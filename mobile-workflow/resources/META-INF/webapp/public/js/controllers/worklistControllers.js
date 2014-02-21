@@ -33,6 +33,20 @@ define([],function(){
 		};
 	};
 	
+	var processModel = function(){
+		this.test="Hello From Process Model";
+		this.descriptors={};
+		this.documents=[];
+		this.events={};
+		this.notes=[];
+		this.participants={};
+		this.priority =0;
+		this.processId ="";
+		this.processName="";
+		this.startTimestamp=0;
+		this.state="";
+	};
+	
 	var worklistItem =function(){
 		this.item={};
 	};
@@ -131,6 +145,7 @@ define([],function(){
 				$scope.activityModel = new worklistItem();
 				$scope.documentModel = new documentModel();
 				$scope.participantModel = new participantModel();
+				$scope.processModel = new processModel();
 				
 				/*Signal JQuery universe that we need to add a note via REST*/
 				$scope.addNote = function(id,newNote){
@@ -160,8 +175,10 @@ define([],function(){
 				      });
 				    };
 				    
-			    $scope.uploadFile = function() {
-			        var fd = new FormData();
+			    $scope.uploadFile = function(processOid) {
+			        var fd = new FormData(),
+			        	url="";
+			        
 			        for (var i in $scope.files) {
 			            fd.append("uploadedFile", $scope.files[i]);
 			        }
@@ -188,7 +205,11 @@ define([],function(){
 			        	});
 			        }, false);
 			        //xhr.addEventListener("abort", uploadCanceled, false);
-			        xhr.open("POST", "http://localhost:8080/pepper-test/services/rest/mobile-workflow/process-instances/17/documents");
+			        url="http://localhost:8080/pepper-test/services/rest/mobile-workflow/process-instances/" +
+			        	processOid +
+			        	"/documents";
+			        
+			        xhr.open("POST", url);
 			        $scope.progressVisible = true;
 			        xhr.send(fd);
 			    };

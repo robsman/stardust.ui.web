@@ -1,40 +1,39 @@
 <div data-role="header" style="overflow:hidden;">
-	<h1>{{activityModel.item.activityName}} #{{activityModel.item.processInstanceOid}}</h1>
+	<h1>{{activityModel.item.processName}} (#{{activityModel.item.processInstanceOid}})</h1>
     <!-- a href="#" data-icon="gear" class="ui-btn-right">Options</a-->
     <a href="#" data-rel="back" class="ui-btn ui-shadow ui-corner-all ui-icon-back ui-btn-icon-notext">No Text</a>
 </div>
-
 <div data-role="tabs" id="processTabs" style="padding-top:0em;border-top:0em;">
   <div data-role="navbar">
 	<ul>
 		<li>
 			<a href="#overviewTab" class="ui-btn-active">
 				<i style="display:block;" class="fa fa-info-circle fa-2x jqm-icon-block"></i>
-				Overview
+				<span title="Overview" class="hide-media-sm">Overview</span>
 			</a>		
 		</li>
 		<li>
 			<a href="#descriptorsTab">
 				<i style="display:block;" class="fa fa-tags fa-2x jqm-icon-block"></i>
-				Descriptors	
+				<span title="Descriptors" class="hide-media-sm">Descriptors</span>	
 			</a>
 		</li>
 		<li>
 			<a href="#docsProcessTab">
 				<i style="display:block;" class="fa fa-files-o fa-2x jqm-icon-block"></i>
-				Docs
+				<span title="Documents" class="hide-media-sm">Documents</span>
 			</a>
 		</li>
 		<li>
 		 	<a href="#notesProcessTab" >
 				<i style="display:block;" class="fa fa-clipboard fa-2x jqm-icon-block"></i>
-				Notes
+				<span title="Notes" class="hide-media-sm">Notes</span>
 			</a>
 		</li>
 		<li>
 			<a  href="#participantsTab" >
 				<i style="display:block;" class="fa fa-user fa-2x jqm-icon-block"></i>
-				Participants
+				<span title="Participants" class="hide-media-sm">Participants</span>
 			</a>
 		</li>
 	</ul>
@@ -42,7 +41,7 @@
   <div id="overviewTab" class="ui-body-d ui-content">
 		<div data-theme="a" 
 			 data-jqm-template data-jqm-widgets="" 
-			 data-template-url="templates/activityDetails.html">
+			 data-template-url="templates/processDetails.html">
 		</div>
   </div>
   <div id="descriptorsTab" class="ui-body-d ui-content">

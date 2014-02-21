@@ -1,6 +1,6 @@
 
 <div data-role="header" style="overflow:hidden;">
-	<h1>{{activityModel.item.activityName}} #{{activityModel.item.processInstanceOid}}</h1>
+	<h1>{{activityModel.item.activityName}} (#{{activityModel.item.oid}})</h1>
     <!-- a href="#" data-icon="gear" class="ui-btn-right">Options</a-->
     <a href="#" ng-click="activeTab=''" data-rel="back" class="ui-btn ui-shadow ui-corner-all ui-icon-back ui-btn-icon-notext">No Text</a>
 </div>
@@ -10,60 +10,38 @@
 	<ul>
 		<li ng-click="activeTab='activityTab';getNotes(activityModel.item.processInstanceOid)" >
 			<a href="#activityTab" class="ui-btn-active">
-				<i style="display:block;" class="fa fa-info fa-2x jqm-icon-block"></i>
-				Activity
+				<i title="Activity" style="display:block;" class="fa fa-info fa-2x jqm-icon-block"></i>
+				<span title="Activity" class="hide-media-sm">Activity</span>
 			</a>		
 		</li>
 		<li ng-click="activeTab='formTab'" >
 			<a href="#formTab">
 				<i style="display:block;" class="fa fa-cog fa-2x jqm-icon-block"></i>
-				Form	
+				<span title="Form" class="hide-media-sm">Form</span>	
 			</a>
 		</li>
 		<li ng-click="activeTab='docsTab'" >
 			<a href="#docsTab">
 				<i style="display:block;" class="fa fa-files-o fa-2x jqm-icon-block"></i>
-				Docs ({{documentModel.docs.length}})
+				<span title="Documents" class="hide-media-sm">Documents ({{documentModel.docs.length}})</span>
 			</a>
 		</li>
 		<li ng-click="activeTab='notesTab'">
 		 	<a href="#notesTabContent" >
 				<i style="display:block;" class="fa fa-clipboard fa-2x jqm-icon-block"></i>
-				Notes ({{notesModel.notes.length}})
+				<span title="Notes" class="hide-media-sm">Notes ({{notesModel.notes.length}})</span>
 			</a>
 		</li>
 		<li ng-click="navigateTo('#processPage?id=' + activityModel.item.processInstanceOid)">
 			<a  id="#processTab" href="#" >
 				<i style="display:block;" class="fa fa-cogs fa-2x jqm-icon-block"></i>
-				Process
+				<span title="Process" class="hide-media-sm">Process</span>
 			</a>
 		</li>
 	</ul>
   </div>
   
-  <div class="ui-mini" ng-show="activeTab=='activityTab'">
-	  <div ng-click="trigger('activateActivity',activityModel.item.processInstanceOid)"  style="margin-right:0em;" class="ui-btn ui-conrner-all ui-btn-inline">
-	  	<i class="fa fa-bolt"></i> Activate
-	  </div>
-	  <div ng-click="trigger('delegateActivity',activityModel.item.processInstanceOid)" style="margin-right:0em;" class="ui-btn ui-btn-inline">
-	  	<i class="fa fa-user"></i> Delegate
-	  </div>
-  </div>  
-  
-  <div class="ui-mini" ng-show="activeTab=='formTab'">
-	  <div ng-click="trigger('completeActivity',activityModel.item.processInstanceOid)" style="margin-right:0em;" class="ui-btn ui-conrner-all ui-btn-inline">
-	  	<i class="fa fa-bolt"></i> Complete
-	  </div>
-	  <div ng-click="trigger('cancelActivity',activityModel.item.processInstanceOid)" style="margin-right:0em;" class="ui-btn ui-btn-inline">
-	  	<i class="fa fa-times"></i> Cancel
-	  </div>
-	  <div ng-click="trigger('saveActivity',activityModel.item.processInstanceOid)" style="margin-right:0em;" class="ui-btn ui-btn-inline">
-	  	<i class="fa fa-save"></i> Save
-	  </div>
-	  <div ng-click="trigger('delegateActivity',activityModel.item.processInstanceOid)" style="margin-right:0em;" class="ui-btn ui-btn-inline">
-	  	<i class="fa fa-user"></i> Delegate
-	  </div>
-  </div> 
+
  
 
   
@@ -98,6 +76,31 @@
     <!-- NO CONTENT -->
   </div>
 </div><!-- Tabs End  -->
+
+
+  <div class="ui-mini" ng-show="activeTab=='activityTab'">
+	  <div ng-click="trigger('activateActivity',activityModel.item.processInstanceOid)"  style="margin-right:0em;" class="ui-btn ui-conrner-all ui-btn-inline">
+	  	<i class="fa fa-bolt"></i> Activate
+	  </div>
+	  <div ng-click="trigger('delegateActivity',activityModel.item.processInstanceOid)" style="margin-right:0em;" class="ui-btn ui-btn-inline">
+	  	<i class="fa fa-user"></i> Delegate
+	  </div>
+  </div>  
+  
+  <!-- div class="ui-mini" ng-show="activeTab=='formTab'">
+	  <div ng-click="trigger('completeActivity',activityModel.item.processInstanceOid)" style="margin-right:0em;" class="ui-btn ui-conrner-all ui-btn-inline">
+	  	<i class="fa fa-bolt"></i> Complete
+	  </div>
+	  <div ng-click="trigger('cancelActivity',activityModel.item.processInstanceOid)" style="margin-right:0em;" class="ui-btn ui-btn-inline">
+	  	<i class="fa fa-times"></i> Cancel
+	  </div>
+	  <div ng-click="trigger('saveActivity',activityModel.item.processInstanceOid)" style="margin-right:0em;" class="ui-btn ui-btn-inline">
+	  	<i class="fa fa-save"></i> Save
+	  </div>
+	  <div ng-click="trigger('delegateActivity',activityModel.item.processInstanceOid)" style="margin-right:0em;" class="ui-btn ui-btn-inline">
+	  	<i class="fa fa-user"></i> Delegate
+	  </div>
+  </div--> 
 
 <div data-role="footer" data-theme="a" ng-controller="footerCtrl">
 	<div class="ui-grid-b ui-mini" style="height:1.75em;">

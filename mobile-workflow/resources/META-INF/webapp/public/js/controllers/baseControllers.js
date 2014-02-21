@@ -30,11 +30,9 @@ define([],function(){
 			},
 			
 			/*simple binding for our persistent footer*/
-			"footerCtrl" : function($scope,$rootScope){
-				$scope.title = "&#169;" + 
-							   (new Date()).getFullYear() +
-							   " SunGard";
-				
+			"footerCtrl" : function($scope,$rootScope, $sce){
+				var title="&copy; " + (new Date()).getFullYear() + " SunGard";
+				$scope.title = $sce.trustAsHtml(title);
 				$scope.version = "0.1";
 			}
 	};

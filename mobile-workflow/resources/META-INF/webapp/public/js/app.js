@@ -30,11 +30,14 @@ define(function(require){
 	app.controller( "processCtrl", worklistControllers.processCtrl);
 	app.filter( "humaneDate",        baseFilters.humaneDate);
 	app.filter( "serializeObject",   baseFilters.serializeObject);
+	app.filter( "criticality",       baseFilters.criticality);
+	app.filter( "absoluteTime",      baseFilters.absoluteTime);
 	app.directive( "jqmTemplate",    jqmDirectives.jqmTemplate);
 	app.directive( "testTemplate",   jqmDirectives.testTemplate);
 	app.factory("utilService",utilService);
 	app.factory("workflowService",angWorkflow);
 	
+	/*Initial setup TODO:- consider config, not sure if we can access $rootScope etc though*/
 	app.run(function($rootScope,workflowService){
 		$rootScope.appData={
 				"isAuthorized" : false,

@@ -1,4 +1,4 @@
-define([],function(){
+define(["angularjs"],function(angular){
 	
 	var srvc,
 		ngInjector = angular.injector(["ng"]),

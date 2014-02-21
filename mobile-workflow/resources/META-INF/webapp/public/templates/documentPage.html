@@ -12,7 +12,9 @@
 		<input type="file"  onchange="angular.element(this).scope().setFiles(this)" />
 	</div>
 	<div class="ui-block-b" style="width:20%;">
-		<button title="Upload" ng-click="uploadFile();isUploading=true" style="height:40px;">
+		<button title="Upload" 
+				ng-click="uploadFile(activityModel.item.processInstanceOid);isUploading=true" 
+				style="height:40px;">
 			<i ng-class="{'fa-upload' : !isUploading, 'fa-spinner' : isUploading, 'fa-spin' : isUploading}"  
 			   class="fa fa-2x" 
 			   style="margin-top:-5px;"></i>
@@ -25,7 +27,7 @@
 			<a href="#?id={{doc.id}}">
 				<h3>{{doc.name}}</h3>
 	       		<p class="ui-li-aside">
-	       			<strong>{{doc.mimeType}}</strong>
+	       			<strong>{{doc.lastModifiedTimestamp | date:'yyyy-MM-dd' | humaneDate}}</strong>
 	       		</p>
 			</a>
 		</li>

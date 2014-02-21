@@ -1,8 +1,18 @@
+@media (max-width: 480px) {
+  .hide-media-sm{
+    display:none;
+  }
+}
+
 .external-header{
 	background-image: url('../css-images/spr-main.png');
 	background-repeat:repeat-x;
 }
 
+.external-header-stardust{
+	background-image: url('../css-images/mobile-bgheader-stardust.png');
+	background-repeat:repeat-x;
+}
 .external-header [data-role=button]{
 	margin-top : 5px;
 }
@@ -98,6 +108,11 @@ a.ipp-minimal:visited{
 	background-position-y:6px;
 }
 
+.ipp-logo-stardust{
+	background-image:url('../css-images/Stardust_156X24.png');
+	background-repeat:no-repeat;
+	background-position-y:6px;
+}
 .ipp-grid-subheader {
 	border-width: 0px !important;
 	border-style: none !important;

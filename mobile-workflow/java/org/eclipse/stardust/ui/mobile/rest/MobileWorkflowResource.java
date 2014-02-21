@@ -193,105 +193,133 @@ public class MobileWorkflowResource {
 			throw new RuntimeException(e);
 		}
 	}
-	
-	   @POST
-	   @Path("process-instances/{oid}/documents")
-	   @Consumes(MediaType.MULTIPART_FORM_DATA)
-	   @Produces(MediaType.APPLICATION_JSON)
-	   public Response uploadFile(@PathParam("oid") String processOid, List<Attachment> attachments, @Context HttpServletRequest request)
-	   {
 
-		   
-		   JsonObject response = null;
-	      for (Attachment attachment : attachments)
-	      {
-	         DataHandler dataHandler = attachment.getDataHandler();
-	         try
-	         {
-	            InputStream inputStream = dataHandler.getInputStream();
-	            MultivaluedMap<String, String> headers = attachment.getHeaders();
+   @POST
+   @Path("process-instances/{oid}/documents")
+   @Consumes(MediaType.MULTIPART_FORM_DATA)
+   @Produces(MediaType.APPLICATION_JSON)
+   public Response uploadFile(@PathParam("oid")
+   String processOid, List<Attachment> attachments, @Context
+   HttpServletRequest request)
+   {
 
-	            FileInfo fileInfo = getFileName(headers);
+      JsonObject response = null;
+      for (Attachment attachment : attachments)
+      {
+         DataHandler dataHandler = attachment.getDataHandler();
+         try
+         {
+            InputStream inputStream = dataHandler.getInputStream();
+            MultivaluedMap<String, String> headers = attachment.getHeaders();
 
-	            String folderPath = Parameters.instance().getString("Carnot.Portal.FileUploadPath", servletContext.getRealPath("/"));
-	            // file path
-	            String filePath = folderPath + fileInfo.name;
-	            File uploadedFile = new File(filePath);
+            FileInfo fileInfo = getFileName(headers);
 
-	            OutputStream outputStream = new FileOutputStream(uploadedFile);
+            String folderPath = Parameters.instance().getString(
+                  "Carnot.Portal.FileUploadPath", servletContext.getRealPath("/"));
+            // file path
+            String filePath = folderPath + fileInfo.name;
+            File uploadedFile = new File(filePath);
 
-	            int read = 0;
-	            byte[] bytes = new byte[1024];
-	            while ((read = inputStream.read(bytes)) != -1)
-	            {
-	               outputStream.write(bytes, 0, read);
-	            }
-	            inputStream.close();
+            OutputStream outputStream = new FileOutputStream(uploadedFile);
 
-	            outputStream.flush();
-	            outputStream.close();
+            int read = 0;
+            byte[] bytes = new byte[1024];
+            while ((read = inputStream.read(bytes)) != -1)
+            {
+               outputStream.write(bytes, 0, read);
+            }
+            inputStream.close();
 
-	            // Store file in Process Attachments
-	            getMobileWorkflowService().addProcessAttachment(Long.parseLong(processOid), uploadedFile);
+            outputStream.flush();
+            outputStream.close();
 
-	            response = new JsonObject();
-	         }
-	         catch (Exception e)
-	         {
-	            e.printStackTrace();
-	         }
-	      }
+            // Store file in Process Attachments
+            getMobileWorkflowService().addProcessAttachment(Long.parseLong(processOid),
+                  uploadedFile);
 
-	      if (response != null)
-	      {
-	         return Response.ok(response.toString(), MediaType.APPLICATION_JSON_TYPE).build();
-	      }
-	      else
-	      {
-	         return Response.serverError().build();
-	      }
-	   }
+            response = new JsonObject();
+         }
+         catch (Exception e)
+         {
+            e.printStackTrace();
+         }
+      }
 
-	   /**
-	    * @param header
-	    * @return
-	    */
-	   private FileInfo getFileName(MultivaluedMap<String, String> header)
-	   {
-	      String[] contentDisposition = header.getFirst("Content-Disposition").split(";");
+      if (response != null)
+      {
+         return Response.ok(response.toString(), MediaType.APPLICATION_JSON_TYPE).build();
+      }
+      else
+      {
+         return Response.serverError().build();
+      }
+   }
 
-	      FileInfo fileInfo = new FileInfo();
-	      for (String filename : contentDisposition)
-	      {
-	         if ((filename.trim().startsWith("filename")))
-	         {
-	            String[] name = filename.split("=");
-	            fileInfo.name = name[1].trim().replaceAll("\"", "");
-	         }
-	      }
+   /**
+    * @param header
+    * @return
+    */
+   private FileInfo getFileName(MultivaluedMap<String, String> header)
+   {
+      String[] contentDisposition = header.getFirst("Content-Disposition").split(";");
 
-	      fileInfo.contentType = header.getFirst("Content-Type");
+      FileInfo fileInfo = new FileInfo();
+      for (String filename : contentDisposition)
+      {
+         if ((filename.trim().startsWith("filename")))
+         {
+            String[] name = filename.split("=");
+            fileInfo.name = name[1].trim().replaceAll("\"", "");
+         }
+      }
 
-	      return fileInfo;
-	   }
+      fileInfo.contentType = header.getFirst("Content-Type");
 
-	   /**
-	    * 
-	    * @author Yogesh.Manware
-	    * 
-	    */
-	   private class FileInfo
-	   {
-	      String name;
-	      String contentType;
+      return fileInfo;
+   }
 
-	      public FileInfo()
-	      {
-	         name = "unknown";
-	         contentType = "unknown";
-	      }
-	   }
-	   
+   /**
+    * 
+    * @author Yogesh.Manware
+    * 
+    */
+   private class FileInfo
+   {
+      String name;
+
+      String contentType;
+
+      public FileInfo()
+      {
+         name = "unknown";
+         contentType = "unknown";
+      }
+   }
+
+   @POST
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("activity-instances/{oid}/complete")
+   public Response completeActivity(String postedData)
+   {
+      try
+      {
+         JsonObject postedDataJson = jsonIo.readJsonObject(postedData);
+
+         return Response.ok(
+               getMobileWorkflowService().completeActivity(
+                     postedDataJson.getAsJsonObject("activityInstance"),
+                     postedDataJson.getAsJsonObject("outData")),
+               MediaType.APPLICATION_JSON_TYPE).build();
+      }
+      catch (Exception e)
+      {
+         e.printStackTrace();
+
+         throw new RuntimeException(e);
+      }
+   }
+
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("folders/{id}")

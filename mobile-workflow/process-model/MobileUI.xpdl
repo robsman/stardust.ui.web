@@ -1,0 +1,841 @@
+<?xml version="1.0" encoding="UTF-8"?><Package xmlns:carnot="http://www.carnot.ag/xpdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.wfmc.org/2008/XPDL2.1" xsi:schemaLocation="http://www.wfmc.org/2008/XPDL2.1 http://www.wfmc.org/standards/docs/bpmnxpdl_31.xsd" Id="Model24" Name="Mobile">
+   <PackageHeader>
+      <XPDLVersion>2.1</XPDLVersion>
+      <Vendor>SunGard CSA LLC, IPP</Vendor>
+      <Created>Thu Feb 06 10:19:41 CST 2014</Created>
+   </PackageHeader>
+   <RedefinableHeader PublicationStatus="UNDER_REVISION">
+      <Author>Kyle.Hargett</Author>
+      <Version>1</Version>
+   </RedefinableHeader>
+   <ConformanceClass GraphConformance="NON_BLOCKED"/>
+   <xpdl:Script xmlns:xpdl="http://www.wfmc.org/2008/XPDL2.1" xmlns="http://www.carnot.ag/workflowmodel/3.1" Type="text/ecmascript"/>
+   <xpdl:TypeDeclarations xmlns:xpdl="http://www.wfmc.org/2008/XPDL2.1" xmlns="http://www.carnot.ag/workflowmodel/3.1">
+      <xpdl:TypeDeclaration Id="Person" Name="Person">
+         <xpdl:SchemaType>
+            <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:per="http://www.infinity.com/bpm/model/Model24/Person" targetNamespace="http://www.infinity.com/bpm/model/Model24/Person">
+               <xsd:complexType name="Person">
+                  <xsd:sequence>
+                     <xsd:element name="FirstName" type="xsd:string"/>
+                     <xsd:element name="LastName" type="xsd:string"/>
+                     <xsd:element name="PolicyNumber" type="xsd:string"/>
+                     <xsd:element name="DriversLicense" type="xsd:string"/>
+                     <xsd:element name="PhoneNumber" type="xsd:string"/>
+                     <xsd:element name="Email" type="xsd:string"/>
+                  </xsd:sequence>
+               </xsd:complexType>
+               <xsd:element name="Person" type="per:Person"/>
+            </xsd:schema>
+         </xpdl:SchemaType>
+      </xpdl:TypeDeclaration>
+      <xpdl:TypeDeclaration Id="AccidentInformation" Name="AccidentInformation">
+         <xpdl:SchemaType>
+            <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:acc="http://www.infinity.com/bpm/model/Model24/AccidentInformation" xmlns:veh="http://www.infinity.com/bpm/model/Model24/VehicleDamage" targetNamespace="http://www.infinity.com/bpm/model/Model24/AccidentInformation">
+               <xsd:import namespace="http://www.infinity.com/bpm/model/Model24/VehicleDamage" schemaLocation="urn:internal:VehicleDamage"/>
+               <xsd:complexType name="AccidentInformation">
+                  <xsd:sequence>
+                     <xsd:element name="DateOfAccident" type="xsd:date"/>
+                     <xsd:element name="AccidentLocation" type="xsd:string"/>
+                     <xsd:element name="CarsInvolvedInAccident" type="xsd:byte"/>
+                     <xsd:element name="YourVehicleTowed" type="xsd:boolean"/>
+                     <xsd:element name="WhereVehicleDamaged" type="veh:VehicleDamage"/>
+                  </xsd:sequence>
+               </xsd:complexType>
+               <xsd:element name="AccidentInformation" type="acc:AccidentInformation"/>
+            </xsd:schema>
+         </xpdl:SchemaType>
+      </xpdl:TypeDeclaration>
+      <xpdl:TypeDeclaration Id="PoliceReport" Name="PoliceReport">
+         <xpdl:SchemaType>
+            <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:pol1="http://www.infinity.com/bpm/model/Model24/PoliceReport" targetNamespace="http://www.infinity.com/bpm/model/Model24/PoliceReport">
+               <xsd:complexType name="PoliceReport">
+                  <xsd:sequence>
+                     <xsd:element name="PoliceReportID" type="xsd:string"/>
+                     <xsd:element name="Jurisdiction" type="xsd:string"/>
+                  </xsd:sequence>
+               </xsd:complexType>
+               <xsd:element name="PoliceReport" type="pol1:PoliceReport"/>
+            </xsd:schema>
+         </xpdl:SchemaType>
+      </xpdl:TypeDeclaration>
+      <xpdl:TypeDeclaration Id="PropertyIncident" Name="PropertyIncident">
+         <xpdl:SchemaType>
+            <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:pro="http://www.infinity.com/bpm/model/Model24/PropertyIncident" xmlns:pro2="http://www.infinity.com/bpm/model/Model24/PropertyDamage" targetNamespace="http://www.infinity.com/bpm/model/Model24/PropertyIncident">
+               <xsd:import namespace="http://www.infinity.com/bpm/model/Model24/PropertyDamage" schemaLocation="urn:internal:PropertyDamage"/>
+               <xsd:complexType name="PropertyIncident">
+                  <xsd:sequence>
+                     <xsd:element name="Date" type="xsd:date"/>
+                     <xsd:element name="Location" type="xsd:string"/>
+                     <xsd:element name="EstDamages" type="xsd:decimal"/>
+                     <xsd:element name="Injuries" type="xsd:boolean"/>
+                     <xsd:element name="PropertyDamageCause" type="pro2:PropertyDamage"/>
+                  </xsd:sequence>
+               </xsd:complexType>
+               <xsd:element name="PropertyIncident" type="pro:PropertyIncident"/>
+            </xsd:schema>
+         </xpdl:SchemaType>
+      </xpdl:TypeDeclaration>
+      <xpdl:TypeDeclaration Id="VehicleDamage" Name="VehicleDamage">
+         <xpdl:SchemaType>
+            <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:veh="http://www.infinity.com/bpm/model/Model24/VehicleDamage" targetNamespace="http://www.infinity.com/bpm/model/Model24/VehicleDamage">
+               <xsd:complexType name="VehicleDamage">
+                  <xsd:sequence>
+                     <xsd:element name="Front" type="xsd:boolean"/>
+                     <xsd:element name="PassengerSide" type="xsd:boolean"/>
+                     <xsd:element name="Hood" type="xsd:boolean"/>
+                     <xsd:element name="Rear" type="xsd:boolean"/>
+                     <xsd:element name="DriverSide" type="xsd:boolean"/>
+                     <xsd:element name="Undercarriage" type="xsd:boolean"/>
+                  </xsd:sequence>
+               </xsd:complexType>
+               <xsd:element name="VehicleDamage" type="veh:VehicleDamage"/>
+            </xsd:schema>
+         </xpdl:SchemaType>
+      </xpdl:TypeDeclaration>
+      <xpdl:TypeDeclaration Id="PropertyDamage" Name="PropertyDamage">
+         <xpdl:SchemaType>
+            <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:pro="http://www.infinity.com/bpm/model/Model24/PropertyDamage" targetNamespace="http://www.infinity.com/bpm/model/Model24/PropertyDamage">
+               <xsd:complexType name="PropertyDamage">
+                  <xsd:sequence>
+                     <xsd:element name="Fire" type="xsd:boolean"/>
+                     <xsd:element name="Water" type="xsd:boolean"/>
+                     <xsd:element name="Wind" type="xsd:boolean"/>
+                     <xsd:element name="Lightning" type="xsd:boolean"/>
+                     <xsd:element name="Break-in" type="xsd:boolean"/>
+                     <xsd:element name="Other" type="xsd:boolean"/>
+                  </xsd:sequence>
+               </xsd:complexType>
+               <xsd:element name="PropertyDamage" type="pro:PropertyDamage"/>
+            </xsd:schema>
+         </xpdl:SchemaType>
+      </xpdl:TypeDeclaration>
+   </xpdl:TypeDeclarations>
+   <Participants>
+      <Participant Id="Administrator" Name="Administrator">
+         <ParticipantType Type="ROLE"/>
+         <ExtendedAttributes>
+            <ExtendedAttribute Name="CarnotExt">
+               <carnot:Role Oid="25"/>
+            </ExtendedAttribute>
+         </ExtendedAttributes>
+      </Participant>
+      <Participant Id="Agent" Name="Agent">
+         <ParticipantType Type="ROLE"/>
+         <ExtendedAttributes>
+            <ExtendedAttribute Name="CarnotExt">
+               <carnot:Role Oid="596">
+                  <carnot:Attributes>
+                     <carnot:Attribute Name="carnot:engine:visibility" Value="Public"/>
+                  </carnot:Attributes>
+               </carnot:Role>
+            </ExtendedAttribute>
+         </ExtendedAttributes>
+      </Participant>
+      <Participant Id="Investigator" Name="Investigator">
+         <ParticipantType Type="ROLE"/>
+         <ExtendedAttributes>
+            <ExtendedAttribute Name="CarnotExt">
+               <carnot:Role Oid="597">
+                  <carnot:Attributes>
+                     <carnot:Attribute Name="carnot:engine:visibility" Value="Public"/>
+                  </carnot:Attributes>
+               </carnot:Role>
+            </ExtendedAttribute>
+         </ExtendedAttributes>
+      </Participant>
+      <Participant Id="ClaimsProcessor" Name="Claims Processor">
+         <ParticipantType Type="ROLE"/>
+         <ExtendedAttributes>
+            <ExtendedAttribute Name="CarnotExt">
+               <carnot:Role Oid="598">
+                  <carnot:Attributes>
+                     <carnot:Attribute Name="carnot:engine:visibility" Value="Public"/>
+                  </carnot:Attributes>
+               </carnot:Role>
+            </ExtendedAttribute>
+         </ExtendedAttributes>
+      </Participant>
+   </Participants>
+   <Applications/>
+   <DataFields>
+      <DataField Id="PROCESS_ID" Name="Process OID" IsArray="FALSE">
+         <DataType>
+            <BasicType Type="INTEGER"/>
+         </DataType>
+         <ExtendedAttributes>
+            <ExtendedAttribute Name="CarnotExt">
+               <carnot:DataField Oid="20" Type="primitive" IsPredefined="true">
+                  <carnot:Attributes>
+                     <carnot:Attribute Name="carnot:engine:type" Value="int" Type="org.eclipse.stardust.engine.core.pojo.data.Type"/>
+                  </carnot:Attributes>
+               </carnot:DataField>
+            </ExtendedAttribute>
+         </ExtendedAttributes>
+      </DataField>
+      <DataField Id="ROOT_PROCESS_ID" Name="Root Process OID" IsArray="FALSE">
+         <DataType>
+            <BasicType Type="INTEGER"/>
+         </DataType>
+         <ExtendedAttributes>
+            <ExtendedAttribute Name="CarnotExt">
+               <carnot:DataField Oid="21" Type="primitive" IsPredefined="true">
+                  <carnot:Attributes>
+                     <carnot:Attribute Name="carnot:engine:type" Value="int" Type="org.eclipse.stardust.engine.core.pojo.data.Type"/>
+                  </carnot:Attributes>
+               </carnot:DataField>
+            </ExtendedAttribute>
+         </ExtendedAttributes>
+      </DataField>
+      <DataField Id="PROCESS_PRIORITY" Name="Process Priority" IsArray="FALSE">
+         <DataType>
+            <BasicType Type="INTEGER"/>
+         </DataType>
+         <ExtendedAttributes>
+            <ExtendedAttribute Name="CarnotExt">
+               <carnot:DataField Oid="22" Type="primitive" IsPredefined="true">
+                  <carnot:Attributes>
+                     <carnot:Attribute Name="carnot:engine:type" Value="int" Type="org.eclipse.stardust.engine.core.pojo.data.Type"/>
+                  </carnot:Attributes>
+               </carnot:DataField>
+            </ExtendedAttribute>
+         </ExtendedAttributes>
+      </DataField>
+      <DataField Id="CURRENT_LOCALE" Name="Current Locale" IsArray="FALSE">
+         <DataType>
+            <BasicType Type="STRING"/>
+         </DataType>
+         <ExtendedAttributes>
+            <ExtendedAttribute Name="CarnotExt">
+               <carnot:DataField Oid="23" Type="primitive" IsPredefined="true">
+                  <carnot:Attributes>
+                     <carnot:Attribute Name="carnot:engine:type" Value="String" Type="org.eclipse.stardust.engine.core.pojo.data.Type"/>
+                  </carnot:Attributes>
+               </carnot:DataField>
+            </ExtendedAttribute>
+         </ExtendedAttributes>
+      </DataField>
+      <DataField Id="CURRENT_DATE" Name="Current Date" IsArray="FALSE">
+         <DataType>
+            <BasicType Type="DATETIME"/>
+         </DataType>
+         <ExtendedAttributes>
+            <ExtendedAttribute Name="CarnotExt">
+               <carnot:DataField Oid="24" Type="primitive" IsPredefined="true">
+                  <carnot:Attributes>
+                     <carnot:Attribute Name="carnot:engine:type" Value="Calendar" Type="org.eclipse.stardust.engine.core.pojo.data.Type"/>
+                  </carnot:Attributes>
+               </carnot:DataField>
+            </ExtendedAttribute>
+         </ExtendedAttributes>
+      </DataField>
+      <DataField Id="AccidentInformation" Name="AccidentInformation" IsArray="FALSE">
+         <DataType>
+            <DeclaredType Id="AccidentInformation"/>
+         </DataType>
+         <ExtendedAttributes>
+            <ExtendedAttribute Name="CarnotExt">
+               <carnot:DataField Oid="136" Type="struct">
+                  <carnot:Attributes>
+                     <carnot:Attribute Name="carnot:engine:path:separator" Value="/"/>
+                     <carnot:Attribute Name="carnot:engine:data:bidirectional" Value="true" Type="boolean"/>
+                  </carnot:Attributes>
+               </carnot:DataField>
+            </ExtendedAttribute>
+         </ExtendedAttributes>
+      </DataField>
+      <DataField Id="PoliceReport" Name="PoliceReport" IsArray="FALSE">
+         <DataType>
+            <ExternalReference location="org.eclipse.stardust.engine.api.runtime.Document"/>
+         </DataType>
+         <ExtendedAttributes>
+            <ExtendedAttribute Name="CarnotExt">
+               <carnot:DataField Oid="182" Type="dmsDocument">
+                  <carnot:Attributes>
+                     <carnot:Attribute Name="carnot:engine:data:bidirectional" Value="true" Type="boolean"/>
+                     <carnot:Attribute Name="carnot:engine:className" Value="org.eclipse.stardust.engine.api.runtime.Document"/>
+                     <carnot:Attribute Name="carnot:engine:dms:resourceMetadataSchema" Value="PoliceReport"/>
+                  </carnot:Attributes>
+               </carnot:DataField>
+            </ExtendedAttribute>
+         </ExtendedAttributes>
+      </DataField>
+      <DataField Id="PROCESS_ATTACHMENTS" Name="Process Attachments" IsArray="FALSE">
+         <DataType>
+            <ExternalReference location="java.util.List"/>
+         </DataType>
+         <ExtendedAttributes>
+            <ExtendedAttribute Name="CarnotExt">
+               <carnot:DataField Oid="186" Type="dmsDocumentList">
+                  <carnot:Attributes>
+                     <carnot:Attribute Name="carnot:engine:className" Value="java.util.List"/>
+                     <carnot:Attribute Name="carnot:engine:data:bidirectional" Value="true" Type="boolean"/>
+                  </carnot:Attributes>
+               </carnot:DataField>
+            </ExtendedAttribute>
+         </ExtendedAttributes>
+      </DataField>
+      <DataField Id="PropertyIncident" Name="PropertyIncident" IsArray="FALSE">
+         <DataType>
+            <DeclaredType Id="PropertyIncident"/>
+         </DataType>
+         <ExtendedAttributes>
+            <ExtendedAttribute Name="CarnotExt">
+               <carnot:DataField Oid="193" Type="struct">
+                  <carnot:Attributes>
+                     <carnot:Attribute Name="carnot:engine:path:separator" Value="/"/>
+                     <carnot:Attribute Name="carnot:engine:data:bidirectional" Value="true" Type="boolean"/>
+                  </carnot:Attributes>
+               </carnot:DataField>
+            </ExtendedAttribute>
+         </ExtendedAttributes>
+      </DataField>
+      <DataField Id="Person" Name="Person" IsArray="FALSE">
+         <DataType>
+            <DeclaredType Id="Person"/>
+         </DataType>
+         <ExtendedAttributes>
+            <ExtendedAttribute Name="CarnotExt">
+               <carnot:DataField Oid="642" Type="struct">
+                  <carnot:Attributes>
+                     <carnot:Attribute Name="carnot:engine:path:separator" Value="/"/>
+                     <carnot:Attribute Name="carnot:engine:data:bidirectional" Value="true" Type="boolean"/>
+                  </carnot:Attributes>
+               </carnot:DataField>
+            </ExtendedAttribute>
+         </ExtendedAttributes>
+      </DataField>
+   </DataFields>
+   <WorkflowProcesses>
+      <WorkflowProcess Id="AutoAccident" Name="Auto Accident" AccessLevel="PUBLIC">
+         <ProcessHeader>
+            <Description>This structured process should be used for auto accidents where no one was injured or received medical attention as a result of the accident. </Description>
+         </ProcessHeader>
+         <Activities>
+            <Activity Id="InvestigateAccident" Name="Investigate Accident">
+               <Implementation>
+                  <No/>
+               </Implementation>
+               <Performer>Agent</Performer>
+               <StartMode>
+                  <Automatic/>
+               </StartMode>
+               <FinishMode>
+                  <Manual/>
+               </FinishMode>
+               <ExtendedAttributes>
+                  <ExtendedAttribute Name="CarnotExt">
+                     <carnot:Activity Oid="567" Implementation="Manual" IsAbortableByPerformer="false" IsHibernatedOnCreation="false">
+                        <carnot:EventHandlers/>
+                        <carnot:QualityCodes/>
+                        <carnot:DataFlows>
+                           <carnot:DataFlow Oid="646" Id="Person" Name="Person" Direction="IN" Context="default">
+                              <carnot:DataRef Id="Person"/>
+                              <carnot:AccessPointRef/>
+                           </carnot:DataFlow>
+                           <carnot:DataFlow Oid="647" Id="Person" Name="Person" Direction="OUT" Context="default">
+                              <carnot:DataRef Id="Person"/>
+                              <carnot:AccessPointRef/>
+                           </carnot:DataFlow>
+                           <carnot:DataFlow Oid="585" Id="AccidentInformation" Name="AccidentInformation" Direction="IN" Context="default">
+                              <carnot:DataRef Id="AccidentInformation"/>
+                              <carnot:AccessPointRef/>
+                           </carnot:DataFlow>
+                           <carnot:DataFlow Oid="573" Id="PoliceReport" Name="PoliceReport" Direction="IN" Context="default">
+                              <carnot:DataRef Id="PoliceReport"/>
+                              <carnot:AccessPointRef/>
+                           </carnot:DataFlow>
+                           <carnot:DataFlow Oid="587" Id="AccidentInformation" Name="AccidentInformation" Direction="OUT" Context="default">
+                              <carnot:DataRef Id="AccidentInformation"/>
+                              <carnot:AccessPointRef/>
+                           </carnot:DataFlow>
+                           <carnot:DataFlow Oid="575" Id="PoliceReport" Name="PoliceReport" Direction="OUT" Context="default">
+                              <carnot:DataRef Id="PoliceReport"/>
+                              <carnot:AccessPointRef/>
+                           </carnot:DataFlow>
+                        </carnot:DataFlows>
+                        <carnot:Attributes>
+                           <carnot:Attribute Name="carnot:pwh:includeTime" Value="true" Type="boolean"/>
+                           <carnot:Attribute Name="carnot:engine:relocate:source" Value="false" Type="boolean"/>
+                           <carnot:Attribute Name="authorization:activity.delegateToOther" Value="__carnot_internal_all_permissions__"/>
+                           <carnot:Attribute Name="authorization:activity.delegateToDepartment[0]" Value="Administrator"/>
+                           <carnot:Attribute Name="authorization:activity.manageEventHandlers" Value="__carnot_internal_all_permissions__"/>
+                           <carnot:Attribute Name="authorization:activity.readActivityInstanceData" Value="__carnot_internal_all_permissions__"/>
+                           <carnot:Attribute Name="authorization:activity.abortActivityInstances" Value="__carnot_internal_owner_permission__"/>
+                           <carnot:Attribute Name="carnot:pwh:targetProcessingTime" Value="000:00:000:00:00:00"/>
+                           <carnot:Attribute Name="carnot:pwh:targetExecutionTime" Value="000:00:000:00:00:00"/>
+                           <carnot:Attribute Name="carnot:pwh:targetIdleTime" Value="000:00:000:00:00:00"/>
+                           <carnot:Attribute Name="carnot:pwh:targetWaitingTime" Value="000:00:000:00:00:00"/>
+                        </carnot:Attributes>
+                     </carnot:Activity>
+                  </ExtendedAttribute>
+               </ExtendedAttributes>
+            </Activity>
+            <Activity Id="ProcessClaim" Name="Process Claim">
+               <Implementation>
+                  <No/>
+               </Implementation>
+               <Performer>ClaimsProcessor</Performer>
+               <StartMode>
+                  <Automatic/>
+               </StartMode>
+               <FinishMode>
+                  <Manual/>
+               </FinishMode>
+               <ExtendedAttributes>
+                  <ExtendedAttribute Name="CarnotExt">
+                     <carnot:Activity Oid="600" Implementation="Manual" IsAbortableByPerformer="false" IsHibernatedOnCreation="false">
+                        <carnot:EventHandlers/>
+                        <carnot:QualityCodes/>
+                        <carnot:DataFlows>
+                           <carnot:DataFlow Oid="650" Id="Person" Name="Person" Direction="IN" Context="default">
+                              <carnot:DataRef Id="Person"/>
+                              <carnot:AccessPointRef/>
+                           </carnot:DataFlow>
+                           <carnot:DataFlow Oid="606" Id="AccidentInformation" Name="AccidentInformation" Direction="IN" Context="default">
+                              <carnot:DataRef Id="AccidentInformation"/>
+                              <carnot:AccessPointRef/>
+                           </carnot:DataFlow>
+                           <carnot:DataFlow Oid="651" Id="Person" Name="Person" Direction="OUT" Context="default">
+                              <carnot:DataRef Id="Person"/>
+                              <carnot:AccessPointRef/>
+                           </carnot:DataFlow>
+                           <carnot:DataFlow Oid="607" Id="AccidentInformation" Name="AccidentInformation" Direction="OUT" Context="default">
+                              <carnot:DataRef Id="AccidentInformation"/>
+                              <carnot:AccessPointRef/>
+                           </carnot:DataFlow>
+                           <carnot:DataFlow Oid="610" Id="PoliceReport" Name="PoliceReport" Direction="IN" Context="default">
+                              <carnot:DataRef Id="PoliceReport"/>
+                              <carnot:AccessPointRef/>
+                           </carnot:DataFlow>
+                           <carnot:DataFlow Oid="611" Id="PoliceReport" Name="PoliceReport" Direction="OUT" Context="default">
+                              <carnot:DataRef Id="PoliceReport"/>
+                              <carnot:AccessPointRef/>
+                           </carnot:DataFlow>
+                        </carnot:DataFlows>
+                        <carnot:Attributes>
+                           <carnot:Attribute Name="carnot:pwh:includeTime" Value="true" Type="boolean"/>
+                           <carnot:Attribute Name="carnot:engine:relocate:source" Value="false" Type="boolean"/>
+                           <carnot:Attribute Name="carnot:pwh:targetProcessingTime" Value="000:00:000:00:00:00"/>
+                           <carnot:Attribute Name="carnot:pwh:targetExecutionTime" Value="000:00:000:00:00:00"/>
+                           <carnot:Attribute Name="carnot:pwh:targetIdleTime" Value="000:00:000:00:00:00"/>
+                           <carnot:Attribute Name="carnot:pwh:targetWaitingTime" Value="000:00:000:00:00:00"/>
+                           <carnot:Attribute Name="authorization:activity.delegateToOther" Value="__carnot_internal_all_permissions__"/>
+                           <carnot:Attribute Name="authorization:activity.delegateToDepartment[0]" Value="Administrator"/>
+                           <carnot:Attribute Name="authorization:activity.manageEventHandlers" Value="__carnot_internal_all_permissions__"/>
+                           <carnot:Attribute Name="authorization:activity.readActivityInstanceData" Value="__carnot_internal_all_permissions__"/>
+                           <carnot:Attribute Name="authorization:activity.abortActivityInstances" Value="__carnot_internal_owner_permission__"/>
+                        </carnot:Attributes>
+                     </carnot:Activity>
+                  </ExtendedAttribute>
+               </ExtendedAttributes>
+            </Activity>
+         </Activities>
+         <Transitions>
+            <Transition Id="7ab22451-75a1-4932-8147-00663355be34" Name="" From="InvestigateAccident" To="ProcessClaim">
+               <Condition Type="CONDITION">true</Condition>
+               <ExtendedAttributes>
+                  <ExtendedAttribute Name="CarnotExt">
+                     <carnot:Transition Oid="602"/>
+                  </ExtendedAttribute>
+               </ExtendedAttributes>
+            </Transition>
+         </Transitions>
+         <ExtendedAttributes>
+            <ExtendedAttribute Name="CarnotExt">
+               <carnot:WorkflowProcess Oid="26">
+                  <carnot:Triggers>
+                     <carnot:Trigger Oid="31" Id="ManualTrigger1" Name="Start Claim" Type="manual">
+                        <carnot:AccessPoints/>
+                        <carnot:DataFlows/>
+                        <carnot:Attributes>
+                           <carnot:Attribute Name="carnot:engine:participant" Value="Agent"/>
+                        </carnot:Attributes>
+                     </carnot:Trigger>
+                  </carnot:Triggers>
+                  <carnot:DataPaths>
+                     <carnot:DataPath Oid="766" Id="PROCESS_ATTACHMENTS" Name="PROCESS_ATTACHMENTS" Direction="IN" IsDescriptor="false" IsKey="false">
+                        <carnot:DataRef Id="PROCESS_ATTACHMENTS"/>
+                     </carnot:DataPath>
+                     <carnot:DataPath Oid="767" Id="PROCESS_ATTACHMENTS" Name="PROCESS_ATTACHMENTS" Direction="OUT" IsDescriptor="false" IsKey="false">
+                        <carnot:DataRef Id="PROCESS_ATTACHMENTS"/>
+                     </carnot:DataPath>
+                     <carnot:DataPath Oid="768" Id="FirstName" Name="First Name" Direction="IN" IsDescriptor="true" IsKey="true">
+                        <carnot:DataRef Id="Person" Expression="FirstName"/>
+                     </carnot:DataPath>
+                     <carnot:DataPath Oid="769" Id="LastName" Name="Last Name" Direction="IN" IsDescriptor="true" IsKey="false">
+                        <carnot:DataRef Id="Person" Expression="LastName"/>
+                     </carnot:DataPath>
+                     <carnot:DataPath Oid="770" Id="PolicyNumber" Name="Policy Number" Direction="IN" IsDescriptor="true" IsKey="false">
+                        <carnot:DataRef Id="Person" Expression="PolicyNumber"/>
+                     </carnot:DataPath>
+                     <carnot:DataPath Oid="771" Id="PoliceReport" Name="Police Report" Direction="IN" IsDescriptor="false" IsKey="false">
+                        <carnot:DataRef Id="PoliceReport"/>
+                     </carnot:DataPath>
+                     <carnot:DataPath Oid="772" Id="PoliceReport" Name="Police Report" Direction="OUT" IsDescriptor="false" IsKey="false">
+                        <carnot:DataRef Id="PoliceReport"/>
+                     </carnot:DataPath>
+                  </carnot:DataPaths>
+                  <carnot:EventHandlers/>
+                  <carnot:Attributes>
+                     <carnot:Attribute Name="carnot:engine:dms:byReference" Value="true" Type="boolean"/>
+                  </carnot:Attributes>
+                  <carnot:Diagrams>
+                     <carnot:Diagram Oid="29" Name="Diagram 1" Orientation="Vertical" Mode="MODE_4_5_0">
+                        <carnot:Symbols>
+                           <carnot:Symbol Kind="POOL" Oid="28" Id="_default_pool__1" Name="Default Pool" X="0" Y="0" Width="968" Height="670" Orientation="Vertical">
+                              <carnot:Symbols>
+                                 <carnot:Symbol Kind="LANE" Oid="27" Id="DefaultLane" Name="Default Lane" X="12" Y="32" Width="415" Height="600" Orientation="Vertical" ParticipantReference="Agent" ParentLane="28">
+                                    <carnot:Symbols>
+                                       <carnot:Symbol Kind="STARTEVENT" Oid="30" X="91" Y="71" Width="110" Height="50" ModelElement="ManualTrigger1"/>
+                                       <carnot:Symbol Kind="DATA" Oid="137" X="222" Y="306" Width="100" Height="70" ModelElement="AccidentInformation"/>
+                                       <carnot:Symbol Kind="ACTIVITY" Oid="568" X="56" Y="170" Width="181" Height="51" ModelElement="InvestigateAccident"/>
+                                       <carnot:Symbol Kind="DATA" Oid="183" X="322" Y="238" Width="100" Height="70" ModelElement="PoliceReport"/>
+                                       <carnot:Symbol Kind="DATA" Oid="643" X="36" Y="368" Width="100" Height="70" ModelElement="Person"/>
+                                    </carnot:Symbols>
+                                    <carnot:Connections/>
+                                 </carnot:Symbol>
+                                 <carnot:Symbol Kind="LANE" Oid="35" Id="Lane1" Name="Lane 1" X="439" Y="32" Width="507" Height="600" Orientation="Vertical" ParticipantReference="ClaimsProcessor" ParentLane="28">
+                                    <carnot:Symbols>
+                                       <carnot:Symbol Kind="ACTIVITY" Oid="601" X="93" Y="363" Width="180" Height="50" ModelElement="ProcessClaim"/>
+                                    </carnot:Symbols>
+                                    <carnot:Connections/>
+                                 </carnot:Symbol>
+                              </carnot:Symbols>
+                              <carnot:Connections>
+                                 <carnot:Connection Kind="DATA_FLOW" Oid="574" SourceSymbol="183" TargetSymbol="568"/>
+                                 <carnot:Connection Kind="DATA_FLOW" Oid="586" SourceSymbol="137" TargetSymbol="568" SourceAnchor="top" TargetAnchor="bottom"/>
+                                 <carnot:Connection Kind="TRANSITION" Oid="599" SourceSymbol="30" TargetSymbol="568" SourceAnchor="bottom" TargetAnchor="top"/>
+                                 <carnot:Connection Kind="TRANSITION" Oid="603" ModelElement="7ab22451-75a1-4932-8147-00663355be34" SourceSymbol="568" TargetSymbol="601" SourceAnchor="right" TargetAnchor="top"/>
+                                 <carnot:Connection Kind="DATA_FLOW" Oid="605" SourceSymbol="137" TargetSymbol="601" SourceAnchor="right" TargetAnchor="left"/>
+                                 <carnot:Connection Kind="DATA_FLOW" Oid="609" SourceSymbol="183" TargetSymbol="601" SourceAnchor="right" TargetAnchor="left"/>
+                                 <carnot:Connection Kind="DATA_FLOW" Oid="645" SourceSymbol="643" TargetSymbol="568" SourceAnchor="right" TargetAnchor="bottom"/>
+                                 <carnot:Connection Kind="DATA_FLOW" Oid="649" SourceSymbol="643" TargetSymbol="601" SourceAnchor="right" TargetAnchor="left"/>
+                              </carnot:Connections>
+                           </carnot:Symbol>
+                        </carnot:Symbols>
+                        <carnot:Connections/>
+                     </carnot:Diagram>
+                  </carnot:Diagrams>
+               </carnot:WorkflowProcess>
+            </ExtendedAttribute>
+         </ExtendedAttributes>
+      </WorkflowProcess>
+      <WorkflowProcess Id="PropertyClaim" Name="Property Claim" AccessLevel="PUBLIC">
+         <ProcessHeader>
+            <Description>Use this structured process to report a claim for damaged or destroyed property.</Description>
+         </ProcessHeader>
+         <Activities>
+            <Activity Id="InvestigateIncident" Name="Investigate Incident">
+               <Implementation>
+                  <No/>
+               </Implementation>
+               <Performer>Agent</Performer>
+               <StartMode>
+                  <Automatic/>
+               </StartMode>
+               <FinishMode>
+                  <Manual/>
+               </FinishMode>
+               <ExtendedAttributes>
+                  <ExtendedAttribute Name="CarnotExt">
+                     <carnot:Activity Oid="612" Implementation="Manual" IsAbortableByPerformer="false" IsHibernatedOnCreation="false">
+                        <carnot:EventHandlers/>
+                        <carnot:QualityCodes/>
+                        <carnot:DataFlows>
+                           <carnot:DataFlow Oid="655" Id="Person" Name="Person" Direction="IN" Context="default">
+                              <carnot:DataRef Id="Person"/>
+                              <carnot:AccessPointRef/>
+                           </carnot:DataFlow>
+                           <carnot:DataFlow Oid="623" Id="PropertyIncident" Name="PropertyIncident" Direction="IN" Context="default">
+                              <carnot:DataRef Id="PropertyIncident"/>
+                              <carnot:AccessPointRef/>
+                           </carnot:DataFlow>
+                           <carnot:DataFlow Oid="656" Id="Person" Name="Person" Direction="OUT" Context="default">
+                              <carnot:DataRef Id="Person"/>
+                              <carnot:AccessPointRef/>
+                           </carnot:DataFlow>
+                           <carnot:DataFlow Oid="624" Id="PropertyIncident" Name="PropertyIncident" Direction="OUT" Context="default">
+                              <carnot:DataRef Id="PropertyIncident"/>
+                              <carnot:AccessPointRef/>
+                           </carnot:DataFlow>
+                        </carnot:DataFlows>
+                        <carnot:Attributes>
+                           <carnot:Attribute Name="carnot:pwh:includeTime" Value="true" Type="boolean"/>
+                           <carnot:Attribute Name="carnot:engine:relocate:source" Value="false" Type="boolean"/>
+                           <carnot:Attribute Name="carnot:pwh:targetProcessingTime" Value="000:00:000:00:00:00"/>
+                           <carnot:Attribute Name="carnot:pwh:targetExecutionTime" Value="000:00:000:00:00:00"/>
+                           <carnot:Attribute Name="carnot:pwh:targetIdleTime" Value="000:00:000:00:00:00"/>
+                           <carnot:Attribute Name="carnot:pwh:targetWaitingTime" Value="000:00:000:00:00:00"/>
+                           <carnot:Attribute Name="authorization:activity.delegateToOther" Value="__carnot_internal_all_permissions__"/>
+                           <carnot:Attribute Name="authorization:activity.delegateToDepartment[0]" Value="Administrator"/>
+                           <carnot:Attribute Name="authorization:activity.manageEventHandlers" Value="__carnot_internal_all_permissions__"/>
+                           <carnot:Attribute Name="authorization:activity.readActivityInstanceData" Value="__carnot_internal_all_permissions__"/>
+                           <carnot:Attribute Name="authorization:activity.abortActivityInstances" Value="__carnot_internal_owner_permission__"/>
+                        </carnot:Attributes>
+                     </carnot:Activity>
+                  </ExtendedAttribute>
+               </ExtendedAttributes>
+            </Activity>
+            <Activity Id="ProcessClaim" Name="Process Claim">
+               <Implementation>
+                  <No/>
+               </Implementation>
+               <Performer>ClaimsProcessor</Performer>
+               <StartMode>
+                  <Automatic/>
+               </StartMode>
+               <FinishMode>
+                  <Manual/>
+               </FinishMode>
+               <ExtendedAttributes>
+                  <ExtendedAttribute Name="CarnotExt">
+                     <carnot:Activity Oid="615" Implementation="Manual">
+                        <carnot:EventHandlers/>
+                        <carnot:QualityCodes/>
+                        <carnot:DataFlows>
+                           <carnot:DataFlow Oid="625" Id="PropertyIncident" Name="PropertyIncident" Direction="IN" Context="default">
+                              <carnot:DataRef Id="PropertyIncident"/>
+                              <carnot:AccessPointRef/>
+                           </carnot:DataFlow>
+                           <carnot:DataFlow Oid="626" Id="PropertyIncident" Name="PropertyIncident" Direction="OUT" Context="default">
+                              <carnot:DataRef Id="PropertyIncident"/>
+                              <carnot:AccessPointRef/>
+                           </carnot:DataFlow>
+                           <carnot:DataFlow Oid="659" Id="Person" Name="Person" Direction="IN" Context="default">
+                              <carnot:DataRef Id="Person"/>
+                              <carnot:AccessPointRef/>
+                           </carnot:DataFlow>
+                           <carnot:DataFlow Oid="660" Id="Person" Name="Person" Direction="OUT" Context="default">
+                              <carnot:DataRef Id="Person"/>
+                              <carnot:AccessPointRef/>
+                           </carnot:DataFlow>
+                        </carnot:DataFlows>
+                     </carnot:Activity>
+                  </ExtendedAttribute>
+               </ExtendedAttributes>
+            </Activity>
+         </Activities>
+         <Transitions>
+            <Transition Id="5b145dc6-9d99-4837-ab85-a64e4e26ca33" Name="" From="InvestigateIncident" To="ProcessClaim">
+               <Condition Type="CONDITION">true</Condition>
+               <ExtendedAttributes>
+                  <ExtendedAttribute Name="CarnotExt">
+                     <carnot:Transition Oid="617"/>
+                  </ExtendedAttribute>
+               </ExtendedAttributes>
+            </Transition>
+         </Transitions>
+         <ExtendedAttributes>
+            <ExtendedAttribute Name="CarnotExt">
+               <carnot:WorkflowProcess Oid="105">
+                  <carnot:Triggers>
+                     <carnot:Trigger Oid="110" Id="ManualTrigger1" Name="Start Claim" Type="manual">
+                        <carnot:AccessPoints/>
+                        <carnot:DataFlows/>
+                        <carnot:Attributes>
+                           <carnot:Attribute Name="carnot:engine:participant" Value="Agent"/>
+                        </carnot:Attributes>
+                     </carnot:Trigger>
+                  </carnot:Triggers>
+                  <carnot:DataPaths>
+                     <carnot:DataPath Oid="701" Id="PROCESS_ATTACHMENTS" Name="PROCESS_ATTACHMENTS" Direction="IN" IsDescriptor="false" IsKey="false">
+                        <carnot:DataRef Id="PROCESS_ATTACHMENTS"/>
+                     </carnot:DataPath>
+                     <carnot:DataPath Oid="702" Id="PROCESS_ATTACHMENTS" Name="PROCESS_ATTACHMENTS" Direction="OUT" IsDescriptor="false" IsKey="false">
+                        <carnot:DataRef Id="PROCESS_ATTACHMENTS"/>
+                     </carnot:DataPath>
+                     <carnot:DataPath Oid="703" Id="FirstName" Name="FirstName" Direction="IN" IsDescriptor="false" IsKey="false">
+                        <carnot:DataRef Id="Person" Expression="FirstName"/>
+                     </carnot:DataPath>
+                     <carnot:DataPath Oid="704" Id="LastName" Name="LastName" Direction="IN" IsDescriptor="true" IsKey="false">
+                        <carnot:DataRef Id="Person" Expression="LastName"/>
+                     </carnot:DataPath>
+                     <carnot:DataPath Oid="705" Id="PolicyNumber" Name="PolicyNumber" Direction="IN" IsDescriptor="true" IsKey="false">
+                        <carnot:DataRef Id="Person" Expression="PolicyNumber"/>
+                     </carnot:DataPath>
+                  </carnot:DataPaths>
+                  <carnot:EventHandlers/>
+                  <carnot:Attributes>
+                     <carnot:Attribute Name="carnot:engine:dms:byReference" Value="true" Type="boolean"/>
+                  </carnot:Attributes>
+                  <carnot:Diagrams>
+                     <carnot:Diagram Oid="108" Name="Diagram 1" Orientation="Vertical" Mode="MODE_4_5_0">
+                        <carnot:Symbols>
+                           <carnot:Symbol Kind="POOL" Oid="107" Id="_default_pool__1" Name="Default Pool" X="0" Y="0" Width="796" Height="670" Orientation="Vertical">
+                              <carnot:Symbols>
+                                 <carnot:Symbol Kind="LANE" Oid="106" Id="DefaultLane" Name="Default Lane" X="12" Y="32" Width="375" Height="600" Orientation="Vertical" ParticipantReference="Agent" ParentLane="107">
+                                    <carnot:Symbols>
+                                       <carnot:Symbol Kind="STARTEVENT" Oid="109" X="113" Y="103" Width="110" Height="50" ModelElement="ManualTrigger1"/>
+                                       <carnot:Symbol Kind="DATA" Oid="194" X="203" Y="368" Width="100" Height="70" ModelElement="PropertyIncident"/>
+                                       <carnot:Symbol Kind="ACTIVITY" Oid="613" X="78" Y="223" Width="180" Height="50" ModelElement="InvestigateIncident"/>
+                                       <carnot:Symbol Kind="DATA" Oid="652" X="37" Y="462" Width="100" Height="70" ModelElement="Person"/>
+                                    </carnot:Symbols>
+                                    <carnot:Connections/>
+                                 </carnot:Symbol>
+                                 <carnot:Symbol Kind="LANE" Oid="114" Id="Lane1" Name="Lane 1" X="399" Y="32" Width="375" Height="600" Orientation="Vertical" ParticipantReference="ClaimsProcessor" ParentLane="107">
+                                    <carnot:Symbols>
+                                       <carnot:Symbol Kind="ACTIVITY" Oid="616" X="116" Y="400" Width="180" Height="50" ModelElement="ProcessClaim"/>
+                                    </carnot:Symbols>
+                                    <carnot:Connections/>
+                                 </carnot:Symbol>
+                              </carnot:Symbols>
+                              <carnot:Connections>
+                                 <carnot:Connection Kind="TRANSITION" Oid="614" SourceSymbol="109" TargetSymbol="613" SourceAnchor="bottom" TargetAnchor="top"/>
+                                 <carnot:Connection Kind="TRANSITION" Oid="618" ModelElement="5b145dc6-9d99-4837-ab85-a64e4e26ca33" SourceSymbol="613" TargetSymbol="616" SourceAnchor="right" TargetAnchor="top"/>
+                                 <carnot:Connection Kind="DATA_FLOW" Oid="620" SourceSymbol="194" TargetSymbol="613" SourceAnchor="top" TargetAnchor="bottom"/>
+                                 <carnot:Connection Kind="DATA_FLOW" Oid="622" SourceSymbol="194" TargetSymbol="616" SourceAnchor="right" TargetAnchor="left"/>
+                                 <carnot:Connection Kind="DATA_FLOW" Oid="654" SourceSymbol="652" TargetSymbol="613" SourceAnchor="right" TargetAnchor="bottom"/>
+                                 <carnot:Connection Kind="DATA_FLOW" Oid="658" SourceSymbol="652" TargetSymbol="616" SourceAnchor="right" TargetAnchor="left"/>
+                              </carnot:Connections>
+                           </carnot:Symbol>
+                        </carnot:Symbols>
+                        <carnot:Connections/>
+                     </carnot:Diagram>
+                  </carnot:Diagrams>
+               </carnot:WorkflowProcess>
+            </ExtendedAttribute>
+         </ExtendedAttributes>
+      </WorkflowProcess>
+   </WorkflowProcesses>
+   <ExtendedAttributes>
+      <ExtendedAttribute Name="CarnotExt">
+         <carnot:Package Oid="0" CarnotVersion="7.3.0" ModelOid="0">
+            <carnot:MetaTypes>
+               <carnot:DataTypes>
+                  <carnot:DataType Oid="1" Id="primitive" Name="Primitive Data" IsPredefined="true">
+                     <carnot:Attributes>
+                        <carnot:Attribute Name="carnot:engine:evaluator" Value="org.eclipse.stardust.engine.core.pojo.data.PrimitiveAccessPathEvaluator"/>
+                        <carnot:Attribute Name="carnot:engine:validator" Value="org.eclipse.stardust.engine.core.pojo.data.PrimitiveValidator"/>
+                     </carnot:Attributes>
+                  </carnot:DataType>
+                  <carnot:DataType Oid="2" Id="serializable" Name="Serializable Data" IsPredefined="true">
+                     <carnot:Attributes>
+                        <carnot:Attribute Name="carnot:engine:evaluator" Value="org.eclipse.stardust.engine.core.pojo.data.JavaBeanAccessPathEvaluator"/>
+                        <carnot:Attribute Name="carnot:engine:validator" Value="org.eclipse.stardust.engine.core.pojo.data.SerializableValidator"/>
+                     </carnot:Attributes>
+                  </carnot:DataType>
+                  <carnot:DataType Oid="3" Id="entity" Name="Entity Bean" IsPredefined="true">
+                     <carnot:Attributes>
+                        <carnot:Attribute Name="carnot:engine:evaluator" Value="org.eclipse.stardust.engine.extensions.ejb.data.EntityBeanEvaluator"/>
+                        <carnot:Attribute Name="carnot:engine:validator" Value="org.eclipse.stardust.engine.extensions.ejb.data.EntityBeanValidator"/>
+                     </carnot:Attributes>
+                  </carnot:DataType>
+                  <carnot:DataType Oid="4" Id="plainXML" Name="XML Document" IsPredefined="true">
+                     <carnot:Attributes>
+                        <carnot:Attribute Name="carnot:engine:evaluator" Value="org.eclipse.stardust.engine.extensions.xml.data.XPathEvaluator"/>
+                        <carnot:Attribute Name="carnot:engine:validator" Value="org.eclipse.stardust.engine.extensions.xml.data.XMLValidator"/>
+                     </carnot:Attributes>
+                  </carnot:DataType>
+                  <carnot:DataType Oid="5" Id="struct" Name="Structured Data" IsPredefined="true">
+                     <carnot:Attributes>
+                        <carnot:Attribute Name="carnot:engine:evaluator" Value="org.eclipse.stardust.engine.core.struct.spi.StructuredDataXPathEvaluator"/>
+                        <carnot:Attribute Name="carnot:engine:validator" Value="org.eclipse.stardust.engine.core.struct.spi.StructuredDataXMLValidator"/>
+                        <carnot:Attribute Name="carnot:engine:dataFilterExtension" Value="org.eclipse.stardust.engine.core.struct.spi.StructuredDataFilterExtension"/>
+                        <carnot:Attribute Name="carnot:engine:dataLoader" Value="org.eclipse.stardust.engine.core.struct.spi.StructuredDataLoader"/>
+                     </carnot:Attributes>
+                  </carnot:DataType>
+                  <carnot:DataType Oid="6" Id="dmsDocument" Name="Document" IsPredefined="true">
+                     <carnot:Attributes>
+                        <carnot:Attribute Name="carnot:engine:evaluator" Value="org.eclipse.stardust.engine.extensions.dms.data.VfsDocumentAccessPathEvaluator"/>
+                        <carnot:Attribute Name="carnot:engine:validator" Value="org.eclipse.stardust.engine.extensions.dms.data.VfsDocumentValidator"/>
+                        <carnot:Attribute Name="carnot:engine:dataFilterExtension" Value="org.eclipse.stardust.engine.core.struct.spi.StructuredDataFilterExtension"/>
+                        <carnot:Attribute Name="carnot:engine:dataLoader" Value="org.eclipse.stardust.engine.core.struct.spi.StructuredDataLoader"/>
+                     </carnot:Attributes>
+                  </carnot:DataType>
+                  <carnot:DataType Oid="7" Id="dmsDocumentList" Name="Document List" IsPredefined="true">
+                     <carnot:Attributes>
+                        <carnot:Attribute Name="carnot:engine:evaluator" Value="org.eclipse.stardust.engine.extensions.dms.data.VfsDocumentListAccessPathEvaluator"/>
+                        <carnot:Attribute Name="carnot:engine:validator" Value="org.eclipse.stardust.engine.extensions.dms.data.VfsDocumentListValidator"/>
+                        <carnot:Attribute Name="carnot:engine:dataFilterExtension" Value="org.eclipse.stardust.engine.core.struct.spi.StructuredDataFilterExtension"/>
+                        <carnot:Attribute Name="carnot:engine:dataLoader" Value="org.eclipse.stardust.engine.core.struct.spi.StructuredDataLoader"/>
+                     </carnot:Attributes>
+                  </carnot:DataType>
+                  <carnot:DataType Oid="8" Id="dmsFolder" Name="Folder" IsPredefined="true">
+                     <carnot:Attributes>
+                        <carnot:Attribute Name="carnot:engine:evaluator" Value="org.eclipse.stardust.engine.extensions.dms.data.VfsDocumentAccessPathEvaluator"/>
+                        <carnot:Attribute Name="carnot:engine:validator" Value="org.eclipse.stardust.engine.extensions.dms.data.VfsDocumentValidator"/>
+                        <carnot:Attribute Name="carnot:engine:dataFilterExtension" Value="org.eclipse.stardust.engine.core.struct.spi.StructuredDataFilterExtension"/>
+                        <carnot:Attribute Name="carnot:engine:dataLoader" Value="org.eclipse.stardust.engine.core.struct.spi.StructuredDataLoader"/>
+                     </carnot:Attributes>
+                  </carnot:DataType>
+                  <carnot:DataType Oid="9" Id="dmsFolderList" Name="Folder List" IsPredefined="true">
+                     <carnot:Attributes>
+                        <carnot:Attribute Name="carnot:engine:evaluator" Value="org.eclipse.stardust.engine.extensions.dms.data.VfsDocumentListAccessPathEvaluator"/>
+                        <carnot:Attribute Name="carnot:engine:validator" Value="org.eclipse.stardust.engine.extensions.dms.data.VfsDocumentListValidator"/>
+                        <carnot:Attribute Name="carnot:engine:dataFilterExtension" Value="org.eclipse.stardust.engine.core.struct.spi.StructuredDataFilterExtension"/>
+                        <carnot:Attribute Name="carnot:engine:dataLoader" Value="org.eclipse.stardust.engine.core.struct.spi.StructuredDataLoader"/>
+                     </carnot:Attributes>
+                  </carnot:DataType>
+               </carnot:DataTypes>
+               <carnot:ApplicationTypes>
+                  <carnot:ApplicationType Oid="10" Id="sessionBean" Name="Session Bean Application" IsPredefined="true">
+                     <carnot:Attributes>
+                        <carnot:Attribute Name="carnot:engine:accessPointProvider" Value="org.eclipse.stardust.engine.extensions.ejb.app.SessionBeanAccessPointProvider"/>
+                        <carnot:Attribute Name="carnot:engine:applicationInstance" Value="org.eclipse.stardust.engine.extensions.ejb.app.SessionBeanApplicationInstance"/>
+                        <carnot:Attribute Name="carnot:engine:validator" Value="org.eclipse.stardust.engine.extensions.ejb.SessionBeanValidator"/>
+                     </carnot:Attributes>
+                  </carnot:ApplicationType>
+                  <carnot:ApplicationType Oid="11" Id="plainJava" Name="Plain Java Application" IsPredefined="true">
+                     <carnot:Attributes>
+                        <carnot:Attribute Name="carnot:engine:accessPointProvider" Value="org.eclipse.stardust.engine.core.pojo.app.PlainJavaAccessPointProvider"/>
+                        <carnot:Attribute Name="carnot:engine:applicationInstance" Value="org.eclipse.stardust.engine.core.pojo.app.PlainJavaApplicationInstance"/>
+                        <carnot:Attribute Name="carnot:engine:validator" Value="org.eclipse.stardust.engine.core.pojo.app.PlainJavaValidator"/>
+                     </carnot:Attributes>
+                  </carnot:ApplicationType>
+                  <carnot:ApplicationType Oid="12" Id="jms" Name="JMS Application" IsPredefined="true">
+                     <carnot:Attributes>
+                        <carnot:Attribute Name="carnot:engine:applicationInstance" Value="org.eclipse.stardust.engine.extensions.jms.app.JMSApplicationInstance"/>
+                        <carnot:Attribute Name="carnot:engine:validator" Value="org.eclipse.stardust.engine.extensions.jms.app.JMSValidator"/>
+                     </carnot:Attributes>
+                  </carnot:ApplicationType>
+                  <carnot:ApplicationType Oid="13" Id="webservice" Name="Web Service Application" IsPredefined="true">
+                     <carnot:Attributes>
+                        <carnot:Attribute Name="carnot:engine:applicationInstance" Value="org.eclipse.stardust.engine.extensions.jaxws.app.WebserviceApplicationInstance"/>
+                        <carnot:Attribute Name="carnot:engine:validator" Value="org.eclipse.stardust.engine.extensions.jaxws.app.WebserviceApplicationValidator"/>
+                     </carnot:Attributes>
+                  </carnot:ApplicationType>
+               </carnot:ApplicationTypes>
+               <carnot:ApplicationContextTypes>
+                  <carnot:ApplicationContextType Oid="14" Id="default" Name="Default Context" IsPredefined="true" HasApplicationPath="false" HasMappingId="true"/>
+                  <carnot:ApplicationContextType Oid="15" Id="engine" Name="Engine Context" IsPredefined="true" HasApplicationPath="true" HasMappingId="false"/>
+                  <carnot:ApplicationContextType Oid="16" Id="externalWebApp" Name="External Web Application" IsPredefined="true" HasApplicationPath="true" HasMappingId="false"/>
+                  <carnot:ApplicationContextType Oid="17" Id="application" Name="Noninteractive Application Context" IsPredefined="true" HasApplicationPath="true" HasMappingId="false"/>
+                  <carnot:ApplicationContextType Oid="18" Id="processInterface" Name="Process Interface Context" IsPredefined="true" HasApplicationPath="true" HasMappingId="false"/>
+                  <carnot:ApplicationContextType Oid="565" Id="jfc" Name="JFC Application" IsPredefined="true" HasApplicationPath="true" HasMappingId="false">
+                     <carnot:Attributes>
+                        <carnot:Attribute Name="carnot:defdesk:icon" Value="/ag/carnot/workflow/spi/providers/contexts/jfc/icon.gif"/>
+                        <carnot:Attribute Name="carnot:defdesk:panel" Value="org.eclipse.stardust.engine.core.extensions.interactive.contexts.jfc.JFCContextTypePanel"/>
+                        <carnot:Attribute Name="carnot:engine:accessPointProvider" Value="org.eclipse.stardust.engine.core.extensions.interactive.contexts.jfc.JFCAccessPointProvider"/>
+                        <carnot:Attribute Name="carnot:engine:validator" Value="org.eclipse.stardust.engine.core.extensions.interactive.contexts.jfc.JFCValidator"/>
+                        <carnot:Attribute Name="carnot:exdesk:instance" Value="org.eclipse.stardust.engine.core.extensions.interactive.contexts.jfc.JFCApplicationInstance"/>
+                     </carnot:Attributes>
+                  </carnot:ApplicationContextType>
+                  <carnot:ApplicationContextType Oid="566" Id="jsp" Name="JSP Application" IsPredefined="true" HasApplicationPath="false" HasMappingId="true">
+                     <carnot:Attributes>
+                        <carnot:Attribute Name="carnot:defdesk:icon" Value="/ag/carnot/workflow/spi/providers/contexts/jsp/icon.gif"/>
+                        <carnot:Attribute Name="carnot:defdesk:panel" Value="org.eclipse.stardust.engine.extensions.web.jsp.contexts.JSPContextTypePanel"/>
+                        <carnot:Attribute Name="carnot:engine:validator" Value="org.eclipse.stardust.engine.extensions.web.jsp.contexts.JSPValidator"/>
+                     </carnot:Attributes>
+                  </carnot:ApplicationContextType>
+               </carnot:ApplicationContextTypes>
+               <carnot:TriggerTypes>
+                  <carnot:TriggerType Oid="19" Id="manual" Name="Manual Trigger" IsPredefined="true" IsPullTrigger="false">
+                     <carnot:Attributes>
+                        <carnot:Attribute Name="carnot:engine:validator" Value="org.eclipse.stardust.engine.core.extensions.triggers.manual.ManualTriggerValidator"/>
+                     </carnot:Attributes>
+                  </carnot:TriggerType>
+               </carnot:TriggerTypes>
+               <carnot:EventConditionTypes/>
+               <carnot:EventActionTypes/>
+               <carnot:LinkTypes/>
+            </carnot:MetaTypes>
+            <carnot:Modelers/>
+            <carnot:Diagrams/>
+            <carnot:Views/>
+            <carnot:Attributes>
+               <carnot:Attribute Name="ipp:model:modified" Value="Thu Feb 20 15:20:16 CST 2014"/>
+            </carnot:Attributes>
+         </carnot:Package>
+      </ExtendedAttribute>
+   </ExtendedAttributes>
+</Package>

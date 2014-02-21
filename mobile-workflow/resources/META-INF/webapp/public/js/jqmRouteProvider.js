@@ -121,13 +121,15 @@ define(["jquery-mobile", "angularjs","js/WorkflowService"],function(jqm,angular,
 					 *allow the UI to transition to the page.*/
 					$.when(workflowService.getNotes(data.id),
 						   workflowService.getDocuments(data.id),
-						   workflowService.getParticipants(data.id))
-						   .done(function(notes,docs,participants){
+						   workflowService.getParticipants(data.id),
+						   workflowService.getProcessInstance(data.id))
+						   .done(function(notes,docs,participants,process){
 								scope.$apply(function(){
 		                			scope.notesModel.notes=notes;
 		                			scope.documentModel.docs=docs;
 		                			scope.participantModel.participants=participants;
 		                			scope.activityModel.item=baseItem;
+		                			scope.processModel = process;
 		                		});
 		                		ui.bCDeferred.resolve();
 					});
@@ -200,15 +202,19 @@ define(["jquery-mobile", "angularjs","js/WorkflowService"],function(jqm,angular,
 					console.log(scope);
 					/*Collect data from multiple Ajax sources, when all data is ready init controllers and
 					 *allow the UI to transition to the page.*/
+					console.log("fetching notes and documents.");
 					$.when(workflowService.getNotes(data.id),
-						   workflowService.getDocuments(data.id))
-						   .done(function(notes,docs){
+						   workflowService.getDocuments(data.id),
+						   workflowService.getProcessInstance(data.id))
+						   .done(function(notes,docs,masterData){
+							   console.log("master data ... ");
+							   console.log(masterData);
 								//notescope=angular.element($("#notesTabContent")).scope();
 								scope.$apply(function(){
 		                			console.log(docs);
-		                			scope.notesModel.notes=notes;
+		                			scope.notesModel.notes=masterData.notes;
 		                			scope.activityModel.item=baseItem;
-		                			scope.documentModel.docs=docs;
+		                			scope.documentModel.docs=masterData.documents;
 		                		});
 		                		ui.bCDeferred.resolve();
 					});

@@ -1,31 +1,28 @@
 <div class="sub-header">
 	<div class="ui-grid-b">
 		<div class="ui-block-a" style="width:33.33%;">
-				<a href="#" data-rel="back" style="float:left" class="ui-btn ui-corner-all ui-btn-inline ui-icon-back ui-btn-icon-notext"></a>
+				<a href="#" data-rel="back" style="float:left" 
+				   class="ui-btn ui-corner-all ui-btn-inline ui-icon-back ui-btn-icon-notext"></a>
 		</div>
-		<div class="ui-block-b" style="width:33.33%;">
-			<strong>Worklist Items</strong>
+		<div class="ui-block-b" style="width:33.33%;padding-top:0.8em;">
+			<strong>Worklist</strong>
+			<span style="position:relative;margin-left:1.2em;" class="ui-li-count"> 
+				{{appData.worklistItems.length}}
+			</span>
 		</div>
 		<div class="ui-block-c" style="width:33.33%;">
 			<div style="float:right;">
-				<!-- 
-				<span>{{appData.worklistItems.length}}</span>
-				<a href="#" class="ui-btn ui-corner-all ui-btn-inline ui-icon-arrow-d ui-btn-icon-notext"></a>
-				-->
-				<a href="#noteFilterPopup" data-rel="popup" data-transition="slide" 
-				   class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-arrow-d ui-btn-icon-right ui-btn-a">
-					{{appData.worklistItems.length}}
+				<a href="#wlistFilterPopup" data-rel="popup" data-transition="slide" 
+				   class="ui-btn ui-corner-all ui-btn-icon-notext ui-icon-arrow-d ui-btn-a">
 				</a>
-				<div data-role="popup" id="noteFilterPopup" data-theme="a">
+				<div data-role="popup" id="wlistFilterPopup" data-theme="a">
 				        <ul data-role="listview"  data-inset="true" style="min-width:210px;">
-				            <li data-role="list-divider">Sort by...</li>
 				            <li data-icon="arrow-d" ng-click="predicate='startTime'"><a href="#">Newest</a></li>
 				            <li data-icon="arrow-d" ng-click="predicate='-startTime'"><a href="#">Oldest</a></li>
 				            <li data-icon="arrow-d" ng-click="predicate='criticality'"><a href="#">Criticality</a></li>
 				            <li data-icon="arrow-d" ng-click="predicate='lastModificationTime'"><a href="#">Modified</a></li>
 				        </ul>
-				</div>
-				
+				</div>	
 			</div>
 		</div>
 	</div>
@@ -36,11 +33,10 @@
 <ul data-role="listview">
 	<li ng-repeat="item in appData.worklistItems | orderBy:predicate:asc">
 		<a href="#detailPage?id={{item.processInstanceOid}}">
-			<h3>{{item.activityName}}</h3>
+			<h3>{{item.activityName}} (#{{item.oid}})</h3>
 			<p>
 				<span ng-switch="$last" ng-repeat="(key,value) in item.descriptors">
-          			{{key}} : {{value}}
-          			<span ng-if="!$last">,</span>
+          			{{key}}: {{value}}<span ng-if="!$last">,</span>
           		</span>
          		</p>
          		<p class="ui-li-aside">

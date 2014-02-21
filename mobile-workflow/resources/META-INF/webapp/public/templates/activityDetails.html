@@ -1,4 +1,4 @@
-<table  data-role="table" class="ui-responsive ui-mini">
+<table style="text-align:left;">
 	<thead>
 		<tr><th></th><th></th></tr>
 	</thead>
@@ -9,15 +9,15 @@
 		<tr>
 		<tr>
 			<th>Process</th>
-			<td>{{activityModel.item.activityName}}</td>
+			<td>{{activityModel.item.processName}}</td>
 		<tr>
 		<tr>
 			<th>Priority</th>
-			<td>#####</td>
+			<td></td>
 		<tr>
 		<tr>
 			<th>Criticality</th>
-			<td>{{activityModel.item.criticality}}</td>
+			<td>{{activityModel.item.criticality | criticality}}</td>
 		<tr>
 		<tr>
 			<th>Last Performer</th>
@@ -28,19 +28,12 @@
 			<td>{{activityModel.item.assignedTo}}</td>
 		<tr>
 		<tr>
-			<th>Started By</th>
-			<td>{{activityModel.item.startedBy}}</td>
-		<tr>
-		<tr>
 			<th>Start Time</th>
-			<td>{{activityModel.item.startTime | date:'yyyy-MM-dd'}}</td>
+			<td>{{activityModel.item.startTime | date:'yyyy-MM-dd hh:mm:ss'}}</td>
 		<tr>
 		<tr>
 			<th>Duration</th>
-			<td>{{activityModel.item.duration}}</td>
+			<td>{{activityModel.item.duration | absoluteTime}}</td>
 		<tr>
-		<tr>
-			<th colspan="2">Descriptors</th>
-		</tr>
 	</tbody>
-</table-->
+</table>

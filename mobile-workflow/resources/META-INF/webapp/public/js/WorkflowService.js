@@ -221,7 +221,7 @@ define(
 										url : this
 												.getMobileWorkflowRestServicesUrl()
 												+ "/process-instances/"
-												+ processInstanceOid,
+												+ processInstanceOid
 									}).done(function(processInstance) {
 								console.debug("Return Value:");
 								console.debug(processInstance);

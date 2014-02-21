@@ -1,4 +1,4 @@
-<div class="sub-header">			
+<!--div class="sub-header">			
 	<div class="ui-grid-b">
 			
 	    <div class="ui-block-a ipp-grid-icon-container" style="width:25%;">
@@ -27,10 +27,24 @@
 	    </div>
 	    
 	</div>
-</div><!-- SUB HEADER END -->
+</div--><!-- SUB HEADER END -->
+<div class="ui-grid-b">
+		<div class="ui-block-a" style="width:33.33%;">
+				<a href="#" data-rel="back" style="float:left" 
+				   class="ui-btn ui-corner-all ui-btn-inline ui-icon-back ui-btn-icon-notext"></a>
+		</div>
+		<div class="ui-block-b" style="width:33.33%;padding-top:0.8em;text-align:center;">
+			<strong>Start Work</strong>
+			<span style="position:relative;margin-left:1.2em;" class="ui-li-count"> 
+				{{processes.length}}
+			</span>
+		</div>
+		<div class="ui-block-c" style="width:33.33%;">
+		</div>
+	</div>
 
 
-<div class="ui-body ui-body-a ui-corner-all" ng-repeat="process in processes">
+<!--div class="ui-body ui-body-a ui-corner-all" ng-repeat="process in processes">
 	<p>
 		<div style="display:inline;" href="#" class="ui-btn ipp-icon-cog ui-btn-icon-notext ui-corner-all"></div>
      		<span style="margin-left:18px;">{{process.name}}</span>
@@ -45,7 +59,18 @@
             		{{process.content}}
           	</div>
        	</div>
-</div><!-- process data tiles end... -->
+</div--><!-- process data tiles end... -->
+
+<ul data-role="listview">
+	<li ng-repeat="process in processes">
+		<a href="#">
+			<h3>{{process.name}}</h3>
+			<p>
+				<span>{{process.description}}</span>
+    		</p>
+		</a>
+	</li>
+</ul>
 
 <div data-position="fixed" data-role="footer" data-theme="a" 
 		 ng-controller="footerCtrl"

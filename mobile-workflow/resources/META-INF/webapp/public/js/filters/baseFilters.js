@@ -122,12 +122,53 @@ define([],function(){
 			return result.substring(0,result.lastIndexOf(delimiter));
 	};
 	
+	/* Expects input between 0.0 and 1, 
+	 * results High/Med/Low based on thirds*/
+	var criticality = function(val){
+		
+		var result;
+		
+		val = (val*1000).toFixed(0);
+		result = val;
+		if(val < 333.33){
+			result = val + " (Low)";
+		}
+		else if(val < 666.33){
+			result = val + " (Medium)";
+		}
+		else{
+			result = val + " (High)";
+		}
+		return result;
+	};
+	
+	/*Given a number of ticks/milliseconds, this will return a string
+	 * representing the absolute amount of days / hours / minutes those 
+	 * ticks represent. 
+	 */
+	var absoluteTime = function(val){
+		var d = 86400000, /*number of milliseconds in a day*/
+			h= d/24,	  /*number milliseconds in one hour*/
+			m = h/60,	  /*number of milliseconds in a minute*/
+			sec = m/60,	  /*number of milliseconds in a second*/
+			result,
+			days,hours,minutes;
+
+
+		days=val/d;
+		hours=days%1*24;
+		minutes = hours%1*60;
+		return Math.floor(days) + "d" + "  " + Math.floor(hours) + "h" + " " + Math.floor(minutes) + "m";
+	};
+	
 	
 	/*collection of filters we will return..*/
 	var filters={
 			"test" : function(){return "hello from test filter!";},
 			"humaneDate" : function(){return humaneDate;},
-			"serializeObject" : function(){return serializeObject;}
+			"serializeObject" : function(){return serializeObject;},
+			"criticality" : function(){return criticality;},
+			"absoluteTime" : function(){return absoluteTime;}
 				
 	};
 	

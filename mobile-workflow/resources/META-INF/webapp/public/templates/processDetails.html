@@ -1,0 +1,27 @@
+<table style="text-align:left;">
+	<thead>
+		<tr><th></th><th></th></tr>
+	</thead>
+	<tbody>
+		<tr>
+			<th>State</th>
+			<td>{{processModel.state}}</td>
+		<tr>
+		<tr>
+			<th>Start Time</th>
+			<td>{{processModel.startTimestamp | date: 'yyyy-MM-dd hh:mm:ss'}}</td>
+		<tr>
+		<tr>
+			<th>Started By</th>
+			<td>{{processModel.startingUser.lastName}}, {{processModel.startingUser.firstName}}</td>
+		<tr>
+		<!--tr>
+			<th>Duration</th>
+			<td>????</td>
+		<tr-->
+		<tr>
+			<th>Priority</th>
+			<td>{{processModel.priority}}</td>
+		<tr>
+	</tbody>
+</table>
