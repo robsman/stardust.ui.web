@@ -43,7 +43,7 @@
       <!-- compile -->
       <dependency org="org.eclipse.stardust.engine" name="infinity-process-engine" rev="${ipp.version.full}" conf="stardust-web-modeler-compile->carnot-engine-compile" />
       <!-- TODO: change to ipp-engine-ws-cxf! -->
-      <!-- dependency org="com.infinity.bpm" name="ipp-engine-ws-metro" rev="${ipp.version.full}" conf="stardust-web-modeler-compile->ipp-engine-ws-metro-compile" / -->
+      <!-- dependency org="org.eclipse.stardust.engine" name="ipp-engine-ws-metro" rev="${ipp.version.full}" conf="stardust-web-modeler-compile->ipp-engine-ws-metro-compile" / -->
       <dependency org="wsdl4j" name="wsdl4j" rev="${wsdl4j.version}" conf="stardust-web-modeler-compile->default" />
 
       <dependency org="org.eclipse.stardust.modeling.model" name="ipp-bpm-model" rev="${ipp.version.full}" conf="stardust-web-modeler-compile->ipp-bpm-model-runtime"/>

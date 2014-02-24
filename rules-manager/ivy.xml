@@ -14,7 +14,7 @@
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
 
-   <info organisation="com.infinity.bpm" module="stardust-rules-manager" revision="${ipp.version.full}" />
+   <info organisation="org.eclipse.stardust.ui.web" module="stardust-rules-manager" revision="${ipp.version.full}" />
 
    <configurations>
       <conf name="stardust-rules-manager-compile" description="Stardust Rules - Compile Scope" />
@@ -52,7 +52,7 @@
       <dependency org="org.eclipse.stardust.ui.web" name="ipp-views-common" rev="${ipp.version.full}"
          conf="stardust-rules-manager-compile->ipp-views-common-compile" />
       <dependency org="javax.servlet" name="servlet-api" rev="${servlet-api.version}" 
-         conf="stardust-rules-manager-provided->default"/>      
+         conf="stardust-rules-manager-provided->default"/>
       <dependency org="com.google.code.gson" name="gson" rev="${gson.version}" 
          conf="stardust-rules-manager-compile->default" />
       <dependency org="org.eclipse.xsd" name="org.eclipse.xsd" rev="${org.eclipse.xsd.version}"
