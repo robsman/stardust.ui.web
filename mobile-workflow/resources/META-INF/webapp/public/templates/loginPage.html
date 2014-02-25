@@ -5,7 +5,7 @@
 	     		<i style="margin-top:10px;" class="fa fa-user fa-2x"></i>
 	     	</div>
 	     	<div style="width:80%;" class="ui-block-b">
-	     		<input placeholder="Username" ng-model="username" value="{{username}}"/>
+	     		<input placeholder="Username" ng-model="loginModel.account" value="{{loginModel.account}}"/>
 	     	</div>
 	     </div>
 		
@@ -14,7 +14,9 @@
 	     		<i style="margin-top:10px;" class="fa fa-lock fa-2x"></i>
 	     	</div>
 	     	<div style="width:80%;" class="ui-block-b">
-	     		<input placeholder="Password" ng-model="password" value="{{password}}"/>
+	     		<input placeholder="Password" 
+	     			   ng-model="loginModel.password" 
+	     			   value="{{loginModel.password}}"/>
 	     	</div>
 	     </div>
 	    
@@ -23,14 +25,20 @@
 	     		<i style="margin-top:10px;" class="fa fa-globe fa-2x"></i>
 	     	</div>
 	     	<div style="width:80%;" class="ui-block-b">
-	     		<input placeholder="Partition" ng-model="partition" value="{{partition}}"/>
+	     		<input placeholder="Partition" 
+	     			   ng-model="loginModel.partition" 
+	     			   value="{{loginModel.partition}}"/>
 	     	</div>
 	     </div>
 
 
 	<div class="ui-grid-b xui-responsive">
 			<div class="ui-block-a"></div>
-			<div class="ui-block-b"><input id="inptLogin" type="submit" name="submit" value="Login" /></div>
+			<div class="ui-block-b">
+				<input id="inptLogin" 
+					   ng-click="login(loginModel.account,loginModel.password,loginModel.partition)" 
+					   type="submit" name="submit" value="Login" />
+			</div>
 			<div class="ui-block-c"></div>
 	</div>
 	

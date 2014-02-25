@@ -15,9 +15,9 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta name="apple-mobile-web-app-capable" content="yes">
 		<meta name="mobile-web-app-capable" content="yes">
-		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+		<!-- meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"-->
 		
-		<title>Stardust Portal Shell</title>
+		<title>Stardust Portal</title>
 		
 		<link rel="shortcut icon" sizes="196x196" href="./images/appShortcut.png">
 		<link rel="apple-touch-icon" sizes="196x196" href="./images/appShortcut.png">
@@ -29,6 +29,7 @@
 		<link rel="stylesheet" href="./css/jquery.mobile/jquery.mobile.iscrollview.css" />
 		<link rel="stylesheet" href="./css/jquery.mobile/jquery.mobile.custom.css" />
 		<link rel="stylesheet" href="./css/font-awesome/css/font-awesome.css" />
+		<link rel="stylesheet" href="css/add2home.css">
 	</head>
 	
 	<body>
@@ -65,7 +66,7 @@
 		
 		<!-- MAIN PAGE -->
 		<div id="mainPage" data-role="page" data-theme="a" 
-			 ng-controller="worklistCtrl" 
+			 ng-controller="mainPageCtrl" 
 			 data-jqm-template data-jqm-widgets="" 
 			 data-template-url="templates/mainPage.html">
 		</div>
@@ -74,6 +75,7 @@
 		<div id="worklistListViewPage" data-theme="a" data-role="page"
 			 ng-controller="worklistCtrl" 
 			 data-jqm-template data-jqm-widgets="listview" 
+			 data-bind-to="worklistModel.worklistItems"
 			 data-template-url="templates/worklistListViewPage.html">
 		</div>
 		
@@ -132,7 +134,7 @@
 			 data-template-url="templates/processPage.html">
 		</div>
 		
-		
+		<script type="application/javascript" src="js/add2home.js"></script>
 		<script type="text/javascript" data-main="js/MobileWorkflowMain" src="./js/libs/require/2.0.5/require.js"></script>
 		
 	</body>

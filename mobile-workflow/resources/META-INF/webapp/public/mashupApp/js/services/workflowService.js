@@ -17,6 +17,25 @@ define(["angularjs"],function(angular){
 				return "Hello From Workflow Service";
 			},
 			
+			"login" : function(account,password,partition){
+				var deferred = $q.defer();
+				
+				$http({
+				    url: baseServiceUrl + "/login",
+				    method: "POST",
+				    data: {
+							"account"   : account,
+							"password"  : password,
+							"partition" : partition
+						}
+				}).success(function(data, status, headers, config) {
+					deferred.resolve(data);
+				}).error(function(data, status, headers, config) {
+					deferred.reject(status);
+				});
+				return deferred.promise;
+			},
+			
 			"getNotes" : function(processInstanceOid){
 				var deferred = $q.defer();
 				

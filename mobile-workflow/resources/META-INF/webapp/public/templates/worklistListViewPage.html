@@ -7,7 +7,7 @@
 		<div class="ui-block-b" style="width:33.33%;padding-top:0.8em;">
 			<strong>Worklist</strong>
 			<span style="position:relative;margin-left:1.2em;" class="ui-li-count"> 
-				{{appData.worklistItems.length}}
+				{{worklistModel.worklistItems.length}}
 			</span>
 		</div>
 		<div class="ui-block-c" style="width:33.33%;">
@@ -31,8 +31,8 @@
 </div>
 
 <ul data-role="listview">
-	<li ng-repeat="item in appData.worklistItems | orderBy:predicate:asc">
-		<a href="#detailPage?id={{item.processInstanceOid}}">
+	<li ng-repeat="item in worklistModel.worklistItems | orderBy:predicate:asc">
+		<a href="#detailPage?id={{item.oid}}">
 			<h3>{{item.activityName}} (#{{item.oid}})</h3>
 			<p>
 				<span ng-switch="$last" ng-repeat="(key,value) in item.descriptors">

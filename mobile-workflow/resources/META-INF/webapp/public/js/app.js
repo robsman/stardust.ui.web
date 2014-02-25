@@ -25,9 +25,10 @@ define(function(require){
 	app.controller( "detailCtrl",    worklistControllers.detailCtrl);
 	app.controller( "panelCtrl",     worklistControllers.panelCtrl);
 	app.controller( "startableProcessesCtrl", worklistControllers.startableProcessesCtrl);
-	app.controller( "formCtrl", worklistControllers.formCtrl);
+	app.controller( "formCtrl",      worklistControllers.formCtrl);
 	app.controller( "activityNavbarCtrl", worklistControllers.activityNavbarCtrl);
-	app.controller( "processCtrl", worklistControllers.processCtrl);
+	app.controller( "processCtrl",   worklistControllers.processCtrl);
+	app.controller( "mainPageCtrl",  worklistControllers.mainPageCtrl);
 	app.filter( "humaneDate",        baseFilters.humaneDate);
 	app.filter( "serializeObject",   baseFilters.serializeObject);
 	app.filter( "criticality",       baseFilters.criticality);
@@ -43,6 +44,9 @@ define(function(require){
 				"isAuthorized" : false,
 				"user" :{},
 				"worklistItems":[]
+		};
+		$rootScope.signalJQMNavigation = function(data){
+			$rootScope.$broadcast("jqm-navigate",data);
 		};
 	});
 	
@@ -110,35 +114,6 @@ define(function(require){
 				.fail(function(err){
 					//TODO: do something to indicate failure
 				});
-		});
-		
-
-		/*Handle login submission attempts*/
-		ui.loginPage.on("click","#inptLogin",function(e){
-			var scope, 	   /*angular Scope*/
-				rootScope; /*angular rootScope*/
-			
-			e.preventDefault(); /*Prevent page transitions until we authorize the user*/
-			scope=angular.element($(options.selectors.loginPage)).scope();
-			rootScope = angular.element(document).scope();
-			
-			/*As we can't nest controllers due to the structure of our JQM pages in the DOM (completely flat)
-			 *we will utilize rootScope to hold data common to the entire app, controllers will have rootscope
-			 *injected as needed.*/
-			
-			/*leverage the login function from our workflow service to transition
-			 * to the mainPage on success or to show an inline error message on fail.*/
-			workflowService.login(scope.username,scope.password,scope.partition)
-				.done(function(user){
-					rootScope.appData.user=user;
-					rootScope.appData.isAuthorized=true;
-					$.mobile.navigate(options.selectors.mainPage);
-				})
-				.fail(function(err){
-					var myAlert = $("div:jqmData(role='inlineAlert')",ui.loginPage);
-					myAlert.inlineAlert("show","User Authentication Failed...",5000);
-			});
-			
 		});
 		
 	};

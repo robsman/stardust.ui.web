@@ -54,8 +54,12 @@ define([],function(){
 	var documentModel=function(){
 		this.docs=[];
 		this.uploadDoc={
-				path:""
+				"path" : ""
 		};
+	};
+	
+	var mainPageModel = function(){
+		this.worklistCount=0;
 	};
 	
 	var notesModel=function(){
@@ -70,7 +74,6 @@ define([],function(){
 			$(rootScope).trigger("addWorklistNote",newNote);
 		};
 	};
-	
 	
 	var participantModel = function(){
 		this.participants =[];
@@ -98,9 +101,55 @@ define([],function(){
 			/*Control intended to operate under rootScopes appData.worklist Items.
 			 *Provides a few helper functions etc ...
 			 *TODO:ZZM-(possibly consider a service once app is more fully fleshed out).*/
-			"worklistCtrl" : function($scope,$rootScope){
+			"worklistCtrl" : function($scope,$rootScope,workflowService){
+				
+				$scope.$on("jqm-navigate",function(e,edata){
+					var success,fail;
+					if(edata.scopeTarget != $scope.$id){return;}
+
+					success=function(data){
+							$scope.$apply(function(){
+								$rootScope.appData.worklistItems=data.worklist;
+								$scope.worklistModel.worklistItems = data.worklist;
+							});
+							edata.ui.bCDeferred.resolve();
+					},
+					fail =  function(status){
+							console.log("Worklist retrieval failed.");
+							edata.ui.bCDeferred.resolve();
+					};
+								
+					workflowService.getWorklist().then(success,fail);
+					
+				});
+				
 				$scope.worklistModel=new worklistModel();
 				$scope.test="Hello From Worklist CTRL";
+			},
+			
+			"mainPageCtrl" : function($scope,$rootScope,workflowService){
+				$scope.mainPageModel = new mainPageModel();
+				
+				$scope.$on("jqm-navigate",function(e,edata){
+					var success,fail;
+					if(edata.scopeTarget != $scope.$id){return;}
+
+					success=function(data){
+							$scope.$apply(function(){
+								console.log("Count total=");
+								console.log(data);
+								$scope.mainPageModel.worklistCount=data.total;
+							});
+							edata.ui.bCDeferred.resolve();
+					},
+					fail =  function(status){
+							console.log("Activity Instance Count retrieval failed");
+							edata.ui.bCDeferred.resolve();
+					};
+								
+					workflowService.getWorklistCount().then(success,fail);
+					
+				});
 			},
 			
 			/*Deprecated: Popup is now intgrated as a navbar directly in the page
@@ -139,13 +188,39 @@ define([],function(){
 				$scope.activity={};
 			},
 			
-			"processCtrl" : function($scope,$rootScope){
+			"processCtrl" : function($scope,$rootScope,workflowService){
 				/*declare our model(s)*/
 				$scope.notesModel = new notesModel();
 				$scope.activityModel = new worklistItem();
 				$scope.documentModel = new documentModel();
 				$scope.participantModel = new participantModel();
 				$scope.processModel = new processModel();
+				
+				/*Listener for JQuery Mobile navigation events*/
+				$scope.$on("jqm-navigate",function(e,edata){
+					if(edata.scopeTarget != $scope.$id){return;}
+					var success,fail;
+					
+					success=function(data){
+						console.log("ProcessPage data returned");
+						console.log(data);
+						console.log(data);
+							$scope.$apply(function(){
+								$scope.notesModel.notes = data.notes;
+								$scope.activityModel.item = {};
+								$scope.documentModel.docs = data.documents;
+								$scope.participantModel.participants = data.participants;
+								$scope.processModel = data;
+							});
+							edata.ui.bCDeferred.resolve();
+					},
+					fail =  function(status){
+							console.log("Process Instance retrieval failed.");
+							edata.ui.bCDeferred.resolve();
+					};
+								
+					workflowService.getProcessInstance(edata.data.id).then(success,fail);
+				});
 				
 				/*Signal JQuery universe that we need to add a note via REST*/
 				$scope.addNote = function(id,newNote){
@@ -156,11 +231,38 @@ define([],function(){
 			
 			"detailCtrl" : function($scope,$rootScope,utilService,workflowService){
 				
+				$scope.addNote2 = workflowService.addNote;
+				$scope.notesModel = new notesModel();
+				$scope.activityModel = new worklistItem();
+				$scope.formModel = new mashupModel();
+				$scope.documentModel = new documentModel();
 				$scope.baseHref = workflowService.baseHref;
 				$scope.progress = 0;
 				$scope.showMsg = false;
 				$scope.alertMessage = "";
 				$scope.uploadSuccesful = false;
+				
+				/*Listener for JQuery Mobile Navigation events*/
+				$scope.$on("jqm-navigate",function(e,edata){
+					var success,fail;
+					
+					if(edata.scopeTarget != $scope.$id){return;}
+					success=function(data){
+							$scope.$apply(function(){
+								$scope.notesModel.notes = data.processInstance.notes;
+								$scope.activityModel.item = data;
+								$scope.documentModel.docs = data.processInstance.documents;
+							});
+							edata.ui.bCDeferred.resolve();
+					},
+					fail =  function(status){
+							console.log("Process Instance retrieval failed.");
+							edata.ui.bCDeferred.resolve();
+					};
+								
+					workflowService.getActivityInstance(edata.data.id).then(success,fail);
+				});
+				
 				
 				/**File Handling************/
 				$scope.setFiles = function(element) {
@@ -219,14 +321,22 @@ define([],function(){
 				$scope.activeTab='activityTab';
 				
 				$scope.createNote = function(oid,content){
-					workflowService.createNote(oid,content);
+					var success,fail;
+					success=function(){
+						console.log("Note Succesfully added");
+						$scope.getNotes(oid);
+					};
+					fail = function(){
+						console.log("failed");
+					};
+					workflowService.createNote(oid,content).then(success,fail);
 				}; 
 				
 				$scope.getNotes = function(oid){
 					var success = function(data){
-							console.log("success");
-							console.log(data);
-							$scope.notesModel.notes=data;
+							$scope.$apply(function(){
+								$scope.notesModel.notes=data;
+							});
 						},
 						fail = function(status){
 							console.log("failed");
@@ -236,14 +346,6 @@ define([],function(){
 						.then(success,fail);
 					
 				};
-				
-				$scope.addNote2 = workflowService.addNote;
-				$scope.notesModel = new notesModel();
-				$scope.activityModel = new worklistItem();
-				$scope.formModel = new mashupModel();
-				$scope.documentModel = new documentModel();
-				
-				
 				
 				/*Signal JQuery universe that we need to add a note via REST*/
 				$scope.addNote = function(id,newNote){

@@ -1,6 +1,6 @@
 <div class="ui-body ui-body-a ui-corner-all" ng-repeat="part in participantModel.participants | orderBy:timestamp">
     <div>
-	    <strong>{{part.name.first}}, {{part.name.last}}</strong>
+	    <strong>{{part.firstName}}, {{part.lastName}}</strong>
 	    <div style="display:inline;float:right;">
 		    <a href="tel:{{part.phone}}"><i class="fa fa-phone fa-fw fa-2x"></i></a>&nbsp;
 		    <a href="mailto:{{part.email}}"><i class="fa fa-envelope fa-fw fa-2x"></i></a>

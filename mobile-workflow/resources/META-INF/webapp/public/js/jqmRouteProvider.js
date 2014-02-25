@@ -19,6 +19,14 @@
 define(["jquery-mobile", "angularjs","js/WorkflowService"],function(jqm,angular,WorkflowService){
 
 	var workflowService = WorkflowService.instance();
+	var jqmNavigateData=function(scopeTarget,evtType,ui,page,baseEvent,data){
+		this.scopeTarget=scopeTarget;
+		this.navigationType=evtType;
+		this.ui = ui;
+		this.page=page;
+		this.baseEvent=baseEvent;
+		this.data=data;
+	};
 	
 	/**
 	 * Look up a worklist item within our $rootScope collection.
@@ -59,10 +67,9 @@ define(["jquery-mobile", "angularjs","js/WorkflowService"],function(jqm,angular,
 	 */
 	var router=new $.mobile.Router([
 	            { "#login": { events: "bC", handler: "login" } },
-	            { "#mainPage":  { events: "bC", handler: "mainPage" } },
+	            { "#mainPage":  { events: "bC", handler: "mainPage" , step: "url" } },
 	            { "#worklistListViewPage": { events: "bC", handler: "worklistListViewPage" }},
 	            { "#activityPage": { events: "bC", handler: "activityPage" }},
-	            { "#notesPage": { events: "bC", handler: "notesPage" }},
 	            { "#activityPage": { events: "bC", handler: "activityPage" }},
 	            { "#startableProcessesPage": {events: "bC", handler: "startableProcessesPage" }},
 	            { "#detailPage": {events: "bC", handler: "detailPage" }},
@@ -106,13 +113,16 @@ define(["jquery-mobile", "angularjs","js/WorkflowService"],function(jqm,angular,
 						baseItem;
 				
 					e.preventDefault();
-					
 					console.log("JQM Router: /#processPage");
 					
 					scope=angular.element($("#processPage")).scope();
 					rootscope = angular.element($(document)).scope();
 					data=router.getParams(matchObj.input);
 					
+					jqmNData = new jqmNavigateData(scope.$id,eventType,ui,page,e,data);	
+					rootScope.signalJQMNavigation(jqmNData);
+					
+					return;
 					/*Lookup base worklist Item on rootscope.*/
 					baseItem=worklistItemLookup(data,rootscope.appData.worklistItems);
 					
@@ -138,118 +148,46 @@ define(["jquery-mobile", "angularjs","js/WorkflowService"],function(jqm,angular,
 
 				},
 				
+				/*Navigation events to mainPage will only query for meta data, 
+				 *such as count of activityInstances.*/
 				"mainPage" : function(eventType, matchObj, ui, page, e){
-					var scope, /*angular Scope*/
-						rootScope; /*angular rootScope*/
+					var rootScope = angular.element(document).scope(),
+						scope = angular.element($("#mainPage")).scope(),
+						jqmNData = new jqmNavigateData(scope.$id,eventType,ui,page,e);	
+					
 					e.preventDefault();
 					console.log("JQM Router: /#mainPage");
-					
-					workflowService.getWorklist()
-						.done(function(data){
-							e.preventDefault(); /*Prevent page transitions until we authorize the user*/
-							scope=angular.element($("#mainPage")).scope();
-							rootScope=angular.element(document).scope();
-							scope.$apply(function(){
-								rootScope.appData.worklistItems=data;
-								ui.bCDeferred.resolve();
-							});
-						}).fail(function(){
-							/*TODO:-ZZM handle fails*/
-							console.log("getWorklist failed");
-							ui.bCDeferred.resolve();
-						});
-					
+					rootScope.signalJQMNavigation(jqmNData);	
 				},
 				
+				/*Navigation events to the worklist-listview page will result in a list of 
+				 *activity instances being pulled*/
 				"worklistListViewPage" : function(eventType, matchObj, ui, page, e){
-					var scopeParent, /*Scope we need to access data from*/
-						scope,		 /*our local scope for this JQM dom page*/
-						rootScope;   /*angular rootScope*/
+					var rootScope = angular.element(document).scope(),
+						scope = angular.element($("#worklistListViewPage")).scope(),
+						jqmNData = new jqmNavigateData(scope.$id,eventType,ui,page,e);	
 					
 					e.preventDefault();
 					console.log("JQM Router: /#worklistListViewPage");
-					
-
-					scope=angular.element($("#worklistListViewPage")).scope();
-					rootScope=angular.element($(document)).scope();
-					scope.$apply(function(){
-						//scope.worklistItems=scopeParent.worklistItems;				
-					});
-					$("#worklistListViewPage ul").listview("refresh");
-					ui.bCDeferred.resolve();
+					rootScope.signalJQMNavigation(jqmNData);
 				},
 				
 				"detailPage" : function(eventType, matchObj, ui, page, e){
 					var rootscope,
 						scope,
 						data,
-						baseItem,
-						itemsLength,i,item;
+						jqmNData;
 					
 					e.preventDefault();
-					
 					console.log("JQM Router: /#detailPage");
-					
+					rootScope= angular.element(document).scope();
 					scope=angular.element($("#detailPage")).scope();
-					rootscope = angular.element($(document)).scope();
 					data=router.getParams(matchObj.input);
 					
-					/*Lookup base worklist Item on rootscope.*/
-					baseItem=worklistItemLookup(data,rootscope.appData.worklistItems);
-					scope.item=baseItem;
-					scope.activityModel.item=baseItem;
-					
-					console.log(scope);
-					/*Collect data from multiple Ajax sources, when all data is ready init controllers and
-					 *allow the UI to transition to the page.*/
-					console.log("fetching notes and documents.");
-					$.when(workflowService.getNotes(data.id),
-						   workflowService.getDocuments(data.id),
-						   workflowService.getProcessInstance(data.id))
-						   .done(function(notes,docs,masterData){
-							   console.log("master data ... ");
-							   console.log(masterData);
-								//notescope=angular.element($("#notesTabContent")).scope();
-								scope.$apply(function(){
-		                			console.log(docs);
-		                			scope.notesModel.notes=masterData.notes;
-		                			scope.activityModel.item=baseItem;
-		                			scope.documentModel.docs=masterData.documents;
-		                		});
-		                		ui.bCDeferred.resolve();
-					});
-					
-					scope.$apply(function(){
-						scope.item=baseItem;
-					});
-					ui.bCDeferred.resolve();
+					jqmNData = new jqmNavigateData(scope.$id,eventType,ui,page,e,data);	
+					rootScope.signalJQMNavigation(jqmNData);
 				},
 				
-				"notesPage" : function(eventType, matchObj, ui, page, e){
-					var scopeParent, /*Scope we need to access data from*/
-						data,		 /*data object extracted from hash params*/
-						scope;		 /*our local scope for this JQM DOM page*/
-					
-					e.preventDefault();
-					console.log("JQM Router: /#notesPage");
-					
-					/*calling router function to parse our hash url params*/
-	                data=router.getParams(matchObj.input);
-	                workflowService.getNotes(data.id)	                
-	                	.done(function(notes){
-	                		scope=angular.element($("#notesPage")).scope();
-	                		scope.$apply(function(){
-	                			scope.processoid=data.id;
-	                			scope.notes=notes;
-	                		});
-	                		$("#notesPage ul").listview("refresh");
-	                		ui.bCDeferred.resolve();
-	                	})
-	                	.fail(function(){
-	                		console.log("getNotes failed...");
-	                		ui.bCDeferred.resolve();
-	                	});
-				},
 				
 				"activityPage" : function(eventType, matchObj, ui, page, e){
 					var scopeParent, /*Scope we need to access data from*/

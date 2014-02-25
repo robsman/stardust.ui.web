@@ -9,18 +9,39 @@
  */
 
 define([],function(){
+	
+	var loginModel=function(acc,pw,part){
+		this.account = acc;
+		this.password = pw;
+		this.partition = part;
+	};
+	
 	var baseCtrl = {
 			
-			/*handle login binding to our DOM, actual global level authorization
-			 *is handled by app.js which handles login attempts and sets the resulting
-			 *value on our applications $rootScope*/
-			"loginCtrl" : function($scope,$rootScope){
-				$scope.username="motu";
-				$scope.password="motu";
-				$scope.partition = "default";
+			/* Handle login submission, on success load our rootScope level data and 
+			 * trigger a navigateTo event on rootScope.*/
+			"loginCtrl" : function($scope,$rootScope,workflowService,utilService){
+				
+				//TODO: ZZM - remove default values
+				$scope.loginModel=new loginModel("motu","motu","default");
+				
+				$scope.login = function(account,password,partition){
+					var loginPromise = workflowService.login(account,password,partition),
+						success=function(user){
+							$rootScope.appData.user=user;
+							$rootScope.appData.isAuthorized=true;
+							utilService.navigateTo($rootScope,"#mainPage",{});
+						},
+						fail = function(status){
+							//TODO: handle fail case
+							console.log("Login Failed");
+						};
+						
+					loginPromise.then(success,fail);
+				};
+
 				$scope.reset = function(){
-					$scope.username="";
-					$scope.password="";
+					$scope.loginModel=new loginModel("","","");
 				};
 			},
 			

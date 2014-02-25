@@ -26,20 +26,13 @@ import java.util.Map;
 
 import org.eclipse.stardust.common.Direction;
 import org.eclipse.stardust.common.StringUtils;
-import org.eclipse.stardust.engine.api.dto.ContextKind;
-import org.eclipse.stardust.engine.api.dto.DataDetails;
-import org.eclipse.stardust.engine.api.dto.Note;
-import org.eclipse.stardust.engine.api.dto.ProcessInstanceAttributes;
-import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetails;
+import org.eclipse.stardust.engine.api.dto.*;
 import org.eclipse.stardust.engine.api.model.ApplicationContext;
 import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.ImplementationType;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
-import org.eclipse.stardust.engine.api.query.DescriptorPolicy;
-import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
-import org.eclipse.stardust.engine.api.query.UserQuery;
-import org.eclipse.stardust.engine.api.query.WorklistQuery;
+import org.eclipse.stardust.engine.api.query.*;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
 import org.eclipse.stardust.engine.api.runtime.DeployedModel;
@@ -211,6 +204,18 @@ public class MobileWorkflowService {
 		return resultJson;
 	}
 
+   /**
+    * 
+    * @return
+    */
+   public JsonObject getWorklistCount() {
+      JsonObject resultJson = new JsonObject();
+      
+      resultJson.addProperty("total", 100);
+      
+      return resultJson;
+   }
+   
 	/**
 	 * 
 	 * @return
@@ -362,6 +367,138 @@ public class MobileWorkflowService {
 		return activityInstanceJson;
 	}
 
+   /**
+    * 
+    * @return
+    */
+   public JsonObject getActivityInstance(long activityInstanceOid) {
+      JsonObject activityInstanceJson = new JsonObject();
+
+      ActivityInstanceQuery activityInstanceQuery = ActivityInstanceQuery.findAll();
+
+      activityInstanceQuery.where(ActivityInstanceQuery.OID.isEqual(activityInstanceOid));
+      activityInstanceQuery.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
+      
+      ActivityInstanceDetails activityInstance = (ActivityInstanceDetails) getQueryService()
+            .getAllActivityInstances(activityInstanceQuery).get(0);
+
+      long timeInMillis = Calendar.getInstance().getTimeInMillis();
+      if (activityInstance.getState() == ActivityInstanceState.Completed
+            || activityInstance.getState() == ActivityInstanceState.Aborted) {
+         timeInMillis = activityInstance.getLastModificationTime().getTime();
+      }
+      long duration = timeInMillis - activityInstance.getStartTime().getTime();
+      
+      String lastPerformer;
+      UserInfo userInfo = activityInstance.getPerformedBy();
+      if (null != userInfo) {
+           User user = UserUtils.getUser(userInfo.getId());
+           lastPerformer = I18nUtils.getUserLabel(user);
+      }
+      else {
+         lastPerformer = activityInstance.getPerformedByName();
+      }
+
+      activityInstanceJson.addProperty("oid", activityInstance.getOID());
+      activityInstanceJson.addProperty("criticality", activityInstance.getCriticality());
+      activityInstanceJson.addProperty("status", activityInstance.getState().getName()); // TODO: i18n
+      
+      activityInstanceJson.addProperty("lastPerformer", lastPerformer);
+      activityInstanceJson.addProperty("assignedTo", ActivityInstanceUtils.getAssignedToLabel(activityInstance));
+      activityInstanceJson.addProperty("duration", duration);
+      activityInstanceJson.addProperty("activityId", activityInstance
+            .getActivity().getId());
+      activityInstanceJson.addProperty("activityName", activityInstance
+            .getActivity().getName());
+      activityInstanceJson.addProperty("processId", activityInstance
+            .getActivity().getProcessDefinitionId());
+      activityInstanceJson.addProperty("processName", activityInstance
+            .getActivity().getProcessDefinitionId());
+      activityInstanceJson.addProperty("processInstanceOid",
+            activityInstance.getProcessInstanceOID());
+      activityInstanceJson.addProperty("startTime", activityInstance
+            .getStartTime().getTime());
+      activityInstanceJson.addProperty("lastModificationTime",
+            activityInstance.getLastModificationTime().getTime());
+
+      /*JsonObject descriptorsJson = new JsonObject();
+
+      activityInstanceJson.add("descriptors", descriptorsJson);
+      
+      for (DataPath dataPath : activityInstance
+            .getDescriptorDefinitions()) {
+         
+         descriptorsJson.addProperty(dataPath.getId(),
+               (String) activityInstance.getDescriptorValue(dataPath
+                     .getId()));
+      }*/
+      
+      
+      JsonObject processInstanceJson = new JsonObject();
+      ProcessInstanceQuery processInstanceQuery = ProcessInstanceQuery.findAll();
+
+      processInstanceQuery.where(ProcessInstanceQuery.OID.isEqual(activityInstance.getProcessInstanceOID()));
+      processInstanceQuery.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
+      
+      ProcessInstanceDetails processInstance = (ProcessInstanceDetails) getQueryService()
+            .getAllProcessInstances(processInstanceQuery).get(0);
+      
+      activityInstanceJson.add("processInstance", processInstanceJson);
+
+      JsonObject descriptorsJson = new JsonObject();
+      processInstanceJson.add("descriptors", descriptorsJson);
+      
+      // Map descriptors
+
+      for (String key : ((ProcessInstanceDetails) processInstance)
+            .getDescriptors().keySet()) {
+         Object value = ((ProcessInstanceDetails) processInstance)
+               .getDescriptorValue(key);
+
+         JsonObject descriptorJson = new JsonObject();
+
+         descriptorsJson.add(key, descriptorJson);
+
+         descriptorJson.addProperty("id", key);
+         descriptorJson.addProperty("name", key);
+
+         if (value == null) {
+            descriptorJson.addProperty("value", (String) null);
+         } else if (value instanceof Boolean) {
+            descriptorJson.addProperty("value", (Boolean) value);
+
+         } else if (value instanceof Character) {
+            descriptorJson.addProperty("value", (Character) value);
+
+         } else if (value instanceof Number) {
+            descriptorJson.addProperty("value", (Number) value);
+
+         } else {
+            descriptorJson.addProperty("value", value.toString());
+         }
+      }
+
+      JsonArray documentsJson = new JsonArray();
+      processInstanceJson.add("documents", documentsJson);
+      List<Document> processAttachments = fetchProcessAttachments(processInstance);
+//    List<TypedDocument> typedDocuments = getTypeDocuments(processInstance);
+      for (Document document : processAttachments) {
+         documentsJson.add(marshalDocument(document));
+      }
+
+      JsonArray notesJson = new JsonArray();
+
+      processInstanceJson.add("notes", notesJson);
+
+      for (Note note : processInstance.getAttributes().getNotes()) {
+         JsonObject noteJson = marshalNote(note);
+
+         notesJson.add(noteJson);
+      }
+
+      return activityInstanceJson;
+   }
+   
 	/**
 	 * 
 	 * @return

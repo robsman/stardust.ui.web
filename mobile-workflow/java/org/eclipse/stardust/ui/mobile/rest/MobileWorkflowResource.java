@@ -109,6 +109,38 @@ public class MobileWorkflowResource {
 		}
 	}
 
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("worklist/count")
+   public Response getWorklistCount() {
+      try {
+         return Response.ok(
+               getMobileWorkflowService().getWorklistCount().toString(),
+               MediaType.APPLICATION_JSON_TYPE).build();
+      } catch (Exception e) {
+         e.printStackTrace();
+
+         throw new RuntimeException(e);
+      }
+   }
+
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("activity-instance/{oid}")
+   public Response getActivityInstance(@PathParam("oid") String activityInstanceOid) {
+      try {
+         return Response.ok(
+               getMobileWorkflowService().getActivityInstance(
+                     Long.parseLong(activityInstanceOid)).toString(),
+               MediaType.APPLICATION_JSON_TYPE).build();
+      } catch (Exception e) {
+         e.printStackTrace();
+
+         throw new RuntimeException(e);
+      }
+   }
+
+   
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
