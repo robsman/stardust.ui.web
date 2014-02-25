@@ -13,6 +13,11 @@ define(function(require){
 		
 		$scope.submitModel = function(){
 			console.log($scope.model);
+         workflowService.complete({
+            name : "Investigate Accident",
+            oid : "85",
+            context : "external-webapp"
+            }, $scope.model);
 		},
 		
 		$scope.model={

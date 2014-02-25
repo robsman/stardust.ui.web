@@ -66,8 +66,25 @@ define(["angularjs"],function(angular){
 					deferred.reject(status);
 				});
 				return deferred.promise;
-			}
+			},
 			
+	      "complete" : function(activityInstance, outData){
+	         var deferred = $q.defer();
+	      
+	         $http({
+	             url: baseServiceUrl + "/activity-instances/" + activityInstance.oid + "/complete",
+	             method: "POST",
+	             data: {
+	                  "activityInstance" : activityInstance,
+	                  "outData" : outData
+	               }
+	         }).success(function(data, status, headers, config) {
+	            deferred.resolve(data);
+	         }).error(function(data, status, headers, config) {
+	            deferred.reject(status);
+	         });
+	         return deferred.promise;
+	      }
 		};
 
 		return function(){
