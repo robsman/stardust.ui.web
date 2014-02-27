@@ -31,8 +31,8 @@ import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 
-import org.eclipse.xsd.XSDNamedComponent;
-import org.eclipse.xsd.XSDSchema;
+import com.infinity.bpm.thirdparty.xsd.XSDNamedComponent;
+import com.infinity.bpm.thirdparty.xsd.XSDSchema;
 
 
 

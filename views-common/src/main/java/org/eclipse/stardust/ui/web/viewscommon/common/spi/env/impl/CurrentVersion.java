@@ -11,6 +11,8 @@
 package org.eclipse.stardust.ui.web.viewscommon.common.spi.env.impl;
 
 import java.text.MessageFormat;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import org.eclipse.stardust.common.config.Version;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
@@ -31,27 +33,29 @@ public class CurrentVersion
    
    private static final String BUILD_VERSION_NAME = "-buildVersionName";
    private static final String VERSION_NAME = "-versionName";
-   public static final String COPYRIGHT_YEARS = "2000-2013";
-   public static final String MAJOR_VERSION = "@major@";
-   public static final String MINOR_VERSION = "@minor@";
-   public static final String MICRO_VERSION = "@micro@";
-   public static final String BUILD = "@build@";
-   public static final String COPYRIGHT_MESSAGE = "@copyrightMessage@";
+   public static final String COPYRIGHT_YEARS = "2000-2014";
+   public static final String VERSION;
+   public static final String BUILD;
+   public static final String COPYRIGHT_MESSAGE;
 
+   static
+   {
+      // load version.properties from 
+      // org.eclipse.stardust.ui.web.viewscommon.common.spi.env.impl package
+      ResourceBundle versionBundle = ResourceBundle.getBundle(
+            CurrentVersion.class.getPackage().getName() + ".version",
+            Locale.getDefault(), CurrentVersion.class.getClassLoader());
+      VERSION = versionBundle.getString("version");
+      BUILD = versionBundle.getString("build");
+      COPYRIGHT_MESSAGE = versionBundle.getString("copyright.message");
+   }
+   
    /**
     * String representation in the form
     */
    public static String getVersionName()
    {
-      StringBuffer name = new StringBuffer();
-
-      name.append(MAJOR_VERSION);
-      name.append(".");
-      name.append(MINOR_VERSION);
-      name.append(".");
-      name.append(MICRO_VERSION);
-
-      return name.toString();
+      return VERSION;
    }
 
    public static Version getVersion()
@@ -74,18 +78,14 @@ public class CurrentVersion
 
    public static String getCopyrightMessage()
    {
-      return COPYRIGHT_MESSAGE;
+      return  MessageFormat.format(COPYRIGHT_MESSAGE, new Object[] {
+            getVersionName(), COPYRIGHT_YEARS});
    }
 
    public static String getBuildVersionName()
    {
-      StringBuffer name = new StringBuffer();
+      StringBuffer name = new StringBuffer(VERSION);
 
-      name.append(MAJOR_VERSION);
-      name.append(".");
-      name.append(MINOR_VERSION);
-      name.append(".");
-      name.append(MICRO_VERSION);
       name.append(".");
       name.append(BUILD);
 
@@ -123,8 +123,7 @@ public class CurrentVersion
 
    private static String getVerboseVersion()
    {
-      return "Infinity (TM) Process Platform " + getVersionName()
-            + ", Copyright (C) SunGard CSA LLC, " + CurrentVersion.COPYRIGHT_YEARS
-            + ". All rights reserved.\n";
+      return MessageFormat.format(COPYRIGHT_MESSAGE + "\n", new Object[] {
+            getVersionName(), CurrentVersion.COPYRIGHT_YEARS });
    }
 }
