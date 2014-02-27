@@ -29,6 +29,7 @@
    <properties>
       <copyright.message>2014 SunGard CSA LLC and others, {0}</copyright.message>
       <build.qualifier>${maven.build.timestamp}</build.qualifier>
+      <skip.i18n-bundle-copy>false</skip.i18n-bundle-copy>
    </properties>
 
    <dependencies>
