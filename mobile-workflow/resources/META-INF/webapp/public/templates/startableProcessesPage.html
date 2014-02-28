@@ -1,69 +1,22 @@
-<!--div class="sub-header">			
-	<div class="ui-grid-b">
-			
-	    <div class="ui-block-a ipp-grid-icon-container" style="width:25%;">
-		    <div class="ui-bar ui-bar-a ipp-grid-subheader">
-		    	<a href="#" data-rel="back" class="ui-btn ui-icon-back ui-btn-icon-notext ui-corner-all">No text</a>
-		    </div>
-		</div>
-	
-	    <div class="ui-block-b" style="width:50%;">
-	    	<div class="ui-bar ui-bar-a ipp-grid-subheader" style="">Start Work</div>
-	    </div>
-    
-	    <div class="ui-block-c ipp-grid-icon-container" style="width:25%;">
-	    	<div class="ui-bar ui-bar-a ipp-grid-subheader" style="margin-right:-30px;">
-	    		<div style="float:right;text-align:right;position:relative;top:-12px;'">
-	    			<span class="ui-li-count ui-body-inherit" style="position:relative;left:-1px;top:1px;">
-		    				{{processes.length}}
-	    			</span>
-	    			<button  
-	    				ng-click="ascending=!ascending"
-	    		   		ng-class="{'ui-icon-arrow-d': ascending, 'ui-icon-arrow-u': !ascending}" 
-	    				class="ui-btn ui-corner-all ui-btn-inline ui-icon-arrow-d ui-btn-icon-notext">Icon only
-	    			</button>
-	    		</div>
-	    	</div>
-	    </div>
-	    
-	</div>
-</div--><!-- SUB HEADER END -->
 <div class="ui-grid-b">
-		<div class="ui-block-a" style="width:33.33%;">
-				<a href="#" data-rel="back" style="float:left" 
-				   class="ui-btn ui-corner-all ui-btn-inline ui-icon-back ui-btn-icon-notext"></a>
-		</div>
-		<div class="ui-block-b" style="width:33.33%;padding-top:0.8em;text-align:center;">
-			<strong>Start Work</strong>
-			<span style="position:relative;margin-left:1.2em;" class="ui-li-count"> 
-				{{processes.length}}
-			</span>
-		</div>
-		<div class="ui-block-c" style="width:33.33%;">
-		</div>
+	<div class="ui-block-a" style="width:33.33%;">
+			<a href="#" data-rel="back" style="float:left" 
+			   class="ui-btn ui-corner-all ui-btn-inline ui-icon-back ui-btn-icon-notext"></a>
 	</div>
+	<div class="ui-block-b" style="width:33.33%;padding-top:0.8em;text-align:center;">
+		<strong>Start Work</strong>
+		<span style="position:relative;margin-left:1.2em;" class="ui-li-count"> 
+			{{startableProcessModel.processes.length}}
+		</span>
+	</div>
+	<div class="ui-block-c" style="width:33.33%;">
+	</div>
+</div>
 
-
-<!--div class="ui-body ui-body-a ui-corner-all" ng-repeat="process in processes">
-	<p>
-		<div style="display:inline;" href="#" class="ui-btn ipp-icon-cog ui-btn-icon-notext ui-corner-all"></div>
-     		<span style="margin-left:18px;">{{process.name}}</span>
-      		<p><span>{{process.description}}</span><p>
-        	</p>
-       	<div ng-click="showContent=!showContent" 
-       		 ng-class="{'ui-icon-minus': showContent, 'ui-icon-plus' : !showContent}"
-       		 class="ui-btn ui-btn-right ui-btn-icon-notext ui-corner-all">
-       	</div>
-       	<div data-inset="false">
-          	<div ng-class="{'ipp-overflowEllipsis': !showContent, 'ipp-overflowShow': showContent}">
-            		{{process.content}}
-          	</div>
-       	</div>
-</div--><!-- process data tiles end... -->
 
 <ul data-role="listview">
-	<li ng-repeat="process in processes">
-		<a href="#">
+	<li ng-repeat="process in startableProcessModel.processes">
+		<a ng-click="startProcess(process.id)" >
 			<h3>{{process.name}}</h3>
 			<p>
 				<span>{{process.description}}</span>

@@ -9,7 +9,9 @@ define(function(require){
 		baseControllers = require('js/controllers/baseControllers'),
 		worklistControllers = require('js/controllers/worklistControllers'),
 		baseFilters = require("js/filters/baseFilters"),
+		fileDirectives = require("js/directives/fileHandlingDirectives"),
 		jqmDirectives = require("js/directives/jqmDirectives"),
+		docViewDirectives = require("js/directives/documentViewers"),
 		utilService = require("js/services/utils"),
 		app=angular.module('phoneApp',[]),/*create angular application*/
 		rootScope;  /*Angular rootScope within a JQuery context*/
@@ -19,22 +21,21 @@ define(function(require){
 	app.controller( "footerCtrl", baseControllers.footerCtrl);
 	app.controller( "headerCtrl", baseControllers.headerCtrl);
 	app.controller( "worklistCtrl",  worklistControllers.worklistCtrl);
-	app.controller( "activityCtrl",  worklistControllers.activityCtrl);
-	app.controller( "activityPopupCtrl", worklistControllers.activityPopupControl);
-	app.controller( "notesListCtrl", worklistControllers.notesListCtrl);
 	app.controller( "detailCtrl",    worklistControllers.detailCtrl);
 	app.controller( "panelCtrl",     worklistControllers.panelCtrl);
 	app.controller( "startableProcessesCtrl", worklistControllers.startableProcessesCtrl);
 	app.controller( "formCtrl",      worklistControllers.formCtrl);
-	app.controller( "activityNavbarCtrl", worklistControllers.activityNavbarCtrl);
 	app.controller( "processCtrl",   worklistControllers.processCtrl);
 	app.controller( "mainPageCtrl",  worklistControllers.mainPageCtrl);
+	app.controller( "documentViewerCtrl" ,worklistControllers.documentViewerCtrl);
 	app.filter( "humaneDate",        baseFilters.humaneDate);
 	app.filter( "serializeObject",   baseFilters.serializeObject);
 	app.filter( "criticality",       baseFilters.criticality);
 	app.filter( "absoluteTime",      baseFilters.absoluteTime);
 	app.directive( "jqmTemplate",    jqmDirectives.jqmTemplate);
 	app.directive( "testTemplate",   jqmDirectives.testTemplate);
+	app.directive( "fileUpload",   	 fileDirectives.fileUpload);
+	app.directive( "imageViewer",    docViewDirectives.imageViewer);
 	app.factory("utilService",utilService);
 	app.factory("workflowService",angWorkflow);
 	
@@ -43,7 +44,9 @@ define(function(require){
 		$rootScope.appData={
 				"isAuthorized" : false,
 				"user" :{},
-				"worklistItems":[]
+				"worklistItems":[],
+				"isActivityHot" : false,
+				"hotActivityInstance" : {}
 		};
 		$rootScope.signalJQMNavigation = function(data){
 			$rootScope.$broadcast("jqm-navigate",data);
@@ -59,20 +62,7 @@ define(function(require){
 		angular.bootstrap(document,['phoneApp']);
 
 		/****************************************JQUERY******************************************/
-		/* Jquery initialization, specifically, we need to handle click or submit events
-		 * that are outside the purview of JQMs hash based navigation. Common cases would be a
-		 * request to a rest API for data that is NOT concurrent with a page navigation/transition.
-		 * The login page is another case as we need to submit login data to the server and get a 
-		 * response back before we attempt to navigate. So, in that case we combine a non navigation event
-		 * result (login verification) with a control flow based navigation related to that result.*/
-		
-		/*Create $ objects corresponding to our UI elements we need to interact with directly via jQuery*/
-		ui.inptLogin=$(options.selectors.inptLogin);
-		ui.loginPage = $(options.selectors.loginPage);
-		ui.mainPage = $(options.selectors.mainPage);
-		ui.worklistListViewPage = $(options.selectors.worklistListViewPage);
-		ui.btnAddNote = $(options.selectors.btnAddNote);
-		ui.notesPage = $(options.selectors.notesPage);
+		/* Jquery initialization*/
 		
 		/*Initialize our external headers and footers, as external headers and footers exist outside 
 		 *of a JQM page they must be explicitly initialized.
@@ -81,40 +71,20 @@ define(function(require){
 		$( "[data-role='header'], [data-role='footer']" ).toolbar();
 		$( "body>[data-role='panel']" ).panel();
 		
-		/*Set up rootscope to handle events from Angular within our JQuery universe*/
+		/*Set up rootScope to handle events from Angular within our JQuery universe*/
 		rootScope=angular.element($(document)).scope();
 		
-		/* Handle navigation requests that need to be performed manually.*/
+		/* Handle navigation requests triggered within Angular that need to be performed manually.
+		 * The goal is to keep from explicitly referencing JQM as a dependency internal to Angular.
+		 * Other than our JQM template directives, our Angular domain should not be aware that it is
+		 * co-habitating with JQuery Mobile, well it's a goal...
+		 * */
 		$(rootScope).on("navigateRequest",function(e,data){
-			console.log("navigation request triggered on rootscope.");
-			console.log(data);
+			/*Particulars will be handled within the JQMRouteProveder,*/
 			$.mobile.navigate(data.target,data.payload);
 		});
 		
 		
-		/* Handle addWorklistNote events generated within Angular and triggered on rootScope.
-		 * TODO: move to an internal Angular service, will require 
-		 * injecting workflowService as a dependency. IF this is done then to avoid keeping a duplicate
-		 * external workflow service for the JQM router provider, we should look at moving its ajax
-		 * initialization calls to that service as well. At that point the routing mechanism will be
-		 * used only to signal the angular app that a page navigation has occured and the angular app
-		 * decides what to do next.*/
-		$(rootScope).on("addWorklistNote",function(e,data){
-			workflowService.createNote(data.processoid, data.content)
-				.done(function(res){
-					workflowService.getNotes(data.processoid)
-					.done(function(notes){
-						rootScope.$broadcast("worklistNoteAdded",{
-							"notes" :notes, 
-							"processoid" : data.processoid}
-						);
-					})
-					.fail();
-				})
-				.fail(function(err){
-					//TODO: do something to indicate failure
-				});
-		});
 		
 	};
 	

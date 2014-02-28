@@ -1,0 +1,60 @@
+<div data-role="header" style="overflow:hidden;">
+	<h1>{{documentViewerModel.name}}</h1>
+    <!-- a href="#" data-icon="gear" class="ui-btn-right">Options</a-->
+    <a href="#" data-rel="back"  class="ui-btn ui-shadow ui-corner-all ui-icon-back ui-btn-icon-notext">No Text</a>
+</div>
+
+<div data-role="tabs" id="tabs">
+  <div data-role="navbar">
+    <ul>
+      <li>
+		<a href="#docContentTab" class="ui-btn-active">
+			<i title="Content" style="display:block;" class="fa fa-file-text-o fa-2x jqm-icon-block"></i>
+			<span title="Content" class="hide-media-sm">Content</span>
+		</a>		
+	  </li>
+	  <li>
+		<a href="#docDetailsTab">
+			<i title="Details" style="display:block;" class="fa fa-info-circle  fa-2x jqm-icon-block"></i>
+			<span title="Details" class="hide-media-sm">Details</span>
+		</a>		
+	  </li>
+    </ul>
+  </div>
+  
+  <div id="docContentTab" style="text-align:center;" class="ui-body-d ui-content ipp-ux-wrapper">
+    <div image-viewer data-repository-url="{{documentViewerModel.downloadUrl}}" />
+  </div>
+  <div id="docDetailsTab">
+        <ul data-role="listview">
+		    <li>
+		    	<strong class="ipp-header-2col">File Type</strong>
+		    	<span>{{documentViewerModel.contentType}}</span>
+		    </li>
+		    <li>
+		    	<strong class="ipp-header-2col">File Size</strong>
+		    	<span>{{documentViewerModel.size}}</span>
+		    </li>
+		    <li>
+		    	<strong class="ipp-header-2col">Author</strong>
+		    	<span>????</span>
+		    </li>
+		    <li>
+		    	<strong class="ipp-header-2col">Created</strong>
+		    	<span>{{documentViewerModel.createdTimestamp | date:"yyyy-MM-dd" | humaneDate}}</span>
+		    </li>
+		    <li>
+		    	<strong class="ipp-header-2col">Last Modified</strong>
+		    	<span>{{documentViewerModel.lastModifiedTimestamp | date:"yyyy-MM-dd" | humaneDate}}</span>
+		    </li>
+		    <li>
+		    	<strong class="ipp-header-2col">Process</strong>
+		    	<span>{{documentViewerModel.processOid}}</span>
+		    </li>
+		    <li>
+		    	<strong>Document Type</strong>
+		    	<span></span>
+		    </li>
+		</ul>
+  </div>
+</div>

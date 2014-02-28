@@ -83,55 +83,43 @@
 		<div id="startableProcessesPage" data-role="page" data-theme="a" 
 			 ng-controller="startableProcessesCtrl"
 			 data-jqm-template data-jqm-widgets="listview" 
-			 data-bind-to="processes"
+			 data-bind-to="startableProcessModel.processes"
 			 data-template-url="templates/startableProcessesPage.html">
 		</div>
 		
-		
-		<!-- NOTES PAGE -->
-		<div id="notesPage" data-role="page" data-theme="a" 
-			 ng-controller="notesListCtrl"
-			 data-jqm-template 
-			 data-jqm-widgets="listview"
-			 data-bind-to="notes"
-			 data-template-url="templates/notesPage.html">
-		</div><!-- Data-Role Page end... -->
-		
-		<!-- ACTIVITY PANEL PAGE -->
-		<div id="activityPage" data-role="page" data-theme="a" 
-			 ng-controller="activityCtrl"
-			 data-jqm-template data-jqm-widgets="" 
-			 data-template-url="templates/activityPanelPage.html">
-		</div>
-		
-		<!-- ACTIVITY PANEL SUBPAGE NOTES -->
-		<div id="activityPanelSubpageNotes" data-role="page" data-theme="a" 
-			 ng-controller="notesListCtrl"
-			 data-jqm-template data-jqm-widgets="listview" 
-			 data-bind-to="notes"
-			 data-template-url="templates/activityPanelSubpageNotes.html">
-		</div>
-		
+
 		<!-- DETAIL PAGE -->
 		<div id="detailPage" data-role="page" data-theme="a" 
 			 ng-controller="detailCtrl"
-			 data-jqm-template data-jqm-widgets="" 
+			 data-jqm-template 
+			 data-jqm-widgets="tabs,popup" 
+			 data-bind-to="[activityModel.item.activatable,isHotActivityConflict,isMashupShowable]"
 			 data-template-url="templates/detailPage.html">
 		</div> <!-- DETAIL PAGE END -->
 		
 		<!-- FORM PAGE -->
 		<div id="formPage" data-role="page" data-theme="a"
 			 ng-controller="formCtrl"
-			 data-jqm-template data-jqm-widgets="" 
+			 data-jqm-template 
+			 data-jqm-widgets="" 
 			 data-template-url="templates/formPage.html">
-			
 		</div>
 		
 		<!-- PROCESS PAGE -->
 		<div id="processPage" data-role="page" data-theme="a"
 			 ng-controller="processCtrl"
-			 data-jqm-template data-jqm-widgets="" 
+			 data-jqm-template 
+			 data-jqm-widgets="" 
 			 data-template-url="templates/processPage.html">
+		</div>
+		
+		<!-- Document Viewer Page -->
+		<div id="documentViewerPage" data-role="page" data-theme="a"
+			 ng-controller="documentViewerCtrl"
+			 data-jqm-template 
+			 data-jqm-widgets="tabs" 
+			 data-bind-to="documentViewerModel"
+			 data-template-url="templates/documentViewerPage.html">
 		</div>
 		
 		<script type="application/javascript" src="js/add2home.js"></script>

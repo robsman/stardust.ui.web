@@ -6,9 +6,11 @@ define(["angularjs"],function(angular){
 	    $q = ngInjector.get("$q"),
 	    $window = ngInjector.get("$window"),
 	    baseServiceUrl,
+	    baseUrl,
 	    href;
 	
-	href=$window.location.href;
+	href = $window.location.href;
+	baseUrl = href.substring(0,href.indexOf("/plugins"));
 	baseServiceUrl = href.substring(0,href.indexOf("/plugins"))+ "/services/rest/mobile-workflow";
 	
 	srvc = {
@@ -37,6 +39,20 @@ define(["angularjs"],function(angular){
 			},
 			
 			"baseHref" : baseServiceUrl,
+			
+			"activate" : function(activityOid){
+				var deferred = $q.defer();
+				
+				$http({
+				    url: baseServiceUrl + "/activity-instances/" + activityOid + "/activation",
+				    method: "PUT"
+				}).success(function(data, status, headers, config) {
+					deferred.resolve(data);
+				}).error(function(data, status, headers, config) {
+					deferred.reject(status);
+				});
+				return deferred.promise;
+			},
 			
 			"getWorklist" : function(){
 				var deferred = $q.defer();
@@ -67,6 +83,20 @@ define(["angularjs"],function(angular){
 				return baseItem;
 			},
 			
+			"getDocuments" : function(processOid){
+				var deferred = $q.defer();
+				
+				$http({
+				    url: baseServiceUrl + "/process-instances/" + processOid + "/documents",
+				    method: "GET"
+				}).success(function(data, status, headers, config) {
+					deferred.resolve(data);
+				}).error(function(data, status, headers, config) {
+					deferred.reject(status);
+				});
+				return deferred.promise;
+			},
+			
 			"getWorklistCount" : function(){
 				var deferred = $q.defer();
 				
@@ -81,11 +111,11 @@ define(["angularjs"],function(angular){
 				return deferred.promise;
 			},
 			
-			"getActivityInstance" : function(activityId){
+			"getActivityInstance" : function(activityOid){
 				var deferred = $q.defer();
 				
 				$http({
-				    url: baseServiceUrl + "/activity-instance/" + activityId,
+				    url: baseServiceUrl + "/activity-instances/" + activityOid,
 				    method: "GET"
 				}).success(function(data, status, headers, config) {
 					deferred.resolve(data);
@@ -109,11 +139,62 @@ define(["angularjs"],function(angular){
 				return deferred.promise;
 			},
 			
+			"getDocument" : function(docId,processInstanceOid){
+				var deferred = $q.defer();
+				$http({
+				    url: baseServiceUrl + "/process-instances/" + processInstanceOid + 
+				    	 "/documents/process-attachments/" + docId,
+				    method: "GET"
+				}).success(function(data, status, headers, config) {
+					deferred.resolve(data);
+				}).error(function(data, status, headers, config) {
+					deferred.reject(status);
+				});
+				return deferred.promise;
+			},
+			
+			"getDocumentUrl" : function(downloadToken){
+				//http://localhost:8080/pepper-test/dms-content/ZGwvMS8xMzkzNTMzMzE3NjcxL3tqY3JVdWlkfWM3MmU2ZTRlLTYzZTctNGY4Ni04ZmVhLWYwZDI2NjgzMTRkNA== 
+				var docUrl = baseUrl + "/dms-content/" + downloadToken;
+				return docUrl;
+			},
+			
 			"getNotes" : function(processInstanceOid){
 				var deferred = $q.defer();
 				
 				$http({
 				    url: baseServiceUrl + "/process-instances/" + processInstanceOid + "/notes",
+				    method: "GET"
+				}).success(function(data, status, headers, config) {
+					deferred.resolve(data);
+				}).error(function(data, status, headers, config) {
+					deferred.reject(status);
+				});
+				return deferred.promise;
+			},
+			
+			"startProcess" : function(processDefinitionId){
+				var deferred = $q.defer();
+				
+				$http({
+				    url: baseServiceUrl + "/process-instances/",
+				    method: "POST",
+				    data: {
+							"processDefinitionId" : processDefinitionId
+						}
+				}).success(function(data, status, headers, config) {
+					deferred.resolve(data);
+				}).error(function(data, status, headers, config) {
+					deferred.reject(status);
+				});
+				return deferred.promise;
+			},
+			
+			"getStartableProcesses" : function(){
+				var deferred = $q.defer();
+				
+				$http({
+				    url: baseServiceUrl + "/startable-processes/",
 				    method: "GET"
 				}).success(function(data, status, headers, config) {
 					deferred.resolve(data);

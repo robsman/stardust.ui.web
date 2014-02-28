@@ -2,7 +2,7 @@
 <div data-role="header" style="overflow:hidden;">
 	<h1>{{activityModel.item.activityName}} (#{{activityModel.item.oid}})</h1>
     <!-- a href="#" data-icon="gear" class="ui-btn-right">Options</a-->
-    <a href="#" ng-click="activeTab=''" data-rel="back" class="ui-btn ui-shadow ui-corner-all ui-icon-back ui-btn-icon-notext">No Text</a>
+    <a ng-href="#{{previousPage}}" ng-click="activeTab=''"  class="ui-btn ui-shadow ui-corner-all ui-icon-back ui-btn-icon-notext">No Text</a>
 </div>
 
 <div data-role="tabs" id="tabs" style="padding-top:0em;border-top:0em;">
@@ -15,7 +15,7 @@
 			</a>		
 		</li>
 		<li ng-click="activeTab='formTab'" >
-			<a href="#formTab">
+			<a ng-href="{{formTabTarget}}">
 				<i style="display:block;" class="fa fa-cog fa-2x jqm-icon-block"></i>
 				<span title="Form" class="hide-media-sm">Form</span>	
 			</a>
@@ -51,11 +51,18 @@
 			 data-template-url="templates/activityDetails.html">
 		</div>
   </div>
-  <div id="formTab" class="ui-body-d ui-content">
-    	<div data-jqm-template 
+  <div  id="formTab" class="ui-body-d ui-content" style="text-align:center;">
+    	<div ng-show="isMashupShowable()==true" 
+    		 data-jqm-template 
 			 data-jqm-widgets=""
 			 data-bind-to=""
 			 data-template-url="templates/formPage.html">
+		</div>
+		<div ng-show="isMashupShowable()==false"
+			 data-jqm-template 
+			 data-jqm-widgets=""
+			 data-bind-to=""
+			 data-template-url="templates/formDefault.html">
 		</div>
   </div>
    <div id="docsTab" class="ui-body-d ui-content">
@@ -77,14 +84,38 @@
   </div>
 </div><!-- Tabs End  -->
 
-
   <div class="ui-mini" ng-show="activeTab=='activityTab'">
-	  <div ng-click="trigger('activateActivity',activityModel.item.processInstanceOid)"  style="margin-right:0em;" class="ui-btn ui-conrner-all ui-btn-inline">
+  
+	  <div ng-click="activate(activityModel.item.oid);" 
+	  	   ng-show="activityModel.item.activatable && isHotActivityConflict()==false" 
+	  	   style="margin-right:0em;" 
+	  	   class="ui-btn ui-conrner-all ui-btn-inline">
 	  	<i class="fa fa-bolt"></i> Activate
 	  </div>
+	  
+	  <div ng-show="activityModel.item.activatable && isHotActivityConflict()==true" 
+	  	   style="margin-right:0em;" 
+	  	   class="ui-btn ui-conrner-all ui-btn-inline">
+	  	<a ng-href="#activateConflictPopup_{{$id}}" data-rel="popup"><i class="fa fa-bolt"></i> Activate!</a>
+	  </div>
+
+	  <div data-role="popup" id="activateConflictPopup_{{$id}}" data-overlay-theme="b" data-theme="a" data-dismissible="false" style="max-width:400px;">
+	    <div data-role="header" data-theme="a">
+	    <h3>{{activityModel.item.activityName}} (#{{activityModel.item.oid}}) is not Activatable</h3>
+	    </div>
+	    <div role="main" class="ui-content">
+	        <h4 class="ui-title">You currently have another activity active.</h4>
+	    <p>What do you want to do?</p>
+	        <a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-b" data-rel="back">Cancel</a>
+	        <a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-b" data-rel="back" data-transition="flow">View Active </a>
+	    </div>
+	  </div>
+	  
+	  
 	  <div ng-click="trigger('delegateActivity',activityModel.item.processInstanceOid)" style="margin-right:0em;" class="ui-btn ui-btn-inline">
 	  	<i class="fa fa-user"></i> Delegate
 	  </div>
+	  
   </div>  
   
 <div data-role="footer" data-theme="a" ng-controller="footerCtrl">

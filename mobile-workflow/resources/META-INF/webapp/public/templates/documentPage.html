@@ -1,30 +1,14 @@
-
-<div ng-style="" style="width:100%;height:30px;color:white;text-shadow:none;padding: 5px 5px 5px 5px"" 
-	 ng-click="showMsg=false" 
-	 ng-class="{'jqm-cstm-success':uploadSuccesful, 'jqm-cstm-warning' : !uploadSuccesful}"
-	 ng-hide="!showMsg">
-	 <span>{{alertMessage}}</span>
-	 <i class="fa fa-2x fa-times" style="float:right;"></i>
-</div>
-
-<div class="ui-grid-a">
-	<div class="ui-block-a" style="width:80%;">
-		<input type="file"  onchange="angular.element(this).scope().setFiles(this)" />
-	</div>
-	<div class="ui-block-b" style="width:20%;">
-		<button title="Upload" 
-				ng-click="uploadFile(activityModel.item.processInstanceOid);isUploading=true" 
-				style="height:40px;">
-			<i ng-class="{'fa-upload' : !isUploading, 'fa-spinner' : isUploading, 'fa-spin' : isUploading}"  
-			   class="fa fa-2x" 
-			   style="margin-top:-5px;"></i>
-		</button>
-	</div>
+<div file-upload
+	 data-template-url="templates/fileUpload.html"
+	 data-url-target="{{baseHref}}/process-instances/{{activityModel.item.processInstanceOid}}/documents"
+	 data-on-progress="uploadReporter.onProgress",
+	 data-on-error="uploadReporter.onError",
+	 data-on-load="uploadReporter.onLoad">
 </div>
 <div>
 	<ul data-role="listview" style="margin:0em;">
 		<li ng-repeat="doc in documentModel.docs">
-			<a href="#?id={{doc.id}}">
+			<a href="#documentViewerPage?id={{doc.id}}&processOid={{activityModel.item.processInstanceOid}}">
 				<h3>{{doc.name}}</h3>
 	       		<p class="ui-li-aside">
 	       			<strong>{{doc.lastModifiedTimestamp | date:'yyyy-MM-dd' | humaneDate}}</strong>

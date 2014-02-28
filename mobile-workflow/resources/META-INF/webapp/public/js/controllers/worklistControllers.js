@@ -1,40 +1,22 @@
 /*Controllers Related to worklists...*/
 define([],function(){
 	
-	/*TODO: ZZM- Move utils to a service/factory and inject as a dependency*/
-	var utils={
-			
-			/* Indicate a navigation request outside of the JQM
-			 * hash handlers.*/
-			"navigateTo" : function(root,target,data){
-				$(root).trigger("navigateRequest",{
-					"target": target,
-					"payload" : data
-				});
-			},
-			
-			/*Generic event trigger function*/
-			"trigger" : function(root,eventName,data){
-				$(root).trigger(eventName,data);
-			}
-	};
 	
 	var worklistModel =function(){
-		var that = this;
-		this.test="Hello From Worklist CTRL";
-		this.worklistItems=[];
-		this.sort=function(items,key,asc){
-			items.sort(function(a,b){
-				return a[key] > b[key];
-			});
-			if(asc){
-				items.reverse();
-			}
-		};
-	};
+			var that = this;
+			this.test="Hello From Worklist CTRL";
+			this.worklistItems=[];
+			this.sort=function(items,key,asc){
+				items.sort(function(a,b){
+					return a[key] > b[key];
+				});
+				if(asc){
+					items.reverse();
+				}
+			};
+	},
 	
-	var processModel = function(){
-		this.test="Hello From Process Model";
+	 processModel = function(){
 		this.descriptors={};
 		this.documents=[];
 		this.events={};
@@ -45,62 +27,48 @@ define([],function(){
 		this.processName="";
 		this.startTimestamp=0;
 		this.state="";
-	};
+	},
 	
-	var worklistItem =function(){
+	startableProcessModel=function(){
+		this.processes =[];
+	},
+	
+	worklistItem =function(){
 		this.item={};
-	};
+	},
 	
-	var documentModel=function(){
+	documentModel=function(){
 		this.docs=[];
-		this.uploadDoc={
-				"path" : ""
-		};
-	};
+	},
 	
-	var mainPageModel = function(){
+	documentViewerModel = function(){
+		this.document={};
+	},
+	
+	mainPageModel = function(){
 		this.worklistCount=0;
-	};
+	},
 	
-	var notesModel=function(){
+	notesModel=function(){
 		this.notes=[];
 		this.newNote={
 				"content" : "", 
 				"processoid": ""
 		};
-		this.addNote=function(scope,rootScope,newNote){
-			console.log("triggering addWorklistNote event...");
-			console.log(newNote);
-			$(rootScope).trigger("addWorklistNote",newNote);
-		};
-	};
+	},
 	
-	var participantModel = function(){
+	participantModel = function(){
 		this.participants =[];
-	};
+	},
 	
-	var mashupModel=function(){
-		this.url="http://localhost:8080/pepper-test/plugins/mobile-workflow/public/mashupapp/mashup.html";
-	};
+	mashupModel=function(){
+		this.externalUrl = "#";
+		this.interactionId = "";
+	},
 	
 	/*Our return object with all controllers defined*/
-	var worklistCtrl = {
+	worklistCtrl = {
 			
-			/**Overall Note on using $rootScope
-			 * ------------------------------------------------------------------
-			 * In order to more easily provide the same data to our sibling scopes 
-			 * (observe that distinct JQM DOM pages in a single page app may not nest)
-			 * we leverage rootScope for certain bits of data that are truly global
-			 * to our application (@see worklistItems, isAuthorized). We can then simply inject $rootScope
-			 * into our controllers and have access to the same data across scopes.
-			 * TODO:ZZM-Consider moving this to a cached data service...
-			 * Ref: http://stackoverflow.com/questions/16739084/angularjs-using-rootscope-as-a-data-store
-			 * Ref: http://docs.angularjs.org/misc/faq "$rootScope exists, but it can be used for evil"
-			 * */
-			
-			/*Control intended to operate under rootScopes appData.worklist Items.
-			 *Provides a few helper functions etc ...
-			 *TODO:ZZM-(possibly consider a service once app is more fully fleshed out).*/
 			"worklistCtrl" : function($scope,$rootScope,workflowService){
 				
 				$scope.$on("jqm-navigate",function(e,edata){
@@ -109,7 +77,7 @@ define([],function(){
 
 					success=function(data){
 							$scope.$apply(function(){
-								$rootScope.appData.worklistItems=data.worklist;
+								//$rootScope.appData.worklistItems=data.worklist;
 								$scope.worklistModel.worklistItems = data.worklist;
 							});
 							edata.ui.bCDeferred.resolve();
@@ -128,6 +96,7 @@ define([],function(){
 			},
 			
 			"mainPageCtrl" : function($scope,$rootScope,workflowService){
+				
 				$scope.mainPageModel = new mainPageModel();
 				
 				$scope.$on("jqm-navigate",function(e,edata){
@@ -151,29 +120,47 @@ define([],function(){
 					
 				});
 			},
-			
-			/*Deprecated: Popup is now intgrated as a navbar directly in the page
-			 *TODO: - Remove upon final refactor*/
-			"activityPopupControl" : function($scope,$rootScope){
-				$scope.test = "Hello From activity Popup Ctrl";
-				$scope.worklistItem=undefined;
-			},
-			
-			/*Deprecated for now, meged with detail control*/
-			"notesListCtrl" : function($scope,$rootScope){
-				$scope.notesModel = new notesModel();
-			},
+
 			
 			/*startableProcessesControl*/
-			"startableProcessesCtrl" : function($scope,$rootScope){
+			"startableProcessesCtrl" : function($scope,$rootScope,workflowService){
 				$scope.test = "Hello From Startable Process(s) Control";
-				$scope.processes = [];
-			},
-			
-			/*Activity Panel navbar Control, repeats across 'subpages'*/
-			"activityNavbarCtrl" : function($scope,$rootScope){
-				$scope.test = "Hello From Activity NavBar Ctrl";
-				$scope.activeSubPage="activity";
+				$scope.startableProcessModel = new startableProcessModel();
+				
+				$scope.startProcess = function(processDefinitionId){
+					var success,fail;
+					
+					success=function(data){
+						console.log("startProcess Returned...");
+						console.log(data);
+						/*check data and then do some crazy stuff...*/
+					},
+					fail =  function(status){
+							console.log("Startable Process retrieval failed");
+					};
+					
+					workflowService.startProcess(processDefinitionId)
+						.then(success,fail);
+					
+				};
+				$scope.$on("jqm-navigate",function(e,edata){
+					var success,fail;
+					if(edata.scopeTarget != $scope.$id){return;}
+
+					success=function(data){
+							$scope.$apply(function(){
+								$scope.startableProcessModel.processes=data.processDefinitions;
+							});
+							edata.ui.bCDeferred.resolve();
+					},
+					fail =  function(status){
+							console.log("Startable Process retrieval failed");
+							edata.ui.bCDeferred.resolve();
+					};
+								
+					workflowService.getStartableProcesses().then(success,fail);
+					
+				});
 			},
 			
 			/*panelControl*/
@@ -181,12 +168,6 @@ define([],function(){
 				$scope.test = "Hello From Panel Ctrl";
 			},
 			
-			/*TODO:ZZM-stubbed*/
-			"activityCtrl" : function($scope,$rootScope){
-				$scope.test = "Hello From Activity Ctrl";
-				$scope.activityID = -1;
-				$scope.activity={};
-			},
 			
 			"processCtrl" : function($scope,$rootScope,workflowService){
 				/*declare our model(s)*/
@@ -195,19 +176,72 @@ define([],function(){
 				$scope.documentModel = new documentModel();
 				$scope.participantModel = new participantModel();
 				$scope.processModel = new processModel();
+				$scope.baseHref = workflowService.baseHref;
+				$scope.showMsg = false;
+				$scope.alertMessage = "";
+				$scope.uploadSuccesful = false;
+				$scope.isUploading =false;
+				
+				/*Helper function to refresh our scoped document collection*/
+				$scope.getDocuments = function(processOid){
+					var success = function(data){
+							$scope.$apply(function(){
+								$scope.documentModel.docs = data.documents;
+							});
+						},
+						fail = function(){
+							console.log("document refresh failed.");
+						};
+						
+					workflowService.getDocuments(processOid).then(success,fail);
+				};
+				
+				/*Reporter object we will tie to our file-upload directive*/
+				$scope.uploadReporter ={
+		          onProgress: function(e){
+		        	console.log("Progress");
+		            console.log(e);
+		          },
+		          onLoad: function(e){
+		        	  $scope.$apply(function(){
+		        		  $scope.isUploading=false;
+		        		  if(e.currentTarget.status==200){
+		        			  $scope.uploadSuccesful=true;
+		        			  $scope.alertMessage="Upload Succesful";
+		        			  $scope.getDocuments($scope.activityModel.item.processInstanceOid);
+		        		  }else{
+		        			  $scope.uploadSuccesful=false;
+		        			  $scope.alertMessage="Upload Failed " + e.currentTarget.statusText ;
+		        		  }
+		        		  $scope.showMsg=true;
+		        	  });
+		          },
+		          onError: function(e){
+		        	  $scope.$apply(function(){
+		        		  $scope.uploadSuccesful=false;
+		        		  $scope.alertMessage="Upload Failed "+ e.currentTarget.statusText ;
+		        	  });
+		          }
+		        };
 				
 				/*Listener for JQuery Mobile navigation events*/
 				$scope.$on("jqm-navigate",function(e,edata){
-					if(edata.scopeTarget != $scope.$id){return;}
-					var success,fail;
+					var success,
+						fail;
 					
+					/*Ignore Navigate events on scopes other than our own*/
+					if(edata.scopeTarget != $scope.$id){return;}
+				
 					success=function(data){
-						console.log("ProcessPage data returned");
-						console.log(data);
-						console.log(data);
 							$scope.$apply(function(){
 								$scope.notesModel.notes = data.notes;
-								$scope.activityModel.item = {};
+								console.log(data.participants);
+								/*For coherence with detailPage template structure,
+								 *TODO: abstract title and ids as appropriate*/
+								$scope.activityModel.item ={
+										"processInstanceOid" : edata.data.id,
+										"processName" : data.processName
+								};
 								$scope.documentModel.docs = data.documents;
 								$scope.participantModel.participants = data.participants;
 								$scope.processModel = data;
@@ -217,42 +251,179 @@ define([],function(){
 					fail =  function(status){
 							console.log("Process Instance retrieval failed.");
 							edata.ui.bCDeferred.resolve();
-					};
-								
+					};		
 					workflowService.getProcessInstance(edata.data.id).then(success,fail);
 				});
 				
-				/*Signal JQuery universe that we need to add a note via REST*/
-				$scope.addNote = function(id,newNote){
-					newNote.processoid=id;
-					$scope.notesModel.addNote($scope,$rootScope,newNote);
-				};
+				/**/
+				$scope.createNote = function(oid,content){
+					var success,fail;
+					success=function(){
+						workflowService.getNotes(oid).then(function(data){
+							$scope.$apply(function(){
+								$scope.notesModel.notes=data.notes;
+							});
+						});
+					};
+					fail = function(){
+						console.log("failed");
+					};
+					workflowService.createNote(oid,content).then(success,fail);
+				}; 
 			},
 			
-			"detailCtrl" : function($scope,$rootScope,utilService,workflowService){
+			"detailCtrl" : function($scope,$rootScope,$filter,$sce,utilService,workflowService){
 				
-				$scope.addNote2 = workflowService.addNote;
 				$scope.notesModel = new notesModel();
 				$scope.activityModel = new worklistItem();
 				$scope.formModel = new mashupModel();
 				$scope.documentModel = new documentModel();
+				$scope.mashupModel = new mashupModel();
 				$scope.baseHref = workflowService.baseHref;
-				$scope.progress = 0;
 				$scope.showMsg = false;
 				$scope.alertMessage = "";
 				$scope.uploadSuccesful = false;
+				$scope.isUploading =false;
+				$scope.formTabTarget = "#formTab";
+				$scope.showMashupIframe=true;
+				$scope.showActivateButton =false;
+				$scope.hotActivityConflict = false;
+				$scope.previousPage="";
+				
+				$scope.isMashupShowable = function(){
+					if(  $rootScope.appData.isActivityHot &&  
+							(  $scope.activityModel.item.oid == $rootScope.appData.hotActivityInstance.oid )
+						){
+						return true;
+					}else{
+						return false;
+					}
+				};
+				
+				$scope.isHotActivityConflict = function(){
+					if($rootScope.appData.isActivityHot && 
+							(  $scope.activityModel.item.oid != $rootScope.appData.hotActivityInstance.oid )
+							){
+						return true;
+					}else{
+						return false;
+					}
+				};
+				
+				$scope.activate = function(activityOid){
+					workflowService.activate(activityOid).then(
+						function(data){
+							
+							var url=data.contexts.externalWebApp["carnot:engine:ui:externalWebApp:uri"] +
+									"?interactionId=" + data.contexts.externalWebApp.interactionId;
+							
+							//Load new data for iframe
+							$scope.$apply(function(){
+								$scope.mashupModel.externalUrl= $sce.trustAsResourceUrl(url);
+								$scope.mashupModel.interactionId=data.contexts.externalWebApp.interactionId;
+							});	
+							
+							$rootScope.$apply(function(){
+								$rootScope.appData.isActivityHot = true;
+								$rootScope.appData.hotActivityInstance = {
+										"oid" : $scope.activityModel.item.oid,
+										"name" : $scope.activityModel.item.activityName
+								};
+							});
+							//Get updates state etc from server...
+							workflowService.getActivityInstance(activityOid).then(
+									function(data){
+										$scope.$apply(function(){
+											$scope.activityModel.item = data;
+											$scope.isMashupShowable();
+											$scope.isHotActivityConflict();
+										});
+									}
+							);
+							//AutoNav to form tab
+							$("[href='#formTab']").addClass("ui-btn-active");
+							$("[href='#formTab']").trigger("click");
+						},
+						
+						function(status){
+							console.log("activation failed");
+						});
+				};
+				
+				/*Helper function to refresh our scoped document collection*/
+				$scope.getDocuments = function(processOid){
+					var success = function(data){
+							$scope.$apply(function(){
+								$scope.documentModel.docs = data.documents;
+							});
+						},
+						fail = function(){
+							console.log("document refresh failed.");
+						};
+						
+					workflowService.getDocuments(processOid).then(success,fail);
+				};
+				
+				/*Reporter object we will tie to our file-upload directive*/
+				$scope.uploadReporter ={
+		          onProgress: function(e){
+		        	console.log("Progress");
+		            console.log(e);
+		          },
+		          onLoad: function(e){
+		        	  $scope.$apply(function(){
+		        		  $scope.isUploading=false;
+		        		  if(e.currentTarget.status==200){
+		        			  $scope.uploadSuccesful=true;
+		        			  $scope.alertMessage="Upload Succesful";
+		        			  $scope.getDocuments($scope.activityModel.item.processInstanceOid);
+		        		  }else{
+		        			  $scope.uploadSuccesful=false;
+		        			  $scope.alertMessage="Upload Failed " + e.currentTarget.statusText ;
+		        		  }
+		        		  $scope.showMsg=true;
+		        	  });
+		          },
+		          onError: function(e){
+		        	  $scope.$apply(function(){
+		        		  $scope.uploadSuccesful=false;
+		        		  $scope.alertMessage="Upload Failed "+ e.currentTarget.statusText ;
+		        	  });
+		          }
+		        };
 				
 				/*Listener for JQuery Mobile Navigation events*/
 				$scope.$on("jqm-navigate",function(e,edata){
-					var success,fail;
 					
+					var success,fail;
+					console.log("jqmn data");
+					console.log(edata);
+					
+					/*filter messages that don't match our scopeID*/
 					if(edata.scopeTarget != $scope.$id){return;}
 					success=function(data){
+							var sortedNotes = $filter("orderBy")(data.processInstance.notes,
+													"timestamp",true),
+								sortedDocs = $filter("orderBy")(data.processInstance.documents,
+													 "lastModifiedTimestamp",true);
 							$scope.$apply(function(){
-								$scope.notesModel.notes = data.processInstance.notes;
+								
+								$scope.notesModel.notes = sortedNotes;
 								$scope.activityModel.item = data;
-								$scope.documentModel.docs = data.processInstance.documents;
+								$scope.documentModel.docs = sortedDocs;
+								$scope.showMashupIframe=false;
+								$scope.hotActivityConflict=false;
+								$scope.previousPage=edata.ui.options.fromPage[0].id;
+								$scope.isMashupShowable();
+								$scope.isHotActivityConflict();
+								
+						
+								
 							});
+							if(edata.data.activeTab){
+								$("[href='#" + edata.data.activeTab + "']").addClass("ui-btn-active");
+								$("[href='#" + edata.data.activeTab + "']").trigger("click");
+							}	
 							edata.ui.bCDeferred.resolve();
 					},
 					fail =  function(status){
@@ -262,69 +433,18 @@ define([],function(){
 								
 					workflowService.getActivityInstance(edata.data.id).then(success,fail);
 				});
-				
-				
-				/**File Handling************/
-				$scope.setFiles = function(element) {
-				    $scope.$apply(function(scope) {
-				      console.log('files:', element.files);
-				      // Turn the FileList object into an Array
-				        $scope.files = [];
-				        for (var i = 0; i < element.files.length; i++) {
-				          $scope.files.push(element.files[i]);
-				        }
-				      scope.progressVisible = false;
-				      });
-				    };
-				    
-			    $scope.uploadFile = function(processOid) {
-			        var fd = new FormData(),
-			        	url="";
-			        
-			        for (var i in $scope.files) {
-			            fd.append("uploadedFile", $scope.files[i]);
-			        }
-			        var xhr = new XMLHttpRequest();
-			        xhr.upload.addEventListener("progress", function(e){
-			        	$scope.$apply(function(){
-			        		$scope.progress = Math.round(e.loaded * 100 / e.total);
-			        	});		        	 
-			        }, false);
-			        xhr.addEventListener("load", function(e){
-			        	$scope.$apply(function(){
-			        		$scope.showMsg=true;
-			        		$scope.alertMessage = "File succesfully uploaded.";
-			        		$scope.isUploading=false;
-			        		$scope.uploadSuccesful=true;
-			        	});
-			        }, false);
-			        xhr.addEventListener("error", function(e){
-			        	$scope.$apply(function(){
-			        		$scope.isUploading=false;
-			        		$scope.showMsg=true;
-			        		$scope.alertMessage = "Error occured uploading file.";
-			        		$scope.uploadSuccesful=false;
-			        	});
-			        }, false);
-			        //xhr.addEventListener("abort", uploadCanceled, false);
-			        url="http://localhost:8080/pepper-test/services/rest/mobile-workflow/process-instances/" +
-			        	processOid +
-			        	"/documents";
-			        
-			        xhr.open("POST", url);
-			        $scope.progressVisible = true;
-			        xhr.send(fd);
-			    };
-				/***************************/
-				
+
 				/*Initialization*/
 				$scope.activeTab='activityTab';
 				
 				$scope.createNote = function(oid,content){
 					var success,fail;
 					success=function(){
-						console.log("Note Succesfully added");
-						$scope.getNotes(oid);
+						workflowService.getNotes(oid).then(function(data){
+							$scope.$apply(function(){
+								$scope.notesModel.notes=data.notes;
+							});
+						});
 					};
 					fail = function(){
 						console.log("failed");
@@ -332,71 +452,48 @@ define([],function(){
 					workflowService.createNote(oid,content).then(success,fail);
 				}; 
 				
-				$scope.getNotes = function(oid){
-					var success = function(data){
-							$scope.$apply(function(){
-								$scope.notesModel.notes=data;
-							});
-						},
-						fail = function(status){
-							console.log("failed");
-						};
-						
-					workflowService.getNotes(oid)
-						.then(success,fail);
-					
-				};
 				
-				/*Signal JQuery universe that we need to add a note via REST*/
-				$scope.addNote = function(id,newNote){
-					newNote.processoid=id;
-					$scope.notesModel.addNote($scope,$rootScope,newNote);
-				};
 				
-				/*Generic trigger handler for anyone who wishes to trigger an event
-				 * to any listeners on $rootScope. Designed for communication with 
-				 * the JQuery universe
-				 * */
-				$scope.trigger= function(eventName,data){
-					console.log("trigger request");
-					console.log(eventName + " , " + data);
-					utils.trigger($rootScope,eventName,data);
-				};
-				
-				/*Signal JQM to perform a manual navigation to a target page,
-				 *passing in deep copies of our local data.*/
+				/*Signal JQM to perform a manual navigation to a target page*/
 				$scope.navigateTo = function(target){
-					utils.navigateTo($rootScope,target,{});
+					utilService.navigateTo($rootScope,target);
 				};
 				
-				/**
-				 * SECTION : EVENT LISTNENERS 
-				 * ----------------------------------------------------------------------
-				 * add handlers to listen to events emitted from rootScope. Events can be from
-				 * both within and outside the angular universe. In the case of 'worklistAdded'
-				 * we are listening for an event triggered externally in the JQUERY universe to
-				 * indicate an AJAX post was succesful.
-				 */
-				$scope.$on("worklistNoteAdded",function(e,data){
-					console.log("worklistNoteAdded event received by Controller...");
-					if(data.processoid==$scope.item.processInstanceOid){
-						console.log("adding data within scope...");
-						/*TODO: this only reflects in our data boundUI if we wrap with $apply which seems
-						 * extremely odd in that we are making our change within Angular. Investigate...*/
-						$scope.$apply(function(){
-							$scope.notesModel.notes=data.notes;
-						});
-					}
-				});
 				
 			},
 			
 			"formCtrl" : function($scope,$rootScope){
 				$scope.test= "Hello From Form Ctrl";
 				$scope.formModel = new mashupModel();
+			},
+			
+			"documentViewerCtrl" : function($scope, $rootScope, $sce, workflowService){
+				$scope.documentViewerModel = new documentViewerModel();
+				
+				$scope.$on("jqm-navigate",function(e,edata){
+					var success,fail;
+					if(edata.scopeTarget != $scope.$id){return;}
+
+					success=function(data){
+							$scope.$apply(function(){
+								$scope.documentViewerModel=data;
+								$scope.documentViewerModel.downloadUrl = workflowService.getDocumentUrl(data.downloadToken);
+							});
+							edata.ui.bCDeferred.resolve();
+					},
+					fail =  function(status){
+							console.log("Document viewer data failed");
+							edata.ui.bCDeferred.resolve();
+					};
+								
+					workflowService.getDocument(edata.data.id,edata.data.processOid)
+						.then(success,fail);
+					
+				});
 			}
 			
 			
 	};
+	
 	return worklistCtrl;
 });

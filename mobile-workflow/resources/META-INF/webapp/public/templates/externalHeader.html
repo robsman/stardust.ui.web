@@ -1,6 +1,14 @@
 <div style="height:40px;" class="ipp-logo-stardust" >
-				<span style="vertical-align:-15px;left:154px;position:relative;">{{title}}</span>
+				<span style="vertical-align:-15px;left:154px;position:relative;">{{headerModel.title}}</span>
 </div>
+
 <a ng-show="appData.isAuthorized" href="#main-panel" 
    class="ui-btn ui-btn-right ui-icon-bars ui-btn-icon-notext ui-corner-all">No text
 </a>
+
+<div ng-show="appData.isActivityHot" class="ng-hide">
+	<a ng-href="#detailPage?id={{appData.hotActivityInstance.oid}}&activeTab=formTab"  class="ipp-minimal jqm-cstm-inlineAlert jqm-cstm-success">
+		Tap to return to {{appData.hotActivityInstance.name}} (#{{appData.hotActivityInstance.oid}})
+		<i class="fa fa-angle-right fa-2x ipp-pull-right ipp-pad-right-2x"></i>
+	</a>
+</div>

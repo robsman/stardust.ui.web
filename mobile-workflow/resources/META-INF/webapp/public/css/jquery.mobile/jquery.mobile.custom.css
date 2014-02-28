@@ -4,6 +4,39 @@
   }
 }
 
+.ipp-header-2col{
+	display:inline-table;
+	width:50%;
+}
+
+.ipp-header-3col{
+	display:inline-table;
+	width:33%;
+}
+
+.ipp-header-4col{
+	display:inline-table;
+	width:25%;
+}
+
+.ipp-header-5col{
+	display:inline-table;
+	width:20%;
+}
+
+.ipp-ux-wrapper{
+    max-width:90%;
+    height:auto;
+    position: relative;
+    display:block;
+    margin:0 auto;
+}
+.ipp-ux-wrapper img{
+    width:100% !important;
+    height:100% !important;
+    display:block;
+}
+
 .external-header{
 	background-image: url('../css-images/spr-main.png');
 	background-repeat:repeat-x;
@@ -84,22 +117,22 @@
 
 a.ipp-minimal:link{
 	color:#FFF !important;
-	text-decoration:none;
+	text-decoration:none !important;
 }
 
 a.ipp-minimal:hover{
 	color:#FFF !important;
-	text-decoration:none;
+	text-decoration:none !important;
 }
 
 a.ipp-minimal:active{
 	color:#FFF !important;
-	text-decoration:none;
+	text-decoration:none !important;
 }
 
 a.ipp-minimal:visited{
 	color:#FFF !important;
-	text-decoration:none;
+	text-decoration:none !important;
 }
 
 .ipp-logo-sungard{
@@ -151,6 +184,24 @@ a.ipp-minimal:visited{
   font-size: 23px;
   direction: ltr;
   cursor: pointer;
+}
+
+.ipp-pull-right{
+	float:right;
+}
+
+.ipp-pad-right-1x{
+	padding-right:0.25em;
+}
+
+.ipp-pad-right-2x{
+	padding-right:0.50em;
+}
+.ipp-pad-right-3x{
+	padding-right:0.75em;
+}
+.ipp-pad-right-4x{
+	padding-right:1em;
 }
 
 .ui-grid-a > .ui-block-a.major { width: 75% }

@@ -1,0 +1,22 @@
+<div ng-style="" style="width:100%;height:30px;color:white;text-shadow:none;padding: 5px 5px 5px 5px"" 
+	 ng-click="showMsg=false" 
+	 ng-class="{'jqm-cstm-success':uploadSuccesful, 'jqm-cstm-warning' : !uploadSuccesful}"
+	 ng-hide="!showMsg">
+	 <span>{{alertMessage}}</span>
+	 <i class="fa fa-2x fa-times" style="float:right;"></i>
+</div>
+<div class="ui-grid-a">
+	<div class="ui-block-a" style="width:80%;">
+		<input type="file" />
+	</div>
+	<div class="ui-block-b" style="width:20%;">
+		<button title="Upload" 
+				ng-click="isUploading=true" 
+				style="height:40px;">
+				
+				<i ng-class="{'fa-upload' : !isUploading, 'fa-spinner' : isUploading, 'fa-spin' : isUploading}"  
+				   class="fa fa-2x" 
+				   style="margin-top:-5px;"></i>
+		</button>
+	</div>
+</div>

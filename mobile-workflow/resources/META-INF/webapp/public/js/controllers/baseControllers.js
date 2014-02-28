@@ -16,6 +16,15 @@ define([],function(){
 		this.partition = part;
 	};
 	
+	var headerModel = function(title){
+		this.title= title || "Process Portal";
+		this.activityInstance= {
+				"oid"  : "",
+				"name" : ""
+			};
+		this.showActivityNavBar =true;
+	};
+	
 	var baseCtrl = {
 			
 			/* Handle login submission, on success load our rootScope level data and 
@@ -47,7 +56,21 @@ define([],function(){
 			
 			/*simple binding for our persistent header*/
 			"headerCtrl" : function($scope,$rootScope){
-				$scope.title = "Process Portal";
+				$scope.headerModel = new headerModel();
+				
+				$scope.$on("activityActivation",function(e){
+					console.log("Activity Activation event received!");
+					$scope.$apply(function(){
+						$scope.headerModel.showActivityNavBar = true;
+					});
+				});
+				
+				$scope.$on("activityCompleted",function(e){
+					console.log("Activity Completed event received!");
+					$scope.$apply(function(){
+						$scope.headerModel.showActivityNavBar = true;
+					});
+				});
 			},
 			
 			/*simple binding for our persistent footer*/

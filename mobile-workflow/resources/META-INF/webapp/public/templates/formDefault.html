@@ -1,0 +1,32 @@
+<div ng-click="activate(activityModel.item.oid);" 
+	 ng-show="activityModel.item.activatable && isHotActivityConflict()==false"  
+	 style="margin-right:0em;" class="ui-btn ui-corner-all ui-btn-inline">
+	  	<i class="fa fa-bolt"></i> Activate
+</div>
+
+
+<div ng-show="activityModel.item.activatable && isHotActivityConflict()==true">
+	<div class="ui-corner-all custom-corners">
+	  <div class="ui-body ui-body-a">
+	    <p>
+		    We could not activate this activity because one is already active.
+		    Do you want to view the active activity?
+	    </p>
+	    <a ng-href="#detailPage?id={{appData.hotActivityInstance.oid}}&activeTab=formTab" " 
+	       class="jqm-cstm-success ipp-minimal ui-btn ui-corner-all ui-btn-inline">
+	  		<i class="fa fa-bolt"></i> View Active Activity
+	  	</a>
+		</div>
+	  </div>
+	</div>
+</div>
+
+
+<div ng-show="!activityModel.item.activatable">
+	<div class="ui-corner-all custom-corners">
+	  <div class="ui-body ui-body-a">
+	    <p>This activity is not activatable.</p>
+	  </div>
+	</div>
+</div>
+
