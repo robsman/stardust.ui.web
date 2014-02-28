@@ -11,18 +11,11 @@
 
 package org.eclipse.stardust.ui.mobile.service;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.*;
+import java.util.*;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.common.Direction;
 import org.eclipse.stardust.common.StringUtils;
@@ -30,42 +23,17 @@ import org.eclipse.stardust.engine.api.dto.*;
 import org.eclipse.stardust.engine.api.model.ApplicationContext;
 import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.ImplementationType;
-import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.query.*;
-import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
-import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
-import org.eclipse.stardust.engine.api.runtime.DeployedModel;
-import org.eclipse.stardust.engine.api.runtime.DmsUtils;
-import org.eclipse.stardust.engine.api.runtime.Document;
-import org.eclipse.stardust.engine.api.runtime.DocumentInfo;
-import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
-import org.eclipse.stardust.engine.api.runtime.Folder;
-import org.eclipse.stardust.engine.api.runtime.HistoricalEvent;
-import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
-import org.eclipse.stardust.engine.api.runtime.QueryService;
-import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
-import org.eclipse.stardust.engine.api.runtime.ServiceFactoryLocator;
-import org.eclipse.stardust.engine.api.runtime.User;
-import org.eclipse.stardust.engine.api.runtime.UserInfo;
-import org.eclipse.stardust.engine.api.runtime.UserService;
-import org.eclipse.stardust.engine.api.runtime.WorkflowService;
+import org.eclipse.stardust.engine.api.runtime.*;
 import org.eclipse.stardust.engine.core.interactions.Interaction;
 import org.eclipse.stardust.engine.core.runtime.beans.removethis.SecurityProperties;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
 import org.eclipse.stardust.ui.mobile.rest.JsonMarshaller;
 import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
-import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
-import org.eclipse.stardust.ui.web.viewscommon.utils.TypedDocumentsUtil;
-import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.*;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.TypedDocument;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 
 public class MobileWorkflowService {
 	private ServiceFactory serviceFactory;
@@ -255,7 +223,7 @@ public class MobileWorkflowService {
 			activityInstanceJson.addProperty("status", activityInstance.getState().getName()); // TODO: i18n
 			
 			activityInstanceJson.addProperty("lastPerformer", lastPerformer);
-			activityInstanceJson.addProperty("assignedTo", ActivityInstanceUtils.getAssignedToLabel(activityInstance));
+			activityInstanceJson.addProperty("assignedTo", "motu" /*ActivityInstanceUtils.getAssignedToLabel(activityInstance)*/); // TODO
 			activityInstanceJson.addProperty("duration", duration);
 			activityInstanceJson.addProperty("activityId", activityInstance
 					.getActivity().getId());
@@ -292,49 +260,12 @@ public class MobileWorkflowService {
 	 * 
 	 * @return
 	 */
-	public JsonObject activateActivity(JsonObject activityInstanceJson) {
-		ActivityInstance activityInstance = getWorkflowService().activate(
-				activityInstanceJson.get("oid").getAsLong());
-		JsonObject activityJson = new JsonObject();
+	public JsonObject activateActivity(long activityInstanceOid) {
+      ActivityInstance activityInstance = getWorkflowService().activate(activityInstanceOid);
 
-		activityInstanceJson.add("activity", activityJson);
+		JsonObject activityJson = getActivityInstance(activityInstanceOid);
 
-		ApplicationContext applicationContext = null;
-		JsonObject applicationContextsJson = new JsonObject();
-
-		activityJson.add("contexts", applicationContextsJson);
-
-		if (activityInstance.getActivity().getImplementationType() == ImplementationType.Manual) {
-			applicationContext = activityInstance.getActivity()
-					.getApplicationContext("default");
-			activityJson.addProperty("implementation", "manual");
-
-			JsonObject applicationContextJson = new JsonObject();
-
-			applicationContextsJson.add("default", applicationContextJson);
-		} else {
-			activityJson.addProperty("implementation", "application");
-
-			JsonObject applicationContextJson = new JsonObject();
-
-			// TODO Handle others
-
-			applicationContextsJson.add("externalWebApp",
-					applicationContextJson);
-
-			applicationContext = activityInstance.getActivity()
-					.getApplicationContext("externalWebApp");
-
-			applicationContextJson
-					.addProperty(
-							"carnot:engine:ui:externalWebApp:uri",
-							(String) applicationContext
-									.getAttribute("carnot:engine:ui:externalWebApp:uri"));
-			applicationContextJson.addProperty("interactionId",
-					Interaction.getInteractionId(activityInstance));
-		}
-
-		return activityInstanceJson;
+		return activityJson;
 	}
 
 	/**
@@ -404,7 +335,7 @@ public class MobileWorkflowService {
       activityInstanceJson.addProperty("status", activityInstance.getState().getName()); // TODO: i18n
       
       activityInstanceJson.addProperty("lastPerformer", lastPerformer);
-      activityInstanceJson.addProperty("assignedTo", ActivityInstanceUtils.getAssignedToLabel(activityInstance));
+      activityInstanceJson.addProperty("assignedTo", "motu" /*ActivityInstanceUtils.getAssignedToLabel(activityInstance)*/);
       activityInstanceJson.addProperty("duration", duration);
       activityInstanceJson.addProperty("activityId", activityInstance
             .getActivity().getId());
@@ -420,6 +351,8 @@ public class MobileWorkflowService {
             .getStartTime().getTime());
       activityInstanceJson.addProperty("lastModificationTime",
             activityInstance.getLastModificationTime().getTime());
+      activityInstanceJson.addProperty("activatable",
+            ActivityInstanceUtils.isActivatable(activityInstance) && SpiUtils.getInteractionController(activityInstance.getActivity()) == SpiUtils.DEFAULT_EXTERNAL_WEB_APP_CONTROLLER);
 
       /*JsonObject descriptorsJson = new JsonObject();
 
@@ -433,6 +366,43 @@ public class MobileWorkflowService {
                      .getId()));
       }*/
       
+      if (activityInstance.getState().getValue() == ActivityInstanceState.APPLICATION) {
+      
+      ApplicationContext applicationContext = null;
+      JsonObject applicationContextsJson = new JsonObject();
+
+      activityInstanceJson.add("contexts", applicationContextsJson);
+
+      if (activityInstance.getActivity().getImplementationType() == ImplementationType.Manual) {
+         applicationContext = activityInstance.getActivity()
+               .getApplicationContext("default");
+         activityInstanceJson.addProperty("implementation", "manual");
+
+         JsonObject applicationContextJson = new JsonObject();
+
+         applicationContextsJson.add("default", applicationContextJson);
+      } else {
+         activityInstanceJson.addProperty("implementation", "application");
+
+         JsonObject applicationContextJson = new JsonObject();
+
+         // TODO Handle others
+
+         applicationContextsJson.add("externalWebApp",
+               applicationContextJson);
+
+         applicationContext = activityInstance.getActivity()
+               .getApplicationContext("externalWebApp");
+
+         applicationContextJson
+               .addProperty(
+                     "carnot:engine:ui:externalWebApp:uri",
+                     (String) applicationContext
+                           .getAttribute("carnot:engine:ui:externalWebApp:uri"));
+         applicationContextJson.addProperty("interactionId",
+               Interaction.getInteractionId(activityInstance));
+      }
+      }
       
       JsonObject processInstanceJson = new JsonObject();
       ProcessInstanceQuery processInstanceQuery = ProcessInstanceQuery.findAll();
@@ -499,7 +469,29 @@ public class MobileWorkflowService {
       return activityInstanceJson;
    }
    
-	/**
+   public JsonObject startProcessInstance(JsonObject request)
+   {
+      ProcessInstance processInstance = getWorkflowService().startProcess(request.get("processDefinitionId").getAsString(), null, true);
+      
+      JsonObject processInstanceJson = getProcessInstance(processInstance.getOID());
+      
+      if (!(ProcessInstanceUtils.isTransientProcess(processInstance) || ProcessInstanceUtils
+            .isCompletedProcess(processInstance)))
+      {
+         ActivityInstance nextActivityInstance = getWorkflowService()
+               .activateNextActivityInstanceForProcessInstance(processInstance.getOID());
+         if (nextActivityInstance != null)
+         {
+            JsonObject activityInstanceJson = getActivityInstance(nextActivityInstance.getOID());
+            
+            processInstanceJson.add("activatedActivityInstance", activityInstanceJson);
+         }
+      }
+      
+      return processInstanceJson;
+   }
+
+   /**
 	 * 
 	 * @return
 	 */
@@ -711,7 +703,7 @@ public class MobileWorkflowService {
     * 
     * @return
     */
-   public JsonObject getDocuments(long processInstanceOid)
+   public JsonObject getProcessInstanceDocuments(long processInstanceOid)
    {
       ProcessInstance processInstance = getWorkflowService().getProcessInstance(
             processInstanceOid);
@@ -731,17 +723,34 @@ public class MobileWorkflowService {
       return resultJson;
    }
 
+   public JsonObject getProcessInstanceDocument(long processInstanceOid, String documentId)
+   {
+      Document document = getDocumentManagementService().getDocument(documentId);
+      
+      JsonObject documentJson = marshalDocument(document);
+      
+      return documentJson;
+   }
+   
 	/**
 	 * 
 	 * @return
 	 */
-	public JsonObject getFolders(String folderId) {
+	public JsonObject getRepositoryFolder(String folderId) {
 		JsonObject folderJson = new JsonObject();
+		JsonObject childrenJson = new JsonObject();
 		JsonArray subFoldersJson = new JsonArray();
+      JsonArray documentsJson = new JsonArray();
 
-		folderJson.add("subFolders", subFoldersJson);
+      childrenJson.add("folders", subFoldersJson);
+      childrenJson.add("documents", documentsJson);
+		folderJson.add("children", childrenJson);
 
-		if (folderId == null || folderId.equals("null")) {
+		if (folderId == null || folderId.equals("") || folderId.equals("root")) {
+	      folderJson.addProperty("id", "root");
+	      folderJson.addProperty("name", "Root");
+	      folderJson.addProperty("path", "/");
+	      
 			JsonObject subFolderJson = new JsonObject();
 
 			subFoldersJson.add(subFolderJson);
@@ -750,11 +759,11 @@ public class MobileWorkflowService {
 			subFolderJson.addProperty("path",
 					publicDocumentsRootFolder.getPath());
 
-			getFolderContent(subFolderJson, publicDocumentsRootFolder);
+//			getFolderContent(subFolderJson, publicDocumentsRootFolder);
 
 			// Overwrite name
 			
-			subFolderJson.addProperty("name", "Public Documents");
+			subFolderJson.addProperty("name", "Common Documents");
 
 			if (userDocumentsRootFolder != null) {
 				subFolderJson = new JsonObject();
@@ -766,11 +775,11 @@ public class MobileWorkflowService {
 				subFolderJson.addProperty("path",
 						userDocumentsRootFolder.getPath());
 
-				getFolderContent(subFolderJson, userDocumentsRootFolder);
+//				getFolderContent(subFolderJson, userDocumentsRootFolder);
 
 				// Overwrite name 
 				
-				subFolderJson.addProperty("name", "Personal Documents");
+				subFolderJson.addProperty("name", "My Documents");
 			}
 		} else {
 			getFolderContent(folderJson, getDocumentManagementService()
@@ -793,12 +802,14 @@ public class MobileWorkflowService {
 		
 		JsonArray subFoldersJson = null;
 
-		if (!folderJson.has("subFolders")) {
+		/*if (!folderJson.has("subFolders")) {
 			folderJson.add("subFolders", subFoldersJson = new JsonArray());
 		} else {
 			subFoldersJson = folderJson.get("subFolders").getAsJsonArray();
-		}
+		}*/
 
+      subFoldersJson = folderJson.get("children").getAsJsonObject().get("folders").getAsJsonArray();
+		
 		for (Folder subFolder : (List<Folder>) folder.getFolders()) {
 			JsonObject subFolderJson = new JsonObject();
 
@@ -811,33 +822,17 @@ public class MobileWorkflowService {
 
 		JsonArray documentsJson = null;
 
-		if (!folderJson.has("documents")) {
+		/*if (!folderJson.has("documents")) {
 			folderJson.add("documents", documentsJson = new JsonArray());
 		} else {
 			documentsJson = folderJson.get("documents").getAsJsonArray();
-		}
+		}*/
+		documentsJson = folderJson.get("children").getAsJsonObject().get("documents").getAsJsonArray();
 
 		for (Document document : (List<Document>) folder.getDocuments()) {
-			JsonObject documentJson = new JsonObject();
+			JsonObject documentJson = marshalDocument(document);
 
 			documentsJson.add(documentJson);
-
-			documentJson.addProperty("id", document.getId());
-			documentJson.addProperty("name", document.getName());
-			documentJson.addProperty("contentType", document.getContentType());
-			documentJson.addProperty("revisionId", document.getRevisionId());
-			documentJson
-					.addProperty("revisionName", document.getRevisionName());
-			documentJson.addProperty("revisionComment",
-					document.getRevisionComment());
-			documentJson.addProperty("owner", document.getOwner());
-			documentJson.addProperty("path", document.getPath());
-			documentJson.addProperty("downloadToken",
-					getDocumentManagementService()
-							.requestDocumentContentDownload(document.getId()));
-			documentJson.addProperty("content",
-					new String(getDocumentManagementService()
-							.retrieveDocumentContent(document.getId())));
 		}
 
 		return folderJson;
@@ -917,8 +912,12 @@ public class MobileWorkflowService {
 		documentJson.addProperty("id", document.getId());
 		documentJson.addProperty("name", document.getName());
 		documentJson.addProperty("contentType", document.getContentType());
+      documentJson.addProperty("createdTimestamp", document.getDateCreated().getTime());
 		documentJson.addProperty("lastModifiedTimestamp", document.getDateLastModified().getTime());
 		documentJson.addProperty("size", document.getSize());
+      documentJson.addProperty("downloadToken",
+            getDocumentManagementService()
+                  .requestDocumentContentDownload(document.getId()));
 
 		return documentJson;
 	}
@@ -1036,5 +1035,14 @@ public class MobileWorkflowService {
       {
          return folder;
       }
+   }
+
+   public JsonObject getRepositoryDocument(String folderId, String documentId)
+   {
+      Document document = getDocumentManagementService().getDocument(documentId);
+      
+      JsonObject documentJson = marshalDocument(document);
+      
+      return documentJson;
    }
 }

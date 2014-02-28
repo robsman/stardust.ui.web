@@ -9,16 +9,8 @@ import java.util.List;
 import javax.activation.DataHandler;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.*;
+import javax.ws.rs.core.*;
 
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.eclipse.stardust.common.config.Parameters;
@@ -126,7 +118,7 @@ public class MobileWorkflowResource {
 
    @GET
    @Produces(MediaType.APPLICATION_JSON)
-   @Path("activity-instance/{oid}")
+   @Path("activity-instances/{oid: \\d+}")
    public Response getActivityInstance(@PathParam("oid") String activityInstanceOid) {
       try {
          return Response.ok(
@@ -141,16 +133,13 @@ public class MobileWorkflowResource {
    }
 
    
-	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
+	@PUT
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("activity/activate")
-	public Response activateActivity(String postedData) {
+	@Path("activity-instances/{oid: \\d+}/activation")
+	public Response activateActivity(@PathParam("oid") String activityInstanceOid) {
 		try {
-			JsonObject json = jsonIo.readJsonObject(postedData);
-
 			return Response.ok(
-					getMobileWorkflowService().activateActivity(json)
+					getMobileWorkflowService().activateActivity(Long.parseLong(activityInstanceOid))
 							.toString(), MediaType.APPLICATION_JSON_TYPE)
 					.build();
 		} catch (Exception e) {
@@ -160,9 +149,27 @@ public class MobileWorkflowResource {
 		}
 	}
 
+   @POST
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("process-instances")
+   public Response startProcessInstance(String postedData) {
+      try {
+         JsonObject json = jsonIo.readJsonObject(postedData);
+
+         return Response.ok(
+               getMobileWorkflowService().startProcessInstance(json).toString(),
+               MediaType.APPLICATION_JSON_TYPE).build();
+      } catch (Exception e) {
+         e.printStackTrace();
+
+         throw new RuntimeException(e);
+      }
+   }
+
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("process-instances/{oid}")
+	@Path("process-instances/{oid: \\d+}")
 	public Response getProcessInstance(@PathParam("oid") String processOid) {
 		try {
 			return Response.ok(
@@ -178,7 +185,7 @@ public class MobileWorkflowResource {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("process-instances/{oid}/notes")
+	@Path("process-instances/{oid: \\d+}/notes")
 	public Response getNotes(@PathParam("oid") String processOid) {
 		try {
 			return Response.ok(
@@ -195,7 +202,7 @@ public class MobileWorkflowResource {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("process-instances/{oid}/notes/create")
+	@Path("process-instances/{oid: \\d+}/notes/create")
 	public Response createNote(String postedData) {
 		try {
 			JsonObject json = jsonIo.readJsonObject(postedData);
@@ -212,11 +219,11 @@ public class MobileWorkflowResource {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("process-instances/{oid}/documents")
-	public Response getDocuments(@PathParam("oid") String processOid) {
+	@Path("process-instances/{oid: \\d+}/documents")
+	public Response getProcessDocuments(@PathParam("oid") String processOid) {
 		try {
 			return Response.ok(
-					getMobileWorkflowService().getDocuments(
+					getMobileWorkflowService().getProcessInstanceDocuments(
 							Long.parseLong(processOid)).toString(),
 					MediaType.APPLICATION_JSON_TYPE).build();
 		} catch (Exception e) {
@@ -227,7 +234,7 @@ public class MobileWorkflowResource {
 	}
 
    @POST
-   @Path("process-instances/{oid}/documents")
+   @Path("process-instances/{oid: \\d+}/documents")
    @Consumes(MediaType.MULTIPART_FORM_DATA)
    @Produces(MediaType.APPLICATION_JSON)
    public Response uploadFile(@PathParam("oid")
@@ -287,6 +294,22 @@ public class MobileWorkflowResource {
       }
    }
 
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("process-instances/{oid: \\d+}/documents/process-attachments/{documentId}")
+   public Response getDocument(@PathParam("oid") String processOid, @PathParam("documentId") String documentId) {
+      try {
+         return Response.ok(
+               getMobileWorkflowService().getProcessInstanceDocument(
+                     Long.parseLong(processOid), documentId).toString(),
+               MediaType.APPLICATION_JSON_TYPE).build();
+      } catch (Exception e) {
+         e.printStackTrace();
+
+         throw new RuntimeException(e);
+      }
+   }
+
    /**
     * @param header
     * @return
@@ -331,7 +354,7 @@ public class MobileWorkflowResource {
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
-   @Path("activity-instances/{oid}/complete")
+   @Path("activity-instances/{oid: \\d+}/complete")
    public Response completeActivity(String postedData)
    {
       try
@@ -354,11 +377,11 @@ public class MobileWorkflowResource {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("folders/{id}")
-	public Response getFolders(@PathParam("id") String folderId) {
+	@Path("folders/{folderId}")
+	public Response getRepositoryFolder(@PathParam("folderId") String folderId) {
 		try {
 			return Response.ok(
-					getMobileWorkflowService().getFolders(folderId).toString(),
+					getMobileWorkflowService().getRepositoryFolder(folderId).toString(),
 					MediaType.APPLICATION_JSON_TYPE).build();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -366,4 +389,19 @@ public class MobileWorkflowResource {
 			throw new RuntimeException(e);
 		}
 	}
+
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("folders/{folderId}/documents/{documentId}")
+   public Response getRepositoryDocument(@PathParam("folderId") String folderId, @PathParam("documentId") String documentId) {
+      try {
+         return Response.ok(
+               getMobileWorkflowService().getRepositoryDocument(folderId, documentId).toString(),
+               MediaType.APPLICATION_JSON_TYPE).build();
+      } catch (Exception e) {
+         e.printStackTrace();
+
+         throw new RuntimeException(e);
+      }
+   }
 }
