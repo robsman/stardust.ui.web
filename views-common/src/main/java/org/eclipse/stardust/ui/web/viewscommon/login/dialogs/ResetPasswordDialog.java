@@ -80,7 +80,7 @@ public class ResetPasswordDialog extends PopupDialog
          }
 
          trace.info("About to call reset pwd for " + account + ", props: " + loginProperties);
-         sessionCtx.getServiceFactory().getUserService().resetPassword(account, loginProperties);
+         sessionCtx.getServiceFactory().getUserService().resetPassword(account, loginProperties, null);
 
          if (trace.isDebugEnabled())
          {
