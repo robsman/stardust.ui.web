@@ -97,6 +97,53 @@ define(["angularjs"],function(angular){
 				return deferred.promise;
 			},
 			
+			"getRepositoryRoot" : function(){
+				var deferred = $q.defer();
+				
+				$http({
+				    url: baseServiceUrl + "/folders/root",
+				    method: "GET"
+				}).success(function(data, status, headers, config) {
+					deferred.resolve(data);
+				}).error(function(data, status, headers, config) {
+					deferred.reject(status);
+				});
+				return deferred.promise;
+			},
+			
+			"getRepositoryFolder" : function(folderUid){
+				var deferred = $q.defer(),
+					url = "/folders/";
+				
+				if(folderUid){
+					url=url + folderUid;
+				}
+				
+				$http({
+				    url: baseServiceUrl + url,
+				    method: "GET"
+				}).success(function(data, status, headers, config) {
+					deferred.resolve(data);
+				}).error(function(data, status, headers, config) {
+					deferred.reject(status);
+				});
+				return deferred.promise;
+			},
+			
+			"getRepositoryDocument" : function(folderUid,documentUid){
+				var deferred = $q.defer();
+				
+				$http({
+				    url: baseServiceUrl + "/folders/" + folderUid + "/documents/" + documentUid,
+				    method: "GET"
+				}).success(function(data, status, headers, config) {
+					deferred.resolve(data);
+				}).error(function(data, status, headers, config) {
+					deferred.reject(status);
+				});
+				return deferred.promise;
+			},
+			
 			"getWorklistCount" : function(){
 				var deferred = $q.defer();
 				
@@ -154,7 +201,6 @@ define(["angularjs"],function(angular){
 			},
 			
 			"getDocumentUrl" : function(downloadToken){
-				//http://localhost:8080/pepper-test/dms-content/ZGwvMS8xMzkzNTMzMzE3NjcxL3tqY3JVdWlkfWM3MmU2ZTRlLTYzZTctNGY4Ni04ZmVhLWYwZDI2NjgzMTRkNA== 
 				var docUrl = baseUrl + "/dms-content/" + downloadToken;
 				return docUrl;
 			},
@@ -187,6 +233,319 @@ define(["angularjs"],function(angular){
 				}).error(function(data, status, headers, config) {
 					deferred.reject(status);
 				});
+				return deferred.promise;
+			},
+			
+			"getProcessHistory" : function(){
+				var deferred = $q.defer();
+				
+				var data={ "parentProcessInstances": [
+						                             {
+						                               "oid": 1,
+						                               "processId": "Process 1",
+						                               "processName": "Process 1",
+						                               "startTimestamp": 1391720570809,
+						                               "state": "Active",
+						                               "priority": 0,
+						                               "startingUser": {
+						                                 "id": "motu",
+						                                 "firstName": "Master",
+						                                 "lastName": "Of the Universe",
+						                                 "name": "Master",
+						                                 "eMail": null,
+						                                 "description": null
+						                               },
+						                               "descriptors": {
+						                                 "PolicyHolderFirstName": {
+						                                   "id": "PolicyHolderFirstName",
+						                                   "name": "PolicyHolderFirstName",
+						                                   "value": "John"
+						                                 },
+						                                 "PolicyNumber": {
+						                                   "id": "PolicyNumber",
+						                                   "name": "PolicyNumber",
+						                                   "value": "123"
+						                                 },
+						                                 "PolicyHolderLastName": {
+						                                   "id": "PolicyHolderLastName",
+						                                   "name": "PolicyHolderLastName",
+						                                   "value": "Doe"
+						                                 }
+						                               }
+						                             },
+						                             {
+						                               "oid": 2,
+						                               "processId": "Process 2",
+						                               "processName": "Process 2",
+						                               "startTimestamp": 1391720570809,
+						                               "state": "Active",
+						                               "priority": 0,
+						                               "startingUser": {
+						                                 "id": "motu",
+						                                 "firstName": "Master",
+						                                 "lastName": "Of the Universe",
+						                                 "name": "Master",
+						                                 "eMail": null,
+						                                 "description": null
+						                               },
+						                               "descriptors": {
+						                                 "PolicyHolderFirstName": {
+						                                   "id": "PolicyHolderFirstName",
+						                                   "name": "PolicyHolderFirstName",
+						                                   "value": "John"
+						                                 },
+						                                 "PolicyNumber": {
+						                                   "id": "PolicyNumber",
+						                                   "name": "PolicyNumber",
+						                                   "value": "123"
+						                                 },
+						                                 "PolicyHolderLastName": {
+						                                   "id": "PolicyHolderLastName",
+						                                   "name": "PolicyHolderLastName",
+						                                   "value": "Doe"
+						                                 }
+						                               }
+						                             }
+						                           ],
+						                           "selectedProcessInstance": {
+						                             "oid": 3,
+						                             "processId": "Process 3",
+						                             "processName": "Process 3",
+						                             "startTimestamp": 1391720570809,
+						                             "state": "Active",
+						                             "priority": 0,
+						                             "startingUser": {
+						                               "id": "motu",
+						                               "firstName": "Master",
+						                               "lastName": "Of the Universe",
+						                               "name": "Master",
+						                               "eMail": null,
+						                               "description": null
+						                             },
+						                             "descriptors": {
+						                               "PolicyHolderFirstName": {
+						                                 "id": "PolicyHolderFirstName",
+						                                 "name": "PolicyHolderFirstName",
+						                                 "value": "John"
+						                               },
+						                               "PolicyNumber": {
+						                                 "id": "PolicyNumber",
+						                                 "name": "PolicyNumber",
+						                                 "value": "123"
+						                               },
+						                               "PolicyHolderLastName": {
+						                                 "id": "PolicyHolderLastName",
+						                                 "name": "PolicyHolderLastName",
+						                                 "value": "Doe"
+						                               }
+						                             }
+						                           },
+						                           "activityInstances": [
+						                             {
+						                               "oid": 140,
+						                               "criticality": 0.3300052739236111,
+						                               "status": "Suspended",
+						                               "lastPerformer": null,
+						                               "assignedTo": "motu",
+						                               "duration": 612785760,
+						                               "activityId": "UIMashup",
+						                               "activityName": "UI Mashup",
+						                               "processId": "AutoAccident",
+						                               "processName": "AutoAccident",
+						                               "processInstanceOid": 13,
+						                               "startTime": 1393434327995,
+						                               "lastModificationTime": 1393434402012,
+						                               "activatable": true,
+						                               "contexts": {
+						                                 "externalWebApp": {
+						                                   "carnot:engine:ui:externalWebApp:uri": "http://localhost:8080/pepper-test/plugins/mobile-workflow/public/mashupapp/mashup.html",
+						                                   "interactionId": "MTR8MTM5MzQzNDQwMjAxMg=="
+						                                 }
+						                               },
+						                               "implementation": "application",
+						                               "processInstance": {
+						                                 "descriptors": {
+						                                   "PolicyNumber": {
+						                                     "id": "PolicyNumber",
+						                                     "name": "PolicyNumber",
+						                                     "value": "333"
+						                                   },
+						                                   "FirstName": {
+						                                     "id": "FirstName",
+						                                     "name": "FirstName",
+						                                     "value": "Jane"
+						                                   },
+						                                   "LastName": {
+						                                     "id": "LastName",
+						                                     "name": "LastName",
+						                                     "value": "Doe"
+						                                   }
+						                                 },
+						                                 "documents": [
+						                                   {
+						                                     "id": "{jcrUuid}dfe74589-3bea-4a86-97cc-a14ad87db8e4",
+						                                     "name": "7-Eleven.jpg",
+						                                     "contentType": "application/octet-stream",
+						                                     "createdTimestamp": 1393625898000,
+						                                     "lastModifiedTimestamp": 1393625898000,
+						                                     "size": 7208,
+						                                     "downloadToken": "ZGwvMS8xMzk0MDQ3MTE0NjI1L3tqY3JVdWlkfWRmZTc0NTg5LTNiZWEtNGE4Ni05N2NjLWExNGFkODdkYjhlNA=="
+						                                   }
+						                                 ],
+						                                 "notes": [
+						                                   {
+						                                     "content": "aasas",
+						                                     "timestamp": 1393625913736,
+						                                     "user": {
+						                                       "id": "motu",
+						                                       "firstName": "Master",
+						                                       "lastName": "Of the Universe",
+						                                       "name": "Master",
+						                                       "eMail": null,
+						                                       "description": null
+						                                     }
+						                                   }
+						                                 ]
+						                               }
+						                             },
+						                             {
+						                               "oid": 141,
+						                               "criticality": 0.3300052739236111,
+						                               "status": "Application",
+						                               "lastPerformer": null,
+						                               "assignedTo": "motu",
+						                               "duration": 612785760,
+						                               "activityId": "UIMashup",
+						                               "activityName": "UI Mashup",
+						                               "processId": "AutoAccident",
+						                               "processName": "AutoAccident",
+						                               "processInstanceOid": 13,
+						                               "startTime": 1393434327995,
+						                               "lastModificationTime": 1393434402012,
+						                               "activatable": true,
+						                               "contexts": {
+						                                 "externalWebApp": {
+						                                   "carnot:engine:ui:externalWebApp:uri": "http://localhost:8080/pepper-test/plugins/mobile-workflow/public/mashupapp/mashup.html",
+						                                   "interactionId": "MTR8MTM5MzQzNDQwMjAxMg=="
+						                                 }
+						                               },
+						                               "implementation": "application",
+						                               "processInstance": {
+						                                 "descriptors": {
+						                                   "PolicyNumber": {
+						                                     "id": "PolicyNumber",
+						                                     "name": "PolicyNumber",
+						                                     "value": "333"
+						                                   },
+						                                   "FirstName": {
+						                                     "id": "FirstName",
+						                                     "name": "FirstName",
+						                                     "value": "Jane"
+						                                   },
+						                                   "LastName": {
+						                                     "id": "LastName",
+						                                     "name": "LastName",
+						                                     "value": "Doe"
+						                                   }
+						                                 },
+						                                 "documents": [
+						                                   {
+						                                     "id": "{jcrUuid}dfe74589-3bea-4a86-97cc-a14ad87db8e4",
+						                                     "name": "7-Eleven.jpg",
+						                                     "contentType": "application/octet-stream",
+						                                     "createdTimestamp": 1393625898000,
+						                                     "lastModifiedTimestamp": 1393625898000,
+						                                     "size": 7208,
+						                                     "downloadToken": "ZGwvMS8xMzk0MDQ3MTE0NjI1L3tqY3JVdWlkfWRmZTc0NTg5LTNiZWEtNGE4Ni05N2NjLWExNGFkODdkYjhlNA=="
+						                                   }
+						                                 ],
+						                                 "notes": [
+						                                   {
+						                                     "content": "aasas",
+						                                     "timestamp": 1393625913736,
+						                                     "user": {
+						                                       "id": "motu",
+						                                       "firstName": "Master",
+						                                       "lastName": "Of the Universe",
+						                                       "name": "Master",
+						                                       "eMail": null,
+						                                       "description": null
+						                                     }
+						                                   }
+						                                 ]
+						                               }
+						                             },
+						                             {
+						                               "oid": 142,
+						                               "criticality": 0.3300052739236111,
+						                               "status": "Application",
+						                               "lastPerformer": null,
+						                               "assignedTo": "motu",
+						                               "duration": 612785760,
+						                               "activityId": "UIMashup",
+						                               "activityName": "UI Mashup",
+						                               "processId": "AutoAccident",
+						                               "processName": "AutoAccident",
+						                               "processInstanceOid": 13,
+						                               "startTime": 1393434327995,
+						                               "lastModificationTime": 1393434402012,
+						                               "activatable": true,
+						                               "contexts": {
+						                                 "externalWebApp": {
+						                                   "carnot:engine:ui:externalWebApp:uri": "http://localhost:8080/pepper-test/plugins/mobile-workflow/public/mashupapp/mashup.html",
+						                                   "interactionId": "MTR8MTM5MzQzNDQwMjAxMg=="
+						                                 }
+						                               },
+						                               "implementation": "application",
+						                               "processInstance": {
+						                                 "descriptors": {
+						                                   "PolicyNumber": {
+						                                     "id": "PolicyNumber",
+						                                     "name": "PolicyNumber",
+						                                     "value": "333"
+						                                   },
+						                                   "FirstName": {
+						                                     "id": "FirstName",
+						                                     "name": "FirstName",
+						                                     "value": "Jane"
+						                                   },
+						                                   "LastName": {
+						                                     "id": "LastName",
+						                                     "name": "LastName",
+						                                     "value": "Doe"
+						                                   }
+						                                 },
+						                                 "documents": [
+						                                   {
+						                                     "id": "{jcrUuid}dfe74589-3bea-4a86-97cc-a14ad87db8e4",
+						                                     "name": "7-Eleven.jpg",
+						                                     "contentType": "application/octet-stream",
+						                                     "createdTimestamp": 1393625898000,
+						                                     "lastModifiedTimestamp": 1393625898000,
+						                                     "size": 7208,
+						                                     "downloadToken": "ZGwvMS8xMzk0MDQ3MTE0NjI1L3tqY3JVdWlkfWRmZTc0NTg5LTNiZWEtNGE4Ni05N2NjLWExNGFkODdkYjhlNA=="
+						                                   }
+						                                 ],
+						                                 "notes": [
+						                                   {
+						                                     "content": "aasas",
+						                                     "timestamp": 1393625913736,
+						                                     "user": {
+						                                       "id": "motu",
+						                                       "firstName": "Master",
+						                                       "lastName": "Of the Universe",
+						                                       "name": "Master",
+						                                       "eMail": null,
+						                                       "description": null
+						                                     }
+						                                   }
+						                                 ]
+						                               }
+						                             }
+						                           ]
+						                         };
+				
+				deferred.resolve(data);
 				return deferred.promise;
 			},
 			

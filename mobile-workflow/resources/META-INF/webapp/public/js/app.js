@@ -28,18 +28,21 @@ define(function(require){
 	app.controller( "processCtrl",   worklistControllers.processCtrl);
 	app.controller( "mainPageCtrl",  worklistControllers.mainPageCtrl);
 	app.controller( "documentViewerCtrl" ,worklistControllers.documentViewerCtrl);
+	app.controller( "repositoryRootCtrl" ,worklistControllers.repositoryRootCtrl);
 	app.filter( "humaneDate",        baseFilters.humaneDate);
 	app.filter( "serializeObject",   baseFilters.serializeObject);
 	app.filter( "criticality",       baseFilters.criticality);
 	app.filter( "absoluteTime",      baseFilters.absoluteTime);
 	app.directive( "jqmTemplate",    jqmDirectives.jqmTemplate);
+	app.directive("jqmPopup",        jqmDirectives.jqmPopup);
 	app.directive( "testTemplate",   jqmDirectives.testTemplate);
 	app.directive( "fileUpload",   	 fileDirectives.fileUpload);
 	app.directive( "imageViewer",    docViewDirectives.imageViewer);
+	app.directive( "jqSmartZoom",    	 docViewDirectives.jqSmartZoom);
 	app.factory("utilService",utilService);
 	app.factory("workflowService",angWorkflow);
 	
-	/*Initial setup TODO:- consider config, not sure if we can access $rootScope etc though*/
+	/*Initial setup TODO:-*/
 	app.run(function($rootScope,workflowService){
 		$rootScope.appData={
 				"isAuthorized" : false,
