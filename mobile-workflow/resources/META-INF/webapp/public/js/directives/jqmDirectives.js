@@ -8,7 +8,94 @@ define([],function(){
 		        templateUrl: "templates/test.html"
 		    };
 	    },
-		    
+	  
+	  "jqmPopup" : function(){
+		  
+		  /*Linking function, 
+		   * 1. Assign our observers to our data attributes,
+		   * 2. Convert our element into a Jquery Mobile popup*/
+		  var link=function(scope, element, attrs){
+              console.log("JQM attrs");
+              console.log(attrs);
+	          var options={
+	 					  "corners" : attrs.jqmCorners || true,
+	 					  "disabled" : attrs.jqmDisabled || false,
+	 					  "dismissible" : attrs.jqmDismissible || false,
+	 					  "history" : attrs.jqmHistory || false,
+	 					  "overlayTheme" : attrs.jqmOverlayTheme || "b",
+	 					  "positionTo" : attrs.jqmPositionTo || "origin",
+	 					  "shadow" : attrs.jqmShadow || false,
+	 					  "theme" : attrs.jqmTheme || "a",
+	 					  "tolerance" : attrs.jqmTolerance || "0,0",
+	 					  "transition" : attrs.jqmTransition || "pop"
+	 					  
+	 			  },
+	 			  $popup=$(element).popup(options),
+			      observerFunc=function(prop,val){
+	        	  		console.log("jqmpopup observer...");
+	        	  		console.log(prop + "  :  " + val);
+	        	  		$popup.popup( "option", prop,val );
+			  	  };
+ 
+             /*Observe our options*/
+             attrs.$observe("jqmCorners",function(val){
+               observerFunc("corners",val);
+             });
+             
+             attrs.$observe("jqmDisabled",function(val){
+               observerFunc("disabled",val);
+             });
+             
+             attrs.$observe("jqmDismissible",function(val){
+               observerFunc("dismissible",val);
+             });
+             
+             attrs.$observe("jqmHistory",function(val){
+               observerFunc("history",val);
+             });
+             
+             attrs.$observe("jqmOverlayTheme",function(val){
+               observerFunc("overlayTheme",val);
+             });
+             
+             attrs.$observe("jqmPositionTo",function(val){
+               observerFunc("positionTo",val);
+             });
+             
+             attrs.$observe("jqmShadow",function(val){
+               observerFunc("shadow",val);
+             });
+             
+             attrs.$observe("jqmTheme",function(val){
+               observerFunc("theme",val);
+             });
+             
+             attrs.$observe("jqmTolerance",function(val){
+               observerFunc("tolerance",val);
+             });
+             
+             attrs.$observe("jqmTransition",function(val){
+               observerFunc("transition",val);
+             });
+             
+             /*Observe our data attribute which maps to our open/close method call*/
+		     attrs.$observe("jqmOpen",function(val){
+		       if(val=="true"){
+		         $popup.popup("open");
+		       }else{
+		         $popup.popup("close");
+		       }
+		     });
+		  };/*Link Function Ends*/
+		  
+		  return {
+              restrict: 'EA',
+              scope:true, /*Complete isolate scope*/
+              link: {post:link}
+          };
+		  
+	  },
+	  
 	  "jqmTemplate" : function () {
 		    var link=function(scope, element, attrs){
 		    	console.log("linking function...");

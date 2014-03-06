@@ -16,7 +16,7 @@
 
 <ul data-role="listview">
 	<li ng-repeat="process in startableProcessModel.processes">
-		<a ng-click="startProcess(process.id)" >
+		<a ng-click="uiModel.showPopup=false;startProcess(process.id)" >
 			<h3>{{process.name}}</h3>
 			<p>
 				<span>{{process.description}}</span>
@@ -24,6 +24,29 @@
 		</a>
 	</li>
 </ul>
+
+<div data-jqm-popup 
+     data-jqm-open={{uiModel.showPopup}}
+	 id="activateInstance_{{$id}}" 
+	 data-jqm-overlay-theme="a" 
+	 data-jqm-theme="a" 
+	 style="max-width:400px;">
+	 
+    <div role="main" data-theme="a" class="ui-content">
+        <h4 class="ui-title">{{uiModel.popupMessage}}</h4>
+    	<p>What do you want to do?</p>
+        <a ng-show="uiModel.showHotNavBtn" ng-href="#detailPage?id={{appData.hotActivityInstance.oid}}&activeTab=formTab" 
+           class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-a" >
+		   Return to the Active Activity</a>
+        <a ng-show="uiModel.showProcessDetailsBtn" ng-href="#processPage?id={{uiModel.currentSelectedProcessId}}" 
+           class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-a" >
+           View Process Details</a>
+        <a ng-show="uiModel.showCloseDialogBtn" href="#" 
+           ng-click="uiModel.showPopup=false"
+           class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-a" >
+           Close</a>
+    </div>
+</div>
 
 <div data-position="fixed" data-role="footer" data-theme="a" 
 		 ng-controller="footerCtrl"

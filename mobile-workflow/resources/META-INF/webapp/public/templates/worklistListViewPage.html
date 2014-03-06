@@ -29,23 +29,23 @@
 	
 	
 </div>
-
-<ul data-role="listview">
-	<li ng-repeat="item in worklistModel.worklistItems | orderBy:predicate:asc">
-		<a href="#detailPage?id={{item.oid}}">
-			<h3>{{item.activityName}} (#{{item.oid}})</h3>
-			<p>
-				<span ng-switch="$last" ng-repeat="(key,value) in item.descriptors">
-          			{{key}}: {{value}}<span ng-if="!$last">,</span>
-          		</span>
-         		</p>
-         		<p class="ui-li-aside">
-         			<strong>{{item.startTime | date:'yyyy-MM-dd' | humaneDate }}</strong>
-         		</p>
-		</a>
-	</li>
-</ul>
-
+<div data-iscroll>
+	<ul data-role="listview">
+		<li ng-repeat="item in worklistModel.worklistItems | orderBy:predicate:asc">
+			<a href="#detailPage?id={{item.oid}}">
+				<h3>{{item.activityName}} (#{{item.oid}})</h3>
+				<p>
+					<span ng-switch="$last" ng-repeat="(key,value) in item.descriptors">
+	          			{{key}}: {{value}}<span ng-if="!$last">,</span>
+	          		</span>
+	         		</p>
+	         		<p class="ui-li-aside">
+	         			<strong>{{item.startTime | date:'yyyy-MM-dd' | humaneDate }}</strong>
+	         		</p>
+			</a>
+		</li>
+	</ul>
+</div>
 <div data-position="fixed" data-role="footer" data-theme="a" 
 		 ng-controller="footerCtrl"
 		 data-jqm-template 

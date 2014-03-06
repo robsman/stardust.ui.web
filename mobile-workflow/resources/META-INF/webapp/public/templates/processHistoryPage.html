@@ -1,0 +1,46 @@
+<div>
+	<a ng-repeat="instance in processHistoryModel.parentProcessInstances">&gt;{{instance.oid}}</a>
+</div>
+
+<p></p>
+
+<div>
+	<ul data-role="listview">
+		<li>
+			<p>
+				<i class="fa fa-2x fa-cogs"></i>
+				<strong>
+					{{processHistoryModel.selectedProcessInstance.processName}} 
+					(#{{processHistoryModel.selectedProcessInstance.oid}})
+				</strong>
+				<span class="ui-li-aside" xstyle="float:right;">Started at {{processHistoryModel.selectedProcessInstance.startTimestamp | date:"yyyy-MM-dd hh:mm:ss"}}</span>
+			</p>
+			<p style="font-size:0.75em">
+				<i ng-class="process-state-{{processHistoryModel.selectedProcessInstance.state}}" 
+				   class="fa fa-spinner fa-spin"></i>
+				<span ng-switch="$last" ng-repeat="(k,v) in processHistoryModel.selectedProcessInstance.descriptors">
+		          			{{k}}: {{v.value}}<span ng-if="!$last">,</span>
+		        </span>
+	        </p>
+		</li>
+		<li ng-repeat="activity in processHistoryModel.activityInstances">
+			<a href="#">
+			<p>
+				<i class="fa fa-2x fa-cog"></i>
+				<strong>
+					{{activity.activityId}} 
+					(#{{activity.oid}})
+				</strong>
+				<span class="ui-li-aside" xstyle="float:right;">Modified {{activity.lastModificationTime | date:"yyyy-MM-dd hh:mm:ss"}}</span>
+			</p>
+			<p style="font-size:0.75em">
+				<i ng-class="getStateClass(activity.status)" 
+				   class="fa"></i>
+				<span ng-switch="$last" ng-repeat="(k,v) in processHistoryModel.selectedProcessInstance.descriptors">
+		          			{{k}}: {{v.value}}<span ng-if="!$last">,</span>
+		        </span>
+	        </p>
+	        </a>
+		</li>
+	</ul>
+</div>

@@ -121,6 +121,15 @@
 			 data-bind-to="documentViewerModel"
 			 data-template-url="templates/documentViewerPage.html">
 		</div>
+
+		<!-- Repository Root Page -->
+		<div id="repositoryRootPage" data-role="page" data-theme="a"
+			 ng-controller="repositoryRootCtrl"
+			 data-jqm-template 
+			 data-jqm-widgets="listview,popup"
+			 data-bind-to="[repositoryModel.children.folders,repositoryModel.children.documents]"
+			 data-template-url="templates/repositoryRootPage.html">
+		</div>
 		
 		<script type="application/javascript" src="js/add2home.js"></script>
 		<script type="text/javascript" data-main="js/MobileWorkflowMain" src="./js/libs/require/2.0.5/require.js"></script>

@@ -33,6 +33,12 @@
 		<li>
 			<a  href="#participantsTab" >
 				<i style="display:block;" class="fa fa-user fa-2x jqm-icon-block"></i>
+				<span title="Participants" class="hide-media-sm">History</span>
+			</a>
+		</li>
+		<li>
+			<a  href="#processHistoryTab" >
+				<i style="display:block;" class="fa fa-user fa-2x jqm-icon-block"></i>
 				<span title="Participants" class="hide-media-sm">Participants</span>
 			</a>
 		</li>
@@ -51,25 +57,32 @@
 			 data-template-url="templates/descriptorsPage.html">
 		</div>
   </div>
-   <div id="docsProcessTab" class="ui-body-d ui-content">
+  <div id="docsProcessTab" class="ui-body-d ui-content">
     	<div data-jqm-template 
 			 data-jqm-widgets="listview"
 			 data-bind-to="documentModel.docs"
 			 data-template-url="templates/documentPage.html">
 		</div>
   </div>
-   <div id="notesProcessTab" class="ui-body-d ui-content">
+  <div id="notesProcessTab" class="ui-body-d ui-content">
    		<div data-jqm-template 
 			 data-jqm-widgets="listview"
 			 data-bind-to="notesModel.notes"
 			 data-template-url="templates/notesPage.html">
 		</div>
   </div>
-   <div id="participantsTab"  class="ui-body-d ui-content">
+  <div id="participantsTab"  class="ui-body-d ui-content">
     	<div data-jqm-template 
 			 data-jqm-widgets="listview"
 			 data-bind-to="participantModel.participants"
 			 data-template-url="templates/participantPage.html">
+		</div>
+  </div>
+  <div id="processHistoryTab"  class="ui-body-d ui-content">
+    	<div data-jqm-template 
+			 data-jqm-widgets="listview"
+			 data-bind-to="processHistoryModel"
+			 data-template-url="templates/processHistoryPage.html">
 		</div>
   </div>
 </div><!-- Tabs End  -->

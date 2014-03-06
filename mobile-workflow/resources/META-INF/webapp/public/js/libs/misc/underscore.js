@@ -1,16 +1,15 @@
-//     Underscore.js 1.5.2
+//     Underscore.js 1.6.0
 //     http://underscorejs.org
 //     (c) 2009-2014 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
 //     Underscore may be freely distributed under the MIT license.
 
-define([],function(){
-var init = function(optRoot) {
+(function() {
 
   // Baseline setup
   // --------------
 
   // Establish the root object, `window` in the browser, or `exports` on the server.
-  var root = optRoot ||  this; //ZZM-Modified to support ability to define our own root object
+  var root = this;
 
   // Save the previous value of the `_` variable.
   var previousUnderscore = root._;
@@ -66,7 +65,7 @@ var init = function(optRoot) {
   }
 
   // Current version.
-  _.VERSION = '1.5.2';
+  _.VERSION = '1.6.0';
 
   // Collection Functions
   // --------------------
@@ -240,13 +239,13 @@ var init = function(optRoot) {
   // Convenience version of a common use case of `filter`: selecting only objects
   // containing specific `key:value` pairs.
   _.where = function(obj, attrs) {
-    return _.filter(obj, _.match(attrs));
+    return _.filter(obj, _.matches(attrs));
   };
 
   // Convenience version of a common use case of `find`: getting the first object
   // containing specific `key:value` pairs.
   _.findWhere = function(obj, attrs) {
-    return _.find(obj, _.match(attrs));
+    return _.find(obj, _.matches(attrs));
   };
 
   // Return the maximum element or (element-based computation).
@@ -284,7 +283,7 @@ var init = function(optRoot) {
   };
 
   // Shuffle an array, using the modern version of the
-  // [Fisher-Yates shuffle](http://en.wikipedia.org/wiki/Fisher–Yates_shuffle).
+  // [Fisher-Yates shuffle](http://en.wikipedia.org/wiki/Fisherâ€“Yates_shuffle).
   _.shuffle = function(obj) {
     var rand;
     var index = 0;
@@ -463,10 +462,11 @@ var init = function(optRoot) {
 
   // Split an array into two arrays: one whose elements all satisfy the given
   // predicate, and one whose elements all do not satisfy the predicate.
-  _.partition = function(array, predicate) {
+  _.partition = function(array, predicate, context) {
+    predicate = lookupIterator(predicate);
     var pass = [], fail = [];
     each(array, function(elem) {
-      (predicate(elem) ? pass : fail).push(elem);
+      (predicate.call(context, elem) ? pass : fail).push(elem);
     });
     return [pass, fail];
   };
@@ -1103,7 +1103,7 @@ var init = function(optRoot) {
   };
 
   // Returns a predicate for checking whether an object has a given set of `key:value` pairs.
-  _.match = function(attrs) {
+  _.matches = function(attrs) {
     return function(obj) {
       if (obj === attrs) return true; //avoid comparing an object to itself.
       for (var key in attrs) {
@@ -1328,7 +1328,17 @@ var init = function(optRoot) {
     }
 
   });
- 
-};
-return {"init" : init};
-});
+
+  // AMD registration happens at the end for compatibility with AMD loaders
+  // that may not enforce next-turn semantics on modules. Even though general
+  // practice for AMD registration is to be anonymous, underscore registers
+  // as a named module because, like jQuery, it is a base library that is
+  // popular enough to be bundled in a third party lib, but not be part of
+  // an AMD load request. Those cases could generate an error when an
+  // anonymous define() is called outside of a loader request.
+  if (typeof define === 'function' && define.amd) {
+    define('underscore', [], function() {
+      return _;
+    });
+  }
+}).call(this);

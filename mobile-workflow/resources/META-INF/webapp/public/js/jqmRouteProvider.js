@@ -55,7 +55,8 @@ define(["jquery-mobile", "angularjs","js/WorkflowService"],function(jqm,angular,
 	            { "#startableProcessesPage": {events: "bC", handler: "startableProcessesPage" }},
 	            { "#detailPage": {events: "bC", handler: "detailPage" }},
 	            { "#processPage": {events: "bC", handler: "processPage"}},
-	            { "#documentViewerPage": {events: "bC", handler: "documentViewerPage"}}
+	            { "#documentViewerPage": {events: "bC", handler: "documentViewerPage"}},
+	            { "#repositoryRootPage": {events: "bC", handler: "repositoryRootPage"}}
 	        ],
 	        {
 				/*Reference controllers/baseControllers.js for login authentication*/
@@ -95,6 +96,21 @@ define(["jquery-mobile", "angularjs","js/WorkflowService"],function(jqm,angular,
 					data=router.getParams(matchObj.input);
 					
 					jqmNData = new jqmNavigateData(scope.$id,eventType,ui,page,e,data);	
+					rootScope.signalJQMNavigation(jqmNData); /*signal Angular listeners*/
+				},
+				
+				"repositoryRootPage" : function(eventType, matchObj, ui, page, e){
+					var rootScope, /*rootScope of document*/
+					scope,	   /*local scope of the JQM processPage*/
+					data;      /*Parameter data attached to our hash URL*/
+			
+					e.preventDefault();
+					console.log("JQM Router: /#repositoryRootPage");
+					data=router.getParams(matchObj.input);
+					scope=angular.element($("#repositoryRootPage")).scope();
+					rootScope = angular.element($(document)).scope();
+					
+					jqmNData = new jqmNavigateData(scope.$id,eventType,ui,page,e,{});	
 					rootScope.signalJQMNavigation(jqmNData); /*signal Angular listeners*/
 				},
 				

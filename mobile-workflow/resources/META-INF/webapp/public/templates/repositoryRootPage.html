@@ -1,0 +1,30 @@
+<div data-role="header" style="overflow:hidden;">
+	<h1>{{repositoryModel.name}}</h1>
+    <a ng-click="popNavStack(true)"  class="ui-btn ui-shadow ui-corner-all ui-icon-back ui-btn-icon-notext">No Text</a>
+</div>
+
+
+<ul data-role="listview" data-split-icon="gear" data-split-theme="a" data-inset="true" >
+		<li ng-repeat="folder in repositoryModel.children.folders">
+			<a ng-click="getFolder(folder.id,true)">
+				<i class="fa fa-2x fa-folder"></i>
+				<strong>{{folder.name}}</strong>
+				<span class="ui-li-count">12</span>
+			</a>
+			<a href="#folderPopup"  data-rel="popup" data-transition="slide" ></a>
+ 		</li>
+ 		<li ng-repeat="document in repositoryModel.children.documents">
+			<a ng-href="#documentViewerPage?id={{document.id}}&folderid={{repositoryModel.id}}">
+				<i class="fa fa-2x fa-file"></i>
+				<strong>{{document.name}}</strong>
+			</a>
+			<a href="#"></a>
+ 		</li>
+ 		<div data-role="popup" id="folderPopup" data-theme="a" class="ui-content" style="max-width:340px;padding-top:0.2em; padding-bottom:0.2em;">
+	        <ul data-role="listview"  data-inset="true" style="min-width:210px;">
+	            <li data-icon="arrow-u" ng-click=""><a href="#">Upload</a></li>
+	            <li data-icon="plus" ng-click=""><a href="#">Create</a></li>
+	        </ul>
+		</div>
+</ul><!-- NOTE data tiles end... -->
+

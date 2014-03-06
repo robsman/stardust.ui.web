@@ -377,9 +377,10 @@ public class MobileWorkflowResource {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("folders/{folderId}")
+	@Path("folders/{folderId: .*}")
 	public Response getRepositoryFolder(@PathParam("folderId") String folderId) {
 		try {
+			System.out.println("folder id = " + folderId);
 			return Response.ok(
 					getMobileWorkflowService().getRepositoryFolder(folderId).toString(),
 					MediaType.APPLICATION_JSON_TYPE).build();

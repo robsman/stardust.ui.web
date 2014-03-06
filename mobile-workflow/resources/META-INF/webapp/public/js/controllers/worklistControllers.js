@@ -29,6 +29,13 @@ define([],function(){
 		this.state="";
 	},
 	
+	
+	processHistoryModel = function(){
+		this.parentProcessInstances =[];
+		this.selectedProcessInstance={};
+		this.activityInstances=[];
+	},
+	
 	startableProcessModel=function(){
 		this.processes =[];
 	},
@@ -43,6 +50,15 @@ define([],function(){
 	
 	documentViewerModel = function(){
 		this.document={};
+	},
+	
+	repositoryModel = function(){
+		this.id="";
+		this.name="";
+		this.path="";
+		this.children={};
+		this.children.documents=[];
+		this.children.folders=[];
 	},
 	
 	mainPageModel = function(){
@@ -123,17 +139,72 @@ define([],function(){
 
 			
 			/*startableProcessesControl*/
-			"startableProcessesCtrl" : function($scope,$rootScope,workflowService){
+			"startableProcessesCtrl" : function($scope,$rootScope,workflowService,utilService){
+				
 				$scope.test = "Hello From Startable Process(s) Control";
 				$scope.startableProcessModel = new startableProcessModel();
-				
+				$scope.startableProcessModel.showPopup=false;
+				$scope.uiModel={
+						showPopup: false,
+						showHotNavBtn: false,
+						showProcessDetailsBtn: false,
+						showCloseDialogBtn: true,
+						popupMessage: "",
+						currentSelectedProcessId: 0
+				};
+				/*function to handle the user clicking on a process in our process list*/
 				$scope.startProcess = function(processDefinitionId){
 					var success,fail;
 					
 					success=function(data){
 						console.log("startProcess Returned...");
 						console.log(data);
-						/*check data and then do some crazy stuff...*/
+						$scope.$apply(function(){
+							$scope.uiModel.currentSelectedProcessId=data.activatedActivityInstance.processInstanceOid;
+						});
+						
+						if($rootScope.appData.isActivityHot){
+							/*We have a hotActivity already active...*/
+							$scope.$apply(function(){
+								$scope.uiModel.showHotNavBtn=true;
+								$scope.uiModel.showProcessDetailsBtn=true;
+								$scope.uiModel.showCloseDialogBtn=true;
+								$scope.uiModel.popupMessage = data.processId + "(#" +
+									data.activatedActivityInstance.processInstanceOid + ") was started " +
+									"but we could not activate its first interactive activity beacuase " +
+									"you have another active activity.";
+								$scope.uiModel.showPopup=true;
+							});
+						}
+						else if(data.activatedActivityInstance.activatable==true){
+							/*Set item as our hotActivityInstance and nav to detailPage->formTab*/
+							$rootScope.$apply(function(){
+								$rootScope.appData.isActivityHot = true;
+								$rootScope.appData.hotActivityInstance = {
+										"oid" : data.activatedActivityInstance.oid,
+										"name" : data.activatedActivityInstance.activityName
+								};
+							});
+							
+							utilService.navigateTo($rootScope,
+									   "#detailPage?id=" + 
+									    data.activatedActivityInstance.oid +  
+									   "&activeTab=formTab",{});
+						}
+						else{
+							/*This item has been started but it is not activatable*/
+							$scope.$apply(function(){
+								$scope.uiModel.showHotNavBtn=false;
+								$scope.uiModel.showProcessDetailsBtn=true;
+								$scope.uiModel.showCloseDialogBtn=true;
+								$scope.uiModel.popupMessage=data.processId + "(#" +
+									data.activatedActivityInstance.processInstanceOid + ") was started " +
+									"but we could not activate its first interactive activity because " + 
+									"that activity instance is not activatable";
+								$scope.uiModel.showPopup=true;
+							});
+							
+						}
 					},
 					fail =  function(status){
 							console.log("Startable Process retrieval failed");
@@ -149,6 +220,7 @@ define([],function(){
 
 					success=function(data){
 							$scope.$apply(function(){
+								$scope.uiModel.showPopup=false;
 								$scope.startableProcessModel.processes=data.processDefinitions;
 							});
 							edata.ui.bCDeferred.resolve();
@@ -170,17 +242,53 @@ define([],function(){
 			
 			
 			"processCtrl" : function($scope,$rootScope,workflowService){
+				
 				/*declare our model(s)*/
 				$scope.notesModel = new notesModel();
 				$scope.activityModel = new worklistItem();
 				$scope.documentModel = new documentModel();
 				$scope.participantModel = new participantModel();
 				$scope.processModel = new processModel();
+				$scope.processHistoryModel = new processHistoryModel();
+				
+				/*Set up a few UI specific props*/
 				$scope.baseHref = workflowService.baseHref;
 				$scope.showMsg = false;
 				$scope.alertMessage = "";
 				$scope.uploadSuccesful = false;
 				$scope.isUploading =false;
+				
+				//TODO-move to util service
+				$scope.getStateClass=function(state){
+					var cssClass;
+					switch(state){
+					case "Application":
+						cssClass="fa-spinner fa-spin";
+						break;
+					case "Completed":
+						cssClass="fa-check-square-o";
+						break;
+					case "Aborted":
+						cssClass="fa-times";
+						break;
+					case "Suspended":
+						cssClass="fa-coffee";
+						break;
+					case "Hibernated":
+						cssClass="fa-clock-o";
+						break;
+					case "Interrupted":
+						cssClass="fa-exclamation-triangle";
+						break;
+					case "Created":
+						cssClass="fa-magic";
+						break;
+					default:
+						cssClass="fa-question-circle";
+					}
+					
+					return cssClass;
+				};
 				
 				/*Helper function to refresh our scoped document collection*/
 				$scope.getDocuments = function(processOid){
@@ -253,6 +361,16 @@ define([],function(){
 							edata.ui.bCDeferred.resolve();
 					};		
 					workflowService.getProcessInstance(edata.data.id).then(success,fail);
+					workflowService.getProcessHistory().then(function(data){
+						console.log("process History data");
+						console.log(data);
+						$scope.processHistoryModel.parentProcessInstances =data.parentProcessInstances;
+						$scope.processHistoryModel.selectedProcessInstance=data.selectedProcessInstance;
+						$scope.processHistoryModel.activityInstances=data.activityInstances;
+					},function(status){
+						console.log("process history retrieval failed");
+						console.log(status);
+					});
 				});
 				
 				/**/
@@ -396,8 +514,6 @@ define([],function(){
 				$scope.$on("jqm-navigate",function(e,edata){
 					
 					var success,fail;
-					console.log("jqmn data");
-					console.log(edata);
 					
 					/*filter messages that don't match our scopeID*/
 					if(edata.scopeTarget != $scope.$id){return;}
@@ -405,9 +521,16 @@ define([],function(){
 							var sortedNotes = $filter("orderBy")(data.processInstance.notes,
 													"timestamp",true),
 								sortedDocs = $filter("orderBy")(data.processInstance.documents,
-													 "lastModifiedTimestamp",true);
+													 "lastModifiedTimestamp",true),
+								url;
+							
+							if(data.activatable){
+								url=data.contexts.externalWebApp["carnot:engine:ui:externalWebApp:uri"] +
+								"?interactionId=" + data.contexts.externalWebApp.interactionId;
+							}
+							
 							$scope.$apply(function(){
-								
+								$scope.mashupModel.externalUrl= $sce.trustAsResourceUrl(url);
 								$scope.notesModel.notes = sortedNotes;
 								$scope.activityModel.item = data;
 								$scope.documentModel.docs = sortedDocs;
@@ -467,10 +590,81 @@ define([],function(){
 				$scope.formModel = new mashupModel();
 			},
 			
+			"repositoryRootCtrl" : function($scope, $rootScope, workflowService, utilService){
+				
+				var updateModel = function(data){
+						$scope.$apply(function(){
+							$scope.repositoryModel.name = data.name;
+							$scope.repositoryModel.id = data.id;
+							$scope.repositoryModel.path = data.path;
+							$scope.repositoryModel.children.folders = data.children.folders;
+							$scope.repositoryModel.children.documents = data.children.documents;
+						});
+					},
+					
+					popNavStack = function(popOnDuplicateState){
+						var targetFolder;						
+						targetFolder=$scope.directoryNavStack.pop();
+						if(!targetFolder){
+							utilService.navigateTo($rootScope,"#mainPage");
+						}
+						/*Initial Back requries a double pop so we dont renavigate to the current page,
+						 *we also have to check that we arent at the home/0 position in our stack as
+						 *i nthat case we need to nav back to the main page.*/
+						if(targetFolder.id==$scope.repositoryModel.id && popOnDuplicateState==true){
+							targetFolder = $scope.directoryNavStack.pop();
+						}
+						$scope.getFolder(targetFolder.id,false);
+					};
+				
+				$scope.directoryNavStack=[];
+				$scope.popNavStack=popNavStack;
+				$scope.test= "Hello From Repository-Root Ctrl";
+				$scope.repositoryModel= new repositoryModel();	
+				
+				$scope.getFolder = function(folderId,doPush){
+					if(doPush==true){
+						$scope.directoryNavStack.push({"id" : folderId});
+					}
+					workflowService.getRepositoryFolder(folderId).then(function(data){
+						console.log(data);
+						updateModel(data);
+					});
+				};
+				
+				$scope.$on("jqm-navigate",function(e,edata){
+					var success,fail;
+					console.log("repos navigation " + edata);
+					
+					if(edata.scopeTarget != $scope.$id){return;}
+					
+					if($scope.directoryNavStack.length > 0){
+						$scope.popNavStack(false);
+						edata.ui.bCDeferred.resolve();
+						return;
+					}
+					
+					success=function(data){
+							updateModel(data);
+							$scope.directoryNavStack.push({"id" : ""});
+							edata.ui.bCDeferred.resolve();
+					},
+					fail =  function(status){
+							console.log("Repository Root Retrieval Failed.");
+							edata.ui.bCDeferred.resolve();
+					};
+								
+					workflowService.getRepositoryFolder()
+						.then(success,fail);
+					
+				});
+			},
+			
 			"documentViewerCtrl" : function($scope, $rootScope, $sce, workflowService){
 				$scope.documentViewerModel = new documentViewerModel();
 				
 				$scope.$on("jqm-navigate",function(e,edata){
+					console.log(edata);
 					var success,fail;
 					if(edata.scopeTarget != $scope.$id){return;}
 
@@ -485,9 +679,15 @@ define([],function(){
 							console.log("Document viewer data failed");
 							edata.ui.bCDeferred.resolve();
 					};
-								
-					workflowService.getDocument(edata.data.id,edata.data.processOid)
-						.then(success,fail);
+					
+					if(edata.data.processOid){			
+						workflowService.getDocument(edata.data.id,edata.data.processOid)
+							.then(success,fail);
+					}
+					else{
+						workflowService.getRepositoryDocument(edata.data.folderid, edata.data.id)
+							.then(success,fail);
+					}
 					
 				});
 			}

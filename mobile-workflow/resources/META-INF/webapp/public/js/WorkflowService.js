@@ -9,7 +9,7 @@
  ******************************************************************************/
 
 define(
-		[ "js/Utils","jquery.base64" ],
+		[ "js/Utils"],
 		function(Utils) {
 			return {
 				instance : function() {
