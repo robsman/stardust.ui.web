@@ -21,6 +21,7 @@ import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.engine.extensions.jaxws.app.WSConstants;
 import org.eclipse.stardust.model.xpdl.carnot.util.VariableContext;
+import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 
 @org.springframework.stereotype.Service
 public class WebServicesSupport
