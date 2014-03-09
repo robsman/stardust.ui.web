@@ -11,6 +11,9 @@
 
 package org.eclipse.stardust.ui.mobile.service;
 
+import static org.eclipse.stardust.common.CollectionUtils.newHashMap;
+import static org.eclipse.stardust.engine.core.interactions.Interaction.getInteractionId;
+
 import java.io.*;
 import java.util.*;
 
@@ -20,16 +23,15 @@ import com.google.gson.JsonObject;
 import org.eclipse.stardust.common.Direction;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.dto.*;
-import org.eclipse.stardust.engine.api.model.ApplicationContext;
-import org.eclipse.stardust.engine.api.model.DataPath;
-import org.eclipse.stardust.engine.api.model.ImplementationType;
-import org.eclipse.stardust.engine.api.model.ProcessDefinition;
+import org.eclipse.stardust.engine.api.model.*;
 import org.eclipse.stardust.engine.api.query.*;
 import org.eclipse.stardust.engine.api.runtime.*;
 import org.eclipse.stardust.engine.core.interactions.Interaction;
+import org.eclipse.stardust.engine.core.interactions.InteractionRegistry;
 import org.eclipse.stardust.engine.core.runtime.beans.removethis.SecurityProperties;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
 import org.eclipse.stardust.ui.mobile.rest.JsonMarshaller;
+import org.eclipse.stardust.ui.web.viewscommon.common.spi.IActivityInteractionController;
 import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.utils.*;
@@ -150,26 +152,34 @@ public class MobileWorkflowService {
 	 * 
 	 * @return
 	 */
-	public JsonObject getStartableProcesses() {
+	public JsonObject getProcesses(boolean startable) {
 		JsonObject resultJson = new JsonObject();
 		JsonArray processDefinitionsJson = new JsonArray();
 
 		resultJson.add("processDefinitions", processDefinitionsJson);
 
-		for (ProcessDefinition processDefinition : getWorkflowService()
-				.getStartableProcessDefinitions()) {
-			JsonObject processDefinitionJson = new JsonObject();
-
-			processDefinitionsJson.add(processDefinitionJson);
-
-			processDefinitionJson.addProperty("id", processDefinition.getId());
-			processDefinitionJson.addProperty("name",
-					processDefinition.getName());
-			processDefinitionJson.addProperty("description",
-					processDefinition.getDescription());
+		List<ProcessDefinition> processDefinitions = null;
+		if (startable)
+		{
+		   processDefinitions = getWorkflowService().getStartableProcessDefinitions();
+		}
+		else {
+		   processDefinitions = getQueryService().getProcessDefinitions(ProcessDefinitionQuery.findAll());
 		}
 
-		return resultJson;
+      for (ProcessDefinition processDefinition : processDefinitions) {
+         JsonObject processDefinitionJson = new JsonObject();
+
+         processDefinitionsJson.add(processDefinitionJson);
+
+         processDefinitionJson.addProperty("id", processDefinition.getId());
+         processDefinitionJson.addProperty("name",
+               processDefinition.getName());
+         processDefinitionJson.addProperty("description",
+               processDefinition.getDescription());
+      }
+
+      return resultJson;
 	}
 
    /**
@@ -179,7 +189,10 @@ public class MobileWorkflowService {
    public JsonObject getWorklistCount() {
       JsonObject resultJson = new JsonObject();
       
-      resultJson.addProperty("total", 100);
+      // TODO: Use count query
+      resultJson.addProperty("total",
+            getWorkflowService().getWorklist(WorklistQuery.findCompleteWorklist())
+                  .getCumulatedItems().size());
       
       return resultJson;
    }
@@ -194,9 +207,10 @@ public class MobileWorkflowService {
 
 		resultJson.add("worklist", worklistJson);
 
-		for (ActivityInstance activityInstance : (List<ActivityInstance>) getWorkflowService()
-				.getWorklist(WorklistQuery.findCompleteWorklist())
-				.getCumulatedItems()) {
+		WorklistQuery query = WorklistQuery.findCompleteWorklist();
+		query.orderBy(WorklistQuery.ACTIVITY_INSTANCE_OID, false);
+		List<ActivityInstance> worklistItems = getWorkflowService().getWorklist(query).getCumulatedItems();
+		for (ActivityInstance activityInstance : worklistItems) {
 			JsonObject activityInstanceJson = new JsonObject();
 
 			worklistJson.add(activityInstanceJson);
@@ -256,45 +270,198 @@ public class MobileWorkflowService {
 		return resultJson;
 	}
 
+   /**
+    * 
+    * @return
+    */
+   public JsonObject activateActivity(long activityInstanceOid, InteractionRegistry ir) {
+      ActivityInstance ai = getWorkflowService().activate(activityInstanceOid);
+      JsonObject activityJson = getActivityInstanceJson(ai);
+      // TODO @SG
+      Interaction interaction = new Interaction(null, serviceFactory.getQueryService().getModel(ai.getModelOID(), false), ai, "externalWebApp", serviceFactory);
+      
+      Map inData = workflowService.getInDataValues(activityInstanceOid, "externalWebApp", null);
+      // performing client side IN mappings
+      Map<String, Serializable> inParams = newHashMap();
+      for (DataMapping inMapping : (List<DataMapping>) interaction.getDefinition().getAllInDataMappings())
+      {
+         Serializable inValue = (Serializable) inData.get(inMapping.getId());
+         if (null != inValue)
+         {
+            try
+            {
+               String paramId = inMapping.getApplicationAccessPoint().getId();
+
+               Object inParam = ClientSideDataFlowUtils.evaluateClientSideInMapping(
+                     interaction.getModel(), inParams.get(paramId), inMapping, inValue);
+
+               inParams.put(paramId, (Serializable) inParam);
+            }
+            catch (Exception e)
+            {
+               System.out.println("Failed evaluating client side of IN data mapping "
+                     + inMapping.getId() + " on activity instance " + ai);
+            }
+         }
+      }
+
+      interaction.setInDataValues(inParams);
+      
+      ir.registerInteraction(interaction);
+      return activityJson;
+   }
+
 	/**
 	 * 
+	 * @param oid
+	 * @param registry
 	 * @return
 	 */
-	public JsonObject activateActivity(long activityInstanceOid) {
-      ActivityInstance activityInstance = getWorkflowService().activate(activityInstanceOid);
+	public JsonObject completeActivity(String oid, InteractionRegistry registry) {
+		ActivityInstance ai = getWorkflowService().getActivityInstance(new Long(oid).longValue());
+		IActivityInteractionController interactionController = SpiUtils
+				.getInteractionController(ai.getActivity());
+		//Map<String, Serializable>outDataValues = interactionController.getOutDataValues(activityInstance);
+		
+		
+	      Map<String, Serializable> outData = null;
 
-		JsonObject activityJson = getActivityInstance(activityInstanceOid);
+	      if (null != registry)
+	      {
+	         // retrieve out data
+	         Interaction interaction = registry.getInteraction(getInteractionId(ai));
+	         if (null != interaction)
+	         {
+	            Map<String, Serializable> outParams = interaction.getOutDataValues();
+	            if (null != outParams)
+	            {
+	               // performing client side OUT mappings
+	               outData = newHashMap();
+	               for (DataMapping outMapping : (List<DataMapping>) interaction.getDefinition().getAllOutDataMappings())
+	               {
+	                  Serializable outParam = outParams.get(outMapping.getApplicationAccessPoint().getId());
+	                  if (null != outParam)
+	                  {
+	                     try
+	                     {
+	                        Object outValue = ClientSideDataFlowUtils.evaluateClientSideOutMapping(
+	                              interaction.getModel(), outParam, outMapping);
 
-		return activityJson;
+	                        outData.put(outMapping.getId(), (Serializable) outValue);
+	                     }
+	                     catch (Exception e)
+	                     {
+	                    	 System.out.println("Failed evaluating client side of OUT data mapping "
+	                              + outMapping.getId() + " on activity instance " + ai);
+	                     }
+	                  }
+	                  else
+	                  {
+	                	  System.out.println("Missing value for data mapping " + outMapping.getId()
+	                           + " on activity instance " + ai);
+	                  }
+	               }
+	            }
+
+	            // destroy interaction resource
+	            registry.unregisterInteraction(interaction.getId());
+	    		
+	    		ai = getWorkflowService().complete(
+	    				new Long(oid).longValue(), "externalWebApp", outData);
+	         }
+	         else
+	         {
+	            System.out.println("Failed resolving interaction resource for activity instance " + ai);
+	         }
+	      }
+		
+	    // TODO @SG
+		JsonObject activityInstanceJson = new JsonObject();
+		return activityInstanceJson;
 	}
 
 	/**
-	 *
+	 * 
+	 * @param oid
+	 * @param registry
 	 * @return
 	 */
-	public JsonObject completeActivity(JsonObject activityInstanceJson, JsonObject outDataJson) {
-		Map<String, Object> accMap = new HashMap<String, Object>();
-		JsonObject accObj = outDataJson.get("accident").getAsJsonObject();
-		accMap.put("CarsInvolvedInAccident", accObj.get("numVehicles").getAsInt());
-		accMap.put("AccidentLocation", accObj.get("location").getAsString());
-		accMap.put("YourVehicleTowed", accObj.get("vehicleTowed").getAsBoolean());
-		JsonObject damagesObj = accObj.get("damageLocs").getAsJsonObject();
-		Map<String, Object> damagesMap = new HashMap<String, Object>();
-		damagesMap.put("Undercarriage", damagesObj.get("underCarriage").getAsBoolean());
-		damagesMap.put("Rear", damagesObj.get("rear").getAsBoolean());
-		damagesMap.put("DriverSide", damagesObj.get("driverSide").getAsBoolean());
-		damagesMap.put("Front", damagesObj.get("front").getAsBoolean());
-		damagesMap.put("PassengerSide", damagesObj.get("passSide").getAsBoolean());
-		damagesMap.put("Hood", damagesObj.get("hood").getAsBoolean());
-		accMap.put("WhereVehicleDamaged", damagesMap);
+	public JsonObject suspendActivity(String oid, InteractionRegistry registry) {
+    	getWorkflowService().suspendToDefaultPerformer(new Long(oid).longValue());
+		
+	    // TODO @SG
+		JsonObject activityInstanceJson = new JsonObject();
+		return activityInstanceJson;
+	}
+	
 
-		Map<String, Object> outDataMap = new HashMap<String, Object>();
-		outDataMap.put("AccidentInformation", accMap);
-		ActivityInstance activityInstance = getWorkflowService().complete(
-				activityInstanceJson.get("oid").getAsLong(), "default",
-				outDataMap);
+	/**
+	 * 
+	 * @param oid
+	 * @param registry
+	 * @return
+	 */
+	public JsonObject suspendAndSaveActivity(String oid, InteractionRegistry registry) {
+		ActivityInstance ai = getWorkflowService().getActivityInstance(new Long(oid).longValue());
+		IActivityInteractionController interactionController = SpiUtils
+				.getInteractionController(ai.getActivity());
+		//Map<String, Serializable>outDataValues = interactionController.getOutDataValues(activityInstance);
+		System.out.println("@@@@@@@@@@@@@@@@@@@@@@@ suspend and save");
+		
+	      Map<String, Serializable> outData = null;
 
-		activityInstanceJson = new JsonObject();
+	      if (null != registry)
+	      {
+	         // retrieve out data
+	         Interaction interaction = registry.getInteraction(getInteractionId(ai));
+	         if (null != interaction)
+	         {
+	            Map<String, Serializable> outParams = interaction.getOutDataValues();
+	            if (null != outParams)
+	            {
+	               // performing client side OUT mappings
+	               outData = newHashMap();
+	               for (DataMapping outMapping : (List<DataMapping>) interaction.getDefinition().getAllOutDataMappings())
+	               {
+	                  Serializable outParam = outParams.get(outMapping.getApplicationAccessPoint().getId());
+	                  if (null != outParam)
+	                  {
+	                     try
+	                     {
+	                        Object outValue = ClientSideDataFlowUtils.evaluateClientSideOutMapping(
+	                              interaction.getModel(), outParam, outMapping);
+
+	                        outData.put(outMapping.getId(), (Serializable) outValue);
+	                     }
+	                     catch (Exception e)
+	                     {
+	                    	 System.out.println("Failed evaluating client side of OUT data mapping "
+	                              + outMapping.getId() + " on activity instance " + ai);
+	                     }
+	                  }
+	                  else
+	                  {
+	                	  System.out.println("Missing value for data mapping " + outMapping.getId()
+	                           + " on activity instance " + ai);
+	                  }
+	               }
+	            }
+
+	            // destroy interaction resource
+	            registry.unregisterInteraction(interaction.getId());
+	    		
+	            System.out.println("@@@@@@@@@@@@@@@@@@@@@@@ out data " + outData);
+	            
+	    		ai = getWorkflowService().suspendToDefaultPerformer(new Long(oid).longValue(), "externalWebApp", outData);
+	         }
+	         else
+	         {
+	            System.out.println("Failed resolving interaction resource for activity instance " + ai);
+	         }
+	      }
+		
+	    // TODO @SG
+		JsonObject activityInstanceJson = new JsonObject();
 		return activityInstanceJson;
 	}
 
@@ -302,9 +469,7 @@ public class MobileWorkflowService {
     * 
     * @return
     */
-   public JsonObject getActivityInstance(long activityInstanceOid) {
-      JsonObject activityInstanceJson = new JsonObject();
-
+   public ActivityInstance getActivityInstance(long activityInstanceOid) {
       ActivityInstanceQuery activityInstanceQuery = ActivityInstanceQuery.findAll();
 
       activityInstanceQuery.where(ActivityInstanceQuery.OID.isEqual(activityInstanceOid));
@@ -312,6 +477,16 @@ public class MobileWorkflowService {
       
       ActivityInstanceDetails activityInstance = (ActivityInstanceDetails) getQueryService()
             .getAllActivityInstances(activityInstanceQuery).get(0);
+      
+      return activityInstance;
+   }
+
+   /**
+    * 
+    * @return
+    */
+   public JsonObject getActivityInstanceJson(ActivityInstance activityInstance) {
+      JsonObject activityInstanceJson = new JsonObject();
 
       long timeInMillis = Calendar.getInstance().getTimeInMillis();
       if (activityInstance.getState() == ActivityInstanceState.Completed
@@ -323,8 +498,8 @@ public class MobileWorkflowService {
       String lastPerformer;
       UserInfo userInfo = activityInstance.getPerformedBy();
       if (null != userInfo) {
-           User user = UserUtils.getUser(userInfo.getId());
-           lastPerformer = I18nUtils.getUserLabel(user);
+//           User user = UserUtils.getUser(userInfo.getId());
+           lastPerformer = "motu"; // I18nUtils.getUserLabel(user);
       }
       else {
          lastPerformer = activityInstance.getPerformedByName();
@@ -339,6 +514,7 @@ public class MobileWorkflowService {
       activityInstanceJson.addProperty("duration", duration);
       activityInstanceJson.addProperty("activityId", activityInstance
             .getActivity().getId());
+      activityInstanceJson.addProperty("activityImplementationType", ActivityInstanceUtils.getActivityType(activityInstance.getActivity(), false));
       activityInstanceJson.addProperty("activityName", activityInstance
             .getActivity().getName());
       activityInstanceJson.addProperty("processId", activityInstance
@@ -366,7 +542,7 @@ public class MobileWorkflowService {
                      .getId()));
       }*/
       
-      if (activityInstance.getState().getValue() == ActivityInstanceState.APPLICATION) {
+//      if (activityInstance.getState().getValue() == ActivityInstanceState.APPLICATION) {
       
       ApplicationContext applicationContext = null;
       JsonObject applicationContextsJson = new JsonObject();
@@ -399,10 +575,16 @@ public class MobileWorkflowService {
                      "carnot:engine:ui:externalWebApp:uri",
                      (String) applicationContext
                            .getAttribute("carnot:engine:ui:externalWebApp:uri"));
-         applicationContextJson.addProperty("interactionId",
-               Interaction.getInteractionId(activityInstance));
+         String ippPortalBaseUri = "http://localhost:8080/pepper-test/";
+         String ippServicesBaseUri = ippPortalBaseUri + "services/";
+         String interactionId = Interaction.getInteractionId(activityInstance);
+         String ippInteractionUri = ippServicesBaseUri + "rest/engine/interactions/" + interactionId;
+         applicationContextJson.addProperty("ippPortalBaseURi", ippPortalBaseUri);
+         applicationContextJson.addProperty("ippServicesBaseUri", ippServicesBaseUri);
+         applicationContextJson.addProperty("ippInteractionUri", ippInteractionUri);
+         applicationContextJson.addProperty("interactionId", interactionId);
       }
-      }
+//      }
       
       JsonObject processInstanceJson = new JsonObject();
       ProcessInstanceQuery processInstanceQuery = ProcessInstanceQuery.findAll();
@@ -469,11 +651,11 @@ public class MobileWorkflowService {
       return activityInstanceJson;
    }
    
-   public JsonObject startProcessInstance(JsonObject request)
+   public JsonObject startProcessInstance(JsonObject request, InteractionRegistry ir)
    {
       ProcessInstance processInstance = getWorkflowService().startProcess(request.get("processDefinitionId").getAsString(), null, true);
       
-      JsonObject processInstanceJson = getProcessInstance(processInstance.getOID());
+      JsonObject processInstanceJson = getProcessInstanceJson(processInstance);
       
       if (!(ProcessInstanceUtils.isTransientProcess(processInstance) || ProcessInstanceUtils
             .isCompletedProcess(processInstance)))
@@ -482,9 +664,42 @@ public class MobileWorkflowService {
                .activateNextActivityInstanceForProcessInstance(processInstance.getOID());
          if (nextActivityInstance != null)
          {
-            JsonObject activityInstanceJson = getActivityInstance(nextActivityInstance.getOID());
+            JsonObject activityInstanceJson = getActivityInstanceJson(nextActivityInstance);
             
             processInstanceJson.add("activatedActivityInstance", activityInstanceJson);
+            
+            // TODO @SG
+            Interaction interaction = new Interaction(null, serviceFactory.getQueryService().getModel(nextActivityInstance.getModelOID(), false), nextActivityInstance, "externalWebApp", serviceFactory);
+            
+            Map inData = workflowService.getInDataValues(nextActivityInstance.getOID(), "externalWebApp", null);
+            // performing client side IN mappings
+            Map<String, Serializable> inParams = newHashMap();
+            for (DataMapping inMapping : (List<DataMapping>) interaction.getDefinition().getAllInDataMappings())
+            {
+               Serializable inValue = (Serializable) inData.get(inMapping.getId());
+               if (null != inValue)
+               {
+                  try
+                  {
+                     String paramId = inMapping.getApplicationAccessPoint().getId();
+
+                     Object inParam = ClientSideDataFlowUtils.evaluateClientSideInMapping(
+                           interaction.getModel(), inParams.get(paramId), inMapping, inValue);
+
+                     inParams.put(paramId, (Serializable) inParam);
+                  }
+                  catch (Exception e)
+                  {
+                     System.out.println("Failed evaluating client side of IN data mapping "
+                           + inMapping.getId() + " on activity instance " + nextActivityInstance);
+                  }
+               }
+            }
+
+            interaction.setInDataValues(inParams);
+            
+            ir.registerInteraction(interaction);
+            
          }
       }
       
@@ -492,21 +707,31 @@ public class MobileWorkflowService {
    }
 
    /**
+    * 
+    * @return
+    */
+   public ProcessInstance getProcessInstance(long oid) {
+      ProcessInstanceQuery processInstanceQuery = ProcessInstanceQuery
+            .findAll();
+
+      processInstanceQuery.where(ProcessInstanceQuery.OID.isEqual(oid));
+      processInstanceQuery.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
+
+      ProcessInstanceDetails processInstance = (ProcessInstanceDetails) getQueryService()
+            .getAllProcessInstances(processInstanceQuery).get(0);
+      
+      return processInstance;
+   }
+
+   /**
 	 * 
 	 * @return
 	 */
-	public JsonObject getProcessInstance(long oid) {
-		ProcessInstanceQuery processInstanceQuery = ProcessInstanceQuery
-				.findAll();
-
-		processInstanceQuery.where(ProcessInstanceQuery.OID.isEqual(oid));
-		processInstanceQuery.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
-
-		ProcessInstanceDetails processInstance = (ProcessInstanceDetails) getQueryService()
-				.getAllProcessInstances(processInstanceQuery).get(0);
-
+	public JsonObject getProcessInstanceJson(ProcessInstance processInstance) {
 		JsonObject processInstanceJson = new JsonObject();
 
+      processInstanceJson.addProperty("oid",
+            processInstance.getOID());
 		processInstanceJson.addProperty("processId",
 				processInstance.getProcessID());
 		processInstanceJson.addProperty("processName",
@@ -523,7 +748,8 @@ public class MobileWorkflowService {
 				.getName());
 		processInstanceJson.addProperty("priority",
 				processInstance.getPriority());
-		processInstanceJson.add("startingUser", marshalUser(processInstance.getStartingUser()));
+//		processInstanceJson.add("startingUser", marshalUser(processInstance.getStartingUser()));
+      processInstanceJson.addProperty("startingUser", "motu");
 
 		JsonObject descriptorsJson = new JsonObject();
 
@@ -750,6 +976,7 @@ public class MobileWorkflowService {
 	      folderJson.addProperty("id", "root");
 	      folderJson.addProperty("name", "Root");
 	      folderJson.addProperty("path", "/");
+	      folderJson.addProperty("childCount", 2);
 	      
 			JsonObject subFolderJson = new JsonObject();
 
@@ -764,6 +991,7 @@ public class MobileWorkflowService {
 			// Overwrite name
 			
 			subFolderJson.addProperty("name", "Common Documents");
+			subFolderJson.addProperty("childCount", publicDocumentsRootFolder.getFolderCount() + publicDocumentsRootFolder.getDocumentCount());
 
 			if (userDocumentsRootFolder != null) {
 				subFolderJson = new JsonObject();
@@ -774,6 +1002,7 @@ public class MobileWorkflowService {
 						.addProperty("id", userDocumentsRootFolder.getId());
 				subFolderJson.addProperty("path",
 						userDocumentsRootFolder.getPath());
+				subFolderJson.addProperty("childCount", userDocumentsRootFolder.getFolderCount() + userDocumentsRootFolder.getDocumentCount());
 
 //				getFolderContent(subFolderJson, userDocumentsRootFolder);
 
@@ -818,6 +1047,7 @@ public class MobileWorkflowService {
 			subFolderJson.addProperty("id", subFolder.getId());
 			subFolderJson.addProperty("name", subFolder.getName());
 			subFolderJson.addProperty("path", subFolder.getPath());
+         subFolderJson.addProperty("childCount", subFolder.getFolderCount() + subFolder.getDocumentCount());
 		}
 
 		JsonArray documentsJson = null;
@@ -1045,4 +1275,123 @@ public class MobileWorkflowService {
       
       return documentJson;
    }
+
+   public JsonObject getProcessHistory(long processOid, long selectedProcessInstanceOid)
+   {
+      JsonObject historyJson = new JsonObject();
+
+      selectedProcessInstanceOid = (selectedProcessInstanceOid == 0)
+            ? processOid
+            : selectedProcessInstanceOid;
+      
+      ProcessInstanceQuery processInstanceQuery = ProcessInstanceQuery.findAll();
+      processInstanceQuery.where(ProcessInstanceQuery.OID.isEqual(processOid));
+      processInstanceQuery.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
+      ProcessInstanceDetails processInstance = (ProcessInstanceDetails) getQueryService()
+            .getAllProcessInstances(processInstanceQuery).get(0);
+
+      ProcessInstanceDetails selectedProcessInstance = null;
+      List<ProcessInstance> allPIs = getAllProcesses(processInstance, true);
+      
+      if (selectedProcessInstanceOid == processOid)
+      {
+         selectedProcessInstance = processInstance;
+      }
+      else
+      {
+         processInstanceQuery = ProcessInstanceQuery.findAll();
+         processInstanceQuery.where(ProcessInstanceQuery.OID.isEqual(processOid));
+         processInstanceQuery.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
+         selectedProcessInstance = (ProcessInstanceDetails) getQueryService()
+               .getAllProcessInstances(processInstanceQuery).get(0);
+      }
+      
+      historyJson.add("selectedProcessInstance", getProcessInstanceJson(selectedProcessInstance));
+      
+      List<ActivityInstance> allAIs = getAllActivities(selectedProcessInstance, true);
+      
+      Map<Long, List<ProcessInstance>> tree = new HashMap<Long, List<ProcessInstance>>();
+      List<ProcessInstance> roots = new ArrayList<ProcessInstance>();
+      for (ProcessInstance pi : allPIs)
+      {
+         if (pi.getParentProcessInstanceOid() == ProcessInstance.UNKNOWN_OID)
+            roots.add(pi);
+         else
+         {
+            if (!tree.containsKey(pi.getParentProcessInstanceOid()))
+               tree.put(pi.getParentProcessInstanceOid(), new ArrayList<ProcessInstance>());
+            tree.get(pi.getParentProcessInstanceOid()).add(pi);
+         }
+      }
+
+      JsonArray parentProcessInstancesJson = new JsonArray();
+      historyJson.add("parentProcessInstances", parentProcessInstancesJson);
+      
+      
+      Map<Long, ProcessInstance> startingActivityToProcessMap = new HashMap<Long, ProcessInstance>();
+
+      for (ProcessInstance subProcess : allPIs)
+      {
+         ProcessInstanceDetails processInstanceDetails = (ProcessInstanceDetails) subProcess;
+         startingActivityToProcessMap.put(processInstanceDetails.getStartingActivityInstanceOID(), subProcess);
+      }
+
+      JsonArray activityInstancesJson = new JsonArray();
+      historyJson.add("activityInstances", activityInstancesJson);
+      for (ActivityInstance activityInstance : allAIs)
+      {
+         JsonObject activityInstanceJson = getActivityInstanceJson(activityInstance); 
+         activityInstancesJson.add(activityInstanceJson);
+         if (startingActivityToProcessMap.containsKey(activityInstance.getOID()))
+         {
+            activityInstanceJson.add("childProcessInstance", getProcessInstanceJson(startingActivityToProcessMap.get(activityInstance.getOID())));
+         }
+      }
+      
+      return historyJson;
+   }
+
+   private List<ProcessInstance> getAllProcesses(ProcessInstance process, boolean includeEvents)
+   {
+      long rootProcessOid = process.getRootProcessInstanceOID();
+      ProcessInstanceQuery query = ProcessInstanceQuery.findAll();
+      query.getFilter().and(ProcessInstanceQuery.ROOT_PROCESS_INSTANCE_OID.isEqual(rootProcessOid));
+      query.orderBy(ProcessInstanceQuery.START_TIME);
+      
+      if (includeEvents)
+      {
+         query.setPolicy(HistoricalEventPolicy.ALL_EVENTS);
+      }
+      
+      query.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
+      
+      ProcessInstanceDetailsPolicy processInstanceDetailsPolicy = new ProcessInstanceDetailsPolicy(
+            ProcessInstanceDetailsLevel.Default);
+      processInstanceDetailsPolicy.getOptions().add(ProcessInstanceDetailsOptions.WITH_HIERARCHY_INFO);
+      query.setPolicy(processInstanceDetailsPolicy);
+      
+      return queryService.getAllProcessInstances(query);
+   }
+
+   /**
+    * @param processInstance
+    * @param includeEvents
+    * @return
+    */
+   private List<ActivityInstance> getAllActivities(ProcessInstance processInstance, boolean includeEvents)
+   {
+      ActivityInstanceQuery aiQuery = ActivityInstanceQuery.findAll();
+      ProcessInstanceFilter processFilter = new ProcessInstanceFilter(processInstance.getOID(), false);
+      aiQuery.where(processFilter);
+      aiQuery.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
+      aiQuery.orderBy(ActivityInstanceQuery.START_TIME).and(ActivityInstanceQuery.OID);
+      
+      if (includeEvents)
+      {
+         aiQuery.setPolicy(HistoricalEventPolicy.ALL_EVENTS);
+      }
+      
+      return queryService.getAllActivityInstances(aiQuery);
+   }
+
 }

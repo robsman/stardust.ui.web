@@ -7,7 +7,7 @@
 	<packaging>jar</packaging>
 
 	<properties>
-		<ipp.version>7.3.0</ipp.version>
+		<ipp.version>7.3.1</ipp.version>
 	</properties>
 
 	<version>0.1-SNAPSHOT</version>

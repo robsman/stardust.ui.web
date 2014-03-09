@@ -17,6 +17,25 @@ define(["angularjs"],function(angular){
 				return "Hello From Workflow Service";
 			},
 			
+			"getCurrentPosition" : function(timeout){
+			    var deferred = $q.defer();
+			    
+			    if(!navigator.geolocation){
+			      deferred.reject("navigator undefined");
+			    }
+			  
+			    navigator.geolocation.getCurrentPosition(function(pos){
+			          deferred.resolve(pos);
+		          },
+			      function(err){
+			          deferred.reject(err);
+			      },
+			          {timeout: timeout || 10000}
+			      );
+			  
+			  return deferred.promise;
+		    },
+			
 			"login" : function(account,password,partition){
 				var deferred = $q.defer();
 				

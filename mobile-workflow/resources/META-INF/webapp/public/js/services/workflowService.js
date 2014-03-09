@@ -4,7 +4,7 @@ define(["angularjs"],function(angular){
 		ngInjector = angular.injector(["ng"]),
 	    $http = ngInjector.get("$http"),
 	    $q = ngInjector.get("$q"),
-	    $window = ngInjector.get("$window"),
+	    $window = ngInjector.get("$window"),    
 	    baseServiceUrl,
 	    baseUrl,
 	    href;
@@ -47,6 +47,8 @@ define(["angularjs"],function(angular){
 				    url: baseServiceUrl + "/activity-instances/" + activityOid + "/activation",
 				    method: "PUT"
 				}).success(function(data, status, headers, config) {
+					// SG
+					window.currentlyActiveActivityOID = activityOid;
 					deferred.resolve(data);
 				}).error(function(data, status, headers, config) {
 					deferred.reject(status);
@@ -236,324 +238,32 @@ define(["angularjs"],function(angular){
 				return deferred.promise;
 			},
 			
-			"getProcessHistory" : function(){
-				var deferred = $q.defer();
+			"getProcessHistory" : function(processInstanceOid,selectedProcessInstanceOid){
 				
-				var data={ "parentProcessInstances": [
-						                             {
-						                               "oid": 1,
-						                               "processId": "Process 1",
-						                               "processName": "Process 1",
-						                               "startTimestamp": 1391720570809,
-						                               "state": "Active",
-						                               "priority": 0,
-						                               "startingUser": {
-						                                 "id": "motu",
-						                                 "firstName": "Master",
-						                                 "lastName": "Of the Universe",
-						                                 "name": "Master",
-						                                 "eMail": null,
-						                                 "description": null
-						                               },
-						                               "descriptors": {
-						                                 "PolicyHolderFirstName": {
-						                                   "id": "PolicyHolderFirstName",
-						                                   "name": "PolicyHolderFirstName",
-						                                   "value": "John"
-						                                 },
-						                                 "PolicyNumber": {
-						                                   "id": "PolicyNumber",
-						                                   "name": "PolicyNumber",
-						                                   "value": "123"
-						                                 },
-						                                 "PolicyHolderLastName": {
-						                                   "id": "PolicyHolderLastName",
-						                                   "name": "PolicyHolderLastName",
-						                                   "value": "Doe"
-						                                 }
-						                               }
-						                             },
-						                             {
-						                               "oid": 2,
-						                               "processId": "Process 2",
-						                               "processName": "Process 2",
-						                               "startTimestamp": 1391720570809,
-						                               "state": "Active",
-						                               "priority": 0,
-						                               "startingUser": {
-						                                 "id": "motu",
-						                                 "firstName": "Master",
-						                                 "lastName": "Of the Universe",
-						                                 "name": "Master",
-						                                 "eMail": null,
-						                                 "description": null
-						                               },
-						                               "descriptors": {
-						                                 "PolicyHolderFirstName": {
-						                                   "id": "PolicyHolderFirstName",
-						                                   "name": "PolicyHolderFirstName",
-						                                   "value": "John"
-						                                 },
-						                                 "PolicyNumber": {
-						                                   "id": "PolicyNumber",
-						                                   "name": "PolicyNumber",
-						                                   "value": "123"
-						                                 },
-						                                 "PolicyHolderLastName": {
-						                                   "id": "PolicyHolderLastName",
-						                                   "name": "PolicyHolderLastName",
-						                                   "value": "Doe"
-						                                 }
-						                               }
-						                             }
-						                           ],
-						                           "selectedProcessInstance": {
-						                             "oid": 3,
-						                             "processId": "Process 3",
-						                             "processName": "Process 3",
-						                             "startTimestamp": 1391720570809,
-						                             "state": "Active",
-						                             "priority": 0,
-						                             "startingUser": {
-						                               "id": "motu",
-						                               "firstName": "Master",
-						                               "lastName": "Of the Universe",
-						                               "name": "Master",
-						                               "eMail": null,
-						                               "description": null
-						                             },
-						                             "descriptors": {
-						                               "PolicyHolderFirstName": {
-						                                 "id": "PolicyHolderFirstName",
-						                                 "name": "PolicyHolderFirstName",
-						                                 "value": "John"
-						                               },
-						                               "PolicyNumber": {
-						                                 "id": "PolicyNumber",
-						                                 "name": "PolicyNumber",
-						                                 "value": "123"
-						                               },
-						                               "PolicyHolderLastName": {
-						                                 "id": "PolicyHolderLastName",
-						                                 "name": "PolicyHolderLastName",
-						                                 "value": "Doe"
-						                               }
-						                             }
-						                           },
-						                           "activityInstances": [
-						                             {
-						                               "oid": 140,
-						                               "criticality": 0.3300052739236111,
-						                               "status": "Suspended",
-						                               "lastPerformer": null,
-						                               "assignedTo": "motu",
-						                               "duration": 612785760,
-						                               "activityId": "UIMashup",
-						                               "activityName": "UI Mashup",
-						                               "processId": "AutoAccident",
-						                               "processName": "AutoAccident",
-						                               "processInstanceOid": 13,
-						                               "startTime": 1393434327995,
-						                               "lastModificationTime": 1393434402012,
-						                               "activatable": true,
-						                               "contexts": {
-						                                 "externalWebApp": {
-						                                   "carnot:engine:ui:externalWebApp:uri": "http://localhost:8080/pepper-test/plugins/mobile-workflow/public/mashupapp/mashup.html",
-						                                   "interactionId": "MTR8MTM5MzQzNDQwMjAxMg=="
-						                                 }
-						                               },
-						                               "implementation": "application",
-						                               "processInstance": {
-						                                 "descriptors": {
-						                                   "PolicyNumber": {
-						                                     "id": "PolicyNumber",
-						                                     "name": "PolicyNumber",
-						                                     "value": "333"
-						                                   },
-						                                   "FirstName": {
-						                                     "id": "FirstName",
-						                                     "name": "FirstName",
-						                                     "value": "Jane"
-						                                   },
-						                                   "LastName": {
-						                                     "id": "LastName",
-						                                     "name": "LastName",
-						                                     "value": "Doe"
-						                                   }
-						                                 },
-						                                 "documents": [
-						                                   {
-						                                     "id": "{jcrUuid}dfe74589-3bea-4a86-97cc-a14ad87db8e4",
-						                                     "name": "7-Eleven.jpg",
-						                                     "contentType": "application/octet-stream",
-						                                     "createdTimestamp": 1393625898000,
-						                                     "lastModifiedTimestamp": 1393625898000,
-						                                     "size": 7208,
-						                                     "downloadToken": "ZGwvMS8xMzk0MDQ3MTE0NjI1L3tqY3JVdWlkfWRmZTc0NTg5LTNiZWEtNGE4Ni05N2NjLWExNGFkODdkYjhlNA=="
-						                                   }
-						                                 ],
-						                                 "notes": [
-						                                   {
-						                                     "content": "aasas",
-						                                     "timestamp": 1393625913736,
-						                                     "user": {
-						                                       "id": "motu",
-						                                       "firstName": "Master",
-						                                       "lastName": "Of the Universe",
-						                                       "name": "Master",
-						                                       "eMail": null,
-						                                       "description": null
-						                                     }
-						                                   }
-						                                 ]
-						                               }
-						                             },
-						                             {
-						                               "oid": 141,
-						                               "criticality": 0.3300052739236111,
-						                               "status": "Application",
-						                               "lastPerformer": null,
-						                               "assignedTo": "motu",
-						                               "duration": 612785760,
-						                               "activityId": "UIMashup",
-						                               "activityName": "UI Mashup",
-						                               "processId": "AutoAccident",
-						                               "processName": "AutoAccident",
-						                               "processInstanceOid": 13,
-						                               "startTime": 1393434327995,
-						                               "lastModificationTime": 1393434402012,
-						                               "activatable": true,
-						                               "contexts": {
-						                                 "externalWebApp": {
-						                                   "carnot:engine:ui:externalWebApp:uri": "http://localhost:8080/pepper-test/plugins/mobile-workflow/public/mashupapp/mashup.html",
-						                                   "interactionId": "MTR8MTM5MzQzNDQwMjAxMg=="
-						                                 }
-						                               },
-						                               "implementation": "application",
-						                               "processInstance": {
-						                                 "descriptors": {
-						                                   "PolicyNumber": {
-						                                     "id": "PolicyNumber",
-						                                     "name": "PolicyNumber",
-						                                     "value": "333"
-						                                   },
-						                                   "FirstName": {
-						                                     "id": "FirstName",
-						                                     "name": "FirstName",
-						                                     "value": "Jane"
-						                                   },
-						                                   "LastName": {
-						                                     "id": "LastName",
-						                                     "name": "LastName",
-						                                     "value": "Doe"
-						                                   }
-						                                 },
-						                                 "documents": [
-						                                   {
-						                                     "id": "{jcrUuid}dfe74589-3bea-4a86-97cc-a14ad87db8e4",
-						                                     "name": "7-Eleven.jpg",
-						                                     "contentType": "application/octet-stream",
-						                                     "createdTimestamp": 1393625898000,
-						                                     "lastModifiedTimestamp": 1393625898000,
-						                                     "size": 7208,
-						                                     "downloadToken": "ZGwvMS8xMzk0MDQ3MTE0NjI1L3tqY3JVdWlkfWRmZTc0NTg5LTNiZWEtNGE4Ni05N2NjLWExNGFkODdkYjhlNA=="
-						                                   }
-						                                 ],
-						                                 "notes": [
-						                                   {
-						                                     "content": "aasas",
-						                                     "timestamp": 1393625913736,
-						                                     "user": {
-						                                       "id": "motu",
-						                                       "firstName": "Master",
-						                                       "lastName": "Of the Universe",
-						                                       "name": "Master",
-						                                       "eMail": null,
-						                                       "description": null
-						                                     }
-						                                   }
-						                                 ]
-						                               }
-						                             },
-						                             {
-						                               "oid": 142,
-						                               "criticality": 0.3300052739236111,
-						                               "status": "Application",
-						                               "lastPerformer": null,
-						                               "assignedTo": "motu",
-						                               "duration": 612785760,
-						                               "activityId": "UIMashup",
-						                               "activityName": "UI Mashup",
-						                               "processId": "AutoAccident",
-						                               "processName": "AutoAccident",
-						                               "processInstanceOid": 13,
-						                               "startTime": 1393434327995,
-						                               "lastModificationTime": 1393434402012,
-						                               "activatable": true,
-						                               "contexts": {
-						                                 "externalWebApp": {
-						                                   "carnot:engine:ui:externalWebApp:uri": "http://localhost:8080/pepper-test/plugins/mobile-workflow/public/mashupapp/mashup.html",
-						                                   "interactionId": "MTR8MTM5MzQzNDQwMjAxMg=="
-						                                 }
-						                               },
-						                               "implementation": "application",
-						                               "processInstance": {
-						                                 "descriptors": {
-						                                   "PolicyNumber": {
-						                                     "id": "PolicyNumber",
-						                                     "name": "PolicyNumber",
-						                                     "value": "333"
-						                                   },
-						                                   "FirstName": {
-						                                     "id": "FirstName",
-						                                     "name": "FirstName",
-						                                     "value": "Jane"
-						                                   },
-						                                   "LastName": {
-						                                     "id": "LastName",
-						                                     "name": "LastName",
-						                                     "value": "Doe"
-						                                   }
-						                                 },
-						                                 "documents": [
-						                                   {
-						                                     "id": "{jcrUuid}dfe74589-3bea-4a86-97cc-a14ad87db8e4",
-						                                     "name": "7-Eleven.jpg",
-						                                     "contentType": "application/octet-stream",
-						                                     "createdTimestamp": 1393625898000,
-						                                     "lastModifiedTimestamp": 1393625898000,
-						                                     "size": 7208,
-						                                     "downloadToken": "ZGwvMS8xMzk0MDQ3MTE0NjI1L3tqY3JVdWlkfWRmZTc0NTg5LTNiZWEtNGE4Ni05N2NjLWExNGFkODdkYjhlNA=="
-						                                   }
-						                                 ],
-						                                 "notes": [
-						                                   {
-						                                     "content": "aasas",
-						                                     "timestamp": 1393625913736,
-						                                     "user": {
-						                                       "id": "motu",
-						                                       "firstName": "Master",
-						                                       "lastName": "Of the Universe",
-						                                       "name": "Master",
-						                                       "eMail": null,
-						                                       "description": null
-						                                     }
-						                                   }
-						                                 ]
-						                               }
-						                             }
-						                           ]
-						                         };
+				var deferred = $q.defer(),
+					url = "/process-instances/" + processInstanceOid + "/history";
 				
-				deferred.resolve(data);
+				if(selectedProcessInstanceOid){
+					url=url + "?selectedProcessInstanceOid=" + selectedProcessInstanceOid;
+				}
+				
+				$http({
+				    url: baseServiceUrl + url,
+				    method: "GET"
+				}).success(function(data, status, headers, config) {
+					deferred.resolve(data);
+				}).error(function(data, status, headers, config) {
+					deferred.reject(status);
+				});
 				return deferred.promise;
+				
 			},
 			
 			"getStartableProcesses" : function(){
 				var deferred = $q.defer();
 				
 				$http({
-				    url: baseServiceUrl + "/startable-processes/",
+				    url: baseServiceUrl + "/process-definitions?startable=true",
 				    method: "GET"
 				}).success(function(data, status, headers, config) {
 					deferred.resolve(data);
@@ -567,7 +277,7 @@ define(["angularjs"],function(angular){
 				var deferred = $q.defer();
 				
 				$http({
-				    url: baseServiceUrl + "/process-instances/" + processInstanceOid + "/notes/create",
+				    url: baseServiceUrl + "/process-instances/" + processInstanceOid + "/notes",
 				    method: "POST",
 				    data: {
 							"processInstanceOid" : processInstanceOid,
@@ -579,10 +289,129 @@ define(["angularjs"],function(angular){
 					deferred.reject(status);
 				});
 				return deferred.promise;
-			}
+			},
+			
+			// SG
+         "completeActivity" : function(activityInstanceOID) {
+            var deferred = $q.defer();
+            
+            $http({
+                url: baseServiceUrl + "/activity-instances/" + activityInstanceOID + "/complete",
+                method: "POST",
+                data: {}
+            }).success(function(data, status, headers, config) {
+               deferred.resolve(data);
+            }).error(function(data, status, headers, config) {
+               deferred.reject(status);
+            });
+            return deferred.promise;
+         },       
+         
+         "suspendActivity" : function(activityInstanceOID) {
+            var deferred = $q.defer();
+            
+            $http({
+                url: baseServiceUrl + "/activity-instances/" + activityInstanceOID + "/suspend",
+                method: "POST",
+                data: {}
+            }).success(function(data, status, headers, config) {
+               deferred.resolve(data);
+            }).error(function(data, status, headers, config) {
+               deferred.reject(status);
+            });
+            return deferred.promise;
+         },       
+         
+         "suspendAndSaveActivity" : function(activityInstanceOID) {
+            var deferred = $q.defer();
+            
+            $http({
+                url: baseServiceUrl + "/activity-instances/" + activityInstanceOID + "/suspendAndSave",
+                method: "POST",
+                data: {}
+            }).success(function(data, status, headers, config) {
+               deferred.resolve(data);
+            }).error(function(data, status, headers, config) {
+               deferred.reject(status);
+            });
+            return deferred.promise;
+         }
 			
 		};
+	
+	// SG
+	/*
+	function receiveMessage(event) {
+		if ("complete" == event.data) {
+			if (window.currentlyActiveActivityOID) {
+				srvc.completeActivity(window.currentlyActiveActivityOID)
+				.then(function(e) {
+						alert("Activity completed");
+					}, function() {
+						alert("Activity completion failed");
+					});	
+			}
+		} else if ("suspend" == event.data) {
+			if (window.currentlyActiveActivityOID) {
+				srvc.suspendActivity(window.currentlyActiveActivityOID)
+				.then(function(e) {
+						alert("Activity Suspended");
+					}, function() {
+						alert("Activity suspension failed");
+					});	
+			}
+		} else if ("suspendAndSave" == event.data) {
+			if (window.currentlyActiveActivityOID) {
+				srvc.suspendAndSaveActivity(window.currentlyActiveActivityOID)
+				.then(function(e) {
+						alert("Activity saved and suspend");
+					}, function() {
+						alert("Activity could not be saved and suspended");
+					});	
+			}
+		}
+	};*/
+	
+	/*Angular window message handling setup*/
+	$window.onmessage=function(event){
+		
+		var $rootScope = angular.element(document).scope(),
+			hotInstance = $rootScope.appData.hotActivityInstance;
+		
+		if(!hotInstance.oid){return;}
+			
+		if(event.data == "complete"){
+			srvc.completeActivity(hotInstance.oid)
+				.then(function(){
+				$rootScope.$broadcast( "activityStatusChange",
+									  {"oid" : hotInstance.oid, 
+									   "newStatus" : "complete"}
+				);
+			});
+		}
+		else if(event.data == "suspend"){
+			srvc.suspendActivity(hotInstance.oid)
+				.then(function(){
+				$rootScope.$broadcast( "activityStatusChange",
+									  {"oid" : hotInstance.oid, 
+									   "newStatus" : "suspend"}
+				);
+			});
+		}
+		else if(event.data == "suspendAndSave"){
+			srvc.suspendAndSaveActivity(hotInstance.oid)
+				.then(function(){
+				$rootScope.$broadcast( "activityStatusChange",
+									  {"oid" : hotInstance.oid, 
+									   "newStatus" : "suspendAndSave"}
+				);
+			});
+		}	
 
+	};
+	
+	//window.addEventListener("message", receiveMessage, false);
+	
 		return function(){
 			return srvc;
 		};

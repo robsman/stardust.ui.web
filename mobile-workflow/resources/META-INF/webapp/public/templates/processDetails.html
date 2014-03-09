@@ -1,4 +1,4 @@
-<table style="text-align:left;">
+<table class="ui-mini" style="text-align:left;">
 	<thead>
 		<tr><th></th><th></th></tr>
 	</thead>
@@ -25,3 +25,18 @@
 		<tr>
 	</tbody>
 </table>
+
+<table style="text-align:left;"  class="ui-mini">
+	<thead>
+		<tr>
+			<th></th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr ng-repeat="(k,v) in processModel.descriptors">
+			<th>{{k}}</th>
+			<td>{{v.value}}</td>
+		</tr>
+	</tbody>
+</table-->

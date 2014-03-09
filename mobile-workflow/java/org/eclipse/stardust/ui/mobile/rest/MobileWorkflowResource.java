@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.util.List;
 
 import javax.activation.DataHandler;
+import javax.annotation.Resource;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
@@ -14,7 +15,9 @@ import javax.ws.rs.core.*;
 
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.eclipse.stardust.common.config.Parameters;
+import org.eclipse.stardust.engine.core.interactions.InteractionRegistry;
 import org.eclipse.stardust.ui.mobile.service.MobileWorkflowService;
+import org.springframework.context.ApplicationContext;
 
 import com.google.gson.JsonObject;
 
@@ -35,6 +38,9 @@ public class MobileWorkflowResource {
 	@Context
 	private ServletContext servletContext;
 
+   @Resource
+   private ApplicationContext springContext;
+	   
 	/**
 	 * 
 	 * @return
@@ -72,11 +78,13 @@ public class MobileWorkflowResource {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("startable-processes")
-	public Response getStartableProcesses() {
+	@Path("process-definitions")
+	public Response getProcesses(@QueryParam("startable") String startable) {
 		try {
+			// Initit registry
+			getInteractionRegistry();
 			return Response.ok(
-					getMobileWorkflowService().getStartableProcesses()
+					getMobileWorkflowService().getProcesses(Boolean.parseBoolean(startable))
 							.toString(), MediaType.APPLICATION_JSON_TYPE)
 					.build();
 		} catch (Exception e) {
@@ -91,6 +99,9 @@ public class MobileWorkflowResource {
 	@Path("worklist")
 	public Response getWorklist() {
 		try {
+			// Initit registry
+			getInteractionRegistry();
+			
 			return Response.ok(
 					getMobileWorkflowService().getWorklist().toString(),
 					MediaType.APPLICATION_JSON_TYPE).build();
@@ -122,8 +133,8 @@ public class MobileWorkflowResource {
    public Response getActivityInstance(@PathParam("oid") String activityInstanceOid) {
       try {
          return Response.ok(
-               getMobileWorkflowService().getActivityInstance(
-                     Long.parseLong(activityInstanceOid)).toString(),
+               getMobileWorkflowService().getActivityInstanceJson(
+                     getMobileWorkflowService().getActivityInstance(Long.parseLong(activityInstanceOid))).toString(),
                MediaType.APPLICATION_JSON_TYPE).build();
       } catch (Exception e) {
          e.printStackTrace();
@@ -138,8 +149,9 @@ public class MobileWorkflowResource {
 	@Path("activity-instances/{oid: \\d+}/activation")
 	public Response activateActivity(@PathParam("oid") String activityInstanceOid) {
 		try {
+			// TODO @SG - pass the servlet / spring context to service instead of passing it the needed beans.
 			return Response.ok(
-					getMobileWorkflowService().activateActivity(Long.parseLong(activityInstanceOid))
+					getMobileWorkflowService().activateActivity(Long.parseLong(activityInstanceOid), getInteractionRegistry())
 							.toString(), MediaType.APPLICATION_JSON_TYPE)
 					.build();
 		} catch (Exception e) {
@@ -158,7 +170,7 @@ public class MobileWorkflowResource {
          JsonObject json = jsonIo.readJsonObject(postedData);
 
          return Response.ok(
-               getMobileWorkflowService().startProcessInstance(json).toString(),
+               getMobileWorkflowService().startProcessInstance(json, getInteractionRegistry()).toString(),
                MediaType.APPLICATION_JSON_TYPE).build();
       } catch (Exception e) {
          e.printStackTrace();
@@ -173,8 +185,8 @@ public class MobileWorkflowResource {
 	public Response getProcessInstance(@PathParam("oid") String processOid) {
 		try {
 			return Response.ok(
-					getMobileWorkflowService().getProcessInstance(
-							Long.parseLong(processOid)).toString(),
+					getMobileWorkflowService().getProcessInstanceJson(
+					      getMobileWorkflowService().getProcessInstance(Long.parseLong(processOid))).toString(),
 					MediaType.APPLICATION_JSON_TYPE).build();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -202,7 +214,7 @@ public class MobileWorkflowResource {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("process-instances/{oid: \\d+}/notes/create")
+	@Path("process-instances/{oid: \\d+}/notes")
 	public Response createNote(String postedData) {
 		try {
 			JsonObject json = jsonIo.readJsonObject(postedData);
@@ -351,20 +363,90 @@ public class MobileWorkflowResource {
       }
    }
 
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("process-instances/{oid: \\d+}/history")
+   public Response getProcessHistory(@PathParam("oid") String processOid, @QueryParam("selectedProcessInstanceOid") String strSelectedProcessOid) {
+      try {
+         System.out.println("startingProcessOid: " + strSelectedProcessOid);
+         long selectedProcessInstanceOid = 0; 
+         if (strSelectedProcessOid != null && !strSelectedProcessOid.equals(""))
+         {
+            selectedProcessInstanceOid = Long.parseLong(strSelectedProcessOid);
+         }
+         return Response.ok(
+               getMobileWorkflowService().getProcessHistory(
+                     Long.parseLong(processOid), selectedProcessInstanceOid).toString(),
+               MediaType.APPLICATION_JSON_TYPE).build();
+      } catch (Exception e) {
+         e.printStackTrace();
+
+         throw new RuntimeException(e);
+      }
+   }
+
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("activity-instances/{oid: \\d+}/complete")
-   public Response completeActivity(String postedData)
+   public Response completeActivity(@PathParam("oid") String oid, String postedData)
    {
       try
       {
          JsonObject postedDataJson = jsonIo.readJsonObject(postedData);
 
+         InteractionRegistry registry = getInteractionRegistry();
+      // TODO @SG - pass the servlet / spring context to service instead of passing it the needed beans.
          return Response.ok(
-               getMobileWorkflowService().completeActivity(
-                     postedDataJson.getAsJsonObject("activityInstance"),
-                     postedDataJson.getAsJsonObject("outData")),
+               getMobileWorkflowService().completeActivity(oid, registry).toString(),
+               MediaType.APPLICATION_JSON_TYPE).build();
+      }
+      catch (Exception e)
+      {
+         e.printStackTrace();
+
+         throw new RuntimeException(e);
+      }
+   }
+   
+   @POST
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("activity-instances/{oid : \\d+}/suspend")
+   public Response suspendActivity(@PathParam("oid") String oid, String postedData)
+   {
+      try
+      {
+         JsonObject postedDataJson = jsonIo.readJsonObject(postedData);
+
+      // TODO @SG - pass the servlet / spring context to service instead of passing it the needed beans.
+         InteractionRegistry registry = getInteractionRegistry();
+         return Response.ok(
+               getMobileWorkflowService().suspendActivity(oid, registry).toString(),
+               MediaType.APPLICATION_JSON_TYPE).build();
+      }
+      catch (Exception e)
+      {
+         e.printStackTrace();
+
+         throw new RuntimeException(e);
+      }
+   }   
+
+   @POST
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("activity-instances/{oid : \\d+}/suspendAndSave")
+   public Response suspendAndSaveActivity(@PathParam("oid") String oid, String postedData)
+   {
+      try
+      {
+         JsonObject postedDataJson = jsonIo.readJsonObject(postedData);
+
+      // TODO @SG - pass the servlet / spring context to service instead of passing it the needed beans.
+         InteractionRegistry registry = getInteractionRegistry();
+         return Response.ok(
+               getMobileWorkflowService().suspendAndSaveActivity(oid, registry).toString(),
                MediaType.APPLICATION_JSON_TYPE).build();
       }
       catch (Exception e)
@@ -378,9 +460,10 @@ public class MobileWorkflowResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("folders/{folderId: .*}")
+//   @Path("folders{folderId: \\/{0,1}/|\\/b}")
 	public Response getRepositoryFolder(@PathParam("folderId") String folderId) {
 		try {
-			System.out.println("folder id = " + folderId);
+		   System.out.println("folderId: " + folderId);
 			return Response.ok(
 					getMobileWorkflowService().getRepositoryFolder(folderId).toString(),
 					MediaType.APPLICATION_JSON_TYPE).build();
@@ -404,5 +487,23 @@ public class MobileWorkflowResource {
 
          throw new RuntimeException(e);
       }
+   }
+   
+   /**
+    * 
+    * @return
+    */
+   private InteractionRegistry getInteractionRegistry() {
+	   InteractionRegistry registry = (InteractionRegistry) servletContext.getAttribute(InteractionRegistry.BEAN_ID);
+	   if (registry != null) return registry;
+	   
+	   synchronized (this) {
+		   if (null == registry) {
+			   registry = new InteractionRegistry();
+			   servletContext.setAttribute(InteractionRegistry.BEAN_ID, registry);
+		   }
+	   }
+	   
+	   return registry;
    }
 }

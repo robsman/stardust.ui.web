@@ -29,22 +29,25 @@
 			
 				<div class="ui-field-contain">
 				    <label for="accidentDate">Accident Date:</label>
-				    <input ng-model="model.accident.date" id="accidentDate" data-role="date">
+				    <input ng-model="model.accident.DateOfAccident" id="accidentDate" data-role="date">
 				</div>
 				
 				<div class="ui-field-contain">
 				    <label for="accidentLocation">Accident Location:</label>
-				    <input ng-model="model.accident.location" placeholder="coordinates" id="accidentLocation" data-role="date">
+				    <input ng-click="getCurrentPosition()" 
+				           ng-model="model.accident.AccidentLocation" 
+				           placeholder="coordinates" 
+				           id="accidentLocation">
 				</div>
 				
 				<div class="ui-field-contain">
 				    <label for="slider-5">Number of Vehicles Involved</label>
-				    <input ng-model="model.accident.numVehicles" type="number" name="slider-5" id="slider-5" value="50" min="0" max="100" data-highlight="true" data-mini="true">
+				    <input ng-model="model.accident.CarsInvolvedInAccident" type="number" name="slider-5" id="slider-5" value="50" min="0" max="100" data-highlight="true" data-mini="true">
 				</div>
 
 				<div class="ui-field-contain">
 					<label for="flip-checkbox-1">Was Your Vehicle Towed?</label>
-				    <input ng-model="model.accident.vehicleTowed" type="checkbox" xdata-role="flipswitch" name="flip-checkbox-1" id="flip-checkbox-1">
+				    <input ng-model="model.accident.YourVehicleTowed" type="checkbox" xdata-role="flipswitch" name="flip-checkbox-1" id="flip-checkbox-1">
 				</div>
 
 			    <p>Where was your vehicle damaged?</p>
@@ -52,37 +55,37 @@
 			    <div class="ui-grid-a" class="ui-mini">
 				    <div class="ui-block-a">
 				    	<div class="ui-bar ui-bar-a" style="height:60px;">
-				    		<input ng-model="model.accident.damageLocs.front" type="checkbox" name="checkbox-v-2a" id="checkbox-v-2a">
+				    		<input ng-model="model.accident.WhereVehicleDamaged.Front" type="checkbox" name="checkbox-v-2a" id="checkbox-v-2a">
        						<label for="checkbox-v-2a" style="font-size:0.9em;">Front</label>
 				    	</div>
 				    </div>
 				    <div class="ui-block-b">
 				    	<div class="ui-bar ui-bar-a" style="height:60px;">
-				    		<input ng-model="model.accident.damageLocs.rear" type="checkbox" name="checkbox-v-2b" id="checkbox-v-2b">
+				    		<input ng-model="model.accident.WhereVehicleDamaged.Rear" type="checkbox" name="checkbox-v-2b" id="checkbox-v-2b">
        						<label for="checkbox-v-2b" style="font-size:0.9em;">Rear</label>
 				    	</div>
 				    </div>
 				    <div class="ui-block-a">
 				    	<div class="ui-bar ui-bar-a" style="height:60px">
-				    		<input ng-model="model.accident.damageLocs.passSide" type="checkbox" name="checkbox-v-2c" id="checkbox-v-2c">
+				    		<input ng-model="model.accident.WhereVehicleDamaged.PassengerSide" type="checkbox" name="checkbox-v-2c" id="checkbox-v-2c">
        						<label for="checkbox-v-2c" style="font-size:0.9em;">Pass-side</label>
 				    	</div>
 				    </div>
 				    <div class="ui-block-b">
 				    	<div class="ui-bar ui-bar-a" style="height:60px">
-				    		<input ng-model="model.accident.damageLocs.driverSide" type="checkbox" name="checkbox-v-2d" id="checkbox-v-2d">
+				    		<input ng-model="model.accident.WhereVehicleDamaged.DriverSide" type="checkbox" name="checkbox-v-2d" id="checkbox-v-2d">
        						<label for="checkbox-v-2d" style="font-size:0.9em;">Driver Side</label>
 				    	</div>
 				    </div>
 				    <div class="ui-block-a">
 				    	<div class="ui-bar ui-bar-a" style="height:60px">
-				    		<input ng-model="model.accident.damageLocs.hood" type="checkbox" name="checkbox-v-2e" id="checkbox-v-2e">
+				    		<input ng-model="model.accident.WhereVehicleDamaged.Hood" type="checkbox" name="checkbox-v-2e" id="checkbox-v-2e">
        						<label for="checkbox-v-2e" style="font-size:0.9em;">hood</label>
 				    	</div>
 				    </div>
 				    <div class="ui-block-b">
 				    	<div class="ui-bar ui-bar-a" style="height:60px">
-				    		<input ng-model="model.accident.damageLocs.underCarriage" type="checkbox" name="checkbox-v-2f" id="checkbox-v-2f">
+				    		<input ng-model="model.accident.WhereVehicleDamaged.Undercarriage" type="checkbox" name="checkbox-v-2f" id="checkbox-v-2f">
        						<label for="checkbox-v-2f" style="font-size:0.9em;">Undercarriage</label>
 				    	</div>
 				    </div>
@@ -91,7 +94,7 @@
 				</form>
 			</div><!-- /content -->
 
-			<button ng-click="submitModel()" class="ui-btn ui-corners-all">Submit</button>
+			<button ng-click="submitModel()" class="ui-btn ui-corners-all">Complete</button>
 			
 		</div><!-- /page -->
 		

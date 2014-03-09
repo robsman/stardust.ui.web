@@ -131,13 +131,13 @@ define([],function(){
 		val = (val*1000).toFixed(0);
 		result = val;
 		if(val < 333.33){
-			result = val + " (Low)";
+			result =  "Low (" + val + ")";
 		}
 		else if(val < 666.33){
-			result = val + " (Medium)";
+			result = "Medium (" + val + ")";
 		}
 		else{
-			result = val + " (High)";
+			result = "High (" + val + ")";
 		}
 		return result;
 	};

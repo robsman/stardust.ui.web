@@ -16,7 +16,7 @@
 				<span class="ui-li-aside" xstyle="float:right;">Started at {{processHistoryModel.selectedProcessInstance.startTimestamp | date:"yyyy-MM-dd hh:mm:ss"}}</span>
 			</p>
 			<p style="font-size:0.75em">
-				<i ng-class="process-state-{{processHistoryModel.selectedProcessInstance.state}}" 
+				<i ng-class="" 
 				   class="fa fa-spinner fa-spin"></i>
 				<span ng-switch="$last" ng-repeat="(k,v) in processHistoryModel.selectedProcessInstance.descriptors">
 		          			{{k}}: {{v.value}}<span ng-if="!$last">,</span>
@@ -24,22 +24,33 @@
 	        </p>
 		</li>
 		<li ng-repeat="activity in processHistoryModel.activityInstances">
-			<a href="#">
-			<p>
-				<i class="fa fa-2x fa-cog"></i>
-				<strong>
-					{{activity.activityId}} 
-					(#{{activity.oid}})
-				</strong>
-				<span class="ui-li-aside" xstyle="float:right;">Modified {{activity.lastModificationTime | date:"yyyy-MM-dd hh:mm:ss"}}</span>
-			</p>
-			<p style="font-size:0.75em">
-				<i ng-class="getStateClass(activity.status)" 
-				   class="fa"></i>
-				<span ng-switch="$last" ng-repeat="(k,v) in processHistoryModel.selectedProcessInstance.descriptors">
-		          			{{k}}: {{v.value}}<span ng-if="!$last">,</span>
-		        </span>
-	        </p>
+			<a ng-click="interceptNav(activity,$event)" ng-href="{{getTargetUrl(activity)}}">
+				<p>
+					<!-- i ng-class="getActivityTypeClass(activity.activityImplementationType,activity.childProcessInstance)" 
+					   class="fa fa-2x"></i-->
+					<span class="fa-stack">
+				      <i class="fa fa-cog fa-stack-2x"></i>
+				      <i ng-if="activity.activityImplementationType==ApplicationActivity"
+				         style="color:#999999" class="fa ipp-offeset-right-2x ipp-offeset-up-2x fa-square fa-stack-1x">
+				      </i>
+				      <i ng-class="getActivityTypeClass(activity.activityImplementationType,activity.childProcessInstance)"
+				      	 class="fa ipp-offeset-right-2x ipp-offeset-up-2x fa-stack-1x">
+				      </i>
+				    </span>
+					<strong>
+						{{activity.activityId}} 
+						(#{{activity.oid}})
+					</strong>
+					<span class="ui-li-aside" xstyle="float:right;">Modified {{activity.lastModificationTime | date:"yyyy-MM-dd hh:mm:ss"}}</span>
+				</p>
+				<p style="font-size:0.75em">
+					<i ng-class="getStateClass(activity.status)" 
+					   class="fa">
+					</i>
+					<span ng-if="activity.status=='Completed'">
+						Completed<span ng-if="activity.lastPerformer"> by {{activity.lastPerformer}}</span>
+					</span>
+		        </p>
 	        </a>
 		</li>
 	</ul>

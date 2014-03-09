@@ -10,7 +10,7 @@
 		<li ng-repeat="doc in documentModel.docs">
 			<a href="#documentViewerPage?id={{doc.id}}&processOid={{activityModel.item.processInstanceOid}}">
 				<h3>{{doc.name}}</h3>
-	       		<p class="ui-li-aside">
+	       		<p>
 	       			<strong>{{doc.lastModifiedTimestamp | date:'yyyy-MM-dd' | humaneDate}}</strong>
 	       		</p>
 			</a>

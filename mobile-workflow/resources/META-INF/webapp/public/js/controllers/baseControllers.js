@@ -37,8 +37,12 @@ define([],function(){
 				$scope.login = function(account,password,partition){
 					var loginPromise = workflowService.login(account,password,partition),
 						success=function(user){
-							$rootScope.appData.user=user;
-							$rootScope.appData.isAuthorized=true;
+							$rootScope.$apply(function(){
+								$rootScope.appData.user=user;
+								$rootScope.appData.isAuthorized=true;
+								$rootScope.appData.isActivityHot = false;
+								$rootScope.appData.hotActivityInstance = {};
+							});
 							utilService.navigateTo($rootScope,"#mainPage",{});
 						},
 						fail = function(status){
@@ -65,12 +69,6 @@ define([],function(){
 					});
 				});
 				
-				$scope.$on("activityCompleted",function(e){
-					console.log("Activity Completed event received!");
-					$scope.$apply(function(){
-						$scope.headerModel.showActivityNavBar = true;
-					});
-				});
 			},
 			
 			/*simple binding for our persistent footer*/

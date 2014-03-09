@@ -62,7 +62,8 @@ define(["jquery-mobile", "angularjs","js/WorkflowService"],function(jqm,angular,
 				/*Reference controllers/baseControllers.js for login authentication*/
 				"login" : function(eventType, matchObj, ui, page, e){
 					var scope, /*Angular scope for our login JQM page*/
-						data;  /*Parameter data passed to our login page*/
+						data,  /*Parameter data passed to our login page*/
+						rootScope;
 					
 					e.preventDefault();
 					console.log("JQM Router: /#login");

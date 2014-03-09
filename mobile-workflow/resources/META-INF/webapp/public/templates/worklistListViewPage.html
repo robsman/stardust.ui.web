@@ -17,8 +17,8 @@
 				</a>
 				<div data-role="popup" id="wlistFilterPopup" data-theme="a">
 				        <ul data-role="listview"  data-inset="true" style="min-width:210px;">
-				            <li data-icon="arrow-d" ng-click="predicate='startTime'"><a href="#">Newest</a></li>
-				            <li data-icon="arrow-d" ng-click="predicate='-startTime'"><a href="#">Oldest</a></li>
+				            <li data-icon="arrow-d" ng-click="predicate='-startTime'"><a href="#">Newest</a></li>
+				            <li data-icon="arrow-d" ng-click="predicate='startTime'"><a href="#">Oldest</a></li>
 				            <li data-icon="arrow-d" ng-click="predicate='criticality'"><a href="#">Criticality</a></li>
 				            <li data-icon="arrow-d" ng-click="predicate='lastModificationTime'"><a href="#">Modified</a></li>
 				        </ul>
@@ -31,9 +31,9 @@
 </div>
 <div data-iscroll>
 	<ul data-role="listview">
-		<li ng-repeat="item in worklistModel.worklistItems | orderBy:predicate:asc">
+		<li ng-repeat="item in worklistModel.worklistItems | orderBy:predicate">
 			<a href="#detailPage?id={{item.oid}}">
-				<h3>{{item.activityName}} (#{{item.oid}})</h3>
+				<strong>{{item.activityName}} <span class="hide-media-sm">(#{{item.oid}})</span></strong>
 				<p>
 					<span ng-switch="$last" ng-repeat="(key,value) in item.descriptors">
 	          			{{key}}: {{value}}<span ng-if="!$last">,</span>

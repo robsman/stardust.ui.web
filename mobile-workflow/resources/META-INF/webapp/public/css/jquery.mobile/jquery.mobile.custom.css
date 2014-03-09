@@ -204,5 +204,65 @@ a.ipp-minimal:visited{
 	padding-right:1em;
 }
 
+      .ipp-stroked{
+        color: white;
+        text-shadow:
+        -1px -1px 0 #000,
+        1px -1px 0 #000,
+        -1px 1px 0 #000,
+        1px 1px 0 #000;
+      }
+      
+.ipp-gradientText{
+
+  background: #000000; /* Old browsers */
+  background: -moz-linear-gradient(left,  #000000 0%, #000000 50%, #aaaaaa 50%, #aaaaaa 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, right top, color-stop(0%,#000000), color-stop(50%,#000000), color-stop(50%,#aaaaaa), color-stop(100%,#aaaaaa)); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(left,  #000000 0%,#000000 50%,#aaaaaa 50%,#aaaaaa 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(left,  #000000 0%,#000000 50%,#aaaaaa 50%,#aaaaaa 100%); /* Opera 11.10+ */
+  background: -ms-linear-gradient(left,  #000000 0%,#000000 50%,#aaaaaa 50%,#aaaaaa 100%); /* IE10+ */
+  background: linear-gradient(to right,  #000000 0%,#000000 50%,#aaaaaa 50%,#aaaaaa 100%); /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#000000', endColorstr='#aaaaaa',GradientType=1 ); /* IE6-9 */
+  
+   -webkit-background-clip: text;
+   moz-background-clip: text;
+   background-clip: text;
+   
+   color: transparent;
+  
+}
+
+.ipp-offeset-up-1x{
+  top:-.25em;
+}
+
+.ipp-offeset-up-2x{
+  top:-.50em;
+}
+
+.ipp-offeset-up-3x{
+  top:-.75em;
+}
+
+.ipp-offeset-up-4x{
+  top:1em;
+}
+
+.ipp-offeset-right-1x{
+  left:0.25em !important;
+}
+
+.ipp-offeset-right-2x{
+  left:0.50em !important;
+}
+
+.ipp-offeset-right-3x{
+  left:0.75em !important;
+}
+
+.ipp-offeset-right-4x{
+  left:1em !important;
+}
+
 .ui-grid-a > .ui-block-a.major { width: 75% }
 .ui-grid-a > .ui-block-b.minor { width: 25%; } 

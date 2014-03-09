@@ -238,10 +238,60 @@ define([],function(){
 			/*panelControl*/
 			"panelCtrl" : function($scope,$rootScope){
 				$scope.test = "Hello From Panel Ctrl";
+				$scope.resetGlobalState = function(){
+						$rootScope.appData.user={};
+						$rootScope.appData.isAuthorized=false;
+						$rootScope.appData.isActivityHot = false;
+						$rootScope.appData.hotActivityInstance = {};
+				}
 			},
 			
 			
-			"processCtrl" : function($scope,$rootScope,workflowService){
+			"processCtrl" : function($scope, $rootScope, $q, workflowService, utilService){
+				
+				/**
+				 * 
+				 * @param processOid
+				 * @returns
+				 */
+				var init = function(processOid){
+					var success,
+						fail,
+						deferred=$q.defer();
+	
+					workflowService.getProcessInstance(processOid)
+						.then(function(data){
+							$scope.$apply(function(){
+									$scope.notesModel.notes = data.notes;
+									$scope.activityModel.item ={
+											"processInstanceOid" : processOid,
+											"processName" : data.processName
+									};
+									$scope.documentModel.docs = data.documents;
+									$scope.participantModel.participants = data.participants;
+									$scope.processModel = data;
+								});
+							},function(status){
+								console.log("Process Instance retrieval failed.");
+								deferred.reject();
+							})
+						.then(function(){
+								workflowService.getProcessHistory(processOid).then(function(data){
+									$scope.$apply(function(){
+										$scope.processHistoryModel.parentProcessInstances=data.parentProcessInstances;
+										$scope.processHistoryModel.selectedProcessInstance=data.selectedProcessInstance;
+										$scope.processHistoryModel.activityInstances=data.activityInstances;
+									});
+								},function(status){
+									console.log("process history retrieval failed");
+									deferred.reject();
+								});
+							})
+						.then(deferred.resolve);
+					
+					return deferred.promise;
+				};
+				
 				
 				/*declare our model(s)*/
 				$scope.notesModel = new notesModel();
@@ -258,36 +308,27 @@ define([],function(){
 				$scope.uploadSuccesful = false;
 				$scope.isUploading =false;
 				
-				//TODO-move to util service
-				$scope.getStateClass=function(state){
-					var cssClass;
-					switch(state){
-					case "Application":
-						cssClass="fa-spinner fa-spin";
-						break;
-					case "Completed":
-						cssClass="fa-check-square-o";
-						break;
-					case "Aborted":
-						cssClass="fa-times";
-						break;
-					case "Suspended":
-						cssClass="fa-coffee";
-						break;
-					case "Hibernated":
-						cssClass="fa-clock-o";
-						break;
-					case "Interrupted":
-						cssClass="fa-exclamation-triangle";
-						break;
-					case "Created":
-						cssClass="fa-magic";
-						break;
-					default:
-						cssClass="fa-question-circle";
+				/*functions for determining classes we will need.*/
+				$scope.getStateClass=utilService.getStateClass;
+				$scope.getActivityTypeClass = utilService.getActivityTypeClass;
+				
+				/*intercept a click event to prevent default navigation on a subprocess*/
+				$scope.interceptNav = function(activity,e){
+					if(activity.childProcessInstance){
+						e.preventDefault(); /*prevent navigation*/
+						/*reload page by hand*/
+						init(activity.childProcessInstance.oid);
 					}
-					
-					return cssClass;
+
+				}
+				
+				/*Build a url for an activityInstance*/
+				$scope.getTargetUrl=function(activity){
+					var url="#";
+					if(!activity.childProcessInstance){
+						url=url + "detailPage?id=" + activity.oid;
+					}
+					return url;
 				};
 				
 				/*Helper function to refresh our scoped document collection*/
@@ -315,7 +356,7 @@ define([],function(){
 		        		  $scope.isUploading=false;
 		        		  if(e.currentTarget.status==200){
 		        			  $scope.uploadSuccesful=true;
-		        			  $scope.alertMessage="Upload Succesful";
+		        			  $scope.alertMessage="Upload Successful";
 		        			  $scope.getDocuments($scope.activityModel.item.processInstanceOid);
 		        		  }else{
 		        			  $scope.uploadSuccesful=false;
@@ -334,43 +375,10 @@ define([],function(){
 				
 				/*Listener for JQuery Mobile navigation events*/
 				$scope.$on("jqm-navigate",function(e,edata){
-					var success,
-						fail;
-					
 					/*Ignore Navigate events on scopes other than our own*/
 					if(edata.scopeTarget != $scope.$id){return;}
-				
-					success=function(data){
-							$scope.$apply(function(){
-								$scope.notesModel.notes = data.notes;
-								console.log(data.participants);
-								/*For coherence with detailPage template structure,
-								 *TODO: abstract title and ids as appropriate*/
-								$scope.activityModel.item ={
-										"processInstanceOid" : edata.data.id,
-										"processName" : data.processName
-								};
-								$scope.documentModel.docs = data.documents;
-								$scope.participantModel.participants = data.participants;
-								$scope.processModel = data;
-							});
-							edata.ui.bCDeferred.resolve();
-					},
-					fail =  function(status){
-							console.log("Process Instance retrieval failed.");
-							edata.ui.bCDeferred.resolve();
-					};		
-					workflowService.getProcessInstance(edata.data.id).then(success,fail);
-					workflowService.getProcessHistory().then(function(data){
-						console.log("process History data");
-						console.log(data);
-						$scope.processHistoryModel.parentProcessInstances =data.parentProcessInstances;
-						$scope.processHistoryModel.selectedProcessInstance=data.selectedProcessInstance;
-						$scope.processHistoryModel.activityInstances=data.activityInstances;
-					},function(status){
-						console.log("process history retrieval failed");
-						console.log(status);
-					});
+					init(edata.data.id)
+						.then(edata.ui.bCDeferred.resolve);
 				});
 				
 				/**/
@@ -407,24 +415,18 @@ define([],function(){
 				$scope.showActivateButton =false;
 				$scope.hotActivityConflict = false;
 				$scope.previousPage="";
+				$scope.showMashup =false;
 				
-				$scope.isMashupShowable = function(){
-					if(  $rootScope.appData.isActivityHot &&  
-							(  $scope.activityModel.item.oid == $rootScope.appData.hotActivityInstance.oid )
-						){
-						return true;
-					}else{
-						return false;
-					}
+				$scope.isMashupShowable = function(force){
+					return $scope.showMashup;
 				};
 				
 				$scope.isHotActivityConflict = function(){
-					if($rootScope.appData.isActivityHot && 
-							(  $scope.activityModel.item.oid != $rootScope.appData.hotActivityInstance.oid )
-							){
-						return true;
-					}else{
+					if(!$rootScope.appData.isActivityHot){
 						return false;
+					}
+					else if($scope.activityModel.item.oid === $rootScope.appData.hotActivityInstance.oid){
+						return true;
 					}
 				};
 				
@@ -433,7 +435,10 @@ define([],function(){
 						function(data){
 							
 							var url=data.contexts.externalWebApp["carnot:engine:ui:externalWebApp:uri"] +
-									"?interactionId=" + data.contexts.externalWebApp.interactionId;
+									"?ippInteractionUri=" + data.contexts.externalWebApp.ippInteractionUri +
+									"&ippPortalBaseUri=" + data.contexts.externalWebApp.ippPortalBaseURi +
+									"&ippServicesBaseUri=" + data.contexts.externalWebApp.ippServicesBaseUri +
+									"&interactionId=" + data.contexts.externalWebApp.interactionId;
 							
 							//Load new data for iframe
 							$scope.$apply(function(){
@@ -448,11 +453,13 @@ define([],function(){
 										"name" : $scope.activityModel.item.activityName
 								};
 							});
+							
 							//Get updates state etc from server...
 							workflowService.getActivityInstance(activityOid).then(
 									function(data){
 										$scope.$apply(function(){
 											$scope.activityModel.item = data;
+											$scope.showMashup=true;
 											$scope.isMashupShowable();
 											$scope.isHotActivityConflict();
 										});
@@ -510,6 +517,24 @@ define([],function(){
 		          }
 		        };
 				
+				$scope.$on("activityStatusChange",function(e,data){
+					/*filter out events that don't match our hotInstance*/
+					if($rootScope.appData.hotActivityInstance.oid != data.oid){return;}
+					if(data.newStatus=="complete"){
+						utilService.navigateTo($rootScope,"#worklistListViewPage");
+						$rootScope.$apply(function(){
+							$rootScope.appData.hotActivityInstance={};
+							$rootScope.appData.isActivityHot="false";
+							$scope.showMashup=false;
+							$scope.isMashupShowable();
+							$scope.isHotActivityConflict();
+						});
+						
+					}
+					console.log(data);
+					
+				});
+				
 				/*Listener for JQuery Mobile Navigation events*/
 				$scope.$on("jqm-navigate",function(e,edata){
 					
@@ -526,7 +551,10 @@ define([],function(){
 							
 							if(data.activatable){
 								url=data.contexts.externalWebApp["carnot:engine:ui:externalWebApp:uri"] +
-								"?interactionId=" + data.contexts.externalWebApp.interactionId;
+                        "?ippInteractionUri=" + data.contexts.externalWebApp.ippInteractionUri +
+                        "&ippPortalBaseUri=" + data.contexts.externalWebApp.ippPortalBaseURi +
+                        "&ippServicesBaseUri=" + data.contexts.externalWebApp.ippServicesBaseUri +
+                        "&interactionId=" + data.contexts.externalWebApp.interactionId;
 							}
 							
 							$scope.$apply(function(){
@@ -539,10 +567,9 @@ define([],function(){
 								$scope.previousPage=edata.ui.options.fromPage[0].id;
 								$scope.isMashupShowable();
 								$scope.isHotActivityConflict();
-								
-						
-								
+								$scope.showMashup =false;
 							});
+							
 							if(edata.data.activeTab){
 								$("[href='#" + edata.data.activeTab + "']").addClass("ui-btn-active");
 								$("[href='#" + edata.data.activeTab + "']").trigger("click");

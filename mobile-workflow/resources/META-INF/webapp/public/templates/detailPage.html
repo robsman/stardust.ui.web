@@ -1,8 +1,10 @@
 
 <div data-role="header" style="overflow:hidden;">
-	<h1>{{activityModel.item.activityName}} (#{{activityModel.item.oid}})</h1>
+	<h1>{{activityModel.item.activityName}} <span class="hide-media-sm">(#{{activityModel.item.oid}})</span></h1>
     <!-- a href="#" data-icon="gear" class="ui-btn-right">Options</a-->
-    <a ng-href="#{{previousPage}}" ng-click="activeTab=''"  class="ui-btn ui-shadow ui-corner-all ui-icon-back ui-btn-icon-notext">No Text</a>
+    <a ng-href="#{{previousPage}}" 
+       ng-click="activeTab=''"  
+       class="ui-btn ui-shadow ui-corner-all ui-icon-back ui-btn-icon-notext">No Text</a>
 </div>
 
 <div data-role="tabs" id="tabs" style="padding-top:0em;border-top:0em;">
@@ -52,13 +54,13 @@
 		</div>
   </div>
   <div  id="formTab" class="ui-body-d ui-content" style="text-align:center;">
-    	<div ng-show="isMashupShowable()==true" 
+    	<div ng-show="isMashupShowable()===true" 
     		 data-jqm-template 
 			 data-jqm-widgets=""
 			 data-bind-to=""
 			 data-template-url="templates/formPage.html">
 		</div>
-		<div ng-show="isMashupShowable()==false"
+		<div ng-show="isMashupShowable()===false"
 			 data-jqm-template 
 			 data-jqm-widgets=""
 			 data-bind-to=""
@@ -93,6 +95,7 @@
 	  	<i class="fa fa-bolt"></i> Activate
 	  </div>
 	  
+	  <!-- Pseudo activate button we detected a conflict and just want to warn the user on click -->
 	  <div ng-show="activityModel.item.activatable && isHotActivityConflict()==true" 
 	  	   style="margin-right:0em;" 
 	  	   class="ui-btn ui-conrner-all ui-btn-inline">

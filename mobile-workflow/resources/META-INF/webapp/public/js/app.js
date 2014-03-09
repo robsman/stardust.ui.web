@@ -44,6 +44,7 @@ define(function(require){
 	
 	/*Initial setup TODO:-*/
 	app.run(function($rootScope,workflowService){
+		
 		$rootScope.appData={
 				"isAuthorized" : false,
 				"user" :{},
@@ -51,9 +52,11 @@ define(function(require){
 				"isActivityHot" : false,
 				"hotActivityInstance" : {}
 		};
+		
 		$rootScope.signalJQMNavigation = function(data){
 			$rootScope.$broadcast("jqm-navigate",data);
 		};
+		
 	});
 	
 	/* 1. bootstrap our document against our angular application
