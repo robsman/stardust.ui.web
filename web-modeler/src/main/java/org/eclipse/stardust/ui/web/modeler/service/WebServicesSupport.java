@@ -88,7 +88,20 @@ public class WebServicesSupport
    public JsonObject getWebServiceStructure(JsonObject postedData)
    {
       String wsdlUrl = postedData.get("wsdlUrl").getAsString();
+      String modelID = postedData.get("modelID").getAsString();
       System.out.println("===> Get Web Service Structure for URL " + wsdlUrl);
+
+      if (wsdlUrl != null && wsdlUrl.indexOf("${") > -1)
+      {
+         ModelType model = this.getModelBuilderFacade().getModelManagementStrategy()
+               .getModels().get(modelID);
+         if (model != null)
+         {
+            VariableContext variableContext = new VariableContext();
+            variableContext.initializeVariables(model);
+            wsdlUrl = variableContext.replaceAllVariablesByDefaultValue(wsdlUrl);
+         }
+      }
 
       Definition definition = JaxWSResource.getDefinition(wsdlUrl);
 

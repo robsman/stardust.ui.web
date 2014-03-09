@@ -3,15 +3,19 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title>Message Event</title>
+<link href="plugins/bpm-modeler/css/bpm-modeler.custom.jquery.ui.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
-	<div id="propertiesTabs" style="margin-top: 10px;">
+	<div id="propertiesTabs" class="minimalTabs" style="margin-top: 10px;">
 		<ul id="propertiesTabsList">
 			<li><a href="#configurationTab"><span class="tabLabel"
 					id="configuration">Configuration</span> </a>
 			</li>
 			<li><a href="#parametersTab"><span class="tabLabel"
 					id="parameters">Parameters</span> </a>
+			</li>
+			<li><a href="#splilTab"><span class="tabLabel"
+					id="split">Split</span> </a>
 			</li>
 		</ul>
 		<div id="configurationTab">
@@ -183,6 +187,80 @@
 								</select></td>
 							</tr>
 						</table></td>
+				</tr>
+			</table>
+		</div>
+		
+		<div id="splilTab">
+			<table>
+				<tr>
+					<td><label for="useSplitting">Use Splitting</label>
+					</td>
+					<td>
+					<input id="useSplitting" type="checkbox" />
+					</td>
+					<td></td>
+				</tr>
+				<tr>
+					<td><label id="stopOnExceptionLabel" for="stopOnException">Stop On Exception</label>
+					</td>
+					<td>
+					<input id="stopOnException" type="checkbox" />
+					</td>
+					<td></td>
+				</tr>
+				<tr>
+					<td><label id ="tokenLabel" for="token">Token</label>
+					</td>
+					<td><input id="token" type="text"
+						style="width: 200px;" /></td>
+					<td></td>
+				</tr>			
+				<tr>
+					<td><label id="regexLabel" for="regex">Regex</label>
+					</td>
+					<td>
+					<input id="regex" type="checkbox" />
+					</td>
+					<td></td>
+				</tr>	 
+				<tr>
+					<td><label id="xmlLabel" for="xml">XML</label>
+					</td>
+					<td>
+					<input id="xml" type="checkbox" />
+					</td>
+					<td></td>
+				</tr>
+				<tr>
+					<td><label id="inheritNamespaceTagNameLabel" for="inheritNamespaceTagName">Inherit Namespace Tag Name</label>
+					</td>
+					<td><input id="inheritNamespaceTagName" type="text"
+						style="width: 200px;" /></td>
+					<td></td>
+				</tr>		
+				<tr>
+					<td><label id="streamingLabel" for="streaming">Streaming</label>
+					</td>
+					<td>
+					<input id="streaming" type="checkbox" />
+					</td>
+					<td></td>
+				</tr>
+				<tr>
+					<td><label id="groupingLabel" for="grouping">Grouping</label>
+					</td>
+					<td><input id="grouping" type="text"
+						style="width: 200px;" /></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td><label id="parallelProcessingLabel" for="parallelProcessing">Parallel Processing</label>
+					</td>
+					<td>
+					<input id="parallelProcessing" type="checkbox" />
+					</td>
+					<td></td>
 				</tr>
 			</table>
 		</div>

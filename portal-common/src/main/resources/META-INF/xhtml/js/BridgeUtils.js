@@ -248,6 +248,55 @@ if (!window["BridgeUtils"]) {
 			BridgeUtils.FrameManager.close(id);
 		}
 
+		/*
+		 * 
+		 */
+		function processUrlParams() {
+			var hash = window.location.hash;
+			if (hash != "" && hash.length > 0) {
+				// Remove #
+				hash = hash.substring(1);
+				// Somehow / gets added at start!, if so remove it
+				if (hash.indexOf("/") == 0) {
+					hash = hash.substring(1);
+				}
+
+				var uiCommand = extractParams(hash)['uicommand'];
+
+				if (uiCommand) {
+					// Decode if needed
+					try {
+						uiCommand = window.atob(uiCommand); // Base64 Decode
+					} catch(e) {
+						log("Error while decoding uicommand. May be it's not encoded." + e);
+					}
+	
+					// Check if it's valid format i.e. JSON format
+					try {
+						JSON.parse(uiCommand);
+						window.postMessage(uiCommand, "*");
+
+						window.location.hash = "";
+					} catch (e) {
+						log("uicommand is not in valid format. Needs to be JSON: " + uiCommand);
+					}
+				}
+			}
+		}
+
+		/*
+		 * 
+		 */
+		function extractParams(str) {
+			var params = {}, regex = /([^&=]+)=([^&]*)/g, match;
+			if (str != "" && str.length > 0) {
+				while (match = regex.exec(str)) {
+					params[decodeURIComponent(match[1])] = decodeURIComponent(match[2]);
+				}
+			}
+			return params;
+		}
+
 		return {
 			log : log,
 			initIframe : initIframe,
@@ -263,7 +312,8 @@ if (!window["BridgeUtils"]) {
 			getContextRoot : getContextRoot,
 			showHideAlertNotifications : showHideAlertNotifications,
 			showAlertNotifications : showAlertNotifications,
-			hideAlertNotifications : hideAlertNotifications
+			hideAlertNotifications : hideAlertNotifications,
+			processUrlParams : processUrlParams
 		}
 	};
 } // !BridgeUtils

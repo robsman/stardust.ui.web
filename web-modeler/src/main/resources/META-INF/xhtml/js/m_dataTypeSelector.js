@@ -17,9 +17,9 @@ define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
 				"bpm-modeler/js/m_extensionManager", "bpm-modeler/js/m_model",
 				"bpm-modeler/js/m_dialog", "bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_modelElementUtils",
-				"bpm-modeler/js/m_messageDisplay"],
+				"bpm-modeler/js/m_messageDisplay", "bpm-modeler/js/m_modelerUtils"],
 		function(m_utils, m_constants, m_extensionManager, m_model, m_dialog,
-				m_i18nUtils, m_modelElementUtils, m_messageDisplay) {
+				m_i18nUtils, m_modelElementUtils, m_messageDisplay, m_modelerUtils) {
 			return {
 				create : function(options) {
 					var panel = new DataTypeSelector();
@@ -56,7 +56,7 @@ define(
 					this.supportsDocumentTypes = options.supportsDocumentTypes;
 					this.restrictToCurrentModel = options.restrictToCurrentModel;
 					this.hideEnumerations = options.hideEnumerations;
-
+					this.enableOpenTypeDeclarationLink = options.enableOpenTypeDeclarationLink;
 
 					this.dataTypeSelect = m_utils.jQuerySelect(this.checkElementId(this.scope) + " #dataTypeSelect");
 					this.primitiveDataTypeRow = m_utils.jQuerySelect(this.checkElementId(this.scope) + " #primitiveDataTypeRow");
@@ -116,6 +116,16 @@ define(
 											event.data.panel.submitChanges();
 										}
 									});
+
+					if (this.enableOpenTypeDeclarationLink) {
+						this.structuredDataTypeRow.append('<td><img id="typeDeclarationViewLink" style="padding-left: 5px;" class="imgLink imgLinkDisabled" src="plugins/bpm-modeler/images/icons/arrow.png" /></td>');
+						this.typeDeclarationViewLink = m_utils.jQuerySelect(this.checkElementId(this.scope)+ " #typeDeclarationViewLink");
+						this.typeDeclarationViewLink.click({
+							panel : this
+						}, function(event) {
+							event.data.panel.openTypeDeclarationView();
+						});
+					}
 				};
 
 				DataTypeSelector.prototype.validate = function() {
@@ -489,7 +499,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				DataTypeSelector.prototype.isEnumTypeDeclaration = function(
 						fullId) {
@@ -504,7 +514,7 @@ define(
 					}
 
 				};
-				
+
 				/**
 				 *
 				 */
@@ -579,6 +589,14 @@ define(
 				DataTypeSelector.prototype.setStructuredDataType = function(
 						structuredDataTypeFullId) {
 					this.structuredDataTypeSelect.val(structuredDataTypeFullId);
+					if (this.enableOpenTypeDeclarationLink) {
+						// TODO - find a better way
+						if (structuredDataTypeFullId
+								&& structuredDataTypeFullId.indexOf(":") != (structuredDataTypeFullId.length - 1)) {
+							this.typeDeclarationViewLink
+									.removeClass("imgLinkDisabled");
+						}
+					}
 
 					m_dialog.makeInvisible(this.primitiveDataTypeRow);
 					m_dialog.makeVisible(this.structuredDataTypeRow);
@@ -691,6 +709,17 @@ define(
 							primitiveDataType : primitiveDataType,
 							structuredDataTypeFullId : structTypeFullId
 						});
+					}
+				};
+
+				/**
+				 *
+				 */
+				DataTypeSelector.prototype.openTypeDeclarationView = function() {
+					var fullId = this.structuredDataTypeSelect.val();
+					if (fullId && fullId !== m_constants.TO_BE_DEFINED) {
+						var typeDeclaration = m_model.findTypeDeclaration(fullId);
+						m_modelerUtils.openTypeDeclarationView(typeDeclaration);
 					}
 				};
 			}

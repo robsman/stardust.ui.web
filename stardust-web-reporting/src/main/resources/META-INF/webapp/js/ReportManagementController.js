@@ -393,6 +393,9 @@ define(
 				 */
 				ReportManagementController.prototype.openView = function(
 						viewId, viewParams, viewIdentity) {
+					viewIdentity = viewIdentity.replace(/\//g, "");
+					viewIdentity = viewIdentity.replace(/ /g, "");
+
 					var portalWinDoc = this.getOutlineWindowAndDocument();
 					var link = jQuery("a[id $= 'view_management_link']",
 							portalWinDoc.doc);

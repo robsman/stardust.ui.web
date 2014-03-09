@@ -298,6 +298,15 @@ public final class SessionContext implements Serializable
       loginData = new LoginData(account, password != null ? password.toCharArray() : new char[0], properties);
       ServiceFactory serviceFactory = loginData.getServiceFactory();
       
+      login(serviceFactory);
+   }
+
+   /**
+    * @param serviceFactory
+    * @throws PortalException
+    */
+   public void login(ServiceFactory serviceFactory) throws PortalException
+   {
       validateSession(serviceFactory);
       this.serviceFactory = serviceFactory;
    }
@@ -309,11 +318,6 @@ public final class SessionContext implements Serializable
     */
    public void initInternalSession() throws PortalException
    {
-      if (loginData == null)
-      {
-         // works only if login(String, String, Map) has been called successfully before 
-         throw new PortalException(PortalErrorClass.UNABLE_TO_INITIALIZE_SESSION);
-      }
       initSession();
    }
    

@@ -1324,6 +1324,13 @@ define(
 				 *
 				 */
 				Symbol.prototype.drag = function(dX, dY, x, y) {
+					// Sometimes drag function gets called with dx and dy as 0 when a symbol is clicked,
+					// but has values for X and Y are non-zero causing unintended symbol movement.
+					// Adding this check to avoid symbol move on selection
+					if (dX == 0  && dY == 0) {
+						return;
+					}
+
 					this.diagram.resetEditableText();
 					if (this.diagram.mode == this.diagram.SYMBOL_MOVE_MODE) {
 
@@ -1460,6 +1467,7 @@ define(
 					var moveY = y * this.diagram.zoomFactor
 							- this.diagram.getCanvasPosition().top
 							- (this.height / 2);
+
 					return {
 						'deltaX' : moveX - this.x,
 						'deltaY' : moveY - this.y
@@ -1696,6 +1704,7 @@ define(
 					} else {
 						this.showMoveCursor();
 						this.highlight();
+						this.showFlyOutMenu();
 					}
 				};
 
@@ -2356,7 +2365,7 @@ define(
 				if (this.symbol) {
 					//this.symbol.addToPrimitives(this.graphics);
 				}
-				
+
 				this.originalAnchorPoint = null;
 				this.dragConnection = null;
 				this.lastDragOverSymbol = null;

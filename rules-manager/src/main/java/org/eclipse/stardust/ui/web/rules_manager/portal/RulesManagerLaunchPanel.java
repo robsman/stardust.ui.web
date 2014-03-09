@@ -11,6 +11,7 @@
 
 package org.eclipse.stardust.ui.web.rules_manager.portal;
 
+import javax.annotation.Resource;
 import javax.faces.context.FacesContext;
 
 import org.springframework.beans.factory.BeanCreationException;
@@ -27,6 +28,7 @@ import org.eclipse.stardust.ui.web.common.event.PerspectiveEvent;
 import org.eclipse.stardust.ui.web.common.event.PerspectiveEventHandler;
 import org.eclipse.stardust.ui.web.common.uielement.AbstractLaunchPanel;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
+import org.eclipse.stardust.ui.web.rules_manager.store.RulesManagementStrategy;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.core.SessionSharedObjectsMap;
 
@@ -40,6 +42,10 @@ public class RulesManagerLaunchPanel extends AbstractLaunchPanel
       implements PerspectiveEventHandler
 {
    private static final Logger trace = LogManager.getLogger(RulesManagerLaunchPanel.class);
+   
+   @Resource(name="rulesManagementStrategy")
+   private RulesManagementStrategy rulesManagementStrategy;
+
    /**
 	 *
 	 */
@@ -48,11 +54,6 @@ public class RulesManagerLaunchPanel extends AbstractLaunchPanel
       super("rulesManagerLaunchPanel");
       SessionSharedObjectsMap sessionMap = SessionSharedObjectsMap.getCurrent();
       sessionMap.setObject("SESSION_CONTEXT", SessionContext.findSessionContext());
-
-      // My processes panel should be expanded by default
-      // Set it to expanded and activate outline IFRAME
-      setExpanded(true);
-      activateIframe();
    }
 
    /*
@@ -92,7 +93,7 @@ public class RulesManagerLaunchPanel extends AbstractLaunchPanel
    {
        String outlinePath = FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath() 
        		+ "/plugins/rules-manager/launchpad/outline.html";
-      String deActivateIframeJS = "InfinityBpm.ProcessPortal.createOrActivateContentFrame('ruleSetOutlineFrame', '" + outlinePath + "', {anchorId:'portalLaunchPanels:rulesOutlineAnchor', autoResize: true, heightAdjustment: -30, zIndex:800, noUnloadWarning: 'true', frmAttrs: {repotitionOnScroll: false}});";
+      String deActivateIframeJS = "InfinityBpm.ProcessPortal.createOrActivateContentFrame('ruleSetOutlineFrame', '" + outlinePath + "', {anchorId:'portalLaunchPanels:rulesOutlineAnchor', autoResize: true, zIndex:800, noUnloadWarning: 'true', frmAttrs: {repotitionOnScroll: false}});";
       JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(),
             deActivateIframeJS);
       PortalApplicationEventScript.getInstance().addEventScript(deActivateIframeJS);
@@ -115,6 +116,12 @@ public class RulesManagerLaunchPanel extends AbstractLaunchPanel
       switch (event.getType())
       {
       case ACTIVATED:
+         rulesManagementStrategy.initialize(event.getParams());
+
+         // Panel should be expanded by default
+         // Set it to expanded and activate outline IFRAME
+         setExpanded(true);
+         activateIframe();
       case LAUNCH_PANELS_ACTIVATED:
          Boolean launchPanelActivated = null;
          try
@@ -140,5 +147,10 @@ public class RulesManagerLaunchPanel extends AbstractLaunchPanel
          FacesUtils.refreshPage();
          break;
       }
+   }
+
+   public void setRulesManagementStrategy(RulesManagementStrategy rulesManagementStrategy)
+   {
+      this.rulesManagementStrategy = rulesManagementStrategy;
    }
 }

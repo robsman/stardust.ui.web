@@ -102,7 +102,9 @@ require([ "require", "jquery", "jquery-ui", "jquery.download", "jquery.form",
 				lastModificationDateLabel: "#lastModificationDateLabel",
 				parameterTabLabel: "#data",
 				lblmax : "#lblmax",
-				maxRulesExecutions : "#maxRulesExecutions"
+				maxRulesExecutions : "#maxRulesExecutions",
+				decShowGeneralPropertiesTitle: "#decShowGeneralPropertiesTitle",
+				decHideGeneralPropertiesTitle: "#decHideGeneralPropertiesTitle"
 			},
 			i18nMaps:{
 				uuidLabel: {path:"rules.element.properties.commonProperties.uuid",defaultText:"NA",attr:"text"},
@@ -112,7 +114,9 @@ require([ "require", "jquery", "jquery-ui", "jquery.download", "jquery.form",
 				lastModificationDateLabel: {path:"rules.element.properties.lastModifiedDate",defaultText:"NA",attr:"text"},
 				descriptionLabel: {path:"rules.element.properties.commonProperties.description",defaultText:"NA",attr:"text"},
 				parameterTabLabel: {path:"rules.propertyView.rulesetview.parameterdefinitions.parameters.tab",defaultText:"NA",attr:"text"},
-				lblmax: {path:"rules.propertyView.decisiontableview.maxexecutions.label",defaultText:"NA",attr:"text"}
+				lblmax: {path:"rules.propertyView.decisiontableview.maxexecutions.label",defaultText:"NA",attr:"text"},
+				decShowGeneralPropertiesTitle: {path:"rules.element.properties.generalProperties.title",defaultText:"NA",attr:"text"},
+				decHideGeneralPropertiesTitle: {path:"rules.element.properties.generalProperties.title",defaultText:"NA",attr:"text"}
 			}
 	};
 	ruleSetView.initialize(BridgeUtils.View.getActiveViewParams().param("uuid"),options);

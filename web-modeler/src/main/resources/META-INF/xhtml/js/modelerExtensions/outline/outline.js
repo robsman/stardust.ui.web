@@ -14,7 +14,7 @@ define([ 'bpm-modeler/js/DefaultOutlineHandler', "bpm-modeler/js/m_i18nUtils" ],
 		menuOption : [ {
 			id : "openCreateApplicationWrapperProcessWizardMenuOption",
 			nodeType : "application",
-			label :  "Create Service Wrapper Process", //m_i18nUtils.getProperty("modeler.outline.openCreateApplicationWrapperProcessWizard"),
+			label :  m_i18nUtils.getProperty("modeler.outline.openCreateApplicationWrapperProcessWizard.createServiceWrapperProcess"),
 			provider : DefaultOutlineHandler,
 			handlerMethod: "openCreateApplicationWrapperProcessWizard",
 			visibility : "always"
@@ -22,7 +22,7 @@ define([ 'bpm-modeler/js/DefaultOutlineHandler', "bpm-modeler/js/m_i18nUtils" ],
 		{
 			id : "openProcessInterfaceTestWrapperProcessWizardMenuOption",
 			nodeType : "process",
-			label :  "Create Interface Test Process", //m_i18nUtils.getProperty("modeler.outline.openCreateApplicationWrapperProcessWizard"),
+			label :  m_i18nUtils.getProperty("modeler.outline.openCreateApplicationWrapperProcessWizard.createInterfaceTestProcess"),
 			provider : DefaultOutlineHandler,
 			handlerMethod: "openProcessInterfaceTestWrapperProcessWizard",
 			visibility : "always"

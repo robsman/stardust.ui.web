@@ -298,12 +298,12 @@ define(
         }
       }
 
-      var readAllModels = function(force) {
+      var readAllModels = function(force, dontReloadStrategy) {
         jQuery("div#outlineLoadingMsg").show();
         jQuery("div#outlineLoadingMsg").html(
             m_i18nUtils.getProperty("modeler.outline.loading.message"));
         console.time("###################################### Load models");
-        m_model.loadModels(force);
+        m_model.loadModels(force, dontReloadStrategy);
         console.timeEnd("###################################### Load models");
 
         m_utils.jQuerySelect("#lastsave").text(
@@ -575,6 +575,21 @@ define(
 				//jQuery(displayScope + "#outline").jstree("create");
 			};
 
+			/**
+			 * This function will not reload the models in model management strategy
+			 */
+			var loadOutlineTree = function() {
+				// Close all modeler-related views This is to
+				// avoid having any open view in inconsistent
+				// state.
+				m_modelerUtils.closeAllModelerViews();
+
+				m_utils.jQuerySelect(displayScope + "#outline").empty();
+				readAllModels(true, true);
+				setupJsTree();
+				// jQuery(displayScope + "#outline").jstree("create");
+			};
+			
 			var importModel = function() {
 				if (false == m_modelsSaveStatus.areModelsSaved()) {
 					if (parent.iPopupDialog) {
@@ -680,6 +695,8 @@ define(
 											m_modelsSaveStatus.setModelsSaved();
 											m_utils.jQuerySelect("#undoChange").addClass("toolDisabled");
 											m_utils.jQuerySelect("#redoChange").addClass("toolDisabled");
+											
+											window.parent.EventHub.events.publish("CONTEXT_UPDATED");
 										},
 										failure : function(data) {
 											if (parent.iPopupDialog) {
@@ -2099,7 +2116,9 @@ define(
 
 				if (model) {
 					m_commandsController.submitCommand(m_command
-							.createDeleteModelCommand(model.uuid, model.id, {}));
+							.createDeleteModelCommand(model.uuid, model.id, {})).done(function() {
+								window.parent.EventHub.events.publish("CONTEXT_UPDATED");								
+							});
 				}
 			};
 
@@ -2388,17 +2407,18 @@ define(
 			/**
 			 *
 			 */
-			function createCamelApplication(modelUUId, name, attributes) {
+			function createCamelApplication(modelUUId, name, extIdKey, attributes) {
 				var model = m_model.findModelByUuid(modelUUId);
+				var titledata = m_i18nUtils.getProperty(extIdKey);
 
 				//if (!name) {
-					name = m_modelerUtils.getUniqueNameForElement(
-							model.id,name);
+				var genName = m_modelerUtils.getUniqueNameForElement(
+							model.id, titledata);
 				//}
 
 				m_commandsController.submitCommand(m_command
 						.createCreateCamelAppCommand(model.id, model.id, {
-							name : name,
+							name : genName,
 							attributes : attributes
 						}));
 				isElementCreatedViaOutline = true;
@@ -2556,7 +2576,7 @@ define(
 					options[applicationIntegrationOverlayExtension.id] = {
 						label : createTxt + " " +
 								m_i18nUtils.getProperty("modeler.integrationoverlays.application." +
-								applicationIntegrationOverlayExtension.id), 
+								applicationIntegrationOverlayExtension.id),
 
 						// This code requires the following patch in
 						// jquery.jstree
@@ -2577,6 +2597,8 @@ define(
 							createCamelApplication(
 									node.attr("modelUUID"),
 									applicationIntegrationOverlayExtensions[0].name,
+									m_i18nUtils.getProperty("modeler.integrationoverlays.application." + 
+		                              applicationIntegrationOverlayExtensions[0].id),
 									{
 										"carnot:engine:camel::applicationIntegrationOverlay" : id
 									});
@@ -2694,6 +2716,17 @@ define(
 							changeProfileHandler);
 					window.parent.EventHub.events.subscribe("RELOAD_MODELS",
 							reloadOutlineTree);
+
+					window.parent.EventHub.events.subscribe("CONTEXT_UPDATED", function(releaseId) {
+						if (releaseId != undefined) {
+							reloadOutlineTree();
+						}
+					});
+					
+					//do not refresh the strategy
+					window.parent.EventHub.events.subscribe("LOAD_MODELS", function(releaseId) {
+							loadOutlineTree();
+					});
 				}
 
 				//jQuery(displayScope + "#outline").jstree("create");
@@ -2832,11 +2865,11 @@ define(
 				Outline.prototype.processCommand = function(command) {
 					m_utils.debug("===> Outline Process Event");
 					var modelTreeType="model";
-					var obj = ("string" == typeof (command)) ? jQuery
+					command = ("string" == typeof (command)) ? jQuery
 							.parseJSON(command) : command;
 
-					if (null != obj && null != obj.changes) {
-						for ( var i = 0; i < obj.changes.added.length; i++) {
+					if (null != command && null != command.changes) {
+						for ( var i = 0; i < command.changes.added.length; i++) {
 							// Create Process
 							if (m_constants.PROCESS == command.changes.added[i].type) {
 								this
@@ -2867,15 +2900,15 @@ define(
 												.createParticipant(command.changes.added[i]));
 							}
 						}
-						for ( var i = 0; i < obj.changes.modified.length; i++) {
-							if (m_constants.MODEL == obj.changes.modified[i].type) {
+						for ( var i = 0; i < command.changes.modified.length; i++) {
+							if (m_constants.MODEL == command.changes.modified[i].type) {
 								var modelElement = m_model
-										.findModelByUuid(obj.changes.modified[i].uuid);
+										.findModelByUuid(command.changes.modified[i].uuid);
 							} else {
 								var modelElement = m_model
 										.findElementInModelByUuid(
-												obj.changes.modified[i].modelId,
-												obj.changes.modified[i].uuid);
+												command.changes.modified[i].modelId,
+												command.changes.modified[i].uuid);
 							}
 							m_utils.debug("Models:");
 							m_utils.debug(m_model.getModels());
@@ -2883,8 +2916,8 @@ define(
 							m_utils.debug(modelElement);
 
 							if (modelElement != null) {
-								modelElement.rename(obj.changes.modified[i].id,
-										obj.changes.modified[i].name);
+								modelElement.rename(command.changes.modified[i].id,
+										command.changes.modified[i].name);
 								var uuid = modelElement.uuid;
 								var link = m_utils.jQuerySelect("li#" + uuid + " a")[0];
 								var node = m_utils.jQuerySelect("li#" + uuid);
@@ -2897,11 +2930,11 @@ define(
 
 								textElem.nodeValue = modelElement.name;
 								m_utils.inheritFields(modelElement,
-										obj.changes.modified[i]);
-								if (m_constants.ROLE_PARTICIPANT_TYPE == obj.changes.modified[i].type
-										|| m_constants.TEAM_LEADER_TYPE == obj.changes.modified[i].type) {
+										command.changes.modified[i]);
+								if (m_constants.ROLE_PARTICIPANT_TYPE == command.changes.modified[i].type
+										|| m_constants.TEAM_LEADER_TYPE == command.changes.modified[i].type) {
 									node.attr("rel",
-											obj.changes.modified[i].type);
+											command.changes.modified[i].type);
 								}
 
 								// Change icon in case the date type changes
@@ -2914,11 +2947,11 @@ define(
 											node.attr("rel", m_constants.PRIMITIVE_DATA_TYPE);
 										}else{
 											node.attr("rel",
-													obj.changes.modified[i].dataType);
+													command.changes.modified[i].dataType);
 										}
 									} else {
 										node.attr("rel",
-												obj.changes.modified[i].dataType);
+												command.changes.modified[i].dataType);
 									}
 								}
 
@@ -2947,7 +2980,7 @@ define(
 										.attr("id"), node.attr("name"));
 							}
 						}
-						for ( var i = 0; i < obj.changes.removed.length; i++) {
+						for ( var i = 0; i < command.changes.removed.length; i++) {
 							if (m_constants.MODEL == command.changes.removed[i].type) {
 								this.deleteModel(command.changes.removed[i]);
 							} else if (m_constants.PROCESS == command.changes.removed[i].type) {
@@ -2990,9 +3023,9 @@ define(
 							m_utils.jQuerySelect("#redoChange").addClass("toolDisabled");
 						}
 
-						if (obj.uiState) {
-						  if (obj.uiState.modelLocks) {
-                m_utils.jQuerySelect(obj.uiState.modelLocks).each(function(i, lockInfo) {
+						if (command.uiState) {
+						  if (command.uiState.modelLocks) {
+                m_utils.jQuerySelect(command.uiState.modelLocks).each(function(i, lockInfo) {
                   var model = m_model.findModel(lockInfo.modelId);
                   if (model) {
                     model.editLock = model.editLock || {};
@@ -3022,7 +3055,7 @@ define(
         Outline.prototype.processCommandError = function(command, response) {
           m_utils.debug("===> Outline - Processing Command Error");
 
-          var obj = ("string" == typeof (command)) ? jQuery.parseJSON(command) : command;
+          command = ("string" == typeof (command)) ? jQuery.parseJSON(command) : command;
 
           if (409 === response.status) {
             m_utils.debug("Refreshing model lock status");
@@ -3180,6 +3213,8 @@ define(
 
           runHasModelsCheck();
 
+          window.parent.EventHub.events.publish("CONTEXT_UPDATED");
+          
           return model;
         };
 

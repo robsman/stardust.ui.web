@@ -102,7 +102,9 @@ define(
 							alertPanel : m_utils.jQuerySelect(options.selectors.alertPanel),
 							alertPanelMsg : m_utils.jQuerySelect(options.selectors.alertPanelMsg),
 							tableSearch : m_utils.jQuerySelect(options.selectors.tableSearch),
-							tableSearchLbl : m_utils.jQuerySelect(options.selectors.tableSearchLbl)
+							tableSearchLbl : m_utils.jQuerySelect(options.selectors.tableSearchLbl),
+							decShowGeneralPropertiesTitle: m_utils.jQuerySelect(options.selectors.decShowGeneralPropertiesTitle),
+							decHideGeneralPropertiesTitle: m_utils.jQuerySelect(options.selectors.decHideGeneralPropertiesTitle)
 					};
 					
 					/*TODO: [ZZM] Factor these out.*/
@@ -483,7 +485,7 @@ define(
 				    });
 				    uiElements.decisionTableInstance.rootElement.on("column_removed",function(event){
 				    	/*Check for lock-on-active column being removed*/
-				    	if(event.category==="Attribute" && event.colValue==="lock-on-active"){
+				    	if(event.category==="Attribute" && event.colValue===m_i18nUtils.getProperty("rules.propertyView.decisiontableview.alertpanel.warning.lockOnActive")){
 				    		uiElements.alertPanel.removeClass("view-hide",250,"linear");
 				    		uiElements.alertPanelMsg.text(m_i18nUtils.getProperty("rules.propertyView.decisiontableview.alertpanel.warning.lockOnActive"));
 				    	}

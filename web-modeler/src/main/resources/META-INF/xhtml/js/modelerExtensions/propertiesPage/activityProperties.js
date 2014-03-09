@@ -45,7 +45,7 @@ define([ 'bpm-modeler/js/m_constants',
 					panelId : "activityPropertiesPanel",
 					id : "processingPropertiesPage",
 					provider : m_activityProcessingPropertiesPage,
-					visibility : "preview"
+					visibility : "always"
 				}, {
 					panelId : "activityPropertiesPanel",
 					id : "controllingPropertiesPage",

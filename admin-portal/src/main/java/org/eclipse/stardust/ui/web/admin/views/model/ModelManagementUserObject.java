@@ -205,5 +205,15 @@ public class ModelManagementUserObject extends NodeUserObject
    {
       return !PredefinedConstants.PREDEFINED_MODEL_ID.equals(treeItem.getModelDescription().getId());
    }
+   
+   public Date getDeploymentTime()
+   {
+	      return treeItem.getDeploymentTime();
+   }
+   
+   public void setDeploymentTime(Date deploymentTime)
+   {
+      treeItem.setDeploymentTime(deploymentTime);
+   }
 
 }

@@ -16,6 +16,7 @@ import javax.faces.context.FacesContext;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.app.PortalApplicationEventScript;
 import org.eclipse.stardust.ui.web.common.event.PerspectiveEvent;
@@ -44,6 +45,10 @@ public class ProcessesView extends AbstractLaunchPanel implements
    private static final Logger trace = LogManager.getLogger(ProcessesView.class);
 
    private boolean initialized = false;
+
+   @Resource(name="webModelerModelManagementStrategy")
+   private ModelManagementStrategy modelManagementStrategy;
+
    /**
     *
     */
@@ -62,11 +67,6 @@ public class ProcessesView extends AbstractLaunchPanel implements
             SessionContext.findSessionContext());
 
       profile = ModelingConfigurationPanel.getProfile();
-
-      // My processes panel should be expanded by default
-      // Set it to expanded and activate outline IFRAME
-      setExpanded(true);
-      activateIframe();
    }
 
    /* (non-Javadoc)
@@ -99,7 +99,7 @@ public class ProcessesView extends AbstractLaunchPanel implements
     private static void activateIframe() {
         String outlinePath = FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath()
            + "/plugins/bpm-modeler/launchpad/outline.html";
-        String activateIframeJS = "InfinityBpm.ProcessPortal.createOrActivateContentFrame('modelOutlineFrame', '" + outlinePath + "', {anchorId:'portalLaunchPanels:outlineAnchor', autoResize: true, heightAdjustment: -93, zIndex:800, noUnloadWarning: 'true', frmAttrs: {repotitionOnScroll: false}});";
+        String activateIframeJS = "InfinityBpm.ProcessPortal.createOrActivateContentFrame('modelOutlineFrame', '" + outlinePath + "', {anchorId:'portalLaunchPanels:outlineAnchor', autoResize: true, zIndex:800, noUnloadWarning: 'true', frmAttrs: {repotitionOnScroll: false}});";
         JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(),
                 activateIframeJS);
         PortalApplicationEventScript.getInstance().addEventScript(activateIframeJS);
@@ -129,6 +129,13 @@ public class ProcessesView extends AbstractLaunchPanel implements
       switch (event.getType())
       {
       case ACTIVATED:
+         modelManagementStrategy.initialize(event.getParams());
+
+         // My processes panel should be expanded by default
+         // Set it to expanded and activate outline IFRAME
+         setExpanded(true);
+         activateIframe();
+
          if(!initialized){
             changeMouseCursorStyle("progress");
             toggled = true;
@@ -196,5 +203,10 @@ public class ProcessesView extends AbstractLaunchPanel implements
    public void setProfile(String profile)
    {
       this.profile = profile;
+   }
+   
+   public void setModelManagementStrategy(ModelManagementStrategy strategy)
+   {
+      this.modelManagementStrategy = strategy;
    }
 }

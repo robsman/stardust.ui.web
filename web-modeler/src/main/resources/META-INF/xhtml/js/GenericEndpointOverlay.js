@@ -71,12 +71,13 @@ define(
 
 					// producer route tab
 					this.processContextHeadersInput = m_utils.jQuerySelect("#producerRouteTab #processContextHeadersInput");
+					this.producerBpmTypeConverter = m_utils.jQuerySelect("#producerRouteTab #producerBpmTypeConverter");
+					this.producerOutboundConversion = m_utils.jQuerySelect("#producerRouteTab #producerOutboundConversion");
+					this.producerInboundConversion = m_utils.jQuerySelect("#producerRouteTab #producerInboundConversion");
 					this.producerRouteTextarea = m_utils.jQuerySelect("#producerRouteTab #producerRouteTextarea");
-
-					// consumer route tab
+					this.consumerBpmTypeConverter = m_utils.jQuerySelect("#consumerRouteTab #consumerBpmTypeConverter");
+					this.consumerInboundConversion = m_utils.jQuerySelect("#consumerRouteTab #consumerInboundConversion");
 					this.consumerRouteTextarea = m_utils.jQuerySelect("#consumerRouteTab #consumerRouteTextarea");
-
-					// parameters tab
 					this.requestDataInput = m_utils.jQuerySelect("#genericEndpointOverlay #requestDataInput");
 					this.responseDataInput = m_utils.jQuerySelect("#genericEndpointOverlay #responseDataInput");
 					this.inputBodyAccessPointInput = m_utils.jQuerySelect("#parametersTab #inputBodyAccessPointInput");
@@ -130,6 +131,10 @@ define(
 							return;
 						}
 
+						if (!self.validateProducerRoute()) {
+							return;
+						}
+						
 						self.view.submitModelElementAttributeChange(
 								"carnot:engine:camel::routeEntries",
 								self.producerRouteTextarea.val());
@@ -144,8 +149,83 @@ define(
 								self.processContextHeadersInput.prop("checked"));
 					});
 
+					this.producerBpmTypeConverter.change(function() {
+						if (!self.view.validate()) {
+							return;
+						}
+						
+						if (self.producerBpmTypeConverter.prop("checked")) {
+							self.producerOutboundConversion.prop('disabled', false);
+							self.producerInboundConversion.prop('disabled', false);
+							self.view.submitModelElementAttributeChange(
+									"carnot:engine:camel::producerBpmTypeConverter",
+									self.producerBpmTypeConverter.prop("checked"));
+						}
+						else {
+							self.producerRouteTextarea.removeClass("error");
+							self.producerOutboundConversion.prop('disabled', true);
+							self.producerInboundConversion.prop('disabled', true);
+							
+							self.view.submitModelElementAttributeChange(
+									"carnot:engine:camel::producerBpmTypeConverter",
+									false);
+							self.view.submitModelElementAttributeChange(
+									"carnot:engine:camel::producerOutboundConversion",
+									null);
+							self.view.submitModelElementAttributeChange(
+									"carnot:engine:camel::producerInboundConversion",
+									null);
+						}
+					});
+					
+					this.producerOutboundConversion.change(function() {
+						if (!self.view.validate()) {
+							return;
+						}
+						
+						if (!self.validateProducerRoute()) {
+							return;
+						}
+						
+						if(self.producerOutboundConversion.val() != "None") {
+							self.view.submitModelElementAttributeChange(
+									"carnot:engine:camel::producerOutboundConversion",
+									self.producerOutboundConversion.val());
+						}
+						else {
+							self.view.submitModelElementAttributeChange(
+									"carnot:engine:camel::producerOutboundConversion",
+									null);
+						}
+					});
+					
+					this.producerInboundConversion.change(function() {
+						if (!self.view.validate()) {
+							return;
+						}
+						
+						if (!self.validateProducerRoute()) {
+							return;
+						}
+						
+						if(self.producerInboundConversion.val() != "None") {
+							self.view.submitModelElementAttributeChange(
+									"carnot:engine:camel::producerInboundConversion",
+									self.producerInboundConversion.val());
+						}
+						else {
+							self.view.submitModelElementAttributeChange(
+									"carnot:engine:camel::producerInboundConversion",
+									null);
+						}
+					});
+					
 					this.consumerRouteTextarea.change(function() {
 						if (!self.view.validate()) {
+							return;
+						}
+
+						if (!self.validateConsumerRoute()) {
 							return;
 						}
 
@@ -154,6 +234,52 @@ define(
 								self.consumerRouteTextarea.val());
 					});
 
+					this.consumerBpmTypeConverter.change(function() {
+						if (!self.view.validate()) {
+							return;
+						}
+						
+						if (self.consumerBpmTypeConverter.prop("checked")) {
+							self.consumerInboundConversion.prop('disabled', false);
+							self.view.submitModelElementAttributeChange(
+									"carnot:engine:camel::consumerBpmTypeConverter",
+									self.consumerBpmTypeConverter.prop("checked"));
+						}
+						else {
+							self.consumerRouteTextarea.removeClass("error");
+							self.consumerInboundConversion.prop('disabled', true);
+							
+							self.view.submitModelElementAttributeChange(
+									"carnot:engine:camel::consumerBpmTypeConverter",
+									false);
+							self.view.submitModelElementAttributeChange(
+									"carnot:engine:camel::consumerInboundConversion",
+									null);
+						}
+					});
+					
+					this.consumerInboundConversion.change(function() {
+						if (!self.view.validate()) {
+							return;
+						}
+						
+						if (!self.validateConsumerRoute()) {
+							return;
+						}
+						
+						if(self.consumerInboundConversion.val() != "None") {
+							self.view.submitModelElementAttributeChange(
+									"carnot:engine:camel::consumerInboundConversion",
+									self.consumerInboundConversion.val());
+						}
+						else {
+							self.view.submitModelElementAttributeChange(
+									"carnot:engine:camel::consumerInboundConversion",
+									null);
+						}
+					});
+					
+					
 					this.additionalBeanSpecificationTextarea
 							.change(function() {
 								if (!self.view.validate()) {
@@ -226,7 +352,9 @@ define(
 					    
 					    this.invocationTypeInput.prop('disabled', true);
 						this.producerRouteTextarea.prop('disabled', false);
+						this.producerBpmTypeConverter.prop('disabled', false);
 						this.consumerRouteTextarea.prop('disabled', true);
+						this.consumerBpmTypeConverter.prop('disabled', true);
 						this.processContextHeadersInput.prop('disabled', false);
 					}
 					else
@@ -355,13 +483,66 @@ define(
 					this.processContextHeadersInput.prop("checked",
 							this.getApplication().attributes["carnot:engine:camel::processContextHeaders"]);
 					
+					this.producerBpmTypeConverter.prop("checked",
+							this.getApplication().attributes["carnot:engine:camel::producerBpmTypeConverter"]);
+					
+					this.producerOutboundConversion
+						.val(this.getApplication().attributes["carnot:engine:camel::producerOutboundConversion"]);
+					
+					this.producerInboundConversion
+						.val(this.getApplication().attributes["carnot:engine:camel::producerInboundConversion"]);
+					
+					if(this.producerBpmTypeConverter.prop("checked")) {
+						this.producerOutboundConversion.prop('disabled', false);
+						this.producerInboundConversion.prop('disabled', false);
+					}else{
+						this.producerOutboundConversion.prop('disabled', true);
+						this.producerInboundConversion.prop('disabled', true);
+					}
+					
 					this.producerRouteTextarea
 						.val(this.getApplication().attributes["carnot:engine:camel::routeEntries"]);
 
+					if (this.invocationPatternInput.val() == 'receive'){
+						this.invocationTypeInput.prop('disabled', true);
+						this.producerRouteTextarea.prop('disabled', true);
+						this.producerBpmTypeConverter.prop('disabled', true);
+						this.consumerRouteTextarea.prop('disabled', false);
+						this.consumerBpmTypeConverter.prop('disabled', false);
+						this.processContextHeadersInput.prop('disabled', true);
+					}
 					// camel consumer tab
 					this.consumerRouteTextarea
 						.val(this.getApplication().attributes["carnot:engine:camel::consumerRoute"]);
 
+					this.consumerBpmTypeConverter.prop("checked",
+							this.getApplication().attributes["carnot:engine:camel::consumerBpmTypeConverter"]);
+					
+					this.consumerInboundConversion
+						.val(this.getApplication().attributes["carnot:engine:camel::consumerInboundConversion"]);
+					if (this.invocationPatternInput.val() == 'send'){
+						this.invocationTypeInput.prop('disabled', true);
+						this.producerRouteTextarea.prop('disabled', false);
+						this.producerBpmTypeConverter.prop('disabled', false);
+						this.consumerRouteTextarea.prop('disabled', true);
+						this.consumerBpmTypeConverter.prop('disabled', true);
+						this.processContextHeadersInput.prop('disabled', false);
+					}
+					
+					if ((this.invocationPatternInput.val() == 'sendReceive') && (this.invocationTypeInput.val() == "synchronous")){
+						this.invocationTypeInput.prop('disabled', false);
+						this.producerRouteTextarea.prop('disabled', false);
+						this.producerBpmTypeConverter.prop('disabled', false);
+						this.consumerRouteTextarea.prop('disabled', true);
+						this.consumerBpmTypeConverter.prop('disabled', true);
+						this.processContextHeadersInput.prop('disabled', false);
+					}
+					if(this.consumerBpmTypeConverter.prop("checked")) {
+						this.consumerInboundConversion.prop('disabled', false);
+					}else{
+						this.consumerInboundConversion.prop('disabled', true);
+					} 
+					
 					// legacy
 					if (this.getApplication().attributes["carnot:engine:camel::producerMethodName"]
 							&& this.getApplication().attributes["carnot:engine:camel::producerMethodName"]
@@ -399,9 +580,97 @@ define(
 					return true;
 				};
 
+				/**
+				 * 
+				 */
+				GenericEndpointOverlay.prototype.validateProducerRoute = function() {
+
+					this.producerRouteTextarea.removeClass("error");
+					if(!m_utils.isEmptyString(this.producerRouteTextarea.val())) {
+						var indexFromEndpoint = this.producerRouteTextarea.val().indexOf("<from");
+						if(indexFromEndpoint != -1) {
+							this.view.errorMessages
+							.push("Producer Route must not contain From Endpoint.");
+							this.producerRouteTextarea.addClass("error");
+						}
+						var indexExplicitProuducerOutboundConverter = this.producerRouteTextarea.val().indexOf("bean:bpmTypeConverter?method=to");
+						
+						if(indexExplicitProuducerOutboundConverter != -1 && this.producerOutboundConversion.val() != "None" && 
+								!m_utils.isEmptyString(this.producerOutboundConversion.val())) {
+							// check if this converter is in the same place as the injected Inbound converter
+							// check if the explicit outbound conversion is right after setHeader Endpoint
+							var setHeaderIndex = this.producerRouteTextarea.val().indexOf("</setHeader>");
+							if(setHeaderIndex == -1) {
+								this.view.errorMessages
+								.push("More than one Producer Outbound Conversion specified.");
+								this.producerRouteTextarea.addClass("error");
+							}
+							else  {
+								var beforeExplicitProuducerOutboundConverter = this.producerRouteTextarea.val().substring(setHeaderIndex, indexExplicitProuducerOutboundConverter);
+								var toUriCount = beforeExplicitProuducerOutboundConverter.match(/<to/g);
+								if(toUriCount.length == 1) {
+									this.view.errorMessages
+									.push("More than one Producer Outbound Conversion specified.");
+									this.producerRouteTextarea.addClass("error");
+								}
+							}
+						}
+						
+						var indexExplicitProuducerInboundConverter = this.producerRouteTextarea.val().indexOf("bean:bpmTypeConverter?method=from");
+						if(indexExplicitProuducerInboundConverter != -1 && this.producerInboundConversion.val() != "None" && 
+								!m_utils.isEmptyString(this.producerInboundConversion.val())) {
+							// check if the explicit inbound conversion is right after last To Endpoint
+							var lastProducerRoutePart = this.producerRouteTextarea.val()
+								.substring(indexExplicitProuducerInboundConverter, this.producerRouteTextarea.val().length);
+							if(lastProducerRoutePart.indexOf("<to") == -1) {
+								this.view.errorMessages
+								.push("More than one Producer Inbound Conversion specified.");
+								this.producerRouteTextarea.addClass("error");
+							}
+						}
+					}
+					
+					if(this.view.errorMessages.length > 0) {
+						this.view.showErrorMessages();
+						return false;
+					}
+					return true;
+				};
+				
+				/**
+				 * 
+				 */
+				GenericEndpointOverlay.prototype.validateConsumerRoute = function() {
+					this.consumerRouteTextarea.removeClass("error");
+					if(!m_utils.isEmptyString(this.consumerRouteTextarea.val())) {
+						var indexExplicitConsumerInboundConverter = this.consumerRouteTextarea.val().indexOf("bean:bpmTypeConverter?method=from");
+						var indexCompleteActivity = this.consumerRouteTextarea.val().indexOf("ipp:activity:complete");
+						if(indexExplicitConsumerInboundConverter != -1 && indexCompleteActivity != -1 &&
+								this.consumerInboundConversion.val() != "None" && 
+								!m_utils.isEmptyString(this.consumerInboundConversion.val())) {
+							// check if the explicit inbound conversion is right before complete activity Endpoint
+							var beforeCompleteActivity = this.consumerRouteTextarea.val()
+								.substring(indexExplicitConsumerInboundConverter, indexCompleteActivity);
+							var toUriCount = beforeCompleteActivity.match(/<to/g);
+							if(toUriCount.length == 1) {
+								this.view.errorMessages
+								.push("More than one Consumer Inbound Conversion specified.");
+								this.consumerRouteTextarea.addClass("error");
+							}
+						}
+					}
+					
+					if(this.view.errorMessages.length > 0) {
+						this.view.showErrorMessages();
+						return false;
+					}
+					return true;
+				};
+				
 				GenericEndpointOverlay.prototype.submitApplicationTypeChanges = function(
 						applicationTypeChanges, invocationPatternChanges,
-						invocationTypeChanges, producerRoute, consumerRoute, 
+						invocationTypeChanges, producerRoute, producerBpmTypeConverter, producerOutboundConversion,
+						producerInboundConversion, consumerRoute, consumerBpmTypeConverter, consumerInboundConversion, 
 						includeProcessContextHeaders) 
 				{
 					this.view
@@ -411,7 +680,12 @@ define(
 									"carnot:engine:camel::invocationPattern" : invocationPatternChanges,
 									"carnot:engine:camel::invocationType" : invocationTypeChanges,
 									"carnot:engine:camel::routeEntries" : producerRoute,
+									"carnot:engine:camel::producerBpmTypeConverter" : producerBpmTypeConverter,
+									"carnot:engine:camel::producerOutboundConversion" : producerOutboundConversion,
+									"carnot:engine:camel::producerInboundConversion" : producerInboundConversion,
 									"carnot:engine:camel::consumerRoute" : consumerRoute,
+									"carnot:engine:camel::consumerBpmTypeConverter" : consumerBpmTypeConverter,
+									"carnot:engine:camel::consumerInboundConversion" : consumerInboundConversion,
 									"carnot:engine:camel::processContextHeaders" : includeProcessContextHeaders
 								}
 							});
@@ -446,11 +720,18 @@ define(
 						null,
 						null,
 						null,
+						null,
+						null, 
+						null,
+						null,
+						null,
 						null);
 					
 					this.invocationTypeInput.prop('disabled', true);
 					this.producerRouteTextarea.prop('disabled', true);
+					this.producerBpmTypeConverter.prop('disabled', true);
 					this.consumerRouteTextarea.prop('disabled', true);
+					this.consumerBpmTypeConverter.prop('disabled', true);
 					this.processContextHeadersInput.prop('disabled', true);
 				};
 
@@ -463,12 +744,19 @@ define(
 						"send",
 						"synchronous",
 						this.producerRouteTextarea.val(),
+						this.producerBpmTypeConverter.prop("checked"),
+						this.producerOutboundConversion.val(),
+						this.producerInboundConversion.val(),
+						null,
+						false,
 						null,
 						this.processContextHeadersInput.prop("checked"));
 					
 					this.invocationTypeInput.prop('disabled', true);
 					this.producerRouteTextarea.prop('disabled', false);
+					this.producerBpmTypeConverter.prop('disabled', false);
 					this.consumerRouteTextarea.prop('disabled', true);
+					this.consumerBpmTypeConverter.prop('disabled', true);
 					this.processContextHeadersInput.prop('disabled', false);
 				};
 
@@ -481,12 +769,19 @@ define(
 						"sendReceive",
 						"synchronous",
 						this.producerRouteTextarea.val(),
+						this.producerBpmTypeConverter.prop("checked"),
+						this.producerOutboundConversion.val(),
+						this.producerInboundConversion.val(),
+						null,
+						false,
 						null,
 						this.processContextHeadersInput.prop("checked"));
 					
 					this.invocationTypeInput.prop('disabled', false);
 					this.producerRouteTextarea.prop('disabled', false);
+					this.producerBpmTypeConverter.prop('disabled', false);
 					this.consumerRouteTextarea.prop('disabled', true);
+					this.consumerBpmTypeConverter.prop('disabled', true);
 					this.processContextHeadersInput.prop('disabled', false);
 				};
 
@@ -499,12 +794,19 @@ define(
 						"sendReceive",
 						"asynchronous",
 						this.producerRouteTextarea.val(),
+						this.producerBpmTypeConverter.prop("checked"),
+						this.producerOutboundConversion.val(),
+						this.producerInboundConversion.val(),
 						this.consumerRouteTextarea.val(),
+						this.consumerBpmTypeConverter.prop("checked"),
+						this.consumerInboundConversion.val(),
 						this.processContextHeadersInput.prop("checked"));
 					
 					this.invocationTypeInput.prop('disabled', false);
 					this.producerRouteTextarea.prop('disabled', false);
+					this.producerBpmTypeConverter.prop('disabled', false);
 					this.consumerRouteTextarea.prop('disabled', false);
+					this.consumerBpmTypeConverter.prop('disabled', false);
 					this.processContextHeadersInput.prop('disabled', false);
 				};
 
@@ -517,13 +819,21 @@ define(
 						"receive",
 						"asynchronous",
 						null,
+						false,
+						null,
+						null,
 						this.consumerRouteTextarea.val(),
+						this.consumerBpmTypeConverter.prop("checked"),
+						this.consumerInboundConversion.val(),
 						false);
 					
 					this.invocationTypeInput.prop('disabled', true);
 					this.producerRouteTextarea.prop('disabled', true);
+					this.producerBpmTypeConverter.prop('disabled', true);
 					this.consumerRouteTextarea.prop('disabled', false);
+					this.consumerBpmTypeConverter.prop('disabled', false);
 					this.processContextHeadersInput.prop('disabled', true);
+					this.update();
 				};
 
 				GenericEndpointOverlay.prototype.manageInvocationSettings = function()

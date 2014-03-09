@@ -216,7 +216,7 @@ define(function() {
 		MODEL : "model",
 		DATE_OF_CREATION : "dateOfCreation",
 		DATE_OF_MODIFICATION : "dateOfModification",
-		
+
 		//Model Config Variable
 		CONFIG_VAR_REF_LIMIT : 3,
 		TYPE_PASSWORD :"Password",
@@ -260,9 +260,10 @@ define(function() {
 		SEND_TASK_TYPE : "send",
 		SERVICE_TASK_TYPE : "service",
 		USER_TASK_TYPE : "user",
-		SINGLE_PROCESSING_TYPE : "SINGLE_PROCESSING_TYPE",
-		PARALLEL_MULTI_PROCESSING_TYPE : "PARALLEL_MULTI_PROCESSING_TYPE",
-		SEQUENTIAL_MULTI_PROCESSING_TYPE : "SEQUENTIAL_MULTI_PROCESSING_TYPE",
+		SINGLE_PROCESSING_TYPE : "singleInstance",
+		PARALLEL_MULTI_PROCESSING_TYPE : "multiInstanceParallel",
+		SEQUENTIAL_MULTI_PROCESSING_TYPE : "multiInstanceSequential",
+		MULTI_INSTANCE_LOOP_TYPE : "multi",
 
 		// Data
 

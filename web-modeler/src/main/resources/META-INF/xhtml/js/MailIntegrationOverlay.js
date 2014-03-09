@@ -88,6 +88,7 @@ define(
 					this.userInput = m_utils.jQuerySelect("#mailIntegrationOverlay #userInput");
 					this.passwordInput = m_utils.jQuerySelect("#mailIntegrationOverlay #passwordInput");
 					this.mailFormatSelect = m_utils.jQuerySelect("#mailIntegrationOverlay #mailFormatSelect");
+               this.protocolSelect = m_utils.jQuerySelect("#mailIntegrationOverlay #protocolSelect");       
 					this.subjectInput = m_utils.jQuerySelect("#mailIntegrationOverlay #subjectInput");
 					this.toInput = m_utils.jQuerySelect("#mailIntegrationOverlay #toInput");
 					this.fromInput = m_utils.jQuerySelect("#mailIntegrationOverlay #fromInput");
@@ -164,6 +165,18 @@ define(
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.model.applicationOverlay.email.mailFormatSelect.html.label"));
+               m_utils.jQuerySelect("label[for='protocolSelect']")
+                     .text(
+                           m_i18nUtils
+                                 .getProperty("modeler.model.applicationOverlay.email.protocolSelect.label"));
+               m_utils.jQuerySelect("#protocolSelect option[value='smtp']")
+                     .text(
+                           m_i18nUtils
+                                 .getProperty("modeler.model.applicationOverlay.email.protocolSelect.smtp.label"));
+               m_utils.jQuerySelect("#protocolSelect option[value='smtps']")
+                     .text(
+                           m_i18nUtils
+                                 .getProperty("modeler.model.applicationOverlay.email.protocolSelect.smtps.label"));       
 					m_utils.jQuerySelect("label[for='subjectInput']")
 							.text(
 									m_i18nUtils
@@ -241,6 +254,10 @@ define(
 					this.mailFormatSelect.change(function() {
 						self.submitChanges();
 					});
+
+               this.protocolSelect.change(function() {
+                  self.submitChanges();
+               });
 
 					this.subjectInput.change(function() {
 						self.submitChanges();
@@ -432,7 +449,7 @@ define(
 				};
 
 				/**
-				 *
+             * 
 				 */
 				MailIntegrationOverlay.prototype.createParameterObjectString = function(
 						direction, initializePrimitives) {
@@ -503,7 +520,7 @@ define(
 				};
 
 				/**
-				 *
+             * 
 				 */
 				MailIntegrationOverlay.prototype.createResponseOptionString = function() {
 
@@ -552,28 +569,28 @@ define(
 				};
 
 				/**
-				 *
+             * 
 				 */
 				MailIntegrationOverlay.prototype.getModelElement = function() {
 					return this.view.getModelElement();
 				};
 
 				/**
-				 *
+             * 
 				 */
 				MailIntegrationOverlay.prototype.getApplication = function() {
 					return this.view.application;
 				};
 
 				/**
-				 *
+             * 
 				 */
 				MailIntegrationOverlay.prototype.getScopeModel = function() {
 					return this.view.getModelElement().model;
 				};
 
 				/**
-				 *
+             * 
 				 */
 				MailIntegrationOverlay.prototype.activate = function() {
 
@@ -680,7 +697,7 @@ define(
 				}
 
 				/**
-				 *
+             * 
 				 */
 				MailIntegrationOverlay.prototype.update = function() {
 
@@ -698,6 +715,9 @@ define(
 
 					this.mailFormatSelect
 							.val(this.getApplication().attributes["stardust:emailOverlay::mailFormat"]);
+
+               this.protocolSelect
+                     .val(this.getApplication().attributes["stardust:emailOverlay::protocol"]);
 
 					this.subjectInput
 							.val(this.getApplication().attributes["stardust:emailOverlay::subject"]);
@@ -736,7 +756,7 @@ define(
 				};
 
 				/**
-				 *
+             * 
 				 */
 				MailIntegrationOverlay.prototype.getRoute = function() {
 
@@ -812,9 +832,32 @@ define(
 					// possible response links.
 					route += "<setHeader headerName=\"CamelLanguageScript\">\n";
 					route += "   <constant>\n";
-					route += "      function setOutHeader(key, output){\n";
-					route += "         exchange.out.headers.put(key,output);\n";
+               route += "function setOutHeader(key, output){\nexchange.out.headers.put(key,output);}\n";
+               route += "function formatDate(format,value){\n  return new java.text.SimpleDateFormat(format).format(value);}\n";
+               route += "function isArray(obj) {\n\tif (Array.isArray) {\n\t\treturn Array.isArray(obj);\n\t} else {\n\treturn Object.prototype.toString.call(obj) === '[object Array]';\n\t}\n}\n";
+               
+               route += "function visitMembers(obj, callback) {\n\tvar i = 0, length = obj.length;\n\tif (isArray(obj)) {\n\t\t";
+               route += "for(; i &lt; length; i++) {\n\t\tobj[i]= callback(i, obj[i]);\n\t\t}\n";
+               route += "} else {\n\t\tfor (i in obj) {\n\t\tobj[i]=  callback(i, obj[i]);}\n\t}\n\treturn obj;\n}\n";
+               
+               route += "function recursiveFunction(key, val) {\n";
+               route += "\tif (val instanceof Object || isArray(val)) {\n";
+               route += "\t\treturn visitMembers(val, recursiveFunction);\n";
+               route += "\t} else {\n";
+               route += "\t\treturn actualFunction(val, typeof val);\n";
+               route += "\t}\n";
 					route += "      }\n";
+
+               route += "function actualFunction(value, type) {\n";
+               route += "\tvar dataAsLong;\n";
+               route += "\tif (type === 'string') {\n";
+               route += "\t\tdataAsLong =new RegExp(/\\/Date\\((-?\\d*)\\)\\//).exec(value);\n";
+               route += "\tif (dataAsLong) {\n";
+               route += "\t\treturn new java.util.Date(+dataAsLong[1]);\n";
+               route += "\t}\n";
+               route += "}\n";
+               route += "return value;\n";
+               route += "}\n";
 
 					route += "		String.prototype.hashCode = function() {";
 					route += "			var hash = 0;\n";
@@ -841,6 +884,8 @@ define(
 						}
 
 						if (accessPoint.dataType == "primitive") {
+                     
+                     
 							route += "var " + accessPoint.id + ";\n";
 							route += "if(request.headers.get('"
 									+ accessPoint.id + "') != null){\n";
@@ -850,23 +895,28 @@ define(
 							route += "}\n";
 
 						} else if (accessPoint.dataType == "struct") {
+                     
 							route += "var " + accessPoint.id + ";\n";
 							route += "if(request.headers.get('"
 									+ accessPoint.id + "') != null){\n";
 							route += accessPoint.id
 									+ " =  eval('(' + request.headers.get('"
 									+ accessPoint.id + "')+ ')');\n";
+                     route +=  accessPoint.id+"=visitMembers("+accessPoint.id+", recursiveFunction);\n";
 							route += "}\n";
 
-						} else {
+                  }
+
+                  /*} else {
 							route += "      var " + accessPoint.id
 									+ " =  eval('(' + request.headers.get('"
 									+ accessPoint.id + "')+ ')');\n";
+                  }*/
 						}
-					}
 
 					route += "\n";
 
+               
 					var markup = CKEDITOR.instances[this.mailTemplateEditor.id]
 							.getData();
 
@@ -879,6 +929,7 @@ define(
 							+ markup.replace(new RegExp("\n", 'g'), " ")
 									.replace(new RegExp("<", 'g'), "&lt;")
 									.replace(new RegExp(">", 'g'), "&gt;")
+                           .replace(new RegExp("toDate", 'g'), "formatDate")
 									.replace(new RegExp("&nbsp;", 'g'),
 											"&amp;nbsp;").replace(
 											new RegExp("&copy;", 'g'),
@@ -924,7 +975,7 @@ define(
 
 					// set content type
 					route += "<setHeader headerName=\"contentType\">\n";
-					route += "   <constant>" + this.mailFormatSelect.val()+ "</constant>\n";
+               route += "   <constant>" + this.mailFormatSelect.val()+ "</constant>\n";
 					route += "</setHeader>";
 
 					// set processed response to body
@@ -933,12 +984,12 @@ define(
 					route += "</setBody>\n";
 
 					// execute smpt endpoint
-					route += "<to uri=\"smtp://" + this.serverInput.val()
+               route += "<to uri=\""+this.protocolSelect.val()+"://" + this.serverInput.val()
 					if(!m_utils.isEmptyString(this.userInput.val()) && !m_utils.isEmptyString(this.passwordInput.val())){
-						route += "?username=" + this.userInput.val()
-						route += "&amp;password=" + this.passwordInput.val();
+                  route += "?username=" + this.userInput.val()
+                  route += "&amp;password=" + this.passwordInput.val();
 					}else if(!m_utils.isEmptyString(this.userInput.val()) ){
-						route += "?username=" + this.userInput.val()
+                  route += "?username=" + this.userInput.val()
 					}
 					route += "\"/>";
 
@@ -990,6 +1041,8 @@ define(
 									"carnot:engine:camel::routeEntries" : this
 											.getRoute(),
 									"carnot:engine:camel::consumerRoute" : "",
+                           "carnot:engine:camel::includeAttributesAsHeaders" : "false",
+                           "carnot:engine:camel::processContextHeaders" : "true",
 									"stardust:emailOverlay::responseType" : responseTypeChanges,
 									"stardust:emailOverlay::responseOptionType" : responseOptionsTypeChanges,
 									"stardust:emailOverlay::responseHttpUrl" : responseHttpUrlChanges,
@@ -1001,6 +1054,8 @@ define(
 											.val(),
 									"stardust:emailOverlay::mailFormat" : this.mailFormatSelect
 											.val(),
+                           "stardust:emailOverlay::protocol" : this.protocolSelect
+                                 .val(),
 									"stardust:emailOverlay::subject" : this.subjectInput
 											.val(),
 									"stardust:emailOverlay::includeUniqueIdentifierInSubject" : this.identifierInSubjectInput

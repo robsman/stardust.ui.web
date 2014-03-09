@@ -18,6 +18,12 @@ define(
 		function(m_utils, m_model, m_jsfViewManager) {
 			var SCROLL_PANE_ID = "scrollpane";
 			var viewManager = m_jsfViewManager.create();
+			var appTypeViewIdMap = {
+				"messageTransformationBean" : "messageTransformationApplicationView",
+				"webservice" : "webServiceApplicationView",
+				"camelSpringProducerApplication" : "camelApplicationView",
+				"interactive" : "uiMashupApplicationView"
+			};
 
 			return {
 				getModelerScrollPosition : function() {
@@ -31,6 +37,14 @@ define(
 				enableToolbarControl : enableToolbarControl,
 
 				getUniqueNameForElement : getUniqueNameForElement,
+
+				openApplicationView : openApplicationView,
+
+				getViewIdForApplicationType : getViewIdForApplicationType,
+
+				openParticipantView : openParticipantView,
+
+				openTypeDeclarationView : openTypeDeclarationView
 
 				fixDivTop : fixDivTop
 			};
@@ -90,6 +104,89 @@ define(
 
 				return name;
 			}
+
+			/**
+			 *
+			 */
+			function openApplicationView(application) {
+				if (application) {
+					var model = application.model;
+					viewManager.openView(
+							getViewIdForApplicationType(application.applicationType),
+							"modelId="
+									+ encodeURIComponent(model.id)
+									+ "&applicationId="
+									+ encodeURIComponent(application.id)
+									+ "&applicationName="
+									+ encodeURIComponent(application.name)
+									+ "&fullId="
+									+ encodeURIComponent(application
+											.getFullId())
+									+ "&uuid="
+									+ application.uuid
+									+ "&modelUUID="
+									+ model.uuid,
+							application.uuid);
+				}
+			};
+
+			/**
+			 *
+			 */
+			function getViewIdForApplicationType(appType) {
+				if (appType) {
+					var viewId = appTypeViewIdMap[appType];
+					return viewId ? viewId : "genericApplicationView";
+				}
+			};
+
+			/**
+			 *
+			 */
+			function openParticipantView(participant) {
+				if (participant) {
+					var paramPrefix = participant.type.substring(0, participant.type.indexOf("Participant"));
+					var model = participant.model;
+					viewManager.openView(
+							paramPrefix + "View",
+								paramPrefix + "Id="
+										+ encodeURIComponent(participant.id)
+										+ "&modelId="
+										+ encodeURIComponent(model.id)
+										+ "&" + paramPrefix + "Name="
+										+ encodeURIComponent(participant.name)
+										+ "&fullId="
+										+ encodeURIComponent(participant
+												.getFullId())
+										+ "&uuid="
+										+ participant.uuid
+										+ "&modelUUID="
+										+ model.uuid,
+										participant.uuid);
+				}
+			};
+
+			function openTypeDeclarationView(structuredDataType) {
+				if (structuredDataType) {
+					var model = structuredDataType.model;
+					viewManager.openView(
+							"xsdStructuredDataTypeView",
+							"modelId="
+									+ encodeURIComponent(model.id)
+									+ "&structuredDataTypeId="
+									+ encodeURIComponent(structuredDataType.id)
+									+ "&structuredDataTypeName="
+									+ encodeURIComponent(structuredDataType.name)
+									+ "&fullId="
+									+ encodeURIComponent(structuredDataType
+											.getFullId())
+									+ "&uuid="
+									+ structuredDataType.uuid
+									+ "&modelUUID="
+									+ model.uuid,
+							structuredDataType.uuid);
+				}
+			};
 
 			function fixDivTop(jDiv) {
 				$(window).scroll(function() {

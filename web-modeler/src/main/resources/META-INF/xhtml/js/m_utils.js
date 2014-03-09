@@ -25,11 +25,11 @@ define(
 				removeItemFromArray : function(array, item) {
 					removeItemFromArray(array, item);
 				},
-				
+
 				pushArray : pushArray,
-				
+
 				insertArrayAt : insertArrayAt,
-				
+
 				convertToSortedArray : convertToSortedArray,
 				isItemInArray : function(array, item) {
 					return isItemInArray(array, item);
@@ -82,6 +82,36 @@ define(
 //					if (window.parent.InfinityBpm.Core) {
 //						window.parent.InfinityBpm.Core.changeMouseCursorStyle("default");
 //					}
+				},
+
+				/**
+				 * TODO
+				 * This function takes a simple approach of changing the cursor property of the document "body" element and all its children.
+				 * This would not work if a user hovers over an IFRAME or hovers out of the current IFRAME, but this should be good enough for most
+				 * use cases as all we need to do is to indicate to the user that a background process is going on and are not trying to stop them from
+				 * clicking elsewhere.
+				 * If we want to prevent a user from clicking elsewhere we will have to take an approach of creating a modal div with wait cursor. This
+				 * also would be quite straight forward, but with a draw back that, if due to some error the modal div does not get removed by the hideWaitCursor function,
+				 * it would block the user completely. May be we can have two function, one to go the modal way and one otherwise.
+				 *
+				 * Note: For any of the above approaches to work, the showWaitCursor function should only be called in conjunction with "async" ajax calls only,
+				 * as this won't work for sync calls.
+				 *
+				 * TODO
+				 * There is a separate ticket filed for getting the wait cursor working and here is a summary of what needs to be done
+				 * 1. Get rid of sync calls and replace them with async calls and deferred pattern
+				 * 2. Have two functions for wait cursor (modal and non-modal) if needed and call them accordingly
+				 * 3. Move the content of this function to the non-modal function, delete these tmp functions and make changes to the calling code.
+				 */
+				showWaitCursorTmp : function() {
+					jQuery("body").addClass("waiting");
+				},
+
+				/**
+				 * TODO - see comment for function "showWaitCursorTmp"
+				 */
+				hideWaitCursorTmp : function () {
+					jQuery("body").removeClass("waiting");
 				},
 
 				isBrowserChrome : function() {
@@ -150,15 +180,15 @@ define(
 				executeTimeoutLoop : executeTimeoutLoop,
 				
 				isIntermediateEvent : isIntermediateEvent,
-				
-				encodeXmlPredfinedCharacters : encodeXmlPredfinedCharacters, 
-				
+
+				encodeXmlPredfinedCharacters : encodeXmlPredfinedCharacters,
+
 				decodeXmlPredfinedCharacters : decodeXmlPredfinedCharacters,
-				
+
 				getUniqueElementNameId : function(array, name) {
 					return getUniqueElementNameId(array, name);
 				},
-				
+
 			};
 			
       function markControlReadonly(control, readonly) {
@@ -310,7 +340,7 @@ define(
 			/**
 			 * Adds contents of array "newArray" to "thisArray"
 			 * This is better than concat as this doesn't create a new array.
-			 * 
+			 *
 			 * @param arr
 			 * @param arr2
 			 * @returns
@@ -318,9 +348,9 @@ define(
 			function pushArray(thisArray, newArray) {
 				thisArray.push.apply(thisArray, newArray);
 			}
-			
+
 			/**
-			 * 
+			 *
 			 * @param toArray
 			 * @param fromArray
 			 * @param index
@@ -353,7 +383,7 @@ define(
 				while (true) {
 					elementNameId.name = name + " " + index;
 					elementNameId.id = id + index;
-					
+
 					hasElement = hasElementWithName(array, elementNameId.name);
 					hasElement = hasElement || hasElementWithId(array, elementNameId.id);
 					if (!hasElement) {
@@ -381,7 +411,7 @@ define(
 				}
 				return false;
 			}
-			
+
 			/**
 			 * Trim the text for TextNode element when symbol size is less than
 			 * textNode size
@@ -1178,28 +1208,28 @@ define(
 				}
 				return false;
 			}
-			
-			
+
+
 			function encodeXmlPredfinedCharacters(content) {
-				
+
 				content = content.replace(new RegExp("&", 'g'), "&amp;");
 				content = content.replace(new RegExp(">", 'g'), "&gt;");
 				content = content.replace(new RegExp("<", 'g'), "&lt;");
 				content = content.replace(new RegExp("\"", 'g'), "&quot;");
 				content = content.replace(new RegExp("'", 'g'), "&apos;");
-				
+
 				return content;
 			}
-			
+
 			function decodeXmlPredfinedCharacters(content) {
-				
+
 				content = content.replace(new RegExp("&amp;", 'g'), "&");
 				content = content.replace(new RegExp("&gt;", 'g'), ">");
 				content = content.replace(new RegExp("&lt;", 'g'), "<");
 				content = content.replace(new RegExp("&quot;", 'g'), "\"");
 				content = content.replace(new RegExp("&apos;", 'g'), "'");
-				
+
 				return content;
 			}
-			
+
 		});

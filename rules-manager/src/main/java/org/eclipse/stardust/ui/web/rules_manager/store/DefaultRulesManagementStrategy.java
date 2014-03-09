@@ -2,6 +2,7 @@ package org.eclipse.stardust.ui.web.rules_manager.store;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.stardust.engine.api.runtime.DmsUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
@@ -10,6 +11,8 @@ import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.ui.web.rules_manager.common.ServiceFactoryLocator;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -29,6 +32,14 @@ public class DefaultRulesManagementStrategy implements RulesManagementStrategy
    
    public static final String RULES_DIR_NAME = "rules";
 
+   /* (non-Javadoc)
+    * @see org.eclipse.stardust.ui.web.rules_manager.store.RulesManagementStrategy#initialize(java.util.Map)
+    */
+   public void initialize(Map<String, Object> params)
+   {
+      // NOP
+   }
+   
    /**
     * 
     */

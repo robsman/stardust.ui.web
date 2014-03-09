@@ -463,6 +463,8 @@ define(
 					this.initialDelayInput.removeClass("error");
 					this.passwordInput.removeClass("error");
 					this.page.propertiesPanel.errorMessages=[];
+					this.page.propertiesPanel.warningMessages=[];
+					this.page.propertiesPanel.clearWarningMessages();
 																
 
 					if (m_utils.isEmptyString(this.mailServerInput.val())) {
@@ -512,6 +514,12 @@ define(
 						this.initialDelayInput.addClass("error");
 
 					
+					}
+					
+					if(this.page.overlay.parameterDefinitionsPanel.parameterDefinitions.length == 0) {
+						this.page.propertiesPanel.warningMessages
+						.push("No parameters defined for Start Event.");
+						this.page.propertiesPanel.showWarningMessages();
 					}
 					
 					if (this.page.propertiesPanel.errorMessages.length != 0){

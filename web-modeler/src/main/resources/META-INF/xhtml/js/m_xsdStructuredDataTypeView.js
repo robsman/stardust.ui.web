@@ -447,6 +447,15 @@ define(
 					m_utils.jQuerySelect("label[for='bindJavaClassCheckbox']")
 						.text(m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.bindToJava"));
 					
+					m_utils.jQuerySelect("#javaClassInputError")
+               .text(m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.bindToJava.javaClassInputErrorMessage"));
+					
+					m_utils.jQuerySelect("#javaClassNoInputError")
+                  .text(m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.bindToJava.javaClassNoInputErrorMessage"));
+					
+					m_utils.jQuerySelect("#noEnumFoundInputError")
+               .text(m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.bindToJava.noEnumFoundInputErrorMessage"));
+					
 					m_utils.jQuerySelect("tr#minimumLength td:eq(0)")
 						.text(m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.enumeration.minLength"));
 					

@@ -70,10 +70,7 @@ public class ManualActivityIframeInteractionController implements IActivityInter
       FacesContext fc = FacesContext.getCurrentInstance();
       HttpServletRequest req = (HttpServletRequest) fc.getExternalContext().getRequest();
       
-      String contextUri = "${request.scheme}://${request.serverName}:${request.serverPort}/${request.contextPath}";
-      contextUri = contextUri.replace("${request.scheme}", req.getScheme());
-      contextUri = contextUri.replace("${request.serverName}", req.getServerName());
-      contextUri = contextUri.replace("${request.serverPort}", Integer.toString(req.getServerPort()));
+      String contextUri = "/${request.contextPath}";
       contextUri = contextUri.replace("/${request.contextPath}", req.getContextPath());
       
       contextUri = contextUri + PANEL_URI + "?interactionId=" + Interaction.getInteractionId(ai);

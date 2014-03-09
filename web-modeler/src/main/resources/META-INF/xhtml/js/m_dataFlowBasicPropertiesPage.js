@@ -119,7 +119,7 @@ define(
 											page.propertiesPanel.element.fromAnchorPointOrientation = page.propertiesPanel.element.toAnchorPointOrientation;
 											page.propertiesPanel.element.toAnchorPointOrientation = tempFromOrientation;
 										}
-										
+
 										page
 												.submitChanges({
 													// TODO Usually, we are not
@@ -202,7 +202,7 @@ define(
 										// TODO Usually we push less
 										// information, but current server code
 										// requires this
-										page.getModelElement().inputDataMapping.dataPath = page.inputDataPathInput.val();										
+										page.getModelElement().inputDataMapping.dataPath = page.inputDataPathInput.val();
 										page
 												.submitChanges({
 													modelElement : {
@@ -463,7 +463,7 @@ define(
 							continue;
 						}
 
-						var group = m_utils.jQuerySelect("<optgroup label='" + 
+						var group = m_utils.jQuerySelect("<optgroup label='" +
 								m_i18nUtils.getProperty("modeler.dataFlow.propertiesPanel.outputAccessPointSelectInput.group." + i)
 								+ "'/>"); // I18N
 
@@ -482,7 +482,11 @@ define(
 							option += ":";
 							option += accessPoint.id;
 							option += "'>";
-							option += accessPoint.name;
+							if (accessPoint.isUsedAsList) {
+								option += accessPoint.name + " (" + m_i18nUtils.getProperty("modeler.general.multiInstanceActivity.accesspoint.name.listSuffix") + ")";
+							} else {
+								option += accessPoint.name;
+							}
 							option += "</option>";
 
 							group.append(option);
@@ -490,7 +494,7 @@ define(
 					}
 					this.populateEngineAccessPoints(this.inputAccessPointSelectInput);
 					this.populateRulesInAccesspoints(this.inputAccessPointSelectInput);
-					
+
 				};
 
 				/**
@@ -536,14 +540,14 @@ define(
 						if (count == 0) {
 							continue;
 						}
-						
-						var group = m_utils.jQuerySelect("<optgroup label='" + 
+
+						var group = m_utils.jQuerySelect("<optgroup label='" +
 								m_i18nUtils.getProperty("modeler.dataFlow.propertiesPanel.outputAccessPointSelectInput.group." + i)
 								+ "'/>"); // I18N
-						
+
 						this.outputAccessPointSelectInput.append(group);
 
-		
+
 						for ( var m = 0; m < context.accessPoints.length; ++m) {
 							var accessPoint = context.accessPoints[m];
 
@@ -557,7 +561,11 @@ define(
 							option += ":";
 							option += accessPoint.id;
 							option += "'>";
-							option += accessPoint.name;
+							if (accessPoint.isUsedAsList) {
+								option += accessPoint.name + " (" + m_i18nUtils.getProperty("modeler.general.multiInstanceActivity.accesspoint.name.listSuffix") + ")";
+							} else {
+								option += accessPoint.name;
+							}
 							option += "</option>";
 
 							group.append(option);
@@ -577,9 +585,9 @@ define(
 							&& this.getModelElement().activity
 							&& this.getModelElement().activity.activityType === m_constants.SUBPROCESS_ACTIVITY_TYPE
 							&& this.getModelElement().activity.subprocessMode !== "synchShared"
-							&& (this.getModelElement().activity.attributes 
+							&& (this.getModelElement().activity.attributes
 									&& !this.getModelElement().activity.attributes["carnot:engine:subprocess:copyAllData"])) {
-						
+
 						var group = m_utils.jQuerySelect("<optgroup label='"+
 								m_i18nUtils.getProperty("modeler.dataFlow.propertiesPanel.outputAccessPointSelectInput.group.engine")
 								+"'/>"); // I18N
@@ -593,10 +601,10 @@ define(
 							option += "</option>";
 
 							group.append(option);
-						}	
+						}
 					}
 				};
-				
+
 				/**
 				 *
 				 */
@@ -606,7 +614,7 @@ define(
 					if (this.getModelElement()
 							&& this.getModelElement().activity
 							&& this.getModelElement().activity.activityType === m_constants.TASK_ACTIVITY_TYPE
-							&& this.getModelElement().activity.attributes["ruleSetId"]) {						
+							&& this.getModelElement().activity.attributes["ruleSetId"]) {
 						var ruleOptGroupName = m_i18nUtils.getProperty("modeler.dataFlow.propertiesPage.accessPoints.rules.optGroup.name");
 						var group = m_utils.jQuerySelect("<optgroup label='" + ruleOptGroupName + "'/>");
 						inputElement.append(group);
@@ -619,8 +627,8 @@ define(
 										rule = ruleSets[i];
 									}
 								}
-							}	
-							
+							}
+
 							if (rule) {
 								for (var i in rule.parameterDefinitions) {
 									var param = rule.parameterDefinitions[i];
@@ -635,11 +643,11 @@ define(
 									}
 								}
 							}
-						}	
+						}
 					}
 				};
-				
-				
+
+
 				/**
 				 *
 				 */
@@ -649,7 +657,7 @@ define(
 					if (this.getModelElement()
 							&& this.getModelElement().activity
 							&& this.getModelElement().activity.activityType === m_constants.TASK_ACTIVITY_TYPE
-							&& this.getModelElement().activity.attributes["ruleSetId"]) {						
+							&& this.getModelElement().activity.attributes["ruleSetId"]) {
 						var ruleOptGroupName = m_i18nUtils.getProperty("modeler.dataFlow.propertiesPage.accessPoints.rules.optGroup.name");
 						var group = m_utils.jQuerySelect("<optgroup label='" + ruleOptGroupName + "'/>");
 						inputElement.append(group);
@@ -676,10 +684,10 @@ define(
 									}
 								}
 							}
-						}	
+						}
 					}
 				};
-				
+
 				/**
 				 *
 				 */
@@ -689,7 +697,7 @@ define(
 					//disable description section
 					this.descriptionInput.hide();
 					m_utils.jQuerySelect("label[for='descriptionInput']").hide();
-					
+
 					m_utils.debug("===> Data Flow");
 					m_utils.debug(this.propertiesPanel.element.modelElement);
 

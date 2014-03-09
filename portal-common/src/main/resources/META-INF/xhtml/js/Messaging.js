@@ -1,11 +1,14 @@
-/*
- *
+/**
+ * @author Subodh.Godbole 
  */
 
 if (!window["Messaging"]) {
 	Messaging = new function() {
 
 		var extenssionListeners = [];
+
+		var parentSubscriber = false;
+		var parentSubscriberEventNames = [];
 
 		/*
 		 *
@@ -25,6 +28,8 @@ if (!window["Messaging"]) {
 				} else {
 	              debug("This browser does not support safe cross iframe messaging.");
 				}
+				
+				subscribeToEventHub();
 			} catch (e) {
 				alert("Failed enabling safe cross domain iframe messaging: " + e.message);
 			}
@@ -32,6 +37,52 @@ if (!window["Messaging"]) {
 
 		/*
 		 *
+		 */
+		function subscribeToEventHub() {
+			if (window.EventHub != null) {
+				window.EventHub.events.subscribe("*", eventHubSubscriber);
+			} else {
+				window.setTimeout(subscribeToEventHub, 200);
+			}
+		}
+		
+		/*
+		 * 
+		 */
+		function eventHubSubscriber(eventName) {
+			if (parentSubscriber) {
+				BridgeUtils.log("Event to sent to parent - " + eventName);
+				if (parentSubscriberEventNames.indexOf(eventName) > -1) {
+					var args = null;
+					if (arguments.length > 1) {
+						args = Array.prototype.slice.call(arguments, 1);				
+					}
+		
+					var message = {}
+					message.eventName = eventName;
+					if (null != args) {
+						message.args = args;
+					}
+					
+					message = JSON.stringify(message);
+					BridgeUtils.log("Message to post: " + message);
+					try {
+						if (opener) {
+							opener.postMessage(message, "*");
+						} else if (parent) {
+							parent.postMessage(message, "*");				
+						}
+					} catch(e) {
+						BridgeUtils.log(e);
+					}
+				}
+			} else {
+				// NOP
+			}
+		}
+
+		/*
+		 * 
 		 */
 		function register(expr, func) {
 			// If exists it overrides, One listener for one expr
@@ -83,23 +134,107 @@ if (!window["Messaging"]) {
 		 */
 		function postMessageReceived(input) {
 			var proceed = false;
-			var jsonStr;
+			var jsonObj;
 			try {
 				if (typeof input === 'string' || input instanceof String){
-					// String. So it will be Stringified JSON, Validation is done at serverside
-					jsonStr = input;
+					jsonObj = JSON.parse(input);
 					proceed = true;
 				} else if (typeof input === 'object') {
-					jsonStr = JSON.stringify(input);
+					jsonObj = input;
 					proceed = true;
 				}
 			} catch(x) {}
 
 			if (proceed) {
+				var map = sortCommandsByType(jsonObj);
+				if (map.SYSTEM != undefined) {
+					var jsonStr = JSON.stringify(map.SYSTEM);
 				BridgeUtils.View.doPartialSubmit("portalLaunchPanels", "viewFormLP", "messageData", jsonStr);
+				} 
+				
+				if (map.EVENTHUB_SUBSCRIPTION != undefined) {
+					// TODO: Accept Event Names
+					for(var i in map.EVENTHUB_SUBSCRIPTION) {
+						if (map.EVENTHUB_SUBSCRIPTION[i].data.target == "parent" || 
+								map.EVENTHUB_SUBSCRIPTION[i].data.target == "opener") {
+							parentSubscriber = true;
+							parentSubscriberEventNames = map.EVENTHUB_SUBSCRIPTION[i].data.eventNames;
+							BridgeUtils.log("Event Subscribtion set for parent");
+						}
+					}
+				}
+
+				if (map.EVENTHUB != undefined) {
+					if (window.EventHub) {
+						for(var i in map.EVENTHUB) {
+							var args = [map.EVENTHUB[i].eventName].concat(map.EVENTHUB[i].args);
+							window.EventHub.events.publish.apply(null, args);
+						}
+					}
+				}
 			} else {
 				//alert("Post Error");
 			}
+		}
+
+		/*
+		 * 
+		 */
+		function sortCommandsByType(jsonObj) {
+			var ret = {};
+			
+			var jsonArr;
+			if (Object.prototype.toString.call(jsonObj) === "[object Array]") {
+				jsonArr = jsonObj;
+			} else {
+				jsonArr = [];
+				jsonArr.push(jsonObj);
+			}
+			
+			for (var i in jsonArr) {
+				if (isSystemCommand(jsonArr[i])) {
+					if (isEventSubscriberCommand(jsonArr[i])) {
+						addToMap(ret, "EVENTHUB_SUBSCRIPTION", jsonArr[i]);
+					} else {
+						addToMap(ret, "SYSTEM", jsonArr[i]);
+					}
+				} else if (isEventHubCommand(jsonArr[i])) {
+					addToMap(ret, "EVENTHUB", jsonArr[i])
+				}
+			}
+			
+			return ret;
+		}
+
+		/*
+		 * 
+		 */
+		function addToMap(map, key, elm) {
+			if (map[key] == undefined) {
+				map[key] = [];
+			}
+			map[key].push(elm);
+		}
+
+		/*
+		 * 
+		 */
+		function isSystemCommand(jsonObj) {
+			return jsonObj.type && jsonObj.data;
+		}
+
+		/*
+		 * 
+		 */
+		function isEventSubscriberCommand(jsonObj) {
+			return jsonObj.type == "subscribeEvents";
+		}
+
+		/*
+		 * 
+		 */
+		function isEventHubCommand(jsonObj) {
+			return jsonObj.eventName;
 		}
 
 		/*

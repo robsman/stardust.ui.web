@@ -6,6 +6,16 @@
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 
+
+	<ice:panelGroup rendered="#{col.columnName == 'DeploymentTime'}"
+		style="text-align: center;">
+		<ice:outputLabel value="#{row.deploymentTime}"
+			rendered="#{row.type=='MODEL_VERSION' }" style="font-weight:normal">
+			<f:converter converterId="customDateTimeConverter" />
+		</ice:outputLabel>
+
+	</ice:panelGroup>
+
 	<ice:panelGroup rendered="#{col.columnName == 'ValidFrom'}"
 		style="text-align: center;">
 		<ice:outputLabel value="#{row.validFrom}"

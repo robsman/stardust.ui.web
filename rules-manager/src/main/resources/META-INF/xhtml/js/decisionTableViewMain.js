@@ -73,7 +73,9 @@ require([ "require",
 					alertPanel: "#alertPanel",
 					alertPanelMsg: "#alertPanelMsg",
 					tableSearchLbl: "#tableSearchLbl",
-					tableSearch: "#tableSearch"
+					tableSearch: "#tableSearch",
+					decShowGeneralPropertiesTitle: "#decShowGeneralPropertiesTitle",
+					decHideGeneralPropertiesTitle: "#decHideGeneralPropertiesTitle"
 				},
 				i18nMaps:{
 					decisionTableTab: {path:"rules.propertyView.decisiontableview.decisiontable.tab",defaultText:"NA",attr:"text"},
@@ -87,7 +89,9 @@ require([ "require",
 					columnTreeButton:{path:"rules.propertyView.decisiontableview.toolbar.tooltip.addColumn",defaultText:"NA",attr:"title"},
 					addRow:{path:"rules.propertyView.decisiontableview.toolbar.tooltip.addRow",defaultText:"NA",attr:"title"},
 					decTableNameLbl:{path:"rules.element.properties.commonProperties.name",defaultText:"NA",attr:"text"},
-					tableSearchLbl: {path:"rules.outline.toolbar.label.search",defaultText:"NA",attr:"text"}
+					tableSearchLbl: {path:"rules.outline.toolbar.label.search",defaultText:"NA",attr:"text"},
+					decShowGeneralPropertiesTitle: {path:"rules.element.properties.generalProperties.title",defaultText:"NA",attr:"text"},
+					decHideGeneralPropertiesTitle: {path:"rules.element.properties.generalProperties.title",defaultText:"NA",attr:"text"}
 				}
 		};
 		

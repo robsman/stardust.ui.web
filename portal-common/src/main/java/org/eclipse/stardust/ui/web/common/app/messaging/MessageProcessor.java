@@ -115,7 +115,8 @@ public class MessageProcessor implements MessageTypeConstants
          else if (T_CHANGE_PERSPECTIVE.equalsIgnoreCase(message.getType()))
          {
             String perspectiveId = GsonUtils.extractString(message.getData(), D_PERSPECTIVE_ID);
-            PortalApplication.getInstance().getPortalUiController().loadPerspective(perspectiveId);
+            Map<String, Object> params = GsonUtils.extractMap(message.getData(), D_VIEW_PARAMS);
+            PortalApplication.getInstance().getPortalUiController().loadPerspective(perspectiveId, params);
          }
          else
          {

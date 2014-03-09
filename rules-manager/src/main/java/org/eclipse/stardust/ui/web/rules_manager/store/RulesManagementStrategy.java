@@ -1,6 +1,7 @@
 package org.eclipse.stardust.ui.web.rules_manager.store;
 
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.stardust.engine.api.runtime.Document;
 
@@ -11,6 +12,11 @@ import org.eclipse.stardust.engine.api.runtime.Document;
  */
 public interface RulesManagementStrategy
 {
+   /**
+    * @param params
+    */
+   void initialize(Map<String, Object> params);
+
    /**
     * @return
     */

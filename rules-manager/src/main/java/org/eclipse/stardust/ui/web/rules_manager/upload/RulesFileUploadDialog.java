@@ -66,6 +66,7 @@ public class RulesFileUploadDialog extends PopupUIComponentBean
                rulesService.getRulesManagementStrategy().createRuleSet(
                      fileInfo.getFileName(),
                      FileUtils.fileToBytes(fileInfo.getPhysicalPath()));
+			   reloadRulesAndClosePopup();
             }
             else
             {
@@ -162,6 +163,10 @@ public class RulesFileUploadDialog extends PopupUIComponentBean
    {
       PortalApplication.getInstance().addEventScript(
             "window.parent.EventHub.events.publish('RELOAD_RULES');");
+
+      PortalApplication.getInstance().addEventScript(
+            "window.parent.EventHub.events.publish('CONTEXT_UPDATED');");
+
       closePopup();
    }
 

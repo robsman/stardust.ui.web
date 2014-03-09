@@ -16,10 +16,10 @@ define(
 				"bpm-modeler/js/m_session", "bpm-modeler/js/m_model",
 				"bpm-modeler/js/m_dialog", "bpm-modeler/js/m_propertiesPage",
 				"bpm-modeler/js/m_activity", "bpm-modeler/js/m_i18nUtils",
-				"bpm-modeler/js/m_modelElementUtils" ],
+				"bpm-modeler/js/m_modelElementUtils", "bpm-modeler/js/m_modelerUtils"],
 		function(m_utils, m_constants, m_ruleSetsHelper, m_command,
 				m_commandsController, m_user, m_session, m_model, m_dialog,
-				m_propertiesPage, m_activity, m_i18nUtils, m_modelElementUtils) {
+				m_propertiesPage, m_activity, m_i18nUtils, m_modelElementUtils, m_modelerUtils) {
 			return {
 				create : function(propertiesPanel) {
 					var page = new ActivityImplementationPropertiesPage(
@@ -35,7 +35,7 @@ define(
 				var propertiesPage = m_propertiesPage
 						.createPropertiesPage(propertiesPanel,
 								"implementationPropertiesPage",
-								m_i18nUtils.getProperty("modeler.propertiesPage.toolbar.implementation.title"), 
+								m_i18nUtils.getProperty("modeler.propertiesPage.toolbar.implementation.title"),
 								"plugins/bpm-modeler/images/icons/wrench.png");
 
 				m_utils.inheritFields(this, propertiesPage);
@@ -56,12 +56,12 @@ define(
 					this.applicationList = this.mapInputId("applicationList");
 					this.ruleSetRow = this.mapInputId("ruleSetRow");
 					this.ruleSetList = this.mapInputId("ruleSetList");
-
+					this.appViewLink = m_utils.jQuerySelect("#appViewLink");
 					this.heading.empty();
 					this.heading
 							.append(m_i18nUtils
 									.getProperty("modeler.propertiesPage.activity.implementation.heading"));
-					
+
 					m_utils.jQuerySelect("label[for='applicationList']")
 							.text(
 									m_i18nUtils
@@ -78,7 +78,13 @@ define(
 
 						page.submitApplicationChanges();
 					});
-					
+
+					this.appViewLink.click({
+						panel : this
+					}, function(event) {
+						event.data.panel.openApplicationView();
+					});
+
 					this.registerInputForModelElementAttributeChangeSubmission(this.ruleSetList, "ruleSetId");
 				};
 
@@ -174,7 +180,7 @@ define(
 									+ "</option>");
 
 					var ruleSets = m_ruleSetsHelper.getRuleSets();
-					
+
 					if (ruleSets) {
 						for ( var i in ruleSets) {
 							if (ruleSets[i].state.isDeleted != true) {
@@ -182,7 +188,7 @@ define(
 										+ ruleSets[i].id + "'>"
 										+ ruleSets[i].name + "</option>");
 							}
-						}	
+						}
 					}
 				};
 
@@ -215,10 +221,12 @@ define(
 					m_dialog.makeInvisible(this.noImplementationRow);
 					m_dialog.makeVisible(this.applicationRow);
 					m_dialog.makeInvisible(this.ruleSetRow);
+					this.appViewLink.addClass("imgLinkDisabled");
 
 					if (this.getModelElement().applicationFullId != null) {
 						this.applicationList
 								.val(this.getModelElement().applicationFullId);
+						this.appViewLink.removeClass("imgLinkDisabled");
 					} else {
 						this.applicationList.val(m_constants.TO_BE_DEFINED);
 					}
@@ -233,7 +241,7 @@ define(
 					m_dialog.makeVisible(this.ruleSetRow);
 
 					this.ruleSetList.val(this.getModelElement().attributes["ruleSetId"]);
-					
+
 					// if (ruleSetUuid != null) {
 					// this.ruleSetList.val(ruleSetUuid);
 					// } else {
@@ -277,7 +285,7 @@ define(
 				ActivityImplementationPropertiesPage.prototype.setElement = function() {
 					m_utils.debug("===> Activity");
 					m_utils.debug(this.getModelElement());
-
+					this.appViewLink.hide();
 					if (this.getModelElement().taskType == m_constants.NONE_TASK_TYPE
 							|| this.getModelElement().taskType == m_constants.MANUAL_TASK_TYPE) {
 						this.setNoImplementationType();
@@ -285,6 +293,7 @@ define(
 						this.populateRuleSetSelect();
 						this.setRuleType();
 					} else {
+						this.appViewLink.show();
 						this.populateApplicationSelect();
 						this.setApplicationType();
 					}
@@ -297,8 +306,16 @@ define(
 					if (this.getModelElement().taskType === "rule") {
 						return true;
 					}
-					
+
 					return this.validateCircularModelReference(this.applicationList);
+				};
+
+				/**
+				 *
+				 */
+				ActivityImplementationPropertiesPage.prototype.openApplicationView = function() {
+					var application = m_model.findApplication(this.getModelElement().applicationFullId);
+					m_modelerUtils.openApplicationView(application);
 				};
 			}
 		});

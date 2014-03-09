@@ -8,8 +8,9 @@
  * documentation
  ******************************************************************************/
 
-define([ "bpm-modeler/js/m_utils" ],
-		function(m_utils) {
+define([ "bpm-modeler/js/m_utils",
+         "rules-manager/js/m_i18nUtils"],
+		function(m_utils, m_i18nUtils) {
 			return {
 				create : function(ruleSet, uuid, id, name) {
 					var decisionTable = new DecisionTable();
@@ -59,8 +60,8 @@ define([ "bpm-modeler/js/m_utils" ],
 					               ['',true],['',true],['',true],['',true],['',true]
 					           ],
 					        colWidths:[90,90],
-					        colHeaders:["Description|NA|Header",
-					                    "lock-on-active|NA|Attribute"]
+					        colHeaders:[m_i18nUtils.getProperty("rules.element.properties.commonProperties.description","Description") + "|NA|Header",
+					                    m_i18nUtils.getProperty("rules.propertyView.decisiontableview.lockOnActive","lock-on-active") + "|NA|Attribute"]
 					};
 				};
 				

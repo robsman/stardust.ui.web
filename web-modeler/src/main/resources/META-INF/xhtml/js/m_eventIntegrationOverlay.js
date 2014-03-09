@@ -78,7 +78,7 @@ define(
 					if (this.propertiesTabs != null) {
 						this.propertiesTabs.tabs();
 					}
-					this.removeCamelTriggerPasswordCV();
+					
 				};
 
 				/**

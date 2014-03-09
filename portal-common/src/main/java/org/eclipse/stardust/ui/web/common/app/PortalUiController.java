@@ -324,26 +324,30 @@ public class PortalUiController
    
    /**
     * @param perspectiveId
+    * @param params
     * @return
     */
-   public boolean loadPerspective(String perspectiveId)
+   public boolean loadPerspective(String perspectiveId, Map<String, Object> params)
    {
-      if (null != this.currentPerspective
-            && this.currentPerspective.getName().equalsIgnoreCase(perspectiveId))
-      {
-         return true;
-      }
-
       IPerspectiveDefinition perspectiveDef = getPerspective(perspectiveId);
       if (null != perspectiveDef)
       {
-         setPerspective(perspectiveDef);
+         setPerspective(perspectiveDef, params);
          return true;
       }
       else
       {
          return false;
       }
+   }
+
+   /**
+    * @param perspectiveId
+    * @return
+    */
+   public boolean loadPerspective(String perspectiveId)
+   {
+      return loadPerspective(perspectiveId, null);
    }
 
    public void setApplicationContext(ApplicationContext appContext) throws BeansException
@@ -444,11 +448,12 @@ public class PortalUiController
 
    /**
     * @param newPerspective
+    * @param params
     */
-   private void setPerspective(IPerspectiveDefinition newPerspective)
+   private void setPerspective(IPerspectiveDefinition newPerspective, Map<String, Object> params)
    {
       IPerspectiveDefinition previousPerspective = this.currentPerspective;
-      if (null != previousPerspective)
+      if (null != previousPerspective && !previousPerspective.getName().equals(newPerspective.getName()))
       {
          broadcastNonVetoablePerspectiveEvent(previousPerspective, PerspectiveEventType.DEACTIVATED);
       }
@@ -456,10 +461,18 @@ public class PortalUiController
       this.currentPerspective = newPerspective;
       this.perspectiveController = new PerspectiveController(this);
 
-      broadcastNonVetoablePerspectiveEvent(currentPerspective, PerspectiveEventType.ACTIVATED);
+      broadcastNonVetoablePerspectiveEvent(currentPerspective, PerspectiveEventType.ACTIVATED, params);
 
       // Fire View Event
       broadcastNonVetoableViewEvent(focusView, ViewEventType.PERSPECTIVE_CHANGED);
+   }
+
+   /**
+    * @param newPerspective
+    */
+   private void setPerspective(IPerspectiveDefinition newPerspective)
+   {
+      setPerspective(newPerspective, null);
    }
 
    // *********************** View management **********************
@@ -1268,7 +1281,7 @@ public class PortalUiController
       return null;
    }
 
-   public void broadcastNonVetoablePerspectiveEvent(IPerspectiveDefinition perspective, PerspectiveEventType eventType)
+   public void broadcastNonVetoablePerspectiveEvent(IPerspectiveDefinition perspective, PerspectiveEventType eventType, Map<String, Object> params)
    {
       if (null != perspective)
       {
@@ -1276,7 +1289,7 @@ public class PortalUiController
          
          if (null != handler)
          {
-            PerspectiveEvent event = new PerspectiveEvent(perspective, eventType);
+            PerspectiveEvent event = new PerspectiveEvent(perspective, eventType, params);
             if (trace.isDebugEnabled())
             {
                trace.debug("Triggering Perspective Event: " + eventType + ", for Perspective: " + perspective.getName());
@@ -1284,6 +1297,11 @@ public class PortalUiController
             handler.handleEvent(event);
          }
       }
+   }
+   
+   public void broadcastNonVetoablePerspectiveEvent(IPerspectiveDefinition perspective, PerspectiveEventType eventType)
+   {
+      broadcastNonVetoablePerspectiveEvent(perspective, eventType, null);
    }
    
    /**

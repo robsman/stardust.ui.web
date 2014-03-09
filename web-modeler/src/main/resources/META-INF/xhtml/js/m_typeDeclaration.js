@@ -167,20 +167,26 @@ define(
 					if (this.typeDeclaration
 							&& this.typeDeclaration.schema && this.typeDeclaration.schema.elements) {
 						for (var i in this.typeDeclaration.schema.elements) {
-							if (this.typeDeclaration.schema.elements[i].facets) {
-								for (var j in this.typeDeclaration.schema.elements[i].facets) {
-									facets.push(this.typeDeclaration.schema.elements[i].facets[j]);
+							if (this.typeDeclaration.schema.elements[i].name === this.asSchemaType().name) {
+								if (this.typeDeclaration.schema.elements[i].facets) {
+									for (var j in this.typeDeclaration.schema.elements[i].facets) {
+										facets.push(this.typeDeclaration.schema.elements[i].facets[j]);
+									}
 								}
+								break;
 							}
 						}
 					}
 					if (facets.length == 0 && this.typeDeclaration
 							&& this.typeDeclaration.schema && this.typeDeclaration.schema.types) {
 						for (var i in this.typeDeclaration.schema.types) {
-							if (this.typeDeclaration.schema.types[i].facets) {
-								for (var j in this.typeDeclaration.schema.types[i].facets) {
-									facets.push(this.typeDeclaration.schema.types[i].facets[j]);
+							if (this.typeDeclaration.schema.types[i].name === this.asSchemaType().name) {
+								if (this.typeDeclaration.schema.types[i].facets) {
+									for (var j in this.typeDeclaration.schema.types[i].facets) {
+										facets.push(this.typeDeclaration.schema.types[i].facets[j]);
+									}
 								}
+								break;
 							}
 						}
 					}

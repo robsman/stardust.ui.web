@@ -290,6 +290,8 @@ define(
 					this.camelContextInput.removeClass("error");
 					this.routeTextarea.removeClass("error");
 					this.page.propertiesPanel.errorMessages=[];
+					this.page.propertiesPanel.warningMessages=[];
+					this.page.propertiesPanel.clearWarningMessages();
 					
 					if (m_utils.isEmptyString(this.camelContextInput.val()) ||
 							this.camelContextInput.val() == m_i18nUtils
@@ -309,6 +311,12 @@ define(
 						this.routeTextarea.addClass("error");
 						//this.routeTextarea.focus();
 
+					}
+					
+					if(this.page.overlay.parameterDefinitionsPanel.parameterDefinitions.length == 0) {
+						this.page.propertiesPanel.warningMessages
+						.push("No parameters defined for Start Event.");
+						this.page.propertiesPanel.showWarningMessages();
 					}
 					
 					if (this.page.propertiesPanel.errorMessages.length != 0){

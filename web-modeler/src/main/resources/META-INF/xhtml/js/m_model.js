@@ -485,12 +485,12 @@ define(
 			/**
 			 *
 			 */
-			function loadModels(force) {
+			function loadModels(force, dontReloadStrategy) {
 				if (!force && getModels() != null) {
 					return;
 				}
 
-				refreshModels();
+				refreshModels(dontReloadStrategy);
 			}
 
 			/**
@@ -511,10 +511,16 @@ define(
 			 * singleton object DefaultModelManager / window.top.modelManager
 			 * as it was apparently giving problems (on model loading) in IOD env. when releases were switched.
 			 */
-			function refreshModels() {
+			function refreshModels(dontReloadStrategy) {
+				var reloadModels = true;
+				
+				if (dontReloadStrategy) {
+					reloadModels = false;
+				}
+				
 				m_communicationController.syncGetData({
 					url : m_communicationController.getEndpointUrl()
-							+ "/models"
+							+ "/models?reload=" + reloadModels
 				}, {
 					"success" : function(json) {
 						if (json.loaded) {

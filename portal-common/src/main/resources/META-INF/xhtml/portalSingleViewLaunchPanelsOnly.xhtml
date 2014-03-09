@@ -18,7 +18,7 @@
 <script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/plugins/common/js/portalSingleViewUtils.js" />	
 	<ui:include src="portalStyleSheets.xhtml" />
 </head>
-<body onload="parent.BridgeUtils.initIframe(window);" style="width: #{ippSingleViewLaunchPanels.launchPanelsWidth};">
+<body onload="parent.BridgeUtils.initIframe(window); parent.BridgeUtils.processUrlParams();" style="width: #{ippSingleViewLaunchPanels.launchPanelsWidth};">
 	<ui:include src="portalSingleViewLaunchPanels.xhtml" />
 	<ice:panelGroup
 		rendered="#{ippMessageDialog.fromlaunchPanels == 'true'}">

@@ -102,7 +102,19 @@ define(
 					}, function(event) {
 						event.data.page.refreshConfigurationVariables();
 					});
-					
+					m_utils.jQuerySelect("a[href='#configurationVariablesPropertiesPage']").click({
+						"page" : this
+					}, function(event) {
+						if (!event.data.page.propertiesPanel.model.configVariables) {
+							m_utils.showWaitCursorTmp();
+							event.data.page.refreshConfigurationVariables().done(function() {
+								m_utils.hideWaitCursorTmp();
+							}).fail(function() {
+								m_utils.hideWaitCursorTmp();
+							});
+						}
+					});
+
 					var rdmNo = Math.floor((Math.random()*100000) + 1);
 					this.deleteConfigurationVariableDialog = m_utils.jQuerySelect("#deleteConfigurationVariableDialog").get(0);
 					this.deleteConfigurationVariableDialog.id = "deleteConfigurationVariableDialog" + rdmNo;
@@ -199,7 +211,7 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				ConfigurationVariablesPropertiesPage.prototype.submitDeleteCommand = function(
 						configVariableDlg, deleteOptions, event) {
@@ -222,7 +234,7 @@ define(
 					});
 
 				};
-				
+
 				/**
 				 *
 				 */
@@ -236,32 +248,38 @@ define(
 				ConfigurationVariablesPropertiesPage.prototype.refreshConfigurationVariables = function() {
 					var page = this;
 
-					m_communicationController
-							.syncGetData(
-									{
-										url : m_communicationController
-												.getEndpointUrl()
-												+ "/models/"
-												+ encodeURIComponent(this.getModel().id)
-												+ "/configurationVariables"
-									},
-									{
-										"success" : function(json) {
-											page.refreshConfigurationVariablesTable(json);
-										},
-										"error" : function() {
-											m_utils.debug("Error");
-										}
+					var deferred = jQuery.Deferred();
+					jQuery.ajax({
+						type : 'GET',
+						url : m_communicationController
+								.getEndpointUrl()
+								+ "/models/"
+								+ encodeURIComponent(this.getModel().id)
+								+ "/configurationVariables",
+						async : true
+					}).done(
+							function(json) {
+								page.propertiesPanel.model.configVariables = json;
+								page.refreshConfigurationVariablesTable(json);
+
+								deferred.resolve();
+							}).fail(function(data) {
+										m_utils.debug("Error");
+										deferred.reject();
 									});
+
+					return deferred.promise();
 				};
-				
+
 				/**
-				 * 
+				 *
 				 */
 				ConfigurationVariablesPropertiesPage.prototype.refreshConfigurationVariablesTable = function(json) {
 					m_utils.jQuerySelect(
 							"table#configurationVariablesTable tbody")
 							.empty();
+
+					if (!json) return;
 
 					var variables = json;
 
@@ -295,10 +313,10 @@ define(
 												var deleteOptions = {
 													mode : "emptyLiteral"
 												};
-												
+
 											event.data.page.submitDeleteCommand(self.deleteConfigurationVariableDialog, deleteOptions,event);
 											}
-											
+
 										});
 
 						cell.append(button);
@@ -360,15 +378,15 @@ define(
 											};
 											 event.data.page.modifyConfigurationVariable(event, changes);
 										});
-						
+
 						cell = m_utils.jQuerySelect("<td></td>");
 
 						row.append(cell);
 
 						cell.append(variables[n].type);
-						
+
 						cell = m_utils.jQuerySelect("<td></td>");
-						
+
 						row.append(cell);
 
 						var list = m_utils.jQuerySelect("<ul class='referencesList'></ul>");
@@ -403,7 +421,7 @@ define(
 
 							item.append(info);
 						}
-						
+
 						var showMoreLink = m_utils
 								.jQuerySelect('<li class="show_more"><a class="configLink" style="text-decoration:none">'
 										+ m_i18nUtils
@@ -420,23 +438,23 @@ define(
 							event.data.currList.children().show();
 							event.data.currList.find('li.show_more').hide();
 						});
-						
+
 
 						showLessLink.click({
 							currList : list
 						}, function(event) {
 							event.data.currList.find('li:gt('+ (m_constants.CONFIG_VAR_REF_LIMIT - 1)+')').hide();
 							event.data.currList.find('li.show_more').show();
-							
+
 						});
-						
+
 						if (list.children().size() > m_constants.CONFIG_VAR_REF_LIMIT) {
 							var lastElement=list.find('li:gt('+ (m_constants.CONFIG_VAR_REF_LIMIT - 1)+')').hide().end();
 							lastElement.append(showMoreLink);
 							list.append(showLessLink);
 							list.find('li.show_less').hide();
 						}
-						 
+
 						m_utils.jQuerySelect(
 								"table#configurationVariablesTable tbody")
 								.append(row);
@@ -453,7 +471,7 @@ define(
 									.getModel().uuid, changes);
 					var deleteStatus = m_commandsController.submitCommand(command);
 				};
-				
+
 			}
 
 			/**

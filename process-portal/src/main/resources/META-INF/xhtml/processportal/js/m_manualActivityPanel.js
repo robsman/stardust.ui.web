@@ -550,7 +550,8 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 		 * 
 		 */
 		function marshalBooleanValue(binding, lastPart) {
-			if (binding == null || binding == "") {
+			if (binding != null && binding != "" && lastPart != null && lastPart != "") {
+				if (binding[lastPart] == null || binding[lastPart] == "") {
 					binding[lastPart] = false;
 				}
 			}

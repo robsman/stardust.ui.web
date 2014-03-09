@@ -288,7 +288,10 @@ public class UserProfileBean extends PopupUIComponentBean implements Confirmatio
    private void initializeView()
    {
       MessagesViewsCommonBean propsBean = MessagesViewsCommonBean.getInstance();
-      isInternalAuthentication = SecurityProperties.isInternalAuthentication();
+      
+      UserService userService = UserUtils.getUserService();
+      isInternalAuthentication = userService.isInternalAuthentication();
+      
       oldPassword = "";
       password = "";
       confirmPassword = "";

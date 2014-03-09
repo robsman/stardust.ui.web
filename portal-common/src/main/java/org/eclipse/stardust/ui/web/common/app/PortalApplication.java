@@ -1094,8 +1094,7 @@ public class PortalApplication
          if (externalContext instanceof ServletExternalContext)
          {
             HttpServletRequest request = (HttpServletRequest) externalContext.getRequest();
-            String urlBase = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
-                  + contextPath + "/plugins/common/portalSingleViewMain.iface?";
+            String urlBase = contextPath + "/plugins/common/portalSingleViewMain.iface?";
             url = urlBase + url;
             
             // Convention - Views having Include = htmlframeadapter.xhtml are HTML based Views

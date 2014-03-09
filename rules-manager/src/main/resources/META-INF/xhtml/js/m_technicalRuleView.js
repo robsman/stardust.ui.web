@@ -105,7 +105,9 @@ define(
 							idLabel : m_utils.jQuerySelect(options.selectors.idLabel ),
 							nameLabel : m_utils.jQuerySelect(options.selectors.nameLabel ),
 							descriptionLabel : m_utils.jQuerySelect(options.selectors.descriptionLabel ),
-							uuidLabel : m_utils.jQuerySelect(options.selectors.uuidLabel )
+							uuidLabel : m_utils.jQuerySelect(options.selectors.uuidLabel ),
+							decShowGeneralPropertiesTitle: m_utils.jQuerySelect(options.selectors.decShowGeneralPropertiesTitle),
+                     decHideGeneralPropertiesTitle: m_utils.jQuerySelect(options.selectors.decHideGeneralPropertiesTitle)
 					};
 					
 					/*Map uiElements to their resource text values*/

@@ -180,25 +180,35 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
       FacesContext fc = FacesContext.getCurrentInstance();
       HttpServletRequest req = (HttpServletRequest) fc.getExternalContext().getRequest();
 
+      Boolean embedded = (Boolean) context.getAttribute("carnot:engine:ui:externalWebApp:embedded");
+
+      String servicesBaseUri = "";
+      String portalBaseUri = "";
+      if (null != embedded && embedded)
+      {
+    	  servicesBaseUri = "/${request.contextPath}/services/";
+    	  portalBaseUri = "/${request.contextPath}";
+      }
+      else
+      {
       // allow base URI override via parameter
-      String servicesBaseUri = fc.getExternalContext().getInitParameter("InfinityBpm.ServicesBaseUri");
+          servicesBaseUri = fc.getExternalContext().getInitParameter("InfinityBpm.ServicesBaseUri");
       if (isEmpty(servicesBaseUri))
       {
          servicesBaseUri = "${request.scheme}://${request.serverName}:${request.serverPort}/${request.contextPath}/services/";
       }
 
-      servicesBaseUri = expandUriTemplate(servicesBaseUri, req);
-
-      String portalBaseUri = fc.getExternalContext().getInitParameter("InfinityBpm.PortalBaseUri");
+          portalBaseUri = fc.getExternalContext().getInitParameter("InfinityBpm.PortalBaseUri");
       if (isEmpty(portalBaseUri))
       {
          portalBaseUri = "${request.scheme}://${request.serverName}:${request.serverPort}/${request.contextPath}";
       }
+      }
 
+      servicesBaseUri = expandUriTemplate(servicesBaseUri, req);
       portalBaseUri = expandUriTemplate(portalBaseUri, req);
 
       String uri = "";
-      Boolean embedded = (Boolean) context.getAttribute("carnot:engine:ui:externalWebApp:embedded");
       if (null != embedded && embedded)
       {
          uri = "${serviceBaseUrl}rest/engine/interactions/${interactionId}/embeddedMarkup";
@@ -436,7 +446,7 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
       }
       return false;
    }
-   
+
    @Override
    public boolean isTypedDocumentOpen(ActivityInstance activityInstance)
    {

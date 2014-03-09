@@ -148,16 +148,16 @@ define(
 												+ "bpm-modeler/popups/confirmationPopupDialogContent.html"
 									},
 									payload : {
-										title : "Warning",
-										message : "Rule-sets have unsaved changes.<BR><BR>Please save rule-sets before continuing.",
-										acceptButtonText : "Close",
+									   title : m_i18nUtils.getProperty("rules.messages.warning","Warning"),
+                              message : m_i18nUtils.getProperty("rules.messages.info.ruleSetsNotSaved","Rule-sets have unsaved changes.<BR><BR>Please save rule-sets before continuing."),
+                              acceptButtonText : m_i18nUtils.getProperty("rules.messages.confirm.close","Close"),
 										acceptFunction : function() {
 											// Do nothing
 										}
 									}
 								});
 					} else {
-						alert("Rule-sets have unsaved changes. Please save rule-sets before continuing.");
+						alert(m_i18nUtils.getProperty("rules.messages.info.ruleSetsNotSaved","Rule-sets have unsaved changes.<BR><BR>Please save rule-sets before continuing."));
 					}
 				} else {
 					if (ruleSet) {
@@ -289,12 +289,28 @@ define(
 									src : m_urlUtils.getPlugsInRoot()
 											+ "rules-manager/popups/outlineRefreshConfirmationDialog.html"
 								},
-								payload : {
-									title : "Confirm",
-									message : "All rule-sets will be reloaded from their last saved state and the session log will be cleared.<BR><BR>Continue?<BR><BR>",
-									acceptButtonText : "Yes",
-									cancelButtonText : "No",
-									acceptFunction : reloadOutlineTreeReset
+                              payload : {
+                                 title : m_i18nUtils
+                                          .getProperty(
+                                                   "rules.messages.confirm",
+                                                   "Confirm"),
+                                 message : m_i18nUtils
+                                          .getProperty(
+                                                   "rules.messages.confirm.ruleSetsReload",
+                                                   "All rule-sets will be reloaded from their last saved state and the session log will be cleared.<BR><BR>Continue?<BR><BR>"),
+                                 acceptButtonText : m_i18nUtils
+                                          .getProperty(
+                                                   "rules.messages.confirm.yes",
+                                                   "Yes"),
+                                 cancelButtonText : m_i18nUtils
+                                          .getProperty(
+                                                   "rules.messages.confirm.no",
+                                                   "No"),
+                                 acceptFunction : reloadOutlineTreeReset,
+                                 checkboxLabelText : m_i18nUtils
+                                          .getProperty(
+                                                   "rules.messages.confirm.saveRuleSetsPriorToReload",
+                                                   "Save Rule-Sets prior to reload")
 								}
 							});
 				}
@@ -334,16 +350,16 @@ define(
 												+ "bpm-modeler/popups/confirmationPopupDialogContent.html"
 									},
 									payload : {
-										title : "Warning",
-										message : "Rule-sets have unsaved changes.<BR><BR>Please save rule-sets before continuing.",
-										acceptButtonText : "Close",
+										title : m_i18nUtils.getProperty("rules.messages.warning","Warning"),
+										message : m_i18nUtils.getProperty("rules.messages.info.ruleSetsNotSaved","Rule-sets have unsaved changes.<BR><BR>Please save rule-sets before continuing."),
+										acceptButtonText : m_i18nUtils.getProperty("rules.messages.confirm.close","Close"),
 										acceptFunction : function() {
 											// Do nothing
 										}
 									}
 								});
 					} else {
-						alert("Rule-sets have unsaved changes. Please save rule-sets before continuing.");
+						alert(m_i18nUtils.getProperty("rules.messages.info.ruleSetsNotSaved","Rule-sets have unsaved changes.<BR><BR>Please save rule-sets before continuing."));
 					}
 				} else {
 					var link = m_utils.jQuerySelect(
@@ -521,6 +537,8 @@ define(
 													}
 												}
 											});
+
+											window.parent.EventHub.events.publish("CONTEXT_UPDATED");
 
 											console.log("FAILURES...");
 											console.log(failures);
@@ -1027,6 +1045,7 @@ define(
 					RuleSet.markRuleSetForDeletion(ruleSetUUID);
 					jQuery(displayScope + "#outline").jstree("delete_node", "#"+ ruleSetUUID);
 					saveRuleSets(true); /*deleteOnly=true*/
+					window.parent.EventHub.events.publish("CONTEXT_UPDATED");
 				}
 
 				function prepareDeleteElementData(name, callback) {
@@ -1117,6 +1136,12 @@ define(
 							changeProfileHandler);
 					window.parent.EventHub.events.subscribe("RELOAD_RULES",
 							reloadOutlineTreeReset);
+
+					window.parent.EventHub.events.subscribe("CONTEXT_UPDATED", function(releaseId) {
+						if (releaseId != undefined) {
+							reloadOutlineTreeReset();
+						}
+					});
 				}
 
 				readAllRuleSets();
@@ -1288,6 +1313,8 @@ define(
 					jQuery(displayScope + "#outline").jstree("rename","#" + ruleSet.uuid);
 					/*save our virgin Rule Set to the server.*/
 					saveRuleSets(false,true);
+					
+					window.parent.EventHub.events.publish("CONTEXT_UPDATED");
 				}
 			}
 		});

@@ -258,8 +258,8 @@ define(
 					this.parallelMultiProcessingMarkerIcon = this.diagram.canvasManager
 							.drawImageAt(
 									"plugins/bpm-modeler/images/icons/parallel-marker.gif",
-									this.x + 0.5 * this.width - 4, this.y + 2,
-									16, 16).hide();
+									this.x + 0.5 * this.width - 8,
+									this.y + this.height - 16, 16, 16).hide();
 
 					this
 							.addToPrimitives(this.parallelMultiProcessingMarkerIcon);
@@ -267,8 +267,8 @@ define(
 					this.sequentialMultiProcessingMarkerIcon = this.diagram.canvasManager
 							.drawImageAt(
 									"plugins/bpm-modeler/images/icons/sequential-marker.gif",
-									this.x + 0.5 * this.width - 4, this.y + 2,
-									16, 16).hide();
+									this.x + 0.5 * this.width - 8,
+									this.y + this.height - 16, 16, 16).hide();
 
 					this
 							.addToPrimitives(this.sequentialMultiProcessingMarkerIcon);
@@ -279,7 +279,7 @@ define(
 							this.y + this.height - 16, 16, 16).hide();
 
 					this.addToPrimitives(this.subprocessMarkerIcon);
-					
+
 					this.applicationActivitiesIcon = this.diagram.canvasManager.getNewSet();
 					this.applicationActivitiesIcon.push(this.receiveTaskIcon);
 					this.applicationActivitiesIcon.push(this.ruleTaskIcon);
@@ -297,26 +297,26 @@ define(
 				ActivitySymbol.prototype.initializeEventHandling = function() {
 					//Subprocess activity
 					this.subprocessMarkerIcon.mouseover(ActivitySymbol_subprocessMarkerIconMouseOverClosure);
-					
+
 					this.subprocessMarkerIcon.mouseout(ActivitySymbol_applicationActivityIconMouseOutClosure);
-					
+
 					this.subprocessMarkerIcon.click(ActivitySymbol_subprocessMarkerIconClickClosure);
-					
+
 					if (this.modelElement.isApplicationActivity()) {
 						//MouseHover event
 						this.applicationActivitiesIcon
 								.mouseover(ActivitySymbol_applicationActivityIconMouseOverClosure);
-					
+
 						//MouseOut event
 						this.applicationActivitiesIcon
 								.mouseout(ActivitySymbol_applicationActivityIconMouseOutClosure);
-						
+
 						//Click event
 						if(!this.modelElement.applicationFullId){
 							m_utils.debug("Application Full Id not defined for " + this.modelElement.name);
 							return;
 						}
-						
+
 						var application = m_model
 								.findApplication(this.modelElement.applicationFullId);
 
@@ -348,7 +348,7 @@ define(
 							return false;
 						});
 					}
-					
+
 				};
 
 				/**
@@ -410,13 +410,49 @@ define(
 						this.userTaskIcon.toFront();
 					}
 
-					if (this.modelElement.processingType == m_constants.SINGLE_PROCESSING_TYPE) {
+					if (this.modelElement.getProcessingType() === m_constants.SINGLE_PROCESSING_TYPE) {
 						this.parallelMultiProcessingMarkerIcon.hide();
 						this.sequentialMultiProcessingMarkerIcon.hide();
-					} else if (this.modelElement.processingType == m_constants.PARALLEL_MULTI_PROCESSING_TYPE) {
+					} else if (this.modelElement.getProcessingType() === m_constants.PARALLEL_MULTI_PROCESSING_TYPE) {
+						if (this.modelElement.activityType == m_constants.SUBPROCESS_ACTIVITY_TYPE) {
+							this.parallelMultiProcessingMarkerIcon.animate({
+								"x" : this.x + 0.5 * this.width + 1,
+								"y" : this.y + this.height - 16
+							}, this.diagram.animationDelay,
+									this.diagram.animationEasing);
+							this.subprocessMarkerIcon.animate({
+								"x" : this.x + 0.5 * this.width - 17,
+								"y" : this.y + this.height - 16
+							}, this.diagram.animationDelay,
+									this.diagram.animationEasing);
+						} else {
+							this.parallelMultiProcessingMarkerIcon.animate({
+								"x" : this.x + 0.5 * this.width - 8,
+								"y" : this.y + this.height - 16
+							}, this.diagram.animationDelay,
+									this.diagram.animationEasing);
+						}
 						this.parallelMultiProcessingMarkerIcon.show();
 						this.sequentialMultiProcessingMarkerIcon.hide();
-					} else if (this.modelElement.processingType == m_constants.SEQUENTIAL_MULTI_PROCESSING_TYPE) {
+					} else if (this.modelElement.getProcessingType() === m_constants.SEQUENTIAL_MULTI_PROCESSING_TYPE) {
+						if (this.modelElement.activityType === m_constants.SUBPROCESS_ACTIVITY_TYPE) {
+							this.sequentialMultiProcessingMarkerIcon.animate({
+								"x" : this.x + 0.5 * this.width + 1,
+								"y" : this.y + this.height - 16
+							}, this.diagram.animationDelay,
+									this.diagram.animationEasing);
+							this.subprocessMarkerIcon.animate({
+								"x" : this.x + 0.5 * this.width - 17,
+								"y" : this.y + this.height - 16
+							}, this.diagram.animationDelay,
+									this.diagram.animationEasing);
+						} else {
+							this.sequentialMultiProcessingMarkerIcon.animate({
+								"x" : this.x + 0.5 * this.width - 8,
+								"y" : this.y + this.height - 16
+							}, this.diagram.animationDelay,
+									this.diagram.animationEasing);
+						}
 						this.parallelMultiProcessingMarkerIcon.hide();
 						this.sequentialMultiProcessingMarkerIcon.show();
 					}
@@ -481,21 +517,51 @@ define(
 						"y" : this.y + 0.5 * this.height
 					}, this.diagram.animationDelay,
 							this.diagram.animationEasing);
-					this.parallelMultiProcessingMarkerIcon.animate({
-						"x" : this.x + 0.5 * this.width - 4,
-						"y" : this.y + 2
-					}, this.diagram.animationDelay,
-							this.diagram.animationEasing);
-					this.sequentialMultiProcessingMarkerIcon.animate({
-						"x" : this.x + 0.5 * this.width - 4,
-						"y" : this.y + 2
-					}, this.diagram.animationDelay,
-							this.diagram.animationEasing);
 					this.subprocessMarkerIcon.animate({
 						"x" : this.x + 0.5 * this.width - 8,
 						"y" : this.y + this.height - 16
 					}, this.diagram.animationDelay,
 							this.diagram.animationEasing);
+					if (this.modelElement.getProcessingType() === m_constants.PARALLEL_MULTI_PROCESSING_TYPE) {
+						if (this.modelElement.activityType === m_constants.SUBPROCESS_ACTIVITY_TYPE) {
+							this.parallelMultiProcessingMarkerIcon.animate({
+								"x" : this.x + 0.5 * this.width + 1,
+								"y" : this.y + this.height - 16
+							}, this.diagram.animationDelay,
+									this.diagram.animationEasing);
+							this.subprocessMarkerIcon.animate({
+								"x" : this.x + 0.5 * this.width - 17,
+								"y" : this.y + this.height - 16
+							}, this.diagram.animationDelay,
+									this.diagram.animationEasing);
+						} else {
+							this.parallelMultiProcessingMarkerIcon.animate({
+								"x" : this.x + 0.5 * this.width - 8,
+								"y" : this.y + this.height - 16
+							}, this.diagram.animationDelay,
+									this.diagram.animationEasing);
+						}
+					}
+					if (this.modelElement.getProcessingType() === m_constants.SEQUENTIAL_MULTI_PROCESSING_TYPE) {
+						if (this.modelElement.activityType === m_constants.SUBPROCESS_ACTIVITY_TYPE) {
+							this.sequentialMultiProcessingMarkerIcon.animate({
+								"x" : this.x + 0.5 * this.width + 1,
+								"y" : this.y + this.height - 16
+							}, this.diagram.animationDelay,
+									this.diagram.animationEasing);
+							this.subprocessMarkerIcon.animate({
+								"x" : this.x + 0.5 * this.width - 17,
+								"y" : this.y + this.height - 16
+							}, this.diagram.animationDelay,
+									this.diagram.animationEasing);
+						} else {
+							this.sequentialMultiProcessingMarkerIcon.animate({
+								"x" : this.x + 0.5 * this.width - 8,
+								"y" : this.y + this.height - 16
+							}, this.diagram.animationDelay,
+									this.diagram.animationEasing);
+						}
+					}
 
 					this.adjustPrimitivesOnShrink();
 					// this.rectangle.attr({
@@ -744,7 +810,7 @@ define(
 					var applicationActivityTooltip = this.diagram.applicationActivityTooltip;
 					applicationActivityTooltip.fadeOut("slow");
 				};
-				
+
 				/**
 				 *
 				 */
@@ -838,8 +904,8 @@ define(
 					}
 					return applicationMD;
 				};
-				
-				
+
+
 				/**
 				 * Update the modelElement
 				 */
@@ -887,7 +953,7 @@ define(
 							}
 						} else if (null != connection.toAnchorPoint
 								&& null != connection.toAnchorPoint.symbol) {
-							if (connection.fromAnchorPoint.symbol.modelElement.eventType == m_constants.START_EVENT_TYPE) 
+							if (connection.fromAnchorPoint.symbol.modelElement.eventType == m_constants.START_EVENT_TYPE)
 							{
 								fromStartEvent.push(connection.fromAnchorPoint.symbol.oid);
 							} else if (connection.fromAnchorPoint.symbol.type == m_constants.DATA_SYMBOL) {
@@ -911,14 +977,14 @@ define(
 							}
 						}
 					}
-					
+
 					//to keep single incoming and outgoing connection to/from an activity
 					// When rerouting happens, connection is not present in
 					// this.connections, check the validation rules with symbol
 					// connections list
 					if (conn != null) {
 						if (-1 == jQuery.inArray(conn, this.connections)) {
-							if (conn.fromAnchorPoint && conn.fromAnchorPoint.symbol.type !== m_constants.DATA_SYMBOL 
+							if (conn.fromAnchorPoint && conn.fromAnchorPoint.symbol.type !== m_constants.DATA_SYMBOL
 									&& conn.toAnchorPoint && conn.toAnchorPoint.symbol.type !== m_constants.DATA_SYMBOL) {
 								if (conn.fromAnchorPoint
 										&& conn.fromAnchorPoint.symbol) {
@@ -934,27 +1000,27 @@ define(
 										{
 											//if there is already an incoming connection from symbol which is not Start Symbol - return false
 											if(inMappingActivity.length > 0){
-												return false;	
+												return false;
 											}
 										}
 										else{
-											//if there is an incoming connection from start event or any other symbol - return false   
+											//if there is an incoming connection from start event or any other symbol - return false
 											return (-1 == jQuery
 													.inArray(conn.toAnchorPoint.symbol.oid,
-															inMappingActivity) && fromStartEvent.length == 0);	
+															inMappingActivity) && fromStartEvent.length == 0);
 										}
 									}
-								}	
+								}
 							}
 						}
 					}
-					
+
 					return true;
 				};
 
 
 				/**
-				 * overridden to consider boundary events as part of activity symbol 
+				 * overridden to consider boundary events as part of activity symbol
 				 */
 				ActivitySymbol.prototype.dragStart = function() {
 					if (!this.selected) {
@@ -971,7 +1037,7 @@ define(
 					this.diagram.selectedSymbolsDragStart();
 				};
 
-				
+
 				/**
 				 * Adjust Activity Symbol Width
 				 */
@@ -983,7 +1049,7 @@ define(
 
 						if ((add && this.width < requiredWidth) || (!add && this.width > requiredWidth)) {
 							var difference = requiredWidth - this.width;
-							this.x = this.x - difference; 
+							this.x = this.x - difference;
 							this.width = requiredWidth;
 							var changes = {
 								"x" : this.x,
@@ -991,7 +1057,7 @@ define(
 								"parentSymbolId" : this.parentSymbol.id,
 								"width" : this.width
 							};
-							
+
 							if (!returnChanges) {
 								m_commandsController.submitCommand(m_command
 										.createUpdateModelElementCommand(
@@ -1014,27 +1080,27 @@ define(
 				 */
 				ActivitySymbol.prototype.insertBoundaryEvent = function(
 						symbolTobeInserted) {
-					
+
 					if (m_utils.isItemInArray(this.boundaryEventSymbols, symbolTobeInserted)) {
 						return boundaryEventSymbols.indexOf(symbolTobeInserted);
 					}
-					
+
 					this.boundaryEventSymbols.push(symbolTobeInserted);
-					
+
 					var length = this.boundaryEventSymbols.length;
-					
+
 					for (var i=0; i < length; i++) {
 				        var eventSymbol = this.boundaryEventSymbols[i];
-				        
+
 						for ( var j = i - 1; j > -1 && this.boundaryEventSymbols[j].x < eventSymbol.x; j--) {
 				        	this.boundaryEventSymbols[j+1] = this.boundaryEventSymbols[j];
 				        }
-						
+
 				        this.boundaryEventSymbols[j+1] = eventSymbol;
 				    }
 					return this.boundaryEventSymbols.indexOf(symbolTobeInserted);
 				};
-				
+
 				/**
 				 *
 				 */
@@ -1044,13 +1110,13 @@ define(
 					var changeDesc;
 					var changeDescriptions = [];
 					var changes;
-					
+
 					var y = this.y + this.height - m_constants.EVENT_DEFAULT_RADIUS;
 
 					for ( var i = 0; i < this.boundaryEventSymbols.length; ++i) {
 						x -= m_constants.ACTIVITY_BOUNDARY_EVENT_OFFSET;
 						eventSymbol = this.boundaryEventSymbols[i];
-						
+
 						if (eventSymbol.x !== (x - eventSymbol.clientSideAdjX + eventSymbol.parentSymbol.symbolXOffset)
 								|| eventSymbol.y !== y) {
 							eventSymbol.moveTo(x, y);
@@ -1068,7 +1134,7 @@ define(
 										changes["modelElement"] = {
 												bindingActivityUuid : this.modelElement.id,
 												interrupting : true
-											};		
+											};
 									}else{
 										changes["modelElement"] = {
 												bindingActivityUuid : this.modelElement.id
@@ -1084,18 +1150,18 @@ define(
 						}
 						x -= eventSymbol.width;
 					}
-					
+
 					return changeDescriptions;
 				};
 
-				
+
 				ActivitySymbol.prototype.getNextAvailableSlot = function() {
 					var length = this.boundaryEventSymbols.length + 1;
-					
+
 					var x = this.x + this.width + 10;
 					x -= (m_constants.ACTIVITY_BOUNDARY_EVENT_OFFSET * length);
 					x -= (2 * m_constants.EVENT_DEFAULT_RADIUS * length);
-					
+
 					var y = this.y + this.height
 							- (m_constants.EVENT_DEFAULT_RADIUS);
 
@@ -1105,7 +1171,7 @@ define(
 					};
 				};
 
-				
+
 				ActivitySymbol.prototype.showEditable = function() {
 					this.text.hide();
 					var editableText = this.diagram.editableText;
@@ -1202,7 +1268,7 @@ define(
 				this.auxiliaryProperties.callbackScope.diagram
 						.connectToIntermediateEvent(this.auxiliaryProperties.callbackScope);
 			}
-			
+
 			/**
 			 *
 			 */
@@ -1241,7 +1307,7 @@ define(
 				this.auxiliaryProperties.callbackScope
 						.onSubprocessMarkerIconMouseOver();
 			}
-			
+
 			/**
 			 *
 			 */

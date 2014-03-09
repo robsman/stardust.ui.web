@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.common.event;
 
+import java.util.Map;
+
 import org.eclipse.stardust.ui.web.common.IPerspectiveDefinition;
 
 /**
@@ -28,15 +30,17 @@ public class PerspectiveEvent
 
    private final PerspectiveEventType type;
    private final IPerspectiveDefinition perspective;
+   private final Map<String, Object> params;
 
    /**
     * @param perspective
     * @param type
     */
-   public PerspectiveEvent(IPerspectiveDefinition perspective, PerspectiveEventType type)
+   public PerspectiveEvent(IPerspectiveDefinition perspective, PerspectiveEventType type, Map<String, Object> params)
    {
       this.perspective = perspective;
       this.type = type;
+      this.params = params;
    }
 
    public PerspectiveEventType getType()
@@ -47,5 +51,10 @@ public class PerspectiveEvent
    public IPerspectiveDefinition getPerspective()
    {
       return perspective;
+   }
+
+   public Map<String, Object> getParams()
+   {
+      return params;
    }
 }

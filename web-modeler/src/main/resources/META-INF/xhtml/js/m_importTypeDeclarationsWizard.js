@@ -338,18 +338,26 @@ define(
                   jQuery.each(typeDeclarations, function() {
                      var id = this.name;
                      var xref = ns ? "{" + ns + "}" + id : id;
-                     changes.push({
-                        // must keep the original name as ID as otherwise the type can't be resolved eventually
-                        "id": id,
-                        "name": id,
-                        "typeDeclaration" : {
-                           type: {
-                              classifier: "ExternalReference",
-                              location: location,
-                              xref: xref
-                           }
-                        }
+                     var duplicate = false;
+                     jQuery.each(changes, function() {
+                    	 if (id == this.name) {
+                    		 duplicate = true;
+                    	 }
                      });
+                     if (!duplicate) {
+                         changes.push({
+                             // must keep the original name as ID as otherwise the type can't be resolved eventually
+                             "id": id,
+                             "name": id,
+                             "typeDeclaration" : {
+                                type: {
+                                   classifier: "ExternalReference",
+                                   location: location,
+                                   xref: xref
+                                }
+                             }
+                          });
+                     }
                   });
                   m_commandsController.submitCommand(
                         m_command.createCreateTypeDeclarationCommand(

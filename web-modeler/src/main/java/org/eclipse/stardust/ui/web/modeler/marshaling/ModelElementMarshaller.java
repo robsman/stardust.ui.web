@@ -98,6 +98,8 @@ import org.eclipse.stardust.model.xpdl.carnot.util.VariableContext;
 import org.eclipse.stardust.model.xpdl.carnot.util.VariableContextHelper;
 import org.eclipse.stardust.model.xpdl.util.IConnectionManager;
 import org.eclipse.stardust.model.xpdl.xpdl2.DataTypeType;
+import org.eclipse.stardust.model.xpdl.xpdl2.LoopType;
+import org.eclipse.stardust.model.xpdl.xpdl2.extensions.LoopDataRefType;
 import org.eclipse.stardust.model.xpdl.xpdl2.DeclaredTypeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.ExternalPackage;
 import org.eclipse.stardust.model.xpdl.xpdl2.ExternalReferenceType;
@@ -955,6 +957,47 @@ public class ModelElementMarshaller implements ModelMarshaller
             activityJson.addProperty(ModelerConstants.ACTIVITY_IS_HIBERNATED_ON_CREATION,
                   activity.isHibernateOnCreation());
 
+            String inputRef = null;
+            String inputContext = null;
+            String outputRef = null;
+            String outputContext = null;
+            String counterRef = null;
+            String counterContext = null;
+            LoopType loop = activity.getLoop();
+            if (loop != null)
+            {
+               activityJson.add("loop", toLoopJson(loop));
+               if (loop.getLoopType() != LoopTypeType.STANDARD)
+               {
+                  LoopMultiInstanceType miLoop = loop.getLoopMultiInstance();
+                  if (miLoop != null)
+                  {
+                     LoopDataRefType dataRef = miLoop.getLoopDataRef();
+                     if (dataRef != null)
+                     {
+                        inputRef = dataRef.getInputItemRef();
+                        if (inputRef != null)
+                        {
+                           inputContext = inputRef.substring(0, inputRef.indexOf(':'));
+                           inputRef = inputRef.substring(inputContext.length() + 1);
+                        }
+                        outputRef = dataRef.getOutputItemRef();
+                        if (outputRef != null)
+                        {
+                           outputContext = outputRef.substring(0, outputRef.indexOf(':'));
+                           outputRef = outputRef.substring(outputContext.length() + 1);
+                        }
+                        counterRef = dataRef.getLoopCounterRef();
+                        if (counterRef != null)
+                        {
+                           counterContext = counterRef.substring(0, counterRef.indexOf(':'));
+                           counterRef = counterRef.substring(counterContext.length() + 1);
+                        }
+                     }
+                  }
+               }
+            }
+
             activityJson.addProperty(
                   ModelerConstants.PARTICIPANT_FULL_ID,
                   getModelBuilderFacade().createFullId(
@@ -1035,46 +1078,40 @@ public class ModelElementMarshaller implements ModelMarshaller
                   for (AccessPointType accessPoint : ActivityUtil.getAccessPoints(
                         activity, true, context))
                   {
-                     JsonObject accessPointJson = new JsonObject();
-
-                     accessPointsJson.add(accessPointJson);
-                     accessPointJson.addProperty(ModelerConstants.ID_PROPERTY,
-                           accessPoint.getId());
-                     accessPointJson.addProperty(ModelerConstants.NAME_PROPERTY,
-                           accessPoint.getName());
-                     accessPointJson.addProperty(ModelerConstants.DIRECTION_PROPERTY,
-                           accessPoint.getDirection().getLiteral());
-
-                     if (accessPoint.getType() != null)
-                     {
-                        accessPointJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
-                              accessPoint.getType().getId());
+                     String id = accessPoint.getId();
+                     accessPointsJson.add(toAccessPointJson(activity, accessPoint,
+                           inputRef != null && inputRef.equals(id) && inputContext.equals(inputContext)));
                      }
-
-                     addDataToAccessPoint(activity, accessPoint, accessPointJson);
-
-                     loadAttributes(accessPoint, accessPointJson);
-                     loadDescription(accessPointJson, accessPoint);
-                  }
 
                   for (AccessPointType accessPoint : ActivityUtil.getAccessPoints(
                         activity, false, context))
                   {
                      if (DirectionType.INOUT_LITERAL == accessPoint.getDirection())
                      {
-                        // skip INOUT access points since they were already added for IN
-                        // direction.
+                        // skip INOUT access points since they were already added for IN direction.
                         continue;
                      }
+                     accessPointsJson.add(toAccessPointJson(activity, accessPoint,
+                           outputRef != null && outputRef.equals(accessPoint.getId()) && outputContext.equals(context)));
+                  }
+               }
+            }
+         }
+      }
+      return activityJson;
+   }
+
+   private JsonObject toAccessPointJson(ActivityType activity, AccessPointType accessPoint, boolean isListItem)
+   {
                      JsonObject accessPointJson = new JsonObject();
 
-                     accessPointsJson.add(accessPointJson);
                      accessPointJson.addProperty(ModelerConstants.ID_PROPERTY,
                            accessPoint.getId());
-                     accessPointJson.addProperty(ModelerConstants.NAME_PROPERTY,
-                           accessPoint.getName());
+      String name = accessPoint.getName();
+      accessPointJson.addProperty(ModelerConstants.NAME_PROPERTY, name);
                      accessPointJson.addProperty(ModelerConstants.DIRECTION_PROPERTY,
                            accessPoint.getDirection().getLiteral());
+      accessPointJson.addProperty(ModelerConstants.USED_AS_LIST_PROPERTY, isListItem);
 
                      if (accessPoint.getType() != null)
                      {
@@ -1086,19 +1123,45 @@ public class ModelElementMarshaller implements ModelMarshaller
 
                      loadAttributes(accessPoint, accessPointJson);
                      loadDescription(accessPointJson, accessPoint);
+
+      return accessPointJson;
                   }
+
+   private JsonObject toLoopJson(LoopType loop)
+   {
+      JsonObject loopJson = new JsonObject();
+      switch (loop.getLoopType())
+      {
+      case STANDARD:
+         loopJson.addProperty("type", "standard");
+         // TODO (fh) other properties
+         break;
+      case MULTI_INSTANCE:
+         loopJson.addProperty("type", "multi");
+         LoopMultiInstanceType multiLoop = loop.getLoopMultiInstance();
+         if (multiLoop != null)
+         {
+            Boolean sequential = multiLoop.getMIOrdering() == MIOrderingType.SEQUENTIAL;
+            loopJson.addProperty("sequential", sequential);
+            LoopDataRefType loopDataRef = multiLoop.getLoopDataRef();
+            if (loopDataRef != null)
+            {
+               addPropertyIfNotNull(loopJson, "inputId", loopDataRef.getInputItemRef());
+               addPropertyIfNotNull(loopJson, "outputId", loopDataRef.getOutputItemRef());
+               addPropertyIfNotNull(loopJson, "indexId", loopDataRef.getLoopCounterRef());
                }
             }
+      }
+      return loopJson;
+   }
 
-            /*
-             * if (null != activity.getPerformer()) { act.getProps().setPerformerid(
-             * activity.getPerformer().getId()); }
-             */
-
+   private void addPropertyIfNotNull(JsonObject loopJson, String property, String value)
+   {
+      if (value != null)
+      {
+         loopJson.addProperty(property, value);
          }
       }
-      return activityJson;
-   }
 
    private void addDataToAccessPoint(ActivityType activity,
          AccessPointType accessPoint, JsonObject accessPointJson)
@@ -1115,7 +1178,7 @@ public class ModelElementMarshaller implements ModelMarshaller
                if (model != null)
                {
                   dataTypeFullID = getDataFullID(model, dataMappingType.getData());
-                  JsonObject dataJson = this.toDataJson(dataMappingType.getData());
+                  JsonObject dataJson = toDataJson(dataMappingType.getData());
                   accessPointJson.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY,
                         dataTypeFullID);
                   if (dataJson.get(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY) != null)
@@ -1885,6 +1948,20 @@ public class ModelElementMarshaller implements ModelMarshaller
          {
             ModelType referencedModel = null;
             URI proxyUri = ((InternalEObject) data).eProxyURI();
+
+            if (proxyUri == null)
+            {
+               String uri = AttributeUtil.getAttributeValue(data,
+                     IConnectionManager.URI_ATTRIBUTE_NAME);
+               try
+               {
+                  proxyUri = URI.createURI(uri);
+               }
+               catch (Exception ex)
+               {
+               }
+            }
+
             referencedModel = ModelUtils.getModelByProxyURI(model, proxyUri);
             if (referencedModel != null)
             {
@@ -2849,7 +2926,7 @@ public class ModelElementMarshaller implements ModelMarshaller
       try
       {
          init();
-         return toModelJson((ModelType) model);
+         return toModelJson((ModelType) model, true);
       }
       finally
       {
@@ -3095,9 +3172,21 @@ public class ModelElementMarshaller implements ModelMarshaller
     */
    public JsonObject toModelJson(ModelType model)
    {
+      return toModelJson(model, false);
+   }
+
+   /**
+    * @param model
+    * @return
+    */
+   public JsonObject toModelJson(ModelType model, boolean excludeCVs)
+   {
       JsonObject modelJson = toModelOnlyJson(model);
 
+      if (!excludeCVs)
+      {
       modelJson.add("configVariables", toConfigVariableJson(model));
+      }
 
       JsonObject processesJson = new JsonObject();
 

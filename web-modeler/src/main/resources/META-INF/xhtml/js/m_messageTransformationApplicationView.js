@@ -24,7 +24,7 @@ define(
 
 					m_utils.jQuerySelect("#hideGeneralProperties").hide();
 					initViewCollapseClickHandlers();
-					
+
 					var view = new MessageTransformationApplicationView();
 					i18nmessageTransformationproperties();
 					// TODO Unregister!
@@ -36,9 +36,9 @@ define(
 					m_utils.hideWaitCursor();
 					}
 				};
-				
+
 			/**
-			 * 
+			 *
 			 */
 			function initViewCollapseClickHandlers() {
 				m_utils.jQuerySelect("#showGeneralProperties").click(function() {
@@ -49,7 +49,7 @@ define(
 				m_utils.jQuerySelect("#showAllProperties").show();
 				m_utils.jQuerySelect("#hideGeneralProperties").hide();
 				});
-			}	
+			}
 
 			/**
 			 *
@@ -59,11 +59,11 @@ define(
 				// Common properties
 				m_utils.jQuerySelect("#hideGeneralProperties label")
 					.text(m_i18nUtils.getProperty("modeler.element.properties.commonProperties.generalProperties"));
-		
+
 				m_utils.jQuerySelect("#showGeneralProperties label")
 					.text(m_i18nUtils.getProperty("modeler.element.properties.commonProperties.generalProperties"));
-			
-				
+
+
 				m_utils.jQuerySelect("label[for='guidOutput']")
 						.text(
 								m_i18nUtils
@@ -337,6 +337,7 @@ define(
 					this.inputData = {};
 					this.outputData = {};
 					this.mappingExpressions = {};
+					this.advancedMappings = {};
 					this.publicVisibilityCheckbox = m_utils.jQuerySelect("#publicVisibilityCheckbox");
 					this.inputTable = m_utils.jQuerySelect("#sourceTable");
 					this.inputTableBody = m_utils.jQuerySelect("table#sourceTable tbody");
@@ -382,6 +383,9 @@ define(
 
 					m_dialog.makeInvisible(this.showAllSourceFieldsInput);
 					m_dialog.makeInvisible(this.showAllTargetFieldsInput);
+
+					this.advancedMappingCheckbox = m_utils.jQuerySelect("#advancedMappingCheckbox");
+					this.advancedMappingCheckbox.attr("disabled", true);
 
 					this.editorAnchor = m_utils.jQuerySelect("#expressionTextDiv").get(0);
 					this.editorAnchor.id = "expressionText" + Math.floor((Math.random()*100000) + 1) + "Div";
@@ -440,6 +444,7 @@ define(
 					this.inputData = {};
 					this.outputData = {};
 					this.mappingExpressions = {};
+					this.advancedMappings = {};
 					this.inputTableBody.empty();
 					this.outputTableBody.empty();
 					this.inputTableRows = [];
@@ -539,7 +544,6 @@ define(
 					this.expressionEditor.setSessionData("$keywordList",completerStrings);
 					var that=this;
 
-					this.submitChanges(this.determineTransformationChanges());
 
 
 
@@ -608,11 +612,18 @@ define(
 											view.selectedOutputTableRow = m_utils.jQuerySelect(
 													self).data("tableRow");
 
-											m_utils.jQuerySelect("#elementIndicatorText").empty();
-											m_utils.jQuerySelect("#elementIndicatorText")
-													.append(
-															view.selectedOutputTableRow.path
-																	+ " = ");
+											view.advancedMappingCheckbox.removeAttr("disabled");
+											if (view.selectedOutputTableRow.advancedMapping) {
+												view.advancedMappingCheckbox.attr("checked", true);
+												m_utils.jQuerySelect("#elementIndicatorText").empty();
+											} else {
+												view.advancedMappingCheckbox.attr("checked", false);
+												m_utils.jQuerySelect("#elementIndicatorText").empty();
+												m_utils.jQuerySelect("#elementIndicatorText")
+														.append(
+																view.selectedOutputTableRow.path
+																		+ " = ");
+											}
 
 											view.expressionEditor.enable();
 											view.expressionEditor
@@ -807,6 +818,7 @@ define(
 						// for output mapping
 						tableRow.mappingExpression = this.mappingExpressions[path] == null ? ""
 								: this.mappingExpressions[path];
+						tableRow.advancedMapping = this.advancedMappings[path];
 						tableRow.problems = "";
 
 						this.outputTableRows.push(tableRow);
@@ -902,7 +914,7 @@ define(
 						if (source) {
 							content += "</tr>";
 							tableBody.append(content);
-							
+
 							var dataElement = m_utils.jQuerySelect("#sourceTable #" + rowId
 									+ " .data-element");
 
@@ -1467,6 +1479,8 @@ define(
 
 									view.mappingExpressions[fieldPath] = m_utils.jQuerySelect(
 											this).attr("mappingExpression");
+									view.advancedMappings[fieldPath] = m_utils.jQuerySelect(
+											this).attr("advancedMapping");
 								});
 					} catch(e) {
 						this.errorMessages
@@ -1500,6 +1514,9 @@ define(
 																						.replace(/>/g, '&gt;')
 																						.replace(/"/g, '&quot;')
 																						.replace(/\n/g, '&#xA;');
+							if (outputTableRow.advancedMapping == "true") {
+								transformationProperty += '" advancedMapping="true';
+							}
 							transformationProperty += '"/>\r\n';
 						}
 					}
@@ -1568,6 +1585,37 @@ define(
 							view.submitChanges(view.determineTransformationChanges());
 						}
 					});
+
+					this.advancedMappingCheckbox.change({
+															"view" : this
+														},function(event) {
+															if (view.advancedMappingCheckbox.attr("checked")) {
+																var advMapping = "true";
+															} else {
+																var advMapping = null;
+															}
+
+															for (var n = 0; n < view.outputTableRows.length; ++n) {
+																if (view.selectedOutputTableRow === view.outputTableRows[n]) {
+																	view.selectedOutputTableRow.advancedMapping = advMapping;
+																	view.outputTableRows[n].advancedMapping = advMapping;
+																	if (advMapping) {
+																		m_utils.jQuerySelect("#elementIndicatorText").empty();
+																	} else {
+																		m_utils.jQuerySelect("#elementIndicatorText").empty();
+																		m_utils.jQuerySelect("#elementIndicatorText")
+																				.append(
+																						view.selectedOutputTableRow.path
+																								+ " = ");
+																	}
+																	break;
+																}
+															}
+
+															view.populateMappingCell(view.selectedOutputTableRow);
+
+															view.submitChanges(view.determineTransformationChanges());
+														});
 
 					m_utils.jQuerySelect("#" + this.editorAnchor.id)
 							.droppable({

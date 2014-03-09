@@ -19,6 +19,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.*;
+import java.util.Map.Entry;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -854,9 +855,20 @@ public class ModelerResource
       try
       {
          JsonObject postedObject = jsonIo.readJsonObject(postedData);
+         
+         JsonObject outputData = (JsonObject)getInteractionDataObject().get("output");
+         if (null == outputData)
+         {
+            outputData = new JsonObject();
+         }
 
-         getInteractionDataObject().add("output", postedObject);
+         for (Entry<String, JsonElement> entry : postedObject.entrySet())
+         {
+            outputData.add(entry.getKey(), entry.getValue());
+         }
 
+         getInteractionDataObject().add("output", outputData);
+         
          return Response.ok(getInteractionDataObject().toString(), APPLICATION_JSON_TYPE)
                .build();
       }

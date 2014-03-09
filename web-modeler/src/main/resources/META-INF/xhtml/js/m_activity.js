@@ -24,9 +24,9 @@ define(
 
 					var actNamePrefix = m_i18nUtils
 							.getProperty("modeler.diagram.newActivity.namePrefix");
-					
+
 					var elementNameId = m_utils.getUniqueElementNameId(process.activities, actNamePrefix);
-					
+
 					activity.initialize(elementNameId.name, type);
 
 					activity.taskType = m_constants.MANUAL_TASK_TYPE;
@@ -38,7 +38,7 @@ define(
 					var activity = new Activity();
 
 					var elementNameId = m_utils.getUniqueElementNameId(process.activities, subprocess.name);
-					
+
 					activity.initialize(elementNameId.name,
 							m_constants.SUBPROCESS_ACTIVITY_TYPE);
 
@@ -51,7 +51,7 @@ define(
 					var activity = new Activity();
 
 					var elementNameId = m_utils.getUniqueElementNameId(process.activities, application.name);
-					
+
 					activity.initialize(elementNameId.name,
 							m_constants.TASK_ACTIVITY_TYPE);
 
@@ -99,7 +99,7 @@ define(
 				this.subprocessId = null;
 				this.applicationFullId = null;
 				this.participantFullId = null;
-				this.processingType = m_constants.SINGLE_PROCESSING_TYPE;
+				this.loop = null;
 
 				/**
 				 *
@@ -129,12 +129,12 @@ define(
 				};
 
 				/**
-				 * 
+				 *
 				 */
 				Activity.prototype.isApplicationActivity = function() {
 					return ((this.activityType == m_constants.TASK_ACTIVITY_TYPE) && (this.taskType != m_constants.MANUAL_TASK_TYPE));
 				};
-				
+
 				/**
 				 *
 				 */
@@ -205,8 +205,88 @@ define(
 							&& (this.attributes && !this.attributes["carnot:engine:subprocess:copyAllData"])) {
 						return true;
 					}
-					
+
 					return false;
+				};
+
+				/**
+				 *
+				 */
+				Activity.prototype.supportsProcessingType = function() {
+					if (this.isApplicationActivity()) return true;
+
+					if (this.activityType === "Subprocess" && this.subprocessFullId) {
+						return true;
+					}
+
+					return false;
+				};
+
+				/**
+				 *
+				 */
+				Activity.prototype.resetProcessingTypeIfNotSupported = function() {
+					if (!this.supportsProcessingType()) {
+						this.setProcessingTypeSingleInstance();
+					}
+				};
+
+				/**
+				 *
+				 */
+				Activity.prototype.getProcessingType = function(paramId) {
+					if (this.loop) {
+						if (this.loop.type === m_constants.MULTI_INSTANCE_LOOP_TYPE) {
+							return this.loop.sequential ? m_constants.SEQUENTIAL_MULTI_PROCESSING_TYPE : m_constants.PARALLEL_MULTI_PROCESSING_TYPE;
+						}
+					} else {
+						return m_constants.SINGLE_PROCESSING_TYPE;
+					}
+				};
+
+				/**
+				 *
+				 */
+				Activity.prototype.setProcessingTypeSingleInstance = function() {
+					this.loop = null;
+				};
+
+				/**
+				 *
+				 */
+				Activity.prototype.setProcessingTypeMultiInstance = function(sequential) {
+					if (!this.loop) {
+						this.loop = {};
+					}
+
+					this.loop.type = m_constants.MULTI_INSTANCE_LOOP_TYPE;
+					if (sequential) {
+						this.loop.sequential = sequential;
+					} else {
+						this.loop.sequential = false;
+					}
+				};
+
+				/**
+				 *
+				 */
+				Activity.prototype.setMultiInstanceInputListParam = function(paramId) {
+					this.loop.inputId = paramId;
+				};
+
+
+				/**
+				 *
+				 */
+				Activity.prototype.setMultiInstanceIndexListParam = function(paramId) {
+					this.loop.indexId = paramId;
+				};
+
+				/**
+				 *
+				 */
+				Activity.prototype.setMultiInstanceOutputListParam = function(paramId) {
+					this.loop.outputId = paramId;
 				};
 			}
 		});

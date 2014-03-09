@@ -41,10 +41,10 @@ define(
 				 *
 				 */
 				EventBasicPropertiesPage.prototype.initialize = function() {
-					
+
 					m_utils.jQuerySelect("label[for='eventClassSelect']")
 						.text(m_i18nUtils.getProperty("modeler.eventPropertiesPanel.heading.startEvent.eventClass"));
-					
+
 					this.initializeBasicPropertiesPage();
 
 					this.namePanel = this.mapInputId("annotationName");
@@ -117,6 +117,19 @@ define(
 								modelElement.attributes = {};
 							}
 							modelElement.attributes["carnot:engine:exceptionName"] = "java.lang.Exception";
+						}
+
+						if (modelElement.eventType == m_constants.START_EVENT_TYPE
+								&& modelElement.eventClass == m_constants.NONE_EVENT_CLASS) {
+							for ( var key in modelElement.attributes) {
+
+								if (key != "documentation:comments"
+										|| key != "eventClass"
+										|| key != "interrupting"
+										|| key != "throwing") {
+									modelElement.attributes[key] = null;
+								}
+							}
 						}
 						page.submitChanges({modelElement: modelElement});
 					});
@@ -218,7 +231,7 @@ define(
 						this.interruptingInput.hide();
 						m_utils.jQuerySelect("label[for='interruptingInput']").hide();
 					}
-					
+
 					this.setInterrupting(this.getModelElement().interrupting);
 					this.setCatching(!this.getModelElement().throwing);
 					this.setThrowing(this.getModelElement().throwing);

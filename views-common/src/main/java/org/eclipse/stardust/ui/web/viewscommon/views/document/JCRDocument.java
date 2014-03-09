@@ -249,16 +249,12 @@ public class JCRDocument extends AbstractDocumentContentInfo
       {
          this.document = DocumentMgmtUtility.getDocumentManagementService().versionDocument(this.document.getId(), "", null);
       }
-
       this.document.setProperties(getProperties());
-      this.document.setDescription(description);
       this.document.setDocumentType(documentType);
-      
       this.document.setDocumentAnnotations(annotations);
-      this.document.setOwner(DocumentMgmtUtility.getUser().getAccount());
       
-      Document document = DocumentMgmtUtility.getDocumentManagementService().updateDocument(this.document, contentByte,
-            "", true, comments, null, false);
+      Document document = DocumentMgmtUtility.updateDocument(this.document, contentByte, description, comments);
+      
       return new JCRDocument(document, new JCRVersionTracker(document));
    }
 

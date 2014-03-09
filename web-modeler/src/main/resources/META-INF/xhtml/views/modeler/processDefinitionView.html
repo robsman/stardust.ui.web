@@ -625,6 +625,18 @@ t/javascript" data-main="plugins/bpm-modeler/js/modeler-main"
 																			</table>
 																	</tr>
 																</table>
+																<table>
+																	<tr>
+																		<td><label for="processingTypeSelect">Processing Type</label></td>
+																		<td>
+																			<select id="processingTypeSelect">
+																				<option value="singleInstance">Single-instance</option>
+																				<option value="multiInstanceParallel">Multi-instance Parallel</option>
+																				<option value="multiInstanceSequential">Multi-instance Sequential</option>
+																			</select>
+																		</td>
+																	</tr>
+																</table>
 															</div></td>
 													</tr>
 													<tr>
@@ -642,7 +654,12 @@ t/javascript" data-main="plugins/bpm-modeler/js/modeler-main"
 																		</td>
 																		<td><select id="applicationList" size="1">
 																		</select></td>
+																		<td>
+																			<img id="appViewLink" style="padding-left: 5px;" class="imgLink" src="plugins/bpm-modeler/images/icons/arrow.png" />
+																		</td>
 																	</tr>
+																</table>
+																<table>
 																	<tr id="ruleSetRow">
 																		<td><label for="ruleSetInput" id="ruleSetLabel">Rule
 																				Set</label>
@@ -673,44 +690,37 @@ t/javascript" data-main="plugins/bpm-modeler/js/modeler-main"
 														<td>
 															<div id="processingPropertiesPage" class="propertiesPage">
 																<div class="heading">Processing</div>
-																<table style="margin-bottom: 10px;">
-																	<tr>
-																		<td><input id="singleProcessingTypeInput"
-																			type="radio" /></td>
-																		<td><label for="singleProcessingTypeInput">Single
-																				Processing</label>
-																		</td>
-																	</tr>
-																	<tr>
-																		<td><input id="parallelMultiProcessingTypeInput"
-																			type="radio" /></td>
-																		<td><label for="parallelMultiProcessingTypeInput">Parallel
-																				Multi-Processing</label>
-																		</td>
-																	</tr>
-																	<tr>
-																		<td><input
-																			id="sequentialMultiProcessingTypeInput" type="radio" />
-																		</td>
-																		<td><label
-																			for="sequentialMultiProcessingTypeInput">Sequential
-																				Multi-Processing</label>
-																		</td>
-																	</tr>
-																</table>
 																<table>
 																	<tr>
-																		<td><label for="listDataMappingInput">List
-																				Data Mapping</label>
+																		<td><label for="processingTypeSelect">Processing Type</label></td>
+																		<td>
+																			<select id="processingTypeSelect">
+																				<option value="singleInstance">Single-instance</option>
+																				<option value="multiInstanceParallel">Multi-instance Parallel</option>
+																				<option value="multiInstanceSequential">Multi-instance Sequential</option>
+																			</select>
 																		</td>
-																		<td><input id="listDataMappingInput" type="text">
-																		</input></td>
 																	</tr>
 																	<tr>
-																		<td><label for="itemDataList">Item Data</label>
+																		<td><label for="inputListParam">Input List Parameter</label></td>
+																		<td>
+																			<select id="inputListParam">
+																			</select>
 																		</td>
-																		<td><select id="itemDataList" size="1">
-																		</select></td>
+																	</tr>
+																	<tr>
+																		<td><label for="indexListParam">Index List Parameter</label></td>
+																		<td>
+																			<select id="indexListParam">
+																			</select>
+																		</td>
+																	</tr>
+																	<tr>
+																		<td><label for="outputListParam">Output List Parameter</label></td>
+																		<td>
+																			<select id="outputListParam">
+																			</select>
+																		</td>
 																	</tr>
 																</table>
 															</div></td>
@@ -752,6 +762,13 @@ t/javascript" data-main="plugins/bpm-modeler/js/modeler-main"
 														<td>
 															<div class="errorMessagesPanel">
 																<ul id="errorMessagesList">
+																</ul>
+															</div></td>
+													</tr>
+													<tr>
+														<td>
+															<div class="warningMessagesPanel">
+																<ul id="warningMessagesList">
 																</ul>
 															</div></td>
 													</tr>
@@ -1393,6 +1410,9 @@ t/javascript" data-main="plugins/bpm-modeler/js/modeler-main"
 																		<td><select id="participantList" size="1"
 																			style="width: 224px;">
 																		</select> <!-- Added width attr to make all textbox of lane alligned -->
+																		</td>
+																		<td>
+																			<img id="participantViewLink" style="padding-left: 5px;" class="imgLink" src="plugins/bpm-modeler/images/icons/arrow.png" />
 																		</td>
 																	</tr>
 																</table>

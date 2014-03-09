@@ -42,6 +42,8 @@ public class ModelManagementTreeItem
 
    private DeployedModelDescription modelDescription;// use
                                                      // DeployedModelDescriptionDetails
+   
+   private Date deploymentTime; 
 
    public ModelManagementTreeItem(ModelManagementTreeItem parent)
    {
@@ -192,5 +194,13 @@ public class ModelManagementTreeItem
    {
       this.processId = processId;
    }
+
+	public Date getDeploymentTime() {
+		return deploymentTime;
+	}
+
+	public void setDeploymentTime(Date deploymentTime) {
+		this.deploymentTime = deploymentTime;
+	}
 
 }

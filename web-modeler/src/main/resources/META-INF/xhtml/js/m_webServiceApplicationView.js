@@ -20,10 +20,10 @@ define(
 				initialize : function(fullId) {
 					m_utils.initializeWaitCursor(m_utils.jQuerySelect("html"));
 					m_utils.showWaitCursor();
-					
+
 					m_utils.jQuerySelect("#hideGeneralProperties").hide();
 					initViewCollapseClickHandlers();
-					
+
 					var view = new WebServiceApplicationView();
 					// TODO Unregister!
 					// In Initializer?
@@ -37,7 +37,7 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function initViewCollapseClickHandlers() {
 				m_utils.jQuerySelect("#showGeneralProperties").click(function() {
@@ -49,15 +49,15 @@ define(
 					m_utils.jQuerySelect("#hideGeneralProperties").hide();
 				});
 			}
-			
+
 			function i18webserviceproperties() {
 				m_utils.jQuerySelect("#hideGeneralProperties label")
 					.text(m_i18nUtils.getProperty("modeler.element.properties.commonProperties.generalProperties"));
-		
+
 				m_utils.jQuerySelect("#showGeneralProperties label")
 					.text(m_i18nUtils.getProperty("modeler.element.properties.commonProperties.generalProperties"));
-			
-			
+
+
 				m_utils.jQuerySelect("label[for='guidOutput']")
 				.text(
 						m_i18nUtils
@@ -110,7 +110,7 @@ define(
 				m_utils.jQuerySelect("#protocal")
 						.text(
 								m_i18nUtils
-										.getProperty("modeler.model.propertyView.webService.protocal"));
+										.getProperty("modeler.model.propertyView.webService.protocol"));
 				m_utils.jQuerySelect("#use")
 						.text(
 								m_i18nUtils
@@ -284,6 +284,17 @@ define(
 						});
 					});
 
+                    this.wsdlUrlInput.change({
+                        view : this
+                  }, function(event) {
+                        event.data.view.submitChanges({
+							attributes : {
+								"carnot:engine:wsdlUrl" : event.data.view.wsdlUrlInput.val()
+							}
+                        });
+                  });
+
+
 					this.implementationSelect
 							.change(
 									{
@@ -351,6 +362,7 @@ define(
 												.setVariant(event.data.view.variantSelect
 														.val());
 									});
+
 					this.initializeModelElementView(application);
 					this.view.css("visibility", "visible");
 				};
@@ -557,7 +569,8 @@ define(
 														+ "/webServices/structure"
 											},
 											JSON.stringify({
-												wsdlUrl : wsdlURL
+												wsdlUrl : wsdlURL,
+												modelID : view.application.model.id
 											}),
 											{
 												"success" : function(serverData) {

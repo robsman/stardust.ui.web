@@ -68,6 +68,11 @@ public final class WebServiceApplicationUtils
          updateAddressing(application, attributes);
          updateSecurity(application, attributes);
          updateService(mapper, application, attributes);
+         String wsdlURL = GsonUtils.safeGetAsString(attributes, WSConstants.WS_WSDL_URL_ATT);
+         if (StringUtils.isNotEmpty(wsdlURL))
+         {
+            AttributeUtil.setAttribute(application, WSConstants.WS_WSDL_URL_ATT, wsdlURL);
+         }
       }
    }
 
@@ -242,6 +247,14 @@ public final class WebServiceApplicationUtils
             operationName = oldOperationName;
             operationInputName = oldOperationInputName;
             operationOutputName = oldOperationOutputName;
+         }
+
+         if (wsdlUrl != null && wsdlUrl.indexOf("${") > -1)
+         {
+            ModelType model = ModelUtils.findContainingModel(application);
+            VariableContext variableContext = new VariableContext();
+            variableContext.initializeVariables(model);
+            wsdlUrl = variableContext.replaceAllVariablesByDefaultValue(wsdlUrl);
          }
 
          Definition definition = JaxWSResource.getDefinition(wsdlUrl);
@@ -570,4 +583,5 @@ public final class WebServiceApplicationUtils
       }
       return definition.getService(serviceName);
    }
+
 }

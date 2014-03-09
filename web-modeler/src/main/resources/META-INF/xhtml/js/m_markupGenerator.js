@@ -108,7 +108,6 @@ define(
 						parameterDefinitions) {
 					writeTag("<head>");
 					indentUp();
-					this.generateCss();
 					this.generateJavaScript(parameterDefinitions);
 					indentDown();
 					writeTag("</head>");
@@ -117,51 +116,39 @@ define(
 				/**
 				 *
 				 */
-				MarkupGenerator.prototype.generateCss = function() {
-					writeTag("<link rel='stylesheet' type='text/css' href='"
-							+ m_urlUtils.getContextName()
-							+ "/plugins/bpm-modeler/css/lightdust.css'></link>");
-					writeTag("<link rel='stylesheet' type='text/css' href='"
-							+ m_urlUtils.getContextName()
-							+ "/plugins/bpm-modeler/css/thirdparty/jquery/jquery-ui-1.10.2.custom.css'></link>");
-					writeTag("<link rel='stylesheet' type='text/css' href='"
-							+ m_urlUtils.getContextName()
-							+ "/plugins/processportal/css/bpm-form.css'></link>");
-
-					if (THE_NEW_WAY) {
-						writeTag("<link rel='stylesheet' type='text/css' href='"
-								+ m_urlUtils.getContextName()
-								+ "/plugins/processportal/css/manual-activity.css'></link>");
-					}
-				};
-
-				/**
-				 *
-				 */
 				MarkupGenerator.prototype.generateJavaScript = function(
 						parameterDefinitions) {
-					writeTag("<script src='"
-							+ m_urlUtils.getContextName()
-							+ "/plugins/bpm-modeler/js/libs/require/2.0.5/require.js'></script>");
 					writeTag("<script>");
 					indentUp();
-					writeTag("var baseUrl = window.location.search;");
-					writeTag("baseUrl = baseUrl.substring(baseUrl.indexOf('ippInteractionUri') + 18);");
-					writeTag("baseUrl = baseUrl.indexOf('&') >= 0 ? baseUrl.substring(0, baseUrl.indexOf('&')) : baseUrl;");
-					writeTag("baseUrl = baseUrl.substring(0, baseUrl.indexOf('/services'));");
+
+					writeTag("function injectJS(head, src) {");
+					writeTag("    var script = document.createElement('script');");
+					writeTag("    script.src = src;");
+					writeTag("    head.appendChild(script);");
+					writeTag("}");
+
+					writeTag("function injectCSS(head, src) {");
+					writeTag("    var link = document.createElement('link');");
+					writeTag("    link.href = src;");
+					writeTag("    link.rel = 'stylesheet';");
+					writeTag("    link.type = 'text/css';");
+					writeTag("    head.appendChild(link);");
+					writeTag("}");
+
+					writeTag("function initialize() {");
 					writeTag("require.config({baseUrl : baseUrl + '/plugins/',");
 					writeTag("   paths : {");
-					writeTag("      'jquery' : [ 'bpm-modeler/js/libs/jquery/jquery-1.7.2',");
+					writeTag("         'jquery' : [ 'views-common/js/libs/jquery/jquery-1.7.2.min',");
 					writeTag("         '//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min' ],");
-					writeTag("      'jquery-ui' : ['bpm-modeler/js/libs/jquery/plugins/jquery-ui-1.10.2.min',");
+					writeTag("         'jquery-ui' : ['views-common/js/libs/jquery/plugins/jquery-ui-1.10.2.min',");
 					writeTag("      '//ajax.googleapis.com/ajax/libs/jqueryui/1.8.19/jquery-ui.min' ],");
-					writeTag("      'json' : [ 'bpm-modeler/js/libs/json/json2',");
+					writeTag("         'json' : [ 'views-common/js/libs/json/json2',");
 					writeTag("         '//cdnjs.cloudflare.com/ajax/libs/json2/20110223/json2' ],");
 					writeTag("      'jquery.url' : [");
-					writeTag("         'bpm-modeler/js/libs/jquery/plugins/jquery.url',");
+					writeTag("            'views-common/js/libs/jquery/plugins/jquery.url',");
 					writeTag("         'https://raw.github.com/allmarkedup/jQuery-URL-Parser/4f5254f2519111ad7037d398b2efa61d3cda58d4/jquery.url' ],");
 					writeTag("      'angularjs' : [");
-					writeTag("         'bpm-modeler/js/libs/angular/angular-1.0.2',");
+					writeTag("            'views-common/js/libs/angular/angular-1.0.2',");
 					writeTag("         '//ajax.googleapis.com/ajax/libs/angularjs/1.0.2/angular.min' ],");
 					writeTag(" 'xml2json' : [ 'processportal/xml2js' ],");
 					writeTag(" 'bpm.portal.Interaction' : [ 'processportal/Interaction' ],");
@@ -197,6 +184,33 @@ define(
 					writeTag("         });");
 					writeTag("   });");
 					writeTag("});");
+					writeTag("}");
+					
+					writeTag("function waitToLoad() {");
+					writeTag("    if (!window['require']) {");
+					writeTag("        window.setTimeout(function() {");
+					writeTag("            waitToLoad();");
+					writeTag("        }, 300);");
+					writeTag("    } else {");
+					writeTag("        initialize();");
+					writeTag("    }");
+					writeTag("}");
+					
+					writeTag("var baseUrl = window.location.search;");
+					writeTag("baseUrl = baseUrl.substring(baseUrl.indexOf('ippInteractionUri') + 18);");
+					writeTag("baseUrl = baseUrl.indexOf('&') >= 0 ? baseUrl.substring(0, baseUrl.indexOf('&')) : baseUrl;");
+					writeTag("baseUrl = baseUrl.substring(0, baseUrl.indexOf('/services'));");
+
+					writeTag("var head = document.getElementsByTagName('head')[0];");
+					writeTag("injectJS(head, baseUrl + '/plugins/views-common/js/libs/require/2.0.5/require.js');");
+					writeTag("injectCSS(head, baseUrl + '/plugins/views-common/css/thirdparty/jquery/jquery-ui-1.10.2.custom.css');");
+					writeTag("injectCSS(head, baseUrl + '/plugins/processportal/css/bpm-form.css');");
+					if (THE_NEW_WAY) {
+						writeTag("injectCSS(head, baseUrl + '/plugins/processportal/css/manual-activity.css');");
+					}
+
+					writeTag("waitToLoad();");
+					
 					indentDown();
 					writeTag("</script>");
 				}
@@ -252,7 +266,7 @@ define(
 					var prefs = {
 						layoutColumns: this.options.numberOfPrimitivesPerColumns,
 						ngModelSepAsDot: true,
-						pluginsUrl: m_urlUtils.getContextName() + "/plugins",
+						pluginsUrl: "../../../../../plugins", // This is relative to /services/rest/engine/interactions/<ID>/embeddedMarkup
 						skipMultiCardinalityNested: true,
 						splitDateTimeFields: false
 					};

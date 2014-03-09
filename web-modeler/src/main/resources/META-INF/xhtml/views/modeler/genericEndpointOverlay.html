@@ -164,6 +164,22 @@
 								<td><input id="processContextHeadersInput" type="checkbox"></input></td>
 								<td><label for="processContextHeadersInput">Include Process Context Headers</label></td>
 							</tr>
+							<tr>
+								<td><input id="producerBpmTypeConverter" type="checkbox"></input></td>
+								<td><label for="producerBpmTypeConverter">Include BPM Type Converter</label></td>
+								<td><label for="producerOutboundConversion">Outbound Conversion</label></td>
+								<td><select id="producerOutboundConversion" disabled="disabled">
+									<option value="None">None</option>
+									<option value="toXML">To XML</option>
+									<option value="toJSON">To JSON</option>
+								</select></td>
+								<td style="padding-left: 10px;"><label for="producerInboundConversion">Inbound Conversion</label></td>
+								<td><select id="producerInboundConversion" disabled="disabled">
+									<option value="None">None</option>
+									<option value="fromXML">From XML</option>
+									<option value="fromJSON">From JSON</option>
+								</select></td>
+							</tr>
 						</table>
 					</td>
 				</tr>
@@ -180,6 +196,25 @@
 		</div>
 		<div id="consumerRouteTab">
 			<table cellpadding="0" cellspacing="0" class="layoutTable">
+				<tr>
+					<td>
+						<table cellpadding="0" cellspacing="0" class="layoutTable">
+							<tr>
+								<td><input id="consumerBpmTypeConverter" type="checkbox"></input></td>
+								<td><label for="consumerBpmTypeConverter">Include BPM Type Converter</label></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td style="padding-left: 10px;"><label for="consumerInboundConversion">Inbound Conversion</label></td>
+								<td><select id="consumerInboundConversion" disabled="disabled">
+									<option value="None">None</option>
+									<option value="fromXML">From XML</option>
+									<option value="fromJSON">From JSON</option>
+								</select></td>
+							</tr>
+						</table>
+					</td>
+				</tr>
 				<tr>
 					<td><div id="endpointUriPrefix" class="code">&lt;route&gt;</div></td>
 				</tr>

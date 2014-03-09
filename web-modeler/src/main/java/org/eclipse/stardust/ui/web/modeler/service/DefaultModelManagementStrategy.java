@@ -14,7 +14,6 @@ import javax.annotation.Resource;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
-
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.runtime.*;
@@ -22,11 +21,11 @@ import org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder;
 import org.eclipse.stardust.model.xpdl.builder.strategy.AbstractModelManagementStrategy;
 import org.eclipse.stardust.model.xpdl.builder.utils.WebModelerModelManager;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
+import org.eclipse.stardust.model.xpdl.carnot.util.VariableContext;
 import org.eclipse.stardust.ui.web.modeler.common.ModelPersistenceService;
 import org.eclipse.stardust.ui.web.modeler.common.ServiceFactoryLocator;
 import org.eclipse.stardust.ui.web.modeler.common.UserIdProvider;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelPersistenceHandler;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
@@ -182,6 +181,14 @@ public class DefaultModelManagementStrategy extends
 	 */
    public void saveModel(ModelType model)
    {
+      if (model != null)
+      {
+         VariableContext variableContext = new VariableContext();
+         variableContext.initializeVariables(model);
+         variableContext.refreshVariables(model);
+         variableContext.saveVariables();
+      }
+
       EObject nativeModel = getNativeModel(model.getId());
 
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -213,8 +220,7 @@ public class DefaultModelManagementStrategy extends
          }
          else
          {
-            getDocumentManagementService().updateDocument(modelDocument,
-                  baos.toByteArray(), null, false, null, false);
+            getDocumentManagementService().updateDocument(modelDocument, baos.toByteArray(), null, false, null, false);
          }
       }
    }
@@ -253,7 +259,8 @@ public class DefaultModelManagementStrategy extends
          {
             Document modelDocument = getDocumentManagementService().getDocument(
                   MODELS_DIR + fileName);
-            updateDocument(modelDocument, fileContent, modelDocument.getDescription(), "");
+            DocumentMgmtUtility.updateDocument(modelDocument, fileContent,
+                  modelDocument.getDescription(), "", false);
 
             return ModelUploadStatus.NEW_MODEL_VERSION_CREATED;
          }

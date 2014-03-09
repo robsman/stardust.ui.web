@@ -11,9 +11,10 @@
 
 define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_command", "bpm-modeler/js/m_commandsController",
-				"bpm-modeler/js/m_propertiesPage", "bpm-modeler/js/m_activity", "bpm-modeler/js/m_i18nUtils" ],
+				"bpm-modeler/js/m_propertiesPage", "bpm-modeler/js/m_activity", "bpm-modeler/js/m_i18nUtils",
+				"bpm-modeler/js/m_activityProcessingPropertiesCommon"],
 		function(m_utils, m_constants, m_command, m_commandsController,
-				m_propertiesPage, m_activity, m_i18nUtils) {
+				m_propertiesPage, m_activity, m_i18nUtils, m_activityProcessingPropertiesCommon) {
 			return {
 				create: function(propertiesPanel) {
 					return new ActivityProcessingPropertiesPage(propertiesPanel);
@@ -26,185 +27,252 @@ define(
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
 						propertiesPanel, "processingPropertiesPage",
 						"Processing",  "plugins/bpm-modeler/images/icons/arrow-circle.png");
-				
-				
+
+
 				/*Internationalization*/
 				m_utils.jQuerySelect("#processingPropertiesPage > .heading")
 					.text(m_i18nUtils.getProperty("modeler.propertiesPage.activity.processing.heading"));
-				m_utils.jQuerySelect("label[for='singleProcessingTypeInput']")
-					.text(m_i18nUtils.getProperty("modeler.propertiesPage.activity.processing.single"));
-				m_utils.jQuerySelect("label[for='parallelMultiProcessingTypeInput']")
-					.text(m_i18nUtils.getProperty("modeler.propertiesPage.activity.processing.parallellMulti"));
-				m_utils.jQuerySelect("label[for='sequentialMultiProcessingTypeInput']")
-					.text(m_i18nUtils.getProperty("modeler.propertiesPage.activity.processing.sequentialMulti"));
-				m_utils.jQuerySelect("label[for='listDataMappingInput']")
-					.text(m_i18nUtils.getProperty("modeler.propertiesPage.activity.processing.listDataMapping"));
-				m_utils.jQuerySelect("label[for='itemDataList']")
-					.text(m_i18nUtils.getProperty("modeler.propertiesPage.activity.processing.itemData"));
-				
+
+				m_utils.jQuerySelect("label[for='processingTypeSelect']")
+					.text(m_i18nUtils.getProperty("modeler.activity.propertyPages.general.processingType.label"));
+				m_utils.jQuerySelect("label[for='inputListParam']")
+					.text(m_i18nUtils.getProperty("modeler.propertiesPage.activity.processing.inputParam"));
+				m_utils.jQuerySelect("label[for='indexListParam']")
+					.text(m_i18nUtils.getProperty("modeler.propertiesPage.activity.processing.indexParam"));
+				m_utils.jQuerySelect("label[for='outputListParam']")
+					.text(m_i18nUtils.getProperty("modeler.propertiesPage.activity.processing.outputParam"));
+
 				m_utils.inheritFields(this, propertiesPage);
 				m_utils.inheritMethods(
 						ActivityProcessingPropertiesPage.prototype,
 						propertiesPage);
 
 				// Field initialization
-
-				this.singleProcessingTypeInput = this
-						.mapInputId("singleProcessingTypeInput");
-				this.parallelMultiProcessingTypeInput = this
-						.mapInputId("parallelMultiProcessingTypeInput");
-				this.sequentialMultiProcessingTypeInput = this
-						.mapInputId("sequentialMultiProcessingTypeInput");
-				this.listDataMappingInput = this.mapInputId("listDataMappingInput");
-				this.itemDataList = this.mapInputId("itemDataList");
+				this.processingTypeSelect = this.mapInputId("processingTypeSelect");
+				this.inputListParam = this.mapInputId("inputListParam");
+				this.indexListParam = this.mapInputId("indexListParam");
+				this.outputListParam = this.mapInputId("outputListParam");
 
 				// Initialize callbacks
-
-				this.singleProcessingTypeInput.click({
+				this.processingTypeSelect.change({
 					"callbackScope" : this
 				}, function(event) {
-					m_utils.debug("single checked");
-					if (event.data.callbackScope.singleProcessingTypeInput
-							.is(":checked")) {
-						event.data.callbackScope.setSingleProcessingType();
+					var me = event.data.callbackScope.propertiesPanel.getModelElement();
+					var val = event.data.callbackScope.processingTypeSelect.val();
+					if (val === m_constants.SINGLE_PROCESSING_TYPE) {
+						me.setProcessingTypeSingleInstance();
+					} else {
+						me.setProcessingTypeMultiInstance(val === m_constants.SEQUENTIAL_MULTI_PROCESSING_TYPE);
 					}
+
+					event.data.callbackScope.submitChanges({modelElement : {loop : me.loop}});
 				});
 
-				this.parallelMultiProcessingTypeInput
-						.click(
-								{
-									"callbackScope" : this
-								},
-								function(event) {
-									m_utils.debug("parallel checked");
-									if (event.data.callbackScope.parallelMultiProcessingTypeInput
-											.is(":checked")) {
-										event.data.callbackScope
-												.setParallelMultiProcessingType();
-									}
-								});
-
-				this.sequentialMultiProcessingTypeInput
-						.click(
-								{
-									"callbackScope" : this
-								},
-								function(event) {
-									m_utils.debug("sequential checked");
-									if (event.data.callbackScope.sequentialMultiProcessingTypeInput
-											.is(":checked")) {
-										event.data.callbackScope
-												.setSequentialMultiProcessingType();
-									}
-								});
-
-				// Populate list data list from model
-
-				this.listDataMappingInput.empty();
-				this.listDataMappingInput.append("<option value='"
-						+ m_constants.TO_BE_DEFINED
-						+ "'>"
-						+ m_i18nUtils
-								.getProperty("modeler.general.toBeDefined")
-						+ "</option>");
-
-				for ( var n in this.propertiesPanel.models) {
-					for ( var m in this.propertiesPanel.models[n].dataItems) {
-						this.listDataMappingInput
-								.append("<option value='"
-										+ this.propertiesPanel.models[n].dataItems[m].getFullId()
-										+ "'>"
-										+ this.propertiesPanel.models[n].name
-										+ "/"
-										+ this.propertiesPanel.models[n].dataItems[m].name
-										+ "</option>");
+				this.inputListParam.change({
+					"callbackScope" : this
+				}, function(event) {
+					var me = event.data.callbackScope.propertiesPanel.getModelElement();
+					var val = event.data.callbackScope.inputListParam.val();
+					if (val == m_constants.TO_BE_DEFINED) {
+						me.setMultiInstanceInputListParam(null);
+					} else {
+						me.setMultiInstanceInputListParam(val);
 					}
-				}
 
-				// Populate list data list from model
+					event.data.callbackScope.submitChanges({modelElement : {loop : me.loop}});
+				});
 
-				this.itemDataList.empty();
-				this.itemDataList.append("<option value='"
-						+ m_constants.TO_BE_DEFINED
-						+ "'>" + m_i18nUtils.getProperty("modeler.general.toBeDefined") + "</option>");
-
-				for ( var n in this.propertiesPanel.models) {
-					for ( var m in this.propertiesPanel.models[n].dataItems) {
-						this.itemDataList
-								.append("<option value='"
-										+ this.propertiesPanel.models[n].dataItems[m].getFullId()
-										+ "'>"
-										+ this.propertiesPanel.models[n].name
-										+ "/"
-										+ this.propertiesPanel.models[n].dataItems[m].name
-										+ "</option>");
+				this.indexListParam.change({
+					"callbackScope" : this
+				}, function(event) {
+					var me = event.data.callbackScope.propertiesPanel.getModelElement();
+					var val = event.data.callbackScope.indexListParam.val();
+					if (val == m_constants.TO_BE_DEFINED) {
+						me.setMultiInstanceIndexListParam(null);
+					} else {
+						me.setMultiInstanceIndexListParam(val);
 					}
-				}
 
-				/**
-				 *
-				 */
-				ActivityProcessingPropertiesPage.prototype.setSingleProcessingType = function() {
-					this.singleProcessingTypeInput.attr("checked", true);
-					this.parallelMultiProcessingTypeInput
-							.attr("checked", false);
-					this.sequentialMultiProcessingTypeInput.attr("checked",
-							false);
-					this.listDataMappingInput.attr("disabled", true);
-					this.itemDataList.attr("disabled", true);
-				};
+					event.data.callbackScope.submitChanges({modelElement : {loop : me.loop}});
+				});
 
-				/**
-				 *
-				 */
-				ActivityProcessingPropertiesPage.prototype.setParallelMultiProcessingType = function() {
-					this.singleProcessingTypeInput.attr("checked", false);
-					this.parallelMultiProcessingTypeInput.attr("checked", true);
-					this.sequentialMultiProcessingTypeInput.attr("checked",
-							false);
-					this.listDataMappingInput.removeAttr("disabled");
-					this.itemDataList.removeAttr("disabled");
-				};
+				this.outputListParam.change({
+					"callbackScope" : this
+				}, function(event) {
+					var me = event.data.callbackScope.propertiesPanel.getModelElement();
+					var val = event.data.callbackScope.outputListParam.val();
+					if (val == m_constants.TO_BE_DEFINED) {
+						me.setMultiInstanceOutputListParam(null);
+					} else {
+						me.setMultiInstanceOutputListParam(val);
+					}
 
-				/**
-				 *
-				 */
-				ActivityProcessingPropertiesPage.prototype.setSequentialMultiProcessingType = function() {
-					this.singleProcessingTypeInput.attr("checked", false);
-					this.parallelMultiProcessingTypeInput
-							.attr("checked", false);
-					this.sequentialMultiProcessingTypeInput.attr("checked",
-							true);
-					this.listDataMappingInput.removeAttr("disabled");
-					this.itemDataList.removeAttr("disabled");
-				};
+					event.data.callbackScope.submitChanges({modelElement : {loop : me.loop}});
+				});
 
 				/**
 				 *
 				 */
 				ActivityProcessingPropertiesPage.prototype.setElement = function() {
-					if (this.propertiesPanel.element.modelElement.processingType == m_constants.SINGLE_PROCESSING_TYPE) {
-						this.setSingleProcessingType();
-					} else if (this.propertiesPanel.element.modelElement.processingType == m_constants.PARALLEL_MULTI_PROCESSING_TYPE) {
-						this.setParallelMultiProcessingType();
-					} else if (this.propertiesPanel.element.modelElement.processingType == m_constants.SEQUENTIAL_MULTI_PROCESSING_TYPE) {
-						this.setSequentialMultiProcessingType();
+					m_activityProcessingPropertiesCommon.initProcessingType(this);
+					if (m_activityProcessingPropertiesCommon.getProcessingType(this) === m_constants.SINGLE_PROCESSING_TYPE) {
+						this.disableListParamInputs();
+					} else {
+						this.enableListParamInputs();
+						this.initInputListParams();
+						this.initIndexListParams();
+						this.initOutputListParams();
 					}
+				};
+
+				/**
+				 *
+				 */
+				ActivityProcessingPropertiesPage.prototype.initInputListParams = function() {
+					this.inputListParam.empty();
+					this.inputListParam.append("<option value='"
+							+ m_constants.TO_BE_DEFINED
+							+ "'>" + m_i18nUtils.getProperty("modeler.general.toBeDefined") + "</option>");
+					this.inputListParam.val(m_constants.TO_BE_DEFINED);
+					var activity = this.getModelElement();
+					for ( var i in activity.getContexts()) {
+						if (i != "application" && i != "processInterface") {
+							continue;
+						}
+						var context = activity.getContexts()[i];
+						for ( var m = 0; m < context.accessPoints.length; ++m) {
+							var accessPoint = context.accessPoints[m];
+
+							if (accessPoint.direction == m_constants.OUT_ACCESS_POINT) {
+								continue;
+							}
+
+							var option = "<option value='";
+
+							option += i;
+							option += ":";
+							option += accessPoint.id;
+							option += "'>";
+							option += accessPoint.name;
+							option += "</option>";
+
+							this.inputListParam.append(option);
+						}
+					}
+
+					if (this.getModelElement().loop.inputId) {
+						this.inputListParam.val(this.getModelElement().loop.inputId);
+					}
+				};
+
+				/**
+				 *
+				 */
+				ActivityProcessingPropertiesPage.prototype.initIndexListParams = function() {
+					this.indexListParam.empty();
+					this.indexListParam.append("<option value='"
+							+ m_constants.TO_BE_DEFINED
+							+ "'>" + m_i18nUtils.getProperty("modeler.general.toBeDefined") + "</option>");
+					this.indexListParam.val(m_constants.TO_BE_DEFINED);
+
+					var activity = this.getModelElement();
+					for ( var i in activity.getContexts()) {
+						if (i != "application" && i != "processInterface") {
+							continue;
+						}
+						var context = activity.getContexts()[i];
+						for ( var m = 0; m < context.accessPoints.length; ++m) {
+							var accessPoint = context.accessPoints[m];
+
+							if (accessPoint.direction == m_constants.OUT_ACCESS_POINT) {
+								continue;
+							}
+
+							var option = "<option value='";
+
+							option += i;
+							option += ":";
+							option += accessPoint.id;
+							option += "'>";
+							option += accessPoint.name;
+							option += "</option>";
+
+							this.indexListParam.append(option);
+						}
+					}
+
+					if (this.getModelElement().loop.indexId) {
+						this.indexListParam.val(this.getModelElement().loop.indexId);
+					}
+				};
+
+				/**
+				 *
+				 */
+				ActivityProcessingPropertiesPage.prototype.initOutputListParams = function() {
+					this.outputListParam.empty();
+					this.outputListParam.append("<option value='"
+							+ m_constants.TO_BE_DEFINED
+							+ "'>" + m_i18nUtils.getProperty("modeler.general.toBeDefined") + "</option>");
+					this.outputListParam.val(m_constants.TO_BE_DEFINED);
+
+					var activity = this.getModelElement();
+					for ( var i in activity.getContexts()) {
+						if (i != "application" && i != "processInterface") {
+							continue;
+						}
+						var context = activity.getContexts()[i];
+						for ( var m = 0; m < context.accessPoints.length; ++m) {
+							var accessPoint = context.accessPoints[m];
+
+							if (accessPoint.direction == m_constants.IN_ACCESS_POINT) {
+								continue;
+							}
+
+							var option = "<option value='";
+
+							option += i;
+							option += ":";
+							option += accessPoint.id;
+							option += "'>";
+							option += accessPoint.name;
+							option += "</option>";
+
+							this.outputListParam.append(option);
+						}
+					}
+
+					if (this.getModelElement().loop.outputId) {
+						this.outputListParam.val(this.getModelElement().loop.outputId);
+					}
+				};
+
+				/**
+				 *
+				 */
+				ActivityProcessingPropertiesPage.prototype.enableListParamInputs = function() {
+					this.inputListParam.removeAttr("disabled");
+					this.indexListParam.removeAttr("disabled");
+					this.outputListParam.removeAttr("disabled");
+				};
+
+				/**
+				 *
+				 */
+				ActivityProcessingPropertiesPage.prototype.disableListParamInputs = function() {
+					this.inputListParam.empty();
+					this.indexListParam.empty();
+					this.outputListParam.empty();
+					this.inputListParam.attr("disabled", true);
+					this.indexListParam.attr("disabled", true);
+					this.outputListParam.attr("disabled", true);
 				};
 
 				/**
 				 *
 				 */
 				ActivityProcessingPropertiesPage.prototype.apply = function() {
-					if (this.singleProcessingTypeInput.is(":checked")) {
-						this.propertiesPanel.element.modelElement.processingType = m_constants.SINGLE_PROCESSING_TYPE;
-					} else if (this.parallelMultiProcessingTypeInput
-							.is(":checked")) {
-						this.propertiesPanel.element.modelElement.processingType = m_constants.PARALLEL_MULTI_PROCESSING_TYPE;
-					} else if (this.sequentialMultiProcessingTypeInput
-							.is(":checked")) {
-						this.propertiesPanel.element.modelElement.processingType = m_constants.SEQUENTIAL_MULTI_PROCESSING_TYPE;
-					}
+
 				};
 			}
 		});

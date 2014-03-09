@@ -17,11 +17,11 @@ define(
 				"bpm-modeler/js/m_dialog",
 				"bpm-modeler/js/m_basicPropertiesPage",
 				"bpm-modeler/js/m_activity", "bpm-modeler/js/m_i18nUtils",
-				"bpm-modeler/js/m_modelElementUtils" ],
+				"bpm-modeler/js/m_modelElementUtils", "bpm-modeler/js/m_activityProcessingPropertiesCommon" ],
 		function(m_utils, m_constants, m_extensionManager, m_command,
 				m_commandsController, m_user, m_session, m_model, m_dialog,
 				m_basicPropertiesPage, m_activity, m_i18nUtils,
-				m_modelElementUtils) {
+				m_modelElementUtils, m_activityProcessingPropertiesCommon) {
 			return {
 				create : function(propertiesPanel) {
 					i18nProcessActivityScreen();
@@ -38,28 +38,28 @@ define(
 					.text(
 						m_i18nUtils
 								.getProperty("modeler.activity.propertyPages.controlling.executionMode.label"));
-				
+
 				m_utils.jQuerySelect("label[for='copyDataInput']")
 					.text(
 						m_i18nUtils
 								.getProperty("modeler.activity.propertyPages.controlling.copyalldata.label"));
-				
+
 				m_utils.jQuerySelect("option[value='synchShared']")
 					.text(
 						m_i18nUtils
 							.getProperty("modeler.activity.propertyPages.controlling.executionMode.options.synchShared"));
-				
+
 				m_utils.jQuerySelect("option[value='synchSeparate']")
 				.text(
 					m_i18nUtils
 						.getProperty("modeler.activity.propertyPages.controlling.executionMode.options.synchSeparate"));
-				
+
 				m_utils.jQuerySelect("option[value='asynchSeparate']")
 				.text(
 					m_i18nUtils
 						.getProperty("modeler.activity.propertyPages.controlling.executionMode.options.asynchSeparate"));
-				
-				
+
+
 				m_utils.jQuerySelect("label[for='guidOutput']")
 						.text(
 								m_i18nUtils
@@ -94,6 +94,22 @@ define(
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.activity.propertyPages.general.relocationTarget"));
+				m_utils.jQuerySelect("label[for='processingTypeSelect']")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.activity.propertyPages.general.processingType.label"));
+				m_utils.jQuerySelect("option[value='" + m_constants.SINGLE_PROCESSING_TYPE + "']")
+						.text(
+							m_i18nUtils
+								.getProperty("modeler.activity.propertyPages.general.processingType.options.singleInstance"));
+				m_utils.jQuerySelect("option[value='" + m_constants.PARALLEL_MULTI_PROCESSING_TYPE + "']")
+						.text(
+							m_i18nUtils
+								.getProperty("modeler.activity.propertyPages.general.processingType.options.multiInstanceParallel"));
+				m_utils.jQuerySelect("option[value='" + m_constants.SEQUENTIAL_MULTI_PROCESSING_TYPE + "']")
+						.text(
+							m_i18nUtils
+								.getProperty("modeler.activity.propertyPages.general.processingType.options.multiInstanceSequential"));
 			}
 
 			function ActivityBasicPropertiesPage(propertiesPanel) {
@@ -129,6 +145,7 @@ define(
 							.mapInputId("supportsRelocationInput");
 					this.isRelocationTargetInput = this
 							.mapInputId("isRelocationTargetInput");
+					this.processingTypeSelect = this.mapInputId("processingTypeSelect");
 
 					// I18N
 
@@ -136,7 +153,7 @@ define(
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.activity.propertyPages.general.task"));
-					
+
 					this.taskTypeList.empty();
 					this.taskTypeList
 							.append("<option value='none'>"
@@ -204,6 +221,19 @@ define(
 							.registerCheckboxInputForModelElementAttributeChangeSubmission(
 									this.copyDataInput,
 									"carnot:engine:subprocess:copyAllData");
+					this.processingTypeSelect.change({
+						"callbackScope" : this
+					}, function(event) {
+						var me = event.data.callbackScope.propertiesPanel.getModelElement();
+						var val = event.data.callbackScope.processingTypeSelect.val();
+						if (val == m_constants.SINGLE_PROCESSING_TYPE) {
+							me.setProcessingTypeSingleInstance();
+						} else {
+							me.setProcessingTypeMultiInstance(val === m_constants.SEQUENTIAL_MULTI_PROCESSING_TYPE);
+						}
+
+						event.data.callbackScope.submitChanges({modelElement : {loop : me.loop}});
+					});
 
 					this.taskInput.click({
 						"page" : this
@@ -236,14 +266,14 @@ define(
 							return;
 						}
 
-						page.submitSubprocessChanges();
+						page.submitSubprocessChanges(true);
 					});
 					this.subprocessInput.click({
 						"page" : this
 					}, function(event) {
 						if (event.data.page.subprocessInput.is(":checked")) {
 							event.data.page.setSubprocessType();
-							event.data.page.submitSubprocessChanges();
+							event.data.page.submitSubprocessChanges(true);
 						}
 					});
 					this.subprocessModeSelect
@@ -257,7 +287,7 @@ define(
 												.setSubprocessMode(event.data.page.subprocessModeSelect
 														.val());
 										event.data.page
-												.submitSubprocessChanges();
+												.submitSubprocessChanges(false);
 									});
 				};
 
@@ -378,14 +408,22 @@ define(
 				ActivityBasicPropertiesPage.prototype.submitTaskTypeChanges = function(force) {
 					if (force || this.propertiesPanel.element.modelElement.taskType != this.taskTypeList
 							.val()) {
-						this.submitChanges({
-							modelElement : {
-								taskType : this.taskTypeList.val(),
-								participantFullId : (this.taskTypeList.val() == m_constants.MANUAL_TASK_TYPE
-										|| this.taskTypeList.val() == m_constants.USER_TASK_TYPE) ? this
-												.getElement().parentSymbol.participantFullId : null
-							}
-						});
+
+						var submitObj = {
+											modelElement : {
+												taskType : this.taskTypeList.val(),
+												participantFullId : (this.taskTypeList.val() == m_constants.MANUAL_TASK_TYPE
+														|| this.taskTypeList.val() == m_constants.USER_TASK_TYPE) ? this
+																.getElement().parentSymbol.participantFullId : null
+											}
+										};
+
+						// Reset loop (processing type) object if it exists
+						if (this.getModelElement().loop) {
+							this.getModelElement().loop = null;
+							submitObj.modelElement.loop = null;
+						}
+						this.submitChanges(submitObj);
 					}
 				};
 
@@ -394,6 +432,7 @@ define(
 				 */
 				ActivityBasicPropertiesPage.prototype.setSubprocessMode = function(
 						executionType, copyData) {
+					this.initSubprocessModeSelect();
 					this.subprocessModeSelect.val(executionType);
 
 					if (executionType == "synchShared") {
@@ -409,25 +448,59 @@ define(
 				/**
 				 *
 				 */
+				ActivityBasicPropertiesPage.prototype.initSubprocessModeSelect = function() {
+					this.subprocessModeSelect.empty();
+					if (!(this.getModelElement().loop
+							&& this.getModelElement().loop.type === m_constants.MULTI_INSTANCE_LOOP_TYPE && !this
+							.getModelElement().loop.sequential)) {
+						this.subprocessModeSelect
+								.append("<option value='synchShared'>"
+										+ m_i18nUtils
+												.getProperty("modeler.activity.propertyPages.controlling.executionMode.options.synchShared")
+										+ "</option>");
+					}
+					this.subprocessModeSelect
+							.append("<option value='synchSeparate'>"
+									+ m_i18nUtils
+											.getProperty("modeler.activity.propertyPages.controlling.executionMode.options.synchSeparate")
+									+ "</option>");
+					this.subprocessModeSelect
+							.append("<option value='asynchSeparate'>"
+									+ m_i18nUtils
+											.getProperty("modeler.activity.propertyPages.controlling.executionMode.options.asynchSeparate")
+									+ "</option>");
+				};
+
+				/**
+				 *
+				 */
 				ActivityBasicPropertiesPage.prototype.submitSubprocessChanges = function(
-						subprocessFullId) {
+						resetProcessingType) {
 					var attributes = {};
 
 					attributes["carnot:engine:subprocess:copyAllData"] = this.copyDataInput
 							.is(":checked");
 
-					this
-							.submitChanges({
-								modelElement : {
-									activityType : m_constants.SUBPROCESS_ACTIVITY_TYPE,
-									subprocessFullId : this.subprocessList
-											.val() == m_constants.TO_BE_DEFINED ? null
-											: this.subprocessList.val(),
-									subprocessMode : this.subprocessModeSelect
-											.val(),
-									attributes : attributes
-								}
-							});
+					var submitObj = {
+										modelElement : {
+											activityType : m_constants.SUBPROCESS_ACTIVITY_TYPE,
+											subprocessFullId : this.subprocessList
+													.val() == m_constants.TO_BE_DEFINED ? null
+													: this.subprocessList.val(),
+											subprocessMode : this.subprocessModeSelect
+													.val(),
+											attributes : attributes
+										}
+									};
+
+					// Reset loop (processing type) object if it exists and resetProcessingType
+					// flag is set
+					if (resetProcessingType && this.getModelElement().loop) {
+						this.getModelElement().loop = null;
+						submitObj.modelElement.loop = null;
+					}
+
+					this.submitChanges(submitObj);
 				};
 
 				/**
@@ -453,11 +526,19 @@ define(
 							.getModelElement().isAbortableByPerformer == true);
 					this.hibernateInitiallyInput.attr("checked", this
 							.getModelElement().isHibernatedOnCreation == true);
-					this.supportsRelocationInput.removeAttr("disabled");
-					this.supportsRelocationInput
-							.attr(
-									"checked",
-									this.getModelElement().attributes["carnot:engine:relocate:source"] == true);
+
+					if (m_activityProcessingPropertiesCommon
+							.getProcessingType(this) === m_constants.SINGLE_PROCESSING_TYPE) {
+						this.supportsRelocationInput.removeAttr("disabled");
+						this.supportsRelocationInput
+								.attr(
+										"checked",
+										this.getModelElement().attributes["carnot:engine:relocate:source"] == true);
+					} else {
+						this.supportsRelocationInput.attr("disabled", true);
+						this.supportsRelocationInput.attr("checked", false);
+					}
+
 					this.isRelocationTargetInput
 							.attr(
 									"checked",
@@ -479,6 +560,8 @@ define(
 						this.supportsRelocationInput.attr("checked", false);
 						this.supportsRelocationInput.attr("disabled", true);
 					}
+
+					m_activityProcessingPropertiesCommon.initProcessingType(this);
 				};
 
 				/**

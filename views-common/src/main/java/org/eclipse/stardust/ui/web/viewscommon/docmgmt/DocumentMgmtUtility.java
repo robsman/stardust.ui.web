@@ -20,20 +20,20 @@ import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
+
+import com.icesoft.faces.component.inputfile.FileInfo;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.Direction;
@@ -77,8 +77,6 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.JCRDocument;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.JCRVersionTracker;
 import org.eclipse.stardust.ui.web.viewscommon.views.documentsearch.DocumentSearchProvider;
-
-import com.icesoft.faces.component.inputfile.FileInfo;
 
 
 
@@ -215,25 +213,52 @@ public class DocumentMgmtUtility
       return doc;
    }
 
-   public static Document updateDocument(Document existingDocument, byte[] fileData, String description, String comments)
+   /**
+    * creates revision - new copy of the document
+    * 
+    * @param existingDocument
+    * @param content
+    * @param description
+    * @param comments
+    * @return
+    */
+   public static Document updateDocument(Document existingDocument, byte[] content, String description, String comments)
+   {
+      return updateDocument(existingDocument, content, description, comments, false);
+   }
+
+   /**
+    * creates document revision or overwrites it based on the input parameter, updates document owner as
+    * well.
+    * 
+    * @param existingDocument
+    * @param content
+    * @param description
+    * @param comments
+    * @param overwrite
+    * @return
+    */
+   public static Document updateDocument(Document existingDocument, byte[] content, String description,
+         String comments, boolean overwrite)
    {
       Document doc = null;
-      
+
       existingDocument.setDescription(description);
       existingDocument.setOwner(getUser().getAccount());
 
-      if (!isDocumentVersioned(existingDocument))
+      if (!overwrite && !isDocumentVersioned(existingDocument))
       {
          getDocumentManagementService().versionDocument(existingDocument.getId(), "", null);
       }
-      
-      if (null != fileData)
+
+      if (null != content)
       {
-         doc = getDocumentManagementService().updateDocument(existingDocument, fileData, "", true, comments, null,
+         doc = getDocumentManagementService().updateDocument(existingDocument, content, "", !overwrite, comments, null,
                false);
       }
       return doc;
    }
+   
    /**
     * returns true if the folder(having name as input parameter 'name') already exist
     * 

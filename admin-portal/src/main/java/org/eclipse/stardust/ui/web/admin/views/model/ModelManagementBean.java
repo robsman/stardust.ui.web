@@ -531,6 +531,7 @@ public class ModelManagementBean extends UIComponentBean implements ViewEventHan
             ModelManagementTreeItem versionItem = new ModelManagementTreeItem(modelItem);
             String description = I18nUtils.getDescriptionAsHtml(version, version.getDescription());
             versionItem.setComment(version.getDeploymentComment());
+            versionItem.setDeploymentTime(version.getDeploymentTime());
             versionItem.setLabel(adminMessagesBean.getParamString("views.deploymodel.nodelabel",
                   new String[] {version.getVersion(), String.valueOf(version.getModelOID())}));
             versionItem.setOid(version.getModelOID());
@@ -640,6 +641,9 @@ public class ModelManagementBean extends UIComponentBean implements ViewEventHan
       ColumnPreference colOid = new ColumnPreference("OID", "oid", ColumnDataType.NUMBER, this.getMessages().getString(
             "column.oid"));
       colOid.setColumnAlignment(ColumnAlignment.CENTER);
+      
+      ColumnPreference colDeploymentTime = new ColumnPreference("DeploymentTime", null, this.getMessages().getString(
+    		  "column.deploymentTime"), ResourcePaths.V_MODEL_MANAGEMENT_VIEW_COLUMNS, true, false);
 
       ColumnPreference colvalidFrom = new ColumnPreference("ValidFrom", null, this.getMessages().getString(
             "column.validFrom"), ResourcePaths.V_MODEL_MANAGEMENT_VIEW_COLUMNS, true, false);
@@ -659,6 +663,7 @@ public class ModelManagementBean extends UIComponentBean implements ViewEventHan
       cols.add(colVersion);
       cols.add(colOid);
       // cols.add(colDisabled);
+      cols.add(colDeploymentTime);
       cols.add(colvalidFrom);
       cols.add(colComment);
 

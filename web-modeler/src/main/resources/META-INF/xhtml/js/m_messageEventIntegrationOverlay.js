@@ -71,13 +71,58 @@ define(
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.messageEvent.transacted"));
+					m_utils.jQuerySelect("label[for='useSplitting']")
+					        .text(
+						           	m_i18nUtils
+						           			.getProperty("modeler.element.properties.messageEvent.useSplitting"));
+					m_utils.jQuerySelect("label[for='stopOnException']")
+					        .text(
+						           	m_i18nUtils
+						           			.getProperty("modeler.element.properties.messageEvent.stopOnException"));
+					m_utils.jQuerySelect("label[for='token']")
+					        .text(
+						           	m_i18nUtils
+						           			.getProperty("modeler.element.properties.messageEvent.token"));
+					m_utils.jQuerySelect("label[for='xml']")
+							.text(
+					           	m_i18nUtils
+					           			.getProperty("modeler.element.properties.messageEvent.xml"));
+					m_utils.jQuerySelect("label[for='regex']")
+							.text(
+					           	m_i18nUtils
+					           			.getProperty("modeler.element.properties.messageEvent.regex"));
+					m_utils.jQuerySelect("label[for='inheritNamespaceTagName']")
+							.text(
+					           	m_i18nUtils
+					           			.getProperty("modeler.element.properties.messageEvent.inheritNamespaceTagName"));
+					
+					m_utils.jQuerySelect("label[for='streaming']")
+					        .text(
+						           	m_i18nUtils
+						           			.getProperty("modeler.element.properties.messageEvent.streaming"));
+					m_utils.jQuerySelect("label[for='grouping']")
+					        .text(
+						           	m_i18nUtils
+						           			.getProperty("modeler.element.properties.messageEvent.grouping"));
+					m_utils.jQuerySelect("label[for='parallelProcessing']")
+					        .text(
+						           	m_i18nUtils
+						           			.getProperty("modeler.element.properties.messageEvent.parallelProcessing"));
 
-
+					
+					this.useSplitting = this.mapInputId("useSplitting");
+					this.stopOnException = this.mapInputId("stopOnException");
+					this.token = this.mapInputId("token");
+					this.xml = this.mapInputId("xml");
+					this.regex = this.mapInputId("regex");
+					this.inheritNamespaceTagName = this.mapInputId("inheritNamespaceTagName");
+					this.streaming = this.mapInputId("streaming");
+					this.grouping = this.mapInputId("grouping");
+					this.parallelProcessing = this.mapInputId("parallelProcessing");			
 					this.configurationSpan = this.mapInputId("configuration");
 					this.configurationSpan.text(m_i18nUtils.getProperty("modeler.element.properties.event.configuration"));
 					this.parametersSpan = this.mapInputId("parameters");
 					this.parametersSpan.text(m_i18nUtils.getProperty("modeler.element.properties.event.parameters"));
-
 					this.parameterDefinitionsPanel = this.mapInputId("parameterDefinitionsTable");
 					this.outputBodyAccessPointInput = jQuery("#messageEvent #parametersTab #outputBodyAccessPointInput");
 					this.parameterDefinitionsPanel = m_parameterDefinitionsPanel
@@ -134,14 +179,55 @@ define(
 					this.typeSelect = this.mapInputId("typeSelect");
 					this.nameInput = this.mapInputId("nameInput");
 
-
 					this.clientIdInput = this.mapInputId("clientIdInput");
 					this.selectorInput = this.mapInputId("selectorInput");
 					this.transactedInput = this.mapInputId("transactedInput");
 					this.preserveQoSInput = this.mapInputId("preserveQoSInput");
-
-					this.jmsComponentIdInput= this.mapInputId("jmsComponentIdInput")
-
+					this.jmsComponentIdInput= this.mapInputId("jmsComponentIdInput");	
+					
+					this.stopOnExceptionDisplay = jQuery("#splilTab #stopOnException");
+					this.tokenDisplay = jQuery("#splilTab #token");
+					this.xmlDisplay = jQuery("#splilTab #xml");
+					this.regexDisplay = jQuery("#splilTab #regex");
+					this.inheritNamespaceTagNameDisplay = jQuery("#splilTab #inheritNamespaceTagName");
+					this.streamingDisplay = jQuery("#splilTab #streaming");
+					this.groupingDisplay = jQuery("#splilTab #grouping");
+					this.parallelProcessingDisplay = jQuery("#splilTab #parallelProcessing");
+					this.stopOnExceptionLabel = jQuery("#splilTab #stopOnExceptionLabel");
+					this.tokenLabel = jQuery("#splilTab #tokenLabel");
+					this.xmlLabel = jQuery("#splilTab #xmlLabel");
+					this.regexLabel = jQuery("#splilTab #regexLabel");
+					this.inheritNamespaceTagNameLabel = jQuery("#splilTab #inheritNamespaceTagNameLabel");
+					this.streamingLabel = jQuery("#splilTab #streamingLabel");
+					this.groupingLabel = jQuery("#splilTab #groupingLabel");
+					this.parallelProcessingLabel = jQuery("#splilTab #parallelProcessingLabel");
+					
+					this.stopOnExceptionDisplay.css("display", "none");
+					this.tokenDisplay.css("display", "none");
+					this.xmlDisplay.css("display", "none");
+					this.regexDisplay.css("display", "none");
+					this.inheritNamespaceTagNameDisplay.css("display", "none");
+					this.streamingDisplay.css("display", "none");
+					this.groupingDisplay.css("display", "none");
+					this.parallelProcessingDisplay.css("display", "none");	
+					this.stopOnExceptionLabel.css("display", "none");
+					this.tokenLabel.css("display", "none");
+					this.xmlLabel.css("display", "none");
+					this.regexLabel.css("display", "none");
+					this.inheritNamespaceTagNameLabel.css("display", "none");
+					this.streamingLabel.css("display", "none");
+					this.groupingLabel.css("display", "none");
+					this.parallelProcessingLabel.css("display", "none");	
+						
+					this.registerForRouteChanges(this.useSplitting);	
+					this.registerForRouteChanges(this.stopOnException);
+					this.registerForRouteChanges(this.token);
+					this.registerForRouteChanges(this.xml);
+					this.registerForRouteChanges(this.regex);
+					this.registerForRouteChanges(this.inheritNamespaceTagName);
+					this.registerForRouteChanges(this.streaming);
+					this.registerForRouteChanges(this.grouping);
+					this.registerForRouteChanges(this.parallelProcessing);
 					this.registerForRouteChanges(this.typeSelect);
 					this.registerForRouteChanges(this.nameInput);
 					this.registerForRouteChanges(this.clientIdInput);
@@ -215,7 +301,7 @@ define(
 
 					route += this.getEndpointUri();
 					route += "\"/>";
-					route += this.getAdditionalRouteDefinitions();
+					route += this.getSplitRouteDefinitions();
 
 					return route;
 				};
@@ -224,9 +310,93 @@ define(
 					return "<to uri=\"ipp:direct\"/>";
 				};
 
-				MessageEventIntegrationOverlay.prototype.getRouteDefinitions= function() {
-					return "<from uri=\""+this.getEndpointUri()+"\"/>"+this.getAdditionalRouteDefinitions();
-				}
+				MessageEventIntegrationOverlay.prototype.getSplitRouteDefinitions = function() {
+					var splitRoute ="";
+					
+					if (this.useSplitting.is(":checked") == true){
+						splitRoute+="<split";
+						if (this.streaming.is(":checked") == true){
+							splitRoute+=" streaming=\"true\"";
+						}
+
+						if (this.parallelProcessing.is(":checked") == true){
+							splitRoute+=" parallelProcessing=\"true\"";
+						}
+
+						if (this.stopOnException.is(":checked") == true){					
+							splitRoute+=" stopOnException=\"true\"";
+						}
+						splitRoute+=" >";
+						jQuery.trim(this.token.val());
+						if (jQuery.trim(this.token.val()) == ""){
+							splitRoute+="<simple>$simple{in.body}</simple>";
+						}
+						else {
+							splitRoute+="<tokenize token=\""+this.token.val()+"\"";
+							
+							if (jQuery.trim(this.inheritNamespaceTagName.val()) != ""){
+								splitRoute+=" inheritNamespaceTagName=\""+this.inheritNamespaceTagName.val()+"\"";
+							}
+
+							if (this.regex.is(":checked") == true){	
+								splitRoute+="  regex=\"true\"";
+							}
+
+							if (this.xml.is(":checked") == true){
+								splitRoute+="  xml=\"true\"";
+							}
+							if (jQuery.trim(this.grouping.val()) != ""){
+								splitRoute+="  group=\""+this.grouping.val()+"\"";
+							}
+							splitRoute+=" />";
+							
+						}
+
+						splitRoute+=this.getAdditionalRouteDefinitions();
+						splitRoute+="</split>";
+						this.stopOnExceptionDisplay.css("display", "block");
+						this.tokenDisplay.css("display", "block");
+						this.xmlDisplay.css("display", "block");
+						this.regexDisplay.css("display", "block");
+						this.inheritNamespaceTagNameDisplay.css("display", "block");
+						this.streamingDisplay.css("display", "block");
+						this.groupingDisplay.css("display", "block");
+						this.parallelProcessingDisplay.css("display", "block");
+						this.stopOnExceptionLabel.css("display", "block");
+						this.tokenLabel.css("display", "block");
+						this.xmlLabel.css("display", "block");
+						this.regexLabel.css("display", "block");
+						this.inheritNamespaceTagNameLabel.css("display", "block");
+						this.streamingLabel.css("display", "block");
+						this.groupingLabel.css("display", "block");
+						this.parallelProcessingLabel.css("display", "block");		
+						
+						return splitRoute;
+					} else {
+						this.stopOnExceptionDisplay.css("display", "none");
+						this.tokenDisplay.css("display", "none");
+						this.xmlDisplay.css("display", "none");
+						this.regexDisplay.css("display", "none");
+						this.inheritNamespaceTagNameDisplay.css("display", "none");
+						this.streamingDisplay.css("display", "none");
+						this.groupingDisplay.css("display", "none");
+						this.parallelProcessingDisplay.css("display", "none");
+						this.stopOnExceptionLabel.css("display", "none");
+						this.tokenLabel.css("display", "none");
+						this.xmlLabel.css("display", "none");
+						this.regexLabel.css("display", "none");
+						this.inheritNamespaceTagNameLabel.css("display", "none");
+						this.streamingLabel.css("display", "none");
+						this.groupingLabel.css("display", "none");
+						this.parallelProcessingLabel.css("display", "none");	
+						return this.getAdditionalRouteDefinitions();
+					}
+
+				};
+
+				MessageEventIntegrationOverlay.prototype.getRouteDefinitions = function() {
+					return "<from uri=\"" + this.getEndpointUri() + "\"/>"+ this.getSplitRouteDefinitions();
+				};
 				/**
 				 *
 				 */
@@ -243,7 +413,7 @@ define(
 					{
 						var accessPoint = this.page.getEvent().parameterMappings[n];
 						//accessPoint.id=accessPoint.name;
-						accessPoint.direction = m_constants.OUT_ACCESS_POINT
+						accessPoint.direction = m_constants.OUT_ACCESS_POINT;
 						this.outputBodyAccessPointInput
 								.append("<option value='" + accessPoint.id
 										+ "'>" + accessPoint.name + "</option>");
@@ -263,13 +433,78 @@ define(
 					var xmlObject = m_utils.jQuerySelect(xmlDoc);
 					var from = m_utils.jQuerySelect(xmlObject).find("from");
 					var uri = from.attr("uri");
+					var uriSplitOptions = route.split("<split");
+					if (uriSplitOptions.length == '1') {
+						this.useSplitting.prop("checked",false);
+					}
+					else{
+						this.useSplitting.prop("checked",true);
+						
+						var optionsSplit = uriSplitOptions[1].split(" ");
 
+						if (optionsSplit) {
+							for ( var n = 0; n < optionsSplit.length; ++n) {
+
+								var optionSplit = optionsSplit[n];
+
+								if (optionSplit.indexOf("=")>-1){
+									optionSplit = optionSplit.split("=");
+									var name = optionSplit[0];
+									var value=optionSplit[1].substring(optionSplit[1].indexOf("\"")+1,optionSplit[1].indexOf("\"",optionSplit[1].indexOf("\"")+1));
+									if (name == "stopOnException"){
+										this.stopOnException.prop("checked",value);
+									}
+									if (name == "token"){
+										this.token.val(value);
+									}
+									if (name == "regex"){
+										this.regex.prop("checked",value);
+									}
+									if (name == "xml"){
+										this.xml.prop("checked",value);
+									}
+									if (name == "inheritNamespaceTagName"){
+										this.inheritNamespaceTagName.val(value);
+									}
+									if (name == "streaming"){
+										this.streaming.prop("checked",value);
+									}
+									if (name == "group"){
+										this.grouping.val(value);
+									}
+									if (name == "parallelProcessing"){
+										this.parallelProcessing.prop("checked",value);
+									}
+								}
+							}
+						}	
+						this.stopOnExceptionDisplay.css("display", "block");
+						this.tokenDisplay.css("display", "block");
+						this.xmlDisplay.css("display", "block");
+						this.regexDisplay.css("display", "block");
+						this.inheritNamespaceTagNameDisplay.css("display", "block");
+						this.streamingDisplay.css("display", "block");
+						this.groupingDisplay.css("display", "block");
+						this.parallelProcessingDisplay.css("display", "block");								
+						this.stopOnExceptionLabel.css("display", "block");
+						this.tokenLabel.css("display", "block");
+						this.xmlLabel.css("display", "block");
+						this.regexLabel.css("display", "block");
+						this.inheritNamespaceTagNameLabel.css("display", "block");
+						this.streamingLabel.css("display", "block");
+						this.groupingLabel.css("display", "block");
+						this.parallelProcessingLabel.css("display", "block");		
+					}
+					
+//					this.inheritNamespaceTagNameDisplay.val(uri[0]);
+//					this.grouping.val("grouping inserted manually");
+					
 					if (uri) {
 						var sourceAndProperties = uri.split("?");
 						var source = sourceAndProperties[0];
 
 						var sourceParts = source.split(":");
-						this.jmsComponentIdInput.val(sourceParts[0])
+						this.jmsComponentIdInput.val(sourceParts[0]);
 						this.typeSelect.val(sourceParts[1]);
 
 						var clientName = "";
@@ -332,11 +567,45 @@ define(
 				 */
 				MessageEventIntegrationOverlay.prototype.validate = function() {
 					
+					this.grouping.removeClass("error");
 					this.jmsComponentIdInput.removeClass("error");
 					this.nameInput.removeClass("error");
 					this.page.propertiesPanel.errorMessages=[];
+					this.page.propertiesPanel.warningMessages=[];
+					this.page.propertiesPanel.clearWarningMessages();
+					var intRegex = /^\d+$/;
 					
-
+					if (((!intRegex.test(this.grouping.val())) || (this.grouping.val()<1))&& (!(jQuery.trim(this.grouping.val())=="")) ) {
+							this.getPropertiesPanel().errorMessages.push("Field must be a positive number");
+							this.grouping.addClass("error");
+					}
+					
+					if (jQuery.trim(this.token.val())=="") {
+						this.inheritNamespaceTagName.prop("disabled",true);
+						this.inheritNamespaceTagName.val("");
+						this.regex.prop("disabled",true);
+						this.regex.prop("checked",false);
+						this.xml.prop("disabled",true);
+						this.xml.prop("checked",false);
+						this.grouping.prop("disabled",true);
+						this.grouping.val("");
+						
+					}else{
+						this.inheritNamespaceTagName.prop("disabled",false);
+						this.regex.prop("disabled",false);
+						this.xml.prop("disabled",false);
+						this.grouping.prop("disabled",false);
+						
+					}
+					
+					if (!(this.xml.is(":checked") == true)) {		
+						this.inheritNamespaceTagName.prop("disabled",true);
+						this.inheritNamespaceTagName.val("");
+						
+					}else{
+						this.inheritNamespaceTagName.prop("disabled",false);				
+					}
+					
 					if (m_utils.isEmptyString(this.jmsComponentIdInput.val()) ||
 							this.jmsComponentIdInput.val() == m_i18nUtils
 							.getProperty("modeler.general.toBeDefined")) {
@@ -356,6 +625,12 @@ define(
 						this.nameInput.addClass("error");
 						//this.nameInput.focus();
 
+					}
+					
+					if(this.page.overlay.parameterDefinitionsPanel.parameterDefinitions.length == 0) {
+						this.page.propertiesPanel.warningMessages
+						.push("No parameters defined for Start Event.");
+						this.page.propertiesPanel.showWarningMessages();
 					}
 					
 					if (this.page.propertiesPanel.errorMessages.length != 0){

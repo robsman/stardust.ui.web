@@ -211,6 +211,7 @@ public class ModelService
       {
          if (reload || getModelManagementStrategy().getModels().isEmpty())
          {
+            TypeDeclarationUtils.clearExternalSchemaCache();
             // reload upon request or if never loaded before
             // TODO Review
             getModelManagementStrategy().getModels(true);

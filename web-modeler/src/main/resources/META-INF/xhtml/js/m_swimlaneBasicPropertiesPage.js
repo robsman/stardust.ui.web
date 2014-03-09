@@ -14,9 +14,9 @@
 define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_command",
 				"bpm-modeler/js/m_model", "bpm-modeler/js/m_basicPropertiesPage", "bpm-modeler/js/m_participant","bpm-modeler/js/m_i18nUtils",
-				"bpm-modeler/js/m_modelElementUtils", "bpm-modeler/js/m_messageDisplay" ],
+				"bpm-modeler/js/m_modelElementUtils", "bpm-modeler/js/m_messageDisplay", "bpm-modeler/js/m_modelerUtils" ],
 		function(m_utils, m_constants, m_commandsController, m_command,
-				m_model, m_basicPropertiesPage, m_participant, m_i18nUtils, m_modelElementUtils, m_messageDisplay) {
+				m_model, m_basicPropertiesPage, m_participant, m_i18nUtils, m_modelElementUtils, m_messageDisplay, m_modelerUtils) {
 			return {
 				create : function(propertiesPanel) {
 					var page = new SwimlaneBasicPropertiesPage(propertiesPanel);
@@ -49,12 +49,19 @@ define(
 					this.initializeBasicPropertiesPage();
 
 					this.propertiesPanelTitle = m_utils.jQuerySelect("#swimlanePropertiesPanelTitle");
+					this.participantViewLink = m_utils.jQuerySelect("#participantViewLink");
 					this.newParticipantName = this
 							.mapInputId("newParticipantName");
 					this.participantList = this.mapInputId("participantList");
 
 					this.registerInputForModelElementChangeSubmission(
 							this.participantList, "participantFullId");
+
+					this.participantViewLink.click({
+						panel : this
+					}, function(event) {
+						event.data.panel.openParticipantView();
+					});
 				};
 
 				/**
@@ -117,10 +124,12 @@ define(
 					this.setModelElement();
 
 					this.refreshParticipantList();
+					this.participantViewLink.addClass("imgLinkDisabled");
 
 					if (this.getModelElement().participantFullId != null) {
 						this.participantList
 								.val(this.getModelElement().participantFullId);
+						this.participantViewLink.removeClass("imgLinkDisabled");
 					} else {
 						this.participantList.val("NONE");
 					}
@@ -201,6 +210,14 @@ define(
 					}
 
 					return false;
+				};
+
+				/**
+				 *
+				 */
+				SwimlaneBasicPropertiesPage.prototype.openParticipantView = function() {
+					var participant = m_model.findParticipant(this.getModelElement().participantFullId);
+					m_modelerUtils.openParticipantView(participant);
 				};
 			}
 		});

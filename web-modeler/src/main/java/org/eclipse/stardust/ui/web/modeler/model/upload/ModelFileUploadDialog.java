@@ -172,6 +172,10 @@ public class ModelFileUploadDialog extends PopupUIComponentBean
    {
       PortalApplication.getInstance().addEventScript(
             "window.parent.EventHub.events.publish('RELOAD_MODELS');");
+
+      PortalApplication.getInstance().addEventScript(
+            "window.parent.EventHub.events.publish('CONTEXT_UPDATED');");
+
       closePopup();
    }
 

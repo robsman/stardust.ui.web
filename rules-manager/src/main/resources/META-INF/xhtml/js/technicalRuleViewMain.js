@@ -63,7 +63,9 @@ require([ "require", "jquery", "jquery-ui","rules-manager/js/m_technicalRuleView
 				uuidLabel:"#uuidLabel", /* label for our rule UUID*/
 				descriptionLabel:"#descriptionLabel", /*label for rule description textarea*/
 				nameLabel:"#nameLabel", /*label for rule name*/
-				descriptionTextarea: "#descriptionTextarea" /*text area for our technical Rule description*/
+				descriptionTextarea: "#descriptionTextarea", /*text area for our technical Rule description*/
+				decShowGeneralPropertiesTitle: "#decShowGeneralPropertiesTitle",
+				decHideGeneralPropertiesTitle: "#decHideGeneralPropertiesTitle"
 			},
 			i18nMaps:{
 				codeTab: {path:"rules.propertyView.technicalruleview.ruleeditor.tab",defaultText:"NA",attr:"text"},
@@ -81,7 +83,9 @@ require([ "require", "jquery", "jquery-ui","rules-manager/js/m_technicalRuleView
 				nameLabel:{path:"rules.element.properties.commonProperties.name",defaultText:"NA",attr:"text"},
 				descriptionLabel:{path:"rules.element.properties.commonProperties.description",defaultText:"NA",attr:"text"},
 				uuidLabel:{path:"rules.element.properties.commonProperties.uuid",defaultText:"NA",attr:"text"},
-				drlEditorReplaceOptionVal: {path:"rules.propertyView.technicalruleview.ruleeditor.toolbar.label.replaceCurrent",defaultText:"NA",attr:"text"}
+				drlEditorReplaceOptionVal: {path:"rules.propertyView.technicalruleview.ruleeditor.toolbar.label.replaceCurrent",defaultText:"NA",attr:"text"},
+				decShowGeneralPropertiesTitle: {path:"rules.element.properties.generalProperties.title",defaultText:"NA",attr:"text"},
+				decHideGeneralPropertiesTitle: {path:"rules.element.properties.generalProperties.title",defaultText:"NA",attr:"text"}
 			}
 	};
 	

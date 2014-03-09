@@ -92,7 +92,9 @@ define(
 							lastModificationDateLabel: m_utils.jQuerySelect(options.selectors.lastModificationDateLabel),
 							parameterTabLabel: m_utils.jQuerySelect(options.selectors.parameterTabLabel),
 							lblmax: m_utils.jQuerySelect(options.selectors.lblmax),
-							maxRulesExecutions : m_utils.jQuerySelect(options.selectors.maxRulesExecutions)
+							maxRulesExecutions : m_utils.jQuerySelect(options.selectors.maxRulesExecutions),
+							decShowGeneralPropertiesTitle: m_utils.jQuerySelect(options.selectors.decShowGeneralPropertiesTitle),
+                     decHideGeneralPropertiesTitle: m_utils.jQuerySelect(options.selectors.decHideGeneralPropertiesTitle)
 					};
 					
 					m_i18nMapper.map(options,uiElements,true);

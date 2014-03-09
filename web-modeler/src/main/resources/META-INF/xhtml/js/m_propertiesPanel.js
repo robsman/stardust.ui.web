@@ -84,8 +84,11 @@ define(
 						+ " #errorMessagesRow");
 				this.errorMessagesList = m_utils.jQuerySelect("#" + this.id
 						+ " #errorMessagesList");
+				this.warningMessagesList = m_utils.jQuerySelect("#" + this.id
+						+ " #warningMessagesList");
 				this.propertiesPages = [];
 				this.errorMessages = [];
+				this.warningMessages = [];
 				this.helpPanel = m_utils.jQuerySelect("#" + this.id + " #helpPanel");
 				this.lastSelectedPageIndex = 0;
 
@@ -324,6 +327,31 @@ define(
 						for ( var n in this.errorMessages) {
 							this.errorMessagesList.append("<li>"
 									+ this.errorMessages[n] + "</li>");
+						}
+					}
+				};
+
+				/**
+				 *
+				 */
+				PropertiesPanel.prototype.clearWarningMessages = function() {
+					m_utils.debug("Clear warning messages");
+					m_dialog.makeInvisible(this.errorMessagesRow);
+					this.warningMessages = [];
+					this.warningMessagesList.empty();
+				};
+
+				/**
+				 *
+				 */
+				PropertiesPanel.prototype.showWarningMessages = function() {
+					if (this.warningMessages.length != 0) {
+						m_dialog.makeVisible(this.errorMessagesRow);
+
+						this.warningMessagesList.empty();
+						for ( var n in this.warningMessages) {
+							this.warningMessagesList.append("<li>"+"Warning: "
+									+ this.warningMessages[n] + "</li>");
 						}
 					}
 				};
