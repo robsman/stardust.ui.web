@@ -708,8 +708,8 @@ public class ModelerResource
          WebServicesSupport webServicesSupport = springContext.getBean(WebServicesSupport.class);
 
          return Response.ok(
-               webServicesSupport.getWebServiceStructure(jsonIo.readJsonObject(postedData))
-                     .toString(), APPLICATION_JSON_TYPE)
+               webServicesSupport.getWebServiceStructure(jsonIo.readJsonObject(postedData), springContext).toString(),
+               APPLICATION_JSON_TYPE)
                .build();
       }
       catch (Exception e)

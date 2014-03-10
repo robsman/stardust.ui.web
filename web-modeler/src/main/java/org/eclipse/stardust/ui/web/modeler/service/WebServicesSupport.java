@@ -16,12 +16,14 @@ import javax.wsdl.Port;
 import javax.wsdl.Service;
 import javax.xml.namespace.QName;
 
+import org.eclipse.stardust.engine.extensions.jaxws.app.WSConstants;
+import org.eclipse.stardust.model.xpdl.carnot.ModelType;
+import org.eclipse.stardust.model.xpdl.carnot.util.VariableContext;
+import org.eclipse.stardust.ui.web.modeler.edit.utils.CommandHandlerUtils;
+import org.springframework.context.ApplicationContext;
+
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
-
-import org.eclipse.stardust.engine.extensions.jaxws.app.WSConstants;
-import org.eclipse.stardust.model.xpdl.carnot.util.VariableContext;
-import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 
 @org.springframework.stereotype.Service
 public class WebServicesSupport
@@ -85,9 +87,10 @@ public class WebServicesSupport
     * @param postedData
     *           a JsonObject that contains a primitive (String) member with the name
     *           "wsdlUrl" that specifies the URL from where the WSDL should be loaded.
+    * @param springContext 
     * @return the JsonObject containing the representation of the services.
     */
-   public JsonObject getWebServiceStructure(JsonObject postedData)
+   public JsonObject getWebServiceStructure(JsonObject postedData, ApplicationContext springContext)
    {
       String wsdlUrl = postedData.get("wsdlUrl").getAsString();
       String modelID = postedData.get("modelID").getAsString();
@@ -95,7 +98,7 @@ public class WebServicesSupport
 
       if (wsdlUrl != null && wsdlUrl.indexOf("${") > -1)
       {
-         ModelType model = this.getModelBuilderFacade().getModelManagementStrategy()
+         ModelType model = CommandHandlerUtils.getModelBuilderFacade(springContext).getModelManagementStrategy()
                .getModels().get(modelID);
          if (model != null)
          {
