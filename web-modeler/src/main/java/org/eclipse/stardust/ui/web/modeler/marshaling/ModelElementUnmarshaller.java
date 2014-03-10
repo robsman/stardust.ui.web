@@ -337,10 +337,8 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
                   .getAsString()
                   .equals(ModelerConstants.OR_GATEWAY_TYPE))
             {
-               // TODO OR Support
-
-               activity.setJoin(JoinSplitType.XOR_LITERAL);
-               activity.setSplit(JoinSplitType.XOR_LITERAL);
+               activity.setJoin(JoinSplitType.OR_LITERAL);
+               activity.setSplit(JoinSplitType.OR_LITERAL);
             }
          }
       }
