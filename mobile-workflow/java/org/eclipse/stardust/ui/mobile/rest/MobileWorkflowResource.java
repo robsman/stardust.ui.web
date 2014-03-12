@@ -33,13 +33,7 @@ public class MobileWorkflowResource {
 	private final JsonMarshaller jsonIo = new JsonMarshaller();
 
 	@Context
-	private HttpServletRequest httpRequest;
-
-	@Context
 	private ServletContext servletContext;
-
-   @Resource
-   private ApplicationContext springContext;
 	   
 	/**
 	 * 
@@ -81,8 +75,6 @@ public class MobileWorkflowResource {
 	@Path("process-definitions")
 	public Response getProcesses(@QueryParam("startable") String startable) {
 		try {
-			// Initit registry
-			getInteractionRegistry();
 			return Response.ok(
 					getMobileWorkflowService().getProcesses(Boolean.parseBoolean(startable))
 							.toString(), MediaType.APPLICATION_JSON_TYPE)
@@ -99,9 +91,6 @@ public class MobileWorkflowResource {
 	@Path("worklist")
 	public Response getWorklist() {
 		try {
-			// Initit registry
-			getInteractionRegistry();
-			
 			return Response.ok(
 					getMobileWorkflowService().getWorklist().toString(),
 					MediaType.APPLICATION_JSON_TYPE).build();
@@ -149,9 +138,8 @@ public class MobileWorkflowResource {
 	@Path("activity-instances/{oid: \\d+}/activation")
 	public Response activateActivity(@PathParam("oid") String activityInstanceOid) {
 		try {
-			// TODO @SG - pass the servlet / spring context to service instead of passing it the needed beans.
 			return Response.ok(
-					getMobileWorkflowService().activateActivity(Long.parseLong(activityInstanceOid), getInteractionRegistry())
+					getMobileWorkflowService().activateActivity(Long.parseLong(activityInstanceOid))
 							.toString(), MediaType.APPLICATION_JSON_TYPE)
 					.build();
 		} catch (Exception e) {
@@ -170,7 +158,7 @@ public class MobileWorkflowResource {
          JsonObject json = jsonIo.readJsonObject(postedData);
 
          return Response.ok(
-               getMobileWorkflowService().startProcessInstance(json, getInteractionRegistry()).toString(),
+               getMobileWorkflowService().startProcessInstance(json).toString(),
                MediaType.APPLICATION_JSON_TYPE).build();
       } catch (Exception e) {
          e.printStackTrace();
@@ -395,10 +383,8 @@ public class MobileWorkflowResource {
       {
          JsonObject postedDataJson = jsonIo.readJsonObject(postedData);
 
-         InteractionRegistry registry = getInteractionRegistry();
-      // TODO @SG - pass the servlet / spring context to service instead of passing it the needed beans.
          return Response.ok(
-               getMobileWorkflowService().completeActivity(oid, registry).toString(),
+               getMobileWorkflowService().completeActivity(oid).toString(),
                MediaType.APPLICATION_JSON_TYPE).build();
       }
       catch (Exception e)
@@ -419,10 +405,8 @@ public class MobileWorkflowResource {
       {
          JsonObject postedDataJson = jsonIo.readJsonObject(postedData);
 
-      // TODO @SG - pass the servlet / spring context to service instead of passing it the needed beans.
-         InteractionRegistry registry = getInteractionRegistry();
          return Response.ok(
-               getMobileWorkflowService().suspendActivity(oid, registry).toString(),
+               getMobileWorkflowService().suspendActivity(oid).toString(),
                MediaType.APPLICATION_JSON_TYPE).build();
       }
       catch (Exception e)
@@ -443,10 +427,8 @@ public class MobileWorkflowResource {
       {
          JsonObject postedDataJson = jsonIo.readJsonObject(postedData);
 
-      // TODO @SG - pass the servlet / spring context to service instead of passing it the needed beans.
-         InteractionRegistry registry = getInteractionRegistry();
          return Response.ok(
-               getMobileWorkflowService().suspendAndSaveActivity(oid, registry).toString(),
+               getMobileWorkflowService().suspendAndSaveActivity(oid).toString(),
                MediaType.APPLICATION_JSON_TYPE).build();
       }
       catch (Exception e)
@@ -487,23 +469,5 @@ public class MobileWorkflowResource {
 
          throw new RuntimeException(e);
       }
-   }
-   
-   /**
-    * 
-    * @return
-    */
-   private InteractionRegistry getInteractionRegistry() {
-	   InteractionRegistry registry = (InteractionRegistry) servletContext.getAttribute(InteractionRegistry.BEAN_ID);
-	   if (registry != null) return registry;
-	   
-	   synchronized (this) {
-		   if (null == registry) {
-			   registry = new InteractionRegistry();
-			   servletContext.setAttribute(InteractionRegistry.BEAN_ID, registry);
-		   }
-	   }
-	   
-	   return registry;
    }
 }

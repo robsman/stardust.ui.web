@@ -12,10 +12,14 @@
 package org.eclipse.stardust.ui.mobile.service;
 
 import static org.eclipse.stardust.common.CollectionUtils.newHashMap;
+import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.engine.core.interactions.Interaction.getInteractionId;
 
 import java.io.*;
 import java.util.*;
+
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -36,8 +40,10 @@ import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.utils.*;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.TypedDocument;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.ServletContextAware;
 
-public class MobileWorkflowService {
+public class MobileWorkflowService implements ServletContextAware {
 	private ServiceFactory serviceFactory;
 	private UserService userService;
 	private QueryService queryService;
@@ -46,6 +52,8 @@ public class MobileWorkflowService {
 	private User loginUser;
 	private Folder userDocumentsRootFolder;
 	private Folder publicDocumentsRootFolder;
+	private ServletContext servletContext;
+	private @Autowired HttpServletRequest httpRequest;
 
 	public MobileWorkflowService() {
 		super();
@@ -53,6 +61,11 @@ public class MobileWorkflowService {
 		new JsonMarshaller();
 	}
 
+	@Override
+	public void setServletContext(ServletContext servletContext) {
+		this.servletContext = servletContext;
+	}
+	
 	/**
 	 * 
 	 * @return
@@ -153,6 +166,8 @@ public class MobileWorkflowService {
 	 * @return
 	 */
 	public JsonObject getProcesses(boolean startable) {
+		// Initit registry
+		getInteractionRegistry();
 		JsonObject resultJson = new JsonObject();
 		JsonArray processDefinitionsJson = new JsonArray();
 
@@ -202,6 +217,8 @@ public class MobileWorkflowService {
 	 * @return
 	 */
 	public JsonObject getWorklist() {
+		// Initit registry
+		getInteractionRegistry();
 		JsonObject resultJson = new JsonObject();
 		JsonArray worklistJson = new JsonArray();
 
@@ -274,7 +291,7 @@ public class MobileWorkflowService {
     * 
     * @return
     */
-   public JsonObject activateActivity(long activityInstanceOid, InteractionRegistry ir) {
+   public JsonObject activateActivity(long activityInstanceOid) {
       ActivityInstance ai = getWorkflowService().activate(activityInstanceOid);
       JsonObject activityJson = getActivityInstanceJson(ai);
       // TODO @SG
@@ -308,7 +325,7 @@ public class MobileWorkflowService {
          }
          interaction.setInDataValues(inParams);
          
-         ir.registerInteraction(interaction);
+         getInteractionRegistry().registerInteraction(interaction);
       }
       catch (Exception e)
       {
@@ -324,7 +341,7 @@ public class MobileWorkflowService {
 	 * @param registry
 	 * @return
 	 */
-	public JsonObject completeActivity(String oid, InteractionRegistry registry) {
+	public JsonObject completeActivity(String oid) {
 		ActivityInstance ai = getWorkflowService().getActivityInstance(new Long(oid).longValue());
 		IActivityInteractionController interactionController = SpiUtils
 				.getInteractionController(ai.getActivity());
@@ -333,6 +350,7 @@ public class MobileWorkflowService {
 		
 	      Map<String, Serializable> outData = null;
 
+	      InteractionRegistry registry = getInteractionRegistry();
 	      if (null != registry)
 	      {
 	         // retrieve out data
@@ -393,7 +411,7 @@ public class MobileWorkflowService {
 	 * @param registry
 	 * @return
 	 */
-	public JsonObject suspendActivity(String oid, InteractionRegistry registry) {
+	public JsonObject suspendActivity(String oid) {
     	getWorkflowService().suspendToDefaultPerformer(new Long(oid).longValue());
 		
 	    // TODO @SG
@@ -408,15 +426,13 @@ public class MobileWorkflowService {
 	 * @param registry
 	 * @return
 	 */
-	public JsonObject suspendAndSaveActivity(String oid, InteractionRegistry registry) {
+	public JsonObject suspendAndSaveActivity(String oid) {
 		ActivityInstance ai = getWorkflowService().getActivityInstance(new Long(oid).longValue());
 		IActivityInteractionController interactionController = SpiUtils
 				.getInteractionController(ai.getActivity());
-		//Map<String, Serializable>outDataValues = interactionController.getOutDataValues(activityInstance);
-		System.out.println("@@@@@@@@@@@@@@@@@@@@@@@ suspend and save");
 		
 	      Map<String, Serializable> outData = null;
-
+	      InteractionRegistry registry = getInteractionRegistry();
 	      if (null != registry)
 	      {
 	         // retrieve out data
@@ -457,8 +473,6 @@ public class MobileWorkflowService {
 	            // destroy interaction resource
 	            registry.unregisterInteraction(interaction.getId());
 	    		
-	            System.out.println("@@@@@@@@@@@@@@@@@@@@@@@ out data " + outData);
-	            
 	    		ai = getWorkflowService().suspendToDefaultPerformer(new Long(oid).longValue(), "externalWebApp", outData);
 	         }
 	         else
@@ -582,17 +596,9 @@ public class MobileWorkflowService {
                      "carnot:engine:ui:externalWebApp:uri",
                      (String) applicationContext
                            .getAttribute("carnot:engine:ui:externalWebApp:uri"));
-         String ippPortalBaseUri = "http://localhost:8080/pepper-test/";
-//         String ippPortalBaseUri = "https://www.infinity.com/iod73-0/a/93170f2c-6ec5-475a-b07b-e75a5e67ffc6/";
-         String ippServicesBaseUri = ippPortalBaseUri + "services/";
-         String interactionId = Interaction.getInteractionId(activityInstance);
-         String ippInteractionUri = ippServicesBaseUri + "rest/engine/interactions/" + interactionId;
-         applicationContextJson.addProperty("ippPortalBaseURi", ippPortalBaseUri);
-         applicationContextJson.addProperty("ippServicesBaseUri", ippServicesBaseUri);
-         applicationContextJson.addProperty("ippInteractionUri", ippInteractionUri);
-         applicationContextJson.addProperty("interactionId", interactionId);
+
+         setIPPInteractionParams(applicationContextJson, activityInstance);
       }
-//      }
       
       JsonObject processInstanceJson = new JsonObject();
       ProcessInstanceQuery processInstanceQuery = ProcessInstanceQuery.findAll();
@@ -659,7 +665,7 @@ public class MobileWorkflowService {
       return activityInstanceJson;
    }
    
-   public JsonObject startProcessInstance(JsonObject request, InteractionRegistry ir)
+   public JsonObject startProcessInstance(JsonObject request)
    {
       ProcessInstance processInstance = getWorkflowService().startProcess(request.get("processDefinitionId").getAsString(), null, true);
       
@@ -708,7 +714,7 @@ public class MobileWorkflowService {
    
                interaction.setInDataValues(inParams);
                
-               ir.registerInteraction(interaction);
+               getInteractionRegistry().registerInteraction(interaction);
             }
             catch (Exception e)
             {
@@ -1408,5 +1414,102 @@ public class MobileWorkflowService {
       
       return queryService.getAllActivityInstances(aiQuery);
    }
+   
+   /**
+    * 
+    * @return
+    */
+   private InteractionRegistry getInteractionRegistry() {
+	   InteractionRegistry registry = (InteractionRegistry) servletContext.getAttribute(InteractionRegistry.BEAN_ID);
+	   if (registry != null) return registry;
+	   
+	   synchronized (this) {
+		   if (null == registry) {
+			   registry = new InteractionRegistry();
+			   servletContext.setAttribute(InteractionRegistry.BEAN_ID, registry);
+		   }
+	   }
+	   
+	   return registry;
+   }
+   
+	/**
+	 * TODO - need to move to a util as it's almost duplicated from
+	 * ExternalWebAppActivityInteractionController
+	 * 
+	 * @param applicationContextJson
+	 * @param ai
+	 */
+	private void setIPPInteractionParams(JsonObject applicationContextJson,
+			ActivityInstance ai) {
+		ApplicationContext context = ai.getActivity().getApplicationContext("externalWebApp");
 
+		Boolean embedded = (Boolean) context
+				.getAttribute("carnot:engine:ui:externalWebApp:embedded");
+
+		String servicesBaseUri = "";
+		String portalBaseUri = "";
+		if (null != embedded && embedded) {
+			servicesBaseUri = "/${request.contextPath}/services/";
+			portalBaseUri = "/${request.contextPath}";
+		} else {
+			// allow base URI override via parameter
+			servicesBaseUri = servletContext.getInitParameter("InfinityBpm.ServicesBaseUri");
+			if (isEmpty(servicesBaseUri)) {
+				servicesBaseUri = "${request.scheme}://${request.serverName}:${request.serverPort}/${request.contextPath}/services/";
+			}
+
+			portalBaseUri = servletContext.getInitParameter("InfinityBpm.PortalBaseUri");
+			if (isEmpty(portalBaseUri)) {
+				portalBaseUri = "${request.scheme}://${request.serverName}:${request.serverPort}/${request.contextPath}";
+			}
+		}
+
+		servicesBaseUri = expandUriTemplate(servicesBaseUri, httpRequest);
+		portalBaseUri = expandUriTemplate(portalBaseUri, httpRequest);
+        String interactionId = Interaction.getInteractionId(ai);
+        String ippInteractionUri = servicesBaseUri + "rest/engine/interactions/" + interactionId;
+		applicationContextJson
+				.addProperty("ippPortalBaseURi", portalBaseUri);
+		applicationContextJson.addProperty("ippServicesBaseUri",
+				servicesBaseUri);
+		applicationContextJson.addProperty("ippInteractionUri",
+				ippInteractionUri);
+		applicationContextJson.addProperty("interactionId", interactionId);
+	}
+
+	/**
+	 * TODO - need to move to a util as it's duplicated from
+	 * ExternalWebAppActivityInteractionController
+	 * 
+	 * @param uriTemplate
+	 * @param req
+	 * @return
+	 */
+	private String expandUriTemplate(String uriTemplate, HttpServletRequest req) {
+		String uri = uriTemplate;
+
+		if (uri.contains("${request.scheme}")) {
+			uri = uri.replace("${request.scheme}", req.getScheme());
+		}
+		if (uri.contains("${request.serverName}")) {
+			uri = uri.replace("${request.serverName}", req.getServerName());
+		}
+		if (uri.contains("${request.serverLocalName}")
+				&& !isEmpty(req.getLocalName())) {
+			uri = uri.replace("${request.serverLocalName}", req.getLocalName());
+		}
+		if (uri.contains("${request.serverPort}")) {
+			uri = uri.replace("${request.serverPort}",
+					Integer.toString(req.getServerPort()));
+		}
+		if (uri.contains("${request.serverLocalPort}")) {
+			uri = uri.replace("${request.serverLocalPort}",
+					Integer.toString(req.getLocalPort()));
+		}
+		if (uri.contains("/${request.contextPath}")) {
+			uri = uri.replace("/${request.contextPath}", req.getContextPath());
+		}
+		return uri;
+	}
 }
