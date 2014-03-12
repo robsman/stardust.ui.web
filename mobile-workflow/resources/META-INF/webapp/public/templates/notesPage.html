@@ -1,5 +1,5 @@
 <div data-role="content" style="margin-top:-2.5em;">
-				
+
 	<ul data-role="listview" data-split-icon="plus" data-theme="a" data-split-theme="a" data-inset="true">
       <li>
         <a href="#">
@@ -12,6 +12,7 @@
 	<a href="#noteFilterPopup_{{$id}}" style="float:right;" data-rel="popup" data-transition="slide" 
 	   class="ui-btn ui-corner-all ui-btn-icon-notext ui-icon-arrow-d ui-btn-a">
 	</a>
+	
 	<div data-role="popup" id="noteFilterPopup_{{$id}}" data-theme="a">
 	    <ul data-role="listview"  data-inset="true" style="min-width:210px;">
 	        <li data-icon="arrow-d" ng-click="notePredicate='-timestamp'"><a href="#">Newest</a></li>

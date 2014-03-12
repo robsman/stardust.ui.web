@@ -50,6 +50,9 @@
 					<span ng-if="activity.status=='Completed'">
 						Completed<span ng-if="activity.lastPerformer"> by {{activity.lastPerformer}}</span>
 					</span>
+					<span ng-if="activity.status=='Suspended'">
+						Suspended<span ng-if="activity.assignedTo"> to {{activity.assignedTo}}</span>
+					</span>
 		        </p>
 	        </a>
 		</li>

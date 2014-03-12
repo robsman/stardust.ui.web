@@ -33,17 +33,20 @@
 	 style="max-width:400px;">
 	 
     <div role="main" data-theme="a" class="ui-content">
-        <h4 class="ui-title">{{uiModel.popupMessage}}</h4>
+        <h5>{{uiModel.popupMessage}}</h5>
     	<p>What do you want to do?</p>
         <a ng-show="uiModel.showHotNavBtn" ng-href="#detailPage?id={{appData.hotActivityInstance.oid}}&activeTab=formTab" 
-           class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-a" >
+           class="ui-btn ui-corner-all ui-shadow ui-btn-a" >
+           <i style="float:left;" class="fa fa-cog fa-2x"></i>
 		   Return to the Active Activity</a>
         <a ng-show="uiModel.showProcessDetailsBtn" ng-href="#processPage?id={{uiModel.currentSelectedProcessId}}" 
-           class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-a" >
+           class="ui-btn ui-corner-all ui-shadow ui-btn-a" >
+           <i style="float:left;" class="fa fa-cogs fa-2x"></i>
            View Process Details</a>
         <a ng-show="uiModel.showCloseDialogBtn" href="#" 
            ng-click="uiModel.showPopup=false"
-           class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-a" >
+           class="ui-btn ui-corner-all ui-shadow ui-btn-a" >
+           <i style="float:left;" class="fa fa-times fa-2x"></i>
            Close</a>
     </div>
 </div>

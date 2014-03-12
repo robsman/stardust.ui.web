@@ -33,6 +33,7 @@ define([],function(){
 				
 				//TODO: ZZM - remove default values
 				$scope.loginModel=new loginModel("motu","motu","default");
+//				$scope.loginModel=new loginModel("motu","motu","93170f2c-6ec5-475a-b07b-e75a5e67ffc6");
 				
 				$scope.login = function(account,password,partition){
 					var loginPromise = workflowService.login(account,password,partition),

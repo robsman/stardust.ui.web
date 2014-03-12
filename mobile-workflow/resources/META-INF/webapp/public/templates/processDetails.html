@@ -1,8 +1,41 @@
-<table class="ui-mini" style="text-align:left;">
+ <ul data-role="listview">
+
+	 <li>
+	 	<strong class="ipp-header-2col">OID</strong>
+	 	<span>{{processModel.oid}}</span>
+	 </li>
+	 <li>
+	 	<strong class="ipp-header-2col">State</strong>
+	 	<span>{{processModel.state}}</span>
+	 </li>
+	 <li>
+	 	<strong class="ipp-header-2col">Start Time</strong>
+	 	<span>{{processModel.startTimestamp | date: 'yyyy-MM-dd hh:mm:ss'}}</span>
+	 </li>
+	 <li>
+	 	<strong class="ipp-header-2col">Started By</strong>
+	 	<span>{{processModel.startingUser.lastName}}, {{processModel.startingUser.firstName}}</span>
+	 </li>
+	 <li>
+	 	<strong class="ipp-header-2col">Priority</strong>
+	 	<span>{{processModel.priority | priority}}</span>
+	 </li>
+	 <li ng-repeat="(k,v) in processModel.descriptors">
+	 	<strong class="ipp-header-2col">{{k}}</strong>
+	 	<span>{{v.value}}</span>
+	 </li>
+	 
+</ul>
+
+<!-- table class="ui-mini" style="text-align:left;">
 	<thead>
 		<tr><th></th><th></th></tr>
 	</thead>
 	<tbody>
+		<tr>
+			<th>OID</th>
+			<td>{{processModel.oid}}</td>
+		<tr>
 		<tr>
 			<th>State</th>
 			<td>{{processModel.state}}</td>
@@ -15,13 +48,9 @@
 			<th>Started By</th>
 			<td>{{processModel.startingUser.lastName}}, {{processModel.startingUser.firstName}}</td>
 		<tr>
-		<!--tr>
-			<th>Duration</th>
-			<td>????</td>
-		<tr-->
 		<tr>
 			<th>Priority</th>
-			<td>{{processModel.priority}}</td>
+			<td>{{processModel.priority | priority}}</td>
 		<tr>
 	</tbody>
 </table>

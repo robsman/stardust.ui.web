@@ -21,14 +21,14 @@ require
 				'jquery-mobile'   : [ 'js/libs/jquery/plugins/jquery.mobile-1.4.0.min',
 				                      '//code.jquery.com/mobile/1.4.0/jquery.mobile-1.4.0'],
 				'jquery-iscroll'  : [ 'js/libs/jquery/plugins/jquery.mobile.iscrollview'],
-				'jquery-smartZoom': [ 'js/libs/jquery/plugins/jquery.smartZoom'],
+				/*'jquery-smartZoom': [ 'js/libs/jquery/plugins/jquery.smartZoom'],*/
 				'jquery.base64'   : [ 'js/libs/jquery/plugins/jquery.base64', '' ],
 				'angularjs' 	  : [ 'js/libs/angular/angular.1.2.11.min',
 				            	      '//ajax.googleapis.com/ajax/libs/angularjs/1.2.11/angular.min' ]
 			},
 			shim : {
 				'jquery-router'    : ['jquery'],
-				'jquery-smartZoom' : ['jquery'],
+				/*'jquery-smartZoom' : ['jquery'],*/
 				'jquery-mobile'    : [ 'jquery','jquery-router' ],
 				'jquery-iscroll'   : ['jquery','jquery-mobile'],
 				'jquery.base64'    : ['jquery'],

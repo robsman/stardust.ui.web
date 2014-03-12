@@ -127,6 +127,12 @@ define(["angularjs"],function(angular){
 				}).success(function(data, status, headers, config) {
 					deferred.resolve(data);
 				}).error(function(data, status, headers, config) {
+					console.log("Error in workflowService.getRepositoryFolder");
+					console.log("...dumping data, status, headers, config");
+					console.log(data);
+					console.log(status);
+					console.log(headers);
+					console.log(config);
 					deferred.reject(status);
 				});
 				return deferred.promise;
@@ -197,6 +203,12 @@ define(["angularjs"],function(angular){
 				}).success(function(data, status, headers, config) {
 					deferred.resolve(data);
 				}).error(function(data, status, headers, config) {
+					console.log("Error in workflowService.getDocument");
+					console.log("...dumping data, status, headers, config");
+					console.log(data);
+					onsole.log(status);
+					onsole.log(headers);
+					onsole.log(config);
 					deferred.reject(status);
 				});
 				return deferred.promise;

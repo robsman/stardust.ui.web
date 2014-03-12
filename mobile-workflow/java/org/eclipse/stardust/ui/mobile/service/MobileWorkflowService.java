@@ -226,7 +226,7 @@ public class MobileWorkflowService {
 			UserInfo userInfo = activityInstance.getPerformedBy();
 			if (null != userInfo) {
 			     User user = UserUtils.getUser(userInfo.getId());
-			     lastPerformer = I18nUtils.getUserLabel(user);
+			     lastPerformer = "motu"; //I18nUtils.getUserLabel(user);
 			}
 			else {
 				lastPerformer = activityInstance.getPerformedByName();
@@ -278,36 +278,43 @@ public class MobileWorkflowService {
       ActivityInstance ai = getWorkflowService().activate(activityInstanceOid);
       JsonObject activityJson = getActivityInstanceJson(ai);
       // TODO @SG
-      Interaction interaction = new Interaction(null, serviceFactory.getQueryService().getModel(ai.getModelOID(), false), ai, "externalWebApp", serviceFactory);
       
-      Map inData = workflowService.getInDataValues(activityInstanceOid, "externalWebApp", null);
-      // performing client side IN mappings
-      Map<String, Serializable> inParams = newHashMap();
-      for (DataMapping inMapping : (List<DataMapping>) interaction.getDefinition().getAllInDataMappings())
-      {
-         Serializable inValue = (Serializable) inData.get(inMapping.getId());
-         if (null != inValue)
+      try {
+         Interaction interaction = new Interaction(null, serviceFactory.getQueryService().getModel(ai.getModelOID(), false), ai, "externalWebApp", serviceFactory);
+         
+         Map inData = workflowService.getInDataValues(activityInstanceOid, "externalWebApp", null);
+         // performing client side IN mappings
+         Map<String, Serializable> inParams = newHashMap();
+         for (DataMapping inMapping : (List<DataMapping>) interaction.getDefinition().getAllInDataMappings())
          {
-            try
+            Serializable inValue = (Serializable) inData.get(inMapping.getId());
+            if (null != inValue)
             {
-               String paramId = inMapping.getApplicationAccessPoint().getId();
-
-               Object inParam = ClientSideDataFlowUtils.evaluateClientSideInMapping(
-                     interaction.getModel(), inParams.get(paramId), inMapping, inValue);
-
-               inParams.put(paramId, (Serializable) inParam);
-            }
-            catch (Exception e)
-            {
-               System.out.println("Failed evaluating client side of IN data mapping "
-                     + inMapping.getId() + " on activity instance " + ai);
+               try
+               {
+                  String paramId = inMapping.getApplicationAccessPoint().getId();
+   
+                  Object inParam = ClientSideDataFlowUtils.evaluateClientSideInMapping(
+                        interaction.getModel(), inParams.get(paramId), inMapping, inValue);
+   
+                  inParams.put(paramId, (Serializable) inParam);
+               }
+               catch (Exception e)
+               {
+                  System.out.println("Failed evaluating client side of IN data mapping "
+                        + inMapping.getId() + " on activity instance " + ai);
+               }
             }
          }
+         interaction.setInDataValues(inParams);
+         
+         ir.registerInteraction(interaction);
       }
-
-      interaction.setInDataValues(inParams);
-      
-      ir.registerInteraction(interaction);
+      catch (Exception e)
+      {
+         System.out.println("No externalWebApp for this AI");
+      }
+        
       return activityJson;
    }
 
@@ -576,6 +583,7 @@ public class MobileWorkflowService {
                      (String) applicationContext
                            .getAttribute("carnot:engine:ui:externalWebApp:uri"));
          String ippPortalBaseUri = "http://localhost:8080/pepper-test/";
+//         String ippPortalBaseUri = "https://www.infinity.com/iod73-0/a/93170f2c-6ec5-475a-b07b-e75a5e67ffc6/";
          String ippServicesBaseUri = ippPortalBaseUri + "services/";
          String interactionId = Interaction.getInteractionId(activityInstance);
          String ippInteractionUri = ippServicesBaseUri + "rest/engine/interactions/" + interactionId;
@@ -668,37 +676,44 @@ public class MobileWorkflowService {
             
             processInstanceJson.add("activatedActivityInstance", activityInstanceJson);
             
-            // TODO @SG
-            Interaction interaction = new Interaction(null, serviceFactory.getQueryService().getModel(nextActivityInstance.getModelOID(), false), nextActivityInstance, "externalWebApp", serviceFactory);
-            
-            Map inData = workflowService.getInDataValues(nextActivityInstance.getOID(), "externalWebApp", null);
-            // performing client side IN mappings
-            Map<String, Serializable> inParams = newHashMap();
-            for (DataMapping inMapping : (List<DataMapping>) interaction.getDefinition().getAllInDataMappings())
+            try
             {
-               Serializable inValue = (Serializable) inData.get(inMapping.getId());
-               if (null != inValue)
+               // TODO @SG
+               Interaction interaction = new Interaction(null, serviceFactory.getQueryService().getModel(nextActivityInstance.getModelOID(), false), nextActivityInstance, "externalWebApp", serviceFactory);
+               
+               Map inData = workflowService.getInDataValues(nextActivityInstance.getOID(), "externalWebApp", null);
+               // performing client side IN mappings
+               Map<String, Serializable> inParams = newHashMap();
+               for (DataMapping inMapping : (List<DataMapping>) interaction.getDefinition().getAllInDataMappings())
                {
-                  try
+                  Serializable inValue = (Serializable) inData.get(inMapping.getId());
+                  if (null != inValue)
                   {
-                     String paramId = inMapping.getApplicationAccessPoint().getId();
-
-                     Object inParam = ClientSideDataFlowUtils.evaluateClientSideInMapping(
-                           interaction.getModel(), inParams.get(paramId), inMapping, inValue);
-
-                     inParams.put(paramId, (Serializable) inParam);
-                  }
-                  catch (Exception e)
-                  {
-                     System.out.println("Failed evaluating client side of IN data mapping "
-                           + inMapping.getId() + " on activity instance " + nextActivityInstance);
+                     try
+                     {
+                        String paramId = inMapping.getApplicationAccessPoint().getId();
+   
+                        Object inParam = ClientSideDataFlowUtils.evaluateClientSideInMapping(
+                              interaction.getModel(), inParams.get(paramId), inMapping, inValue);
+   
+                        inParams.put(paramId, (Serializable) inParam);
+                     }
+                     catch (Exception e)
+                     {
+                        System.out.println("Failed evaluating client side of IN data mapping "
+                              + inMapping.getId() + " on activity instance " + nextActivityInstance);
+                     }
                   }
                }
+   
+               interaction.setInDataValues(inParams);
+               
+               ir.registerInteraction(interaction);
             }
-
-            interaction.setInDataValues(inParams);
-            
-            ir.registerInteraction(interaction);
+            catch (Exception e)
+            {
+               System.out.println("No externalWebapp for this AI.");
+            }
             
          }
       }
@@ -1012,7 +1027,7 @@ public class MobileWorkflowService {
 			}
 		} else {
 			getFolderContent(folderJson, getDocumentManagementService()
-					.getFolder(folderId, Folder.LOD_LIST_MEMBERS));
+					.getFolder(folderId, Folder.LOD_LIST_MEMBERS_OF_MEMBERS));
 		}
 
 		return folderJson;

@@ -6,9 +6,9 @@
    class="ui-btn ui-btn-right ui-icon-bars ui-btn-icon-notext ui-corner-all">No text
 </a>
 
-<div ng-show="appData.isActivityHot" class="ng-hide">
+<div ng-show="(appData.isActivityHot=='true' || appData.isActivityHot==true) && appData.activePage !='detailPage'" class="ng-hide">
 	<a ng-href="#detailPage?id={{appData.hotActivityInstance.oid}}&activeTab=formTab"  class="ipp-minimal jqm-cstm-inlineAlert jqm-cstm-success">
-		Tap to return to {{appData.hotActivityInstance.name}} (#{{appData.hotActivityInstance.oid}})
+		<span style="font-size: 0.7em;">Tap to return to {{appData.hotActivityInstance.name}} <span class="hide-media-sm">(#{{appData.hotActivityInstance.oid}})</span></span>
 		<i class="fa fa-angle-right fa-2x ipp-pull-right ipp-pad-right-2x"></i>
 	</a>
 </div>

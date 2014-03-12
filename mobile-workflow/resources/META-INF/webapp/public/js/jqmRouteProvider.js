@@ -21,13 +21,14 @@ define(["jquery-mobile", "angularjs","js/WorkflowService"],function(jqm,angular,
 	var workflowService = WorkflowService.instance();
 	
 	/*JQM navigation event object we pass from JQM to Angular*/
-	var jqmNavigateData=function(scopeTarget,evtType,ui,page,baseEvent,data){
+	var jqmNavigateData=function(scopeTarget,evtType,ui,page,baseEvent,data,pageTarget){
 		this.scopeTarget=scopeTarget; /*Scope the event will apply to, used for filtering events*/
 		this.navigationType=evtType;  /*JQMrouter event Maps*/
 		this.ui = ui;				  /*JQMrouter ui object, transports our JQM promise into the Angular realm */
 		this.page=page;				  /*JQM Dom page that is the target of the navigation event*/
 		this.baseEvent=baseEvent;	  /*Original JQM event*/
 		this.data=data;				  /*Any data we need to pass from JQM to Angular*/
+		this.pageTarget=pageTarget;   /*JQM page we are navigating to*/
 	};
 	
 	/*TODO: ZZM !!!!! REFACTOR events as appropriate to avoid double loads and optimize for initialization,
@@ -96,7 +97,7 @@ define(["jquery-mobile", "angularjs","js/WorkflowService"],function(jqm,angular,
 					rootScope = angular.element($(document)).scope();
 					data=router.getParams(matchObj.input);
 					
-					jqmNData = new jqmNavigateData(scope.$id,eventType,ui,page,e,data);	
+					jqmNData = new jqmNavigateData(scope.$id,eventType,ui,page,e,data,"documentViewerPage");	
 					rootScope.signalJQMNavigation(jqmNData); /*signal Angular listeners*/
 				},
 				
@@ -111,7 +112,7 @@ define(["jquery-mobile", "angularjs","js/WorkflowService"],function(jqm,angular,
 					scope=angular.element($("#repositoryRootPage")).scope();
 					rootScope = angular.element($(document)).scope();
 					
-					jqmNData = new jqmNavigateData(scope.$id,eventType,ui,page,e,{});	
+					jqmNData = new jqmNavigateData(scope.$id,eventType,ui,page,e,{},"repositoryRootPage");	
 					rootScope.signalJQMNavigation(jqmNData); /*signal Angular listeners*/
 				},
 				
@@ -125,10 +126,13 @@ define(["jquery-mobile", "angularjs","js/WorkflowService"],function(jqm,angular,
 					console.log("JQM Router: /#processPage");
 					
 					scope=angular.element($("#processPage")).scope();
+					console.log("Broadcasting to #processPage : " + scope.$id);
+					console.log("##############################################################");
 					rootScope = angular.element($(document)).scope();
 					data=router.getParams(matchObj.input);
 					
-					jqmNData = new jqmNavigateData(scope.$id,eventType,ui,page,e,data);	
+					jqmNData = new jqmNavigateData("#processPage",eventType,ui,page,e,data,"processPage");	
+					$.mobile.loading( 'show');
 					rootScope.signalJQMNavigation(jqmNData); /*signal Angular listeners*/
 				},
 				
@@ -136,10 +140,11 @@ define(["jquery-mobile", "angularjs","js/WorkflowService"],function(jqm,angular,
 				"mainPage" : function(eventType, matchObj, ui, page, e){
 					var rootScope = angular.element(document).scope(),
 						scope = angular.element($("#mainPage")).scope(),
-						jqmNData = new jqmNavigateData(scope.$id,eventType,ui,page,e);	
+						jqmNData = new jqmNavigateData(scope.$id,eventType,ui,page,e,{},"mainPage");	
 					
 					e.preventDefault();
 					console.log("JQM Router: /#mainPage");
+					$.mobile.loading( 'show');
 					rootScope.signalJQMNavigation(jqmNData);	
 				},
 				
@@ -148,10 +153,11 @@ define(["jquery-mobile", "angularjs","js/WorkflowService"],function(jqm,angular,
 				"worklistListViewPage" : function(eventType, matchObj, ui, page, e){
 					var rootScope = angular.element(document).scope(),
 						scope = angular.element($("#worklistListViewPage")).scope(),
-						jqmNData = new jqmNavigateData(scope.$id,eventType,ui,page,e);	
+						jqmNData = new jqmNavigateData(scope.$id,eventType,ui,page,e,{},"worklistListViewPage");	
 					
 					e.preventDefault();
 					console.log("JQM Router: /#worklistListViewPage");
+					$.mobile.loading( 'show');
 					rootScope.signalJQMNavigation(jqmNData);
 				},
 				
@@ -167,7 +173,8 @@ define(["jquery-mobile", "angularjs","js/WorkflowService"],function(jqm,angular,
 					scope=angular.element($("#detailPage")).scope();
 					data=router.getParams(matchObj.input);
 					
-					jqmNData = new jqmNavigateData(scope.$id,eventType,ui,page,e,data);	
+					jqmNData = new jqmNavigateData(scope.$id,eventType,ui,page,e,data,"detailPage");	
+					$.mobile.loading( 'show');
 					rootScope.signalJQMNavigation(jqmNData);
 				},
 				
@@ -183,7 +190,8 @@ define(["jquery-mobile", "angularjs","js/WorkflowService"],function(jqm,angular,
 					rootScope= angular.element(document).scope();
 					scope=angular.element($("#startableProcessesPage")).scope();
 					
-					jqmNData = new jqmNavigateData(scope.$id,eventType,ui,page,e,{});	
+					jqmNData = new jqmNavigateData(scope.$id,eventType,ui,page,e,{},"startableProcessesPage");	
+					$.mobile.loading( 'show');
 					rootScope.signalJQMNavigation(jqmNData);
 				}
 				

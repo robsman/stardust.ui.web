@@ -1,14 +1,65 @@
-define([],function(){
+define(["jquery"],function(){
 
 	var directives={
 			
-	  "testTemplate" : function(){
+	   "testTemplate" : function(){
 		    return{
 		        restrict: 'EA',
 		        templateUrl: "templates/test.html"
 		    };
-	    },
-	  
+		},
+
+		"jqmLoader" : function(){
+		    
+		    var link=function(scope,element,attrs){
+		      console.log(element);
+		      
+		      var options = {
+		        "html"        : attrs.jqmHtml || "",
+		        "textVisible" : attrs.jqmTextVisible ==='true',
+		        "textonly"    : attrs.jqmTextOnly === 'true',
+		        "text"        : attrs.jqmText || "",
+		        "theme"       : attrs.jqmTheme || "a"
+		      };
+		      
+		      $(element).loader(options);
+		      
+		      attrs.$observe("jqmShowLoader",function(val){
+		          if(val==true || val=='true'){
+		            $(element).loader('show');
+		          }
+		          else{
+		            $(element).loader('hide');
+		          }
+		      });
+		        
+		      attrs.$observe("jqmTextVisible",function(val){
+                val = (val === 'true' || val === true);
+                $( element ).loader( "option", "textVisible", val );
+              });
+	              
+              attrs.$observe("jqmTextOnly",function(val){
+                val = (val === 'true' || val === true);
+                $( element ).loader( "option", "textonly", val );
+              });
+              
+              attrs.$observe("jqmText",function(val){
+                $( element ).loader( "option", "text", val );
+              });
+              
+              attrs.$observe("jqmTheme",function(val){
+                $( element ).loader( "option", "theme", val );
+              });
+		        
+		    };
+		
+		    return {
+		      link:link
+		    };
+		    
+		},
+            
+	    
 	  "jqmPopup" : function(){
 		  
 		  /*Linking function, 

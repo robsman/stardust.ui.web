@@ -142,6 +142,26 @@ define([],function(){
 		return result;
 	};
 	
+	var priority = function(val){
+		var result;
+		
+		val = val *1;/*ensure cast to a number*/
+		switch(val){
+			case -1:
+				result = "Low";
+				break;
+			case 0:
+				result = "Normal";
+				break;
+			case 1:
+				result = "High";
+				break;
+			default:
+				result = "NA";
+		}
+		return result;
+	};
+	
 	/*Given a number of ticks/milliseconds, this will return a string
 	 * representing the absolute amount of days / hours / minutes those 
 	 * ticks represent. 
@@ -164,11 +184,12 @@ define([],function(){
 	
 	/*collection of filters we will return..*/
 	var filters={
-			"test" : function(){return "hello from test filter!";},
-			"humaneDate" : function(){return humaneDate;},
+			"test"         : function(){return "hello from test filter!";},
+			"humaneDate"   : function(){return humaneDate;},
 			"serializeObject" : function(){return serializeObject;},
-			"criticality" : function(){return criticality;},
-			"absoluteTime" : function(){return absoluteTime;}
+			"criticality"  : function(){return criticality;},
+			"absoluteTime" : function(){return absoluteTime;},
+			"priority"     : function(){return priority;}
 				
 	};
 	

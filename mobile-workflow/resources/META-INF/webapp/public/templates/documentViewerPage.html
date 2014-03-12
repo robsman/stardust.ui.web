@@ -23,8 +23,8 @@
   </div>
   
   <div id="docContentTab" style="text-align:center;" class="ui-body-d ui-content ipp-ux-wrapper">
-    <div image-viewer data-repository-url="{{documentViewerModel.downloadUrl}}" />
-    <!-- img jq-smart-zoom ng-src="{{documentViewerModel.downloadUrl}}"/-->
+    <!-- div image-viewer data-repository-url="{{documentViewerModel.downloadUrl}}" /-->
+    <img ng-src="{{documentViewerModel.downloadUrl}}"/>
   </div>
 
   <div id="docDetailsTab">
@@ -39,7 +39,7 @@
 		    </li>
 		    <li>
 		    	<strong class="ipp-header-2col">Author</strong>
-		    	<span>????</span>
+		    	<span>motu</span>
 		    </li>
 		    <li>
 		    	<strong class="ipp-header-2col">Created</strong>
@@ -49,14 +49,14 @@
 		    	<strong class="ipp-header-2col">Last Modified</strong>
 		    	<span>{{documentViewerModel.lastModifiedTimestamp | date:"yyyy-MM-dd" | humaneDate}}</span>
 		    </li>
-		    <li>
+		    <!--li>
 		    	<strong class="ipp-header-2col">Process</strong>
 		    	<span>{{documentViewerModel.processOid}}</span>
-		    </li>
-		    <li>
+		    </li-->
+		    <!-- li>
 		    	<strong>Document Type</strong>
 		    	<span></span>
-		    </li>
+		    </li-->
 		</ul>
   </div>
 </div>

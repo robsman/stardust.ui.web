@@ -1,6 +1,7 @@
-define(["angularjs","jquery","jquery-smartZoom"],function(angular){
+define(["angularjs","jquery"],function(angular){
 
 	var directives={
+			/*
 		 "jqSmartZoom" :function(){
 			    
 		    var link=function($scope, element, attributes){
@@ -22,7 +23,7 @@ define(["angularjs","jquery","jquery-smartZoom"],function(angular){
 		      "link": {"post" : link}
 		    };
 		    
-		  },
+		  },*/
 
 		 "imageViewer" : function(){
 			 

@@ -53,7 +53,7 @@
 
 		<!-- EXTERNAL PANEL RIGHT -->
 		<div data-role="panel" id="main-panel" data-position="right" data-display="overlay" data-theme="a"
-			 data-jqm-template data-jqm-widgets="panel" 
+			 data-jqm-template data-jqm-widgets="" 
 			 ng-controller="panelCtrl"
 			 data-template-url="templates/externalPanelRight.html">
 		</div>
@@ -132,8 +132,13 @@
 			 data-template-url="templates/repositoryRootPage.html">
 		</div>
 		
+		<script type="text/javascript">
+		var addToHomeConfig = {
+		    touchIcon:true
+		};
+		</script>
 		<script type="application/javascript" src="js/add2home.js"></script>
 		<script type="text/javascript" data-main="js/MobileWorkflowMain" src="./js/libs/require/2.0.5/require.js"></script>
-		
+      <!-- <script src="http://jsconsole.com/remote.js?8771A847-9D0C-40F6-AF7C-5764F32C2AF5"></script> -->		
 	</body>
 </html>

@@ -35,7 +35,24 @@ define(["angularjs"],function(angular){
 			  
 			  return deferred.promise;
 		    },
-			
+		    
+		    "getAddress" : function(lon,lat){
+		    	
+		    	var deferred = $q.defer();
+		    	
+		    	$http({
+				    url: "http://nominatim.openstreetmap.org/reverse?format=json" +
+				    	 "&lat=" + lat + "&lon=" + lon + "&zoom=18&addressdetails=1",
+				    method: "GET"
+				}).success(function(data, status, headers, config) {
+					deferred.resolve(data);
+				}).error(function(data, status, headers, config) {
+					deferred.reject(status);
+				});
+		    	
+				return deferred.promise;
+		    },
+		    
 			"login" : function(account,password,partition){
 				var deferred = $q.defer();
 				

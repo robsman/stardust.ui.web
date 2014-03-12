@@ -85,18 +85,19 @@ define([],function(){
 	/*Our return object with all controllers defined*/
 	worklistCtrl = {
 			
-			"worklistCtrl" : function($scope,$rootScope,workflowService){
+			"worklistCtrl" : function($scope, $rootScope, $filter, workflowService){
 				
 				$scope.$on("jqm-navigate",function(e,edata){
 					var success,fail;
-					if(edata.scopeTarget != $scope.$id){return;}
-
+					if(edata.pageTarget != "worklistListViewPage"){return;}
+					$rootScope.appData.activePage = edata.pageTarget;
 					success=function(data){
-							$scope.$apply(function(){
-								//$rootScope.appData.worklistItems=data.worklist;
-								$scope.worklistModel.worklistItems = data.worklist;
-							});
-							edata.ui.bCDeferred.resolve();
+						data.worklist= $filter("orderBy")(data.worklist,"oid",true);
+						$scope.$apply(function(){
+							//$rootScope.appData.worklistItems=data.worklist;
+							$scope.worklistModel.worklistItems = data.worklist;
+						});
+						edata.ui.bCDeferred.resolve();
 					},
 					fail =  function(status){
 							console.log("Worklist retrieval failed.");
@@ -117,8 +118,8 @@ define([],function(){
 				
 				$scope.$on("jqm-navigate",function(e,edata){
 					var success,fail;
-					if(edata.scopeTarget != $scope.$id){return;}
-
+					if(edata.pageTarget != "mainPage"){return;}
+					$rootScope.appData.activePage = edata.pageTarget;
 					success=function(data){
 							$scope.$apply(function(){
 								console.log("Count total=");
@@ -140,7 +141,6 @@ define([],function(){
 			
 			/*startableProcessesControl*/
 			"startableProcessesCtrl" : function($scope,$rootScope,workflowService,utilService){
-				
 				$scope.test = "Hello From Startable Process(s) Control";
 				$scope.startableProcessModel = new startableProcessModel();
 				$scope.startableProcessModel.showPopup=false;
@@ -163,16 +163,16 @@ define([],function(){
 							$scope.uiModel.currentSelectedProcessId=data.activatedActivityInstance.processInstanceOid;
 						});
 						
-						if($rootScope.appData.isActivityHot){
+						if($rootScope.appData.isActivityHot==true || $rootScope.appData.isActivityHot=="true" ){
 							/*We have a hotActivity already active...*/
 							$scope.$apply(function(){
 								$scope.uiModel.showHotNavBtn=true;
 								$scope.uiModel.showProcessDetailsBtn=true;
 								$scope.uiModel.showCloseDialogBtn=true;
-								$scope.uiModel.popupMessage = data.processId + "(#" +
+								$scope.uiModel.popupMessage = data.processId + " (#" +
 									data.activatedActivityInstance.processInstanceOid + ") was started " +
-									"but we could not activate its first interactive activity beacuase " +
-									"you have another active activity.";
+									"but we could not activate its first interactive Activity because " +
+									"you have another active Activity.";
 								$scope.uiModel.showPopup=true;
 							});
 						}
@@ -197,10 +197,10 @@ define([],function(){
 								$scope.uiModel.showHotNavBtn=false;
 								$scope.uiModel.showProcessDetailsBtn=true;
 								$scope.uiModel.showCloseDialogBtn=true;
-								$scope.uiModel.popupMessage=data.processId + "(#" +
+								$scope.uiModel.popupMessage=data.processId + " (#" +
 									data.activatedActivityInstance.processInstanceOid + ") was started " +
-									"but we could not activate its first interactive activity because " + 
-									"that activity instance is not activatable";
+									"but we could not activate its first interactive Activity because " + 
+									"that Activity Instance is not activatable.";
 								$scope.uiModel.showPopup=true;
 							});
 							
@@ -214,10 +214,11 @@ define([],function(){
 						.then(success,fail);
 					
 				};
+				
 				$scope.$on("jqm-navigate",function(e,edata){
 					var success,fail;
-					if(edata.scopeTarget != $scope.$id){return;}
-
+					if(edata.pageTarget != "startableProcessesPage"){return;}
+					$rootScope.appData.activePage = edata.pageTarget;
 					success=function(data){
 							$scope.$apply(function(){
 								$scope.uiModel.showPopup=false;
@@ -301,12 +302,14 @@ define([],function(){
 				$scope.processModel = new processModel();
 				$scope.processHistoryModel = new processHistoryModel();
 				
+				
 				/*Set up a few UI specific props*/
 				$scope.baseHref = workflowService.baseHref;
 				$scope.showMsg = false;
 				$scope.alertMessage = "";
 				$scope.uploadSuccesful = false;
 				$scope.isUploading =false;
+				$scope.activeSubView = "overview";
 				
 				/*functions for determining classes we will need.*/
 				$scope.getStateClass=utilService.getStateClass;
@@ -375,30 +378,43 @@ define([],function(){
 				
 				/*Listener for JQuery Mobile navigation events*/
 				$scope.$on("jqm-navigate",function(e,edata){
-					/*Ignore Navigate events on scopes other than our own*/
-					if(edata.scopeTarget != $scope.$id){return;}
+					if(edata.scopeTarget != "#processPage"){return;}
+					
+					$rootScope.appData.activePage = edata.pageTarget;
+					
+					$scope.$apply(function(){
+						$scope.activeSubView = "overview";
+					});
+					
 					init(edata.data.id)
 						.then(edata.ui.bCDeferred.resolve);
 				});
 				
-				/**/
 				$scope.createNote = function(oid,content){
-					var success,fail;
-					success=function(){
-						workflowService.getNotes(oid).then(function(data){
+					
+					$scope.isAjaxLoading = true;
+					workflowService.createNote(oid,content)
+						.then(function(){
+							return workflowService.getNotes(oid);
+						})
+						.then(function(data){
 							$scope.$apply(function(){
 								$scope.notesModel.notes=data.notes;
 							});
+						})
+						.catch(function(){
+							//TODO: Handle error conditions
+						})
+						.finally(function(){
+							$scope.$apply(function(){
+								$scope.isAjaxLoading = false;
+							});
 						});
-					};
-					fail = function(){
-						console.log("failed");
-					};
-					workflowService.createNote(oid,content).then(success,fail);
-				}; 
+				};
+				
 			},
 			
-			"detailCtrl" : function($scope,$rootScope,$filter,$sce,utilService,workflowService){
+			"detailCtrl" : function($scope,$rootScope,$filter,$sce,$q,utilService,workflowService){
 				
 				$scope.notesModel = new notesModel();
 				$scope.activityModel = new worklistItem();
@@ -411,27 +427,77 @@ define([],function(){
 				$scope.uploadSuccesful = false;
 				$scope.isUploading =false;
 				$scope.formTabTarget = "#formTab";
-				$scope.showMashupIframe=true;
-				$scope.showActivateButton =false;
-				$scope.hotActivityConflict = false;
 				$scope.previousPage="";
-				$scope.showMashup =false;
+				$scope.activeTab='activityTab';
 				
-				$scope.isMashupShowable = function(force){
-					return $scope.showMashup;
+				/*Initialization function, retrieve remote data and initialize UI with that data*/
+				$scope.init=function(activityOid, prevPage){
+					
+					var deferred = $q.defer();
+					workflowService.getActivityInstance(activityOid)
+					.then(
+						function(data){
+							var sortedNotes = $filter("orderBy")(data.processInstance.notes,"timestamp",true),
+							    sortedDocs = $filter("orderBy")(data.processInstance.documents,
+								   "lastModifiedTimestamp",true),
+						        url;
+							
+							/*Navigation to this controllers page from the startableProcessPage is the only case
+							 *where we should load the mashup URL outside of an activate button click event.*/
+							if(prevPage==="startableProcessesPage"){
+								if(data.activatable){
+									url=data.contexts.externalWebApp["carnot:engine:ui:externalWebApp:uri"] +
+									    "?ippInteractionUri=" + data.contexts.externalWebApp.ippInteractionUri +
+									    "&ippPortalBaseUri=" + data.contexts.externalWebApp.ippPortalBaseURi +
+									    "&ippServicesBaseUri=" + data.contexts.externalWebApp.ippServicesBaseUri +
+									    "&interactionId=" + data.contexts.externalWebApp.interactionId;
+								}
+								$scope.mashupModel.externalUrl= $sce.trustAsResourceUrl(url);
+							}
+						
+							$scope.notesModel.notes = sortedNotes;
+							$scope.activityModel.item = data;
+							$scope.documentModel.docs = sortedDocs;
+							
+							deferred.resolve(data);
+						},
+						function(status){
+							console.log("Process Instance retrieval failed.");
+							deferred.reject();
+						}
+					);				
+					return deferred.promise;
 				};
 				
+				/* Always show activate/defaultUI unless our hotActivityInstance (meaning our currently
+				 * activated instance matches our local scoped instance). In that case we should show our
+				 * Mashup application as it has already been activated.*/
+				$scope.isMashupShowable = function(force){
+					return ($rootScope.appData.isActivityHot=="true" || $rootScope.appData.isActivityHot==true) && 
+					        $scope.activityModel.item.oid == $rootScope.appData.hotActivityInstance.oid;
+				};
+				
+				/*Test for a conflict with any previously activated instance that has not been completed.*/
 				$scope.isHotActivityConflict = function(){
-					if(!$rootScope.appData.isActivityHot){
-						return false;
+					var isHot=false;
+					if($rootScope.appData.isActivityHot=="false" || $rootScope.appData.isActivityHot == false ){
+						/*No hot activity thus no conflict*/
+						isHot = false;
 					}
-					else if($scope.activityModel.item.oid === $rootScope.appData.hotActivityInstance.oid){
-						return true;
+					else if($scope.activityModel.item.oid !== $rootScope.appData.hotActivityInstance.oid){
+						/*Hot activity and its oid does not match our scopes.*/
+						isHot = true;
+					}else{
+						/*Hot activity and its oid matches ours*/
+						isHot = false;
 					}
+					return isHot;
 				};
 				
 				$scope.activate = function(activityOid){
-					workflowService.activate(activityOid).then(
+					$scope.isAjaxLoading=true;
+					workflowService.activate(activityOid)
+					.then(
 						function(data){
 							
 							var url=data.contexts.externalWebApp["carnot:engine:ui:externalWebApp:uri"] +
@@ -440,7 +506,8 @@ define([],function(){
 									"&ippServicesBaseUri=" + data.contexts.externalWebApp.ippServicesBaseUri +
 									"&interactionId=" + data.contexts.externalWebApp.interactionId;
 							
-							//Load new data for iframe
+							/*Load new data for iframe, as soon as we modify externalUrl on our scope the 
+							  iframe will trigger a load.*/
 							$scope.$apply(function(){
 								$scope.mashupModel.externalUrl= $sce.trustAsResourceUrl(url);
 								$scope.mashupModel.interactionId=data.contexts.externalWebApp.interactionId;
@@ -454,24 +521,24 @@ define([],function(){
 								};
 							});
 							
-							//Get updates state etc from server...
-							workflowService.getActivityInstance(activityOid).then(
-									function(data){
-										$scope.$apply(function(){
-											$scope.activityModel.item = data;
-											$scope.showMashup=true;
-											$scope.isMashupShowable();
-											$scope.isHotActivityConflict();
-										});
-									}
-							);
-							//AutoNav to form tab
-							$("[href='#formTab']").addClass("ui-btn-active");
-							$("[href='#formTab']").trigger("click");
-						},
-						
-						function(status){
-							console.log("activation failed");
+						})
+						.then(function(){
+								return workflowService.getActivityInstance(activityOid);
+							}
+						)
+						.then(function(data){
+							$scope.$apply(function(){
+								$scope.activityModel.item = data;
+								$scope.activeSubView='form';
+							});
+						})
+						.catch(function(){
+							/*TODO: handle errors*/
+						})
+						.finally(function(){
+							$scope.$apply(function(){
+								$scope.isAjaxLoading=false;
+							});
 						});
 				};
 				
@@ -492,7 +559,7 @@ define([],function(){
 				/*Reporter object we will tie to our file-upload directive*/
 				$scope.uploadReporter ={
 		          onProgress: function(e){
-		        	console.log("Progress");
+		        	console.log("Document Upload Progress...");
 		            console.log(e);
 		          },
 		          onLoad: function(e){
@@ -518,18 +585,11 @@ define([],function(){
 		        };
 				
 				$scope.$on("activityStatusChange",function(e,data){
-					/*filter out events that don't match our hotInstance*/
-					if($rootScope.appData.hotActivityInstance.oid != data.oid){return;}
 					if(data.newStatus=="complete"){
+						console.log("DetailCtrl received activityStatusChangeEvent, intiating navigation...");
+						$scope.mashupModel.externalUrl= "";
+						$scope.mashupModel.interactionId="";
 						utilService.navigateTo($rootScope,"#worklistListViewPage");
-						$rootScope.$apply(function(){
-							$rootScope.appData.hotActivityInstance={};
-							$rootScope.appData.isActivityHot="false";
-							$scope.showMashup=false;
-							$scope.isMashupShowable();
-							$scope.isHotActivityConflict();
-						});
-						
 					}
 					console.log(data);
 					
@@ -538,72 +598,50 @@ define([],function(){
 				/*Listener for JQuery Mobile Navigation events*/
 				$scope.$on("jqm-navigate",function(e,edata){
 					
-					var success,fail;
-					
-					/*filter messages that don't match our scopeID*/
-					if(edata.scopeTarget != $scope.$id){return;}
-					success=function(data){
-							var sortedNotes = $filter("orderBy")(data.processInstance.notes,
-													"timestamp",true),
-								sortedDocs = $filter("orderBy")(data.processInstance.documents,
-													 "lastModifiedTimestamp",true),
-								url;
-							
-							if(data.activatable){
-								url=data.contexts.externalWebApp["carnot:engine:ui:externalWebApp:uri"] +
-                        "?ippInteractionUri=" + data.contexts.externalWebApp.ippInteractionUri +
-                        "&ippPortalBaseUri=" + data.contexts.externalWebApp.ippPortalBaseURi +
-                        "&ippServicesBaseUri=" + data.contexts.externalWebApp.ippServicesBaseUri +
-                        "&interactionId=" + data.contexts.externalWebApp.interactionId;
+					/*Filter messages not for our scope*/
+					if(edata.pageTarget != "detailPage"){return;}
+					$rootScope.appData.activePage = edata.pageTarget;
+					console.log("initializing detailCtrl on jqmNavigate event");
+					$scope.init(edata.data.id,edata.ui.options.fromPage[0].id)
+						.then(function(){
+							edata.ui.bCDeferred.resolve();
+							console.log("Updating Previous page............................");
+							console.log(edata.ui.options.fromPage[0].id);
+							$scope.previousPage=edata.ui.options.fromPage[0].id;
+							console.log("Previous page = " + $scope.previousPage);
+							if(edata.data.activeTab=="formTab"){
+								$scope.activeSubView='form';
 							}
-							
-							$scope.$apply(function(){
-								$scope.mashupModel.externalUrl= $sce.trustAsResourceUrl(url);
-								$scope.notesModel.notes = sortedNotes;
-								$scope.activityModel.item = data;
-								$scope.documentModel.docs = sortedDocs;
-								$scope.showMashupIframe=false;
-								$scope.hotActivityConflict=false;
-								$scope.previousPage=edata.ui.options.fromPage[0].id;
-								$scope.isMashupShowable();
-								$scope.isHotActivityConflict();
-								$scope.showMashup =false;
-							});
-							
-							if(edata.data.activeTab){
-								$("[href='#" + edata.data.activeTab + "']").addClass("ui-btn-active");
-								$("[href='#" + edata.data.activeTab + "']").trigger("click");
-							}	
-							edata.ui.bCDeferred.resolve();
-					},
-					fail =  function(status){
-							console.log("Process Instance retrieval failed.");
-							edata.ui.bCDeferred.resolve();
-					};
-								
-					workflowService.getActivityInstance(edata.data.id).then(success,fail);
+							else{
+								$scope.activeSubView='activity';
+							}
+
+						})
+						.catch(edata.ui.bCDeferred.resolve);
 				});
 
-				/*Initialization*/
-				$scope.activeTab='activityTab';
-				
 				$scope.createNote = function(oid,content){
-					var success,fail;
-					success=function(){
-						workflowService.getNotes(oid).then(function(data){
+					
+					$scope.isAjaxLoading = true;
+					workflowService.createNote(oid,content)
+						.then(function(){
+							return workflowService.getNotes(oid);
+						})
+						.then(function(data){
 							$scope.$apply(function(){
 								$scope.notesModel.notes=data.notes;
 							});
+						})
+						.catch(function(){
+							//TODO: Handle error conditions
+						})
+						.finally(function(){
+							$scope.$apply(function(){
+								$scope.isAjaxLoading = false;
+							});
 						});
-					};
-					fail = function(){
-						console.log("failed");
-					};
-					workflowService.createNote(oid,content).then(success,fail);
 				}; 
-				
-				
-				
+
 				/*Signal JQM to perform a manual navigation to a target page*/
 				$scope.navigateTo = function(target){
 					utilService.navigateTo($rootScope,target);
@@ -649,21 +687,36 @@ define([],function(){
 				$scope.test= "Hello From Repository-Root Ctrl";
 				$scope.repositoryModel= new repositoryModel();	
 				
-				$scope.getFolder = function(folderId,doPush){
+				$scope.getFolder = function(folderId,doPush,e){
+					
+					/*if user passes event object then call preventDefault*/
+					if(e && e.preventDefault){
+						e.preventDefault();
+					}
+					
+					/*push target folderID onto our navStack so we can simulate a back navigation when required*/
 					if(doPush==true){
 						$scope.directoryNavStack.push({"id" : folderId});
 					}
-					workflowService.getRepositoryFolder(folderId).then(function(data){
-						console.log(data);
+					
+					$scope.isAjaxLoading = true;
+					workflowService.getRepositoryFolder(folderId)
+					.then(function(data){
 						updateModel(data);
+					})
+					.catch(function(){
+						/*TODO: handle errors*/
+					})
+					.finally(function(){
+						$scope.$apply(function(){
+							$scope.isAjaxLoading = false;
+						});			
 					});
 				};
 				
 				$scope.$on("jqm-navigate",function(e,edata){
 					var success,fail;
-					console.log("repos navigation " + edata);
-					
-					if(edata.scopeTarget != $scope.$id){return;}
+					if(edata.pageTarget != "repositoryRootPage"){return;}
 					
 					if($scope.directoryNavStack.length > 0){
 						$scope.popNavStack(false);
@@ -680,7 +733,7 @@ define([],function(){
 							console.log("Repository Root Retrieval Failed.");
 							edata.ui.bCDeferred.resolve();
 					};
-								
+					$rootScope.appData.activePage = edata.pageTarget;			
 					workflowService.getRepositoryFolder()
 						.then(success,fail);
 					
@@ -693,9 +746,14 @@ define([],function(){
 				$scope.$on("jqm-navigate",function(e,edata){
 					console.log(edata);
 					var success,fail;
-					if(edata.scopeTarget != $scope.$id){return;}
-
+					if(edata.pageTarget != "documentViewerPage"){return;}
+					console.log("documentViewer page controller initializing...");
+					console.log("doc id=" + edata.data.id);
+					console.log("process id=" + edata.data.processOid);
+					$rootScope.appData.activePage = edata.pageTarget;
 					success=function(data){
+						console.log("workflowService.getDocument success...");
+						console.log(data);
 							$scope.$apply(function(){
 								$scope.documentViewerModel=data;
 								$scope.documentViewerModel.downloadUrl = workflowService.getDocumentUrl(data.downloadToken);
@@ -704,6 +762,7 @@ define([],function(){
 					},
 					fail =  function(status){
 							console.log("Document viewer data failed");
+							console.log(status);
 							edata.ui.bCDeferred.resolve();
 					};
 					

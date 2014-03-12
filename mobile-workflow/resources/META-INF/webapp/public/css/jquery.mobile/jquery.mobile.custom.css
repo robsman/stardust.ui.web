@@ -145,6 +145,7 @@ a.ipp-minimal:visited{
 	background-image:url('../css-images/Stardust_156X24.png');
 	background-repeat:no-repeat;
 	background-position-y:6px;
+	background-color:#FFFFFF;
 }
 .ipp-grid-subheader {
 	border-width: 0px !important;
@@ -262,6 +263,12 @@ a.ipp-minimal:visited{
 
 .ipp-offeset-right-4x{
   left:1em !important;
+}
+.ipp-btn-active {
+	background-color: #38c !important;
+	border-color: #38c !important;
+	color: #fff !important;
+	text-shadow: 0 1px 0 #059 !important;
 }
 
 .ui-grid-a > .ui-block-a.major { width: 75% }

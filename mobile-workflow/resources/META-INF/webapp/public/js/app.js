@@ -33,12 +33,14 @@ define(function(require){
 	app.filter( "serializeObject",   baseFilters.serializeObject);
 	app.filter( "criticality",       baseFilters.criticality);
 	app.filter( "absoluteTime",      baseFilters.absoluteTime);
+	app.filter( "priority",          baseFilters.priority);
 	app.directive( "jqmTemplate",    jqmDirectives.jqmTemplate);
 	app.directive("jqmPopup",        jqmDirectives.jqmPopup);
+	app.directive("jqmLoader",       jqmDirectives.jqmLoader);
 	app.directive( "testTemplate",   jqmDirectives.testTemplate);
 	app.directive( "fileUpload",   	 fileDirectives.fileUpload);
 	app.directive( "imageViewer",    docViewDirectives.imageViewer);
-	app.directive( "jqSmartZoom",    	 docViewDirectives.jqSmartZoom);
+	//app.directive( "jqSmartZoom",    	 docViewDirectives.jqSmartZoom);
 	app.factory("utilService",utilService);
 	app.factory("workflowService",angWorkflow);
 	
@@ -50,12 +52,24 @@ define(function(require){
 				"user" :{},
 				"worklistItems":[],
 				"isActivityHot" : false,
-				"hotActivityInstance" : {}
+				"hotActivityInstance" : {},
+				"activePage" : "login"
 		};
 		
 		$rootScope.signalJQMNavigation = function(data){
 			$rootScope.$broadcast("jqm-navigate",data);
 		};
+		
+		/*TODO: we need the completed OID sent to us*/
+		$rootScope.$on("activityStatusChange",function(e,data){
+			/*filter out events that don't match our hotInstance*/
+			console.log("activityStatusChange event on rootScope...");
+			if(data.newStatus=="complete"){
+				console.log("Resetting rootscope activity Instance state.");
+				$rootScope.appData.hotActivityInstance={};
+				$rootScope.appData.isActivityHot="false";
+			}
+		});
 		
 	});
 	
@@ -90,7 +104,18 @@ define(function(require){
 			$.mobile.navigate(data.target,data.payload);
 		});
 		
-		
+		$(document).delegate("#mainPage", "pageinit", function(event) {
+	        $(".iscroll-wrapper", this).bind( {
+		        "iscroll_onpulldown" : function(){console.log("pulldown");},
+		        "iscroll_onpullup"   : function(){console.log("pullup");}
+	        });
+	      });
+		$.mobile.loading( "show", {
+			  text: "foo",
+			  textVisible: true,
+			  theme: "z",
+			  html: ""
+			});
 		
 	};
 	

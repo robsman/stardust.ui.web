@@ -26,18 +26,36 @@
 		
 			<div role="content" class="ui-content">
 			<form>
-			
+				
+				<div class="ui-field-contain">
+				    <label for="firstName">First Name:</label>
+				    <input ng-model="model.person.FirstName" id="firstName">
+				</div>
+				
+				<div class="ui-field-contain">
+				    <label for="lastName">Last Name:</label>
+				    <input ng-model="model.person.LastName" id="lastName">
+				</div>
+				
+				<div class="ui-field-contain">
+				    <label for="policyNumber">Policy Number:</label>
+				    <input ng-model="model.person.PolicyNumber" id="policyNumber">
+				</div>
+				
 				<div class="ui-field-contain">
 				    <label for="accidentDate">Accident Date:</label>
 				    <input ng-model="model.accident.DateOfAccident" id="accidentDate" data-role="date">
 				</div>
 				
 				<div class="ui-field-contain">
-				    <label for="accidentLocation">Accident Location:</label>
-				    <input ng-click="getCurrentPosition()" 
-				           ng-model="model.accident.AccidentLocation" 
+				    <div class="ui-corner-all" for="accidentLocation">
+				    	<i style="display:inline;" ng-click="getCurrentPosition()" class="fa ui-mini ui-btn fa-map-marker">
+				    		<span style="font-family: sans-serif;font-weight:400;font-size:16px;">Accident Location</span>
+				    	</i>
+				    </div>
+				    <textarea ng-model="model.accident.AccidentLocation" 
 				           placeholder="coordinates" 
-				           id="accidentLocation">
+				           id="accidentLocation"></textarea>
 				</div>
 				
 				<div class="ui-field-contain">

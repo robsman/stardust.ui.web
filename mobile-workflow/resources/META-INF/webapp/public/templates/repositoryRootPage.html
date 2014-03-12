@@ -3,10 +3,10 @@
     <a ng-click="popNavStack(true)"  class="ui-btn ui-shadow ui-corner-all ui-icon-back ui-btn-icon-notext">No Text</a>
 </div>
 
-
+<div jqm-loader jqm-show-loader="{{isAjaxLoading}}" jqm-text=""></div>
 <ul data-role="listview" data-split-icon="gear" data-split-theme="a" data-inset="true" >
 		<li ng-repeat="folder in repositoryModel.children.folders">
-			<a ng-click="getFolder(folder.id,true)">
+			<a ng-href="#" ng-click="getFolder(folder.id,true,$event)">
 				<i class="fa fa-2x fa-folder"></i>
 				<strong>{{folder.name}}</strong>
 				<span class="ui-li-count">{{folder.childCount}}</span>
