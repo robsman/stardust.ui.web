@@ -751,7 +751,7 @@ define(
 					jQuery
 							.ajax(
 									{
-										type : "POST",
+										type : "GET",
 										beforeSend : function(request) {
 											request
 													.setRequestHeader(
@@ -759,12 +759,7 @@ define(
 															self
 																	.getBasicAuthenticationHeader());
 										},
-										url : self.getRootUrl()
-												+ "/services/rest/bpm-reporting/report-definition",
-										contentType : "application/json",
-										data : JSON.stringify({
-											path : path
-										})
+										url : self.getRootUrl() + "/services/rest/bpm-reporting/report-definition" + path
 									}).done(function(response) {
 								self.loadedReportDefinitions[path] = response;
 

@@ -1222,19 +1222,10 @@ public class ReportingService {
 	 * 
 	 * @param json
 	 */
-	public JsonObject saveReportDefinition(JsonObject json) {
+	public JsonObject saveReportDefinition(JsonObject reportJson) {
 		try {
-			JsonObject reportJson = null;
 
-			// TODO Possibly homogenize handling
-
-			if (json.has("report")) {
-				reportJson = json.get("report").getAsJsonObject();
-			} else {
-				reportJson = json;
-			}
-
-			JsonObject storageJson = reportJson.get("storage")
+		    JsonObject storageJson = reportJson.get("storage")
 					.getAsJsonObject();
 			String name = reportJson.get("name").getAsString();
 			String location = storageJson.get("location").getAsString();
@@ -1264,7 +1255,7 @@ public class ReportingService {
 
 			trace.debug(reportDefinitionJsons);
 
-			return json;
+			return reportJson;
 		} finally {
 		}
 	}
@@ -1322,10 +1313,10 @@ public class ReportingService {
 	 * @param json
 	 * @return
 	 */
-	public JsonObject deleteReportDefinition(JsonObject json) {
+	public JsonObject deleteReportDefinition(String reportPath) {
 		try {
-			deleteReportDefinitionDocument(json.get("path").getAsString());
-
+		   trace.debug("deleting report template: " + reportPath);
+		    getDocumentManagementService().removeDocument(reportPath);
 			return new JsonObject();
 		} finally {
 		}
@@ -1536,21 +1527,6 @@ public class ReportingService {
 
 		return folderPath + "/" + name + ".bpmrpt";
 	}
-
-	/**
-	 * 
-	 * @param path
-	 */
-	private void deleteReportDefinitionDocument(String path) {
-		Document reportDefinitionDocument = getDocumentManagementService()
-				.getDocument(path);
-
-		if (reportDefinitionDocument != null) {
-			getDocumentManagementService().removeDocument(
-					reportDefinitionDocument.getId());
-		}
-	}
-
 	/**
 	 * Retrieves external join data via REST and creates a map with the join key
 	 * as key and a map with all external fields and their 'useAs' field names

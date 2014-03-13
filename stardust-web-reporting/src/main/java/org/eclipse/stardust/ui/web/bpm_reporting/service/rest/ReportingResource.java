@@ -23,8 +23,9 @@ import javax.ws.rs.core.Response.Status;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.ui.web.bpm_reporting.service.ReportingService;
 import org.eclipse.stardust.ui.web.bpm_reporting.common.LanguageUtil;
+import org.eclipse.stardust.ui.web.bpm_reporting.service.ReportingService;
+import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -116,13 +117,14 @@ public class ReportingResource {
 		}
 	}
 
+	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("report-definition")
-	public Response loadReportDefinition(@PathParam("path") String path) {
+	@Path("report-definition/{reportPath:.*}")
+	public Response loadReportDefinition(@PathParam("reportPath") String path) {
 		try {
 			return Response
-					.ok(getReportingService().loadReportDefinition(path)
+					.ok(getReportingService().loadReportDefinition("/" + path)
 							.toString(), MediaType.APPLICATION_JSON).build();
 		} catch (Exception e) {
 			trace.error(e, e);
@@ -172,15 +174,16 @@ public class ReportingResource {
 
 			String operation = json.get("operation").getAsString();
 
-			if (operation.equals("rename")) {
+	    	if (operation.equals("rename")) {
 				getReportingService().renameReportDefinition(
 						json.get("path").getAsString(),
 						json.get("name").getAsString());
 
 				return Response.ok("", MediaType.TEXT_PLAIN).build();
 			} else {
+			    JsonObject reportJson = GsonUtils.extractObject(json, "report");
 				return Response.ok(
-						getReportingService().saveReportDefinition(json)
+						getReportingService().saveReportDefinition(reportJson)
 								.toString(), MediaType.APPLICATION_JSON)
 						.build();
 			}
@@ -199,7 +202,7 @@ public class ReportingResource {
 		try {
 			trace.debug("Save report definitions: "
 					+ prettyPrinter.toJson(postedData));
-
+			
 			JsonObject json = jsonIo.readJsonObject(postedData);
 
 			getReportingService().saveReportDefinitions(json);
@@ -215,13 +218,11 @@ public class ReportingResource {
 	@DELETE
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("report-definition")
-	public Response deleteReportDefinition(String postedData) {
+	@Path("report-definition/{reportPath:.*}")
+	public Response deleteReportDefinition(@PathParam("reportPath") String path) {
 		try {
-			JsonObject json = jsonIo.readJsonObject(postedData);
-
 			return Response.ok(
-					getReportingService().deleteReportDefinition(json)
+					getReportingService().deleteReportDefinition(path)
 							.toString(), MediaType.APPLICATION_JSON).build();
 		} catch (Exception e) {
 			trace.error(e, e);

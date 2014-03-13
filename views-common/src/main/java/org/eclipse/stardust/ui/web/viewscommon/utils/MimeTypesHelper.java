@@ -48,7 +48,7 @@ public class MimeTypesHelper implements Serializable
    public static final MIMEType MP3 = new MIMEType("audio/mpeg", "mp3", "document-music.png", "Audio");
    public static final MIMEType ZIP = new MIMEType("application/zip", "zip", "document-zipper.png", "");
    public static final MIMEType TXT = new MIMEType("text/plain", "txt", "document-text.png", "Text");
-   public static final MIMEType XML = new MIMEType("text/xml", new String[]{"xml", "xpdl"}, "document-code.png", "XML");
+   public static final MIMEType XML = new MIMEType("text/xml", new String[]{"xml", "xpdl", "bpmrpt"}, "document-code.png", "XML");
    public static final MIMEType PPT = new MIMEType("application/vnd.ms-powerpoint", "ppt", "document-powerpoint.png", "");
    public static final MIMEType XLS = new MIMEType("application/vnd.ms-excel", "xls", "document-excel.png", "");
    public static final MIMEType PNG = new MIMEType("image/png", "png", "document-image.png", "PNG");
