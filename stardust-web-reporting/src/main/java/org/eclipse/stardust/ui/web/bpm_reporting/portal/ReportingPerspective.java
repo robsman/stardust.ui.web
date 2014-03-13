@@ -33,148 +33,155 @@ import com.icesoft.faces.context.effects.JavascriptContext;
  */
 @Component
 @Scope("session")
-public class ReportingPerspective extends AbstractLaunchPanel implements
-		PerspectiveEventHandler {
+public class ReportingPerspective extends AbstractLaunchPanel implements PerspectiveEventHandler
+{
 
-	private static final Logger trace = LogManager
-			.getLogger(ReportingPerspective.class);
+   private static final Logger trace = LogManager.getLogger(ReportingPerspective.class);
 
-	private boolean initialized = false;
+   private boolean initialized = false;
 
-	/**
+   /**
     *
     */
-	public ReportingPerspective() {
-		super("reportingPerspective");
+   public ReportingPerspective()
+   {
+      super("reportingPerspective");
 
-		SessionSharedObjectsMap sessionMap = SessionSharedObjectsMap
-				.getCurrent();
-		sessionMap.setObject("SESSION_CONTEXT",
-				SessionContext.findSessionContext());
+      SessionSharedObjectsMap sessionMap = SessionSharedObjectsMap.getCurrent();
+      sessionMap.setObject("SESSION_CONTEXT", SessionContext.findSessionContext());
 
-		// My processes panel should be expanded by default
-		// Set it to expanded and activate outline IFRAME
-		
-		setExpanded(true);
-		activateIframe();
-	}
+      // My processes panel should be expanded by default
+      // Set it to expanded and activate outline IFRAME
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.stardust.ui.web.common.uielement.AbstractLaunchPanel#toggle()
-	 */
-	@Override
-	public void toggle() {
-		super.toggle();
-		if (isExpanded()) {
-			activateIframe();
-		} else {
-			deActivateIframe();
-		}
-	}
+      setExpanded(true);
+      activateIframe();
+   }
 
-	/**
+   /*
+    * (non-Javadoc)
+    * 
+    * @see org.eclipse.stardust.ui.web.common.uielement.AbstractLaunchPanel#toggle()
+    */
+   @Override
+   public void toggle()
+   {
+      super.toggle();
+      if (isExpanded())
+      {
+         activateIframe();
+      }
+      else
+      {
+         deActivateIframe();
+      }
+   }
+
+   /**
     *
     */
-	private static void deActivateIframe() {
-		String deActivateIframeJS = "InfinityBpm.ProcessPortal.deactivateContentFrame('reportingOutlineFrame');";
-		JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(),
-				deActivateIframeJS);
-		PortalApplicationEventScript.getInstance().addEventScript(
-				deActivateIframeJS);
-	}
+   private static void deActivateIframe()
+   {
+      String deActivateIframeJS = "InfinityBpm.ProcessPortal.deactivateContentFrame('reportingOutlineFrame');";
+      JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), deActivateIframeJS);
+      PortalApplicationEventScript.getInstance().addEventScript(deActivateIframeJS);
+   }
 
-	/**
+   /**
     *
     */
-	private static void activateIframe() {
-		String outlinePath = FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath() 
-		           + "/plugins/bpm-reporting/launchpanel/reportTree.html";
-		String activateIframeJS = "InfinityBpm.ProcessPortal.createOrActivateContentFrame('reportingOutlineFrame', '" + outlinePath + 
-				"', {anchorId:'portalLaunchPanels:reportTreeAnchor', autoResize: true, heightAdjustment: -40, zIndex:800, noUnloadWarning: 'true', frmAttrs: {repotitionOnScroll: false}});";
+   private static void activateIframe()
+   {
+      String outlinePath = FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath()
+            + "/plugins/bpm-reporting/launchpanel/reportTree.html";
+      String activateIframeJS = "InfinityBpm.ProcessPortal.createOrActivateContentFrame('reportingOutlineFrame', '"
+            + outlinePath
+            + "', {anchorId:'portalLaunchPanels:reportTreeAnchor', autoResize: true, heightAdjustment: -40, zIndex:800, noUnloadWarning: 'true', frmAttrs: {repotitionOnScroll: false}});";
 
-//		String activateIframeJS = "InfinityBpm.ProcessPortal.createOrActivateContentFrame('reportingOutlineFrame', '" + outlinePath + 
-//				"', {anchorId:'reportTreeAnchor', autoResize: true, heightAdjustment: -93, zIndex:800, noUnloadWarning: 'true', frmAttrs: {repotitionOnScroll: false}});";
+      // String activateIframeJS =
+      // "InfinityBpm.ProcessPortal.createOrActivateContentFrame('reportingOutlineFrame', '"
+      // + outlinePath +
+      // "', {anchorId:'reportTreeAnchor', autoResize: true, heightAdjustment: -93, zIndex:800, noUnloadWarning: 'true', frmAttrs: {repotitionOnScroll: false}});";
 
-		// Activate iframe
+      // Activate iframe
 
-		JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(),
-				activateIframeJS);
-		PortalApplicationEventScript.getInstance().addEventScript(
-				activateIframeJS);
+      JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), activateIframeJS);
+      PortalApplicationEventScript.getInstance().addEventScript(activateIframeJS);
 
-		// Resize iframe
+      // Resize iframe
 
-		PortalApplicationEventScript.getInstance().addEventScript(
-				"InfinityBpm.ProcessPortal.resizeIFrames();");
+      PortalApplicationEventScript.getInstance().addEventScript("InfinityBpm.ProcessPortal.resizeIFrames();");
 
-	}
+   }
 
-	@Override
-	public void update() {
-		// TODO Auto-generated method stub
-	}
+   @Override
+   public void update()
+   {
+      // TODO Auto-generated method stub
+   }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.stardust.ui.web.common.event.PerspectiveEventHandler#handleEvent
-	 * (org .eclipse.stardust.ui.web.common.event.PerspectiveEvent)
-	 */
-	public void handleEvent(PerspectiveEvent event) {
-		boolean toggled = false;
-		switch (event.getType()) {
-		
-		case ACTIVATED:
-			if (!initialized) {
-				changeMouseCursorStyle("progress");
-				toggled = true;
-				initialized = true;
-			}
-		case LAUNCH_PANELS_ACTIVATED:
-			if (!toggled) {
-				changeMouseCursorStyle("default");
-			}
+   /*
+    * (non-Javadoc)
+    * 
+    * @see org.eclipse.stardust.ui.web.common.event.PerspectiveEventHandler#handleEvent
+    * (org .eclipse.stardust.ui.web.common.event.PerspectiveEvent)
+    */
+   public void handleEvent(PerspectiveEvent event)
+   {
+      boolean toggled = false;
+      switch (event.getType())
+      {
 
-			// Create "process-models" folder if it doesn't exist already.
+      case ACTIVATED:
+         if (!initialized)
+         {
+            changeMouseCursorStyle("progress");
+            toggled = true;
+            initialized = true;
+         }
+      case LAUNCH_PANELS_ACTIVATED:
+         if (!toggled)
+         {
+            changeMouseCursorStyle("default");
+         }
 
-			// DocumentMgmtUtility.createFolderIfNotExists("/process-models");
+         // Create "process-models" folder if it doesn't exist already.
 
-			Boolean launchPanelActivated = null;
+         // DocumentMgmtUtility.createFolderIfNotExists("/process-models");
 
-			try {
-				// If web modeler is set as default perspective ,on first login
-				// activation
-				// PortalApplication loading is not complete
-				launchPanelActivated = PortalApplication.getInstance()
-						.isLaunchPanelsActivated();
-			} catch (Exception e) {
-				trace.warn("PortalApplication instance not found"
-						+ e.getLocalizedMessage());
-			}
+         Boolean launchPanelActivated = null;
 
-			if (isExpanded()
-					&& (launchPanelActivated == null || launchPanelActivated)) {
-				activateIframe();
-			}
+         try
+         {
+            // If web modeler is set as default perspective ,on first login
+            // activation
+            // PortalApplication loading is not complete
+            launchPanelActivated = PortalApplication.getInstance().isLaunchPanelsActivated();
+         }
+         catch (Exception e)
+         {
+            trace.warn("PortalApplication instance not found" + e.getLocalizedMessage());
+         }
 
-			break;
-		case DEACTIVATED:
-		case LAUNCH_PANELS_DEACTIVATED:
-			deActivateIframe();
-			FacesUtils.refreshPage();
-			break;
-		}
-	}
+         if (isExpanded() && (launchPanelActivated == null || launchPanelActivated))
+         {
+            activateIframe();
+         }
 
-	/**
-	 * @param style
-	 */
-	private void changeMouseCursorStyle(String style) {
-		PortalApplicationEventScript.getInstance().addEventScript(
-				"InfinityBpm.Core.changeMouseCursorStyle(\"" + style + "\");");
-	}
+         break;
+      case DEACTIVATED:
+      case LAUNCH_PANELS_DEACTIVATED:
+         deActivateIframe();
+         FacesUtils.refreshPage();
+         break;
+      }
+   }
+
+   /**
+    * @param style
+    */
+   private void changeMouseCursorStyle(String style)
+   {
+      PortalApplicationEventScript.getInstance().addEventScript(
+            "InfinityBpm.Core.changeMouseCursorStyle(\"" + style + "\");");
+   }
 }

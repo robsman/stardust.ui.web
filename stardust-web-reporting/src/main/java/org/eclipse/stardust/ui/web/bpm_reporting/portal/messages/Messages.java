@@ -13,23 +13,23 @@ import org.eclipse.stardust.ui.web.common.util.AbstractMessageBean;
  * 
  */
 @SuppressWarnings("unchecked")
-public class Messages extends AbstractMessageBean {
+public class Messages extends AbstractMessageBean
+{
+   private static final String BUNDLE_NAME = "bpm-reporting-messages";
+   private static final String BEAN_NAME = "bpmReportingMessages";
 
-	private static final String BUNDLE_NAME = "bpm-reporting-messages";
-	private static final String BEAN_NAME = "bpmReportingMessages";
+   public Messages()
+   {
+      super("carnot");
 
-	public Messages() {
-		super("carnot");
+      ResourceBundle resBundle = ResourceBundle.getBundle(BUNDLE_NAME, FacesContext.getCurrentInstance()
+            .getExternalContext().getRequestLocale());
+      Reflect.setFieldValue(this, "bundle", resBundle);
+   }
 
-		ResourceBundle resBundle = ResourceBundle.getBundle(BUNDLE_NAME,
-				FacesContext.getCurrentInstance().getExternalContext()
-						.getRequestLocale());
-		Reflect.setFieldValue(this, "bundle", resBundle);
-	}
-
-	public static Messages getInstance() {
-		return (Messages) FacesContext.getCurrentInstance().getApplication()
-				.getVariableResolver()
-				.resolveVariable(FacesContext.getCurrentInstance(), BEAN_NAME);
-	}
+   public static Messages getInstance()
+   {
+      return (Messages) FacesContext.getCurrentInstance().getApplication().getVariableResolver()
+            .resolveVariable(FacesContext.getCurrentInstance(), BEAN_NAME);
+   }
 }
