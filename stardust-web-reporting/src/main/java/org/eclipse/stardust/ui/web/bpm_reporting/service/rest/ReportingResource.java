@@ -243,7 +243,7 @@ public class ReportingResource
    {
       try
       {
-         return Response.ok(getReportingService().deleteReportDefinition(path).toString(), MediaType.APPLICATION_JSON)
+         return Response.ok(getReportingService().deleteReportDefinition("/" + path).toString(), MediaType.APPLICATION_JSON)
                .build();
       }
       catch (Exception e)

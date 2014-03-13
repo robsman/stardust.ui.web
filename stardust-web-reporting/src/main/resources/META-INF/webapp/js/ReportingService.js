@@ -869,12 +869,7 @@ define(
 															self
 																	.getBasicAuthenticationHeader());
 										},
-										url : self.getRootUrl()
-												+ "/services/rest/bpm-reporting/report-definition",
-										contentType : "application/json",
-										data : JSON.stringify({
-											path : path
-										})
+										url : self.getRootUrl() + "/services/rest/bpm-reporting/report-definition" + path
 									}).done(function() {
 								deferred.resolve();
 							}).fail(function() {

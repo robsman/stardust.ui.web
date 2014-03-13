@@ -1485,83 +1485,61 @@ public class ReportingService
       {
          Folder publicFolder = findOrCreateFolder(PUBLIC_REPORT_DEFINITIONS_DIR);
          Folder personalFolder = findOrCreateFolder(getUserDocumentFolderPath());
+
          JsonObject rootFolderJson = new JsonObject();
          JsonArray subFoldersJson = new JsonArray();
-
          rootFolderJson.add("subFolders", subFoldersJson);
 
-         JsonObject publicFolderJson = new JsonObject();
-
-         subFoldersJson.add(publicFolderJson);
-
-         publicFolderJson.addProperty("name", "Public Report Definitions"); // I18N
-         publicFolderJson.addProperty("id", publicFolder.getId());
-         publicFolderJson.addProperty("path", publicFolder.getPath());
-
-         JsonArray reportDefinitionsJson = null;
-         List<Document> candidateReportDefinitionsDocuments = null;
-
-         if (publicFolder != null)
-         {
-            candidateReportDefinitionsDocuments = publicFolder.getDocuments();
-
-            reportDefinitionsJson = new JsonArray();
-
-            publicFolderJson.add("reportDefinitions", reportDefinitionsJson);
-
-            for (Document reportDefinitionDocument : candidateReportDefinitionsDocuments)
-            {
-               if (reportDefinitionDocument.getName().endsWith(".bpmrpt"))
-               {
-                  String content = new String(getDocumentManagementService().retrieveDocumentContent(
-                        reportDefinitionDocument.getId()));
-
-                  JsonObject reportDefinitionJson = jsonIo.readJsonObject(content);
-
-                  // TODO Retrieve partially from content
-
-                  reportDefinitionsJson.add(reportDefinitionJson);
-                  reportDefinitionJson.addProperty("id", reportDefinitionDocument.getId());
-                  reportDefinitionJson.addProperty(
-                        "name",
-                        reportDefinitionDocument.getName().substring(0,
-                              reportDefinitionDocument.getName().indexOf(".bpmrpt")));
-                  reportDefinitionJson.addProperty("path", reportDefinitionDocument.getPath());
-               }
-            }
-         }
-
-         JsonObject personalFolderJson = new JsonObject();
-
-         subFoldersJson.add(personalFolderJson);
-
-         personalFolderJson.addProperty("name", "Personal Report Definitions"); // I18N
-
-         if (personalFolder != null)
-         {
-            candidateReportDefinitionsDocuments = personalFolder.getDocuments();
-
-            reportDefinitionsJson = new JsonArray();
-
-            personalFolderJson.add("reportDefinitions", reportDefinitionsJson);
-
-            for (Document reportDefinitionDocument : candidateReportDefinitionsDocuments)
-            {
-               if (reportDefinitionDocument.getName().endsWith(".bpmrpt"))
-               {
-                  JsonObject reportDefinitionJson = new JsonObject();
-
-                  reportDefinitionsJson.add(reportDefinitionJson);
-                  reportDefinitionJson.addProperty("name", reportDefinitionDocument.getName());
-               }
-            }
-         }
+         subFoldersJson.add(getReportDefinitions(publicFolder, "Public Report Definitions")); // I18N
+         subFoldersJson.add(getReportDefinitions(personalFolder, "Personal Report Definitions")); // I18N
 
          return rootFolderJson;
+      }
+      catch (Exception e)
+      {
+         trace.debug("Error Occurred while loading report definitions");
+         return null;
       }
       finally
       {
       }
+   }
+
+   /**
+    * @param folder
+    * @param label
+    * @return
+    */
+   private JsonObject getReportDefinitions(Folder folder, String label)
+   {
+      JsonObject folderJson = new JsonObject();
+      folderJson.addProperty("name", label);
+      folderJson.addProperty("id", folder.getId());
+      folderJson.addProperty("path", folder.getPath());
+      JsonArray reportDefinitionsJson = new JsonArray();
+      folderJson.add("reportDefinitions", reportDefinitionsJson);
+
+      @SuppressWarnings("unchecked")
+      List<Document> candidateReportDefinitionsDocuments = folder.getDocuments();
+
+      for (Document reportDefinitionDocument : candidateReportDefinitionsDocuments)
+      {
+         if (reportDefinitionDocument.getName().endsWith(".bpmrpt"))
+         {
+            String content = new String(getDocumentManagementService().retrieveDocumentContent(
+                  reportDefinitionDocument.getId()));
+
+            JsonObject reportDefinitionJson = jsonIo.readJsonObject(content);
+
+            reportDefinitionsJson.add(reportDefinitionJson);
+            reportDefinitionJson.addProperty("id", reportDefinitionDocument.getId());
+            reportDefinitionJson.addProperty("name",
+                  reportDefinitionDocument.getName()
+                        .substring(0, reportDefinitionDocument.getName().indexOf(".bpmrpt")));
+            reportDefinitionJson.addProperty("path", reportDefinitionDocument.getPath());
+         }
+      }
+      return folderJson;
    }
 
    /**
