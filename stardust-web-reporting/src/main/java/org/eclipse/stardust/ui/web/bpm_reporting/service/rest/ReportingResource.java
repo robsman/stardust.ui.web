@@ -37,247 +37,276 @@ import com.google.gson.JsonObject;
  * 
  */
 @Path("/")
-public class ReportingResource {
-	private static final Logger trace = LogManager
-			.getLogger(ReportingResource.class);
-	private final JsonMarshaller jsonIo = new JsonMarshaller();
-	private final Gson prettyPrinter = new GsonBuilder().setPrettyPrinting()
-			.create();
-	private ReportingService reportingService;
+public class ReportingResource
+{
+   private static final Logger trace = LogManager.getLogger(ReportingResource.class);
+   private final JsonMarshaller jsonIo = new JsonMarshaller();
+   private final Gson prettyPrinter = new GsonBuilder().setPrettyPrinting().create();
+   private ReportingService reportingService;
 
-	@Context
-	private HttpServletRequest httpRequest;
+   @Context
+   private HttpServletRequest httpRequest;
 
-	@Context
-	private ServletContext servletContext;
+   @Context
+   private ServletContext servletContext;
 
-	/**
-	 * 
-	 * @return
-	 */
-	public ReportingService getReportingService() {
-		return reportingService;
-	}
+   /**
+    * 
+    * @return
+    */
+   public ReportingService getReportingService()
+   {
+      return reportingService;
+   }
 
-	/**
-	 * 
-	 * @param reportingService
-	 */
-	public void setReportingService(ReportingService reportingService) {
-		this.reportingService = reportingService;
-	}
+   /**
+    * 
+    * @param reportingService
+    */
+   public void setReportingService(ReportingService reportingService)
+   {
+      this.reportingService = reportingService;
+   }
 
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("model-data")
-	public Response getModelData() {
-		try {
-			return Response.ok(getReportingService().getModelData().toString(),
-					MediaType.APPLICATION_JSON_TYPE).build();
-		} catch (Exception e) {
-			trace.error(e, e);
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("model-data")
+   public Response getModelData()
+   {
+      try
+      {
+         return Response.ok(getReportingService().getModelData().toString(), MediaType.APPLICATION_JSON_TYPE).build();
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
 
-			return Response.serverError().build();
-		}
-	}
+         return Response.serverError().build();
+      }
+   }
 
-	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("report-data")
-	public Response getReportData(String postedData) {
-		try {
-			trace.debug("report-data");
-			trace.debug(postedData);
+   @POST
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("report-data")
+   public Response getReportData(String postedData)
+   {
+      try
+      {
+         trace.debug("report-data");
+         trace.debug(postedData);
 
-			JsonObject json = jsonIo.readJsonObject(postedData);
+         JsonObject json = jsonIo.readJsonObject(postedData);
 
-			return Response.ok(
-					getReportingService().getReportData(json).toString(),
-					MediaType.APPLICATION_JSON_TYPE).build();
-		} catch (Exception e) {
-			trace.error(e, e);
+         return Response.ok(getReportingService().getReportData(json).toString(), MediaType.APPLICATION_JSON_TYPE)
+               .build();
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
 
-			return Response.serverError().build();
-		}
-	}
+         return Response.serverError().build();
+      }
+   }
 
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("report-definitions")
-	public Response loadReportDefinitions() {
-		try {
-			return Response.ok(
-					getReportingService().loadReportDefinitions().toString(),
-					MediaType.APPLICATION_JSON).build();
-		} catch (Exception e) {
-			trace.error(e, e);
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("report-definitions")
+   public Response loadReportDefinitions()
+   {
+      try
+      {
+         return Response.ok(getReportingService().loadReportDefinitions().toString(), MediaType.APPLICATION_JSON)
+               .build();
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
 
-			return Response.serverError().build();
-		}
-	}
+         return Response.serverError().build();
+      }
+   }
 
-	
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("report-definition/{reportPath:.*}")
-	public Response loadReportDefinition(@PathParam("reportPath") String path) {
-		try {
-			return Response
-					.ok(getReportingService().loadReportDefinition("/" + path)
-							.toString(), MediaType.APPLICATION_JSON).build();
-		} catch (Exception e) {
-			trace.error(e, e);
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("report-definition/{reportPath:.*}")
+   public Response loadReportDefinition(@PathParam("reportPath") String path)
+   {
+      try
+      {
+         return Response.ok(getReportingService().loadReportDefinition("/" + path).toString(),
+               MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
 
-			return Response.serverError().build();
-		}
-	}
+         return Response.serverError().build();
+      }
+   }
 
-	/**
-	 * 
-	 * @param postedData
-	 * @return
-	 * 
-	 * @deprecated Use GET instead
-	 */
-	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("report-definition")
-	public Response loadReportDefinitionAsJson(String postedData) {
-		try {
-			trace.debug("Load report definition: " + postedData);
+   /**
+    * 
+    * @param postedData
+    * @return
+    * 
+    * @deprecated Use GET instead
+    */
+   @POST
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("report-definition")
+   public Response loadReportDefinitionAsJson(String postedData)
+   {
+      try
+      {
+         trace.debug("Load report definition: " + postedData);
 
-			JsonObject json = jsonIo.readJsonObject(postedData);
+         JsonObject json = jsonIo.readJsonObject(postedData);
 
-			return Response.ok(
-					getReportingService().loadReportDefinition(
-							json.get("path").getAsString()).toString(),
-					MediaType.APPLICATION_JSON).build();
-		} catch (Exception e) {
-			trace.error(e, e);
+         return Response.ok(getReportingService().loadReportDefinition(json.get("path").getAsString()).toString(),
+               MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
 
-			return Response.serverError().build();
-		}
-	}
+         return Response.serverError().build();
+      }
+   }
 
-	@PUT
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.TEXT_PLAIN)
-	@Path("report-definition")
-	public Response saveReportDefinition(String postedData) {
-		try {
-			trace.debug("Save report definition: "
-					+ prettyPrinter.toJson(postedData));
+   @PUT
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.TEXT_PLAIN)
+   @Path("report-definition")
+   public Response saveReportDefinition(String postedData)
+   {
+      try
+      {
+         trace.debug("Save report definition: " + prettyPrinter.toJson(postedData));
 
-			JsonObject json = jsonIo.readJsonObject(postedData);
+         JsonObject json = jsonIo.readJsonObject(postedData);
 
-			String operation = json.get("operation").getAsString();
+         String operation = json.get("operation").getAsString();
 
-	    	if (operation.equals("rename")) {
-				getReportingService().renameReportDefinition(
-						json.get("path").getAsString(),
-						json.get("name").getAsString());
+         if (operation.equals("rename"))
+         {
+            getReportingService()
+                  .renameReportDefinition(json.get("path").getAsString(), json.get("name").getAsString());
 
-				return Response.ok("", MediaType.TEXT_PLAIN).build();
-			} else {
-			    JsonObject reportJson = GsonUtils.extractObject(json, "report");
-				return Response.ok(
-						getReportingService().saveReportDefinition(reportJson)
-								.toString(), MediaType.APPLICATION_JSON)
-						.build();
-			}
-		} catch (Exception e) {
-			trace.error(e, e);
+            return Response.ok("", MediaType.TEXT_PLAIN).build();
+         }
+         else
+         {
+            JsonObject reportJson = GsonUtils.extractObject(json, "report");
+            return Response.ok(getReportingService().saveReportDefinition(reportJson).toString(),
+                  MediaType.APPLICATION_JSON).build();
+         }
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
 
-			return Response.serverError().build();
-		}
-	}
+         return Response.serverError().build();
+      }
+   }
 
-	@PUT
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.TEXT_PLAIN)
-	@Path("report-definitions")
-	public Response saveReportDefinitions(String postedData) {
-		try {
-			trace.debug("Save report definitions: "
-					+ prettyPrinter.toJson(postedData));
-			
-			JsonObject json = jsonIo.readJsonObject(postedData);
+   @PUT
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.TEXT_PLAIN)
+   @Path("report-definitions")
+   public Response saveReportDefinitions(String postedData)
+   {
+      try
+      {
+         trace.debug("Save report definitions: " + prettyPrinter.toJson(postedData));
 
-			getReportingService().saveReportDefinitions(json);
+         JsonObject json = jsonIo.readJsonObject(postedData);
 
-			return Response.ok("", MediaType.TEXT_PLAIN).build();
-		} catch (Exception e) {
-			trace.error(e, e);
+         getReportingService().saveReportDefinitions(json);
 
-			return Response.serverError().build();
-		}
-	}
+         return Response.ok("", MediaType.TEXT_PLAIN).build();
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
 
-	@DELETE
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("report-definition/{reportPath:.*}")
-	public Response deleteReportDefinition(@PathParam("reportPath") String path) {
-		try {
-			return Response.ok(
-					getReportingService().deleteReportDefinition(path)
-							.toString(), MediaType.APPLICATION_JSON).build();
-		} catch (Exception e) {
-			trace.error(e, e);
+         return Response.serverError().build();
+      }
+   }
 
-			return Response.serverError().build();
-		}
-	}
+   @DELETE
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("report-definition/{reportPath:.*}")
+   public Response deleteReportDefinition(@PathParam("reportPath") String path)
+   {
+      try
+      {
+         return Response.ok(getReportingService().deleteReportDefinition(path).toString(), MediaType.APPLICATION_JSON)
+               .build();
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
 
-	@GET
-	@Produces(MediaType.TEXT_PLAIN)
-	@Path("/language")
-	public Response getLanguage() {
-		StringTokenizer tok = new StringTokenizer(
-				httpRequest.getHeader("Accept-language"), ",");
-		if (tok.hasMoreTokens()) {
-			return Response.ok(LanguageUtil.getLocale(tok.nextToken()),
-					MediaType.TEXT_PLAIN_TYPE).build();
-		}
-		return Response.ok("en", MediaType.TEXT_PLAIN_TYPE).build();
-	}
+         return Response.serverError().build();
+      }
+   }
 
-	/**
-	 * @param bundleName
-	 * @param locale
-	 * @return
-	 */
-	@GET
-	@Path("/{bundleName}/{locale}")
-	public Response getRetrieve(@PathParam("bundleName") String bundleName,
-			@PathParam("locale") String locale) {
-		final String POST_FIX = "client-messages";
+   @GET
+   @Produces(MediaType.TEXT_PLAIN)
+   @Path("/language")
+   public Response getLanguage()
+   {
+      StringTokenizer tok = new StringTokenizer(httpRequest.getHeader("Accept-language"), ",");
+      if (tok.hasMoreTokens())
+      {
+         return Response.ok(LanguageUtil.getLocale(tok.nextToken()), MediaType.TEXT_PLAIN_TYPE).build();
+      }
+      return Response.ok("en", MediaType.TEXT_PLAIN_TYPE).build();
+   }
 
-		if (StringUtils.isNotEmpty(bundleName) && bundleName.endsWith(POST_FIX)) {
-			try {
-				StringBuffer bundleData = new StringBuffer();
-				ResourceBundle bundle = ResourceBundle.getBundle(bundleName,
-						LanguageUtil.getLocaleObject(locale));
+   /**
+    * @param bundleName
+    * @param locale
+    * @return
+    */
+   @GET
+   @Path("/{bundleName}/{locale}")
+   public Response getRetrieve(@PathParam("bundleName") String bundleName, @PathParam("locale") String locale)
+   {
+      final String POST_FIX = "client-messages";
 
-				String key;
-				Enumeration<String> keys = bundle.getKeys();
-				while (keys.hasMoreElements()) {
-					key = keys.nextElement();
-					bundleData.append(key).append("=")
-							.append(bundle.getString(key)).append("\n");
-				}
+      if (StringUtils.isNotEmpty(bundleName) && bundleName.endsWith(POST_FIX))
+      {
+         try
+         {
+            StringBuffer bundleData = new StringBuffer();
+            ResourceBundle bundle = ResourceBundle.getBundle(bundleName, LanguageUtil.getLocaleObject(locale));
 
-				return Response.ok(bundleData.toString(),
-						MediaType.TEXT_PLAIN_TYPE).build();
-			} catch (MissingResourceException mre) {
-				return Response.status(Status.NOT_FOUND).build();
-			} catch (Exception e) {
-				return Response.status(Status.BAD_REQUEST).build();
-			}
-		} else {
-			return Response.status(Status.FORBIDDEN).build();
-		}
-	}
+            String key;
+            Enumeration<String> keys = bundle.getKeys();
+            while (keys.hasMoreElements())
+            {
+               key = keys.nextElement();
+               bundleData.append(key).append("=").append(bundle.getString(key)).append("\n");
+            }
+
+            return Response.ok(bundleData.toString(), MediaType.TEXT_PLAIN_TYPE).build();
+         }
+         catch (MissingResourceException mre)
+         {
+            return Response.status(Status.NOT_FOUND).build();
+         }
+         catch (Exception e)
+         {
+            return Response.status(Status.BAD_REQUEST).build();
+         }
+      }
+      else
+      {
+         return Response.status(Status.FORBIDDEN).build();
+      }
+   }
 }

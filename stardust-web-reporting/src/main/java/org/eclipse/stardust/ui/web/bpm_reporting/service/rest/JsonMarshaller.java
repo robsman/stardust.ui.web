@@ -40,15 +40,14 @@ public class JsonMarshaller
 {
    private static final Logger trace = LogManager.getLogger(JsonMarshaller.class);
 
-   private final Gson gson = new GsonBuilder() //
-      .registerTypeAdapter(JsonObject.class, new JsonObjectSerializationHandler())
-      .registerTypeAdapter(JsonArray.class, new JsonArraySerializationHandler())
-      .create();
+   private final Gson gson = new GsonBuilder()
+         //
+         .registerTypeAdapter(JsonObject.class, new JsonObjectSerializationHandler())
+         .registerTypeAdapter(JsonArray.class, new JsonArraySerializationHandler()).create();
 
    private final Gson gsonForUpdates = new GsonBuilder().serializeNulls()
          .registerTypeAdapter(JsonObject.class, new JsonObjectSerializationHandler())
-         .registerTypeAdapter(JsonArray.class, new JsonArraySerializationHandler())
-         .create();
+         .registerTypeAdapter(JsonArray.class, new JsonArraySerializationHandler()).create();
 
    private final JsonParser jsonParser = new JsonParser();
 
@@ -57,8 +56,7 @@ public class JsonMarshaller
       return gson;
    }
 
-   public JsonObject readJsonObject(String jsonText)
-         throws javax.ws.rs.WebApplicationException
+   public JsonObject readJsonObject(String jsonText) throws javax.ws.rs.WebApplicationException
    {
       try
       {
@@ -117,7 +115,7 @@ public class JsonMarshaller
          }
          else if (attr.getValue() instanceof JsonObject)
          {
-            if ( !master.has(attr.getKey()) || master.get(attr.getKey()).isJsonNull())
+            if (!master.has(attr.getKey()) || master.get(attr.getKey()).isJsonNull())
             {
                // copy whole subtree
                master.add(attr.getKey(), attr.getValue());
@@ -151,7 +149,7 @@ public class JsonMarshaller
          }
          else if (update.isJsonPrimitive())
          {
-            if ( !master.isJsonPrimitive())
+            if (!master.isJsonPrimitive())
             {
                throw new IllegalArgumentException(
                      "Must not structurally change JSON objects (expecting primitive, got " + master + ").");
@@ -160,18 +158,18 @@ public class JsonMarshaller
          }
          else if (update.isJsonArray())
          {
-            if ( !master.isJsonArray())
+            if (!master.isJsonArray())
             {
-               throw new IllegalArgumentException(
-                     "Must not structurally change JSON objects (expecting array, got " + master + ").");
+               throw new IllegalArgumentException("Must not structurally change JSON objects (expecting array, got "
+                     + master + ").");
             }
          }
          else if (update.isJsonObject())
          {
-            if ( !master.isJsonObject())
+            if (!master.isJsonObject())
             {
-               throw new IllegalArgumentException(
-                     "Must not structurally change JSON objects (expecting object, got " + master + ").");
+               throw new IllegalArgumentException("Must not structurally change JSON objects (expecting object, got "
+                     + master + ").");
             }
          }
       }
@@ -181,16 +179,15 @@ public class JsonMarshaller
          implements JsonSerializer<JsonObject>, JsonDeserializer<JsonObject>
    {
       @Override
-      public JsonObject serialize(JsonObject src, Type typeOfSrc,
-            JsonSerializationContext context)
+      public JsonObject serialize(JsonObject src, Type typeOfSrc, JsonSerializationContext context)
       {
          // just use the object as is
          return src;
       }
 
       @Override
-      public JsonObject deserialize(JsonElement json, Type typeOfT,
-            JsonDeserializationContext context) throws JsonParseException
+      public JsonObject deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+            throws JsonParseException
       {
          if (json.isJsonObject() && JsonObject.class.equals(typeOfT))
          {
@@ -204,20 +201,18 @@ public class JsonMarshaller
       }
    }
 
-   private static class JsonArraySerializationHandler
-         implements JsonSerializer<JsonArray>, JsonDeserializer<JsonArray>
+   private static class JsonArraySerializationHandler implements JsonSerializer<JsonArray>, JsonDeserializer<JsonArray>
    {
       @Override
-      public JsonArray serialize(JsonArray src, Type typeOfSrc,
-            JsonSerializationContext context)
+      public JsonArray serialize(JsonArray src, Type typeOfSrc, JsonSerializationContext context)
       {
          // just use the object as is
          return src;
       }
 
       @Override
-      public JsonArray deserialize(JsonElement json, Type typeOfT,
-            JsonDeserializationContext context) throws JsonParseException
+      public JsonArray deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+            throws JsonParseException
       {
          if (json.isJsonArray() && JsonArray.class.equals(typeOfT))
          {

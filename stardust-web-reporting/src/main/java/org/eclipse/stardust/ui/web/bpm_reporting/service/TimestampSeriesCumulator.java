@@ -8,293 +8,311 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonPrimitive;
 
 /**
- * Discrete dimension is mapped to String, a non-discrete, continuous dimension
- * is mapped to long. If the dimension is discrete, the sequence of values is
- * assumed to be grouped by dimension values; if it is continous, it is assumed
- * to be monotonous.
+ * Discrete dimension is mapped to String, a non-discrete, continuous dimension is mapped
+ * to long. If the dimension is discrete, the sequence of values is assumed to be grouped
+ * by dimension values; if it is continous, it is assumed to be monotonous.
  * 
  * @author Marc.Gille
  * 
  */
-public class TimestampSeriesCumulator {
-	private final String UNDEFINED_STRING = "__UNDEFINED";
-	
-	private boolean discreteDimension;
-	private boolean allowsCumulants;
-	private ValueProvider factProvider;
-	private ValueProvider dimensionProvider;
-	private ValueProvider groupCriterionProvider;
+public class TimestampSeriesCumulator
+{
+   private final String UNDEFINED_STRING = "__UNDEFINED";
 
-	public TimestampSeriesCumulator(ValueProvider factProvider,
-			ValueProvider dimensionProvider, boolean discreteDimension,
-			boolean allowsCumulants) {
-		this.discreteDimension = discreteDimension;
-		this.allowsCumulants = allowsCumulants;
-		this.factProvider = factProvider;
-		this.dimensionProvider = dimensionProvider;
-	}
+   private boolean discreteDimension;
+   private boolean allowsCumulants;
+   private ValueProvider factProvider;
+   private ValueProvider dimensionProvider;
+   private ValueProvider groupCriterionProvider;
 
-	/**
-	 * 
-	 * @param groupCriterionProvider
-	 */
-	public void setGroupCriterionProvider(ValueProvider groupCriterionProvider) {
-		this.groupCriterionProvider = groupCriterionProvider;
-	}
+   public TimestampSeriesCumulator(ValueProvider factProvider, ValueProvider dimensionProvider,
+         boolean discreteDimension, boolean allowsCumulants)
+   {
+      this.discreteDimension = discreteDimension;
+      this.allowsCumulants = allowsCumulants;
+      this.factProvider = factProvider;
+      this.dimensionProvider = dimensionProvider;
+   }
 
-	/**
-	 * 
-	 * @param object
-	 * @return
-	 */
-	private double getFact(Object object) {
-		return ((Number) this.factProvider.getValue(object)).doubleValue();
-	}
+   /**
+    * 
+    * @param groupCriterionProvider
+    */
+   public void setGroupCriterionProvider(ValueProvider groupCriterionProvider)
+   {
+      this.groupCriterionProvider = groupCriterionProvider;
+   }
 
-	/**
-	 * 
-	 * @param object
-	 * @return
-	 */
-	private Object getDimension(Object object) {
-		return dimensionProvider.getValue(object);
-	}
+   /**
+    * 
+    * @param object
+    * @return
+    */
+   private double getFact(Object object)
+   {
+      return ((Number) this.factProvider.getValue(object)).doubleValue();
+   }
 
-	/**
-	 * Indicates no grouping.
-	 * 
-	 * @param object
-	 * @return
-	 */
-	private Comparable getGroupingCriterion(Object object) {
-		if (this.groupCriterionProvider != null) {
-			return (Comparable) this.groupCriterionProvider.getValue(object);
-		}
+   /**
+    * 
+    * @param object
+    * @return
+    */
+   private Object getDimension(Object object)
+   {
+      return dimensionProvider.getValue(object);
+   }
 
-		return null;
-	}
+   /**
+    * Indicates no grouping.
+    * 
+    * @param object
+    * @return
+    */
+   private Comparable getGroupingCriterion(Object object)
+   {
+      if (this.groupCriterionProvider != null)
+      {
+         return (Comparable) this.groupCriterionProvider.getValue(object);
+      }
 
-	/**
-	 * 
-	 * @param list
-	 * @param cumulationInterval
-	 * @return
-	 */
-	public JsonArray createCumulatedSeriesGroup(List<Object> list,
-			long cumulationInterval, JsonArray groupIds) {
-		TreeMap<Comparable, List<Object>> groups = new TreeMap<Comparable, List<Object>>();
+      return null;
+   }
 
-		// Group objects
+   /**
+    * 
+    * @param list
+    * @param cumulationInterval
+    * @return
+    */
+   public JsonArray createCumulatedSeriesGroup(List<Object> list, long cumulationInterval, JsonArray groupIds)
+   {
+      TreeMap<Comparable, List<Object>> groups = new TreeMap<Comparable, List<Object>>();
 
-		for (Object object : list) {
-			Comparable groupingCriterion = getGroupingCriterion(object);
+      // Group objects
 
-			if (groupingCriterion == null) {
-				groupingCriterion = "-";
-			}
+      for (Object object : list)
+      {
+         Comparable groupingCriterion = getGroupingCriterion(object);
 
-			List<Object> groupList = groups.get(groupingCriterion);
+         if (groupingCriterion == null)
+         {
+            groupingCriterion = "-";
+         }
 
-			if (groupList == null) {
-				groups.put(groupingCriterion,
-						groupList = new ArrayList<Object>());
-				groupIds.add(new JsonPrimitive(groupingCriterion.toString()));
-			}
+         List<Object> groupList = groups.get(groupingCriterion);
 
-			groupList.add(object);
-		}
+         if (groupList == null)
+         {
+            groups.put(groupingCriterion, groupList = new ArrayList<Object>());
+            groupIds.add(new JsonPrimitive(groupingCriterion.toString()));
+         }
 
-		JsonArray seriesGroup = new JsonArray();
+         groupList.add(object);
+      }
 
-		for (Comparable key : groups.keySet()) {
-			JsonArray series = new JsonArray();
+      JsonArray seriesGroup = new JsonArray();
 
-			seriesGroup.add(series);
+      for (Comparable key : groups.keySet())
+      {
+         JsonArray series = new JsonArray();
 
-			Object currentDimension = this; // Null is a valid value, hence this
-											// as a dummy
-			long count = 0;
-			double currentValue = 0;
-			double currentMaximum = 0;
-			double currentMinimum = Double.MAX_VALUE;
-			double currentSum = 0;
-			double currentSquareSum = 0;
+         seriesGroup.add(series);
 
-			JsonArray pair = null;
+         Object currentDimension = this; // Null is a valid value, hence this
+         // as a dummy
+         long count = 0;
+         double currentValue = 0;
+         double currentMaximum = 0;
+         double currentMinimum = Double.MAX_VALUE;
+         double currentSum = 0;
+         double currentSquareSum = 0;
 
-			System.out.println("New series " + key);
+         JsonArray pair = null;
 
-			for (Object object : groups.get(key)) {
-				// Initialize timestamp for first entry
+         System.out.println("New series " + key);
 
-				System.out.println("Dimension " + getDimension(object));
+         for (Object object : groups.get(key))
+         {
+            // Initialize timestamp for first entry
 
-				if (currentDimension == this) {
-					currentDimension = getDimension(object);
+            System.out.println("Dimension " + getDimension(object));
 
-					// Create new pair for current interval
+            if (currentDimension == this)
+            {
+               currentDimension = getDimension(object);
 
-					pair = new JsonArray();
+               // Create new pair for current interval
 
-					series.add(pair);
+               pair = new JsonArray();
 
-					// Add dimension to pair
+               series.add(pair);
 
-					if (discreteDimension) {
-						if (currentDimension != null) {
-							pair.add(new JsonPrimitive(currentDimension
-									.toString()));
-						} else {
-							pair.add(new JsonPrimitive(UNDEFINED_STRING));
-						}
-					} else {
-						pair.add(new JsonPrimitive(((Long) currentDimension)
-								.longValue()));
-					}
-				}
+               // Add dimension to pair
 
-				if ((!discreteDimension && ((Long) getDimension(object))
-						.longValue() >= ((Long) currentDimension).longValue()
-						+ cumulationInterval)
-						|| getDimension(object) == null
-						|| !getDimension(object).equals(currentDimension)) {
-					// Close current interval
+               if (discreteDimension)
+               {
+                  if (currentDimension != null)
+                  {
+                     pair.add(new JsonPrimitive(currentDimension.toString()));
+                  }
+                  else
+                  {
+                     pair.add(new JsonPrimitive(UNDEFINED_STRING));
+                  }
+               }
+               else
+               {
+                  pair.add(new JsonPrimitive(((Long) currentDimension).longValue()));
+               }
+            }
 
-					System.out.println("Closing interval " + currentDimension
-							+ " and count " + count);
+            if ((!discreteDimension && ((Long) getDimension(object)).longValue() >= ((Long) currentDimension)
+                  .longValue() + cumulationInterval)
+                  || getDimension(object) == null || !getDimension(object).equals(currentDimension))
+            {
+               // Close current interval
 
-					if (allowsCumulants) {
-						double average = currentSum / count;
-						double sigma = count == 1 ? 0 : Math
-								.sqrt((currentSquareSum - currentSum
-										* currentSum / count)
-										/ count - 1);
+               System.out.println("Closing interval " + currentDimension + " and count " + count);
 
-						System.out.println("===> Average         " + average);
-						System.out.println("===> Sigma           " + sigma);
-						System.out.println("===> Current Minimum "
-								+ currentMinimum);
-						System.out.println("===> Current Maximum "
-								+ currentMaximum);
+               if (allowsCumulants)
+               {
+                  double average = currentSum / count;
+                  double sigma = count == 1 ? 0 : Math.sqrt((currentSquareSum - currentSum * currentSum / count)
+                        / count - 1);
 
-						pair.add(new JsonPrimitive(average - sigma));
-						pair.add(new JsonPrimitive(currentMinimum));
-						pair.add(new JsonPrimitive(currentMaximum));
-						pair.add(new JsonPrimitive(average + sigma));
-					} else {
-						pair.add(new JsonPrimitive(count));
-					}
+                  System.out.println("===> Average         " + average);
+                  System.out.println("===> Sigma           " + sigma);
+                  System.out.println("===> Current Minimum " + currentMinimum);
+                  System.out.println("===> Current Maximum " + currentMaximum);
 
-					if (discreteDimension) {
-						currentDimension = getDimension(object);
-					} else {
-						currentDimension = new Long(
-								((Long) currentDimension).longValue()
-										+ cumulationInterval);
-					}
+                  pair.add(new JsonPrimitive(average - sigma));
+                  pair.add(new JsonPrimitive(currentMinimum));
+                  pair.add(new JsonPrimitive(currentMaximum));
+                  pair.add(new JsonPrimitive(average + sigma));
+               }
+               else
+               {
+                  pair.add(new JsonPrimitive(count));
+               }
 
-					// Populate intervals between the last and the current one
+               if (discreteDimension)
+               {
+                  currentDimension = getDimension(object);
+               }
+               else
+               {
+                  currentDimension = new Long(((Long) currentDimension).longValue() + cumulationInterval);
+               }
 
-					while (!discreteDimension
-							&& ((Long) getDimension(object)).longValue() > ((Long) currentDimension)
-									.longValue() + cumulationInterval) {
-						pair = new JsonArray();
+               // Populate intervals between the last and the current one
 
-						series.add(pair);
+               while (!discreteDimension
+                     && ((Long) getDimension(object)).longValue() > ((Long) currentDimension).longValue()
+                           + cumulationInterval)
+               {
+                  pair = new JsonArray();
 
-						pair.add(new JsonPrimitive(((Long) currentDimension)
-								.longValue()));
+                  series.add(pair);
 
-						if (allowsCumulants) {
-							pair.add(new JsonPrimitive(0));
-							pair.add(new JsonPrimitive(0));
-							pair.add(new JsonPrimitive(0));
-							pair.add(new JsonPrimitive(0));
-						} else {
-							pair.add(new JsonPrimitive(0));
-						}
+                  pair.add(new JsonPrimitive(((Long) currentDimension).longValue()));
 
-						pair = null;
+                  if (allowsCumulants)
+                  {
+                     pair.add(new JsonPrimitive(0));
+                     pair.add(new JsonPrimitive(0));
+                     pair.add(new JsonPrimitive(0));
+                     pair.add(new JsonPrimitive(0));
+                  }
+                  else
+                  {
+                     pair.add(new JsonPrimitive(0));
+                  }
 
-						currentDimension = new Long(
-								((Long) currentDimension).longValue()
-										+ cumulationInterval);
-					}
+                  pair = null;
 
-					// Create new pair for current interval
+                  currentDimension = new Long(((Long) currentDimension).longValue() + cumulationInterval);
+               }
 
-					pair = new JsonArray();
+               // Create new pair for current interval
 
-					series.add(pair);
+               pair = new JsonArray();
 
-					// Add dimension to pair
+               series.add(pair);
 
-					if (discreteDimension) {
-						if (currentDimension == null) {
-							pair.add(new JsonPrimitive(""));
-						} else {
-							pair.add(new JsonPrimitive(currentDimension
-									.toString()));
-						}
-					} else {
-						pair.add(new JsonPrimitive(((Long) currentDimension)
-								.longValue()));
-					}
+               // Add dimension to pair
 
-					// (Re)initialize values
+               if (discreteDimension)
+               {
+                  if (currentDimension == null)
+                  {
+                     pair.add(new JsonPrimitive(""));
+                  }
+                  else
+                  {
+                     pair.add(new JsonPrimitive(currentDimension.toString()));
+                  }
+               }
+               else
+               {
+                  pair.add(new JsonPrimitive(((Long) currentDimension).longValue()));
+               }
 
-					count = 0;
-					currentValue = 0;
-					currentMaximum = 0;
-					currentMinimum = Double.MAX_VALUE;
-					currentSum = 0;
-					currentSquareSum = 0;
-				}
+               // (Re)initialize values
 
-				count++;
+               count = 0;
+               currentValue = 0;
+               currentMaximum = 0;
+               currentMinimum = Double.MAX_VALUE;
+               currentSum = 0;
+               currentSquareSum = 0;
+            }
 
-				if (allowsCumulants) {
-					currentValue = getFact(object);
-					currentMaximum = Math.max(currentValue, currentMaximum);
-					currentMinimum = Math.min(currentValue, currentMinimum);
-					currentSum += currentValue;
-					currentSquareSum += currentValue * currentValue;
+            count++;
 
-					System.out.println("New Value " + currentValue);
-					System.out.println("Minimum   " + currentMinimum);
-					System.out.println("Maximum   " + currentMaximum);
-				}
-			}
+            if (allowsCumulants)
+            {
+               currentValue = getFact(object);
+               currentMaximum = Math.max(currentValue, currentMaximum);
+               currentMinimum = Math.min(currentValue, currentMinimum);
+               currentSum += currentValue;
+               currentSquareSum += currentValue * currentValue;
 
-			// Close last open interval
+               System.out.println("New Value " + currentValue);
+               System.out.println("Minimum   " + currentMinimum);
+               System.out.println("Maximum   " + currentMaximum);
+            }
+         }
 
-			if (pair != null) {
-				System.out.println("Closing final interval " + count);
+         // Close last open interval
 
-				if (allowsCumulants) {
-					double average = currentSum / count;
-					double sigma = count == 1 ? 0 : Math
-							.sqrt((currentSquareSum - currentSum * currentSum
-									/ count)
-									/ count - 1);
+         if (pair != null)
+         {
+            System.out.println("Closing final interval " + count);
 
-					System.out.println("===> Average         " + average);
-					System.out.println("===> Sigma           " + sigma);
-					System.out
-							.println("===> Current Minimum " + currentMinimum);
-					System.out
-							.println("===> Current Maximum " + currentMaximum);
+            if (allowsCumulants)
+            {
+               double average = currentSum / count;
+               double sigma = count == 1 ? 0 : Math.sqrt((currentSquareSum - currentSum * currentSum / count) / count
+                     - 1);
 
-					pair.add(new JsonPrimitive(average - sigma));
-					pair.add(new JsonPrimitive(currentMinimum));
-					pair.add(new JsonPrimitive(currentMaximum));
-					pair.add(new JsonPrimitive(average + sigma));
-				} else {
-					pair.add(new JsonPrimitive(count));
-				}
-			}
-		}
+               System.out.println("===> Average         " + average);
+               System.out.println("===> Sigma           " + sigma);
+               System.out.println("===> Current Minimum " + currentMinimum);
+               System.out.println("===> Current Maximum " + currentMaximum);
 
-		return seriesGroup;
-	}
+               pair.add(new JsonPrimitive(average - sigma));
+               pair.add(new JsonPrimitive(currentMinimum));
+               pair.add(new JsonPrimitive(currentMaximum));
+               pair.add(new JsonPrimitive(average + sigma));
+            }
+            else
+            {
+               pair.add(new JsonPrimitive(count));
+            }
+         }
+      }
+
+      return seriesGroup;
+   }
 }
