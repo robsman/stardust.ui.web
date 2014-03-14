@@ -63,6 +63,8 @@ define(
 					this.wizardPanels.push(this.templatePanel);
 
 					this.primaryObjectSelect = jQuery("#primaryObjectSelect");
+					this.participantsSelect = jQuery("#participantsSelect");
+					
 					this.factSelect = jQuery("#factSelect");
 					this.chartTypeSelect = jQuery("#chartTypeSelect");
 
@@ -154,6 +156,25 @@ define(
 													self.updateView();
 												});
 
+										//Participants Select
+										self.participantsSelect.empty();
+										var modelParticipants = self.reportingService.modelData.participants;
+										for ( var n in modelParticipants) {
+											self.participantsSelect
+													.append("<option value='"
+															+ modelParticipants[n].id
+															+ "'>"
+															+ modelParticipants[n].name
+															+ "</option>");
+										}
+
+										self.participantsSelect.change(function() {
+											self.report.storage.location = "participantFolder";
+											self.report.storage.participant = self.participantsSelect.val();
+											self.updateView();
+										});
+
+										
 										self.chartTypeSelect
 												.change(function() {
 													self.report.layout.chart.type = self.chartTypeSelect

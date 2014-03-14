@@ -1194,7 +1194,8 @@ table.formTable td {
 													ng-model="report.storage.location"
 													value="participantFolder" /></td>
 												<td>{{getI18N('reporting.definitionView.organizationRoleReportTemplate.label')}}</td>
-												<td><select ng-model="report.storage.participant"></select>
+												<td>
+													<select id="participantsSelect"></select>
 												</td>
 											</tr>
 										</table>

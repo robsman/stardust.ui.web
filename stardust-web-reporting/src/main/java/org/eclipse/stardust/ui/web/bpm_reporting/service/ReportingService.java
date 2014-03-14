@@ -63,6 +63,7 @@ import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.engine.api.runtime.UserService;
 import org.eclipse.stardust.ui.web.bpm_reporting.service.rest.JsonMarshaller;
+import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 
@@ -74,6 +75,10 @@ import com.google.gson.JsonPrimitive;
 public class ReportingService
 {
    private static final Logger trace = LogManager.getLogger(ReportingService.class);
+   
+   private static final String PUBLIC_REPORT_DEFINITIONS_DIR = "/reports";
+   private static final String PARTICIPANTS_REPORT_DEFINITIONS_DIR = "/participants/reports/";
+   
    @Resource
    private SessionContext sessionContext;
    private DocumentManagementService documentManagementService;
@@ -340,12 +345,14 @@ public class ReportingService
          JsonObject participantsJson = new JsonObject();
 
          resultJson.add("participants", participantsJson);
+         
+         //List<QualifiedModelParticipantInfo> qParticipantInfoList = ParticipantUtils.fetchAllParticipants(true);
 
          for (Participant participant : getQueryService().getAllParticipants())
          {
             JsonObject participantJson = new JsonObject();
 
-            participantJson.addProperty("id", participant.getId());
+            participantJson.addProperty("id", participant.getQualifiedId());
             participantJson.addProperty("name", participant.getName());
 
             participantsJson.add(participant.getId(), participantJson);
@@ -1417,10 +1424,6 @@ public class ReportingService
       }
    }
 
-   // ===
-
-   private static final String PUBLIC_REPORT_DEFINITIONS_DIR = "/reports";
-
    /**
     * Returns the folder if exist otherwise create new folder
     * 
@@ -1473,7 +1476,7 @@ public class ReportingService
     */
    private String getParticipantDocumentFolderPath(String participant)
    {
-      return "/participants/" + participant + "/documents/reports/designs";
+      return PARTICIPANTS_REPORT_DEFINITIONS_DIR + participant;
    }
 
    /**
@@ -1482,9 +1485,10 @@ public class ReportingService
    public JsonObject loadReportDefinitions()
    {
       try
-      {
+      { 
          Folder publicFolder = findOrCreateFolder(PUBLIC_REPORT_DEFINITIONS_DIR);
          Folder personalFolder = findOrCreateFolder(getUserDocumentFolderPath());
+         Folder participantFolder = findOrCreateFolder(PARTICIPANTS_REPORT_DEFINITIONS_DIR);
 
          JsonObject rootFolderJson = new JsonObject();
          JsonArray subFoldersJson = new JsonArray();
@@ -1492,6 +1496,29 @@ public class ReportingService
 
          subFoldersJson.add(getReportDefinitions(publicFolder, "Public Report Definitions")); // I18N
          subFoldersJson.add(getReportDefinitions(personalFolder, "Personal Report Definitions")); // I18N
+         
+         //subFoldersJson.add(getReportDefinitions(participantFolder, "Participants Report Definitions")); // I18N
+         JsonArray reportDefinitionsJson = new JsonArray();
+         List<Folder> subfolders = participantFolder.getFolders();
+         
+         for (Folder participantSubFolder : subfolders)
+         {
+            //TODO check the permissions to current user
+            participantSubFolder = findOrCreateFolder(participantSubFolder.getPath());
+            JsonArray reportsJson = GsonUtils.extractJsonArray(getReportDefinitions(participantSubFolder, null),
+                  "reportDefinitions");
+            if (reportsJson != null && reportsJson.size() > 0)
+            {
+               reportDefinitionsJson.addAll(reportsJson); // I18N
+            }
+         }
+         JsonObject partitionFolderJson = new JsonObject(); // I18N
+         partitionFolderJson.addProperty("name", "Participants Report Definitions");
+         partitionFolderJson.addProperty("id", participantFolder.getId());
+         partitionFolderJson.addProperty("path", participantFolder.getPath());   
+         partitionFolderJson.add("reportDefinitions", reportDefinitionsJson);
+         
+         subFoldersJson.add(partitionFolderJson); 
 
          return rootFolderJson;
       }
@@ -1513,32 +1540,42 @@ public class ReportingService
    private JsonObject getReportDefinitions(Folder folder, String label)
    {
       JsonObject folderJson = new JsonObject();
-      folderJson.addProperty("name", label);
-      folderJson.addProperty("id", folder.getId());
-      folderJson.addProperty("path", folder.getPath());
-      JsonArray reportDefinitionsJson = new JsonArray();
-      folderJson.add("reportDefinitions", reportDefinitionsJson);
 
-      @SuppressWarnings("unchecked")
-      List<Document> candidateReportDefinitionsDocuments = folder.getDocuments();
-
-      for (Document reportDefinitionDocument : candidateReportDefinitionsDocuments)
+      if (StringUtils.isNotEmpty(label))
       {
-         if (reportDefinitionDocument.getName().endsWith(".bpmrpt"))
+         folderJson.addProperty("name", label);
+         folderJson.addProperty("id", folder.getId());
+         folderJson.addProperty("path", folder.getPath());
+      }
+      
+      if (folder != null)
+      {
+         JsonArray reportDefinitionsJson = new JsonArray();
+         folderJson.add("reportDefinitions", reportDefinitionsJson);
+
+         @SuppressWarnings("unchecked")
+         List<Document> candidateReportDefinitionsDocuments = folder.getDocuments();
+
+         for (Document reportDefinitionDocument : candidateReportDefinitionsDocuments)
          {
-            String content = new String(getDocumentManagementService().retrieveDocumentContent(
-                  reportDefinitionDocument.getId()));
+            if (reportDefinitionDocument.getName().endsWith(".bpmrpt"))
+            {
+               String content = new String(getDocumentManagementService().retrieveDocumentContent(
+                     reportDefinitionDocument.getId()));
 
-            JsonObject reportDefinitionJson = jsonIo.readJsonObject(content);
+               JsonObject reportDefinitionJson = jsonIo.readJsonObject(content);
 
-            reportDefinitionsJson.add(reportDefinitionJson);
-            reportDefinitionJson.addProperty("id", reportDefinitionDocument.getId());
-            reportDefinitionJson.addProperty("name",
-                  reportDefinitionDocument.getName()
-                        .substring(0, reportDefinitionDocument.getName().indexOf(".bpmrpt")));
-            reportDefinitionJson.addProperty("path", reportDefinitionDocument.getPath());
+               reportDefinitionsJson.add(reportDefinitionJson);
+               reportDefinitionJson.addProperty("id", reportDefinitionDocument.getId());
+               reportDefinitionJson.addProperty(
+                     "name",
+                     reportDefinitionDocument.getName().substring(0,
+                           reportDefinitionDocument.getName().indexOf(".bpmrpt")));
+               reportDefinitionJson.addProperty("path", reportDefinitionDocument.getPath());
+            }
          }
       }
+
       return folderJson;
    }
 
