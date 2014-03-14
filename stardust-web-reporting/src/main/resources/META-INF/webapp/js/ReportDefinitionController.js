@@ -2,9 +2,10 @@ define(
 		[ "bpm-reporting/js/I18NUtils", "bpm-reporting/js/AngularAdapter",
 				"bpm-reporting/js/ReportingService",
 				"bpm-reporting/js/ReportRenderingController",
-				"bpm-reporting/js/SchedulingController" ],
+				"bpm-reporting/js/SchedulingController",
+				"bpm-reporting/js/utils" ],
 		function(I18NUtils, AngularAdapter, ReportingService,
-				ReportRenderingController, SchedulingController) {
+				ReportRenderingController, SchedulingController, utils) {
 			return {
 				create : function(angular, name, path) {
 					var controller = new ReportDefinitionController();
@@ -996,6 +997,7 @@ define(
 				ReportDefinitionController.prototype.getNextExecutionTime = function(
 						e) {
 					var date = new Date(); // Now
+					
 
 					console.log("Start Date");
 					console
@@ -1054,7 +1056,8 @@ define(
 						return "(Unknown)";
 					}
 				};
-
+				
+				
 				/**
 				 * 
 				 */
@@ -1185,5 +1188,58 @@ define(
 
 					return "";
 				};
+				
+				ReportDefinitionController.prototype.getExecutionTime = function() {
+               return {
+                  '01' : I18NUtils.getProperty('reporting.definitionView.executionTime.1200AM.label'),
+                  '02' : I18NUtils.getProperty('reporting.definitionView.executionTime.1230AM.label'),
+                  '03' : I18NUtils.getProperty('reporting.definitionView.executionTime.0100AM.label'),
+                  '04' : I18NUtils.getProperty('reporting.definitionView.executionTime.0130AM.label'),
+                  '05' : I18NUtils.getProperty('reporting.definitionView.executionTime.0200AM.label'),
+                  '06' : I18NUtils.getProperty('reporting.definitionView.executionTime.0230AM.label'),
+                  '07' : I18NUtils.getProperty('reporting.definitionView.executionTime.0300AM.label'),
+                  '08' : I18NUtils.getProperty('reporting.definitionView.executionTime.0330AM.label'),
+                  '09' : I18NUtils.getProperty('reporting.definitionView.executionTime.0400AM.label'),
+                  '10': I18NUtils.getProperty('reporting.definitionView.executionTime.0430AM.label'),
+                  '11': I18NUtils.getProperty('reporting.definitionView.executionTime.0500AM.label'),
+                  '12': I18NUtils.getProperty('reporting.definitionView.executionTime.0530AM.label'),
+                  '13': I18NUtils.getProperty('reporting.definitionView.executionTime.0600AM.label'),
+                  '14': I18NUtils.getProperty('reporting.definitionView.executionTime.0630AM.label'),
+                  '15': I18NUtils.getProperty('reporting.definitionView.executionTime.0700AM.label'),
+                  '16': I18NUtils.getProperty('reporting.definitionView.executionTime.0730AM.label'),
+                  '17': I18NUtils.getProperty('reporting.definitionView.executionTime.0800AM.label'),
+                  '18': I18NUtils.getProperty('reporting.definitionView.executionTime.0830AM.label'),
+                  '19': I18NUtils.getProperty('reporting.definitionView.executionTime.0900AM.label'),
+                  '20': I18NUtils.getProperty('reporting.definitionView.executionTime.0930AM.label'),
+                  '21': I18NUtils.getProperty('reporting.definitionView.executionTime.1000AM.label'),
+                  '22': I18NUtils.getProperty('reporting.definitionView.executionTime.1030AM.label'),
+                  '23': I18NUtils.getProperty('reporting.definitionView.executionTime.1100AM.label'),
+                  '24': I18NUtils.getProperty('reporting.definitionView.executionTime.1130AM.label'),
+                  '25': I18NUtils.getProperty('reporting.definitionView.executionTime.1200PM.label'),
+                  '26': I18NUtils.getProperty('reporting.definitionView.executionTime.1230PM.label'),
+                  '27': I18NUtils.getProperty('reporting.definitionView.executionTime.0100PM.label'),
+                  '28': I18NUtils.getProperty('reporting.definitionView.executionTime.0130PM.label'),
+                  '29': I18NUtils.getProperty('reporting.definitionView.executionTime.0200PM.label'),
+                  '30': I18NUtils.getProperty('reporting.definitionView.executionTime.0230PM.label'),
+                  '31': I18NUtils.getProperty('reporting.definitionView.executionTime.0300PM.label'),
+                  '32': I18NUtils.getProperty('reporting.definitionView.executionTime.0330PM.label'),
+                  '33': I18NUtils.getProperty('reporting.definitionView.executionTime.0400PM.label'),
+                  '34': I18NUtils.getProperty('reporting.definitionView.executionTime.0430PM.label'),
+                  '35': I18NUtils.getProperty('reporting.definitionView.executionTime.0500PM.label'),
+                  '36': I18NUtils.getProperty('reporting.definitionView.executionTime.0530PM.label'),
+                  '37': I18NUtils.getProperty('reporting.definitionView.executionTime.0600PM.label'),
+                  '38': I18NUtils.getProperty('reporting.definitionView.executionTime.0630PM.label'),
+                  '39': I18NUtils.getProperty('reporting.definitionView.executionTime.0700PM.label'),
+                  '40': I18NUtils.getProperty('reporting.definitionView.executionTime.0730PM.label'),
+                  '41': I18NUtils.getProperty('reporting.definitionView.executionTime.0800PM.label'),
+                  '42': I18NUtils.getProperty('reporting.definitionView.executionTime.0830PM.label'),
+                  '43': I18NUtils.getProperty('reporting.definitionView.executionTime.0900PM.label'),
+                  '44': I18NUtils.getProperty('reporting.definitionView.executionTime.0930PM.label'),
+                  '45': I18NUtils.getProperty('reporting.definitionView.executionTime.1000PM.label'),
+                  '46': I18NUtils.getProperty('reporting.definitionView.executionTime.1030PM.label'),
+                  '47': I18NUtils.getProperty('reporting.definitionView.executionTime.1100PM.label'),
+                  '48': I18NUtils.getProperty('reporting.definitionView.executionTime.1130PM.label')
+                     };
+            };
 			}
 		});
