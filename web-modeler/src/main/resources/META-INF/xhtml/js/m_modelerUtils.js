@@ -44,7 +44,7 @@ define(
 
 				openParticipantView : openParticipantView,
 
-				openTypeDeclarationView : openTypeDeclarationView
+				openTypeDeclarationView : openTypeDeclarationView,
 
 				fixDivTop : fixDivTop
 			};
