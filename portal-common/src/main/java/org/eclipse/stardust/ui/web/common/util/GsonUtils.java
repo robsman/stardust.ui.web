@@ -173,6 +173,19 @@ public class GsonUtils
             : null;
    }
 
+   /**
+    * @param json
+    * @param memberName
+    * @return
+    */
+   public static JsonArray extractJsonArray(JsonObject json, String memberName)
+   {
+      JsonElement member = json.get(memberName);
+      return (null != member) && member.isJsonArray()
+            ? (JsonArray) member.getAsJsonArray()
+            : null;
+   }
+   
    public static Boolean extractBoolean(JsonObject json, String memberName)
    {
       return extractBoolean(json, memberName, null);
