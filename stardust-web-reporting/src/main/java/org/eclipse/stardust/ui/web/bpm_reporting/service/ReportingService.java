@@ -19,10 +19,14 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Resource;
 import javax.script.Bindings;
@@ -31,6 +35,8 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import javax.script.SimpleScriptContext;
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
@@ -40,11 +46,14 @@ import org.eclipse.stardust.engine.api.dto.ActivityInstanceDetails;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetails;
 import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.Participant;
+import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
+import org.eclipse.stardust.engine.api.model.QualifiedModelParticipantInfo;
 import org.eclipse.stardust.engine.api.query.ActivityFilter;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.ActivityStateFilter;
 import org.eclipse.stardust.engine.api.query.DataFilter;
+import org.eclipse.stardust.engine.api.query.DeployedModelQuery;
 import org.eclipse.stardust.engine.api.query.DescriptorPolicy;
 import org.eclipse.stardust.engine.api.query.ProcessDefinitionFilter;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
@@ -52,6 +61,7 @@ import org.eclipse.stardust.engine.api.query.ProcessStateFilter;
 import org.eclipse.stardust.engine.api.query.UnsupportedFilterException;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
+import org.eclipse.stardust.engine.api.runtime.DeployedModelDescription;
 import org.eclipse.stardust.engine.api.runtime.DmsUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentInfo;
@@ -63,9 +73,13 @@ import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.engine.api.runtime.UserService;
 import org.eclipse.stardust.ui.web.bpm_reporting.service.rest.JsonMarshaller;
+import org.eclipse.stardust.ui.web.common.app.PortalApplication;
+import org.eclipse.stardust.ui.web.common.spi.user.User;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
+import org.eclipse.stardust.ui.web.html5.rest.RestControllerUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -346,9 +360,9 @@ public class ReportingService
 
          resultJson.add("participants", participantsJson);
          
-         //List<QualifiedModelParticipantInfo> qParticipantInfoList = ParticipantUtils.fetchAllParticipants(true);
+         List<QualifiedModelParticipantInfo> qParticipantInfoList = getAllModelParticipants(false);
 
-         for (Participant participant : getQueryService().getAllParticipants())
+         for (QualifiedModelParticipantInfo participant : qParticipantInfoList)
          {
             JsonObject participantJson = new JsonObject();
 
@@ -365,6 +379,51 @@ public class ReportingService
       }
    }
 
+   //TODO: move this method to ViewsCommon#ParticipantUtils later
+   // do we need to cache models/ participants for better performances
+   
+   public List<QualifiedModelParticipantInfo> getAllModelParticipants(boolean filterPredefinedModel)
+   {
+      Collection<DeployedModelDescription> allModels = getQueryService().getModels(DeployedModelQuery.findAll());
+      List<QualifiedModelParticipantInfo> allParticipants = new ArrayList<QualifiedModelParticipantInfo>();
+      Set<String> allParticipantQIDs = new HashSet<String>();
+      boolean isAdminAdded = false;
+
+      for (DeployedModelDescription model : allModels)
+      {
+         if (filterPredefinedModel && PredefinedConstants.PREDEFINED_MODEL_ID.equals(model.getId()))
+         {
+            continue;
+         }
+         List<Participant> participants = getQueryService().getModel(model.getModelOID()).getAllParticipants();
+         
+         for (Participant participant : participants)
+         {
+            if (participant instanceof QualifiedModelParticipantInfo)
+            {
+               boolean isAdminRole = ParticipantUtils.isAdministratorRole(participant);
+
+               // Administrator should be added only once
+               if (!isAdminAdded && isAdminRole)
+               {
+                  allParticipants.add((QualifiedModelParticipantInfo) participant);
+                  isAdminAdded = true;
+               }
+               else if (!isAdminRole)
+               {
+                  if (!allParticipantQIDs.contains(participant.getQualifiedId()))
+                  {
+                     allParticipants.add((QualifiedModelParticipantInfo) participant);
+                     allParticipantQIDs.add(participant.getQualifiedId());
+                  }
+               }
+            }
+         }
+      }
+      return allParticipants;
+   }
+   
+   
    /**
     * 
     * @return
@@ -1481,8 +1540,10 @@ public class ReportingService
 
    /**
     * TODO Split off persistence part
+    * @param servletContext 
+    * @param httpRequest 
     */
-   public JsonObject loadReportDefinitions()
+   public JsonObject loadReportDefinitions(ServletContext servletContext, HttpServletRequest httpRequest)
    {
       try
       { 
@@ -1501,15 +1562,23 @@ public class ReportingService
          JsonArray reportDefinitionsJson = new JsonArray();
          List<Folder> subfolders = participantFolder.getFolders();
          
+         PortalApplication pa = (PortalApplication) RestControllerUtils.resolveSpringBean("ippPortalApp",
+               servletContext);
+         User loggedInUser = pa.getLoggedInUser();
+         
          for (Folder participantSubFolder : subfolders)
          {
-            //TODO check the permissions to current user
             participantSubFolder = findOrCreateFolder(participantSubFolder.getPath());
-            JsonArray reportsJson = GsonUtils.extractJsonArray(getReportDefinitions(participantSubFolder, null),
-                  "reportDefinitions");
-            if (reportsJson != null && reportsJson.size() > 0)
+
+            // check the permissions to current user
+            if (loggedInUser.isInRole(participantSubFolder.getName()) || loggedInUser.isAdministrator())
             {
-               reportDefinitionsJson.addAll(reportsJson); // I18N
+               JsonArray reportsJson = GsonUtils.extractJsonArray(getReportDefinitions(participantSubFolder, null),
+                     "reportDefinitions");
+               if (reportsJson != null && reportsJson.size() > 0)
+               {
+                  reportDefinitionsJson.addAll(reportsJson); // I18N
+               }
             }
          }
          JsonObject partitionFolderJson = new JsonObject(); // I18N

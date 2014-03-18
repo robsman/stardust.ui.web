@@ -116,7 +116,7 @@ public class ReportingResource
    {
       try
       {
-         return Response.ok(getReportingService().loadReportDefinitions().toString(), MediaType.APPLICATION_JSON)
+         return Response.ok(getReportingService().loadReportDefinitions(servletContext, httpRequest).toString(), MediaType.APPLICATION_JSON)
                .build();
       }
       catch (Exception e)
