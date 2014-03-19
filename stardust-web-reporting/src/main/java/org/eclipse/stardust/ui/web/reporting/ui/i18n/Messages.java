@@ -1,4 +1,4 @@
-package org.eclipse.stardust.ui.web.bpm_reporting.portal.messages;
+package org.eclipse.stardust.ui.web.reporting.ui.i18n;
 
 import java.util.ResourceBundle;
 
@@ -8,11 +8,11 @@ import org.eclipse.stardust.common.reflect.Reflect;
 import org.eclipse.stardust.ui.web.common.util.AbstractMessageBean;
 
 /**
- * 
+ *
  * @author Marc.Gille
- * 
+ *
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "serial"})
 public class Messages extends AbstractMessageBean
 {
    private static final String BUNDLE_NAME = "bpm-reporting-messages";

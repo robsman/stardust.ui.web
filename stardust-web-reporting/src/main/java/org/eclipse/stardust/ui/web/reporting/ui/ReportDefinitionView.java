@@ -1,4 +1,4 @@
-package org.eclipse.stardust.ui.web.bpm_reporting.portal;
+package org.eclipse.stardust.ui.web.reporting.ui;
 
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
 

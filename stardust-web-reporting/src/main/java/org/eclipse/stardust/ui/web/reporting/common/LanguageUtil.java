@@ -1,4 +1,4 @@
-package org.eclipse.stardust.ui.web.bpm_reporting.common;
+package org.eclipse.stardust.ui.web.reporting.common;
 
 import java.util.HashMap;
 import java.util.Locale;

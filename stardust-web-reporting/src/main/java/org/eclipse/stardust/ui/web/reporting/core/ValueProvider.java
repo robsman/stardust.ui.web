@@ -1,4 +1,4 @@
-package org.eclipse.stardust.ui.web.bpm_reporting.service;
+package org.eclipse.stardust.ui.web.reporting.core;
 
 /**
  * 

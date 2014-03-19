@@ -9,7 +9,7 @@
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
 
-package org.eclipse.stardust.ui.web.bpm_reporting.portal;
+package org.eclipse.stardust.ui.web.reporting.ui;
 
 import javax.faces.context.FacesContext;
 

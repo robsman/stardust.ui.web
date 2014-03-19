@@ -9,7 +9,7 @@
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
 
-package org.eclipse.stardust.ui.web.bpm_reporting.service;
+package org.eclipse.stardust.ui.web.reporting.core;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -72,12 +72,11 @@ import org.eclipse.stardust.engine.api.runtime.ProcessInstanceState;
 import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.engine.api.runtime.UserService;
-import org.eclipse.stardust.ui.web.bpm_reporting.common.ModelCache;
-import org.eclipse.stardust.ui.web.bpm_reporting.service.rest.JsonMarshaller;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.spi.user.User;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.html5.rest.RestControllerUtils;
+import org.eclipse.stardust.ui.web.reporting.common.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;

@@ -1,4 +1,4 @@
-package org.eclipse.stardust.ui.web.bpm_reporting.service.rest;
+package org.eclipse.stardust.ui.web.reporting.core;
 
 import java.util.Enumeration;
 import java.util.MissingResourceException;
@@ -23,9 +23,8 @@ import javax.ws.rs.core.Response.Status;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.ui.web.bpm_reporting.common.LanguageUtil;
-import org.eclipse.stardust.ui.web.bpm_reporting.service.ReportingService;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
+import org.eclipse.stardust.ui.web.reporting.common.LanguageUtil;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

@@ -8,7 +8,7 @@
  * Contributors:
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
-package org.eclipse.stardust.ui.web.bpm_reporting.common;
+package org.eclipse.stardust.ui.web.reporting.common;
 
 import java.io.Serializable;
 import java.util.ArrayList;
