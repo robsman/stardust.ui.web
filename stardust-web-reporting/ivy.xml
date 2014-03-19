@@ -48,8 +48,6 @@
          conf="stardust-web-reporting-compile->carnot-engine-compile" />
       <dependency org="org.eclipse.stardust.engine" name="infinity-process-engine-module" rev="${ipp.version.full}"
          conf="stardust-web-reporting-compile->logging-slf4j-log4j-module-compile" />
-      <dependency org="org.eclipse.stardust.engine" name="stardust-engine-ws-cxf" rev="${ipp.version.full}"
-         conf="stardust-web-reporting-compile->stardust-engine-ws-cxf-compile" />
       <dependency org="org.eclipse.stardust.ui.web" name="ipp-portal-common" rev="${ipp.version.full}"
          conf="stardust-web-reporting-compile->ipp-portal-common-compile" />
       <dependency org="org.eclipse.stardust.ui.web" name="ipp-views-common" rev="${ipp.version.full}"

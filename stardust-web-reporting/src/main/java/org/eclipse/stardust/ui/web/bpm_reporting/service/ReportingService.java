@@ -53,7 +53,6 @@ import org.eclipse.stardust.engine.api.query.ActivityFilter;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.ActivityStateFilter;
 import org.eclipse.stardust.engine.api.query.DataFilter;
-import org.eclipse.stardust.engine.api.query.DeployedModelQuery;
 import org.eclipse.stardust.engine.api.query.DescriptorPolicy;
 import org.eclipse.stardust.engine.api.query.ProcessDefinitionFilter;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
@@ -61,6 +60,7 @@ import org.eclipse.stardust.engine.api.query.ProcessStateFilter;
 import org.eclipse.stardust.engine.api.query.UnsupportedFilterException;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
+import org.eclipse.stardust.engine.api.runtime.DeployedModel;
 import org.eclipse.stardust.engine.api.runtime.DeployedModelDescription;
 import org.eclipse.stardust.engine.api.runtime.DmsUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
@@ -72,6 +72,7 @@ import org.eclipse.stardust.engine.api.runtime.ProcessInstanceState;
 import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.engine.api.runtime.UserService;
+import org.eclipse.stardust.ui.web.bpm_reporting.common.ModelCache;
 import org.eclipse.stardust.ui.web.bpm_reporting.service.rest.JsonMarshaller;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.spi.user.User;
@@ -312,7 +313,7 @@ public class ReportingService
     * 
     * @return
     */
-   public JsonObject getModelData()
+   public JsonObject getModelData(ServletContext servletContext)
    {
       try
       {
@@ -360,7 +361,7 @@ public class ReportingService
 
          resultJson.add("participants", participantsJson);
          
-         List<QualifiedModelParticipantInfo> qParticipantInfoList = getAllModelParticipants(false);
+         List<QualifiedModelParticipantInfo> qParticipantInfoList = getAllModelParticipants(servletContext, sessionContext, false);
 
          for (QualifiedModelParticipantInfo participant : qParticipantInfoList)
          {
@@ -382,9 +383,10 @@ public class ReportingService
    //TODO: move this method to ViewsCommon#ParticipantUtils later
    // do we need to cache models/ participants for better performances
    
-   public List<QualifiedModelParticipantInfo> getAllModelParticipants(boolean filterPredefinedModel)
+   public static List<QualifiedModelParticipantInfo> getAllModelParticipants(ServletContext servletContext, SessionContext sessionContext, boolean filterPredefinedModel)
    {
-      Collection<DeployedModelDescription> allModels = getQueryService().getModels(DeployedModelQuery.findAll());
+      Collection<DeployedModel> allModels = ModelCache.getModelCache(sessionContext, servletContext).getActiveModels();
+         
       List<QualifiedModelParticipantInfo> allParticipants = new ArrayList<QualifiedModelParticipantInfo>();
       Set<String> allParticipantQIDs = new HashSet<String>();
       boolean isAdminAdded = false;
@@ -395,7 +397,7 @@ public class ReportingService
          {
             continue;
          }
-         List<Participant> participants = getQueryService().getModel(model.getModelOID()).getAllParticipants();
+         Collection<Participant> participants = ModelCache.getModelCache(sessionContext, servletContext).getAllParticipants();
          
          for (Participant participant : participants)
          {

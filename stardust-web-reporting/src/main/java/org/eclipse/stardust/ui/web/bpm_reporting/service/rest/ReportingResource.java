@@ -75,7 +75,7 @@ public class ReportingResource
    {
       try
       {
-         return Response.ok(getReportingService().getModelData().toString(), MediaType.APPLICATION_JSON_TYPE).build();
+         return Response.ok(getReportingService().getModelData(servletContext).toString(), MediaType.APPLICATION_JSON_TYPE).build();
       }
       catch (Exception e)
       {
