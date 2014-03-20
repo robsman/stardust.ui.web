@@ -65,10 +65,8 @@ define(
 					jQuery("#refreshReports").click(function() {
 						self.loadReportDefinitionsFolderStructure();
 					});
-					window.top.addEventListener('message', function(event) {
-						if (event.data === "BPM-REPORTING-REPORT-CREATED") {
+					window.parent.EventHub.events.subscribe("BPM-REPORTING-REPORT-CREATED", function(event) {
 							self.loadReportDefinitionsFolderStructure();
-						}
 					}, false);
 					jQuery("#reportTree")
 							.jstree(

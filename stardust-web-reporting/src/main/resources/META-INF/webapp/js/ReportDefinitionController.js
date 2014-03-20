@@ -832,10 +832,7 @@ define(
 							.done(
 									function(report) {
 										self.report = report;
-										window.top.postMessage(
-												"BPM-REPORTING-REPORT-CREATED",
-												self.reportingService
-														.getRootUrl());
+										window.parent.EventHub.events.publish("BPM-REPORTING-REPORT-CREATED");
 									});
 				};
 
