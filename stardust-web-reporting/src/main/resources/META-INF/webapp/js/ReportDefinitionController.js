@@ -833,6 +833,7 @@ define(
 									function(report) {
 										self.report = report;
 										window.parent.EventHub.events.publish("BPM-REPORTING-REPORT-CREATED");
+										self.updateView();
 									});
 				};
 
