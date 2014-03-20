@@ -336,6 +336,9 @@ define(
 				selectdata = m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.gateway.typeSelect.xor");
 				gatewayTypeInputselect.append("<option value=\"xor\">"+selectdata+"</option>" );
 
+				selectdata = m_i18nUtils.getProperty("modeler.diagram.toolbar.tool.gateway.typeSelect.or");
+				gatewayTypeInputselect.append("<option value=\"or\">"+selectdata+"</option>" );
+				
 				m_utils.jQuerySelect("#gatewayid")
 				.text(m_i18nUtils.getProperty("modeler.element.properties.commonProperties.gateway"));
 

@@ -927,6 +927,12 @@ public class ModelElementMarshaller implements ModelMarshaller
                activityJson.addProperty(ModelerConstants.GATEWAY_TYPE_PROPERTY,
                      ModelerConstants.AND_GATEWAY_TYPE);
             }
+            else if (activity.getJoin().equals(JoinSplitType.OR_LITERAL)
+                  && activity.getSplit().equals(JoinSplitType.OR_LITERAL))
+            {
+               activityJson.addProperty(ModelerConstants.GATEWAY_TYPE_PROPERTY,
+                     ModelerConstants.OR_GATEWAY_TYPE);
+            }
             else
             {
                // Default behavior for incorrectly defined Gateways

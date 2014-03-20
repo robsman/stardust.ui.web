@@ -195,27 +195,29 @@ define(
 					this.addToPrimitives(this.xorPath);
 					this.addToEditableTextPrimitives(this.xorPath);
 
-					if (this.modelElement.gatewayType == "and") {
-						this.andPath.show();
-					} else {
-						this.xorPath.show();
-					}
-
 					this.orCircle = this.diagram.canvasManager
-							.drawCircle(
-									this.x
-											+ m_constants.GATEWAY_SYMBOL_OR_RADIUS,
-									this.y
-											+ m_constants.GATEWAY_SYMBOL_OR_RADIUS,
-									m_constants.GATEWAY_SYMBOL_OR_RADIUS,
-									{
-										"stroke" : m_constants.GATEWAY_SYMBOL_DEFAULTSTROKE_COLOR,
-										'stroke-width' : m_constants.GATEWAY_SYMBOL_OR_STROKE_WIDTH
-									});
+					.drawCircle(
+							this.x
+									+ m_constants.GATEWAY_SYMBOL_OR_RADIUS,
+							this.y
+									+ m_constants.GATEWAY_SYMBOL_OR_RADIUS,
+							m_constants.GATEWAY_SYMBOL_OR_RADIUS,
+							{
+								"stroke" : m_constants.GATEWAY_SYMBOL_DEFAULTSTROKE_COLOR,
+								'stroke-width' : m_constants.GATEWAY_SYMBOL_OR_STROKE_WIDTH
+							});
 
 					this.orCircle.hide();
 					this.addToPrimitives(this.orCircle);
 					this.addToEditableTextPrimitives(this.orCircle);
+			
+					if (this.modelElement.gatewayType == "and") {
+						this.andPath.show();
+					} else if(this.modelElement.gatewayType == "xor"){
+						this.xorPath.show();
+					} else{
+						this.orCircle.show();
+					}
 
 					this.text = this.diagram.canvasManager.drawTextNode(
 							this.x + 0.5 * this.width,
@@ -377,7 +379,7 @@ define(
 						'x' : x - m_constants.FLY_OUT_MENU_CONTENT_MARGIN,
 						'y' : y - m_constants.FLY_OUT_MENU_EMPTY_MARGIN,
 						'width' : width + 2
-								* m_constants.FLY_OUT_MENU_CONTENT_MARGIN,
+								* m_constants.FLY_OUT_MENU_CONTENT_MARGIN + 5,
 						'height' : this.getFlyoutMenuHeight(height)
 					});
 
@@ -416,7 +418,7 @@ define(
 											+ width
 											+ m_constants.FLY_OUT_MENU_CONTENT_MARGIN
 											- m_constants.FLY_OUT_MENU_ITEM_MARGIN
-											- 16,
+											-5,
 									y : y
 											- m_constants.FLY_OUT_MENU_EMPTY_MARGIN
 											+ m_constants.FLY_OUT_MENU_ITEM_MARGIN
@@ -547,6 +549,12 @@ define(
 												imageWidth : 16,
 												imageHeight : 16,
 												clickHandler : GatewaySymbol_switchToAndGatewayClosure
+											},
+											{
+												imageUrl : "plugins/bpm-modeler/images/icons/gateway-or.png",
+												imageWidth : 16,
+												imageHeight : 16,
+												clickHandler : GatewaySymbol_switchToOrGatewayClosure
 											}
 
 									]);
@@ -591,6 +599,7 @@ define(
 				GatewaySymbol.prototype.switchToAndGateway = function() {
 					this.modelElement.gatewayType = m_constants.AND_GATEWAY_TYPE;
 					this.xorPath.hide();
+					this.orCircle.hide();
 					this.andPath.show();
 					this.submitChanges();
 				};
@@ -598,7 +607,16 @@ define(
 				GatewaySymbol.prototype.switchToXorGateway = function() {
 					this.modelElement.gatewayType = m_constants.XOR_GATEWAY_TYPE;
 					this.andPath.hide();
+					this.orCircle.hide();
 					this.xorPath.show();
+					this.submitChanges();
+				};
+				
+				GatewaySymbol.prototype.switchToOrGateway = function() {
+					this.modelElement.gatewayType = m_constants.OR_GATEWAY_TYPE;
+					this.andPath.hide();
+					this.xorPath.hide();
+					this.orCircle.show();
 					this.submitChanges();
 				};
 
@@ -719,5 +737,12 @@ define(
 			 */
 			function GatewaySymbol_switchToAndGatewayClosure() {
 				this.auxiliaryProperties.callbackScope.switchToAndGateway();
+			}
+			
+			/**
+			 *
+			 */
+			function GatewaySymbol_switchToOrGatewayClosure() {
+				this.auxiliaryProperties.callbackScope.switchToOrGateway();
 			}
 		});
