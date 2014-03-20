@@ -10,7 +10,7 @@
 		http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/portal/common/uiDefinition.xsd">
 
 	<context:annotation-config />
-	<context:component-scan base-package="org.eclipse.stardust.ui.web.bpm_reporting" />
+	<context:component-scan base-package="org.eclipse.stardust.ui.web.reporting" />
 
 	<bean name="bpmReportingMessages"
 		class="org.eclipse.stardust.ui.web.reporting.ui.i18n.Messages"
