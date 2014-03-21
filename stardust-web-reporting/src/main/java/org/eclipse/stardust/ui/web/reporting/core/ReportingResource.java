@@ -5,6 +5,7 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 
+import javax.annotation.Resource;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -31,9 +32,9 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 /**
- * 
+ *
  * @author Marc.Gille
- * 
+ *
  */
 @Path("/")
 public class ReportingResource
@@ -41,6 +42,8 @@ public class ReportingResource
    private static final Logger trace = LogManager.getLogger(ReportingResource.class);
    private final JsonMarshaller jsonIo = new JsonMarshaller();
    private final Gson prettyPrinter = new GsonBuilder().setPrettyPrinting().create();
+
+   @Resource
    private ReportingService reportingService;
 
    @Context
@@ -49,24 +52,6 @@ public class ReportingResource
    @Context
    private ServletContext servletContext;
 
-   /**
-    * 
-    * @return
-    */
-   public ReportingService getReportingService()
-   {
-      return reportingService;
-   }
-
-   /**
-    * 
-    * @param reportingService
-    */
-   public void setReportingService(ReportingService reportingService)
-   {
-      this.reportingService = reportingService;
-   }
-
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("model-data")
@@ -74,7 +59,7 @@ public class ReportingResource
    {
       try
       {
-         return Response.ok(getReportingService().getModelData(servletContext).toString(), MediaType.APPLICATION_JSON_TYPE).build();
+         return Response.ok(reportingService.getModelData().toString(), MediaType.APPLICATION_JSON_TYPE).build();
       }
       catch (Exception e)
       {
@@ -97,7 +82,7 @@ public class ReportingResource
 
          JsonObject json = jsonIo.readJsonObject(postedData);
 
-         return Response.ok(getReportingService().getReportData(json).toString(), MediaType.APPLICATION_JSON_TYPE)
+         return Response.ok(reportingService.getReportData(json).toString(), MediaType.APPLICATION_JSON_TYPE)
                .build();
       }
       catch (Exception e)
@@ -115,7 +100,7 @@ public class ReportingResource
    {
       try
       {
-         return Response.ok(getReportingService().loadReportDefinitions(servletContext, httpRequest).toString(), MediaType.APPLICATION_JSON)
+         return Response.ok(reportingService.loadReportDefinitions().toString(), MediaType.APPLICATION_JSON)
                .build();
       }
       catch (Exception e)
@@ -133,7 +118,7 @@ public class ReportingResource
    {
       try
       {
-         return Response.ok(getReportingService().loadReportDefinition("/" + path).toString(),
+         return Response.ok(reportingService.loadReportDefinition("/" + path).toString(),
                MediaType.APPLICATION_JSON).build();
       }
       catch (Exception e)
@@ -145,10 +130,10 @@ public class ReportingResource
    }
 
    /**
-    * 
+    *
     * @param postedData
     * @return
-    * 
+    *
     * @deprecated Use GET instead
     */
    @POST
@@ -163,7 +148,7 @@ public class ReportingResource
 
          JsonObject json = jsonIo.readJsonObject(postedData);
 
-         return Response.ok(getReportingService().loadReportDefinition(json.get("path").getAsString()).toString(),
+         return Response.ok(reportingService.loadReportDefinition(json.get("path").getAsString()).toString(),
                MediaType.APPLICATION_JSON).build();
       }
       catch (Exception e)
@@ -190,7 +175,7 @@ public class ReportingResource
 
          if (operation.equals("rename"))
          {
-            getReportingService()
+            reportingService
                   .renameReportDefinition(json.get("path").getAsString(), json.get("name").getAsString());
 
             return Response.ok("", MediaType.TEXT_PLAIN).build();
@@ -198,7 +183,7 @@ public class ReportingResource
          else
          {
             JsonObject reportJson = GsonUtils.extractObject(json, "report");
-            return Response.ok(getReportingService().saveReportDefinition(reportJson).toString(),
+            return Response.ok(reportingService.saveReportDefinition(reportJson).toString(),
                   MediaType.APPLICATION_JSON).build();
          }
       }
@@ -222,7 +207,7 @@ public class ReportingResource
 
          JsonObject json = jsonIo.readJsonObject(postedData);
 
-         getReportingService().saveReportDefinitions(json);
+         reportingService.saveReportDefinitions(json);
 
          return Response.ok("", MediaType.TEXT_PLAIN).build();
       }
@@ -242,7 +227,7 @@ public class ReportingResource
    {
       try
       {
-         return Response.ok(getReportingService().deleteReportDefinition("/" + path).toString(), MediaType.APPLICATION_JSON)
+         return Response.ok(reportingService.deleteReportDefinition("/" + path).toString(), MediaType.APPLICATION_JSON)
                .build();
       }
       catch (Exception e)

@@ -19,8 +19,6 @@
 
 	<bean id="reportingResource"
 		class="org.eclipse.stardust.ui.web.reporting.core.ReportingResource">
-		<property name="reportingService" ref="reportingService" />
 	</bean>
-
 </beans>
 

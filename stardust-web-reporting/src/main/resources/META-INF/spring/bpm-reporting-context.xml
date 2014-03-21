@@ -11,20 +11,4 @@
 
 	<context:annotation-config />
 	<context:component-scan base-package="org.eclipse.stardust.ui.web.reporting" />
-
-	<bean name="bpmReportingMessages"
-		class="org.eclipse.stardust.ui.web.reporting.ui.i18n.Messages"
-		scope="session">
-	</bean>
-
-	<bean id="reportingService"
-		class="org.eclipse.stardust.ui.web.reporting.core.ReportingService"
-		scope="session">
-		<aop:scoped-proxy />
-	</bean>
-
-	<bean id="reportDefinitionView"
-		class="org.eclipse.stardust.ui.web.reporting.ui.ReportDefinitionView">
-	</bean>
-
 </beans>

@@ -1,13 +1,18 @@
 package org.eclipse.stardust.ui.web.reporting.ui;
 
+import org.springframework.stereotype.Component;
+
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
 
 /**
- * 
+ *
  * @author Marc.Gille
- * 
+ *
  *         TODO Use AbstractAdapterView with Spring Bean Properties?
  */
+
+
+@Component(value="reportDefinitionView")
 public class ReportDefinitionView extends AbstractAdapterView
 {
    /**

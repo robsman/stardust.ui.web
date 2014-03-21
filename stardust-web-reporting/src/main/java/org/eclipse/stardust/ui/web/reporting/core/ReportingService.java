@@ -19,24 +19,19 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import javax.annotation.Resource;
-import javax.script.Bindings;
-import javax.script.ScriptContext;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
-import javax.script.SimpleScriptContext;
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
+import javax.script.*;
+
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.stereotype.Component;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
@@ -44,56 +39,28 @@ import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.dto.ActivityInstanceDetails;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetails;
-import org.eclipse.stardust.engine.api.model.DataPath;
-import org.eclipse.stardust.engine.api.model.Participant;
-import org.eclipse.stardust.engine.api.model.PredefinedConstants;
-import org.eclipse.stardust.engine.api.model.ProcessDefinition;
-import org.eclipse.stardust.engine.api.model.QualifiedModelParticipantInfo;
-import org.eclipse.stardust.engine.api.query.ActivityFilter;
-import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
-import org.eclipse.stardust.engine.api.query.ActivityStateFilter;
-import org.eclipse.stardust.engine.api.query.DataFilter;
-import org.eclipse.stardust.engine.api.query.DescriptorPolicy;
-import org.eclipse.stardust.engine.api.query.ProcessDefinitionFilter;
-import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
-import org.eclipse.stardust.engine.api.query.ProcessStateFilter;
-import org.eclipse.stardust.engine.api.query.UnsupportedFilterException;
-import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
-import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
-import org.eclipse.stardust.engine.api.runtime.DeployedModel;
-import org.eclipse.stardust.engine.api.runtime.DeployedModelDescription;
-import org.eclipse.stardust.engine.api.runtime.DmsUtils;
-import org.eclipse.stardust.engine.api.runtime.Document;
-import org.eclipse.stardust.engine.api.runtime.DocumentInfo;
-import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
-import org.eclipse.stardust.engine.api.runtime.Folder;
-import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
-import org.eclipse.stardust.engine.api.runtime.ProcessInstanceState;
-import org.eclipse.stardust.engine.api.runtime.QueryService;
-import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
-import org.eclipse.stardust.engine.api.runtime.UserService;
-import org.eclipse.stardust.ui.web.common.app.PortalApplication;
+import org.eclipse.stardust.engine.api.model.*;
+import org.eclipse.stardust.engine.api.query.*;
+import org.eclipse.stardust.engine.api.runtime.*;
 import org.eclipse.stardust.ui.web.common.spi.user.User;
-import org.eclipse.stardust.ui.web.html5.rest.RestControllerUtils;
+import org.eclipse.stardust.ui.web.common.spi.user.UserProvider;
 import org.eclipse.stardust.ui.web.reporting.common.ModelCache;
-import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 
+@Component
+@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class ReportingService
 {
+   @Resource
+   UserProvider userProvider;
+
    private static final Logger trace = LogManager.getLogger(ReportingService.class);
-   
+
    private static final String PUBLIC_REPORT_DEFINITIONS_DIR = "/reports";
    private static final String PARTICIPANTS_REPORT_DEFINITIONS_DIR = "/participants/reports/";
-   
-   @Resource
-   private SessionContext sessionContext;
+
    private DocumentManagementService documentManagementService;
    private UserService userService;
    private QueryService queryService;
@@ -105,9 +72,13 @@ public class ReportingService
    private Map<String, JsonObject> reportDefinitionJsons;
    private Map<String, Map<String, ValueProvider>> valueProviders;
 
+   @Resource
+   private ReportingServiceHelper helperBean;
+
    public ReportingService()
    {
       super();
+
 
       jsonIo = new JsonMarshaller();
       reportDefinitionCache = new HashMap<String, JsonObject>();
@@ -262,11 +233,11 @@ public class ReportingService
 
    private ServiceFactory getServiceFactory()
    {
-      return sessionContext.getServiceFactory();
+      return helperBean.getServiceFactory();
    }
 
    /**
-    * 
+    *
     * @return
     */
    DocumentManagementService getDocumentManagementService()
@@ -280,7 +251,7 @@ public class ReportingService
    }
 
    /**
-    * 
+    *
     * @return
     */
    private UserService getUserService()
@@ -294,7 +265,7 @@ public class ReportingService
    }
 
    /**
-    * 
+    *
     * @return
     */
    private QueryService getQueryService()
@@ -308,10 +279,10 @@ public class ReportingService
    }
 
    /**
-    * 
+    *
     * @return
     */
-   public JsonObject getModelData(ServletContext servletContext)
+   public JsonObject getModelData()
    {
       try
       {
@@ -358,9 +329,9 @@ public class ReportingService
          JsonObject participantsJson = new JsonObject();
 
          resultJson.add("participants", participantsJson);
-         
-         List<QualifiedModelParticipantInfo> qParticipantInfoList = getAllModelParticipants(servletContext, sessionContext, false);
 
+         List<QualifiedModelParticipantInfo> qParticipantInfoList =
+               getAllModelParticipants(false);
          for (QualifiedModelParticipantInfo participant : qParticipantInfoList)
          {
             JsonObject participantJson = new JsonObject();
@@ -378,54 +349,11 @@ public class ReportingService
       }
    }
 
-   //TODO: move this method to ViewsCommon#ParticipantUtils later
-   // do we need to cache models/ participants for better performances
-   
-   public static List<QualifiedModelParticipantInfo> getAllModelParticipants(ServletContext servletContext, SessionContext sessionContext, boolean filterPredefinedModel)
-   {
-      Collection<DeployedModel> allModels = ModelCache.getModelCache(sessionContext, servletContext).getActiveModels();
-         
-      List<QualifiedModelParticipantInfo> allParticipants = new ArrayList<QualifiedModelParticipantInfo>();
-      Set<String> allParticipantQIDs = new HashSet<String>();
-      boolean isAdminAdded = false;
 
-      for (DeployedModelDescription model : allModels)
-      {
-         if (filterPredefinedModel && PredefinedConstants.PREDEFINED_MODEL_ID.equals(model.getId()))
-         {
-            continue;
-         }
-         Collection<Participant> participants = ModelCache.getModelCache(sessionContext, servletContext).getAllParticipants();
-         
-         for (Participant participant : participants)
-         {
-            if (participant instanceof QualifiedModelParticipantInfo)
-            {
-               boolean isAdminRole = ParticipantUtils.isAdministratorRole(participant);
 
-               // Administrator should be added only once
-               if (!isAdminAdded && isAdminRole)
-               {
-                  allParticipants.add((QualifiedModelParticipantInfo) participant);
-                  isAdminAdded = true;
-               }
-               else if (!isAdminRole)
-               {
-                  if (!allParticipantQIDs.contains(participant.getQualifiedId()))
-                  {
-                     allParticipants.add((QualifiedModelParticipantInfo) participant);
-                     allParticipantQIDs.add(participant.getQualifiedId());
-                  }
-               }
-            }
-         }
-      }
-      return allParticipants;
-   }
-   
-   
+
    /**
-    * 
+    *
     * @return
     */
    public boolean isDiscreteDimension(String primaryObject, String dimension)
@@ -439,7 +367,7 @@ public class ReportingService
    };
 
    /**
-    * 
+    *
     * @param jsonObject
     * @param primitiveObject
     */
@@ -471,7 +399,7 @@ public class ReportingService
    }
 
    /**
-    * 
+    *
     * @param jsonElement
     * @return
     */
@@ -507,7 +435,7 @@ public class ReportingService
    }
 
    /**
-    * 
+    *
     * @return
     */
    public ValueProvider getValueProvider(String primaryObject, final String property)
@@ -547,7 +475,7 @@ public class ReportingService
 
    /**
     * Converts the key of a duration unit into the equivalent in seconds.
-    * 
+    *
     * @param unit
     * @return
     */
@@ -582,7 +510,7 @@ public class ReportingService
    }
 
    /**
-    * 
+    *
     * @return
     * @throws ParseException
     * @throws UnsupportedFilterException
@@ -1015,10 +943,10 @@ public class ReportingService
    /**
     * TODO: This code should be completed looking at the implementation of Process
     * Instance Search in the Portal.
-    * 
+    *
     * @throws ParseException
     * @throws UnsupportedFilterException
-    * 
+    *
     */
    public void addProcessInstanceQueryFilters(ProcessInstanceQuery query, JsonArray filters, JsonObject parametersJson)
          throws UnsupportedFilterException, ParseException
@@ -1193,10 +1121,10 @@ public class ReportingService
    /**
     * TODO: This code should be completed looking at the implementation of Process
     * Instance Search in the Portal.
-    * 
+    *
     * @throws ParseException
     * @throws UnsupportedFilterException
-    * 
+    *
     */
    public void addActivityInstanceQueryFilters(ActivityInstanceQuery query, JsonArray filters, JsonObject parametersJson)
          throws UnsupportedFilterException, ParseException
@@ -1362,7 +1290,7 @@ public class ReportingService
    /**
     * Might be invoked for saving of multiple Report Definitions or directly (whereby json
     * contains a top-level element "report").
-    * 
+    *
     * @param json
     */
    public JsonObject saveReportDefinition(JsonObject reportJson)
@@ -1409,7 +1337,7 @@ public class ReportingService
    }
 
    /**
-    * 
+    *
     * @param json
     */
    public void saveReportDefinitions(JsonObject json)
@@ -1421,7 +1349,7 @@ public class ReportingService
    }
 
    /**
-    * 
+    *
     * @param json
     */
    public void renameReportDefinition(String path, String name)
@@ -1440,7 +1368,7 @@ public class ReportingService
    }
 
    /**
-    * 
+    *
     * @param json
     */
    public JsonObject loadReportDefinition(String path)
@@ -1466,7 +1394,7 @@ public class ReportingService
    }
 
    /**
-    * 
+    *
     * @param json
     * @return
     */
@@ -1485,7 +1413,7 @@ public class ReportingService
 
    /**
     * Returns the folder if exist otherwise create new folder
-    * 
+    *
     * @param folderPath
     * @return
     */
@@ -1520,7 +1448,7 @@ public class ReportingService
    }
 
    /**
-    * 
+    *
     * @return
     */
    private String getUserDocumentFolderPath()
@@ -1530,7 +1458,7 @@ public class ReportingService
    }
 
    /**
-    * 
+    *
     * @return
     */
    private String getParticipantDocumentFolderPath(String participant)
@@ -1540,13 +1468,13 @@ public class ReportingService
 
    /**
     * TODO Split off persistence part
-    * @param servletContext 
-    * @param httpRequest 
+    * @param servletContext
+    * @param httpRequest
     */
-   public JsonObject loadReportDefinitions(ServletContext servletContext, HttpServletRequest httpRequest)
+   public JsonObject loadReportDefinitions()
    {
       try
-      { 
+      {
          Folder publicFolder = findOrCreateFolder(PUBLIC_REPORT_DEFINITIONS_DIR);
          Folder personalFolder = findOrCreateFolder(getUserDocumentFolderPath());
          Folder participantFolder = findOrCreateFolder(PARTICIPANTS_REPORT_DEFINITIONS_DIR);
@@ -1557,25 +1485,22 @@ public class ReportingService
 
          subFoldersJson.add(getReportDefinitions(publicFolder, "Public Report Definitions")); // I18N
          subFoldersJson.add(getReportDefinitions(personalFolder, "Personal Report Definitions")); // I18N
-         
+
          //Prepare Participants subfolders
-         JsonObject participantsFolderJson = new JsonObject(); 
+         JsonObject participantsFolderJson = new JsonObject();
          participantsFolderJson.addProperty("name", "Participants Report Definitions"); // I18N
          participantsFolderJson.addProperty("id", participantFolder.getId());
-         participantsFolderJson.addProperty("path", participantFolder.getPath());   
-         
-         subFoldersJson.add(participantsFolderJson); 
-         
+         participantsFolderJson.addProperty("path", participantFolder.getPath());
+
+         subFoldersJson.add(participantsFolderJson);
+
          List<Folder> subfolders = participantFolder.getFolders();
-         
-         PortalApplication pa = (PortalApplication) RestControllerUtils.resolveSpringBean("ippPortalApp",
-               servletContext);
-         User loggedInUser = pa.getLoggedInUser();
+         User loggedInUser = userProvider.getUser();
 
          //add relevant participants
          JsonArray participantFoldersJson = new JsonArray();
          participantsFolderJson.add("subFolders", participantFoldersJson);
-         
+
          for (Folder participantSubFolder : subfolders)
          {
             participantSubFolder = findOrCreateFolder(participantSubFolder.getPath());
@@ -1583,18 +1508,20 @@ public class ReportingService
             // check the permissions to current user
             if (loggedInUser.isInRole(participantSubFolder.getName()) || loggedInUser.isAdministrator())
             {
-               ModelCache modelCache = ModelCache.getModelCache(sessionContext, servletContext);
+
+
+               ModelCache modelCache = helperBean.getModelCache();
                Participant  participant = modelCache.getParticipant(participantSubFolder.getName(), null);
-               
+
                JsonObject participantFolderJson = getReportDefinitions(participantSubFolder, participant.getName());
-               
+
                if (participantFolderJson != null)
                {
                   participantFoldersJson.add(participantFolderJson);
                }
             }
          }
-       
+
 
          return rootFolderJson;
       }
@@ -1608,6 +1535,52 @@ public class ReportingService
       finally
       {
       }
+   }
+
+   /* (non-Javadoc)
+    * @see org.eclipse.stardust.ui.web.reporting.core.MyEngineService#getAllModelParticipants(boolean)
+    */
+   public List<QualifiedModelParticipantInfo> getAllModelParticipants(
+         boolean filterPredefinedModel)
+   {
+      ModelCache modelCache = helperBean.getModelCache();
+      Collection<DeployedModel> allModels = modelCache.getActiveModels();
+      List<QualifiedModelParticipantInfo> allParticipants = new ArrayList<QualifiedModelParticipantInfo>();
+      Set<String> allParticipantQIDs = new HashSet<String>();
+      boolean isAdminAdded = false;
+
+      for (DeployedModelDescription model : allModels)
+      {
+         if (filterPredefinedModel && PredefinedConstants.PREDEFINED_MODEL_ID.equals(model.getId()))
+         {
+            continue;
+         }
+         Collection<Participant> participants = modelCache.getAllParticipants();
+
+         for (Participant participant : participants)
+         {
+            if (participant instanceof QualifiedModelParticipantInfo)
+            {
+               boolean isAdminRole = ParticipantUtils.isAdministratorRole(participant);
+
+               // Administrator should be added only once
+               if (!isAdminAdded && isAdminRole)
+               {
+                  allParticipants.add((QualifiedModelParticipantInfo) participant);
+                  isAdminAdded = true;
+               }
+               else if (!isAdminRole)
+               {
+                  if (!allParticipantQIDs.contains(participant.getQualifiedId()))
+                  {
+                     allParticipants.add((QualifiedModelParticipantInfo) participant);
+                     allParticipantQIDs.add(participant.getQualifiedId());
+                  }
+               }
+            }
+         }
+      }
+      return allParticipants;
    }
 
    /**
@@ -1625,7 +1598,7 @@ public class ReportingService
          folderJson.addProperty("id", folder.getId());
          folderJson.addProperty("path", folder.getPath());
       }
-      
+
       if (folder != null)
       {
          JsonArray reportDefinitionsJson = new JsonArray();
@@ -1690,7 +1663,7 @@ public class ReportingService
 
    /**
     * TODO Should be more elegant
-    * 
+    *
     * @param path
     */
    private String renameReportDefinitionDocument(String path, String name)
@@ -1714,7 +1687,7 @@ public class ReportingService
     * Retrieves external join data via REST and creates a map with the join key as key and
     * a map with all external fields and their 'useAs' field names as keys and their
     * values as values.
-    * 
+    *
     * @param externalJoinJson
     * @return
     */
@@ -1798,7 +1771,7 @@ public class ReportingService
    }
 
    /**
-    * 
+    *
     * @param computedColumns
     * @param recordJson
     */
@@ -1816,7 +1789,7 @@ public class ReportingService
    }
 
    /**
-    * 
+    *
     * @param input
     * @return
     */

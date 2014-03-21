@@ -4,6 +4,9 @@ import java.util.ResourceBundle;
 
 import javax.faces.context.FacesContext;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import org.eclipse.stardust.common.reflect.Reflect;
 import org.eclipse.stardust.ui.web.common.util.AbstractMessageBean;
 
@@ -12,11 +15,13 @@ import org.eclipse.stardust.ui.web.common.util.AbstractMessageBean;
  * @author Marc.Gille
  *
  */
-@SuppressWarnings({"unchecked", "serial"})
+
+@Component(value=Messages.BEAN_NAME)
+@Scope(value = "session")
 public class Messages extends AbstractMessageBean
 {
    private static final String BUNDLE_NAME = "bpm-reporting-messages";
-   private static final String BEAN_NAME = "bpmReportingMessages";
+   public static final String BEAN_NAME = "bpmReportingMessages";
 
    public Messages()
    {

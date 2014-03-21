@@ -21,11 +21,11 @@ import org.eclipse.stardust.ui.web.common.event.ViewEvent;
 import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
 
 /**
- * 
+ *
  * @author Marc.Gille
- * 
+ *
  */
-public class AbstractAdapterView implements ViewEventHandler
+public abstract class AbstractAdapterView implements ViewEventHandler
 {
    private String viewPath;
    private String anchorId;
