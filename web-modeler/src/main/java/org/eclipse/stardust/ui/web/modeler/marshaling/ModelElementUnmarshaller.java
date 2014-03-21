@@ -1757,6 +1757,12 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
                   .getAsString()
                   .equals("none"))
       {
+         if (startEventSymbol.getTrigger() != null)
+         {
+            TriggerType trigger = startEventSymbol.getTrigger();
+            ProcessDefinitionType process = ModelUtils.findContainingProcess(trigger);
+            process.getTrigger().remove(trigger);
+         }
          startEventSymbol.setTrigger(null);
       }
       else
