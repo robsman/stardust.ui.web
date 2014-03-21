@@ -85,7 +85,7 @@ define(
 																.getRootUrl()
 																+ "/plugins/bpm-reporting/images/icons/folder.png"
 													},
-													valid_children : [ "report" ]
+													valid_children : ["report", "folder"]
 												},
 												report : {
 													icon : {
@@ -319,69 +319,10 @@ define(
 				 * 
 				 */
 				ReportManagementController.prototype.refreshTree = function() {
-					var folderNodeId = 0;
-					var reportNodeId = 0;
-
 					jQuery("#reportTree").empty();
-
-					jQuery
-							.each(
-									this.reportingService.rootFolder.subFolders,
-									function(index, folder) {
-										jQuery("#reportTree").jstree(
-												"create",
-												"#reportTree",
-												"first",
-												{
-													attr : {
-														id : "folder"
-																+ folderNodeId,
-														rel : "folder",
-														elementId : folder.id
-													},
-													data : folder.name
-												}, null, true);
-
-										if (folder.reportDefinitions) {
-											jQuery
-													.each(
-															folder.reportDefinitions,
-															function(index,
-																	reportDefinition) {
-																jQuery(
-																		"#reportTree")
-																		.jstree(
-																				"create",
-																				"#folder"
-																						+ folderNodeId,
-																				"last",
-																				{
-																					attr : {
-																						id : "report"
-																								+ reportNodeId,
-																						rel : "report",
-																						elementId : reportDefinition.id,
-																						name : reportDefinition.name,
-																						path : reportDefinition.path,
-																						draggable : true
-																					},
-																					data : {
-																						attr : {
-																							"class" : "showTooltip",
-																							title : reportDefinition.description
-																						},
-																						title : reportDefinition.name
-																					}
-																				},
-																				null,
-																				true);
-																++reportNodeId;
-															});
-										}
-
-										++folderNodeId;
-									});
-
+					
+					createTree1(this.reportingService.rootFolder, {"folderNodeId" : 0, "reportNodeId": 0}, "#reportTree");
+					
 					jQuery(".showTooltip").tooltip();
 					this.initializeDragAndDrop();
 				};
@@ -446,4 +387,78 @@ define(
 //					};
 				};
 			}
+			
+			function createTree1(folder, trackIds, parent) {
+				jQuery.each(folder.subFolders,
+					function(index, folder) {
+						trackIds = createTree2(index, folder, trackIds, parent);
+					});
+				return trackIds;
+			}
+			
+			function createTree2(index, folder, trackIds, parent) {
+				var folderNodeId = trackIds.folderNodeId;
+				var reportNodeId = trackIds.reportNodeId;
+								
+				jQuery("#reportTree").jstree(
+						"create",
+						 parent,
+						"first",
+						{
+							attr : {
+								id : "folder"
+										+ folderNodeId,
+								rel : "folder",
+								elementId : folder.id
+							},
+							data : folder.name
+						}, null, true);
+
+				if (folder.reportDefinitions) {
+					jQuery
+							.each(
+									folder.reportDefinitions,
+									function(index,
+											reportDefinition) {
+										jQuery(
+												"#reportTree")
+												.jstree(
+														"create",
+														"#folder"
+																+ folderNodeId,
+														"last",
+														{
+															attr : {
+																id : "report"
+																		+ reportNodeId,
+																rel : "report",
+																elementId : reportDefinition.id,
+																name : reportDefinition.name,
+																path : reportDefinition.path,
+																draggable : true
+															},
+															data : {
+																attr : {
+																	"class" : "showTooltip",
+																	title : reportDefinition.description
+																},
+																title : reportDefinition.name
+															}
+														},
+														null,
+														true);
+										++reportNodeId;
+									});
+				} else if (folder.subFolders) {
+					var parent = "#folder"+ folderNodeId;
+					++folderNodeId;
+					trackIds  = createTree1(folder, {"folderNodeId" : folderNodeId, "reportNodeId": ++reportNodeId}, parent);
+					folderNodeId = trackIds.folderNodeId; 
+					reportNodeId = trackIds.reportNodeId;
+				}
+
+				++folderNodeId;
+				
+				return {"folderNodeId" : folderNodeId, "reportNodeId": reportNodeId};
+			};
 		});

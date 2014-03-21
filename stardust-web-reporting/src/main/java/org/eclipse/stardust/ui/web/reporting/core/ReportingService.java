@@ -74,7 +74,6 @@ import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.engine.api.runtime.UserService;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.spi.user.User;
-import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.html5.rest.RestControllerUtils;
 import org.eclipse.stardust.ui.web.reporting.common.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
@@ -1559,13 +1558,23 @@ public class ReportingService
          subFoldersJson.add(getReportDefinitions(publicFolder, "Public Report Definitions")); // I18N
          subFoldersJson.add(getReportDefinitions(personalFolder, "Personal Report Definitions")); // I18N
          
-         //subFoldersJson.add(getReportDefinitions(participantFolder, "Participants Report Definitions")); // I18N
-         JsonArray reportDefinitionsJson = new JsonArray();
+         //Prepare Participants subfolders
+         JsonObject participantsFolderJson = new JsonObject(); 
+         participantsFolderJson.addProperty("name", "Participants Report Definitions"); // I18N
+         participantsFolderJson.addProperty("id", participantFolder.getId());
+         participantsFolderJson.addProperty("path", participantFolder.getPath());   
+         
+         subFoldersJson.add(participantsFolderJson); 
+         
          List<Folder> subfolders = participantFolder.getFolders();
          
          PortalApplication pa = (PortalApplication) RestControllerUtils.resolveSpringBean("ippPortalApp",
                servletContext);
          User loggedInUser = pa.getLoggedInUser();
+
+         //add relevant participants
+         JsonArray participantFoldersJson = new JsonArray();
+         participantsFolderJson.add("subFolders", participantFoldersJson);
          
          for (Folder participantSubFolder : subfolders)
          {
@@ -1574,26 +1583,25 @@ public class ReportingService
             // check the permissions to current user
             if (loggedInUser.isInRole(participantSubFolder.getName()) || loggedInUser.isAdministrator())
             {
-               JsonArray reportsJson = GsonUtils.extractJsonArray(getReportDefinitions(participantSubFolder, null),
-                     "reportDefinitions");
-               if (reportsJson != null && reportsJson.size() > 0)
+               ModelCache modelCache = ModelCache.getModelCache(sessionContext, servletContext);
+               Participant  participant = modelCache.getParticipant(participantSubFolder.getName(), null);
+               
+               JsonObject participantFolderJson = getReportDefinitions(participantSubFolder, participant.getName());
+               
+               if (participantFolderJson != null)
                {
-                  reportDefinitionsJson.addAll(reportsJson); // I18N
+                  participantFoldersJson.add(participantFolderJson);
                }
             }
          }
-         JsonObject partitionFolderJson = new JsonObject(); // I18N
-         partitionFolderJson.addProperty("name", "Participants Report Definitions");
-         partitionFolderJson.addProperty("id", participantFolder.getId());
-         partitionFolderJson.addProperty("path", participantFolder.getPath());   
-         partitionFolderJson.add("reportDefinitions", reportDefinitionsJson);
-         
-         subFoldersJson.add(partitionFolderJson); 
+       
 
          return rootFolderJson;
       }
       catch (Exception e)
       {
+         //TODO: remove later
+         e.printStackTrace();
          trace.debug("Error Occurred while loading report definitions");
          return null;
       }
