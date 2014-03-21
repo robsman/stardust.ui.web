@@ -1180,22 +1180,22 @@ table.formTable td {
 										</div>
 										<table>
 											<tr>
-												<td><input type="radio"
+												<td><input type="radio" ng-disabled="report.storage.state != 'created'"
 													ng-model="report.storage.location" value="personalFolder" /></td>
 												<td colspan="2">{{getI18N('reporting.definitionView.personalReportTemplate.label')}}</td>
 											</tr>
 											<tr>
-												<td><input type="radio"
+												<td><input type="radio" ng-disabled="report.storage.state != 'created'"
 													ng-model="report.storage.location" value="publicFolder" /></td>
 												<td colspan="2">{{getI18N('reporting.definitionView.globalReportTemplate.label')}}</td>
 											</tr>
 											<tr>
-												<td><input type="radio"
+												<td><input type="radio" ng-disabled="report.storage.state != 'created'"
 													ng-model="report.storage.location"
 													value="participantFolder" /></td>
 												<td>{{getI18N('reporting.definitionView.organizationRoleReportTemplate.label')}}</td>
 												<td>
-													<select id="participantsSelect"></select>
+													<select id="participantsSelect" ng-disabled="report.storage.state != 'created'"></select>
 												</td>
 											</tr>
 										</table>
@@ -1203,7 +1203,7 @@ table.formTable td {
 								</tr>
 								<tr>
 									<td colspan="2">
-										<div ng-show="report.storage.state == 'created'">
+										<div>
 											<button ng-click="saveReport()" style="margin-top: 10px;">{{getI18N('reporting.definitionView.saveAsTemplate.label')}}</button>
 										</div>
 									</td>
