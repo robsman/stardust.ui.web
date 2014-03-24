@@ -44,7 +44,6 @@ import org.eclipse.stardust.engine.api.query.*;
 import org.eclipse.stardust.engine.api.runtime.*;
 import org.eclipse.stardust.ui.web.common.spi.user.User;
 import org.eclipse.stardust.ui.web.common.spi.user.UserProvider;
-import org.eclipse.stardust.ui.web.reporting.common.DocumentUtils;
 import org.eclipse.stardust.ui.web.reporting.common.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
@@ -59,6 +58,10 @@ public class ReportingService
 
    private static final Logger trace = LogManager.getLogger(ReportingService.class);
 
+   private static final String PUBLIC_REPORT_DEFINITIONS_DIR = "/reports";
+   private static final String PARTICIPANTS_REPORT_DEFINITIONS_DIR = "/participants/reports/";
+
+   private DocumentManagementService documentManagementService;
    private UserService userService;
    private QueryService queryService;
    private JsonMarshaller jsonIo;
@@ -72,13 +75,9 @@ public class ReportingService
    @Resource
    private ReportingServiceHelper helperBean;
 
-   private DocumentUtils documentUtils;
-
    public ReportingService()
    {
       super();
-
-      documentUtils = new DocumentUtils(getServiceFactory());
 
 
       jsonIo = new JsonMarshaller();
@@ -243,7 +242,26 @@ public class ReportingService
     */
    DocumentManagementService getDocumentManagementService()
    {
-      return documentUtils.getDocumentManagementService();
+      if (documentManagementService == null)
+      {
+         documentManagementService = getServiceFactory().getDocumentManagementService();
+      }
+
+      return documentManagementService;
+   }
+
+   /**
+    *
+    * @return
+    */
+   private UserService getUserService()
+   {
+      if (userService == null)
+      {
+         userService = getServiceFactory().getUserService();
+      }
+
+      return userService;
    }
 
    /**
@@ -330,6 +348,9 @@ public class ReportingService
       {
       }
    }
+
+
+
 
    /**
     *
@@ -1285,15 +1306,15 @@ public class ReportingService
 
          if (location.equals("publicFolder"))
          {
-            folder = documentUtils.findOrCreateFolder(DocumentUtils.PUBLIC_REPORT_DEFINITIONS_DIR);
+            folder = findOrCreateFolder(PUBLIC_REPORT_DEFINITIONS_DIR);
          }
          else if (location.equals("personalFolder"))
          {
-            folder = documentUtils.findOrCreateFolder(documentUtils.getUserDocumentFolderPath());
+            folder = findOrCreateFolder(getUserDocumentFolderPath());
          }
          else if (location.equals("participantFolder"))
          {
-            folder = documentUtils.findOrCreateFolder(documentUtils.getParticipantDocumentFolderPath(storageJson.get("participant").getAsString()));
+            folder = findOrCreateFolder(getParticipantDocumentFolderPath(storageJson.get("participant").getAsString()));
          }
 
          // Mark Report Definition as saved
@@ -1390,7 +1411,60 @@ public class ReportingService
       }
    }
 
+   /**
+    * Returns the folder if exist otherwise create new folder
+    *
+    * @param folderPath
+    * @return
+    */
+   public Folder findOrCreateFolder(String folderPath)
+   {
+      Folder folder = getDocumentManagementService().getFolder(folderPath);
 
+      if (null == folder)
+      {
+         // folder does not exist yet, create it
+         String parentPath = folderPath.substring(0, folderPath.lastIndexOf('/'));
+         String childName = folderPath.substring(folderPath.lastIndexOf('/') + 1);
+
+         if (StringUtils.isEmpty(parentPath))
+         {
+            // Top-level reached
+
+            return getDocumentManagementService().createFolder("/", DmsUtils.createFolderInfo(childName));
+         }
+         else
+         {
+            Folder parentFolder = findOrCreateFolder(parentPath);
+
+            return getDocumentManagementService().createFolder(parentFolder.getId(),
+                  DmsUtils.createFolderInfo(childName));
+         }
+      }
+      else
+      {
+         return folder;
+      }
+   }
+
+   /**
+    *
+    * @return
+    */
+   private String getUserDocumentFolderPath()
+   {
+      return "/realms/" + getUserService().getUser().getRealm().getId() + "/users/"
+            + getUserService().getUser().getId() + "/documents/reports/designs";
+   }
+
+   /**
+    *
+    * @return
+    */
+   private String getParticipantDocumentFolderPath(String participant)
+   {
+      return PARTICIPANTS_REPORT_DEFINITIONS_DIR + participant;
+   }
 
    /**
     * TODO Split off persistence part
@@ -1401,9 +1475,9 @@ public class ReportingService
    {
       try
       {
-         Folder publicFolder = documentUtils.findOrCreateFolder(DocumentUtils.PUBLIC_REPORT_DEFINITIONS_DIR);
-         Folder personalFolder = documentUtils.findOrCreateFolder(documentUtils.getUserDocumentFolderPath());
-         Folder participantFolder = documentUtils.findOrCreateFolder(DocumentUtils.PARTICIPANTS_REPORT_DEFINITIONS_DIR);
+         Folder publicFolder = findOrCreateFolder(PUBLIC_REPORT_DEFINITIONS_DIR);
+         Folder personalFolder = findOrCreateFolder(getUserDocumentFolderPath());
+         Folder participantFolder = findOrCreateFolder(PARTICIPANTS_REPORT_DEFINITIONS_DIR);
 
          JsonObject rootFolderJson = new JsonObject();
          JsonArray subFoldersJson = new JsonArray();
@@ -1429,11 +1503,13 @@ public class ReportingService
 
          for (Folder participantSubFolder : subfolders)
          {
-            participantSubFolder = documentUtils.findOrCreateFolder(participantSubFolder.getPath());
+            participantSubFolder = findOrCreateFolder(participantSubFolder.getPath());
 
             // check the permissions to current user
             if (loggedInUser.isInRole(participantSubFolder.getName()) || loggedInUser.isAdministrator())
             {
+
+
                ModelCache modelCache = helperBean.getModelCache();
                Participant  participant = modelCache.getParticipant(participantSubFolder.getName(), null);
 
