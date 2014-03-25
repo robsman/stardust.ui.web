@@ -134,7 +134,8 @@ define(
 							priority : {
 								id : "priority",
 								name : "Priority",
-								type : this.metadata.integerType
+								type : this.metadata.enumerationType,
+								enumerationType : "staticData:priorityLevel:name"
 							}
 						}
 					},
@@ -271,6 +272,20 @@ define(
 						},
 						interrupted : {
 							name : "Interrupted"
+						}
+					},
+					priorityLevel : {
+						low : {
+							id : "low",
+							name : "Low" //I18n
+						},
+						medium : {
+							id : "low",
+							name : "Medium" //I18n
+						},
+						high : {
+							id : "low",
+							name : "High" //I18n
 						}
 					}
 				};

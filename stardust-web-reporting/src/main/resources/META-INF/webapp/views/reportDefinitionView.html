@@ -677,6 +677,7 @@ table.formTable td {
 																ng-show="!existsParameter('filters.' + x.dimension)"><img
 																	src="../css/images/no-parameter.png"
 																	title="No Parameter (filters.{{x.dimension}})" /> </a> </a></td>
+														<td style="color:white">{{x.value}}</td>			
 													</tr>
 												</table>
 											</div>
@@ -1207,7 +1208,9 @@ table.formTable td {
 										</div>
 									</td>
 								</tr>
+								
 							</table>
+								<div style="color:white">{{report}}</div>
 						</div>
 						<div id="schedulingTab">
 							<table>
