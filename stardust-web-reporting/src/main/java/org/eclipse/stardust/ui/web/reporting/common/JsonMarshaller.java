@@ -9,7 +9,7 @@
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
 
-package org.eclipse.stardust.ui.web.reporting.core;
+package org.eclipse.stardust.ui.web.reporting.common;
 
 import java.lang.reflect.Type;
 import java.util.Map;

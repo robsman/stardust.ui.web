@@ -18,7 +18,7 @@
 	</jaxrs:server>
 
 	<bean id="reportingResource"
-		class="org.eclipse.stardust.ui.web.reporting.core.ReportingResource">
+		class="org.eclipse.stardust.ui.web.reporting.beans.rest.ReportingResource">
 	</bean>
 </beans>
 

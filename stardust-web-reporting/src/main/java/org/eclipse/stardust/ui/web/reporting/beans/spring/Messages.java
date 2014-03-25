@@ -1,4 +1,4 @@
-package org.eclipse.stardust.ui.web.reporting.ui.i18n;
+package org.eclipse.stardust.ui.web.reporting.beans.spring;
 
 import java.util.ResourceBundle;
 

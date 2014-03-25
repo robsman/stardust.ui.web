@@ -1,4 +1,4 @@
-package org.eclipse.stardust.ui.web.reporting.ui;
+package org.eclipse.stardust.ui.web.reporting.beans.spring;
 
 import org.springframework.stereotype.Component;
 

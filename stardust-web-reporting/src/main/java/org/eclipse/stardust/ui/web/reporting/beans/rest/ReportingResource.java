@@ -1,4 +1,4 @@
-package org.eclipse.stardust.ui.web.reporting.core;
+package org.eclipse.stardust.ui.web.reporting.beans.rest;
 
 import java.util.Enumeration;
 import java.util.MissingResourceException;
@@ -25,6 +25,8 @@ import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
+import org.eclipse.stardust.ui.web.reporting.beans.spring.ReportingServiceBean;
+import org.eclipse.stardust.ui.web.reporting.common.JsonMarshaller;
 import org.eclipse.stardust.ui.web.reporting.common.LanguageUtil;
 
 import com.google.gson.Gson;
@@ -44,13 +46,10 @@ public class ReportingResource
    private final Gson prettyPrinter = new GsonBuilder().setPrettyPrinting().create();
 
    @Resource
-   private ReportingService reportingService;
+   private ReportingServiceBean reportingService;
 
    @Context
    private HttpServletRequest httpRequest;
-
-   @Context
-   private ServletContext servletContext;
 
    @GET
    @Produces(MediaType.APPLICATION_JSON)

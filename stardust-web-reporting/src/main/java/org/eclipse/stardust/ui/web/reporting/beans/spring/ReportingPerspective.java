@@ -9,7 +9,7 @@
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
 
-package org.eclipse.stardust.ui.web.reporting.ui;
+package org.eclipse.stardust.ui.web.reporting.beans.spring;
 
 import javax.faces.context.FacesContext;
 
