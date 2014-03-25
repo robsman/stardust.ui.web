@@ -352,6 +352,17 @@ define(
 					return enumerators;
 				};
 
+				ReportingService.prototype.getEnumerators2 = function(type,
+						scope, property) {
+					var enumerators = [];
+
+					for ( var n in this[type][scope]) {
+						enumerators.push(this[type][scope][n]);
+					}
+
+					return enumerators;
+				};
+				
 				/**
 				 * 
 				 */

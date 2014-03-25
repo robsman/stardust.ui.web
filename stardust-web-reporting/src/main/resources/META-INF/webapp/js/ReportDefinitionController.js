@@ -455,7 +455,15 @@ define(
 				ReportDefinitionController.prototype.getPrimaryObject = function() {
 					return this.reportingService.metadata.objects[this.report.dataSet.primaryObject];
 				};
-
+				
+				ReportDefinitionController.prototype.getPrimaryObjectEnum = function() {
+					var dimensionsObj = this.reportingService.metadata.objects[this.report.dataSet.primaryObject].dimensions;
+					var enumerators = [];
+					for ( var n in dimensionsObj) {
+						enumerators.push(dimensionsObj[n]);
+					}
+					return enumerators;
+				};
 				/**
 				 * 
 				 */
@@ -601,6 +609,17 @@ define(
 
 					return this.reportingService.getEnumerators(qualifier[0],
 							qualifier[1], qualifier[2]);
+				};
+				
+				ReportDefinitionController.prototype.getEnumerators2 = function(
+						dimension) {
+					if (!dimension || !dimension.enumerationType) {
+						return null;
+					}
+
+					var qualifier = dimension.enumerationType.split(":");
+
+					return this.reportingService.getEnumerators2(qualifier[0], qualifier[1]);
 				};
 
 				/**
@@ -848,12 +867,16 @@ define(
 				 * 
 				 */
 				ReportDefinitionController.prototype.addParameter = function(
-						id, name, type) {
+						id, name, type, value, operator) {
+					
+					var currentFilter = this.report.dataSet.filters;
+					
 					this.report.parameters[id] = {
 						id : id,
 						name : name,
 						type : type,
-						value : null
+						value : value,
+						operator : operator
 					};
 				};
 

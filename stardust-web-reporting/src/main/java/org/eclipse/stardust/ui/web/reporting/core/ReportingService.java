@@ -302,7 +302,7 @@ public class ReportingService
          {
             JsonObject processJson = new JsonObject();
 
-            processJson.addProperty("id", processDefinition.getId());
+            processJson.addProperty("id", processDefinition.getQualifiedId());
             processJson.addProperty("name", processDefinition.getName());
 
             processesJson.add(processDefinition.getId(), processJson);
@@ -317,7 +317,7 @@ public class ReportingService
 
                      descriptorsJson.add(dataPath.getId(), descriptorJson);
 
-                     descriptorJson.addProperty("id", dataPath.getId());
+                     descriptorJson.addProperty("id", dataPath.getQualifiedId());
                      descriptorJson.addProperty("name", dataPath.getName());
                      descriptorJson.addProperty("type", dataPath.getMappedType().getSimpleName());
                      descriptorsMap.put(dataPath.getId(), dataPath);

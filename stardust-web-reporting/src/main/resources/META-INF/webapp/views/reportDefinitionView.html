@@ -573,11 +573,10 @@ table.formTable td {
 										<td valign="top"><a href=""
 											ng-click="deleteFilter(x.index)"><img
 												src="../css/images/delete.png" /> </a></td>
-										<td valign="top"><select ng-model="x.dimension"
-											ng-change="onFilterDimensionChange(x.index)">
-												<!--  ng-options="y.id as y.name for y in getPrimaryObject().dimensions"  is not working -->
-												<option value="{{y.id}}"
-													ng-repeat="y in getPrimaryObject().dimensions">{{y.name}}</option>
+										<td valign="top">
+										<select ng-model="x.dimension"
+											ng-change="onFilterDimensionChange(x.index)"
+												ng-options="y.id as y.name for y in getPrimaryObjectEnum()">
 										</select></td>
 										<td valign="top">
 											<div
@@ -666,11 +665,11 @@ table.formTable td {
 													<tr>
 														<td valign="top"><select multiple="multiple"
 															style="height: 100px; width: 250px;" ng-model="x.value"
-															ng-options="y as y for y in getEnumerators(getDimension(x.dimension))"></select>
+															ng-options="y.name for y in getEnumerators2(getDimension(x.dimension))"></select>
 														</td>
 														<td valign="top"><a href=""
 															ng-click="removeParameter('filters.' + x.dimension)"
-															ng-show="!existsParameter('filters.' + x.dimension)"><img
+															ng-show="existsParameter('filters.' + x.dimension)"><img
 																src="../css/images/parameter.png"
 																title="Parameter (filters.{{x.dimension}})" /> <a
 																href=""
