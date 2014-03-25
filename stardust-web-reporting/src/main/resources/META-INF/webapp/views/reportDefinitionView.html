@@ -679,6 +679,18 @@ table.formTable td {
 																	title="No Parameter (filters.{{x.dimension}})" /> </a> </a></td>
 														<td style="color:white">{{x.value}}</td>			
 													</tr>
+													<tr>
+													<td valign="top"><a href=""
+															ng-click="toggleAuxiliaryProcesses()" ng-class="getAuxiliaryProcessesAttr('style')"
+															ng-show="x.dimension == 'processName'">
+																<img ng-disabled="true"
+																src="../css/images/process_auxiliary.png"
+																title="{{getAuxiliaryProcessesAttr('title')}}" />
+															</a>
+													</td>
+													
+													<td style="color:white">{{x.value}}</td>
+													</tr>
 												</table>
 											</div>
 										</td>

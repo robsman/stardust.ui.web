@@ -307,3 +307,10 @@ div.right {
 	height:80px;"
 	border:solid 1px #555555;
 }
+
+.disabled {
+	opacity : 0.4;
+}
+.enabled {
+	opacity : 1.0;
+}

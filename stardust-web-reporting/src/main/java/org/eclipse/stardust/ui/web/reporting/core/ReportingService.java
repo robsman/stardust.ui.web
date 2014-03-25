@@ -47,6 +47,7 @@ import org.eclipse.stardust.ui.web.common.spi.user.UserProvider;
 import org.eclipse.stardust.ui.web.reporting.common.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
 
 
 @Component
@@ -304,6 +305,7 @@ public class ReportingService
 
             processJson.addProperty("id", processDefinition.getQualifiedId());
             processJson.addProperty("name", processDefinition.getName());
+            processJson.addProperty("auxiliary", ProcessDefinitionUtils.isAuxiliaryProcess(processDefinition));
 
             processesJson.add(processDefinition.getId(), processJson);
 

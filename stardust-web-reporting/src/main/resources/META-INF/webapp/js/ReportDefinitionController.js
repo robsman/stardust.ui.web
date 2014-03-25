@@ -67,6 +67,8 @@ define(
 					
 					this.factSelect = jQuery("#factSelect");
 					this.chartTypeSelect = jQuery("#chartTypeSelect");
+					
+					this.filterAuxiliaryProcesses = true;
 
 					var self = this;
 
@@ -464,6 +466,32 @@ define(
 					}
 					return enumerators;
 				};
+				
+				ReportDefinitionController.prototype.toggleAuxiliaryProcesses = function() {
+					this.filterAuxiliaryProcesses = !this.filterAuxiliaryProcesses; 
+					this.updateView();
+				};
+				
+				ReportDefinitionController.prototype.getAuxiliaryProcessesAttr = function(attr) {
+					if(attr == "title"){
+						if(this.filterAuxiliaryProcesses){
+							return "Show Auxiliary Processes";
+						}
+						else {
+							return "Hide Auxiliary Processes";
+						}
+					}
+					else if(attr == "style"){
+						if(this.filterAuxiliaryProcesses){
+							return "disabled";
+						}
+						else {
+							return "enabled";
+						}
+					}
+
+				};
+				
 				/**
 				 * 
 				 */
@@ -619,7 +647,22 @@ define(
 
 					var qualifier = dimension.enumerationType.split(":");
 
-					return this.reportingService.getEnumerators2(qualifier[0], qualifier[1]);
+					var enumItems = this.reportingService.getEnumerators2(qualifier[0], qualifier[1]);
+					
+					var filteredEnumItems = [];
+					
+					if (dimension.id == "processName" && this.filterAuxiliaryProcesses) {
+						for (var i = 0; i < enumItems.length; i++) {
+							var process = enumItems[i];
+							if (!process.auxiliary) {
+								filteredEnumItems.push(process);
+							}
+						}
+					} else {
+						filteredEnumItems = enumItems;
+					}
+					
+					return filteredEnumItems;
 				};
 
 				/**
