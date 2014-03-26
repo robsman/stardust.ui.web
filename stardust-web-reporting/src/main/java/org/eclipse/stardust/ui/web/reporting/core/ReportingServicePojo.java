@@ -29,6 +29,7 @@ import org.eclipse.stardust.ui.web.reporting.common.JsonMarshaller;
 import org.eclipse.stardust.ui.web.reporting.common.JsonUtil;
 import org.eclipse.stardust.ui.web.reporting.common.RestUtil;
 import org.eclipse.stardust.ui.web.reporting.core.util.ReportingUtil;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
 
 public class ReportingServicePojo
 {
@@ -226,8 +227,10 @@ public class ReportingServicePojo
          {
             JsonObject processJson = new JsonObject();
 
-            processJson.addProperty("id", processDefinition.getId());
+            processJson.addProperty("id", processDefinition.getQualifiedId());
             processJson.addProperty("name", processDefinition.getName());
+            processJson.addProperty("auxiliary",
+                  ProcessDefinitionUtils.isAuxiliaryProcess(processDefinition));
 
             processesJson.add(processDefinition.getId(), processJson);
 
@@ -241,7 +244,7 @@ public class ReportingServicePojo
 
                      descriptorsJson.add(dataPath.getId(), descriptorJson);
 
-                     descriptorJson.addProperty("id", dataPath.getId());
+                     descriptorJson.addProperty("id", dataPath.getQualifiedId());
                      descriptorJson.addProperty("name", dataPath.getName());
                      descriptorJson.addProperty("type", dataPath.getMappedType()
                            .getSimpleName());
@@ -1270,7 +1273,6 @@ public class ReportingServicePojo
 
       return true;
    };
-
 
    @Deprecated
    /**
