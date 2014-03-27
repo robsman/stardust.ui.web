@@ -10,12 +10,15 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.docmgmt;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Map;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
+import org.eclipse.stardust.engine.core.spi.dms.RepositoryIdUtils;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsPrivilege;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.app.View;
@@ -197,7 +200,17 @@ public class DocumentViewUtil
       // create viewKey
       if (StringUtils.isEmpty(viewKey))
       {
-         viewKey = "documentOID=" + document.getId();
+         try
+         {
+            // TODO review by portal team
+            // documentId can contain ':' or other special characters that need to be encoded. e.g. {urn:repositoryId:<repositoryId}<id>
+            viewKey = "documentOID=" + URLEncoder.encode(document.getId(), "UTF-8");
+         }
+         catch (UnsupportedEncodingException e)
+         {
+            // if encoding fails, fallback to old ID format
+            viewKey = "documentOID=" + RepositoryIdUtils.stripRepositoryId(document.getId());
+         }
       }
 
       return openDocument(viewKey, documentContentInfo, viewParams);
