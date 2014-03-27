@@ -1,8 +1,10 @@
-package org.eclipse.stardust.ui.web.reporting.core.mapping;
+package org.eclipse.stardust.ui.web.reporting.common.mapping;
 
 import com.google.gson.JsonElement;
 
-public class ReportFilter
+import org.eclipse.stardust.ui.web.reporting.common.validation.IValidateAble;
+
+public class ReportFilter implements IValidateAble
 {
    private int index;
    private JsonElement value;
@@ -39,4 +41,6 @@ public class ReportFilter
    {
       this.dimension = dimension;
    }
+
+
 }

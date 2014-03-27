@@ -1,6 +1,8 @@
-package org.eclipse.stardust.ui.web.reporting.core.mapping;
+package org.eclipse.stardust.ui.web.reporting.common.mapping;
 
-public class ReportSchedulingWeeklyRecurrenceOptions
+import org.eclipse.stardust.ui.web.reporting.common.validation.IValidateAble;
+
+public class ReportSchedulingWeeklyRecurrenceOptions implements IValidateAble
 {
    private long recurrenceWeekCount;
    private boolean mondays;

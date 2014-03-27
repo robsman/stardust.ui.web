@@ -1,6 +1,8 @@
-package org.eclipse.stardust.ui.web.reporting.core.mapping;
+package org.eclipse.stardust.ui.web.reporting.common.mapping;
 
-public class ReportSchedulingYearlyRecurrenceOptions
+import org.eclipse.stardust.ui.web.reporting.common.validation.IValidateAble;
+
+public class ReportSchedulingYearlyRecurrenceOptions implements IValidateAble
 {
    private String yearlyRecurrence;
    private int recurEveryYear;

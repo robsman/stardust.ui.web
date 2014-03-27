@@ -43,10 +43,12 @@ public class JsonMarshaller
    private final Gson gson = new GsonBuilder()
          //
          .registerTypeAdapter(JsonObject.class, new JsonObjectSerializationHandler())
+         .registerTypeAdapter(JsonElement.class, new JsonElementSerializationHandler())
          .registerTypeAdapter(JsonArray.class, new JsonArraySerializationHandler()).create();
 
    private final Gson gsonForUpdates = new GsonBuilder().serializeNulls()
          .registerTypeAdapter(JsonObject.class, new JsonObjectSerializationHandler())
+         .registerTypeAdapter(JsonElement.class, new JsonElementSerializationHandler())
          .registerTypeAdapter(JsonArray.class, new JsonArraySerializationHandler()).create();
 
    private final JsonParser jsonParser = new JsonParser();
@@ -223,6 +225,23 @@ public class JsonMarshaller
          {
             return new JsonArray();
          }
+      }
+   }
+
+   private static class JsonElementSerializationHandler implements JsonDeserializer<JsonElement>, JsonSerializer<JsonElement>
+   {
+      @Override
+      public JsonElement serialize(JsonElement src, Type typeOfSrc,
+            JsonSerializationContext context)
+      {
+         return src;
+      }
+
+      @Override
+      public JsonElement deserialize(JsonElement json, Type typeOfT,
+            JsonDeserializationContext context) throws JsonParseException
+      {
+         return json;
       }
    }
 }
