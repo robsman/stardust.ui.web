@@ -35,10 +35,9 @@
    <dependencies>
       <dependency>
          <groupId>org.eclipse.stardust.engine</groupId>
-         <artifactId>engine-module</artifactId>
+         <artifactId>carnot-engine</artifactId>
          <version>${project.version}</version>
          <scope>compile</scope>
-         <type>pom</type>
       </dependency>
       <dependency>
          <groupId>org.eclipse.stardust.engine</groupId>
