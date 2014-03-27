@@ -236,14 +236,14 @@
             <directory>src/main/resources</directory>
             <filtering>true</filtering>
             <includes>
-               <include>org/eclipse/stardust/**</include>
+               <include>org/eclipse/stardust/**/*.properties</include>
             </includes>
          </resource>
          <resource>
             <directory>src/main/resources</directory>
             <filtering>false</filtering>
             <excludes>
-               <exclude>org/eclipse/stardust/**</exclude>
+               <exclude>org/eclipse/stardust/**/*.properties</exclude>
             </excludes>
          </resource>
       </resources>
