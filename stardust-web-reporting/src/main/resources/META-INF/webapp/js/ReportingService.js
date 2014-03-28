@@ -204,7 +204,7 @@ define(
 								type : this.metadata.decimalType
 							}
 						}
-					},
+					}/*,
 					role : {
 						id : "role",
 						name : "Roles",
@@ -230,7 +230,7 @@ define(
 								enumerationType : "modelData:participants:name"
 							}
 						}
-					}
+					}*/
 				};
 
 				this.staticData = {
