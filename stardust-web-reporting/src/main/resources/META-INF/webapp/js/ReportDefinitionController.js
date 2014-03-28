@@ -72,9 +72,8 @@ define(
 					this.factSelect = jQuery("#factSelect");
 					this.chartTypeSelect = jQuery("#chartTypeSelect");
 					
-					this.filterAuxiliaryProcesses = true;
+					this.filterMetadata = {};
 					
-		         
 					this.editorAnchor = utils.jQuerySelect("#expressionTextDiv").get(0);
 					this.expressionEditor = m_codeEditorAce.getJSCodeEditor(this.editorAnchor);
 					this.expressionEditor.getEditor().on('blur', function(event)
@@ -507,29 +506,22 @@ define(
 					return enumerators;
 				};
 				
-				ReportDefinitionController.prototype.toggleAuxiliaryProcesses = function() {
-					this.filterAuxiliaryProcesses = !this.filterAuxiliaryProcesses; 
+				ReportDefinitionController.prototype.getPrimaryObjectEnum = function() {
+					var dimensionsObj = this.reportingService.metadata.objects[this.report.dataSet.primaryObject].dimensions;
+					var enumerators = [];
+					for ( var n in dimensionsObj) {
+						enumerators.push(dimensionsObj[n]);
+					}
+					return enumerators;
+				};
+				
+				ReportDefinitionController.prototype.toggleFilter = function(filter, property) {
+					filter.metadata[property] = !filter.metadata[property]; 
 					this.updateView();
 				};
 				
-				ReportDefinitionController.prototype.getAuxiliaryProcessesAttr = function(attr) {
-					if(attr == "title"){
-						if(this.filterAuxiliaryProcesses){
-							return "Show Auxiliary Processes";
-						}
-						else {
-							return "Hide Auxiliary Processes";
-						}
-					}
-					else if(attr == "style"){
-						if(this.filterAuxiliaryProcesses){
-							return "disabled";
-						}
-						else {
-							return "enabled";
-						}
-					}
-
+				ReportDefinitionController.prototype.selectedProcessChanged = function() {
+					//this.updateView();
 				};
 				
 				/**
@@ -680,7 +672,7 @@ define(
 				};
 				
 				ReportDefinitionController.prototype.getEnumerators2 = function(
-						dimension) {
+						dimension, filter) {
 					if (!dimension || !dimension.enumerationType) {
 						return null;
 					}
@@ -689,18 +681,40 @@ define(
 
 					var enumItems = this.reportingService.getEnumerators2(qualifier[0], qualifier[1]);
 					
-					var filteredEnumItems = [];
+					var filteredEnumItems = [{id: "allProcesses", name: "All Processes"}];
 					
-					if (dimension.id == "processName" && this.filterAuxiliaryProcesses) {
+					//Processes
+					if ((dimension.id == "processName") && filter.metadata.process_filter_auxiliary) {
 						for (var i = 0; i < enumItems.length; i++) {
 							var process = enumItems[i];
 							if (!process.auxiliary) {
 								filteredEnumItems.push(process);
 							}
 						}
-					} else {
+					} //activities
+					else if (dimension.id == "activityName") {
+						if (!filter.metadata.selectedProcesses
+								|| filter.metadata.selectedProcesses.length < 1) {
+							filter.metadata.selectedProcesses = enumItems;
+						}
+						for (var i = 0; i < filter.metadata.selectedProcesses.length; i++) {
+							var process = filter.metadata.selectedProcesses[i];
+							for (var j = 0; j < process.activities.length; j++){
+								var activity = process.activities[j];
+								if (!filter.metadata.activity_filter_auxiliary || !activity.auxiliary) {
+									if(!filter.metadata.activity_filter_interactive || !activity.interactive){
+										if(!filter.metadata.activity_filter_nonInteractive || activity.interactive){
+											filteredEnumItems.push(activity);	
+										}
+									}
+								}	
+							}
+						}	
+					} 
+					else {
 						filteredEnumItems = enumItems;
 					}
+					
 					
 					return filteredEnumItems;
 				};
@@ -749,9 +763,9 @@ define(
 						if (this.report.dataSet.filters[n].dimension == dimension) {
 							return this.report.dataSet.filters[n];
 						}
-
-						throw "No filter found with dimension " + dimension
-								+ ".";
+						//TODO: this is always thrown commenting temporarily
+						/*throw "No filter found with dimension " + dimension
+								+ ".";*/
 					}
 				};
 
@@ -761,9 +775,14 @@ define(
 				ReportDefinitionController.prototype.onFilterDimensionChange = function(
 						index) {
 					this.report.dataSet.filters[index].value = null;
+					
+					if(this.report.dataSet.filters[index].dimension == 'processName'){
+						this.report.dataSet.filters[index].metadata = { process_filter_auxiliary : true };
+					}else if(this.report.dataSet.filters[index].dimension == 'activityName'){
+						this.report.dataSet.filters[index].metadata = filterTemplate();
+					}
 
 					// TODO: Operator only for respective types
-
 					this.report.dataSet.filters[index].operator = "equal";
 				};
 
@@ -1388,4 +1407,20 @@ define(
             };
 
 			}
+			
+
+		function filterTemplate()
+			{
+				return {
+					// Processes
+					process_filter_auxiliary : true,
+					selectedProcesses : [],
+
+					// Activities
+					activity_filter_auxiliary : true,
+					activity_filter_interactive : false,
+					activity_filter_nonInteractive : true
+				};
+			}
+			
 		});

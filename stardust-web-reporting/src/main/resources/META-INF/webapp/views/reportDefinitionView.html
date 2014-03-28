@@ -657,12 +657,62 @@ table.formTable td {
 											</div>
 											<div
 												ng-show="getDimension(x.dimension).type == getMetadata().enumerationType"
-												style="height: 120px;">
+												style="height: auto;">
 												<table class="layoutTable">
+													<tr ng-show="x.dimension == 'processName' || x.dimension == 'activityName'">
+														<td><label class="section2">{{getI18N('reporting.definitionView.process.title')}}</label></td>
+													</tr>
+													<tr ng-show="x.dimension == 'processName' || x.dimension == 'activityName'">
+														<td valign="top"><a href=""
+																ng-click="toggleFilter(x, 'process_filter_auxiliary')" ng-class="{true:'disabled', false:'enabled'}[x.metadata.process_filter_auxiliary]">
+																	<img 
+																	src="../css/images/process_auxiliary.png"
+																	title="{{getI18N('reporting.definitionView.process.filter.auxiliary.' + x.metadata.process_filter_auxiliary)}}" />
+																</a>
+														</td>
+													</tr>
+													<tr ng-show="x.dimension == 'activityName'">
+														<td valign="top"><select multiple="multiple"
+															style="height: 100px; width: 250px;" ng-model="x.metadata.selectedProcesses"
+															ng-options="p.name for p in getEnumerators2(getDimension('processName'), x)"></select>
+														</td>
+													</tr>
+													</table>
+													<table>
+													<tr ng-show="x.dimension == 'activityName'">
+														<td><label class="section2">{{getI18N('reporting.definitionView.activity.title')}}</label></td>
+													</tr>
+													</table>
+													<table>
+													<tr ng-show="x.dimension == 'activityName'">
+														<td valign="top"><a href=""
+																ng-click="toggleFilter(x, 'activity_filter_nonInteractive')" ng-class="{true:'disabled', false:'enabled'}[x.metadata.activity_filter_nonInteractive]">
+																	<img 
+																	src="../css/images/activity_application.png"
+																	title="{{getI18N('reporting.definitionView.process.filter.auxiliary.' + x.metadata.activity_filter_nonInteractive)}}" />
+																</a>
+														</td>
+														<td valign="top"><a href=""
+																ng-click="toggleFilter(x, 'activity_filter_interactive')" ng-class="{true:'disabled', false:'enabled'}[x.metadata.activity_filter_interactive]">
+																	<img 
+																	src="../css/images/activity_manual.png"
+																	title="{{getI18N('reporting.definitionView.process.filter.auxiliary.' + x.metadata.activity_filter_interactive)}}"/>
+																</a>
+														</td>
+														<td valign="top"><a href=""
+																ng-click="toggleFilter(x, 'activity_filter_auxiliary')" ng-class="{true:'disabled', false:'enabled'}[x.metadata.activity_filter_auxiliary]">
+																	<img 
+																	src="../css/images/activity_auxiliary.png"
+																	title="{{getI18N('reporting.definitionView.process.filter.auxiliary.' + x.metadata.activity_filter_auxiliary)}}" />
+																</a>
+														</td>
+													</tr>	
+													</table>
+													<table>
 													<tr>
 														<td valign="top"><select multiple="multiple"
 															style="height: 100px; width: 250px;" ng-model="x.value"
-															ng-options="y.name for y in getEnumerators2(getDimension(x.dimension))"></select>
+															ng-options="y.name for y in getEnumerators2(getDimension(x.dimension), x)"></select>
 														</td>
 														<td valign="top"><a href=""
 															ng-click="removeParameter('filters.' + x.dimension)"
@@ -674,19 +724,6 @@ table.formTable td {
 																ng-show="!existsParameter('filters.' + x.dimension)"><img
 																	src="../css/images/no-parameter.png"
 																	title="No Parameter (filters.{{x.dimension}})" /> </a> </a></td>
-														<td style="color:white">{{x.value}}</td>			
-													</tr>
-													<tr>
-													<td valign="top"><a href=""
-															ng-click="toggleAuxiliaryProcesses()" ng-class="getAuxiliaryProcessesAttr('style')"
-															ng-show="x.dimension == 'processName'">
-																<img ng-disabled="true"
-																src="../css/images/process_auxiliary.png"
-																title="{{getAuxiliaryProcessesAttr('title')}}" />
-															</a>
-													</td>
-													
-													<td style="color:white">{{x.value}}</td>
 													</tr>
 												</table>
 											</div>

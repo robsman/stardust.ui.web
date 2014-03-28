@@ -20,6 +20,7 @@ import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.dto.ActivityInstanceDetails;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetails;
+import org.eclipse.stardust.engine.api.model.Activity;
 import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.model.QualifiedModelParticipantInfo;
@@ -29,6 +30,7 @@ import org.eclipse.stardust.ui.web.reporting.common.JsonMarshaller;
 import org.eclipse.stardust.ui.web.reporting.common.JsonUtil;
 import org.eclipse.stardust.ui.web.reporting.common.RestUtil;
 import org.eclipse.stardust.ui.web.reporting.core.util.ReportingUtil;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
 
 public class ReportingServicePojo
@@ -252,6 +254,22 @@ public class ReportingServicePojo
                   }
                }
             }
+            
+            //add all activities
+            JsonArray activities = new JsonArray();
+            
+            for (Object  activityObj : processDefinition.getAllActivities()) 
+            {
+               Activity activity = (Activity) activityObj;
+               JsonObject activityJsonObj = new JsonObject();
+               
+               activityJsonObj.addProperty("id", activity.getQualifiedId());   
+               activityJsonObj.addProperty("name", activity.getName());
+               activityJsonObj.addProperty("auxiliary", ActivityInstanceUtils.isAuxiliaryActivity(activity));
+               activityJsonObj.addProperty("interactive", activity.isInteractive());
+               activities.add(activityJsonObj);
+            }
+            processJson.add("activities", activities);
          }
 
          JsonObject participantsJson = new JsonObject();
