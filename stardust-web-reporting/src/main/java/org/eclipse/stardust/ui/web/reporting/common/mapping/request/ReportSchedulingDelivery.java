@@ -1,4 +1,4 @@
-package org.eclipse.stardust.ui.web.reporting.common.mapping;
+package org.eclipse.stardust.ui.web.reporting.common.mapping.request;
 
 import org.eclipse.stardust.ui.web.reporting.common.validation.IValidateAble;
 

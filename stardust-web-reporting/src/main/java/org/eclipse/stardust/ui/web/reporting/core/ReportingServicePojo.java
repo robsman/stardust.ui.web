@@ -30,6 +30,7 @@ import org.eclipse.stardust.ui.web.reporting.common.JsonMarshaller;
 import org.eclipse.stardust.ui.web.reporting.common.JsonUtil;
 import org.eclipse.stardust.ui.web.reporting.common.RestUtil;
 import org.eclipse.stardust.ui.web.reporting.common.mapping.*;
+import org.eclipse.stardust.ui.web.reporting.common.mapping.request.*;
 import org.eclipse.stardust.ui.web.reporting.common.validation.ValidationHelper;
 import org.eclipse.stardust.ui.web.reporting.common.validation.ValidationProblem;
 import org.eclipse.stardust.ui.web.reporting.common.validation.ValidationProblemsException;
