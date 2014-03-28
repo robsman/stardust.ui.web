@@ -702,12 +702,12 @@ define(
 					
 					var filteredEnumItems = [];
 					
-					//Processes
-					if ((dimension.id == "processName") && filter.metadata.process_filter_auxiliary) {
+					//processes
+					if ((dimension.id == "processName")) {
 						filteredEnumItems.push(this.ALL_PROCESSES);
 						for (var i = 0; i < enumItems.length; i++) {
 							var process = enumItems[i];
-							if (!process.auxiliary) {
+							if (!filter.metadata.process_filter_auxiliary || !process.auxiliary) {
 								filteredEnumItems.push(process);
 							}
 						}
