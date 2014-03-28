@@ -35,8 +35,13 @@
          <groupId>org.eclipse.stardust.engine</groupId>
          <artifactId>web-client-module</artifactId>
          <version>${project.version}</version>
-         <scope>compile</scope>
+         <scope>provided</scope>
          <type>pom</type>
+      </dependency>
+      <dependency>
+         <groupId>commons-fileupload</groupId>
+         <artifactId>commons-fileupload</artifactId>
+         <scope>runtime</scope>
       </dependency>
       <dependency>
          <groupId>org.eclipse.stardust.engine</groupId>
