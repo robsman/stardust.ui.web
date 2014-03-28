@@ -292,4 +292,27 @@ public class ReportingResource
          return Response.status(Status.FORBIDDEN).build();
       }
    }
+   
+   @PUT
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.TEXT_PLAIN)
+   @Path("nextExecutionDate")
+   public Response getNextExecutionDate(String postedData)
+   {
+      try
+      {
+          trace.debug("Save report definitions: " + prettyPrinter.toJson(postedData));
+           
+         JsonObject json = jsonIo.readJsonObject(postedData);
+         
+         return Response.ok(reportingService.getNextExecutionDate(json), MediaType.TEXT_PLAIN).build();
+         
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
+
+         return Response.serverError().build();
+      }
+   }
 }

@@ -85,6 +85,16 @@ define(
 					                  self.selectedComputedColumn.formula = self.expressionEditor.getValue();
 					               }
 					         });
+					this.expressionEditor.loadLanguageTools();
+					this.expressionEditor.setSessionData("$keywordList",["test", "air", "word"]);
+					
+					$(this.expressionEditor).on("moduleLoaded",function(event,module){
+                  var sessionCompleter;
+                  if(module.name==="ace/ext/language_tools"){
+                     sessionCompleter = m_autoCompleters.getSessionCompleter();
+                     self.expressionEditor.addCompleter(sessionCompleter);
+                  }
+               });
 
 					var self = this;
 
@@ -171,6 +181,9 @@ define(
 
 													self
 															.changePrimaryObject(false);
+													
+													self.populateAutoCompleteKeywordList();
+													
 													self.updateView();
 												});
 
@@ -319,6 +332,8 @@ define(
 																	.css(
 																			"visibility",
 																			"visible");
+															
+															self.populateAutoCompleteKeywordList();
 															
 														})
 												.fail(
@@ -918,7 +933,7 @@ define(
 				ReportDefinitionController.prototype.getChartType = function() {
 					return this.reportingService.metadata.chartTypes[this.report.layout.chart.type];
 				};
-
+				
 				/**
 				 * 
 				 */
@@ -1414,6 +1429,20 @@ define(
                      }).fail(function(err){
                         console.log("Failed next Execution Date: " + err);
                      });
+            };
+            
+            /**
+             * 
+             */
+            ReportDefinitionController.prototype.populateAutoCompleteKeywordList = function() {
+                  var self = this;
+                  var dimensions = self.getInternalDimensions();
+                  var dimensionNames = [];
+                  for ( var m in dimensions) {
+                     var dimension = dimensions[m];
+                     dimensionNames[m] = dimension.name;
+                  }
+                  self.expressionEditor.setSessionData("$keywordList", dimensionNames);
             };
 
 			}

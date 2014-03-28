@@ -18,6 +18,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -589,5 +590,22 @@ public class ReportingServiceBean
 
          throw new RuntimeException(e);
       }
+   }
+   
+   /**
+    * Calculates NextExecutionDate depending on UI selected values
+    *
+    * @param Report Defintion JsonObject
+    * @return NextExecutionDate 
+    */
+   public String getNextExecutionDate(JsonObject json)
+   {
+      System.out.println(json.toString());
+      
+//      SchedulingRecurrence sc = SchedulingFactory.getSchedular(json);
+      
+//      return sc.prcoessSchedule(json);
+      return new Date().toString();
+      
    }
 }
