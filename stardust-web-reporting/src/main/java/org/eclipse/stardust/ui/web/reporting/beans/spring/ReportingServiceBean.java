@@ -38,7 +38,7 @@ import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.engine.api.model.Participant;
+import org.eclipse.stardust.engine.api.model.*;
 import org.eclipse.stardust.engine.api.query.UnsupportedFilterException;
 import org.eclipse.stardust.engine.api.runtime.*;
 import org.eclipse.stardust.ui.web.common.spi.user.User;
@@ -47,7 +47,9 @@ import org.eclipse.stardust.ui.web.reporting.common.JsonMarshaller;
 import org.eclipse.stardust.ui.web.reporting.core.IModelService;
 import org.eclipse.stardust.ui.web.reporting.core.ReportingServicePojo;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
 
 
 @Component
@@ -99,7 +101,7 @@ public class ReportingServiceBean
    {
       if(reportingServicePojo == null)
       {
-         reportingServicePojo = new ReportingServicePojo(getServiceFactory(), modelService);
+         reportingServicePojo = new ReportingServicePojo(getServiceFactory());
       }
 
       return reportingServicePojo;
@@ -108,6 +110,11 @@ public class ReportingServiceBean
    private ServiceFactory getServiceFactory()
    {
       return sessionContext.getServiceFactory();
+   }
+
+   private QueryService getQueryService()
+   {
+      return getServiceFactory().getQueryService();
    }
 
    /**
@@ -139,13 +146,97 @@ public class ReportingServiceBean
    }
 
    /**
-    *
-    * @return
-    */
-   public JsonObject getModelData()
-   {
-      return getReportingServicePojo().getModelData();
-   }
+   *
+   * @return
+   */
+  public JsonObject getModelData()
+  {
+     try
+     {
+        QueryService queryService = getQueryService();
+
+        JsonObject resultJson = new JsonObject();
+        JsonObject processesJson = new JsonObject();
+        JsonObject descriptorsJson = new JsonObject();
+
+        resultJson.add("processDefinitions", processesJson);
+        resultJson.add("descriptors", descriptorsJson);
+
+        // Ensures uniqueness of descriptor entries across all Process
+        // Definitions
+
+        Map<String, Object> descriptorsMap = new HashMap<String, Object>();
+
+        for (ProcessDefinition processDefinition : queryService
+              .getAllProcessDefinitions())
+        {
+           JsonObject processJson = new JsonObject();
+
+           processJson.addProperty("id", processDefinition.getQualifiedId());
+           processJson.addProperty("name", processDefinition.getName());
+           processJson.addProperty("auxiliary",
+                 ProcessDefinitionUtils.isAuxiliaryProcess(processDefinition));
+
+           processesJson.add(processDefinition.getId(), processJson);
+
+           for (DataPath dataPath : (List<DataPath>) processDefinition.getAllDataPaths())
+           {
+              if (dataPath.isDescriptor())
+              {
+                 if (!descriptorsMap.containsKey(dataPath.getId()))
+                 {
+                    JsonObject descriptorJson = new JsonObject();
+
+                    descriptorsJson.add(dataPath.getId(), descriptorJson);
+
+                    descriptorJson.addProperty("id", dataPath.getQualifiedId());
+                    descriptorJson.addProperty("name", dataPath.getName());
+                    descriptorJson.addProperty("type", dataPath.getMappedType()
+                          .getSimpleName());
+                    descriptorsMap.put(dataPath.getId(), dataPath);
+                 }
+              }
+           }
+
+           //add all activities
+           JsonArray activities = new JsonArray();
+
+           for (Object  activityObj : processDefinition.getAllActivities())
+           {
+              Activity activity = (Activity) activityObj;
+              JsonObject activityJsonObj = new JsonObject();
+
+              activityJsonObj.addProperty("id", activity.getQualifiedId());
+              activityJsonObj.addProperty("name", activity.getName());
+              activityJsonObj.addProperty("auxiliary", ActivityInstanceUtils.isAuxiliaryActivity(activity));
+              activityJsonObj.addProperty("interactive", activity.isInteractive());
+              activities.add(activityJsonObj);
+           }
+           processJson.add("activities", activities);
+        }
+
+        JsonObject participantsJson = new JsonObject();
+
+        resultJson.add("participants", participantsJson);
+
+        List<QualifiedModelParticipantInfo> qParticipantInfoList = modelService
+              .getAllModelParticipants(false);
+        for (QualifiedModelParticipantInfo participant : qParticipantInfoList)
+        {
+           JsonObject participantJson = new JsonObject();
+
+           participantJson.addProperty("id", participant.getQualifiedId());
+           participantJson.addProperty("name", participant.getName());
+
+           participantsJson.add(participant.getId(), participantJson);
+        }
+
+        return resultJson;
+     }
+     finally
+     {
+     }
+  }
 
    /**
     *
@@ -591,21 +682,21 @@ public class ReportingServiceBean
          throw new RuntimeException(e);
       }
    }
-   
+
    /**
     * Calculates an estimation date when the report will be executed next.
     *
-    * @param json - The json object representing the scheduling object 
+    * @param json - The json object representing the scheduling object
     * @return - The next possible execution time in json format
     */
    public String getNextExecutionDate(JsonObject json)
    {
       System.out.println(json.toString());
-      
+
 //      SchedulingRecurrence sc = SchedulingFactory.getSchedular(json);
-      
+
 //      return sc.prcoessSchedule(json);
       return new Date().toString();
-      
+
    }
 }

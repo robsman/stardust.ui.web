@@ -20,24 +20,14 @@ import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.dto.ActivityInstanceDetails;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetails;
-import org.eclipse.stardust.engine.api.model.Activity;
-import org.eclipse.stardust.engine.api.model.DataPath;
-import org.eclipse.stardust.engine.api.model.ProcessDefinition;
-import org.eclipse.stardust.engine.api.model.QualifiedModelParticipantInfo;
 import org.eclipse.stardust.engine.api.query.*;
 import org.eclipse.stardust.engine.api.runtime.*;
 import org.eclipse.stardust.ui.web.reporting.common.JsonMarshaller;
 import org.eclipse.stardust.ui.web.reporting.common.JsonUtil;
 import org.eclipse.stardust.ui.web.reporting.common.RestUtil;
-import org.eclipse.stardust.ui.web.reporting.common.mapping.*;
 import org.eclipse.stardust.ui.web.reporting.common.mapping.request.*;
 import org.eclipse.stardust.ui.web.reporting.common.validation.ValidationHelper;
-import org.eclipse.stardust.ui.web.reporting.common.validation.ValidationProblem;
-import org.eclipse.stardust.ui.web.reporting.common.validation.ValidationProblemsException;
-import org.eclipse.stardust.ui.web.reporting.common.validation.ValidatorApp;
 import org.eclipse.stardust.ui.web.reporting.core.util.ReportingUtil;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
 
 public class ReportingServicePojo
 {
@@ -47,18 +37,15 @@ public class ReportingServicePojo
 
    private QueryService queryService;
 
-   private IModelService modelService;
-
    private JsonMarshaller jsonMarshaller;
 
    @Deprecated
    // TODO: get rid of any hardcoded value from the prototype
    private Map<String, Map<String, ValueProvider>> valueProviders;
 
-   public ReportingServicePojo(ServiceFactory serviceFactory, IModelService modelService)
+   public ReportingServicePojo(ServiceFactory serviceFactory)
    {
       this.serviceFactory = serviceFactory;
-      this.modelService = modelService;
       this.queryService = serviceFactory.getQueryService();
       this.jsonMarshaller = new JsonMarshaller();
 
@@ -208,97 +195,6 @@ public class ReportingServicePojo
             return ((ActivityInstance) object).getState();
          }
       });
-   }
-
-   /**
-    *
-    * @return
-    */
-   public JsonObject getModelData()
-   {
-      try
-      {
-         JsonObject resultJson = new JsonObject();
-         JsonObject processesJson = new JsonObject();
-         JsonObject descriptorsJson = new JsonObject();
-
-         resultJson.add("processDefinitions", processesJson);
-         resultJson.add("descriptors", descriptorsJson);
-
-         // Ensures uniqueness of descriptor entries across all Process
-         // Definitions
-
-         Map<String, Object> descriptorsMap = new HashMap<String, Object>();
-
-         for (ProcessDefinition processDefinition : queryService
-               .getAllProcessDefinitions())
-         {
-            JsonObject processJson = new JsonObject();
-
-            processJson.addProperty("id", processDefinition.getQualifiedId());
-            processJson.addProperty("name", processDefinition.getName());
-            processJson.addProperty("auxiliary",
-                  ProcessDefinitionUtils.isAuxiliaryProcess(processDefinition));
-
-            processesJson.add(processDefinition.getId(), processJson);
-
-            for (DataPath dataPath : (List<DataPath>) processDefinition.getAllDataPaths())
-            {
-               if (dataPath.isDescriptor())
-               {
-                  if (!descriptorsMap.containsKey(dataPath.getId()))
-                  {
-                     JsonObject descriptorJson = new JsonObject();
-
-                     descriptorsJson.add(dataPath.getId(), descriptorJson);
-
-                     descriptorJson.addProperty("id", dataPath.getQualifiedId());
-                     descriptorJson.addProperty("name", dataPath.getName());
-                     descriptorJson.addProperty("type", dataPath.getMappedType()
-                           .getSimpleName());
-                     descriptorsMap.put(dataPath.getId(), dataPath);
-                  }
-               }
-            }
-            
-            //add all activities
-            JsonArray activities = new JsonArray();
-            
-            for (Object  activityObj : processDefinition.getAllActivities()) 
-            {
-               Activity activity = (Activity) activityObj;
-               JsonObject activityJsonObj = new JsonObject();
-               
-               activityJsonObj.addProperty("id", activity.getQualifiedId());   
-               activityJsonObj.addProperty("name", activity.getName());
-               activityJsonObj.addProperty("auxiliary", ActivityInstanceUtils.isAuxiliaryActivity(activity));
-               activityJsonObj.addProperty("interactive", activity.isInteractive());
-               activities.add(activityJsonObj);
-            }
-            processJson.add("activities", activities);
-         }
-
-         JsonObject participantsJson = new JsonObject();
-
-         resultJson.add("participants", participantsJson);
-
-         List<QualifiedModelParticipantInfo> qParticipantInfoList = modelService
-               .getAllModelParticipants(false);
-         for (QualifiedModelParticipantInfo participant : qParticipantInfoList)
-         {
-            JsonObject participantJson = new JsonObject();
-
-            participantJson.addProperty("id", participant.getQualifiedId());
-            participantJson.addProperty("name", participant.getName());
-
-            participantsJson.add(participant.getId(), participantJson);
-         }
-
-         return resultJson;
-      }
-      finally
-      {
-      }
    }
 
    /**
