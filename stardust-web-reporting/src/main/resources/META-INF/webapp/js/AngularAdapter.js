@@ -63,14 +63,14 @@ if (!window.bpm.portal.AngularAdapter) {
 			scope.updateView = function() {
 				this.$apply();
 			};
+			
+			scope.runInAngularContext = function(func) {
+	         scope.$apply(func);
+	      };
 
 			return scope;
 		};
 		
-		scope.runInAngularContext = function(func) {
-         scope.$apply(func);
-      };
-
 		/**
 		 * Auxiliary method to copy all methods from the parentObject to the
 		 * childObject.
