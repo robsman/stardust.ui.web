@@ -593,10 +593,10 @@ public class ReportingServiceBean
    }
    
    /**
-    * Calculates NextExecutionDate depending on UI selected values
+    * Calculates an estimation date when the report will be executed next.
     *
-    * @param Report Defintion JsonObject
-    * @return NextExecutionDate 
+    * @param json - The json object representing the scheduling object 
+    * @return - The next possible execution time in json format
     */
    public String getNextExecutionDate(JsonObject json)
    {
