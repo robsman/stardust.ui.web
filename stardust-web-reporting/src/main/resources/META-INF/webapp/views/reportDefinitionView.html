@@ -664,7 +664,8 @@ table.formTable td {
 													</tr>
 													<tr ng-show="x.dimension == 'processName' || x.dimension == 'activityName'">
 														<td valign="top"><a href=""
-																ng-click="toggleFilter(x, 'process_filter_auxiliary')" ng-class="{true:'disabled', false:'enabled'}[x.metadata.process_filter_auxiliary]">
+																ng-click="toggleFilter(x, 'process_filter_auxiliary')" 
+																ng-class="{true:'disabled', false:'enabled'}[x.metadata.process_filter_auxiliary]">
 																	<img 
 																	src="../css/images/process_auxiliary.png"
 																	title="{{getI18N('reporting.definitionView.process.filter.auxiliary.' + x.metadata.process_filter_auxiliary)}}" />
@@ -674,6 +675,7 @@ table.formTable td {
 													<tr ng-show="x.dimension == 'activityName'">
 														<td valign="top"><select multiple="multiple"
 															style="height: 100px; width: 250px;" ng-model="x.metadata.selectedProcesses"
+															ng-change="selectedProcessChanged(x)"
 															ng-options="p.name for p in getEnumerators2(getDimension('processName'), x)"></select>
 														</td>
 													</tr>

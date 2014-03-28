@@ -72,7 +72,9 @@ define(
 					this.factSelect = jQuery("#factSelect");
 					this.chartTypeSelect = jQuery("#chartTypeSelect");
 					
-					this.filterMetadata = {};
+					//TODO: have better way to do this??
+					this.ALL_PROCESSES = {id: "allProcesses", name: "All Processes"};
+					this.ALL_ACTIVITIES = {id: "allActivities", name: "All Activities"};
 					
 					this.editorAnchor = utils.jQuerySelect("#expressionTextDiv").get(0);
 					this.expressionEditor = m_codeEditorAce.getJSCodeEditor(this.editorAnchor);
@@ -520,8 +522,10 @@ define(
 					this.updateView();
 				};
 				
-				ReportDefinitionController.prototype.selectedProcessChanged = function() {
+				ReportDefinitionController.prototype.selectedProcessChanged = function(filter) {
 					//this.updateView();
+					//TODO remove this method later
+					var a = 1;
 				};
 				
 				/**
@@ -681,10 +685,11 @@ define(
 
 					var enumItems = this.reportingService.getEnumerators2(qualifier[0], qualifier[1]);
 					
-					var filteredEnumItems = [{id: "allProcesses", name: "All Processes"}];
+					var filteredEnumItems = [];
 					
 					//Processes
 					if ((dimension.id == "processName") && filter.metadata.process_filter_auxiliary) {
+						filteredEnumItems.push(this.ALL_PROCESSES);
 						for (var i = 0; i < enumItems.length; i++) {
 							var process = enumItems[i];
 							if (!process.auxiliary) {
@@ -693,12 +698,17 @@ define(
 						}
 					} //activities
 					else if (dimension.id == "activityName") {
+						var selectedProcesses = enumItems;
+						filteredEnumItems.push(this.ALL_ACTIVITIES);
 						if (!filter.metadata.selectedProcesses
 								|| filter.metadata.selectedProcesses.length < 1) {
-							filter.metadata.selectedProcesses = enumItems;
+							filter.metadata.selectedProcesses = this.ALL_ACTIVITIES;
+						}else{
+							selectedProcesses = filter.metadata.selectedProcesses;
 						}
-						for (var i = 0; i < filter.metadata.selectedProcesses.length; i++) {
-							var process = filter.metadata.selectedProcesses[i];
+						
+						for (var i = 0; i < selectedProcesses.length; i++) {
+							var process = selectedProcesses[i];
 							for (var j = 0; j < process.activities.length; j++){
 								var activity = process.activities[j];
 								if (!filter.metadata.activity_filter_auxiliary || !activity.auxiliary) {
