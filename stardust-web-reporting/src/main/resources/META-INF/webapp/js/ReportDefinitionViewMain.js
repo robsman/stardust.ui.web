@@ -1,5 +1,6 @@
 require
 		.config({
+			waitSeconds: 0,
 			baseUrl : "../../",
 			paths : {
 				'jquery' : [ 'bpm-reporting/js/libs/jquery/jquery-1.7.2',
