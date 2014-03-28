@@ -3,9 +3,12 @@ define(
 				"bpm-reporting/js/ReportingService",
 				"bpm-reporting/js/ReportRenderingController",
 				"bpm-reporting/js/SchedulingController",
-				"bpm-reporting/js/utils" ],
+				"bpm-reporting/js/utils",
+				"bpm-reporting/js/m_codeEditorAce",
+				"bpm-reporting/js/m_autoCompleters"],
 		function(I18NUtils, AngularAdapter, ReportingService,
-				ReportRenderingController, SchedulingController, utils) {
+				ReportRenderingController, SchedulingController, utils, 
+				m_codeEditorAce, m_autoCompleters) {
 			return {
 				create : function(angular, name, path) {
 					var controller = new ReportDefinitionController();
@@ -64,11 +67,23 @@ define(
 
 					this.primaryObjectSelect = jQuery("#primaryObjectSelect");
 					this.participantsSelect = jQuery("#participantsSelect");
+					this.schedulingParticipantsSelect = jQuery("#schedulingParticipantsSelect");
 					
 					this.factSelect = jQuery("#factSelect");
 					this.chartTypeSelect = jQuery("#chartTypeSelect");
 					
 					this.filterAuxiliaryProcesses = true;
+					
+		         
+					this.editorAnchor = utils.jQuerySelect("#expressionTextDiv").get(0);
+					this.expressionEditor = m_codeEditorAce.getJSCodeEditor(this.editorAnchor);
+					this.expressionEditor.getEditor().on('blur', function(event)
+					         {
+					               if (self.selectedComputedColumn != null)
+					               {
+					                  self.selectedComputedColumn.formula = self.expressionEditor.getValue();
+					               }
+					         });
 
 					var self = this;
 
@@ -175,7 +190,23 @@ define(
 											self.report.storage.participant = self.participantsSelect.val();
 											self.updateView();
 										});
+										
+										//Participants Select
+                              self.schedulingParticipantsSelect.empty();
+                              var modelParticipants = self.reportingService.modelData.participants;
+                              for ( var n in modelParticipants) {
+                                 self.schedulingParticipantsSelect
+                                       .append("<option value='"
+                                             + modelParticipants[n].id
+                                             + "'>"
+                                             + modelParticipants[n].name
+                                             + "</option>");
+                              }
 
+                              self.schedulingParticipantsSelect.change(function() {
+                                 self.report.scheduling.delivery.participant = self.schedulingParticipantsSelect.val();
+                                 self.updateView();
+                              });
 										
 										self.chartTypeSelect
 												.change(function() {
@@ -241,6 +272,7 @@ define(
 																}
 															}
 														});
+										
 
 										self
 												.loadOrCreateReportDefinition(
@@ -266,6 +298,12 @@ define(
 															self.schedulingController
 																	.initialize(self.report.scheduling);
 
+															self.runInAngularContext(function(scope){
+															   scope.$watch("report.scheduling", function(newValue, oldValue) {
+															            self.getNextExecutionDate();
+	                                             }, true);
+															});
+
 															self.updateView();
 
 															document.body.style.cursor = "default";
@@ -280,6 +318,7 @@ define(
 																	.css(
 																			"visibility",
 																			"visible");
+															
 														})
 												.fail(
 														function() {
@@ -303,6 +342,7 @@ define(
 										jQuery("#reportDefinitionView").css(
 												"visibility", "visible");
 									});
+					
 				};
 
 				/**
@@ -332,7 +372,7 @@ define(
 								.done(function(report) {
 
 									self.report = report;
-
+									
 									console.log("Loaded report definition:");
 									console.log(self.report);
 
@@ -1255,7 +1295,9 @@ define(
 				ReportDefinitionController.prototype.selectComputedColumn = function(
 						column) {
 					this.selectedComputedColumn = column;
-
+					
+					this.expressionEditor.setValue(this.selectedComputedColumn.formula);
+					
 					console.log("Selected Column");
 					console.log(this.selectedComputedColumn);
 				};
@@ -1324,7 +1366,26 @@ define(
                   '46': I18NUtils.getProperty('reporting.definitionView.executionTime.1030PM.label'),
                   '47': I18NUtils.getProperty('reporting.definitionView.executionTime.1100PM.label'),
                   '48': I18NUtils.getProperty('reporting.definitionView.executionTime.1130PM.label')
-                     };
+                     }; 
             };
+            
+            /**
+             * 
+             */
+            ReportDefinitionController.prototype.getNextExecutionDate = function() {
+                  var self = this;
+                  //FIXME temporary hack to update the values as sd-date directive not updating model
+                  this.report.scheduling.recurrenceRange.startDate = document.getElementById("startDateId").value;
+                  this.report.scheduling.recurrenceRange.endDate = document.getElementById("endDateId").value;
+                  this.reportingService.getNextExecutionDate(this.report.scheduling).done(
+                     function(date) {
+                        self.report.scheduling.nextExecutionDate = date;
+                        self.report.scheduling.nextExecutionDateDay = utils.getWeekdayName(date);
+                        self.updateView();
+                     }).fail(function(err){
+                        console.log("Failed next Execution Date: " + err);
+                     });
+            };
+
 			}
 		});

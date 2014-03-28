@@ -1091,5 +1091,41 @@ define(
 
 					return dimensions;
 				};
+				
+				
+	           /**
+             * Calculates Next Execution Date.
+             */
+            ReportingService.prototype.getNextExecutionDate = function(scheduling) {
+               var deferred = jQuery.Deferred();
+               var self = this;
+
+               jQuery
+                     .ajax(
+                           {
+                              type : "PUT",
+                              beforeSend : function(request) {
+                                 request
+                                       .setRequestHeader(
+                                             "Authentication",
+                                             self
+                                                   .getBasicAuthenticationHeader());
+                              },
+                              url : self.getRootUrl()
+                                    + "/services/rest/bpm-reporting/nextExecutionDate",
+                              contentType : "application/json",
+                              data : JSON
+                                    .stringify(scheduling)
+                           }).done(function(response) {
+                              console.log(response);
+                              var a = 0;
+                              a++;
+                        deferred.resolve(response);
+                     }).fail(function(response) {
+                        deferred.reject(response);
+                     });
+
+               return deferred.promise();
+            };
 			}
 		});

@@ -35,9 +35,11 @@ define(
                /**
                 * Function to get the i18n name of weekday
                 */
-               getWeekdayName : function()
+               getWeekdayName : function(d)
                {
-                  var d = new Date();
+                  if (d == null)
+                     d = new Date();
+                  d = new Date(d);
                   var weekday = new Array(7);
                   weekday[0] = I18NUtils
                            .getProperty("reporting.definitionView.sunday.label");
@@ -128,11 +130,12 @@ define(
                 */
                calculateDateAfterNDays : function(startDate, noOfDays)
                {
+                  var date = new Date(startDate); 
                   if (!(isNaN(noOfDays)))
                   {
-                     startDate.setDate(startDate.getDate() + noOfDays);
+                     date.setDate(date.getDate() + noOfDays);
                   }
-                  return startDate;
+                  return date;
                },
 
                /**
@@ -174,7 +177,53 @@ define(
                            .getProperty("reporting.definitionView.last.label");
 
                   return week[0 | date.getDate() / 7];
-               }
+               },
+               
+               jQuerySelect : jQuerySelect
 
             };
+            
+            /*
+            *
+            */
+           function jQuerySelect(pattern, context) {
+              var ret = null;
+              if (!context) {
+                 if (!(typeof pattern === "string"
+                    && (pattern.indexOf("</") != -1
+                             || pattern.indexOf("/>") != -1))) {
+                    // Find HTML5 Framework parent div for current View
+                    var views = jQuery(".sg-view-panel").children();
+                    if (views) {
+                       for(var i = 0; i< views.length; i++) {
+                          if (views[i].style.display == "" || views[i].style.display == "inline") {
+                             var ret = jQuery(pattern, jQuery(views[i]));
+                             if (ret.length > 0) {
+                                return ret;
+                             }
+                          }
+                       }
+                    }
+
+                    // Fallback portal-shell
+                    var view = jQuery(".view-panel-active");
+                    if (view && view.length > 0) {
+                       var ret = jQuery(pattern, jQuery(view));
+                       if (ret.length > 0) {
+                          return ret;
+                       }
+                    }
+                 }
+
+                 ret = jQuery(pattern);
+              }
+              ret = jQuery(pattern, context);
+
+//            if (ret.length == 0) {
+//               return null;
+//            }
+
+              return ret;
+           }
+
          });

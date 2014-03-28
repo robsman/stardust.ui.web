@@ -66,6 +66,10 @@ if (!window.bpm.portal.AngularAdapter) {
 
 			return scope;
 		};
+		
+		scope.runInAngularContext = function(func) {
+         scope.$apply(func);
+      };
 
 		/**
 		 * Auxiliary method to copy all methods from the parentObject to the

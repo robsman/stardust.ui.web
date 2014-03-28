@@ -107,11 +107,10 @@ table.formTable td {
 									<tr>
 										<td><input type="checkbox"
 											ng-model="report.dataSet.joinExternalData"></td>
-										<td><label>{{getI18N('reporting.definitionView.joinExternalData.label')}}</label></td>
+										<td><label>{{getI18N('reporting.definitionView.joinExternalData.label') + " " +  getI18N('reporting.definitionView.as.label')}}</label></td>
 										<td><div ng-show="report.dataSet.joinExternalData">
 												<table cellpadding="0" cellspacing="0" class="formTable">
 													<tr>
-														<td><label>{{getI18N('reporting.definitionView.as.label')}}</label></td>
 														<td><select
 															ng-model="report.dataSet.externalJoins[0].joinType"><option
 																	value="inner">Inner Join</option>
@@ -140,8 +139,7 @@ table.formTable td {
 										<tr>
 											<td colspan="2"><a style="font-size: 9px;"
 												ng-click="evaluateExternalTestdata(report.dataSet.externalJoins[0])"
-												class="smallLink">{{getI18N('reporting.definitionView.loadTestDataLink.label')}}
-													&raquo;</a></td>
+												class="smallLink"><img src="../css/images/database_go.png"></a></td>
 										</tr>
 									</table>
 									<table cellpadding="0" cellspacing="0" class="embeddedTable"
@@ -244,14 +242,16 @@ table.formTable td {
 												</tbody>
 											</table>
 										</td>
-										<td valign="top" style="padding-left: 10px;"><table
+                              </tr>
+                              <tr>
+										<td valign="top"><table
 												cellpadding="0" cellspacing="0" class="formTable">
 												<tr>
 													<td><label>{{getI18N('reporting.definitionView.formula.label')}}</label></td>
 												</tr>
 												<tr>
-													<td>
-														<!--div 
+                                       <td>
+                                          <!-- <div 
 												          ipp-Ace 
 												          mode="javascript"
 												          keywords="Hello,World" 
@@ -259,15 +259,13 @@ table.formTable td {
 												          snippets="true"
 												          autocomplete="true"
 												          ng-model="selectedComputedColumn.formula">
-												        </div-->
-												        <textarea 
-												        	id="computedColumnExpressionEditor"
-															rows="10" 
-															cols="80"
-															ng-model="selectedComputedColumn.formula">
-														</textarea>
-													</td>
-												</tr>
+												        </div> -->
+                                          <div id="expressionTextDiv"
+                                             class="editorDivDefault"
+                                             ng-model="selectedComputedColumn.formula">
+                                             </textarea>
+                                       </td>
+                                    </tr>
 											</table></td>
 									</tr>
 								</table>
@@ -1459,22 +1457,24 @@ table.formTable td {
                                                                         ng-model="report.scheduling.monthlyRecurrenceOptions.dayIndex"
                                                                         ng-disabled="report.scheduling.monthlyRecurrenceOptions.monthsRecurrence != 'weekday'"
                                                                         style="width: 50px;">
-                                                                           <option>{{getI18N('reporting.definitionView.first.label')}}</option>
-                                                                           <option>{{getI18N('reporting.definitionView.second.label')}}</option>
-                                                                           <option>{{getI18N('reporting.definitionView.third.label')}}</option>
-                                                                           <option>{{getI18N('reporting.definitionView.fourth.label')}}</option>
-                                                                           <option>{{getI18N('reporting.definitionView.last.label')}}</option>
+                                                                           <option value="1">{{getI18N('reporting.definitionView.first.label')}}</option>
+                                                                           <option value="2">{{getI18N('reporting.definitionView.second.label')}}</option>
+                                                                           <option value="3">{{getI18N('reporting.definitionView.third.label')}}</option>
+                                                                           <option value="4">{{getI18N('reporting.definitionView.fourth.label')}}</option>
+                                                                           <option value="5">{{getI18N('reporting.definitionView.last.label')}}</option>
+                                                                           <option value="" ng-hide="report.scheduling.monthlyRecurrenceOptions.dayIndex">{{report.scheduling.monthlyRecurrenceOptions.dayIndex}}</option>
                                                                      </select></td>
                                                                      <td><select
 																								ng-disabled="report.scheduling.monthlyRecurrenceOptions.monthsRecurrence != 'weekday'" 
                                                                            ng-model="report.scheduling.monthlyRecurrenceOptions.day" >
-                                                                           <option>{{getI18N('reporting.definitionView.monday.label')}}</option>
-																									<option>{{getI18N('reporting.definitionView.tuesday.label')}}</option>
-																									<option>{{getI18N('reporting.definitionView.wednesday.label')}}</option>
-																									<option>{{getI18N('reporting.definitionView.thursday.label')}}</option>
-																									<option>{{getI18N('reporting.definitionView.friday.label')}}</option>
-																									<option>{{getI18N('reporting.definitionView.saturday.label')}}</option>
-																									<option>{{getI18N('reporting.definitionView.sunday.label')}}</option>
+                                                                           <option value="1">{{getI18N('reporting.definitionView.monday.label')}}</option>
+																									<option value="2">{{getI18N('reporting.definitionView.tuesday.label')}}</option>
+																									<option value="3">{{getI18N('reporting.definitionView.wednesday.label')}}</option>
+																									<option value="4">{{getI18N('reporting.definitionView.thursday.label')}}</option>
+																									<option value="5">{{getI18N('reporting.definitionView.friday.label')}}</option>
+																									<option value="6">{{getI18N('reporting.definitionView.saturday.label')}}</option>
+																									<option value="7">{{getI18N('reporting.definitionView.sunday.label')}}</option>
+                                                                           <option value="" ng-hide="report.scheduling.monthlyRecurrenceOptions.monthsRecurrence">{{report.scheduling.monthlyRecurrenceOptions.monthsRecurrence}}</option>
 																							</select></td>
 																							<td><label>{{getI18N('reporting.definitionView.ofEvery.label')}}</label></td>
 																							<td><input type="number" min="1"
@@ -1514,18 +1514,19 @@ table.formTable td {
 																							<td><select
                                                                         ng-model="report.scheduling.yearlyRecurrenceOptions.onMonth"
 																								ng-disabled="report.scheduling.yearlyRecurrenceOptions.yearlyRecurrence != 'weekday'">
-																									<option>{{getI18N('reporting.definitionView.january.label')}}</option>
-																									<option>{{getI18N('reporting.definitionView.february.label')}}</option>
-																									<option>{{getI18N('reporting.definitionView.march.label')}}</option>
-																									<option>{{getI18N('reporting.definitionView.april.label')}}</option>
-																									<option>{{getI18N('reporting.definitionView.may.label')}}</option>
-																									<option>{{getI18N('reporting.definitionView.june.label')}}</option>
-																									<option>{{getI18N('reporting.definitionView.july.label')}}</option>
-																									<option>{{getI18N('reporting.definitionView.august.label')}}</option>
-																									<option>{{getI18N('reporting.definitionView.september.label')}}</option>
-																									<option>{{getI18N('reporting.definitionView.october.label')}}</option>
-																									<option>{{getI18N('reporting.definitionView.november.label')}}</option>
-																									<option>{{getI18N('reporting.definitionView.december.label')}}</option>
+																									<option value="1">{{getI18N('reporting.definitionView.january.label')}}</option>
+																									<option value="2">{{getI18N('reporting.definitionView.february.label')}}</option>
+																									<option value="3">{{getI18N('reporting.definitionView.march.label')}}</option>
+																									<option value="4">{{getI18N('reporting.definitionView.april.label')}}</option>
+																									<option value="5">{{getI18N('reporting.definitionView.may.label')}}</option>
+																									<option value="6">{{getI18N('reporting.definitionView.june.label')}}</option>
+																									<option value="7">{{getI18N('reporting.definitionView.july.label')}}</option>
+																									<option value="8">{{getI18N('reporting.definitionView.august.label')}}</option>
+																									<option value="9">{{getI18N('reporting.definitionView.september.label')}}</option>
+																									<option value="10">{{getI18N('reporting.definitionView.october.label')}}</option>
+																									<option value="11">{{getI18N('reporting.definitionView.november.label')}}</option>
+																									<option value="12">{{getI18N('reporting.definitionView.december.label')}}</option>
+                                                                           <option value="" ng-hide="report.scheduling.yearlyRecurrenceOptions.onMonth">{{report.scheduling.yearlyRecurrenceOptions.onMonth}}</option>
 																									<td><input type="number"
                                                                               ng-model="report.scheduling.yearlyRecurrenceOptions.onDay"
 																										ng-disabled="report.scheduling.yearlyRecurrenceOptions.yearlyRecurrence != 'weekday'"
@@ -1543,38 +1544,41 @@ table.formTable td {
 																						<tr>
 																							<td><select
                                                                         ng-model="report.scheduling.yearlyRecurrenceOptions.onTheXDay"
-																								ng-disabled="report.scheduling.yearlyRecurrenceOptions.yearlyRecurrence != 'date'"><option>{{getI18N('reporting.definitionView.first.label')}}</option>
-																									<option>{{getI18N('reporting.definitionView.second.label')}}</option>
-																									<option>{{getI18N('reporting.definitionView.third.label')}}</option>
-																									<option>{{getI18N('reporting.definitionView.fourth.label')}}</option>
-																									<option>{{getI18N('reporting.definitionView.last.label')}}</option>
+																								ng-disabled="report.scheduling.yearlyRecurrenceOptions.yearlyRecurrence != 'date'"><option  value="1">{{getI18N('reporting.definitionView.first.label')}}</option>
+																									<option value="2">{{getI18N('reporting.definitionView.second.label')}}</option>
+																									<option value="3">{{getI18N('reporting.definitionView.third.label')}}</option>
+																									<option value="4">{{getI18N('reporting.definitionView.fourth.label')}}</option>
+																									<option value="5">{{getI18N('reporting.definitionView.last.label')}}</option>
+                                                                           <option value="" ng-hide="report.scheduling.yearlyRecurrenceOptions.onTheXDay">{{report.scheduling.yearlyRecurrenceOptions.onTheXDay}}</option>
 																							</select></td>
 																							<td><select
                                                                         ng-model="report.scheduling.yearlyRecurrenceOptions.onTheXDayName"
-																								ng-disabled="report.scheduling.yearlyRecurrenceOptions.yearlyRecurrence != 'date'"><option>{{getI18N('reporting.definitionView.monday.label')}}</option>
-																									<option>{{getI18N('reporting.definitionView.tuesday.label')}}</option>
-																									<option>{{getI18N('reporting.definitionView.wednesday.label')}}</option>
-																									<option>{{getI18N('reporting.definitionView.thursday.label')}}</option>
-																									<option>{{getI18N('reporting.definitionView.friday.label')}}</option>
-																									<option>{{getI18N('reporting.definitionView.saturday.label')}}</option>
-																									<option>{{getI18N('reporting.definitionView.sunday.label')}}</option>
+																								ng-disabled="report.scheduling.yearlyRecurrenceOptions.yearlyRecurrence != 'date'"><option value="1">{{getI18N('reporting.definitionView.monday.label')}}</option>
+																									<option value="2">{{getI18N('reporting.definitionView.tuesday.label')}}</option>
+																									<option value="3">{{getI18N('reporting.definitionView.wednesday.label')}}</option>
+																									<option value="4">{{getI18N('reporting.definitionView.thursday.label')}}</option>
+																									<option value="5">{{getI18N('reporting.definitionView.friday.label')}}</option>
+																									<option value="6">{{getI18N('reporting.definitionView.saturday.label')}}</option>
+																									<option value="7">{{getI18N('reporting.definitionView.sunday.label')}}</option>
+                                                                           <option value="" ng-hide="report.scheduling.yearlyRecurrenceOptions.onTheXDayName">{{report.scheduling.yearlyRecurrenceOptions.onTheXDayName}}</option>
 																							</select></td>
 																							<td><label>{{getI18N('reporting.definitionView.of.label')}}</label></td>
 																							<td><select
                                                                         ng-model="report.scheduling.yearlyRecurrenceOptions.onTheMonth"
 																								ng-disabled="report.scheduling.yearlyRecurrenceOptions.yearlyRecurrence != 'date'">
-																									<option>{{getI18N('reporting.definitionView.january.label')}}</option>
-																									<option>{{getI18N('reporting.definitionView.february.label')}}</option>
-																									<option>{{getI18N('reporting.definitionView.march.label')}}</option>
-																									<option>{{getI18N('reporting.definitionView.april.label')}}</option>
-																									<option>{{getI18N('reporting.definitionView.may.label')}}</option>
-																									<option>{{getI18N('reporting.definitionView.june.label')}}</option>
-																									<option>{{getI18N('reporting.definitionView.july.label')}}</option>
-																									<option>{{getI18N('reporting.definitionView.august.label')}}</option>
-																									<option>{{getI18N('reporting.definitionView.september.label')}}</option>
-																									<option>{{getI18N('reporting.definitionView.october.label')}}</option>
-																									<option>{{getI18N('reporting.definitionView.november.label')}}</option>
-																									<option>{{getI18N('reporting.definitionView.december.label')}}</option>
+																									<option value="1">{{getI18N('reporting.definitionView.january.label')}}</option>
+                                                                           <option value="2">{{getI18N('reporting.definitionView.february.label')}}</option>
+                                                                           <option value="3">{{getI18N('reporting.definitionView.march.label')}}</option>
+                                                                           <option value="4">{{getI18N('reporting.definitionView.april.label')}}</option>
+                                                                           <option value="5">{{getI18N('reporting.definitionView.may.label')}}</option>
+                                                                           <option value="6">{{getI18N('reporting.definitionView.june.label')}}</option>
+                                                                           <option value="7">{{getI18N('reporting.definitionView.july.label')}}</option>
+                                                                           <option value="8">{{getI18N('reporting.definitionView.august.label')}}</option>
+                                                                           <option value="9">{{getI18N('reporting.definitionView.september.label')}}</option>
+                                                                           <option value="10">{{getI18N('reporting.definitionView.october.label')}}</option>
+                                                                           <option value="11">{{getI18N('reporting.definitionView.november.label')}}</option>
+                                                                           <option value="12">{{getI18N('reporting.definitionView.december.label')}}</option>
+                                                                           <option value="" ng-hide="report.scheduling.yearlyRecurrenceOptions.onTheMonth">{{report.scheduling.yearlyRecurrenceOptions.onTheMonth}}</option>
 																							</select></td>
 																						</tr>
 																					</table></td>
@@ -1594,7 +1598,7 @@ table.formTable td {
 														<table>
 															<tr>
 																<td><label>{{getI18N('reporting.definitionView.start.label')}}</label></td>
-																<td><input type="text"
+																<td><input type="text" id="startDateId"
 																	ng-model="report.scheduling.recurrenceRange.startDate"
 																	sd-date /></td>
 															</tr>
@@ -1624,7 +1628,7 @@ table.formTable td {
 																	ng-model="report.scheduling.recurrenceRange.endMode"
 																	value="endByDate" /></td>
 																<td><label>{{getI18N('reporting.definitionView.endBy.label')}}</label></td>
-																<td colspan="2"><input type="text"
+																<td colspan="2"><input type="text" id = "endDateId" 
 																	ng-model="report.scheduling.recurrenceRange.endDate"
 																	ng-disabled="report.scheduling.recurrenceRange.endMode != 'endByDate'"
 																	sd-date /></td>
@@ -1653,7 +1657,7 @@ table.formTable td {
 													<td><input type="radio" value="participantFolder"
 														ng-model="report.scheduling.delivery.mode" /></td>
 													<td>{{getI18N('reporting.definitionView.saveForOrganizationRole.label')}}</td>
-													<td><select
+													<td><select id="schedulingParticipantsSelect" 
 														ng-model="report.scheduling.delivery.participant"></select></td>
 												</tr>
 												<tr>
@@ -1679,10 +1683,10 @@ table.formTable td {
 																<td style="padding-right: 5px;"><img
 																	src="../images/icons/date.png" /></td>
 																<td style="color: #8ba7aa;">
-																	<div style="text-align: left;">{{getWeekdayName(getNextExecutionTime())}}</div>
+																	<div style="text-align: left;">{{report.scheduling.nextExecutionDateDay}}</div>
 																	<div
 																		style="font-size: 25px; text-align: left; margin-top: 5px;">
-																		{{reportingService.getISODateTime(getNextExecutionTime())}}</div>
+																		{{report.scheduling.nextExecutionDate + " " + getExecutionTime()[report.scheduling.executionTime]}}</div>
 																</td>
 															</tr>
 														</table>

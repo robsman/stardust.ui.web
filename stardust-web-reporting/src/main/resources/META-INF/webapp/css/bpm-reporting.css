@@ -314,3 +314,10 @@ div.right {
 .enabled {
 	opacity : 1.0;
 }
+
+.editorDivDefault {
+   position: relative !important;
+   height: 80px;
+   width:500px;
+   border: 1px solid #BBBBBB !important;
+}

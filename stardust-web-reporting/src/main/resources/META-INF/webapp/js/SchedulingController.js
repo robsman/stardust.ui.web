@@ -31,15 +31,15 @@ define([ "bpm-reporting/js/I18NUtils", "bpm-reporting/js/utils" ], function(I18N
       {
          return {
             recurrenceInterval : this.WEEKLY,
-            executionTime : "08:00 AM",
+            executionTime : "18",
             delivery : {
                mode : "personalFolder"
             },
             recurrenceRange : {
-               startDate : new Date(),
+               startDate : convertDate(new Date()),
                endMode : "noEnd",
                occurences : 10,
-               endDate : utils.calculateDateAfterNDays(new Date(), 60)
+               endDate : convertDate(new Date())
             },
             dailyRecurrenceOptions : {
                daysRecurrence : "interval",
@@ -61,20 +61,20 @@ define([ "bpm-reporting/js/I18NUtils", "bpm-reporting/js/utils" ], function(I18N
                month : 1,
 
                // monthsRecurrence : "weekday",
-               day : utils.getWeekdayName(),
-               dayIndex : utils.findWeekOfMonth(new Date()),
+               day : new Date().getDay(),
+               dayIndex : (0 | new Date().getDate() / 7),
                monthIndex : 1
             },
             yearlyRecurrenceOptions : {
                yearlyRecurrence : "weekday",
                recurEveryYear : 1,
 
-               onMonth : utils.getMonthName(),
+               onMonth : new Date().getMonth() + 1,
                onDay : utils.getDDFromDate(),
 
-               onTheXDay : utils.findWeekOfMonth(new Date()),
-               onTheXDayName : utils.getWeekdayName(),
-               onTheMonth : utils.getMonthName()
+               onTheXDay : (0 | new Date().getDate() / 7),
+               onTheXDayName : new Date().getDay(),
+               onTheMonth : new Date().getMonth() + 1
             }
          };
       };
@@ -95,4 +95,15 @@ define([ "bpm-reporting/js/I18NUtils", "bpm-reporting/js/utils" ], function(I18N
    {
       return (utils.getWeekday() == index) ? true : false;
    }
+   
+   /**
+    *  returns inputed date in yyyy-mm-dd format
+    */
+   function convertDate(input)
+   {
+      function pad(s) { return (s < 10) ? '0' + s : s; }
+      var d = new Date(input);
+      return [d.getFullYear(), pad(d.getMonth()+1), pad(d.getDate())].join('-');
+   }
+   
 });
