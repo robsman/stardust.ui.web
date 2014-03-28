@@ -1,7 +1,6 @@
 package org.eclipse.stardust.ui.web.reporting.core;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
@@ -16,6 +15,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
+import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.dto.ActivityInstanceDetails;
@@ -29,6 +29,11 @@ import org.eclipse.stardust.engine.api.runtime.*;
 import org.eclipse.stardust.ui.web.reporting.common.JsonMarshaller;
 import org.eclipse.stardust.ui.web.reporting.common.JsonUtil;
 import org.eclipse.stardust.ui.web.reporting.common.RestUtil;
+import org.eclipse.stardust.ui.web.reporting.common.mapping.*;
+import org.eclipse.stardust.ui.web.reporting.common.validation.ValidationHelper;
+import org.eclipse.stardust.ui.web.reporting.common.validation.ValidationProblem;
+import org.eclipse.stardust.ui.web.reporting.common.validation.ValidationProblemsException;
+import org.eclipse.stardust.ui.web.reporting.common.validation.ValidatorApp;
 import org.eclipse.stardust.ui.web.reporting.core.util.ReportingUtil;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
@@ -304,51 +309,50 @@ public class ReportingServicePojo
     *
     */
    private void addProcessInstanceQueryFilters(ProcessInstanceQuery query,
-         JsonArray filters, JsonObject parametersJson) throws UnsupportedFilterException,
-         ParseException
+         List<ReportFilter> filters, JsonObject parametersJson)
+         throws UnsupportedFilterException, ParseException
    {
       DateFormat dateFormat = DateFormat.getDateInstance();
-
-      for (int n = 0; n < filters.size(); ++n)
+      for (ReportFilter filter : filters)
       {
-         JsonObject filterJson = filters.get(n).getAsJsonObject();
-         JsonPrimitive valueJson = null;
-         JsonArray valuesJson = null;
+         JsonElement filterValue = filter.getValue();
+         String dimension = filter.getDimension();
+         String operator = filter.getOperator();
 
-         if (filterJson.get("value").isJsonPrimitive())
+         JsonPrimitive primitiveValue = null;
+         JsonArray arrayValue = null;
+
+         if (filterValue.isJsonPrimitive())
          {
-            valueJson = filterJson.get("value").getAsJsonPrimitive();
+            primitiveValue = filterValue.getAsJsonPrimitive();
          }
-         else if (filterJson.get("value").isJsonArray())
+         else if (filterValue.isJsonArray())
          {
-            valuesJson = filterJson.get("value").getAsJsonArray();
+            arrayValue = filterValue.getAsJsonArray();
          }
          else
          {
             throw new IllegalArgumentException(
-                  "Unexpected type for filter value of filter "
-                        + filterJson.get("dimension").getAsString() + ".");
+                  "Unexpected type for filter value of filter " + dimension + ".");
          }
 
          JsonElement parameterValueJson = null;
 
          // Overwrite by parameter, if parameter is set
 
-         if (parametersJson.has("filters." + filterJson.get("dimension").getAsString()))
+         if (parametersJson.has("filters." + dimension))
          {
-
-            parameterValueJson = parametersJson
-                  .get("filters." + filterJson.get("dimension").getAsString())
+            parameterValueJson = parametersJson.get("filters." + dimension)
                   .getAsJsonObject().get("value");
          }
 
-         if (filterJson.get("dimension").getAsString().equals("processName"))
+         if (dimension.equals("processName"))
          {
-            if (valueJson != null && !valueJson.isJsonNull())
+            if (primitiveValue != null && !primitiveValue.isJsonNull())
             {
                query.where(new ProcessDefinitionFilter(parameterValueJson == null
                      || parameterValueJson.isJsonNull()
-                     ? valueJson.getAsString()
+                     ? primitiveValue.getAsString()
                      : parameterValueJson.getAsString()));
             }
 
@@ -356,101 +360,101 @@ public class ReportingServicePojo
          }
          else
          {
-            if (filterJson.get("dimension").getAsString().equals("startTimestamp"))
+            if (dimension.equals("startTimestamp"))
             {
-               if (!valueJson.isJsonNull())
+               if (!primitiveValue.isJsonNull())
                {
                   query.where(ProcessInstanceQuery.START_TIME.greaterOrEqual(dateFormat
-                        .parse(valueJson.getAsString()).getTime()));
+                        .parse(primitiveValue.getAsString()).getTime()));
 
                }
 
-               if (!valueJson.isJsonNull())
+               if (!primitiveValue.isJsonNull())
                {
                   query.where(ProcessInstanceQuery.START_TIME.lessOrEqual(dateFormat
-                        .parse(valueJson.getAsString()).getTime()));
+                        .parse(primitiveValue.getAsString()).getTime()));
 
                }
             }
-            else if (filterJson.get("dimension").getAsString()
-                  .equals("terminationTimestamp"))
+            else if (dimension.equals("terminationTimestamp"))
             {
-               if (!valueJson.isJsonNull())
+               if (!primitiveValue.isJsonNull())
                {
                   query.where(ProcessInstanceQuery.TERMINATION_TIME
-                        .greaterOrEqual(dateFormat.parse(valueJson.getAsString())
+                        .greaterOrEqual(dateFormat.parse(primitiveValue.getAsString())
                               .getTime()));
 
                }
 
-               if (!valueJson.isJsonNull())
+               if (!primitiveValue.isJsonNull())
                {
                   query.where(ProcessInstanceQuery.TERMINATION_TIME
-                        .lessOrEqual(dateFormat.parse(valueJson.getAsString()).getTime()));
+                        .lessOrEqual(dateFormat.parse(primitiveValue.getAsString())
+                              .getTime()));
                }
             }
-            else if (filterJson.get("dimension").getAsString().equals("priority"))
+            else if (dimension.equals("priority"))
             {
-               if (!valueJson.isJsonNull())
+               if (!primitiveValue.isJsonNull())
                {
-                  if (filterJson.get("operator").getAsString().equals("equal"))
+                  if (operator.equals("equal"))
                   {
                      query.where(ProcessInstanceQuery.PRIORITY
                            .isEqual(parameterValueJson == null
-                                 || parameterValueJson.isJsonNull() ? valueJson
+                                 || parameterValueJson.isJsonNull() ? primitiveValue
                                  .getAsLong() : parameterValueJson.getAsLong()));
                   }
                }
             }
-            else if (filterJson.get("dimension").getAsString().equals("startingUserName"))
+            else if (dimension.equals("startingUserName"))
             {
-               if (!valueJson.isJsonNull())
+               if (!primitiveValue.isJsonNull())
                {
                   // TODO Find user by account and use OID
-                  if (filterJson.get("operator").getAsString().equals("equals"))
+                  if (operator.equals("equals"))
                   {
-                     query.where(ProcessInstanceQuery.STARTING_USER_OID.isEqual(valueJson
-                           .getAsLong()));
+                     query.where(ProcessInstanceQuery.STARTING_USER_OID
+                           .isEqual(primitiveValue.getAsLong()));
                   }
                }
             }
-            else if (filterJson.get("dimension").getAsString().equals("state"))
+            else if (dimension.equals("state"))
             {
                if (parameterValueJson != null && !parameterValueJson.isJsonNull())
                {
-                  valuesJson = parameterValueJson.getAsJsonArray();
+                  arrayValue = parameterValueJson.getAsJsonArray();
                }
 
-               ProcessInstanceState[] processInstanceStates = new ProcessInstanceState[valuesJson
+               ProcessInstanceState[] processInstanceStates = new ProcessInstanceState[arrayValue
                      .size()];
 
-               for (int m = 0; m < valuesJson.size(); ++m)
+               for (int m = 0; m < arrayValue.size(); ++m)
                {
-                  if (valuesJson.get(m).isJsonNull())
+                  if (arrayValue.get(m).isJsonNull())
                   {
                      break;
                   }
 
-                  if (valuesJson.get(m).getAsString().equals("Created"))
+                  if (arrayValue.get(m).getAsString().equals("Created"))
                   {
                      processInstanceStates[m] = ProcessInstanceState.Created;
                   }
-                  else if (valuesJson.get(m).getAsString().equals("Active"))
+                  else if (arrayValue.get(m).getAsString().equals("Active"))
                   {
                      processInstanceStates[m] = ProcessInstanceState.Active;
                   }
-                  else if (valuesJson.get(m).getAsString().equals("Completed"))
+                  else if (arrayValue.get(m).getAsString().equals("Completed"))
                   {
                      processInstanceStates[m] = ProcessInstanceState.Completed;
                   }
-                  else if (valuesJson.get(m).getAsString().equals("Aborted"))
+                  else if (arrayValue.get(m).getAsString().equals("Aborted"))
                   {
                      processInstanceStates[m] = ProcessInstanceState.Aborted;
                   }
                   else
                   {
                      throw new IllegalArgumentException("State "
-                           + valuesJson.get(m).getAsString()
+                           + arrayValue.get(m).getAsString()
                            + " unknown for process instance state.");
                   }
                }
@@ -464,29 +468,26 @@ public class ReportingServicePojo
             {
                // Descriptors
 
-               if (filterJson.get("operator").getAsString().equals("equal"))
+               if (operator.equals("equal"))
                {
-                  query.where(DataFilter.isEqual(filterJson.get("dimension")
-                        .getAsString(),
-                        parameterValueJson == null || parameterValueJson.isJsonNull()
-                              ? valueJson.getAsString()
-                              : parameterValueJson.getAsString()));
+                  query.where(DataFilter.isEqual(dimension, parameterValueJson == null
+                        || parameterValueJson.isJsonNull()
+                        ? primitiveValue.getAsString()
+                        : parameterValueJson.getAsString()));
                }
-               else if (filterJson.get("operator").getAsString().equals("equal"))
+               else if (operator.equals("equal"))
                {
-                  query.where(DataFilter.notEqual(filterJson.get("dimension")
-                        .getAsString(),
-                        parameterValueJson == null || parameterValueJson.isJsonNull()
-                              ? valueJson.getAsString()
-                              : parameterValueJson.getAsString()));
+                  query.where(DataFilter.notEqual(dimension, parameterValueJson == null
+                        || parameterValueJson.isJsonNull()
+                        ? primitiveValue.getAsString()
+                        : parameterValueJson.getAsString()));
                }
-               else if (filterJson.get("operator").getAsString().equals("notEqual"))
+               else if (operator.equals("notEqual"))
                {
-                  query.where(DataFilter.notEqual(filterJson.get("dimension")
-                        .getAsString(),
-                        parameterValueJson == null || parameterValueJson.isJsonNull()
-                              ? valueJson.getAsString()
-                              : parameterValueJson.getAsString()));
+                  query.where(DataFilter.notEqual(dimension, parameterValueJson == null
+                        || parameterValueJson.isJsonNull()
+                        ? primitiveValue.getAsString()
+                        : parameterValueJson.getAsString()));
                }
             }
          }
@@ -503,22 +504,22 @@ public class ReportingServicePojo
     *
     */
    private void addActivityInstanceQueryFilters(ActivityInstanceQuery query,
-         JsonArray filters, JsonObject parametersJson) throws UnsupportedFilterException,
-         ParseException
+         List<ReportFilter> filters, JsonObject parametersJson)
+         throws UnsupportedFilterException, ParseException
    {
       DateFormat dateFormat = DateFormat.getDateInstance();
 
-      for (int n = 0; n < filters.size(); ++n)
+      for (ReportFilter filter : filters)
       {
-         JsonObject filterJson = filters.get(n).getAsJsonObject();
-
-         trace.debug("Filter: " + filterJson.toString());
+         trace.debug("Filter: " + filter);
+         JsonElement filterValue = filter.getValue();
+         String dimension = filter.getDimension();
+         String operator = filter.getOperator();
 
          // TODO: These need to be overwritten by parameters
+         JsonObject valueJson = filter.getValues().getAsJsonObject();
 
-         JsonObject valueJson = filterJson.get("values").getAsJsonObject();
-
-         if (filterJson.get("dimension").getAsString().equals("processName"))
+         if (dimension.equals("processName"))
          {
             if (!valueJson.isJsonNull())
             {
@@ -527,7 +528,7 @@ public class ReportingServicePojo
 
             break;
          }
-         else if (filterJson.get("dimension").getAsString().equals("activityName"))
+         else if (dimension.equals("activityName"))
          {
             if (!valueJson.isJsonNull())
             {
@@ -538,7 +539,7 @@ public class ReportingServicePojo
          }
          else
          {
-            if (filterJson.get("dimension").getAsString().equals("startTimestamp"))
+            if (dimension.equals("startTimestamp"))
             {
                if (!valueJson.isJsonNull())
                {
@@ -554,8 +555,7 @@ public class ReportingServicePojo
 
                }
             }
-            else if (filterJson.get("dimension").getAsString()
-                  .equals("lastModificationTimestamp"))
+            else if (dimension.equals("lastModificationTimestamp"))
             {
                if (!valueJson.isJsonNull())
                {
@@ -571,31 +571,30 @@ public class ReportingServicePojo
                         .lessOrEqual(dateFormat.parse(valueJson.getAsString()).getTime()));
                }
             }
-            else if (filterJson.get("dimension").getAsString().equals("criticality"))
+            else if (dimension.equals("criticality"))
             {
                if (!valueJson.isJsonNull())
                {
-                  if (filterJson.get("operator").getAsString().equals("equal"))
+                  if (operator.equals("equal"))
                   {
                      query.where(ActivityInstanceQuery.CRITICALITY.isEqual(valueJson
                            .getAsLong()));
                   }
                }
             }
-            else if (filterJson.get("dimension").getAsString()
-                  .equals("participantPerformerName"))
+            else if (dimension.equals("participantPerformerName"))
             {
                if (!valueJson.isJsonNull())
                {
                   // TODO Find user by account and use OID
-                  if (filterJson.get("operator").getAsString().equals("equals"))
+                  if (operator.equals("equals"))
                   {
                      query.where(ActivityInstanceQuery.CURRENT_PERFORMER_OID
                            .isEqual(valueJson.getAsLong()));
                   }
                }
             }
-            else if (filterJson.get("dimension").getAsString().equals("state"))
+            else if (dimension.equals("state"))
             {
                JsonArray valuesJson = valueJson.getAsJsonArray();
                ActivityInstanceState[] activityInstanceStates = new ActivityInstanceState[valuesJson
@@ -654,20 +653,17 @@ public class ReportingServicePojo
             {
                // Descriptors
 
-               if (filterJson.get("operator").getAsString().equals("equal"))
+               if (operator.equals("equal"))
                {
-                  query.where(DataFilter.isEqual(filterJson.get("dimension")
-                        .getAsString(), valueJson.getAsString()));
+                  query.where(DataFilter.isEqual(dimension, valueJson.getAsString()));
                }
-               else if (filterJson.get("operator").getAsString().equals("equal"))
+               else if (operator.equals("equal"))
                {
-                  query.where(DataFilter.notEqual(filterJson.get("dimension")
-                        .getAsString(), valueJson.getAsString()));
+                  query.where(DataFilter.notEqual(dimension, valueJson.getAsString()));
                }
-               else if (filterJson.get("operator").getAsString().equals("notEqual"))
+               else if (operator.equals("notEqual"))
                {
-                  query.where(DataFilter.notEqual(filterJson.get("dimension")
-                        .getAsString(), valueJson.getAsString()));
+                  query.where(DataFilter.notEqual(dimension, valueJson.getAsString()));
                }
             }
          }
@@ -685,33 +681,49 @@ public class ReportingServicePojo
    {
       try
       {
-         JsonObject dataSetJson = reportJson.get("dataSet").getAsJsonObject();
-         String dataSetType = dataSetJson.get("type").getAsString();
-         String primaryObject = dataSetJson.get("primaryObject").getAsString();
-         String fact = dataSetJson.get("fact").getAsString();
-         String firstDimension = dataSetJson.get("firstDimension").getAsString();
-         JsonObject parametersJson = reportJson.get("parameters").getAsJsonObject();
-         JsonArray filters = dataSetJson.get("filters").getAsJsonArray();
-         final String groupByCriterion = dataSetJson.has("groupBy") ? dataSetJson.get(
-               "groupBy").getAsString() : null;
+         //workaround until the method signature changes and this method here just receives
+         //the raw json string
+         JsonMarshaller jm = new JsonMarshaller();
+         String reportDefJson = jm.gson().toJson(reportJson);
+         ReportDefinition reportDefinition = jm.gson().fromJson(reportDefJson,
+               ReportDefinition.class);
+         //validate only if enabled - the helper will take care of it
+         ValidationHelper.validate(reportDefinition);
+
+         ReportDataSet dataSet = reportDefinition.getDataSet();
+         String dataSetType = dataSet.getType();
+         String primaryObject = dataSet.getPrimaryObject();
+         String fact = dataSet.getFact();
+         String firstDimension = dataSet.getFirstDimension();
+         JsonObject parametersJson = reportDefinition.getParameters().getAsJsonObject();
+         List<ReportFilter> filters = dataSet.getFilters();
+         final String groupByCriterion = dataSet.getGroupBy();
+
          JsonObject result = new JsonObject();
          DateFormat dateFormat = DateFormat.getDateInstance();
 
          // Obtain cumulation criteria
+         final long firstDimensionCumulationIntervalCount;
+         final String firstDimensionCumulationIntervalUnit;
 
-         long firstDimensionCumulationIntervalCount = 1;
-         String firstDimensionCumulationIntervalUnit = "d";
-
-         if (dataSetJson.has("firstDimensionCumulationIntervalCount"))
+         if (dataSet.getFirstDimensionCumulationIntervalCount() != null)
          {
-            firstDimensionCumulationIntervalCount = dataSetJson.get(
-                  "firstDimensionCumulationIntervalCount").getAsLong();
+            firstDimensionCumulationIntervalCount = dataSet
+                  .getFirstDimensionCumulationIntervalCount();
+         }
+         else
+         {
+            firstDimensionCumulationIntervalCount = 1;
          }
 
-         if (dataSetJson.has("firstDimensionCumulationIntervalUnit"))
+         if (dataSet.getFirstDimensionCumulationIntervalUnit() != null)
          {
-            firstDimensionCumulationIntervalUnit = dataSetJson.get(
-                  "firstDimensionCumulationIntervalUnit").getAsString();
+            firstDimensionCumulationIntervalUnit = dataSet
+                  .getFirstDimensionCumulationIntervalUnit();
+         }
+         else
+         {
+            firstDimensionCumulationIntervalUnit = "d";
          }
 
          long firstDimensionCumulationInterval = firstDimensionCumulationIntervalCount
@@ -723,19 +735,21 @@ public class ReportingServicePojo
          JsonObject externalJoinJson = null;
          String internalKey = null;
 
-         if (dataSetJson.get("joinExternalData").getAsBoolean())
+         // TODO: review questionable logic
+         if (dataSet.isJoinExternalData())
          {
-            JsonArray externalJoinsJson = dataSetJson.get("externalJoins")
-                  .getAsJsonArray();
-            externalJoinJson = externalJoinsJson.get(0).getAsJsonObject();
-            internalKey = externalJoinJson.get("internalKey").getAsString();
-            externalData = retrieveExternalData(externalJoinJson);
+            List<ReportExternalJoin> externalJoins = dataSet.getExternalJoins();
+            if (externalJoins != null && !externalJoins.isEmpty())
+            {
+               ReportExternalJoin externalJoin = externalJoins.get(0);
+               String interalKey = externalJoin.getInternalKey();
+               trace.info("Internal Key: " + internalKey);
 
-            trace.info("Internal Key: " + internalKey);
+               externalData = retrieveExternalData(externalJoin);
+            }
          }
 
          // Obtain Audit Trail data
-
          if (primaryObject.equals("processInstance"))
          {
             ProcessInstanceQuery query = ProcessInstanceQuery.findAll();
@@ -750,11 +764,18 @@ public class ReportingServicePojo
                // for all duration dimensions, parameterized by dimension
                // (first, second)
 
+               String firstDimensionValue = dataSet.getFirstDimensionValue();
+               List<String> firstDimensionValueList = dataSet
+                     .getFirstDimensionValueList();
+
                if (firstDimension.equals("startTimestamp"))
                {
                   long fromTimestamp = 0; // Beginning of the era
+                  String firstDimensionFrom = dataSet.getFirstDimensionFrom();
+                  String firstDimensionTo = dataSet.getFirstDimensionTo();
+                  String firstDimensionDuration = dataSet.getFirstDimensionDuration();
 
-                  if (dataSetJson.has("firstDimensionFrom"))
+                  if (StringUtils.isNotEmpty(firstDimensionFrom))
                   {
                      if (parametersJson.has("startTimestamp")
                            && parametersJson.get("startTimestamp").getAsJsonObject()
@@ -766,18 +787,17 @@ public class ReportingServicePojo
                                           .getAsJsonObject().get("from").getAsString())
                                     .getTime()));
                      }
-                     else if (!dataSetJson.get("firstDimensionFrom").isJsonNull())
+                     else
                      {
                         query.where(ProcessInstanceQuery.START_TIME
                               .greaterOrEqual(fromTimestamp = dateFormat.parse(
-                                    dataSetJson.get("firstDimensionFrom").getAsString())
-                                    .getTime()));
+                                    firstDimensionFrom).getTime()));
                      }
                   }
 
                   // Distinguish between to/from and to/duration
 
-                  if (dataSetJson.has("firstDimensionTo"))
+                  if (StringUtils.isNotEmpty(firstDimensionTo))
                   {
                      if (parametersJson.has("startTimestamp")
                            && parametersJson.get("startTimestamp").getAsJsonObject()
@@ -789,16 +809,19 @@ public class ReportingServicePojo
                                           .getAsJsonObject().get("to").getAsString())
                                     .getTime()));
                      }
-                     else if (!dataSetJson.get("firstDimensionTo").isJsonNull())
+                     else
                      {
                         query.where(ProcessInstanceQuery.START_TIME
-                              .lessOrEqual(dateFormat.parse(
-                                    dataSetJson.get("firstDimensionTo").getAsString())
-                                    .getTime()));
+                              .lessOrEqual(dateFormat.parse(firstDimensionTo).getTime()));
                      }
                   }
-                  else if (dataSetJson.has("firstDimensionDuration"))
+                  else if (StringUtils.isNotEmpty(firstDimensionDuration))
                   {
+                     Long firstDimensionDurationCount = dataSet
+                           .getFirstDimensionDurationCount();
+                     String firstDimensionDurationUnit = dataSet
+                           .getFirstDimensionDurationUnit();
+
                      if (parametersJson.has("startTimestamp")
                            && parametersJson.get("startTimestamp").getAsJsonObject()
                                  .has("durationValue"))
@@ -812,14 +835,12 @@ public class ReportingServicePojo
                                           .get("startTimestamp").getAsJsonObject()
                                           .get("durationUnit").getAsString())));
                      }
-                     else if (!dataSetJson.get("firstDimensionDuration").isJsonNull())
+                     else
                      {
-                        query.where(ProcessInstanceQuery.START_TIME
-                              .lessOrEqual(fromTimestamp
-                                    + dataSetJson.get("firstDimensionDurationCount")
-                                          .getAsLong()
-                                    + ReportingUtil.convertDurationUnit(dataSetJson.get(
-                                          "firstDimensionDurationUnit").getAsString())));
+                        query.where(ProcessInstanceQuery.START_TIME.lessOrEqual(fromTimestamp
+                              + firstDimensionDurationCount
+                              + ReportingUtil
+                                    .convertDurationUnit(firstDimensionDurationUnit)));
                      }
                   }
                }
@@ -831,20 +852,17 @@ public class ReportingServicePojo
                {
                   query.orderBy(ProcessInstanceQuery.PROC_DEF_NAME);
 
-                  if (dataSetJson.has("firstDimensionValueList"))
+                  if (firstDimensionValueList != null
+                        && !firstDimensionValueList.isEmpty())
                   {
-                     JsonArray valueList = dataSetJson.get("firstDimensionValueList")
-                           .getAsJsonArray();
-
                      // query.where(ProcessInstanceQuery.PROC_DEF_NAME.equals(valueList.get(0).getAsString()));
-
                   }
                }
                else if (firstDimension.equals("startingUserName"))
                {
                   query.orderBy(ProcessInstanceQuery.STARTING_USER_OID);
 
-                  if (dataSetJson.has("firstDimensionValue"))
+                  if (firstDimensionValue != null)
                   {
 
                   }
@@ -853,7 +871,8 @@ public class ReportingServicePojo
                {
                   query.orderBy(ProcessInstanceQuery.STATE);
 
-                  if (dataSetJson.has("firstDimensionValueList"))
+                  if (firstDimensionValueList != null
+                        && !firstDimensionValueList.isEmpty())
                   {
 
                   }
@@ -862,7 +881,8 @@ public class ReportingServicePojo
                {
                   query.orderBy(ProcessInstanceQuery.PRIORITY);
 
-                  if (dataSetJson.has("firstDimensionValueList"))
+                  if (firstDimensionValueList != null
+                        && !firstDimensionValueList.isEmpty())
                   {
 
                   }
@@ -962,9 +982,13 @@ public class ReportingServicePojo
                   }
 
                   // Add computed columns
+                  List<ReportComputedColumn> computedColumns = dataSet
+                        .getComputedColumns();
+                  if (computedColumns != null)
+                  {
+                     addComputedColumns(computedColumns, processInstanceJson);
+                  }
 
-                  addComputedColumns(dataSetJson.get("computedColumns").getAsJsonArray(),
-                        processInstanceJson);
                }
             }
             else
@@ -1160,13 +1184,12 @@ public class ReportingServicePojo
     * @return
     */
    public Map<String, Map<String, String>> retrieveExternalData(
-         JsonObject externalJoinJson)
+         ReportExternalJoin externalJoin)
    {
       try
       {
-         String restUri = externalJoinJson.get("restUri").getAsString();
+         String restUri = externalJoin.getRestUri();
          String externalDataJsonResponse = RestUtil.performRestJsonCall(restUri);
-
          JsonArray externalDataJson = jsonMarshaller
                .readJsonObject(externalDataJsonResponse).get("list").getAsJsonArray();
 
@@ -1174,45 +1197,28 @@ public class ReportingServicePojo
          trace.info(externalDataJson.toString());
 
          Map<String, Map<String, String>> externalData = new HashMap<String, Map<String, String>>();
-         JsonArray externalJoinFieldsJson = externalJoinJson.get("fields")
-               .getAsJsonArray();
 
+         List<ReportExternalJoinField> joinFields = externalJoin.getFields();
          for (int n = 0; n < externalDataJson.size(); n++)
          {
             JsonObject recordJson = externalDataJson.get(n).getAsJsonObject();
             Map<String, String> record = new HashMap<String, String>();
 
-            for (int m = 0; m < externalJoinFieldsJson.size(); m++)
+            for (ReportExternalJoinField joinField : joinFields)
             {
-               JsonObject externalJoinFieldJson = externalJoinFieldsJson.get(m)
-                     .getAsJsonObject();
-
-               if (externalJoinFieldJson.get("id").getAsString()
-                     .equals(externalJoinJson.get("externalKey").getAsString()))
+               String joinFieldId = joinField.getId();
+               if (joinFieldId.equals(externalJoin.getExternalKey()))
                {
-                  externalData.put(
-                        recordJson.get(externalJoinFieldJson.get("id").getAsString())
-                              .getAsString(), record);
+                  externalData.put(recordJson.get(joinFieldId).getAsString(), record);
                }
 
-               // TODO Other type mapping than string (central mapping
-               // function f(type,object, container))
-
-               record.put(externalJoinFieldJson.get("useAs").getAsString(), recordJson
-                     .get(externalJoinFieldJson.get("id").getAsString()).getAsString());
+               record.put(joinField.getUseAs(), recordJson.get(joinFieldId).getAsString());
             }
          }
 
-         trace.info("Map");
+         trace.info("external data map");
          trace.info(externalData);
-
          return externalData;
-      }
-      catch (MalformedURLException e)
-      {
-         trace.error(e);
-
-         throw new RuntimeException(e);
       }
       catch (IOException e)
       {
@@ -1222,23 +1228,16 @@ public class ReportingServicePojo
       }
    }
 
-   /**
-    *
-    * @param computedColumns
-    * @param recordJson
-    */
-   private static void addComputedColumns(JsonArray computedColumns, JsonObject recordJson)
+   private void addComputedColumns(List<ReportComputedColumn> computedColumns,
+         JsonObject jsonObject)
    {
-      for (int n = 0; n < computedColumns.size(); ++n)
+      for (ReportComputedColumn computedColumn : computedColumns)
       {
-         JsonObject computedColumn = computedColumns.get(n).getAsJsonObject();
-         // TODO Type conversion
+         String columnId = computedColumn.getId();
+         String columnFormula = computedColumn.getFormula();
 
-         JsonUtil.addPrimitiveObjectToJsonObject(
-               recordJson,
-               computedColumn.get("id").getAsString(),
-               evaluateComputedColumn(recordJson, computedColumn.get("formula")
-                     .getAsString()));
+         JsonUtil.addPrimitiveObjectToJsonObject(jsonObject, columnId,
+               evaluateComputedColumn(jsonObject, columnFormula));
       }
    }
 

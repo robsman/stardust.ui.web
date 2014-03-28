@@ -3,16 +3,20 @@ package org.eclipse.stardust.ui.web.reporting.common.mapping;
 import java.util.List;
 
 import org.eclipse.stardust.ui.web.reporting.common.validation.IValidateAble;
+import org.eclipse.stardust.ui.web.reporting.common.validation.annotations.NotNull;
 
 public class ReportExternalJoin implements IValidateAble
 {
    private String joinType;
 
+   @NotNull
    private String restUri;
 
    private List<ReportExternalJoinField> fields;
 
    private String internalKey;
+
+   private String externalKey;
 
    public String getJoinType()
    {
@@ -32,5 +36,10 @@ public class ReportExternalJoin implements IValidateAble
    public String getInternalKey()
    {
       return internalKey;
+   }
+
+   public String getExternalKey()
+   {
+      return externalKey;
    }
 }

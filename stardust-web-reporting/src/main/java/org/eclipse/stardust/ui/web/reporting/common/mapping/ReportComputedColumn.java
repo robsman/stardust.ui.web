@@ -3,28 +3,36 @@ package org.eclipse.stardust.ui.web.reporting.common.mapping;
 import org.eclipse.stardust.ui.web.reporting.common.validation.IValidateAble;
 import org.eclipse.stardust.ui.web.reporting.common.validation.annotations.NotNull;
 
-public class ReportExternalJoinField implements IValidateAble
+public class ReportComputedColumn implements IValidateAble
 {
    @NotNull
    private String id;
 
-   private String externalKey;
+   private String name;
 
    @NotNull
-   private String useAs;
+   private String type;
+
+   @NotNull
+   private String formula;
 
    public String getId()
    {
       return id;
    }
 
-   public String getExternalKey()
+   public String getName()
    {
-      return externalKey;
+      return name;
    }
 
-   public String getUseAs()
+   public String getType()
    {
-      return useAs;
+      return type;
+   }
+
+   public String getFormula()
+   {
+      return formula;
    }
 }

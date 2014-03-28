@@ -17,7 +17,7 @@ public class ReportDataSet implements IValidateAble
 
    private List<ReportExternalJoin> externalJoins;
 
-   private List<String> computedColumns;
+   private List<ReportComputedColumn> computedColumns;
 
    private List<String> columns;
 
@@ -69,7 +69,7 @@ public class ReportDataSet implements IValidateAble
       return externalJoins;
    }
 
-   public List<String> getComputedColumns()
+   public List<ReportComputedColumn> getComputedColumns()
    {
       return computedColumns;
    }
