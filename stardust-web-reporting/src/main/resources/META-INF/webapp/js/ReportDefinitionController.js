@@ -538,9 +538,9 @@ define(
 				};
 				
 				ReportDefinitionController.prototype.selectedProcessChanged = function(filter) {
-					//this.updateView();
-					//TODO remove this method later
-					var a = 1;
+					if(containsObj(filter.metadata.selectedProcesses, this.ALL_PROCESSES, "id")){
+						filter.metadata.selectedProcesses = [this.ALL_PROCESSES];
+					}
 				};
 				
 				/**
@@ -700,10 +700,11 @@ define(
 
 					var enumItems = this.reportingService.getEnumerators2(qualifier[0], qualifier[1]);
 					
-					var filteredEnumItems = [];
+					var filteredEnumItems = enumItems;
 					
 					//processes
-					if ((dimension.id == "processName")) {
+					if ((dimension.id == "processName" || dimension.id == "activityName")) {
+						filteredEnumItems = [];
 						filteredEnumItems.push(this.ALL_PROCESSES);
 						for (var i = 0; i < enumItems.length; i++) {
 							var process = enumItems[i];
@@ -711,19 +712,28 @@ define(
 								filteredEnumItems.push(process);
 							}
 						}
-					} //activities
-					else if (dimension.id == "activityName") {
-						var selectedProcesses = enumItems;
-						filteredEnumItems.push(this.ALL_ACTIVITIES);
+					} 
+					
+					//activities
+					if (dimension.id == "activityName") {
+						var selectedProcesses = [];
 						if (!filter.metadata.selectedProcesses
 								|| filter.metadata.selectedProcesses.length < 1) {
-							filter.metadata.selectedProcesses = this.ALL_ACTIVITIES;
+							selectedProcesses = selectedProcesses.concat(filteredEnumItems);
+						}else if(containsObj(filter.metadata.selectedProcesses, this.ALL_PROCESSES, "id")){
+							selectedProcesses = selectedProcesses.concat(filteredEnumItems);
 						}else{
 							selectedProcesses = filter.metadata.selectedProcesses;
 						}
 						
+						filteredEnumItems = [];
+						filteredEnumItems.push(this.ALL_ACTIVITIES);
+						
 						for (var i = 0; i < selectedProcesses.length; i++) {
 							var process = selectedProcesses[i];
+							if(process == this.ALL_PROCESSES){
+								continue;
+							}
 							for (var j = 0; j < process.activities.length; j++){
 								var activity = process.activities[j];
 								if (!filter.metadata.activity_filter_auxiliary || !activity.auxiliary) {
@@ -734,16 +744,24 @@ define(
 									}
 								}	
 							}
-						}	
+						}
+						
 					} 
-					else {
-						filteredEnumItems = enumItems;
-					}
-					
 					
 					return filteredEnumItems;
 				};
 
+				
+				ReportDefinitionController.prototype.selectionChanged = function(dimension, filter) {
+					if(dimension.id == "processName" && containsObj(filter.value, this.ALL_PROCESSES, "id")){
+						filter.value = [this.ALL_PROCESSES];
+					}
+					
+					if(dimension.id == "activityName" && containsObj(filter.value, this.ALL_ACTIVITIES, "id")){
+						filter.value = [this.ALL_ACTIVITIES];
+					}
+				}
+				
 				/**
 				 * 
 				 */
@@ -803,8 +821,11 @@ define(
 					
 					if(this.report.dataSet.filters[index].dimension == 'processName'){
 						this.report.dataSet.filters[index].metadata = { process_filter_auxiliary : true };
+						this.report.dataSet.filters[index].value = [this.ALL_PROCESSES];
 					}else if(this.report.dataSet.filters[index].dimension == 'activityName'){
-						this.report.dataSet.filters[index].metadata = filterTemplate();
+						this.report.dataSet.filters[index].metadata = activityFilterTemplate();
+						this.report.dataSet.filters[index].metadata.selectedProcesses.push(this.ALL_PROCESSES);
+						this.report.dataSet.filters[index].value = [this.ALL_ACTIVITIES];
 					}
 
 					// TODO: Operator only for respective types
@@ -1077,7 +1098,10 @@ define(
 					} else if (id.indexOf("filters.") >= 0) {
 						var path = id.split(".");
 
-						return this.getFilterByDimension(path[1]).value;
+						if (this.getFilterByDimension(path[1])) {
+							return this.getFilterByDimension(path[1]).value;
+						}
+						return null;
 					}
 				};
 
@@ -1448,8 +1472,20 @@ define(
 			}
 			
 
-		function filterTemplate()
-			{
+		function containsObj(arrayObj, element, property){
+			if(!arrayObj || arrayObj.length < 1){
+				return false;
+			}
+			
+			for(var i = 0;  i < arrayObj.length; i++){
+				if(element[property] == arrayObj[i][property]){
+					return true;
+				}
+			}
+			return false;
+		}
+			
+		function activityFilterTemplate(){
 				return {
 					// Processes
 					process_filter_auxiliary : true,

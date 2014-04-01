@@ -691,21 +691,21 @@ table.formTable td {
 																ng-click="toggleFilter(x, 'activity_filter_nonInteractive')" ng-class="{true:'disabled', false:'enabled'}[x.metadata.activity_filter_nonInteractive]">
 																	<img 
 																	src="../css/images/activity_application.png"
-																	title="{{getI18N('reporting.definitionView.process.filter.auxiliary.' + x.metadata.activity_filter_nonInteractive)}}" />
+																	title="{{getI18N('reporting.definitionView.activity.filter.nonInteractive.' + x.metadata.activity_filter_nonInteractive)}}" />
 																</a>
 														</td>
 														<td valign="top"><a href=""
 																ng-click="toggleFilter(x, 'activity_filter_interactive')" ng-class="{true:'disabled', false:'enabled'}[x.metadata.activity_filter_interactive]">
 																	<img 
 																	src="../css/images/activity_manual.png"
-																	title="{{getI18N('reporting.definitionView.process.filter.auxiliary.' + x.metadata.activity_filter_interactive)}}"/>
+																	title="{{getI18N('reporting.definitionView.activity.filter.interactive.' + x.metadata.activity_filter_interactive)}}"/>
 																</a>
 														</td>
 														<td valign="top"><a href=""
 																ng-click="toggleFilter(x, 'activity_filter_auxiliary')" ng-class="{true:'disabled', false:'enabled'}[x.metadata.activity_filter_auxiliary]">
 																	<img 
 																	src="../css/images/activity_auxiliary.png"
-																	title="{{getI18N('reporting.definitionView.process.filter.auxiliary.' + x.metadata.activity_filter_auxiliary)}}" />
+																	title="{{getI18N('reporting.definitionView.activity.filter.auxiliary.' + x.metadata.activity_filter_auxiliary)}}" />
 																</a>
 														</td>
 													</tr>	
@@ -714,6 +714,7 @@ table.formTable td {
 													<tr>
 														<td valign="top"><select multiple="multiple"
 															style="height: 100px; width: 250px;" ng-model="x.value"
+															ng-change="selectionChanged(getDimension(x.dimension), x)"
 															ng-options="y.name for y in getEnumerators2(getDimension(x.dimension), x)"></select>
 														</td>
 														<td valign="top"><a href=""
