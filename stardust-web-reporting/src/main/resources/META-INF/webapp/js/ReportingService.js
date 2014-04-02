@@ -98,41 +98,41 @@ define(
 						facts : {
 							count : {
 								id : "count",
-								name : "Count",
+								name : this.getI18N("reporting.definitionView.count"),
 								type : this.metadata.countType,
 							},
 							duration : {
 								id : "duration",
-								name : "Duration",
+								name : this.getI18N("reporting.definitionView.duration"),
 								type : this.metadata.durationType,
 							}
 						},
 						dimensions : {
 							startTimestamp : {
 								id : "startTimestamp",
-								name : "Start Timestamp",
+								name : this.getI18N("reporting.definitionView.additionalFiltering.timestamp.start"),
 								type : this.metadata.timestampType
 							},
 							terminationTimestamp : {
 								id : "terminationTimestamp",
-								name : "Termination Timestamp",
+								name : this.getI18N("reporting.definitionView.additionalFiltering.timestamp.termination"),
 								type : this.metadata.timestampType
 							},
 							processName : {
 								id : "processName",
-								name : "Process Name",
+								name : this.getI18N("reporting.definitionView.additionalFiltering.processName"),
 								type : this.metadata.enumerationType,
 								enumerationType : "modelData:processDefinitions:name"
 							},
 							startingUserName : {
 								id : "startingUserName",
-								name : "Starting User Name",
+								name : this.getI18N("reporting.definitionView.additionalFiltering.startingUserName"),
 								type : this.metadata.enumerationType,
 								enumerationType : "userData:users:name"
 							},
 							state : {
 								id : "state",
-								name : "Process State",
+								name : this.getI18N("reporting.definitionView.additionalFiltering.processState"),
 								type : this.metadata.enumerationType,
 								enumerationType : "staticData:processStates:name"
 							},
@@ -153,13 +153,13 @@ define(
 						facts : {
 							count : {
 								id : "count",
-								name : "Count",
+								name : this.getI18N("reporting.definitionView.count"),
 								type : this.metadata.countType,
 								cumulated : true
 							},
 							duration : {
 								id : "duration",
-								name : "Duration",
+								name : this.getI18N("reporting.definitionView.duration"),
 								type : this.metadata.durationType,
 								cumulated : true
 							}
@@ -167,47 +167,47 @@ define(
 						dimensions : {
 							startTimestamp : {
 								id : "startTimestamp",
-								name : "Start Timestamp",
+								name : this.getI18N("reporting.definitionView.additionalFiltering.timestamp.start"),
 								type : this.metadata.timestampType
 							},
 							lastModificationTimestamp : {
 								id : "lastModificationTimestamp",
-								name : "Last Modification Timestamp",
+								name : this.getI18N("reporting.definitionView.additionalFiltering.timestamp.last"),
 								type : this.metadata.timestampType
 							},
 							activityName : {
 								id : "activityName",
-								name : "Activity Name",
+								name : this.getI18N("reporting.definitionView.additionalFiltering.activityName"),
 								type : this.metadata.enumerationType,
 								enumerationType : "modelData:processDefinitions:name"
 							},
 							processName : {
 								id : "processName",
-								name : "Process Name",
+								name : this.getI18N("reporting.definitionView.additionalFiltering.processName"),
 								type : this.metadata.enumerationType,
 								enumerationType : "modelData:processDefinitions:name"
 							},
 							userPerformerName : {
 								id : "userPerformerName",
-								name : "User Performer Name",
+								name : this.getI18N("reporting.definitionView.additionalFiltering.userPerformer"),
 								type : this.metadata.enumerationType,
 								enumerationType : "modelData:processDefinitions:name"
 							},
 							participantPerformerName : {
 								id : "participantPerformerName",
-								name : "Role/Organization Performer Name",
+								name : this.getI18N("reporting.definitionView.additionalFiltering.performer"),
 								type : this.metadata.enumerationType,
 								enumerationType : "modelData:processDefinitions:name"
 							},
 							state : {
 								id : "state",
-								name : "Activity State",
+								name : this.getI18N("reporting.definitionView.additionalFiltering.activityState"),
 								type : this.metadata.enumerationType,
 								enumerationType : "staticData:activityStates:name"
 							},
 							criticality : {
 								id : "criticality",
-								name : "Criticality",
+								name : this.getI18N("reporting.definitionView.additionalFiltering.criticality"),
 								type : this.metadata.decimalType
 							}
 						}
@@ -242,43 +242,59 @@ define(
 
 				this.staticData = {
 					processStates : {
-						created : {
-							name : "Created"
-						},
-						active : {
-							name : "Active"
-						},
-						completed : {
-							name : "Completed"
-						},
-						aborting : {
-							name : "Aborting"
+						alive : {
+							id : "Alive", 
+							name : this.getI18N("reporting.definitionView.additionalFiltering.processState.alive"),
 						},
 						aborted : {
-							name : "Aborted"
+							id : "Aborted",
+							name : this.getI18N("reporting.definitionView.additionalFiltering.processState.aborted")
+						},
+						completed : {
+							id : "Completed",
+							name : this.getI18N("reporting.definitionView.additionalFiltering.processState.completed")
+						},
+						interrupted : {
+							id : "Interrupted",
+							name : this.getI18N("reporting.definitionView.additionalFiltering.processState.interrupted")
 						}
 					},
 					activityStates : {
+						alive : {
+							id : "Alive",
+							name : this.getI18N("reporting.definitionView.additionalFiltering.activityState.interrupted")
+						},
 						application : {
-							name : "Application"
+							id : "Application",
+							name : this.getI18N("reporting.definitionView.additionalFiltering.activityState.application")
 						},
 						suspended : {
-							name : "Suspended"
+							id : "Suspended",
+							name : this.getI18N("reporting.definitionView.additionalFiltering.activityState.suspended")
 						},
 						hibernated : {
-							name : "Hibernated"
+							id : "Hibernated", 
+							name : this.getI18N("reporting.definitionView.additionalFiltering.activityState.hibernated")
 						},
 						completed : {
-							name : "Completed"
+							id : "Completed",
+							name : this.getI18N("reporting.definitionView.additionalFiltering.activityState.completed")
 						},
 						aborted : {
-							name : "Aborted"
+							id : "Aborted",
+							name : this.getI18N("reporting.definitionView.additionalFiltering.activityState.aborted")
 						},
 						aborting : {
-							name : "Aborting"
+							id : "Aborting",
+							name : this.getI18N("reporting.definitionView.additionalFiltering.activityState.aborting")
 						},
 						interrupted : {
-							name : "Interrupted"
+							id : "Interrupted",
+							name : this.getI18N("reporting.definitionView.additionalFiltering.activityState.interrupted")
+						},
+						created : {
+							id : "Created",
+							name : this.getI18N("reporting.definitionView.additionalFiltering.activityState.created")
 						}
 					},
 					priorityLevel : {

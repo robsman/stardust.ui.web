@@ -720,51 +720,53 @@ define(
 					
 					var filteredEnumItems = enumItems;
 					
-					//processes
-					if ((filter.dimension == "processName" || filter.dimension == "activityName")) {
-						filteredEnumItems = [];
-						filteredEnumItems.push(this.ALL_PROCESSES);
-						for (var i = 0; i < enumItems.length; i++) {
-							var process = enumItems[i];
-							if (!filter.metadata.process_filter_auxiliary || !process.auxiliary) {
-								filteredEnumItems.push(process);
+					if(filter.dimension == "processName" || filter.dimension == "activityName"){
+						//processes
+						if ((dimension.id == "processName" || dimension.id == "activityName")) {
+							filteredEnumItems = [];
+							filteredEnumItems.push(this.ALL_PROCESSES);
+							for (var i = 0; i < enumItems.length; i++) {
+								var process = enumItems[i];
+								if (!filter.metadata.process_filter_auxiliary || !process.auxiliary) {
+									filteredEnumItems.push(process);
+								}
 							}
-						}
-					} 
-					
-					//activities
-					if (filter.dimension == "activityName") {
-						var selectedProcesses = [];
-						if (!filter.metadata.selectedProcesses
-								|| filter.metadata.selectedProcesses.length < 1) {
-							selectedProcesses = selectedProcesses.concat(filteredEnumItems);
-						}else if(containsObj(filter.metadata.selectedProcesses, this.ALL_PROCESSES, "id")){
-							selectedProcesses = selectedProcesses.concat(filteredEnumItems);
-						}else{
-							selectedProcesses = filter.metadata.selectedProcesses;
-						}
+						} 
 						
-						filteredEnumItems = [];
-						filteredEnumItems.push(this.ALL_ACTIVITIES);
-						
-						for (var i = 0; i < selectedProcesses.length; i++) {
-							var process = selectedProcesses[i];
-							if(process == this.ALL_PROCESSES){
-								continue;
+						//activities
+						if (dimension.id == "activityName") {
+							var selectedProcesses = [];
+							if (!filter.metadata.selectedProcesses
+									|| filter.metadata.selectedProcesses.length < 1) {
+								selectedProcesses = selectedProcesses.concat(filteredEnumItems);
+							}else if(containsObj(filter.metadata.selectedProcesses, this.ALL_PROCESSES, "id")){
+								selectedProcesses = selectedProcesses.concat(filteredEnumItems);
+							}else{
+								selectedProcesses = filter.metadata.selectedProcesses;
 							}
-							for (var j = 0; j < process.activities.length; j++){
-								var activity = process.activities[j];
-								if (!filter.metadata.activity_filter_auxiliary || !activity.auxiliary) {
-									if(!filter.metadata.activity_filter_interactive || !activity.interactive){
-										if(!filter.metadata.activity_filter_nonInteractive || activity.interactive){
-											filteredEnumItems.push(activity);	
+							
+							filteredEnumItems = [];
+							filteredEnumItems.push(this.ALL_ACTIVITIES);
+							
+							for (var i = 0; i < selectedProcesses.length; i++) {
+								var process = selectedProcesses[i];
+								if(process == this.ALL_PROCESSES){
+									continue;
+								}
+								for (var j = 0; j < process.activities.length; j++){
+									var activity = process.activities[j];
+									if (!filter.metadata.activity_filter_auxiliary || !activity.auxiliary) {
+										if(!filter.metadata.activity_filter_interactive || !activity.interactive){
+											if(!filter.metadata.activity_filter_nonInteractive || activity.interactive){
+												filteredEnumItems.push(activity);	
+											}
 										}
-									}
-								}	
+									}	
+								}
 							}
-						}
-						
-					} 
+							
+						} 
+					}
 					
 					return filteredEnumItems;
 				};
@@ -837,6 +839,7 @@ define(
 						index) {
 					this.report.dataSet.filters[index].value = null;
 					this.report.dataSet.filters[index].metadata = null;
+					this.report.dataSet.filters[index].operator = null;
 					
 					if(this.report.dataSet.filters[index].dimension == 'processName'){
 						this.report.dataSet.filters[index].metadata = { process_filter_auxiliary : true };
