@@ -44,7 +44,6 @@ import org.eclipse.stardust.engine.api.runtime.*;
 import org.eclipse.stardust.ui.web.common.spi.user.User;
 import org.eclipse.stardust.ui.web.common.spi.user.UserProvider;
 import org.eclipse.stardust.ui.web.reporting.common.JsonMarshaller;
-import org.eclipse.stardust.ui.web.reporting.core.IModelService;
 import org.eclipse.stardust.ui.web.reporting.core.ReportingServicePojo;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;

@@ -1,4 +1,4 @@
-package org.eclipse.stardust.ui.web.reporting.core;
+package org.eclipse.stardust.ui.web.reporting.beans.spring;
 
 import java.util.Collection;
 import java.util.List;

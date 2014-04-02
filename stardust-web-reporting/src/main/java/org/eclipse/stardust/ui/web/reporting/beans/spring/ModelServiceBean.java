@@ -15,7 +15,6 @@ import org.eclipse.stardust.engine.api.model.QualifiedModelParticipantInfo;
 import org.eclipse.stardust.engine.api.runtime.DeployedModel;
 import org.eclipse.stardust.engine.api.runtime.DeployedModelDescription;
 import org.eclipse.stardust.ui.web.reporting.common.ModelCache;
-import org.eclipse.stardust.ui.web.reporting.core.IModelService;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 
