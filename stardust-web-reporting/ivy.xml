@@ -76,7 +76,10 @@
       <dependency org="javax.ws.rs" name="jsr311-api" rev="${jsr311-api.version}" 
          conf="stardust-web-reporting-compile->default"/>
       <dependency org="org.slf4j" name="slf4j-api" rev="${slf4j-api.version}" 
-         conf="stardust-web-reporting-compile->default"/>
+         conf="stardust-web-reporting-compile->default"/>      
+
+      <dependency org="org.quartz-scheduler" name="quartz" rev="${quartz.version}"
+         transitive="false" conf="stardust-web-reporting-compile->default" />
       
       <override org="com.sun.xml.bind" module="jaxb-impl" rev="${jaxb-impl.version}" />
       

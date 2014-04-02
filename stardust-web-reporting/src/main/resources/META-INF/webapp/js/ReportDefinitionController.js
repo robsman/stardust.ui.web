@@ -68,6 +68,11 @@ define(
 					this.primaryObjectSelect = jQuery("#primaryObjectSelect");
 					this.participantsSelect = jQuery("#participantsSelect");
 					this.schedulingParticipantsSelect = jQuery("#schedulingParticipantsSelect");
+					this.startDateId = jQuery("#startDateId");
+					this.endDateId = jQuery("#endDateId");
+					this.cumulatedDimensions = [];
+					this.selectedColumns = [];
+					
 					
 					this.factSelect = jQuery("#factSelect");
 					this.chartTypeSelect = jQuery("#chartTypeSelect");
@@ -85,8 +90,28 @@ define(
 					                  self.selectedComputedColumn.formula = self.expressionEditor.getValue();
 					               }
 					         });
+					
+					this.startDateId.on('blur', function(event)
+                        {
+                              setTimeout(function () {
+                                 self.getNextExecutionDate();;
+                             }, 100);
+                              
+                        });
+					
+					this.endDateId.on('blur', function(event)
+                        {
+                              setTimeout(function () {
+                                 // Timer set for Date picker value to be updated in
+                                 // underlying text control.
+                                 self.getNextExecutionDate();;
+                             }, 100);
+                              
+                        });
+					
 					this.expressionEditor.loadLanguageTools();
 					this.expressionEditor.setSessionData("$keywordList",["test", "air", "word"]);
+					this.expressionEditor.disable();
 					
 					$(this.expressionEditor).on("moduleLoaded",function(event,module){
                   var sessionCompleter;
@@ -95,7 +120,7 @@ define(
                      self.expressionEditor.addCompleter(sessionCompleter);
                   }
                });
-
+					
 					var self = this;
 
 					document.body.style.cursor = "wait";
@@ -221,7 +246,7 @@ define(
                                  self.report.scheduling.delivery.participant = self.schedulingParticipantsSelect.val();
                                  self.updateView();
                               });
-										
+                              
 										self.chartTypeSelect
 												.change(function() {
 													self.report.layout.chart.type = self.chartTypeSelect
@@ -389,6 +414,7 @@ define(
 
 									self.report = report;
 									
+									self.loadDataSetRecordSet();
 									console.log("Loaded report definition:");
 									console.log(self.report);
 
@@ -878,8 +904,7 @@ define(
 				 * joined data from external data sources.
 				 */
 				ReportDefinitionController.prototype.getCumulatedDimensions = function() {
-					return this.reportingService
-							.getCumulatedDimensions(this.report);
+					return this.reportingService.getCumulatedDimensions(this.report);
 				};
 
 				/**
@@ -981,23 +1006,22 @@ define(
 				 * 
 				 */
 				ReportDefinitionController.prototype.selectAllDimensionsForColumns = function() {
-					this.report.dataSet.columns = [];
-
-					var cumulatedDimensions = this.getCumulatedDimensions();
-
-					for ( var k in cumulatedDimensions) {
-						console.log(cumulatedDimensions[k]);
-
-						this.report.dataSet.columns
-								.push(cumulatedDimensions[k].id);
+					for ( var k in this.cumulatedDimensions) {
+						this.report.dataSet.columns.push(this.cumulatedDimensions[k].id);
+						this.selectedColumns.push(this.cumulatedDimensions[k]);
 					}
+					this.cumulatedDimensions = [];
 				};
 
 				/**
 				 * 
 				 */
 				ReportDefinitionController.prototype.deselectAllDimensionsForColumns = function() {
-					this.report.dataSet.columns = [];
+				   this.report.dataSet.columns = [];
+               for ( var k in this.selectedColumns) {
+                  this.cumulatedDimensions.push(this.selectedColumns[k]);
+               }
+               this.selectedColumns = [];
 				};
 
 				/**
@@ -1386,10 +1410,9 @@ define(
 						column) {
 					this.selectedComputedColumn = column;
 					
+					this.expressionEditor.enable();
 					this.expressionEditor.setValue(this.selectedComputedColumn.formula);
 					
-					console.log("Selected Column");
-					console.log(this.selectedComputedColumn);
 				};
 
 				/**
@@ -1465,8 +1488,8 @@ define(
             ReportDefinitionController.prototype.getNextExecutionDate = function() {
                   var self = this;
                   //FIXME temporary hack to update the values as sd-date directive not updating model
-                  this.report.scheduling.recurrenceRange.startDate = document.getElementById("startDateId").value;
-                  this.report.scheduling.recurrenceRange.endDate = document.getElementById("endDateId").value;
+                  this.report.scheduling.recurrenceRange.startDate = self.startDateId.get(0).value;
+                  this.report.scheduling.recurrenceRange.endDate = self.endDateId.get(0).value
                   this.reportingService.getNextExecutionDate(this.report.scheduling).done(
                      function(date) {
                         self.report.scheduling.nextExecutionDate = date;
@@ -1486,11 +1509,128 @@ define(
                   var dimensionNames = [];
                   for ( var m in dimensions) {
                      var dimension = dimensions[m];
-                     dimensionNames[m] = dimension.name;
+                     dimensionNames[m] = dimension.id;
                   }
                   self.expressionEditor.setSessionData("$keywordList", dimensionNames);
             };
+            
+            /**
+             * 
+             */
+            ReportDefinitionController.prototype.moveItem = function(items, from, to) {
+               if (items == undefined)
+               {
+                  return;
+               }
+               for ( var int = 0; int < items.length; int++)
+               {
+                  var item = items[int];
+                  for ( var k in from) {
+                     
+                     if (item === from[k].id)
+                     {
+                        to.push(from[k]);
+                        from.splice(k, 1);
+                        break;
+                     }
+                  }
+               }
+               
+               this.populateSelectedArrayinJson();
 
+            };
+            
+            /**
+             * 
+             */
+            ReportDefinitionController.prototype.moveUp = function(item, list) {
+               if (this.isMultiSelected(item))
+               {
+                  return;
+               }
+               
+               var listIds = [];
+               
+               for ( var l in list)
+               {
+                  listIds[l] = list[l].id;
+               }
+               
+               var idx = listIds.indexOf(item[0]);
+               if (idx != -1) {
+                   list.splice(idx - 1, 0, list.splice(idx, 1)[0]);
+               }
+               this.populateSelectedArrayinJson();
+           };
+           
+           /**
+            * 
+            */
+           ReportDefinitionController.prototype.moveDown = function(item, list) {
+              if (this.isMultiSelected(item))
+              {
+                 return;
+              }  
+              
+              var listIds = [];
+              
+              for ( var l in list)
+              {
+                 listIds[l] = list[l].id;
+              }
+              
+              var idx = listIds.indexOf(item[0]);
+              if (idx != -1) {
+                  list.splice(idx + 1, 0, list.splice(idx, 1)[0]);
+              }
+              this.populateSelectedArrayinJson();
+          };
+          
+          /**
+             * This function updates the underlying variables when any changes happens to
+             * Data Set -> Record Set -> multi select box options
+             */
+          ReportDefinitionController.prototype.populateSelectedArrayinJson = function() {
+             this.report.dataSet.columns = [];
+             for ( var item in this.selectedColumns)
+             {
+                this.report.dataSet.columns.push(this.selectedColumns[item].id);
+             }
+         };
+         
+         /**
+          *  This function returns true if more than 1 options are selected in
+          *  Data Set -> Record Set -> multi select box options 
+          */
+         ReportDefinitionController.prototype.isMultiSelected = function(item) {
+            if (item.length > 1)
+            {
+               alert("Please select single item to move");// i18n
+               return true;
+            }
+            return false;
+        };
+        
+        /**
+          * This function will populte the variables while loading previously saved Data
+          * Set -> Record Set -> multi select box options
+          */
+        ReportDefinitionController.prototype.loadDataSetRecordSet = function() {
+           this.cumulatedDimensions = this.getCumulatedDimensions();
+           var selColumns = this.report.dataSet.columns;
+            
+           for (var i in selColumns) {
+              for ( var k in this.cumulatedDimensions) {
+                 if (selColumns[i] === this.cumulatedDimensions[k].id)
+                 {
+                    this.selectedColumns.push(this.cumulatedDimensions[k]);
+                    this.cumulatedDimensions.splice(k, 1);
+                    break;
+                 }
+              }
+            }
+        };
+          
 			}
 			
 
@@ -1519,5 +1659,6 @@ define(
 					activity_filter_nonInteractive : true
 				};
 			}
+		
 			
 		});

@@ -293,29 +293,40 @@ table.formTable td {
 										<td><select multiple="multiple"
 											style="height: 100px; width: 250px;"
 											ng-model="availableColumns"
-											ng-options="dimension.id as dimension.name for dimension in getCumulatedDimensions() "><option></option></select></td>
+											ng-options="dimension.id as dimension.name for dimension in this.cumulatedDimensions "><option></option></select></td>
 										<td style="vertical-align: center"><table cellpadding="0"
 												cellspacing="0">
 												<tr>
-													<td><button>&lt;</button></td>
+													<td><button ng-click="moveItem(availableColumns, this.cumulatedDimensions, this.selectedColumns)">&gt;</button></td>
 												</tr>
 												<tr>
-													<td><button>&gt;</button></td>
+													<td><button ng-click="moveItem(selColumns, this.selectedColumns, this.cumulatedDimensions)">&lt;</button></td>
 												</tr>
 												<tr>
-													<td><button
-															ng-click="deselectAllDimensionsForColumns()">&laquo;</button>
+													<td>
+                                          <button ng-click="selectAllDimensionsForColumns()">&raquo;</button>
 													</td>
 												</tr>
 												<tr>
-													<td><button ng-click="selectAllDimensionsForColumns()">&raquo;</button>
+													<td>
+                                          <button ng-click="deselectAllDimensionsForColumns()">&laquo;</button>
 													</td>
 												</tr>
 											</table></td>
 										<td><select multiple="multiple"
 											style="height: 100px; width: 250px;"
-											ng-model="selectedColumns"
-											ng-options="dimension.id as dimension.name for dimension in getColumnDimensions()"><option></option></select></td>
+											ng-model="selColumns"
+											ng-options="dimension.id as dimension.name for dimension in this.selectedColumns"><option></option></select></td>
+                              <td style="vertical-align: top">
+                                 <table cellpadding="0" cellspacing="0">
+                                    <tr>
+                                       <td><button ng-click="moveUp(selColumns, this.selectedColumns)">^</button></td>
+                                    </tr>
+                                    <tr>
+                                       <td><button ng-click="moveDown(selColumns, this.selectedColumns)">v</button></td>
+                                    </tr>
+                                 </table>
+                              </td>
 									</tr>
 								</table>
 							</div>

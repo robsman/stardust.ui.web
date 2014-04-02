@@ -235,7 +235,7 @@ if (!window.bpm.portal.AngularAdapter) {
 					link : function(scope, element, attrs, controller) {
 						element.datepicker({
 							inline : true,
-							dateFormat : 'dd.mm.yy', // I18N
+							dateFormat : 'yy-mm-dd', // I18N
 							onSelect : function() {
 								var date = new Date(element
 										.datepicker("getDate"));

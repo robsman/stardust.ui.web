@@ -45,6 +45,8 @@ import org.eclipse.stardust.ui.web.common.spi.user.User;
 import org.eclipse.stardust.ui.web.common.spi.user.UserProvider;
 import org.eclipse.stardust.ui.web.reporting.common.JsonMarshaller;
 import org.eclipse.stardust.ui.web.reporting.core.ReportingServicePojo;
+import org.eclipse.stardust.ui.web.reporting.scheduling.SchedulingFactory;
+import org.eclipse.stardust.ui.web.reporting.scheduling.SchedulingRecurrence;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
@@ -690,12 +692,11 @@ public class ReportingServiceBean
     */
    public String getNextExecutionDate(JsonObject json)
    {
-      System.out.println(json.toString());
+      trace.info(json.toString());
 
-//      SchedulingRecurrence sc = SchedulingFactory.getSchedular(json);
+      SchedulingRecurrence sc = SchedulingFactory.getSchedular(json);
 
-//      return sc.prcoessSchedule(json);
-      return new Date().toString();
+      return sc.prcoessSchedule(json);
 
    }
 }
