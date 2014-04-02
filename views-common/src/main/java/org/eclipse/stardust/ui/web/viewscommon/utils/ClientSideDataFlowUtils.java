@@ -38,6 +38,7 @@ import org.eclipse.stardust.engine.core.struct.spi.StructuredDataXPathEvaluator;
 import org.eclipse.stardust.engine.core.struct.sxml.Document;
 import org.eclipse.stardust.engine.core.struct.sxml.Element;
 import org.eclipse.stardust.engine.core.struct.sxml.Node;
+import org.eclipse.stardust.engine.core.struct.sxml.Text;
 
 
 public class ClientSideDataFlowUtils
@@ -139,12 +140,21 @@ public class ClientSideDataFlowUtils
       // data value is in accessPointInstance
       Node[] nodes = converter.toDom(accessPointInstance, "", true);
       Assert.condition(nodes.length == 1);
+      
+      Object returnValue = null;
+      if (nodes[0] instanceof Element)
+      {
       document = new Document((Element) nodes[0]);
-
       boolean namespaceAware = StructuredDataXPathUtils.isNamespaceAware(document);
 
-      Object returnValue = converter.toCollection(document.getRootElement(), outPath,
-            namespaceAware);
+         returnValue = converter.toCollection(document.getRootElement(), outPath, namespaceAware);
+      }
+      else if (nodes[0] instanceof Text)
+      {
+         // Structure as Enum
+         returnValue = accessPointInstance;
+      }
+
       if (trace.isDebugEnabled())
       {
          if (null == returnValue)
@@ -209,8 +219,8 @@ public class ClientSideDataFlowUtils
          trace.debug("document after change: " + document.toXML());
       }
 
-      // can be casted to map since XPath is empty (root XPath)
-      Map newAccessPointInstance = (Map) converter.toCollection(document.getRootElement(), "", namespaceAware);
+      // Can NOT be casted to map even if XPath is empty (root XPath), due to Structure as Enum case, this is String
+      Object newAccessPointInstance = converter.toCollection(document.getRootElement(), "", namespaceAware);
       if (accessPointInstance == null)
       {
          accessPointInstance = newAccessPointInstance;
@@ -220,7 +230,7 @@ public class ClientSideDataFlowUtils
          // update accessPointInstance (do not just return another instance, try "refilling"
          // the existing one
          ((Map)accessPointInstance).clear();
-         ((Map)accessPointInstance).putAll(newAccessPointInstance);
+         ((Map)accessPointInstance).putAll((Map)newAccessPointInstance);
       }
       else
       {

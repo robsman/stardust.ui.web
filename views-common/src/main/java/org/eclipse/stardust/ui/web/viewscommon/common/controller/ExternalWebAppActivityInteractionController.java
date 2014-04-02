@@ -57,13 +57,14 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ManagedBeanUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 
+import com.icesoft.faces.context.effects.JavascriptContext;
 
 
 /**
  * @author Robert.Sauer
  * @version $Revision: $
  */
-public class ExternalWebAppActivityInteractionController implements IActivityInteractionController
+public class ExternalWebAppActivityInteractionController implements IActivityInteractionController, RemoteControlActivityStateChangeHandler
 {
 
    private static final Logger trace = LogManager.getLogger(ExternalWebAppActivityInteractionController.class);
@@ -373,12 +374,42 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
 
    public boolean closePanel(ActivityInstance ai, ClosePanelScenario scenario)
    {
-      if ((ClosePanelScenario.SUSPEND == scenario) || (ClosePanelScenario.ABORT == scenario))
+      if ((ClosePanelScenario.COMPLETE == scenario) || (ClosePanelScenario.SUSPEND_AND_SAVE == scenario))
       {
-        unregisterInteraction(ai);
+         ApplicationContext context = ai.getActivity().getApplicationContext(EXT_WEB_APP_CONTEXT_ID);
+         Boolean embedded = (Boolean) context.getAttribute("carnot:engine:ui:externalWebApp:embedded");
+
+         if (null != embedded && embedded)
+         {
+            trace.info("Triggering asynchronous close of activity panel ...");
+
+            FacesContext facesContext = FacesContext.getCurrentInstance();
+            InteractionRegistry registry = (InteractionRegistry) ManagedBeanUtils.getManagedBean(facesContext,
+                  InteractionRegistry.BEAN_ID);
+
+            Interaction interaction = registry.getInteraction(Interaction.getInteractionId(ai));
+            if ((null != interaction) && (Interaction.Status.Complete == interaction.getStatus()))
+            {
+               // out data mapping was already performed
+               // validate data?
+               return true;
       }
 
+            JavascriptContext.addJavascriptCall(facesContext,
+                  "parent.InfinityBpm.ProcessPortal.sendCloseCommandToExternalWebApp('" + getContentFrameId(ai) + "', '"
+                        + scenario.getId() + "', true);");
+
+            // close panel asynchronously after iFrame page responds via JavaScript
+            return false;
+         }
+
       return true;
+   }
+      else 
+      {
+         unregisterInteraction(ai);
+         return true;
+      }
    }
 
    @SuppressWarnings("unchecked")
@@ -451,5 +482,32 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
    public boolean isTypedDocumentOpen(ActivityInstance activityInstance)
    {
       return false;
+   }
+
+   @Override
+   public void handleScenario(ActivityInstance ai, ClosePanelScenario scenario)
+   {
+      if (ClosePanelScenario.COMPLETE == scenario || ClosePanelScenario.SUSPEND_AND_SAVE == scenario)
+      {
+         InteractionRegistry registry = (InteractionRegistry) ManagedBeanUtils
+               .getManagedBean(InteractionRegistry.BEAN_ID);
+
+         Interaction interaction = registry.getInteraction(Interaction.getInteractionId(ai));
+
+         if (null != interaction)
+         {
+            interaction.setStatus(Interaction.Status.Complete);
+         }
+      }
+   }
+
+   /**
+    * This is copy of org.eclipse.stardust.ui.web.processportal.interaction.iframe.IframePanelUtils.getContentFrameId;
+    * @param activityInstance
+    * @return
+    */
+   private static String getContentFrameId(ActivityInstance activityInstance)
+   {
+      return "ipp-activity-panel-" + activityInstance.getOID();
    }
 }

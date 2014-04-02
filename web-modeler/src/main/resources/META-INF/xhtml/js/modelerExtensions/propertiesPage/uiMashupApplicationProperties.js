@@ -21,7 +21,7 @@ define(
 							id : "uiMashupTestPropertiesPage",
 							pageHtmlUrl : "plugins/bpm-modeler/views/modeler/uiMashupTestPropertiesPage.html",
 							provider : UiMashupTestPropertiesPage,
-							visibility : "preview",
+							visibility : "always",
 							pageName : m_i18nUtils
 									.getProperty("modeler.model.propertyView.uiMashup.test.title"),
 							pageIconUrl : "plugins/bpm-modeler/images/icons/application-run.png"

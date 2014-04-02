@@ -95,7 +95,11 @@ define(
 										var outputDataTable = m_utils.jQuerySelect("#outputDataTable");
 
 										outputDataTable.empty();
-
+										
+										if (view.interactionId == undefined) {
+											view.interactionId = Math.floor(Math.random() * 1000000) + 1;
+										}
+										
 										// Send input data
 
 										jQuery
@@ -104,7 +108,7 @@ define(
 															type : "POST",
 															url : m_urlUtils
 																	.getModelerEndpointUrl()
-																	+ "/interactions/4711/inData",
+																	+ "/interactions/" + view.interactionId + "/inData",
 															contentType : "application/json",
 															data : inputDataTextarea
 																	.val()
@@ -127,7 +131,7 @@ define(
 																		+ "?ippInteractionUri="
 																		+ m_urlUtils
 																				.getModelerEndpointUrl()
-																		+ "/interactions/4711&ippMode=modeler";
+																		+ "/interactions/" + view.interactionId + "&ippMode=modeler";
 
 																view.applicationFrame
 																		.attr(
@@ -183,36 +187,27 @@ define(
 												continue;
 											}
 
-											if (n > 0) {
-												inputData += ",";
-											}
-
-											if (parameterDefinition.dataType == "struct") {
-												var typeDeclaration = m_model
-														.findTypeDeclaration(parameterDefinition.structuredDataTypeFullId);
-
-												inputData += parameterDefinition.id;
-												inputData += ": ";
-												inputData += JSON
-														.stringify(
-																typeDeclaration
-																		.createInstance(),
-																null, 3);
-											} 
-											else if (parameterDefinition.dataType == "dmsDocument") {
-												var typeDeclaration = m_model
-														.findTypeDeclaration(parameterDefinition.structuredDataTypeFullId);
-
-												inputData += parameterDefinition.id;
-												inputData += ": ";
-												inputData += JSON
-														.stringify(
-																typeDeclaration
-																		.createInstance(),
-																null, 3);
-											} 
-											else {
-												// Deal with primitives 
+											// TODO: Support Document
+											if (parameterDefinition.dataType == "struct" || parameterDefinition.dataType == "primitive") {
+												if (n > 0) {
+													inputData += ",";
+												}
+	
+												if (parameterDefinition.dataType == "struct") {
+													var typeDeclaration = m_model
+															.findTypeDeclaration(parameterDefinition.structuredDataTypeFullId);
+	
+													inputData += parameterDefinition.id;
+													inputData += ": ";
+													inputData += JSON
+															.stringify(
+																	typeDeclaration
+																			.createInstance(),
+																	null, 3);
+												} else if (parameterDefinition.dataType == "primitive") {
+													inputData += parameterDefinition.id;
+													inputData += ": \"\"";
+												}
 											}
 										}
 
@@ -231,7 +226,7 @@ define(
 								{
 									type : "GET",
 									url : m_urlUtils.getModelerEndpointUrl()
-											+ "/interactions/4711/outData",
+											+ "/interactions/" + view.interactionId + "/outData",
 									contentType : "application/json"
 								}).done(function(data) {
 							outputDataTextarea.val(JSON.stringify(data, null, 3));

@@ -13,7 +13,7 @@ if (!window["InfinityBpm.ProcessPortal"]) {
 		/*
 		 * 
 		 */
-		function sendIppAiClosePanelCommand(contentId, commandId) {
+		function sendIppAiClosePanelCommand(contentId, commandId, fallback) {
 	    	BridgeUtils.FrameManager.doWithContentFrame(contentId, function(contentFrame) {
 	    		var wndEmbeddedWebApp = contentFrame.contentWindow;
 		        if (wndEmbeddedWebApp) {
@@ -33,7 +33,13 @@ if (!window["InfinityBpm.ProcessPortal"]) {
 				                if (wndEmbeddedWebApp.performIppAiClosePanelCommand) {
 				                	invokeIppAiClosePanelCommand(wndEmbeddedWebApp, commandId);
 				                } else {
-				                	alert("Did not find performIppAiClosePanelCommand() method in embedded AI panel's iFrame.");
+				                	if (fallback) {
+				                		window.setTimeout(function() {
+				                			confirmCloseCommandFromExternalWebApp(commandId);
+				                		});
+				                	} else {
+				                		alert("Did not find performIppAiClosePanelCommand() method in embedded AI panel's iFrame.");
+				                	}
 				                }
 		        			};
 		        			return;
@@ -41,7 +47,13 @@ if (!window["InfinityBpm.ProcessPortal"]) {
 		        			alert('Failed registering <onload> handler: ' + e.message);
 		        		}
 		        	} else {
-		        		alert("Did not find performIppAiClosePanelCommand() method in embedded AI panel's iFrame.");
+		        		if (fallback) {
+	                		window.setTimeout(function() {
+	                			confirmCloseCommandFromExternalWebApp(commandId);
+	                		});
+	                	} else {
+	                		alert("Did not find performIppAiClosePanelCommand() method in embedded AI panel's iFrame.");
+	                	}
 		        	}
 		        } else {
 		        	alert('Failed resolving content window of external Web App iFrame.');
@@ -111,9 +123,9 @@ if (!window["InfinityBpm.ProcessPortal"]) {
 	    }
 
 		return {
-	        sendCloseCommandToExternalWebApp: function(contentId, commandId) {
+	        sendCloseCommandToExternalWebApp: function(contentId, commandId, fallback) {
 	            try {
-	            	sendIppAiClosePanelCommand(contentId, commandId);
+	            	sendIppAiClosePanelCommand(contentId, commandId, fallback);
 	            } catch (e) {
 	            	alert('Failed notifying external Web App: ' + e.message);
 	            }

@@ -270,6 +270,15 @@ define(
 								instance, options);
 
 						return instance;
+					} else if (this.isEnumeration()){
+						// TODO: Return Enum Default. It seems not available at the movement, to get this from server.
+						var elems = this.getElements();
+						if (elems && elems.length > 0) {
+							return elems[0].name;
+						} else {
+							return "";
+						}
+						
 					} else {
 						return this.getFacets();
 					}

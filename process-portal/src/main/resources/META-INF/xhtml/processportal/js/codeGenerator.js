@@ -58,6 +58,8 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 		var ignoreXPath;
 		var formElemName;
 
+		var nestedBindings;
+	
 		/*
 		 * 
 		 */
@@ -71,6 +73,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			}
 
 			bindingData = {};
+			nestedBindings = [];
 
 			var elemForm = htmlElement.create("form", {attributes: {name: formElemName}});
 			var elemMain = htmlElement.create("div", {parent: elemForm, attributes: {class: "panel-main"}});
@@ -87,13 +90,32 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			generateChildren(elemMain, paths);
 
 			var html = elemForm.toHtml();
+			if (ignoreXPath == undefined) {
+				var nestedListsDiv =
+					"<iframe ng-show=\"showNestedDM\" class=\"panel-list-dialog-modal-iframe\"" +
+						"style=\"width: {{sizes.frameWidth}}; height: {{sizes.frameHeight}};\" src=\"about:blank\"></iframe>\n" +
+					"<div ng-show=\"showNestedDM\" class=\"panel-list-dialog\" style=\"left: {{sizes.dialogLeft}}; top: {{sizes.dialogTop}}\">" + 
+						"<div class=\"panel-list-dialog-title\">" +
+							"<span class=\"panel-list-dialog-title-text\">{{nestedDMTitle}}</span>" + 
+							"<input type=\"button\" class=\"panel-list-dialog-close\" ng-click=\"closeNestedList()\"></input></div>" + 
+						"<div class=\"panel-list-dialog-breadcrumb\">" + 
+							"<span class=\"panel-list-dialog-breadcrumb-item\" ng-repeat=\"bCrumb in nestedDMs\">" + 
+								"<a href=\"\" ng-click=\"showNestedList($index)\" ng-show=\"!$last\">{{bCrumb.label}}</a>" + 
+								"<span ng-show=\"$last\">{{bCrumb.label}}</span>" +
+								"<span ng-show=\"!$last\"> &raquo; </span></span></div>" + 
+						"<div class=\"panel-list-dialog-content\"></div>" + 
+						"<div class=\"panel-list-dialog-footer\">" +
+							"<input type=\"button\" value=\"Close\" class=\"panel-list-dialog-footer-control\" ng-click=\"closeNestedList()\" /></div>" +
+					"</div>";
+				html += "\n" + nestedListsDiv;
+			}
 
 			bindingPrefix = undefined;
 			i18nLabelProvider = undefined;
 			ignoreXPath = undefined;
 			formElemName = undefined;
 
-			return {html: html, binding: bindingData};
+			return {html: html, binding: bindingData, nestedBindings: nestedBindings};
 		};
 
 		/*
@@ -164,7 +186,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			}
 
 			if (path.isPrimitive) { // List of Primitives
-				htmlElement.create("th", {parent: elemTHeadTr, value: getI18NLabel(path), attributes: {class: "panel-list-tbl-header"}});
+				htmlElement.create("th", {parent: elemTHeadTr, value: getLabel(path), attributes: {class: "panel-list-tbl-header"}});
 				var elemTd = htmlElement.create("td", {parent: elemTBodyTr, attributes: {class: "panel-list-tbl-cell"}});
 				
 				var loopNgModel = preferences.ngModelSepAsDot ? (loopVar + ".$value") : (loopVar + "['$value']");
@@ -179,7 +201,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 					
 					// Table Head
 					if (child.isPrimitive || !preferences.skipMultiCardinalityNested) {
-						htmlElement.create("th", {parent: elemTHeadTr, value: getI18NLabel(child), attributes: {class: "panel-list-tbl-header"}});
+						htmlElement.create("th", {parent: elemTHeadTr, value: getLabel(child), attributes: {class: "panel-list-tbl-header"}});
 						var elemTd = htmlElement.create("td", {parent: elemTBodyTr, attributes: {class: "panel-list-tbl-cell"}});
 					}
 
@@ -213,6 +235,8 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 						elemLink.attributes["ng-click"] = "openNestedList(" + loopVar + ", '" + child.fullXPath + 
 							"', $index, '" + listBinding.replace(/'/g, '\\\'') + "', '" + getI18NLabel(path) + "', '" + 
 							getI18NLabel(child) + "', " + isReadonly(path) + ")";
+						
+						nestedBindings.push(child);
 					}
 				}
 			}
@@ -231,27 +255,30 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			
 			if (options.noLabel == undefined || !options.noLabel) {
 				var elemLabel = htmlElement.create("label", 
-						{parent: elemMain, value: getI18NLabel(path), attributes: {class: "panel-label"}});
+						{parent: elemMain, value: getLabel(path), attributes: {class: "panel-label"}});
 			}
 
 			var elem;
 			if (path.typeName == "document") {
 				elem = generateDocument(elemMain, path);
 			} else if (isReadonly(path)) {
+				var binding = (options.ngModel == undefined ? convertFullIdToBinding(path) : options.ngModel);
+
 				if (path.properties["BooleanInputPreferences_readonlyOutputType"] != undefined &&
 						path.properties["BooleanInputPreferences_readonlyOutputType"] == "CHECKBOX") {
 					elem = htmlElement.create("input", {parent: elemMain, 
 								attributes: {type: "checkbox", class: "panel-checkbox", disabled: true}});
+					elem.attributes['ng-model'] = binding;
 				} else {
 					elem = htmlElement.create("label", {parent: elemMain, attributes: {class: "panel-output"}});
-				}
 
-				var binding = (options.ngModel == undefined ? convertFullIdToBinding(path) : options.ngModel);
-				var customFilter = getCustomFilter(path);
-				if (customFilter) {
-					binding = binding + " | " + customFilter;
+					var customFilter = getCustomFilter(path);
+					if (customFilter) {
+						binding = binding + " | " + customFilter;
+					}
+
+					elem.value = "{{" + binding + "}}";
 				}
-				elem.value = "{{" + binding + "}}";
 			} else {
 				if (path.isEnum) {
 					elem = htmlElement.create("select", {parent: elemMain, attributes: {'ng-model-onblur': null}});
@@ -565,7 +592,8 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 				var menuTable = htmlElement.create("table", {parent: docMenu, attributes: {cellpadding: 2, cellspacing: 0}});
 				var menuTableTr = htmlElement.create("tr", {parent: htmlElement.create("tbody", {parent: menuTable})});
 				var menuTableTd1 = htmlElement.create("td", {parent: menuTableTr, attributes: {class: "panel-primitive-container-cell"}});
-				htmlElement.create("img", {parent: menuTableTd1, attributes: {"ng-src": "../../plugins/views-common/images/icons/page_white_delete.png", class: "panel-image"}});
+				htmlElement.create("img", {parent: menuTableTd1, attributes: {
+					"src": preferences.pluginsUrl + "/views-common/images/icons/page_white_delete.png", class: "panel-image"}});
 				var menuTableTd2 = htmlElement.create("td", {parent: menuTableTr, attributes: {class: "panel-primitive-container-cell"}});
 				htmlElement.create("span", {parent: menuTableTd2, value:"Delete", attributes: {class: "panel-label"}});
 			}
@@ -680,6 +708,26 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			if (value) {
 				htmlElement.create("label", {parent: parent, value: value, attributes: {class: "panel-output"}});
 			}
+		}
+
+		/*
+		 * 
+		 */
+		function getLabel(path) {
+			var label = path.properties["InputPreferences_label"];
+			var labelKey = path.properties["InputPreferences_labelKey"];
+
+			var value;
+			if (labelKey != null && labelKey != "") {
+				value = getI18NLabel(labelKey);
+			} else {
+				value = label;
+			}
+
+			if(value == undefined || value == null || value == "") {
+				value = getI18NLabel(path);
+			}
+			return value;
 		}
 
 		/*

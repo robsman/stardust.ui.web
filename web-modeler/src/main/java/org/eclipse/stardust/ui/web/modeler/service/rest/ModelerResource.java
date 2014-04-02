@@ -66,7 +66,7 @@ public class ModelerResource
    private ApplicationContext springContext;
 
    // TODO static because of issues with session binding
-   private static JsonObject interactionDataObject;
+   private static Map<String, JsonObject> interactionDataObjects;
 
    @Context
    private HttpServletRequest httpRequest;
@@ -724,23 +724,37 @@ public class ModelerResource
     *
     * @return
     */
-   private void clearInteractionDataObject()
+   private void clearInteractionDataObject(String interactionId)
    {
-      interactionDataObject = new JsonObject();
+      getInteractionDataObjects().remove(interactionId);
+      getInteractionDataObjects().put(interactionId, new JsonObject());
    }
 
    /**
     *
     * @return
     */
-   private JsonObject getInteractionDataObject()
+   private JsonObject getInteractionDataObject(String interactionId)
    {
-      if (interactionDataObject == null)
+      if (!getInteractionDataObjects().containsKey(interactionId))
       {
-         interactionDataObject = new JsonObject();
+         getInteractionDataObjects().put(interactionId, new JsonObject());
       }
 
-      return interactionDataObject;
+      return getInteractionDataObjects().get(interactionId);
+   }
+
+   /*
+    * 
+    */
+   private Map<String, JsonObject> getInteractionDataObjects()
+   {
+      if (null == interactionDataObjects)
+      {
+         interactionDataObjects = new HashMap<String, JsonObject>();
+      }
+
+      return interactionDataObjects;
    }
 
    // Callbacks for Interaction REST API
@@ -795,7 +809,7 @@ public class ModelerResource
    {
       try
       {
-         return Response.ok(getInteractionDataObject().toString(), APPLICATION_JSON_TYPE)
+         return Response.ok(getInteractionDataObject(interactionId).toString(), APPLICATION_JSON_TYPE)
                .build();
       }
       catch (Exception e)
@@ -819,7 +833,7 @@ public class ModelerResource
    {
       try
       {
-         clearInteractionDataObject();
+         clearInteractionDataObject(interactionId);
 
          JsonObject postedObject = jsonIo.readJsonObject(postedData);
 
@@ -830,11 +844,11 @@ public class ModelerResource
                String key = entry.getKey();
                JsonElement value = postedObject.get(key);
 
-               getInteractionDataObject().add(key, value);
+               getInteractionDataObject(interactionId).add(key, value);
             }
          }
 
-         return Response.ok(getInteractionDataObject().toString(), APPLICATION_JSON_TYPE)
+         return Response.ok(getInteractionDataObject(interactionId).toString(), APPLICATION_JSON_TYPE)
                .build();
       }
       catch (Exception e)
@@ -856,7 +870,7 @@ public class ModelerResource
       {
          JsonObject postedObject = jsonIo.readJsonObject(postedData);
          
-         JsonObject outputData = (JsonObject)getInteractionDataObject().get("output");
+         JsonObject outputData = (JsonObject)getInteractionDataObject(interactionId).get("output");
          if (null == outputData)
          {
             outputData = new JsonObject();
@@ -867,9 +881,9 @@ public class ModelerResource
             outputData.add(entry.getKey(), entry.getValue());
          }
 
-         getInteractionDataObject().add("output", outputData);
+         getInteractionDataObject(interactionId).add("output", outputData);
          
-         return Response.ok(getInteractionDataObject().toString(), APPLICATION_JSON_TYPE)
+         return Response.ok(getInteractionDataObject(interactionId).toString(), APPLICATION_JSON_TYPE)
                .build();
       }
       catch (Exception e)
@@ -893,9 +907,9 @@ public class ModelerResource
       try
       {
          System.out.println("Retrieving interaction output:");
-         System.out.println(getInteractionDataObject());
+         System.out.println(getInteractionDataObject(interactionId));
 
-         return Response.ok(getInteractionDataObject().get("output").toString(),
+         return Response.ok(getInteractionDataObject(interactionId).get("output").toString(),
                APPLICATION_JSON_TYPE).build();
       }
       catch (Exception e)

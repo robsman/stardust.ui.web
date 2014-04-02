@@ -214,6 +214,9 @@ define(
 				m_utils.jQuerySelect("label[for='generateSuspendButtonInput']")
 					.text(m_i18nUtils.getProperty("modeler.model.propertyView.uiMashup.configuration.configurationProperties.embedded.generateSuspendButton"));
 
+				m_utils.jQuerySelect("label[for='generateSaveButtonInput']")
+				.text(m_i18nUtils.getProperty("modeler.model.propertyView.uiMashup.configuration.configurationProperties.embedded.generateSaveButton"));
+
 				m_utils.jQuerySelect("label[for='generateAbortButtonInput']")
 					.text(m_i18nUtils.getProperty("modeler.model.propertyView.uiMashup.configuration.configurationProperties.embedded.generateAbortButton"));
 
@@ -257,6 +260,7 @@ define(
 					this.numberOfLabelInputPairsInput = m_utils.jQuerySelect("#numberOfLabelInputPairsInput");
 					this.generateCompleteButtonInput = m_utils.jQuerySelect("#generateCompleteButtonInput");
 					this.generateSuspendButtonInput = m_utils.jQuerySelect("#generateSuspendButtonInput");
+					this.generateSaveButtonInput = m_utils.jQuerySelect("#generateSaveButtonInput");
 					this.generateAbortButtonInput = m_utils.jQuerySelect("#generateAbortButtonInput");
 					this.generateQaPassButtonInput = m_utils.jQuerySelect("#generateQaPassButtonInput");
 					this.generateQaFailButtonInput = m_utils.jQuerySelect("#generateQaFailButtonInput");
@@ -272,6 +276,7 @@ define(
 								supportsDescriptors : false,
 								supportsDataTypeSelection : true,
 								supportsInOutDirection : true,
+								supportsDocumentTypes : false,
 								tableWidth : "500px",
 								directionColumnWidth : "50px",
 								nameColumnWidth : "250px",
@@ -317,10 +322,6 @@ define(
 									});
 
 					this.generateTable = m_utils.jQuerySelect("#generateTable");
-
-					if (!m_session.getInstance().technologyPreview) {
-						m_dialog.makeInvisible(this.generateTable);
-					}
 
 					this.generateMarkupForAngularLink.click({
 						view : this
@@ -523,6 +524,7 @@ define(
 						this.numberOfLabelInputPairsInput.val(4);
 						this.generateCompleteButtonInput.prop("checked", true);
 						this.generateSuspendButtonInput.prop("checked", true);
+						this.generateSaveButtonInput.prop("checked", true);
 						this.generateAbortButtonInput.prop("checked", true);
 						this.generateQaPassButtonInput.prop("checked", false);
 						this.generateQaFailButtonInput.prop("checked", false);
@@ -587,6 +589,8 @@ define(
 								generateCompleteButton : this.generateCompleteButtonInput
 										.prop("checked"),
 								generateSuspendButton : this.generateSuspendButtonInput
+										.prop("checked"),
+								generateSaveButton : this.generateSaveButtonInput
 										.prop("checked"),
 								generateAbortButton : this.generateAbortButtonInput
 										.prop("checked"),

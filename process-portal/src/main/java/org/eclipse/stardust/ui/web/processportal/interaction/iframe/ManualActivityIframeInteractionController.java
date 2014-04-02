@@ -47,6 +47,7 @@ import org.eclipse.stardust.ui.web.processportal.view.manual.ManualActivityUi;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.ClosePanelScenario;
 import org.eclipse.stardust.ui.web.viewscommon.common.PanelIntegrationStrategy;
+import org.eclipse.stardust.ui.web.viewscommon.common.controller.RemoteControlActivityStateChangeHandler;
 import org.eclipse.stardust.ui.web.viewscommon.common.spi.IActivityInteractionController;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ManagedBeanUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
@@ -56,7 +57,7 @@ import org.eclipse.stardust.ui.web.viewscommon.views.document.AbstractDocumentCo
  * @author Subodh.Godbole
  *
  */
-public class ManualActivityIframeInteractionController implements IActivityInteractionController, ViewEventAwareInteractionController
+public class ManualActivityIframeInteractionController implements IActivityInteractionController, ViewEventAwareInteractionController, RemoteControlActivityStateChangeHandler
 {
    private static final Logger trace = LogManager.getLogger(ManualActivityIframeInteractionController.class);
    
@@ -372,5 +373,27 @@ public class ManualActivityIframeInteractionController implements IActivityInter
    public boolean isTypedDocumentOpen(ActivityInstance activityInstance)
    {
       return DocumentHelper.isTypedDocumentOpen(getInteraction(activityInstance));
+   }
+
+   /* (non-Javadoc)
+    * @see org.eclipse.stardust.ui.web.viewscommon.common.controller.RemoteControlActivityStateChangeHandler#handleCommand(org.eclipse.stardust.engine.api.runtime.ActivityInstance, org.eclipse.stardust.ui.web.viewscommon.common.ClosePanelScenario)
+    */
+   public void handleScenario(ActivityInstance ai, ClosePanelScenario scenario)
+   {
+      if (ClosePanelScenario.COMPLETE == scenario || ClosePanelScenario.SUSPEND_AND_SAVE == scenario)
+      {
+         org.eclipse.stardust.ui.web.processportal.interaction.InteractionRegistry registry = 
+            (org.eclipse.stardust.ui.web.processportal.interaction.InteractionRegistry) ManagedBeanUtils
+               .getManagedBean(InteractionRegistry.BEAN_ID);
+
+         org.eclipse.stardust.ui.web.processportal.interaction.Interaction interaction = registry
+               .getInteraction(org.eclipse.stardust.ui.web.processportal.interaction.Interaction
+                     .getInteractionId(ai));
+
+         if (null != interaction)
+         {
+            interaction.setStatus(org.eclipse.stardust.ui.web.processportal.interaction.Interaction.Status.Complete);
+         }
+      }
    }
 }

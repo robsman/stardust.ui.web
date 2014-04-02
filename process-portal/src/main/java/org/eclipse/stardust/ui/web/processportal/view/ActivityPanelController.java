@@ -32,12 +32,14 @@ import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.core.interactions.Interaction;
 import org.eclipse.stardust.ui.web.common.UIComponentBean;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
+import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.processportal.interaction.InteractionRegistry;
 import org.eclipse.stardust.ui.web.processportal.interaction.iframe.FaceletPanelInteractionController;
 import org.eclipse.stardust.ui.web.processportal.interaction.iframe.ManualActivityIframeInteractionController;
 import org.eclipse.stardust.ui.web.viewscommon.common.ClosePanelScenario;
 import org.eclipse.stardust.ui.web.viewscommon.common.NoteTip;
 import org.eclipse.stardust.ui.web.viewscommon.common.PanelIntegrationStrategy;
+import org.eclipse.stardust.ui.web.viewscommon.common.controller.RemoteControlActivityStateChangeHandler;
 import org.eclipse.stardust.ui.web.viewscommon.common.spi.IActivityInteractionController;
 import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.LinkedProcessBean;
@@ -178,7 +180,7 @@ public class ActivityPanelController extends UIComponentBean
             ClosePanelScenario scenario = (ClosePanelScenario) ClosePanelScenario.getKey(
                   ClosePanelScenario.class, commandId);
 
-            checkForHTMLBasedManualActivity(scenario);
+            checkForRemoteControlActivityStateChangeHandler(scenario);
 
             if (ClosePanelScenario.COMPLETE == scenario)
             {
@@ -212,6 +214,7 @@ public class ActivityPanelController extends UIComponentBean
          catch (Exception e)
          {
             trace.error("Error in handling externally triggered close of activity panel", e);
+            MessageDialog.addErrorMessage("Unexpected Error occurred while handling activity close", e);
          }
       }
    }
@@ -219,34 +222,19 @@ public class ActivityPanelController extends UIComponentBean
    /**
     * @param scenario
     */
-   private void checkForHTMLBasedManualActivity(ClosePanelScenario scenario)
+   private void checkForRemoteControlActivityStateChangeHandler(ClosePanelScenario scenario)
    {
       try
       {
-         if (ClosePanelScenario.COMPLETE == scenario || ClosePanelScenario.SUSPEND_AND_SAVE == scenario)
-         {
             IActivityInteractionController interactionController = ActivityDetailsBean
                   .getInteractionController(activityDetailsBean.getActivityInstance().getActivity());
             
-            // HTML Based Manual Activity
-            if (null != interactionController
-                  && interactionController instanceof ManualActivityIframeInteractionController)
+         if (interactionController instanceof RemoteControlActivityStateChangeHandler)
             {
-               org.eclipse.stardust.ui.web.processportal.interaction.InteractionRegistry registry = 
-                  (org.eclipse.stardust.ui.web.processportal.interaction.InteractionRegistry) ManagedBeanUtils
-                     .getManagedBean(InteractionRegistry.BEAN_ID);
-      
-               org.eclipse.stardust.ui.web.processportal.interaction.Interaction interaction = registry
-                     .getInteraction(org.eclipse.stardust.ui.web.processportal.interaction.Interaction
-                           .getInteractionId(activityDetailsBean.getActivityInstance()));
-      
-               if (null != interaction)
-               {
-                  interaction.setStatus(org.eclipse.stardust.ui.web.processportal.interaction.Interaction.Status.Complete);
+            ((RemoteControlActivityStateChangeHandler) interactionController).handleScenario(
+                  activityDetailsBean.getActivityInstance(), scenario);
                }
             }
-         }
-      }
       catch (Exception e)
       {
          trace.error("Error in handling externally triggered close of HTML Manual activity panel", e);
