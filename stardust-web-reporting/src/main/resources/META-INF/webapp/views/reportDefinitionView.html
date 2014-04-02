@@ -580,11 +580,9 @@ table.formTable td {
 												ng-show="getDimension(x.dimension).type == getMetadata().stringType">
 												<table cellpadding="0" cellspacing="0" class="layoutTable">
 													<tr>
-														<td><select ng-model="x.operator"><option>equal</option>
-																<option>greater or equal</option>
-																<option>less or equal</option>
-																<option>between</option>
-																<option>not equal</option></select></td>
+														<td><select ng-model="x.operator" 
+																ng-options="o.id as o.label for o in getOperatorsEnum(getDimension(x.dimension))">
+														</td>
 														<td><input type="text" ng-model="x.value" required></td>
 														<td><a href=""
 															ng-click="removeParameter('filters.' + x.dimension)"
@@ -603,10 +601,9 @@ table.formTable td {
 												ng-show="getDimension(x.dimension).type == getMetadata().integerType">
 												<table cellpadding="0" cellspacing="0" class="layoutTable">
 													<tr>
-														<td><select ng-model="x.operator"><option>equal</option>
-																<option>greater or equal</option>
-																<option>less or equal</option>
-																<option>not equal</option></select></td>
+														<td><select ng-model="x.operator" 
+																ng-options="o.id as o.label for o in getOperatorsEnum(getDimension(x.dimension))">
+														</td>
 														<td><input type="number" ng-model="x.value" required></td>
 														<td><a href=""
 															ng-click="removeParameter('filters.' + x.dimension)"
@@ -731,10 +728,9 @@ table.formTable td {
 													</table>
 													<table class="filterTable" ng-show="getDimension(x.dimension).display == 'singleSelect'">
 														<tr>
-															<td><select ng-model="x.operator"><option>equal</option>
-																<option>greater or equal</option>
-																<option>less or equal</option>
-																<option>not equal</option></select></td>
+															<td><select ng-model="x.operator" 
+																ng-options="o.id as o.label for o in getOperatorsEnum(getDimension(x.dimension))">
+															</td>
 															<td valign="top"><select ng-model="x.value"
 																ng-change="selectionChanged(getDimension(x.dimension), x)"
 																ng-options="y.id as y.name for y in getEnumerators2(getDimension(x.dimension), x)"></select>

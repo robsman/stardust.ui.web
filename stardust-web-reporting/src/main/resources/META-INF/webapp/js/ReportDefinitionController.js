@@ -690,6 +690,24 @@ define(
 							qualifier[1], qualifier[2]);
 				};
 				
+				ReportDefinitionController.prototype.getOperatorsEnum = function(dimension){
+					var operators = [];
+					if(dimension.operators){
+						for (var i in dimension.operators){
+							operators.push({"id" : dimension.operators[i], 
+									"label" : this.getI18N("reporting.definitionView.additionalFiltering.operator." + dimension.operators[i])});
+						}
+					}else{
+						// return default list
+						operators.push({"id" : "E", "label" : this.getI18N("reporting.definitionView.additionalFiltering.operator.E")});
+						operators.push({"id" : "LE", "label" : this.getI18N("reporting.definitionView.additionalFiltering.operator.LE")});
+						operators.push({"id" : "GE", "label" : this.getI18N("reporting.definitionView.additionalFiltering.operator.GE")});
+						operators.push({"id" : "NE", "label" : this.getI18N("reporting.definitionView.additionalFiltering.operator.NE")});
+					}
+					return operators;
+				}
+						
+				
 				ReportDefinitionController.prototype.getEnumerators2 = function(
 						dimension, filter) {
 					if (!dimension || !dimension.enumerationType) {
@@ -703,7 +721,7 @@ define(
 					var filteredEnumItems = enumItems;
 					
 					//processes
-					if ((dimension.id == "processName" || dimension.id == "activityName")) {
+					if ((filter.dimension == "processName" || filter.dimension == "activityName")) {
 						filteredEnumItems = [];
 						filteredEnumItems.push(this.ALL_PROCESSES);
 						for (var i = 0; i < enumItems.length; i++) {
@@ -715,7 +733,7 @@ define(
 					} 
 					
 					//activities
-					if (dimension.id == "activityName") {
+					if (filter.dimension == "activityName") {
 						var selectedProcesses = [];
 						if (!filter.metadata.selectedProcesses
 								|| filter.metadata.selectedProcesses.length < 1) {
@@ -818,6 +836,7 @@ define(
 				ReportDefinitionController.prototype.onFilterDimensionChange = function(
 						index) {
 					this.report.dataSet.filters[index].value = null;
+					this.report.dataSet.filters[index].metadata = null;
 					
 					if(this.report.dataSet.filters[index].dimension == 'processName'){
 						this.report.dataSet.filters[index].metadata = { process_filter_auxiliary : true };

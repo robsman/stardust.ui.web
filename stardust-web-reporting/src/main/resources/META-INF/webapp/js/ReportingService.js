@@ -3,8 +3,8 @@
  ******************************************************************************/
 
 define(
-		[],
-		function() {
+		["bpm-reporting/js/I18NUtils"],
+		function(I18NUtils) {
 			return {
 				instance : function() {
 					if (!window.top.reportingService) {
@@ -20,6 +20,11 @@ define(
 			 * loaded reports are kept in a cache.
 			 */
 			function ReportingService() {
+				
+				ReportingService.prototype.getI18N = function(key) {
+					return I18NUtils.getProperty(key);
+				};
+				
 				this.mode = "server";
 				this.metadata = {};
 
@@ -133,10 +138,11 @@ define(
 							},
 							priority : {
 								id : "priority",
-								name : "Priority",
+								name : this.getI18N("reporting.definitionView.additionalFiltering.priority"),
 								type : this.metadata.enumerationType,
 								display : "singleSelect",
-								enumerationType : "staticData:priorityLevel:name"
+								enumerationType : "staticData:priorityLevel:name",
+								operators : ["E", "LE", "GE", "NE"]
 							}
 						}
 					},
@@ -278,15 +284,15 @@ define(
 					priorityLevel : {
 						low : {
 							id : "low",
-							name : "Low" //I18n
+							name : this.getI18N("reporting.definitionView.additionalFiltering.priority.low")
 						},
 						medium : {
-							id : "low",
-							name : "Medium" //I18n
+							id : "medium",
+							name : this.getI18N("reporting.definitionView.additionalFiltering.priority.medium")
 						},
 						high : {
-							id : "low",
-							name : "High" //I18n
+							id : "high",
+							name : this.getI18N("reporting.definitionView.additionalFiltering.priority.high")
 						}
 					}
 				};
