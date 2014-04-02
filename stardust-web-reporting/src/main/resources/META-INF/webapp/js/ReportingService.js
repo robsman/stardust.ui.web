@@ -135,6 +135,7 @@ define(
 								id : "priority",
 								name : "Priority",
 								type : this.metadata.enumerationType,
+								display : "singleSelect",
 								enumerationType : "staticData:priorityLevel:name"
 							}
 						}

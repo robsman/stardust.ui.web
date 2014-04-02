@@ -331,3 +331,9 @@ div.right {
    width:500px;
    border: 1px solid #BBBBBB !important;
 }
+
+.filterTable {
+	padding: 0px;
+	border-spacing: 0px;
+	border-collapse: separate;
+}
