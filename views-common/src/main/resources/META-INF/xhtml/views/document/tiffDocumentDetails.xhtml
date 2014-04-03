@@ -7,6 +7,7 @@
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 	
 	<ui:include src="/plugins/views-common/views/document/extractPageDialog.xhtml" />
+	<ui:include src="/plugins/views-common/views/document/movePagesDialog.xhtml" />
 	<ui:include
 		src="/plugins/common/views/dialog/confirmationDialog.xhtml">
 		<ui:param name="dialogBean"
@@ -127,6 +128,19 @@
 							</ice:commandLink>
 							<ice:outputLabel value=" " />
 							<ice:commandLink
+								actionListener="#{contentHandler.tiffDocumentHolder.movePageAction}"
+								disabled="#{!contentHandler.tiffDocumentHolder.editable}">
+								<pc:automationTag
+									value="auto-COM-DocView-TiffDocView-MovePageUp"
+									standAlone="false" />
+								<ice:graphicImage
+									title="#{views_common_msgPropsBean['views.movePagesDialog.title']}"
+									rendered="#{contentHandler.tiffDocumentHolder.documentContent != null}"
+									value="/plugins/views-common/images/icons/page_white_stack.png"
+									style="#{!contentHandler.tiffDocumentHolder.editable ? 'opacity : 0.4; filter:alpha(opacity=40);' : ''}" />
+							</ice:commandLink>
+							<ice:outputLabel value=" " />
+							<ice:commandLink
 								actionListener="#{contentHandler.tiffDocumentHolder.reversePageOrder}"
 								disabled="#{!contentHandler.tiffDocumentHolder.editable}">
 								<pc:automationTag value="auto-COM-DocView-TiffDocView-ReversePageOrder" standAlone="false" />
@@ -147,6 +161,17 @@
 									rendered="#{contentHandler.tiffDocumentHolder.documentContent != null}"
 									value="/plugins/views-common/images/icons/bookmark--plus.png"
 									style="#{!contentHandler.tiffDocumentHolder.editable ? 'opacity : 0.4; filter:alpha(opacity=40);' : ''}" />
+							</ice:commandLink>
+							<ice:outputLabel value=" " />
+							<ice:commandLink
+								actionListener="#{contentHandler.tiffDocumentHolder.openExtractPageDialog}"
+								disabled="#{contentHandler.modified or !contentHandler.tiffDocumentHolder.editable or not contentHandler.tiffDocumentHolder.bookmarkManager.extractEnable}"
+								style="#{(contentHandler.modified or !contentHandler.tiffDocumentHolder.editable or not contentHandler.tiffDocumentHolder.bookmarkManager.extractEnable) ? 'opacity : 0.5; filter:alpha(opacity=50);' : ''}">
+								<pc:automationTag value="auto-COM-DocView-TiffDocView-ExtractPage" standAlone="false" />
+								<ice:graphicImage
+									title="#{views_common_msgPropsBean['views.tiffViewer.thumbnails.extractPages']}"
+									rendered="#{contentHandler.tiffDocumentHolder.documentContent != null}"
+									value="/plugins/views-common/images/icons/page_go.png" />
 							</ice:commandLink>
 						</ice:panelGroup>
 						<ice:panelGroup scrollWidth="200px" scrollHeight="1050px">

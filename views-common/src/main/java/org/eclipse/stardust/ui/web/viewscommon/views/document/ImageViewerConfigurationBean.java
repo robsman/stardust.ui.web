@@ -46,6 +46,8 @@ public class ImageViewerConfigurationBean implements PortalConfigurationListener
    private static final String BEAN_NAME = "imageViewerConfigurationBean";
    private static final String RETAIN_PRIOR_DOCUMENT_VERSIONS="0";
    private static final String DELETE_PRIOR_DOCUMENT_VERSIONS="1";
+   private static final String SUB_PROCESS_TYPE = "0";
+   private static final String ROOT_PROCESS_TYPE = "1";
    
    private static final String DEFAULT_NOTE_FONT_SIZE = "24";
 
@@ -58,6 +60,8 @@ public class ImageViewerConfigurationBean implements PortalConfigurationListener
    private List<SelectItem> docPriorVersionActionList;
    
    private List<SelectItem> highlightOpacityList;
+
+   private List<SelectItem> spawnProcessTypeList;
 
    private boolean showSidePanel = true;
 
@@ -95,6 +99,8 @@ public class ImageViewerConfigurationBean implements PortalConfigurationListener
    
    private String dataFieldHighlightOpacity;
    
+   private String spawnProcessType;
+   
    private ConfirmationDialog imageViewerConfirmationDialog;
    
    private boolean enableExtractPage = true;
@@ -124,6 +130,7 @@ public class ImageViewerConfigurationBean implements PortalConfigurationListener
       intializeDisplayZoomLevelOptions();
       initializeHighlightColourList();
       initializeDocPriorVerionAcionList();
+      initializeSpawnProcessTypeList();
       initializeDataHighlightOpacityList();
       initializeNoteFontSizeList();
       setUsersPreferences();
@@ -273,6 +280,7 @@ public class ImageViewerConfigurationBean implements PortalConfigurationListener
          allowDeleteFromOriginal = enableExtractPage && allowDeleteFromOriginal;
          userPrefsHelper.setString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_ENABLE_PAGE_DELETE, String.valueOf(allowDeleteFromOriginal));
          userPrefsHelper.setString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SELECTED_DOC_PRIOR_VERSION_ACTION, docPriorVersionAction);
+         userPrefsHelper.setString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SPAWN_PROCESS_TYPE, spawnProcessType);
       }
       MessageDialog.addInfoMessage(messageBean.getString("views.imageViewerConfig.save.successMessage"));
    }
@@ -421,6 +429,16 @@ public class ImageViewerConfigurationBean implements PortalConfigurationListener
       return ImageViewerStampsBean.getCurrent().getSelectedStampId();
    }
 
+   public String getSpawnProcessType()
+   {
+      return spawnProcessType;
+   }
+
+   public void setSpawnProcessType(String spawnProcessType)
+   {
+      this.spawnProcessType = spawnProcessType;
+   }
+
    public List<SelectItem> getHighlightColourList()
    {
       return highlightColourList;
@@ -449,6 +467,16 @@ public class ImageViewerConfigurationBean implements PortalConfigurationListener
    public void setHighlightOpacityList(List<SelectItem> highlightOpacityList)
    {
       this.highlightOpacityList = highlightOpacityList;
+   }
+
+   public List<SelectItem> getSpawnProcessTypeList()
+   {
+      return spawnProcessTypeList;
+   }
+
+   public void setSpawnProcessTypeList(List<SelectItem> spawnProcessTypeList)
+   {
+      this.spawnProcessTypeList = spawnProcessTypeList;
    }
 
    public List<SelectItem> getNoteFontSizeList()
@@ -605,6 +633,19 @@ public class ImageViewerConfigurationBean implements PortalConfigurationListener
       docPriorVersionActionList.add(new SelectItem(RETAIN_PRIOR_DOCUMENT_VERSIONS,messageBean.getString("views.imageViewerConfig.extractPages.DocPriorVerionAction.Retain")));
       docPriorVersionActionList.add(new SelectItem(DELETE_PRIOR_DOCUMENT_VERSIONS,messageBean.getString("views.imageViewerConfig.extractPages.DocPriorVerionAction.Delete")));
    }
+   
+   /**
+    * 
+    */
+   private void initializeSpawnProcessTypeList()
+   {
+      spawnProcessTypeList = new ArrayList<SelectItem>();
+      spawnProcessTypeList.add(new SelectItem(SUB_PROCESS_TYPE, messageBean
+            .getString("views.extractPages.spawnProcess.subprocess")));
+      spawnProcessTypeList.add(new SelectItem(ROOT_PROCESS_TYPE, messageBean
+            .getString("views.extractPages.spawnProcess.rootprocess")));
+   }
+   
    /**
     * 
     */
@@ -664,6 +705,7 @@ public class ImageViewerConfigurationBean implements PortalConfigurationListener
       enableExtractPage = userPrefsHelper.getBoolean(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_ENABLE_EXTRACT_PAGES, true);
       allowDeleteFromOriginal = userPrefsHelper.getBoolean(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_ENABLE_PAGE_DELETE, true);
       docPriorVersionAction = userPrefsHelper.getSingleString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SELECTED_DOC_PRIOR_VERSION_ACTION, RETAIN_PRIOR_DOCUMENT_VERSIONS);     
+      spawnProcessType = userPrefsHelper.getSingleString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SPAWN_PROCESS_TYPE, SUB_PROCESS_TYPE);
       ImageViewerStampsBean.getCurrent().setSelectedStampId(userPrefsHelper.getSingleString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SELECTED_STAMP, ""));
    }
    

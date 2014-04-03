@@ -85,6 +85,24 @@ define(
 							&& (this.typeDeclaration.type.classifier === 'ExternalReference');
 				};
 
+				TypeDeclaration.prototype.isEnumeration = function() {
+					if (this.getType() === "enumStructuredDataType") {
+						return true;
+					} else {
+						// imported types could also be enumerations
+						// checks for presense of a facet with classifier enumeration
+						var facets = this.getFacets();
+						if (facets && facets.length > 0) {
+							for (var f in facets) {
+								if (facets[f].classifier === "enumeration") {
+									return true;
+								}
+							}
+						}
+					}
+					return false;
+				};
+
 				/**
 				 *
 				 */
@@ -98,6 +116,18 @@ define(
 								return true;
 							}
 						}
+					} else if (this.isComplexTypeWithSimpleContent()) {
+						return true;
+					}
+
+					return false;
+				};
+
+				TypeDeclaration.prototype.isComplexTypeWithSimpleContent = function() {
+					if (this.getTypeDeclaration()
+							&& this.getTypeDeclaration().primitiveType
+							&& this.getTypeDeclaration().attributes) {
+						return true;
 					}
 
 					return false;
@@ -251,67 +281,96 @@ define(
 									typeDeclaration.getElements(),
 									function(i, element) {
 										var type = element.type;
+										if (type) {
+											// Strip prefix
+											if (element.type.indexOf(':') !== -1) {
+												type = element.type.split(":")[1];
+											}
 
-										// Strip prefix
-										if (element.type.indexOf(':') !== -1) {
-											type = element.type.split(":")[1];
-										}
+											var childTypeDeclaration = obj.model
+													.findTypeDeclarationBySchemaName(type);
 
-										var childTypeDeclaration = obj.model
-												.findTypeDeclarationBySchemaName(type);
+											if (element.cardinality === "required") {
+												if (childTypeDeclaration != null) {
+													if (childTypeDeclaration
+															.isSequence()) {
 
-										if (element.cardinality === "required") {
-											if (childTypeDeclaration != null) {
-												if (childTypeDeclaration
-														.isSequence()) {
+														instance[element.name] = {};
 
-													instance[element.name] = {};
+														obj
+																.populateSequenceInstanceRecursively(
+																		childTypeDeclaration,
+																		instance[element.name],
+																		options);
+													} else {
+														if (options.initializePrimitives) {
+															for ( var enumerator in childTypeDeclaration
+																	.getFacets()) {
+																instance[element.name] = enumerator;
+
+																break;
+															}
+														}
+													}
+												} else {
+													if (options.initializePrimitives) {
+														// TODO Consider primitive
+														// type
+
+														instance[element.name] = "";
+													}
+												}
+											} else {
+												instance[element.name] = [];
+
+												if (childTypeDeclaration != null
+														&& childTypeDeclaration
+																.isSequence()) {
+													instance[element.name][0] = {};
 
 													obj
 															.populateSequenceInstanceRecursively(
 																	childTypeDeclaration,
-																	instance[element.name],
+																	instance[element.name][0],
 																	options);
 												} else {
-													if (options.initializePrimitives) {
-														for ( var enumerator in childTypeDeclaration
-																.getFacets()) {
-															instance[element.name] = enumerator;
+													// TODO Consider primitive type
 
-															break;
-														}
-													}
-												}
-											} else {
-												if (options.initializePrimitives) {
-													// TODO Consider primitive
-													// type
-
-													instance[element.name] = "";
+													instance[element.name][0] = "";
 												}
 											}
 										} else {
-											instance[element.name] = [];
-
-											if (childTypeDeclaration != null
-													&& childTypeDeclaration
-															.isSequence()) {
-												instance[element.name][0] = {};
-
-												obj
-														.populateSequenceInstanceRecursively(
-																childTypeDeclaration,
-																instance[element.name][0],
-																options);
-											} else {
-												// TODO Consider primitive type
-
-												instance[element.name][0] = "";
-											}
+											instance[element.name] = {};
+											obj.populateSequenceInstanceRecursivelyForAnonymousTypeElements(element, instance[element.name], options);
 										}
 									});
 
 					return instance;
+				};
+
+				/**
+				 *
+				 */
+				TypeDeclaration.prototype.populateSequenceInstanceRecursivelyForAnonymousTypeElements = function(inlineTypeElement, instance, options) {
+					var thisObj = this;
+					if (inlineTypeElement.body) {
+						jQuery.each(inlineTypeElement.body, function(i, seq) {
+							if (seq.classifier === "sequence" && seq.body) {
+								jQuery.each(seq.body, function(i, element) {
+									if (element.body) {
+										instance[element.name] = {};
+										thisObj.populateSequenceInstanceRecursivelyForAnonymousTypeElements(element, instance[element.name], options);
+									} else {
+										if (options.initializePrimitives) {
+											instance[element.name] = "";
+										}
+									}
+								});
+							}
+						});
+					} else if (inlineTypeElement.type) {
+						thisObj.populateSequenceInstanceRecursively(inlineTypeElement, instance, options);
+					}
 				};
 
 				/**
@@ -329,7 +388,7 @@ define(
 								icon : "XSDModelGroupSequence.gif",
 								classifier : "sequence",
 								body : []
-							}]							
+							}]
 						};
 						this.typeDeclaration.schema.types = types;
 					}
@@ -348,6 +407,18 @@ define(
 					}
 				};
 
+				/**
+				 * Clear the Enum table, when Java Binding is available
+				 */
+				TypeDeclaration.prototype.removeEnumTable = function() {
+					if (this.getTypeDeclaration()) {
+						var td = this.getTypeDeclaration();
+						delete td.body;
+						td.base = "{http://www.w3.org/2001/XMLSchema}string";
+						td.facets = [];
+					}
+				};
+
 				TypeDeclaration.prototype.getElements = function() {
 					if (this.isSequence()) {
 						var elements = [];
@@ -358,7 +429,15 @@ define(
 
 						return elements;
 					} else {
-						return this.getFacets();
+						var elems = [];
+						var allFacets = this.getFacets();
+						for (var f in allFacets) {
+							if (allFacets[f].classifier === "enumeration") {
+								elems.push(allFacets[f]);
+							}
+						}
+
+						return elems;
 					}
 				};
 
@@ -546,22 +625,26 @@ define(
 				};
 
 				TypeDeclaration.prototype.resolveSchemaType = function(name) {
-					var typeQName = parseQName(name);
-					if (typeQName.namespace) {
-						return resolveSchemaTypeFromModel("{"
-								+ typeQName.namespace + "}"
-										+ typeQName.name,
-								this.model,
-								this.typeDeclaration.schema ? this.typeDeclaration.schema.locations
-										: null);
-					} else {
-						// no ns prefix, resolve to containing schema
-						var schema = this.typeDeclaration.schema;
-						var schemaNsUri = schema.targetNamespace;
+					if (name) {
+						var typeQName = parseQName(name);
+						if (typeQName.namespace) {
+							return resolveSchemaTypeFromModel("{"
+	 								+ typeQName.namespace + "}"
+											+ typeQName.name,
+									this.model,
+									this.typeDeclaration.schema ? this.typeDeclaration.schema.locations
+											: null);
+						} else {
+							// no ns prefix, resolve to containing schema
+							var schema = this.typeDeclaration.schema;
+							if (schema) {
+								var schemaNsUri = schema.targetNamespace;
 
-						var type = findType(schema, typeQName.name);
-						return new SchemaType(typeQName.name, schemaNsUri,
-								type, schema, this.model);
+								var type = findType(schema, typeQName.name);
+								return new SchemaType(typeQName.name, schemaNsUri,
+										type, schema, this.model);
+							}
+						}
 					}
 				};
 			}
@@ -606,13 +689,17 @@ define(
 				} else if (this.schema && this.schema.types) {
 					var type = this.schema.types[0];
 				}
-				if (type && type.body) {
-					for (i in type.body) {
-						if (!type.body[i].inherited
-								&& (type.body[i].classifier === 'sequence'
-										|| type.body[i].classifier === 'all' || type.body[i].classifier === 'choice')) {
-							return true;
+				if (type) {
+					if (type.body) {
+						for (i in type.body) {
+							if (!type.body[i].inherited
+									&& (type.body[i].classifier === 'sequence'
+											|| type.body[i].classifier === 'all' || type.body[i].classifier === 'choice')) {
+								return true;
+							}
 						}
+					} else if (type.primitiveType && type.attributes) {
+						return true;
 					}
 				}
 
@@ -658,11 +745,14 @@ define(
 						}
 					}
 					if (facets.length == 0 && this.schema.types) {
-						for (var i in this.schema.types) {
-							if (this.schema.types[i].facets) {
-								for (var j in this.schema.types[i].facets) {
-									if (this.schema.types[i].facets[j].classifier === "enumeration") {
-										facets.push(this.schema.types[i].facets[j]);
+						if (this.type) {
+							for (var i in this.schema.types) {
+								if (this.schema.types[i].name === this.type.name
+										&& this.schema.types[i].facets) {
+									for (var j in this.schema.types[i].facets) {
+										if (this.schema.types[i].facets[j].classifier === "enumeration") {
+											facets.push(this.schema.types[i].facets[j]);
+										}
 									}
 								}
 							}
@@ -670,6 +760,30 @@ define(
 					}
 
 					return facets;
+				}
+			};
+
+
+			/**
+			 * @returns {Array}
+			 */
+			SchemaType.prototype.getAttributes = function() {
+				// TODO - check
+				if (this.isStructure()) {
+					var attributes = [];
+					if (this.type) {
+						var type = this.type
+					} else if (this.schema && this.schema.types) {
+						var type = this.schema.types[0];
+					}
+
+					if (type && type.attributes) {
+						attributes = type.attributes;
+					}
+
+					return attributes;
+				} else {
+					// TODO
 				}
 			};
 
@@ -686,9 +800,13 @@ define(
 
 			SchemaType.prototype.resolveElementType = function(elementName) {
 				var element = this.getElement(elementName);
+				return this.resolveElementTypeFromElement(element);
+			};
+
+			SchemaType.prototype.resolveElementTypeFromElement = function(element) {
 				if (element && element.type) {
 
-					var typeQName = parseQName(element.type);
+					var typeQName = parseQName(element.type, this.schema);
 					if (!typeQName.prefix) {
 						// no ns prefix, resolve to containing schema
 						var type = findType(this.schema, typeQName.name);
@@ -700,16 +818,17 @@ define(
 						if (!typeQName.namespace && typeQName.prefix) {
 							typeQName.namespace = this.schema.nsMappings[typeQName.prefix];
 						}
+						var resolvedSchema;
 						if (this.scope) {
-							return resolveSchemaTypeFromModel("{"
+							resolvedSchema = resolveSchemaTypeFromModel("{"
 									+ typeQName.namespace + "}"
 									+ typeQName.name, this.scope,
 									this.schema ? this.schema.locations : null);
-						} else if (this.schema) {
-							return resolveSchemaTypeFromSchema("{"
-									+ typeQName.namespace + "}"
-									+ typeQName.name, this.schema);
 						}
+						if (!resolvedSchema && this.schema) {
+							resolvedSchema = resolveSchemaTypeFromSchema(element.type, this.schema);
+						}
+						return resolvedSchema;
 					}
 				} else {
 					return undefined;
@@ -718,7 +837,7 @@ define(
 
 			function getElementsFromBody(body, elements, inherited) {
 				for (var i in body) {
-					if (body[i] && body[i].classifier !== "element") {
+					if (body[i] && (body[i].classifier !== "element" && body[i].name !== "<any>")) {
 						getElementsFromBody(body[i].body, elements, (inherited || body[i].inherited));
 					} else {
 						if (inherited || body[i].inherited) {
@@ -744,10 +863,18 @@ define(
 										function(i, declaration) {
 											if ((null != declaration.typeDeclaration)
 													&& (null != declaration.typeDeclaration.schema)
-													&& (declaration.typeDeclaration.schema.targetNamespace === parsedName.namespace)
-													&& (declaration.id === parsedName.name)) {
-												schema = declaration.typeDeclaration.schema;
-												return false;
+													&& (declaration.typeDeclaration.schema.targetNamespace === parsedName.namespace)) {
+												if (declaration.typeDeclaration.type && declaration.typeDeclaration.type.xref) {
+													if (declaration.typeDeclaration.type.xref === sqName) {
+														schema = declaration.typeDeclaration.schema;
+														return false;
+													}
+												} else {
+													if (declaration.id === parsedName.name) {
+														schema = declaration.typeDeclaration.schema;
+														return false;
+													}
+												}
 											}
 										});
 
@@ -778,10 +905,18 @@ define(
 												function(i, declaration) {
 													if ((null != declaration.typeDeclaration)
 															&& (null != declaration.typeDeclaration.schema)
-															&& (declaration.typeDeclaration.schema.targetNamespace === parsedName.namespace)
-															&& (declaration.id === parsedName.name)) {
-														schema = declaration.typeDeclaration.schema;
-														return false;
+															&& (declaration.typeDeclaration.schema.targetNamespace === parsedName.namespace)) {
+														if (declaration.typeDeclaration.type && declaration.typeDeclaration.type.xref) {
+															if (declaration.typeDeclaration.type.xref === sqName) {
+																schema = declaration.typeDeclaration.schema;
+																return false;
+															}
+														} else {
+															if (declaration.id === parsedName.name) {
+																schema = declaration.typeDeclaration.schema;
+																return false;
+															}
+														}
 													}
 												});
 							}
@@ -798,21 +933,33 @@ define(
 				return undefined;
 			}
 
-			function parseQName(name) {
+			function parseQName(name, schema) {
 				if (name && ("{" === name.charAt(0))) {
 					return {
 						namespace : name.substr(1, name.length).split("}")[0],
 						name : name.substr(1, name.length).split("}")[1]
 					};
 				} else if (name && (0 <= name.indexOf(":"))) {
+					derivedNS = findNamespaceForPrefix(name, schema);
 					return {
 						prefix : name.split(":")[0],
-						name : name.split(":")[1]
+						name : name.split(":")[1],
+						namespace : derivedNS
 					};
 				} else {
 					return {
 						name : name
 					};
+				}
+			}
+
+			/**
+			 *
+			 */
+			function findNamespaceForPrefix(qualifiedType, schema) {
+				var nsPrefix = qualifiedType.split(":")[0];
+				if (nsPrefix && schema && schema.nsMappings) {
+					return schema.nsMappings[nsPrefix];
 				}
 			}
 
@@ -824,7 +971,7 @@ define(
 				// (fh) spec says we should search for elements
 				if (!parsedName.namespace
 						|| (schema && (parsedName.namespace === schema.targetNamespace))) {
-					if (schema.elements) {
+					if (schema && schema.elements) {
 						jQuery.each(schema.elements, function() {
 							if (this.name === parsedName.name) {
 								element = this;
@@ -852,7 +999,7 @@ define(
 				// (fh) now search the type
 				if (!parsedName.namespace
 						|| (schema && (parsedName.namespace === schema.targetNamespace))) {
-					if (schema.types) {
+					if (schema && schema.types) {
 						jQuery.each(schema.types, function() {
 							if (this.name === parsedName.name) {
 								type = this;
@@ -1034,8 +1181,8 @@ define(
 					return getXsdExtraTypes();
 				},
 
-				parseQName : function(qName) {
-					return parseQName(qName);
+				parseQName : function(qName, schema) {
+					return parseQName(qName, schema);
 				},
 
 				getPrimitiveTypeLabel : function(type) {

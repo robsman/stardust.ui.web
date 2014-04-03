@@ -46,3 +46,23 @@
 .structured-type {
 	background: url("../images/icons/structured-type.png") no-repeat;
 }
+
+.structured-type-enum {
+	background: url("../images/icons/structured-type-enum.png") no-repeat;
+}
+
+.data-primitive {
+	background: url("../images/icons/data-primitive.png") no-repeat;
+}
+
+.data-structured {
+	background: url("../images/icons/data-structured.png") no-repeat;
+}
+
+.bricks {
+	background: url("../images/icons/bricks.png") no-repeat;
+}
+
+.data-document {
+	background: url("../images/icons/data-document.png") no-repeat;
+}

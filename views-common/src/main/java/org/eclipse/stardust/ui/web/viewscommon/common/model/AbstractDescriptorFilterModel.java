@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.DateRangeChangeListener;
@@ -107,6 +108,32 @@ public abstract class AbstractDescriptorFilterModel implements IDescriptorFilter
          filterValues.remove(id);
       }
    }
+   
+   /**
+    * For multi-select ENUM descriptor, Set of values are stored for dataId
+    * 
+    * @param id
+    * @param values
+    */
+   public void setFilterValues(String id, Set<Object> values)
+   {
+      for(Object value:values)
+      {
+         if ((value instanceof String) && StringUtils.isEmpty((String) value))
+         {
+            values.remove(value);
+         }
+
+         if (null == value)
+         {
+            filterValues.remove(id);
+         }
+      }
+      if(!values.isEmpty())
+      {
+         filterValues.put(id, values);   
+      }
+    }
    
    public DateRangeChangeListener getDateRangeChangeListener()
    {

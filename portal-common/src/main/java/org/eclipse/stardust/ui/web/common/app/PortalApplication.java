@@ -901,6 +901,15 @@ public class PortalApplication
    }
 
    /**
+    * 
+    */
+   public void renderActiveView()
+   {
+      String script = "parent.BridgeUtils.View.syncActiveView(true);";
+      addEventScript(script);
+   }
+   
+   /**
     * If UI is already Pinned, Restore Pin View and Focus View too
     * And then Pin UI again on Focus View with new mode
     * @param mode
@@ -939,7 +948,11 @@ public class PortalApplication
       {
          script = "parent.BridgeUtils.showAlert('Not all Views got closed successully. Cannot logout...');";
       }
-      addEventScript(script);
+      if (StringUtils.isNotEmpty(script))
+      {
+         addEventScript(script);
+      }
+      
    }
 
    /**
@@ -1087,7 +1100,7 @@ public class PortalApplication
             
             // Convention - Views having Include = htmlframeadapter.xhtml are HTML based Views
             processHTML5OpenViewCall(view, url,
-                  !view.getDefinition().getInclude().toLowerCase().equals("htmlframeadapter.xhtml"));
+                  !view.getDefinition().getInclude().toLowerCase().endsWith(".html"));
          }
          else
          {
@@ -1096,10 +1109,6 @@ public class PortalApplication
       }
       else // Comes here when view is opened from Mega Menu
       {
-         // Currently only one "Portal Configuration"
-         // TODO
-         String html5FWViewId = "/ippPortal/configurationTreeView";
-         view.getViewParams().put("html5FWViewId", html5FWViewId);
       }
    }
 
@@ -1128,12 +1137,8 @@ public class PortalApplication
       String typeId = view.getDefinition().getName();
       String id =  StringUtils.isNotEmpty(view.getViewKey()) ? view.getViewKey() : "";
 
-      // Save HTML5 FW View Id, for to be used at the time of closing
-      String html5FWViewId = "/ippPortal/configurationTreeView/" + viewId;
-      html5FWViewId = StringUtils.replace(html5FWViewId, ":type", typeId);
-      html5FWViewId = StringUtils.replace(html5FWViewId, ":id", id);
-      view.getViewParams().put("html5FWViewId", html5FWViewId);
-
+      String html5FWViewId = view.getHtml5FwViewId();
+      
       String script = "parent.BridgeUtils.View.openView('" + html5FWViewId + "', '" + viewId
             + "', {type: '_TYPE_', id: '_ID_', label: '_LABEL_', icon: '_ICON_', url: '_URL_', custom: {_CUSTOM_}});";
       script = StringUtils.replace(script, "_TYPE_", typeId);
@@ -1173,7 +1178,9 @@ public class PortalApplication
       String iconClass = deriveIconClass(view.getIcon());
 
       String popupScript;
-      String html5FWViewId = (String)view.getViewParams().get("html5FWViewId");
+      
+      String html5FWViewId = view.getHtml5FwViewId();
+      
       if (StringUtils.isNotEmpty(html5FWViewId))
       {
          popupScript = "parent.BridgeUtils.View.setIcon('" + iconClass + "', '" + html5FWViewId + "');";
@@ -1194,7 +1201,9 @@ public class PortalApplication
       String title = view.getFullLabel();
 
       String popupScript;
-      String html5FWViewId = (String)view.getViewParams().get("html5FWViewId");
+      
+      String html5FWViewId = view.getHtml5FwViewId();
+      
       if (StringUtils.isNotEmpty(html5FWViewId))
       {
          popupScript = "parent.BridgeUtils.View.setTitle('" + title + "', '" + html5FWViewId + "');";
@@ -1212,7 +1221,7 @@ public class PortalApplication
     */
    private void handleViewCloseForHTML5(View view)
    {
-      String html5FWViewId = (String)view.getViewParams().get("html5FWViewId");
+      String html5FWViewId = view.getHtml5FwViewId();
       if (StringUtils.isNotEmpty(html5FWViewId))
       {
          String script = "parent.BridgeUtils.View.closeView('" + html5FWViewId + "');";

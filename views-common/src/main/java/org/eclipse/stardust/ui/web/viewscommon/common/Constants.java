@@ -69,6 +69,9 @@ public class Constants
    public static final String PLUGIN_ROOT_FOLDER_PATH = "/plugins/";
    
    public static final String CONTEXT_PARAM_REPORTING_URI = "ag.carnot.processportal.integration.REPORTING_URL";
+   public static final String DATA_TYPE_ATTR = "carnot:engine:dataType";
+   public static final String ENUM_STRUCT_TYPE = "EnumStructType";
+   public static final String ENUM_TYPE = "Enumeration";
    
    public ActivityInstanceStates getActivityInstanceState()
    {

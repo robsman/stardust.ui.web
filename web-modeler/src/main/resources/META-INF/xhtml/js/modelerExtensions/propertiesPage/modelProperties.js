@@ -11,9 +11,11 @@
 define(
 		[ 'bpm-modeler/js/m_modelElementCommentsPropertiesPage',
 				"bpm-modeler/js/m_i18nUtils",
-				'bpm-modeler/js/m_modelConfigurationVariablesPropertiesPage', 'bpm-modeler/js/m_modelReadOnlyPropertiesPage' ],
+				'bpm-modeler/js/m_modelConfigurationVariablesPropertiesPage',
+				'bpm-modeler/js/m_modelReadOnlyPropertiesPage',
+				'bpm-modeler/js/m_modelEditLockPropertiesPage'],
 		function(m_modelElementCommentsPropertiesPage, m_i18nUtils,
-				m_modelConfigurationVariablesPropertiesPage, m_modelReadOnlyPropertiesPage) {
+				m_modelConfigurationVariablesPropertiesPage, m_modelReadOnlyPropertiesPage, m_modelEditLockPropertiesPage) {
 			return {
 				propertiesPage : [
 						{
@@ -45,6 +47,16 @@ define(
 							pageName : m_i18nUtils
 									.getProperty("modeler.propertyView.modelView.readOnlyPage.title"),
 							pageIconUrl : "plugins/bpm-modeler/images/icons/key--pencil.png"
-						}]
+						},
+            {
+              panelId : "modelView",
+              id : "editLockPropertiesPage",
+              pageHtmlUrl : "plugins/bpm-modeler/views/modeler/modelEditLockPropertiesPage.html",
+              provider : m_modelEditLockPropertiesPage,
+              visibility : "always",
+              pageName : m_i18nUtils
+                  .getProperty("modeler.propertyView.modelView.editLock.title"),
+              pageIconUrl : "plugins/bpm-modeler/images/icons/lock_edit.png"
+            }]
 			};
 		});

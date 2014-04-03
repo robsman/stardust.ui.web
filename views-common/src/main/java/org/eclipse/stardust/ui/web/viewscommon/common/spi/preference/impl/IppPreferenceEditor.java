@@ -27,7 +27,7 @@ public class IppPreferenceEditor extends IppPreferenceStore implements Preferenc
 {
    private static final long serialVersionUID = 1L;
 
-   protected IPreferenceEditor preferenceEditor;
+   protected transient IPreferenceEditor preferenceEditor;
    
    /**
     * @param preferencesEditor

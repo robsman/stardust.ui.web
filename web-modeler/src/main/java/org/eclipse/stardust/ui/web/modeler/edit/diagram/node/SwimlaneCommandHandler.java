@@ -22,6 +22,7 @@ import java.util.Iterator;
 
 import javax.annotation.Resource;
 
+import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.utils.LaneParticipantUtil;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
@@ -31,6 +32,8 @@ import org.eclipse.stardust.ui.web.modeler.edit.ModelElementEditingUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
 import org.eclipse.stardust.ui.web.modeler.edit.utils.CommandHandlerUtils;
+import org.eclipse.stardust.ui.web.modeler.service.ModelService;
+
 import org.springframework.context.ApplicationContext;
 
 import com.google.gson.JsonObject;
@@ -64,11 +67,13 @@ public class SwimlaneCommandHandler
 
       synchronized (model)
       {
-         getModelBuilderFacade().createLane(model,
+         LaneSymbol lane = getModelBuilderFacade().createLane(model,
                processDefinition, participantFullID, null, laneName, orientation, xPos, yPos,
                width, height, parentSymbol);
 
-
+         EObjectUUIDMapper mapper = modelService().uuidMapper();
+         mapper.map(lane);
+         
          PoolSymbol containingPool = parentSymbol;
 
          if (ModelerConstants.DIAGRAM_FLOW_ORIENTATION_VERTICAL.equals(orientation))
@@ -219,4 +224,8 @@ public class SwimlaneCommandHandler
       }
    }
 
+   private ModelService modelService()
+   {
+      return springContext.getBean(ModelService.class);
+   }
 }

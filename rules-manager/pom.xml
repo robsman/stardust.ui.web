@@ -1,0 +1,37 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+
+   <groupId>org.eclipse.stardust.ui.web</groupId>
+   <artifactId>rules-manager</artifactId>
+   <packaging>pom</packaging>
+
+  <parent>
+    <groupId>org.eclipse.stardust</groupId>
+    <artifactId>stardust-parent</artifactId>
+    <version>9.9.9-SNAPSHOT</version>
+    <relativePath>../../org.eclipse.stardust/org.eclipse.stardust-parent/pom.xml</relativePath>
+  </parent>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>ant-compile</id>
+          </execution>
+          <execution>
+            <id>ant-package</id>
+          </execution>
+          <execution>
+            <id>ant-install</id>
+          </execution>
+          <execution>
+            <id>ant-deploy</id>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

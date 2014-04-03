@@ -6,6 +6,7 @@
 <link rel="stylesheet" type="text/css"
 	href="plugins/bpm-modeler/css/thirdparty/jquery/jquery-ui-1.10.2.custom.css"></link>
 <link href="plugins/bpm-modeler/css/lightdust.css" rel="stylesheet" type="text/css" />
+<link href="plugins/bpm-modeler/css/bpm-modeler.custom.jquery.ui.css" rel="stylesheet" type="text/css" />
 <style>
 #typeDeclarationsTable {
 	width: 600px;
@@ -58,6 +59,24 @@ table.layoutTable tr.widget td .widget {
 					</div>
 				</td>
 			</tr>
+		</table>
+		<div id="hideGeneralProperties">
+				<div class="clplPanelHeading">
+				<img src="./plugins/common/images/panelHeader-triggerExpand.png"
+					title="Show General Properties" styleClass="headerImg"></img> 
+					<label>General Properties</label>
+			</div>
+		</div>
+		<div id="showAllProperties">
+			<div id="showGeneralProperties">
+				<div class="clplPanelHeading">
+					<img src="./plugins/common/images/panelHeader-triggerCollapse.png"
+						title="Hide General Properties" styleClass="headerImg"></img>
+						<label>General Properties</label>	
+				</div>
+			</div>
+		<table cellpadding="0" cellspacing="0" class="layoutTable"
+			style="width: 800px;">
 			<tr>
 				<td>
 					<div style="margin-bottom: 10px;">
@@ -98,9 +117,13 @@ table.layoutTable tr.widget td .widget {
 					</table>
 				</td>
 			</tr>
+		</table>
+		</div>
+		<table cellpadding="0" cellspacing="0" class="layoutTable"
+			style="width: 800px;">	
 			<tr>
 				<td>
-					<div id="propertiesTabs" style="margin-top: 10px;">
+					<div id="propertiesTabs" class="minimalTabs" style="margin-top: 10px;">
 						<ul id="propertiesTabsList">
 							<li><a href="#configurationTab"><img
 									src="plugins/bpm-modeler/images/icons/table.png"></img><span
@@ -119,16 +142,39 @@ table.layoutTable tr.widget td .widget {
 														cardinalities.</td>
 												</tr>
 												<tr id="structureKind" class="widget">
-													<td style="width: 150px;">Data structure type:</td>
+													<td style="width: 150px;"><label>Data structure type:</label></td>
 													<td class="widget">
 														<select >
 															<option class="label-struct" value="struct">Composite</option>
 															<option class="label-enum" value="enum">Enumeration</option>
 														</select>
+													<div class="widget show-when-enum">
+														<table cellpadding="0" cellspacing="0">
+															<tr>
+																<td><input id="bindJavaClassCheckbox" type="checkbox"></input></td>
+																<td><label for="bindJavaClassCheckbox" id="bindJavaClass">Bind to Java</label></td>
+																<td><input id="javaClassInput" name="javaClassInput" type="text"
+																	style="width: 120px;" ng-model="javaClassInput"
+																	ng-model-onblur ng-pattern="/([a-z][a-z_0-9]*\.)*[A-Z_]($[A-Z_]|[\w_])*/"
+																	ng-disabled="javaClassBinding == false" class="widget rightAligned">
+																	<div id="javaClassInputError"
+																		ng-show="form.javaClassInput.$error.pattern"
+																		style="color: red">Not a valid java class</div>
+																	<div id="javaClassNoInputError"
+																		ng-show="javaClassRequiredError" ng-hide="form.javaClassInput.$error.pattern"
+																		style="color: red">Java Class is mandatory</div>
+																	<div id="noEnumFoundInputError"
+																		ng-show="noEnumFoundError" ng-hide="form.javaClassInput.$error.pattern"
+																		style="color: red">No Enum values found
+																	</div>
+																</td>
+															</tr>
+														</table>
+													</div>
 													</td>
 												</tr>
 												<tr id="baseTypeSelect" class="widget show-when-struct">
-													<td style="width: 150px;">Parent Structure:</td>
+													<td style="width: 150px;"><label>Parent Structure:</label></td>
 													<td class="widget">
 														<select class="widget">
 														</select>
@@ -140,7 +186,7 @@ table.layoutTable tr.widget td .widget {
 														<input id="minLenghtInput" name="minLenghtInput" ng-model="minLength"
 															ng-model-onblur ng-pattern="/^(\+|-)?([\d]{0,9})$/"
 															type="text"
-															class="widget rightAligned" />
+															class="widget rightAligned" ng-disabled="javaClassBinding == true"/>
 														<div id="intMinLengthError"
 															ng-show="form.minLenghtInput.$error.pattern" style="color:red">Not a valid number</div>
 													</td>
@@ -151,7 +197,7 @@ table.layoutTable tr.widget td .widget {
 														<input id="maxLenghtInput" name="maxLenghtInput"
 															ng-model="maxLength" ng-model-onblur ng-pattern="/^(\+|-)?([\d]{0,9})$/"
 															type="text"
-															class="widget rightAligned" />
+															class="widget rightAligned" ng-disabled="javaClassBinding == true"/>
 														<div id="intMaxLengthError"
 															ng-show="form.maxLenghtInput.$error.pattern" style="color:red">Not a valid number</div>
 														<div id="minGreaterThanMax"
@@ -176,18 +222,18 @@ table.layoutTable tr.widget td .widget {
 																			<tr>
 																				<td><input id="addElementButton"
 																					type="image" src="plugins/bpm-modeler/images/icons/add.png"
-																					title="Add" alt="Add" class="toolbarButton" />
+																					title="Add" alt="Add" class="toolbarButton" ng-disabled="javaClassBinding == true"/>
 																				</td>
 																				<td><input id="deleteElementButton"
 																					type="image" src="plugins/bpm-modeler/images/icons/delete.png"
-																					title="Delete" alt="Delete" class="toolbarButton" />
+																					title="Delete" alt="Delete" class="toolbarButton" ng-disabled="javaClassBinding == true"/>
 																				</td>
 																				<td><img
 																					src="plugins/bpm-modeler/images/icons/toolbar-separator.png"></img>
 																				</td>
 																				<td><input id="moveElementUpButton"
 																					type="image" src="plugins/bpm-modeler/images/icons/arrow_up.png"
-																					title="Move Up" alt="Move Up" class="toolbarButton" />
+																					title="Move Up" alt="Move Up" class="toolbarButton" ng-disabled="javaClassBinding == true"/>
 																				</td>
 																				<td><img
 																					src="plugins/bpm-modeler/images/icons/toolbar-separator.png"></img>
@@ -196,7 +242,7 @@ table.layoutTable tr.widget td .widget {
 																					type="image"
 																					src="plugins/bpm-modeler/images/icons/arrow_down.png"
 																					title="Move Down" alt="Move Down"
-																					class="toolbarButton" /></td>
+																					class="toolbarButton" ng-disabled="javaClassBinding == true"/></td>
 																			</tr>
 																		</table>
 																	</div>

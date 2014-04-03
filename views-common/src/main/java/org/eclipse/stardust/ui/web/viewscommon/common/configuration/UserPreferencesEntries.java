@@ -80,6 +80,7 @@ public interface UserPreferencesEntries
    public static final String F_IMAGE_VIEWER_SELECTED_STAMP = "prefs.imageViewer.selectedStamp";
    public static final String F_IMAGE_VIEWER_ENABLE_EXTRACT_PAGES = "prefs.imageViewer.enableExtractPages";
    public static final String F_IMAGE_VIEWER_ALLOW_DELETE_FROM_ORIGINAL = "prefs.imageViewer.allowDeleteFromOriginal";
+   public static final String F_IMAGE_VIEWER_SPAWN_PROCESS_TYPE = "prefs.imageViewer.spawnProcessType";
    
    //BCC
    public static final String F_REPORTS_FAVORITE = "prefs.reports.favoriteReports";

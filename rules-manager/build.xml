@@ -1,0 +1,193 @@
+<!--
+    Copyright (c) 2011 SunGard CSA LLC and others.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+   
+    Contributors:
+       SunGard CSA LLC - initial API and implementation and/or initial documentation
+ -->
+<!--
+  To execute this build script, you have to configure your environment as follows:
+  - Java property java.home must point to an existent JAVA_HOME (either via parameter
+    (e.g. antit.bat -Djava.home=C:/Programme/Java15) or create a private.properties file
+    in the etc folder of the project and put the property in there)
+  - you need an Infinity installation or you have to execute at least the latakia build file
+-->
+
+<project name="stardust-rules-manager" default="build" basedir="." xmlns:ipp="com.infinity.bpm.ant.macros">
+
+   <property name="project.dir" value="." />
+   <property name="project.src" value="${project.dir}/src/main/java" />
+   <property name="project.resources" value="${project.dir}/src/main/resources" />
+   <property name="project.etc" value="${project.dir}/etc" />
+   <property file="${project.etc}/private.properties" />
+
+   <property name="artifactId" value="stardust-rules-manager" />
+
+   <import file="${project.dir}/../../build.tools/commons-build.xml" />
+
+   <target name="initOnDevelopment" if="setup.development">
+      <echo message="Performing a development build ..." />
+
+      <property name="javac.debuglevel" value="lines,source,vars" />
+   </target>
+
+   <target name="initOnProduction" unless="setup.development">
+      <echo message="Performing a production build ..." />
+
+      <property name="javac.debuglevel" value="lines,source,vars" />
+   </target>
+
+   <target name="init" depends="initOnDevelopment, initOnProduction">
+      <property name="build.dir" value="${project.dir}/build" />
+   </target>
+
+   <target name="clean" depends="init" description="removes all build results">
+      <delete dir="${build.dir}" />
+   </target>
+
+   <target name="initBuild" depends="init">
+      <property name="build.classes" value="${build.dir}/classes" />
+      <property name="build.lib" value="${build.dir}/lib" />
+      <property name="build.src" value="${build.dir}/src" />
+      <property name="build.src.none" location="${build.dir}/src-none" />
+
+      <property name="stardust-rules-manager.jarfile" value="${artifactId}.jar" />
+      <property name="stardust-rules-manager.jar" value="${build.lib}/${stardust-rules-manager.jarfile}" />
+      <property name="stardust-rules-manager.src-jarfile" value="${artifactId}-sources.jar" />
+      <property name="stardust-rules-manager.src-jar" value="${build.lib}/${stardust-rules-manager.src-jarfile}" />
+   </target>
+
+   <target name="initBuildDirectories" depends="initBuild">
+      <mkdir dir="${build.classes}" />
+      <mkdir dir="${build.lib}" />
+      <mkdir dir="${build.src}" />
+      <mkdir dir="${build.src.none}" />
+   </target>
+
+	<target name="initIvy">
+      <echo message="Using Ivy for dependency management." />
+      <init-ivy />
+   </target>
+
+   <target name="initClasspath" depends="initIvy">
+   	<init-ivy-classpath />
+
+      <path id="stardust-rules-manager.classpath">
+         <path refid="compile.deps" />
+      </path>
+   </target>
+   
+   <target name="prepareSources" depends="initBuildDirectories, prepareSourcesForFastBuild, prepareSourcesForSafeBuild" />
+
+   <target name="prepareSourcesForFastBuild" if="build.fast">
+      <echo message="Preparing sources for a fast but potentially unsafe build." />
+
+      <property name="build.src.static" value="${project.src}" />
+      <property name="build.src.generated" value="${build.src}" />
+   </target>
+
+   <target name="prepareSourcesForSafeBuild" unless="build.fast">
+      <echo message="Preparing sources for a safe but slow build." />
+
+      <property name="build.src.static" value="${build.src.none}" />
+      <property name="build.src.generated" value="${build.src}" />
+
+      <mkdir dir="${build.src.generated}/org/eclipse/stardust" />
+
+      <copy todir="${build.src.generated}" overwrite="true">
+         <fileset dir="${project.src}">
+            <include name="**/*.java" />
+         </fileset>
+      </copy>
+   </target>
+   
+   <target name="compile" depends="prepareSources, initClasspath" 
+      description="Compiles the project's Java classes" unless="skip.compile">
+      <!-- if build.fast property is set - only CurrentVersion class is compiled here. Otherwise all classes are compiled -->
+      <ipp:javac-java6 destdir="${build.classes}"
+         srcdir="${build.src.generated}" sourcepath="${build.src.generated}:${build.src.static}">
+         <include name="**/*.java" />
+         <classpath id="compile6.classpath">
+            <path path="${build.classes}" />
+            <path refid="stardust-rules-manager.classpath" />
+         </classpath>
+      </ipp:javac-java6>
+
+      <!-- compile all other classes if it is not done by the previous step -->
+      <ipp:javac-java6 destdir="${build.classes}"
+         srcdir="${build.src.static}" sourcepath="${build.src.generated}:${build.src.static}">
+         <classpath refid="compile6.classpath" />
+      </ipp:javac-java6>
+   </target>
+
+   <target name="jar" depends="compile">
+      <ipp:jar jarfile="${stardust-rules-manager.jar}" implementationTitle="Rules Manager">
+         <fileset dir="${build.classes}" id="fileset.xpdl.builder.jar">
+         	<include name="**/*.class" />
+         </fileset>
+         <fileset dir="${project.resources}" includes="**/*.*" />
+      </ipp:jar>
+   </target>
+
+   <target name="jar.src" depends="compile">
+      <delete file="${stardust-rules-managerr.src-jar}" />
+      <ipp:jar jarfile="${stardust-rules-manager.src-jar}" implementationTitle="Rules Manager - Sources">
+         <fileset dir="${project.src}">
+            <include name="**/*.java" />
+         </fileset>
+      </ipp:jar>
+   </target>
+   
+   <target name="build" depends="jar, jar.src" xmlns:ivy="antlib:org.apache.ivy.ant">
+      <ivy:resolve file="${project.dir}/ivy.xml" />
+      <ivy-publish-local artifactId="${artifactId}" artifactDir="${build.lib}" 
+         publishIvy="true" publishPom="true" />
+   </target>
+   
+   <target name="dist" depends="build, jar.src">
+<!--
+      <property name="stardust.dir" value="../.." />
+      <copy file="${stardust-rules-manager.jar}" todir="${stardust.dir}/ide.wst/org.eclipse.stardust.ide.wst.facet.portal/lib" />
+-->
+   </target>
+
+   <target name="deploy" depends="build,dependencies:report" />
+
+   <target name="install" if="maven.localRepository" depends="initBuild"
+      description="installs the artifacts into a local Maven repository">
+
+      <ipp:init-mvn localMavenRepository="${maven.localRepository}" />
+      <ipp:mvn-install file="${stardust-rules-manager.jar}" 
+      	pomFile="${build.lib}/${artifactId}.pom" />
+   </target>
+
+   <target name="publish" depends="initBuild"
+     description="publish artifacts into a remote Maven repository">
+
+      <ipp:init-mvn />
+      <ipp:mvn-deploy file="${stardust-rules-manager.jar}" 
+      	pomFile="${build.lib}/${artifactId}.pom" />
+   </target>
+   
+   <!-- target is invoked by stardust-engine-nls project -->
+   <target name="copy-nls-resources" 
+      description="copies the resources into a given folder">
+      <copy todir="${build.nls.dir}">
+         <fileset dir="${project.resources}">
+            <include name="**/*_de.properties"/>
+            <include name="**/*_en.properties"/>
+            <include name="**/*_zh_CN.properties"/>
+            <include name="**/*_zh_TW.properties"/>
+         </fileset>
+      </copy>
+   </target>
+
+   <target name="dependencies:report" depends="init,initIvy">
+      <property name="build.report" location="${build.dir}/report" />
+      <ivy-report ivyFile="${project.dir}/ivy.xml" outputDir="${build.report}" />
+   </target>
+
+</project>

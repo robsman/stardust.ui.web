@@ -32,7 +32,7 @@ define(
 				getModels : getModels,
 
 				getErroredModels : getErroredModels,
-
+				
 				createModel : function() {
 					return new Model();
 				},
@@ -54,7 +54,7 @@ define(
 				findTypeDeclaration : function(fullId) {
 					return findModel(stripModelId(fullId)).typeDeclarations[stripElementId(fullId)];
 				},
-
+				
 				findData : function(fullId) {
 					return findModel(stripModelId(fullId)).dataItems[stripElementId(fullId)];
 				},
@@ -218,7 +218,7 @@ define(
 
 				return ids[1];
 			}
-
+			
       function attachModel(model) {
         getModels()[model.id] = model;
       }
@@ -444,6 +444,9 @@ define(
 					if (this.attributes
 							&& this.attributes["stardust:security:hash"]) {
 						return true;
+					}
+					if (this.editLock && ("lockedByOther" === this.editLock.lockStatus)) {
+					  return true;
 					}
 
 					return false;

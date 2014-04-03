@@ -5,12 +5,36 @@
 	xmlns:c="http://java.sun.com/jstl/core">
 	<ui:component>
 		<c:if
-			test="#{(not empty validationMessageBean) and (validationMessageBean.containMessages)}">
-			<ice:panelSeries var="message"
-				value="#{validationMessageBean.messages}">
-				<h:outputText value="#{message}" style="color:red;" />
-				<ice:panelGroup styleClass="clearing" />
-			</ice:panelSeries>
+			test="#{(not empty validationMessageBean) and (validationMessageBean.containErrorMessages)}">
+			<ice:panelGroup
+				styleClass="#{validationMessageBean.styleClass!=null ? validationMessageBean.styleClass : ''}">
+				<ice:panelSeries var="message"
+					value="#{validationMessageBean.errorMessages}">
+					<ice:graphicImage
+						url="/plugins/views-common/images/icons/process-history/exception.png"
+						styleClass="messagePanelImg"
+						rendered="#{validationMessageBean.styleClass!=null}" />
+					<h:outputText value="#{message}"
+						styleClass="#{validationMessageBean.styleClass!=null ? 'messagePanelText' : 'validationMsgDlgTxt1'}" />
+					<ice:panelGroup styleClass="clearing" />
+				</ice:panelSeries>
+			</ice:panelGroup>
+		</c:if>
+		<c:if
+			test="#{(not empty validationMessageBean) and (validationMessageBean.containInfoMessages)}">
+			<ice:panelGroup
+				styleClass="#{validationMessageBean.styleClass!=null ? 'messagePanel' : ''}">
+				<ice:panelSeries var="message"
+					value="#{validationMessageBean.infoMessages}">
+					<ice:graphicImage
+						url="/plugins/views-common/images/icons/information.png"
+						rendered="#{validationMessageBean.styleClass!=null}"
+						styleClass="messagePanelImg" />
+					<h:outputText value="#{message}"
+						styleClass="#{validationMessageBean.styleClass!=null ? 'messagePanelText' : 'validationMsgDlgTxt1'}" />
+					<ice:panelGroup styleClass="clearing" />
+				</ice:panelSeries>
+			</ice:panelGroup>
 		</c:if>
 	</ui:component>
 </f:view>

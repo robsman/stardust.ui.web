@@ -93,7 +93,14 @@ public class PriorityConverter implements Converter
 
    public static String getPriorityLabel(int priorityIdent)
    {
-      return ProcessInstanceUtils.getPriorityLabel(priorityIdent);
+      try
+      {
+         return ProcessInstanceUtils.getPriorityLabel(priorityIdent);
+      }
+      catch (Exception e)
+      {
+         return String.valueOf(priorityIdent);
+      }
    }
 
    /**

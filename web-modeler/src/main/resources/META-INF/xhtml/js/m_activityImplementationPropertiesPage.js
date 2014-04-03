@@ -10,14 +10,14 @@
 
 define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
-				"bpm-modeler/js/m_extensionManager",
+				"bpm-modeler/js/m_ruleSetsHelper",
 				"bpm-modeler/js/m_command",
 				"bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_user",
 				"bpm-modeler/js/m_session", "bpm-modeler/js/m_model",
 				"bpm-modeler/js/m_dialog", "bpm-modeler/js/m_propertiesPage",
 				"bpm-modeler/js/m_activity", "bpm-modeler/js/m_i18nUtils",
 				"bpm-modeler/js/m_modelElementUtils" ],
-		function(m_utils, m_constants, m_extensionManager, m_command,
+		function(m_utils, m_constants, m_ruleSetsHelper, m_command,
 				m_commandsController, m_user, m_session, m_model, m_dialog,
 				m_propertiesPage, m_activity, m_i18nUtils, m_modelElementUtils) {
 			return {
@@ -35,7 +35,7 @@ define(
 				var propertiesPage = m_propertiesPage
 						.createPropertiesPage(propertiesPanel,
 								"implementationPropertiesPage",
-								"Implementation", // TODO I18N
+								m_i18nUtils.getProperty("modeler.propertiesPage.toolbar.implementation.title"), 
 								"plugins/bpm-modeler/images/icons/wrench.png");
 
 				m_utils.inheritFields(this, propertiesPage);
@@ -47,7 +47,7 @@ define(
 				 *
 				 */
 				ActivityImplementationPropertiesPage.prototype.initialize = function() {
-					this.heading = this.mapInputId("heading");
+					this.heading = this.mapInputId("implementationHeading");
 					this.noImplementationRow = this
 							.mapInputId("noImplementationRow");
 					this.noImplementationLabel = this
@@ -61,6 +61,7 @@ define(
 					this.heading
 							.append(m_i18nUtils
 									.getProperty("modeler.propertiesPage.activity.implementation.heading"));
+					
 					m_utils.jQuerySelect("label[for='applicationList']")
 							.text(
 									m_i18nUtils
@@ -77,6 +78,8 @@ define(
 
 						page.submitApplicationChanges();
 					});
+					
+					this.registerInputForModelElementAttributeChangeSubmission(this.ruleSetList, "ruleSetId");
 				};
 
 				/**
@@ -161,31 +164,25 @@ define(
 				 *
 				 */
 				ActivityImplementationPropertiesPage.prototype.populateRuleSetSelect = function() {
-					if (m_session.getInstance().technologyPreview) {
-						var ruleSetProviders = m_extensionManager
-								.findExtensions("ruleSetProvider");
+					this.ruleSetList.empty();
+					this.ruleSetList
+							.append("<option value='"
+									+ m_constants.TO_BE_DEFINED
+									+ "'>"
+									+ m_i18nUtils
+											.getProperty("modeler.general.toBeDefined")
+									+ "</option>");
 
-						this.ruleSetList
-								.append("<option value='"
-										+ m_constants.TO_BE_DEFINED
-										+ "'>"
-										+ m_i18nUtils
-												.getProperty("modeler.general.toBeDefined")
-										+ "</option>");
-
-						for ( var n = 0; n < ruleSetProviders.length; n++) {
-							var ruleSetProvider = ruleSetProviders[n].provider
-									.create();
-							var ruleSets = ruleSetProvider.getRuleSets();
-
-							this.ruleSetList.empty();
-
-							for ( var i in ruleSets) {
+					var ruleSets = m_ruleSetsHelper.getRuleSets();
+					
+					if (ruleSets) {
+						for ( var i in ruleSets) {
+							if (ruleSets[i].state.isDeleted != true) {
 								this.ruleSetList.append("<option value='"
-										+ ruleSets[i].uuid + "'>"
+										+ ruleSets[i].id + "'>"
 										+ ruleSets[i].name + "</option>");
 							}
-						}
+						}	
 					}
 				};
 
@@ -235,6 +232,8 @@ define(
 					m_dialog.makeInvisible(this.applicationRow);
 					m_dialog.makeVisible(this.ruleSetRow);
 
+					this.ruleSetList.val(this.getModelElement().attributes["ruleSetId"]);
+					
 					// if (ruleSetUuid != null) {
 					// this.ruleSetList.val(ruleSetUuid);
 					// } else {
@@ -254,6 +253,19 @@ define(
 										applicationFullId : this.applicationList
 												.val() == m_constants.TO_BE_DEFINED ? null
 												: this.applicationList.val()
+									}
+								});
+					}
+				};
+
+				/**
+				 *
+				 */
+				ActivityImplementationPropertiesPage.prototype.submitRuleSetChanges = function() {
+					if (this.propertiesPanel.element.modelElement.ruleSetUuid != this.ruleSetList.val()) {
+						this.submitChanges({
+									modelElement : {
+										ruleSetUuid : this.ruleSetList.val() == m_constants.TO_BE_DEFINED ? null : this.ruleSetList.val()
 									}
 								});
 					}
@@ -282,6 +294,10 @@ define(
 				 *
 				 */
 				ActivityImplementationPropertiesPage.prototype.validate = function() {
+					if (this.getModelElement().taskType === "rule") {
+						return true;
+					}
+					
 					return this.validateCircularModelReference(this.applicationList);
 				};
 			}

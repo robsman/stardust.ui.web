@@ -5,10 +5,13 @@ define(
 				"bpm-modeler/js/m_accessPoint",
 				"bpm-modeler/js/m_typeDeclaration",
 				"bpm-modeler/js/m_parameterDefinitionsPanel",
-				"bpm-modeler/js/m_codeEditorAce" ],
+				"bpm-modeler/js/m_codeEditorAce",
+				"bpm-modeler/js/m_parsingUtils",
+				"bpm-modeler/js/m_autoCompleters"],
 		function(m_utils, m_constants, m_commandsController, m_command,
 				m_model, m_accessPoint, m_typeDeclaration,
-				m_parameterDefinitionsPanel, m_codeEditorAce) {
+				m_parameterDefinitionsPanel, m_codeEditorAce,
+				m_parsingUtils,m_autoCompleters) {
 			return {
 				create : function(view) {
 					var overlay = new RulesIntegrationOverlay();
@@ -27,6 +30,7 @@ define(
 				 *
 				 */
 				RulesIntegrationOverlay.prototype.initialize = function(view) {
+					var that=this;
 					this.view = view;
 
 					this.view.insertPropertiesTab("rulesIntegrationOverlay",
@@ -41,9 +45,16 @@ define(
 					
 					this.editorAnchor = m_utils.jQuerySelect("#ruleSetEditorDiv").get(0);
 					this.editorAnchor.id = "ruleSetEditorDiv" + Math.floor((Math.random()*100000) + 1);
-					this.ruleSetEditor = m_codeEditorAce
-							.getDrlEditor(this.editorAnchor.id);
-
+					this.ruleSetEditor = m_codeEditorAce.getDrlEditor(this.editorAnchor.id);
+					$(this.ruleSetEditor).on("moduleLoaded",function(event,module){
+						var sessionCompleter;
+						if(module.name==="ace/ext/language_tools"){
+							sessionCompleter=m_autoCompleters.getSessionCompleter();
+							that.ruleSetEditor.addCompleter(sessionCompleter);
+						}
+					});
+					this.ruleSetEditor.loadLanguageTools();
+					
 					var self = this;
 
 					// TODO
@@ -282,11 +293,24 @@ define(
 				 *
 				 */
 				RulesIntegrationOverlay.prototype.update = function() {
+					var paramDefLength,
+						completerStrings=[],
+						pDef;
+					
 					this.parameterDefinitionsPanel.setScopeModel(this
 							.getScopeModel());
 					this.parameterDefinitionsPanel
 							.setParameterDefinitions(this.getApplication().contexts.application.accessPoints);
-
+					
+					/*compute a list of keyword strings for our code editor session to leverage for 
+					 *autocompletion capability against our active parameterDefintions.*/
+					paramDefLength=this.parameterDefinitionsPanel.parameterDefinitions.length;
+					while(paramDefLength--){
+							pDef=this.parameterDefinitionsPanel.parameterDefinitions[paramDefLength];
+							completerStrings=completerStrings.concat(m_parsingUtils.parseParamDefToStringFrags(pDef));
+					}
+					this.ruleSetEditor.setSessionData("$keywordList",completerStrings);
+					
 					var drl = this.createTypeDeclarationsDrl();
 
 					this.typeDeclarationsTextarea.val(drl);

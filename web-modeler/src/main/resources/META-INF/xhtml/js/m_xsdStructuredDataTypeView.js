@@ -25,7 +25,9 @@ define(
 				initialize : function(fullId) {
 					m_utils.initializeWaitCursor(m_utils.jQuerySelect("html"));
 					m_utils.showWaitCursor();
-
+					
+					m_utils.jQuerySelect("#hideGeneralProperties").hide();
+					initViewCollapseClickHandlers();
 					var view = new XsdStructuredDataTypeView();
 
 					// TODO Unregister!
@@ -38,6 +40,20 @@ define(
 				}
 			};
 
+			/**
+			 * 
+			 */
+			function initViewCollapseClickHandlers() {
+				m_utils.jQuerySelect("#showGeneralProperties").click(function() {
+					m_utils.jQuerySelect("#showAllProperties").hide();
+					m_utils.jQuerySelect("#hideGeneralProperties").show();
+				});
+				m_utils.jQuerySelect("#hideGeneralProperties").click(function() {
+					m_utils.jQuerySelect("#showAllProperties").show();
+					m_utils.jQuerySelect("#hideGeneralProperties").hide();
+				});
+			}
+			
 			/**
 			 *
 			 */
@@ -71,12 +87,14 @@ define(
 					this.visibilitySelect = m_utils.jQuerySelect("#publicVisibilityCheckbox");
 					this.structureKindSelect = m_utils.jQuerySelect("#structureKind select");
 					this.baseTypeSelect = m_utils.jQuerySelect("#baseTypeSelect select");
+					this.bindToJavaSelect = m_utils.jQuerySelect("#bindJavaClassCheckbox");
+					this.bindJavaClassEdit = m_utils.jQuerySelect("#javaClassInput");
 					this.minimumLengthEdit = m_utils.jQuerySelect("#minLenghtInput");
 					this.maximumLengthEdit = m_utils.jQuerySelect("#maxLenghtInput");
 					this.focusAttr = {};
 
 					var view = this;
-
+					
 					this.visibilitySelect.change(function(event) {
 						var currentVisibility = view.typeDeclaration.attributes["carnot:engine:visibility"];
 						var newVisibility = m_utils.jQuerySelect(event.target).is(":checked") ? "Public" : "Private";
@@ -124,7 +142,61 @@ define(
 										});
 							});
 
+					
+					this.bindToJavaSelect.change(function(event) {
+						var removeTypeDeclaration = false;
+						var bindJavaClass = m_utils.jQuerySelect(event.target).is(":checked");
+						if (bindJavaClass) {
+							view.typeDeclaration.removeEnumTable(); //clear the min,max lenght and ENUM table
+							removeTypeDeclaration =true; //flag to submit the removed table
+						}
+						m_angularContextUtils.runInAngularContext(function($scope) {
+							if (bindJavaClass) {
+								$scope.javaClassBinding = true; //Flag to show/hide other facets
+								$scope.javaClassRequiredError = true; //Error message to enter java class path
+							}else{
+								$scope.javaClassRequiredError = false;
+								$scope.javaClassBinding = false;
+							}
+							$scope.noEnumFoundError = false; // Valid on server roundtrip, not on pageLoad
+						}, m_utils.jQuerySelect("#configurationTab").get(0));
+						
+						if(removeTypeDeclaration){
+							view.submitChanges({
+								typeDeclaration : view.typeDeclaration.typeDeclaration
+							});
+						}else{
+							view.submitChanges({
+								attributes : {
+									"carnot:engine:className" : null
+								}
+							});
+						}
+					});
+					
 					var self = this;
+					
+					m_angularContextUtils.runInAngularContext(function($scope) {
+						$scope.$watch("javaClassInput", function(newValue, oldValue) {
+							if (newValue !== oldValue && $scope.form.javaClassInput.$valid) {
+								if (newValue == "" || newValue == undefined) {
+									$scope.javaClassInput = undefined;
+									$scope.javaClassRequiredError = true; // For empty java class, show error
+									$scope.noEnumFoundError = false;
+								}else{
+									$scope.javaClassRequiredError = false;
+									$scope.noEnumFoundError = false;
+									self.submitChanges({
+										typeDeclaration : self.typeDeclaration.typeDeclaration,
+										attributes : {
+											"carnot:engine:className" : $scope.javaClassInput
+										}
+									});
+								}
+							}
+						});
+					}, m_utils.jQuerySelect("#configurationTab").get(0));
+						
 					m_angularContextUtils.runInAngularContext(function($scope) {
 						$scope.$watch("minLength", function(newValue, oldValue) {
 							if (newValue !== oldValue && $scope.form.minLenghtInput.$valid) {
@@ -290,8 +362,10 @@ define(
 					var baseTypeDeclaration = null;
 
 					if (typeDeclaration
-							&& "enumStructuredDataType" !== typeDeclaration.getType()) {
-						if (typeDeclaration.getTypeDeclaration()
+							&& "enumStructuredDataType" !== typeDeclaration.getType()
+							&& !typeDeclaration.isComplexTypeWithSimpleContent()) {
+						if (typeDeclaration.isSequence()
+								&& typeDeclaration.getTypeDeclaration()
 								&& typeDeclaration.getTypeDeclaration().base) {
 							baseTypeDeclaration = this
 									.resolveBaseType(typeDeclaration);
@@ -369,11 +443,33 @@ define(
 				};
 
 				XsdStructuredDataTypeView.prototype.internationalizeStaticData = function() {
+					
+					m_utils.jQuerySelect("label[for='bindJavaClassCheckbox']")
+						.text(m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.bindToJava"));
+					
+					m_utils.jQuerySelect("tr#minimumLength td:eq(0)")
+						.text(m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.enumeration.minLength"));
+					
+					m_utils.jQuerySelect("tr#maximumLength td:eq(0)")
+						.text(m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.enumeration.maxLength"));			
+					
+					m_utils.jQuerySelect("#fieldPropertiesTableDiv th#property")
+						.text(m_i18nUtils.getProperty("modeler.element.properties.commonProperties.property"));
+					
+					m_utils.jQuerySelect("#fieldPropertiesTableDiv th#propertyVal")
+						.text(m_i18nUtils.getProperty("modeler.processDefinition.propertyPages.value"));
+
+					m_utils.jQuerySelect("#hideGeneralProperties label")
+						.text(m_i18nUtils.getProperty("modeler.element.properties.commonProperties.generalProperties"));
+			
+					m_utils.jQuerySelect("#showGeneralProperties label")
+						.text(m_i18nUtils.getProperty("modeler.element.properties.commonProperties.generalProperties"));
+				
 					m_utils.jQuerySelect("#publicVisibility")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.commonProperties.publicVisibility"));
-					m_utils.jQuerySelect("tr#structureKind td.label")
+					m_utils.jQuerySelect("tr#structureKind > td > label")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.model.propertyView.structuredTypes.dataStructureType")
@@ -402,7 +498,7 @@ define(
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.model.propertyView.structuredTypes.enumeration.minGreaterThanMaxError"));
-					m_utils.jQuerySelect("tr#baseTypeSelect td.label")
+					m_utils.jQuerySelect("tr#baseTypeSelect > td > label")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.model.propertyView.structuredTypes.parentType") + ":");
@@ -422,7 +518,9 @@ define(
 //							$scope.minLength = self.typeDeclaration.getTypeDeclaration().minLength;
 //							$scope.maxLength = self.typeDeclaration.getTypeDeclaration().maxLength;
 							var facets = self.typeDeclaration.getFacets();
-							if (facets) {
+							// reset the java class binding for ENUM
+							$scope.noEnumFoundError = false;
+							if (facets && !jQuery.isEmptyObject(facets)) {
 								var minVal;
 								var maxVal;
 								for (var i in facets) {
@@ -435,6 +533,13 @@ define(
 								}
 								$scope.minLength = minVal;
 								$scope.maxLength = maxVal;
+							} else {
+								if($scope.javaClassBinding == true && $scope.javaClassRequiredError == false){
+									//On server roundtrip , for valid java class provided , show No-enum msg
+									$scope.noEnumFoundError = true;
+								}else{
+									$scope.noEnumFoundError = false;
+								}
 							}
 						}
 					}, m_utils.jQuerySelect("#configurationTab").get(0));
@@ -478,7 +583,23 @@ define(
 					this.visibilitySelect.prop("checked", (!this.typeDeclaration.attributes["carnot:engine:visibility"]
 																|| "Public" === this.typeDeclaration.attributes["carnot:engine:visibility"]));
 					this.structureKindSelect.val(this.typeDeclaration.isSequence() ? "struct" : "enum");
-
+					
+					this.bindJavaClassEdit.val(this.typeDeclaration.attributes["carnot:engine:className"]);
+					
+					if(!this.bindToJavaSelect.prop("checked")){
+						this.bindToJavaSelect.prop("checked",this.typeDeclaration.attributes["carnot:engine:className"] != undefined);	
+					}
+					
+					view=this;
+					m_angularContextUtils.runInAngularContext(function($scope) {
+						if (view.bindToJavaSelect.prop("checked")) {
+							$scope.javaClassBinding = true;
+						} else {
+							$scope.javaClassBinding = false; //reset java bindling flag.
+							$scope.javaClassRequiredError = false; //reset javaClassRequiredflag, as javaBinding is false
+						}
+					}, m_utils.jQuerySelect("#configurationTab").get(0));
+					
 					this.clearErrorMessages();
 					this.setBaseType(this.typeDeclaration);
 
@@ -633,35 +754,62 @@ define(
 					var propertyName = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.inputText.new");
 					elementName = elementName.replace("New", propertyName);
 					var nameColumn = m_utils.jQuerySelect("<td class='elementCell'></td>").appendTo(row);
-					if ( !this.typeDeclaration.isExternalReference() && !element.inherited) {
+					if (this.isRowEditable(element)) {
 						nameColumn.append("<span class='data-element'><input class='nameInput' type='text' value='" + elementName + "'/></span>");
 					} else {
-						nameColumn.append("<span class='data-element'>" + element.name + "</span>");
+						nameColumn.append("<span class='data-element'></span>");
+						nameColumn.children("td span").text(element.name);
 					}
 
 					var typeColumn = m_utils.jQuerySelect("<td class='typeCell'></td>").appendTo(row);
 					if (this.typeDeclaration.isSequence()) {
 
-						if ( !this.typeDeclaration.isExternalReference() && !element.inherited) {
+						if (this.isRowEditable(element)) {
 							typeColumn.append(this.getTypeSelectList(schemaType, element));
 						} else {
-							typeColumn.append(m_structuredTypeBrowser.getSchemaTypeLabel(schemaType ? schemaType.name : (element.type ? element.type : "")));
+							var type = schemaType ? schemaType.name : (element.type ? element.type : "");
+							if (!type) {
+								if (element.primitiveType && !element.attributes) {
+									type = m_structuredTypeBrowser.getSchemaTypeLabel(element.primitiveType);
+								} else {
+									// Assumes that this is an element of anonymous type
+									// and sets the element name as its type
+									type = element.name;
+								}
+							}
+							typeColumn.append(m_structuredTypeBrowser.getSchemaTypeLabel(type));
 						}
 					}
 
 					var cardinalityColumn = m_utils.jQuerySelect("<td class='cardinalityCell'></td>").appendTo(row);
 					if (this.typeDeclaration.isSequence()) {
-						if ( !this.typeDeclaration.isExternalReference() && !element.inherited) {
+						if (this.isRowEditable(element)) {
 							var cardinalityBox = m_utils.jQuerySelect("<select size='1' class='cardinalitySelect'></select>");
 							jQuery.each(["required", "optional", "many", "atLeastOne"], function(i, key) {
 								cardinalityBox.append("<option value='" + key + "'" + (element.cardinality === key ? "selected" : "") + ">" + m_structuredTypeBrowser.getCardinalityLabel(key) + "</option>");
 							});
 							cardinalityColumn.append(cardinalityBox);
 						} else {
-							cardinalityColumn.append(m_structuredTypeBrowser.getCardinalityLabel(element.cardinality));
+							if (element.classifier === "attribute") {
+								// Cardinality not displayed for attributes
+								cardinalityColumn.append(element.cardinality);
+							} else {
+								cardinalityColumn.append(m_structuredTypeBrowser.getCardinalityLabel(element.cardinality));
+							}
 						}
 					}
 				};
+				
+				/**
+				 * 
+				 */
+				XsdStructuredDataTypeView.prototype.isRowEditable = function(element) {
+					if ( !this.typeDeclaration.isExternalReference() && !element.inherited && (element.classifier !== "attribute")) {
+						return true;
+					}
+					
+					return false;
+				}
 
 				XsdStructuredDataTypeView.prototype.refreshElementsTable = function() {
 					var selectedRowIndex = m_utils.jQuerySelect("table#typeDeclarationsTable tr.selected").first().index();
@@ -683,9 +831,17 @@ define(
 						var parentPath = parentRow.data("path");
 						var schemaType = parentRow.data("schemaType");
 						var childRows = m_structuredTypeBrowser.generateChildElementRows(parentPath, schemaType);
+						
+						var attributes = parentRow.data("attributes");
+						if (attributes) {
+							var attributeRows = m_structuredTypeBrowser.generateChildElementRows(parentPath, attributes);
+							m_utils.insertArrayAt(childRows, attributeRows, 0);
+						}
 
 						parentRow.appendTo(view.tableBody);
-
+						if(view.bindToJavaSelect.prop("checked")){
+							m_utils.jQuerySelect("table#typeDeclarationsTable *").attr("disabled","disabled");
+						}
 						jQuery.each(childRows, function(i, childRow) {
 							childRow.addClass("child-of-" + parentPath);
 							if (parentRow.hasClass("locked")) {
@@ -866,7 +1022,7 @@ define(
 				 *
 				 */
 				XsdStructuredDataTypeView.prototype.getTypeSelectList = function(schemaType, element) {
-					var select = "<select size='1' class='typeSelect'>";
+					var select = "<select size='1' class='typeSelect' style='width: 90%;'>";
 					var selected = false;
 
 					select += "<optgroup label='" + m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.element.selectTypeSection.primitives") + "'>";

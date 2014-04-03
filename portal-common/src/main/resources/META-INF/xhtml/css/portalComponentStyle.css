@@ -11,6 +11,33 @@
 {
 }
 
+.messagePanel {
+	font-family: Arial, sans-serif;
+	font-size: 11px;
+	height:20px;
+	background-color: #FFD966;
+	border: 1px solid #CCCCCC;
+}
+
+.messagePanel .messagePanelText {
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 11px;
+	height: 18px;
+	padding-left: 5px;
+	margin-left:5px;
+	vertical-align:top;
+}
+
+.messagePanel .messagePanelImg {
+	padding-left: 15px;
+	padding-bottom:2px;
+}
+
+/* Default style for Validation msg txt */
+.validationMsgDlgTxt1 {
+	color:red;
+}
+
 .genericTableToolbar
 {
 	cell-padding: 0;
@@ -128,6 +155,13 @@
 	color: blue !important;
 	font-weight: normal;
 }	
+
+.iceMsgImageInfo {
+	padding-left: 16px !important;
+	padding-bottom: 1px;
+	margin-left: 5px;
+	background: url('../images/icons/information.png') no-repeat 0; 
+}
 
 .breadCrumbTitle
 {

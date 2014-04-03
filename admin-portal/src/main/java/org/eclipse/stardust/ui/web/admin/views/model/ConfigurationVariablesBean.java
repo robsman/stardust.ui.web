@@ -143,7 +143,8 @@ public class ConfigurationVariablesBean extends UIComponentBean
       {
          AdministrationService administrationService = SessionContext.findSessionContext().getServiceFactory()
                .getAdministrationService();
-         preferenceVariables = administrationService.getConfigurationVariables(variables.getModelId());
+         // Retrieving config variable(String type) and password type
+         preferenceVariables = administrationService.getConfigurationVariables(variables.getModelId(), true);
       }
       List<ConfigurationVariable> vars=variables.getConfigurationVariables();
       
@@ -368,7 +369,8 @@ public class ConfigurationVariablesBean extends UIComponentBean
 
             for (String id : idSet)
             {
-               ConfigurationVariables confVariables = administrationService.getConfigurationVariables(id);
+               // Retrieving config variable(String type) and password type
+               ConfigurationVariables confVariables = administrationService.getConfigurationVariables(id, true);
 
                // add model only if ConfigurationVariables present for model id
                if (!confVariables.getConfigurationVariables().isEmpty())
@@ -413,6 +415,8 @@ public class ConfigurationVariablesBean extends UIComponentBean
       ColumnPreference colValue = new ColumnPreference("Value", "value", this.getMessages().getString("column.value"),
             ResourcePaths.V_MODEL_CONFIGURATION_VIEW_COLUMNS, true, false);
 
+      ColumnPreference colType = new ColumnPreference("Type", "type", ColumnDataType.STRING, this.getMessages()
+            .getString("column.type"));
       // if (hideDefaultValue)
       // {
       // colValue.setColumnDataFilterPopup(new TableDataFilterPopup(new
@@ -425,11 +429,12 @@ public class ConfigurationVariablesBean extends UIComponentBean
       cols.add(colName);
       cols.add(colValue);
       cols.add(colDescription);
+      cols.add(colType);
 
       if (!isHideDefaultValue())
       {
-         ColumnPreference colDefaultValue = new ColumnPreference("Default Value", "defaultValue",
-               ColumnDataType.STRING, this.getMessages().getString("column.defaultValue"));
+         ColumnPreference colDefaultValue = new ColumnPreference("Default Value", "defaultValue", this.getMessages()
+               .getString("column.defaultValue"), ResourcePaths.V_MODEL_CONFIGURATION_VIEW_COLUMNS, true, false);
          cols.add(3, colDefaultValue);
       }
 

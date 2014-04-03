@@ -11,6 +11,7 @@
 package org.eclipse.stardust.ui.web.viewscommon.views.document.tiff.extract;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
@@ -39,8 +40,8 @@ public class ExtractPageTableEntry extends DefaultRowModel
    private final MessagesViewsCommonBean COMMON_MESSAGE_BEAN = MessagesViewsCommonBean.getInstance();
 
    private boolean select;
-   private int pageTo;
-   private int pageFrom;
+   private Set<Integer> pages;
+   private String pageRange;
    private String spawnProcessName;
    private String spawnProcessFQID;
    private String docTypeId;
@@ -49,7 +50,8 @@ public class ExtractPageTableEntry extends DefaultRowModel
    private boolean copyImageData = true;
    private boolean copyProcessData = true;
    private String docDecription;
-   private String versionComment;   
+   private String versionComment;
+   private String processType;
    private List<SelectItem> dataItems;
    private List<SelectItem> docTypeItems;
    private byte[] content;
@@ -58,12 +60,14 @@ public class ExtractPageTableEntry extends DefaultRowModel
 
    /**
     * 
-    * @param defaultProcessFQID
     * @param sourceDocId
+    * @param defaultProcessFQID
     * @param copyProcessData
+    * @param sourceProcessInstance
+    * @param processType
     */
    public ExtractPageTableEntry(final String sourceDocId, final String defaultProcessFQID,
-         final boolean copyProcessData, final ProcessInstance sourceProcessInstance)
+         final boolean copyProcessData, final ProcessInstance sourceProcessInstance, String processType)
    {
       this.copyProcessData = copyProcessData;
       spawnProcessFQID = defaultProcessFQID;
@@ -71,22 +75,24 @@ public class ExtractPageTableEntry extends DefaultRowModel
       this.docId = sourceDocId;
       versionComment = COMMON_MESSAGE_BEAN.getParamString("views.extractPageDialog.targetDocumentVersion.comment",
             sourceDocId);
+      this.processType = processType;
    }
 
    /**
     * 
     * @param sourceDocId
-    * @param copyProcessData
     * @param defaultProcessFQID
-    * @param pageFrom
-    * @param pageTo
+    * @param copyProcessData
+    * @param pages
+    * @param pageRange
+    * @param sourceProcessInstance
     */
-   public ExtractPageTableEntry(String sourceDocId, String defaultProcessFQID, boolean copyProcessData, int pageFrom,
-         int pageTo, final ProcessInstance sourceProcessInstance)
+   public ExtractPageTableEntry(String sourceDocId, String defaultProcessFQID, boolean copyProcessData,
+         Set<Integer> pages, String pageRange, final ProcessInstance sourceProcessInstance, String processType)
    {
-      this(sourceDocId, defaultProcessFQID, copyProcessData, sourceProcessInstance);
-      this.pageFrom = pageFrom;
-      this.pageTo = pageTo;
+      this(sourceDocId, defaultProcessFQID, copyProcessData, sourceProcessInstance, processType);
+      this.pages = pages;
+      this.pageRange = pageRange;
    }
 
    public PrintDocumentAnnotationsImpl getDocMetadata()
@@ -144,6 +150,16 @@ public class ExtractPageTableEntry extends DefaultRowModel
       this.docId = docId;
    }
 
+   public String getProcessType()
+   {
+      return processType;
+   }
+
+   public void setProcessType(String processType)
+   {
+      this.processType = processType;
+   }
+
    public DeployedModel getModel()
    {
       DeployedModel model = null;
@@ -170,24 +186,24 @@ public class ExtractPageTableEntry extends DefaultRowModel
       return StringUtils.isNotEmpty(dataId);
    }
 
-   public int getPageTo()
+   public Set<Integer> getPages()
    {
-      return pageTo;
+      return pages;
    }
 
-   public void setPageTo(int pageTo)
+   public void setPages(Set<Integer> pages)
    {
-      this.pageTo = pageTo;
+      this.pages = pages;
    }
 
-   public int getPageFrom()
+   public String getPageRange()
    {
-      return pageFrom;
+      return pageRange;
    }
 
-   public void setPageFrom(int pageFrom)
+   public void setPageRange(String pageRange)
    {
-      this.pageFrom = pageFrom;
+      this.pageRange = pageRange;
    }
 
    public String getDocTypeId()

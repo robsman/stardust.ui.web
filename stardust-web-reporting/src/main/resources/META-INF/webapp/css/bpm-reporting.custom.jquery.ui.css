@@ -1,0 +1,56 @@
+/* Tabs */
+.minimalTabs {
+	background: transparent;
+	border: none;
+}
+
+.minimalTabs.ui-widget-content {
+	background: transparent;
+	border: none;
+}
+
+.minimalTabs .ui-widget-header {
+	background: transparent;
+	border: none;
+	border-bottom: 1px solid #c0c0c0;
+	-moz-border-radius: 0px;
+	-webkit-border-radius: 0px;
+	border-radius: 0px;
+}
+
+.minimalTabs .ui-tabs-nav .ui-state-default {
+	background: transparent;
+	border: none;
+}
+
+.minimalTabs .ui-tabs-nav .ui-state-active {
+	background: transparent url(./images/tabs-arrow.png) no-repeat bottom
+		center;
+	border: none;
+}
+
+.minimalTabs .ui-tabs-nav .ui-state-default a {
+	color: #c0c0c0;
+}
+
+.minimalTabs .ui-tabs-nav .ui-state-active a {
+	color: #9d2127;
+	border: none;
+}
+
+.minimalTabs .ui-tabs-nav .ui-state-focus a {
+	color: #9d2127;
+	border: none;
+}
+
+.minimalTabs a {
+	border: none;
+}
+
+.minimalTabs a:ACTIVE {
+	border: none;
+}
+
+.minimalTabs a:FOCUS {
+	border: none;
+}

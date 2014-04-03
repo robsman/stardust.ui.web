@@ -29,6 +29,7 @@ import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
  */
 public class FileSystemJCRDocument extends FileSystemDocument
 {
+   private static final long serialVersionUID = -2445220516541697610L;
    private static final Logger trace = LogManager.getLogger(FileSystemJCRDocument.class);
    private String jcrParentFolder;
 
@@ -50,6 +51,18 @@ public class FileSystemJCRDocument extends FileSystemDocument
       this.showDetails = true;
    }
 
+   public FileSystemJCRDocument(
+         FileSystemDocumentAttributes fileSystemDocumentAttributes,
+         String jcrParentFolder, String description, String comments)
+   {
+      super(fileSystemDocumentAttributes);
+      this.jcrParentFolder = jcrParentFolder;
+      this.description = description;
+      this.comments = comments;
+      this.metaDataEditable = true;
+      this.showDetails = true;
+   }
+   
    /**
     * contentBytes are ignored.
     * Reads content from File and creates/saves file in JCR and returns JCRDocument
@@ -126,5 +139,10 @@ public class FileSystemJCRDocument extends FileSystemDocument
                   "views.documentView.createError", file.getName()));
          }
       }
+   }
+
+   public void setJcrParentFolder(String jcrParentFolder)
+   {
+      this.jcrParentFolder = jcrParentFolder;
    }
 }

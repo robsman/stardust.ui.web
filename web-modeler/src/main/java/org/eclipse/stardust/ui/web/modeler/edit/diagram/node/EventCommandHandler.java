@@ -30,6 +30,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
+import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.utils.LaneParticipantUtil;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
@@ -40,6 +41,7 @@ import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
 import org.eclipse.stardust.ui.web.modeler.marshaling.EventMarshallingUtils;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
+import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 import org.springframework.context.ApplicationContext;
 
 import com.google.gson.JsonObject;
@@ -142,6 +144,7 @@ public class EventCommandHandler
    private <T extends AbstractEventSymbol> T updateAndAddSymbol(LaneSymbol parentLaneSymbol,
          JsonObject request, T symbol)
    {
+      EObjectUUIDMapper mapper = modelService().uuidMapper();
       // TODO - Pass correct x,y co-ordinates rather than adjustment at server
       symbol.setXPos(extractInt(request, X_PROPERTY)
             - parentLaneSymbol.getXPos());
@@ -150,9 +153,10 @@ public class EventCommandHandler
       symbol.setWidth(extractInt(request, WIDTH_PROPERTY));
       symbol.setHeight(extractInt(request, HEIGHT_PROPERTY));
       
+      mapper.map(symbol);
       addSymbol(ModelUtils.findContainingProcess(parentLaneSymbol).getDiagram().get(0), symbol);
       addSymbol(parentLaneSymbol, symbol);
-
+      
       return symbol;
    }
 
@@ -306,5 +310,10 @@ public class EventCommandHandler
       XmlTextNode type = transition.getExpression();
       String expression = type == null ? null : ModelUtils.getCDataString(transition.getExpression().getMixed());
       return expression;
+   }
+   
+   private ModelService modelService()
+   {
+      return springContext.getBean(ModelService.class);
    }
 }

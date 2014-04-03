@@ -16,6 +16,7 @@
 			<ref bean="webModelerResourceBean" />
 			<ref bean="webModelerSessionRestControllerBean" />
 			<ref bean="webModelingUiExtensionsControllerBean" />
+            <ref bean="webModelerRecordingsRestController" />
 		</jaxrs:serviceBeans>
 	</jaxrs:server>
 
@@ -25,5 +26,7 @@
 		class="org.eclipse.stardust.ui.web.modeler.service.rest.ModelerSessionRestController" />
 	<bean id="webModelingUiExtensionsControllerBean"
 		class="org.eclipse.stardust.ui.web.modeler.service.rest.ModelingUiExtensionsController" />
+   <bean id="webModelerRecordingsRestController"
+      class="org.eclipse.stardust.ui.web.modeler.service.rest.ModelerRecordingsRestController" />
 
 </beans>

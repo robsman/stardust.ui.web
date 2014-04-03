@@ -171,9 +171,16 @@ public class WorklistsTreeUserObject extends IceUserObject
          Integer count = 0;
          while (childObjects.hasMoreElements())
          {
-            count = count
-                  + Integer.valueOf(((WorklistsTreeUserObject) childObjects.nextElement().getUserObject())
-                        .getActivityCount());
+            String activityCnt = ((WorklistsTreeUserObject) childObjects.nextElement().getUserObject())
+                  .getActivityCount();
+            try
+            {
+               count = count + Integer.valueOf(activityCnt);
+            }
+            catch (NumberFormatException e)
+            {
+               return activityCnt;
+            }
          }
          return count.toString();
       }

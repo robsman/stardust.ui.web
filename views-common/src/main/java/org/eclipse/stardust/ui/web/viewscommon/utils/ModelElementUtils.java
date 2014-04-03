@@ -161,4 +161,31 @@ public class ModelElementUtils
       }
       return null;
    }
+   
+   /**
+    * REST friendly method - No use of FacesContext or SessionContext
+    * @param model
+    * @return
+    */
+   public static String getBundleName(Model model)
+   {
+      try
+      {
+         String baseName = null;
+         if(model != null)
+         {
+            baseName = (String) model.getAttribute(CARNOT_MODEL_RESOURCE_BUNDLE);
+            if(StringUtils.isEmpty(baseName))
+            {
+               baseName = DEFAULT_BUNDLE_PREFIX + model.getId();
+            }
+         }
+         return baseName;
+      }
+      catch(Exception e)
+      {
+         
+      }
+      return null;
+   }
 }

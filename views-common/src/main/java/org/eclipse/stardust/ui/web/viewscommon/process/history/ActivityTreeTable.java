@@ -18,19 +18,24 @@ import javax.faces.component.UICommand;
 import javax.faces.event.ActionEvent;
 import javax.swing.tree.DefaultTreeModel;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
+import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
 import org.eclipse.stardust.ui.web.common.filter.ITableDataFilterOnOff;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterOnOff;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
+import org.eclipse.stardust.ui.web.common.table.export.DataTableExportHandler;
+import org.eclipse.stardust.ui.web.common.table.export.ExportType;
 import org.eclipse.stardust.ui.web.common.treetable.NodeUserObject;
 import org.eclipse.stardust.ui.web.common.treetable.TreeTable;
 import org.eclipse.stardust.ui.web.common.treetable.TreeTableBean;
 import org.eclipse.stardust.ui.web.common.treetable.TreeTableNode;
+import org.eclipse.stardust.ui.web.common.treetable.TreeTableUserObject;
 import org.eclipse.stardust.ui.web.viewscommon.common.FilterToolbarItem;
 import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.AbortActivityBean;
@@ -220,6 +225,7 @@ public class ActivityTreeTable implements TreeTableBean,ICallbackHandler
          model = new DefaultTreeModel(activityRootNode);
          treeTable = new TreeTable(model, activityUIBuilder.getActivityColumnFilterPopup(), activityUIBuilder
                .getOnOffFilters());
+         treeTable.setDataTableExportHandler(new ActivityTreeTableExportHandler());
          treeTable.setHideRootNode(true);
          treeTable.setAutoFilter(false);
          activityRootNode.getUserObject().setTreeTable(treeTable);
@@ -353,6 +359,56 @@ public class ActivityTreeTable implements TreeTableBean,ICallbackHandler
       this.caseProcess = caseProcess;
    }
    
-   
+   /**
+    * @author Sidharth.Singh
+    * 
+    */
+   private class ActivityTreeTableExportHandler implements DataTableExportHandler<TreeTableUserObject>
+   {
+       /*
+       * (non-Javadoc)
+       * 
+       * @see org.eclipse.stardust.ui.web.common.table.export.DataTableExportHandler#
+       * handleHeaderCellExport
+       * (org.eclipse.stardust.ui.web.common.table.export.DataTableExportHandler.ExportType,
+       * org.eclipse.stardust.ui.web.common.column.ColumnPreference, java.lang.String)
+       */
+      public String handleHeaderCellExport(ExportType exportType, ColumnPreference column, String text)
+      {
+         return text;
+      }
+      
+      /*
+       * (non-Javadoc)
+       * 
+       * @see
+       * org.eclipse.stardust.ui.web.common.table.export.DataTableExportHandler#handleCellExport
+       * (org.eclipse.stardust.ui.web.common.table.export.ExportType,
+       * org.eclipse.stardust.ui.web.common.column.ColumnPreference, java.lang.Object,
+       * java.lang.Object)
+       */
+      public Object handleCellExport(ExportType exportType, ColumnPreference column, TreeTableUserObject row,
+            Object value)
+      {
+         ActivityTableEntryUserObject thisRow = ((ActivityTableEntryUserObject) row);
+         if ("Event Details".equals(column.getColumnName()))
+         {
+            if(StringUtils.isNotEmpty(thisRow.getFullDetails()))
+            {
+               return thisRow.getFullDetails();
+            }
+            else
+            {
+               return value;
+            }
+         }
+         else
+         {
+            return value;
+         }
+            
+      }
+
+   }
 
 }

@@ -18,6 +18,7 @@ import javax.annotation.Resource;
 
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
+import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.*;
@@ -48,6 +49,7 @@ public class GatewayCommandHandler
 
       synchronized (model)
       {
+         EObjectUUIDMapper mapper = modelService().uuidMapper();
          // encode Gateway as Route Activity (default configuration)
          String name = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY, ModelerConstants.NAME_PROPERTY);
          if(StringUtils.isEmpty(name))
@@ -59,7 +61,7 @@ public class GatewayCommandHandler
                .withIdAndName(null, name)
                .usingControlFlow(JoinSplitType.XOR_LITERAL, JoinSplitType.XOR_LITERAL).build();
          gateway.setName(""); //$NON-NLS-1$
-         
+         mapper.map(gateway);
          // add gateway to model
          processDefinition.getActivity().add(gateway);
 
@@ -69,7 +71,7 @@ public class GatewayCommandHandler
 
          // create node symbol
          ActivitySymbolType gatewaySymbol = AbstractElementBuilder.F_CWM.createActivitySymbolType();
-
+         mapper.map(gatewaySymbol);
          // connect symbol with model element
          gatewaySymbol.setActivity(gateway);
 

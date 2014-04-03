@@ -37,7 +37,7 @@
       <conf name="jsf-myfaces-module-runtime" description="JSF API and Implementation Classes - MyFaces - Runtime Scope" />
       
       <conf name="compile" extends="ipp-portal-common-compile, ipp-portal-common-provided" visibility="private" description="IPP Portal Common" />
-   
+
       <conf name="test" visibility="private" description="Test dependencies" />
 
       <!-- compound configurations which encapsulates the above mentioned configs -->
@@ -139,7 +139,7 @@
          <exclude org="commons-el" module="commons-el"/>
          <exclude org="commons-collections" module="commons-collections"/>
          <exclude org="commons-logging" module="commons-logging"/>
-      </dependency>      
+      </dependency>
       <dependency org="commons-logging" name="commons-logging" rev="${commons-logging.version}" conf="ipp-portal-base-lib-module-runtime->default"/>
       <dependency org="commons-beanutils" name="commons-beanutils" rev="${commons-beanutils.version}" conf="ipp-portal-base-lib-module-runtime->default"/>
       <dependency org="commons-collections" name="commons-collections" rev="${commons-collections.version}" conf="ipp-portal-base-lib-module-runtime->default"/>
@@ -174,7 +174,7 @@
       <dependency org="commons-discovery" name="commons-discovery" rev="${commons-discovery.version}" conf="ipp-portal-base-lib-module-runtime->default">
          <exclude org="commons-logging" module="commons-logging"/>
       </dependency>
-      
+
       <dependency org="com.sun.media" name="jai_imageio" rev="${jai_imageio.version}" conf="ipp-portal-base-lib-module-runtime->default">
          <exclude org="javax.media" module="jai_core" />
       </dependency>

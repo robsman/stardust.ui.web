@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?><!--
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
     Copyright (c) 2011 SunGard CSA LLC and others.
     All rights reserved. This program and the accompanying materials
     are made available under the terms of the Eclipse Public License v1.0
@@ -102,33 +103,121 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 	   	<ippui:view name="userManagerDetailView" include="/plugins/business-control-center/views/userManagerDetailView.xhtml" controller="userManagerDetail"
 	   		identityParams="userOid" />
 	   	
-		<ippui:view name="processOverviewView" include="/plugins/business-control-center/views/processOverviewView.xhtml" controller="businessProcessManager">	   		<ippui:preferences>				<ippui:preferencePage name="icon"					include="/plugins/views-common/images/icons/process_manager.png" />			</ippui:preferences>	   	</ippui:view>
-				   	<ippui:view name="processSearchView" include="/plugins/business-control-center/views/processSearchView.xhtml" controller="processSearchBean">
+		<ippui:view name="processOverviewView" include="/plugins/business-control-center/views/processOverviewView.xhtml" controller="businessProcessManager">
+	   		<ippui:preferences>
+				<ippui:preferencePage name="icon"
+					include="/plugins/views-common/images/icons/process_manager.png" />
+			</ippui:preferences>
+	   	</ippui:view>
+			
+	   	<ippui:view name="processSearchView" include="/plugins/business-control-center/views/processSearchView.xhtml" controller="processSearchBean">
 			<ippui:preferences>
 				<ippui:preferencePage name="icon"
 					include="/plugins/views-common/images/icons/cog_search.png" />
 			</ippui:preferences>
 	    </ippui:view>
 	   	
-		<ippui:view name="pendingActivities" include="/plugins/business-control-center/views/pendingActivities.xhtml" controller="openActivitiesBean">	   		<ippui:preferences>				<ippui:preferencePage name="icon"					include="/plugins/views-common/images/icons/pending_activities.png" />			</ippui:preferences>	   	</ippui:view>
-		<ippui:view name="completedActivities" include="/plugins/business-control-center/views/completedActivities.xhtml" controller="completedActivitiesBean">	   		<ippui:preferences>				<ippui:preferencePage name="icon"					include="/plugins/views-common/images/icons/process-history/activity_completed.png" />			</ippui:preferences>	   	</ippui:view>
-		<ippui:view name="postponedActivities" include="/plugins/business-control-center/views/postponedActivities.xhtml" controller="postponedActivities">	   		<ippui:preferences>				<ippui:preferencePage name="icon"					include="/plugins/views-common/images/icons/activity_postponed.png" />			</ippui:preferences>	   	</ippui:view>
-		<ippui:view name="strandedActivities" include="/plugins/business-control-center/views/strandedActivitiesView.xhtml" controller="strandedActivitiesBean">	   		<ippui:preferences>				<ippui:preferencePage name="icon"					include="/plugins/views-common/images/icons/activity_stranded.png" />			</ippui:preferences>	   	</ippui:view>
+		<ippui:view name="pendingActivities" include="/plugins/business-control-center/views/pendingActivities.xhtml" controller="openActivitiesBean">
+	   		<ippui:preferences>
+				<ippui:preferencePage name="icon"
+					include="/plugins/views-common/images/icons/pending_activities.png" />
+			</ippui:preferences>
+	   	</ippui:view>
+		<ippui:view name="completedActivities" include="/plugins/business-control-center/views/completedActivities.xhtml" controller="completedActivitiesBean">
+	   		<ippui:preferences>
+				<ippui:preferencePage name="icon"
+					include="/plugins/views-common/images/icons/process-history/activity_completed.png" />
+			</ippui:preferences>
+	   	</ippui:view>
+		<ippui:view name="postponedActivities" include="/plugins/business-control-center/views/postponedActivities.xhtml" controller="postponedActivities">
+	   		<ippui:preferences>
+				<ippui:preferencePage name="icon"
+					include="/plugins/views-common/images/icons/activity_postponed.png" />
+			</ippui:preferences>
+	   	</ippui:view>
+		<ippui:view name="strandedActivities" include="/plugins/business-control-center/views/strandedActivitiesView.xhtml" controller="strandedActivitiesBean">
+	   		<ippui:preferences>
+				<ippui:preferencePage name="icon"
+					include="/plugins/views-common/images/icons/activity_stranded.png" />
+			</ippui:preferences>
+	   	</ippui:view>
 	   	
-		<ippui:view name="resourceAvailabilityView" include="/plugins/business-control-center/views/resourceAvailabilityView.xhtml"  controller="processResourceMgmtBean">	   		<ippui:preferences>				<ippui:preferencePage name="icon"					include="/plugins/views-common/images/icons/group.png" />			</ippui:preferences>	   	</ippui:view>
-		<ippui:view name="roleAssignmentView" include="/plugins/business-control-center/views/roleAssignmentView.xhtml" controller="roleAssignment" >	   		<ippui:preferences>				<ippui:preferencePage name="icon"					include="/plugins/views-common/images/icons/role.png" />			</ippui:preferences>	   	</ippui:view>
-		<ippui:view name="resourceLoginView" include="/plugins/business-control-center/views/resourceLoginView.xhtml" controller="resourceLogin">	   		<ippui:preferences>				<ippui:preferencePage name="icon"					include="/plugins/views-common/images/icons/group_key.png" />			</ippui:preferences>	   	</ippui:view>
-			   	<ippui:view name="resourcePerformance" include="/plugins/business-control-center/views/resourcePerformance.xhtml" controller="resourcePerformance">	   		<ippui:preferences>				<ippui:preferencePage name="icon"					include="/plugins/views-common/images/icons/chart-up.png" />			</ippui:preferences>	   	</ippui:view>
-		<ippui:view name="performanceTeamleader" include="/plugins/business-control-center/views/performanceTeamleader.xhtml" controller="performanceTeamleader" >	   		<ippui:preferences>				<ippui:preferencePage name="icon"					include="/plugins/views-common/images/icons/chart-up-color.png" />			</ippui:preferences>	   	</ippui:view>
+		<ippui:view name="resourceAvailabilityView" include="/plugins/business-control-center/views/resourceAvailabilityView.xhtml"  controller="processResourceMgmtBean">
+	   		<ippui:preferences>
+				<ippui:preferencePage name="icon"
+					include="/plugins/views-common/images/icons/group.png" />
+			</ippui:preferences>
+	   	</ippui:view>
+		<ippui:view name="roleAssignmentView" include="/plugins/business-control-center/views/roleAssignmentView.xhtml" controller="roleAssignment" >
+	   		<ippui:preferences>
+				<ippui:preferencePage name="icon"
+					include="/plugins/views-common/images/icons/role.png" />
+			</ippui:preferences>
+	   	</ippui:view>
+		<ippui:view name="resourceLoginView" include="/plugins/business-control-center/views/resourceLoginView.xhtml" controller="resourceLogin">
+	   		<ippui:preferences>
+				<ippui:preferencePage name="icon"
+					include="/plugins/views-common/images/icons/group_key.png" />
+			</ippui:preferences>
+	   	</ippui:view>
+		
+	   	<ippui:view name="resourcePerformance" include="/plugins/business-control-center/views/resourcePerformance.xhtml" controller="resourcePerformance">
+	   		<ippui:preferences>
+				<ippui:preferencePage name="icon"
+					include="/plugins/views-common/images/icons/chart-up.png" />
+			</ippui:preferences>
+	   	</ippui:view>
+	   	
+		<ippui:view name="performanceTeamleader" include="/plugins/business-control-center/views/performanceTeamleader.xhtml" controller="performanceTeamleader" >
+	   		<ippui:preferences>
+				<ippui:preferencePage name="icon"
+					include="/plugins/views-common/images/icons/chart-up-color.png" />
+			</ippui:preferences>
+	   	</ippui:view>
 	   	
 		<ippui:view name="trafficLightView" include="/plugins/business-control-center/views/trafficLightView.xhtml" controller="trafficLightViewManagerBean">
 			<ippui:preferences>
 				<ippui:preferencePage name="configuration"
-					include="/plugins/business-control-center/views/trafficLightViewConfigPanel.xhtml" />				<ippui:preferencePage name="icon"					include="/plugins/views-common/images/icons/traffic_light.png" />
+					include="/plugins/business-control-center/views/trafficLightViewConfigPanel.xhtml" />
+				<ippui:preferencePage name="icon"
+					include="/plugins/views-common/images/icons/traffic_light.png" />
 			</ippui:preferences>
 		</ippui:view>
-				<ippui:view name="costs" include="/plugins/business-control-center/views/costs.xhtml" controller="costsBean">			<ippui:preferences>				<ippui:preferencePage name="icon"					include="/plugins/views-common/images/icons/money-coin.png" />			</ippui:preferences>		</ippui:view>
+		
+		<ippui:view name="costs" include="/plugins/business-control-center/views/costs.xhtml" controller="costsBean">
+			<ippui:preferences>
+				<ippui:preferencePage name="icon"
+					include="/plugins/views-common/images/icons/money-coin.png" />
+			</ippui:preferences>
+		</ippui:view>
 
-		<ippui:view name="activityCriticalityManagerView" include="/plugins/business-control-center/views/activityCriticalityManagerView.xhtml" controller="activityCriticalityManagerBean" >	   		<ippui:preferences>				<ippui:preferencePage name="icon"					include="/plugins/views-common/images/icons/criticality_manager.png" />			</ippui:preferences>	   	</ippui:view>		<ippui:view name="ganttChartView"			include="/plugins/business-control-center/views/ganttChartView.xhtml"			controller="ganttChartSelectionBean" identityParams="processInstanceOId">			<ippui:preferences>				<ippui:preferencePage name="configuration"				include="/plugins/business-control-center/views/ganttChartConfigurationDialog.xhtml" />			</ippui:preferences>		</ippui:view>		<ippui:view name="processDiagramView"			include="/plugins/business-control-center/views/processDiagramView.xhtml"			controller="ippBCCDiagramBean" identityParams="processInstanceOId" />		<ippui:view name="deputyTeamMemberView"			include="/plugins/business-control-center/views/deputyTeamMemberView.xhtml"			controller="deputyTeamMemberBean">			<ippui:preferences>				<ippui:preferencePage name="icon"					include="/plugins/views-common/images/icons/user-silhouette.png" />			</ippui:preferences>		</ippui:view>
+		<ippui:view name="activityCriticalityManagerView" include="/plugins/business-control-center/views/activityCriticalityManagerView.xhtml" controller="activityCriticalityManagerBean" >
+	   		<ippui:preferences>
+				<ippui:preferencePage name="icon"
+					include="/plugins/views-common/images/icons/criticality_manager.png" />
+			</ippui:preferences>
+	   	</ippui:view>
+
+		<ippui:view name="ganttChartView"
+			include="/plugins/business-control-center/views/ganttChartView.xhtml"
+			controller="ganttChartSelectionBean" identityParams="processInstanceOId">
+			<ippui:preferences>
+				<ippui:preferencePage name="configuration"
+				include="/plugins/business-control-center/views/ganttChartConfigurationDialog.xhtml" />
+			</ippui:preferences>
+		</ippui:view>
+
+		<ippui:view name="processDiagramView"
+			include="/plugins/business-control-center/views/processDiagramView.xhtml"
+			controller="ippBCCDiagramBean" identityParams="processInstanceOId" />
+
+		<ippui:view name="deputyTeamMemberView"
+			include="/plugins/business-control-center/views/deputyTeamMemberView.xhtml"
+			controller="deputyTeamMemberBean">
+			<ippui:preferences>
+				<ippui:preferencePage name="icon"
+					include="/plugins/views-common/images/icons/user-silhouette.png" />
+			</ippui:preferences>
+		</ippui:view>
    </ippui:perspective>
 </beans>

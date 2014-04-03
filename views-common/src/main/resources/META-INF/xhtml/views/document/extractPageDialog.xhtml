@@ -28,10 +28,8 @@
 						renderSouth="true" renderWest="false" renderCenter="true">
 						<f:facet name="center">
 							<ice:panelGroup>
-							
-							<ice:panelGroup styleClass="msgError">
+							<ice:panelGroup>
 								<ice:inputHidden id="extractPageMsg" />
-								<ice:messages rendered="#{!extractPageDialogBean.validationMessageBean.containMessages}"/>
 								<ui:include
 									src="/plugins/views-common/common/validationMessage.xhtml">
 									<ui:param name="validationMessageBean"

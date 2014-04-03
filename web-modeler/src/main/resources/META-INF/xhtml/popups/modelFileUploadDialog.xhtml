@@ -44,7 +44,7 @@
 									actionListener="#{modelFileUploadDialog.uploadFile}"
 									progressListener="#{modelFileUploadDialog.measureProgress}"
 									submitOnUpload="preUpload"
-									label="Upload">
+									label="#{common_msgPropsBean['common.upload']}">
 								</ice:inputFile>
 							</ice:panelGroup>
 							<ice:panelGroup styleClass="msgError">
@@ -68,15 +68,13 @@
 								</ice:panelGroup>
 								<ice:panelGroup>
 									<ice:outputText
-										value="#{bpmModelerMessages['uploadmodelfile.message.uploadFileName']}" />
-									<ice:panelGroup />
+										value="#{bpmModelerMessages['uploadmodelfile.message.uploadFileName']} #{modelFileUploadDialog.uploadedFileName}" />									
 									<ice:outputText
 										value="#{bpmModelerMessages['uploadmodelfile.message.exists']}" />
 									<ice:panelGroup styleClass="clearing" />
 									<ice:panelGroup styleClass="clearing" />
 									<ice:outputText
-										value="#{bpmModelerMessages['uploadmodelfile.message.continue']}" />
-									<ice:panelGroup />
+										value="#{bpmModelerMessages['uploadmodelfile.message.continue']}" />									
 									<ice:outputText
 										value="#{bpmModelerMessages['uploadmodelfile.message.existingProcessModel']}" />
 									<ice:panelGroup styleClass="clearing" />
@@ -91,17 +89,17 @@
 					<ice:panelGroup>
 						<ice:panelGroup rendered="#{modelFileUploadDialog.uploadMode}">
 							<ice:commandButton
-								value="Close"
+								value="#{common_msgPropsBean['common.close']}"
 								action="#{modelFileUploadDialog.closePopup}" immediate="true"
 								styleClass="button secondary" />
 						</ice:panelGroup>
 						<ice:panelGroup rendered="#{!modelFileUploadDialog.uploadMode}">
 							<ice:commandButton
-								value="Continue"
+								value="#{common_msgPropsBean['common.continue']}"
 								actionListener="#{modelFileUploadDialog.createNewVersion}"
 								styleClass="button secondary" />
 							<ice:commandButton
-								value="Cancel"
+								value="#{common_msgPropsBean['common.cancel']}"
 								action="#{modelFileUploadDialog.closePopup}" immediate="true"
 								styleClass="button secondary" />
 						</ice:panelGroup>

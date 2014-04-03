@@ -17,37 +17,16 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.StringReader;
-import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Map;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
-import java.util.Scanner;
-import java.util.StringTokenizer;
+import java.util.*;
 
-import javax.servlet.ServletContext;
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.HEAD;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.*;
+import javax.ws.rs.core.*;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
 import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -56,11 +35,9 @@ import com.google.gson.JsonPrimitive;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.engine.core.interactions.Interaction;
-import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
-import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.modeler.common.LanguageUtil;
+import org.eclipse.stardust.ui.web.modeler.edit.MissingWritePermissionException;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
 import org.eclipse.stardust.ui.web.modeler.service.ClientModelManagementStrategy;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
@@ -71,9 +48,14 @@ public class ModelerResource
 {
    private static final Logger trace = LogManager.getLogger(ModelerResource.class);
 
-   private final JsonMarshaller jsonIo = new JsonMarshaller();
+   @Resource
+   private JsonMarshaller jsonIo;
 
+   @Resource
    private ModelService modelService;
+
+   @Resource
+   private ApplicationContext springContext;
 
    // TODO static because of issues with session binding
    private static JsonObject interactionDataObject;
@@ -86,21 +68,6 @@ public class ModelerResource
    private String sessionId;
 
    private long id = System.currentTimeMillis();
-
-   @Context
-   private ServletContext servletContext;
-
-   public ModelService getModelService()
-   {
-      ApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(servletContext);
-
-      return (ModelService) context.getBean("modelService");
-   }
-
-   public void setModelService(ModelService modelService)
-   {
-      this.modelService = modelService;
-   }
 
    private synchronized String getNextId()
    {
@@ -145,7 +112,7 @@ public class ModelerResource
    {
       try
       {
-         return Response.ok(getModelService().getPreferences().toString(),
+         return Response.ok(modelService.getPreferences().toString(),
                MediaType.APPLICATION_JSON_TYPE).build();
       }
       catch (Exception e)
@@ -166,7 +133,7 @@ public class ModelerResource
       {
          // TODO - currently always forces a reload - getAllModels(true)
          // we may need to make it conditional
-         String result = getModelService().getAllModels(reload);
+         String result = modelService.getAllModels(reload);
          return Response.ok(result, MediaType.APPLICATION_JSON_TYPE).build();
       }
       catch (Exception e)
@@ -182,16 +149,19 @@ public class ModelerResource
    @Path("models/{modelId}/download")
    public Response downloadModel(@PathParam("modelId") String modelId)
    {
-      byte[] docStream = getModelService().getModelFile(modelId);
+      byte[] docStream = modelService.getModelFile(modelId);
 
+      String fileName = modelId;
+      if (!fileName.endsWith(".xpdl"))
+      {
+         fileName = fileName + ".xpdl";
+      }
+      
       return Response.ok(docStream, MediaType.APPLICATION_OCTET_STREAM)
-            .header(
-                  "content-disposition",
-                  "attachment; filename = \""
-                        + getModelService().getModelFileName(modelId) + "\"")
+            .header("content-disposition", "attachment; filename = \"" + fileName + "\"")
             .build();
    }
-
+   
    /**
     * Used to push models loaded on the client (e.g. from Orion) into a server-side cache.
     * Switches the model management strategy to <code>clientModelManagementStrategy</code>
@@ -211,12 +181,13 @@ public class ModelerResource
       {
          // Ensures that the Model Management Strategy is clientModelManagementStrategy
 
-         ClientModelManagementStrategy modelManagementStrategy = getClientModelManagementStrategy();
+         ClientModelManagementStrategy modelManagementStrategy = (ClientModelManagementStrategy) springContext
+               .getBean("clientModelManagementStrategy");
 
          JsonObject modelDescriptorJson = modelManagementStrategy.addModelFile(fileName,
                postedData);
 
-         getModelService().setModelManagementStrategy(modelManagementStrategy);
+         modelService.setModelManagementStrategy(modelManagementStrategy);
 
          return Response.ok(modelDescriptorJson.toString(), APPLICATION_JSON_TYPE)
                .build();
@@ -285,7 +256,7 @@ public class ModelerResource
    {
       try
       {
-         String result = getModelService().loadProcessDiagram(modelId, processId);
+         String result = modelService.loadProcessDiagram(modelId, processId);
          return Response.ok(result, MediaType.APPLICATION_JSON_TYPE).build();
       }
       catch (Exception e)
@@ -296,66 +267,22 @@ public class ModelerResource
       }
    }
 
-   @POST
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
-   @Path("models/{modelId}/processes/{processId}/diagrams/{diagramId}")
-   public Response updateDiagram(@PathParam("modelId") String modelId,
-         @PathParam("processId") String processId,
-         @PathParam("diagramId") String diagramId, String postedData)
-   {
-      try
-      {
-         JsonObject json = jsonIo.readJsonObject(postedData);
-
-         String result = getModelService().updateProcessDiagram(modelId, processId,
-               diagramId, json);
-         return Response.ok(result, APPLICATION_JSON_TYPE).build();
-      }
-      catch (Exception e)
-      {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
-         throw new RuntimeException(e);
-      }
-   }
-
-   @POST
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
-   @Path("models/{modelId}/processes/{processId}/activities/{activityId}/rename")
-   public Response renameActivity(@PathParam("modelId") String modelId,
-         @PathParam("processId") String processId,
-         @PathParam("activityId") String activityId, String postedData)
-   {
-      try
-      {
-         JsonObject json = jsonIo.readJsonObject(postedData);
-
-         String result = getModelService().renameActivity(modelId, processId, activityId,
-               json);
-
-         return Response.ok(result, APPLICATION_JSON_TYPE).build();
-      }
-      catch (Exception e)
-      {
-         e.printStackTrace();
-
-         throw new RuntimeException(e);
-      }
-   }
-
    @GET
    @Path("models/{modelId}")
    public Response saveModel(@PathParam("modelId") String modelId)
    {
       try
       {
-         getModelService().saveModel(modelId);
+         modelService.saveModel(modelId);
 
          ResponseBuilder response = Response.ok("Saved");
 
          return response.build();
+      }
+      catch (MissingWritePermissionException mwpe)
+      {
+         return Response.status(Status.CONFLICT)
+               .entity("Missing write permission: " + mwpe.getMessage()).build();
       }
       catch (Exception e)
       {
@@ -372,7 +299,7 @@ public class ModelerResource
    {
       try
       {
-         String result = getModelService().getLoggedInUser(servletContext);
+         String result = modelService.getLoggedInUser();
          return Response.ok(result, APPLICATION_JSON_TYPE).build();
       }
       catch (Exception e)
@@ -394,7 +321,7 @@ public class ModelerResource
          String sessionID = userJson.getAsJsonObject("oldObject")
                .get("sessionId")
                .getAsString();
-         String result = getModelService().getSessionOwner(sessionID);
+         String result = modelService.getSessionOwner(sessionID);
          return Response.ok(result, APPLICATION_JSON_TYPE).build();
       }
       catch (Exception e)
@@ -413,7 +340,7 @@ public class ModelerResource
       try
       {
          JsonObject userJson = jsonIo.readJsonObject(postedData);
-         String result = getModelService().getAllProspects(
+         String result = modelService.getAllProspects(
                userJson.getAsJsonObject("oldObject").get("account").getAsString());
          return Response.ok(result, APPLICATION_JSON_TYPE).build();
       }
@@ -434,7 +361,7 @@ public class ModelerResource
       {
          JsonObject userJson = new JsonMarshaller().readJsonObject(postedData);
          // utlity methode gson utils
-         String result = getModelService().getAllCollaborators(
+         String result = modelService.getAllCollaborators(
                userJson.getAsJsonObject("oldObject").get("account").getAsString());
 
          return Response.ok(result, APPLICATION_JSON_TYPE).build();
@@ -453,36 +380,19 @@ public class ModelerResource
    {
       try
       {
-         getModelService().saveAllModels();
+         modelService.saveAllModels();
 
          ResponseBuilder response = Response.ok("Saved");
 
          return response.build();
       }
-      catch (Exception e)
+      catch (MissingWritePermissionException mwpe)
       {
-         e.printStackTrace();
-         throw new RuntimeException(e);
-      }
-   }
-
-   @DELETE
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
-   @Path("models/{modelId}/processes/{processId}/dataSymbols")
-   public Response dropDataSymbol(@PathParam("modelId") String modelId,
-         @PathParam("processId") String processId, String postedData)
-   {
-      try
-      {
-         JsonObject json = jsonIo.readJsonObject(postedData);
-
-         String result = getModelService().dropDataSymbol(modelId, processId, json);
-         return Response.ok(result, APPLICATION_JSON_TYPE).build();
+         return Response.status(Status.CONFLICT)
+               .entity("Missing write permission: " + mwpe.getMessage()).build();
       }
       catch (Exception e)
       {
-         // TODO Auto-generated catch block
          e.printStackTrace();
          throw new RuntimeException(e);
       }
@@ -508,7 +418,7 @@ public class ModelerResource
       try
       {
          return Response.ok(
-               getModelService().getXsdStructure(jsonIo.readJsonObject(postedData))
+               modelService.getXsdStructure(jsonIo.readJsonObject(postedData))
                      .toString(), APPLICATION_JSON_TYPE).build();
       }
       catch (Exception e)
@@ -528,53 +438,13 @@ public class ModelerResource
       try
       {
          return Response.ok(
-               getModelService().retrieveEmbeddedExternalWebApplicationMarkup(modelId,
+               modelService.retrieveEmbeddedExternalWebApplicationMarkup(modelId,
                      applicationId), MediaType.TEXT_HTML_TYPE).build();
       }
       catch (Exception e)
       {
          e.printStackTrace();
 
-         throw new RuntimeException(e);
-      }
-   }
-
-   @POST
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
-   @Path("models/{id}/processes/createWrapperProcess")
-   public Response createWrapperProcess(@PathParam("id") String modelId, String postedData)
-   {
-      try
-      {
-         getModelService().createWrapperProcess(modelId,
-               jsonIo.readJsonObject(postedData));
-         return Response.ok("", APPLICATION_JSON_TYPE).build();
-      }
-      catch (Exception e)
-      {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
-         throw new RuntimeException(e);
-      }
-   }
-
-   @POST
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
-   @Path("models/{id}/processes/createProcessInterfaceTestWrapperProcess")
-   public Response createProcessInterfaceTestWrapperProcess(@PathParam("id") String modelId, String postedData)
-   {
-      try
-      {
-         getModelService().createProcessInterfaceTestWrapperProcess(modelId,
-               jsonIo.readJsonObject(postedData));
-         return Response.ok("", APPLICATION_JSON_TYPE).build();
-      }
-      catch (Exception e)
-      {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
          throw new RuntimeException(e);
       }
    }
@@ -586,7 +456,7 @@ public class ModelerResource
    {
       try
       {
-         return Response.ok(getModelService().validateModel(modelId).toString(),
+         return Response.ok(modelService.validateModel(modelId).toString(),
                APPLICATION_JSON_TYPE).build();
       }
       catch (Exception e)
@@ -605,56 +475,7 @@ public class ModelerResource
       try
       {
          return Response.ok(
-               getModelService().getConfigurationVariables(modelId).toString(),
-               APPLICATION_JSON_TYPE).build();
-      }
-      catch (Exception e)
-      {
-         e.printStackTrace();
-
-         throw new RuntimeException(e);
-      }
-   }
-
-   @POST
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
-   @Path("models/{modelId}/configurationVariables/{variableName}")
-   public Response updateConfigurationVariable(@PathParam("modelId") String modelId,
-         String postedData)
-   {
-      try
-      {
-         return Response.ok(
-               getModelService().updateConfigurationVariable(modelId,
-                     jsonIo.readJsonObject(postedData)).toString(), APPLICATION_JSON_TYPE)
-               .build();
-      }
-      catch (Exception e)
-      {
-         e.printStackTrace();
-
-         throw new RuntimeException(e);
-      }
-   }
-
-   @DELETE
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
-   @Path("models/{modelId}/configurationVariables/{variableName}")
-   public Response deleteConfigurationVariable(@PathParam("modelId") String modelId,
-         @PathParam("variableName") String variableName, String postedData)
-   {
-      try
-      {
-         System.out.println("Delete parameter: " + postedData);
-
-         variableName = URLDecoder.decode(variableName);
-         JsonObject json = jsonIo.readJsonObject(postedData);
-         getModelService().deleteConfigurationVariable(modelId, variableName, json);
-
-         return Response.ok(
-               getModelService().getConfigurationVariables(modelId).toString(),
+               modelService.getConfigurationVariables(modelId).toString(),
                APPLICATION_JSON_TYPE).build();
       }
       catch (Exception e)
@@ -852,7 +673,7 @@ public class ModelerResource
       try
       {
          return Response.ok(
-               getModelService().getWebServiceStructure(jsonIo.readJsonObject(postedData))
+               modelService.getWebServiceStructure(jsonIo.readJsonObject(postedData))
                      .toString(), APPLICATION_JSON_TYPE)
                .build();
       }
@@ -1335,15 +1156,5 @@ public class ModelerResource
 
          return Response.serverError().build();
       }
-   }
-
-   /**
-    * @return
-    */
-   private ClientModelManagementStrategy getClientModelManagementStrategy()
-   {
-      ApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(servletContext);
-
-      return (ClientModelManagementStrategy) context.getBean("clientModelManagementStrategy");
    }
 }

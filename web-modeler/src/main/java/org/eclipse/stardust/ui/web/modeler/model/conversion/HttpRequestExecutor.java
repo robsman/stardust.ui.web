@@ -3,6 +3,7 @@ package org.eclipse.stardust.ui.web.modeler.model.conversion;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -10,8 +11,6 @@ import javax.ws.rs.core.Response.Status;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
-import org.eclipse.stardust.common.error.PublicException;
 
 public class HttpRequestExecutor extends RequestExecutor
 {
@@ -122,9 +121,7 @@ public class HttpRequestExecutor extends RequestExecutor
       }
       else
       {
-         throw new PublicException("Failed applying change: "
-               + new JsonParser().parse(new InputStreamReader((InputStream) createModelResponse
-                     .getEntity())).getAsString());
+         throw new WebApplicationException(createModelResponse);
       }
    }
 }

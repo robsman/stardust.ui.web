@@ -26,6 +26,7 @@
     <module>portal-persistence-jpa</module>
     <module>end-user-doc</module>
     <module>stardust-web-reporting</module>
+    <module>rules-manager</module>
   </modules>
 
 </project>

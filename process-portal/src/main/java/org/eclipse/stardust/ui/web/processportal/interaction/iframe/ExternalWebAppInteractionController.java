@@ -14,6 +14,7 @@ import static org.eclipse.stardust.ui.web.processportal.interaction.iframe.Ifram
 
 import javax.faces.context.FacesContext;
 
+import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
 import org.eclipse.stardust.ui.web.processportal.view.ViewEventAwareInteractionController;
@@ -72,6 +73,7 @@ public class ExternalWebAppInteractionController
       {
       case TO_BE_ACTIVATED:
          String uri = providePanelUri(activityInstance);
+         uri = StringUtils.replace(uri, "\'", "\\\'");
 
          eventScript = "InfinityBpm.ProcessPortal.createOrActivateContentFrame('"
                + getContentFrameId(activityInstance) + "', '" + uri + "');";

@@ -78,7 +78,7 @@ define(
 				var symbol = m_symbol.createSymbol();
 
 				m_utils.inheritFields(this, symbol);
-				m_utils.inheritMethods(DataSymbol.prototype, symbol);
+				var _super = m_utils.inheritMethods(DataSymbol.prototype, symbol, {selected: ['createTransferObject']});
 
 				this.width = m_constants.DATA_SYMBOL_DEFAULT_WIDTH;
 				this.height = m_constants.DATA_SYMBOL_DEFAULT_HEIGHT;
@@ -130,7 +130,7 @@ define(
 
 					m_utils.inheritFields(transferObject, this);
 
-					transferObject = this.prepareTransferObject(transferObject);
+					transferObject = _super.createTransferObject(this, transferObject);
 
 					transferObject.path = null;
 					transferObject.text = null;

@@ -68,7 +68,7 @@ define(
 				var symbol = m_symbol.createSymbol();
 
 				m_utils.inheritFields(this, symbol);
-				m_utils.inheritMethods(SwimlaneSymbol.prototype, symbol);
+				var _super = m_utils.inheritMethods(SwimlaneSymbol.prototype, symbol, {selected: ['createTransferObject']});
 
 				this.width = 0;
 				this.height = 0;
@@ -215,7 +215,7 @@ define(
 
 					m_utils.inheritFields(transferObject, this);
 
-					transferObject = this.prepareTransferObject(transferObject);
+					transferObject = _super.createTransferObject(this, transferObject);
 
 					// TODO Recursively for children
 

@@ -14,21 +14,11 @@ package org.eclipse.stardust.ui.web.modeler.edit.postprocessing;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.change.impl.ChangeDescriptionImpl;
 import org.eclipse.stardust.model.xpdl.builder.session.Modification;
 import org.eclipse.stardust.model.xpdl.builder.utils.LaneParticipantUtil;
-import org.eclipse.stardust.model.xpdl.carnot.ConditionalPerformerType;
-import org.eclipse.stardust.model.xpdl.carnot.DataType;
-import org.eclipse.stardust.model.xpdl.carnot.IExtensibleElement;
-import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableModelElement;
-import org.eclipse.stardust.model.xpdl.carnot.IModelParticipant;
-import org.eclipse.stardust.model.xpdl.carnot.INodeSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.ModelType;
-import org.eclipse.stardust.model.xpdl.carnot.OrganizationType;
-import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
-import org.eclipse.stardust.model.xpdl.carnot.RoleType;
+import org.eclipse.stardust.model.xpdl.carnot.*;
 import org.eclipse.stardust.model.xpdl.carnot.impl.DataSymbolTypeImpl;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
@@ -86,11 +76,12 @@ public class ExternalElementChangeTracker implements ChangePostprocessor
       if (isExternalReference(dataType))
       {
          UnusedModelElementsSearcher searcher = new UnusedModelElementsSearcher();
-         Map matchedElements = searcher.search(model);
-         List children = (List) matchedElements.get(model);
+         @SuppressWarnings("unchecked")
+         Map<ModelType, List<EObject>> matchedElements = searcher.search(model);
+         List<EObject> children = matchedElements.get(model);
          if (children != null && children.contains(dataType))
          {
-            EList<INodeSymbol> symbols = ((DataType) dataType).getSymbols();
+            List<INodeSymbol> symbols = dataType.getSymbols();
             if (symbols.size() == 0)
             {
                model.getData().remove(dataType);
@@ -116,8 +107,9 @@ public class ExternalElementChangeTracker implements ChangePostprocessor
       if (model != null)
       {
          UnusedModelElementsSearcher searcher = new UnusedModelElementsSearcher();
-         Map matchedElements = searcher.search(model);
-         List<EObject> children = (List) matchedElements.get(model);
+         @SuppressWarnings("unchecked")
+         Map<ModelType, List<EObject>> matchedElements = searcher.search(model);
+         List<EObject> children = matchedElements.get(model);
          if (children != null)
          {
             boolean modified = false;

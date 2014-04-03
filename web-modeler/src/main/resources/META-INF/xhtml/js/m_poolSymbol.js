@@ -46,7 +46,7 @@ define(
 				var symbol = m_symbol.createSymbol();
 
 				m_utils.inheritFields(this, symbol);
-				m_utils.inheritMethods(PoolSymbol.prototype, symbol);
+				var _super = m_utils.inheritMethods(PoolSymbol.prototype, symbol, {selected: ['createTransferObject']});
 
 				this.laneSymbols = [];
 				this.x = 0;
@@ -110,7 +110,7 @@ define(
 
 					m_utils.inheritFields(transferObject, this);
 
-					transferObject = this.prepareTransferObject(transferObject);
+					transferObject = _super.createTransferObject(this, transferObject);
 
 					transferObject.borderRectangle = null;
 					transferObject.topRectangle = null;
@@ -313,9 +313,11 @@ define(
 						// adjusted
 						this.adjustCurrentLaneCoordinates(swimlaneSymbol);
 						//The create REST call for swimlanes is made after the swimlabe is created and re-positioned.
-						swimlaneSymbol.createAndSubmitCreateCommand();
+						swimlaneSymbol.createAndSubmitCreateCommand(true);
 					} else {
-						m_messageDisplay.showMessage("Swimlane for participant (" + participant.name + ") exists already");
+						m_messageDisplay.showMessage(m_i18nUtils.getProperty(
+										"modeler.swimlane.error.participantExist")
+											.replace("{0}", participant.name));
 					}
 				};
 

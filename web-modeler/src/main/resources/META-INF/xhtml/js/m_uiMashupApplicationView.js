@@ -27,6 +27,9 @@ define(
 					m_utils.initializeWaitCursor(m_utils.jQuerySelect("html"));
 					m_utils.showWaitCursor();
 
+					m_utils.jQuerySelect("#hideGeneralProperties").hide();
+					initViewCollapseClickHandlers();
+					
 					var view = new UiMashupApplicationView();
 					i18uimashupproperties();
 					// TODO Unregister!
@@ -38,6 +41,20 @@ define(
 					m_utils.hideWaitCursor();
 				}
 			};
+			
+			/**
+			 * 
+			 */
+			function initViewCollapseClickHandlers() {
+				m_utils.jQuerySelect("#showGeneralProperties").click(function() {
+					m_utils.jQuerySelect("#showAllProperties").hide();
+					m_utils.jQuerySelect("#hideGeneralProperties").show();
+				});
+				m_utils.jQuerySelect("#hideGeneralProperties").click(function() {
+					m_utils.jQuerySelect("#showAllProperties").show();
+					m_utils.jQuerySelect("#hideGeneralProperties").hide();
+				});
+			}
 
 			var editorToolbarGroups = [ {
 				name : 'clipboard',
@@ -71,6 +88,13 @@ define(
 			} ];
 
 			function i18uimashupproperties() {
+				
+				m_utils.jQuerySelect("#hideGeneralProperties label")
+					.text(m_i18nUtils.getProperty("modeler.element.properties.commonProperties.generalProperties"));
+		
+				m_utils.jQuerySelect("#showGeneralProperties label")
+					.text(m_i18nUtils.getProperty("modeler.element.properties.commonProperties.generalProperties"));
+			
 				m_utils.jQuerySelect("label[for='guidOutput']")
 						.text(
 								m_i18nUtils
@@ -180,26 +204,30 @@ define(
 						.text(
 								m_i18nUtils
 										.getProperty("modeler.element.properties.commonProperties.primitiveType"));
-
-				var parameterDefinitionDirectionSelect = m_utils.jQuerySelect("#parameterDefinitionDirectionSelect");
-
-				selectdata = m_i18nUtils
-						.getProperty("modeler.element.properties.commonProperties.in");
-				parameterDefinitionDirectionSelect
-						.append("<option value=\"IN\">" + selectdata
-								+ "</option>");
-
-				selectdata = m_i18nUtils
-						.getProperty("modeler.element.properties.commonProperties.inout");
-				parameterDefinitionDirectionSelect
-						.append("<option value=\"INOUT\">" + selectdata
-								+ "</option>");
-
-				selectdata = m_i18nUtils
-						.getProperty("modeler.element.properties.commonProperties.out");
-				parameterDefinitionDirectionSelect
-						.append("<option value=\"OUT\">" + selectdata
-								+ "</option>");
+				
+				m_utils.jQuerySelect("#addParameterDefinitionButton")
+					.attr("title",m_i18nUtils.getProperty("modeler.element.properties.commonProperties.add"));
+				
+				m_utils.jQuerySelect("label[for='generateCompleteButtonInput']")
+					.text(m_i18nUtils.getProperty("modeler.model.propertyView.uiMashup.configuration.configurationProperties.embedded.generateCompleteButton"));
+				
+				m_utils.jQuerySelect("label[for='generateSuspendButtonInput']")
+					.text(m_i18nUtils.getProperty("modeler.model.propertyView.uiMashup.configuration.configurationProperties.embedded.generateSuspendButton"));
+				
+				m_utils.jQuerySelect("label[for='generateAbortButtonInput']")
+					.text(m_i18nUtils.getProperty("modeler.model.propertyView.uiMashup.configuration.configurationProperties.embedded.generateAbortButton"));
+				
+				m_utils.jQuerySelect("label[for='generateQaPassButtonInput']")
+					.text(m_i18nUtils.getProperty("modeler.model.propertyView.uiMashup.configuration.configurationProperties.embedded.generateQASuccessButton"));
+				
+				m_utils.jQuerySelect("label[for='generateQaFailButtonInput']")
+					.text(m_i18nUtils.getProperty("modeler.model.propertyView.uiMashup.configuration.configurationProperties.embedded.generateQAFailButoon"));
+				
+				m_utils.jQuerySelect("label[for='numberOfLabelInputPairsInput']")
+					.text(m_i18nUtils.getProperty("modeler.model.propertyView.uiMashup.configuration.configurationProperties.embedded.numberOfColumnsUsed"));
+				
+				m_utils.jQuerySelect("a#generateMarkupForAngularLink")
+					.text(m_i18nUtils.getProperty("modeler.model.propertyView.uiMashup.configuration.configurationProperties.embedded.generateMarkup"));
 			}
 			/**
 			 * 
@@ -243,6 +271,7 @@ define(
 								supportsDataMappings : false,
 								supportsDescriptors : false,
 								supportsDataTypeSelection : true,
+								supportsInOutDirection : true,
 								tableWidth : "500px",
 								directionColumnWidth : "50px",
 								nameColumnWidth : "250px",

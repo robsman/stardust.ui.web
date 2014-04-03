@@ -90,7 +90,8 @@ define(
 								supportsDataMappings : true,
  								supportsDescriptors : false,
  								supportsDataTypeSelection : true,
- 								supportsDocumentTypes : false
+ 								supportsDocumentTypes : false,
+ 								hideEnumerations:true
 							});
 
 					var self = this;
@@ -105,7 +106,7 @@ define(
 								"carnot:engine:camel::camelContextId",
 									self.camelContextInput.val());
 					});
-
+					
 					this.invocationPatternInput.change(function()
 					{
 						if (!self.view.validate()) {
@@ -215,8 +216,28 @@ define(
 						this.camelContextInput.val(this.getApplication().attributes["carnot:engine:camel::camelContextId"]);                             
 					}
 					
+					if(!this.getApplication().attributes["carnot:engine:camel::invocationPattern"])
+					{
+						this.invocationPatternInput.val('send');
+						this.invocationTypeInput.val('synchronous');
+					    
+						self.view.submitModelElementAttributeChange("carnot:engine:camel::invocationPattern", self.invocationPatternInput.val());
+					    self.view.submitModelElementAttributeChange("carnot:engine:camel::invocationType", self.invocationTypeInput.val());
+					    
+					    this.invocationTypeInput.prop('disabled', true);
+						this.producerRouteTextarea.prop('disabled', false);
+						this.consumerRouteTextarea.prop('disabled', true);
+						this.processContextHeadersInput.prop('disabled', false);
+					}
+					else
+					{
+						this.invocationPatternInput.val(this.getApplication().attributes["carnot:engine:camel::invocationPattern"]);      
+						this.invocationTypeInput.val(this.getApplication().attributes["carnot:engine:camel::invocationType"]);      
+						 
+					}
+					
 					// set default to true if absent but invocation pattern is send or sendReveive
-					if (!this.getApplication().attributes["carnot:engine:camel::processContextHeaders"] && 
+					if (this.getApplication().attributes["carnot:engine:camel::processContextHeaders"] && 
 							this.getApplication().attributes["carnot:engine:camel::invocationPattern"] && (
 							this.getApplication().attributes["carnot:engine:camel::invocationPattern"].indexOf("send") > -1 ||
 							this.getApplication().attributes["carnot:engine:camel::invocationPattern"].indexOf("sendReceive") > -1))
@@ -323,10 +344,6 @@ define(
 
 					this.additionalBeanSpecificationTextarea
 						.val(this.getApplication().attributes["carnot:engine:camel::additionalSpringBeanDefinitions"]);
-					if(this.getApplication().attributes["carnot:engine:camel::invocationPattern"]==null || !this.getApplication().attributes["carnot:engine:camel::invocationPattern"] 
-					&&(this.getApplication().attributes["carnot:engine:camel::invocationType"]==null || !this.getApplication().attributes["carnot:engine:camel::invocationType"])){
-						this.sendSynchronous();
-					}
 
 					this.invocationPatternInput
 							.val(this.getApplication().attributes["carnot:engine:camel::invocationPattern"]);

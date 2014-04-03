@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Loading external Web application ...</title>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<style type="text/css">
+ul.initially-hidden {
+	display: none;
+}
+.success {
+	display: none;
+}
+.error {
+	display: none;
+}
+</style>
+<script>
+  $(document)
+      .ready(
+          function() {
+
+            var params = {},
+                regex = /([^&=]+)=([^&]*)/g,
+                match,
+                key,
+                authProxyTest,
+                existenceChallenge,
+                errorTimer,
+                redirectBaseUri,
+                redirectParams;
+            while (match = regex.exec(location.hash.substring(1))) {
+              params[decodeURIComponent(match[1])] = decodeURIComponent(match[2]);
+            }
+            existenceChallenge = Math.floor(100000000 + (Math.random() * 899999999)).toString();
+
+            $("a.authProxyUri").attr("href", params.auth_proxy_uri);
+
+            authProxyTest = document.createElement("iframe");
+            authProxyTest.style.display = "none";
+
+            window.addEventListener("message", function(event) {
+              var isExpectedSender, isExpectedPayload;
+              isExpectedSender = authProxyTest.contentWindow === event.source;
+              isExpectedPayload = existenceChallenge === event.data;
+              if (isExpectedSender && isExpectedPayload) {
+                $("li.success").show();
+
+				redirectBaseUri = params.auth_proxy_uri;
+				redirectParams = [];
+				for (key in params) {
+				  if (key != "auth_proxy_uri") {
+				    redirectParams.push(key + "=" + encodeURIComponent(params[key]));
+				  }
+				}
+
+                window.clearTimeout(errorTimer);
+                window.location.replace(redirectBaseUri + "#" + redirectParams.join("&"));
+              }
+            }, false);
+
+            authProxyTest.onerror = function(event) {
+              $("li.error").show();
+            };
+            authProxyTest.src = params.auth_proxy_uri + "#existence=" + existenceChallenge;
+
+            errorTimer = window.setTimeout(function() {
+              $(".initially-hidden").show();
+              $("li.error").show();
+            }, 3000);
+
+            $("body").append(authProxyTest);
+          });
+</script>
+</head>
+<body>
+	<ul class="initially-hidden">
+		<li>Attempting redirect to <a class="authProxyUri">authentication proxy page</a> ...</li>
+		<li class="success">Found authentication proxy page, initiating load ...</li>
+		<li class="error">Failed detecting authentication proxy page, please check your deployment!<br>
+		To pass credentials to an external Web application, the page to be downloaded from <a href="ippMashupAuthProxy.html" download="ippMashupAuthProxy.html">here</a> has to be deployed at <a class="authProxyUri">this location</a>.
+		</li>
+	</ul>
+</body>
+</html>

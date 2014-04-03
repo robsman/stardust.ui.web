@@ -11,23 +11,15 @@
 
 package org.eclipse.stardust.ui.web.modeler.portal;
 
-import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
-import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractAsString;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
-import javax.servlet.ServletContext;
-
-import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.common.PopupUIComponentBean;
-import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 
 public class InviteParticipantsDialog extends PopupUIComponentBean

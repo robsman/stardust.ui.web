@@ -42,7 +42,8 @@ define(
 					supportsDataPathes : true,
 					supportsDescriptors : true,
 					supportsDataTypeSelection : false,
-					showExternalDataReferences : true
+					showExternalDataReferences : true,
+					displayParameterId : true
 				});
 
 				/**

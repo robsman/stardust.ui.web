@@ -1452,7 +1452,9 @@ img
 .modelMenuBar .iceMnuItm a{
 	background-color:white;
 	text-decoration:none;
-	}
+	white-space: nowrap;
+}
+
 .modelMenuBar .iceMnuItm a:hover {
     background-color: #DDEAF0;
     text-decoration:none;
@@ -1500,7 +1502,7 @@ img
 	background-color: white;
 	background-image: none;
 	text-align: left;
-
+	
 }
 
 /* select option with icon */

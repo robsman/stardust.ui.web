@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.runtime.User;
+import org.eclipse.stardust.ui.web.modeler.common.UserIdProvider;
 import org.eclipse.stardust.ui.web.viewscommon.common.spi.user.impl.IppUserProvider;
 
 @Component
@@ -46,12 +47,7 @@ public class ModelingSessionManager
       return sessions.get(sessionId);
    }
 
-   public ModelingSession currentSession(User user)
-   {
-      return currentSession(getUniqueId(user));
-   }
-
-   public ModelingSession currentSession(String userId)
+   public ModelingSession getCurrentSession(String userId)
    {
       // prefer an active collaboration
       ModelingSession session = collaborations.get(userId);
@@ -59,15 +55,25 @@ public class ModelingSessionManager
       {
          // if not collaborating, use the user's original session
          session = userSessions.get(userId);
-         if (null == session)
-         {
-            // no original session yet, start a new one
-            userSessions.putIfAbsent(userId, createSession(userId));
-            session = userSessions.get(userId);
+      }
 
-            // the real user session should be tracked by ID as well
-            sessions.putIfAbsent(session.getId(), session);
-         }
+      return session;
+   }
+
+   public ModelingSession getOrCreateSession(UserIdProvider userIdProvider)
+   {
+      String userId = userIdProvider.getCurrentUserId();
+
+      // prefer an active collaboration
+      ModelingSession session = getCurrentSession(userId);
+      if (null == session)
+      {
+         // no original session yet, start a new one
+         userSessions.putIfAbsent(userId, createSession(userId, userIdProvider.getCurrentUserDisplayName()));
+         session = userSessions.get(userId);
+
+         // the real user session should be tracked by ID as well
+         sessions.putIfAbsent(session.getId(), session);
       }
 
       return session;
@@ -90,11 +96,13 @@ public class ModelingSessionManager
          if (null != session)
          {
             userSessions.remove(userId);
+            sessions.remove(session.getId(), session);
+            session.reset();
          }
       }
    }
 
-   private ModelingSession createSession(String userId)
+   private ModelingSession createSession(String userId, String userName)
    {
       ModelingSession session = null;
       // modeling
@@ -104,6 +112,7 @@ public class ModelingSessionManager
          {
             session = context.getBean(beanName, ModelingSession.class);
             session.setOwnerId(userId);
+            session.setOwnerName(userName);
             session.setOwnerColor(session.generateColor());
             session.addStateListener(new ModelingSession.SessionStateListener()
             {

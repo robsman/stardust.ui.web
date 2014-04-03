@@ -11,6 +11,7 @@
 package org.eclipse.stardust.ui.web.processportal.interaction.iframe;
 
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
+import static org.eclipse.stardust.engine.core.interactions.Interaction.getInteractionId;
 import static org.eclipse.stardust.ui.web.processportal.interaction.iframe.IframePanelUtils.getContentFrameId;
 
 import java.io.Serializable;
@@ -258,14 +259,7 @@ public class FaceletPanelInteractionController implements IActivityInteractionCo
       else
       {
          // destroy interaction
-         InteractionRegistry registry = (InteractionRegistry) ManagedBeanUtils.getManagedBean(
-               facesContext, InteractionRegistry.BEAN_ID);
-
-         Interaction interaction = registry.getInteraction(Interaction.getInteractionId(ai));
-         if (null != interaction)
-         {
-            registry.unregisterInteraction(interaction.getId());
-         }
+         unregisterInteraction(ai);
 
          // synchronously close panel as no custom post processing needs to occur
          return true;
@@ -285,9 +279,6 @@ public class FaceletPanelInteractionController implements IActivityInteractionCo
       if (null != interaction)
       {
          outData = interaction.getOutDataValues();
-
-         // destroy interaction
-         registry.unregisterInteraction(interaction.getId());
       }
 
       return outData;
@@ -299,5 +290,26 @@ public class FaceletPanelInteractionController implements IActivityInteractionCo
 
       return !isEmpty(panelUrl)
             && (panelUrl.endsWith(".iface") || panelUrl.contains(".iface?"));
+   }
+
+   /* (non-Javadoc)
+    * @see org.eclipse.stardust.ui.web.viewscommon.common.spi.IActivityInteractionController#unregisterInteraction(org.eclipse.stardust.engine.api.runtime.ActivityInstance)
+    */
+   public boolean unregisterInteraction(ActivityInstance ai)
+   {
+      InteractionRegistry registry = (InteractionRegistry) ManagedBeanUtils.getManagedBean(InteractionRegistry.BEAN_ID);
+      if (registry != null)
+      {
+         // destroy interaction resource
+         registry.unregisterInteraction(getInteractionId(ai));
+         return true;
+      }
+      return false;
+   }
+
+ 
+   public boolean isTypedDocumentOpen(ActivityInstance activityInstance)
+   {
+      return false;
    }
 }

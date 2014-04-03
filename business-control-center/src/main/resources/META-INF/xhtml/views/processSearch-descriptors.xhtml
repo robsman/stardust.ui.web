@@ -106,6 +106,18 @@
 								</ice:panelGroup>
 								
 								 <ice:panelGroup
+									rendered="#{descriptorItem.type eq 'Enumeration'}">
+									<ice:selectManyListbox value="#{descriptorItem.enumValueList}"
+										valueChangeListener="#{descriptorItem.enumValueChangeListener}">
+										<pc:automationTag
+											value="auto-BCC-ProcSrch-Descriptors-EnumVal"
+											standAlone="false" />
+									<f:selectItems value="#{descriptorItem.enumList}" /> 
+									</ice:selectManyListbox>
+								</ice:panelGroup>
+								
+								
+								 <ice:panelGroup
 									rendered="#{descriptorItem.type eq 'Structured'}">
 									<ice:inputText partialSubmit="true"
 										id="Str#{descriptorItem.id}"

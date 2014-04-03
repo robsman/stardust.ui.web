@@ -14,8 +14,21 @@ public class PortalSessionUserIdProvider implements UserIdProvider
    @Resource
    private PortalApplication portalApp;
 
+   @Override
    public String getCurrentUserId()
    {
       return (null != portalApp) ? portalApp.getLoggedInUser().getUID() : null;
+   }
+
+   @Override
+   public String getCurrentUserDisplayName()
+   {
+      return (null != portalApp) ? portalApp.getLoggedInUser().getDisplayName() : null;
+   }
+
+   @Override
+   public boolean isAdministrator()
+   {
+      return (null != portalApp) ? portalApp.getLoggedInUser().isAdministrator() : false;
    }
 }

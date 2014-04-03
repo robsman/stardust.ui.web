@@ -1,0 +1,29 @@
+/**
+* To test all syntax elements supported by Stardust.
+*/
+
+// Globals Section
+
+global org.eclipse.stardust.Test global1;
+global int global2;
+
+// Rules Section
+
+rule SuspiciousCountry
+when
+	$customer: org.eclipse.stardust.types.CustomerOnboarding.Customer()
+	$almRisk: int()
+then
+	modify ($customer)
+	{
+	}
+	modify ($almRisk)
+	{
+	}
+end	
+
+rule SuspiciousCounterparties
+when
+	$customer: org.eclipse.stardust.types.CustomerOnboarding.Customer()
+then
+end

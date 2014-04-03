@@ -20,12 +20,15 @@ public class ViewDataEvent
 {
    public static enum ViewDataEventType
    {
-      DATA_MODIFIED
+      DATA_MODIFIED,
+      VIEW_STATE_CHANGED
    }
 
    private final View view;
    private final ViewDataEventType type;
    private final Object payload;
+   
+   private final ViewEvent viewEvent;
 
    /**
     * @param view
@@ -38,8 +41,24 @@ public class ViewDataEvent
       this.view = view;
       this.type = type;
       this.payload = payload;
+      this.viewEvent = null;
    }
 
+   /**
+    * @param view
+    * @param type
+    * @param payload
+    * @param viewEvent
+    */
+   public ViewDataEvent(View view, ViewDataEventType type, Object payload, ViewEvent viewEvent)
+   {
+      super();
+      this.view = view;
+      this.type = type;
+      this.viewEvent = viewEvent;
+      this.payload = payload;
+   }
+   
    public View getView()
    {
       return view;
@@ -53,5 +72,10 @@ public class ViewDataEvent
    public Object getPayload()
    {
       return payload;
+   }
+
+   public ViewEvent getViewEvent()
+   {
+      return viewEvent;
    }
 }

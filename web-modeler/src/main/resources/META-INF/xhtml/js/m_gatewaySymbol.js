@@ -44,7 +44,8 @@ define(
 				var symbol = m_symbol.createSymbol();
 
 				m_utils.inheritFields(this, symbol);
-				m_utils.inheritMethods(GatewaySymbol.prototype, symbol);
+				var _super = m_utils.inheritMethods(GatewaySymbol.prototype, symbol, {selected: ['createTransferObject']});
+				
 
 				/**
 				 * Binds all client-side aspects to the object (graphics
@@ -123,7 +124,7 @@ define(
 
 					m_utils.inheritFields(transferObject, this);
 
-					transferObject = this.prepareTransferObject(transferObject);
+					transferObject = _super.createTransferObject(this, transferObject);
 
 					transferObject.path = null;
 					transferObject.andPath = null;

@@ -37,7 +37,7 @@ define(
 			function EventImplementationPropertiesPage(propertiesPanel) {
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
 						propertiesPanel, "implementationPropertiesPage",
-						"Implementation", // TODO I18N
+						m_i18nUtils.getProperty("modeler.propertiesPage.toolbar.implementation.title"), // TODO I18N
 						"plugins/bpm-modeler/images/icons/wrench.png");
 
 				m_utils.inheritFields(this, propertiesPage);
@@ -55,11 +55,19 @@ define(
 							.mapInputId("implementationPanel");
 					this.eventIntegrationOverlaySelect = this
 							.mapInputId("eventIntegrationOverlaySelect");
+					
 					this.overlayTableCell = this.mapInputId("overlayTableCell");
 
 					var eventIntegrationOverlays = m_extensionManager
 							.findExtensions("eventIntegrationOverlay");
 
+					m_utils.jQuerySelect("#eventImpHeading")
+						.text(m_i18nUtils.getProperty("modeler.eventImplementationPropertiesPage.heading"));
+					
+					m_utils.jQuerySelect("label[for='eventIntegrationOverlaySelect']")
+						.text(m_i18nUtils.getProperty("modeler.eventImplementationPropertiesPage.label"));
+					
+					
 					this.overlays = {};
 					this.overlay = null;
 					this.supportedOverlays = {};

@@ -1,10 +1,16 @@
 package org.eclipse.stardust.ui.web.html5.rest;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.GET;
@@ -20,15 +26,27 @@ import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.ClassPathResource;
-
+import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.ui.web.common.Constants;
+import org.eclipse.stardust.ui.web.common.IPerspectiveDefinition;
+import org.eclipse.stardust.ui.web.common.PerspectiveDefinition;
+import org.eclipse.stardust.ui.web.common.ViewDefinition;
+import org.eclipse.stardust.ui.web.common.app.PerspectiveAuthorizationProxy;
+import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.spi.env.RuntimeEnvironmentInfoProvider;
 import org.eclipse.stardust.ui.web.common.spi.theme.ThemeProvider;
+import org.eclipse.stardust.ui.web.common.spi.user.IAuthorizationProvider;
 import org.eclipse.stardust.ui.web.common.spi.user.UserProvider;
+import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
+import org.eclipse.stardust.ui.web.common.util.UserUtils;
+import org.eclipse.stardust.ui.web.plugin.support.ServiceLoaderUtils;
+import org.eclipse.stardust.ui.web.plugin.support.resources.PluginResourceUtils;
 
 
 /**
@@ -43,10 +61,13 @@ public class HTML5FrameworkServices
    private static final Logger trace = LogManager.getLogger(HTML5FrameworkServices.class);
    private final String COMMON_MENU_KEY_SEPERATOR = "=";
    private final String NEWLINE_TAB = "\n\t";
+   private final String htmlViewJSON = ",\n{\n\t\"label\": \"{label}\",\n\t\"id\": \"Int/VIEW_NAME/:id\",\n\t\"iconBase\":\"viewIconBase :icon\",\n\t\"icon\":\"viewIconBase tabIcon-generic\",\n\t\"module\": \"bpm-ui\",\n\t\"controller\": \"bpm-ui.InternalPageCtrl\",\n\t\"partial\": \"/CONTEXT_ROOTVIEW_PATH\"\n\t}";
 
    @Context
    private ServletContext servletContext;
 
+   private ApplicationContext appContext;
+   
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("config")
@@ -61,8 +82,11 @@ public class HTML5FrameworkServices
       MessagePropertiesBean messageBean = (MessagePropertiesBean) RestControllerUtils.resolveSpringBean(
             MessagePropertiesBean.class, servletContext);
 
-      contents = StringUtils.replace(contents, "PORTAL_TITLE",
-            messageBean.getString("portalFramework.config.PORTAL_TITLE"));
+      String headerKey = servletContext.getInitParameter(Constants.LOGIN_HEADING);
+      String bundleBasName = servletContext.getInitParameter(Constants.COMMON_MESSAGE_BUNDLE);
+      Locale loc = new Locale(locale);
+      contents = StringUtils
+            .replace(contents, "PORTAL_TITLE", FacesUtils.getPortalTitle(headerKey, bundleBasName, loc));
       contents = StringUtils.replace(contents, "SIDEBAR_LABEL",
             messageBean.getString("portalFramework.config.SIDEBAR_LABEL"));
       String commonMenuConfigStr = (String) RestControllerUtils.resolveSpringBean("commonMenuConfig", servletContext);
@@ -85,7 +109,6 @@ public class HTML5FrameworkServices
       trace.debug("Retrieving navigation");
 
       String contents = getCodeResource("bpm-ui/templates/navigation.json");
-      contents = StringUtils.replace(contents, "CONTEXT_ROOT", getDeploymentBaseURL(uriInfo, true));
       contents = StringUtils.replace(contents, "FULL_PATH", getDeploymentBaseURL(uriInfo, false));
       contents = StringUtils.replace(contents, "LOGGED_IN_USER_LABEL",
             RestControllerUtils.resolveSpringBean(UserProvider.class, servletContext).getUser().getDisplayName());
@@ -103,13 +126,19 @@ public class HTML5FrameworkServices
             messageBean.getString("portalFramework.navigation.ALERTS_LABEL"));
       contents = StringUtils.replace(contents, "SIGN_OUT_LABEL",
             messageBean.getString("portalFramework.navigation.SIGN_OUT_LABEL"));
+      
+      contents = addHTMLViewsToNavigationJSON(contents);
+      
+      // Replacing CONTEXT_ROOT should be called after the above call to add html views 
+      contents = StringUtils.replace(contents, "CONTEXT_ROOT", getDeploymentBaseURL(uriInfo, true));
+      
       try
       {
          RuntimeEnvironmentInfoProvider envInfoProvider = RestControllerUtils.resolveSpringBean(RuntimeEnvironmentInfoProvider.class, servletContext);
          version = (null != envInfoProvider) ? envInfoProvider.getVersion().getCompleteString() : "";
       }
       catch (Exception e)
-      {
+      { 
          version = "dev";
          trace.error("Could not retrieve Version Information", e);
       }
@@ -148,9 +177,70 @@ public class HTML5FrameworkServices
          stylesJson = sb.toString();
       }
       
+      contents = addPluginViewIconStyleSheets(contents);
       contents = StringUtils.replace(contents, "PORAL_SKIN_STYLE_SHEETS", stylesJson);
 
       return Response.ok(contents, MediaType.APPLICATION_JSON_TYPE).build();
+   }
+
+   /**
+    * @param contents
+    * @return
+    */
+   public String addPluginViewIconStyleSheets(String contents)
+   {
+      final String STYLE_FILE_POSTFIX = "-icons.css";
+      final String STYLES_FILE_PATH = "xhtml/css/*-icons.css";
+      StringBuffer pluginIconsStyles = new StringBuffer("");
+
+      try
+      {
+         Set<String> cssFileNames = PluginResourceUtils.getMatchingFileNames(getAppContext(),
+               STYLES_FILE_PATH);
+         for (String fileName : cssFileNames)
+         {
+            String pluginName = (fileName.substring(0, fileName.indexOf(STYLE_FILE_POSTFIX)));
+            pluginIconsStyles.append(",\n\t\"plugins/" + pluginName + "/css/"
+                  + fileName + "\"");
+         }
+      }
+      catch (IOException e)
+      {
+         trace.warn(e);
+      }
+
+      contents = StringUtils.replace(contents, "PLUGIN_VIEW_ICON_STYLE_SHEETS",
+            pluginIconsStyles.toString());
+
+      return contents;
+   }
+   
+   /**
+    * @param contents
+    */
+   private String addHTMLViewsToNavigationJSON(String contents)
+   {
+      List<IPerspectiveDefinition> perspectiveDefs = getAllPerspectives();
+      StringBuffer allHtmlViews = new StringBuffer("");
+      for (IPerspectiveDefinition perspectiveDef : perspectiveDefs)
+      {
+         List<ViewDefinition> viewDefs = perspectiveDef.getViews();
+         for (ViewDefinition viewDef : viewDefs)
+         {
+            if (viewDef.getInclude().endsWith(".html"))
+            {
+               String str = StringUtils.replace(htmlViewJSON, "VIEW_NAME",
+                     viewDef.getName());
+               str = StringUtils.replace(str, "VIEW_PATH", viewDef.getInclude());
+               allHtmlViews.append(str);
+            }
+         }
+      }
+
+      contents = StringUtils.replace(contents, "NATIVE_VIEW_DEFS",
+            allHtmlViews.toString());
+      
+      return contents;
    }
 
    /**
@@ -254,5 +344,110 @@ public class HTML5FrameworkServices
          buffer.append("\"" + params[1] + "\"");
       }
       return buffer.toString();
+   }
+   
+   
+   /**
+    * TODO - this function needs to be moved to some utility class after the TODO
+    * mentioned inside the method is resolved
+    * 
+    * @return
+    */
+   private List<IPerspectiveDefinition> getAllPerspectives() {
+      Map<String, PerspectiveDefinition> systemPerspectives = getAppContext().getBeansOfType(PerspectiveDefinition.class);
+      List<IPerspectiveDefinition> allPerspectives = new ArrayList<IPerspectiveDefinition>();
+      Map<String, IPerspectiveDefinition> perspectives = new HashMap<String, IPerspectiveDefinition>();
+      for (String key : systemPerspectives.keySet())
+      {
+         PerspectiveDefinition pd = systemPerspectives.get(key);
+         if (isAuthorized(pd))
+         {
+            perspectives.put(key, PerspectiveAuthorizationProxy.newInstance(pd,
+                  (PortalApplication) getAppContext().getBean("ippPortalApp")));            
+         }
+      }
+      
+      for (IPerspectiveDefinition perspectiveDef : perspectives.values())
+      {
+         allPerspectives.add(perspectiveDef);
+      }
+      
+      return allPerspectives;
+   }
+
+   /**
+    * @param perspectiveDef
+    * @return
+    * 
+    */
+   private boolean isAuthorized(PerspectiveDefinition perspectiveDef)
+   {
+      Boolean isAuthorized = isAuthorized_(perspectiveDef.getName());
+
+      if (null != isAuthorized)
+      {
+         return isAuthorized;
+      }
+      else
+      {
+         return UserUtils.isAuthorized(
+               ((UserProvider) getAppContext().getBean("userProvider")).getUser(),
+               perspectiveDef.getRequiredRolesSet(), perspectiveDef.getExcludeRolesSet());
+      }
+   }
+   
+
+   /**
+    * (Portal UI Authorization)
+    * @param elementName
+    * @return
+    */
+   private Boolean isAuthorized_(String elementName)
+   {
+      IAuthorizationProvider authorizationProvider = getAuthorizationProvider();
+      Boolean isAuthorized = null;
+
+      if (null != authorizationProvider)
+      {
+         isAuthorized = authorizationProvider.isAuthorized(((UserProvider) getAppContext().getBean("userProvider")).getUser(), elementName);
+      }
+
+      return isAuthorized;
+   }
+   
+   /**
+    * @return
+    */
+   private IAuthorizationProvider getAuthorizationProvider()
+   {
+      Iterator<IAuthorizationProvider.Factory> serviceProviders = ServiceLoaderUtils.searchProviders(IAuthorizationProvider.Factory.class);
+
+      IAuthorizationProvider.Factory factory = null;
+
+      if (null != serviceProviders)
+      {
+         while (serviceProviders.hasNext())
+         {
+            factory = serviceProviders.next();
+            if (null != factory)
+            {
+               return factory.getAuthorizationProvider();
+            }
+         }
+      }
+      return null;
+   }
+   
+   /**
+    * @return
+    */
+   private ApplicationContext getAppContext()
+   {
+      if (null == appContext)
+      {
+         appContext = WebApplicationContextUtils.getWebApplicationContext(servletContext);
+      }
+
+      return appContext;
    }
 }

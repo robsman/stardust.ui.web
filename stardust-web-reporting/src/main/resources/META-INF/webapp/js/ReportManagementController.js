@@ -435,9 +435,9 @@ define(
 				ReportManagementController.prototype.getOutlineWindowAndDocument = function() {
 					return {
 						win : parent.document
-								.getElementById("modelerLaunchPanels").contentWindow,
+								.getElementById("portalLaunchPanels").contentWindow,
 						doc : parent.document
-								.getElementById("modelerLaunchPanels").contentDocument
+								.getElementById("portalLaunchPanels").contentDocument
 					};
 //					return {
 //						win : window.top.frames['ippPortalMain'],

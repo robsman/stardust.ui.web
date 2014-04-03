@@ -79,7 +79,8 @@ define(
 								supportsDataMappings : true,
 								supportsDescriptors : false,
 								supportsDataTypeSelection : true,
-								restrictToCurrentModel : false
+								restrictToCurrentModel : false,
+								supportsInOutDirection : true
 							});
 
 					this.internationalizeLabels();

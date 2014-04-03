@@ -1,0 +1,92 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ui:composition>
+		<ice:panelPopup id="#{movePagesDialog.beanId}" modal="true"
+			rendered="#{movePagesDialog.visible}" draggable="true"
+			autoPosition="manual" positionOnLoadOnly="true"
+			styleClass="popupDialog" clientOnly="true">
+
+			<f:facet name="header">
+				<ice:panelGroup>
+					<pc:automationTag value="auto-COM-MovePagesDlg-Header" />
+					<ice:outputText styleClass="headerText"
+						value="#{views_common_msgPropsBean['views.movePagesDialog.title']}" />
+					<ice:commandButton title="#{common_msgPropsBean['common.close']}"
+						action="#{movePagesDialog.closePopup}" immediate="true"
+						styleClass="windowClose" />
+				</ice:panelGroup>
+			</f:facet>
+
+			<f:facet name="body">
+				<ice:panelBorder styleClass="pnlPopUpBrdrDialog" cellpadding="2"
+					cellspacing="2" renderNorth="false" renderEast="true"
+					renderSouth="true" renderWest="true" renderCenter="true">
+					<f:facet name="center">
+						<ice:panelGroup>
+							<ice:panelGroup>
+								<ice:inputHidden id="movePageMsg" />
+								<ui:include
+									src="/plugins/views-common/common/validationMessage.xhtml">
+									<ui:param name="validationMessageBean"
+										value="#{movePagesDialog.validationMessageBean}" />
+								</ui:include>
+							</ice:panelGroup>
+							<ice:panelGrid columns="2" style="width:220px;">
+								<ice:outputText styleClass="panelHeaderTitle"
+									value="#{views_common_msgPropsBean['views.movePagesDialog.movePageRange']}" />
+								<ice:inputText partialSubmit="true"
+									value="#{movePagesDialog.range}"
+									style="width: 100px;height: 10px;"
+									valueChangeListener="#{movePagesDialog.pageRangeChange}">
+									<pc:automationTag
+										value="auto-COM-ExtractPageDlg-ExtPageTbl-Range"
+										standAlone="false" />
+								</ice:inputText>
+								<ice:panelGroup />
+								<ice:selectOneMenu partialSubmit="true"
+									onclick="Event.stop(event);"
+									value="#{movePagesDialog.targetAction}" valueChangeListener="#{movePagesDialog.moveActionChange}"	style="width: 108px;">
+									<pc:automationTag
+										value="auto-COM-ExtractPageDlg-ExtPageTbl-StartableProc"
+										standAlone="false" />
+									<f:selectItems value="#{movePagesDialog.pageActions}" />
+									<f:attribute name="movePagesDialog" value="#{movePagesDialog}" />
+								</ice:selectOneMenu>
+								<ice:outputText styleClass="panelHeaderTitle"
+									value="#{views_common_msgPropsBean['views.movePagesDialog.targetPage']}" />
+
+								<ice:inputText partialSubmit="true"
+									value="#{movePagesDialog.targetPage}"
+									style="width: 100px;height: 10px;" valueChangeListener="#{movePagesDialog.targetPageChange}">
+									<pc:automationTag
+										value="auto-COM-ExtractPageDlg-ExtPageTbl-TargetPage"
+										standAlone="false" />
+								</ice:inputText>
+							</ice:panelGrid>
+						</ice:panelGroup>
+					</f:facet>
+
+					<f:facet name="south">
+						<ice:panelGroup>
+							<pc:automationTag value="auto-COM-ExtractPageDlg-OkCancelBtnsBar" />
+							<ice:commandButton
+								value="#{ views_common_msgPropsBean['common.ok']}"
+								action="#{movePagesDialog.apply}" styleClass="button"
+								style="width: 60px" immediate="true" />
+
+							<ice:commandButton
+								value="#{views_common_msgPropsBean['common.cancel']}"
+								immediate="true" action="#{movePagesDialog.closePopup}"
+								styleClass="button secondary" style="width: 60px" />
+						</ice:panelGroup>
+					</f:facet>
+				</ice:panelBorder>
+			</f:facet>
+		</ice:panelPopup>
+	</ui:composition>
+</f:view>

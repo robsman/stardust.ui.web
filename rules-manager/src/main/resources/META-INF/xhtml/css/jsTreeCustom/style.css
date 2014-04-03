@@ -1,0 +1,97 @@
+/*******************************************************************************
+ * Copyright (c) 2011 SunGard CSA LLC and others. All rights reserved. This
+ * program and the accompanying materials are made available under the terms of
+ * the Eclipse Public License v1.0 which accompanies this distribution, and is
+ * available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
+ * documentation
+ ******************************************************************************/
+
+.jstree-custom li,.jstree-custom ins {
+	background-image: url("icons.png");
+	background-repeat: no-repeat;
+	background-color: transparent;
+}
+
+.jstree-custom li {
+	background-position: -90px 0;
+	background-repeat: repeat-y;
+}
+
+.jstree-custom li.jstree-last {
+	background: transparent;
+}
+
+.jstree-custom .jstree-open>ins {
+	background-position: -72px 0;
+}
+
+.jstree-custom .jstree-closed>ins {
+	background-position: -54px 0;
+}
+
+.jstree-custom .jstree-leaf>ins {
+	background-position: -36px 0;
+}
+
+.jstree-custom .jstree-hovered {
+	background: #e7f4f9;
+	border: 1px solid #e7f4f9;
+	padding: 0 2px 0 1px;
+}
+
+.jstree-custom .jstree-clicked {
+	border: 1px solid navy !important;
+	color: white;
+	padding: 0 2px 0 1px !important;
+	background: none repeat scroll 0 0 #BEEBFF !important;
+}
+
+.jstree-custom a .jstree-icon {
+	background-position: -56px -19px;
+}
+
+.jstree-custom .jstree-open>a .jstree-icon {
+	background-position: -56px -36px;
+}
+
+#vakata-contextmenu.jstree-custom-context li.jstree-contextmenu-disabled a,#vakata-contextmenu.jstree-custom-context li.jstree-contextmenu-disabled a:hover
+	{
+	color: gray !important;
+	background:white !important;
+	background: transparent;
+	border: 0;
+	padding: 1px 4px;
+	cursor: default !important;
+}
+
+#vakata-contextmenu li a:hover {
+	padding:0 5px;
+	background:#e8eff7 !important;
+	border:1px solid #aecff7;
+	color:black;
+	-moz-border-radius:2px;
+	-webkit-border-radius:2px;
+	border-radius:2px;
+}
+
+#vakata-contextmenu.jstree-custom-context a {
+	color: #00629A !important;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+}
+
+#vakata-contextmenu.jstree-custom-context,#vakata-contextmenu.jstree-custom-context li ul
+	{
+	background: none repeat scroll 0 0 #FFFFFF !important;
+	border: 1px solid #979797;
+}
+
+#vakata-contextmenu li {
+	border: 1px solid #E7E7E7;
+}
+
+#vakata-contextmenu {
+	min-width: 200px !important;
+}

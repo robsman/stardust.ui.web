@@ -173,7 +173,13 @@ define(
 							&& (this.attributes && !this.attributes["carnot:engine:subprocess:copyAllData"])) {
 						return true;
 					}
-					
+
+					// Return true if activity is a rules task
+					if (this.activityType === m_constants.TASK_ACTIVITY_TYPE
+							&& this.taskType === "rule") {
+						return true;
+					}
+
 					return false;
 				};
 

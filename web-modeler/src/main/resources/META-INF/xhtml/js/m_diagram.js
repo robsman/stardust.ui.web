@@ -35,7 +35,8 @@ define(
 				"bpm-modeler/js/m_dataFlowPropertiesPanel",
 				"bpm-modeler/js/m_model", "bpm-modeler/js/m_process",
 				"bpm-modeler/js/m_data", "bpm-modeler/js/m_modelerUtils",
-				"bpm-modeler/js/m_autoScrollManager" ],
+				"bpm-modeler/js/m_autoScrollManager",
+				"bpm-modeler/js/m_i18nUtils" ],
 		function(m_utils, m_constants, m_extensionManager, m_urlUtils,
 				m_communicationController, m_commandsController, m_command,
 				m_session, m_canvasManager, m_messageDisplay, m_symbol,
@@ -46,7 +47,7 @@ define(
 				m_eventPropertiesPanel, m_gatewayPropertiesPanel,
 				m_annotationPropertiesPanel, m_swimlanePropertiesPanel,
 				m_controlFlowPropertiesPanel, m_dataFlowPropertiesPanel,
-				m_model, m_process, m_data, m_modelerUtils, m_autoScrollManager) {
+				m_model, m_process, m_data, m_modelerUtils, m_autoScrollManager, m_i18nUtils) {
 
 			//var X_OFFSET; // Set fpr #panningSensor
 			//var Y_OFFSET; // Set for #toolbar +
@@ -1907,7 +1908,7 @@ define(
 							} else {
 								this.currentConnection.select();
 								m_messageDisplay
-										.showMessage("Connection created"); // TODO I18N
+										.showMessage(m_i18nUtils.getProperty("modeler.messagedisplay.messages.info.connCreated"));
 							}
 							this.currentConnection = null;
 							this.mode = this.NORMAL_MODE;

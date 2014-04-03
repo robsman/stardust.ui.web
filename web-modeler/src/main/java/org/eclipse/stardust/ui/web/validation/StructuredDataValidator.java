@@ -13,6 +13,7 @@ package org.eclipse.stardust.ui.web.validation;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.stardust.common.StringUtils;
@@ -33,7 +34,6 @@ import org.eclipse.stardust.modeling.validation.IModelElementValidator;
 import org.eclipse.stardust.modeling.validation.Issue;
 import org.eclipse.stardust.modeling.validation.ValidationException;
 
-import org.eclipse.emf.common.util.URI;
 
 public class StructuredDataValidator implements IModelElementValidator
 {
@@ -41,6 +41,7 @@ public class StructuredDataValidator implements IModelElementValidator
    {
       List<Issue> issues = new ArrayList<Issue>();
       DataType data = (DataType) element;
+      TypeDeclarationsType declarations = null;
       AttributeType attribute = AttributeUtil.getAttribute((IExtensibleElement) element, "carnot:connection:uri"); //$NON-NLS-1$
       if (data.getExternalReference() != null)
       {
@@ -49,6 +50,10 @@ public class StructuredDataValidator implements IModelElementValidator
       }
 
       ModelType model = ModelUtils.findContainingModel(data);
+      if (model != null)
+      {
+         declarations = model.getTypeDeclarations();
+      }
       String typeId = AttributeUtil.getAttributeValue(data, StructuredDataConstants.TYPE_DECLARATION_ATT);
       if (StringUtils.isEmpty(typeId))
       {
@@ -57,7 +62,6 @@ public class StructuredDataValidator implements IModelElementValidator
       }
       else
       {
-         TypeDeclarationsType declarations = null;
          if (data.eIsProxy())
          {
             URI proxyUri = ((InternalEObject) data).eProxyURI();

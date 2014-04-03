@@ -11,6 +11,7 @@
 
 package org.eclipse.stardust.ui.web.modeler.service;
 
+import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder.newApplicationActivity;
 import static org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder.newManualTrigger;
@@ -31,7 +32,6 @@ import java.util.Map;
 
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
-import javax.servlet.ServletContext;
 import javax.wsdl.Binding;
 import javax.wsdl.BindingInput;
 import javax.wsdl.BindingOperation;
@@ -85,6 +85,7 @@ import org.eclipse.stardust.model.xpdl.carnot.AttributeType;
 import org.eclipse.stardust.model.xpdl.carnot.CarnotWorkflowModelFactory;
 import org.eclipse.stardust.model.xpdl.carnot.ContextType;
 import org.eclipse.stardust.model.xpdl.carnot.DataMappingConnectionType;
+import org.eclipse.stardust.model.xpdl.carnot.DataMappingType;
 import org.eclipse.stardust.model.xpdl.carnot.DataSymbolType;
 import org.eclipse.stardust.model.xpdl.carnot.DataType;
 import org.eclipse.stardust.model.xpdl.carnot.DescriptionType;
@@ -122,6 +123,7 @@ import org.eclipse.stardust.ui.web.modeler.common.ModelRepository;
 import org.eclipse.stardust.ui.web.modeler.common.ServiceFactoryLocator;
 import org.eclipse.stardust.ui.web.modeler.common.UserIdProvider;
 import org.eclipse.stardust.ui.web.modeler.common.UserPreferencesEntries;
+import org.eclipse.stardust.ui.web.modeler.edit.MissingWritePermissionException;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSessionManager;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementMarshaller;
@@ -133,7 +135,6 @@ import org.eclipse.xsd.impl.XSDImportImpl;
 import org.eclipse.xsd.util.XSDResourceFactoryImpl;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -343,11 +344,6 @@ public class ModelService
 
    // Modeling Session Management
 
-   /**
-    * Contains all loaded and newly created getModelManagementStrategy().getModels().
-    */
-   private JsonObject modelsJson = new JsonObject();
-
    @Resource
    private ModelingSessionManager sessionManager;
 
@@ -371,7 +367,13 @@ public class ModelService
       {
          destroyModelingSession();
       }
-      return sessionManager.currentSession(me.getCurrentUserId());
+      ModelingSession currentSession = sessionManager.getOrCreateSession(me);
+      if (me.isAdministrator())
+      {
+         currentSession.setSessionAttribute(ModelingSession.SUPERUSER, true);
+      }
+
+      return currentSession;
    }
 
    /**
@@ -478,7 +480,7 @@ public class ModelService
     */
    private EditingSession getEditingSession(ModelType model)
    {
-      return currentSession().getSession(model);
+      return currentSession().getEditSession(model);
    }
 
    /**
@@ -496,36 +498,37 @@ public class ModelService
    {
       UserService userService = getUserService();
       User sessionOwner = userService.getUser(account);
-      String uniqueID = ModelingSessionManager.getUniqueId(sessionOwner);
-
-      ModelingSession currentSession = sessionManager.currentSession(uniqueID);
 
       JsonObject allInvitedUsers = new JsonObject();
       allInvitedUsers.addProperty(TYPE_PROPERTY, "UPDATE_INVITED_USERS_COMMAND");
       allInvitedUsers.addProperty("account", account);
       allInvitedUsers.addProperty("timestamp", System.currentTimeMillis());
       allInvitedUsers.addProperty("path", "users");
-      allInvitedUsers.addProperty("ownerColor",
-            Integer.toHexString(currentSession.getOwnerColor().getRGB() & 0x00ffffff));
       allInvitedUsers.addProperty("operation", "updateCollaborators");
 
       JsonObject old = new JsonObject();
-      JsonArray allUsers = new JsonArray();
-      Collection<User> collaborators = currentSession.getAllCollaborators();
-      for (User user : collaborators)
-      {
-         JsonObject userJson = new JsonObject();
-         userJson.addProperty("account", user.getAccount());
-         userJson.addProperty("firstName", user.getFirstName());
-         userJson.addProperty("lastName", user.getLastName());
-         userJson.addProperty("email", user.getEMail());
-         userJson.addProperty("imageUrl", "");
-         trace.info(">>>>>>>>>>>>>>>> usercolour: "
-               + Integer.toHexString(currentSession.getColor(user).getRGB()));
-         userJson.addProperty("color",
-               Integer.toHexString(currentSession.getColor(user).getRGB() & 0x00ffffff));
 
-         allUsers.add(userJson);
+      JsonArray allUsers = new JsonArray();
+      ModelingSession currentSession = sessionManager.getCurrentSession(ModelingSessionManager.getUniqueId(sessionOwner));
+      if (null != currentSession)
+      {
+         allInvitedUsers.addProperty("ownerColor",
+               Integer.toHexString(currentSession.getOwnerColor().getRGB() & 0x00ffffff));
+         for (User user : currentSession.getAllCollaborators())
+         {
+            JsonObject userJson = new JsonObject();
+            userJson.addProperty("account", user.getAccount());
+            userJson.addProperty("firstName", user.getFirstName());
+            userJson.addProperty("lastName", user.getLastName());
+            userJson.addProperty("email", user.getEMail());
+            userJson.addProperty("imageUrl", "");
+            trace.info(">>>>>>>>>>>>>>>> usercolour: "
+                  + Integer.toHexString(currentSession.getColor(user).getRGB()));
+            userJson.addProperty("color", Integer.toHexString(currentSession.getColor(
+                  user).getRGB() & 0x00ffffff));
+
+            allUsers.add(userJson);
+         }
       }
       old.add("users", allUsers);
       allInvitedUsers.add("oldObject", old);
@@ -544,9 +547,6 @@ public class ModelService
    {
       UserService userService = getUserService();
       User sessionOwner = userService.getUser(account);
-      String uniqueID = ModelingSessionManager.getUniqueId(sessionOwner);
-
-      ModelingSession currentSession = sessionManager.currentSession(uniqueID);
 
       JsonObject allProspectUsers = new JsonObject();
       allProspectUsers.addProperty(TYPE_PROPERTY, "UPDATE_INVITED_USERS_COMMAND");
@@ -557,17 +557,21 @@ public class ModelService
 
       JsonObject old = new JsonObject();
       JsonArray allUsers = new JsonArray();
-      Collection<User> prospects = currentSession.getAllProspects();
-      for (User user : prospects)
-      {
-         JsonObject userJson = new JsonObject();
-         userJson.addProperty("account", user.getAccount());
-         userJson.addProperty("firstName", user.getFirstName());
-         userJson.addProperty("lastName", user.getLastName());
-         userJson.addProperty("email", user.getEMail());
-         userJson.addProperty("imageUrl", "");
 
-         allUsers.add(userJson);
+      ModelingSession currentSession = sessionManager.getCurrentSession(ModelingSessionManager.getUniqueId(sessionOwner));
+      if (null != currentSession)
+      {
+         for (User user : currentSession.getAllProspects())
+         {
+            JsonObject userJson = new JsonObject();
+            userJson.addProperty("account", user.getAccount());
+            userJson.addProperty("firstName", user.getFirstName());
+            userJson.addProperty("lastName", user.getLastName());
+            userJson.addProperty("email", user.getEMail());
+            userJson.addProperty("imageUrl", "");
+
+            allUsers.add(userJson);
+         }
       }
       old.add("users", allUsers);
       allProspectUsers.add("oldObject", old);
@@ -578,10 +582,9 @@ public class ModelService
 
    }
 
-   public String getLoggedInUser(ServletContext context)
+   public String getLoggedInUser()
    {
-      PortalApplication app = WebApplicationContextUtils.getWebApplicationContext(context)
-            .getBean(PortalApplication.class);
+      PortalApplication app = context.getBean(PortalApplication.class);
       org.eclipse.stardust.ui.web.common.spi.user.User currentUser = app.getLoggedInUser();
       JsonObject currentUserJson = new JsonObject();
       currentUserJson.addProperty(TYPE_PROPERTY, "WHO_AM_I");
@@ -628,7 +631,7 @@ public class ModelService
             getModelManagementStrategy().getModels(true);
          }
 
-         modelsJson = new JsonObject();
+         JsonObject modelsJson = new JsonObject();
          JsonObject loaded = new JsonObject();
          JsonArray failed = new JsonArray();
          modelsJson.add("loaded", loaded);
@@ -648,7 +651,7 @@ public class ModelService
             catch (Exception e)
             {
                JsonObject failedModel = new JsonObject();
-               failedModel.addProperty("id", ((ModelType) model).getId());
+               failedModel.addProperty("id", modelRepository.getModelBinding(model).getModelId(model));
                failedModel.addProperty("uuid",  uuidMapper().getUUID(model));
                failedModel.addProperty("error", e.getMessage());
                failed.add(failedModel);
@@ -676,6 +679,12 @@ public class ModelService
    {
       ModelType model = findModel(modelId);
 
+      if (!currentSession().canSaveModel(modelId))
+      {
+         throw new MissingWritePermissionException(
+               "Failed to (re-)validate edit lock on model " + modelId);
+      }
+
       getModelManagementStrategy().saveModel(model);
    }
 
@@ -684,41 +693,39 @@ public class ModelService
 	 */
    public void saveAllModels()
    {
-      // TODO
-      // Temporarily commenting selective save as not all changes have moved to change
-      // protocol yet.
-      // After that this can be uncommented
-      /*
-       * Set<String> changedModels =
-       * UnsavedModelsTracker.getInstance().getUnsavedModels(); for (String modelId :
-       * changedModels) { ModelType model =
-       * getModelManagementStrategy().getModels().get(modelId); if (null != model) {
-       * getModelManagementStrategy().saveModel(model); } }
-       *
-       * //Clear the unsaved models' list.
-       * UnsavedModelsTracker.getInstance().notifyAllModelsSaved();
-       */
+      ModelRepository modelRepository = currentSession().modelRepository();
+      List<ModelType> modelsToBeSaved = newArrayList();
+      for (ModelType xpdlModel : getModelManagementStrategy().getModels().values())
+      {
+         // do only save if the model was actually changed (which implies an edit lock)
+         EObject nativeModel = modelRepository.findModel(xpdlModel.getId());
+         if (currentSession().getSession().isTrackingModel(nativeModel))
+         {
+            if (!currentSession().canSaveModel(xpdlModel.getId()))
+            {
+               throw new MissingWritePermissionException(
+                     "Failed to (re-)validate edit lock on model " + xpdlModel.getId());
+            }
 
-      // TODO
-      // Temporarily saving all models as not all changes have moved to change protocol
-      // yet.
-      // After that happens this code can be deleted.
-      Collection<ModelType> models = getModelManagementStrategy().getModels().values();
-      for (ModelType model : models)
+            modelsToBeSaved.add(xpdlModel);
+         }
+      }
+
+      for (ModelType xpdlModel : modelsToBeSaved)
       {
          try
          {
-            if (!getModelBuilderFacade().isReadOnly(model))
+            if (!getModelBuilderFacade().isReadOnly(xpdlModel))
             {
-               getModelManagementStrategy().saveModel(model);
+               getModelManagementStrategy().saveModel(xpdlModel);
             }
-            getEditingSession(model).clearUndoRedoStack();
          }
          catch (Exception e)
          {
-            trace.warn("Failed saving model " + getModelFileName(model.getId()), e);
+            trace.warn("Failed saving model " + getModelFileName(xpdlModel.getId()), e);
          }
       }
+      currentSession().reset();
    }
 
    /**
@@ -1161,7 +1168,7 @@ public class ModelService
             URI uri = URI.createURI("cnx://" + fileConnectionId + "/");
 
             ModelType loadModel = getModelManagementStrategy().loadModel(
-                  participantModelID + ".xpdl");
+                  participantModelID);
             IModelParticipant participantCopy = getModelBuilderFacade().findParticipant(
                   loadModel, participantId);
             if (participantCopy == null)
@@ -1352,14 +1359,17 @@ public class ModelService
          {
             getModelBuilderFacade().setAttribute(processDefinition,
                   "carnot:engine:externalInvocationType",
-                  PredefinedConstants.PROCESSINTERFACE_INVOCATION_BOTH);
+                  PredefinedConstants.PROCESSINTERFACE_INVOCATION_SOAP);
          }
       }
       else
       {
-         getModelBuilderFacade().setAttribute(processDefinition,
-               "carnot:engine:externalInvocationType",
-               PredefinedConstants.PROCESSINTERFACE_INVOCATION_BOTH);
+         if (extractBoolean(json, "createRestService"))
+         {
+            getModelBuilderFacade().setAttribute(processDefinition,
+                  "carnot:engine:externalInvocationType",
+                  PredefinedConstants.PROCESSINTERFACE_INVOCATION_REST);
+         }
       }
 
       if (extractBoolean(json, "transientProcess"))
@@ -1659,6 +1669,9 @@ public class ModelService
             model, null, extractString(json, "processDefinitionName"), "Default",
             "Default");
       uuidMapper().map(processDefinition);
+
+      ModelBuilderFacade.setBooleanAttribute(processDefinition, PredefinedConstants.PROCESS_IS_AUXILIARY_ATT, true);
+
       ProcessDefinitionType processInterface = getModelBuilderFacade().findProcessDefinition(
             extractString(json, "processFullId"));
 
@@ -1967,7 +1980,7 @@ public class ModelService
 
    public ModelType refreshAndFindModel(String modelId)
    {
-      return getModelManagementStrategy().loadModel(modelId + ".xpdl");
+      return getModelManagementStrategy().loadModel(modelId);
    }
 
    public <M extends EObject> ModelBinding<M> findModelBinding(M model)
@@ -2009,31 +2022,36 @@ public class ModelService
 
          EObject modelElement = issue.getModelElement();
 
-         String modelElemendId = null;
+         String modelElementId = null;
 
          if (modelElement != null && modelElement instanceof IIdentifiableModelElement)
          {
-            modelElemendId = modelId + "/"
+            modelElementId = modelId + "/"
                   + ((IIdentifiableModelElement) modelElement).getId() + "/"
                   + ((IIdentifiableModelElement) modelElement).getElementOid();
          }
          else if (modelElement != null && modelElement instanceof ModelType)
          {
-            modelElemendId = modelId + "/" + modelId + "/"
+            modelElementId = modelId + "/" + modelId + "/"
                   + ((ModelType) modelElement).getOid();
          }
          else if (modelElement != null && modelElement instanceof TypeDeclarationType)
          {
-            modelElemendId = modelId + "/" + modelId + "/"
+            modelElementId = modelId + "/" + modelId + "/"
                   + ((TypeDeclarationType) modelElement).getId();
          }
          else if (modelElement != null && modelElement instanceof ExternalPackage)
          {
-            modelElemendId = modelId + "/" + modelId + "/"
+            modelElementId = modelId + "/" + modelId + "/"
                   + ((ExternalPackage) modelElement).getId();
          }
+         else if (modelElement != null && modelElement instanceof DataMappingType)
+         {
+            modelElementId = modelId + "/" + modelId + "/"
+                  + ((DataMappingType) modelElement).getId();
+         }
 
-         issueJson.addProperty("modelElement", modelElemendId);
+         issueJson.addProperty("modelElement", modelElementId);
          issuesJson.add(issueJson);
       }
 
@@ -2654,7 +2672,7 @@ public class ModelService
     * <p>
     * Should be removed after repackaging of XSDSchema for runtime is dropped.
     */
-   public static XSDSchema loadSchema(String location) throws IOException
+   public XSDSchema loadSchema(String location) throws IOException
    {
       Parameters parameters = Parameters.instance();
       Map<String, Object> loadedSchemas = null;
@@ -2678,7 +2696,7 @@ public class ModelService
       URI uri = URI.createURI(location);
       if (uri.scheme() == null)
       {
-         resourceSet.setURIConverter(new WebModelerUriConverter());
+         resourceSet.setURIConverter(getClasspathUriConverter());
          if (location.startsWith("/"))
          {
             location = location.substring(1);
@@ -2910,56 +2928,11 @@ public class ModelService
     */
 
    /**
-    * @return
-    *
-    */
-   public void deleteConfigurationVariable(String modelId, String variableName,
-         JsonObject json)
-   {
-      System.out.println("Configuration Variable:");
-
-      ModelType model = findModel(modelId);
-      VariableContext variableContext = new VariableContext();
-      variableContext.initializeVariables(model);
-      variableContext.refreshVariables(model);
-      variableContext.saveVariables();
-
-      JsonElement jsonMode = json.get("mode");
-      String mode = jsonMode.getAsString();
-
-      ModelVariable modelVariableByName = variableContext.getModelVariableByName(variableName);
-      if (modelVariableByName != null)
-      {
-         modelVariableByName.setRemoved(true);
-         String newValue = null;
-
-         if (mode.equals("withLiteral"))
-         {
-            JsonElement jsonValue = json.get("literalValue");
-            newValue = jsonValue.getAsString();
-         }
-         else if (mode.equals("defaultValue"))
-         {
-            newValue = modelVariableByName.getDefaultValue();
-         }
-         else
-         {
-            newValue = "";
-         }
-
-         variableContext.replaceVariable(modelVariableByName, newValue);
-         variableContext.saveVariables();
-      }
-   }
-
-   /**
     *
     */
    public JsonArray getConfigurationVariables(String modelId)
    {
       JsonArray variablesJson = new JsonArray();
-
-      System.out.println("Configuration Variables:");
 
       ModelType model = findModel(modelId);
 
@@ -2976,11 +2949,12 @@ public class ModelService
 
          variablesJson.add(variableJson);
 
+         String cleanName = getModelVariableName(modelVariable.getName());
+         variableJson.addProperty("type", VariableContextHelper.getType(cleanName));
          variableJson.addProperty("name", modelVariable.getName());
          variableJson.addProperty("defaultValue", modelVariable.getDefaultValue());
-
-         List<EObject> refList = variableContext.getVariableReferences().get(
-               modelVariable.getName());
+         variableJson.addProperty("description", modelVariable.getDescription());
+         List<EObject> refList = variableContext.getReferences(modelVariable);
 
          JsonArray referencesJson = new JsonArray();
 
@@ -3057,28 +3031,6 @@ public class ModelService
    }
 
    /**
-    *
-    */
-   public JsonObject updateConfigurationVariable(String modelId, JsonObject postedData)
-   {
-      ModelType model = findModel(modelId);
-      VariableContext variableContext = new VariableContext();
-
-      variableContext.initializeVariables(model);
-      variableContext.refreshVariables(model);
-      variableContext.saveVariables();
-
-      ModelVariable modelVariable = variableContext.getModelVariableByName(postedData.get(
-            "variableName")
-            .getAsString());
-
-      modelVariable.setDefaultValue(postedData.get("defaultValue").getAsString());
-      variableContext.saveVariables();
-
-      return postedData;
-   }
-
-   /**
     * Might be redundant as we could do this entirely on the client, but good test for
     * equivalent Runtime functionality.
     */
@@ -3104,5 +3056,14 @@ public class ModelService
       // TODO I18N
 
       return "Embedded Web Application is not configured.";
+   }
+
+   private String getModelVariableName(String name)
+   {
+      if (name.startsWith("${")) //$NON-NLS-1$
+      {
+         name = name.substring(2, name.length() - 1);
+      }
+      return name;
    }
 }

@@ -90,6 +90,11 @@ public class ModelRepository
       };
    }
 
+   public String getModelId(EObject model)
+   {
+      return getModelBinding(model).getModelId(model);
+   }
+
    public String getModelFileName(EObject model)
    {
       for (ModelType xpdlModel : session.modelManagementStrategy().getModels().values())
@@ -104,9 +109,7 @@ public class ModelRepository
 
    protected EObject getNativeModel(ModelType xpdlModel)
    {
-      return (session.modelManagementStrategy() instanceof AbstractModelManagementStrategy)
-            ? ((AbstractModelManagementStrategy) session.modelManagementStrategy()).getNativeModel(xpdlModel.getId())
-            : xpdlModel;
+      return findModel(xpdlModel.getId());
    }
 
    @SuppressWarnings("unchecked")
