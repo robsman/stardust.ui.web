@@ -684,7 +684,7 @@ table.formTable td {
 															<td valign="top"><select multiple="multiple"
 																style="height: 100px; width: 250px;" ng-model="x.metadata.selectedProcesses"
 																ng-change="selectedProcessChanged(x)"
-																ng-options="p.name for p in getEnumerators2(getDimension('processName'), x)"></select>
+																ng-options="p.id as p.name for p in getEnumerators2(getDimension('processName'), x)"></select>
 															</td>
 														</tr>
 													</table>
@@ -723,7 +723,7 @@ table.formTable td {
 															<td valign="top"><select multiple="multiple"
 																style="height: 100px; width: 250px;" ng-model="x.value"
 																ng-change="selectionChanged(getDimension(x.dimension), x)"
-																ng-options="y.name for y in getEnumerators2(getDimension(x.dimension), x)"></select>
+																ng-options="y.id as y.name for y in getEnumerators2(getDimension(x.dimension), x)"></select>
 															</td>
 															<td valign="top"><a href=""
 																ng-click="removeParameter('filters.' + x.dimension)"

@@ -549,23 +549,15 @@ define(
 					return enumerators;
 				};
 				
-				ReportDefinitionController.prototype.getPrimaryObjectEnum = function() {
-					var dimensionsObj = this.reportingService.metadata.objects[this.report.dataSet.primaryObject].dimensions;
-					var enumerators = [];
-					for ( var n in dimensionsObj) {
-						enumerators.push(dimensionsObj[n]);
-					}
-					return enumerators;
-				};
-				
 				ReportDefinitionController.prototype.toggleFilter = function(filter, property) {
 					filter.metadata[property] = !filter.metadata[property]; 
 					this.updateView();
 				};
 				
 				ReportDefinitionController.prototype.selectedProcessChanged = function(filter) {
-					if(containsObj(filter.metadata.selectedProcesses, this.ALL_PROCESSES, "id")){
-						filter.metadata.selectedProcesses = [this.ALL_PROCESSES];
+					var self = this;
+					if(filter.metadata.selectedProcesses.some(function (id) {return self.ALL_PROCESSES.id == id;})){
+						filter.metadata.selectedProcesses = [this.ALL_PROCESSES.id];
 					}
 				};
 				
@@ -762,13 +754,19 @@ define(
 						//activities
 						if (dimension.id == "activityName") {
 							var selectedProcesses = [];
+							self = this;
+							
 							if (!filter.metadata.selectedProcesses
 									|| filter.metadata.selectedProcesses.length < 1) {
 								selectedProcesses = selectedProcesses.concat(filteredEnumItems);
-							}else if(containsObj(filter.metadata.selectedProcesses, this.ALL_PROCESSES, "id")){
+							}else if(filter.metadata.selectedProcesses.some(function (id) {return self.ALL_PROCESSES.id == id;})){
 								selectedProcesses = selectedProcesses.concat(filteredEnumItems);
 							}else{
-								selectedProcesses = filter.metadata.selectedProcesses;
+								filteredEnumItems.forEach(function(item){
+									if(filter.metadata.selectedProcesses.some(function (id) {return  item.id == id;})){
+										selectedProcesses.push(item);
+									}
+								});
 							}
 							
 							filteredEnumItems = [];
@@ -799,12 +797,13 @@ define(
 
 				
 				ReportDefinitionController.prototype.selectionChanged = function(dimension, filter) {
-					if(dimension.id == "processName" && containsObj(filter.value, this.ALL_PROCESSES, "id")){
-						filter.value = [this.ALL_PROCESSES];
+					var self = this;
+					if(dimension.id == "processName" && filter.value.some(function (id) {return self.ALL_PROCESSES.id == id;})){
+						filter.value = [this.ALL_PROCESSES.id];
 					}
 					
-					if(dimension.id == "activityName" && containsObj(filter.value, this.ALL_ACTIVITIES, "id")){
-						filter.value = [this.ALL_ACTIVITIES];
+					if(dimension.id == "activityName" && filter.value.some(function (id) {return self.ALL_ACTIVITIES.id == id;})){
+						filter.value = [this.ALL_ACTIVITIES.id];
 					}
 				}
 				
@@ -869,11 +868,11 @@ define(
 					
 					if(this.report.dataSet.filters[index].dimension == 'processName'){
 						this.report.dataSet.filters[index].metadata = { process_filter_auxiliary : true };
-						this.report.dataSet.filters[index].value = [this.ALL_PROCESSES];
+						this.report.dataSet.filters[index].value = [this.ALL_PROCESSES.id];
 					}else if(this.report.dataSet.filters[index].dimension == 'activityName'){
 						this.report.dataSet.filters[index].metadata = activityFilterTemplate();
-						this.report.dataSet.filters[index].metadata.selectedProcesses.push(this.ALL_PROCESSES);
-						this.report.dataSet.filters[index].value = [this.ALL_ACTIVITIES];
+						this.report.dataSet.filters[index].metadata.selectedProcesses.push(this.ALL_PROCESSES.id);
+						this.report.dataSet.filters[index].value = [this.ALL_ACTIVITIES.id];
 					}
 
 					// TODO: Operator only for respective types
@@ -1634,19 +1633,6 @@ define(
 			}
 			
 
-		function containsObj(arrayObj, element, property){
-			if(!arrayObj || arrayObj.length < 1){
-				return false;
-			}
-			
-			for(var i = 0;  i < arrayObj.length; i++){
-				if(element[property] == arrayObj[i][property]){
-					return true;
-				}
-			}
-			return false;
-		}
-			
 		function activityFilterTemplate(){
 				return {
 					// Processes

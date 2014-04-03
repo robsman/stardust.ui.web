@@ -299,15 +299,15 @@ define(
 					},
 					priorityLevel : {
 						low : {
-							id : "low",
+							id : "-1",
 							name : this.getI18N("reporting.definitionView.additionalFiltering.priority.low")
 						},
 						medium : {
-							id : "medium",
+							id : "0",
 							name : this.getI18N("reporting.definitionView.additionalFiltering.priority.medium")
 						},
 						high : {
-							id : "high",
+							id : "1",
 							name : this.getI18N("reporting.definitionView.additionalFiltering.priority.high")
 						}
 					}
