@@ -24,7 +24,7 @@ public class SchedulingRecurrenceYearly extends SchedulingRecurrence
          cronExpr.append(getSECONDS() + SchedulingUtils.BLANK_SPACE
                + getMINUTES() + SchedulingUtils.BLANK_SPACE
                + getHOURS() + SchedulingUtils.BLANK_SPACE + dayNumber + " "
-               + onMonth + " ? *");
+               + onMonth + " ? 0/" + recurrenceYearIntervalCount);
 
       }
       else if (yearlyRecurrence.equals("date"))
@@ -42,7 +42,7 @@ public class SchedulingRecurrenceYearly extends SchedulingRecurrence
                + getMINUTES() + SchedulingUtils.BLANK_SPACE
                + getHOURS() + SchedulingUtils.BLANK_SPACE + "?"
                + SchedulingUtils.BLANK_SPACE + onTheMonth + SchedulingUtils.BLANK_SPACE
-               + byDay + "#" + onTheXDay + SchedulingUtils.BLANK_SPACE + "*");
+               + byDay + "#" + onTheXDay + SchedulingUtils.BLANK_SPACE + "0/" + recurrenceYearIntervalCount);
       }
 
       return cronExpr.toString();
