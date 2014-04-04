@@ -221,6 +221,19 @@
       </dependency>
    </dependencies>
 
+   <build>
+      <plugins>
+         <plugin>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+               <excludes>
+                  <exclude>**/SwitchElementTypeTest.java</exclude>
+               </excludes>
+            </configuration>
+         </plugin>
+      </plugins>
+   </build>
+
    <profiles>
       <profile>
          <id>with-bpmn2-xpdl-transformation</id>
