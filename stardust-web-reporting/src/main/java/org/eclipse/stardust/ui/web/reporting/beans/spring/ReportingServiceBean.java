@@ -170,50 +170,47 @@ public class ReportingServiceBean
    *
    * @return
    */
-  public JsonObject getModelData()
-  {
-     try
-     {
-        QueryService queryService = getQueryService();
+   public JsonObject getModelData()
+   {
+      try
+      {
+         JsonObject resultJson = new JsonObject();
+         JsonObject processesJson = new JsonObject();
+         JsonObject descriptorsJson = new JsonObject();
 
-        JsonObject resultJson = new JsonObject();
-        JsonObject processesJson = new JsonObject();
-        JsonObject descriptorsJson = new JsonObject();
+         resultJson.add("processDefinitions", processesJson);
+         resultJson.add("descriptors", descriptorsJson);
 
-        resultJson.add("processDefinitions", processesJson);
-        resultJson.add("descriptors", descriptorsJson);
+         // Ensures uniqueness of descriptor entries across all Process
+         // Definitions
 
-        // Ensures uniqueness of descriptor entries across all Process
-        // Definitions
+         Map<String, Object> descriptorsMap = new HashMap<String, Object>();
 
-        Map<String, Object> descriptorsMap = new HashMap<String, Object>();
+         for (ProcessDefinition processDefinition : modelService.getAllProcessDefinitions(false, null))
+         {
+            JsonObject processJson = new JsonObject();
 
-        for (ProcessDefinition processDefinition : queryService
-              .getAllProcessDefinitions())
-        {
-           JsonObject processJson = new JsonObject();
+            processJson.addProperty("id", processDefinition.getQualifiedId());
+            processJson.addProperty("name", processDefinition.getName());
+            processJson.addProperty("auxiliary", ProcessDefinitionUtils.isAuxiliaryProcess(processDefinition));
 
-           processJson.addProperty("id", processDefinition.getQualifiedId());
-           processJson.addProperty("name", processDefinition.getName());
-           processJson.addProperty("auxiliary",
-                 ProcessDefinitionUtils.isAuxiliaryProcess(processDefinition));
-
-           processesJson.add(processDefinition.getId(), processJson);
+            processesJson.add(processDefinition.getId(), processJson);
 
             DataPath[] dataPaths = DescriptorUtils.getAllDescriptors(processDefinition, true, modelService,
                   servletContext, xPathCacheManager);
-           
-           for (DataPath dataPath : dataPaths)
-           {
-              if (dataPath.isDescriptor())
-              {
-                 if (!descriptorsMap.containsKey(dataPath.getId()))
+
+            for (DataPath dataPath : dataPaths)
+            {
+               if (dataPath.isDescriptor())
+               {
+                  if (!descriptorsMap.containsKey(dataPath.getId()))
                   {
                      JsonObject descriptorJson = new JsonObject();
 
                      descriptorsJson.add(dataPath.getId(), descriptorJson);
 
-                     descriptorJson.addProperty("id", dataPath.getQualifiedId());
+                     descriptorJson.addProperty("id",
+                           processDefinition.getQualifiedId() + ":" + dataPath.getQualifiedId());
                      descriptorJson.addProperty("name", dataPath.getName());
                      descriptorJson.addProperty("type", UiHelper.mapDesciptorType(dataPath.getMappedType()).getId());
                      descriptorsMap.put(dataPath.getId(), dataPath);
@@ -221,45 +218,44 @@ public class ReportingServiceBean
                }
             }
 
-           //add all activities
-           JsonArray activities = new JsonArray();
+            // add all activities
+            JsonArray activities = new JsonArray();
 
-           for (Object  activityObj : processDefinition.getAllActivities())
-           {
-              Activity activity = (Activity) activityObj;
-              JsonObject activityJsonObj = new JsonObject();
+            for (Object activityObj : processDefinition.getAllActivities())
+            {
+               Activity activity = (Activity) activityObj;
+               JsonObject activityJsonObj = new JsonObject();
 
-              activityJsonObj.addProperty("id", activity.getQualifiedId());
-              activityJsonObj.addProperty("name", activity.getName());
-              activityJsonObj.addProperty("auxiliary", ActivityInstanceUtils.isAuxiliaryActivity(activity));
-              activityJsonObj.addProperty("interactive", activity.isInteractive());
-              activities.add(activityJsonObj);
-           }
-           processJson.add("activities", activities);
-        }
+               activityJsonObj.addProperty("id", processDefinition.getQualifiedId() + ":" + activity.getQualifiedId());
+               activityJsonObj.addProperty("name", activity.getName());
+               activityJsonObj.addProperty("auxiliary", ActivityInstanceUtils.isAuxiliaryActivity(activity));
+               activityJsonObj.addProperty("interactive", activity.isInteractive());
+               activities.add(activityJsonObj);
+            }
+            processJson.add("activities", activities);
+         }
 
-        JsonObject participantsJson = new JsonObject();
+         JsonObject participantsJson = new JsonObject();
 
-        resultJson.add("participants", participantsJson);
+         resultJson.add("participants", participantsJson);
 
-        List<QualifiedModelParticipantInfo> qParticipantInfoList = modelService
-              .getAllModelParticipants(false);
-        for (QualifiedModelParticipantInfo participant : qParticipantInfoList)
-        {
-           JsonObject participantJson = new JsonObject();
+         List<QualifiedModelParticipantInfo> qParticipantInfoList = modelService.getAllModelParticipants(false);
+         for (QualifiedModelParticipantInfo participant : qParticipantInfoList)
+         {
+            JsonObject participantJson = new JsonObject();
 
-           participantJson.addProperty("id", participant.getQualifiedId());
-           participantJson.addProperty("name", participant.getName());
+            participantJson.addProperty("id", participant.getQualifiedId());
+            participantJson.addProperty("name", participant.getName());
 
-           participantsJson.add(participant.getId(), participantJson);
-        }
+            participantsJson.add(participant.getId(), participantJson);
+         }
 
-        return resultJson;
-     }
-     finally
-     {
-     }
-  }
+         return resultJson;
+      }
+      finally
+      {
+      }
+   }
 
    /**
     *
@@ -282,7 +278,6 @@ public class ReportingServiceBean
    {
       try
       {
-
          JsonObject storageJson = reportJson.get("storage").getAsJsonObject();
          String name = reportJson.get("name").getAsString();
          String location = storageJson.get("location").getAsString();

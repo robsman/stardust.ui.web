@@ -551,7 +551,7 @@ define(
 				
 				ReportDefinitionController.prototype.toggleFilter = function(filter, property) {
 					filter.metadata[property] = !filter.metadata[property]; 
-					this.updateView();
+					//this.updateView();
 				};
 				
 				ReportDefinitionController.prototype.selectedProcessChanged = function(filter) {

@@ -3,7 +3,9 @@ package org.eclipse.stardust.ui.web.reporting.beans.spring;
 import java.util.Collection;
 import java.util.List;
 
+import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.Participant;
+import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.model.QualifiedModelParticipantInfo;
 import org.eclipse.stardust.engine.api.runtime.DeployedModel;
 
@@ -41,5 +43,14 @@ public interface IModelService
     * @param oid
     * @return
     */
-   public DeployedModel getModel(long oid); 
+   public DeployedModel getModel(long oid);
+   
+   //Process Definitions
+   /**
+    * @param filterDuplicateProcesses
+    * @param deployedModel
+    * @return
+    */
+   public List<ProcessDefinition> getAllProcessDefinitions(boolean filterDuplicateProcesses, Model deployedModel);
+   
 }
