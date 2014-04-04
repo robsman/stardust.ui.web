@@ -710,10 +710,21 @@ define(
 				
 				ReportDefinitionController.prototype.getOperatorsEnum = function(dimension){
 					var operators = [];
-					if(dimension.operators){
-						for (var i in dimension.operators){
-							operators.push({"id" : dimension.operators[i], 
-									"label" : this.getI18N("reporting.definitionView.additionalFiltering.operator." + dimension.operators[i])});
+					
+					if(!dimension){
+						return operators; 
+					}
+					
+					//operators can be data type specific or filter specific
+					var dimensionOperator = dimension.operators;
+					if(!dimensionOperator && dimension.type){
+						dimensionOperator = dimension.type.operators;
+					}
+					
+					if(dimensionOperator){
+						for (var i in dimensionOperator){
+							operators.push({"id" : dimensionOperator[i], 
+									"label" : this.getI18N("reporting.definitionView.additionalFiltering.operator." + dimensionOperator[i])});
 						}
 					}else{
 						// return default list
@@ -738,7 +749,7 @@ define(
 					
 					var filteredEnumItems = enumItems;
 					
-					if(filter.dimension == "processName" || filter.dimension == "activityName"){
+					if(filter && (filter.dimension == "processName" || filter.dimension == "activityName")){
 						//processes
 						if ((dimension.id == "processName" || dimension.id == "activityName")) {
 							filteredEnumItems = [];

@@ -67,7 +67,8 @@ define(
 				};
 				this.metadata.integerType = {
 					id : "integerType",
-					name : "Integer"
+					name : "Integer",
+					operators : ["E", "LE", "GE", "NE", "I", "NI", "B"]
 				};
 				this.metadata.decimalType = {
 					id : "decimalType",
@@ -484,17 +485,13 @@ define(
 				ReportingService.prototype.addDescriptorData = function() {
 					for ( var descriptorId in this.modelData.descriptors) {
 						var descriptor = this.modelData.descriptors[descriptorId];
-						var type = this.metadata.stringType;
-
-						if (descriptor.type === "Integer") {
-							type = this.metadata.integerType;
-						}
+						var type = this.metadata[descriptor.type];
 
 						for ( var objectId in this.metadata.objects) {
 							var object = this.metadata.objects[objectId];
 
 							if (object.supportsDescriptors) {
-								if (descriptor.type === "Integer") {
+								if (type == this.metadata.integerType) {
 									object.facts[descriptor.id] = {
 										id : descriptor.id,
 										name : descriptor.name,

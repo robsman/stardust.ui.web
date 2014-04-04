@@ -612,10 +612,24 @@ table.formTable td {
 												ng-show="getDimension(x.dimension).type == getMetadata().integerType">
 												<table cellpadding="0" cellspacing="0" class="layoutTable">
 													<tr>
-														<td><select ng-model="x.operator" 
+														<td><select ng-model="x.operator" ng-change="operatorChanged(x)"
 																ng-options="o.id as o.label for o in getOperatorsEnum(getDimension(x.dimension))">
 														</td>
-														<td><input type="number" ng-model="x.value" required></td>
+														
+  													 	<td ng-show="x.operator != 'B'"><input type="number" ng-model="x.value" required></td>
+														<td ng-show="x.operator == 'B'">
+														 <table>
+														 	<tr>
+															 	<td ><label>{{getI18N('reporting.definitionView.from.label')}}</label></td>
+																<td ><input type="number" ng-model="x.value.From" required></td>
+														 	</tr>
+															<tr>
+															 	<td ><label>{{getI18N('reporting.definitionView.to.label')}}</label></td>
+																<td ><input type="number" ng-model="x.value.To" required></td>
+														 	</tr>
+														 	
+														 </table>			
+														</td>														
 														<td><a href=""
 															ng-click="removeParameter('filters.' + x.dimension)"
 															ng-show="existsParameter('filters.' + x.dimension)"><img

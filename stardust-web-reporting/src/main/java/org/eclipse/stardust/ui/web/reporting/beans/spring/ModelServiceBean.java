@@ -8,13 +8,12 @@ import javax.servlet.ServletContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
-
 import org.eclipse.stardust.engine.api.model.Participant;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.model.QualifiedModelParticipantInfo;
 import org.eclipse.stardust.engine.api.runtime.DeployedModel;
 import org.eclipse.stardust.engine.api.runtime.DeployedModelDescription;
-import org.eclipse.stardust.ui.web.reporting.common.ModelCache;
+import org.eclipse.stardust.ui.web.reporting.common.portal.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 
@@ -39,6 +38,12 @@ public class ModelServiceBean implements IModelService
    {
    }
 
+   @Override
+   public DeployedModel getModel(long oid)
+   {
+      return getModelCache().getModel(oid);
+   }
+   
    @Override
    public List<DeployedModel> getActiveModels()
    {

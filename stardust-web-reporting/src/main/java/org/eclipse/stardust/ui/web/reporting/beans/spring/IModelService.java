@@ -17,9 +17,29 @@ import org.eclipse.stardust.engine.api.runtime.DeployedModel;
  */
 public interface IModelService
 {
+   /**
+    * @return
+    */
    public List<DeployedModel> getActiveModels();
+   /**
+    * @return
+    */
    public Collection<Participant> getAllParticipants();
+   /**
+    * @param filterPredefinedModel
+    * @return
+    */
    public List<QualifiedModelParticipantInfo> getAllModelParticipants(boolean filterPredefinedModel);
+   /**
+    * @param id
+    * @param type
+    * @return
+    */
    @SuppressWarnings("rawtypes")
    public Participant getParticipant(String id, Class type);
+   /**
+    * @param oid
+    * @return
+    */
+   public DeployedModel getModel(long oid); 
 }
