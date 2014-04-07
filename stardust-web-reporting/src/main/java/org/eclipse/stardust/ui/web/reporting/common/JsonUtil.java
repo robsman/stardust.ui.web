@@ -1,5 +1,8 @@
 package org.eclipse.stardust.ui.web.reporting.common;
 
+import org.apache.commons.lang.StringUtils;
+
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
@@ -60,6 +63,112 @@ public class JsonUtil
          {
             throw new RuntimeException("JSON Primitive " + primitive + " has an unknown type.");
          }
+      }
+
+      return null;
+   }
+
+   private static void nullCheck(JsonElement jsonElement)
+   {
+      if(jsonElement == null || jsonElement.isJsonNull())
+      {
+         throw new RuntimeException("JsonElement argument is null");
+      }
+   }
+
+   private static void primitiveValueCheck(JsonElement jsonElement)
+   {
+      nullCheck(jsonElement);
+      if(!jsonElement.isJsonPrimitive())
+      {
+         StringBuilder msgBuilder = new StringBuilder();
+         msgBuilder.append("JsonElement").append("'");
+         msgBuilder.append(jsonElement).append("'");
+         msgBuilder.append(" is not a JsonPrimitive");
+         throw new RuntimeException(msgBuilder.toString());
+      }
+   }
+
+
+   public static long getPrimitiveValueAsLong(JsonElement jsonElement)
+   {
+      nullCheck(jsonElement);
+      primitiveValueCheck(jsonElement);
+
+      JsonPrimitive jsonPrimitive = jsonElement.getAsJsonPrimitive();
+      return jsonPrimitive.getAsLong();
+   }
+
+   public static String getPrimitiveValueAsString(JsonElement jsonElement)
+   {
+      nullCheck(jsonElement);
+      primitiveValueCheck(jsonElement);
+
+      JsonPrimitive jsonPrimitive = jsonElement.getAsJsonPrimitive();
+      return jsonPrimitive.getAsString();
+   }
+
+   public static JsonPrimitive getPrimitiveProperty(JsonObject jsonObject, String property)
+   {
+      if(StringUtils.isEmpty(property))
+      {
+         throw new RuntimeException("Property is null");
+      }
+
+      if(jsonObject == null || jsonObject.isJsonNull())
+      {
+         throw new RuntimeException("JsonObject is null");
+      }
+
+
+      JsonElement jsonProperty = jsonObject.get(property);
+      if(jsonProperty != null && !jsonProperty.isJsonNull())
+      {
+         if(!jsonProperty.isJsonPrimitive())
+         {
+            StringBuilder msgBuilder = new StringBuilder();
+            msgBuilder.append("Property").append("'");
+            msgBuilder.append(property).append("'");
+            msgBuilder.append(" is not a JsonPrimitive");
+            throw new RuntimeException(msgBuilder.toString());
+         }
+
+         JsonPrimitive jsonPrimitive
+            = (JsonPrimitive) jsonProperty.getAsJsonPrimitive();
+         return jsonPrimitive;
+
+      }
+
+      return null;
+   }
+
+   public static JsonObject getAsJsonObject(JsonElement jsonElement)
+   {
+      if(jsonElement == null || jsonElement.isJsonNull())
+      {
+         throw new RuntimeException("JsonElement argument is null");
+      }
+
+      if(!jsonElement.isJsonObject())
+      {
+         StringBuilder msgBuilder = new StringBuilder();
+         msgBuilder.append("JsonElement").append("'");
+         msgBuilder.append(jsonElement).append("'");
+         msgBuilder.append(" is not a JsonObject");
+         throw new RuntimeException(msgBuilder.toString());
+      }
+
+      return jsonElement.getAsJsonObject();
+   }
+
+   public static String getStringProperty(JsonElement jsonElement, String property)
+   {
+      JsonObject jsonObject = getAsJsonObject(jsonElement);
+      JsonPrimitive jsonPrimitive = getPrimitiveProperty(jsonObject, property);
+
+      if(jsonPrimitive != null && !jsonPrimitive.isJsonNull())
+      {
+         return getPrimitiveValueAsString(jsonPrimitive);
       }
 
       return null;

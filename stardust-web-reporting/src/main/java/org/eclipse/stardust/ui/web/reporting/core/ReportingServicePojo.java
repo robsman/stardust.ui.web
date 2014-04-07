@@ -39,6 +39,45 @@ public class ReportingServicePojo
 
    private JsonMarshaller jsonMarshaller;
 
+   public enum QueryType {
+      PROCESS_INSTANCE("processInstance"),
+      ACTIVITY_INSTANCE("activityInstance");
+
+      private String id;
+      QueryType(String id)
+      {
+         this.id = id;
+      }
+
+      @Override
+      public String toString()
+      {
+         return getId();
+      }
+
+      public String getId()
+      {
+         return id;
+      }
+
+      public static QueryType parse(String s)
+      {
+         for(QueryType type: QueryType.values())
+         {
+            if(type.getId().equals(s))
+            {
+               return type;
+            }
+         }
+
+         StringBuilder errorMsgBuilder = new StringBuilder();
+         errorMsgBuilder.append("Unkown QueryType: ").append("'");
+         errorMsgBuilder.append(s);
+         errorMsgBuilder.append("'");
+         throw new RuntimeException(errorMsgBuilder.toString());
+      }
+   }
+
    @Deprecated
    // TODO: get rid of any hardcoded value from the prototype
    private Map<String, Map<String, ValueProvider>> valueProviders;
@@ -413,157 +452,157 @@ public class ReportingServicePojo
          String dimension = filter.getDimension();
          String operator = filter.getOperator();
 
-         // TODO: These need to be overwritten by parameters
-         JsonObject valueJson = filter.getValues().getAsJsonObject();
-
-         if (dimension.equals("processName"))
-         {
-            if (!valueJson.isJsonNull())
-            {
-               query.where(new ProcessDefinitionFilter(valueJson.getAsString()));
-            }
-
-            break;
-         }
-         else if (dimension.equals("activityName"))
-         {
-            if (!valueJson.isJsonNull())
-            {
-               query.where(new ActivityFilter(valueJson.getAsString()));
-            }
-
-            break;
-         }
-         else
-         {
-            if (dimension.equals("startTimestamp"))
-            {
-               if (!valueJson.isJsonNull())
-               {
-                  query.where(ActivityInstanceQuery.START_TIME.greaterOrEqual(dateFormat
-                        .parse(valueJson.getAsString()).getTime()));
-
-               }
-
-               if (!valueJson.isJsonNull())
-               {
-                  query.where(ProcessInstanceQuery.START_TIME.lessOrEqual(dateFormat
-                        .parse(valueJson.getAsString()).getTime()));
-
-               }
-            }
-            else if (dimension.equals("lastModificationTimestamp"))
-            {
-               if (!valueJson.isJsonNull())
-               {
-                  query.where(ActivityInstanceQuery.LAST_MODIFICATION_TIME
-                        .greaterOrEqual(dateFormat.parse(valueJson.getAsString())
-                              .getTime()));
-
-               }
-
-               if (!valueJson.isJsonNull())
-               {
-                  query.where(ActivityInstanceQuery.LAST_MODIFICATION_TIME
-                        .lessOrEqual(dateFormat.parse(valueJson.getAsString()).getTime()));
-               }
-            }
-            else if (dimension.equals("criticality"))
-            {
-               if (!valueJson.isJsonNull())
-               {
-                  if (operator.equals("equal"))
-                  {
-                     query.where(ActivityInstanceQuery.CRITICALITY.isEqual(valueJson
-                           .getAsLong()));
-                  }
-               }
-            }
-            else if (dimension.equals("participantPerformerName"))
-            {
-               if (!valueJson.isJsonNull())
-               {
-                  // TODO Find user by account and use OID
-                  if (operator.equals("equals"))
-                  {
-                     query.where(ActivityInstanceQuery.CURRENT_PERFORMER_OID
-                           .isEqual(valueJson.getAsLong()));
-                  }
-               }
-            }
-            else if (dimension.equals("state"))
-            {
-               JsonArray valuesJson = valueJson.getAsJsonArray();
-               ActivityInstanceState[] activityInstanceStates = new ActivityInstanceState[valuesJson
-                     .size()];
-
-               for (int m = 0; m < valuesJson.size(); ++m)
-               {
-                  if (valuesJson.get(m).isJsonNull())
-                  {
-                     break;
-                  }
-
-                  if (valuesJson.get(m).getAsString().equals("Application"))
-                  {
-                     activityInstanceStates[m] = ActivityInstanceState.Application;
-                  }
-                  else if (valuesJson.get(m).getAsString().equals("Suspended"))
-                  {
-                     activityInstanceStates[m] = ActivityInstanceState.Suspended;
-                  }
-                  else if (valuesJson.get(m).getAsString().equals("Hibernated"))
-                  {
-                     activityInstanceStates[m] = ActivityInstanceState.Hibernated;
-                  }
-                  else if (valuesJson.get(m).getAsString().equals("Completed"))
-                  {
-                     activityInstanceStates[m] = ActivityInstanceState.Completed;
-                  }
-                  else if (valuesJson.get(m).getAsString().equals("Aborting"))
-                  {
-                     activityInstanceStates[m] = ActivityInstanceState.Aborting;
-                  }
-                  else if (valuesJson.get(m).getAsString().equals("Aborted"))
-                  {
-                     activityInstanceStates[m] = ActivityInstanceState.Aborted;
-                  }
-                  else if (valuesJson.get(m).getAsString().equals("Interrupted"))
-                  {
-                     activityInstanceStates[m] = ActivityInstanceState.Interrupted;
-                  }
-                  else
-                  {
-                     throw new IllegalArgumentException("State "
-                           + valuesJson.get(m).getAsString()
-                           + " unknown for activity instance state.");
-                  }
-               }
-
-               ActivityStateFilter activityStateFilter = new ActivityStateFilter(
-                     activityInstanceStates);
-
-               query.where(activityStateFilter);
-
-            }
-            else
-            {
-               // Descriptors
-
-               if (operator.equals("equal"))
-               {
-                  query.where(DataFilter.isEqual(dimension, valueJson.getAsString()));
-               }
-               else if (operator.equals("equal"))
-               {
-                  query.where(DataFilter.notEqual(dimension, valueJson.getAsString()));
-               }
-               else if (operator.equals("notEqual"))
-               {
-                  query.where(DataFilter.notEqual(dimension, valueJson.getAsString()));
-               }
-            }
-         }
+//         // TODO: These need to be overwritten by parameters
+//         JsonObject valueJson = filter.getValue().getAsJsonObject();
+//
+//         if (dimension.equals("processName"))
+//         {
+//            if (!valueJson.isJsonNull())
+//            {
+//               query.where(new ProcessDefinitionFilter(valueJson.getAsString()));
+//            }
+//
+//            break;
+//         }
+//         else if (dimension.equals("activityName"))
+//         {
+//            if (!valueJson.isJsonNull())
+//            {
+//               query.where(new ActivityFilter(valueJson.getAsString()));
+//            }
+//
+//            break;
+//         }
+//         else
+//         {
+//            if (dimension.equals("startTimestamp"))
+//            {
+//               if (!valueJson.isJsonNull())
+//               {
+//                  query.where(ActivityInstanceQuery.START_TIME.greaterOrEqual(dateFormat
+//                        .parse(valueJson.getAsString()).getTime()));
+//
+//               }
+//
+//               if (!valueJson.isJsonNull())
+//               {
+//                  query.where(ProcessInstanceQuery.START_TIME.lessOrEqual(dateFormat
+//                        .parse(valueJson.getAsString()).getTime()));
+//
+//               }
+//            }
+//            else if (dimension.equals("lastModificationTimestamp"))
+//            {
+//               if (!valueJson.isJsonNull())
+//               {
+//                  query.where(ActivityInstanceQuery.LAST_MODIFICATION_TIME
+//                        .greaterOrEqual(dateFormat.parse(valueJson.getAsString())
+//                              .getTime()));
+//
+//               }
+//
+//               if (!valueJson.isJsonNull())
+//               {
+//                  query.where(ActivityInstanceQuery.LAST_MODIFICATION_TIME
+//                        .lessOrEqual(dateFormat.parse(valueJson.getAsString()).getTime()));
+//               }
+//            }
+//            else if (dimension.equals("criticality"))
+//            {
+//               if (!valueJson.isJsonNull())
+//               {
+//                  if (operator.equals("equal"))
+//                  {
+//                     query.where(ActivityInstanceQuery.CRITICALITY.isEqual(valueJson
+//                           .getAsLong()));
+//                  }
+//               }
+//            }
+//            else if (dimension.equals("participantPerformerName"))
+//            {
+//               if (!valueJson.isJsonNull())
+//               {
+//                  // TODO Find user by account and use OID
+//                  if (operator.equals("equals"))
+//                  {
+//                     query.where(ActivityInstanceQuery.CURRENT_PERFORMER_OID
+//                           .isEqual(valueJson.getAsLong()));
+//                  }
+//               }
+//            }
+//            else if (dimension.equals("state"))
+//            {
+//               JsonArray valuesJson = valueJson.getAsJsonArray();
+//               ActivityInstanceState[] activityInstanceStates = new ActivityInstanceState[valuesJson
+//                     .size()];
+//
+//               for (int m = 0; m < valuesJson.size(); ++m)
+//               {
+//                  if (valuesJson.get(m).isJsonNull())
+//                  {
+//                     break;
+//                  }
+//
+//                  if (valuesJson.get(m).getAsString().equals("Application"))
+//                  {
+//                     activityInstanceStates[m] = ActivityInstanceState.Application;
+//                  }
+//                  else if (valuesJson.get(m).getAsString().equals("Suspended"))
+//                  {
+//                     activityInstanceStates[m] = ActivityInstanceState.Suspended;
+//                  }
+//                  else if (valuesJson.get(m).getAsString().equals("Hibernated"))
+//                  {
+//                     activityInstanceStates[m] = ActivityInstanceState.Hibernated;
+//                  }
+//                  else if (valuesJson.get(m).getAsString().equals("Completed"))
+//                  {
+//                     activityInstanceStates[m] = ActivityInstanceState.Completed;
+//                  }
+//                  else if (valuesJson.get(m).getAsString().equals("Aborting"))
+//                  {
+//                     activityInstanceStates[m] = ActivityInstanceState.Aborting;
+//                  }
+//                  else if (valuesJson.get(m).getAsString().equals("Aborted"))
+//                  {
+//                     activityInstanceStates[m] = ActivityInstanceState.Aborted;
+//                  }
+//                  else if (valuesJson.get(m).getAsString().equals("Interrupted"))
+//                  {
+//                     activityInstanceStates[m] = ActivityInstanceState.Interrupted;
+//                  }
+//                  else
+//                  {
+//                     throw new IllegalArgumentException("State "
+//                           + valuesJson.get(m).getAsString()
+//                           + " unknown for activity instance state.");
+//                  }
+//               }
+//
+//               ActivityStateFilter activityStateFilter = new ActivityStateFilter(
+//                     activityInstanceStates);
+//
+//               query.where(activityStateFilter);
+//
+//            }
+//            else
+//            {
+//               // Descriptors
+//
+//               if (operator.equals("equal"))
+//               {
+//                  query.where(DataFilter.isEqual(dimension, valueJson.getAsString()));
+//               }
+//               else if (operator.equals("equal"))
+//               {
+//                  query.where(DataFilter.notEqual(dimension, valueJson.getAsString()));
+//               }
+//               else if (operator.equals("notEqual"))
+//               {
+//                  query.where(DataFilter.notEqual(dimension, valueJson.getAsString()));
+//               }
+//            }
+//         }
       }
    }
 
@@ -588,6 +627,26 @@ public class ReportingServicePojo
          ValidationHelper.validate(reportDefinition);
 
          ReportDataSet dataSet = reportDefinition.getDataSet();
+         QueryType queryType = QueryType.parse(dataSet.getPrimaryObject());
+         QueryBuilder queryBuilder = new QueryBuilder();
+
+         //TODO : write generic resultset to json logic
+         switch(queryType)
+         {
+            case ACTIVITY_INSTANCE:
+               ActivityInstanceQuery aiQuery
+                  = queryBuilder.buildActivityInstanceQuery(dataSet);
+               queryService.getAllActivityInstances(aiQuery);
+               break;
+            case PROCESS_INSTANCE:
+               ProcessInstanceQuery piQuery
+                  = queryBuilder.buildProcessInstanceQuery(dataSet);
+               queryService.getAllProcessInstances(piQuery);
+               break;
+            default:
+               throw new RuntimeException("Unsupported QueryType: "+queryType);
+         }
+
          String dataSetType = dataSet.getType();
          String primaryObject = dataSet.getPrimaryObject();
          String fact = dataSet.getFact();
@@ -645,6 +704,8 @@ public class ReportingServicePojo
                externalData = retrieveExternalData(externalJoin);
             }
          }
+
+
 
          // Obtain Audit Trail data
          if (primaryObject.equals("processInstance"))
