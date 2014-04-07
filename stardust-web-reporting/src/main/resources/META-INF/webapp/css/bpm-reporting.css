@@ -337,3 +337,40 @@ div.right {
 	border-spacing: 0px;
 	border-collapse: separate;
 }
+
+
+table.dataTable {
+	font-family: Arial;
+	color: #004169;
+	width: 100%;
+	margin: 0px;
+	border-bottom: 1px solid #111;
+}
+
+table.dataTable thead {
+	margin-top: 10px;
+	background-color: white;
+}
+
+table.dataTable thead th {
+	border-bottom: 1px solid #111;
+	font-weight: bold;
+	font-size: 12px;
+	color: #111;
+}
+
+table.dataTable tbody td {
+	border-top: 1px solid #ddd;
+}
+
+table.dataTable tbody tr.lastRow td {
+	border-bottom: none;
+}
+
+table.dataTable tbody tr.odd {
+	background-color: #f9f9f9;
+}
+
+.dataTableFrame {
+	border: none;
+}

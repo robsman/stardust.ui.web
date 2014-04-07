@@ -209,7 +209,7 @@ define(
 													
 													self.populateAutoCompleteKeywordList();
 													
-													self.updateView();
+													//self.updateView();
 												});
 
 										//Participants Select
