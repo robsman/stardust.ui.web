@@ -885,6 +885,12 @@ define(
 						this.report.dataSet.filters[index].metadata.selectedProcesses.push(this.ALL_PROCESSES.id);
 						this.report.dataSet.filters[index].value = [this.ALL_ACTIVITIES.id];
 					}
+					else{
+						var dimenison = this.getDimension(this.report.dataSet.filters[index].dimension);
+						if(dimenison && dimenison.isDescriptor){
+							this.report.dataSet.filters[index].metadata = { isDescriptor: true};	
+						}
+					}
 
 					// TODO: Operator only for respective types
 					this.report.dataSet.filters[index].operator = "equal";

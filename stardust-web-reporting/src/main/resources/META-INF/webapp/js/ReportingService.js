@@ -495,14 +495,16 @@ define(
 									object.facts[descriptor.id] = {
 										id : descriptor.id,
 										name : descriptor.name,
-										type : type
+										type : type,
+										isDescriptor : true
 									};
 								}
 
 								object.dimensions[descriptor.id] = {
 									id : descriptor.id,
 									name : descriptor.name,
-									type : type
+									type : type,
+									isDescriptor : true
 								};
 							}
 						}
