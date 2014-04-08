@@ -470,17 +470,17 @@ table.formTable td {
 													<tr>
 														<td valign="top"><select multiple="multiple"
 															style="height: 100px; width: 250px;"
-															ng-model="report.dataSet.firstDimensionFilters"
+															ng-model="report.dataSet.firstDimensionParameters"
 															ng-options="x as x for x in firstDimensionEnumerators"></select>
 														</td>
 														<td valign="top"><a href=""
-															ng-click="firstDimensionEnumerationParameter = false"
-															ng-show="firstDimensionEnumerationParameter"><img
+															ng-click="removeParameters(report.dataSet.firstDimensionParameters);"
+															ng-show="existsDimension(getFirstDimension().name)"><img
 																src="../css/images/parameter.png"
 																title="{{getI18N('reporting.definitionView.parameter.label')}}" />
 																<a href=""
-																ng-click="firstDimensionEnumerationParameter = true"
-																ng-show="!firstDimensionEnumerationParameter"><img
+																ng-click="addParameter(report.dataSet.firstDimensionParameters, getFirstDimension().name, getMetadata().enumerationType.id);"
+																ng-show="!existsDimension(getFirstDimension().name)"><img
 																	src="../css/images/no-parameter.png"
 																	title="{{getI18N('reporting.definitionView.noParameter.label')}}" />
 															</a> </a></td>
@@ -1136,7 +1136,7 @@ table.formTable td {
 								<div id="documentTemplateEditor"></div>
 							</div>
 						</div>
-						<div id="previewTab">
+						<div id="previewTab">                     
 							<div ng-show="hasParameters()">
 								<div class="heading">{{getI18N('reporting.definitionView.parameters.title')}}</div>
 								<table class="formTable" style="margin-bottom: 10px;">
@@ -1156,6 +1156,7 @@ table.formTable td {
 											ng-show="parameter.type == getMetadata().stringType.id"
 											value="{{getParameterDefaultValue(parameter.id)}}"
 											ng-blur="refreshPreview()" /> <select multiple="multiple"
+                                 ng-model="report.parameters[parameter.id].value"
 											ng-show="parameter.type == getMetadata().enumerationType.id"
 											ng-options="x as x for x in getTestEnumerators()"
 											ng-blur="refreshPreview()"></select></td>

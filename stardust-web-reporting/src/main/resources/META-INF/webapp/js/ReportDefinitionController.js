@@ -682,6 +682,17 @@ define(
 							.getFirstDimension().name;
 
 					this.populateGroupBy();
+					
+					//Remove the First Dimension parameters from the list
+					for ( var parameter in this.report.parameters)
+               {
+                  if (this.report.parameters[parameter].id.indexOf("filters.") === -1)
+                  {
+                     delete this.report.parameters[parameter];
+                  }
+               }
+					
+					this.report.dataSet.firstDimensionParameters = [];
 
 					this.updateView();
 				};
@@ -1081,13 +1092,16 @@ define(
 					
 					var currentFilter = this.report.dataSet.filters;
 					
-					this.report.parameters[id] = {
-						id : id,
-						name : name,
-						type : type,
-						value : value,
-						operator : operator
-					};
+					if (id != null && id.length != 0)
+               {
+					   this.report.parameters[id] = {
+			                  id : id,
+			                  name : name,
+			                  type : type,
+			                  value : value,
+			                  operator : operator
+			               };
+               }
 				};
 
 				/**
@@ -1113,7 +1127,7 @@ define(
 				 */
 				ReportDefinitionController.prototype.removeParameters = function(
 						ids) {
-					for ( var n = 0; n < parameters.length; ++n) {
+					for ( var n = 0; n < ids.length; ++n) {
 						this.removeParameter(ids[n]);
 					}
 				};
@@ -1125,6 +1139,21 @@ define(
 						id) {
 					return this.report.parameters[id] != null;
 				};
+				
+				/**
+             * 
+             */
+            ReportDefinitionController.prototype.existsDimension = function(
+                  dimensionName) {
+               for ( var parameter in this.report.parameters)
+               {
+                  if (this.report.parameters[parameter].name == dimensionName)
+                  {
+                     return true;
+                  }
+               }
+               return false;
+            };
 
 				/**
 				 * 
