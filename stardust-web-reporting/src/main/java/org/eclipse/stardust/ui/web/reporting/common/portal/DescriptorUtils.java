@@ -1,8 +1,8 @@
 package org.eclipse.stardust.ui.web.reporting.common.portal;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletContext;
 
@@ -28,8 +28,8 @@ import org.eclipse.stardust.ui.web.reporting.beans.spring.portal.XPathCacheManag
  * @author Yogesh.Manware
  * 
  *         TODO: methods are copied from CommonDescriptorUtils and other relevant classes
- *         to avoid the dependency on facescontext, needs to be moved to centralized location
- *         later.
+ *         to avoid the dependency on facescontext, needs to be moved to centralized
+ *         location later.
  * 
  */
 public class DescriptorUtils
@@ -43,36 +43,36 @@ public class DescriptorUtils
     * Descriptors are ordered by the order of processes and the order of descriptors in
     * the modeller.
     * 
-    * @param processes
-    *           List of all processes for which the descriptors should be resolved
+    * @param process
+    *       List of all processes for which the descriptors should be resolved
     * @param onlyFilterable
-    *           Restrict the descriptors to get only filterable items or not
-    * @return Descriptors for the given processes
+    *       Restrict the descriptors to get only filterable items or not
+    * @param modelService
+    * @param servletContext
+    * @param xPathCacheManager
+    * @return Descriptors for the given processes along with metadata
     */
-   public static DataPath[] getAllDescriptors(ProcessDefinition process, boolean onlyFilterable,
+   public static Map<DataPath, DescriptorMetadata> getAllDescriptors(ProcessDefinition process, boolean onlyFilterable,
          IModelService modelService, ServletContext servletContext, XPathCacheManager xPathCacheManager)
    {
-      List<DataPath> allDescriptors = new ArrayList<DataPath>();
+      Map<DataPath, DescriptorMetadata> allDescriptors = new HashMap<DataPath, DescriptorUtils.DescriptorMetadata>();
 
       for (Iterator descrItr = process.getAllDataPaths().iterator(); descrItr.hasNext();)
       {
          DataPath path = (DataPath) descrItr.next();
-         if (Direction.IN.equals(path.getDirection())
-               && path.isDescriptor()
-               && ((onlyFilterable && isDataFilterable(path, modelService, servletContext, xPathCacheManager)) || !onlyFilterable))
+         if (Direction.IN.equals(path.getDirection()) && path.isDescriptor())
          {
-            allDescriptors.add(path);
+            DescriptorMetadata metadata = getDescriptorMetadata(path, modelService, servletContext,
+                  xPathCacheManager);
+
+            if (!onlyFilterable || metadata.isFilterable())
+            {
+               allDescriptors.put(path, metadata);
+            }
          }
       }
 
-      DataPath[] descriptors = allDescriptors.toArray(new DataPath[0]);
-      return descriptors;
-   }
-
-   public static boolean isDataFilterable(DataPath dataPath, IModelService modelService, ServletContext servletContext,
-         XPathCacheManager xPathCacheManager)
-   {
-      return getSortableAndFilterableFlags(dataPath, modelService, servletContext, xPathCacheManager).isFilterable();
+      return allDescriptors;
    }
 
    /**
@@ -81,14 +81,16 @@ public class DescriptorUtils
     * @param dataPath
     *           <code>DataPath</DataPath> that is to be evaluated
     * @param modelService
-    * @return Wrapper for the sortable and filterable flag
+    * @param servletContext
+    * @param xPathCacheManager
+    * @return Datapath Metadata
     */
-   public static DescriptorFlags getSortableAndFilterableFlags(DataPath dataPath, IModelService modelService,
+   public static DescriptorMetadata getDescriptorMetadata(DataPath dataPath, IModelService modelService,
          ServletContext servletContext, XPathCacheManager xPathCacheManager)
    {
       Model model = modelService.getModel(dataPath.getModelOID());
 
-      DescriptorFlags flags = new DescriptorFlags();
+      DescriptorMetadata descriptorMD = new DescriptorMetadata();
 
       if (model != null)
       {
@@ -99,6 +101,7 @@ public class DescriptorUtils
             String typeId = dataDetails.getTypeId();
             if (StructuredDataConstants.STRUCTURED_DATA.equals(typeId))
             {
+               descriptorMD.structured = true;
                String myXPath = dataPath.getAccessPath();
                // Pepper models, return null for Access Path, Eclipse model returns "" for
                // Structured Enum
@@ -111,6 +114,8 @@ public class DescriptorUtils
                   // the XPath must be simplified (e.g. indexes will be removed)
                   myXPath = StructuredDataXPathUtils.getXPathWithoutIndexes(myXPath);
 
+                  descriptorMD.xPath = myXPath;
+                  
                   IXPathMap xPathMap = xPathCacheManager.getXpathMap(model, dataPath);
                   if (null == xPathMap)
                   {
@@ -137,8 +142,8 @@ public class DescriptorUtils
                      else if (typedXPath.getType() != BigData.NULL)
                      {
                         // it is a list of primitives or a single primitive
-                        flags.filterable = true;
-                        flags.sortable = !typedXPath.isList();
+                        descriptorMD.filterable = true;
+                        descriptorMD.sortable = !typedXPath.isList();
                      }
                   }
                }
@@ -153,31 +158,44 @@ public class DescriptorUtils
                if (!PredefinedConstants.CURRENT_DATE.equals(data.getId())
                      && !PredefinedConstants.ROOT_PROCESS_ID.equals(data.getId()))
                {
-                  flags = new DescriptorFlags(true, true);
+                  descriptorMD = new DescriptorMetadata(true, true);
                }
                Class mappedType = dataPath.getMappedType();
                if (Float.class.equals(mappedType) || Double.class.equals(mappedType))
                {
-                  flags.sortable = false;
+                  descriptorMD.sortable = false;
                }
             }
          }
       }
-      return flags;
+      return descriptorMD;
    }
 
-   public static class DescriptorFlags
+   /**
+    * @author Yogesh.Manware
+    *
+    */
+   public static class DescriptorMetadata
    {
       private boolean sortable;
 
       private boolean filterable;
 
-      public DescriptorFlags()
+      private boolean structured;
+
+      private String xPath;
+
+      public String getxPath()
       {
-         sortable = filterable = false;
+         return xPath;
       }
 
-      public DescriptorFlags(boolean sortable, boolean filterable)
+      public DescriptorMetadata()
+      {
+         sortable = filterable = structured = false;
+      }
+
+      public DescriptorMetadata(boolean sortable, boolean filterable)
       {
          this.sortable = sortable;
          this.filterable = filterable;
@@ -191,6 +209,11 @@ public class DescriptorUtils
       public boolean isFilterable()
       {
          return filterable;
+      }
+
+      public boolean isStructured()
+      {
+         return structured;
       }
    }
 }

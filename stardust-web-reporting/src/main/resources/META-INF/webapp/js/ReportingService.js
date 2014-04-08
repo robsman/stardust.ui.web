@@ -496,7 +496,7 @@ define(
 										id : descriptor.id,
 										name : descriptor.name,
 										type : type,
-										isDescriptor : true
+										metadata : descriptor.metadata
 									};
 								}
 
@@ -504,7 +504,7 @@ define(
 									id : descriptor.id,
 									name : descriptor.name,
 									type : type,
-									isDescriptor : true
+									metadata : descriptor.metadata
 								};
 							}
 						}

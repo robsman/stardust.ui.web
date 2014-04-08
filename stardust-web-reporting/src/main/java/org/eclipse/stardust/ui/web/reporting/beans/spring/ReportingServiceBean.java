@@ -21,6 +21,7 @@ import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletContext;
@@ -48,6 +49,7 @@ import org.eclipse.stardust.ui.web.common.spi.user.UserProvider;
 import org.eclipse.stardust.ui.web.reporting.beans.spring.portal.XPathCacheManager;
 import org.eclipse.stardust.ui.web.reporting.common.JsonMarshaller;
 import org.eclipse.stardust.ui.web.reporting.common.portal.DescriptorUtils;
+import org.eclipse.stardust.ui.web.reporting.common.portal.DescriptorUtils.DescriptorMetadata;
 import org.eclipse.stardust.ui.web.reporting.core.ReportingServicePojo;
 import org.eclipse.stardust.ui.web.reporting.scheduling.SchedulingFactory;
 import org.eclipse.stardust.ui.web.reporting.scheduling.SchedulingRecurrence;
@@ -196,11 +198,12 @@ public class ReportingServiceBean
 
             processesJson.add(processDefinition.getId(), processJson);
 
-            DataPath[] dataPaths = DescriptorUtils.getAllDescriptors(processDefinition, true, modelService,
-                  servletContext, xPathCacheManager);
+            Map<DataPath, DescriptorMetadata> dataPaths = DescriptorUtils.getAllDescriptors(processDefinition, true,
+                  modelService, servletContext, xPathCacheManager);
 
-            for (DataPath dataPath : dataPaths)
+            for (Entry<DataPath, DescriptorMetadata> dataPathEntry : dataPaths.entrySet())
             {
+               DataPath dataPath = dataPathEntry.getKey();
                if (dataPath.isDescriptor())
                {
                   if (!descriptorsMap.containsKey(dataPath.getId()))
@@ -213,6 +216,17 @@ public class ReportingServiceBean
                            processDefinition.getQualifiedId() + ":" + dataPath.getQualifiedId());
                      descriptorJson.addProperty("name", dataPath.getName());
                      descriptorJson.addProperty("type", UiHelper.mapDesciptorType(dataPath.getMappedType()).getId());
+
+                     // metadata for Engine
+                     DescriptorUtils.DescriptorMetadata metadata = dataPathEntry.getValue();
+                     JsonObject metadataJson = new JsonObject();
+                     metadataJson.addProperty("isDescriptor", true);
+                     metadataJson.addProperty("isStructuredType", metadata.isStructured());
+                     metadataJson.addProperty("xPath", metadata.getxPath());
+                     metadataJson.addProperty("javaType", dataPath.getMappedType().getName());
+
+                     descriptorJson.add("metadata", metadataJson);
+                     
                      descriptorsMap.put(dataPath.getId(), dataPath);
                   }
                }
