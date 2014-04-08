@@ -572,23 +572,10 @@ if (!window.bpm.portal.AngularAdapter) {
 						element.datepicker({
 							inline : true,
 							dateFormat : 'yy-mm-dd', // I18N
-							onSelect : function() {
-								var date = new Date(element
-										.datepicker("getDate"));
-
-								console.debug("Date set to " + date);
-								console.debug("Controller");
-								console.debug(controller);
-								console.debug("Scope");
-								console.debug(scope);
-
-								controller.$modelValue = date.toISOString();
-								scope.$apply();
-
-								console.debug("Controller");
-								console.debug(controller);
-								console.debug("Scope");
-								console.debug(scope);
+							onSelect : function(date) {
+								scope.$apply(function () {
+								   controller.$setViewValue(date);
+                       });
 							}
 						});
 

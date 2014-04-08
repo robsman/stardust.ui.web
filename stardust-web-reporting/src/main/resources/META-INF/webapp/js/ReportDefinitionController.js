@@ -1534,9 +1534,6 @@ define(
              */
             ReportDefinitionController.prototype.getNextExecutionDate = function() {
                   var self = this;
-                  //FIXME temporary hack to update the values as sd-date directive not updating model
-                  this.report.scheduling.recurrenceRange.startDate = self.startDateId.get(0).value;
-                  this.report.scheduling.recurrenceRange.endDate = self.endDateId.get(0).value
                   this.reportingService.getNextExecutionDate(this.report.scheduling).done(
                      function(date) {
                         self.report.scheduling.nextExecutionDate = date;
