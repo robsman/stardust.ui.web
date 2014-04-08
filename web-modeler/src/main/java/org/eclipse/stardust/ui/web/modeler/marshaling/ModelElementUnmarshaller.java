@@ -52,7 +52,6 @@ import org.eclipse.stardust.model.xpdl.builder.utils.LaneParticipantUtil;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.builder.utils.NameIdUtilsExtension;
-import org.eclipse.stardust.model.xpdl.builder.utils.PepperIconFactory;
 import org.eclipse.stardust.model.xpdl.builder.utils.WebModelerConnectionManager;
 import org.eclipse.stardust.model.xpdl.carnot.AccessPointType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityImplementationType;
@@ -117,6 +116,7 @@ import org.eclipse.stardust.model.xpdl.xpdl2.XpdlFactory;
 import org.eclipse.stardust.model.xpdl.xpdl2.XpdlPackage;
 import org.eclipse.stardust.model.xpdl.xpdl2.XpdlTypeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.TypeDeclarationUtils;
+import org.eclipse.stardust.modeling.repository.common.SimpleImportStrategy;
 import org.eclipse.stardust.modeling.repository.common.descriptors.ReplaceModelElementDescriptor;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
@@ -857,8 +857,7 @@ public abstract class ModelElementUnmarshaller implements ModelUnmarshaller
 
                ReplaceModelElementDescriptor descriptor = new ReplaceModelElementDescriptor(
                      uri, participantCopy, bundleId, null, true);
-               PepperIconFactory iconFactory = new PepperIconFactory();
-               descriptor.importElements(iconFactory, model, true);
+               descriptor.importElements(model, new SimpleImportStrategy(true));
                findParticipant = getModelBuilderFacade().findParticipant(model,
                      participantId);
             }
