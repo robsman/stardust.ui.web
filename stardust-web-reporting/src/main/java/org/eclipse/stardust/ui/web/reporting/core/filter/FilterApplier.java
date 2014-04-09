@@ -5,5 +5,6 @@ import org.eclipse.stardust.ui.web.reporting.common.mapping.request.ReportFilter
 
 public abstract class FilterApplier<T extends Query>
 {
+   public abstract boolean canApply(T query, ReportFilter filter);
    public abstract void apply(T query, ReportFilter filter);
 }

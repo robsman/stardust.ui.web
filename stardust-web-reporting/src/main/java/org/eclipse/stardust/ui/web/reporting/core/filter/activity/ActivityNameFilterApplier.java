@@ -9,10 +9,10 @@ import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.FilterCriterion;
 import org.eclipse.stardust.engine.api.query.FilterOrTerm;
 import org.eclipse.stardust.ui.web.reporting.common.mapping.request.ReportFilter;
-import org.eclipse.stardust.ui.web.reporting.core.filter.FilterApplier;
+import org.eclipse.stardust.ui.web.reporting.core.filter.DimensionBasedFilterApplier;
 import org.eclipse.stardust.ui.web.reporting.core.filter.process.ProcessNameFilterApplier;
 
-public class ActivityNameFilterApplier extends FilterApplier<ActivityInstanceQuery>
+public class ActivityNameFilterApplier extends DimensionBasedFilterApplier<ActivityInstanceQuery>
 {
    public static final String ALL_ACTIVITY_NAMES = "allActivities";
 
@@ -49,7 +49,7 @@ public class ActivityNameFilterApplier extends FilterApplier<ActivityInstanceQue
             final String activityProcessID;
             final String activityID;
             final FilterCriterion filterCriterion;
-            //in case all processed are selected the activty id are not process qualified
+            //in case all processes are selected the activty id are not process qualified
             //take care of this
             if(allProcessesSelected)
             {
@@ -69,5 +69,11 @@ public class ActivityNameFilterApplier extends FilterApplier<ActivityInstanceQue
             filterOrTerm.or(filterCriterion);
          }
       }
+   }
+
+   @Override
+   protected String getMatchDimension()
+   {
+      return "activityName";
    }
 }

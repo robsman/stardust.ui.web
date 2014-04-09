@@ -1,6 +1,8 @@
 package org.eclipse.stardust.ui.web.reporting.common.validation;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -86,7 +88,55 @@ public class ValidationTest extends TestCase
       validationProblems = app.validate(root);
       assertTrue(hasProblemWithMessage(ValidateParent.CUSTOM_VALIDATION_MESSAGE,
             validationProblems));
+   }
 
+
+   private void testValidateCollection(IValidateAbleCollectionContainer container)
+   {
+      ValidatorApp app = ValidatorApp.getInstance();
+      container.resetToNull();
+
+      List<ValidationProblem> validationProblems = app.validate(container);
+      assertEquals(1, validationProblems.size());
+      //assert it has a NotNull property with name "validateAbles"
+      assertTrue(containsProblemAboutField("validateAbles", container.getClass().getName(), validationProblems));
+
+      //one element with 2 not null fields shoudl give you 2 problems
+      container.add(new ValidateChild());
+      validationProblems = app.validate(container);
+      assertTrue(containsProblemAboutField("b1", ValidateChild.class.getName(), validationProblems));
+      assertTrue(containsProblemAboutField("b2", ValidateChild.class.getName(), validationProblems));
+      assertEquals(2, validationProblems.size());
+
+      //two elements should give you 4 problems
+      container.add(new ValidateChild());
+      validationProblems = app.validate(container);
+      assertEquals(4, validationProblems.size());
+
+      //add another 2 element should give you a total of 8
+      container.add(new ValidateChild());
+      container.add(new ValidateChild());
+      validationProblems = app.validate(container);
+      assertEquals(8, validationProblems.size());
+
+      //null values should not cause any problem
+      container.add(null);
+      validationProblems = app.validate(container);
+      assertEquals(8, validationProblems.size());
+
+      //empty collection should give you 0 problems
+      container.resetToEmpty();
+      validationProblems = app.validate(container);
+      assertEquals(0, validationProblems.size());
+   }
+
+
+   public void testValidateCollection()
+   {
+      //validate implementation where the property uses wildcard type
+      testValidateCollection(new WildCardCollectionContainer());
+      //validate implementation where the property is strongly type
+      testValidateCollection(new ParametrizedCollectionContainer());
    }
 
    private boolean containsProblemAboutField(String fieldName, String className,

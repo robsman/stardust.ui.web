@@ -9,6 +9,12 @@ public class ReportFilterMetaData
    private boolean activity_filter_auxiliary = false;
    private boolean activity_filter_interactive = false;
    private boolean activity_filter_nonInteractive = false;
+   private boolean isDescriptor = false;
+   private boolean isStructuredType = false;
+   private String xPath;
+   private String javaType;
+   private Number rangeFrom;
+   private Number rangeTo;
    private List<String> selectedProcesses = new ArrayList<String>();
 
    public boolean isProcess_filter_auxiliary()
@@ -34,5 +40,35 @@ public class ReportFilterMetaData
    public List<String> getSelectedProcesses()
    {
       return selectedProcesses;
+   }
+
+   public boolean isDescriptor()
+   {
+      return isDescriptor;
+   }
+
+   public boolean isStructuredType()
+   {
+      return isStructuredType;
+   }
+
+   public String getXPath()
+   {
+      return xPath;
+   }
+
+   public String getJavaType()
+   {
+      return javaType;
+   }
+
+   public Number getRangeFrom()
+   {
+      return rangeFrom;
+   }
+
+   public Number getRangeTo()
+   {
+      return rangeTo;
    }
 }

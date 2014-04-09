@@ -38,18 +38,20 @@ public class ReportFilter implements IValidateAble
    @NotNull
    private JsonElement value;
    private String operator;
+   @SuppressWarnings("unused")
    private String $$hashKey;
    private String dimension;
    private ReportFilterMetaData metadata;
 
+
+   public int getIndex()
+   {
+      return index;
+   }
+
    public JsonElement getValue()
    {
       return value;
-   }
-
-   public void setValue(JsonElement value)
-   {
-      this.value = value;
    }
 
    public String getOperator()
@@ -57,19 +59,9 @@ public class ReportFilter implements IValidateAble
       return operator;
    }
 
-   public void setOperator(String operator)
-   {
-      this.operator = operator;
-   }
-
    public String getDimension()
    {
       return dimension;
-   }
-
-   public void setDimension(String dimension)
-   {
-      this.dimension = dimension;
    }
 
    public ReportFilterMetaData getMetadata()

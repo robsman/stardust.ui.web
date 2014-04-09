@@ -3,11 +3,14 @@ package org.eclipse.stardust.ui.web.reporting.core.filter.process;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.stardust.engine.api.query.*;
+import org.eclipse.stardust.engine.api.query.FilterOrTerm;
+import org.eclipse.stardust.engine.api.query.ProcessDefinitionFilter;
+import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
+import org.eclipse.stardust.engine.api.query.Query;
 import org.eclipse.stardust.ui.web.reporting.common.mapping.request.ReportFilter;
-import org.eclipse.stardust.ui.web.reporting.core.filter.FilterApplier;
+import org.eclipse.stardust.ui.web.reporting.core.filter.DimensionBasedFilterApplier;
 
-public class ProcessNameFilterApplier extends FilterApplier<ProcessInstanceQuery>
+public class ProcessNameFilterApplier extends DimensionBasedFilterApplier<ProcessInstanceQuery>
 {
    public static final String ALL_PROCESS_NAMES = "allProcesses";
 
@@ -40,5 +43,11 @@ public class ProcessNameFilterApplier extends FilterApplier<ProcessInstanceQuery
       }
 
       apply(query, allFilterValues);
+   }
+
+   @Override
+   protected String getMatchDimension()
+   {
+      return "processName";
    }
 }

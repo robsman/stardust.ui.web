@@ -6,9 +6,9 @@ import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery.Attribute;
 import org.eclipse.stardust.ui.web.reporting.common.JsonUtil;
 import org.eclipse.stardust.ui.web.reporting.common.mapping.request.ReportFilter;
 import org.eclipse.stardust.ui.web.reporting.common.mapping.request.ReportFilter.OperatorType;
-import org.eclipse.stardust.ui.web.reporting.core.filter.FilterApplier;
+import org.eclipse.stardust.ui.web.reporting.core.filter.DimensionBasedFilterApplier;
 
-public class PriorityFilterApplier extends FilterApplier<ProcessInstanceQuery>
+public class PriorityFilterApplier extends DimensionBasedFilterApplier<ProcessInstanceQuery>
 {
 
    @Override
@@ -41,6 +41,12 @@ public class PriorityFilterApplier extends FilterApplier<ProcessInstanceQuery>
       }
 
       query.where(filterCriterion);
+   }
+
+   @Override
+   protected String getMatchDimension()
+   {
+      return "priority";
    }
 
 }

@@ -1,5 +1,9 @@
 package org.eclipse.stardust.ui.web.reporting.common;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.apache.commons.lang.StringUtils;
 
 import com.google.gson.JsonElement;
@@ -8,6 +12,7 @@ import com.google.gson.JsonPrimitive;
 
 public class JsonUtil
 {
+   private static final String DEFAULT_DATE_FORMAT = "yyyy/MM/dd hh:mm:ss:SSS";
 
    //TODO: refactor this method / the caller code
    /**
@@ -89,6 +94,23 @@ public class JsonUtil
       }
    }
 
+   public static Date getPrimitiveValueAsDate(JsonElement jsonElement)
+   {
+      String primitiveValueAsString = getPrimitiveValueAsString(jsonElement);
+      SimpleDateFormat dateFormat = new SimpleDateFormat(DEFAULT_DATE_FORMAT);
+      try
+      {
+         return dateFormat.parse(primitiveValueAsString);
+      }
+      catch (ParseException e)
+      {
+         StringBuilder msgBuilder = new StringBuilder();
+         msgBuilder.append("JsonElement").append("'");
+         msgBuilder.append(jsonElement).append("'");
+         msgBuilder.append(" cannot be parsed as Date");
+         throw new RuntimeException(msgBuilder.toString(), e);
+      }
+   }
 
    public static long getPrimitiveValueAsLong(JsonElement jsonElement)
    {
@@ -106,6 +128,21 @@ public class JsonUtil
 
       JsonPrimitive jsonPrimitive = jsonElement.getAsJsonPrimitive();
       return jsonPrimitive.getAsString();
+   }
+
+   public static JsonPrimitive getPrimitiveProperty(JsonElement jsonElement, String property)
+   {
+      nullCheck(jsonElement);
+      if(!jsonElement.isJsonObject())
+      {
+         StringBuilder msgBuilder = new StringBuilder();
+         msgBuilder.append("JsonElement").append("'");
+         msgBuilder.append(jsonElement).append("'");
+         msgBuilder.append(" is not a JsonObject");
+         throw new RuntimeException(msgBuilder.toString());
+      }
+
+      return getPrimitiveProperty(jsonElement.getAsJsonObject(), property);
    }
 
    public static JsonPrimitive getPrimitiveProperty(JsonObject jsonObject, String property)
@@ -173,4 +210,6 @@ public class JsonUtil
 
       return null;
    }
+
+
 }
