@@ -36,7 +36,8 @@
       <dependency>
          <groupId>org.eclipse.stardust.modeling.core</groupId>
          <artifactId>ipp-bpm-model-validation</artifactId>
-         <version>${project.version}</version>
+         <!-- temporarily fixating to 1.1.2, until ipp-bpm-model-validation was properly refactored into the components build phase -->
+         <version>1.1.2</version>
          <scope>compile</scope>
       </dependency>
       <dependency>
@@ -54,34 +55,16 @@
          <groupId>org.eclipse.emf</groupId>
          <artifactId>org.eclipse.emf.ecore</artifactId>
          <scope>compile</scope>
-         <exclusions>
-            <exclusion>
-               <groupId>org.eclipse.emf</groupId>
-               <artifactId>org.eclipse.emf.common</artifactId>
-            </exclusion>
-         </exclusions>
       </dependency>
       <dependency>
          <groupId>org.eclipse.emf</groupId>
          <artifactId>org.eclipse.emf.ecore.xmi</artifactId>
          <scope>compile</scope>
-         <exclusions>
-            <exclusion>
-               <groupId>org.eclipse.emf</groupId>
-               <artifactId>org.eclipse.emf.ecore</artifactId>
-            </exclusion>
-         </exclusions>
       </dependency>
       <dependency>
          <groupId>org.eclipse.emf</groupId>
          <artifactId>org.eclipse.emf.ecore.change</artifactId>
          <scope>compile</scope>
-         <exclusions>
-            <exclusion>
-               <groupId>org.eclipse.emf</groupId>
-               <artifactId>org.eclipse.emf.ecore</artifactId>
-            </exclusion>
-         </exclusions>
       </dependency>
       <dependency>
          <groupId>org.eclipse.xsd</groupId>
@@ -105,10 +88,6 @@
          <artifactId>myfaces-api</artifactId>
          <scope>compile</scope>
          <exclusions>
-            <exclusion>
-               <groupId>commons-beanutils</groupId>
-               <artifactId>commons-beanutils</artifactId>
-            </exclusion>
             <exclusion>
                <groupId>commons-lang</groupId>
                <artifactId>commons-lang</artifactId>
@@ -205,7 +184,7 @@
          </plugin>
       </plugins>
    </build>
-   
+
    <profiles>
       <profile>
          <id>with-emfcompare</id>
