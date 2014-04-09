@@ -29,6 +29,7 @@
     <module>rules-manager</module>
     <module>web-modeler</module>
     <module>stardust-web-modeler-bpmn2</module>
+    <module>web-portal</module>
   </modules>
 
 </project>
