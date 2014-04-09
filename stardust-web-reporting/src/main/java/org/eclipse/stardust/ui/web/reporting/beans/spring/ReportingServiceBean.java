@@ -18,6 +18,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,15 +42,17 @@ import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentInfo;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.Folder;
-import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.engine.api.runtime.UserService;
 import org.eclipse.stardust.ui.web.common.spi.user.User;
 import org.eclipse.stardust.ui.web.common.spi.user.UserProvider;
+import org.eclipse.stardust.ui.web.reporting.beans.spring.portal.CriticalityConfigurationService;
 import org.eclipse.stardust.ui.web.reporting.beans.spring.portal.XPathCacheManager;
 import org.eclipse.stardust.ui.web.reporting.common.JsonMarshaller;
 import org.eclipse.stardust.ui.web.reporting.common.portal.DescriptorUtils;
 import org.eclipse.stardust.ui.web.reporting.common.portal.DescriptorUtils.DescriptorMetadata;
+import org.eclipse.stardust.ui.web.reporting.common.portal.criticality.CriticalityCategory;
+import org.eclipse.stardust.ui.web.reporting.common.portal.criticality.CriticalityConfigurationUtil;
 import org.eclipse.stardust.ui.web.reporting.core.ReportingServicePojo;
 import org.eclipse.stardust.ui.web.reporting.scheduling.SchedulingFactory;
 import org.eclipse.stardust.ui.web.reporting.scheduling.SchedulingRecurrence;
@@ -62,6 +65,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -90,7 +94,6 @@ public class ReportingServiceBean
    /**
     * Stores uncommitted changes.
     */
-   private Map<String, JsonObject> reportDefinitionCache;
    private Map<String, JsonObject> reportDefinitionJsons;
 
    //a bean with name "modelService" already exists in the spring context
@@ -109,14 +112,18 @@ public class ReportingServiceBean
    @Resource(name=XPathCacheManager.BEAN_ID)
    private XPathCacheManager xPathCacheManager;
    
+   @Resource
+   private CriticalityConfigurationService criticalityConfigurationService;
+   
    private ReportingServicePojo reportingServicePojo;
 
    private JsonMarshaller jsonMarshaller;
 
+   private Gson gson = new Gson();
+   
    public ReportingServiceBean()
    {
       jsonMarshaller = new JsonMarshaller();
-      reportDefinitionCache = new HashMap<String, JsonObject>();
       reportDefinitionJsons = new HashMap<String, JsonObject>();
    }
 
@@ -133,11 +140,6 @@ public class ReportingServiceBean
    private ServiceFactory getServiceFactory()
    {
       return sessionContext.getServiceFactory();
-   }
-
-   private QueryService getQueryService()
-   {
-      return getServiceFactory().getQueryService();
    }
 
    /**
@@ -271,6 +273,34 @@ public class ReportingServiceBean
       }
    }
 
+   /**
+    * @return preference data
+    */
+   public JsonObject getPreferenceData()
+   {
+      List<CriticalityCategory> criticalityPrefs = CriticalityConfigurationUtil
+            .getCriticalityCategoriesList(criticalityConfigurationService.readCriticalityCategoryPrefsMap());
+      
+      JsonObject preferencesJson = new JsonObject();
+      
+      // criticality
+      ArrayList<CriticalityCategory> criticalityList = new ArrayList<CriticalityCategory>();
+      CriticalityCategory cat = CriticalityConfigurationUtil.getAllCriticalityCategory();
+      cat.setName("All"); //TODO I18n
+      criticalityList.add(cat);
+      criticalityList.addAll(criticalityPrefs);
+      cat = CriticalityConfigurationUtil.getUndefinedCriticalityCategory();
+      cat.setName("Undefined"); //TODO I18n
+      criticalityList.add(cat);
+      preferencesJson.add("criticality", gson.toJsonTree(criticalityList));
+  
+      //add other preferences here
+      
+      return preferencesJson;
+   }
+   
+   
+   
    /**
     *
     * @return

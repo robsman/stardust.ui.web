@@ -6,7 +6,6 @@ import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 
 import javax.annotation.Resource;
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -36,6 +35,7 @@ import com.google.gson.JsonObject;
 /**
  *
  * @author Marc.Gille
+ * @author Yogesh.Manware
  *
  */
 @Path("/")
@@ -67,6 +67,26 @@ public class ReportingResource
          return Response.serverError().build();
       }
    }
+   
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("preference-data")
+   public Response getPreferenceData()
+   {
+      try
+      {
+         return Response.ok(reportingService.getPreferenceData().toString(), MediaType.APPLICATION_JSON_TYPE).build();
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
+
+         return Response.serverError().build();
+      }
+   }
+   
+   
+   
 
    @POST
    @Consumes(MediaType.APPLICATION_JSON)

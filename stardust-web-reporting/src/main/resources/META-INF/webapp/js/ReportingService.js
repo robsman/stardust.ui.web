@@ -27,6 +27,8 @@ define(
 				
 				this.mode = "server";
 				this.metadata = {};
+				
+				this.preferenceData = {};
 
 				this.metadata.chartTypes = {
 					xyPlot : {
@@ -209,7 +211,10 @@ define(
 							criticality : {
 								id : "criticality",
 								name : this.getI18N("reporting.definitionView.additionalFiltering.criticality"),
-								type : this.metadata.decimalType
+								type : this.metadata.enumerationType,
+								display : "singleSelect",
+								enumerationType : "preferenceData:criticality:label",
+								operators : ["E", "LE", "GE", "NE"]
 							}
 						}
 					}/*,
@@ -479,6 +484,36 @@ define(
 					return deferred.promise();
 				};
 
+				ReportingService.prototype.refreshPreferenceData = function() {
+					var deferred = jQuery.Deferred();
+						var self = this;
+						jQuery
+							.ajax(
+									{
+										type : "GET",
+										beforeSend : function(request) {
+											request
+													.setRequestHeader(
+															"Authentication",
+															self
+																	.getBasicAuthenticationHeader());
+										},
+										url : self.getRootUrl()
+												+ "/services/rest/bpm-reporting/preference-data",
+										contentType : "application/json"
+									}).done(function(data) {
+								self.preferenceData = data;
+								deferred.resolve();
+							}).fail(function() {
+								deferred.reject();
+							});
+
+				
+
+					return deferred.promise();
+				};
+				
+				
 				/**
 				 * Adds Process Model Descriptors to Reporting Metadata.
 				 */
