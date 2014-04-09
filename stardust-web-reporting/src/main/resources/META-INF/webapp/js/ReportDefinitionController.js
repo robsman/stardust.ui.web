@@ -45,6 +45,12 @@ define(
 				 */
 				ReportDefinitionController.prototype.initialize = function(
 						renderingController, name, path) {
+					this.constants = {
+							ALL_PROCESSES : {id: "allProcesses", name: this.getI18N("reporting.definitionView.additionalFiltering.allprocesses")},
+							ALL_ACTIVITIES : {id: "allActivities", name: this.getI18N("reporting.definitionView.additionalFiltering.allactivities")}
+					};
+
+					
 					this.renderingController = renderingController;
 					this.schedulingController = SchedulingController.create();
 
@@ -73,13 +79,8 @@ define(
 					this.cumulatedDimensions = [];
 					this.selectedColumns = [];
 					
-					
 					this.factSelect = jQuery("#factSelect");
 					this.chartTypeSelect = jQuery("#chartTypeSelect");
-					
-					//TODO: have better way to do this??
-					this.ALL_PROCESSES = {id: "allProcesses", name: "All Processes"};
-					this.ALL_ACTIVITIES = {id: "allActivities", name: "All Activities"};
 					
 					this.editorAnchor = utils.jQuerySelect("#expressionTextDiv").get(0);
 					this.expressionEditor = m_codeEditorAce.getJSCodeEditor(this.editorAnchor);
@@ -540,8 +541,8 @@ define(
 				
 				ReportDefinitionController.prototype.selectedProcessChanged = function(filter) {
 					var self = this;
-					if(filter.metadata.selectedProcesses.some(function (id) {return self.ALL_PROCESSES.id == id;})){
-						filter.metadata.selectedProcesses = [this.ALL_PROCESSES.id];
+					if(filter.metadata.selectedProcesses.some(function (id) {return self.constants.ALL_PROCESSES.id == id;})){
+						filter.metadata.selectedProcesses = [this.constants.ALL_PROCESSES.id];
 					}
 				};
 				
@@ -748,7 +749,7 @@ define(
 						//processes
 						if ((dimension.id == "processName" || dimension.id == "activityName")) {
 							filteredEnumItems = [];
-							filteredEnumItems.push(this.ALL_PROCESSES);
+							filteredEnumItems.push(this.constants.ALL_PROCESSES);
 							for (var i = 0; i < enumItems.length; i++) {
 								var process = enumItems[i];
 								if (!filter.metadata.process_filter_auxiliary || !process.auxiliary) {
@@ -765,7 +766,7 @@ define(
 							if (!filter.metadata.selectedProcesses
 									|| filter.metadata.selectedProcesses.length < 1) {
 								selectedProcesses = selectedProcesses.concat(filteredEnumItems);
-							}else if(filter.metadata.selectedProcesses.some(function (id) {return self.ALL_PROCESSES.id == id;})){
+							}else if(filter.metadata.selectedProcesses.some(function (id) {return self.constants.ALL_PROCESSES.id == id;})){
 								selectedProcesses = selectedProcesses.concat(filteredEnumItems);
 							}else{
 								filteredEnumItems.forEach(function(item){
@@ -776,11 +777,11 @@ define(
 							}
 							
 							filteredEnumItems = [];
-							filteredEnumItems.push(this.ALL_ACTIVITIES);
+							filteredEnumItems.push(this.constants.ALL_ACTIVITIES);
 							
 							for (var i = 0; i < selectedProcesses.length; i++) {
 								var process = selectedProcesses[i];
-								if(process == this.ALL_PROCESSES){
+								if(process == this.constants.ALL_PROCESSES){
 									continue;
 								}
 								for (var j = 0; j < process.activities.length; j++){
@@ -804,12 +805,12 @@ define(
 				
 				ReportDefinitionController.prototype.selectionChanged = function(dimension, filter) {
 					var self = this;
-					if(dimension.id == "processName" && filter.value.some(function (id) {return self.ALL_PROCESSES.id == id;})){
-						filter.value = [this.ALL_PROCESSES.id];
+					if(dimension.id == "processName" && filter.value.some(function (id) {return self.constants.ALL_PROCESSES.id == id;})){
+						filter.value = [this.constants.ALL_PROCESSES.id];
 					}
 					
-					if(dimension.id == "activityName" && filter.value.some(function (id) {return self.ALL_ACTIVITIES.id == id;})){
-						filter.value = [this.ALL_ACTIVITIES.id];
+					if(dimension.id == "activityName" && filter.value.some(function (id) {return self.constants.ALL_ACTIVITIES.id == id;})){
+						filter.value = [this.constants.ALL_ACTIVITIES.id];
 					}
 					
 					if(dimension.id == "criticality"){
@@ -889,11 +890,11 @@ define(
 					
 					if(this.report.dataSet.filters[index].dimension == 'processName'){
 						this.report.dataSet.filters[index].metadata = { process_filter_auxiliary : true };
-						this.report.dataSet.filters[index].value = [this.ALL_PROCESSES.id];
+						this.report.dataSet.filters[index].value = [this.constants.ALL_PROCESSES.id];
 					}else if(this.report.dataSet.filters[index].dimension == 'activityName'){
 						this.report.dataSet.filters[index].metadata = activityFilterTemplate();
-						this.report.dataSet.filters[index].metadata.selectedProcesses.push(this.ALL_PROCESSES.id);
-						this.report.dataSet.filters[index].value = [this.ALL_ACTIVITIES.id];
+						this.report.dataSet.filters[index].metadata.selectedProcesses.push(this.constants.ALL_PROCESSES.id);
+						this.report.dataSet.filters[index].value = [this.constants.ALL_ACTIVITIES.id];
 					}else{
 						var dimenison = this
 								.getDimension(this.report.dataSet.filters[index].dimension);
