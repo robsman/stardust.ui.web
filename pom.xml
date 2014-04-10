@@ -9,9 +9,9 @@
 
   <parent>
     <groupId>org.eclipse.stardust</groupId>
-    <artifactId>stardust-parent</artifactId>
+    <artifactId>product-parent</artifactId>
     <version>9.9.9-SNAPSHOT</version>
-    <relativePath>../org.eclipse.stardust/org.eclipse.stardust-parent/pom.xml</relativePath>
+    <relativePath>../product/product-parent/pom.xml</relativePath>
   </parent>
 
   <modules>
