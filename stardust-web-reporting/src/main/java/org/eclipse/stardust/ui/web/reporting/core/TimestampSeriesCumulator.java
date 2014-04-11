@@ -11,9 +11,9 @@ import com.google.gson.JsonPrimitive;
  * Discrete dimension is mapped to String, a non-discrete, continuous dimension is mapped
  * to long. If the dimension is discrete, the sequence of values is assumed to be grouped
  * by dimension values; if it is continous, it is assumed to be monotonous.
- * 
+ *
  * @author Marc.Gille
- * 
+ *
  */
 public class TimestampSeriesCumulator
 {
@@ -35,7 +35,7 @@ public class TimestampSeriesCumulator
    }
 
    /**
-    * 
+    *
     * @param groupCriterionProvider
     */
    public void setGroupCriterionProvider(ValueProvider groupCriterionProvider)
@@ -44,7 +44,7 @@ public class TimestampSeriesCumulator
    }
 
    /**
-    * 
+    *
     * @param object
     * @return
     */
@@ -54,7 +54,7 @@ public class TimestampSeriesCumulator
    }
 
    /**
-    * 
+    *
     * @param object
     * @return
     */
@@ -65,7 +65,7 @@ public class TimestampSeriesCumulator
 
    /**
     * Indicates no grouping.
-    * 
+    *
     * @param object
     * @return
     */
@@ -80,7 +80,7 @@ public class TimestampSeriesCumulator
    }
 
    /**
-    * 
+    *
     * @param list
     * @param cumulationInterval
     * @return
@@ -190,6 +190,7 @@ public class TimestampSeriesCumulator
                   pair.add(new JsonPrimitive(currentMinimum));
                   pair.add(new JsonPrimitive(currentMaximum));
                   pair.add(new JsonPrimitive(average + sigma));
+                  pair.add(new JsonPrimitive(count));
                }
                else
                {
@@ -305,6 +306,7 @@ public class TimestampSeriesCumulator
                pair.add(new JsonPrimitive(currentMinimum));
                pair.add(new JsonPrimitive(currentMaximum));
                pair.add(new JsonPrimitive(average + sigma));
+               pair.add(new JsonPrimitive(count));
             }
             else
             {
