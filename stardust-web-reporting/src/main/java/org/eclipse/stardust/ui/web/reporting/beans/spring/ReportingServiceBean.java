@@ -86,7 +86,7 @@ public class ReportingServiceBean
    private static final Logger trace = LogManager.getLogger(ReportingServiceBean.class);
 
    private static final String PUBLIC_REPORT_DEFINITIONS_DIR = "/reports";
-   private static final String PARTICIPANTS_REPORT_DEFINITIONS_DIR = "/participants/reports/";
+   private static final String PARTICIPANTS_REPORT_DEFINITIONS_DIR = "/reports/participants";
 
    private DocumentManagementService documentManagementService;
    private UserService userService;
