@@ -132,18 +132,6 @@ define(
                   }
                });
 					
-					//TODO static data, need to be removed.
-					this.rows = [{
-					                      id : 1,
-					                      processName : "Process 1",
-					                      state : "Active"
-					                    },
-					                    {
-					                       id : 2,
-					                       processName : "Process 2",
-					                       state : "Suspended"
-					                     }];
-					
 					var self = this;
 
 					document.body.style.cursor = "wait";
@@ -600,9 +588,6 @@ define(
 					if (columns.length != 0)
                {
 	                var TEMPLATE = "<table cellpadding=\"0\" cellspacing=\"0\" class=\"dataTable\"><thead><tr>_HEADERS_</tr></thead><tbody><tr sd-table-data=\"row in rows\">_COLUMNS_</tr></tbody></table>";
-// var TEMPLATE = "<table cellpadding='0' cellspacing='0'
-// class='dataTable'><thead><tr>_HEADERS_</tr></thead><tbody><tr sd-table-data='row in
-// renderingController.getPreviewData()'><td>{{row.processName}}</td><td>{{row.state}}</td></tr></tbody></table>";
 	                   
 	                var v1 = jQuery.extend({}, TEMPLATE);
 	                var TEMPLATE_COPY = "";
@@ -619,35 +604,20 @@ define(
 	                   headers += "<th>" + column.name + "</th>";
 	                   cols += "<td>{{row." + column.id + "}}</td>";
 	                }
-	                console.log("HEADERS ->>>>>>>>>>>>>>>>>>>>>>" + headers);
-	                console.log("COLS ->>>>>>>>>>>>>>>>>>>>>>>>" + cols);
 	                TEMPLATE_COPY = TEMPLATE_COPY.replace("_HEADERS_", headers);
 	                TEMPLATE_COPY = TEMPLATE_COPY.replace("_COLUMNS_", cols);
 	                  
-	                jQuery(".dynamicTable").html("");
-	                jQuery(".dynamicTable").append(TEMPLATE_COPY);
-	                console.log(this.rows);
-	                console.log(TEMPLATE_COPY);
-	                   
-	                   
-	                var self = this;
-	                jQuery(function() {
-	                   var divElem = angular.element(".dynamicTable");
-	                   angularCompile(divElem)(divElem.scope());
-	                });
-
-
-	                var deferred = jQuery.Deferred();
-	                var self = this;
+	                jQuery(".dynamicTable").html(TEMPLATE_COPY);
 	                
-	                this.renderingController.getPreviewData().done(
-	                    function(data) {
-	                       self.rows = data;
-	                       self.updateView();
-	                    }).fail(function(err){
-	                       console.log("Failed getting Preview Date: " + err);
-	                    });
+	                var divElem = angular.element(".dynamicTable");
+                   angularCompile(divElem)(divElem.scope());
+	               
+	                var self = this;
+	                self.refreshPreviewData();
                }
+					
+					var self = this;
+					var deferred = jQuery.Deferred();
 
 					this.renderingController.renderReport().done(function() {
 						deferred.resolve();
@@ -657,6 +627,21 @@ define(
 					
 					return deferred.promise();
 				};
+				
+				/**
+             * 
+             */
+            ReportDefinitionController.prototype.refreshPreviewData = function() {
+               var self = this;
+               
+               this.renderingController.getPreviewData().done(
+                   function(data) {
+                      self.rows = data.recordSet;
+                      self.updateView();
+                   }).fail(function(err){
+                      console.log("Failed getting Preview Date: " + err);
+                   });
+            }
 
 				/**
 				 * 

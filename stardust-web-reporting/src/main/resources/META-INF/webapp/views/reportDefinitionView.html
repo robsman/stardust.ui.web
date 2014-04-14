@@ -1164,51 +1164,13 @@ table.formTable td {
 									</tr>
 								</table>
 							</div>
-							<div ng-show="report.layout.type == 'table'">
-								<div class="heading">{{getI18N('reporting.definitionView.table.title')}}</div>
-                        
+                     <div ng-show="report.layout.type == 'table'">
+                        <div class="heading">{{getI18N('reporting.definitionView.table.title')}}</div>
                         <div class="dataTableFrame">
-                        
-                        
-                         <div class="dynamicTable"></div>
-
-<!-- 
-                                 <th>processName</th>
-                                 <th>processState</th>
-
-                                 <td>{{row.processName}}</td>
-                                 <td>{{row.processState}}</td>
-
- -->                        
+                           <div class="dynamicTable"></div>
+                        </div>
                      </div>
-								<!-- <div style="padding-bottom: 20px; border: 3px solid #dddddd"
-									class="dataTableFrame">
-									<div class="dataTableControls">
-										<table style="padding: 5px;">
-											<tr>
-												<td><a href="" ng-click="refreshPreview()"> <img
-														src="../css/images/refresh.png" title="Refresh" />
-												</a></td>
-												<td><a href="{{getReportUri()}}" target="_blank"> <img
-														src="../css/images/report.png"
-														title="Open in separate Window" />
-												</a></td>
-											</tr>
-										</table>
-									</div>
-									<table id="reportTable" class="display dataTable"
-										cellpadding="0" cellspacing="0" border="0" width="100%"
-										style="padding-top: 10px;">
-										<thead>
-											<tr id="dataTableHeaderRow">
-											</tr>
-										</thead>
-										<tbody id="dataTableBody">
-										</tbody>
-									</table>
-								</div> -->
-							</div>
-							<div ng-show="report.layout.type == 'chart'">
+                     <div ng-show="report.layout.type == 'chart'">
 								<div class="heading">{{getI18N('reporting.definitionView.chart.title')}}</div>
 								<table>
 									<tr>
