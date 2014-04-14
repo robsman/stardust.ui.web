@@ -53,6 +53,8 @@ define(
 					} else {
 						this.masterController = masterController;
 					}
+					
+					this.rows = [];
 
 					// this.updateView();
 				};
@@ -466,6 +468,11 @@ define(
 					}
 
 					document.body.style.cursor = "wait";
+					
+					if (this.report.parameters.length == 0)
+               {
+                  return;
+               }
 
 					var deferred = this.reportingService
 							.retrieveData(this.report);
@@ -571,5 +578,33 @@ define(
 					"" // convert to string
 					).slice(-characters); // cut leading "1"
 				};
+				
+				
+	           /**
+             *   This function returns Preview Data
+             */
+            ReportRenderingController.prototype.getPreviewData = function() {
+               var deferred = jQuery.Deferred();
+               var self = this;
+               
+               if (this.report.parameters.length == 0)
+               {
+                  return;
+               }
+               
+               self.reportingService.retrieveData(self.report)
+               .done(
+                     function(data) {
+                        var rows = data.recordSet;
+                        deferred.resolve(data);
+                     }).fail(function(data) {
+                  deferred.reject(data);
+               });
+               
+               
+               return deferred.promise();
+               
+            };
+
 			}
 		});

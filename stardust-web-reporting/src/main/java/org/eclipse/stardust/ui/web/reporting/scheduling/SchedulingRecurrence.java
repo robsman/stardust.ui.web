@@ -60,13 +60,10 @@ public abstract class SchedulingRecurrence
    {
       String cronExpressionInput = this.generateSchedule(json);
       
-      //TODO Get the execution Time from JsonObject and set into SECONDS, MINUTES, 
-      //and HOURS variables
-
       String startDateStr = json.get("recurrenceRange").getAsJsonObject()
             .get("startDate").getAsString();
 
-      Date startDate = getParsedDate(startDateStr);
+      Date startDate = null;
 
       String endMode = json.get("recurrenceRange").getAsJsonObject().get("endMode")
             .getAsString();
@@ -90,7 +87,7 @@ public abstract class SchedulingRecurrence
 
          String endDateStr = json.get("recurrenceRange").getAsJsonObject().get("endDate")
                .getAsString();
-         endDate = getParsedDate(endDateStr);
+         endDate = getParsedDate(endDateStr, SchedulingUtils.CLIENT_DATE_FORMAT);
       }
 
       if (endDate != null)
@@ -119,6 +116,14 @@ public abstract class SchedulingRecurrence
       {
          trace.error(e);
       }
+      
+      String uIselectedExecutionTime = json.get("executionTime").getAsString();
+      String executionTime = SchedulingUtils.getExecutionTime(uIselectedExecutionTime);
+      
+      
+      String input = startDateStr + SchedulingUtils.BLANK_SPACE + executionTime;
+      // Format of the date defined in the input String
+      startDate = getParsedDate(input, "yyyy-MM-dd hh:mm aa");
 
       trace.info("Start Date: " + startDate);
 
@@ -128,21 +133,16 @@ public abstract class SchedulingRecurrence
       Date nextValidTimeAfter = cronExpression.getNextValidTimeAfter(startDate);
       trace.info("Next Execution Date: " + nextValidTimeAfter);
 
-      nextValidTimeAfter = cronExpression.getNextValidTimeAfter(nextValidTimeAfter);
-
       trace.info("Next to Next Time: "
             + cronExpression.getNextValidTimeAfter(nextValidTimeAfter));
       // trace.info("Get Time After: " + cronExpression.getTimeAfter(startDate));
 
-      String selectedExecutionTime = json.get("executionTime").getAsString();
-      SchedulingUtils.getExecutionTime(selectedExecutionTime);
-
       return convertDate(nextValidTimeAfter);
    }
 
-   private Date getParsedDate(String startDateStr)
+   private Date getParsedDate(String startDateStr, String DateFormat)
    {
-      DateFormat df = new SimpleDateFormat(SchedulingUtils.DATE_FORMAT);
+      DateFormat df = new SimpleDateFormat(DateFormat);
 
       Date date = null;
       try
@@ -160,7 +160,7 @@ public abstract class SchedulingRecurrence
 
    private String convertDate(Date date)
    {
-      SimpleDateFormat sdf = new SimpleDateFormat(SchedulingUtils.DATE_FORMAT);
+      SimpleDateFormat sdf = new SimpleDateFormat(SchedulingUtils.CLIENT_DATE_FORMAT);
       String convertedDate = sdf.format(date);
       return convertedDate;
    }

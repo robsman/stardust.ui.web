@@ -15,6 +15,8 @@ if (!window.bpm.portal.AngularAdapter) {
 		/**
 		 * 
 		 */
+	   var angularCompile;
+	   
 		AngularAdapter.prototype.initialize = function(angular) {
 			this.angular = angular;
 			this.angularModule = angular.module('angularApp', []);
@@ -83,6 +85,13 @@ if (!window.bpm.portal.AngularAdapter) {
 				}
 			}
 		};
+		
+      /*
+       * 
+       */
+      AngularAdapter.prototype.getCompiler = function() {
+         return angularCompile;
+      };
 
 		/**
 		 * 
@@ -428,6 +437,10 @@ if (!window.bpm.portal.AngularAdapter) {
 			});
 			
 			
+		   this.angularModule.controller("ReportDefinitionController", function($compile) {
+            angularCompile = $compile;
+         });
+
 			this.angularModule
 					.directive(
 							'required',

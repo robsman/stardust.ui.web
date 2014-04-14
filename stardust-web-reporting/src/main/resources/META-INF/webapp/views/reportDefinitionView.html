@@ -1,5 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
+<html ng-controller="ReportDefinitionController">
 <head>
 <title>Process Reporting</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
@@ -477,12 +478,12 @@ table.formTable td {
 															ng-click="removeParameters(report.dataSet.firstDimensionParameters);"
 															ng-show="existsDimension(getFirstDimension().name)"><img
 																src="../css/images/parameter.png"
-																title="{{getI18N('reporting.definitionView.parameter.label')}}" />
+																title="{{getI18N('reporting.definitionView.parameter.label') + '(' + getFirstDimension().id + ')' }}" />
 																<a href=""
 																ng-click="addParameter(report.dataSet.firstDimensionParameters, getFirstDimension().name, getMetadata().enumerationType.id);"
 																ng-show="!existsDimension(getFirstDimension().name)"><img
 																	src="../css/images/no-parameter.png"
-																	title="{{getI18N('reporting.definitionView.noParameter.label')}}" />
+																	title="{{getI18N('reporting.definitionView.noParameter.label') + '(' + getFirstDimension().id + ')' }}" />
 															</a> </a></td>
 													</tr>
 												</table>
@@ -670,7 +671,7 @@ table.formTable td {
 																src="../css/images/parameter.png"
 																title="Parameter (filters.{{x.dimension}})" /> <a
 																href=""
-																ng-click="addParameter('filters.' + x.dimension + '.to', 'Filter for ' + getDimension(x.dimension).name + ' From', getMetadata().timestampType.id)"
+																ng-click="addParameter('filters.' + x.dimension + '.to', 'Filter for ' + getDimension(x.dimension).name + ' To', getMetadata().timestampType.id)"
 																ng-show="!existsParameter('filters.' + x.dimension + '.to')"><img
 																	src="../css/images/no-parameter.png"
 																	title="No Parameter (filters.{{x.dimension}})" /> </a> </a></td>
@@ -1165,7 +1166,22 @@ table.formTable td {
 							</div>
 							<div ng-show="report.layout.type == 'table'">
 								<div class="heading">{{getI18N('reporting.definitionView.table.title')}}</div>
-								<div style="padding-bottom: 20px; border: 3px solid #dddddd"
+                        
+                        <div class="dataTableFrame">
+                        
+                        
+                         <div class="dynamicTable"></div>
+
+<!-- 
+                                 <th>processName</th>
+                                 <th>processState</th>
+
+                                 <td>{{row.processName}}</td>
+                                 <td>{{row.processState}}</td>
+
+ -->                        
+                     </div>
+								<!-- <div style="padding-bottom: 20px; border: 3px solid #dddddd"
 									class="dataTableFrame">
 									<div class="dataTableControls">
 										<table style="padding: 5px;">
@@ -1190,7 +1206,7 @@ table.formTable td {
 										<tbody id="dataTableBody">
 										</tbody>
 									</table>
-								</div>
+								</div> -->
 							</div>
 							<div ng-show="report.layout.type == 'chart'">
 								<div class="heading">{{getI18N('reporting.definitionView.chart.title')}}</div>
@@ -1329,7 +1345,7 @@ table.formTable td {
 													<td valign="top"><label>{{getI18N('reporting.definitionView.mapStartTimestamp.label')}}</label></td>
 													<td valign="top"><select multiple="multiple"
 														ng-model="report.scheduling.parametersForStartTime"
-														ng-options="enum.id as enum.name for (key, enum) in getParameters()"
+														ng-options="enum.id as enum.name for (key, enum) in getParametersOfTypeTimestamp()"
 														style="height: 50px;">
 													</select></td>
 												</tr>
@@ -1766,10 +1782,10 @@ table.formTable td {
 																<td style="padding-right: 5px;"><img
 																	src="../images/icons/date.png" /></td>
 																<td style="color: #8ba7aa;">
-																	<div style="text-align: left;">{{report.scheduling.nextExecutionDateDay}}</div>
+																	<div style="text-align: left;">{{scheduling.nextExecutionDateDay}}</div>
 																	<div
 																		style="font-size: 25px; text-align: left; margin-top: 5px;">
-																		{{report.scheduling.nextExecutionDate + " " + getExecutionTime()[report.scheduling.executionTime]}}</div>
+																		{{scheduling.nextExecutionDate + " " + getExecutionTime()[report.scheduling.executionTime]}}</div>
 																</td>
 															</tr>
 														</table>

@@ -7,7 +7,8 @@ import java.util.Map;
 public class SchedulingUtils
 {
    public static String BLANK_SPACE = " ";
-   public static String DATE_FORMAT = "yyyy-MM-dd";
+   public static String SERVER_DATE_FORMAT = "yyyy/MM/dd hh:mm:ss:SSS";
+   public static String CLIENT_DATE_FORMAT = "yyyy-MM-dd";
 
    public enum RecurrencePattern
    {

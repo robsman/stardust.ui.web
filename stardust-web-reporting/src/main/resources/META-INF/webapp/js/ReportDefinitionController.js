@@ -9,12 +9,14 @@ define(
 		function(I18NUtils, AngularAdapter, ReportingService,
 				ReportRenderingController, SchedulingController, utils, 
 				m_codeEditorAce, m_autoCompleters) {
+		      var angularAdapter = null; 
+		      var angularCompile = null;
 			return {
 				create : function(angular, name, path) {
 					var controller = new ReportDefinitionController();
 					var renderingController = ReportRenderingController
 							.create();
-					var angularAdapter = new bpm.portal.AngularAdapter();
+					angularAdapter = new bpm.portal.AngularAdapter();
 
 					angularAdapter.initialize(angular);
 
@@ -22,6 +24,8 @@ define(
 							.mergeControllerWithScope(controller);
 
 					controller.initialize(renderingController, name, path);
+					
+					angularCompile = angularAdapter.getCompiler();
 
 					return controller;
 				}
@@ -78,6 +82,12 @@ define(
 					this.endDateId = jQuery("#endDateId");
 					this.cumulatedDimensions = [];
 					this.selectedColumns = [];
+					this.filterSelected = [];
+					
+					this.scheduling = {
+                        "nextExecutionDate" : null,
+                        "nextExecutionDateDay" : null
+               };
 					
 					this.factSelect = jQuery("#factSelect");
 					this.chartTypeSelect = jQuery("#chartTypeSelect");
@@ -121,6 +131,18 @@ define(
                      self.expressionEditor.addCompleter(sessionCompleter);
                   }
                });
+					
+					//TODO static data, need to be removed.
+					this.rows = [{
+					                      id : 1,
+					                      processName : "Process 1",
+					                      state : "Active"
+					                    },
+					                    {
+					                       id : 2,
+					                       processName : "Process 2",
+					                       state : "Suspended"
+					                     }];
 					
 					var self = this;
 
@@ -572,16 +594,67 @@ define(
 				 */
 				ReportDefinitionController.prototype.refreshPreview = function() {
 					console.log("refreshPreview");
+					
+					var columns = this.reportingService.getColumnDimensions(this.report);
+					
+					if (columns.length != 0)
+               {
+	                var TEMPLATE = "<table cellpadding=\"0\" cellspacing=\"0\" class=\"dataTable\"><thead><tr>_HEADERS_</tr></thead><tbody><tr sd-table-data=\"row in rows\">_COLUMNS_</tr></tbody></table>";
+// var TEMPLATE = "<table cellpadding='0' cellspacing='0'
+// class='dataTable'><thead><tr>_HEADERS_</tr></thead><tbody><tr sd-table-data='row in
+// renderingController.getPreviewData()'><td>{{row.processName}}</td><td>{{row.state}}</td></tr></tbody></table>";
+	                   
+	                var v1 = jQuery.extend({}, TEMPLATE);
+	                var TEMPLATE_COPY = "";
+	                for (v in v1) {
+	                   TEMPLATE_COPY += v1[v];
+	                }
+	                   
+	                var headers = "";
+	                var cols = "";
+	                   
+	                for (x in columns) {
+	                   var column = columns[x];
 
-					var deferred = jQuery.Deferred();
-					var self = this;
+	                   headers += "<th>" + column.name + "</th>";
+	                   cols += "<td>{{row." + column.id + "}}</td>";
+	                }
+	                console.log("HEADERS ->>>>>>>>>>>>>>>>>>>>>>" + headers);
+	                console.log("COLS ->>>>>>>>>>>>>>>>>>>>>>>>" + cols);
+	                TEMPLATE_COPY = TEMPLATE_COPY.replace("_HEADERS_", headers);
+	                TEMPLATE_COPY = TEMPLATE_COPY.replace("_COLUMNS_", cols);
+	                  
+	                jQuery(".dynamicTable").html("");
+	                jQuery(".dynamicTable").append(TEMPLATE_COPY);
+	                console.log(this.rows);
+	                console.log(TEMPLATE_COPY);
+	                   
+	                   
+	                var self = this;
+	                jQuery(function() {
+	                   var divElem = angular.element(".dynamicTable");
+	                   angularCompile(divElem)(divElem.scope());
+	                });
+
+
+	                var deferred = jQuery.Deferred();
+	                var self = this;
+	                
+	                this.renderingController.getPreviewData().done(
+	                    function(data) {
+	                       self.rows = data;
+	                       self.updateView();
+	                    }).fail(function(err){
+	                       console.log("Failed getting Preview Date: " + err);
+	                    });
+               }
 
 					this.renderingController.renderReport().done(function() {
 						deferred.resolve();
 					}).fail(function() {
 						deferred.reject();
 					});
-
+					
 					return deferred.promise();
 				};
 
@@ -608,6 +681,7 @@ define(
 
 					if (!initialize) {
 						this.report.dataSet.filters = [];
+						this.filterSelected = [];
 					}
 
 					this.factSelect.empty();
@@ -832,6 +906,11 @@ define(
 
 						operator : "equal"
 					});
+					
+					this.filterSelected.push({
+					         index : index,
+					         value : []
+					      });
 				};
 
 				ReportDefinitionController.prototype.getCriticalityForName = function(name) {
@@ -861,6 +940,10 @@ define(
 					}
 
 					this.report.dataSet.filters = newFilters;
+					
+					//Remove parameters from parameter
+					this.removeParametersFromParameterList(index);
+					
 				};
 
 				/**
@@ -906,6 +989,8 @@ define(
 
 					// TODO: Operator only for respective types
 					this.report.dataSet.filters[index].operator = "equal";
+					
+					this.removeParametersFromParameterList(index);
 				};
 
 				/**
@@ -1093,6 +1178,20 @@ define(
 					
 					var currentFilter = this.report.dataSet.filters;
 					
+					for ( var int = 0; int < this.report.dataSet.filters.length; int++)
+               {
+                  if (id.indexOf(this.report.dataSet.filters[int].dimension) != -1)
+                  {
+                     this.filterSelected[int].value.push({
+                              id : id,
+                              name : name,
+                              type : type,
+                              value : value,
+                              operator : operator
+                     });
+                  }
+               }
+					
 					if (id != null && id.length != 0)
                {
 					   this.report.parameters[id] = {
@@ -1162,6 +1261,21 @@ define(
 				ReportDefinitionController.prototype.getParameters = function() {
 					return this.report.parameters;
 				};
+				
+				/**
+             * 
+             */
+            ReportDefinitionController.prototype.getParametersOfTypeTimestamp = function() {
+               var parametersOfTypeTimestamp = {};
+               for ( var parameter in this.report.parameters)
+               {
+                  if (this.report.parameters[parameter].type == this.reportingService.metadata.timestampType.id)
+                  {
+                     parametersOfTypeTimestamp[this.report.parameters[parameter].id] = this.report.parameters[parameter];
+                  }
+               }
+               return parametersOfTypeTimestamp;
+            };
 
 				/**
 				 * 
@@ -1535,8 +1649,8 @@ define(
                   var self = this;
                   this.reportingService.getNextExecutionDate(this.report.scheduling).done(
                      function(date) {
-                        self.report.scheduling.nextExecutionDate = date;
-                        self.report.scheduling.nextExecutionDateDay = utils.getWeekdayName(date);
+                        self.scheduling.nextExecutionDate = date;
+                        self.scheduling.nextExecutionDateDay = utils.getWeekdayName(date);
                         self.updateView();
                      }).fail(function(err){
                         console.log("Failed next Execution Date: " + err);
@@ -1673,6 +1787,21 @@ define(
               }
             }
         };
+        
+        /**
+         * This function will remove parameters from parameter list
+         */
+       ReportDefinitionController.prototype.removeParametersFromParameterList = function(index) {
+          if (this.filterSelected[index].value != null)
+          {
+             var params = this.filterSelected[index].value;
+             for ( var param in params)
+             {
+                this.removeParameter(this.filterSelected[index].value[param].id);
+             }
+          }
+       };
+         
           
 			}
 			
