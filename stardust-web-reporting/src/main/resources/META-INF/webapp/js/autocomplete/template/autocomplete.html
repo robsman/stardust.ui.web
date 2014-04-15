@@ -1,0 +1,33 @@
+<div name="ac-Container" 
+     ng-class="classWrapper('containerClass',item)"
+     ng-keyDown="keyMonitor($event)">
+  
+  <div name="ac-tag"
+       ng-click="popData(item)" 
+       ng-repeat="item in dataSelected track by $index"
+       ng-class="classWrapper('tagClass',item)">
+       <i ng-class="classWrapper('tagPreclass',item)"></i>
+         {{item[textProperty] || item}}
+       <i ng-class="classWrapper('tagPostclass', item, $index)"></i>
+  </div>
+  
+  <input ng-model="matchStr" 
+         ng-keyUp="changeWrapper(matchStr)"
+         style="outline-width:0px;border:none;"
+         type="text" />
+         
+  <div  ng-show="dataList.length >0 && matchStr.length>0"
+        name="ac-selectList"
+        style="z-index:9999"
+        ng-class="classWrapper('selectBoxClass',{},-1)">
+
+      <div ng-click="pushData(item)"
+           ng-mouseover="ui.selectedIndex=$index"
+           ng-class="{ '{{classWrapper('itemHotClass',item)}}' : ui.selectedIndex==$index}"
+           ng-repeat="item in dataList | orderBy:orderPredicate">
+           <i ng-class="classWrapper('itemPreclass', item, $index)"></i>
+           {{item[textProperty]||item}}
+           </div>
+  </div>
+  
+</div>

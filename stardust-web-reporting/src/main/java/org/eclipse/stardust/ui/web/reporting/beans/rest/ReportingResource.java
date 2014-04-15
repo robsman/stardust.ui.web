@@ -336,4 +336,30 @@ public class ReportingResource
          return Response.serverError().build();
       }
    }
+   
+   @GET
+   @Path("search/{serviceName}/{searchValue}")
+   public Response search(@PathParam("serviceName") String serviceName, @PathParam("searchValue") String searchValue)
+   {
+      if (StringUtils.isNotEmpty(serviceName) && StringUtils.isNotEmpty(searchValue))
+      {
+         try
+         {
+            String result = reportingService.searchData(serviceName, searchValue);
+            return Response.ok(result, MediaType.TEXT_PLAIN_TYPE).build();
+         }
+         catch (MissingResourceException mre)
+         {
+            return Response.status(Status.NOT_FOUND).build();
+         }
+         catch (Exception e)
+         {
+            return Response.status(Status.BAD_REQUEST).build();
+         }
+      }
+      else
+      {
+         return Response.status(Status.FORBIDDEN).build();
+      }
+   }
 }

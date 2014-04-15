@@ -59,7 +59,7 @@ public class CriticalityConfigurationService
    /**
     * @param preferences
     */
-   public static void saveCriticalityCategories(Map<String, Serializable> preferences)
+   public void saveCriticalityCategories(Map<String, Serializable> preferences)
    {
       savePreferenceMap(PreferenceScope.PARTITION, UserPreferencesEntries.M_ADMIN_PORTAL,
             UserPreferencesEntries.P_ACTIVITY_CRITICALITY_CONFIG, preferences);
@@ -71,10 +71,10 @@ public class CriticalityConfigurationService
     * @param preferenceId
     * @param preferences
     */
-   private static void savePreferenceMap(PreferenceScope scope, String moduleId, String preferenceId,
+   private void savePreferenceMap(PreferenceScope scope, String moduleId, String preferenceId,
          Map<String, Serializable> preferences)
    {
-      AdministrationService adminService = SessionContext.findSessionContext().getServiceFactory()
+      AdministrationService adminService = sessionContext.getServiceFactory()
             .getAdministrationService();
       Preferences prefs = new Preferences(scope, moduleId, preferenceId, preferences);
       adminService.savePreferences(prefs);

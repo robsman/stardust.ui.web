@@ -610,6 +610,27 @@ table.formTable td {
 												</table>
 											</div>
 											<div
+												ng-show="getDimension(x.dimension).type == getMetadata().booleanType">
+												<table cellpadding="0" cellspacing="0" class="layoutTable">
+													<tr>
+														<td>
+														<label>{{getI18N('reporting.definitionView.checkbox.default')}}</label>
+														</td>
+														<td><input type="checkbox" ng-model="x.value"/></td>
+														<td><a href=""
+															ng-click="removeParameter('filters.' + x.dimension)"
+															ng-show="existsParameter('filters.' + x.dimension)"><img
+																src="../css/images/parameter.png"
+																title="Parameter (filters.{{x.dimension}})" /> <a
+																href=""
+																ng-click="addParameter('filters.' + x.dimension, 'Filter for ' + getDimension(x.dimension).name, getMetadata().stringType.id)"
+																ng-show="!existsParameter('filters.' + x.dimension)"><img
+																	src="../css/images/no-parameter.png"
+																	title="No Parameter (filters.{{x.dimension}})" /></td>
+													</tr>
+												</table>
+											</div>
+											<div
 												ng-show="getDimension(x.dimension).type == getMetadata().integerType">
 												<table cellpadding="0" cellspacing="0" class="layoutTable">
 													<tr>
@@ -774,6 +795,40 @@ table.formTable td {
 														</tr>
 													</table>
 											</div>
+											
+											<div
+												ng-show="getDimension(x.dimension).type == getMetadata().autocompleteType">
+												<table cellpadding="0" cellspacing="0" class="layoutTable">
+													<tr>
+														<td>
+														<!-- ng-controller="getDimension(x.dimension).controller" -->
+															<div   ng-controller="AutocompleteCntr"
+														           auto-complete="" 
+														           data-matches="data" 
+														           data-match-str="matchVal" 
+														           data-change="getMatches(getDimension(x.dimension).service, matchVal)" 
+														           data-text-property="name" 
+														           data-tag-preclass="tagPreMapper"
+														           data-container-class="rel-container" 
+														           data-item-preclass="tagPreMapper"
+														           data-item-hot-class="rel-item-hot" 
+														           data-selected-matches="x.value">
+							     							</div>												
+														</td>
+														<td valign="top"><a href=""
+																ng-click="removeParameter('filters.' + x.dimension)"
+																ng-show="existsParameter('filters.' + x.dimension)"><img
+																	src="../css/images/parameter.png"
+																	title="Parameter (filters.{{x.dimension}})" /> <a
+																	href=""
+																	ng-click="addParameter('filters.' + x.dimension, 'Filter for ' + getDimension(x.dimension).name, getMetadata().enumerationType.id, x.value)"
+																	ng-show="!existsParameter('filters.' + x.dimension)"><img
+																		src="../css/images/no-parameter.png"
+																		title="No Parameter (filters.{{x.dimension}})" /> </a> </a>
+														</td>
+													</tr>
+												</table>
+											</div>
 										</td>
 									</tr>
 									<tr>
@@ -801,7 +856,7 @@ table.formTable td {
 								</table>
 							</div>
 							</div>
-						<div id="layoutTab">
+							<div id="layoutTab">
 							<table cellpadding="0" cellspacing="0" class="formTable"
 								style="margin-top: 10px; margin-bottom: 10px;">
 								<tr>

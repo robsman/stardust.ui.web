@@ -76,6 +76,11 @@ define(
 					id : "decimalType",
 					name : "Decimal"
 				};
+				
+				this.metadata.booleanType = {
+						id : "booleanType",
+						name : "Boolean"
+				};
 				this.metadata.countType = {
 					id : "countType",
 					name : "Count"
@@ -93,6 +98,11 @@ define(
 					name : "Enumeration"
 				};
 
+				this.metadata.autocompleteType = {
+						id : "autocompleteType",
+						name : "Autocomplete"
+				};
+				
 				this.metadata.objects = {
 					processInstance : {
 						id : "processInstance",
@@ -130,8 +140,8 @@ define(
 							startingUserName : {
 								id : "startingUserName",
 								name : this.getI18N("reporting.definitionView.additionalFiltering.startingUserName"),
-								type : this.metadata.enumerationType,
-								enumerationType : "userData:users:name"
+								type : this.metadata.autocompleteType,
+								service : "userService"
 							},
 							state : {
 								id : "state",
@@ -193,8 +203,8 @@ define(
 							userPerformerName : {
 								id : "userPerformerName",
 								name : this.getI18N("reporting.definitionView.additionalFiltering.userPerformer"),
-								type : this.metadata.enumerationType,
-								enumerationType : "modelData:processDefinitions:name"
+								type : this.metadata.autocompleteType,
+								service : "userService"
 							},
 							participantPerformerName : {
 								id : "participantPerformerName",
@@ -512,6 +522,33 @@ define(
 
 					return deferred.promise();
 				};
+				
+				ReportingService.prototype.search = function(serviceName, searchValue) {
+					var deferred = jQuery.Deferred();
+						var self = this;
+						jQuery
+							.ajax(
+									{
+										type : "GET",
+										beforeSend : function(request) {
+											request
+													.setRequestHeader(
+															"Authentication",
+															self
+																	.getBasicAuthenticationHeader());
+										},
+										url : self.getRootUrl()
+												+ "/services/rest/bpm-reporting/search/"+ serviceName + "/" + searchValue,
+										contentType : "application/json"
+									}).done(function(data) {
+								deferred.resolve(data);
+							}).fail(function() {
+								deferred.reject();
+							});
+
+					return deferred.promise();
+				};
+				
 				
 				
 				/**

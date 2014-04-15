@@ -1,6 +1,19 @@
 /*******************************************************************************
- * Copyright (c) 2013 SunGard CSA LLC. All rights reserved.
- ******************************************************************************/
+ * Copyright (c) 2013 SunGard CSA LLC and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    SunGard CSA LLC - initial API and implementation and/or initial documentation
+ *******************************************************************************/
+
+/**
+ * @author Marc.Gille
+ * @author Yogesh.Manware
+ * 
+ */
 
 if (!window.bpm) {
 	bpm = {};
@@ -16,16 +29,30 @@ if (!window.bpm.portal.AngularAdapter) {
 		 * 
 		 */
 	   var angularCompile;
-	   
-		AngularAdapter.prototype.initialize = function(angular) {
-			this.angular = angular;
-			this.angularModule = angular.module('angularApp', []);
+		
+		//load directives here, directives file should have init method which initializes 
+	    //directive module and return module name so that dependency can be added to main module.
+	    AngularAdapter.prototype.initializeModule = function(angular) {
+	      this.angular = angular;
 
-			// Taken From - http://jsfiddle.net/cn8VF/
-			// This is to delay model updates till element is in focus
+	      //load all directives
+	      var dirModuleNames = [];
+	      if(options && options.directives){
+	    	  options.directives.forEach(function(directiveModule) {
+	  	        if (directiveModule) {
+	  	          var moduleName = directiveModule.init();
+	  	          dirModuleNames = dirModuleNames.concat(moduleName);
+	  	        }
+	  	      });  
+	      }
 
-			this.angularModule.directive('ngModelOnblur', function() {
-				return {
+	      this.angularModule = angular.module('angularApp', dirModuleNames);
+
+	      // Taken From - http://jsfiddle.net/cn8VF/
+		  // This is to delay model updates till element is in focus
+
+		  this.angularModule.directive('ngModelOnblur', function() {
+			return {
 					restrict : 'A',
 					require : 'ngModel',
 					link : function(scope, elm, attr, ngModelCtrl) {
@@ -43,7 +70,14 @@ if (!window.bpm.portal.AngularAdapter) {
 			});
 
 			this.initalizeFormatConstraints();
-
+	      
+	      return this.angularModule;
+	    };
+		
+		/**
+		 * bootstrap module
+		 */
+		AngularAdapter.prototype.initialize = function(angular) {
 			this.angular.bootstrap(document, [ 'angularApp' ]);
 
 			// Is this correct?

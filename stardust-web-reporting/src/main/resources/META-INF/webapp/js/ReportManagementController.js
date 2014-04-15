@@ -11,8 +11,12 @@ define(
 					var controller = new ReportManagementController();
 					var angularAdapter = new bpm.portal.AngularAdapter();
 
-					angularAdapter.initialize(angular);
+					//initialize controller and services
+			        var angularModule = angularAdapter.initializeModule(angular);
 
+			        //bootstrap module
+			        angularAdapter.initialize(angular);
+			        
 					controller = angularAdapter
 							.mergeControllerWithScope(controller);
 

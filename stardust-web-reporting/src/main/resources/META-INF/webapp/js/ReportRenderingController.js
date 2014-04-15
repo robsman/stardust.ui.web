@@ -102,7 +102,7 @@ define(
 													+ "<script src='"
 													+ self.reportingService
 															.getRootUrl()
-													+ "/plugins/bpm-reporting/js/libs/angular/angular-1.0.2.js'>"
+													+ "/plugins/bpm-reporting/js/libs/angular/angular-1.2.11.js'>"
 													+ "</script>"
 													+ "<script>"
 													+ "function Controller($scope) {$scope.seriesGroup = "

@@ -1,3 +1,19 @@
+/*******************************************************************************
+ * Copyright (c) 2013 SunGard CSA LLC and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    SunGard CSA LLC - initial API and implementation and/or initial documentation
+ *******************************************************************************/
+
+/**
+ * @author Marc.Gille
+ * @author Yogesh.Manware
+ * 
+ */
 define(
 		[ "bpm-reporting/js/I18NUtils", "bpm-reporting/js/AngularAdapter",
 				"bpm-reporting/js/ReportingService",
@@ -12,13 +28,18 @@ define(
 		      var angularAdapter = null; 
 		      var angularCompile = null;
 			return {
-				create : function(angular, name, path) {
+				create : function(angular, name, path, options) {
 					var controller = new ReportDefinitionController();
-					var renderingController = ReportRenderingController
-							.create();
-					angularAdapter = new bpm.portal.AngularAdapter();
+					var renderingController = ReportRenderingController.create();
+					
+			        var angularAdapter = new bpm.portal.AngularAdapter(options);
 
-					angularAdapter.initialize(angular);
+			        //initialize controller and services
+			        var angularModule = angularAdapter.initializeModule(angular);
+			        controller.initializeAutocompleteDir(angularModule);
+
+			        //bootstrap module
+			        angularAdapter.initialize(angular);
 
 					controller = angularAdapter
 							.mergeControllerWithScope(controller);
@@ -381,6 +402,37 @@ define(
 					}).fail(handleError("Failed to initialize Report Definition Controller"));
 				};
 
+				
+				ReportDefinitionController.prototype.initializeAutocompleteDir = function(angularModule) {
+					var self = this; 
+	
+					angularModule.controller("AutocompleteCntr", function($scope) {
+
+			          $scope.data = [];
+			          $scope.dataSelected = [];
+			          $scope.matchVal = "";
+
+			          /*Retrieve data from our service*/
+			          $scope.getMatches = function(serviceName, serachVal) {
+			        	  clearTimeout($scope.typingTimer);
+			        	  
+			        	  $scope.data = [];
+			        	  
+			        	  $scope.typingTimer = setTimeout(
+				              function(){
+				            	  self.reportingService.search(serviceName, serachVal).done(function(data) {
+					        		  $scope.data = JSON.parse(data);  
+					        		  $scope.$apply();
+								}).fail(function() {
+									console.debug("Error occurred while fetching user from server");
+								});
+				              },
+				              500
+			              );
+			          };
+			        });
+			      };
+				
 				/**
 				 * 
 				 */
@@ -612,7 +664,7 @@ define(
 	                var divElem = angular.element(".dynamicTable");
                    angularCompile(divElem)(divElem.scope());
 	               
-	                var self = this;
+					var self = this;
 	                self.refreshPreviewData();
                }
 					
@@ -677,9 +729,9 @@ define(
 						if (this.isNumeric(fact) || fact.id === this.reportingService.metadata.objects.processInstance.facts.count.id || 
 						         fact.id === this.reportingService.metadata.objects.processInstance.facts.duration.id)
                   {
-						   this.factSelect.append("<option value='" + n + "'>"
-		                        + fact.name + "</option>");
-                  }
+						this.factSelect.append("<option value='" + n + "'>"
+								+ fact.name + "</option>");
+					}
 					}
 
 					this.populateChartTypes();
@@ -973,6 +1025,8 @@ define(
 						if (dimenison && dimenison.metadata
 								&& dimenison.metadata.isDescriptor) {
 							this.report.dataSet.filters[index].metadata = dimenison.metadata;
+						}else if(dimenison && (dimenison.type == this.reportingService.metadata.autocompleteType)){
+							this.report.dataSet.filters[index].value = [];
 						}
 					}
 
@@ -1779,7 +1833,7 @@ define(
               }
             }
         };
-        
+          
         /**
          * This function will remove parameters from parameter list
          */
@@ -1790,10 +1844,10 @@ define(
              for ( var param in params)
              {
                 this.removeParameter(this.filterSelected[index].value[param].id);
-             }
+			}
           }
        };
-       
+			
       
       /**
        * This function will remove parameters from parameter list

@@ -47,6 +47,7 @@ import org.eclipse.stardust.engine.api.runtime.UserService;
 import org.eclipse.stardust.ui.web.common.spi.user.User;
 import org.eclipse.stardust.ui.web.common.spi.user.UserProvider;
 import org.eclipse.stardust.ui.web.reporting.beans.spring.portal.CriticalityConfigurationService;
+import org.eclipse.stardust.ui.web.reporting.beans.spring.portal.SearchHandlerChain;
 import org.eclipse.stardust.ui.web.reporting.beans.spring.portal.XPathCacheManager;
 import org.eclipse.stardust.ui.web.reporting.common.JsonMarshaller;
 import org.eclipse.stardust.ui.web.reporting.common.portal.DescriptorUtils;
@@ -89,8 +90,12 @@ public class ReportingServiceBean
    private static final String PARTICIPANTS_REPORT_DEFINITIONS_DIR = "/reports/participants";
 
    private DocumentManagementService documentManagementService;
+   
    private UserService userService;
-
+   
+   @Resource
+   private SearchHandlerChain searchHandlerChain;
+   
    /**
     * Stores uncommitted changes.
     */
@@ -557,7 +562,16 @@ public class ReportingServiceBean
       }
    }
 
-
+   /**
+    * @param serviceName
+    * @param searchValue
+    * @return
+    */
+   public String searchData(String serviceName, String searchValue)
+   {
+      return searchHandlerChain.handleRequest(serviceName, searchValue);
+   }
+   
    /**
     * @param folder
     * @param label
