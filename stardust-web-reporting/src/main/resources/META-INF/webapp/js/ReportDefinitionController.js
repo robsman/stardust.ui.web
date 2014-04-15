@@ -674,8 +674,12 @@ define(
 					for ( var n in this.getPrimaryObject().facts) {
 						var fact = this.getPrimaryObject().facts[n];
 
-						this.factSelect.append("<option value='" + n + "'>"
-								+ fact.name + "</option>");
+						if (this.isNumeric(fact) || fact.id === this.reportingService.metadata.objects.processInstance.facts.count.id || 
+						         fact.id === this.reportingService.metadata.objects.processInstance.facts.duration.id)
+                  {
+						   this.factSelect.append("<option value='" + n + "'>"
+		                        + fact.name + "</option>");
+                  }
 					}
 
 					this.populateChartTypes();
@@ -1632,14 +1636,17 @@ define(
              */
             ReportDefinitionController.prototype.getNextExecutionDate = function() {
                   var self = this;
-                  this.reportingService.getNextExecutionDate(this.report.scheduling).done(
-                     function(date) {
-                        self.scheduling.nextExecutionDate = date;
-                        self.scheduling.nextExecutionDateDay = utils.getWeekdayName(date);
-                        self.updateView();
-                     }).fail(function(err){
-                        console.log("Failed next Execution Date: " + err);
-                     });
+                  if (this.report.scheduling.active)
+                  {
+                     this.reportingService.getNextExecutionDate(this.report.scheduling).done(
+                              function(date) {
+                                 self.scheduling.nextExecutionDate = date;
+                                 self.scheduling.nextExecutionDateDay = utils.getWeekdayName(date);
+                                 self.updateView();
+                              }).fail(function(err){
+                                 console.log("Failed next Execution Date: " + err);
+                              });
+                  }
             };
             
             /**
@@ -1786,6 +1793,14 @@ define(
              }
           }
        };
+       
+      
+      /**
+       * This function will remove parameters from parameter list
+       */
+     ReportDefinitionController.prototype.isNumeric = function(element) {
+        return (element.type.id === this.reportingService.metadata.integerType.id)? true : false;
+     };
          
           
 			}

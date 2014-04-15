@@ -64,9 +64,7 @@ public class SchedulingRecurrenceWeekly extends SchedulingRecurrence
 
       StringBuilder cronExpr = new StringBuilder();
 
-      cronExpr.append(getSECONDS() + SchedulingUtils.BLANK_SPACE
-            + getMINUTES() + SchedulingUtils.BLANK_SPACE
-            + getHOURS() + SchedulingUtils.BLANK_SPACE + "? *"
+      cronExpr.append(getStartTime() + "? *"
             + SchedulingUtils.BLANK_SPACE + commaSepValueBuilder.toString()
             + SchedulingUtils.BLANK_SPACE + "*");
 

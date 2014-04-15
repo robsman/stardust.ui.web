@@ -21,9 +21,7 @@ public class SchedulingRecurrenceYearly extends SchedulingRecurrence
          int onMonth = json.get("yearlyRecurrenceOptions").getAsJsonObject()
                .get("onMonth").getAsInt();
 
-         cronExpr.append(getSECONDS() + SchedulingUtils.BLANK_SPACE
-               + getMINUTES() + SchedulingUtils.BLANK_SPACE
-               + getHOURS() + SchedulingUtils.BLANK_SPACE + dayNumber + " "
+         cronExpr.append(getStartTime() + dayNumber + " "
                + onMonth + " ? 0/" + recurrenceYearIntervalCount);
 
       }
@@ -38,9 +36,7 @@ public class SchedulingRecurrenceYearly extends SchedulingRecurrence
 
          String byDay = SchedulingUtils.getDayNameFromIndex(onTheXDayName);
 
-         cronExpr.append(getSECONDS() + SchedulingUtils.BLANK_SPACE
-               + getMINUTES() + SchedulingUtils.BLANK_SPACE
-               + getHOURS() + SchedulingUtils.BLANK_SPACE + "?"
+         cronExpr.append(getStartTime() + "?"
                + SchedulingUtils.BLANK_SPACE + onTheMonth + SchedulingUtils.BLANK_SPACE
                + byDay + "#" + onTheXDay + SchedulingUtils.BLANK_SPACE + "0/" + recurrenceYearIntervalCount);
       }

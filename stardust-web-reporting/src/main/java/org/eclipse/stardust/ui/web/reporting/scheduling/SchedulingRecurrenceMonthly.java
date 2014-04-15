@@ -21,9 +21,7 @@ public class SchedulingRecurrenceMonthly extends SchedulingRecurrence
          int dayNumber = json.get("monthlyRecurrenceOptions").getAsJsonObject()
                .get("dayNumber").getAsInt();
 
-         cronExpr.append(getSECONDS() + SchedulingUtils.BLANK_SPACE
-               + getMINUTES() + SchedulingUtils.BLANK_SPACE
-               + getHOURS() + SchedulingUtils.BLANK_SPACE + dayNumber + " 1/"
+         cronExpr.append(getStartTime() + dayNumber + " 1/"
                + recurrenceMonthIntervalCount + " ? *");
       }
       else if (monthsRecurrence.equals("weekday"))
@@ -39,9 +37,7 @@ public class SchedulingRecurrenceMonthly extends SchedulingRecurrence
 
          String byDay = SchedulingUtils.getDayNameFromIndex(day);
 
-         cronExpr.append(getSECONDS() + SchedulingUtils.BLANK_SPACE
-               + getMINUTES() + SchedulingUtils.BLANK_SPACE
-               + getHOURS() + SchedulingUtils.BLANK_SPACE + "? 1/"
+         cronExpr.append(getStartTime() + "? 1/"
                + recurrenceMonthIntervalCount + SchedulingUtils.BLANK_SPACE + byDay + "#"
                + dayIndex + SchedulingUtils.BLANK_SPACE + "*");
       }

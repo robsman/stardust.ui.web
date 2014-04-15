@@ -15,6 +15,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -313,17 +314,17 @@ public class ReportingResource
       }
    }
    
-   @PUT
+   @GET
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.TEXT_PLAIN)
    @Path("nextExecutionDate")
-   public Response getNextExecutionDate(String postedData)
+   public Response getNextExecutionDate(@QueryParam("schedulingJSON") String schedulingInfo)
    {
       try
       {
-          trace.debug("Save report definitions: " + prettyPrinter.toJson(postedData));
+          trace.debug("Save report definitions: " + prettyPrinter.toJson(schedulingInfo));
            
-         JsonObject json = jsonIo.readJsonObject(postedData);
+         JsonObject json = jsonIo.readJsonObject(schedulingInfo);
          
          return Response.ok(reportingService.getNextExecutionDate(json), MediaType.TEXT_PLAIN).build();
          

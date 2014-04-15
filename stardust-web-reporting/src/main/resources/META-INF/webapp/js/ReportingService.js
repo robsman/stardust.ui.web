@@ -1160,7 +1160,7 @@ define(
                jQuery
                      .ajax(
                            {
-                              type : "PUT",
+                              type : "GET",
                               beforeSend : function(request) {
                                  request
                                        .setRequestHeader(
@@ -1169,10 +1169,7 @@ define(
                                                    .getBasicAuthenticationHeader());
                               },
                               url : self.getRootUrl()
-                                    + "/services/rest/bpm-reporting/nextExecutionDate",
-                              contentType : "application/json",
-                              data : JSON
-                                    .stringify(scheduling)
+                                    + "/services/rest/bpm-reporting/nextExecutionDate?schedulingJSON=" + JSON.stringify(scheduling)
                            }).done(function(response) {
                               console.log(response);
                               var a = 0;

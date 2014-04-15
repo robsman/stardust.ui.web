@@ -24,6 +24,10 @@ public abstract class SchedulingRecurrence
 
    private String HOURS = "12";
    
+   private Date startDate = null;
+   
+   private String startTime;
+   
    public String getSECONDS()
    {
       return SECONDS;
@@ -53,17 +57,42 @@ public abstract class SchedulingRecurrence
    {
       HOURS = hOURS;
    }
+   
+   public Date getStartDate()
+   {
+      return startDate;
+   }
+
+   public void setStartDate(Date startDate)
+   {
+      this.startDate = startDate;
+   }
+
+   public String getStartTime()
+   {
+      return startTime;
+   }
 
    public abstract String generateSchedule(JsonObject json);
    
    public String prcoessSchedule(JsonObject json)
    {
-      String cronExpressionInput = this.generateSchedule(json);
-      
       String startDateStr = json.get("recurrenceRange").getAsJsonObject()
-            .get("startDate").getAsString();
+      .get("startDate").getAsString();
+      
+      String uIselectedExecutionTime = json.get("executionTime").getAsString();
+      String executionTime = SchedulingUtils.getExecutionTime(uIselectedExecutionTime);
+      
+      String input = startDateStr + SchedulingUtils.BLANK_SPACE + executionTime;
+      // Format of the date defined in the input String
+      startDate = getParsedDate(input, "yyyy-MM-dd hh:mm aa");
 
-      Date startDate = null;
+      trace.info("Start Date: " + startDate);
+      
+      startTime = startDate.getSeconds() + SchedulingUtils.BLANK_SPACE + startDate.getMinutes()
+            + SchedulingUtils.BLANK_SPACE + startDate.getHours() + SchedulingUtils.BLANK_SPACE;
+      
+      String cronExpressionInput = this.generateSchedule(json);
 
       String endMode = json.get("recurrenceRange").getAsJsonObject().get("endMode")
             .getAsString();
@@ -117,16 +146,7 @@ public abstract class SchedulingRecurrence
          trace.error(e);
       }
       
-      String uIselectedExecutionTime = json.get("executionTime").getAsString();
-      String executionTime = SchedulingUtils.getExecutionTime(uIselectedExecutionTime);
       
-      
-      String input = startDateStr + SchedulingUtils.BLANK_SPACE + executionTime;
-      // Format of the date defined in the input String
-      startDate = getParsedDate(input, "yyyy-MM-dd hh:mm aa");
-
-      trace.info("Start Date: " + startDate);
-
       trace.info("End Date: " + endDate);
 
       trace.info("Constructed Cron Expression: " + cronExpressionInput);
