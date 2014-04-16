@@ -54,9 +54,19 @@ public class ReportDataSet implements IValidateAble
       return type;
    }
 
+   public void setType(String type)
+   {
+      this.type = type;
+   }
+
    public String getPrimaryObject()
    {
       return primaryObject;
+   }
+
+   public void setPrimaryObject(String primaryObject)
+   {
+      this.primaryObject = primaryObject;
    }
 
    public boolean isJoinExternalData()
@@ -64,9 +74,19 @@ public class ReportDataSet implements IValidateAble
       return joinExternalData;
    }
 
+   public void setJoinExternalData(boolean joinExternalData)
+   {
+      this.joinExternalData = joinExternalData;
+   }
+
    public List<ReportExternalJoin> getExternalJoins()
    {
       return externalJoins;
+   }
+
+   public void setExternalJoins(List<ReportExternalJoin> externalJoins)
+   {
+      this.externalJoins = externalJoins;
    }
 
    public List<ReportComputedColumn> getComputedColumns()
@@ -74,9 +94,19 @@ public class ReportDataSet implements IValidateAble
       return computedColumns;
    }
 
+   public void setComputedColumns(List<ReportComputedColumn> computedColumns)
+   {
+      this.computedColumns = computedColumns;
+   }
+
    public List<String> getColumns()
    {
       return columns;
+   }
+
+   public void setColumns(List<String> columns)
+   {
+      this.columns = columns;
    }
 
    public List<ReportFilter> getFilters()
@@ -84,9 +114,19 @@ public class ReportDataSet implements IValidateAble
       return filters;
    }
 
+   public void setFilters(List<ReportFilter> filters)
+   {
+      this.filters = filters;
+   }
+
    public String getFactDurationUnit()
    {
       return factDurationUnit;
+   }
+
+   public void setFactDurationUnit(String factDurationUnit)
+   {
+      this.factDurationUnit = factDurationUnit;
    }
 
    public Long getFirstDimensionCumulationIntervalCount()
@@ -94,9 +134,21 @@ public class ReportDataSet implements IValidateAble
       return firstDimensionCumulationIntervalCount;
    }
 
+   public void setFirstDimensionCumulationIntervalCount(
+         Long firstDimensionCumulationIntervalCount)
+   {
+      this.firstDimensionCumulationIntervalCount = firstDimensionCumulationIntervalCount;
+   }
+
    public String getFirstDimensionCumulationIntervalUnit()
    {
       return firstDimensionCumulationIntervalUnit;
+   }
+
+   public void setFirstDimensionCumulationIntervalUnit(
+         String firstDimensionCumulationIntervalUnit)
+   {
+      this.firstDimensionCumulationIntervalUnit = firstDimensionCumulationIntervalUnit;
    }
 
    public String getFact()
@@ -104,9 +156,19 @@ public class ReportDataSet implements IValidateAble
       return fact;
    }
 
+   public void setFact(String fact)
+   {
+      this.fact = fact;
+   }
+
    public String getFirstDimension()
    {
       return firstDimension;
+   }
+
+   public void setFirstDimension(String firstDimension)
+   {
+      this.firstDimension = firstDimension;
    }
 
    public String getFirstDimensionFrom()
@@ -114,9 +176,19 @@ public class ReportDataSet implements IValidateAble
       return firstDimensionFrom;
    }
 
+   public void setFirstDimensionFrom(String firstDimensionFrom)
+   {
+      this.firstDimensionFrom = firstDimensionFrom;
+   }
+
    public String getFirstDimensionTo()
    {
       return firstDimensionTo;
+   }
+
+   public void setFirstDimensionTo(String firstDimensionTo)
+   {
+      this.firstDimensionTo = firstDimensionTo;
    }
 
    public String getFirstDimensionDuration()
@@ -124,9 +196,19 @@ public class ReportDataSet implements IValidateAble
       return firstDimensionDuration;
    }
 
+   public void setFirstDimensionDuration(String firstDimensionDuration)
+   {
+      this.firstDimensionDuration = firstDimensionDuration;
+   }
+
    public Long getFirstDimensionDurationCount()
    {
       return firstDimensionDurationCount;
+   }
+
+   public void setFirstDimensionDurationCount(Long firstDimensionDurationCount)
+   {
+      this.firstDimensionDurationCount = firstDimensionDurationCount;
    }
 
    public String getFirstDimensionDurationUnit()
@@ -134,9 +216,9 @@ public class ReportDataSet implements IValidateAble
       return firstDimensionDurationUnit;
    }
 
-   public String getGroupBy()
+   public void setFirstDimensionDurationUnit(String firstDimensionDurationUnit)
    {
-      return groupBy;
+      this.firstDimensionDurationUnit = firstDimensionDurationUnit;
    }
 
    public String getFirstDimensionValue()
@@ -144,8 +226,28 @@ public class ReportDataSet implements IValidateAble
       return firstDimensionValue;
    }
 
+   public void setFirstDimensionValue(String firstDimensionValue)
+   {
+      this.firstDimensionValue = firstDimensionValue;
+   }
+
    public List<String> getFirstDimensionValueList()
    {
       return firstDimensionValueList;
+   }
+
+   public void setFirstDimensionValueList(List<String> firstDimensionValueList)
+   {
+      this.firstDimensionValueList = firstDimensionValueList;
+   }
+
+   public String getGroupBy()
+   {
+      return groupBy;
+   }
+
+   public void setGroupBy(String groupBy)
+   {
+      this.groupBy = groupBy;
    }
 }
