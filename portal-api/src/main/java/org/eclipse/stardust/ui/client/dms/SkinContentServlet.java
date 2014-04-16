@@ -29,6 +29,7 @@ import org.eclipse.stardust.common.Function;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.config.ExtensionProviderUtils;
 import org.eclipse.stardust.common.config.Parameters;
+import org.eclipse.stardust.common.config.ParametersFacade;
 import org.eclipse.stardust.common.error.PublicException;
 import org.eclipse.stardust.engine.api.web.dms.DmsContentServlet.ExecutionServiceProvider;
 import org.eclipse.stardust.engine.core.preferences.IPreferenceStorageManager;
@@ -43,6 +44,8 @@ import org.eclipse.stardust.engine.core.runtime.beans.ForkingServiceFactory;
 import org.eclipse.stardust.engine.core.runtime.beans.interceptors.PropertyLayerProviderInterceptor;
 import org.eclipse.stardust.engine.core.runtime.beans.removethis.SecurityProperties;
 import org.eclipse.stardust.engine.core.runtime.removethis.EngineProperties;
+import org.eclipse.stardust.engine.core.spi.dms.RepositoryProviderManager;
+import org.eclipse.stardust.engine.core.spi.jca.IJcaResourceProvider;
 import org.eclipse.stardust.vfs.IDocumentRepositoryService;
 import org.eclipse.stardust.vfs.IFile;
 import org.eclipse.stardust.vfs.IFolder;
@@ -123,6 +126,7 @@ public class SkinContentServlet extends AbstractVfsContentServlet
                         {
                            Repository repository = null;
 
+                           // TODO rework to use RepositoryProviderManager.getInstance().getImplicitService()
                            if (ejbEnvironment)
                            {
                               Context context = new InitialContext();
@@ -132,11 +136,14 @@ public class SkinContentServlet extends AbstractVfsContentServlet
                            }
                            else
                            {
-                              IDocumentRepositoryService drs = rtEnv.getDocumentRepositoryService();
-                              if (null != drs && drs instanceof JcrDocumentRepositoryService)
+                              // workaround for spring mode as rtEnv.getDocumentRepositoryService was removed.
+                              String jcrJndiName = parameters.getString(
+                                    "Jcr.ContentRepository", "jcr/ContentRepository");
+                              IJcaResourceProvider jcaResourceProvider = rtEnv.getJcaResourceProvider();
+                              if (jcaResourceProvider != null)
                               {
-                                 JcrDocumentRepositoryService jcrDocumentRepositoryService = (JcrDocumentRepositoryService) drs;
-                                 ISessionFactory sessionFactory = jcrDocumentRepositoryService.getSessionFactory();
+                                 Object sessionFactory = jcaResourceProvider.resolveJcaResource(jcrJndiName);
+
                                  if (sessionFactory instanceof JcrSpringSessionFactory)
                                  {
                                     repository = ((JcrSpringSessionFactory) sessionFactory).getRepository();
