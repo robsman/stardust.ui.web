@@ -15,19 +15,19 @@ import com.google.gson.JsonObject;
 
 public abstract class SchedulingRecurrence
 {
-   
+
    private static final Logger trace = LogManager.getLogger(SchedulingRecurrence.class);
-   
+
    private String SECONDS = "0";
 
    private String MINUTES = "0";
 
    private String HOURS = "12";
-   
+
    private Date startDate = null;
-   
+
    private String startTime;
-   
+
    public String getSECONDS()
    {
       return SECONDS;
@@ -57,7 +57,7 @@ public abstract class SchedulingRecurrence
    {
       HOURS = hOURS;
    }
-   
+
    public Date getStartDate()
    {
       return startDate;
@@ -74,24 +74,25 @@ public abstract class SchedulingRecurrence
    }
 
    public abstract String generateSchedule(JsonObject json);
-   
+
    public String prcoessSchedule(JsonObject json)
    {
       String startDateStr = json.get("recurrenceRange").getAsJsonObject()
-      .get("startDate").getAsString();
-      
+            .get("startDate").getAsString();
+
       String uIselectedExecutionTime = json.get("executionTime").getAsString();
       String executionTime = SchedulingUtils.getExecutionTime(uIselectedExecutionTime);
-      
+
       String input = startDateStr + SchedulingUtils.BLANK_SPACE + executionTime;
       // Format of the date defined in the input String
-      startDate = getParsedDate(input, "yyyy-MM-dd hh:mm aa");
+      startDate = SchedulingUtils.getParsedDate(input, "yyyy-MM-dd hh:mm aa");
 
       trace.info("Start Date: " + startDate);
-      
-      startTime = startDate.getSeconds() + SchedulingUtils.BLANK_SPACE + startDate.getMinutes()
-            + SchedulingUtils.BLANK_SPACE + startDate.getHours() + SchedulingUtils.BLANK_SPACE;
-      
+
+      startTime = startDate.getSeconds() + SchedulingUtils.BLANK_SPACE
+            + startDate.getMinutes() + SchedulingUtils.BLANK_SPACE + startDate.getHours()
+            + SchedulingUtils.BLANK_SPACE;
+
       String cronExpressionInput = this.generateSchedule(json);
 
       String endMode = json.get("recurrenceRange").getAsJsonObject().get("endMode")
@@ -116,7 +117,8 @@ public abstract class SchedulingRecurrence
 
          String endDateStr = json.get("recurrenceRange").getAsJsonObject().get("endDate")
                .getAsString();
-         endDate = getParsedDate(endDateStr, SchedulingUtils.CLIENT_DATE_FORMAT);
+         endDate = SchedulingUtils.getParsedDate(endDateStr,
+               SchedulingUtils.CLIENT_DATE_FORMAT);
       }
 
       if (endDate != null)
@@ -145,8 +147,7 @@ public abstract class SchedulingRecurrence
       {
          trace.error(e);
       }
-      
-      
+
       trace.info("End Date: " + endDate);
 
       trace.info("Constructed Cron Expression: " + cronExpressionInput);
@@ -157,31 +158,8 @@ public abstract class SchedulingRecurrence
             + cronExpression.getNextValidTimeAfter(nextValidTimeAfter));
       // trace.info("Get Time After: " + cronExpression.getTimeAfter(startDate));
 
-      return convertDate(nextValidTimeAfter);
+      return SchedulingUtils.convertDate(nextValidTimeAfter,
+            SchedulingUtils.CLIENT_DATE_FORMAT);
    }
 
-   private Date getParsedDate(String startDateStr, String DateFormat)
-   {
-      DateFormat df = new SimpleDateFormat(DateFormat);
-
-      Date date = null;
-      try
-      {
-         date = df.parse(startDateStr);
-      }
-      catch (ParseException e)
-      {
-         trace.error(e);
-      }
-
-      return date;
-
-   }
-
-   private String convertDate(Date date)
-   {
-      SimpleDateFormat sdf = new SimpleDateFormat(SchedulingUtils.CLIENT_DATE_FORMAT);
-      String convertedDate = sdf.format(date);
-      return convertedDate;
-   }
 }

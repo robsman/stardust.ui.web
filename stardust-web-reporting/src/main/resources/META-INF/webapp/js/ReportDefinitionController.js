@@ -637,8 +637,7 @@ define(
 					
 					var columns = this.reportingService.getColumnDimensions(this.report);
 					
-					if (columns.length != 0)
-               {
+				
 	                var TEMPLATE = "<table cellpadding=\"0\" cellspacing=\"0\" class=\"dataTable\"><thead><tr>_HEADERS_</tr></thead><tbody><tr sd-table-data=\"row in rows\">_COLUMNS_</tr></tbody></table>";
 	                   
 	                var v1 = jQuery.extend({}, TEMPLATE);
@@ -663,7 +662,9 @@ define(
 	                
 	                var divElem = angular.element(".dynamicTable");
                    angularCompile(divElem)(divElem.scope());
-	               
+                   
+               if (columns.length != 0)
+               {   
 					var self = this;
 	                self.refreshPreviewData();
                }

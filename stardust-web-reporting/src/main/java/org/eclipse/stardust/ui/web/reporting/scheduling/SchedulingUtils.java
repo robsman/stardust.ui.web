@@ -1,11 +1,22 @@
 package org.eclipse.stardust.ui.web.reporting.scheduling;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
+
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
+
 public class SchedulingUtils
 {
+   private static final Logger trace = LogManager.getLogger(SchedulingRecurrence.class);
+   
    public static String BLANK_SPACE = " ";
    public static String SERVER_DATE_FORMAT = "yyyy/MM/dd hh:mm:ss:SSS";
    public static String CLIENT_DATE_FORMAT = "yyyy-MM-dd";
@@ -152,6 +163,31 @@ public class SchedulingUtils
       String string = map.get(selectedExecutionTime);
       return string;
 
+   }
+   
+   public static Date getParsedDate(String startDateStr, String DateFormat)
+   {
+      DateFormat df = new SimpleDateFormat(DateFormat);
+
+      Date date = null;
+      try
+      {
+         date = df.parse(startDateStr);
+      }
+      catch (ParseException e)
+      {
+         trace.error(e);
+      }
+
+      return date;
+
+   }
+
+   public static String convertDate(Date date, String DateFormat)
+   {
+      SimpleDateFormat sdf = new SimpleDateFormat(DateFormat);
+      String convertedDate = sdf.format(date);
+      return convertedDate;
    }
 
 }
