@@ -587,12 +587,38 @@ define(
 					return this.reportingService.metadata.objects[this.report.dataSet.primaryObject];
 				};
 				
+				ReportDefinitionController.prototype.primaryObjectEnumGroup = function(id) {
+					var dimension = this.getDimension(id);
+					
+					if(!dimension){
+						dimension = this.getComputedColumnAsDimensions()[id];
+					}
+					
+					if(!dimension){
+						return;
+					}
+					
+					if(dimension.metadata && dimension.metadata.isDescriptor){
+						return this.getI18N("reporting.definitionView.descriptors");
+					}else if(dimension.metadata && dimension.metadata.isComputedType){
+						return this.getI18N("reporting.definitionView.computedColumns");
+					}
+					return this.getI18N("reporting.definitionView." + this.report.dataSet.primaryObject);
+				};
+				
 				ReportDefinitionController.prototype.getPrimaryObjectEnum = function() {
 					var dimensionsObj = this.reportingService.metadata.objects[this.report.dataSet.primaryObject].dimensions;
 					var enumerators = [];
 					for ( var n in dimensionsObj) {
 						enumerators.push(dimensionsObj[n]);
 					}
+					
+					dimensionsObj = this.getComputedColumnAsDimensions();
+					
+					for ( var n in dimensionsObj) {
+						enumerators.push(dimensionsObj[n]);
+					}
+					
 					return enumerators;
 				};
 				
@@ -622,6 +648,23 @@ define(
 					return this.getPrimaryObject().dimensions[id];
 				};
 
+				ReportDefinitionController.prototype.getComputedColumnAsDimensions = function() {
+					var dimensions = {};
+					for ( var n in this.report.dataSet.computedColumns) {
+						var column = this.report.dataSet.computedColumns[n];
+
+						dimensions[column.id] = {
+							id : column.id,
+							name : column.name,
+							type : this.reportingService.metadata[column.type],
+							metadata : {
+								isComputedType : true
+							}
+						};
+					}
+					
+					return dimensions;
+				};
 				/**
 				 * 
 				 */
@@ -1848,7 +1891,7 @@ define(
 			}
           }
        };
-			
+      
       
       /**
        * This function will remove parameters from parameter list

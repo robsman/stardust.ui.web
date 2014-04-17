@@ -141,7 +141,7 @@ define(
 								id : "startingUserName",
 								name : this.getI18N("reporting.definitionView.additionalFiltering.startingUserName"),
 								type : this.metadata.autocompleteType,
-								service : "userService"
+								service : "userService" //TODO rest end point
 							},
 							state : {
 								id : "state",
@@ -1116,7 +1116,10 @@ define(
 						dimensions.push({
 							id : column.id,
 							name : column.name,
-							type : this.metadata[column.type]
+							type : this.metadata[column.type],
+							metadata : {
+								isComputedType : true
+							}
 						});
 					}
 

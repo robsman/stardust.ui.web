@@ -385,7 +385,6 @@ table.dataTable tbody tr.odd {
 .rel-container div[name='ac-tag']{
   display:inline-table;
   font-size: 0.8em;
-  font-family: Lato;
   padding: 0px 4px 0px 4px;
   border:solid 1px #ccd5e4;
   background-color:#eff2f7;
@@ -417,7 +416,6 @@ table.dataTable tbody tr.odd {
 
 .rel-container [name='ac-selectList'] div{
   cursor:pointer;
-  font-family:Lato;
   font-size:0.8em;
   padding:2px;
   background-color:#fff;

@@ -229,7 +229,7 @@ table.formTable td {
 															ng-click="$parent.selectComputedColumn(column)" /></td>
 														<td><select ng-model="column.type"
 															ng-click="$parent.selectComputedColumn(column)"
-															ng-options="type.id as type.name for type in reportingService.getPrimitiveTypes() "><option
+															ng-options="type.name for type in reportingService.getPrimitiveTypes() "><option
 																	value="" ng-hide="column.type">{{getI18N('reporting.definitionView.pleaseSelect.label')}}</option></select></td>
 													</tr>
 													<tr>
@@ -359,7 +359,7 @@ table.formTable td {
 													<td><label
 														style="width: 100px; display: inline-block;">{{getI18N('reporting.definitionView.firstDimension.label')}}</label></td>
 													<td><select ng-model="report.dataSet.firstDimension"
-														ng-options="dimension.id as dimension.name for dimension in getCumulatedDimensions()"
+														ng-options="dimension.id as dimension.name group by primaryObjectEnumGroup(dimension.id) for dimension in getCumulatedDimensions()"
 														ng-change="changeFirstDimension()">
 															<option value=""></option>
 													</select></td>
@@ -585,7 +585,7 @@ table.formTable td {
 										<td valign="top">
 										<select ng-model="x.dimension"
 											ng-change="onFilterDimensionChange(x.index)"
-												ng-options="y.id as y.name for y in getPrimaryObjectEnum()">
+												ng-options="y.id as y.name group by primaryObjectEnumGroup(y.id) for y in getPrimaryObjectEnum()">
 										</select></td>
 										<td valign="top">
 											<div
@@ -595,7 +595,7 @@ table.formTable td {
 														<td><select ng-model="x.operator" 
 																ng-options="o.id as o.label for o in getOperatorsEnum(getDimension(x.dimension))">
 														</td>
-														<td><input type="text" ng-model="x.value" required></td>
+														<td><input type="text" ng-model="x.value"></td>
 														<td><a href=""
 															ng-click="removeParameter('filters.' + x.dimension)"
 															ng-show="existsParameter('filters.' + x.dimension)"><img
@@ -638,16 +638,16 @@ table.formTable td {
 																ng-options="o.id as o.label for o in getOperatorsEnum(getDimension(x.dimension))">
 														</td>
 														
-  													 	<td ng-show="x.operator != 'B'"><input type="number" ng-model="x.value" required></td>
+  													 	<td ng-show="x.operator != 'B'"><input type="number" ng-model="x.value"></td>
 														<td ng-show="x.operator == 'B'">
 														 <table>
 														 	<tr>
 															 	<td ><label>{{getI18N('reporting.definitionView.from.label')}}</label></td>
-																<td ><input type="number" ng-model="x.value.From" required></td>
+																<td ><input type="number" ng-model="x.value.From" ></td>
 														 	</tr>
 															<tr>
 															 	<td ><label>{{getI18N('reporting.definitionView.to.label')}}</label></td>
-																<td ><input type="number" ng-model="x.value.To" required></td>
+																<td ><input type="number" ng-model="x.value.To" ></td>
 														 	</tr>
 														 	
 														 </table>			
