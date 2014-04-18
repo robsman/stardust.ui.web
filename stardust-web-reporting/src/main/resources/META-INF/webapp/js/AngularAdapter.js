@@ -609,21 +609,20 @@ if (!window.bpm.portal.AngularAdapter) {
 							});
 
 			// Date Picker
-			this.angularModule.directive('sdTimePicker', function() {
-				console.debug("sd-dateTime parsed");
+			this.angularModule.directive('sdDatetime', function() {
+				console.debug("sd-datetime parsed");
 				return {
 					restrict : "A",
 					require : "ngModel",
 					link : function(scope, element, attrs, controller) {
-						var timeFormat = "hh:mm:ss";
+						var timeFormat = "hh:mm:ss:l";
 						var dateFormat = "yy/mm/dd";
 						if(attrs.timeFormat){
-							timeFormat = attrs.dateFormat;
+							timeFormat = attrs.timeFormat;
 						}
 						if(attrs.dateFormat){
 							dateFormat = attrs.dateFormat;
 						}
-						
 						element.datetimepicker({
 							inline : true,
 							timeFormat : timeFormat,

@@ -1071,7 +1071,12 @@ define(
 							this.report.dataSet.filters[index].metadata = dimenison.metadata;
 						}else if(dimenison && (dimenison.type == this.reportingService.metadata.autocompleteType)){
 							this.report.dataSet.filters[index].value = [];
-						}
+						}else if(dimenison && (dimenison.type == this.reportingService.metadata.timestampType)){
+							this.report.dataSet.filters[index].value = {
+									from :"",
+									to : ""
+							};
+ 						}
 					}
 
 					// TODO: Operator only for respective types

@@ -376,7 +376,7 @@ table.formTable td {
 														<tr>
 															<td><label>{{getI18N('reporting.definitionView.from.label')}}</label></td>
 															<td><input type="text"
-																ng-model="report.dataSet.firstDimensionFrom" sd-date /></td>
+																ng-model="report.dataSet.firstDimensionFrom" sd-datetime /></td>
 															<td><a href=""
 																ng-click="removeParameter('firstDimensionFrom')"
 																ng-show="existsParameter('firstDimensionFrom')"><img
@@ -392,7 +392,7 @@ table.formTable td {
 														<tr>
 															<td><label>{{getI18N('reporting.definitionView.to.label')}}</label></td>
 															<td><input type="text"
-																ng-model="report.dataSet.firstDimensionTo" sd-date /></td>
+																ng-model="report.dataSet.firstDimensionTo" sd-datetime /></td>
 															<td><a href=""
 																ng-click="removeParameter('firstDimensionTo')"
 																ng-show="existsParameter('firstDimensionTo')"><img
@@ -417,7 +417,7 @@ table.formTable td {
 														<tr>
 															<td><label>{{getI18N('reporting.definitionView.from.label')}}</label></td>
 															<td colspan="2"><input type="text"
-																ng-model="report.dataSet.firstDimensionFrom" sd-date /></td>
+																ng-model="report.dataSet.firstDimensionFrom" sd-datetime /></td>
 															<td><a href=""
 																ng-click="removeParameter('firstDimensionFrom')"
 																ng-show="existsParameter('firstDimensionFrom')"><img
@@ -670,7 +670,7 @@ table.formTable td {
 												<table cellpadding="0" cellspacing="0" class="layoutTable">
 													<tr>
 														<td><label>From</label></td>
-														<td><input type="text" ng-model="x.value" sd-timePicker /></td>
+														<td><input type="text" ng-model="x.value.from" sd-datetime /></td>
 														<td><a href=""
 															ng-click="removeParameter('filters.' + x.dimension + '.from')"
 															ng-show="existsParameter('filters.' + x.dimension + '.from')"><img
@@ -684,8 +684,7 @@ table.formTable td {
 													</tr>
 													<tr>
 														<td><label>To</label></td>
-														<td><input type="text" ng-model="x.otherValue"
-															sd-date /></td>
+														<td><input type="text" ng-model="x.value.to" sd-datetime /></td>
 														<td><a href=""
 															ng-click="removeParameter('filters.' + x.dimension + '.to')"
 															ng-show="existsParameter('filters.' + x.dimension + '.to')"><img
@@ -1200,7 +1199,7 @@ table.formTable td {
 										<td><label>{{parameter.name}} (<i>{{parameter.id}}</i>)
 										</label></td>
 										<td><input type="text"
-											ng-model="getParameters()[parameter.id].value" sd-date
+											ng-model="getParameters()[parameter.id].value" sd-datetime
 											ng-show="parameter.type == getMetadata().timestampType.id"
 											value="{{getParameterDefaultValue(parameter.id)}}"
 											ng-blur="refreshPreview()" /><input type="number"
