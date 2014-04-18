@@ -609,7 +609,35 @@ if (!window.bpm.portal.AngularAdapter) {
 							});
 
 			// Date Picker
-
+			this.angularModule.directive('sdTimePicker', function() {
+				console.debug("sd-dateTime parsed");
+				return {
+					restrict : "A",
+					require : "ngModel",
+					link : function(scope, element, attrs, controller) {
+						var timeFormat = "hh:mm:ss";
+						var dateFormat = "yy/mm/dd";
+						if(attrs.timeFormat){
+							timeFormat = attrs.dateFormat;
+						}
+						if(attrs.dateFormat){
+							dateFormat = attrs.dateFormat;
+						}
+						
+						element.datetimepicker({
+							inline : true,
+							timeFormat : timeFormat,
+							dateFormat : dateFormat,
+							onSelect : function(date) {
+								scope.$apply(function () {
+								   controller.$setViewValue(date);
+								});
+							}
+						});
+					}
+				};
+			});
+			
 			this.angularModule.directive('sdDate', function() {
 				console.debug("sd-date parsed");
 				return {
