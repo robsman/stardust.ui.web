@@ -595,6 +595,11 @@ define(
 						}
 						var indexExplicitProuducerOutboundConverter = this.producerRouteTextarea.val().indexOf("bean:bpmTypeConverter?method=to");
 						
+						// add check for new data endpoint
+						if(indexExplicitProuducerOutboundConverter == -1) {
+							indexExplicitProuducerOutboundConverter = this.producerRouteTextarea.val().indexOf("ipp:data:to");
+						}
+						
 						if(indexExplicitProuducerOutboundConverter != -1 && this.producerOutboundConversion.val() != "None" && 
 								!m_utils.isEmptyString(this.producerOutboundConversion.val())) {
 							// check if this converter is in the same place as the injected Inbound converter
@@ -617,6 +622,12 @@ define(
 						}
 						
 						var indexExplicitProuducerInboundConverter = this.producerRouteTextarea.val().indexOf("bean:bpmTypeConverter?method=from");
+						
+						// add check for new data endpoint
+						if(indexExplicitProuducerInboundConverter == -1) {
+							indexExplicitProuducerInboundConverter = this.producerRouteTextarea.val().indexOf("ipp:data:from");
+						}
+						
 						if(indexExplicitProuducerInboundConverter != -1 && this.producerInboundConversion.val() != "None" && 
 								!m_utils.isEmptyString(this.producerInboundConversion.val())) {
 							// check if the explicit inbound conversion is right after last To Endpoint
@@ -644,6 +655,11 @@ define(
 					this.consumerRouteTextarea.removeClass("error");
 					if(!m_utils.isEmptyString(this.consumerRouteTextarea.val())) {
 						var indexExplicitConsumerInboundConverter = this.consumerRouteTextarea.val().indexOf("bean:bpmTypeConverter?method=from");
+						// add check for new data endpoint
+						if(indexExplicitConsumerInboundConverter == -1) {
+							indexExplicitConsumerInboundConverter = this.consumerRouteTextarea.val().indexOf("ipp:data:from");
+						}
+						
 						var indexCompleteActivity = this.consumerRouteTextarea.val().indexOf("ipp:activity:complete");
 						if(indexExplicitConsumerInboundConverter != -1 && indexCompleteActivity != -1 &&
 								this.consumerInboundConversion.val() != "None" && 
