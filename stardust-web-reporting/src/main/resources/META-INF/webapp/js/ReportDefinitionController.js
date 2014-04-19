@@ -112,6 +112,8 @@ define(
 					
 					this.factSelect = jQuery("#factSelect");
 					this.chartTypeSelect = jQuery("#chartTypeSelect");
+					this.layoutSubTypeSelect = jQuery("#layoutSubTypeSelect");
+					this.cumulantsDisplaySelect = jQuery("#cumulantsDisplaySelect");
 					
 					this.editorAnchor = utils.jQuerySelect("#expressionTextDiv").get(0);
 					this.expressionEditor = m_codeEditorAce.getJSCodeEditor(this.editorAnchor);
@@ -215,194 +217,220 @@ define(
 									});
 
 					this.initializeDragAndDrop();
-					
 
-					this.reportingService
-						.refreshPreferenceData()
-						.done(
-								function() {
-									self.reportingService
-											.refreshModelData()
-											.done(
-													function() {
-									self.primaryObjectSelect.empty();
+					jQuery.when(self.reportingService
+							.refreshPreferenceData(), self.reportingService
+							.refreshModelData()).done( function() {
+							self.primaryObjectSelect.empty();
 
-									for ( var n in self.reportingService.metadata.objects) {
-										self.primaryObjectSelect
-												.append("<option value='"
-														+ n
-														+ "'>"
-														+ self.reportingService.metadata.objects[n].name
-														+ "</option>");
+							for (var n in self.reportingService.metadata.objects) {
+								self.primaryObjectSelect
+								.append("<option value='" + n + "'>"
+									 + self.reportingService.metadata.objects[n].name
+									 + "</option>");
+							}
+
+							self.primaryObjectSelect
+							.change(function () {
+								self.report.dataSet.primaryObject = self.primaryObjectSelect
+									.val();
+
+								self
+								.changePrimaryObject(false);
+
+								self.populateAutoCompleteKeywordList();
+
+								//self.updateView();
+							});
+
+							//Participants Select
+							self.participantsSelect.empty();
+							var modelParticipants = self.reportingService.modelData.participants;
+							for (var n in modelParticipants) {
+								self.participantsSelect
+								.append("<option value='"
+									 + modelParticipants[n].id
+									 + "'>"
+									 + modelParticipants[n].name
+									 + "</option>");
+							}
+
+							self.participantsSelect.change(function () {
+								self.report.storage.location = "participantFolder";
+								self.report.storage.participant = self.participantsSelect.val();
+								self.updateView();
+							});
+
+							//Participants Select
+							self.schedulingParticipantsSelect.empty();
+							var modelParticipants = self.reportingService.modelData.participants;
+							for (var n in modelParticipants) {
+								self.schedulingParticipantsSelect
+								.append("<option value='"
+									 + modelParticipants[n].id
+									 + "'>"
+									 + modelParticipants[n].name
+									 + "</option>");
+							}
+
+							self.schedulingParticipantsSelect.change(function () {
+								self.report.scheduling.delivery.participant = self.schedulingParticipantsSelect.val();
+								self.updateView();
+							});
+
+							self.layoutSubTypeSelect.change(function (val) {
+								self.report.layout.subType = self.layoutSubTypeSelect.val();
+
+								if (self.reportingService.metadata.layoutSubTypes.table.id == self.layoutSubTypeSelect.val()) {
+
+									if (!self.report.layout) {
+										self.report.layout = {};
 									}
 
-									self.primaryObjectSelect
-											.change(function() {
-												self.report.dataSet.primaryObject = self.primaryObjectSelect
-														.val();
-
-												self
-														.changePrimaryObject(false);
-												
-												self.populateAutoCompleteKeywordList();
-												
-												//self.updateView();
-											});
-
-									//Participants Select
-									self.participantsSelect.empty();
-									var modelParticipants = self.reportingService.modelData.participants;
-									for ( var n in modelParticipants) {
-										self.participantsSelect
-												.append("<option value='"
-														+ modelParticipants[n].id
-														+ "'>"
-														+ modelParticipants[n].name
-														+ "</option>");
+									if (!self.report.layout.table) {
+										self.report.layout.table = {};
 									}
 
-									self.participantsSelect.change(function() {
-										self.report.storage.location = "participantFolder";
-										self.report.storage.participant = self.participantsSelect.val();
-										self.updateView();
-									});
-									
-									//Participants Select
-                          self.schedulingParticipantsSelect.empty();
-                          var modelParticipants = self.reportingService.modelData.participants;
-                          for ( var n in modelParticipants) {
-                             self.schedulingParticipantsSelect
-                                   .append("<option value='"
-                                         + modelParticipants[n].id
-                                         + "'>"
-                                         + modelParticipants[n].name
-                                         + "</option>");
-                          }
+									if (!self.report.layout.selectedCumulants) {
+										self.report.layout.table.selectedCumulants = [];
+									}
 
-                          self.schedulingParticipantsSelect.change(function() {
-                             self.report.scheduling.delivery.participant = self.schedulingParticipantsSelect.val();
-                             self.updateView();
-                          });
-                          
-									self.chartTypeSelect
-											.change(function() {
-												self.report.layout.chart.type = self.chartTypeSelect
-														.val();
+								}
 
-												self.updateView();
-											});
+								self.populateChartTypes();
+								self.updateView();
+							});
 
-									self.factSelect
-											.change(function() {
-												self.report.dataSet.fact = self.factSelect
-														.val();
+							self.cumulantsDisplaySelect.change(function () {
+								self.report.layout.table.cumulantsDisplay = self.cumulantsDisplaySelect.val();
+							});
 
-												self.changeFact();
-												self.updateView();
-											});
+							self.chartTypeSelect
+							.change(function () {
+								self.report.layout.chart.type = self.chartTypeSelect
+									.val();
 
-									jQuery("#factProcessDataSelect")
-											.change(
-													function() {
-														self.report.dataSet.factProcessData = jQuery(
-																this).val();
+								self.updateView();
+							});
 
-														self.updateView();
-													});
+							self.factSelect
+							.change(function () {
+								self.report.dataSet.fact = self.factSelect
+									.val();
 
-									jQuery("#groupBySelect")
-											.change(
-													function() {
-														self.report.dataSet.groupBy = jQuery(
-																this).val();
-													});
+								self.changeFact();
+								self.updateView();
+							});
 
-									jQuery("#propertiesTabs")
-											.tabs(
-													{
-														beforeActivate : function(
-																event, ui) {
-															if (self.report.layout.type == "document"
-																	&& ui.newPanel.selector === "#previewTab") {
-																// TODO
-																// Workaround
-																// to make
-																// sure that
-																// changes
-																// are
-																// written
-																// to markup
+							jQuery("#factProcessDataSelect")
+							.change(
+								function () {
+								self.report.dataSet.factProcessData = jQuery(
+										this).val();
 
-																self.report.layout.document = {
-																	markup : CKEDITOR.instances["documentTemplateEditor"]
-																			.getData()
-																};
-															}
-														},
-														activate : function(
-																event, ui) {
+								self.updateView();
+							});
 
-															if (ui.newPanel.selector === "#previewTab") {
-																self
-																		.refreshPreview();
-															}
-														}
-													});
-									
+							jQuery("#groupBySelect")
+							.change(
+								function () {
+								self.report.dataSet.groupBy = jQuery(
+										this).val();
+							});
 
-									self
-											.loadOrCreateReportDefinition(
-													name, path)
-											.done(
-													function() {
-														// TODO Need a
-														// cleaner
-														// initialization
-														// function
+							jQuery("#propertiesTabs")
+							.tabs({
+								beforeActivate : function (
+									event, ui) {
+									if (self.report.layout.type == "document"
+										 && ui.newPanel.selector === "#previewTab") {
+										// TODO
+										// Workaround
+										// to make
+										// sure that
+										// changes
+										// are
+										// written
+										// to markup
 
-														self
-																.changePrimaryObject(true);
-														self.changeFact();
-														self
-																.changeFirstDimension();
-														self.renderingController
-																.initialize(self.report);
+										self.report.layout.document = {
+											markup : CKEDITOR.instances["documentTemplateEditor"]
+											.getData()
+										};
+									}
+								},
+								activate : function (
+									event, ui) {
 
-														self.chartTypeSelect
-																.val(self.report.layout.chart.type);
+									if (ui.newPanel.selector === "#previewTab") {
+										self
+										.refreshPreview();
+									}
+								}
+							});
 
-														self.schedulingController
-																.initialize(self.report.scheduling);
+							self
+							.loadOrCreateReportDefinition(
+								name, path)
+							.done(
+								function () {
+								// TODO Need a
+								// cleaner
+								// initialization
+								// function
 
-														self.runInAngularContext(function(scope){
-														   scope.$watch("report.scheduling", function(newValue, oldValue) {
-														            self.getNextExecutionDate();
-                                             }, true);
-														});
+								self
+								.changePrimaryObject(true);
+								self.changeFact();
+								self
+								.changeFirstDimension();
+								self.renderingController
+								.initialize(self.report);
 
-														self.updateView();
+								self.layoutSubTypeSelect.val(self.report.layout.subType);
 
-														document.body.style.cursor = "default";
+								self.cumulantsDisplaySelect.val(self.report.layout.table.cumulantsDisplay);
 
-														if (self.report.document) {
-															CKEDITOR.instances["documentTemplateEditor"]
-																	.setData(self.report.layout.document.markup);
-														}
+								self.chartTypeSelect
+								.val(self.report.layout.chart.type);
 
-														jQuery(
-																"#reportDefinitionView")
-																.css(
-																		"visibility",
-																		"visible");
-														
-														self.populateAutoCompleteKeywordList();
-														
-													}).fail(handleError("Failed to initialize Report Definition Controller"));
-								}).fail(handleError("Failed to initialize Report Definition Controller"));
-					}).fail(handleError("Failed to initialize Report Definition Controller"));
+								self.schedulingController
+								.initialize(self.report.scheduling);
+
+								self.runInAngularContext(function (scope) {
+									scope.$watch("report.scheduling", function (newValue, oldValue) {
+										self.getNextExecutionDate();
+									}, true);
+								});
+
+								self.updateView();
+
+								document.body.style.cursor = "default";
+
+								if (self.report.document) {
+									CKEDITOR.instances["documentTemplateEditor"]
+									.setData(self.report.layout.document.markup);
+								}
+
+								jQuery(
+									"#reportDefinitionView")
+								.css(
+									"visibility",
+									"visible");
+
+								self.populateAutoCompleteKeywordList();
+
+							}).fail(function ()	{
+										console.debug(error);
+										document.body.style.cursor = "default";
+										jQuery("#reportDefinitionView").css("visibility", "visible");
+								});
+							console.debug('refreshModelData preferencedata success.............');
+						}).fail(function () {
+							console.debug('refreshModelData preferencedata falied.............');
+					});
 				};
 
-				
 				ReportDefinitionController.prototype.initializeAutocompleteDir = function(angularModule) {
 					var self = this; 
 	
@@ -500,7 +528,7 @@ define(
 							},
 							parameters : {},
 							layout : {
-								type : "chart",
+								type : "simpleReport",
 								chart : {
 									type : this.reportingService.metadata.chartTypes.xyPlot.id,
 									options : {
@@ -584,6 +612,9 @@ define(
 				 * 
 				 */
 				ReportDefinitionController.prototype.getPrimaryObject = function() {
+					if(!this.report){
+						console.debug("something is wrong here");
+					}
 					return this.reportingService.metadata.objects[this.report.dataSet.primaryObject];
 				};
 				
@@ -621,6 +652,41 @@ define(
 					
 					return enumerators;
 				};
+				
+				ReportDefinitionController.prototype.getAvailableCumulantsEnum = function() {
+					var cumulants = this.reportingService.metadata.cumulants;
+					var enumerators = [];
+					for ( var n in cumulants ) {
+						var add = true; 
+						if (this.report.layout.table && this.report.layout.table.selectedCumulants) {
+							this.report.layout.table.selectedCumulants
+									.forEach(function(cumulantId) {
+										if (cumulants[n].id == cumulantId) {
+											add = false;
+										}
+									});
+						}
+						if(add){
+							enumerators.push(cumulants[n]);	
+						}
+					}
+					return enumerators;
+				};
+				
+				ReportDefinitionController.prototype.getSelectedCumulantsEnum = function() {
+					var enumerators = [];
+					if (!this.report.layout.table || !this.report.layout.table.selectedCumulants){
+						return enumerators;
+					}	
+					var cumulants = this.report.layout.table.selectedCumulants;
+					var self = this;
+					cumulants.forEach(function(cumulantId){
+						enumerators.push(self.reportingService.metadata.cumulants[cumulantId]);
+					});
+					
+					return enumerators;
+				};
+				
 				
 				ReportDefinitionController.prototype.toggleFilter = function(filter, property) {
 					filter.metadata[property] = !filter.metadata[property]; 
@@ -746,7 +812,8 @@ define(
 					if (this.report.dataSet.type === "processHistory") {
 						this.report.layout.type = "processDiagram";
 					} else if (this.report.dataSet.type === 'seriesGroup') {
-						this.report.layout.type = "chart";
+						this.report.layout.type = "simpleReport";
+						this.report.layout.subType = "chart";
 					} else if (this.report.dataSet.type === 'recordSet') {
 						this.report.layout.type = "table";
 					}
@@ -777,9 +844,12 @@ define(
 								+ fact.name + "</option>");
 					}
 					}
-
-					this.populateChartTypes();
+					
+					this.populatelayoutSubTypes();
+					//this.populateChartTypes();
 					this.populateGroupBy();
+					
+					this.populateCumulantsDisplay();
 
 					this.report.layout.chart.options.title = this
 							.getPrimaryObject().name;
@@ -1164,6 +1234,31 @@ define(
 					}
 				};
 
+				ReportDefinitionController.prototype.populatelayoutSubTypes = function() {
+					this.layoutSubTypeSelect.empty();
+
+					var option = "<option value='ID'>LABEL</option>";
+			        
+					var layoutSubTypes = this.reportingService.metadata.layoutSubTypes;
+					
+			        for(var i in layoutSubTypes){
+			            this.layoutSubTypeSelect.append(option.replace("ID", layoutSubTypes[i].id).replace("LABEL", layoutSubTypes[i].name));
+			        }
+				};
+
+				ReportDefinitionController.prototype.populateCumulantsDisplay = function() {
+					this.cumulantsDisplaySelect.empty();
+
+					var option = "<option value='ID'>LABEL</option>";
+			        
+					var cumulantsDisplay = this.reportingService.metadata.cumulantsDisplay;
+					
+			        for(var i in cumulantsDisplay){
+			            this.cumulantsDisplaySelect.append(option.replace("ID", cumulantsDisplay[i].id).replace("LABEL", cumulantsDisplay[i].name));
+			        }
+				};
+
+				
 				/**
 				 * Selects the useful tables and charts for the selected facts
 				 * and dimensions.
@@ -1766,6 +1861,33 @@ define(
                   self.expressionEditor.setSessionData("$keywordList", dimensionNames);
             };
             
+            ReportDefinitionController.prototype.addItems = function (selectedItems, list) {
+            	var self = this;
+            	selectedItems.forEach(function(itemId){
+            		if(list.indexOf(itemId) < 0){
+            			list.push(itemId);	
+            		}
+            	});
+            };
+            
+            ReportDefinitionController.prototype.removeItems = function (selectedItems, list) {
+            	selectedItems.forEach(function(itemId){
+            		delete list[list.indexOf(itemId)];
+            	});
+            };
+            
+            ReportDefinitionController.prototype.addAllItems = function (selectedItems, list) {
+            	selectedItems.forEach(function(item){
+            		if(list.indexOf(item.id) < 0){
+            			list.push(item.id);	
+            		}
+            	});
+            };
+            
+            ReportDefinitionController.prototype.removeAllItems = function (list) {
+            	list.length = 0;
+            };
+            
             /**
              * 
              */
@@ -1791,6 +1913,33 @@ define(
                this.populateSelectedArrayinJson();
 
             };
+            
+            ReportDefinitionController.prototype.moveItemUp = function(item, list) {
+                if (this.isMultiSelected(item))
+                {
+                   return;
+                }
+                
+                var idx = list.indexOf(item[0]);
+                if (idx != -1) {
+                    list.splice(idx - 1, 0, list.splice(idx, 1)[0]);
+                }
+            };
+            
+            /**
+             * 
+             */
+            ReportDefinitionController.prototype.moveItemDown = function(item, list) {
+               if (this.isMultiSelected(item))
+               {
+                  return;
+               }  
+               
+               var idx = list.indexOf(item[0]);
+               if (idx != -1) {
+                   list.splice(idx + 1, 0, list.splice(idx, 1)[0]);
+               }
+           };
             
             /**
              * 
@@ -1920,12 +2069,5 @@ define(
 					activity_filter_interactive : false,
 					activity_filter_nonInteractive : true
 				};
-			}
-		
-		function handleError(error){
-			console.debug(error);
-			document.body.style.cursor = "default";
-			jQuery("#reportDefinitionView").css("visibility", "visible");
-		}
-			
+			}		
 		});

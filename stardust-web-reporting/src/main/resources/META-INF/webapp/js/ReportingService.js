@@ -30,6 +30,51 @@ define(
 				
 				this.preferenceData = {};
 
+				this.metadata.layoutSubTypes = {
+						chart : {
+							id : "chart",
+							name : this.getI18N("reporting.definitionView.layout.chart.label"),
+						},
+						table : {
+							id : "table",
+							name : this.getI18N("reporting.definitionView.layout.table.label"),
+						}
+				};
+				
+				this.metadata.cumulantsDisplay = {
+						row : {
+							id : "row",
+							name : this.getI18N("reporting.definitionView.layout.table.cumulant.row"),
+						},
+						columns : {
+							id : "table",
+							name : this.getI18N("reporting.definitionView.layout.table.cumulant.column"),
+						}
+				};
+				
+				this.metadata.cumulants = {
+						count : {
+							id : "count",
+							name : this.getI18N("reporting.definitionView.layout.table.cumulant.count"),
+						},
+						average : {
+							id : "average",
+							name : this.getI18N("reporting.definitionView.layout.table.cumulant.average"),
+						},
+						standard : {
+							id : "standard",
+							name : this.getI18N("reporting.definitionView.layout.table.cumulant.standard"),
+						},
+						minimum : {
+							id : "minimum",
+							name : this.getI18N("reporting.definitionView.layout.table.cumulant.minimum"),
+						},
+						maximum : {
+							id : "maximum",
+							name : this.getI18N("reporting.definitionView.layout.table.cumulant.maximum"),
+						}
+				};
+				
 				this.metadata.chartTypes = {
 					xyPlot : {
 						id : "xyPlot",
@@ -893,7 +938,7 @@ define(
 
 					return deferred.promise();
 				};
-
+				
 				/**
 				 * 
 				 */

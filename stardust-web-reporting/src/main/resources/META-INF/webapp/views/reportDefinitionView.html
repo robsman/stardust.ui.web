@@ -860,16 +860,19 @@ table.formTable td {
 								style="margin-top: 10px; margin-bottom: 10px;">
 								<tr>
 									<td><input ng-model="report.layout.type"
-										ng-show="report.dataSet.type == 'seriesGroup'" value="chart"
+										ng-show="report.dataSet.type == 'seriesGroup'" value="simpleReport"
 										type="radio"></td>
-									<td><label ng-show="report.dataSet.type == 'seriesGroup'">{{getI18N('reporting.definitionView.chart.label')}}</label></td>
+									<td><label ng-show="report.dataSet.type == 'seriesGroup'">{{getI18N('reporting.definitionView.simpletReport.label')}}</label></td>
+									
 									<td><input ng-model="report.layout.type"
 										ng-show="report.dataSet.type == 'recordSet'" value="table"
 										type="radio"></td>
 									<td><label ng-show="report.dataSet.type == 'recordSet'">{{getI18N('reporting.definitionView.table.label')}}</label></td>
+									
 									<td><input ng-model="report.layout.type" value="document"
 										type="radio"></td>
 									<td><label>{{getI18N('reporting.definitionView.composite.label')}}</label></td>
+									
 									<td><input ng-model="report.layout.type"
 										ng-show="report.dataSet.type == 'processHistory'"
 										value="processDiagram" type="radio"></td>
@@ -892,23 +895,25 @@ table.formTable td {
 									</tr>
 								</table>
 							</div>
-							<div ng-show="report.layout.type == 'chart'">
+							<div ng-show="report.layout.type == 'simpleReport'">
 								<table cellpadding="0" cellspacing="0" class="formTable">
 									<tr>
-										<td><label>{{getI18N('reporting.definitionView.chartType.label')}}</label></td>
-										<td><select id="chartTypeSelect">
+										<td><label>{{getI18N('reporting.definitionView.layoutTitle.label')}}</label></td>
+										<td><input type="text" ng-model="report.layout.title" /> </td>
+									</tr>
+									<tr>
+										<td><label>{{getI18N('reporting.definitionView.layoutType.label')}}</label></td>
+										
+										<td><select id="layoutSubTypeSelect">
 										</select></td>
+										
+										<td><select id="chartTypeSelect" 
+												ng-show="report.layout.subType == reportingService.metadata.layoutSubTypes.chart.id">
+										</select></td>
+										
 									</tr>
 								</table>
-								<div class="heading">{{getI18N('reporting.definitionView.title.title')}}</div>
-								<table cellpadding="0" cellspacing="0" class="formTable">
-									<tr>
-										<td><label>{{getI18N('reporting.definitionView.title.label')}}</label></td>
-										<td><input type="text"
-											ng-model="report.layout.chart.options.title"
-											style="width: 250px;" /></td>
-									</tr>
-								</table>
+							<div ng-show="report.layout.subType == reportingService.metadata.layoutSubTypes.chart.id">
 								<table style="margin-top: 10px;">
 									<tr>
 										<td valign="top">
@@ -1186,11 +1191,77 @@ table.formTable td {
 										</td>
 									</tr>
 								</table>
-							</div>
-							<div ng-show="report.layout.type == 'document'">
-								<div id="documentTemplateEditor"></div>
-							</div>
+							</div> <!-- layout subtype == chart ends here -->
+							<div ng-show="report.layout.subType == reportingService.metadata.layoutSubTypes.table.id">
+								<table cellpadding="0" cellspacing="0"  style="margin-top: 10px;" class="formTable">
+									<tr>
+										<td><label>{{getI18N('reporting.definitionView.layout.table.cumulantsDisplay.label')}}</label></td>
+										<td><select id="cumulantsDisplaySelect"></select></td>
+									</tr>
+								</table>
+								
+								<table style="margin-top: 20px;" cellpadding="0" cellspacing="0" class="layoutTable" 
+										ng-show="report.dataSet.fact != reportingService.metadata.objects.processInstance.facts.count.id">
+									<tr>
+										<td><h2>{{getI18N('reporting.definitionView.layout.table.cumulant.available')}}</h2></td>
+										<td></td>
+										<td><h2>{{getI18N('reporting.definitionView.layout.table.cumulant.selected')}}</h2></td>
+									</tr>
+									<tr style="margin-top: 10px;">
+										<td><select multiple="multiple"
+											style="height: 100px; width: 250px;"
+											ng-model="availableCumulants"
+											ng-options="cumulant.id as cumulant.name for cumulant in getAvailableCumulantsEnum()"><option></option></select></td>
+										<td style="vertical-align: center"><table cellpadding="0"
+												cellspacing="0">
+												<tr>
+													<td><button ng-click="addItems(availableCumulants, report.layout.table.selectedCumulants)">&gt;</button></td>
+												</tr>
+												<tr>
+													<td><button ng-click="removeItems(selectedCumulants, report.layout.table.selectedCumulants)">&lt;</button></td>
+												</tr>
+												<tr>
+													<td>
+                                          				<button ng-click="addAllItems(this.getAvailableCumulantsEnum(), report.layout.table.selectedCumulants)">&raquo;</button>
+													</td>
+												</tr>
+												<tr>
+													<td>
+                                          				<button ng-click="removeAllItems(report.layout.table.selectedCumulants)">&laquo;</button>
+													</td>
+												</tr>
+											</table></td>
+										<td><select multiple="multiple"
+											style="height: 100px; width: 250px;"
+											ng-model="selectedCumulants"
+											ng-options="selCumulant.id as selCumulant.name for selCumulant in getSelectedCumulantsEnum()"><option></option></select></td>
+                              <td style="vertical-align: top">
+                                 <table cellpadding="0" cellspacing="0">
+                                    <tr>
+                                       <td><button ng-click="moveItemUp(selectedCumulants, report.layout.table.selectedCumulants)">^</button></td>
+                                    </tr>
+                                    <tr>
+                                       <td><button ng-click="moveItemDown(selectedCumulants, report.layout.table.selectedCumulants)">v</button></td>
+                                    </tr>
+                                 </table>
+                              </td>
+									</tr>
+								</table>			
+									
+								 <table style="margin-top: 10px;" cellpadding="0" cellspacing="0">
+                                    <tr>
+                                    	<td><input type="checkbox" ng-model="report.layout.table.displayTotals" /></td>
+										<td><label>{{getI18N('reporting.definitionView.layout.table.displayTotals')}}</label></td>
+                                    </tr>
+								</table>
+									
+							</div> <!-- layout subtype == table ends here -->	
+						</div> <!-- simple report ends here -->
+							
+						<div ng-show="report.layout.type == 'document'">
+							<div id="documentTemplateEditor"></div>
 						</div>
+					</div>
 						<div id="previewTab">                     
 							<div ng-show="hasParameters()">
 								<div class="heading">{{getI18N('reporting.definitionView.parameters.title')}}</div>
@@ -1224,7 +1295,7 @@ table.formTable td {
                            <div class="dynamicTable"></div>
                         </div>
                      </div>
-                     <div ng-show="report.layout.type == 'chart'">
+                     <div ng-show="report.layout.subType == reportingService.metadata.layoutSubTypes.chart.id">
 								<div class="heading">{{getI18N('reporting.definitionView.chart.title')}}</div>
 								<table>
 									<tr>
