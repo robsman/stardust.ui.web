@@ -298,19 +298,19 @@ table.formTable td {
 										<td style="vertical-align: center"><table cellpadding="0"
 												cellspacing="0">
 												<tr>
-													<td><button ng-click="moveItem(availableColumns, this.cumulatedDimensions, this.selectedColumns)">&gt;</button></td>
+													<td><button ng-click="moveItem(selColumns, this.selectedColumns, this.cumulatedDimensions)">&#x2039;</button></td>
 												</tr>
 												<tr>
-													<td><button ng-click="moveItem(selColumns, this.selectedColumns, this.cumulatedDimensions)">&lt;</button></td>
+													<td><button ng-click="moveItem(availableColumns, this.cumulatedDimensions, this.selectedColumns)">&#x203a;</button></td>
 												</tr>
 												<tr>
 													<td>
-                                          <button ng-click="selectAllDimensionsForColumns()">&raquo;</button>
+                                          <button ng-click="deselectAllDimensionsForColumns()">&#xab;</button>
 													</td>
 												</tr>
 												<tr>
 													<td>
-                                          <button ng-click="deselectAllDimensionsForColumns()">&laquo;</button>
+                                          <button ng-click="selectAllDimensionsForColumns()">&#xbb;</button>
 													</td>
 												</tr>
 											</table></td>
@@ -321,10 +321,10 @@ table.formTable td {
                               <td style="vertical-align: top">
                                  <table cellpadding="0" cellspacing="0">
                                     <tr>
-                                       <td><button ng-click="moveUp(selColumns, this.selectedColumns)">^</button></td>
+                                       <td><button ng-click="moveUp(selColumns, this.selectedColumns)">&#x2c4;</button></td>
                                     </tr>
                                     <tr>
-                                       <td><button ng-click="moveDown(selColumns, this.selectedColumns)">v</button></td>
+                                       <td><button ng-click="moveDown(selColumns, this.selectedColumns)">&#x2c5;</button></td>
                                     </tr>
                                  </table>
                               </td>

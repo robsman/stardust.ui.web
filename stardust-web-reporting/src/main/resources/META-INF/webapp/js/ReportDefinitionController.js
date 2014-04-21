@@ -1958,7 +1958,7 @@ define(
                }
                
                var idx = listIds.indexOf(item[0]);
-               if (idx != -1) {
+               if (idx != -1 && idx != 0) {
                    list.splice(idx - 1, 0, list.splice(idx, 1)[0]);
                }
                this.populateSelectedArrayinJson();
@@ -1981,7 +1981,7 @@ define(
               }
               
               var idx = listIds.indexOf(item[0]);
-              if (idx != -1) {
+              if (idx != -1 && idx != (list.lenght -1)) {
                   list.splice(idx + 1, 0, list.splice(idx, 1)[0]);
               }
               this.populateSelectedArrayinJson();
