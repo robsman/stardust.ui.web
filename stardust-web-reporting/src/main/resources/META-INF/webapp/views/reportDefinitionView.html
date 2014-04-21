@@ -229,7 +229,7 @@ table.formTable td {
 															ng-click="$parent.selectComputedColumn(column)" /></td>
 														<td><select ng-model="column.type"
 															ng-click="$parent.selectComputedColumn(column)"
-															ng-options="type.name for type in reportingService.getPrimitiveTypes() "><option
+															ng-options="type.id as type.name for type in reportingService.getPrimitiveTypes() "><option
 																	value="" ng-hide="column.type">{{getI18N('reporting.definitionView.pleaseSelect.label')}}</option></select></td>
 													</tr>
 													<tr>

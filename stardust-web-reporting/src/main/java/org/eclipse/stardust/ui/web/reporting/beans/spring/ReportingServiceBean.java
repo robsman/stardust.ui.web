@@ -538,7 +538,12 @@ public class ReportingServiceBean
             if (loggedInUser.isInRole(participantSubFolder.getName()) || loggedInUser.isAdministrator())
             {
                Participant  participant = modelService.getParticipant(participantSubFolder.getName(), null);
-               JsonObject participantFolderJson = getReportDefinitions(participantSubFolder, participant.getName());
+               JsonObject participantFolderJson = null;
+               
+               if (participant != null)
+               {
+                  participantFolderJson = getReportDefinitions(participantSubFolder, participant.getName());
+               }
 
                if (participantFolderJson != null)
                {
