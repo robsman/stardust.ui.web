@@ -462,7 +462,7 @@ if (!window.bpm.portal.AngularAdapter) {
 
 										document.body.style.cursor = "default";
 									},
-										2000);
+										100);
 								});
 							}
 						};

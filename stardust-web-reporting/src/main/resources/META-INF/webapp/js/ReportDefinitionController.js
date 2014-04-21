@@ -760,13 +760,21 @@ define(
 	                   
 	                for (x in columns) {
 	                   var column = columns[x];
-
 	                   headers += "<th>" + column.name + "</th>";
-	                   cols += "<td>{{row." + column.id + "}}</td>";
+	                   var col = column.id;
+	                   console.log(col);
+	                   // Logic to handle special characters like '{' in column id
+	                   // column.id is typically like {Model71}ChangeOfAddress:{Model71}ConfirmationNumber
+	                   // So Getting the last word i.e. ConfirmationNumber
+	                   if(col.indexOf("{") != -1) { 
+	                      var lastIndex = col.lastIndexOf("}");
+                         col = col.substr( lastIndex + 1, col.length );
+	                   }
+	                   cols += "<td>{{row." + col + "}}</td>";
 	                }
 	                TEMPLATE_COPY = TEMPLATE_COPY.replace("_HEADERS_", headers);
 	                TEMPLATE_COPY = TEMPLATE_COPY.replace("_COLUMNS_", cols);
-	                  
+	                
 	                jQuery(".dynamicTable").html(TEMPLATE_COPY);
 	                
 	                var divElem = angular.element(".dynamicTable");
@@ -774,8 +782,10 @@ define(
                    
                if (columns.length != 0)
                {   
-					var self = this;
-	                self.refreshPreviewData();
+                  var self = this;
+	               setTimeout(function () {
+	                  self.refreshPreviewData();
+	               }, 200);
                }
 					
 					var self = this;
