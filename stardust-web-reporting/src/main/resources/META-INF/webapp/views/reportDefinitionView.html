@@ -1292,6 +1292,19 @@ table.formTable td {
                      <div ng-show="report.layout.type == 'table'">
                         <div class="heading">{{getI18N('reporting.definitionView.table.title')}}</div>
                         <div class="dataTableFrame">
+                        <div class="dataTableControls">
+                              <table style="padding: 5px;">
+                                 <tr>
+                                    <td><a href="" ng-click="refreshPreviewData()"> <img
+                                          src="../css/images/refresh.png" title="Refresh" />
+                                    </a></td>
+                                    <td><a href="{{getReportUri()}}" target="_blank"> <img
+                                          src="../css/images/report.png"
+                                          title="Open in separate Window" />
+                                    </a></td>
+                                 </tr>
+                              </table>
+                           </div>
                            <div class="dynamicTable"></div>
                         </div>
                      </div>
