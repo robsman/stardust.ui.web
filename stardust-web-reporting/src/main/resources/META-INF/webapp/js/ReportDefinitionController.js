@@ -151,17 +151,11 @@ define(
 				                aTargets: ["_all"]
 				              }],
 				        multi_headers : true, //dont change this
-				        cumulantsAsRow : true
 				      };
 
 				      this.countTableConfig = {
-				        multi_headers : false,
-				        cumulantsAsRow : true
+				        multi_headers : false, //dont change this
 				      };
-
-					//TODO: remove later above
-					
-					
 					
 					this.expressionEditor.loadLanguageTools();
 					this.expressionEditor.setSessionData("$keywordList",["test", "air", "word"]);
@@ -763,9 +757,14 @@ define(
 					}
 				};
 
-			      ReportDefinitionController.prototype.getCumulantsTableConfig = function(){
-			          return this.countTableConfig;       
-			      };
+				ReportDefinitionController.prototype.getCumulantsTableConfig = function(){
+			    	  if(this.report.dataSet.fact == this.reportingService.metadata.objects.processInstance.facts.count.id){
+			    		  return this.countTableConfig;
+			    	  }else{
+			    		  return this.nonCountTableConfig;  
+			    	  }
+			    };
+			    
 				/**
 				 * 
 				 */
@@ -778,22 +777,22 @@ define(
    					//TODO: remove later below
 					   //input data
 				      var countgroupbyCumulantsCol = [
-				        ['', 'A1', 'A2', 'A3', 'Total'],
+				        ['', 'A1', 'A2', 'A3', 'Total'], //header -> this and all rows below it should match
 				        ['Jan', 22, 3, 4, 29],
 				        ['Feb', 6, 7, 8, 21],
 				        ['Total', 28, 10, 12, 50]
 				      ];
 
 				      var countCumulantsCol = [
-				        ['', 'Activities'],
+				        ['', 'Activities'], //header -> this and all rows below it should match
 				        ['Jan', 22, ],
 				        ['Feb', 21],
 				        ['Total', 41]
 				      ];
 
 				      var nonCountCumulantsCol = [
-				        ['Jan', 5, 'Feb', 5],
-				        ['', 'Activities'],
+				        ['Jan', 5, 'Feb', 5], //header 1, it's a pair {title, span}
+				        ['', 'Activities'], //header 2-> this and all rows below it should match
 				        ['Average', 22, ],
 				        ['Min', 21],
 				        ['Max', 30],
@@ -806,12 +805,43 @@ define(
 				        ['Count', 31]
 				      ];
 
-                       
+				      var nonCountGroupbyCumulantsCol = [
+  				        ['Jan', 5, 'Feb', 5], //header 1, it's a pair {title, span}
+  				        ['', 'A1', 'A2'],//header 2-> this and all rows below it should match
+  				        ['Average', 22, 12],
+  				        ['Min', 21, 2],
+  				        ['Max', 30, 4],
+  				        ['Std Dev', 30, 5],
+  				        ['Count', 30, 5],
+  				        ['Average', 28, 5],
+  				        ['Min', 22, 54],
+  				        ['Max', 37, 44],
+  				        ['Std Dev', 33, 45],
+  				        ['Count', 31, 56]
+  				      ];
+				      
                        var configurations = self.getCumulantsTableConfig();
                        var disableSorting = configurations.disableSorting;
                        var multi_headers = configurations.multi_headers;
-                       var cumulantsAsRow = configurations.cumulantsAsRow;
-                       var a1 = countgroupbyCumulantsCol;
+                       var cumulantsAsRow = false;
+                       
+                       if(self.report.layout.table.cumulantsDisplay == self.reportingService.metadata.cumulantsDisplay.rows.id){
+                    	   var cumulantsAsRow = true;   
+                       }
+                       
+                       //TODO: Replace following with live report data in the give format, also conside the total flag
+                       var tableArray = nonCountGroupbyCumulantsCol; //This data should come from Report-data result
+                       if(this.report.dataSet.fact == this.reportingService.metadata.objects.processInstance.facts.count.id){
+                    	   tableArray = countCumulantsCol;
+                    	   if(this.report.dataSet.groupBy == 'activityName'){
+                    		   tableArray = countgroupbyCumulantsCol;   
+                    	   }
+                       }else{
+                    	   tableArray = nonCountCumulantsCol;
+                    	   if(this.report.dataSet.groupBy == 'activityName'){
+                    		   tableArray = nonCountGroupbyCumulantsCol;   
+                    	   }
+                       }
                        
                        //Process
                        var TEMPLATE = "<table cellpadding=\"0\" cellspacing=\"0\" class=\"dataTable\"><thead><tr>_HEADERS_</tr></thead><tbody><tr sd-table-data=\"row in rows\">_COLUMNS_</tr></tbody></table>";
@@ -834,8 +864,8 @@ define(
                        }
 
                        if (multi_headers) {
-                         var topheaders = a1[0];
-                         a1 = a1.splice(1);
+                         var topheaders = tableArray[0];
+                         tableArray = tableArray.splice(1);
 
                          var headers2 = "";
 
@@ -849,9 +879,9 @@ define(
                                h = "";
                              }
                            }
-                           for (i = 0; i < a1.length; i++) {
+                           for (i = 0; i < tableArray.length; i++) {
                              //insert column data
-                             a1[i].splice(0, 0, topHeaderArr[i]);
+                             tableArray[i].splice(0, 0, topHeaderArr[i]);
                            }
                          } else {
                            for (i = 0; i < topheaders.length - 1; i = i + 2) {
@@ -868,10 +898,10 @@ define(
 
                        //transform the array
                        if (!cumulantsAsRow) {
-                         a1 = transposeArray(a1);
+                         tableArray = transposeArray(tableArray);
                        }
 
-                       var columns = a1[0];
+                       var columns = tableArray[0];
 
                        var headers = "";
                        var cols = "";
@@ -887,8 +917,10 @@ define(
                          headers += "<th>" + column + "</th>";
                          if (x == 0) {
                            cols += "<td style=\"font-weight:bold; font-size:small\">{{row[" + x + "]}}</td>";
-                         } else {
-                           cols += "<td>{{row[" + x + "]}}</td>";
+                         }else if(x == 1 && multi_headers && cumulantsAsRow){
+                        	 cols += "<td style=\"font-weight:bold; font-size:small\">{{row[" + x + "]}}</td>";
+                         }else {
+                           cols += "<td style=\"text-align:center\">{{row[" + x + "]}}</td>";
                          }
                        }
 
@@ -898,38 +930,22 @@ define(
 
                        //E
                        //create an angular element. (this is our "view")
-	   	               jQuery(".dynamicTable").html(TEMPLATE_COPY);
-	   	                
-	   	               var divElem = angular.element(".dynamicTable");
-	   	               
-	   	               divElem.scope().rows = a1.splice(1);
-	   	               
-	   	               angularCompile(divElem)(divElem.scope());
-	                   
-	                   
-	                   
-	                   /* if (columns.length != 0)
-	                    {   
-	                    	var self = this;
-	                    	setTimeout(function () {
-	                    		self.refreshPreviewData1();
-	                    	}, 200);
-	                    };*/
+	   	               	
+                       var el = angular.element(TEMPLATE_COPY);
                        
+                       var compiled = angularCompile(el);
+                       
+                       var divElem = angular.element(".dynamicTable");
+                       
+                       //append our view to the element of the directive.
+                       divElem.html(el);
+                       
+	   	               compiled(divElem.scope());
+	                   
+	   	               self.rows = tableArray.splice(1);
+	   	               self.updateView();
+	   	               
                       };
-				
-				
-			ReportDefinitionController.prototype.refreshPreviewData1 = function() {
-	               var self = this;
-	               
-	               this.renderingController.getPreviewData().done(
-	                   function(data) {
-	                      //self.rows = self. //data.recordSet;
-	                      self.updateView();
-	                   }).fail(function(err){
-	                      console.log("Failed getting Preview Date: " + err);
-	                   });
-	            }
 			
 			ReportDefinitionController.prototype.refreshPreview2 = function() {
 				console.log("refreshPreview");
@@ -2269,5 +2285,15 @@ define(
 					activity_filter_interactive : false,
 					activity_filter_nonInteractive : true
 				};
-			}		
+			}
+		
+		function transposeArray(aInput) {
+		      return Object.keys(aInput[0]).map(
+		        function(c) {
+		          return aInput.map(function(r) {
+		            return r[c];
+		          });
+		        }
+		      );
+		    }
 		});

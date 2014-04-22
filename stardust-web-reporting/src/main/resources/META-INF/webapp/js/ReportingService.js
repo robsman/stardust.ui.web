@@ -42,12 +42,12 @@ define(
 				};
 				
 				this.metadata.cumulantsDisplay = {
-						row : {
-							id : "row",
+						rows : {
+							id : "rows",
 							name : this.getI18N("reporting.definitionView.layout.table.cumulant.row"),
 						},
 						columns : {
-							id : "table",
+							id : "columns",
 							name : this.getI18N("reporting.definitionView.layout.table.cumulant.column"),
 						}
 				};

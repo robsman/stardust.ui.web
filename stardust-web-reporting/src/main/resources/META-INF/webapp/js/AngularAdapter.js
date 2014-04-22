@@ -838,7 +838,7 @@ if (!window.bpm.portal.AngularAdapter) {
 			      };
 			});
 			/****Angular Ace Directive END *****/
-			
 		};
 	}
+	  
 }

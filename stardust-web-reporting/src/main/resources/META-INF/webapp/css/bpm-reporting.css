@@ -365,6 +365,7 @@ table.dataTable tbody td {
 
 table.dataTable tbody tr.lastRow td {
 	border-bottom: none;
+	
 }
 
 table.dataTable tbody tr.odd {
