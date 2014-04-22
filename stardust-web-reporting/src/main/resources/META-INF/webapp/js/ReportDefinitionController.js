@@ -992,18 +992,18 @@ define(
 	               setTimeout(function () {
                 self.refreshPreviewData();
 	               }, 200);
-           }
-				
-				var self = this;
-				var deferred = jQuery.Deferred();
-
-				this.renderingController.renderReport().done(function() {
-					deferred.resolve();
-				}).fail(function() {
-					deferred.reject();
-				});
-				
-				return deferred.promise();
+           } else {
+   				var self = this;
+   				var deferred = jQuery.Deferred();
+   
+   				this.renderingController.renderReport().done(function() {
+   					deferred.resolve();
+   				}).fail(function() {
+   					deferred.reject();
+   				});
+   				
+   				return deferred.promise();
+   			}
 			};
 			
 			/**
@@ -1014,6 +1014,10 @@ define(
            
            this.renderingController.getPreviewData().done(
                function(data) {
+                //Format data before displaying the Results
+                  
+                  self.formatPreviewData(data.recordSet);
+                  
                   self.rows = data.recordSet;
                   self.updateView();
                }).fail(function(err){
@@ -2269,6 +2273,36 @@ define(
      ReportDefinitionController.prototype.isNumeric = function(element) {
         return (element.type.id === this.reportingService.metadata.integerType.id)? true : false;
      };
+     
+                 
+              /**
+               * 
+               */
+              ReportDefinitionController.prototype.formatPreviewData = function(data) {
+                 var self = this;
+                    
+                  if (data[0].priority != null)
+                  {
+                     var qualifier = ["staticData", "priorityLevel"];
+                       
+                     var enumItems = this.reportingService.getEnumerators2(qualifier[0], qualifier[1]);
+                       
+                     for ( var row in data)
+                     {
+                        var record = data[row];
+                        for ( var item in enumItems)
+                        {
+                           if (enumItems[item].id == record.priority)
+                           {
+                              record.priority = enumItems[item].name;
+                              break;
+                           }
+                        }
+                     }
+                  }  
+                    
+                    
+                 }
          
           
 			}
