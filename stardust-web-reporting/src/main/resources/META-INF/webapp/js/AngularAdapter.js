@@ -162,6 +162,10 @@ if (!window.bpm.portal.AngularAdapter) {
 								attributes, controller) {
 								// Parse expression
 
+								if(attrs.options){
+				                      aoColumnDefs = aoColumnDefs.concat(options);
+				                }
+								
 								var expression = attrs.sdTableData;
 								var match = expression
 									.match(/^\s*(.+)\s+in\s+(.*?)\s*(\s+track\s+by\s+(.+)\s*)?$/),

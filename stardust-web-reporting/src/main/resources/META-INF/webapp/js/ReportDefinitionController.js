@@ -143,6 +143,26 @@ define(
                               
                         });
 					
+				      this.nonCountTableConfig = {
+				         disableSorting : [{
+				                aaSorting: []
+				              }, {
+				                bSortable: false,
+				                aTargets: ["_all"]
+				              }],
+				        multi_headers : true, //dont change this
+				        cumulantsAsRow : true
+				      };
+
+				      this.countTableConfig = {
+				        multi_headers : false,
+				        cumulantsAsRow : true
+				      };
+
+					//TODO: remove later above
+					
+					
+					
 					this.expressionEditor.loadLanguageTools();
 					this.expressionEditor.setSessionData("$keywordList",["test", "air", "word"]);
 					this.expressionEditor.disable();
@@ -612,9 +632,6 @@ define(
 				 * 
 				 */
 				ReportDefinitionController.prototype.getPrimaryObject = function() {
-					if(!this.report){
-						console.debug("something is wrong here");
-					}
 					return this.reportingService.metadata.objects[this.report.dataSet.primaryObject];
 				};
 				
@@ -738,29 +755,202 @@ define(
 					return this.getPrimaryObject().dimensions[this.report.dataSet.firstDimension];
 				};
 
+				ReportDefinitionController.prototype.refreshPreview = function() {
+					if(this.report.layout.subType == this.reportingService.metadata.layoutSubTypes.table.id){
+						this.refreshPreview1();
+					}else{
+						this.refreshPreview2();
+					}
+				};
+
+			      ReportDefinitionController.prototype.getCumulantsTableConfig = function(){
+			          return this.countTableConfig;       
+			      };
 				/**
 				 * 
 				 */
-				ReportDefinitionController.prototype.refreshPreview = function() {
-					console.log("refreshPreview");
-					
-					var columns = this.reportingService.getColumnDimensions(this.report);
-					
+				ReportDefinitionController.prototype.refreshPreview1 = function() {
+                       self= this;
+						//getting a list of space-separated property names 
+                       //from the attribute.
+                       // inputs
+                       
+   					//TODO: remove later below
+					   //input data
+				      var countgroupbyCumulantsCol = [
+				        ['', 'A1', 'A2', 'A3', 'Total'],
+				        ['Jan', 22, 3, 4, 29],
+				        ['Feb', 6, 7, 8, 21],
+				        ['Total', 28, 10, 12, 50]
+				      ];
+
+				      var countCumulantsCol = [
+				        ['', 'Activities'],
+				        ['Jan', 22, ],
+				        ['Feb', 21],
+				        ['Total', 41]
+				      ];
+
+				      var nonCountCumulantsCol = [
+				        ['Jan', 5, 'Feb', 5],
+				        ['', 'Activities'],
+				        ['Average', 22, ],
+				        ['Min', 21],
+				        ['Max', 30],
+				        ['Std Dev', 30],
+				        ['Count', 30],
+				        ['Average', 28, ],
+				        ['Min', 22],
+				        ['Max', 37],
+				        ['Std Dev', 33],
+				        ['Count', 31]
+				      ];
+
+                       
+                       var configurations = self.getCumulantsTableConfig();
+                       var disableSorting = configurations.disableSorting;
+                       var multi_headers = configurations.multi_headers;
+                       var cumulantsAsRow = configurations.cumulantsAsRow;
+                       var a1 = countgroupbyCumulantsCol;
+                       
+                       //Process
+                       var TEMPLATE = "<table cellpadding=\"0\" cellspacing=\"0\" class=\"dataTable\"><thead><tr>_HEADERS_</tr></thead><tbody><tr sd-table-data=\"row in rows\">_COLUMNS_</tr></tbody></table>";
+                       var options = [];
+
+                       if (multi_headers) {
+                         if (!cumulantsAsRow) {
+                           TEMPLATE = "<table cellpadding=\"0\" cellspacing=\"0\" class=\"dataTable\"><thead><tr>_TOPHEADERS_</tr></thead><thead><tr>_HEADERS_</tr></thead><tbody><tr options=_OPTIONS_ sd-table-data=\"row in rows\">_COLUMNS_</tr></tbody></table>";
+                         } 
+                         else{
+                           TEMPLATE = "<table cellpadding=\"0\" cellspacing=\"0\" class=\"dataTable\"><thead><tr>_HEADERS_</tr></thead><tbody><tr options=_OPTIONS_ sd-table-data=\"row in rows\">_COLUMNS_</tr></tbody></table>";
+                         }
+                         options = disableSorting;
+                       }
+                       var v1 = jQuery.extend({}, TEMPLATE);
+
+                       var TEMPLATE_COPY = "";
+                       for (v in v1) {
+                         TEMPLATE_COPY += v1[v];
+                       }
+
+                       if (multi_headers) {
+                         var topheaders = a1[0];
+                         a1 = a1.splice(1);
+
+                         var headers2 = "";
+
+                         if (cumulantsAsRow) {
+                           var topHeaderArr = [];
+                           topHeaderArr.push('');
+                           for (i = 0; i < topheaders.length - 1; i = i + 2) {
+                             var h = topheaders[i];
+                             for (x = 0; x < topheaders[i + 1]; x++) {
+                               topHeaderArr.push(h);
+                               h = "";
+                             }
+                           }
+                           for (i = 0; i < a1.length; i++) {
+                             //insert column data
+                             a1[i].splice(0, 0, topHeaderArr[i]);
+                           }
+                         } else {
+                           for (i = 0; i < topheaders.length - 1; i = i + 2) {
+                             headers2 += "<th colspan=" + topheaders[i + 1] + ">" + topheaders[i] + "</th>";
+                           }
+                         }
+
+                         if (!cumulantsAsRow) {
+                           TEMPLATE_COPY = TEMPLATE_COPY.replace("_TOPHEADERS_", headers2);
+                         }
+                       }
+
+                       TEMPLATE_COPY = TEMPLATE_COPY.replace("_OPTIONS_", options);
+
+                       //transform the array
+                       if (!cumulantsAsRow) {
+                         a1 = transposeArray(a1);
+                       }
+
+                       var columns = a1[0];
+
+                       var headers = "";
+                       var cols = "";
+
+                       if (multi_headers && cumulantsAsRow) {
+                         //for (i = 0; i < topheaders.length - 1; i = i + 2) {
+                           //cols += "<td style=\"font-weight:bold; font-size:small\" rowspan=" + topheaders[i + 1] + ">" + topheaders[i] + "</td>";
+                         //}
+                       }
+
+                       for (x in columns) {
+                         var column = columns[x];
+                         headers += "<th>" + column + "</th>";
+                         if (x == 0) {
+                           cols += "<td style=\"font-weight:bold; font-size:small\">{{row[" + x + "]}}</td>";
+                         } else {
+                           cols += "<td>{{row[" + x + "]}}</td>";
+                         }
+                       }
+
+                       TEMPLATE_COPY = TEMPLATE_COPY.replace("_HEADERS_", headers);
+
+                       TEMPLATE_COPY = TEMPLATE_COPY.replace("_COLUMNS_", cols);
+
+                       //E
+                       //create an angular element. (this is our "view")
+	   	               jQuery(".dynamicTable").html(TEMPLATE_COPY);
+	   	                
+	   	               var divElem = angular.element(".dynamicTable");
+	   	               
+	   	               divElem.scope().rows = a1.splice(1);
+	   	               
+	   	               angularCompile(divElem)(divElem.scope());
+	                   
+	                   
+	                   
+	                   /* if (columns.length != 0)
+	                    {   
+	                    	var self = this;
+	                    	setTimeout(function () {
+	                    		self.refreshPreviewData1();
+	                    	}, 200);
+	                    };*/
+                       
+                      };
 				
-	                var TEMPLATE = "<table cellpadding=\"0\" cellspacing=\"0\" class=\"dataTable\"><thead><tr>_HEADERS_</tr></thead><tbody><tr sd-table-data=\"row in rows\">_COLUMNS_</tr></tbody></table>";
-	                   
-	                var v1 = jQuery.extend({}, TEMPLATE);
-	                var TEMPLATE_COPY = "";
-	                for (v in v1) {
-	                   TEMPLATE_COPY += v1[v];
-	                }
-	                   
-	                var headers = "";
-	                var cols = "";
-	                   
-	                for (x in columns) {
-	                   var column = columns[x];
-	                   headers += "<th>" + column.name + "</th>";
+				
+			ReportDefinitionController.prototype.refreshPreviewData1 = function() {
+	               var self = this;
+	               
+	               this.renderingController.getPreviewData().done(
+	                   function(data) {
+	                      //self.rows = self. //data.recordSet;
+	                      self.updateView();
+	                   }).fail(function(err){
+	                      console.log("Failed getting Preview Date: " + err);
+	                   });
+	            }
+			
+			ReportDefinitionController.prototype.refreshPreview2 = function() {
+				console.log("refreshPreview");
+				
+				var columns = this.reportingService.getColumnDimensions(this.report);
+				
+			
+                var TEMPLATE = "<table cellpadding=\"0\" cellspacing=\"0\" class=\"dataTable\"><thead><tr>_HEADERS_</tr></thead><tbody><tr sd-table-data=\"row in rows\">_COLUMNS_</tr></tbody></table>";
+                   
+                var v1 = jQuery.extend({}, TEMPLATE);
+                var TEMPLATE_COPY = "";
+                for (v in v1) {
+                   TEMPLATE_COPY += v1[v];
+                }
+                   
+                var headers = "";
+                var cols = "";
+                   
+                for (x in columns) {
+                   var column = columns[x];
+                   headers += "<th>" + column.name + "</th>";
 	                   var col = column.id;
 	                   console.log(col);
 	                   // Logic to handle special characters like '{' in column id
@@ -772,52 +962,52 @@ define(
 	                   }
 	                   cols += "<td>{{row." + col + "}}</td>";
 	                }
-	                TEMPLATE_COPY = TEMPLATE_COPY.replace("_HEADERS_", headers);
-	                TEMPLATE_COPY = TEMPLATE_COPY.replace("_COLUMNS_", cols);
-	                
-	                jQuery(".dynamicTable").html(TEMPLATE_COPY);
-	                
-	                var divElem = angular.element(".dynamicTable");
-                   angularCompile(divElem)(divElem.scope());
-                   
-               if (columns.length != 0)
-               {   
-                  var self = this;
+                TEMPLATE_COPY = TEMPLATE_COPY.replace("_HEADERS_", headers);
+                TEMPLATE_COPY = TEMPLATE_COPY.replace("_COLUMNS_", cols);
+                  
+                jQuery(".dynamicTable").html(TEMPLATE_COPY);
+                
+                var divElem = angular.element(".dynamicTable");
+               angularCompile(divElem)(divElem.scope());
+               
+           if (columns.length != 0)
+           {   
+				var self = this;
 	               setTimeout(function () {
-	                  self.refreshPreviewData();
+                self.refreshPreviewData();
 	               }, 200);
-               }
-					
-					var self = this;
-					var deferred = jQuery.Deferred();
-
-					this.renderingController.renderReport().done(function() {
-						deferred.resolve();
-					}).fail(function() {
-						deferred.reject();
-					});
-					
-					return deferred.promise();
-				};
+           }
 				
+				var self = this;
+				var deferred = jQuery.Deferred();
+
+				this.renderingController.renderReport().done(function() {
+					deferred.resolve();
+				}).fail(function() {
+					deferred.reject();
+				});
+				
+				return deferred.promise();
+			};
+			
+			/**
+         * 
+         */
+        ReportDefinitionController.prototype.refreshPreviewData = function() {
+           var self = this;
+           
+           this.renderingController.getPreviewData().done(
+               function(data) {
+                  self.rows = data.recordSet;
+                  self.updateView();
+               }).fail(function(err){
+                  console.log("Failed getting Preview Date: " + err);
+               });
+        }	
+
 				/**
              * 
              */
-            ReportDefinitionController.prototype.refreshPreviewData = function() {
-               var self = this;
-               
-               this.renderingController.getPreviewData().done(
-                   function(data) {
-                      self.rows = data.recordSet;
-                      self.updateView();
-                   }).fail(function(err){
-                      console.log("Failed getting Preview Date: " + err);
-                   });
-            }
-
-				/**
-				 * 
-				 */
 				ReportDefinitionController.prototype.changeDataSetType = function() {
 					if (this.report.dataSet.type === "processHistory") {
 						this.report.layout.type = "processDiagram";

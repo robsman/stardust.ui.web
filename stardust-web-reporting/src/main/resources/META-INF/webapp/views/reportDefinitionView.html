@@ -1289,7 +1289,7 @@ table.formTable td {
 									</tr>
 								</table>
 							</div>
-                     <div ng-show="report.layout.type == 'table'">
+                     <div ng-show="report.layout.type == 'table' || report.layout.subType == reportingService.metadata.layoutSubTypes.table.id">
                         <div class="heading">{{getI18N('reporting.definitionView.table.title')}}</div>
                         <div class="dataTableFrame">
                         <div class="dataTableControls">
