@@ -187,29 +187,35 @@ public class InteractionDataUtils
          {
             Map<String, Object> details = (Map<String, Object>) value;
 
-            ManualActivityDocumentController dc = interaction.getDocumentControllers().get(outMapping.getId());
-            if (details.get("deleteDocument") != null)
+            // TODO - This null check is added as in case of mobile app documents are not supported
+            // and document controllers are not set
+            // Needs to be reviewed.
+            if (null != interaction.getDocumentControllers())
             {
-               // document removed or no change
-               dc.delete((String) details.get(DOCUMENT.ID));
-            }
-            else if (dc.isJCRDocument()) // document is uploaded and saved from viewer
-            {
-               // JCR document
-               result = dc.getJCRDocument();
-            }
-            else
-            {
-               // document is uploaded and not saved from viewer
-               result = (String) details.get(DOCUMENT.ID);
-               if (result != null)
+               ManualActivityDocumentController dc = interaction.getDocumentControllers().get(outMapping.getId());
+               if (details.get("deleteDocument") != null)
                {
-                  // use this data when creating JCR document
-                  RawDocument rawDocument = new RawDocument();
-                  rawDocument.setName((String) details.get(DOCUMENT.NAME));
-                  rawDocument.setDescription((String) details.get(DOCUMENT.DESCRIPTION));
-                  rawDocument.setComments((String) details.get(DOCUMENT.VERSION_COMMENT));
-                  dc.setRawDocument(rawDocument);
+                  // document removed or no change
+                  dc.delete((String) details.get(DOCUMENT.ID));
+               }
+               else if (dc.isJCRDocument()) // document is uploaded and saved from viewer
+               {
+                  // JCR document
+                  result = dc.getJCRDocument();
+               }
+               else
+               {
+                  // document is uploaded and not saved from viewer
+                  result = (String) details.get(DOCUMENT.ID);
+                  if (result != null)
+                  {
+                     // use this data when creating JCR document
+                     RawDocument rawDocument = new RawDocument();
+                     rawDocument.setName((String) details.get(DOCUMENT.NAME));
+                     rawDocument.setDescription((String) details.get(DOCUMENT.DESCRIPTION));
+                     rawDocument.setComments((String) details.get(DOCUMENT.VERSION_COMMENT));
+                     dc.setRawDocument(rawDocument);
+                  }
                }
             }
          }

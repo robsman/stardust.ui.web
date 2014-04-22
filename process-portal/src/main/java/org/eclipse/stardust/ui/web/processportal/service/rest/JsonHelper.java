@@ -96,6 +96,13 @@ public class JsonHelper
    {
       trace.debug("create document json...");
 
+      // In case of mobile - where document data is not supported - the document controllers
+      // are not set. Hence the following check.
+      if (null == interaction.getDocumentControllers())
+      {
+         return;
+      }
+      
       ManualActivityDocumentController dc = interaction.getDocumentControllers().get(dm.getId());
 
       if (dc.isJCRDocument())
@@ -245,6 +252,10 @@ public class JsonHelper
             {
                ret = new JsonPrimitive("");
             }
+         }
+         else if (value instanceof Number)
+         {
+            ret = new JsonPrimitive((Number)value);
          }
          else if (value instanceof Boolean)
          {

@@ -24,6 +24,7 @@ import org.eclipse.stardust.engine.api.model.DataMapping;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.TypeDeclaration;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
+import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.core.struct.StructuredTypeRtUtils;
 import org.eclipse.stardust.engine.core.struct.TypedXPath;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
@@ -48,7 +49,8 @@ public class ManualActivityUi
    private ActivityInstance activityInstance;
    
    private ManualActivityPath manualActivityPath;
-
+   private QueryService queryService;
+   
    /**
     * @param generationPreferences
     * @param formBinding
@@ -58,8 +60,19 @@ public class ManualActivityUi
     */
    public ManualActivityUi(ActivityInstance activityInstance, ApplicationContext applicationContext)
    {
+      this(activityInstance, applicationContext, null);
+   }
+   
+   /**
+    * @param activityInstance
+    * @param applicationContext
+    * @param queryService
+    */
+   public ManualActivityUi(ActivityInstance activityInstance, ApplicationContext applicationContext, QueryService queryService)
+   {
       this.activityInstance = activityInstance;
       this.applicationContext = applicationContext;
+      this.queryService = queryService;
       init();
    }
 
@@ -304,7 +317,13 @@ public class ManualActivityUi
     */
    public Model getModel()
    {
-      return org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils.getModel(activityInstance.getModelOID());
+      Model model = org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils.getModel(activityInstance.getModelOID());
+      if (null == model && null != queryService)
+      {
+         model = queryService.getModel(activityInstance.getModelOID(), false);
+      }
+
+      return model;
    }
 
    public ApplicationContext getApplicationContext()

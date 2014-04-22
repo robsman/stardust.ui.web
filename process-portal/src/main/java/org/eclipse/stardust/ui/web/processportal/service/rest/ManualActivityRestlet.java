@@ -19,6 +19,7 @@ import java.util.Map.Entry;
 import java.util.ResourceBundle;
 
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -221,13 +222,10 @@ public class ManualActivityRestlet
    @Produces(MediaType.TEXT_PLAIN)
    @Path("i18n")
    @GET
-   public Response i18n()
+   public Response i18n(@Context HttpServletRequest request)
    {
       StringBuffer data = new StringBuffer();
 
-      MessagePropertiesBean messageBean = (MessagePropertiesBean) RestControllerUtils.resolveSpringBean(
-            MessagePropertiesBean.class, servletContext);
-      
       Model model = getInteraction().getModel();
       String bundleName = ModelElementUtils.getBundleName(model);
       if (StringUtils.isNotEmpty(bundleName))
@@ -235,19 +233,19 @@ public class ManualActivityRestlet
          try
          {
             // Client Messages Bundle
-            readBundle(ResourceBundle.getBundle("processportal-client", messageBean.getLocaleObject()), data);
+            readBundle(ResourceBundle.getBundle("processportal-client", request.getLocale()), data);
             
             // Get required values from other bundle
-            ResourceBundle rb = ResourceBundle.getBundle("views-common-messages", messageBean.getLocaleObject());
+            ResourceBundle rb = ResourceBundle.getBundle("views-common-messages", request.getLocale());
             data.append("common.process.priority.options.1").append("=")
-                  .append(rb.getString("common.process.priority.options.1")).append("\n");
+                  .append(getStringFromResourceBundle(rb, "common.process.priority.options.1")).append("\n");
             data.append("common.process.priority.options.0").append("=")
-                  .append(rb.getString("common.process.priority.options.0")).append("\n");
+                  .append(getStringFromResourceBundle(rb, "common.process.priority.options.0")).append("\n");
             data.append("common.process.priority.options.-1").append("=")
-                  .append(rb.getString("common.process.priority.options.-1")).append("\n");
+                  .append(getStringFromResourceBundle(rb, "common.process.priority.options.-1")).append("\n");
 
             // Model Bundle
-            readBundle(ResourceBundle.getBundle(bundleName, messageBean.getLocaleObject()), data);
+            readBundle(ResourceBundle.getBundle(bundleName, request.getLocale()), data);
             }
          catch (Exception e)
          {
@@ -264,15 +262,13 @@ public class ManualActivityRestlet
    @Produces(MediaType.APPLICATION_JSON)
    @Path("dateFormats")
    @GET
-   public Response dateFormats()
+   public Response dateFormats(@Context HttpServletRequest request)
    {
-      MessagePropertiesBean messageBean = (MessagePropertiesBean) RestControllerUtils.resolveSpringBean(
-            MessagePropertiesBean.class, servletContext);
-
+      ResourceBundle rb = ResourceBundle.getBundle("portal-common-messages", request.getLocale());
       JsonObject dates = new JsonObject();
-      dates.add("dateFormat", new JsonPrimitive(messageBean.getString("portalFramework.formats.defaultDateFormat")));
-      dates.add("dateTimeFormat", new JsonPrimitive(messageBean.getString("portalFramework.formats.defaultDateTimeFormat")));
-      dates.add("timeFormat", new JsonPrimitive(messageBean.getString("portalFramework.formats.defaultTimeFormat")));
+      dates.add("dateFormat", new JsonPrimitive(getStringFromResourceBundle(rb, "portalFramework.formats.defaultDateFormat")));
+      dates.add("dateTimeFormat", new JsonPrimitive(getStringFromResourceBundle(rb, "portalFramework.formats.defaultDateTimeFormat")));
+      dates.add("timeFormat", new JsonPrimitive(getStringFromResourceBundle(rb, "portalFramework.formats.defaultTimeFormat")));
 
       return Response.ok(dates.toString(), MediaType.APPLICATION_JSON_TYPE).build();
    }
@@ -305,6 +301,24 @@ public class ManualActivityRestlet
       }
    }
 
+   /**
+    * @param bundle
+    * @param data
+    * 
+    * TODO - this can move to some utility class
+    */
+   private String getStringFromResourceBundle(ResourceBundle bundle, String key)
+   {
+      try
+      {
+         return bundle.getString((String) key);
+      }
+      catch (Exception x)
+      {
+         return "%" + key + "%";
+      }
+   }
+   
    /**
     * @return
     */

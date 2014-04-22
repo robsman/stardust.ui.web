@@ -57,7 +57,9 @@ define([], function() {
 			}
 
 			for(var i = 0; i < this.children.length; i++) {
-				ret += this.children[i].toHtml(indent);
+				if (this.children[i]) {
+					ret += this.children[i].toHtml(indent);	
+				}
 			}
 
 			indent--;

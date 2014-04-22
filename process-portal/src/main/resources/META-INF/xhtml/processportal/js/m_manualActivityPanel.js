@@ -15,11 +15,27 @@
  * 
  */
 
-define(["processportal/js/codeGenerator"], function(codeGenerator){
+define(function(require){
+    var isMobileClient =  (window.location.search.indexOf('isMobileClient') >= 0);
+    var codeGenSrc = ["processportal/js/codeGenerator"];
+    if (isMobileClient) {
+    	// Load jQM only for mobile clients
+    	require(["jquery-mobile"]);
+    	codeGenSrc = ["processportal/js/codeGeneratorMobile"];
+    	loadCSSFile("../../plugins/mobile-workflow/public/css/jquery.mobile/jquery.mobile-1.4.0.css");
+    	loadCSSFile("./css/manual-activity-mobile.css");
+    } else {
+    	loadCSSFile("./css/manual-activity.css");
+    }
+    var codeGenerator;
+	
 	return {
 		initialize : function() {
-			var mAPanel = new ManualActivityPanel();
-			mAPanel.initialize();
+		    require(codeGenSrc, function(c) {
+		    	codeGenerator = c;
+				var mAPanel = new ManualActivityPanel();
+				mAPanel.initialize();
+		    });
 		}
 	};
 	
@@ -33,7 +49,9 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 
 		var dataMappings;
 		var bindings;
-		var clientDateFormat = "dd-mm-yy";
+		// TODO - check
+		// for input[type="date"] wire date format needs to be "yy-mm-dd" for chrome
+		var clientDateFormat = isMobileClient ? "yy-mm-dd" : "dd-mm-yy";
 		var configuration;
 
 		/*
@@ -46,7 +64,7 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 			var interactionId = window.location.search;
 	        interactionId = interactionId.substring(interactionId.indexOf('interactionId') + 14);
 	        interactionId = interactionId.indexOf('&') >= 0 ? interactionId.substring(0, interactionId.indexOf('&')) : interactionId;
-
+	        
 	        interactionEndpoint = urlPrefix + REST_END_POINT + interactionId;
 	        log("Interaction Rest End Point: " + interactionEndpoint);
 	        
@@ -77,6 +95,9 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 						} else {
 							postData(interactionEndpoint, "/outData/" + dataMapping, data, callbacks);
 						}
+					},
+					closeActivityPanel : function(commandId) {
+						window.parent.postMessage(commandId, "*");
 					}
 				}, {
 					getMarkup : function(path, prefix, i18nProvider, ignoreParentXPath, formName) {
@@ -103,8 +124,15 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 			var BINDING_PREFIX = "dm";
 
 			var data = codeGenerator.create(configuration).generate(json, BINDING_PREFIX, i18nLabelProvider());
-			document.getElementsByTagName("body")[0].innerHTML = data.html;
-			
+			var htm = data.html;
+			if (isMobileClient) {
+				htm += "<div class='ui-body ui-body-a ui-corner-all'>";
+				htm += "<button ng-click='completeActivity()' class='ui-btn ui-shadow ui-corner-all' style='width: 100%'>Complete</button><br>";
+				htm += "<button ng-click='suspendActivity()' class='ui-btn ui-shadow ui-corner-all' style='width: 100%'>Suspend</button><br>";
+				htm += "<button ng-click='suspendActivity(true)' class='ui-btn ui-shadow ui-corner-all' style='width: 100%'>Suspend And Save</button>";
+				htm += "</div>";
+			}
+			document.getElementsByTagName("body")[0].innerHTML = htm;
 			bindings = data.binding;
 		};
 
@@ -248,4 +276,12 @@ define(["processportal/js/codeGenerator"], function(codeGenerator){
 			}
 		}
 	};
+	
+	function loadCSSFile(filename) {
+		  var fileref=document.createElement("link")
+		  fileref.setAttribute("rel", "stylesheet")
+		  fileref.setAttribute("type", "text/css")
+		  fileref.setAttribute("href", filename);
+		  document.getElementsByTagName("head")[0].appendChild(fileref);
+		}
 });
