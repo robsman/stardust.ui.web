@@ -71,33 +71,8 @@ define(["processportal/js/codeGenerator", "processportal/js/htmlElement", "bpm-m
 		CodeGeneratorMobile.prototype.generateChildren = function(parent, children) {
 			var elemMainPrimTr;
 			var elemPrimTBody;
-			var renderedPrimitivesCount = 0;
-			var createPrimitiveContainer = true;
 			for (var i = 0; i < children.length; i++) {
 				if (children[i].isPrimitive && !children[i].isList) {
-					var primitivesCount = this.countContiguousPrimitives(children, i);
-
-					if (createPrimitiveContainer) {
-						// Primitives Container
-//						var elemMainPrimTbl = htmlElement.create("table", {parent: parent, attributes: {cellpadding: 0, cellspacing: 0, class: "panel-primitive-container"}});
-//						elemMainPrimTr = htmlElement.create("tr", {parent: htmlElement.create("tbody", {parent: elemMainPrimTbl})});
-
-						createPrimitiveContainer = false;
-					}
-
-					if (renderedPrimitivesCount >= primitivesCount / this.preferences.layoutColumns) {
-						renderedPrimitivesCount = 0;
-					}
-
-//					if (renderedPrimitivesCount == 0) {
-//						var elemMainPrimTd = htmlElement.create("td", {parent: elemMainPrimTr, attributes: {class: "panel-primitive-container-cell"}});
-//						var elemPrimTbl = htmlElement.create("table", {parent: elemMainPrimTd, attributes: {cellpadding: 0, cellspacing: 0}});
-//						elemPrimTBody = htmlElement.create("tbody", {parent: elemPrimTbl});
-//					}
-//					renderedPrimitivesCount++;
-	//
-//					var elemPrimTr = htmlElement.create("tr", {parent: elemPrimTBody, attributes: {class: "panel-primitive-row"}});
-
 					if (children[i].typeName == "document") {
 						return;
 					}
@@ -105,15 +80,11 @@ define(["processportal/js/codeGenerator", "processportal/js/htmlElement", "bpm-m
 					var elemPrimitive = this.generatePath(null, children[i], {labelAsBooleanInput: true});
 
 					// Label
-//					var elemPrimLabelTd = htmlElement.create("td", {parent: elemPrimTr, attributes: {class: "panel-label-column"}});
 					fieldContainerDiv.children.push(elemPrimitive.children[0]);
 
-					// Prefix
-//					var elemPrimPrefixTd = htmlElement.create("td", {parent: elemPrimTr, attributes: {class: "panel-prefix-column"}});
-//					this.addPrefix(elemPrimPrefixTd, children[i]);
+					// TODO - add prefix related code 
 
 					// Input
-//					var elemPrimInputTd = htmlElement.create("td", {parent: elemPrimTr, attributes: {class: "panel-input-column"}});
 					fieldContainerDiv.children.push(elemPrimitive.children[1]);
 					
 					// Has a validation error message field
@@ -121,14 +92,7 @@ define(["processportal/js/codeGenerator", "processportal/js/htmlElement", "bpm-m
 						fieldContainerDiv.children.push(elemPrimitive.children[2]);	
 					}
 
-					// Suffix
-//					var elemPrimSuffixTd = htmlElement.create("td", {parent: elemPrimTr, attributes: {class: "panel-suffix-column"}});
-//					this.addSuffix(elemPrimSuffixTd, children[i]);
-					
-//					var elemValidationImgTd = htmlElement.create("td", {parent: elemPrimTr, attributes: {class: "panel-validation-image-column"}});
-//					if (elemPrimitive.children[2] != undefined) {
-//						elemValidationImgTd.children.push(elemPrimitive.children[2]);
-//					}
+					// TODO - add suffix related code 
 				} else {
 					renderedPrimitivesCount = 0;
 					createPrimitiveContainer = true;

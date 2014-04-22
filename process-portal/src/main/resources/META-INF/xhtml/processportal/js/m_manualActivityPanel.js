@@ -49,9 +49,7 @@ define(function(require){
 
 		var dataMappings;
 		var bindings;
-		// TODO - check
-		// for input[type="date"] wire date format needs to be "yy-mm-dd" for chrome
-		var clientDateFormat = isMobileClient ? "yy-mm-dd" : "dd-mm-yy";
+		var clientDateFormat = "dd-mm-yy";
 		var configuration;
 
 		/*
@@ -140,7 +138,9 @@ define(function(require){
 		 * 
 		 */
 		function receiveDateFormats(json) {
-			clientDateFormat = json.dateFormat;
+			// TODO - check
+			// for input[type="date"] wire date format needs to be "yy-mm-dd" for chrome
+			clientDateFormat = isMobileClient ? "yy-mm-dd" : json.dateFormat;
 			if (clientDateFormat) {
 				clientDateFormat = clientDateFormat.toLowerCase();
 			}
