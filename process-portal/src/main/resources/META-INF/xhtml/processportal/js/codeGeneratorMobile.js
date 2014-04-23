@@ -79,17 +79,8 @@ define(["processportal/js/codeGenerator", "processportal/js/htmlElement", "bpm-m
 					var fieldContainerDiv = htmlElement.create("div", {parent: parent, attributes: {class: "ui-field-contain"}});
 					var elemPrimitive = this.generatePath(null, children[i], {labelAsBooleanInput: true});
 
-					// Label
-					fieldContainerDiv.children.push(elemPrimitive.children[0]);
-
-					// TODO - add prefix related code 
-
-					// Input
-					fieldContainerDiv.children.push(elemPrimitive.children[1]);
-					
-					// Has a validation error message field
-					if (elemPrimitive.children.length > 2) {
-						fieldContainerDiv.children.push(elemPrimitive.children[2]);	
+					for (var c in elemPrimitive.children) {
+						fieldContainerDiv.children.push(elemPrimitive.children[c]);
 					}
 
 					// TODO - add suffix related code 
@@ -133,13 +124,24 @@ define(["processportal/js/codeGenerator", "processportal/js/htmlElement", "bpm-m
 					htmlElement.create("div", {parent: elemWrapper, value: validations[i].msg, 
 						attributes: {class: "panel-invalid-msg", "ng-show": showExpr}});
 				}
-
-				var showExpr = ngFormName + "[" + formId + "].$invalid";
-				htmlElement.create("span", {parent: elemMain, 
-					attributes: {class: "panel-invalid-icon", "ng-show": showExpr}});
 			}
 		};
-		
+
+		/**
+		 * 
+		 */
+		CodeGeneratorMobile.prototype.addTimeInputField = function(parent) {
+			// Dummy lable is added only to get a decent layout in jQM
+			var dummyLabel = htmlElement.create("label", {parent: parent});
+			var elem2 = htmlElement.create("input", {parent: parent});
+			elem2.attributes["ng-model-onblur"] = null;
+			elem2.attributes['type'] = "time";
+			elem2.attributes['class'] = "panel-input-dateTime-time panel-input";
+			elem2.attributes['maxlength'] = 5; // HH:mm
+			
+			return elem2;
+		};
+
 		/**
 		 * 
 		 */

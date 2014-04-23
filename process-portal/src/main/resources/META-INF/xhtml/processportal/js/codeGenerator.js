@@ -378,11 +378,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 							}
 	
 							// Input field for Time Part
-							var elem2 = htmlElement.create("input", {parent: elemWrapper});
-							elem2.attributes["ng-model-onblur"] = null;
-							elem2.attributes['type'] = "text";
-							elem2.attributes['class'] = "panel-input-dateTime-time panel-input";
-							elem2.attributes['maxlength'] = 5; // HH:mm
+							var elem2 = this.addTimeInputField(elemWrapper);
 							
 							var validations2 = [];
 							validations2.push({type: "ng-pattern", value: /^(0?[0-9]|1[0-9]|2[0123]):[0-5][0-9]$/, 
@@ -430,6 +426,19 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			}
 			
 			return elemMain;
+		};
+		
+		/**
+		 * 
+		 */
+		CodeGenerator.prototype.addTimeInputField = function(parent) {
+			var elem2 = htmlElement.create("input", {parent: parent});
+			elem2.attributes["ng-model-onblur"] = null;
+			elem2.attributes['type'] = "text";
+			elem2.attributes['class'] = "panel-input-dateTime-time panel-input";
+			elem2.attributes['maxlength'] = 5; // HH:mm
+			
+			return elem2;
 		};
 		
 		/**
