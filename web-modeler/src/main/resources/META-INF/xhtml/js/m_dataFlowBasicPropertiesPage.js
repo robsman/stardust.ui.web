@@ -717,6 +717,7 @@ define(
 								.val(this.propertiesPanel.element.modelElement.inputDataMapping.dataPath);
 						if (this.propertiesPanel.element.modelElement.inputDataMapping.accessPointId == null) {
 							this.inputAccessPointSelectInput.val("DEFAULT");
+							this.inputAccessPointPathInput.val("");
 							this.inputAccessPointPathInput.prop("disabled", true);
 						} else {
 							this.inputAccessPointSelectInput

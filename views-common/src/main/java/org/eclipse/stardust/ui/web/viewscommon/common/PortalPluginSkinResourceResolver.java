@@ -132,8 +132,7 @@ public class PortalPluginSkinResourceResolver
                                                                            // returns the
                                                                            // <plugin-id>
                         + pluginFolder
-                        + "/"
-                        + (splitArr[1].contains("/") ? splitArr[1].substring(0, splitArr[1].indexOf("/")) : ""); // if
+                        + (splitArr[1].contains("/") ? "/" + splitArr[1].substring(0, splitArr[1].indexOf("/")) : ""); // if
                                                                                                                  // splitArr[1]
                                                                                                                  // contains
                                                                                                                  // the

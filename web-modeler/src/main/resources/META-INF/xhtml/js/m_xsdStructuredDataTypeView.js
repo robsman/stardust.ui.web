@@ -542,13 +542,9 @@ define(
 								}
 								$scope.minLength = minVal;
 								$scope.maxLength = maxVal;
-							} else {
-								if($scope.javaClassBinding == true && $scope.javaClassRequiredError == false){
-									//On server roundtrip , for valid java class provided , show No-enum msg
-									$scope.noEnumFoundError = true;
-								}else{
-									$scope.noEnumFoundError = false;
-								}
+							}else if($scope.javaClassBinding == true && $scope.javaClassRequiredError == false){
+								//On server roundtrip , for valid java class provided , show No-enum msg
+								$scope.noEnumFoundError = true;
 							}
 						}
 					}, m_utils.jQuerySelect("#configurationTab").get(0));
@@ -601,11 +597,15 @@ define(
 					
 					view=this;
 					m_angularContextUtils.runInAngularContext(function($scope) {
+						$scope.javaClassBinding = false; //reset java bindling flag.
+						$scope.javaClassRequiredError = false; //reset javaClassRequiredflag
 						if (view.bindToJavaSelect.prop("checked")) {
 							$scope.javaClassBinding = true;
-						} else {
-							$scope.javaClassBinding = false; //reset java bindling flag.
-							$scope.javaClassRequiredError = false; //reset javaClassRequiredflag, as javaBinding is false
+							if(view.typeDeclaration.attributes["carnot:engine:className"] != undefined){
+								$scope.javaClassRequiredError = false;
+							} else {
+								$scope.javaClassRequiredError = true;
+							}
 						}
 					}, m_utils.jQuerySelect("#configurationTab").get(0));
 					
@@ -669,6 +669,9 @@ define(
 						if (dataValue.indexOf("#location:") != -1) {
 							typeName = dataValue.substr(dataValue.indexOf("#typeName:") + 10);
 							location = dataValue.substring(dataValue.indexOf("#location:") + 10, dataValue.indexOf("#typeName:"));
+						}else if(null != dataValue && dataValue.indexOf("#typeName:") != -1){
+							typeName = dataValue.substr(dataValue.indexOf("#typeName:") + 10);
+							location = dataValue.substring(0,dataValue.indexOf("#typeName:"));
 						}
 
 						if (location) {
@@ -1051,16 +1054,28 @@ define(
 					select += "</optgroup>";
 					select += "<optgroup label='" + m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.element.selectTypeSection.thisModel") + "'>";
 					var thisTypeDeclaration = this.typeDeclaration;
+					var typeArr = element.type.split(":");
+					var type = typeArr[0];
+					if(schemaType.schema!=undefined){
+						var locationKey = schemaType.schema.nsMappings[type];
+						var element = this.typeDeclaration.typeDeclaration.schema.locations[locationKey];
+						var modelId = this.typeDeclaration.modelId;
+						if(null != element && element.indexOf("{") == 0){
+							modelId = element.substring(element.indexOf("{")+1,element.indexOf("}"))
+						}
+					}
+					
+					
 					jQuery.each(this.typeDeclaration.model.typeDeclarations, function() {
 						var typeDeclaration = this;
-
-						if (thisTypeDeclaration.uuid != typeDeclaration.uuid
-								&& typeDeclaration.getType() !== "importedStructuredDataType") {
+						if (thisTypeDeclaration.uuid != typeDeclaration.uuid) {
 							var tdType = typeDeclaration.asSchemaType();
 							if (tdType) {
-								select += "<option value='{" + tdType.nsUri +"}" + tdType.name + "' ";
+								var typeName = "{" + tdType.nsUri + "}" + tdType.name;
+								var dataValue = tdType.name + "#typeName:" + typeName;
+								select += "<option value='" + dataValue + "' ";
 								if ( schemaType && !schemaType.isBuiltinType()) {
-									select += ((schemaType.name === tdType.name) && (schemaType.nsUri === tdType.nsUri) ? "selected " : "");
+									select += ((schemaType.name === tdType.name && modelId == typeDeclaration.modelId) && (schemaType.nsUri === tdType.nsUri) ? "selected " : "");
 									selected = true;
 								}
 								select += ">" + m_structuredTypeBrowser.getSchemaTypeLabel(typeDeclaration.name) + "</option>";
@@ -1081,13 +1096,14 @@ define(
 								var typeDeclaration = model.typeDeclarations[n];
 								 if (m_modelElementUtils.hasPublicVisibility(typeDeclaration)) {
 										var tdType = typeDeclaration.asSchemaType();
+										
 										if (tdType) {
 											var typeName = "{" + tdType.nsUri + "}" + tdType.name;
-											var dataValue = "#location:" + "{" + model.id + "}" + tdType.name + "#typeName:" + typeName;
+											var dataValue = "#location:" + "{" + model.id + "}" + tdType.name + "#typeName:" + typeName;	
 
 											var x = "<option value='" + dataValue + "' ";
 											if (schemaType && !schemaType.isBuiltinType()) {
-												x += ((schemaType.name === tdType.name) && (schemaType.nsUri === tdType.nsUri) ? "selected " : "");
+												x += ((schemaType.name === tdType.name && modelId == model.id) && (schemaType.nsUri === tdType.nsUri) ? "selected " : "");
 												selected = true;
 											}
 											x += ">" + model.name + "/" + typeDeclaration.name + "</option>";

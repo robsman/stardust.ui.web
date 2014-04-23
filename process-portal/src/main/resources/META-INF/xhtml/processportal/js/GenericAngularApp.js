@@ -109,7 +109,9 @@ if (!window.bpm.portal.GenericAngularApp) {
 										if (validate === "byte" || validate === "short" || validate === "integer" || validate === "long") {
 											val = new Number(value);
 											if (!isNaN(val)) {
-												if (validate === "byte") {
+												if (value.indexOf(".") >= 0) {
+													// Decimal no. Invalid
+												} else if (validate === "byte") {
 													if (val >= -128 && val <= 127) {
 														success = true;
 													}

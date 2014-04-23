@@ -173,7 +173,8 @@ public class LoginDialogBean implements Serializable, InitializingBean
                for (String filePath : entry.getValue())
                {
                   String fileName = filePath.substring(filePath.lastIndexOf("/") + 1);
-                  pluginLoginStyleSheetPath = Constants.PLUGIN_ROOT_FOLDER_PATH + entry.getKey() + "/" + fileName;
+                  //No need to append initial '/' as already present on UI
+                  pluginLoginStyleSheetPath = Constants.PLUGIN_ROOT_FOLDER_PATH.substring(1) + entry.getKey() + "/" + fileName;
                }
             }
          }

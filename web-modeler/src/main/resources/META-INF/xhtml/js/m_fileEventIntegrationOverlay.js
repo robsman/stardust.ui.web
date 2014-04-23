@@ -36,7 +36,6 @@ define(
 			function FileEventIntegrationOverlay() {
 				var eventIntegrationOverlay = m_eventIntegrationOverlay
 						.create();
-
 				m_utils.inheritFields(this, eventIntegrationOverlay);
 				m_utils.inheritMethods(FileEventIntegrationOverlay.prototype,
 						eventIntegrationOverlay);
@@ -155,7 +154,7 @@ define(
 							.mapInputId("alwaysConsumeInput");
 
 					this.parameterDefinitionsPanel = this.mapInputId("parameterDefinitionsTable");
-					this.outputBodyAccessPointInput = jQuery("#fileEvent #parametersTab #outputBodyAccessPointInput");
+					this.outputBodyAccessPointInput = m_utils.jQuerySelect("#parametersTab #outputBodyAccessPointInput");
 					this.parameterDefinitionsPanel = m_parameterDefinitionsPanel
 								.create({
 									scope : "fileEvent",
@@ -200,8 +199,7 @@ define(
 								event.data.panel.submitChanges({
 									modelElement : {
 										attributes : {
-											"carnot:engine:camel::outBodyAccessPoint" : event.data.panel.outputBodyAccessPointInput
-																.val()
+											"carnot:engine:camel::outBodyAccessPoint" : event.data.panel.outputBodyAccessPointInput.val()
 										}
 									}
 								});
@@ -261,6 +259,7 @@ define(
 					this.registerForRouteChanges(this.lockBehaviorSelect);
 					this.registerForRouteChanges(this.postProcessingSelect);
 					this.registerForRouteChanges(this.alwaysConsumeInput);
+					this.registerForRouteChanges(this.outputBodyAccessPointInput);
 				};
 
 				/**

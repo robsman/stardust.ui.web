@@ -24,6 +24,7 @@ define(function() {
 		VIEWPORT_WIDTH : 1000,
 		VIEWPORT_HEIGHT : 550,
 		PANNING_SENSOR_WIDTH : 30,
+		TEXT_NODE_DY_ADJUSTMENT : 5,
 
 		// Default graphics parameters
 
@@ -265,6 +266,7 @@ define(function() {
 		SEQUENTIAL_MULTI_PROCESSING_TYPE : "multiInstanceSequential",
 		MULTI_INSTANCE_LOOP_TYPE : "multi",
 
+		MULTI_INTSTANCE_TRANSACTION_BATCH_INPUT : 1,
 		// Data
 
 		DATA : "data",
@@ -316,6 +318,7 @@ define(function() {
 		JAVA_CLASS_ACCESS_POINT : "JAVA_CLASS_ACCESS_POINT",
 		DATA_STRUCTURE_ACCESS_POINT : "DATA_STRUCTURE_ACCESS_POINT",
 		ANY_ACCESS_POINT : "ANY_ACCESS_POINT",
+		IS_INOUT_PARAM : "IS_INOUT_PARAM",
 
 		// Control Flow
 

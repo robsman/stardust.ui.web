@@ -47,7 +47,6 @@ define(
 				TimerEventIntegrationOverlay.prototype.initialize = function(
 						page, id) {
 					this.initializeEventIntegrationOverlay(page, id);
-
 					m_utils.jQuerySelect("label[for='repeatIntervalInput']")
 							.text(
 									m_i18nUtils

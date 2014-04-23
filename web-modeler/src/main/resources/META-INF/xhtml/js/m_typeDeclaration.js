@@ -750,7 +750,7 @@ define(
 					var facets = [];
 					if (this.schema && this.schema.elements) {
 						for (var i in this.schema.elements) {
-							if (this.schema.elements[i].facets) {
+							if (this.schema.elements[i].facets && this.schema.elements[i].name === this.name) {
 								for (var j in this.schema.elements[i].facets) {
 									if (this.schema.elements[i].facets[j].classifier === "enumeration") {
 										facets.push(this.schema.elements[i].facets[j]);
@@ -762,7 +762,7 @@ define(
 					if (facets.length == 0 && this.schema.types) {
 						if (this.type) {
 							for (var i in this.schema.types) {
-								if (this.schema.types[i].name === this.type.name
+								if (this.schema.types[i].name === this.name
 										&& this.schema.types[i].facets) {
 									for (var j in this.schema.types[i].facets) {
 										if (this.schema.types[i].facets[j].classifier === "enumeration") {
@@ -822,7 +822,7 @@ define(
 				if (element && element.type) {
 
 					var typeQName = parseQName(element.type, this.schema);
-					if (!typeQName.prefix) {
+					if (!typeQName.prefix && typeQName.namespace == undefined) {
 						// no ns prefix, resolve to containing schema
 						var type = findType(this.schema, typeQName.name);
 
@@ -866,7 +866,7 @@ define(
 			function resolveSchemaTypeFromModel(sqName, model, locations) {
 				var schema = null;
 				var parsedName = parseQName(sqName);
-				if (parsedName.namespace) {
+				if (parsedName.namespace != undefined) {
 					// resolve ns prefix to schema
 					if (parsedName.namespace === "http://www.w3.org/2001/XMLSchema") {
 						return new SchemaType("xsd:" + parsedName.name,
@@ -880,7 +880,7 @@ define(
 													&& (null != declaration.typeDeclaration.schema)
 													&& (declaration.typeDeclaration.schema.targetNamespace === parsedName.namespace)) {
 												if (declaration.typeDeclaration.type && declaration.typeDeclaration.type.xref) {
-													if (declaration.typeDeclaration.type.xref === sqName) {
+													if (declaration.typeDeclaration.type.xref === sqName || (parsedName.namespace == "" && declaration.typeDeclaration.type.xref == parsedName.name)) {
 														schema = declaration.typeDeclaration.schema;
 														return false;
 													}

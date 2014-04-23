@@ -57,6 +57,9 @@ define(
 
 				page.processingTypeSelect
 						.val(m_constants.SINGLE_PROCESSING_TYPE);
+				if(page.processingTypeLink != undefined){
+					page.processingTypeLink.css("visibility",'hidden');
+				}
 				if (me
 						&& me.supportsProcessingType()
 						&& me.attributes["carnot:engine:relocate:source"] !== true) {
@@ -70,6 +73,9 @@ define(
 							} else {
 								page.processingTypeSelect
 										.val(m_constants.PARALLEL_MULTI_PROCESSING_TYPE);
+							}
+							if(page.processingTypeLink != undefined){
+								page.processingTypeLink.css("visibility",'visible');
 							}
 						}
 					}

@@ -264,6 +264,7 @@ define(
 						"x" : this.x + 15,
 						"y" : this.y + 50
 					});
+					$('tspan:first-child', this.text.node).attr('dy', m_constants.TEXT_NODE_DY_ADJUSTMENT);
 				};
 
 				DataSymbol.prototype.recalculateBoundingBox = function() {
@@ -283,6 +284,9 @@ define(
 					// Data may not have been created yet
 					if (data != null) {
 						this.text.attr("text", data.name);
+						// Raphael.text() incorrectly y-positioned on hidden tabs
+						// Issue reported :: https://github.com/DmitryBaranovskiy/raphael/issues/491
+						$('tspan:first-child', this.text.node).attr('dy', m_constants.TEXT_NODE_DY_ADJUSTMENT);
 						this.modelElement = data;
 					}
 				};

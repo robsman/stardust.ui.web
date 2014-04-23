@@ -139,15 +139,6 @@ define(
 				 *
 				 */
 				Activity.prototype.getContexts = function() {
-					// TODO Should/might be evaluated on the server
-					if (this.activityType == m_constants.TASK_ACTIVITY_TYPE
-							&& this.applicationFullId) {
-						var application = m_model
-								.findApplication(this.applicationFullId);
-
-						return application.contexts;
-					}
-
 					return this.contexts;
 				};
 
@@ -264,6 +255,8 @@ define(
 						this.loop.sequential = sequential;
 					} else {
 						this.loop.sequential = false;
+						// only for sequence, batch size is supported else send null
+						this.setMultiInstanceBatchSizeParam(null);
 					}
 				};
 
@@ -287,6 +280,13 @@ define(
 				 */
 				Activity.prototype.setMultiInstanceOutputListParam = function(paramId) {
 					this.loop.outputId = paramId;
+				};
+				
+				/**
+				 *
+				 */
+				Activity.prototype.setMultiInstanceBatchSizeParam = function(paramId) {
+					this.loop.batchSize = paramId;
 				};
 			}
 		});

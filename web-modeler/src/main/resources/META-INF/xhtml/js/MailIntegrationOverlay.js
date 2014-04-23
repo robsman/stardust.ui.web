@@ -309,7 +309,7 @@ define(
 								supportsDataMappings : false,
 								supportsDescriptors : false,
 								supportsDataTypeSelection : true,
-								supportsDocumentTypes : false
+                        supportsDocumentTypes : true
 							});
 
 					this.populateResponseOptionsTypeSelect();
@@ -762,7 +762,7 @@ define(
 
 					// convert possible SDT defined as IN mapping to Java native
 					// object.
-					var route = "<to uri=\"bean:bpmTypeConverter?method=toNativeObject\"/>\n";
+               var route = "<to uri=\"ipp:data:toNativeObject\"/>\n";
 
 					// if runtime doesn't provide a certain header, set the
 					// default specified in UI
@@ -874,6 +874,7 @@ define(
 					route += "var activityInstanceOid = request.headers.get('ippActivityInstanceOid');\n";
 					route += "var partition = request.headers.get('ippPartition');\n";
 					route += "var investigate = false;\n";
+               route += "var attachments = {};\n";
 
 					for ( var n = 0; n < this.getApplication().contexts.application.accessPoints.length; ++n) {
 
@@ -905,6 +906,17 @@ define(
                      route +=  accessPoint.id+"=visitMembers("+accessPoint.id+", recursiveFunction);\n";
 							route += "}\n";
 
+                  } else if (accessPoint.dataType == "dmsDocument") {
+                	  
+                	  route += "var " + accessPoint.id + ";\n";
+                      route += "if(request.headers.get('"
+                            + accessPoint.id + "')!=null){\n";
+                      route += accessPoint.id
+                            + " =  request.headers.get('"
+                            + accessPoint.id + "');\n";
+                      route += "attachments[" + accessPoint.id + "]" + " =  request.headers.get('"
+                      + accessPoint.id + "');\n";
+                      route += "}\n";
                   }
 
                   /*} else {
@@ -967,6 +979,10 @@ define(
 					route += "      	setOutHeader('bcc', bcc);\n";
 					route += "      }\n";
 
+               route += "      for (var doc in attachments){\n";
+               route += "        setOutHeader(doc, attachments[doc]);\n";
+               route += "      }\n";
+
 					route += "   </constant>\n";
 					route += "</setHeader>\n";
 
@@ -983,6 +999,9 @@ define(
 					route += "   <simple>$simple{in.header.response}</simple>\n";
 					route += "</setBody>\n";
 
+			  // add attachment document
+               route += "<process ref=\"addAttachmentProcessor\"/>\n";
+               
 					// execute smpt endpoint
                route += "<to uri=\""+this.protocolSelect.val()+"://" + this.serverInput.val()
 					if(!m_utils.isEmptyString(this.userInput.val()) && !m_utils.isEmptyString(this.passwordInput.val())){

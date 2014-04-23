@@ -14,6 +14,7 @@
  */
 
 require.config({
+	waitSeconds: 0,
 	baseUrl: "../../../",
 	paths : {
 		'jquery' : ['bpm-modeler/js/libs/jquery/jquery-1.7.2', '//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min'],

@@ -40,6 +40,9 @@ public class I18nFolderUtils
    public static final String PREDEFINED_REPORTS = "predefinedReports";
    public static final String REPORTS = "reports";
    // virtual folders ends
+   
+   public static final String PROCESS_MODELS = "process-models";
+   public static final String RULES = "rules";
 
    private List<SystemFolder> systemFolders = null;
    private List<SystemFolder> systemFolders_virtual = null;
@@ -89,6 +92,14 @@ public class I18nFolderUtils
             else
             {
                i18nFolderName = StringUtils.substringAfterLast(path, "\\");
+            }
+            for (SystemFolder systemFolder : i18nFolderUtils.systemFolders_virtual)
+            {
+               if (i18nFolderName.matches(systemFolder.getPath()))
+               {
+                  i18nFolderName = systemFolder.getI18Name();
+                  break;
+               }
             }
          }
       }
@@ -147,7 +158,7 @@ public class I18nFolderUtils
       systemFolders_virtual.add(new SystemFolder(COMMON_DOCUMENTS_V,
             "views.myDocumentsTreeView.documentTree.commonDocumentsFolderLabel"));
       systemFolders_virtual.add(new SystemFolder(PREDEFINED_REPORTS, PREDEFINED_REPORTS));
-      systemFolders_virtual.add(new SystemFolder(REPORTS, REPORTS));
+      systemFolders_virtual.add(new SystemFolder(REPORTS, "views.genericRepositoryView.systemFolders.reports.label"));
       systemFolders_virtual.add(new SystemFolder(MY_REPORT_DESIGNS_V, MY_REPORT_DESIGNS_V));
       systemFolders_virtual.add(new SystemFolder(MY_SAVED_REPORTS_V, MY_SAVED_REPORTS_V));
       systemFolders_virtual.add(new SystemFolder(PROCESS_DOCUMENTS_V,
@@ -159,6 +170,10 @@ public class I18nFolderUtils
       systemFolders_virtual.add(new SystemFolder(ARTIFACTS_V, "views.genericRepositoryView.artifacts"));
       systemFolders_virtual
             .add(new SystemFolder(NOTES_V, "views.processInstanceDetailsView.processDocumentTree.notes"));
+      systemFolders_virtual.add(new SystemFolder(PROCESS_MODELS,
+            "views.genericRepositoryView.systemFolders.processModels"));
+      systemFolders_virtual.add(new SystemFolder(RULES,
+            "views.genericRepositoryView.systemFolders.rules"));
    }
 
    private static class SystemFolder

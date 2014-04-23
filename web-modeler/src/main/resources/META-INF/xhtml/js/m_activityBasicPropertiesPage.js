@@ -110,6 +110,16 @@ define(
 						.text(
 							m_i18nUtils
 								.getProperty("modeler.activity.propertyPages.general.processingType.options.multiInstanceSequential"));
+				m_utils.jQuerySelect("#taskImplLink")
+						.attr(
+								"title",
+								m_i18nUtils
+									.getProperty("modeler.activity.propertyPages.general.taskImplementationLabel"));
+				m_utils.jQuerySelect("#processingTypeLink")
+						.attr(
+								"title",
+								m_i18nUtils
+									.getProperty("modeler.activity.propertyPages.general.processingType.parameterLabel"));
 			}
 
 			function ActivityBasicPropertiesPage(propertiesPanel) {
@@ -128,6 +138,7 @@ define(
 
 					this.taskInput = this.mapInputId("taskInput");
 					this.taskTypeList = this.mapInputId("taskTypeList");
+					this.taskImplLink = this.mapInputId("taskImplLink");
 					this.subprocessInput = this.mapInputId("subprocessInput");
 					this.subprocessList = this.mapInputId("subprocessList");
 					this.subprocessExecutionRow = this
@@ -146,7 +157,7 @@ define(
 					this.isRelocationTargetInput = this
 							.mapInputId("isRelocationTargetInput");
 					this.processingTypeSelect = this.mapInputId("processingTypeSelect");
-
+					this.processingTypeLink = this.mapInputId("processingTypeLink");
 					// I18N
 
 					m_utils.jQuerySelect("label[for='taskInput']")
@@ -228,8 +239,10 @@ define(
 						var val = event.data.callbackScope.processingTypeSelect.val();
 						if (val == m_constants.SINGLE_PROCESSING_TYPE) {
 							me.setProcessingTypeSingleInstance();
+							event.data.callbackScope.processingTypeLink.css("visibility",'hidden');
 						} else {
 							me.setProcessingTypeMultiInstance(val === m_constants.SEQUENTIAL_MULTI_PROCESSING_TYPE);
+							event.data.callbackScope.processingTypeLink.css("visibility",'visible');
 						}
 
 						event.data.callbackScope.submitChanges({modelElement : {loop : me.loop}});
@@ -240,6 +253,7 @@ define(
 					}, function(event) {
 						if (event.data.page.taskInput.is(":checked")) {
 							event.data.page.setTaskType();
+							event.data.page.setTaskImplementationLinkVisibility();
 							event.data.page.submitTaskTypeChanges(true);
 						}
 					});
@@ -257,6 +271,34 @@ define(
 
 										page.submitTaskTypeChanges();
 									});
+
+					this.taskImplLink.click({
+						panel : this
+					}, function(event) {
+						event.data.panel.hide();
+						var propertiesPages = event.data.panel.propertiesPanel.propertiesPages;
+						for(var n in propertiesPages){
+							if(propertiesPages[n].id =='implementationPropertiesPage'){
+								propertiesPages[n].show();
+							}
+						}
+
+					});
+
+					this.processingTypeLink.click({
+						panel : this
+					}, function(event) {
+						event.data.panel.hide();
+						var propertiesPages = event.data.panel.propertiesPanel.propertiesPages;
+						for(var n in propertiesPages){
+							if(propertiesPages[n].id =='processingPropertiesPage'){
+								propertiesPages[n].show();
+							}
+						}
+
+					});
+
+
 					this.subprocessList.change({
 						"page" : this
 					}, function(event) {
@@ -380,6 +422,21 @@ define(
 						}
 					}
 				};
+
+				ActivityBasicPropertiesPage.prototype.setTaskImplementationLinkVisibility = function() {
+					if (m_user.getCurrentRole() == m_constants.INTEGRATOR_ROLE
+							&& this.getModelElement().activityType != m_constants.SUBPROCESS_ACTIVITY_TYPE) {
+						if (this.getModelElement().taskType != m_constants.NONE_TASK_TYPE
+								&& this.getModelElement().taskType != m_constants.MANUAL_TASK_TYPE) {
+							this.taskImplLink.css("visibility", 'visible');
+						} else {
+							this.taskImplLink.css("visibility", 'hidden');
+						}
+					} else {
+						this.taskImplLink.css("visibility", 'hidden');
+					}
+				};
+
 
 				/**
 				 *
@@ -560,7 +617,7 @@ define(
 						this.supportsRelocationInput.attr("checked", false);
 						this.supportsRelocationInput.attr("disabled", true);
 					}
-
+					this.setTaskImplementationLinkVisibility();
 					m_activityProcessingPropertiesCommon.initProcessingType(this);
 				};
 

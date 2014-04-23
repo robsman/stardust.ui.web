@@ -425,8 +425,12 @@ public class ParticipantTree
             topLevelOrganizations = model.getAllTopLevelOrganizations();
             for (Organization organization : topLevelOrganizations)
             {
-               orgNode = addParticipantNode(node, organization);
-               addToTopLevelParticipantsMap(model.getId(), orgNode);
+               String modelId = ModelUtils.extractModelId(organization.getQualifiedId());
+               if (modelId.equals(model.getId()))
+               {
+                  orgNode = addParticipantNode(node, organization);
+                  addToTopLevelParticipantsMap(model.getId(), orgNode);
+               }
             }
          }
       }
@@ -441,7 +445,6 @@ public class ParticipantTree
       DefaultMutableTreeNode roleNode = null;
       List<Role> topLevelRoles = null;
       boolean adminRoleAdded = false;
-
       List<DeployedModel> models = ModelUtils.getActiveModels();
       for (Model model : models)
       {
@@ -464,11 +467,16 @@ public class ParticipantTree
 
             if (PredefinedConstants.ADMINISTRATOR_ROLE.equals(role.getId()) || !filterModelNodes(model))
             {
-               roleNode = addParticipantNode(node, role);
-               // Add non-Administrator top-level role nodes to model-participant Map
-               if (!PredefinedConstants.ADMINISTRATOR_ROLE.equals(role.getId()))
+               String modelId = !PredefinedConstants.ADMINISTRATOR_ROLE.equals(role.getId()) ? ModelUtils
+                     .extractModelId(role.getQualifiedId()) : null;
+               if((modelId == null) || (modelId.equals(model.getId())))
                {
-                  addToTopLevelParticipantsMap(model.getId(), roleNode);
+                  roleNode = addParticipantNode(node, role);
+                  // Add non-Administrator top-level role nodes to model-participant Map
+                  if (!PredefinedConstants.ADMINISTRATOR_ROLE.equals(role.getId()))
+                  {
+                     addToTopLevelParticipantsMap(model.getId(), roleNode);
+                  }
                }
             }
          }

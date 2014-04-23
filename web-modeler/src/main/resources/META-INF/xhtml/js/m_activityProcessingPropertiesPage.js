@@ -12,9 +12,9 @@
 define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_command", "bpm-modeler/js/m_commandsController",
 				"bpm-modeler/js/m_propertiesPage", "bpm-modeler/js/m_activity", "bpm-modeler/js/m_i18nUtils",
-				"bpm-modeler/js/m_activityProcessingPropertiesCommon"],
+				"bpm-modeler/js/m_activityProcessingPropertiesCommon", "bpm-modeler/js/m_angularContextUtils"],
 		function(m_utils, m_constants, m_command, m_commandsController,
-				m_propertiesPage, m_activity, m_i18nUtils, m_activityProcessingPropertiesCommon) {
+				m_propertiesPage, m_activity, m_i18nUtils, m_activityProcessingPropertiesCommon, m_angularContextUtils) {
 			return {
 				create: function(propertiesPanel) {
 					return new ActivityProcessingPropertiesPage(propertiesPanel);
@@ -41,7 +41,10 @@ define(
 					.text(m_i18nUtils.getProperty("modeler.propertiesPage.activity.processing.indexParam"));
 				m_utils.jQuerySelect("label[for='outputListParam']")
 					.text(m_i18nUtils.getProperty("modeler.propertiesPage.activity.processing.outputParam"));
-
+				m_utils.jQuerySelect("label[for='batchSizeInput']")
+					.text(m_i18nUtils.getProperty("modeler.propertiesPage.activity.processing.limitTransactionBatchSizeInput"));
+				m_utils.jQuerySelect("label[for='maximumBatchSize']")
+					.text(m_i18nUtils.getProperty("modeler.propertiesPage.activity.processing.maximumBatchSize"));
 				m_utils.inheritFields(this, propertiesPage);
 				m_utils.inheritMethods(
 						ActivityProcessingPropertiesPage.prototype,
@@ -52,7 +55,9 @@ define(
 				this.inputListParam = this.mapInputId("inputListParam");
 				this.indexListParam = this.mapInputId("indexListParam");
 				this.outputListParam = this.mapInputId("outputListParam");
-
+				this.batchSizeInput = this.mapInputId("batchSizeInput");
+				this.maximumBatchInput = this.mapInputId("maximumBatchSize");
+				
 				// Initialize callbacks
 				this.processingTypeSelect.change({
 					"callbackScope" : this
@@ -63,6 +68,10 @@ define(
 						me.setProcessingTypeSingleInstance();
 					} else {
 						me.setProcessingTypeMultiInstance(val === m_constants.SEQUENTIAL_MULTI_PROCESSING_TYPE);
+						// Show batch size checkbox for sequential multi-instance only
+						if(val === m_constants.SEQUENTIAL_MULTI_PROCESSING_TYPE){
+							event.data.callbackScope.batchSizeInput.attr("disabled", false);
+						}
 					}
 
 					event.data.callbackScope.submitChanges({modelElement : {loop : me.loop}});
@@ -110,6 +119,24 @@ define(
 					event.data.callbackScope.submitChanges({modelElement : {loop : me.loop}});
 				});
 
+				this.batchSizeInput.change({
+					"callbackScope" : this
+				}, function(event) {
+					var me = event.data.callbackScope.propertiesPanel.getModelElement();
+					if (event.data.callbackScope.batchSizeInput.prop("checked")) {
+						event.data.callbackScope.maximumBatchInput.attr("disabled",false);
+						event.data.callbackScope.maximumBatchInput.attr("value", m_constants.MULTI_INTSTANCE_TRANSACTION_BATCH_INPUT);
+						me.setMultiInstanceBatchSizeParam(m_constants.MULTI_INTSTANCE_TRANSACTION_BATCH_INPUT);
+					} else {
+						// remove batch size attribute when batch size support checkbox is unchecked/disabled
+						me.setMultiInstanceBatchSizeParam(null);
+						event.data.callbackScope.maximumBatchInput.attr("disabled",true);
+						event.data.callbackScope.maximumBatchInput.attr("value", "");
+						me.setMultiInstanceBatchSizeParam(null);
+					}
+					event.data.callbackScope.submitChanges({modelElement : {loop : me.loop}});
+				});	
+				
 				/**
 				 *
 				 */
@@ -117,14 +144,35 @@ define(
 					m_activityProcessingPropertiesCommon.initProcessingType(this);
 					if (m_activityProcessingPropertiesCommon.getProcessingType(this) === m_constants.SINGLE_PROCESSING_TYPE) {
 						this.disableListParamInputs();
+						this.hideBatchInputs();
 					} else {
 						this.enableListParamInputs();
 						this.initInputListParams();
 						this.initIndexListParams();
 						this.initOutputListParams();
+						this.showBatchInputs();
 					}
 				};
 
+				this.maximumBatchInput.change({
+					"callbackScope" : this
+				}, function(event) {
+					var self = event.data.callbackScope;
+				m_angularContextUtils.runInAngularContext(function($scope) {
+					$scope.$watch("batchSize", function(newValue, oldValue) {
+						if (newValue !== oldValue && $scope.batchForm.maximumBatchSize.$valid) {
+								if (newValue == "" || self.maximumBatchInput.val() != newValue) {
+									return;
+								} else {
+									var me = self.propertiesPanel.getModelElement();
+									me.setMultiInstanceBatchSizeParam(self.maximumBatchInput.val());
+										self.submitChanges({modelElement : {loop : me.loop}});
+								}
+						}
+					});
+				}, m_utils.jQuerySelect("#configurationTab").get(0));	
+				});	
+				
 				/**
 				 *
 				 */
@@ -266,6 +314,37 @@ define(
 					this.inputListParam.attr("disabled", true);
 					this.indexListParam.attr("disabled", true);
 					this.outputListParam.attr("disabled", true);
+				};
+				
+				/**
+				 * 
+				 */
+				ActivityProcessingPropertiesPage.prototype.showBatchInputs = function() {
+					// for sequence loop only enable limit batch size checkbox
+					if (this.getModelElement().loop.sequential) {
+						this.batchSizeInput.attr("disabled", false);
+						// loop.batchsize is available only when limit batch checkbox is checked
+						if (this.getModelElement().loop.batchSize) {
+							this.maximumBatchInput.attr("disabled", false);
+							this.batchSizeInput.attr("checked", true);
+							if (this.getModelElement().loop.batchSize) {
+								this.maximumBatchInput.val(this
+										.getModelElement().loop.batchSize);
+							}
+						}
+					} else {
+						this.hideBatchInputs();
+					}
+				};
+				
+				/**
+				 * 
+				 */
+				ActivityProcessingPropertiesPage.prototype.hideBatchInputs = function() {
+					this.batchSizeInput.attr("disabled",true);
+					this.batchSizeInput.attr("checked",false);
+					this.maximumBatchInput.attr("disabled",true);
+					this.maximumBatchInput.val("");
 				};
 
 				/**

@@ -312,6 +312,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 
 					if (path.properties["StringInputPreferences_stringInputType"] == "TEXTAREA") {
 						elem = htmlElement.create("textarea", {parent: elemWrapper});
+						elem.attributes["style"] = "width: auto;";
 						if (path.properties["StringInputPreferences_textAreaRows"] != undefined) {
 							elem.attributes["rows"] = path.properties["StringInputPreferences_textAreaRows"];
 						}

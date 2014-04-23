@@ -548,8 +548,13 @@ define(
 				WebServiceApplicationView.prototype.loadWebServiceStructure = function(
 						structure) {
 					var wsdlURL = (structure && structure.url) ? structure.url : this.wsdlUrlInput.val();
-
 					if (wsdlURL.trim() != "") {
+						if(structure == null){
+							// Rest application variables on URL change
+							this.application.attributes["carnot:engine:wsPortName"] = null;
+							this.application.attributes["carnot:engine:wsOperationName"] = null;
+							this.application.attributes["carnot:engine:wsServiceName"] = null;							
+						}
 						var successCallback = {
 								callbackScope : this,
 								callbackMethod : "setWebServiceStructure"

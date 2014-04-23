@@ -975,7 +975,8 @@ public class ModelElementMarshaller implements ModelMarshaller
             LoopType loop = activity.getLoop();
             if (loop != null)
             {
-               activityJson.add("loop", toLoopJson(loop));
+               JsonObject loopJson = toLoopJson(loop);
+               activityJson.add("loop", loopJson);
                if (loop.getLoopType() != LoopTypeType.STANDARD)
                {
                   LoopMultiInstanceType miLoop = loop.getLoopMultiInstance();
@@ -1003,8 +1004,14 @@ public class ModelElementMarshaller implements ModelMarshaller
                            counterRef = counterRef.substring(counterContext.length() + 1);
                         }
                      }
+                     Object batchSize = getModelBuilderFacade().getAttribute(activity, PredefinedConstants.ACTIVITY_MI_BATCH_SIZE_ATT);
+                     if(null != batchSize)
+                     {
+                        Integer val = Integer.valueOf(getModelBuilderFacade().getAttributeValue(batchSize));
+                        loopJson.addProperty("batchSize", val);
                   }
                }
+            }
             }
 
             activityJson.addProperty(
@@ -1054,25 +1061,16 @@ public class ModelElementMarshaller implements ModelMarshaller
                }
             }
 
-            String[] contexts = new String[] {
-                  PredefinedConstants.DEFAULT_CONTEXT,
-                  PredefinedConstants.APPLICATION_CONTEXT,
-                  PredefinedConstants.PROCESSINTERFACE_CONTEXT,
-                  PredefinedConstants.ENGINE_CONTEXT};
-            if(isSubProcess)
-            {
-               contexts = new String[] {
-                     PredefinedConstants.DEFAULT_CONTEXT,
-                     PredefinedConstants.APPLICATION_CONTEXT,
-                     PredefinedConstants.PROCESSINTERFACE_CONTEXT};
-            }
+            List<String> contexts = getContextList(activity);
 
             JsonObject contextsJson = new JsonObject();
 
             activityJson.add(ModelerConstants.CONTEXTS_PROPERTY, contextsJson);
 
-            for (String context : contexts)
+            for (Iterator<String> i = contexts.iterator(); i.hasNext();)
             {
+               String context = i.next();
+
                JsonObject contextJson = new JsonObject();
 
                contextsJson.add(context, contextJson);
@@ -1084,6 +1082,7 @@ public class ModelElementMarshaller implements ModelMarshaller
                // Activity has no model as parent --> it has been deleted from the model
                if (ModelUtils.findContainingModel(activity) != null)
                {
+
                   for (AccessPointType accessPoint : ActivityUtil.getAccessPoints(
                         activity, true, context))
                   {
@@ -1103,11 +1102,56 @@ public class ModelElementMarshaller implements ModelMarshaller
                      accessPointsJson.add(toAccessPointJson(activity, accessPoint,
                            outputRef != null && outputRef.equals(accessPoint.getId()) && outputContext.equals(context)));
                   }
+
+
+                  // As Java Access Points are created on the fly they have to be added to
+                  // the application context explicitly
+                  if (context
+                        .equalsIgnoreCase(ModelerConstants.APPLICATION_CONTEXT_TYPE_KEY))
+                  {
+                     if (activity.getApplication() != null
+                           && isSupportedJavaApplicationType(activity.getApplication()))
+                     {
+                        createJavaAccessPoints(activity.getApplication(),
+                              accessPointsJson);
                }
             }
          }
       }
+         }
+      }
       return activityJson;
+   }
+
+   private List<String> getContextList(ActivityType activity)
+   {
+      List<String> contextList = new ArrayList<String>();
+      contextList.add(PredefinedConstants.DEFAULT_CONTEXT);
+      contextList.add(PredefinedConstants.APPLICATION_CONTEXT);
+      contextList.add(PredefinedConstants.PROCESSINTERFACE_CONTEXT);
+      if (!activity.getImplementation().equals(
+            ActivityImplementationType.SUBPROCESS_LITERAL))
+      {
+
+         contextList.add(PredefinedConstants.ENGINE_CONTEXT);
+      }
+      if (ActivityUtil.isInteractive(activity))
+      {
+         if (activity.getApplication() != null)
+         {
+            List<ContextType> contextTypes = activity.getApplication().getContext();
+            for (Iterator<ContextType> i = contextTypes.iterator(); i.hasNext();)
+            {
+               ContextType contextType = i.next();
+               if (contextType.getType() != null)
+               {
+                  contextList.add(contextType.getType().getId());
+
+               }
+            }
+         }
+      }
+      return contextList;
    }
 
    private JsonObject toAccessPointJson(ActivityType activity, AccessPointType accessPoint, boolean isListItem)
@@ -2475,6 +2519,15 @@ public class ModelElementMarshaller implements ModelMarshaller
                   accessPointsJson);
          }
 
+         createJavaAccessPoints(application, accessPointsJson);
+
+      }
+      return applicationJson;
+   }
+
+   private void createJavaAccessPoints(ApplicationType application,
+         JsonArray accessPointsJson)
+   {
          // TODO: (fh) constructor ?
 
          String methodName = getModelBuilderFacade().getAttributeValue(
@@ -2500,14 +2553,11 @@ public class ModelElementMarshaller implements ModelMarshaller
          }
 
          Method method = ClassesHelper.getMethodBySignature(
-               modelingSession.classLoaderProvider().classLoader(), className, methodName);
+            modelingSession().classLoaderProvider().classLoader(), className, methodName);
 
          ClassesHelper.addParameterAccessPoints(accessPointsJson, method);
          ClassesHelper.addReturnTypeAccessPoint(accessPointsJson, method);
-
       }
-      return applicationJson;
-   }
 
    private static List<String> pojoTypes = Arrays.asList(new String[] {
          PredefinedConstants.PLAINJAVA_APPLICATION,

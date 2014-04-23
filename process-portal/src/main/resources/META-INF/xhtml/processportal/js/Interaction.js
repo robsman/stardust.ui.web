@@ -180,6 +180,21 @@ if (!window.bpm.portal.Interaction) {
 					}
 				}
 			}
+
+			// Clean up unwanted values in data at 1st level
+			for (var k in data) {
+				var found = false;
+				for (var i in arrPaths) {
+					if (arrPaths[i].id == k) {
+						found = true;
+						break;
+					}
+				}
+
+				if (!found) {
+					delete data[k];
+				}
+			}
 		}
 
 		/*

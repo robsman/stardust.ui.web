@@ -99,8 +99,8 @@ define(
 					this.connectionTypeSelect.empty();
 					this.connectionTypeSelect
 							.append("<option value='direct' selected>Direct</option>");
-					this.connectionTypeSelect
-							.append("<option value='jndi'>JNDI</option>");
+					/*this.connectionTypeSelect
+							.append("<option value='jndi'>JNDI</option>");*/
 
 					this.directConfigTab = m_utils
 							.jQuerySelect("#dataSourceTab #directConfigTab");
@@ -739,7 +739,8 @@ define(
 							.val(this.getApplication().attributes["stardust:sqlScriptingOverlay::username"]);
 
 					this.passwordInput
-							.val(this.getApplication().attributes["stardust:sqlScriptingOverlay::password"]);
+							.val(this.convertConfigVariableToPassword(
+									this.getApplication().attributes["stardust:sqlScriptingOverlay::password"]));
 					this.useCVforPassowrdInput
 							.prop(
 									"checked",
@@ -1077,6 +1078,32 @@ define(
 				/**
 				 * 
 				 */
+				StoredProcedureIntegrationOverlay.prototype.convertPasswordToConfigVariable = function(password) {	
+					if(!m_utils.isEmptyString(password) && this.useCVforPassowrdInput.prop("checked")){
+						password = "${"+password+ ":Password}";	
+					}
+					return password;
+				};
+				
+				/**
+				 * 
+				 */
+				StoredProcedureIntegrationOverlay.prototype.convertConfigVariableToPassword = function(password) {	
+					
+					if(!m_utils.isEmptyString(password))
+					{
+						if(password.indexOf("${") > -1){
+							var firstIdex = password.indexOf("${");
+							var lastIdex = password.lastIndexOf(":");
+							password = password.substring(firstIdex+2,lastIdex);
+						}
+						return password;
+					}
+					return password;
+				};
+				/**
+				 * 
+				 */
 				StoredProcedureIntegrationOverlay.prototype.submitChanges = function(
 						) {
 					this.view
@@ -1109,8 +1136,8 @@ define(
 											.prop("checked") ? this.useCVforPassowrdInput
 											.prop("checked")
 											: null,
-									"stardust:sqlScriptingOverlay::password" : this.passwordInput
-											.val(),
+									"stardust:sqlScriptingOverlay::password" : this.convertPasswordToConfigVariable(this.passwordInput
+											.val()),
 
 								/*	"carnot:engine:camel::additionalSpringBeanDefinitions" : this
 											.populateDataSourceBeanDefinition(),*/
@@ -1158,8 +1185,8 @@ define(
 											.prop("checked") ? this.useCVforPassowrdInput
 											.prop("checked")
 											: null,
-									"stardust:sqlScriptingOverlay::password" : this.passwordInput
-											.val(),
+									"stardust:sqlScriptingOverlay::password" : this.convertPasswordToConfigVariable(this.passwordInput
+											.val()),
 								/*	"carnot:engine:camel::additionalSpringBeanDefinitions" : this
 											.populateDataSourceBeanDefinition(),*/
 									"carnot:engine:camel::routeEntries" : this

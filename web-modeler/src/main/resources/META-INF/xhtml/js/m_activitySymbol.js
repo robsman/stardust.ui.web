@@ -373,6 +373,9 @@ define(
 				 */
 				ActivitySymbol.prototype.refreshFromModelElement = function() {
 					this.text.attr("text", this.modelElement.name);
+					// Raphael.text() incorrectly y-positioned on hidden papers
+					// Issue reported :: https://github.com/DmitryBaranovskiy/raphael/issues/491
+					$('tspan:first-child', this.text.node).attr('dy', m_constants.TEXT_NODE_DY_ADJUSTMENT);						
 					this.subprocessMarkerIcon.hide();
 					this.manualTaskIcon.hide();
 					this.receiveTaskIcon.hide();
@@ -517,6 +520,7 @@ define(
 						"y" : this.y + 0.5 * this.height
 					}, this.diagram.animationDelay,
 							this.diagram.animationEasing);
+				
 					this.subprocessMarkerIcon.animate({
 						"x" : this.x + 0.5 * this.width - 8,
 						"y" : this.y + this.height - 16
@@ -562,7 +566,6 @@ define(
 									this.diagram.animationEasing);
 						}
 					}
-
 					this.adjustPrimitivesOnShrink();
 					// this.rectangle.attr({
 					// "x" : this.x,

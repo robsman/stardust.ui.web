@@ -316,10 +316,10 @@ define(
 				 *
 				 */
 				Drawable.prototype.showFlyOutMenu = function() {
-					if (this.diagram.currentFlyOutSymbol) {
+					if (this.diagram.currentFlyOutSymbol || this.isPoolSymbol()) {
 						return;
 					} else if (this.type
-							&& (this.isPoolSymbol() || this.type == m_constants.SWIMLANE_SYMBOL)) {
+							&& (this.type == m_constants.SWIMLANE_SYMBOL)) {
 						// do nothing
 					} else {
 						this.diagram.currentFlyOutSymbol = this;

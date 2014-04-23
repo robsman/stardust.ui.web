@@ -287,7 +287,18 @@ public class HTML5FrameworkServices
 
       if (!onlyContext)
       {
+         String portalBaseURL = servletContext.getInitParameter("InfinityBpm.PortalBaseUri");
          StringBuffer sb = new StringBuffer();
+         if(StringUtils.isNotEmpty(portalBaseURL))
+         {
+            if (portalBaseURL.contains("/${request.contextPath}"))
+            {
+               portalBaseURL = portalBaseURL.replace("${request.contextPath}/", toReturn);
+               sb.append(portalBaseURL);
+            }
+         }
+         else
+         {
          sb.append(baseUri.getScheme()).append("://");
          sb.append(baseUri.getHost());
          if (baseUri.getPort() > 0){
@@ -296,6 +307,7 @@ public class HTML5FrameworkServices
          }
          sb.append("/");
          sb.append(toReturn);
+         }
          toReturn = sb.toString();
       }
 

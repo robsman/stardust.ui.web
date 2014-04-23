@@ -26,6 +26,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -117,7 +118,21 @@ import org.eclipse.stardust.model.xpdl.carnot.util.CarnotConstants;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.model.xpdl.carnot.util.StructuredTypeUtils;
 import org.eclipse.stardust.model.xpdl.util.IdFactory;
-import org.eclipse.stardust.model.xpdl.xpdl2.*;
+import org.eclipse.stardust.model.xpdl.xpdl2.DataTypeType;
+import org.eclipse.stardust.model.xpdl.xpdl2.DeclaredTypeType;
+import org.eclipse.stardust.model.xpdl.xpdl2.ExternalReferenceType;
+import org.eclipse.stardust.model.xpdl.xpdl2.FormalParameterType;
+import org.eclipse.stardust.model.xpdl.xpdl2.FormalParametersType;
+import org.eclipse.stardust.model.xpdl.xpdl2.LoopMultiInstanceType;
+import org.eclipse.stardust.model.xpdl.xpdl2.LoopType;
+import org.eclipse.stardust.model.xpdl.xpdl2.MIOrderingType;
+import org.eclipse.stardust.model.xpdl.xpdl2.ModeType;
+import org.eclipse.stardust.model.xpdl.xpdl2.SchemaTypeType;
+import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
+import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationsType;
+import org.eclipse.stardust.model.xpdl.xpdl2.XpdlFactory;
+import org.eclipse.stardust.model.xpdl.xpdl2.XpdlPackage;
+import org.eclipse.stardust.model.xpdl.xpdl2.XpdlTypeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.extensions.ExtensionFactory;
 import org.eclipse.stardust.model.xpdl.xpdl2.extensions.LoopDataRefType;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.TypeDeclarationUtils;
@@ -486,6 +501,25 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
          JsonObject json = (JsonObject) loopJson;
          LoopType loop = activity.getLoop();
          String type = GsonUtils.safeGetAsString(json, "type");
+         boolean hasBatchSize = json.has("batchSize");
+         if(hasBatchSize)
+         {
+            String val = GsonUtils.safeGetAsString(json, "batchSize");
+            if(StringUtils.isEmpty(val))
+            {
+               AttributeUtil.setAttribute(activity, PredefinedConstants.ACTIVITY_MI_BATCH_SIZE_ATT, null);
+            }
+            else
+            {
+               try
+               {
+                  AttributeUtil.setAttribute(activity, PredefinedConstants.ACTIVITY_MI_BATCH_SIZE_ATT, val);
+               }
+               catch (NumberFormatException ex)
+               {
+               }
+            }
+         }
          if ("multi".equals(type))
          {
             LoopMultiInstanceType multiLoop = XpdlUtil.getOrCreateLoopMulti(loop);
@@ -494,6 +528,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
                multiLoop.setMIOrdering(GsonUtils.safeGetBool(json, "sequential") ? MIOrderingType.SEQUENTIAL : MIOrderingType.PARALLEL);
             }
             LoopDataRefType loopDataRef = multiLoop.getLoopDataRef();
+
             LoopDataRefType dataRef = loopDataRef;
 
             boolean hasInputId = json.has("inputId");
@@ -834,8 +869,6 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
    {
       DataMappingType dataMapping = AbstractElementBuilder.F_CWM.createDataMappingType();
 
-      dataMapping.setContext(PredefinedConstants.DEFAULT_CONTEXT);
-
       if (hasNotJsonNull(dataFlowJson, ModelerConstants.ID_PROPERTY))
       {
          dataMapping.setId(dataFlowJson.get(ModelerConstants.ID_PROPERTY).getAsString());
@@ -883,7 +916,8 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
 
       if (StringUtils.isEmpty(dataMapping.getContext()))
       {
-         dataMapping.setContext(PredefinedConstants.DEFAULT_CONTEXT);
+         dataMapping.setContext(getModelBuilderFacade().getDefaultContext(activity,
+               direction));
       }
 
       if (hasNotJsonNull(dataMappingJson, ModelerConstants.DATA_PATH_PROPERTY))
@@ -2323,23 +2357,29 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
                      ModelerConstants.ACCESS_POINTS_PROPERTY).getAsJsonArray();
 
                List<EObject> accessPoints = new ArrayList<EObject>();
+
                for (int n = 0; n < accessPointsJson.size(); ++n)
                {
                   JsonObject accessPointJson = accessPointsJson.get(n).getAsJsonObject();
 
                   boolean predefined = false;
 
-                  if (hasNotJsonNull(accessPointJson, ModelerConstants.ATTRIBUTES_PROPERTY))
+                  if (hasNotJsonNull(accessPointJson,
+                        ModelerConstants.ATTRIBUTES_PROPERTY))
                   {
-                     JsonObject attributeJson = accessPointJson.get(ModelerConstants.ATTRIBUTES_PROPERTY).getAsJsonObject();
+                     JsonObject attributeJson = accessPointJson.get(
+                           ModelerConstants.ATTRIBUTES_PROPERTY).getAsJsonObject();
                      if (hasNotJsonNull(attributeJson, "stardust:predefined"))
                      {
-                     // TODO : create ModelerConstans entry
-                     predefined = attributeJson.get("stardust:predefined").getAsBoolean();
+                        // TODO : create ModelerConstans entry
+                        predefined = attributeJson.get("stardust:predefined")
+                              .getAsBoolean();
                      }
                   }
 
                   String id = null;
+
+
 
                   if (predefined)
                   {
@@ -2350,6 +2390,9 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
                         .getAsString();
                   String direction = accessPointJson.get(
                         ModelerConstants.DIRECTION_PROPERTY).getAsString();
+
+                  String oldID  = accessPointJson.get(ModelerConstants.ID_PROPERTY).getAsString();
+                  String newID  = accessPointJson.get(ModelerConstants.NAME_PROPERTY).getAsString();
 
                   logger.debug("Direction: " + direction);
 
@@ -2436,10 +2479,71 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
                         }
                      }
                      accessPoints.add(accessPoint);
+                     fixReferencesToAccessPoint(oldID, newID, application);
                   }
 
                   storeAttributes(accessPoint, accessPointJson);
                   storeDescription(accessPoint, accessPointJson);
+
+                  mergeInOutAccessPoints(accessPoints);
+
+               }
+            }
+         }
+      }
+   }
+
+   private void fixReferencesToAccessPoint(String oldID, String newID,
+         ApplicationType application)
+   {
+      ModelType model = ModelUtils.findContainingModel(application);
+      for (Iterator<ProcessDefinitionType> i = model.getProcessDefinition().iterator(); i
+            .hasNext();)
+      {
+         ProcessDefinitionType processDefinitonType = i.next();
+         for (Iterator<ActivityType> j = processDefinitonType.getActivity().iterator(); j
+               .hasNext();)
+         {
+            ActivityType activity = j.next();
+            for (Iterator<DataMappingType> k = activity.getDataMapping().iterator(); k
+                  .hasNext();)
+            {
+               DataMappingType dm = k.next();
+               if (dm.getApplicationAccessPoint() != null && dm.getApplicationAccessPoint().equals(oldID))
+               {
+                  dm.setApplicationAccessPoint(newID);
+               }
+            }
+         }
+      }
+   }
+
+   private void mergeInOutAccessPoints(List<EObject> accessPoints)
+   {
+      // Post Process AccessPoints
+      List<EObject> duplicates = new ArrayList<EObject>();
+      for (Iterator<EObject> i = accessPoints.iterator(); i.hasNext();)
+      {
+         boolean matched = false;
+         AccessPointType apt1 = (AccessPointType) i.next();
+         if (!duplicates.contains(apt1))
+         {
+            for (Iterator<EObject> j = accessPoints.iterator(); j.hasNext();)
+            {
+               AccessPointType apt2 = (AccessPointType) j.next();
+               if (!apt1.equals(apt2) && !apt1.getDirection().equals(apt2.getDirection())
+                     && apt1.getName().equals(apt2.getName()))
+               {
+                  if (matched)
+                  {
+                     AttributeUtil.setAttribute(apt2, "IS_INOUT_PARAM", null);
+                     duplicates.add(apt2);
+                  }
+                  else
+                  {
+                     matched = true;
+                     apt2.setId(apt1.getId());
+                  }
                }
             }
          }
@@ -2606,31 +2710,28 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
              JsonObject attributeJson = json.get(ModelerConstants.ATTRIBUTES_PROPERTY).getAsJsonObject();
              if (hasNotJsonNull(attributeJson, PredefinedConstants.CLASS_NAME_ATT))
              {
-                String className=attributeJson.get(PredefinedConstants.CLASS_NAME_ATT).getAsString();
-                JsonArray facets = loadEnumForStructuredType(className);
-                if (null != facets)
-                {
-                   JsonObject schemaJson = declarationJson.getAsJsonObject("schema");
-                   JsonArray types = GsonUtils.safeGetAsJsonArray(schemaJson, "types");
-                   JsonArray elements = GsonUtils.safeGetAsJsonArray(schemaJson, "elements");
-                   for (JsonElement entry : types)
-                   {
-                      if (entry instanceof JsonObject)
-                      {
-                         JsonObject defJson = (JsonObject) entry;
-                         defJson.add("facets", facets);
-                      }
-                   }
-                   for (JsonElement entry : elements)
-                   {
-                      if (entry instanceof JsonObject)
-                      {
-                         JsonObject defJson = (JsonObject) entry;
-                         defJson.add("facets", facets);
-                      }
-                   }
-                }
-             }
+               String className = attributeJson.get(PredefinedConstants.CLASS_NAME_ATT).getAsString();
+               JsonArray facets = loadEnumForStructuredType(className);
+               JsonObject schemaJson = declarationJson.getAsJsonObject("schema");
+               JsonArray types = GsonUtils.safeGetAsJsonArray(schemaJson, "types");
+               JsonArray elements = GsonUtils.safeGetAsJsonArray(schemaJson, "elements");
+               for (JsonElement entry : types)
+               {
+                  if (entry instanceof JsonObject)
+                  {
+                     JsonObject defJson = (JsonObject) entry;
+                     defJson.add("facets", facets);
+                  }
+               }
+               for (JsonElement entry : elements)
+               {
+                  if (entry instanceof JsonObject)
+                  {
+                     JsonObject defJson = (JsonObject) entry;
+                     defJson.add("facets", facets);
+                  }
+               }
+            }
          }
          XsdSchemaUtils.updateXSDSchemaType(getModelBuilderFacade(),
                typeDeclaration.getSchemaType(), declarationJson.getAsJsonObject("schema"));

@@ -1002,7 +1002,11 @@ define(
 								/* symbol.applyChanges(obj.changes.modified[i]); */
 								m_utils.debug("Changed symbol to:");
 								m_utils.debug(symbol);
-								symbol.refresh();
+								//symbol.refresh();
+								// On ModelElement update, update only the model
+								// of symbol
+								symbol.refreshFromModelElement();
+								symbol.refreshCommentPrimitives();
 								this.resetLastSymbol(symbol.oid);
 								// TODO - update properties panel on
 								// modelElement change
@@ -1900,7 +1904,7 @@ define(
 							}
 
 							this.currentConnection
-									.setSecondAnchorPoint(anchorPoint);
+									.setSecondAnchorPoint(anchorPoint, true);
 
 
 							if (!this.currentConnection.isCompleted()) {

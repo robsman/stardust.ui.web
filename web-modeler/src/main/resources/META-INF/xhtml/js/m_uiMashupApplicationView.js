@@ -516,8 +516,8 @@ define(
 
 					this.parameterDefinitionsPanel
 							.setScopeModel(this.application.model);
-					this.parameterDefinitionsPanel.setParameterDefinitions(this
-							.getContext().accessPoints);
+					this.parameterDefinitionsPanel.setParameterDefinitions(this.mergeINOUTParams(this
+							.getContext().accessPoints));
 
 					// UI Only Defaults, do it only once on View load
 					if (this.numberOfLabelInputPairsInput.val() == "") {
@@ -530,7 +530,7 @@ define(
 						this.generateQaFailButtonInput.prop("checked", false);
 					}
 				};
-
+				
 				/**
 				 *
 				 */
@@ -567,7 +567,7 @@ define(
 						parameterDefinitionsChanges) {
 					// Context is regenerated on the server - hence, all data
 					// need to be provided
-
+					parameterDefinitionsChanges = this.splitINOUTParameters(parameterDefinitionsChanges);
 					this.submitChanges({
 						contexts : {
 							"externalWebApp" : {
@@ -579,7 +579,62 @@ define(
 				};
 
 				/**
-				 *
+				 * Splits INOUT params into separate IN and OUT params with same name
+				 */
+				UiMashupApplicationView.prototype.splitINOUTParameters = function(parameterDefinitionsChanges) {
+					var newParameterDefs = [];
+					jQuery.each(parameterDefinitionsChanges, function(index, param) {
+						if (param.direction === m_constants.IN_OUT_ACCESS_POINT) {
+							var inParam = jQuery.extend(true, {}, param);
+							inParam.direction = m_constants.IN_ACCESS_POINT;
+							inParam.attributes = inParam.attributes ? inParam.attributes : {};
+							inParam.attributes[m_constants.IS_INOUT_PARAM] = true
+							newParameterDefs.push(inParam);
+							var outParam = jQuery.extend(true, {}, param);
+							outParam.direction = m_constants.OUT_ACCESS_POINT;
+							outParam.attributes = outParam.attributes ? outParam.attributes : {};
+							outParam.attributes[m_constants.IS_INOUT_PARAM] = true;
+							newParameterDefs.push(outParam);
+						} else {
+							if (param.attributes) {
+								param.attributes[m_constants.IS_INOUT_PARAM] = null;	
+							}
+							newParameterDefs.push(param);
+						}
+					});
+					
+					return newParameterDefs;
+				};
+				
+
+				/**
+				 * Merger two parameter with same names and opposite directions into
+				 * a single parameter with same name and direction as INOUT
+				 * if the attribute "IS_INOUT_PARAM" is set for it.
+				 *  
+				 */
+				UiMashupApplicationView.prototype.mergeINOUTParams = function(accessPoints) {
+					//var paramMap = {};
+					var addedINOUTParams = [];
+					var newParamArray = [];
+					jQuery.each(accessPoints, function(index, accessPoint) {
+						if (accessPoint.attributes && accessPoint.attributes[m_constants.IS_INOUT_PARAM]) {
+							if (jQuery.inArray(accessPoint.name, addedINOUTParams) < 0) {
+								var param = jQuery.extend(true, {}, accessPoint);
+								param.direction = m_constants.IN_OUT_ACCESS_POINT;
+								newParamArray.push(param);
+								addedINOUTParams.push(accessPoint.name);
+							}
+						} else {
+							newParamArray.push(accessPoint);
+						}
+					});
+					
+					return newParamArray;
+				};
+				
+				/**
+				 * 
 				 */
 				UiMashupApplicationView.prototype.generateMarkup = function() {
 					var generator = m_markupGenerator

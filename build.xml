@@ -71,6 +71,10 @@
    </target>  
    
 
+   <target name="portal-persistence-jpa" depends="init">
+      <invoke-subproject subproject="portal-persistence-jpa" />
+   </target>
+   
    <target name="portal-api" depends="init">
       <invoke-subproject subproject="portal-api" />
    </target>
@@ -138,9 +142,10 @@
       <invoke-subproject subproject="${ui.common.home}/stardust-ui-form-jsf" />
    </target>
 
-	<target name="package" depends="init, portal-common,portal-api, 
+	<target name="package" depends="init, portal-common, portal-api, 
 	   stardust-common-introspection, stardust-common-introspection-xsd, stardust-ui-form, stardust-ui-form-jsf,
-	   views-common, graphics-common, process-portal, business-control-center, admin-portal, end-user-doc, stardust-web-reporting, stardust-rules-manager">
+	   views-common, graphics-common, process-portal, business-control-center, admin-portal, end-user-doc,
+	   stardust-web-reporting, stardust-rules-manager, portal-persistence-jpa">
 	</target>
 
    <!-- - - - - - - - -  -->

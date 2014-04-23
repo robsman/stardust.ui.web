@@ -228,7 +228,7 @@ public class ConnectionCommandHandler
                            mapAnchorOrientation(extractInt(request,
                                  ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)),
                            PredefinedConstants.DEFAULT_CONTEXT, null);
-               
+
                mapper.map(dataConnectionType);
             }
             else
@@ -336,7 +336,8 @@ public class ConnectionCommandHandler
             defaultPool
                   .getTransitionConnection()
                   .remove(transitionConnection);
-
+            transitionConnection.getSourceActivitySymbol().getOutTransitions().remove(transitionConnection);
+            transitionConnection.getTargetActivitySymbol().getInTransitions().remove(transitionConnection);
             if (transitionConnection.getTransition() != null)
             {
                TransitionType transitionType = transitionConnection.getTransition();
@@ -344,6 +345,7 @@ public class ConnectionCommandHandler
                transitionType.getFrom().getOutTransitions().remove(transitionType);
                transitionType.getTo().getInTransitions().remove(transitionType);
             }
+
          }
          catch (ObjectNotFoundException x)
          {
@@ -439,7 +441,7 @@ public class ConnectionCommandHandler
                   ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)),
             mapAnchorOrientation(extractInt(connectionJson,
                   ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
-      
+
       mapper.map(transitionConnectionType);
    }
 
@@ -456,7 +458,7 @@ public class ConnectionCommandHandler
          ActivitySymbolType sourceActivitySymbol, AbstractEventSymbol targetEventSymbol, EObjectUUIDMapper mapper)
    {
       TransitionType transition = null;
-      
+
       ActivityType hostActivity = EventMarshallingUtils.resolveHostActivity(targetEventSymbol);
 
       if (null != hostActivity)
@@ -483,7 +485,7 @@ public class ConnectionCommandHandler
                   ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)),
             mapAnchorOrientation(extractInt(connectionJson,
                   ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
-      
+
       mapper.map(transitionConnectionType);
    }
 
@@ -498,7 +500,7 @@ public class ConnectionCommandHandler
          AbstractEventSymbol targetEventSymbol, EObjectUUIDMapper mapper)
    {
       TransitionType transition = null;
-      
+
       ActivityType targetHostActivity = EventMarshallingUtils.resolveHostActivity(targetEventSymbol);
       ActivityType sourceHostActivity = EventMarshallingUtils.resolveHostActivity(sourceEventSymbol);
 
@@ -569,5 +571,5 @@ public class ConnectionCommandHandler
    {
       return springContext.getBean(ModelService.class);
    }
-   
+
 }

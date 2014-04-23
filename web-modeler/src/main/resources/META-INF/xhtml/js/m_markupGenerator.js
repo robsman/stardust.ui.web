@@ -151,7 +151,7 @@ define(
 					writeTag("}");
 
 					writeTag("function initialize() {");
-					writeTag("require.config({baseUrl : baseUrl + '/plugins/',");
+					writeTag("   require.config({waitSeconds: 0, baseUrl : baseUrl + '/plugins/',");
 					writeTag("   paths : {");
 					writeTag("         'jquery' : [ 'views-common/js/libs/jquery/jquery-1.7.2.min',");
 					writeTag("         '//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min' ],");
@@ -266,6 +266,7 @@ define(
 						if (parameterDefinition.dataType == "primitive") {
 							jsonDM =  {};
 							jsonDM.id = parameterDefinition.id;
+							jsonDM.name = parameterDefinition.name;
 							jsonDM.fullXPath = "/" + parameterDefinition.id;
 							jsonDM.readonly = readonly;
 							jsonDM.typeName = parameterDefinition.primitiveDataType;
@@ -278,7 +279,7 @@ define(
 							jsonDM.properties = {};
 						} else if (parameterDefinition.dataType == "struct") {
 							var typeDeclaration = m_model.findTypeDeclaration(parameterDefinition.structuredDataTypeFullId);
-							jsonDM = buildDataMappings(typeDeclaration.model, typeDeclaration, parameterDefinition.id, "", readonly);
+							jsonDM = buildDataMappings(typeDeclaration.model, typeDeclaration, parameterDefinition.id, parameterDefinition.name, "", readonly);
 						} else  {
 							// Not Supported - parameterDefinition.dataType == "dmsDocument"
 							continue;
@@ -342,9 +343,10 @@ define(
 				/**
 				 * 
 				 */
-				function buildDataMappings (model, typeDeclaration, id, parentXPath, readonly) {
+				function buildDataMappings (model, typeDeclaration, id, name, parentXPath, readonly) {
 					var jsonRet = {};
 					jsonRet.id = id;
+					jsonRet.name = name;
 					jsonRet.fullXPath = parentXPath + "/" + id;
 					jsonRet.readonly = readonly;
 					jsonRet.typeName = typeDeclaration.id;
@@ -373,6 +375,7 @@ define(
 	
 							if (childTypeDeclaration == null || childTypeDeclaration.isEnumeration()) { // Primitive
 								jsonChild.id = element.name;
+								jsonChild.name = element.name;
 								jsonChild.fullXPath = jsonRet.fullXPath + "/" + element.name;
 								jsonChild.readonly = readonly;
 								jsonChild.typeName = type;
@@ -393,7 +396,7 @@ define(
 									});
 								}
 							} else { // XSD
-									jsonChild = buildDataMappings(model, childTypeDeclaration, element.name, jsonRet.fullXPath, readonly);
+								jsonChild = buildDataMappings(model, childTypeDeclaration, element.name, element.name, jsonRet.fullXPath, readonly);
 								jsonChild.isList = (element.cardinality === "many" || element.cardinality === "atLeastOne") ? true : false;
 								}
 							jsonRet.children.push(jsonChild);

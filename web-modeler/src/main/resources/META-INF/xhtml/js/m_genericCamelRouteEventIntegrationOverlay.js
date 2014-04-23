@@ -48,7 +48,6 @@ define(
 				GenericCamelRouteEventIntegrationOverlay.prototype.initialize = function(
 						page, id) {
 					this.initializeEventIntegrationOverlay(page, id);
-					
 					m_utils.jQuerySelect("label[for='camelContextInput']")
 							.text(
 									m_i18nUtils
