@@ -13,8 +13,7 @@ import org.eclipse.stardust.ui.web.reporting.core.filter.DescriptorFilterApplier
 import org.eclipse.stardust.ui.web.reporting.core.filter.FilterApplier;
 import org.eclipse.stardust.ui.web.reporting.core.filter.activity.ActivityNameFilterApplier;
 import org.eclipse.stardust.ui.web.reporting.core.filter.activity.CriticalityFilterApplier;
-import org.eclipse.stardust.ui.web.reporting.core.filter.process.PriorityFilterApplier;
-import org.eclipse.stardust.ui.web.reporting.core.filter.process.ProcessNameFilterApplier;
+import org.eclipse.stardust.ui.web.reporting.core.filter.process.*;
 
 public class QueryBuilder
 {
@@ -31,6 +30,12 @@ public class QueryBuilder
       piFilterAppliers = new ArrayList<FilterApplier<ProcessInstanceQuery>>();
       piFilterAppliers.add(new ProcessNameFilterApplier());
       piFilterAppliers.add(new PriorityFilterApplier());
+      piFilterAppliers.add(new ProcessStateFilterApplier());
+      piFilterAppliers.add(new ProcessStartTimestampFilterApplier());
+      piFilterAppliers.add(new ProcessRootStartTimestampFilterApplier());
+      piFilterAppliers.add(new ProcessTerminationTimestampFilterApplier());
+      piFilterAppliers.add(new ProcessStartingUserFilterApplier());
+
 
       genericFilterAppliers = new ArrayList<FilterApplier<Query>>();
       genericFilterAppliers.add(new DescriptorFilterApplier());
@@ -59,33 +64,42 @@ public class QueryBuilder
       if(filters != null && !filters.isEmpty())
       {
          boolean filterFound = false;
-         if(query instanceof ActivityInstanceQuery)
+         for(ReportFilter filter: filters)
          {
-            ActivityInstanceQuery aiQuery = (ActivityInstanceQuery) query;
-            filterFound = filterFound && applyFilter(aiQuery, aiFilterAppliers, filters);
-         }
+            if(query instanceof ActivityInstanceQuery)
+            {
+               ActivityInstanceQuery aiQuery = (ActivityInstanceQuery) query;
+               filterFound = applyFilter(aiQuery, aiFilterAppliers, filter);
+            }
+            else if(query instanceof ProcessInstanceQuery)
+            {
+               ProcessInstanceQuery piQuery = (ProcessInstanceQuery) query;
+               filterFound = applyFilter(piQuery, piFilterAppliers, filter);
+            }
 
-         else if(query instanceof ProcessInstanceQuery)
-         {
-            ProcessInstanceQuery piQuery = (ProcessInstanceQuery) query;
-            applyFilter(piQuery, piFilterAppliers, filters);
-         }
+            if(filterFound == false)
+            {
+               filterFound = applyFilter(query, genericFilterAppliers, filter);
+            }
 
-         applyFilter(query, genericFilterAppliers, filters);
+            if(filterFound == false)
+            {
+               throw new RuntimeException("Unsupported Filter type: "+filter.getDimension());
+            }
+         }
       }
    }
 
-   private <T extends Query> boolean applyFilter(T query, List<FilterApplier<T>> appliers, List<ReportFilter> filters)
+   private <T extends Query> boolean applyFilter(T query,
+         List<FilterApplier<T>> appliers, ReportFilter filter)
    {
-      for(ReportFilter filter: filters)
+
+      for (FilterApplier<T> applier : appliers)
       {
-         for(FilterApplier<T> applier: appliers)
+         if (applier.canApply(query, filter))
          {
-            if(applier.canApply(query, filter))
-            {
-               applier.apply(query, filter);
-               return true;
-            }
+            applier.apply(query, filter);
+            return true;
          }
       }
 

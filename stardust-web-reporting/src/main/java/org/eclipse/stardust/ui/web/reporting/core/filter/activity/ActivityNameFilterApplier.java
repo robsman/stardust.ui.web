@@ -9,6 +9,7 @@ import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.FilterCriterion;
 import org.eclipse.stardust.engine.api.query.FilterOrTerm;
 import org.eclipse.stardust.ui.web.reporting.common.mapping.request.ReportFilter;
+import org.eclipse.stardust.ui.web.reporting.core.Constants;
 import org.eclipse.stardust.ui.web.reporting.core.filter.DimensionBasedFilterApplier;
 import org.eclipse.stardust.ui.web.reporting.core.filter.process.ProcessNameFilterApplier;
 
@@ -74,6 +75,6 @@ public class ActivityNameFilterApplier extends DimensionBasedFilterApplier<Activ
    @Override
    protected String getMatchDimension()
    {
-      return "activityName";
+      return Constants.AiDimensionField.ACTIVITY_NAME.getId();
    }
 }
