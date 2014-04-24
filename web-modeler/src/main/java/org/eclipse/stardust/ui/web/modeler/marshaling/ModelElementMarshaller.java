@@ -11,6 +11,7 @@ import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.hasNotJso
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -139,6 +140,11 @@ public class ModelElementMarshaller implements ModelMarshaller
 
    @Resource
    private ModelingSession modelingSession;
+
+   public ModelingSession getModelingSession()
+   {
+      return modelingSession;
+   }
 
    private ModelBuilderFacade modelBuilderFacade;
 
@@ -2553,7 +2559,7 @@ public class ModelElementMarshaller implements ModelMarshaller
          }
 
          Method method = ClassesHelper.getMethodBySignature(
-            modelingSession().classLoaderProvider().classLoader(), className, methodName);
+            getModelingSession().classLoaderProvider().classLoader(), className, methodName);
 
          ClassesHelper.addParameterAccessPoints(accessPointsJson, method);
          ClassesHelper.addReturnTypeAccessPoint(accessPointsJson, method);
