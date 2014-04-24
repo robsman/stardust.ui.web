@@ -9,44 +9,125 @@
     Contributors:
        SunGard CSA LLC - initial API and implementation and/or initial documentation
  -->
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <modelVersion>4.0.0</modelVersion>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+   xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>org.eclipse.stardust.ui.web</groupId>
-  <artifactId>business-control-center</artifactId>
-  <packaging>pom</packaging>
+   <groupId>org.eclipse.stardust.ui.web</groupId>
+   <artifactId>ipp-business-control-center</artifactId>
+   <packaging>jar</packaging>
 
-  <parent>
-    <groupId>org.eclipse.stardust</groupId>
-    <artifactId>stardust-parent</artifactId>
-    <version>9.9.9-SNAPSHOT</version>
-    <relativePath>../../org.eclipse.stardust/org.eclipse.stardust-parent/pom.xml</relativePath>
-  </parent>
+   <name>Business Control Center</name>
 
-  <properties>
-    <maven.test.skip>true</maven.test.skip>
-  </properties>
+   <parent>
+      <groupId>org.eclipse.stardust</groupId>
+      <artifactId>product-parent</artifactId>
+      <version>9.9.9-SNAPSHOT</version>
+      <relativePath>../../product/product-parent/pom.xml</relativePath>
+   </parent>
 
-  <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>ant-compile</id>
-          </execution>
-          <execution>
-            <id>ant-package</id>
-          </execution>
-          <execution>
-            <id>ant-install</id>
-          </execution>
-          <execution>
-            <id>ant-deploy</id>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
+   <properties>
+      <skip.i18n-bundle-copy>false</skip.i18n-bundle-copy>
+   </properties>
+   
+   <dependencies>
+      <dependency>
+         <groupId>org.eclipse.stardust.engine</groupId>
+         <artifactId>web-client-module</artifactId>
+         <version>${project.version}</version>
+         <scope>provided</scope>
+         <type>pom</type>
+      </dependency>
+
+      <dependency>
+         <groupId>org.eclipse.stardust.engine</groupId>
+         <artifactId>spring-module</artifactId>
+         <version>${project.version}</version>
+         <scope>compile</scope>
+         <type>pom</type>
+      </dependency>
+
+      <dependency>
+         <groupId>org.eclipse.stardust.ui.web</groupId>
+         <artifactId>ipp-portal-common</artifactId>
+         <version>${project.version}</version>
+         <scope>compile</scope>
+      </dependency>
+
+      <dependency>
+         <groupId>org.eclipse.stardust.ui.web</groupId>
+         <artifactId>ipp-views-common</artifactId>
+         <version>${project.version}</version>
+         <scope>compile</scope>
+      </dependency>
+
+      <dependency>
+         <groupId>org.eclipse.stardust.ui.web</groupId>
+         <artifactId>ipp-graphics-common</artifactId>
+         <version>${project.version}</version>
+         <scope>runtime</scope>
+      </dependency>
+
+      <dependency>
+         <groupId>org.eclipse.stardust.ui.web</groupId>
+         <artifactId>jsf-api-module</artifactId>
+         <version>${project.version}</version>
+         <scope>provided</scope>
+         <type>pom</type>
+      </dependency>
+
+      <dependency>
+         <groupId>javax.servlet</groupId>
+         <artifactId>servlet-api</artifactId>
+         <scope>provided</scope>
+      </dependency>
+
+      <dependency>
+         <groupId>javax.el</groupId>
+         <artifactId>el-api</artifactId>
+         <scope>provided</scope>
+      </dependency>
+
+      <dependency>
+         <groupId>junit</groupId>
+         <artifactId>junit</artifactId>
+         <scope>test</scope>
+         <exclusions>
+            <exclusion>
+               <groupId>org.hamcrest</groupId>
+               <artifactId>hamcrest-core</artifactId>
+            </exclusion>
+         </exclusions>
+      </dependency>
+
+      <dependency>
+         <groupId>org.hamcrest</groupId>
+         <artifactId>hamcrest-core</artifactId>
+         <scope>test</scope>
+      </dependency>
+   </dependencies>
+
+   <build>
+      <resources>
+         <!-- use the generated resources at first because already available files
+               will not be overridden -->
+         <resource>
+            <directory>${project.build.directory}/generated-resources</directory>
+         </resource>
+         <resource>
+            <directory>src/main/resources</directory>
+         </resource>
+      </resources>
+      <plugins>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+               <execution>
+                  <id>replace-i18n-default-bundle</id>
+               </execution>
+            </executions>
+         </plugin>
+      </plugins>
+   </build>
 </project>

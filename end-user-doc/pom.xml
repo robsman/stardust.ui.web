@@ -11,45 +11,223 @@
  -->
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <modelVersion>4.0.0</modelVersion>
+   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>org.eclipse.stardust.ui.web</groupId>
-  <artifactId>end-user-doc</artifactId>
-  <packaging>pom</packaging>
+   <groupId>org.eclipse.stardust.ui.web</groupId>
+   <artifactId>ipp-end-user-doc</artifactId>
+   <packaging>jar</packaging>
 
-  <parent>
-    <groupId>org.eclipse.stardust</groupId>
-    <artifactId>stardust-parent</artifactId>
-    <version>9.9.9-SNAPSHOT</version>
-    <relativePath>../../org.eclipse.stardust/org.eclipse.stardust-parent/pom.xml</relativePath>
-  </parent>
+   <parent>
+      <groupId>org.eclipse.stardust</groupId>
+      <artifactId>product-parent</artifactId>
+      <version>9.9.9-SNAPSHOT</version>
+      <relativePath>../../product/product-parent/pom.xml</relativePath>
+   </parent>
 
-  <properties>
-    <maven.test.skip>true</maven.test.skip>
-  </properties>
+   <name>End User Documenation</name>
 
-  <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>ant-compile</id>
+   <properties>
+      <!-- Source paths used in copy-documentation -->
+      <documentation.dir>../../documentation</documentation.dir>
+      <bpm.doc.path>${documentation.dir}/org.eclipse.stardust.docs.analyst</bpm.doc.path>
+      <misc.doc.path>${documentation.dir}/org.eclipse.stardust.docs.misc/html/portal</misc.doc.path>
+      <enduser.doc.path>${documentation.dir}/org.eclipse.stardust.docs.enduser</enduser.doc.path>
+      
+      <project.build.sourceEncoding>iso-8859-1</project.build.sourceEncoding>
+   </properties>
+
+   <build>
+      <resources>
+         <resource>
+            <directory>src/main/resources</directory>
+            <filtering>false</filtering>
+            <excludes>
+               <exclude>**/*.css</exclude>
+               <exclude>**/*.js</exclude>
+            </excludes>
+         </resource>
+         <resource>
+            <directory>${project.build.directory}/generated-resources</directory>
+            <filtering>false</filtering>
+            <includes>
+               <include>**/*.png</include>
+               <include>**/*.gif</include>
+               <include>**/*.jpg</include>
+            </includes>
+         </resource>
+
+         <!-- product.properties filter is provided by product-parent -->
+         <resource>
+            <directory>src/main/resources</directory>
+            <filtering>true</filtering>
+            <includes>
+               <include>**/*.css</include>
+               <include>**/*.js</include>
+            </includes>
+         </resource>
+         <resource>
+            <directory>${project.build.directory}/generated-resources</directory>
+            <filtering>true</filtering>
+            <excludes>
+               <exclude>**/*.png</exclude>
+               <exclude>**/*.gif</exclude>
+               <exclude>**/*.jpg</exclude>
+            </excludes>
+         </resource>
+      </resources>
+
+      <plugins>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
             <configuration>
-              <skip>true</skip>
+               <skipSource>true</skipSource>
             </configuration>
-          </execution>
-          <execution>
-            <id>ant-package</id>
-          </execution>
-          <execution>
-            <id>ant-install</id>
-          </execution>
-          <execution>
-            <id>ant-deploy</id>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
+         </plugin>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+               <execution>
+                  <id>copy-documentation</id>
+                  <phase>generate-resources</phase>
+                  <configuration>
+                     <target>
+                     <!-- source locations -->
+                     
+                     
+                     <!-- target locations -->
+                     <property name="build.src.doc" value="${project.build.directory}/generated-resources/META-INF/doc"/>
+                     <property name="build.src.bpmdoc" value="${project.build.directory}/generated-resources/META-INF/doc/bpm"/>
+                     <property name="build.src.miscdoc" value="${project.build.directory}/generated-resources/META-INF/doc/misc"/>
+                     <property name="build.src.portaldoc" value="${project.build.directory}/generated-resources/META-INF/doc/portal"/>
+
+                     <!-- copy business process modeler doc -->
+                     <copy file="${bpm.doc.path}/html/toc.html" todir="${build.src.doc}" />
+                     <replace file="${build.src.doc}/toc.html" token="handbooks" value="bpm" /> 
+                     <!-- copy images without filtering -->
+                     <copy todir="${build.src.bpmdoc}" >
+                        <fileset dir="${bpm.doc.path}/html/handbooks">
+                           <include name="**/*.png"/>
+                           <include name="**/*.gif"/>
+                           <include name="**/*.jpg"/>
+                        </fileset>
+                     </copy>
+                     
+                     <!-- copy files and replace references to other plugins with links to relative path inside jar files according to folder level -->
+                     <!-- level 1 -->
+                     <copy todir="${build.src.bpmdoc}" >
+                        <fileset dir="${bpm.doc.path}/html/handbooks">
+                           <include name="*/*.html"/>
+                           <include name="*/*.htm"/>
+                        </fileset>
+                        <filterchain>
+                            <tokenfilter>
+                               <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.enduser/html/handbooks/" replace="../../portal/"/>
+                               <replaceregex pattern="PLUGINS_ROOT/@doc-plugin@.misc/html/portal/" replace="../../misc/"/>
+                            </tokenfilter>
+                        </filterchain>
+                     </copy>
+
+                     <!-- level 2 -->
+                     <copy todir="${build.src.bpmdoc}" >
+                        <fileset dir="${bpm.doc.path}/html/handbooks">
+                           <include name="*/*/*.html"/>
+                           <include name="*/*/*.htm"/>
+                        </fileset>
+                        <filterchain>
+                            <tokenfilter>
+                                <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.enduser/html/handbooks/" replace="../../../portal/"/>
+                               <replaceregex pattern="PLUGINS_ROOT/@doc-plugin@.misc/html/portal/" replace="../../../misc/"/>
+                            </tokenfilter>
+                        </filterchain>
+                     </copy>
+ 
+                     <!-- copy end user doc -->
+                     <!-- copy images without filtering -->
+                     <copy todir="${build.src.portaldoc}" >
+                        <fileset dir="${enduser.doc.path}/html/handbooks">
+                           <include name="**/*.png"/>
+                           <include name="**/*.gif"/>
+                           <include name="**/*.jpg"/>
+                        </fileset>
+                     </copy>
+                     <!-- copy files and replace references to other plugins with links to relative path inside jar files according to folder level -->
+                     <!-- level 1 -->
+                     <copy todir="${build.src.portaldoc}" overwrite="true">
+                        <fileset dir="${enduser.doc.path}/html/handbooks">
+                           <include name="*/*.html"/>
+                           <include name="*/*.htm"/>
+                        </fileset>
+                        <filterchain>
+                            <tokenfilter>
+                               <replaceregex pattern="PLUGINS_ROOT/@doc-plugin@.misc/html/portal/" replace="../../misc/"/>
+                               <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.analyst/html/handbooks/" replace="../../bpm/"/>
+                               <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.analyst/html/toc.html" replace="../../toc.html"/>
+                            </tokenfilter>
+                        </filterchain>
+                     </copy>
+      
+                     <!-- level 2 -->
+                     <copy todir="${build.src.portaldoc}" overwrite="true">
+                        <fileset dir="${enduser.doc.path}/html/handbooks">
+                           <include name="*/*/*.html"/>
+                           <include name="*/*/*.htm"/>
+                        </fileset>
+                        <filterchain>
+                            <tokenfilter>
+                               <replaceregex pattern="PLUGINS_ROOT/@doc-plugin@.misc/html/portal/" replace="../../../misc/"/>
+                               <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.analyst/html/handbooks/" replace="../../../bpm/"/>
+                               <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.analyst/html/toc.html" replace="../../../toc.html"/>
+                            </tokenfilter>
+                        </filterchain>
+                     </copy>
+      
+                     <!-- level 3 -->
+                     <copy todir="${build.src.portaldoc}" overwrite="true">
+                        <fileset dir="${enduser.doc.path}/html/handbooks">
+                           <include name="*/*/*/*.html"/>
+                           <include name="*/*/*/*.htm"/>
+                        </fileset>
+                        <filterchain>
+                            <tokenfilter>
+                               <replaceregex pattern="PLUGINS_ROOT/@doc-plugin@.misc/html/portal/" replace="../../../../misc/"/>
+                               <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.analyst/html/handbooks/" replace="../../../../bpm/"/>
+                               <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.analyst/html/toc.html" replace="../../../../toc.html"/>
+                            </tokenfilter>
+                        </filterchain>
+                     </copy>
+
+                     <!-- copy portal issues residing in misc plugins -->
+                     <copy todir="${build.src.miscdoc}" overwrite="true">
+                        <fileset dir="${misc.doc.path}">
+                           <include name="**/*.html"/>
+                           <include name="**/*.htm"/>
+                           <exclude name="toc.html" />
+                        </fileset>
+                        <filterchain>
+                            <tokenfilter>
+                               <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.enduser/html/handbooks/execution-clients/" replace="../portal/execution-clients/"/>
+                               <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.analyst/html/handbooks/" replace="../bpm/"/>
+                               <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.analyst/html/toc.html" replace="../toc.html"/>
+                            </tokenfilter>
+                        </filterchain>
+                     </copy>
+                     <copy todir="${build.src.miscdoc}" >
+                        <fileset dir="${misc.doc.path}">
+                           <include name="**/*.png"/>
+                           <include name="**/*.gif"/>
+                           <include name="**/*.jpg"/>
+                        </fileset>
+                     </copy>
+                     </target>
+                  </configuration>
+                  <goals>
+                     <goal>run</goal>
+                  </goals>
+               </execution>
+            </executions>
+         </plugin>
+      </plugins>
+   </build>
 </project>

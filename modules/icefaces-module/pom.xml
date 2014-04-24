@@ -1,0 +1,111 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright (c) 2011, 2012 SunGard CSA LLC and others.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+   
+    Contributors:
+       SunGard CSA LLC - initial API and implementation and/or initial documentation
+ -->
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+   xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <modelVersion>4.0.0</modelVersion>
+
+   <groupId>org.eclipse.stardust.ui.web</groupId>
+   <artifactId>icefaces-module</artifactId>
+   <packaging>pom</packaging>
+
+   <name>IceFaces Module</name>
+
+   <parent>
+      <groupId>org.eclipse.stardust</groupId>
+      <artifactId>product-parent</artifactId>
+      <version>9.9.9-SNAPSHOT</version>
+      <relativePath>../../../product/product-parent/pom.xml</relativePath>
+   </parent>
+
+   <dependencies>
+      <dependency>
+         <groupId>org.icefaces</groupId>
+         <artifactId>icefaces</artifactId>
+         <scope>compile</scope>
+         <exclusions>
+            <exclusion>
+               <groupId>javax.faces</groupId>
+               <artifactId>jsf-api</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>javax.faces</groupId>
+               <artifactId>jsf-impl</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>commons-logging</groupId>
+               <artifactId>commons-logging-api</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>commons-logging</groupId>
+               <artifactId>commons-logging</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>commons-beanutils</groupId>
+               <artifactId>commons-beanutils</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>backport-util-concurrent</groupId>
+               <artifactId>backport-util-concurrent</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>com.sun.xml.fastinfoset</groupId>
+               <artifactId>FastInfoset</artifactId>
+            </exclusion>
+         </exclusions>
+      </dependency>
+      <dependency>
+         <groupId>commons-logging</groupId>
+         <artifactId>commons-logging</artifactId>
+         <scope>compile</scope>
+         <exclusions>
+            <exclusion>
+               <groupId>logkit</groupId>
+               <artifactId>logkit</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>avalon-framework</groupId>
+               <artifactId>avalon-framework</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>log4j</groupId>
+               <artifactId>log4j</artifactId>
+            </exclusion>
+         </exclusions>
+      </dependency>
+      <dependency>
+         <groupId>org.icefaces</groupId>
+         <artifactId>icefaces-comps</artifactId>
+         <scope>compile</scope>
+         <exclusions>
+            <exclusion>
+               <groupId>org.icefaces</groupId>
+               <artifactId>icefaces</artifactId>
+            </exclusion>
+         </exclusions>
+      </dependency>
+      <dependency>
+         <groupId>org.icefaces</groupId>
+         <artifactId>icefaces-facelets</artifactId>
+         <scope>compile</scope>
+         <exclusions>
+            <exclusion>
+               <groupId>org.icefaces</groupId>
+               <artifactId>icefaces</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>javax.el</groupId>
+               <artifactId>el-api</artifactId>
+            </exclusion>
+         </exclusions>
+      </dependency>
+   </dependencies>
+</project>

@@ -3,35 +3,62 @@
    <modelVersion>4.0.0</modelVersion>
 
    <groupId>org.eclipse.stardust.ui.web</groupId>
-   <artifactId>rules-manager</artifactId>
-   <packaging>pom</packaging>
+   <artifactId>stardust-rules-manager</artifactId>
+   <packaging>jar</packaging>
 
-  <parent>
-    <groupId>org.eclipse.stardust</groupId>
-    <artifactId>stardust-parent</artifactId>
-    <version>9.9.9-SNAPSHOT</version>
-    <relativePath>../../org.eclipse.stardust/org.eclipse.stardust-parent/pom.xml</relativePath>
-  </parent>
+   <name>Rules Manager</name>
 
-  <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>ant-compile</id>
-          </execution>
-          <execution>
-            <id>ant-package</id>
-          </execution>
-          <execution>
-            <id>ant-install</id>
-          </execution>
-          <execution>
-            <id>ant-deploy</id>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
+   <parent>
+      <groupId>org.eclipse.stardust</groupId>
+      <artifactId>product-parent</artifactId>
+      <version>9.9.9-SNAPSHOT</version>
+      <relativePath>../../product/product-parent/pom.xml</relativePath>
+   </parent>
+
+   <dependencies>
+      <dependency>
+         <groupId>org.eclipse.stardust.engine</groupId>
+         <artifactId>carnot-base</artifactId>
+         <version>${project.version}</version>
+         <scope>compile</scope>
+      </dependency>
+      <dependency>
+         <groupId>wsdl4j</groupId>
+         <artifactId>wsdl4j</artifactId>
+         <scope>compile</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.eclipse.stardust.ui.web</groupId>
+         <artifactId>ipp-portal-common</artifactId>
+         <version>${project.version}</version>
+         <scope>compile</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.eclipse.stardust.ui.web</groupId>
+         <artifactId>ipp-views-common</artifactId>
+         <version>${project.version}</version>
+         <scope>compile</scope>
+      </dependency>
+      <dependency>
+         <groupId>javax.servlet</groupId>
+         <artifactId>servlet-api</artifactId>
+         <scope>provided</scope>
+      </dependency>
+      <dependency>
+         <groupId>com.google.code.gson</groupId>
+         <artifactId>gson</artifactId>
+         <scope>compile</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.eclipse.xsd</groupId>
+         <artifactId>org.eclipse.xsd</artifactId>
+         <scope>compile</scope>
+      </dependency>
+      <dependency>
+         <groupId>junit</groupId>
+         <artifactId>junit</artifactId>
+         <scope>test</scope>
+      </dependency>
+  </dependencies>
+
 </project>

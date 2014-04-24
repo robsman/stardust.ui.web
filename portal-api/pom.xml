@@ -11,42 +11,63 @@
  -->
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <modelVersion>4.0.0</modelVersion>
+   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>org.eclipse.stardust.ui.web</groupId>
-  <artifactId>portal-api</artifactId>
-  <packaging>pom</packaging>
+   <groupId>org.eclipse.stardust.ui.web</groupId>
+   <artifactId>ipp-portal-api</artifactId>
+   <packaging>jar</packaging>
 
-  <parent>
-    <groupId>org.eclipse.stardust</groupId>
-    <artifactId>stardust-parent</artifactId>
-    <version>9.9.9-SNAPSHOT</version>
-    <relativePath>../../org.eclipse.stardust/org.eclipse.stardust-parent/pom.xml</relativePath>
-  </parent>
+   <name>Portal API</name>
 
-  <properties>
-    <maven.test.skip>true</maven.test.skip>
-  </properties>
+   <parent>
+      <groupId>org.eclipse.stardust</groupId>
+      <artifactId>product-parent</artifactId>
+      <version>9.9.9-SNAPSHOT</version>
+      <relativePath>../../product/product-parent/pom.xml</relativePath>
+   </parent>
 
-  <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>ant-compile</id>
-          </execution>
-          <execution>
-            <id>ant-package</id>
-          </execution>
-          <execution>
-            <id>ant-install</id>
-          </execution>
-          <execution>
-            <id>ant-deploy</id>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
+   <dependencies>
+      <dependency>
+         <groupId>org.eclipse.stardust.engine</groupId>
+         <artifactId>carnot-engine</artifactId>
+         <version>${project.version}</version>
+         <scope>compile</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.eclipse.stardust.engine</groupId>
+         <artifactId>spring-module</artifactId>
+         <version>${project.version}</version>
+         <scope>compile</scope>
+         <type>pom</type>
+      </dependency>
+      <dependency>
+         <groupId>org.eclipse.stardust.engine</groupId>
+         <artifactId>jcr-vfs-module</artifactId>
+         <version>${project.version}</version>
+         <scope>compile</scope>
+         <type>pom</type>
+         <optional>true</optional>
+      </dependency>
+      <dependency>
+         <groupId>javax.servlet</groupId>
+         <artifactId>servlet-api</artifactId>
+         <scope>provided</scope>
+      </dependency>
+      <dependency>
+         <groupId>junit</groupId>
+         <artifactId>junit</artifactId>
+         <scope>test</scope>
+         <exclusions>
+            <exclusion>
+               <groupId>org.hamcrest</groupId>
+               <artifactId>hamcrest-core</artifactId>
+            </exclusion>
+         </exclusions>
+      </dependency>
+      <dependency>
+         <groupId>org.hamcrest</groupId>
+         <artifactId>hamcrest-core</artifactId>
+         <scope>test</scope>
+      </dependency>
+   </dependencies>
 </project>
