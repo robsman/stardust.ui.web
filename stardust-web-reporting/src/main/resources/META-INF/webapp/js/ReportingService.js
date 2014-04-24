@@ -186,6 +186,11 @@ define(
 								name : this.getI18N("reporting.definitionView.additionalFiltering.timestamp.termination"),
 								type : this.metadata.timestampType
 							},
+							processOID : {
+                        id : "processOID",
+                        name : this.getI18N("reporting.definitionView.additionalFiltering.processOID"),
+                        type : this.metadata.integerType
+                     },
 							processName : {
 								id : "processName",
 								name : this.getI18N("reporting.definitionView.additionalFiltering.processName"),
@@ -263,6 +268,16 @@ define(
 								name : this.getI18N("reporting.definitionView.additionalFiltering.timestamp.last"),
 								type : this.metadata.timestampType
 							},
+                     processOID : {
+                        id : "processOID",
+                        name : this.getI18N("reporting.definitionView.additionalFiltering.processOID"),
+                        type : this.metadata.integerType
+                     },
+                     activityOID : {
+                        id : "activityOID",
+                        name : this.getI18N("reporting.definitionView.additionalFiltering.activityOID"),
+                        type : this.metadata.integerType
+                     },
 							activityName : {
 								id : "activityName",
 								name : this.getI18N("reporting.definitionView.additionalFiltering.activityName"),
