@@ -606,7 +606,7 @@ define(
 
 						this.report.dataSet.fact = this.getPrimaryObject().facts.count.id;
 						this.report.dataSet.firstDimension = this
-								.getPrimaryObject().dimensions.startTimestamp.id;
+								.getPrimaryObject().dimensions.processInstanceStartTimestamp.id;
 
 						deferred.resolve();
 					}
@@ -1057,12 +1057,11 @@ define(
 					for ( var n in this.getPrimaryObject().facts) {
 						var fact = this.getPrimaryObject().facts[n];
 
-						if (this.isNumeric(fact) || fact.id === this.reportingService.metadata.objects.processInstance.facts.count.id || 
-						         fact.id === this.reportingService.metadata.objects.processInstance.facts.duration.id)
+						if (this.isNumeric(fact) || this.isCount(fact) || this.isDuration(fact))
                   {
-						this.factSelect.append("<option value='" + n + "'>"
+						   this.factSelect.append("<option value='" + n + "'>"
 								+ fact.name + "</option>");
-					}
+                  }
 					}
 					
 					this.populatelayoutSubTypes();
@@ -2267,12 +2266,26 @@ define(
        };
       
       
-      /**
-       * This function will remove parameters from parameter list
-       */
-     ReportDefinitionController.prototype.isNumeric = function(element) {
-        return (element.type.id === this.reportingService.metadata.integerType.id)? true : false;
-     };
+               /**
+                * This function will return true if argument is of Integer Type
+                */
+              ReportDefinitionController.prototype.isNumeric = function(element) {
+                 return (element.type.id === this.reportingService.metadata.integerType.id)? true : false;
+              };
+              
+              /**
+               * This function will return true if argument is of duration Type
+               */
+             ReportDefinitionController.prototype.isDuration = function(element) {
+                return (element.type.id === this.reportingService.metadata.durationType.id)? true : false;
+             };
+             
+             /**
+              * This function will return true if argument is of Count Type
+              */
+            ReportDefinitionController.prototype.isCount = function(element) {
+               return (element.type.id === this.reportingService.metadata.countType.id)? true : false;
+            };
      
                  
               /**

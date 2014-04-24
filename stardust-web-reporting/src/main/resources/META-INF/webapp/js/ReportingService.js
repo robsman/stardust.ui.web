@@ -159,18 +159,28 @@ define(
 								name : this.getI18N("reporting.definitionView.count"),
 								type : this.metadata.countType,
 							},
-							duration : {
-								id : "duration",
-								name : this.getI18N("reporting.definitionView.duration"),
-								type : this.metadata.durationType,
-							}
+							processInstanceDuration : {
+                        id : "processInstanceDuration",
+                        name : this.getI18N("reporting.definitionView.processInstanceDuration"),
+                        type : this.metadata.durationType
+                     },
+                     rootProcessInstanceDuration : {
+                        id : "rootProcessInstanceDuration",
+                        name : this.getI18N("reporting.definitionView.rootProcessInstanceDuration"),
+                        type : this.metadata.durationType
+                     }
 						},
 						dimensions : {
-							startTimestamp : {
-								id : "startTimestamp",
-								name : this.getI18N("reporting.definitionView.additionalFiltering.timestamp.start"),
+						   processInstanceStartTimestamp : {
+								id : "processInstanceStartTimestamp",
+								name : this.getI18N("reporting.definitionView.additionalFiltering.processInstanceStartTimestamp"),
 								type : this.metadata.timestampType
 							},
+							rootProcessInstanceStartTimestamp : {
+                        id : "rootProcessInstanceStartTimestamp",
+                        name : this.getI18N("reporting.definitionView.additionalFiltering.rootProcessInstanceStartTimestamp"),
+                        type : this.metadata.timestampType
+                     },
 							terminationTimestamp : {
 								id : "terminationTimestamp",
 								name : this.getI18N("reporting.definitionView.additionalFiltering.timestamp.termination"),
@@ -215,12 +225,22 @@ define(
 								type : this.metadata.countType,
 								cumulated : true
 							},
-							duration : {
-								id : "duration",
-								name : this.getI18N("reporting.definitionView.duration"),
+							activityInstanceDuration : {
+								id : "activityInstanceDuration",
+								name : this.getI18N("reporting.definitionView.activityInstanceDuration"),
 								type : this.metadata.durationType,
 								cumulated : true
-							}
+							},
+                     processInstanceDuration : {
+                        id : "processInstanceDuration",
+                        name : this.getI18N("reporting.definitionView.processInstanceDuration"),
+                        type : this.metadata.durationType
+                     },
+                     rootProcessInstanceDuration : {
+                        id : "rootProcessInstanceDuration",
+                        name : this.getI18N("reporting.definitionView.rootProcessInstanceDuration"),
+                        type : this.metadata.durationType
+                     }
 						},
 						dimensions : {
 							startTimestamp : {
@@ -228,6 +248,16 @@ define(
 								name : this.getI18N("reporting.definitionView.additionalFiltering.timestamp.start"),
 								type : this.metadata.timestampType
 							},
+							processInstanceStartTimestamp : {
+                        id : "processInstanceStartTimestamp",
+                        name : this.getI18N("reporting.definitionView.additionalFiltering.processInstanceStartTimestamp"),
+                        type : this.metadata.timestampType
+                     },
+                     rootProcessInstanceStartTimestamp : {
+                        id : "rootProcessInstanceStartTimestamp",
+                        name : this.getI18N("reporting.definitionView.additionalFiltering.rootProcessInstanceStartTimestamp"),
+                        type : this.metadata.timestampType
+                     },
 							lastModificationTimestamp : {
 								id : "lastModificationTimestamp",
 								name : this.getI18N("reporting.definitionView.additionalFiltering.timestamp.last"),
