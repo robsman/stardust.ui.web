@@ -15,61 +15,13 @@ import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.hasNotJsonNull;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.toPrettyString;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Stack;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
 import org.eclipse.emf.ecore.xmi.XMLResource;
-import org.eclipse.xsd.XSDAnnotation;
-import org.eclipse.xsd.XSDAttributeDeclaration;
-import org.eclipse.xsd.XSDAttributeGroupContent;
-import org.eclipse.xsd.XSDAttributeGroupDefinition;
-import org.eclipse.xsd.XSDAttributeUse;
-import org.eclipse.xsd.XSDAttributeUseCategory;
-import org.eclipse.xsd.XSDComplexTypeContent;
-import org.eclipse.xsd.XSDComplexTypeDefinition;
-import org.eclipse.xsd.XSDComponent;
-import org.eclipse.xsd.XSDCompositor;
-import org.eclipse.xsd.XSDConstrainingFacet;
-import org.eclipse.xsd.XSDDerivationMethod;
-import org.eclipse.xsd.XSDElementDeclaration;
-import org.eclipse.xsd.XSDEnumerationFacet;
-import org.eclipse.xsd.XSDFactory;
-import org.eclipse.xsd.XSDImport;
-import org.eclipse.xsd.XSDModelGroup;
-import org.eclipse.xsd.XSDNamedComponent;
-import org.eclipse.xsd.XSDParticle;
-import org.eclipse.xsd.XSDPatternFacet;
-import org.eclipse.xsd.XSDSchema;
-import org.eclipse.xsd.XSDSchemaContent;
-import org.eclipse.xsd.XSDSimpleTypeDefinition;
-import org.eclipse.xsd.XSDTerm;
-import org.eclipse.xsd.XSDTypeDefinition;
-import org.eclipse.xsd.XSDVariety;
-import org.eclipse.xsd.XSDWildcard;
-import org.eclipse.xsd.impl.XSDSchemaImpl;
-import org.eclipse.xsd.util.XSDSwitch;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
-
 import org.eclipse.stardust.common.Predicate;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
@@ -77,16 +29,21 @@ import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
-import org.eclipse.stardust.model.xpdl.xpdl2.ExternalPackage;
-import org.eclipse.stardust.model.xpdl.xpdl2.ExternalPackages;
-import org.eclipse.stardust.model.xpdl.xpdl2.SchemaTypeType;
-import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
-import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationsType;
+import org.eclipse.stardust.model.xpdl.xpdl2.*;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.TypeDeclarationUtils;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.XSDElementCheckForType;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils;
+import org.eclipse.xsd.*;
+import org.eclipse.xsd.impl.XSDSchemaImpl;
+import org.eclipse.xsd.util.XSDSwitch;
+import org.w3c.dom.*;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 public final class XsdSchemaUtils
 {
@@ -99,31 +56,6 @@ public final class XsdSchemaUtils
 
    private static final String LOCATIONS = "locations";
 
-   public static void main(String[] args)
-   {
-      try
-      {
-         URL location = XsdSchemaUtils.class.getResource("TestSchema.xsd");
-         XSDSchema schema = ModelService.loadSchema(location.toString());
-         /*
-         System.out.println(toPrettyString(toSchemaJson(schema, "ExtendedRGB")));
-         System.out.println(toPrettyString(toSchemaJson(schema, "ExtendedColor")));
-         System.out.println(toPrettyString(toSchemaJson(schema, "Material")));
-         System.out.println(toPrettyString(toSchemaJson(schema, "employee")));*/
-
-         System.out.println(toPrettyString(toSchemaJson(schema, "RGB")));
-         System.out.println(toPrettyString(toSchemaJson(schema, "ARGB")));
-         System.out.println(toPrettyString(toSchemaJson(schema, "X1")));
-         System.out.println(toPrettyString(toSchemaJson(schema, "SuperColor")));
-         System.out.println(toPrettyString(toSchemaJson(schema, "Color")));
-      }
-      catch (IOException e)
-      {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
-      }
-   }
-
    private static Predicate<String> NON_EMPTY_STRINGS = new Predicate<String>()
    {
       @Override
@@ -132,16 +64,6 @@ public final class XsdSchemaUtils
          return value != null && !value.isEmpty();
       }
    };
-
-   public static JsonObject toSchemaJson(XSDSchema schema, String componentId)
-   {
-      JsonObject json = new Xsd2Json(null/*componentId*/).doSwitch(schema);
-      if (trace.isDebugEnabled())
-      {
-         trace.debug(toPrettyString(json));
-      }
-      return json;
-   }
 
    public static JsonObject toSchemaJson(XSDSchema schema)
    {
@@ -332,7 +254,8 @@ public final class XsdSchemaUtils
             {
                XSDImport xsdImport = (XSDImport) item;
                String location = xsdImport.getSchemaLocation();
-               if (location.startsWith(StructuredDataConstants.URN_INTERNAL_PREFIX))
+               if (location != null
+                     && location.startsWith(StructuredDataConstants.URN_INTERNAL_PREFIX))
                {
                   location = location.substring(StructuredDataConstants.URN_INTERNAL_PREFIX.length());
                   locations.addProperty(xsdImport.getNamespace(), location);
@@ -383,7 +306,13 @@ public final class XsdSchemaUtils
          XSDTypeDefinition type = element.getTypeDefinition();
 
          // elements are constructed similar with types
-         JsonObject json = doSwitch(type);
+         JsonObject json = new JsonObject();
+         if (type == element.getAnonymousTypeDefinition()
+               || type instanceof XSDSimpleTypeDefinition
+               || (type instanceof XSDComplexTypeDefinition && element.eContainer() instanceof XSDSchema))
+         {
+            json = doSwitch(type);
+         }
 
          // now overwrite properties
          json.addProperty("name", element.getName());
@@ -791,24 +720,28 @@ public final class XsdSchemaUtils
          XSDTypeDefinition type = attribute.getTypeDefinition();
 
          // elements are constructed similar with types
-         JsonObject json = doSwitch(type);
-
-         // now overwrite properties
-         json.addProperty("name", attribute.getName());
-         if (includeIcon)
+         if (type != null)
          {
-            json.addProperty("icon", XsdIcon.AttributeDeclaration.getSimpleName());
+            JsonObject json = doSwitch(type);
+
+            // now overwrite properties
+            json.addProperty("name", attribute.getName());
+            if (includeIcon)
+            {
+               json.addProperty("icon", XsdIcon.AttributeDeclaration.getSimpleName());
+            }
+            json.addProperty("classifier", "attribute");
+
+            if (type != attribute.getAnonymousTypeDefinition())
+            {
+               json.addProperty("type", getPrefixedName(type));
+            }
+
+            addAnnotations(json, attribute.getAnnotation());
+
+            return json;
          }
-         json.addProperty("classifier", "attribute");
-
-         if (type != attribute.getAnonymousTypeDefinition())
-         {
-            json.addProperty("type", getPrefixedName(type));
-         }
-
-         addAnnotations(json, attribute.getAnnotation());
-
-         return json;
+         return null;
       }
 
       private String getPrefixedName(XSDNamedComponent type)

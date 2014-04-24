@@ -343,8 +343,28 @@ define([ "m_pharmacyToolbarController", "m_canvasManager", "m_communicationContr
 				  }
 			});
 			
+			function extractDelta(e) {
+			    if (e.wheelDelta) {
+			        return e.wheelDelta;
+			    }
+
+			    if (e.originalEvent.detail) {
+			        return e.originalEvent.detail * -1;
+			    }
+
+			    if (e.originalEvent && e.originalEvent.wheelDelta) {
+			        return e.originalEvent.wheelDelta;
+			    }
+			}
+			
 			// Bind to mouse wheel event.
 			jQuery('#canvas').bind('mousewheel', function(event, delta) {
+				if(delta == 0){
+					// TODO : remove when jquery.mousewheel.js is upgraded
+					// to 3.1.4 or higher
+					delta= extractDelta(event);	
+				}
+				
 			    if (parseInt(delta) > 0)
 			    {
 			    	effectZoomIn();

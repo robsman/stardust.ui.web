@@ -25,6 +25,11 @@ define(
 				removeItemFromArray : function(array, item) {
 					removeItemFromArray(array, item);
 				},
+				
+				pushArray : pushArray,
+				
+				insertArrayAt : insertArrayAt,
+				
 				convertToSortedArray : convertToSortedArray,
 				isItemInArray : function(array, item) {
 					return isItemInArray(array, item);
@@ -40,8 +45,8 @@ define(
 					inheritFields(childObject, parentObject);
 				},
 
-				inheritMethods : function(childObject, parentObject) {
-					inheritMethods(childObject, parentObject);
+				inheritMethods : function(childObject, parentObject, superMethodsAccess) {
+					return inheritMethods(childObject, parentObject, superMethodsAccess);
 				},
 
 				typeObject : function(object, prototype) {
@@ -100,15 +105,11 @@ define(
 								if (control.disabled !== undefined) {
 									// Exclude links marked specifically
 									if(control.className.indexOf("noDataChange") == -1) {
-										control.disabled = true;
-										control.style.opacity = 0.5;
-										control.style.cursor = "default";
+									  markControlReadonly(control, true);
 									}
 								}
 							} else {
-								control.disabled = false;
-								control.style.opacity = 1;
-								control.style.cursor = "auto";
+							  markControlReadonly(control, false);
 							}
 						});
 					});
@@ -123,6 +124,8 @@ define(
 
 					return false;
 				},
+
+        markControlReadonly : markControlReadonly,
 
 				prettyDateTime : prettyDateTime,
 
@@ -146,9 +149,31 @@ define(
 				
 				executeTimeoutLoop : executeTimeoutLoop,
 				
-				isIntermediateEvent : isIntermediateEvent
+				isIntermediateEvent : isIntermediateEvent,
+				
+				encodeXmlPredfinedCharacters : encodeXmlPredfinedCharacters, 
+				
+				decodeXmlPredfinedCharacters : decodeXmlPredfinedCharacters,
+				
+				getUniqueElementNameId : function(array, name) {
+					return getUniqueElementNameId(array, name);
+				},
+				
 			};
 			
+      function markControlReadonly(control, readonly) {
+        if (readonly == undefined || readonly == true) {
+          jQuery(control).prop("disabled", true);
+          jQuery(control).css("opacity", "0.5");
+          jQuery(control).css("cursor", "default");
+        } else {
+          jQuery(control).prop("disabled", false);
+          jQuery(control).css("opacity", "1");
+          jQuery(control).css("cursor", "auto");
+        }
+      };
+
+
 			/**
 			 * A utility function to execute a <fn> function, after a delay of
 			 * <delay> milliseconds, for a maximum of <reps> repetitions,
@@ -215,8 +240,8 @@ define(
 			function getOutlineWindowAndDocument() {
 				if (parent && parent.window["BridgeUtils"]) {
 					return {
-						win: parent.document.getElementById("modelerLaunchPanels"),
-						doc: parent.document.getElementById("modelerLaunchPanels").contentDocument
+						win: parent.document.getElementById("portalLaunchPanels"),
+						doc: parent.document.getElementById("portalLaunchPanels").contentDocument
 					};
 				} else { // Compatibility to old portal
 					return {
@@ -282,6 +307,81 @@ define(
 				}
 			}
 
+			/**
+			 * Adds contents of array "newArray" to "thisArray"
+			 * This is better than concat as this doesn't create a new array.
+			 * 
+			 * @param arr
+			 * @param arr2
+			 * @returns
+			 */
+			function pushArray(thisArray, newArray) {
+				thisArray.push.apply(thisArray, newArray);
+			}
+			
+			/**
+			 * 
+			 * @param toArray
+			 * @param fromArray
+			 * @param index
+			 * @returns
+			 */
+			function insertArrayAt(toArray, fromArray, index) {
+				if (toArray && fromArray) {
+					for (var i = (fromArray.length - 1); i >= 0; i--) {
+						toArray.splice(index, 0, fromArray[i]);
+					};
+				}
+			}
+
+			/**
+			 * @author Yogesh.Manware
+			 * This method accepts Element Array and proposed name for new
+			 * element. It assumes that all elements in the Array have id and
+			 * name attributes. It searches for all elements in the given
+			 * array to see if any of the element already has same id or name.
+			 * If yes, it increases the index until it finds unique id and unique
+			 * name.
+			 */
+			function getUniqueElementNameId(array, name) {
+				var index = 1;
+				var id = name.replace(/\s+/g, '');
+
+				var elementNameId = {};
+				var hasElement = true;
+
+				while (true) {
+					elementNameId.name = name + " " + index;
+					elementNameId.id = id + index;
+					
+					hasElement = hasElementWithName(array, elementNameId.name);
+					hasElement = hasElement || hasElementWithId(array, elementNameId.id);
+					if (!hasElement) {
+						break;
+					}
+					index++;
+				}
+				return elementNameId;
+			}
+
+			function hasElementWithName(array, name) {
+				for ( var n in array) {
+					if (array[n].name == name) {
+						return true;
+					}
+				}
+				return false;
+			}
+
+			function hasElementWithId(array, id) {
+				for ( var n in array) {
+					if (array[n].id == id) {
+						return true;
+					}
+				}
+				return false;
+			}
+			
 			/**
 			 * Trim the text for TextNode element when symbol size is less than
 			 * textNode size
@@ -465,12 +565,38 @@ define(
 			/**
 			 * Copies all methods of and object into another object.
 			 */
-			function inheritMethods(childObject, parentObject) {
+			function inheritMethods(childObject, parentObject, superMethodsAccess) {
+				var superMethods = {};
+				//copy all methods to child object
 				for ( var member in parentObject) {
 					if (parentObject[member] instanceof Function) {
+						
+						//retain all super methods
+						if (superMethodsAccess && superMethodsAccess.all) {
+							var method = parentObject[member];
+							superMethods[member] = function(method) {
+								return function() {
+									var targetObject = Array.prototype.shift.call(arguments);
+									return method.apply(targetObject, arguments);
+								};
+							}(method);
+						}//retain only selected super methods
+						else if (superMethodsAccess && superMethodsAccess.selected) {
+							if (jQuery.inArray(member, superMethodsAccess.selected) != -1) {
+								var method = parentObject[member];
+								superMethods[member] = function(method) {
+									return function() {
+										var targetObject = Array.prototype.shift.call(arguments);
+										return method.apply(targetObject, arguments);
+									};
+								}(method);
+							}
+						}
+						//copy all super methods to child
 						childObject[member] = parentObject[member];
 					}
 				}
+				return superMethods;
 			}
 
 			/**
@@ -1052,4 +1178,28 @@ define(
 				}
 				return false;
 			}
+			
+			
+			function encodeXmlPredfinedCharacters(content) {
+				
+				content = content.replace(new RegExp("&", 'g'), "&amp;");
+				content = content.replace(new RegExp(">", 'g'), "&gt;");
+				content = content.replace(new RegExp("<", 'g'), "&lt;");
+				content = content.replace(new RegExp("\"", 'g'), "&quot;");
+				content = content.replace(new RegExp("'", 'g'), "&apos;");
+				
+				return content;
+			}
+			
+			function decodeXmlPredfinedCharacters(content) {
+				
+				content = content.replace(new RegExp("&amp;", 'g'), "&");
+				content = content.replace(new RegExp("&gt;", 'g'), ">");
+				content = content.replace(new RegExp("&lt;", 'g'), "<");
+				content = content.replace(new RegExp("&quot;", 'g'), "\"");
+				content = content.replace(new RegExp("&apos;", 'g'), "'");
+				
+				return content;
+			}
+			
 		});

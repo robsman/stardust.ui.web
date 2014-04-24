@@ -1,7 +1,6 @@
 package org.eclipse.stardust.ui.web.modeler.service;
 
 import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
-import static org.eclipse.stardust.common.CollectionUtils.newHashSet;
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
 
 import java.io.ByteArrayInputStream;
@@ -10,7 +9,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
@@ -126,7 +124,7 @@ public class DefaultModelManagementStrategy extends
           String documentName = modelDocument.getName();
           if (documentName.endsWith(".xpdl"))
           {
-             if (documentName.equals(id))
+             if (documentName.split("\\.")[0].equals(id))
              {
                 try
                 {

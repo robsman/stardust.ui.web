@@ -1,0 +1,91 @@
+<!-- The file extension was changed from xhtml to html as it caused issues on JBoss environment when accessed from IE8. -->
+<html>
+<head>
+
+<link href="../../common/css/iPopupDialogStyle.css" rel="stylesheet"
+	type="text/css" />
+
+<script type="text/javascript" src="../../common/InfinityBPMI18N.js"></script>
+<script type="text/javascript"
+	data-main="../../views-common/js/fileUploadMain"
+	src="../../views-common/js/libs/require/2.0.5/require.js"></script>
+
+</head>
+
+<body class="iPopupDialogBody">
+	<div id="titleBar" class="iPopupDialogTitleBar">
+		<span id="titleText" class="iPopupDialogTitleText"></span> <input
+			id="dialogCloseIcon" type="button" title="Close"
+			class="iPopupDialogCloseControl" />
+	</div>
+
+	<div id="contentArea" class="iPopupDialogContentArea">
+
+		<div class="iPopupDialogSpacerDiv"></div>
+
+		<span class="iPopupDialogContentText" id="fileUploadMsg"></span>
+
+		<div class="iPopupDialogSpacerDiv"></div>
+
+		<table border="0">
+			<colgroup>
+				<col>
+				<col style="width: 80%">
+			</colgroup>
+			<tr>
+				<td><span class="iPopupDialogContentText"
+					id="documentTypeLabel"> Document Type </span></td>
+				<td><output id="documentType" class="iPopupDialogContentText" />
+				</td>
+			</tr>
+			<tr>
+				<td><span class="iPopupDialogContentText"
+					id="fileDescriptionLabel"> File Description </span></td>
+				<td><input id="fileDescription" type="textarea"
+					class="popupTextArea" /></td>
+			</tr>
+			<tr>
+				<td><span class="iPopupDialogContentText"
+					id="versionCommentLabel"> Version Comments </span>
+				</td>
+				<td><input id="versionComment" type="textarea"
+					class="popupTextArea" /></td>
+			</tr>
+		</table>
+
+		<div class="iPopupDialogSpacerDiv"></div>
+		<div class="iPopupDialogSpacerDiv"></div>
+
+		<span class="iPopupDialogContentText"
+			id="fileUploadFormLabel"> Select file for Upload </span>
+		
+		<form id="fileUploadForm" method="post" enctype="multipart/form-data"
+			style="width: 100%">
+			<input type="file" size="35" name="upload"
+				class="iPopupDialogControlButton"> <input id="uploadButton"
+				type="submit" value="Upload" class="iPopupDialogControlButton" /> <span
+				id="confirmationMessage" style="color: green; margin: 10px"
+				class="iPopupDialogContentText"></span>
+		</form>
+		<div id="fileUploadprogress">
+			<div id="progressBar">
+				<div id="fileUploadPercent" class="iPopupDialogContentText">0%</div>
+			</div>
+		</div>
+		<div class="iPopupDialogSpacerDiv"></div>
+		<table>
+			<tr>
+				<td><input id="openDocument" type="checkbox" /></td>
+				<td><span class="iPopupDialogContentText"
+					id="openDocumentLabel"> Open Document </span></td>
+			</tr>
+		</table>
+	</div>
+	<div id="fileUploadControls" class="iPopupDialogControlsArea">
+		<input id="acceptButton" type="button" value="Upload"
+			class="iPopupDialogControlButton" /> <input id="cancelButton"
+			type="button" value="Cancel" class="iPopupDialogControlButton" />
+	</div>
+	</form>
+</body>
+</html>

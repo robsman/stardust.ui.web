@@ -1,5 +1,6 @@
 package org.eclipse.stardust.ui.web.modeler.service.rest;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
@@ -16,6 +17,7 @@ public class TestModelConversionViaHttp
    private ModelConverter modelConverter = new ModelConverter(new JsonMarshaller(), requestExecutor);
 
    @Test
+   @Ignore
    public void test() throws Exception
    {
       modelConverter.convertModel("Statement P1", "xpdl");

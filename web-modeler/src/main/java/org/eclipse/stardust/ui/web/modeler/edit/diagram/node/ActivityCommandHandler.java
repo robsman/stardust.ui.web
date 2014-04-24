@@ -20,6 +20,7 @@ import static org.eclipse.stardust.ui.web.modeler.service.ModelService.Y_PROPERT
 
 import javax.annotation.Resource;
 
+import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.*;
@@ -34,9 +35,9 @@ import org.springframework.context.ApplicationContext;
 import com.google.gson.JsonObject;
 
 /**
- * 
+ *
  * @author Sidharth.Singh
- * 
+ *
  */
 @CommandHandler
 public class ActivityCommandHandler
@@ -74,21 +75,26 @@ public class ActivityCommandHandler
       int heightProperty = extractInt(request, HEIGHT_PROPERTY);
       synchronized (model)
       {
+         EObjectUUIDMapper mapper = modelService().uuidMapper();
          ActivityType activity = getModelBuilderFacade().createActivity(model,
                processDefinition, activityType, taskType, null, activityName, participantFullID,
                applicationFullID, subProcessID);
 
+         mapper.map(activity);
+
          ModelService.setDescription(activity,
                request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY));
 
-         getModelBuilderFacade().createActivitySymbol(
+         ActivitySymbolType activitySymbol = getModelBuilderFacade().createActivitySymbol(
                model, activity, processDefinition, parentLaneSymbol.getId(), xProperty,
                yProperty, widthProperty, heightProperty);
+
+         mapper.map(activitySymbol);
       }
    }
 
    /**
-    * 
+    *
     * @param parentLaneSymbol
     * @param request
     */
@@ -107,15 +113,32 @@ public class ActivityCommandHandler
       synchronized (model)
       {
          ModelElementEditingUtils.deleteEventSymbols(activity, parentLaneSymbol);
-         
+
          ModelElementEditingUtils.deleteTransitionConnections(activitySymbol);
          ModelElementEditingUtils.deleteDataMappingConnection(activitySymbol.getDataMappings());
+
+         if (activity.getApplication() != null)
+         {
+            ApplicationType applicationType = activity.getApplication();
+            if (applicationType.getType() != null
+                  && applicationType.getType()
+                        .getId()
+                        .equals(ModelerConstants.DROOLS_APPLICATION_TYPE_ID))
+            {
+               model.getApplication().remove(applicationType);
+            }
+         }
 
          processDefinition.getActivity().remove(activity);
          processDefinition.getDiagram().get(0).getActivitySymbol().remove(activitySymbol);
 
          parentLaneSymbol.getActivitySymbol().remove(activitySymbol);
       }
+   }
+
+   private ModelService modelService()
+   {
+      return springContext.getBean(ModelService.class);
    }
 
    private ModelBuilderFacade getModelBuilderFacade()

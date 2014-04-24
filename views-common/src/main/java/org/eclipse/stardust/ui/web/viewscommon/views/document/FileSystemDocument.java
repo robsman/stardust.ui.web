@@ -27,6 +27,7 @@ import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.FileSystemDocumentServlet;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
+import org.eclipse.stardust.ui.web.viewscommon.utils.MIMEType;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 
@@ -39,9 +40,9 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
  */
 public class FileSystemDocument extends AbstractDocumentContentInfo
 {
+   private static final long serialVersionUID = -2797207925644726903L;
    protected File file;
-  
-   
+
    public FileSystemDocument(String resourcePath, DocumentType documentType, boolean editable)
    {
       file = new File(resourcePath);
@@ -50,6 +51,22 @@ public class FileSystemDocument extends AbstractDocumentContentInfo
       mimeType = MimeTypesHelper.detectMimeType(this.name, "");
       this.contentEditable = editable;
       init();
+   }
+   
+   public FileSystemDocument(FileSystemDocumentAttributes attributes)
+   {
+      this.metaDataEditable = false;
+      this.showDetails = false;
+      
+      file = new File(attributes.getResourcePath());
+      this.documentType = attributes.getDocumentType();
+      this.name = file.getName();
+      mimeType = attributes.getMimeType();
+      this.contentEditable = attributes.isEditable();
+      author = attributes.getDefaultAuthor();
+      id = file.getPath();
+      idLabel = attributes.getDefaultIdLabel();
+      properties = new HashMap<String, Object>();
    }
 
    private void init()
@@ -119,6 +136,11 @@ public class FileSystemDocument extends AbstractDocumentContentInfo
       return new FileSystemDocument(getId(), documentType, isContentEditable());
    }
 
+   public boolean delete()
+   {
+      return this.file.delete();
+   }
+   
    public Date getDateLastModified()
    {
       return new Date(file.lastModified());
@@ -137,5 +159,80 @@ public class FileSystemDocument extends AbstractDocumentContentInfo
    public IDocumentContentInfo reset()
    {
       return this;
+   }
+   
+   public static class FileSystemDocumentAttributes
+   {
+      private String resourcePath;
+
+      private DocumentType documentType;
+
+      private boolean editable;
+
+      private MIMEType mimeType;
+
+      private String defaultAuthor;
+
+      private String defaultIdLabel;
+      
+      public String getResourcePath()
+      {
+         return resourcePath;
+      }
+
+      public void setResourcePath(String resourcePath)
+      {
+         this.resourcePath = resourcePath;
+      }
+
+      public DocumentType getDocumentType()
+      {
+         return documentType;
+      }
+
+      public void setDocumentType(DocumentType documentType)
+      {
+         this.documentType = documentType;
+      }
+
+      public boolean isEditable()
+      {
+         return editable;
+      }
+
+      public void setEditable(boolean editable)
+      {
+         this.editable = editable;
+      }
+
+      public MIMEType getMimeType()
+      {
+         return mimeType;
+      }
+
+      public void setMimeType(MIMEType mimeType)
+      {
+         this.mimeType = mimeType;
+      }
+
+      public String getDefaultAuthor()
+      {
+         return defaultAuthor;
+      }
+
+      public void setDefaultAuthor(String defaultAuthor)
+      {
+         this.defaultAuthor = defaultAuthor;
+      }
+
+      public String getDefaultIdLabel()
+      {
+         return defaultIdLabel;
+      }
+
+      public void setDefaultIdLabel(String defaultIdLabel)
+      {
+         this.defaultIdLabel = defaultIdLabel;
+      }
    }
 }

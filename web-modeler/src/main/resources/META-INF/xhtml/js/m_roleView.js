@@ -18,6 +18,9 @@ define(
 					m_utils.initializeWaitCursor(m_utils.jQuerySelect("html"));
 					m_utils.showWaitCursor();
 
+					m_utils.jQuerySelect("#hideGeneralProperties").hide();
+					initViewCollapseClickHandlers();
+					
 					var role = m_model.findParticipant(fullId);
 					i18nRoleScreen();
 					m_utils.debug("===> role");
@@ -29,16 +32,35 @@ define(
 					m_utils.hideWaitCursor();
 				}
 			};
-
+		
+			/**
+			 * 
+			 */
+			function initViewCollapseClickHandlers() {
+				m_utils.jQuerySelect("#showGeneralProperties").click(function() {
+					m_utils.jQuerySelect("#showAllProperties").hide();
+					m_utils.jQuerySelect("#hideGeneralProperties").show();
+				});
+				m_utils.jQuerySelect("#hideGeneralProperties").click(function() {
+					m_utils.jQuerySelect("#showAllProperties").show();
+					m_utils.jQuerySelect("#hideGeneralProperties").hide();
+				});
+			}
 
 		function i18nRoleScreen() {
-
-			   m_utils.jQuerySelect("label[for='guidOutput']")
+				
+				m_utils.jQuerySelect("#hideGeneralProperties label")
+					.text(m_i18nUtils.getProperty("modeler.element.properties.commonProperties.generalProperties"));
+	
+				m_utils.jQuerySelect("#showGeneralProperties label")
+					.text(m_i18nUtils.getProperty("modeler.element.properties.commonProperties.generalProperties"));
+		
+				m_utils.jQuerySelect("label[for='guidOutput']")
 		        	.text(
 					m_i18nUtils
 							.getProperty("modeler.element.properties.commonProperties.uuid"));
 
-		   	  m_utils.jQuerySelect("label[for='idOutput']")
+		   	  	m_utils.jQuerySelect("label[for='idOutput']")
 			        .text(
 					m_i18nUtils
 							.getProperty("modeler.element.properties.commonProperties.id"));

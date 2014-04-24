@@ -260,7 +260,7 @@ public class CreateOrModifyDeputyPopupBean extends PopupUIComponentBean
             validationMessageBean.addError(getMessages().getString("dialog.error.noAuthsSelected"), (String[])null);
          }
 
-         if (validationMessageBean.isContainMessages())
+         if (validationMessageBean.isContainErrorMessages())
          {
             return;
          }

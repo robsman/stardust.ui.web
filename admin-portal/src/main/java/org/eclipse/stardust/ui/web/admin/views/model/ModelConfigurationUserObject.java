@@ -121,6 +121,11 @@ public class ModelConfigurationUserObject extends NodeUserObject
     {
         return edited;
     }
+    
+    public String getType()
+    {
+       return treeItem.getType();
+    }
 
     @Override
     public boolean isFilterOut(TableDataFilters dataFilters)

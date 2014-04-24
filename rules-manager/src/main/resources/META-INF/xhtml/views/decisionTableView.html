@@ -1,0 +1,209 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<link href="plugins/bpm-modeler/css/thirdparty/jquery/jquery-ui-1.10.2.custom.css" rel="stylesheet"type="text/css" />
+<link href="plugins/bpm-modeler/css/lightdust.css" rel="stylesheet" type="text/css" />
+<link  rel="stylesheet" href="plugins/rules-manager/css/thirdParty/jquery/jquery.handsontable.full.custom.css" />
+<link  rel="stylesheet" href="plugins/rules-manager/css/rulesmanager.custom.style.css" />
+<link  rel="stylesheet" href="plugins/rules-manager/css/rulesmanager.custom.camino.css" />
+<link  rel="stylesheet" href="plugins/rules-manager/css/rulesmanager.custom.ui.camino.css" />
+<link  rel="stylesheet" href="plugins/rules-manager/css/rulesmanager.custom.jquery.ui.css" />
+<style>
+
+/* Move to lightdust.css */
+ul.popupSelectorItemList {
+	list-style: none;
+	list-style-position: inside;
+	padding: 0px;
+	margin: 0px;
+}
+
+.popupSelectorItem {
+	
+}
+
+.popupSelectorItem:hover {
+	background: url(plugins/bpmn-modeler/images/toolbarIconSelectHover.png)
+		center repeat-x #ffd700;
+	cursor: pointer;
+}
+
+.emphasis {
+	font-weight: bold;
+}
+
+.factTerm {
+	font-weight: bold;
+	vertical-align: middle;
+	text-align: center;
+}
+
+table.wrapperTable {
+	width: 100%;
+}
+/* End of move */
+#decisionTable {
+	border-collapse: collapse;
+	border: 1px solid #afd7ed;
+	margin-top: 10px;
+	min-width: 700px;
+}
+
+#decisionTable td {
+	border: 1px solid #afd7ed;
+	padding: none;
+}
+
+#decisionTable td.titleCell {
+	vertical-align: middle;
+	text-align: center;
+	padding-top: 3px;
+	padding-bottom: 3px;
+	width: 100%;
+	font-weight: bold;
+}
+
+#decisionTable td.buttonsCell {
+	vertical-align: top;
+	text-align: right;
+}
+
+#decisionTable td.inputCell {
+	padding: 2px;
+}
+
+#decisionTable input[type=text] {
+	border: none;
+	width: 100%;
+	padding: 0px;
+}
+
+#decisionTable table.wrapperTable {
+	border-collapse: collapse;
+	border: none;
+}
+
+#decisionTable table.wrapperTable td {
+	border: none;
+	padding: none;
+}
+#drlEditor {
+        top:10px;
+        width: 80%;
+        height: 100%;
+        margin-bottom: 10px;
+    }
+</style>
+</head>
+<body>
+	<div id="DecisionTableView" class="panelView view-hide">
+		<table cellpadding="0" cellspacing="0" class="layoutTable"
+			style="width: 800px;">
+			<tr>
+				<td>
+					<div class="errorMessagesPanel">
+						<ul id="errorMessagesList">
+						</ul>
+					</div></td>
+			</tr>
+		</table>
+		<div id="hideGeneralProperties">
+				<div class="clplPanelHeading">
+				<img src="./plugins/common/images/panelHeader-triggerExpand.png"
+					title="Show General Properties" styleClass="headerImg"></img> 
+					<label>General Properties</label>
+			</div>
+		</div>
+		<div id="showAllProperties">
+			<div id="showGeneralProperties">
+				<div class="clplPanelHeading">
+					<img src="./plugins/common/images/panelHeader-triggerCollapse.png"
+						title="Hide General Properties" styleClass="headerImg"></img>
+						<label>General Properties</label>	
+				</div>
+			</div>
+		<table>	
+			<tr>
+				<td>
+					<table>
+						<tr>
+							<td>
+								<table cellpadding="0" cellspacing="0" class="fieldSetTable"
+									style="margin-bottom: 10px; margin-right: 10px;">
+									<tr id="uuidOutputRow">
+										<td><label for="uuidOutput" id="decTableUuidLbl">xxxx</label>
+										</td>
+										<td><div id="uuidOutput" class="output"></div>
+										</td>
+									</tr>
+									<tr id="idOutputRow">
+										<td><label for="idOutput" id="decTableIdLbl">ID</label>
+										</td>
+										<td><div id="idOutput" class="output"></div>
+										</td>
+									</tr>
+									<tr>
+										<td><label for="nameInput" id="decTableNameLbl">Decision Table Name</label>
+										</td>
+										<td><input id="nameInput" type="text"
+											style="width: 200px;"></input>
+										</td>
+									</tr>
+								</table></td>
+						</tr>
+					</table></td>
+			</tr>
+			<tr>
+				<td><label for="descriptionTextarea" id="decTableDescrLbl" >Description</label>
+				</td>
+			</tr>
+			<tr>
+				<td><textarea id="descriptionTextarea" cols="40" rows="5"></textarea>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<!-- rulesettabs -->
+				</td>
+			</tr>
+		</table>
+		</div>
+		<div id="decisionTableTabs" class="minimalTabs" style="margin-top: 10px;width:95%;">
+			<ul id="ruleSetTabsList">
+				<li><a href="#hotTableTab"><img
+						src="plugins/rules-manager/images/icons/table_edit.png"></img><span
+						class="tabLabel" id="decisionTableTab">Decision Table</span> </a>
+				</li>
+			</ul>
+			<div id="hotTableTab">
+			<div class="camino-panel">
+				<div id="alertPanel" class="alert-caution view-hide">
+					<img src="plugins/rules-manager/images/icons/error.png"/>
+					<span id="alertPanelMsg"></span>
+				</div>
+				<div class="toolBar" style="margin-bottom:2px;">
+					<input id="addRow" type="image" alt="Add Row" src="plugins/rules-manager/images/icons/table-insert-row-green.png" class="toolbarButton"  />
+					<input type="image"  src="plugins/rules-manager/images/icons/table-insert-column-green.png" id="categoryDropdown" class="toolbarButton" alt="Add Column" />
+					<img alt="" src="plugins/rules-manager/images/icons/toolbar-separator.png" />
+			        <!-- 
+			        <input id="exportData" type="image" src="plugins/rules-manager/images/icons/page_white_get.png" class="toolbarButton" alt="Export Data" />
+			        <input id="importData" type="image"  src="plugins/rules-manager/images/icons/page_white_put.png" class="toolbarButton" alt="Import Data" />
+			        <img alt="" src="plugins/rules-manager/images/icons/separator.png" />
+			        -->
+			        <input type="image"  src="plugins/rules-manager/images/icons/eye.png" id="hideNonDataCols" class="toolbarButton" alt="Hide Description and Attribute columns" />
+			     	<img alt="" src="plugins/rules-manager/images/icons/toolbar-separator.png" />
+			     	<span id="tableSearchLbl">Search</span>
+			     	<input id="tableSearch" type="text"></input>
+			     </div>
+				 <div id="decisionTableBuilder"></div>
+				 <p></p>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<script type="text/javascript" src="plugins/rules-manager/js/decisionTableViewMain.js"></script>
+		
+</body>
+</html>

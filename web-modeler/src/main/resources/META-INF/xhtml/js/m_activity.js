@@ -20,12 +20,14 @@ define(
 					return new Activity();
 				},
 				createActivity : function(process, type) {
-					var index = process.getNewActivityIndex();
 					var activity = new Activity();
 
 					var actNamePrefix = m_i18nUtils
 							.getProperty("modeler.diagram.newActivity.namePrefix");
-					activity.initialize(actNamePrefix + " " + index, type);
+					
+					var elementNameId = m_utils.getUniqueElementNameId(process.activities, actNamePrefix);
+					
+					activity.initialize(elementNameId.name, type);
 
 					activity.taskType = m_constants.MANUAL_TASK_TYPE;
 
@@ -33,10 +35,11 @@ define(
 				},
 
 				createActivityFromProcess : function(process, subprocess) {
-					var index = process.getNewActivityIndex();
 					var activity = new Activity();
 
-					activity.initialize(subprocess.name + index,
+					var elementNameId = m_utils.getUniqueElementNameId(process.activities, subprocess.name);
+					
+					activity.initialize(elementNameId.name,
 							m_constants.SUBPROCESS_ACTIVITY_TYPE);
 
 					activity.subprocessFullId = subprocess.getFullId();
@@ -45,10 +48,11 @@ define(
 				},
 
 				createActivityFromApplication : function(process, application) {
-					var index = process.getNewActivityIndex();
 					var activity = new Activity();
 
-					activity.initialize(application.name + index,
+					var elementNameId = m_utils.getUniqueElementNameId(process.activities, application.name);
+					
+					activity.initialize(elementNameId.name,
 							m_constants.TASK_ACTIVITY_TYPE);
 
 					activity.taskType = application.getCompatibleActivityTaskType();
@@ -59,8 +63,7 @@ define(
 				},
 
 				createGatewayActivity : function(process) {
-					var index = process.getNewGatewayIndex();
-					var activity = new Activity("Gateway" + index);
+					var activity = new Activity();
 
 					activity.initialize("", m_constants.GATEWAY_ACTIVITY_TYPE);
 
@@ -170,7 +173,13 @@ define(
 							&& (this.attributes && !this.attributes["carnot:engine:subprocess:copyAllData"])) {
 						return true;
 					}
-					
+
+					// Return true if activity is a rules task
+					if (this.activityType === m_constants.TASK_ACTIVITY_TYPE
+							&& this.taskType === "rule") {
+						return true;
+					}
+
 					return false;
 				};
 

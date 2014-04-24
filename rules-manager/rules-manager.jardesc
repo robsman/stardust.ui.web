@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="WINDOWS-1252" standalone="no"?>
+<jardesc>
+    <jar path="stardust-rules-manager.jar"/>
+    <options buildIfNeeded="true" compress="true" descriptionLocation="/rules-manager/rules-manager.jardesc" exportErrors="false" exportWarnings="true" includeDirectoryEntries="true" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
+    <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
+    <selectedProjects/>
+    <manifest generateManifest="true" manifestLocation="" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
+        <sealing sealJar="false">
+            <packagesToSeal/>
+            <packagesToUnSeal/>
+        </sealing>
+    </manifest>
+    <selectedElements exportClassFiles="false" exportJavaFiles="false" exportOutputFolder="true">
+        <folder path="/rules-manager/src/main/resources/META-INF"/>
+        <file path="/rules-manager/src/main/resources/rules-manager-client-messages.properties"/>
+        <file path="/rules-manager/src/main/resources/rules-manager-messages.properties"/>
+        <javaElement handleIdentifier="=rules-manager/src\/main\/java"/>
+    </selectedElements>
+</jardesc>

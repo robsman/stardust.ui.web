@@ -21,6 +21,7 @@
 	border: 1px solid grey;
 }
 </style>
+<link href="plugins/bpm-modeler/css/bpm-modeler.custom.jquery.ui.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
 	<div id="uiMashupApplicationView" class="nativeHtmlViewPanel" style="visibility: hidden;">
@@ -33,6 +34,24 @@
 						</ul>
 					</div></td>
 			</tr>
+		</table>
+		<div id="hideGeneralProperties">
+				<div class="clplPanelHeading">
+				<img src="./plugins/common/images/panelHeader-triggerExpand.png"
+					title="Show General Properties" styleClass="headerImg"></img> 
+					<label>General Properties</label>
+			</div>
+		</div>
+		<div id="showAllProperties">
+			<div id="showGeneralProperties">
+				<div class="clplPanelHeading">
+					<img src="./plugins/common/images/panelHeader-triggerCollapse.png"
+						title="Hide General Properties" styleClass="headerImg"></img>
+						<label>General Properties</label>	
+				</div>
+			</div>
+		<table cellpadding="0" cellspacing="0" class="layoutTable"
+			style="width: 800px;">	
 			<tr>
 				<td>
 					<table cellpadding="0" cellspacing="0" class="fieldSetTable"
@@ -79,9 +98,13 @@
 					</table>
 				</td>
 			</tr>
+		</table>
+		</div>
+		<table cellpadding="0" cellspacing="0" class="layoutTable"
+			style="width: 800px;">	
 			<tr>
 				<td>
-					<div id="propertiesTabs" style="margin-top: 10px;">
+					<div id="propertiesTabs" class="minimalTabs" style="margin-top: 10px;">
 						<ul id="propertiesTabsList">
 							<li><a href="#parametersTab"><img
 									src="plugins/bpm-modeler/images/icons/database_link.png"></img><span
@@ -145,8 +168,7 @@
 																		<td>
 																			<table style="margin-top: 10px;">
 																				<tr>
-																					<td><label for="numberOfLabelInputPairsInput">Numbers of Label/Input
-																							Pairs per Column</label>
+																					<td><label for="numberOfLabelInputPairsInput">Number of Columns Used to Display Data in Column Layouts</label>
 																					</td>
 																					<td><input id="numberOfLabelInputPairsInput" type="number"></input>
 																					</td>
@@ -157,7 +179,7 @@
 																							<tr>
 																								<td><input id="generateCompleteButtonInput" type="checkbox"></input>
 																								</td>
-																								<td><label fr="generateCompleteButtonInput">Generate Complete Button</label>
+																								<td><label for="generateCompleteButtonInput">Generate Complete Button</label>
 																								</td>
 																							</tr>
 																							<tr>
@@ -185,6 +207,7 @@
 																								</td>
 																							</tr>
 																						</table></td>
+																					<!-- New Code Generator does not support these configuration, hence hide them 
 																					<td valign="top">
 																					<table>
 																							<tr>
@@ -200,6 +223,7 @@
 																								</td>
 																							</tr>
 																						</table></td>
+																					-->
 																				</tr>
 																			</table>
 																		</td>

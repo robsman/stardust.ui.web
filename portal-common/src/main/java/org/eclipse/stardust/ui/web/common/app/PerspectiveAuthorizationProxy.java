@@ -42,13 +42,14 @@ public class PerspectiveAuthorizationProxy implements java.lang.reflect.Invocati
    private List<LaunchPanel> launchPanels;
    private List<ToolbarSection> toolbarSections;
    private List<MenuSection> menuSections;
-   
+   private PortalApplication portalApp;
    /**
     * @param perspectiveDefinition
     */
-   public PerspectiveAuthorizationProxy(IPerspectiveDefinition perspectiveDefinition)
+   public PerspectiveAuthorizationProxy(IPerspectiveDefinition perspectiveDefinition, PortalApplication portalApp)
    {
       this.perspectiveDefinition = perspectiveDefinition;
+      this.portalApp = portalApp;
    }
 
    /**
@@ -58,7 +59,18 @@ public class PerspectiveAuthorizationProxy implements java.lang.reflect.Invocati
    public static IPerspectiveDefinition newInstance(IPerspectiveDefinition pd)
    {
       return (IPerspectiveDefinition) Proxy.newProxyInstance(pd.getClass().getClassLoader(), pd.getClass()
-            .getInterfaces(), new PerspectiveAuthorizationProxy(pd));
+            .getInterfaces(), new PerspectiveAuthorizationProxy(pd, null));
+   }
+   
+
+   /**
+    * @param pd
+    * @return
+    */
+   public static IPerspectiveDefinition newInstance(IPerspectiveDefinition pd, PortalApplication portalApplication)
+   {
+      return (IPerspectiveDefinition) Proxy.newProxyInstance(pd.getClass().getClassLoader(), pd.getClass()
+            .getInterfaces(), new PerspectiveAuthorizationProxy(pd, portalApplication));
    }
 
    /* (non-Javadoc)
@@ -217,7 +229,11 @@ public class PerspectiveAuthorizationProxy implements java.lang.reflect.Invocati
    {
       if (uiElement instanceof UiElementWithPermissions)
       {
-         return PortalApplication.getInstance().getPortalUiController()
+         if (null == portalApp)
+         {
+            portalApp = PortalApplication.getInstance();
+         }
+         return portalApp.getPortalUiController()
                .isAuthorized(((UiElementWithPermissions) uiElement));
       }
       else

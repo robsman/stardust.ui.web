@@ -2,6 +2,12 @@
    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
    <modelVersion>4.0.0</modelVersion>
 
+   <groupId>org.eclipse.stardust.ui.web</groupId>
+   <artifactId>stardust-web-modeler</artifactId>
+   <packaging>jar</packaging>
+
+   <name>Web Modeler</name>
+
    <parent>
       <groupId>org.eclipse.stardust</groupId>
       <artifactId>product-parent</artifactId>
@@ -9,209 +15,175 @@
       <relativePath>../../product/product-parent/pom.xml</relativePath>
    </parent>
 
-   <groupId>org.eclipse.stardust.ui.web</groupId>
-   <artifactId>stardust-web-modeler</artifactId>
-   <version>0.0.1-SNAPSHOT</version>
-
-   <packaging>jar</packaging>
-
-<!--
-   <parent>
-      <groupId>com.infinity.bpm.pepper</groupId>
-      <artifactId>pepper-common</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
-      <relativePath>../pepper-common/pom.xml</relativePath>
-   </parent>
--->
-
-   <properties>
-      <ipp.version>1.1.0-NIGHTLY-SNAPSHOT</ipp.version>
-   </properties>
-
-   <dependencyManagement>
-      <dependencies>
-      </dependencies>
-   </dependencyManagement>
-
    <dependencies>
-      <!-- IMPORTANT: these dependencies must be in sync with those of ivy.xml -->
-
       <dependency>
          <groupId>org.eclipse.stardust.engine</groupId>
          <artifactId>carnot-engine</artifactId>
-         <version>${ipp.version}</version>
+         <version>${project.version}</version>
+         <scope>compile</scope>
       </dependency>
       <dependency>
          <groupId>wsdl4j</groupId>
          <artifactId>wsdl4j</artifactId>
-         <version>${wsdl4j.version}</version>
+         <scope>compile</scope>
       </dependency>
-
       <dependency>
          <groupId>org.eclipse.stardust.modeling.model</groupId>
          <artifactId>ipp-bpm-model</artifactId>
-         <version>${ipp.version}</version>
+         <version>${project.version}</version>
+         <scope>compile</scope>
       </dependency>
       <dependency>
          <groupId>org.eclipse.stardust.modeling.core</groupId>
          <artifactId>ipp-bpm-model-validation</artifactId>
-         <version>${ipp.version}</version>
+         <!-- temporarily fixating to 1.1.2, until ipp-bpm-model-validation was properly refactored into the components build phase -->
+         <version>${legacy.build.version}</version>
+         <scope>compile</scope>
       </dependency>
       <dependency>
          <groupId>org.eclipse.stardust.modeling.model</groupId>
-         <artifactId>org.eclipse.stardust.model.xpdl.builder</artifactId>
+         <artifactId>ipp-bpm-model-builder</artifactId>
          <version>${project.version}</version>
+         <scope>compile</scope>
       </dependency>
-
-      <dependency>
-         <groupId>org.eclipse.stardust.ui.web</groupId>
-         <artifactId>ipp-portal-common</artifactId>
-         <version>${ipp.version}</version>
-      </dependency>
-      <dependency>
-         <groupId>org.eclipse.stardust.ui.web</groupId>
-         <artifactId>ipp-views-common</artifactId>
-         <version>${ipp.version}</version>
-      </dependency>
-
-      <dependency>
-         <groupId>org.apache.myfaces.core</groupId>
-         <artifactId>myfaces-api</artifactId>
-         <version>${myfaces-api.version}</version>
-      </dependency>
-      <dependency>
-         <groupId>javax.servlet</groupId>
-         <artifactId>servlet-api</artifactId>
-         <version>${servlet-api.version}</version>
-         <scope>provided</scope>
-      </dependency>
-
-      <dependency>
-         <groupId>com.google.code.gson</groupId>
-         <artifactId>gson</artifactId>
-         <version>${gson.version}</version>
-      </dependency>
-
-      <!-->dependency>
-         <groupId>org.apache.httpcomponents</groupId>
-         <artifactId>httpclient</artifactId>
-         <version>${commons-httpclient.version}</version>
-      </dependency-->
-
-      <!-- The following Eclipse dependencies are part of Eclipse 3.6.2 -->
       <dependency>
          <groupId>org.eclipse.emf</groupId>
          <artifactId>org.eclipse.emf.common</artifactId>
-         <version>${org.eclipse.emf.common.version}</version>
+         <scope>compile</scope>
       </dependency>
       <dependency>
          <groupId>org.eclipse.emf</groupId>
          <artifactId>org.eclipse.emf.ecore</artifactId>
-         <version>${org.eclipse.emf.ecore.version}</version>
-         <exclusions>
-            <exclusion>
-               <groupId>org.eclipse.emf</groupId>
-               <artifactId>org.eclipse.emf.common</artifactId>
-            </exclusion>
-         </exclusions>
+         <scope>compile</scope>
       </dependency>
       <dependency>
          <groupId>org.eclipse.emf</groupId>
          <artifactId>org.eclipse.emf.ecore.xmi</artifactId>
-         <version>${org.eclipse.emf.ecore.xmi.version}</version>
-         <exclusions>
-            <exclusion>
-               <groupId>org.eclipse.emf</groupId>
-               <artifactId>org.eclipse.emf.ecore</artifactId>
-            </exclusion>
-         </exclusions>
+         <scope>compile</scope>
       </dependency>
       <dependency>
          <groupId>org.eclipse.emf</groupId>
          <artifactId>org.eclipse.emf.ecore.change</artifactId>
-         <version>${org.eclipse.emf.ecore.change.version}</version>
-         <exclusions>
-            <exclusion>
-               <groupId>org.eclipse.emf</groupId>
-               <artifactId>org.eclipse.emf.ecore</artifactId>
-            </exclusion>
-         </exclusions>
+         <scope>compile</scope>
       </dependency>
       <dependency>
          <groupId>org.eclipse.xsd</groupId>
          <artifactId>org.eclipse.xsd</artifactId>
-         <version>${org.eclipse.xsd.version}</version>
+         <scope>compile</scope>
       </dependency>
-
+      <dependency>
+         <groupId>org.eclipse.stardust.ui.web</groupId>
+         <artifactId>ipp-portal-common</artifactId>
+         <version>${project.version}</version>
+         <scope>compile</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.eclipse.stardust.ui.web</groupId>
+         <artifactId>ipp-views-common</artifactId>
+         <version>${project.version}</version>
+         <scope>compile</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.myfaces.core</groupId>
+         <artifactId>myfaces-api</artifactId>
+         <scope>compile</scope>
+         <exclusions>
+            <exclusion>
+               <groupId>commons-lang</groupId>
+               <artifactId>commons-lang</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>commons-digester</groupId>
+               <artifactId>commons-digester</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>commons-logging</groupId>
+               <artifactId>commons-logging</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>javax.servlet</groupId>
+               <artifactId>jstl</artifactId>
+            </exclusion>
+         </exclusions>
+      </dependency>
+      <dependency>
+         <groupId>commons-beanutils</groupId>
+         <artifactId>commons-beanutils</artifactId>
+         <scope>compile</scope>
+      </dependency>
+      <dependency>
+         <groupId>javax.servlet</groupId>
+         <artifactId>servlet-api</artifactId>
+         <scope>provided</scope>
+      </dependency>
+      <dependency>
+         <groupId>com.google.code.gson</groupId>
+         <artifactId>gson</artifactId>
+         <scope>compile</scope>
+      </dependency>
       <dependency>
          <groupId>junit</groupId>
          <artifactId>junit</artifactId>
-         <version>${junit.version}</version>
          <scope>test</scope>
+         <exclusions>
+            <exclusion>
+               <groupId>org.hamcrest</groupId>
+               <artifactId>hamcrest-core</artifactId>
+            </exclusion>
+         </exclusions>
       </dependency>
       <dependency>
          <groupId>org.springframework</groupId>
          <artifactId>spring-test</artifactId>
-         <version>${spring-test.version}</version>
+         <scope>test</scope>
+         <exclusions>
+            <exclusion>
+               <groupId>org.springframework</groupId>
+               <artifactId>spring-core</artifactId>
+            </exclusion>
+         </exclusions>
+      </dependency>
+      <dependency>
+         <groupId>org.hamcrest</groupId>
+         <artifactId>hamcrest-core</artifactId>
          <scope>test</scope>
       </dependency>
       <dependency>
          <groupId>org.mockito</groupId>
          <artifactId>mockito-core</artifactId>
-         <version>${mockito-core.version}</version>
          <scope>test</scope>
          <exclusions>
-         	<exclusion>
-         		<groupId>org.hamcrest</groupId>
-         		<artifactId>hamcrest-core</artifactId>
-         	</exclusion>
+            <exclusion>
+               <groupId>org.hamcrest</groupId>
+               <artifactId>hamcrest-core</artifactId>
+            </exclusion>
          </exclusions>
       </dependency>
       <dependency>
          <groupId>com.google.guava</groupId>
          <artifactId>guava</artifactId>
-         <version>10.0.1</version>
          <scope>test</scope>
+         <exclusions>
+            <exclusion>
+               <groupId>com.google.code.findbugs</groupId>
+               <artifactId>jsr305</artifactId>
+            </exclusion>
+         </exclusions>
       </dependency>
-
-      <!-- <dependency> <groupId>com.ning</groupId> <artifactId>async-http-client</artifactId> 
-         <version>1.7.4</version> </dependency> -->
-
    </dependencies>
 
    <build>
       <plugins>
          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <version>2.3.2</version>
+            <artifactId>maven-surefire-plugin</artifactId>
             <configuration>
-               <encoding>UTF-8</encoding>
-               <source>1.6</source>
-               <target>1.6</target>
-            </configuration>
-         </plugin>
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-resources-plugin</artifactId>
-            <version>2.4.3</version>
-            <configuration>
-               <encoding>UTF-8</encoding>
+               <excludes>
+                  <exclude>**/TestModelConversion.java</exclude>
+               </excludes>
             </configuration>
          </plugin>
       </plugins>
    </build>
-
-   <repositories>
-      <repository>
-         <id>ipp-repo</id>
-         <url>https://infinity.sungard.com/repository/ipp-libs</url>
-      </repository>
-      <repository>
-         <id>ipp-repo-dev</id>
-         <url>https://infinity.sungard.com/repository/ipp-libs-dev</url>
-      </repository>
-   </repositories>
 
    <profiles>
       <profile>
@@ -247,12 +219,12 @@
                   <groupId>org.apache.maven.plugins</groupId>
                   <artifactId>maven-compiler-plugin</artifactId>
                   <configuration>
-                  <excludes>
-                     <exclude>**/web/modeler/edit/twophase/**</exclude>
-                  </excludes>
-                  <testExcludes>
-                     <testExclude>**/web/modeler/edit/twophase/**</testExclude>
-                  </testExcludes>
+                     <excludes>
+                        <exclude>**/web/modeler/edit/twophase/**</exclude>
+                     </excludes>
+                     <testExcludes>
+                        <testExclude>**/web/modeler/edit/twophase/**</testExclude>
+                     </testExcludes>
                   </configuration>
                </plugin>
             </plugins>

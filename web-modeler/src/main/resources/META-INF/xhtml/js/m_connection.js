@@ -22,12 +22,13 @@ define(
 				"bpm-modeler/js/m_eventSymbol", "bpm-modeler/js/m_controlFlow",
 				"bpm-modeler/js/m_dataFlow", "bpm-modeler/js/m_modelerUtils",
 				"bpm-modeler/js/m_messageDisplay",
-				"bpm-modeler/js/libs/jsPlumb/jquery.jsPlumb-1.4.1-all-min" ],
+				"bpm-modeler/js/libs/jsPlumb/jquery.jsPlumb-1.4.1-all-min",
+				"bpm-modeler/js/m_i18nUtils"],
 		function(m_utils, m_constants, m_canvasManager, m_drawable,
 				m_commandsController, m_command, m_controlFlow,
 				m_propertiesPanel, m_activitySymbol,
 				m_gatewaySymbol, m_eventSymbol, m_controlFlow, m_dataFlow,
-				m_modelerUtils, m_messageDisplay, jquery_jsPlumb) {
+				m_modelerUtils, m_messageDisplay, jquery_jsPlumb,m_i18nUtils) {
 
 			return {
 				createConnection : function(diagram, fromAnchorPoint) {
@@ -686,7 +687,7 @@ define(
 					this.setSecondAnchorPoint(this.fromAnchorPoint
 							.createFlippedClone(this.diagram));
 					m_messageDisplay
-							.showMessage("Select second anchor point for connection.");
+							.showMessage(m_i18nUtils.getProperty("modeler.messagedisplay.messages.info.connSelAchorPoint"));
 				};
 
 				/**
@@ -907,11 +908,12 @@ define(
 								});
 
 								this.conditionExpressionText.show();
-							} /*else if (this.modelElement.name) {
+							} else if (this.fromModelElementType == m_constants.GATEWAY 
+										&& this.modelElement.name) {
 								this.conditionExpressionText.attr("text",
 										this.modelElement.name);
 								this.conditionExpressionText.show();
-							} */else {
+							} else {
 								this.conditionExpressionText.hide();
 							}
 						}
@@ -2143,38 +2145,38 @@ define(
 						// Check for OUT connections on End Event
 						if (fromAnchorPoint.symbol.modelElement.eventType == m_constants.STOP_EVENT_TYPE) {
 							m_messageDisplay
-									.showErrorMessage("Only incoming sequence flow connections are allowed on End events.");
+									.showErrorMessage( m_i18nUtils.getProperty("modeler.messagedisplay.messages.error.onlyIncomingSeq"));
 							return false;
 						}// Connection between Event and Data not supported
 						else if (null != toAnchorPoint
 								&& toAnchorPoint.symbol.type == m_constants.DATA_SYMBOL) {
 							m_messageDisplay
-									.showErrorMessage("Data connections/associations are not supported for this symbol.");
+									.showErrorMessage(m_i18nUtils.getProperty("modeler.messagedisplay.messages.error.dataConnNotSup"));
 							return false;
 						} else if (!fromAnchorPoint.symbol
 								.validateCreateConnection(this)) {
 							// Start Event can have only one OUT connection
 							m_messageDisplay
-									.showErrorMessage("No further connection allowed for this Event.");
+									.showErrorMessage(m_i18nUtils.getProperty("modeler.messagedisplay.messages.error.noFurtherConnEvt"));
 							return false;
 						}
 					} else if (fromAnchorPoint.symbol.type == m_constants.DATA_SYMBOL) {
 						if (null != toAnchorPoint
 								&& (toAnchorPoint.symbol.type == m_constants.GATEWAY_SYMBOL || toAnchorPoint.symbol.type == m_constants.EVENT_SYMBOL)) {
 							m_messageDisplay
-									.showErrorMessage("Data associations are not supported for this symbol.");
+									.showErrorMessage(m_i18nUtils.getProperty("modeler.messagedisplay.messages.error.dataAssocNotSup"));
 							return false;
 						} else if (null != toAnchorPoint
 								&& (toAnchorPoint.symbol.type == m_constants.DATA_SYMBOL)) {
 							m_messageDisplay
-									.showErrorMessage("Data symbols can connect to activity only.");
+									.showErrorMessage(m_i18nUtils.getProperty("modeler.messagedisplay.messages.error.DataSymbolsCan"));
 							return false;
 						} else if (null != toAnchorPoint
 								&& (toAnchorPoint.symbol.type == m_constants.ACTIVITY_SYMBOL)) {
 							if (!toAnchorPoint.symbol
 									.validateCreateConnection(this)) {
 								m_messageDisplay
-										.showErrorMessage("Data element is already associated with this Activity");
+										.showErrorMessage(m_i18nUtils.getProperty("modeler.messagedisplay.messages.error.dataEleAlready"));
 								return false;
 							}
 						}
@@ -2182,7 +2184,7 @@ define(
 						if (!fromAnchorPoint.symbol
 								.validateCreateConnection()) {
 							m_messageDisplay
-									.showErrorMessage("No further connection allowed for this Data symbols.");
+									.showErrorMessage(m_i18nUtils.getProperty("modeler.messagedisplay.messages.error.noFurtherConnDS"));
 							return false;
 						}
 					} else if (fromAnchorPoint.symbol.type == m_constants.ACTIVITY_SYMBOL) {
@@ -2194,28 +2196,28 @@ define(
 							if (!toAnchorPoint.symbol
 									.validateCreateConnection()) {
 								m_messageDisplay
-										.showErrorMessage("No further outgoing connection allowed from this activity.");
+										.showErrorMessage(m_i18nUtils.getProperty("modeler.messagedisplay.messages.error.noFutherOutConnAct"));
 								return false;
 							}
 
 							if (!fromAnchorPoint.symbol
 									.validateCreateConnection(this)) {
 								m_messageDisplay
-										.showErrorMessage("Data element is already associated with this Activity");
+										.showErrorMessage(m_i18nUtils.getProperty("modeler.messagedisplay.messages.error.dataEleAlready"));
 								return false;
 							}
 
 						} else if (!fromAnchorPoint.symbol
 								.validateCreateConnection(this)) {
 							m_messageDisplay
-									.showErrorMessage("No more connection allowed from this activity.");
+									.showErrorMessage(m_i18nUtils.getProperty("modeler.messagedisplay.messages.error.noFurtherConnAct"));
 							return false;
 						}
 					} else if (fromAnchorPoint.symbol.type == m_constants.GATEWAY_SYMBOL) {
 						if (null != toAnchorPoint
 								&& toAnchorPoint.symbol.type == m_constants.DATA_SYMBOL) {
 							m_messageDisplay
-									.showErrorMessage("Data connections/associations are not supported for this symbol.");
+									.showErrorMessage(m_i18nUtils.getProperty("modeler.messagedisplay.messages.error.dataConnNotSup"));
 							return false;
 						}
 					}
@@ -2228,7 +2230,7 @@ define(
 							// Check for IN connections on Start Event
 							if (fromAnchorPoint.symbol.modelElement.eventType == m_constants.STOP_EVENT_TYPE) {
 								m_messageDisplay
-										.showErrorMessage("Only outgoing sequence flow connections are allowed on Start events.");
+										.showErrorMessage(m_i18nUtils.getProperty("modeler.messagedisplay.messages.error.onlyOutSeqFlow"));
 								return false;
 							} else if (!toAnchorPoint.symbol
 									.validateCreateConnection(this)) {
@@ -2238,7 +2240,7 @@ define(
 							if (!toAnchorPoint.symbol
 									.validateCreateConnection()) {
 								m_messageDisplay
-										.showErrorMessage("No more OUT Connection allowed from this activity.");
+										.showErrorMessage(m_i18nUtils.getProperty("modeler.messagedisplay.messages.error.noFutherOutConnAct"));
 								return false;
 							}
 						} else if (toAnchorPoint.symbol.type == m_constants.ACTIVITY_SYMBOL) {
@@ -2246,7 +2248,7 @@ define(
 									&& !toAnchorPoint.symbol
 											.validateCreateConnection(this)) {
 								m_messageDisplay
-										.showErrorMessage("No more connections allowed to this activity.");
+										.showErrorMessage(m_i18nUtils.getProperty("modeler.messagedisplay.messages.error.noFurtherConnActTo"));
 								return false;
 							}
 						} else if (toAnchorPoint.symbol.isPoolSymbol()
@@ -2258,7 +2260,7 @@ define(
 						if (fromAnchorPoint.symbol.oid != null
 								&& fromAnchorPoint.symbol.oid == toAnchorPoint.symbol.oid) {
 							m_messageDisplay
-									.showErrorMessage("A connection must connect two different symbols.");
+									.showErrorMessage(m_i18nUtils.getProperty("modeler.messagedisplay.messages.error.connMustContain2"));
 							return false;
 						}
 
@@ -2266,7 +2268,7 @@ define(
 						if (m_constants.ANNOTATION_SYMBOL == toAnchorPoint.symbol.type
 								|| m_constants.ANNOTATION_SYMBOL == fromAnchorPoint.symbol.type) {
 							m_messageDisplay
-							.showErrorMessage("Connection from/to Annotation is not supported.");
+							.showErrorMessage(m_i18nUtils.getProperty("modeler.messagedisplay.messages.error.connToFromAnnot"));
 							return false;
 						}
 

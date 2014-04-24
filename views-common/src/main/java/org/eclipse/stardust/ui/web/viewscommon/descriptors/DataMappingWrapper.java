@@ -14,13 +14,17 @@ import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.event.ValueChangeEvent;
+import javax.faces.model.SelectItem;
 import javax.faces.validator.ValidatorException;
 
+import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
@@ -39,7 +43,9 @@ import org.eclipse.stardust.engine.core.struct.ClientXPathMap;
 import org.eclipse.stardust.engine.core.struct.IXPathMap;
 import org.eclipse.stardust.engine.core.struct.StructuredDataXPathUtils;
 import org.eclipse.stardust.engine.core.struct.StructuredTypeRtUtils;
+import org.eclipse.stardust.engine.core.struct.TypedXPath;
 import org.eclipse.stardust.engine.extensions.dms.data.AuditTrailUtils;
+import org.eclipse.stardust.engine.extensions.xml.data.XPathUtils;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.DateRange;
 import org.eclipse.stardust.ui.web.viewscommon.common.GenericDataMapping;
@@ -50,10 +56,10 @@ import org.eclipse.stardust.ui.web.viewscommon.common.model.IInputFieldChangeLis
 import org.eclipse.stardust.ui.web.viewscommon.common.spi.IGenericInputField;
 import org.eclipse.stardust.ui.web.viewscommon.common.structureddata.ComplexTypeWrapper;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
+import org.eclipse.stardust.ui.web.viewscommon.utils.CommonDescriptorUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
-
 
 
 public class DataMappingWrapper implements IGenericInputField, Serializable
@@ -61,13 +67,17 @@ public class DataMappingWrapper implements IGenericInputField, Serializable
    protected final static Logger trace = LogManager.getLogger(DataMappingWrapper.class);
 
    private static final long serialVersionUID = 1l;
-
+   
    private DataMapping dataMapping;
    private boolean readOnly;
    private Object value;
+   private Set<Object> values;
    private String type;
    private DateRange dateRangeValue;
    private String distinctiveId = null;
+   private List<SelectItem> enumList = CollectionUtils.newArrayList();
+   private Set<TypedXPath> xpaths;
+   private Map<Integer, String> enumValueMap = CollectionUtils.newHashMap();
 
    // these are only set in case of structured data (collection values: List, Map)
    private transient ComplexTypeWrapper structuredValue;
@@ -82,6 +92,7 @@ public class DataMappingWrapper implements IGenericInputField, Serializable
 
    public DataMappingWrapper(DataMapping dataMapping, Object defaultValue, boolean readOnly)
    {
+      this.values = CollectionUtils.newHashSet();
       this.dataMapping = dataMapping;
       this.readOnly = readOnly;
       // since finding out the type requires iterations, cache the result of determineType()
@@ -106,7 +117,7 @@ public class DataMappingWrapper implements IGenericInputField, Serializable
          value = defaultValue;
       }
    }
-
+   
    public String getType()
    {
       return this.type;
@@ -161,9 +172,18 @@ public class DataMappingWrapper implements IGenericInputField, Serializable
       {
          type = ProcessPortalConstants.DOUBLE_TYPE;
       }
-      else if(dataClass == String.class || dataClass == Character.class)
+      else if (dataClass == String.class || dataClass == Character.class)
       {
-         type = ProcessPortalConstants.STRING_TYPE;
+         if (dataTypeId.equals("struct") && CommonDescriptorUtils.isEnumerationType(dataMapping))
+         {
+            Model model = ModelCache.findModelCache().getModel(dataMapping.getModelOID());
+            populateEnumValues(model, dataMapping);
+            type = ProcessPortalConstants.ENUM_TYPE;
+         }
+         else
+         {
+            type = ProcessPortalConstants.STRING_TYPE;
+         }
       }
       else if (dataClass == Map.class || dataClass == List.class
             || Resource.class.isAssignableFrom(dataClass))
@@ -175,9 +195,44 @@ public class DataMappingWrapper implements IGenericInputField, Serializable
             type = ProcessPortalConstants.STRUCTURED_TYPE;
          }
       }
+      else if(dataClass instanceof Class<?>)
+      {
+         Model model = ModelCache.findModelCache().getModel(dataMapping.getModelOID());
+         populateEnumValues(model, dataMapping);
+         type = !enumList.isEmpty() ? ProcessPortalConstants.ENUM_TYPE : null;
+      }
       return type;
    }
 
+   /**
+    * 
+    */
+   private void populateEnumValues(Model model, DataMapping dataMapping)
+   {
+      enumList.clear();
+      if(null == xpaths || xpaths.isEmpty())
+      {
+         xpaths = XPathUtils.getXPaths(ModelCache.findModelCache().getModel(dataMapping.getModelOID()),
+               dataMapping);   
+      }
+      Iterator<TypedXPath> xpathIterator = xpaths.iterator();
+      while (xpathIterator.hasNext())
+      {
+         TypedXPath xPath = xpathIterator.next();
+         if (xPath.isEnumeration())
+         {
+            List<String> enumValList = xPath.getEnumerationValues();
+            Integer i = 0;
+            for (String enumVal : enumValList)
+            {
+               enumList.add(new SelectItem(i.toString(), enumVal));
+               enumValueMap.put(i, enumVal);
+               i++;
+            }
+         }
+      }
+   }
+   
    private DataDetails getDataDetails()
    {
       Model model = ModelCache.findModelCache().getModel(dataMapping.getModelOID());
@@ -225,6 +280,15 @@ public class DataMappingWrapper implements IGenericInputField, Serializable
       {
          return value;
       }
+   }
+   
+   public Set<Object> getValueList()
+   {
+      if (values.isEmpty())
+      {
+         values.add(getValue());
+      }
+      return values;
    }
 
    public String getMappedType()
@@ -327,6 +391,70 @@ public class DataMappingWrapper implements IGenericInputField, Serializable
       trace.debug("set String: " + castedValue);
    }
 
+   public List<SelectItem> getEnumList()
+   {
+      return enumList;
+   }
+
+   public void enumValueChangeListener(ValueChangeEvent event)
+   {
+         if (event.getNewValue() != null)
+         {
+            setEnumValueList((String[]) event.getNewValue());
+         }
+         else
+         {
+            setEnumValueList(null);
+         }
+   }
+
+   public String[] getEnumValueList()
+   {
+      if (this.values != null && this.values.size()>0)
+      {
+         Object[] objectArray = values.toArray();
+         String strArr[]=new String[objectArray.length];
+         int index = 0;
+         for(Object obj:objectArray)
+         {
+            strArr[index] = String.valueOf(obj);
+            index++;
+         }
+         return strArr;
+      }
+      return null;
+   }
+
+   public void setEnumValueList(String[] valueList)
+   {
+      values.clear();
+      this.value =null;
+      if (valueList != null && valueList.length > 0)
+      {
+         // When multiple ENUM values, store in List
+         if (valueList.length > 1)
+         {
+            for (String val : valueList)
+            {
+               Integer intVal=Integer.valueOf(val);
+               values.add(enumValueMap.get(intVal));
+            }
+         }
+         else
+         {
+            // when there is only single ENUM value filter, using direct approach of
+            // this.value like other descriptors
+            int intVal = Integer.valueOf(valueList[0].toString());
+            Object objVal =  null;
+            objVal = enumValueMap.get(intVal);
+            this.value = objVal;
+            this.values.add(objVal); // Set for showing selection on UI
+         }
+         broadcastChange(value != null ? value : this.values);
+      }
+      trace.debug("set ENUM: " + this.value);
+   }
+   
    public Long getLongValue()
    {
       try

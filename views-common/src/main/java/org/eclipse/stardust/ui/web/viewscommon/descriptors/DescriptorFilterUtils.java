@@ -11,9 +11,11 @@
 package org.eclipse.stardust.ui.web.viewscommon.descriptors;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
@@ -31,6 +33,7 @@ import org.eclipse.stardust.engine.api.query.DataFilter;
 import org.eclipse.stardust.engine.api.query.DataOrder;
 import org.eclipse.stardust.engine.api.query.DescriptorPolicy;
 import org.eclipse.stardust.engine.api.query.FilterAndTerm;
+import org.eclipse.stardust.engine.api.query.FilterOrTerm;
 import org.eclipse.stardust.engine.api.query.FilterTerm;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
 import org.eclipse.stardust.engine.api.query.Query;
@@ -127,6 +130,9 @@ public class DescriptorFilterUtils
             if (StructuredDataConstants.STRUCTURED_DATA.equals(typeId))
             {
                String myXPath = dataPath.getAccessPath();
+               // Pepper models, return null for Access Path, Eclipse model returns "" for
+               // Structured Enum
+               myXPath = myXPath == null  ?  "" : myXPath;
                if (null != myXPath && !myXPath.contains("["))
                {   
                   // this is important and maybe needs discussion:
@@ -228,11 +234,28 @@ public class DescriptorFilterUtils
                   }
 
                   DataFilter dataFilter = null;
+                  DataFilter dataFilterOrTerm=null;
 
                   // for String
                   if (Character.class.equals(dataPath.getMappedType()) || String.class.equals(dataPath.getMappedType()))
                   {
-                     dataFilter = getStringFilter(dataPath, filterValue, caseSensitive);
+                     if(filterValue instanceof Collection<?>)
+                     {
+                        FilterOrTerm term = predicate.addOrTerm();
+                        if(filterValue instanceof Set<?>)
+                        {
+                           Set<Object> vals= (Set<Object>) filterValue;
+                           for(Object obj:vals)
+                           {
+                              dataFilterOrTerm = getStringFilter(mapping, dataPath, obj.toString(), caseSensitive);
+                              term.add(dataFilterOrTerm);
+                           }
+                        }
+                     }
+                     else
+                     {
+                        dataFilter = getStringFilter(mapping, dataPath, filterValue, caseSensitive);
+                     }
                   }// for boolean
                   else if (Boolean.class.equals(dataPath.getMappedType()))
                   {
@@ -254,6 +277,10 @@ public class DescriptorFilterUtils
                   else if (filterValue instanceof DateRange)
                   {
                      dataFilter = getDateFilter(dataPath, (DateRange) filterValue);
+                  }
+                  else if(dataPath.getMappedType() instanceof Class<?>)
+                  {
+                     dataFilter = getStringFilter(mapping, dataPath, filterValue, caseSensitive);
                   }
 
                   if (mapping.getDataId().equals("PROCESS_PRIORITY"))
@@ -304,7 +331,8 @@ public class DescriptorFilterUtils
                   }
                   else
                   {
-                     if (dataFilter == null)
+                     // For multiple ENUM's 'OR' term is formed, dataFilter is null
+                     if (dataFilter == null && dataFilterOrTerm == null)
                      {
                         if (trace.isDebugEnabled())
                         {
@@ -323,7 +351,10 @@ public class DescriptorFilterUtils
                            dataFilter = DataFilter.isEqual(mapping.getDataId(), filterValue);
                         }
                      }
-                     predicate.add(dataFilter);
+                     if(dataFilter != null)
+                     {
+                        predicate.add(dataFilter);   
+                     }
                   }
                }
                else
@@ -372,7 +403,12 @@ public class DescriptorFilterUtils
             {
                dataFilter = new GenericDataMapping(dataFilter);
             }
-            if (dmWrapper.getValue() != null)
+            // For ENUM, Set of descriptor values are set for dataId, create Filter using List
+            if (dmWrapper.getValueList().size() > 1)
+            {
+               filterModel.setFilterValues(dataFilter.getId(), dmWrapper.getValueList());
+            }
+            else if (dmWrapper.getValue() != null)
             {
                filterModel.setFilterValue(dataFilter.getId(), (Serializable) dmWrapper.getValue());
             }
@@ -418,6 +454,19 @@ public class DescriptorFilterUtils
     */
    public static DataFilter getStringFilter(DataPath dataPath, Object filterValue, boolean caseSensitive)
    {
+      return getStringFilter(null, dataPath, filterValue, caseSensitive);
+   }
+   
+   /**
+    * 
+    * @param mapping
+    * @param dataPath
+    * @param filterValue
+    * @param caseSensitive
+    * @return
+    */
+   public static DataFilter getStringFilter(GenericDataMapping mapping, DataPath dataPath, Object filterValue, boolean caseSensitive)
+   {
       DataFilter dataFilter = null;
       boolean isCaseDescriptor = isCaseDescriptor(dataPath);
       String dataId = isCaseDescriptor ? dataPath.getId() : getData(dataPath).getQualifiedId();
@@ -449,7 +498,7 @@ public class DescriptorFilterUtils
             }
          }
       }// For String type
-      else if (String.class.equals(dataPath.getMappedType()))
+      else if (String.class.equals(dataPath.getMappedType()) || dataPath.getMappedType() instanceof Class<?>)
       {
          if (filterValue instanceof String && !StringUtils.isEmpty((String) filterValue))
          {
@@ -470,15 +519,33 @@ public class DescriptorFilterUtils
             {
                if (CommonDescriptorUtils.isStructuredData(dataPath))
                {
-                  // Grab the xpath here.......
-                  String xPath = dataPath.getAccessPath();
-                  dataFilter = DataFilter.like(dataId, xPath, filterValueStr, caseSensitive);
+                  if (null != mapping && CommonDescriptorUtils.isEnumerationType(mapping))
+                  {
+                     dataFilter = DataFilter.isEqual(dataId, "", filterValueStr);
+                  }
+                  else
+                  {
+                     // Grab the xpath here.......
+                     String xPath = dataPath.getAccessPath();
+                     dataFilter = DataFilter.like(dataId, xPath, filterValueStr, caseSensitive);                     
+                  }
                }
                else
                {
-                  dataFilter = DataFilter.like(dataId, filterValueStr, caseSensitive);
+                  if (CommonDescriptorUtils.isEnumerationPrimitive(dataPath))
+                  {
+                     dataFilter = DataFilter.isEqual(dataId, filterValueStr);
+                  }
+                  else
+                  {
+                     dataFilter = DataFilter.like(dataId, filterValueStr, caseSensitive);
+                  }
                }
             }
+         }
+         else if(filterValue instanceof Integer)
+         {
+            dataFilter = DataFilter.isEqual(dataId,(Integer) filterValue);
          }
       }
       return dataFilter;

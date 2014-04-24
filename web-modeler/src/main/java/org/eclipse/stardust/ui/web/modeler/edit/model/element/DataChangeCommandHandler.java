@@ -26,10 +26,10 @@ import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
-import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.*;
+import org.eclipse.stardust.model.xpdl.util.NameIdUtils;
 import org.eclipse.stardust.model.xpdl.xpdl2.*;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.ExtendedAttributeUtil;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.TypeDeclarationUtils;
@@ -37,7 +37,6 @@ import org.eclipse.stardust.ui.web.modeler.edit.ModelElementEditingUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
 import org.eclipse.stardust.ui.web.modeler.edit.utils.CommandHandlerUtils;
-import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementUnmarshaller;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 import org.eclipse.xsd.*;
 import org.springframework.context.ApplicationContext;
@@ -79,6 +78,7 @@ public class DataChangeCommandHandler
    @OnCommand(commandId = "typeDeclaration.create")
    public void createTypeDeclaration(ModelType model, JsonObject request)
    {
+      boolean duplicate = false;
       String name = extractString(request, ModelerConstants.NAME_PROPERTY);
       String id = extractString(request, ModelerConstants.ID_PROPERTY);
       if (isEmpty(id))
@@ -96,8 +96,7 @@ public class DataChangeCommandHandler
       }
       else if (declarations.getTypeDeclaration(id) != null)
       {
-         // TODO: change to error case ?
-         throw new PublicException("Duplicate type declaration id '" + id + "'.");
+         duplicate = true;
       }
 
       if (trace.isDebugEnabled())
@@ -107,6 +106,12 @@ public class DataChangeCommandHandler
 
       TypeDeclarationType declaration = XpdlFactory.eINSTANCE.createTypeDeclarationType();
       declarations.getTypeDeclaration().add(declaration);
+
+      if(duplicate)
+      {
+         id = NameIdUtils.createIdFromName(null, declaration, id);
+         name = id;
+      }
 
       declaration.setId(id);
       declaration.setName(name);
@@ -178,15 +183,8 @@ public class DataChangeCommandHandler
          xsdElementDeclaration.setTypeDefinition(xsdTypeDefinition);
          xsdSchema.getContents().add(xsdElementDeclaration);
 
-         new ModelElementUnmarshaller()
-         {
-            @Override
-            protected ModelManagementStrategy modelManagementStrategy()
-            {
-               // TODO Auto-generated method stub
-               return null;
-            }
-         }.populateFromJson(declaration, request);
+         modelService().currentSession().modelElementUnmarshaller()
+               .populateFromJson(declaration, request);
       }
 
       // Map newly created data element to a UUID
@@ -225,18 +223,30 @@ public class DataChangeCommandHandler
       String name = extractString(request, ModelerConstants.NAME_PROPERTY);
 
       String dataFullID = null;
+      TypeDeclarationType typeDeclaration = null;
       if (hasNotJsonNull(request, ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY))
       {
          dataFullID = extractString(request,
                ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY);
+         typeDeclaration = getModelBuilderFacade().findTypeDeclaration(dataFullID);
       }
       else
       {
          dataFullID = model.getId() + ":";
       }
+      DataType data = null;
 
-      DataType data = getModelBuilderFacade().createStructuredData(model, null, name,
-            dataFullID);
+      // For Java bound ENUM's create primitive else structured Data
+      if (getModelBuilderFacade().isEnumerationJavaBound(typeDeclaration))
+      {
+         data = getModelBuilderFacade().createPrimitiveData(model, null, name, ModelerConstants.ENUM_PRIMITIVE_DATA_TYPE);
+         getModelBuilderFacade().updateTypeForPrimitive(data, dataFullID);
+      }
+      else
+      {
+         data = getModelBuilderFacade().createStructuredData(model, null, name,
+               dataFullID);
+      }
 
       // Map newly created data element to a UUID
       EObjectUUIDMapper mapper = modelService().uuidMapper();

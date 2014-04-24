@@ -73,7 +73,7 @@ if (!window.bpm.portal.GenericController) {
 																		var key = attr.ngModel
 																				.split(".")[0];
 
-																		if (key === "$tableIterator") {
+																		if (key === "$tableIterator" || key === "$listIterator") {
 																			// Change
 																			// is
 																			// coming
@@ -82,7 +82,12 @@ if (!window.bpm.portal.GenericController) {
 																			// table
 																			// iterator
 
-																			var attributes = event.target.parentNode.parentNode.attributes;
+																			var attributes;
+																			if (key === "$tableIterator") {
+																				attributes = event.target.parentNode.parentNode.attributes;
+																			} else {
+																				attributes = event.target.parentNode.parentNode.parentNode.attributes;
+																			}
 
 																			for (n in attributes) {
 																				if (attributes[n].name === "ng-repeat") {
@@ -143,11 +148,85 @@ if (!window.bpm.portal.GenericController) {
 				console.log(this.interaction.transfer[x]);
 
 				this[x] = this.interaction.transfer[x];
+				if (!isPrimitive(this[x])) {
+					if (isValidObject(this[x])) {
+						processTransferObject(this[x]);
+					} else {
+						this[x] = ""; // This is not valid Object, then it must be empty primitive
+					}
+				}
 			}
 
 			this.mergeControllerWithScope();
 			this.updateView();
 		};
+
+		/*
+		 * Blank out empty primitives, so that on UI it won't show [object object]
+		 * 
+		 */
+		function processTransferObject(obj) {
+			for(var key in obj) {
+				var vp = isValidParam(key);
+				if (vp) {
+					if (!isPrimitive(obj[key])) {
+						if (obj[key].length) { // Array
+							for(var i in obj[key]) {
+								processTransferObject(obj[key][i]);
+							}
+						} else { // Object
+							if (isValidObject(obj[key])) {
+								processTransferObject(obj[key]);
+							} else {
+								obj[key] = ""; // This is not valid Object, then it must be empty primitive
+							}
+						}
+					}
+				}
+			}
+		};
+
+		/*
+		 * 
+		 */
+		function isValidParam(attr) {
+			return (attr.indexOf("_") != 0 && !endsWith(attr, "_asArray"));
+		}
+
+		/*
+		 * 
+		 */
+		function endsWith(str, subStr) {
+			return str.lastIndexOf(subStr) == str.length - 8;
+		}
+
+		/*
+		 * 
+		 */
+		function isPrimitive(obj) {
+			if (typeof obj != "object" || typeof obj == "string") {
+				return true;
+			} else {
+				for(var key in obj) {
+					if (key == "toString" && typeof obj[key] == "function") {
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+
+		/*
+		 * 
+		 */
+		function isValidObject(obj) {
+			for(var key in obj) {
+				if (isValidParam(key)) {
+					return true;
+				}
+			}
+			return false;
+		}
 
 		/**
 		 *
@@ -346,30 +425,44 @@ if (!window.bpm.portal.GenericController) {
 							});
 
 			// Date Picker
-
 			this.angularModule.directive('sdDate', function($parse) {
-				return function(scope, element, attrs, controller) {
-					var ngModel = $parse(attrs.ngModel);
-					$(function() {
-						element.datepicker({
-							inline : true,
-							dateFormat : 'dd.mm.yy',
-							onSelect : function(dateText, inst) {
-								scope.$apply(function(scope) {
-									// Change binded variable
-									ngModel.assign(scope, dateText);
-									self
-											.postSingle(attrs.ngModel
-													.split(".")[0]);
-								});
-							}
+				return {
+					require : 'ngModel',
+					link : function(scope, element, attrs, controller) {
+						var ngModel = $parse(attrs.ngModel);
+						$(function() {
+							element.datepicker({
+								inline : true,
+								dateFormat : 'yy-mm-dd',
+								onSelect : function(dateText, inst) {
+									scope.$apply(function(scope) {
+										// Change binded variable
+										ngModel.assign(scope, dateText);
+										self
+												.postSingle(attrs.ngModel
+														.split(".")[0]);
+									});
+								}
+							});
 						});
-					});
+						
+						controller.$formatters.unshift(function(viewValue) {
+							// Strip off Time Part
+							// TODO: Support Time
+							if (viewValue && viewValue != null && viewValue != "") {
+								var dateParts = getPrimitiveValue(viewValue).split("T");
+								if (dateParts.length >= 1) {
+									viewValue = dateParts[0];
+								}
+							}
+							
+							return viewValue;
+						});
+					}
 				};
 			});
 
 			// Data Table
-
 			this.angularModule.directive('dataTable', function() {
 				return function(scope, element, attrs) {
 					console.log("Initialize data table");
@@ -397,8 +490,93 @@ if (!window.bpm.portal.GenericController) {
 					});
 				};
 			});
+
+			this.angularModule.directive('sdValidate', function() {
+				return {
+					require : 'ngModel',
+					link : function(scope, elm, attr, ctrl) {
+						var validate = attr.sdValidate;
+						if (validate) {
+							var validatorFunc = function(value, toUI) {
+								var success = false;
+								var val;
+								
+								if (value == undefined || value == null || value == "") {
+									success = true;
+								} else {
+									try {
+										if (validate === "byte" || validate === "short" || validate === "integer") {
+											val = new Number(value);
+											if (!isNaN(val)) {
+												if (validate === "byte") {
+													if (val >= -128 && val <= 127) {
+														success = true;
+													}
+												} else if (validate === "short") {
+													if (val >= -32768 && val <= 32767) {
+														success = true;
+													}
+												} else if (validate === "integer") {
+													if (val >= -2147483648 && val <= 2147483647) {
+														success = true;
+													}
+												}
+											}
+										} else if (validate === "duration") {
+											var parts = value.split(":");
+											if (parts.length == 6) {
+												success = true;
+												for(var i in parts) {
+													val = new Number(parts[i]);
+													if (!isNaN(val)) {
+														if (val < -32768 || val > 32767) {
+															success = false;
+															break;
+														}
+													} else {
+														success = false;
+														break;
+													}
+												}
+											}
+										} else {
+											success = true;
+										}
+									} catch(e) {
+									}
+								}
+
+								if (success) {
+									ctrl.$setValidity('validate', true);
+									return value;
+								} else {
+									ctrl.$setValidity('validate', false);
+									return undefined;
+								}
+							};
+
+							ctrl.$formatters.unshift(function(value) {
+								return validatorFunc(value, true);
+							});
+							ctrl.$parsers.unshift(function(value) {
+								return validatorFunc(value, false);
+							});
+						}
+					}
+				};
+			});
 		};
 
+		/*
+		 * 
+		 */
+		function getPrimitiveValue(value) {
+			if (typeof value == "object" && value.toString) {
+				return value.toString();
+			}
+			return value;
+		}
+		
 		/**
 		 * Bind all fields of GenericController to Angular scope.
 		 */
@@ -433,6 +611,54 @@ if (!window.bpm.portal.GenericController) {
 			this.angular.element(document.body).scope().$apply();
 		};
 
+		/*
+		 * 
+		 */
+		GenericController.prototype.addToList = function(list) {
+			if (list != undefined) {
+				list.push({});
+			}
+		};
+
+		/*
+		 * 
+		 */
+		GenericController.prototype.selectListItem = function(event, obj) {
+			// Select if target is Row/Column 
+			if (event.target.localName.toLowerCase() == "td" || event.target.localName.toLowerCase() == "tr") {
+				if (obj.$$selected == undefined || obj.$$selected == false) {
+					obj.$$selected = true;
+				} else {
+					obj.$$selected = false;
+				}
+			}
+		};
+
+		/*
+		 * 
+		 */
+		GenericController.prototype.removeFromList = function(list) {
+			if (list) {
+				removeSelectedElements(list);
+				if (list.length == 0) {
+					list.push({});
+				}
+			}
+		};
+
+		/*
+		 * 
+		 */
+		function removeSelectedElements(arr) {
+			for(var i = 0 ; i < arr.length; i++) {
+				if (arr[i].$$selected) {
+					arr.splice(i, 1);
+					removeSelectedElements(arr);
+					break;
+				}
+			}
+		};
+		
 		/**
 		 * Add row to "to many"-table.
 		 */
@@ -543,9 +769,17 @@ if (!window.bpm.portal.GenericController) {
 			console.log("Posting element " + key);
 			console.log(this[key]);
 
-			// Need a deep copy in order to be able to remove internal variables
+			this.interaction.transfer = {};
 
-			this.interaction.transfer[key] = jQuery.extend(true, {}, this[key]);
+			var toPost;
+			if (isPrimitive(this[key])) {
+				toPost = this[key];
+			} else {
+				// Need a deep copy in order to be able to remove internal variables
+				toPost = jQuery.extend(true, {}, this[key]);
+			}
+				
+			this.interaction.transfer[key] = toPost;
 
 			// Cleanup internal ($) variables
 

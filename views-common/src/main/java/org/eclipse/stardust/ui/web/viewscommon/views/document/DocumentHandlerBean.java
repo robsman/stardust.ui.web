@@ -19,10 +19,12 @@ import javax.faces.event.ActionEvent;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.model.Data;
+import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.runtime.DeployedModel;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.core.runtime.beans.DocumentTypeUtils;
+import org.eclipse.stardust.engine.extensions.dms.data.DocumentType;
 import org.eclipse.stardust.engine.extensions.dms.data.annotations.printdocument.CorrespondenceCapable;
 import org.eclipse.stardust.engine.extensions.dms.data.annotations.printdocument.PrintDocumentAnnotations;
 import org.eclipse.stardust.ui.common.form.FormGenerator;
@@ -35,10 +37,10 @@ import org.eclipse.stardust.ui.web.common.UIComponentBean;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.app.View;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog;
-import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialogHandler;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogActionType;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogContentType;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogStyle;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialogHandler;
 import org.eclipse.stardust.ui.web.common.event.ViewDataEvent;
 import org.eclipse.stardust.ui.web.common.event.ViewDataEvent.ViewDataEventType;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
@@ -54,10 +56,11 @@ import org.eclipse.stardust.ui.web.viewscommon.core.SessionSharedObjectsMap;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler.EventType;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.FileStorage;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
-import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.DocumentUploadHelper;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.AbstractDocumentUploadHelper.DocumentUploadCallbackHandler;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.DocumentUploadHelper;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DocumentTypeWrapper;
@@ -66,9 +69,9 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.IppJsfFormGenerator;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.TypedDocumentsUtil;
+import org.eclipse.stardust.ui.web.viewscommon.views.doctree.CommonFileUploadDialog.FileUploadDialogAttributes;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.FileSaveDialog;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.FileSaveDialog.FileSaveCallbackHandler;
-import org.eclipse.stardust.ui.web.viewscommon.views.doctree.CommonFileUploadDialog.FileUploadDialogAttributes;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.OutputResource;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.IDocumentEventListener.DocumentEventType;
 
@@ -106,6 +109,8 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
    private boolean disableAutoDownload = false;
    private String loadUnsuccessfulMsg;
    private ConfirmationDialog confirmationDialog;
+   
+   private String docInteractionId = null;
 
    private String autoDownloadLinkId;
 
@@ -258,6 +263,20 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
       {
          ((ViewEventHandler) contentHandler).handleEvent(event);
       }
+      
+      // notify view state change observers
+      if (docInteractionId != null)
+      {
+         Map<String, Object> result = CollectionUtils.newHashMap();
+         result.put("docInteractionId", docInteractionId);
+         PortalApplication.getInstance().broadcastViewDataEvent(
+               new ViewDataEvent(thisView.getOpenerView(), ViewDataEventType.VIEW_STATE_CHANGED, result, event));
+      }
+      else
+      {
+         PortalApplication.getInstance().broadcastViewDataEvent(
+               new ViewDataEvent(thisView, ViewDataEventType.VIEW_STATE_CHANGED, null, event));
+      }
    }
 
    /**
@@ -275,24 +294,53 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
 
       documentContentInfo = (IDocumentContentInfo) thisView.getViewParams().get("documentInfo");
 
-      if (null == documentContentInfo && null != thisView.getViewParams().get("documentId"))
+      if (null == documentContentInfo)
       {
          String documentId = (String) thisView.getViewParams().get("documentId");
+         
+         if (null != documentId)
+         {
+            try
+            {
+               // first check if it is a file system document
+               FileStorage fileStorage = FileStorage.getInstance();
+               documentContentInfo = fileStorage.retrieveFile((documentId));
 
-         try
-         {
-            documentContentInfo = new JCRDocument(DocumentMgmtUtility.getDocument(documentId));
-            thisView.getViewParams().put("documentInfo", documentContentInfo);
-         }
-         catch (ResourceNotFoundException e)
-         {
-            viewEvent.setVetoed(true);
-            ExceptionHandler.handleException(e);
-            return false;
+               if (documentContentInfo == null)
+               {
+                  documentContentInfo = new JCRDocument(DocumentMgmtUtility.getDocument(documentId));
+               }
+               
+               thisView.getViewParams().put("documentInfo", documentContentInfo);
+            }
+            catch (Exception e)
+            {
+               viewEvent.setVetoed(true);
+               ExceptionHandler.handleException(e);
+               return false;
+            }
          }
       }
 
-      processInstance = (ProcessInstance) thisView.getViewParams().get("processInstance");
+      if (StringUtils.isNotEmpty((String) thisView.getViewParams().get("docInteractionId")))
+      {
+         docInteractionId = (String) thisView.getViewParams().get("docInteractionId");
+      }
+
+      if (StringUtils.isNotEmpty((String) thisView.getViewParams().get("description")))
+      {
+         documentContentInfo.setDescription((String) thisView.getViewParams().get("description"));
+      }
+      if (StringUtils.isNotEmpty((String) thisView.getViewParams().get("comments")))
+      {
+         documentContentInfo.setComments((String) thisView.getViewParams().get("comments"));
+      }
+
+      if (processInstance == null)
+      {
+         processInstance = (ProcessInstance) thisView.getViewParams().get(
+               "processInstance");
+      }
 
       if (null == processInstance)
       {
@@ -309,8 +357,33 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
                processInstanceOid = Long.valueOf((String) processInsOIdObj);
             }
             processInstance = ProcessInstanceUtils.getProcessInstance(processInstanceOid);
+            thisView.getViewParams().put("processInstance", processInstance);
          }
       }
+      
+      if (documentContentInfo instanceof FileSystemJCRDocument && processInstance != null)
+      {
+         FileSystemJCRDocument fileSystemDoc = (FileSystemJCRDocument) documentContentInfo;
+         String parentFolder = DocumentMgmtUtility.getTypedDocumentsFolderPath(processInstance);
+         fileSystemDoc.setJcrParentFolder(parentFolder);
+
+         
+      }
+      
+      if (processInstance != null)
+      {
+         // String docTypeId = (String) thisView.getViewParams().get("docTypeId");
+         if (documentContentInfo.getDocumentType() == null && this.dataId != null)
+         {
+            Model model = ModelUtils.getModel(processInstance.getModelOID());
+            DocumentType docType = ModelUtils.getDocumentTypeFromData(model, model.getData(this.dataId));
+            if (docType != null)
+            {
+               documentContentInfo.setDocumentType(docType);
+            }
+         }
+      }
+      
       Object embededViewObj = thisView.getViewParams().get("embededView");
 
       if (null != embededViewObj)
@@ -798,7 +871,16 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
 
       PortalApplication.getInstance().broadcastViewDataEvent(
             new ViewDataEvent(thisView, ViewDataEventType.DATA_MODIFIED, documentContentInfo));
-
+      
+      if (docInteractionId != null)
+      {
+         Map<String, Object> result = CollectionUtils.newHashMap();
+         result.put("docInteractionId", docInteractionId);
+         result.put("document", documentContentInfo);
+         PortalApplication.getInstance().broadcastViewDataEvent(
+               new ViewDataEvent(thisView.getOpenerView(), ViewDataEventType.DATA_MODIFIED, result));
+      }
+      
       initializeBean();
 
       if(refreshViewer)
@@ -1266,7 +1348,5 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
    public boolean isDisableAutoDownload()
    {
       return disableAutoDownload;
-   }
-
-
+   }  
 }

@@ -63,4 +63,16 @@ public class ActivityInteractionHandler2Adapter implements IActivityInteractionC
       return aih2.providePanelUri(ai);
    }
 
+   @Override
+   public boolean isTypedDocumentOpen(ActivityInstance activityInstance)
+   {
+      return false;
+   }
+
+   @Override
+   public boolean unregisterInteraction(ActivityInstance ai)
+   {
+      return false;
+   }
+
 }

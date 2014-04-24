@@ -34,5 +34,15 @@
          id="org.eclipse.stardust.ui.web.validation.eventHandlerValidator"
          targetType="org.eclipse.stardust.model.xpdl.carnot.EventHandlerType">
    </modelElementValidator>
+   <modelElementValidator
+         class="org.eclipse.stardust.ui.web.validation.EventValidator"
+         id="org.eclipse.stardust.ui.web.validation.eventHandlerValidator"
+         targetType="org.eclipse.stardust.model.xpdl.carnot.ActivityType">
+   </modelElementValidator>
+   <modelElementValidator
+         class="org.eclipse.stardust.ui.web.validation.DataMappingValidator"
+         id="org.eclipse.stardust.ui.web.validation.dataMappingValidator"
+         targetType="org.eclipse.stardust.model.xpdl.carnot.DataMappingType">
+   </modelElementValidator>
 	</extension>
 </plugin>

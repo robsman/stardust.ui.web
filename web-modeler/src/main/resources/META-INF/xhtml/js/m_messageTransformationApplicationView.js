@@ -12,15 +12,19 @@ define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_command", "bpm-modeler/js/m_commandsController",
 				"bpm-modeler/js/m_model", "bpm-modeler/js/m_accessPoint", "bpm-modeler/js/m_dataTypeSelector", "bpm-modeler/js/m_dataTraversal", "bpm-modeler/js/m_dialog",
 				"bpm-modeler/js/m_modelElementView", "bpm-modeler/js/m_codeEditorAce", "bpm-modeler/js/m_i18nUtils",
-				"bpm-modeler/js/m_parameterDefinitionsPanel",],
+				"bpm-modeler/js/m_parameterDefinitionsPanel","bpm-modeler/js/m_parsingUtils","bpm-modeler/js/m_autoCompleters", "bpm-modeler/js/m_typeDeclaration"],
 		function(m_utils, m_constants, m_command, m_commandsController,
 				m_model, m_accessPoint, m_dataTypeSelector, m_dataTraversal, m_dialog,
-				m_modelElementView, m_codeEditorAce, m_i18nUtils, m_parameterDefinitionsPanel) {
+				m_modelElementView, m_codeEditorAce, m_i18nUtils, m_parameterDefinitionsPanel,
+				m_parsingUtils,m_autoCompleters, m_typeDeclaration) {
 			return {
 				initialize : function(fullId) {
 					m_utils.initializeWaitCursor(m_utils.jQuerySelect("html"));
 					m_utils.showWaitCursor();
 
+					m_utils.jQuerySelect("#hideGeneralProperties").hide();
+					initViewCollapseClickHandlers();
+					
 					var view = new MessageTransformationApplicationView();
 					i18nmessageTransformationproperties();
 					// TODO Unregister!
@@ -32,6 +36,20 @@ define(
 					m_utils.hideWaitCursor();
 					}
 				};
+				
+			/**
+			 * 
+			 */
+			function initViewCollapseClickHandlers() {
+				m_utils.jQuerySelect("#showGeneralProperties").click(function() {
+				m_utils.jQuerySelect("#showAllProperties").hide();
+				m_utils.jQuerySelect("#hideGeneralProperties").show();
+				});
+				m_utils.jQuerySelect("#hideGeneralProperties").click(function() {
+				m_utils.jQuerySelect("#showAllProperties").show();
+				m_utils.jQuerySelect("#hideGeneralProperties").hide();
+				});
+			}	
 
 			/**
 			 *
@@ -39,6 +57,13 @@ define(
 			function i18nmessageTransformationproperties() {
 
 				// Common properties
+				m_utils.jQuerySelect("#hideGeneralProperties label")
+					.text(m_i18nUtils.getProperty("modeler.element.properties.commonProperties.generalProperties"));
+		
+				m_utils.jQuerySelect("#showGeneralProperties label")
+					.text(m_i18nUtils.getProperty("modeler.element.properties.commonProperties.generalProperties"));
+			
+				
 				m_utils.jQuerySelect("label[for='guidOutput']")
 						.text(
 								m_i18nUtils
@@ -362,6 +387,15 @@ define(
 					this.editorAnchor.id = "expressionText" + Math.floor((Math.random()*100000) + 1) + "Div";
 					this.expressionEditor = m_codeEditorAce.getJSCodeEditor(this.editorAnchor.id);
 					this.expressionEditor.disable();
+					var that=this;
+					$(this.expressionEditor).on("moduleLoaded",function(event,module){
+						var sessionCompleter;
+						if(module.name==="ace/ext/language_tools"){
+							sessionCompleter=m_autoCompleters.getSessionCompleter();
+							that.expressionEditor.addCompleter(sessionCompleter);
+						}
+					});
+					this.expressionEditor.loadLanguageTools();
 
 					this.bindEventHandlers();
 
@@ -476,29 +510,38 @@ define(
 					}
 
 					// Global variables for Code Editor auto-complete / validation
-					var globalVariables = {};
+					//var globalVariables = {};
+					var completerStrings=[];
 					var typeDeclaration;
 					for (var id in this.inputData) {
 						typeDeclaration = this.inputData[id];
-						if (typeDeclaration != null) {
-							globalVariables[id] = typeDeclaration.createInstance();
+						if (typeDeclaration) {
+							/*Structured type branch*/
+							completerStrings=completerStrings.concat(m_parsingUtils.parseTypeToStringFrags(typeDeclaration,id));
 						}
-						else {
-							globalVariables[id] = "";
+						else{
+							/*Primitive type branch*/
+							completerStrings=completerStrings.concat([id]);
 						}
 					}
 
 					for (var id in this.outputData) {
 						typeDeclaration = this.outputData[id];
-						if (typeDeclaration != null) {
-							globalVariables[id] = typeDeclaration.createInstance();
+						if (typeDeclaration) {
+							/*Structured type branch*/
+							completerStrings=completerStrings.concat(m_parsingUtils.parseTypeToStringFrags(typeDeclaration,id));
 						}
-						else {
-							globalVariables[id] = "";
+						else{
+							/*Primitive type branch*/
+							completerStrings=completerStrings.concat([id]);
 						}
 					}
+					this.expressionEditor.setSessionData("$keywordList",completerStrings);
+					var that=this;
 
-					this.expressionEditor.setGlobalVariables(globalVariables);
+					this.submitChanges(this.determineTransformationChanges());
+
+
 
 					// TODO - these things below were possible with CodeMirror editor out of box
 					// But not in case of Ace editor hence temporarily commented out
@@ -523,14 +566,14 @@ define(
 				 */
 				MessageTransformationApplicationView.prototype.resume = function() {
 					this.inputTable.tableScroll({
-						height : 200
+						height : 400
 					});
 					this.inputTable.treeTable({
 						indent: 14
 					});
 
 					this.outputTable.tableScroll({
-						height : 200
+						height : 400
 					});
 					this.outputTable.treeTable({
 						indent: 14
@@ -645,9 +688,12 @@ define(
 						accessPoint) {
 					if (accessPoint.dataType === m_constants.STRUCTURED_DATA_TYPE) {
 						var typeDeclaration = m_accessPoint.retrieveTypeDeclaration(accessPoint, this.getModel());
+						var childElementsArray = [];
+						m_utils.insertArrayAt(childElementsArray, typeDeclaration.getBody());
+						m_utils.insertArrayAt(childElementsArray, typeDeclaration.getTypeDeclaration().attributes);
 						this.inputData[accessPoint.id] = typeDeclaration;
 						this.initializeTableRowsRecursively(false, accessPoint,
-								typeDeclaration.getBody(), null,
+								childElementsArray, null,
 								typeDeclaration.model);
 					}
 					else { // accessPoint.dataType === m_constants.PRIMITIVE_DATA_TYPE
@@ -692,8 +738,11 @@ define(
 					if (accessPoint.dataType === m_constants.STRUCTURED_DATA_TYPE) {
 						var typeDeclaration = m_accessPoint.retrieveTypeDeclaration(accessPoint, this.getModel());
 						this.outputData[accessPoint.id] = typeDeclaration;
+						var childElementsArray = [];
+						m_utils.insertArrayAt(childElementsArray, typeDeclaration.getBody());
+						m_utils.insertArrayAt(childElementsArray, typeDeclaration.getTypeDeclaration().attributes);
 						this.initializeTableRowsRecursively(true, accessPoint,
-								typeDeclaration.getBody(), null,
+								childElementsArray, null,
 								typeDeclaration.model);
 					}
 					else { // accessPoint.dataType === m_constants.PRIMITIVE_DATA_TYPE
@@ -725,7 +774,7 @@ define(
 				 */
 				MessageTransformationApplicationView.prototype.initializeTableRowsRecursively = function(
 						output, accessPoint, element, parentPath, scopeModel,
-						elementName, elementType) {
+						elementName, elementType, schema) {
 
 					elementName = elementName ? elementName
 							: element ? element.name : null;
@@ -750,6 +799,10 @@ define(
 							: accessPoint.primitiveDataType)
 							: elementType;
 
+					// Assign the element name as type name assuming this is an element
+					// with anonymous nested type
+					tableRow.typeName = tableRow.typeName ? tableRow.typeName : elementName;
+
 					if (output) {
 						// for output mapping
 						tableRow.mappingExpression = this.mappingExpressions[path] == null ? ""
@@ -769,6 +822,11 @@ define(
 
 					if (element.length > 0) {
 						for ( var elmnt in element) {
+							if (element[elmnt].classifier === "attribute") {
+								this.initializeTableRowsRecursively(output,
+										accessPoint, element[elmnt], path,
+										scopeModel);
+							}
 							var childElements = element[elmnt].body;
 							if (childElements == null) {
 								continue;
@@ -776,17 +834,39 @@ define(
 
 							for ( var index in childElements) {
 								var childElement = childElements[index];
-								if (childElement.body) {
+								if (childElement.attributes || childElement.body) {
+									var childElementsArray = [];
+									m_utils.insertArrayAt(childElementsArray, childElement.body);
+									m_utils.insertArrayAt(childElementsArray, childElement.attributes);
 									this.initializeTableRowsRecursively(output,
-											accessPoint, childElement.body,
+											accessPoint, childElementsArray,
 											path, scopeModel,
 											childElement.name,
 											childElement.type);
 
 								} else {
-									this.initializeTableRowsRecursively(output,
-											accessPoint, childElement, path,
-											scopeModel);
+									// TODO - review
+									var typeDeclaration = m_accessPoint.retrieveTypeDeclaration(accessPoint, this.getModel());
+									var schemaType = typeDeclaration.asSchemaType();
+									var childSchemaType = schemaType.resolveElementTypeFromElement(childElement);
+									if (!childSchemaType && schema) {
+										childSchemaType = schema.resolveElementTypeFromElement(childElement);
+									}
+									if (childSchemaType && childSchemaType.isStructure()) {
+										var childElementsArray = [];
+										m_utils.insertArrayAt(childElementsArray, childSchemaType.type.body);
+										m_utils.insertArrayAt(childElementsArray, childSchemaType.getAttributes());
+										this.inputData[accessPoint.id] = childSchemaType;
+										var elemName = childElement.name ? childElement.name : (childSchemaType.name ? m_typeDeclaration.parseQName(childSchemaType.name).name : "");
+										this.initializeTableRowsRecursively(output, accessPoint,
+												childElementsArray, path,
+												childSchemaType.model, elemName,
+												((childSchemaType.type && childSchemaType.type.type) ? childSchemaType.type.type : childSchemaType.name), childSchemaType);
+									} else {
+										this.initializeTableRowsRecursively(output,
+												accessPoint, childElement, path,
+												scopeModel);
+									}
 								}
 							}
 						}
@@ -819,28 +899,10 @@ define(
 						content += "<td class='typeCell'>" + tableRows[tableRow].typeName;
 						+"</td>";
 
-						var deleteTooltip = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.delete");
 						if (source) {
-							content += "<td class='inputActionsCell'>";
-							if (tableRows[tableRow].parentPath == null) {
-								content += "<div class='deleteAction' title='" + deleteTooltip + "'></div>";
-							}
-							content += "</td>";
 							content += "</tr>";
-
 							tableBody.append(content);
-
-							// Add click event handler for "delete" action
-							if (tableRows[tableRow].parentPath == null) {
-								var deleteIcon = m_utils.jQuerySelect("#sourceTable #" + rowId + " .deleteAction");
-								deleteIcon.click({
-									"view" : this,
-									"accessPoint" : tableRows[tableRow].accessPoint
-								}, function(event) {
-									event.data.view.deleteAccessPoint(event.data.accessPoint);
-								});
-							}
-
+							
 							var dataElement = m_utils.jQuerySelect("#sourceTable #" + rowId
 									+ " .data-element");
 
@@ -878,9 +940,6 @@ define(
 							content += "<td class='problemCell' />";
 							content += "<td class='outputActionsCell'>";
 							content += "<div class='clearMappingAction' title='" + clearMappingTooltip + "'></div>";
-							if (tableRows[tableRow].parentPath == null) {
-								content += "<div class='deleteAction' title='" + "Delete" + "'></div>";
-							}
 							content += "</td>";
 							content += "</tr>";
 
@@ -900,17 +959,6 @@ define(
 							}
 							else {
 								clearMappingIcon.addClass("disabled");
-							}
-
-							// Add click event handler for "delete" action
-							if (tableRows[tableRow].parentPath == null) {
-								var deleteIcon = m_utils.jQuerySelect("#targetTable #" + rowId + " .deleteAction");
-								deleteIcon.click({
-									"view" : this,
-									"accessPoint" : tableRows[tableRow].accessPoint
-								}, function(event) {
-									event.data.view.deleteAccessPoint(event.data.accessPoint);
-								});
 							}
 
 							var row = m_utils.jQuerySelect("#targetTable #" + rowId);
@@ -966,7 +1014,7 @@ define(
 													var prefix = outputTableRow.path + ".";
 													for (var n = 0; n < view.outputTableRows.length; ++n) {
 														if (view.outputTableRows[n].path.indexOf(prefix) == 0) {
-															if (view.outputTableRows[n].typeName.indexOf("xsd:") == 0) {
+															if (view.isPrimitive(view.outputTableRows[n])) {
 																view.outputTableRows[n].mappingExpression = view.outputTableRows[n].path.replace(prefix, inputTableRow.path + ".");
 																view.populateMappingCell(view.outputTableRows[n]);
 															}

@@ -10,12 +10,13 @@
 <link rel="stylesheet" type="text/css"
 	href="plugins/bpm-modeler/css/thirdparty/jquery/jquery-ui-1.10.2.custom.css"></link>
 <link href="plugins/bpm-modeler/css/lightdust.css" rel="stylesheet" type="text/css" />
-<script type="text/javascript" data-main="plugins/bpm-modeler/js/modeler-main"
+<script type="texstructEnum
+t/javascript" data-main="plugins/bpm-modeler/js/modeler-main"
 	src="plugins/bpm-modeler/js/libs/require/2.0.5/require.js"></script>
 </head>
 <body>
 <div id="processDefinitionView" style="visibility: hidden">
-  <div style="margin-left: 10px; overflow: auto;">
+  <div style="margin-left: 10px; overflow: auto; padding-top: 10px;">
 	<table style="width: 100%; height: auto;" cellpadding="0" cellspacing="0"> <!-- Height to be adjusted with available area -->
 		<tr style="vertical-align: top; height: 100%">
 			<td>
@@ -224,6 +225,11 @@
 																						title="Add" alt="Add" class="toolbarButton" />
 																					</td>
 																					<td></td>
+																				</tr>
+																				<tr>
+																					<td><label for="parameterDefinitionIdOutput">Id</label>
+																					</td>
+																					<td><label id="parameterDefinitionIdOutput"></label></td>
 																				</tr>
 																				<tr>
 																					<td><label for="parameterDefinitionNameInput">Name</label>
@@ -575,7 +581,7 @@
 																	</tr>
 																	<tr>
 																		<td></td>
-																		<td></td>																		
+																		<td></td>
 																		<td colspan="2"><div id="participantOutput" /></td>
 																	</tr>
 																	<tr>
@@ -625,7 +631,7 @@
 														<td id="propertiesPagesCell" valign="top">
 															<div id="implementationPropertiesPage"
 																class="propertiesPage">
-																<div class="heading">Implementation</div>
+																<div id="implementationHeading" class="heading">Implementation</div>
 																<table>
 																	<tr id="noImplementationRow">
 																		<td colspan="2"><label id="noImplementationLabel" />
@@ -948,28 +954,24 @@
 														<td id="propertiesPagesCell">
 															<div id="basicPropertiesPage" class="propertiesPage">
 																<div class="heading">General Properties</div>
+																<div style="float: right;">
+																	<a id="viewLink">Open Data View &raquo;</a>
+																</div>
 																<table id="dataname">
 																	<tr id="guidOutputRow">
 																		<td><label for="guidOutput">UUID</label>
 																		</td>
 																		<td><div id="guidOutput" class="output" /></td>
-																		<td>
-																			<div>
-																				<a id="viewLink">Open Data View &raquo;</a>
-																			</div>
-																		</td>
 																	</tr>
 																	<tr id="idOutputRow">
 																		<td><label for="idOutput">ID</label>
 																		</td>
 																		<td><div id="idOutput" class="output" /></td>
-																		<td></td>
 																	</tr>
 																	<tr>
 																		<td><label for="nameInput">Name</label>
 																		</td>
 																		<td><input type="text" id="nameInput" /></td>
-																		<td></td>
 																	</tr>
 																</table>
 																<table id="datadescription">
@@ -1085,6 +1087,10 @@
 																					<input id="otherInputText" name="otherInputText"
 																						type="text" ng-model="defaultValue" ng-model-onblur />
 																				</div>
+																				<div ng-show="enumDataType == true">
+																					<select id="enumInputSelect" size="1"/>
+
+																				</div>
 																			</form>
 																		</td>
 																	</tr>
@@ -1196,6 +1202,13 @@
 																												Access Point</label></td>
 																										<td><select
 																											id="inputAccessPointSelectInput" size="1">
+																									</tr>
+																									<tr>
+																										<td><label
+																											for="inputAccessPointPathInput">Input
+																												Access Point Path</label></td>
+																										<td><input
+																											id="inputAccessPointPathInput" type="text" style="width: 200px" /></td>
 																										</select></td>
 																									</tr>
 																								</table>
@@ -1230,6 +1243,13 @@
 																										<td><select
 																											id="outputAccessPointSelectInput" size="1">
 																										</select></td>
+																									</tr>
+																									<tr>
+																										<td><label
+																											for="outputAccessPointPathInput">Output
+																												Access Point Path</label></td>
+																										<td><input
+																											id="outputAccessPointPathInput" type="text" style="width: 200px" /></td>
 																									</tr>
 																								</table>
 																							</div></td>

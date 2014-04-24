@@ -143,5 +143,10 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 		class="org.eclipse.stardust.ui.web.processportal.dialogs.WorklistColumnSelectorPopup"
 		scope="portalTab">
 	</bean>
+
+	<bean name="infinityBpmInteractionsRegistry2"
+		class="org.eclipse.stardust.ui.web.processportal.interaction.InteractionRegistry"
+		scope="singleton">
+	</bean>
 	
 </beans>

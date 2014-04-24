@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Edit Lock</title>
+</head>
+<body>
+	<div id="editLockHeading" class="heading">Edit Lock</div>
+	<div>
+		<table cellpadding="0" cellspacing="0" class="fieldSetTable">
+			<tbody>
+				<tr>
+					<td><label for="editLockStatus">Current state</label>
+					</td>
+					<td><label id="editLockStatus"></label>
+					</td>
+				</tr>
+				<tr>
+					<td><label for="editLockOwner">Owner</label>
+					</td>
+					<td><label id="editLockOwner"></label>
+					</td>
+				</tr>
+				<tr>
+					<td><input id="refreshLockStatusButton" type="button" value="Refresh status" class="noDataChange" />
+					<td><input id="breakEditLockButton" type="button" value="Break edit lock" class="noDataChange" />
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div id="deleteEditLockDialog"
+		title="Delete Edit Lock"
+		style="min-width: 300px; min-height: 200px;">
+		<table cellpadding="0" cellspacing="0" class="fieldSetTable">
+			<tr>
+				<td colspan="3"><label id="deleteEditLockDialogMsg">Break edit lock</label></td>
+			</tr>
+			<tr>
+				<td>
+					<table>
+						<tr>
+							<td><input id="applyButton" type="button" value="Apply" />
+							</td>
+							<td><input id="closeButton" type="button" value="Close" class="noDataChange" />
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+	</div>
+</body>
+</html>

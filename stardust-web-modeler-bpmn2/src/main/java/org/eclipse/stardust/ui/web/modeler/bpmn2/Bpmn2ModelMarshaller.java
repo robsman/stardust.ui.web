@@ -797,7 +797,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
       if (itemDefinition.getStructureRef() instanceof InternalEObject)
       {
          URI proxyURI = ((InternalEObject) itemDefinition.getStructureRef()).eProxyURI();
-         if (proxyURI.hasFragment())
+         if ((null != proxyURI) && proxyURI.hasFragment())
          {
             schemaLocation = proxyURI.trimFragment().toString();
             typeId = proxyURI.fragment();
@@ -842,7 +842,7 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
          if ((xsdSchema instanceof XSDSchema) && !isEmpty(typeId))
          {
             XSDSchema embeddedSchema = (XSDSchema) xsdSchema;
-            jto.typeDeclaration.schema = XsdSchemaUtils.toSchemaJson(embeddedSchema, typeId);
+            jto.typeDeclaration.schema = XsdSchemaUtils.toSchemaJson(embeddedSchema);
             jto.typeDeclaration.type.classifier = "SchemaType";
          }
       }
@@ -1485,5 +1485,17 @@ public class Bpmn2ModelMarshaller implements ModelMarshaller
          jto.attributes = new JsonObject();
       }
 
+   }
+
+   @Override
+   public void init()
+   {
+      // TODO Auto-generated method stub
+   }
+
+   @Override
+   public void done()
+   {
+      // TODO Auto-generated method stub
    }
 }

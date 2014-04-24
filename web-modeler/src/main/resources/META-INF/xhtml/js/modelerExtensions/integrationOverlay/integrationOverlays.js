@@ -14,6 +14,7 @@ define(
 				"bpm-modeler/js/RestServiceOverlay",
 				"bpm-modeler/js/RulesIntegrationOverlay",
 				"bpm-modeler/js/ScriptingIntegrationOverlay",
+				"bpm-modeler/js/SqlIntegrationOverlay",
 				"bpm-modeler/js/m_manualTriggerIntegrationOverlay",
 				"bpm-modeler/js/m_timerEventIntegrationOverlay",
 				"bpm-modeler/js/m_intermediateTimerEventIntegrationOverlay",
@@ -23,7 +24,7 @@ define(
 				"bpm-modeler/js/m_messageEventIntegrationOverlay",
 				"bpm-modeler/js/m_scanEventIntegrationOverlay",
 				"bpm-modeler/js/m_genericCamelRouteEventIntegrationOverlay" ],
-		function(GenericEndpointOverlay, MailIntegrationOverlay, RestServiceOverlay, RulesIntegrationOverlay, ScriptingIntegrationOverlay, m_manualTriggerIntegrationOverlay,
+		function(GenericEndpointOverlay, MailIntegrationOverlay, RestServiceOverlay, RulesIntegrationOverlay, ScriptingIntegrationOverlay,SqlIntegrationOverlay, m_manualTriggerIntegrationOverlay,
 				m_timerEventIntegrationOverlay,  m_intermediateTimerEventIntegrationOverlay, m_intermediateErrorEventIntegrationOverlay,
 				m_fileEventIntegrationOverlay, m_emailEventIntegrationOverlay,
 				m_messageEventIntegrationOverlay,
@@ -57,7 +58,15 @@ define(
 					name : "Script Invocation",
 					pageHtmlUrl: "plugins/bpm-modeler/views/modeler/scriptingIntegrationOverlay.html",
 					provider : ScriptingIntegrationOverlay,
-				}],
+				},
+				{
+					id : "sqlIntegrationOverlay",
+					name : "SQL Invocation",
+					pageHtmlUrl: "plugins/bpm-modeler/views/modeler/sqlIntegrationOverlay.html",
+					provider : SqlIntegrationOverlay,
+					visibility:"preview"
+				}
+				],
 				eventIntegrationOverlay : [
 						{
 							id : "manualTrigger",

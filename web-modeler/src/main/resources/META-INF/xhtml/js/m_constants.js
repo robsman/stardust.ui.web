@@ -216,6 +216,10 @@ define(function() {
 		MODEL : "model",
 		DATE_OF_CREATION : "dateOfCreation",
 		DATE_OF_MODIFICATION : "dateOfModification",
+		
+		//Model Config Variable
+		CONFIG_VAR_REF_LIMIT : 3,
+		TYPE_PASSWORD :"Password",
 
 		// Process Definition
 
@@ -276,6 +280,7 @@ define(function() {
 		DOCUMENT_DATA_TYPE : "dmsDocument",
 		ENTITY_DATA_TYPE : "entity",
 		HIBERNATE_DATA_TYPE : "hibernate",
+		ENUMERATION : "Enumeration",
 
 		// Type Declarations
 

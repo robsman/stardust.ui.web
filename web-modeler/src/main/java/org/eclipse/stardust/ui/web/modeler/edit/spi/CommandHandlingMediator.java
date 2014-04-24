@@ -8,10 +8,11 @@ import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.model.xpdl.builder.session.EditingSession;
 import org.eclipse.stardust.model.xpdl.builder.session.Modification;
+import org.eclipse.stardust.ui.web.modeler.edit.jto.CommandJto;
 
 public interface CommandHandlingMediator
 {
-   void broadcastChange(EditingSession session, JsonObject commndJson);
+   void broadcastChange(EditingSession session, CommandJto commandJto, JsonObject changeJson);
 
    Modification handleCommand(EditingSession editingSession, String commandId,
          List<ChangeRequest> changes);

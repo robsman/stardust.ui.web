@@ -111,4 +111,17 @@ public class JsfActivityInteractionController implements IActivityInteractionCon
       return outData;
    }
 
+   /* (non-Javadoc)
+    * @see org.eclipse.stardust.ui.web.viewscommon.common.spi.IActivityInteractionController#unregisterInteraction(org.eclipse.stardust.engine.api.runtime.ActivityInstance)
+    */
+   public boolean unregisterInteraction(ActivityInstance ai)
+   {
+      return false;
+   }
+
+   @Override
+   public boolean isTypedDocumentOpen(ActivityInstance activityInstance)
+   {
+		return false;
+   }
 }

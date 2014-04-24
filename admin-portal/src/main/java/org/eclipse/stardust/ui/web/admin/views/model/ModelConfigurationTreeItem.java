@@ -12,6 +12,8 @@ package org.eclipse.stardust.ui.web.admin.views.model;
 
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.core.preferences.configurationvariables.ConfigurationVariable;
+import org.eclipse.stardust.engine.core.preferences.configurationvariables.ConfigurationVariableScope;
+import org.eclipse.stardust.engine.core.preferences.configurationvariables.ConfigurationVariableUtils;
 import org.eclipse.stardust.engine.core.preferences.configurationvariables.ConfigurationVariables;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelElementLocalizerKey;
@@ -25,6 +27,7 @@ public class ModelConfigurationTreeItem
    private final Object source;
    private String defaultValue;
    private String description;
+   private String type;
    private String modelName;
    private String name;
    private String value;
@@ -43,6 +46,7 @@ public class ModelConfigurationTreeItem
          this.description = getModelDescription(conVariables.getModelId());
          this.value = "";
          this.defaultValue = "";
+         this.type = "";
       }
       else if ((source != null) && source instanceof ConfigurationVariable)
       {
@@ -52,6 +56,9 @@ public class ModelConfigurationTreeItem
          this.description = configurationVariable.getDescription();
          this.value = configurationVariable.getValue();
          this.defaultValue = configurationVariable.getDefaultValue();
+         this.type = configurationVariable.getType().equals(ConfigurationVariableScope.Password)
+               ? ConfigurationVariableScope.Password.name()
+               : ConfigurationVariableScope.String.name();
       }
    }
 
@@ -103,6 +110,11 @@ public class ModelConfigurationTreeItem
       return description;
    }
 
+   public String getType()
+   {
+      return type;
+   }
+
    public String getModelName()
    {
       return modelName;
@@ -141,6 +153,11 @@ public class ModelConfigurationTreeItem
    public void setDescription(String description)
    {
       this.description = description;
+   }
+
+   public void setType(String type)
+   {
+      this.type = type;
    }
 
    public void setModelName(String modelName)

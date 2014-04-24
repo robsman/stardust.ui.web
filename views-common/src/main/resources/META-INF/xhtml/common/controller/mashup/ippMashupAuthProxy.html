@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Initiate authenticated request</title>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script
+	src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.3.1/jquery.cookie.js"></script>
+<style type="text/css">
+.initially-hidden {
+	display: none;
+}
+.conditionally-hidden {
+	display: none;
+}
+</style>
+<script>
+  $(document)
+      .ready(
+          function() {
+
+            var params = {},
+                regex = /([^&=]+)=([^&]*)/g,
+                match,
+                errorTimer;
+            while (match = regex.exec(location.search.substring(1))) {
+              params[decodeURIComponent(match[1])] = decodeURIComponent(match[2]);
+            }
+            while (match = regex.exec(location.hash.substring(1))) {
+              params[decodeURIComponent(match[1])] = decodeURIComponent(match[2]);
+            }
+
+            if (params.existence) {
+              // confirm existence
+              window.parent.postMessage(params.existence, "*");
+              return;
+            }
+
+            $.ajax({
+              type: "GET",
+              crossDomain: true,
+              url: params.user_info_uri,
+              headers: {"Authorization": "Bearer " + params.access_token},
+              data: $.support.cors ? {} : {access_token: params.access_token},
+              dataType: $.support.cors ? "json" : "jsonp",
+              success: function(result, status) {
+                $(".success-userInfo").show();
+
+                $.each(result.ipp_session_credentials || [], function(i, credCfg) {
+                  $.cookie(credCfg.name, credCfg.value, credCfg);
+                });
+
+                $(".targetUri").attr("href", result.uri);
+                $(".success-redirect").show();
+
+                window.clearTimeout(errorTimer);
+                window.location.replace(result.uri);
+              },
+              complete : function(jqXhr, status) {
+                if ("success" !== status) {
+                  $(".errorDetails").text(status + " (" + jqXhr.statusText + ")");
+                  $(".error-userInfo").show();
+                  $(".initially-hidden").show();
+                }
+              }
+            });
+
+            errorTimer = window.setTimeout(function() {
+              $(".initially-hidden").show();
+            }, 3000);
+          });
+</script>
+</head>
+<body>
+	<ul class="initially-hidden">
+		<li>Initiating request ...</li>
+		<li class="success-userInfo conditionally-hidden">Successfully retrieved context config ...</li>
+		<li class="success-redirect conditionally-hidden">Initiating load of <a class="mashupUri">target URI</a> ...</li>
+		<li class="error-userInfo conditionally-hidden">Failed completing request: <span class="errorDetails"></span></li>
+	</ul>
+</body>
+</html>

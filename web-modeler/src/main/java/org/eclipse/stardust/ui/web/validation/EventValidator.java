@@ -36,6 +36,13 @@ public class EventValidator implements IModelElementValidator
    {
       List<Issue> issues = new ArrayList<Issue>();
             
+      if(element instanceof ActivityType)
+      {
+         checkBoundaryEventsConsistency(((ActivityType) element).getEventHandler(), issues);
+         
+         return issues.toArray(new Issue[issues.size()]);         
+      }      
+      
       EventHandlerType event = (EventHandlerType) element;
       
       ActivityType activity = ModelUtils.findContainingActivity(event);
@@ -43,7 +50,6 @@ public class EventValidator implements IModelElementValidator
       List<TransitionType> inTransitions = activity.getInTransitions();
             
       checkBoundaryEventConsistency(event, outTransitions, issues);
-      checkBoundaryEventsConsistency(activity.getEventHandler(), issues);
       checkIntermediateEventConsistency(activity, outTransitions, inTransitions, issues);
          
       return issues.toArray(new Issue[issues.size()]);
@@ -91,7 +97,7 @@ public class EventValidator implements IModelElementValidator
    {
       ActivityType activity = null;
       
-      for (int i=0; i<eventHandlers.size(); i++)
+      for (int i = 0; i < eventHandlers.size(); i++)
       {
          EventHandlerType x = (EventHandlerType) eventHandlers.get(i);
          if(activity == null)
@@ -104,7 +110,7 @@ public class EventValidator implements IModelElementValidator
             continue;
          }
          
-         for (int j=i+1; j<eventHandlers.size(); j++)
+         for (int j= i + 1; j < eventHandlers.size(); j++)
          {
             EventHandlerType y = (EventHandlerType) eventHandlers.get(j);
             if(activity == null)

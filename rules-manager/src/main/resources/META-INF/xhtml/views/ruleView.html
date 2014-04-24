@@ -1,0 +1,235 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+<head>
+<title>Organization View</title>
+<link href="plugins/bpm-modeler/css/thirdparty/jquery/jquery-ui-1.10.2.custom.css" rel="stylesheet"
+	type="text/css" />
+<link href="plugins/bpm-modeler/css/lightdust.css" rel="stylesheet" type="text/css" />
+<style>
+ul.popupSelectorItemList {
+	list-style: none;
+	list-style-position: inside;
+	padding: 0px;
+	margin: 0px;
+}
+
+.popupSelectorItem {
+}
+
+.popupSelectorItem:hover {
+	background: url(plugins/bpmn-modeler/images/toolbarIconSelectHover.png)
+		center repeat-x #ffd700;
+	cursor: pointer;
+}
+
+.factTerm {
+	font-weight: bold;
+	vertical-align: middle;
+	text-align: center;
+}
+
+table.wrapperTable {
+	width: 100%;
+}
+
+table.rulesTable {
+	min-width: 400px;
+}
+
+table.layoutTable td {
+	border: none;
+}
+
+#ruleEditor #conditionsTable {
+	min-width: 400px;
+}
+
+#ruleEditor #actionsTable {
+	min-width: 400px;
+}
+
+#ruleEditor tr.ruleRow {
+	height: 40px;
+}
+
+#ruleEditor  tr.ruleRow .selected {
+	background: #ccedff;
+}
+
+#ruleEditor tr.ruleTableTitle {
+	height: 20px;
+}
+
+#ruleEditor td.ruleTableTitle {
+	border-bottom: 1px solid grey;
+	vertical-align: middle;
+	font-weight: bold;
+}
+
+#ruleEditor td.ruleCell {
+	border-bottom: 1px solid #afd7ed;
+	vertical-align: middle;
+}
+
+#ruleEditor select {
+	border: none;
+	background: none;
+}
+</style>
+</head>
+<body>
+	<div id="ruleView" class="panel">
+		<table cellpadding="0" cellspacing="0" class="layoutTable"
+			style="width: 800px;">
+			<tr>
+				<td>
+					<div class="errorMessagesPanel">
+						<ul id="errorMessagesList">
+						</ul>
+					</div>
+				</td>
+			</tr>
+		</table>
+		<div id="hideGeneralProperties">
+				<div class="clplPanelHeading">
+				<img src="./plugins/common/images/panelHeader-triggerExpand.png"
+					title="Show General Properties" styleClass="headerImg"></img> 
+					<label>General Properties</label>
+			</div>
+		</div>
+		<div id="showAllProperties">
+			<div id="showGeneralProperties">
+				<div class="clplPanelHeading">
+					<img src="./plugins/common/images/panelHeader-triggerCollapse.png"
+						title="Hide General Properties" styleClass="headerImg"></img>
+						<label>General Properties</label>	
+				</div>
+			</div>
+		<table>
+			<tr>
+				<td>
+					<table cellpadding="0" cellspacing="0" class="fieldSetTable"
+						style="margin-bottom: 10px;">
+						<tr id="guidOutputRow">
+							<td><label for="guidOutput">UUID</label></td>
+							<td><div id="guidOutput" class="output">168999</div></td>
+						</tr>
+						<tr id="idOutputRow">
+							<td><label for="idOutput">ID</label></td>
+							<td><div id="idOutput" class="output"></div></td>
+						</tr>
+						<tr>
+							<td><label for="nameInput">Rule Name</label></td>
+							<td><input id="nameInput" type="text" style="width: 300px;"></input>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td><label for="descriptionTextarea">Description</label></td>
+			</tr>
+			<tr>
+				<td><textarea id="descriptionTextarea" cols="40" rows="5"></textarea>
+				</td>
+			</tr>
+		</table>
+		</div>
+		<table>	
+			<tr>
+				<td>
+					<div id="ruleTabs" style="margin-top: 10px;">
+						<ul id="ruleTabsList">
+							<li><a href="#ruleTab"><img
+									src="plugins/rules-manager/images/icons/basic-properties-page.png"></img><span
+									class="tabLabel" id="rule">Rule</span> </a>
+							</li>
+							<li><a href="#attributesTab"><img
+									src="plugins/rules-manager/images/icons/basic-properties-page.png"></img><span
+									class="tabLabel" id="attributes">Attributes</span> </a>
+							</li>
+						</ul>
+						<div id="ruleTab">
+							<div id="ruleEditorPanel">
+								<table cellpadding="0" cellspacing="0" class="layoutTable">
+									<tr>
+										<td>
+											<table id="ruleEditor">
+												<tr id="titleRow" valign="top">
+													<td id="conditionCell">
+														<table id="conditionsTable" cellpadding="0"
+															cellspacing="0">
+															<tr class="ruleTableTitle">
+																<td class="ruleTableTitle">Conditions</td>
+																<td align="right" class="ruleTableTitle"><input
+																	id="addConditionButton" type="image"
+																	src="plugins/rules-manager/images/icons/add.png" title="Add" alt="Add"
+																	class="toolbarButton" /></td>
+															</tr>
+														</table>
+													</td>
+													<td id="actionCell">
+														<table id="actionsTable" cellpadding="0" cellspacing="0"
+															style="margin-left: 10px;">
+															<tr class="ruleTableTitle">
+																<td class="ruleTableTitle">Actions</td>
+																<td align="right" class="ruleTableTitle"><input
+																	id="addActionButton" type="image"
+																	src="plugins/rules-manager/images/icons/add.png" title="Add" alt="Add"
+																	class="toolbarButton" /></td>
+															</tr>
+														</table>
+													</td>
+												</tr>
+											</table></td>
+									</tr>
+								</table>
+							</div>
+						</div>
+						<div id="attributesTab">
+							<table>
+								<tr>
+									<td><label for="agendaGroupSelect">Agenda Group</label></td>
+									<td><select id="agendaGroupSelect"><option
+												value="init">Initialize</option>
+									</select></td>
+								</tr>
+								<tr>
+									<td><label for="loopSelect">Loop Behavior</label></td>
+									<td><select id="loopSelect"><option
+												value="no-loop">No Loop</option>
+									</select></td>
+								</tr>
+								<tr>
+									<td><label for="salienceInput">Salience</label></td>
+									<td><input id="salienceInput" type="text"
+										style="width: 50px;"></input></td>
+								</tr>
+								<tr>
+									<td><label for="autoFocusInput">Auto Focus</label></td>
+									<td><input id="autoFocusInput" type="checkbox"></input></td>
+								</tr>
+								<tr>
+									<td><label for="dialectSelect">Dialect</label></td>
+									<td><select id="dialectSelect"><option
+												value="mvel">MVEL</option>
+									</select></td>
+								</tr>
+							</table>
+						</div>
+					</div>
+				</td>
+			</tr>
+		</table>
+	</div>
+	<div id="ruleEditorSelectDialog" style="padding: 0px;"></div>
+	
+		<script type="text/javascript" src="plugins/rules-manager/js/RuleViewMain.js"></script>
+</body>
+</html>

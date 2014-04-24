@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright (c) 2011, 2012 SunGard CSA LLC and others.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+   
+    Contributors:
+       SunGard CSA LLC - initial API and implementation and/or initial documentation
+ -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+
+   <groupId>org.eclipse.stardust.ui.web</groupId>
+   <artifactId>jsf-myfaces-module</artifactId>
+   <packaging>pom</packaging>
+
+   <name>JSF MyFaces Module</name>
+
+   <parent>
+      <groupId>org.eclipse.stardust</groupId>
+      <artifactId>product-parent</artifactId>
+      <version>9.9.9-SNAPSHOT</version>
+      <relativePath>../../../product/product-parent/pom.xml</relativePath>
+   </parent>
+
+   <dependencies>
+      <dependency>
+         <groupId>org.apache.myfaces.core</groupId>
+         <artifactId>myfaces-api</artifactId>
+         <scope>compile</scope>
+         <exclusions>
+            <exclusion>
+               <groupId>commons-lang</groupId>
+               <artifactId>commons-lang</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>commons-digester</groupId>
+               <artifactId>commons-digester</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>commons-beanutils</groupId>
+               <artifactId>commons-beanutils</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>commons-logging</groupId>
+               <artifactId>commons-logging</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>javax.servlet</groupId>
+               <artifactId>jstl</artifactId>
+            </exclusion>
+         </exclusions>
+      </dependency>
+      <dependency>
+         <groupId>commons-beanutils</groupId>
+         <artifactId>commons-beanutils</artifactId>
+         <scope>compile</scope>
+      </dependency>
+      <dependency>
+         <groupId>commons-lang</groupId>
+         <artifactId>commons-lang</artifactId>
+         <scope>compile</scope>
+      </dependency>
+      <dependency>
+         <groupId>commons-digester</groupId>
+         <artifactId>commons-digester</artifactId>
+         <scope>compile</scope>
+         <exclusions>
+            <exclusion>
+               <groupId>commons-logging</groupId>
+               <artifactId>commons-logging</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>commons-beanutils</groupId>
+               <artifactId>commons-beanutils</artifactId>
+            </exclusion>
+         </exclusions>
+      </dependency>
+      <dependency>
+         <groupId>commons-logging</groupId>
+         <artifactId>commons-logging</artifactId>
+         <scope>compile</scope>
+      </dependency>
+      <dependency>
+         <groupId>javax.servlet</groupId>
+         <artifactId>jstl</artifactId>
+         <scope>compile</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.myfaces.core</groupId>
+         <artifactId>myfaces-impl</artifactId>
+         <scope>runtime</scope>
+         <exclusions>
+            <exclusion>
+               <groupId>commons-collections</groupId>
+               <artifactId>commons-collections</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>commons-el</groupId>
+               <artifactId>commons-el</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>commons-logging</groupId>
+               <artifactId>commons-logging</artifactId>
+            </exclusion>
+         </exclusions>
+      </dependency>
+      <dependency>
+         <groupId>commons-collections</groupId>
+         <artifactId>commons-collections</artifactId>
+         <scope>runtime</scope>
+      </dependency>
+      <dependency>
+         <groupId>commons-el</groupId>
+         <artifactId>commons-el</artifactId>
+         <scope>runtime</scope>
+         <exclusions>
+            <exclusion>
+               <groupId>commons-logging</groupId>
+               <artifactId>commons-logging</artifactId>
+            </exclusion>
+         </exclusions>
+      </dependency>
+      <dependency>
+         <groupId>com.sun.el</groupId>
+         <artifactId>el-ri</artifactId>
+         <scope>runtime</scope>
+      </dependency>
+      <dependency>
+         <groupId>junit</groupId>
+         <artifactId>junit</artifactId>
+         <scope>test</scope>
+         <exclusions>
+            <exclusion>
+               <groupId>org.hamcrest</groupId>
+               <artifactId>hamcrest-core</artifactId>
+            </exclusion>
+         </exclusions>
+      </dependency>
+      <dependency>
+         <groupId>org.hamcrest</groupId>
+         <artifactId>hamcrest-core</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.springframework</groupId>
+         <artifactId>spring-test</artifactId>
+         <scope>test</scope>
+         <exclusions>
+            <exclusion>
+               <groupId>org.springframework</groupId>
+               <artifactId>spring-core</artifactId>
+            </exclusion>
+         </exclusions>
+      </dependency>
+   </dependencies>
+</project>

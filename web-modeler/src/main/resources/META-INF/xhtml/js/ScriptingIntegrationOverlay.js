@@ -6,10 +6,13 @@ define(
 				"bpm-modeler/js/m_accessPoint",
 				"bpm-modeler/js/m_typeDeclaration",
 				"bpm-modeler/js/m_parameterDefinitionsPanel",
-				"bpm-modeler/js/m_codeEditorAce" ],
+				"bpm-modeler/js/m_codeEditorAce",
+				"bpm-modeler/js/m_parsingUtils",
+				"bpm-modeler/js/m_autoCompleters"],
 		function(m_utils, m_i18nUtils, m_constants, m_commandsController,
 				m_command, m_model, m_accessPoint, m_typeDeclaration,
-				m_parameterDefinitionsPanel, m_codeEditorAce) {
+				m_parameterDefinitionsPanel, m_codeEditorAce,
+				m_parsingUtils,m_autoCompleters) {
 			return {
 				create : function(view) {
 					var overlay = new ScriptingIntegrationOverlay();
@@ -53,6 +56,22 @@ define(
 					
 					this.codeEditor = m_codeEditorAce
 							.getJSCodeEditor(this.editorAnchor.id);
+					
+					/*Listen for our module loaded events. Specifically, for our
+					 *language tools being loaded. When we receive it load our sessionCompleter*/
+					var that=this; /*for reference in our callback*/
+					$(this.codeEditor).on("moduleLoaded",function(event,module){
+						var sessionCompleter;
+						if(module.name==="ace/ext/language_tools"){
+							sessionCompleter=m_autoCompleters.getSessionCompleter({metaName:"Data",score:9999});
+							that.codeEditor.addCompleter(sessionCompleter);
+						}
+					});
+					
+					/*Load our languageTools extension into ACE, this will fire a 
+					 * moduleLoaded event on completion.*/
+					this.codeEditor.loadLanguageTools();
+					
 					this.resetButton = m_utils.jQuerySelect("#testTab #resetButton");
 					this.runButton = m_utils.jQuerySelect("#testTab #runButton");
 					this.inputDataTextarea = m_utils.jQuerySelect("#testTab #inputDataTextarea");
@@ -81,12 +100,12 @@ define(
 											.getJSCodeEditor(self.editorAnchor.id);
 								} else if (self.languageSelect.val() == "Python") {
 									self.codeEditor = m_codeEditorAce
-											.getJSCodeEditor(self.editorAnchor.id);
+											.getPythonCodeEditor(self.editorAnchor.id);
 								} else if (self.languageSelect.val() == "Groovy") {
 									self.codeEditor = m_codeEditorAce
-											.getJSCodeEditor(self.editorAnchor.id);
+											.getGroovyCodeEditor(self.editorAnchor.id);
 								}
-
+								
 								self.codeEditor.getEditor().getSession()
 										.setValue(code);
 								self.submitChanges();
@@ -121,7 +140,8 @@ define(
 								supportsDataMappings : false,
 								supportsDescriptors : false,
 								supportsDataTypeSelection : true,
-								supportsDocumentTypes : false
+								supportsDocumentTypes : false,
+								hideEnumerations:true
 							});
 
 					this.runButton
@@ -348,17 +368,27 @@ define(
 				 *
 				 */
 				ScriptingIntegrationOverlay.prototype.update = function() {
+					var completerStrings=[],pDef,key;
 					this.parameterDefinitionsPanel.setScopeModel(this
 							.getScopeModel());
 					this.parameterDefinitionsPanel
 							.setParameterDefinitions(this.getApplication().contexts.application.accessPoints);
 					this.languageSelect
-							.val(this.getApplication().attributes["stardust:scriptingOverlay::language"]);
+							.val(this.getApplication().attributes["stardust:scriptingOverlay::language"]);			
 					this.codeEditor
 							.getEditor()
 							.getSession()
 							.setValue(
 									this.getApplication().attributes["stardust:scriptingOverlay::scriptCode"]);
+					
+					for(key in this.parameterDefinitionsPanel.parameterDefinitions){
+						if(this.parameterDefinitionsPanel.parameterDefinitions.hasOwnProperty(key)){
+							pDef=this.parameterDefinitionsPanel.parameterDefinitions[key];
+							completerStrings=completerStrings.concat(m_parsingUtils.parseParamDefToStringFrags(pDef));
+							this.codeEditor.setSessionData("$keywordList",completerStrings);
+						}
+					}			
+					
 				};
 
 				/**
@@ -368,8 +398,6 @@ define(
 					var route = "";
 					if (this.languageSelect.val() === "JavaScript") {
 					var code = "function setOutHeader(key, output){\nexchange.out.headers.put(key,output);}\n";
-					code += "function convertStringToDate(format, input){\nreturn new java.text.SimpleDateFormat(format).parse(input);\n}\n";
-					
 					code += "function isArray(obj) {\n\tif (Array.isArray) {\n\t\treturn Array.isArray(obj);\n\t} else {\n\treturn Object.prototype.toString.call(obj) === '[object Array]';\n\t}\n}\n";
 					
 					code += "function visitMembers(obj, callback) {\n\tvar i = 0, length = obj.length;\n\tif (isArray(obj)) {\n\t\t";
@@ -387,20 +415,22 @@ define(
 					code += "function actualFunction(value, type) {\n";
 					code += "\tvar dataAsLong;\n";
 					code += "\tif (type === 'string') {\n";
-					code += "\t\tdataAsLong =/\\/Date\\((\\d*)\\)\\//.exec(value);\n";
+						code += "\t\tdataAsLong =new RegExp(/\\/Date\\((-?\\d*)\\)\\//).exec(value);\n";
 					code += "\tif (dataAsLong) {\n";
-					code += "\t\treturn new java.util.Date(+dataAsLong[1]);\n";
+						code += "\t\treturn new java.util.Date(+dataAsLong[1]);\n";
 					code += "\t}\n";
 					code += "}\n";
 					code += "return value;\n";
 					code += "}\n";
+
+
 					for ( var n = 0; n < this.getApplication().contexts.application.accessPoints.length; ++n) {
 						var accessPoint = this.getApplication().contexts.application.accessPoints[n];
 						if (accessPoint.direction === m_constants.IN_ACCESS_POINT) {
 							if (accessPoint.dataType == "primitive") {
 								code += "var " + accessPoint.id + ";\n";
 								code += "if(request.headers.get('"
-										+ accessPoint.id + "')!=null){\n"
+										+ accessPoint.id + "')!=null){\n";
 								code += accessPoint.id
 										+ " =  request.headers.get('"
 										+ accessPoint.id + "');\n";
@@ -409,7 +439,7 @@ define(
 							} else if (accessPoint.dataType == "struct") {
 								code += "var " + accessPoint.id + ";\n";
 								code += "if(request.headers.get('"
-										+ accessPoint.id + "')!=null){\n"
+										+ accessPoint.id + "')!=null){\n";
 								code += accessPoint.id
 										+ " =  eval('(' + request.headers.get('"
 										+ accessPoint.id + "')+ ')');\n";
@@ -484,6 +514,8 @@ define(
 
 					return route;
 				};
+
+
 				/**
 				 *
 				 */

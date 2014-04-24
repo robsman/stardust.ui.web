@@ -16,8 +16,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -35,6 +37,7 @@ import org.eclipse.stardust.engine.api.model.Activity;
 import org.eclipse.stardust.engine.api.model.ApplicationContext;
 import org.eclipse.stardust.engine.api.model.ContextData;
 import org.eclipse.stardust.engine.api.model.DataMapping;
+import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
@@ -79,10 +82,12 @@ import org.eclipse.stardust.ui.web.processportal.common.WorkflowActivityCompleti
 import org.eclipse.stardust.ui.web.processportal.interaction.iframe.ExternalWebAppInteractionController;
 import org.eclipse.stardust.ui.web.processportal.interaction.iframe.FaceletPanelInteractionController;
 import org.eclipse.stardust.ui.web.processportal.interaction.iframe.JspPanelInteractionController;
+import org.eclipse.stardust.ui.web.processportal.interaction.iframe.ManualActivityIframeInteractionController;
 import org.eclipse.stardust.ui.web.processportal.launchpad.WorklistsBean;
 import org.eclipse.stardust.ui.web.processportal.view.manual.DocumentInputEventHandler;
 import org.eclipse.stardust.ui.web.processportal.view.manual.IppDocumentInputController;
 import org.eclipse.stardust.ui.web.processportal.view.manual.ManualActivityForm;
+import org.eclipse.stardust.ui.web.processportal.view.manual.ModelUtils;
 import org.eclipse.stardust.ui.web.processportal.views.qualityassurance.QualityAssuranceActivityBean;
 import org.eclipse.stardust.ui.web.processportal.views.qualityassurance.QualityAssuranceActivityBean.QAAction;
 import org.eclipse.stardust.ui.web.viewscommon.common.ClosePanelScenario;
@@ -232,7 +237,11 @@ public class ActivityDetailsBean extends UIComponentBean
    private WorkflowAction selectedAction = WorkflowAction.SUSPEND;
 
    private boolean qualityAssuranceActionInProgress;
-   private QAAction qualityAssuranceAction;   
+   private QAAction qualityAssuranceAction;
+   
+   // Kind of constant, loaded from  properties
+   // Temporary to support both modes for some time
+   private static boolean HTML_BASED;
 
    public static IActivityInteractionController getInteractionController(Activity activity)
    {
@@ -251,10 +260,57 @@ public class ActivityDetailsBean extends UIComponentBean
       {
          interactionController = new JspPanelInteractionController();
       }
+      else if (SpiUtils.DEFAULT_MANUAL_ACTIVITY_CONTROLLER == interactionController)
+      {
+         if (isHTMLBased(activity))
+         {
+            interactionController = new ManualActivityIframeInteractionController();
+         }
+      }
 
       return interactionController;
    }
+   
+   /**
+    * @return
+    */
+   public static boolean isHTMLBased(Activity activity)
+   {
+      if (HTML_BASED && !isSingleDocumentCase(activity))
+      {
+         return true;
+      }
 
+      return false;
+   }
+
+   /**
+    * @param activity
+    * @return
+    */
+   @SuppressWarnings("unchecked")
+   public static boolean isSingleDocumentCase(Activity activity)
+   {
+      List<Object> allMappings = activity.getApplicationContext("default").getAllDataMappings();
+      Model model = org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils.getModel(activity.getModelOID());
+
+      Set<String> docDataMappingIds = new HashSet<String>(); 
+      for (Object obj : allMappings)
+      {
+         DataMapping dm = (DataMapping)obj;
+         if (ModelUtils.isDocumentType(model, dm))
+         {
+            docDataMappingIds.add(dm.getId());
+         }
+         else
+         {
+            return false;
+         }
+      }
+
+      return docDataMappingIds.size() == 1;
+   }
+   
    /**
      * 
      */
@@ -262,6 +318,8 @@ public class ActivityDetailsBean extends UIComponentBean
    {
       super("activityPanel");
       this.title = "";
+      HTML_BASED = Parameters.instance().getBoolean("ManualActivity.Mode.HTML", true);
+      trace.debug("Manual Activity HTML Mode = " + HTML_BASED);
    }
 
    /**
@@ -410,6 +468,8 @@ public class ActivityDetailsBean extends UIComponentBean
          hasJoinProcessPermission = AuthorizationUtils.hasAbortAndJoinProcessInstancePermission();
          hasSwitchProcessPermission = AuthorizationUtils.hasAbortAndStartProcessInstancePermission();
          hasSpawnProcessPermission = AuthorizationUtils.hasSpawnProcessPermission();
+        
+         fireEventForViewEventAwareInteractionController(activityInstance, event);
       }
       else if (ViewEventType.TO_BE_ACTIVATED == event.getType())
       {
@@ -485,6 +545,11 @@ public class ActivityDetailsBean extends UIComponentBean
             }
             
             performAutoOperations(event.getView());
+            
+            if (isLoadSuccessful())
+            {
+               fireEventForViewEventAwareInteractionController(activityInstance, event);
+            }
          }
       }
       else if (ViewEventType.TO_BE_DEACTIVATED == event.getType())
@@ -1943,10 +2008,25 @@ public class ActivityDetailsBean extends UIComponentBean
     */
    private void showMappedDocumentWarningAndProcessActivity(WorkflowAction action)
    {
+      IActivityInteractionController interactionController = null;
+      
+      if (null != activityInstance)
+      {
+          interactionController = getInteractionController(activityInstance.getActivity());
+      }
+         
       try
       {
          if (ActivityPanelConfigurationBean.isAutoShowMappedDocumentWarning() && null != activityForm
                && activityForm.getDisplayedMappedDocuments(true, true).size() > 0)
+         {
+            mappedDocumentConfirmationDialog = new MappedDocumentsConfirmationDialog(action, DialogContentType.WARNING,
+                  DialogActionType.CONTINUE_CANCEL, MAPPED_DOC_WARN_INCLUDE);
+
+            mappedDocumentConfirmationDialog.openPopup();
+         }
+         else if (ActivityPanelConfigurationBean.isAutoShowMappedDocumentWarning() && (null != interactionController)
+               && interactionController.isTypedDocumentOpen(activityInstance))
          {
             mappedDocumentConfirmationDialog = new MappedDocumentsConfirmationDialog(action, DialogContentType.WARNING,
                   DialogActionType.CONTINUE_CANCEL, MAPPED_DOC_WARN_INCLUDE);
@@ -1980,7 +2060,7 @@ public class ActivityDetailsBean extends UIComponentBean
       ActivityInstance ai = activityInstance;
       String contextId = interactionController.getContextId(ai);
 
-      if (PredefinedConstants.DEFAULT_CONTEXT.equals(contextId))
+      if (PredefinedConstants.DEFAULT_CONTEXT.equals(contextId) && !isHTMLBased(ai.getActivity()))
       {
          if (singleDocumentCase)
          {
@@ -2010,11 +2090,15 @@ public class ActivityDetailsBean extends UIComponentBean
          else if (null != activityForm)
          {
             outDataValues = (Map)activityForm.retrieveData();
-         }         
+         }
       }
       else
       {
          outDataValues = interactionController.getOutDataValues(ai);
+         if (releaseInteraction)
+         {
+            interactionController.unregisterInteraction(ai);
+         }
       }
 
       if (dataAvailable)
@@ -2074,8 +2158,8 @@ public class ActivityDetailsBean extends UIComponentBean
             if (null != interactionController)
             {
                String contextId = interactionController.getContextId(activityInstance);
-
-               if (PredefinedConstants.DEFAULT_CONTEXT.equals(contextId))
+               
+               if (PredefinedConstants.DEFAULT_CONTEXT.equals(contextId) && !isHTMLBased(activity))
                {
                   FormGenerationPreferences formPref = new FormGenerationPreferences(
                         ActivityPanelConfigurationBean.getAutoNoOfColumnsInColumnLayout(),

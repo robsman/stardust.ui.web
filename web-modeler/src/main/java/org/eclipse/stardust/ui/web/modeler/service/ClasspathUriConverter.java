@@ -39,7 +39,7 @@ public class ClasspathUriConverter implements URIConverter
       throw new RuntimeException("Not supported.");
    }
 
-   public Map getURIMap()
+   public Map<URI, URI> getURIMap()
    {
       return URIConverter.URI_MAP;
    }

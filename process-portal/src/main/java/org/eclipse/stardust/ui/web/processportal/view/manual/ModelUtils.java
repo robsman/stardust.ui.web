@@ -18,9 +18,11 @@ import java.util.Set;
 import javax.faces.model.SelectItem;
 
 import org.eclipse.stardust.common.reflect.Reflect;
+import org.eclipse.stardust.engine.api.dto.DataDetails;
 import org.eclipse.stardust.engine.api.model.Data;
 import org.eclipse.stardust.engine.api.model.DataMapping;
 import org.eclipse.stardust.engine.api.model.Model;
+import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.model.Reference;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.Folder;
@@ -31,6 +33,9 @@ import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
 import org.eclipse.stardust.engine.core.struct.StructuredTypeRtUtils;
 import org.eclipse.stardust.engine.core.struct.TypedXPath;
 import org.eclipse.stardust.engine.extensions.xml.data.XPathUtils;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 
@@ -42,6 +47,8 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
  */
 public class ModelUtils
 {
+   private static final Logger trace = LogManager.getLogger(ModelUtils.class);
+   
    public static enum SystemDefinedDataType
    {
       PROCESS_ID,
@@ -109,14 +116,43 @@ public class ModelUtils
    public static boolean isPrimitiveType(Model model, DataMapping mapping)
    {
       Class<?> type = mapping.getMappedType();
+      if (isSimplePrimitive(type))
+      {
+         return true;
+      }
+
+      return PrimitiveXmlUtils.isPrimitiveType(model, mapping);
+   }
+   
+   /**
+    * 
+    * @param type
+    * @return
+    */
+   public static boolean isSimplePrimitive(Class<?> type)
+   {
       if (Boolean.class == type || Long.class == type || Integer.class == type || Double.class == type ||
             Float.class == type || Short.class == type || Byte.class == type ||
             String.class == type || Character.class == type || Date.class == type || Calendar.class == type)
       {
          return true;
       }
-
-      return PrimitiveXmlUtils.isPrimitiveType(model, mapping);
+      return false;
+   }
+   
+   /**
+    * 
+    * @param mapping
+    * @return
+    */
+   public static boolean isPrimitiveAsEnum(DataMapping mapping)
+   {
+      Object carnotType = getDataDetails(mapping).getAttribute(PredefinedConstants.TYPE_ATT);
+      if (carnotType != null && carnotType.equals("Enumeration"))
+      {
+         return true;
+      }
+      return false;
    }
    
    /**
@@ -127,7 +163,7 @@ public class ModelUtils
    public static boolean isEnumerationType(Model model, DataMapping mapping)
    {
       boolean isEnum = false;
-      if (isStructuredType(model, mapping))
+      if (isStructuredType(model, mapping) || isPrimitiveAsEnum(mapping))
       {
          Set<TypedXPath> xpaths = getXPaths(model, mapping);
          for (TypedXPath path : xpaths)
@@ -139,10 +175,21 @@ public class ModelUtils
             }
          }
       }
-      
+
       return isEnum;
    }
 
+   /**
+    * 
+    * @return
+    */
+   private static DataDetails getDataDetails(DataMapping dataMapping)
+   {
+      Model model = ModelCache.findModelCache().getModel(dataMapping.getModelOID());
+      Data data = model.getData(dataMapping.getDataId());
+
+      return (DataDetails)data;
+   }
    /**
     * @param model
     * @param mapping
@@ -378,6 +425,21 @@ public class ModelUtils
         {
            refModel = org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils.getModel(data.getModelOID());
         }
+         if (!StringUtils.isEmpty(typeDeclarationId) && typeDeclarationId.indexOf("typeDeclaration") == 0)
+         {
+            // For data created in current model, Structured type in different model
+            try
+            {
+               String parts[] = typeDeclarationId.split("\\{")[1].split("\\}");
+               typeDeclarationId = parts[1];
+               Model newRefModel = org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils.getModel(parts[0]);
+               refModel = newRefModel != null ? newRefModel : refModel;
+            }
+            catch (Exception e)
+            {
+               trace.error("Error occured in Type declaration parsing", e);
+            }
+         }
       }
       else
       {
@@ -387,7 +449,6 @@ public class ModelUtils
 
       return XPathUtils.getXPaths(refModel, typeDeclarationId, dm.getDataPath());
    }
-
 
    /**
     * @return

@@ -1,7 +1,6 @@
 package org.eclipse.stardust.ui.web.modeler.model.conversion;
 
-import java.io.IOException;
-
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -9,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.gson.JsonObject;
 
-import org.eclipse.stardust.common.error.PublicException;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 import org.eclipse.stardust.ui.web.modeler.service.rest.ModelerSessionRestController;
@@ -48,7 +46,7 @@ public class BeanInvocationExecutor extends RequestExecutor
    }
 
    @Override
-   public JsonObject applyChange(JsonObject cmdJson) throws IOException
+   public JsonObject applyChange(JsonObject cmdJson)
    {
       Response response = modelerSessionRestController.applyChange(jsonIo
             .writeJsonObject(cmdJson));
@@ -62,8 +60,7 @@ public class BeanInvocationExecutor extends RequestExecutor
       }
       else
       {
-         throw new PublicException("Failed applying change: " + response.getStatus()
-               + response.getEntity());
+         throw new WebApplicationException(response);
       }
    }
 

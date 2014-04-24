@@ -15,8 +15,7 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants" ], function(m_ut
 
 	return {
 		createControlFlow : function(process) {
-			var controlFlow = new ControlFlow("ControlFlow" + process.getControlFlowIndex());
-
+			var controlFlow = new ControlFlow();
 			return controlFlow;
 		},
 

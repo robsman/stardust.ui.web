@@ -11,12 +11,12 @@
 package org.eclipse.stardust.ui.web.viewscommon.views.document.tiff.extract;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
@@ -99,9 +99,9 @@ public class ExtractPageDialog extends PopupUIComponentBean implements Confirmat
 
    //column names
    public static String COL_EXTRACT_PAGE = "extractPage";
-   public static String COL_TO = "to";
-   public static String COL_FROM = "from";
+   public static String COL_PAGES = "pageRange";
    public static String COL_START_PROCESS = "startProcess";
+   public static String COL_PROCESS_TYPE = "processType";
    public static String COL_DOCUMENT_TYPE = "documentType";
    public static String COL_DOCUMENT_DATA = "documentData";
    public static String COL_COPY_IMAGE_DATA = "copyImageData";
@@ -109,13 +109,20 @@ public class ExtractPageDialog extends PopupUIComponentBean implements Confirmat
    public static String COL_DOCUMENT_DESCRIPTION = "documentDescription";
    public static String COL_VERSION_COMMENT = "versionComment";
    public static String COL_DELETE_PAGES = "deletePages";
+   public static String PAGE_RANGE_REG_EX="^(\\d+)-(\\d+)$";
+   public static String NUMBER_VAL_REG_EX="^\\d+$";
+   
    //instance valriables   
    private final MessagesViewsCommonBean COMMON_MESSAGE_BEAN = MessagesViewsCommonBean.getInstance();
    private final String DEFAULT_LABEL = COMMON_MESSAGE_BEAN.getString("views.extractPageDialog.documentType.default");
    private final ExtractPageDataCache dataCache = new ExtractPageDataCache();
+   private static final String SUB_PROCESS_TYPE = "0";
+   private static final String ROOT_PROCESS_TYPE = "1";
+   private static final String VALIDATION_STYLE="messagePanel";
 
    private DataTable<ExtractPageTableEntry> extractTable;
    private List<SelectItem> processItems;
+   private List<SelectItem> processTypes;
    private boolean showExtractPageView = true;
    private TiffImageInfo imageInfo;
    private UserPreferencesHelper userPrefsHelper;
@@ -191,6 +198,8 @@ public class ExtractPageDialog extends PopupUIComponentBean implements Confirmat
       spawnProcessHelper = new SpawnProcessHelper();
       userPrefsHelper = getUserPrefenceHelper();
       validationMessageBean = new ValidationMessageBean();
+      // Set the style for inline Validation message
+      validationMessageBean.setStyleClass(VALIDATION_STYLE);
       deletePageEnable = ImageViewerConfigurationBean.isEnablePageDelete();
 
       List<ProcessDefinition> startableProcesses = null;
@@ -204,6 +213,11 @@ public class ExtractPageDialog extends PopupUIComponentBean implements Confirmat
          ProcessDefinitionUtils.sort(startableProcesses);
          defaultProcessFQID = startableProcesses.get(0).getQualifiedId();
          processItems = getProcesses(startableProcesses);
+         processTypes = CollectionUtils.newArrayList();
+         processTypes.add(new SelectItem(SUB_PROCESS_TYPE, COMMON_MESSAGE_BEAN
+               .getString("views.extractPages.spawnProcess.subprocess")));
+         processTypes.add(new SelectItem(ROOT_PROCESS_TYPE, COMMON_MESSAGE_BEAN
+               .getString("views.extractPages.spawnProcess.rootprocess")));
          updatePageList = new LinkedHashSet<Integer>();
          loadDocumentPageList(imageInfo.getMaxPages());
          createTable();
@@ -226,7 +240,7 @@ public class ExtractPageDialog extends PopupUIComponentBean implements Confirmat
    public void apply()
    {
       // if contains error message in context then not allowed to submit
-      if (FacesContext.getCurrentInstance().getMessages().hasNext())
+      if (FacesContext.getCurrentInstance().getMessages().hasNext() || validationMessageBean.isContainsMessage())
       {
          return;
       }
@@ -260,34 +274,34 @@ public class ExtractPageDialog extends PopupUIComponentBean implements Confirmat
     */
    public void add(ActionEvent event)
    {
-      // FromPage and ToPage are not set on click of add button
-      addRow(null, null);
+      // Page Range are not set on click of add button
+      addRow(null,null);
    }
 
    /**
-    * Creates a new row of ExtractPageDialog, if page range is specified create row with
-    * FromPage and ToPage set
+    * Creates a new row of ExtractPageDialog, if page range is specified create 
+    * row with pageRange
     * 
-    * @param fromPage
-    * @param toPage
+    * @param pageRange
+    * @param pageRangeStr
     */
-   public void addRow(Integer fromPage, Integer toPage)
+   public void addRow(Set<Integer> pageRange, String pageRangeStr)
    {
       ExtractPageTableEntry row = null;
-
-      if ((null != fromPage) & (null != toPage))
+      String processType=userPrefsHelper.getSingleString(UserPreferencesEntries.V_IMAGE_VIEWER_CONFIG, UserPreferencesEntries.F_IMAGE_VIEWER_SPAWN_PROCESS_TYPE, SUB_PROCESS_TYPE);
+      if (!CollectionUtils.isEmpty(pageRange))
       {
          // if process context is not available then default value for copy process data
          // should be false
          row = new ExtractPageTableEntry(imageInfo.getDocument().getId(), defaultProcessFQID,
-               imageInfo.isProcessAvailable(), fromPage, toPage, imageInfo.getProcessInstance());
+               imageInfo.isProcessAvailable(), pageRange, pageRangeStr, imageInfo.getProcessInstance(), processType);
       }
       else
       {
          // if process context is not available then default value for copy process data
          // should be false
          row = new ExtractPageTableEntry(imageInfo.getDocument().getId(), defaultProcessFQID,
-               imageInfo.isProcessAvailable(), imageInfo.getProcessInstance());
+               imageInfo.isProcessAvailable(), imageInfo.getProcessInstance(), processType);
       }
 
       List<DocumentTypeWrapper> documentTypeList = dataCache.getDocumentType(row.getSpawnProcessFQID(), row.getModel());
@@ -421,21 +435,20 @@ public class ExtractPageDialog extends PopupUIComponentBean implements Confirmat
       ColumnPreference extractPageCol = new ColumnPreference(COL_EXTRACT_PAGE,
             COMMON_MESSAGE_BEAN.getString("views.extractPageDialog.table.column.extractPages"));
 
-      ColumnPreference toCol = new ColumnPreference(COL_TO, "pageTo",
-            COMMON_MESSAGE_BEAN.getString("views.extractPageDialog.table.column.pageTo"),
+      ColumnPreference pageRangeCol = new ColumnPreference(COL_PAGES, "pageRange",
+            COMMON_MESSAGE_BEAN.getString("views.extractPageDialog.table.column.pageRange"),
             ResourcePaths.V_EXTRACT_PAGES_TABLE_COLUMNS, true, false);
 
-      ColumnPreference fromCol = new ColumnPreference(COL_FROM, "pageFrom",
-            COMMON_MESSAGE_BEAN.getString("views.extractPageDialog.table.column.pageFrom"),
-            ResourcePaths.V_EXTRACT_PAGES_TABLE_COLUMNS, true, false);
-
-      extractPageCol.addChildren(fromCol);
-      extractPageCol.addChildren(toCol);
-
+      extractPageCol.addChildren(pageRangeCol);
+     
       ColumnPreference startProcessCol = new ColumnPreference(COL_START_PROCESS, "spawnProcessFQID",
             COMMON_MESSAGE_BEAN.getString("views.extractPageDialog.table.column.startProcess"),
             ResourcePaths.V_EXTRACT_PAGES_TABLE_COLUMNS, true, false);
 
+      ColumnPreference processTypeCol = new ColumnPreference(COL_PROCESS_TYPE, "processType",
+            COMMON_MESSAGE_BEAN.getString("views.extractPageDialog.table.column.processType"),
+            ResourcePaths.V_EXTRACT_PAGES_TABLE_COLUMNS, true, false);
+      
       ColumnPreference docTypeCol = new ColumnPreference(COL_DOCUMENT_TYPE, "docTypeId",
             COMMON_MESSAGE_BEAN.getString("views.extractPageDialog.table.column.docType"),
             ResourcePaths.V_EXTRACT_PAGES_TABLE_COLUMNS, true, false);
@@ -465,8 +478,9 @@ public class ExtractPageDialog extends PopupUIComponentBean implements Confirmat
       commentCol.setNoWrap(false);
 
       fixCols.add(extractPageCol);
-
+      
       fixCols.add(startProcessCol);
+      fixCols.add(processTypeCol);
       fixCols.add(docTypeCol);
       fixCols.add(docDataCol);
 
@@ -513,15 +527,31 @@ public class ExtractPageDialog extends PopupUIComponentBean implements Confirmat
    {
       if (CollectionUtils.isNotEmpty(bookmarkPageList))
       {
-         for (BookmarkPageRange pageRange : bookmarkPageList)
+         for (BookmarkPageRange bookmarkRange : bookmarkPageList)
          {
-            // for bookmark range create new row
-            addRow(pageRange.getFromPage(), pageRange.getToPage());
+            StringBuffer pageRangeStr = new StringBuffer();
+            Set<Integer> pageRange = CollectionUtils.newTreeSet();
+            Integer fromPage = bookmarkRange.getFromPage();
+            Integer toPage = bookmarkRange.getToPage();
+            for (int i = fromPage; i <= toPage; i++)
+            {
+               pageRange.add(i);
+            }
+            if (fromPage != toPage)
+            {
+               pageRangeStr.append(fromPage.toString() + "-" + toPage.toString());
+            }
+            else
+            {
+               pageRangeStr.append(fromPage.toString());
+            }
+            addRow(pageRange,pageRangeStr.toString());
          }
       }
       else
       {
-         addRow(null, null);
+         validationMessageBean.addInfoMessage(COMMON_MESSAGE_BEAN.getString("views.extractPageDialog.table.pagesRangeMsg"), "extractPageMsg");
+         addRow(null,null);
       }
    }
 
@@ -570,17 +600,16 @@ public class ExtractPageDialog extends PopupUIComponentBean implements Confirmat
    {
       for (ExtractPageTableEntry row : extractTable.getList())
       {
-         Integer fromPageNos = row.getPageFrom() - 1;
-         Integer toPageNos = row.getPageTo() - 1;
+        Set<Integer> pageRange= row.getPages();
 
          byte[] fileData = ImageUtils.createTiffImage(ImageUtils.extractTIFFImage(imageInfo.getDocumentContent(),
-               fromPageNos, toPageNos));
+               pageRange));
          row.setContent(fileData);
 
          if (row.isCopyImageData())
          {
             Set<Integer> currentPageList = new LinkedHashSet<Integer>();
-            currentPageList = updateCurrentPageList(fromPageNos + 1, toPageNos + 1, currentPageList);
+            currentPageList = updateCurrentPageList(pageRange, currentPageList);
 
             PrintDocumentAnnotationsImpl saveMetadata = getDocumentAnnotationsList(imageInfo.getDocument(),
                   currentPageList);
@@ -642,9 +671,15 @@ public class ExtractPageDialog extends PopupUIComponentBean implements Confirmat
     */
    private ExtractPageCommand.PageModel createPageModel(ExtractPageTableEntry tableEntry)
    {
-      return new ExtractPageCommand.PageModel(tableEntry.getContent(), tableEntry.getVersionComment(), tableEntry.getDocDecription(),
-            tableEntry.getDocMetadata(), tableEntry.getSpawnProcessFQID(), tableEntry.isCopyProcessData(),
-            tableEntry.getDataId());
+      ExtractPageCommand.PageModel pageModel = new ExtractPageCommand.PageModel(tableEntry.getContent(), tableEntry.getVersionComment(),
+            tableEntry.getDocDecription(), tableEntry.getDocMetadata(), tableEntry.getSpawnProcessFQID(),
+            tableEntry.isCopyProcessData(), tableEntry.getDataId(), tableEntry.getProcessType()
+                  .equals(SUB_PROCESS_TYPE) ? true : false);
+      if(!pageModel.isAbortProcessInstance())
+      {
+         pageModel.setLinkComment(COMMON_MESSAGE_BEAN.getString("view.linkedProcess.label.spawn.linkComment"));
+      }
+      return pageModel;
    }   
   /**
    * 
@@ -669,7 +704,7 @@ public class ExtractPageDialog extends PopupUIComponentBean implements Confirmat
          }
 
          String comment = COMMON_MESSAGE_BEAN.getParamString("views.extractPageDialog.sourceDocumentVersion.comment",
-               Integer.valueOf(row.getPageFrom()).toString(), Integer.valueOf(row.getPageTo()).toString(), documentId,
+               row.getPageRange(), documentId,
                ProcessInstanceUtils.getProcessLabel(pi));
          version.append(comment);
       }
@@ -702,31 +737,22 @@ public class ExtractPageDialog extends PopupUIComponentBean implements Confirmat
 
    /**
     * 
-    * @param fromPageIndex
-    * @param toPageIndex
+    * @param pageRange
     */
-   private void updateDocumentPageList(int fromPageIndex, int toPageIndex, boolean deleleFlag)
+   private void updateDocumentPageList(Set<Integer> pageRange)
    {
-      for (int i = fromPageIndex; i <= toPageIndex; i++)
-      {
-         if (deleleFlag & updatePageList.contains(i))
-         {
-            updatePageList.remove(i);
-         }
-      }
+       updatePageList.removeAll(pageRange);
    }
 
    /**
     * 
-    * @param fromPageIndex
-    * @param toPageIndex
+    * @param pageRange
+    * @param currentPageList
+    * @return
     */
-   private Set<Integer> updateCurrentPageList(int fromPageIndex, int toPageIndex, Set<Integer> currentPageList)
+   private Set<Integer> updateCurrentPageList(Set<Integer> pageRange, Set<Integer> currentPageList)
    {
-      for (int i = fromPageIndex; i <= toPageIndex; i++)
-      {
-         currentPageList.add(i);
-      }
+         currentPageList.addAll(pageRange);
 
       return currentPageList;
    }
@@ -735,7 +761,7 @@ public class ExtractPageDialog extends PopupUIComponentBean implements Confirmat
     * 
     * @param event
     */
-   public void fromValueChange(ValueChangeEvent event)
+   public void pageRangeChange(ValueChangeEvent event)
    {
       if (!event.getPhaseId().equals(javax.faces.event.PhaseId.INVOKE_APPLICATION))
       {
@@ -748,59 +774,89 @@ public class ExtractPageDialog extends PopupUIComponentBean implements Confirmat
       {
          try
          {
-            validationMessageBean.reset();
             ExtractPageTableEntry row = (ExtractPageTableEntry) event.getComponent().getAttributes().get("row");
-            int index = extractTable.getList().indexOf(row);
-            String fromValue = event.getNewValue().toString();
-            int from = Integer.valueOf(fromValue).intValue();
-
-            if (from < 1 || ((row.getPageTo() != 0) && (row.getPageTo() < from)))
-            {
-               validationMessageBean.addError(COMMON_MESSAGE_BEAN.getParamString("views.extractPageDialog.table.error.invalidPageRange",
-                     String.valueOf(index+1)), "extractPageMsg");
-            }
-            if (validationMessageBean.isContainMessages())
+            String pageRange = event.getNewValue().toString();
+            String range = String.valueOf(pageRange);
+            if(StringUtils.isEmpty(range))
             {
                return;
             }
-         }
-         catch (Exception e)
-         {
-            ExceptionHandler.handleException("extractPageMsg", COMMON_MESSAGE_BEAN.getString("views.extractPageDialog.table.error.invalidPageRange"));
-         }
-      }
-   }
-
-   /**
-    * 
-    * @param event
-    */
-   public void toValueChange(ValueChangeEvent event)
-   {
-      if (!event.getPhaseId().equals(javax.faces.event.PhaseId.INVOKE_APPLICATION))
-      {
-         event.setPhaseId(javax.faces.event.PhaseId.INVOKE_APPLICATION);
-         event.queue();
-
-         return;
-      }
-      else
-      {
-         try
-         {
-            validationMessageBean.reset();
-            ExtractPageTableEntry row = (ExtractPageTableEntry) event.getComponent().getAttributes().get("row");
-            String toValue = event.getNewValue().toString();
             int index = extractTable.getList().indexOf(row);
-            int to = Integer.valueOf(toValue).intValue();
-
-            if (to < 1 || (to > imageInfo.getMaxPages()) || (row.getPageFrom() > to))
+            validationMessageBean.reset();
+            String[] rangeArr = range.split(",");
+            int[] rangeResults = new int[2];
+            Set<Integer> ranges= CollectionUtils.newTreeSet();
+            if (rangeArr != null && rangeArr.length > 0)
             {
-               validationMessageBean.addError(COMMON_MESSAGE_BEAN.getParamString("views.extractPageDialog.table.error.invalidPageRange",
-                     String.valueOf(index+1)), "extractPageMsg");
+               for (int i = 0; i < rangeArr.length; i++)
+               {
+                  String rangeTemp = rangeArr[i];
+                  if (rangeTemp.matches(PAGE_RANGE_REG_EX))
+                  {
+                     String[] numbers = rangeTemp.split("-");
+                     rangeResults[0] = Integer.parseInt(numbers[0]);
+                     rangeResults[1] = Integer.parseInt(numbers[1]);
+                     if ((rangeResults[0] < 1 || rangeResults[1] < 1) || rangeResults[0] > imageInfo.getMaxPages()
+                           || rangeResults[1] > imageInfo.getMaxPages())
+                     {
+                        validationMessageBean.addError(COMMON_MESSAGE_BEAN.getParamString(
+                              "views.extractPageDialog.table.error.invalidPageRange", String.valueOf(index + 1)),
+                              "extractPageMsg");
+                        break;
+                     }
+                     if(rangeResults[0] == rangeResults[1])
+                     {
+                        validationMessageBean.addError(COMMON_MESSAGE_BEAN.getParamString(
+                              "views.movePagesDialog.error.overlappingPageRange", String.valueOf(index + 1)),
+                              "movePageMsg");
+                        break;
+                     }
+                     for(int j=rangeResults[0];j<=rangeResults[1];j++)
+                     {
+                        if(ranges.contains(j))
+                        {
+                           validationMessageBean.addError(COMMON_MESSAGE_BEAN.getParamString(
+                                 "views.movePagesDialog.error.overlappingPageRange", String.valueOf(index + 1)),
+                                 "movePageMsg");
+                           break;
+                        }
+                        ranges.add(j);
+                     }
+                  }
+                  else if (rangeTemp.matches(NUMBER_VAL_REG_EX))
+                  {
+                     Integer val = Integer.valueOf(rangeTemp);
+                     if (val > 0)
+                     {
+                        if(ranges.contains(val))
+                        {
+                           validationMessageBean.addError(COMMON_MESSAGE_BEAN.getParamString(
+                                 "views.movePagesDialog.error.overlappingPageRange", String.valueOf(index + 1)),
+                                 "movePageMsg");
+                           break;
+                        }
+                        ranges.add(val);
+                     }
+                     else
+                     {
+                        validationMessageBean.addError(COMMON_MESSAGE_BEAN.getParamString(
+                              "views.extractPageDialog.table.error.invalidPageRange", String.valueOf(index + 1)),
+                              "extractPageMsg");
+                        break;
+                     }
+                  }
+                  else
+                  {
+                     validationMessageBean.addError(COMMON_MESSAGE_BEAN.getParamString(
+                           "views.extractPageDialog.table.error.invalidPageRange", String.valueOf(index + 1)),
+                           "extractPageMsg");
+                     break;
+                  }
+               }
+               row.setPages(ranges);
             }
             
-            if (validationMessageBean.isContainMessages())
+            if (validationMessageBean.isContainErrorMessages())
             {
                return;
             }
@@ -812,7 +868,7 @@ public class ExtractPageDialog extends PopupUIComponentBean implements Confirmat
          }
       }
    }
-
+   
    /**
     * method to open worklist table for started process/activities
     */
@@ -1041,14 +1097,14 @@ public class ExtractPageDialog extends PopupUIComponentBean implements Confirmat
       {
          ExtractPageTableEntry row = tableList.get(i);
 
-         if ((row.getPageFrom() > row.getPageTo()) || ((row.getPageFrom() == 0) && (row.getPageTo() == 0)))
+         if(CollectionUtils.isEmpty(row.getPages()))
          {
-            validationMessageBean.addError(
-                  COMMON_MESSAGE_BEAN.getParamString("views.extractPageDialog.table.error.invalidPageRange",
-                        String.valueOf(i + 1)), "extractPageMsg");
+            validationMessageBean.addError(COMMON_MESSAGE_BEAN.getParamString(
+                  "views.extractPageDialog.table.error.invalidPageRange", String.valueOf(i + 1)),
+                  "extractPageMsg");
             success = false;
          }
-         else if ((row.getPageTo() > imageInfo.getMaxPages()) || (row.getPageFrom() < 1))
+         else if ((((TreeSet<Integer>)row.getPages()).last() > imageInfo.getMaxPages()))
          {
             validationMessageBean.addError(
                   COMMON_MESSAGE_BEAN.getParamString("views.extractPageDialog.table.error.invalidPageRange",
@@ -1057,12 +1113,8 @@ public class ExtractPageDialog extends PopupUIComponentBean implements Confirmat
          }
          else if (row.isDeletePages())
          {
-            updateDocumentPageList(row.getPageFrom(), row.getPageTo(), row.isDeletePages());
+            updateDocumentPageList(row.getPages());
             updateOrigDoc = true;
-         }
-         else
-         {
-            updateDocumentPageList(row.getPageFrom(), row.getPageTo(), row.isDeletePages());
          }
       }
 
@@ -1222,6 +1274,11 @@ public class ExtractPageDialog extends PopupUIComponentBean implements Confirmat
       return processItems;
    }
    
+   public List<SelectItem> getProcessTypes()
+   {
+      return processTypes;
+   }
+
    public SpawnProcessHelper getSpawnProcessHelper()
    {
       return spawnProcessHelper;

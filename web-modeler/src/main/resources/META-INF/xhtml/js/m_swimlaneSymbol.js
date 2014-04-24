@@ -24,9 +24,10 @@ define(
 			return {
 				createSwimlaneSymbol : function(diagram, parentSymbol) {
 					var laneSymbol = new SwimlaneSymbol();
-					var laneIndex = parentSymbol.getLaneIndex();
 					var laneNamePrefix = m_i18nUtils.getProperty("modeler.diagram.newLane.namePrefix");
-					laneSymbol.name = laneNamePrefix + " " + laneIndex;
+					var laneIdName = m_utils.getUniqueElementNameId(parentSymbol.laneSymbols, laneNamePrefix);
+					laneSymbol.name = laneIdName.name;
+					
 					laneSymbol.bind(diagram, parentSymbol);
 
 					return laneSymbol;
@@ -37,8 +38,10 @@ define(
 					var laneSymbol = new SwimlaneSymbol(diagram);
 
 					laneSymbol.bind(diagram, parentSymbol);
-					var laneIndex = parentSymbol.getLaneIndex();
-					laneSymbol.name = "Lane " + laneIndex;
+					var laneNamePrefix = m_i18nUtils.getProperty("modeler.diagram.newLane.namePrefix");
+					var laneIdName = m_utils.getUniqueElementNameId(parentSymbol.laneSymbols, laneNamePrefix);
+					laneSymbol.name = laneIdName.name;
+
 					laneSymbol.participantFullId = participant.getFullId();
 
 					return laneSymbol;
@@ -65,7 +68,7 @@ define(
 				var symbol = m_symbol.createSymbol();
 
 				m_utils.inheritFields(this, symbol);
-				m_utils.inheritMethods(SwimlaneSymbol.prototype, symbol);
+				var _super = m_utils.inheritMethods(SwimlaneSymbol.prototype, symbol, {selected: ['createTransferObject']});
 
 				this.width = 0;
 				this.height = 0;
@@ -212,7 +215,7 @@ define(
 
 					m_utils.inheritFields(transferObject, this);
 
-					transferObject = this.prepareTransferObject(transferObject);
+					transferObject = _super.createTransferObject(this, transferObject);
 
 					// TODO Recursively for children
 

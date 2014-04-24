@@ -48,7 +48,7 @@ define(
 			 * modeler related views will be closed.
 			 */
 			function closeAllModelerViews() {
-				m_jsfViewManager
+				
 				var models = m_model.getModels();
 				for (var i in models) {
 					viewManager.closeViewsForElement(models[i].uuid);

@@ -9,8 +9,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.stardust.common.annotations.ParameterName;
-import org.eclipse.stardust.common.annotations.ParameterNames;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.DirectionType;
@@ -179,7 +177,7 @@ public final class ClassesHelper
 
    public static void addParameterAccessPoints(JsonArray accessPointsJson, Method method)
    {
-      ParameterName[] values = getParameterLabels(method);
+      Annotation[] values = getParameterLabels(method);
       JsonObject accessPointJson;
       for (int n = 0; n < method.getParameterTypes().length; ++n)
       {
@@ -189,7 +187,7 @@ public final class ClassesHelper
          accessPointJson.addProperty(ModelerConstants.DIRECTION_PROPERTY,
                DirectionType.IN_LITERAL.toString());
 
-         Class<? > parameterType = method.getParameterTypes()[n];
+         Class<?> parameterType = method.getParameterTypes()[n];
          String paramName = parameterType.getSimpleName();
          String paramId = paramName.toLowerCase().charAt(0) + "Param" + (n + 1);
          String paramLabel = getParameterLabel(method, n, values, paramId);
@@ -216,37 +214,61 @@ public final class ClassesHelper
       }
    }
 
-   private static ParameterName[] getParameterLabels(Method method)
+   private static Annotation[] getParameterLabels(Method method)
    {
       for (Annotation a : method.getAnnotations())
       {
-         if (a instanceof ParameterNames)
+         if (matchName("ParameterNames", a))
          {
-            return ((ParameterNames) a).value();
+            return getValue(a);
          }
       }
       return null;
    }
 
-   private static String getParameterLabel(Method method, int n, ParameterName[] values, String paramId)
+   private static <T> T getValue(Annotation a)
    {
-      ParameterName nameAnnotation = findParameterName(method, n);
-      String paramLabel = nameAnnotation == null ? null : nameAnnotation.value();
+      try
+      {
+         Method m = a.getClass().getMethod("value");
+         @SuppressWarnings("unchecked")
+         T result = (T) m.invoke(a);
+         return result;
+      }
+      catch (Exception e)
+      {
+         // (fh) do nothing because either:
+         // - the method do not exist or
+         // - we don't have access to it
+         // - it returns a different type than expected
+      }
+      return null;
+   }
+
+   private static boolean matchName(String name, Annotation a)
+   {
+      return name.equals(a.annotationType().getSimpleName());
+   }
+
+   private static String getParameterLabel(Method method, int n, Annotation[] values, String paramId)
+   {
+      Annotation nameAnnotation = findParameterName(method, n);
+      String paramLabel = nameAnnotation == null ? null : ClassesHelper.<String>getValue(nameAnnotation);
       if (StringUtils.isEmpty(paramLabel) && values != null && n < values.length)
       {
-         paramLabel = values[n].value();
+         paramLabel = ClassesHelper.<String>getValue(values[n]);
       }
       return StringUtils.isEmpty(paramLabel) ? paramId : paramLabel;
    }
 
-   private static ParameterName findParameterName(Method method, int parameterIndex)
+   private static Annotation findParameterName(Method method, int parameterIndex)
    {
       Annotation[] paramAnnotations = method.getParameterAnnotations()[parameterIndex];
       for (Annotation annotation : paramAnnotations)
       {
-         if (annotation instanceof ParameterName)
+         if (matchName("ParameterName", annotation))
          {
-            return (ParameterName) annotation;
+            return annotation;
          }
       }
       return null;
@@ -258,8 +280,7 @@ public final class ClassesHelper
       Method method = null;
       try
       {
-
-         Class<? > type = classLoader.loadClass(className);
+         Class<?> type = classLoader.loadClass(className);
 
          String methodName = methodSignature.split("\\(")[0];
 
@@ -269,9 +290,9 @@ public final class ClassesHelper
 
          String[] parameterClassNames;
 
-         Class<? >[] parameterClasses = new Class<? >[]{};
+         Class<?>[] parameterClasses = new Class<? >[]{};
 
-         if ( !StringUtils.isEmpty(signature))
+         if (!StringUtils.isEmpty(signature))
          {
             signature = removeErasures(signature);
 
@@ -292,7 +313,6 @@ public final class ClassesHelper
          }
 
          method = type.getMethod(methodName, parameterClasses);
-
       }
       catch (Throwable t)
       {
@@ -323,5 +343,4 @@ public final class ClassesHelper
       }
       return null;
    }
-
 }

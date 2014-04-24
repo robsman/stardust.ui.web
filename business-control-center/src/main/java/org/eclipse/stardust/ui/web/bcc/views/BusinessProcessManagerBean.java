@@ -26,6 +26,8 @@ import javax.swing.tree.DefaultTreeModel;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.engine.api.query.Query;
+import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.DeployedModel;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
@@ -56,8 +58,6 @@ import org.eclipse.stardust.ui.web.common.filter.TableDataFilterPopup;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterSearch;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilters;
 import org.eclipse.stardust.ui.web.common.table.DataTableSortModel;
-import org.eclipse.stardust.ui.web.common.table.IQuery;
-import org.eclipse.stardust.ui.web.common.table.IQueryResult;
 import org.eclipse.stardust.ui.web.common.table.export.DataTableExportHandler;
 import org.eclipse.stardust.ui.web.common.table.export.ExportType;
 import org.eclipse.stardust.ui.web.common.treetable.NodeUserObject;
@@ -69,8 +69,7 @@ import org.eclipse.stardust.ui.web.viewscommon.common.Constants;
 import org.eclipse.stardust.ui.web.viewscommon.common.FilterToolbarItem;
 import org.eclipse.stardust.ui.web.viewscommon.common.ISearchHandler;
 import org.eclipse.stardust.ui.web.viewscommon.common.UIViewComponentBean;
-import org.eclipse.stardust.ui.web.viewscommon.common.table.IppQuery;
-import org.eclipse.stardust.ui.web.viewscommon.common.table.IppQueryResult;
+import org.eclipse.stardust.ui.web.viewscommon.common.table.IppSearchHandler;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.helper.activityTable.ActivityInstanceWithPrioTableEntry;
 import org.eclipse.stardust.ui.web.viewscommon.helper.activityTable.ActivityTableHelper;
@@ -511,34 +510,29 @@ public class BusinessProcessManagerBean extends UIViewComponentBean
 
    /**
     * @author Subodh.Godbole
-    *
+    * 
     */
-   public class WrapSearchHandler<E> implements org.eclipse.stardust.ui.web.common.table.ISearchHandler<E> 
+   public class WrapSearchHandler<E> extends IppSearchHandler<E>
    {
       private static final long serialVersionUID = 1L;
 
       ISearchHandler searchHandler;
-      
+
       public WrapSearchHandler(ISearchHandler searchHandler)
       {
          this.searchHandler = searchHandler;
       }
-      
-      /* (non-Javadoc)
-       * @see org.eclipse.stardust.ui.web.common.table.paginator.spi.ISearchHandler#buildQuery()
-       */
-      public IQuery buildQuery()
+
+      @Override
+      public Query createQuery()
       {
-         return new IppQuery(searchHandler.createQuery());
+         return searchHandler.createQuery();
       }
 
-      /* (non-Javadoc)
-       * @see org.eclipse.stardust.ui.web.common.table.paginator.spi.ISearchHandler#performSearch(org.eclipse.stardust.ui.web.common.table.paginator.spi.IQuery, int, int)
-       */
-      @SuppressWarnings("unchecked")
-      public IQueryResult<E> performSearch(IQuery query, int startRow, int pageSize)
+      @Override
+      public QueryResult<E> performSearch(Query query)
       {
-         return new IppQueryResult<E>(searchHandler.performSearch(((IppQuery)query).getQuery()));
+         return searchHandler.performSearch(((Query) query));
       }
    }
 

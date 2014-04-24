@@ -11,12 +11,16 @@
 package org.eclipse.stardust.ui.web.admin.views.model.dialog;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.tree.DefaultTreeModel;
 
 import org.eclipse.stardust.common.CollectionUtils;
-import org.eclipse.stardust.common.error.ConcurrencyException;
+import org.eclipse.stardust.common.config.ExtensionProviderUtils;
+import org.eclipse.stardust.common.error.ErrorCase;
+import org.eclipse.stardust.common.error.IErrorMessageProvider;
+import org.eclipse.stardust.common.error.IErrorMessageProvider.Factory;
 import org.eclipse.stardust.engine.api.dto.DeploymentInfoDetails;
 import org.eclipse.stardust.engine.api.model.Inconsistency;
 import org.eclipse.stardust.engine.api.runtime.AdministrationService;
@@ -31,10 +35,10 @@ import org.eclipse.stardust.ui.web.admin.messages.AdminMessagesPropertiesBean;
 import org.eclipse.stardust.ui.web.admin.views.TreeNodeFactory;
 import org.eclipse.stardust.ui.web.admin.views.model.ModelManagementUtil;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
-import org.eclipse.stardust.ui.web.common.column.DefaultColumnModel;
-import org.eclipse.stardust.ui.web.common.column.IColumnModel;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnAlignment;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
+import org.eclipse.stardust.ui.web.common.column.DefaultColumnModel;
+import org.eclipse.stardust.ui.web.common.column.IColumnModel;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
 import org.eclipse.stardust.ui.web.common.table.SortableTable;
 import org.eclipse.stardust.ui.web.common.table.SortableTableComparator;
@@ -53,7 +57,7 @@ import org.eclipse.stardust.ui.web.viewscommon.wizard.WizardPageEvent;
 
 
 /**
- * 
+ *
  * @author Vikas.Mishra
  * @version $Revision: $
  */
@@ -71,17 +75,20 @@ public class ModelDeploymentStatusPage extends WizardPage implements TreeTableBe
    private boolean containsConfigurationValues = false;
    private boolean containsErrors = false;
    private boolean containsWarnings = false;
-   private ModelDeploymentPage deploymentPage;   
+   private ModelDeploymentPage deploymentPage;
    private boolean modelDeployed=false;
    private List<DeploymentElement> deployList;
    private boolean deploymentException;
-   
+   private ArrayList<Factory> translators;
+
 
    public ModelDeploymentStatusPage()
    {
       super("STATUS_PAGE", "/plugins/admin-portal/views/model/_modelDeployStatusPage.xhtml");
       propsBean = AdminMessagesPropertiesBean.getInstance();
       sessionContext = SessionContext.findSessionContext();
+      translators = new ArrayList<IErrorMessageProvider.Factory>(ExtensionProviderUtils
+            .getExtensionProviders(IErrorMessageProvider.Factory.class));
       createTreeTable();
       createStatusTable();
       initialize();
@@ -145,7 +152,7 @@ public class ModelDeploymentStatusPage extends WizardPage implements TreeTableBe
             deploymentPage = (ModelDeploymentPage) event.getFlowEvent().getOldPage();
             deploymentStatus.setList(getDeploymentStatusTableData());
             deploymentStatus.initialize();
-            
+
          }
       }else if (!modelDeployed && event.getType().equals(WizardPageEvent.WizardPageEventType.PAGE_ONLOAD))
       {
@@ -156,9 +163,9 @@ public class ModelDeploymentStatusPage extends WizardPage implements TreeTableBe
             processConfigurationVariables(deployList);
          }
          catch (Exception e)
-         { 
+         {
             deploymentException = true;
-            
+
             DeploymentInfoDetails infoDetail = new DeploymentInfoDetails(null, null,
                   ExceptionHandler.getExceptionMessage(e));
             Inconsistency inconsistency = new Inconsistency(e.getLocalizedMessage(),
@@ -168,17 +175,17 @@ public class ModelDeploymentStatusPage extends WizardPage implements TreeTableBe
             {
                deploymentInfoList = new ArrayList<DeploymentInfo>(1);
             }
-       
+
             deploymentInfoList.add(infoDetail);
-                        
+
             DeploymentStatusTableEntry entry = new DeploymentStatusTableEntry();
             entry.setErrors(1);
             entry.setCause(e);
             entry.setComplete(true);
-            
+
             List<DeploymentStatusTableEntry> list=new ArrayList<DeploymentStatusTableEntry>(1);
             list.add(entry);
-            
+
             deploymentStatus.setList(list);
             deploymentStatus.initialize();
          }
@@ -322,9 +329,18 @@ public class ModelDeploymentStatusPage extends WizardPage implements TreeTableBe
 
    private ErrorWarningTreeItem createTreeItem(Inconsistency inconsistency, String modelId)
    {
+      String message = "";
       ErrorWarningTreeItem childItem = new ErrorWarningTreeItem();
       childItem.setElement(inconsistency.getSourceElementName());
-      childItem.setMessage(inconsistency.getMessage());
+      if (inconsistency.getError() != null)
+      {
+         message = getMessageFromErrorCase(inconsistency.getError());
+      }
+      else
+      {
+         message = inconsistency.getMessage();
+      }
+      childItem.setMessage(message);
       childItem.setElementId(inconsistency.getSourceElementId());
       childItem.setModelId(modelId);
 
@@ -338,6 +354,26 @@ public class ModelDeploymentStatusPage extends WizardPage implements TreeTableBe
       }
 
       return childItem;
+   }
+
+   private String getMessageFromErrorCase(ErrorCase errorCase)
+   {
+      Iterator<IErrorMessageProvider.Factory> tIter = translators.iterator();
+
+      while (tIter.hasNext())
+      {
+         IErrorMessageProvider.Factory msgFactory = (IErrorMessageProvider.Factory) tIter.next();
+         IErrorMessageProvider msgProvider = msgFactory.getProvider(errorCase);
+         if (msgProvider != null)
+         {
+            return msgProvider.getErrorMessage(
+                  errorCase,
+                  null,
+                  org.eclipse.stardust.ui.web.common.util.FacesUtils.getLocaleFromRequest());
+         }
+      }
+
+      return null;
    }
 
    /**
@@ -406,7 +442,7 @@ public class ModelDeploymentStatusPage extends WizardPage implements TreeTableBe
 
    /**
     * Mock data
-    * 
+    *
     * @return
     */
    private List<ErrorWarningTreeItem> getErrorWarningTreeTableData()
@@ -487,7 +523,7 @@ public class ModelDeploymentStatusPage extends WizardPage implements TreeTableBe
    public List<DeploymentInfo> deployModels() throws Exception
    {
       List<DeploymentInfo> list = new ArrayList<DeploymentInfo>(1);
-      
+
       AdministrationService administrationService = sessionContext.getServiceFactory().getAdministrationService();
 
       if (sessionContext.isSessionInitialized())
@@ -508,7 +544,7 @@ public class ModelDeploymentStatusPage extends WizardPage implements TreeTableBe
                }
                else if (deployTableEntry.getFilePath().startsWith("/process-models/"))
                {
-                  data = DocumentMgmtUtility.getFileContent(DocumentMgmtUtility.getDocumentManagementService().getDocument(deployTableEntry.getFilePath()).getId());                  
+                  data = DocumentMgmtUtility.getFileContent(DocumentMgmtUtility.getDocumentManagementService().getDocument(deployTableEntry.getFilePath()).getId());
                }
                else
                {
@@ -561,7 +597,7 @@ public class ModelDeploymentStatusPage extends WizardPage implements TreeTableBe
                            info.getDeploymentComment());
                      Inconsistency inconsistency = new Inconsistency(e.getLocalizedMessage(), null, Inconsistency.ERROR);
                      infoDetail.addInconsistency(inconsistency);
-                     info = infoDetail;                     
+                     info = infoDetail;
                   }
 
                   list = new ArrayList<DeploymentInfo>(1);
@@ -570,7 +606,7 @@ public class ModelDeploymentStatusPage extends WizardPage implements TreeTableBe
                }
             }
          }
-         
+
          finally
          {
             if (stoppedDaemons != null && stoppedDaemons.length > 0)
@@ -588,5 +624,5 @@ public class ModelDeploymentStatusPage extends WizardPage implements TreeTableBe
    {
       return deploymentException;
    }
-   
+
 }

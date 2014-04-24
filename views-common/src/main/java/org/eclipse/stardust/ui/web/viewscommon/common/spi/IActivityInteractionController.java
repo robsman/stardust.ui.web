@@ -49,6 +49,10 @@ public interface IActivityInteractionController
 
    Map getOutDataValues(ActivityInstance ai);
    
+   boolean isTypedDocumentOpen(ActivityInstance activityInstance);
+   
+   boolean unregisterInteraction(ActivityInstance ai);
+   
    interface Factory
    {
       IActivityInteractionController getInteractionController(Activity activity);

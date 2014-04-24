@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- *
+ * 
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -14,9 +14,10 @@ define(
 				"bpm-modeler/js/m_command", "bpm-modeler/js/m_model",
 				"bpm-modeler/js/m_accessPoint",
 				"bpm-modeler/js/m_parameterDefinitionsPanel",
-				"bpm-modeler/js/m_i18nUtils"],
+				"bpm-modeler/js/m_i18nUtils" ],
 		function(m_utils, m_constants, m_commandsController, m_command,
-				m_model, m_accessPoint, m_parameterDefinitionsPanel, m_i18nUtils) {
+				m_model, m_accessPoint, m_parameterDefinitionsPanel,
+				m_i18nUtils) {
 
 			return {
 				create : function() {
@@ -27,11 +28,11 @@ define(
 			};
 
 			/**
-			 *
+			 * 
 			 */
 			function EventIntegrationOverlay() {
 				/**
-				 *
+				 * 
 				 */
 				EventIntegrationOverlay.prototype.initializeEventIntegrationOverlay = function(
 						page, id) {
@@ -54,7 +55,8 @@ define(
 														+ " "
 														+ xhr.statusText;
 
-												m_utils.jQuerySelect(this).append(msg);
+												m_utils.jQuerySelect(this)
+														.append(msg);
 											} else {
 												overlay.parameterMappingsPanel = m_parameterDefinitionsPanel
 														.create({
@@ -76,17 +78,18 @@ define(
 					if (this.propertiesTabs != null) {
 						this.propertiesTabs.tabs();
 					}
+					this.removeCamelTriggerPasswordCV();
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				EventIntegrationOverlay.prototype.mapInputId = function(inputId) {
 					return m_utils.jQuerySelect("#" + this.id + " #" + inputId);
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				EventIntegrationOverlay.prototype.registerForRouteChanges = function(
 						input) {
@@ -100,14 +103,14 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				EventIntegrationOverlay.prototype.getEvent = function() {
 					this.page.getEvent();
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				EventIntegrationOverlay.prototype.createPrimitiveParameterMapping = function(
 						name, id, primitiveDataType) {
@@ -121,21 +124,21 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				EventIntegrationOverlay.prototype.getPropertiesPanel = function() {
 					return this.page.propertiesPanel;
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				EventIntegrationOverlay.prototype.getImplementation = function() {
 					return "camel";
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				EventIntegrationOverlay.prototype.getCamelContext = function() {
 					return "defaultCamelContext";
@@ -156,7 +159,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				EventIntegrationOverlay.prototype.initializeIntervalUnitSelect = function(
 						select) {
@@ -189,7 +192,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				EventIntegrationOverlay.prototype.initializedelayTimerUnitSelect = function(
 						select) {
@@ -211,7 +214,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				EventIntegrationOverlay.prototype.getIntervalInMilliseconds = function(
 						value, unitFactor) {
@@ -219,7 +222,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				EventIntegrationOverlay.prototype.getIntervalWithUnit = function(
 						value) {
@@ -255,16 +258,33 @@ define(
 					};
 				};
 
+				EventIntegrationOverlay.prototype.removeCamelTriggerPasswordCV = function() {
+					var deleteOptions = {
+						literalValue : "${camelTriggerPassword:Password}",
+						mode : "withLiteral"
+
+					};
+					var changes = {
+						variableName : "${camelTriggerPassword}",
+						deleteOptions : deleteOptions
+					};
+					var command = m_command.createDeleteConfigVariableCommand(
+							this.page.getModel().id, this.page.getModel().uuid,
+							changes);
+					var deleteStatus = m_commandsController
+							.submitCommand(command);
+
+				}
+
 				/**
-				 *
+				 * 
 				 */
-				EventIntegrationOverlay.prototype.getRouteContent = function()
-				{
+				EventIntegrationOverlay.prototype.getRouteContent = function() {
 					return this.getRouteDefinitions();
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				EventIntegrationOverlay.prototype.submitChanges = function(
 						changes) {
@@ -288,7 +308,7 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				EventIntegrationOverlay.prototype.submitOverlayChanges = function(
 						parameterMappings) {
@@ -303,26 +323,31 @@ define(
 									implementation : this.getImplementation(),
 									attributes : {
 										"carnot:engine:integration::overlay" : this.id,
-										"carnot:engine:camel::camelContextId" : this.getCamelContext(),
-										"carnot:engine:camel::camelRouteExt" : this.getRouteContent(),
-										"carnot:engine:camel::additionalSpringBeanDefinitions" : this.getAdditionalBeanSpecifications(),
+										"carnot:engine:camel::camelContextId" : this
+												.getCamelContext(),
+										"carnot:engine:camel::camelRouteExt" : this
+												.getRouteContent(),
+										"carnot:engine:camel::additionalSpringBeanDefinitions" : this
+												.getAdditionalBeanSpecifications(),
 										"carnot:engine:camel::username" : "${camelTriggerUsername}",
-										"carnot:engine:camel::password" : "${camelTriggerPassword}"
+										"carnot:engine:camel::password" : "${camelTriggerPassword:Password}"
 									}
 								}
 							});
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				EventIntegrationOverlay.prototype.submitRouteChanges = function() {
 					this
 							.submitChanges({
 								modelElement : {
 									attributes : {
-										"carnot:engine:camel::camelContextId" : this.getCamelContext(),
-										"carnot:engine:camel::camelRouteExt" : this.getRouteContent(),
+										"carnot:engine:camel::camelContextId" : this
+												.getCamelContext(),
+										"carnot:engine:camel::camelRouteExt" : this
+												.getRouteContent(),
 										"carnot:engine:camel::additionalSpringBeanDefinitions" : this
 												.getAdditionalBeanSpecifications()
 									}
@@ -332,7 +357,7 @@ define(
 			}
 
 			/**
-			 *
+			 * 
 			 */
 			EventIntegrationOverlay.prototype.validate = function() {
 				return true;

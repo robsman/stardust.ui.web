@@ -19,11 +19,14 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.resource.URIHandler;
 import org.eclipse.emf.ecore.resource.impl.ExtensibleURIConverterImpl;
 import org.eclipse.emf.ecore.resource.impl.URIHandlerImpl;
+
 import org.eclipse.stardust.common.error.PublicException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.modeler.marshaling.ClassLoaderProvider;
 
 /**
  * Supports URLs with "classpath:/" and "jcr:/" schemes, as well as relative URLs by
@@ -48,28 +51,28 @@ public class WebModelerUriConverter extends ExtensibleURIConverterImpl
          {
             // does nothing
          }
-         
+
          public Map<String, ?> getAttributes(URI uri, Map<?, ?> options)
          {
             return Collections.emptyMap();
          }
-         
+
          public boolean exists(URI uri, Map<?, ?> options)
          {
             // TODO (fh) implement
             throw new RuntimeException("Not supported.");
          }
-         
+
          public void delete(URI uri, Map<?, ?> options) throws IOException
          {
             throw new RuntimeException("Not supported.");
          }
-         
+
          public OutputStream createOutputStream(URI uri, Map<?, ?> options) throws IOException
          {
             throw new RuntimeException("Not supported.");
          }
-         
+
          public InputStream createInputStream(URI uri, Map<?, ?> options) throws IOException
          {
             InputStream result = null;
@@ -88,7 +91,7 @@ public class WebModelerUriConverter extends ExtensibleURIConverterImpl
             }
             return result;
          }
-         
+
          private InputStream createJcrInputStream(URI uri)
          {
             if (modelService != null)
@@ -113,7 +116,21 @@ public class WebModelerUriConverter extends ExtensibleURIConverterImpl
             {
                trace.debug("Getting resource from context class loader: " + path);
             }
-            ClassLoader ctxCl = Thread.currentThread().getContextClassLoader();
+
+            ClassLoader ctxCl = null;
+            if(modelService != null)
+            {
+               ClassLoaderProvider classLoaderProvider = modelService.currentSession().classLoaderProvider();
+               if(classLoaderProvider != null)
+               {
+                  ctxCl = classLoaderProvider.classLoader();
+               }
+            }
+            if(ctxCl == null)
+            {
+               ctxCl = Thread.currentThread().getContextClassLoader();
+            }
+
             // (fh) classloaders are considering all paths to be absolute
             // a path starting with a "/" is incorrect since first segment would then be empty
             URL resourceUrl = ctxCl.getResource(isAbsolute ? path.substring(1) : path);

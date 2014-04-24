@@ -77,12 +77,23 @@ define(
       OutlineUiModelBuilder.prototype.buildModelNode = function(parent) {
         // alias to be used from jQuery.each callbacks
         var self = this;
-
+        	modelTreeType="model",
+        	isLocked=this.model.isReadonly(),
+        	isEditLocked=this.model.isReadonly() && 
+				         this.model.editLock && 
+				         ("lockedByOther" === this.model.editLock.lockStatus);
+        
+        if(isLocked){
+        	modelTreeType="lockedModel";
+        	if(isEditLocked){
+        		modelTreeType="lockedModelForEdit";
+        	}
+        }
         // Model
         var modelNode = this.nodeBuilder.buildNode({
           attr : {
             "id" : this.model.uuid,
-            "rel" : this.model.isReadonly() ? "lockedModel" : "model",
+            "rel" : modelTreeType,
             "elementId" : this.model.id
           },
           data : this.model.name
@@ -159,10 +170,19 @@ define(
         if (data[m_constants.EXTERNAL_REFERENCE_PROPERTY]) {
           return undefined;
         }
+        
+        var showAsPrimitive = null;
+        if (data.structuredDataTypeFullId) {
+        	var typeDeclaration = m_model.findModel(m_model
+					.stripModelId(data.structuredDataTypeFullId)).typeDeclarations[m_model
+					.stripElementId(data.structuredDataTypeFullId)];
+        	showAsPrimitive = typeDeclaration ? typeDeclaration.isEnumeration():false;
+		}
+        
         return this.nodeBuilder.buildNode({
           attr : {
             "id" : data.uuid,
-            "rel" : data.dataType,
+            "rel" : showAsPrimitive != true ? data.dataType : "primitive",
             "elementId" : data.id,
             "modelId" : this.model.id,
             "oid" : data.oid,
@@ -261,6 +281,23 @@ define(
         return new OutlineUiModelBuilder(model, new TreeNodeBuilder(outlineTree));
       }
 
+      function refreshModelStatus(model) {
+        var modelNode = m_utils.jQuerySelect("li#" + model.uuid, displayScope + " #outline");
+        modelNode.attr("rel", model.isReadonly() ? "lockedModel" : "model");
+
+        if (model.isReadonly() && model.editLock
+            && ("lockedByOther" === model.editLock.lockStatus)) {
+        	
+        	modelNode.attr("rel", model.isReadonly() ? "lockedModelForEdit" : "model");
+          modelNode.attr("title", m_i18nUtils
+              .getProperty("modeler.outline.model.statusLocked")
+              + " " + model.editLock.ownerName);
+          modelNode.addClass("show_tooltip");
+        } else {
+          modelNode.removeClass("show_tooltip");
+        }
+      }
+
       var readAllModels = function(force) {
         jQuery("div#outlineLoadingMsg").show();
         jQuery("div#outlineLoadingMsg").html(
@@ -274,17 +311,20 @@ define(
 
         console.time("###################################### Tree formation");
 
+        var outline = this;
         var outlineRoot = jQuery(displayScope + "#outline");
 
         jQuery.each(m_utils.convertToSortedArray(m_model.getModels(), "name", false),
             function(index, model) {
               newOutlineTreeDomBuilder(model).buildModelNode(outlineRoot);
+              refreshModelStatus(model);
             });
 
         // Errored models
         jQuery.each(m_utils.convertToSortedArray(m_model.getErroredModels(), "name",
             false), function(index, model) {
           newOutlineTreeDomBuilder(model).buildErroredModelNode(outlineRoot);
+          //refreshModelStatus(model);
         });
 
         console.timeEnd("###################################### Tree formation");
@@ -419,13 +459,14 @@ define(
 
 			var renameNodeHandler = function(event, data) {
 				if (data.rslt.obj.attr('rel') == 'model'
-					|| data.rslt.obj.attr('rel') == 'lockedModel') {
+					|| data.rslt.obj.attr('rel') == 'lockedModel'
+					|| data.rslt.obj.attr('rel') == 'lockedModelForEdit') {
 					var model = m_model.findModelByUuid(data.rslt.obj
 							.attr("id"));
 
 					if (model && (model.name != data.rslt.name)) {
 						m_commandsController.submitCommand(m_command
-								.createUpdateModelCommand(model.uuid, model.id, {
+								.createUpdateModelElementCommand(model.id, model.id, {
 									"name" : data.rslt.name
 								}));
 					}
@@ -446,7 +487,7 @@ define(
 			};
 
 			var renameElementViewLabel = function(type, uuid, name) {
-				if (type == 'model' || type == 'lockedModel') {
+				if (type == 'model' || type == 'lockedModel' || type == "lockedModelForEdit" ) {
 					renameView("modelView", uuid, "modelName", name);
 				} else if (type == 'process') {
 					renameView("processDefinitionView", uuid, "processName",
@@ -510,7 +551,9 @@ define(
 											.getProperty("modeler.messages.confirm.yes"),
 									cancelButtonText : m_i18nUtils
 											.getProperty("modeler.messages.confirm.no"),
-									acceptFunction : reloadOutlineTree
+									acceptFunction : reloadOutlineTree ,
+									checkboxLabelText:	m_i18nUtils
+										.getProperty("modeler.messages.confirm.saveModelsPriorToReload")
 								}
 							});
 				}
@@ -674,7 +717,8 @@ define(
 							contextmenu : {
 								"items" : function(node) {
 									if ('model' == node.attr('rel')
-											|| 'lockedModel' == node.attr('rel')) {
+											|| 'lockedModel' == node.attr('rel')
+											|| 'lockedModelForEdit' == node.attr('rel')) {
 										var ctxMenu =  {
 											"ccp" : false,
 											"create" : false,
@@ -1276,6 +1320,19 @@ define(
 												"structuredTypes",
 												"data" ]
 									},
+									"lockedModelForEdit" : {
+										"icon" : {
+											"image" : m_urlUtils
+													.getPlugsInRoot()
+													+ "bpm-modeler/images/icons/model-locked-for-edit.png"
+										},
+										"valid_children" : [
+												"participants",
+												"process",
+												"applications",
+												"structuredTypes",
+												"data" ]
+									},
 									"erroredModel" : {
 										"icon" : {
 											"image" : m_urlUtils
@@ -1569,7 +1626,8 @@ define(
 								"select_node.jstree",
 								function(event, data) {
 									if (data.rslt.obj.attr('rel') == 'model'
-											|| data.rslt.obj.attr('rel') == 'lockedModel') {
+											|| data.rslt.obj.attr('rel') == 'lockedModel'
+											|| data.rslt.obj.attr('rel') == 'lockedModelForEdit') {
 										var model = m_model
 												.findModelByUuid(data.rslt.obj
 														.attr("id"));
@@ -2404,7 +2462,7 @@ define(
 						application : application,
 						viewManager : viewManager,
 						createCallback : function(parameter) {
-							jQuery
+						jQuery
 									.ajax({
 										type : "POST",
 										url : m_urlUtils
@@ -2415,6 +2473,12 @@ define(
 										contentType : "application/json",
 										data : JSON.stringify(parameter)
 									});
+							
+							m_commandsController.submitCommand(m_command
+									.createCreateWrapperServiceCommand(model.id,
+											model.id, {
+											data : JSON.stringify(parameter)
+											}));
 						}
 					}
 				};
@@ -2478,7 +2542,8 @@ define(
 			 */
 			function addCamelOverlayMenuOptions(options, nodeType) {
 				var applicationIntegrationOverlayExtensions = m_extensionManager
-						.findExtensions("applicationIntegrationOverlay");
+						.findExtensions("applicationIntegrationOverlay"),
+				    createTxt=m_i18nUtils.getProperty("modeler.element.properties.commonProperties.create");
 
 				for ( var m = 0; m < applicationIntegrationOverlayExtensions.length; ++m) {
 					var applicationIntegrationOverlayExtension = applicationIntegrationOverlayExtensions[m];
@@ -2489,8 +2554,9 @@ define(
 					}
 
 					options[applicationIntegrationOverlayExtension.id] = {
-						label : "Create "
-								+ applicationIntegrationOverlayExtension.name, // I18N
+						label : createTxt + " " +
+								m_i18nUtils.getProperty("modeler.integrationoverlays.application." +
+								applicationIntegrationOverlayExtension.id), 
 
 						// This code requires the following patch in
 						// jquery.jstree
@@ -2763,7 +2829,7 @@ define(
 				 */
 				Outline.prototype.processCommand = function(command) {
 					m_utils.debug("===> Outline Process Event");
-
+					var modelTreeType="model";
 					var obj = ("string" == typeof (command)) ? jQuery
 							.parseJSON(command) : command;
 
@@ -2838,8 +2904,20 @@ define(
 
 								// Change icon in case the date type changes
 								if (m_constants.DATA === modelElement.type) {
-									node.attr("rel",
-											obj.changes.modified[i].dataType);
+									if (modelElement.structuredDataTypeFullId) {
+										var typeDeclaration = m_model.findModel(m_model
+												.stripModelId(modelElement.structuredDataTypeFullId)).typeDeclarations[m_model
+												.stripElementId(modelElement.structuredDataTypeFullId)];
+										if(typeDeclaration.isEnumeration()){
+											node.attr("rel", m_constants.PRIMITIVE_DATA_TYPE);	
+										}else{
+											node.attr("rel",
+													obj.changes.modified[i].dataType);
+										}
+									} else {
+										node.attr("rel",
+												obj.changes.modified[i].dataType);
+									}
 								}
 
 								// Change struct type icon in case the type
@@ -2850,7 +2928,14 @@ define(
 
 								// Change model icon in case the read-only factor has changed.
 								if (m_constants.MODEL === modelElement.type) {
-									node.attr("rel", (modelElement.isReadonly() ? "lockedModel" : "model"));
+									modelTreeType="model";
+									if(modelElement.isReadonly()){
+										modelTreeType="lockedModel";
+										if(modelElement.editLock && modelElement.editLock.lockStatus=="lockedByOther"){
+											modelTreeType="lockedModelForEdit";
+										}
+									}
+									node.attr("rel", modelTreeType);
 									if (command.commandId === "modelLockStatus.update" && modelElement.isReadonly()) {
 										var isModelLockCommand = true;
 									}
@@ -2903,6 +2988,20 @@ define(
 							m_utils.jQuerySelect("#redoChange").addClass("toolDisabled");
 						}
 
+						if (obj.uiState) {
+						  if (obj.uiState.modelLocks) {
+                m_utils.jQuerySelect(obj.uiState.modelLocks).each(function(i, lockInfo) {
+                  var model = m_model.findModel(lockInfo.modelId);
+                  if (model) {
+                    model.editLock = model.editLock || {};
+                    m_utils.inheritFields(model.editLock, lockInfo);
+
+                    refreshModelStatus(model);
+                  }
+                });
+              }
+						}
+
 						if (command.commandId === "modelLockStatus.update") {
 							if (isModelLockCommand) {
 								m_utils.jQuerySelect("#undoChange").addClass("toolDisabled");
@@ -2917,6 +3016,35 @@ define(
 						refresh();
 					}
 				};
+
+        Outline.prototype.processCommandError = function(command, response) {
+          m_utils.debug("===> Outline - Processing Command Error");
+
+          var obj = ("string" == typeof (command)) ? jQuery.parseJSON(command) : command;
+
+          if (409 === response.status) {
+            m_utils.debug("Refreshing model lock status");
+
+            var model = m_model.findModel(command.modelId);
+
+            m_communicationController.syncGetData({
+              url : m_communicationController.getEndpointUrl() + "/sessions/editLock/"
+                  + encodeURIComponent(model.id)
+            }, {
+              "success" : function(lockInfoJson) {
+                model.editLock = model.editLock || {};
+
+                m_utils.inheritFields(model.editLock, lockInfoJson);
+
+                // refresh UI state
+                refreshModelStatus(model);
+              },
+              "error" : function(e) {
+                m_utils.debug("Failed refreshing lock status");
+              }
+            });
+          }
+        };
 
 				/**
 				 * TODO - temporary
@@ -3204,7 +3332,7 @@ define(
         };
 
         /**
-         * 
+         *
          */
         Outline.prototype.expandNode = function(nodeSelector) {
         	jQuery.jstree._reference(displayScope + "#outline").open_node(nodeSelector);

@@ -136,14 +136,18 @@
 			<div id="sidebar" class="sidebar" sg-stretch-to-bottom>
 				<div class="sg-sidebar-toggle" ng-class="{'display-none': sidebar.pinned}"> 
 					<div class="sg-sidebar-toggle-inner">
-						<div class="sg-sidebar-toggle-icon" ng-click="pinSidebar()"></div>
+						<div class="sg-sidebar-toggle-icon" ng-click="pinSidebar()">
+							<span>&laquo;</span>
+						</div>
 					</div>
 				</div>
 				<div class="sidebar-content" sg-stretch-to-bottom ng-class="{'display-none': !sidebar.pinned}"
 					ng-style="{'width': config.sidebar.width + 'px'}">
 					<div class="sidebar-title-wrapper">
 						<span class="sidebar-title">{{config.sidebar.title}}</span>
-						<div ng-if="sidebar.pinned" class="sg-sidebar-pin" ng-click="unpinSidebar()"></div>
+						<div ng-if="sidebar.pinned" class="sg-sidebar-pin" ng-click="unpinSidebar()">
+							<span>&raquo;</span>
+						</div>
 					</div>
 					<div class="sidebar-content-inner" ng-class="{'display-none': !sidebar.visible}">
 						<div ng-repeat="item in sidebars">

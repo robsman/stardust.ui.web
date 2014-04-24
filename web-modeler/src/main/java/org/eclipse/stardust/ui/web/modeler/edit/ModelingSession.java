@@ -13,7 +13,6 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.eclipse.emf.ecore.EObject;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -24,7 +23,6 @@ import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
 import org.eclipse.stardust.ui.web.modeler.common.ModelPersistenceService;
 import org.eclipse.stardust.ui.web.modeler.common.ModelRepository;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ClassLoaderProvider;
-import org.eclipse.stardust.ui.web.modeler.marshaling.DefaultClassLoaderProvider;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementMarshaller;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementUnmarshaller;
 
@@ -32,7 +30,13 @@ import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementUnmarshaller;
 @Scope("prototype")
 public class ModelingSession
 {
+   public static final String SUPERUSER = ModelingSession.class.getName() + ".Superuser";
+
    private String ownerId;
+
+   private String ownerName;
+
+   private Map<String, Object> sessionAtributes = null;
 
    private Map<String, User> invitedUsers = newHashMap();
 
@@ -47,6 +51,9 @@ public class ModelingSession
    private final EditingSession editingSession = new EditingSession();
 
    private final List<SessionStateListener> stateListeners = newArrayList();
+
+   @Resource
+   private ModelLockManager modelLockManager;
 
    @Resource(name="webModelerModelManagementStrategy")
    private ModelManagementStrategy modelManagementStrategy;
@@ -74,9 +81,9 @@ public class ModelingSession
       }
 
       @Override
-      protected ClassLoaderProvider classLoaderProvider()
+      protected ModelingSession modelingSession()
       {
-         return ModelingSession.this.classLoaderProvider();
+         return ModelingSession.this;
       }
    };
 
@@ -87,7 +94,19 @@ public class ModelingSession
       {
          return ModelingSession.this.modelManagementStrategy();
       }
+
+      @Override
+      protected ModelingSession modelingSession()
+      {
+         return ModelingSession.this;
+      }
    };
+
+   public void reset()
+   {
+      editingSession.reset();
+      modelLockManager.releaseLocks(this);
+   }
 
    public String getId()
    {
@@ -104,9 +123,33 @@ public class ModelingSession
       this.ownerId = ownerId;
    }
 
+   public String getOwnerName()
+   {
+      return ownerName;
+   }
+
+   void setOwnerName(String ownerName)
+   {
+      this.ownerName = ownerName;
+   }
+
    public boolean isOwner(String userId)
    {
       return areEqual(ownerId, userId);
+   }
+
+   public Object getSessionAttribute(String name)
+   {
+      return (null != sessionAtributes) ? sessionAtributes.get(name) : null;
+   }
+
+   public Object setSessionAttribute(String name, Object value)
+   {
+      if (null == sessionAtributes)
+      {
+         this.sessionAtributes = newHashMap();
+      }
+      return sessionAtributes.put(name, value);
    }
 
    public ModelManagementStrategy modelManagementStrategy()
@@ -220,17 +263,104 @@ public class ModelingSession
      return color;
    }
 
-   public synchronized EditingSession getSession(EObject... models)
+   public synchronized EditingSession getSession()
    {
+      return editingSession;
+   }
+
+   /**
+    * Request a session suitable to perform modifications on the underlying models.
+    *
+    * @param models
+    * @return
+    */
+   public synchronized EditingSession getEditSession(EObject... models) throws MissingWritePermissionException
+   {
+      // TODO ensure all previously tracked models can still be edited
+      for (EObject model : editingSession.getTrackedModels())
+      {
+         if ( !ensureEditLock(model, false))
+         {
+            // TODO improve message
+            throw new MissingWritePermissionException(
+                  "Failed to re-validate edit lock on model "
+                        + this.modelRepository().getModelBinding(model).getModelId(model));
+         }
+      }
+
+
       for (EObject model : models)
       {
          if ( !editingSession.isTrackingModel(model))
          {
-            editingSession.trackModel(model);
+            if (ensureEditLock(model, true))
+            {
+               editingSession.trackModel(model);
+            }
+            else
+            {
+               // TODO improve message
+               throw new MissingWritePermissionException(
+                     "Failed to obtain edit lock on model "
+                           + this.modelRepository().getModelBinding(model).getModelId(model));
+            }
          }
       }
 
       return editingSession;
+   }
+
+   // TODO can this become a more generic contract? Ideally combined with the check if model needs to be saved at all.
+   public boolean canSaveModel(String modelId)
+   {
+      EObject model = modelRepository().findModel(modelId);
+      if (getSession().isTrackingModel(model))
+      {
+         return ensureEditLock(model, false);
+      }
+      else
+      {
+         // if the model is currently not tracked for changes, at least make sure nobody
+         // else has an edit lock
+         return modelLockManager.isLockedByMe(this, modelId)
+               || !modelLockManager.isLockedByOther(this, modelId);
+      }
+   }
+
+   public boolean releaseEditLock(EObject model)
+   {
+      String modelId = modelRepository().getModelBinding(model).getModelId(model);
+      boolean isLockedByMe = modelLockManager.isLockedByMe(this, modelId);
+      if (isLockedByMe)
+      {
+         modelLockManager.releaseLock(this, modelId);
+         return true;
+      }
+      return false;
+   }
+
+   public boolean breakEditLock(EObject model)
+   {
+      String modelId = modelRepository().getModelBinding(model).getModelId(model);
+      return modelLockManager.breakEditLock(this, modelId);
+   }
+
+   private boolean ensureEditLock(EObject model, boolean obtainLockIfNeeded)
+   {
+      String modelId = modelRepository().getModelBinding(model).getModelId(model);
+      boolean isLockedByMe = modelLockManager.isLockedByMe(this, modelId);
+      if ( !isLockedByMe && obtainLockIfNeeded && !modelLockManager.isLockedByOther(this, modelId))
+      {
+         isLockedByMe = modelLockManager.lockForEditing(this, modelId);
+      }
+
+      return isLockedByMe;
+   }
+
+   public LockInfo getEditLockInfo(EObject model)
+   {
+      String modelId = modelRepository().getModelBinding(model).getModelId(model);
+      return modelLockManager.getEditLockInfo(modelId);
    }
 
    public boolean invitedContainsUser(User user)

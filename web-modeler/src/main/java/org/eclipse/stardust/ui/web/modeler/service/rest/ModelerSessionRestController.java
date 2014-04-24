@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -41,14 +42,19 @@ import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.modeler.common.ModelRepository;
-import org.eclipse.stardust.ui.web.modeler.common.UnsavedModelsTracker;
+import org.eclipse.stardust.ui.web.modeler.edit.LockInfo;
+import org.eclipse.stardust.ui.web.modeler.edit.MissingWritePermissionException;
+import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
 import org.eclipse.stardust.ui.web.modeler.edit.SimpleCommandHandlingMediator;
+import org.eclipse.stardust.ui.web.modeler.edit.jto.ChangeDescriptionJto;
+import org.eclipse.stardust.ui.web.modeler.edit.jto.CommandJto;
 import org.eclipse.stardust.ui.web.modeler.edit.postprocessing.ChangesetPostprocessingService;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandlingMediator;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.ModelCommandsHandler;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelMarshaller;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
+import org.eclipse.stardust.ui.web.modeler.service.rest.ModelerSessionRestController.ChangeJto.UiStateJto;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelBinding;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelNavigator;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelPersistenceHandler;
@@ -113,32 +119,38 @@ public class ModelerSessionRestController
       }
 
       ModelMarshaller marshaller;
-      if ( !isEmpty(jto.modelId))
+      if (!isEmpty(jto.modelId))
       {
-         EObject model = modelService.currentSession()
-               .modelRepository()
-               .findModel(jto.modelId);
-         marshaller = modelService.currentSession()
-               .modelRepository()
-               .getModelBinding(model)
-               .getMarshaller();
+         ModelingSession currentSession = modelService.currentSession();
+         ModelRepository modelRepository = currentSession.modelRepository();
+         EObject model = modelRepository.findModel(jto.modelId);
+         ModelBinding<EObject> modelBinding = modelRepository.getModelBinding(model);
+         marshaller = modelBinding.getMarshaller();
       }
       else
       {
          marshaller = modelService.modelElementMarshaller();
       }
 
-      for (EObject changedObject : change.getModifiedElements())
+      try
       {
-         jto.changes.modified.add(marshaller.toJson(changedObject));
+         marshaller.init();
+         for (EObject changedObject : change.getModifiedElements())
+         {
+            jto.changes.modified.add(marshaller.toJson(changedObject));
+         }
+         for (EObject addedObject : change.getAddedElements())
+         {
+            jto.changes.added.add(marshaller.toJson(addedObject));
+         }
+         for (EObject removedObject : change.getRemovedElements())
+         {
+            jto.changes.removed.add(marshaller.toJson(removedObject));
+         }
       }
-      for (EObject addedObject : change.getAddedElements())
+      finally
       {
-         jto.changes.added.add(marshaller.toJson(addedObject));
-      }
-      for (EObject removedObject : change.getRemovedElements())
-      {
-         jto.changes.removed.add(marshaller.toJson(removedObject));
+         marshaller.done();
       }
 
       if (change.wasFailure())
@@ -150,6 +162,8 @@ public class ModelerSessionRestController
          jto.problems = newArrayList();
          jto.problems.add(failureJto);
       }
+
+      jto.uiState = toUiStateJto();
 
       return jto;
    }
@@ -179,7 +193,51 @@ public class ModelerSessionRestController
          jto.problems.add(failureJto);
       }
 
+      jto.uiState = toUiStateJto();
+
       return jto;
+   }
+
+   private UiStateJto toUiStateJto()
+   {
+      UiStateJto uiStateJto = new UiStateJto();
+
+      // TODO consider only pushing the delta since last ui-state update
+      uiStateJto.modelLocks = toModelLocksJto();
+
+      return uiStateJto;
+   }
+
+   private List<ModelLockJto> toModelLocksJto()
+   {
+      List<ModelLockJto> modelLocksJto = newArrayList();
+
+      ModelingSession session = modelService.currentSession();
+      for (EObject model : session.modelRepository().getAllModels())
+      {
+         modelLocksJto.add(toModelLockJto(session, model));
+      }
+
+      return modelLocksJto;
+   }
+
+   private ModelLockJto toModelLockJto(ModelingSession session, EObject model)
+   {
+      ModelLockJto lockInfoJto = new ModelLockJto();
+      lockInfoJto.modelId = session.modelRepository().getModelBinding(model).getModelId(model);
+
+      LockInfo lockInfo = session.getEditLockInfo(model);
+      if (null != lockInfo)
+      {
+         lockInfoJto.lockStatus = lockInfo.isLockedBySession(session)
+               ? ModelLockJto.STATUS_LOCKED_BY_ME
+               : ModelLockJto.STATUS_LOCKED_BY_OTHER;
+         // TODO full name of edit lock owner
+         lockInfoJto.ownerId = lockInfo.ownerId;
+         lockInfoJto.ownerName = lockInfo.ownerName;
+         lockInfoJto.canBreakEditLock = lockInfo.canBreakEditLock(session);
+      }
+      return lockInfoJto;
    }
 
    public JsonObject toJson(ChangeJto changeJto)
@@ -312,7 +370,8 @@ public class ModelerSessionRestController
             jto.isUndo = true;
             result = toJson(jto);
 
-            commandHandlingMediator().broadcastChange(undoneChange.getSession(), result);
+            // TODO include full command?
+            commandHandlingMediator().broadcastChange(undoneChange.getSession(), null, result);
 
             return Response.ok(jsonIo.writeJsonObject(result), MediaType.APPLICATION_JSON_TYPE).build();
          }
@@ -351,7 +410,8 @@ public class ModelerSessionRestController
             jto.isRedo = true;
             result = toJson(jto);
 
-            commandHandlingMediator().broadcastChange(redoneChange.getSession(), result);
+            // TODO include full command?
+            commandHandlingMediator().broadcastChange(redoneChange.getSession(), null, result);
 
             return Response.ok(jsonIo.writeJsonObject(result), MediaType.APPLICATION_JSON_TYPE).build();
          }
@@ -368,6 +428,54 @@ public class ModelerSessionRestController
                .entity("Invalid navigation action: " + action)
                .build();
       }
+   }
+
+   @GET
+   @Path("/editLock")
+   @Produces(MediaType.APPLICATION_JSON)
+   public String getEditLocksStatus()
+   {
+      List<ModelLockJto> jtos = toModelLocksJto();
+
+      return jsonIo.gson().toJson(jtos);
+   }
+
+   @GET
+   @Path("/editLock/{modelId}")
+   @Produces(MediaType.APPLICATION_JSON)
+   public String getEditLockStatus(@PathParam("modelId") final String modelId)
+   {
+      ModelingSession session = modelService.currentSession();
+
+      EObject model = session.modelRepository().findModel(modelId);
+      if (null == model)
+      {
+         throw new WebApplicationException(Response.status(Status.NOT_FOUND).build());
+      }
+
+      ModelLockJto jto = toModelLockJto(session, model);
+      return jsonIo.gson().toJson(jto);
+   }
+
+   @DELETE
+   @Path("/editLock/{modelId}")
+   @Produces(MediaType.APPLICATION_JSON)
+   public String breakEditLockForModel(@PathParam("modelId") final String modelId)
+   {
+      ModelingSession session = modelService.currentSession();
+
+      EObject model = session.modelRepository().findModel(modelId);
+      if (null == model)
+      {
+         throw new WebApplicationException(Response.status(Status.NOT_FOUND).build());
+      }
+
+      if ( !session.breakEditLock(model))
+      {
+         throw new WebApplicationException(Response.status(Status.BAD_REQUEST).build());
+      }
+
+      return getEditLockStatus(modelId);
    }
 
    @POST
@@ -397,30 +505,44 @@ public class ModelerSessionRestController
       ModelRepository modelRepository = modelService.currentSession().modelRepository();
       EObject model = modelRepository.findModel(modelId);
 
-      if (commandId.startsWith("model."))
+      try
       {
-         return applyGlobalChange(commandId, model, commandJto);
-      }
-      else
-      {
-         // change to be interpreted in context of a model
-         if (null == model)
-         {
-            return Response.status(Status.BAD_REQUEST) //
-                  .entity("Unknown model: " + modelId)
-                  .build();
-         }
+         // obtain session to ensure we hold an edit lock for the model
+         EditingSession editingSession = (null != model) //
+               ? modelService.currentSession().getEditSession(model)
+               : modelService.currentSession().getSession();
 
-         return applyModelElementChange(commandId, model, commandJto);
+         if (commandId.startsWith("model."))
+         {
+            return applyGlobalChange(editingSession, commandId, model, commandJto);
+         }
+         else
+         {
+            // change to be interpreted in context of a model
+            if (null == model)
+            {
+               return Response.status(Status.BAD_REQUEST) //
+                     .entity("Unknown model: " + modelId)
+                     .build();
+            }
+
+            return applyModelElementChange(editingSession, commandId, model, commandJto);
+         }
+      }
+      catch (MissingWritePermissionException mwpe)
+      {
+         return Response.status(Status.CONFLICT) //
+               .entity("Missing write permission: " + mwpe.getMessage()).build();
       }
    }
 
    /**
+    * @param editingSession TODO
     * @param commandId
-    * @param commandJson
+    * @param commandJto
     * @return
     */
-   private Response applyGlobalChange(String commandId, EObject model, CommandJto commandJto)
+   private Response applyGlobalChange(EditingSession editingSession, String commandId, EObject model, CommandJto commandJto)
    {
       List<ChangeDescriptionJto> changesJson = commandJto.changeDescriptions;
 
@@ -478,7 +600,7 @@ public class ModelerSessionRestController
    }
 
 
-   private Response applyModelElementChange(String commandId, EObject model, CommandJto commandJto)
+   private Response applyModelElementChange(EditingSession editingSession, String commandId, EObject model, CommandJto commandJto)
    {
       List<CommandHandlingMediator.ChangeRequest> changeDescriptors = newArrayList();
 
@@ -502,7 +624,6 @@ public class ModelerSessionRestController
       ModelerSessionRestController.CommandJto = commandJto;
 
       // dispatch to actual command handler
-      EditingSession editingSession = modelService.currentSession().getSession(model);
       Modification change = commandHandlingMediator().handleCommand(editingSession,
             commandId, changeDescriptors);
       if (null != change)
@@ -516,17 +637,17 @@ public class ModelerSessionRestController
             change.getMetadata().put("account", commandJto.account);
          }
 
-         // Notify unsaved models tracker of the change to the model.
-         UnsavedModelsTracker.getInstance().notifyModelModfied(modelBinding.getModelId(model));
+         ChangeJto jto = toJto(change);
+         JsonObject changeJto = toJson(jto);
 
-         JsonObject changeJto = toJson(toJto(change));
-
-         commandHandlingMediator().broadcastChange(change.getSession(), changeJto);
+         commandHandlingMediator().broadcastChange(change.getSession(), commandJto,
+               changeJto);
 
          ModelerSessionRestController.CommandJto = null;
 
+         Object payload = jsonIo.writeJsonObject(changeJto);
          return Response.created(URI.create(toChangeUri(change))) //
-               .entity(jsonIo.writeJsonObject(changeJto))
+               .entity(payload)
                .type(MediaType.APPLICATION_JSON_TYPE)
                .build();
       }
@@ -663,9 +784,9 @@ public class ModelerSessionRestController
       return new CommandHandlingMediator()
       {
          @Override
-         public void broadcastChange(EditingSession session, JsonObject commndJson)
+         public void broadcastChange(EditingSession session, org.eclipse.stardust.ui.web.modeler.edit.jto.CommandJto commandJto, JsonObject changeJson)
          {
-            mediator.broadcastChange(session, commndJson);
+            mediator.broadcastChange(session, commandJto, changeJson);
          }
 
          @Override
@@ -709,6 +830,8 @@ public class ModelerSessionRestController
       public Boolean isUndo;
       public Boolean isRedo;
 
+      public UiStateJto uiState;
+
       public static class ChangesJto
       {
          public JsonArray modified = new JsonArray();
@@ -721,23 +844,29 @@ public class ModelerSessionRestController
          public String severity;
          public String message;
       }
+
+      public static class UiStateJto
+      {
+         public List<ModelLockJto> modelLocks;
+      }
    };
 
-   public static class CommandJto
+   public static class ModelLockJto
    {
-      public String commandId;
+      public static final String STATUS_NOT_LOCKED = "";
+
+      public static final String STATUS_LOCKED_BY_ME = "lockedByMe";
+
+      public static final String STATUS_LOCKED_BY_OTHER = "lockedByOther";
+
       public String modelId;
 
-      public String account;
+      public String lockStatus = STATUS_NOT_LOCKED;
 
-      public List<ChangeDescriptionJto> changeDescriptions;
-   }
+      public String ownerId;
 
-   public static class ChangeDescriptionJto
-   {
-      public String uuid;
-      public String oid;
+      public String ownerName;
 
-      public JsonObject changes;
+      public boolean canBreakEditLock = false;
    }
 }

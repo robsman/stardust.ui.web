@@ -37,6 +37,7 @@ import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MIMEType;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.tiff.TIFFDocumentHolder;
 
 import com.icesoft.faces.context.effects.JavascriptContext;
@@ -92,6 +93,7 @@ public class TIFFViewer implements IDocumentViewer, ICustomDocumentSaveHandler, 
    {
       this.view = view;
       processInstance = (ProcessInstance) view.getViewParams().get("processInstance");
+
       setDocumentId(documentContentInfo);
       
       //Temporary code

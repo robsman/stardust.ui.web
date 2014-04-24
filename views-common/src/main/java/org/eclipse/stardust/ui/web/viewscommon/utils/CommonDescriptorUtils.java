@@ -32,6 +32,7 @@ import org.eclipse.stardust.engine.api.dto.DataDetails;
 import org.eclipse.stardust.engine.api.dto.DataPathDetails;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetails;
 import org.eclipse.stardust.engine.api.model.Data;
+import org.eclipse.stardust.engine.api.model.DataMapping;
 import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
@@ -39,6 +40,8 @@ import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.WorkflowService;
 import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
+import org.eclipse.stardust.engine.core.struct.TypedXPath;
+import org.eclipse.stardust.engine.extensions.xml.data.XPathUtils;
 import org.eclipse.stardust.ui.web.common.configuration.UserPreferencesHelper;
 import org.eclipse.stardust.ui.web.common.spi.preference.PreferenceScope;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
@@ -355,6 +358,54 @@ public class CommonDescriptorUtils
          }
       }
       return false;
+   }
+   
+   /**
+    * 
+    * @param dataPath
+    * @return
+    */
+   public static boolean isEnumerationPrimitive(DataPath dataPath)
+   {
+      try
+      {
+         Model model = ModelCache.findModelCache().getModel(dataPath.getModelOID());
+         if (model != null)
+         {
+            Data data = model.getData(dataPath.getData());
+            Object carnotType = data.getAttribute("carnot:engine:type");
+            if(carnotType != null && carnotType.equals(ProcessPortalConstants.ENUM_TYPE))
+            {
+                  return true;                  
+            }
+         }
+      }
+      catch (Exception e)
+      {
+         return false;
+      }
+      return false;
+   }
+   
+  /**
+   * 
+   * @param dataMapping
+   * @return
+   */
+   public static boolean isEnumerationType(DataMapping dataMapping)
+   {
+      Model model = ModelCache.findModelCache().getModel(dataMapping.getModelOID());
+      boolean isEnum = false;
+      Set<TypedXPath> xpaths = XPathUtils.getXPaths(model, dataMapping);
+      for (TypedXPath path : xpaths)
+      {
+         if (path.getParentXPath() == null)
+         {
+            isEnum = path.isEnumeration();
+            break;
+         }
+      }
+      return isEnum;
    }
    
    /**

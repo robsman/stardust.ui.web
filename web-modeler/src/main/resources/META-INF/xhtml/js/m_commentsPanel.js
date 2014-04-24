@@ -37,13 +37,19 @@ define(
 				CommentsPanel.prototype.initialize = function(options) {
 					this.options = options;
 					this.scope = options.scope;
-
+					
+					this.commentsHeading =  m_utils.jQuerySelect(this.scope 
+							+ " #commentsHeading");
+					this.commentsHeading
+						.text(m_i18nUtils.getProperty("modeler.element.properties.commonProperties.comments"));
 					this.commentsTableBody = m_utils.jQuerySelect(this.scope
 							+ " #commentsTable tbody");
 					this.contentTextArea = m_utils.jQuerySelect(this.scope
 							+ " #contentTextArea");
 					this.submitButton = m_utils.jQuerySelect(this.scope
 							+ " #submitButton");
+					this.submitButton
+						.val(m_i18nUtils.getProperty("modeler.element.properties.commonProperties.submit"));
 					this.deleteButton = m_utils.jQuerySelect(this.scope
 							+ " #deleteButton");
 					this.deleteButton

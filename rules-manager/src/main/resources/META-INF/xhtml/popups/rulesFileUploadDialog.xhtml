@@ -1,0 +1,113 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelPopup id="#{rulesFileUploadDialog.beanId}" modal="true"
+		rendered="#{rulesFileUploadDialog.visible}" draggable="true"
+		autoCenter="true" positionOnLoadOnly="true"
+		styleClass="popupDialog" clientOnly="true">
+
+		<f:facet name="header">
+			<ice:panelGroup style="min-width: 200px;">
+				<ice:outputText value="#{rulesManagerMessages['uploadrulesfile.headerText']}" styleClass="headerText" rendered="#{rulesFileUploadDialog.uploadMode}" />
+				<ice:outputText value="#{rulesManagerMessages['uploadrulesfile.message.confirmation']}" styleClass="headerText" rendered="#{!rulesFileUploadDialog.uploadMode}" />
+				<ice:commandButton title="#{common_msgPropsBean['common.close']}"
+					action="#{rulesFileUploadDialog.closePopup}" immediate="true"
+					styleClass="windowClose" />
+			</ice:panelGroup>
+		</f:facet>
+
+		<f:facet name="body">
+			<ice:panelBorder styleClass="pnlPopUpBrdrDialog" cellpadding="0"
+				cellspacing="0" renderNorth="false" renderEast="false"
+				renderSouth="true" renderWest="false" renderCenter="true"
+				style="width:100%">
+				<f:facet name="center">
+					<ice:panelGroup style="width: 350px">
+						<ice:panelGroup rendered="#{rulesFileUploadDialog.uploadMode}">
+							<ice:panelGroup styleClass="clearing" />
+							<ice:outputText value="#{rulesManagerMessages['uploadrulesfile.message.upload']}" styleClass="form-label" />
+							<ice:panelGroup styleClass="clearing" />
+							<h:outputText
+								value="#{views_common_msgPropsBean['common.selectFileForUpload']}"
+								styleClass="label-form" />
+
+							<!-- The iframe that gets rendered as a part of ice:inputFile takes much wider space. So cap it with max-width -->
+							<ice:panelGroup
+								style="margin-top: 5px; margin-bottom: 5px; max-width: auto;">
+								<ice:inputFile id="commonFile#{rulesFileUploadDialog.beanId}"
+									failOnEmptyFile="false"
+									actionListener="#{rulesFileUploadDialog.uploadFile}"
+									progressListener="#{rulesFileUploadDialog.measureProgress}"
+									submitOnUpload="preUpload"
+									label="#{common_msgPropsBean['common.upload']}">
+								</ice:inputFile>
+							</ice:panelGroup>
+							<ice:panelGroup styleClass="msgError">
+								<ice:message for="commonFile#{rulesFileUploadDialog.beanId}" />
+							</ice:panelGroup>
+							<ice:panelGroup>
+								<ice:outputProgress
+									value="#{rulesFileUploadDialog.fileUploadProgress}">
+								</ice:outputProgress>
+							</ice:panelGroup>
+						</ice:panelGroup>
+						<ice:panelGroup rendered="#{!rulesFileUploadDialog.uploadMode}">
+							<ice:panelGrid columns="2">
+								<ice:panelGroup style="padding-right: 5px">
+									<ice:graphicImage value="/plugins/bpm-modeler/images/icons/dialog-icon-warning.jpg" />
+									<ice:panelGroup styleClass="clearing" />
+									<ice:panelGroup styleClass="clearing" />
+									<ice:panelGroup styleClass="clearing" />
+									<ice:panelGroup styleClass="clearing" />
+									<ice:panelGroup styleClass="clearing" />
+								</ice:panelGroup>
+								<ice:panelGroup>
+									<ice:outputText
+										value="#{rulesManagerMessages['uploadrulesfile.message.uploadFileName']} '#{rulesFileUploadDialog.uploadedFileName}'" />
+									<ice:outputText
+										value="#{rulesManagerMessages['uploadrulesfile.message.exists']}" />
+									<ice:panelGroup />
+									<ice:panelGroup styleClass="clearing" />
+									<ice:panelGroup styleClass="clearing" />
+									<ice:outputText
+										value="#{rulesManagerMessages['uploadrulesfile.message.continue']}" />
+									<ice:panelGroup />
+									<ice:outputText
+										value="#{rulesManagerMessages['uploadrulesfile.message.existingRuleSet']}" />
+									<ice:panelGroup styleClass="clearing" />
+									<ice:panelGroup styleClass="clearing" />
+								</ice:panelGroup>
+							</ice:panelGrid>
+						</ice:panelGroup>
+					</ice:panelGroup>
+				</f:facet>
+
+				<f:facet name="south">
+					<ice:panelGroup>
+						<ice:panelGroup rendered="#{rulesFileUploadDialog.uploadMode}">
+							<ice:commandButton
+								value="#{common_msgPropsBean['common.close']}"
+								action="#{rulesFileUploadDialog.closePopup}" immediate="true"
+								styleClass="button secondary" />
+						</ice:panelGroup>
+						<ice:panelGroup rendered="#{!rulesFileUploadDialog.uploadMode}">
+							<ice:commandButton
+								value="#{common_msgPropsBean['common.continue']}"
+								actionListener="#{rulesFileUploadDialog.createNewVersion}"
+								styleClass="button secondary" />
+							<ice:commandButton
+								value="#{common_msgPropsBean['common.cancel']}"
+								action="#{rulesFileUploadDialog.closePopup}" immediate="true"
+								styleClass="button secondary" />
+						</ice:panelGroup>
+					</ice:panelGroup>
+				</f:facet>
+			</ice:panelBorder>
+		</f:facet>
+	</ice:panelPopup>
+</f:view>

@@ -14,10 +14,11 @@ define(
 				"bpm-modeler/js/m_canvasManager", "bpm-modeler/js/m_drawable",
 				"bpm-modeler/js/m_commandsController",
 				"bpm-modeler/js/m_command", "bpm-modeler/js/m_propertiesPanel",
-				"bpm-modeler/js/m_modelerUtils" ],
+				"bpm-modeler/js/m_modelerUtils",
+ 				"bpm-modeler/js/m_i18nUtils" ],
 		function(m_utils, m_constants, m_messageDisplay, m_canvasManager,
 				m_drawable, m_commandsController, m_command, m_propertiesPanel,
-				m_modelerUtils) {
+				m_modelerUtils, m_i18nUtils) {
 
 			return {
 				createSymbol : function() {
@@ -95,33 +96,35 @@ define(
 					this.complete();
 				};
 
-				Symbol.prototype.prepareTransferObject = function(
+				Symbol.prototype.createTransferObject = function(
 						transferObject) {
-					transferObject.diagram = null;
-					transferObject.connections = null;
-					transferObject.anchorPoints = null;
-					transferObject.parentSymbol = null;
-					transferObject.topSelectFrame = null;
-					transferObject.rightSelectFrame = null;
-					transferObject.bottomSelectFrame = null;
-					transferObject.leftSelectFrame = null;
-					transferObject.topSelectHiddenFrame = null;
-					transferObject.rightSelectHiddenFrame = null;
-					transferObject.bottomSelectHiddenFrame = null;
-					transferObject.leftSelectHiddenFrame = null;
-					transferObject.flyOutMenuBackground = null;
-					transferObject.bottomFlyOutMenuItems = null;
-					transferObject.bottomRAFlyOutMenuItems = null;
-					transferObject.rightFlyOutMenuItems = null;
-					transferObject.primitives = null;
-					transferObject.editableTextPrimitives = null;
-					transferObject.proximitySensor = null;
-					transferObject.propertiesPanel = null;
-					transferObject.commentCountIcon = null;
-					transferObject.commentCountText = null;
-					transferObject.glow = null;
+					if (transferObject) {
+						transferObject.diagram = null;
+						transferObject.connections = null;
+						transferObject.anchorPoints = null;
+						transferObject.parentSymbol = null;
+						transferObject.topSelectFrame = null;
+						transferObject.rightSelectFrame = null;
+						transferObject.bottomSelectFrame = null;
+						transferObject.leftSelectFrame = null;
+						transferObject.topSelectHiddenFrame = null;
+						transferObject.rightSelectHiddenFrame = null;
+						transferObject.bottomSelectHiddenFrame = null;
+						transferObject.leftSelectHiddenFrame = null;
+						transferObject.flyOutMenuBackground = null;
+						transferObject.bottomFlyOutMenuItems = null;
+						transferObject.bottomRAFlyOutMenuItems = null;
+						transferObject.rightFlyOutMenuItems = null;
+						transferObject.primitives = null;
+						transferObject.editableTextPrimitives = null;
+						transferObject.proximitySensor = null;
+						transferObject.propertiesPanel = null;
+						transferObject.commentCountIcon = null;
+						transferObject.commentCountText = null;
+						transferObject.glow = null;
+					}
 					return transferObject;
-				}
+				};
 
 				/**
 				 *
@@ -170,7 +173,7 @@ define(
 						left : left,
 						right : right,
 						top : top,
-						bottom : bottom,
+						bottom : bottom
 					};
 				};
 
@@ -2350,6 +2353,10 @@ define(
 									"fill" : m_constants.DEFAULT_ANCHOR_FILL_COLOR
 								}).hide();
 
+				if (this.symbol) {
+					//this.symbol.addToPrimitives(this.graphics);
+				}
+				
 				this.originalAnchorPoint = null;
 				this.dragConnection = null;
 				this.lastDragOverSymbol = null;
@@ -2482,6 +2489,9 @@ define(
 				 *
 				 */
 				AnchorPoint.prototype.drag = function(dX, dY, x, y) {
+					if (this.diagram.mode === "CONNECTION_MODE") {
+						return;
+					}
 					if (this.dragConnection == null) {
 						return;
 					}
@@ -2555,6 +2565,16 @@ define(
 				 *
 				 */
 				AnchorPoint.prototype.dragStart = function() {
+					// TODO - review
+					// The code to make connection is duplicated here as when an anchor point is clicked (in connection mode)
+					// the drag event gets fired instead of the click.
+					// This is a workaround and not a clean solution.
+					if (this.diagram.mode === "CONNECTION_MODE" && this.diagram.currentConnection) {
+						this.diagram.currentConnection.setSecondAnchorPointNoComplete(this);
+						this.diagram.setAnchorPoint(this);
+						this.symbol.hideAnchorPoints();
+						return;
+					}
 					this.symbol.diagram.mode = this.symbol.diagram.SYMBOL_MOVE_MODE;
 					for ( var n in this.symbol.connections) {
 						if (this.symbol.connections[n].selected) {
@@ -2634,8 +2654,10 @@ define(
 						if (symbol == this.symbol) {
 							if (this.direction == m_constants.FROM_ANCHOR_POINT) {
 								this.dragConnection.fromAnchorPoint = anchorPoint;
+								this.dragConnection.originalFromAnchorPoint = null;
 							} else {
 								this.dragConnection.toAnchorPoint = anchorPoint;
+								this.dragConnection.originalToAnchorPoint = null;
 							}
 						} else {
 							var newConnection = null;
@@ -2709,7 +2731,7 @@ define(
 							}
 						}
 						this.dragConnection.createUpdateCommand(changes);
-						m_messageDisplay.showMessage("Connection updated");
+						m_messageDisplay.showMessage(m_i18nUtils.getProperty("modeler.messagedisplay.messages.info.connUpdated"));
 					}
 					this.dragConnection.select();
 					this.dragConnection.toAnchorPoint.deselect();
@@ -2720,6 +2742,7 @@ define(
 				 *
 				 */
 				AnchorPoint.prototype.remove = function() {
+					//this.symbol.removeFromPrimitives(this.graphics);
 					this.graphics.remove();
 				};
 
@@ -2735,29 +2758,32 @@ define(
 			}
 
 			function AnchorPoint_clickClosure() {
-				if (this.auxiliaryProperties)
+				if (this.auxiliaryProperties && this.auxiliaryProperties.anchorPoint)
 					this.auxiliaryProperties.anchorPoint.select();
 			}
 
 			function AnchorPoint_hoverInClosure() {
-				if (this.auxiliaryProperties)
+				if (this.auxiliaryProperties && this.auxiliaryProperties.anchorPoint)
 					this.auxiliaryProperties.anchorPoint.hoverIn();
 			}
 
 			function AnchorPoint_hoverOutClosure() {
-				if (this.auxiliaryProperties)
+				if (this.auxiliaryProperties && this.auxiliaryProperties.anchorPoint)
 					this.auxiliaryProperties.anchorPoint.hoverOut();
 			}
 
 			function AnchorPoint_dragClosure(dX, dY, x, y, event) {
-				this.auxiliaryProperties.anchorPoint.drag(dX, dY, x, y);
+				if (this.auxiliaryProperties && this.auxiliaryProperties.anchorPoint)
+					this.auxiliaryProperties.anchorPoint.drag(dX, dY, x, y);
 			}
 
 			function AnchorPoint_dragStartClosure() {
-				this.auxiliaryProperties.anchorPoint.dragStart();
+				if (this.auxiliaryProperties && this.auxiliaryProperties.anchorPoint)
+					this.auxiliaryProperties.anchorPoint.dragStart();
 			}
 
 			function AnchorPoint_dragStopClosure() {
-				this.auxiliaryProperties.anchorPoint.dragStop();
+				if (this.auxiliaryProperties && this.auxiliaryProperties.anchorPoint)
+					this.auxiliaryProperties.anchorPoint.dragStop();
 			}
 		});

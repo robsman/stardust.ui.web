@@ -1,0 +1,56 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:outputDeclaration doctypeRoot="HTML"
+		doctypePublic="-//W3C//DTD HTML 4.01 Transitional//EN"
+		doctypeSystem="http://www.w3.org/TR/html4/loose.dtd" />
+
+<html>
+ <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></meta>
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/plugins/common/js/facesSupport.js" />
+	<ui:include src="I18NInclude.xhtml" />
+	
+	<ui:include src="portalStyleSheets.xhtml" />
+ </head>
+ <body>
+	<ice:form>
+		<ice:panelGroup>
+			<ice:panelGrid columns="2" style="text-align: left">
+				<ice:graphicImage
+					url="/plugins/common/images/icons/dialog-icon-error.jpg" />
+				<ice:panelGroup>
+				<ice:outputText style="color:red"
+					value="#{common_msgPropsBean['common.internalServerError']}"></ice:outputText>
+					<ice:panelGroup styleClass="clearing" />
+					<ice:commandLink style="text-decoration:underline" 
+						rendered="#{ippInternalErrorHandler.displayLoginUrl}"
+						value="#{common_msgPropsBean['common.goToLogin']}"
+						styleClass="link" onclick="parent.BridgeUtils.logout(true);">
+					</ice:commandLink>
+				</ice:panelGroup>
+					
+			</ice:panelGrid>
+			
+			<ice:panelCollapsible expanded="true" toggleOnClick="true">
+				<f:facet name="header">
+					<ice:panelGroup>
+						<ice:outputText
+							value="#{common_msgPropsBean['portalFramework.error.unhandledError.technicalDetails']}" />
+					</ice:panelGroup>
+				</f:facet>
+				<ice:panelGroup>
+					<ice:outputText value="#{pc:getStackTrace(ippInternalErrorHandler.exception)}" />
+				</ice:panelGroup>
+			</ice:panelCollapsible>
+			
+		</ice:panelGroup>
+	</ice:form>
+ </body>
+</html>
+</f:view>

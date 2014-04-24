@@ -30,6 +30,7 @@ import com.google.gson.JsonObject;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
+import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.*;
@@ -39,6 +40,7 @@ import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
 import org.eclipse.stardust.ui.web.modeler.edit.utils.CommandHandlerUtils;
 import org.eclipse.stardust.ui.web.modeler.marshaling.EventMarshallingUtils;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
+import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 
 /**
  * @author Sidharth.Singh
@@ -56,7 +58,7 @@ public class ConnectionCommandHandler
          JsonObject request)
    {
       ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(targetElement);
-
+      EObjectUUIDMapper mapper = modelService().uuidMapper();
       synchronized (model)
       {
          DiagramType diagram = processDefinition.getDiagram().get(0);
@@ -77,8 +79,8 @@ public class ConnectionCommandHandler
             {
                JsonObject controlFlowJson = request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
 
-               getModelBuilderFacade().createControlFlowConnection(processDefinition,
-                     fromActivitySymbol,
+               TransitionConnectionType transitionConnectionType = getModelBuilderFacade().createControlFlowConnection(
+                     processDefinition, fromActivitySymbol,
                      ModelBuilderFacade.findActivitySymbol(diagram, toSymbolOid),
                      extractString(controlFlowJson, ModelerConstants.ID_PROPERTY),
                      extractString(controlFlowJson, ModelerConstants.NAME_PROPERTY),
@@ -88,6 +90,7 @@ public class ConnectionCommandHandler
                      "",
                      mapAnchorOrientation(extractInt(request, ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)),
                      mapAnchorOrientation(extractInt(request, ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
+               mapper.map(transitionConnectionType);
             }
             else if (ModelerConstants.EVENT_KEY.equals(targetType))
             {
@@ -98,7 +101,7 @@ public class ConnectionCommandHandler
                   // start events don't have incoming transitions, simply create an
                   // outgoing one
                   createControlFlowConnection(request, processDefinition,
-                        startEventSymbol, fromActivitySymbol);
+                        startEventSymbol, fromActivitySymbol, mapper);
                }
                else
                {
@@ -110,13 +113,13 @@ public class ConnectionCommandHandler
                            diagram, toSymbolOid);
                   }
                   createControlFlowConnection(request, processDefinition,
-                        fromActivitySymbol, toEventSymbol);
+                        fromActivitySymbol, toEventSymbol, mapper);
 
                }
             }
             else if (ModelerConstants.DATA.equals(targetType))
             {
-               getModelBuilderFacade().createDataFlowConnection(
+               DataMappingConnectionType dataConnectionType = getModelBuilderFacade().createDataFlowConnection(
                      processDefinition,
                      fromActivitySymbol,
                      getModelBuilderFacade().findDataSymbol(diagram, toSymbolOid),
@@ -129,6 +132,7 @@ public class ConnectionCommandHandler
                            mapAnchorOrientation(extractInt(request,
                                  ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)),
                            PredefinedConstants.DEFAULT_CONTEXT, null);
+               mapper.map(dataConnectionType);
             }
             else
             {
@@ -150,7 +154,7 @@ public class ConnectionCommandHandler
                {
                   createControlFlowConnection(request, processDefinition,
                         fromEventSymbol,
-                        ModelBuilderFacade.findActivitySymbol(diagram, toSymbolOid));
+                        ModelBuilderFacade.findActivitySymbol(diagram, toSymbolOid), mapper);
                }
                else
                {
@@ -164,7 +168,7 @@ public class ConnectionCommandHandler
                            request,
                            processDefinition,
                            ModelBuilderFacade.findActivitySymbol(diagram,
-                                 toSymbolOid), endEventSymbol);
+                                 toSymbolOid), endEventSymbol, mapper);
                   }
                }
             }
@@ -192,7 +196,7 @@ public class ConnectionCommandHandler
                if (null != fromEventSymbol && null != toEventSymbol)
                {
                   createControlFlowConnection(request, processDefinition,
-                        fromEventSymbol, toEventSymbol);
+                        fromEventSymbol, toEventSymbol, mapper);
                }
                else
                {
@@ -211,7 +215,7 @@ public class ConnectionCommandHandler
          {
             if (ModelerConstants.ACTIVITY_KEY.equals(targetType))
             {
-               getModelBuilderFacade().createDataFlowConnection(
+               DataMappingConnectionType dataConnectionType = getModelBuilderFacade().createDataFlowConnection(
                      processDefinition,
                      ModelBuilderFacade.findActivitySymbol(diagram, toSymbolOid),
                      getModelBuilderFacade().findDataSymbol(diagram, fromSymbolOid),
@@ -224,6 +228,8 @@ public class ConnectionCommandHandler
                            mapAnchorOrientation(extractInt(request,
                                  ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)),
                            PredefinedConstants.DEFAULT_CONTEXT, null);
+               
+               mapper.map(dataConnectionType);
             }
             else
             {
@@ -387,10 +393,9 @@ public class ConnectionCommandHandler
     */
    private void createControlFlowConnection(JsonObject connectionJson,
          ProcessDefinitionType processDefinition, AbstractEventSymbol sourceEventSymbol,
-         ActivitySymbolType targetActivitySymbol)
+         ActivitySymbolType targetActivitySymbol, EObjectUUIDMapper mapper)
    {
       TransitionType transition = null;
-
       ActivityType hostActivity = EventMarshallingUtils.resolveHostActivity(sourceEventSymbol);
 
       if (hostActivity != null)
@@ -422,9 +427,10 @@ public class ConnectionCommandHandler
                      && extractBoolean(connectionJson,
                            ModelerConstants.OTHERWISE_PROPERTY),
                condition);
+         mapper.map(transition);
       }
 
-      getModelBuilderFacade().createTransitionSymbol(
+      TransitionConnectionType transitionConnectionType = getModelBuilderFacade().createTransitionSymbol(
             processDefinition,
             sourceEventSymbol,
             targetActivitySymbol,
@@ -433,6 +439,8 @@ public class ConnectionCommandHandler
                   ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)),
             mapAnchorOrientation(extractInt(connectionJson,
                   ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
+      
+      mapper.map(transitionConnectionType);
    }
 
    /**
@@ -445,10 +453,10 @@ public class ConnectionCommandHandler
     */
    private void createControlFlowConnection(JsonObject connectionJson,
          ProcessDefinitionType processDefinition,
-         ActivitySymbolType sourceActivitySymbol, AbstractEventSymbol targetEventSymbol)
+         ActivitySymbolType sourceActivitySymbol, AbstractEventSymbol targetEventSymbol, EObjectUUIDMapper mapper)
    {
       TransitionType transition = null;
-
+      
       ActivityType hostActivity = EventMarshallingUtils.resolveHostActivity(targetEventSymbol);
 
       if (null != hostActivity)
@@ -463,9 +471,10 @@ public class ConnectionCommandHandler
                hasNotJsonNull(connectionJson, ModelerConstants.OTHERWISE_PROPERTY)
                      && extractBoolean(connectionJson,
                            ModelerConstants.OTHERWISE_PROPERTY), "");
+         mapper.map(transition);
       }
 
-      getModelBuilderFacade().createTransitionSymbol(
+      TransitionConnectionType transitionConnectionType = getModelBuilderFacade().createTransitionSymbol(
             processDefinition,
             sourceActivitySymbol,
             targetEventSymbol,
@@ -474,6 +483,8 @@ public class ConnectionCommandHandler
                   ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)),
             mapAnchorOrientation(extractInt(connectionJson,
                   ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
+      
+      mapper.map(transitionConnectionType);
    }
 
    /**
@@ -484,10 +495,10 @@ public class ConnectionCommandHandler
     */
    private void createControlFlowConnection(JsonObject connectionJson,
          ProcessDefinitionType processDefinition, AbstractEventSymbol sourceEventSymbol,
-         AbstractEventSymbol targetEventSymbol)
+         AbstractEventSymbol targetEventSymbol, EObjectUUIDMapper mapper)
    {
       TransitionType transition = null;
-
+      
       ActivityType targetHostActivity = EventMarshallingUtils.resolveHostActivity(targetEventSymbol);
       ActivityType sourceHostActivity = EventMarshallingUtils.resolveHostActivity(sourceEventSymbol);
 
@@ -503,8 +514,9 @@ public class ConnectionCommandHandler
                hasNotJsonNull(connectionJson, ModelerConstants.OTHERWISE_PROPERTY)
                      && extractBoolean(connectionJson,
                            ModelerConstants.OTHERWISE_PROPERTY), "");
+         mapper.map(transition);
 
-         getModelBuilderFacade().createTransitionSymbol(
+         TransitionConnectionType transitionConnectionType = getModelBuilderFacade().createTransitionSymbol(
                processDefinition,
                sourceEventSymbol,
                targetEventSymbol,
@@ -513,6 +525,7 @@ public class ConnectionCommandHandler
                      ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)),
                mapAnchorOrientation(extractInt(connectionJson,
                      ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
+         mapper.map(transitionConnectionType);
       }
    }
 
@@ -552,4 +565,9 @@ public class ConnectionCommandHandler
       return CommandHandlerUtils.getModelBuilderFacade(springContext);
    }
 
+   private ModelService modelService()
+   {
+      return springContext.getBean(ModelService.class);
+   }
+   
 }

@@ -21,6 +21,9 @@ define(
 					m_utils.initializeWaitCursor(m_utils.jQuerySelect("html"));
 					m_utils.showWaitCursor();
 
+					m_utils.jQuerySelect("#hideGeneralProperties").hide();
+					initViewCollapseClickHandlers();
+					
 					var model = m_model.findModel(modelId);
 					var view = new ModelView();
 					i18modelview();
@@ -33,7 +36,29 @@ define(
 				}
 			};
 
+			/**
+			 * 
+			 */
+			function initViewCollapseClickHandlers() {
+				m_utils.jQuerySelect("#showGeneralProperties").click(function() {
+					m_utils.jQuerySelect("#showAllProperties").hide();
+					m_utils.jQuerySelect("#hideGeneralProperties").show();
+				});
+				m_utils.jQuerySelect("#hideGeneralProperties").click(function() {
+					m_utils.jQuerySelect("#showAllProperties").show();
+					m_utils.jQuerySelect("#hideGeneralProperties").hide();
+				});
+			}
+			
 			function i18modelview() {
+				
+				m_utils.jQuerySelect("#hideGeneralProperties label")
+					.text(m_i18nUtils.getProperty("modeler.element.properties.commonProperties.generalProperties"));
+		
+				m_utils.jQuerySelect("#showGeneralProperties label")
+					.text(m_i18nUtils.getProperty("modeler.element.properties.commonProperties.generalProperties"));
+			
+				
 				m_utils.jQuerySelect("#accesscontrol")
 						.text(
 								m_i18nUtils
@@ -284,7 +309,7 @@ define(
 					}
 
 					m_commandsController.submitCommand(m_command
-							.createUpdateModelCommand(this.getModelElement().uuid, this.getModelElement().id, changes));
+							.createUpdateModelElementCommand(this.getModelElement().id, this.getModelElement().id, changes));
 				};
 
 				/**

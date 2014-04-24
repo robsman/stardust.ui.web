@@ -76,6 +76,16 @@ define(["bpm-modeler/js/m_utils"], function(m_utils) {
 		 * @returns
 		 */
 		closeView : function(modelerLinkId, formId, uuid) {
+			if(!modelerLinkId)
+			{
+				m_utils.debug("modelerLinkId is null");
+				return;
+			}
+			if(!formId)
+			{
+				m_utils.debug("formId is null");
+				return;
+			}
 			var portalWinDoc = m_utils.getOutlineWindowAndDocument();
 
 			var link = portalWinDoc.doc.getElementById(modelerLinkId);

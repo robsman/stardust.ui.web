@@ -431,10 +431,8 @@ public class DocumentMgmtUtility
       return moon;
    }
 
-  
    /**
     * returns the folder on the specified path
-    * 
     * @param path
     * @return
     */

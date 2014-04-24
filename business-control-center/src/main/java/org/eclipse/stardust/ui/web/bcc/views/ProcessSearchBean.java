@@ -505,7 +505,7 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
             getFilterAttributes().setUser(null);
          }
          
-         if (validationMessageBean.isContainMessages())
+         if (validationMessageBean.isContainErrorMessages())
          {
             return;
          }
@@ -554,7 +554,7 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
             getActivityFilterAttributes().setUser(null);
          }
          
-         if (validationMessageBean.isContainMessages())
+         if (validationMessageBean.isContainErrorMessages())
          {
             return;
          }
@@ -872,6 +872,7 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
          if ( !includeCaseDescriptor
                & ((SEARCH_OPTION.PROCESSES.equals(selectedSearchOption) & getFilterAttributes().isCaseOnlySearch()) || removedCaseProcess))
          {
+            fetchCaseDescriptors();   
             descriptorItems.addAll(caseDescriptorItems);
             commonDescriptors = updateCommonDescriptorsForCase();
          }
@@ -1085,6 +1086,14 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
       ProcessDefinition caseProcessDefinition = ProcessDefinitionUtils
             .getProcessDefinition(PredefinedConstants.CASE_PROCESS_ID);
       caseDataPath = caseProcessDefinition.getAllDataPaths();
+      
+   }
+   
+   /**
+    * 
+    */
+   private void fetchCaseDescriptors()
+   {
       caseDescriptorItems.clear();
       GenericDataMapping mapping;
       DataMappingWrapper dmWrapper;

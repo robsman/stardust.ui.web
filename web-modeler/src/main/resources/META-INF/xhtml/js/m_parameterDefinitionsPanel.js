@@ -19,9 +19,9 @@ define(
 				"bpm-modeler/js/m_extensionManager", "bpm-modeler/js/m_model",
 				"bpm-modeler/js/m_typeDeclaration", "bpm-modeler/js/m_dialog",
 				"bpm-modeler/js/m_dataTypeSelector",
-				"bpm-modeler/js/m_i18nUtils" ],
+				"bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_user" ],
 		function(m_utils, m_urlUtils, m_constants, m_extensionManager, m_model,
-				m_typeDeclaration, m_dialog, m_dataTypeSelector, m_i18nUtils) {
+				m_typeDeclaration, m_dialog, m_dataTypeSelector, m_i18nUtils, m_user) {
 			return {
 				create : function(options) {
 					var panel = new ParameterDefinitionsPanel();
@@ -87,10 +87,28 @@ define(
 
 					this.parameterDefinitionsTableBody = m_utils.jQuerySelect(this.options.scope
 							+ " #parameterDefinitionsTable tbody");
+					this.parameterDefinitionIdOutput = m_utils.jQuerySelect(this.options.scope
+							+ " #parameterDefinitionIdOutput");
+					this.parameterDefinitionIdOutputLabel = m_utils.jQuerySelect(this.options.scope
+							+ " label[for='parameterDefinitionIdOutput']");
+					this.displayParameterId();
+
 					this.parameterDefinitionNameInput = m_utils.jQuerySelect(this.options.scope
 							+ " #parameterDefinitionNameInput");
+					
 					this.parameterDefinitionDirectionSelect = m_utils.jQuerySelect(this.options.scope
 							+ " #parameterDefinitionDirectionSelect");
+					this.parameterDefinitionDirectionSelect.empty();
+					var direction = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.in");
+					this.parameterDefinitionDirectionSelect.append("<option value=\"IN\">" + direction + "</option>");
+					if (options.supportsInOutDirection) {
+						direction = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.inout");
+						this.parameterDefinitionDirectionSelect.append("<option value=\"INOUT\">" + direction + "</option>");
+					}
+					direction = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.out");
+					this.parameterDefinitionDirectionSelect.append("<option value=\"OUT\">" + direction + "</option>");
+					
+					
 					this.addParameterDefinitionButton = m_utils.jQuerySelect(this.options.scope
 							+ " #addParameterDefinitionButton");
 					this.deleteParameterDefinitionButton = m_utils.jQuerySelect(this.options.scope
@@ -143,6 +161,11 @@ define(
 							this.parameterDefinitionPathInput = m_utils.jQuerySelect(this.options.scope
 									+ " #parameterDefinitionPathInput");
 						}
+					} else {
+						m_utils.jQuerySelect(this.options.scope
+								+ " #parameterDefinitionDataSelect").hide();
+						m_utils.jQuerySelect(this.options.scope
+								+ " label[for='parameterDefinitionDataSelect']").hide();
 					}
 
 					if (this.options.supportsDataTypeSelection) {
@@ -179,20 +202,40 @@ define(
 										panel : this
 									},
 									function(event) {
-										if (event.data.panel.currentParameterDefinition != null) {
+										var that=event.data.panel, /*for when 'this' just isn't good enough*/
+											baseName,			   /*Name we wil lgenerate a newID from*/
+											generatedID,		   /*our ID generated from a custom function*/	
+											fx;					   /*our custom ID generation function*/
+										
+										if (that.currentParameterDefinition != null) {
 											// Blank names are not allowed.
-											if (jQuery
-													.trim(event.data.panel.parameterDefinitionNameInput
-															.val()) == "") {
-												event.data.panel.parameterDefinitionNameInput
-														.val(event.data.panel.currentParameterDefinition.name);
+											if (jQuery.trim(that.parameterDefinitionNameInput.val()) == "") {
+												that.parameterDefinitionNameInput.val(that.currentParameterDefinition.name);
 												return;
 											}
-
-											event.data.panel.currentParameterDefinition.name = event.data.panel.parameterDefinitionNameInput
-													.val();
-											event.data.panel.currentFocusInput = this.parameterDefinitionDirectionSelect;
-											event.data.panel.submitChanges();
+											
+											/*Extract name the user has just updated and apply it to our pDef*/
+											that.currentParameterDefinition.name = that.parameterDefinitionNameInput.val();
+											
+											/*Check if we are going to update the ID in clientside code*/
+											if (that.options.updateIdOnNameChangeClientSide) {
+												baseName=that.currentParameterDefinition.name;
+												generatedID=baseName.replace(/\s/g, "");
+												fx=that.options.customIDGenerator;	
+												if(that.options.supportsCustomIDs===true && typeof fx==="function"){
+													generatedID=fx(
+															baseName,
+															that.parameterDefinitions,
+															"id",
+															that.currentParameterDefinition);
+													that.currentParameterDefinition.id=generatedID;
+												}
+												else{
+													that.currentParameterDefinition.id = that.parameterDefinitionNameInput.val().replace(/\s/g, "");
+												}											
+											}
+											that.currentFocusInput = this.parameterDefinitionDirectionSelect;
+											that.submitChanges();
 										}
 									});
 					this.parameterDefinitionDirectionSelect
@@ -511,6 +554,13 @@ define(
 										.val()) {
 							return true
 						}
+					} else if (this.dataTypeSelector 
+							&& data.dataType === m_constants.STRUCTURED_DATA_TYPE
+							&& this.dataTypeSelector.dataTypeSelect.val() === m_constants.PRIMITIVE_DATA_TYPE
+							&& data.structuredDataTypeFullId === this.dataTypeSelector.primitiveDataTypeSelect.val()) {
+						if (this.dataTypeSelector.isEnumTypeDeclaration(data.structuredDataTypeFullId)) {
+							return true;
+						}
 					}
 
 					return false;
@@ -560,8 +610,14 @@ define(
 							content += "<td style=\"width: "
 									+ this.options.typeColumnWidth + "\">";
 							if (parameterDefinition.dataType == m_constants.PRIMITIVE_DATA_TYPE) {
-								content += m_typeDeclaration
-										.getPrimitiveTypeLabel(parameterDefinition.primitiveDataType); // TODO
+								if (this.dataTypeSelector
+										.isEnumTypeDeclaration(parameterDefinition.primitiveDataType)) {
+									content += m_model
+											.stripElementId(parameterDefinition.primitiveDataType);
+								} else {
+									content += m_typeDeclaration
+											.getPrimitiveTypeLabel(parameterDefinition.primitiveDataType); // TODO	
+								}
 								// Convert
 							} else {
 								if (parameterDefinition.structuredDataTypeFullId) {
@@ -649,6 +705,33 @@ define(
 				/**
 				 *
 				 */
+				ParameterDefinitionsPanel.prototype.displayParameterId = function() {
+					if (this.options.alwaysDisplayParameterId) {
+						if (this.currentParameterDefinition) {
+							this.parameterDefinitionIdOutput.text(this.currentParameterDefinition.id);	
+						}							
+						this.parameterDefinitionIdOutput.show();
+						this.parameterDefinitionIdOutputLabel.show();						
+					} else if (this.options.displayParameterId) {
+						if (m_user.getCurrentRole() == m_constants.INTEGRATOR_ROLE) {
+							if (this.currentParameterDefinition) {
+								this.parameterDefinitionIdOutput.text(this.currentParameterDefinition.id);	
+							}							
+							this.parameterDefinitionIdOutput.show();
+							this.parameterDefinitionIdOutputLabel.show();
+						} else {
+							this.parameterDefinitionIdOutput.hide();
+							this.parameterDefinitionIdOutputLabel.hide();
+						}
+					} else {
+						this.parameterDefinitionIdOutput.hide();
+						this.parameterDefinitionIdOutputLabel.hide();							
+					}
+				};
+
+				/**
+				 *
+				 */
 				ParameterDefinitionsPanel.prototype.populateParameterDefinitionFields = function() {
 					if (!this.currentParameterDefinition
 							|| (this.currentParameterDefinition.attributes && this.currentParameterDefinition.attributes["stardust:predefined"])) {
@@ -689,6 +772,8 @@ define(
 							this.parameterDefinitionDirectionSelect
 									.removeAttr("disabled");
 						}
+
+						this.displayParameterId();
 
 						this.parameterDefinitionNameInput
 								.val(this.currentParameterDefinition.name);
@@ -814,8 +899,10 @@ define(
 				 *
 				 */
 				ParameterDefinitionsPanel.prototype.addParameterDefinition = function() {
-					var n = this.getNextIdIndex();
-
+					var n = this.getNextIdIndex(),
+						generatedID, /*ID generated when using a custom function*/
+						fx;			 /*custom ID generator functions supplied via options*/
+					
 					this.currentParameterDefinition = {
 						id : "New_" + n, // TODO: Anticipates renaming of ID
 						// on server
@@ -824,7 +911,23 @@ define(
 						dataFullId : null,
 						dataPath : null
 					};
-
+					
+					/*Support custom ID generation mechanisms to supplant our default scheme.*/
+					if(this.options.supportsCustomIDs===true && 
+					   typeof this.options.customIDGenerator ==="function"){
+						
+						fx=this.options.customIDGenerator;
+						generatedID=fx(
+							this.currentParameterDefinition.name,
+							this.parameterDefinitions,
+							"id",
+							this.currentParameterDefinition);
+						
+						if(generatedID && generatedID !==""){
+							this.currentParameterDefinition.id = generatedID;
+						}
+					}
+					
 					if (this.options.supportsDescriptors) {
 						this.currentParameterDefinition.descriptor = false;
 						this.currentParameterDefinition.keyDescriptor = false;

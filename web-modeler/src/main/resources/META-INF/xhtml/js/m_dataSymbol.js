@@ -29,14 +29,14 @@ define(
 					var dataSymbol = new DataSymbol();
 
 					dataSymbol.bind(diagram);
-
-					var index = diagram.model.getNewDataIndex();
+					var dataNamePrefix = m_i18nUtils.getProperty("modeler.diagram.newData.namePrefix");
+					
+					var elementNameId = m_utils.getUniqueElementNameId(diagram.model.dataItems, dataNamePrefix);
 
 					// TODO Need to create data before!
-
-					var dataNamePrefix = m_i18nUtils.getProperty("modeler.diagram.newData.namePrefix");
-					dataSymbol.dataId = dataNamePrefix + "_" + index;
-					dataSymbol.dataName = dataNamePrefix + " " + index;
+					
+					dataSymbol.dataId = elementNameId.id;
+					dataSymbol.dataName = elementNameId.name;
 					// Data is not present at server side, using DataIndex and
 					// modelId to create dataId
 					dataSymbol.dataFullId = m_model.getFullId(diagram.model,
@@ -78,7 +78,7 @@ define(
 				var symbol = m_symbol.createSymbol();
 
 				m_utils.inheritFields(this, symbol);
-				m_utils.inheritMethods(DataSymbol.prototype, symbol);
+				var _super = m_utils.inheritMethods(DataSymbol.prototype, symbol, {selected: ['createTransferObject']});
 
 				this.width = m_constants.DATA_SYMBOL_DEFAULT_WIDTH;
 				this.height = m_constants.DATA_SYMBOL_DEFAULT_HEIGHT;
@@ -130,7 +130,7 @@ define(
 
 					m_utils.inheritFields(transferObject, this);
 
-					transferObject = this.prepareTransferObject(transferObject);
+					transferObject = _super.createTransferObject(this, transferObject);
 
 					transferObject.path = null;
 					transferObject.text = null;

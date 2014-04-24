@@ -106,7 +106,7 @@ public class XSDInheritanceTest
       employeeAddressType.addProperty("name", "address");
       employeeAddressType.addProperty("classifier", "element");
 
-      addAddressSequence(employeeAddressType);
+      //addAddressSequence(employeeAddressType);
 
       employeeAddressType.addProperty("cardinality", "required");
       employeeAddressType.addProperty("type", "tns:Address");
@@ -148,7 +148,7 @@ public class XSDInheritanceTest
       personAddressType.addProperty("name", "address");
       personAddressType.addProperty("classifier", "element");
 
-      addAddressSequence(personAddressType);
+      //addAddressSequence(personAddressType);
 
       personAddressType.addProperty("cardinality", "required");
       personAddressType.addProperty("type", "tns:Address");
@@ -497,7 +497,8 @@ public class XSDInheritanceTest
       URL location = XsdSchemaUtils.class.getResource(path);
       try
       {
-         return ModelService.loadSchema(location.toString());
+         ModelService service = new ModelService();
+         return service.loadSchema(location.toString());
       }
       catch (IOException e)
       {
@@ -570,8 +571,4 @@ public class XSDInheritanceTest
          return "";
       }
    }
-
-
-
-
 }

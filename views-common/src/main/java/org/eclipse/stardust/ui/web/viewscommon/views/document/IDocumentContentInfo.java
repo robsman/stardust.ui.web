@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.views.document;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Map;
 
@@ -23,7 +24,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.MIMEType;
  * @author Yogesh.Manware
  * 
  */
-public interface IDocumentContentInfo
+public interface IDocumentContentInfo extends Serializable
 {
    String getId();
    String getName();
