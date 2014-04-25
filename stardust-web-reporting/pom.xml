@@ -16,7 +16,7 @@
       <groupId>com.infinity.bpm</groupId>
       <artifactId>product-parent</artifactId>
       <version>9.9.9-SNAPSHOT</version>
-      <relativePath>../../../sungard/product/product-parent/pom.xml</relativePath>
+      <relativePath>../../product/product-parent/pom.xml</relativePath>
    </parent>
 
    <groupId>org.eclipse.stardust.ui.web</groupId>
