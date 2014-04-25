@@ -42,6 +42,15 @@ public abstract class FilterApplier<T extends Query>
       return fc;
    }
 
+   protected void raisUnsupportedFilterException(T query, ReportFilter filter)
+   {
+      StringBuffer errorMsg = new StringBuffer();
+      errorMsg.append("Filtering for filter "+filter.getDimension());
+      errorMsg.append(" and query type: "+query.getClass().getName());
+      errorMsg.append(" is not supported native by the engine yet");
+      throw new RuntimeException(errorMsg.toString());
+   }
+
    protected void applyDateFilter(T query, FilterableAttribute filterAttribute, ReportFilter dateFilter)
    {
       JsonObject jsonObject = dateFilter.getValue().getAsJsonObject();

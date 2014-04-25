@@ -26,6 +26,6 @@ public class ProcessRootStartTimestampFilterApplier extends DimensionBasedFilter
    @Override
    public void apply(ProcessInstanceQuery query, ReportFilter filter)
    {
-      throw new RuntimeException("filtering for "+getMatchDimension()+" is not native supported by the engine yet");
+      raisUnsupportedFilterException(query, filter);
    }
 }

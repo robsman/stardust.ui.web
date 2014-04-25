@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.util.Date;
 
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
+import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.ui.web.reporting.core.Constants.AiDimensionField;
 import org.eclipse.stardust.ui.web.reporting.core.Constants.DurationUnit;
 import org.eclipse.stardust.ui.web.reporting.core.orm.DataField.DataFieldType;
@@ -39,6 +40,55 @@ public class AiMapperRegistry extends AbstractMapperRegistry<ActivityInstance>
                {
                   // TODO Auto-generated method stub
                   return new DataField(AiDimensionField.START_TIMESTAMP.getId(),
+                        DataFieldType.NUMBER);
+               }
+            });
+
+      register(AiDimensionField.PROCESS_INSTANCE_START_TIMESTAMP.getId(),
+            new IMappingProvider<Date, ActivityInstance>()
+            {
+               @Override
+               public Date provideResultSetValue(ProviderContext context, ResultSet rs) throws SQLException
+               {
+                  return null;
+               }
+
+               @Override
+               public Date provideObjectValue(ProviderContext context, ActivityInstance t)
+               {
+                  return t.getProcessInstance().getStartTime();
+               }
+
+               @Override
+               public DataField provideDataField(ProviderContext context)
+               {
+                  // TODO Auto-generated method stub
+                  return new DataField(AiDimensionField.PROCESS_INSTANCE_START_TIMESTAMP.getId(),
+                        DataFieldType.NUMBER);
+               }
+            });
+
+      register(AiDimensionField.PROCESS_INSTANCE_ROOT_START_TIMESTAMP.getId(),
+            new IMappingProvider<Date, ActivityInstance>()
+            {
+               @Override
+               public Date provideResultSetValue(ProviderContext context, ResultSet rs) throws SQLException
+               {
+                  return null;
+               }
+
+               @Override
+               public Date provideObjectValue(ProviderContext context, ActivityInstance t)
+               {
+                  ProcessInstance pi = ReportingUtil.findRootProcessInstance(context.getQueryService(), t.getProcessInstance());
+                  return pi.getStartTime();
+               }
+
+               @Override
+               public DataField provideDataField(ProviderContext context)
+               {
+                  // TODO Auto-generated method stub
+                  return new DataField(AiDimensionField.PROCESS_INSTANCE_ROOT_START_TIMESTAMP.getId(),
                         DataFieldType.NUMBER);
                }
             });

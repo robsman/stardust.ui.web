@@ -7,6 +7,8 @@ package org.eclipse.stardust.ui.web.reporting.core.orm;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.stardust.engine.api.runtime.QueryService;
+
 public class ProviderContext
 {
    public static final String DURATION_UNIT_ID = "DurationUnitId";
@@ -15,8 +17,9 @@ public class ProviderContext
       = new HashMap<String, Object>();
 
    private long totalCount;
+   private QueryService queryService;
 
-   public ProviderContext(long totalCount)
+   public ProviderContext(QueryService queryService, long totalCount)
    {
       this.totalCount = totalCount;
    }
@@ -34,5 +37,10 @@ public class ProviderContext
    public long getTotalCount()
    {
       return totalCount;
+   }
+
+   public QueryService getQueryService()
+   {
+      return queryService;
    }
 }

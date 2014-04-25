@@ -12,6 +12,8 @@ import org.eclipse.stardust.ui.web.reporting.common.mapping.request.ReportFilter
 import org.eclipse.stardust.ui.web.reporting.core.filter.DescriptorFilterApplier;
 import org.eclipse.stardust.ui.web.reporting.core.filter.FilterApplier;
 import org.eclipse.stardust.ui.web.reporting.core.filter.activity.ActivityNameFilterApplier;
+import org.eclipse.stardust.ui.web.reporting.core.filter.activity.ActivityProcessStartTimestampFilterApplier;
+import org.eclipse.stardust.ui.web.reporting.core.filter.activity.ActivityRootProcessStartTimestampFilterApplier;
 import org.eclipse.stardust.ui.web.reporting.core.filter.activity.CriticalityFilterApplier;
 import org.eclipse.stardust.ui.web.reporting.core.filter.process.*;
 
@@ -26,6 +28,8 @@ public class QueryBuilder
       aiFilterAppliers = new ArrayList<FilterApplier<ActivityInstanceQuery>>();
       aiFilterAppliers.add(new ActivityNameFilterApplier());
       aiFilterAppliers.add(new CriticalityFilterApplier());
+      aiFilterAppliers.add(new ActivityProcessStartTimestampFilterApplier());
+      aiFilterAppliers.add(new ActivityRootProcessStartTimestampFilterApplier());
 
       piFilterAppliers = new ArrayList<FilterApplier<ProcessInstanceQuery>>();
       piFilterAppliers.add(new ProcessNameFilterApplier());

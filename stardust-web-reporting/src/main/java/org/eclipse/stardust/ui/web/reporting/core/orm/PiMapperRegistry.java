@@ -88,6 +88,30 @@ public class PiMapperRegistry extends AbstractMapperRegistry<ProcessInstance>
                }
             });
 
+      register(PiDimensionField.ROOT_START_TIMESTAMP.getId(),
+            new IMappingProvider<Date, ProcessInstance>()
+            {
+               @Override
+               public Date provideResultSetValue(ProviderContext context, ResultSet rs) throws SQLException
+               {
+                  return null;
+               }
+
+               @Override
+               public Date provideObjectValue(ProviderContext context, ProcessInstance t)
+               {
+                  ProcessInstance pi = ReportingUtil.findRootProcessInstance(context.getQueryService(), t);
+                  return pi.getStartTime();
+               }
+
+               @Override
+               public DataField provideDataField(ProviderContext context)
+               {
+                  return new DataField(PiDimensionField.ROOT_START_TIMESTAMP.getId(),
+                        DataFieldType.NUMBER);
+               }
+            });
+
       register(PiDimensionField.STARTING_USER_NAME.getId(),
             new IMappingProvider<String, ProcessInstance>()
             {

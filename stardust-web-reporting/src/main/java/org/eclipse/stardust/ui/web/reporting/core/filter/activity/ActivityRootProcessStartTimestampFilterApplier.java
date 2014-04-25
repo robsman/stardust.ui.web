@@ -8,25 +8,25 @@
 * Contributors:
 *    Holger.Prause (SunGard CSA LLC) - initial API and implementation and/or initial documentation
 *******************************************************************************/
-package org.eclipse.stardust.ui.web.reporting.core.filter.process;
+package org.eclipse.stardust.ui.web.reporting.core.filter.activity;
 
-import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
+import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.ui.web.reporting.common.mapping.request.ReportFilter;
 import org.eclipse.stardust.ui.web.reporting.core.Constants;
 import org.eclipse.stardust.ui.web.reporting.core.filter.DimensionBasedFilterApplier;
 
-public class ProcessStartingUserFilterApplier extends DimensionBasedFilterApplier<ProcessInstanceQuery>
+public class ActivityRootProcessStartTimestampFilterApplier extends DimensionBasedFilterApplier<ActivityInstanceQuery>
 {
 
    @Override
    protected String getMatchDimension()
    {
-      return Constants.PiDimensionField.STARTING_USER_NAME.getId();
+      return Constants.AiDimensionField.PROCESS_INSTANCE_ROOT_START_TIMESTAMP.getId();
    }
 
    @Override
-   public void apply(ProcessInstanceQuery query, ReportFilter filter)
+   public void apply(ActivityInstanceQuery query, ReportFilter filter)
    {
-      throw new RuntimeException("awaiting change request for passing user oid");
+      raisUnsupportedFilterException(query, filter);
    }
 }

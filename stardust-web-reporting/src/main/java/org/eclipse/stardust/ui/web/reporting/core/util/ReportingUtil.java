@@ -4,10 +4,32 @@ import java.util.Date;
 
 import com.ibm.icu.util.Calendar;
 
+import org.eclipse.stardust.engine.api.query.ProcessInstanceFilter;
+import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
+import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
+import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.ui.web.reporting.core.Constants.DurationUnit;
 
 public class ReportingUtil
 {
+   public static ProcessInstance findRootProcessInstance(QueryService queryService, ProcessInstance pi)
+   {
+      long rootPiOid = pi.getRootProcessInstanceOID();
+      if(pi.getOID() == rootPiOid)
+      {
+         return pi;
+      }
+      else
+      {
+         ProcessInstanceQuery rootPiQuery = ProcessInstanceQuery.findAll();
+         ProcessInstanceFilter rootPiFilter = new ProcessInstanceFilter(rootPiOid);
+         rootPiQuery.where(rootPiFilter);
+
+         ProcessInstance rootPI = queryService.findFirstProcessInstance(rootPiQuery);
+         return rootPI;
+      }
+   }
+
    public static long calculateDuration(Date startDate, Date endDate, DurationUnit unit)
    {
       if(startDate == null || startDate.getTime() == 0)

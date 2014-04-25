@@ -204,6 +204,8 @@ public class Constants
    public enum AiDimensionField
    {
       START_TIMESTAMP("startTimestamp"),
+      PROCESS_INSTANCE_START_TIMESTAMP(PiDimensionField.START_TIMESTAMP.getId()),
+      PROCESS_INSTANCE_ROOT_START_TIMESTAMP(PiDimensionField.ROOT_START_TIMESTAMP.getId()),
       LAST_MODIFICATION_TIMESTAMP("lastModificationTimestamp"),
       ACTIVITY_NAME("activityName"),
       PROCESS_NAME("processName"),
