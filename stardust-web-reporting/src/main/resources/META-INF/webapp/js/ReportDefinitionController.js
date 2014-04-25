@@ -1018,9 +1018,8 @@ define(
                function(data) {
                 //Format data before displaying the Results
                   
-                  self.formatPreviewData(data.recordSet);
+                  self.rows = self.formatPreviewData(data.rows);
                   
-                  self.rows = data.recordSet;
                   self.updateView();
                }).fail(function(err){
                   console.log("Failed getting Preview Date: " + err);
@@ -2296,28 +2295,60 @@ define(
               ReportDefinitionController.prototype.formatPreviewData = function(data) {
                  var self = this;
                     
-                  if (data[0].priority != null)
-                  {
-                     var qualifier = ["staticData", "priorityLevel"];
+                 var selectedColumns =  this.reportingService.getColumnDimensions(this.report);
+                 
+                 for ( var selColumn in selectedColumns)
+                 {
+                    if (selectedColumns[selColumn].id == this.
+                             reportingService.metadata.objects.processInstance.dimensions.priority.id)
+                    {// Formatting Priority to display priority levels as Low, medium etc
+                       var qualifier = ["staticData", "priorityLevel"];
                        
-                     var enumItems = this.reportingService.getEnumerators2(qualifier[0], qualifier[1]);
+                       var enumItems = this.reportingService.getEnumerators2(qualifier[0], qualifier[1]);
+                         
+                       for ( var row in data)
+                       {
+                          var record = data[row];
+                          for ( var item in enumItems)
+                          {
+                             if (enumItems[item].id == record[selColumn])
+                             {
+                                record[selColumn] = enumItems[item].name;
+                                break;
+                             }
+                          }
+                       }
+                    } else if (selectedColumns[selColumn].id == this.
+                             reportingService.metadata.objects.processInstance.dimensions.state.id) {
+                    // Formatting Process State to display string states as Alive, completed etc 
+                       var qualifier = ["staticData", "processStates"];
                        
-                     for ( var row in data)
-                     {
-                        var record = data[row];
-                        for ( var item in enumItems)
-                        {
-                           if (enumItems[item].id == record.priority)
-                           {
-                              record.priority = enumItems[item].name;
-                              break;
-                           }
-                        }
-                     }
-                  }  
-                    
-                    
+                       var enumItems = this.reportingService.getEnumerators2(qualifier[0], qualifier[1]);
+                         
+                       for ( var row in data)
+                       {
+                          var record = data[row];
+                          record[selColumn] = enumItems[record[selColumn]].name;
+                       }
+                    }
                  }
+                 
+                 var a = [];
+                 
+                 for ( var row in data)
+                 {
+                    var record = data[row];
+                    record.splice(selectedColumns.length, record.length);
+                    var b = {};
+                    for ( var selColumn in selectedColumns) {
+                       var key = selectedColumns[selColumn].id;
+                       var value = record[selColumn];
+                       b[key] = value;
+                    }
+                    a.push(b);
+                 }
+                 return a;
+              }
          
           
 			}
