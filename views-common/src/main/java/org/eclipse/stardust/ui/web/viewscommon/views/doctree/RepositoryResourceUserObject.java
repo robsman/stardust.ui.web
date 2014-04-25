@@ -37,7 +37,7 @@ public abstract class RepositoryResourceUserObject extends IceUserObject
    private static final long serialVersionUID = 5221739219683823073L;
 
    public enum ResourceType {
-      FOLDER, DOCUMENT, VIRTUAL, NOTE
+      FOLDER, DOCUMENT, VIRTUAL, NOTE, REPOSITORY
    }
    
    private Resource resource;
@@ -56,6 +56,8 @@ public abstract class RepositoryResourceUserObject extends IceUserObject
    private Boolean canUploadFile;
 
    private boolean isMenuPopupApplicable = true;
+   private boolean isRepositoryNode = false;
+   private boolean repositoryRootNode = false;
 
    /**
     * custom constructor initialized a user object specific to node
@@ -335,6 +337,26 @@ public abstract class RepositoryResourceUserObject extends IceUserObject
       this.canUploadFile = canUploadFile;
    }
    
+   public boolean isRepositoryNode()
+   {
+      return isRepositoryNode;
+   }
+
+   public void setRepositoryNode(boolean isRepositoryNode)
+   {
+      this.isRepositoryNode = isRepositoryNode;
+   }
+
+   public boolean isRepositoryRootNode()
+   {
+      return repositoryRootNode;
+   }
+
+   public void setRepositoryRootNode(boolean repositoryRootNode)
+   {
+      this.repositoryRootNode = repositoryRootNode;
+   }
+
    /**
     * Rename the resource
     * 

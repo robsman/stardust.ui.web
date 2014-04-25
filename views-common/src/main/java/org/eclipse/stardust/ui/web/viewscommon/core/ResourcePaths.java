@@ -74,7 +74,11 @@ public interface ResourcePaths
    static final String MIME_TYPE_PATH = "/plugins/views-common/images/icons/mime-types/";
 
    static final String V_NOTES_TOOLTIP = "/plugins/views-common/views/doctree/toolTip.xhtml";
-
+   
+   static final String I_REPOSITORY_ROOT = "/plugins/views-common/images/icons/folder_database.png";
+   static final String I_REPOSITORY = "/plugins/views-common/images/icons/database.png";
+   static final String I_REPOSITORY_DEFAULT  = "/plugins/views-common/images/icons/repositry-default.png";
+   
    static final String V_AUTOCOMPLETE_MULTI_USER_SELECTOR = "/plugins/views-common/user/userAutocompleteMultiSelector.xhtml";
    static final String V_AUTOCOMPLETE_SINGLE_USER_SELECTOR = "/plugins/views-common/user/userAutocompleteSingleSelector.xhtml";
    static final String V_AUTOCOMPLETE_USER_SELECTOR_TABLE = "/plugins/views-common/user/userAutocompleteMultiSelectorUserTable.xhtml";

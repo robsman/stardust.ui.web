@@ -443,6 +443,11 @@
 		class="org.eclipse.stardust.ui.web.viewscommon.views.document.tiff.extract.ExtractPageDialog"
 		scope="portalTab">
 	</bean>
+	
+	<bean name="bindRepositoryDialogBean"
+		class="org.eclipse.stardust.ui.web.viewscommon.views.document.BindRepositoryDialog"
+		scope="portalTab">
+	</bean>
 
 	<bean name="linkedProcessBean"
 		class="org.eclipse.stardust.ui.web.viewscommon.dialogs.LinkedProcessBean"

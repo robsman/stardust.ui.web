@@ -1,0 +1,209 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ui:composition>
+		<ice:panelPopup id="#{bindRepositoryDialogBean.beanId}" modal="true"
+			rendered="#{bindRepositoryDialogBean.visible}" draggable="true"
+			autoPosition="manual" positionOnLoadOnly="true"
+			styleClass="popupDialog" clientOnly="true">
+			<f:facet name="header">
+				<ice:panelGroup>
+					<pc:automationTag value="auto-COM-BindRepoDlg-Header" />
+					<ice:outputText styleClass="headerText"
+						value="#{views_common_msgPropsBean['views.bindRepositoryDialog.title']}" />
+					<ice:commandButton title="#{common_msgPropsBean['common.close']}"
+						action="#{bindRepositoryDialogBean.closePopup}" immediate="true"
+						styleClass="windowClose" />
+				</ice:panelGroup>
+			</f:facet>
+
+			<f:facet name="body">
+				<ice:panelBorder styleClass="pnlPopUpBrdrDialog" cellpadding="2"
+					cellspacing="2" renderNorth="false" renderEast="true"
+					renderSouth="true" renderWest="true" renderCenter="true">
+					<f:facet name="center">
+						<ice:panelGroup>
+							<ice:panelGroup styleClass="msgError" style="max-width:250px;">
+								<ice:message for="#{bindRepositoryDialogBean.beanId}" />
+							</ice:panelGroup>
+							<ice:panelGrid columns="3">
+								<ice:outputText
+									value="#{views_common_msgPropsBean['views.bindRepositoryDialog.provider']}" />
+								<ice:selectOneMenu partialSubmit="true"
+									value="#{bindRepositoryDialogBean.selectedProvider}">
+									<pc:automationTag value="auto-BCC-ProcSrch-SearchFor"
+										standAlone="false" />
+									<f:selectItems
+										value="#{bindRepositoryDialogBean.providerItems}" />
+								</ice:selectOneMenu>
+								<ice:panelGroup style="display: inline"
+									panelTooltip="providerTooltip">
+									<ice:graphicImage
+										url="/plugins/views-common/images/icons/information.png" />
+								</ice:panelGroup>
+							</ice:panelGrid>
+
+							<ice:panelTooltip id="providerTooltip" styleClass="tooltip">
+								<f:facet name="body">
+									<ice:panelGrid columns="1">
+										<ice:panelGrid columns="4">
+											<ice:outputLabel
+												value="#{views_common_msgPropsBean['views.bindRepositoryDialog.provider.vendor']}"
+												styleClass="label-form" />
+											<ice:outputText value="" />
+											<ice:outputLabel
+												value="#{views_common_msgPropsBean['views.bindRepositoryDialog.provider.version']}"
+												styleClass="label-form" />
+											<ice:outputText value="" />
+										</ice:panelGrid>
+										<ice:panelGrid columns="1"
+											style="width: 100%; border-bottom: 1px solid #333333;">
+											<ice:outputText
+												value="#{views_common_msgPropsBean['views.bindRepositoryDialog.provider.capabilities']}"
+												styleClass="tooltipTitle"
+												style="font-weight: bold; color: #333333" />
+										</ice:panelGrid>
+										<ice:panelGrid columns="4">
+											<ice:selectBooleanCheckbox id="fullTextSearchSupported"
+												value="#{bindRepositoryDialogBean.repositoryProviderInfo.fullTextSearchSupported}"
+												disabled="true">
+											</ice:selectBooleanCheckbox>
+											<ice:outputLabel for="fullTextSearchSupported"
+												value="#{views_common_msgPropsBean['views.bindRepositoryDialog.provider.capabilities.fullSearch']}"
+												styleClass="label-form" />
+											<ice:selectBooleanCheckbox id="transactionSupported"
+												value="#{bindRepositoryDialogBean.repositoryProviderInfo.transactionSupported}"
+												disabled="true">
+												<pc:automationTag
+													value="auto-BCC-GanttChart-ShowPercentValue"
+													standAlone="false" />
+											</ice:selectBooleanCheckbox>
+											<ice:outputLabel for="transactionSupported"
+												value="#{views_common_msgPropsBean['views.bindRepositoryDialog.provider.capabilities.transaction']}"
+												styleClass="label-form" />
+											<ice:selectBooleanCheckbox id="metaDataSearchSupported"
+												value="#{bindRepositoryDialogBean.repositoryProviderInfo.metaDataSearchSupported}"
+												disabled="true">
+												<pc:automationTag
+													value="auto-BCC-GanttChart-ShowPercentValue"
+													standAlone="false" />
+											</ice:selectBooleanCheckbox>
+											<ice:outputLabel for="metaDataSearchSupported"
+												value="#{views_common_msgPropsBean['views.bindRepositoryDialog.provider.capabilities.metaDataSearch']}"
+												styleClass="label-form" />
+											<ice:selectBooleanCheckbox id="metaDataWriteSupported"
+												value="#{bindRepositoryDialogBean.repositoryProviderInfo.metaDataWriteSupported}"
+												disabled="true">
+												<pc:automationTag
+													value="auto-BCC-GanttChart-ShowPercentValue"
+													standAlone="false" />
+											</ice:selectBooleanCheckbox>
+											<ice:outputLabel for="metaDataWriteSupported"
+												value="#{views_common_msgPropsBean['views.bindRepositoryDialog.provider.capabilities.metaDataStorage']}"
+												styleClass="label-form" />
+											<ice:selectBooleanCheckbox id="accessControlPolicySupported"
+												value="#{bindRepositoryDialogBean.repositoryProviderInfo.accessControlPolicySupported}"
+												disabled="true">
+												<pc:automationTag
+													value="auto-BCC-GanttChart-ShowPercentValue"
+													standAlone="false" />
+											</ice:selectBooleanCheckbox>
+											<ice:outputLabel for="accessControlPolicySupported"
+												value="#{views_common_msgPropsBean['views.bindRepositoryDialog.provider.capabilities.aclPolicy']}"
+												styleClass="label-form" />
+											<ice:selectBooleanCheckbox id="versioningSupported"
+												value="#{bindRepositoryDialogBean.repositoryProviderInfo.versioningSupported}"
+												disabled="true">
+												<pc:automationTag
+													value="auto-BCC-GanttChart-ShowPercentValue"
+													standAlone="false" />
+											</ice:selectBooleanCheckbox>
+											<ice:outputLabel for="versioningSupported"
+												value="#{views_common_msgPropsBean['views.bindRepositoryDialog.provider.capabilities.versioning']}"
+												styleClass="label-form" />
+											<ice:selectBooleanCheckbox id="writeSupported"
+												value="#{bindRepositoryDialogBean.repositoryProviderInfo.writeSupported}"
+												disabled="true">
+												<pc:automationTag
+													value="auto-BCC-GanttChart-ShowPercentValue"
+													standAlone="false" />
+											</ice:selectBooleanCheckbox>
+											<ice:outputLabel for="writeSupported"
+												value="#{views_common_msgPropsBean['views.bindRepositoryDialog.provider.capabilities.writable']}"
+												styleClass="label-form" />
+
+										</ice:panelGrid>
+									</ice:panelGrid>
+								</f:facet>
+							</ice:panelTooltip>
+
+							<ice:panelGrid columns="1"
+								style="width: 100%; border-bottom: 1px solid #333333;">
+								<ice:outputText
+									value="#{views_common_msgPropsBean['views.bindRepositoryDialog.repositorySettings']}"
+									styleClass="tooltipTitle"
+									style="color: #708090;font-weight: bold;white-space: nowrap;" />
+							</ice:panelGrid>
+
+							<ice:panelGroup styleClass="clearing" />
+
+							<ice:panelGrid columns="2">
+								<ice:outputText
+									value="#{views_common_msgPropsBean['views.bindRepositoryDialog.repositorySettings.repositoryId']}" />
+								<ice:panelGroup>
+									<ice:inputText id="repositoryID" partialSubmit="true"
+										value="#{bindRepositoryDialogBean.repositoryId}"
+										required="true">
+										<f:validateLength minimum="1" />
+									</ice:inputText>
+									<ice:message for="repositoryID" styleClass="iceMsgImage"
+										showSummary="false" showDetail="false" />
+								</ice:panelGroup>
+								<ice:panelGroup
+									rendered="#{bindRepositoryDialogBean.repositoryId == null}" />
+								<ice:message for="repositoryId" styleClass="iceMsgInline"
+									rendered="#{bindRepositoryDialogBean.repositoryId == null}" />
+
+								<c:forEach items="#{bindRepositoryDialogBean.attributesMap}"
+									var="entry">
+									<ice:outputText value="#{entry.key}" />
+									<ice:panelGroup>
+										<ice:inputText id="key#{entry.key}"
+											value="#{bindRepositoryDialogBean.attributesMap[entry.key]}"
+											valueChangeListener="#{bindRepositoryDialogBean.attributeChanged}"
+											partialSubmit="true" required="true">
+											<f:attribute name="key" value="#{entry.key}" />
+										</ice:inputText>
+										<ice:message for="key#{entry.key}" styleClass="iceMsgImage"
+											showSummary="false" showDetail="false" />
+									</ice:panelGroup>
+								</c:forEach>
+
+							</ice:panelGrid>
+						</ice:panelGroup>
+
+
+					</f:facet>
+					<f:facet name="south">
+						<ice:panelGroup>
+							<ice:commandButton
+								value="#{views_common_msgPropsBean['common.ok']}"
+								action="#{bindRepositoryDialogBean.createRepository}"
+								styleClass="button" />
+							<ice:commandButton
+								value="#{views_common_msgPropsBean['common.cancel']}"
+								action="#{bindRepositoryDialogBean.closePopup}" immediate="true"
+								styleClass="button secondary" />
+
+						</ice:panelGroup>
+					</f:facet>
+				</ice:panelBorder>
+			</f:facet>
+		</ice:panelPopup>
+
+	</ui:composition>
+</f:view>

@@ -23,7 +23,9 @@
 		<ui:include src="/plugins/views-common/common/panelConfirmation.xhtml" />	
 		<ui:include src="/plugins/common/views/dialog/confirmationDialog.xhtml">
 				<ui:param name="dialogBean" value="#{genericRepositoryTreeViewBean.genericRepoConfirmationDialog}" />
-			</ui:include>
+		</ui:include>
+		<ui:include
+			src="/plugins/views-common/dialogs/bindRepositoryDialog.xhtml" />
 	</ice:panelGroup>
 	<ice:panelGroup styleClass="msgError">
 		<ice:message for="genericRepositoryTree" />
@@ -102,7 +104,8 @@
 								icon="/plugins/views-common/images/icons/rename.png"
 								value="#{genericRepositoryTreeViewBean.messages['treeMenuItem.rename']}"
 								actionListener="#{genericRepositoryTreeViewBean.rename}"
-								disabled="#{!item.userObject.editable}">
+								disabled="#{!item.userObject.editable}"
+								rendered="#{!item.userObject.repositoryNode and !item.userObject.repositoryRootNode}">
 								<pc:automationTag value="auto-COM-RepoTree-MenuDlg-Rename"
 									standAlone="false" />
 								<f:attribute name="userObject" value="#{item.userObject}" />
@@ -119,23 +122,23 @@
 								<f:attribute name="userObject" value="#{item.userObject}" />
 							</ice:menuItem>
 
-							<ice:menuItem id="deleteFolder"
-								icon="/plugins/views-common/images/icons/folder_delete.png"
-								value="#{genericRepositoryTreeViewBean.messages['treeMenuItem.delete']}"
-							    actionListener="#{genericRepositoryTreeViewBean.confirmDeleteResource}"											
-								disabled="#{!item.userObject.deletable}"
-								rendered="#{!item.userObject.leafNode}">
-								<pc:automationTag value="auto-COM-RepoTree-MenuDlg-DelFolder"
-									standAlone="false" />
-								<f:attribute name="userObject" value="#{item.userObject}" />
-							</ice:menuItem>
+								<ice:menuItem id="deleteFolder"
+									icon="/plugins/views-common/images/icons/folder_delete.png"
+									value="#{genericRepositoryTreeViewBean.messages['treeMenuItem.delete']}"
+									actionListener="#{genericRepositoryTreeViewBean.confirmDeleteResource}"
+									disabled="#{!item.userObject.deletable}"
+									rendered="#{!item.userObject.leafNode and !item.userObject.repositoryNode and !item.userObject.repositoryRootNode}">
+									<pc:automationTag value="auto-COM-RepoTree-MenuDlg-DelFolder"
+										standAlone="false" />
+									<f:attribute name="userObject" value="#{item.userObject}" />
+								</ice:menuItem>
 
-							<ice:menuItem id="createSubfolder"
+								<ice:menuItem id="createSubfolder"
 								icon="/plugins/views-common/images/icons/folder_add.png"
 								value="#{genericRepositoryTreeViewBean.messages['treeMenuItem.createSubFolder']}"
 								actionListener="#{genericRepositoryTreeViewBean.createSubfolder}"
 								disabled="#{!item.userObject.canCreateFolder}"
-								rendered="#{!item.userObject.leafNode}">
+								rendered="#{!item.userObject.leafNode and !item.userObject.repositoryNode and !item.userObject.repositoryRootNode}">
 								<pc:automationTag
 									value="auto-COM-RepoTree-MenuDlg-CreateSubFolder"
 									standAlone="false" />
@@ -226,7 +229,8 @@
 								icon="/plugins/views-common/images/icons/arrow_refresh.png"
 								value="#{genericRepositoryTreeViewBean.messages['treeMenuItem.refresh']}"
 								action="#{item.userObject.refresh}"
-								disabled="#{!item.userObject.refreshable}">
+								disabled="#{!item.userObject.refreshable}"
+								rendered="#{!item.userObject.repositoryNode and !item.userObject.repositoryRootNode}">
 								<pc:automationTag value="auto-COM-RepoTree-MenuDlg-Refresh"
 									standAlone="false" />
 							</ice:menuItem>
@@ -235,7 +239,8 @@
 								icon="/plugins/views-common/images/icons/wrench.png"
 								value="#{genericRepositoryTreeViewBean.messages['treeMenuItem.security']}"
 								action="#{securityDialog.open}"
-								disabled="#{!item.userObject.readACL}">
+								disabled="#{!item.userObject.readACL}"
+								rendered="#{!item.userObject.repositoryNode and !item.userObject.repositoryRootNode}">
 								<pc:automationTag
 									value="auto-COM-RepoTree-MenuDlg-SecuritySetting"
 									standAlone="false" />
@@ -264,6 +269,38 @@
 									standAlone="false" />
 								<f:attribute name="fileHandle"
 									value="#{item.userObject.resourceItem}" />
+							</ice:menuItem>
+							
+							<ice:menuItem id="makeDefaultRepo"
+								value="#{genericRepositoryTreeViewBean.messages['treeMenuItem.repo.makeDefault']}"
+								icon="/plugins/views-common/images/icons/repositry-default.png"
+								actionListener="#{item.userObject.switchDefaultRepository}"
+								rendered="#{item.userObject.repositoryNode}">
+								<pc:automationTag value="auto-COM-RepoTree-MenuDlg-MakeDefaultRepo"
+									standAlone="false" />
+								<f:attribute name="repositoryId"
+									value="#{item.userObject.repositoryInstance.repositoryId}" />
+							</ice:menuItem>
+							
+							<ice:menuItem id="unbindRepo"
+								value="#{genericRepositoryTreeViewBean.messages['treeMenuItem.repo.unbindRepo']}"
+								icon="/plugins/views-common/images/icons/database_delete.png"
+								actionListener="#{genericRepositoryTreeViewBean.confirmUnbindRepository}"
+								rendered="#{item.userObject.repositoryNode}"
+								disabled="#{item.userObject.defaultRepository}">
+								<pc:automationTag value="auto-COM-RepoTree-MenuDlg-UnbindRepo"
+									standAlone="false" />
+								<f:attribute name="userObject" value="#{item.userObject}" />
+							</ice:menuItem>
+							
+							<ice:menuItem id="bindRepo"
+								value="#{genericRepositoryTreeViewBean.messages['treeMenuItem.repo.bindRepo']}"
+								icon="/plugins/views-common/images/icons/database_add.png"
+								actionListener="#{genericRepositoryTreeViewBean.openBindRepoDialog}"
+								rendered="#{item.userObject.repositoryRootNode}">
+								<pc:automationTag value="auto-COM-RepoTree-MenuDlg-BindRepo"
+									standAlone="false" />
+								<f:attribute name="userObject" value="#{item.userObject}" />
 							</ice:menuItem>
 
 						</ice:menuPopup>

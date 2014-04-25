@@ -11,6 +11,7 @@
 package org.eclipse.stardust.ui.web.viewscommon.docmgmt;
 
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -27,6 +28,8 @@ import org.eclipse.stardust.engine.api.dto.Note;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
+import org.eclipse.stardust.engine.core.spi.dms.IRepositoryInstanceInfo;
+import org.eclipse.stardust.engine.core.spi.dms.RepositoryIdUtils;
 import org.eclipse.stardust.ui.web.common.configuration.UserPreferencesHelper;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.common.spi.preference.PreferenceScope;
@@ -46,6 +49,7 @@ import org.eclipse.stardust.ui.web.viewscommon.views.doctree.ProcessAttachmentUs
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.RepositoryDocumentUserObject;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.RepositoryFolderProxyUserObject;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.RepositoryFolderUserObject;
+import org.eclipse.stardust.ui.web.viewscommon.views.doctree.RepositoryNodeUserObject;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.RepositoryResourceUserObject;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.RepositoryVirtualUserObject;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.TypedDocument;
@@ -68,6 +72,8 @@ public class RepositoryUtility
    private static final String ARTIFACTS_SKINS = "/artifacts/skins";
    private static final String ARTIFACTS_BUNDLES = "/artifacts/bundles";
    private static final String ARTIFACTS_CONTENT = "/artifacts/content";
+   private static final String POSTFIX_OPEN = " (";
+   private static final String POSTFIX_CLOSE = ")";
    
    public static enum NodeType {
       DOCUMENT, ATTACHMENT, ATTACHMENT_FOLDER
@@ -80,8 +86,23 @@ public class RepositoryUtility
     */
    public static DefaultTreeModel createDocumentRepoModel()
    {
-      Folder rootFolder = DocumentMgmtUtility.getDocumentManagementService().getFolder("/");
-      return new DefaultTreeModel(createFolderNode(rootFolder));
+      DefaultMutableTreeNode repositoryRootNode = createVirtualNode("Repositories", ResourcePaths.I_REPOSITORY_ROOT, null);
+      List<IRepositoryInstanceInfo> repositoryInstanceInfos = DocumentMgmtUtility.getDocumentManagementService()
+      .getRepositoryInstanceInfos();
+      String defaultRepository = DocumentMgmtUtility.getDocumentManagementService().getDefaultRepository();
+      for (IRepositoryInstanceInfo repoInstanceInfo : repositoryInstanceInfos)
+      {
+         DefaultMutableTreeNode repositoryNode = createRepository(repositoryRootNode, repoInstanceInfo);
+         RepositoryNodeUserObject repositoryNodeUserObject = (RepositoryNodeUserObject) repositoryNode.getUserObject();
+         if(defaultRepository.equals(repoInstanceInfo.getRepositoryId()))
+         {
+            repositoryNodeUserObject.setDefaultRepository(true);
+            repositoryNodeUserObject.setLabel(getRepositoryLabel(repositoryNodeUserObject, defaultRepository));
+         }
+      }
+      // Boolean flag to control Menu options for Repository Root node
+      ((RepositoryVirtualUserObject)repositoryRootNode.getUserObject()).setRepositoryRootNode(true);
+      return new DefaultTreeModel(repositoryRootNode);
    }
 
    /**
@@ -419,6 +440,40 @@ public class RepositoryUtility
             node = replaceProxyNode(node);
          }
       }
+      else if(node.getUserObject() instanceof RepositoryNodeUserObject)
+      {
+         RepositoryNodeUserObject repositoryUserObject = (RepositoryNodeUserObject) node.getUserObject();
+         DefaultMutableTreeNode parent = (DefaultMutableTreeNode) node.getParent();
+         Enumeration<DefaultMutableTreeNode> en =parent.breadthFirstEnumeration();
+         while (en.hasMoreElements())
+         {
+            DefaultMutableTreeNode node1 = en.nextElement();
+            if (node1.getLevel() == 0)
+            {
+               continue;
+            }
+            else if (node1.getLevel() == 2)
+            {
+               break;
+            }
+            RepositoryNodeUserObject userObj = (RepositoryNodeUserObject) node1.getUserObject();
+            if (repositoryUserObject.getLabel().equals(userObj.getLabel()))
+            {
+               continue;
+            }
+            else if (repositoryUserObject.isDefaultRepository() && userObj.isDefaultRepository())
+            {
+               // Reset status and label of previous default repo
+               userObj.setDefaultRepository(false);
+               userObj.setIcon(ResourcePaths.I_REPOSITORY);
+               userObj.setLabel(getRepositoryLabel(userObj, null));
+               
+               repositoryUserObject.setLabel(getRepositoryLabel(repositoryUserObject, null));
+               
+            }
+         }
+         return;
+      }
       
       List<String> expandedFolders = new ArrayList<String>();
       populateExpandedFolderList(node, expandedFolders);
@@ -510,7 +565,33 @@ public class RepositoryUtility
       repositoryFolderUserObject.setNewNodeCreated(true);
       return subNode;
    }
+   
+   /**
+    * 
+    * @param rootNode
+    * @param repositoryInstanceInfo
+    * @return
+    */
+   public static DefaultMutableTreeNode createRepository(DefaultMutableTreeNode rootNode, IRepositoryInstanceInfo repositoryInstanceInfo)
+   {
+      DefaultMutableTreeNode repositoryNode = new DefaultMutableTreeNode();
+      RepositoryNodeUserObject repositoryNodeUserObject = new RepositoryNodeUserObject(repositoryNode, repositoryInstanceInfo);
+      repositoryNode.setUserObject(repositoryNodeUserObject);
+      repositoryNodeUserObject.setLabel(getRepositoryLabel(repositoryNodeUserObject, null));
 
+      // Fetch the folders for the Repository
+      String folderId = RepositoryIdUtils.addRepositoryId("/", repositoryInstanceInfo.getRepositoryId());
+      Folder rootFolder = DocumentMgmtUtility.getDocumentManagementService().getFolder(folderId);
+      // Create Folder Node
+      DefaultMutableTreeNode folderNode = new DefaultMutableTreeNode();
+      RepositoryFolderUserObject repositoryFolderUserObject = new RepositoryFolderUserObject(folderNode, rootFolder,
+            false);
+      folderNode.setUserObject(repositoryFolderUserObject);
+      repositoryNode.add(folderNode);
+      rootNode.add(repositoryNode);
+      return repositoryNode;
+   }
+   
    /**
     * searches a node for provided path
     * 
@@ -1408,4 +1489,20 @@ public class RepositoryUtility
       MessagesViewsCommonBean propsBean = MessagesViewsCommonBean.getInstance();
       return propsBean.getParamString(key, params);
    }  
+   
+   private static String getRepositoryLabel(RepositoryNodeUserObject userObject, String defaultRepository)
+   {
+      String label = "";
+      String repoName = userObject.getRepositoryInstance().getRepositoryId();
+      label = repoName;
+      if (repoName.equals(defaultRepository) || userObject.isDefaultRepository())
+      {
+         label = label + POSTFIX_OPEN
+               + MessagesViewsCommonBean.getInstance().getString(
+                     "views.genericRepositoryView.treeMenuItem.repo.default") + POSTFIX_CLOSE;
+         
+         userObject.setIcon(ResourcePaths.I_REPOSITORY_DEFAULT);
+      }
+      return label;
+   }
 }

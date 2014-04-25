@@ -48,6 +48,7 @@ import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
+import org.eclipse.stardust.ui.web.viewscommon.views.document.BindRepositoryDialog;
 
 import com.icesoft.faces.component.DisplayEvent;
 import com.icesoft.faces.component.dragdrop.DndEvent;
@@ -84,6 +85,7 @@ public class GenericRepositoryTreeViewBean extends UIComponentBean implements Vi
    private boolean registred;
    boolean skipDocumentEvents = false;
    RepositoryResourceUserObject deleteUserObject;
+   RepositoryNodeUserObject repositoryUserObject;
    private List<ProcessInstance> processInstances;
    private ConfirmationDialog genericRepoConfirmationDialog;
 
@@ -103,6 +105,7 @@ public class GenericRepositoryTreeViewBean extends UIComponentBean implements Vi
    public void initialize()
    {
 	  deleteUserObject=null;
+	  repositoryUserObject = null;
       quickSearchApplicable = false;
       if (RepositoryMode.DOCUMENT_REPO == this.repositoryMode)
       {
@@ -417,6 +420,14 @@ public class GenericRepositoryTreeViewBean extends UIComponentBean implements Vi
       }
    }
 
+   public void openBindRepoDialog(ActionEvent event)
+   {
+      BindRepositoryDialog dialog = BindRepositoryDialog.getInstance();
+      RepositoryVirtualUserObject userObject = (RepositoryVirtualUserObject) event.getComponent().getAttributes()
+      .get("userObject");
+      dialog.setUserObject(userObject);
+      dialog.openPopup();
+   }
    /**
     * @param event
     */
@@ -546,15 +557,36 @@ public class GenericRepositoryTreeViewBean extends UIComponentBean implements Vi
 
 	public void confirmYes() 
 	{
-		deleteUserObject.deleteResource();
-		deleteUserObject = null;
+      if (deleteUserObject != null)
+      {
+         deleteUserObject.deleteResource();
+         deleteUserObject = null;
+      }
+      if(repositoryUserObject != null)
+      {
+         repositoryUserObject.unbindRepository(repositoryUserObject);
+      }
+	   
 	}
 
 	public void confirmNo() 
 	{
 		deleteUserObject = null;
+		repositoryUserObject = null;
 	}
 	
+   public void confirmUnbindRepository(ActionEvent event)
+   {
+      repositoryUserObject = (RepositoryNodeUserObject) event.getComponent().getAttributes().get("userObject");
+      MessagesViewsCommonBean propsBean = MessagesViewsCommonBean.getInstance();
+      genericRepoConfirmationDialog = new ConfirmationDialog(DialogContentType.WARNING, DialogActionType.YES_NO, null,
+            DialogStyle.COMPACT, this);
+      genericRepoConfirmationDialog.setTitle(propsBean.getString("common.confirm"));
+      genericRepoConfirmationDialog.setMessage(propsBean.getParamString("common.confirmUnbindRepo.message.label",
+            repositoryUserObject.getRepositoryInstance().getRepositoryId()));
+      genericRepoConfirmationDialog.openPopup();
+   }
+
 	/**
 	 * 
 	 */
