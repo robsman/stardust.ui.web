@@ -584,8 +584,7 @@ public class RepositoryUtility
       Folder rootFolder = DocumentMgmtUtility.getDocumentManagementService().getFolder(folderId);
       // Create Folder Node
       DefaultMutableTreeNode folderNode = new DefaultMutableTreeNode();
-      RepositoryFolderUserObject repositoryFolderUserObject = new RepositoryFolderUserObject(folderNode, rootFolder,
-            false);
+      RepositoryFolderUserObject repositoryFolderUserObject = new RepositoryFolderUserObject(folderNode, rootFolder);
       folderNode.setUserObject(repositoryFolderUserObject);
       repositoryNode.add(folderNode);
       rootNode.add(repositoryNode);
