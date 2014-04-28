@@ -86,6 +86,7 @@ public class GenericRepositoryTreeViewBean extends UIComponentBean implements Vi
    boolean skipDocumentEvents = false;
    RepositoryResourceUserObject deleteUserObject;
    RepositoryNodeUserObject repositoryUserObject;
+   private String repositoryId;
    private List<ProcessInstance> processInstances;
    private ConfirmationDialog genericRepoConfirmationDialog;
 
@@ -106,6 +107,7 @@ public class GenericRepositoryTreeViewBean extends UIComponentBean implements Vi
    {
 	  deleteUserObject=null;
 	  repositoryUserObject = null;
+	  repositoryId = null;
       quickSearchApplicable = false;
       if (RepositoryMode.DOCUMENT_REPO == this.repositoryMode)
       {
@@ -428,6 +430,16 @@ public class GenericRepositoryTreeViewBean extends UIComponentBean implements Vi
       dialog.setUserObject(userObject);
       dialog.openPopup();
    }
+   
+   public void showRepositoryProperties(ActionEvent event)
+   {
+      BindRepositoryDialog dialog = BindRepositoryDialog.getInstance();
+      String repositoryId = (String) event.getComponent().getAttributes().get("repositoryId");
+      dialog.setShowProperties(true);
+      dialog.setRepositoryId(repositoryId);
+      dialog.openPopup();
+   }
+   
    /**
     * @param event
     */
@@ -555,24 +567,33 @@ public class GenericRepositoryTreeViewBean extends UIComponentBean implements Vi
       genericRepoConfirmationDialog.openPopup();
 	}
 
-	public void confirmYes() 
-	{
+   public void confirmYes()
+   {
       if (deleteUserObject != null)
       {
          deleteUserObject.deleteResource();
          deleteUserObject = null;
       }
-      if(repositoryUserObject != null)
+      if (repositoryUserObject != null)
       {
-         repositoryUserObject.unbindRepository(repositoryUserObject);
+         if (repositoryId != null)
+         {
+            repositoryUserObject.switchDefaultRepository(repositoryId);
+            repositoryId = null;
+         }
+         else
+         {
+            repositoryUserObject.unbindRepository(repositoryUserObject);
+         }
+         repositoryUserObject = null;
       }
-	   
-	}
+   }
 
 	public void confirmNo() 
 	{
 		deleteUserObject = null;
 		repositoryUserObject = null;
+		repositoryId = null;
 	}
 	
    public void confirmUnbindRepository(ActionEvent event)
@@ -583,6 +604,19 @@ public class GenericRepositoryTreeViewBean extends UIComponentBean implements Vi
             DialogStyle.COMPACT, this);
       genericRepoConfirmationDialog.setTitle(propsBean.getString("common.confirm"));
       genericRepoConfirmationDialog.setMessage(propsBean.getParamString("common.confirmUnbindRepo.message.label",
+            repositoryUserObject.getRepositoryInstance().getRepositoryId()));
+      genericRepoConfirmationDialog.openPopup();
+   }
+   
+   public void confirmSwitchDefaultRepo(ActionEvent event)
+   {
+      repositoryId = (String) event.getComponent().getAttributes().get("repositoryId");
+      repositoryUserObject = (RepositoryNodeUserObject) event.getComponent().getAttributes().get("userObject");
+      MessagesViewsCommonBean propsBean = MessagesViewsCommonBean.getInstance();
+      genericRepoConfirmationDialog = new ConfirmationDialog(DialogContentType.WARNING, DialogActionType.YES_NO, null,
+            DialogStyle.COMPACT, this);
+      genericRepoConfirmationDialog.setTitle(propsBean.getString("common.confirm"));
+      genericRepoConfirmationDialog.setMessage(propsBean.getParamString("common.confirmSwitchRepo.message.label",
             repositoryUserObject.getRepositoryInstance().getRepositoryId()));
       genericRepoConfirmationDialog.openPopup();
    }

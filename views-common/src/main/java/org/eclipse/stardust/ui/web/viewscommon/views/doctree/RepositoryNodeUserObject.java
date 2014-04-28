@@ -57,9 +57,8 @@ public class RepositoryNodeUserObject extends RepositoryResourceUserObject
       setLeafIcon(iconFile);
    }
 
-   public void switchDefaultRepository(ActionEvent event)
+   public void switchDefaultRepository(String repositoryId)
    {
-      String repositoryId = (String) event.getComponent().getAttributes().get("repositoryId");
       DocumentMgmtUtility.getDocumentManagementService().setDefaultRepository(repositoryId);
       this.setDefaultRepository(true);
       RepositoryUtility.refreshNode(this.wrapper);

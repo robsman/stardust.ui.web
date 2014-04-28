@@ -274,12 +274,14 @@
 							<ice:menuItem id="makeDefaultRepo"
 								value="#{genericRepositoryTreeViewBean.messages['treeMenuItem.repo.makeDefault']}"
 								icon="/plugins/views-common/images/icons/repositry-default.png"
-								actionListener="#{item.userObject.switchDefaultRepository}"
-								rendered="#{item.userObject.repositoryNode}">
+								actionListener="#{genericRepositoryTreeViewBean.confirmSwitchDefaultRepo}"
+								rendered="#{item.userObject.repositoryNode}"
+								disabled="#{item.userObject.defaultRepository}">
 								<pc:automationTag value="auto-COM-RepoTree-MenuDlg-MakeDefaultRepo"
 									standAlone="false" />
 								<f:attribute name="repositoryId"
 									value="#{item.userObject.repositoryInstance.repositoryId}" />
+								<f:attribute name="userObject" value="#{item.userObject}" />	
 							</ice:menuItem>
 							
 							<ice:menuItem id="unbindRepo"
@@ -291,6 +293,17 @@
 								<pc:automationTag value="auto-COM-RepoTree-MenuDlg-UnbindRepo"
 									standAlone="false" />
 								<f:attribute name="userObject" value="#{item.userObject}" />
+							</ice:menuItem>
+							
+							<ice:menuItem id="showProperties"
+								value="#{genericRepositoryTreeViewBean.messages['treeMenuItem.repo.properties']}"
+								icon="/plugins/views-common/images/icons/database_add.png"
+								actionListener="#{genericRepositoryTreeViewBean.showRepositoryProperties}"
+								rendered="#{item.userObject.repositoryNode}">
+								<pc:automationTag value="auto-COM-RepoTree-MenuDlg-BindRepo"
+									standAlone="false" />
+								<f:attribute name="repositoryId"
+									value="#{item.userObject.repositoryInstance.repositoryId}" />	
 							</ice:menuItem>
 							
 							<ice:menuItem id="bindRepo"

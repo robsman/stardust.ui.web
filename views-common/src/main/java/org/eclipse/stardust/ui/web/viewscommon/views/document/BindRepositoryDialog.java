@@ -22,6 +22,7 @@ import javax.faces.model.SelectItem;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.core.repository.jcr.JcrVfsRepositoryConfiguration;
 import org.eclipse.stardust.engine.core.spi.dms.IRepositoryConfiguration;
+import org.eclipse.stardust.engine.core.spi.dms.IRepositoryInstance;
 import org.eclipse.stardust.engine.core.spi.dms.IRepositoryInstanceInfo;
 import org.eclipse.stardust.engine.core.spi.dms.IRepositoryProviderInfo;
 import org.eclipse.stardust.engine.core.spi.dms.RepositoryProviderManager;
@@ -56,7 +57,13 @@ public class BindRepositoryDialog extends PopupUIComponentBean
 
    private IRepositoryProviderInfo repositoryProviderInfo;
 
+   private IRepositoryInstance repositoryInstance;
+
    private Map<String, Serializable> attributesMap;
+
+   private String title;
+
+   private boolean showProperties;
 
    public static BindRepositoryDialog getInstance()
    {
@@ -72,7 +79,6 @@ public class BindRepositoryDialog extends PopupUIComponentBean
       providerItems = new ArrayList<SelectItem>();
       providerMap = CollectionUtils.newHashMap();
       attributesMap = CollectionUtils.newHashMap();
-      repositoryId = null;
       for (IRepositoryProviderInfo iRepositoryProviderInfo : repositoryProviderInfos)
       {
          providerItems.add(new SelectItem(iRepositoryProviderInfo.getProviderId(), iRepositoryProviderInfo
@@ -100,7 +106,17 @@ public class BindRepositoryDialog extends PopupUIComponentBean
    {
       try
       {
-         initialize();
+         if (repositoryId != null)
+         {
+            repositoryInstance = RepositoryProviderManager.getInstance().getInstance(repositoryId);
+            title = repositoryInstance.getRepositoryId()
+                  + " " + COMMON_MESSAGE_BEAN.get("views.genericRepositoryView.treeMenuItem.repo.properties");
+         }
+         else
+         {
+            title = COMMON_MESSAGE_BEAN.getString("views.bindRepositoryDialog.title");
+            initialize();
+         }
          super.openPopup();
       }
       catch (Exception e)
@@ -108,6 +124,14 @@ public class BindRepositoryDialog extends PopupUIComponentBean
          ExceptionHandler.handleException("",
                COMMON_MESSAGE_BEAN.getString("common.exception") + " : " + e.getLocalizedMessage());
       }
+   }
+
+   @Override
+   public void closePopup()
+   {
+      showProperties = false;
+      repositoryId = null;
+      super.closePopup();
    }
 
    public void createRepository()
@@ -197,6 +221,36 @@ public class BindRepositoryDialog extends PopupUIComponentBean
    public Map<String, Serializable> getAttributesMap()
    {
       return attributesMap;
+   }
+
+   public boolean isShowProperties()
+   {
+      return showProperties;
+   }
+
+   public void setShowProperties(boolean showProperties)
+   {
+      this.showProperties = showProperties;
+   }
+
+   public IRepositoryInstance getRepositoryInstance()
+   {
+      return repositoryInstance;
+   }
+
+   public void setRepositoryInstance(IRepositoryInstance repositoryInstance)
+   {
+      this.repositoryInstance = repositoryInstance;
+   }
+
+   public String getTitle()
+   {
+      return title;
+   }
+
+   public void setTitle(String title)
+   {
+      this.title = title;
    }
 
 }
