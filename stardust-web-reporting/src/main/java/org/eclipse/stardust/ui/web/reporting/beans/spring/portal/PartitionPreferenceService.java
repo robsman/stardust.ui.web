@@ -36,7 +36,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Scope(value =  "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class PartitionPreferenceCache implements Serializable
+public class PartitionPreferenceService implements Serializable
 {
    /**
     * 

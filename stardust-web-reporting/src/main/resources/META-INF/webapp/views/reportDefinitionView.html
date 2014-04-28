@@ -554,36 +554,92 @@ table.formTable td {
 											</div>
 											<div
 												ng-show="getDimension(x.dimension).type == getMetadata().timestampType">
+											
+												<div ng-show="x.metadata.fromTo" style="margin-left: 10px;">
 												<table cellpadding="0" cellspacing="0" class="layoutTable">
-													<tr>
-														<td><label>From</label></td>
-														<td><input type="text" ng-model="x.value.from" sd-datetime /></td>
-														<td><a href=""
-															ng-click="removeParameter('filters.' + x.dimension + '.from')"
-															ng-show="existsParameter('filters.' + x.dimension + '.from')"><img
-																src="../css/images/parameter.png"
-																title="Parameter (filters.{{x.dimension}})" /> <a
-																href=""
-																ng-click="addParameter('filters.' + x.dimension + '.from', 'Filter for ' + getDimension(x.dimension).name + ' From', getMetadata().timestampType.id)"
-																ng-show="!existsParameter('filters.' + x.dimension + '.from')"><img
-																	src="../css/images/no-parameter.png"
-																	title="No Parameter (filters.{{x.dimension}})" /></td>
-													</tr>
-													<tr>
-														<td><label>To</label></td>
-														<td><input type="text" ng-model="x.value.to" sd-datetime /></td>
-														<td><a href=""
-															ng-click="removeParameter('filters.' + x.dimension + '.to')"
-															ng-show="existsParameter('filters.' + x.dimension + '.to')"><img
-																src="../css/images/parameter.png"
-																title="Parameter (filters.{{x.dimension}})" /> <a
-																href=""
-																ng-click="addParameter('filters.' + x.dimension + '.to', 'Filter for ' + getDimension(x.dimension).name + ' To', getMetadata().timestampType.id)"
-																ng-show="!existsParameter('filters.' + x.dimension + '.to')"><img
-																	src="../css/images/no-parameter.png"
-																	title="No Parameter (filters.{{x.dimension}})" /> </a> </a></td>
-													</tr>
-												</table>
+														<tr>
+															<td><label>{{getI18N('reporting.definitionView.from.label')}}</label></td>
+															<td><input type="text" ng-model="x.value.from" sd-datetime /></td>
+															<td><a href=""
+																ng-click="removeParameter('filters.' + x.dimension + '.from')"
+																ng-show="existsParameter('filters.' + x.dimension + '.from')"><img
+																	src="../css/images/parameter.png"
+																	title="Parameter (filters.{{x.dimension}})" /> <a
+																	href=""
+																	ng-click="addParameter('filters.' + x.dimension + '.from', 'Filter for ' + getDimension(x.dimension).name + ' From', getMetadata().timestampType.id)"
+																	ng-show="!existsParameter('filters.' + x.dimension + '.from')"><img
+																		src="../css/images/no-parameter.png"
+																		title="No Parameter (filters.{{x.dimension}})" /></td>
+														</tr>
+														<tr>
+															<td><label>{{getI18N('reporting.definitionView.to.label')}}</label></td>
+															<td><input type="text" ng-model="x.value.to" sd-datetime /></td>
+															<td><a href=""
+																ng-click="removeParameter('filters.' + x.dimension + '.to')"
+																ng-show="existsParameter('filters.' + x.dimension + '.to')"><img
+																	src="../css/images/parameter.png"
+																	title="Parameter (filters.{{x.dimension}})" /> <a
+																	href=""
+																	ng-click="addParameter('filters.' + x.dimension + '.to', 'Filter for ' + getDimension(x.dimension).name + ' To', getMetadata().timestampType.id)"
+																	ng-show="!existsParameter('filters.' + x.dimension + '.to')"><img
+																		src="../css/images/no-parameter.png"
+																		title="No Parameter (filters.{{x.dimension}})" /> </a> </a></td>
+														</tr>
+													</table>
+												
+													<a style="font-size: 9px;"
+															ng-click="x.metadata.fromTo = false;" class="smallLink">
+															{{getI18N('reporting.definitionView.switchToStartDateAndDuration.label')}}
+															&raquo;</a>
+												</div>
+												<div ng-show="!x.metadata.fromTo"
+														style="margin-left: 10px;">
+													<table cellpadding="0" cellspacing="0" class="formTable">
+														<tr>
+															<td><label>{{getI18N('reporting.definitionView.from.label')}}</label></td>
+															<td><input type="text" ng-model="x.value.from" sd-datetime /></td>
+															<td><a href=""
+																ng-click="removeParameter('filters.' + x.dimension + '.from')"
+																ng-show="existsParameter('filters.' + x.dimension + '.from')"><img
+																	src="../css/images/parameter.png"
+																	title="Parameter (filters.{{x.dimension}})" /> <a
+																	href=""
+																	ng-click="addParameter('filters.' + x.dimension + '.from', 'Filter for ' + getDimension(x.dimension).name + ' From', getMetadata().timestampType.id)"
+																	ng-show="!existsParameter('filters.' + x.dimension + '.from')"><img
+																		src="../css/images/no-parameter.png"
+																		title="No Parameter (filters.{{x.dimension}})" /></td>
+														</tr>
+														<tr>
+															<td><label>{{getI18N('reporting.definitionView.duration.label')}}</label></td>
+															<td><input type="number"
+																ng-model="x.value.duration"
+																style="width: 50px;" /></td>
+															<td><select
+																ng-model="x.value.durationUnit">
+																	<option value="s">Second(s)</option>
+																	<option value="m">Minutes(s)</option>
+																	<option value="h">Hour(s)</option>
+																	<option value="d">Day(s)</option>
+																	<option value="w">Week(s)</option>
+																	<option value="M">Month(s)</option>
+																	<option value="Y">Year(s)</option>
+															</select></td>
+															<td><a href=""
+																ng-click="removeParameter('filters.' + x.dimension + '.duration')"
+																ng-show="existsParameter('filters.' + x.dimension + '.duration')"><img
+																	src="../css/images/parameter.png"
+																	title="Parameter (filters.{{x.dimension}})" /> <a
+																	href=""
+																	ng-click="addParameter('filters.' + x.dimension + '.duration', 'Filter for ' + getDimension(x.dimension).name + ' From', getMetadata().timestampType.id)"
+																	ng-show="!existsParameter('filters.' + x.dimension + '.duration')"><img
+																		src="../css/images/no-parameter.png"
+																		title="No Parameter (filters.{{x.dimension}})" /></td>
+														</tr>
+													</table>
+												<a style="font-size: 9px;"
+													ng-click="x.metadata.fromTo = true;" class="smallLink">{{getI18N('reporting.definitionView.switchToStartDateAndEndDate.label')}}
+													&raquo;</a>
+												</div>	
 											</div>
 											<div
 												ng-show="getDimension(x.dimension).type == getMetadata().enumerationType"

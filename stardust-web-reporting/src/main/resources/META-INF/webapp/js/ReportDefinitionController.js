@@ -254,7 +254,7 @@ define(
 
 								self.populateAutoCompleteKeywordList();
 
-								//self.updateView();
+								self.updateView();
 							});
 
 							//Participants Select
@@ -753,7 +753,15 @@ define(
 
 				ReportDefinitionController.prototype.refreshPreview = function() {
 					if(this.report.layout.subType == this.reportingService.metadata.layoutSubTypes.table.id){
-						this.refreshPreview1();
+						this.renderingController.getPreviewData().done(
+								function(data) {
+									// Format data before displaying the Results
+									// transform data	
+									this.refreshPreview1(data);
+								}).fail(function(err) {
+							console.log("Failed getting Preview Date: " + err);
+						});
+						
 					}else{
 						this.refreshPreview2();
 					}
@@ -770,7 +778,7 @@ define(
 				/**
 				 * 
 				 */
-				ReportDefinitionController.prototype.refreshPreview1 = function() {
+				ReportDefinitionController.prototype.refreshPreview1 = function(data) {
                        self= this;
 						//getting a list of space-separated property names 
                        //from the attribute.
@@ -1374,16 +1382,27 @@ define(
 					}else{
 						var dimenison = this
 								.getDimension(this.report.dataSet.filters[index].dimension);
+						
 						if (dimenison && dimenison.metadata
 								&& dimenison.metadata.isDescriptor) {
 							this.report.dataSet.filters[index].metadata = dimenison.metadata;
-						}else if(dimenison && (dimenison.type == this.reportingService.metadata.autocompleteType)){
+						}
+						
+						if(dimenison && (dimenison.type == this.reportingService.metadata.autocompleteType)){
 							this.report.dataSet.filters[index].value = [];
-						}else if(dimenison && (dimenison.type == this.reportingService.metadata.timestampType)){
+						}
+						
+						if(dimenison && (dimenison.type == this.reportingService.metadata.timestampType)){
 							this.report.dataSet.filters[index].value = {
 									from :"",
-									to : ""
+									to : "",
+									duration: "",
+									durationUnit: ""
 							};
+							if(!this.report.dataSet.filters[index].metadata){
+								this.report.dataSet.filters[index].metadata = {};
+							}
+							this.report.dataSet.filters[index].metadata.fromTo = true;
  						}
 					}
 
