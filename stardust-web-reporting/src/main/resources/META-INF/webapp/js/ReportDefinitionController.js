@@ -753,15 +753,19 @@ define(
 
 				ReportDefinitionController.prototype.refreshPreview = function() {
 					if(this.report.layout.subType == this.reportingService.metadata.layoutSubTypes.table.id){
-						this.renderingController.getPreviewData().done(
-								function(data) {
-									// Format data before displaying the Results
-									// transform data	
-									this.refreshPreview1(data);
-								}).fail(function(err) {
-							console.log("Failed getting Preview Date: " + err);
-						});
-						
+						//TODO usage of displayTotals is temporary to display dummy data.
+						if(this.report.layout.table.displayTotals){
+							this.renderingController.getPreviewData().done(
+									function(data) {
+										// Format data before displaying the Results
+										// transform data	
+										this.refreshPreview1(data);
+									}).fail(function(err) {
+								console.log("Failed getting Preview Date: " + err);
+							});	
+						}else{
+							this.refreshPreview1();
+						}
 					}else{
 						this.refreshPreview2();
 					}
