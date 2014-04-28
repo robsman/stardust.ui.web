@@ -1055,16 +1055,30 @@ define(
 
 					this.factSelect.empty();
 
+					var group = "<optgroup label=" + this.getI18N("reporting.definitionView.descriptors") + ">";
+					var areDiscriptorsAvailable = false;
+					
 					for ( var n in this.getPrimaryObject().facts) {
 						var fact = this.getPrimaryObject().facts[n];
 
 						if (this.isNumeric(fact) || this.isCount(fact) || this.isDuration(fact))
                   {
-						   this.factSelect.append("<option value='" + n + "'>"
-								+ fact.name + "</option>");
+						   if(fact.metadata && fact.metadata.isDescriptor) 
+						   {
+						      group += "<option value='" + n + "'>" + fact.name + "</option>";
+						      areDiscriptorsAvailable = true;
+		               } else {
+		                  this.factSelect.append("<option value='" + n + "'>"
+		                           + fact.name + "</option>");
+		               }
                   }
 					}
-					
+					group += "</optgroup>";
+					if (areDiscriptorsAvailable)
+               {
+					   this.factSelect.append(group);
+               }
+
 					this.populatelayoutSubTypes();
 					//this.populateChartTypes();
 					this.populateGroupBy();
