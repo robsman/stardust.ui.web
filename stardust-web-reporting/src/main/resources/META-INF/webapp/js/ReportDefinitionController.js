@@ -1070,9 +1070,13 @@ define(
 					this.populateGroupBy();
 					
 					this.populateCumulantsDisplay();
+					
+					this.populateCumulatedDimensions();
 
 					this.report.layout.chart.options.title = this
 							.getPrimaryObject().name;
+					
+					this.updateView();
 				};
 
 				/**
@@ -2349,6 +2353,14 @@ define(
                  }
                  return a;
               }
+              
+              
+              ReportDefinitionController.prototype.populateCumulatedDimensions = function() {
+                 this.cumulatedDimensions = [];
+                 this.cumulatedDimensions = this.getCumulatedDimensions();
+                 this.selectedColumns = [];
+              };
+
          
           
 			}
