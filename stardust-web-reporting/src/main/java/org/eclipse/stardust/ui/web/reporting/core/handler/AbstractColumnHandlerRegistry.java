@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.stardust.engine.api.query.Query;
+import org.eclipse.stardust.ui.web.reporting.core.Constants;
 import org.eclipse.stardust.ui.web.reporting.core.RequestColumn;
 
 public abstract class AbstractColumnHandlerRegistry<U, V extends Query>
@@ -28,6 +29,7 @@ public abstract class AbstractColumnHandlerRegistry<U, V extends Query>
    {
       this.fixColumnHandler = new HashMap<String, IColumnHandler<?,U,V>>();
       this.dynamicColumnHandler = new ArrayList<IColumnHandler<?,U,V>>();
+      register(Constants.DimensionField.COUNT.getId(), new CountColumnHandler<U, V>());
    }
 
    public void register(String key, IColumnHandler< ? , U, V> handler)
