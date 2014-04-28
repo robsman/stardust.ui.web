@@ -20,6 +20,7 @@ public class PiColumnHandlerRegistry extends AbstractColumnHandlerRegistry<Proce
    public PiColumnHandlerRegistry()
    {
       register(new PiDescriptorColumnHandler());
+      register(PiDimensionField.OID.getId(), new PiOidColumnHandler());
       register(PiDimensionField.DURATION.getId(), new PiDurationColumnHandler());
       register(PiDimensionField.PROCESS_NAME.getId(), new PiNameColumnHandler());
       register(PiDimensionField.PRIORITY.getId(), new PiPriorityColumnHandler());
