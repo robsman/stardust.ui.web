@@ -163,6 +163,7 @@ public class Constants
 
    public enum PiDimensionField
    {
+      OID("processOID"),
       PRIORITY("priority"),
       PROCESS_NAME("processName"),
       START_TIMESTAMP("processInstanceStartTimestamp"),
@@ -203,6 +204,8 @@ public class Constants
 
    public enum AiDimensionField
    {
+      OID("activityOID"),
+      PROCESS_OID(PiDimensionField.OID.getId()),
       START_TIMESTAMP("startTimestamp"),
       PROCESS_INSTANCE_START_TIMESTAMP(PiDimensionField.START_TIMESTAMP.getId()),
       PROCESS_INSTANCE_ROOT_START_TIMESTAMP(PiDimensionField.ROOT_START_TIMESTAMP.getId()),

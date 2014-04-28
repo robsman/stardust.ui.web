@@ -115,4 +115,14 @@ public class ReportFilter implements IValidateAble
 
       return listValues;
    }
+
+   public boolean isDescriptor()
+   {
+      if(metadata != null)
+      {
+         return metadata.isDescriptor();
+      }
+
+      return false;
+   }
 }

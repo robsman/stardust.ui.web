@@ -1,6 +1,8 @@
 package org.eclipse.stardust.ui.web.reporting.core.util;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import com.ibm.icu.util.Calendar;
 
@@ -28,6 +30,25 @@ public class ReportingUtil
          ProcessInstance rootPI = queryService.findFirstProcessInstance(rootPiQuery);
          return rootPI;
       }
+   }
+
+   public static List<Long> getCollectionValues(String rawFilterValue)
+   {
+      List<Long> values = new ArrayList<Long>();
+      String[] tokens = rawFilterValue.split(",");
+      for(String token: tokens)
+      {
+         values.add(getLongValue(token));
+      }
+
+      return values;
+   }
+
+   public static Long getLongValue(String rawFilterValue)
+   {
+      String longToParse = rawFilterValue.replace(" ", "");
+      longToParse = rawFilterValue.trim();
+      return Long.parseLong(longToParse);
    }
 
    public static long calculateDuration(Date startDate, Date endDate, DurationUnit unit)

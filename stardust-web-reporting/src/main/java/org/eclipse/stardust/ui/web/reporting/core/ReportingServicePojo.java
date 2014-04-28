@@ -22,7 +22,6 @@ import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.ui.web.reporting.common.JsonMarshaller;
 import org.eclipse.stardust.ui.web.reporting.common.JsonUtil;
-import org.eclipse.stardust.ui.web.reporting.common.RequestColumn;
 import org.eclipse.stardust.ui.web.reporting.common.RestUtil;
 import org.eclipse.stardust.ui.web.reporting.common.mapping.reponse.RecordSetResponseDataBuilder;
 import org.eclipse.stardust.ui.web.reporting.common.mapping.reponse.ReponseDataBuilder;
@@ -32,7 +31,11 @@ import org.eclipse.stardust.ui.web.reporting.common.validation.ValidationHelper;
 import org.eclipse.stardust.ui.web.reporting.core.Constants.DataSetType;
 import org.eclipse.stardust.ui.web.reporting.core.Constants.DurationUnit;
 import org.eclipse.stardust.ui.web.reporting.core.Constants.QueryType;
-import org.eclipse.stardust.ui.web.reporting.core.orm.*;
+import org.eclipse.stardust.ui.web.reporting.core.handler.AbstractColumnHandlerRegistry;
+import org.eclipse.stardust.ui.web.reporting.core.handler.IMappingHandler;
+import org.eclipse.stardust.ui.web.reporting.core.handler.HandlerContext;
+import org.eclipse.stardust.ui.web.reporting.core.handler.activity.AiColumnHandlerRegistry;
+import org.eclipse.stardust.ui.web.reporting.core.handler.process.PiColumnHandlerRegistry;
 
 public class ReportingServicePojo
 {
@@ -59,66 +62,6 @@ public class ReportingServicePojo
       }
 
       return null;
-   }
-
-   private <T> JsonObject generateResponse(ReportDataSet dataSet, AbstractMapperRegistry<T> registy, AbstractQueryResult<T> results)
-   {
-      DataSetType dataSetType = DataSetType.parse(dataSet.getType());
-      List<RequestColumn> requestedColumns = new ArrayList<RequestColumn>();
-
-      final ReponseDataBuilder responseBuilder;
-      final List<DataField> metaFields;
-
-      switch (dataSetType)
-      {
-         case SERIESGROUP:
-            DurationUnit factDurationUnit = getDurationUnit(dataSet.getFactDurationUnit());
-            RequestColumn factColumn = new RequestColumn(dataSet.getFact(), factDurationUnit);
-
-            DurationUnit dimensionDurationUnit = getDurationUnit(dataSet.getFirstDimensionDurationUnit());
-            RequestColumn dimensionColumn = new RequestColumn(dataSet.getFirstDimension(), dimensionDurationUnit);
-
-            requestedColumns.add(factColumn);
-            requestedColumns.add(dimensionColumn);
-
-            metaFields = registy.getMetaFields(requestedColumns);
-            responseBuilder = new SeriesResponseDataBuilder(metaFields);
-            break;
-         case RECORDSET:
-            for(String s: dataSet.getColumns())
-            {
-               requestedColumns.add(new RequestColumn(s, null));
-            }
-
-            requestedColumns.add(new RequestColumn(Constants.PiDimensionField.PRIORITY.getId(), null));
-            requestedColumns.add(new RequestColumn(Constants.PiDimensionField.PROCESS_NAME.getId(), null));
-
-            metaFields = registy.getMetaFields(requestedColumns);
-            responseBuilder = new RecordSetResponseDataBuilder(metaFields);
-            break;
-         default:
-            throw new RuntimeException("Unsupported DataSetType: " + dataSetType);
-      }
-
-      ProviderContext ctx = new ProviderContext(queryService, results.size());
-      for(T t: results)
-      {
-         responseBuilder.next();
-         for(RequestColumn requestedColumn: requestedColumns)
-         {
-            IMappingProvider<? , T> mapper
-               = registy.getRegisteredMapper(requestedColumn.getId());
-            DurationUnit durationUnit = requestedColumn.getDurationUnit();
-            //set context data
-            ctx.putContextData(ProviderContext.DURATION_UNIT_ID, durationUnit);
-
-            DataField metaField = mapper.provideDataField(ctx);
-            Object value = mapper.provideObjectValue(ctx, t);
-            responseBuilder.addValue(metaField, value);
-         }
-      }
-
-      return responseBuilder.getResult();
    }
 
    /**
@@ -152,14 +95,13 @@ public class ReportingServicePojo
                   = queryBuilder.buildActivityInstanceQuery(dataSet);
                ActivityInstances allActivityInstances
                   = queryService.getAllActivityInstances(aiQuery);
-               return generateResponse(dataSet, new AiMapperRegistry(), allActivityInstances);
+               return generateResponse(dataSet, new AiColumnHandlerRegistry(), allActivityInstances);
             case PROCESS_INSTANCE:
                ProcessInstanceQuery piQuery
                   = queryBuilder.buildProcessInstanceQuery(dataSet);
                ProcessInstances allProcessInstances
                   = queryService.getAllProcessInstances(piQuery);
-               return generateResponse(dataSet, new PiMapperRegistry(), allProcessInstances);
-
+               return generateResponse(dataSet, new PiColumnHandlerRegistry(), allProcessInstances);
             default:
                throw new RuntimeException("Unsupported QueryType: "+queryType);
          }
@@ -671,6 +613,61 @@ public class ReportingServicePojo
       finally
       {
       }
+   }
+
+   private <T> JsonObject generateResponse(ReportDataSet dataSet,
+         AbstractColumnHandlerRegistry<T, ? extends Query> handlerRegistry,
+         AbstractQueryResult<T> results)
+   {
+      DataSetType dataSetType = DataSetType.parse(dataSet.getType());
+      List<RequestColumn> requestedColumns = new ArrayList<RequestColumn>();
+
+      final ReponseDataBuilder responseBuilder;
+      switch (dataSetType)
+      {
+         case SERIESGROUP:
+            DurationUnit factDurationUnit = getDurationUnit(dataSet.getFactDurationUnit());
+            RequestColumn factColumn = new RequestColumn(dataSet.getFact(),
+                  factDurationUnit);
+
+            DurationUnit dimensionDurationUnit = getDurationUnit(dataSet
+                  .getFirstDimensionDurationUnit());
+            RequestColumn dimensionColumn = new RequestColumn(
+                  dataSet.getFirstDimension(), dimensionDurationUnit);
+
+            requestedColumns.add(factColumn);
+            requestedColumns.add(dimensionColumn);
+            responseBuilder = new SeriesResponseDataBuilder(requestedColumns);
+            break;
+         case RECORDSET:
+            for (String s : dataSet.getColumns())
+            {
+               requestedColumns.add(new RequestColumn(s, null));
+            }
+            responseBuilder = new RecordSetResponseDataBuilder(requestedColumns);
+            break;
+         default:
+            throw new RuntimeException("Unsupported DataSetType: " + dataSetType);
+      }
+
+      HandlerContext ctx = new HandlerContext(queryService, results.size());
+      for (T t : results)
+      {
+         responseBuilder.next();
+         for (RequestColumn requestedColumn : requestedColumns)
+         {
+            IMappingHandler< ? , T> mappingHandler = handlerRegistry
+                  .getMappingHandler(requestedColumn);
+            DurationUnit durationUnit = requestedColumn.getDurationUnit();
+
+            //set context data
+            ctx.putContextData(HandlerContext.DURATION_UNIT_ID, durationUnit);
+            Object value = mappingHandler.provideObjectValue(ctx, t);
+            responseBuilder.addValue(requestedColumn, value);
+         }
+      }
+
+      return responseBuilder.getResult();
    }
 
    /**

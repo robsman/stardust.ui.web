@@ -11,7 +11,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
 import org.eclipse.stardust.ui.web.reporting.common.JsonUtil;
-import org.eclipse.stardust.ui.web.reporting.core.orm.DataField;
+import org.eclipse.stardust.ui.web.reporting.core.RequestColumn;
 
 public class RecordSetResponseDataBuilder extends ReponseDataBuilder
 {
@@ -22,17 +22,13 @@ public class RecordSetResponseDataBuilder extends ReponseDataBuilder
 
    private JsonArray currentRow;
 
-   public RecordSetResponseDataBuilder(List<DataField> metaFields)
+   public RecordSetResponseDataBuilder(List<RequestColumn> metaFields)
    {
-      super(metaFields);
-
       response = new JsonObject();
       JsonArray columns = new JsonArray();
-      for (DataField df : metaFields)
+      for (RequestColumn rc : metaFields)
       {
-         String name = df.getName();
-         JsonPrimitive namePrimitive = JsonUtil.convertJavaToPrimitive(name);
-         columns.add(namePrimitive);
+         columns.add(new JsonPrimitive(rc.getId()));
       }
       response.add("columns", columns);
 
@@ -41,7 +37,7 @@ public class RecordSetResponseDataBuilder extends ReponseDataBuilder
    }
 
    @Override
-   public void addValue(DataField field, Object value)
+   public void addValue(RequestColumn field, Object value)
    {
       if (currentRow == null)
       {

@@ -1,14 +1,14 @@
 package org.eclipse.stardust.ui.web.reporting.core.util;
 
-import org.eclipse.stardust.ui.web.reporting.core.orm.DataField;
-import org.eclipse.stardust.ui.web.reporting.core.orm.DataField.DataFieldType;
+import org.eclipse.stardust.ui.web.reporting.core.DataField;
+import org.eclipse.stardust.ui.web.reporting.core.DataField.DataFieldType;
 
 public class SqlUtil
 {
    public static String getColumnDefinitionSql(DataField df, boolean withSqlType)
    {
       StringBuilder sqlBuilder = new StringBuilder();
-      sqlBuilder.append(df.getName());
+      sqlBuilder.append(df.getId());
       if(withSqlType)
       {
          sqlBuilder.append(" ");

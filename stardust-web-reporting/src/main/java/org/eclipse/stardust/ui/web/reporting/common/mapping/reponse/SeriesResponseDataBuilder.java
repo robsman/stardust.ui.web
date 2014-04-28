@@ -12,20 +12,19 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
 import org.eclipse.stardust.ui.web.reporting.common.JsonUtil;
-import org.eclipse.stardust.ui.web.reporting.core.orm.DataField;
+import org.eclipse.stardust.ui.web.reporting.core.RequestColumn;
 
 public class SeriesResponseDataBuilder extends ReponseDataBuilder
 {
-   private HashMap<DataField, JsonArray> seriesMapping = new HashMap<DataField, JsonArray>();
-   private List<DataField> metaFields;
+   private HashMap<RequestColumn, JsonArray> seriesMapping = new HashMap<RequestColumn, JsonArray>();
+   private List<RequestColumn> requestColumns;
 
-   public SeriesResponseDataBuilder(List<DataField> metaFields)
+   public SeriesResponseDataBuilder(List<RequestColumn> requestColumns)
    {
-      super(metaFields);
-      this.metaFields = metaFields;
-      for(DataField df: metaFields)
+      this.requestColumns = requestColumns;
+      for(RequestColumn rc: requestColumns)
       {
-         seriesMapping.put(df, new JsonArray());
+         seriesMapping.put(rc, new JsonArray());
       }
    }
 
@@ -36,7 +35,7 @@ public class SeriesResponseDataBuilder extends ReponseDataBuilder
    }
 
    @Override
-   public void addValue(DataField field, Object value)
+   public void addValue(RequestColumn field, Object value)
    {
       JsonArray seriesValues = seriesMapping.get(field);
       seriesValues.add(JsonUtil.convertJavaToPrimitive(value));
@@ -49,10 +48,10 @@ public class SeriesResponseDataBuilder extends ReponseDataBuilder
       JsonArray seriesSummary = new JsonArray();
       result.add("seriesIds", seriesSummary);
       //for keeping the order - iterate the list instead of map
-      for(DataField df: metaFields)
+      for(RequestColumn rc: requestColumns)
       {
-         seriesSummary.add(new JsonPrimitive(df.getName()));
-         result.add(df.getName(), seriesMapping.get(df));
+         seriesSummary.add(new JsonPrimitive(rc.getId()));
+         result.add(rc.getId(), seriesMapping.get(rc));
       }
 
       return result;

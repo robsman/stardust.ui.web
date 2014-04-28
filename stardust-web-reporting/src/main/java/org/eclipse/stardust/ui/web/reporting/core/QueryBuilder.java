@@ -1,6 +1,5 @@
 package org.eclipse.stardust.ui.web.reporting.core;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
@@ -9,104 +8,48 @@ import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
 import org.eclipse.stardust.engine.api.query.Query;
 import org.eclipse.stardust.ui.web.reporting.common.mapping.request.ReportDataSet;
 import org.eclipse.stardust.ui.web.reporting.common.mapping.request.ReportFilter;
-import org.eclipse.stardust.ui.web.reporting.core.filter.DescriptorFilterApplier;
-import org.eclipse.stardust.ui.web.reporting.core.filter.FilterApplier;
-import org.eclipse.stardust.ui.web.reporting.core.filter.activity.ActivityNameFilterApplier;
-import org.eclipse.stardust.ui.web.reporting.core.filter.activity.ActivityProcessStartTimestampFilterApplier;
-import org.eclipse.stardust.ui.web.reporting.core.filter.activity.ActivityRootProcessStartTimestampFilterApplier;
-import org.eclipse.stardust.ui.web.reporting.core.filter.activity.CriticalityFilterApplier;
-import org.eclipse.stardust.ui.web.reporting.core.filter.process.*;
+import org.eclipse.stardust.ui.web.reporting.core.handler.AbstractColumnHandlerRegistry;
+import org.eclipse.stardust.ui.web.reporting.core.handler.IFilterHandler;
+import org.eclipse.stardust.ui.web.reporting.core.handler.activity.AiColumnHandlerRegistry;
+import org.eclipse.stardust.ui.web.reporting.core.handler.process.PiColumnHandlerRegistry;
 
 public class QueryBuilder
 {
-   private List<FilterApplier<ActivityInstanceQuery>> aiFilterAppliers;
-   private List<FilterApplier<ProcessInstanceQuery>> piFilterAppliers;
-   private List<FilterApplier<Query>> genericFilterAppliers;
+   private AiColumnHandlerRegistry aiHandlerRegistry;
+   private PiColumnHandlerRegistry piHandlerRegistry;
+
 
    public QueryBuilder()
    {
-      aiFilterAppliers = new ArrayList<FilterApplier<ActivityInstanceQuery>>();
-      aiFilterAppliers.add(new ActivityNameFilterApplier());
-      aiFilterAppliers.add(new CriticalityFilterApplier());
-      aiFilterAppliers.add(new ActivityProcessStartTimestampFilterApplier());
-      aiFilterAppliers.add(new ActivityRootProcessStartTimestampFilterApplier());
-
-      piFilterAppliers = new ArrayList<FilterApplier<ProcessInstanceQuery>>();
-      piFilterAppliers.add(new ProcessNameFilterApplier());
-      piFilterAppliers.add(new PriorityFilterApplier());
-      piFilterAppliers.add(new ProcessStateFilterApplier());
-      piFilterAppliers.add(new ProcessStartTimestampFilterApplier());
-      piFilterAppliers.add(new ProcessRootStartTimestampFilterApplier());
-      piFilterAppliers.add(new ProcessTerminationTimestampFilterApplier());
-      piFilterAppliers.add(new ProcessStartingUserFilterApplier());
-
-
-      genericFilterAppliers = new ArrayList<FilterApplier<Query>>();
-      genericFilterAppliers.add(new DescriptorFilterApplier());
+      aiHandlerRegistry = new AiColumnHandlerRegistry();
+      piHandlerRegistry = new PiColumnHandlerRegistry();
    }
 
    public ActivityInstanceQuery buildActivityInstanceQuery(ReportDataSet dataSet)
    {
       ActivityInstanceQuery aiQuery = ActivityInstanceQuery.findAll();
-      prepareQuery(aiQuery, dataSet);
+      applyFilters(aiQuery, aiHandlerRegistry, dataSet.getFilters());
       return aiQuery;
    }
 
    public ProcessInstanceQuery buildProcessInstanceQuery(ReportDataSet dataSet)
    {
       ProcessInstanceQuery piQuery = ProcessInstanceQuery.findAll();
-      prepareQuery(piQuery, dataSet);
+      applyFilters(piQuery, piHandlerRegistry, dataSet.getFilters());
       return piQuery;
    }
 
-   private void prepareQuery(Query query, ReportDataSet dataSet)
+
+   private <T extends Query> void applyFilters(T query, AbstractColumnHandlerRegistry<?, T> handlerRegistry, List<ReportFilter> filters)
    {
       query.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
-      List<ReportFilter> filters = dataSet.getFilters();
-
-      //apply filters - if any present
-      if(filters != null && !filters.isEmpty())
+      for(ReportFilter filter: filters)
       {
-         boolean filterFound = false;
-         for(ReportFilter filter: filters)
-         {
-            if(query instanceof ActivityInstanceQuery)
-            {
-               ActivityInstanceQuery aiQuery = (ActivityInstanceQuery) query;
-               filterFound = applyFilter(aiQuery, aiFilterAppliers, filter);
-            }
-            else if(query instanceof ProcessInstanceQuery)
-            {
-               ProcessInstanceQuery piQuery = (ProcessInstanceQuery) query;
-               filterFound = applyFilter(piQuery, piFilterAppliers, filter);
-            }
+         RequestColumn columnKey = new RequestColumn(filter.getDimension());
+         columnKey.setDescriptor(filter.isDescriptor());
 
-            if(filterFound == false)
-            {
-               filterFound = applyFilter(query, genericFilterAppliers, filter);
-            }
-
-            if(filterFound == false)
-            {
-               throw new RuntimeException("Unsupported Filter type: "+filter.getDimension());
-            }
-         }
+         IFilterHandler<T> filterHandler = handlerRegistry.getFilterHandler(columnKey);
+         filterHandler.applyFilter(query, filter);
       }
-   }
-
-   private <T extends Query> boolean applyFilter(T query,
-         List<FilterApplier<T>> appliers, ReportFilter filter)
-   {
-
-      for (FilterApplier<T> applier : appliers)
-      {
-         if (applier.canApply(query, filter))
-         {
-            applier.apply(query, filter);
-            return true;
-         }
-      }
-
-      return false;
    }
 }
