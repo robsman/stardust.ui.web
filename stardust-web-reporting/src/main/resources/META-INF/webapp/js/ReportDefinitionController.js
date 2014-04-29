@@ -1063,6 +1063,7 @@ define(
 					if (!initialize) {
 						this.report.dataSet.filters = [];
 						this.filterSelected = [];
+						this.populateCumulatedDimensions();
 					}
 
 					this.factSelect.empty();
@@ -1097,8 +1098,6 @@ define(
 					
 					this.populateCumulantsDisplay();
 					
-					this.populateCumulatedDimensions();
-
 					this.report.layout.chart.options.title = this
 							.getPrimaryObject().name;
 					
