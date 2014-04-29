@@ -205,13 +205,14 @@ public class DefaultModelManagementStrategy extends
             {
                // create initial version
                getDocumentManagementService()
-                     .versionDocument(modelDocument.getId(), null);
+                     .versionDocument(modelDocument.getId(), null, null);
                mapModelFileName(model, modelDocument.getName());
             }
          }
          else
          {
-            getDocumentManagementService().updateDocument(modelDocument, baos.toByteArray(), null, false, null, false);
+            getDocumentManagementService().updateDocument(modelDocument, baos.toByteArray(), null, false, null, null,
+                  false);
          }
       }
    }

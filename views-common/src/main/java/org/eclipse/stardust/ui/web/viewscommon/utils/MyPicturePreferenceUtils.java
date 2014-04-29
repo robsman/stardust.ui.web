@@ -279,7 +279,7 @@ public class MyPicturePreferenceUtils
       {
          if (doc != null)
          {
-            dms.updateDocument(doc, currentImage, "", false, "", false);
+            dms.updateDocument(doc, currentImage, "", false, "", "", false);
          }
          else
          {

@@ -77,7 +77,7 @@ public class JsfWebappPreferencesManager extends AbstractCachedPreferencesManage
 
    protected AgeCache getUserPreferencesCache(User user)
    {
-      String userCacheKey = user.getPartitionId() + "." + user.getRealmId() + "."
+      String userCacheKey = user.getPartitionId() + "." + user.getRealm().getId() + "."
             + user.getOID();
       AgeCache userPrefsCache = (AgeCache) userPrefs.get(userCacheKey);
       if (null == userPrefsCache)

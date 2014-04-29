@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.stardust.engine.api.model.Model;
+import org.eclipse.stardust.engine.api.query.DeployedModelQuery;
 import org.eclipse.stardust.engine.api.runtime.DeployedModel;
 import org.eclipse.stardust.engine.api.runtime.DeployedModelDescription;
 import org.eclipse.stardust.ui.client.event.StatusEvent;
@@ -116,7 +117,7 @@ public class ModelsImpl extends AbstractWorkflowCollection<DeployedModelDescript
             	//FIXME clientContext pushMessage()
 //               client.getContext().pushMessage("Fetching models information...");
                @SuppressWarnings("unchecked")
-               List<DeployedModelDescription> deployedModels = client.getContext().getServiceFactory().getQueryService().getAllModelDescriptions();
+               List<DeployedModelDescription> deployedModels = client.getContext().getServiceFactory().getQueryService().getModels(DeployedModelQuery.findAll());
                descriptions = deployedModels.toArray(new DeployedModelDescription[deployedModels.size()]);
             }
             finally

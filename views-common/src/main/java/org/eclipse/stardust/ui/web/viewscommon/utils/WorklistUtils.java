@@ -105,9 +105,7 @@ public class WorklistUtils
       if(participantIdRestrictionMap.isEmpty() ||
             participantIdRestrictionMap.containsKey(participantId))
       {
-         PerformingParticipantFilter filter = isGroup ?
-             PerformingParticipantFilter.forUserGroup(participantId)
-             : PerformingParticipantFilter.forModelParticipant(participantId);
+         PerformingParticipantFilter filter = PerformingParticipantFilter.forParticipant(ModelCache.findModelCache().getParticipant(participantId, null));
 
          if (outline)
          {
@@ -188,14 +186,7 @@ public class WorklistUtils
             {
                Participant participant = iter.next();
                PerformingParticipantFilter filter = null;
-               if(participant instanceof ModelParticipant)
-               {
-                  filter = PerformingParticipantFilter.forModelParticipant(participant.getId());
-               }
-               else if(participant instanceof UserGroup)
-               {
-                  filter = PerformingParticipantFilter.forUserGroup(participant.getId());
-               }
+               filter = PerformingParticipantFilter.forParticipant(participant);
 
                if (outline)
                {

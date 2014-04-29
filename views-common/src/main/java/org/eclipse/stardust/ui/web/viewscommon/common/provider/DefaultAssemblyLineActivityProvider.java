@@ -73,7 +73,7 @@ public class DefaultAssemblyLineActivityProvider implements IAssemblyLineActivit
          if(!participant.isDepartmentScoped())
          {
             // For non-department scoped Participant use the participantId for filter
-            query.setParticipantContribution(PerformingParticipantFilter.forModelParticipant(participantId, false),
+            query.setParticipantContribution(PerformingParticipantFilter.forParticipant(participant, false),
                   outline ? new SubsetPolicy(0, true) : null);
          }
          else

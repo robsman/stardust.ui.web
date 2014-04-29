@@ -452,7 +452,7 @@ public class UserManagementBean extends PopupUIComponentBean
          try
          {
             UserDetailsTableEntry userDetailsTableEntry = new UserDetailsTableEntry(ud, I18nUtils.getUserLabel(ud),
-                  ud.getOID(), ud.getAccount(), ud.getRealmId(), ud.getValidFrom(), ud.getValidTo(), ud.getEMail(),
+                  ud.getOID(), ud.getAccount(), ud.getRealm().getId(), ud.getValidFrom(), ud.getValidTo(), ud.getEMail(),
                   false);
             userDetailsTableEntry.setParametricCallbackHandler(parametricCallbackHandler);
             return userDetailsTableEntry;

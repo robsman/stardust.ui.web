@@ -284,7 +284,7 @@ public class ActivityInstanceUtils
    {
       for (HistoricalState hs : ai.getHistoricalStates())
       {
-         Participant performer = hs.getPerfomer();
+         Participant performer = ParticipantUtils.getParticipant(hs.getParticipant());
          if (performer instanceof User && hs.getState() == ActivityInstanceState.Application)
          {
             return I18nUtils.getUserLabel((User) performer, defaultDisplayFormat);
