@@ -275,11 +275,11 @@ table.formTable td {
 							<table cellpadding="0" cellspacing="0" class="formTable">
 								<tr>
 									<td><input ng-model="report.dataSet.type"
-										ng-click="changeDataSetType()" value="seriesGroup"
+										ng-change="changeDataSetType()" value="seriesGroup"
 										type="radio"></td>
 									<td><label>{{getI18N('reporting.definitionView.seriesGroup.label')}}</label></td>
 									<td><input ng-model="report.dataSet.type"
-										ng-click="changeDataSetType()" value="recordSet" type="radio"></td>
+										ng-change="changeDataSetType()" value="recordSet" type="radio"></td>
 									<td><label>{{getI18N('reporting.definitionView.recordSet.label')}}</label></td>
 								</tr>
 							</table>
