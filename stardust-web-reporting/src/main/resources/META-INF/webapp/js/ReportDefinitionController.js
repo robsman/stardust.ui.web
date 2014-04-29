@@ -417,6 +417,8 @@ define(
 									}, true);
 								});
 
+								jQuery("#groupBySelect").val(self.report.dataSet.groupBy);
+								
 								self.updateView();
 
 								document.body.style.cursor = "default";
