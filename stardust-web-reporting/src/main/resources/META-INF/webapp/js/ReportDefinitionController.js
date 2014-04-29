@@ -664,6 +664,10 @@ define(
 					for ( var n in dimensionsObj) {
 						enumerators.push(dimensionsObj[n]);
 					}
+
+					enumerators.sort(function(object1, object2){
+						return object1.name.localeCompare(object2.name);
+					});
 					
 					return enumerators;
 				};
@@ -754,6 +758,7 @@ define(
 				};
 
 				ReportDefinitionController.prototype.refreshPreview = function() {
+					var self = this;
 					if(this.report.layout.subType == this.reportingService.metadata.layoutSubTypes.table.id){
 						//TODO usage of displayTotals is temporary to display dummy data.
 						if(this.report.layout.table.displayTotals){
@@ -761,7 +766,7 @@ define(
 									function(data) {
 										// Format data before displaying the Results
 										// transform data	
-										this.refreshPreview1(data);
+										self.refreshPreview1(data);
 									}).fail(function(err) {
 								console.log("Failed getting Preview Date: " + err);
 							});	
@@ -1070,29 +1075,35 @@ define(
 
 					this.factSelect.empty();
 
-					var group = "<optgroup label=" + this.getI18N("reporting.definitionView.descriptors") + ">";
+					var stdQuantities = "<optgroup label=\"" + this.getI18N("reporting.definitionView.stdQuantities") + "\">";
+					
+					var group = "<optgroup label=\"" + this.getI18N("reporting.definitionView.numericDescriptors") + "\">";
 					var areDiscriptorsAvailable = false;
 					
 					for ( var n in this.getPrimaryObject().facts) {
 						var fact = this.getPrimaryObject().facts[n];
 
 						if (this.isNumeric(fact) || this.isCount(fact) || this.isDuration(fact))
-                  {
+						{
 						   if(fact.metadata && fact.metadata.isDescriptor) 
 						   {
 						      group += "<option value='" + n + "'>" + fact.name + "</option>";
 						      areDiscriptorsAvailable = true;
-		               } else {
-		                  this.factSelect.append("<option value='" + n + "'>"
-		                           + fact.name + "</option>");
-		               }
-                  }
+						   } else {
+							   stdQuantities += "<option value='" + n + "'>"  + fact.name + "</option>";
+						   }
+						}
 					}
+					
+					stdQuantities += "</optgroup>";
+					this.factSelect.append(stdQuantities);
+					
 					group += "</optgroup>";
+					
 					if (areDiscriptorsAvailable)
-               {
+					{
 					   this.factSelect.append(group);
-               }
+					}
 
 					this.populatelayoutSubTypes();
 					//this.populateChartTypes();

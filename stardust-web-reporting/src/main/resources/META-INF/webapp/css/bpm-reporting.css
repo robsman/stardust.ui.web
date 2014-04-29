@@ -290,7 +290,7 @@ div.right {
 }
 
 .embeddedTable td input {
-	border: none;
+	border-top: 1px solid white;
 }
 
 .embeddedTable td select {
@@ -327,7 +327,7 @@ div.right {
 
 .editorDivDefault {
    position: relative !important;
-   height: 80px;
+   height: 250px;
    width:500px;
    border: 1px solid #BBBBBB !important;
 }

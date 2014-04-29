@@ -208,7 +208,7 @@ table.formTable td {
 									<tr>
 										<td valign="top">
 											<table cellpadding="0" cellspacing="0" class="embeddedTable"
-												style="margin-top: 5px;">
+												style="margin-top: 5px; width: 100%;">
 												<thead>
 													<tr>
 														<td></td>
@@ -245,7 +245,7 @@ table.formTable td {
                               </tr>
                               <tr>
 										<td valign="top"><table
-												cellpadding="0" cellspacing="0" class="formTable">
+												cellpadding="0" cellspacing="0">
 												<tr>
 													<td><label>{{getI18N('reporting.definitionView.formula.label')}}</label></td>
 												</tr>
@@ -361,7 +361,6 @@ table.formTable td {
 													<td><select ng-model="report.dataSet.firstDimension"
 														ng-options="dimension.id as dimension.name group by primaryObjectEnumGroup(dimension.id) for dimension in getCumulatedDimensions()"
 														ng-change="changeFirstDimension()">
-															<option value=""></option>
 													</select></td>
 												</tr>
 											</table>

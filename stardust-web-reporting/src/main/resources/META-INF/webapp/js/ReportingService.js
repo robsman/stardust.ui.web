@@ -1213,6 +1213,10 @@ define(
 						});
 					}
 
+					dimensions.sort(function(object1, object2){
+						return object1.name.localeCompare(object2.name);
+					});
+					
 					return dimensions;
 				};
 
