@@ -61,9 +61,9 @@ define(
 							id : "average",
 							name : this.getI18N("reporting.definitionView.layout.table.cumulant.average"),
 						},
-						standard : {
-							id : "standard",
-							name : this.getI18N("reporting.definitionView.layout.table.cumulant.standard"),
+						stdDeviation : {
+							id : "stdDeviation",
+							name : this.getI18N("reporting.definitionView.layout.table.cumulant.stdDeviation"),
 						},
 						minimum : {
 							id : "minimum",

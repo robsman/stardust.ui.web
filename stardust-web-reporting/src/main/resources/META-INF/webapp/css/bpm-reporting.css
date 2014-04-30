@@ -353,7 +353,8 @@ table.dataTable thead {
 }
 
 table.dataTable thead th {
-	border-bottom: 1px solid #111;
+	border-bottom: 1px solid grey;
+	border-right: 1px solid grey;
 	font-weight: bold;
 	font-size: 12px;
 	color: #111;

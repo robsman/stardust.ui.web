@@ -419,6 +419,8 @@ define(
 
 								jQuery("#groupBySelect").val(self.report.dataSet.groupBy);
 								
+								self.factSelect.val(self.report.dataSet.fact);
+								
 								self.updateView();
 
 								document.body.style.cursor = "default";
@@ -760,19 +762,15 @@ define(
 				ReportDefinitionController.prototype.refreshPreview = function() {
 					var self = this;
 					if(this.report.layout.subType == this.reportingService.metadata.layoutSubTypes.table.id){
-						//TODO usage of displayTotals is temporary to display dummy data.
-						if(this.report.layout.table.displayTotals){
-							this.renderingController.getPreviewData().done(
-									function(data) {
-										// Format data before displaying the Results
-										// transform data	
-										self.refreshPreview1(data);
-									}).fail(function(err) {
-								console.log("Failed getting Preview Date: " + err);
-							});	
-						}else{
-							this.refreshPreview1();
-						}
+						this.renderingController.getPreviewData().done(
+								function(data) {
+									self.refreshPreview1(data);
+								}).fail(function(err) {
+									if(self.report.layout.table.preview){
+										self.refreshPreview1();
+									}
+							console.log("Failed getting Preview Date: showing dummy data" + err);
+						});
 					}else{
 						this.refreshPreview2();
 					}
@@ -790,28 +788,335 @@ define(
 				 * 
 				 */
 				ReportDefinitionController.prototype.refreshPreview1 = function(data) {
+					//delete later 
+					//TODO: remove this temporary data post-development
+					var countCumulantsCol = {
+						  "activity_instances": [
+		                         [
+		                           "2014_01",
+		                           1
+		                         ],
+		                         [
+		                           "2014_04",
+		                           3
+		                         ]
+		                       ]
+							};
+					
+					var countgroupbyCumulantsCol = {
+							  "A1": [
+							         [
+							           "2014_01",
+							           0
+							         ],
+							         [
+							           "2014_04",
+							           2
+							         ]
+							       ],
+							     "A2": [
+							         [
+							           "2014_01",
+							           1
+							         ],
+							         [
+							           "2014_04",
+							           1
+							         ]
+							       ]
+							     }
+						
+					var nonCountCumulantsCol = {
+							  "activity_instances": [
+				                         [
+				                           "2014_01",
+				                           6,
+				                           6,
+				                           6,
+				                           0,
+				                           1
+				                         ],
+				                         [
+				                           "2014_04",
+				                           15,
+				                           7,
+				                           10,
+				                           3.559,
+				                           3
+				                         ]
+				                       ]
+							    }
+					
+					var nonCountGroupbyCumulantsCol = {
+							  "A1": [
+							         [
+							           "2014_01",
+							           0,
+							           0,
+							           0,
+							           0,
+							           0
+							         ],
+							         [
+							           "2014_04",
+							           15,
+							           7,
+							           11,
+							           4,
+							           2
+							         ]
+							       ],
+							       "A2": [
+							         [
+							           "2014_01",
+							           6,
+							           6,
+							           6,
+							           0,
+							           1
+							         ],
+							         [
+							           "2014_04",
+							           8,
+							           8,
+							           8,
+							           0,
+							           1
+							         ]
+							       ]
+							     }
+					
+						if(this.report.layout.table.preview){
+							//data = countCumulantsCol;
+							data = countgroupbyCumulantsCol;
+						
+		                    if(this.report.dataSet.fact == this.reportingService.metadata.objects.processInstance.facts.count.id){
+		                    	data = countCumulantsCol;
+		                 	   if(this.report.dataSet.groupBy == 'activityName'){
+		                 		  data = countgroupbyCumulantsCol;   
+		                 	   }
+		                    }else{
+		                    	data = nonCountCumulantsCol;
+		                 	   if(this.report.dataSet.groupBy == 'activityName'){
+		                 		  data = nonCountGroupbyCumulantsCol;   
+		                 	   }
+		                    }
+						}
+
                        self= this;
-						//getting a list of space-separated property names 
-                       //from the attribute.
-                       // inputs
+                       var configurations = self.getCumulantsTableConfig();
+                       var disableSorting = configurations.disableSorting;
+                       var multi_headers = configurations.multi_headers;
+                       var cumulantsAsRow = false;
                        
-   					//TODO: remove later below
-					   //input data
-				      var countgroupbyCumulantsCol = [
+                       if(self.report.layout.table.cumulantsDisplay == self.reportingService.metadata.cumulantsDisplay.rows.id){
+                    	   var cumulantsAsRow = true;   
+                       }
+                       
+                       var fact_count = (this.report.dataSet.fact == this.reportingService.metadata.objects.processInstance.facts.count.id);
+                       var span = this.report.layout.table.selectedCumulants.length;
+                       
+                       //transform data
+                       var inputArray = [];
+
+                       //if fact != count
+                       if (!fact_count) {
+                         //position of cumulants in response json
+                         var AVG_I = 1,
+                           MIN_I = 2,
+                           MAX_I = 3,
+                           STD_DEV_I = 4,
+                           COUNT_I = 5;
+
+                         var cumulatingIntHeader = [];
+                         inputArray.push(cumulatingIntHeader);
+
+                         if(!cumulantsAsRow){
+                      	   cumulatingIntHeader.push('', 1);   
+                         }
+                         
+                         var cumulatingIntHeaderComplete = false;
+
+                         var groupByArray = [];
+                         inputArray.push(groupByArray);
+                         groupByArray.push("");
+
+                         for (var prop in data) {
+                           var groupbyIndex = 0;
+
+                           for (var j = 0; j < data[prop].length; j++) {
+
+                             var inputArrayIndex = 2 + groupbyIndex++ * span;
+
+                             //prepare header1: cumulating interval header
+                             if (!cumulatingIntHeaderComplete) {
+                               cumulatingIntHeader.push(data[prop][j][0]);
+                               cumulatingIntHeader.push(span);
+
+                               //if fact != count
+                               if(this.report.layout.table.selectedCumulants.indexOf('average') != -1){
+                            	   inputArray.push(['average']); //I18n   
+                               }
+                               if(this.report.layout.table.selectedCumulants.indexOf('minimum') != -1){
+                            	   inputArray.push(['minimum']); //I18n   
+                               }
+                               if(this.report.layout.table.selectedCumulants.indexOf('maximum') != -1){
+                            	   inputArray.push(['maximum']); //I18n   
+                               }	   
+                               if(this.report.layout.table.selectedCumulants.indexOf('stdDeviation') != -1){
+                            	   inputArray.push(['stdDeviation']); //I18n   
+                               }
+                               if(this.report.layout.table.selectedCumulants.indexOf('count') != -1){
+                            	   inputArray.push(['count']); //I18n   
+                               }
+                             }
+
+                             //if fact != count  
+                             //populate cumulant data
+                             if(this.report.layout.table.selectedCumulants.indexOf('average') != -1){
+                            	 inputArray[inputArrayIndex++].push(data[prop][j][AVG_I]);	 
+                             }
+                             if(this.report.layout.table.selectedCumulants.indexOf('minimum') != -1){
+                            	 inputArray[inputArrayIndex++].push(data[prop][j][MIN_I]);	 
+                             }
+                             if(this.report.layout.table.selectedCumulants.indexOf('maximum') != -1){
+                            	 inputArray[inputArrayIndex++].push(data[prop][j][MAX_I]);	 
+                             }
+                             if(this.report.layout.table.selectedCumulants.indexOf('stdDeviation') != -1){
+                            	 inputArray[inputArrayIndex++].push(data[prop][j][STD_DEV_I]);	 
+                             }
+                             if(this.report.layout.table.selectedCumulants.indexOf('count') != -1){
+                            	 inputArray[inputArrayIndex++].push(data[prop][j][COUNT_I]);	 
+                             }
+                           }
+
+                           cumulatingIntHeaderComplete = true;
+
+                           //if groupby is selected
+                           //prepare groupby header
+                           groupByArray.push(prop);
+                         }
+
+                         //if display total is selected
+                         if(this.report.layout.table.displayTotals){
+	                         var total_cols = groupByArray.length - 1;
+	                         if (groupByArray.length > 2) {
+	                           inputArray[1].push("Total");
+	                           total_cols = groupByArray.length - 2;
+	                         }
+	
+	                         inputArray.push(["Total"]);
+	
+	                         for (var j = 0; j < total_cols; j++) {
+	                           inputArray[inputArray.length - 1].push(0); //set default value
+	                         }
+	                         
+							for (var i = 2; i < inputArray.length-1; i++) {
+								var sum = 0;
+								
+								for (var j = 1; j < inputArray[i].length; j++) {
+									sum += inputArray[i][j];
+									// if display total is selected
+									inputArray[inputArray.length - 1][j] += inputArray[i][j];
+								}
+	
+								if (groupByArray.length > 2) {
+									inputArray[i].push(sum);
+								}
+							}
+							
+							var sum = 0;
+							
+							for (var i = 2; i < inputArray.length-1; i++) {
+								sum += inputArray[i][inputArray[i].length-1];
+							}
+							inputArray[inputArray.length-1].push(sum);
+	                         
+	                         
+                       }  
+
+                       } else { // fact is count
+                         var groupByArray = [];
+                         inputArray.push(groupByArray);
+                         groupByArray.push("");
+
+                         var cumulatingIntHeaderComplete = false;
+
+                         var groupbyIndex = 0;
+
+                         for (var prop in data) {
+
+                           for (var j = 0; j < data[prop].length; j++) {
+
+                             if (!cumulatingIntHeaderComplete) {
+                               inputArray.push([data[prop][j][0]]);
+                             }
+
+                             inputArray[j + 1].push(data[prop][j][1]);
+                           }
+
+                           cumulatingIntHeaderComplete = true;
+
+                           groupByArray.push(prop);
+                           groupbyIndex++;
+                         }
+
+                         //if display total is selected
+                         if(this.report.layout.table.displayTotals){
+	                         var total_cols = groupByArray.length - 1;
+	                         if (groupbyIndex > 1) {
+	                           inputArray[0].push("Total");
+	                           total_cols = groupByArray.length - 2;
+	                         }
+	
+	                         inputArray.push(["Total"]);
+	
+	                         for (var j = 0; j < total_cols; j++) {
+	                           inputArray[inputArray.length - 1].push(0); //set default value
+	                         }
+	                         
+							for (var i = 1; i < inputArray.length-1; i++) {
+								var sum = 0;
+								
+								for (var j = 1; j < inputArray[i].length; j++) {
+									sum += inputArray[i][j];
+									// if display total is selected
+									inputArray[inputArray.length - 1][j] += inputArray[i][j];
+								}
+	
+								if (groupbyIndex > 1) {
+									inputArray[i].push(sum);
+								}
+							}
+							
+							var sum = 0;
+							
+							for (var i = 1; i < inputArray.length-1; i++) {
+								sum += inputArray[i][inputArray[i].length-1];
+							}
+							inputArray[inputArray.length-1].push(sum);
+                         }
+                       }
+	                   
+	                   
+                       
+   					// TODO: remove post-development - server data must converted to following format
+					   // input data
+				      var countgroupbyCumulantsCol1 = [
 				        ['', 'A1', 'A2', 'A3', 'Total'], //header -> this and all rows below it should match
 				        ['Jan', 22, 3, 4, 29],
 				        ['Feb', 6, 7, 8, 21],
 				        ['Total', 28, 10, 12, 50]
 				      ];
 
-				      var countCumulantsCol = [
+				      var countCumulantsCol1 = [
 				        ['', 'Activities'], //header -> this and all rows below it should match
 				        ['Jan', 22, ],
 				        ['Feb', 21],
 				        ['Total', 41]
 				      ];
 
-				      var nonCountCumulantsCol = [
+				      var nonCountCumulantsCol1 = [
 				        ['Jan', 5, 'Feb', 5], //header 1, it's a pair {title, span}
 				        ['', 'Activities'], //header 2-> this and all rows below it should match
 				        ['Average', 22, ],
@@ -826,8 +1131,8 @@ define(
 				        ['Count', 31]
 				      ];
 
-				      var nonCountGroupbyCumulantsCol = [
-  				        ['Jan', 5, 'Feb', 5], //header 1, it's a pair {title, span}
+				      var nonCountGroupbyCumulantsCol1 = [
+  				        ['', 1,'Jan', 5, 'Feb', 5], //header 1, it's a pair {title, span}
   				        ['', 'A1', 'A2'],//header 2-> this and all rows below it should match
   				        ['Average', 22, 12],
   				        ['Min', 21, 2],
@@ -841,16 +1146,7 @@ define(
   				        ['Count', 31, 56]
   				      ];
 				      
-                       var configurations = self.getCumulantsTableConfig();
-                       var disableSorting = configurations.disableSorting;
-                       var multi_headers = configurations.multi_headers;
-                       var cumulantsAsRow = false;
-                       
-                       if(self.report.layout.table.cumulantsDisplay == self.reportingService.metadata.cumulantsDisplay.rows.id){
-                    	   var cumulantsAsRow = true;   
-                       }
-                       
-                       //TODO: Replace following with live report data in the give format, also conside the total flag
+/*                       //TODO: Replace following with live report data in the give format, also conside the total flag
                        var tableArray = nonCountGroupbyCumulantsCol; //This data should come from Report-data result
                        if(this.report.dataSet.fact == this.reportingService.metadata.objects.processInstance.facts.count.id){
                     	   tableArray = countCumulantsCol;
@@ -863,6 +1159,8 @@ define(
                     		   tableArray = nonCountGroupbyCumulantsCol;   
                     	   }
                        }
+*/                       
+                       tableArray = inputArray;
                        
                        //Process
                        var TEMPLATE = "<table cellpadding=\"0\" cellspacing=\"0\" class=\"dataTable\"><thead><tr>_HEADERS_</tr></thead><tbody><tr sd-table-data=\"row in rows\">_COLUMNS_</tr></tbody></table>";
@@ -919,7 +1217,8 @@ define(
 
                        //transform the array
                        if (!cumulantsAsRow) {
-                         tableArray = transposeArray(tableArray);
+                    	   
+                    	   tableArray = transposeArray(tableArray);
                        }
 
                        var columns = tableArray[0];
