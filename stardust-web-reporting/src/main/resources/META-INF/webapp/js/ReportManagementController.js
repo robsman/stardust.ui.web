@@ -156,7 +156,13 @@ define(
 															action : function(
 																	obj) {
 															}
-														}
+														},
+														clone : {
+                                             label : "Clone", // I18N
+                                             action : function(
+                                                   obj) {
+                                             }
+                                          }
 													};
 												}
 											}

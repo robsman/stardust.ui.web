@@ -250,7 +250,7 @@ define(
 						dimensions : {
 							startTimestamp : {
 								id : "startTimestamp",
-								name : this.getI18N("reporting.definitionView.additionalFiltering.timestamp.start"),
+								name : this.getI18N("reporting.definitionView.additionalFiltering.activityStartTimestamp"),
 								type : this.metadata.timestampType
 							},
 							processInstanceStartTimestamp : {
@@ -368,7 +368,7 @@ define(
 					activityStates : {
 						alive : {
 							id : "Alive",
-							name : this.getI18N("reporting.definitionView.additionalFiltering.activityState.interrupted")
+							name : this.getI18N("reporting.definitionView.additionalFiltering.activityState.alive")
 						},
 						application : {
 							id : "Application",

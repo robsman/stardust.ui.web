@@ -465,15 +465,41 @@ table.formTable td {
 								<table cellpadding="0" cellspacing="0" class="formTable"
 									style="margin-top: 10px;">
 									<tr ng-repeat="x in report.dataSet.filters">
-										<td valign="top"><a href=""
-											ng-click="deleteFilter(x.index)"><img
-												src="../css/images/delete.png" /> </a></td>
-										<td valign="top">
-										<select ng-model="x.dimension"
-											ng-change="onFilterDimensionChange(x.index)"
-												ng-options="y.id as y.name group by primaryObjectEnumGroup(y.id) for y in getPrimaryObjectEnum()">
-										</select></td>
-										<td valign="top">
+                              <td valign="top">
+                                 <div>
+                                    <table cellpadding="0" cellspacing="0"
+                                       class="layoutTable">
+                                       <tbody>
+                                          <tr>
+                                             <td valign="top"><a href=""
+                                                ng-click="deleteFilter(x.index)"><img
+                                                   src="../css/images/delete.png"
+                                                   title="{{getI18N('reporting.definitionView.additionalFiltering.removeFilter')}}" />
+                                             </a>
+                                             </td>
+                                          </tr>
+                                       </tbody>
+                                    </table>
+                                 </div>
+                              </td>
+                              <td valign="top">
+                                 <div>
+                                    <table cellpadding="0" cellspacing="0"
+                                       class="layoutTable">
+                                       <tbody>
+                                          <tr>
+                                             <td valign="top"><select
+                                                ng-model="x.dimension"
+                                                ng-change="onFilterDimensionChange(x.index)"
+                                                ng-options="y.id as y.name group by primaryObjectEnumGroup(y.id) for y in getPrimaryObjectEnum()">
+                                             </select>
+                                             </td>
+                                          </tr>
+                                       </tbody>
+                                    </table>
+                                 </div>
+                              </td>
+                              <td valign="top">
 											<div
 												ng-show="getDimension(x.dimension).type == getMetadata().stringType">
 												<table cellpadding="0" cellspacing="0" class="layoutTable">
@@ -644,7 +670,7 @@ table.formTable td {
 												ng-show="getDimension(x.dimension).type == getMetadata().enumerationType"
 												style="height: auto;">
 													<table class="filterTable" ng-show="x.dimension == 'processName' || x.dimension == 'activityName'">
-														<tr ng-show="x.dimension == 'processName' || x.dimension == 'activityName'">
+														<tr ng-show="x.dimension == 'activityName'">
 															<td><label class="section2">{{getI18N('reporting.definitionView.process.title')}}</label></td>
 														</tr>
 														<tr ng-show="x.dimension == 'processName' || x.dimension == 'activityName'">
@@ -774,7 +800,7 @@ table.formTable td {
 									</tr>
 									<tr>
 										<td><a href="" ng-click="addFilter()"><img
-												src="../css/images/add.png" /> </a></td>
+												src="../css/images/add.png" title="{{getI18N('reporting.definitionView.additionalFiltering.addFilter')}}"/> </a></td>
 										<td></td>
 										<td></td>
 									</tr>
