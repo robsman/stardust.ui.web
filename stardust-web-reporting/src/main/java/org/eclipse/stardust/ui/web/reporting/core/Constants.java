@@ -1,21 +1,32 @@
 package org.eclipse.stardust.ui.web.reporting.core;
 
+import com.ibm.icu.util.Calendar;
+
+
+
 
 public class Constants
 {
    public enum DurationUnit {
-      SECOND("s"),
-      MINUTE("m"),
-      HOUR("h"),
-      DAY("d"),
-      WEEK("w"),
-      MONTH("M"),
-      YEAR("Y");
+      SECOND("s", Calendar.SECOND),
+      MINUTE("m", Calendar.MINUTE),
+      HOUR("h", Calendar.HOUR_OF_DAY),
+      DAY("d", Calendar.DAY_OF_YEAR),
+      WEEK("w", Calendar.WEEK_OF_YEAR),
+      MONTH("M", Calendar.MONTH),
+      YEAR("Y", Calendar.YEAR);
 
       private String id;
-      DurationUnit(String id)
+      private int calendarField;
+      DurationUnit(String id, int calendarField)
       {
          this.id = id;
+         this.calendarField = calendarField;
+      }
+
+      public int getCalendarField()
+      {
+         return calendarField;
       }
 
       @Override
@@ -215,7 +226,7 @@ public class Constants
       USER_PERFORMER_NAME("USERPERFORMERNAME"),
       PARTICIPANT_PERFORMER_NAME("participantPerformerName"),
       STATE("state"),
-      DURATION("duration");
+      DURATION("activityInstanceDuration");
 
       private String id;
       private AiDimensionField(String id)
