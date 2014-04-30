@@ -115,7 +115,7 @@ define(
 				this.metadata.integerType = {
 					id : "integerType",
 					name : "Integer",
-					operators : ["E", "LE", "GE", "NE", "I", "NI", "B"]
+					operators : ["E", "LE", "GE", "NE", "I", "NI"]
 				};
 				this.metadata.decimalType = {
 					id : "decimalType",
