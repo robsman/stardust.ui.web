@@ -16,9 +16,7 @@
  * on the JQM framework.
  */
 
-define(["jquery-mobile", "angularjs","js/WorkflowService"],function(jqm,angular,WorkflowService){
-
-	var workflowService = WorkflowService.instance();
+define(["jquery-mobile", "angularjs"],function(jqm,angular){
 	
 	/*JQM navigation event object we pass from JQM to Angular*/
 	var jqmNavigateData=function(scopeTarget,evtType,ui,page,baseEvent,data,pageTarget){
@@ -54,41 +52,62 @@ define(["jquery-mobile", "angularjs","js/WorkflowService"],function(jqm,angular,
 	            { "#mainPage":  { events: "bC", handler: "mainPage" , step: "url" } },
 	            { "#worklistListViewPage": { events: "bC", handler: "worklistListViewPage" }},
 	            { "#startableProcessesPage": {events: "bC", handler: "startableProcessesPage" }},
-	            { "#detailPage": {events: "bC", handler: "detailPage" }},
+	            { "#detailPage":  {events: "bC", handler: "detailPage" }},
 	            { "#processPage": {events: "bC", handler: "processPage"}},
-	            { "#documentViewerPage": {events: "bC", handler: "documentViewerPage"}},
-	            { "#repositoryRootPage": {events: "bC", handler: "repositoryRootPage"}}
+	            { "#documentViewerPage" :  {events: "bC", handler: "documentViewerPage"}},
+	            { "#reportViewerPage"   :  {events: "bC", handler: "reportViewerPage"}},
+	            { "#repositoryRootPage" :  {events: "bC", handler: "repositoryRootPage"}},
+	            { "#searchLandingPage"  :  {events: "bC", handler: "searchLandingPage"}},
+	            { "#documentSearchPage" :  {events: "bC", handler: "documentSearchPage"}},
+	            { "#activitySearchPage" :  {events: "bC", handler: "activitySearchPage"}},
+	            { "#processSearchPage"  :  {events: "bC", handler: "processSearchPage"}},
+	            { "#reportRootPage"     :  {events: "bC", handler: "reportRootPage"}},
+	            { "#profilePage"        :  {events: "bC", handler: "profilePage"}},
+	            { "#settingsPage"       :  {events: "bC", handler: "settingsPage"}}
 	        ],
 	        {
 				/*Reference controllers/baseControllers.js for login authentication*/
 				"login" : function(eventType, matchObj, ui, page, e){
-					var scope, /*Angular scope for our login JQM page*/
-						data,  /*Parameter data passed to our login page*/
-						rootScope;
-					
 					e.preventDefault();
 					console.log("JQM Router: /#login");
-					data=router.getParams(e.target.baseURI);
-					
-					try{
-						scope=angular.element($("#login").scope())[0];
-		
-						if(data.partition){
-							scope.$apply(function(){
-								scope.partition=data.partition;
-							});
-						}
-					}catch(ex){
-						console.log("Error on login:");
-						console.log(scope);
-					}
 					ui.bCDeferred.resolve();
+				},
+				
+				"reportRootPage" : function(eventType, matchObj, ui, page, e){
+					var rootScope, /*rootScope of document*/
+						scope,	   /*local scope of the JQM processPage*/
+						data;      /*Parameter data attached to our hash URL*/
+			
+					e.preventDefault();
+					console.log("JQM Router: /#reportRootPage");
+					
+					scope=angular.element($("#reportRootPage")).scope();
+					rootScope = angular.element($(document)).scope();
+					
+					jqmNData = new jqmNavigateData(scope.$id,eventType,ui,page,e,{},"reportRootPage");	
+					rootScope.signalJQMNavigation(jqmNData); /*signal Angular listeners*/
+				},
+				
+				"reportViewerPage" : function(eventType, matchObj, ui, page, e){
+					var rootScope, /*rootScope of document*/
+						scope,	   /*local scope of the JQM processPage*/
+						data;      /*Parameter data attached to our hash URL*/
+			
+					e.preventDefault();
+					console.log("JQM Router: /#reportViewerPage");
+					
+					scope=angular.element($("#reportViewerPage")).scope();
+					rootScope = angular.element($(document)).scope();
+					data=router.getParams(matchObj.input);
+					
+					jqmNData = new jqmNavigateData(scope.$id,eventType,ui,page,e,data,"reportViewerPage");	
+					rootScope.signalJQMNavigation(jqmNData); /*signal Angular listeners*/
 				},
 				
 				"documentViewerPage" : function(eventType, matchObj, ui, page, e){
 					var rootScope, /*rootScope of document*/
-					scope,	   /*local scope of the JQM processPage*/
-					data;      /*Parameter data attached to our hash URL*/
+						scope,	   /*local scope of the JQM processPage*/
+						data;      /*Parameter data attached to our hash URL*/
 			
 					e.preventDefault();
 					console.log("JQM Router: /#documentViewerPage");
@@ -103,18 +122,78 @@ define(["jquery-mobile", "angularjs","js/WorkflowService"],function(jqm,angular,
 				
 				"repositoryRootPage" : function(eventType, matchObj, ui, page, e){
 					var rootScope, /*rootScope of document*/
-					scope,	   /*local scope of the JQM processPage*/
-					data;      /*Parameter data attached to our hash URL*/
+						scope,	   /*local scope of the JQM processPage*/
+						data;      /*Parameter data attached to our hash URL*/
 			
 					e.preventDefault();
 					console.log("JQM Router: /#repositoryRootPage");
 					data=router.getParams(matchObj.input);
 					scope=angular.element($("#repositoryRootPage")).scope();
 					rootScope = angular.element($(document)).scope();
-					
+					$.mobile.loading( 'show');
 					jqmNData = new jqmNavigateData(scope.$id,eventType,ui,page,e,{},"repositoryRootPage");	
 					rootScope.signalJQMNavigation(jqmNData); /*signal Angular listeners*/
 				},
+				
+				"searchLandingPage" : function(eventType, matchObj, ui, page, e){
+					var jqmNData,
+						rootScope,
+						scope;
+					
+					e.preventDefault();
+					console.log("JQM Router: /#searchLandingPage");
+					rootScope = angular.element($(document)).scope();
+					scope=angular.element($("#searchLandingPage")).scope();
+					jqmNData = new jqmNavigateData(scope.$id,eventType,ui,page,e,{},"searchLandingPage");
+					$.mobile.loading( 'show');
+					rootScope.signalJQMNavigation(jqmNData); /*signal Angular listeners*/
+					ui.bCDeferred.resolve();
+				},
+				
+				"documentSearchPage" : function(eventType, matchObj, ui, page, e){
+					var jqmNData,
+						rootScope,
+						scope;
+				
+					e.preventDefault();
+					console.log("JQM Router: /#documentSearchPage");
+					
+					rootScope = angular.element($(document)).scope();
+					scope=angular.element($("#documentSearchPage")).scope();
+					jqmNData = new jqmNavigateData(scope.$id,eventType,ui,page,e,{},"documentSearchPage");
+					$.mobile.loading( 'show');
+					rootScope.signalJQMNavigation(jqmNData); /*signal Angular listeners*/
+				},
+				
+				"activitySearchPage" : function(eventType, matchObj, ui, page, e){
+					var jqmNData,
+						rootScope,
+						scope;
+					
+					e.preventDefault();
+					console.log("JQM Router: /#activitySearchPage");
+					
+					rootScope = angular.element($(document)).scope();
+					scope=angular.element($("#activitySearchPage")).scope();
+					jqmNData = new jqmNavigateData(scope.$id,eventType,ui,page,e,{},"activitySearchPage");
+					$.mobile.loading( 'show');
+					rootScope.signalJQMNavigation(jqmNData); /*signal Angular listeners*/
+				},
+				
+				"processSearchPage" : function(eventType, matchObj, ui, page, e){
+					var jqmNData,
+						rootScope,
+						scope;
+					
+					e.preventDefault();
+					console.log("JQM Router: /#processSearchPage");
+					
+					rootScope = angular.element($(document)).scope();
+					scope=angular.element($("#processSearchPage")).scope();
+					jqmNData = new jqmNavigateData(scope.$id,eventType,ui,page,e,{},"processSearchPage");
+					$.mobile.loading( 'show');
+					rootScope.signalJQMNavigation(jqmNData); /*signal Angular listeners*/
+				},			
 				
 				/*Navigation event to processPage*/
 				"processPage" : function(eventType, matchObj, ui, page, e){
@@ -126,8 +205,6 @@ define(["jquery-mobile", "angularjs","js/WorkflowService"],function(jqm,angular,
 					console.log("JQM Router: /#processPage");
 					
 					scope=angular.element($("#processPage")).scope();
-					console.log("Broadcasting to #processPage : " + scope.$id);
-					console.log("##############################################################");
 					rootScope = angular.element($(document)).scope();
 					data=router.getParams(matchObj.input);
 					
@@ -178,6 +255,35 @@ define(["jquery-mobile", "angularjs","js/WorkflowService"],function(jqm,angular,
 					rootScope.signalJQMNavigation(jqmNData);
 				},
 				
+				"profilePage" : function(eventType, matchObj, ui, page, e){
+					var rootScope,
+						scope,
+						jqmNData;
+				
+					e.preventDefault();
+					console.log("JQM Router: /#profilePage");
+					rootScope= angular.element(document).scope();
+					scope=angular.element($("#profilePage")).scope();
+					
+					jqmNData = new jqmNavigateData(scope.$id,eventType,ui,page,e,{},"profilePage");	
+					$.mobile.loading( 'show');
+					rootScope.signalJQMNavigation(jqmNData);
+				},
+				
+				"settingsPage" : function(eventType, matchObj, ui, page, e){
+					var rootScope,
+						scope,
+						jqmNData;
+				
+					e.preventDefault();
+					console.log("JQM Router: /#settingsPage");
+					rootScope= angular.element(document).scope();
+					scope=angular.element($("#settingsPage")).scope();
+					
+					jqmNData = new jqmNavigateData(scope.$id,eventType,ui,page,e,{},"settingsPage");	
+					$.mobile.loading( 'show');
+					rootScope.signalJQMNavigation(jqmNData);
+				},
 				
 				"startableProcessesPage" : function(eventType, matchObj, ui, page, e){
 					var rootScope,

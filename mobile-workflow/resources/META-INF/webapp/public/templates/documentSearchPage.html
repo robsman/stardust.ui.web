@@ -1,0 +1,127 @@
+<div class="ipp-header" data-role="header">
+	 <div style="float:left;margin-left:1.1em;margin-top:0.75em;">
+		 <a ng-show="!showResults" href="#" data-rel="back" class="ipp-icon-minimal">
+		 	<i style="color:#ffffff;" class="fa fa-chevron-left ipp-fs-2x ipp-fw-normal"></i>
+		 </a>
+		 <a ng-show="showResults" ng-click="showResults=false" href="#"  class="ipp-icon-minimal">
+		 	<i style="color:#ffffff;" class="fa fa-chevron-left ipp-fs-2x  ipp-fw-normal"></i>
+		 </a>
+	 </div>
+     <h4>{{uiText.searchDocs}}</h4>
+</div>
+
+<div  ng-show="errorModel.hasError==true" 
+      ng-click="errorModel.hasError=false;" 
+      class="ipp-bar ipp-bar-error">
+	<i class="fa fa-times-circle-o"></i>
+	<span>{{errorModel.errorMessage}}</span>
+</div>
+
+<div jqm-loader jqm-show-loader="{{isAjaxLoading}}" jqm-text=""></div>
+
+<div class="animate-show" ng-show="!showResults">
+	
+	
+	<div class="ui-page-theme-a ipp-pseudo-list">
+ 		<div>
+  			<span class="ipp-fw-normal ipp-lighter" style="float:left;'">
+	  			{{uiText.createFrom}} 
+  			</span>
+ 		</div>
+ 		
+	    <div class="ui-block-a" style="width:59%;margin-right:0.1em;">
+    		<input class="ipp-fs-small" ng-model="filter.startDate" type="date" data-clear-btn="false" >
+	    </div>
+	    
+	    <div class="ui-block-b" style="width:40%;">
+	    	<input class="ipp-fs-small" ng-model="filter.startTime" type="time" data-clear-btn="false" >
+	    </div>
+	</div>
+	
+	<div class="ui-page-theme-a ipp-pseudo-list">
+		<div>
+			<span class="ipp-fw-normal ipp-lighter" style="float:left;'">
+				{{uiText.createTo}} 
+			</span>
+		</div>
+		<div class="ui-block-a" style="width:59%;margin-right:0.1em;">
+			<input class="ipp-fs-small" ng-model="filter.endDate" type="date" data-clear-btn="false">
+		</div>
+		<div class="ui-block-b" style="width:40%;">
+			<input class="ipp-fs-small" ng-model="filter.endTime" type="time" data-clear-btn="false" >
+		</div>
+	</div>
+	
+	<div style="clear:both;" class="ui-page-theme-a ipp-pseudo-list">
+		<input ng-model="filter.name" placeholder="{{uiText.search}}" type="text"/>
+	</div>
+	
+	<div style="display:table;width:100%;">
+	
+		<ul data-role="listview" data-theme='d'  data-shadow="false">
+		  <li data-role="collapsible" data-iconpos="right" data-inset="false">
+		    <h2>
+		    	{{uiText.docTypes}}
+		    	<span style="right:7em;" class="ipp-li-count-secondary">
+		    		{{(documentSearchModel.documentTypes|filter:{isChecked:true}).length}}
+		    	</span>
+		    	<span ng-click="docTypeToggleState=!docTypeToggleState;
+		    	               toggleAll(documentSearchModel.documentTypes,docTypeToggleState,$event)"
+		    	      class="ipp-li-count-secondary">
+		    		<i ng-class="{'fa-check-square':docTypeToggleState}" class="fa fa-square"></i> {{uiText.all}}
+		    	</span>
+		    </h2>
+		    <ul data-role="listview" data-theme="a">
+				<li ng-init="docType.isChecked=false"
+					ng-click="docType.isChecked=!docType.isChecked;" 
+		            ng-repeat="docType in documentSearchModel.documentTypes">
+		        	<i style="font-size:1.5em;"  
+		        	   ng-class="{'fa-check-square':docType.isChecked}" 
+		        	   class="fa fa-square-o"></i>
+		        	&nbsp;
+		        	<span class="ipp-fs-small ipp-light ipp-fw-light">{{docType.name}}</span>
+	        	</li>
+		    </ul>
+		  </li>	
+		</ul>
+		
+	</div>
+	
+	<a ng-click="getResults();" 
+	   style="margin-left:1em;margin-right:1em;" 
+	   href="#"  
+	   class="ui-btn ui-corner-all ui-btn-d">
+		<i class="fa fa-search ipp-pad-right-4x"></i>{{uiText.submit}}
+	</a>
+
+    	
+</div>
+
+<div class="animate-show" ng-show="showResults">
+	<div>
+		<ul data-role="listview" style="margin:0em;">
+			<li ng-repeat="doc in documentSearchModel.results">
+				<a href="#documentViewerPage?id={{doc.id}}" style="line-height:2em;"  class="ipp-no-content">
+					<i style="vertical-align:middle" 
+					   ng-class="{'fa-picture-o':isImageType(doc.name),'fa-file-o':!isImageType(doc.name)}"
+			       	   class="fa fa-2x fa-fw ipp-color-secondary-darkest ipp-icon-pad-r"></i>
+			       
+					<span class="ipp-fs-small ipp-light ipp-fw-normal">{{doc.name}}</span>
+
+	         		<div style="top:0.8em;" class="ui-li-aside">
+	         			<i class="fa fa-clock-o ipp-lighter ipp-fs-smaller"></i>
+	
+	         			<span class="ipp-fs-smallest ipp-lighter ipp-fw-normal">
+	         			      {{doc.lastModifiedTimestamp | friendlyDate}}</span>
+         			</div>
+         			
+	    			<i class="fa fa-1x fa-chevron-right ipp-nav-icon-right"></i>
+				</a>
+			</li>
+		</ul>
+	</div>
+</div>
+
+    	
+
+

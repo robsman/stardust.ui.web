@@ -13,8 +13,9 @@ define([],function(){
 		        	var fd,		   /*Form Data we will upload*/
 		            	files=[],  /*File(s) to upload, pushed onChange of our input.file*/
 		            	url="",	   /*target URL to upload to*/
-	            		inpt=element.find("input"),   /*Must be singularly present in template*/
-		                btn = element.find("button"), /*Must be singularly present in template*/
+	            		inpt=element.find("input[type='file']"),   /*Must be singularly present in template*/
+		                btn = element.find("a[name='upload']"), /*Must be singularly present in template*/
+		                btnMock=element.find("a[name='mockFile']"),
 		                errorHandler,    /*event handler evaluated from our attributes*/
 		                loadHandler,	 /*event handler evaluated from our attributes*/
 		                progressHandler; /*event handler evaluated from our attributes*/
@@ -25,6 +26,10 @@ define([],function(){
 		            loadHandler = scope.$eval(attr.onLoad);
 		            progressHandler = scope.$eval(attr.onProgress);
 		        	
+		            btnMock.on("click",function(){
+		            	inpt.click();
+		            });
+		            
 			        /*on change events of our input.file element we need to push into our file collection*/
 		            inpt.on("change",function(){
 		              for (var i = 0; i < inpt[0].files.length; i++) {

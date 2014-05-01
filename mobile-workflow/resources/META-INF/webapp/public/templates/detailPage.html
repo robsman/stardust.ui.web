@@ -1,45 +1,59 @@
+<div class="ipp-header" data-role="header">
+	 <a ng-href="#{{previousPage}}" 
+	    class="ipp-icon-minimal"
+	    ng-click="activeTab=''">
+	 	<i style="float:left;color:#ffffff;" class="fa fa-2x fa-chevron-left"></i>
+	 </a>
+     <h4>{{activityModel.item.activityName}} <span class="hide-media-sm">(#{{activityModel.item.oid}})</span></h4>
+</div>
 
-<div data-role="header" style="overflow:hidden;">
-	<h1>{{activityModel.item.activityName}} <span class="hide-media-sm">(#{{activityModel.item.oid}})</span></h1>
-    <!-- a href="#" data-icon="gear" class="ui-btn-right">Options</a-->
-    <a ng-href="#{{previousPage}}" 
-       ng-click="activeTab=''"  
-       class="ui-btn ui-shadow ui-corner-all ui-icon-back ui-btn-icon-notext">No Text</a>
+<div  ng-show="errorModel.hasError==true" 
+      ng-click="errorModel.hasError=false;" 
+      class="ipp-bar ipp-bar-error">
+	<i class="fa fa-times-circle-o"></i>
+	<span>{{errorModel.errorMessage}}</span>
+</div>
+
+<div  ng-show="infoModel.hasInfo==true" 
+      ng-click="infoModel.hasInfo=false;" 
+      class="ipp-bar ipp-bar-info">
+	<i class="fa fa-info-circle"></i>
+	<span>{{infoModel.infoMessage}}</span>
 </div>
 
 <div jqm-loader jqm-show-loader="{{isAjaxLoading}}" jqm-text=""></div>
-<div data-iscroll>
+<div>
 <div id="detailPageTabs" style="padding-top:0em;border-top:0em;">
   <div data-role="navbar">
 	<ul>
 		<li ng-click="activeSubView='activity';getNotes(activityModel.item.processInstanceOid)">
-			<a href="#activityTab" ng-class="{'ipp-btn-active' : activeSubView=='activity'}" class="ui-btn-active">
-				<i title="Activity" style="display:block;" class="fa fa-info fa-2x jqm-icon-block"></i>
-				<span title="Activity" class="hide-media-sm">Activity</span>
+			<a href="#activityTab" ng-class="{'ipp-btn-active' : activeSubView=='activity'}">
+				<i title="Activity" style="display:block;" class="fa fa-info fa-2x jqm-icon-block ipp-lightest"></i>
+				<span title="Activity" class="hide-media-sm ipp-lighter ipp-fw-normal">{{uiText.activity}}</span>
 			</a>		
 		</li>
 		<li ng-click="activeSubView='form'" >
 			<a ng-href="{{formTabTarget}}" ng-class="{'ipp-btn-active' : activeSubView=='form'}">
-				<i style="display:block;" class="fa fa-cog fa-2x jqm-icon-block"></i>
-				<span title="Form" class="hide-media-sm">Form</span>	
+				<i style="display:block;" class="fa fa-cog fa-2x jqm-icon-block ipp-lightest"></i>
+				<span title="Form" class="hide-media-sm ipp-lighter ipp-fw-normal">{{uiText.form}}</span>	
 			</a>
 		</li>
 		<li ng-click="activeSubView='docs'">
 			<a href="#docsTab" ng-class="{'ipp-btn-active' : activeSubView=='docs'}">
-				<i style="display:block;" class="fa fa-files-o fa-2x jqm-icon-block"></i>
-				<span title="Documents" class="hide-media-sm">Documents ({{documentModel.docs.length}})</span>
+				<i style="display:block;" class="fa fa-files-o fa-2x jqm-icon-block ipp-lightest"></i>
+				<span title="Documents" class="hide-media-sm ipp-lighter ipp-fw-normal">{{uiText.documents}} ({{documentModel.docs.length}})</span>
 			</a>
 		</li>
 		<li ng-click="activeSubView='notes'">
 		 	<a href="#notesTabContent" ng-class="{'ipp-btn-active' : activeSubView=='notes'}">
-				<i style="display:block;" class="fa fa-clipboard fa-2x jqm-icon-block"></i>
-				<span title="Notes" class="hide-media-sm">Notes ({{notesModel.notes.length}})</span>
+				<i style="display:block;" class="fa fa-clipboard fa-2x jqm-icon-block ipp-lightest"></i>
+				<span title="Notes" class="hide-media-sm ipp-lighter ipp-fw-normal">{{uiText.notes}} ({{notesModel.notes.length}})</span>
 			</a>
 		</li>
 		<li ng-click="navigateTo('#processPage?id=' + activityModel.item.processInstanceOid);activeSubView='process'">
 			<a  id="#processTab" href="#" ng-class="{'ipp-btn-active' : activeSubView=='process'}">
-				<i style="display:block;" class="fa fa-cogs fa-2x jqm-icon-block"></i>
-				<span title="Process" class="hide-media-sm">Process</span>
+				<i style="display:block;" class="fa fa-cogs fa-2x jqm-icon-block ipp-lightest"></i>
+				<span title="Process" class="hide-media-sm ipp-lighter ipp-fw-normal">{{uiText.process}}</span>
 			</a>
 		</li>
 	</ul>
@@ -49,13 +63,13 @@
  
 
   
-  <div ng-show="activeSubView=='activity'" id="activityTab" class="ui-body-d ui-content">
+  <div ng-show="activeSubView=='activity'" id="activityTab" class="ui-body-d ui-content ipp-border-0x">
 		<div data-theme="a" 
 			 data-jqm-template data-jqm-widgets="" 
 			 data-template-url="templates/activityDetails.html">
 		</div>
   </div>
-  <div ng-show="activeSubView=='form'"  id="formTab" class="ui-body-d ui-content" style="text-align:center;">
+  <div ng-show="activeSubView=='form'"  id="formTab" class="ui-body-d ui-content ipp-border-0x" style="text-align:center;">
     	<div ng-show="isMashupShowable()===true" 
     		 data-jqm-template 
 			 data-jqm-widgets=""
@@ -69,77 +83,145 @@
 			 data-template-url="templates/formDefault.html">
 		</div>
   </div>
-   <div ng-show="activeSubView=='docs'" id="docsTab" class="ui-body-d ui-content">
+   <div ng-show="activeSubView=='docs'" id="docsTab" class="ui-body-d ui-content ipp-border-0x">
     	<div data-jqm-template 
 			 data-jqm-widgets="listview"
 			 data-bind-to="documentModel.docs"
 			 data-template-url="templates/documentPage.html">
 		</div>
   </div>
-   <div ng-show="activeSubView=='notes'" id="notesTabContent" class="ui-body-d ui-content">
+   <div ng-show="activeSubView=='notes'" id="notesTabContent" class="ui-body-d ui-content ipp-border-0x">
    		<div data-jqm-template 
 			 data-jqm-widgets="listview"
 			 data-bind-to="notesModel.notes"
 			 data-template-url="templates/notesPage.html">
 		</div>
   </div>
-   <div id="processTabContent"  class="ui-body-d ui-content">
+   <div ng-show="false" id="processTabContent"  class="ui-body-d ui-content">
     <!-- NO CONTENT -->
   </div>
 </div><!-- Tabs End  -->
 
-  <div class="ui-mini" ng-show="activeTab=='activityTab'">
+  <div class="ui-mini" style="text-align:center;" ng-show="activeSubView=='activity'">
   
 	  <div ng-click="activate(activityModel.item.oid);" 
 	  	   ng-show="activityModel.item.activatable && isHotActivityConflict()==false && 
 	  	   	       (appData.isActivityHot=='false' || appData.isActivityHot==false)" 
 	  	   style="margin-right:0em;" 
-	  	   class="ui-btn ui-conrner-all ui-btn-inline">
-	  	<i class="fa fa-bolt"></i> Activate
+	  	   class="ui-btn ui-btn-d ui-corner-all ui-btn-inline">
+	  	<i class="fa fa-bolt ipp-pad-right-4x"></i> {{uiText.activate}}
 	  </div>
 	  
 	  <!-- Pseudo activate button we detected a conflict and just want to warn the user on click -->
 	  <div ng-show="activityModel.item.activatable && isHotActivityConflict()==true" 
-	  	   style="margin-right:0em;" 
-	  	   class="ui-btn ui-conrner-all ui-btn-inline">
-	  	<a ng-href="#activateConflictPopup_{{$id}}" data-rel="popup"><i class="fa fa-bolt"></i> Activate!</a>
+	  	   class="ipp-inline"
+	  	   style="margin-right:0em;" >
+	  	<a class="ui-btn ui-btn-d ui-corner-all ui-btn-inline" 
+	  	   ng-href="#activateConflictPopup_{{$id}}" 
+	  	   data-rel="popup">
+	  	   <i class="fa fa-bolt ipp-pad-right-4x"></i> {{uiText.activate}}
+	  	</a>
 	  </div>
 
-	  <div data-role="popup" id="activateConflictPopup_{{$id}}" data-overlay-theme="b" data-theme="a" data-dismissible="false" style="max-width:400px;">
-	    <div data-role="header" data-theme="a">
-	    <h3>{{activityModel.item.activityName}} (#{{activityModel.item.oid}}) is not Activatable</h3>
+	  <div data-role="popup" 
+	       id="activateConflictPopup_{{$id}}" 
+	       data-overlay-theme="a" 
+	       data-theme="d" 
+	       data-dismissible="false" 
+	       style="max-width:400px;">
+	    <div data-role="header" data-theme="a" >
+	    	<h4 class="ipp-margin-h-1x">{{activityModel.item.activityName}} (#{{activityModel.item.oid}}) {{uiText.notActivatableHdr}}</h4>
 	    </div>
 	    <div role="main" class="ui-content">
-	        <h4 class="ui-title">You currently have another activity active.</h4>
-	    <p>What do you want to do?</p>
-	        <a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-b" data-rel="back">Cancel</a>
-	        <a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-b" data-rel="back" data-transition="flow">View Active </a>
+	        <h5 class="ui-title">{{uiText.notActivatableSub}}</h5>
+	    	{{uiText.notActivatableText}}
+	    	<div class="ipp-center">
+		        <a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-d" data-rel="back">{{uiText.cancel}}</a>
+		        <a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-d" data-rel="back" data-transition="flow">{{uiText.view}} </a>
+	    	</div>
 	    </div>
 	  </div>
 	  
 	  
-	  <div ng-click="trigger('delegateActivity',activityModel.item.processInstanceOid)" style="margin-right:0em;" class="ui-btn ui-btn-inline">
-	  	<i class="fa fa-user"></i> Delegate
-	  </div>
+	  <a ng-click="" 
+	     data-rel="popup" 
+	     ng-href="#delegatePopup_{{$id}}" 
+	     style="margin-right:0em;" 
+	     class="ui-btn ui-btn-d ui-btn-inline ui-corner-all">
+	  	<i class="fa fa-user ipp-pad-right-4x"></i> {{uiText.delegate}}
+	  </a>
+	  
+	  <div data-role="popup" 
+	       class="ipp-popup"
+	       id="delegatePopup_{{$id}}" 
+	       data-overlay-theme="d" 
+	       data-theme="d" 
+	       data-position-to="window"
+	       data-dismissible="false">
+	    
+	    <div role="main" class="ui-content">
+	    	<div class="ipp-bgcolor-primary ipp-popup-header">
+	    		<span>{{uiText.delegateActivity}}</span>
+	    	</div>
+	    	
+	        <div style="margin-bottom:0.5em;" class="ui-title">
+	        	{{uiText.whichParticipant}}
+	        </div>
+	        
+	        <div style="border:solid 1px #ddd;">
+	        
+		        <span ng-show="participantSearchModel.showTargetTag" 
+		              ng-click="participantSearchModel.showTargetTag=false;
+		              		    delegatePopupUI.setInputFocus=true" 
+		              style="font-size:0.8em;padding:.1em .1em;margin-left:5px;" 
+		              class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-d">
+		             
+		             <i ng-class="{'fa-users': participantSearchModel.selectedParticipant.type=='role',
+		                           'fa-sitemap' : participantSearchModel.selectedParticipant.type=='organization'}" 
+					   style="float:left;font-size:0.8em;padding:3px;"  
+					   class="fa fa-user ipp-color-secondary"></i>
+					   
+		             <i style="float:right;padding:2px;" class="fa fa-times"></i>
+		             
+		        	{{participantSearchModel.selectedParticipant.name}}
+		        </span>
+		        
+				<input ng-model="participantSearchModel.matchStr" 
+				       ng-change="getParticipantMatches(participantSearchModel.matchStr)" 
+				       style="width:180px;border:none;outline-width:0px;font-size:0.8em" 
+				       set-focus="delegatePopupUI.setInputFocus"
+				       type="text" 
+				       placeholder="Type user, role, or organization"></input>
+			</div>
+			
+			<div style="border:solid 1px #ddd;max-height:150px;overflow:auto;border-top:none; ">
+				<button ng-click="participantSearchModel.selectedParticipant=participant;
+				                  participantSearchModel.showTargetTag=true;
+				                  delegatePopupUI.setInputFocus=true" 
+				        ng-repeat="participant in participantSearchModel.results" 
+				        class="ui-btn ui-mini ui-btn-a"
+				        style="margin:0px;">
+					<i ng-class="{'fa-users': participant.type=='role','fa-sitemap' : participant.type=='organization'}" 
+					   style="float:left;font-size:1.5em;"  
+					   class="fa fa-user"></i>
+					{{participant.name}}
+				</button>
+			</div>
+			<div class="ipp-center">
+				<a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-d ipp-block" data-rel="back">
+					<i class="fa fa-user ipp-pad-right-4x"></i>
+					{{uiText.delegate}}
+				</a>
+		        <a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ipp-block ipp-bgcolor-tertiary" 
+		           data-rel="back">
+		           <i class="fa fa-times ipp-pad-right-4x"></i>
+		           {{uiText.cancel}}
+		        </a>
+		        
+	        </div>
+	    </div>
+	  </div><!-- Delegate Popup End -->
 	  
   </div>  
  </div>
-<div data-role="footer" data-theme="a" ng-controller="footerCtrl">
-	<div class="ui-grid-b ui-mini" style="height:1.75em;">
-
-	    <div class="ui-block-a" style="width:45%;">
-	    	<div class="ui-bar ui-bar-a" style="height:1.75em;border-style:none;">XXX-{{title}}</div>
-	    </div>
-	
-	    <div class="ui-block-b" style="width:10%;">
-	    	<div class="ui-bar ui-bar-a" style="height:1.75em;border-style:none;position:relative;top:-0.5em;">
-	    		<input type="button" data-icon="delete" data-iconpos="notext" value="Icon only"/>
-	    	</div>
-	    </div>
-	    
-	    <div class="ui-block-c" style="width:45%;">
-	    	<div class="ui-bar ui-bar-a" style="height:1.75em;float:right;border-style:none;">{{version}}</div>
-	    </div>
-    
-	</div>
-</div>
+ 

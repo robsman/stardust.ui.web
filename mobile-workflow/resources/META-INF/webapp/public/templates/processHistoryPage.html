@@ -5,56 +5,86 @@
 <p></p>
 
 <div>
-	<ul data-role="listview">
-		<li>
-			<p>
-				<i class="fa fa-2x fa-cogs"></i>
-				<strong>
+	<ul data-role="listview" data-theme="a">
+
+		<li style="padding:0em;line-height:4em;">
+			<div style="display:inline-grid;line-height:4em;width:0.5em;" 
+				 class="ipp-{{processHistoryModel.selectedProcessInstance.state}}">&nbsp;</div>
+				 
+			<div style="position:absolute;left:1.0em;top:0em;">
+			    <i style="position:relative;top:0.2em;" 
+			       class="fa fa-2x fa-cogs ipp-color-secondary-darkest"></i>
+				<span style="position:relative;left:0.7em;" class="ipp-fs-small ipp-light ipp-fw-normal">
 					{{processHistoryModel.selectedProcessInstance.processName}} 
-					(#{{processHistoryModel.selectedProcessInstance.oid}})
-				</strong>
-				<span class="ui-li-aside" xstyle="float:right;">Started at {{processHistoryModel.selectedProcessInstance.startTimestamp | date:"yyyy-MM-dd hh:mm:ss"}}</span>
-			</p>
-			<p style="font-size:0.75em">
-				<i ng-class="" 
-				   class="fa fa-spinner fa-spin"></i>
-				<span ng-switch="$last" ng-repeat="(k,v) in processHistoryModel.selectedProcessInstance.descriptors">
-		          			{{k}}: {{v.value}}<span ng-if="!$last">,</span>
-		        </span>
-	        </p>
+					<span class="hide-media-sm">(#{{processHistoryModel.selectedProcessInstance.oid}})</span>
+				</span>
+				<div class="ipp-fs-smallest ipp-lighter  ipp-fw-normal" 
+				     style="position:absolute;top:1.4em;left:4.2em;">
+					<span ng-switch="$last" ng-repeat="(k,v) in processHistoryModel.selectedProcessInstance.descriptors">
+	          			{{k}}: {{v.value}}<span ng-if="!$last">,</span>
+	        		</span>
+				</div>
+			</div>
+			<div style="top:0em;" class="ui-li-aside">
+         			<i class="fa fa-clock-o ipp-lighter ipp-fs-smaller"></i>
+         			<span class="ipp-fs-smallest ipp-lighter ipp-fw-normal">
+         			      {{processHistoryModel.selectedProcessInstance.startTimestamp | friendlyDate}}</span>
+       		</div>
+
+			
 		</li>
-		<li ng-repeat="activity in processHistoryModel.activityInstances">
-			<a ng-click="interceptNav(activity,$event)" ng-href="{{getTargetUrl(activity)}}">
-				<p>
-					<!-- i ng-class="getActivityTypeClass(activity.activityImplementationType,activity.childProcessInstance)" 
-					   class="fa fa-2x"></i-->
+		
+		<li style="padding:0em;line-height:4em;" 
+		    ng-repeat="activity in processHistoryModel.activityInstances">
+		    
+			<a href="#" 
+			   style="padding:0em;" 
+			   class="ipp-no-content" 
+			   ng-click="interceptNav(activity,$event)"
+			   ng-href="{{getTargetUrl(activity)}}">
+			    
+			 	<div style="display:inline-grid;line-height:4em;width:0.5em;" 
+			 	     class="ipp-{{activity.status}}">&nbsp;</div>
+			 	     
+			 	<div style="position:absolute;left:1.0em;top:1.0em;">
 					<span class="fa-stack">
-				      <i class="fa fa-cog fa-stack-2x"></i>
+				      <i class="fa fa-cog fa-stack-2x ipp-color-secondary-darkest"></i>
 				      <i ng-if="activity.activityImplementationType==ApplicationActivity"
 				         style="color:#999999" class="fa ipp-offeset-right-2x ipp-offeset-up-2x fa-square fa-stack-1x">
 				      </i>
 				      <i ng-class="getActivityTypeClass(activity.activityImplementationType,activity.childProcessInstance)"
-				      	 class="fa ipp-offeset-right-2x ipp-offeset-up-2x fa-stack-1x">
+				      	 class="fa ipp-offeset-right-2x ipp-offeset-up-2x fa-stack-1x ">
 				      </i>
 				    </span>
-					<strong>
+	
+					<span style="position:relative;left:0.7em;" class="ipp-fs-small ipp-light ipp-fw-normal">
 						{{activity.activityId}} 
-						(#{{activity.oid}})
-					</strong>
-					<span class="ui-li-aside" xstyle="float:right;">Modified {{activity.lastModificationTime | date:"yyyy-MM-dd hh:mm:ss"}}</span>
-				</p>
-				<p style="font-size:0.75em">
-					<i ng-class="getStateClass(activity.status)" 
-					   class="fa">
-					</i>
-					<span ng-if="activity.status=='Completed'">
-						Completed<span ng-if="activity.lastPerformer"> by {{activity.lastPerformer}}</span>
+						<span class="hide-media-sm">(#{{activity.oid}})</span>
 					</span>
-					<span ng-if="activity.status=='Suspended'">
-						Suspended<span ng-if="activity.assignedTo"> to {{activity.assignedTo}}</span>
-					</span>
-		        </p>
-	        </a>
+					
+					<div  class="ipp-fs-smallest ipp-fw-normal ipp-lighter" style="position:absolute;top:2.0em;left:4.2em;">
+						<span ng-if="activity.status=='Completed'">
+							<span ng-if="!activity.lastPerformer">{{uiText.completed}}</span>
+							<span ng-if="activity.lastPerformer"> {{uiText.completedby.replace('{0}',activity.lastPerformer)}}</span>
+						</span>
+						<span ng-if="activity.status=='Suspended'">
+							<span ng-if="!activity.assignedTo">{{uiText.suspended}}</span> 
+							<span ng-if="activity.assignedTo"> {{uiText.suspendedto.replace('{0}',activity.assignedTo)}}</span>
+						</span>
+					</div>
+	
+				</div>
+				
+				<div class="ui-li-aside">
+         			<i class="fa fa-clock-o ipp-lighter ipp-fs-smaller"></i>
+         			<span class="ipp-fs-smallest ipp-lighter ipp-fw-normal">
+         			      {{activity.lastModificationTime | friendlyDate}}</span>
+       			</div>
+
+				<i class="fa fa-1x fa-chevron-right ipp-nav-icon-right"></i>
+			</a>
 		</li>
+		
 	</ul>
 </div>
+

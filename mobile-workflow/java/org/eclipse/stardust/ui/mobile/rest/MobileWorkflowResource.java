@@ -4,7 +4,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+import java.util.StringTokenizer;
 
 import javax.activation.DataHandler;
 import javax.annotation.Resource;
@@ -12,11 +16,14 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
+import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.config.Parameters;
 import org.eclipse.stardust.engine.core.interactions.InteractionRegistry;
 import org.eclipse.stardust.ui.mobile.service.MobileWorkflowService;
+import org.eclipse.stardust.ui.mobile.common.LanguageUtil;
 import org.springframework.context.ApplicationContext;
 
 import com.google.gson.JsonObject;
@@ -33,7 +40,13 @@ public class MobileWorkflowResource {
 	private final JsonMarshaller jsonIo = new JsonMarshaller();
 
 	@Context
+	private HttpServletRequest httpRequest;
+
+	@Context
 	private ServletContext servletContext;
+
+   @Resource
+   private ApplicationContext springContext;
 	   
 	/**
 	 * 
@@ -73,10 +86,12 @@ public class MobileWorkflowResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("process-definitions")
-	public Response getProcesses(@QueryParam("startable") String startable) {
+	public Response getProcessDefinitions(@QueryParam("startable") String startable) {
 		try {
+			// Initit registry
+			getInteractionRegistry();
 			return Response.ok(
-					getMobileWorkflowService().getProcesses(Boolean.parseBoolean(startable))
+					getMobileWorkflowService().getProcessDefinitions(Boolean.parseBoolean(startable))
 							.toString(), MediaType.APPLICATION_JSON_TYPE)
 					.build();
 		} catch (Exception e) {
@@ -86,11 +101,30 @@ public class MobileWorkflowResource {
 		}
 	}
 
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("activities")
+   public Response getActivities(@QueryParam("processDefinitionIds") List<String> processDefinitionIds) {
+      try {
+         return Response.ok(
+               getMobileWorkflowService().getActivities(processDefinitionIds)
+                     .toString(), MediaType.APPLICATION_JSON_TYPE)
+               .build();
+      } catch (Exception e) {
+         e.printStackTrace();
+
+         throw new RuntimeException(e);
+      }
+   }
+
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("worklist")
 	public Response getWorklist() {
 		try {
+			// Initit registry
+			getInteractionRegistry();
+			
 			return Response.ok(
 					getMobileWorkflowService().getWorklist().toString(),
 					MediaType.APPLICATION_JSON_TYPE).build();
@@ -108,6 +142,39 @@ public class MobileWorkflowResource {
       try {
          return Response.ok(
                getMobileWorkflowService().getWorklistCount().toString(),
+               MediaType.APPLICATION_JSON_TYPE).build();
+      } catch (Exception e) {
+         e.printStackTrace();
+
+         throw new RuntimeException(e);
+      }
+   }
+
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("activity-instances")
+   public Response getActivityInstances(@QueryParam("startedFromTimestamp") String startedFromTimestamp,
+         @QueryParam("startedToTimestamp") String startedToTimestamp,
+         @QueryParam("activityIds") List<String> activityIds,
+         @QueryParam("states") List<String> states) {
+      try {
+         return Response.ok(
+               getMobileWorkflowService().getActivityInstances().toString(),
+               MediaType.APPLICATION_JSON_TYPE).build();
+      } catch (Exception e) {
+         e.printStackTrace();
+
+         throw new RuntimeException(e);
+      }
+   }
+
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("activity-instances/states")
+   public Response getActivityInstanceStates() {
+      try {
+         return Response.ok(
+               getMobileWorkflowService().getActivityInstanceStates().toString(),
                MediaType.APPLICATION_JSON_TYPE).build();
       } catch (Exception e) {
          e.printStackTrace();
@@ -138,8 +205,9 @@ public class MobileWorkflowResource {
 	@Path("activity-instances/{oid: \\d+}/activation")
 	public Response activateActivity(@PathParam("oid") String activityInstanceOid) {
 		try {
+			// TODO @SG - pass the servlet / spring context to service instead of passing it the needed beans.
 			return Response.ok(
-					getMobileWorkflowService().activateActivity(Long.parseLong(activityInstanceOid))
+					getMobileWorkflowService().activateActivity(Long.parseLong(activityInstanceOid), getInteractionRegistry())
 							.toString(), MediaType.APPLICATION_JSON_TYPE)
 					.build();
 		} catch (Exception e) {
@@ -158,7 +226,40 @@ public class MobileWorkflowResource {
          JsonObject json = jsonIo.readJsonObject(postedData);
 
          return Response.ok(
-               getMobileWorkflowService().startProcessInstance(json).toString(),
+               getMobileWorkflowService().startProcessInstance(json, getInteractionRegistry()).toString(),
+               MediaType.APPLICATION_JSON_TYPE).build();
+      } catch (Exception e) {
+         e.printStackTrace();
+
+         throw new RuntimeException(e);
+      }
+   }
+
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("process-instances")
+   public Response getProcessInstances(@QueryParam("startedFromTimestamp") String startedFromTimestamp,
+         @QueryParam("startedToTimestamp") String startedToTimestamp,
+         @QueryParam("processDefinitionIds") List<String> processDefinitionIds,
+         @QueryParam("states") List<String> states) {
+      try {
+         return Response.ok(
+               getMobileWorkflowService().getProcessInstances().toString(),
+               MediaType.APPLICATION_JSON_TYPE).build();
+      } catch (Exception e) {
+         e.printStackTrace();
+
+         throw new RuntimeException(e);
+      }
+   }
+
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("process-instances/states")
+   public Response getProcessInstanceStates() {
+      try {
+         return Response.ok(
+               getMobileWorkflowService().getProcessInstanceStates().toString(),
                MediaType.APPLICATION_JSON_TYPE).build();
       } catch (Exception e) {
          e.printStackTrace();
@@ -296,12 +397,63 @@ public class MobileWorkflowResource {
 
    @GET
    @Produces(MediaType.APPLICATION_JSON)
+   @Path("documents")
+   public Response getDocuments(@QueryParam("searchText") String searchText,
+         @QueryParam("createFromTimestamp") String createFromTimestamp,
+         @QueryParam("createToTimestamp") String createToTimestamp,
+         @QueryParam("documentTypeIds") List<String> documentTypeIds) {
+      try {
+         return Response.ok(
+               getMobileWorkflowService().getDocuments("",
+                     Long.parseLong("0"),
+                     Long.parseLong("0"),
+                     documentTypeIds).toString(),
+               MediaType.APPLICATION_JSON_TYPE).build();
+      } catch (Exception e) {
+         e.printStackTrace();
+
+         throw new RuntimeException(e);
+      }
+   }
+
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("documents/{documentId}")
+   public Response getDocument(@PathParam("documentId") String documentId) {
+      try {
+         return Response.ok(
+               getMobileWorkflowService().getDocument(documentId).toString(),
+               MediaType.APPLICATION_JSON_TYPE).build();
+      } catch (Exception e) {
+         e.printStackTrace();
+
+         throw new RuntimeException(e);
+      }
+   }
+
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
    @Path("process-instances/{oid: \\d+}/documents/process-attachments/{documentId}")
    public Response getDocument(@PathParam("oid") String processOid, @PathParam("documentId") String documentId) {
       try {
          return Response.ok(
                getMobileWorkflowService().getProcessInstanceDocument(
                      Long.parseLong(processOid), documentId).toString(),
+               MediaType.APPLICATION_JSON_TYPE).build();
+      } catch (Exception e) {
+         e.printStackTrace();
+
+         throw new RuntimeException(e);
+      }
+   }
+
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("document-types")
+   public Response getDocumentTypes() {
+      try {
+         return Response.ok(
+               getMobileWorkflowService().getDocumentTypes().toString(),
                MediaType.APPLICATION_JSON_TYPE).build();
       } catch (Exception e) {
          e.printStackTrace();
@@ -383,8 +535,10 @@ public class MobileWorkflowResource {
       {
          JsonObject postedDataJson = jsonIo.readJsonObject(postedData);
 
+         InteractionRegistry registry = getInteractionRegistry();
+      // TODO @SG - pass the servlet / spring context to service instead of passing it the needed beans.
          return Response.ok(
-               getMobileWorkflowService().completeActivity(oid).toString(),
+               getMobileWorkflowService().completeActivity(oid, registry).toString(),
                MediaType.APPLICATION_JSON_TYPE).build();
       }
       catch (Exception e)
@@ -405,8 +559,10 @@ public class MobileWorkflowResource {
       {
          JsonObject postedDataJson = jsonIo.readJsonObject(postedData);
 
+      // TODO @SG - pass the servlet / spring context to service instead of passing it the needed beans.
+         InteractionRegistry registry = getInteractionRegistry();
          return Response.ok(
-               getMobileWorkflowService().suspendActivity(oid).toString(),
+               getMobileWorkflowService().suspendActivity(oid, registry).toString(),
                MediaType.APPLICATION_JSON_TYPE).build();
       }
       catch (Exception e)
@@ -427,8 +583,10 @@ public class MobileWorkflowResource {
       {
          JsonObject postedDataJson = jsonIo.readJsonObject(postedData);
 
+      // TODO @SG - pass the servlet / spring context to service instead of passing it the needed beans.
+         InteractionRegistry registry = getInteractionRegistry();
          return Response.ok(
-               getMobileWorkflowService().suspendAndSaveActivity(oid).toString(),
+               getMobileWorkflowService().suspendAndSaveActivity(oid, registry).toString(),
                MediaType.APPLICATION_JSON_TYPE).build();
       }
       catch (Exception e)
@@ -470,4 +628,72 @@ public class MobileWorkflowResource {
          throw new RuntimeException(e);
       }
    }
+   
+   /**
+    * 
+    * @return
+    */
+   private InteractionRegistry getInteractionRegistry() {
+	   InteractionRegistry registry = (InteractionRegistry) servletContext.getAttribute(InteractionRegistry.BEAN_ID);
+	   if (registry != null) return registry;
+	   
+	   synchronized (this) {
+		   if (null == registry) {
+			   registry = new InteractionRegistry();
+			   servletContext.setAttribute(InteractionRegistry.BEAN_ID, registry);
+		   }
+	   }
+	   
+	   return registry;
+   }
+   
+   @GET
+   @Produces(MediaType.TEXT_PLAIN)
+   @Path("/language")
+   public Response getLanguage()
+   {
+      StringTokenizer tok = new StringTokenizer(httpRequest.getHeader("Accept-language"), ",");
+      if (tok.hasMoreTokens())
+      {
+         return Response.ok(LanguageUtil.getLocale(tok.nextToken()), MediaType.TEXT_PLAIN_TYPE).build();
+      }
+      return Response.ok("en", MediaType.TEXT_PLAIN_TYPE).build();
+   }
+   
+	/**
+	 * @param bundleName
+	 * @param locale
+	 * @return
+	 */
+	@GET
+	@Path("/{bundleName}/{locale}")
+	public Response getRetrieve(@PathParam("bundleName") String bundleName,
+			@PathParam("locale") String locale) {
+		final String POST_FIX = "client-messages";
+
+		if (StringUtils.isNotEmpty(bundleName) && bundleName.endsWith(POST_FIX)) {
+			try {
+				StringBuffer bundleData = new StringBuffer();
+				ResourceBundle bundle = ResourceBundle.getBundle(bundleName,
+						LanguageUtil.getLocaleObject(locale));
+
+				String key;
+				Enumeration<String> keys = bundle.getKeys();
+				while (keys.hasMoreElements()) {
+					key = keys.nextElement();
+					bundleData.append(key).append("=")
+							.append(bundle.getString(key)).append("\n");
+				}
+
+				return Response.ok(bundleData.toString(),
+						MediaType.TEXT_PLAIN_TYPE).build();
+			} catch (MissingResourceException mre) {
+				return Response.status(Status.NOT_FOUND).build();
+			} catch (Exception e) {
+				return Response.status(Status.BAD_REQUEST).build();
+			}
+		} else {
+			return Response.status(Status.FORBIDDEN).build();
+		}
+	}
 }

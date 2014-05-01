@@ -15,21 +15,40 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta name="apple-mobile-web-app-capable" content="yes">
 		<meta name="mobile-web-app-capable" content="yes">
-		<!-- meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"-->
+		<!-- <meta name="viewport" content="minimal-ui"> -->  
+		<meta name="format-detection" content="telephone=yes">
 		
 		<title>Stardust Portal</title>
 		
-		<link rel="shortcut icon" sizes="196x196" href="./images/appShortcut.png">
-		<link rel="apple-touch-icon" sizes="196x196" href="./images/appShortcut.png">
-		<link rel="apple-touch-icon-precomposed" sizes="196x196" href="./images/appShortcut.png">
-		<link rel="apple-touch-startup-image" href="./images/appLoading.png">
-		
+		<link href='https://fonts.googleapis.com/css?family=Lato:300,400,700' rel='stylesheet' type='text/css'>
 		<link rel="stylesheet" href="./css/jquery.mobile/jquery.mobile-1.4.0.min.css" />
+		<link rel="stylesheet" href="./css/font-awesome/css/font-awesome.css" />
 		<link rel="stylesheet" href="./css/jquery.mobile/jqm.custom.widgets.css" />
 		<link rel="stylesheet" href="./css/jquery.mobile/jquery.mobile.iscrollview.css" />
-		<link rel="stylesheet" href="./css/jquery.mobile/jquery.mobile.custom.css" />
-		<link rel="stylesheet" href="./css/font-awesome/css/font-awesome.css" />
 		<link rel="stylesheet" href="css/add2home.css">
+		
+		<!-- STARDUST STYLE -->
+		<link rel="shortcut icon" sizes="196x196" href="./images/appStardust.png">
+		<link rel="apple-touch-icon" sizes="196x196" href="./images/appStardust.png">
+		<link rel="apple-touch-icon-precomposed" sizes="196x196" href="./images/appStardust.png">
+		<link rel="apple-touch-startup-image" href="./images/splashStardust.png">
+		
+		<link rel="stylesheet" href="./css/jquery.mobile/custom/stardustbase/themes/stardustbase2.0.css" />
+		<link rel="stylesheet" href="./css/ipp.stardust.css" />
+		<!-- STARDUST STYLE END -->
+		
+		<!-- SUNGARD STYLE -->
+      <!--  
+		<link rel="shortcut icon" sizes="196x196" href="./images/appSunGard.png">
+		<link rel="apple-touch-icon" sizes="196x196" href="./images/appSunGard.png">
+		<link rel="apple-touch-icon-precomposed" sizes="196x196" href="./images/appSunGard.png">
+		<link rel="apple-touch-startup-image" href="./images/splashSunGard.png">
+		
+		<link rel="stylesheet" href="./css/jquery.mobile/custom/sungardbase/themes/sungardbase4.0.css" />
+		<link rel="stylesheet" href="./css/ipp.sungard.css" />
+      -->
+		<!-- SUNGARD STYLE END-->
+		
 	</head>
 	
 	<body>
@@ -37,31 +56,37 @@
 		<!-- EXTERNAL HEADER -->
 		<div data-role="header" data-position="fixed"  
 			 data-theme="a"  style="float:left;text-align;"
-			 class="external-header-stardust" 
+			 class="external-header" 
 			 ng-controller="headerCtrl"
 			 data-jqm-template data-jqm-widgets="toolbar" 
 			 data-template-url="templates/externalHeader.html">
 		</div>
 		
 		<!--  EXTERNAL FOOTER -->
-		<!--div class="external-footer" data-role="footer" data-theme="a" 
+		<div class="external-footer" 
+		     data-role="footer" 
+		     data-theme="a" 
+		     data-position="fixed"
 			 data-add-back-btn="true"
 			 ng-controller="footerCtrl"
-			 data-jqm-template data-jqm-widgets="" 
-			 data-template-url="templates/externalFooter.html">
-		</div-->
+			 data-jqm-template 
+			 data-jqm-widgets="" 
+			 data-template-url="templates/baseFooter.html">
+		</div>
 
 		<!-- EXTERNAL PANEL RIGHT -->
 		<div data-role="panel" id="main-panel" data-position="right" data-display="overlay" data-theme="a"
-			 data-jqm-template data-jqm-widgets="" 
+			 data-jqm-template 
+			 data-jqm-widgets="" 
 			 ng-controller="panelCtrl"
 			 data-template-url="templates/externalPanelRight.html">
 		</div>
 		
 		<!--LOGIN PAGE -->
-		<div id="login" data-role="page" data-theme="a" 
+		<div id="login" data-role="page" data-theme="c" 
 			 ng-controller="loginCtrl" 
-			 data-jqm-template data-jqm-widgets="" 
+			 data-jqm-template 
+			 data-jqm-widgets="" 
 			 data-template-url="templates/loginPage.html" >
 		</div>
 		
@@ -75,7 +100,8 @@
 		<!-- WORKLIST LISTVIEW PAGE -->
 		<div id="worklistListViewPage" data-theme="a" data-role="page"
 			 ng-controller="worklistCtrl" 
-			 data-jqm-template data-jqm-widgets="listview" 
+			 data-jqm-template 
+			 data-jqm-widgets="listview" 
 			 data-bind-to="worklistModel.worklistItems"
 			 data-template-url="templates/worklistListViewPage.html">
 		</div>
@@ -83,18 +109,18 @@
 		<!-- STARTABLE PROCESSES PAGE -->
 		<div id="startableProcessesPage" data-role="page" data-theme="a" 
 			 ng-controller="startableProcessesCtrl"
-			 data-jqm-template data-jqm-widgets="listview" 
+			 data-jqm-template 
+			 data-jqm-widgets="listview" 
 			 data-bind-to="startableProcessModel.processes"
 			 data-template-url="templates/startableProcessesPage.html">
 		</div>
 		
-
 		<!-- DETAIL PAGE -->
 		<div id="detailPage" data-role="page" data-theme="a" 
 			 ng-controller="detailCtrl"
 			 data-jqm-template 
-			 data-jqm-widgets="tabs,popup" 
-			 data-bind-to="[activityModel.item.activatable,isHotActivityConflict,isMashupShowable]"
+			 data-jqm-widgets="popup,listview" 
+			 data-bind-to="[activityModel.item.activatable,isHotActivityConflict,isMashupShowable,participantSearchModel.results]"
 			 data-template-url="templates/detailPage.html">
 		</div> <!-- DETAIL PAGE END -->
 		
@@ -118,7 +144,7 @@
 		<div id="documentViewerPage" data-role="page" data-theme="a"
 			 ng-controller="documentViewerCtrl"
 			 data-jqm-template 
-			 data-jqm-widgets="tabs" 
+			 data-jqm-widgets="listview" 
 			 data-bind-to="documentViewerModel"
 			 data-template-url="templates/documentViewerPage.html">
 		</div>
@@ -132,10 +158,90 @@
 			 data-template-url="templates/repositoryRootPage.html">
 		</div>
 		
+		<!-- Report Root Page -->
+		<div id="reportRootPage" data-role="page" data-theme="a"
+			 ng-controller="reportRootCtrl"
+			 data-jqm-template 
+			 data-jqm-widgets="listview"
+			 data-bind-to="[repositoryModel.children.folders,repositoryModel.children.documents]"
+			 data-template-url="templates/reportRootPage.html">
+		</div>
+		
+		<!-- Report Viewer Page -->
+		<div id="reportViewerPage" data-role="page" data-theme="a"
+			 ng-controller="reportViewerCtrl"
+			 data-jqm-template 
+			 data-jqm-widgets="listview" 
+			 data-bind-to="reportViewerModel"
+			 data-template-url="templates/reportViewerPage.html">
+		</div>
+		
+		<!-- Search Landing Page -->
+		<div id="searchLandingPage" data-role="page" data-theme="a"
+			 ng-controller=""
+			 data-jqm-template 
+			 data-jqm-widgets="listview"
+			 data-bind-to=""
+			 data-template-url="templates/searchLandingPage.html">
+		</div>
+		
+		<!-- Document Search Page -->
+		<div id="documentSearchPage" data-role="page" data-theme="a"
+			 ng-controller="documentSearchCtrl"
+			 data-jqm-template 
+			 data-jqm-widgets="listview,collapsible"
+			 data-bind-to="documentSearchModel"
+			 data-template-url="templates/documentSearchPage.html">
+		</div>
+		
+		<!-- Activity Search Page -->
+		<div id="activitySearchPage" data-role="page" data-theme="a"
+			 ng-controller="activitySearchCtrl"
+			 data-jqm-template 
+			 data-jqm-widgets="listview,collapsible"
+			 data-bind-to="activitySearchModel"
+			 data-template-url="templates/activitySearchPage.html">
+		</div>
+		
+		<!-- Process Search Page -->
+		<div id="processSearchPage" data-role="page" data-theme="a"
+			 ng-controller="processSearchCtrl"
+			 data-jqm-template 
+			 data-jqm-widgets="listview,collapsible"
+			 data-bind-to="processSearchModel"
+			 data-template-url="templates/processSearchPage.html">
+		</div>
+		
+		<!-- Not Authorized Page -->
+		<div id="unauthorizedPage" data-role="page" data-theme="a"
+			 ng-controller="unauthorizedCtrl"
+			 data-jqm-template 
+			 data-jqm-widgets=""
+			 data-template-url="templates/unauthorizedPage.html">
+		</div>
+		
+		<!-- Profile Page -->
+		<div id="profilePage" data-role="page" data-theme="a"
+			 ng-controller="profileCtrl"
+			 data-jqm-template 
+			 data-jqm-widgets=""
+			 data-template-url="templates/profilePage.html">
+		</div>
+		
+		<!-- Settings Page -->
+		<div id="settingsPage" data-role="page" data-theme="a"
+			 ng-controller="settingsCtrl"
+			 data-jqm-template 
+			 data-jqm-widgets="listview"
+			 data-bind-to="uiText"
+			 data-template-url="templates/settingsPage.html">
+		</div>
+		
+		
 		<script type="text/javascript">
-		var addToHomeConfig = {
-		    touchIcon:true
-		};
+			var addToHomeConfig = {
+			    touchIcon:true
+			};
 		</script>
 		<script type="application/javascript" src="js/add2home.js"></script>
 		<script type="text/javascript" data-main="js/MobileWorkflowMain" src="./js/libs/require/2.0.5/require.js"></script>

@@ -5,15 +5,34 @@
 	 data-on-error="uploadReporter.onError",
 	 data-on-load="uploadReporter.onLoad">
 </div>
+
 <div>
-	<ul data-role="listview" style="margin:0em;">
+	<ul data-role="listview" data-theme="a" style="margin:0em;">
 		<li ng-repeat="doc in documentModel.docs">
-			<a href="#documentViewerPage?id={{doc.id}}&processOid={{activityModel.item.processInstanceOid}}">
-				<h3>{{doc.name}}</h3>
-	       		<p>
-	       			<strong>{{doc.lastModifiedTimestamp | date:'yyyy-MM-dd' | humaneDate}}</strong>
-	       		</p>
+			<a class="ipp-no-content" 
+			   style="line-height:2em"
+			   href="#documentViewerPage?id={{doc.id}}&processOid={{activityModel.item.processInstanceOid}}">
+			   
+			    <i ng-class="{'fa-picture-o':isImageType(doc.name),'fa-file-o':!isImageType(doc.name)}" style="vertical-align:middle" 
+			       class="fa fa-2x fa-fw ipp-color-secondary-darkest ipp-icon-pad-r"></i>
+			       
+				<span class="ipp-fw-normal ipp-fs-small ipp-light">{{doc.name}}</span>
+
+	       		<div style="margin-top:-5px;" class="ui-li-aside">
+         			<i class="fa fa-clock-o ipp-lighter ipp-fs-smaller"></i>
+
+         			<span class="ipp-fs-smallest ipp-lighter ipp-fw-normal">
+         			      {{doc.lastModifiedTimestamp | friendlyDate}}</span>
+         		</div>
+
+         		<i  class="fa fa-1x fa-chevron-right ipp-nav-icon-right"></i>
 			</a>
 		</li>
 	</ul>
+	
+</div>
+
+<div ng-show="false && documentModel.docs.length==0" 
+     style="text-align:center;margin-top:5em;">
+	<i style="font-size:8em;" class="fa fa-files-o"></i>
 </div>

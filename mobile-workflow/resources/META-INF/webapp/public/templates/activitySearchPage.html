@@ -1,0 +1,168 @@
+<div class="ipp-header" data-role="header">
+	 <div style="float:left;margin-left:1.1em;margin-top:0.75em;">
+		 <a ng-show="!showResults" href="#" data-rel="back" class="ipp-icon-minimal">
+		 	<i style="color:#ffffff;" class="fa ipp-fs-2x fa-chevron-left"></i>
+		 </a>
+		 <a ng-show="showResults" ng-click="showResults=false" href="#" class="ipp-icon-minimal">
+		 	<i style="color:#ffffff;" class="fa ipp-fs-2x fa-chevron-left"></i>
+		 </a>
+	 </div>
+     <h4>{{uiText.searchAct}}</h4>
+</div>
+
+<div  ng-show="hasError==true" 
+      ng-click="hasError=false;" 
+      class="ipp-bar ipp-bar-error">
+	<i class="fa fa-times-circle-o"></i>
+	<span>{{errorMessage}}</span>
+</div>
+
+<div jqm-loader jqm-show-loader="{{isAjaxLoading}}" jqm-text=""></div>
+<div ng-show="!showResults">
+	<div class="ui-page-theme-a ipp-pseudo-list">
+	
+	  		<div>
+	  			<span class="ipp-fw-normal ipp-lighter" style="float:left;'">
+		  			{{uiText.startFrom}}
+	  			</span>
+	 		</div>
+	 		
+		    <div class="ui-block-a" style="width:59%;margin-right:0.1em;">
+	    		<input type="date" 
+	    			   class="ipp-fs-small"
+	    		       ng-model="filter.startDate" 
+	    		       id="startDate{{$id}}"
+	    		       data-clear-btn="false" value="" ></input>
+		    </div>
+		    
+		    <div class="ui-block-b" style="width:40%;">
+		    	<input type="time" 
+		    		   class="ipp-fs-small"
+		    	       ng-model="filter.startTime" 
+		    	       id="startTime{{$id}}"
+		    	       data-clear-btn="false" value="" ></input>
+		    </div>
+	</div>
+	
+	<div class="ui-page-theme-a ipp-pseudo-list">
+	
+		<div>
+			<span class="ipp-fw-normal ipp-lighter" style="float:left;'">
+				{{uiText.startTo}}
+			</span>
+		</div>
+		
+		<div class="ui-block-a" style="width:59%;margin-right:0.1em;">
+			<input type="date" 
+				   class="ipp-fs-small"
+			       ng-model="filter.endDate" 
+			       data-clear-btn="false" value="" />
+		</div>
+		
+		<div class="ui-block-b" style="width:40%;">
+			<input type="time" 
+			       class="ipp-fs-small"
+			       ng-model="filter.endTime" 
+			       data-clear-btn="false" value="" />
+		</div>
+	</div>
+	
+	<div style="display:table;width:100%;">
+		<ul data-role="listview" data-theme='d' data-shadow="false">
+		
+		  <li data-role="collapsible" data-iconpos="right" data-inset="false">
+		    <h4>
+		    	{{uiText.process}}
+		    	<div style="right:7em;" class="ipp-li-count-secondary">
+		    		{{(activitySearchModel.startableProcesses|filter:{isChecked:true}).length}}
+		    	</div>
+		    	<span ng-click="processesToggleState=!processesToggleState;
+		    	               toggleAll(activitySearchModel.startableProcesses,processesToggleState,$event)"
+		    	      class="ipp-li-count-secondary">
+		    		<i ng-class="{'fa-check-square':processesToggleState}" class="fa fa-square"></i> {{uiText.all}}
+		    	</span>
+		    </h4>
+		    <ul data-role="listview" data-theme="a">
+				<li ng-init="process.isChecked=false"
+					ng-click="process.isChecked=!process.isChecked;
+				              getActivities()" 
+		            ng-repeat="process in activitySearchModel.startableProcesses">
+		        	<i style="font-size:1.5em;"  
+		        	   ng-class="{'fa-check-square':process.isChecked}" 
+		        	   class="fa fa-square"></i>
+		        	&nbsp;
+		        	<span class="ipp-fs-small ipp-light ipp-fw-light">{{process.name}}</span>
+	        	</li>
+		    </ul>
+		  </li>
+			
+		  <li data-role="collapsible" data-iconpos="right" data-inset="false">
+		    <h4>
+		    	{{uiText.activity}}
+		    	<span style="right:7em;" class="ipp-li-count-secondary">
+		    		{{(activitySearchModel.activities|filter:{isChecked:true}).length}}
+		    	</span>
+		    	<span ng-click="activityToggleState=!activityToggleState;
+		    	               toggleAll(activitySearchModel.activities,activityToggleState,$event)"
+		    	      class="ipp-li-count-secondary">
+		    		<i ng-class="{'fa-check-square':activityToggleState}" class="fa fa-square"></i> {{uiText.all}}
+		    	</span>
+		    </h4>
+		    <ul data-role="listview" data-theme="a">
+				<li ng-init="activity.isChecked=false"
+				    ng-click="activity.isChecked=!activity.isChecked;" 
+		            ng-repeat="activity in activitySearchModel.activities">
+		        	<i style="font-size:1.5em;"  
+		        	   ng-class="{'fa-check-square':activity.isChecked}" 
+		        	   class="fa fa-square"></i>
+		        	&nbsp;
+		        	<span class="ipp-fs-small ipp-light ipp-fw-light">{{activity.name}}</span>
+	        	</li>
+		    </ul>
+		  </li>
+		  
+		  <li data-role="collapsible" data-iconpos="right" data-inset="false">
+		    <h4>
+		    	{{uiText.state}}
+		    	<span style="right:7em;" class="ipp-li-count-secondary">
+		    		{{(activitySearchModel.states|filter:{isChecked:true}).length}}
+		    	</span>
+		    	<span ng-click="stateToggleState=!stateToggleState;
+		    	               toggleAll(activitySearchModel.states,stateToggleState,$event)"
+		    	      class="ipp-li-count-secondary">
+		    		<i ng-class="{'fa-check-square':stateToggleState}" class="fa fa-square"></i> {{uiText.all}}
+		    	</span>
+		    </h4>
+		    <ul data-role="listview" data-theme="a">
+				<li ng-init="state.isChecked=false"
+				    ng-click="state.isChecked=!state.isChecked;" 
+		            ng-repeat="state in activitySearchModel.states">
+		        	<i style="font-size:1.5em;"  
+		        	   ng-class="{'fa-check-square':state.isChecked}" 
+		        	   class="fa fa-square"></i>
+		        	&nbsp;
+		        	<span class="ipp-fs-small ipp-light ipp-fw-light">{{state.name}}</span>
+		        </li>
+		    </ul>
+		  </li>
+		  
+		</ul>
+	</div>
+	
+	<a ng-click="showResults=true;getResults();"  
+	   style="margin-left:1em;margin-right:1em;" 
+	   href="#" 
+	   class="ui-btn ui-corner-all ui-btn-d">
+		<i class="fa fa-search ipp-pad-right-4x"></i>{{uiText.submit}}
+	</a>
+
+</div>
+
+<div ng-show="showResults">Todo:Results...</div>
+
+    	
+
+
+    	
+
+

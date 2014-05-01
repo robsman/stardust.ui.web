@@ -1,71 +1,42 @@
- <ul data-role="listview">
+ <ul data-role="listview" class="ipp-fs-smaller">
 
-	 <li>
-	 	<strong class="ipp-header-2col">OID</strong>
+	 <li style="border-top:none;">
+	 	<span class="ipp-header-2col ipp-fw-bold ipp-light">{{uiText.OID}}</span>
 	 	<span>{{processModel.oid}}</span>
 	 </li>
 	 <li>
-	 	<strong class="ipp-header-2col">State</strong>
-	 	<span>{{processModel.state}}</span>
+	 	<span class="ipp-header-2col ipp-fw-bold ipp-light">{{uiText.state}}</span>
+	 	<span class="ipp-fw-normal ipp-lighter">{{processModel.state}}</span>
 	 </li>
 	 <li>
-	 	<strong class="ipp-header-2col">Start Time</strong>
-	 	<span>{{processModel.startTimestamp | date: 'yyyy-MM-dd hh:mm:ss'}}</span>
+	 	<span class="ipp-header-2col ipp-fw-bold ipp-light">{{uiText.starttime}}</span>
+	 	<span class="ipp-fw-normal ipp-lighter">{{processModel.startTimestamp | date: 'yyyy-MM-dd hh:mm:ss'}}</span>
 	 </li>
 	 <li>
-	 	<strong class="ipp-header-2col">Started By</strong>
-	 	<span>{{processModel.startingUser.lastName}}, {{processModel.startingUser.firstName}}</span>
+	 	<span class="ipp-header-2col ipp-fw-bold ipp-light">{{uiText.startedby}}</span>
+	 	<span class="ipp-fw-normal ipp-lighter">{{processModel.startingUser.lastName}}, {{processModel.startingUser.firstName}}</span>
 	 </li>
 	 <li>
-	 	<strong class="ipp-header-2col">Priority</strong>
-	 	<span>{{processModel.priority | priority}}</span>
+	 	<span class="ipp-header-2col ipp-fw-bold ipp-light">{{uiText.priority}}</span>
+	 	<!-- span class="ipp-fw-normal ipp-lighter">{{processModel.priority | priority}}</span-->
+	 	<div style="display:inline-table" data-role="controlgroup" data-type="horizontal" data-mini="true">
+		    <a href="#" 
+		       ng-click="setPriority(processModel.oid,-1)"
+		       ng-class="{'ipp-btn-active' : processModel.priority ==-1}" 
+		       class="ui-btn ui-btn-a ui-corner-all">{{uiText.low}}</a>
+		    <a href="#" 
+		       ng-click="setPriority(processModel.oid,0)"
+		       ng-class="{'ipp-btn-active' : processModel.priority ==0}" 
+		       class="ui-btn  ui-btn-a ui-corner-all">{{uiText.normal}}</a>
+		    <a href="#" 
+		       ng-click="setPriority(processModel.oid,1)"
+		       ng-class="{'ipp-btn-active' : processModel.priority ==1}" 
+		       class="ui-btn  ui-btn-a ui-corner-all">{{uiText.high}}</a>
+		</div>
 	 </li>
 	 <li ng-repeat="(k,v) in processModel.descriptors">
-	 	<strong class="ipp-header-2col">{{k}}</strong>
-	 	<span>{{v.value}}</span>
+	 	<span class="ipp-header-2col ipp-fw-bold ipp-light">{{k}}</span>
+	 	<span class="ipp-fw-normal ipp-lighter">{{v.value}}</span>
 	 </li>
 	 
 </ul>
-
-<!-- table class="ui-mini" style="text-align:left;">
-	<thead>
-		<tr><th></th><th></th></tr>
-	</thead>
-	<tbody>
-		<tr>
-			<th>OID</th>
-			<td>{{processModel.oid}}</td>
-		<tr>
-		<tr>
-			<th>State</th>
-			<td>{{processModel.state}}</td>
-		<tr>
-		<tr>
-			<th>Start Time</th>
-			<td>{{processModel.startTimestamp | date: 'yyyy-MM-dd hh:mm:ss'}}</td>
-		<tr>
-		<tr>
-			<th>Started By</th>
-			<td>{{processModel.startingUser.lastName}}, {{processModel.startingUser.firstName}}</td>
-		<tr>
-		<tr>
-			<th>Priority</th>
-			<td>{{processModel.priority | priority}}</td>
-		<tr>
-	</tbody>
-</table>
-
-<table style="text-align:left;"  class="ui-mini">
-	<thead>
-		<tr>
-			<th></th>
-			<th></th>
-		</tr>
-	</thead>
-	<tbody>
-		<tr ng-repeat="(k,v) in processModel.descriptors">
-			<th>{{k}}</th>
-			<td>{{v.value}}</td>
-		</tr>
-	</tbody>
-</table-->

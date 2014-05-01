@@ -1,19 +1,42 @@
-<div data-role="header" style="overflow:hidden;">
-	<h1>{{activityModel.item.processName}} <span class="hide-media-sm">(#{{activityModel.item.processInstanceOid}})</span></h1>
-    <!-- a href="#" data-icon="gear" class="ui-btn-right">Options</a-->
-    <a href="#" data-rel="back" class="ui-btn ui-shadow ui-corner-all ui-icon-back ui-btn-icon-notext">No Text</a>
+<div class="ipp-header" data-role="header">
+	 <a href="#" data-rel="back" 
+	    class="ipp-icon-minimal"
+	    ng-click="activeTab=''">
+	 	<i style="float:left;color:#ffffff;" class="fa fa-2x fa-chevron-left"></i>
+	 </a>
+     <h4>{{activityModel.item.processName}} 
+     	<span class="hide-media-sm">(#{{activityModel.item.processInstanceOid}})</span>
+     </h4>
+</div>
+
+<div  ng-show="errorModel.hasError==true" 
+      ng-click="errorModel.hasError=false;" 
+      class="ipp-bar ipp-bar-error">
+	<i class="fa fa-times-circle-o"></i>
+	<span>{{errorModel.errorMessage}}</span>
+</div>
+
+<div  ng-show="infoModel.hasInfo==true" 
+      ng-click="infoModel.hasInfo=false;" 
+      class="ipp-bar ipp-bar-info">
+	<i class="fa fa-info-circle"></i>
+	<span>{{infoModel.infoMessage}}</span>
 </div>
 
 <div jqm-loader jqm-show-loader="{{isAjaxLoading}}" jqm-text=""></div>
 
 <div data-iscroll>
-<div data-role="stabs" id="processTabs" style="padding-top:0em;border-top:0em;">
+<div data-role="stabs" 
+     id="processTabs" 
+     style="padding-top:0em;border-top:0em;">
   <div data-role="navbar">
 	<ul>
 		<li>
-			<a href="#overviewTab" ng-click="activeSubView='overview'" ng-class="{'ipp-btn-active' : activeSubView=='overview'}">
-				<i style="display:block;" class="fa fa-info-circle fa-2x jqm-icon-block"></i>
-				<span title="Overview" class="hide-media-sm">Overview</span>
+			<a href="#overviewTab" 
+			   ng-click="activeSubView='overview'" 
+			   ng-class="{'ipp-btn-active' : activeSubView=='overview'}">
+				<i style="display:block;" class="fa fa-info-circle fa-2x jqm-icon-block ipp-lightest"></i>
+				<span title="Overview" class="hide-media-sm ipp-lighter ipp-fw-normal">{{uiText.overview}}</span>
 			</a>		
 		</li>
 		<!-- li>
@@ -26,37 +49,40 @@
 			<a href="#docsProcessTab" 
 			   ng-click="activeSubView='docs'" 
 			   ng-class="{'ipp-btn-active' : activeSubView=='docs'}">
-				<i style="display:block;" class="fa fa-files-o fa-2x jqm-icon-block"></i>
-				<span title="Documents" class="hide-media-sm">Documents ({{documentModel.docs.length}})</span>
+				<i style="display:block;" 
+				   class="fa fa-files-o fa-2x jqm-icon-block ipp-lightest"></i>
+				<span title="Documents" class="hide-media-sm ipp-lighter ipp-fw-normal">{{uiText.documents}} ({{documentModel.docs.length}})</span>
 			</a>
 		</li>
 		<li>
 		 	<a href="#notesProcessTab" 
 		 	   ng-click="activeSubView='notes'" 
 		 	   ng-class="{'ipp-btn-active' : activeSubView=='notes'}" >
-				<i style="display:block;" class="fa fa-clipboard fa-2x jqm-icon-block"></i>
-				<span title="Notes" class="hide-media-sm">Notes ({{notesModel.notes.length}})</span>
+				<i style="display:block;" class="fa fa-clipboard fa-2x jqm-icon-block ipp-lightest"></i>
+				<span title="Notes" class="hide-media-sm ipp-lighter ipp-fw-normal">{{uiText.notes}} ({{notesModel.notes.length}})</span>
 			</a>
 		</li>
 		<li>
 			<a href="#participantsTab" 
 			   ng-click="activeSubView='participants'" 
 			   ng-class="{'ipp-btn-active' : activeSubView=='participants'}" >
-				<i style="display:block;" class="fa fa-user fa-2x jqm-icon-block"></i>
-				<span title="Participants" class="hide-media-sm">Participants</span>
+				<i style="display:block;" class="fa fa-user fa-2x jqm-icon-block ipp-lightest"></i>
+				<span title="Participants" class="hide-media-sm ipp-lighter ipp-fw-normal">{{uiText.participants}}</span>
 			</a>
 		</li>
 		<li>
 			<a href="#processHistoryTab"  
 			   ng-click="activeSubView='history'" 
 			   ng-class="{'ipp-btn-active' : activeSubView=='history'}" >
-				<i style="display:block;" class="fa fa-clock-o fa-2x jqm-icon-block"></i>
-				<span title="Participants" class="hide-media-sm">History</span>
+				<i style="display:block;" class="fa fa-clock-o fa-2x jqm-icon-block ipp-lightest"></i>
+				<span title="Participants" class="hide-media-sm ipp-lighter ipp-fw-normal">{{uiText.history}}</span>
 			</a>
 		</li>
 	</ul>
   </div>
-  <div ng-show="activeSubView=='overview'" id="overviewTab" class="ui-body-d ui-content">
+  <div ng-show="activeSubView=='overview'" 
+       id="overviewTab" 
+       class="ui-body-d ui-content ipp-border-0x">
 		<div data-theme="a" 
 			 data-jqm-template 
 			 data-jqm-widgets="listview" 
@@ -71,28 +97,37 @@
 			 data-template-url="templates/descriptorsPage.html">
 		</div>
   </div-->
-  <div ng-show="activeSubView=='docs'" id="docsProcessTab" class="ui-body-d ui-content">
+  <div ng-show="activeSubView=='docs'" 
+       id="docsProcessTab" 
+       class="ui-body-d ui-content ipp-border-0x">
     	<div data-jqm-template 
 			 data-jqm-widgets="listview"
 			 data-bind-to="documentModel.docs"
 			 data-template-url="templates/documentPage.html">
 		</div>
   </div>
-  <div ng-show="activeSubView=='notes'" id="notesProcessTab" class="ui-body-d ui-content">
+  <div ng-show="activeSubView=='notes'" 
+       id="notesProcessTab" 
+       class="ui-body-d ui-content ipp-border-0x">
    		<div data-jqm-template 
 			 data-jqm-widgets="listview"
 			 data-bind-to="notesModel.notes"
 			 data-template-url="templates/notesPage.html">
 		</div>
   </div>
-  <div ng-show="activeSubView=='participants'" id="participantsTab"  class="ui-body-d ui-content">
+  <div ng-show="activeSubView=='participants'" 
+       id="participantsTab"  
+       class="ui-body-d ui-content ipp-border-0x">
     	<div data-jqm-template 
 			 data-jqm-widgets="listview"
 			 data-bind-to="participantModel.participants"
 			 data-template-url="templates/participantPage.html">
 		</div>
   </div>
-  <div ng-show="activeSubView=='history'" id="processHistoryTab"  class="ui-body-d ui-content">
+  <div ng-show="activeSubView=='history'" 
+       id="processHistoryTab"  
+       style="margin-top:-1.25em;"
+       class="ui-body-d ui-content ipp-border-0x">
     	<div data-jqm-template 
 			 data-jqm-widgets="listview"
 			 data-bind-to="processHistoryModel"
@@ -100,10 +135,4 @@
 		</div>
   </div>
 </div><!-- Tabs End  -->
-</div>
-<div data-position="fixed" data-role="footer" data-theme="a" 
-		 ng-controller="footerCtrl"
-		 data-jqm-template 
-		 data-jqm-widgets="" 
-		 data-template-url="templates/baseFooter.html">
 </div>

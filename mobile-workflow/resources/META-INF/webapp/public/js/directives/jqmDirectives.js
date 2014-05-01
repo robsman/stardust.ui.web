@@ -173,6 +173,8 @@ define(["jquery"],function(){
 		      /*TODO: detect when data-bind-to is not present and adjust accordingly*/
 		      scope.$watchCollection(attrs.bindTo,function(){
 		    	  console.log("change in ... " +  attrs.bindTo);
+		    	  $(element).enhanceWithin();
+		    	  console.log("enhanceWithin...");
 		         $($widgets).each(function(){
 		           try{
 		        	   this[this.attr("data-role")]("refresh");

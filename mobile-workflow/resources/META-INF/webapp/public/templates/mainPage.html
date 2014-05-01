@@ -1,74 +1,59 @@
-<div href="#login" ng-show="!appData.isAuthorized">You are not Authorized to View this Page</div>
-
-<ul data-role="listview" ng-show="!appData.isAuthorized">
-     <li>
-      <a href="#login">
-      	You are not authorized to view this page.
-      	Click to return to the login page.
-      </a>
-     </li>
- </ul>
-   
-
- 		
-<div class="sub-header">
-				<div class="ui-grid-b">
-	    <div class="ui-block-a ipp-grid-icon-container" style="width:25%;">
-		    <div class="ui-bar ui-bar-a ipp-grid-subheader">
-		    	<a href="#" data-rel="back" class="ui-btn ui-icon-back ui-btn-icon-notext ui-corner-all">
-		    	</a>
-		    </div>
-		</div>
-	    <div class="ui-block-b" style="width:50%;">
-	    	<div class="ui-bar ui-bar-a ipp-grid-subheader" style="">Welcome {{appData.user.id}}</div>
-	    </div>
-	    <div class="ui-block-c" style="width:25%;">
-	    	<div class="ui-bar ui-bar-a ipp-grid-subheader"></div>
-	    </div>
-	</div>
+<div  ng-show="errorModel.hasError==true" 
+      ng-click="errorModel.hasError=false;" 
+      class="ipp-bar ipp-bar-error">
+	<i class="fa fa-times-circle-o"></i>
+	<span>{{errorModel.errorMessage}}</span>
 </div>
+   
+<div class="ipp-header" data-role="header">
+	 <a href="#login" class="ipp-icon-minimal">
+	 	<i style="float:left;color:#ffffff;" class="fa fa-2x fa-chevron-left"></i>
+	 </a>
+     <h4>{{uiText.welcome}} {{appData.user.id}}</h4>
+</div>
+ 		
 	
 <div id="mainPContent" data-role="content" data-iscroll>
-	<ul data-role="listview">
+
+	<ul data-role="listview" data-theme="b">
 	
 		<li>
-			<a href="#worklistListViewPage">
-				<i class="fa fa-2x fa-tasks ipp-icon-pad-r"></i>
-				Worklist
-				<span class="ui-li-count">{{mainPageModel.worklistCount}}</span>
+			<a href="#worklistListViewPage" class="ipp-no-content">
+				<i class="fa fa-2x fa-tasks fa-fw ipp-icon-pad-r ipp-color-primary-darkest"></i>
+				<span style="vertical-align:0.3em;" class="ipp-lighter ipp-fw-normal">{{uiText.worklist}}<span>
+				<span class="ipp-li-count">{{mainPageModel.worklistCount}}</span>
+				<i class="fa fa-1x fa-chevron-right ipp-nav-icon-right"></i>
 			</a>
 		</li>
 		<li>
-			<a href="#startableProcessesPage">
-				<i class="fa  fa-2x fa-gears ipp-icon-pad-r"></i>
-				Start Work
+			<a href="#startableProcessesPage" class="ipp-no-content">
+				<i class="fa  fa-2x fa-gears fa-fw ipp-icon-pad-r ipp-color-primary-darkest"></i>
+				<span style="vertical-align:0.3em;" class="ipp-lighter ipp-fw-normal">{{uiText.startwork}}</span>
+				<i class="fa fa-1x fa-chevron-right ipp-nav-icon-right"></i>
 			</a>
 		</li>
 		<li>
-			<aa href="#search">
-				<i class="fa fa-2x fa-search ipp-icon-pad-r"></i>
-				Search
-			</aa>
+			<a href="#searchLandingPage" class="ipp-no-content">
+				<i class="fa fa-2x fa-search fa-fw ipp-icon-pad-r ipp-color-primary-darkest"></i>
+				<span style="vertical-align:0.3em;"class="ipp-lighter ipp-fw-normal">{{uiText.search}}</span>
+				<i class="fa fa-1x fa-chevron-right ipp-nav-icon-right"></i>
+			</a>
 		</li>
 		<li>
-			<aa href="#reports">
-				<i class="fa fa-2x fa-bar-chart-o ipp-icon-pad-r"></i>
-				Reports
-			</aa>
+			<a href="#reportRootPage" class="ipp-no-content">
+				<i class="fa fa-2x fa-bar-chart-o fa-fw ipp-icon-pad-r ipp-color-primary-darkest"></i>
+				<span style="vertical-align:0.3em;" class="ipp-lighter ipp-fw-normal">{{uiText.reports}}</span>
+				<i class="fa fa-1x fa-chevron-right ipp-nav-icon-right"></i>
+			</a>
 		</li>
 		<li>
-			<a href="#repositoryRootPage">
-			<i class="fa fa-2x fa-files-o ipp-icon-pad-r"></i>
-			Documents
+			<a href="#repositoryRootPage" class="ipp-no-content">
+				<i class="fa fa-2x fa-files-o fa-fw ipp-icon-pad-r ipp-color-primary-darkest"></i>
+				<span style="vertical-align:0.3em;" class="ipp-lighter ipp-fw-normal">{{uiText.documents}}</span>
+				<i class="fa fa-1x fa-chevron-right ipp-nav-icon-right"></i>
 			</a>
 		</li>
 		
 	</ul>
 </div>
 
-<div data-position="fixed" data-role="footer" data-theme="a" 
-		 ng-controller="footerCtrl"
-		 data-jqm-template 
-		 data-jqm-widgets="" 
-		 data-template-url="templates/baseFooter.html">
-</div>

@@ -1,40 +1,72 @@
-<div data-role="content" style="margin-top:-2.5em;">
-
-	<ul data-role="listview" data-split-icon="plus" data-theme="a" data-split-theme="a" data-inset="true">
-      <li>
-        <a href="#">
-          <textarea id="txtareaAddNote" ng-model="notesModel.newNote.content" placeholder="Add Notes"></textarea>
-        </a>
-        <a ng-click="createNote(activityModel.item.processInstanceOid,notesModel.newNote.content)" href="#">Save Note</a>
-      </li>
-    </ul>
+<div class="notes" data-role="content" style="margin-top:-2.5em;">
 	
-	<a href="#noteFilterPopup_{{$id}}" style="float:right;" data-rel="popup" data-transition="slide" 
-	   class="ui-btn ui-corner-all ui-btn-icon-notext ui-icon-arrow-d ui-btn-a">
-	</a>
-	
-	<div data-role="popup" id="noteFilterPopup_{{$id}}" data-theme="a">
-	    <ul data-role="listview"  data-inset="true" style="min-width:210px;">
-	        <li data-icon="arrow-d" ng-click="notePredicate='-timestamp'"><a href="#">Newest</a></li>
-	        <li data-icon="arrow-d" ng-click="notePredicate='timestamp'"><a href="#">Oldest</a></li>
-	    </ul>
+	<div style="margin-top:1em;padding:1.0em;padding-bottom:2em;background-color:#eee;border:sold 1px #bbb;" class="ui-corner-all">
+		<div>
+			<i class="fa fa-clipboard ipp-fs-2x fa-flip-horizontal ipp-color-secondary-darkest ipp-icon-pad-r"></i>
+			<span class="ipp-fs-1x ipp-fw-normal ipp-fw-light">{{uiText.addNote}}</span>
+			<i ng-click="isListening=!isListening"
+	          	 style="position:relative;top:2.5em;float:right;font-size:1em;right:0.5em" 
+	          	 ng-class="{'pulse1' : isListening,'fa-microphone':isSupported}"
+	             class="fa fa-2x"></i>
+			<textarea speech-to-text 
+	                  data-is-listening="isListening" 
+	                  data-is-supported="isSupported" 
+	                  id="txtareaAddNote" 
+	                  ng-model="notesModel.newNote.content"></textarea>
+            <a href="#" 
+               style="float:right;padding:3px;position:relative;top:-0.75em;right:-0.5em;" 
+               ng-click="createNote(activityModel.item.processInstanceOid,notesModel.newNote.content)"
+               class="ui-btn ui-btn-d ui-btn-inline ui-corner-all">
+				<i  class="fa fa-plus-circle ipp-fs-2x"></i>
+			</a>
+         </div>
 	</div>
 	
-	<div class="ui-body ui-body-a ui-corner-all" ng-repeat="note in notesModel.notes | orderBy:notePredicate">
-        <span>{{note.user.firstName}}, {{note.user.lastName}}</span>
-       	<span style="font-size:8pt;float:right;padding-right:2.5em;">
-       		{{note.timestamp | date:'yyyy-MM-dd' | humaneDate}}
-       	</span>
-        
-       	<div ng-click="showContent=!showContent" 
-       		 ng-class="{'ui-icon-carat-u': showContent, 'ui-icon-carat-d' : !showContent}"
-       		 class="ui-btn ui-btn-right ui-btn-icon-notext ui-corner-all">
-       	</div>
-       	<div data-inset="false">
-         	<div ng-class="{'ipp-overflowEllipsis': !showContent, 'ipp-overflowShow': showContent}">
+	<a href="#noteFilterPopup_{{$id}}" 
+	   ng-show="notesModel.notes.length > 1"
+	   style="padding:4px;float:right;margin-right:-1.4em;" 
+	   data-rel="popup" 
+	   data-transition="slide"
+	   class="ui-btn ui-btn-d ui-btn-inline ui-corner-all ipp-fs-2x">
+		<i class="fa fa-1x fa-sort"></i>
+	</a>
+	
+	<div data-role="popup" id="noteFilterPopup_{{$id}}" data-theme="b">
+	    <ul data-role="listview"  data-inset="true" style="min-width:210px;">
+	        <li data-icon="arrow-d" ng-click="notePredicate='-timestamp'"><a class="ipp-no-content" href="#">{{uiText.newest}}</a></li>
+	        <li data-icon="arrow-d" ng-click="notePredicate='timestamp'"><a class="ipp-no-content" href="#">{{uiText.oldest}}</a></li>
+	    </ul>
+	</div>
+
+	<div class="ui-body ui-body-a ui-corner-all ipp-note" 
+	     ng-class="{'ipp-border-bottom-none':!$last}"
+	     ng-repeat="note in notesModel.notes | orderBy:notePredicate">
+		<div style="display:inline-block">
+			<i class="fa fa-edit ipp-note-icon ipp-color-secondary-darkest"></i>
+		</div>
+		
+		<div class="ipp-note-content">
+	        <span class="ipp-fs-small ipp-fw-bold ipp-light">{{note.user.firstName}}, {{note.user.lastName}}</span>
+         	<div class="ipp-fs-smallest ipp-fw-normal ipp-lighter" ng-class="{'ipp-overflowEllipsis': !showContent, 'ipp-overflowShow': showContent}">
            		{{note.content}}
          	</div>
-       	</div>        	
+       	</div>
+       	
+       	<div style="display:inline;right:3em;position:absolute;" class="ui-li-aside">
+         			<i class="fa fa-clock-o ipp-lighter ipp-fs-smaller"></i>
+
+         			<span class="ipp-fs-smallest ipp-lighter ipp-fw-normal">
+         			      {{note.timestamp | friendlyDate }}</span>
+    	</div>
+       	  
+        <i ng-click="showContent=!showContent" 
+           ng-class="{'fa-chevron-up': showContent,'fa-chevron-down': !showContent}"
+           class="fa fa-1x fa-chevron-down ipp-nav-icon-right ipp-note-expando"></i>
+           
     </div><!-- NOTE data tiles end... -->
+    
+    <div ng-show="notesModel.notes.length==0" style="text-align:center;margin-top:5em;">
+    	<i style="font-size:8em;" class="fa fa-clipboard"></i>
+    </div>
     
 </div><!-- Data-Role Content end... -->

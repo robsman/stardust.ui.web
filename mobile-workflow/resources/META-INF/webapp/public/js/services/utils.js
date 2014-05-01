@@ -11,6 +11,69 @@ define(["angularjs"],function(angular){
 				return "Hello From Util Service";
 			},
 			
+			"isImageType" : function(mimeType){
+				var exp = /^.*\.(jpg|jpeg|gif|png|bmp|svg|apng)$/i;           
+				return exp.test(mimeType);  
+			},
+			
+			"isReportType" : function(filename){
+				var exp = /^.*\.(json|bpmrpt)$/i;           
+				return exp.test(filename);  
+			},
+			
+			"isReportDefinition" : function(filename){
+				var exp = /^.*\.(bpmrpt)$/i;           
+				return exp.test(filename);  
+			},
+			
+			"isReportInstance" : function(filename){
+				var exp = /^.*\.(json)$/i;           
+				return exp.test(filename);  
+			},
+			
+			"buildDatePartObject" : function(dateString) {
+				var oDate = new Date(dateString),
+		    	oDay=oDate.getDay(),
+		    	month=	oDate.getMonth()+1,
+		    	year=oDate.getFullYear(),
+		    	dateOfMonth=oDate.getDate(),
+		    	hour=oDate.getHours(),
+		    	minutes=oDate.getMinutes(),
+		    	seconds=oDate.getSeconds(),
+		    	milliseconds=oDate.getMilliseconds(),
+		    	tzo=oDate.getTimezoneOffset(),
+		    	meridian=(hour<12)?"AM":"PM",
+		    			dpObj={};
+				//TODO: 
+				var months=["January","February","March","April","May","June","July","August","September","October","November","December"];
+				var days=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+				
+				dpObj.yy=(year %1000)+"";
+				dpObj.yyyy=year+"";
+				dpObj.M=month+"";
+				dpObj.MM=(month <10)?"0"+month:month+"";
+				dpObj.MMM=months[month-1].slice(0,3);
+				dpObj.MMMM=months[month-1];
+				dpObj.d=dateOfMonth+"";
+				dpObj.dd=(dateOfMonth <10)?"0"+dateOfMonth:dateOfMonth+"";
+				dpObj.ddd=days[oDay].slice(0,3),
+				dpObj.dddd=days[oDay],
+				dpObj.H=hour+"";
+				dpObj.HH=(hour <10)?"0" + hour:hour+"";
+				dpObj.h=hour%12+"";
+				dpObj.hh=(hour%12===0)?12:hour;
+				dpObj.hh=(dpObj.hh < 10)?"0" + dpObj.hh:dpObj.hh+"";
+				dpObj.m=minutes+"";
+				dpObj.mm=(minutes<10)?"0"+minutes:minutes+"";
+				dpObj.s=seconds +"";
+				dpObj.ss=(seconds < 10)?"0"+seconds:seconds+"";
+				dpObj.sss=milliseconds;
+				dpObj.K=tzo/60;
+				dpObj.t=meridian.slice(0,1);
+				dpObj.tt=meridian;
+				return dpObj;
+			},
+				
 			/**
 			 * Promise based wrapper for navigator.geolocation.getCurrentPosition
 			 * @param timeout

@@ -70,6 +70,34 @@ define(["angularjs"],function(angular){
 				return deferred.promise;
 			},
 			
+			"getProcessStates" : function(){
+				var deferred = $q.defer();
+				
+				$http({
+				    url: baseServiceUrl + "/process-instances/states",
+				    method: "GET"
+				}).success(function(data, status, headers, config) {
+					deferred.resolve(data);
+				}).error(function(data, status, headers, config) {
+					deferred.reject(status);
+				});
+				return deferred.promise;
+			},
+			
+			"getActivityStates" : function(){
+				
+				var deferred = $q.defer();
+				
+				$http({
+				    url: baseServiceUrl + "/activity-instances/states",
+				    method: "GET"
+				}).success(function(data, status, headers, config) {
+					deferred.resolve(data);
+				}).error(function(data, status, headers, config) {
+					deferred.reject(status);
+				});
+				return deferred.promise;	
+			},
 			"findWorklistItem" : function(processInstanceOid,worklistItems){
 				var baseItem={},
 					i=0;
@@ -99,6 +127,39 @@ define(["angularjs"],function(angular){
 				return deferred.promise;
 			},
 			
+			"getReportRoot" : function(){
+				var deferred = $q.defer();
+				
+				$http({
+				    url: baseServiceUrl + "/folders/root",
+				    method: "GET"
+				}).success(function(data, status, headers, config) {
+					deferred.resolve(data);
+				}).error(function(data, status, headers, config) {
+					deferred.reject(status);
+				});
+				return deferred.promise;
+			},
+			
+			"getReportFolder" : function(folderUid){
+				var deferred = $q.defer(),
+				url = "/folders/";
+			
+				if(folderUid){
+					url=url + folderUid.replace(/[{}]/g, encodeURIComponent);
+				}
+				
+				$http({
+				    url: baseServiceUrl + url,
+				    method: "GET"
+				}).success(function(data, status, headers, config) {
+					deferred.resolve(data);
+				}).error(function(data, status, headers, config) {
+					deferred.reject(status);
+				});
+				return deferred.promise;
+			},
+			
 			"getRepositoryRoot" : function(){
 				var deferred = $q.defer();
 				
@@ -118,7 +179,7 @@ define(["angularjs"],function(angular){
 					url = "/folders/";
 				
 				if(folderUid){
-					url=url + folderUid;
+					url=url + folderUid.replace(/[{}]/g, encodeURIComponent);
 				}
 				
 				$http({
@@ -127,22 +188,16 @@ define(["angularjs"],function(angular){
 				}).success(function(data, status, headers, config) {
 					deferred.resolve(data);
 				}).error(function(data, status, headers, config) {
-					console.log("Error in workflowService.getRepositoryFolder");
-					console.log("...dumping data, status, headers, config");
-					console.log(data);
-					console.log(status);
-					console.log(headers);
-					console.log(config);
 					deferred.reject(status);
 				});
 				return deferred.promise;
-			},
+			},		
 			
-			"getRepositoryDocument" : function(folderUid,documentUid){
+			"getWorklistCount" : function(){
 				var deferred = $q.defer();
 				
 				$http({
-				    url: baseServiceUrl + "/folders/" + folderUid + "/documents/" + documentUid,
+				    url: baseServiceUrl + "/worklist/count",
 				    method: "GET"
 				}).success(function(data, status, headers, config) {
 					deferred.resolve(data);
@@ -152,11 +207,40 @@ define(["angularjs"],function(angular){
 				return deferred.promise;
 			},
 			
-			"getWorklistCount" : function(){
+			"getActivitesByProcess" : function(procs){
+				
 				var deferred = $q.defer();
 				
 				$http({
-				    url: baseServiceUrl + "/worklist/count",
+				    url: baseServiceUrl + "/activities?processDefinitionIds=" + procs,
+				    method: "GET"
+				}).success(function(data, status, headers, config) {
+					deferred.resolve(data);
+				}).error(function(data, status, headers, config) {
+					deferred.reject(status);
+				});
+				return deferred.promise;
+			},
+			
+			"getDescriptorInstersection" : function(procs){
+				//TODO: $http - /process-definitions/descriptors
+				var deferred = $q.defer(),
+					data=[
+						{"id" : 0, "name" : "descriptor1"},
+						{"id" : 1, "name" : "descriptor2"},
+						{"id" : 2, "name" : "descriptor3"},
+						{"id" : 3, "name" : "descriptor4"},
+						{"id" : 4, "name" : "descriptor5"}];
+				
+				deferred.resolve(data);
+				return deferred.promise;
+			},
+			
+			"getActivitesByProcessIDs" : function(processId){
+				var deferred = $q.defer();
+				
+				$http({
+				    url: baseServiceUrl + "/activities?" + activityOid,
 				    method: "GET"
 				}).success(function(data, status, headers, config) {
 					deferred.resolve(data);
@@ -194,8 +278,161 @@ define(["angularjs"],function(angular){
 				return deferred.promise;
 			},
 			
-			"getDocument" : function(docId,processInstanceOid){
+			"getParticipantMatches" : function(val){
+				var deferred = $q.defer(),
+					results=[],
+					data=[
+					      {"name" : "Alan", "type" : "user"},
+					      {"name" : "Amy", "type" : "user"},
+					      {"name" : "Aaron", "type" : "user"},
+					      {"name" : "Anistasia", "type" : "user"},
+					      {"name" : "Arthur", "type" : "user"},
+					      {"name" : "Anissa", "type" : "user"},
+					      {"name" : "Alex", "type" : "user"},
+					      {"name" : "Arnold", "type" : "user"},
+					      {"name" : "Alexis", "type" : "user"},
+					      {"name" : "Anne", "type" : "user"},
+					      {"name" : "Alfonse", "type" : "user"},
+					      {"name" : "Annie", "type" : "user"},
+					      {"name" : "Architect", "type" : "role"},
+					      {"name" : "Auditor", "type" : "role"},
+					      {"name" : "Accounts", "type" : "role"},
+					      {"name" : "Approval", "type" : "role"},
+					      {"name" : "Adjuster", "type" : "role"},
+					      {"name" : "Analysis", "type" : "role"},
+					      {"name" : "Accounts-l2", "type" : "role"},
+					      {"name" : "Accounting", "type" : "organization"},
+					      {"name" : "Advertising", "type" : "organization"},
+					      {"name" : "Asia", "type" : "organization"},
+					      {"name" : "Audits - Internal", "type" : "organization"},
+					      {"name" : "America - North", "type" : "organization"},
+					      {"name" : "America - South", "type" : "organization"},
+					      {"name" : "Audits - External", "type" : "organization"}
+					];
+				
+				data.forEach(function(v){
+					if(v.name.indexOf(val) > -1){
+						console.log("matched:" + v.name + " - " + val);
+						results.push(v);
+					}
+				});
+				deferred.resolve(results);
+				return deferred.promise;
+			},
+			
+			"getFilteredDocuments" : function(name,start,end,ids){
+				var deferred = $q.defer(),
+				 	ids=ids.replace(/[{}]/g, encodeURIComponent);
+				
+				$http({
+				    url: baseServiceUrl + "/documents?" + 
+				    					  "searchText=" + name +
+				    					  "createFromTimestamp=" + start +
+				    					  "createToTimestamp=" + end + 
+				    					  "documentTypeIds=" + ids,
+				    method: "GET"
+				}).success(function(data, status, headers, config) {
+					deferred.resolve(data);
+				}).error(function(data, status, headers, config) {
+					deferred.reject(status);
+				});
+				
+				return deferred.promise;
+			},
+			
+			"getFilteredActivities" : function(start,end,ids,states){
 				var deferred = $q.defer();
+				
+				$http({
+				    url: baseServiceUrl + "/activity-instances?" + 
+				    					  "startedFromTimestamp=" + start +
+				    					  "&startedToTimestamp=" + end +
+				    					  "&activityIds=" + ids + 
+				    					  "&states=" + states,
+				    method: "GET"
+				}).success(function(data, status, headers, config) {
+					deferred.resolve(data);
+				}).error(function(data, status, headers, config) {
+					deferred.reject(status);
+				});
+				
+				return deferred.promise;
+			},
+			
+			"getFilteredProcesses" : function(start,end,ids,states){
+				//process-instances?startedFromTimestamp=&startedToTimestamp=&processDefinitionIds=&states=
+				var deferred = $q.defer();
+				
+				$http({
+				    url: baseServiceUrl + "/process-instances?" + 
+				    					  "startedFromTimestamp=" + start +
+				    					  "&startedToTimestamp=" + end +
+				    					  "&processDefinitionIds=" + ids +
+				    					  "&states=" + states,
+				    method: "GET"
+				}).success(function(data, status, headers, config) {
+					deferred.resolve(data);
+				}).error(function(data, status, headers, config) {
+					deferred.reject(status);
+				});
+				return deferred.promise;
+			},
+			
+			"getProcessDefinitions" : function(isStartable){
+				var deferred = $q.defer(),
+					params="";
+				
+				if(isStartable==true){
+					params="?startable=true";
+				}
+				
+				$http({
+				    url: baseServiceUrl + "/process-definitions" + params,
+				    method: "GET"
+				}).success(function(data, status, headers, config) {
+					deferred.resolve(data);
+				}).error(function(data, status, headers, config) {
+					deferred.reject(status);
+				});
+				return deferred.promise;
+			},
+
+			"getDocumentTypes" : function(){
+				var deferred = $q.defer();
+				
+				$http({
+				    url: baseServiceUrl + "/document-types",
+				    method: "GET"
+				}).success(function(data, status, headers, config) {
+					deferred.resolve(data);
+				}).error(function(data, status, headers, config) {
+					deferred.reject(status);
+				});
+				
+				return deferred.promise;
+			},
+			
+			"getDocument" :function(docId){
+				var deferred = $q.defer(),
+				    docId=docId.replace(/[{}]/g, encodeURIComponent);
+				
+				$http({
+				    url: baseServiceUrl + "/documents/" + docId,
+				    method: "GET"
+				}).success(function(data, status, headers, config) {
+					deferred.resolve(data);
+				}).error(function(data, status, headers, config) {
+					deferred.reject(status);
+				});
+				
+				return deferred.promise;
+			},
+			
+			"getProcessDocument" : function(docId,processInstanceOid){
+				var deferred = $q.defer();
+				
+				docId=docId.replace(/[{}]/g, encodeURIComponent);
+				
 				$http({
 				    url: baseServiceUrl + "/process-instances/" + processInstanceOid + 
 				    	 "/documents/process-attachments/" + docId,
@@ -203,12 +440,23 @@ define(["angularjs"],function(angular){
 				}).success(function(data, status, headers, config) {
 					deferred.resolve(data);
 				}).error(function(data, status, headers, config) {
-					console.log("Error in workflowService.getDocument");
-					console.log("...dumping data, status, headers, config");
-					console.log(data);
-					onsole.log(status);
-					onsole.log(headers);
-					onsole.log(config);
+					deferred.reject(status);
+				});
+				return deferred.promise;
+			},
+			
+			"getRepositoryDocument" : function(folderUid,documentUid){
+				var deferred = $q.defer();
+				
+				folderUid=folderUid.replace(/[{}]/g, encodeURIComponent);
+				documentUid=documentUid.replace(/[{}]/g, encodeURIComponent);
+				
+				$http({
+				    url: baseServiceUrl + "/folders/" + folderUid + "/documents/" + documentUid,
+				    method: "GET"
+				}).success(function(data, status, headers, config) {
+					deferred.resolve(data);
+				}).error(function(data, status, headers, config) {
 					deferred.reject(status);
 				});
 				return deferred.promise;
@@ -250,6 +498,12 @@ define(["angularjs"],function(angular){
 				return deferred.promise;
 			},
 			
+			"setProcessPriority" : function(processInstanceOid,priority){
+				var deferred = $q.defer();
+				deferred.resolve();
+				return deferred.promise;
+			},
+			
 			"getProcessHistory" : function(processInstanceOid,selectedProcessInstanceOid){
 				
 				var deferred = $q.defer(),
@@ -269,6 +523,18 @@ define(["angularjs"],function(angular){
 				});
 				return deferred.promise;
 				
+			},
+			
+			"saveMobileSettings" : function(userId,settings){
+				var deferred = $q.defer();
+				deferred.resolve();
+				return deferred.promise;
+			},
+			
+			"saveUserProfile" : function(userId,profile){
+				var deferred = $q.defer();
+				deferred.resolve();
+				return deferred.promise;
 			},
 			
 			"getStartableProcesses" : function(){
@@ -351,39 +617,6 @@ define(["angularjs"],function(angular){
 			
 		};
 	
-	// SG
-	/*
-	function receiveMessage(event) {
-		if ("complete" == event.data) {
-			if (window.currentlyActiveActivityOID) {
-				srvc.completeActivity(window.currentlyActiveActivityOID)
-				.then(function(e) {
-						alert("Activity completed");
-					}, function() {
-						alert("Activity completion failed");
-					});	
-			}
-		} else if ("suspend" == event.data) {
-			if (window.currentlyActiveActivityOID) {
-				srvc.suspendActivity(window.currentlyActiveActivityOID)
-				.then(function(e) {
-						alert("Activity Suspended");
-					}, function() {
-						alert("Activity suspension failed");
-					});	
-			}
-		} else if ("suspendAndSave" == event.data) {
-			if (window.currentlyActiveActivityOID) {
-				srvc.suspendAndSaveActivity(window.currentlyActiveActivityOID)
-				.then(function(e) {
-						alert("Activity saved and suspend");
-					}, function() {
-						alert("Activity could not be saved and suspended");
-					});	
-			}
-		}
-	};*/
-	
 	/*Angular window message handling setup*/
 	$window.onmessage=function(event){
 		
@@ -395,29 +628,31 @@ define(["angularjs"],function(angular){
 		if(event.data == "complete"){
 			srvc.completeActivity(hotInstance.oid)
 				.then(function(){
-				$rootScope.$broadcast( "activityStatusChange",
-									  {"oid" : hotInstance.oid, 
-									   "newStatus" : "complete"}
-				);
-			});
+					$rootScope.$broadcast( 
+						"activityStatusChange",
+						 {"oid" : hotInstance.oid, "newStatus" : "complete"}
+					);
+			}).catch();
 		}
 		else if(event.data == "suspend"){
 			srvc.suspendActivity(hotInstance.oid)
 				.then(function(){
-				$rootScope.$broadcast( "activityStatusChange",
-									  {"oid" : hotInstance.oid, 
-									   "newStatus" : "suspend"}
-				);
-			});
+					$rootScope.$broadcast( 
+							"activityStatusChange",
+							 {"oid" : hotInstance.oid, 
+							  "newStatus" : "suspend"}
+					);
+			}).catch();
 		}
 		else if(event.data == "suspendAndSave"){
 			srvc.suspendAndSaveActivity(hotInstance.oid)
 				.then(function(){
-				$rootScope.$broadcast( "activityStatusChange",
-									  {"oid" : hotInstance.oid, 
-									   "newStatus" : "suspendAndSave"}
-				);
-			});
+					$rootScope.$broadcast( 
+							"activityStatusChange",
+							 {"oid" : hotInstance.oid, 
+							  "newStatus" : "suspendAndSave"}
+					);
+			}).catch();
 		}	
 
 	};

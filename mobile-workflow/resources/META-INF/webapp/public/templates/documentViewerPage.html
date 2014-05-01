@@ -1,62 +1,81 @@
-<div data-role="header" style="overflow:hidden;">
-	<h1>{{documentViewerModel.name}}</h1>
-    <!-- a href="#" data-icon="gear" class="ui-btn-right">Options</a-->
-    <a href="#" data-rel="back"  class="ui-btn ui-shadow ui-corner-all ui-icon-back ui-btn-icon-notext">No Text</a>
+<div class="ipp-header" data-role="header">
+	 <a href="#" data-rel="back" 
+	    class="ipp-icon-minimal"
+	    ng-click="activeTab=''">
+	 	<i style="float:left;color:#ffffff;" class="fa fa-2x fa-chevron-left"></i>
+	 </a>
+     <h4>{{documentViewerModel.name}}</h4>
 </div>
 
-<div data-role="tabs" id="tabs">
+<div  ng-show="errorModel.hasError==true" 
+      ng-click="errorModel.hasError=false;" 
+      class="ipp-bar ipp-bar-error">
+	<i class="fa fa-times-circle-o"></i>
+	<span>{{errorModel.errorMessage}}</span>
+</div>
+
+<div>
   <div data-role="navbar">
     <ul>
       <li>
-		<a href="#docContentTab" class="ui-btn-active">
-			<i title="Content" style="display:block;" class="fa fa-file-text-o fa-2x jqm-icon-block"></i>
-			<span title="Content" class="hide-media-sm">Content</span>
+		<a href="#docContentTab"
+		   ng-click="activeSubView='content'" 
+		   ng-class="{'ipp-btn-active' : activeSubView=='content'}">
+			<i title="Content" style="display:block;" class="fa fa-file-text-o fa-2x jqm-icon-block ipp-lightest"></i>
+			<span title="Content" class="hide-media-sm ipp-fs-small ipp-light">{{uiText.content}}</span>
 		</a>		
 	  </li>
 	  <li>
-		<a href="#docDetailsTab">
-			<i title="Details" style="display:block;" class="fa fa-info-circle  fa-2x jqm-icon-block"></i>
-			<span title="Details" class="hide-media-sm">Details</span>
+		<a href="#docDetailsTab"
+		   ng-click="activeSubView='details'" 
+		   ng-class="{'ipp-btn-active' : activeSubView=='details'}">
+			<i title="Details" style="display:block;" class="fa fa-info-circle  fa-2x jqm-icon-block ipp-lightest"></i>
+			<span title="Details" class="hide-media-sm ipp-fs-small ipp-light">{{uiText.details}}</span>
 		</a>		
 	  </li>
     </ul>
   </div>
   
-  <div id="docContentTab" style="text-align:center;" class="ui-body-d ui-content ipp-ux-wrapper">
-    <!-- div image-viewer data-repository-url="{{documentViewerModel.downloadUrl}}" /-->
-    <img ng-src="{{documentViewerModel.downloadUrl}}"/>
+  <div ng-show="activeSubView=='content'" style="text-align:center;" class="ui-body-d ui-content ipp-ux-wrapper ipp-border-0x">
+    <div ng-if="isImageType(documentViewerModel.name)==true" 
+         image-viewer 
+         data-repository-url="{{documentViewerModel.downloadUrl}}"></div>
+    
+    <div ng-if="isImageType(documentViewerModel.name)==false">
+    	<i style="font-size:10em;" 
+    	   class="fa fa-file-text-o ipp-block"></i>
+    	<span>{{uiText.unsupported}}</span>
+	    <a class="ui ui-btn ui-btn-d ui-corner-all" target="_blank" 
+	       ng-href="{{documentViewerModel.downloadUrl}}">
+	       <i class="fa fa-cloud-download"></i>
+	       <span class="ipp-fw-normal ipp-fs-small">{{uiText.download}}</span>
+        </a> 
+   </div>
+   
   </div>
 
-  <div id="docDetailsTab">
-        <ul data-role="listview">
-		    <li>
-		    	<strong class="ipp-header-2col">File Type</strong>
-		    	<span>{{documentViewerModel.contentType}}</span>
+  <div ng-show="activeSubView=='details'"  class="ui-body-d ui-content ipp-border-0x">
+        <ul data-role="listview" class="ipp-fs-small">
+		    <li style="border-top:none;">
+		    	<span class="ipp-header-2col ipp-fw-bold ipp-light">{{uiText.filetype}}</span>
+		    	<span class="ipp-fw-normal ipp-lighter">{{documentViewerModel.contentType}}</span>
 		    </li>
 		    <li>
-		    	<strong class="ipp-header-2col">File Size</strong>
-		    	<span>{{documentViewerModel.size}}</span>
+		    	<span class="ipp-header-2col ipp-fw-bold ipp-light">{{uiText.filesize}}</span>
+		    	<span class="ipp-fw-normal ipp-lighter">{{documentViewerModel.size}}</span>
 		    </li>
 		    <li>
-		    	<strong class="ipp-header-2col">Author</strong>
-		    	<span>motu</span>
+		    	<span class="ipp-header-2col ipp-fw-bold ipp-light">{{uiText.author}}</span>
+		    	<span class="ipp-fw-normal ipp-lighter">motu</span>
 		    </li>
 		    <li>
-		    	<strong class="ipp-header-2col">Created</strong>
-		    	<span>{{documentViewerModel.createdTimestamp | date:"yyyy-MM-dd" | humaneDate}}</span>
+		    	<span class="ipp-header-2col ipp-fw-bold ipp-light">{{uiText.created}}</span>
+		    	<span class="ipp-fw-normal ipp-lighter">{{documentViewerModel.createdTimestamp | date:'yyyy-MM-dd hh:mm:ss'}}</span>
 		    </li>
 		    <li>
-		    	<strong class="ipp-header-2col">Last Modified</strong>
-		    	<span>{{documentViewerModel.lastModifiedTimestamp | date:"yyyy-MM-dd" | humaneDate}}</span>
+		    	<span class="ipp-header-2col ipp-fw-bold ipp-light">{{uiText.lastmodified}}</span>
+		    	<span class="ipp-fw-normal ipp-lighter">{{documentViewerModel.lastModifiedTimestamp | date:'yyyy-MM-dd hh:mm:ss'}}</span>
 		    </li>
-		    <!--li>
-		    	<strong class="ipp-header-2col">Process</strong>
-		    	<span>{{documentViewerModel.processOid}}</span>
-		    </li-->
-		    <!-- li>
-		    	<strong>Document Type</strong>
-		    	<span></span>
-		    </li-->
 		</ul>
   </div>
 </div>

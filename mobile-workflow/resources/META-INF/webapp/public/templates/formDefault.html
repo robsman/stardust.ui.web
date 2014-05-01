@@ -23,10 +23,11 @@
 
 
 <div ng-show="!activityModel.item.activatable">
-	<div class="ui-corner-all custom-corners">
-	  <div class="ui-body ui-body-a">
-	    <p>This Activity is not activatable.</p>
-	  </div>
-	</div>
+	<div ng-show="notesModel.notes.length==0" style="text-align:center;margin-top:5em;">
+    	<i style="font-size:8em;" class="fa fa-cog"></i>
+    	<p>
+    		<strong>Activation of this type of Activity is not yet supported.</strong>
+    	</p>
+    </div>
 </div>
 

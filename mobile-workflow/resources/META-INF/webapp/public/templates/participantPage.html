@@ -1,9 +1,14 @@
-<div class="ui-body ui-body-a ui-corner-all" ng-repeat="part in participantModel.participants | orderBy:timestamp">
-    <div>
-	    <strong>{{part.firstName}}, {{part.lastName}}</strong>
-	    <div style="display:inline;float:right;">
-		    <a href="tel:{{part.phone}}"><i class="fa fa-phone fa-fw fa-2x"></i></a>&nbsp;
-		    <a href="mailto:{{part.eMail}}"><i class="fa fa-envelope fa-fw fa-2x"></i></a>
+<ul data-role="listview">
+	<li style="padding:0px;padding-left:1em;" ng-repeat="part in participantModel.participants | orderBy:timestamp">
+		<span class="fa-stack fa-lg ipp-icon-pad-r">
+	      <i class="fa fa-circle fa-stack-2x ipp-color-secondary-darkest"></i>
+	      <i class="fa fa-user fa-stack-1x fa-inverse ipp-fs-smaller"></i>
+	    </span>
+	    <span class="ipp-fw-bold ipp-fs-small ipp-light">{{part.firstName}}, {{part.lastName}}</span>
+	    <div style="display:inline;float:right;margin:0.25em;">
+		    <a data-enhance="false" href="mailto:john.doe@johndoe000.org">
+		    	<i  class="fa fa-envelope fa-fw ipp-fs-2x ui-btn ui-btn-d  ui-btn-inline ipp-icon-btn"></i>
+		    </a>
 	    </div>
-   	</div>    	
-</div><!-- NOTE data tiles end... -->
+	</li>
+</ul>

@@ -1,30 +1,61 @@
-<div data-role="header" style="overflow:hidden;">
-	<h1>{{repositoryModel.name}}</h1>
-    <a ng-click="popNavStack(true)"  class="ui-btn ui-shadow ui-corner-all ui-icon-back ui-btn-icon-notext">No Text</a>
+<div class="ipp-header" data-role="header">
+	 <a ng-click="popNavStack(true)"
+	    class="ipp-icon-minimal"
+	    ng-click="activeTab=''">
+	 	<i style="float:left;color:#ffffff;" class="fa fa-2x fa-chevron-left"></i>
+	 </a>
+     <h4>{{repositoryModel.name}}</h4>
+</div>
+
+<div  ng-show="errorModel.hasError==true" 
+      ng-click="errorModel.hasError=false;" 
+      class="ipp-bar ipp-bar-error">
+	<i class="fa fa-times-circle-o"></i>
+	<span>{{errorModel.errorMessage}}</span>
 </div>
 
 <div jqm-loader jqm-show-loader="{{isAjaxLoading}}" jqm-text=""></div>
-<ul data-role="listview" data-split-icon="gear" data-split-theme="a" data-inset="true" >
-		<li ng-repeat="folder in repositoryModel.children.folders">
-			<a ng-href="#" ng-click="getFolder(folder.id,true,$event)">
-				<i class="fa fa-2x fa-folder"></i>
-				<strong>{{folder.name}}</strong>
-				<span class="ui-li-count">{{folder.childCount}}</span>
+
+<ul data-role="listview" data-theme="a">
+	<li ng-repeat="folder in repositoryModel.children.folders">
+		<a  ng-href="#" ng-click="getFolder(folder.id,true,$event)" class="ipp-no-content">
+			<i style="vertical-align:middle;" class="fa fa-2x fa-fw fa-folder-o  ipp-icon-pad-r ipp-color-secondary-darkest"></i>
+			<div  class="ipp-inline">
+				<span class="ipp-fs-small ipp-fs-bold ipp-lighter">
+					{{folder.name}}
+				</span>
+         	</div>
+         	<span class="ipp-li-count-secondary">{{folder.childCount}}</span>
+       		<i class="fa fa-1x fa-chevron-right ipp-nav-icon-right"></i>
+		</a>
+	</li>
+	<li ng-repeat="document in repositoryModel.children.documents">
+			<a ng-click="pushNavStack(document.id)"  
+			   class="ipp-no-content" 
+			   ng-href="#documentViewerPage?id={{document.id}}&folderid={{repositoryModel.id}}">
+				<i style="vertical-align:middle;" 
+				   class="fa fa-2x fa-fw fa-picture-o ipp-icon-pad-r ipp-color-secondary-darkest"></i>
+				<div class="ipp-inline">
+					<span class="ipp-fs-small ipp-fs-normal ipp-lighter">
+						{{document.name}}
+					</span>
+	         	</div>
+
+         		<div class="ui-li-aside">
+         			<i class="fa fa-clock-o ipp-lighter ipp-fs-smaller"></i>
+
+         			<span class="ipp-fs-smallest ipp-lighter ipp-fw-normal">
+         			      {{document.createdTimestamp | friendlyDate }}</span>
+        		</div>
+         		<i class="fa fa-1x fa-chevron-right ipp-nav-icon-right"></i>
 			</a>
-			<a href="#folderPopup"  data-rel="popup" data-transition="slide" ></a>
  		</li>
- 		<li ng-repeat="document in repositoryModel.children.documents">
-			<a ng-href="#documentViewerPage?id={{document.id}}&folderid={{repositoryModel.id}}">
-				<i class="fa fa-2x fa-file"></i>
-				<strong>{{document.name}}</strong>
-			</a>
-			<a href="#"></a>
- 		</li>
- 		<div data-role="popup" id="folderPopup" data-theme="a" class="ui-content" style="max-width:340px;padding-top:0.2em; padding-bottom:0.2em;">
-	        <ul data-role="listview"  data-inset="true" style="min-width:210px;">
-	            <li data-icon="arrow-u" ng-click=""><a href="#">Upload</a></li>
-	            <li data-icon="plus" ng-click=""><a href="#">Create</a></li>
-	        </ul>
-		</div>
-</ul><!-- NOTE data tiles end... -->
+</ul>
+
+
+<div ng-show="repositoryModel.children.documents.length==0 && 
+		      repositoryModel.children.folders.length==0" 
+     style="text-align:center;margin-top:5em;">
+	<i style="font-size:8em;" class="fa fa-files-o"></i>
+</div>
 

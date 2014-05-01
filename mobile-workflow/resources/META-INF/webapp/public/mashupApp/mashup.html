@@ -17,8 +17,8 @@
 		<link rel="stylesheet" href="./css/font-awesome/css/font-awesome.css" />
 	</head>
 	
-	<body>
-		<div data-role="page" ng-controller="main">
+	<body ng-cloak>
+		<div id="mashupMain" data-role="page" ng-controller="main">
 
 			<div data-role="header">
 				<h1>{{model.title}}</h1>
@@ -60,17 +60,17 @@
 				
 				<div class="ui-field-contain">
 				    <label for="slider-5">Number of Vehicles Involved</label>
-				    <input ng-model="model.accident.CarsInvolvedInAccident" type="number" name="slider-5" id="slider-5" value="50" min="0" max="100" data-highlight="true" data-mini="true">
+				    <input ng-model="model.accident.CarsInvolvedInAccident"  type="number" name="slider-5" id="slider-5" value="2" min="0" max="10" data-highlight="true" data-mini="true">
 				</div>
 
 				<div class="ui-field-contain">
 					<label for="flip-checkbox-1">Was Your Vehicle Towed?</label>
-				    <input ng-model="model.accident.YourVehicleTowed" type="checkbox" xdata-role="flipswitch" name="flip-checkbox-1" id="flip-checkbox-1">
+				    <input ng-model="model.accident.YourVehicleTowed" type="checkbox" data-on-text="Yes" data-off-text="No" name="flip-checkbox-1" id="flip-checkbox-1">
 				</div>
 
 			    <p>Where was your vehicle damaged?</p>
 			    
-			    <div class="ui-grid-a" class="ui-mini">
+			    <div id="checkboxAccInfo" class="ui-grid-a" class="ui-mini">
 				    <div class="ui-block-a">
 				    	<div class="ui-bar ui-bar-a" style="height:60px;">
 				    		<input ng-model="model.accident.WhereVehicleDamaged.Front" type="checkbox" name="checkbox-v-2a" id="checkbox-v-2a">
@@ -111,9 +111,11 @@
 					</div><!-- /grid-a -->
 				</form>
 			</div><!-- /content -->
-
-			<button ng-click="submitModel()" class="ui-btn ui-corners-all">Complete</button>
-			
+			<div style="text-align:center;">
+				<button ng-click="complete()" class="ui-btn ui-corners-all ui-btn-inline">Submit</button>
+				<button ng-click="suspendAndSave()" class="ui-btn ui-corners-all ui-btn-inline">Save</button>
+				<button ng-click="suspend()" class="ui-btn ui-corners-all ui-btn-inline">Cancel</button>
+			</div>
 		</div><!-- /page -->
 		
 		

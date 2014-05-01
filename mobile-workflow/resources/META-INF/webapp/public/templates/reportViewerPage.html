@@ -1,0 +1,163 @@
+<div class="ipp-header" data-role="header">
+	 <a href="#" data-rel="back" 
+	    class="ipp-icon-minimal"
+	    ng-click="activeTab=''">
+	 	<i style="float:left;color:#ffffff;" class="fa fa-2x fa-chevron-left"></i>
+	 </a>
+     <h4>{{documentViewerModel.name}}</h4>
+</div>
+
+<div  ng-show="errorModel.hasError==true" 
+      ng-click="errorModel.hasError=false;" 
+      class="ipp-bar ipp-bar-error">
+	<i class="fa fa-times-circle-o"></i>
+	<span>{{errorModel.errorMessage}}</span>
+</div>
+
+<div>
+  <div data-role="navbar">
+    <ul>
+      <li>
+		<a href="#reportContentTab"
+		   ng-click="activeSubView='content'" 
+		   ng-class="{'ipp-btn-active' : activeSubView=='content'}">
+			<i title="Content" style="display:block;" class="fa fa-bar-chart-o fa-2x jqm-icon-block ipp-lightest"></i>
+			<span title="Content" class="hide-media-sm ipp-fs-small ipp-light">{{uiText.content}}</span>
+		</a>		
+	  </li>
+	  <li>
+		<a href="#reportParametersTab"
+		   ng-click="activeSubView='parameters'" 
+		   ng-class="{'ipp-btn-active' : activeSubView=='parameters'}">
+			<i title="Details" style="display:block;" class="fa fa-list-alt  fa-2x jqm-icon-block ipp-lightest"></i>
+			<span title="Details" class="hide-media-sm ipp-fs-small ipp-light">{{uiText.parameters}}</span>
+		</a>		
+	  </li>
+	  <li>
+		<a href="#reportDetailsTab"
+		   ng-click="activeSubView='details'" 
+		   ng-class="{'ipp-btn-active' : activeSubView=='details'}">
+			<i title="Details" style="display:block;" class="fa fa-info-circle  fa-2x jqm-icon-block ipp-lightest"></i>
+			<span title="Details" class="hide-media-sm ipp-fs-small ipp-light">{{uiText.detail}}</span>
+		</a>		
+	  </li>
+    </ul>
+  </div>
+  
+  <div ng-show="activeSubView=='content'" 
+       style="text-align:center;" 
+       class="ui-body-d ui-content ipp-ux-wrapper ipp-border-0x">
+    <div style="text-align:left;">
+    	<span style="padding-right:2em;" class="ipp-fs-small">{{uiText.runtime}}</span>
+    	<span class="ipp-fs-small ipp-lighter">yyyy-mm-dd h:m AM</span>
+    </div>
+    <div ng-if="isImageType(documentViewerModel.name)==false">
+    	<i style="font-size:10em;" 
+    	   class="fa fa-bar-chart-o ipp-block"></i>
+		
+		<a class="ui ui-btn ui-btn-d ui-corner-all" target="_blank" 
+	       ng-href="{{documentViewerModel.downloadUrl}}">
+	       <i class="fa fa-envelope-o"></i>
+	       <span class="ipp-fw-normal ipp-fs-small">{{uiText.email}}</span>
+        </a>
+        
+	    <a class="ui ui-btn ui-btn-d ui-corner-all" target="_blank" 
+	       ng-href="{{documentViewerModel.downloadUrl}}">
+	       <i class="fa fa-cloud-download"></i>
+	       <span class="ipp-fw-normal ipp-fs-small">{{uiText.export}}</span>
+        </a> 
+   </div>
+   
+  </div>
+  
+  <div  ng-show="activeSubView=='parameters'" 
+        style="text-align:center;" 
+        class="ui-body-d ui-content ipp-ux-wrapper ipp-border-0x">
+        
+        <div ng-show="isReportDefinition(documentViewerModel.name)">
+       		<div class="ui-page-theme-a ipp-pseudo-list">
+		 		<div>
+		  			<span class="ipp-fw-normal ipp-lighter" style="float:left;'">
+			  			{{uiText.from}}
+		  			</span>
+		 		</div>
+		 		
+			    <div class="ui-block-a" style="width:59%;margin-right:0.1em;">
+		    		<input class="ipp-fs-small" ng-model="filter.startDate" type="date" data-clear-btn="false" >
+			    </div>
+			    
+			    <div class="ui-block-b" style="width:40%;">
+			    	<input class="ipp-fs-small" ng-model="filter.startTime" type="time" data-clear-btn="false" >
+			    </div>
+			</div>
+	
+			<div class="ui-page-theme-a ipp-pseudo-list">
+				<div>
+					<span class="ipp-fw-normal ipp-lighter" style="float:left;'">
+						{{uiText.to}} 
+					</span>
+				</div>
+				<div class="ui-block-a" style="width:59%;margin-right:0.1em;">
+					<input class="ipp-fs-small" ng-model="filter.endDate" type="date" data-clear-btn="false">
+				</div>
+				<div class="ui-block-b" style="width:40%;">
+					<input class="ipp-fs-small" ng-model="filter.endTime" type="time" data-clear-btn="false" >
+				</div>
+			</div>
+	
+			<div style="clear:both;" class="ui-page-theme-a ipp-pseudo-list">
+				<input ng-model="filter.name" placeholder="{{uiText.process}}" type="text"/>
+			</div>
+			
+			<a class="ui ui-btn ui-btn-d ui-corner-all" target="_blank" 
+		       ng-href="#">
+		       <i class="fa fa-check"></i>
+		       <span class="ipp-fw-normal ipp-fs-small">{{uiText.submit}}</span>
+	        </a>
+			
+        </div>
+        
+		<ul ng-show="isReportInstance(documentViewerModel.name)" 
+		    data-role="listview" 
+		    class="ipp-fs-small">
+		    <li style="border-top:none;">
+		    	<span class="ipp-header-2col ipp-fw-bold ipp-light">{{uiText.from}}</span>
+		    	<span class="ipp-fw-normal ipp-lighter">yyyy-mm-dd hh:mm am|pm</span>
+		    </li>
+		    <li>
+		    	<span class="ipp-header-2col ipp-fw-bold ipp-light">{{uiText.to}}</span>
+		    	<span class="ipp-fw-normal ipp-lighter">yyyy-mm-dd hh:mm am|pm</span>
+		    </li>
+		    <li>
+		    	<span class="ipp-header-2col ipp-fw-bold ipp-light">{{uiText.process}}</span>
+		    	<span class="ipp-fw-normal ipp-lighter">All</span>
+		    </li>
+		</ul>
+		
+  </div>
+
+  <div ng-show="activeSubView=='details'"  class="ui-body-d ui-content ipp-border-0x">
+        <ul data-role="listview" class="ipp-fs-small">
+		    <li style="border-top:none;">
+		    	<span class="ipp-header-2col ipp-fw-bold ipp-light">{{uiText.filetype}}</span>
+		    	<span class="ipp-fw-normal ipp-lighter">{{documentViewerModel.contentType}}</span>
+		    </li>
+		    <li>
+		    	<span class="ipp-header-2col ipp-fw-bold ipp-light">{{uiText.filesize}}</span>
+		    	<span class="ipp-fw-normal ipp-lighter">{{documentViewerModel.size}}</span>
+		    </li>
+		    <li>
+		    	<span class="ipp-header-2col ipp-fw-bold ipp-light">{{uiText.author}}</span>
+		    	<span class="ipp-fw-normal ipp-lighter">motu</span>
+		    </li>
+		    <li>
+		    	<span class="ipp-header-2col ipp-fw-bold ipp-light">{{uiText.created}}</span>
+		    	<span class="ipp-fw-normal ipp-lighter">{{documentViewerModel.createdTimestamp | date:'yyyy-MM-dd hh:mm:ss'}}</span>
+		    </li>
+		    <li>
+		    	<span class="ipp-header-2col ipp-fw-bold ipp-light">{{uiText.lastmodified}}</span>
+		    	<span class="ipp-fw-normal ipp-lighter">{{documentViewerModel.lastModifiedTimestamp | date:'yyyy-MM-dd hh:mm:ss'}}</span>
+		    </li>
+		</ul>
+  </div>
+</div>

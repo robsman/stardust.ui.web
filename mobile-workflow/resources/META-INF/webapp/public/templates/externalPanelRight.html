@@ -1,11 +1,28 @@
-<a href="#mainPage" class="ui-btn ui-shadow ui-corner-all" style="text-align:left;">
-	<i class="fa fa-2x fa-fw fa-home ipp-icon-pad-r"></i>Home
-</a>
-<a href="#" class="ui-btn ui-shadow ui-corner-all" style="text-align:left;">
-	<i class="fa fa-2x fa-fw fa-wrench ipp-icon-pad-r"></i>Settings
-</a>
-<a ng-href="deck.html" 
-   ng-click="resetGlobalState()" 
-   class="ui-btn ui-shadow ui-corner-all" style="text-align:left;">
-   <i class="fa fa-2x fa-fw fa-lock ipp-icon-pad-r"></i>Log Out
-</a>
+<ul data-role="listview" data-theme="b">
+	<li ng-show="appData.activePage!='mainPage'">
+		<a href="#mainPage" class="ui-btn ui-shadow" style="text-align:left;">
+			<i class="fa fa-2x fa-fw fa-home ipp-icon-pad-r ipp-color-primary-darkest"></i>
+			<span class="ipp-fs-small ipp-fw-normal ipp-lighter">{{uiText.home}}</span>
+		</a>
+	</li>
+	<li ng-show="appData.activePage!='profilePage'">
+		<a href="#profilePage" class="ui-btn ui-shadow" style="text-align:left;">
+			<i class="fa fa-2x fa-fw fa-user ipp-icon-pad-r ipp-color-primary-darkest"></i>
+			<span class="ipp-fs-small ipp-fw-normal ipp-lighter">{{uiText.profile}}</span>
+		</a>
+	</li>
+	<li ng-show="appData.activePage!='settingsPage'">
+		<a href="#settingsPage" class="ui-btn ui-shadow" style="text-align:left;">
+			<i class="fa fa-2x fa-fw fa-wrench ipp-icon-pad-r ipp-color-primary-darkest"></i>
+			<span class="ipp-fs-small ipp-fw-normal ipp-lighter">{{uiText.settings}}</span>
+		</a>
+	</li>
+	<li>
+		<a ng-href="deck.html" 
+		   ng-click="resetGlobalState()" 
+		   class="ui-btn ui-shadow" style="text-align:left;">
+		   <i class="fa fa-2x fa-fw fa-lock ipp-icon-pad-r ipp-color-primary-darkest"></i>
+		   <span class="ipp-fs-small ipp-fw-normal ipp-lighter">{{uiText.logout}}</span>
+		</a>
+	</li>
+</ul>

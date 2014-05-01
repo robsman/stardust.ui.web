@@ -12,18 +12,15 @@
 package org.eclipse.stardust.ui.mobile.service;
 
 import static org.eclipse.stardust.common.CollectionUtils.newHashMap;
-import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.engine.core.interactions.Interaction.getInteractionId;
 
 import java.io.*;
 import java.util.*;
 
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.Direction;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.dto.*;
@@ -32,18 +29,20 @@ import org.eclipse.stardust.engine.api.query.*;
 import org.eclipse.stardust.engine.api.runtime.*;
 import org.eclipse.stardust.engine.core.interactions.Interaction;
 import org.eclipse.stardust.engine.core.interactions.InteractionRegistry;
+import org.eclipse.stardust.engine.core.runtime.beans.DocumentTypeUtils;
 import org.eclipse.stardust.engine.core.runtime.beans.removethis.SecurityProperties;
+import org.eclipse.stardust.engine.core.thirdparty.encoding.Text;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
+import org.eclipse.stardust.engine.extensions.dms.data.DocumentType;
 import org.eclipse.stardust.ui.mobile.rest.JsonMarshaller;
 import org.eclipse.stardust.ui.web.viewscommon.common.spi.IActivityInteractionController;
 import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.utils.*;
+import org.eclipse.stardust.ui.web.viewscommon.utils.QueryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.TypedDocument;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.context.ServletContextAware;
 
-public class MobileWorkflowService implements ServletContextAware {
+public class MobileWorkflowService {
 	private ServiceFactory serviceFactory;
 	private UserService userService;
 	private QueryService queryService;
@@ -52,8 +51,6 @@ public class MobileWorkflowService implements ServletContextAware {
 	private User loginUser;
 	private Folder userDocumentsRootFolder;
 	private Folder publicDocumentsRootFolder;
-	private ServletContext servletContext;
-	private @Autowired HttpServletRequest httpRequest;
 
 	public MobileWorkflowService() {
 		super();
@@ -61,11 +58,6 @@ public class MobileWorkflowService implements ServletContextAware {
 		new JsonMarshaller();
 	}
 
-	@Override
-	public void setServletContext(ServletContext servletContext) {
-		this.servletContext = servletContext;
-	}
-	
 	/**
 	 * 
 	 * @return
@@ -165,9 +157,7 @@ public class MobileWorkflowService implements ServletContextAware {
 	 * 
 	 * @return
 	 */
-	public JsonObject getProcesses(boolean startable) {
-		// Initit registry
-		getInteractionRegistry();
+	public JsonObject getProcessDefinitions(boolean startable) {
 		JsonObject resultJson = new JsonObject();
 		JsonArray processDefinitionsJson = new JsonArray();
 
@@ -201,6 +191,59 @@ public class MobileWorkflowService implements ServletContextAware {
     * 
     * @return
     */
+   public JsonObject getActivities(List<String> processDefinitionIds) {
+      JsonObject resultJson = new JsonObject();
+      JsonArray activitiesJson = new JsonArray();
+
+      resultJson.add("activities", activitiesJson);
+
+      List<Activity> activities = null;
+      List<ProcessDefinition> processDefinitions = getQueryService().getProcessDefinitions(ProcessDefinitionQuery.findAll());
+
+      if (CollectionUtils.isEmpty(processDefinitionIds))
+      {
+         for (ProcessDefinition processDefinition : processDefinitions) {
+            activities = processDefinition.getAllActivities();
+            for (Activity activity : activities)
+            {
+               JsonObject activityJson = new JsonObject();
+               activitiesJson.add(activityJson);
+               
+               activityJson.addProperty("id", activity.getId());
+               activityJson.addProperty("name", activity.getName());
+               activityJson.addProperty("description", activity.getDescription());
+            }
+         }
+      }
+      else
+      {
+         for (String processDefinitionId : processDefinitionIds)
+         {
+            for (ProcessDefinition processDefinition : processDefinitions) {
+               if (processDefinition.getId().equals(processDefinitionId))
+               {
+                  activities = processDefinition.getAllActivities();
+                  for (Activity activity : activities)
+                  {
+                     JsonObject activityJson = new JsonObject();
+                     activitiesJson.add(activityJson);
+                     
+                     activityJson.addProperty("id", activity.getId());
+                     activityJson.addProperty("name", activity.getName());
+                     activityJson.addProperty("description", activity.getDescription());
+                  }
+               }
+            }
+         }
+      }
+
+      return resultJson;
+   }
+
+   /**
+    * 
+    * @return
+    */
    public JsonObject getWorklistCount() {
       JsonObject resultJson = new JsonObject();
       
@@ -217,8 +260,6 @@ public class MobileWorkflowService implements ServletContextAware {
 	 * @return
 	 */
 	public JsonObject getWorklist() {
-		// Initit registry
-		getInteractionRegistry();
 		JsonObject resultJson = new JsonObject();
 		JsonArray worklistJson = new JsonArray();
 
@@ -291,7 +332,7 @@ public class MobileWorkflowService implements ServletContextAware {
     * 
     * @return
     */
-   public JsonObject activateActivity(long activityInstanceOid) {
+   public JsonObject activateActivity(long activityInstanceOid, InteractionRegistry ir) {
       ActivityInstance ai = getWorkflowService().activate(activityInstanceOid);
       JsonObject activityJson = getActivityInstanceJson(ai);
       // TODO @SG
@@ -325,7 +366,7 @@ public class MobileWorkflowService implements ServletContextAware {
          }
          interaction.setInDataValues(inParams);
          
-         getInteractionRegistry().registerInteraction(interaction);
+         ir.registerInteraction(interaction);
       }
       catch (Exception e)
       {
@@ -341,7 +382,7 @@ public class MobileWorkflowService implements ServletContextAware {
 	 * @param registry
 	 * @return
 	 */
-	public JsonObject completeActivity(String oid) {
+	public JsonObject completeActivity(String oid, InteractionRegistry registry) {
 		ActivityInstance ai = getWorkflowService().getActivityInstance(new Long(oid).longValue());
 		IActivityInteractionController interactionController = SpiUtils
 				.getInteractionController(ai.getActivity());
@@ -350,7 +391,6 @@ public class MobileWorkflowService implements ServletContextAware {
 		
 	      Map<String, Serializable> outData = null;
 
-	      InteractionRegistry registry = getInteractionRegistry();
 	      if (null != registry)
 	      {
 	         // retrieve out data
@@ -411,7 +451,7 @@ public class MobileWorkflowService implements ServletContextAware {
 	 * @param registry
 	 * @return
 	 */
-	public JsonObject suspendActivity(String oid) {
+	public JsonObject suspendActivity(String oid, InteractionRegistry registry) {
     	getWorkflowService().suspendToDefaultPerformer(new Long(oid).longValue());
 		
 	    // TODO @SG
@@ -426,13 +466,15 @@ public class MobileWorkflowService implements ServletContextAware {
 	 * @param registry
 	 * @return
 	 */
-	public JsonObject suspendAndSaveActivity(String oid) {
+	public JsonObject suspendAndSaveActivity(String oid, InteractionRegistry registry) {
 		ActivityInstance ai = getWorkflowService().getActivityInstance(new Long(oid).longValue());
 		IActivityInteractionController interactionController = SpiUtils
 				.getInteractionController(ai.getActivity());
+		//Map<String, Serializable>outDataValues = interactionController.getOutDataValues(activityInstance);
+		System.out.println("@@@@@@@@@@@@@@@@@@@@@@@ suspend and save");
 		
 	      Map<String, Serializable> outData = null;
-	      InteractionRegistry registry = getInteractionRegistry();
+
 	      if (null != registry)
 	      {
 	         // retrieve out data
@@ -473,6 +515,8 @@ public class MobileWorkflowService implements ServletContextAware {
 	            // destroy interaction resource
 	            registry.unregisterInteraction(interaction.getId());
 	    		
+	            System.out.println("@@@@@@@@@@@@@@@@@@@@@@@ out data " + outData);
+	            
 	    		ai = getWorkflowService().suspendToDefaultPerformer(new Long(oid).longValue(), "externalWebApp", outData);
 	         }
 	         else
@@ -485,6 +529,60 @@ public class MobileWorkflowService implements ServletContextAware {
 		JsonObject activityInstanceJson = new JsonObject();
 		return activityInstanceJson;
 	}
+
+   /**
+    * 
+    * @return
+    */
+   public JsonObject getActivityInstances() {
+      JsonObject resultJson = new JsonObject();
+      JsonArray activityInstancesJson = new JsonArray();
+
+      resultJson.add("activityInstances", activityInstancesJson);
+
+      ActivityInstanceQuery activityInstanceQuery = ActivityInstanceQuery.findAll();
+      activityInstanceQuery.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
+      List<ActivityInstance> activityInstances = getQueryService().getAllActivityInstances(activityInstanceQuery);
+      
+      for (ActivityInstance activityInstance : activityInstances)
+      {
+         activityInstancesJson.add(getActivityInstanceJson(activityInstance));
+      }
+      
+      return resultJson;
+   }
+
+   /**
+    * 
+    * @return
+    */
+   public JsonObject getActivityInstanceStates() {
+      JsonObject resultJson = new JsonObject();
+      JsonArray activityInstanceStatesJson = new JsonArray();
+
+      resultJson.add("activityInstanceStates", activityInstanceStatesJson);
+
+      Set<ActivityInstanceState> activityInstanceStates = new LinkedHashSet<ActivityInstanceState>();
+      activityInstanceStates.add(ActivityInstanceState.Created);
+      activityInstanceStates.add(ActivityInstanceState.Application);
+      activityInstanceStates.add(ActivityInstanceState.Suspended);
+      activityInstanceStates.add(ActivityInstanceState.Completed);
+      activityInstanceStates.add(ActivityInstanceState.Aborting);
+      activityInstanceStates.add(ActivityInstanceState.Aborted);
+      activityInstanceStates.add(ActivityInstanceState.Interrupted);
+      activityInstanceStates.add(ActivityInstanceState.Hibernated);
+      
+      for (ActivityInstanceState activityInstanceState : activityInstanceStates)
+      {
+         JsonObject activityInstanceStateJson = new JsonObject();
+         activityInstanceStatesJson.add(activityInstanceStateJson);
+         
+         activityInstanceStateJson.addProperty("name", activityInstanceState.getName());
+         activityInstanceStateJson.addProperty("value", activityInstanceState.getValue());
+      }
+      
+      return resultJson;
+   }
 
    /**
     * 
@@ -596,9 +694,17 @@ public class MobileWorkflowService implements ServletContextAware {
                      "carnot:engine:ui:externalWebApp:uri",
                      (String) applicationContext
                            .getAttribute("carnot:engine:ui:externalWebApp:uri"));
-
-         setIPPInteractionParams(applicationContextJson, activityInstance);
+         String ippPortalBaseUri = "http://localhost:8080/pepper-test/";
+//         String ippPortalBaseUri = "https://www.infinity.com/iod73-0/a/93170f2c-6ec5-475a-b07b-e75a5e67ffc6/";
+         String ippServicesBaseUri = ippPortalBaseUri + "services/";
+         String interactionId = Interaction.getInteractionId(activityInstance);
+         String ippInteractionUri = ippServicesBaseUri + "rest/engine/interactions/" + interactionId;
+         applicationContextJson.addProperty("ippPortalBaseURi", ippPortalBaseUri);
+         applicationContextJson.addProperty("ippServicesBaseUri", ippServicesBaseUri);
+         applicationContextJson.addProperty("ippInteractionUri", ippInteractionUri);
+         applicationContextJson.addProperty("interactionId", interactionId);
       }
+//      }
       
       JsonObject processInstanceJson = new JsonObject();
       ProcessInstanceQuery processInstanceQuery = ProcessInstanceQuery.findAll();
@@ -665,7 +771,7 @@ public class MobileWorkflowService implements ServletContextAware {
       return activityInstanceJson;
    }
    
-   public JsonObject startProcessInstance(JsonObject request)
+   public JsonObject startProcessInstance(JsonObject request, InteractionRegistry ir)
    {
       ProcessInstance processInstance = getWorkflowService().startProcess(request.get("processDefinitionId").getAsString(), null, true);
       
@@ -714,7 +820,7 @@ public class MobileWorkflowService implements ServletContextAware {
    
                interaction.setInDataValues(inParams);
                
-               getInteractionRegistry().registerInteraction(interaction);
+               ir.registerInteraction(interaction);
             }
             catch (Exception e)
             {
@@ -725,6 +831,57 @@ public class MobileWorkflowService implements ServletContextAware {
       }
       
       return processInstanceJson;
+   }
+
+   /**
+    * 
+    * @return
+    */
+   public JsonObject getProcessInstances() {
+      JsonObject resultJson = new JsonObject();
+      JsonArray processInstancesJson = new JsonArray();
+
+      resultJson.add("processInstances", processInstancesJson);
+
+      ProcessInstanceQuery processInstanceQuery = ProcessInstanceQuery.findAll();
+      processInstanceQuery.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
+      List<ProcessInstance> processInstances = getQueryService().getAllProcessInstances(processInstanceQuery);
+      
+      for (ProcessInstance processInstance : processInstances)
+      {
+         processInstancesJson.add(getProcessInstanceJson(processInstance));
+      }
+      
+      return resultJson;
+   }
+
+   /**
+    * 
+    * @return
+    */
+   public JsonObject getProcessInstanceStates() {
+      JsonObject resultJson = new JsonObject();
+      JsonArray processInstanceStatesJson = new JsonArray();
+
+      resultJson.add("processInstanceStates", processInstanceStatesJson);
+
+      Set<ProcessInstanceState> processInstanceStates = new LinkedHashSet<ProcessInstanceState>();
+      processInstanceStates.add(ProcessInstanceState.Active);
+      processInstanceStates.add(ProcessInstanceState.Completed);
+      processInstanceStates.add(ProcessInstanceState.Aborted);
+      processInstanceStates.add(ProcessInstanceState.Created);
+      processInstanceStates.add(ProcessInstanceState.Aborting);
+      
+      for (ProcessInstanceState processInstanceState : processInstanceStates)
+      {
+         JsonObject processInstanceStateJson = new JsonObject();
+         processInstanceStatesJson.add(processInstanceStateJson);
+
+         processInstanceStateJson.addProperty("name", processInstanceState.getName());
+         processInstanceStateJson.addProperty("value", processInstanceState.getValue());
+      }
+      
+      return resultJson;
    }
 
    /**
@@ -933,12 +1090,13 @@ public class MobileWorkflowService implements ServletContextAware {
    {
       ProcessInstance processInstance = getWorkflowService().getProcessInstance(
             processInstanceOid);
+      ProcessInstance scopeProcessInstance = processInstance.getScopeProcessInstance();
       JsonObject resultJson = new JsonObject();
       JsonArray notesJson = new JsonArray();
 
       resultJson.add("notes", notesJson);
 
-      for (Note note : processInstance.getAttributes().getNotes())
+      for (Note note : scopeProcessInstance.getAttributes().getNotes())
       {
          notesJson.add(marshalNote(note));
       }
@@ -1106,7 +1264,8 @@ public class MobileWorkflowService implements ServletContextAware {
 		ProcessInstance processInstance = getWorkflowService()
 				.getProcessInstance(
 						request.get("processInstanceOid").getAsLong());
-		ProcessInstanceAttributes attributes = processInstance.getAttributes();
+		ProcessInstance scopeProcessInstance = processInstance.getScopeProcessInstance();
+		ProcessInstanceAttributes attributes = scopeProcessInstance.getAttributes();
 
 		Note note = attributes.addNote(request.get("content").getAsString(),
 				ContextKind.ProcessInstance, processInstance.getOID());
@@ -1414,102 +1573,130 @@ public class MobileWorkflowService implements ServletContextAware {
       
       return queryService.getAllActivityInstances(aiQuery);
    }
-   
+
    /**
-    * 
     * @return
     */
-   private InteractionRegistry getInteractionRegistry() {
-	   InteractionRegistry registry = (InteractionRegistry) servletContext.getAttribute(InteractionRegistry.BEAN_ID);
-	   if (registry != null) return registry;
-	   
-	   synchronized (this) {
-		   if (null == registry) {
-			   registry = new InteractionRegistry();
-			   servletContext.setAttribute(InteractionRegistry.BEAN_ID, registry);
-		   }
-	   }
-	   
-	   return registry;
+   public JsonObject getDocuments(String searchText, long createFromTimestamp, long createToTimestamp, List<String> documentTypeIds)
+   {
+      DocumentQuery query = DocumentQuery.findAll();
+      
+      /*Date createFrom = new Date(createFromTimestamp), createTo = new Date(createToTimestamp);
+      
+      // Name
+      FilterAndTerm filter = query.where(DocumentQuery.NAME.like(QueryUtils.getFormattedString(searchText)));
+
+      // Create date
+      if (null != createFrom && null != createTo)
+      {
+         filter.and(DocumentQuery.DATE_CREATED.between(org.eclipse.stardust.ui.web.common.util.DateUtils.convertToGmt(createFrom), 
+               org.eclipse.stardust.ui.web.common.util.DateUtils.convertToGmt(createTo)));
+      }
+      
+      // Document Type
+      if (CollectionUtils.isNotEmpty(documentTypeIds))
+      {
+         FilterOrTerm filterOrTerm = filter.addOrTerm();
+         for (String documentTypeId : documentTypeIds)
+         {
+            filterOrTerm.add(DocumentQuery.DOCUMENT_TYPE_ID.isEqual(documentTypeId));
+         }
+      }
+      
+      // Content
+      FilterCriterion contentFilter = null, dataFilter = null;
+      if (StringUtils.isNotEmpty(searchText))
+      {
+//         if (getFilterAttributes().isSearchContent())
+         {
+            contentFilter = DocumentQuery.CONTENT.like(QueryUtils.getFormattedString(Text
+                  .escapeIllegalJcrChars(searchText)));
+         }
+
+//         if (getFilterAttributes().isSearchData())
+         {
+            dataFilter = DocumentQuery.META_DATA.any().like(
+                  QueryUtils.getFormattedString(Text.escapeIllegalJcrChars(searchText)));
+         }
+       
+         if (null != contentFilter && null != dataFilter)
+         {
+            FilterOrTerm filterOrTerm = filter.addOrTerm();
+            filterOrTerm.add(contentFilter);
+            filterOrTerm.add(dataFilter);
+         }
+         else if (null != contentFilter)
+         {
+            filter.and(contentFilter);
+         }
+         else if (null != dataFilter)
+         {
+            filter.and(dataFilter);
+         }
+      }*/
+      
+      List<Document> documents = getQueryService().getAllDocuments(query);
+      
+      JsonObject resultJson = new JsonObject();
+      JsonArray documentsJson = new JsonArray();
+
+      resultJson.add("documents", documentsJson);
+
+      for (Document document : documents)
+      {
+         documentsJson.add(marshalDocument(document));
+      }
+      
+      return resultJson;
    }
    
-	/**
-	 * TODO - need to move to a util as it's almost duplicated from
-	 * ExternalWebAppActivityInteractionController
-	 * 
-	 * @param applicationContextJson
-	 * @param ai
-	 */
-	private void setIPPInteractionParams(JsonObject applicationContextJson,
-			ActivityInstance ai) {
-		ApplicationContext context = ai.getActivity().getApplicationContext("externalWebApp");
+   /**
+    * @return
+    */
+   public JsonObject getDocument(String documentId)
+   {
+      Document document = getDocumentManagementService().getDocument(documentId);
+      
+      JsonObject documentJson = marshalDocument(document);
+      
+      return documentJson;
+   }
 
-		Boolean embedded = (Boolean) context
-				.getAttribute("carnot:engine:ui:externalWebApp:embedded");
+   /**
+    * @return
+    */
+   public JsonObject getDocumentTypes()
+   {
+      JsonObject resultJson = new JsonObject();
+      JsonArray documentTypesJson = new JsonArray();
 
-		String servicesBaseUri = "";
-		String portalBaseUri = "";
-		if (null != embedded && embedded) {
-			servicesBaseUri = "/${request.contextPath}/services/";
-			portalBaseUri = "/${request.contextPath}";
-		} else {
-			// allow base URI override via parameter
-			servicesBaseUri = servletContext.getInitParameter("InfinityBpm.ServicesBaseUri");
-			if (isEmpty(servicesBaseUri)) {
-				servicesBaseUri = "${request.scheme}://${request.serverName}:${request.serverPort}/${request.contextPath}/services/";
-			}
+      resultJson.add("documentTypes", documentTypesJson);
 
-			portalBaseUri = servletContext.getInitParameter("InfinityBpm.PortalBaseUri");
-			if (isEmpty(portalBaseUri)) {
-				portalBaseUri = "${request.scheme}://${request.serverName}:${request.serverPort}/${request.contextPath}";
-			}
-		}
+      Set<DocumentType> allDocumentTypes = CollectionUtils.newHashSet();
+      List<DeployedModelDescription> models = getQueryService().getModels(DeployedModelQuery.findActive());
+      for (DeployedModelDescription model : models)
+      {
+         DeployedModel deployedModel = getQueryService().getModel(model.getModelOID());
+         allDocumentTypes.addAll(DocumentTypeUtils.getDeclaredDocumentTypes(deployedModel));
+      }
 
-		servicesBaseUri = expandUriTemplate(servicesBaseUri, httpRequest);
-		portalBaseUri = expandUriTemplate(portalBaseUri, httpRequest);
-        String interactionId = Interaction.getInteractionId(ai);
-        String ippInteractionUri = servicesBaseUri + "rest/engine/interactions/" + interactionId;
-		applicationContextJson
-				.addProperty("ippPortalBaseURi", portalBaseUri);
-		applicationContextJson.addProperty("ippServicesBaseUri",
-				servicesBaseUri);
-		applicationContextJson.addProperty("ippInteractionUri",
-				ippInteractionUri);
-		applicationContextJson.addProperty("interactionId", interactionId);
-	}
+      for (DocumentType documentType : allDocumentTypes)
+      {
+         JsonObject documentTypeJson = new JsonObject();
 
-	/**
-	 * TODO - need to move to a util as it's duplicated from
-	 * ExternalWebAppActivityInteractionController
-	 * 
-	 * @param uriTemplate
-	 * @param req
-	 * @return
-	 */
-	private String expandUriTemplate(String uriTemplate, HttpServletRequest req) {
-		String uri = uriTemplate;
+         documentTypesJson.add(documentTypeJson);
 
-		if (uri.contains("${request.scheme}")) {
-			uri = uri.replace("${request.scheme}", req.getScheme());
-		}
-		if (uri.contains("${request.serverName}")) {
-			uri = uri.replace("${request.serverName}", req.getServerName());
-		}
-		if (uri.contains("${request.serverLocalName}")
-				&& !isEmpty(req.getLocalName())) {
-			uri = uri.replace("${request.serverLocalName}", req.getLocalName());
-		}
-		if (uri.contains("${request.serverPort}")) {
-			uri = uri.replace("${request.serverPort}",
-					Integer.toString(req.getServerPort()));
-		}
-		if (uri.contains("${request.serverLocalPort}")) {
-			uri = uri.replace("${request.serverLocalPort}",
-					Integer.toString(req.getLocalPort()));
-		}
-		if (uri.contains("/${request.contextPath}")) {
-			uri = uri.replace("/${request.contextPath}", req.getContextPath());
-		}
-		return uri;
-	}
+         //TODO: Return Name based on TypeDeclaration
+         String documentTypeId = documentType.getDocumentTypeId();
+         String documentTypeName = documentTypeId; 
+         documentTypeJson.addProperty("id", documentTypeId);
+         if (documentTypeId.contains("}"))
+         {
+            documentTypeName = documentTypeId.substring(documentTypeId.lastIndexOf("}") + 1);
+         }
+         documentTypeJson.addProperty("name", documentTypeName);
+      }
+      
+      return resultJson;
+   }
 }

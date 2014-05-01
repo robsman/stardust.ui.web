@@ -1,0 +1,159 @@
+<div class="ipp-header" data-role="header">
+	<div style="float:left;margin-left:1.1em;margin-top:0.75em;">
+		 <a ng-show="!showResults" href="#" data-rel="back" class="ipp-icon-minimal">
+		 	<i style="color:#ffffff;" class="fa ipp-fs-2x fa-chevron-left"></i>
+		 </a>
+		 <a ng-show="showResults" ng-click="showResults=false" href="#" class="ipp-icon-minimal">
+		 	<i style="color:#ffffff;" class="fa ipp-fs-2x fa-chevron-left"></i>
+		 </a>
+	 </div>
+     <h4>{{uiText.searchProcs}}</h4>
+</div>
+
+<div  ng-show="hasError==true" 
+      ng-click="hasError=false;" 
+      class="ipp-bar ipp-bar-error">
+	<i class="fa fa-times-circle-o"></i>
+	<span>{{errorMessage}}</span>
+</div>
+
+<div jqm-loader jqm-show-loader="{{isAjaxLoading}}" jqm-text=""></div>
+
+<div ng-show="!showResults">
+	<div class="ui-page-theme-a ipp-pseudo-list">
+	
+	  		<div>
+	  			<span class="ipp-fw-bold ipp-fs-small ipp-light"  style="float:left;'">
+		  			{{uiText.start}}
+	  			</span>
+	 		</div>
+	 		
+		    <div class="ui-block-a" style="width:59%;margin-right:0.1em;">
+	    		<input type="date" 
+	    		       ng-model="filter.startDate" 
+	    		       class="ipp-fs-small"
+	    		       id="startDate{{$id}}"
+	    		       data-clear-btn="false" value="" ></input>
+		    </div>
+		    
+		    <div class="ui-block-b" style="width:40%;">
+		    	<input type="time" 
+		    	       ng-model="filter.startTime"
+		    	       class="ipp-fs-small" 
+		    	       id="startTime{{$id}}"
+		    	       data-clear-btn="false" value="" ></input>
+		    </div>
+	</div>
+	
+	<div class="ui-page-theme-a ipp-pseudo-list">
+	
+		<div>
+			<span class="ipp-fw-bold ipp-fs-small ipp-light" style="float:left;'">
+				{{uiText.to}}
+			</span>
+		</div>
+		
+		<div class="ui-block-a" style="width:59%;margin-right:0.1em;">
+			<input type="date" 
+			       ng-model="filter.endDate" 
+			       class="ipp-fs-small"
+			       data-clear-btn="false" value="" />
+		</div>
+		
+		<div class="ui-block-b" style="width:40%;">
+			<input type="time" 
+			       ng-model="filter.endTime" 
+			       class="ipp-fs-small"
+			       data-clear-btn="false" value="" />
+		</div>
+	</div>
+	
+	<div style="display:table;width:100%;">
+	
+		<ul data-role="listview" data-inset="false" data-theme='d' data-shadow="false">
+		  <li data-role="collapsible" data-iconpos="right" data-inset="false">
+		    <h4>
+		    	{{uiText.process}}
+		    	<span style="right:7em;" class="ipp-li-count-secondary">
+		    		{{(processSearchModel.processes|filter:{isChecked:true}).length}}
+		    	</span>
+		    	<span ng-click="processToggleState=!processToggleState;
+		    	               toggleAll(processSearchModel.processes,processToggleState,$event)" 
+		    	      class="ipp-li-count-secondary">
+		    		<i ng-class="{'fa-check-square':processToggleState}" class="fa fa-square"></i> {{uiText.all}}
+		    	</span>
+		    </h4>
+		    <ul data-role="listview" data-theme="a">
+				<li ng-init="process.isChecked=false"
+				    ng-click="process.isChecked=!process.isChecked;" 
+		            ng-repeat="process in processSearchModel.processes">
+		        	<i style="font-size:1.5em;"  
+		        	   ng-class="{'fa-check-square':process.isChecked}" 
+		        	   class="fa fa-square"></i>
+		        	&nbsp;
+		        	<span class="ipp-fs-small ipp-light ipp-fw-light">{{process.name}}</span>
+	        	</li>
+		    </ul>
+		  </li>
+	
+		  <li data-role="collapsible" data-iconpos="right" data-inset="false">
+		    <h2>
+		    	State
+		    	<span style="right:7em;" class="ipp-li-count-secondary">
+		    		{{(processSearchModel.states|filter:{isChecked:true}).length}}
+		    	</span>
+		    	<span ng-click="stateToggleState=!stateToggleState;
+		    	               toggleAll(processSearchModel.states,stateToggleState,$event)"
+		    	      class="ipp-li-count-secondary">
+		    		<i ng-class="{'fa-check-square':stateToggleState}" class="fa fa-square"></i> {{uiText.all}}
+		    	</span>
+		    </h2>
+		    <ul data-role="listview">
+				<li ng-init="state.isChecked=false"
+				    ng-click="state.isChecked=!state.isChecked;" 
+		            ng-repeat="state in processSearchModel.states">
+		        	<i ng-class="{'fa-check-square':state.isChecked}" 
+		        	   class="fa fa-square ipp-fs-2x"></i>
+		        	&nbsp;
+		        	<span class="ipp-fs-small ipp-light ipp-fw-light">{{state.name}}</span>
+		        </li>
+		    </ul>
+		  </li>
+		  
+		</ul>
+	</div>
+	
+	<a ng-click="getResults();" href="#" class="ui-btn ui-btn-d ui-corner-all ipp-margin-h-1x">
+		<i class="fa fa-search ipp-pad-right-4x"></i>{{uiText.submit}}
+	</a>
+</div>
+
+<div ng-show="showResults">
+
+	<ul data-role="listview">
+		<li ng-repeat="process in processSearchModel.results">
+			<a ng-href="#processPage?id={{process.oid}}" class="ipp-no-content">
+				<span class="ipp-fs-small ipp-light ipp-fw-bold">
+					{{process.processName}}
+				</span>
+				<p>
+					<span ng-switch="$last" 
+					      class="ipp-fs-smaller ipp-fs-lighter ipp-light"
+					      ng-repeat="(k,v) in process.descriptors">
+			          		{{k}}: {{v.value}}<span ng-if="!$last">,</span>
+			        </span>
+	    		</p>
+	    		
+	    		<div class="ui-li-aside">
+         			<i class="fa fa-clock-o ipp-lighter ipp-fs-smaller"></i>
+
+         			<span class="ipp-fs-smallest ipp-lighter ipp-fw-normal">
+         			      {{process.startTimestamp | friendlyDate}}</span>
+         		</div>
+
+	    		<i class="fa fa-1x fa-chevron-right ipp-nav-icon-right ipp-margin-top-1x"></i>
+			</a>
+		</li>
+	</ul>	
+	
+</div>

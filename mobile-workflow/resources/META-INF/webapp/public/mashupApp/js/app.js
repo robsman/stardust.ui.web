@@ -5,27 +5,52 @@ define(function(require){
 	 *and create an Angular module representing our application.*/
 	var angular=require('angularjs'),
 		angWorkflow = require("js/services/workflowService"),
+		$ = require("jquery"),
+		jqm=require("jquery-mobile"),
 		app=angular.module('mashupApp',[]),/*create angular application*/
 		rootScope,  /*Angular rootScope within a JQuery context*/
-		// SG
     	i = require('bpm.portal.Interaction'),
-    	g = controller = require('bpm.portal.GenericController'),
     	jui = require('jquery.url');
 	
     	var interaction = new bpm.portal.Interaction();
-    	var controller = new bpm.portal.GenericController();
-	
+    	
 	app.factory("workflowService",angWorkflow);
+	
+	$( "#mashupMain" ).on( "pageinit", function( event ) {
+		console.log("Page init, MashupMain");
+	});
+	
+	
 	app.controller("main",function($scope,workflowService){
 		
-		$scope.submitModel = function(){
-			console.log($scope.model);
-			// SG
-			interaction.transfer.AccidentInformation = $scope.model.accident;
-			interaction.transfer.Person= $scope.model.person;
-			interaction.post();
+
+		$scope.complete = function(){
+			/*TODO: handle this better*/
+			delete interaction.transfer.PersonIn;
+			delete interaction.transfer.AccidentInformationIn;
+			
+			interaction.transfer.AccidentInformationOut = $scope.model.accident;
+			interaction.transfer.PersonOut= $scope.model.person;
+			interaction.post(); // This should actually be called from within interaction.completeActivity() 
 			interaction.completeActivity();
 		},
+		
+		$scope.suspend = function(){
+			/*TODO: handle this better*/
+			delete interaction.transfer.PersonIn;
+			delete interaction.transfer.AccidentInformationIn;
+			interaction.suspendActivity();
+		};
+		
+		$scope.suspendAndSave = function(){
+			/*TODO: handle this better*/
+			delete interaction.transfer.PersonIn;
+			delete interaction.transfer.AccidentInformationIn;
+			
+			interaction.transfer.AccidentInformationOut = $scope.model.accident;
+			interaction.transfer.PersonOut= $scope.model.person;
+			interaction.suspendActivity(true);
+		};
 		
 		$scope.getCurrentPosition = function(){
 			workflowService.getCurrentPosition()
@@ -71,23 +96,43 @@ define(function(require){
 		// SG
 		var scope = $scope;
     	interaction.bind().done(function(){
-    		//controller.bind(angular, interaction);
-    		/*
-    		scope.model.person.FirstName = interaction.transfer.Person.FirstName.__text;
-    		scope.model.person.LastName = interaction.transfer.Person.LastName.__text;
-    		scope.model.person.PolicyNumber = interaction.transfer.Person.PolicyNumber.__text;
-    		scope.model.accident.AccidentLocation = interaction.transfer.AccidentInformation.AccidentLocation.__text;
-    		scope.model.accident.DateOfAccident = interaction.transfer.AccidentInformation.DateOfAccident.__text;
-    		scope.model.accident.CarsInvolvedInAccident = parseInt(interaction.transfer.AccidentInformation.CarsInvolvedInAccident.__text);
-    		scope.model.accident.YourVehicleTowed = interaction.transfer.AccidentInformation.YourVehicleTowed.__text == "true";
-    		scope.model.accident.WhereVehicleDamaged.Front = interaction.transfer.AccidentInformation.WhereVehicleDamaged.Front == "true";
-    		scope.model.accident.WhereVehicleDamaged.Rear = interaction.transfer.AccidentInformation.WhereVehicleDamaged.Rear == "true";
-    		scope.model.accident.WhereVehicleDamaged.PassengerSide = interaction.transfer.AccidentInformation.WhereVehicleDamaged.PassengerSide == "true";
-    		scope.model.accident.WhereVehicleDamaged.DriverSide = interaction.transfer.AccidentInformation.WhereVehicleDamaged.DriverSide == "true";
-    		scope.model.accident.WhereVehicleDamaged.Hood = interaction.transfer.AccidentInformation.WhereVehicleDamaged.Hood == "true";
-    		scope.model.accident.WhereVehicleDamaged.Undercarriage = interaction.transfer.AccidentInformation.WhereVehicleDamaged.Undercarriage == "true";
-    		*/
+    		var accInfo,perInfo;
+    		
+    		if(interaction.transfer.PersonIn){
+    			
+    			perInfo=interaction.transfer.PersonIn;
+    			
+	    		scope.model.person.FirstName = perInfo.FirstName.__text || "";
+	    		scope.model.person.LastName =  perInfo.LastName.__text || "";
+	    		scope.model.person.PolicyNumber = perInfo.PolicyNumber.__text || "";
+    		}
+    		
+    		if(interaction.transfer.AccidentInformationIn){
+    			
+    			accInfo = interaction.transfer.AccidentInformationIn;
+    			scope.model.accident.AccidentLocation = accInfo.AccidentLocation.__text || "";
+	    		scope.model.accident.DateOfAccident = accInfo.DateOfAccident.__text || "2014-01-01";
+	    		scope.model.accident.CarsInvolvedInAccident = parseInt(accInfo.CarsInvolvedInAccident.__text || "1");
+	    		scope.model.accident.YourVehicleTowed = accInfo.YourVehicleTowed.__text == "true";
+	    		scope.model.accident.WhereVehicleDamaged.Front = accInfo.WhereVehicleDamaged.Front == "true";
+	    		scope.model.accident.WhereVehicleDamaged.Rear = accInfo.WhereVehicleDamaged.Rear == "true";
+	    		scope.model.accident.WhereVehicleDamaged.PassengerSide = accInfo.WhereVehicleDamaged.PassengerSide == "true";
+	    		scope.model.accident.WhereVehicleDamaged.DriverSide = accInfo.WhereVehicleDamaged.DriverSide == "true";
+	    		scope.model.accident.WhereVehicleDamaged.Hood = accInfo.WhereVehicleDamaged.Hood == "true";
+	    		scope.model.accident.WhereVehicleDamaged.Undercarriage = accInfo.WhereVehicleDamaged.Undercarriage == "true";
+    		}
+    		
     		scope.$apply();
+    		
+    		$( "#mashupMain input[type='checkbox']").each(function(){
+    			try{
+    				$(this).checkboxradio("refresh");
+    			}catch(ex){
+    				console.log("refresh not available...");
+    			}
+    		});
+ 
+    		
     	});
 	});
 	

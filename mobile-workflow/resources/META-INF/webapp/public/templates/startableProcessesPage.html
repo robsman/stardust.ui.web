@@ -1,59 +1,68 @@
-<div class="ui-grid-b">
-	<div class="ui-block-a" style="width:33.33%;">
-			<a href="#" data-rel="back" style="float:left" 
-			   class="ui-btn ui-corner-all ui-btn-inline ui-icon-back ui-btn-icon-notext"></a>
-	</div>
-	<div class="ui-block-b" style="width:33.33%;padding-top:0.8em;text-align:center;">
-		<strong>Start Work</strong>
-		<span style="position:relative;margin-left:1.2em;" class="ui-li-count"> 
-			{{startableProcessModel.processes.length}}
-		</span>
-	</div>
-	<div class="ui-block-c" style="width:33.33%;">
-	</div>
+<div class="ipp-header" data-role="header">
+	 <a href="#" data-rel="back" class="ipp-icon-minimal">
+	 	<i style="float:left;" class="fa fa-2x fa-chevron-left"></i>
+	 </a>
+     <h4>{{uiText.startWork}}</h4>
+     <span class="ipp-li-count">{{startableProcessModel.processes.length}}</span>	
 </div>
 
+<div  ng-show="errorModel.hasError==true" 
+      ng-click="errorModel.hasError=false;" 
+      class="ipp-bar ipp-bar-error">
+	<i class="fa fa-times-circle-o"></i>
+	<span>{{errorModel.errorMessage}}</span>
+</div>
 
 <ul data-role="listview">
 	<li ng-repeat="process in startableProcessModel.processes">
-		<a ng-click="uiModel.showPopup=false;startProcess(process.id)" >
-			<h3>{{process.name}}</h3>
+		<a ng-click="uiModel.showPopup=false;startProcess(process.id)" class="ipp-no-content" >
+			<span class="ipp-fs-small ipp-light ipp-fw-bold">{{process.name}}</span>
 			<p>
-				<span>{{process.description}}</span>
+				<span class="ipp-fs-smaller ipp-fw-normal ipp-lighter">{{process.description}}</span>
     		</p>
+    		<i class="fa fa-1x fa-chevron-right ipp-nav-icon-right"></i>
 		</a>
 	</li>
 </ul>
 
 <div data-jqm-popup 
+     class="ipp-popup"
      data-jqm-open={{uiModel.showPopup}}
 	 id="activateInstance_{{$id}}" 
-	 data-jqm-overlay-theme="a" 
-	 data-jqm-theme="a" 
-	 style="max-width:400px;">
+	 data-overlay-theme="d" 
+	 data-position-to="window"
+	 data-theme="d" >
 	 
     <div role="main" data-theme="a" class="ui-content">
-        <h5>{{uiModel.popupMessage}}</h5>
-    	<p>What do you want to do?</p>
+    
+    	<div class="ipp-bgcolor-primary ipp-popup-header">
+    		<i class="fa fa-info-circle ipp-pad-right-4x"></i><span>{{uiText.popupHdr}}</span>
+    	</div>
+    	
+        <div>{{uiModel.popupMessage}}</div>
+    	<p>{{uiText.popupSubhdr}}</p>
         <a ng-show="uiModel.showHotNavBtn" ng-href="#detailPage?id={{appData.hotActivityInstance.oid}}&activeTab=formTab" 
-           class="ui-btn ui-corner-all ui-shadow ui-btn-a" >
-           <i style="float:left;" class="fa fa-cog fa-2x"></i>
-		   Return to the Active Activity</a>
+           class="ui-btn ui-corner-all ui-shadow ui-btn-d ipp-btn-left-align" >
+           <i class="fa fa-cogs ipp-pad-right-4x"></i>
+		   <span class="ipp-fs-small">{{uiText.return}}<span>
+	    </a>
         <a ng-show="uiModel.showProcessDetailsBtn" ng-href="#processPage?id={{uiModel.currentSelectedProcessId}}" 
-           class="ui-btn ui-corner-all ui-shadow ui-btn-a" >
-           <i style="float:left;" class="fa fa-cogs fa-2x"></i>
-           View Process Details</a>
+           class="ui-btn ui-corner-all ui-shadow ui-btn-d ipp-btn-left-align" >
+           <i class="fa fa-cogs ipp-pad-right-4x"></i>
+           <span class="ipp-fs-small">{{uiText.view}}</span>
+        </a>
         <a ng-show="uiModel.showCloseDialogBtn" href="#" 
            ng-click="uiModel.showPopup=false"
-           class="ui-btn ui-corner-all ui-shadow ui-btn-a" >
-           <i style="float:left;" class="fa fa-times fa-2x"></i>
-           Close</a>
+           class="ui-btn ipp-btn-left-align ui-corner-all ui-shadow ui-btn-d ipp-block ipp-bgcolor-tertiary" >
+           <i class="fa fa-times ipp-pad-right-4x"></i>
+           <span class="ipp-fs-small">{{uiText.close}}</span>
+        </a>
     </div>
 </div>
 
-<div data-position="fixed" data-role="footer" data-theme="a" 
+<!-- >div data-position="fixed" data-role="footer" data-theme="a" 
 		 ng-controller="footerCtrl"
 		 data-jqm-template 
 		 data-jqm-widgets="" 
 		 data-template-url="templates/baseFooter.html">
-</div>
+</div-->

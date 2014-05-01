@@ -1,54 +1,61 @@
-<div data-role="content">
+<div  ng-show="errorModel.hasError==true" 
+      ng-click="errorModel.hasError=false;" 
+      class="ipp-bar ipp-bar-error">
+	<i class="fa fa-times-circle-o"></i>
+	<span>{{errorModel.errorMessage}}</span>
+</div>
+
+<div data-role="content" 
+     data-theme="c" 
+     class="ipp-border-0x">
+
+		<!--div class="ipp-margin-top-2x ipp-center">
+			<div class="ipp-title-alt">Welcome</div>
+			<span class="ipp-fs-smaller">Please Sign in to access the Process Portal</span>
+		</div-->
 		
-		<div class="ui-grid-a" style="margin-right:15px;margin-left:15px;">
-	     	<div style="width:40px;" class="ui-block-a">
-	     		<i style="margin-top:10px;" class="fa fa-user fa-2x"></i>
-	     	</div>
-	     	<div style="width:80%;" class="ui-block-b">
-	     		<input placeholder="Username" ng-model="loginModel.account" value="{{loginModel.account}}"/>
-	     	</div>
-	     </div>
-		
-		<div class="ui-grid-a" style="margin-right:15px;margin-left:15px;border-radius:4 4 4 4;">
-	     	<div style="width:40px;" class="ui-block-a">
-	     		<i style="margin-top:10px;" class="fa fa-key fa-2x"></i>
-	     	</div>
-	     	<div style="width:80%;" class="ui-block-b">
-	     		<input placeholder="Password" 
-	     			   ng-model="loginModel.password" 
-	     			   value="{{loginModel.password}}"/>
-	     	</div>
-	     </div>
-	    
-	     <div class="ui-grid-a" style="margin-right:15px;margin-left:15px;">
-	     	<div style="width:40px;" class="ui-block-a">
-	     		<i style="margin-top:10px;" class="fa fa-globe fa-2x"></i>
-	     	</div>
-	     	<div style="width:80%;" class="ui-block-b">
-	     		<input placeholder="Partition" 
-	     			   ng-model="loginModel.partition" 
-	     			   value="{{loginModel.partition}}"/>
-	     	</div>
+		<div class="ipp-margin-h-2x ipp-margin-top-3x">
+	     		<input class="ipp-inline ipp-input-minimal" 
+	     		       data-enhance="false" 
+	     		       placeholder="{{uiText.username}}" 
+	     		       ng-model="loginModel.account" 
+	     		       value="{{loginModel.account}}"/>
+	     		<i class="fa fa-fw fa-user fa-2x ipp-input-icon"></i>
 	     </div>
 
+	     <div class="ipp-margin-h-2x">
 
-	<div class="ui-grid-a xui-responsive">
-			<div style="width:40px;" class="ui-block-a">
-				<i style="margin-top:10px;" class="fa fa-2x"></i>
-			</div>
-			<div style="width:80%;" class="ui-block-b">
-				<input id="inptLogin" 
+	     		<input class="ipp-inline ipp-input-minimal" 
+	     		       data-enhance="false" 
+	     		       placeholder="{{uiText.password}}" 
+	     		       ng-model="loginModel.password" 
+	     		       value="{{loginModel.password}}"/>
+	     		<i style="left:-2px;" 
+	     		   class="fa fa-fw fa-lock fa-2x ipp-input-icon"></i>
+
+	     </div>
+
+		 <div ng-show="loginModel.showPartition===true" 
+		      class="ipp-margin-h-2x">
+
+	     		<input class="ipp-inline ipp-input-minimal" 
+	     		       data-enhance="false" 
+	     		       placeholder="{{uiText.partition}}" 
+	     		       ng-model="loginModel.partition" 
+	     		       value="{{loginModel.partition}}"/>
+	     		<i class="fa fa-fw fa-globe fa-2x ipp-input-icon"></i>
+
+	     </div>
+		
+
+
+	<div class="ipp-margin-h-2x">
+				<button id="inptLogin" 
+					   data-theme="c"
 					   ng-click="login(loginModel.account,loginModel.password,loginModel.partition)" 
-					   type="submit" name="submit" value="Log In" />
-			</div>
-			<div class="ui-block-c"></div>
+					   name="submit">{{uiText.login}}</button>
+
 	</div>
-	
-    <div data-position="fixed" data-role="footer" data-theme="a" 
-		 ng-controller="footerCtrl"
-		 data-jqm-template 
-		 data-jqm-widgets="" 
-		 data-template-url="templates/baseFooter.html">
-	</div>
+
 	
 </div>

@@ -1,0 +1,63 @@
+<div  ng-show="errorModel.hasError==true" 
+      ng-click="errorModel.hasError=false;" 
+      class="ipp-bar ipp-bar-error">
+	<i class="fa fa-times-circle-o"></i>
+	<span>{{errorModel.errorMessage}}</span>
+</div>
+   
+<div class="ipp-header" data-role="header">
+	 <a href="#" data-rel="back" class="ipp-icon-minimal">
+	 	<i style="float:left;color:#ffffff;" class="fa fa-2x fa-chevron-left"></i>
+	 </a>
+     <h4>{{uiText.header}}</h4>
+</div>
+
+<div  ng-show="infoModel.hasInfo==true" 
+      ng-click="infoModel.hasInfo=false;" 
+      class="ipp-bar ipp-bar-info">
+	<i class="fa fa-info-circle"></i>
+	<span>{{infoModel.infoMessage}}</span>
+</div>
+
+<div jqm-loader jqm-show-loader="{{isAjaxLoading}}" jqm-text=""></div>
+
+<ul data-role="listview">
+
+	<li class="ipp-bgcolor-tertiary ipp-light" data-role="list-divider">
+		<span style="color:#fff" class="ipp-fw-bold">{{uiText.action}}</span>
+	</li>
+	<li>
+		<span class="ipp-fw-light ipp-fs-small">{{uiText.whencancel}}</span>
+		    <select ng-model="selectedSettings.saveAction" 
+		    		ng-options="item.value for item in settingsModel.saveOptions"
+		            class="ipp-input-simple ipp-block ipp-fw-light ipp-fs-small" 
+		            data-enhance="false">
+	    	</select>
+	</li>
+	
+	<li class="ipp-bgcolor-tertiary ipp-light" data-role="list-divider">
+		<span style="color:#fff" class="ipp-fw-bold">{{uiText.lists}}</span>
+	</li>
+	<li>
+		<span class="ipp-fw-light ipp-fs-small ipp-light">{{uiText.maxitems}}</span>
+	    	<input ng-model="selectedSettings.maxItems" 
+	    	       class="ipp-input-simple ipp-block ipp-fw-light ipp-fs-small" 
+	    	       data-enhance="false"  
+	    	       type="number" />
+	</li>
+	<li>
+		<span class="ipp-fw-light ipp-fs-small ipp-light">{{uiText.timestampformat}}</span>
+	    <select ng-model="selectedSettings.dateFormat" 
+	            ng-options="item.value for item in settingsModel.dateFormats" 
+	            class="ipp-input-simple ipp-block ipp-fw-light ipp-fs-small" 
+	            data-enhance="false">
+	    </select>
+	</li>
+</ul>
+
+<a href="#" 
+   ng-click="saveSettings()" 
+   class="ui-btn ui-corner-all ipp-btn-active ipp-margin-h-1x" >
+   <i class="fa fa-times ipp-pad-right-4x"></i>
+   <span class="ipp-fs-small">{{uiText.save}}<span>
+</a>
