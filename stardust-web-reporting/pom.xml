@@ -51,12 +51,6 @@
          <type>pom</type>
       </dependency>
       <dependency>
-         <groupId>org.eclipse.stardust.engine</groupId>
-         <artifactId>stardust-engine-ws-cxf</artifactId>
-         <version>${project.version}</version>
-         <scope>compile</scope>
-      </dependency>
-      <dependency>
          <groupId>org.eclipse.stardust.ui.web</groupId>
          <artifactId>ipp-portal-common</artifactId>
          <version>${project.version}</version>
@@ -140,6 +134,11 @@
       <dependency>
          <groupId>org.slf4j</groupId>
          <artifactId>slf4j-api</artifactId>
+         <scope>compile</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.quartz-scheduler</groupId>
+         <artifactId>quartz</artifactId>
          <scope>compile</scope>
       </dependency>
    </dependencies>
