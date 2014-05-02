@@ -130,7 +130,9 @@
 	       data-dismissible="false" 
 	       style="max-width:400px;">
 	    <div data-role="header" data-theme="a" >
-	    	<h4 class="ipp-margin-h-1x">{{activityModel.item.activityName}} (#{{activityModel.item.oid}}) {{uiText.notActivatableHdr}}</h4>
+	    	<h4 class="ipp-margin-h-1x">
+	    	{{uiText.notActivatableHdr.replace("{0}",activityModel.item.activityName + " (#" +activityModel.item.oid + ")")}}
+	    	</h4>
 	    </div>
 	    <div role="main" class="ui-content">
 	        <h5 class="ui-title">{{uiText.notActivatableSub}}</h5>

@@ -13,6 +13,13 @@
 	width:50%;
 }
 
+@media (max-width: 480px) {
+  .ipp-header-2col{
+    display:inline-table;
+	width:30%;
+  }
+}
+
 .ipp-header-3col{
 	display:inline-table;
 	width:33%;
