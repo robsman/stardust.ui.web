@@ -152,19 +152,19 @@ public class SingleViewLaunchPanels implements InitializingBean
                // TODO: Enhance?
                if ("configurationTreeView".equals(viewId))
                {
-                  String html5FWViewId = "/ippPortal/configurationTreeView";
+                  String html5FWViewId = "/bpm/portal/configurationTreeView";
                   String script = "parent.BridgeUtils.View.closeView('" + html5FWViewId + "');";
                   portalApp.addEventScript(script);                  
                }
                else
                {
                   // For External
-                  String html5FWViewId = "/ippPortal/configurationTreeView/Ext/" + viewId + "/" + viewKey;
+                  String html5FWViewId = "/bpm/portal/Ext/" + viewId + "/" + viewKey;
                   String script = "parent.BridgeUtils.View.closeView('" + html5FWViewId + "');";
                   portalApp.addEventScript(script);
    
                   // For Internal/Native
-                  html5FWViewId = "/ippPortal/configurationTreeView/Int/" + viewId + "/" + viewKey;
+                  html5FWViewId = "/bpm/portal/Int/" + viewId + "/" + viewKey;
                   script = "parent.BridgeUtils.View.closeView('" + html5FWViewId + "');";
                   portalApp.addEventScript(script);
                }

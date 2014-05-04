@@ -7,6 +7,7 @@
 if (!window["BridgeUtils"]) {
 	BridgeUtils = new function() {
 		var scriptRunning;
+		var timeoutService;
 
 		/*
 		 * type: i = Info, w = Warning, e = Error, d or undefined = Debug
@@ -67,6 +68,20 @@ if (!window["BridgeUtils"]) {
 			scope.$apply(func);
 		}
 
+		/*
+		 * 
+		 */
+		function setTimeoutService($timeout) {
+			timeoutService = $timeout;
+		}
+
+		/*
+		 * 
+		 */
+		function getTimeoutService() {
+			return timeoutService;
+		}
+		
 		/*
 		 *
 		 */
@@ -301,6 +316,8 @@ if (!window["BridgeUtils"]) {
 			log : log,
 			initIframe : initIframe,
 			runInAngularContext : runInAngularContext,
+			setTimeoutService : setTimeoutService,
+			getTimeoutService : getTimeoutService,
 			runScript : runScript,
 			isScriptRunning : isScriptRunning,
 			handleServerDisconnect : handleServerDisconnect,
@@ -338,6 +355,8 @@ if (!window["BridgeUtils"].View) {
 					$scope.$root.$on('$destroy', function() {
 						BridgeUtils.View.destroy();
 			        });
+					
+					BridgeUtils.setTimeoutService($scope.$root.$timeout);
 				});
 	
 				if(sgPubSubService) {
@@ -735,18 +754,27 @@ if (!window["BridgeUtils"].View) {
 				if ($scope.$root.getSidebarDetails) {
 					ret = $scope.$root.getSidebarDetails();
 				} else {
-					var sidebar = document.getElementById("sidebar");
-					var left = BridgeUtils.getAbsoluteSize(sidebar.style.left);
-					ret.visible = !(left < 0);
-					ret.pinned = left < 10;
-					if (left < 0) { // Sidebar not pinned but is hidden
-						ret.width = BridgeUtils.getAbsoluteSize(sidebar.parentNode.children[0].style.paddingLeft) + 10;
-					} else if (left < 10) { // Sidebar Pinned
-						ret.width = BridgeUtils.getAbsoluteSize(sidebar.parentNode.children[0].style.marginLeft) + 10;
+					var sidebar = jQuery("#sidebar");
+					
+					ret.visible = sidebar.hasClass("sg-sidebar-opened");
+					ret.pinned = sidebar.hasClass("sg-sidebar-pinned");
+					
+					ret.height = jQuery(".sg-sidebar-content-well", sidebar).outerHeight() + 3;
+					if (ret.visible) {
+						ret.left = jQuery(".sg-sidebar-content", sidebar).offset().left;
+						if (ret.pinned) {
+							ret.width = jQuery(".sg-sidebar-content-well", sidebar).outerWidth();
+						} else {
+							ret.width = jQuery(".sg-sidebar-toggle-well", sidebar).innerWidth();
+						}
 					} else {
-						ret.width = left;
+						ret.width = jQuery(".sg-sidebar-toggle-well", sidebar).innerWidth();
+						ret.left = 0;
 					}
-					ret.height = BridgeUtils.getAbsoluteSize(sidebar.style.height) - 6;
+					
+					ret.width += BridgeUtils.getAbsoluteSize(jQuery(".container-fluid").css('padding-left'));
+					
+					ret.zIndex = parseInt(sidebar.css('z-index'));
 				}
 			});
 			
@@ -757,7 +785,7 @@ if (!window["BridgeUtils"].View) {
 		 * Private Function
 		 */
 		function isPortalPath(navPath) {
-			return navPath.indexOf("/ippPortal/") == 0;
+			return navPath.indexOf("/bpm/portal/") == 0;
 		}
 
 		/*
@@ -923,7 +951,7 @@ if (!window["BridgeUtils"].Dialog) {
 				}
 
 				// Sidebar Title
-				jQuery(".sidebar-title").get(0).style.display = "none";
+				jQuery(".sg-sidebar-title").get(0).style.display = "none";
 
 				// New Size
 				var newWidth = scrollWidth + "px";
@@ -982,7 +1010,7 @@ if (!window["BridgeUtils"].Dialog) {
 					launchPanelIframe.style.height = launchPanelIframeOrgData.height;
 					
 					// Sidebar Title
-					jQuery(".sidebar-title").get(0).style.display = "";
+					jQuery(".sg-sidebar-title").get(0).style.display = "";
 					// store the launchPanel iframe for refresh after closing popup
 					currLaunchPanelIframe = launchPanelIframe;
 					
@@ -1543,6 +1571,15 @@ if (!window["BridgeUtils"].FrameManager) {
 					}
 
 					var posFrame = findPosition(viewFrameData.win);
+					var iFrameInSidebar = viewFrameData.win.name == "portalLaunchPanels";
+					
+					if (iFrameInSidebar) {
+						var details = BridgeUtils.View.getSidebarDetails();
+						posFrame.x = details.left;
+						if (zIndex == undefined || zIndex <= details.zIndex) {
+							zIndex = details.zIndex + 1;
+						}
+					}
 
 					// Sometimes frame position comes as zero
 					// Add workaround i.e. delay activation. if last iteration then continue
@@ -1589,11 +1626,11 @@ if (!window["BridgeUtils"].FrameManager) {
 						if (border != undefined) {
 							contentFrame.style.border = border;
 						}
-	
+
 						if (zIndex != undefined) {
 							contentFrame.style.zIndex = zIndex;
 						}
-	
+
 						// Save values for future use
 						contentFrame.setAttribute('anchorId', anchorId);
 						if (!autoResize) {

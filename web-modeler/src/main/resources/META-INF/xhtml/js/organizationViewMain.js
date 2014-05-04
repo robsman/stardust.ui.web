@@ -69,5 +69,7 @@ require(["require",
 //		require("bpm-modeler/js/m_organizationView").initialize(
 //				jQuery.url(window.location.search).param("fullId"));
 
-		require("bpm-modeler/js/m_organizationView").initialize(BridgeUtils.View.getActiveViewParams().param("fullId"));
+		BridgeUtils.getTimeoutService()(function(){
+			require("bpm-modeler/js/m_organizationView").initialize(BridgeUtils.View.getActiveViewParams().param("fullId"));
+		});
 });

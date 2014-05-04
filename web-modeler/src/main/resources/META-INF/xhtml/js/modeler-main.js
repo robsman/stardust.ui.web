@@ -86,8 +86,8 @@ require(["require",
 	 "bpm-modeler/js/extensions_jquery",
 	 "bpm-modeler/js/extensions_raphael",
 	 "bpm-modeler/js/m_modelerViewLayoutManager",
-	 "i18n",
-	 "bpm-modeler/angular/app"
+	 //"bpm-modeler/angular/app",
+	 "i18n"
 	 ], function (require) {
 
 		//require("bpm-modeler/angular/app").init();
@@ -95,7 +95,8 @@ require(["require",
 //		require("bpm-modeler/js/m_modelerViewLayoutManager").initialize(
 //				$.url(window.location.search).param("fullId"));
 
-		require("bpm-modeler/js/m_modelerViewLayoutManager").initialize(BridgeUtils.View.getActiveViewParams().param("fullId"));
-
+		BridgeUtils.getTimeoutService()(function(){
+				require("bpm-modeler/js/m_modelerViewLayoutManager").initialize(BridgeUtils.View.getActiveViewParams().param("fullId"));
+		});
 });
 

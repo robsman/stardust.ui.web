@@ -119,5 +119,8 @@ require([ "require", "jquery", "jquery-ui", "jquery.download", "jquery.form",
 				decHideGeneralPropertiesTitle: {path:"rules.element.properties.generalProperties.title",defaultText:"NA",attr:"text"}
 			}
 	};
-	ruleSetView.initialize(BridgeUtils.View.getActiveViewParams().param("uuid"),options);
+	
+	BridgeUtils.getTimeoutService()(function(){
+		ruleSetView.initialize(BridgeUtils.View.getActiveViewParams().param("uuid"),options);
+	});
 });

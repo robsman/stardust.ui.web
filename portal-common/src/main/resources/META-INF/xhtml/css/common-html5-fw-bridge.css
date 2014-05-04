@@ -49,7 +49,7 @@
 	overflow: hidden;
 	border: none;
 	z-index: 1000;
-	position: absolute;
-	left: -5px;
-	top: -10px;
+	position: fixed;
+	left: 0px;
+	top: -09px;
 }

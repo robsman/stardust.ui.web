@@ -89,8 +89,9 @@ require([ "require", "jquery", "jquery-ui","rules-manager/js/m_technicalRuleView
 			}
 	};
 	
-	techRuleView.initialize(BridgeUtils.View.getActiveViewParams().param("ruleSetUuid"),
+	BridgeUtils.getTimeoutService()(function(){
+		techRuleView.initialize(BridgeUtils.View.getActiveViewParams().param("ruleSetUuid"),
 							BridgeUtils.View.getActiveViewParams().param("uuid"),
 							options);
-
+	});
 });

@@ -1,69 +1,87 @@
 {
-    "main":[
-	    {	    
-	        "label" : "PORTAL_LABEL",
-	        "id" : "ippPortal",
-	        "children" : [
-	            {
-	                "label": "CONFIGURATION_LABEL",
-	                "title": "CONFIGURATION_LABEL",
-	                "id": "configurationTreeView",
-	                "icon":"viewIconBase tabIcon-generic",
-	                "module": "bpm-ui",
-	                "partial": "bpm-ui/partials/externalPage.html",
-	                "controller": "bpm-ui.ExternalPageCtrl",
-	                "target": "tab",
-	                "externalURL": "FULL_PATH/plugins/common/portalSingleViewMain.iface?singleViewId=*::configurationTreeView",
-	                "children": [
-						{
-						    "label": "{label}",
-						    "id": "Ext/:type/:id",
-						    "iconBase":"viewIconBase :icon",
-						    "icon":"viewIconBase tabIcon-generic",
-						    "module": "bpm-ui",
-						    "partial": "bpm-ui/partials/externalPage.html",
-						    "controller": "bpm-ui.ExternalPageCtrl",
-						    "target": "tab",
-						    "externalURL": ":url"
-						}NATIVE_VIEW_DEFS
-					]
-				}
-			]
-		}
-	],
-	"utility":[
-		{
-		    "label":"ALERTS_LABEL",
-		    "id":"link",
-		    "icon":"viewIconBase bell",
-		    "cls":"sg-alerts",
-		    "actionController":"bpm-ui.BpmUiCtrl",
-		    "action":"showHideAlerts()"
-		},
-		{
-		    "label":"LOGGED_IN_USER_LABEL",
-		    "cls":"sg-logged-in-user"
-		},
-		{
-		    "label":"SIGN_OUT_LABEL",
-		    "id":"signOut",
-		    "cls":"sg-sign-out ng-hide: true",
-		    "actionController":"bpm-ui.BpmUiCtrl",
-		    "action":"logout()"
-		}
-	],
-	"footer":[
-	    {
-	        "label":"BUILD_INFO",
-	        "cls":"sg-build-info"
-	    }
-	],
-    "sidebar":[
-	    {
-	        "id":"sidebarLaunchPanels",
-	        "module":"bpm-ui",
-	        "controller": "bpm-ui.SidebarCtrl",
-	        "partial":"bpm-ui/partials/sidebarLaunchPanels.html"
-	    }
+    "main": [
+        {
+            "label": "PORTAL_LABEL",
+            "id": "bpm",
+            "children": [
+                {
+                    "label": "PORTAL_LABEL",
+                    "id": "portal",
+                    "children": [
+                        {
+                            "label": "CONFIGURATION_LABEL",
+                            "title": "CONFIGURATION_LABEL",
+                            "id": "configurationTreeView",
+                            "icon": "viewIconBase tabIcon-generic",
+                            "module": "bpm-ui",
+                            "partial": "bpm-ui/partials/externalPage.html",
+                            "controller": "bpm-ui.ExternalPageCtrl",
+                            "target": "tab",
+                            "externalURL": "FULL_PATH/plugins/common/portalSingleViewMain.iface?singleViewId=*::configurationTreeView"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "mainHidden": [
+        {
+            "label": "PORTAL_LABEL",
+            "id": "bpm",
+            "children": [
+                {
+                    "label": "PORTAL_LABEL",
+                    "id": "portal",
+                    "children": [
+                       {
+                           "label": "{label}",
+                           "id": "Ext/:type/:id",
+                           "iconBase": "viewIconBase :icon",
+                           "icon": "viewIconBase tabIcon-generic",
+                           "module": "bpm-ui",
+                           "partial": "bpm-ui/partials/externalPage.html",
+                           "controller": "bpm-ui.ExternalPageCtrl",
+                           "target": "tab",
+                           "externalURL": ":url"
+                       }NATIVE_VIEW_DEFS
+                    ]
+                }
+            ]
+        }
+    ],
+    "utility": [
+        {
+            "label": "ALERTS_LABEL",
+            "id": "link",
+            "icon": "viewIconBase bell",
+            "cls": "sg-alerts",
+            "actionController": "bpm-ui.BpmUiCtrl",
+            "action": "showHideAlerts()"
+        },
+        {
+            "label": "LOGGED_IN_USER_LABEL",
+            "cls": "sg-logged-in-user"
+        },
+        {
+            "label": "SIGN_OUT_LABEL",
+            "id": "signOut",
+            "cls": "sg-sign-out ng-hide: true",
+            "actionController": "bpm-ui.BpmUiCtrl",
+            "action": "logout()"
+        }
+    ],
+    "footer": [
+        {
+            "label": "BUILD_INFO",
+            "cls": "sg-build-info"
+        }
+    ],
+    "sidebar": [
+        {
+            "id": "sidebarLaunchPanels",
+            "module": "bpm-ui",
+            "controller": "bpm-ui.SidebarCtrl",
+            "partial": "bpm-ui/partials/sidebarLaunchPanels.html"
+        }
     ]
 }

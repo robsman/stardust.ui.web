@@ -8,13 +8,13 @@ define(['bpm-ui/js/bpm-ui'], function (bpmUi) {
 	/*
 	 * 
 	 */
-	bpmUi.module.controller('bpm-ui.SidebarCtrl', ['$scope', function($scope) {
+	bpmUi.module.controller('bpm-ui.SidebarCtrl', ['$scope', '$timeout', 'sgSidebarStateService', function($scope, $timeout, sgSidebarStateService) {
 		/*
 		 *
 		 */
 		function disableSidebarResizing() {
 			// There is no API to disable resizing, so add workaround
-			var sidebarResizeHandle = jQuery('.sidebarResizeHandle');
+			var sidebarResizeHandle = jQuery('.sg-sidebar-resize');
 			if (sidebarResizeHandle) {
 				sidebarResizeHandle.off();
 			}
@@ -41,11 +41,25 @@ define(['bpm-ui/js/bpm-ui'], function (bpmUi) {
 		}
 
 		// BridgeUtils not loaded at this point, so save these handlers in root for later use
-		$scope.$root.openSidebar = $scope.openSidebar;
-		$scope.$root.closeSidebar = $scope.closeSidebar;
-		$scope.$root.pinSidebar = $scope.pinSidebar;
-		$scope.$root.unpinSidebar = $scope.unpinSidebar;
+		$scope.$root.openSidebar = function() {
+			sgSidebarStateService.openSidebar('main');
+		}
+		
+		$scope.$root.closeSidebar = function() {
+			sgSidebarStateService.closeSidebar('main');
+		}
+
+		$scope.$root.pinSidebar = function() {
+			sgSidebarStateService.pinSidebar('main');
+		}
+		
+		$scope.$root.unpinSidebar = function() {
+			sgSidebarStateService.unpinSidebar('main');
+		}
+		
 		$scope.$root.getSidebarDetails = $scope.getSidebarDetails;
+		
+		$scope.$root.$timeout = $timeout;
 
 		$scope.$watch('sidebar.position', function(newValue) {
 			disableSidebarResizing();
@@ -54,9 +68,14 @@ define(['bpm-ui/js/bpm-ui'], function (bpmUi) {
 		// Open and Pin Sidebar upon initialization.
 		// More delay is required between Open and Pin
 		window.setTimeout(function(){
-			$scope.openSidebar();
+		  // TODO: Temporary hack. Some how shell is not removing these classes
+		  jQuery('body').removeClass('hidden');
+      jQuery('body').removeClass('sg-theme');
+
+			$scope.$root.openSidebar();
 			window.setTimeout(function(){
-				$scope.pinSidebar();
+				$scope.$root.pinSidebar();
+				$scope.$apply();
 				// Ideally this would not be needed, and should be covered by sidebar events
 				// But somehow 'sidebar pinned' event does not reach BridgeUtils listener
 				// So as a workaround fire resize iframe explicitly

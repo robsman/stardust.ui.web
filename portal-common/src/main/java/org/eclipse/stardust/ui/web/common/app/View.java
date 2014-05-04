@@ -175,13 +175,13 @@ public class View extends AbstractUiElement implements TabScopeManager
          
          if(!StringUtils.isEmpty(typeId) && !typeId.equals("configurationTreeView"))
          {
-            html5FwViewId = "/ippPortal/configurationTreeView/" + viewId;
+            html5FwViewId = "/bpm/portal/" + viewId;
             html5FwViewId = StringUtils.replace(html5FwViewId, ":type", typeId);
             html5FwViewId = StringUtils.replace(html5FwViewId, ":id", id);   
          }
          else
          {
-            html5FwViewId = "/ippPortal/configurationTreeView";
+            html5FwViewId = "/bpm/portal/configurationTreeView";
          }
          
       }

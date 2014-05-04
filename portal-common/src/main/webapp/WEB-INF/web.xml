@@ -141,7 +141,7 @@
         <filter-class>org.eclipse.stardust.ui.web.html5.HTML5LandingPageFilter</filter-class>
 	    <init-param>
 	    <param-name>landingPage</param-name>
-	        <param-value>/shell/desktop-index.html</param-value>
+	        <param-value>/shell/index.html</param-value>
 	    </init-param>
     </filter>
     <filter-mapping>
@@ -168,7 +168,7 @@
         </init-param>
      	<init-param>
             <param-name>restrictLibs</param-name>
-            <param-value>sg-components-,app-shell-,util-services-,portal-common</param-value>
+            <param-value>html5-framework</param-value>
         </init-param>
     </filter>
     <filter-mapping>

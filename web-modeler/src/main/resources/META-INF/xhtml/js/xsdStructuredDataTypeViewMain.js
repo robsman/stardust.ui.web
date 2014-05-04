@@ -58,7 +58,7 @@ require(["require",
 		 "common-plugins",
 		 "bpm-modeler/js/m_utils",
 		 "i18n",
-		 "bpm-modeler/angular/app",
+		 //"bpm-modeler/angular/app",
 		 "bpm-modeler/js/m_xsdStructuredDataTypeView"
 ], function(require) {
 
@@ -67,7 +67,8 @@ require(["require",
 //	require("bpm-modeler/js/m_xsdStructuredDataTypeView").initialize(
 //			jQuery.url(window.location.search).param("fullId"));
 
-	require("bpm-modeler/js/m_xsdStructuredDataTypeView").initialize(BridgeUtils.View.getActiveViewParams().param("fullId"));
-
+	BridgeUtils.getTimeoutService()(function(){
+		require("bpm-modeler/js/m_xsdStructuredDataTypeView").initialize(BridgeUtils.View.getActiveViewParams().param("fullId"));
+	});
 });
 
