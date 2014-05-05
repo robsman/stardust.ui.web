@@ -22,10 +22,8 @@ import javax.faces.model.SelectItem;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.core.repository.jcr.JcrVfsRepositoryConfiguration;
 import org.eclipse.stardust.engine.core.spi.dms.IRepositoryConfiguration;
-import org.eclipse.stardust.engine.core.spi.dms.IRepositoryInstance;
 import org.eclipse.stardust.engine.core.spi.dms.IRepositoryInstanceInfo;
 import org.eclipse.stardust.engine.core.spi.dms.IRepositoryProviderInfo;
-import org.eclipse.stardust.engine.core.spi.dms.RepositoryProviderManager;
 import org.eclipse.stardust.ui.web.common.PopupUIComponentBean;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
@@ -57,8 +55,8 @@ public class BindRepositoryDialog extends PopupUIComponentBean
 
    private IRepositoryProviderInfo repositoryProviderInfo;
 
-   private IRepositoryInstance repositoryInstance;
-
+   private IRepositoryInstanceInfo repositoryInstanceInfo;
+   
    private Map<String, Serializable> attributesMap;
 
    private String title;
@@ -108,8 +106,8 @@ public class BindRepositoryDialog extends PopupUIComponentBean
       {
          if (repositoryId != null)
          {
-            repositoryInstance = RepositoryProviderManager.getInstance().getInstance(repositoryId);
-            title = repositoryInstance.getRepositoryId()
+            repositoryInstanceInfo = getRepositoryInstanceInfo(repositoryId);
+            title = repositoryInstanceInfo.getRepositoryId()
                   + " " + COMMON_MESSAGE_BEAN.get("views.genericRepositoryView.treeMenuItem.repo.properties");
          }
          else
@@ -153,8 +151,7 @@ public class BindRepositoryDialog extends PopupUIComponentBean
          attributes.put(JcrVfsRepositoryConfiguration.DISABLE_CAPABILITY_VERSIONING, true);
          DocumentMgmtUtility.getDocumentManagementService().bindRepository(
                new JcrVfsRepositoryConfiguration(attributes));
-         IRepositoryInstanceInfo repositoryInstanceInfo = (IRepositoryInstanceInfo) RepositoryProviderManager
-               .getInstance().getInstance(repositoryId).getRepositoryInstanceInfo();
+         IRepositoryInstanceInfo repositoryInstanceInfo = getRepositoryInstanceInfo(repositoryId);
          RepositoryUtility.createRepository(userObject.getWrapper(), repositoryInstanceInfo);
          closePopup();
       }
@@ -164,6 +161,25 @@ public class BindRepositoryDialog extends PopupUIComponentBean
                MessagesViewsCommonBean.getInstance().getString("views.bindRepositoryDialog.createException") + " : "
                      + e.getLocalizedMessage());
       }
+   }
+   
+   /**
+    * 
+    * @param repositoryId
+    * @return
+    */
+   private IRepositoryInstanceInfo getRepositoryInstanceInfo(String repositoryId)
+   {
+      List<IRepositoryInstanceInfo> repositoryInstanceInfos = DocumentMgmtUtility.getDocumentManagementService()
+            .getRepositoryInstanceInfos();
+      for (IRepositoryInstanceInfo instanceInfo : repositoryInstanceInfos)
+      {
+         if (instanceInfo.getRepositoryId().equals(repositoryId))
+         {
+            return instanceInfo;
+         }
+      }
+      return null;
    }
 
    public void attributeChanged(ValueChangeEvent event)
@@ -223,6 +239,16 @@ public class BindRepositoryDialog extends PopupUIComponentBean
    {
       return repositoryProviderInfo;
    }
+   
+   public IRepositoryInstanceInfo getRepositoryInstanceInfo()
+   {
+      return repositoryInstanceInfo;
+   }
+
+   public void setRepositoryInstanceInfo(IRepositoryInstanceInfo repositoryInstanceInfo)
+   {
+      this.repositoryInstanceInfo = repositoryInstanceInfo;
+   }
 
    public Map<String, Serializable> getAttributesMap()
    {
@@ -237,16 +263,6 @@ public class BindRepositoryDialog extends PopupUIComponentBean
    public void setShowProperties(boolean showProperties)
    {
       this.showProperties = showProperties;
-   }
-
-   public IRepositoryInstance getRepositoryInstance()
-   {
-      return repositoryInstance;
-   }
-
-   public void setRepositoryInstance(IRepositoryInstance repositoryInstance)
-   {
-      this.repositoryInstance = repositoryInstance;
    }
 
    public String getTitle()
