@@ -1054,14 +1054,20 @@ define(
 					select += "</optgroup>";
 					select += "<optgroup label='" + m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.element.selectTypeSection.thisModel") + "'>";
 					var thisTypeDeclaration = this.typeDeclaration;
-					var typeArr = element.type.split(":");
-					var type = typeArr[0];
-					if(schemaType.schema!=undefined){
-						var locationKey = schemaType.schema.nsMappings[type];
-						var element = this.typeDeclaration.typeDeclaration.schema.locations[locationKey];
-						var modelId = this.typeDeclaration.modelId;
-						if(null != element && element.indexOf("{") == 0){
-							modelId = element.substring(element.indexOf("{")+1,element.indexOf("}"))
+					if (element.type.indexOf(":") < 0 && element.type.indexOf("{}") == 0) {
+						var locationKey = "";
+					} else {
+						var typeArr = element.type.split(":");					
+						var prefix = typeArr[0];						
+					}
+					var modelId = this.typeDeclaration.modelId;
+					if(this.typeDeclaration && this.typeDeclaration.typeDeclaration && this.typeDeclaration.typeDeclaration.schema){
+						locationKey = (locationKey == "") ? "" : this.typeDeclaration.typeDeclaration.schema.nsMappings[prefix];
+						if (locationKey != undefined && this.typeDeclaration.typeDeclaration.schema.locations) {
+							var elem = this.typeDeclaration.typeDeclaration.schema.locations[locationKey];						
+							if(elem && elem.indexOf("{") == 0){
+								modelId = elem.substring(elem.indexOf("{")+1,elem.indexOf("}"))
+							}
 						}
 					}
 					

@@ -361,6 +361,10 @@ public final class XsdSchemaUtils
                   {
                   locations.addProperty(xsdImport.getNamespace(), location);
                }
+                  else
+                  {
+                     locations.addProperty("", location);
+                  }
             }
          }
          }
@@ -444,6 +448,10 @@ public final class XsdSchemaUtils
             {
                prefixedName = "{}" + element.getName();
          }
+            else if(prefixedName.indexOf(':') < 0)
+            {
+               prefixedName = "{}" + prefixedName;
+            }
             json.addProperty("type", prefixedName);
          }
 
@@ -1420,6 +1428,11 @@ public final class XsdSchemaUtils
          if (locations != null)
          {
             String location = GsonUtils.safeGetAsString(locations, namespace);
+         if(StringUtils.isEmpty(namespace))
+         {
+            location = GsonUtils.safeGetAsString(locations, "");
+         }
+
             if (location != null)
             {
                QName qname = QName.valueOf(location);

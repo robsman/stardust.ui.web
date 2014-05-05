@@ -922,7 +922,7 @@ define(
 															&& (null != declaration.typeDeclaration.schema)
 															&& (declaration.typeDeclaration.schema.targetNamespace === parsedName.namespace)) {
 														if (declaration.typeDeclaration.type && declaration.typeDeclaration.type.xref) {
-															if (declaration.typeDeclaration.type.xref === sqName) {
+															if (declaration.typeDeclaration.type.xref === sqName || (parsedName.namespace == "" && declaration.typeDeclaration.type.xref == parsedName.name)) {
 																schema = declaration.typeDeclaration.schema;
 																return false;
 															}

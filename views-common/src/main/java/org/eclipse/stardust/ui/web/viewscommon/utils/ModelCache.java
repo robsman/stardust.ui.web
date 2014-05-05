@@ -27,6 +27,7 @@ import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.engine.api.dto.ModelDetails;
 import org.eclipse.stardust.engine.api.model.Activity;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.Organization;
@@ -44,47 +45,47 @@ import org.eclipse.stardust.ui.web.viewscommon.beans.ApplicationContext;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.Resetable;
 
-
-
 public class ModelCache implements Resetable, Serializable
 {
    private final static long serialVersionUID = 1l;
 
    private final List<DeployedModelDescription> modelDescriptions;
-   
+
    private final Map<Long, DeployedModel> cache;
 
    private final static String MODEL_CACHE_ID = "carnotBbm/modelCache";
 
    private final static Logger trace = LogManager.getLogger(ModelCache.class);
-   
+
    private final static ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
-   
+
    private Activity defaultCaseActivity;
-   
+
    private ProcessDefinition caseProcessDefination;
-   
+
    private DeployedModel predefinedModel;
+
+   private ModelDetails.SchemaLocatorAdapter schemaLocator = new ModelDetails.SchemaLocatorAdapter()
+   {
+      protected Model getModel(long oid)
+      {
+         return ModelCache.this.getModel(oid);
+      }
+   };
 
    private ModelCache()
    {
       this.modelDescriptions = CollectionUtils.newList();
       this.cache= CollectionUtils.newHashMap();
-      if (null == modelDescriptions || null ==cache)
-      {
-         throw new OutOfMemoryError();
-      }
 
       reset();
    }
+
    /**
-    * 
     * @return
     */
-   
    public Map<Long, DeployedModel> getCache()
    {
-
       Map<Long, DeployedModel> tempCache = null;
       try
       {
@@ -102,8 +103,6 @@ public class ModelCache implements Resetable, Serializable
 
       return tempCache;
    }
-
-
 
    private static ModelCache getModelCache()
    {
@@ -139,7 +138,7 @@ public class ModelCache implements Resetable, Serializable
    /**
     * method remove unused DeployedModel objects from cache and also remove if model's
     * active status change.
-    * 
+    *
     * @param models
     */
    private Set<Long> findStaleCacheData(List<DeployedModelDescription> models)
@@ -161,12 +160,9 @@ public class ModelCache implements Resetable, Serializable
          if (isStale)
          {
             unusedModels.add(modelOID);
-
          }
-
       }
       return unusedModels;
-
    }
 
    /**
@@ -185,17 +181,16 @@ public class ModelCache implements Resetable, Serializable
             // creating temp cache so that actual map should not modified
             Map<Long, DeployedModel> tempCache = new HashMap<Long, DeployedModel>( getCache());
             //1)find stale model's Id removing from temp map
-             Set<Long> unusedModels=  findStaleCacheData(models);
-             if (!unusedModels.isEmpty())
-             {
-                tempCache.keySet().removeAll(unusedModels);
-             }
+            Set<Long> unusedModels=  findStaleCacheData(models);
+            if (!unusedModels.isEmpty())
+            {
+               tempCache.keySet().removeAll(unusedModels);
+            }
 
             Map<Long, DeployedModel> updatedModels = new HashMap<Long, DeployedModel>();
 
             for (DeployedModelDescription modelDesc : models)
             {
-
                DeployedModel cachedModel = tempCache.get(new Long(modelDesc.getModelOID()));
                //2) update models (if any model updated then remove old cache value and add new model in cache
                if (cachedModel != null)
@@ -203,15 +198,15 @@ public class ModelCache implements Resetable, Serializable
                   Date deploymentDate = cachedModel.getDeploymentTime();
                   if (deploymentDate != null && deploymentDate.getTime() != modelDesc.getDeploymentTime().getTime())
                   {
-                     DeployedModel model = serviceFactory.getQueryService().getModel(modelDesc.getModelOID(), false);
+                     DeployedModel model = fetchModel(serviceFactory, modelDesc.getModelOID());
                      updatedModels.put(new Long(modelDesc.getModelOID()), model);
                   }
                }//3) add new model if it is not preset in cache
                else
                {
-                  DeployedModel model = serviceFactory.getQueryService().getModel(modelDesc.getModelOID(), false);
+                  DeployedModel model = fetchModel(serviceFactory, modelDesc.getModelOID());
                   updatedModels.put(new Long(modelDesc.getModelOID()), model);
-                  
+
                   if (PredefinedConstants.PREDEFINED_MODEL_ID.equals(model.getId()))
                   {
                      predefinedModel = model;
@@ -219,7 +214,7 @@ public class ModelCache implements Resetable, Serializable
                      defaultCaseActivity = caseProcessDefination
                            .getActivity(PredefinedConstants.DEFAULT_CASE_ACTIVITY_ID);
                   }
-                  
+
                }
 
             }
@@ -243,14 +238,13 @@ public class ModelCache implements Resetable, Serializable
                {
                   getCache().putAll(updatedModels);
                }
-               LocalizerCache.reset();            
+               LocalizerCache.reset();
             }
 
             tempCache = null;
             models = null;
             updatedModels = null;
             unusedModels=null;
-
          }
          finally
          {
@@ -262,6 +256,13 @@ public class ModelCache implements Resetable, Serializable
          }
       }
 
+   }
+   private void registerSchemaLocator(DeployedModel model)
+   {
+      if (model instanceof ModelDetails)
+      {
+         ((ModelDetails) model).setSchemaLocatorAdapter(schemaLocator);
+      }
    }
 
    @Deprecated
@@ -285,7 +286,7 @@ public class ModelCache implements Resetable, Serializable
    /**
     * if grant is available prefer using getActiveModel(Grant grant) instead of this
     * method
-    * 
+    *
     * @param id
     * @return
     */
@@ -309,7 +310,7 @@ public class ModelCache implements Resetable, Serializable
    /**
     * returns grant's associated model and for predefined ADMIN role, it returns any of
     * the available model
-    * 
+    *
     * @param grant
     * @return
     */
@@ -320,7 +321,6 @@ public class ModelCache implements Resetable, Serializable
       List<DeployedModel> activeModels = getActiveModels();
       if (null != id)
       {
-
          for (DeployedModel model : activeModels)
          {
             if (model.getId().equals(id))
@@ -380,6 +380,7 @@ public class ModelCache implements Resetable, Serializable
       }
       return Collections.unmodifiableCollection(allParticipants);
    }
+
    @Deprecated
    public Participant getParticipant(String id)
    {
@@ -416,14 +417,13 @@ public class ModelCache implements Resetable, Serializable
       {
          SessionContext sessionContext = SessionContext.findSessionContext();
          ServiceFactory serviceFactory = sessionContext.getServiceFactory();
-         DeployedModel model = serviceFactory.getQueryService().getModel(oid, false);
+         DeployedModel model = fetchModel(serviceFactory, oid);
          modelCache.put(new Long(oid), model);
       }
    }
 
    /**
     * @return  default Activity of Predefined Model
-    *
     */
    public Activity getDefaultCaseActivity()
    {
@@ -432,24 +432,20 @@ public class ModelCache implements Resetable, Serializable
 
    /**
     * @return  Case ProcessDefinition of Predefined Model
-    * 
     */
    public ProcessDefinition getCaseProcessDefination()
    {
       return caseProcessDefination;
    }
-   
+
    /**
-    * 
-    * @return DeployedModel 
+    * @return DeployedModel
     */
-   
    public DeployedModel getPredefinedModel()
    {
       return predefinedModel;
    }
-   
-   
+
    public DeployedModel getModel(long oid)
    {
       Map<Long, DeployedModel> modelCache = getCache();
@@ -465,13 +461,13 @@ public class ModelCache implements Resetable, Serializable
             ServiceFactory serviceFactory = sessionContext.getServiceFactory();
             try
             {
-               model = serviceFactory.getQueryService().getModel(oid, false);              
+               model = fetchModel(serviceFactory, oid);
             }
             catch (ObjectNotFoundException e)
             {
                trace.error("unable to resolve model", e);
             }
-           
+
 
             if (model != null)// update modelDescriptions
             {
@@ -495,6 +491,13 @@ public class ModelCache implements Resetable, Serializable
       return model;
    }
 
+   private DeployedModel fetchModel(ServiceFactory serviceFactory, long oid)
+   {
+      DeployedModel model = serviceFactory.getQueryService().getModel(oid, false);
+      registerSchemaLocator(model);
+      return model;
+   }
+
    private static boolean isJsfContext()
    {
       // TODO add real verification
@@ -508,12 +511,10 @@ public class ModelCache implements Resetable, Serializable
       {
          SessionContext session = SessionContext.findSessionContext();
          if (session != null)
-         { 
+         {
             return getModelCache();
          }
       }
       return tempCache;
-
    }
-
 }
