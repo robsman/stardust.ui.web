@@ -10,6 +10,7 @@
 *******************************************************************************/
 package org.eclipse.stardust.ui.web.reporting.core.handler.process;
 
+import java.util.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -17,28 +18,28 @@ import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.ui.web.reporting.common.mapping.request.ReportFilter;
 import org.eclipse.stardust.ui.web.reporting.core.DataField;
-import org.eclipse.stardust.ui.web.reporting.core.Constants.DurationUnit;
+import org.eclipse.stardust.ui.web.reporting.core.Constants.TimeUnit;
 import org.eclipse.stardust.ui.web.reporting.core.Constants.PiDimensionField;
 import org.eclipse.stardust.ui.web.reporting.core.DataField.DataFieldType;
 import org.eclipse.stardust.ui.web.reporting.core.handler.HandlerContext;
+import org.eclipse.stardust.ui.web.reporting.core.handler.IFactValueProvider;
 import org.eclipse.stardust.ui.web.reporting.core.util.ReportingUtil;
 
-public class PiDurationColumnHandler extends PiColumnHandler<Long>
+public class PiDurationColumnHandler extends PiColumnHandler<Long> implements IFactValueProvider<ProcessInstance>
 {
-   @Override
-   public Long provideResultSetValue(HandlerContext context, ResultSet rs)
-         throws SQLException
-   {
-      // TODO Auto-generated method stub
-      return null;
-   }
-
    @Override
    public Long provideObjectValue(HandlerContext context, ProcessInstance t)
    {
-      DurationUnit du = (DurationUnit) context.getContextData(HandlerContext.DURATION_UNIT_ID);
-      return ReportingUtil.calculateDuration(t.getStartTime(),
-            t.getTerminationTime(), du);
+      TimeUnit du = context.getColumn().getTimeUnit();
+      Date startTime = t.getStartTime();
+      Date endTime = t.getTerminationTime();
+      if(endTime == null || endTime.getTime() == 0)
+      {
+         endTime = new Date();
+      }
+
+      return ReportingUtil.calculateDuration(startTime,
+            endTime, du);
    }
 
    @Override
@@ -52,5 +53,19 @@ public class PiDurationColumnHandler extends PiColumnHandler<Long>
    public void applyFilter(ProcessInstanceQuery query, ReportFilter filter)
    {
       raisUnsupportedFilterException(query, filter);
+   }
+
+   @Override
+   public Long provideResultSetValue(HandlerContext context, ResultSet rs)
+         throws SQLException
+   {
+      // TODO Auto-generated method stub
+      return null;
+   }
+
+   @Override
+   public Long provideFactValue(HandlerContext context, ProcessInstance t)
+   {
+      return provideObjectValue(context, t);
    }
 }

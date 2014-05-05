@@ -19,18 +19,11 @@ import org.eclipse.stardust.ui.web.reporting.core.DataField;
 import org.eclipse.stardust.ui.web.reporting.core.handler.AbstractDescriptorColumnHandler;
 import org.eclipse.stardust.ui.web.reporting.core.handler.HandlerContext;
 
-public class PiDescriptorColumnHandler extends AbstractDescriptorColumnHandler<Object, ProcessInstance, ProcessInstanceQuery>
+public class PiDescriptorColumnHandler extends AbstractDescriptorColumnHandler<ProcessInstance, ProcessInstanceQuery>
 {
    @Override
    public Object provideResultSetValue(HandlerContext context, ResultSet rs)
          throws SQLException
-   {
-      // TODO Auto-generated method stub
-      return null;
-   }
-
-   @Override
-   public Object provideObjectValue(HandlerContext context, ProcessInstance t)
    {
       // TODO Auto-generated method stub
       return null;

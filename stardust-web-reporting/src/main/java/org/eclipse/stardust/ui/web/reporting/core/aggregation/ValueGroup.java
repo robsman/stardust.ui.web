@@ -8,13 +8,32 @@
 * Contributors:
 *    Holger.Prause (SunGard CSA LLC) - initial API and implementation and/or initial documentation
 *******************************************************************************/
-package org.eclipse.stardust.ui.web.reporting.core.handler;
+package org.eclipse.stardust.ui.web.reporting.core.aggregation;
 
-import org.eclipse.stardust.engine.api.query.Query;
-import org.eclipse.stardust.ui.web.reporting.common.mapping.request.ReportFilter;
+import java.util.ArrayList;
+import java.util.List;
 
-public interface IFilterHandler<T extends Query>
+public class ValueGroup<T>
 {
-   public void applyFilter(T query, ReportFilter filter);
-   public boolean canFilter(T query, ReportFilter filter);
+   public List<T> values;
+
+   public ValueGroup()
+   {
+      values = new ArrayList<T>();
+   }
+
+   public List<T> getValues()
+   {
+      return values;
+   }
+
+   public void add(T value)
+   {
+      values.add(value);
+   }
+
+   public int getSize()
+   {
+      return values.size();
+   }
 }

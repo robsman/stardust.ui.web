@@ -16,37 +16,37 @@ import java.sql.SQLException;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.ui.web.reporting.common.mapping.request.ReportFilter;
-import org.eclipse.stardust.ui.web.reporting.core.Constants.AiDimensionField;
-import org.eclipse.stardust.ui.web.reporting.core.Constants.TimeUnit;
 import org.eclipse.stardust.ui.web.reporting.core.DataField;
-import org.eclipse.stardust.ui.web.reporting.core.DataField.DataFieldType;
 import org.eclipse.stardust.ui.web.reporting.core.handler.HandlerContext;
 import org.eclipse.stardust.ui.web.reporting.core.handler.IFactValueProvider;
-import org.eclipse.stardust.ui.web.reporting.core.util.ReportingUtil;
+import org.eclipse.stardust.ui.web.reporting.core.handler.process.PiDurationColumnHandler;
 
-public class AiDurationColumnHandler extends AiColumnHandler<Long> implements IFactValueProvider<ActivityInstance>
+public class AiProcessDurationColumnHandler extends AiColumnHandler<Long> implements IFactValueProvider<ActivityInstance>
 {
-   @Override
-   public Long provideResultSetValue(HandlerContext context, ResultSet rs)
-         throws SQLException
+   private PiDurationColumnHandler delegate;
+
+   public AiProcessDurationColumnHandler()
    {
-      // TODO Auto-generated method stub
-      return null;
+      delegate = new PiDurationColumnHandler();
    }
 
    @Override
    public Long provideObjectValue(HandlerContext context, ActivityInstance t)
    {
-      TimeUnit du = context.getColumn().getTimeUnit();
-      return ReportingUtil.calculateDuration(t.getStartTime(),
-            t.getLastModificationTime(), du);
+      return delegate.provideObjectValue(context, t.getProcessInstance());
+   }
+
+   @Override
+   public Long provideResultSetValue(HandlerContext context, ResultSet rs)
+         throws SQLException
+   {
+      return null;
    }
 
    @Override
    public DataField provideDataField(HandlerContext context)
    {
-      return new DataField(AiDimensionField.DURATION.getId(),
-            DataFieldType.NUMBER);
+      return null;
    }
 
    @Override
@@ -58,6 +58,6 @@ public class AiDurationColumnHandler extends AiColumnHandler<Long> implements IF
    @Override
    public Long provideFactValue(HandlerContext context, ActivityInstance t)
    {
-      return provideObjectValue(context, t);
+      return delegate.provideFactValue(context, t.getProcessInstance());
    }
 }

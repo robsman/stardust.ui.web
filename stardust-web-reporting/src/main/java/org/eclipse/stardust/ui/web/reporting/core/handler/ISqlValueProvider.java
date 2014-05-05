@@ -10,11 +10,13 @@
 *******************************************************************************/
 package org.eclipse.stardust.ui.web.reporting.core.handler;
 
-import org.eclipse.stardust.engine.api.query.Query;
-import org.eclipse.stardust.ui.web.reporting.common.mapping.request.ReportFilter;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
-public interface IFilterHandler<T extends Query>
+import org.eclipse.stardust.ui.web.reporting.core.DataField;
+
+public interface ISqlValueProvider<T>
 {
-   public void applyFilter(T query, ReportFilter filter);
-   public boolean canFilter(T query, ReportFilter filter);
+   public T provideResultSetValue(HandlerContext context, ResultSet rs) throws SQLException;
+   public DataField provideDataField(HandlerContext context);
 }

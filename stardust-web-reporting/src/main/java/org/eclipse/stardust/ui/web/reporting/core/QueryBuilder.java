@@ -48,7 +48,7 @@ public class QueryBuilder
          RequestColumn columnKey = new RequestColumn(filter.getDimension());
          columnKey.setDescriptor(filter.isDescriptor());
 
-         IFilterHandler<T> filterHandler = handlerRegistry.getFilterHandler(columnKey);
+         IFilterHandler<T> filterHandler = handlerRegistry.getFilterHandler(query, columnKey, filter);
          filterHandler.applyFilter(query, filter);
       }
    }

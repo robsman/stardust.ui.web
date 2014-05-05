@@ -8,13 +8,17 @@
 * Contributors:
 *    Holger.Prause (SunGard CSA LLC) - initial API and implementation and/or initial documentation
 *******************************************************************************/
-package org.eclipse.stardust.ui.web.reporting.core.handler;
+package org.eclipse.stardust.ui.web.reporting.core;
 
-import org.eclipse.stardust.engine.api.query.Query;
-import org.eclipse.stardust.ui.web.reporting.common.mapping.request.ReportFilter;
-
-public interface IFilterHandler<T extends Query>
+public class GroupByColumn extends GroupColumn
 {
-   public void applyFilter(T query, ReportFilter filter);
-   public boolean canFilter(T query, ReportFilter filter);
+   public GroupByColumn(String id)
+   {
+      super(id);
+   }
+
+   public GroupByColumn(String id, Interval interval)
+   {
+      super(id, interval);
+   }
 }

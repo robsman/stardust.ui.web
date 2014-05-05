@@ -33,5 +33,7 @@ public class AiColumnHandlerRegistry extends AbstractColumnHandlerRegistry<Activ
       register(AiDimensionField.USER_PERFORMER_NAME.getId(), new AiUserPerformerColumnHandler());
       register(AiDimensionField.PARTICIPANT_PERFORMER_NAME.getId(), new AiParticipantPerformerColumnHandler());
       register(AiDimensionField.DURATION.getId(), new AiDurationColumnHandler());
+      register(AiDimensionField.PROCESS_INSTANCE_DURATION.getId(), new AiProcessDurationColumnHandler());
+      register(AiDimensionField.PROCESS_INSTANCE_ROOT_DURATION.getId(), new AiRootProcessDurationColumnHandler());
    }
 }

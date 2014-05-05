@@ -2,10 +2,7 @@ package org.eclipse.stardust.ui.web.reporting.core;
 
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.script.*;
 
@@ -23,19 +20,23 @@ import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.ui.web.reporting.common.JsonMarshaller;
 import org.eclipse.stardust.ui.web.reporting.common.JsonUtil;
 import org.eclipse.stardust.ui.web.reporting.common.RestUtil;
-import org.eclipse.stardust.ui.web.reporting.common.mapping.reponse.RecordSetResponseDataBuilder;
-import org.eclipse.stardust.ui.web.reporting.common.mapping.reponse.ReponseDataBuilder;
-import org.eclipse.stardust.ui.web.reporting.common.mapping.reponse.SeriesResponseDataBuilder;
+import org.eclipse.stardust.ui.web.reporting.common.mapping.reponse.RecordSetDataBuilder;
+import org.eclipse.stardust.ui.web.reporting.common.mapping.reponse.SeriesDataBuilder;
+import org.eclipse.stardust.ui.web.reporting.common.mapping.reponse.ValuesArray;
 import org.eclipse.stardust.ui.web.reporting.common.mapping.request.*;
 import org.eclipse.stardust.ui.web.reporting.common.validation.ValidationHelper;
 import org.eclipse.stardust.ui.web.reporting.core.Constants.DataSetType;
-import org.eclipse.stardust.ui.web.reporting.core.Constants.DurationUnit;
+import org.eclipse.stardust.ui.web.reporting.core.Constants.FactField;
 import org.eclipse.stardust.ui.web.reporting.core.Constants.QueryType;
-import org.eclipse.stardust.ui.web.reporting.core.handler.AbstractColumnHandlerRegistry;
-import org.eclipse.stardust.ui.web.reporting.core.handler.IMappingHandler;
-import org.eclipse.stardust.ui.web.reporting.core.handler.HandlerContext;
+import org.eclipse.stardust.ui.web.reporting.core.Constants.TimeUnit;
+import org.eclipse.stardust.ui.web.reporting.core.aggregation.ValueAggregator;
+import org.eclipse.stardust.ui.web.reporting.core.aggregation.ValueGroup;
+import org.eclipse.stardust.ui.web.reporting.core.aggregation.ValueGroupKey;
+import org.eclipse.stardust.ui.web.reporting.core.aggregation.functions.*;
+import org.eclipse.stardust.ui.web.reporting.core.handler.*;
 import org.eclipse.stardust.ui.web.reporting.core.handler.activity.AiColumnHandlerRegistry;
 import org.eclipse.stardust.ui.web.reporting.core.handler.process.PiColumnHandlerRegistry;
+import org.eclipse.stardust.ui.web.reporting.core.util.ReportingUtil;
 
 public class ReportingServicePojo
 {
@@ -84,12 +85,8 @@ public class ReportingServicePojo
 
             ActivityInstanceQuery aiQuery = queryBuilder
                   .buildActivityInstanceQuery(dataSet);
-            long start = System.currentTimeMillis();
             ActivityInstances allActivityInstances = queryService
                   .getAllActivityInstances(aiQuery);
-            long end = System.currentTimeMillis();
-            System.err.println("RSP: "+(end-start));
-
             return generateResponse(dataSet, new AiColumnHandlerRegistry(),
                   allActivityInstances);
          case PROCESS_INSTANCE:
@@ -102,75 +99,166 @@ public class ReportingServicePojo
          default:
             throw new RuntimeException("Unsupported QueryType: " + queryType);
       }
-
-
-
-
    }
 
+   private TimeUnit getTimeUnit(String unit)
+   {
+      if(StringUtils.isNotEmpty(unit))
+      {
+         return TimeUnit.parse(unit);
+      }
+
+      return null;
+   }
+
+   private Interval getDimensionInterval(ReportDataSet dataSet)
+   {
+      Long unitValue
+         = dataSet.getFirstDimensionCumulationIntervalCount();
+
+      if(unitValue != null)
+      {
+         TimeUnit unit = getTimeUnit(dataSet.getFirstDimensionCumulationIntervalUnit());
+         return new Interval(unit, unitValue);
+      }
+
+      return null;
+   }
+
+
+   //TODO: Performance optimization :
+   //grouping / building response for each group locally instead of building big datastructure.
+   //try to implement via in memory database(h2) - was trying this but run out of time
    private <T> JsonObject generateResponse(ReportDataSet dataSet,
          AbstractColumnHandlerRegistry<T, ? extends Query> handlerRegistry,
          AbstractQueryResult<T> results)
    {
       DataSetType dataSetType = DataSetType.parse(dataSet.getType());
-      List<RequestColumn> requestedColumns = new ArrayList<RequestColumn>();
+      QueryType queryType = QueryType.parse(dataSet.getPrimaryObject());
+      String seriesKey = queryType.getId();
 
-      final ReponseDataBuilder responseBuilder;
+      List<RequestColumn> requestedColumns = new ArrayList<RequestColumn>();
+      List<GroupColumn> groupColumns = new ArrayList<GroupColumn>();
+
+      TimeUnit factDurationUnit = getTimeUnit(dataSet.getFactDurationUnit());
+      RequestColumn factColumn = new RequestColumn(dataSet.getFact(), factDurationUnit);
+
+      Interval dimensionInterval = getDimensionInterval(dataSet);
+      String dimensionId = dataSet.getFirstDimension();
+
+      //each distinct value for group by will result in an own series
+      //where the distinct value is the key to the series
+      if(dataSet.getGroupBy() != null)
+      {
+         GroupByColumn groupByColumn
+            = new GroupByColumn(dataSet.getGroupBy(), null);
+         groupColumns.add(groupByColumn);
+      }
+
+      //according to ui team - dimension is always grouped but will not result in an own series
+      //it should do result, to be consequent and to be able to treat them generic
+      groupColumns.add(new GroupColumn(dimensionId, dimensionInterval));
+
+      //aggregate the values base on the grouping criteria
+      ValueAggregator<T> aggregator
+         = new ValueAggregator<T>(queryService, results, groupColumns, handlerRegistry);
+      Map<ValueGroupKey<T>, ValueGroup<T>> aggregateResults
+         = aggregator.aggregate();
+
       switch (dataSetType)
       {
          case SERIESGROUP:
-            DurationUnit factDurationUnit = getDurationUnit(dataSet.getFactDurationUnit());
-            RequestColumn factColumn = new RequestColumn(dataSet.getFact(),
-                  factDurationUnit);
+            SeriesDataBuilder sdb = new SeriesDataBuilder();
+            //get the results and also apply the aggregate functions
+            for(ValueGroupKey<T> groupKey: aggregateResults.keySet())
+            {
+               T groupEntitiy
+                  = groupKey.getCriteriaEntitiy();
+               ValueGroup<T> group = aggregateResults.get(groupKey);
+               ValuesArray seriesValues = new ValuesArray();
 
-            DurationUnit dimensionDurationUnit = getDurationUnit(dataSet
-                  .getFirstDimensionDurationUnit());
-            RequestColumn dimensionColumn = new RequestColumn(
-                  dataSet.getFirstDimension(), dimensionDurationUnit);
+               for(GroupColumn gc: groupColumns)
+               {
+                  HandlerContext providerContext = new HandlerContext(queryService, 0);
+                  providerContext.setColumn(gc);
 
-            requestedColumns.add(factColumn);
-            requestedColumns.add(dimensionColumn);
-            responseBuilder = new SeriesResponseDataBuilder(requestedColumns);
-            break;
+                  IColumnHandler< ? , T, ? extends Query> columnHandler
+                     = handlerRegistry.getColumnHandler(gc);
+                  Object seriesValue
+                     = columnHandler.provideObjectValue(providerContext, groupEntitiy);
+                  //todo return a wrapepr object and let JsonUtil#addPrimitiveObjectToJsonObject
+                  //do the job of formatting it
+                  if(seriesValue instanceof Date && gc.getInterval() != null)
+                  {
+                     seriesValue = ReportingUtil.formatDate((Date)seriesValue, gc.getInterval().getUnit());
+                  }
+
+                  if(gc instanceof GroupByColumn)
+                  {
+                     seriesKey = (seriesValue != null)? seriesValue.toString() : "NULL";
+                  }
+                  else
+                  {
+                     seriesValues.setSortIndex(0);
+                     seriesValues.addValue(seriesValue);
+                  }
+               }
+
+               //Max, Min, Avg, Std Dev and Count
+               CountFunction<T> countFunction = new CountFunction<T>();
+               if(!FactField.COUNT.getId().equals(factColumn.getId()))
+               {
+                  IFactValueProvider<T> factProvider
+                     = handlerRegistry.getFactValueProvider(factColumn);
+
+                  //Max, Min, Avg, Std Dev and Count add it in that order - the client expects it like that
+                  MaxFunction<T> maxFunction = new MaxFunction<T>(queryService, factColumn, factProvider);
+                  Number max = maxFunction.apply(group);
+                  seriesValues.addValue(max);
+
+                  MinFunction<T> minFunction = new MinFunction<T>(queryService, factColumn, factProvider);
+                  Number min = minFunction.apply(group);
+                  seriesValues.addValue(min);
+
+                  AvgFunction<T> avgFunction = new AvgFunction<T>(queryService, factColumn, factProvider);
+                  Number avg = avgFunction.apply(group);
+                  seriesValues.addValue(avg);
+
+                  StdDevFunction<T> stdDevFunction = new StdDevFunction<T>(queryService, factColumn, factProvider);
+                  Number stdDev = stdDevFunction.apply(group);
+                  seriesValues.addValue(stdDev);
+               }
+               long count = countFunction.apply(group).longValue();
+               seriesValues.addValue(count);
+
+               sdb.add(seriesKey, seriesValues);
+            }
+            return sdb.getResult();
          case RECORDSET:
             for (String s : dataSet.getColumns())
             {
-               requestedColumns.add(new RequestColumn(s, null));
+               requestedColumns.add(new RequestColumn(s));
             }
-            responseBuilder = new RecordSetResponseDataBuilder(requestedColumns);
-            break;
+
+            RecordSetDataBuilder responseBuilder
+               = new RecordSetDataBuilder(requestedColumns);
+            HandlerContext ctx = new HandlerContext(queryService, results.size());
+            for(ValueGroupKey<T> groupKey: aggregateResults.keySet())
+            {
+               T groupEntitiy = groupKey.getCriteriaEntitiy();
+               for (RequestColumn requestedColumn : requestedColumns)
+               {
+                  IPropertyValueProvider< ? , T> mappingHandler = handlerRegistry
+                        .getPropertyValueProvider(requestedColumn);
+                  Object value = mappingHandler.provideObjectValue(ctx, groupEntitiy);
+                  responseBuilder.addValue(value);
+               }
+               responseBuilder.nextRow();
+            }
+            return responseBuilder.getResult();
          default:
             throw new RuntimeException("Unsupported DataSetType: " + dataSetType);
       }
-
-      HandlerContext ctx = new HandlerContext(queryService, results.size());
-      for (T t : results)
-      {
-         responseBuilder.next();
-         for (RequestColumn requestedColumn : requestedColumns)
-         {
-            IMappingHandler< ? , T> mappingHandler = handlerRegistry
-                  .getMappingHandler(requestedColumn);
-            DurationUnit durationUnit = requestedColumn.getDurationUnit();
-
-            //set context data
-            ctx.putContextData(HandlerContext.DURATION_UNIT_ID, durationUnit);
-            Object value = mappingHandler.provideObjectValue(ctx, t);
-            responseBuilder.addValue(requestedColumn, value);
-         }
-      }
-
-      return responseBuilder.getResult();
-   }
-
-   private DurationUnit getDurationUnit(String unit)
-   {
-      if(StringUtils.isNotEmpty(unit))
-      {
-         return DurationUnit.parse(unit);
-      }
-
-      return null;
    }
 
    /**

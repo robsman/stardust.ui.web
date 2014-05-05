@@ -7,26 +7,33 @@ import com.ibm.icu.util.Calendar;
 
 public class Constants
 {
-   public enum DurationUnit {
-      SECOND("s", Calendar.SECOND),
-      MINUTE("m", Calendar.MINUTE),
-      HOUR("h", Calendar.HOUR_OF_DAY),
-      DAY("d", Calendar.DAY_OF_YEAR),
-      WEEK("w", Calendar.WEEK_OF_YEAR),
-      MONTH("M", Calendar.MONTH),
-      YEAR("Y", Calendar.YEAR);
+   public enum TimeUnit {
+      SECOND("s", "yyyy/MM/dd hh:mm:ss", Calendar.SECOND),
+      MINUTE("m", "yyyy/MM/dd hh:mm", Calendar.MINUTE),
+      HOUR("h", "yyyy/MM/dd hh", Calendar.HOUR_OF_DAY),
+      DAY("d", "yyyy/MM/dd", Calendar.DAY_OF_YEAR),
+      WEEK("w", "yyyy/MM/WW", Calendar.WEEK_OF_MONTH),
+      MONTH("M", "yyyy/MM", Calendar.MONTH),
+      YEAR("Y", "yyyy", Calendar.YEAR);
 
       private String id;
       private int calendarField;
-      DurationUnit(String id, int calendarField)
+      private String dateFormat;
+      TimeUnit(String id, String dateFormat, int calendarField)
       {
          this.id = id;
+         this.dateFormat = dateFormat;
          this.calendarField = calendarField;
       }
 
       public int getCalendarField()
       {
          return calendarField;
+      }
+
+      public String getDateFormat()
+      {
+         return dateFormat;
       }
 
       @Override
@@ -40,9 +47,9 @@ public class Constants
          return id;
       }
 
-      public static DurationUnit parse(String s)
+      public static TimeUnit parse(String s)
       {
-         for(DurationUnit type: DurationUnit.values())
+         for(TimeUnit type: TimeUnit.values())
          {
             if(type.getId().equals(s))
             {
@@ -138,12 +145,12 @@ public class Constants
       }
    }
 
-   public enum DimensionField
+   public enum FactField
    {
       COUNT("count");
 
       private String id;
-      DimensionField(String id)
+      FactField(String id)
       {
          this.id = id;
       }
@@ -153,9 +160,9 @@ public class Constants
          return id;
       }
 
-      public static DimensionField parse(String s)
+      public static FactField parse(String s)
       {
-         for(DimensionField type: DimensionField.values())
+         for(FactField type: FactField.values())
          {
             if(type.getId().equals(s))
             {
@@ -164,7 +171,7 @@ public class Constants
          }
 
          StringBuilder errorMsgBuilder = new StringBuilder();
-         errorMsgBuilder.append("Unkown DimensionField: ").append("'");
+         errorMsgBuilder.append("Unkown FactFieldd: ").append("'");
          errorMsgBuilder.append(s);
          errorMsgBuilder.append("'");
          throw new RuntimeException(errorMsgBuilder.toString());
@@ -181,7 +188,8 @@ public class Constants
       STARTING_USER_NAME("startingUserName"),
       TERMINATION_TIMESTAMP("terminationTimestamp"),
       STATE("state"),
-      DURATION("duration");
+      DURATION("processInstanceDuration"),
+      ROOT_DURATION("rootProcessInstanceDuration");
 
       private String id;
       PiDimensionField(String id)
@@ -223,10 +231,13 @@ public class Constants
       ACTIVITY_NAME("activityName"),
       PROCESS_NAME("processName"),
       CRITICALITY("criticality"),
-      USER_PERFORMER_NAME("USERPERFORMERNAME"),
+      USER_PERFORMER_NAME("userPerformerName"),
       PARTICIPANT_PERFORMER_NAME("participantPerformerName"),
       STATE("state"),
-      DURATION("activityInstanceDuration");
+      DURATION("activityInstanceDuration"),
+      PROCESS_INSTANCE_DURATION(PiDimensionField.DURATION.getId()),
+      PROCESS_INSTANCE_ROOT_DURATION(PiDimensionField.ROOT_DURATION.getId());
+
 
       private String id;
       private AiDimensionField(String id)

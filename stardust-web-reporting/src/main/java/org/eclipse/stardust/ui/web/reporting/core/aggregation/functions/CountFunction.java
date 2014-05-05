@@ -8,13 +8,21 @@
 * Contributors:
 *    Holger.Prause (SunGard CSA LLC) - initial API and implementation and/or initial documentation
 *******************************************************************************/
-package org.eclipse.stardust.ui.web.reporting.core.handler;
+package org.eclipse.stardust.ui.web.reporting.core.aggregation.functions;
 
-import org.eclipse.stardust.engine.api.query.Query;
-import org.eclipse.stardust.ui.web.reporting.common.mapping.request.ReportFilter;
+import org.eclipse.stardust.ui.web.reporting.core.aggregation.IGroupFunction;
+import org.eclipse.stardust.ui.web.reporting.core.aggregation.ValueGroup;
 
-public interface IFilterHandler<T extends Query>
+public class CountFunction<T> implements IGroupFunction<T>
 {
-   public void applyFilter(T query, ReportFilter filter);
-   public boolean canFilter(T query, ReportFilter filter);
+   @Override
+   public Number apply(ValueGroup<T> group)
+   {
+      if(group != null)
+      {
+         return group.getSize();
+      }
+
+      return 0;
+   }
 }

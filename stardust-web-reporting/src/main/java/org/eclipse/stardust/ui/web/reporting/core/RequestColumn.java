@@ -4,33 +4,52 @@
 
 package org.eclipse.stardust.ui.web.reporting.core;
 
-import org.eclipse.stardust.ui.web.reporting.core.Constants.DurationUnit;
+import org.eclipse.stardust.ui.web.reporting.core.Constants.TimeUnit;
 
 
 public class RequestColumn extends AbstractColumn
 {
-   private DurationUnit durationUnit;
+   private TimeUnit timeUnit;
+
    private boolean descriptor;
+
+   private Interval interval;
 
    public RequestColumn(String id)
    {
       this(id, null);
    }
 
-   public RequestColumn(String id, DurationUnit durationUnit)
+   public RequestColumn(String id, TimeUnit timeUnit)
+   {
+      this(id, timeUnit, null);
+   }
+
+   public RequestColumn(String id, TimeUnit timeUnit, Interval interval)
    {
       super(id);
-      this.durationUnit = durationUnit;
+      this.timeUnit = timeUnit;
+      this.interval = interval;
    }
 
-   public DurationUnit getDurationUnit()
+   public Interval getInterval()
    {
-      return durationUnit;
+      return interval;
    }
 
-   public void setDurationUnit(DurationUnit durationUnit)
+   public void setInterval(Interval interval)
    {
-      this.durationUnit = durationUnit;
+      this.interval = interval;
+   }
+
+   public TimeUnit getTimeUnit()
+   {
+      return timeUnit;
+   }
+
+   public void setTimeUnit(TimeUnit timeUnit)
+   {
+      this.timeUnit = timeUnit;
    }
 
    public boolean isDescriptor()
@@ -51,6 +70,5 @@ public class RequestColumn extends AbstractColumn
       s.append(",isDescriptor: "+isDescriptor()).append("}");
       return s.toString();
    }
-
 
 }

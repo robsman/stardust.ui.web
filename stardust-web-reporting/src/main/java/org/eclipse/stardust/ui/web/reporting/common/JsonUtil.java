@@ -10,29 +10,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
+import org.eclipse.stardust.ui.web.reporting.core.util.ReportingUtil;
+
 public class JsonUtil
 {
-   private static final String DEFAULT_DATE_FORMAT = "yyyy/MM/dd hh:mm:ss:SSS";
-
-
-   public static Date parseDate(String s)
-   {
-      if(StringUtils.isNotEmpty(s))
-      {
-         SimpleDateFormat f = new SimpleDateFormat(DEFAULT_DATE_FORMAT);
-         try
-         {
-            return f.parse(s);
-         }
-         catch (ParseException e)
-         {
-            throw new RuntimeException("Could not parse date from string: "+s);
-         }
-      }
-
-      return null;
-   }
-
    // TODO: refactor this method / the caller code
    /**
     *
@@ -86,7 +67,7 @@ public class JsonUtil
          else if (value instanceof Date)
          {
             Date date = (Date) value;
-            SimpleDateFormat dateFormat = new SimpleDateFormat(DEFAULT_DATE_FORMAT);
+            SimpleDateFormat dateFormat = new SimpleDateFormat(ReportingUtil.DEFAULT_DATE_FORMAT);
             return new JsonPrimitive(dateFormat.format(date));
          }
          else
@@ -148,7 +129,7 @@ public class JsonUtil
    public static Date getPrimitiveValueAsDate(JsonElement jsonElement)
    {
       String primitiveValueAsString = getPrimitiveValueAsString(jsonElement);
-      SimpleDateFormat dateFormat = new SimpleDateFormat(DEFAULT_DATE_FORMAT);
+      SimpleDateFormat dateFormat = new SimpleDateFormat(ReportingUtil.DEFAULT_DATE_FORMAT);
       try
       {
          return dateFormat.parse(primitiveValueAsString);

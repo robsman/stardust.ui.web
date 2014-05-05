@@ -19,18 +19,11 @@ import org.eclipse.stardust.ui.web.reporting.core.DataField;
 import org.eclipse.stardust.ui.web.reporting.core.handler.AbstractDescriptorColumnHandler;
 import org.eclipse.stardust.ui.web.reporting.core.handler.HandlerContext;
 
-public class AiDescriptorColumnHandler extends AbstractDescriptorColumnHandler<Object, ActivityInstance, ActivityInstanceQuery>
+public class AiDescriptorColumnHandler extends AbstractDescriptorColumnHandler<ActivityInstance, ActivityInstanceQuery>
 {
    @Override
    public Object provideResultSetValue(HandlerContext context, ResultSet rs)
          throws SQLException
-   {
-      // TODO Auto-generated method stub
-      return null;
-   }
-
-   @Override
-   public Object provideObjectValue(HandlerContext context, ActivityInstance t)
    {
       // TODO Auto-generated method stub
       return null;
@@ -42,5 +35,4 @@ public class AiDescriptorColumnHandler extends AbstractDescriptorColumnHandler<O
       // TODO Auto-generated method stub
       return null;
    }
-
 }

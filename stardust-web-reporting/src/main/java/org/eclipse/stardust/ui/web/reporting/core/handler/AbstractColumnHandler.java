@@ -10,21 +10,56 @@
 *******************************************************************************/
 package org.eclipse.stardust.ui.web.reporting.core.handler;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 import java.util.List;
 
 import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.engine.api.query.*;
-import org.eclipse.stardust.ui.web.reporting.common.JsonUtil;
 import org.eclipse.stardust.ui.web.reporting.common.mapping.request.ReportFilter;
 import org.eclipse.stardust.ui.web.reporting.common.mapping.request.ReportFilter.OperatorType;
+import org.eclipse.stardust.ui.web.reporting.core.Interval;
 import org.eclipse.stardust.ui.web.reporting.core.RequestColumn;
 import org.eclipse.stardust.ui.web.reporting.core.util.ReportingUtil;
 
 public abstract class AbstractColumnHandler<T, U, V extends Query> implements IColumnHandler<T, U, V>
 {
+   @Override
+   public Object provideGroupingCriteria(HandlerContext context, U t)
+   {
+      T result = provideObjectValue(context, t);
+      if(result instanceof Date)
+      {
+         Interval interval = context.getColumn().getInterval();
 
+         if(interval != null)
+         {
+            Date referenceDate = new Date(0);
+            Date endDate = (Date) result;
+
+            long unitValue = interval.getUnitValue();
+            if(unitValue == 0)
+            {
+               unitValue = 1;
+            }
+            Long diff = ReportingUtil.calculateDuration(referenceDate, endDate, interval.getUnit());
+            Double intervalCriteriaDouble = new Double(diff) / new Double(unitValue);
+
+            BigDecimal intervalCriteria = new BigDecimal(intervalCriteriaDouble);
+            intervalCriteria.setScale(1, RoundingMode.DOWN);
+
+            return intervalCriteria.longValue();
+         }
+         else
+         {
+            return ((Date) result).getTime();
+         }
+      }
+
+      return result;
+   }
 
    protected FilterCriterion getDateFilterCriterion(FilterableAttribute filterAttribute, Date fromDate, Date toDate)
    {
@@ -67,8 +102,8 @@ public abstract class AbstractColumnHandler<T, U, V extends Query> implements IC
       String from = jsonObject.getAsJsonPrimitive("from").getAsString();
       String to = jsonObject.getAsJsonPrimitive("to").getAsString();
 
-      Date fromDate = JsonUtil.parseDate(from);
-      Date toDate = JsonUtil.parseDate(to);
+      Date fromDate = ReportingUtil.parseDate(from);
+      Date toDate = ReportingUtil.parseDate(to);
 
       FilterCriterion fc = getDateFilterCriterion(filterAttribute, fromDate, toDate);
       if(fc != null)
@@ -129,7 +164,13 @@ public abstract class AbstractColumnHandler<T, U, V extends Query> implements IC
    @Override
    public boolean canHandle(RequestColumn requestColumn)
    {
-      return true;
+      return false;
+   }
+
+   @Override
+   public boolean canFilter(V query, ReportFilter filter)
+   {
+      return false;
    }
 }
 

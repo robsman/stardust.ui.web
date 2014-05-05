@@ -27,13 +27,15 @@ import org.eclipse.stardust.common.Serialization;
 import org.eclipse.stardust.engine.api.query.DataFilter;
 import org.eclipse.stardust.engine.api.query.FilterCriterion;
 import org.eclipse.stardust.engine.api.query.Query;
+import org.eclipse.stardust.engine.api.runtime.IDescriptorProvider;
 import org.eclipse.stardust.ui.web.reporting.common.JsonUtil;
 import org.eclipse.stardust.ui.web.reporting.common.mapping.request.ReportFilter;
 import org.eclipse.stardust.ui.web.reporting.common.mapping.request.ReportFilter.OperatorType;
 import org.eclipse.stardust.ui.web.reporting.common.mapping.request.ReportFilterMetaData;
 import org.eclipse.stardust.ui.web.reporting.core.RequestColumn;
 
-public abstract class AbstractDescriptorColumnHandler<T, U, V extends Query> extends AbstractColumnHandler<T, U, V>
+public abstract class AbstractDescriptorColumnHandler<U extends IDescriptorProvider, V extends Query>
+   extends AbstractColumnHandler<Object, U, V> implements IFactValueProvider<U>
 {
    @Override
    public void applyFilter(V query, ReportFilter filter)
@@ -119,7 +121,6 @@ public abstract class AbstractDescriptorColumnHandler<T, U, V extends Query> ext
       }
 
       query.where(filterCriterion);
-
    }
 
    private Collection<Serializable> getDataFilterValues(JsonElement jsonElement,
@@ -211,9 +212,44 @@ public abstract class AbstractDescriptorColumnHandler<T, U, V extends Query> ext
       }
    }
 
-   @Override
-   public boolean canHandle(RequestColumn requestColumn)
+   protected void raiseUnsupportedDescriptorTypeException(HandlerContext context)
    {
-      return requestColumn.isDescriptor();
+      RequestColumn column = context.getColumn();
+      StringBuffer errorMsg = new StringBuffer();
+      errorMsg.append("Descriptor: "+column.getId());
+      errorMsg.append(" is not of numeric type");
+      throw new RuntimeException(errorMsg.toString());
+   }
+
+   @Override
+   public boolean canFilter(V query, ReportFilter filter)
+   {
+      return filter.isDescriptor();
+   }
+
+   @Override
+   public Number provideFactValue(HandlerContext context, U t)
+   {
+      Object descriptorValue = provideObjectValue(context, t);
+      if(descriptorValue != null )
+      {
+         if(descriptorValue instanceof Number)
+         {
+            return (Number) descriptorValue;
+         }
+         else
+         {
+            raiseUnsupportedDescriptorTypeException(context);
+         }
+      }
+
+      return 0;
+   }
+
+   @Override
+   public Object provideObjectValue(HandlerContext context, U t)
+   {
+      String descriptorId = context.getColumn().getId();
+      return t.getDescriptorValue(descriptorId);
    }
 }

@@ -10,11 +10,7 @@
 *******************************************************************************/
 package org.eclipse.stardust.ui.web.reporting.core.handler;
 
-import org.eclipse.stardust.engine.api.query.Query;
-import org.eclipse.stardust.ui.web.reporting.common.mapping.request.ReportFilter;
-
-public interface IFilterHandler<T extends Query>
+public interface IFactValueProvider<U>
 {
-   public void applyFilter(T query, ReportFilter filter);
-   public boolean canFilter(T query, ReportFilter filter);
+   public Number provideFactValue(HandlerContext context, U t);
 }

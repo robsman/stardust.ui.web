@@ -16,16 +16,26 @@ import java.sql.SQLException;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.ui.web.reporting.common.mapping.request.ReportFilter;
-import org.eclipse.stardust.ui.web.reporting.core.Constants.AiDimensionField;
-import org.eclipse.stardust.ui.web.reporting.core.Constants.TimeUnit;
 import org.eclipse.stardust.ui.web.reporting.core.DataField;
-import org.eclipse.stardust.ui.web.reporting.core.DataField.DataFieldType;
 import org.eclipse.stardust.ui.web.reporting.core.handler.HandlerContext;
 import org.eclipse.stardust.ui.web.reporting.core.handler.IFactValueProvider;
-import org.eclipse.stardust.ui.web.reporting.core.util.ReportingUtil;
+import org.eclipse.stardust.ui.web.reporting.core.handler.process.PiRootDurationColumnHandler;
 
-public class AiDurationColumnHandler extends AiColumnHandler<Long> implements IFactValueProvider<ActivityInstance>
+public class AiRootProcessDurationColumnHandler extends AiColumnHandler<Long> implements IFactValueProvider<ActivityInstance>
 {
+   private PiRootDurationColumnHandler delegate;
+
+   public AiRootProcessDurationColumnHandler()
+   {
+      delegate = new PiRootDurationColumnHandler();
+   }
+
+   @Override
+   public Long provideObjectValue(HandlerContext context, ActivityInstance t)
+   {
+      return delegate.provideObjectValue(context, t.getProcessInstance());
+   }
+
    @Override
    public Long provideResultSetValue(HandlerContext context, ResultSet rs)
          throws SQLException
@@ -35,29 +45,22 @@ public class AiDurationColumnHandler extends AiColumnHandler<Long> implements IF
    }
 
    @Override
-   public Long provideObjectValue(HandlerContext context, ActivityInstance t)
-   {
-      TimeUnit du = context.getColumn().getTimeUnit();
-      return ReportingUtil.calculateDuration(t.getStartTime(),
-            t.getLastModificationTime(), du);
-   }
-
-   @Override
    public DataField provideDataField(HandlerContext context)
    {
-      return new DataField(AiDimensionField.DURATION.getId(),
-            DataFieldType.NUMBER);
+      // TODO Auto-generated method stub
+      return null;
    }
 
    @Override
    public void applyFilter(ActivityInstanceQuery query, ReportFilter filter)
    {
       raisUnsupportedFilterException(query, filter);
+
    }
 
    @Override
    public Long provideFactValue(HandlerContext context, ActivityInstance t)
    {
-      return provideObjectValue(context, t);
+      return delegate.provideObjectValue(context, t.getProcessInstance());
    }
 }

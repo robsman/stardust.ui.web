@@ -8,13 +8,33 @@
 * Contributors:
 *    Holger.Prause (SunGard CSA LLC) - initial API and implementation and/or initial documentation
 *******************************************************************************/
-package org.eclipse.stardust.ui.web.reporting.core.handler;
+package org.eclipse.stardust.ui.web.reporting.common.mapping.reponse;
 
-import org.eclipse.stardust.engine.api.query.Query;
-import org.eclipse.stardust.ui.web.reporting.common.mapping.request.ReportFilter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-public interface IFilterHandler<T extends Query>
+public class Series
 {
-   public void applyFilter(T query, ReportFilter filter);
-   public boolean canFilter(T query, ReportFilter filter);
+   private List<ValuesArray> seriesValues;
+
+   public Series()
+   {
+      seriesValues = new ArrayList<ValuesArray>();
+   }
+
+   public void add(ValuesArray values)
+   {
+      seriesValues.add(values);
+   }
+
+   public void sort()
+   {
+      Collections.sort(seriesValues);
+   }
+
+   public List<ValuesArray> getValues()
+   {
+      return seriesValues;
+   }
 }

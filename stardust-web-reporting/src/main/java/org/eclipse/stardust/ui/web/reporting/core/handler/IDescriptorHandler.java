@@ -11,10 +11,9 @@
 package org.eclipse.stardust.ui.web.reporting.core.handler;
 
 import org.eclipse.stardust.engine.api.query.Query;
-import org.eclipse.stardust.ui.web.reporting.common.mapping.request.ReportFilter;
+import org.eclipse.stardust.engine.api.runtime.IDescriptorProvider;
 
-public interface IFilterHandler<T extends Query>
+public interface IDescriptorHandler<U extends IDescriptorProvider, V extends Query> extends IColumnHandler<Object, U, V>
 {
-   public void applyFilter(T query, ReportFilter filter);
-   public boolean canFilter(T query, ReportFilter filter);
+
 }

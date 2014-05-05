@@ -8,18 +8,22 @@
 * Contributors:
 *    Holger.Prause (SunGard CSA LLC) - initial API and implementation and/or initial documentation
 *******************************************************************************/
-package org.eclipse.stardust.ui.web.reporting.core.handler;
+package org.eclipse.stardust.ui.web.reporting.core.aggregation.functions;
 
-import org.eclipse.stardust.engine.api.query.Query;
+import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.ui.web.reporting.core.RequestColumn;
-import org.eclipse.stardust.ui.web.reporting.core.aggregation.IGroupingValueProvider;
+import org.eclipse.stardust.ui.web.reporting.core.handler.IFactValueProvider;
 
-public interface IColumnHandler<T, U, V extends Query>
-   extends
-   IPropertyValueProvider<T, U>,
-   IGroupingValueProvider<U>,
-   ISqlValueProvider<T>,
-   IFilterHandler<V>
+public class MinFunction<T> extends CompareFunction<T>
 {
-   public boolean canHandle(RequestColumn requestColumn);
+   public MinFunction(QueryService queryService, RequestColumn factColumn, IFactValueProvider<T> factProvider)
+   {
+      super(queryService, factColumn, factProvider);
+   }
+
+   @Override
+   protected boolean matches(long referenceValue, long currentValue)
+   {
+      return currentValue < referenceValue;
+   }
 }

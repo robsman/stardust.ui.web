@@ -4,34 +4,28 @@
 
 package org.eclipse.stardust.ui.web.reporting.core.handler;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.eclipse.stardust.engine.api.runtime.QueryService;
+import org.eclipse.stardust.ui.web.reporting.core.RequestColumn;
 
 public class HandlerContext
 {
-   public static final String DURATION_UNIT_ID = "DurationUnitId";
-
-   private Map<String, Object> contextData
-      = new HashMap<String, Object>();
-
    private long totalCount;
    private QueryService queryService;
+   private RequestColumn column;
 
    public HandlerContext(QueryService queryService, long totalCount)
    {
       this.totalCount = totalCount;
    }
 
-   public Object getContextData(String key)
+   public RequestColumn getColumn()
    {
-      return contextData.get(key);
+      return column;
    }
 
-   public void putContextData(String key, Object value)
+   public void setColumn(RequestColumn column)
    {
-      contextData.put(key, value);
+      this.column = column;
    }
 
    public long getTotalCount()

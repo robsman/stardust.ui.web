@@ -16,20 +16,20 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.stardust.engine.api.query.Query;
-import org.eclipse.stardust.ui.web.reporting.core.Constants;
+import org.eclipse.stardust.ui.web.reporting.common.mapping.request.ReportFilter;
 import org.eclipse.stardust.ui.web.reporting.core.RequestColumn;
+import org.eclipse.stardust.ui.web.reporting.core.aggregation.IGroupingValueProvider;
 
 public abstract class AbstractColumnHandlerRegistry<U, V extends Query>
 {
    private Map<String, IColumnHandler< ? , U, V>> fixColumnHandler;
 
-   private List<IColumnHandler< ? , U, V>> dynamicColumnHandler;
+   private List<IColumnHandler< ? , U, V>> dynamicHandler;
 
    public AbstractColumnHandlerRegistry()
    {
-      this.fixColumnHandler = new HashMap<String, IColumnHandler<?,U,V>>();
-      this.dynamicColumnHandler = new ArrayList<IColumnHandler<?,U,V>>();
-      register(Constants.DimensionField.COUNT.getId(), new CountColumnHandler<U, V>());
+      this.fixColumnHandler = new HashMap<String, IColumnHandler< ? , U, V>>();
+      this.dynamicHandler = new ArrayList<IColumnHandler< ? , U, V>>();
    }
 
    public void register(String key, IColumnHandler< ? , U, V> handler)
@@ -37,46 +37,87 @@ public abstract class AbstractColumnHandlerRegistry<U, V extends Query>
       fixColumnHandler.put(key, handler);
    }
 
-   protected void register(IColumnHandler< ? , U, V> handler)
+   public void register(IColumnHandler< ? , U, V> handler)
    {
-      dynamicColumnHandler.add(handler);
+      dynamicHandler.add(handler);
    }
 
-   protected IColumnHandler< ? , U, V> getColumnHandler(RequestColumn column)
+   public IColumnHandler< ? , U, V> getColumnHandler(RequestColumn column)
    {
       String columnId = column.getId();
       IColumnHandler< ? , U, V> columnHandler = fixColumnHandler.get(columnId);
-      if (columnHandler == null)
+      if (columnHandler != null)
       {
-         for (IColumnHandler< ? , U, V> ic : dynamicColumnHandler)
+         return columnHandler;
+      }
+      else
+      {
+         for (IColumnHandler< ? , U, V> dh : dynamicHandler)
          {
-            if (ic.canHandle(column))
+            if (dh.canHandle(column))
             {
-               columnHandler = ic;
-               break;
+               return columnHandler;
             }
          }
       }
 
-      if (columnHandler == null)
-      {
-         StringBuilder errorMsg = new StringBuilder();
-         errorMsg.append(" No column handler found for column ");
-         errorMsg.append(column.toString());
+      StringBuilder errorMsg = new StringBuilder();
+      errorMsg.append(" No column handler found for column ");
+      errorMsg.append(column.toString());
+      throw new RuntimeException(errorMsg.toString());
+   }
 
-         throw new RuntimeException(errorMsg.toString());
+   public IFilterHandler<V> getFilterHandler(V query, RequestColumn column,
+         ReportFilter filter)
+   {
+      String columnId = column.getId();
+      IColumnHandler< ? , U, V> columnHandler = fixColumnHandler.get(columnId);
+      if (columnHandler != null)
+      {
+         return columnHandler;
+      }
+      else
+      {
+         for (IColumnHandler< ? , U, V> dh : dynamicHandler)
+         {
+            if (dh.canFilter(query, filter))
+            {
+               return dh;
+            }
+         }
       }
 
-      return columnHandler;
+      StringBuilder errorMsg = new StringBuilder();
+      errorMsg.append(" No column handler found for column ");
+      errorMsg.append(column.toString());
+      throw new RuntimeException(errorMsg.toString());
    }
 
-   public IFilterHandler<V> getFilterHandler(RequestColumn column)
+   public IPropertyValueProvider< ? , U> getPropertyValueProvider(RequestColumn column)
    {
       return getColumnHandler(column);
    }
 
-   public IMappingHandler<?, U> getMappingHandler(RequestColumn column)
+   public IGroupingValueProvider<U> getGroupingValueProvider(RequestColumn column)
    {
       return getColumnHandler(column);
+   }
+
+   @SuppressWarnings("unchecked")
+   public IFactValueProvider<U> getFactValueProvider(RequestColumn column)
+   {
+      IColumnHandler< ? , U, V> columnHandler = getColumnHandler(column);
+      if (columnHandler instanceof IFactValueProvider)
+      {
+         return (IFactValueProvider<U>) columnHandler;
+      }
+      else
+      {
+         StringBuilder errorMsg = new StringBuilder();
+         errorMsg.append(" Requested column ");
+         errorMsg.append(column.getId());
+         errorMsg.append(" is not fact column!");
+         throw new RuntimeException(errorMsg.toString());
+      }
    }
 }
