@@ -86,9 +86,10 @@ public class ReportingServiceBean
 
    private static final Logger trace = LogManager.getLogger(ReportingServiceBean.class);
 
-   private static final String PUBLIC_REPORT_DEFINITIONS_DIR = "/reports";
-   private static final String PARTICIPANTS_REPORT_DEFINITIONS_DIR = "/reports/participants";
-
+   private static final String PUBLIC_REPORT_DEFINITIONS_DIR = "/reports/designs/";
+   
+   private static final String REPORT_DEFINITION_EXT = ".bpmrptdesign";
+   
    private DocumentManagementService documentManagementService;
    
    private UserService userService;
@@ -492,7 +493,7 @@ public class ReportingServiceBean
     */
    private String getParticipantDocumentFolderPath(String participant)
    {
-      return PARTICIPANTS_REPORT_DEFINITIONS_DIR + participant;
+      return PUBLIC_REPORT_DEFINITIONS_DIR + participant;
    }
 
    /**
@@ -506,7 +507,7 @@ public class ReportingServiceBean
       {
          Folder publicFolder = findOrCreateFolder(PUBLIC_REPORT_DEFINITIONS_DIR);
          Folder personalFolder = findOrCreateFolder(getUserDocumentFolderPath());
-         Folder participantFolder = findOrCreateFolder(PARTICIPANTS_REPORT_DEFINITIONS_DIR);
+         Folder participantFolder = findOrCreateFolder(PUBLIC_REPORT_DEFINITIONS_DIR);
 
          JsonObject rootFolderJson = new JsonObject();
          JsonArray subFoldersJson = new JsonArray();
@@ -516,19 +517,19 @@ public class ReportingServiceBean
          subFoldersJson.add(getReportDefinitions(personalFolder, "Personal Report Definitions")); // I18N
 
          //Prepare Participants subfolders
-         JsonObject participantsFolderJson = new JsonObject();
-         participantsFolderJson.addProperty("name", "Participants Report Definitions"); // I18N
-         participantsFolderJson.addProperty("id", participantFolder.getId());
-         participantsFolderJson.addProperty("path", participantFolder.getPath());
+         //JsonObject participantsFolderJson = new JsonObject();
+         //participantsFolderJson.addProperty("name", "Participants Report Definitions"); // I18N
+         //participantsFolderJson.addProperty("id", participantFolder.getId());
+         //participantsFolderJson.addProperty("path", participantFolder.getPath());
 
-         subFoldersJson.add(participantsFolderJson);
+         //subFoldersJson.add(participantsFolderJson);
 
          List<Folder> subfolders = participantFolder.getFolders();
          User loggedInUser = userProvider.getUser();
 
          //add relevant participants
-         JsonArray participantFoldersJson = new JsonArray();
-         participantsFolderJson.add("subFolders", participantFoldersJson);
+         //JsonArray participantFoldersJson = new JsonArray();
+         //participantsFolderJson.add("subFolders", participantFoldersJson);
 
          for (Folder participantSubFolder : subfolders)
          {
@@ -542,12 +543,12 @@ public class ReportingServiceBean
                
                if (participant != null)
                {
-                  participantFolderJson = getReportDefinitions(participantSubFolder, participant.getName());
+                  participantFolderJson = getReportDefinitions(participantSubFolder, participant.getName() + " Report Definitions"); //TODO: I18N
                }
 
                if (participantFolderJson != null)
                {
-                  participantFoldersJson.add(participantFolderJson);
+                  subFoldersJson.add(participantFolderJson);
                }
             }
          }
@@ -603,7 +604,7 @@ public class ReportingServiceBean
 
          for (Document reportDefinitionDocument : candidateReportDefinitionsDocuments)
          {
-            if (reportDefinitionDocument.getName().endsWith(".bpmrpt"))
+            if (reportDefinitionDocument.getName().endsWith(REPORT_DEFINITION_EXT))
             {
                String content = new String(getDocumentManagementService().retrieveDocumentContent(
                      reportDefinitionDocument.getId()));
@@ -615,7 +616,7 @@ public class ReportingServiceBean
                reportDefinitionJson.addProperty(
                      "name",
                      reportDefinitionDocument.getName().substring(0,
-                           reportDefinitionDocument.getName().indexOf(".bpmrpt")));
+                           reportDefinitionDocument.getName().indexOf(REPORT_DEFINITION_EXT)));
                reportDefinitionJson.addProperty("path", reportDefinitionDocument.getPath());
             }
          }
@@ -630,12 +631,12 @@ public class ReportingServiceBean
    private void saveReportDefinitionDocument(JsonObject reportDefinitionJson, Folder folder, String name)
    {
       String reportContent = reportDefinitionJson.toString();
-      String path = folder.getPath() + "/" + name + ".bpmrpt";
+      String path = folder.getPath() + "/" + name + REPORT_DEFINITION_EXT;
       Document reportDesignDocument = getDocumentManagementService().getDocument(path);
 
       if (null == reportDesignDocument)
       {
-         DocumentInfo documentInfo = DmsUtils.createDocumentInfo(name + ".bpmrpt");
+         DocumentInfo documentInfo = DmsUtils.createDocumentInfo(name + REPORT_DEFINITION_EXT);
 
          documentInfo.setOwner(getServiceFactory().getWorkflowService().getUser().getAccount());
          documentInfo.setContentType(MimeTypesHelper.DEFAULT.getType());
@@ -664,7 +665,7 @@ public class ReportingServiceBean
    {
       Document reportDefinitionDocument = getDocumentManagementService().getDocument(path);
       String folderPath = path.substring(0, path.lastIndexOf('/'));
-      DocumentInfo documentInfo = DmsUtils.createDocumentInfo(name + ".bpmrpt");
+      DocumentInfo documentInfo = DmsUtils.createDocumentInfo(name + REPORT_DEFINITION_EXT);
 
       documentInfo.setOwner(getServiceFactory().getWorkflowService().getUser().getAccount());
       documentInfo.setContentType(MimeTypesHelper.DEFAULT.getType());
@@ -674,7 +675,7 @@ public class ReportingServiceBean
       getDocumentManagementService().createDocument(folderPath, documentInfo, content, null);
       getDocumentManagementService().removeDocument(reportDefinitionDocument.getId());
 
-      return folderPath + "/" + name + ".bpmrpt";
+      return folderPath + "/" + name + REPORT_DEFINITION_EXT;
    }
 
    /**
