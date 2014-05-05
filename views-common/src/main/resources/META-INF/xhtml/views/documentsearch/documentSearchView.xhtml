@@ -301,6 +301,20 @@
 									style="color:red;" />
 						</ice:column>
 
+						<ice:column>
+							<ice:outputText
+								value="#{documentSearchBean.messages['repository.label']}#{documentSearchBean.messages['colon']}"
+								styleClass="label-form" />
+						</ice:column>
+						<ice:column>
+								<ice:selectManyMenu id="repositoryName"
+									style="height:75px; width:210px;align:center;"
+									value="#{documentSearchBean.filterAttributes.selectedRepository}"
+									partialSubmit="true">
+									<f:selectItems id="txtDocumentTypes"
+										value="#{documentSearchBean.filterAttributes.repositories}" />
+								</ice:selectManyMenu>
+						</ice:column>		
 					</ice:panelGrid>
 				</td>
 			</tr>

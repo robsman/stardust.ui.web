@@ -30,6 +30,7 @@ import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.Documents;
 import org.eclipse.stardust.engine.api.runtime.QueryService;
+import org.eclipse.stardust.engine.core.spi.dms.IRepositoryInstanceInfo;
 import org.eclipse.stardust.engine.core.thirdparty.encoding.Text;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.table.IppSearchHandler;
@@ -58,6 +59,7 @@ public class DocumentSearchProvider implements Serializable
    // ================================================================================================
    private FilterAttributes filterAttributes;
    private Set <DocumentTypeWrapper> declaredDocumentTypes;
+   private List<IRepositoryInstanceInfo> repositoryInstances;
 
    // ~ Constructor
    // ================================================================================================
@@ -66,7 +68,16 @@ public class DocumentSearchProvider implements Serializable
     */
    public DocumentSearchProvider(Set <DocumentTypeWrapper> declaredDocumentTypes)
    {
+      this(declaredDocumentTypes, null);
+   }
+   
+   /**
+    * @param portalId
+    */
+   public DocumentSearchProvider(Set <DocumentTypeWrapper> declaredDocumentTypes, List<IRepositoryInstanceInfo> repositoryInstances)
+   {
       this.declaredDocumentTypes = declaredDocumentTypes;
+      this.repositoryInstances = repositoryInstances;
       filterAttributes = getFilterAttributes();
    }
 
@@ -92,7 +103,7 @@ public class DocumentSearchProvider implements Serializable
    
    public void initializeFilterAttributes()
    {
-      filterAttributes= new FilterAttributes(declaredDocumentTypes);     
+      filterAttributes= new FilterAttributes(declaredDocumentTypes, repositoryInstances);     
    }
 
    public static QueryService getQueryService()
@@ -135,8 +146,10 @@ public class DocumentSearchProvider implements Serializable
       private String advancedFileType;
       private SelectItem[] fileTypes;
       private SelectItem[] typicalFileTypes;
+      private ArrayList<SelectItem> repositories;
       private boolean showAll;
       private String[] selectedDocumentTypes = {ALL};
+      private String[] selectedRepository = {ALL};
       private List<SelectItem> documentTypes;
       private String containingText;
       private boolean searchContent = true;
@@ -152,6 +165,11 @@ public class DocumentSearchProvider implements Serializable
       
 
       public FilterAttributes(Set <DocumentTypeWrapper> declaredDocumentTypes)
+      {
+         this(declaredDocumentTypes, null);
+      }
+      
+      public FilterAttributes(Set <DocumentTypeWrapper> declaredDocumentTypes, List<IRepositoryInstanceInfo> repositoryInstances)
       {
          super();
          messageCommonBean=MessagesViewsCommonBean.getInstance();
@@ -184,6 +202,14 @@ public class DocumentSearchProvider implements Serializable
          for (DocumentTypeWrapper documentTypeWrapper : declaredDocumentTypes)
          {
             documentTypes.add(new SelectItem(documentTypeWrapper.getDocumentTypeId(), documentTypeWrapper.getDocumentTypeI18nName()));
+         }
+         repositories = new ArrayList<SelectItem>();
+         repositories
+               .add(new SelectItem(ALL, messageCommonBean.getString("views.documentSearchView.documentType.All")));
+         
+         for (IRepositoryInstanceInfo repos : repositoryInstances)
+         {
+            repositories.add(new SelectItem(repos.getRepositoryId(), repos.getRepositoryName()));
          }
       }
 
@@ -344,6 +370,16 @@ public class DocumentSearchProvider implements Serializable
          this.selectedDocumentTypes = selectedDocumentTypes;
       }
 
+      public String[] getSelectedRepository()
+      {
+         return selectedRepository;
+      }
+
+      public void setSelectedRepository(String[] selectedRepository)
+      {
+         this.selectedRepository = selectedRepository;
+      }
+
       public List<SelectItem> getDocumentTypes()
       {
          return documentTypes;
@@ -392,6 +428,16 @@ public class DocumentSearchProvider implements Serializable
       public void setAdvancedFileType(String advancedFileType)
       {
          this.advancedFileType = advancedFileType;
+      }
+
+      public ArrayList<SelectItem> getRepositories()
+      {
+         return repositories;
+      }
+
+      public void setRepositories(ArrayList<SelectItem> repositories)
+      {
+         this.repositories = repositories;
       }
 
       /**
@@ -571,6 +617,16 @@ public class DocumentSearchProvider implements Serializable
             {
                filterOrTerm.add(DocumentQuery.DOCUMENT_TYPE_ID.isEqual(documentTypeIds[i]));
             }
+         }
+         
+         // Repository types
+         String[] selectedRepo = getFilterAttributes().getSelectedRepository();
+         if (selectedRepo.length > 0 && !checkIfAllOptionSelect(selectedRepo))
+         {
+            /*
+             * for (int i = 0; i < selectedRepo.length; i++) {
+             * filterOrTerm.add(DocumentQuery.R.isEqual(documentTypeIds[i])); }
+             */
          }
            
          //File Type   

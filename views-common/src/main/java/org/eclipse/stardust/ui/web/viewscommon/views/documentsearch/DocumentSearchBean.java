@@ -21,6 +21,7 @@ import org.eclipse.stardust.common.Pair;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.User;
+import org.eclipse.stardust.engine.core.spi.dms.IRepositoryInstanceInfo;
 import org.eclipse.stardust.ui.web.common.UIComponentBean;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
 import org.eclipse.stardust.ui.web.common.column.DefaultColumnModel;
@@ -120,7 +121,9 @@ public class DocumentSearchBean extends UIComponentBean
    {
 
       declaredDocumentTypes = ModelUtils.getAllActiveDeclaredDocumentTypes();
-      searchProvider = new DocumentSearchProvider(declaredDocumentTypes);
+      List<IRepositoryInstanceInfo> repositoryInstanceInfos = DocumentMgmtUtility.getDocumentManagementService()
+            .getRepositoryInstanceInfos();
+      searchProvider = new DocumentSearchProvider(declaredDocumentTypes, repositoryInstanceInfos);
 
       List<ColumnPreference> documentSearchFixedCols = new ArrayList<ColumnPreference>();
 
