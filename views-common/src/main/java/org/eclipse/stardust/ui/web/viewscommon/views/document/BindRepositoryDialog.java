@@ -138,6 +138,12 @@ public class BindRepositoryDialog extends PopupUIComponentBean
    {
       try
       {
+         if (repositoryId == null)
+         {
+            ExceptionHandler.handleException(getBeanId(),
+                  MessagesViewsCommonBean.getInstance().getString("views.bindRepositoryDialog.repoId.empty"));
+            return;
+         }
          Map<String, Serializable> attributes = CollectionUtils.newMap();
          attributes.put(IRepositoryConfiguration.PROVIDER_ID, getSelectedProvider());
          attributes.put(IRepositoryConfiguration.REPOSITORY_ID, getRepositoryId());
