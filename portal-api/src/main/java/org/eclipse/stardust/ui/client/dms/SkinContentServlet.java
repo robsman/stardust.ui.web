@@ -29,7 +29,6 @@ import org.eclipse.stardust.common.Function;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.config.ExtensionProviderUtils;
 import org.eclipse.stardust.common.config.Parameters;
-import org.eclipse.stardust.common.config.ParametersFacade;
 import org.eclipse.stardust.common.error.PublicException;
 import org.eclipse.stardust.engine.api.web.dms.DmsContentServlet.ExecutionServiceProvider;
 import org.eclipse.stardust.engine.core.preferences.IPreferenceStorageManager;
@@ -44,9 +43,7 @@ import org.eclipse.stardust.engine.core.runtime.beans.ForkingServiceFactory;
 import org.eclipse.stardust.engine.core.runtime.beans.interceptors.PropertyLayerProviderInterceptor;
 import org.eclipse.stardust.engine.core.runtime.beans.removethis.SecurityProperties;
 import org.eclipse.stardust.engine.core.runtime.removethis.EngineProperties;
-import org.eclipse.stardust.engine.core.spi.dms.RepositoryProviderManager;
 import org.eclipse.stardust.engine.core.spi.jca.IJcaResourceProvider;
-import org.eclipse.stardust.vfs.IDocumentRepositoryService;
 import org.eclipse.stardust.vfs.IFile;
 import org.eclipse.stardust.vfs.IFolder;
 import org.eclipse.stardust.vfs.RepositoryOperationFailedException;
@@ -58,15 +55,15 @@ import org.eclipse.stardust.vfs.jcr.spring.JcrSpringSessionFactory;
 
 /**
  * Serves the 'default-skin' artifacts, which are configured for a partition.
- * 
+ *
  * This Servlet is invoked with URIs like /<partitionId>/default-skin/<skin-artifacts>
  * It replaces the 'default-skin' work with the actually skin folder configured,
  * and returns the contents of the resource from Repository under SKIN folder
- * 
- * E.g. 
+ *
+ * E.g.
  * /default/default-skin/custom/login.css
  * /default/default-skin/custom/css-images/login-logo.png
- * 
+ *
  * @author Subodh.Godbole
  *
  */
@@ -81,7 +78,7 @@ public class SkinContentServlet extends AbstractVfsContentServlet
    public static final String SKIN_PREF_MODULE_ID = "ipp-portal-common";
    public static final String SKIN_PREF_ID = "preference";
    public static final String SKIN_PREF_KEY = "ipp-portal-common.configuration.prefs.skin";
-   public static final String EJB = "ejb"; 
+   public static final String EJB = "ejb";
    private boolean ejbEnvironment = false;
 
    private String context;
@@ -119,7 +116,7 @@ public class SkinContentServlet extends AbstractVfsContentServlet
                            AuditTrailPartitionBean.findById(request.partitionId));
 
                      String skinFolder = getDefaultSkinId(rtEnv);
-                     
+
                      if (StringUtils.isNotEmpty(skinFolder))
                      {
                         try
@@ -180,13 +177,13 @@ public class SkinContentServlet extends AbstractVfsContentServlet
                                     downloadManager.getContentOutputStream());
 
                               result = HttpServletResponse.SC_OK;
-                           }   
+                           }
                            else
                            {
                               // file not found
                               result = HttpServletResponse.SC_NOT_FOUND;
                            }
-                        }   
+                        }
                         catch (RepositoryOperationFailedException rofe)
                         {
                            throw new PublicException(MessageFormat.format(
@@ -306,7 +303,7 @@ public class SkinContentServlet extends AbstractVfsContentServlet
 
       context = config.getInitParameter(CLIENT_CONTEXT_PARAM);
       context = context != null ? context.toLowerCase() : null;
-      
+
       if (EJB.equalsIgnoreCase(context))
       {
          ejbEnvironment = true;
@@ -335,7 +332,7 @@ public class SkinContentServlet extends AbstractVfsContentServlet
 
       return folderPathString;
    }
-   
+
    /**
     * @author Subodh.Godbole
     *
@@ -358,10 +355,10 @@ public class SkinContentServlet extends AbstractVfsContentServlet
       final Parameters params = Parameters.instance();
       return params.getString("ContentRepository.Password", "jcrPassword");
    }
-  
+
    /**
     * @author Yogesh.Manware
-    * 
+    *
     */
    private class IppSkinJcrSessionFactory implements ISessionFactory
    {
