@@ -269,7 +269,7 @@ define(
 					}
 
 				}
-
+				
 				var selectModeButton = m_utils.jQuerySelect("#selectModeButton");
 				
 				selectModeButton.click({
@@ -287,10 +287,13 @@ define(
 				});
 
 				// === End Toolbar
+				
+				/*Turn zoomIn button off as we are already at our max extent*/
+				m_utils.jQuerySelect("#zoomInButton")
+					.css("opacity","0.2");
 
 				this.canvas = m_utils.jQuerySelect('#' + this.divId);
 				this.scrollPane = m_utils.jQuerySelect("#scrollpane");
-
 
 				// dirty workaround - only chrome being triggerring 'blur' event on clicking scrollbars
 				// resetForm and submit form conflicts in this case

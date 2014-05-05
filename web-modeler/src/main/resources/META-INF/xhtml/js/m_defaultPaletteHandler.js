@@ -27,7 +27,7 @@ function(m_utils, m_constants, m_messageDisplay, m_canvasManager,
 		m_diagram, m_activitySymbol, m_eventSymbol, m_gatewaySymbol,
 		m_dataSymbol, m_annotationSymbol, m_model, m_process, m_activity,
 		m_data, m_i18nUtils) {
-
+	
 	function selectTool(toolButtonId) {
 		m_utils.jQuerySelect(".selected-tool").removeClass("selected-tool");
 		m_utils.jQuerySelect("#" + toolButtonId).addClass("selected-tool");
@@ -98,10 +98,20 @@ function(m_utils, m_constants, m_messageDisplay, m_canvasManager,
 			diagram.newSymbol = m_annotationSymbol.create(diagram);
 		},
 		zoomIn : function(diagram) {
-			diagram.zoomIn();
+			var zoomInBtn=m_utils.jQuerySelect("#zoomInButton");
+			if(diagram.zoomFactor > 1){
+				zoomInBtn.css("opacity","1");
+				diagram.zoomIn();
+			}
+
+			if(diagram.zoomFactor===1){				
+				zoomInBtn.css("opacity","0.2");
+			}
 		},
 		zoomOut : function(diagram) {
+			var zoomInBtn=m_utils.jQuerySelect("#zoomInButton");			
 			diagram.zoomOut();
+			zoomInBtn.css("opacity","1");
 		},
 		print : function(diagram) {
 			diagram.print();
