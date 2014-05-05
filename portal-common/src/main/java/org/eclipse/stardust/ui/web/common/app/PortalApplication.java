@@ -1134,7 +1134,7 @@ public class PortalApplication
       }
 
       String typeId = view.getDefinition().getName();
-      String id =  StringUtils.isNotEmpty(view.getViewKey()) ? view.getViewKey() : "";
+      String id =  StringUtils.isNotEmpty(view.getViewKey()) ? view.getViewKey() : "all"; // all - As Blank does not work.
 
       String html5FWViewId = view.getHtml5FwViewId();
       
