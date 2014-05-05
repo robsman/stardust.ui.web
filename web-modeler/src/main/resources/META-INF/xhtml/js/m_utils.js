@@ -230,21 +230,15 @@ define(
 					if (!(typeof pattern === "string"
 						&& (pattern.indexOf("</") != -1
 									|| pattern.indexOf("/>") != -1))) {
-						// Find HTML5 Framework parent div for current View
-						var views = jQuery(".sg-view-panel").children();
-						if (views) {
-							for(var i = 0; i< views.length; i++) {
-								if (views[i].style.display == "" || views[i].style.display == "inline") {
-									var ret = jQuery(pattern, jQuery(views[i]));
-									if (ret.length > 0) {
-										return ret;
-									}
-								}
-							}
+
+					  // Find HTML5 Framework div for current View
+						var view = jQuery(".sg-view-panel").children(".sg-selected");
+
+						if (view == undefined || view.length == 0) {
+						  // Fallback portal-shell
+						  var view = jQuery(".view-panel-active");
 						} 
 
-						// Fallback portal-shell
-						var view = jQuery(".view-panel-active");
 						if (view && view.length > 0) {
 							var ret = jQuery(pattern, jQuery(view));
 							if (ret.length > 0) {
