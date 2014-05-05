@@ -357,7 +357,7 @@ table.formTable td {
 											<table cellpadding="0" cellspacing="0" class="formTable">
 												<tr>
 													<td><label
-														style="width: 100px; display: inline-block;">{{getI18N('reporting.definitionView.firstDimension.label')}}</label></td>
+														style="display: inline-block;">{{getI18N('reporting.definitionView.firstDimension.label')}}</label></td>
 													<td><select ng-model="report.dataSet.firstDimension"
 														ng-options="dimension.id as dimension.name group by primaryObjectEnumGroup(dimension.id) for dimension in getCumulatedDimensions()"
 														ng-change="changeFirstDimension()">
@@ -366,11 +366,11 @@ table.formTable td {
 											</table>
 										</td>
 										<td valign="top">
-											<div id="firstDimensionTimeBoundariesPanel"
+											<div id="firstDimensionTimeBoundariesPanel" style="display: inline;"
 												ng-show="getFirstDimension().type == getMetadata().timestampType"
 												style="margin-left: 10px;">
 											</div>
-											<div id="firstDimensionEnumerationSelectionPanel"
+											<div id="firstDimensionEnumerationSelectionPanel" style="display: inline;"
 												ng-show="getFirstDimension().type == getMetadata().enumerationType"
 												style="margin-left: 10px; height: 120px;">
 											</div>
@@ -380,7 +380,7 @@ table.formTable td {
 												ng-show="getFirstDimension().type == reportingService.metadata.timestampType">
 												<table cellpadding="0" cellspacing="0" class="formTable">
 													<tr>
-														<td style="padding-left: 20px;"><label>{{getI18N('reporting.definitionView.cumulationInterval.label')}}</label></td>
+														<td><label>{{getI18N('reporting.definitionView.cumulationInterval.label')}}</label></td>
 														<td><input type="number" style="width: 50px;"
 															ng-model="report.dataSet.firstDimensionCumulationIntervalCount"></input>
 														</td>
@@ -491,6 +491,7 @@ table.formTable td {
                                              <td valign="top"><select
                                                 ng-model="x.dimension"
                                                 ng-change="onFilterDimensionChange(x.index)"
+                                                ng-init="x.dimension = x.dimension || getPrimaryObjectEnum()[0].id"
                                                 ng-options="y.id as y.name group by primaryObjectEnumGroup(y.id) for y in getPrimaryObjectEnum()">
                                              </select>
                                              </td>
@@ -550,7 +551,7 @@ table.formTable td {
 																ng-options="o.id as o.label for o in getOperatorsEnum(getDimension(x.dimension))">
 														</td>
 														
-  													 	<td ng-show="x.operator != 'B'"><input type="number" ng-model="x.value"></td>
+  													 	<td ng-show="x.operator != 'B'"><input style="width: 127px;" type="number" ng-model="x.value"></td>
 														<td ng-show="x.operator == 'B'">
 														 <table>
 														 	<tr>
@@ -638,8 +639,8 @@ table.formTable td {
 															<td><label>{{getI18N('reporting.definitionView.duration.label')}}</label></td>
 															<td><input type="number"
 																ng-model="x.value.duration"
-																style="width: 50px;" /></td>
-															<td><select
+																style="width: 50px;" />
+															   <select
 																ng-model="x.value.durationUnit">
 																	<option value="s">Second(s)</option>
 																	<option value="m">Minutes(s)</option>
@@ -649,6 +650,7 @@ table.formTable td {
 																	<option value="M">Month(s)</option>
 																	<option value="Y">Year(s)</option>
 															</select></td>
+                                             <td></td>
 															<td><a href=""
 																ng-click="removeParameter('filters.' + x.dimension + '.duration')"
 																ng-show="existsParameter('filters.' + x.dimension + '.duration')"><img
@@ -799,9 +801,23 @@ table.formTable td {
 										</td>
 									</tr>
 									<tr>
-										<td><a href="" ng-click="addFilter()"><img
-												src="../css/images/add.png" title="{{getI18N('reporting.definitionView.additionalFiltering.addFilter')}}"/> </a></td>
-										<td></td>
+                              <td>
+                                 <div>
+                                    <table cellpadding="0" cellspacing="0"
+                                       class="layoutTable">
+                                       <tbody>
+                                          <tr>
+                                             <td valign="top"><a href=""
+                                                ng-click="addFilter()"><img
+                                                   src="../css/images/add.png"
+                                                   title="{{getI18N('reporting.definitionView.additionalFiltering.addFilter')}}" />
+                                             </a></td>
+                                          </tr>
+                                       </tbody>
+                                    </table>
+                                 </div>
+                              </td>
+                              <td></td>
 										<td></td>
 									</tr>
 								</table>
@@ -1415,6 +1431,7 @@ table.formTable td {
 															style="font-style: italic; color: #aaaaaa;">{{getI18N('reporting.definitionView.notSaved.text')}}</div></td>
 												</tr>
 											</table>
+                                 <div class="heading">{{getI18N('reporting.definitionView.parameters.title')}}</div>
 											<table cellpadding="0" cellspacing="0" class="formTable">
 												<tr>
 													<td valign="top"><label>{{getI18N('reporting.definitionView.mapStartTimestamp.label')}}</label></td>
@@ -1428,7 +1445,7 @@ table.formTable td {
                                  <div class="heading">{{getI18N('reporting.definitionView.executionTime.label')}}</div>
                                  <table cellpadding="0" cellspacing="0" class="formTable">
                                     <tr>
-                                       <td valign="top"><label style="width: 170px; display: inline-block;">{{getI18N('reporting.definitionView.executeReportAt.label')}}</label></td>
+                                       <td valign="top"><label style="display: inline-block;">{{getI18N('reporting.definitionView.executeReportAt.label')}}</label></td>
                                        <td valign="top"><select 
                                           ng-model="report.scheduling.executionTime"
                                           ng-options="k as v for (k, v) in getExecutionTime()">
