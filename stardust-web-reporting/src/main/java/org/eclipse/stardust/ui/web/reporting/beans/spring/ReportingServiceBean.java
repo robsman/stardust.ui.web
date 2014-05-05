@@ -513,9 +513,6 @@ public class ReportingServiceBean
          JsonArray subFoldersJson = new JsonArray();
          rootFolderJson.add("subFolders", subFoldersJson);
 
-         subFoldersJson.add(getReportDefinitions(publicFolder, "Public Report Definitions")); // I18N
-         subFoldersJson.add(getReportDefinitions(personalFolder, "Personal Report Definitions")); // I18N
-
          //Prepare Participants subfolders
          //JsonObject participantsFolderJson = new JsonObject();
          //participantsFolderJson.addProperty("name", "Participants Report Definitions"); // I18N
@@ -553,7 +550,9 @@ public class ReportingServiceBean
             }
          }
 
-
+         subFoldersJson.add(getReportDefinitions(publicFolder, "Public Report Definitions")); // I18N
+         subFoldersJson.add(getReportDefinitions(personalFolder, "Personal Report Definitions")); // I18N
+         
          return rootFolderJson;
       }
       catch (Exception e)
