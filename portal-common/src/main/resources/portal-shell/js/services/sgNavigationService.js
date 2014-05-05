@@ -128,7 +128,7 @@ define(['portal-shell/js/shell'], function (shell) {
 				return sgConfigService.then(function(config) {
 					return fetchNavigation(config.endpoints && config.endpoints.navigation, params);
 				}, function () {
-					alert("Faild in loading Navigation Endpoint");
+					alert("Failed in loading Navigation Endpoint");
 				});
 			};
 
