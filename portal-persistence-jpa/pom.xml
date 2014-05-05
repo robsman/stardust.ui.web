@@ -42,6 +42,16 @@
          <groupId>org.springframework</groupId>
          <artifactId>spring-orm</artifactId>
          <scope>compile</scope>
+         <exclusions>
+            <exclusion>
+               <groupId>aopalliance</groupId>
+               <artifactId>aopalliance</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>commons-logging</groupId>
+               <artifactId>commons-logging</artifactId>
+            </exclusion>
+         </exclusions>
       </dependency>
       <dependency>
          <groupId>org.eclipse.persistence</groupId>
