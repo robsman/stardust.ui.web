@@ -609,8 +609,6 @@ define(
 						};
 
 						this.report.dataSet.fact = this.getPrimaryObject().facts.count.id;
-						this.report.dataSet.firstDimension = this
-								.getPrimaryObject().dimensions.processInstanceStartTimestamp.id;
 						
 						this.cumulatedDimensions = this.getCumulatedDimensions();
 
@@ -2707,6 +2705,38 @@ define(
                  this.cumulatedDimensions = [];
                  this.cumulatedDimensions = this.getCumulatedDimensions();
                  this.selectedColumns = [];
+              };
+              
+              /**
+               * Adding order parameter to dimension object for displaying it on UI in specific order
+               */
+              ReportDefinitionController.prototype.getCumulatedDimensionsByGroup = function() {
+                 var dimensions = this.reportingService.getCumulatedDimensions(this.report);
+                 for ( var dimension in dimensions)
+                 {
+                    var group = this.primaryObjectEnumGroup(dimensions[dimension].id);
+                    dimensions[dimension].order = this.getDimensionsDisplayOrder(dimensions[dimension].id); 
+                 }
+                 return dimensions
+              };
+              
+              /**
+               * Returns the order index of a dimension depending on its group .
+               */
+              ReportDefinitionController.prototype.getDimensionsDisplayOrder = function(id) {
+                 var dimension = this.getDimension(id);
+                 
+                 if(!dimension){
+                    dimension = this.getComputedColumnAsDimensions()[id];
+                    return;
+                 }
+                 
+                 if(dimension.metadata && dimension.metadata.isDescriptor){
+                    return 2;
+                 }else if(dimension.metadata && dimension.metadata.isComputedType){
+                    return 3;
+                 }
+                 return 1;
               };
 
          

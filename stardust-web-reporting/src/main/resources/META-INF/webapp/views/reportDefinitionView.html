@@ -359,7 +359,8 @@ table.formTable td {
 													<td><label
 														style="display: inline-block;">{{getI18N('reporting.definitionView.firstDimension.label')}}</label></td>
 													<td><select ng-model="report.dataSet.firstDimension"
-														ng-options="dimension.id as dimension.name group by primaryObjectEnumGroup(dimension.id) for dimension in getCumulatedDimensions()"
+                                          ng-init="report.dataSet.firstDimension = report.dataSet.firstDimension || (getCumulatedDimensionsByGroup() | orderBy:['order','name'])[0].id"
+														ng-options="dimension.id as dimension.name group by primaryObjectEnumGroup(dimension.id) for dimension in getCumulatedDimensionsByGroup() | orderBy:['order','name']"
 														ng-change="changeFirstDimension()">
 													</select></td>
 												</tr>
