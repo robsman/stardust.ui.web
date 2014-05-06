@@ -18,6 +18,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.StringTokenizer;
 
+import javax.xml.namespace.QName;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
@@ -43,10 +45,11 @@ public abstract class AbstractDescriptorColumnHandler<U extends IDescriptorProvi
       ReportFilterMetaData metadata = filter.getMetadata();
       String dimension = filter.getDimension();
 
-      // split the full qualified activity namedimension in format
+      // split the full qualified dimension in format
       // FullQualifiedProcessId:FullQualifiedActivityId
       StringTokenizer st = new StringTokenizer(dimension, ":");
       st.nextToken();
+
       String dataId = st.nextToken();
       String xPath = metadata.getXPath();
       boolean isStructuredType = metadata.isStructuredType();
@@ -228,6 +231,12 @@ public abstract class AbstractDescriptorColumnHandler<U extends IDescriptorProvi
    }
 
    @Override
+   public boolean canHandle(RequestColumn requestColumn)
+   {
+      return requestColumn.isDescriptor();
+   }
+
+   @Override
    public Number provideFactValue(HandlerContext context, U t)
    {
       Object descriptorValue = provideObjectValue(context, t);
@@ -249,7 +258,22 @@ public abstract class AbstractDescriptorColumnHandler<U extends IDescriptorProvi
    @Override
    public Object provideObjectValue(HandlerContext context, U t)
    {
-      String descriptorId = context.getColumn().getId();
-      return t.getDescriptorValue(descriptorId);
+      // split the full qualified dimension in format
+      // FullQualifiedProcessId:FullQualifiedActivityId
+      String fullId = context.getColumn().getId();
+      String[] idParts = fullId.split(":");
+
+      final QName fullDescriptorId;
+      if(idParts.length == 2)
+      {
+         fullDescriptorId = QName.valueOf(idParts[1]);
+      }
+      else
+      {
+         fullDescriptorId = QName.valueOf(idParts[0]);
+      }
+
+      String localDescriptorId = fullDescriptorId.getLocalPart();
+      return t.getDescriptorValue(localDescriptorId);
    }
 }

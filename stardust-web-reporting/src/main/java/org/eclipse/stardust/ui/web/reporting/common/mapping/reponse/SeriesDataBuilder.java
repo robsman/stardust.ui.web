@@ -45,16 +45,18 @@ public class SeriesDataBuilder
          Series series = seriesMapping.get(key);
          series.sort();
 
-         JsonArray seriesValuesJson = new JsonArray();
+         JsonArray seriesArrayJson = new JsonArray();
          for(ValuesArray valuesArray: series.getValues())
          {
+            JsonArray seriesValuesArrayJson = new JsonArray();
+            seriesArrayJson.add(seriesValuesArrayJson);
             for(Object value: valuesArray.getValues())
             {
-               seriesValuesJson.add(JsonUtil.convertJavaToPrimitive(value));
+               seriesValuesArrayJson.add(JsonUtil.convertJavaToPrimitive(value));
             }
          }
 
-         result.add(key, seriesValuesJson);
+         result.add(key, seriesArrayJson);
       }
 
       return result;
