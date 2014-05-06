@@ -12,6 +12,7 @@ package org.eclipse.stardust.ui.web.viewscommon.views.documentsearch;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -19,6 +20,7 @@ import java.util.Set;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 
+import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.query.DocumentQuery;
 import org.eclipse.stardust.engine.api.query.FilterAndTerm;
@@ -26,6 +28,7 @@ import org.eclipse.stardust.engine.api.query.FilterCriterion;
 import org.eclipse.stardust.engine.api.query.FilterOrTerm;
 import org.eclipse.stardust.engine.api.query.Query;
 import org.eclipse.stardust.engine.api.query.QueryResult;
+import org.eclipse.stardust.engine.api.query.RepositoryPolicy;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.Documents;
@@ -54,7 +57,8 @@ public class DocumentSearchProvider implements Serializable
    // ~ Constants
    // ================================================================================================
    private static final long serialVersionUID = 4819215015562743113L;
-
+   private static final String POSTFIX_OPEN = " (";
+   private static final String POSTFIX_CLOSE = ")";
    // ~ Instance fields
    // ================================================================================================
    private FilterAttributes filterAttributes;
@@ -209,7 +213,7 @@ public class DocumentSearchProvider implements Serializable
          
          for (IRepositoryInstanceInfo repos : repositoryInstances)
          {
-            repositories.add(new SelectItem(repos.getRepositoryId(), repos.getRepositoryName()));
+            repositories.add(new SelectItem(repos.getRepositoryId(), repos.getRepositoryId() + POSTFIX_OPEN +repos.getRepositoryName()+ POSTFIX_CLOSE));
          }
       }
 
@@ -623,10 +627,11 @@ public class DocumentSearchProvider implements Serializable
          String[] selectedRepo = getFilterAttributes().getSelectedRepository();
          if (selectedRepo.length > 0 && !checkIfAllOptionSelect(selectedRepo))
          {
-            /*
-             * for (int i = 0; i < selectedRepo.length; i++) {
-             * filterOrTerm.add(DocumentQuery.R.isEqual(documentTypeIds[i])); }
-             */
+            query.setPolicy(RepositoryPolicy.includeRepositories(CollectionUtils.newArrayList(Arrays.asList(selectedRepo))));
+         }
+         else
+         {
+            query.setPolicy(RepositoryPolicy.includeAllRepositories());
          }
            
          //File Type   
