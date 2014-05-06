@@ -16,6 +16,7 @@ public class HandlerContext
    public HandlerContext(QueryService queryService, long totalCount)
    {
       this.totalCount = totalCount;
+      this.queryService = queryService;
    }
 
    public RequestColumn getColumn()
