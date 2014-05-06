@@ -1,3 +1,19 @@
+/*******************************************************************************
+ * Copyright (c) 2013 SunGard CSA LLC and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    SunGard CSA LLC - initial API and implementation and/or initial documentation
+ *******************************************************************************/
+
+/**
+ * @author Marc.Gille
+ * @author Yogesh.Manware
+ * 
+ */
 define(
 		[ "bpm-reporting/js/AngularAdapter",
 				"bpm-reporting/js/ReportingService" ],
@@ -83,7 +99,8 @@ define(
 				/**
 				 * 
 				 */
-				ReportRenderingController.prototype.renderReport = function() {
+				ReportRenderingController.prototype.renderReport = function(report) {
+					this.initialize(report);
 					var deferred = jQuery.Deferred();
 					var self = this;
 
@@ -172,11 +189,16 @@ define(
 							y2axis : {}
 						},
 						legend : {
-							location : "w"
+							show: true,
+			                location: 'nw',
+			                placement: 'inside',
+			                fontSize: '11px'
 						},
 						highlighter : {},
 						cursor : {},
-						zoom : {}
+						zoom : {},
+						seriesColors: [ "#4bb2c5", "#c5b47f", "#EAA228", "#579575", "#839557", "#958c12",
+						                 "#953579", "#4b5de4", "#d8b83f", "#ff5800", "#0085cc"]
 					};
 
 					// Copy configuration from Report Definition
@@ -215,10 +237,28 @@ define(
 						}
 
 						chartOptions.axes.xaxis.tickRenderer = jQuery.jqplot.CanvasAxisTickRenderer;
-						chartOptions.axes.yaxis.tickRenderer = jQuery.jqplot.CanvasAxisTickRenderer;
+						
 					} else if (this.report.layout.chart.type === this.reportingService.metadata.chartTypes.candlestickChart.id) {
-						chartOptions.axes.xaxis.renderer = $.jqplot.DateAxisRenderer;
-						chartOptions.series = [ {
+						chartOptions = {
+						      title: 'Chart',
+						      axesDefaults:{},
+						      axes: {
+						          xaxis: {
+						              renderer:$.jqplot.DateAxisRenderer
+						          },
+						          yaxis: {
+						              tickOptions:{ prefix: '$' }
+						          }
+						      },
+						      series: [{renderer:$.jqplot.OHLCRenderer, rendererOptions:{}}],
+						      cursor:{
+						          zoom:true,
+						          tooltipOffset: 10,
+						          tooltipLocation: 'nw'
+						      }
+						    };
+						
+/*						chartOptions.series = [ {
 							renderer : $.jqplot.OHLCRenderer,
 							rendererOptions : {
 								animation : {
@@ -239,7 +279,11 @@ define(
 		      <tr><td>hi:</td><td>%s</td></tr> \
 		      <tr><td>low:</td><td>%s</td></tr> \
 		      <tr><td>close:</td><td>%s</td></tr></table>'
-						};
+						};*/
+						
+						
+						
+						
 					} else if (this.report.layout.chart.type === this.reportingService.metadata.chartTypes.barChart.id) {
 						chartOptions.seriesDefaults.renderer = $.jqplot.BarRenderer;
 						chartOptions.seriesDefaults.rendererOptions = {
@@ -256,15 +300,26 @@ define(
 						}
 
 						chartOptions.axes.xaxis.tickRenderer = jQuery.jqplot.CanvasAxisTickRenderer;
-						chartOptions.axes.yaxis.tickRenderer = jQuery.jqplot.CanvasAxisTickRenderer;
-
+						
 						chartOptions.axes.yaxis.pad = 1.05;
 					} else if (this.report.layout.chart.type === this.reportingService.metadata.chartTypes.bubbleChart.id) {
 						chartOptions.seriesDefaults.renderer = $.jqplot.BubbleRenderer;
 						chartOptions.seriesDefaults.rendererOptions = {
 							bubbleGradients : true
 						};
-					} else {
+					}else if (this.report.layout.chart.type === this.reportingService.metadata.chartTypes.donutChart.id) {
+						chartOptions.seriesDefaults.renderer = jQuery.jqplot.DonutRenderer;
+						chartOptions.seriesDefaults.rendererOptions = {
+					        // Donut's can be cut into slices like pies.
+					        sliceMargin: 3,
+					        // Pies and donuts can start at any arbitrary angle.
+					        startAngle: -90,
+					        showDataLabels: true,
+					        // By default, data labels show the percentage of the donut/pie.
+					        // You can show the data 'value' or data 'label' instead.
+					        dataLabels: 'value'
+						};
+					} else if(this.report.layout.chart.type === this.reportingService.metadata.chartTypes.pieChart.id) {
 						chartOptions.seriesDefaults.renderer = jQuery.jqplot.PieRenderer;
 						chartOptions.seriesDefaults.rendererOptions = {
 							fill : false,
@@ -275,7 +330,6 @@ define(
 					}
 
 					// Label series
-
 					if (this.report.dataSet.groupBy) {
 						if (groupIds) {
 							for ( var i = 0; i < groupIds.length; ++i) {
@@ -302,24 +356,136 @@ define(
 
 					deferred
 							.done(
-									function(data) {
+									function(inData) {
+										//TODO: temporary code starts here
+										
+										//data.seriesGroup = [[['14/2008', 42], ['2/2008', 56], ['7/2008', 39], ['22/2008', 81]]];
+										
+										var countgroupbyCumulantsCol = {
+												  "A1": [
+												         [
+												           "2014/01",
+												           1
+												         ],
+												         [
+												           "2014/04",
+												           2
+												         ]
+												       ],
+												     "A2": [
+												         [
+												           "2014/01",
+												           1
+												         ],
+												         [
+												           "2014/04",
+												           10
+												         ]
+												       ]
+												     };
+										
+										var countCumulantsCol = {
+												  "activity_instances": [
+								                         [
+								                           "2014/01",
+								                           1
+								                         ],
+								                         [
+								                           "2014/03",
+								                           3
+								                         ]
+								                       ]
+													};
+										
+										var nonCountGroupbyCumulantsCol = {
+												  "A1": [
+												         [
+												           "2014/01",
+												           10,
+												           2,
+												           4,
+												          
+												         ],
+												         [
+												           "2014/03",
+												           15,
+												           7,
+												           11
+												         ]
+												       ],
+												       "A2": [
+												         [
+												           "2014/01",
+												           6,
+												           6,
+												           6,
+												         ],
+												         [
+												           "2014/03",
+												           8,
+												           4,
+												           6
+												         ]
+												       ]
+												     }
+										
+										//inData = nonCountGroupbyCumulantsCol;
+										
+										var data = {};
+										data.seriesGroup = [];
+										var seriesIds = [];
+										for(var prop in inData){
+											data.seriesGroup.push(inData[prop]); 
+											seriesIds.push(prop);
+										}
+										
+										/*data.seriesGroup = [[
+					                         [
+					                           "2014_01",
+					                           1
+					                         ],
+					                         [
+					                           "2014_04",
+					                           3
+					                         ]
+					                       ]]*/
+										
+										//TODO : temporart codes ends here
+										
+						
 										console
 												.log("Report Data before preprocessing");
 										console.log(data);
 
+//										var chartOptions ={
+//											    title: 'Concern vs. Occurrance',
+//											    //series:[{renderer:$.jqplot.BarRenderer}],
+//											    axesDefaults: {
+//											        tickRenderer: $.jqplot.CanvasAxisTickRenderer ,
+//											        tickOptions: {
+//											          angle: -30,
+//											          fontSize: '10pt'
+//											        }
+//											    },
+//											    axes: {
+//											      xaxis: {
+//											        renderer: $.jqplot.CategoryAxisRenderer
+//											      }
+//											    }
+//										};
 										var chartOptions = self
-												.createChartOptions(data.groupIds);
+												.createChartOptions(seriesIds);
 
 										// Perform preprocessing of data
 
-										data.seriesGroup = self
-												.preprocessData(data.seriesGroup);
+										/*data.seriesGroup = self
+												.preprocessData(data.seriesGroup);*/
 
 										// Perform chart-specific data
 										// processing
 
-										if (self.report.layout.chartType === self.reportingService.metadata.chartTypes.barChart.id) {
-											var seriesGroup = [];
+										if (self.report.layout.chart.type === self.reportingService.metadata.chartTypes.barChart.id) {
+											/*var seriesGroup = [];
 											var ticks = [];
 
 											for ( var n = 0; n < data.seriesGroup.length; ++n) {
@@ -340,9 +506,9 @@ define(
 
 											chartOptions.axes.xaxis.ticks = ticks;
 
-											data.data = seriesGroup;
-										} else if (self.report.layout.chartType === self.reportingService.metadata.chartTypes.bubbleChart.id) {
-											var arr = [
+											data.data = seriesGroup;*/
+										} else if (self.report.layout.chart.type === self.reportingService.metadata.chartTypes.bubbleChart.id) {
+											/*var arr = [
 													[ 11, 123, 1236, "Acura" ],
 													[ 45, 92, 1067,
 															"Alfa Romeo" ],
@@ -354,7 +520,7 @@ define(
 													[ 7, 89, 864, "BMW" ],
 													[ 2, 13, 1026, "Bugatti" ] ];
 
-											data = [ arr ];
+											data.seriesGroup = [ arr ];*/
 										}
 
 										// Clean Canvas

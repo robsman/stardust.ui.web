@@ -105,6 +105,12 @@ define(
 						name : "Bubble Chart",
 						hasDefaultSeries : false,
 						hasAxes : true
+					},
+					donutChart : {
+						id : "donutChart",
+						name : "Donut Chart", //TODO: I18n
+						hasDefaultSeries : false,
+						hasAxes : true
 					}
 				};
 

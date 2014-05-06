@@ -1314,7 +1314,7 @@ define(
    				var self = this;
    				var deferred = jQuery.Deferred();
    
-   				this.renderingController.renderReport().done(function() {
+   				this.renderingController.renderReport(self.report).done(function() {
    					deferred.resolve();
    				}).fail(function() {
    					deferred.reject();
@@ -1836,6 +1836,8 @@ define(
 				ReportDefinitionController.prototype.populateChartTypes = function() {
 					this.chartTypeSelect.empty();
 
+					var fact_count = (this.report.dataSet.fact == this.reportingService.metadata.objects.processInstance.facts.count.id);
+					
 					this.chartTypeSelect
 							.append("<option value='xyPlot'>"
 									+ this.reportingService.metadata.chartTypes.xyPlot.name
@@ -1849,7 +1851,12 @@ define(
 									+ this.reportingService.metadata.chartTypes.bubbleChart.name
 									+ "</option>");
 
-					if (true) {
+					this.chartTypeSelect
+					.append("<option value='donutChart'>"
+							+ this.reportingService.metadata.chartTypes.donutChart.name
+							+ "</option>");
+					
+					if (!fact_count) {
 						this.chartTypeSelect
 								.append("<option value='candlestickChart'>"
 										+ this.reportingService.metadata.chartTypes.candlestickChart.name

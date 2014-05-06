@@ -32,6 +32,7 @@ require
 				'trendline' : [ 'bpm-reporting/js/libs/jqplot/plugins/jqplot.trendline.min' ],
 				'ohlcRenderer' : [ 'bpm-reporting/js/libs/jqplot/plugins/jqplot.ohlcRenderer.min' ],
 				'pieRenderer' : [ 'bpm-reporting/js/libs/jqplot/plugins/jqplot.pieRenderer.min' ],
+				'donutRenderer' : [ 'bpm-reporting/js/libs/jqplot/plugins/jqplot.donutRenderer.min' ],
 				'pointLabels' : [ 'bpm-reporting/js/libs/jqplot/plugins/jqplot.pointLabels.min' ],
 				'dataTables' : [ 'bpm-reporting/js/libs/datatables/jquery.dataTables.min' ],
 				'TableTools' : [ 'bpm-reporting/js/libs/datatables/extras/TableTools/TableTools.min' ],
@@ -64,6 +65,7 @@ require
 				'trendline' : [ 'jquery.jqplot' ],
 				'ohlcRenderer' : [ 'jquery.jqplot' ],
 				'pieRenderer' : [ 'jquery.jqplot' ],
+				'donutRenderer' : [ 'jquery.jqplot' ],
 				'pointLabels' : [ 'jquery.jqplot' ],
 				'dataTables' : [ 'jquery' ],
 				'TableTools' : [ 'dataTables' ]
@@ -76,14 +78,14 @@ require(
 				"bubbleRenderer", "canvasTextRenderer",
 				"canvasAxisLabelRenderer", "canvasAxisTickRenderer",
 				"categoryAxisRenderer", "dateAxisRenderer", "cursor",
-				"highlighter", "trendline", "ohlcRenderer", "pieRenderer",
+				"highlighter", "trendline", "ohlcRenderer", "pieRenderer", "donutRenderer",
 				"pointLabels", "bpm-reporting/js/ReportDefinitionController",
 				"dataTables", "TableTools",
 				"ckeditor", "ace", "bpm-reporting/js/autocomplete/autocomplete"], function(require, jquery, jqueryUrl, jqueryUi,
 				jqueryUiTimepicker, json, angularjs, jqueryBase64, jqueryJqPlot, barRenderer,
 				bubbleRenderer, canvasTextRenderer, canvasAxisLabelRenderer,
 				canvasAxisTickRenderer, categoryAxisRenderer, dateAxisRenderer,
-				cursor, highlighter, trendline, ohlcRenderer, pieRenderer,
+				cursor, highlighter, trendline, ohlcRenderer, pieRenderer, donutRenderer,
 				pointLabels, ReportDefinitionController, dataTables,
 				TableTools, CkEditor, ace, autocomplete) {
 			jQuery(document).ready(
