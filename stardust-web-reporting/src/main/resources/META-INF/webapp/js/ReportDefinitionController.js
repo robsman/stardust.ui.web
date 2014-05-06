@@ -402,6 +402,7 @@ define(
 								.initialize(self.report);
 
 								self.layoutSubTypeSelect.val(self.report.layout.subType);
+								jQuery("#layoutSubTypeSelect").change();
 
 								self.cumulantsDisplaySelect.val(self.report.layout.table.cumulantsDisplay);
 
