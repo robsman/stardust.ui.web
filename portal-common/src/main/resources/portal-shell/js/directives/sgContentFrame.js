@@ -40,11 +40,14 @@ define(['portal-shell/js/shell'], function(shell) {
 
     shell.module.directive('sgContentFrame', function () {
         return {
-            template : '<iframe sg-stretch-to-bottom></iframe>',
+            template : '<iframe ng-src="{{getContentFrameURL()}}" sg-stretch-to-bottom></iframe>',
             restrict: 'A',
             replace: true,
             link: function (scope, element, attrs) {
                 element.addClass('content-frame');
+                scope.getContentFrameURL = function(){
+                  return attrs.sgSrc;
+              };
             }
         };
     });

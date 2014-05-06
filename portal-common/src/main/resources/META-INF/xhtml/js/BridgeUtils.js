@@ -905,6 +905,11 @@ if (!window["BridgeUtils"].Dialog) {
 			var scrollWidth = document.body.scrollWidth;
 			var headerHeight = jQuery(".header").height();
 			var footerHeight = jQuery(".footer").height();
+			var footerTopMargin = jQuery(".footer").css("margin-top"); // Margin is not covered in height, so check it
+			if (footerTopMargin && footerTopMargin != "") {
+			  footerHeight += BridgeUtils.getAbsoluteSize(footerTopMargin) + 1;
+			}
+
 			var contentHeight = jQuery(window).height() - headerHeight - footerHeight;
 
 			// Header
@@ -951,7 +956,7 @@ if (!window["BridgeUtils"].Dialog) {
 				}
 
 				// Sidebar Title
-				jQuery(".sg-sidebar-title").get(0).style.display = "none";
+				jQuery(".sg-sidebar-title").css("display", "none");
 
 				// New Size
 				var newWidth = scrollWidth + "px";
@@ -1010,7 +1015,7 @@ if (!window["BridgeUtils"].Dialog) {
 					launchPanelIframe.style.height = launchPanelIframeOrgData.height;
 					
 					// Sidebar Title
-					jQuery(".sg-sidebar-title").get(0).style.display = "";
+					jQuery(".sg-sidebar-title").css("display", "");
 					// store the launchPanel iframe for refresh after closing popup
 					currLaunchPanelIframe = launchPanelIframe;
 					

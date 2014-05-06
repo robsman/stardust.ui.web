@@ -57,7 +57,7 @@ define(['bpm-ui/js/bpm-ui'], function (bpmUi) {
 			sgSidebarStateService.unpinSidebar('main');
 		}
 		
-		$scope.$root.getSidebarDetails = $scope.getSidebarDetails;
+		$scope.$root.getSidebarDetails = sgSidebarStateService.getSidebarDetails;
 		
 		$scope.$root.$timeout = $timeout;
 

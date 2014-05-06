@@ -5,8 +5,8 @@ define(['portal-shell/js/shell'], function (shell) {
 	'use strict';
 	
 	shell.module.controller('sg.shell.Controller',
-			['$scope', '$resource', '$q', '$window', '$document', '$timeout', '$compile', '$controller', 'sgConfigService', 'sgNavigationService', 'sgViewPanelService', 'sgPubSubService',
-			function ($scope, $resource, $q, $window, $document, $timeout, $compile, $controller, sgConfigService, sgNavigationService, sgViewPanelService, sgPubSubService) {
+			['$scope', '$resource', '$q', '$window', '$document', '$timeout', '$compile', '$controller', 'sgConfigService', 'sgNavigationService', 'sgViewPanelService', 'sgPubSubService', 'sgSidebarStateService',
+			function ($scope, $resource, $q, $window, $document, $timeout, $compile, $controller, sgConfigService, sgNavigationService, sgViewPanelService, sgPubSubService, sgSidebarStateService) {
 
 				// ****************** Config Service - START ******************
 				/*
@@ -192,56 +192,8 @@ define(['portal-shell/js/shell'], function (shell) {
 						return currSidebar.$ctrl;
 					}
 				};
-
-				$scope.sidebar = {visible: true, pinned: true};
-
-				/*
-				 * 
-				 */
-				$scope.openSidebar = function() {
-					// TODO
-				};
-
-				/*
-				 * 
-				 */
-				$scope.closeSidebar = function() {
-					// TODO
-				};
-
-				/*
-				 * 
-				 */
-				$scope.pinSidebar = function() {
-					$scope.sidebar.pinned = true;
-					$scope.sidebar.visible = true;
-					sgPubSubService.publish('sgSidebarPinStateChanged', {oldValue: false, newValue: true});
-					sgPubSubService.publish('sgSidebarVisibilityChanged', {oldValue: false, newValue: true});
-				};
-
-				/*
-				 * 
-				 */
-				$scope.unpinSidebar = function() {
-					$scope.sidebar.pinned = false;
-					$scope.sidebar.visible = false;
-					sgPubSubService.publish('sgSidebarPinStateChanged', {oldValue: true, newValue: false});
-					sgPubSubService.publish('sgSidebarVisibilityChanged', {oldValue: true, newValue: false});
-				};
-
-				/*
-				 * 
-				 */
-				$scope.getSidebarDetails = function() {
-					var sidebarElem = $scope.sidebar.pinned ? jQuery(".sidebar-content") : jQuery(".sg-sidebar-toggle");
-					var ret = {
-						visible: $scope.sidebar.visible,
-						pinned: $scope.sidebar.pinned,
-						width: sidebarElem.outerWidth(),
-						height: sidebarElem.outerHeight()
-					}
-					return ret;
-				};
+				
+				$scope.sidebar = sgSidebarStateService.sidebar;
 				// ****************** Sidebar - END ******************
 
 				// ****************** Utility Bar - START ******************

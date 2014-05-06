@@ -8,7 +8,8 @@ define([
 	'portal-shell/js/services/sgNavigationService',
 	'portal-shell/js/services/sgViewPanelService',
 	'portal-shell/js/services/sgPubSubService',
-    'portal-shell/js/directives/sgContentFrame'
+	'portal-shell/js/services/sgSidebarStateService',
+  'portal-shell/js/directives/sgContentFrame'
 ], function (shell) {
 	return shell;
 });
