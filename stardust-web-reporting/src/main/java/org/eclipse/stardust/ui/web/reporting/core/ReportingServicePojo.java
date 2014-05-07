@@ -211,6 +211,7 @@ public class ReportingServicePojo
                   }
                   else
                   {
+                     //sort by dimension
                      seriesValues.setSortIndex(0);
                      seriesValues.addValue(seriesValue);
                   }
@@ -260,6 +261,7 @@ public class ReportingServicePojo
                T groupEntitiy = groupKey.getCriteriaEntitiy();
                for (RequestColumn requestedColumn : requestedColumns)
                {
+                  ctx.setColumn(requestedColumn);
                   IPropertyValueProvider< ? , T> mappingHandler = handlerRegistry
                         .getPropertyValueProvider(requestedColumn);
                   Object value = mappingHandler.provideObjectValue(ctx, groupEntitiy);
