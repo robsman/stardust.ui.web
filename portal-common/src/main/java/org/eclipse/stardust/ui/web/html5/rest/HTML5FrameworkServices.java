@@ -4,12 +4,15 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
+import java.util.ResourceBundle;
 import java.util.Set;
 
 import javax.servlet.ServletContext;
@@ -152,7 +155,47 @@ public class HTML5FrameworkServices
    @Path("messages/{locale}")
    public Response messages(@PathParam("locale") String locale)
    {
-      return Response.ok(getCodeResource("bpm-ui/templates/message.json")).build();
+      MessagePropertiesBean messageBean = (MessagePropertiesBean) RestControllerUtils.resolveSpringBean(
+            MessagePropertiesBean.class, servletContext);
+
+      ResourceBundle bundle = ResourceBundle.getBundle("html5-framework-messages", messageBean.getLocaleObject());
+
+      String value;
+      int index;
+      String component;
+      Map<String, Map<String, String>> messagesJson = new HashMap<String, Map<String,String>>();
+      for (String key : Collections.list(bundle.getKeys()))
+      {
+         index = key.indexOf(".");
+         if (index > 0)
+         {
+            value = bundle.getString(key);
+            component = key.substring(0, index);
+            key = key.substring(index + 1);
+            
+            if(!messagesJson.containsKey(component))
+            {
+               messagesJson.put(component, new HashMap<String, String>());  
+            }
+            messagesJson.get(component).put(key, value);
+         }
+      }
+
+      StringBuffer messages = new StringBuffer("{\"en").append("\": {\"translation\": {");
+      for (Entry<String, Map<String, String>> cEntry : messagesJson.entrySet())
+      {
+         messages.append("\"").append(cEntry.getKey()).append("\":{");
+         for (Entry<String, String> entry : cEntry.getValue().entrySet())
+         {
+            messages.append("\"").append(entry.getKey()).append("\":").append("\"").append(entry.getValue()).append("\"").append(",");
+         }
+         messages.deleteCharAt(messages.length()-1);
+         messages.append("},");
+      }
+      messages.deleteCharAt(messages.length()-1);
+      messages.append("}}}");
+      
+      return Response.ok(messages.toString()).build();
    }
 
    @GET
