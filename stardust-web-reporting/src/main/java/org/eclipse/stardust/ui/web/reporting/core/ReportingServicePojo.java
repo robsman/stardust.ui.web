@@ -48,6 +48,8 @@ public class ReportingServicePojo
 
    private JsonMarshaller jsonMarshaller;
 
+   final String GROUPING_NOT_SELECTED = "None";
+
    public ReportingServicePojo(ServiceFactory serviceFactory)
    {
       this.serviceFactory = serviceFactory;
@@ -125,6 +127,17 @@ public class ReportingServicePojo
       return null;
    }
 
+   private GroupByColumn getGroupByColumn(ReportDataSet dataSet)
+   {
+      String groupBy = dataSet.getGroupBy();
+      if(StringUtils.isNotEmpty(groupBy)
+            && !GROUPING_NOT_SELECTED.equals(groupBy))
+      {
+         return new GroupByColumn(groupBy, null);
+      }
+
+      return null;
+   }
 
    //TODO: Performance optimization :
    //grouping / building response for each group locally instead of building big datastructure.
@@ -148,10 +161,9 @@ public class ReportingServicePojo
 
       //each distinct value for group by will result in an own series
       //where the distinct value is the key to the series
-      if(dataSet.getGroupBy() != null)
+      GroupByColumn groupByColumn = getGroupByColumn(dataSet);
+      if(groupByColumn != null)
       {
-         GroupByColumn groupByColumn
-            = new GroupByColumn(dataSet.getGroupBy(), null);
          groupColumns.add(groupByColumn);
       }
 
