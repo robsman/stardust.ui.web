@@ -80,27 +80,53 @@ public class ReportingServicePojo
       QueryType queryType = QueryType.parse(dataSet.getPrimaryObject());
       QueryBuilder queryBuilder = new QueryBuilder();
 
+      final long queryStart;
+      final long queryEnd;
 
+      final long responseStart;
+      final long responseEnd;
+      JsonObject response;
       switch (queryType)
       {
          case ACTIVITY_INSTANCE:
-
+            queryStart = System.currentTimeMillis();
             ActivityInstanceQuery aiQuery = queryBuilder
                   .buildActivityInstanceQuery(dataSet);
             ActivityInstances allActivityInstances = queryService
                   .getAllActivityInstances(aiQuery);
-            return generateResponse(dataSet, new AiColumnHandlerRegistry(),
+            queryEnd = System.currentTimeMillis();
+
+            responseStart = System.currentTimeMillis();
+            response = generateResponse(dataSet, new AiColumnHandlerRegistry(),
                   allActivityInstances);
+            responseEnd = System.currentTimeMillis();
+            break;
          case PROCESS_INSTANCE:
+            queryStart = System.currentTimeMillis();
             ProcessInstanceQuery piQuery = queryBuilder
                   .buildProcessInstanceQuery(dataSet);
             ProcessInstances allProcessInstances = queryService
                   .getAllProcessInstances(piQuery);
-            return generateResponse(dataSet, new PiColumnHandlerRegistry(),
+            queryEnd = System.currentTimeMillis();
+
+            responseStart = System.currentTimeMillis();
+            response = generateResponse(dataSet, new PiColumnHandlerRegistry(),
                   allProcessInstances);
+            responseEnd = System.currentTimeMillis();
+            break;
          default:
             throw new RuntimeException("Unsupported QueryType: " + queryType);
       }
+
+      if(trace.isDebugEnabled())
+      {
+         long queryDuration = queryEnd - queryStart;
+         long responseDuration = responseEnd - responseStart;
+         trace.debug("Executing query took :"+queryDuration);
+         trace.debug("Generating json took :"+responseDuration);
+      }
+
+      return response;
    }
 
    private TimeUnit getTimeUnit(String unit)
