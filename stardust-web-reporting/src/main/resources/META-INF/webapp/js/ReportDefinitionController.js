@@ -610,6 +610,8 @@ define(
 						};
 
 						this.report.dataSet.fact = this.getPrimaryObject().facts.count.id;
+						this.report.dataSet.firstDimension = this
+                        .getPrimaryObject().dimensions.processInstanceStartTimestamp.id;
 						
 						this.cumulatedDimensions = this.getCumulatedDimensions();
 
