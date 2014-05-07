@@ -726,31 +726,35 @@ define(
 							deferred.resolve(this.retrieveRoleData(report));
 						}
 					} else {
-						var self = this;
+						if(!report.layout.table.preview){
+							var self = this;
 
-						console.debug("Report Definition");
-						console.debug(report);
+							console.debug("Report Definition");
+							console.debug(report);
 
-						jQuery
-								.ajax(
-										{
-											type : "POST",
-											beforeSend : function(request) {
-												request
-														.setRequestHeader(
-																"Authentication",
-																self
-																		.getBasicAuthenticationHeader());
-											},
-											url : self.getRootUrl()
-													+ "/services/rest/bpm-reporting/report-data",
-											contentType : "application/json",
-											data : JSON.stringify(report)
-										}).done(function(data) {
-									deferred.resolve(data);
-								}).fail(function() {
-									deferred.reject([]);
-								});
+							jQuery
+									.ajax(
+											{
+												type : "POST",
+												beforeSend : function(request) {
+													request
+															.setRequestHeader(
+																	"Authentication",
+																	self
+																			.getBasicAuthenticationHeader());
+												},
+												url : self.getRootUrl()
+														+ "/services/rest/bpm-reporting/report-data",
+												contentType : "application/json",
+												data : JSON.stringify(report)
+											}).done(function(data) {
+										deferred.resolve(data);
+									}).fail(function() {
+										deferred.reject([]);
+									});
+						}else{
+							deferred.resolve("");	
+						}
 					}
 
 					return deferred.promise();

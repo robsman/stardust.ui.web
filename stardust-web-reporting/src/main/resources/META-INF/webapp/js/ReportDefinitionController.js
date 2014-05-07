@@ -305,7 +305,7 @@ define(
 										self.report.layout.table = {};
 									}
 
-									if (!self.report.layout.selectedCumulants) {
+									if (!self.report.layout.table.selectedCumulants) {
 										self.report.layout.table.selectedCumulants = [];
 									}
 
@@ -761,7 +761,7 @@ define(
 				ReportDefinitionController.prototype.refreshPreview = function() {
 					var self = this;
 					if(this.report.layout.subType == this.reportingService.metadata.layoutSubTypes.table.id){
-						this.renderingController.getPreviewData().done(
+						this.renderingController.getPreviewData(self.report).done(
 								function(data) {
 									self.refreshPreview1(data);
 								}).fail(function(err) {
@@ -954,19 +954,19 @@ define(
 
                                //if fact != count
                                if(this.report.layout.table.selectedCumulants.indexOf('average') != -1){
-                            	   inputArray.push(['average']); //I18n   
+                            	   inputArray.push([this.getI18N("reporting.definitionView.layout.table.cumulant.average")]); //I18n   
                                }
                                if(this.report.layout.table.selectedCumulants.indexOf('minimum') != -1){
-                            	   inputArray.push(['minimum']); //I18n   
+                            	   inputArray.push([this.getI18N("reporting.definitionView.layout.table.cumulant.minimum")]); //I18n   
                                }
                                if(this.report.layout.table.selectedCumulants.indexOf('maximum') != -1){
-                            	   inputArray.push(['maximum']); //I18n   
+                            	   inputArray.push([this.getI18N("reporting.definitionView.layout.table.cumulant.maximum")]); //I18n   
                                }	   
                                if(this.report.layout.table.selectedCumulants.indexOf('stdDeviation') != -1){
-                            	   inputArray.push(['stdDeviation']); //I18n   
+                            	   inputArray.push([this.getI18N("reporting.definitionView.layout.table.cumulant.stdDeviation")]); //I18n   
                                }
                                if(this.report.layout.table.selectedCumulants.indexOf('count') != -1){
-                            	   inputArray.push(['count']); //I18n   
+                            	   inputArray.push([this.getI18N("reporting.definitionView.layout.table.cumulant.count")]); //I18n   
                                }
                              }
 
@@ -1004,7 +1004,7 @@ define(
 	                           total_cols = groupByArray.length - 2;
 	                         }
 	
-	                         inputArray.push(["Total"]);
+	                         //inputArray.push(["Total"]);
 	
 	                         for (var j = 0; j < total_cols; j++) {
 	                           inputArray[inputArray.length - 1].push(0); //set default value
@@ -2450,8 +2450,13 @@ define(
             
             ReportDefinitionController.prototype.removeItems = function (selectedItems, list) {
             	selectedItems.forEach(function(itemId){
-            		delete list[list.indexOf(itemId)];
+            		//delete list[list.indexOf(itemId)];
+            		var index = list.indexOf(itemId);
+                	if (index > -1) {
+                		list.splice(index, 1);
+                	}
             	});
+            	
             };
             
             ReportDefinitionController.prototype.addAllItems = function (selectedItems, list) {
