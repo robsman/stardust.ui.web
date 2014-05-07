@@ -1,5 +1,7 @@
 package org.eclipse.stardust.ui.web.reporting.core.util;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -19,6 +21,25 @@ import org.eclipse.stardust.ui.web.reporting.core.Constants.TimeUnit;
 public class ReportingUtil
 {
    public static final String DEFAULT_DATE_FORMAT = "yyyy/MM/dd hh:mm:ss:SSS";
+   public static final int NUMBER_MAX_DECIMAL_PLACES = 2;
+
+   public static Number formatNumber(Number n)
+   {
+      if(n instanceof Double)
+      {
+         BigDecimal numberFormatter = new BigDecimal((Double) n);
+         numberFormatter = numberFormatter.setScale(NUMBER_MAX_DECIMAL_PLACES, RoundingMode.DOWN);
+         return numberFormatter.doubleValue();
+      }
+      else if(n instanceof Float)
+      {
+         BigDecimal numberFormatter = new BigDecimal(n.toString());
+         numberFormatter = numberFormatter.setScale(NUMBER_MAX_DECIMAL_PLACES, RoundingMode.DOWN);
+         return numberFormatter.floatValue();
+      }
+
+      return n;
+   }
 
    public static String formatDate(Date d, TimeUnit t)
    {

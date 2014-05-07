@@ -10,8 +10,6 @@
 *******************************************************************************/
 package org.eclipse.stardust.ui.web.reporting.core.handler;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Date;
 import java.util.List;
 
@@ -33,7 +31,6 @@ public abstract class AbstractColumnHandler<T, U, V extends Query> implements IC
       if(result instanceof Date)
       {
          Interval interval = context.getColumn().getInterval();
-
          if(interval != null)
          {
             Date referenceDate = new Date(0);
@@ -46,11 +43,7 @@ public abstract class AbstractColumnHandler<T, U, V extends Query> implements IC
             }
             Long diff = ReportingUtil.calculateDuration(referenceDate, endDate, interval.getUnit());
             Double intervalCriteriaDouble = new Double(diff) / new Double(unitValue);
-
-            BigDecimal intervalCriteria = new BigDecimal(intervalCriteriaDouble);
-            intervalCriteria.setScale(1, RoundingMode.DOWN);
-
-            return intervalCriteria.longValue();
+            return intervalCriteriaDouble.longValue();
          }
          else
          {

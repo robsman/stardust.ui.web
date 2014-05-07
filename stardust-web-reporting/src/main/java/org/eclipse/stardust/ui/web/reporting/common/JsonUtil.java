@@ -62,7 +62,8 @@ public class JsonUtil
          }
          else if (value instanceof Number)
          {
-            return new JsonPrimitive((Number) value);
+            Number formattedNumber = ReportingUtil.formatNumber((Number)value);
+            return new JsonPrimitive(formattedNumber);
          }
          else if (value instanceof Date)
          {
