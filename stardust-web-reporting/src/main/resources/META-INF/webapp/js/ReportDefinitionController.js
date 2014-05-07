@@ -350,6 +350,7 @@ define(
 								function () {
 								self.report.dataSet.groupBy = jQuery(
 										this).val();
+								self.populateChartTypes();
 							});
 
 							jQuery("#propertiesTabs")
@@ -1849,10 +1850,6 @@ define(
 							.append("<option value='barChart'>"
 									+ this.reportingService.metadata.chartTypes.barChart.name
 									+ "</option>");
-					this.chartTypeSelect
-							.append("<option value='bubbleChart'>"
-									+ this.reportingService.metadata.chartTypes.bubbleChart.name
-									+ "</option>");
 
 					this.chartTypeSelect
 					.append("<option value='donutChart'>"
@@ -1866,8 +1863,7 @@ define(
 										+ "</option>");
 					}
 
-					if (this.getFirstDimension()
-							&& this.getFirstDimension().type == this.reportingService.metadata.enumerationType) {
+					if (!this.report.dataSet.groupBy || (this.report.dataSet.groupBy == 'None')) {
 						this.chartTypeSelect
 								.append("<option value='pieChart'>"
 										+ this.reportingService.metadata.chartTypes.pieChart.name

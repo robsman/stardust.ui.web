@@ -190,8 +190,8 @@ define(
 						},
 						legend : {
 							show: true,
-			                location: 'nw',
-			                placement: 'inside',
+			                location: 'ne',
+			                placement: 'outside',
 			                fontSize: '11px'
 						},
 						highlighter : {},
@@ -239,50 +239,14 @@ define(
 						chartOptions.axes.xaxis.tickRenderer = jQuery.jqplot.CanvasAxisTickRenderer;
 						
 					} else if (this.report.layout.chart.type === this.reportingService.metadata.chartTypes.candlestickChart.id) {
-						chartOptions = {
-						      title: 'Chart',
-						      axesDefaults:{},
-						      axes: {
-						          xaxis: {
-						              renderer:$.jqplot.DateAxisRenderer
-						          },
-						          yaxis: {
-						              tickOptions:{ prefix: '$' }
-						          }
-						      },
-						      series: [{renderer:$.jqplot.OHLCRenderer, rendererOptions:{}}],
-						      cursor:{
-						          zoom:true,
-						          tooltipOffset: 10,
-						          tooltipLocation: 'nw'
-						      }
-						    };
-						
-/*						chartOptions.series = [ {
-							renderer : $.jqplot.OHLCRenderer,
-							rendererOptions : {
-								animation : {
-									speed : 2500
-								},
-								candleStick : true
-							}
-						} ];
-
-						chartOptions.highlighter = {
-							show : true,
-							showMarker : false,
-							tooltipAxes : 'xy',
-							yvalues : 4,
-							formatString : '<table class="jqplot-highlighter"> \
-		      <tr><td>date:</td><td>%s</td></tr> \
-		      <tr><td>open:</td><td>%s</td></tr> \
-		      <tr><td>hi:</td><td>%s</td></tr> \
-		      <tr><td>low:</td><td>%s</td></tr> \
-		      <tr><td>close:</td><td>%s</td></tr></table>'
-						};*/
-						
-						
-						
+						if (this.getFirstDimension().type == this.reportingService.metadata.timestampType) {
+							chartOptions.axes.xaxis.renderer = jQuery.jqplot.DateAxisRenderer;
+						} else {
+							chartOptions.axes.xaxis.renderer = jQuery.jqplot.CategoryAxisRenderer;
+						}
+						chartOptions.series.push({
+							renderer:$.jqplot.OHLCRenderer, rendererOptions:{candleStick:false }
+						})
 						
 					} else if (this.report.layout.chart.type === this.reportingService.metadata.chartTypes.barChart.id) {
 						chartOptions.seriesDefaults.renderer = $.jqplot.BarRenderer;
@@ -317,7 +281,15 @@ define(
 					        showDataLabels: true,
 					        // By default, data labels show the percentage of the donut/pie.
 					        // You can show the data 'value' or data 'label' instead.
-					        dataLabels: 'value'
+					        series: [{label: 'A1'},{label: 'A2'}],
+					        highlighter: {
+					            show: true,
+					            showLabel: true,
+					            formatString: '%s - %d. X, %d Y'
+					        },
+					        pointLabels: {
+			                    show: true
+			                },
 						};
 					} else if(this.report.layout.chart.type === this.reportingService.metadata.chartTypes.pieChart.id) {
 						chartOptions.seriesDefaults.renderer = jQuery.jqplot.PieRenderer;
@@ -332,11 +304,19 @@ define(
 					// Label series
 					if (this.report.dataSet.groupBy) {
 						if (groupIds) {
+							chartOptions.series = [];
 							for ( var i = 0; i < groupIds.length; ++i) {
-
-								chartOptions.series.push({
-									label : groupIds[i]
-								});
+								
+								if (this.report.layout.chart.type === this.reportingService.metadata.chartTypes.candlestickChart.id){
+									chartOptions.series.push({
+										label : groupIds[i],
+										renderer:$.jqplot.OHLCRenderer, rendererOptions:{candleStick:false }
+									});	
+								}else{
+									chartOptions.series.push({
+										label : groupIds[i]
+									});	
+								}
 							}
 						}
 					}
@@ -359,13 +339,25 @@ define(
 									function(inData) {
 										//TODO: temporary code starts here
 										
-										//data.seriesGroup = [[['14/2008', 42], ['2/2008', 56], ['7/2008', 39], ['22/2008', 81]]];
+										//TODO: remove this temporary data post-development
+										var countCumulantsCol = {
+											  "activity_instances": [
+							                         [
+							                           "2014/01",
+							                           5
+							                         ],
+							                         [
+							                           "2014/04",
+							                           3
+							                         ]
+							                       ]
+												};
 										
 										var countgroupbyCumulantsCol = {
 												  "A1": [
 												         [
 												           "2014/01",
-												           1
+												           10
 												         ],
 												         [
 												           "2014/04",
@@ -375,61 +367,304 @@ define(
 												     "A2": [
 												         [
 												           "2014/01",
-												           1
+												           12
 												         ],
 												         [
 												           "2014/04",
-												           10
+												           15
 												         ]
 												       ]
-												     };
-										
-										var countCumulantsCol = {
-												  "activity_instances": [
-								                         [
-								                           "2014/01",
-								                           1
-								                         ],
-								                         [
-								                           "2014/03",
-								                           3
-								                         ]
-								                       ]
-													};
-										
-										var nonCountGroupbyCumulantsCol = {
-												  "A1": [
+												     }
+											
+										var nonCountCumulantsCol = {
+												  "Activity_Instances": [
 												         [
 												           "2014/01",
 												           10,
-												           2,
-												           4,
-												          
+												           20,
+												           30,
+												           140,
+												           150
+												         ],
+												         [
+												           "2014/02",
+												           10,
+												           20,
+												           30,
+												           140,
+												           150
 												         ],
 												         [
 												           "2014/03",
-												           15,
-												           7,
-												           11
+												           135,
+												           120,
+												           150,
+												           140,
+												           150
+												         ],
+												         [
+												           "2014/04",
+												           135,
+												           120,
+												           150,
+												           140,
+												           150
+												         ],
+												         [
+												           "2014/05",
+												           135,
+												           120,
+												           150,
+												           140,
+												           150
+												         ],
+												         [
+												           "2014/06",
+												           135,
+												           120,
+												           150,
+												           140,
+												           150
+												         ],
+												         [
+												           "2014/07",
+												           135,
+												           120,
+												           150,
+												           140,
+												           150
+												         ],
+												         [
+												           "2014/08",
+												           135,
+												           120,
+												           150,
+												           140,
+												           150
+												         ],
+												         [
+												           "2014/09",
+												           135,
+												           120,
+												           150,
+												           140,
+												           150
+												         ],
+												         [
+												           "2014/10",
+												           135,
+												           120,
+												           150,
+												           140,
+												           150
+												         ]
+												       ]}
+	var nonCountGroupbyCumulantsCol = {
+												  "A1": [
+												         [
+												           "2014/01",
+												           200,
+												           100,
+												           300,
+												           40,
+												           50
+												         ],
+												         [
+												           "2014/02",
+												           25,
+												           20,
+												           30,
+												           40,
+												           50
+												         ],
+												         [
+												           "2014/03",
+												           25,
+												           20,
+												           30,
+												           40,
+												           50
+												         ],
+												         [
+												           "2014/04",
+												           25,
+												           20,
+												           30,
+												           40,
+												           50
+												         ],
+												         [
+												           "2014/05",
+												           25,
+												           20,
+												           30,
+												           40,
+												           50
+												         ],
+												         [
+												           "2014/06",
+												           25,
+												           20,
+												           30,
+												           40,
+												           50
+												         ],
+												         [
+												           "2014/07",
+												           25,
+												           20,
+												           30,
+												           40,
+												           50
+												         ],
+												         [
+												           "2014/08",
+												           25,
+												           20,
+												           30,
+												           40,
+												           50
+												         ],
+												         [
+												           "2014/09",
+												           25,
+												           20,
+												           30,
+												           40,
+												           50
+												         ],
+												         [
+												           "2014/10",
+												           35,
+												           20,
+												           50,
+												           40,
+												           50
 												         ]
 												       ],
 												       "A2": [
 												         [
 												           "2014/01",
-												           6,
-												           6,
-												           6,
+												           130,
+												           120,
+												           140,
+												           140,
+												           150
+												         ],
+												         [
+												           "2014/02",
+												           135,
+												           120,
+												           150,
+												           140,
+												           150
 												         ],
 												         [
 												           "2014/03",
-												           8,
-												           4,
-												           6
+												           135,
+												           120,
+												           150,
+												           140,
+												           150
+												         ],
+												         [
+												           "2014/04",
+												           135,
+												           120,
+												           150,
+												           140,
+												           150
+												         ],
+												         [
+												           "2014/05",
+												           135,
+												           120,
+												           150,
+												           140,
+												           150
+												         ],
+												         [
+												           "2014/06",
+												           135,
+												           120,
+												           150,
+												           140,
+												           150
+												         ],
+												         [
+												           "2014/07",
+												           135,
+												           120,
+												           150,
+												           140,
+												           150
+												         ],
+												         [
+												           "2014/08",
+												           135,
+												           120,
+												           150,
+												           140,
+												           150
+												         ],
+												         [
+												           "2014/09",
+												           135,
+												           120,
+												           150,
+												           140,
+												           150
+												         ],
+												         [
+												           "2014/10",
+												           135,
+												           120,
+												           150,
+												           140,
+												           150
 												         ]
 												       ]
-												     }
+												     };
+											var fact_count = (self.report.dataSet.fact == self.reportingService.metadata.objects.processInstance.facts.count.id);
+											
+											if(self.report.layout.table.preview){
+												//data = countCumulantsCol;
+												inData = countgroupbyCumulantsCol;
+											
+							                    if(fact_count){
+							                    	inData = countCumulantsCol;
+							                 	   if(self.report.dataSet.groupBy == 'activityName'){
+							                 		  inData = countgroupbyCumulantsCol;   
+							                 	   }
+							                    }else{
+							                    	inData = nonCountCumulantsCol;
+							                 	   if(self.report.dataSet.groupBy == 'activityName'){
+							                 		  inData = nonCountGroupbyCumulantsCol;   
+							                 	   }
+							                    }
+											}
 										
-										//inData = nonCountGroupbyCumulantsCol;
+										//Transform data values for Candlestick chart
+										if (self.report.layout.chart.type === self.reportingService.metadata.chartTypes.candlestickChart.id) {
+											for(var i in inData){
+												  for(var j in inData[i]){
+													//before swap avg, min, max, stddev, count 
+												    var temp = inData[i][j][1];
+												    inData[i][j][1] = inData[i][j][3];
+												    inData[i][j][3] = temp;
+													//before swap max, min, avg, stddev, count
+												    inData[i][j].length = 4;
+													//now max, min, avg
+												  }
+											}
+											
+										} else if (!fact_count) {
+											for ( var i in inData) {
+												for ( var j in inData[i]) {
+													inData[i][j].length = 2; //consider only avg value
+												}
+											}
+										}
 										
 										var data = {};
 										data.seriesGroup = [];
@@ -439,6 +674,9 @@ define(
 											seriesIds.push(prop);
 										}
 										
+										//TODO: remove later
+										//data.seriesGroup = [hlc];
+										//seriesIds = [];
 										/*data.seriesGroup = [[
 					                         [
 					                           "2014_01",
@@ -475,56 +713,7 @@ define(
 //										};
 										var chartOptions = self
 												.createChartOptions(seriesIds);
-
-										// Perform preprocessing of data
-
-										/*data.seriesGroup = self
-												.preprocessData(data.seriesGroup);*/
-
-										// Perform chart-specific data
-										// processing
-
-										if (self.report.layout.chart.type === self.reportingService.metadata.chartTypes.barChart.id) {
-											/*var seriesGroup = [];
-											var ticks = [];
-
-											for ( var n = 0; n < data.seriesGroup.length; ++n) {
-												var series = [];
-
-												seriesGroup.push(series);
-
-												for ( var m = 0; m < data.seriesGroup[n].length; ++m) {
-													series
-															.push(data.seriesGroup[n][m][1]);
-
-													if (n == 0) {
-														ticks
-																.push(data.seriesGroup[n][m][0]);
-													}
-												}
-											}
-
-											chartOptions.axes.xaxis.ticks = ticks;
-
-											data.data = seriesGroup;*/
-										} else if (self.report.layout.chart.type === self.reportingService.metadata.chartTypes.bubbleChart.id) {
-											/*var arr = [
-													[ 11, 123, 1236, "Acura" ],
-													[ 45, 92, 1067,
-															"Alfa Romeo" ],
-													[ 24, 104, 1176,
-															"AM General" ],
-													[ 50, 23, 610,
-															"Aston Martin Lagonda" ],
-													[ 18, 17, 539, "Audi" ],
-													[ 7, 89, 864, "BMW" ],
-													[ 2, 13, 1026, "Bugatti" ] ];
-
-											data.seriesGroup = [ arr ];*/
-										}
-
 										// Clean Canvas
-
 										if (self.chart) {
 											self.chart.destroy();
 										}
