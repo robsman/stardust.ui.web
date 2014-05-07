@@ -65,6 +65,11 @@ define(['bpm-ui/js/bpm-ui'], function (bpmUi) {
 			disableSidebarResizing();
 		}, true);
 
+		// TODO: It's observed that title is not getting set by Shell. So manually change it here!
+		if ($scope.appConfigData && $scope.appConfigData.windowTitle) {
+		  document.title = $scope.appConfigData.windowTitle;		  
+		}
+
 		// Open and Pin Sidebar upon initialization.
 		// More delay is required between Open and Pin
 		window.setTimeout(function(){
