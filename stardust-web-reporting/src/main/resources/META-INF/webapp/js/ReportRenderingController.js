@@ -939,6 +939,9 @@ define(
              *   This function returns Preview Data
              */
             ReportRenderingController.prototype.getPreviewData = function(report) {
+               if(report){
+            	   this.report = report;
+               }	
                var deferred = jQuery.Deferred();
                var self = this;
                
@@ -947,7 +950,7 @@ define(
                   return;
                }
                
-               self.reportingService.retrieveData(report)
+               self.reportingService.retrieveData(self.report)
                .done(
                      function(data) {
                         var rows = data.recordSet;
