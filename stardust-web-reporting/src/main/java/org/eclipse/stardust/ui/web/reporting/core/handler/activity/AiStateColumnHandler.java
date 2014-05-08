@@ -12,10 +12,7 @@ package org.eclipse.stardust.ui.web.reporting.core.handler.activity;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.ActivityStateFilter;
@@ -23,18 +20,19 @@ import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
 import org.eclipse.stardust.ui.web.reporting.common.mapping.request.ReportFilter;
 import org.eclipse.stardust.ui.web.reporting.core.Constants.AiDimensionField;
+import org.eclipse.stardust.ui.web.reporting.core.Constants.FilterConstants;
 import org.eclipse.stardust.ui.web.reporting.core.DataField;
 import org.eclipse.stardust.ui.web.reporting.core.DataField.DataFieldType;
 import org.eclipse.stardust.ui.web.reporting.core.handler.HandlerContext;
 
 public class AiStateColumnHandler extends AiColumnHandler<Integer>
 {
-   private Map<String, ActivityInstanceState> allAiStates;
+   private Map<String, ActivityInstanceState[]> allAiStates;
 
    public AiStateColumnHandler()
    {
       allAiStates
-         = new HashMap<String, ActivityInstanceState>();
+         = new HashMap<String, ActivityInstanceState[]>();
       List<ActivityInstanceState> availableStates
          = new ArrayList<ActivityInstanceState>();
       availableStates.add(ActivityInstanceState.Created);
@@ -47,8 +45,10 @@ public class AiStateColumnHandler extends AiColumnHandler<Integer>
       availableStates.add(ActivityInstanceState.Hibernated);
       for(ActivityInstanceState state: availableStates)
       {
-         allAiStates.put(state.getName(), state);
+         allAiStates.put(state.getName(), new ActivityInstanceState[] {state});
       }
+
+      allAiStates.put(FilterConstants.ALIVE.getId(), new ActivityInstanceState[]{ActivityInstanceState.Created, ActivityInstanceState.Application});
    }
 
    @Override
@@ -78,16 +78,20 @@ public class AiStateColumnHandler extends AiColumnHandler<Integer>
       List<String> filterValues = filter.getListValues();
       if(filterValues.size() > 0)
       {
-         ActivityInstanceState[] filterStates = new ActivityInstanceState[filterValues.size()];
+         Set<ActivityInstanceState> allFilterStates = new HashSet<ActivityInstanceState>();
          for(int i=0; i< filterValues.size(); i++)
          {
-            String filterStateName = filterValues.get(i);
-            ActivityInstanceState filterState = allAiStates.get(filterStateName);
-            filterStates[i] = filterState;
+            String filterStateKey = filterValues.get(i);
+            ActivityInstanceState[] mappedStates = allAiStates.get(filterStateKey);
+            for(ActivityInstanceState ais: mappedStates)
+            {
+               allFilterStates.add(ais);
+            }
          }
 
-         query.where(new ActivityStateFilter(filterStates));
+         ActivityInstanceState[] criteriaStates
+            = allFilterStates.toArray(new ActivityInstanceState[allFilterStates.size()]);
+         query.where(new ActivityStateFilter(criteriaStates));
       }
    }
-
 }

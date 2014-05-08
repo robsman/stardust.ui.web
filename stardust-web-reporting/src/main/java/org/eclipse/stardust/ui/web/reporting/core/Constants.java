@@ -267,4 +267,25 @@ public class Constants
          throw new RuntimeException(errorMsgBuilder.toString());
       }
    }
+
+   public enum FilterConstants
+   {
+      ALIVE("Alive");
+      private FilterConstants(String id)
+      {
+         this.id = id;
+      }
+      private String id;
+
+      public String getId()
+      {
+         return id;
+      }
+
+      @Override
+      public String toString()
+      {
+         return getId();
+      }
+   }
 }

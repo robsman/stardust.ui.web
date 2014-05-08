@@ -6,31 +6,40 @@ package org.eclipse.stardust.ui.web.reporting.core.handler.process;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
 import org.eclipse.stardust.engine.api.query.ProcessStateFilter;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstanceState;
 import org.eclipse.stardust.ui.web.reporting.common.mapping.request.ReportFilter;
-import org.eclipse.stardust.ui.web.reporting.core.DataField;
+import org.eclipse.stardust.ui.web.reporting.core.Constants.FilterConstants;
 import org.eclipse.stardust.ui.web.reporting.core.Constants.PiDimensionField;
+import org.eclipse.stardust.ui.web.reporting.core.DataField;
 import org.eclipse.stardust.ui.web.reporting.core.DataField.DataFieldType;
 import org.eclipse.stardust.ui.web.reporting.core.handler.HandlerContext;
 
 public class PiStateColumnHandler extends PiColumnHandler<Integer>
 {
-   private Map<String, ProcessInstanceState> allPiStates;
+   private Map<String, ProcessInstanceState[]> allPiStates;
 
    public PiStateColumnHandler()
    {
-      allPiStates = new HashMap<String, ProcessInstanceState>();
-      for(ProcessInstanceState state: ProcessInstanceState.getAllStates())
+      allPiStates = new HashMap<String, ProcessInstanceState[]>();
+
+      List<ProcessInstanceState> availableStates = new ArrayList<ProcessInstanceState>();
+      availableStates.add(ProcessInstanceState.Created);
+      availableStates.add(ProcessInstanceState.Active);
+      availableStates.add(ProcessInstanceState.Completed);
+      availableStates.add(ProcessInstanceState.Interrupted);
+      availableStates.add(ProcessInstanceState.Aborting);
+      availableStates.add(ProcessInstanceState.Aborted);
+      for(ProcessInstanceState state: availableStates)
       {
-         allPiStates.put(state.getName(), state);
+         allPiStates.put(state.getName(), new ProcessInstanceState[] {state});
       }
+
+      allPiStates.put(FilterConstants.ALIVE.getId(), new ProcessInstanceState[] {ProcessInstanceState.Created, ProcessInstanceState.Active});
    }
 
    @Override
@@ -58,15 +67,19 @@ public class PiStateColumnHandler extends PiColumnHandler<Integer>
       List<String> filterValues = filter.getListValues();
       if(filterValues.size() > 0)
       {
-         ProcessInstanceState[] filterStates = new ProcessInstanceState[filterValues.size()];
+         Set<ProcessInstanceState> allFilterStates = new HashSet<ProcessInstanceState>();
          for(int i=0; i< filterValues.size(); i++)
          {
             String filterStateName = filterValues.get(i);
-            ProcessInstanceState filterState = allPiStates.get(filterStateName);
-            filterStates[i] = filterState;
+            ProcessInstanceState[] mappedStates = allPiStates.get(filterStateName);
+            for(ProcessInstanceState pis: mappedStates)
+            {
+               allFilterStates.add(pis);
+            }
          }
 
-         query.where(new ProcessStateFilter(filterStates));
+         ProcessInstanceState[] criteriaStates = allFilterStates.toArray(new ProcessInstanceState[allFilterStates.size()]);
+         query.where(new ProcessStateFilter(criteriaStates));
       }
    }
 }
