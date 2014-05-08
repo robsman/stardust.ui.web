@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="WINDOWS-1252" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <jardesc>
     <jar path="stardust-mobile-workflow.jar"/>
-    <options buildIfNeeded="true" compress="true" descriptionLocation="/mobile-workflow/mobile-workflow.jardesc" exportErrors="false" exportWarnings="true" includeDirectoryEntries="true" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
+    <options buildIfNeeded="true" compress="true" descriptionLocation="/stardust-mobile-workflow/mobile-workflow.jardesc" exportErrors="false" exportWarnings="true" includeDirectoryEntries="true" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
     <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
     <selectedProjects/>
     <manifest generateManifest="true" manifestLocation="" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
@@ -11,8 +11,7 @@
         </sealing>
     </manifest>
     <selectedElements exportClassFiles="false" exportJavaFiles="false" exportOutputFolder="true">
-        <javaElement handleIdentifier="=mobile-workflow/resources"/>
-        <javaElement handleIdentifier="=mobile-workflow/java"/>
-        <folder path="/mobile-workflow/config"/>
+        <javaElement handleIdentifier="=stardust-mobile-workflow/src\/main\/resources"/>
+        <javaElement handleIdentifier="=stardust-mobile-workflow/src\/main\/java"/>
     </selectedElements>
 </jardesc>
