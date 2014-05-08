@@ -86,7 +86,11 @@ public class ReportingServiceBean
 
    private static final Logger trace = LogManager.getLogger(ReportingServiceBean.class);
 
-   private static final String PUBLIC_REPORT_DEFINITIONS_DIR = "/reports/designs/";
+   private static final String REPORTS_ROOT_FOLDER = "/reports";
+   private static final String REPORT_DESIGN = "/designs";
+   private static final String PUBLIC_REPORT_DEFINITIONS_DIR = REPORTS_ROOT_FOLDER + REPORT_DESIGN;
+   private static final String PARTICIPANT_REPORT_DEFINITIONS_DIR_TMP = REPORTS_ROOT_FOLDER + "/PARTICIPANT_ID" + REPORT_DESIGN;
+   private static final String USER_REPORT_DIR = "/documents/reports/designs";
    
    private static final String REPORT_DEFINITION_EXT = ".bpmrptdesign";
    
@@ -460,21 +464,15 @@ public class ReportingServiceBean
          if (StringUtils.isEmpty(parentPath))
          {
             // Top-level reached
+
             return getDocumentManagementService().createFolder("/", DmsUtils.createFolderInfo(childName));
          }
          else
          {
             Folder parentFolder = findOrCreateFolder(parentPath);
 
-            if (StringUtils.isNotEmpty(childName))
-            {
-               return getDocumentManagementService().createFolder(parentFolder.getId(),
-                     DmsUtils.createFolderInfo(childName));
-            }
-            else
-            {
-               return parentFolder;
-            }
+            return getDocumentManagementService().createFolder(parentFolder.getId(),
+                  DmsUtils.createFolderInfo(childName));
          }
       }
       else
@@ -490,7 +488,7 @@ public class ReportingServiceBean
    private String getUserDocumentFolderPath()
    {
       return "/realms/" + getUserService().getUser().getRealm().getId() + "/users/"
-            + getUserService().getUser().getId() + "/documents/reports/designs";
+            + getUserService().getUser().getId() + USER_REPORT_DIR;
    }
 
    /**
@@ -499,7 +497,7 @@ public class ReportingServiceBean
     */
    private String getParticipantDocumentFolderPath(String participant)
    {
-      return PUBLIC_REPORT_DEFINITIONS_DIR + participant;
+      return PARTICIPANT_REPORT_DEFINITIONS_DIR_TMP.replace("PARTICIPANT_ID", participant);
    }
 
    /**
@@ -513,7 +511,7 @@ public class ReportingServiceBean
       {
          Folder publicFolder = findOrCreateFolder(PUBLIC_REPORT_DEFINITIONS_DIR);
          Folder personalFolder = findOrCreateFolder(getUserDocumentFolderPath());
-         Folder participantFolder = findOrCreateFolder(PUBLIC_REPORT_DEFINITIONS_DIR);
+         Folder participantFolder = findOrCreateFolder(REPORTS_ROOT_FOLDER);
 
          JsonObject rootFolderJson = new JsonObject();
          JsonArray subFoldersJson = new JsonArray();
@@ -546,7 +544,7 @@ public class ReportingServiceBean
                
                if (participant != null)
                {
-                  participantFolderJson = getReportDefinitions(participantSubFolder, participant.getName() + " Report Definitions"); //TODO: I18N
+                  participantFolderJson = getReportDefinitions(findOrCreateFolder(participantSubFolder.getPath() + REPORT_DESIGN), participant.getName() + " Report Definitions"); //TODO: I18N
                }
 
                if (participantFolderJson != null)
