@@ -807,12 +807,25 @@ define(
                        if (!fact_count) {
 
                     	 //position of cumulants in response json
-                         var AVG_I = 1,
-                           MIN_I = 2,
-                           MAX_I = 3,
-                           STD_DEV_I = 4,
-                           COUNT_I = 5;
-
+                    	 var INDEX = {
+								average : 1,
+								minimum : 2,
+								maximum : 3,
+								stdDeviation : 4,
+								count : 5
+						  };
+                    	 
+                    	 var PROP_KEY_PREFIX = "reporting.definitionView.layout.table.cumulant.";
+                    	 
+                    	 var CUMULANTS_MSG = {
+								average : this.getI18N(PROP_KEY_PREFIX + "average"),
+								minimum : this.getI18N(PROP_KEY_PREFIX + "minimum"),
+								maximum : this.getI18N(PROP_KEY_PREFIX + "maximum"),
+								stdDeviation : this.getI18N(PROP_KEY_PREFIX + "stdDeviation"),
+								count : this.getI18N(PROP_KEY_PREFIX + "count")
+						  }; 
+                         
+                         
                          var cumulatingIntHeader = [];
                          inputArray.push(cumulatingIntHeader);
 
@@ -839,39 +852,15 @@ define(
                                cumulatingIntHeader.push(span);
 
                                //if fact != count
-                               if(this.report.layout.table.selectedCumulants.indexOf('average') != -1){
-                            	   inputArray.push([this.getI18N("reporting.definitionView.layout.table.cumulant.average")]);   
-                               }
-                               if(this.report.layout.table.selectedCumulants.indexOf('minimum') != -1){
-                            	   inputArray.push([this.getI18N("reporting.definitionView.layout.table.cumulant.minimum")]);   
-                               }
-                               if(this.report.layout.table.selectedCumulants.indexOf('maximum') != -1){
-                            	   inputArray.push([this.getI18N("reporting.definitionView.layout.table.cumulant.maximum")]);   
-                               }	   
-                               if(this.report.layout.table.selectedCumulants.indexOf('stdDeviation') != -1){
-                            	   inputArray.push([this.getI18N("reporting.definitionView.layout.table.cumulant.stdDeviation")]);   
-                               }
-                               if(this.report.layout.table.selectedCumulants.indexOf('count') != -1){
-                            	   inputArray.push([this.getI18N("reporting.definitionView.layout.table.cumulant.count")]);   
+                               for(var i in this.report.layout.table.selectedCumulants){
+                            	   inputArray.push([CUMULANTS_MSG[this.report.layout.table.selectedCumulants[i]]]);
                                }
                              }
 
                              //populate cumulant data
-                             if(this.report.layout.table.selectedCumulants.indexOf('average') != -1){
-                            	 inputArray[inputArrayIndex++].push(data[prop][j][AVG_I]);	 
-                             }
-                             if(this.report.layout.table.selectedCumulants.indexOf('minimum') != -1){
-                            	 inputArray[inputArrayIndex++].push(data[prop][j][MIN_I]);	 
-                             }
-                             if(this.report.layout.table.selectedCumulants.indexOf('maximum') != -1){
-                            	 inputArray[inputArrayIndex++].push(data[prop][j][MAX_I]);	 
-                             }
-                             if(this.report.layout.table.selectedCumulants.indexOf('stdDeviation') != -1){
-                            	 inputArray[inputArrayIndex++].push(data[prop][j][STD_DEV_I]);	 
-                             }
-                             if(this.report.layout.table.selectedCumulants.indexOf('count') != -1){
-                            	 inputArray[inputArrayIndex++].push(data[prop][j][COUNT_I]);	 
-                             }
+                             for(var i in this.report.layout.table.selectedCumulants){
+                            	 inputArray[inputArrayIndex++].push(data[prop][j][INDEX[this.report.layout.table.selectedCumulants[i]]]);
+                             }  
                            }
 
                            cumulatingIntHeaderComplete = true;
