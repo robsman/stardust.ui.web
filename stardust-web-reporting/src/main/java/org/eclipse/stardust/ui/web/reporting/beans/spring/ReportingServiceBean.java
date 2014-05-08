@@ -460,15 +460,21 @@ public class ReportingServiceBean
          if (StringUtils.isEmpty(parentPath))
          {
             // Top-level reached
-
             return getDocumentManagementService().createFolder("/", DmsUtils.createFolderInfo(childName));
          }
          else
          {
             Folder parentFolder = findOrCreateFolder(parentPath);
 
-            return getDocumentManagementService().createFolder(parentFolder.getId(),
-                  DmsUtils.createFolderInfo(childName));
+            if (StringUtils.isNotEmpty(childName))
+            {
+               return getDocumentManagementService().createFolder(parentFolder.getId(),
+                     DmsUtils.createFolderInfo(childName));
+            }
+            else
+            {
+               return parentFolder;
+            }
          }
       }
       else
