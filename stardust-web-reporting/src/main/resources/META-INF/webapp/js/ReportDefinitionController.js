@@ -592,7 +592,7 @@ define(
 											y2axis : {}
 										},
 										legend : {
-											location : "w"
+											location : "e"
 										},
 										highlighter : {},
 										cursor : {
