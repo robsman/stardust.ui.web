@@ -29,6 +29,7 @@ import org.eclipse.stardust.ui.web.common.util.CollectionUtils;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 
+import com.icesoft.util.encoding.Base64;
 
 /**
  * @author Robert.Sauer
@@ -172,6 +173,9 @@ public class View extends AbstractUiElement implements TabScopeManager
 
          String typeId = getDefinition().getName();
          String id = StringUtils.isNotEmpty(getViewKey()) ? getViewKey() : "";
+         // Again Encode id with Bas64 to handle special char ':' in viewKey
+         // ex: {urn:repositoryId:rep1}{jcrUuid}
+         id = Base64.encode(id);
          
          if(!StringUtils.isEmpty(typeId) && !typeId.equals("configurationTreeView"))
          {

@@ -57,6 +57,7 @@ import com.icesoft.faces.component.paneltabset.TabChangeEvent;
 import com.icesoft.faces.component.paneltabset.TabChangeListener;
 import com.icesoft.faces.context.effects.JavascriptContext;
 import com.icesoft.faces.webapp.http.servlet.ServletExternalContext;
+import com.icesoft.util.encoding.Base64;
 
 
 /**
@@ -1135,7 +1136,9 @@ public class PortalApplication
 
       String typeId = view.getDefinition().getName();
       String id =  StringUtils.isNotEmpty(view.getViewKey()) ? view.getViewKey() : "all"; // all - As Blank does not work.
-
+      // Again Encode id with Bas64 to handle special char ':' in viewKey
+      // ex: {urn:repositoryId:repo1}{jcrUuid}
+      id = Base64.encode(id);
       String html5FWViewId = view.getHtml5FwViewId();
       
       String script = "parent.BridgeUtils.View.openView('" + html5FWViewId + "', '" + viewId
