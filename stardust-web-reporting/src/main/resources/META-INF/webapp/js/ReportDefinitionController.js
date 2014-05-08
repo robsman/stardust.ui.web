@@ -768,9 +768,6 @@ define(
 								function(data) {
 									self.refreshPreview1(data);
 								}).fail(function(err) {
-									if(self.report.layout.table.preview){
-										self.refreshPreview1();
-									}
 							console.log("Failed getting Preview Date: showing dummy data" + err);
 						});
 					}else{
@@ -790,121 +787,6 @@ define(
 				 * 
 				 */
 				ReportDefinitionController.prototype.refreshPreview1 = function(data) {
-					//delete later 
-					//TODO: remove this temporary data post-development
-					var countCumulantsCol = {
-						  "activity_instances": [
-		                         [
-		                           "2014_01",
-		                           1
-		                         ],
-		                         [
-		                           "2014_04",
-		                           3
-		                         ]
-		                       ]
-							};
-					
-					var countgroupbyCumulantsCol = {
-							  "A1": [
-							         [
-							           "2014_01",
-							           0
-							         ],
-							         [
-							           "2014_04",
-							           2
-							         ]
-							       ],
-							     "A2": [
-							         [
-							           "2014_01",
-							           1
-							         ],
-							         [
-							           "2014_04",
-							           1
-							         ]
-							       ]
-							     }
-						
-					var nonCountCumulantsCol = {
-							  "activity_instances": [
-				                         [
-				                           "2014_01",
-				                           6,
-				                           6,
-				                           6,
-				                           0,
-				                           1
-				                         ],
-				                         [
-				                           "2014_04",
-				                           15,
-				                           7,
-				                           10,
-				                           3.559,
-				                           3
-				                         ]
-				                       ]
-							    }
-					
-					var nonCountGroupbyCumulantsCol = {
-							  "A1": [
-							         [
-							           "2014_01",
-							           0,
-							           0,
-							           0,
-							           0,
-							           0
-							         ],
-							         [
-							           "2014_04",
-							           15,
-							           7,
-							           11,
-							           4,
-							           2
-							         ]
-							       ],
-							       "A2": [
-							         [
-							           "2014_01",
-							           6,
-							           6,
-							           6,
-							           0,
-							           1
-							         ],
-							         [
-							           "2014_04",
-							           8,
-							           8,
-							           8,
-							           0,
-							           1
-							         ]
-							       ]
-							     }
-					
-						if(this.report.layout.table.preview){
-							//data = countCumulantsCol;
-							data = countgroupbyCumulantsCol;
-						
-		                    if(this.report.dataSet.fact == this.reportingService.metadata.objects.processInstance.facts.count.id){
-		                    	data = countCumulantsCol;
-		                 	   if(this.report.dataSet.groupBy == 'activityName'){
-		                 		  data = countgroupbyCumulantsCol;   
-		                 	   }
-		                    }else{
-		                    	data = nonCountCumulantsCol;
-		                 	   if(this.report.dataSet.groupBy == 'activityName'){
-		                 		  data = nonCountGroupbyCumulantsCol;   
-		                 	   }
-		                    }
-						}
-
                        self= this;
                        var configurations = self.getCumulantsTableConfig();
                        var disableSorting = configurations.disableSorting;
@@ -923,7 +805,8 @@ define(
 
                        //if fact != count
                        if (!fact_count) {
-                         //position of cumulants in response json
+
+                    	 //position of cumulants in response json
                          var AVG_I = 1,
                            MIN_I = 2,
                            MAX_I = 3,
@@ -957,23 +840,22 @@ define(
 
                                //if fact != count
                                if(this.report.layout.table.selectedCumulants.indexOf('average') != -1){
-                            	   inputArray.push([this.getI18N("reporting.definitionView.layout.table.cumulant.average")]); //I18n   
+                            	   inputArray.push([this.getI18N("reporting.definitionView.layout.table.cumulant.average")]);   
                                }
                                if(this.report.layout.table.selectedCumulants.indexOf('minimum') != -1){
-                            	   inputArray.push([this.getI18N("reporting.definitionView.layout.table.cumulant.minimum")]); //I18n   
+                            	   inputArray.push([this.getI18N("reporting.definitionView.layout.table.cumulant.minimum")]);   
                                }
                                if(this.report.layout.table.selectedCumulants.indexOf('maximum') != -1){
-                            	   inputArray.push([this.getI18N("reporting.definitionView.layout.table.cumulant.maximum")]); //I18n   
+                            	   inputArray.push([this.getI18N("reporting.definitionView.layout.table.cumulant.maximum")]);   
                                }	   
                                if(this.report.layout.table.selectedCumulants.indexOf('stdDeviation') != -1){
-                            	   inputArray.push([this.getI18N("reporting.definitionView.layout.table.cumulant.stdDeviation")]); //I18n   
+                            	   inputArray.push([this.getI18N("reporting.definitionView.layout.table.cumulant.stdDeviation")]);   
                                }
                                if(this.report.layout.table.selectedCumulants.indexOf('count') != -1){
-                            	   inputArray.push([this.getI18N("reporting.definitionView.layout.table.cumulant.count")]); //I18n   
+                            	   inputArray.push([this.getI18N("reporting.definitionView.layout.table.cumulant.count")]);   
                                }
                              }
 
-                             //if fact != count  
                              //populate cumulant data
                              if(this.report.layout.table.selectedCumulants.indexOf('average') != -1){
                             	 inputArray[inputArrayIndex++].push(data[prop][j][AVG_I]);	 
@@ -1102,8 +984,7 @@ define(
 	                   
 	                   
                        
-   					// TODO: remove post-development - server data must converted to following format
-					   // input data
+   					  // server data must be converted to following format - just for reference, is not used
 				      var countgroupbyCumulantsCol1 = [
 				        ['', 'A1', 'A2', 'A3', 'Total'], //header -> this and all rows below it should match
 				        ['Jan', 22, 3, 4, 29],

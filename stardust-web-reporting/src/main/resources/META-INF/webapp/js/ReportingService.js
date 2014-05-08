@@ -726,7 +726,9 @@ define(
 							deferred.resolve(this.retrieveRoleData(report));
 						}
 					} else {
-						if(!report.layout.table.preview){
+						if(report.layout.table.preview && report.layout.type == "simpleReport"){
+								deferred.resolve(this.getTestSimpleReportData(report));
+						}else{
 							var self = this;
 
 							console.debug("Report Definition");
@@ -752,8 +754,6 @@ define(
 									}).fail(function() {
 										deferred.reject([]);
 									});
-						}else{
-							deferred.resolve("");	
 						}
 					}
 
@@ -1325,5 +1325,317 @@ define(
 
                return deferred.promise();
             };
+            
+            /**
+             * Following are samples of input data data, can be kept for future references 
+             */
+            
+            ReportingService.prototype.getTestSimpleReportData = function(report){
+				var countCumulantsCol = {
+					  "activity_instances": [
+	                         [
+	                           "2014/01",
+	                           5
+	                         ],
+	                         [
+	                           "2014/04",
+	                           3
+	                         ]
+	                       ]
+						};
+				
+				var countgroupbyCumulantsCol = {
+						  "A1": [
+						         [
+						           "2014/01",
+						           10
+						         ],
+						         [
+						           "2014/04",
+						           2
+						         ]
+						       ],
+						     "A2": [
+						         [
+						           "2014/01",
+						           12
+						         ],
+						         [
+						           "2014/04",
+						           15
+						         ]
+						       ]
+						     }
+					
+				var nonCountCumulantsCol = {
+						  "Activity_Instances": [
+						         [
+						           "2014/01",
+						           10,
+						           20,
+						           30,
+						           140,
+						           150
+						         ],
+						         [
+						           "2014/02",
+						           10,
+						           20,
+						           30,
+						           140,
+						           150
+						         ],
+						         [
+						           "2014/03",
+						           135,
+						           120,
+						           150,
+						           140,
+						           150
+						         ],
+						         [
+						           "2014/04",
+						           135,
+						           120,
+						           150,
+						           140,
+						           150
+						         ],
+						         [
+						           "2014/05",
+						           135,
+						           120,
+						           150,
+						           140,
+						           150
+						         ],
+						         [
+						           "2014/06",
+						           135,
+						           120,
+						           150,
+						           140,
+						           150
+						         ],
+						         [
+						           "2014/07",
+						           135,
+						           120,
+						           150,
+						           140,
+						           150
+						         ],
+						         [
+						           "2014/08",
+						           135,
+						           120,
+						           150,
+						           140,
+						           150
+						         ],
+						         [
+						           "2014/09",
+						           135,
+						           120,
+						           150,
+						           140,
+						           150
+						         ],
+						         [
+						           "2014/10",
+						           135,
+						           120,
+						           150,
+						           140,
+						           150
+						         ]
+						       ]}
+				var nonCountGroupbyCumulantsCol = {
+						  "A1": [
+						         [
+						           "2014/01",
+						           200,
+						           100,
+						           300,
+						           40,
+						           50
+						         ],
+						         [
+						           "2014/02",
+						           25,
+						           20,
+						           30,
+						           40,
+						           50
+						         ],
+						         [
+						           "2014/03",
+						           25,
+						           20,
+						           30,
+						           40,
+						           50
+						         ],
+						         [
+						           "2014/04",
+						           25,
+						           20,
+						           30,
+						           40,
+						           50
+						         ],
+						         [
+						           "2014/05",
+						           25,
+						           20,
+						           30,
+						           40,
+						           50
+						         ],
+						         [
+						           "2014/06",
+						           25,
+						           20,
+						           30,
+						           40,
+						           50
+						         ],
+						         [
+						           "2014/07",
+						           25,
+						           20,
+						           30,
+						           40,
+						           50
+						         ],
+						         [
+						           "2014/08",
+						           25,
+						           20,
+						           30,
+						           40,
+						           50
+						         ],
+						         [
+						           "2014/09",
+						           25,
+						           20,
+						           30,
+						           40,
+						           50
+						         ],
+						         [
+						           "2014/10",
+						           35,
+						           20,
+						           50,
+						           40,
+						           50
+						         ]
+						       ],
+						       "A2": [
+						         [
+						           "2014/01",
+						           130,
+						           120,
+						           140,
+						           140,
+						           150
+						         ],
+						         [
+						           "2014/02",
+						           135,
+						           120,
+						           150,
+						           140,
+						           150
+						         ],
+						         [
+						           "2014/03",
+						           135,
+						           120,
+						           150,
+						           140,
+						           150
+						         ],
+						         [
+						           "2014/04",
+						           135,
+						           120,
+						           150,
+						           140,
+						           150
+						         ],
+						         [
+						           "2014/05",
+						           135,
+						           120,
+						           150,
+						           140,
+						           150
+						         ],
+						         [
+						           "2014/06",
+						           135,
+						           120,
+						           150,
+						           140,
+						           150
+						         ],
+						         [
+						           "2014/07",
+						           135,
+						           120,
+						           150,
+						           140,
+						           150
+						         ],
+						         [
+						           "2014/08",
+						           135,
+						           120,
+						           150,
+						           140,
+						           150
+						         ],
+						         [
+						           "2014/09",
+						           135,
+						           120,
+						           150,
+						           140,
+						           150
+						         ],
+						         [
+						           "2014/10",
+						           135,
+						           120,
+						           150,
+						           140,
+						           150
+						         ]
+						       ]
+						     };
+					var fact_count = (report.dataSet.fact == this.metadata.objects.processInstance.facts.count.id);
+					var indData;
+					if(report.layout.table.preview){
+						//data = countCumulantsCol;
+						inData = countgroupbyCumulantsCol;
+					
+	                    if(fact_count){
+	                    	inData = countCumulantsCol;
+	                 	   if(report.dataSet.groupBy == 'activityName'){
+	                 		  inData = countgroupbyCumulantsCol;   
+	                 	   }
+	                    }else{
+	                    	inData = nonCountCumulantsCol;
+	                 	   if(report.dataSet.groupBy == 'activityName'){
+	                 		  inData = nonCountGroupbyCumulantsCol;   
+	                 	   }
+	                    }
+					}
+					return inData;
+            };
+            
 			}
 		});
