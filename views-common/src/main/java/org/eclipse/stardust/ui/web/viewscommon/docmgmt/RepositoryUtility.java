@@ -557,8 +557,8 @@ public class RepositoryUtility
       expandTree(parentNode);
       parentNode.setAllowsChildren(true);
       RepositoryFolderUserObject parentUserObject = (RepositoryFolderUserObject) parentNode.getUserObject();
-      DefaultMutableTreeNode subNode = createFolderNode(DocumentMgmtUtility.createFolder(parentUserObject.getFolder()
-            .getPath(), folderName));
+      DefaultMutableTreeNode subNode = createFolderNode(DocumentMgmtUtility.createFolder(
+            RepositoryIdUtils.addRepositoryId("/", parentUserObject.getResource().getRepositoryId()), folderName));
       parentNode.add(subNode);
       RepositoryFolderUserObject repositoryFolderUserObject = (RepositoryFolderUserObject) subNode.getUserObject();
       //repositoryFolderUserObject.renameStart();
