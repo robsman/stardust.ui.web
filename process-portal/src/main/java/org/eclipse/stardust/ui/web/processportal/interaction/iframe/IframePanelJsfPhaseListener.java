@@ -175,6 +175,12 @@ public class IframePanelJsfPhaseListener implements PhaseListener
                               JavascriptContext.addJavascriptCall(facesContext, "confirmIppAiClosePanelCommand('"
                                     + panelCommand + "');");
                            }
+                           else if (isTrinidadPage(facesContext))
+                           {
+                              // confirm completion of AI panel command
+                              IframePanelUtils.addJavaScriptCallForTrinidadContext(facesContext,
+                                    "confirmIppAiClosePanelCommand('" + panelCommand + "');");
+                           }
                            else
                            {
                               trace.error("FacesContext other than ICEfaces is not supported...", new Throwable());
@@ -272,14 +278,37 @@ public class IframePanelJsfPhaseListener implements PhaseListener
       boolean ret = false;
       if (null != viewRoot)
       {
-         ret = viewRoot.getViewId().startsWith("/plugins/common")
+         if (!viewRoot.getViewId().startsWith(FaceletPanelInteractionController.VIEW_ID_NON_IFACE_FACELET_CONTAINER))
+         {
+            ret = viewRoot.getViewId().startsWith("/plugins/common")
                || viewRoot.getViewId().startsWith("/plugins/admin-portal")
                || viewRoot.getViewId().startsWith("/plugins/business-control-center")
                || viewRoot.getViewId().startsWith("/plugins/processportal")
                || viewRoot.getViewId().startsWith("/plugins/views-common");
+         }
       }
 
       return ret;
+   }
+   
+   /**
+    * @param facesContext
+    * @return
+    */
+   private boolean isTrinidadPage(final FacesContext facesContext)
+   {
+      UIViewRoot viewRoot = facesContext.getViewRoot();
+
+      boolean ret = false;
+      if (null != viewRoot)
+      {
+         if (viewRoot.getViewId().startsWith(FaceletPanelInteractionController.VIEW_ID_NON_IFACE_FACELET_CONTAINER))
+         {
+            ret = true;
+         }
+      }
+      
+      return ret; 
    }
 
    /**

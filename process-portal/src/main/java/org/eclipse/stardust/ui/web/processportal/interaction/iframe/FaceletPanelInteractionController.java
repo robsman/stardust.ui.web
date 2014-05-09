@@ -247,8 +247,7 @@ public class FaceletPanelInteractionController implements IActivityInteractionCo
             sessionMap.put(IframePanelConstants.KEY_VIEW_ID,
                   VIEW_ID_NON_IFACE_FACELET_CONTAINER);
          }
-
-         System.out.println("************************ HERE1 **********************");
+         
          JavascriptContext.addJavascriptCall(facesContext,
                "parent.InfinityBpm.ProcessPortal.sendCloseCommandToExternalWebApp('"
                      + getContentFrameId(ai) + "', '" + scenario.getId() + "');");

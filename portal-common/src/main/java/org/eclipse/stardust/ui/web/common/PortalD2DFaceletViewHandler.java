@@ -13,6 +13,7 @@ package org.eclipse.stardust.ui.web.common;
 import java.io.IOException;
 
 import javax.faces.FacesException;
+import javax.faces.application.ViewHandler;
 import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
@@ -24,6 +25,7 @@ import com.icesoft.faces.facelets.D2DFaceletViewHandler;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.app.InternalErrorHandler;
+import org.eclipse.stardust.ui.web.jsf.icefaces.IceFacesUtils;
 
 /**
  * @author Subodh.Godbole
@@ -34,9 +36,38 @@ public class PortalD2DFaceletViewHandler extends D2DFaceletViewHandler
 {
    private static final Logger logger = LogManager.getLogger(PortalD2DFaceletViewHandler.class);
 
+   /**
+    * 
+    */
    public PortalD2DFaceletViewHandler()
    {
       super();
+   }
+
+   /**
+    * @param delegate
+    */
+   public PortalD2DFaceletViewHandler(ViewHandler delegate)
+   {
+      super(delegate);
+   }
+
+   @Override
+   public String calculateRenderKitId(FacesContext context)
+   {
+      String kitId;
+
+      if (IceFacesUtils.isIceFaces(context))
+      {
+         kitId = super.calculateRenderKitId(context);
+      }
+      else
+      {
+         // ID as per http://myfaces.apache.org/trinidad/installation.html
+         kitId = "org.apache.myfaces.trinidad.core";
+      }
+
+      return kitId;
    }
 
    @Override
