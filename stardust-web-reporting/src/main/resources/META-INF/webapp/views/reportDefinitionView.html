@@ -492,8 +492,7 @@ table.formTable td {
                                              <td valign="top"><select
                                                 ng-model="x.dimension"
                                                 ng-change="onFilterDimensionChange(x.index)"
-                                                ng-init="x.dimension = x.dimension || getPrimaryObjectEnum()[0].id"
-                                                ng-options="y.id as y.name group by primaryObjectEnumGroup(y.id) for y in getPrimaryObjectEnum()">
+                                                ng-options="y.id as y.name group by primaryObjectEnumGroup(y.id) for y in getPrimaryObjectEnumByGroup() | orderBy:['order','name']">
                                              </select>
                                              </td>
                                           </tr>
@@ -831,7 +830,11 @@ table.formTable td {
 												<tr>
 													<td><label style="width: 250px;">{{getI18N('reporting.definitionView.groupBy.label')}}</label></td>
 													<td><select id="groupBySelect"
-														ng-model="report.dataSet.groupBy">
+														ng-model="report.dataSet.groupBy"
+                                          ng-options="dimension.id as dimension.name group by primaryObjectEnumGroup(dimension.id) 
+                                                         for dimension in populateGroupBy() | orderBy:['order','name']"
+                                          ng-change="changeGroupBy()">
+                                          <option value="">None</option>  
 													</select></td>
 												</tr>
 											</table>
@@ -1299,7 +1302,7 @@ table.formTable td {
                            <div class="dynamicTable"></div>
                         </div>
                      </div>
-                     <div ng-show="report.layout.subType == reportingService.metadata.layoutSubTypes.chart.id">
+                     <div ng-show="report.dataSet.type == 'seriesGroup' && report.layout.subType == reportingService.metadata.layoutSubTypes.chart.id">
 								<div class="heading">{{getI18N('reporting.definitionView.chart.title')}}</div>
 								<table>
 									<tr>

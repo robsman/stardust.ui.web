@@ -345,14 +345,6 @@ define(
 								self.updateView();
 							});
 
-							jQuery("#groupBySelect")
-							.change(
-								function () {
-								self.report.dataSet.groupBy = jQuery(
-										this).val();
-								self.populateChartTypes();
-							});
-
 							jQuery("#propertiesTabs")
 							.tabs({
 								beforeActivate : function (
@@ -418,9 +410,7 @@ define(
 										self.getNextExecutionDate();
 									}, true);
 								});
-
-								jQuery("#groupBySelect").val(self.report.dataSet.groupBy);
-								
+			
 								self.factSelect.val(self.report.dataSet.fact);
 								
 								self.updateView();
@@ -675,6 +665,20 @@ define(
 					
 					return enumerators;
 				};
+				
+				/**
+             * Adding order parameter to dimension object used in Filtering for displaying 
+             * it on UI in specific order
+             */
+            ReportDefinitionController.prototype.getPrimaryObjectEnumByGroup = function() {
+               var dimensions = this.getPrimaryObjectEnum();
+               for ( var dimension in dimensions)
+               {
+                  var group = this.primaryObjectEnumGroup(dimensions[dimension].id);
+                  dimensions[dimension].order = this.getDimensionsDisplayOrder(dimensions[dimension].id); 
+               }
+               return dimensions
+            };
 				
 				ReportDefinitionController.prototype.getAvailableCumulantsEnum = function() {
 					var cumulants = this.reportingService.metadata.cumulants;
@@ -1278,7 +1282,6 @@ define(
 
 					this.populatelayoutSubTypes();
 					//this.populateChartTypes();
-					this.populateGroupBy();
 					
 					this.populateCumulantsDisplay();
 					
@@ -1343,6 +1346,14 @@ define(
 
 					this.updateView();
 				};
+				
+				/**
+             * 
+             */
+            ReportDefinitionController.prototype.changeGroupBy = function() {
+               this.populateChartTypes();
+               this.updateView();
+            };
 
 				/**
 				 * 
@@ -1658,24 +1669,27 @@ define(
 				 * 
 				 */
 				ReportDefinitionController.prototype.populateGroupBy = function() {
-					var groupBySelect = jQuery("#groupBySelect");
+					
+				   var dimensions = []; 
+				   
+               for ( var i in this.getPrimaryObject().dimensions) {
+                  var dimension = this.getPrimaryObject().dimensions[i];
 
-					groupBySelect.empty();
-
-					groupBySelect
-							.append("<option style='font-style: italic;'>None</option>"); // TODO
-					// I18N
-
-					for ( var i in this.getPrimaryObject().dimensions) {
-						var dimension = this.getPrimaryObject().dimensions[i];
-
-						// Only discrete types can be used as group criteria
-						if (this.reportingService
-								.isDiscreteType(dimension.type)) {
-							groupBySelect.append("<option value='" + i + "'>"
-									+ dimension.name + "</option>");
-						}
-					}
+                  // Only discrete types can be used as group criteria
+                  if (this.reportingService
+                        .isDiscreteType(dimension.type)) {
+                     dimensions.push(dimension);
+                  }
+               }
+               
+               //Adding oredr property which is used for sorting in UI
+               for ( var dimension in dimensions)
+               {
+                  var group = this.primaryObjectEnumGroup(dimensions[dimension].id);
+                  dimensions[dimension].order = this.getDimensionsDisplayOrder(dimensions[dimension].id); 
+               }
+               
+					return dimensions;
 				};
 
 				ReportDefinitionController.prototype.populatelayoutSubTypes = function() {
@@ -1937,8 +1951,22 @@ define(
 					} else if (id.indexOf("filters.") >= 0) {
 						var path = id.split(".");
 
-						if (this.getFilterByDimension(path[1])) {
-							return this.getFilterByDimension(path[1]).value;
+						var dimension = this.getDimension(this.getFilterByDimension(path[1]).dimension);
+						if (dimension.type.id == this.reportingService.metadata.timestampType.id) {
+						   if (path[2] === "from")
+                     {
+                        return this.getFilterByDimension(path[1]).value.from;
+                     } else if (path[2] === "to") {
+                        return this.getFilterByDimension(path[1]).value.to;
+                     } else if (path[2] === "duration") {
+                        return this.getFilterByDimension(path[1]).value.duration;
+                     } else if (path[2] === "durationUnit") {
+                        return this.getFilterByDimension(path[1]).value.durationUnit;
+                     }
+						   return this.getFilterByDimension(path[1]).value.path[2];
+						} else
+						{
+						   return this.getFilterByDimension(path[1]).value;
 						}
 						return null;
 					}
