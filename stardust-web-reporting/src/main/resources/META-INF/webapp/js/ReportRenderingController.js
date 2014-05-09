@@ -325,6 +325,33 @@ define(
 				};
 
 				/**
+				 * perform ui controlled I18n
+				 */
+				ReportRenderingController.prototype.performUII18n = function(inData, report){
+					var primaryObject = this.reportingService.metadata.objects[report.dataSet.primaryObject];
+					var dimension = primaryObject.dimensions[report.dataSet.groupBy];
+
+					if (dimension) {
+						var qualifier = dimension.enumerationType.split(":");
+						var enums = this.reportingService.getEnumerators2(qualifier[0], qualifier[1]);
+						if(!enums){
+							return;
+						}
+						Object.keys(inData).forEach(function(key) {
+							for ( var item in enums)
+	                          {
+	                             if (enums[item].id == key)
+	                             {
+	                            	 inData[enums[item].name] = inData[key];
+	                                 delete inData[key];
+	                                break;
+	                             }
+	                          }
+						});
+					}
+				};
+				
+				/**
 				 * 
 				 */
 				ReportRenderingController.prototype.createChart = function() {
@@ -338,6 +365,9 @@ define(
 							.done(
 									function(inData) {
 										var fact_count = (self.report.dataSet.fact == self.reportingService.metadata.objects.processInstance.facts.count.id);
+										
+										//apply ui terminologies
+										self.performUII18n(inData, self.report);
 										
 										//Transform data values for Candlestick chart
 										if (self.report.layout.chart.type === self.reportingService.metadata.chartTypes.candlestickChart.id) {

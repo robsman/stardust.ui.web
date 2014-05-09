@@ -791,6 +791,9 @@ define(
 				 * 
 				 */
 				ReportDefinitionController.prototype.refreshPreview1 = function(data) {
+					   //apply ui terminologies
+					   this.renderingController.performUII18n(data, this.report);	
+					
                        self= this;
                        var configurations = self.getCumulantsTableConfig();
                        var disableSorting = configurations.disableSorting;

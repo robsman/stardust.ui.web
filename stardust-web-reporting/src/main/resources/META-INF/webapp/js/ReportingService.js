@@ -503,7 +503,7 @@ define(
 				};
 
 				ReportingService.prototype.getEnumerators2 = function(type,
-						scope, property) {
+						scope) {
 					var enumerators = [];
 
 					for ( var n in this[type][scope]) {
@@ -1616,6 +1616,16 @@ define(
 						         ]
 						       ]
 						     };
+				
+					var priority_example = {
+						    				 "-1" : [["2014/05/08",88],
+						    				       	["2014/05/09",76]],
+						    				 "0" :[["2014/05/08",48],
+						    				   	   ["2014/05/09",56]],
+					                         "1" : [["2014/05/08",28],
+						                             ["2014/05/09",96]]      
+											};
+				
 					var fact_count = (report.dataSet.fact == this.metadata.objects.processInstance.facts.count.id);
 					var indData;
 					if(report.layout.table.preview){
@@ -1626,6 +1636,8 @@ define(
 	                    	inData = countCumulantsCol;
 	                 	   if(report.dataSet.groupBy == 'activityName'){
 	                 		  inData = countgroupbyCumulantsCol;   
+	                 	   }else if(report.dataSet.groupBy == 'priority'){
+	                 		  inData = priority_example;    
 	                 	   }
 	                    }else{
 	                    	inData = nonCountCumulantsCol;
