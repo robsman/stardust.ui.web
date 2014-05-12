@@ -155,6 +155,8 @@ define(
 															label : "Download", // I18N
 															action : function(
 																	obj) {
+																var path = obj.attr("path")
+																self.reportingService.downloadReportDefinition(path);
 															}
 														},
 														clone : {

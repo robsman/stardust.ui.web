@@ -362,4 +362,39 @@ public class ReportingResource
          return Response.status(Status.FORBIDDEN).build();
       }
    }
+   
+   /**
+    * @param reportId
+    * @param reportName
+    * @return
+    */
+   @GET
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_OCTET_STREAM)
+   @Path("report-definition/download/{reportPath:.*}")
+   public Response downloadReportDefinition(@javax.ws.rs.PathParam("reportPath") String reportPath)
+   {
+      try
+      {
+         String fileName = "";
+         if (reportPath.contains("/"))
+         {
+            fileName = org.eclipse.stardust.ui.web.viewscommon.utils.StringUtils.substringAfterLast(reportPath, "/");
+            reportPath = "/" + reportPath;
+         }
+         else
+         {
+            fileName = org.eclipse.stardust.ui.web.viewscommon.utils.StringUtils.substringAfterLast(reportPath, "\\");
+            reportPath = "\\" + reportPath;
+         }
+
+         return Response.ok(reportingService.downloadReportDefinition(reportPath), MediaType.APPLICATION_OCTET_STREAM)
+               .header("content-disposition", "attachment; filename = \"" + fileName + "\"").build();
+      }
+      catch (Exception e)
+      {
+         trace.debug(e);
+      }
+      return Response.serverError().build();
+   }
 }

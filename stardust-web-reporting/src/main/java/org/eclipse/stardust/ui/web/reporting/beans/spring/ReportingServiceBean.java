@@ -426,6 +426,23 @@ public class ReportingServiceBean
          }
       }
    }
+   
+   /**
+    * @param reportId
+    * @return
+    */
+   public byte[] downloadReportDefinition(String reportId) 
+   {
+      try
+      {
+         return getDocumentManagementService().retrieveDocumentContent(reportId);
+      }
+      catch (Exception e)
+      {
+         trace.error("Exception while Download Report Definition " + e, e);
+      }
+      return null;
+   }
 
    /**
     *

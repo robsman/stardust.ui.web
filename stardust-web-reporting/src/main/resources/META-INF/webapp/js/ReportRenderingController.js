@@ -330,6 +330,14 @@ define(
 				ReportRenderingController.prototype.performUII18n = function(inData, report){
 					var primaryObject = this.reportingService.metadata.objects[report.dataSet.primaryObject];
 					var dimension = primaryObject.dimensions[report.dataSet.groupBy];
+					
+					//if groupby is empty or none
+					if(!dimension){
+						Object.keys(inData).forEach(function(key) {
+							inData[primaryObject.name] = inData[key];
+	                        delete inData[key];	
+						});
+					}
 
 					if (dimension) {
 						var qualifier = dimension.enumerationType.split(":");

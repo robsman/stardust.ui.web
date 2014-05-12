@@ -1074,7 +1074,7 @@ define(
                          var topheaders = tableArray[0];
                          tableArray = tableArray.splice(1);
 
-                         var headers2 = "";
+                         var topHeaders = "";
 
                          if (dimensionAsRow) {
                            var topHeaderArr = [];
@@ -1092,12 +1092,12 @@ define(
                            }
                          } else {
                            for (i = 0; i < topheaders.length - 1; i = i + 2) {
-                             headers2 += "<th colspan=" + topheaders[i + 1] + ">" + topheaders[i] + "</th>";
+                             topHeaders += "<th colspan=" + topheaders[i + 1] + ">" + topheaders[i] + "</th>";
                            }
                          }
 
                          if (!dimensionAsRow) {
-                           TEMPLATE_COPY = TEMPLATE_COPY.replace("_TOPHEADERS_", headers2);
+                           TEMPLATE_COPY = TEMPLATE_COPY.replace("_TOPHEADERS_", topHeaders);
                          }
                        }
 

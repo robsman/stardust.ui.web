@@ -157,7 +157,7 @@ define(
 				this.metadata.objects = {
 					processInstance : {
 						id : "processInstance",
-						name : "Process Instances",
+						name : this.getI18N("reporting.definitionView.processInstances.label"),
 						supportsDescriptors : true,
 						facts : {
 							count : {
@@ -227,7 +227,7 @@ define(
 					},
 					activityInstance : {
 						id : "activityInstance",
-						name : "Activity Instances",
+						name : this.getI18N("reporting.definitionView.activityInstances.label"),
 						supportsDescriptors : true,
 						facts : {
 							count : {
@@ -618,6 +618,19 @@ define(
 
 					return deferred.promise();
 				};
+				
+				/**
+				 * 
+				 */
+				ReportingService.prototype.downloadReportDefinition = function(reportPath) {
+					var deferred = jQuery.Deferred();
+					window.location = this.getRootUrl() 
+						+ "/services/rest/bpm-reporting/report-definition" + "/download" + reportPath;
+					deferred.resolve();
+					
+					return deferred.promise();
+				};
+				
 				
 				ReportingService.prototype.search = function(serviceName, searchValue) {
 					var deferred = jQuery.Deferred();
