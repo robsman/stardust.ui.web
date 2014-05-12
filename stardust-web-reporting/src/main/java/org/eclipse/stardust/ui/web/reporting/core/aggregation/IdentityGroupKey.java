@@ -10,10 +10,9 @@
 *******************************************************************************/
 package org.eclipse.stardust.ui.web.reporting.core.aggregation;
 
-public class ValueGroupKey<T> extends AbstractGroupKey<T>
+public class IdentityGroupKey<T> extends AbstractGroupKey<T>
 {
-   private StringBuffer internalKeyBuffer = new StringBuffer();
-   public ValueGroupKey(T criteriaEntity)
+   public IdentityGroupKey(T criteriaEntity)
    {
       super(criteriaEntity);
    }
@@ -21,12 +20,18 @@ public class ValueGroupKey<T> extends AbstractGroupKey<T>
    @Override
    public void addCriteria(Object criteria)
    {
-      internalKeyBuffer.append(criteria);
+
    }
 
    @Override
    protected String getInternalKey()
    {
-      return internalKeyBuffer.toString();
+      T criteriaEntitiy = getCriteriaEntitiy();
+      if(criteriaEntitiy != null)
+      {
+         return new Integer(criteriaEntitiy.hashCode()).toString();
+      }
+
+      return null;
    }
 }

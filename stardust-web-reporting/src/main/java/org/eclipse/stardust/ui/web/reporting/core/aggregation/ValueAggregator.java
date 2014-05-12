@@ -26,7 +26,7 @@ public class ValueAggregator<T>
 {
    private AbstractQueryResult<T> results;
    private AbstractColumnHandlerRegistry<T, ? extends Query> handlerRegistry;
-   private Map<ValueGroupKey<T>, ValueGroup<T>> aggregationMap;
+   private Map<AbstractGroupKey<T>, ValueGroup<T>> aggregationMap;
    private QueryService queryService;
    private List<GroupColumn> groupColumns;
 
@@ -40,22 +40,22 @@ public class ValueAggregator<T>
       this.groupColumns = groupColumns;
       this.handlerRegistry = handlerRegistry;
       this.results = results;
-      this.aggregationMap = new HashMap<ValueGroupKey<T>, ValueGroup<T>>();
+      this.aggregationMap = new HashMap<AbstractGroupKey<T>, ValueGroup<T>>();
    }
 
-   public Map<ValueGroupKey<T>, ValueGroup<T>> aggregate()
+   public Map<AbstractGroupKey<T>, ValueGroup<T>> aggregate()
    {
       HandlerContext ctx = new HandlerContext(queryService, results.size());
       for(T result: results)
       {
-         ValueGroupKey<T> groupKey = new ValueGroupKey<T>(result);
+         AbstractGroupKey<T> groupKey = getGroupKey(result);
          for(GroupColumn gc: groupColumns)
          {
             IColumnHandler< ? , T, ? extends Query>
                columnHandler = handlerRegistry.getColumnHandler(gc);
             //set context data
             ctx.setColumn(gc);
-            groupKey.addKeyCriteria(columnHandler.provideGroupingCriteria(ctx, result));
+            groupKey.addCriteria(columnHandler.provideGroupingCriteria(ctx, result));
          }
 
          ValueGroup<T> valueGroup = aggregationMap.get(groupKey);
@@ -69,5 +69,15 @@ public class ValueAggregator<T>
       }
 
       return aggregationMap;
+   }
+
+   private AbstractGroupKey<T> getGroupKey(T criteriaEntity)
+   {
+      if(this.groupColumns.isEmpty())
+      {
+         return new IdentityGroupKey<T>(criteriaEntity);
+      }
+
+      return new ValueGroupKey<T>(criteriaEntity);
    }
 }

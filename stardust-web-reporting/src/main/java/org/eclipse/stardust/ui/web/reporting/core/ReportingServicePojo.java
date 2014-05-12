@@ -29,9 +29,9 @@ import org.eclipse.stardust.ui.web.reporting.core.Constants.DataSetType;
 import org.eclipse.stardust.ui.web.reporting.core.Constants.FactField;
 import org.eclipse.stardust.ui.web.reporting.core.Constants.QueryType;
 import org.eclipse.stardust.ui.web.reporting.core.Constants.TimeUnit;
+import org.eclipse.stardust.ui.web.reporting.core.aggregation.AbstractGroupKey;
 import org.eclipse.stardust.ui.web.reporting.core.aggregation.ValueAggregator;
 import org.eclipse.stardust.ui.web.reporting.core.aggregation.ValueGroup;
-import org.eclipse.stardust.ui.web.reporting.core.aggregation.ValueGroupKey;
 import org.eclipse.stardust.ui.web.reporting.core.aggregation.functions.*;
 import org.eclipse.stardust.ui.web.reporting.core.handler.*;
 import org.eclipse.stardust.ui.web.reporting.core.handler.activity.AiColumnHandlerRegistry;
@@ -193,22 +193,22 @@ public class ReportingServicePojo
          groupColumns.add(groupByColumn);
       }
 
-      //according to ui team - dimension is always grouped but will not result in an own series
-      //it should do result, to be consequent and to be able to treat them generic
-      groupColumns.add(new GroupColumn(dimensionId, dimensionInterval));
-
-      //aggregate the values base on the grouping criteria
-      ValueAggregator<T> aggregator
-         = new ValueAggregator<T>(queryService, results, groupColumns, handlerRegistry);
-      Map<ValueGroupKey<T>, ValueGroup<T>> aggregateResults
-         = aggregator.aggregate();
-
+      final ValueAggregator<T> aggregator;
+      final Map<AbstractGroupKey<T>, ValueGroup<T>> aggregateResults;
       switch (dataSetType)
       {
          case SERIESGROUP:
+            //according to ui team - dimension is always grouped but will not result in an own series
+            //it should do result, to be consequent and to be able to treat them generic
+            groupColumns.add(new GroupColumn(dimensionId, dimensionInterval));
+
+            //aggregate the values base on the grouping criteria
+            aggregator= new ValueAggregator<T>(queryService, results, groupColumns, handlerRegistry);
+            aggregateResults = aggregator.aggregate();
+
             SeriesDataBuilder sdb = new SeriesDataBuilder();
             //get the results and also apply the aggregate functions
-            for(ValueGroupKey<T> groupKey: aggregateResults.keySet())
+            for(AbstractGroupKey<T> groupKey: aggregateResults.keySet())
             {
                T groupEntitiy
                   = groupKey.getCriteriaEntitiy();
@@ -279,10 +279,14 @@ public class ReportingServicePojo
                requestedColumns.add(new RequestColumn(s));
             }
 
+            //aggregate the values base on the grouping criteria
+            aggregator= new ValueAggregator<T>(queryService, results, groupColumns, handlerRegistry);
+            aggregateResults = aggregator.aggregate();
+
             RecordSetDataBuilder responseBuilder
                = new RecordSetDataBuilder(requestedColumns);
             HandlerContext ctx = new HandlerContext(queryService, results.size());
-            for(ValueGroupKey<T> groupKey: aggregateResults.keySet())
+            for(AbstractGroupKey<T> groupKey: aggregateResults.keySet())
             {
                T groupEntitiy = groupKey.getCriteriaEntitiy();
                for (RequestColumn requestedColumn : requestedColumns)
