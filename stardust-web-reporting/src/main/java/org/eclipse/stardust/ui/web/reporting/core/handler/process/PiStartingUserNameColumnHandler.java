@@ -15,6 +15,7 @@ import java.sql.SQLException;
 
 import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
+import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.reporting.common.mapping.request.ReportFilter;
 import org.eclipse.stardust.ui.web.reporting.core.DataField;
 import org.eclipse.stardust.ui.web.reporting.core.Constants.PiDimensionField;
@@ -32,7 +33,13 @@ public class PiStartingUserNameColumnHandler extends PiColumnHandler<String>
    @Override
    public String provideObjectValue(HandlerContext context, ProcessInstance t)
    {
-      return t.getStartingUser().getName();
+      User startingUser = t.getStartingUser();
+      if(startingUser != null)
+      {
+         return startingUser.getName();
+      }
+
+      return null;
    }
 
    @Override
