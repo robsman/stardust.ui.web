@@ -113,6 +113,7 @@ define(
 					this.factSelect = jQuery("#factSelect");
 					this.chartTypeSelect = jQuery("#chartTypeSelect");
 					this.layoutSubTypeSelect = jQuery("#layoutSubTypeSelect");
+					this.dimensionDisplaySelect = jQuery("#dimensionDisplaySelect");
 					this.cumulantsDisplaySelect = jQuery("#cumulantsDisplaySelect");
 					
 					this.editorAnchor = utils.jQuerySelect("#expressionTextDiv").get(0);
@@ -315,6 +316,10 @@ define(
 								self.updateView();
 							});
 
+							self.dimensionDisplaySelect.change(function () {
+								self.report.layout.table.dimensionDisplay = self.dimensionDisplaySelect.val();
+							});
+							
 							self.cumulantsDisplaySelect.change(function () {
 								self.report.layout.table.cumulantsDisplay = self.cumulantsDisplaySelect.val();
 							});
@@ -397,6 +402,7 @@ define(
 								self.layoutSubTypeSelect.val(self.report.layout.subType);
 								jQuery("#layoutSubTypeSelect").change();
 
+								self.dimensionDisplaySelect.val(self.report.layout.table.dimensionDisplay);
 								self.cumulantsDisplaySelect.val(self.report.layout.table.cumulantsDisplay);
 
 								self.chartTypeSelect
@@ -798,12 +804,18 @@ define(
                        var configurations = self.getCumulantsTableConfig();
                        var disableSorting = configurations.disableSorting;
                        var multi_headers = configurations.multi_headers;
+                       var dimensionAsRow = false;
                        var cumulantsAsRow = false;
                        
-                       if(self.report.layout.table.cumulantsDisplay == self.reportingService.metadata.cumulantsDisplay.rows.id){
-                    	   var cumulantsAsRow = true;   
+                       if(self.report.layout.table.dimensionDisplay == self.reportingService.metadata.cumulantsDisplay.rows.id){
+                    	   var dimensionAsRow = true;  
                        }
-                       
+
+                       if(self.report.layout.table.cumulantsDisplay == self.reportingService.metadata.cumulantsDisplay.rows.id){
+                    	   var cumulantsAsRow = true;
+                    	   var dimensionAsRow = true; //TODO:review later
+                       }
+                                              
                        var fact_count = (this.report.dataSet.fact == this.reportingService.metadata.objects.processInstance.facts.count.id);
                        var span = this.report.layout.table.selectedCumulants.length;
                        
@@ -833,32 +845,31 @@ define(
 						  }; 
                          
                          
-                         var cumulatingIntHeader = [];
-                         inputArray.push(cumulatingIntHeader);
+                         var dimensionArray = [];
+                         inputArray.push(dimensionArray);
 
-                         if(!cumulantsAsRow){
-                      	   cumulatingIntHeader.push('', 1);   
+                         if(!dimensionAsRow){
+                      	   dimensionArray.push('', 1);   
                          }
-                         
-                         var cumulatingIntHeaderComplete = false;
 
-                         var groupByArray = [];
-                         inputArray.push(groupByArray);
-                         groupByArray.push("");
+                         var seriesArray = [];
+                         inputArray.push(seriesArray);
+                         seriesArray.push("");
+                         
+                         var dimensionArrayComplete = false;
 
                          for (var prop in data) {
-                           var groupbyIndex = 0;
+                           var dimensionIndex = 0;
 
                            for (var j = 0; j < data[prop].length; j++) {
 
-                             var inputArrayIndex = 2 + groupbyIndex++ * span;
+                             var inputArrayIndex = 2 + dimensionIndex++ * span;
 
                              //prepare header1: cumulating interval header
-                             if (!cumulatingIntHeaderComplete) {
-                               cumulatingIntHeader.push(data[prop][j][0]);
-                               cumulatingIntHeader.push(span);
+                             if (!dimensionArrayComplete) {
+                               dimensionArray.push(data[prop][j][0]);
+                               dimensionArray.push(span);
 
-                               //if fact != count
                                for(var i in this.report.layout.table.selectedCumulants){
                             	   inputArray.push([CUMULANTS_MSG[this.report.layout.table.selectedCumulants[i]]]);
                                }
@@ -870,19 +881,19 @@ define(
                              }  
                            }
 
-                           cumulatingIntHeaderComplete = true;
+                           dimensionArrayComplete = true;
 
                            //if groupby is selected
                            //prepare groupby header
-                           groupByArray.push(prop);
+                           seriesArray.push(prop);
                          }
 
                          //if display total is selected
                          if(this.report.layout.table.displayTotals){
-	                         var total_cols = groupByArray.length - 1;
-	                         if (groupByArray.length > 2) {
+	                         var total_cols = seriesArray.length - 1;
+	                         if (seriesArray.length > 2) {
 	                           inputArray[1].push("Total");
-	                           total_cols = groupByArray.length - 2;
+	                           total_cols = seriesArray.length - 2;
 	                         }
 	
 	                         //inputArray.push(["Total"]);
@@ -900,7 +911,7 @@ define(
 									inputArray[inputArray.length - 1][j] += inputArray[i][j];
 								}
 	
-								if (groupByArray.length > 2) {
+								if (seriesArray.length > 2) {
 									inputArray[i].push(sum);
 								}
 							}
@@ -911,42 +922,40 @@ define(
 								sum += inputArray[i][inputArray[i].length-1];
 							}
 							inputArray[inputArray.length-1].push(sum);
-	                         
-	                         
                        }  
 
                        } else { // fact is count
-                         var groupByArray = [];
-                         inputArray.push(groupByArray);
-                         groupByArray.push("");
+                         var seriesArray = [];
+                         inputArray.push(seriesArray);
+                         seriesArray.push("");
 
-                         var cumulatingIntHeaderComplete = false;
+                         var dimensionArrayComplete = false;
 
-                         var groupbyIndex = 0;
+                         var seriesIndex = 0;
 
                          for (var prop in data) {
 
                            for (var j = 0; j < data[prop].length; j++) {
 
-                             if (!cumulatingIntHeaderComplete) {
+                             if (!dimensionArrayComplete) {
                                inputArray.push([data[prop][j][0]]);
                              }
 
                              inputArray[j + 1].push(data[prop][j][1]);
                            }
 
-                           cumulatingIntHeaderComplete = true;
+                           dimensionArrayComplete = true;
 
-                           groupByArray.push(prop);
-                           groupbyIndex++;
+                           seriesArray.push(prop);
+                           seriesIndex++;
                          }
 
                          //if display total is selected
                          if(this.report.layout.table.displayTotals){
-	                         var total_cols = groupByArray.length - 1;
-	                         if (groupbyIndex > 1) {
+	                         var total_cols = seriesArray.length - 1;
+	                         if (seriesIndex > 1) {
 	                           inputArray[0].push("Total");
-	                           total_cols = groupByArray.length - 2;
+	                           total_cols = seriesArray.length - 2;
 	                         }
 	
 	                         inputArray.push(["Total"]);
@@ -964,7 +973,7 @@ define(
 									inputArray[inputArray.length - 1][j] += inputArray[i][j];
 								}
 	
-								if (groupbyIndex > 1) {
+								if (seriesIndex > 1) {
 									inputArray[i].push(sum);
 								}
 							}
@@ -1046,7 +1055,7 @@ define(
                        var options = [];
 
                        if (multi_headers) {
-                         if (!cumulantsAsRow) {
+                         if (!dimensionAsRow) {
                            TEMPLATE = "<table cellpadding=\"0\" cellspacing=\"0\" class=\"dataTable\"><thead><tr>_TOPHEADERS_</tr></thead><thead><tr>_HEADERS_</tr></thead><tbody><tr options=_OPTIONS_ sd-table-data=\"row in rows\">_COLUMNS_</tr></tbody></table>";
                          } 
                          else{
@@ -1067,7 +1076,7 @@ define(
 
                          var headers2 = "";
 
-                         if (cumulantsAsRow) {
+                         if (dimensionAsRow) {
                            var topHeaderArr = [];
                            topHeaderArr.push('');
                            for (i = 0; i < topheaders.length - 1; i = i + 2) {
@@ -1087,7 +1096,7 @@ define(
                            }
                          }
 
-                         if (!cumulantsAsRow) {
+                         if (!dimensionAsRow) {
                            TEMPLATE_COPY = TEMPLATE_COPY.replace("_TOPHEADERS_", headers2);
                          }
                        }
@@ -1095,7 +1104,7 @@ define(
                        TEMPLATE_COPY = TEMPLATE_COPY.replace("_OPTIONS_", options);
 
                        //transform the array
-                       if (!cumulantsAsRow) {
+                       if (!dimensionAsRow) {
                     	   
                     	   tableArray = transposeArray(tableArray);
                        }
@@ -1105,7 +1114,7 @@ define(
                        var headers = "";
                        var cols = "";
 
-                       if (multi_headers && cumulantsAsRow) {
+                       if (multi_headers && dimensionAsRow) {
                          //for (i = 0; i < topheaders.length - 1; i = i + 2) {
                            //cols += "<td style=\"font-weight:bold; font-size:small\" rowspan=" + topheaders[i + 1] + ">" + topheaders[i] + "</td>";
                          //}
@@ -1116,7 +1125,7 @@ define(
                          headers += "<th>" + column + "</th>";
                          if (x == 0) {
                            cols += "<td style=\"font-weight:bold; font-size:small\">{{row[" + x + "]}}</td>";
-                         }else if(x == 1 && multi_headers && cumulantsAsRow){
+                         }else if(x == 1 && multi_headers && dimensionAsRow){
                         	 cols += "<td style=\"font-weight:bold; font-size:small\">{{row[" + x + "]}}</td>";
                          }else {
                            cols += "<td style=\"text-align:center\">{{row[" + x + "]}}</td>";
@@ -1285,6 +1294,8 @@ define(
 
 					this.populatelayoutSubTypes();
 					//this.populateChartTypes();
+					
+					this.populateDimensionDisplay();
 					
 					this.populateCumulantsDisplay();
 					
@@ -1704,6 +1715,18 @@ define(
 					
 			        for(var i in layoutSubTypes){
 			            this.layoutSubTypeSelect.append(option.replace("ID", layoutSubTypes[i].id).replace("LABEL", layoutSubTypes[i].name));
+			        }
+				};
+
+				ReportDefinitionController.prototype.populateDimensionDisplay = function() {
+					this.dimensionDisplaySelect.empty();
+
+					var option = "<option value='ID'>LABEL</option>";
+			        
+					var cumulantsDisplay = this.reportingService.metadata.cumulantsDisplay;
+					
+			        for(var i in cumulantsDisplay){
+			            this.dimensionDisplaySelect.append(option.replace("ID", cumulantsDisplay[i].id).replace("LABEL", cumulantsDisplay[i].name));
 			        }
 				};
 
