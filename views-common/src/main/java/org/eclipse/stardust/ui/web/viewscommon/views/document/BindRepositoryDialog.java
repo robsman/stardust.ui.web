@@ -12,6 +12,8 @@ package org.eclipse.stardust.ui.web.viewscommon.views.document;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Hashtable;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -58,6 +60,8 @@ public class BindRepositoryDialog extends PopupUIComponentBean
    private IRepositoryInstanceInfo repositoryInstanceInfo;
    
    private Map<String, Serializable> attributesMap;
+   
+   private List<String> keyList;
 
    private String title;
 
@@ -76,7 +80,8 @@ public class BindRepositoryDialog extends PopupUIComponentBean
             .getRepositoryProviderInfos();
       providerItems = new ArrayList<SelectItem>();
       providerMap = CollectionUtils.newHashMap();
-      attributesMap = CollectionUtils.newHashMap();
+      attributesMap = new Hashtable<String, Serializable>();
+      keyList = CollectionUtils.newArrayList();
       for (IRepositoryProviderInfo iRepositoryProviderInfo : repositoryProviderInfos)
       {
          providerItems.add(new SelectItem(iRepositoryProviderInfo.getProviderId(), iRepositoryProviderInfo
@@ -84,7 +89,15 @@ public class BindRepositoryDialog extends PopupUIComponentBean
          providerMap.put(iRepositoryProviderInfo.getProviderId(), iRepositoryProviderInfo);
       }
       this.repositoryProviderInfo = repositoryProviderInfos.get(0);
+      this.selectedProvider = this.repositoryProviderInfo.getProviderId();
+      updateAttributeMap();
+   }
+
+   private void updateAttributeMap()
+   {
+      attributesMap.clear();
       Map<String, Serializable> objectMap = this.repositoryProviderInfo.getConfigurationTemplate().getAttributes();
+      keyList.clear();
       for (Entry<String, Serializable> obj : objectMap.entrySet())
       {
          if (obj.getKey().equals(IRepositoryConfiguration.PROVIDER_ID)
@@ -94,11 +107,15 @@ public class BindRepositoryDialog extends PopupUIComponentBean
          }
          else
          {
+            keyList.add(obj.getKey());
+            attributesMap.remove(obj.getKey());
             attributesMap.put(obj.getKey(), obj.getValue());
+            
          }
+         
       }
    }
-
+   
    @Override
    public void openPopup()
    {
@@ -145,10 +162,14 @@ public class BindRepositoryDialog extends PopupUIComponentBean
          Map<String, Serializable> attributes = CollectionUtils.newMap();
          attributes.put(IRepositoryConfiguration.PROVIDER_ID, getSelectedProvider());
          attributes.put(IRepositoryConfiguration.REPOSITORY_ID, getRepositoryId());
+         for(Map.Entry<String, Serializable> entry  : attributesMap.entrySet())
+         {
+            if(!IRepositoryConfiguration.PROVIDER_ID.equals(entry.getKey()) || !IRepositoryConfiguration.REPOSITORY_ID.equals(entry.getKey()))
+            {
+               attributes.put(entry.getKey(), entry.getValue());   
+            }
+         }
          attributes.put(JcrVfsRepositoryConfiguration.USER_LEVEL_AUTHORIZATION, true);
-         attributes.put(JcrVfsRepositoryConfiguration.JNDI_NAME,
-               attributesMap.get(JcrVfsRepositoryConfiguration.JNDI_NAME));
-         attributes.put(JcrVfsRepositoryConfiguration.DISABLE_CAPABILITY_VERSIONING, true);
          DocumentMgmtUtility.getDocumentManagementService().bindRepository(
                new JcrVfsRepositoryConfiguration(attributes));
          IRepositoryInstanceInfo repositoryInstanceInfo = getRepositoryInstanceInfo(repositoryId);
@@ -218,6 +239,7 @@ public class BindRepositoryDialog extends PopupUIComponentBean
    {
       this.selectedProvider = selectedProvider;
       this.repositoryProviderInfo = providerMap.get(selectedProvider);
+      updateAttributeMap();
    }
 
    public MessagesViewsCommonBean getCOMMON_MESSAGE_BEAN()
@@ -255,6 +277,11 @@ public class BindRepositoryDialog extends PopupUIComponentBean
       return attributesMap;
    }
 
+   public void setAttributesMap(Map<String, Serializable> attributesMap)
+   {
+      this.attributesMap.clear();
+      this.attributesMap = attributesMap;
+   }
    public boolean isShowProperties()
    {
       return showProperties;
@@ -275,4 +302,14 @@ public class BindRepositoryDialog extends PopupUIComponentBean
       this.title = title;
    }
 
+   public List<String> getKeyList()
+   {
+      return keyList;
+   }
+
+   public void setKeyList(List<String> keyList)
+   {
+      this.keyList = keyList;
+   }
+   
 }

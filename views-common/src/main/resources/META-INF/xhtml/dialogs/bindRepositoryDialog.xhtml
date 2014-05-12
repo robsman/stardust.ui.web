@@ -178,17 +178,17 @@
 									<ice:message for="repositoryId" styleClass="iceMsgInline"
 										rendered="#{bindRepositoryDialogBean.repositoryId == null}" />
 
-									<c:forEach items="#{bindRepositoryDialogBean.attributesMap}"
+									<c:forEach items="#{bindRepositoryDialogBean.keyList}"
 										var="entry">
-										<ice:outputText value="#{entry.key}" />
+										<ice:outputText value="#{entry}" />
 										<ice:panelGroup>
-											<ice:inputText id="key#{entry.key}"
-												value="#{bindRepositoryDialogBean.attributesMap[entry.key]}"
+											<ice:inputText id="key#{entry}"
+												value="#{bindRepositoryDialogBean.attributesMap[entry]}"
 												valueChangeListener="#{bindRepositoryDialogBean.attributeChanged}"
 												partialSubmit="true" required="true" size="30">
-												<f:attribute name="key" value="#{entry.key}" />
+												<f:attribute name="key" value="#{entry}" />
 											</ice:inputText>
-											<ice:message for="key#{entry.key}" styleClass="iceMsgImage"
+											<ice:message for="key#{entry}" styleClass="iceMsgImage"
 												showSummary="false" showDetail="false" />
 										</ice:panelGroup>
 									</c:forEach>
