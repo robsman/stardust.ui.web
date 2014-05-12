@@ -588,6 +588,7 @@ define(
 											y2axis : {}
 										},
 										legend : {
+											show: true,
 											location : "e"
 										},
 										highlighter : {},
