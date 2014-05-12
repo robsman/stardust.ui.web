@@ -73,7 +73,7 @@ public class JsonUtil
          }
          else
          {
-            throw new RuntimeException("Unsupported object type : "+value);
+            return new JsonPrimitive(value.toString());
          }
       }
 

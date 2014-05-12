@@ -19,7 +19,7 @@ import org.eclipse.stardust.ui.web.reporting.core.DataField;
 import org.eclipse.stardust.ui.web.reporting.core.DataField.DataFieldType;
 import org.eclipse.stardust.ui.web.reporting.core.handler.HandlerContext;
 
-public class PiStateColumnHandler extends PiColumnHandler<Integer>
+public class PiStateColumnHandler extends PiColumnHandler<ProcessInstanceState>
 {
    private Map<String, ProcessInstanceState[]> allPiStates;
 
@@ -43,15 +43,15 @@ public class PiStateColumnHandler extends PiColumnHandler<Integer>
    }
 
    @Override
-   public Integer provideResultSetValue(HandlerContext context, ResultSet rs) throws SQLException
+   public ProcessInstanceState provideResultSetValue(HandlerContext context, ResultSet rs) throws SQLException
    {
       return null;
    }
 
    @Override
-   public Integer provideObjectValue(HandlerContext context, ProcessInstance t)
+   public ProcessInstanceState provideObjectValue(HandlerContext context, ProcessInstance t)
    {
-      return t.getState().getValue();
+      return t.getState();
    }
 
    @Override

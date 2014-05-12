@@ -25,7 +25,7 @@ import org.eclipse.stardust.ui.web.reporting.core.DataField;
 import org.eclipse.stardust.ui.web.reporting.core.DataField.DataFieldType;
 import org.eclipse.stardust.ui.web.reporting.core.handler.HandlerContext;
 
-public class AiStateColumnHandler extends AiColumnHandler<Integer>
+public class AiStateColumnHandler extends AiColumnHandler<ActivityInstanceState>
 {
    private Map<String, ActivityInstanceState[]> allAiStates;
 
@@ -52,7 +52,7 @@ public class AiStateColumnHandler extends AiColumnHandler<Integer>
    }
 
    @Override
-   public Integer provideResultSetValue(HandlerContext context, ResultSet rs)
+   public ActivityInstanceState provideResultSetValue(HandlerContext context, ResultSet rs)
          throws SQLException
    {
       // TODO Auto-generated method stub
@@ -60,9 +60,9 @@ public class AiStateColumnHandler extends AiColumnHandler<Integer>
    }
 
    @Override
-   public Integer provideObjectValue(HandlerContext context, ActivityInstance t)
+   public ActivityInstanceState provideObjectValue(HandlerContext context, ActivityInstance t)
    {
-      return t.getState().getValue();
+      return t.getState();
    }
 
    @Override
