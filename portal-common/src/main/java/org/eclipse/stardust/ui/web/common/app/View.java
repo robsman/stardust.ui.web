@@ -29,7 +29,6 @@ import org.eclipse.stardust.ui.web.common.util.CollectionUtils;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 
-import com.icesoft.util.encoding.Base64;
 
 /**
  * @author Robert.Sauer
@@ -75,7 +74,7 @@ public class View extends AbstractUiElement implements TabScopeManager
 
    private String identityUrl;
    
-   private String html5FwViewId = null;
+   private FrameworkViewInfo frameworkViewInfo = null;
 
    /**
     * @param definition
@@ -153,42 +152,7 @@ public class View extends AbstractUiElement implements TabScopeManager
     */
    private void generateHTML5FrameworkId()
    {
-      if (getDefinition() != null)
-      {
-         boolean ext = !getDefinition().getInclude().toLowerCase().endsWith(".html");
-         String viewId;
-         if (ext)
-         {
-            viewId = "Ext/:type/:id";
-         }
-         else
-         {
-            if (StringUtils.isEmpty(getViewKey()))
-            {
-               return;
-            }
-
-            viewId = "Int/" + getDefinition().getName() + "/:id";
-         }
-
-         String typeId = getDefinition().getName();
-         String id = StringUtils.isNotEmpty(getViewKey()) ? getViewKey() : "";
-         // Again Encode id with Bas64 to handle special char ':' in viewKey
-         // ex: {urn:repositoryId:rep1}{jcrUuid}
-         id = Base64.encode(id);
-         
-         if(!StringUtils.isEmpty(typeId) && !typeId.equals("configurationTreeView"))
-         {
-            html5FwViewId = "/bpm/portal/" + viewId;
-            html5FwViewId = StringUtils.replace(html5FwViewId, ":type", typeId);
-            html5FwViewId = StringUtils.replace(html5FwViewId, ":id", id);   
-         }
-         else
-         {
-            html5FwViewId = "/bpm/portal/configurationTreeView";
-         }
-         
-      }
+      frameworkViewInfo = FrameworkViewInfo.generateHTML5FrameworkViewInfo(this);
    }
    
    public static String createURL(ViewDefinition definition, String viewKey)
@@ -721,12 +685,21 @@ public class View extends AbstractUiElement implements TabScopeManager
       return viewKey;
    }
 
-   public String getHtml5FwViewId()
+   public FrameworkViewInfo getHtml5FwViewInfo()
    {
-      if (html5FwViewId == null)
+      if (frameworkViewInfo == null)
       {
          generateHTML5FrameworkId();
       }
-      return html5FwViewId;
+      return frameworkViewInfo;
+   }
+
+   public String getHtml5FwViewId()
+   {
+      if (frameworkViewInfo == null)
+      {
+         generateHTML5FrameworkId();
+      }
+      return frameworkViewInfo.getHtml5FwViewId();
    }
 }

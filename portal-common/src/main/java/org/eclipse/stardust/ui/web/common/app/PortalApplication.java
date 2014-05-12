@@ -57,7 +57,6 @@ import com.icesoft.faces.component.paneltabset.TabChangeEvent;
 import com.icesoft.faces.component.paneltabset.TabChangeListener;
 import com.icesoft.faces.context.effects.JavascriptContext;
 import com.icesoft.faces.webapp.http.servlet.ServletExternalContext;
-import com.icesoft.util.encoding.Base64;
 
 
 /**
@@ -1119,32 +1118,12 @@ public class PortalApplication
     */
    public void processHTML5OpenViewCall(View view, String url, Boolean ext)
    {
-      String viewId = "";
-      if (ext)
-      {
-         viewId = "Ext/:type/:id";
-      }
-      else
-      {
-         if (StringUtils.isEmpty(view.getViewKey()))
-         {
-            return;
-         }
-
-         viewId = "Int/" + view.getDefinition().getName() + "/:id";
-      }
-
-      String typeId = view.getDefinition().getName();
-      String id =  StringUtils.isNotEmpty(view.getViewKey()) ? view.getViewKey() : "all"; // all - As Blank does not work.
-      // Again Encode id with Bas64 to handle special char ':' in viewKey
-      // ex: {urn:repositoryId:repo1}{jcrUuid}
-      id = Base64.encode(id);
-      String html5FWViewId = view.getHtml5FwViewId();
+      FrameworkViewInfo frameworkViewInfo = view.getHtml5FwViewInfo();
       
-      String script = "parent.BridgeUtils.View.openView('" + html5FWViewId + "', '" + viewId
+      String script = "parent.BridgeUtils.View.openView('" + frameworkViewInfo.getHtml5FwViewId() + "', '" + frameworkViewInfo.getViewId()
             + "', {type: '_TYPE_', id: '_ID_', label: '_LABEL_', icon: '_ICON_', url: '_URL_', custom: {_CUSTOM_}});";
-      script = StringUtils.replace(script, "_TYPE_", typeId);
-      script = StringUtils.replace(script, "_ID_", id);
+      script = StringUtils.replace(script, "_TYPE_", frameworkViewInfo.getTypeId());
+      script = StringUtils.replace(script, "_ID_", frameworkViewInfo.getId());
       script = StringUtils.replace(script, "_LABEL_", view.getFullLabel());
       script = StringUtils.replace(script, "_ICON_", deriveIconClass(view.getIcon()));
       script = StringUtils.replace(script, "_URL_", url);
