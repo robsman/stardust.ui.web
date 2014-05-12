@@ -837,9 +837,9 @@ define(
                     	 var PROP_KEY_PREFIX = "reporting.definitionView.layout.table.cumulant.";
                     	 
                     	 var CUMULANTS_MSG = {
-								average : this.getI18N(PROP_KEY_PREFIX + "average"),
+	                			maximum : this.getI18N(PROP_KEY_PREFIX + "maximum"),
+	                			average : this.getI18N(PROP_KEY_PREFIX + "average"),
 								minimum : this.getI18N(PROP_KEY_PREFIX + "minimum"),
-								maximum : this.getI18N(PROP_KEY_PREFIX + "maximum"),
 								stdDeviation : this.getI18N(PROP_KEY_PREFIX + "stdDeviation"),
 								count : this.getI18N(PROP_KEY_PREFIX + "count")
 						  }; 
