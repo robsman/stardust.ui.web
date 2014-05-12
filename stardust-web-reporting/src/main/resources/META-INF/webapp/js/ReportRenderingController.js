@@ -373,19 +373,19 @@ define(
 										if (self.report.layout.chart.type === self.reportingService.metadata.chartTypes.candlestickChart.id) {
 											for(var i in inData){
 												  for(var j in inData[i]){
-													//before swap avg, min, max, stddev, count 
-												    var temp = inData[i][j][1];
-												    inData[i][j][1] = inData[i][j][3];
-												    inData[i][j][3] = temp;
-													//before swap max, min, avg, stddev, count
+													//now max, min, avg													  
 												    inData[i][j].length = 4;
-													//now max, min, avg
 												  }
 											}
 											
 										} else if (!fact_count) {
 											for ( var i in inData) {
 												for ( var j in inData[i]) {
+													//before swap max, min, avg, stddev, count 
+												    var temp = inData[i][j][1];
+												    inData[i][j][1] = inData[i][j][3];
+												    inData[i][j][3] = temp;
+													//after swap avg, min, max, stddev, count
 													inData[i][j].length = 2; //consider only avg value
 												}
 											}

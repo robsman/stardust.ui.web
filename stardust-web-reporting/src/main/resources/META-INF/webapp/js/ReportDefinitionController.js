@@ -827,9 +827,9 @@ define(
 
                     	 //position of cumulants in response json
                     	 var INDEX = {
-								average : 1,
+                    			maximum : 1,
 								minimum : 2,
-								maximum : 3,
+								average : 3,
 								stdDeviation : 4,
 								count : 5
 						  };
