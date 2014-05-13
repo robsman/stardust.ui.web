@@ -427,3 +427,22 @@ table.dataTable tbody tr.odd {
   background-color:#3B5998 !important;
   color:#fff;
 }
+
+/*portal style */
+.breadCrumbsToolbarWrapper {
+	background:url(../images/toolbar-BG-border-bottom.png) center repeat-x;
+	width: 100%;
+	border-spacing: 2px;
+}
+
+.viewToolbar {
+	line-height: 28px;
+	text-align: right;
+}
+
+.toolbarGroupRight {
+	background: url(../images/toolbar-separator.png) left no-repeat;
+	padding-left: 8px;
+	padding-right: 8px;
+	white-space: nowrap;
+}

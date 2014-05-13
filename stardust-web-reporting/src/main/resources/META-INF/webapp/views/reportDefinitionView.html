@@ -30,6 +30,34 @@ table.formTable td {
 	src="../js/libs/require/2.0.5/require.js"></script>
 </head>
 <body>
+	<!-- view specific Toolbar -->
+	<div id="ippViewToolbar">
+		<table class="breadCrumbsToolbarWrapper" cellpadding="0"
+			cellspacing="0">
+			<tbody>
+				<tr>
+					<td style="width: 99%"></td>
+					<td class="toolbarGroupRight"><table cellpadding="0"
+							cellspacing="0">
+							<tbody>
+								<tr>
+									<td><table>
+											<tbody>
+												<tr>
+													<td><a ng-click="saveReport()"><img alt=""
+															src="/idemo/plugins/views-common/images/icons/disk.png"
+															title={{getI18N('reporting.definitionView.save.label')}}></a></td>
+												</tr>
+											</tbody>
+										</table></td>
+								</tr>
+							</tbody>
+						</table></td>
+					<td><span id="ippViewToolbarEnd"></span></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
 	<div id="reportDefinitionView" style="visibility: hidden;">
 		<table cellpadding="0" cellspacing="0" class="layoutTable"
 			style="width: 1200px; margin: 10px;">
@@ -1412,14 +1440,6 @@ table.formTable td {
 										</table>
 									</td>
 								</tr>
-								<tr>
-									<td colspan="2">
-										<div>
-											<button ng-click="saveReport()" style="margin-top: 10px;">{{getI18N('reporting.definitionView.saveAsTemplate.label')}}</button>
-										</div>
-									</td>
-								</tr>
-								
 							</table>
 								<div style="color:white">{{report}}</div>
 						</div>
