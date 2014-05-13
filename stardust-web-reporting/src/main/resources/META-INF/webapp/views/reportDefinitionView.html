@@ -1269,7 +1269,7 @@ table.formTable td {
 								<div class="heading">{{getI18N('reporting.definitionView.parameters.title')}}</div>
 								<table class="formTable" style="margin-bottom: 10px;">
 									<tr ng-repeat="parameter in getParameters()">
-										<td><label>{{parameter.name}} (<i>{{parameter.id}}</i>)
+										<td><label title="{{parameter.id}}">{{getParamDisplayName(parameter.name)}}
 										</label></td>
 										<td><input type="text"
 											ng-model="getParameters()[parameter.id].value" sd-datetime

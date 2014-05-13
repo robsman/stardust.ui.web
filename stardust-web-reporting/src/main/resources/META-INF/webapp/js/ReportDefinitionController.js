@@ -2686,10 +2686,10 @@ define(
                  }
               };
               
-              /**
-               * This function will populte the filter variables by loading previously saved filters
-               * 
-               */
+             /**
+                * This function will populte the filter variables by loading previously
+                * saved filters
+                */
              ReportDefinitionController.prototype.loadFilters = function() {
                 if (this.filterSelected.length != this.report.dataSet.filters.length) {
                    for (var item in this.report.dataSet.filters)
@@ -2701,6 +2701,20 @@ define(
                    }
                 }
              };
+             
+             /**
+                * This function will return UI Displayable param name
+                * 
+                */
+            ReportDefinitionController.prototype.getParamDisplayName = function(id) {
+               var pattern = "Filter for";
+                  if (id.indexOf(pattern) >= 0) 
+                  {
+                     return id.substr(pattern.length, id.length);
+                  }
+               return id;
+            };
+             
 
          
           
