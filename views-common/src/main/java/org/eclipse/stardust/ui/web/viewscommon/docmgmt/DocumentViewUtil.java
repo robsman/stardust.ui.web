@@ -29,6 +29,8 @@ import org.eclipse.stardust.ui.web.viewscommon.views.document.FileSystemJCRDocum
 import org.eclipse.stardust.ui.web.viewscommon.views.document.IDocumentContentInfo;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.JCRDocument;
 
+import com.icesoft.util.encoding.Base64;
+
 
 
 /**
@@ -54,6 +56,9 @@ public class DocumentViewUtil
       {
          params.putAll(viewParams);
       }
+      // Again Encode id with Bas64 to handle special char ':' in viewKey
+      // ex: {urn:repositoryId:repo1}{jcrUuid}
+      viewKey = Base64.encode(viewKey);
       return PortalApplication.getInstance().openViewById("documentView", viewKey, params, null, true);
    }
 

@@ -65,10 +65,6 @@ public class FrameworkViewInfo
          typeId = view.getDefinition().getName();
          id = StringUtils.isNotEmpty(view.getViewKey()) ? view.getViewKey() : "all";
          
-         // Again Encode id with Bas64 to handle special char ':' in viewKey
-         // ex: {urn:repositoryId:repo1}{jcrUuid}
-         id = Base64.encode(id);
-
          if(!StringUtils.isEmpty(typeId) && !typeId.equals("configurationTreeView"))
          {
             viewId = "/bpm/portal/" + viewId;
