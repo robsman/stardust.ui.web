@@ -20,6 +20,7 @@ public class AiColumnHandlerRegistry extends AbstractColumnHandlerRegistry<Activ
    public AiColumnHandlerRegistry()
    {
       register(new AiDescriptorColumnHandler());
+      register(new AiComputedColumnHandler());
       register(AiDimensionField.OID.getId() ,new AiOidColumnHandler());
       register(AiDimensionField.PROCESS_OID.getId(), new AiProcessOidColumnHandler());
       register(AiDimensionField.ACTIVITY_NAME.getId(), new AiNameColumnHandler());

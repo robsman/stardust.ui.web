@@ -67,9 +67,6 @@ public abstract class AbstractColumnHandlerRegistry<U, V extends Query>
       throw new RuntimeException(errorMsg.toString());
    }
 
-
-
-
    public IFilterHandler<V> getFilterHandler(V query, RequestColumn column,
          ReportFilter filter)
    {

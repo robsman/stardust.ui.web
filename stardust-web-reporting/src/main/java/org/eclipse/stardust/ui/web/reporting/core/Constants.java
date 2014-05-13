@@ -180,26 +180,33 @@ public class Constants
 
    public enum PiDimensionField
    {
-      OID("processOID"),
-      PRIORITY("priority"),
-      PROCESS_NAME("processName"),
-      START_TIMESTAMP("processInstanceStartTimestamp"),
-      ROOT_START_TIMESTAMP("rootProcessInstanceStartTimestamp"),
-      STARTING_USER_NAME("startingUserName"),
-      TERMINATION_TIMESTAMP("terminationTimestamp"),
-      STATE("state"),
-      DURATION("processInstanceDuration"),
-      ROOT_DURATION("rootProcessInstanceDuration");
+      OID("processOID", true),
+      PRIORITY("priority", true),
+      PROCESS_NAME("processName", true),
+      START_TIMESTAMP("processInstanceStartTimestamp", true),
+      ROOT_START_TIMESTAMP("rootProcessInstanceStartTimestamp", true),
+      STARTING_USER_NAME("startingUserName", true),
+      TERMINATION_TIMESTAMP("terminationTimestamp", true),
+      STATE("state", true),
+      DURATION("processInstanceDuration", false),
+      ROOT_DURATION("rootProcessInstanceDuration", false);
 
       private String id;
-      PiDimensionField(String id)
+      private boolean scriptingVariable;
+      PiDimensionField(String id, boolean scriptingVariable)
       {
          this.id = id;
+         this.scriptingVariable = scriptingVariable;
       }
 
       public String getId()
       {
          return id;
+      }
+
+      public boolean isScriptingVariable()
+      {
+         return scriptingVariable;
       }
 
       public static PiDimensionField parse(String s)
@@ -222,32 +229,38 @@ public class Constants
 
    public enum AiDimensionField
    {
-      OID("activityOID"),
-      PROCESS_OID(PiDimensionField.OID.getId()),
-      START_TIMESTAMP("startTimestamp"),
-      PROCESS_INSTANCE_START_TIMESTAMP(PiDimensionField.START_TIMESTAMP.getId()),
-      PROCESS_INSTANCE_ROOT_START_TIMESTAMP(PiDimensionField.ROOT_START_TIMESTAMP.getId()),
-      LAST_MODIFICATION_TIMESTAMP("lastModificationTimestamp"),
-      ACTIVITY_NAME("activityName"),
-      PROCESS_NAME("processName"),
-      CRITICALITY("criticality"),
-      USER_PERFORMER_NAME("userPerformerName"),
-      PARTICIPANT_PERFORMER_NAME("participantPerformerName"),
-      STATE("state"),
-      DURATION("activityInstanceDuration"),
-      PROCESS_INSTANCE_DURATION(PiDimensionField.DURATION.getId()),
-      PROCESS_INSTANCE_ROOT_DURATION(PiDimensionField.ROOT_DURATION.getId());
-
+      OID("activityOID", true),
+      PROCESS_OID(PiDimensionField.OID.getId(), true),
+      START_TIMESTAMP("startTimestamp", true),
+      PROCESS_INSTANCE_START_TIMESTAMP(PiDimensionField.START_TIMESTAMP.getId(), true),
+      PROCESS_INSTANCE_ROOT_START_TIMESTAMP(PiDimensionField.ROOT_START_TIMESTAMP.getId(), true),
+      LAST_MODIFICATION_TIMESTAMP("lastModificationTimestamp", true),
+      ACTIVITY_NAME("activityName", true),
+      PROCESS_NAME("processName", true),
+      CRITICALITY("criticality", true),
+      USER_PERFORMER_NAME("userPerformerName", true),
+      PARTICIPANT_PERFORMER_NAME("participantPerformerName", true),
+      STATE("state", true),
+      DURATION("activityInstanceDuration", false),
+      PROCESS_INSTANCE_DURATION(PiDimensionField.DURATION.getId(), false),
+      PROCESS_INSTANCE_ROOT_DURATION(PiDimensionField.ROOT_DURATION.getId(), false);
 
       private String id;
-      private AiDimensionField(String id)
+      private boolean scriptingVariable;
+      private AiDimensionField(String id, boolean scriptingVariable)
       {
          this.id = id;
+         this.scriptingVariable = scriptingVariable;
       }
 
       public String getId()
       {
          return id;
+      }
+
+      public boolean isScriptingVariable()
+      {
+         return scriptingVariable;
       }
 
       public static AiDimensionField parse(String s)
