@@ -25,8 +25,10 @@ import org.eclipse.stardust.ui.web.reporting.common.mapping.reponse.SeriesDataBu
 import org.eclipse.stardust.ui.web.reporting.common.mapping.reponse.ValuesArray;
 import org.eclipse.stardust.ui.web.reporting.common.mapping.request.*;
 import org.eclipse.stardust.ui.web.reporting.common.validation.ValidationHelper;
+import org.eclipse.stardust.ui.web.reporting.core.Constants.AiDimensionField;
 import org.eclipse.stardust.ui.web.reporting.core.Constants.DataSetType;
 import org.eclipse.stardust.ui.web.reporting.core.Constants.FactField;
+import org.eclipse.stardust.ui.web.reporting.core.Constants.PiDimensionField;
 import org.eclipse.stardust.ui.web.reporting.core.Constants.QueryType;
 import org.eclipse.stardust.ui.web.reporting.core.Constants.TimeUnit;
 import org.eclipse.stardust.ui.web.reporting.core.aggregation.AbstractGroupKey;
@@ -128,43 +130,6 @@ public class ReportingServicePojo
 
       return response;
    }
-
-   private TimeUnit getTimeUnit(String unit)
-   {
-      if(StringUtils.isNotEmpty(unit))
-      {
-         return TimeUnit.parse(unit);
-      }
-
-      return null;
-   }
-
-   private Interval getDimensionInterval(ReportDataSet dataSet)
-   {
-      Long unitValue
-         = dataSet.getFirstDimensionCumulationIntervalCount();
-
-      if(unitValue != null)
-      {
-         TimeUnit unit = getTimeUnit(dataSet.getFirstDimensionCumulationIntervalUnit());
-         return new Interval(unit, unitValue);
-      }
-
-      return null;
-   }
-
-   private GroupByColumn getGroupByColumn(ReportDataSet dataSet)
-   {
-      String groupBy = dataSet.getGroupBy();
-      if(StringUtils.isNotEmpty(groupBy)
-            && !GROUPING_NOT_SELECTED.equals(groupBy))
-      {
-         return new GroupByColumn(groupBy, null);
-      }
-
-      return null;
-   }
-
    //TODO: Performance optimization :
    //grouping / building response for each group locally instead of building big datastructure.
    //try to implement via in memory database(h2) - was trying this but run out of time
@@ -174,37 +139,19 @@ public class ReportingServicePojo
    {
       DataSetType dataSetType = DataSetType.parse(dataSet.getType());
       QueryType queryType = QueryType.parse(dataSet.getPrimaryObject());
-      String seriesKey = queryType.getId();
+      List<GroupColumn> groupColumns = getGroupColumns(dataSetType, dataSet);
 
-      List<RequestColumn> requestedColumns = new ArrayList<RequestColumn>();
-      List<GroupColumn> groupColumns = new ArrayList<GroupColumn>();
+      //aggregate the values base on the(explicit & implicit) grouping criteria
+      ValueAggregator<T> aggregator = new ValueAggregator<T>(queryService, results, groupColumns, handlerRegistry);
+      Map<AbstractGroupKey<T>, ValueGroup<T>> aggregateResults = aggregator.aggregate();
 
-      TimeUnit factDurationUnit = getTimeUnit(dataSet.getFactDurationUnit());
-      RequestColumn factColumn = new RequestColumn(dataSet.getFact(), factDurationUnit);
-
-      Interval dimensionInterval = getDimensionInterval(dataSet);
-      String dimensionId = dataSet.getFirstDimension();
-
-      //each distinct value for group by will result in an own series
-      //where the distinct value is the key to the series
-      GroupByColumn groupByColumn = getGroupByColumn(dataSet);
-      if(groupByColumn != null)
-      {
-         groupColumns.add(groupByColumn);
-      }
-
-      final ValueAggregator<T> aggregator;
-      final Map<AbstractGroupKey<T>, ValueGroup<T>> aggregateResults;
       switch (dataSetType)
       {
          case SERIESGROUP:
-            //according to ui team - dimension is always grouped but will not result in an own series
-            //it should do result, to be consequent and to be able to treat them generic
-            groupColumns.add(new GroupColumn(dimensionId, dimensionInterval));
+            String seriesKey = queryType.getId();
 
-            //aggregate the values base on the grouping criteria
-            aggregator= new ValueAggregator<T>(queryService, results, groupColumns, handlerRegistry);
-            aggregateResults = aggregator.aggregate();
+            TimeUnit factDurationUnit = getTimeUnit(dataSet.getFactDurationUnit());
+            RequestColumn factColumn = new RequestColumn(dataSet.getFact(), factDurationUnit);
 
             SeriesDataBuilder sdb = new SeriesDataBuilder();
             //get the results and also apply the aggregate functions
@@ -269,27 +216,19 @@ public class ReportingServicePojo
                }
                long count = countFunction.apply(group).longValue();
                seriesValues.addValue(count);
-
                sdb.add(seriesKey, seriesValues);
             }
             return sdb.getResult();
          case RECORDSET:
-            for (String s : dataSet.getColumns())
-            {
-               requestedColumns.add(new RequestColumn(s));
-            }
-
-            //aggregate the values base on the grouping criteria
-            aggregator= new ValueAggregator<T>(queryService, results, groupColumns, handlerRegistry);
-            aggregateResults = aggregator.aggregate();
+            List<RequestColumn> requestColumns = getRequestColumns(dataSetType, dataSet);
 
             RecordSetDataBuilder responseBuilder
-               = new RecordSetDataBuilder(requestedColumns);
+               = new RecordSetDataBuilder(requestColumns);
             HandlerContext ctx = new HandlerContext(queryService, results.size());
             for(AbstractGroupKey<T> groupKey: aggregateResults.keySet())
             {
                T groupEntitiy = groupKey.getCriteriaEntitiy();
-               for (RequestColumn requestedColumn : requestedColumns)
+               for (RequestColumn requestedColumn : requestColumns)
                {
                   ctx.setColumn(requestedColumn);
                   IPropertyValueProvider< ? , T> mappingHandler = handlerRegistry
@@ -303,6 +242,151 @@ public class ReportingServicePojo
          default:
             throw new RuntimeException("Unsupported DataSetType: " + dataSetType);
       }
+   }
+
+   private TimeUnit getTimeUnit(String unit)
+   {
+      if(StringUtils.isNotEmpty(unit))
+      {
+         return TimeUnit.parse(unit);
+      }
+
+      return null;
+   }
+
+   private Interval getDimensionInterval(ReportDataSet dataSet)
+   {
+      Long unitValue
+         = dataSet.getFirstDimensionCumulationIntervalCount();
+
+      if(unitValue != null)
+      {
+         TimeUnit unit = getTimeUnit(dataSet.getFirstDimensionCumulationIntervalUnit());
+         return new Interval(unit, unitValue);
+      }
+
+      return null;
+   }
+
+   private GroupByColumn getGroupByColumn(ReportDataSet dataSet)
+   {
+      String groupBy = dataSet.getGroupBy();
+      if(StringUtils.isNotEmpty(groupBy)
+            && !GROUPING_NOT_SELECTED.equals(groupBy))
+      {
+         return new GroupByColumn(groupBy);
+      }
+
+      return null;
+   }
+
+   //hackaround to determine if the column is a descriptor - the
+   //meta inforomation if a column is a descriptor should be passed from ui
+   //for now - assume that a column is a descriptor column if it cannot be mapped
+   private boolean isDescriptorColumn(RequestColumn column)
+   {
+      String id = column.getId();
+      for(PiDimensionField field: Constants.PiDimensionField.values())
+      {
+         if(field.getId().equals(id))
+         {
+            return false;
+         }
+      }
+
+      for(AiDimensionField field: Constants.AiDimensionField.values())
+      {
+         if(field.getId().equals(id))
+         {
+            return false;
+         }
+      }
+
+      for(FactField field: Constants.FactField.values())
+      {
+         if(field.getId().equals(id))
+         {
+            return false;
+         }
+      }
+
+      return true;
+   }
+
+   private ReportComputedColumn getComputedColumnDefinition(String id, ReportDataSet dataSet)
+   {
+      List<ReportComputedColumn> computedColumnDefinitions = dataSet.getComputedColumns();
+      if(computedColumnDefinitions != null)
+      {
+         for(ReportComputedColumn computedColumnDefinition: computedColumnDefinitions)
+         {
+            if(id.equals(computedColumnDefinition.getId()))
+            {
+               return computedColumnDefinition;
+            }
+         }
+      }
+
+      return null;
+   }
+
+   private void setMetaInformation(List<? extends RequestColumn> columns, ReportDataSet dataSet)
+   {
+      //set meta information - ideally - all these values would already come via the column
+      //definitions - reality check - this will never happen
+      for(RequestColumn rc: columns)
+      {
+         //a column cannot be computed / descriptor at the same time
+         ReportComputedColumn computedColumnDef = getComputedColumnDefinition(rc.getId(), dataSet);
+         if(computedColumnDef != null)
+         {
+            rc.setComputed(true);
+            rc.setComputationFormula(computedColumnDef.getFormula());
+         }
+         else
+         {
+            rc.setDescriptor(isDescriptorColumn(rc));
+         }
+      }
+   }
+
+   private List<GroupColumn> getGroupColumns(DataSetType dataSetType, ReportDataSet dataSet)
+   {
+      List<GroupColumn> groupColumns = new ArrayList<GroupColumn>();
+      if(dataSetType == DataSetType.SERIESGROUP)
+      {
+         //implicit grouping information - according to ui team: dimension is always grouped
+         //but will not result in an own series - thats why you need two Grouping classes - to distinguish
+         Interval dimensionInterval = getDimensionInterval(dataSet);
+         GroupColumn dimensionColumn = new GroupColumn(dataSet.getFirstDimension(), dimensionInterval);
+         groupColumns.add(dimensionColumn);
+      }
+
+      //explicit grouping information
+      GroupByColumn groupByColumn = getGroupByColumn(dataSet);
+      if(groupByColumn != null)
+      {
+         groupColumns.add(groupByColumn);
+      }
+
+      //set meta information (descriptors/computed columns, etc)
+      setMetaInformation(groupColumns, dataSet);
+      return groupColumns;
+   }
+
+   private List<RequestColumn> getRequestColumns(DataSetType dataSetType, ReportDataSet dataSet)
+   {
+      List<RequestColumn> requestColumns
+         = new ArrayList<RequestColumn>();
+      for (String s : dataSet.getColumns())
+      {
+         RequestColumn requestColumn = new RequestColumn(s);
+         requestColumns.add(requestColumn);
+      }
+
+      //set meta information (descriptors/computed columns, etc)
+      setMetaInformation(requestColumns, dataSet);
+      return requestColumns;
    }
 
    /**
@@ -358,25 +442,12 @@ public class ReportingServicePojo
       }
    }
 
-   @SuppressWarnings("unused")
-   private void addComputedColumns(List<ReportComputedColumn> computedColumns,
-         JsonObject jsonObject)
-   {
-      for (ReportComputedColumn computedColumn : computedColumns)
-      {
-         String columnId = computedColumn.getId();
-         String columnFormula = computedColumn.getFormula();
-
-         JsonUtil.addPrimitiveObjectToJsonObject(jsonObject, columnId,
-               evaluateComputedColumn(jsonObject, columnFormula));
-      }
-   }
-
    /**
     *
     * @param input
     * @return
     */
+   @SuppressWarnings("unused")
    private static Object evaluateComputedColumn(JsonObject input, String expression)
    {
       try
@@ -407,18 +478,4 @@ public class ReportingServicePojo
          return null;
       }
    }
-
-   /**
-    *
-    * @return
-    */
-   public boolean isDiscreteDimension(String primaryObject, String dimension)
-   {
-      if (dimension.equals("startTimestamp") || dimension.equals("terminationTimestamp"))
-      {
-         return false;
-      }
-
-      return true;
-   };
 }

@@ -13,8 +13,6 @@ package org.eclipse.stardust.ui.web.reporting.core;
 
 public class GroupColumn extends RequestColumn
 {
-   private Interval interval;
-
    public GroupColumn(String id)
    {
       super(id);
@@ -22,12 +20,6 @@ public class GroupColumn extends RequestColumn
 
    public GroupColumn(String id, Interval interval)
    {
-      super(id, null);
-      this.interval = interval;
-   }
-
-   public Interval getInterval()
-   {
-      return interval;
+      super(id, interval);
    }
 }

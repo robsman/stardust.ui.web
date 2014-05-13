@@ -13,16 +13,25 @@ public class RequestColumn extends AbstractColumn
 
    private boolean descriptor;
 
+   private boolean computed;
+
+   private String computationFormula;
+
    private Interval interval;
 
    public RequestColumn(String id)
    {
-      this(id, null);
+      this(id, null, null);
    }
 
    public RequestColumn(String id, TimeUnit timeUnit)
    {
       this(id, timeUnit, null);
+   }
+
+   public RequestColumn(String id, Interval interval)
+   {
+      this(id, null, interval);
    }
 
    public RequestColumn(String id, TimeUnit timeUnit, Interval interval)
@@ -62,13 +71,31 @@ public class RequestColumn extends AbstractColumn
       this.descriptor = descriptor;
    }
 
+   public boolean isComputed()
+   {
+      return computed;
+   }
+
+   public void setComputed(boolean computed)
+   {
+      this.computed = computed;
+   }
+
+   public String getComputationFormula()
+   {
+      return computationFormula;
+   }
+
+   public void setComputationFormula(String computationFormula)
+   {
+      this.computationFormula = computationFormula;
+   }
+
    @Override
    public String toString()
    {
-      StringBuilder s = new StringBuilder();
-      s.append("{").append("columnId: ").append(getId());
-      s.append(",isDescriptor: "+isDescriptor()).append("}");
-      return s.toString();
+      return "RequestColumn [timeUnit=" + timeUnit + ", descriptor=" + descriptor
+            + ", computed=" + computed + ", computationFormula=" + computationFormula
+            + ", interval=" + interval + "]";
    }
-
 }

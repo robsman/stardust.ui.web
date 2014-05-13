@@ -17,10 +17,7 @@ import java.util.Map;
 
 import org.eclipse.stardust.engine.api.query.Query;
 import org.eclipse.stardust.ui.web.reporting.common.mapping.request.ReportFilter;
-import org.eclipse.stardust.ui.web.reporting.core.*;
-import org.eclipse.stardust.ui.web.reporting.core.Constants.FactField;
-import org.eclipse.stardust.ui.web.reporting.core.Constants.AiDimensionField;
-import org.eclipse.stardust.ui.web.reporting.core.Constants.PiDimensionField;
+import org.eclipse.stardust.ui.web.reporting.core.RequestColumn;
 import org.eclipse.stardust.ui.web.reporting.core.aggregation.IGroupingValueProvider;
 
 public abstract class AbstractColumnHandlerRegistry<U, V extends Query>
@@ -55,8 +52,6 @@ public abstract class AbstractColumnHandlerRegistry<U, V extends Query>
       }
       else
       {
-         boolean descriptor = isDescriptorColumn(column);
-         column.setDescriptor(descriptor);
          for (IColumnHandler< ? , U, V> dh : dynamicHandler)
          {
             if (dh.canHandle(column))
@@ -72,37 +67,7 @@ public abstract class AbstractColumnHandlerRegistry<U, V extends Query>
       throw new RuntimeException(errorMsg.toString());
    }
 
-   //hackaround to determine if the column is a descriptor - the correct value should already be passed via
-   //RequestColumn#isDescriptor()
-   private boolean isDescriptorColumn(RequestColumn column)
-   {
-      String id = column.getId();
-      for(PiDimensionField field: Constants.PiDimensionField.values())
-      {
-         if(field.getId().equals(id))
-         {
-            return false;
-         }
-      }
 
-      for(AiDimensionField field: Constants.AiDimensionField.values())
-      {
-         if(field.getId().equals(id))
-         {
-            return false;
-         }
-      }
-
-      for(FactField field: Constants.FactField.values())
-      {
-         if(field.getId().equals(id))
-         {
-            return false;
-         }
-      }
-
-      return true;
-   }
 
 
    public IFilterHandler<V> getFilterHandler(V query, RequestColumn column,

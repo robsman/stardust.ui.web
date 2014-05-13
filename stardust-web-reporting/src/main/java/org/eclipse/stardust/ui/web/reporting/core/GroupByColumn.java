@@ -16,9 +16,4 @@ public class GroupByColumn extends GroupColumn
    {
       super(id);
    }
-
-   public GroupByColumn(String id, Interval interval)
-   {
-      super(id, interval);
-   }
 }
