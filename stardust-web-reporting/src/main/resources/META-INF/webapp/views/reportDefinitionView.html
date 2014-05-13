@@ -1292,7 +1292,7 @@ table.formTable td {
 								</table>
 							</div>
                      <div ng-show="report.layout.type == 'table' || report.layout.subType == reportingService.metadata.layoutSubTypes.table.id">
-                        <div class="heading">{{getI18N('reporting.definitionView.table.title')}}</div>
+                        <div class="heading">{{report.layout.title}}</div>
                         <div class="dataTableFrame">
                         <div class="dataTableControls">
                               <table style="padding: 5px;">
@@ -1311,7 +1311,7 @@ table.formTable td {
                         </div>
                      </div>
                      <div ng-show="report.dataSet.type == 'seriesGroup' && report.layout.subType == reportingService.metadata.layoutSubTypes.chart.id">
-								<div class="heading">{{getI18N('reporting.definitionView.chart.title')}}</div>
+								<div class="heading">{{report.layout.title}}</div>
 								<table>
 									<tr>
 										<td><a href="" ng-click="refreshPreview()"> <img
