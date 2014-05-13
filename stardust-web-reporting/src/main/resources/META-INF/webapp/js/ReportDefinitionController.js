@@ -775,7 +775,7 @@ define(
 
 				ReportDefinitionController.prototype.refreshPreview = function() {
 					var self = this;
-					if(this.report.layout.subType == this.reportingService.metadata.layoutSubTypes.table.id){
+					if(this.report.dataSet.type === 'seriesGroup' && this.report.layout.subType == this.reportingService.metadata.layoutSubTypes.table.id){
 						this.renderingController.getPreviewData(self.report).done(
 								function(data) {
 									self.refreshPreview1(data);
