@@ -506,6 +506,7 @@ define(
 									self.report = report;
 									
 									self.loadDataSetRecordSet();
+									self.loadFilters();
 									console.log("Loaded report definition:");
 									console.log(self.report);
 
@@ -2674,6 +2675,32 @@ define(
                  }
                  return 1;
               };
+              
+              /**
+               * 
+               */
+              ReportDefinitionController.prototype.toggleToAndDuration = function(param) {
+                 if (this.existsParameter(param))
+                 {
+                    this.removeParameter(param);
+                 }
+              };
+              
+              /**
+               * This function will populte the filter variables by loading previously saved filters
+               * 
+               */
+             ReportDefinitionController.prototype.loadFilters = function() {
+                if (this.filterSelected.length != this.report.dataSet.filters.length) {
+                   for (var item in this.report.dataSet.filters)
+                   {
+                      this.filterSelected.push({
+                         index : this.report.dataSet.filters.length,
+                         value : []
+                      });
+                   }
+                }
+             };
 
          
           

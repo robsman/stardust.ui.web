@@ -614,7 +614,7 @@ table.formTable td {
 													</table>
 												
 													<a style="font-size: 9px;"
-															ng-click="x.metadata.fromTo = false;" class="smallLink">
+															ng-click="x.metadata.fromTo = false; toggleToAndDuration('filters.' + x.dimension + '.to');" class="smallLink">
 															{{getI18N('reporting.definitionView.switchToStartDateAndDuration.label')}}
 															&raquo;</a>
 												</div>
@@ -664,7 +664,7 @@ table.formTable td {
 														</tr>
 													</table>
 												<a style="font-size: 9px;"
-													ng-click="x.metadata.fromTo = true;" class="smallLink">{{getI18N('reporting.definitionView.switchToStartDateAndEndDate.label')}}
+													ng-click="x.metadata.fromTo = true; toggleToAndDuration('filters.' + x.dimension + '.duration');" class="smallLink">{{getI18N('reporting.definitionView.switchToStartDateAndEndDate.label')}}
 													&raquo;</a>
 												</div>	
 											</div>
