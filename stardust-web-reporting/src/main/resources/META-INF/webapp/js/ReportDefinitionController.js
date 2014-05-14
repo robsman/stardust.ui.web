@@ -446,7 +446,7 @@ define(
 							console.debug('refreshModelData preferencedata falied.............');
 					});
 				};
-
+				
 				ReportDefinitionController.prototype.initializeAutocompleteDir = function(angularModule) {
 					var self = this; 
 	
@@ -2615,7 +2615,9 @@ define(
                        for ( var row in data)
                        {
                           var record = data[row];
-                          record[selColumn] = enumItems[record[selColumn]].name;
+                          if(!record[selColumn]){
+                        	  record[selColumn] = enumItems[record[selColumn]].name;  
+                          }
                        }
                     }
                  }
