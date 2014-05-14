@@ -12,10 +12,33 @@
 package org.eclipse.stardust.ui.mobile.service;
 
 import static org.eclipse.stardust.common.CollectionUtils.newHashMap;
+import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.engine.core.interactions.Interaction.getInteractionId;
 
-import java.io.*;
-import java.util.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
+
+import javax.annotation.Resource;
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.ServletContextAware;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -23,26 +46,79 @@ import com.google.gson.JsonObject;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.Direction;
 import org.eclipse.stardust.common.StringUtils;
-import org.eclipse.stardust.engine.api.dto.*;
-import org.eclipse.stardust.engine.api.model.*;
-import org.eclipse.stardust.engine.api.query.*;
-import org.eclipse.stardust.engine.api.runtime.*;
+import org.eclipse.stardust.engine.api.dto.ActivityInstanceDetails;
+import org.eclipse.stardust.engine.api.dto.ContextKind;
+import org.eclipse.stardust.engine.api.dto.DataDetails;
+import org.eclipse.stardust.engine.api.dto.Note;
+import org.eclipse.stardust.engine.api.dto.ProcessInstanceAttributes;
+import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetails;
+import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetailsLevel;
+import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetailsOptions;
+import org.eclipse.stardust.engine.api.model.Activity;
+import org.eclipse.stardust.engine.api.model.ApplicationContext;
+import org.eclipse.stardust.engine.api.model.DataMapping;
+import org.eclipse.stardust.engine.api.model.DataPath;
+import org.eclipse.stardust.engine.api.model.ImplementationType;
+import org.eclipse.stardust.engine.api.model.PredefinedConstants;
+import org.eclipse.stardust.engine.api.model.ProcessDefinition;
+import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
+import org.eclipse.stardust.engine.api.query.DeployedModelQuery;
+import org.eclipse.stardust.engine.api.query.DescriptorPolicy;
+import org.eclipse.stardust.engine.api.query.DocumentQuery;
+import org.eclipse.stardust.engine.api.query.HistoricalEventPolicy;
+import org.eclipse.stardust.engine.api.query.ProcessDefinitionQuery;
+import org.eclipse.stardust.engine.api.query.ProcessInstanceDetailsPolicy;
+import org.eclipse.stardust.engine.api.query.ProcessInstanceFilter;
+import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
+import org.eclipse.stardust.engine.api.query.QueryResult;
+import org.eclipse.stardust.engine.api.query.UserQuery;
+import org.eclipse.stardust.engine.api.query.Worklist;
+import org.eclipse.stardust.engine.api.query.WorklistQuery;
+import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
+import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
+import org.eclipse.stardust.engine.api.runtime.DeployedModel;
+import org.eclipse.stardust.engine.api.runtime.DeployedModelDescription;
+import org.eclipse.stardust.engine.api.runtime.DmsUtils;
+import org.eclipse.stardust.engine.api.runtime.Document;
+import org.eclipse.stardust.engine.api.runtime.DocumentInfo;
+import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
+import org.eclipse.stardust.engine.api.runtime.Folder;
+import org.eclipse.stardust.engine.api.runtime.HistoricalEvent;
+import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
+import org.eclipse.stardust.engine.api.runtime.ProcessInstanceState;
+import org.eclipse.stardust.engine.api.runtime.QueryService;
+import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
+import org.eclipse.stardust.engine.api.runtime.ServiceFactoryLocator;
+import org.eclipse.stardust.engine.api.runtime.User;
+import org.eclipse.stardust.engine.api.runtime.UserInfo;
+import org.eclipse.stardust.engine.api.runtime.UserService;
+import org.eclipse.stardust.engine.api.runtime.WorkflowService;
 import org.eclipse.stardust.engine.core.interactions.Interaction;
 import org.eclipse.stardust.engine.core.interactions.InteractionRegistry;
 import org.eclipse.stardust.engine.core.runtime.beans.DocumentTypeUtils;
 import org.eclipse.stardust.engine.core.runtime.beans.removethis.SecurityProperties;
-import org.eclipse.stardust.engine.core.thirdparty.encoding.Text;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
 import org.eclipse.stardust.engine.extensions.dms.data.DocumentType;
 import org.eclipse.stardust.ui.mobile.rest.JsonMarshaller;
-import org.eclipse.stardust.ui.web.viewscommon.common.spi.IActivityInteractionController;
+import org.eclipse.stardust.ui.mobile.service.ActivitySearchHelper.ActivitySearchCriteria;
+import org.eclipse.stardust.ui.mobile.service.DocumentSearchHelper.DocumentSearchCriteria;
+import org.eclipse.stardust.ui.mobile.service.ProcessSearchHelper.ProcessSearchCriteria;
+import org.eclipse.stardust.ui.mobile.service.WorklistHelper.WorklistCriteria;
+import org.eclipse.stardust.ui.web.processportal.common.PPUtils;
+import org.eclipse.stardust.ui.web.processportal.service.rest.DataException;
+import org.eclipse.stardust.ui.web.processportal.service.rest.InteractionDataUtils;
+import org.eclipse.stardust.ui.web.processportal.view.manual.ManualActivityUi;
+import org.eclipse.stardust.ui.web.viewscommon.common.controller.ExternalWebAppActivityInteractionController;
 import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
-import org.eclipse.stardust.ui.web.viewscommon.utils.*;
-import org.eclipse.stardust.ui.web.viewscommon.utils.QueryUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ClientSideDataFlowUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.SpiUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.TypedDocument;
 
-public class MobileWorkflowService {
+public class MobileWorkflowService implements ServletContextAware {
 	private ServiceFactory serviceFactory;
 	private UserService userService;
 	private QueryService queryService;
@@ -51,6 +127,11 @@ public class MobileWorkflowService {
 	private User loginUser;
 	private Folder userDocumentsRootFolder;
 	private Folder publicDocumentsRootFolder;
+	private @Autowired HttpServletRequest httpRequest;
+	private ServletContext servletContext;
+		  
+   @Resource
+   private org.eclipse.stardust.ui.web.processportal.interaction.InteractionRegistry interactionRegistryManual;
 
 	public MobileWorkflowService() {
 		super();
@@ -58,6 +139,11 @@ public class MobileWorkflowService {
 		new JsonMarshaller();
 	}
 
+   @Override
+   public void setServletContext(ServletContext servletContext) {
+      this.servletContext = servletContext;
+   }
+   
 	/**
 	 * 
 	 * @return
@@ -141,6 +227,9 @@ public class MobileWorkflowService {
 						.get("password").getAsString(), credentials);
 		loginUser = getServiceFactory().getWorkflowService().getUser();
 
+		// Initialize session
+		httpRequest.getSession();
+		
 		JsonObject userJson = marshalUser(loginUser);
 
 		userDocumentsRootFolder = (Folder) getDocumentManagementService()
@@ -152,6 +241,22 @@ public class MobileWorkflowService {
 
 		return userJson;
 	}
+	
+
+   /**
+    * 
+    * @return
+    */
+   public JsonObject logout() {      
+      HttpSession session = httpRequest.getSession(false);
+      if (null != session)
+      {
+         session.invalidate();
+      }
+      
+      // TODO
+      return new JsonObject();
+   }
 
 	/**
 	 * 
@@ -188,10 +293,15 @@ public class MobileWorkflowService {
 	}
 
    /**
-    * 
+    * @param procIds
     * @return
     */
-   public JsonObject getActivities(List<String> processDefinitionIds) {
+   public JsonObject getActivities(String procIds) {
+      List<String> processDefinitionIds = new ArrayList<String>();
+      StringTokenizer tok = new StringTokenizer(procIds, ",");
+      while (tok.hasMoreTokens()) {
+         processDefinitionIds.add(tok.nextToken());
+      }
       JsonObject resultJson = new JsonObject();
       JsonArray activitiesJson = new JsonArray();
 
@@ -210,6 +320,7 @@ public class MobileWorkflowService {
                activitiesJson.add(activityJson);
                
                activityJson.addProperty("id", activity.getId());
+               activityJson.addProperty("oid", activity.getElementOID());
                activityJson.addProperty("name", activity.getName());
                activityJson.addProperty("description", activity.getDescription());
             }
@@ -229,6 +340,7 @@ public class MobileWorkflowService {
                      activitiesJson.add(activityJson);
                      
                      activityJson.addProperty("id", activity.getId());
+                     activityJson.addProperty("oid", activity.getElementOID());
                      activityJson.addProperty("name", activity.getName());
                      activityJson.addProperty("description", activity.getDescription());
                   }
@@ -255,125 +367,280 @@ public class MobileWorkflowService {
       return resultJson;
    }
    
-	/**
-	 * 
-	 * @return
-	 */
-	public JsonObject getWorklist() {
-		JsonObject resultJson = new JsonObject();
-		JsonArray worklistJson = new JsonArray();
-
-		resultJson.add("worklist", worklistJson);
-
-		WorklistQuery query = WorklistQuery.findCompleteWorklist();
-		query.orderBy(WorklistQuery.ACTIVITY_INSTANCE_OID, false);
-		List<ActivityInstance> worklistItems = getWorkflowService().getWorklist(query).getCumulatedItems();
-		for (ActivityInstance activityInstance : worklistItems) {
-			JsonObject activityInstanceJson = new JsonObject();
-
-			worklistJson.add(activityInstanceJson);
-
-			long timeInMillis = Calendar.getInstance().getTimeInMillis();
-			if (activityInstance.getState() == ActivityInstanceState.Completed
-					|| activityInstance.getState() == ActivityInstanceState.Aborted) {
-				timeInMillis = activityInstance.getLastModificationTime().getTime();
-			}
-			long duration = timeInMillis - activityInstance.getStartTime().getTime();
-			
-			String lastPerformer;
-			UserInfo userInfo = activityInstance.getPerformedBy();
-			if (null != userInfo) {
-			     User user = UserUtils.getUser(userInfo.getId());
-			     lastPerformer = "motu"; //I18nUtils.getUserLabel(user);
-			}
-			else {
-				lastPerformer = activityInstance.getPerformedByName();
-			}
-
-			activityInstanceJson.addProperty("oid", activityInstance.getOID());
-			activityInstanceJson.addProperty("criticality", activityInstance.getCriticality());
-			activityInstanceJson.addProperty("status", activityInstance.getState().getName()); // TODO: i18n
-			
-			activityInstanceJson.addProperty("lastPerformer", lastPerformer);
-			activityInstanceJson.addProperty("assignedTo", "motu" /*ActivityInstanceUtils.getAssignedToLabel(activityInstance)*/); // TODO
-			activityInstanceJson.addProperty("duration", duration);
-			activityInstanceJson.addProperty("activityId", activityInstance
-					.getActivity().getId());
-			activityInstanceJson.addProperty("activityName", activityInstance
-					.getActivity().getName());
-			activityInstanceJson.addProperty("processId", activityInstance
-					.getActivity().getProcessDefinitionId());
-			activityInstanceJson.addProperty("processName", activityInstance
-					.getActivity().getProcessDefinitionId());
-			activityInstanceJson.addProperty("processInstanceOid",
-					activityInstance.getProcessInstanceOID());
-			activityInstanceJson.addProperty("startTime", activityInstance
-					.getStartTime().getTime());
-			activityInstanceJson.addProperty("lastModificationTime",
-					activityInstance.getLastModificationTime().getTime());
-
-			JsonObject descriptorsJson = new JsonObject();
-
-			activityInstanceJson.add("descriptors", descriptorsJson);
-			
-			for (DataPath dataPath : activityInstance
-					.getDescriptorDefinitions()) {
-				
-				descriptorsJson.addProperty(dataPath.getId(),
-						(String) activityInstance.getDescriptorValue(dataPath
-								.getId()));
-			}
-		}
-
-		return resultJson;
-	}
-
    /**
-    * 
+    * @param criteria
     * @return
     */
-   public JsonObject activateActivity(long activityInstanceOid, InteractionRegistry ir) {
+   public JsonObject getWorklist(WorklistCriteria criteria)
+   {
+      JsonObject resultJson = new JsonObject();
+      JsonArray worklistJson = new JsonArray();
+
+      resultJson.add("worklist", worklistJson);
+
+      WorklistQuery query = WorklistHelper.buildWorklistQuery(criteria);
+
+      // TODO - review
+      List<ActivityInstance> worklistItems;
+      Worklist worklist = getWorkflowService().getWorklist(query);
+      Worklist participantWorklist = PPUtils.extractParticipantWorklist(worklist,
+            serviceFactory.getUserService().getUser());
+      if (null == participantWorklist)
+      {
+         return resultJson;
+      }
+      worklistItems = participantWorklist.getCumulatedItems();
+
+      for (ActivityInstance activityInstance : worklistItems)
+      {
+         JsonObject activityInstanceJson = new JsonObject();
+
+         worklistJson.add(activityInstanceJson);
+
+         long timeInMillis = Calendar.getInstance().getTimeInMillis();
+         if (activityInstance.getState() == ActivityInstanceState.Completed
+               || activityInstance.getState() == ActivityInstanceState.Aborted)
+         {
+            timeInMillis = activityInstance.getLastModificationTime().getTime();
+         }
+         long duration = timeInMillis - activityInstance.getStartTime().getTime();
+
+         String lastPerformer;
+         UserInfo userInfo = activityInstance.getPerformedBy();
+         if (null != userInfo)
+         {
+            User user = UserUtils.getUser(userInfo.getId());
+            lastPerformer = "motu"; // I18nUtils.getUserLabel(user);
+         }
+         else
+         {
+            lastPerformer = activityInstance.getPerformedByName();
+         }
+
+         activityInstanceJson.addProperty("oid", activityInstance.getOID());
+         activityInstanceJson.addProperty("criticality",
+               activityInstance.getCriticality());
+         activityInstanceJson.addProperty("status", activityInstance.getState().getName()); // TODO:
+                                                                                            // i18n
+
+         activityInstanceJson.addProperty("lastPerformer", lastPerformer);
+         activityInstanceJson.addProperty("assignedTo", "motu" /*
+                                                                * ActivityInstanceUtils.
+                                                                * getAssignedToLabel
+                                                                * (activityInstance)
+                                                                */); // TODO
+         activityInstanceJson.addProperty("duration", duration);
+         activityInstanceJson.addProperty("activityId", activityInstance.getActivity()
+               .getId());
+         activityInstanceJson.addProperty("activityName", activityInstance.getActivity()
+               .getName());
+         activityInstanceJson.addProperty("processId", activityInstance.getActivity()
+               .getProcessDefinitionId());
+         activityInstanceJson.addProperty("processName", activityInstance.getActivity()
+               .getProcessDefinitionId());
+         activityInstanceJson.addProperty("processInstanceOid",
+               activityInstance.getProcessInstanceOID());
+         activityInstanceJson.addProperty("startTime", activityInstance.getStartTime()
+               .getTime());
+         activityInstanceJson.addProperty("lastModificationTime",
+               activityInstance.getLastModificationTime().getTime());
+
+         JsonObject descriptorsJson = new JsonObject();
+
+         activityInstanceJson.add("descriptors", descriptorsJson);
+
+         for (DataPath dataPath : activityInstance.getDescriptorDefinitions())
+         {
+
+            descriptorsJson.addProperty(dataPath.getId(),
+                  (String) activityInstance.getDescriptorValue(dataPath.getId()));
+         }
+      }
+
+      return resultJson;
+   }
+
+   /**
+    * @param activityInstanceOid
+    * @return
+    */
+   public JsonObject activateActivity(long activityInstanceOid) {
       ActivityInstance ai = getWorkflowService().activate(activityInstanceOid);
       JsonObject activityJson = getActivityInstanceJson(ai);
       // TODO @SG
-      
+      String context = SpiUtils.getInteractionController(ai.getActivity()).getContextId(ai);
+      Map inData = workflowService.getInDataValues(activityInstanceOid, context, null);
       try {
-         Interaction interaction = new Interaction(null, serviceFactory.getQueryService().getModel(ai.getModelOID(), false), ai, "externalWebApp", serviceFactory);
-         
-         Map inData = workflowService.getInDataValues(activityInstanceOid, "externalWebApp", null);
-         // performing client side IN mappings
-         Map<String, Serializable> inParams = newHashMap();
-         for (DataMapping inMapping : (List<DataMapping>) interaction.getDefinition().getAllInDataMappings())
+
+         if (null != ai.getActivity().getApplicationContext(ExternalWebAppActivityInteractionController.EXT_WEB_APP_CONTEXT_ID))
          {
-            Serializable inValue = (Serializable) inData.get(inMapping.getId());
-            if (null != inValue)
+            // UI Mashup
+            Interaction interaction = new Interaction(null,
+                  serviceFactory.getQueryService().getModel(ai.getModelOID(), false), ai,
+                  ExternalWebAppActivityInteractionController.EXT_WEB_APP_CONTEXT_ID,
+                  serviceFactory);
+            Map<String, Serializable> inParams = newHashMap();
+            for (DataMapping inMapping : (List<DataMapping>) interaction.getDefinition().getAllInDataMappings())
             {
-               try
+               Serializable inValue = (Serializable) inData.get(inMapping.getId());
+               if (null != inValue)
                {
-                  String paramId = inMapping.getApplicationAccessPoint().getId();
-   
-                  Object inParam = ClientSideDataFlowUtils.evaluateClientSideInMapping(
-                        interaction.getModel(), inParams.get(paramId), inMapping, inValue);
-   
-                  inParams.put(paramId, (Serializable) inParam);
-               }
-               catch (Exception e)
-               {
-                  System.out.println("Failed evaluating client side of IN data mapping "
-                        + inMapping.getId() + " on activity instance " + ai);
+                  try
+                  {
+                     String paramId = inMapping.getApplicationAccessPoint().getId();
+      
+                     Object inParam = ClientSideDataFlowUtils.evaluateClientSideInMapping(
+                           interaction.getModel(), inParams.get(paramId), inMapping, inValue);
+      
+                     inParams.put(paramId, (Serializable) inParam);
+                  }
+                  catch (Exception e)
+                  {
+                     System.out.println("Failed evaluating client side of IN data mapping "
+                           + inMapping.getId() + " on activity instance " + ai);
+                  }
                }
             }
+            interaction.setInDataValues(inParams);
+            getInteractionRegistry().registerInteraction(interaction);
          }
-         interaction.setInDataValues(inParams);
-         
-         ir.registerInteraction(interaction);
+         else
+         {
+            // Manual activity
+            org.eclipse.stardust.ui.web.processportal.interaction.Interaction interaction = new org.eclipse.stardust.ui.web.processportal.interaction.Interaction(
+                  serviceFactory.getQueryService().getModel(ai.getModelOID(), false), ai,
+                  PredefinedConstants.DEFAULT_CONTEXT, serviceFactory);
+            ManualActivityUi manualActivityUi = new ManualActivityUi(ai, ai.getActivity()
+                  .getApplicationContext(PredefinedConstants.DEFAULT_CONTEXT),
+                  getQueryService());
+            interaction.setManualActivityPath(manualActivityUi.getManualActivityPath());
+            Map<String, Serializable> configuration = new HashMap<String, Serializable>();
+            // TODO - need this to be configurable for mobile?
+            configuration.put("layoutColumns", 1);
+            configuration.put("tableColumns", 1);
+            interaction.setConfiguration(configuration);
+            interaction.setInDataValues(inData);
+            
+            // TODO - check 
+            // The line below is commented as it has dependency on FacesContext
+            // We can possibly get around it but it may not be needed as we are not supporting
+            // document data anyways
+            // DocumentHelper.initializeDocumentControllers(interaction, inData);
+
+            getInteractionRegistryManual().registerInteraction(interaction);
+         }
       }
       catch (Exception e)
       {
-         System.out.println("No externalWebApp for this AI");
+         e.printStackTrace();
       }
         
       return activityJson;
+   }
+
+   /**
+    * @param oid
+    * @return
+    */
+   public JsonObject completeActivity(String oid) {
+      ActivityInstance ai = getWorkflowService().getActivityInstance(new Long(oid).longValue());
+//    IActivityInteractionController interactionController = SpiUtils
+//          .getInteractionController(ai.getActivity());
+      //Map<String, Serializable>outDataValues = interactionController.getOutDataValues(activityInstance);
+
+      Map<String, Serializable> outData = null;
+      if (null != ai.getActivity().getApplicationContext(
+            ExternalWebAppActivityInteractionController.EXT_WEB_APP_CONTEXT_ID))
+      {
+         InteractionRegistry registry = getInteractionRegistry();
+         if (null != registry)
+         {
+            // retrieve out data
+            Interaction interaction = registry.getInteraction(getInteractionId(ai));
+            if (null != interaction)
+            {
+               Map<String, Serializable> outParams = interaction.getOutDataValues();
+               if (null != outParams)
+               {
+                  // performing client side OUT mappings
+                  outData = newHashMap();
+                  for (DataMapping outMapping : (List<DataMapping>) interaction.getDefinition().getAllOutDataMappings())
+                  {
+                     Serializable outParam = outParams.get(outMapping.getApplicationAccessPoint().getId());
+                     if (null != outParam)
+                     {
+                        try
+                        {
+                           Object outValue = ClientSideDataFlowUtils.evaluateClientSideOutMapping(
+                                 interaction.getModel(), outParam, outMapping);
+
+                           outData.put(outMapping.getId(), (Serializable) outValue);
+                        }
+                        catch (Exception e)
+                        {
+                         System.out.println("Failed evaluating client side of OUT data mapping "
+                                 + outMapping.getId() + " on activity instance " + ai);
+                        }
+                     }
+                     else
+                     {
+                       System.out.println("Missing value for data mapping " + outMapping.getId()
+                              + " on activity instance " + ai);
+                     }
+                  }
+               }
+
+               // destroy interaction resource
+               registry.unregisterInteraction(interaction.getId());
+            
+            ai = getWorkflowService().complete(
+                  new Long(oid).longValue(), ExternalWebAppActivityInteractionController.EXT_WEB_APP_CONTEXT_ID, outData);
+            }
+            else
+            {
+               System.out.println("Failed resolving interaction resource for activity instance " + ai);
+            }
+         }  
+      } else {
+         org.eclipse.stardust.ui.web.processportal.interaction.InteractionRegistry registry = getInteractionRegistryManual();
+         if (null != registry)
+         {
+            // retrieve out data
+            org.eclipse.stardust.ui.web.processportal.interaction.Interaction interaction = registry.getInteraction(getInteractionId(ai));
+            if (null != interaction)
+            {
+               if (null != interaction.getOutDataValues())
+               {
+                  try
+                  {
+                     outData = InteractionDataUtils.unmarshalData(interaction.getModel(),
+                           interaction.getDefinition(), (Map)interaction.getOutDataValues(), interaction, null);
+                  }
+                  catch (DataException e)
+                  {
+                     // TODO Auto-generated catch block
+                     e.printStackTrace();
+                  }
+                  //interaction.setOutDataValues(outData);
+               }
+
+               // destroy interaction resource
+               registry.unregisterInteraction(interaction.getId());
+
+               ai = getWorkflowService().complete(
+                     new Long(oid).longValue(), PredefinedConstants.DEFAULT_CONTEXT, outData);
+            }
+            else
+            {
+               System.out.println("Failed resolving interaction resource for activity instance "
+                     + ai);
+            }
+         }
+      }
+      
+       // TODO @SG
+      JsonObject activityInstanceJson = new JsonObject();
+      return activityInstanceJson;
    }
 
 	/**
@@ -382,76 +649,7 @@ public class MobileWorkflowService {
 	 * @param registry
 	 * @return
 	 */
-	public JsonObject completeActivity(String oid, InteractionRegistry registry) {
-		ActivityInstance ai = getWorkflowService().getActivityInstance(new Long(oid).longValue());
-		IActivityInteractionController interactionController = SpiUtils
-				.getInteractionController(ai.getActivity());
-		//Map<String, Serializable>outDataValues = interactionController.getOutDataValues(activityInstance);
-		
-		
-	      Map<String, Serializable> outData = null;
-
-	      if (null != registry)
-	      {
-	         // retrieve out data
-	         Interaction interaction = registry.getInteraction(getInteractionId(ai));
-	         if (null != interaction)
-	         {
-	            Map<String, Serializable> outParams = interaction.getOutDataValues();
-	            if (null != outParams)
-	            {
-	               // performing client side OUT mappings
-	               outData = newHashMap();
-	               for (DataMapping outMapping : (List<DataMapping>) interaction.getDefinition().getAllOutDataMappings())
-	               {
-	                  Serializable outParam = outParams.get(outMapping.getApplicationAccessPoint().getId());
-	                  if (null != outParam)
-	                  {
-	                     try
-	                     {
-	                        Object outValue = ClientSideDataFlowUtils.evaluateClientSideOutMapping(
-	                              interaction.getModel(), outParam, outMapping);
-
-	                        outData.put(outMapping.getId(), (Serializable) outValue);
-	                     }
-	                     catch (Exception e)
-	                     {
-	                    	 System.out.println("Failed evaluating client side of OUT data mapping "
-	                              + outMapping.getId() + " on activity instance " + ai);
-	                     }
-	                  }
-	                  else
-	                  {
-	                	  System.out.println("Missing value for data mapping " + outMapping.getId()
-	                           + " on activity instance " + ai);
-	                  }
-	               }
-	            }
-
-	            // destroy interaction resource
-	            registry.unregisterInteraction(interaction.getId());
-	    		
-	    		ai = getWorkflowService().complete(
-	    				new Long(oid).longValue(), "externalWebApp", outData);
-	         }
-	         else
-	         {
-	            System.out.println("Failed resolving interaction resource for activity instance " + ai);
-	         }
-	      }
-		
-	    // TODO @SG
-		JsonObject activityInstanceJson = new JsonObject();
-		return activityInstanceJson;
-	}
-
-	/**
-	 * 
-	 * @param oid
-	 * @param registry
-	 * @return
-	 */
-	public JsonObject suspendActivity(String oid, InteractionRegistry registry) {
+	public JsonObject suspendActivity(String oid) {
     	getWorkflowService().suspendToDefaultPerformer(new Long(oid).longValue());
 		
 	    // TODO @SG
@@ -459,96 +657,142 @@ public class MobileWorkflowService {
 		return activityInstanceJson;
 	}
 	
-
-	/**
-	 * 
-	 * @param oid
-	 * @param registry
-	 * @return
-	 */
-	public JsonObject suspendAndSaveActivity(String oid, InteractionRegistry registry) {
-		ActivityInstance ai = getWorkflowService().getActivityInstance(new Long(oid).longValue());
-		IActivityInteractionController interactionController = SpiUtils
-				.getInteractionController(ai.getActivity());
-		//Map<String, Serializable>outDataValues = interactionController.getOutDataValues(activityInstance);
-		System.out.println("@@@@@@@@@@@@@@@@@@@@@@@ suspend and save");
-		
-	      Map<String, Serializable> outData = null;
-
-	      if (null != registry)
-	      {
-	         // retrieve out data
-	         Interaction interaction = registry.getInteraction(getInteractionId(ai));
-	         if (null != interaction)
-	         {
-	            Map<String, Serializable> outParams = interaction.getOutDataValues();
-	            if (null != outParams)
-	            {
-	               // performing client side OUT mappings
-	               outData = newHashMap();
-	               for (DataMapping outMapping : (List<DataMapping>) interaction.getDefinition().getAllOutDataMappings())
-	               {
-	                  Serializable outParam = outParams.get(outMapping.getApplicationAccessPoint().getId());
-	                  if (null != outParam)
-	                  {
-	                     try
-	                     {
-	                        Object outValue = ClientSideDataFlowUtils.evaluateClientSideOutMapping(
-	                              interaction.getModel(), outParam, outMapping);
-
-	                        outData.put(outMapping.getId(), (Serializable) outValue);
-	                     }
-	                     catch (Exception e)
-	                     {
-	                    	 System.out.println("Failed evaluating client side of OUT data mapping "
-	                              + outMapping.getId() + " on activity instance " + ai);
-	                     }
-	                  }
-	                  else
-	                  {
-	                	  System.out.println("Missing value for data mapping " + outMapping.getId()
-	                           + " on activity instance " + ai);
-	                  }
-	               }
-	            }
-
-	            // destroy interaction resource
-	            registry.unregisterInteraction(interaction.getId());
-	    		
-	            System.out.println("@@@@@@@@@@@@@@@@@@@@@@@ out data " + outData);
-	            
-	    		ai = getWorkflowService().suspendToDefaultPerformer(new Long(oid).longValue(), "externalWebApp", outData);
-	         }
-	         else
-	         {
-	            System.out.println("Failed resolving interaction resource for activity instance " + ai);
-	         }
-	      }
-		
-	    // TODO @SG
-		JsonObject activityInstanceJson = new JsonObject();
-		return activityInstanceJson;
-	}
-
    /**
-    * 
+    * @param oid
     * @return
     */
-   public JsonObject getActivityInstances() {
+   public JsonObject suspendAndSaveActivity(String oid)
+   {
+      ActivityInstance ai = getWorkflowService().getActivityInstance(
+            new Long(oid).longValue());
+      // IActivityInteractionController interactionController = SpiUtils
+      // .getInteractionController(ai.getActivity());
+
+      Map<String, Serializable> outData = null;
+
+      if (null != ai.getActivity().getApplicationContext(
+            ExternalWebAppActivityInteractionController.EXT_WEB_APP_CONTEXT_ID))
+      {
+         InteractionRegistry registry = getInteractionRegistry();
+         if (null != registry)
+         {
+            // retrieve out data
+            Interaction interaction = registry.getInteraction(getInteractionId(ai));
+            if (null != interaction)
+            {
+               Map<String, Serializable> outParams = interaction.getOutDataValues();
+               if (null != outParams)
+               {
+                  // performing client side OUT mappings
+                  outData = newHashMap();
+                  for (DataMapping outMapping : (List<DataMapping>) interaction.getDefinition()
+                        .getAllOutDataMappings())
+                  {
+                     Serializable outParam = outParams.get(outMapping.getApplicationAccessPoint()
+                           .getId());
+                     if (null != outParam)
+                     {
+                        try
+                        {
+                           Object outValue = ClientSideDataFlowUtils.evaluateClientSideOutMapping(
+                                 interaction.getModel(), outParam, outMapping);
+
+                           outData.put(outMapping.getId(), (Serializable) outValue);
+                        }
+                        catch (Exception e)
+                        {
+                           System.out.println("Failed evaluating client side of OUT data mapping "
+                                 + outMapping.getId() + " on activity instance " + ai);
+                        }
+                     }
+                     else
+                     {
+                        System.out.println("Missing value for data mapping "
+                              + outMapping.getId() + " on activity instance " + ai);
+                     }
+                  }
+               }
+
+               // destroy interaction resource
+               registry.unregisterInteraction(interaction.getId());
+
+               ai = getWorkflowService().suspendToDefaultPerformer(
+                     new Long(oid).longValue(),
+                     ExternalWebAppActivityInteractionController.EXT_WEB_APP_CONTEXT_ID,
+                     outData);
+            }
+            else
+            {
+               System.out.println("Failed resolving interaction resource for activity instance "
+                     + ai);
+            }
+         }
+      }
+      else
+      {
+         org.eclipse.stardust.ui.web.processportal.interaction.InteractionRegistry registry = getInteractionRegistryManual();
+         if (null != registry)
+         {
+            // retrieve out data
+            org.eclipse.stardust.ui.web.processportal.interaction.Interaction interaction = registry.getInteraction(getInteractionId(ai));
+            if (null != interaction)
+            {
+               if (null != interaction.getOutDataValues())
+               {
+                  try
+                  {
+                     outData = InteractionDataUtils.unmarshalData(interaction.getModel(),
+                           interaction.getDefinition(),
+                           (Map) interaction.getOutDataValues(), interaction, null);
+                  }
+                  catch (DataException e)
+                  {
+                     // TODO Auto-generated catch block
+                     e.printStackTrace();
+                  }
+                  // interaction.setOutDataValues(outData);
+               }
+
+               // destroy interaction resource
+               registry.unregisterInteraction(interaction.getId());
+
+               ai = getWorkflowService().suspendToDefaultPerformer(
+                     new Long(oid).longValue(), PredefinedConstants.DEFAULT_CONTEXT, outData);
+            }
+            else
+            {
+               System.out.println("Failed resolving interaction resource for activity instance "
+                     + ai);
+            }
+         }
+      }
+
+      // TODO @SG
+      JsonObject activityInstanceJson = new JsonObject();
+      return activityInstanceJson;
+   }
+
+   /**
+    * @param criteria
+    * @return
+    */
+   public JsonObject getActivityInstances(ActivitySearchCriteria criteria)
+   {
       JsonObject resultJson = new JsonObject();
       JsonArray activityInstancesJson = new JsonArray();
 
       resultJson.add("activityInstances", activityInstancesJson);
 
-      ActivityInstanceQuery activityInstanceQuery = ActivityInstanceQuery.findAll();
-      activityInstanceQuery.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
-      List<ActivityInstance> activityInstances = getQueryService().getAllActivityInstances(activityInstanceQuery);
-      
+      QueryResult<ActivityInstance> activityInstances = getQueryService().getAllActivityInstances(
+            ActivitySearchHelper.buildActivitySearchQuery(criteria));
+
       for (ActivityInstance activityInstance : activityInstances)
       {
          activityInstancesJson.add(getActivityInstanceJson(activityInstance));
       }
       
+      resultJson.add("paginationResponse", SearchHelperUtil.getPaginationResponseObject(activityInstances));
+
       return resultJson;
    }
 
@@ -601,7 +845,7 @@ public class MobileWorkflowService {
    }
 
    /**
-    * 
+    * @param activityInstance
     * @return
     */
    public JsonObject getActivityInstanceJson(ActivityInstance activityInstance) {
@@ -647,7 +891,7 @@ public class MobileWorkflowService {
       activityInstanceJson.addProperty("lastModificationTime",
             activityInstance.getLastModificationTime().getTime());
       activityInstanceJson.addProperty("activatable",
-            ActivityInstanceUtils.isActivatable(activityInstance) && SpiUtils.getInteractionController(activityInstance.getActivity()) == SpiUtils.DEFAULT_EXTERNAL_WEB_APP_CONTROLLER);
+            ActivityInstanceUtils.isActivatable(activityInstance) && (SpiUtils.getInteractionController(activityInstance.getActivity()) == SpiUtils.DEFAULT_EXTERNAL_WEB_APP_CONTROLLER || SpiUtils.getInteractionController(activityInstance.getActivity()) == SpiUtils.DEFAULT_MANUAL_ACTIVITY_CONTROLLER));
 
       /*JsonObject descriptorsJson = new JsonObject();
 
@@ -670,12 +914,13 @@ public class MobileWorkflowService {
 
       if (activityInstance.getActivity().getImplementationType() == ImplementationType.Manual) {
          applicationContext = activityInstance.getActivity()
-               .getApplicationContext("default");
+               .getApplicationContext(PredefinedConstants.DEFAULT_CONTEXT);
          activityInstanceJson.addProperty("implementation", "manual");
 
          JsonObject applicationContextJson = new JsonObject();
 
-         applicationContextsJson.add("default", applicationContextJson);
+         applicationContextsJson.add(PredefinedConstants.DEFAULT_CONTEXT, applicationContextJson);
+         setIPPInteractionParamsForManualActivity(applicationContextJson, activityInstance);
       } else {
          activityInstanceJson.addProperty("implementation", "application");
 
@@ -683,11 +928,11 @@ public class MobileWorkflowService {
 
          // TODO Handle others
 
-         applicationContextsJson.add("externalWebApp",
+         applicationContextsJson.add(ExternalWebAppActivityInteractionController.EXT_WEB_APP_CONTEXT_ID,
                applicationContextJson);
 
          applicationContext = activityInstance.getActivity()
-               .getApplicationContext("externalWebApp");
+               .getApplicationContext(ExternalWebAppActivityInteractionController.EXT_WEB_APP_CONTEXT_ID);
 
          applicationContextJson
                .addProperty(
@@ -771,6 +1016,11 @@ public class MobileWorkflowService {
       return activityInstanceJson;
    }
    
+   /**
+    * @param request
+    * @param ir
+    * @return
+    */
    public JsonObject startProcessInstance(JsonObject request, InteractionRegistry ir)
    {
       ProcessInstance processInstance = getWorkflowService().startProcess(request.get("processDefinitionId").getAsString(), null, true);
@@ -780,47 +1030,73 @@ public class MobileWorkflowService {
       if (!(ProcessInstanceUtils.isTransientProcess(processInstance) || ProcessInstanceUtils
             .isCompletedProcess(processInstance)))
       {
-         ActivityInstance nextActivityInstance = getWorkflowService()
+         ActivityInstance ai = getWorkflowService()
                .activateNextActivityInstanceForProcessInstance(processInstance.getOID());
-         if (nextActivityInstance != null)
+         if (ai != null)
          {
-            JsonObject activityInstanceJson = getActivityInstanceJson(nextActivityInstance);
-            
-            processInstanceJson.add("activatedActivityInstance", activityInstanceJson);
-            
+            JsonObject activityInstanceJson = getActivityInstanceJson(ai);            
+            processInstanceJson.add("activatedActivityInstance", activityInstanceJson);            
             try
             {
-               // TODO @SG
-               Interaction interaction = new Interaction(null, serviceFactory.getQueryService().getModel(nextActivityInstance.getModelOID(), false), nextActivityInstance, "externalWebApp", serviceFactory);
-               
-               Map inData = workflowService.getInDataValues(nextActivityInstance.getOID(), "externalWebApp", null);
-               // performing client side IN mappings
-               Map<String, Serializable> inParams = newHashMap();
-               for (DataMapping inMapping : (List<DataMapping>) interaction.getDefinition().getAllInDataMappings())
+               String context = SpiUtils.getInteractionController(ai.getActivity()).getContextId(ai);
+               Map inData = workflowService.getInDataValues(ai.getOID(), context, null);
+               if (null != ai.getActivity().getApplicationContext(ExternalWebAppActivityInteractionController.EXT_WEB_APP_CONTEXT_ID))
                {
-                  Serializable inValue = (Serializable) inData.get(inMapping.getId());
-                  if (null != inValue)
+                  // TODO @SG
+                  Interaction interaction = new Interaction(null, serviceFactory.getQueryService().getModel(ai.getModelOID(), false), ai, ExternalWebAppActivityInteractionController.EXT_WEB_APP_CONTEXT_ID, serviceFactory);
+                  // performing client side IN mappings
+                  Map<String, Serializable> inParams = newHashMap();
+                  for (DataMapping inMapping : (List<DataMapping>) interaction.getDefinition().getAllInDataMappings())
                   {
-                     try
+                     Serializable inValue = (Serializable) inData.get(inMapping.getId());
+                     if (null != inValue)
                      {
-                        String paramId = inMapping.getApplicationAccessPoint().getId();
-   
-                        Object inParam = ClientSideDataFlowUtils.evaluateClientSideInMapping(
-                              interaction.getModel(), inParams.get(paramId), inMapping, inValue);
-   
-                        inParams.put(paramId, (Serializable) inParam);
-                     }
-                     catch (Exception e)
-                     {
-                        System.out.println("Failed evaluating client side of IN data mapping "
-                              + inMapping.getId() + " on activity instance " + nextActivityInstance);
+                        try
+                        {
+                           String paramId = inMapping.getApplicationAccessPoint().getId();
+      
+                           Object inParam = ClientSideDataFlowUtils.evaluateClientSideInMapping(
+                                 interaction.getModel(), inParams.get(paramId), inMapping, inValue);
+      
+                           inParams.put(paramId, (Serializable) inParam);
+                        }
+                        catch (Exception e)
+                        {
+                           System.out.println("Failed evaluating client side of IN data mapping "
+                                 + inMapping.getId() + " on activity instance " + ai);
+                        }
                      }
                   }
+      
+                  interaction.setInDataValues(inParams);
+                  
+                  ir.registerInteraction(interaction);
                }
-   
-               interaction.setInDataValues(inParams);
-               
-               ir.registerInteraction(interaction);
+               else
+               {
+                  // Manual activity
+                  org.eclipse.stardust.ui.web.processportal.interaction.Interaction interaction = new org.eclipse.stardust.ui.web.processportal.interaction.Interaction(
+                        serviceFactory.getQueryService().getModel(ai.getModelOID(), false), ai,
+                        PredefinedConstants.DEFAULT_CONTEXT, serviceFactory);
+                  ManualActivityUi manualActivityUi = new ManualActivityUi(ai, ai.getActivity()
+                        .getApplicationContext(PredefinedConstants.DEFAULT_CONTEXT),
+                        getQueryService());
+                  interaction.setManualActivityPath(manualActivityUi.getManualActivityPath());
+                  Map<String, Serializable> configuration = new HashMap<String, Serializable>();
+                  // TODO - need this to be configurable for mobile?
+                  configuration.put("layoutColumns", 1);
+                  configuration.put("tableColumns", 1);
+                  interaction.setConfiguration(configuration);
+                  interaction.setInDataValues(inData);
+                  
+                  // TODO - check 
+                  // The line below is commented as it has dependency on FacesContext
+                  // We can possibly get around it but it may not be needed as we are not supporting
+                  // document data anyways
+                  // DocumentHelper.initializeDocumentControllers(interaction, inData);
+
+                  getInteractionRegistryManual().registerInteraction(interaction);
+               }
             }
             catch (Exception e)
             {
@@ -834,23 +1110,25 @@ public class MobileWorkflowService {
    }
 
    /**
-    * 
+    * @param criteria
     * @return
     */
-   public JsonObject getProcessInstances() {
+   public JsonObject getProcessInstances(ProcessSearchCriteria criteria)
+   {
       JsonObject resultJson = new JsonObject();
       JsonArray processInstancesJson = new JsonArray();
 
       resultJson.add("processInstances", processInstancesJson);
-
-      ProcessInstanceQuery processInstanceQuery = ProcessInstanceQuery.findAll();
-      processInstanceQuery.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
-      List<ProcessInstance> processInstances = getQueryService().getAllProcessInstances(processInstanceQuery);
       
+      QueryResult<ProcessInstance> processInstances = getQueryService().getAllProcessInstances(
+            ProcessSearchHelper.buildProcessSearchQuery(criteria));
+
       for (ProcessInstance processInstance : processInstances)
       {
          processInstancesJson.add(getProcessInstanceJson(processInstance));
       }
+
+      resultJson.add("paginationResponse", SearchHelperUtil.getPaginationResponseObject(processInstances));
       
       return resultJson;
    }
@@ -1126,6 +1404,24 @@ public class MobileWorkflowService {
       }
 
       return resultJson;
+   }
+
+   /**
+    * @param oid
+    * @param postedData
+    * @return
+    */
+   public JsonObject updateProcessInstance(String oid, JsonObject postedData)
+   {
+      if (postedData.has("priority"))
+      {
+         serviceFactory.getAdministrationService().setProcessInstancePriority(
+               Long.parseLong(oid), postedData.get("priority").getAsInt(), true);
+      }
+
+      ProcessInstance processInstance = getWorkflowService().getProcessInstance(
+            Long.parseLong(oid));
+      return getProcessInstanceJson(processInstance);
    }
 
    public JsonObject getProcessInstanceDocument(long processInstanceOid, String documentId)
@@ -1575,67 +1871,14 @@ public class MobileWorkflowService {
    }
 
    /**
+    * @param criteria
     * @return
     */
-   public JsonObject getDocuments(String searchText, long createFromTimestamp, long createToTimestamp, List<String> documentTypeIds)
+   public JsonObject getDocuments(DocumentSearchCriteria criteria)
    {
-      DocumentQuery query = DocumentQuery.findAll();
+      DocumentQuery query = DocumentSearchHelper.buildDocumentSearchQuery(criteria);
       
-      /*Date createFrom = new Date(createFromTimestamp), createTo = new Date(createToTimestamp);
-      
-      // Name
-      FilterAndTerm filter = query.where(DocumentQuery.NAME.like(QueryUtils.getFormattedString(searchText)));
-
-      // Create date
-      if (null != createFrom && null != createTo)
-      {
-         filter.and(DocumentQuery.DATE_CREATED.between(org.eclipse.stardust.ui.web.common.util.DateUtils.convertToGmt(createFrom), 
-               org.eclipse.stardust.ui.web.common.util.DateUtils.convertToGmt(createTo)));
-      }
-      
-      // Document Type
-      if (CollectionUtils.isNotEmpty(documentTypeIds))
-      {
-         FilterOrTerm filterOrTerm = filter.addOrTerm();
-         for (String documentTypeId : documentTypeIds)
-         {
-            filterOrTerm.add(DocumentQuery.DOCUMENT_TYPE_ID.isEqual(documentTypeId));
-         }
-      }
-      
-      // Content
-      FilterCriterion contentFilter = null, dataFilter = null;
-      if (StringUtils.isNotEmpty(searchText))
-      {
-//         if (getFilterAttributes().isSearchContent())
-         {
-            contentFilter = DocumentQuery.CONTENT.like(QueryUtils.getFormattedString(Text
-                  .escapeIllegalJcrChars(searchText)));
-         }
-
-//         if (getFilterAttributes().isSearchData())
-         {
-            dataFilter = DocumentQuery.META_DATA.any().like(
-                  QueryUtils.getFormattedString(Text.escapeIllegalJcrChars(searchText)));
-         }
-       
-         if (null != contentFilter && null != dataFilter)
-         {
-            FilterOrTerm filterOrTerm = filter.addOrTerm();
-            filterOrTerm.add(contentFilter);
-            filterOrTerm.add(dataFilter);
-         }
-         else if (null != contentFilter)
-         {
-            filter.and(contentFilter);
-         }
-         else if (null != dataFilter)
-         {
-            filter.and(dataFilter);
-         }
-      }*/
-      
-      List<Document> documents = getQueryService().getAllDocuments(query);
+      QueryResult<Document> documents = getQueryService().getAllDocuments(query);
       
       JsonObject resultJson = new JsonObject();
       JsonArray documentsJson = new JsonArray();
@@ -1646,6 +1889,8 @@ public class MobileWorkflowService {
       {
          documentsJson.add(marshalDocument(document));
       }
+      
+      resultJson.add("paginationResponse", SearchHelperUtil.getPaginationResponseObject(documents));
       
       return resultJson;
    }
@@ -1698,5 +1943,137 @@ public class MobileWorkflowService {
       }
       
       return resultJson;
+   }
+
+   /**
+    * 
+    * @return
+    */
+   private InteractionRegistry getInteractionRegistry() {
+      InteractionRegistry registry = (InteractionRegistry) servletContext.getAttribute(InteractionRegistry.BEAN_ID);
+      if (registry != null) return registry;
+      
+      synchronized (this) {
+         if (null == registry) {
+            registry = new InteractionRegistry();
+            servletContext.setAttribute(InteractionRegistry.BEAN_ID, registry);
+         }
+      }
+      
+      return registry;
+   }
+   
+   /**
+    * 
+    * @return
+    */
+   private org.eclipse.stardust.ui.web.processportal.interaction.InteractionRegistry getInteractionRegistryManual() {
+//      System.out.println("@@@@@@@@@@@@ servletContext " + servletContext);
+//    org.eclipse.stardust.ui.web.processportal.interaction.InteractionRegistry registry = (org.eclipse.stardust.ui.web.processportal.interaction.InteractionRegistry) servletContext.getAttribute(org.eclipse.stardust.ui.web.processportal.interaction.InteractionRegistry.BEAN_ID);
+//    if (registry != null) return registry;
+//    
+//    synchronized (this) {
+//       if (null == registry) {
+//          registry = new org.eclipse.stardust.ui.web.processportal.interaction.InteractionRegistry();
+//          servletContext.setAttribute(org.eclipse.stardust.ui.web.processportal.interaction.InteractionRegistry.BEAN_ID, registry);
+//       }
+//    }
+      
+      return interactionRegistryManual;
+   }
+   
+   /**
+    * TODO - need to move to a util as it's almost duplicated from
+    * ExternalWebAppActivityInteractionController
+    * 
+    * @param applicationContextJson
+    * @param ai
+    */
+   private void setIPPInteractionParams(JsonObject applicationContextJson,
+         ActivityInstance ai) {
+      ApplicationContext context = ai.getActivity().getApplicationContext(ExternalWebAppActivityInteractionController.EXT_WEB_APP_CONTEXT_ID);
+
+      Boolean embedded = (Boolean) context
+            .getAttribute("carnot:engine:ui:externalWebApp:embedded");
+
+      String servicesBaseUri = "";
+      String portalBaseUri = "";
+      if (null != embedded && embedded) {
+         servicesBaseUri = "/${request.contextPath}/services/";
+         portalBaseUri = "/${request.contextPath}";
+      } else {
+         // allow base URI override via parameter
+         servicesBaseUri = servletContext.getInitParameter("InfinityBpm.ServicesBaseUri");
+         if (isEmpty(servicesBaseUri)) {
+            servicesBaseUri = "${request.scheme}://${request.serverName}:${request.serverPort}/${request.contextPath}/services/";
+         }
+
+         portalBaseUri = servletContext.getInitParameter("InfinityBpm.PortalBaseUri");
+         if (isEmpty(portalBaseUri)) {
+            portalBaseUri = "${request.scheme}://${request.serverName}:${request.serverPort}/${request.contextPath}";
+         }
+      }
+
+      servicesBaseUri = expandUriTemplate(servicesBaseUri, httpRequest);
+      portalBaseUri = expandUriTemplate(portalBaseUri, httpRequest);
+        String interactionId = Interaction.getInteractionId(ai);
+        String ippInteractionUri = servicesBaseUri + "rest/engine/interactions/" + interactionId;
+      applicationContextJson
+            .addProperty("ippPortalBaseURi", portalBaseUri);
+      applicationContextJson.addProperty("ippServicesBaseUri",
+            servicesBaseUri);
+      applicationContextJson.addProperty("ippInteractionUri",
+            ippInteractionUri);
+      applicationContextJson.addProperty("interactionId", interactionId);
+   }
+   
+   /**
+    * TODO - need to move to a util as it's almost duplicated from
+    * ExternalWebAppActivityInteractionController
+    * 
+    * @param applicationContextJson
+    * @param ai
+    */
+   private void setIPPInteractionParamsForManualActivity(JsonObject applicationContextJson,
+         ActivityInstance ai) {
+      String portalBaseUri = expandUriTemplate("/${request.contextPath}/plugins/processportal/manualActivityPanel.html", httpRequest);
+      applicationContextJson.addProperty("ippPortalBaseURi", portalBaseUri);
+      String interactionId = Interaction.getInteractionId(ai);
+      applicationContextJson.addProperty("interactionId", interactionId);
+   }
+
+   /**
+    * TODO - need to move to a util as it's duplicated from
+    * ExternalWebAppActivityInteractionController
+    * 
+    * @param uriTemplate
+    * @param req
+    * @return
+    */
+   private String expandUriTemplate(String uriTemplate, HttpServletRequest req) {
+      String uri = uriTemplate;
+
+      if (uri.contains("${request.scheme}")) {
+         uri = uri.replace("${request.scheme}", req.getScheme());
+      }
+      if (uri.contains("${request.serverName}")) {
+         uri = uri.replace("${request.serverName}", req.getServerName());
+      }
+      if (uri.contains("${request.serverLocalName}")
+            && !isEmpty(req.getLocalName())) {
+         uri = uri.replace("${request.serverLocalName}", req.getLocalName());
+      }
+      if (uri.contains("${request.serverPort}")) {
+         uri = uri.replace("${request.serverPort}",
+               Integer.toString(req.getServerPort()));
+      }
+      if (uri.contains("${request.serverLocalPort}")) {
+         uri = uri.replace("${request.serverLocalPort}",
+               Integer.toString(req.getLocalPort()));
+      }
+      if (uri.contains("/${request.contextPath}")) {
+         uri = uri.replace("/${request.contextPath}", req.getContextPath());
+      }
+      return uri;
    }
 }

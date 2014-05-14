@@ -483,11 +483,16 @@ define([],function(){
 					
 					var startDT,
 					    endDT,
+					    processIDs=[],
 					    activityIDs=[],
 					    stateIDs=[];
 				    	
 					startDT = new Date($scope.filter.startDate + " " + $scope.filter.startTime).getTime();
 					endDT = new Date($scope.filter.endDate + " " + $scope.filter.endTime).getTime();
+					
+					$scope.activitySearchModel.startableProcesses.forEach(function(v){
+						if(v.isChecked){processIDs.push(v.id)}
+					});
 					
 					$scope.activitySearchModel.activities.forEach(function(v){
 						if(v.isChecked){activityIDs.push(v.id)}
@@ -501,6 +506,7 @@ define([],function(){
 					workflowService.getFilteredActivities(
 							startDT,
 							endDT,
+							processIDs.toString(),
 							activityIDs.toString(),
 							stateIDs.toString())
 						.then(function(data){
@@ -868,7 +874,7 @@ define([],function(){
 			},
 			
 			/*panelControl*/
-			"panelCtrl" : function($scope,$rootScope,il18nService){
+			"panelCtrl" : function($scope,$rootScope,il18nService,workflowService){
 				
 				$scope.uiText={
 						"home"     : il18nService.getProperty("mobile.extpanelright.listview.home"),
@@ -878,10 +884,11 @@ define([],function(){
 				}
 				
 				$scope.resetGlobalState = function(){
-						$rootScope.appData.user={};
-						$rootScope.appData.isAuthorized=false;
-						$rootScope.appData.isActivityHot = false;
-						$rootScope.appData.hotActivityInstance = {};
+					workflowService.logout();
+					$rootScope.appData.user={};
+					$rootScope.appData.isAuthorized=false;
+					$rootScope.appData.isActivityHot = false;
+					$rootScope.appData.hotActivityInstance = {};
 				}
 			},
 			
@@ -1334,18 +1341,25 @@ define([],function(){
 					workflowService.activate(activityOid)
 					.then(
 						function(data){
+							if (data.contexts.externalWebApp) {
+								var url=data.contexts.externalWebApp["carnot:engine:ui:externalWebApp:uri"] +
+								"?ippInteractionUri=" + data.contexts.externalWebApp.ippInteractionUri +
+								"&ippPortalBaseUri=" + data.contexts.externalWebApp.ippPortalBaseURi +
+								"&ippServicesBaseUri=" + data.contexts.externalWebApp.ippServicesBaseUri +
+								"&interactionId=" + data.contexts.externalWebApp.interactionId;
+							} else if (data.contexts["default"]) {
+								var url=data.contexts["default"]["ippPortalBaseURi"] +
+								"?interactionId=" + data.contexts["default"]["interactionId"] +
+								"&isMobileClient=true";
+							}
 							
-							var url=data.contexts.externalWebApp["carnot:engine:ui:externalWebApp:uri"] +
-									"?ippInteractionUri=" + data.contexts.externalWebApp.ippInteractionUri +
-									"&ippPortalBaseUri=" + data.contexts.externalWebApp.ippPortalBaseURi +
-									"&ippServicesBaseUri=" + data.contexts.externalWebApp.ippServicesBaseUri +
-									"&interactionId=" + data.contexts.externalWebApp.interactionId;
+							if (!url) return;
 							
 							/*Load new data for iframe, as soon as we modify externalUrl on our scope the 
 							  iframe will trigger a load.*/
 							$scope.$apply(function(){
 								$scope.mashupModel.externalUrl= $sce.trustAsResourceUrl(url);
-								$scope.mashupModel.interactionId=data.contexts.externalWebApp.interactionId;
+								$scope.mashupModel.interactionId= data.contexts.externalWebApp ? data.contexts.externalWebApp.interactionId : data.contexts["default"].interactionId;
 							});	
 							
 							$rootScope.$apply(function(){

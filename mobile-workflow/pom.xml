@@ -48,6 +48,13 @@
 
       <dependency>
          <groupId>org.eclipse.stardust.ui.web</groupId>
+         <artifactId>ipp-workflow-perspective</artifactId>
+         <version>${project.version}</version>
+         <scope>compile</scope>
+      </dependency>
+
+      <dependency>
+         <groupId>org.eclipse.stardust.ui.web</groupId>
          <artifactId>ipp-views-common</artifactId>
          <version>${project.version}</version>
          <scope>compile</scope>

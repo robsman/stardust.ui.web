@@ -11,22 +11,35 @@ import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 
 import javax.activation.DataHandler;
-import javax.annotation.Resource;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
+
+import com.google.gson.JsonObject;
+
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.config.Parameters;
 import org.eclipse.stardust.engine.core.interactions.InteractionRegistry;
-import org.eclipse.stardust.ui.mobile.service.MobileWorkflowService;
 import org.eclipse.stardust.ui.mobile.common.LanguageUtil;
-import org.springframework.context.ApplicationContext;
-
-import com.google.gson.JsonObject;
+import org.eclipse.stardust.ui.mobile.service.ActivitySearchHelper;
+import org.eclipse.stardust.ui.mobile.service.DocumentSearchHelper;
+import org.eclipse.stardust.ui.mobile.service.MobileWorkflowService;
+import org.eclipse.stardust.ui.mobile.service.ProcessSearchHelper;
+import org.eclipse.stardust.ui.mobile.service.WorklistHelper;
 
 
 /**
@@ -44,9 +57,6 @@ public class MobileWorkflowResource {
 
 	@Context
 	private ServletContext servletContext;
-
-   @Resource
-   private ApplicationContext springContext;
 	   
 	/**
 	 * 
@@ -82,6 +92,24 @@ public class MobileWorkflowResource {
 			throw new RuntimeException(e);
 		}
 	}
+	
+   @POST
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("logout")
+   public Response logout(String postedData) {
+      try {
+         JsonObject json = jsonIo.readJsonObject(postedData);
+
+         return Response.ok(
+               getMobileWorkflowService().logout().toString(),
+               MediaType.APPLICATION_JSON_TYPE).build();
+      } catch (Exception e) {
+         e.printStackTrace();
+
+         throw new RuntimeException(e);
+      }
+   }
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -104,7 +132,7 @@ public class MobileWorkflowResource {
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("activities")
-   public Response getActivities(@QueryParam("processDefinitionIds") List<String> processDefinitionIds) {
+   public Response getActivities(@QueryParam("processDefinitionIds") String processDefinitionIds) {
       try {
          return Response.ok(
                getMobileWorkflowService().getActivities(processDefinitionIds)
@@ -120,15 +148,19 @@ public class MobileWorkflowResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("worklist")
-	public Response getWorklist() {
-		try {
-			// Initit registry
-			getInteractionRegistry();
-			
-			return Response.ok(
-					getMobileWorkflowService().getWorklist().toString(),
-					MediaType.APPLICATION_JSON_TYPE).build();
-		} catch (Exception e) {
+	public Response getWorklist(@QueryParam("sortKey") String sortKey,
+         @QueryParam("rowFrom") String rowFrom,
+         @QueryParam("pageSize") String pageSize) {
+      try
+      {
+         // Initit registry
+         getInteractionRegistry();
+
+         return Response.ok(
+               getMobileWorkflowService().getWorklist(
+                     WorklistHelper.getWorkslitCriteria("criticality", rowFrom, pageSize)).toString(),
+               MediaType.APPLICATION_JSON_TYPE).build();
+      } catch (Exception e) {
 			e.printStackTrace();
 
 			throw new RuntimeException(e);
@@ -155,11 +187,19 @@ public class MobileWorkflowResource {
    @Path("activity-instances")
    public Response getActivityInstances(@QueryParam("startedFromTimestamp") String startedFromTimestamp,
          @QueryParam("startedToTimestamp") String startedToTimestamp,
-         @QueryParam("activityIds") List<String> activityIds,
-         @QueryParam("states") List<String> states) {
-      try {
+         @QueryParam("processDefinitionIds") String processDefinitionIds,
+         @QueryParam("activityIds") String activityIds,
+         @QueryParam("states") String states,
+         @QueryParam("sortKey") String sortKey,
+         @QueryParam("rowFrom") String rowFrom,
+         @QueryParam("pageSize") String pageSize) {
+      try
+      {
          return Response.ok(
-               getMobileWorkflowService().getActivityInstances().toString(),
+               getMobileWorkflowService().getActivityInstances(
+                     ActivitySearchHelper.getActivitySearchCriteria(startedFromTimestamp,
+                           startedToTimestamp, processDefinitionIds, activityIds, states,
+                           sortKey, rowFrom, pageSize)).toString(),
                MediaType.APPLICATION_JSON_TYPE).build();
       } catch (Exception e) {
          e.printStackTrace();
@@ -207,7 +247,7 @@ public class MobileWorkflowResource {
 		try {
 			// TODO @SG - pass the servlet / spring context to service instead of passing it the needed beans.
 			return Response.ok(
-					getMobileWorkflowService().activateActivity(Long.parseLong(activityInstanceOid), getInteractionRegistry())
+					getMobileWorkflowService().activateActivity(Long.parseLong(activityInstanceOid))
 							.toString(), MediaType.APPLICATION_JSON_TYPE)
 					.build();
 		} catch (Exception e) {
@@ -240,12 +280,19 @@ public class MobileWorkflowResource {
    @Path("process-instances")
    public Response getProcessInstances(@QueryParam("startedFromTimestamp") String startedFromTimestamp,
          @QueryParam("startedToTimestamp") String startedToTimestamp,
-         @QueryParam("processDefinitionIds") List<String> processDefinitionIds,
-         @QueryParam("states") List<String> states) {
-      try {
+         @QueryParam("processDefinitionIds") String processDefinitionIds,
+         @QueryParam("states") String states,
+         @QueryParam("sortKey") String sortKey,
+         @QueryParam("rowFrom") String rowFrom,
+         @QueryParam("pageSize") String pageSize) {
+      try
+      {
          return Response.ok(
-               getMobileWorkflowService().getProcessInstances().toString(),
-               MediaType.APPLICATION_JSON_TYPE).build();
+               getMobileWorkflowService().getProcessInstances(
+                     ProcessSearchHelper.getProcessSearchCriteria(startedFromTimestamp,
+                           startedToTimestamp, processDefinitionIds, states, sortKey,
+                           rowFrom, pageSize)).toString(), MediaType.APPLICATION_JSON_TYPE)
+               .build();
       } catch (Exception e) {
          e.printStackTrace();
 
@@ -395,19 +442,42 @@ public class MobileWorkflowResource {
       }
    }
 
+   @POST
+   @Path("process-instances/{oid: \\d+}")
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   public Response updateProcessInstance(@PathParam("oid") String oid, String postedData)
+   {
+      try
+      {
+         return Response.ok(
+               getMobileWorkflowService().updateProcessInstance(oid,
+                     jsonIo.readJsonObject(postedData)).toString()).build();
+      }
+      catch (Exception e)
+      {
+         e.printStackTrace();
+         throw new RuntimeException(e);
+      }
+   }
+         
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("documents")
    public Response getDocuments(@QueryParam("searchText") String searchText,
          @QueryParam("createFromTimestamp") String createFromTimestamp,
          @QueryParam("createToTimestamp") String createToTimestamp,
-         @QueryParam("documentTypeIds") List<String> documentTypeIds) {
-      try {
+         @QueryParam("documentTypeIds") String documentTypeIds,
+         @QueryParam("sortKey") String sortKey,
+         @QueryParam("rowFrom") String rowFrom,
+         @QueryParam("pageSize") String pageSize) {
+      try
+      {
          return Response.ok(
-               getMobileWorkflowService().getDocuments("",
-                     Long.parseLong("0"),
-                     Long.parseLong("0"),
-                     documentTypeIds).toString(),
+               getMobileWorkflowService().getDocuments(
+                     DocumentSearchHelper.getDocumentSearchCriteria(searchText,
+                           createFromTimestamp, createToTimestamp, documentTypeIds,
+                           sortKey, rowFrom, pageSize)).toString(),
                MediaType.APPLICATION_JSON_TYPE).build();
       } catch (Exception e) {
          e.printStackTrace();
@@ -535,10 +605,8 @@ public class MobileWorkflowResource {
       {
          JsonObject postedDataJson = jsonIo.readJsonObject(postedData);
 
-         InteractionRegistry registry = getInteractionRegistry();
-      // TODO @SG - pass the servlet / spring context to service instead of passing it the needed beans.
          return Response.ok(
-               getMobileWorkflowService().completeActivity(oid, registry).toString(),
+               getMobileWorkflowService().completeActivity(oid).toString(),
                MediaType.APPLICATION_JSON_TYPE).build();
       }
       catch (Exception e)
@@ -559,10 +627,8 @@ public class MobileWorkflowResource {
       {
          JsonObject postedDataJson = jsonIo.readJsonObject(postedData);
 
-      // TODO @SG - pass the servlet / spring context to service instead of passing it the needed beans.
-         InteractionRegistry registry = getInteractionRegistry();
          return Response.ok(
-               getMobileWorkflowService().suspendActivity(oid, registry).toString(),
+               getMobileWorkflowService().suspendActivity(oid).toString(),
                MediaType.APPLICATION_JSON_TYPE).build();
       }
       catch (Exception e)
@@ -583,10 +649,8 @@ public class MobileWorkflowResource {
       {
          JsonObject postedDataJson = jsonIo.readJsonObject(postedData);
 
-      // TODO @SG - pass the servlet / spring context to service instead of passing it the needed beans.
-         InteractionRegistry registry = getInteractionRegistry();
          return Response.ok(
-               getMobileWorkflowService().suspendAndSaveActivity(oid, registry).toString(),
+               getMobileWorkflowService().suspendAndSaveActivity(oid).toString(),
                MediaType.APPLICATION_JSON_TYPE).build();
       }
       catch (Exception e)

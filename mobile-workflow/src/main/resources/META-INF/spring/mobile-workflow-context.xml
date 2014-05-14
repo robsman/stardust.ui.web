@@ -13,7 +13,8 @@
 	<context:component-scan base-package="org.eclipse.stardust.ui.mobile" />
 
 	<bean id="mobileWorkflowService"
-		class="org.eclipse.stardust.ui.mobile.service.MobileWorkflowService">
+		class="org.eclipse.stardust.ui.mobile.service.MobileWorkflowService" scope="session">
+		<aop:scoped-proxy/>
 	</bean>
 
 </beans>

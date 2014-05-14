@@ -38,6 +38,22 @@ define(["angularjs"],function(angular){
 				return deferred.promise;
 			},
 			
+			
+			"logout" : function(){
+				var deferred = $q.defer();
+				
+				$http({
+				    url: baseServiceUrl + "/logout",
+				    method: "POST",
+				    data: {}
+				}).success(function(data, status, headers, config) {
+					deferred.resolve(data);
+				}).error(function(data, status, headers, config) {
+					deferred.reject(status);
+				});
+				return deferred.promise;
+			},
+			
 			"baseHref" : baseServiceUrl,
 			
 			"activate" : function(activityOid){
@@ -327,9 +343,9 @@ define(["angularjs"],function(angular){
 				$http({
 				    url: baseServiceUrl + "/documents?" + 
 				    					  "searchText=" + name +
-				    					  "createFromTimestamp=" + start +
-				    					  "createToTimestamp=" + end + 
-				    					  "documentTypeIds=" + ids,
+				    					  "&createFromTimestamp=" + start +
+				    					  "&createToTimestamp=" + end + 
+				    					  "&documentTypeIds=" + ids,
 				    method: "GET"
 				}).success(function(data, status, headers, config) {
 					deferred.resolve(data);
@@ -340,14 +356,15 @@ define(["angularjs"],function(angular){
 				return deferred.promise;
 			},
 			
-			"getFilteredActivities" : function(start,end,ids,states){
+			"getFilteredActivities" : function(start,end,processIds,ids,states){
 				var deferred = $q.defer();
 				
 				$http({
 				    url: baseServiceUrl + "/activity-instances?" + 
 				    					  "startedFromTimestamp=" + start +
 				    					  "&startedToTimestamp=" + end +
-				    					  "&activityIds=" + ids + 
+				    					  "&processDefinitionIds=" + processIds +
+				    					  "&activityIds=" + ids +
 				    					  "&states=" + states,
 				    method: "GET"
 				}).success(function(data, status, headers, config) {
@@ -498,10 +515,20 @@ define(["angularjs"],function(angular){
 				return deferred.promise;
 			},
 			
-			"setProcessPriority" : function(processInstanceOid,priority){
+			"setProcessPriority" : function(processInstanceOid, priority) {
 				var deferred = $q.defer();
-				deferred.resolve();
-				return deferred.promise;
+				
+				$http({
+				    url: baseServiceUrl + "/process-instances/" + processInstanceOid,
+				    method: "POST",
+				    data: {
+							"priority" : priority
+						}
+				}).success(function(data, status, headers, config) {
+					deferred.resolve(data);
+				}).error(function(data, status, headers, config) {
+					deferred.reject(status);
+				});
 			},
 			
 			"getProcessHistory" : function(processInstanceOid,selectedProcessInstanceOid){
