@@ -44,6 +44,8 @@ import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.engine.api.runtime.UserService;
+import org.eclipse.stardust.reporting.rt.service.ReportingService;
+import org.eclipse.stardust.reporting.rt.service.beans.ReportingServiceImpl;
 import org.eclipse.stardust.ui.web.common.spi.user.User;
 import org.eclipse.stardust.ui.web.common.spi.user.UserProvider;
 import org.eclipse.stardust.ui.web.reporting.beans.spring.portal.CriticalityConfigurationService;
@@ -62,6 +64,7 @@ import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
+
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
@@ -72,7 +75,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
- * 
+ *
  * @author Yogesh.Manware
  *
  */
@@ -91,16 +94,16 @@ public class ReportingServiceBean
    private static final String PUBLIC_REPORT_DEFINITIONS_DIR = REPORTS_ROOT_FOLDER + REPORT_DESIGN;
    private static final String PARTICIPANT_REPORT_DEFINITIONS_DIR_TMP = REPORTS_ROOT_FOLDER + "/PARTICIPANT_ID" + REPORT_DESIGN;
    private static final String USER_REPORT_DIR = "/documents/reports/designs";
-   
+
    private static final String REPORT_DEFINITION_EXT = ".bpmrptdesign";
-   
+
    private DocumentManagementService documentManagementService;
-   
+
    private UserService userService;
-   
+
    @Resource
    private SearchHandlerChain searchHandlerChain;
-   
+
    /**
     * Stores uncommitted changes.
     */
@@ -121,16 +124,17 @@ public class ReportingServiceBean
 
    @Resource(name=XPathCacheManager.BEAN_ID)
    private XPathCacheManager xPathCacheManager;
-   
+
    @Resource
    private CriticalityConfigurationService criticalityConfigurationService;
-   
+
    private ReportingServicePojo reportingServicePojo;
+   private ReportingService reportingService;
 
    private JsonMarshaller jsonMarshaller;
 
    private Gson gson = new Gson();
-   
+
    public ReportingServiceBean()
    {
       jsonMarshaller = new JsonMarshaller();
@@ -139,6 +143,12 @@ public class ReportingServiceBean
 
    private ReportingServicePojo getReportingServicePojo()
    {
+      // this is a test if dependencies can be found in the build
+      if(reportingService == null)
+      {
+         reportingService = new ReportingServiceImpl();
+      }
+
       if(reportingServicePojo == null)
       {
          reportingServicePojo = new ReportingServicePojo(getServiceFactory());
@@ -238,7 +248,7 @@ public class ReportingServiceBean
                      metadataJson.addProperty("javaType", dataPath.getMappedType().getName());
 
                      descriptorJson.add("metadata", metadataJson);
-                     
+
                      descriptorsMap.put(dataPath.getId(), dataPath);
                   }
                }
@@ -290,9 +300,9 @@ public class ReportingServiceBean
    {
       List<CriticalityCategory> criticalityPrefs = CriticalityConfigurationUtil
             .getCriticalityCategoriesList(criticalityConfigurationService.readCriticalityCategoryPrefsMap());
-      
+
       JsonObject preferencesJson = new JsonObject();
-      
+
       // criticality
       ArrayList<CriticalityCategory> criticalityList = new ArrayList<CriticalityCategory>();
       CriticalityCategory cat = CriticalityConfigurationUtil.getAllCriticalityCategory();
@@ -303,14 +313,14 @@ public class ReportingServiceBean
       cat.setName("Undefined"); //TODO I18n
       criticalityList.add(cat);
       preferencesJson.add("criticality", gson.toJsonTree(criticalityList));
-  
+
       //add other preferences here
-      
+
       return preferencesJson;
    }
-   
-   
-   
+
+
+
    /**
     *
     * @return
@@ -426,12 +436,12 @@ public class ReportingServiceBean
          }
       }
    }
-   
+
    /**
     * @param reportId
     * @return
     */
-   public byte[] downloadReportDefinition(String reportId) 
+   public byte[] downloadReportDefinition(String reportId)
    {
       try
       {
@@ -558,7 +568,7 @@ public class ReportingServiceBean
             {
                Participant  participant = modelService.getParticipant(participantSubFolder.getName(), null);
                JsonObject participantFolderJson = null;
-               
+
                if (participant != null)
                {
                   participantFolderJson = getReportDefinitions(findOrCreateFolder(participantSubFolder.getPath() + REPORT_DESIGN), participant.getName() + " Report Definitions"); //TODO: I18N
@@ -573,7 +583,7 @@ public class ReportingServiceBean
 
          subFoldersJson.add(getReportDefinitions(publicFolder, "Public Report Definitions")); // I18N
          subFoldersJson.add(getReportDefinitions(personalFolder, "Personal Report Definitions")); // I18N
-         
+
          return rootFolderJson;
       }
       catch (Exception e)
@@ -597,7 +607,7 @@ public class ReportingServiceBean
    {
       return searchHandlerChain.handleRequest(serviceName, searchValue);
    }
-   
+
    /**
     * @param folder
     * @param label

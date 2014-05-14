@@ -56,6 +56,10 @@
          conf="stardust-web-reporting-compile->jsf-api-module-compile"/>
       <dependency org="org.eclipse.stardust.engine" name="carnot-spring-module" rev="${ipp.version.full}"
          conf="stardust-web-reporting-compile->spring-module-compile"/>
+      <dependency org="org.eclipse.stardust.reporting.rt" name="stardust-reporting-client" rev="${ipp.version.full}" conf="stardust-web-reporting-compile->stardust-reporting-client-compile"/>
+      <dependency org="org.eclipse.stardust.reporting.rt" name="stardust-reporting-rt" rev="${ipp.version.full}" conf="stardust-web-reporting-compile->stardust-reporting-rt-compile"/>
+      <dependency org="org.eclipse.stardust.reporting.rt" name="stardust-reporting-client" rev="${ipp.version.full}" conf="stardust-web-reporting-runtime->stardust-reporting-client-runtime"/>
+      <dependency org="org.eclipse.stardust.reporting.rt" name="stardust-reporting-rt" rev="${ipp.version.full}" conf="stardust-web-reporting-runtime->stardust-reporting-rt-runtime"/>
 
       <dependency org="javax.servlet" name="servlet-api" rev="${servlet-api.version}"
          conf="stardust-web-reporting-provided->default"/>
