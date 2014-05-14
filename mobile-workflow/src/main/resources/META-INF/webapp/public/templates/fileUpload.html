@@ -7,7 +7,7 @@
 		 ng-class="{'jqm-cstm-success':uploadSuccesful, 'jqm-cstm-warning' : !uploadSuccesful}"
 		 ng-hide="!showMsg">
 		 <span style="float:left;">{{alertMessage}}</span>
-		 <i class="fa fa-2x fa-times" style="float:right;padding-right:1em;"></i>
+		 <i class="sc sc-2x sc-close" style="float:right;padding-right:1em;"></i>
 	</div>
 
 	<input data-enhance="false" 
@@ -18,7 +18,7 @@
 	   title="browse"
 	   class=" ui-btn ui-corner-all ui-btn-a ipp-big-square-btn" 
 	   name="mockFile">
-	   <i class="fa fa-files-o fa-5x"></i>
+	   <i class="sc sc-documents-o fa-5x"></i>
 	</a>
 	<span style="position:relative;top:-3.2em;padding:0.5em;">{{uiText.addafile}}</span>
 	<a title="Upload"
@@ -28,8 +28,8 @@
 		ng-click="isUploading=true" 
 		style="position:relative;top:-3.2em;">
 			
-		<i ng-class="{'fa-cloud-upload' : !isUploading, 'fa-spinner' : isUploading, 'fa-spin' : isUploading}"  
-		   class="fa fa-2x ipp-inline" 
+		<i ng-class="{'sc-cloud-u' : !isUploading, 'sc-spinner' : isUploading, 'sc-spin' : isUploading}"  
+		   class="sc sc-2x ipp-inline" 
 		   style="vertical-align:middle;"></i>
 	</a>
 

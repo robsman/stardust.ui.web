@@ -1,19 +1,54 @@
 <div class="ipp-header" data-role="header">
 	 <div style="float:left;margin-left:1.1em;margin-top:0.75em;">
 		 <a ng-show="!showResults" href="#" data-rel="back" class="ipp-icon-minimal">
-		 	<i style="color:#ffffff;" class="fa ipp-fs-2x fa-chevron-left"></i>
+		 	<i style="color:#ffffff;" class="sc ipp-fs-2x sc-chevron-l"></i>
 		 </a>
 		 <a ng-show="showResults" ng-click="showResults=false" href="#" class="ipp-icon-minimal">
-		 	<i style="color:#ffffff;" class="fa ipp-fs-2x fa-chevron-left"></i>
+		 	<i style="color:#ffffff;" class="sc ipp-fs-2x sc-chevron-l"></i>
 		 </a>
 	 </div>
      <h4>{{uiText.searchAct}}</h4>
+     <div style="position:absolute;top:11px;right:1em;">
+	     <a ng-show="showResults"  class="ipp-icon-minimal" href="#activityFilterPopup" data-rel="popup" data-transition="slide">
+	     	<i class="fa ipp-fs-2x fa-sort"></i>
+	     </a>
+     </div>
+     
+     <div data-role="popup" id="activityFilterPopup" data-theme="b">
+        <ul data-role="listview"  data-inset="true" style="min-width:210px;">
+            <li ng-click="getResults('-startTime');sortBy='-startTime'">
+	            <a class="ipp-no-content ipp-center" href="#">
+	            	<span class="ipp-float-l">{{uiText.newest}}</span>
+	            	<i ng-show="sortBy=='-startTime'" class="sc sc-check ipp-float-r"></i>
+	            </a>
+            </li>
+            <li ng-click="getResults('startTime');sortBy='startTime'">
+	            <a class="ipp-no-content ipp-center" href="#">
+	            	<span class="ipp-float-l">{{uiText.oldest}}</span>
+	            	<i ng-show="sortBy=='startTime'" class="sc sc-check ipp-float-r"></i>
+	            </a>
+	        </li>
+            <li ng-click="getResults('priority');sortBy='criticality'">
+            	<a class="ipp-no-content ipp-center" href="#">
+            		<span class="ipp-float-l">{{uiText.criticality}}</span>
+            		<i ng-show="sortBy=='criticality'" class="sc sc-check ipp-float-r"></i>
+            	</a>
+            </li>
+            <li ng-click="getResults('lastModificationTime');sortBy='lastModificationTime'">
+            	<a class="ipp-no-content ipp-center" href="#">
+            		<span class="ipp-float-l">{{uiText.modified}}</span>
+            		<i ng-show="sortBy=='lastModificationTime'" class="sc sc-check ipp-float-r"></i>
+            	</a>
+            </li>
+        </ul>
+	</div>
+	
 </div>
 
 <div  ng-show="hasError==true" 
       ng-click="hasError=false;" 
       class="ipp-bar ipp-bar-error">
-	<i class="fa fa-times-circle-o"></i>
+	<i class="sc sc-close-circle"></i>
 	<span>{{errorMessage}}</span>
 </div>
 
@@ -79,7 +114,7 @@
 		    	<span ng-click="processesToggleState=!processesToggleState;
 		    	               toggleAll(activitySearchModel.startableProcesses,processesToggleState,$event)"
 		    	      class="ipp-li-count-secondary">
-		    		<i ng-class="{'fa-check-square':processesToggleState}" class="fa fa-square"></i> {{uiText.all}}
+		    		<i ng-class="{'sc-check-box':processesToggleState}" class="sc sc-square"></i> {{uiText.all}}
 		    	</span>
 		    </h4>
 		    <ul data-role="listview" data-theme="a">
@@ -88,8 +123,8 @@
 				              getActivities()" 
 		            ng-repeat="process in activitySearchModel.startableProcesses">
 		        	<i style="font-size:1.5em;"  
-		        	   ng-class="{'fa-check-square':process.isChecked}" 
-		        	   class="fa fa-square"></i>
+		        	   ng-class="{'sc-check-box':process.isChecked}" 
+		        	   class="sc sc-square"></i>
 		        	&nbsp;
 		        	<span class="ipp-fs-small ipp-light ipp-fw-light">{{process.name}}</span>
 	        	</li>
@@ -105,7 +140,7 @@
 		    	<span ng-click="activityToggleState=!activityToggleState;
 		    	               toggleAll(activitySearchModel.activities,activityToggleState,$event)"
 		    	      class="ipp-li-count-secondary">
-		    		<i ng-class="{'fa-check-square':activityToggleState}" class="fa fa-square"></i> {{uiText.all}}
+		    		<i ng-class="{'sc-check-box':activityToggleState}" class="sc sc-square"></i> {{uiText.all}}
 		    	</span>
 		    </h4>
 		    <ul data-role="listview" data-theme="a">
@@ -113,7 +148,7 @@
 				    ng-click="activity.isChecked=!activity.isChecked;" 
 		            ng-repeat="activity in activitySearchModel.activities">
 		        	<i style="font-size:1.5em;"  
-		        	   ng-class="{'fa-check-square':activity.isChecked}" 
+		        	   ng-class="{'sc-check-box':activity.isChecked}" 
 		        	   class="fa fa-square"></i>
 		        	&nbsp;
 		        	<span class="ipp-fs-small ipp-light ipp-fw-light">{{activity.name}}</span>
@@ -130,7 +165,7 @@
 		    	<span ng-click="stateToggleState=!stateToggleState;
 		    	               toggleAll(activitySearchModel.states,stateToggleState,$event)"
 		    	      class="ipp-li-count-secondary">
-		    		<i ng-class="{'fa-check-square':stateToggleState}" class="fa fa-square"></i> {{uiText.all}}
+		    		<i ng-class="{'sc-check-box':stateToggleState}" class="sc sc-square"></i> {{uiText.all}}
 		    	</span>
 		    </h4>
 		    <ul data-role="listview" data-theme="a">
@@ -138,8 +173,8 @@
 				    ng-click="state.isChecked=!state.isChecked;" 
 		            ng-repeat="state in activitySearchModel.states">
 		        	<i style="font-size:1.5em;"  
-		        	   ng-class="{'fa-check-square':state.isChecked}" 
-		        	   class="fa fa-square"></i>
+		        	   ng-class="{'sc-check-box':state.isChecked}" 
+		        	   class="sc sc-square"></i>
 		        	&nbsp;
 		        	<span class="ipp-fs-small ipp-light ipp-fw-light">{{state.name}}</span>
 		        </li>
@@ -153,7 +188,7 @@
 	   style="margin-left:1em;margin-right:1em;" 
 	   href="#" 
 	   class="ui-btn ui-corner-all ui-btn-d">
-		<i class="fa fa-search ipp-pad-right-4x"></i>{{uiText.submit}}
+		<i class="sc sc-search ipp-pad-right-4x"></i>{{uiText.submit}}
 	</a>
 
 </div>

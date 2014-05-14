@@ -72,11 +72,15 @@ define(["angularjs"],function(angular){
 				return deferred.promise;
 			},
 			
-			"getWorklist" : function(){
-				var deferred = $q.defer();
+			"getWorklist" : function(sortBy){
+				var deferred = $q.defer(),
+					sortString="";
 				
+				if(sortBy){
+					sortString ="?sort=" + sortBy;
+				}
 				$http({
-				    url: baseServiceUrl + "/worklist",
+				    url: baseServiceUrl + "/worklist" + sortString,
 				    method: "GET"
 				}).success(function(data, status, headers, config) {
 					deferred.resolve(data);
@@ -336,7 +340,7 @@ define(["angularjs"],function(angular){
 				return deferred.promise;
 			},
 			
-			"getFilteredDocuments" : function(name,start,end,ids){
+			"getFilteredDocuments" : function(name,start,end,ids,sortBy){
 				var deferred = $q.defer(),
 				 	ids=ids.replace(/[{}]/g, encodeURIComponent);
 				
@@ -345,7 +349,8 @@ define(["angularjs"],function(angular){
 				    					  "searchText=" + name +
 				    					  "&createFromTimestamp=" + start +
 				    					  "&createToTimestamp=" + end + 
-				    					  "&documentTypeIds=" + ids,
+				    					  "&documentTypeIds=" + ids +
+				    					  "&sortBy=" + sortBy,
 				    method: "GET"
 				}).success(function(data, status, headers, config) {
 					deferred.resolve(data);
@@ -356,7 +361,7 @@ define(["angularjs"],function(angular){
 				return deferred.promise;
 			},
 			
-			"getFilteredActivities" : function(start,end,processIds,ids,states){
+			"getFilteredActivities" : function(start,end,ids,states,sortBy){
 				var deferred = $q.defer();
 				
 				$http({
@@ -365,7 +370,8 @@ define(["angularjs"],function(angular){
 				    					  "&startedToTimestamp=" + end +
 				    					  "&processDefinitionIds=" + processIds +
 				    					  "&activityIds=" + ids +
-				    					  "&states=" + states,
+				    					  "&states=" + states +
+				    					  "&sortBy=" + sortBy,
 				    method: "GET"
 				}).success(function(data, status, headers, config) {
 					deferred.resolve(data);
@@ -376,7 +382,7 @@ define(["angularjs"],function(angular){
 				return deferred.promise;
 			},
 			
-			"getFilteredProcesses" : function(start,end,ids,states){
+			"getFilteredProcesses" : function(start,end,ids,states,sortBy){
 				//process-instances?startedFromTimestamp=&startedToTimestamp=&processDefinitionIds=&states=
 				var deferred = $q.defer();
 				
@@ -385,7 +391,8 @@ define(["angularjs"],function(angular){
 				    					  "startedFromTimestamp=" + start +
 				    					  "&startedToTimestamp=" + end +
 				    					  "&processDefinitionIds=" + ids +
-				    					  "&states=" + states,
+				    					  "&states=" + states +
+				    					  "&sortBy=" + sortBy,
 				    method: "GET"
 				}).success(function(data, status, headers, config) {
 					deferred.resolve(data);
@@ -529,6 +536,7 @@ define(["angularjs"],function(angular){
 				}).error(function(data, status, headers, config) {
 					deferred.reject(status);
 				});
+				return deferred.promise;
 			},
 			
 			"getProcessHistory" : function(processInstanceOid,selectedProcessInstanceOid){

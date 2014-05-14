@@ -134,6 +134,7 @@ define(function(require){
 				$( "body>[data-role='panel']" ).panel();
 				
 				//TODO:ZZM- TEMP CODE FOR CRNT-32870
+				/*
 				$( window ).on( "orientationchange", function( event ) {
 					$("#mainPage").trigger("create");
 					var winWidth =$(window).width();
@@ -150,7 +151,7 @@ define(function(require){
                     $(".ui-listview").width(winWidth);
                     $(".ui-footer").width(winWidth);
                     $(".ui-page").width(winWidth);
-                });
+                });*/
 				
 				
 				/*Acquire reference in Jquery scope to our Angular rootScope*/
@@ -180,14 +181,6 @@ define(function(require){
 				        "iscroll_onpullup"   : function(){console.log("pullup");}
 			        });
 			      });
-				
-				/*Show our loading gif*/
-				$.mobile.loading( "show", {
-					  text: "foo",
-					  textVisible: false,
-					  theme: "a",
-					  html: ""
-					});
 		
 		});//finally end
 	};

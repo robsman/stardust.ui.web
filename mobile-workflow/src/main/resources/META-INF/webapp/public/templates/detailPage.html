@@ -2,7 +2,7 @@
 	 <a ng-href="#{{previousPage}}" 
 	    class="ipp-icon-minimal"
 	    ng-click="activeTab=''">
-	 	<i style="float:left;color:#ffffff;" class="fa fa-2x fa-chevron-left"></i>
+	 	<i style="float:left;color:#ffffff;" class="sc sc-2x sc-chevron-l"></i>
 	 </a>
      <h4>{{activityModel.item.activityName}} <span class="hide-media-sm">(#{{activityModel.item.oid}})</span></h4>
 </div>
@@ -10,14 +10,14 @@
 <div  ng-show="errorModel.hasError==true" 
       ng-click="errorModel.hasError=false;" 
       class="ipp-bar ipp-bar-error">
-	<i class="fa fa-times-circle-o"></i>
+	<i class="sc sc-close-circle"></i>
 	<span>{{errorModel.errorMessage}}</span>
 </div>
 
 <div  ng-show="infoModel.hasInfo==true" 
       ng-click="infoModel.hasInfo=false;" 
       class="ipp-bar ipp-bar-info">
-	<i class="fa fa-info-circle"></i>
+	<i class="sc sc-info-circle"></i>
 	<span>{{infoModel.infoMessage}}</span>
 </div>
 
@@ -28,31 +28,31 @@
 	<ul>
 		<li ng-click="activeSubView='activity';getNotes(activityModel.item.processInstanceOid)">
 			<a href="#activityTab" ng-class="{'ipp-btn-active' : activeSubView=='activity'}">
-				<i title="Activity" style="display:block;" class="fa fa-info fa-2x jqm-icon-block ipp-lightest"></i>
+				<i title="Activity" style="display:block;" class="sc sc-info sc-2x jqm-icon-block ipp-lightest"></i>
 				<span title="Activity" class="hide-media-sm ipp-lighter ipp-fw-normal">{{uiText.activity}}</span>
 			</a>		
 		</li>
 		<li ng-click="activeSubView='form'" >
 			<a ng-href="{{formTabTarget}}" ng-class="{'ipp-btn-active' : activeSubView=='form'}">
-				<i style="display:block;" class="fa fa-cog fa-2x jqm-icon-block ipp-lightest"></i>
+				<i style="display:block;" class="sc sc-cog sc-2x jqm-icon-block ipp-lightest"></i>
 				<span title="Form" class="hide-media-sm ipp-lighter ipp-fw-normal">{{uiText.form}}</span>	
 			</a>
 		</li>
 		<li ng-click="activeSubView='docs'">
 			<a href="#docsTab" ng-class="{'ipp-btn-active' : activeSubView=='docs'}">
-				<i style="display:block;" class="fa fa-files-o fa-2x jqm-icon-block ipp-lightest"></i>
+				<i style="display:block;" class="sc sc-documents-o sc-2x jqm-icon-block ipp-lightest"></i>
 				<span title="Documents" class="hide-media-sm ipp-lighter ipp-fw-normal">{{uiText.documents}} ({{documentModel.docs.length}})</span>
 			</a>
 		</li>
 		<li ng-click="activeSubView='notes'">
 		 	<a href="#notesTabContent" ng-class="{'ipp-btn-active' : activeSubView=='notes'}">
-				<i style="display:block;" class="fa fa-clipboard fa-2x jqm-icon-block ipp-lightest"></i>
+				<i style="display:block;" class="sc sc-clipboard sc-2x jqm-icon-block ipp-lightest"></i>
 				<span title="Notes" class="hide-media-sm ipp-lighter ipp-fw-normal">{{uiText.notes}} ({{notesModel.notes.length}})</span>
 			</a>
 		</li>
 		<li ng-click="navigateTo('#processPage?id=' + activityModel.item.processInstanceOid);activeSubView='process'">
 			<a  id="#processTab" href="#" ng-class="{'ipp-btn-active' : activeSubView=='process'}">
-				<i style="display:block;" class="fa fa-cogs fa-2x jqm-icon-block ipp-lightest"></i>
+				<i style="display:block;" class="sc sc-cogs sc-2x jqm-icon-block ipp-lightest"></i>
 				<span title="Process" class="hide-media-sm ipp-lighter ipp-fw-normal">{{uiText.process}}</span>
 			</a>
 		</li>
@@ -109,7 +109,7 @@
 	  	   	       (appData.isActivityHot=='false' || appData.isActivityHot==false)" 
 	  	   style="margin-right:0em;" 
 	  	   class="ui-btn ui-btn-d ui-corner-all ui-btn-inline">
-	  	<i class="fa fa-bolt ipp-pad-right-4x"></i> {{uiText.activate}}
+	  	<i class="sc sc-lightning ipp-pad-right-4x"></i> {{uiText.activate}}
 	  </div>
 	  
 	  <!-- Pseudo activate button we detected a conflict and just want to warn the user on click -->
@@ -119,7 +119,7 @@
 	  	<a class="ui-btn ui-btn-d ui-corner-all ui-btn-inline" 
 	  	   ng-href="#activateConflictPopup_{{$id}}" 
 	  	   data-rel="popup">
-	  	   <i class="fa fa-bolt ipp-pad-right-4x"></i> {{uiText.activate}}
+	  	   <i class="sc sc-lightning ipp-pad-right-4x"></i> {{uiText.activate}}
 	  	</a>
 	  </div>
 

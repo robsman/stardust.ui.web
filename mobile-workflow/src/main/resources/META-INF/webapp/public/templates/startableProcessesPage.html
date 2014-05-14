@@ -1,6 +1,6 @@
 <div class="ipp-header" data-role="header">
 	 <a href="#" data-rel="back" class="ipp-icon-minimal">
-	 	<i style="float:left;" class="fa fa-2x fa-chevron-left"></i>
+	 	<i style="float:left;" class="sc sc-2x sc-chevron-l"></i>
 	 </a>
      <h4>{{uiText.startWork}}</h4>
      <span class="ipp-li-count">{{startableProcessModel.processes.length}}</span>	
@@ -9,7 +9,7 @@
 <div  ng-show="errorModel.hasError==true" 
       ng-click="errorModel.hasError=false;" 
       class="ipp-bar ipp-bar-error">
-	<i class="fa fa-times-circle-o"></i>
+	<i class="sc sc-close-circle"></i>
 	<span>{{errorModel.errorMessage}}</span>
 </div>
 
@@ -20,7 +20,7 @@
 			<p>
 				<span class="ipp-fs-smaller ipp-fw-normal ipp-lighter">{{process.description}}</span>
     		</p>
-    		<i class="fa fa-1x fa-chevron-right ipp-nav-icon-right"></i>
+    		<i class="sc sc-chevron-r ipp-nav-icon-right"></i>
 		</a>
 	</li>
 </ul>
@@ -36,25 +36,25 @@
     <div role="main" data-theme="a" class="ui-content">
     
     	<div class="ipp-bgcolor-primary ipp-popup-header">
-    		<i class="fa fa-info-circle ipp-pad-right-4x"></i><span>{{uiText.popupHdr}}</span>
+    		<i class="sc sc-exclamation-circle ipp-pad-right-4x"></i><span>{{uiText.popupHdr}}</span>
     	</div>
     	
         <div>{{uiModel.popupMessage}}</div>
     	<p>{{uiText.popupSubhdr}}</p>
         <a ng-show="uiModel.showHotNavBtn" ng-href="#detailPage?id={{appData.hotActivityInstance.oid}}&activeTab=formTab" 
            class="ui-btn ui-corner-all ui-shadow ui-btn-d ipp-btn-left-align" >
-           <i class="fa fa-cogs ipp-pad-right-4x"></i>
+           <i class="sc sc-cogs ipp-pad-right-4x"></i>
 		   <span class="ipp-fs-small">{{uiText.return}}<span>
 	    </a>
         <a ng-show="uiModel.showProcessDetailsBtn" ng-href="#processPage?id={{uiModel.currentSelectedProcessId}}" 
            class="ui-btn ui-corner-all ui-shadow ui-btn-d ipp-btn-left-align" >
-           <i class="fa fa-cogs ipp-pad-right-4x"></i>
+           <i class="sc sc-cogs ipp-pad-right-4x"></i>
            <span class="ipp-fs-small">{{uiText.view}}</span>
         </a>
         <a ng-show="uiModel.showCloseDialogBtn" href="#" 
            ng-click="uiModel.showPopup=false"
            class="ui-btn ipp-btn-left-align ui-corner-all ui-shadow ui-btn-d ipp-block ipp-bgcolor-tertiary" >
-           <i class="fa fa-times ipp-pad-right-4x"></i>
+           <i class="sc sc-close ipp-pad-right-4x"></i>
            <span class="ipp-fs-small">{{uiText.close}}</span>
         </a>
     </div>

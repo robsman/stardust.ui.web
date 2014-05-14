@@ -13,19 +13,19 @@
 			   style="line-height:2em"
 			   href="#documentViewerPage?id={{doc.id}}&processOid={{activityModel.item.processInstanceOid}}">
 			   
-			    <i ng-class="{'fa-picture-o':isImageType(doc.name),'fa-file-o':!isImageType(doc.name)}" style="vertical-align:middle" 
-			       class="fa fa-2x fa-fw ipp-color-secondary-darkest ipp-icon-pad-r"></i>
+			    <i ng-class="{'sc-picture':isImageType(doc.name),'sc-document-o':!isImageType(doc.name)}" style="vertical-align:middle" 
+			       class="sc sc-2x sc-fw ipp-color-secondary-darkest ipp-icon-pad-r"></i>
 			       
 				<span class="ipp-fw-normal ipp-fs-small ipp-light">{{doc.name}}</span>
 
 	       		<div style="margin-top:-5px;" class="ui-li-aside">
-         			<i class="fa fa-clock-o ipp-lighter ipp-fs-smaller"></i>
+         			<i class="sc sc-clock ipp-lighter ipp-fs-smaller"></i>
 
          			<span class="ipp-fs-smallest ipp-lighter ipp-fw-normal">
          			      {{doc.lastModifiedTimestamp | friendlyDate}}</span>
          		</div>
 
-         		<i  class="fa fa-1x fa-chevron-right ipp-nav-icon-right"></i>
+         		<i  class="sc sc-chevron-r ipp-nav-icon-right"></i>
 			</a>
 		</li>
 	</ul>

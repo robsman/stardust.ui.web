@@ -1,24 +1,45 @@
 
 <div class="ipp-header" data-role="header">
 	 <a href="#mainPage" class="ipp-icon-minimal">
-	 	<i style="float:left;" class="fa fa-2x fa-chevron-left"></i>
+	 	<i style="float:left;" class="sc sc-2x sc-chevron-l"></i>
 	 </a>
      <h4>{{uiText.worklist}}
      	<span class="ipp-li-count ipp-li-count-relative">{{worklistModel.worklistItems.length}}</span>
      </h4>
-     <!-- span class="ipp-li-count">{{worklistModel.worklistItems.length}}</span-->
      <a  class="ipp-icon-minimal" href="#wlistFilterPopup" data-rel="popup" data-transition="slide">
      	<i  class="fa ipp-fs-2x fa-sort"></i>
      </a>
      <div data-role="popup" id="wlistFilterPopup" data-theme="b">
         <ul data-role="listview"  data-inset="true" style="min-width:210px;">
-            <li ng-click="predicate='-startTime'"><a class="ipp-no-content ipp-center" href="#">{{uiText.newest}}</a></li>
-            <li ng-click="predicate='startTime'"><a class="ipp-no-content ipp-center" href="#">{{uiText.oldest}}</a></li>
-            <li ng-click="predicate='criticality'"><a class="ipp-no-content ipp-center" href="#">{{uiText.critical}}</a></li>
-            <li ng-click="predicate='lastModificationTime'"><a class="ipp-no-content ipp-center" href="#">{{uiText.modified}}</a></li>
+            <li ng-click="getSortedWorklist('-startTime');sortBy='-startTime'">
+	            <a class="ipp-no-content ipp-center" href="#">
+	            	<span class="ipp-float-l">{{uiText.newest}}</span>
+	            	<i ng-show="sortBy=='-startTime'" class="sc sc-check ipp-float-r"></i>
+	            </a>
+            </li>
+            <li ng-click="getSortedWorklist('startTime');sortBy='startTime'">
+	            <a class="ipp-no-content ipp-center" href="#">
+	            	<span class="ipp-float-l">{{uiText.oldest}}</span>
+	            	<i ng-show="sortBy=='startTime'" class="sc sc-check ipp-float-r"></i>
+	            </a>
+	        </li>
+            <li ng-click="getSortedWorklist('criticality');sortBy='criticality'">
+            	<a class="ipp-no-content ipp-center" href="#">
+            		<span class="ipp-float-l">{{uiText.critical}}</span>
+            		<i ng-show="sortBy=='criticality'" class="sc sc-check ipp-float-r"></i>
+            	</a>
+            </li>
+            <li ng-click="getSortedWorklist('lastModificationTime');sortBy='lastModificationTime'">
+            	<a class="ipp-no-content ipp-center" href="#">
+            		<span class="ipp-float-l">{{uiText.modified}}</span>
+            		<i ng-show="sortBy=='lastModificationTime'" class="sc sc-check ipp-float-r"></i>
+            	</a>
+            </li>
         </ul>
 	</div>	
 </div>
+
+<div jqm-loader jqm-show-loader="{{isAjaxLoading}}" jqm-text=""></div>
 
 <div  ng-show="errorModel.hasError==true" 
       ng-click="errorModel.hasError=false;" 
@@ -44,12 +65,12 @@
 	          		</span>
 	         	</div>
          		<div class="ui-li-aside">
-         			<i class="fa fa-clock-o ipp-lighter ipp-fs-smaller"></i>
+         			<i class="sc sc-clock ipp-lighter ipp-fs-smaller"></i>
 
          			<span class="ipp-fs-smallest ipp-lighter ipp-fw-normal">
          			      {{item.startTime | friendlyDate }}</span>
          		</div>
-         		<i class="fa fa-1x fa-chevron-right ipp-nav-icon-right ipp-margin-top-1x"></i>
+         		<i class="sc sc-chevron-r ipp-nav-icon-right ipp-margin-top-1x"></i>
 			</a>
 		</li>
 	</ul>
@@ -61,10 +82,3 @@
     		<strong>{{uiText.empty}}</strong>
     	</p>
 </div>
-
-<!-- div data-position="fixed" data-role="footer" data-theme="a" 
-		 ng-controller="footerCtrl"
-		 data-jqm-template 
-		 data-jqm-widgets="" 
-		 data-template-url="templates/baseFooter.html">
-</div-->

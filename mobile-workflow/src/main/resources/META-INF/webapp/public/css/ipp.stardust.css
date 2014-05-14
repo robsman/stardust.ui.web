@@ -775,6 +775,10 @@ a.ui-btn:active .ipp-li-insert{
 	color:#ffffff;
 }
 
+.ipp-header a i.sc{
+	color:#ffffff;
+}
+
 /*apply to any href icon which JQM has enhanced*/
 .ipp-icon-minimal{
 	background:none !important;

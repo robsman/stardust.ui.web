@@ -138,8 +138,14 @@ define([],function(){
 			
 			"worklistCtrl" : function($scope, $rootScope, $q, $filter, workflowService,utilService,il18nService){
 				
-				$scope.errorModel = new errorModel();
-				$scope.worklistModel=new worklistModel();
+				/*Initialize our reinitialize our models*/
+				$scope.initModels=function(){
+					$scope.$apply(function(){
+						$scope.errorModel = new errorModel();
+						$scope.worklistModel=new worklistModel();
+					});
+				};
+				$scope.initModels();
 				
 				$scope.uiText={
 						"worklist" : il18nService.getProperty("mobile.worklist.header.text"),
@@ -150,10 +156,28 @@ define([],function(){
 						"empty"    : il18nService.getProperty("mobile.worklist.message.empty")
 				};
 				
-				$scope.init=function(){
+				$scope.getSortedWorklist = function(sortBy){
+					
+					$scope.isAjaxLoading=true;
+					$scope.init(sortBy)
+						.catch(function(){
+							$scope.$apply(function(){
+								$scope.errorModel.hasError=true;
+								$scope.errorModel.errorMessage= $rootScope.appData.errorText.recordretrieval;
+								$timeout(function(){
+									$scope.errorModel.hasError=false;
+								},$rootScope.appData.barDuration);
+							});
+						})
+						.finally(function(){
+							$scope.isAjaxLoading=false;
+						});
+				}
+				
+				$scope.init=function(sortBy){
 					var deferred = $q.defer();
 					
-					workflowService.getWorklist()
+					workflowService.getWorklist(sortBy)
 					.then(function(data){
 						data.worklist= $filter("orderBy")(data.worklist,"oid",true);
 						$scope.$apply(function(){
@@ -180,6 +204,9 @@ define([],function(){
 					/*update global data with current page*/
 					$rootScope.appData.activePage = edata.pageTarget;
 					
+					/*reset our UI to a blank state*/
+					$scope.initModels();
+					
 					$scope.init()
 					.catch(function(){
 						$scope.$apply(function(){
@@ -204,9 +231,16 @@ define([],function(){
 					"documents" : il18nService.getProperty("mobile.mainpage.listview.documents")
 				}
 				
-				$scope.mainPageModel = new mainPageModel();
-				$scope.errorModel = new errorModel();
-				$scope.getProperty = il18nService.getProperty;
+				//$scope.getProperty = il18nService.getProperty;
+				
+				/*Initialize our reinitialize our models*/
+				$scope.initModels=function(){
+					$scope.$apply(function(){
+						$scope.mainPageModel = new mainPageModel();
+						$scope.errorModel = new errorModel();
+					});
+				};
+				$scope.initModels();
 				
 				$scope.init = function(){
 					var deferred = $q.defer();
@@ -233,7 +267,9 @@ define([],function(){
 					if(edata.pageTarget != "mainPage"){return;}
 					
 					$rootScope.appData.activePage = edata.pageTarget;
-
+					
+					$scope.initModels();
+					
 					$scope.init()
 					.catch(function(){
 						$scope.$apply(function(){
@@ -250,28 +286,36 @@ define([],function(){
 			},
 			
 			"documentSearchCtrl" : function($scope,$rootScope,$q,$timeout,workflowService,utilService,il18nService){
-				var now = new Date(),
-				    then = new Date(),
-				    startDPO,
-				    endDPO;
 				
-				/*set initial values for our dates.*/
-				then.setDate(then.getDate() - 7); 
-				startDPO = utilService.buildDatePartObject(then.toString());
-				endDPO = utilService.buildDatePartObject(now.toString());
-				
-				$scope.isAjaxLoading=false;
-				$scope.documentSearchModel = new documentSearchModel();
-				$scope.errorModel = new errorModel();
-				$scope.results=[];
-				$scope.filter = {
-						name : "",
-						startDate : startDPO.yyyy + "-" + startDPO.MM + "-" + startDPO.dd,
-						startTime : "00:00:01",
-						endDate : endDPO.yyyy + "-" + endDPO.MM + "-" + endDPO.dd,
-						endTime : endDPO.hh + ":" + endDPO.mm + ":" + endDPO.ss,
-						documentTypes : []	
+				/*Initialize our reinitialize our models*/
+				$scope.initModels=function(){
+					$scope.$apply(function(){
+						var now = new Date(),
+					    then = new Date(),
+					    startDPO,
+					    endDPO;
+					
+						/*set initial values for our dates.*/
+						then.setDate(then.getDate() - 7); 
+						startDPO = utilService.buildDatePartObject(then.toString());
+						endDPO = utilService.buildDatePartObject(now.toString());
+						
+						$scope.isAjaxLoading=false;
+						$scope.documentSearchModel = new documentSearchModel();
+						$scope.errorModel = new errorModel();
+						$scope.results=[];
+						$scope.filter = {
+								name : "",
+								startDate : startDPO.yyyy + "-" + startDPO.MM + "-" + startDPO.dd,
+								startTime : "00:00:01",
+								endDate : endDPO.yyyy + "-" + endDPO.MM + "-" + endDPO.dd,
+								endTime : endDPO.hh + ":" + endDPO.mm + ":" + endDPO.ss,
+								documentTypes : []	
+						};
+					});
 				};
+				$scope.initModels();
+				
 				$scope.uiText={
 						"searchDocs" : il18nService.getProperty("mobile.documentsearch.header.text"),
 						"createFrom" : il18nService.getProperty("mobile.documentsearch.filters.from"),
@@ -279,7 +323,10 @@ define([],function(){
 						"search" : il18nService.getProperty("mobile.documentsearch.filters.name.placeholder"),
 						"docTypes" : il18nService.getProperty("mobile.documentsearch.filters.doctypes"),
 						"all" : il18nService.getProperty("mobile.documentsearch.filters.all"),
-						"submit" : il18nService.getProperty("mobile.documentsearch.submit")
+						"submit" : il18nService.getProperty("mobile.documentsearch.submit"),
+						"newest"   : il18nService.getProperty("mobile.worklist.filter.item.newest"),
+						"oldest"   : il18nService.getProperty("mobile.worklist.filter.item.oldest"),
+						"modified" : il18nService.getProperty("mobile.worklist.filter.item.modified")
 				};
 				
 				
@@ -318,7 +365,7 @@ define([],function(){
 					});
 				}
 				
-				$scope.getResults = function(){
+				$scope.getResults = function(sortBy){
 					
 					var docIDs=[],
 						startDT,
@@ -336,7 +383,8 @@ define([],function(){
 							$scope.filter.name,
 							startDT,
 							endDT,
-							docIDs.toString())
+							docIDs.toString(),
+							sortBy)
 						.then(function(data){
 							console.log(data);
 							$scope.$apply(function(){
@@ -372,6 +420,8 @@ define([],function(){
 						return;
 					}
 					
+					$scope.initModels();
+					
 					$scope.init()
 					.catch(function(){
 						$scope.$apply(function(){
@@ -389,38 +439,49 @@ define([],function(){
 			},
 			
 			"activitySearchCtrl" : function($scope,$rootScope,$q, $timeout, workflowService,utilService,il18nService){
-				var now = new Date(),
-				    then = new Date(),
-				    startDPO,
-				    endDPO,
-				    tmrPromise;
 				
-				then.setDate(then.getDate() - 7); 
-				startDPO = utilService.buildDatePartObject(then.toString());
-				endDPO = utilService.buildDatePartObject(now.toString());
-				
-				$scope.isAjaxLoading = false;
-
-				$scope.filter = {
-						startDate : startDPO.yyyy + "-" + startDPO.MM + "-" + startDPO.dd,
-						startTime : "00:00:01",
-						endDate : endDPO.yyyy + "-" + endDPO.MM + "-" + endDPO.dd,
-						endTime : endDPO.hh + ":" + endDPO.mm + ":" + endDPO.ss,
-						processes : [],
-						activities : [],
-						states : []
+				var tmrPromise="";
+				/*Initialize our reinitialize our models*/
+				$scope.initModels=function(){
+						$scope.$apply(function(){
+							var now = new Date(),
+							    then = new Date(),
+							    startDPO,
+							    endDPO;
 						
+							then.setDate(then.getDate() - 7); 
+							startDPO = utilService.buildDatePartObject(then.toString());
+							endDPO = utilService.buildDatePartObject(now.toString());
+							
+							$scope.isAjaxLoading = false;
+		
+							$scope.filter = {
+									startDate : startDPO.yyyy + "-" + startDPO.MM + "-" + startDPO.dd,
+									startTime : "00:00:01",
+									endDate : endDPO.yyyy + "-" + endDPO.MM + "-" + endDPO.dd,
+									endTime : endDPO.hh + ":" + endDPO.mm + ":" + endDPO.ss,
+									processes : [],
+									activities : [],
+									states : []
+									
+							};
+					});
 				};
+				$scope.initModels();
 				
 				$scope.uiText = {
-						"searchAct" : il18nService.getProperty("mobile-workflow-client-messages_en.properties"),
+						"searchAct" : il18nService.getProperty("mobile.activitysearch.header.text"),
 						"startFrom" : il18nService.getProperty("mobile.activitysearch.filters.from"),
 						"startTo" : il18nService.getProperty("mobile.activitysearch.filters.to"),
 						"process" : il18nService.getProperty("mobile.activitysearch.filters.process"),
 						"all" : il18nService.getProperty("mobile.activitysearch.filters.all"),
 						"activity" : il18nService.getProperty("mobile.activitysearch.filters.Activity"),
 						"state" : il18nService.getProperty("mobile.activitysearch.filters.State"),
-						"submit" : il18nService.getProperty("mobile.activitysearch.submit")
+						"submit" : il18nService.getProperty("mobile.activitysearch.submit"),
+						"newest" : il18nService.getProperty("mobile.worklist.filter.item.newest"),
+						"oldest" : il18nService.getProperty("mobile.worklist.filter.item.oldest"),
+						"criticality" : il18nService.getProperty("mobile.worklist.filter.item.criticality"),
+						"modified" : il18nService.getProperty("mobile.worklist.filter.item.modified")
 				};
 					
 				/*Set all options as either true or false*/
@@ -479,7 +540,7 @@ define([],function(){
 			            });
 				};
 				
-				$scope.getResults=function(){
+				$scope.getResults=function(sortBy){
 					
 					var startDT,
 					    endDT,
@@ -508,9 +569,9 @@ define([],function(){
 							endDT,
 							processIDs.toString(),
 							activityIDs.toString(),
-							stateIDs.toString())
+							stateIDs.toString(),
+							sortBy)
 						.then(function(data){
-							console.log(data);
 							$scope.$apply(function(data){
 								$scope.activitySearchModel.results=data.activities;
 							});
@@ -574,6 +635,8 @@ define([],function(){
 						return;
 					}
 					
+					$scope.initModels();
+					
 					$scope.init()
 					.catch(function(){
 						$scope.$apply(function(){
@@ -590,14 +653,6 @@ define([],function(){
 			},
 			
 			"processSearchCtrl" : function($scope,$rootScope,$q,$timeout, workflowService, utilService, il18nService){
-				var now = new Date(),
-				    then = new Date(),
-				    startDPO,
-				    endDPO;
-
-				$scope.isAjaxLoading=false;
-				$scope.processSearchModel=new processSearchModel();
-				$scope.errorModel = new errorModel();
 				
 				$scope.uiText = {
 						"searchProcs" : il18nService.getProperty("mobile.processsearch.header.text"),
@@ -606,7 +661,11 @@ define([],function(){
 						"process" : il18nService.getProperty("mobile.processsearch.filters.process"),
 						"state" : il18nService.getProperty("mobile.processsearch.filters.state"),
 						"all" : il18nService.getProperty("mobile.processsearch.filters.all"),
-						"submit" : il18nService.getProperty("mobile.processsearch.filters.submit")
+						"submit" : il18nService.getProperty("mobile.processsearch.filters.submit"),
+						"newest" : il18nService.getProperty("mobile.worklist.filter.item.newest"),
+						"oldest" : il18nService.getProperty("mobile.worklist.filter.item.oldest"),
+						"priority" : il18nService.getProperty("mobile.processdetails.listview.priority"),
+						"modified" : il18nService.getProperty("mobile.worklist.filter.item.modified")
 				};
 				
 				/*init filter values for our dates*/
@@ -624,6 +683,35 @@ define([],function(){
 						states : []
 				};
 				
+				/*Initialize our reinitialize our models*/
+				$scope.initModels=function(){
+					$scope.$apply(function(){
+						var now = new Date(),
+						    then = new Date(),
+						    startDPO,
+						    endDPO;
+
+						$scope.isAjaxLoading=false;
+						$scope.processSearchModel=new processSearchModel();
+						$scope.errorModel = new errorModel();
+						
+						/*init filter values for our dates*/
+						then.setDate(then.getDate() - 7); 
+						startDPO = utilService.buildDatePartObject(then.toString());
+						endDPO = utilService.buildDatePartObject(now.toString());
+						
+						$scope.filter = {
+								startDate : startDPO.yyyy + "-" + startDPO.MM + "-" + startDPO.dd,
+								startTime : "00:00:01",
+								endDate : endDPO.yyyy + "-" + endDPO.MM + "-" + endDPO.dd,
+								endTime : endDPO.hh + ":" + endDPO.mm + ":" + endDPO.ss,
+								processes : [],
+								states : []
+						};
+					});
+				};
+				$scope.initModels();
+				
 				/*Set all options as either true or false*/
 				$scope.toggleAll = function(data,isChecked,e){
 					e.preventDefault();
@@ -633,15 +721,16 @@ define([],function(){
 					});
 				}
 				
+				
 				/*Gather up data from our user interface and call the workflow service for
 				 *our search resutls.*/
-				$scope.getResults=function(){
+				$scope.getResults=function(sortBy){
 					
 					var startDT,
 					    endDT,
 					    processIDs=[],
 					    stateIDs=[];
-					    	
+					
 					startDT = new Date($scope.filter.startDate + " " + $scope.filter.startTime).getTime();
 					endDT = new Date($scope.filter.endDate + " " + $scope.filter.endTime).getTime();
 					
@@ -659,7 +748,8 @@ define([],function(){
 							startDT,
 							endDT,
 							processIDs.toString(),
-							stateIDs.toString())
+							stateIDs.toString(),
+							sortBy)
 						.then(function(data){
 							$scope.$apply(function(){
 								$scope.processSearchModel.results=data.processInstances;
@@ -719,6 +809,8 @@ define([],function(){
 						utilService.navigateTo($rootScope,"#unauthorizedPage",{});
 					}
 					
+					$scope.initModels();
+					
 					$scope.init()
 						.catch(function(){
 							$scope.$apply(function(){
@@ -737,9 +829,7 @@ define([],function(){
 			/*startableProcessesControl*/
 			"startableProcessesCtrl" : function($scope,$rootScope,$q,$timeout,workflowService,utilService,il18nService){
 				
-				$scope.startableProcessModel = new startableProcessModel();
-				$scope.startableProcessModel.showPopup=false;
-				$scope.errorModel = new errorModel();
+				
 				
 				$scope.uiText={
 						"startWork" : il18nService.getProperty("mobile.startableprocess.header.text"),
@@ -760,6 +850,25 @@ define([],function(){
 						popupMessage: "",
 						currentSelectedProcessId: 0
 				};
+				
+				/*Initialize our reinitialize our models*/
+				$scope.initModels=function(){
+					$scope.$apply(function(){
+						$scope.startableProcessModel = new startableProcessModel();
+						$scope.startableProcessModel.showPopup=false;
+						$scope.errorModel = new errorModel();
+						$scope.uiModel={
+								showPopup: false,
+								showHotNavBtn: false,
+								showProcessDetailsBtn: false,
+								showCloseDialogBtn: true,
+								popupMessage: "",
+								currentSelectedProcessId: 0
+						};
+					});
+				};
+				$scope.initModels();
+				
 				/*function to handle the user clicking on a process in our process list*/
 				$scope.startProcess = function(processDefinitionId){
 					var success,fail;
@@ -858,6 +967,8 @@ define([],function(){
 					
 					$rootScope.appData.activePage = edata.pageTarget;
 					
+					$scope.initModels();
+					
 					$scope.init()
 						.catch(function(){
 							$scope.$apply(function(){
@@ -878,17 +989,18 @@ define([],function(){
 				
 				$scope.uiText={
 						"home"     : il18nService.getProperty("mobile.extpanelright.listview.home"),
-						"profile"     : il18nService.getProperty("mobile.extpanelright.listview.profile"),
+						"profile"  : il18nService.getProperty("mobile.extpanelright.listview.profile"),
 						"settings" : il18nService.getProperty("mobile.extpanelright.listview.settings"),
 						"logout"   : il18nService.getProperty("mobile.extpanelright.listview.logout")
 				}
 				
+				/*Reset the state of our AppData contained in rootScope*/
 				$scope.resetGlobalState = function(){
-					workflowService.logout();
-					$rootScope.appData.user={};
-					$rootScope.appData.isAuthorized=false;
-					$rootScope.appData.isActivityHot = false;
-					$rootScope.appData.hotActivityInstance = {};
+						workflowService.logout();
+						$rootScope.appData.user={};
+						$rootScope.appData.isAuthorized=false;
+						$rootScope.appData.isActivityHot = false;
+						$rootScope.appData.hotActivityInstance = {};
 				}
 			},
 			
@@ -961,71 +1073,33 @@ define([],function(){
 					
 					return deferred.promise;					
 				}
-
-				var init = function(processOid){
-					var success,
-						fail,
-						deferred=$q.defer();
-	
-					workflowService.getProcessInstance(processOid)
-						.then(function(data){
-							$scope.$apply(function(){
-									$scope.notesModel.notes = data.notes;
-									$scope.activityModel.item ={
-											"processInstanceOid" : processOid,
-											"processName" : data.processName
-									};
-									$scope.documentModel.docs = data.documents;
-									$scope.participantModel.participants = data.participants;
-									$scope.processModel = data;
-								});
-							},function(status){
-								deferred.reject();
-							})
-						.then(function(){
-								workflowService.getProcessHistory(processOid).then(function(data){
-									$scope.$apply(function(){
-										$scope.processHistoryModel.parentProcessInstances=data.parentProcessInstances;
-										$scope.processHistoryModel.selectedProcessInstance=data.selectedProcessInstance;
-										$scope.processHistoryModel.activityInstances=data.activityInstances;
-									});
-								},function(status){
-									deferred.reject();
-								});
-							})
-						.then(deferred.resolve)
-						.catch(function(){
-							$scope.$apply(function(){
-								$scope.errorModel.hasError=true;
-								$scope.errorModel.errorMessage= $rootScope.appData.errorText.pageload;
-								$timeout(function(){
-									$scope.errorModel.hasError=false;
-								},$rootScope.appData.barDuration);
-							});
-						});
-					
-					return deferred.promise;
+				
+				/*Initialize our reinitialize our models*/
+				$scope.initModels=function(){
+					$scope.$apply(function(){
+						
+						/*declare our model(s)*/
+						$scope.notesModel = new notesModel();
+						$scope.errorModel = new infoModel();
+						$scope.infoModel = new infoModel();
+						$scope.activityModel = new worklistItem();
+						$scope.documentModel = new documentModel();
+						$scope.participantModel = new participantModel();
+						$scope.processModel = new processModel();
+						$scope.processHistoryModel = new processHistoryModel();
+						
+						
+						/*Set up a few UI specific props*/
+						$scope.baseHref = workflowService.baseHref;
+						$scope.showMsg = false;
+						$scope.alertMessage = "";
+						$scope.uploadSuccesful = false;
+						$scope.isUploading =false;
+						$scope.activeSubView = "overview";
+					});
 				};
 				
-				
-				/*declare our model(s)*/
-				$scope.notesModel = new notesModel();
-				$scope.errorModel = new infoModel();
-				$scope.infoModel = new infoModel();
-				$scope.activityModel = new worklistItem();
-				$scope.documentModel = new documentModel();
-				$scope.participantModel = new participantModel();
-				$scope.processModel = new processModel();
-				$scope.processHistoryModel = new processHistoryModel();
-				
-				
-				/*Set up a few UI specific props*/
-				$scope.baseHref = workflowService.baseHref;
-				$scope.showMsg = false;
-				$scope.alertMessage = "";
-				$scope.uploadSuccesful = false;
-				$scope.isUploading =false;
-				$scope.activeSubView = "overview";
+				$scope.initModels();
 				
 				/*functions for determining classes we will need.*/
 				$scope.getStateClass=utilService.getStateClass;
@@ -1148,6 +1222,8 @@ define([],function(){
 						$scope.activeSubView = "overview";
 					});
 					
+					$scope.initModels();
+					
 					$scope.init(edata.data.id)
 						.catch(function(){
 							$scope.$apply(function(){
@@ -1230,27 +1306,35 @@ define([],function(){
 						"addafile"     : il18nService.getProperty("mobile.fileupload.header")
 				}
 				
-				$scope.notesModel = new notesModel();
-				$scope.errorModel=new errorModel();
-				$scope.infoModel = new infoModel();
-				$scope.activityModel = new worklistItem();
-				$scope.formModel = new mashupModel();
-				$scope.documentModel = new documentModel();
-				$scope.mashupModel = new mashupModel();
-				$scope.participantSearchModel = new participantSearchModel();
-				$scope.delegatePopupUI ={
-						setInputFocus : false
-				};
-				$scope.baseHref = workflowService.baseHref;
-				$scope.showMsg = false;
-				$scope.alertMessage = "";
-				$scope.uploadSuccesful = false;
-				$scope.isUploading =false;
-				$scope.formTabTarget = "#formTab";
-				$scope.previousPage="";
-				$scope.activeTab='activityTab';
+				
 				
 				$scope.isImageType = utilService.isImageType;
+				
+				/*Initialize our reinitialize our models*/
+				$scope.initModels=function(){
+					$scope.$apply(function(){
+						$scope.notesModel = new notesModel();
+						$scope.errorModel=new errorModel();
+						$scope.infoModel = new infoModel();
+						$scope.activityModel = new worklistItem();
+						$scope.formModel = new mashupModel();
+						$scope.documentModel = new documentModel();
+						$scope.mashupModel = new mashupModel();
+						$scope.participantSearchModel = new participantSearchModel();
+						$scope.delegatePopupUI ={
+								setInputFocus : false
+						};
+						$scope.baseHref = workflowService.baseHref;
+						$scope.showMsg = false;
+						$scope.alertMessage = "";
+						$scope.uploadSuccesful = false;
+						$scope.isUploading =false;
+						$scope.formTabTarget = "#formTab";
+						$scope.previousPage="";
+						$scope.activeTab='activityTab';
+					});
+				};
+				$scope.initModels();
 				
 				/*Initialization function, retrieve remote data and initialize UI with that data*/
 				$scope.init=function(activityOid, prevPage){
@@ -1343,10 +1427,10 @@ define([],function(){
 						function(data){
 							if (data.contexts.externalWebApp) {
 								var url=data.contexts.externalWebApp["carnot:engine:ui:externalWebApp:uri"] +
-								"?ippInteractionUri=" + data.contexts.externalWebApp.ippInteractionUri +
-								"&ippPortalBaseUri=" + data.contexts.externalWebApp.ippPortalBaseURi +
-								"&ippServicesBaseUri=" + data.contexts.externalWebApp.ippServicesBaseUri +
-								"&interactionId=" + data.contexts.externalWebApp.interactionId;
+										"?ippInteractionUri=" + data.contexts.externalWebApp.ippInteractionUri +
+										"&ippPortalBaseUri=" + data.contexts.externalWebApp.ippPortalBaseURi +
+										"&ippServicesBaseUri=" + data.contexts.externalWebApp.ippServicesBaseUri +
+										"&interactionId=" + data.contexts.externalWebApp.interactionId;
 							} else if (data.contexts["default"]) {
 								var url=data.contexts["default"]["ippPortalBaseURi"] +
 								"?interactionId=" + data.contexts["default"]["interactionId"] +
@@ -1487,7 +1571,9 @@ define([],function(){
 					}
 					
 					$rootScope.appData.activePage = edata.pageTarget;
-					console.log("initializing detailCtrl on jqmNavigate event");
+					
+					$scope.initModels();
+					
 					$scope.init(edata.data.id,edata.ui.options.fromPage[0].id)
 						.then(function(){
 							var prevPage = edata.ui.options.fromPage[0].id;
@@ -1556,8 +1642,19 @@ define([],function(){
 			},
 			
 			"formCtrl" : function($scope,$rootScope){
+				/*	This controller is only a constituent of a parent page
+				 * and will never be navigated to directly*/
 				$scope.test= "Hello From Form Ctrl";
-				$scope.formModel = new mashupModel();
+				
+				/*Reset our controller to a clean state*/
+				$scope.initModels=function(){
+					$scope.$apply(function(){
+						$scope.formModel = new mashupModel();
+					});
+				};
+				
+				$scope.initModels();
+				
 			},
 			
 			"reportRootCtrl" : function($scope, $rootScope, $timeout, $q, workflowService, utilService){
@@ -1606,6 +1703,12 @@ define([],function(){
 				$scope.popNavStack=popNavStack;
 				$scope.repositoryModel= new repositoryModel();	
 				$scope.isReportType = utilService.isReportType;
+				
+				/*Reset our controller to a clean state*/
+				$scope.initModels=function(){
+					$scope.$apply(function(){
+					});
+				};
 				
 				$scope.getViewerUrl=function(docName){
 					if(utilService.isReportType(docName)){
@@ -1725,9 +1828,15 @@ define([],function(){
 						"created" : il18nService.getProperty("mobile.reportviewer.view.content.details.listitem.created"),
 						"lastmodified" : il18nService.getProperty("mobile.reportviewer.view.content.details.listitem.lastmodified")
 				}
-				
-				$scope.documentViewerModel = new documentViewerModel();
-				$scope.errorModel=new errorModel();
+
+				/*Reset our controller to a clean state*/
+				$scope.initModels=function(){
+					$scope.$apply(function(){
+						$scope.documentViewerModel = new documentViewerModel();
+						$scope.errorModel=new errorModel();
+					});
+				};
+				$scope.initModels();
 				
 				$scope.init = function(docId){
 					var deferred=$q.defer();
@@ -1761,6 +1870,8 @@ define([],function(){
 					}
 					
 					$rootScope.appData.activePage = edata.pageTarget;
+					
+					$scope.initModels();
 					
 					$scope.init(edata.data.id)
 					.catch(function(err){
@@ -1823,6 +1934,12 @@ define([],function(){
 				$scope.popNavStack=popNavStack;
 				$scope.test= "Hello From Repository-Root Ctrl";
 				$scope.repositoryModel= new repositoryModel();	
+				
+				/*Reset our controller to a clean state*/
+				$scope.reset=function(){
+					$scope.$apply(function(){
+					});
+				};
 				
 				$scope.getFolder = function(folderId,doPush,e){
 					
@@ -1918,8 +2035,16 @@ define([],function(){
 					"lastmodified" : il18nService.getProperty("mobile.documentviewer.details.listview.lastmodified")
 				};
 				
-				$scope.documentViewerModel = new documentViewerModel();
-				$scope.errorModel=new errorModel();
+				
+				
+				/*Reset our controller to a clean state*/
+				$scope.initModels=function(){
+					$scope.$apply(function(){
+						$scope.documentViewerModel = new documentViewerModel();
+						$scope.errorModel=new errorModel();
+					});
+				};
+				$scope.initModels();
 				
 				$scope.init = function(docId){
 					var deferred=$q.defer();
@@ -1950,6 +2075,8 @@ define([],function(){
 					}
 					
 					$rootScope.appData.activePage = edata.pageTarget;
+					
+					$scope.initModels();
 					
 					$scope.init(edata.data.id)
 					.catch(function(err){
@@ -1983,6 +2110,12 @@ define([],function(){
 				}
 				
 				$scope.errorModel = new errorModel();
+				
+				/*Reset our controller to a clean state*/
+				$scope.reset=function(){
+					$scope.$apply(function(){
+					});
+				};
 				
 				$scope.init = function(){
 					var deferred = $q.defer();
@@ -2059,6 +2192,12 @@ define([],function(){
 						"dateFormat" : {},
 						"saveAction" :{}
 				}
+				
+				/*Reset our controller to a clean state*/
+				$scope.reset=function(){
+					$scope.$apply(function(){
+					});
+				};
 				
 				$scope.init = function(){
 					var deferred = $q.defer();

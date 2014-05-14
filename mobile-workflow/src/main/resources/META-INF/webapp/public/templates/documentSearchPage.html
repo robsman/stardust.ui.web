@@ -1,13 +1,42 @@
 <div class="ipp-header" data-role="header">
 	 <div style="float:left;margin-left:1.1em;margin-top:0.75em;">
 		 <a ng-show="!showResults" href="#" data-rel="back" class="ipp-icon-minimal">
-		 	<i style="color:#ffffff;" class="fa fa-chevron-left ipp-fs-2x ipp-fw-normal"></i>
+		 	<i style="color:#ffffff;" class="sc sc-chevron-l ipp-fs-2x ipp-fw-normal"></i>
 		 </a>
 		 <a ng-show="showResults" ng-click="showResults=false" href="#"  class="ipp-icon-minimal">
-		 	<i style="color:#ffffff;" class="fa fa-chevron-left ipp-fs-2x  ipp-fw-normal"></i>
+		 	<i style="color:#ffffff;" class="sc sc-chevron-l ipp-fs-2x  ipp-fw-normal"></i>
 		 </a>
 	 </div>
      <h4>{{uiText.searchDocs}}</h4>
+     <div style="position:absolute;top:11px;right:1em;">
+	     <a ng-show="showResults"  class="ipp-icon-minimal" href="#documentFilterPopup" data-rel="popup" data-transition="slide">
+	     	<i class="fa ipp-fs-2x fa-sort"></i>
+	     </a>
+     </div>
+     
+     <div data-role="popup" id="documentFilterPopup" data-theme="b">
+        <ul data-role="listview"  data-inset="true" style="min-width:210px;">
+            <li ng-click="getResults('-startTime');sortBy='-startTime'">
+	            <a class="ipp-no-content ipp-center" href="#">
+	            	<span class="ipp-float-l">{{uiText.newest}}</span>
+	            	<i ng-show="sortBy=='-startTime'" class="sc sc-check ipp-float-r"></i>
+	            </a>
+            </li>
+            <li ng-click="getResults('startTime');sortBy='startTime'">
+	            <a class="ipp-no-content ipp-center" href="#">
+	            	<span class="ipp-float-l">{{uiText.oldest}}</span>
+	            	<i ng-show="sortBy=='startTime'" class="sc sc-check ipp-float-r"></i>
+	            </a>
+	        </li>
+            <li ng-click="getResults('lastModificationTime');sortBy='lastModificationTime'">
+            	<a class="ipp-no-content ipp-center" href="#">
+            		<span class="ipp-float-l">{{uiText.modified}}</span>
+            		<i ng-show="sortBy=='lastModificationTime'" class="sc sc-check ipp-float-r"></i>
+            	</a>
+            </li>
+        </ul>
+	</div>
+     
 </div>
 
 <div  ng-show="errorModel.hasError==true" 
@@ -68,7 +97,7 @@
 		    	<span ng-click="docTypeToggleState=!docTypeToggleState;
 		    	               toggleAll(documentSearchModel.documentTypes,docTypeToggleState,$event)"
 		    	      class="ipp-li-count-secondary">
-		    		<i ng-class="{'fa-check-square':docTypeToggleState}" class="fa fa-square"></i> {{uiText.all}}
+		    		<i ng-class="{'sc-check-box':docTypeToggleState}" class="sc sc-square"></i> {{uiText.all}}
 		    	</span>
 		    </h2>
 		    <ul data-role="listview" data-theme="a">
@@ -76,8 +105,8 @@
 					ng-click="docType.isChecked=!docType.isChecked;" 
 		            ng-repeat="docType in documentSearchModel.documentTypes">
 		        	<i style="font-size:1.5em;"  
-		        	   ng-class="{'fa-check-square':docType.isChecked}" 
-		        	   class="fa fa-square-o"></i>
+		        	   ng-class="{'sc-check-box':docType.isChecked}" 
+		        	   class="sc sc-square"></i>
 		        	&nbsp;
 		        	<span class="ipp-fs-small ipp-light ipp-fw-light">{{docType.name}}</span>
 	        	</li>
@@ -91,7 +120,7 @@
 	   style="margin-left:1em;margin-right:1em;" 
 	   href="#"  
 	   class="ui-btn ui-corner-all ui-btn-d">
-		<i class="fa fa-search ipp-pad-right-4x"></i>{{uiText.submit}}
+		<i class="sc sc-search ipp-pad-right-4x"></i>{{uiText.submit}}
 	</a>
 
     	
@@ -103,19 +132,19 @@
 			<li ng-repeat="doc in documentSearchModel.results">
 				<a href="#documentViewerPage?id={{doc.id}}" style="line-height:2em;"  class="ipp-no-content">
 					<i style="vertical-align:middle" 
-					   ng-class="{'fa-picture-o':isImageType(doc.name),'fa-file-o':!isImageType(doc.name)}"
-			       	   class="fa fa-2x fa-fw ipp-color-secondary-darkest ipp-icon-pad-r"></i>
+					   ng-class="{'sc-picture':isImageType(doc.name),'sc-document-o':!isImageType(doc.name)}"
+			       	   class="sc sc-2x sc-fw ipp-color-secondary-darkest ipp-icon-pad-r"></i>
 			       
 					<span class="ipp-fs-small ipp-light ipp-fw-normal">{{doc.name}}</span>
 
 	         		<div style="top:0.8em;" class="ui-li-aside">
-	         			<i class="fa fa-clock-o ipp-lighter ipp-fs-smaller"></i>
+	         			<i class="sc sc-clock ipp-lighter ipp-fs-smaller"></i>
 	
 	         			<span class="ipp-fs-smallest ipp-lighter ipp-fw-normal">
 	         			      {{doc.lastModifiedTimestamp | friendlyDate}}</span>
          			</div>
          			
-	    			<i class="fa fa-1x fa-chevron-right ipp-nav-icon-right"></i>
+	    			<i class="sc sc-chevron-r ipp-nav-icon-right"></i>
 				</a>
 			</li>
 		</ul>

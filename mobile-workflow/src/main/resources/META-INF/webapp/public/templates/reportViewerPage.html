@@ -2,7 +2,7 @@
 	 <a href="#" data-rel="back" 
 	    class="ipp-icon-minimal"
 	    ng-click="activeTab=''">
-	 	<i style="float:left;color:#ffffff;" class="fa fa-2x fa-chevron-left"></i>
+	 	<i style="float:left;color:#ffffff;" class="sc sc-2x sc-chevron-l"></i>
 	 </a>
      <h4>{{documentViewerModel.name}}</h4>
 </div>
@@ -10,7 +10,7 @@
 <div  ng-show="errorModel.hasError==true" 
       ng-click="errorModel.hasError=false;" 
       class="ipp-bar ipp-bar-error">
-	<i class="fa fa-times-circle-o"></i>
+	<i class="sc sc-close-circle"></i>
 	<span>{{errorModel.errorMessage}}</span>
 </div>
 
@@ -21,7 +21,7 @@
 		<a href="#reportContentTab"
 		   ng-click="activeSubView='content'" 
 		   ng-class="{'ipp-btn-active' : activeSubView=='content'}">
-			<i title="Content" style="display:block;" class="fa fa-bar-chart-o fa-2x jqm-icon-block ipp-lightest"></i>
+			<i title="Content" style="display:block;" class="sc sc-chart-bar sc-2x jqm-icon-block ipp-lightest"></i>
 			<span title="Content" class="hide-media-sm ipp-fs-small ipp-light">{{uiText.content}}</span>
 		</a>		
 	  </li>
@@ -37,7 +37,7 @@
 		<a href="#reportDetailsTab"
 		   ng-click="activeSubView='details'" 
 		   ng-class="{'ipp-btn-active' : activeSubView=='details'}">
-			<i title="Details" style="display:block;" class="fa fa-info-circle  fa-2x jqm-icon-block ipp-lightest"></i>
+			<i title="Details" style="display:block;" class="sc sc-exclamation-circle  sc-2x jqm-icon-block ipp-lightest"></i>
 			<span title="Details" class="hide-media-sm ipp-fs-small ipp-light">{{uiText.detail}}</span>
 		</a>		
 	  </li>
@@ -53,11 +53,11 @@
     </div>
     <div ng-if="isImageType(documentViewerModel.name)==false">
     	<i style="font-size:10em;" 
-    	   class="fa fa-bar-chart-o ipp-block"></i>
+    	   class="sc sc-chart-bar ipp-block"></i>
 		
 		<a class="ui ui-btn ui-btn-d ui-corner-all" target="_blank" 
 	       ng-href="{{documentViewerModel.downloadUrl}}">
-	       <i class="fa fa-envelope-o"></i>
+	       <i class="sc sc-envelope-o"></i>
 	       <span class="ipp-fw-normal ipp-fs-small">{{uiText.email}}</span>
         </a>
         
@@ -111,7 +111,7 @@
 			
 			<a class="ui ui-btn ui-btn-d ui-corner-all" target="_blank" 
 		       ng-href="#">
-		       <i class="fa fa-check"></i>
+		       <i class="sc sc-check"></i>
 		       <span class="ipp-fw-normal ipp-fs-small">{{uiText.submit}}</span>
 	        </a>
 			

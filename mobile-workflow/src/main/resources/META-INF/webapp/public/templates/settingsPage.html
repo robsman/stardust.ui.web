@@ -1,7 +1,7 @@
 <div  ng-show="errorModel.hasError==true" 
       ng-click="errorModel.hasError=false;" 
       class="ipp-bar ipp-bar-error">
-	<i class="fa fa-times-circle-o"></i>
+	<i class="sc sc-close-circle"></i>
 	<span>{{errorModel.errorMessage}}</span>
 </div>
    
@@ -15,7 +15,7 @@
 <div  ng-show="infoModel.hasInfo==true" 
       ng-click="infoModel.hasInfo=false;" 
       class="ipp-bar ipp-bar-info">
-	<i class="fa fa-info-circle"></i>
+	<i class="sc sc-exclamation-circle"></i>
 	<span>{{infoModel.infoMessage}}</span>
 </div>
 
@@ -58,6 +58,6 @@
 <a href="#" 
    ng-click="saveSettings()" 
    class="ui-btn ui-corner-all ipp-btn-active ipp-margin-h-1x" >
-   <i class="fa fa-times ipp-pad-right-4x"></i>
+   <i class="sc sc-close ipp-pad-right-4x"></i>
    <span class="ipp-fs-small">{{uiText.save}}<span>
 </a>

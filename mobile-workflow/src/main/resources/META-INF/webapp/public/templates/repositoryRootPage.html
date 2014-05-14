@@ -2,7 +2,7 @@
 	 <a ng-click="popNavStack(true)"
 	    class="ipp-icon-minimal"
 	    ng-click="activeTab=''">
-	 	<i style="float:left;color:#ffffff;" class="fa fa-2x fa-chevron-left"></i>
+	 	<i style="float:left;color:#ffffff;" class="sc sc-2x sc-chevron-l"></i>
 	 </a>
      <h4>{{repositoryModel.name}}</h4>
 </div>
@@ -10,7 +10,7 @@
 <div  ng-show="errorModel.hasError==true" 
       ng-click="errorModel.hasError=false;" 
       class="ipp-bar ipp-bar-error">
-	<i class="fa fa-times-circle-o"></i>
+	<i class="sc sc-close-circle"></i>
 	<span>{{errorModel.errorMessage}}</span>
 </div>
 
@@ -19,14 +19,14 @@
 <ul data-role="listview" data-theme="a">
 	<li ng-repeat="folder in repositoryModel.children.folders">
 		<a  ng-href="#" ng-click="getFolder(folder.id,true,$event)" class="ipp-no-content">
-			<i style="vertical-align:middle;" class="fa fa-2x fa-fw fa-folder-o  ipp-icon-pad-r ipp-color-secondary-darkest"></i>
+			<i style="vertical-align:middle;" class="sc sc-2x sc-fw sc-folder ipp-icon-pad-r ipp-color-secondary-darkest"></i>
 			<div  class="ipp-inline">
 				<span class="ipp-fs-small ipp-fs-bold ipp-lighter">
 					{{folder.name}}
 				</span>
          	</div>
          	<span class="ipp-li-count-secondary">{{folder.childCount}}</span>
-       		<i class="fa fa-1x fa-chevron-right ipp-nav-icon-right"></i>
+       		<i class="sc sc-chevron-r ipp-nav-icon-right"></i>
 		</a>
 	</li>
 	<li ng-repeat="document in repositoryModel.children.documents">
@@ -34,7 +34,7 @@
 			   class="ipp-no-content" 
 			   ng-href="#documentViewerPage?id={{document.id}}&folderid={{repositoryModel.id}}">
 				<i style="vertical-align:middle;" 
-				   class="fa fa-2x fa-fw fa-picture-o ipp-icon-pad-r ipp-color-secondary-darkest"></i>
+				   class="sc sc-2x sc-fw sc-picture ipp-icon-pad-r ipp-color-secondary-darkest"></i>
 				<div class="ipp-inline">
 					<span class="ipp-fs-small ipp-fs-normal ipp-lighter">
 						{{document.name}}
@@ -42,12 +42,12 @@
 	         	</div>
 
          		<div class="ui-li-aside">
-         			<i class="fa fa-clock-o ipp-lighter ipp-fs-smaller"></i>
+         			<i class="sc sc-clock ipp-lighter ipp-fs-smaller"></i>
 
          			<span class="ipp-fs-smallest ipp-lighter ipp-fw-normal">
          			      {{document.createdTimestamp | friendlyDate }}</span>
         		</div>
-         		<i class="fa fa-1x fa-chevron-right ipp-nav-icon-right"></i>
+         		<i class="sc sc-chevron-r ipp-nav-icon-right"></i>
 			</a>
  		</li>
 </ul>
@@ -56,6 +56,6 @@
 <div ng-show="repositoryModel.children.documents.length==0 && 
 		      repositoryModel.children.folders.length==0" 
      style="text-align:center;margin-top:5em;">
-	<i style="font-size:8em;" class="fa fa-files-o"></i>
+	<i style="font-size:8em;" class="sc sc-documents-o"></i>
 </div>
 

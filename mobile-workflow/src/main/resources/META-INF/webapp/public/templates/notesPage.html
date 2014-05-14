@@ -2,12 +2,12 @@
 	
 	<div style="margin-top:1em;padding:1.0em;padding-bottom:2em;background-color:#eee;border:sold 1px #bbb;" class="ui-corner-all">
 		<div>
-			<i class="fa fa-clipboard ipp-fs-2x fa-flip-horizontal ipp-color-secondary-darkest ipp-icon-pad-r"></i>
+			<i class="sc sc-clipboard ipp-fs-2x sc-flip-horizontal ipp-color-secondary-darkest ipp-icon-pad-r"></i>
 			<span class="ipp-fs-1x ipp-fw-normal ipp-fw-light">{{uiText.addNote}}</span>
 			<i ng-click="isListening=!isListening"
 	          	 style="position:relative;top:2.5em;float:right;font-size:1em;right:0.5em" 
-	          	 ng-class="{'pulse1' : isListening,'fa-microphone':isSupported}"
-	             class="fa fa-2x"></i>
+	          	 ng-class="{'pulse1' : isListening,'sc-microphone':isSupported}"
+	             class="sc sc-2x"></i>
 			<textarea speech-to-text 
 	                  data-is-listening="isListening" 
 	                  data-is-supported="isSupported" 
@@ -17,7 +17,7 @@
                style="float:right;padding:3px;position:relative;top:-0.75em;right:-0.5em;" 
                ng-click="createNote(activityModel.item.processInstanceOid,notesModel.newNote.content)"
                class="ui-btn ui-btn-d ui-btn-inline ui-corner-all">
-				<i  class="fa fa-plus-circle ipp-fs-2x"></i>
+				<i  class="sc sc-plus-circle ipp-fs-2x"></i>
 			</a>
          </div>
 	</div>
@@ -28,7 +28,7 @@
 	   data-rel="popup" 
 	   data-transition="slide"
 	   class="ui-btn ui-btn-d ui-btn-inline ui-corner-all ipp-fs-2x">
-		<i class="fa fa-1x fa-sort"></i>
+		<i class="sc sc-1x fa-sort"></i>
 	</a>
 	
 	<div data-role="popup" id="noteFilterPopup_{{$id}}" data-theme="b">
@@ -42,7 +42,7 @@
 	     ng-class="{'ipp-border-bottom-none':!$last}"
 	     ng-repeat="note in notesModel.notes | orderBy:notePredicate">
 		<div style="display:inline-block">
-			<i class="fa fa-edit ipp-note-icon ipp-color-secondary-darkest"></i>
+			<i class="sc sc-document-edit ipp-note-icon ipp-color-secondary-darkest"></i>
 		</div>
 		
 		<div class="ipp-note-content">
@@ -53,20 +53,20 @@
        	</div>
        	
        	<div style="display:inline;right:3em;position:absolute;" class="ui-li-aside">
-         			<i class="fa fa-clock-o ipp-lighter ipp-fs-smaller"></i>
+         			<i class="sc sc-clock ipp-lighter ipp-fs-smaller"></i>
 
          			<span class="ipp-fs-smallest ipp-lighter ipp-fw-normal">
          			      {{note.timestamp | friendlyDate }}</span>
     	</div>
        	  
         <i ng-click="showContent=!showContent" 
-           ng-class="{'fa-chevron-up': showContent,'fa-chevron-down': !showContent}"
-           class="fa fa-1x fa-chevron-down ipp-nav-icon-right ipp-note-expando"></i>
+           ng-class="{'sc-chevron-u': showContent,'sc-chevron-d': !showContent}"
+           class="sc sc-chevron-d ipp-nav-icon-right ipp-note-expando"></i>
            
     </div><!-- NOTE data tiles end... -->
     
     <div ng-show="notesModel.notes.length==0" style="text-align:center;margin-top:5em;">
-    	<i style="font-size:8em;" class="fa fa-clipboard"></i>
+    	<i style="font-size:8em;" class="sc sc-clipboard"></i>
     </div>
     
 </div><!-- Data-Role Content end... -->

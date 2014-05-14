@@ -23,6 +23,8 @@
 		<link href='https://fonts.googleapis.com/css?family=Lato:300,400,700' rel='stylesheet' type='text/css'>
 		<link rel="stylesheet" href="./css/jquery.mobile/jquery.mobile-1.4.0.min.css" />
 		<link rel="stylesheet" href="./css/font-awesome/css/font-awesome.css" />
+		<xlink rel="stylesheet" href="./css/font-awesome-temp/css/font-awesome-temp.css" />
+		<link rel="stylesheet" href="./css/starclipse/css/starclipse.css" />
 		<link rel="stylesheet" href="./css/jquery.mobile/jqm.custom.widgets.css" />
 		<link rel="stylesheet" href="./css/jquery.mobile/jquery.mobile.iscrollview.css" />
 		<link rel="stylesheet" href="css/add2home.css">
@@ -55,7 +57,7 @@
 	
 		<!-- EXTERNAL HEADER -->
 		<div data-role="header" data-position="fixed"  
-			 data-theme="a"  style="float:left;text-align;"
+			 data-theme="a"  xstyle="float:left;text-align;"
 			 class="external-header" 
 			 ng-controller="headerCtrl"
 			 data-jqm-template data-jqm-widgets="toolbar" 
@@ -74,16 +76,7 @@
 			 data-template-url="templates/baseFooter.html">
 		</div>
 
-		<!-- EXTERNAL PANEL RIGHT -->
-		<div data-role="panel" id="main-panel" 
-		     data-position="right" 
-		     data-display="overlay" 
-		     data-theme="a"
-			 data-jqm-template 
-			 data-jqm-widgets="listview" 
-			 ng-controller="panelCtrl"
-			 data-template-url="templates/externalPanelRight.html">
-		</div>
+		
 		
 		<!--LOGIN PAGE -->
 		<div id="login" data-role="page" data-theme="c" 
@@ -248,6 +241,5 @@
 		</script>
 		<script type="application/javascript" src="js/add2home.js"></script>
 		<script type="text/javascript" data-main="js/MobileWorkflowMain" src="./js/libs/require/2.0.5/require.js"></script>
-      <!-- <script src="http://jsconsole.com/remote.js?8771A847-9D0C-40F6-AF7C-5764F32C2AF5"></script> -->		
 	</body>
 </html>

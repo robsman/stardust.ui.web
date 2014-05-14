@@ -3,21 +3,32 @@
 </div>
 
 
-<a ng-show="appData.isAuthorized" href="#main-panel" 
+<a ng-show="appData.isAuthorized" data-rel="popup"  href="#main-panel" 
    class="ui-btn ui-btn-right ui-icon-bars ui-btn-icon-notext ui-corner-all ipp-jqm-icon-override">No text
 </a>
-<!--a ng-show="appData.isAuthorized" 
-   data-enhance="false" 
-   class="ipp-link-primary"
-   style="position:absolute;right:0em;top:-0.75em;font-size:1.25em" 
-   href="#main-panel">
-	<i class="fa fa-1x fa-bars ipp-nav-icon-right"></i>
-</a-->
+
+<!-- EXTERNAL PANEL RIGHT -->
+<div data-role="popup" id="main-panel" 
+     data-position="right" 
+     data-transition="slide"
+     data-display="overlay" 
+     data-theme="a"
+	 data-jqm-template 
+	 data-jqm-widgets="listview" 
+	 style="width:240px;"
+	 ng-controller="panelCtrl"
+	 data-template-url="templates/externalPanelRight.html">
+</div>
 
 
-<div ng-show="(appData.isActivityHot=='true' || appData.isActivityHot==true) && appData.activePage !='detailPage'" class="ng-hide">
-	<a ng-href="#detailPage?id={{appData.hotActivityInstance.oid}}&activeTab=formTab"  class="ipp-minimal jqm-cstm-inlineAlert jqm-cstm-success">
-		<span style="font-size: 0.7em;">{{uiText.tapto}} {{appData.hotActivityInstance.name}} <span class="hide-media-sm">(#{{appData.hotActivityInstance.oid}})</span></span>
-		<i class="fa fa-angle-right fa-2x ipp-pull-right ipp-pad-right-2x"></i>
+
+<div ng-show="(appData.isActivityHot=='true' || appData.isActivityHot==true) && appData.activePage !='detailPage'" 
+     class="ng-hide">
+	<a ng-href="#detailPage?id={{appData.hotActivityInstance.oid}}&activeTab=formTab"  
+	   class="ipp-minimal jqm-cstm-inlineAlert jqm-cstm-success">
+		<span style="font-size: 0.7em;">{{uiText.tapto}} {{appData.hotActivityInstance.name}} 
+			<span class="hide-media-sm">(#{{appData.hotActivityInstance.oid}})</span>
+		</span>
+		<i class="sc sc-chevron-r sc-2x ipp-pull-right ipp-pad-right-2x"></i>
 	</a>
 </div>
