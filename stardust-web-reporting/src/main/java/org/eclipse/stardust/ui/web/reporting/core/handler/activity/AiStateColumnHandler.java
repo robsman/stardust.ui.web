@@ -56,7 +56,6 @@ public class AiStateColumnHandler extends AiColumnHandler<ActivityInstanceState>
    public ActivityInstanceState provideResultSetValue(HandlerContext context, ResultSet rs)
          throws SQLException
    {
-      // TODO Auto-generated method stub
       return null;
    }
 

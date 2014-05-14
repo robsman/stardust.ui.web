@@ -4,12 +4,8 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.*;
 
-import javax.script.*;
-
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
@@ -18,7 +14,6 @@ import org.eclipse.stardust.engine.api.query.*;
 import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.ui.web.reporting.common.JsonMarshaller;
-import org.eclipse.stardust.ui.web.reporting.common.JsonUtil;
 import org.eclipse.stardust.ui.web.reporting.common.RestUtil;
 import org.eclipse.stardust.ui.web.reporting.common.mapping.reponse.RecordSetDataBuilder;
 import org.eclipse.stardust.ui.web.reporting.common.mapping.reponse.SeriesDataBuilder;
@@ -447,43 +442,6 @@ public class ReportingServicePojo
          trace.error(e);
 
          throw new RuntimeException(e);
-      }
-   }
-
-   /**
-    *
-    * @param input
-    * @return
-    */
-   @SuppressWarnings("unused")
-   private static Object evaluateComputedColumn(JsonObject input, String expression)
-   {
-      try
-      {
-         ScriptEngineManager manager = new ScriptEngineManager();
-         ScriptEngine engine = manager.getEngineByName("JavaScript");
-         ScriptContext context = new SimpleScriptContext();
-         Bindings scope = context.getBindings(ScriptContext.ENGINE_SCOPE);
-
-         // Add column values to scope
-         for (Map.Entry<String, JsonElement> entry : input.entrySet())
-         {
-            if (entry.getValue().isJsonPrimitive())
-            {
-               JsonPrimitive jsonPrimitive = (JsonPrimitive) entry.getValue();
-               scope.put(entry.getKey(), JsonUtil.convertPrimitiveToJava(jsonPrimitive));
-            }
-         }
-
-         // Execute script
-         return engine.eval(expression, context);
-      }
-      catch (ScriptException e)
-      {
-         trace.error(e);
-
-         // Any scripting error result in a non-calulated value
-         return null;
       }
    }
 }

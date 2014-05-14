@@ -25,14 +25,12 @@ public class AiDescriptorColumnHandler extends AbstractDescriptorColumnHandler<A
    public Object provideResultSetValue(HandlerContext context, ResultSet rs)
          throws SQLException
    {
-      // TODO Auto-generated method stub
       return null;
    }
 
    @Override
    public DataField provideDataField(HandlerContext context)
    {
-      // TODO Auto-generated method stub
       return null;
    }
 }

@@ -25,14 +25,12 @@ public class PiDescriptorColumnHandler extends AbstractDescriptorColumnHandler<P
    public Object provideResultSetValue(HandlerContext context, ResultSet rs)
          throws SQLException
    {
-      // TODO Auto-generated method stub
       return null;
    }
 
    @Override
    public DataField provideDataField(HandlerContext context)
    {
-      // TODO Auto-generated method stub
       return null;
    }
 }

@@ -59,7 +59,6 @@ public class PiDurationColumnHandler extends PiColumnHandler<Long> implements IF
    public Long provideResultSetValue(HandlerContext context, ResultSet rs)
          throws SQLException
    {
-      // TODO Auto-generated method stub
       return null;
    }
 

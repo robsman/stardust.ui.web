@@ -22,7 +22,6 @@ public class AiCriticalityColumnHandler extends AiColumnHandler<Double>
    @Override
    public Double provideResultSetValue(HandlerContext context, ResultSet rs) throws SQLException
    {
-      // TODO Auto-generated method stub
       return null;
    }
 

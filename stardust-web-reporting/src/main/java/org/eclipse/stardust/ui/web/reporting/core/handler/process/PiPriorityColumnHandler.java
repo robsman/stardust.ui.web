@@ -21,7 +21,6 @@ public class PiPriorityColumnHandler extends PiColumnHandler<Integer>
    @Override
    public Integer provideResultSetValue(HandlerContext context, ResultSet rs) throws SQLException
    {
-      // TODO Auto-generated method stub
       return null;
    }
 

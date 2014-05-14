@@ -40,7 +40,6 @@ public class AiProcessStartTimestampColumnHandler extends AiColumnHandler<Date>
    @Override
    public DataField provideDataField(HandlerContext context)
    {
-      // TODO Auto-generated method stub
       return new DataField(AiDimensionField.PROCESS_INSTANCE_START_TIMESTAMP.getId(),
             DataFieldType.NUMBER);
    }

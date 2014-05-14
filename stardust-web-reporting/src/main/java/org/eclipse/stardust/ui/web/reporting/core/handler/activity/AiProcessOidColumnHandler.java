@@ -29,7 +29,6 @@ public class AiProcessOidColumnHandler extends AiColumnHandler<Long>
    public Long provideResultSetValue(HandlerContext context, ResultSet rs)
          throws SQLException
    {
-      // TODO Auto-generated method stub
       return null;
    }
 

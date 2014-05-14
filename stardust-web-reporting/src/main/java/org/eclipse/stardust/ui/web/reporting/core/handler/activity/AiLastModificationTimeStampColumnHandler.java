@@ -28,7 +28,6 @@ public class AiLastModificationTimeStampColumnHandler extends AiColumnHandler<Da
    @Override
    public Date provideResultSetValue(HandlerContext context, ResultSet rs) throws SQLException
    {
-      // TODO Auto-generated method stub
       return null;
    }
 

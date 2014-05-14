@@ -27,7 +27,6 @@ public class AiParticipantPerformerColumnHandler extends AiColumnHandler<String>
    @Override
    public String provideResultSetValue(HandlerContext context, ResultSet rs) throws SQLException
    {
-      // TODO Auto-generated method stub
       return null;
    }
 
