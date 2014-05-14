@@ -27,7 +27,7 @@
 	<span>{{errorModel.errorMessage}}</span>
 </div>
 
-<div data-iscroll>
+
 	<ul data-role="listview">
 		<li ng-repeat="item in worklistModel.worklistItems | orderBy:predicate">
 			<a href="#detailPage?id={{item.oid}}" class="ipp-no-content">
@@ -53,7 +53,7 @@
 			</a>
 		</li>
 	</ul>
-</div>
+
 
 <div ng-show="worklistModel.worklistItems.length == 0" style="text-align:center;margin-top:5em;">
     	<i style="font-size:8em;" class="fa fa-inbox"></i>

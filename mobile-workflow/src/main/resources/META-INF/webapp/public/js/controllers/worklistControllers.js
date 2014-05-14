@@ -1165,6 +1165,7 @@ define([],function(){
 						.then(function(data){
 							data.notes=$filter("orderBy")(data.notes,"timestamp",true);
 							$scope.$apply(function(){
+								$scope.notesModel.newNote.content="";
 								$scope.notesModel.notes=data.notes;
 							});
 						})
@@ -1511,7 +1512,8 @@ define([],function(){
 						})
 						.then(function(data){
 							data.notes=$filter("orderBy")(data.notes,"timestamp",true);
-							$scope.$apply(function(){		
+							$scope.$apply(function(){	
+								$scope.notesModel.newNote.content="";
 								$scope.notesModel.notes=data.notes;
 							});
 						})

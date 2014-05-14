@@ -133,14 +133,34 @@ define(function(require){
 				$( "[data-role='header'], [data-role='footer']" ).toolbar();
 				$( "body>[data-role='panel']" ).panel();
 				
+				//TODO:ZZM- TEMP CODE FOR CRNT-32870
+				$( window ).on( "orientationchange", function( event ) {
+					$("#mainPage").trigger("create");
+					var winWidth =$(window).width();
+                    $(".ui-header").width(winWidth);
+                    $(".ui-listview").width(winWidth);
+                    $(".ui-footer").width(winWidth);
+                    $(".ui-page").width(winWidth);
+				});
+				
+				//TODO:ZZM- TEMP CODE FOR CRNT-32870
+				$(window).resize(function() { 
+					var winWidth =$(window).width();
+                    $(".ui-header").width(winWidth);
+                    $(".ui-listview").width(winWidth);
+                    $(".ui-footer").width(winWidth);
+                    $(".ui-page").width(winWidth);
+                });
+				
+				
 				/*Acquire reference in Jquery scope to our Angular rootScope*/
 				rootScope=angular.element($(document)).scope();
 				
 				/* Handle navigation requests triggered within Angular that need to be performed manually.
 				 * Triggering this event with no data.target defined will result in mobile performing a back navigation
 				 * relative to the navigation history.
-				 * The goal is to keep from explicitly referencing JQM as a dependency internal to Angular.
-				 * Other than our JQM template directives, our Angular domain should not be aware that it is
+				 * The goal is to keep from explicitly referencing JQM as a dependency internal to Angular (
+				 * Other than our JQM template directives), our Angular domain should not be aware that it is
 				 * co-habitating with JQuery Mobile, well it's a goal...
 				 * */
 				$(rootScope).on("navigateRequest",function(e,data){
