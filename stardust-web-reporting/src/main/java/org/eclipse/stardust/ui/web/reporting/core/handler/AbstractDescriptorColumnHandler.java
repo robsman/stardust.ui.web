@@ -34,13 +34,14 @@ import org.eclipse.stardust.ui.web.reporting.common.JsonUtil;
 import org.eclipse.stardust.ui.web.reporting.common.mapping.request.ReportFilter;
 import org.eclipse.stardust.ui.web.reporting.common.mapping.request.ReportFilter.OperatorType;
 import org.eclipse.stardust.ui.web.reporting.common.mapping.request.ReportFilterMetaData;
+import org.eclipse.stardust.ui.web.reporting.core.ReportParameter;
 import org.eclipse.stardust.ui.web.reporting.core.RequestColumn;
 
 public abstract class AbstractDescriptorColumnHandler<U extends IDescriptorProvider, V extends Query>
    extends AbstractColumnHandler<Object, U, V> implements IFactValueProvider<U>
 {
    @Override
-   public void applyFilter(V query, ReportFilter filter)
+   public void applyFilter(V query, ReportFilter filter, ReportParameter parameter)
    {
       ReportFilterMetaData metadata = filter.getMetadata();
       String dimension = filter.getDimension();

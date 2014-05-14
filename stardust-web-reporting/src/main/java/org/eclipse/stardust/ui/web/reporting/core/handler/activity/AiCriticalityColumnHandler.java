@@ -12,6 +12,7 @@ import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.ui.web.reporting.common.mapping.request.ReportFilter;
 import org.eclipse.stardust.ui.web.reporting.common.mapping.request.ReportFilter.OperatorType;
 import org.eclipse.stardust.ui.web.reporting.core.DataField;
+import org.eclipse.stardust.ui.web.reporting.core.ReportParameter;
 import org.eclipse.stardust.ui.web.reporting.core.Constants.AiDimensionField;
 import org.eclipse.stardust.ui.web.reporting.core.DataField.DataFieldType;
 import org.eclipse.stardust.ui.web.reporting.core.handler.HandlerContext;
@@ -39,13 +40,21 @@ public class AiCriticalityColumnHandler extends AiColumnHandler<Double>
    }
 
    @Override
-   public void applyFilter(ActivityInstanceQuery query, ReportFilter filter)
+   public void applyFilter(ActivityInstanceQuery query, ReportFilter filter, ReportParameter parameter)
    {
       String operator = filter.getOperator();
       OperatorType operatorType = OperatorType.valueOf(operator);
 
-      JsonPrimitive jsonPrimitive = filter.getValue().getAsJsonPrimitive();
-      Number number = jsonPrimitive.getAsNumber();
+      final Number number;
+      if(parameter != null)
+      {
+         number = parameter.getDoubleValue();
+      }
+      else
+      {
+         JsonPrimitive jsonPrimitive = filter.getValue().getAsJsonPrimitive();
+         number = jsonPrimitive.getAsNumber();
+      }
 
       FilterCriterion filterCriterion;
       FilterableAttribute criticalityAttribute = ActivityInstanceQuery.CRITICALITY;

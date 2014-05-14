@@ -17,7 +17,7 @@ import java.sql.SQLException;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.ui.web.reporting.common.mapping.request.ReportFilter;
-import org.eclipse.stardust.ui.web.reporting.core.DataField;
+import org.eclipse.stardust.ui.web.reporting.core.*;
 import org.eclipse.stardust.ui.web.reporting.core.Constants.TimeUnit;
 import org.eclipse.stardust.ui.web.reporting.core.Constants.PiDimensionField;
 import org.eclipse.stardust.ui.web.reporting.core.DataField.DataFieldType;
@@ -50,7 +50,7 @@ public class PiDurationColumnHandler extends PiColumnHandler<Long> implements IF
    }
 
    @Override
-   public void applyFilter(ProcessInstanceQuery query, ReportFilter filter)
+   public void applyFilter(ProcessInstanceQuery query, ReportFilter filter, ReportParameter parameter)
    {
       raisUnsupportedFilterException(query, filter);
    }

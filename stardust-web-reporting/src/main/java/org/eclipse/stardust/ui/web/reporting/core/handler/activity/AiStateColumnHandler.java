@@ -22,6 +22,7 @@ import org.eclipse.stardust.ui.web.reporting.common.mapping.request.ReportFilter
 import org.eclipse.stardust.ui.web.reporting.core.Constants.AiDimensionField;
 import org.eclipse.stardust.ui.web.reporting.core.Constants.FilterConstants;
 import org.eclipse.stardust.ui.web.reporting.core.DataField;
+import org.eclipse.stardust.ui.web.reporting.core.ReportParameter;
 import org.eclipse.stardust.ui.web.reporting.core.DataField.DataFieldType;
 import org.eclipse.stardust.ui.web.reporting.core.handler.HandlerContext;
 
@@ -73,24 +74,33 @@ public class AiStateColumnHandler extends AiColumnHandler<ActivityInstanceState>
    }
 
    @Override
-   public void applyFilter(ActivityInstanceQuery query, ReportFilter filter)
+   public void applyFilter(ActivityInstanceQuery query, ReportFilter filter, ReportParameter parameter)
    {
-      List<String> filterValues = filter.getListValues();
-      if(filterValues.size() > 0)
+      final List<String> filterStates;
+      if(parameter != null)
       {
-         Set<ActivityInstanceState> allFilterStates = new HashSet<ActivityInstanceState>();
-         for(int i=0; i< filterValues.size(); i++)
+         filterStates = new ArrayList<String>(parameter.getAllValues());
+      }
+      else
+      {
+         filterStates = filter.getListValues();
+      }
+
+      if(filterStates.size() > 0)
+      {
+         Set<ActivityInstanceState> distinctFilterStates = new HashSet<ActivityInstanceState>();
+         for(int i=0; i< filterStates.size(); i++)
          {
-            String filterStateKey = filterValues.get(i);
+            String filterStateKey = filterStates.get(i);
             ActivityInstanceState[] mappedStates = allAiStates.get(filterStateKey);
             for(ActivityInstanceState ais: mappedStates)
             {
-               allFilterStates.add(ais);
+               distinctFilterStates.add(ais);
             }
          }
 
          ActivityInstanceState[] criteriaStates
-            = allFilterStates.toArray(new ActivityInstanceState[allFilterStates.size()]);
+            = distinctFilterStates.toArray(new ActivityInstanceState[distinctFilterStates.size()]);
          query.where(new ActivityStateFilter(criteriaStates));
       }
    }

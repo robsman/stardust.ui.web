@@ -1,7 +1,10 @@
 package org.eclipse.stardust.ui.web.reporting.core;
 
 import java.util.List;
+import java.util.Map;
 
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.DescriptorPolicy;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
@@ -15,12 +18,15 @@ import org.eclipse.stardust.ui.web.reporting.core.handler.process.PiColumnHandle
 
 public class QueryBuilder
 {
+   private static final Logger trace = LogManager.getLogger(QueryBuilder.class);
+
    private AiColumnHandlerRegistry aiHandlerRegistry;
    private PiColumnHandlerRegistry piHandlerRegistry;
+   private Map<String, ReportParameter> parameterMap;
 
-
-   public QueryBuilder()
+   public QueryBuilder(Map<String, ReportParameter> parameterMap)
    {
+      this.parameterMap = parameterMap;
       aiHandlerRegistry = new AiColumnHandlerRegistry();
       piHandlerRegistry = new PiColumnHandlerRegistry();
    }
@@ -45,11 +51,25 @@ public class QueryBuilder
       query.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
       for(ReportFilter filter: filters)
       {
-         RequestColumn columnKey = new RequestColumn(filter.getDimension());
+         String dimension = filter.getDimension();
+         RequestColumn columnKey = new RequestColumn(dimension);
          columnKey.setDescriptor(filter.isDescriptor());
 
-         IFilterHandler<T> filterHandler = handlerRegistry.getFilterHandler(query, columnKey, filter);
-         filterHandler.applyFilter(query, filter);
+         IFilterHandler<T> filterHandler
+            = handlerRegistry.getFilterHandler(query, columnKey, filter);
+         ReportParameter rp = parameterMap.get(dimension);
+         if(rp != null && filter.isParameterizable() == false)
+         {
+            StringBuffer warnMsg = new StringBuffer();
+            warnMsg.append("Parameter for column").append("'").append(rp.getId()).append("'");
+            warnMsg.append(" was provided but the matching filter does not support parameters");
+            trace.warn(warnMsg.toString());
+
+            //filter does not support parameter - set it to null
+            rp = null;
+         }
+
+         filterHandler.applyFilter(query, filter, rp);
       }
    }
 }

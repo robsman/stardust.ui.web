@@ -16,6 +16,8 @@ public class ReportFilterMetaData
    private Number rangeFrom;
    private Number rangeTo;
    private List<String> selectedProcesses = new ArrayList<String>();
+   private boolean parameterizable;
+   private boolean fromTo;
 
    public boolean isProcess_filter_auxiliary()
    {
@@ -70,5 +72,15 @@ public class ReportFilterMetaData
    public Number getRangeTo()
    {
       return rangeTo;
+   }
+
+   public boolean isParameterizable()
+   {
+      return parameterizable;
+   }
+
+   public boolean isFromTo()
+   {
+      return fromTo;
    }
 }

@@ -18,6 +18,7 @@ import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.ui.web.reporting.common.mapping.request.ReportFilter;
 import org.eclipse.stardust.ui.web.reporting.core.DataField;
+import org.eclipse.stardust.ui.web.reporting.core.ReportParameter;
 import org.eclipse.stardust.ui.web.reporting.core.Constants.PiDimensionField;
 import org.eclipse.stardust.ui.web.reporting.core.DataField.DataFieldType;
 import org.eclipse.stardust.ui.web.reporting.core.handler.HandlerContext;
@@ -44,8 +45,8 @@ public class PiStartTimestampColumnHandler extends PiColumnHandler<Date>
    }
 
    @Override
-   public void applyFilter(ProcessInstanceQuery query, ReportFilter filter)
+   public void applyFilter(ProcessInstanceQuery query, ReportFilter filter, ReportParameter parameter)
    {
-      applyDateFilter(query, ProcessInstanceQuery.START_TIME, filter);
+      applyDateFilter(query, ProcessInstanceQuery.START_TIME, filter, parameter);
    }
 }

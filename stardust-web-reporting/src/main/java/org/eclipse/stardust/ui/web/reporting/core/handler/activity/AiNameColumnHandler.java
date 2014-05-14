@@ -15,6 +15,7 @@ import org.eclipse.stardust.ui.web.reporting.common.mapping.request.ReportFilter
 import org.eclipse.stardust.ui.web.reporting.core.DataField;
 import org.eclipse.stardust.ui.web.reporting.core.Constants.AiDimensionField;
 import org.eclipse.stardust.ui.web.reporting.core.DataField.DataFieldType;
+import org.eclipse.stardust.ui.web.reporting.core.ReportParameter;
 import org.eclipse.stardust.ui.web.reporting.core.handler.HandlerContext;
 import org.eclipse.stardust.ui.web.reporting.core.handler.process.PiNameColumnHandler;
 
@@ -43,17 +44,24 @@ public class AiNameColumnHandler extends AiColumnHandler<String>
    }
 
    @Override
-   public void applyFilter(ActivityInstanceQuery query, ReportFilter filter)
+   public void applyFilter(ActivityInstanceQuery query, ReportFilter filter, ReportParameter parameter)
    {
       List<String> allFilterValues = new ArrayList<String>();
-      if(filter.isSingleValue())
+      if(parameter != null)
       {
-         allFilterValues.add(filter.getSingleValue());
+         allFilterValues.addAll(parameter.getAllValues());
       }
-
-      if(filter.isListValue())
+      else
       {
-         allFilterValues.addAll(filter.getListValues());
+         if(filter.isSingleValue())
+         {
+            allFilterValues.add(filter.getSingleValue());
+         }
+
+         if(filter.isListValue())
+         {
+            allFilterValues.addAll(filter.getListValues());
+         }
       }
 
       boolean allProcessesSelected = false;

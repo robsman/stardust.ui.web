@@ -19,6 +19,7 @@ import org.eclipse.stardust.ui.web.reporting.common.mapping.request.ReportFilter
 import org.eclipse.stardust.ui.web.reporting.core.Constants.AiDimensionField;
 import org.eclipse.stardust.ui.web.reporting.core.Constants.TimeUnit;
 import org.eclipse.stardust.ui.web.reporting.core.DataField;
+import org.eclipse.stardust.ui.web.reporting.core.ReportParameter;
 import org.eclipse.stardust.ui.web.reporting.core.DataField.DataFieldType;
 import org.eclipse.stardust.ui.web.reporting.core.handler.HandlerContext;
 import org.eclipse.stardust.ui.web.reporting.core.handler.IFactValueProvider;
@@ -50,7 +51,7 @@ public class AiDurationColumnHandler extends AiColumnHandler<Long> implements IF
    }
 
    @Override
-   public void applyFilter(ActivityInstanceQuery query, ReportFilter filter)
+   public void applyFilter(ActivityInstanceQuery query, ReportFilter filter, ReportParameter parameter)
    {
       raisUnsupportedFilterException(query, filter);
    }

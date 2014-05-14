@@ -125,4 +125,14 @@ public class ReportFilter implements IValidateAble
 
       return false;
    }
+
+   public boolean isParameterizable()
+   {
+      if(metadata != null)
+      {
+         return metadata.isParameterizable();
+      }
+
+      return false;
+   }
 }

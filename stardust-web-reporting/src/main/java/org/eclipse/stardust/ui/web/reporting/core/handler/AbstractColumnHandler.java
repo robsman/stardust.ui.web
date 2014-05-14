@@ -10,6 +10,7 @@
 *******************************************************************************/
 package org.eclipse.stardust.ui.web.reporting.core.handler;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -19,7 +20,9 @@ import org.eclipse.stardust.engine.api.query.*;
 import org.eclipse.stardust.ui.web.reporting.common.mapping.request.ReportFilter;
 import org.eclipse.stardust.ui.web.reporting.common.mapping.request.ReportFilter.OperatorType;
 import org.eclipse.stardust.ui.web.reporting.core.Interval;
+import org.eclipse.stardust.ui.web.reporting.core.ReportParameter;
 import org.eclipse.stardust.ui.web.reporting.core.RequestColumn;
+import org.eclipse.stardust.ui.web.reporting.core.Constants.TimeUnit;
 import org.eclipse.stardust.ui.web.reporting.core.util.ReportingUtil;
 
 public abstract class AbstractColumnHandler<T, U, V extends Query> implements IColumnHandler<T, U, V>
@@ -89,14 +92,55 @@ public abstract class AbstractColumnHandler<T, U, V extends Query> implements IC
       throw new RuntimeException(errorMsg.toString());
    }
 
-   protected void applyDateFilter(V query, FilterableAttribute filterAttribute, ReportFilter dateFilter)
+   //TODO: add parameter support
+   protected void applyDateFilter(V query, FilterableAttribute filterAttribute, ReportFilter dateFilter, ReportParameter parameter)
    {
+      boolean hasFromToSyntax = (dateFilter.getMetadata() == null || dateFilter.getMetadata().isFromTo());
       JsonObject jsonObject = dateFilter.getValue().getAsJsonObject();
-      String from = jsonObject.getAsJsonPrimitive("from").getAsString();
-      String to = jsonObject.getAsJsonPrimitive("to").getAsString();
-
+      final String from;
+      if(parameter != null)
+      {
+         from = parameter.getFirstValue();
+      }
+      else
+      {
+         from = jsonObject.getAsJsonPrimitive("from").getAsString();
+      }
       Date fromDate = ReportingUtil.parseDate(from);
-      Date toDate = ReportingUtil.parseDate(to);
+
+      final Date toDate;
+      if(hasFromToSyntax)
+      {
+         final String to;
+         if(parameter != null && parameter.getValuesSize() > 1)
+         {
+            to = parameter.getLastValue();
+         }
+         else
+         {
+            to = jsonObject.getAsJsonPrimitive("to").getAsString();
+         }
+
+         toDate = ReportingUtil.parseDate(to);
+      }
+      else
+      {
+         final int durationUnitValue;
+         String durationUnitString = jsonObject.getAsJsonPrimitive("durationUnit").getAsString();
+         TimeUnit durationUnit = TimeUnit.parse(durationUnitString);
+
+         if(parameter != null && parameter.getValuesSize() > 1)
+         {
+            String durationValueAsString = parameter.getLastValue();
+            durationUnitValue = Integer.parseInt(durationValueAsString);
+         }
+         else
+         {
+            durationUnitValue = jsonObject.getAsJsonPrimitive("duration").getAsInt();
+         }
+
+         toDate = ReportingUtil.addDuration(fromDate, durationUnit, durationUnitValue);
+      }
 
       FilterCriterion fc = getDateFilterCriterion(filterAttribute, fromDate, toDate);
       if(fc != null)
@@ -105,45 +149,46 @@ public abstract class AbstractColumnHandler<T, U, V extends Query> implements IC
       }
    }
 
-   protected void applyOidFilter(V query, FilterableAttribute oidAttribute, ReportFilter oidFilter)
+   protected void applyOidFilter(V query, FilterableAttribute oidAttribute, ReportFilter oidFilter, ReportParameter parameter)
    {
-      String rawFilterValue = oidFilter.getValue().getAsJsonPrimitive().getAsString();
-
-      final long oid;
-      final List<Long> oids;
-
+      final List<Long> oids = new ArrayList<Long>();
       String operator = oidFilter.getOperator();
       OperatorType operatorType = OperatorType.valueOf(operator);
+      String rawFilterValue = oidFilter.getValue().getAsJsonPrimitive().getAsString();
 
+      if(parameter != null)
+      {
+         oids.addAll(parameter.getLongValues());
+      }
+      else
+      {
+         oids.addAll(ReportingUtil.getCollectionValues(rawFilterValue));
+      }
+
+      final long oid = oids.get(0);
       FilterAndTerm andTerm = query.getFilter().addAndTerm();
       switch(operatorType)
       {
          case LE:
-            oid = ReportingUtil.getLongValue(rawFilterValue);
             andTerm.and(oidAttribute.lessOrEqual(oid));
             break;
          case GE:
-            oid = ReportingUtil.getLongValue(rawFilterValue);
             andTerm.and(oidAttribute.greaterOrEqual(oid));
             break;
          case E:
-            oid = ReportingUtil.getLongValue(rawFilterValue);
             andTerm.and(oidAttribute.isEqual(oid));
             break;
          case NE:
-            oid = ReportingUtil.getLongValue(rawFilterValue);
             andTerm.and(oidAttribute.notEqual(oid));
             break;
          case I:
             FilterOrTerm orTerm = andTerm.addOrTerm();
-            oids = ReportingUtil.getCollectionValues(rawFilterValue);
             for(Long tmpOid: oids)
             {
                orTerm.or(oidAttribute.isEqual(tmpOid));
             }
             break;
          case NI:
-            oids = ReportingUtil.getCollectionValues(rawFilterValue);
             for(Long tmpOid: oids)
             {
                andTerm.and(oidAttribute.notEqual(tmpOid));

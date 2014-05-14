@@ -11,6 +11,7 @@ import org.eclipse.stardust.ui.web.reporting.common.JsonUtil;
 import org.eclipse.stardust.ui.web.reporting.common.mapping.request.ReportFilter;
 import org.eclipse.stardust.ui.web.reporting.common.mapping.request.ReportFilter.OperatorType;
 import org.eclipse.stardust.ui.web.reporting.core.DataField;
+import org.eclipse.stardust.ui.web.reporting.core.ReportParameter;
 import org.eclipse.stardust.ui.web.reporting.core.Constants.PiDimensionField;
 import org.eclipse.stardust.ui.web.reporting.core.DataField.DataFieldType;
 import org.eclipse.stardust.ui.web.reporting.core.handler.HandlerContext;
@@ -38,9 +39,17 @@ public class PiPriorityColumnHandler extends PiColumnHandler<Integer>
    }
 
    @Override
-   public void applyFilter(ProcessInstanceQuery query, ReportFilter filter)
+   public void applyFilter(ProcessInstanceQuery query, ReportFilter filter, ReportParameter parameter)
    {
-      long priorityValue = JsonUtil.getPrimitiveValueAsLong(filter.getValue());
+      final long priorityValue;
+      if(parameter != null)
+      {
+         priorityValue = parameter.getLongValue();
+      }
+      else
+      {
+         priorityValue = JsonUtil.getPrimitiveValueAsLong(filter.getValue());
+      }
 
       String operator = filter.getOperator();
       OperatorType operatorType = OperatorType.valueOf(operator);
@@ -61,7 +70,6 @@ public class PiPriorityColumnHandler extends PiColumnHandler<Integer>
          case NE:
             filterCriterion = priorityAttribute.notEqual(priorityValue);
             break;
-
          default:
             throw new RuntimeException("Unsupported Operator Type: "+operator);
       }

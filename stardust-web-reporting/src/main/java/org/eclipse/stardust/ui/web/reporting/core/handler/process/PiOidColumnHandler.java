@@ -19,6 +19,7 @@ import org.eclipse.stardust.ui.web.reporting.common.mapping.request.ReportFilter
 import org.eclipse.stardust.ui.web.reporting.core.Constants.PiDimensionField;
 import org.eclipse.stardust.ui.web.reporting.core.DataField;
 import org.eclipse.stardust.ui.web.reporting.core.DataField.DataFieldType;
+import org.eclipse.stardust.ui.web.reporting.core.ReportParameter;
 import org.eclipse.stardust.ui.web.reporting.core.handler.HandlerContext;
 
 public class PiOidColumnHandler extends PiColumnHandler<Long>
@@ -46,8 +47,8 @@ public class PiOidColumnHandler extends PiColumnHandler<Long>
    }
 
    @Override
-   public void applyFilter(ProcessInstanceQuery query, ReportFilter filter)
+   public void applyFilter(ProcessInstanceQuery query, ReportFilter filter, ReportParameter parameter)
    {
-      applyOidFilter(query, ProcessInstanceQuery.OID, filter);
+      applyOidFilter(query, ProcessInstanceQuery.OID, filter, parameter);
    }
 }

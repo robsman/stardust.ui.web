@@ -163,4 +163,12 @@ public class ReportingUtil
       startCalendar.setTime(startDate);
       return startCalendar.fieldDifference(endDate, unit.getCalendarField());
    }
+
+   public static Date addDuration(Date date, TimeUnit unit, int unitValue)
+   {
+      Calendar calendar = Calendar.getInstance();
+      calendar.setTime(date);
+      calendar.add(unit.getCalendarField(), unitValue);
+      return calendar.getTime();
+   }
 }

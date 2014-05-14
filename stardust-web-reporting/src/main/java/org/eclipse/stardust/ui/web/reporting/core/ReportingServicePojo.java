@@ -65,9 +65,17 @@ public class ReportingServicePojo
     * @throws ParseException
     * @throws UnsupportedFilterException
     */
-   public JsonObject getReportData(JsonObject reportJson)
+   public JsonObject getReportData(JsonObject reportJson, ReportParameter...parameters)
          throws UnsupportedFilterException, ParseException
    {
+      Map<String, ReportParameter> parameterMap = new HashMap<String, ReportParameter>();
+      if(parameters != null)
+      {
+         for(ReportParameter rp: parameters)
+         {
+            parameterMap.put(rp.getId(), rp);
+         }
+      }
 
       // workaround until the method signature changes and this method here just receives
       // the raw json string
@@ -80,7 +88,7 @@ public class ReportingServicePojo
 
       ReportDataSet dataSet = reportDefinition.getDataSet();
       QueryType queryType = QueryType.parse(dataSet.getPrimaryObject());
-      QueryBuilder queryBuilder = new QueryBuilder();
+      QueryBuilder queryBuilder = new QueryBuilder(parameterMap);
 
       final long queryStart;
       final long queryEnd;

@@ -18,6 +18,7 @@ import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.ui.web.reporting.common.mapping.request.ReportFilter;
 import org.eclipse.stardust.ui.web.reporting.core.DataField;
+import org.eclipse.stardust.ui.web.reporting.core.ReportParameter;
 import org.eclipse.stardust.ui.web.reporting.core.Constants.AiDimensionField;
 import org.eclipse.stardust.ui.web.reporting.core.DataField.DataFieldType;
 import org.eclipse.stardust.ui.web.reporting.core.handler.HandlerContext;
@@ -45,8 +46,8 @@ public class AiStartTimeStampColumnHandler extends AiColumnHandler<Date>
    }
 
    @Override
-   public void applyFilter(ActivityInstanceQuery query, ReportFilter filter)
+   public void applyFilter(ActivityInstanceQuery query, ReportFilter filter, ReportParameter parameter)
    {
-      applyDateFilter(query, ActivityInstanceQuery.START_TIME, filter);
+      applyDateFilter(query, ActivityInstanceQuery.START_TIME, filter, parameter);
    }
 }

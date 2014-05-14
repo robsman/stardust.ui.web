@@ -19,6 +19,7 @@ import javax.script.*;
 import org.eclipse.stardust.engine.api.query.Query;
 import org.eclipse.stardust.ui.web.reporting.common.mapping.request.ReportFilter;
 import org.eclipse.stardust.ui.web.reporting.core.DataField;
+import org.eclipse.stardust.ui.web.reporting.core.ReportParameter;
 import org.eclipse.stardust.ui.web.reporting.core.RequestColumn;
 
 public abstract class AbstractComputedColumnHandler<U, V extends Query> extends AbstractColumnHandler<Object, U, V>
@@ -67,7 +68,7 @@ public abstract class AbstractComputedColumnHandler<U, V extends Query> extends 
    }
 
    @Override
-   public void applyFilter(V query, ReportFilter filter)
+   public void applyFilter(V query, ReportFilter filter, ReportParameter parameter)
    {
       raisUnsupportedFilterException(query, filter);
    }

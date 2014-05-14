@@ -12,9 +12,10 @@ package org.eclipse.stardust.ui.web.reporting.core.handler;
 
 import org.eclipse.stardust.engine.api.query.Query;
 import org.eclipse.stardust.ui.web.reporting.common.mapping.request.ReportFilter;
+import org.eclipse.stardust.ui.web.reporting.core.ReportParameter;
 
 public interface IFilterHandler<T extends Query>
 {
-   public void applyFilter(T query, ReportFilter filter);
+   public void applyFilter(T query, ReportFilter filter, ReportParameter parameter);
    public boolean canFilter(T query, ReportFilter filter);
 }

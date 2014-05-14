@@ -9,6 +9,7 @@ import org.eclipse.stardust.engine.api.query.*;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.ui.web.reporting.common.mapping.request.ReportFilter;
 import org.eclipse.stardust.ui.web.reporting.core.DataField;
+import org.eclipse.stardust.ui.web.reporting.core.ReportParameter;
 import org.eclipse.stardust.ui.web.reporting.core.Constants.PiDimensionField;
 import org.eclipse.stardust.ui.web.reporting.core.DataField.DataFieldType;
 import org.eclipse.stardust.ui.web.reporting.core.handler.HandlerContext;
@@ -38,17 +39,24 @@ public class PiNameColumnHandler extends PiColumnHandler<String>
    }
 
    @Override
-   public void applyFilter(ProcessInstanceQuery query, ReportFilter filter)
+   public void applyFilter(ProcessInstanceQuery query, ReportFilter filter, ReportParameter parameter)
    {
       List<String> allFilterValues = new ArrayList<String>();
-      if(filter.isSingleValue())
+      if(parameter != null)
       {
-         allFilterValues.add(filter.getSingleValue());
+         allFilterValues.addAll(parameter.getAllValues());
       }
-
-      if(filter.isListValue())
+      else
       {
-         allFilterValues.addAll(filter.getListValues());
+         if(filter.isSingleValue())
+         {
+            allFilterValues.add(filter.getSingleValue());
+         }
+
+         if(filter.isListValue())
+         {
+            allFilterValues.addAll(filter.getListValues());
+         }
       }
 
       apply(query, allFilterValues);

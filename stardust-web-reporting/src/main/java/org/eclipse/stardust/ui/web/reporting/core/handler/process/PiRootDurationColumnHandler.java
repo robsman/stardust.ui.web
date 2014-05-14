@@ -17,6 +17,7 @@ import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.ui.web.reporting.common.mapping.request.ReportFilter;
 import org.eclipse.stardust.ui.web.reporting.core.DataField;
+import org.eclipse.stardust.ui.web.reporting.core.ReportParameter;
 import org.eclipse.stardust.ui.web.reporting.core.handler.HandlerContext;
 import org.eclipse.stardust.ui.web.reporting.core.handler.IFactValueProvider;
 import org.eclipse.stardust.ui.web.reporting.core.util.ReportingUtil;
@@ -52,7 +53,7 @@ public class PiRootDurationColumnHandler extends PiColumnHandler<Long> implement
    }
 
    @Override
-   public void applyFilter(ProcessInstanceQuery query, ReportFilter filter)
+   public void applyFilter(ProcessInstanceQuery query, ReportFilter filter, ReportParameter parameter)
    {
       raisUnsupportedFilterException(query, filter);
    }
