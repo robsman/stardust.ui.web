@@ -30,6 +30,7 @@
       <module>web-modeler</module>
       <module>stardust-web-modeler-bpmn2</module>
       <module>web-portal</module>
+      <module>mobile-workflow</module>
    </modules>
 
    <build>
