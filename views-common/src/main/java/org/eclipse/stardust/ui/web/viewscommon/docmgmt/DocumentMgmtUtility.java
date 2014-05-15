@@ -125,10 +125,10 @@ public class DocumentMgmtUtility
          docInfo.setContentType(contentType);
       }
       Document document = getDocumentManagementService().createDocument(targetId, docInfo);
+      // Workaround code added for some Repo, if versioning fails,send original doc
+      Document documentVersioned = getDocumentManagementService().versionDocument(document.getId(), "", null);
       
-      document = getDocumentManagementService().versionDocument(document.getId(), "", null);
-      
-      return document;
+      return documentVersioned != null ? documentVersioned : document;
    }
 
    /**
