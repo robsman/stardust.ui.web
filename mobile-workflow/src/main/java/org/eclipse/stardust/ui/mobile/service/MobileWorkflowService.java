@@ -933,21 +933,7 @@ public class MobileWorkflowService implements ServletContextAware {
 
          applicationContext = activityInstance.getActivity()
                .getApplicationContext(ExternalWebAppActivityInteractionController.EXT_WEB_APP_CONTEXT_ID);
-
-         applicationContextJson
-               .addProperty(
-                     "carnot:engine:ui:externalWebApp:uri",
-                     (String) applicationContext
-                           .getAttribute("carnot:engine:ui:externalWebApp:uri"));
-         String ippPortalBaseUri = "http://localhost:8080/pepper-test/";
-//         String ippPortalBaseUri = "https://www.infinity.com/iod73-0/a/93170f2c-6ec5-475a-b07b-e75a5e67ffc6/";
-         String ippServicesBaseUri = ippPortalBaseUri + "services/";
-         String interactionId = Interaction.getInteractionId(activityInstance);
-         String ippInteractionUri = ippServicesBaseUri + "rest/engine/interactions/" + interactionId;
-         applicationContextJson.addProperty("ippPortalBaseURi", ippPortalBaseUri);
-         applicationContextJson.addProperty("ippServicesBaseUri", ippServicesBaseUri);
-         applicationContextJson.addProperty("ippInteractionUri", ippInteractionUri);
-         applicationContextJson.addProperty("interactionId", interactionId);
+         setIPPInteractionParams(applicationContextJson, activityInstance);
       }
 //      }
       
@@ -1990,41 +1976,58 @@ public class MobileWorkflowService implements ServletContextAware {
     * @param ai
     */
    private void setIPPInteractionParams(JsonObject applicationContextJson,
-         ActivityInstance ai) {
-      ApplicationContext context = ai.getActivity().getApplicationContext(ExternalWebAppActivityInteractionController.EXT_WEB_APP_CONTEXT_ID);
+         ActivityInstance ai)
+   {
+      ApplicationContext context = ai.getActivity().getApplicationContext(
+            ExternalWebAppActivityInteractionController.EXT_WEB_APP_CONTEXT_ID);
 
-      Boolean embedded = (Boolean) context
-            .getAttribute("carnot:engine:ui:externalWebApp:embedded");
+      Boolean embedded = (Boolean) context.getAttribute("carnot:engine:ui:externalWebApp:embedded");
 
       String servicesBaseUri = "";
       String portalBaseUri = "";
-      if (null != embedded && embedded) {
+      if (null != embedded && embedded)
+      {
          servicesBaseUri = "/${request.contextPath}/services/";
          portalBaseUri = "/${request.contextPath}";
-      } else {
+      }
+      else
+      {
          // allow base URI override via parameter
          servicesBaseUri = servletContext.getInitParameter("InfinityBpm.ServicesBaseUri");
-         if (isEmpty(servicesBaseUri)) {
+         if (isEmpty(servicesBaseUri))
+         {
             servicesBaseUri = "${request.scheme}://${request.serverName}:${request.serverPort}/${request.contextPath}/services/";
          }
 
          portalBaseUri = servletContext.getInitParameter("InfinityBpm.PortalBaseUri");
-         if (isEmpty(portalBaseUri)) {
+         if (isEmpty(portalBaseUri))
+         {
             portalBaseUri = "${request.scheme}://${request.serverName}:${request.serverPort}/${request.contextPath}";
          }
       }
 
       servicesBaseUri = expandUriTemplate(servicesBaseUri, httpRequest);
       portalBaseUri = expandUriTemplate(portalBaseUri, httpRequest);
-        String interactionId = Interaction.getInteractionId(ai);
-        String ippInteractionUri = servicesBaseUri + "rest/engine/interactions/" + interactionId;
-      applicationContextJson
-            .addProperty("ippPortalBaseURi", portalBaseUri);
-      applicationContextJson.addProperty("ippServicesBaseUri",
-            servicesBaseUri);
-      applicationContextJson.addProperty("ippInteractionUri",
-            ippInteractionUri);
+      String interactionId = Interaction.getInteractionId(ai);
+      String ippInteractionUri = servicesBaseUri + "rest/engine/interactions/"
+            + interactionId;
+      applicationContextJson.addProperty("ippPortalBaseURi", portalBaseUri);
+      applicationContextJson.addProperty("ippServicesBaseUri", servicesBaseUri);
+      applicationContextJson.addProperty("ippInteractionUri", ippInteractionUri);
       applicationContextJson.addProperty("interactionId", interactionId);
+      if (null != embedded && embedded)
+      {
+         applicationContextJson.addProperty("mashupUri", ippInteractionUri
+               + "/embeddedMarkup");
+      }
+      else
+      {
+         ApplicationContext applicationContext = ai.getActivity().getApplicationContext(
+               ExternalWebAppActivityInteractionController.EXT_WEB_APP_CONTEXT_ID);
+         applicationContextJson.addProperty(
+               "mashupUri",
+               (String) applicationContext.getAttribute("carnot:engine:ui:externalWebApp:uri"));
+      }
    }
    
    /**

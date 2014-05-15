@@ -1355,7 +1355,7 @@ define([],function(){
 							 *where we should load the mashup URL outside of an activate button click event.*/
 							if(prevPage==="startableProcessesPage"){
 								if(data.activatable){
-									url=data.contexts.externalWebApp["carnot:engine:ui:externalWebApp:uri"] +
+									url=data.contexts.externalWebApp["mashupUri"] +
 									    "?ippInteractionUri=" + data.contexts.externalWebApp.ippInteractionUri +
 									    "&ippPortalBaseUri=" + data.contexts.externalWebApp.ippPortalBaseURi +
 									    "&ippServicesBaseUri=" + data.contexts.externalWebApp.ippServicesBaseUri +
@@ -1426,7 +1426,7 @@ define([],function(){
 					.then(
 						function(data){
 							if (data.contexts.externalWebApp) {
-								var url=data.contexts.externalWebApp["carnot:engine:ui:externalWebApp:uri"] +
+								var url=data.contexts.externalWebApp["mashupUri"] +
 										"?ippInteractionUri=" + data.contexts.externalWebApp.ippInteractionUri +
 										"&ippPortalBaseUri=" + data.contexts.externalWebApp.ippPortalBaseURi +
 										"&ippServicesBaseUri=" + data.contexts.externalWebApp.ippServicesBaseUri +
