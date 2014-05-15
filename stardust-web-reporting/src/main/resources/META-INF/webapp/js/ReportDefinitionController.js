@@ -1864,6 +1864,11 @@ define(
                               value : value,
                               operator : operator
                      });
+                     if (this.report.dataSet.filters[int].metadata == null)
+                     {
+                        this.report.dataSet.filters[int].metadata = {};
+                     }
+                     this.report.dataSet.filters[int].metadata.parameterizable = true;
                   }
                }
 					
@@ -1895,6 +1900,13 @@ define(
 				ReportDefinitionController.prototype.removeParameter = function(
 						id) {
 					delete this.report.parameters[id];
+					for ( var int = 0; int < this.report.dataSet.filters.length; int++)
+               {
+                  if (id.indexOf(this.report.dataSet.filters[int].dimension) != -1)
+                  {
+                     delete this.report.dataSet.filters[int].metadata.parameterizable;
+                  }
+               }
 				};
 
 				/**
