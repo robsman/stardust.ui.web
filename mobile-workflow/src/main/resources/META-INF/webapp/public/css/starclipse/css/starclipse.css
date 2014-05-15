@@ -1,0 +1,380 @@
+@font-face{
+        font-family: starclipse;
+        src: url(../fonts/starclipse.otf);
+}
+
+.sc-fw:before{
+    width:1.3em;
+    text-align:center;
+    display:inline-block;
+}
+
+.sc{
+    font-family:starclipse !important;
+    display: inline-block;
+    font-style: normal;
+    font-weight: normal;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;   
+}
+
+.sc-spin {
+  -webkit-animation: spin 2s infinite linear;
+  -moz-animation: spin 2s infinite linear;
+  -o-animation: spin 2s infinite linear;
+  animation: spin 2s infinite linear;
+}
+
+@-moz-keyframes spin {
+  0% {
+    -moz-transform: rotate(0deg);
+  }
+  100% {
+    -moz-transform: rotate(359deg);
+  }
+}
+@-webkit-keyframes spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(359deg);
+  }
+}
+@-o-keyframes spin {
+  0% {
+    -o-transform: rotate(0deg);
+  }
+  100% {
+    -o-transform: rotate(359deg);
+  }
+}
+@-ms-keyframes spin {
+  0% {
+    -ms-transform: rotate(0deg);
+  }
+  100% {
+    -ms-transform: rotate(359deg);
+  }
+}
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(359deg);
+  }
+}
+
+.sc-rotate-90 {
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
+  -webkit-transform: rotate(90deg);
+  -moz-transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  -o-transform: rotate(90deg);
+  transform: rotate(90deg);
+}
+
+.sc-rotate-180 {
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2);
+  -webkit-transform: rotate(180deg);
+  -moz-transform: rotate(180deg);
+  -ms-transform: rotate(180deg);
+  -o-transform: rotate(180deg);
+  transform: rotate(180deg);
+}
+
+.sc-rotate-270 {
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+  -webkit-transform: rotate(270deg);
+  -moz-transform: rotate(270deg);
+  -ms-transform: rotate(270deg);
+  -o-transform: rotate(270deg);
+  transform: rotate(270deg);
+}
+
+.sc-flip-horizontal {
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=0, mirror=1);
+  -webkit-transform: scale(-1, 1);
+  -moz-transform: scale(-1, 1);
+  -ms-transform: scale(-1, 1);
+  -o-transform: scale(-1, 1);
+  transform: scale(-1, 1);
+}
+
+.sc-flip-vertical {
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1);
+  -webkit-transform: scale(1, -1);
+  -moz-transform: scale(1, -1);
+  -ms-transform: scale(1, -1);
+  -o-transform: scale(1, -1);
+  transform: scale(1, -1);
+}
+
+.sc-2x{
+    font-size:2em;
+}
+
+.sc-3x{
+    font-size:3em;
+}
+
+.sc-4x{
+    font-size:4em;
+}
+
+.sc-5x{
+    font-size:5em;
+}
+
+.sc-archive:before{
+    content:'\F001';
+}
+
+.sc-archive-down:before{
+    content:'\F002';
+}
+
+.sc-archive-up:before{
+    content:'\F003';
+}
+.sc-arrow-d:before{
+    content:'\F004';
+}
+.sc-arrow-l:before{
+    content:'\F005';
+}
+.sc-arrow-r:before{
+    content:'\F006';
+}
+.sc-arrow-u:before{
+    content:'\F007';
+}
+.sc-arrow-stem-d:before{
+    content:'\F008';
+}
+.sc-arrow-stem-l:before{
+    content:'\F009';
+}
+.sc-arrow-stem-r:before{
+    content:'\F00A';
+}
+.sc-arrow-stem-u:before{
+    content:'\F00B';
+}
+.sc-arrow-stem-ud:before{
+    content:'\F00C';
+}
+.sc-arrow-ud{
+    content:'\F00D';
+}
+.sc-ban:before{
+    content:'\F00E';
+}
+.sc-chart-bar:before{
+    content:'\F00F';
+}
+.sc-bars:before{
+    content:'\F010';
+}
+.sc-calendar:before{
+    content:'\F011';
+}
+.sc-camera:before{
+    content:'\F012';
+}
+.sc-check:before{
+    content:'\F013';
+}
+.sc-check-box:before{
+    content:'\F014';
+}
+.sc-chevron-d:before{
+    content:'\F015';
+}
+.sc-chevron-l:before{
+    content:'\F016';
+}
+.sc-chevron-r:before{
+    content:'\F017';
+}
+.sc-chevron-u:before{
+    content:'\F018';
+}
+.sc-radio-false:before{
+    content:'\F019';
+}
+.sc-radio-true:before{
+    content:'\F01A';
+}
+.sc-clipboard:before{
+    content:'\F01B';
+}
+.sc-clipboard-text:before{
+    content:'\F01C';
+}
+.sc-clock:before{
+    content:'\F01D';
+}
+.sc-cloud:before{
+    content:'\F01E';
+}
+.sc-document:before{
+    content:'\F01F';
+}
+.sc-document-edit:before{
+    content:'\F020';
+}
+.sc-documents:before{
+    content:'\F021';
+}
+.sc-cloud-d:before{
+    content:'\F022';
+}
+.sc-pencil:before{
+    content:'\F023';
+}
+.sc-pencil-box:before{
+    content:'\F024';
+}
+.sc-envelope:before{
+    content:'\F025';
+}
+.sc-envelope-o:before{
+    content:'\F026';
+}
+.sc-exclamation:before{
+    content:'\F027';
+}.sc-exclamation-circle:before{
+    content:'\F028';
+}
+.sc-exclamation-triangle:before{
+    content:'\F029';
+}
+.sc-folder:before{
+    content:'\F02A';
+}
+.sc-folder-open:before{
+    content:'\F02B';
+}
+.sc-cog:before{
+    content:'\F02C';
+}
+.sc-cogs:before{
+    content:'\F02D';
+}
+.sc-globe:before{
+    content:'\F02E';
+}
+.sc-info:before{
+    content:'\F02F';
+}
+.sc-info-circle:before{
+    content:'\F030';
+}
+.sc-key:before{
+    content:'\F031';
+}
+.sc-lightning:before{
+    content:'\F032';
+}
+.sc-chart-line:before{
+    content:'\F033';
+}
+.sc-lock:before{
+    content:'\F034';
+}
+.sc-microphone:before{
+    content:'\F035';
+}
+.sc-minus:before{
+    content:'\F036';
+}
+.sc-minus-circle:before{
+    content:'\F037';
+}
+.sc-organization:before{
+    content:'\F038';
+}
+.sc-picture:before{
+    content:'\F039';
+}
+.sc-chart-pie:before{
+    content:'\F03A';
+}
+.sc-plus:before{
+    content:'\F03B';
+}
+.sc-plus-circle:before{
+    content:'\F03C';
+}
+.sc-spinner:before{
+    content:'\F03D';
+}
+.sc-square:before{
+    content:'\F03E';
+}
+.sc-tag:before{
+    content:'\F03F';
+}
+.sc-cloud-u:before{
+    content:'\F040';
+}
+.sc-user:before{
+    content:'\F041';
+}
+.sc-users:before{
+    content:'\F042';
+}
+.sc-wrench:before{
+    content:'\F043';
+}
+.sc-home:before{
+    content:'\F044';
+}
+.sc-globe-americas:before{
+    content:'\F045';
+}
+.sc-close:before{
+    content:'\F046';
+}
+.sc-close-circle:before{
+    content:'\F047';
+}
+.sc-search:before{
+    content:'\F048';
+}
+.sc-task:before{
+    content:'\F049';
+}
+.sc-check-large:before{
+    content:'\F04A';
+}
+.sc-document-o:before{
+    content:'\F04B';
+}
+.sc-documents-o:before{
+    content:'\F04C';
+}
+.sc-document-text-o:before{
+    content:'\F04D';
+}
+.sc-documents-text-o:before{
+    content:'\F04E';
+}
+.sc-cloud-u:before{
+    content:'\F04F';
+}
+.sc-circle:before{
+    content:'\F050';
+}
+.sc-list:before{
+    content:'\F051';
+}
+.sc-clipboard-o:before{
+    content:'\F052';
+}
+.sc-folder-open-o:before{
+    content:'\F053';
+}
