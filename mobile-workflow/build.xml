@@ -139,7 +139,17 @@
       <ivy-publish-local artifactId="${artifactId}" artifactDir="${build.lib}" />
    </target>
 
-   <target name="dist" depends="build">
+   <target name="initPortalWstPluginDir" unless="portal.wst.plugin.dir">
+      <property name="portal.wst.plugin.dir" value="${project.dir}/../../ide.wst/org.eclipse.stardust.ide.wst.facet.portal"/>
+      <available file="${portal.wst.plugin.dir}" property="portal.wst.plugin.dir.present" type="dir"/>
+   </target>
+   
+   <target name="dist" depends="build, initPortalWstPluginDir" if="portal.wst.plugin.dir.present">
+      <copy todir="${portal.wst.plugin.dir}/lib">
+         <fileset dir="${build.lib}">
+            <include name="${workflow.mobile.jarfile}" />
+         </fileset>
+      </copy>
    </target>
    
    <target name="deploy" depends="build,dependencies:report"/>
