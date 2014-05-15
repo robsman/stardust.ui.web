@@ -1,0 +1,180 @@
+<!--
+    Copyright (c) 2011 SunGard CSA LLC and others.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+   
+    Contributors:
+       SunGard CSA LLC - initial API and implementation and/or initial documentation
+ -->
+<!--
+  To execute this build script, you have to configure your environment as follows:
+  - Java property java.home must point to an existent JAVA_HOME (either via parameter 
+    (e.g. antit.bat -Djava.home=C:/Programme/Java15) or create a private.properties file
+    in the etc folder of the project and put the property in there)
+  - you need an Infinity installation or you have to execute at least the latakia build file
+-->
+
+<project name="stardust-mobile-workflow" default="build" basedir="." xmlns:ipp="com.infinity.bpm.ant.macros">
+   
+   <property name="project.dir" value="." />
+   <property name="project.src" value="${project.dir}/src/main/java" />
+   <property name="resources.src" value="${project.dir}/src/main/resources" />
+   <property name="project.etc" value="${project.dir}/etc" />
+   <property file="${project.etc}/private.properties"/>
+   
+   <property name="artifactId" value="stardust-mobile-workflow" />
+
+   <import file="../../build.tools/commons-build.xml" />
+
+   <target name="initOnDevelopment" if="setup.development">
+      <echo message="Performing a development build ..." />
+
+      <property name="javac.debuglevel" value="lines,source,vars" />
+   </target>
+
+   <target name="initOnProduction" unless="setup.development">
+      <echo message="Performing a production build ..." />
+
+      <property name="javac.debuglevel" value="lines,source,vars" />
+   </target>
+
+   <target name="init" depends="initOnDevelopment, initOnProduction">
+      <property name="build.dir" value="${project.dir}/build"/>
+   </target>
+
+   <target name="clean" depends="init" description="removes all build results">
+      <delete dir="${build.dir}" />
+   </target>
+
+   <target name="initBuild" depends="init">
+      <property name="build.classes" value="${build.dir}/classes" />
+      <property name="build.lib" value="${build.dir}/lib" />
+      <property name="build.src" value="${build.dir}/src" />
+
+      <property name="workflow.mobile.jarfile" value="${artifactId}.jar" />
+      <property name="workflow.mobile.jar" value="${build.lib}/${workflow.mobile.jarfile}" />
+      <property name="workflow.mobile.src.jarfile" value="${artifactId}-sources.jar" />
+      <property name="workflow.mobile.src.jar" value="${build.lib}/${workflow.mobile.src.jarfile}" />
+   </target>
+
+   <target name="initBuildDirectories" depends="initBuild">
+      <mkdir dir="${build.classes}"/>
+      <mkdir dir="${build.lib}"/>
+      <mkdir dir="${build.src}"/>
+   </target>
+
+   <target name="prepareSources" depends="initBuild">
+      <echo message="Preparing sources for a safe but slow build." />
+      <copy todir="${build.src}" overwrite="true">
+         <fileset dir="${project.src}">
+            <include name="**/*.java" />
+         </fileset>
+      </copy>
+   </target>
+   
+   <target name="init.ivy">
+      <echo message="Using Ivy for dependency management." />
+      <init-ivy />
+   </target>
+
+   <target name="initClasspath" depends="init.ivy" >
+
+      <init-ivy-classpath />
+
+      <path id="compile.classpath">
+         <path refid="compile.deps" />
+      </path>
+   </target>
+
+   <target name="compile.jdk16" depends="init" description="Compiling Java 6 code.">
+      <ipp:javac-java6 srcdir="${build.src}" destdir="${build.classes}">
+         <include name="**/*.java" />
+         <classpath id="compile6.classpath">
+            <path refid="compile.classpath" />
+         </classpath>
+      </ipp:javac-java6>
+   </target>
+
+   <target name="compile" depends="prepareSources, initBuildDirectories, initClasspath, compile.jdk16" 
+      description="compiles the portal API classes" unless="skip.compile" />
+   
+   <target name="copyDatFiles" depends="initBuildDirectories">
+      <copy todir="${build.classes}">
+         <fileset dir="${resources.src}">
+            <include name="**/*.*" />
+         </fileset>
+      </copy>
+
+      <copy todir="${build.src}">
+         <fileset dir="${resources.src}">
+            <include name="**/*.*" />
+         </fileset>
+      </copy>
+   </target>
+
+   <target name="jar" depends="compile, copyDatFiles">
+      <ipp:jar jarfile="${workflow.mobile.jar}" implementationTitle="Infinity Process Engine - Mobile Workflow">
+         <fileset dir="${build.classes}">
+            <include name="**/*.*" />
+         </fileset>
+      </ipp:jar>
+   </target>
+
+   <target name="jar.src" depends="compile">
+      <delete file="${workflow.mobile.src.jar}" />
+      <ipp:jar jarfile="${workflow.mobile.src.jar}" implementationTitle="Infinity Process Engine - Mobile Workflow Sources">
+         <fileset dir="${build.src}">
+            <include name="**/*.*" />
+         </fileset>
+      </ipp:jar>
+   </target>
+
+   <target name="build" depends="jar, jar.src, build.ivy" />
+
+   <target name="build.ivy" if="dependencies.mode.ivy"
+      depends="jar, jar.src">
+      
+      <ivy-publish-local artifactId="${artifactId}" artifactDir="${build.lib}" />
+   </target>
+
+   <target name="dist" depends="build">
+   </target>
+   
+   <target name="deploy" depends="build,dependencies:report"/>
+
+   <target name="install" if="maven.localRepository" depends="initBuild"
+      description="installs the artifacts into a local Maven repository">
+
+      <ipp:init-mvn localMavenRepository="${maven.localRepository}" />
+      <ipp:mvn-install file="${workflow.mobile.jar}" 
+         pomFile="${build.lib}/${artifactId}.pom" />
+   </target>
+   
+   <target name="publish" depends="initBuild"
+     description="publish artifacts into a remote Maven repository">
+
+      <ipp:init-mvn />
+      <ipp:mvn-deploy file="${workflow.mobile.jar}" 
+         pomFile="${build.lib}/${artifactId}.pom" />
+   </target>
+   
+   <!-- target is invoked by stardust-ui-web-nls project -->
+   <target name="copy-nls-resources" 
+      description="copies the resources into a given folder">
+      <copy todir="${build.nls.dir}">
+         <fileset dir="${resources.src}">
+            <include name="**/*_de.properties"/>
+            <include name="**/*_en.properties"/>
+            <include name="**/*_zh_CN.properties"/>
+         </fileset>
+      </copy>
+   </target>
+
+   <target name="dependencies:report" depends="init,init.ivy">
+      <property name="build.report" location="${build.dir}/report" />
+      <ivy-report ivyFile="${project.dir}/ivy.xml" outputDir="${build.report}" />
+   </target>
+
+</project>

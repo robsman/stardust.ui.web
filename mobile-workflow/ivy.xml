@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright (c) 2011 SunGard CSA LLC and others.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+   
+    Contributors:
+       SunGard CSA LLC - initial API and implementation and/or initial documentation
+ -->
+<ivy-module version="2.0"
+   xmlns:m="http://ant.apache.org/ivy/maven"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
+
+   <info organisation="org.eclipse.stardust.ui.web" module="stardust-mobile-workflow"
+      revision="${ipp.version.full}" />
+
+   <configurations>
+      <conf name="stardust-mobile-workflow-compile" description="Stardust Mobile Workflow - Compile Scope" />
+      <conf name="stardust-mobile-workflow-runtime" extends="stardust-mobile-workflow-compile" description="Stardust Mobile Workflow - Runtime Scope" />
+      <conf name="stardust-mobile-workflow-provided" description="Stardust Mobile Workflow - Provided Scope" />
+
+      <conf name="stardust-mobile-workflow-sources" description="Stardust Mobile Workflow - Sources" />
+
+      <conf name="test" visibility="private" description="Test dependencies" />
+
+      <!-- compound configurations which encapsulates the above mentioned configs -->
+      <conf name="provided" extends="stardust-mobile-workflow-provided" visibility="private" />
+      <conf name="compile" extends="provided,stardust-mobile-workflow-compile" visibility="private" description="Compile Time Dependencies" />
+      <conf name="runtime" extends="stardust-mobile-workflow-runtime" visibility="private" />
+
+      <conf name="all" visibility="private" extends="provided, compile, runtime, test" />
+
+      <conf name="pom" description="Stardust Mobile Workflow POMs" />
+   </configurations>
+
+   <publications>
+      <artifact name="stardust-mobile-workflow" type="jar" conf="stardust-mobile-workflow-compile, stardust-mobile-workflow-runtime, stardust-mobile-workflow-provided" />
+      <artifact name="stardust-mobile-workflow" type="source" ext="jar" conf="stardust-mobile-workflow-sources" m:classifier="sources" />
+
+      <artifact name="stardust-mobile-workflow" type="pom" conf="pom" ext="pom" />
+   </publications>
+
+    <dependencies>
+      <dependency org="org.eclipse.stardust.engine" name="infinity-process-engine" rev="${ipp.version.full}" conf="stardust-mobile-workflow-compile->carnot-engine-compile" />
+      <dependency org="org.eclipse.stardust.engine" name="carnot-spring-module" rev="${ipp.version.full}" conf="stardust-mobile-workflow-compile->spring-module-compile" />
+
+      <dependency org="org.eclipse.stardust.ui.web" name="ipp-portal-api" rev="${ipp.version.full}" conf="stardust-mobile-workflow-compile->ipp-portal-api-compile" />
+      <dependency org="org.eclipse.stardust.ui.web" name="ipp-portal-common" rev="${ipp.version.full}" conf="stardust-mobile-workflow-compile->ipp-portal-common-compile" />
+      <dependency org="org.eclipse.stardust.ui.web" name="ipp-process-portal" rev="${ipp.version.full}" conf="stardust-mobile-workflow-compile->ipp-workflow-perspective-compile" />
+      <dependency org="org.eclipse.stardust.ui.web" name="ipp-views-common" rev="${ipp.version.full}" conf="stardust-mobile-workflow-compile->ipp-views-common-compile" />
+
+      <dependency org="javax.ws.rs" name="jsr311-api" rev="${jsr311-api.version}" conf="stardust-mobile-workflow-compile->default" />
+      <dependency org="javax.servlet" name="servlet-api" rev="${servlet-api.version}" conf="stardust-mobile-workflow-provided->default" />
+   </dependencies>
+</ivy-module>
