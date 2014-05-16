@@ -134,6 +134,11 @@ input[type=text].rightAligned {
 	padding-right: 3px;
 }
 
+input[type=text].layoutInputConverterOption {
+	width: 15px;
+	min-width: 0px;
+}
+
 input[type="checkbox"] {
 	margin: 0 5px 2px 0 !important;
 }
@@ -273,6 +278,10 @@ table.fieldSetTable td {
 	padding-top: 3px;
 	padding-bottom: 3px;
 	vertical-align: top;
+}
+
+.layoutTdConverterOption {
+	width: 400px !important;
 }
 
 /* Data Table */

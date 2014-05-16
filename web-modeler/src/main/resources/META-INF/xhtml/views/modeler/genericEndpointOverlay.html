@@ -159,44 +159,115 @@
             </table>
         </div>
         <div id="producerRouteTab">
-            <table cellpadding="0" cellspacing="0" class="layoutTable">
-                <tr>
-                    <td>
-                        <table cellpadding="0" cellspacing="0" class="layoutTable">
-                            <tr>
-                                <td><input id="processContextHeadersInput" type="checkbox"></input></td>
-                                <td><label for="processContextHeadersInput">Include Process Context Headers</label></td>
-                            </tr>
-                            <tr>
-                                <td><input id="producerBpmTypeConverter" type="checkbox"></input></td>
-                                <td><label for="producerBpmTypeConverter">Include BPM Type Converter</label></td>
-                                <td><label for="producerOutboundConversion">Outbound Conversion</label></td>
-                                <td><select id="producerOutboundConversion" disabled="disabled">
-                                    <option value="None">None</option>
-                                    <option value="toXML">To XML</option>
-                                    <option value="toJSON">To JSON</option>
-                                </select></td>
-                                <td style="padding-left: 10px;"><label for="producerInboundConversion">Inbound Conversion</label></td>
-                                <td><select id="producerInboundConversion" disabled="disabled">
-                                    <option value="None">None</option>
-                                    <option value="fromXML">From XML</option>
-                                    <option value="fromJSON">From JSON</option>
-                                </select></td>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
-                <tr>
-                    <td><div id="endpointUriPrefix" class="code">&lt;route&gt;</div></td>
-                </tr>
-                <tr>
-                    <td><textarea id="producerRouteTextarea" class="code overlaysDefaultTextArea"></textarea></td>
-                </tr>
-                <tr>
-                    <td><div class="code" style="margin-bottom: 10px;">&lt;/route&gt;</div></td>
-                </tr>
-            </table>
-        </div>
+			<table cellpadding="0" cellspacing="0" class="layoutTable">
+				<tr>
+					<td>
+						<table cellpadding="0" cellspacing="0" class="layoutTable">
+							<tr>
+								<td>
+									<table cellpadding="0" cellspacing="0" class="layoutTable">
+										<tr>
+											<td><input id="processContextHeadersInput" type="checkbox"></input></td>
+											<td><label for="processContextHeadersInput">Include Process Context Headers</label></td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<table cellpadding="0" cellspacing="0" class="layoutTable">
+										<tr>
+											<td><input id="producerBpmTypeConverter" type="checkbox"></input></td>
+											<td><label for="producerBpmTypeConverter">Include BPM
+													Type Converter</label>
+											</td>
+										</tr>
+									</table>
+								</td>
+								<td>
+									<table cellpadding="0" cellspacing="0" class="layoutTable">
+										<tr>
+											<td><label for="producerOutboundConversion">Outbound
+													Conversion</label></td> 
+											<td><select id="producerOutboundConversion"
+												disabled="disabled">
+													<option value="None">None</option>
+													<option value="toXML">To XML</option>
+													<option value="toJSON">To JSON</option>
+													<option value="toCSV">To CSV</option>
+											</select>
+											</td>
+										</tr>
+									</table>
+								</td>
+								<td>
+									<table cellpadding="0" cellspacing="0" class="layoutTable">
+										<tr>
+											<td style="padding-left: 10px;"><label
+												for="producerInboundConversion">Inbound Conversion</label></td>
+											<td><select
+												id="producerInboundConversion" disabled="disabled">
+													<option value="None">None</option>
+													<option value="fromXML">From XML</option>
+													<option value="fromJSON">From JSON</option>
+													<option value="fromCSV">From CSV</option>
+											</select>
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+
+							<tr>
+								<td></td>
+								<td>
+									<table id="producerOutboundConverterOptionTab"
+										style="display: none;" cellpadding="0" cellspacing="0"
+										class="layoutTable">
+										<tr>
+											<td><label for="producerOutboundConverterDelimiterInput">Delimiter</label></td>
+											<td><input id="producerOutboundConverterDelimiterInput"
+												type="text" maxlength="5" class="layoutInputConverterOption"  value=","/>
+											</td>
+										</tr>
+										<tr>
+											<td><label for="autogenHeadersInput">AutogenHeaders</label></td>
+											<td><input id="autogenHeadersInput" type="checkbox" checked="checked" />
+											</td>
+										</tr>
+									</table>
+							
+								</td>
+								<td>
+									<table id="producerInboundConverterOptionTab"
+										style="display: none;" cellpadding="0" cellspacing="0"
+										class="layoutTable">
+										<tr>
+											<td style="padding-left: 10px;"><label
+												for="producerInboundConverterDelimiterInput">Delimiter</label></td>
+											<td><input id="producerInboundConverterDelimiterInput"
+												type="text" maxlength="5" class="layoutInputConverterOption"  value=","/>
+											</td>
+										</tr>
+									</table>
+								</td>
+
+							</tr>
+
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td><div id="endpointUriPrefix" class="code">&lt;route&gt;</div></td>
+				</tr>
+				<tr>
+					<td><textarea id="producerRouteTextarea" class="code overlaysDefaultTextArea"></textarea></td>
+				</tr>
+				<tr>
+					<td><div class="code" style="margin-bottom: 10px;">&lt;/route&gt;</div></td>
+				</tr>
+			</table>
+		</div>
         <div id="consumerRouteTab">
             <table cellpadding="0" cellspacing="0" class="layoutTable">
                 <tr>

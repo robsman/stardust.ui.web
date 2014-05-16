@@ -74,6 +74,11 @@ define(
                this.producerBpmTypeConverter = m_utils.jQuerySelect("#producerRouteTab #producerBpmTypeConverter");
                this.producerOutboundConversion = m_utils.jQuerySelect("#producerRouteTab #producerOutboundConversion");
                this.producerInboundConversion = m_utils.jQuerySelect("#producerRouteTab #producerInboundConversion");
+               this.producerOutboundConverterOption = m_utils.jQuerySelect("#producerRouteTab #producerOutboundConverterOptionTab");
+               this.producerOutboundConverterDelimiterInput = m_utils.jQuerySelect("#producerRouteTab #producerOutboundConverterDelimiterInput");
+               this.autogenHeadersInput = m_utils.jQuerySelect("#producerRouteTab #autogenHeadersInput");
+               this.producerInboundConverterOption = m_utils.jQuerySelect("#producerRouteTab #producerInboundConverterOptionTab");
+               this.producerInboundConverterDelimiterInput = m_utils.jQuerySelect("#producerRouteTab #producerInboundConverterDelimiterInput");
                this.producerRouteTextarea = m_utils.jQuerySelect("#producerRouteTab #producerRouteTextarea");
                this.consumerBpmTypeConverter = m_utils.jQuerySelect("#consumerRouteTab #consumerBpmTypeConverter");
                this.consumerInboundConversion = m_utils.jQuerySelect("#consumerRouteTab #consumerInboundConversion");
@@ -176,6 +181,8 @@ define(
                      self.producerRouteTextarea.removeClass("error");
                      self.producerOutboundConversion.prop('disabled', true);
                      self.producerInboundConversion.prop('disabled', true);
+                     self.hideProducerOutboundConverterOption();
+                     self.hideProducerInboundConverterOption();
                      
                      self.view.submitModelElementAttributeChange(
                            "carnot:engine:camel::producerBpmTypeConverter",
@@ -199,16 +206,65 @@ define(
                   }
                   
                   if(self.producerOutboundConversion.val() != "None") {
-                     self.view.submitModelElementAttributeChange(
-                           "carnot:engine:camel::producerOutboundConversion",
-                           self.producerOutboundConversion.val());
+                     
+                     if (self.producerOutboundConversion.val() === "toCSV")
+                     {
+                        self.showProducerOutboundConverterOption();
+                        self.view
+                                 .submitModelElementAttributeChange(
+                                          "carnot:engine:camel::producerOutboundConversion",
+                                          self.producerOutboundConversion
+                                                   .val()
+                                                   + self
+                                                            .getProducerOutboundConverterOption());
+                     }
+                     else
+                     {
+                        self.hideProducerOutboundConverterOption();
+                        self.view
+                                 .submitModelElementAttributeChange(
+                                          "carnot:engine:camel::producerOutboundConversion",
+                                          self.producerOutboundConversion
+                                                   .val());
+                     }
                   }
                   else {
+                     self.hideProducerOutboundConverterOption();
                      self.view.submitModelElementAttributeChange(
                            "carnot:engine:camel::producerOutboundConversion",
                            null);
                   }
                });
+               
+               this.producerOutboundConverterDelimiterInput.change(function() {
+                    if (!self.view.validate()) {
+                        return;
+                    }
+
+                    if (!self.validateProducerRoute()) {
+                        return;
+                    }
+
+                    self.view.submitModelElementAttributeChange(
+                             "carnot:engine:camel::producerOutboundConversion",
+                             self.producerOutboundConversion.val()
+                                   + self.getProducerOutboundConverterOption());
+               });
+               
+               this.autogenHeadersInput.change(function() {
+                 if (!self.view.validate()) {
+                    return;
+                 }
+
+                 if (!self.validateProducerRoute()) {
+                    return;
+                 }
+
+                 self.view.submitModelElementAttributeChange(
+                           "carnot:engine:camel::producerOutboundConversion",
+                            self.producerOutboundConversion.val()
+                               + self.getProducerOutboundConverterOption());
+                });
                
                this.producerInboundConversion.change(function() {
                   if (!self.view.validate()) {
@@ -220,15 +276,42 @@ define(
                   }
                   
                   if(self.producerInboundConversion.val() != "None") {
-                     self.view.submitModelElementAttributeChange(
-                           "carnot:engine:camel::producerInboundConversion",
-                           self.producerInboundConversion.val());
+                     
+                     if (self.producerInboundConversion.val() === "fromCSV") {
+                        self.showProducerInboundConverterOption();
+                        self.view.submitModelElementAttributeChange(
+                                 "carnot:engine:camel::producerInboundConversion",
+                                 self.producerInboundConversion.val()
+                                          + self.getProducerInboundConverterOption());
+                     }
+                     else {
+                        self.hideProducerInboundConverterOption();
+                        self.view.submitModelElementAttributeChange(
+                                 "carnot:engine:camel::producerInboundConversion",
+                                 self.producerInboundConversion.val());
+                     }
                   }
                   else {
+                     self.hideProducerInboundConverterOption();
                      self.view.submitModelElementAttributeChange(
                            "carnot:engine:camel::producerInboundConversion",
                            null);
                   }
+               });
+               
+               this.producerInboundConverterDelimiterInput.change(function() {
+                    if (!self.view.validate()) {
+                       return;
+                    }
+
+                   if (!self.validateProducerRoute()) {
+                      return;
+                   }
+
+                   self.view.submitModelElementAttributeChange(
+                            "carnot:engine:camel::producerInboundConversion",
+                            self.producerInboundConversion.val()
+                                 + self.getProducerInboundConverterOption());
                });
                
                this.consumerRouteTextarea.change(function() {
@@ -505,16 +588,92 @@ define(
                this.producerBpmTypeConverter.prop("checked",
                      this.getApplication().attributes["carnot:engine:camel::producerBpmTypeConverter"]);
                
-               this.producerOutboundConversion
-                  .val(this.getApplication().attributes["carnot:engine:camel::producerOutboundConversion"]);
+               if (this.getApplication().attributes["carnot:engine:camel::producerOutboundConversion"] != undefined)
+               {
+                  var csvOutboundIndex = this.getApplication().attributes["carnot:engine:camel::producerOutboundConversion"]
+                           .indexOf("toCSV");
+                  if (csvOutboundIndex != -1)
+                  {
+                     var option = this.getApplication().attributes["carnot:engine:camel::producerOutboundConversion"];
+                     var options = option.split("&amp;");
+                     if (options.length == 2)
+                     {
+                        var delimiter = options[0].substring(options[0]
+                                 .lastIndexOf("=") + 1, options[0].length);
+                        this.producerOutboundConverterDelimiterInput.val(delimiter);
+                        var autogenHeaders = options[1].substring(options[1]
+                                 .lastIndexOf("=") + 1, options[1].length);
+                        this.autogenHeadersInput.val(autogenHeaders);
+                     }
+                     else
+                     {
+                        options = option.split("=");
+                        if (options.length != 0)
+                        {
+                           var autogenHeaders = options[1];
+                           this.autogenHeadersInput.val(autogenHeaders);
+                        }
+                     }
+
+                     this.producerOutboundConversion.val("toCSV");
+                  }
+                  else
+                  {
+                     this.producerOutboundConversion
+                              .val(this.getApplication().attributes["carnot:engine:camel::producerOutboundConversion"]);
+                  }
+
+               }
+               else
+               {
+                  this.producerOutboundConversion
+                           .val(this.getApplication().attributes["carnot:engine:camel::producerOutboundConversion"]);
+               }
                
-               this.producerInboundConversion
-                  .val(this.getApplication().attributes["carnot:engine:camel::producerInboundConversion"]);
+               if (this.getApplication().attributes["carnot:engine:camel::producerInboundConversion"] != undefined)
+               {
+                  var csvInboundIndex = this.getApplication().attributes["carnot:engine:camel::producerInboundConversion"]
+                           .indexOf("fromCSV");
+
+                  if (csvInboundIndex != -1)
+                  {
+                     var option = this.getApplication().attributes["carnot:engine:camel::producerInboundConversion"];
+                     var options = option.split("delimiter=");
+                     if (options.length == 2)
+                     {
+                        this.producerInboundConverterDelimiterInput.val(options[1]);
+                     }
+                     this.producerInboundConversion.val("fromCSV");
+                  }
+                  else
+                  {
+                     this.producerInboundConversion
+                              .val(this.getApplication().attributes["carnot:engine:camel::producerInboundConversion"]);
+                  }
+               }
+               else
+               {
+                  this.producerInboundConversion
+                           .val(this.getApplication().attributes["carnot:engine:camel::producerInboundConversion"]);
+               }
                
-               if(this.producerBpmTypeConverter.prop("checked")) {
+               if (this.producerBpmTypeConverter.prop("checked"))
+               {
                   this.producerOutboundConversion.prop('disabled', false);
                   this.producerInboundConversion.prop('disabled', false);
-               }else{
+                  if (this.producerOutboundConversion.val() === "toCSV")
+                  {
+                     this.showProducerOutboundConverterOption();
+                  }
+
+                  if (this.producerInboundConversion.val() === "fromCSV")
+                  {
+                     this.showProducerInboundConverterOption();
+                  }
+
+               }
+               else
+               {
                   this.producerOutboundConversion.prop('disabled', true);
                   this.producerInboundConversion.prop('disabled', true);
                }
@@ -916,6 +1075,64 @@ define(
 
             GenericEndpointOverlay.prototype.enableConsumerTab = function() {
                this.consumerRouteTextarea.prop('disabled', false);
+            };
+            GenericEndpointOverlay.prototype.showProducerOutboundConverterOption = function()
+            {
+               this.producerOutboundConverterOption.show();
+            };
+
+            GenericEndpointOverlay.prototype.hideProducerOutboundConverterOption = function()
+            {
+               this.producerOutboundConverterOption.hide();
+            };
+
+            GenericEndpointOverlay.prototype.showProducerInboundConverterOption = function()
+            {
+               this.producerInboundConverterOption.show();
+            };
+
+            GenericEndpointOverlay.prototype.hideProducerInboundConverterOption = function()
+            {
+               this.producerInboundConverterOption.hide();
+            };
+
+            GenericEndpointOverlay.prototype.getProducerOutboundConverterOption = function()
+            {
+               var option = "";
+               var separator = "?";
+               if (!m_utils.isEmptyString(this.producerOutboundConverterDelimiterInput
+                        .val()))
+               {
+                  option += separator;
+                  option += "delimiter="
+                           + this.producerOutboundConverterDelimiterInput.val();
+                  option += "&amp;";
+               }
+               if (this.autogenHeadersInput.val() != null)
+               {
+                  if (option.length === 0)
+                  {
+                     option += separator;
+                  }
+                  option += "autogenHeaders="
+                           + this.autogenHeadersInput.prop("checked");
+               }
+
+               return option;
+            };
+
+            GenericEndpointOverlay.prototype.getProducerInboundConverterOption = function()
+            {
+               var option = "";
+               var separator = "?";
+               if (!m_utils.isEmptyString(this.producerInboundConverterDelimiterInput
+                        .val()))
+               {
+                  option += separator;
+                  option += "delimiter="
+                           + this.producerInboundConverterDelimiterInput.val();
+               }
+               return option;
             };
 
          }
