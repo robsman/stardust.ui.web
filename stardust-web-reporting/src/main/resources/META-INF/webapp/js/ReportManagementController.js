@@ -4,8 +4,9 @@
 
 define(
 		[ "bpm-reporting/js/AngularAdapter",
-				"bpm-reporting/js/ReportingService" ],
-		function(AngularAdapter, ReportingService) {
+				"bpm-reporting/js/ReportingService",
+				"bpm-reporting/js/I18NUtils"],
+		function(AngularAdapter, ReportingService, I18NUtils) {
 			return {
 				create : function(angular) {
 					var controller = new ReportManagementController();
@@ -124,32 +125,33 @@ define(
 														deleteReport : {
 															label : "Delete", // I18N
 															action : function(
-																	obj) {
-																document.body.style.cursor = "wait";
-
-																self.reportingService
-																		.deleteReportDefinition(
-																				obj
-																						.attr("path"))
-																		.done(
-																				function() {
-																					// TODO
-																					// Remove
-																					// locally
-																					// and
-																					// just
-																					// refresh
-																					// tree
-																					self
-																							.loadReportDefinitionsFolderStructure();
-																					document.body.style.cursor = "default";
-																				})
-																		.fail(
-																				function() {
-																					document.body.style.cursor = "default";
-																				});
-																;
-															}
+																	obj) { 
+				                                       self.deleteElementAction(
+				                                             obj.context.lastChild.data,
+				                                             function() {
+				                                                self.reportingService
+		                                                      .deleteReportDefinition(
+		                                                            obj
+		                                                                  .attr("path"))
+		                                                      .done(
+		                                                            function() {
+		                                                               // TODO
+		                                                               // Remove
+		                                                               // locally
+		                                                               // and
+		                                                               // just
+		                                                               // refresh
+		                                                               // tree
+		                                                               self
+		                                                                     .loadReportDefinitionsFolderStructure();
+		                                                               document.body.style.cursor = "default";
+		                                                            })
+		                                                      .fail(
+		                                                            function() {
+		                                                               document.body.style.cursor = "default";
+		                                                            });
+				                                             });
+															         }
 														},
 														download : {
 															label : "Download", // I18N
@@ -206,6 +208,7 @@ define(
 							});
 					this.loadReportDefinitionsFolderStructure();
 				};
+				
 
 				/**
 				 * 
@@ -398,6 +401,43 @@ define(
 //						doc : window.top.frames['ippPortalMain'].document
 //					};
 				};
+				
+		      ReportManagementController.prototype.deleteElementAction = function (name, callback) {
+	               if (parent.iPopupDialog) {
+	                  parent.iPopupDialog.openPopup(this.prepareDeleteElementData(
+	                        name, callback));
+	               } else {
+	                  
+	                  callback();
+	               }
+	            };
+	         
+	         ReportManagementController.prototype.prepareDeleteElementData = function(name, callback) {
+	            var popupData = {
+	               attributes : {
+	                  width : "400px",
+	                  height : "200px",
+	                  src : this.reportingService.getRootUrl()
+	                        + "/plugins/bpm-reporting/popups/confirmationPopupDialogContent.html"
+	               },
+	               payload : {
+	                  title : "Confirm"/*m_i18nUtils
+	                        .getProperty("modeler.messages.confirm")*/,
+                     message : I18NUtils.getProperty(
+                                 'reporting.messages.confirm.deleteElement').replace(
+                                 "{0}", name),
+	                     
+	                  acceptButtonText : "Yes"/*m_i18nUtils
+	                        .getProperty("modeler.messages.confirm.yes")*/,
+	                  cancelButtonText : "Cancel"/*m_i18nUtils
+	                        .getProperty("modeler.messages.confirm.cancel")*/,
+	                  acceptFunction : callback
+	               }
+	            };
+
+	            return popupData;
+	         };
+				
 			}
 			
 			function createTree1(folder, trackIds, parent) {
@@ -473,4 +513,5 @@ define(
 				
 				return {"folderNodeId" : folderNodeId, "reportNodeId": reportNodeId};
 			};
+			
 		});

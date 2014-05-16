@@ -1,0 +1,54 @@
+<!-- The file extension was changed from xhtml to html as it caused issues on JBoss environment when accessed from IE8. -->
+<html>
+<head>
+<link type="text/css" rel="stylesheet" href="../../common/css/iPopupDialogStyle.css">
+</link>
+<script>
+	function init()
+	{
+		document.getElementById('titleText').innerHTML = payloadObj.title;
+		document.getElementById('contentText').innerHTML = payloadObj.message;
+		if (payloadObj.cancelButtonText) {
+			document.getElementById('cancelButton').value = payloadObj.cancelButtonText;
+			document.getElementById('cancelButton').onclick = closePopup;
+		} else {
+			document.getElementById('cancelButton').style.visibility = 'hidden';
+		}
+		if (payloadObj.acceptButtonText) {
+			document.getElementById('acceptButton').value = payloadObj.acceptButtonText;
+			document.getElementById('acceptButton').onclick = function () {
+				payloadObj.acceptFunction();
+				closePopup();
+			}
+		} else {
+			document.getElementById('acceptButton').style.visibility = 'hidden';
+		}
+
+		document.getElementById('dialogCloseIcon').onclick = closePopup;
+	}
+</script>
+</head>
+<body onload="init();" style="height: 100%; width: 100%; overflow: hidden; margin: 0px;">
+	<div id="titleBar" class="iPopupDialogTitleBar">
+		<span id="titleText" class="iPopupDialogTitleText"></span>
+		<input id="dialogCloseIcon" type="button" title="Close" class="iPopupDialogCloseControl" />
+	</div>
+	<div id="contentArea" class="iPopupDialogContentArea">
+		<div class="iPopupDialogSpacerDiv"></div>
+		<table border="0">
+			<tr>
+				<td class="iPopupDialogContentTabCol1">
+					<img src="../images/icons/dialog-icon-warning.jpg" />
+				</td>
+				<td class="iPopupDialogContentTabCol2">
+					<span id="contentText" class="iPopupDialogContentText"></span>
+				</td>
+			</tr>
+		</table>
+	</div>
+	<div id="controlsBar" class="iPopupDialogControlsArea">
+		<input id="acceptButton" type="button" value="OK" class="iPopupDialogControlButton" />
+		<input id="cancelButton" type="button" value="Cancel" class="iPopupDialogControlButton" />
+	</div>
+</body>
+</html>
