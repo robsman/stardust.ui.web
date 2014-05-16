@@ -10,6 +10,7 @@
 
 define(
 		[ "bpm-modeler/js/m_utils",
+		  "bpm-modeler/js/m_globalVariables",
 		  "bpm-modeler/js/m_constants",
 		  "bpm-modeler/js/m_command",
 		  "bpm-modeler/js/m_commandsController",
@@ -21,7 +22,7 @@ define(
 		  "bpm-modeler/js/m_modelerUtils",
 		  "bpm-modeler/js/m_model",
 		  "bpm-modeler/js/m_i18nUtils"],
-		function(m_utils, m_constants, m_command, m_commandsController,
+		function(m_utils, m_globalVariables, m_constants, m_command, m_commandsController,
 				m_messageDisplay, m_canvasManager, m_symbol, m_gatewaySymbol, 
 				m_event, m_modelerUtils, m_model,
 				m_i18nUtils) {
@@ -451,7 +452,7 @@ define(
 
 						this.glow = this.circle.glow({
 							width : m_constants.GLOW_WIDTH,
-							color : window.top.modelingSession
+							color : m_globalVariables.get("modelingSession")
 									.getColorByUser(this.lastModifyingUser),
 							opacity : m_constants.GLOW_OPACITY
 						});

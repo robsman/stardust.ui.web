@@ -9,7 +9,7 @@
  ******************************************************************************/
 
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_globalVariables", "bpm-modeler/js/m_constants",
 				"bpm-modeler/js/m_extensionManager",
 				"bpm-modeler/js/m_urlUtils",
 				"bpm-modeler/js/m_communicationController",
@@ -37,7 +37,7 @@ define(
 				"bpm-modeler/js/m_data", "bpm-modeler/js/m_modelerUtils",
 				"bpm-modeler/js/m_autoScrollManager",
 				"bpm-modeler/js/m_i18nUtils" ],
-		function(m_utils, m_constants, m_extensionManager, m_urlUtils,
+		function(m_utils, m_globalVariables, m_constants, m_extensionManager, m_urlUtils,
 				m_communicationController, m_commandsController, m_command,
 				m_session, m_canvasManager, m_messageDisplay, m_symbol,
 				m_poolSymbol, m_activitySymbol, m_dataSymbol, m_eventSymbol,
@@ -1157,7 +1157,7 @@ define(
 				 *
 				 */
 				Diagram.prototype.isDragAndDropMode = function() {
-					if (parent.iDnD.getTransferObject()) {
+					if (m_globalVariables.findMainWindowBottomUp().iDnD.getTransferObject()) {
 						return true;
 					}
 

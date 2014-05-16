@@ -14,8 +14,8 @@
  * @author Marc.Gille
  */
 define(
-		[ "bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_constants"],
-		function(m_i18nUtils, m_constants) {
+		[ "bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_globalVariables", "bpm-modeler/js/m_constants"],
+		function(m_i18nUtils, m_globalVariables, m_constants) {
 
 			return {
 				removeFromArray : function(array, from, to) {
@@ -262,15 +262,16 @@ define(
 			 *
 			 */
 			function getOutlineWindowAndDocument() {
-				if (parent && parent.window["BridgeUtils"]) {
+				var parentWindow = m_globalVariables.findMainWindowBottomUp();
+				if (parent && parentWindow["BridgeUtils"]) {
 					return {
-						win: parent.document.getElementById("portalLaunchPanels"),
-						doc: parent.document.getElementById("portalLaunchPanels").contentDocument
+						win: parentWindow.document.getElementById("portalLaunchPanels"),
+						doc: parentWindow.document.getElementById("portalLaunchPanels").contentDocument
 					};
 				} else { // Compatibility to old portal
 					return {
-						win: window.parent.frames['ippPortalMain'],
-						doc: window.parent.frames['ippPortalMain'].document
+						win: parentWindow.frames['ippPortalMain'],
+						doc: parentWindow.frames['ippPortalMain'].document
 					};
 				}
 			};

@@ -9,8 +9,8 @@
  ******************************************************************************/
 
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_extensionManager" ],
-		function(m_utils, m_constants, m_extensionManager) {
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_globalVariables", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_extensionManager" ],
+		function(m_utils, m_globalVariables, m_constants, m_extensionManager) {
 			return {
 				getRuleSets : getRuleSets,
 
@@ -27,11 +27,11 @@ define(
 			function getRuleSets() {
 				initRuleSets();
 				
-				return window.top.ruleSets;
+				return m_globalVariables.get("ruleSets");
 			};
 			
 			function initRuleSets() {				
-				if (!window.top.ruleSets) {
+				if (!m_globalVariables.get("ruleSets")) {
 					var ruleSetProvider = getRuleSetProvider();					
 					if (ruleSetProvider) {
 						// getRuleSets call set the global variable (window.top.ruleSets)

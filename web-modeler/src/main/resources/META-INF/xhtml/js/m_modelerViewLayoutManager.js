@@ -12,8 +12,8 @@
  * @author shrikant.gangal
  */
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_dialog", "bpm-modeler/js/m_modelerCanvasController", "bpm-modeler/js/m_propertiesPanel", "bpm-modeler/js/m_processPropertiesPanel","bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_model"],
-		function(m_utils, m_constants, m_dialog, m_modelerCanvasController, m_propertiesPanel, m_processPropertiesPanel,m_i18nUtils, m_model) {
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_globalVariables", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_dialog", "bpm-modeler/js/m_modelerCanvasController", "bpm-modeler/js/m_propertiesPanel", "bpm-modeler/js/m_processPropertiesPanel","bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_model"],
+		function(m_utils, m_globalVariables, m_constants, m_dialog, m_modelerCanvasController, m_propertiesPanel, m_processPropertiesPanel,m_i18nUtils, m_model) {
 			var innerHeight = 600;
 			var innerWidth = 800;
 			var propertiesPaneVisible = false;
@@ -43,7 +43,7 @@ define(
 
 				initPropertiesPanelCollapseClickHandlers();
 
-				window.parent.EventHub.events.subscribe("PROCESS_IFRAME_RESIZED", setDimensions);
+				m_globalVariables.findMainWindowBottomUp().EventHub.events.subscribe("PROCESS_IFRAME_RESIZED", setDimensions);
 				//window.parent.ippPortalMain.InfinityBpm.ProcessPortal.resizeProcessDefinitionIFrame(window.frameElement.id, null);
 			}
 

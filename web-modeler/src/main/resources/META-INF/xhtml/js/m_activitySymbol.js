@@ -9,7 +9,7 @@
  ******************************************************************************/
 
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_globalVariables", "bpm-modeler/js/m_constants",
 				"bpm-modeler/js/m_extensionManager",
 				"bpm-modeler/js/m_command", "bpm-modeler/js/m_canvasManager",
 				"bpm-modeler/js/m_symbol", "bpm-modeler/js/m_gatewaySymbol",
@@ -17,7 +17,7 @@ define(
 				"bpm-modeler/js/m_model", "bpm-modeler/js/m_activity",
 				"bpm-modeler/js/m_commandsController",
 				"bpm-modeler/js/m_command", "bpm-modeler/js/m_modelerUtils" ],
-		function(m_utils, m_constants, m_extensionManager, m_command,
+		function(m_utils, m_globalVariables, m_constants, m_extensionManager, m_command,
 				m_canvasManager, m_symbol, m_gatewaySymbol, m_eventSymbol,
 				m_session, m_model, m_activity,
 				m_commandsController, m_command, m_modelerUtils) {
@@ -1342,7 +1342,7 @@ define(
 					this.auxiliaryProperties.callbackScope.glow = this.auxiliaryProperties.callbackScope.rectangle
 							.glow({
 								width : m_constants.GLOW_WIDTH,
-								color : window.top.modelingSession
+								color : m_globalVariables.get("modelingSession")
 										.getColorByUser(this.auxiliaryProperties.callbackScope.lastModifyingUser),
 								opacity : m_constants.GLOW_OPACITY
 							});

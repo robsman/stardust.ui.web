@@ -9,9 +9,9 @@
  ******************************************************************************/
 
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_globalVariables", "bpm-modeler/js/m_constants",
 				"bpm-modeler/js/m_urlUtils",
-				"bpm-modeler/js/m_communicationController" ], function(m_utils,
+				"bpm-modeler/js/m_communicationController" ], function(m_utils, m_globalVariables,
 				m_constants, m_urlUtils, m_communicationController) {
 
 			return {
@@ -90,7 +90,7 @@ define(
 											user.lastName = json.lastName;
 											user.account = json.account;
 											user.isInvited = false;
-											window.top.currentUser = user;
+											m_globalVariables.set("currentUser", user);
 										},
 										failure : function() {
 											alert('Hey');
@@ -104,14 +104,14 @@ define(
 			 * 
 			 */
 			function getCurrentUser() {
-				if (window.top.currentUser == null) {
+				if (m_globalVariables.get("currentUser") == null) {
 					this.initializeCurrentUser();
 				}
 
 				m_utils.debug("Current User: ");
-				m_utils.debug(window.top.currentUser);
+				m_utils.debug(m_globalVariables.get("currentUser"));
 
-				return window.top.currentUser;
+				return m_globalVariables.get("currentUser");
 			}
 
 			/**
@@ -122,8 +122,8 @@ define(
 				// This is because m_user can not have dependency on m_session
 				// As this will make it cyclic
 				
-				if (window.top.modelingSession) {
-					return window.top.modelingSession.currentProfile;
+				if (m_globalVariables.get("modelingSession")) {
+					return m_globalVariables.get("modelingSession").currentProfile;
 				} else {
 					m_constants.BUSINESS_ANALYST_ROLE;
 				}

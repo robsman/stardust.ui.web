@@ -12,10 +12,10 @@
  * @author Marc.Gille
  */
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_globalVariables", "bpm-modeler/js/m_constants",
 				"bpm-modeler/js/m_communicationController",
 				"bpm-modeler/js/m_command" ],
-		function(m_utils, m_constants, m_communicationController, m_command) {
+		function(m_utils, m_globalVariables, m_constants, m_communicationController, m_command) {
 			var executeImmediate;
 			var needUndoSupport;
 			var readonlyExcludeCommandIds = [ "modelLockStatus.update" ];
@@ -77,7 +77,8 @@ define(
 				}
 
 				if (checkForReadonly && command.modelId != undefined) {
-					var model = window.top.models[command.modelId]; //m_model.findModel(command.modelId);
+					var models = m_globalVariables.get("models");
+					var model = models[command.modelId]; //m_model.findModel(command.modelId);
 					if (model != undefined) {
 						if (model.isReadonly()) {
 							m_utils.debug("Model '" + model.name + "' is marked as Readonly. Skipping server post.");
@@ -109,11 +110,11 @@ define(
 			 * Singleton on DOM level.
 			 */
 			function getInstance() {
-				if (window.top.commandsController == null) {
-					window.top.commandsController = new CommandsController();
+				if (m_globalVariables.get("commandsController") == null) {
+					m_globalVariables.set("commandsController", new CommandsController());
 				}
 
-				return window.top.commandsController;
+				return m_globalVariables.get("commandsController");
 			}
 
 			function unregisterCommandhandlerOnWindowUnload(commandHandler) {

@@ -17,8 +17,8 @@
  *
  */
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants" ],
-		function(m_utils, m_constants) {
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_globalVariables", "bpm-modeler/js/m_constants" ],
+		function(m_utils, m_globalVariables, m_constants) {
 
 			return {
 				setModelsSaved : function() {
@@ -42,15 +42,15 @@ define(
 			}
 
 			function getModelsSaveStatus() {
-				if (!window.top.modelerGlobalObjects) {
-					window.top.modelerGlobalObjects = {};
+				if (!m_globalVariables.get("modelerGlobalObjects")) {
+					m_globalVariables.set("modelerGlobalObjects",{});
 				}
 
-				if (!window.top.modelerGlobalObjects.modelsSaveStatus) {
-					window.top.modelerGlobalObjects.modelsSaveStatus = new ModelsSaveStatus();
+				if (!m_globalVariables.get("modelerGlobalObjects.modelsSaveStatus")) {
+					m_globalVariables.set("modelerGlobalObjects.modelsSaveStatus",new ModelsSaveStatus());
 				}
 
-				return window.top.modelerGlobalObjects.modelsSaveStatus;
+				return m_globalVariables.get("modelerGlobalObjects.modelsSaveStatus");
 			}
 			;
 

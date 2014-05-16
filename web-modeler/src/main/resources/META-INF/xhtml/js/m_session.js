@@ -9,9 +9,9 @@
  ******************************************************************************/
 
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_command",
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_globalVariables", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_command",
 				"bpm-modeler/js/m_user", "bpm-modeler/js/m_communicationController" ],
-		function(m_utils, m_constants, m_commandsController, m_command, m_user,
+		function(m_utils, m_globalVariables, m_constants, m_commandsController, m_command, m_user,
 				m_communicationController) {
 
 			return {
@@ -26,27 +26,27 @@ define(
 			 *
 			 */
 			function initialize() {
-				if (window.top.modelingSession == null) {
-					window.top.modelingSession = new Session(m_user
-							.getCurrentUser());
-					window.top.modelingSession.initialize();
+				if (m_globalVariables.get("modelingSession") == null) {
+					m_globalVariables.set("modelingSession",new Session(m_user
+							.getCurrentUser()));
+					m_globalVariables.get("modelingSession").initialize();
 					m_commandsController
-							.registerCommandHandler(window.top.modelingSession);
+							.registerCommandHandler(m_globalVariables.get("modelingSession"));
 				}
 
-				return window.top.modelingSession;
+				return m_globalVariables.get("modelingSession");
 			}
 
 			/**
 			 *
 			 */
 			function renew() {
-				window.top.modelingSession = new Session(m_user
-						.getCurrentUser());
+				m_globalVariables.set("modelingSession",new Session(m_user
+						.getCurrentUser()));
 				m_commandsController
-						.registerCommandHandler(window.top.modelingSession);
+						.registerCommandHandler(m_globalVariables.get("modelingSession"));
 
-				return window.top.modelingSession;
+				return m_globalVariables.get("modelingSession");
 			}
 
 			/**
@@ -151,8 +151,8 @@ define(
 											m_utils.debug("===> Preferences");
 											m_utils.debug(json);
 
-											window.top.modelingSession.technologyPreview = json.showTechnologyPreview;
-											window.top.modelingSession.currentProfile = json.defaultProfile;
+											m_globalVariables.set("modelingSession.technologyPreview", json.showTechnologyPreview);
+											m_globalVariables.set("modelingSession.currentProfile", json.defaultProfile);
 										},
 										"error" : function() {
 											alert('Error occured while fetching models');

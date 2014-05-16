@@ -12,11 +12,11 @@
  * @author Marc.Gille
  */
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_command",
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_globalVariables", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_command",
 				"bpm-modeler/js/m_canvasManager", "bpm-modeler/js/m_model", "bpm-modeler/js/m_symbol", "bpm-modeler/js/m_activitySymbol",
 				"bpm-modeler/js/m_gatewaySymbol", "bpm-modeler/js/m_eventSymbol", "bpm-modeler/js/m_dataSymbol", "bpm-modeler/js/m_annotationSymbol",
 				"bpm-modeler/js/m_propertiesPanel", "bpm-modeler/js/m_modelerUtils","bpm-modeler/js/m_i18nUtils" ],
-		function(m_utils, m_constants, m_commandsController, m_command,
+		function(m_utils, m_globalVariables, m_constants, m_commandsController, m_command,
 				m_canvasManager, m_model, m_symbol, m_activitySymbol,
 				m_gatewaySymbol, m_eventSymbol, m_dataSymbol, m_annotationSymbol,
 				m_propertiesPanel, m_modelerUtils,m_i18nUtils) {
@@ -1458,8 +1458,9 @@ define(
 
 			function SwimlaneSymbol_removeClosure(){
 				var cbObj = this;
-				if (parent.iPopupDialog) {
-					parent.iPopupDialog.openPopup({
+				var parentWindow = m_globalVariables.findMainWindowBottomUp();
+				if (parentWindow.iPopupDialog) {
+					parentWindow.iPopupDialog.openPopup({
 						attributes : {
 							width : "400px",
 							height : "200px",

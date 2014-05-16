@@ -12,8 +12,8 @@
  * @author Marc.Gille
  */
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_modelElement"],
-		function(m_utils, m_modelElement) {
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_globalVariables", "bpm-modeler/js/m_modelElement"],
+		function(m_utils, m_globalVariables, m_modelElement) {
 			var STRUCTURE_TYPE = "STRUCTURE_TYPE";
 			var ENUMERATION_TYPE = "ENUMERATION_TYPE";
 
@@ -903,7 +903,7 @@ define(
 								}
 							}
 
-							var allModels = window.top.models;
+							var allModels = m_globalVariables.get("models");
 							for ( var i in allModels) {
 								var mod = allModels[i];
 								if (schema) {

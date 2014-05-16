@@ -13,14 +13,14 @@
  */
 
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_messageDisplay",
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_globalVariables", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_messageDisplay",
 				"bpm-modeler/js/m_canvasManager",
 				"bpm-modeler/js/m_communicationController", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_logger",
 				"bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_diagram", "bpm-modeler/js/m_activitySymbol",
 				"bpm-modeler/js/m_eventSymbol", "bpm-modeler/js/m_gatewaySymbol", "bpm-modeler/js/m_dataSymbol", "bpm-modeler/js/m_model",
 				"bpm-modeler/js/m_process", "bpm-modeler/js/m_activity", "bpm-modeler/js/m_data", "bpm-modeler/js/m_elementConfiguration",
 				"bpm-modeler/js/m_modelerUtils", "bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_modelElementUtils" ],
-		function(m_utils, m_constants, m_messageDisplay,
+		function(m_utils, m_globalVariables, m_constants, m_messageDisplay,
 				m_canvasManager,
 				m_communicationController, m_constants, m_logger,
 				m_commandsController, m_diagram, m_activitySymbol,
@@ -52,23 +52,24 @@ define(
 				diagram.loadProcess();
 				initDnD(divId);
 				// TODO Used temporarily to indicate the VIEW_LOADED event for the Process Definition View
-				window.parent.EventHub.events.publish("VIEW_LOADED", "");
+				m_globalVariables.findMainWindowBottomUp().EventHub.events.publish("VIEW_LOADED", "");
 				m_utils.jQuerySelect("#processDefinitionView").css("visibility", "visible");
 				
 				function initDnD(divId) {
 					var IE = document.all ? true : false;
 					var canvasDiv = document.getElementById(divId);
 					canvasDiv.onmousemove = function(e) {
+						var parentWindow = m_globalVariables.findMainWindowBottomUp();
 						// De-select any selected elements in the canvas
 						// to avoid they getting dragged inadvertently
-						if (parent.iDnD.dragMode) {
+						if (parentWindow.iDnD.dragMode) {
 							diagram.clearCurrentSelection();
 						}
 
 						if (e) {
-							parent.iDnD.setIframeXY(e, window.name);
+							parentWindow.iDnD.setIframeXY(e, window.name);
 						} else {
-							parent.iDnD.setIframeXY(window.event, window.name);
+							parentWindow.iDnD.setIframeXY(window.event, window.name);
 						}
 					};
 
@@ -82,29 +83,29 @@ define(
 						if (!eve) {
 							eve = window.event;
 						}
-
-						parent.iDnD.dragMode = false;
+						var parentWindow = m_globalVariables.findMainWindowBottomUp();
+						parentWindow.iDnD.dragMode = false;
 
 						if (diagram.process.isReadonly()) {
 							m_messageDisplay.clear();
 							m_messageDisplay.showErrorMessage("Process is marked as Read-only.");
 						}
 
-						if (!diagram.process.isReadonly() && parent.iDnD.getTransferObject()) {
-							var clickCoordinates = parent.iDnD
+						if (!diagram.process.isReadonly() && parentWindow.iDnD.getTransferObject()) {
+							var clickCoordinates = parentWindow.iDnD
 									.getMouseCoordinates(eve);
 							var scrollPos = m_modelerUtils
 									.getModelerScrollPosition();
 //							clickCoordinates.x += scrollPos.left;
 //							clickCoordinates.y += scrollPos.top;
 
-							var otherModelId = m_model.stripModelId(parent.iDnD.getTransferObject().attr.fullId);
+							var otherModelId = m_model.stripModelId(parentWindow.iDnD.getTransferObject().attr.fullId);
 							if (otherModelId != diagram.modelId
 									&& m_model.isModelReferencedIn(diagram.modelId, otherModelId)) {
 								m_messageDisplay.clear();
 								m_messageDisplay.showMessage(m_i18nUtils
 										.getProperty("modeler.propertyPages.commonProperties.errorMessage.modelCircularReferenceNotAllowed"));
-								parent.iDnD.hideIframe();
+								parentWindow.iDnD.hideIframe();
 								return;
 							}
 
@@ -112,21 +113,21 @@ define(
 							// has same id and type
 							// as that of the dragged element, if dragged
 							// element belongs to other model.
-							if (diagram.model.uuid != parent.iDnD
+							if (diagram.model.uuid != parentWindow.iDnD
 									.getTransferObject().modelUUID) {
 								var matchingElems = diagram.model
-										.findModelElementsById(parent.iDnD
+										.findModelElementsById(parentWindow.iDnD
 												.getTransferObject().elementId);
 								if (matchingElems && matchingElems.length > 0) {
 									for ( var i in matchingElems) {
 										if (!matchingElems[i].externalReference
-												&& matchingElems[i].type === parent.iDnD
+												&& matchingElems[i].type === parentWindow.iDnD
 														.getTransferObject().type) {
 											m_messageDisplay.clear();
 											m_messageDisplay
 													.showMessage(m_i18nUtils
 															.getProperty("modeler.propertyPages.commonProperties.errorMessage.elementWithSameIdExists"));
-											parent.iDnD.hideIframe();
+											parentWindow.iDnD.hideIframe();
 											return;
 										}
 									}
@@ -134,10 +135,10 @@ define(
 							}
 
 							if (m_elementConfiguration
-									.isValidDataType(parent.iDnD
+									.isValidDataType(parentWindow.iDnD
 											.getTransferObject().elementType)) {
 								// TODO other check required
-								var data = m_model.findData(parent.iDnD
+								var data = m_model.findData(parentWindow.iDnD
 										.getTransferObject().attr.fullId);
 
 								if (isElementExternalAndPrivate(data)) {
@@ -153,16 +154,16 @@ define(
 										- diagram.getCanvasPosition().left,
 										clickCoordinates.y
 												- diagram.getCanvasPosition().top);
-							} else if (m_constants.ROLE_PARTICIPANT_TYPE == parent.iDnD
+							} else if (m_constants.ROLE_PARTICIPANT_TYPE == parentWindow.iDnD
 									.getTransferObject().elementType
-									|| m_constants.TEAM_LEADER_TYPE == parent.iDnD
+									|| m_constants.TEAM_LEADER_TYPE == parentWindow.iDnD
 									.getTransferObject().elementType
-									|| m_constants.CONDITIONAL_PERFORMER_PARTICIPANT_TYPE == parent.iDnD
+									|| m_constants.CONDITIONAL_PERFORMER_PARTICIPANT_TYPE == parentWindow.iDnD
 									.getTransferObject().elementType
-									|| m_constants.ORGANIZATION_PARTICIPANT_TYPE == parent.iDnD
+									|| m_constants.ORGANIZATION_PARTICIPANT_TYPE == parentWindow.iDnD
 									.getTransferObject().elementType) {
 								var participant = m_model
-										.findParticipant(parent.iDnD
+										.findParticipant(parentWindow.iDnD
 												.getTransferObject().attr.fullId);
 								if (isElementExternalAndPrivate(participant)) {
 									diaplayPrivateElementMessage();
@@ -170,11 +171,11 @@ define(
 								}
 								diagram.poolSymbol
 										.createSwimlaneSymbolFromParticipant(participant);
-							} else if ('structuredDataType' == parent.iDnD.getTransferObject().elementType
-										|| 'compositeStructuredDataType' == parent.iDnD.getTransferObject().elementType
-										|| 'enumStructuredDataType' == parent.iDnD.getTransferObject().elementType
-										|| 'importedStructuredDataType' == parent.iDnD.getTransferObject().elementType) {
-								var dataStructure = m_model.findTypeDeclaration(parent.iDnD
+							} else if ('structuredDataType' == parentWindow.iDnD.getTransferObject().elementType
+										|| 'compositeStructuredDataType' == parentWindow.iDnD.getTransferObject().elementType
+										|| 'enumStructuredDataType' == parentWindow.iDnD.getTransferObject().elementType
+										|| 'importedStructuredDataType' == parentWindow.iDnD.getTransferObject().elementType) {
+								var dataStructure = m_model.findTypeDeclaration(parentWindow.iDnD
 												.getTransferObject().attr.fullId);
 								if (isElementExternalAndPrivate(dataStructure)) {
 									diaplayPrivateElementMessage();
@@ -203,15 +204,15 @@ define(
 											- diagram.getCanvasPosition().top);
 									dataSymbol.refreshFromModelElement();
 								}
-							} else if ('process' == parent.iDnD
+							} else if ('process' == parentWindow.iDnD
 									.getTransferObject().elementType) {
-								var process = m_model.findProcess(parent.iDnD
+								var process = m_model.findProcess(parentWindow.iDnD
 										.getTransferObject().attr.fullId);
 
-								if (diagram.model.uuid != parent.iDnD
+								if (diagram.model.uuid != parentWindow.iDnD
 										.getTransferObject().modelUUID
 										&& !(process.processInterfaceType === m_constants.PROVIDES_PROCESS_INTERFACE_KEY)) {
-									parent.iDnD.hideIframe();
+									parentWindow.iDnD.hideIframe();
 									m_messageDisplay.clear();
 									m_messageDisplay
 											.showMessage(m_i18nUtils
@@ -228,13 +229,13 @@ define(
 										- diagram.getCanvasPosition().top);
 								activitySymbol.refreshFromModelElement();
 							} else if (m_elementConfiguration
-									.isValidAppType(parent.iDnD
+									.isValidAppType(parentWindow.iDnD
 											.getTransferObject().elementType)) {
 								m_utils.debug("Dragged Application");
 								m_utils
-										.debug(parent.iDnD.getTransferObject().attr.fullId);
+										.debug(parentWindow.iDnD.getTransferObject().attr.fullId);
 								var application = m_model
-										.findApplication(parent.iDnD
+										.findApplication(parentWindow.iDnD
 												.getTransferObject().attr.fullId);
 
 								m_utils.debug("Retrieved Application");
@@ -256,15 +257,15 @@ define(
 							} else {
 								m_messageDisplay
 										.showErrorMessage("Unsupported element type: "
-												+ parent.iDnD
+												+ parentWindow.iDnD
 														.getTransferObject().elementType);
 							}
 						}
 
-						parent.iDnD.hideIframe();
+						parentWindow.iDnD.hideIframe();
 
 						function isElementExternalAndPrivate(modelElement) {
-							if (diagram.model.uuid != parent.iDnD
+							if (diagram.model.uuid != parentWindow.iDnD
 									.getTransferObject().modelUUID
 									&& !m_modelElementUtils.hasPublicVisibility(modelElement)) {
 								return true;
@@ -274,7 +275,7 @@ define(
 						}
 
 						function diaplayPrivateElementMessage() {
-							parent.iDnD.hideIframe();
+							parentWindow.iDnD.hideIframe();
 							m_messageDisplay.clear();
 							m_messageDisplay
 									.showMessage(m_i18nUtils

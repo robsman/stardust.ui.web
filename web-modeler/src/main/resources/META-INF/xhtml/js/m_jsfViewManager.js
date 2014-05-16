@@ -14,8 +14,8 @@
  *
  * @author Marc.Gille
  */
-define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_jsfViewManagerHelper" ],
-		function(m_utils, m_jsfViewManagerHelper) {
+define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_globalVariables", "bpm-modeler/js/m_jsfViewManagerHelper" ],
+		function(m_utils, m_globalVariables, m_jsfViewManagerHelper) {
 	return {
 		create : function() {
 			return new JsfViewManager();
@@ -40,9 +40,7 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_jsfViewManagerHelper" ],
 				objectId) {
 			m_utils.showWaitCursor();
 			m_utils.debug("Open View");
-			m_utils.debug(m_utils.jQuerySelect(window));
-			m_utils.debug(m_utils.jQuerySelect(window.top));
-			m_utils.debug(m_utils.jQuerySelect(window.top.frames['ippPortalMain']));
+			m_utils.debug(m_utils.jQuerySelect(m_globalVariables.get("frames")['ippPortalMain']));
 
 			var link = m_utils.jQuerySelect("a[id $= 'model_view_link']", m_utils.getOutlineWindowAndDocument().doc);
 			var linkId = link.attr('id');

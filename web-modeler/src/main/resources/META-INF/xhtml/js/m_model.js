@@ -12,13 +12,13 @@
  * @author Marc.Gille
  */
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_globalVariables", "bpm-modeler/js/m_constants",
 				"bpm-modeler/js/m_urlUtils",
 				"bpm-modeler/js/m_communicationController",
 				"bpm-modeler/js/m_application", "bpm-modeler/js/m_data",
 				"bpm-modeler/js/m_process", "bpm-modeler/js/m_participant",
 				"bpm-modeler/js/m_typeDeclaration" ],
-		function(m_utils, m_constants, m_urlUtils, m_communicationController,
+		function(m_utils, m_globalVariables, m_constants, m_urlUtils, m_communicationController,
 				m_application, m_data, m_process, m_participant,
 				m_typeDeclaration) {
 
@@ -457,12 +457,12 @@ define(
 			 * Singleton on DOM level.
 			 */
 			function getModels() {
-				if (window.top.models) {
-					return window.top.models;
+				if (m_globalVariables.get("models")) {
+					return m_globalVariables.get("models");
 				}
 				loadModels(true);
 
-				return window.top.models;
+				return m_globalVariables.get("models");
 			}
 
 
@@ -470,12 +470,12 @@ define(
 			 * Singleton on DOM level.
 			 */
 			function getErroredModels() {
-				if (window.top.models) {
-					return window.top.erroredModels;
+				if (m_globalVariables.get("models")) {
+					return m_globalVariables.get("erroredModels");
 				}
 				loadModels(true);
 
-				return window.top.erroredModels;
+				return m_globalVariables.get("erroredModels");
 			}
 
 			function findModel(id) {
@@ -524,8 +524,8 @@ define(
 				}, {
 					"success" : function(json) {
 						if (json.loaded) {
-							window.top.models = json.loaded;
-							window.top.erroredModels = json.failed;
+							m_globalVariables.set("models", json.loaded);
+							m_globalVariables.set("erroredModels", json.failed);
 							bindModels();
 						}
 					},

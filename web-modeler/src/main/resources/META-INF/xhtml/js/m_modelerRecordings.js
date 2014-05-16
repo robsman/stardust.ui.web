@@ -9,14 +9,14 @@
  ******************************************************************************/
 
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_user", "bpm-modeler/js/m_session", "bpm-modeler/js/m_command",
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_globalVariables", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_user", "bpm-modeler/js/m_session", "bpm-modeler/js/m_command",
 				"bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_model",
 				"bpm-modeler/js/m_dialog",
 				"bpm-modeler/js/m_communicationController",
 				"bpm-modeler/js/m_i18nUtils",
 				"bpm-modeler/js/m_extensionManager",
 				"bpm-modeler/js/m_urlUtils"],
-		function(m_utils, m_constants, m_user, m_session, m_command,
+		function(m_utils, m_globalVariables, m_constants, m_user, m_session, m_command,
 				m_commandsController, m_model,
 				m_dialog,
  				m_communicationController, m_i18nUtils, m_extensionManager, m_urlUtils) {
@@ -217,7 +217,7 @@ define(
 
        var self = this;
 
-       var container = $('html body', window.top.document);
+       var container = $('html body', m_globalVariables.get("document"));
        var overlay = $('<div style="position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; z-index: 20000"></div>');
        var controlsContainer = $('<div style="margin-top: 40px; margin-left: auto; margin-right: auto; width: 200px; text-align: center;"></div>').appendTo(overlay);
        var statusBar = $('<div style="width: 200px; height: 16px; color: lightgray;"></div>').appendTo(controlsContainer);
@@ -396,11 +396,11 @@ define(
 			// expose the module API
       return {
         initialize : function() {
-          if (window.top.sdWebModelerRecordingsPanel == null) {
+          if (m_globalVariables.get("sdWebModelerRecordingsPanel") == null) {
             i18nsessionpanel();
-            window.top.sdWebModelerRecordingsPanel = new RecordingsController();
+            m_globalVariables.set("sdWebModelerRecordingsPanel", new RecordingsController());
 
-            window.top.sdWebModelerRecordingsPanel.initialize();
+            m_globalVariables.get("sdWebModelerRecordingsPanel").initialize();
           }
         }
       };
