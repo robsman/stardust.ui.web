@@ -339,7 +339,7 @@ define(
 						});
 					}
 
-					if (dimension) {
+					if (dimension && dimension.enumerationType) {
 						var qualifier = dimension.enumerationType.split(":");
 						var enums = this.reportingService.getEnumerators2(qualifier[0], qualifier[1]);
 						if(!enums){

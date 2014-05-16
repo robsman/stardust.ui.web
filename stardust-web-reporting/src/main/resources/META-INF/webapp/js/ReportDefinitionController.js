@@ -1182,10 +1182,7 @@ define(
 	                   // Logic to handle special characters like '{' in column id
 	                   // column.id is typically like {Model71}ChangeOfAddress:{Model71}ConfirmationNumber
 	                   // So Getting the last word i.e. ConfirmationNumber
-	                   if(col.indexOf("{") != -1) { 
-	                      var lastIndex = col.lastIndexOf("}");
-                         col = col.substr( lastIndex + 1, col.length );
-	                   }
+	                   col = replaceSpecialChars(col);
 	                   cols += "<td>{{row." + col + "}}</td>";
 	                }
                 TEMPLATE_COPY = TEMPLATE_COPY.replace("_HEADERS_", headers);
@@ -2643,6 +2640,7 @@ define(
                     var b = {};
                     for ( var selColumn in selectedColumns) {
                        var key = selectedColumns[selColumn].id;
+                       key = replaceSpecialChars(key);
                        var value = record[selColumn];
                        b[key] = value;
                     }
@@ -2757,4 +2755,16 @@ define(
 		        }
 		      );
 		    }
+		
+		function replaceSpecialChars(id){
+			 // Logic to handle special characters like '{' in column id
+            // column.id is typically like {Model71}ChangeOfAddress:{Model71}ConfirmationNumber
+            // So Getting the last word i.e. ConfirmationNumber
+            if(id.indexOf("{") != -1) { 
+               var lastIndex = id.lastIndexOf("}");
+              id = id.substr( lastIndex + 1, id.length );
+            }
+            return id;
+		}
+		
 		});
