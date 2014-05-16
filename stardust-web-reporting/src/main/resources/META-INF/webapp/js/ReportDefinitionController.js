@@ -843,7 +843,8 @@ define(
 	                			average : this.getI18N(PROP_KEY_PREFIX + "average"),
 								minimum : this.getI18N(PROP_KEY_PREFIX + "minimum"),
 								stdDeviation : this.getI18N(PROP_KEY_PREFIX + "stdDeviation"),
-								count : this.getI18N(PROP_KEY_PREFIX + "count")
+								count : this.getI18N(PROP_KEY_PREFIX + "count"),
+								total : this.getI18N(PROP_KEY_PREFIX + "total")
 						  }; 
                          
                          
@@ -894,25 +895,26 @@ define(
                          if(this.report.layout.table.displayTotals){
 	                         var total_cols = seriesArray.length - 1;
 	                         if (seriesArray.length > 2) {
-	                           inputArray[1].push("Total");
-	                           total_cols = seriesArray.length - 2;
-	                         }
-	
-	                         //inputArray.push(["Total"]);
-	
-	                         for (var j = 0; j < total_cols; j++) {
-	                           inputArray[inputArray.length - 1].push(0); //set default value
-	                         }
-	                         
-							for (var i = 2; i < inputArray.length-1; i++) {
+		                           inputArray[1].push("Total");
+		                           total_cols = seriesArray.length - 2;
+		                         }	
+		
+		                         //inputArray.push(["Total"]);
+		
+		                         for (var j = 0; j < total_cols; j++) {
+		                           //inputArray[inputArray.length - 1].push(0); //set default value
+		                         }
+		                         
+
+		                  for (var i = 2; i < inputArray.length; i++) {
 								var sum = 0;
-								
+
 								for (var j = 1; j < inputArray[i].length; j++) {
 									sum += inputArray[i][j];
 									// if display total is selected
-									inputArray[inputArray.length - 1][j] += inputArray[i][j];
+									// inputArray[inputArray.length - 1][j] += inputArray[i][j];
 								}
-	
+
 								if (seriesArray.length > 2) {
 									inputArray[i].push(sum);
 								}
@@ -923,7 +925,7 @@ define(
 							for (var i = 2; i < inputArray.length-1; i++) {
 								sum += inputArray[i][inputArray[i].length-1];
 							}
-							inputArray[inputArray.length-1].push(sum);
+							//inputArray[inputArray.length-1].push(sum);
                        }  
 
                        } else { // fact is count
