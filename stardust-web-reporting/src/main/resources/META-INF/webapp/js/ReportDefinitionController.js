@@ -2369,7 +2369,7 @@ define(
                   var dimensionNames = [];
                   for ( var m in dimensions) {
                      var dimension = dimensions[m];
-                     dimensionNames[m] = dimension.id;
+                      dimensionNames[m] = replaceSpecialChars(dimension.id);
                   }
                   self.expressionEditor.setSessionData("$keywordList", dimensionNames);
             };
