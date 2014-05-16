@@ -71,6 +71,7 @@ define([],function(){
 								$rootScope.appData.isAuthorized=true;
 								$rootScope.appData.isActivityHot = false;
 								$rootScope.appData.hotActivityInstance = {};
+								$rootScope.appData.settings={"pageSize" : 5};
 							});
 							$rootScope.$broadcast("login",user);
 							utilService.navigateTo($rootScope,"#mainPage",{});

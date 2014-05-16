@@ -10,28 +10,28 @@
      <h4>{{uiText.searchDocs}}</h4>
      <div style="position:absolute;top:11px;right:1em;">
 	     <a ng-show="showResults"  class="ipp-icon-minimal" href="#documentFilterPopup" data-rel="popup" data-transition="slide">
-	     	<i class="fa ipp-fs-2x fa-sort"></i>
+	     	<i class="sc ipp-fs-2x sc-arrow-stem-ud"></i>
 	     </a>
      </div>
      
      <div data-role="popup" id="documentFilterPopup" data-theme="b">
         <ul data-role="listview"  data-inset="true" style="min-width:210px;">
-            <li ng-click="getResults('-startTime');sortBy='-startTime'">
+            <li ng-click="getResults('newest',0);filter.sortBy='newest'">
 	            <a class="ipp-no-content ipp-center" href="#">
 	            	<span class="ipp-float-l">{{uiText.newest}}</span>
-	            	<i ng-show="sortBy=='-startTime'" class="sc sc-check ipp-float-r"></i>
+	            	<i ng-show="filter.sortBy=='newest'" class="sc sc-check-large ipp-float-r"></i>
 	            </a>
             </li>
-            <li ng-click="getResults('startTime');sortBy='startTime'">
+            <li ng-click="getResults('oldest',0);filter.sortBy='oldest'">
 	            <a class="ipp-no-content ipp-center" href="#">
 	            	<span class="ipp-float-l">{{uiText.oldest}}</span>
-	            	<i ng-show="sortBy=='startTime'" class="sc sc-check ipp-float-r"></i>
+	            	<i ng-show="filter.sortBy=='oldest'" class="sc sc-check-large ipp-float-r"></i>
 	            </a>
 	        </li>
-            <li ng-click="getResults('lastModificationTime');sortBy='lastModificationTime'">
+            <li ng-click="getResults('modified',0);filter.sortBy='modified'">
             	<a class="ipp-no-content ipp-center" href="#">
             		<span class="ipp-float-l">{{uiText.modified}}</span>
-            		<i ng-show="sortBy=='lastModificationTime'" class="sc sc-check ipp-float-r"></i>
+            		<i ng-show="filter.sortBy=='modified'" class="sc sc-check ipp-float-r"></i>
             	</a>
             </li>
         </ul>
@@ -105,8 +105,8 @@
 					ng-click="docType.isChecked=!docType.isChecked;" 
 		            ng-repeat="docType in documentSearchModel.documentTypes">
 		        	<i style="font-size:1.5em;"  
-		        	   ng-class="{'sc-check-box':docType.isChecked}" 
-		        	   class="sc sc-square"></i>
+		        	   ng-class="{'sc-check-box':docType.isChecked,'sc-square':!docType.isChecked}" 
+		        	   class="sc"></i>
 		        	&nbsp;
 		        	<span class="ipp-fs-small ipp-light ipp-fw-light">{{docType.name}}</span>
 	        	</li>
@@ -146,6 +146,21 @@
          			
 	    			<i class="sc sc-chevron-r ipp-nav-icon-right"></i>
 				</a>
+			</li>
+			<li class="ipp-center">
+				<i ng-if="documentSearchModel.paginationResponse.rowFrom !=0"
+				   ng-click="getResults(filter.sortBy,-1)" 
+				   class="sc sc-chevron-l ipp-margin-h-1x"></i>
+				<span>
+					{{documentSearchModel.paginationResponse.rowFrom}}
+					-
+					{{documentSearchModel.paginationResponse.rowFrom + documentSearchModel.paginationResponse.resultSetSize}}
+					&nbsp;of
+					{{documentSearchModel.paginationResponse.totalCount}}
+				</span>
+				<i ng-if="(documentSearchModel.paginationResponse.rowFrom + documentSearchModel.paginationResponse.resultSetSize) < documentSearchModel.paginationResponse.totalCount"
+				   ng-click="getResults(filter.sortBy,1)" 
+				   class="sc sc-chevron-r ipp-margin-h-1x"></i>
 			</li>
 		</ul>
 	</div>

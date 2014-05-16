@@ -72,7 +72,7 @@ define(["angularjs"],function(angular){
 				return deferred.promise;
 			},
 			
-			"getWorklist" : function(sortBy){
+			"getWorklist" : function(sortBy,rowFrom,pageSize){
 				var deferred = $q.defer(),
 					sortString="";
 				
@@ -80,7 +80,10 @@ define(["angularjs"],function(angular){
 					sortString ="?sort=" + sortBy;
 				}
 				$http({
-				    url: baseServiceUrl + "/worklist" + sortString,
+				    url: baseServiceUrl + "/worklist?" +
+										  "sortKey=" + sortBy + 
+										  "&rowFrom=" + rowFrom +
+										  "&pageSize=" + pageSize,
 				    method: "GET"
 				}).success(function(data, status, headers, config) {
 					deferred.resolve(data);
@@ -340,7 +343,7 @@ define(["angularjs"],function(angular){
 				return deferred.promise;
 			},
 			
-			"getFilteredDocuments" : function(name,start,end,ids,sortBy){
+			"getFilteredDocuments" : function(name,start,end,ids,sortBy,rowFrom,pageSize){
 				var deferred = $q.defer(),
 				 	ids=ids.replace(/[{}]/g, encodeURIComponent);
 				
@@ -350,7 +353,9 @@ define(["angularjs"],function(angular){
 				    					  "&createFromTimestamp=" + start +
 				    					  "&createToTimestamp=" + end + 
 				    					  "&documentTypeIds=" + ids +
-				    					  "&sortBy=" + sortBy,
+				    					  "&sortKey=" + sortBy + 
+				    					  "&rowFrom=" + rowFrom +
+				    					  "&pageSize=" + pageSize,
 				    method: "GET"
 				}).success(function(data, status, headers, config) {
 					deferred.resolve(data);
@@ -361,7 +366,7 @@ define(["angularjs"],function(angular){
 				return deferred.promise;
 			},
 			
-			"getFilteredActivities" : function(start,end,ids,states,sortBy){
+			"getFilteredActivities" : function(start,end,processIds,ids,states,sortBy,rowFrom,pageSize){
 				var deferred = $q.defer();
 				
 				$http({
@@ -371,7 +376,9 @@ define(["angularjs"],function(angular){
 				    					  "&processDefinitionIds=" + processIds +
 				    					  "&activityIds=" + ids +
 				    					  "&states=" + states +
-				    					  "&sortBy=" + sortBy,
+				    					  "&sortKey=" + sortBy +
+				    					  "&rowFrom=" + rowFrom + 
+				    					  "&pageSize=" + pageSize,
 				    method: "GET"
 				}).success(function(data, status, headers, config) {
 					deferred.resolve(data);
@@ -392,7 +399,9 @@ define(["angularjs"],function(angular){
 				    					  "&startedToTimestamp=" + end +
 				    					  "&processDefinitionIds=" + ids +
 				    					  "&states=" + states +
-				    					  "&sortBy=" + sortBy,
+				    					  "&sortKey=" + 'newest' +
+				    					  "&rowFrom=" + 0 +
+				    					  "&pageSize=10",
 				    method: "GET"
 				}).success(function(data, status, headers, config) {
 					deferred.resolve(data);

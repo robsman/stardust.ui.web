@@ -18,25 +18,25 @@
             <li ng-click="getResults('-startTime');sortBy='-startTime'">
 	            <a class="ipp-no-content ipp-center" href="#">
 	            	<span class="ipp-float-l">{{uiText.newest}}</span>
-	            	<i ng-show="sortBy=='-startTime'" class="sc sc-check ipp-float-r"></i>
+	            	<i ng-show="sortBy=='-startTime'" class="sc sc-check-large ipp-float-r"></i>
 	            </a>
             </li>
             <li ng-click="getResults('startTime');sortBy='startTime'">
 	            <a class="ipp-no-content ipp-center" href="#">
 	            	<span class="ipp-float-l">{{uiText.oldest}}</span>
-	            	<i ng-show="sortBy=='startTime'" class="sc sc-check ipp-float-r"></i>
+	            	<i ng-show="sortBy=='startTime'" class="sc sc-check-large ipp-float-r"></i>
 	            </a>
 	        </li>
             <li ng-click="getResults('priority');sortBy='criticality'">
             	<a class="ipp-no-content ipp-center" href="#">
             		<span class="ipp-float-l">{{uiText.priority}}</span>
-            		<i ng-show="sortBy=='criticality'" class="sc sc-check ipp-float-r"></i>
+            		<i ng-show="sortBy=='criticality'" class="sc sc-check-large ipp-float-r"></i>
             	</a>
             </li>
             <li ng-click="getResults('lastModificationTime');sortBy='lastModificationTime'">
             	<a class="ipp-no-content ipp-center" href="#">
             		<span class="ipp-float-l">{{uiText.modified}}</span>
-            		<i ng-show="sortBy=='lastModificationTime'" class="sc sc-check ipp-float-r"></i>
+            		<i ng-show="sortBy=='lastModificationTime'" class="sc sc-check-large ipp-float-r"></i>
             	</a>
             </li>
         </ul>
@@ -113,7 +113,7 @@
 		    	<span ng-click="processToggleState=!processToggleState;
 		    	               toggleAll(processSearchModel.processes,processToggleState,$event)" 
 		    	      class="ipp-li-count-secondary">
-		    		<i ng-class="{'sc-check-box':processToggleState}" class="sc sc-square"></i> {{uiText.all}}
+		    		<i ng-class="{'sc-check-box':processToggleState,'sc-square':!processToggleState}" class="sc"></i> {{uiText.all}}
 		    	</span>
 		    </h4>
 		    <ul data-role="listview" data-theme="a">
@@ -121,8 +121,8 @@
 				    ng-click="process.isChecked=!process.isChecked;" 
 		            ng-repeat="process in processSearchModel.processes">
 		        	<i style="font-size:1.5em;"  
-		        	   ng-class="{'sc-check-box':process.isChecked}" 
-		        	   class="sc sc-square"></i>
+		        	   ng-class="{'sc-check-box':process.isChecked,'sc-square':!process.isChecked}" 
+		        	   class="sc"></i>
 		        	&nbsp;
 		        	<span class="ipp-fs-small ipp-light ipp-fw-light">{{process.name}}</span>
 	        	</li>
@@ -138,15 +138,15 @@
 		    	<span ng-click="stateToggleState=!stateToggleState;
 		    	               toggleAll(processSearchModel.states,stateToggleState,$event)"
 		    	      class="ipp-li-count-secondary">
-		    		<i ng-class="{'sc-check-box':stateToggleState}" class="sc sc-square"></i> {{uiText.all}}
+		    		<i ng-class="{'sc-check-box':stateToggleState,'sc-square':!stateToggleState}" class="sc"></i> {{uiText.all}}
 		    	</span>
 		    </h2>
 		    <ul data-role="listview">
 				<li ng-init="state.isChecked=false"
 				    ng-click="state.isChecked=!state.isChecked;" 
 		            ng-repeat="state in processSearchModel.states">
-		        	<i ng-class="{'sc-check-box':state.isChecked}" 
-		        	   class="sc sc-square ipp-fs-2x"></i>
+		        	<i ng-class="{'sc-check-box':state.isChecked,'sc-square':!state.isChecked}" 
+		        	   class="sc ipp-fs-2x"></i>
 		        	&nbsp;
 		        	<span class="ipp-fs-small ipp-light ipp-fw-light">{{state.name}}</span>
 		        </li>

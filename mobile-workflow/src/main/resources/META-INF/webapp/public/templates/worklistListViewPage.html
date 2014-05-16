@@ -11,28 +11,28 @@
      </a>
      <div data-role="popup" id="wlistFilterPopup" data-theme="b">
         <ul data-role="listview"  data-inset="true" style="min-width:210px;">
-            <li ng-click="getSortedWorklist('-startTime');sortBy='-startTime'">
+            <li ng-click="getResults('newest',0);filter.sortBy='newest'">
 	            <a class="ipp-no-content ipp-center" href="#">
 	            	<span class="ipp-float-l">{{uiText.newest}}</span>
-	            	<i ng-show="sortBy=='-startTime'" class="sc sc-check ipp-float-r"></i>
+	            	<i ng-show="filter.sortBy=='newest'" class="sc sc-check-large ipp-float-r"></i>
 	            </a>
             </li>
-            <li ng-click="getSortedWorklist('startTime');sortBy='startTime'">
+            <li ng-click="getResults('oldest',0);filter.sortBy='oldest'">
 	            <a class="ipp-no-content ipp-center" href="#">
 	            	<span class="ipp-float-l">{{uiText.oldest}}</span>
-	            	<i ng-show="sortBy=='startTime'" class="sc sc-check ipp-float-r"></i>
+	            	<i ng-show="sortBy=='oldest'" class="sc sc-check-large ipp-float-r"></i>
 	            </a>
 	        </li>
-            <li ng-click="getSortedWorklist('criticality');sortBy='criticality'">
+            <li ng-click="getResults('criticality',0);filter.sortBy='criticality'">
             	<a class="ipp-no-content ipp-center" href="#">
             		<span class="ipp-float-l">{{uiText.critical}}</span>
-            		<i ng-show="sortBy=='criticality'" class="sc sc-check ipp-float-r"></i>
+            		<i ng-show="filter.sortBy=='criticality'" class="sc sc-check-large ipp-float-r"></i>
             	</a>
             </li>
-            <li ng-click="getSortedWorklist('lastModificationTime');sortBy='lastModificationTime'">
+            <li ng-click="getResults('modified',0);filter.sortBy='modified'">
             	<a class="ipp-no-content ipp-center" href="#">
             		<span class="ipp-float-l">{{uiText.modified}}</span>
-            		<i ng-show="sortBy=='lastModificationTime'" class="sc sc-check ipp-float-r"></i>
+            		<i ng-show="filter.sortBy=='modified'" class="sc sc-check-large ipp-float-r"></i>
             	</a>
             </li>
         </ul>
@@ -72,7 +72,22 @@
          		</div>
          		<i class="sc sc-chevron-r ipp-nav-icon-right ipp-margin-top-1x"></i>
 			</a>
-		</li>
+			</li>
+				<li class="ipp-center">
+				<i ng-if="worklistModel.paginationResponse.rowFrom !=0"
+				   ng-click="getResults(filter.sortBy,-1)" 
+				   class="sc sc-chevron-l ipp-margin-h-1x"></i>
+				<span>
+					{{worklistModel.paginationResponse.rowFrom}}
+					-
+					{{worklistModel.paginationResponse.rowFrom + worklistModel.paginationResponse.resultSetSize}}
+					&nbsp;of
+					{{worklistModel.paginationResponse.totalCount}}
+				</span>
+				<i ng-if="(worklistModel.paginationResponse.rowFrom + worklistModel.paginationResponse.resultSetSize) < worklistModel.paginationResponse.totalCount"
+				   ng-click="getResults(filter.sortBy,1)" 
+				   class="sc sc-chevron-r ipp-margin-h-1x"></i>
+			</li>
 	</ul>
 
 

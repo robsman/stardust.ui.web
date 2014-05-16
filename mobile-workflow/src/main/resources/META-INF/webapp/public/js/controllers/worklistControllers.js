@@ -136,17 +136,17 @@ define([],function(){
 	/*Our return object with all controllers defined*/
 	worklistCtrl = {
 			
-			"worklistCtrl" : function($scope, $rootScope, $q, $filter, workflowService,utilService,il18nService){
+			"worklistCtrl" : function($scope, $rootScope, $q, $filter,$timeout, workflowService,utilService,il18nService){
 				
 				/*Initialize our reinitialize our models*/
 				$scope.initModels=function(){
-					$scope.$apply(function(){
-						$scope.errorModel = new errorModel();
-						$scope.worklistModel=new worklistModel();
-					});
+					$scope.errorModel = new errorModel();
+					$scope.worklistModel=new worklistModel();
+					$scope.filter={"sortBy" : "newest"}
 				};
 				$scope.initModels();
 				
+				/*Init our internationalized text for out UI elements*/
 				$scope.uiText={
 						"worklist" : il18nService.getProperty("mobile.worklist.header.text"),
 						"newest"   : il18nService.getProperty("mobile.worklist.filter.item.newest"),
@@ -156,32 +156,54 @@ define([],function(){
 						"empty"    : il18nService.getProperty("mobile.worklist.message.empty")
 				};
 				
-				$scope.getSortedWorklist = function(sortBy){
+				/*Retrieve worklist items from our service with sorting and pagination*/
+				$scope.getResults = function(sortBy,pageAdvance){
+					
+					var rowFrom=0,
+				    	pageSize=$rootScope.appData.settings.pageSize || 10;
+					
+					if($scope.worklistModel.paginationResponse){
+						
+						if(pageAdvance==1){
+							rowFrom =$scope.worklistModel.paginationResponse.rowFrom + pageSize;
+						}
+						else if(pageAdvance==-1){
+							rowFrom =$scope.worklistModel.paginationResponse.rowFrom - pageSize;
+						}
+						else{
+							rowFrom=0;
+						}
+					}
 					
 					$scope.isAjaxLoading=true;
-					$scope.init(sortBy)
-						.catch(function(){
-							$scope.$apply(function(){
-								$scope.errorModel.hasError=true;
-								$scope.errorModel.errorMessage= $rootScope.appData.errorText.recordretrieval;
-								$timeout(function(){
-									$scope.errorModel.hasError=false;
-								},$rootScope.appData.barDuration);
-							});
-						})
-						.finally(function(){
-							$scope.isAjaxLoading=false;
-						});
+					workflowService.getWorklist($scope.filter.sortBy,rowFrom,pageSize)
+					.then(function(data){
+						$scope.worklistModel.worklistItems = data.worklist;
+						$scope.worklistModel.paginationResponse = data.paginationResponse;
+					})
+					.catch(function(err){
+						$scope.errorModel.hasError=true;
+						$scope.errorModel.errorMessage= $rootScope.appData.errorText.recordretrieval;
+						$timeout(function(){
+							$scope.errorModel.hasError=false;
+						},$rootScope.appData.barDuration);
+					})
+					.finally(function(){
+						$scope.isAjaxLoading=false;
+						$scope.$apply();
+					});
+					
 				}
 				
 				$scope.init=function(sortBy){
-					var deferred = $q.defer();
-					
-					workflowService.getWorklist(sortBy)
+					var deferred = $q.defer(),
+						pageSize=$rootScope.appData.settings.pageSize || 10;
+					workflowService.getWorklist($scope.filter.sortBy,0,pageSize)
 					.then(function(data){
 						data.worklist= $filter("orderBy")(data.worklist,"oid",true);
 						$scope.$apply(function(){
 							$scope.worklistModel.worklistItems = data.worklist;
+							$scope.worklistModel.paginationResponse = data.paginationResponse;
 						});
 						deferred.resolve();
 					})
@@ -235,10 +257,10 @@ define([],function(){
 				
 				/*Initialize our reinitialize our models*/
 				$scope.initModels=function(){
-					$scope.$apply(function(){
+					//$scope.$apply(function(){
 						$scope.mainPageModel = new mainPageModel();
 						$scope.errorModel = new errorModel();
-					});
+					//});
 				};
 				$scope.initModels();
 				
@@ -289,7 +311,7 @@ define([],function(){
 				
 				/*Initialize our reinitialize our models*/
 				$scope.initModels=function(){
-					$scope.$apply(function(){
+					//$scope.$apply(function(){
 						var now = new Date(),
 					    then = new Date(),
 					    startDPO,
@@ -310,9 +332,10 @@ define([],function(){
 								startTime : "00:00:01",
 								endDate : endDPO.yyyy + "-" + endDPO.MM + "-" + endDPO.dd,
 								endTime : endDPO.hh + ":" + endDPO.mm + ":" + endDPO.ss,
-								documentTypes : []	
+								documentTypes : [],
+								sortBy: "newest"
 						};
-					});
+					//});
 				};
 				$scope.initModels();
 				
@@ -337,18 +360,15 @@ define([],function(){
 					
 					workflowService.getDocumentTypes()
 					.then(function(data){
-						$scope.$apply(function(){
-							$scope.documentSearchModel.documentTypes=data.documentTypes;
-						});
+						$scope.documentSearchModel.documentTypes=data.documentTypes;
 					})
 					.then(deferred.resolve)
 					.catch(deferred.reject)
 					.finally(function(){
-						$scope.$apply(function(){
-							$scope.showResults=false;
-							$scope.docTypeToggleState = true;
-							$scope.toggleAll($scope.documentSearchModel.documentTypes,true,false);
-						});
+						$scope.showResults=false;
+						$scope.docTypeToggleState = true;
+						$scope.toggleAll($scope.documentSearchModel.documentTypes,true,false);
+						$scope.$apply();
 					});
 					
 					return deferred.promise;
@@ -365,11 +385,26 @@ define([],function(){
 					});
 				}
 				
-				$scope.getResults = function(sortBy){
+				$scope.getResults = function(sortBy,pageAdvance){
 					
 					var docIDs=[],
 						startDT,
-						endDT;
+						endDT,
+						rowFrom=0,
+					    pageSize=$rootScope.appData.settings.pageSize || 10;
+					
+					if($scope.documentSearchModel.paginationResponse){
+						
+						if(pageAdvance==1){
+							rowFrom =$scope.documentSearchModel.paginationResponse.rowFrom + pageSize;
+						}
+						else if(pageAdvance==-1){
+							rowFrom =$scope.documentSearchModel.paginationResponse.rowFrom - pageSize;
+						}
+						else{
+							rowFrom=0;
+						}
+					}
 					
 					startDT = new Date($scope.filter.startDate + " " + $scope.filter.startTime).getTime();
 					endDT = new Date($scope.filter.endDate + " " + $scope.filter.endTime).getTime();
@@ -384,11 +419,14 @@ define([],function(){
 							startDT,
 							endDT,
 							docIDs.toString(),
-							sortBy)
+							sortBy,
+							rowFrom,
+							pageSize)
 						.then(function(data){
 							console.log(data);
 							$scope.$apply(function(){
 								$scope.documentSearchModel.results=data.documents;
+								$scope.documentSearchModel.paginationResponse = data.paginationResponse;
 							});
 						})
 						.catch(function(err){
@@ -443,7 +481,7 @@ define([],function(){
 				var tmrPromise="";
 				/*Initialize our reinitialize our models*/
 				$scope.initModels=function(){
-						$scope.$apply(function(){
+						//$scope.$apply(function(){
 							var now = new Date(),
 							    then = new Date(),
 							    startDPO,
@@ -462,10 +500,11 @@ define([],function(){
 									endTime : endDPO.hh + ":" + endDPO.mm + ":" + endDPO.ss,
 									processes : [],
 									activities : [],
-									states : []
+									states : [],
+									sortBy: 'newest'
 									
 							};
-					});
+					//});
 				};
 				$scope.initModels();
 				
@@ -540,14 +579,32 @@ define([],function(){
 			            });
 				};
 				
-				$scope.getResults=function(sortBy){
+				$scope.getResults=function(sortBy,pageAdvance){
 					
 					var startDT,
 					    endDT,
 					    processIDs=[],
 					    activityIDs=[],
-					    stateIDs=[];
+					    stateIDs=[],
+					    rowFrom=0,
+					    pageSize=$rootScope.appData.settings.pageSize || 10;
 				    	
+					
+					sortBy = sortBy || "newest";
+					
+					if($scope.activitySearchModel.paginationResponse){
+						
+						if(pageAdvance==1){
+							rowFrom =$scope.activitySearchModel.paginationResponse.rowFrom + pageSize;
+						}
+						else if(pageAdvance==-1){
+							rowFrom =$scope.activitySearchModel.paginationResponse.rowFrom - pageSize;
+						}
+						else{
+							rowFrom=0;
+						}
+					}
+					
 					startDT = new Date($scope.filter.startDate + " " + $scope.filter.startTime).getTime();
 					endDT = new Date($scope.filter.endDate + " " + $scope.filter.endTime).getTime();
 					
@@ -570,26 +627,24 @@ define([],function(){
 							processIDs.toString(),
 							activityIDs.toString(),
 							stateIDs.toString(),
-							sortBy)
+							sortBy,
+							rowFrom,
+							pageSize)
 						.then(function(data){
-							$scope.$apply(function(data){
-								$scope.activitySearchModel.results=data.activities;
-							});
+							$scope.activitySearchModel.results=data.activityInstances;
+							$scope.activitySearchModel.paginationResponse = data.paginationResponse;
 						})
 						.catch(function(err){
-							$scope.$apply(function(){
-								$scope.errorModel.hasError=true;
-								$scope.errorModel.errorMessage = $rootScope.appData.errorText.recordretrieval;
-								$timeout(function(){
-									$scope.errorModel.hasError=false;
-								},$rootScope.appData.barDuration);
-							});
+							$scope.errorModel.hasError=true;
+							$scope.errorModel.errorMessage = $rootScope.appData.errorText.recordretrieval;
+							$timeout(function(){
+								$scope.errorModel.hasError=false;
+							},$rootScope.appData.barDuration);
 						})
 						.finally(function(){
-							$scope.$apply(function(){
-								$scope.isAjaxLoading=false;
-								$scope.showResults=true;
-							});
+							$scope.isAjaxLoading=false;
+							$scope.showResults=true;
+							$scope.$apply();
 						});
 					
 				};
@@ -668,24 +723,11 @@ define([],function(){
 						"modified" : il18nService.getProperty("mobile.worklist.filter.item.modified")
 				};
 				
-				/*init filter values for our dates*/
-				then.setDate(then.getDate() - 7); 
-				startDPO = utilService.buildDatePartObject(then.toString());
-				endDPO = utilService.buildDatePartObject(now.toString());
-				
-				
-				$scope.filter = {
-						startDate : startDPO.yyyy + "-" + startDPO.MM + "-" + startDPO.dd,
-						startTime : "00:00:01",
-						endDate : endDPO.yyyy + "-" + endDPO.MM + "-" + endDPO.dd,
-						endTime : endDPO.hh + ":" + endDPO.mm + ":" + endDPO.ss,
-						processes : [],
-						states : []
-				};
+
 				
 				/*Initialize our reinitialize our models*/
 				$scope.initModels=function(){
-					$scope.$apply(function(){
+					//$scope.$apply(function(){
 						var now = new Date(),
 						    then = new Date(),
 						    startDPO,
@@ -708,7 +750,7 @@ define([],function(){
 								processes : [],
 								states : []
 						};
-					});
+					//});
 				};
 				$scope.initModels();
 				
@@ -853,7 +895,7 @@ define([],function(){
 				
 				/*Initialize our reinitialize our models*/
 				$scope.initModels=function(){
-					$scope.$apply(function(){
+					//$scope.$apply(function(){
 						$scope.startableProcessModel = new startableProcessModel();
 						$scope.startableProcessModel.showPopup=false;
 						$scope.errorModel = new errorModel();
@@ -865,7 +907,7 @@ define([],function(){
 								popupMessage: "",
 								currentSelectedProcessId: 0
 						};
-					});
+					//});
 				};
 				$scope.initModels();
 				
@@ -1076,7 +1118,7 @@ define([],function(){
 				
 				/*Initialize our reinitialize our models*/
 				$scope.initModels=function(){
-					$scope.$apply(function(){
+					//$scope.$apply(function(){
 						
 						/*declare our model(s)*/
 						$scope.notesModel = new notesModel();
@@ -1096,7 +1138,7 @@ define([],function(){
 						$scope.uploadSuccesful = false;
 						$scope.isUploading =false;
 						$scope.activeSubView = "overview";
-					});
+					//});
 				};
 				
 				$scope.initModels();
@@ -1312,7 +1354,7 @@ define([],function(){
 				
 				/*Initialize our reinitialize our models*/
 				$scope.initModels=function(){
-					$scope.$apply(function(){
+					//$scope.$apply(function(){
 						$scope.notesModel = new notesModel();
 						$scope.errorModel=new errorModel();
 						$scope.infoModel = new infoModel();
@@ -1332,7 +1374,7 @@ define([],function(){
 						$scope.formTabTarget = "#formTab";
 						$scope.previousPage="";
 						$scope.activeTab='activityTab';
-					});
+					//});
 				};
 				$scope.initModels();
 				
@@ -1648,9 +1690,9 @@ define([],function(){
 				
 				/*Reset our controller to a clean state*/
 				$scope.initModels=function(){
-					$scope.$apply(function(){
+					//$scope.$apply(function(){
 						$scope.formModel = new mashupModel();
-					});
+					//});
 				};
 				
 				$scope.initModels();
@@ -1706,8 +1748,7 @@ define([],function(){
 				
 				/*Reset our controller to a clean state*/
 				$scope.initModels=function(){
-					$scope.$apply(function(){
-					});
+					//stub
 				};
 				
 				$scope.getViewerUrl=function(docName){
@@ -1831,10 +1872,10 @@ define([],function(){
 
 				/*Reset our controller to a clean state*/
 				$scope.initModels=function(){
-					$scope.$apply(function(){
+					//$scope.$apply(function(){
 						$scope.documentViewerModel = new documentViewerModel();
 						$scope.errorModel=new errorModel();
-					});
+					//});
 				};
 				$scope.initModels();
 				
@@ -2039,10 +2080,10 @@ define([],function(){
 				
 				/*Reset our controller to a clean state*/
 				$scope.initModels=function(){
-					$scope.$apply(function(){
+					//$scope.$apply(function(){
 						$scope.documentViewerModel = new documentViewerModel();
 						$scope.errorModel=new errorModel();
-					});
+					//});
 				};
 				$scope.initModels();
 				
