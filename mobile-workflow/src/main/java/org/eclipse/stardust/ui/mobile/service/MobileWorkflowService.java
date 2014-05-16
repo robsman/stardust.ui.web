@@ -456,7 +456,7 @@ public class MobileWorkflowService implements ServletContextAware {
                   (String) activityInstance.getDescriptorValue(dataPath.getId()));
          }
       }
-
+      resultJson.add("paginationResponse", SearchHelperUtil.getPaginationResponseObject(worklist));
       return resultJson;
    }
 
