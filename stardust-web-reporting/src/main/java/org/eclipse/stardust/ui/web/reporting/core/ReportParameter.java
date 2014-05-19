@@ -18,12 +18,15 @@ import java.util.TreeSet;
 public class ReportParameter
 {
    private String id;
-   private TreeSet<String> values;
+   private TreeSet<String> uniqueValues;
 
-   public ReportParameter(String id, TreeSet<String> values)
+   public ReportParameter(String id, String[] values)
    {
-      this.id = id;
-      this.values = values;
+      uniqueValues = new TreeSet<String>();
+      for(String v: values)
+      {
+         uniqueValues.add(v);
+      }
    }
 
    public String getId()
@@ -33,9 +36,9 @@ public class ReportParameter
 
    private String getSingleValue()
    {
-      if(values != null && !values.isEmpty())
+      if(uniqueValues != null && !uniqueValues.isEmpty())
       {
-         return values.last();
+         return uniqueValues.last();
       }
 
       return null;
@@ -43,17 +46,17 @@ public class ReportParameter
 
    public boolean hasSingleValue()
    {
-      return (values.size() == 1);
+      return (uniqueValues.size() == 1);
    }
 
    public boolean hasMultipleValues()
    {
-      return (values.size() > 1);
+      return (uniqueValues.size() > 1);
    }
 
    public Collection<String> getAllValues()
    {
-      return values;
+      return uniqueValues;
    }
 
    public Double getDoubleValue()
@@ -71,7 +74,7 @@ public class ReportParameter
    public List<Long> getLongValues()
    {
       List<Long> longValues = new ArrayList<Long>();
-      for(String s : values)
+      for(String s : uniqueValues)
       {
          longValues.add(Long.parseLong(s));
       }
@@ -81,16 +84,16 @@ public class ReportParameter
 
    public String getFirstValue()
    {
-      return values.first();
+      return uniqueValues.first();
    }
 
    public String getLastValue()
    {
-      return values.last();
+      return uniqueValues.last();
    }
 
    public int getValuesSize()
    {
-      return values.size();
+      return uniqueValues.size();
    }
 }
