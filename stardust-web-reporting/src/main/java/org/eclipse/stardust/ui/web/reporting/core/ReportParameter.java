@@ -15,7 +15,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.TreeSet;
 
-public class ReportParameter
+public final class ReportParameter
 {
    private String id;
    private TreeSet<String> uniqueValues;
