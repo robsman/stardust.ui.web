@@ -1255,12 +1255,11 @@ define(
 					this.primaryObjectSelect
 							.val(this.report.dataSet.primaryObject);
 
-					this.resetReportDefinitionProperties();
-					
 					if (!initialize) {
 						this.report.dataSet.filters = [];
 						this.filterSelected = [];
 						this.populateCumulatedDimensions();
+						this.resetReportDefinitionProperties();
 					}
 
 					this.factSelect.empty();
