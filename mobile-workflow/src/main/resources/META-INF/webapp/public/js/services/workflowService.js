@@ -389,7 +389,7 @@ define(["angularjs"],function(angular){
 				return deferred.promise;
 			},
 			
-			"getFilteredProcesses" : function(start,end,ids,states,sortBy){
+			"getFilteredProcesses" : function(start,end,ids,states,sortBy,rowFrom,pageSize){
 				//process-instances?startedFromTimestamp=&startedToTimestamp=&processDefinitionIds=&states=
 				var deferred = $q.defer();
 				
@@ -400,8 +400,8 @@ define(["angularjs"],function(angular){
 				    					  "&processDefinitionIds=" + ids +
 				    					  "&states=" + states +
 				    					  "&sortKey=" + 'newest' +
-				    					  "&rowFrom=" + 0 +
-				    					  "&pageSize=10",
+				    					  "&rowFrom=" + rowFrom +
+				    					  "&pageSize=" + pageSize ,
 				    method: "GET"
 				}).success(function(data, status, headers, config) {
 					deferred.resolve(data);

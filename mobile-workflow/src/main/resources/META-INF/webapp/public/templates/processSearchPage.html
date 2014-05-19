@@ -10,33 +10,33 @@
      <h4>{{uiText.searchProcs}}</h4>
      <div style="position:absolute;top:11px;right:1em;">
 	     <a ng-show="showResults"  class="ipp-icon-minimal" href="#processFilterPopup" data-rel="popup" data-transition="slide">
-	     	<i class="fa ipp-fs-2x fa-sort"></i>
+	     	<i class="sc sc-arrow-stem-ud"></i>
 	     </a>
      </div>
      <div data-role="popup" id="processFilterPopup" data-theme="b">
         <ul data-role="listview"  data-inset="true" style="min-width:210px;">
-            <li ng-click="getResults('-startTime');sortBy='-startTime'">
+            <li ng-click="getResults('newest');filter.sortBy='newest'">
 	            <a class="ipp-no-content ipp-center" href="#">
 	            	<span class="ipp-float-l">{{uiText.newest}}</span>
-	            	<i ng-show="sortBy=='-startTime'" class="sc sc-check-large ipp-float-r"></i>
+	            	<i ng-show="filter.sortBy=='newest'" class="sc sc-check-large ipp-float-r"></i>
 	            </a>
             </li>
-            <li ng-click="getResults('startTime');sortBy='startTime'">
+            <li ng-click="getResults('oldest');filter.sortBy='oldest'">
 	            <a class="ipp-no-content ipp-center" href="#">
 	            	<span class="ipp-float-l">{{uiText.oldest}}</span>
-	            	<i ng-show="sortBy=='startTime'" class="sc sc-check-large ipp-float-r"></i>
+	            	<i ng-show="filter.sortBy=='oldest'" class="sc sc-check-large ipp-float-r"></i>
 	            </a>
 	        </li>
-            <li ng-click="getResults('priority');sortBy='criticality'">
+            <li ng-click="getResults('criticality');filter.sortBy='criticality'">
             	<a class="ipp-no-content ipp-center" href="#">
             		<span class="ipp-float-l">{{uiText.priority}}</span>
-            		<i ng-show="sortBy=='criticality'" class="sc sc-check-large ipp-float-r"></i>
+            		<i ng-show="filter.sortBy=='criticality'" class="sc sc-check-large ipp-float-r"></i>
             	</a>
             </li>
-            <li ng-click="getResults('lastModificationTime');sortBy='lastModificationTime'">
+            <li ng-click="getResults('modified');filter.sortBy='modified'">
             	<a class="ipp-no-content ipp-center" href="#">
             		<span class="ipp-float-l">{{uiText.modified}}</span>
-            		<i ng-show="sortBy=='lastModificationTime'" class="sc sc-check-large ipp-float-r"></i>
+            		<i ng-show="filter.sortBy=='modified'" class="sc sc-check-large ipp-float-r"></i>
             	</a>
             </li>
         </ul>
@@ -186,6 +186,21 @@
 
 	    		<i class="sc sc-chevron-r ipp-nav-icon-right ipp-margin-top-1x"></i>
 			</a>
+		</li>
+		<li class="ipp-center">
+			<i ng-if="processSearchModel.paginationResponse.rowFrom !=0"
+			   ng-click="getResults(filter.sortBy,-1)" 
+			   class="sc sc-chevron-l ipp-margin-h-1x"></i>
+			<span>
+				{{processSearchModel.paginationResponse.rowFrom}}
+				-
+				{{processSearchModel.paginationResponse.rowFrom + processSearchModel.paginationResponse.resultSetSize}}
+				&nbsp;of
+				{{processSearchModel.paginationResponse.totalCount}}
+			</span>
+			<i ng-if="(processSearchModel.paginationResponse.rowFrom + processSearchModel.paginationResponse.resultSetSize) < processSearchModel.paginationResponse.totalCount"
+			   ng-click="getResults(filter.sortBy,1)" 
+			   class="sc sc-chevron-r ipp-margin-h-1x"></i>
 		</li>
 	</ul>	
 	

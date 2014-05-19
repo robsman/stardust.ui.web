@@ -114,17 +114,17 @@
 		    	<span ng-click="processesToggleState=!processesToggleState;
 		    	               toggleAll(activitySearchModel.startableProcesses,processesToggleState,$event)"
 		    	      class="ipp-li-count-secondary">
-		    		<i ng-class="{'sc-check-box':processesToggleState,'sc-square':processesToggleState}" class="sc"></i> {{uiText.all}}
+		    		<i ng-class="{'sc-check-box':processesToggleState,'sc-square':!processesToggleState}" 
+		    		   class="sc"></i> {{uiText.all}}
 		    	</span>
 		    </h4>
 		    <ul data-role="listview" data-theme="a">
-				<li ng-init="process.isChecked=false"
-					ng-click="process.isChecked=!process.isChecked;
+				<li ng-click="process.isChecked=!process.isChecked;
 				              getActivities()" 
 		            ng-repeat="process in activitySearchModel.startableProcesses">
 		        	<i style="font-size:1.5em;"  
 		        	   ng-class="{'sc-check-box':process.isChecked,'sc-square':!process.isChecked}" 
-		        	   class="sc sc-square"></i>
+		        	   class="sc"></i>
 		        	&nbsp;
 		        	<span class="ipp-fs-small ipp-light ipp-fw-light">{{process.name}}</span>
 	        	</li>
@@ -144,8 +144,7 @@
 		    	</span>
 		    </h4>
 		    <ul data-role="listview" data-theme="a">
-				<li ng-init="activity.isChecked=false"
-				    ng-click="activity.isChecked=!activity.isChecked;" 
+				<li ng-click="activity.isChecked=!activity.isChecked;" 
 		            ng-repeat="activity in activitySearchModel.activities">
 		        	<i style="font-size:1.5em;"  
 		        	   ng-class="{'sc-check-box':activity.isChecked,'sc-square':!activity.isChecked}" 
@@ -193,7 +192,7 @@
 </div>
 
 <div ng-show="showResults">
-	<ul data-role="listview">
+	<ul ng-show="activitySearchModel.results.length > 0" data-role="listview">
 		<li ng-repeat="item in activitySearchModel.results">
 			<a href="#detailPage?id={{item.oid}}" class="ipp-no-content">
 				<div  class="ipp-inline">
@@ -205,7 +204,7 @@
 					<span class="ipp-fs-smallest ipp-lightest ipp-fw-normal" 
 					      ng-switch="$last" 
 					      ng-repeat="(key,value) in item.processInstance.descriptors">
-	          			{{key}}: {{value}}<span ng-if="!$last">,</span>
+	          			{{key}}: {{value.value}}<span ng-if="!$last">,</span>
 	          		</span>
 	         	</div>
          		<div class="ui-li-aside">

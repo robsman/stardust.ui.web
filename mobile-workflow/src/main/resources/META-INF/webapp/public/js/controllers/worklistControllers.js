@@ -176,7 +176,7 @@ define([],function(){
 					}
 					
 					$scope.isAjaxLoading=true;
-					workflowService.getWorklist($scope.filter.sortBy,rowFrom,pageSize)
+					workflowService.getWorklist(sortBy,rowFrom,pageSize)
 					.then(function(data){
 						$scope.worklistModel.worklistItems = data.worklist;
 						$scope.worklistModel.paginationResponse = data.paginationResponse;
@@ -479,9 +479,9 @@ define([],function(){
 			"activitySearchCtrl" : function($scope,$rootScope,$q, $timeout, workflowService,utilService,il18nService){
 				
 				var tmrPromise="";
+				
 				/*Initialize our reinitialize our models*/
 				$scope.initModels=function(){
-						//$scope.$apply(function(){
 							var now = new Date(),
 							    then = new Date(),
 							    startDPO,
@@ -504,7 +504,6 @@ define([],function(){
 									sortBy: 'newest'
 									
 							};
-					//});
 				};
 				$scope.initModels();
 				
@@ -534,6 +533,7 @@ define([],function(){
 					});
 				}
 				
+				
 				$scope.activitySearchModel =new activitySearchModel();
 				$scope.errorModel = new errorModel();
 				
@@ -555,7 +555,7 @@ define([],function(){
 							if(v.isChecked){procIDs.push(v.id)}
 						});  
 			            return procIDs.toString();
-		            },1000,true);
+		            },1000,true); // <-one second delay to retrieve processes
 		            
 		            /*If we aren't canceled then do something expensive*/
 		            tmrPromise.then(function(data){
@@ -654,28 +654,28 @@ define([],function(){
 					
 					workflowService.getActivityStates()
 					.then(function(data){
-						$scope.$apply(function(){
-							$scope.activitySearchModel.states=data.activityInstanceStates;
-						});
+						$scope.activitySearchModel.states=data.activityInstanceStates;
+						$scope.stateToggleState = false;
 					})
 					.then(workflowService.getStartableProcesses)
 					.then(function(data){
-						$scope.$apply(function(){
-							$scope.activitySearchModel
-								  .startableProcesses=data.processDefinitions;
-						});						
+						$scope.activitySearchModel.startableProcesses=data.processDefinitions;
+						$scope.toggleAll($scope.activitySearchModel.startableProcesses,true,false);
+						$scope.processesToggleState = true;
+					})
+					.then(function(){
+						return workflowService.getActivitesByProcess([]);
+					})
+					.then(function(data){
+						$scope.activitySearchModel.activities = data.activities;
+						$scope.toggleAll($scope.activitySearchModel.activities,true,false);
+						$scope.activityToggleState = true;
 					})
 					.then(deferred.resolve)
 					.catch(deferred.reject)
 					.finally(function(){
-						$scope.$apply(function(){
-							$scope.showResults=false;
-							$scope.processesToggleState = true;
-							$scope.activityToggleState = true;
-							$scope.stateToggleState = false;
-							$scope.toggleAll($scope.activitySearchModel.startableProcesses,true,false);
-							$scope.toggleAll($scope.activitySearchModel.activities,true,false);
-						});	
+						$scope.showResults=false;
+						$scope.$apply();
 					});
 					
 					return deferred.promise;
@@ -727,7 +727,7 @@ define([],function(){
 				
 				/*Initialize our reinitialize our models*/
 				$scope.initModels=function(){
-					//$scope.$apply(function(){
+
 						var now = new Date(),
 						    then = new Date(),
 						    startDPO,
@@ -748,9 +748,9 @@ define([],function(){
 								endDate : endDPO.yyyy + "-" + endDPO.MM + "-" + endDPO.dd,
 								endTime : endDPO.hh + ":" + endDPO.mm + ":" + endDPO.ss,
 								processes : [],
-								states : []
+								states : [],
+								sortBy: 'newest'
 						};
-					//});
 				};
 				$scope.initModels();
 				
@@ -766,12 +766,29 @@ define([],function(){
 				
 				/*Gather up data from our user interface and call the workflow service for
 				 *our search resutls.*/
-				$scope.getResults=function(sortBy){
+				$scope.getResults=function(sortBy,pageAdvance){
 					
 					var startDT,
 					    endDT,
 					    processIDs=[],
-					    stateIDs=[];
+					    stateIDs=[],
+					    rowFrom=0,
+					    pageSize=$rootScope.appData.settings.pageSize || 10;
+					
+					sortBy = sortBy || "newest";
+					
+					if($scope.processSearchModel.paginationResponse){
+						
+						if(pageAdvance==1){
+							rowFrom =$scope.processSearchModel.paginationResponse.rowFrom + pageSize;
+						}
+						else if(pageAdvance==-1){
+							rowFrom =$scope.processSearchModel.paginationResponse.rowFrom - pageSize;
+						}
+						else{
+							rowFrom=0;
+						}
+					}
 					
 					startDT = new Date($scope.filter.startDate + " " + $scope.filter.startTime).getTime();
 					endDT = new Date($scope.filter.endDate + " " + $scope.filter.endTime).getTime();
@@ -791,26 +808,24 @@ define([],function(){
 							endDT,
 							processIDs.toString(),
 							stateIDs.toString(),
-							sortBy)
+							sortBy,
+							rowFrom,
+							pageSize)
 						.then(function(data){
-							$scope.$apply(function(){
-								$scope.processSearchModel.results=data.processInstances;
-							});
+							$scope.processSearchModel.results=data.processInstances;
+							$scope.processSearchModel.paginationResponse = data.paginationResponse;
 						})
 						.catch(function(err){
-							$scope.$apply(function(){
-								$scope.errorModel.errorMessage = $rootScope.appData.errorText.recordretrieval;
-								$scope.hasError = true;
-								$timeout(function(){
-									$scope.errorModel.hasError=false;
-								},$rootScope.appData.barDuration);
-							});
+							$scope.errorModel.errorMessage = $rootScope.appData.errorText.recordretrieval;
+							$scope.hasError = true;
+							$timeout(function(){
+								$scope.errorModel.hasError=false;
+							},$rootScope.appData.barDuration);
 						})
 						.finally(function(){
-							$scope.$apply(function(){
-								$scope.isAjaxLoading=false;
-								$scope.showResults=true;
-							});
+							$scope.isAjaxLoading=false;
+							$scope.showResults=true;
+							$scope.$apply();
 						});
 					
 				};
@@ -1760,12 +1775,12 @@ define([],function(){
 				}
 				
 				$scope.getDocumentClass = function(docName){
-					var docClass="fa-file-o";
+					var docClass="sc-document";
 					if(utilService.isReportType(docName)==true){
-						docClass="fa-bar-chart-o";
+						docClass="sc-chart-bar";
 					}
 					else if(utilService.isImageType(docName)){
-						docClass="fa-picture-o";
+						docClass="sc-picture";
 					}
 					return docClass;
 				}
