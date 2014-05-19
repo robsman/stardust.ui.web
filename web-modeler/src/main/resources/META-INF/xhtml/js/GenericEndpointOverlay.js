@@ -599,7 +599,7 @@ define(
                      if (options.length == 2)
                      {
                         var delimiter = options[0].substring(options[0]
-                                 .lastIndexOf("=") + 1, options[0].length);
+                                 .indexOf("=") + 1, options[0].length);
                         this.producerOutboundConverterDelimiterInput.val(delimiter);
                         var autogenHeaders = options[1].substring(options[1]
                                  .lastIndexOf("=") + 1, options[1].length);
