@@ -1,7 +1,6 @@
 package org.eclipse.stardust.ui.web.reporting.core;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.*;
 
 import com.google.gson.JsonArray;
@@ -54,14 +53,15 @@ public class ReportingServicePojo
       this.jsonMarshaller = new JsonMarshaller();
    }
 
-   /**
-    *
-    * @return
-    * @throws ParseException
-    * @throws UnsupportedFilterException
-    */
+   public JsonObject getReportData(JsonObject reportJson, Collection<ReportParameter> parameters)
+   {
+      ReportParameter[] reportParameterArray
+         = parameters.toArray(new ReportParameter[parameters.size()]);
+
+      return getReportData(reportJson, reportParameterArray);
+   }
+
    public JsonObject getReportData(JsonObject reportJson, ReportParameter...parameters)
-         throws UnsupportedFilterException, ParseException
    {
       Map<String, ReportParameter> parameterMap = new HashMap<String, ReportParameter>();
       if(parameters != null)
