@@ -53,7 +53,7 @@ public class ReportingServicePojo
       this.jsonMarshaller = new JsonMarshaller();
    }
 
-   public JsonObject getReportData(JsonObject reportJson, Collection<ReportParameter> parameters)
+   public JsonObject getReportData(JsonObject reportJson, Collection<ReportParameter> parameters) throws UnsupportedFilterException
    {
       final ReportParameter[] reportParameterArray;
       if(parameters != null)
@@ -69,7 +69,7 @@ public class ReportingServicePojo
       return getReportData(reportJson, reportParameterArray);
    }
 
-   public JsonObject getReportData(JsonObject reportJson, ReportParameter...parameters)
+   public JsonObject getReportData(JsonObject reportJson, ReportParameter...parameters) throws UnsupportedFilterException
    {
       Map<String, ReportParameter> parameterMap = new HashMap<String, ReportParameter>();
       if(parameters != null)

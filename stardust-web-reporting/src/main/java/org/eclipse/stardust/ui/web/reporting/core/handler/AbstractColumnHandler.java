@@ -83,13 +83,14 @@ public abstract class AbstractColumnHandler<T, U, V extends Query> implements IC
       return fc;
    }
 
+   @SuppressWarnings("deprecation")
    protected void raisUnsupportedFilterException(V query, ReportFilter filter)
    {
       StringBuffer errorMsg = new StringBuffer();
       errorMsg.append("Filtering for filter "+filter.getDimension());
       errorMsg.append(" and query type: "+query.getClass().getName());
       errorMsg.append(" is not supported native by the engine yet");
-      throw new RuntimeException(errorMsg.toString());
+      throw new UnsupportedFilterException(errorMsg.toString());
    }
 
    //TODO: add parameter support
