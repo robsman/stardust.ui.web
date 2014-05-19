@@ -158,7 +158,7 @@ public class MobileWorkflowResource {
 
          return Response.ok(
                getMobileWorkflowService().getWorklist(
-                     WorklistHelper.getWorkslitCriteria("criticality", rowFrom, pageSize)).toString(),
+                     WorklistHelper.getWorkslitCriteria(sortKey, rowFrom, pageSize)).toString(),
                MediaType.APPLICATION_JSON_TYPE).build();
       } catch (Exception e) {
 			e.printStackTrace();

@@ -1,7 +1,12 @@
 package org.eclipse.stardust.ui.mobile.service;
 
+import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
+import org.eclipse.stardust.engine.api.query.EvaluateByWorkitemsPolicy;
+import org.eclipse.stardust.engine.api.query.FilterOrTerm;
+import org.eclipse.stardust.engine.api.query.PerformingParticipantFilter;
+import org.eclipse.stardust.engine.api.query.PerformingUserFilter;
 import org.eclipse.stardust.engine.api.query.SubsetPolicy;
-import org.eclipse.stardust.engine.api.query.WorklistQuery;
+import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
 
 /**
  * @author Shrikant.Gangal
@@ -33,7 +38,8 @@ public class WorklistHelper
     * @param pageSize
     * @return
     */
-   public static WorklistCriteria getWorkslitCriteria(String sortKey, String rowFrom, String pageSize)
+   public static WorklistCriteria getWorkslitCriteria(String sortKey, String rowFrom,
+         String pageSize)
    {
       WorklistCriteria criteria = new WorklistCriteria();
       criteria.sortKey = sortKey;
@@ -47,43 +53,48 @@ public class WorklistHelper
     * @param criteria
     * @return
     */
-   public static WorklistQuery buildWorklistQuery(WorklistCriteria criteria)
+   public static ActivityInstanceQuery buildWorklistQuery(WorklistCriteria criteria)
    {
-      WorklistQuery query = WorklistQuery.findCompleteWorklist();
+      ActivityInstanceQuery query = ActivityInstanceQuery.findInState(new ActivityInstanceState[] {
+            ActivityInstanceState.Application, ActivityInstanceState.Suspended});
+      // TODO - this is used to enhance performace but has a bug 
+      // query.setPolicy(EvaluateByWorkitemsPolicy.WORKITEMS);
 
-      if (criteria.rowFrom > -1 && criteria.pageSize > 0)
-      {
-         SubsetPolicy pagePolicy = new SubsetPolicy(criteria.pageSize, criteria.rowFrom,
-               true);
-         query.setPolicy(pagePolicy);
-      }
+      FilterOrTerm or = query.getFilter().addOrTerm();
+      or.add(PerformingParticipantFilter.ANY_FOR_USER).add(
+            PerformingUserFilter.CURRENT_USER);
 
       if (null != criteria.sortKey)
       {
          if (criteria.sortKey.equals("oldest"))
          {
-            query.orderBy(WorklistQuery.START_TIME, true);
+            query.orderBy(ActivityInstanceQuery.START_TIME, true);
          }
          else if (criteria.sortKey.equals("newest"))
          {
-            query.orderBy(WorklistQuery.START_TIME, false);
+            query.orderBy(ActivityInstanceQuery.START_TIME, false);
          }
          else if (criteria.sortKey.equals("criticality"))
          {
-            query.orderBy(WorklistQuery.ACTIVITY_INSTANCE_CRITICALITY, false);
+            query.orderBy(ActivityInstanceQuery.CRITICALITY, false);
          }
          else if (criteria.sortKey.equals("modified"))
          {
-            query.orderBy(WorklistQuery.LAST_MODIFICATION_TIME, false);
+            query.orderBy(ActivityInstanceQuery.LAST_MODIFICATION_TIME, false);
          }
          else
          {
-            query.orderBy(WorklistQuery.ACTIVITY_INSTANCE_OID, false);
+            query.orderBy(ActivityInstanceQuery.OID, false);
          }
       }
       else
       {
-         query.orderBy(WorklistQuery.ACTIVITY_INSTANCE_OID, false);
+         query.orderBy(ActivityInstanceQuery.OID, false);
+      }
+
+      if (criteria.rowFrom > -1 && criteria.pageSize > 0)
+      {
+         query.setPolicy(new SubsetPolicy(criteria.pageSize, criteria.rowFrom, true));
       }
 
       return query;

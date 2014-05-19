@@ -62,6 +62,7 @@ import org.eclipse.stardust.engine.api.model.ImplementationType;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
+import org.eclipse.stardust.engine.api.query.ActivityInstances;
 import org.eclipse.stardust.engine.api.query.DeployedModelQuery;
 import org.eclipse.stardust.engine.api.query.DescriptorPolicy;
 import org.eclipse.stardust.engine.api.query.DocumentQuery;
@@ -116,6 +117,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ClientSideDataFlowUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.SpiUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.WorklistUtils;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.TypedDocument;
 
 public class MobileWorkflowService implements ServletContextAware {
@@ -378,20 +380,12 @@ public class MobileWorkflowService implements ServletContextAware {
 
       resultJson.add("worklist", worklistJson);
 
-      WorklistQuery query = WorklistHelper.buildWorklistQuery(criteria);
+      ActivityInstanceQuery query = WorklistHelper.buildWorklistQuery(criteria);
 
       // TODO - review
       List<ActivityInstance> worklistItems;
-      Worklist worklist = getWorkflowService().getWorklist(query);
-      Worklist participantWorklist = PPUtils.extractParticipantWorklist(worklist,
-            serviceFactory.getUserService().getUser());
-      if (null == participantWorklist)
-      {
-         return resultJson;
-      }
-      worklistItems = participantWorklist.getCumulatedItems();
-
-      for (ActivityInstance activityInstance : worklistItems)
+      ActivityInstances activityInstances = getQueryService().getAllActivityInstances(query);
+      for (ActivityInstance activityInstance : activityInstances)
       {
          JsonObject activityInstanceJson = new JsonObject();
 
@@ -456,7 +450,7 @@ public class MobileWorkflowService implements ServletContextAware {
                   (String) activityInstance.getDescriptorValue(dataPath.getId()));
          }
       }
-      resultJson.add("paginationResponse", SearchHelperUtil.getPaginationResponseObject(worklist));
+      resultJson.add("paginationResponse", SearchHelperUtil.getPaginationResponseObject(activityInstances));
       return resultJson;
    }
 
