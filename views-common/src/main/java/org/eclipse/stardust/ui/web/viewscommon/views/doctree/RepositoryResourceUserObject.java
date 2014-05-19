@@ -58,6 +58,8 @@ public abstract class RepositoryResourceUserObject extends IceUserObject
    private boolean isMenuPopupApplicable = true;
    private boolean isRepositoryNode = false;
    private boolean repositoryRootNode = false;
+   private boolean isVersioningSupported = true;
+   private boolean isWriteSupported = true;
 
    /**
     * custom constructor initialized a user object specific to node
@@ -355,6 +357,26 @@ public abstract class RepositoryResourceUserObject extends IceUserObject
    public void setRepositoryRootNode(boolean repositoryRootNode)
    {
       this.repositoryRootNode = repositoryRootNode;
+   }
+   
+   public boolean isVersioningSupported()
+   {
+      return isVersioningSupported;
+   }
+
+   public void setVersioningSupported(boolean isVersioningSupported)
+   {
+      this.isVersioningSupported = isVersioningSupported;
+   }
+
+   public boolean isWriteSupported()
+   {
+      return isWriteSupported;
+   }
+
+   public void setWriteSupported(boolean isWriteSupported)
+   {
+      this.isWriteSupported = isWriteSupported;
    }
 
    /**

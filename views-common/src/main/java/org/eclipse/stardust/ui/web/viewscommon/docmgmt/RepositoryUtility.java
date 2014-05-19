@@ -36,6 +36,7 @@ import org.eclipse.stardust.ui.web.common.spi.preference.PreferenceScope;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
+import org.eclipse.stardust.ui.web.viewscommon.core.RepositoryCache;
 import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
@@ -400,7 +401,17 @@ public class RepositoryUtility
          ((ProcessAttachmentUserObject) folderUserObject).refresh();
          return;
       }
-
+      
+      boolean versionSupported = true;
+      boolean writeSupported = true;
+      IRepositoryInstanceInfo repositoryInstance = (IRepositoryInstanceInfo) RepositoryCache.findRepositoryCache().getObject(
+            RepositoryIdUtils.extractRepositoryId(folderUserObject.getResource()));
+      if (repositoryInstance != null)
+      {
+         versionSupported = repositoryInstance.isVersioningSupported();
+         writeSupported = repositoryInstance.isWriteSupported();
+      }
+      
       Folder refreshedFolder = getUpdatedFolder(node);
       folderUserObject.setResource(refreshedFolder);
       // Remove existing children if any
@@ -412,12 +423,17 @@ public class RepositoryUtility
       // create new folders nodes
       for (int i = 0; i < folderCount; i++)
       {
-         node.add(createFolderNode((Folder) refreshedFolder.getFolders().get(i)));
+         DefaultMutableTreeNode folderNode= createFolderNode((Folder) refreshedFolder.getFolders().get(i));
+         ((RepositoryFolderUserObject)folderNode.getUserObject()).setWriteSupported(writeSupported);
+         node.add(folderNode);
       }
       // create new documents nodes
       for (int i = 0; i < documentCount; i++)
       {
-         node.add(createDocumentNode((Document) refreshedFolder.getDocuments().get(i)));
+         DefaultMutableTreeNode documentNode = createDocumentNode((Document) refreshedFolder.getDocuments().get(i));
+         ((RepositoryDocumentUserObject)documentNode.getUserObject()).setVersioningSupported(versionSupported);
+         ((RepositoryDocumentUserObject)documentNode.getUserObject()).setWriteSupported(writeSupported);
+         node.add(documentNode);
       }
       folderUserObject.setExpanded(true);
    }

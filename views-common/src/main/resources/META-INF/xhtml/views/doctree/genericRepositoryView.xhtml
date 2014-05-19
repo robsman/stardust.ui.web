@@ -104,7 +104,7 @@
 								icon="/plugins/views-common/images/icons/rename.png"
 								value="#{genericRepositoryTreeViewBean.messages['treeMenuItem.rename']}"
 								actionListener="#{genericRepositoryTreeViewBean.rename}"
-								disabled="#{!item.userObject.editable}"
+								disabled="#{!item.userObject.editable or !item.userObject.writeSupported}"
 								rendered="#{!item.userObject.repositoryNode and !item.userObject.repositoryRootNode}">
 								<pc:automationTag value="auto-COM-RepoTree-MenuDlg-Rename"
 									standAlone="false" />
@@ -115,7 +115,7 @@
 								icon="/plugins/views-common/images/icons/page_white_delete.png"
 								value="#{genericRepositoryTreeViewBean.messages['treeMenuItem.delete']}"
 								actionListener="#{genericRepositoryTreeViewBean.confirmDeleteResource}"								
-								disabled="#{!item.userObject.deletable}"
+								disabled="#{!item.userObject.deletable or !item.userObject.writeSupported}"
 								rendered="#{item.userObject.leafNode}">
 								<pc:automationTag value="auto-COM-RepoTree-MenuDlg-DelFile"
 									standAlone="false" />
@@ -126,7 +126,7 @@
 									icon="/plugins/views-common/images/icons/folder_delete.png"
 									value="#{genericRepositoryTreeViewBean.messages['treeMenuItem.delete']}"
 									actionListener="#{genericRepositoryTreeViewBean.confirmDeleteResource}"
-									disabled="#{!item.userObject.deletable}"
+									disabled="#{!item.userObject.deletable or !item.userObject.writeSupported}"
 									rendered="#{!item.userObject.leafNode and !item.userObject.repositoryNode and !item.userObject.repositoryRootNode}">
 									<pc:automationTag value="auto-COM-RepoTree-MenuDlg-DelFolder"
 										standAlone="false" />
@@ -137,7 +137,7 @@
 								icon="/plugins/views-common/images/icons/folder_add.png"
 								value="#{genericRepositoryTreeViewBean.messages['treeMenuItem.createSubFolder']}"
 								actionListener="#{genericRepositoryTreeViewBean.createSubfolder}"
-								disabled="#{!item.userObject.canCreateFolder}"
+								disabled="#{!item.userObject.canCreateFolder or !item.userObject.writeSupported}"
 								rendered="#{!item.userObject.leafNode and !item.userObject.repositoryNode and !item.userObject.repositoryRootNode}">
 								<pc:automationTag
 									value="auto-COM-RepoTree-MenuDlg-CreateSubFolder"
@@ -148,7 +148,8 @@
 							<ice:menuItem id="createTextDocument"
 								icon="/plugins/views-common/images/icons/page_white_add.png"
 								value="#{genericRepositoryTreeViewBean.messages['treeMenuItem.createNewDoc']}"
-								rendered="#{item.userObject.canCreateFile and !item.userObject.leafNode}">
+								rendered="#{item.userObject.canCreateFile and !item.userObject.leafNode}"
+								disabled="#{!item.userObject.writeSupported}">
 								<pc:automationTag value="auto-COM-RepoTree-MenuDlg-CreateFile" standAlone="false"/>
 								<c:forEach
 									items="#{documentHandlersRegistryBean.registeredMimeTypes}"
@@ -169,7 +170,8 @@
 								icon="/plugins/views-common/images/icons/note_add.png"
 								value="#{genericRepositoryTreeViewBean.messages['treeMenuItem.createNote']}"
 								action="#{item.userObject.createNote}"
-								rendered="#{item.userObject.canCreateNote}">
+								rendered="#{item.userObject.canCreateNote}"
+								disabled="#{!item.userObject.writeSupported}">
 								<pc:automationTag value="auto-COM-RepoTree-MenuDlg-Note"
 									standAlone="false" />
 							</ice:menuItem>
@@ -178,7 +180,8 @@
 								icon="/plugins/views-common/images/icons/page_white_get.png"
 								value="#{genericRepositoryTreeViewBean.messages['treeMenuItem.uploadFile']}"
 								action="#{item.userObject.upload}"
-								rendered="#{item.userObject.canUploadFile}">
+								rendered="#{item.userObject.canUploadFile}"
+								disabled="#{!item.userObject.writeSupported}">
 								<pc:automationTag value="auto-COM-RepoTree-MenuDlg-UploadFile"
 									standAlone="false" />
 							</ice:menuItem>
@@ -205,7 +208,7 @@
 							</ice:menuItem>
 
 							<ice:menuItem id="uploadVersion"
-								disabled="#{!item.userObject.editable}"
+								disabled="#{!item.userObject.editable or !item.userObject.versioningSupported}"
 								icon="/plugins/views-common/images/icons/page_white_get.png"
 								rendered="#{item.userObject.leafNode}"
 								value="#{genericRepositoryTreeViewBean.messages['treeMenuItem.newVersion']}"
