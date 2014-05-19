@@ -181,7 +181,21 @@ public class MobileWorkflowResource {
          throw new RuntimeException(e);
       }
    }
-
+   
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("participants")
+   public Response getParticipants(){
+	   try{
+	   return Response.ok(getMobileWorkflowService()
+			   .getParticipants().toString(),MediaType.APPLICATION_JSON_TYPE)
+			   .build();
+	   } catch(Exception e){
+		   e.printStackTrace();
+	       throw new RuntimeException(e);
+	   }
+   }
+   
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("activity-instances")

@@ -59,6 +59,7 @@ import org.eclipse.stardust.engine.api.model.ApplicationContext;
 import org.eclipse.stardust.engine.api.model.DataMapping;
 import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.ImplementationType;
+import org.eclipse.stardust.engine.api.model.Participant;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
@@ -1088,7 +1089,27 @@ public class MobileWorkflowService implements ServletContextAware {
       
       return processInstanceJson;
    }
-
+   
+   /**
+    * Returns all participants 
+    * TODO: - Place holder
+    * @return
+    */
+   public JsonObject getParticipants(){
+	   JsonObject resultJson = new JsonObject();
+	   JsonArray userInstancesJson = new JsonArray();
+	   List<Participant> participants= getQueryService().getAllParticipants();
+	   for (Participant participant : participants)
+      {
+		   JsonObject participantJSON = new JsonObject();
+		   participantJSON.addProperty("name", participant.getName());
+		   participantJSON.addProperty("id", participant.getId());
+		   userInstancesJson.add(participantJSON);
+      }
+	   resultJson.add("data", userInstancesJson);
+	   return resultJson;
+   }
+   
    /**
     * @param criteria
     * @return
