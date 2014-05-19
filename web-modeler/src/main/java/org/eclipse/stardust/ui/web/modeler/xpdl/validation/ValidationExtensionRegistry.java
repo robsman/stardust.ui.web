@@ -9,7 +9,7 @@
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
 
-package org.eclipse.stardust.ui.web.modeler.service;
+package org.eclipse.stardust.ui.web.modeler.xpdl.validation;
 
 import java.io.IOException;
 import java.io.InputStream;
