@@ -55,8 +55,16 @@ public class ReportingServicePojo
 
    public JsonObject getReportData(JsonObject reportJson, Collection<ReportParameter> parameters)
    {
-      ReportParameter[] reportParameterArray
-         = parameters.toArray(new ReportParameter[parameters.size()]);
+      final ReportParameter[] reportParameterArray;
+      if(parameters != null)
+      {
+         reportParameterArray
+            = parameters.toArray(new ReportParameter[parameters.size()]);
+      }
+      else
+      {
+         reportParameterArray = new ReportParameter[0];
+      }
 
       return getReportData(reportJson, reportParameterArray);
    }
