@@ -603,7 +603,8 @@ define(
                         this.producerOutboundConverterDelimiterInput.val(delimiter);
                         var autogenHeaders = options[1].substring(options[1]
                                  .lastIndexOf("=") + 1, options[1].length);
-                        this.autogenHeadersInput.val(autogenHeaders);
+                        autogenHeaders = (autogenHeaders === "true") ? true : false;
+                        this.autogenHeadersInput.prop("checked", autogenHeaders);
                      }
                      else
                      {
@@ -611,7 +612,8 @@ define(
                         if (options.length != 0)
                         {
                            var autogenHeaders = options[1];
-                           this.autogenHeadersInput.val(autogenHeaders);
+                           autogenHeaders = (autogenHeaders === "true") ? true : false;
+                           this.autogenHeadersInput.prop("checked", autogenHeaders);
                         }
                      }
 
@@ -1100,8 +1102,9 @@ define(
             {
                var option = "";
                var separator = "?";
-               if (!m_utils.isEmptyString(this.producerOutboundConverterDelimiterInput
-                        .val()))
+               if (this.producerOutboundConverterDelimiterInput
+                        .val() != null && this.producerOutboundConverterDelimiterInput
+                        .val().length != 0)
                {
                   option += separator;
                   option += "delimiter="
@@ -1125,8 +1128,9 @@ define(
             {
                var option = "";
                var separator = "?";
-               if (!m_utils.isEmptyString(this.producerInboundConverterDelimiterInput
-                        .val()))
+               if (this.producerInboundConverterDelimiterInput
+                        .val() != null && this.producerInboundConverterDelimiterInput
+                        .val().length != 0)
                {
                   option += separator;
                   option += "delimiter="
