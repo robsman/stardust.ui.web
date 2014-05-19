@@ -187,8 +187,8 @@ public class MobileWorkflowResource {
    @Path("participants")
    public Response getParticipants(){
 	   try{
-	   return Response.ok(getMobileWorkflowService()
-			   .getParticipants().toString(),MediaType.APPLICATION_JSON_TYPE)
+		   return Response.ok(getMobileWorkflowService()
+				   .getParticipants().toString(),MediaType.APPLICATION_JSON_TYPE)
 			   .build();
 	   } catch(Exception e){
 		   e.printStackTrace();
