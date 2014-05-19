@@ -7,11 +7,13 @@
 <meta name="keywords" content="">
 <link href="../css/thirdparty/jquery/jquery-ui-1.10.2.custom.css"
 	rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css"
+   href="../css/thirdparty/jqplot/jquery.jqplot.css" />
+<link href="../css/thirdparty/jquery.dataTables.css"
+   rel="stylesheet" type="text/css" />
 <link href="../css/bpm-reporting.css" rel="stylesheet" type="text/css">
-<link rel="stylesheet" type="text/css"
-	href="../css/thirdparty/jqplot/jquery.jqplot.css" />
-<link rel="stylesheet" type="text/css"
-	href="../css/thirdparty/datatables/datatables.css" />
+<!-- <link rel="stylesheet" type="text/css"
+	href="../css/thirdparty/datatables/datatables.css" /> -->
 <link rel="stylesheet" type="text/css"
 	href="../css/thirdparty/datatables/extras/TableTools/TableTools.css" />
 <link rel="stylesheet" type="text/css"
@@ -1532,7 +1534,7 @@ table.formTable td {
                                  </tr>
                               </table>
                            </div>
-                           <div class="dynamicTable"></div>
+                           <div class="dynamicTable" style="margin-top: 10px;"></div>
                         </div>
                      </div>
                      <div ng-show="report.dataSet.type == 'seriesGroup' && report.layout.subType == reportingService.metadata.layoutSubTypes.chart.id">
