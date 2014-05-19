@@ -164,7 +164,8 @@ define(
 									supportsDescriptors : false,
 									supportsDataTypeSelection : true,
 									supportsDocumentTypes : true,
-									hideEnumerations:true
+									hideEnumerations:true,
+									supportsDataPathes:true
 								});
 
 						if (this.propertiesTabs != null) {
