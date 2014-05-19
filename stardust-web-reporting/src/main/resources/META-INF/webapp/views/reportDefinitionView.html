@@ -322,7 +322,7 @@ table.formTable td {
 										<td><select multiple="multiple"
 											style="height: 100px; width: 250px;"
 											ng-model="availableColumns"
-											ng-options="dimension.id as dimension.name for dimension in getCumulatedDimensions() "><option></option></select></td>
+											ng-options="dimension.id as dimension.name group by primaryObjectEnumGroup(dimension.id) for dimension in getCumulatedDimensionsByGroup() | orderBy:['order','name']"><option></option></select></td>
 										<td style="vertical-align: center"><table cellpadding="0"
 												cellspacing="0">
 												<tr>
