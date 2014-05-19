@@ -1255,6 +1255,8 @@ define(
 					this.primaryObjectSelect
 							.val(this.report.dataSet.primaryObject);
 
+					this.resetReportDefinitionProperties();
+					
 					if (!initialize) {
 						this.report.dataSet.filters = [];
 						this.filterSelected = [];
@@ -2728,6 +2730,20 @@ define(
                   }
                return id;
             };
+            
+            /* This function will return Report Definition with default values
+            * 
+            */
+            ReportDefinitionController.prototype.resetReportDefinitionProperties = function() {
+               this.report.dataSet.computedColumns = [];
+               this.expressionEditor.setValue("");
+               this.report.dataSet.columns = [];
+               this.report.dataSet.filters = [];
+               this.report.dataSet.factDurationUnit = "d";
+               this.report.dataSet.firstDimensionCumulationIntervalCount = 1;
+               this.report.dataSet.firstDimensionCumulationIntervalUnit = "d";
+               this.report.dataSet.groupBy = "None";
+            }
              
 
          
