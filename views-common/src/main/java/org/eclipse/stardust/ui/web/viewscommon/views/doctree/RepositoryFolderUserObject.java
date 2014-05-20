@@ -18,6 +18,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.Folder;
+import org.eclipse.stardust.engine.core.spi.dms.RepositoryIdUtils;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.viewscommon.common.ToolTip;
 import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
@@ -173,7 +174,8 @@ public class RepositoryFolderUserObject extends RepositoryResourceUserObject
       // upload file
       DocumentUploadHelper documentUploadHelper = new DocumentUploadHelper();
       documentUploadHelper.initializeDocumentUploadDialog();
-      documentUploadHelper.setParentFolderPath(getFolder().getPath());
+      String folderPath = RepositoryIdUtils.addRepositoryId(getFolder().getPath(), getFolder().getRepositoryId());
+      documentUploadHelper.setParentFolderPath(folderPath);
       documentUploadHelper.getFileUploadDialogAttributes().setHeaderMessage(
             propsBean.getParamString("common.uploadIntoFolder", getLabel()));
       
