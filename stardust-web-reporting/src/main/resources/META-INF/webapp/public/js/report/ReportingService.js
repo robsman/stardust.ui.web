@@ -192,6 +192,16 @@ define(
 								name : this.getI18N("reporting.definitionView.additionalFiltering.timestamp.termination"),
 								type : this.metadata.timestampType
 							},
+                     processInstanceDuration : {
+                        id : "processInstanceDuration",
+                        name : this.getI18N("reporting.definitionView.processInstanceDuration"),
+                        type : this.metadata.durationType
+                     },
+                     rootProcessInstanceDuration : {
+                        id : "rootProcessInstanceDuration",
+                        name : this.getI18N("reporting.definitionView.rootProcessInstanceDuration"),
+                        type : this.metadata.durationType
+                     },
 							processOID : {
                         id : "processOID",
                         name : this.getI18N("reporting.definitionView.additionalFiltering.processOID"),
@@ -268,6 +278,22 @@ define(
                         id : "rootProcessInstanceStartTimestamp",
                         name : this.getI18N("reporting.definitionView.additionalFiltering.rootProcessInstanceStartTimestamp"),
                         type : this.metadata.timestampType
+                     },
+                     activityInstanceDuration : {
+                        id : "activityInstanceDuration",
+                        name : this.getI18N("reporting.definitionView.activityInstanceDuration"),
+                        type : this.metadata.durationType,
+                        cumulated : true
+                     },
+                     processInstanceDuration : {
+                        id : "processInstanceDuration",
+                        name : this.getI18N("reporting.definitionView.processInstanceDuration"),
+                        type : this.metadata.durationType
+                     },
+                     rootProcessInstanceDuration : {
+                        id : "rootProcessInstanceDuration",
+                        name : this.getI18N("reporting.definitionView.rootProcessInstanceDuration"),
+                        type : this.metadata.durationType
                      },
 							lastModificationTimestamp : {
 								id : "lastModificationTimestamp",

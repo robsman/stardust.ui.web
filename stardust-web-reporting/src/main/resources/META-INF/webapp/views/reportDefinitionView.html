@@ -324,37 +324,37 @@ table.formTable td {
 										<td><select multiple="multiple"
 											style="height: 100px; width: 250px;"
 											ng-model="availableColumns"
-											ng-options="dimension.id as dimension.name group by primaryObjectEnumGroup(dimension.id) for dimension in getCumulatedDimensionsByGroup() | orderBy:['order','name']"><option></option></select></td>
+											ng-options="dimension.id as dimension.name group by primaryObjectEnumGroup(dimension.id) for dimension in getRecordSetAvailableColumns() | orderBy:['order','name']"><option></option></select></td>
 										<td style="vertical-align: center"><table cellpadding="0"
 												cellspacing="0">
 												<tr>
-													<td><button ng-click="moveItem(selColumns, this.selectedColumns, getCumulatedDimensions())">&#x3c;</button></td>
+													<td><button ng-click="removeItems(selColumns, this.report.dataSet.columns)">&#x3c;</button></td>
 												</tr>
 												<tr>
-													<td><button ng-click="moveItem(availableColumns, getCumulatedDimensions(), this.selectedColumns)">&#x3e;</button></td>
+													<td><button ng-click="addItems(availableColumns, this.report.dataSet.columns)">&#x3e;</button></td>
 												</tr>
 												<tr>
 													<td>
-                                          <button ng-click="deselectAllDimensionsForColumns()">&#xab;</button>
+                                          <button ng-click="removeAllItems(this.report.dataSet.columns)">&#xab;</button>
 													</td>
 												</tr>
 												<tr>
 													<td>
-                                          <button ng-click="selectAllDimensionsForColumns()">&#xbb;</button>
+                                          <button ng-click="addAllItems(getRecordSetAvailableColumns(), this.report.dataSet.columns)">&#xbb;</button>
 													</td>
 												</tr>
 											</table></td>
 										<td><select multiple="multiple"
 											style="height: 100px; width: 250px;"
 											ng-model="selColumns"
-											ng-options="dimension.id as dimension.name for dimension in this.selectedColumns"><option></option></select></td>
+											ng-options="dimension.id as dimension.name for dimension in getRecordSetSelectedColumns()"><option></option></select></td>
                               <td style="vertical-align: top">
                                  <table cellpadding="0" cellspacing="0">
                                     <tr>
-                                       <td><button ng-click="moveUp(selColumns, this.selectedColumns)">&#x2c4;</button></td>
+                                       <td><button ng-click="moveItemUp(selColumns, this.report.dataSet.columns)">&#x2c4;</button></td>
                                     </tr>
                                     <tr>
-                                       <td><button ng-click="moveDown(selColumns, this.selectedColumns)">&#x2c5;</button></td>
+                                       <td><button ng-click="moveItemDown(selColumns, this.report.dataSet.columns)">&#x2c5;</button></td>
                                     </tr>
                                  </table>
                               </td>

@@ -102,8 +102,6 @@ define(
 					this.schedulingParticipantsSelect = jQuery("#schedulingParticipantsSelect");
 					this.startDateId = jQuery("#startDateId");
 					this.endDateId = jQuery("#endDateId");
-					this.cumulatedDimensions = [];
-					this.selectedColumns = [];
 					this.filterSelected = [];
 					
 					this.scheduling = {
@@ -497,7 +495,6 @@ define(
 
 									self.report = report;
 									
-									self.loadDataSetRecordSet();
 									self.loadFilters();
 									console.log("Loaded report definition:");
 									console.log(self.report);
@@ -604,8 +601,6 @@ define(
 						this.report.dataSet.firstDimension = this
                         .getPrimaryObject().dimensions.processInstanceStartTimestamp.id;
 						
-						this.cumulatedDimensions = this.getCumulatedDimensions();
-
 						deferred.resolve();
 					}
 
@@ -671,13 +666,13 @@ define(
              * it on UI in specific order
              */
             ReportDefinitionController.prototype.getPrimaryObjectEnumByGroup = function() {
-               var dimensions = this.getPrimaryObjectEnum();
+               var dimensions = this.filterPrimaryObjectEnum();
                for ( var dimension in dimensions)
                {
                   var group = this.primaryObjectEnumGroup(dimensions[dimension].id);
                   dimensions[dimension].order = this.getDimensionsDisplayOrder(dimensions[dimension].id); 
                }
-               return dimensions
+               return dimensions;
             };
 				
 				ReportDefinitionController.prototype.getAvailableCumulantsEnum = function() {
@@ -792,7 +787,6 @@ define(
 					if (!initialize) {
 						this.report.dataSet.filters = [];
 						this.filterSelected = [];
-						this.populateCumulatedDimensions();
 						this.resetReportDefinitionProperties();
 					}
 
@@ -1324,28 +1318,6 @@ define(
 					return this.reportingService.metadata.chartTypes[this.report.layout.chart.type];
 				};
 				
-				/**
-				 * 
-				 */
-				ReportDefinitionController.prototype.selectAllDimensionsForColumns = function() {
-					for ( var k in this.cumulatedDimensions) {
-						this.report.dataSet.columns.push(this.cumulatedDimensions[k].id);
-						this.selectedColumns.push(this.cumulatedDimensions[k]);
-					}
-					this.cumulatedDimensions = [];
-				};
-
-				/**
-				 * 
-				 */
-				ReportDefinitionController.prototype.deselectAllDimensionsForColumns = function() {
-				   this.report.dataSet.columns = [];
-               for ( var k in this.selectedColumns) {
-                  this.cumulatedDimensions.push(this.selectedColumns[k]);
-               }
-               this.selectedColumns = [];
-				};
-
 				/**
 				 * 
 				 */
@@ -1944,29 +1916,6 @@ define(
             /**
              * 
              */
-            ReportDefinitionController.prototype.moveItem = function(items, from, to) {
-               if (items == undefined)
-               {
-                  return;
-               }
-               for ( var int = 0; int < items.length; int++)
-               {
-                  var item = items[int];
-                  for ( var k in from) {
-                     
-                     if (item === from[k].id)
-                     {
-                        to.push(from[k]);
-                        from.splice(k, 1);
-                        break;
-                     }
-                  }
-               }
-               
-               this.populateSelectedArrayinJson();
-
-            };
-            
             ReportDefinitionController.prototype.moveItemUp = function(item, list) {
                 if (this.isMultiSelected(item))
                 {
@@ -1994,64 +1943,6 @@ define(
                }
            };
             
-            /**
-             * 
-             */
-            ReportDefinitionController.prototype.moveUp = function(item, list) {
-               if (this.isMultiSelected(item))
-               {
-                  return;
-               }
-               
-               var listIds = [];
-               
-               for ( var l in list)
-               {
-                  listIds[l] = list[l].id;
-               }
-               
-               var idx = listIds.indexOf(item[0]);
-               if (idx != -1 && idx != 0) {
-                   list.splice(idx - 1, 0, list.splice(idx, 1)[0]);
-               }
-               this.populateSelectedArrayinJson();
-           };
-           
-           /**
-            * 
-            */
-           ReportDefinitionController.prototype.moveDown = function(item, list) {
-              if (this.isMultiSelected(item))
-              {
-                 return;
-              }  
-              
-              var listIds = [];
-              
-              for ( var l in list)
-              {
-                 listIds[l] = list[l].id;
-              }
-              
-              var idx = listIds.indexOf(item[0]);
-              if (idx != -1 && idx != (list.lenght -1)) {
-                  list.splice(idx + 1, 0, list.splice(idx, 1)[0]);
-              }
-              this.populateSelectedArrayinJson();
-          };
-          
-          /**
-             * This function updates the underlying variables when any changes happens to
-             * Data Set -> Record Set -> multi select box options
-             */
-          ReportDefinitionController.prototype.populateSelectedArrayinJson = function() {
-             this.report.dataSet.columns = [];
-             for ( var item in this.selectedColumns)
-             {
-                this.report.dataSet.columns.push(this.selectedColumns[item].id);
-             }
-         };
-         
          /**
           *  This function returns true if more than 1 options are selected in
           *  Data Set -> Record Set -> multi select box options 
@@ -2065,26 +1956,6 @@ define(
             return false;
         };
         
-        /**
-          * This function will populte the variables while loading previously saved Data
-          * Set -> Record Set -> multi select box options
-          */
-        ReportDefinitionController.prototype.loadDataSetRecordSet = function() {
-           this.cumulatedDimensions = this.getCumulatedDimensions();
-           var selColumns = this.report.dataSet.columns;
-            
-           for (var i in selColumns) {
-              for ( var k in this.cumulatedDimensions) {
-                 if (selColumns[i] === this.cumulatedDimensions[k].id)
-                 {
-                    this.selectedColumns.push(this.cumulatedDimensions[k]);
-                    this.cumulatedDimensions.splice(k, 1);
-                    break;
-                 }
-              }
-            }
-        };
-          
         /**
          * This function will remove parameters from parameter list
          */
@@ -2121,15 +1992,6 @@ define(
                return (element.type.id === this.reportingService.metadata.countType.id)? true : false;
             };
      
-                 
-             
-              
-              ReportDefinitionController.prototype.populateCumulatedDimensions = function() {
-                 this.cumulatedDimensions = [];
-                 this.cumulatedDimensions = this.getCumulatedDimensions();
-                 this.selectedColumns = [];
-              };
-              
               /**
                * Adding order parameter to dimension object for displaying it on UI in specific order
                */
@@ -2214,6 +2076,81 @@ define(
                this.report.dataSet.firstDimensionCumulationIntervalUnit = "d";
                this.report.dataSet.groupBy = "None";
             }
+            
+            /**
+             * Getting latest Record Set Available columns &
+             * Adding order parameter to dimension object for displaying it on UI in specific order
+             */
+            ReportDefinitionController.prototype.getRecordSetAvailableColumns = function() {
+               var dimensions = this.reportingService.getCumulatedDimensions(this.report);
+               var enumerators = [];
+               for ( var n in dimensions ) {
+                  var add = true; 
+                  if (this.report.dataSet.columns) {
+                     this.report.dataSet.columns
+                           .forEach(function(columnId) {
+                              if (dimensions[n].id == columnId) {
+                                 add = false;
+                              }
+                           });
+                  }
+                  if(add){
+                     enumerators.push(dimensions[n]);  
+                  }
+               }
+               
+               dimensions = enumerators;
+               
+               for ( var dimension in dimensions)
+               {
+                  var group = this.primaryObjectEnumGroup(dimensions[dimension].id);
+                  dimensions[dimension].order = this.getDimensionsDisplayOrder(dimensions[dimension].id); 
+               }
+               return dimensions;
+            };
+            
+            /**
+             * Getting latest Record Set Selected columns
+             */
+            ReportDefinitionController.prototype.getRecordSetSelectedColumns = function() {
+               
+               var enumerators = [];
+               if (!this.report.dataSet.columns){
+                  return enumerators;
+               }  
+               
+               var availableColumns = this.reportingService.getCumulatedDimensions(this.report);
+               var selColumns = this.report.dataSet.columns;
+                
+               for (var i in selColumns) {
+                  for ( var k in availableColumns) {
+                     if (selColumns[i] === availableColumns[k].id)
+                     {
+                        enumerators.push(availableColumns[k]);
+                        break;
+                     }
+                  }
+                }
+               return enumerators;
+              
+            };
+            
+            /**
+             * Dimensions of type durationType are not filterable and 
+             * Groupable so filtering them out. 
+             */
+            ReportDefinitionController.prototype.filterPrimaryObjectEnum = function() {
+               var dimensions = this.getPrimaryObjectEnum();
+               
+               for (var i = dimensions.length -1; i >= 0 ; i--){
+                  if (this.reportingService.metadata.durationType.id == dimensions[i].type.id)
+                  {
+                     dimensions.splice(i, 1);
+                  }
+               }
+               
+               return dimensions;
+            };
 		}
 			
 
