@@ -8,31 +8,17 @@
 * Contributors:
 *    Holger.Prause (SunGard CSA LLC) - initial API and implementation and/or initial documentation
 *******************************************************************************/
-package org.eclipse.stardust.ui.web.reporting.common.mapping.reponse;
+package org.eclipse.stardust.ui.web.reporting.core;
 
-import java.util.*;
-
-public class Series
+public class DimensionColumn extends GroupColumn
 {
-   private TreeSet<ValuesArray> seriesValues;
-
-   public Series()
+   public DimensionColumn(String id)
    {
-      seriesValues = new TreeSet<ValuesArray>();
+      super(id);
    }
 
-   public void add(ValuesArray values)
+   public DimensionColumn(String id, Interval interval)
    {
-      seriesValues.add(values);
-   }
-
-   public Collection<ValuesArray> getValues()
-   {
-      return seriesValues;
-   }
-
-   public boolean hasValue(ValuesArray seriesValue)
-   {
-      return seriesValues.contains(seriesValue);
+      super(id, interval);
    }
 }

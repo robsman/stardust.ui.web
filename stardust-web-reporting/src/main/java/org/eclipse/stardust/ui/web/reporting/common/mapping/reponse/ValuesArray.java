@@ -18,16 +18,21 @@ import org.eclipse.stardust.common.CompareHelper;
 public class ValuesArray implements Comparable<ValuesArray>
 {
    private List<Object> values;
-   private Integer sortIndex;
+   private Integer dimensionIndex;
 
    public ValuesArray()
    {
       this.values = new ArrayList<Object>();
    }
 
-   public void setSortIndex(Integer sortIndex)
+   public void setDimensionIndex(Integer dimensionIndex)
    {
-      this.sortIndex = sortIndex;
+      this.dimensionIndex = dimensionIndex;
+   }
+
+   public Integer getDimensionIndex()
+   {
+      return dimensionIndex;
    }
 
    public void addValue(Object value)
@@ -35,14 +40,21 @@ public class ValuesArray implements Comparable<ValuesArray>
       values.add(value);
    }
 
-   public Object getSortCriteria()
+   public Object getDimensionValue()
    {
-      if(sortIndex != null)
+      if(dimensionIndex != null)
       {
-         return values.get(sortIndex);
+         return values.get(dimensionIndex);
       }
 
       return null;
+   }
+
+   protected String getInternalKey()
+   {
+      StringBuffer b = new StringBuffer();
+      b.append(getDimensionValue());
+      return b.toString();
    }
 
    public List<Object> getValues()
@@ -51,10 +63,44 @@ public class ValuesArray implements Comparable<ValuesArray>
    }
 
    @Override
+   public int hashCode()
+   {
+      final String internalKey = getInternalKey();
+      final int prime = 31;
+      int result = 1;
+      result = prime * result + ((internalKey == null) ? 0 : internalKey.hashCode());
+      return result;
+   }
+
+   @Override
+   public boolean equals(Object obj)
+   {
+      final String internalKey = getInternalKey();
+
+      if (this == obj)
+         return true;
+      if (obj == null)
+         return false;
+      if (getClass() != obj.getClass())
+         return false;
+      ValuesArray other = (ValuesArray) obj;
+      final String otherInternalKey = other.getInternalKey();
+
+      if (internalKey == null)
+      {
+         if (otherInternalKey != null)
+            return false;
+      }
+      else if (!internalKey.equals(otherInternalKey))
+         return false;
+      return true;
+   }
+
+   @Override
    public int compareTo(ValuesArray other)
    {
-      Object thisSortObject = getSortCriteria();
-      Object otherSortObject = other.getSortCriteria();
+      Object thisSortObject = getDimensionValue();
+      Object otherSortObject = other.getDimensionValue();
       return CompareHelper.compare(thisSortObject, otherSortObject);
    }
 }

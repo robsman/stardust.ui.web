@@ -71,6 +71,18 @@ public class ReportingServicePojo
 
    public JsonObject getReportData(JsonObject reportJson, ReportParameter...parameters) throws UnsupportedFilterException
    {
+      // workaround until the method signature changes and this method here just receives
+      // the raw json string
+      JsonMarshaller jm = new JsonMarshaller();
+      String reportDefJson = jm.gson().toJson(reportJson);
+      ReportDefinition reportDefinition = jm.gson().fromJson(reportDefJson,
+            ReportDefinition.class);
+
+      return getReportData(reportDefinition, parameters);
+   }
+
+   public JsonObject getReportData(ReportDefinition reportDefinition, ReportParameter...parameters) throws UnsupportedFilterException
+   {
       Map<String, ReportParameter> parameterMap = new HashMap<String, ReportParameter>();
       if(parameters != null)
       {
@@ -80,12 +92,7 @@ public class ReportingServicePojo
          }
       }
 
-      // workaround until the method signature changes and this method here just receives
-      // the raw json string
-      JsonMarshaller jm = new JsonMarshaller();
-      String reportDefJson = jm.gson().toJson(reportJson);
-      ReportDefinition reportDefinition = jm.gson().fromJson(reportDefJson,
-            ReportDefinition.class);
+
       // validate only if enabled - the helper will take care of it
       ValidationHelper.validate(reportDefinition);
 
@@ -173,30 +180,32 @@ public class ReportingServicePojo
                ValueGroup<T> group = aggregateResults.get(groupKey);
                ValuesArray seriesValues = new ValuesArray();
 
-               for(GroupColumn gc: groupColumns)
+               for(int i=0; i< groupColumns.size(); i++)
                {
+                  GroupColumn groupColumn = groupColumns.get(i);
+
                   HandlerContext providerContext = new HandlerContext(queryService, 0);
-                  providerContext.setColumn(gc);
+                  providerContext.setColumn(groupColumn);
 
                   IColumnHandler< ? , T, ? extends Query> columnHandler
-                     = handlerRegistry.getColumnHandler(gc);
+                     = handlerRegistry.getColumnHandler(groupColumn);
                   Object seriesValue
                      = columnHandler.provideObjectValue(providerContext, groupEntitiy);
                   //todo return a wrapepr object and let JsonUtil#addPrimitiveObjectToJsonObject
                   //do the job of formatting it
-                  if(seriesValue instanceof Date && gc.getInterval() != null)
+                  if(seriesValue instanceof Date && groupColumn.getInterval() != null)
                   {
-                     seriesValue = ReportingUtil.formatDate((Date)seriesValue, gc.getInterval().getUnit());
+                     seriesValue = ReportingUtil.formatDate((Date)seriesValue, groupColumn.getInterval().getUnit());
                   }
 
-                  if(gc instanceof GroupByColumn)
+                  if(groupColumn instanceof GroupByColumn)
                   {
                      seriesKey = (seriesValue != null)? seriesValue.toString() : "NULL";
                   }
-                  else
+
+                  if(groupColumn instanceof DimensionColumn)
                   {
-                     //sort by dimension
-                     seriesValues.setSortIndex(0);
+                     seriesValues.setDimensionIndex(i);
                      seriesValues.addValue(seriesValue);
                   }
                }
@@ -369,7 +378,7 @@ public class ReportingServicePojo
          //implicit grouping information - according to ui team: dimension is always grouped
          //but will not result in an own series - thats why you need two Grouping classes - to distinguish
          Interval dimensionInterval = getDimensionInterval(dataSet);
-         GroupColumn dimensionColumn = new GroupColumn(dataSet.getFirstDimension(), dimensionInterval);
+         DimensionColumn dimensionColumn = new DimensionColumn(dataSet.getFirstDimension(), dimensionInterval);
          groupColumns.add(dimensionColumn);
       }
 
