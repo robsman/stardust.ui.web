@@ -22,6 +22,7 @@ public class ReportingUtil
 {
    public static final String DEFAULT_DATE_FORMAT = "yyyy/MM/dd hh:mm:ss:SSS";
    public static final int NUMBER_MAX_DECIMAL_PLACES = 2;
+   public static final TimeUnit DEFAULT_TIME_UNIT = TimeUnit.SECOND;
 
    public static Number formatNumber(Number n)
    {
@@ -156,6 +157,12 @@ public class ReportingUtil
 
    public static long calculateDuration(Date startDate, Date endDate, TimeUnit unit)
    {
+      if(unit == null)
+      {
+         unit = DEFAULT_TIME_UNIT;
+      }
+
+
       startDate = normalize(startDate, unit);
       endDate = normalize(endDate, unit);
 
@@ -166,6 +173,11 @@ public class ReportingUtil
 
    public static Date addDuration(Date date, TimeUnit unit, int unitValue)
    {
+      if(unit == null)
+      {
+         unit = DEFAULT_TIME_UNIT;
+      }
+
       Calendar calendar = Calendar.getInstance();
       calendar.setTime(date);
       calendar.add(unit.getCalendarField(), unitValue);
