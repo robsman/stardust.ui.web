@@ -74,7 +74,7 @@ public class ProcessSearchHelper
          ProcessSearchCriteria criteria)
    {
       ProcessInstanceState[] piss = new ProcessInstanceState[criteria.states.size()];
-      ProcessInstanceQuery query = ProcessInstanceQuery.findInState(piss);
+      ProcessInstanceQuery query = ProcessInstanceQuery.findInState(criteria.states.toArray(piss));
 
       FilterAndTerm filter = query.getFilter().addAndTerm();
 
