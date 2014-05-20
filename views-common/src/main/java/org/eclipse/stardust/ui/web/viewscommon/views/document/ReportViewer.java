@@ -21,11 +21,8 @@ import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MIMEType;
-import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
-import org.eclipse.stardust.ui.web.viewscommon.views.reports.ArchiveReportDialog;
-
 
 
 /**
@@ -39,7 +36,7 @@ public class ReportViewer implements IDocumentViewer
    private static final String MARK_FAVORITE = "/plugins/views-common/images/icons/star-empty.png";
    private final String contentUrl = "/plugins/views-common/views/report/reportViewer.xhtml";
    private final String toolbarUrl = "/plugins/views-common/extension/toolbar/reportDocumentViewToolbar.xhtml";
-   private final MIMEType[] mimeTypes = {MimeTypesHelper.RPT_DESIGN};
+   private final MIMEType[] mimeTypes = {};
 
    private String sourceURI;
    private String reportUri;
@@ -80,17 +77,6 @@ public class ReportViewer implements IDocumentViewer
             + UserUtils.getRealmId() + "&workflowUserSessionId=" + ServiceFactoryUtils.getWorkflowUserSessionId();
    }
    
-   /**
-    * archive report
-    */
-   public void archiveReport()
-   {
-      ArchiveReportDialog archiveReportDialog = ArchiveReportDialog.getCurrent();
-      archiveReportDialog.setReportUri(reportUri);
-      archiveReportDialog.setReportName(DocumentMgmtUtility.getNewReportName(documentContentInfo.getName()));
-      archiveReportDialog.openPopup();
-   }
-
    /**
     * mark or unmark favorite reports
     */

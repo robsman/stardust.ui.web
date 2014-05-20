@@ -313,24 +313,12 @@ public class ModelManagementBean extends UIComponentBean implements ViewEventHan
          deployBean.setAllowBrowse(true);
          deployBean.openPopup();
       }
-      else if ((row != null) && type.equals(PopUpActionType.RUN_REPORT.name()))
-      {
-         Map<String, Object> urlParamMap = new HashMap<String, Object>();
-         urlParamMap.put("ModelID", row.getModelDescription().getId());
-         urlParamMap.put("ModelOID", String.valueOf(row.getOid()));
-         DocumentViewUtil.openActiveModelReport(RepositoryUtility.MODEL_DETAILS_DESIGN, row.getModelDescription().getId(), urlParamMap);
-      }
       else if ((row != null) && type.equals(PopUpActionType.EXPORT.name()))
       {
          ModelExportDialogBean exportModelDialog = ModelExportDialogBean.getCurrent();
          exportModelDialog.setUserObject(row);
          exportModelDialog.openPopup();
       }
-   }
-
-   public void openActiveModelsReport()
-   {
-      DocumentViewUtil.openActiveModelReport(RepositoryUtility.DEFAULT_ACTIVE_MODEL_REPORT, null, null);
    }
 
    public void deleteModel()

@@ -18,18 +18,6 @@
 				value="#{documentHandlerBean.contentHandler.content}" />
 		</ice:commandLink>
 
-		<ice:commandLink
-			action="#{documentHandlerBean.contentHandler.archiveReport}">
-			<pc:automationTag value="auto-COM-ReportDocView-ToolbarArchiveFav"
-				standAlone="false" />
-			<ice:graphicImage
-				value="/plugins/views-common/images/icons/report_go.png"
-				styleClass="toolbar-button"
-				title="#{views_common_msgPropsBean['views.myReportsView.archiveReport.title']}" />
-			<f:param name="reportUri"
-				value="#{documentHandlerBean.contentHandler.content}" />
-		</ice:commandLink>
-
 </f:view>
 
 

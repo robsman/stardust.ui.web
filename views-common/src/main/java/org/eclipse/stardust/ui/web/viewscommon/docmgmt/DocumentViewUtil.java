@@ -233,28 +233,6 @@ public class DocumentViewUtil
    }
 
    /**
-    * @param reportPath
-    * @param modelID
-    * @param urlParamMap
-    * @return
-    */
-   public static View openActiveModelReport(String reportPath, String modelID, Map<String, Object> urlParamMap)
-   {
-      FileSystemDocument fileSystemDocument = new FileSystemDocument(reportPath, null, false);
-
-      // create viewKey
-      String viewKey = "documentOID=";
-      viewKey += fileSystemDocument.getName();
-      // if it is a model report
-      if (StringUtils.isNotEmpty(modelID))
-      {
-         viewKey += modelID;
-         fileSystemDocument.setName(fileSystemDocument.getName() + " (" + modelID + ")");
-      }
-      return openDocument(viewKey, fileSystemDocument, urlParamMap);
-   }
-
-   /**
     * @param processInstance
     * @param dataId
     * @param documentContentInfo

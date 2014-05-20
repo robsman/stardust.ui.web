@@ -65,8 +65,6 @@ import org.eclipse.stardust.ui.web.viewscommon.views.doctree.TypedDocumentUserOb
 public class RepositoryUtility
 {
    public static final String CORRESPONDENCE_FOLDER = "/documents/correspondence-templates";
-   public static final String DEFAULT_ACTIVE_MODEL_REPORT = "reports/carnot/ActiveModels.rptdesign";
-   public final static String MODEL_DETAILS_DESIGN = "reports/carnot/ModelDetails.rptdesign";
    public static final String DOCUMENT_DISPLAY_MODE_PORTAL = "PORTAL";
    public static final String DOCUMENT_DISPLAY_MODE_NEWBROWSER = "NEWBROWSER";
    
@@ -1068,15 +1066,6 @@ public class RepositoryUtility
       RepositoryVirtualUserObject virtualUserObject = (RepositoryVirtualUserObject) predefinedReportNode
             .getUserObject();
       virtualUserObject.setExpanded(false);
-      DefaultMutableTreeNode staticNode = createVirtualNode(
-            MessagesViewsCommonBean.getInstance().getString("views.myReportsView.activeModelReports.label"),
-            ResourcePaths.I_REPORT, null);
-      staticNode.setAllowsChildren(false);
-      RepositoryVirtualUserObject userObject = (RepositoryVirtualUserObject) staticNode.getUserObject();
-      userObject.setResourcePath(DEFAULT_ACTIVE_MODEL_REPORT);
-      userObject.setLeaf(true);
-      userObject.setLeafNode(true);
-      predefinedReportNode.add(staticNode);
       return predefinedReportNode;
    }
 

@@ -362,11 +362,6 @@
 		scope="session">
 	</bean>
 
-	<bean name="archiveReportDialog"
-		class="org.eclipse.stardust.ui.web.viewscommon.views.reports.ArchiveReportDialog"
-		scope="portalTab">
-	</bean>
-
 	<bean name="myReportsViewBean"
 		class="org.eclipse.stardust.ui.web.viewscommon.views.reports.MyReportsViewBean"
 		scope="portalTab">
