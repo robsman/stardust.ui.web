@@ -15,9 +15,9 @@
  * 
  */
 define(
-		[ "bpm-reporting/js/I18NUtils", "bpm-reporting/js/AngularAdapter",
-				"bpm-reporting/js/ReportingService",
-				"bpm-reporting/js/ReportRenderingController",
+		[ "bpm-reporting/public/js/report/I18NUtils", "bpm-reporting/public/js/report/AngularAdapter",
+				"bpm-reporting/public/js/report/ReportingService",
+				"bpm-reporting/public/js/report/ReportRenderingController",
 				"bpm-reporting/js/SchedulingController",
 				"bpm-reporting/js/utils",
 				"bpm-reporting/js/m_codeEditorAce",

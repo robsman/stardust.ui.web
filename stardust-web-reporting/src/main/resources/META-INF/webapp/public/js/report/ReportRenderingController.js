@@ -15,9 +15,9 @@
  * 
  */
 define(
-		[ "bpm-reporting/js/AngularAdapter",
-				"bpm-reporting/js/ReportingService" ],
-		function(AngularAdapter, ReportingService) {
+		[ "bpm-reporting/public/js/report/AngularAdapter",
+				"bpm-reporting/public/js/report/ReportingService", "bpm-reporting/public/js/report/I18NUtils" ],
+		function(AngularAdapter, ReportingService, I18NUtils) {
 			var angularCompile = null;
 			return {
 				create : function(angularCompile1) {
@@ -126,7 +126,7 @@ define(
 													+ "<script src='"
 													+ self.reportingService
 															.getRootUrl()
-													+ "/plugins/bpm-reporting/js/libs/angular/angular-1.2.11.js'>"
+													+ "/plugins/bpm-reporting/public/js/libs/angular/angular-1.2.11.js'>"
 													+ "</script>"
 													+ "<script>"
 													+ "function Controller($scope) {$scope.seriesGroup = "
@@ -1076,6 +1076,8 @@ define(
    	               compiled(divElem.scope());
                    
    	               scopeController.rows = tableArray.splice(1);
+   	               
+   	               scopeController.updateView();
                   };
 		
 		ReportRenderingController.prototype.refreshPreview2 = function(scopeController) {
@@ -1148,7 +1150,7 @@ define(
            }).fail(function(err){
               console.log("Failed getting Preview Date: " + err);
            });
-    };	
+    };
     
 /**
  * 
@@ -1212,7 +1214,12 @@ ReportRenderingController.prototype.formatPreviewData = function(data) {
       a.push(b);
    }
    return a;
-}
+};
+
+		ReportRenderingController.prototype.getI18N = function(key) {
+			return I18NUtils.getProperty(key);
+		};
+
 			}
 			
 			function transposeArray(aInput) {

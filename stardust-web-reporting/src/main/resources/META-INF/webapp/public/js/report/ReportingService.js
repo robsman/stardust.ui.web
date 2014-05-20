@@ -3,7 +3,7 @@
  ******************************************************************************/
 
 define(
-		["bpm-reporting/js/I18NUtils"],
+		["bpm-reporting/public/js/report/I18NUtils"],
 		function(I18NUtils) {
 			return {
 				instance : function() {

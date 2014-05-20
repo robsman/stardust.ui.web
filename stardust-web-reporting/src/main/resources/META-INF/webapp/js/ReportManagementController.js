@@ -3,9 +3,9 @@
  ******************************************************************************/
 
 define(
-		[ "bpm-reporting/js/AngularAdapter",
-				"bpm-reporting/js/ReportingService",
-				"bpm-reporting/js/I18NUtils"],
+		[ "bpm-reporting/public/js/report/AngularAdapter",
+				"bpm-reporting/public/js/report/ReportingService",
+				"bpm-reporting/public/js/report/I18NUtils"],
 		function(AngularAdapter, ReportingService, I18NUtils) {
 			return {
 				create : function(angular) {
@@ -96,7 +96,7 @@ define(
 													icon : {
 														image : this.reportingService
 																.getRootUrl()
-																+ "/plugins/bpm-reporting/css/images/report.png"
+																+ "/plugins/bpm-reporting/public/css/images/report.png"
 													},
 													valid_children : []
 												}
@@ -173,7 +173,7 @@ define(
 										},
 										themes : {
 											"theme" : "custom",
-											"url" : "../css/jsTreeCustom/style.css"
+											"url" : "../public/css/jsTreeCustom/style.css"
 										}
 									});
 
