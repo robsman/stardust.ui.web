@@ -4,7 +4,7 @@
 	 	<i style="float:left;" class="sc sc-2x sc-chevron-l"></i>
 	 </a>
      <h4>{{uiText.worklist}}
-     	<span class="ipp-li-count ipp-li-count-relative">{{worklistModel.worklistItems.length}}</span>
+     	<span class="ipp-li-count ipp-li-count-relative">{{worklistModel.paginationResponse.totalCount}}</span>
      </h4>
      <a  class="ipp-icon-minimal" href="#wlistFilterPopup" data-rel="popup" data-transition="slide">
      	<i  class="fa ipp-fs-2x fa-sort"></i>
@@ -49,48 +49,47 @@
 </div>
 
 
-	<ul data-role="listview">
-		<li ng-repeat="item in worklistModel.worklistItems | orderBy:predicate">
-			<a href="#detailPage?id={{item.oid}}" class="ipp-no-content">
-				<div  class="ipp-inline">
-					<p>
-						<span class="ipp-fs-2x ipp-light ipp-fw-normal">
-							{{item.activityName}} <span class="hide-media-sm">(#{{item.oid}})</span>
-						</span>
-					</p>
-					<span class="ipp-fs-smallest ipp-lightest ipp-fw-normal" 
-					      ng-switch="$last" 
-					      ng-repeat="(key,value) in item.descriptors">
-	          			{{key}}: {{value}}<span ng-if="!$last">,</span>
-	          		</span>
-	         	</div>
-         		<div class="ui-li-aside">
-         			<i class="sc sc-clock ipp-lighter ipp-fs-smaller"></i>
+<ul data-role="listview">
+	<li ng-repeat="item in worklistModel.worklistItems | orderBy:predicate">
+		<a href="#detailPage?id={{item.oid}}" class="ipp-no-content">
+			<div  class="ipp-inline">
+				<p>
+					<span class="ipp-fs-2x ipp-light ipp-fw-normal">
+						{{item.activityName}} <span class="hide-media-sm">(#{{item.oid}})</span>
+					</span>
+				</p>
+				<span class="ipp-fs-smallest ipp-lightest ipp-fw-normal" 
+				      ng-switch="$last" 
+				      ng-repeat="(key,value) in item.descriptors">
+          			{{key}}: {{value}}<span ng-if="!$last">,</span>
+          		</span>
+         	</div>
+        		<div class="ui-li-aside">
+        			<i class="sc sc-clock ipp-lighter ipp-fs-smaller"></i>
 
-         			<span class="ipp-fs-smallest ipp-lighter ipp-fw-normal">
-         			      {{item.startTime | friendlyDate }}</span>
-         		</div>
-         		<i class="sc sc-chevron-r ipp-nav-icon-right ipp-margin-top-1x"></i>
-			</a>
-			</li>
-				<li class="ipp-center">
-				<i ng-if="worklistModel.paginationResponse.rowFrom !=0"
-				   ng-click="getResults(filter.sortBy,-1)" 
-				   class="sc sc-chevron-l ipp-margin-h-1x"></i>
-				<span>
-					{{worklistModel.paginationResponse.rowFrom}}
-					-
-					{{worklistModel.paginationResponse.rowFrom + worklistModel.paginationResponse.resultSetSize}}
-					&nbsp;of
-					{{worklistModel.paginationResponse.totalCount}}
-				</span>
-				<i ng-if="(worklistModel.paginationResponse.rowFrom + worklistModel.paginationResponse.resultSetSize) < worklistModel.paginationResponse.totalCount"
-				   ng-click="getResults(filter.sortBy,1)" 
-				   class="sc sc-chevron-r ipp-margin-h-1x"></i>
-			</li>
-	</ul>
+        			<span class="ipp-fs-smallest ipp-lighter ipp-fw-normal">
+        			      {{item.startTime | friendlyDate }}</span>
+        		</div>
+        		<i class="sc sc-chevron-r ipp-nav-icon-right ipp-margin-top-1x"></i>
+		</a>
+	</li>
+	
+	<li class="ipp-center">
+		<i ng-if="worklistModel.paginationResponse.rowFrom !=0"
+		   ng-click="getResults(filter.sortBy,-1)" 
+		   class="sc sc-chevron-l ipp-margin-h-1x"></i>
+		<span>
+			{{worklistModel.paginationResponse.rowFrom}}
+			-
+			{{worklistModel.paginationResponse.rowFrom + worklistModel.paginationResponse.resultSetSize}}
+		</span>
+		<i ng-if="(worklistModel.paginationResponse.rowFrom + worklistModel.paginationResponse.resultSetSize) < worklistModel.paginationResponse.totalCount"
+		   ng-click="getResults(filter.sortBy,1)" 
+		   class="sc sc-chevron-r ipp-margin-h-1x"></i>
+	</li>
+	
+</ul>
 
-{{filter.sortBy}}
 <div ng-show="worklistModel.worklistItems.length == 0" style="text-align:center;margin-top:5em;">
     	<i style="font-size:8em;" class="fa fa-inbox"></i>
     	<p>

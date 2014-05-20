@@ -97,12 +97,14 @@
 		    	<span ng-click="docTypeToggleState=!docTypeToggleState;
 		    	               toggleAll(documentSearchModel.documentTypes,docTypeToggleState,$event)"
 		    	      class="ipp-li-count-secondary">
-		    		<i ng-class="{'sc-check-box':docTypeToggleState}" class="sc sc-square"></i> {{uiText.all}}
+		    		<i ng-class="{'sc-check-box':docTypeToggleState && 
+		    		              (documentSearchModel.documentTypes|filter:{isChecked:true}).length==documentSearchModel.documentTypes.length,
+		    		              'sc-square':(documentSearchModel.documentTypes|filter:{isChecked:true}).length!=documentSearchModel.documentTypes.length}" 
+		    		   class="sc"></i> {{uiText.all}}
 		    	</span>
 		    </h2>
 		    <ul data-role="listview" data-theme="a">
-				<li ng-init="docType.isChecked=false"
-					ng-click="docType.isChecked=!docType.isChecked;" 
+				<li ng-click="docType.isChecked=!docType.isChecked;" 
 		            ng-repeat="docType in documentSearchModel.documentTypes">
 		        	<i style="font-size:1.5em;"  
 		        	   ng-class="{'sc-check-box':docType.isChecked,'sc-square':!docType.isChecked}" 

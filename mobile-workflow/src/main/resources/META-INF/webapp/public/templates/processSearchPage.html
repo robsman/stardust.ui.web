@@ -113,7 +113,11 @@
 		    	<span ng-click="processToggleState=!processToggleState;
 		    	               toggleAll(processSearchModel.processes,processToggleState,$event)" 
 		    	      class="ipp-li-count-secondary">
-		    		<i ng-class="{'sc-check-box':processToggleState,'sc-square':!processToggleState}" class="sc"></i> {{uiText.all}}
+		    		<i ng-class="{'sc-check-box':
+		    		              (processSearchModel.processes|filter:{isChecked:true}).length==processSearchModel.processes.length,
+		    		              'sc-square':
+		    		              (processSearchModel.processes|filter:{isChecked:true}).length!=processSearchModel.processes.length}" 
+		    		   class="sc"></i> {{uiText.all}}
 		    	</span>
 		    </h4>
 		    <ul data-role="listview" data-theme="a">
@@ -138,7 +142,11 @@
 		    	<span ng-click="stateToggleState=!stateToggleState;
 		    	               toggleAll(processSearchModel.states,stateToggleState,$event)"
 		    	      class="ipp-li-count-secondary">
-		    		<i ng-class="{'sc-check-box':stateToggleState,'sc-square':!stateToggleState}" class="sc"></i> {{uiText.all}}
+		    		<i ng-class="{'sc-check-box':
+		    		              (processSearchModel.states|filter:{isChecked:true}).length==processSearchModel.states.length,
+		    		              'sc-square':
+		    		              (processSearchModel.states|filter:{isChecked:true}).length!=processSearchModel.states.length}" 
+		    		   class="sc"></i> {{uiText.all}}
 		    	</span>
 		    </h2>
 		    <ul data-role="listview">

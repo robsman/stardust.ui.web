@@ -114,7 +114,9 @@
 		    	<span ng-click="processesToggleState=!processesToggleState;
 		    	               toggleAll(activitySearchModel.startableProcesses,processesToggleState,$event)"
 		    	      class="ipp-li-count-secondary">
-		    		<i ng-class="{'sc-check-box':processesToggleState,'sc-square':!processesToggleState}" 
+		    		<i ng-class="{'sc-check-box':
+		    					 (activitySearchModel.startableProcesses|filter:{isChecked:true}).length==activitySearchModel.startableProcesses.length,
+		    					 'sc-square':(activitySearchModel.startableProcesses|filter:{isChecked:true}).length!=activitySearchModel.startableProcesses.length}" 
 		    		   class="sc"></i> {{uiText.all}}
 		    	</span>
 		    </h4>
@@ -140,7 +142,11 @@
 		    	<span ng-click="activityToggleState=!activityToggleState;
 		    	               toggleAll(activitySearchModel.activities,activityToggleState,$event)"
 		    	      class="ipp-li-count-secondary">
-		    		<i ng-class="{'sc-check-box':activityToggleState,'sc-square':!activityToggleState}" class="sc"></i> {{uiText.all}}
+		    		<i ng-class="{'sc-check-box':
+		    					 (activitySearchModel.activities|filter:{isChecked:true}).length==activitySearchModel.activities.length,
+		    					'sc-square':
+		    					(activitySearchModel.activities|filter:{isChecked:true}).length!=activitySearchModel.activities.length}" 
+		    		   class="sc"></i> {{uiText.all}}
 		    	</span>
 		    </h4>
 		    <ul data-role="listview" data-theme="a">
@@ -164,7 +170,11 @@
 		    	<span ng-click="stateToggleState=!stateToggleState;
 		    	               toggleAll(activitySearchModel.states,stateToggleState,$event)"
 		    	      class="ipp-li-count-secondary">
-		    		<i ng-class="{'sc-check-box':stateToggleState,'sc-square':!stateToggleState}" class="sc"></i> {{uiText.all}}
+		    		<i ng-class="{'sc-check-box':
+		    					(activitySearchModel.states|filter:{isChecked:true}).length==activitySearchModel.states.length,
+		    					'sc-square':
+		    					(activitySearchModel.states|filter:{isChecked:true}).length!=activitySearchModel.states.length}" 
+   					   class="sc"></i> {{uiText.all}}
 		    	</span>
 		    </h4>
 		    <ul data-role="listview" data-theme="a">

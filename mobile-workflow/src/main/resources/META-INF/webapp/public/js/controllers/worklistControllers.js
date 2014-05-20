@@ -134,7 +134,7 @@ define([],function(){
 	},
 	
 	/*Our return object with all controllers defined*/
-	worklistCtrl = {
+	controllers = {
 			
 			"worklistCtrl" : function($scope, $rootScope, $q, $filter,$timeout, workflowService,utilService,il18nService){
 				
@@ -144,9 +144,9 @@ define([],function(){
 					$scope.worklistModel=new worklistModel();
 					$scope.filter={"sortBy" : "newest"}
 				};
-				$scope.initModels();
+				$scope.initModels(); /*call immediately upon angular bootstrap*/
 				
-				/*Init our internationalized text for out UI elements*/
+				/*Initialize our internationalized text for our UI elements*/
 				$scope.uiText={
 						"worklist" : il18nService.getProperty("mobile.worklist.header.text"),
 						"newest"   : il18nService.getProperty("mobile.worklist.filter.item.newest"),
@@ -162,6 +162,7 @@ define([],function(){
 					var rowFrom=0,
 				    	pageSize=$rootScope.appData.settings.pageSize || 10;
 					
+					/* Compute our starting row, default to zero unless pageAdvance=1||-1 */
 					if($scope.worklistModel.paginationResponse){
 						
 						if(pageAdvance==1){
@@ -175,7 +176,10 @@ define([],function(){
 						}
 					}
 					
+					//show our spinner
 					$scope.isAjaxLoading=true;
+					
+					//retrieve items from our service
 					workflowService.getWorklist(sortBy,rowFrom,pageSize)
 					.then(function(data){
 						$scope.worklistModel.worklistItems = data.worklist;
@@ -195,16 +199,14 @@ define([],function(){
 					
 				}
 				
+				/*Retrieve initial data-set, returns a promise*/
 				$scope.init=function(sortBy){
 					var deferred = $q.defer(),
 						pageSize=$rootScope.appData.settings.pageSize || 10;
 					workflowService.getWorklist($scope.filter.sortBy,0,pageSize)
 					.then(function(data){
-						data.worklist= $filter("orderBy")(data.worklist,"oid",true);
-						$scope.$apply(function(){
-							$scope.worklistModel.worklistItems = data.worklist;
-							$scope.worklistModel.paginationResponse = data.paginationResponse;
-						});
+						$scope.worklistModel.worklistItems = data.worklist;
+						$scope.worklistModel.paginationResponse = data.paginationResponse;
 						deferred.resolve();
 					})
 					.catch(deferred.reject);
@@ -214,7 +216,7 @@ define([],function(){
 				
 				$scope.$on("jqm-navigate",function(e,edata){
 					
-					/*Filter for events destined for our page*/
+					/*Filter out JQM navigate events which are not ours*/
 					if(edata.pageTarget != "worklistListViewPage"){return;}
 					
 					/*Force unauthorized users to appropriate page...*/
@@ -223,20 +225,26 @@ define([],function(){
 						return;
 					}
 					
-					/*update global data with current page*/
+					/*update appData with current page*/
 					$rootScope.appData.activePage = edata.pageTarget;
 					
-					/*reset our UI to a blank state*/
+					/*initialize-reinitialize scope models*/
 					$scope.initModels();
 					
-					$scope.init()
+					/*show our spinner*/
+					$scope.isAjaxLoading=true;
+					
+					/*call init function and resolve our navigation object*/
+					$scope.init($scope.filter.sortBy)
 					.catch(function(){
-						$scope.$apply(function(){
-							$scope.errorModel.hasError = true;
-							$scope.errorModel.errorMessage = $rootScope.appData.errorText.pageload;
-						});
+						$scope.errorModel.hasError = true;
+						$scope.errorModel.errorMessage = $rootScope.appData.errorText.pageload;
 					})
-					.finally(edata.ui.bCDeferred.resolve);
+					.finally(function(){
+						$scope.$apply();
+						$scope.isAjaxLoading=false;
+						edata.ui.bCDeferred.resolve();
+					});
 
 					
 				});
@@ -244,6 +252,7 @@ define([],function(){
 			
 			"mainPageCtrl" : function($scope,$rootScope,$q,$timeout,workflowService,utilService,il18nService){
 				
+				/*Initialize our internationalized text for our UI elements*/
 				$scope.uiText={
 					"welcome"   : il18nService.getProperty("mobile.mainpage.header.text"),
 					"worklist"  : il18nService.getProperty("mobile.mainpage.listview.worklist"),
@@ -253,17 +262,14 @@ define([],function(){
 					"documents" : il18nService.getProperty("mobile.mainpage.listview.documents")
 				}
 				
-				//$scope.getProperty = il18nService.getProperty;
-				
-				/*Initialize our reinitialize our models*/
+				/*Initialize-reinitialize our models*/
 				$scope.initModels=function(){
-					//$scope.$apply(function(){
-						$scope.mainPageModel = new mainPageModel();
-						$scope.errorModel = new errorModel();
-					//});
+					$scope.mainPageModel = new mainPageModel();
+					$scope.errorModel = new errorModel();
 				};
-				$scope.initModels();
+				$scope.initModels();/*call immediately upon angular bootstrap*/
 				
+				/*retrieve initial data, returns a promise*/
 				$scope.init = function(){
 					var deferred = $q.defer();
 					
@@ -281,64 +287,68 @@ define([],function(){
 				
 				$scope.$on("jqm-navigate",function(e,edata){
 					
+					/*Force unauthorized users to appropriate page...*/
 					if($rootScope.appData.isAuthorized==false){
 						utilService.navigateTo($rootScope,"#unauthorizedPage",{});
 						return;
 					}
 					
+					/*Filter out JQM navigate events which are not ours*/
 					if(edata.pageTarget != "mainPage"){return;}
 					
+					/*update appData with current page*/
 					$rootScope.appData.activePage = edata.pageTarget;
 					
 					$scope.initModels();
 					
 					$scope.init()
 					.catch(function(){
-						$scope.$apply(function(){
-							$scope.errorModel.hasError=true;
-							$scope.errorModel.errorMessage= $rootScope.appData.errorText.pageload;
-							$timeout(function(){
-								$scope.errorModel.hasError=false;
-							},$rootScope.appData.barDuration);
-						});
+						$scope.errorModel.hasError=true;
+						$scope.errorModel.errorMessage= $rootScope.appData.errorText.pageload;
+						$timeout(function(){
+							$scope.errorModel.hasError=false;
+						},$rootScope.appData.barDuration);
 					})
-					.finally(edata.ui.bCDeferred.resolve);
+					.finally(function(){
+						$scope.$apply();
+						edata.ui.bCDeferred.resolve();
+					});
 					
 				});
 			},
 			
 			"documentSearchCtrl" : function($scope,$rootScope,$q,$timeout,workflowService,utilService,il18nService){
 				
-				/*Initialize our reinitialize our models*/
+				/*Initialize-reinitialize our models*/
 				$scope.initModels=function(){
-					//$scope.$apply(function(){
-						var now = new Date(),
-					    then = new Date(),
-					    startDPO,
-					    endDPO;
-					
-						/*set initial values for our dates.*/
-						then.setDate(then.getDate() - 7); 
-						startDPO = utilService.buildDatePartObject(then.toString());
-						endDPO = utilService.buildDatePartObject(now.toString());
-						
-						$scope.isAjaxLoading=false;
-						$scope.documentSearchModel = new documentSearchModel();
-						$scope.errorModel = new errorModel();
-						$scope.results=[];
-						$scope.filter = {
-								name : "",
-								startDate : startDPO.yyyy + "-" + startDPO.MM + "-" + startDPO.dd,
-								startTime : "00:00:01",
-								endDate : endDPO.yyyy + "-" + endDPO.MM + "-" + endDPO.dd,
-								endTime : endDPO.hh + ":" + endDPO.mm + ":" + endDPO.ss,
-								documentTypes : [],
-								sortBy: "newest"
-						};
-					//});
-				};
-				$scope.initModels();
+					var now = new Date(),
+				    then = new Date(),
+				    startDPO,
+				    endDPO;
 				
+					/*set initial values for our dates.*/
+					then.setDate(then.getDate() - 7); 
+					startDPO = utilService.buildDatePartObject(then.toString());
+					endDPO = utilService.buildDatePartObject(now.toString());
+					
+					$scope.isAjaxLoading=false;
+					
+					$scope.documentSearchModel = new documentSearchModel();
+					$scope.errorModel = new errorModel();
+					$scope.results=[];
+					$scope.filter = {
+							name : "",
+							startDate : startDPO.yyyy + "-" + startDPO.MM + "-" + startDPO.dd,
+							startTime : "00:00:01",
+							endDate : endDPO.yyyy + "-" + endDPO.MM + "-" + endDPO.dd,
+							endTime : endDPO.hh + ":" + endDPO.mm + ":" + endDPO.ss,
+							documentTypes : [],
+							sortBy: "newest"
+					};
+				};
+				$scope.initModels();/*call immediately upon angular bootstrap*/
+				
+				/*Initialize all text properties which require internationalization*/
 				$scope.uiText={
 						"searchDocs" : il18nService.getProperty("mobile.documentsearch.header.text"),
 						"createFrom" : il18nService.getProperty("mobile.documentsearch.filters.from"),
@@ -352,9 +362,10 @@ define([],function(){
 						"modified" : il18nService.getProperty("mobile.worklist.filter.item.modified")
 				};
 				
-				
+				/*expose utilService's isImageType function*/
 				$scope.isImageType = utilService.isImageType;
 				
+				/*Pull initial setup data for the UI*/
 				$scope.init = function(){
 					var deferred = $q.defer();
 					
@@ -385,6 +396,7 @@ define([],function(){
 					});
 				}
 				
+				/*Retrieve set of documentSearch results, supports pagination*/
 				$scope.getResults = function(sortBy,pageAdvance){
 					
 					var docIDs=[],
@@ -423,26 +435,20 @@ define([],function(){
 							rowFrom,
 							pageSize)
 						.then(function(data){
-							console.log(data);
-							$scope.$apply(function(){
-								$scope.documentSearchModel.results=data.documents;
-								$scope.documentSearchModel.paginationResponse = data.paginationResponse;
-							});
+							$scope.documentSearchModel.results=data.documents;
+							$scope.documentSearchModel.paginationResponse = data.paginationResponse;
 						})
 						.catch(function(err){
-							$scope.$apply(function(){
-								$scope.errorModel.hasError=true;
-								$scope.errorModel.errorMessage= $rootScope.appData.errorText.recordretrieval;
-								$timeout(function(){
-									$scope.errorModel.hasError=false;
-								},$rootScope.appData.barDuration);
-							});
+							$scope.errorModel.hasError=true;
+							$scope.errorModel.errorMessage= $rootScope.appData.errorText.recordretrieval;
+							$timeout(function(){
+								$scope.errorModel.hasError=false;
+							},$rootScope.appData.barDuration);
 						})
 						.finally(function(){
-							$scope.$apply(function(){
-								$scope.isAjaxLoading=false;
-								$scope.showResults=true;
-							});
+							$scope.isAjaxLoading=false;
+							$scope.showResults=true;
+							$scope.$apply();
 						});
 					
 				};
@@ -458,19 +464,26 @@ define([],function(){
 						return;
 					}
 					
+					/*update global data with current page*/
+					$rootScope.appData.activePage = edata.pageTarget;
+					
+					/*initialize-reinitialize our models*/
 					$scope.initModels();
 					
+					$scope.isAjaxLoading=true;
 					$scope.init()
 					.catch(function(){
-						$scope.$apply(function(){
-							$scope.errorModel.hasError=true;
-							$scope.errorModel.errorMessage= $rootScope.appData.errorText.pageload;
-							$timeout(function(){
-								$scope.errorModel.hasError=false;
-							},$rootScope.appData.barDuration);
-						});
+						$scope.errorModel.hasError=true;
+						$scope.errorModel.errorMessage= $rootScope.appData.errorText.pageload;
+						$timeout(function(){
+							$scope.errorModel.hasError=false;
+						},$rootScope.appData.barDuration);
 					})
-					.finally(edata.ui.bCDeferred.resolve);
+					.finally(function(){
+						$scope.isAjaxLoading=false;
+						$scope.$apply();
+						edata.ui.bCDeferred.resolve();
+					});
 					
 				});
 				
@@ -690,19 +703,23 @@ define([],function(){
 						return;
 					}
 					
+					/*update global data with current page*/
+					$rootScope.appData.activePage = edata.pageTarget;
+					
 					$scope.initModels();
 					
 					$scope.init()
 					.catch(function(){
-						$scope.$apply(function(){
-							$scope.errorModel.hasError=true;
-							$scope.errorModel.errorMessage = $rootScope.appData.errorText.pageload;
-							$timeout(function(){
-								$scope.errorModel.hasError=false;
-							},$rootScope.appData.barDuration);
-						});
+						$scope.errorModel.hasError=true;
+						$scope.errorModel.errorMessage = $rootScope.appData.errorText.pageload;
+						$timeout(function(){
+							$scope.errorModel.hasError=false;
+						},$rootScope.appData.barDuration);
 					})
-					.finally(edata.ui.bCDeferred.resolve);
+					.finally(function(){
+						$scope.$apply();
+						edata.ui.bCDeferred.resolve();
+					});
 
 				});
 			},
@@ -865,6 +882,9 @@ define([],function(){
 					if($rootScope.appData.isAuthorized==false){
 						utilService.navigateTo($rootScope,"#unauthorizedPage",{});
 					}
+					
+					/*update global data with current page*/
+					$rootScope.appData.activePage = edata.pageTarget;
 					
 					$scope.initModels();
 					
@@ -2322,5 +2342,5 @@ define([],function(){
 			
 	};
 	
-	return worklistCtrl;
+	return controllers;
 });
