@@ -94,6 +94,8 @@ public class DocumentSearchHelper
          query.setPolicy(pagePolicy);
       }
 
+      // ** NOTE ** If no order-by clause is used in the document query, the query result
+      // returned doesn't have total count, hence sorting by "newest" by default.
       if (null != criteria.sortKey)
       {
          if (criteria.sortKey.equals("oldest"))
@@ -108,8 +110,16 @@ public class DocumentSearchHelper
          {
             query.orderBy(DocumentQuery.DATE_LAST_MODIFIED, false);
          }
+         else
+         {
+            query.orderBy(DocumentQuery.DATE_CREATED, false);
+         }
       }
-      
+      else
+      {
+         query.orderBy(DocumentQuery.DATE_CREATED, false);
+      }
+
       return query;
    }
 }

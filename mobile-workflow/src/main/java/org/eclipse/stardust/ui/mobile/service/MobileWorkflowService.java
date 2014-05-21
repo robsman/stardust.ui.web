@@ -84,6 +84,7 @@ import org.eclipse.stardust.engine.api.runtime.DmsUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentInfo;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
+import org.eclipse.stardust.engine.api.runtime.Documents;
 import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.engine.api.runtime.HistoricalEvent;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
@@ -1878,9 +1879,9 @@ public class MobileWorkflowService implements ServletContextAware {
    public JsonObject getDocuments(DocumentSearchCriteria criteria)
    {
       DocumentQuery query = DocumentSearchHelper.buildDocumentSearchQuery(criteria);
-      
-      QueryResult<Document> documents = getQueryService().getAllDocuments(query);
-      
+
+      Documents documents = documentManagementService.findDocuments(query);
+
       JsonObject resultJson = new JsonObject();
       JsonArray documentsJson = new JsonArray();
 
@@ -1890,9 +1891,9 @@ public class MobileWorkflowService implements ServletContextAware {
       {
          documentsJson.add(marshalDocument(document));
       }
-      
+
       resultJson.add("paginationResponse", SearchHelperUtil.getPaginationResponseObject(documents));
-      
+
       return resultJson;
    }
    

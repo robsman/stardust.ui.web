@@ -24,16 +24,18 @@ public class SearchHelperUtil
       try
       {
          if (null != result.getSubsetPolicy()) {
-            pageObj.addProperty("rowFrom", result.getSubsetPolicy().getSkippedEntries());   
+            pageObj.addProperty("rowFrom", result.getSubsetPolicy().getSkippedEntries());
          }
          pageObj.addProperty("resultSetSize", result.size());
          pageObj.addProperty("totalCount", result.getTotalCount());
+
       }
       catch (UnsupportedOperationException e)
       {
+         e.printStackTrace();
          pageObj.addProperty("totalCount", -1);
-      }  
-      
+      }
+
       return pageObj;
    }
 
@@ -56,7 +58,7 @@ public class SearchHelperUtil
 
       return longVal;
    }
-   
+
    /**
     * @param intString
     * @param defaultVal
