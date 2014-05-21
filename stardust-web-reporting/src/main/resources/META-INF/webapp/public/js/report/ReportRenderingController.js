@@ -1120,7 +1120,12 @@ define(
                    // column.id is typically like {Model71}ChangeOfAddress:{Model71}ConfirmationNumber
                    // So Getting the last word i.e. ConfirmationNumber
                    col = replaceSpecialChars(col);
-                   cols += "<td>{{row." + col + "}}</td>";
+                   var style = "";
+                   if (column.type.id == this.reportingService.metadata.timestampType.id)
+                   {
+                      style = " style = \"text-align: right;\"";
+                   }
+                   cols += "<td" + style +">{{row." + col + "}}</td>";
                 }
             TEMPLATE_COPY = TEMPLATE_COPY.replace("_HEADERS_", headers);
             TEMPLATE_COPY = TEMPLATE_COPY.replace("_COLUMNS_", cols);

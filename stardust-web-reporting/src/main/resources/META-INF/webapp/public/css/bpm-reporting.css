@@ -123,6 +123,144 @@ textarea {
 	font-size: 11px;
 }
 
+/* General JQuery UI Overrides */
+.ui-widget-content {
+   background: #FFFFFF !important;
+   color: #222222 !important;
+}
+
+.ui-widget input,.ui-widget select,.ui-widget textarea,.ui-widget button
+   {
+   font-size: 12px !important;
+   font-weight: normal !important;
+   font-family: Helvetica, Arial, sans-serif !important;
+}
+
+.ui-corner-all,.ui-corner-bottom,.ui-corner-right,.ui-corner-br {
+   border-bottom-right-radius: 2px;
+}
+
+.ui-corner-all,.ui-corner-bottom,.ui-corner-right,.ui-corner-bl {
+   border-bottom-left-radius: 2px;
+}
+
+.ui-corner-all,.ui-corner-bottom,.ui-corner-right,.ui-corner-tl {
+   border-top-left-radius: 2px;
+}
+
+.ui-corner-all,.ui-corner-bottom,.ui-corner-right,.ui-corner-tr {
+   border-top-right-radius: 2px;
+}
+
+/* JQuery UI Dialog Overwrites */
+div.ui-dialog {
+   border: 1px solid #5a899f !important;
+   -moz-box-shadow: 2px 2px 2px 2px #f2f2f2;
+   -webkit-box-shadow: 2px 2px 2px 2px #f2f2f2;
+   box-shadow: 2px 2px 2px 2px #f2f2f2;
+}
+
+.ui-dialog {
+   left: 0;
+   outline: 0 none;
+   padding: 0px !important;
+   position: absolute;
+   top: 0;
+   background: none repeat scroll 0 0 transparent;
+   border: 0 none;
+   overflow: hidden;
+   position: relative;
+   padding: 0 !important;
+}
+
+#success {
+   padding: 0;
+   margin: 0;
+}
+
+.ui-dialog-content {
+   background: none repeat scroll 0 0 transparent;
+   border: 0 none;
+   overflow: auto;
+   position: relative;
+   padding: 10px !important;
+}
+
+.ui-widget-header {
+   background: #5a899f;
+   border: 0;
+   color: #fff;
+   font-weight: normal;
+}
+
+.ui-dialog .ui-dialog-titlebar {
+   padding: 0.1em .5em;
+   position: relative;
+   font-size: 1em;
+}
+
+.ui-dialog-titlebar {
+   border-bottom-right-radius: 0px;
+   border-bottom-left-radius: 0px;
+}
+
+/* Tabs */
+.minimalTabs {
+   background: transparent;
+   border: none;
+}
+
+.minimalTabs.ui-widget-content {
+   background: transparent;
+   border: none;
+}
+
+.minimalTabs .ui-widget-header {
+   background: transparent;
+   border: none;
+   border-bottom: 1px solid #c0c0c0;
+   -moz-border-radius: 0px;
+   -webkit-border-radius: 0px;
+   border-radius: 0px;
+}
+
+.minimalTabs .ui-tabs-nav .ui-state-default {
+   background: transparent;
+   border: none;
+}
+
+.minimalTabs .ui-tabs-nav .ui-state-active {
+   background: transparent url(images/tabs-arrow.png) no-repeat bottom
+      center;
+   border: none;
+}
+
+.minimalTabs .ui-tabs-nav .ui-state-default a {
+   color: #c0c0c0;
+}
+
+.minimalTabs .ui-tabs-nav .ui-state-active a {
+   color: #9d2127;
+   border: none;
+}
+
+.minimalTabs .ui-tabs-nav .ui-state-focus a {
+   color: #9d2127;
+   border: none;
+}
+
+.minimalTabs a {
+   border: none;
+}
+
+.minimalTabs a:ACTIVE {
+   border: none;
+}
+
+.minimalTabs a:FOCUS {
+   border: none;
+}
+
 a {
 	color: #17375e;
 }
@@ -231,13 +369,13 @@ div.right {
 	border: 1px solid white;
 }
 
-.dataTableFrame {
+/* .dataTableFrame {
 	background-color: #F2F2F2;
 	border: 4px solid #E8E8E8;
-}
+} */
 
 .dataTableControls {
-	background-color: #F2F2F2;
+	background-color: #FFFFFF;
 	border-bottom: 1px Solid #E7E7E7;
 	margin-bottom: 5px;
 }
@@ -352,13 +490,13 @@ table.dataTable thead {
 	background-color: white;
 }
 
-table.dataTable thead th {
+/* table.dataTable thead th {
 	border-bottom: 1px solid grey;
-	/* border-right: 1px solid grey; */
+	border-right: 1px solid grey;
 	font-weight: bold;
 	font-size: 12px;
 	color: #111;
-}
+} */
 
 table.dataTable tbody td {
 	border-top: 1px solid #ddd;
@@ -507,13 +645,13 @@ table.dataTable tbody tr.odd {
       right;
 }
 
-table.dataTable {
+/* table.dataTable {
    font-family: Arial;
    color: #004169;
    width: 100%;
    margin: 0px;
    border-bottom: 1px solid #111;
-}
+} */
 
 table.dataTable thead {
    margin-top: 10px;
