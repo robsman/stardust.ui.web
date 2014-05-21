@@ -15,20 +15,24 @@ define([ "i18n" ], function(InfinityBPMI18N) {
 	var modelerI18N;
 	return {
 		getProperty : function(key, defaultValue) {
-			if (!modelerI18N) {
-				try {
-					initI18N();
-				} catch (e) {
-					if (defaultValue) {
-						return defaultValue;
-					} else {
-						return key;
+			var value = defaultValue;
+			if(!(typeof message_bundle === 'undefined')){
+	 
+			}else{
+				if (!modelerI18N) {
+					try {
+						initI18N();
+					} catch (e) {
+						if (defaultValue) {
+							return defaultValue;
+						} else {
+							return key;
+						}
 					}
 				}
+					value = modelerI18N.getProperty(key, defaultValue);	
 			}
-
-			var value = modelerI18N.getProperty(key, defaultValue);
-
+		
 			if (value) {
 				return value;
 			} else {

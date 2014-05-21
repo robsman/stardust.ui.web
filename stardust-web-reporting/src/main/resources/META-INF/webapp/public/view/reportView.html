@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+<base href="http://localhost:8080/idemo/plugins/bpm-reporting/public/" target="_blank">
+<title>Process Reporting</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="keywords" content="">
+<link href="css/thirdparty/jquery/jquery-ui-1.10.2.custom.css"
+	rel="stylesheet" type="text/css" />
+<link href="css/bpm-reporting.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" type="text/css"
+	href="css/thirdparty/jqplot/jquery.jqplot.css" />
+<link rel="stylesheet" type="text/css"
+	href="css/thirdparty/datatables/datatables.css" />
+<link rel="stylesheet" type="text/css"
+	href="css/thirdparty/datatables/extras/TableTools/TableTools.css" />
+<link rel="stylesheet" type="text/css"
+	href="css/thirdparty/datatables/extras/TableTools/TableTools_JUI.css" />
+<link rel="stylesheet" type="text/css"
+	href="css/bpm-reporting-table.css" />
+<link rel="stylesheet" type="text/css"
+	href="css/bpm-reporting.custom.jquery.ui.css" />
+<style type="text/css">
+table.formTable td {
+	padding: 3px;
+}
+</style>
+
+<script type="text/javascript">
+var chart = {"name":"Report Definition 2","description":"","storage":{"location":"personalFolder","state":"saved"},"dataSet":{"type":"seriesGroup","primaryObject":"processInstance","joinExternalData":false,"externalJoins":[{"joinType":"outer","restUri":"http://127.0.0.1:1337/","fields":[]}],"computedColumns":[],"columns":[],"filters":[],"factDurationUnit":"d","firstDimensionCumulationIntervalCount":1,"firstDimensionCumulationIntervalUnit":"d","fact":"count","firstDimension":"processInstanceStartTimestamp","firstDimensionParameters":[]},"parameters":{},"layout":{"type":"simpleReport","chart":{"type":"xyPlot","options":{"animate":true,"animateReplot":true,"series":{},"seriesDefaults":{"lineWidth":1.5,"markerOptions":{"style":"filledCircle"},"pointLabels":{},"trendline":{"color":"#666666","label":"","type":"linear","shadow":true,"lineWidth":1.5,"shadowAngle":45,"shadowOffset":1.5,"shadowDepth":3,"shadowAlpha":0.07}},"axes":{"xaxis":{"tickOptions":{"mark":"outside","markSize":4,"angle":0},"label":"Process Start Timestamp"},"x2axis":{},"yaxis":{"tickOptions":{"mark":"outside","markSize":4,"angle":0},"label":"Count"},"y2axis":{}},"legend":{"show":true,"location":"e"},"highlighter":{},"cursor":{"show":true},"zoom":{},"title":"Process Instances"}},"table":{"options":{}},"document":{},"subType":"chart"},"scheduling":{"recurrenceInterval":"weekly","executionTime":"18","delivery":{"mode":"personalFolder"},"recurrenceRange":{"startDate":"2014-05-14","endMode":"noEnd","occurences":10,"endDate":"2014-05-14"},"dailyRecurrenceOptions":{"daysRecurrence":"interval","daysIntervalCount":1},"weeklyRecurrenceOptions":{"recurrenceWeekCount":1,"mondays":false,"tuesdays":false,"wednesdays":true,"thursdays":false,"fridays":false,"saturdays":false,"sundays":false},"monthlyRecurrenceOptions":{"monthsRecurrence":"day","dayNumber":14,"month":1,"day":3,"dayIndex":2,"monthIndex":1},"yearlyRecurrenceOptions":{"yearlyRecurrence":"weekday","recurEveryYear":1,"onMonth":5,"onDay":14,"onTheXDay":2,"onTheXDayName":3,"onTheMonth":5}}};
+var table = {"name":"Report Definition 2","description":"","storage":{"location":"personalFolder","state":"saved"},"dataSet":{"type":"seriesGroup","primaryObject":"processInstance","joinExternalData":false,"externalJoins":[{"joinType":"outer","restUri":"http://127.0.0.1:1337/","fields":[]}],"computedColumns":[],"columns":[],"filters":[],"factDurationUnit":"d","firstDimensionCumulationIntervalCount":1,"firstDimensionCumulationIntervalUnit":"d","fact":"count","firstDimension":"processInstanceStartTimestamp","firstDimensionParameters":[]},"parameters":{},"layout":{"type":"simpleReport","chart":{"type":"xyPlot","options":{"animate":true,"animateReplot":true,"series":{},"seriesDefaults":{"lineWidth":1.5,"markerOptions":{"style":"filledCircle"},"pointLabels":{},"trendline":{"color":"#666666","label":"","type":"linear","shadow":true,"lineWidth":1.5,"shadowAngle":45,"shadowOffset":1.5,"shadowDepth":3,"shadowAlpha":0.07}},"axes":{"xaxis":{"tickOptions":{"mark":"outside","markSize":4,"angle":0},"label":"Process Start Timestamp"},"x2axis":{},"yaxis":{"tickOptions":{"mark":"outside","markSize":4,"angle":0},"label":"Count"},"y2axis":{}},"legend":{"show":true,"location":"e"},"highlighter":{},"cursor":{"show":true},"zoom":{},"title":"Process Instances"}},"table":{"options":{},"selectedCumulants":[],"cumulantsDisplay":"columns"},"document":{},"subType":"table"},"scheduling":{"recurrenceInterval":"weekly","executionTime":"18","delivery":{"mode":"personalFolder"},"recurrenceRange":{"startDate":"2014-05-14","endMode":"noEnd","occurences":10,"endDate":"2014-05-14"},"dailyRecurrenceOptions":{"daysRecurrence":"interval","daysIntervalCount":1},"weeklyRecurrenceOptions":{"recurrenceWeekCount":1,"mondays":false,"tuesdays":false,"wednesdays":true,"thursdays":false,"fridays":false,"saturdays":false,"sundays":false},"monthlyRecurrenceOptions":{"monthsRecurrence":"day","dayNumber":14,"month":1,"day":3,"dayIndex":2,"monthIndex":1},"yearlyRecurrenceOptions":{"yearlyRecurrence":"weekday","recurEveryYear":1,"onMonth":5,"onDay":14,"onTheXDay":2,"onTheXDayName":3,"onTheMonth":5}}};
+
+var report_table = {"name":"total issue","description":"","storage":{"location":"publicFolder","state":"saved"},"dataSet":{"type":"seriesGroup","primaryObject":"activityInstance","joinExternalData":false,"externalJoins":[{"joinType":"outer","restUri":"http://127.0.0.1:1337/","fields":[]}],"computedColumns":[],"columns":[],"filters":[],"factDurationUnit":"s","firstDimensionCumulationIntervalCount":1,"firstDimensionCumulationIntervalUnit":"w","fact":"activityInstanceDuration","firstDimension":"startTimestamp","firstDimensionParameters":[],"groupBy":"activityName"},"parameters":{},"layout":{"title":"Table Report", "type":"simpleReport","chart":{"type":"xyPlot","options":{"animate":true,"animateReplot":true,"series":{},"seriesDefaults":{"lineWidth":1.5,"markerOptions":{"style":"filledCircle"},"pointLabels":{},"trendline":{"color":"#666666","label":"","type":"linear","shadow":true,"lineWidth":1.5,"shadowAngle":45,"shadowOffset":1.5,"shadowDepth":3,"shadowAlpha":0.07}},"axes":{"xaxis":{"tickOptions":{"mark":"outside","markSize":4,"angle":0},"label":"reporting.definitionView.additionalFiltering.activityStartTimestamp"},"x2axis":{},"yaxis":{"tickOptions":{"mark":"outside","markSize":4,"angle":0},"label":"reporting.definitionView.activityInstanceDuration"},"y2axis":{}},"legend":{"show":true,"location":"e"},"highlighter":{},"cursor":{"show":true},"zoom":{},"title":"reporting.definitionView.activityInstances.label"}},"table":{"options":{},"selectedCumulants":["count","average","stdDeviation","minimum","maximum"],"preview":true,"displayTotals":true,"cumulantsDisplay":"columns"},"document":{},"subType":"table"},"scheduling":{"recurrenceInterval":"weekly","executionTime":"18","delivery":{"mode":"personalFolder"},"recurrenceRange":{"startDate":"2014-05-16","endMode":"noEnd","occurences":10,"endDate":"2014-05-16"},"dailyRecurrenceOptions":{"daysRecurrence":"interval","daysIntervalCount":1},"weeklyRecurrenceOptions":{"recurrenceWeekCount":1,"mondays":false,"tuesdays":false,"wednesdays":false,"thursdays":false,"fridays":true,"saturdays":false,"sundays":false},"monthlyRecurrenceOptions":{"monthsRecurrence":"day","dayNumber":16,"month":1,"day":5,"dayIndex":2,"monthIndex":1},"yearlyRecurrenceOptions":{"yearlyRecurrence":"weekday","recurEveryYear":1,"onMonth":5,"onDay":16,"onTheXDay":2,"onTheXDayName":5,"onTheMonth":5}}}
+
+var report_chart = {"name":"total issue","description":"","storage":{"location":"publicFolder","state":"saved"},"dataSet":{"type":"seriesGroup","primaryObject":"activityInstance","joinExternalData":false,"externalJoins":[{"joinType":"outer","restUri":"http://127.0.0.1:1337/","fields":[]}],"computedColumns":[],"columns":[],"filters":[],"factDurationUnit":"s","firstDimensionCumulationIntervalCount":1,"firstDimensionCumulationIntervalUnit":"w","fact":"activityInstanceDuration","firstDimension":"startTimestamp","firstDimensionParameters":[],"groupBy":"activityName"},"parameters":{},"layout":{"title":"Chart Report", "type":"simpleReport","chart":{"type":"xyPlot","options":{"animate":true,"animateReplot":true,"series":{},"seriesDefaults":{"lineWidth":1.5,"markerOptions":{"style":"filledCircle"},"pointLabels":{},"trendline":{"color":"#666666","label":"","type":"linear","shadow":true,"lineWidth":1.5,"shadowAngle":45,"shadowOffset":1.5,"shadowDepth":3,"shadowAlpha":0.07}},"axes":{"xaxis":{"tickOptions":{"mark":"outside","markSize":4,"angle":0},"label":"reporting.definitionView.additionalFiltering.activityStartTimestamp"},"x2axis":{},"yaxis":{"tickOptions":{"mark":"outside","markSize":4,"angle":0},"label":"reporting.definitionView.activityInstanceDuration"},"y2axis":{}},"legend":{"show":true,"location":"e"},"highlighter":{},"cursor":{"show":true},"zoom":{},"title":"reporting.definitionView.activityInstances.label"}},"table":{"options":{},"selectedCumulants":["count","average","stdDeviation","minimum","maximum"],"preview":true,"displayTotals":true,"cumulantsDisplay":"columns"},"document":{},"subType":"chart"},"scheduling":{"recurrenceInterval":"weekly","executionTime":"18","delivery":{"mode":"personalFolder"},"recurrenceRange":{"startDate":"2014-05-16","endMode":"noEnd","occurences":10,"endDate":"2014-05-16"},"dailyRecurrenceOptions":{"daysRecurrence":"interval","daysIntervalCount":1},"weeklyRecurrenceOptions":{"recurrenceWeekCount":1,"mondays":false,"tuesdays":false,"wednesdays":false,"thursdays":false,"fridays":true,"saturdays":false,"sundays":false},"monthlyRecurrenceOptions":{"monthsRecurrence":"day","dayNumber":16,"month":1,"day":5,"dayIndex":2,"monthIndex":1},"yearlyRecurrenceOptions":{"yearlyRecurrence":"weekday","recurEveryYear":1,"onMonth":5,"onDay":16,"onTheXDay":2,"onTheXDayName":5,"onTheMonth":5}}}
+
+var report_Recordset = {"name":"total issue","description":"","storage":{"location":"publicFolder","state":"saved"},"dataSet":{"type":"recordSet","primaryObject":"activityInstance","joinExternalData":false,"externalJoins":[{"joinType":"outer","restUri":"http://127.0.0.1:1337/","fields":[]}],"computedColumns":[],"columns":["activityOID","activityName","startTimestamp"],"filters":[],"factDurationUnit":"s","firstDimensionCumulationIntervalCount":1,"firstDimensionCumulationIntervalUnit":"w","fact":"activityInstanceDuration","firstDimension":"startTimestamp","firstDimensionParameters":[],"groupBy":"activityName"},"parameters":{},"layout":{"title":"RecordSet", "type":"table","chart":{"type":"xyPlot","options":{"animate":true,"animateReplot":true,"series":{},"seriesDefaults":{"lineWidth":1.5,"markerOptions":{"style":"filledCircle"},"pointLabels":{},"trendline":{"color":"#666666","label":"","type":"linear","shadow":true,"lineWidth":1.5,"shadowAngle":45,"shadowOffset":1.5,"shadowDepth":3,"shadowAlpha":0.07}},"axes":{"xaxis":{"tickOptions":{"mark":"outside","markSize":4,"angle":0},"label":"Activity Start Timestamp"},"x2axis":{},"yaxis":{"tickOptions":{"mark":"outside","markSize":4,"angle":0},"label":"Activity Instance Duration"},"y2axis":{}},"legend":{"show":true,"location":"e"},"highlighter":{},"cursor":{"show":true},"zoom":{},"title":"Activity Instances"}},"table":{"options":{},"selectedCumulants":["count","average","stdDeviation","minimum","maximum"],"preview":false,"displayTotals":false,"cumulantsDisplay":"columns"},"document":{},"subType":"table"},"scheduling":{"recurrenceInterval":"weekly","executionTime":"18","delivery":{"mode":"personalFolder"},"recurrenceRange":{"startDate":"2014-05-16","endMode":"noEnd","occurences":10,"endDate":"2014-05-16"},"dailyRecurrenceOptions":{"daysRecurrence":"interval","daysIntervalCount":1},"weeklyRecurrenceOptions":{"recurrenceWeekCount":1,"mondays":false,"tuesdays":false,"wednesdays":false,"thursdays":false,"fridays":true,"saturdays":false,"sundays":false},"monthlyRecurrenceOptions":{"monthsRecurrence":"day","dayNumber":16,"month":1,"day":5,"dayIndex":2,"monthIndex":1},"yearlyRecurrenceOptions":{"yearlyRecurrence":"weekday","recurEveryYear":1,"onMonth":5,"onDay":16,"onTheXDay":2,"onTheXDayName":5,"onTheMonth":5}}}
+
+var report_definition = report_table;  
+
+var report_data = {};
+
+var message_bundle = {};
+
+</script>
+
+<script type="text/javascript"
+	data-main="js/report/ReportViewMain"
+	src="js/libs/require/2.0.5/require.js"></script>
+</head>
+<body ng-controller="ReportDefinitionController">
+	<!-- <div ng-include="'reportInstancePartial.html'"></div> -->
+	<!-- <div>--------------------Using remote partial url</div> -->
+	<!-- <div ng-include="'report/reportDefinitionView.html'"></div> -->
+	<div id="reportDefinitionView" style="visibility: hidden;">
+		<div ng-show="hasParameters()">
+			<div class="heading">Parameters</div>
+			<table class="formTable" style="margin-bottom: 10px;">
+				<tr ng-repeat="parameter in getParameters()">
+					<td><label title="{{parameter.id}}">{{getParamDisplayName(parameter.name)}}
+					</label></td>
+					<td><input type="text"
+						ng-model="getParameters()[parameter.id].value" sd-datetime
+						ng-show="parameter.type == getMetadata().timestampType.id"
+						value="{{getParameterDefaultValue(parameter.id)}}"
+						ng-blur="refreshPreview()" /><input type="number"
+						ng-model="report.parameters[parameter.id].value"
+						ng-show="parameter.type == getMetadata().integerType.id"
+						value="{{getParameterDefaultValue(parameter.id)}}"
+						ng-blur="refreshPreview()" /> <input
+						ng-model="report.parameters[parameter.id].value"
+						ng-show="parameter.type == getMetadata().stringType.id"
+						value="{{getParameterDefaultValue(parameter.id)}}"
+						ng-blur="refreshPreview()" /> <select multiple="multiple"
+						ng-model="report.parameters[parameter.id].value"
+						ng-show="parameter.type == getMetadata().enumerationType.id"
+						ng-options="x as x for x in getTestEnumerators()"
+						ng-blur="refreshPreview()"></select></td>
+				</tr>
+			</table>
+		</div>
+		<div class="heading">{{report.layout.title}}</div>
+		<div
+			ng-show="report.layout.type == 'table' || report.layout.subType == reportingService.metadata.layoutSubTypes.table.id">
+			
+			<div class="dataTableFrame">
+				<div class="dynamicTable"></div>
+			</div>
+		</div>
+		<div
+			ng-show="report.dataSet.type == 'seriesGroup' && report.layout.subType == reportingService.metadata.layoutSubTypes.chart.id">
+			<table>
+				<tr>
+					<td><a href="" ng-click="printChart()"> <img
+							src="css/images/print.png" title="Print" />
+					</a></td>
+				</tr>
+			</table>
+			<div style="border: 1px solid #aaaaaa; padding: 10px;">
+				<div id="chartView" style="height: 400px; width: 800px;"></div>
+			</div>
+		</div>
+		<div ng-show="report.layout.type == 'document'">
+			<div class="heading">Composite</div>
+			<table>
+				<tr>
+					<td><a href="" ng-click=""> <img
+							src="css/images/refresh.png" title="Refresh" />
+					</a></td>
+					<td><a href="" ng-click=""> <img
+							src="css/images/print.png" title="Print" />
+					</a></td>
+					<td><a href="{{getReportUri()}}" target="_blank"> <img
+							src="css/images/report.png" title="Open in separate Window" />
+					</a></td>
+				</tr>
+			</table>
+			<iframe id="documentFrame" allowtransparency="true" frameborder="0"
+				sandbox="allow-same-origin allow-forms allow-scripts"
+				scrolling="auto"
+				style="border: 1px solid #dddddd; width: 100%; height: 100%;"></iframe>
+		</div>
+	</div>
+</body>
+</html>

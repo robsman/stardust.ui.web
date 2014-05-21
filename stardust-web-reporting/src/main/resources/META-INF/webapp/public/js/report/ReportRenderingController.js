@@ -335,34 +335,36 @@ define(
 				 * perform ui controlled I18n
 				 */
 				ReportRenderingController.prototype.performUII18n = function(inData, report){
-					var primaryObject = this.reportingService.metadata.objects[report.dataSet.primaryObject];
-					var dimension = primaryObject.dimensions[report.dataSet.groupBy];
-					
-					//if groupby is empty or none
-					if(!dimension){
-						Object.keys(inData).forEach(function(key) {
-							inData[primaryObject.name] = inData[key];
-	                        delete inData[key];	
-						});
-					}
-
-					if (dimension && dimension.enumerationType) {
-						var qualifier = dimension.enumerationType.split(":");
-						var enums = this.reportingService.getEnumerators2(qualifier[0], qualifier[1]);
-						if(!enums){
-							return;
+					if((typeof report_data === 'undefined')){
+						var primaryObject = this.reportingService.metadata.objects[report.dataSet.primaryObject];
+						var dimension = primaryObject.dimensions[report.dataSet.groupBy];
+						
+						//if groupby is empty or none
+						if(!dimension){
+							Object.keys(inData).forEach(function(key) {
+								inData[primaryObject.name] = inData[key];
+		                        delete inData[key];	
+							});
 						}
-						Object.keys(inData).forEach(function(key) {
-							for ( var item in enums)
-	                          {
-	                             if (enums[item].id == key)
-	                             {
-	                            	 inData[enums[item].name] = inData[key];
-	                                 delete inData[key];
-	                                break;
-	                             }
-	                          }
-						});
+
+						if (dimension && dimension.enumerationType) {
+							var qualifier = dimension.enumerationType.split(":");
+							var enums = this.reportingService.getEnumerators2(qualifier[0], qualifier[1]);
+							if(!enums){
+								return;
+							}
+							Object.keys(inData).forEach(function(key) {
+								for ( var item in enums)
+		                          {
+		                             if (enums[item].id == key)
+		                             {
+		                            	 inData[enums[item].name] = inData[key];
+		                                 delete inData[key];
+		                                break;
+		                             }
+		                          }
+							});
+						}
 					}
 				};
 				
@@ -697,14 +699,26 @@ define(
 				}
 				var self = this;
 				if(this.report.dataSet.type === 'seriesGroup' && this.report.layout.subType == this.reportingService.metadata.layoutSubTypes.table.id){
-					this.getPreviewData(self.report).done(
-							function(data) {
-								self.refreshPreview1(data, scopeController);
-							}).fail(function(err) {
-						console.log("Failed getting Preview Date: showing dummy data" + err);
-					});
-				}else{
-					this.refreshPreview2(scopeController);
+						this.getPreviewData(self.report).done(
+								function(data) {
+									self.refreshSeriesTable(data, scopeController);
+								}).fail(function(err) {
+							console.log("Failed getting Preview Date: showing dummy data" + err);
+						});	
+				}else if (this.report.dataSet.type === 'seriesGroup'
+					&& this.report.layout.subType == this.reportingService.metadata.layoutSubTypes.chart.id) {
+					var deferred = jQuery.Deferred();
+
+					this.renderReport(self.report)
+							.done(function() {
+								deferred.resolve();
+							}).fail(function() {
+								deferred.reject();
+							});
+
+					return deferred.promise();
+				} else {
+					this.refreshRecordSet(scopeController);
 				}
 			};
 
@@ -719,7 +733,7 @@ define(
 			/**
 			 * 
 			 */
-			ReportRenderingController.prototype.refreshPreview1 = function(data, scopeController) {
+			ReportRenderingController.prototype.refreshSeriesTable = function(data, scopeController) {
 				   //apply ui terminologies
 				   this.performUII18n(data, this.report);	
 				
@@ -1077,10 +1091,10 @@ define(
                    
    	               scopeController.rows = tableArray.splice(1);
    	               
-   	               scopeController.updateView();
+   	               //scopeController.updateView();
                   };
 		
-		ReportRenderingController.prototype.refreshPreview2 = function(scopeController) {
+		ReportRenderingController.prototype.refreshRecordSet = function(scopeController) {
 			console.log("refreshPreview");
 			
 			var columns = this.reportingService.getColumnDimensions(this.report);
@@ -1114,42 +1128,31 @@ define(
             jQuery(".dynamicTable").html(TEMPLATE_COPY);
             
             var divElem = angular.element(".dynamicTable");
-           angularCompile(divElem)(divElem.scope());
+            angularCompile(divElem)(divElem.scope());
            
        if (columns.length != 0)
        {   
 			var self = this;
                setTimeout(function () {
-            self.refreshPreviewData(scopeController);
+            	   self.refreshPreviewData(scopeController);
                }, 200);
-       } else {
-				var self = this;
-				var deferred = jQuery.Deferred();
-
-				this.renderReport(self.report).done(function() {
-					deferred.resolve();
-				}).fail(function() {
-					deferred.reject();
-				});
-				
-				return deferred.promise();
-			}
+       } 
 		};
 		
 		/**
      * 
      */
     ReportRenderingController.prototype.refreshPreviewData = function(scopeController) {
-       var self = this;
+       var self = this;	
        
-       this.getPreviewData().done(
-           function(data) {
-            //Format data before displaying the Results
+   	   this.getPreviewData().done(
+		function(data) {
+			// Format data before displaying the Results
         	  scopeController.rows = self.formatPreviewData(data.rows);
-              scopeController.updateView();
-           }).fail(function(err){
-              console.log("Failed getting Preview Date: " + err);
-           });
+			scopeController.updateView();
+		}).fail(function(err) {
+			console.log("Failed getting Preview Date: " + err);
+		});   
     };
     
 /**
@@ -1242,5 +1245,4 @@ ReportRenderingController.prototype.formatPreviewData = function(data) {
 	            }
 	            return id;
 			}		
-			
 		});

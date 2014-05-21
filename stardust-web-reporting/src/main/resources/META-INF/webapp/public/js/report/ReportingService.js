@@ -754,48 +754,52 @@ define(
 				ReportingService.prototype.retrieveData = function(report) {
 					var deferred = jQuery.Deferred();
 
-					if (this.mode === "test") {
-						if (this.metadata.objects[report.data.primaryObject].id === "processInstance") {
-							deferred.resolve(this
-									.retrieveProcessInstanceData(report));
-						} else if (this.metadata.objects[report.data.primaryObject].id === "activityInstance") {
-							deferred.resolve(this
-									.retrieveActivityInstanceData(report));
-						} else if (this.metadata.objects[report.data.primaryObject].id === "role") {
-							deferred.resolve(this.retrieveRoleData(report));
+					if(! (typeof report_data === 'undefined')){
+						deferred.resolve(report_data);
+					}else{
+					
+						if (this.mode === "test") {
+							if (this.metadata.objects[report.data.primaryObject].id === "processInstance") {
+								deferred.resolve(this
+										.retrieveProcessInstanceData(report));
+							} else if (this.metadata.objects[report.data.primaryObject].id === "activityInstance") {
+								deferred.resolve(this
+										.retrieveActivityInstanceData(report));
+							} else if (this.metadata.objects[report.data.primaryObject].id === "role") {
+								deferred.resolve(this.retrieveRoleData(report));
+							}
+						} else {
+							if(report.layout.table.preview && report.layout.type == "simpleReport"){
+									deferred.resolve(this.getTestSimpleReportData(report));
+							}else{
+								var self = this;
+	
+								console.debug("Report Definition");
+								console.debug(report);
+	
+								jQuery
+										.ajax(
+												{
+													type : "POST",
+													beforeSend : function(request) {
+														request
+																.setRequestHeader(
+																		"Authentication",
+																		self
+																				.getBasicAuthenticationHeader());
+													},
+													url : self.getRootUrl()
+															+ "/services/rest/bpm-reporting/report-data",
+													contentType : "application/json",
+													data : JSON.stringify(report)
+												}).done(function(data) {
+											deferred.resolve(data);
+										}).fail(function() {
+											deferred.reject([]);
+										});
+							}
 						}
-					} else {
-						if(report.layout.table.preview && report.layout.type == "simpleReport"){
-								deferred.resolve(this.getTestSimpleReportData(report));
-						}else{
-							var self = this;
-
-							console.debug("Report Definition");
-							console.debug(report);
-
-							jQuery
-									.ajax(
-											{
-												type : "POST",
-												beforeSend : function(request) {
-													request
-															.setRequestHeader(
-																	"Authentication",
-																	self
-																			.getBasicAuthenticationHeader());
-												},
-												url : self.getRootUrl()
-														+ "/services/rest/bpm-reporting/report-data",
-												contentType : "application/json",
-												data : JSON.stringify(report)
-											}).done(function(data) {
-										deferred.resolve(data);
-									}).fail(function() {
-										deferred.reject([]);
-									});
-						}
-					}
-
+					}	
 					return deferred.promise();
 				};
 
@@ -1488,8 +1492,19 @@ define(
 						           140,
 						           150
 						         ]
-						       ]}
+						       ]};
+				
 				var nonCountGroupbyCumulantsCol = {
+						"Activity A-2" : [ [ "2014/05/02", 0, 0, 0, 0, 0 ],
+								[ "2014/05/03", 12, 7, 9.5, 3.53, 2 ] ],
+						"Manual Activity 1" : [
+								[ "2014/05/02", 11, 3, 6.66, 4.04, 3 ],
+								[ "2014/05/03", 1041, 0, 244.8, 378.74, 10 ] ],
+						"Activity A-1" : [ [ "2014/05/02", 0, 0, 0, 0, 0 ],
+								[ "2014/05/03", 35, 19, 27.0, 11.31, 2 ] ]
+				}
+				
+				var nonCountGroupbyCumulantsCol1 = {
 						  "A1": [
 						         [
 						           "2014/01",
@@ -1685,6 +1700,11 @@ define(
 	                 	   }
 	                    }
 					}
+					
+					if(report.dataSet.type == "recordSet"){
+						return {"columns":["activityOID","activityName","startTimestamp"],"rows":[[15,"Activity A-2","2014/05/16 09:30:24:581"],[14,"Activity A-1","2014/05/16 09:29:49:230"],[1,"Manual Activity 1","2014/05/09 08:25:50:457"]]};
+					}
+					
 					return inData;
             };
             
