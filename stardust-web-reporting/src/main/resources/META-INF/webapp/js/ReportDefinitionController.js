@@ -530,7 +530,8 @@ define(
 								filters : [],
 								factDurationUnit : "d",
 								firstDimensionCumulationIntervalCount : 1,
-								firstDimensionCumulationIntervalUnit : "d"
+								firstDimensionCumulationIntervalUnit : "d",
+								firstDimensionDurationUnit: "s"
 							},
 							parameters : {},
 							layout : {
@@ -849,13 +850,6 @@ define(
 
 					this.report.layout.chart.options.axes.yaxis.label = this
 							.getFact().name;
-				};
-
-				/**
-				 * 
-				 */
-				ReportDefinitionController.prototype.isFactDuration = function() {
-					return this.getFact().type == this.reportingService.metadata.durationType;
 				};
 
 				/**
