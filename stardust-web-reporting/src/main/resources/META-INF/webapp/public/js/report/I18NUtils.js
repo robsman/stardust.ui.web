@@ -17,7 +17,7 @@ define([ "i18n" ], function(InfinityBPMI18N) {
 		getProperty : function(key, defaultValue) {
 			var value = defaultValue;
 			if(!(typeof message_bundle === 'undefined')){
-	 
+				value = message_bundle[key];
 			}else{
 				if (!modelerI18N) {
 					try {
