@@ -369,32 +369,6 @@ var message_bundle = {
 	<!-- <div>--------------------Using remote partial url</div> -->
 	<!-- <div ng-include="'report/reportDefinitionView.html'"></div> -->
 	<div id="reportDefinitionView" style="visibility: hidden;">
-		<div ng-show="hasParameters()">
-			<div class="heading">Parameters</div>
-			<table class="formTable" style="margin-bottom: 10px;">
-				<tr ng-repeat="parameter in getParameters()">
-					<td><label title="{{parameter.id}}">{{getParamDisplayName(parameter.name)}}
-					</label></td>
-					<td><input type="text"
-						ng-model="getParameters()[parameter.id].value" sd-datetime
-						ng-show="parameter.type == getMetadata().timestampType.id"
-						value="{{getParameterDefaultValue(parameter.id)}}"
-						ng-blur="refreshPreview()" /><input type="number"
-						ng-model="report.parameters[parameter.id].value"
-						ng-show="parameter.type == getMetadata().integerType.id"
-						value="{{getParameterDefaultValue(parameter.id)}}"
-						ng-blur="refreshPreview()" /> <input
-						ng-model="report.parameters[parameter.id].value"
-						ng-show="parameter.type == getMetadata().stringType.id"
-						value="{{getParameterDefaultValue(parameter.id)}}"
-						ng-blur="refreshPreview()" /> <select multiple="multiple"
-						ng-model="report.parameters[parameter.id].value"
-						ng-show="parameter.type == getMetadata().enumerationType.id"
-						ng-options="x as x for x in getTestEnumerators()"
-						ng-blur="refreshPreview()"></select></td>
-				</tr>
-			</table>
-		</div>
 		<div class="heading">{{report.layout.title}}</div>
 		<div
 			ng-show="report.layout.type == 'table' || report.layout.subType == reportingService.metadata.layoutSubTypes.table.id">
