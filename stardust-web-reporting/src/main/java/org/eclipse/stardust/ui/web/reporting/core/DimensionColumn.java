@@ -10,6 +10,8 @@
 *******************************************************************************/
 package org.eclipse.stardust.ui.web.reporting.core;
 
+import org.eclipse.stardust.ui.web.reporting.core.Constants.TimeUnit;
+
 public class DimensionColumn extends GroupColumn
 {
    public DimensionColumn(String id)
@@ -20,5 +22,10 @@ public class DimensionColumn extends GroupColumn
    public DimensionColumn(String id, Interval interval)
    {
       super(id, interval);
+   }
+
+   public DimensionColumn(String id, TimeUnit timeUnit, Interval interval)
+   {
+      super(id, timeUnit, interval);
    }
 }

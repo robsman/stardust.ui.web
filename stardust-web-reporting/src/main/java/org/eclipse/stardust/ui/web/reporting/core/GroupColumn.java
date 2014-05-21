@@ -10,6 +10,8 @@
 *******************************************************************************/
 package org.eclipse.stardust.ui.web.reporting.core;
 
+import org.eclipse.stardust.ui.web.reporting.core.Constants.TimeUnit;
+
 
 public class GroupColumn extends RequestColumn
 {
@@ -21,5 +23,10 @@ public class GroupColumn extends RequestColumn
    public GroupColumn(String id, Interval interval)
    {
       super(id, interval);
+   }
+
+   public GroupColumn(String id, TimeUnit timeUnit, Interval interval)
+   {
+      super(id, timeUnit, interval);
    }
 }

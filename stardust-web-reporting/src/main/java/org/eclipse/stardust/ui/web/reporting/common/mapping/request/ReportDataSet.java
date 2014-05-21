@@ -2,6 +2,8 @@ package org.eclipse.stardust.ui.web.reporting.common.mapping.request;
 
 import java.util.List;
 
+import com.google.gson.JsonElement;
+
 import org.eclipse.stardust.ui.web.reporting.common.validation.IValidateAble;
 import org.eclipse.stardust.ui.web.reporting.common.validation.annotations.NotNull;
 
@@ -20,6 +22,8 @@ public class ReportDataSet implements IValidateAble
    private List<ReportComputedColumn> computedColumns;
 
    private List<String> columns;
+
+   private JsonElement columnsDurationUnit;
 
    private List<ReportFilter> filters;
 
@@ -117,6 +121,11 @@ public class ReportDataSet implements IValidateAble
    public void setFilters(List<ReportFilter> filters)
    {
       this.filters = filters;
+   }
+
+   public JsonElement getColumnsDurationUnit()
+   {
+      return columnsDurationUnit;
    }
 
    public String getFactDurationUnit()

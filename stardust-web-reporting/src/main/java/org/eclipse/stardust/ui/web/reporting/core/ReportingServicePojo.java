@@ -2,8 +2,10 @@ package org.eclipse.stardust.ui.web.reporting.core;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.Map.Entry;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.common.StringUtils;
@@ -274,7 +276,7 @@ public class ReportingServicePojo
       return null;
    }
 
-   private Interval getDimensionInterval(ReportDataSet dataSet)
+   private Interval getDimensionCumulationInterval(ReportDataSet dataSet)
    {
       Long unitValue
          = dataSet.getFirstDimensionCumulationIntervalCount();
@@ -283,6 +285,19 @@ public class ReportingServicePojo
       {
          TimeUnit unit = getTimeUnit(dataSet.getFirstDimensionCumulationIntervalUnit());
          return new Interval(unit, unitValue);
+      }
+
+      return null;
+   }
+
+   private TimeUnit getDimensionDuration(ReportDataSet dataSet)
+   {
+      String firstDimensionDurationUnit
+         = dataSet.getFirstDimensionDurationUnit();
+
+      if(StringUtils.isNotEmpty(firstDimensionDurationUnit))
+      {
+         return TimeUnit.parse(firstDimensionDurationUnit);
       }
 
       return null;
@@ -377,8 +392,10 @@ public class ReportingServicePojo
       {
          //implicit grouping information - according to ui team: dimension is always grouped
          //but will not result in an own series - thats why you need two Grouping classes - to distinguish
-         Interval dimensionInterval = getDimensionInterval(dataSet);
-         DimensionColumn dimensionColumn = new DimensionColumn(dataSet.getFirstDimension(), dimensionInterval);
+         Interval dimensionCumulationInterval = getDimensionCumulationInterval(dataSet);
+         TimeUnit dimensionDuration = getDimensionDuration(dataSet);
+
+         DimensionColumn dimensionColumn = new DimensionColumn(dataSet.getFirstDimension(), dimensionDuration, dimensionCumulationInterval);
          groupColumns.add(dimensionColumn);
       }
 
@@ -396,11 +413,26 @@ public class ReportingServicePojo
 
    private List<RequestColumn> getRequestColumns(DataSetType dataSetType, ReportDataSet dataSet)
    {
+      Map<String, TimeUnit> columnDurationInfos = new HashMap<String, TimeUnit>();
+      JsonElement columnsDurationUnitsWrapper = dataSet.getColumnsDurationUnit();
+      if(columnsDurationUnitsWrapper != null)
+      {
+         Set<Entry<String, JsonElement>> columnsDurationUnits = columnsDurationUnitsWrapper.getAsJsonObject().entrySet();
+         for(Entry<String, JsonElement> columnDurationInfo: columnsDurationUnits)
+         {
+            String columnId = columnDurationInfo.getKey();
+            String durationUnitString = columnDurationInfo.getValue().getAsString();
+            TimeUnit durationUnit = TimeUnit.parse(durationUnitString);
+            columnDurationInfos.put(columnId, durationUnit);
+         }
+      }
+
       List<RequestColumn> requestColumns
          = new ArrayList<RequestColumn>();
       for (String s : dataSet.getColumns())
       {
-         RequestColumn requestColumn = new RequestColumn(s);
+         TimeUnit timeUnit = columnDurationInfos.get(s);
+         RequestColumn requestColumn = new RequestColumn(s, timeUnit);
          requestColumns.add(requestColumn);
       }
 
