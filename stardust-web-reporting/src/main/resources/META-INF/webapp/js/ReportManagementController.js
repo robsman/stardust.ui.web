@@ -203,7 +203,14 @@ define(
 									self.reportingService
 											.renameReportDefinition(
 													data.rslt.obj.attr("path"),
-													data.rslt.name);
+													data.rslt.name).done(
+                                                function() {
+                                                   self.loadReportDefinitionsFolderStructure();
+                                                   document.body.style.cursor = "default";
+                                             }).fail(
+                                                      function() {
+                                                         document.body.style.cursor = "default";
+                                                      });
 								}
 							});
 					this.loadReportDefinitionsFolderStructure();

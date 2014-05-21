@@ -1334,14 +1334,50 @@ define(
 					console.log(this.getJsonString());
 
 					var self = this;
-
-					this.reportingService.saveReportDefinition(this.report)
-							.done(
-									function(report) {
-										self.report = report;
-										window.parent.EventHub.events.publish("BPM-REPORTING-REPORT-CREATED");
-										self.updateView();
-									});
+					
+					//Check if Report name has been changed. If yes then first invoke rename and then save 
+					if (self.path != null)
+               {
+					   var ext = ".bpmrptdesign";
+					   var id = self.path; 
+					   var lastIndex = id.lastIndexOf("/");
+	               id = id.substr( lastIndex + 1, id.length);
+	               id = id.substr( 0, id.lastIndexOf("."));
+	               
+	               if (id !== self.report.name)
+                  {
+                     //report name has been changed
+	                  console.log("report name has been changed");
+	                  self.reportingService
+                     .renameReportDefinition(
+                              self.path,
+                              self.report.name).done(
+                                    function() {
+                                       //self.loadReportDefinitionsFolderStructure();
+                                       self.reportingService.saveReportDefinition(self.report)
+                                       .done(
+                                             function(report) {
+                                                self.report = report;
+                                                window.parent.EventHub.events.publish("BPM-REPORTING-REPORT-CREATED");
+                                                self.updateView();
+                                             });
+                                             document.body.style.cursor = "default";
+                                       }).fail(
+                                          function() {
+                                             document.body.style.cursor = "default";
+                                       });
+	                  return;
+                  }
+               } 
+               self.reportingService.saveReportDefinition(self.report)
+                  .done(
+                        function(report) {
+                           self.report = report;
+                           window.parent.EventHub.events.publish("BPM-REPORTING-REPORT-CREATED");
+                           self.updateView();
+                        });
+               document.body.style.cursor = "default";
+					
 				};
 
 				/**
