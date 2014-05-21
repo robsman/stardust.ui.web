@@ -80,16 +80,16 @@ define([ "bpm-reporting/public/js/report/I18NUtils",
 					//TODO: remove after testing
 					//report_definition.layout.table.preview = true;
 					
-					report_data = this.reportingService
-							.getTestSimpleReportData(report_definition); // TODO:
-																	// this
-																	// would be
-																	// html
-																	// based
-																	// script
-																	// variable
-
-
+					if((typeof report_data === 'undefined')){
+						report_data = this.reportingService
+						.getTestSimpleReportData(report_definition); // TODO:
+																// this
+																// would be
+																// html
+																// based
+																// script
+																// variable	
+					}
 					
 					jQuery("#reportDefinitionView").css("visibility", "visible");
 				};
