@@ -1091,7 +1091,7 @@ define(
                    
    	               scopeController.rows = tableArray.splice(1);
    	               
-   	               //scopeController.updateView();
+   	               scopeController.updateView();
                   };
 		
 		ReportRenderingController.prototype.refreshRecordSet = function(scopeController) {
