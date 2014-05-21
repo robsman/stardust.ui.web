@@ -211,10 +211,15 @@ public class DocumentSearchProvider implements Serializable
          repositories
                .add(new SelectItem(ALL, messageCommonBean.getString("views.documentSearchView.documentType.All")));
          
-         for (IRepositoryInstanceInfo repos : repositoryInstances)
+         if (!CollectionUtils.isEmpty(repositoryInstances) && repositoryInstances.size() > 1)
          {
-            repositories.add(new SelectItem(repos.getRepositoryId(), repos.getRepositoryId() + POSTFIX_OPEN +repos.getRepositoryName()+ POSTFIX_CLOSE));
+            for (IRepositoryInstanceInfo repos : repositoryInstances)
+            {
+               repositories.add(new SelectItem(repos.getRepositoryId(), repos.getRepositoryId() + POSTFIX_OPEN
+                     + repos.getRepositoryName() + POSTFIX_CLOSE));
+            }
          }
+         
       }
 
       public ArrayList<SelectItem> getFileSize()

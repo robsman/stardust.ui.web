@@ -301,12 +301,12 @@
 									style="color:red;" />
 						</ice:column>
 
-						<ice:column>
+						<ice:column rendered="#{fn:length(documentSearchBean.filterAttributes.repositories) > 1}">
 							<ice:outputText
 								value="#{documentSearchBean.messages['repository.label']}#{documentSearchBean.messages['colon']}"
 								styleClass="label-form" />
 						</ice:column>
-						<ice:column>
+						<ice:column rendered="#{fn:length(documentSearchBean.filterAttributes.repositories) > 1}">
 								<ice:selectManyMenu id="repositoryName"
 									style="height:75px; width:210px;align:center;"
 									value="#{documentSearchBean.filterAttributes.selectedRepository}"
