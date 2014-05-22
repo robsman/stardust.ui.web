@@ -28,7 +28,7 @@ define(
 		      var angularAdapter = null; 
 		      var angularCompile = null;
 			return {
-				create : function(angular, name, path, options) {
+				create : function(angular, name, path, isClone, options) {
 					var controller = new ReportDefinitionController();
 					
 			        var angularAdapter = new bpm.portal.AngularAdapter(options);
@@ -47,7 +47,7 @@ define(
 					
 					var renderingController = ReportRenderingController.create(angularCompile);
 
-					controller.initialize(renderingController, name, path);
+					controller.initialize(renderingController, name, path, isClone);
 					
 					return controller;
 				}
@@ -70,7 +70,7 @@ define(
 				 * 
 				 */
 				ReportDefinitionController.prototype.initialize = function(
-						renderingController, name, path) {
+						renderingController, name, path, isClone) {
 					this.constants = {
 							ALL_PROCESSES : {id: "allProcesses", name: this.getI18N("reporting.definitionView.additionalFiltering.allprocesses")},
 							ALL_ACTIVITIES : {id: "allActivities", name: this.getI18N("reporting.definitionView.additionalFiltering.allactivities")}
@@ -81,6 +81,7 @@ define(
 					this.schedulingController = SchedulingController.create();
 
 					this.path = path;
+					this.isClone = isClone;
 
 					this.dataSetPanel = jQuery("#dataSetPanel");
 					this.layoutPanel = jQuery("#layoutPanel");
@@ -368,7 +369,7 @@ define(
 
 							self
 							.loadOrCreateReportDefinition(
-								name, path)
+								name, path, isClone)
 							.done(
 								function () {
 								// TODO Need a
@@ -484,7 +485,7 @@ define(
 				 * 
 				 */
 				ReportDefinitionController.prototype.loadOrCreateReportDefinition = function(
-						name, path) {
+						name, path, isClone) {
 					var deferred = jQuery.Deferred();
 
 					var self = this;
@@ -492,6 +493,14 @@ define(
 					if (path) {
 						this.reportingService.retrieveReportDefinition(path)
 								.done(function(report) {
+								   
+								   if (self.isClone)
+                           {
+								      var clonedReport = self.cloneReportDefinition(report);
+                              clonedReport.name = "Copy " + clonedReport.name;
+                              self.path = null;
+                              report = clonedReport;
+                           }
 
 									self.report = report;
 									
@@ -2180,6 +2189,14 @@ define(
                }
                
                return dimensions;
+            };
+            
+            /**
+             * Function to clone a JS object.
+             */
+            ReportDefinitionController.prototype.cloneReportDefinition = function(report) {
+               var clonedReport = jQuery.extend(true, {}, report);               
+               return clonedReport;
             };
 		}
 			

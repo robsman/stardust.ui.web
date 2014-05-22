@@ -111,6 +111,8 @@ define(
 														create : false,
 														rename : {
 															label : "Rename", // I18N
+															icon : self.reportingService.getRootUrl()
+                                                         + "/plugins/views-common/images/icons/rename.png",
 															action : function(
 																	obj) {
 																jQuery(
@@ -124,6 +126,8 @@ define(
 														},
 														deleteReport : {
 															label : "Delete", // I18N
+															icon : self.reportingService.getRootUrl()
+                                                         + "/plugins/views-common/images/icons/delete.png",
 															action : function(
 																	obj) { 
 				                                       self.deleteElementAction(
@@ -155,6 +159,8 @@ define(
 														},
 														download : {
 															label : "Download", // I18N
+															icon : self.reportingService.getRootUrl()
+                                                         + "/plugins/views-common/images/icons/page_white_put.png",
 															action : function(
 																	obj) {
 																var path = obj.attr("path")
@@ -163,8 +169,19 @@ define(
 														},
 														clone : {
                                              label : "Clone", // I18N
+                                             /*icon : self.reportingService.getRootUrl()
+                                                         + "/plugins/views-common/images/icons/clone.png",*/
                                              action : function(
                                                    obj) {
+                                                self.openView("reportDefinitionView",
+                                                         "name="
+                                                               + obj.attr("name")
+                                                               + "&path=" + obj.attr("path")
+                                                               + "&isClone=" + true,
+                                                         "name="
+                                                               + obj.attr("name")
+                                                               + "&path=" + obj.attr("path")
+                                                               + "&isClone=" + true);
                                              }
                                           }
 													};

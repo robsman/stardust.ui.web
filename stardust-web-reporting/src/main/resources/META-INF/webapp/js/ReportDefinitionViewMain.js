@@ -106,6 +106,7 @@ require(
 						ReportDefinitionController.create(angularjs, jQuery
 								.url(window.location.search).param("name"),
 								jQuery.url(window.location.search)
-										.param("path"), options);
+										.param("path"), jQuery.url(window.location.search)
+                              .param("isClone"), options);
 					});
 		});
