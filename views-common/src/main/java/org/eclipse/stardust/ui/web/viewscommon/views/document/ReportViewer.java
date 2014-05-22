@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 SunGard CSA LLC and others.
+ * Copyright (c) 2014 SunGard CSA LLC and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,73 +10,79 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.views.document;
 
+import javax.faces.context.FacesContext;
 
-import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.ui.web.common.app.PortalApplication;
+import org.eclipse.stardust.ui.web.common.app.PortalApplicationEventScript;
 import org.eclipse.stardust.ui.web.common.app.View;
-import org.eclipse.stardust.ui.web.common.util.FacesUtils;
-import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
+import org.eclipse.stardust.ui.web.common.event.ViewEvent;
+import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
-import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MIMEType;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
-import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
-
+import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 
 /**
  * @author Yogesh.Manware
  * 
  */
-public class ReportViewer implements IDocumentViewer
+public class ReportViewer implements IDocumentViewer, ViewEventHandler
 {
-   public static final String URL_PARAMETERS="URL_PARAMETERS";
+   public static final String URL_PARAMETERS = "URL_PARAMETERS";
    private static final String FAVORITE_MARKED = "/plugins/views-common/images/icons/star.png";
    private static final String MARK_FAVORITE = "/plugins/views-common/images/icons/star-empty.png";
-   private final String contentUrl = "/plugins/views-common/views/report/reportViewer.xhtml";
-   private final String toolbarUrl = "/plugins/views-common/extension/toolbar/reportDocumentViewToolbar.xhtml";
-   private final MIMEType[] mimeTypes = {};
-
-   private String sourceURI;
-   private String reportUri;
+   private static final String CONTENT_URL = "/plugins/views-common/views/report/reportViewerFrameAdapter.xhtml";
+   private static final String TOOLBAR_URL = "/plugins/views-common/extension/toolbar/reportDocumentViewToolbar.xhtml";
+   
+   // Report Viewer
+   private static final String VIEW_PATH = "/plugins/views-common/views/report/reportViewer.html";
+   private static final String ANCHOR_ID = "reportViewerFrameAnchor";
+   private static final String KEY_PARAM = "reportViewerName";
+   
+   private final MIMEType[] mimeTypes = {MimeTypesHelper.BPM_RPT_DESIGN};
    private boolean favoriteReport;
    private MessagesViewsCommonBean propsBean;
-   private View view;
    private IDocumentContentInfo documentContentInfo;
+
+   private String reportPath = "";
+   private String reportName = "";
 
    /*
     * (non-Javadoc)
     * 
-    * @see org.eclipse.stardust.ui.web.viewscommon.views.document.IDocumentViewer#initialize(org.eclipse.stardust.ui.web.viewscommon.views.document.IDocumentContentInfo, org.eclipse.stardust.ui.web.common.app.View)
+    * @see
+    * org.eclipse.stardust.ui.web.viewscommon.views.document.IDocumentViewer#initialize
+    * (org.eclipse.stardust.ui.web.viewscommon.views.document.IDocumentContentInfo,
+    * org.eclipse.stardust.ui.web.common.app.View)
     */
    public void initialize(IDocumentContentInfo documentContentInfo, View view)
    {
-      this.view = view;
       propsBean = MessagesViewsCommonBean.getInstance();
       if (documentContentInfo instanceof JCRDocument)
       {
          JCRDocument jcrDocument = (JCRDocument) documentContentInfo;
-         try
-         {
-            reportUri = getJCRReportUri(jcrDocument.getDocument().getId());
-         }
-         catch (Exception e)
-         {
-            ExceptionHandler.handleException(e);
-         }
+         reportName = jcrDocument.getName();
+         reportPath = jcrDocument.getDocument().getPath();
       }
-      else if (documentContentInfo instanceof FileSystemDocument)
+      else
       {
-         reportUri = documentContentInfo.getId();
+         // nothing
       }
       this.documentContentInfo = documentContentInfo;
+      this.documentContentInfo.setShowDetails(false);
+
       setFavoriteStatus(documentContentInfo.getId());
-      String queryString = getQueryString();
-      sourceURI = DocumentMgmtUtility.getReportingBaseURL() + "/" + getPartitionID() + "?__report=" + reportUri + queryString + "&realmId="
-            + UserUtils.getRealmId() + "&workflowUserSessionId=" + ServiceFactoryUtils.getWorkflowUserSessionId();
    }
-   
+
+   /**
+    * archive report
+    */
+   public void archiveReport()
+   {
+
+   }
+
    /**
     * mark or unmark favorite reports
     */
@@ -108,44 +114,6 @@ public class ReportViewer implements IDocumentViewer
    }
 
    /**
-    */
-   private String getQueryString()
-   {
-      if (CollectionUtils.isNotEmpty(view.getViewParams()))
-      {
-         String modelId = (String) view.getViewParams().get("ModelID");
-         String modelOId = (String) view.getViewParams().get("ModelOID");
-         StringBuilder strBuilder = new StringBuilder();
-         if (StringUtils.isNotEmpty(modelId) && StringUtils.isNotEmpty(modelOId))
-         {
-            strBuilder.append("&").append("ModelID").append("=").append(modelId);
-            strBuilder.append("&").append("ModelOID").append("=").append(modelOId);
-         }
-         return strBuilder.toString();
-      }
-      return "";
-   }
-   
-   /**
-    * @return
-    */
-   private String getPartitionID()
-   {
-      return "frameset/" + UserUtils.getPartitionID();
-   }
-   
-   /**
-    * @param documentPath
-    * @return
-    * @throws ResourceNotFoundException
-    */
-   private String getJCRReportUri(String documentOID) throws ResourceNotFoundException
-   {
-      return FacesUtils.getServerBaseURL() + "/dms-content/"
-            + DocumentMgmtUtility.getDocumentManagementService().requestDocumentContentDownload(documentOID);
-   }
-
-   /**
     * @param documentId
     */
    private void setFavoriteStatus(String documentId)
@@ -169,15 +137,7 @@ public class ReportViewer implements IDocumentViewer
     */
    public String getContentUrl()
    {
-      return contentUrl;
-   }
-
-   /**
-    * returns the resource uri
-    */
-   public String getContent()
-   {
-      return sourceURI;
+      return CONTENT_URL;
    }
 
    public MIMEType[] getMimeTypes()
@@ -187,7 +147,7 @@ public class ReportViewer implements IDocumentViewer
 
    public String getToolbarUrl()
    {
-      return toolbarUrl;
+      return TOOLBAR_URL;
    }
 
    public String getFavoriteIcon()
@@ -216,4 +176,78 @@ public class ReportViewer implements IDocumentViewer
 
    public void closeDocument()
    {}
+
+   @Override
+   public String getContent()
+   {
+      // TODO Auto-generated method stub
+      return "";
+   }
+
+   @Override
+   /**
+    *
+    */
+   public void handleEvent(ViewEvent event)
+   {
+      String pagePath = FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath();
+      pagePath += VIEW_PATH;
+
+      event.getView().getViewParams().put("name", reportName);
+      event.getView().getViewParams().put("path", reportPath);
+      event.getView().getViewParams().put("viewMode", "instance");
+
+      String iframeId = "mf_" + event.getView().getIdentityParams();
+
+      switch (event.getType())
+      {
+      case TO_BE_ACTIVATED:
+         Object keyParamValue = (StringUtils.isNotEmpty(KEY_PARAM)) ? event.getView().getViewParams().get(KEY_PARAM) : "";
+         PortalApplication.getInstance().addEventScript(
+               "InfinityBpm.ProcessPortal.createOrActivateContentFrame('" + iframeId + "', '" + pagePath
+                     + event.getView().getParams() + "', {anchorId:'" + ANCHOR_ID
+                     + "', anchorYAdjustment:10, zIndex:200, frmAttrs: {displayName: '" + keyParamValue + "'}});");
+         fireResizeIframeEvent();
+
+         if (View.ViewState.INACTIVE == event.getView().getViewState())
+         {
+            changeMouseCursorStyle("default");
+         }
+         break;
+
+      case TO_BE_DEACTIVATED:
+         PortalApplication.getInstance().addEventScript(
+               "InfinityBpm.ProcessPortal.deactivateContentFrame('" + iframeId + "');");
+         fireResizeIframeEvent();
+         break;
+
+      case CLOSED:
+         PortalApplication.getInstance().addEventScript(
+               "InfinityBpm.ProcessPortal.closeContentFrame('" + iframeId + "');");
+         break;
+
+      case LAUNCH_PANELS_ACTIVATED:
+      case LAUNCH_PANELS_DEACTIVATED:
+      case FULL_SCREENED:
+      case RESTORED_TO_NORMAL:
+      case PINNED:
+      case PERSPECTIVE_CHANGED:
+         fireResizeIframeEvent();
+         break;
+      }
+   }
+
+   private void fireResizeIframeEvent()
+   {
+      PortalApplication.getInstance().addEventScript("InfinityBpm.ProcessPortal.resizeIFrames();");
+   }
+
+   /**
+    * @param style
+    */
+   private void changeMouseCursorStyle(String style)
+   {
+      PortalApplicationEventScript.getInstance().addEventScript(
+            "InfinityBpm.Core.changeMouseCursorStyle(\"" + style + "\");");
+   }
 }

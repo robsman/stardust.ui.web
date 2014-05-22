@@ -166,4 +166,10 @@ public abstract class AbstractDocumentContentInfo implements IDocumentContentInf
    {
       return showDetails;
    }
+
+   public void setShowDetails(boolean showDetails)
+   {
+      this.showDetails = showDetails;
+   }
+
 }

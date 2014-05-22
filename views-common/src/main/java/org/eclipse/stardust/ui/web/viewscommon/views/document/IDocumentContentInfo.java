@@ -59,5 +59,6 @@ public interface IDocumentContentInfo extends Serializable
 
    boolean isSupportsVersioning();
    IVersionTracker getVersionTracker();
+   void setShowDetails(boolean showDetails);
    boolean isShowDetails();
 }
