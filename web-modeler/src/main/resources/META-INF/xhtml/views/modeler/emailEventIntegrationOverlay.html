@@ -3,75 +3,64 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title>Message Event</title>
-<link href="plugins/bpm-modeler/css/bpm-modeler.custom.jquery.ui.css" rel="stylesheet" type="text/css" />
+<link href="plugins/bpm-modeler/css/bpm-modeler.custom.jquery.ui.css" rel="stylesheet"
+   type="text/css" />
 </head>
 <body>
-	<div id="propertiesTabs" class="minimalTabs" style="margin-top: 10px;">
-		<ul id="propertiesTabsList">
-			<li><a href="#configurationTab"><span class="tabLabel"
-					id="configuration">Configuration</span> </a>
-			</li>
-			<li><a href="#parametersTab"><span class="tabLabel"
-					id="parameters">Parameters</span> </a>
-			</li>
-		</ul>
-		<div id="configurationTab">
-			<table>
-				<tr>
-					<td><label for="protocolSelect">Protocol</label>
-					</td>
-					<td><select id="protocolSelect">
-							<option value="pop3">POP3</option>
-							<option value="imap">IMAP</option>
-					</select>
-					</td>
-				</tr>
-				<tr>
-					<td><label for="mailServerInput">Mail Server</label>
-					</td>
-					<td><input id="mailServerInput" type="text"
-						style="width: 200px;" /></td>
-				</tr>
-				<tr>
-					<td><label for="portInput">Port</label>
-					</td>
-					<td><input id="portInput" type="text" class="rightAligned"
-						style="width: 50px;" /></td>
-				</tr>
-				<tr>
-					<td><label for="accountInput">Account</label>
-					</td>
-					<td><input id="accountInput" type="text" style="width: 200px;" />
-					</td>
-				</tr>
-				<tr>
-					<td><label for="passwordInput">Password</label>
-					</td>
-					<td><input id="passwordInput" type="password"
-						style="width: 200px;" /></td>
-				</tr>
-			</table>
-			<table style="margin-top: 10px;">
-				<tr>
-					<td><label for="connectionTimeoutInput">Connection
-							Timeout</label>
-					</td>
-					<td><input id="connectionTimeoutInput" type="text" class="rightAligned"
-						style="width: 100px;" /></td>
-					<td><select id="connectionTimeoutUnitSelect">
-					</select></td>
-				</tr>
-				<tr>
-					<td><label for="initialDelayInput">Initial Delay</label>
-					</td>
-					<td><input id="initialDelayInput" type="text" class="rightAligned"
-						style="width: 100px;" /></td>
-					</td>
-					<td><select id="initialDelayUnitSelect">
-					</select></td>
+   <div id="propertiesTabs" class="minimalTabs" style="margin-top: 10px;">
+      <ul id="propertiesTabsList">
+         <li><a href="#configurationTab"><span class="tabLabel"
+               id="configuration">Configuration</span> </a></li>
+         <li><a href="#parametersTab"><span class="tabLabel" id="parameters">Parameters</span>
+         </a></li>
+         <li><a href="#converterSettingsTab"><span class="tabLabel"
+               id="converterSettings">Settings</span> </a></li>
+      </ul>
+      <div id="configurationTab">
+         <table>
+            <tr>
+               <td><label for="protocolSelect">Protocol</label></td>
+               <td><select id="protocolSelect">
+                     <option value="pop3">POP3</option>
+                     <option value="imap">IMAP</option>
+               </select></td>
+            </tr>
+            <tr>
+               <td><label for="mailServerInput">Mail Server</label></td>
+               <td><input id="mailServerInput" type="text" style="width: 200px;" /></td>
+            </tr>
+            <tr>
+               <td><label for="portInput">Port</label></td>
+               <td><input id="portInput" type="text" class="rightAligned"
+                  style="width: 50px;" /></td>
+            </tr>
+            <tr>
+               <td><label for="accountInput">Account</label></td>
+               <td><input id="accountInput" type="text" style="width: 200px;" /></td>
+            </tr>
+            <tr>
+               <td><label for="passwordInput">Password</label></td>
+               <td><input id="passwordInput" type="password" style="width: 200px;" /></td>
+            </tr>
+         </table>
+         <table style="margin-top: 10px;">
+            <tr>
+               <td><label for="connectionTimeoutInput">Connection Timeout</label></td>
+               <td><input id="connectionTimeoutInput" type="text"
+                  class="rightAligned" style="width: 100px;" /></td>
+               <td><select id="connectionTimeoutUnitSelect">
+               </select></td>
+            </tr>
+            <tr>
+               <td><label for="initialDelayInput">Initial Delay</label></td>
+               <td><input id="initialDelayInput" type="text" class="rightAligned"
+                  style="width: 100px;" /></td>
+               </td>
+               <td><select id="initialDelayUnitSelect">
+               </select></td>
 
-				</tr>
-				<!-- <tr>
+            </tr>
+            <!-- <tr>
 					<td><label for="pollingDelayInput">Polling Interval</label>
 					</td>
 					<td><input id="pollingDelayInput" type="text" class="rightAligned"
@@ -80,20 +69,18 @@
 					<td><select id="pollingDelayUnitSelect">
 					</select></td>
 				</tr> -->
-			</table>
-			<table style="margin-top: 10px;">
-				<tr>
-					<td><input id="unseenInput" type="checkbox" /></td>
-					<td><label for="unseenInput">Unseen Mails only</label>
-					</td>
-				</tr>
-				<tr>
-					<td><input id="deleteInput" type="checkbox" /></td>
-					<td><label for="deleteInput">Delete after Processing</label>
-					</td>
-				</tr>
-			</table>
-		<!--	<table>
+         </table>
+         <table style="margin-top: 10px;">
+            <tr>
+               <td><input id="unseenInput" type="checkbox" /></td>
+               <td><label for="unseenInput">Unseen Mails only</label></td>
+            </tr>
+            <tr>
+               <td><input id="deleteInput" type="checkbox" /></td>
+               <td><label for="deleteInput">Delete after Processing</label></td>
+            </tr>
+         </table>
+         <!--	<table>
 				<tr>
 					<td><input id="copyToInput" type="checkbox" /></td>
 					<td><label for="copyToInput">After Processing copy to
@@ -102,85 +89,85 @@
 					<td><input id="copyToFolderInput" type="text" /></td>
 				</tr>
 			</table>  -->
-		</div>
-		<!-- <div id="parametersTab">
+      </div>
+      <!-- <div id="parametersTab">
 			<div id="parameterMappingsPanelAnchor" />
 		</div> -->
-		<div id="parametersTab">
-			<table cellpadding="0" cellspacing="0" class="layoutTable">
-				<tr>
-					<td>
-						<div class="heading" id="paramDef">Parameter Definitions</div>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<table>
-							<!--tr>
+      <div id="parametersTab">
+         <table cellpadding="0" cellspacing="0" class="layoutTable">
+            <tr>
+               <td>
+                  <div class="heading" id="paramDef">Parameter Definitions</div>
+               </td>
+            </tr>
+            <tr>
+               <td>
+                  <table>
+                     <!--tr>
 								<td><label for="inputBodyAccessPointInput" id="direction">Body
 										Input Access Point</label></td>
 								<td><select id="inputBodyAccessPointInput">
 								</select></td>
 							</tr-->
-							<tr>
-								<td><label for="outputBodyAccessPointInput" id="direction">Body
-										Output Access Point</label>
-								</td>
-								<td><select id="outputBodyAccessPointInput">
-								</select>
-								</td>
-							</tr>
-						</table></td>
-				</tr>
-				<tr>
-					<td>
-						<div class="panelBorder" style="width: 400px; margin-top: 10px;">
-							<table cellpadding="0" cellspacing="0" width="100%"
-								class="layoutTable">
-								<tr>
-									<td><div class="toolBar">
-											<table>
-												<tr>
-													<td><input id="deleteParameterDefinitionButton"
-														type="image"
-														src="plugins/bpm-modeler/images/icons/delete.png"
-														title="Delete" alt="Delete" class="toolbarButton" />
-													</td>
-												</tr>
-											</table>
-										</div></td>
-								</tr>
-								<tr>
-									<td>
-										<div class="dataTable">
-											<table id="parameterDefinitionsTable" cellpadding="0"
-												cellspacing="0">
-												<tbody />
-											</table>
-										</div>
-									</td>
-								</tr>
-							</table>
-						</div></td>
-				</tr>
-				<tr>
-					<td>
-						<table id="parameterDefinitionTypeSelector" class="fieldSetTable"
-							style="margin-top: 10px;">
-							<tr>
-								<td><input id="addParameterDefinitionButton" type="image"
-									src="plugins/bpm-modeler/images/icons/add.png" title="Add"
-									alt="Add" class="toolbarButton" />
-								</td>
-								<td></td>
-							</tr>
-							<tr>
-								<td><label for="parameterDefinitionNameInput" id="name">Name</label>
-								</td>
-								<td><input id="parameterDefinitionNameInput" type="text" />
-								</td>
-							</tr>
-							<!--tr>
+                     <tr>
+                        <td><label for="outputBodyAccessPointInput" id="direction">Body
+                              Output Access Point</label></td>
+                        <td><select id="outputBodyAccessPointInput">
+                        </select></td>
+                     </tr>
+                  </table>
+               </td>
+            </tr>
+            <tr>
+               <td>
+                  <div class="panelBorder" style="width: 400px; margin-top: 10px;">
+                     <table cellpadding="0" cellspacing="0" width="100%"
+                        class="layoutTable">
+                        <tr>
+                           <td><div class="toolBar">
+                                 <table>
+                                    <tr>
+                                       <td><input
+                                          id="deleteParameterDefinitionButton"
+                                          type="image"
+                                          src="plugins/bpm-modeler/images/icons/delete.png"
+                                          title="Delete" alt="Delete"
+                                          class="toolbarButton" /></td>
+                                    </tr>
+                                 </table>
+                              </div></td>
+                        </tr>
+                        <tr>
+                           <td>
+                              <div class="dataTable">
+                                 <table id="parameterDefinitionsTable" cellpadding="0"
+                                    cellspacing="0">
+                                    <tbody />
+                                 </table>
+                              </div>
+                           </td>
+                        </tr>
+                     </table>
+                  </div>
+               </td>
+            </tr>
+            <tr>
+               <td>
+                  <table id="parameterDefinitionTypeSelector" class="fieldSetTable"
+                     style="margin-top: 10px;">
+                     <tr>
+                        <td><input id="addParameterDefinitionButton" type="image"
+                           src="plugins/bpm-modeler/images/icons/add.png" title="Add"
+                           alt="Add" class="toolbarButton" /></td>
+                        <td></td>
+                     </tr>
+                     <tr>
+                        <td><label for="parameterDefinitionNameInput" id="name">Name</label>
+                        </td>
+                        <td><input id="parameterDefinitionNameInput" type="text" />
+                        </td>
+                     </tr>
+                     <!--tr>
 								<td><label for="parameterDefinitionDirectionSelect"
 									id="direction">Direction</label></td>
 								<td><select id="parameterDefinitionDirectionSelect">
@@ -188,50 +175,99 @@
 										<option value="OUT" selected>Out</option>
 								</select></td>
 							</tr-->
-							<tr>
-								<td><label for="dataTypeSelect" id="dataType">Data
-										Type</label></td>
-								<td><select id="dataTypeSelect" size="1">
-								</select>
-								</td>
-							</tr>
-							<tr id="primitiveDataTypeRow">
-								<td><label for="primitiveDataTypeSelect" id="primitiveType">Primitive
-										Type</label></td>
-								<td><select id="primitiveDataTypeSelect" size="1">
-								</select></td>
-							</tr>
-							<tr id="structuredDataTypeRow">
-								<td><label for="structuredDataTypeSelect">Data
-										Structure</label>
-								</td>
-								<td><select id="structuredDataTypeSelect" size="1">
-								</select>
-								</td>
-							</tr>
-							<tr id="documentTypeRow">
-								<td><label for="documentTypeSelect">Document Type</label>
-								</td>
-								<td><select id="documentTypeSelect" size="1">
-								</select>
-								</td>
-							</tr>
-							<tr>
-								<td><label for="parameterDefinitionDataSelect">Data</label>
-								</td>
-								<td><select id="parameterDefinitionDataSelect">
-								</select></td>
-							</tr>
-                            <tr id="parameterDefinitionPathRow">
-                                 <td><label for="parameterDefinitionPathInput">Data
-                                       Path</label></td>
-                                 <td><input id="parameterDefinitionPathInput" type="text" />
-                                 </td>
-                            </tr>
-						</table></td>
-				</tr>
-			</table>
-		</div>
-	</div>
+                     <tr>
+                        <td><label for="dataTypeSelect" id="dataType">Data
+                              Type</label></td>
+                        <td><select id="dataTypeSelect" size="1">
+                        </select></td>
+                     </tr>
+                     <tr id="primitiveDataTypeRow">
+                        <td><label for="primitiveDataTypeSelect" id="primitiveType">Primitive
+                              Type</label></td>
+                        <td><select id="primitiveDataTypeSelect" size="1">
+                        </select></td>
+                     </tr>
+                     <tr id="structuredDataTypeRow">
+                        <td><label for="structuredDataTypeSelect">Data
+                              Structure</label></td>
+                        <td><select id="structuredDataTypeSelect" size="1">
+                        </select></td>
+                     </tr>
+                     <tr id="documentTypeRow">
+                        <td><label for="documentTypeSelect">Document Type</label></td>
+                        <td><select id="documentTypeSelect" size="1">
+                        </select></td>
+                     </tr>
+                     <tr>
+                        <td><label for="parameterDefinitionDataSelect">Data</label></td>
+                        <td><select id="parameterDefinitionDataSelect">
+                        </select></td>
+                     </tr>
+                     <tr id="parameterDefinitionPathRow">
+                        <td><label for="parameterDefinitionPathInput">Data
+                              Path</label></td>
+                        <td><input id="parameterDefinitionPathInput" type="text" />
+                        </td>
+                     </tr>
+                  </table>
+               </td>
+            </tr>
+         </table>
+      </div>
+      <div id="converterSettingsTab">
+         <table>
+            <tr>
+               <td>
+                  <table cellpadding="0" cellspacing="0" class="layoutTable">
+                     <tr>
+                        <td><input id="producerBpmTypeConverter" type="checkbox"></input></td>
+                        <td><label for="producerBpmTypeConverter">Include BPM
+                              Type Converter</label></td>
+                     </tr>
+                  </table>
+               </td>
+               <td>
+                  <table cellpadding="0" cellspacing="0" class="layoutTable">
+                     <tr>
+                        <td style="padding-left: 10px;"><label
+                           for="producerInboundConversion">Inbound Conversion</label></td>
+                        <td><select id="producerInboundConversion"
+                           disabled="disabled">
+                              <option value="TO_BE_DEFINED">None</option>
+                              <option value="fromXML">From XML</option>
+                              <option value="fromJSON">From JSON</option>
+                              <option value="fromCSV">From CSV</option>
+                        </select></td>
+                     </tr>
+                  </table>
+               </td>
+            </tr>
+         </table>
+         <div class="heading">Options</div>
+         <div id="fromXmlParameters">
+            <!-- <table>
+               <tr>
+                  <td><label>fromXmlParameters</label></td>
+               </tr>
+            </table> -->
+         </div>
+         <div id="fromJsonParameters">
+            <!-- <table>
+               <tr>
+                  <td><label>fromJsonParameters</label></td>
+               </tr>
+            </table> -->
+         </div>
+         <div id="fromCsvParameters">
+            <table>
+               <tr>
+                  <td style="padding-left: 10px;"><label
+                     for="producerInboundConverterDelimiterInput">Delimiter</label></td>
+                  <td><input id="producerInboundConverterDelimiterInput" type="text"
+                     maxlength="5" class="layoutInputConverterOption" value="," /></td>
+               </tr>
+            </table>
+         </div>
+      </div>
 </body>
 </html>

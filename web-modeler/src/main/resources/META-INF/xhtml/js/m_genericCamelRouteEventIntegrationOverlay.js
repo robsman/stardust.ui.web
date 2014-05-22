@@ -71,6 +71,103 @@ define(
                this.parametersSpan = this.mapInputId("parameters");
                this.parametersSpan.text(m_i18nUtils.getProperty("modeler.element.properties.event.parameters"));
                
+               this.converterSettingsSpan = this.mapInputId("converterSettings");
+               this.converterSettingsSpan.text(m_i18nUtils.getProperty("modeler.element.properties.event.converter"));
+               this.producerBpmTypeConverter =jQuery("#genericCamelRouteEvent #propertiesTabs #converterSettingsTab #producerBpmTypeConverter");
+               this.producerInboundConversion = jQuery("#genericCamelRouteEvent #propertiesTabs #converterSettingsTab #producerInboundConversion");
+               this.producerInboundConverterDelimiterInput = jQuery("#genericCamelRouteEvent #propertiesTabs #converterSettingsTab #producerInboundConverterDelimiterInput");
+               
+               this.fromXmlParameters=jQuery("#genericCamelRouteEvent #propertiesTabs #converterSettingsTab #fromXmlParameters");
+               this.fromXmlParameters.hide();
+               this.fromJsonParameters=jQuery("#genericCamelRouteEvent #propertiesTabs #converterSettingsTab #fromJsonParameters");
+               this.fromJsonParameters.hide();
+               this.fromCsvParameters=jQuery("#genericCamelRouteEvent #propertiesTabs #converterSettingsTab #fromCsvParameters");
+               this.fromCsvParameters.hide();
+               
+               this.producerInboundConverterDelimiterInput.change({
+                  overlay : this
+               }, function(event) {
+                  var overlay = event.data.overlay;
+
+                  if (!overlay.validate()) {
+                     return;
+                  }
+                  
+                  var uri=  overlay.producerInboundConversion.val()+"?delimiter="+overlay.producerInboundConverterDelimiterInput.val()
+                  
+                  overlay.submitChanges({
+                     modelElement : {
+                        attributes : {
+                           "carnot:engine:camel::producerInboundConversion" :  uri
+                        }
+                     }
+                  });
+             });
+               
+               this.producerBpmTypeConverter.change({
+                  overlay : this
+               }, function(event) {
+                  var overlay = event.data.overlay;
+                  overlay.submitChanges({
+                     modelElement : {
+                        attributes : {
+                           "carnot:engine:camel::producerBpmTypeConverter" : overlay.producerBpmTypeConverter
+                                          .prop("checked")
+                        }
+                     }
+                  });
+                  
+                  if(!overlay.producerBpmTypeConverter.prop("checked")){
+                     overlay.producerInboundConversion.prop('disabled',true);
+                     overlay.submitChanges({
+                        modelElement : {
+                           attributes : {
+                              "carnot:engine:camel::producerInboundConversion" : null
+                           }
+                        }
+                     });
+                     overlay.producerInboundConversion.val(null);
+                     }
+                  
+                 
+               });
+               
+               this.producerInboundConversion.change(
+                        {
+                           panel : this
+                        },
+                        function(event) {
+                           event.data.panel.hideConverterOptions(event.data.panel);
+                        
+                     if (!event.data.panel.validate()) {
+                        return;
+                     }
+
+                     if (event.data.panel.producerInboundConversion.val() == m_constants.TO_BE_DEFINED) {
+                                    event.data.panel.submitChanges({
+                     modelElement : {
+                        attributes : {
+                           "carnot:engine:camel::producerInboundConversion" : null
+                        }
+                     }
+                  });
+                     } else {
+                     var uri=event.data.panel.producerInboundConversion.val();
+                     if(uri=="fromCSV")
+                        uri+="?delimiter=,"
+                  event.data.panel.submitChanges({
+                     modelElement : {
+                        attributes : {
+                           "carnot:engine:camel::producerInboundConversion" :uri
+                        }
+                     }
+                  });
+                  event.data.panel.showConverterOptions(event.data.panel);
+                  
+                     }
+                  });
+               
+               
                this.parameterDefinitionsPanel = this.mapInputId("parameterDefinitionsTable");
                this.outputBodyAccessPointInput = jQuery("#genericCamelRouteEvent #parametersTab #outputBodyAccessPointInput");
                this.parameterDefinitionsPanel = m_parameterDefinitionsPanel
@@ -150,11 +247,6 @@ define(
                         }
                      });
                         } else {
-                           /*event.data.panel
-                                 .submitParameterDefinitionsChanges(
-                                       "carnot:engine:camel::outBodyAccessPoint",
-                                       event.data.panel.outputBodyAccessPointInput
-                                             .val());*/
                      event.data.panel.submitChanges({
                         modelElement : {
                            attributes : {
@@ -172,7 +264,41 @@ define(
                this.camelContextInput.val("defaultCamelContext");
             };
 
+           
             
+            GenericCamelRouteEventIntegrationOverlay.prototype.showConverterOptions = function(panel) {
+               if(panel.producerInboundConversion.val()=="fromXML"){
+                  panel.fromXmlParameters.show();
+               }else if (panel.producerInboundConversion.val()=="fromJSON"){
+                  panel.fromJsonParameters.show();
+               }else if (panel.producerInboundConversion.val()=="fromCSV"){
+                  panel.fromCsvParameters.show();
+               }
+               
+            }
+            GenericCamelRouteEventIntegrationOverlay.prototype.hideConverterOptions = function(panel) {
+               panel.fromXmlParameters.hide();
+               panel.fromJsonParameters.hide();
+               panel.fromCsvParameters.hide();
+               
+            }
+            
+            
+            GenericCamelRouteEventIntegrationOverlay.prototype.getProducerInboundConverterOption = function()
+            {
+               var option = "";
+               var separator = "?";
+               if (this.producerInboundConverterDelimiterInput
+                        .val() != null && this.producerInboundConverterDelimiterInput
+                        .val().length != 0)
+               {
+                  option += separator;
+                  option += "delimiter="
+                           + this.producerInboundConverterDelimiterInput.val();
+               }
+               return option;
+            };
+
             /**
              *
              */
@@ -201,21 +327,6 @@ define(
             GenericCamelRouteEventIntegrationOverlay.prototype.activate = function() {
                this.routeTextarea.val(m_i18nUtils
                .getProperty("modeler.general.toBeDefined"));
-               /*var parameterMappings = [];
-
-               parameterMappings.push(this
-                     .createPrimitiveParameterMapping("Message",
-                           "message", "String"));
-*/
-            /**
-               parameterMappings.push({
-                  id : "New_" , // TODO: Anticipates renaming of ID
-                  // on server
-                  name : "New ",
-                  direction : "IN",
-                  dataFullId : null,
-                  dataPath : null
-               });*/
                var parameterMappings = [];
                this.submitOverlayChanges(parameterMappings);
             };
@@ -246,7 +357,8 @@ define(
              * 
              */
             GenericCamelRouteEventIntegrationOverlay.prototype.update = function() {
-               
+               this.hideConverterOptions(this);
+               this.producerInboundConversion.prop('disabled',true);
                if(this.page.getEvent().attributes["carnot:engine:camel::transactedRoute"]==null || this.page.getEvent().attributes["carnot:engine:camel::transactedRoute"]===undefined){
                   this.submitChanges({
                      modelElement : {
@@ -256,6 +368,41 @@ define(
                      }
                   });
                }
+               
+               if (this.page.getEvent().attributes["carnot:engine:camel::producerBpmTypeConverter"]!=null && this.page.getEvent().attributes["carnot:engine:camel::producerBpmTypeConverter"]!==undefined &&this.page.getEvent().attributes["carnot:engine:camel::producerBpmTypeConverter"]==true) {
+                  this.producerInboundConversion.prop('disabled',false);
+                  this.producerBpmTypeConverter.prop("checked",this.page.getEvent().attributes["carnot:engine:camel::producerBpmTypeConverter"]);
+               }
+               
+               this.showConverterOptions(this);
+               
+               if (this.page.getEvent().attributes["carnot:engine:camel::producerInboundConversion"] != undefined)
+               {
+                  var csvInboundIndex = this.page.getEvent().attributes["carnot:engine:camel::producerInboundConversion"]
+                           .indexOf("fromCSV");
+
+                  if (csvInboundIndex != -1)
+                  {
+                     var option = this.page.getEvent().attributes["carnot:engine:camel::producerInboundConversion"];
+                     var options = option.split("delimiter=");
+                     if (options.length == 2)
+                     {
+                        this.producerInboundConverterDelimiterInput.val(options[1]);
+                     }
+                     this.producerInboundConversion.val("fromCSV");
+                  }
+                  else
+                  {
+                     this.producerInboundConversion
+                              .val(this.page.getEvent().attributes["carnot:engine:camel::producerInboundConversion"]);
+                  }
+               }
+               else
+               {
+                  this.producerInboundConversion
+                           .val(this.page.getEvent().attributes["carnot:engine:camel::producerInboundConversion"]);
+               }
+
                
                this.transactedRouteInput.prop("checked",this.page.getEvent().attributes["carnot:engine:camel::transactedRoute"]);
                var route = this.page.getEvent().attributes["carnot:engine:camel::camelRouteExt"];
@@ -273,7 +420,6 @@ define(
                for ( var n = 0; n < this.page.getEvent().parameterMappings.length; ++n) 
                {
                   var accessPoint = this.page.getEvent().parameterMappings[n];
-                  //accessPoint.id=accessPoint.name;
                   accessPoint.direction = m_constants.OUT_ACCESS_POINT
                   this.outputBodyAccessPointInput
                         .append("<option value='" + accessPoint.id

@@ -3,171 +3,161 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title>Timer Event</title>
-<link href="plugins/bpm-modeler/css/bpm-modeler.custom.jquery.ui.css" rel="stylesheet" type="text/css" />
+<link href="plugins/bpm-modeler/css/bpm-modeler.custom.jquery.ui.css" rel="stylesheet"
+   type="text/css" />
 </head>
 <body>
-	<div id="propertiesTabs" class="minimalTabs" style="margin-top: 10px;">
-		<ul id="propertiesTabsList">
-			<li><a href="#configurationTab"><span class="tabLabel"
-					id="configuration">Configuration</span> </a>
-			</li>
-			<li><a href="#parametersTab"><span class="tabLabel"
-					id="parameters">Parameters</span> </a>
-			</li>
-			<li><a href="#splilTab"><span class="tabLabel"
-					id="split">Split</span> </a>
-			</li>
-		</ul>
-		<div id="configurationTab">
-			<table>
-				<tr>
-					<td><label for="directoryNameInput"> Directory Name</label>
-					</td>
-					<td><input id="directoryNameInput" type="text"
-						style="width: 200px;" /></td>
-					<td></td>
-				</tr>
-				<tr>
-					<td><label for="fileNameInput"> File Name</label>
-					</td>
-					<td><input id="fileNameInput" type="text"
-						style="width: 100px;" /></td>
-					<td></td>
-				</tr>
-				<tr>
-					<td><label for="recursiveInput">Recursive</label>
-					</td>
-					<td><input id="recursiveInput" type="checkbox" />
-					</td>
-					<td></td>
-				</tr>
-			</table>
-			<table style="margin-top: 10px;">
-				<tr>
-					<td><label for="initialIntervalInput">Initial Interval</label>
-					</td>
-					<td><input id="initialIntervalInput" type="text"
-						class="rightAligned" style="width: 50px;" />
-					</td>
-					<td><select id="initialIntervalUnitSelect">
-					</select></td>
-				</tr>
-				<tr>
-					<td><label for="repeatIntervalInput">Repeat Interval</label></td>
-					<td><input id="repeatIntervalInput" type="text"
-						class="rightAligned" style="width: 50px;" />
-					</td>
-					<td><select id="repeatIntervalUnitSelect">
-					</select></td>
-				</tr>
-			</table>
-			<table style="margin-top: 10px;">
-				<tr>
-					<td><label for="lockBehaviorSelect">Read Lock Behavior</label>
-					</td>
-					<td><select id="lockBehaviorSelect">
-							<option value="none">Please specify ...</option>
-							<option value="markerFile">Marker File</option>
-							<!--  Camel creates a marker file and then holds a lock on it-->
-							<option value="changed">Changed</option>
-							<!-- changed is using file length/modification timestamp to detect whether the file is currently being copied or not-->
-					</select>
-					</td>
-					<td></td>
-				</tr>
-				<tr>
-					<td><label for="postProcessingSelect">Post-Processing</label>
-					</td>
-					<td><select id="postProcessingSelect">
-							<option selected value="move">Move</option>
-							<option value="noop">Leave</option>
-							<option value="delete">Delete</option>
-					</select>
-					</td>
-					<td></td>
-				</tr>
-				<!--<tr>
+   <div id="propertiesTabs" class="minimalTabs" style="margin-top: 10px;">
+      <ul id="propertiesTabsList">
+         <li><a href="#configurationTab"><span class="tabLabel"
+               id="configuration">Configuration</span> </a></li>
+         <li><a href="#parametersTab"><span class="tabLabel" id="parameters">Parameters</span>
+         </a></li>
+         <li><a href="#splilTab"><span class="tabLabel" id="split">Split</span> </a>
+         </li>
+         <li><a href="#converterSettingsTab"><span class="tabLabel"
+               id="converterSettings">Settings</span> </a></li>
+      </ul>
+      <div id="configurationTab">
+         <table>
+            <tr>
+               <td><label for="directoryNameInput"> Directory Name</label></td>
+               <td><input id="directoryNameInput" type="text" style="width: 200px;" /></td>
+               <td></td>
+            </tr>
+            <tr>
+               <td><label for="fileNameInput"> File Name</label></td>
+               <td><input id="fileNameInput" type="text" style="width: 100px;" /></td>
+               <td></td>
+            </tr>
+            <tr>
+               <td><label for="recursiveInput">Recursive</label></td>
+               <td><input id="recursiveInput" type="checkbox" /></td>
+               <td></td>
+            </tr>
+         </table>
+         <table style="margin-top: 10px;">
+            <tr>
+               <td><label for="initialIntervalInput">Initial Interval</label></td>
+               <td><input id="initialIntervalInput" type="text" class="rightAligned"
+                  style="width: 50px;" /></td>
+               <td><select id="initialIntervalUnitSelect">
+               </select></td>
+            </tr>
+            <tr>
+               <td><label for="repeatIntervalInput">Repeat Interval</label></td>
+               <td><input id="repeatIntervalInput" type="text" class="rightAligned"
+                  style="width: 50px;" /></td>
+               <td><select id="repeatIntervalUnitSelect">
+               </select></td>
+            </tr>
+         </table>
+         <table style="margin-top: 10px;">
+            <tr>
+               <td><label for="lockBehaviorSelect">Read Lock Behavior</label></td>
+               <td><select id="lockBehaviorSelect">
+                     <option value="none">Please specify ...</option>
+                     <option value="markerFile">Marker File</option>
+                     <!--  Camel creates a marker file and then holds a lock on it-->
+                     <option value="changed">Changed</option>
+                     <!-- changed is using file length/modification timestamp to detect whether the file is currently being copied or not-->
+               </select></td>
+               <td></td>
+            </tr>
+            <tr>
+               <td><label for="postProcessingSelect">Post-Processing</label></td>
+               <td><select id="postProcessingSelect">
+                     <option selected value="move">Move</option>
+                     <option value="noop">Leave</option>
+                     <option value="delete">Delete</option>
+               </select></td>
+               <td></td>
+            </tr>
+            <!--<tr>
 					<td><label for="alwaysConsumeInput">Always consume</label></td>
 					<td><input id="alwaysConsumeInput" type="checkbox" /></td>
 					<td></td>
 				</tr>-->
-			</table>
-		</div>
-		<!-- <div id="parametersTab">
+         </table>
+      </div>
+      <!-- <div id="parametersTab">
 			<div id="parameterMappingsPanelAnchor" />
 		</div> -->
-		<div id="parametersTab">
-			<table cellpadding="0" cellspacing="0" class="layoutTable">
-				<tr>
-					<td>
-						<div class="heading" id="paramDef">Parameter Definitions</div></td>
-				</tr>
-				<tr>
-					<td>
-						<table>
-							<!--tr>
+      <div id="parametersTab">
+         <table cellpadding="0" cellspacing="0" class="layoutTable">
+            <tr>
+               <td>
+                  <div class="heading" id="paramDef">Parameter Definitions</div>
+               </td>
+            </tr>
+            <tr>
+               <td>
+                  <table>
+                     <!--tr>
 								<td><label for="inputBodyAccessPointInput" id="direction">Body
 										Input Access Point</label></td>
 								<td><select id="inputBodyAccessPointInput">
 								</select></td>
 							</tr-->
-							<tr>
-								<td><label for="outputBodyAccessPointInput" id="direction">Body
-										Output Access Point</label></td>
-								<td><select id="outputBodyAccessPointInput">
-								</select></td>
-							</tr>
-						</table>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<div class="panelBorder" style="width: 400px; margin-top: 10px;">
-							<table cellpadding="0" cellspacing="0" width="100%"
-								class="layoutTable">
-								<tr>
-									<td><div class="toolBar">
-											<table>
-												<tr>
-													<td><input id="deleteParameterDefinitionButton"
-														type="image"
-														src="plugins/bpm-modeler/images/icons/delete.png"
-														title="Delete" alt="Delete" class="toolbarButton" /></td>
-												</tr>
-											</table>
-										</div>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<div class="dataTable">
-											<table id="parameterDefinitionsTable" cellpadding="0"
-												cellspacing="0">
-												<tbody />
-											</table>
-										</div></td>
-								</tr>
-							</table>
-						</div>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<table id="parameterDefinitionTypeSelector" class="fieldSetTable"
-							style="margin-top: 10px;">
-							<tr>
-								<td><input id="addParameterDefinitionButton" type="image"
-									src="plugins/bpm-modeler/images/icons/add.png" title="Add"
-									alt="Add" class="toolbarButton" /></td>
-								<td></td>
-							</tr>
-							<tr>
-								<td><label for="parameterDefinitionNameInput" id="name">Name</label>
-								</td>
-								<td><input id="parameterDefinitionNameInput" type="text" />
-								</td>
-							</tr>
-							<!--tr>
+                     <tr>
+                        <td><label for="outputBodyAccessPointInput" id="direction">Body
+                              Output Access Point</label></td>
+                        <td><select id="outputBodyAccessPointInput">
+                        </select></td>
+                     </tr>
+                  </table>
+               </td>
+            </tr>
+            <tr>
+               <td>
+                  <div class="panelBorder" style="width: 400px; margin-top: 10px;">
+                     <table cellpadding="0" cellspacing="0" width="100%"
+                        class="layoutTable">
+                        <tr>
+                           <td><div class="toolBar">
+                                 <table>
+                                    <tr>
+                                       <td><input
+                                          id="deleteParameterDefinitionButton"
+                                          type="image"
+                                          src="plugins/bpm-modeler/images/icons/delete.png"
+                                          title="Delete" alt="Delete"
+                                          class="toolbarButton" /></td>
+                                    </tr>
+                                 </table>
+                              </div></td>
+                        </tr>
+                        <tr>
+                           <td>
+                              <div class="dataTable">
+                                 <table id="parameterDefinitionsTable" cellpadding="0"
+                                    cellspacing="0">
+                                    <tbody />
+                                 </table>
+                              </div>
+                           </td>
+                        </tr>
+                     </table>
+                  </div>
+               </td>
+            </tr>
+            <tr>
+               <td>
+                  <table id="parameterDefinitionTypeSelector" class="fieldSetTable"
+                     style="margin-top: 10px;">
+                     <tr>
+                        <td><input id="addParameterDefinitionButton" type="image"
+                           src="plugins/bpm-modeler/images/icons/add.png" title="Add"
+                           alt="Add" class="toolbarButton" /></td>
+                        <td></td>
+                     </tr>
+                     <tr>
+                        <td><label for="parameterDefinitionNameInput" id="name">Name</label>
+                        </td>
+                        <td><input id="parameterDefinitionNameInput" type="text" />
+                        </td>
+                     </tr>
+                     <!--tr>
 								<td><label for="parameterDefinitionDirectionSelect"
 									id="direction">Direction</label></td>
 								<td><select id="parameterDefinitionDirectionSelect">
@@ -175,124 +165,155 @@
 										<option value="OUT" selected>Out</option>
 								</select></td>
 							</tr-->
-							<tr>
-								<td><label for="dataTypeSelect" id="dataType">Data
-										Type</label>
-								</td>
-								<td><select id="dataTypeSelect" size="1">
-								</select></td>
-							</tr>
-							<tr id="primitiveDataTypeRow">
-								<td><label for="primitiveDataTypeSelect" id="primitiveType">Primitive
-										Type</label>
-								</td>
-								<td><select id="primitiveDataTypeSelect" size="1">
-								</select>
-								</td>
-							</tr>
-							<tr id="structuredDataTypeRow">
-								<td><label for="structuredDataTypeSelect">Data
-										Structure</label></td>
-								<td><select id="structuredDataTypeSelect" size="1">
-								</select></td>
-							</tr>
-							<tr id="documentTypeRow">
-								<td><label for="documentTypeSelect">Document Type</label></td>
-								<td><select id="documentTypeSelect" size="1">
-								</select></td>
-							</tr>
-							<tr>
-								<td><label for="parameterDefinitionDataSelect">Data</label>
-								</td>
-								<td><select id="parameterDefinitionDataSelect">
-								</select>
-								</td>
-							</tr>
-                            <tr id="parameterDefinitionPathRow">
-                                 <td><label for="parameterDefinitionPathInput">Data
-                                       Path</label></td>
-                                 <td><input id="parameterDefinitionPathInput" type="text" />
-                                 </td>
-                              </tr>
-						</table>
-					</td>
-				</tr>
-			</table>
-		</div>
-	
-		<div id="splilTab">
-			<table>
-				<tr>
-					<td><label for="useSplitting">Use Splitting</label>
-					</td>
-					<td>
-					<input id="useSplitting" type="checkbox" />
-					</td>
-					<td></td>
-				</tr>
-				<tr>
-					<td><label id="stopOnExceptionLabel" for="stopOnException">Stop On Exception</label>
-					</td>
-					<td>
-					<input id="stopOnException" type="checkbox" />
-					</td>
-					<td></td>
-				</tr>
-				<tr>
-					<td><label id ="tokenLabel" for="token">Token</label>
-					</td>
-					<td><input id="token" type="text"
-						style="width: 200px;" /></td>
-					<td></td>
-				</tr>			
-				<tr>
-					<td><label id="regexLabel" for="regex">Regex</label>
-					</td>
-					<td>
-					<input id="regex" type="checkbox" />
-					</td>
-					<td></td>
-				</tr>	 
-				<tr>
-					<td><label id="xmlLabel" for="xml">XML</label>
-					</td>
-					<td>
-					<input id="xml" type="checkbox" />
-					</td>
-					<td></td>
-				</tr>
-				<tr>
-					<td><label id="inheritNamespaceTagNameLabel" for="inheritNamespaceTagName">Inherit Namespace Tag Name</label>
-					</td>
-					<td><input id="inheritNamespaceTagName" type="text"
-						style="width: 200px;" /></td>
-					<td></td>
-				</tr>		
-				<tr>
-					<td><label id="streamingLabel" for="streaming">Streaming</label>
-					</td>
-					<td>
-					<input id="streaming" type="checkbox" />
-					</td>
-					<td></td>
-				</tr>
-				<tr>
-					<td><label id="groupingLabel" for="grouping">Grouping</label>
-					</td>
-					<td><input id="grouping" type="text"
-						style="width: 200px;" /></td>
-					<td></td>
-				</tr>
-				<tr>
-					<td><label id="parallelProcessingLabel" for="parallelProcessing">Parallel Processing</label>
-					</td>
-					<td>
-					<input id="parallelProcessing" type="checkbox" />
-					</td>
-					<td></td>
-				</tr>
-			</table>
-		</div>
-	</div>
+                     <tr>
+                        <td><label for="dataTypeSelect" id="dataType">Data
+                              Type</label></td>
+                        <td><select id="dataTypeSelect" size="1">
+                        </select></td>
+                     </tr>
+                     <tr id="primitiveDataTypeRow">
+                        <td><label for="primitiveDataTypeSelect" id="primitiveType">Primitive
+                              Type</label></td>
+                        <td><select id="primitiveDataTypeSelect" size="1">
+                        </select></td>
+                     </tr>
+                     <tr id="structuredDataTypeRow">
+                        <td><label for="structuredDataTypeSelect">Data
+                              Structure</label></td>
+                        <td><select id="structuredDataTypeSelect" size="1">
+                        </select></td>
+                     </tr>
+                     <tr id="documentTypeRow">
+                        <td><label for="documentTypeSelect">Document Type</label></td>
+                        <td><select id="documentTypeSelect" size="1">
+                        </select></td>
+                     </tr>
+                     <tr>
+                        <td><label for="parameterDefinitionDataSelect">Data</label></td>
+                        <td><select id="parameterDefinitionDataSelect">
+                        </select></td>
+                     </tr>
+                     <tr id="parameterDefinitionPathRow">
+                        <td><label for="parameterDefinitionPathInput">Data
+                              Path</label></td>
+                        <td><input id="parameterDefinitionPathInput" type="text" />
+                        </td>
+                     </tr>
+                  </table>
+               </td>
+            </tr>
+         </table>
+      </div>
+
+      <div id="splilTab">
+         <table>
+            <tr>
+               <td><label for="useSplitting">Use Splitting</label></td>
+               <td><input id="useSplitting" type="checkbox" /></td>
+               <td></td>
+            </tr>
+            <tr>
+               <td><label id="stopOnExceptionLabel" for="stopOnException">Stop
+                     On Exception</label></td>
+               <td><input id="stopOnException" type="checkbox" /></td>
+               <td></td>
+            </tr>
+            <tr>
+               <td><label id="tokenLabel" for="token">Token</label></td>
+               <td><input id="token" type="text" style="width: 200px;" /></td>
+               <td></td>
+            </tr>
+            <tr>
+               <td><label id="regexLabel" for="regex">Regex</label></td>
+               <td><input id="regex" type="checkbox" /></td>
+               <td></td>
+            </tr>
+            <tr>
+               <td><label id="xmlLabel" for="xml">XML</label></td>
+               <td><input id="xml" type="checkbox" /></td>
+               <td></td>
+            </tr>
+            <tr>
+               <td><label id="inheritNamespaceTagNameLabel"
+                  for="inheritNamespaceTagName">Inherit Namespace Tag Name</label></td>
+               <td><input id="inheritNamespaceTagName" type="text"
+                  style="width: 200px;" /></td>
+               <td></td>
+            </tr>
+            <tr>
+               <td><label id="streamingLabel" for="streaming">Streaming</label></td>
+               <td><input id="streaming" type="checkbox" /></td>
+               <td></td>
+            </tr>
+            <tr>
+               <td><label id="groupingLabel" for="grouping">Grouping</label></td>
+               <td><input id="grouping" type="text" style="width: 200px;" /></td>
+               <td></td>
+            </tr>
+            <tr>
+               <td><label id="parallelProcessingLabel" for="parallelProcessing">Parallel
+                     Processing</label></td>
+               <td><input id="parallelProcessing" type="checkbox" /></td>
+               <td></td>
+            </tr>
+         </table>
+      </div>
+
+      <div id="converterSettingsTab">
+         <table>
+            <tr>
+               <td>
+                  <table cellpadding="0" cellspacing="0" class="layoutTable">
+                     <tr>
+                        <td><input id="producerBpmTypeConverter" type="checkbox"></input></td>
+                        <td><label for="producerBpmTypeConverter">Include BPM
+                              Type Converter</label></td>
+                     </tr>
+                  </table>
+               </td>
+               <td>
+                  <table cellpadding="0" cellspacing="0" class="layoutTable">
+                     <tr>
+                        <td style="padding-left: 10px;"><label
+                           for="producerInboundConversion">Inbound Conversion</label></td>
+                        <td><select id="producerInboundConversion"
+                           disabled="disabled">
+                              <option value="TO_BE_DEFINED">None</option>
+                              <option value="fromXML">From XML</option>
+                              <option value="fromJSON">From JSON</option>
+                              <option value="fromCSV">From CSV</option>
+                        </select></td>
+                     </tr>
+                  </table>
+               </td>
+            </tr>
+         </table>
+         <div class="heading">Options</div>
+         <div id="fromXmlParameters">
+            <!-- <table>
+               <tr>
+                  <td><label>fromXmlParameters</label></td>
+               </tr>
+            </table> -->
+         </div>
+         <div id="fromJsonParameters">
+            <!-- <table>
+               <tr>
+                  <td><label>fromJsonParameters</label></td>
+               </tr>
+            </table> -->
+         </div>
+         <div id="fromCsvParameters">
+            <table>
+               <tr>
+                  <td style="padding-left: 10px;"><label
+                     for="producerInboundConverterDelimiterInput">Delimiter</label></td>
+                  <td><input id="producerInboundConverterDelimiterInput" type="text"
+                     maxlength="5" class="layoutInputConverterOption" value="," /></td>
+               </tr>
+            </table>
+         </div>
+      </div>
+   </div>
 </body>
 </html>

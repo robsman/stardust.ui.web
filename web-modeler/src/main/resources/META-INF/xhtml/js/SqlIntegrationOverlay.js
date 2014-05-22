@@ -675,7 +675,7 @@ define(
                                  if (structuredData.dataType=="struct") {
                                     outAccessPoint
                                           .push({
-                                             id :  structuredData.id.toLowerCase(),
+                                             id :  structuredData.id,
                                              name : structuredData.name,
                                              dataType : "struct",
                                              direction : "OUT",
@@ -709,7 +709,7 @@ define(
                                     outAccessPoint
                                           .push({
                                              id : structuredData.id
-                                                   .toLowerCase(),
+                                                   ,
                                              name : structuredData.name
                                                    ,
                                              dataType : "primitive",
@@ -959,7 +959,8 @@ define(
                   if (parameterDefinition.id === this.inputBodyAccessPointInput.val()
                         ||parameterDefinition.id === this.inputBodyAccessPointInput.val().toLowerCase()
                         || parameterDefinition.id === this.outputBodyAccessPointInput.val()
-                        || parameterDefinition.id === this.outputBodyAccessPointInput.val().toLowerCase()
+                        || parameterDefinition.id === this.outputBodyAccessPointInput.val()
+                        || parameterDefinition.structuredDataTypeFullId+":"+parameterDefinition.id === this.outputBodyAccessPointInput.val()
                         || this.outputBodyAccessPointInput.val().indexOf(parameterDefinition.name)!=-1
                         || this.inputBodyAccessPointInput.val().indexOf(parameterDefinition.name)!=-1) {
 
@@ -1311,7 +1312,7 @@ define(
                            && outBodyAccessPoint != ""
                            &&((accessPoint.dataType=="primitive"&& outBodyAccessPoint == accessPoint.name)
                            ||
-                           (accessPoint.dataType=="struct" && outBodyAccessPoint == accessPoint.structuredDataTypeFullId+":"+accessPoint.name))) {
+                           (accessPoint.dataType=="struct" && outBodyAccessPoint == accessPoint.structuredDataTypeFullId+":"+accessPoint.id))) {
                         route += "<setHeader headerName=\""
                               + accessPoint.id + "\">";
                         route += "<simple>$simple{body}</simple>"
