@@ -617,12 +617,30 @@ public class RepositoryUtility
          boolean forceReload)
    {
       DefaultMutableTreeNode node = rootNode;
+      DefaultMutableTreeNode searchNode = null;
       String[] path = resourcePath.split("/");
       for (int i = 1; i < path.length; i++)
       {
-         node = findNode(node, path[i], forceReload);
+         Enumeration<DefaultMutableTreeNode> en =node.breadthFirstEnumeration();
+         while (en.hasMoreElements())
+         {
+            node = en.nextElement();
+            // Parent Node is repository Node, use next Folder Node to findNode
+            if (node.getUserObject() instanceof RepositoryFolderUserObject)
+            {
+               searchNode = findNode(node, path[i], forceReload);
+            }
+            else
+            {
+               continue;
+            }
+            if(null !=  searchNode)
+            {
+               break;
+            }
+         }
       }
-      return node;
+      return searchNode;
    }
 
    /**
