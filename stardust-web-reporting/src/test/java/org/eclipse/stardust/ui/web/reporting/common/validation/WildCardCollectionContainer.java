@@ -3,7 +3,8 @@ package org.eclipse.stardust.ui.web.reporting.common.validation;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.eclipse.stardust.ui.web.reporting.common.validation.annotations.NotNull;
+import org.eclipse.stardust.reporting.rt.IValidateAble;
+import org.eclipse.stardust.reporting.rt.NotNull;
 
 public class WildCardCollectionContainer implements IValidateAbleCollectionContainer
 {

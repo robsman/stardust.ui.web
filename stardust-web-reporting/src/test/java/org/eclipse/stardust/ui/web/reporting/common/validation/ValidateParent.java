@@ -1,9 +1,9 @@
 package org.eclipse.stardust.ui.web.reporting.common.validation;
 
-import org.eclipse.stardust.ui.web.reporting.common.validation.ICustomValidateAble;
-import org.eclipse.stardust.ui.web.reporting.common.validation.ValidationContext;
-import org.eclipse.stardust.ui.web.reporting.common.validation.ValidationProblem;
-import org.eclipse.stardust.ui.web.reporting.common.validation.annotations.NotNull;
+import org.eclipse.stardust.reporting.rt.ICustomValidateAble;
+import org.eclipse.stardust.reporting.rt.NotNull;
+import org.eclipse.stardust.reporting.rt.ValidationContext;
+import org.eclipse.stardust.reporting.rt.ValidationProblem;
 
 public class ValidateParent implements ICustomValidateAble
 {

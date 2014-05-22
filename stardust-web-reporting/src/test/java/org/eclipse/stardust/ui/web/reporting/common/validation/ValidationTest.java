@@ -1,15 +1,13 @@
 package org.eclipse.stardust.ui.web.reporting.common.validation;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.eclipse.stardust.ui.web.reporting.common.validation.AnnotationdBasedValidator;
-import org.eclipse.stardust.ui.web.reporting.common.validation.ValidationProblem;
-import org.eclipse.stardust.ui.web.reporting.common.validation.ValidatorApp;
+import org.eclipse.stardust.reporting.rt.ValidationProblem;
+import org.eclipse.stardust.reporting.rt.util.validation.AnnotationdBasedValidator;
+import org.eclipse.stardust.reporting.rt.util.validation.ValidatorApp;
 
 public class ValidationTest extends TestCase
 {
