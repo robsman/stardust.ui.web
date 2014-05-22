@@ -82,6 +82,8 @@ define(
                this.producerRouteTextarea = m_utils.jQuerySelect("#producerRouteTab #producerRouteTextarea");
                this.consumerBpmTypeConverter = m_utils.jQuerySelect("#consumerRouteTab #consumerBpmTypeConverter");
                this.consumerInboundConversion = m_utils.jQuerySelect("#consumerRouteTab #consumerInboundConversion");
+               this.consumerInboundConverterOption = m_utils.jQuerySelect("#consumerRouteTab #consumerInboundConverterOptionTab");
+               this.consumerInboundConverterDelimiterInput = m_utils.jQuerySelect("#consumerRouteTab #consumerInboundConverterDelimiterInput");
                this.consumerRouteTextarea = m_utils.jQuerySelect("#consumerRouteTab #consumerRouteTextarea");
                this.requestDataInput = m_utils.jQuerySelect("#genericEndpointOverlay #requestDataInput");
                this.responseDataInput = m_utils.jQuerySelect("#genericEndpointOverlay #responseDataInput");
@@ -342,7 +344,7 @@ define(
                   else {
                      self.consumerRouteTextarea.removeClass("error");
                      self.consumerInboundConversion.prop('disabled', true);
-                     
+                     self.hideConsumerInboundConverterOption();
                      self.view.submitModelElementAttributeChange(
                            "carnot:engine:camel::consumerBpmTypeConverter",
                            false);
@@ -362,17 +364,42 @@ define(
                   }
                   
                   if(self.consumerInboundConversion.val() != "None") {
+                     
+                     if (self.consumerInboundConversion.val() === "fromCSV") {
+                        self.showConsumerInboundConverterOption();
+                        self.view.submitModelElementAttributeChange(
+                                 "carnot:engine:camel::consumerInboundConversion",
+                                 self.consumerInboundConversion.val()
+                                          + self.getConsumerInboundConverterOption());
+                     }
+                     else {
                      self.view.submitModelElementAttributeChange(
                            "carnot:engine:camel::consumerInboundConversion",
                            self.consumerInboundConversion.val());
+                     }
                   }
                   else {
+                     self.hideConsumerInboundConverterOption();
                      self.view.submitModelElementAttributeChange(
                            "carnot:engine:camel::consumerInboundConversion",
                            null);
                   }
                });
                
+               this.consumerInboundConverterDelimiterInput.change(function() {
+                  if (!self.view.validate()) {
+                     return;
+                  }
+
+                 if (!self.validateConsumerRoute()) {
+                    return;
+                 }
+
+                 self.view.submitModelElementAttributeChange(
+                          "carnot:engine:camel::consumerInboundConversion",
+                          self.consumerInboundConversion.val()
+                               + self.getConsumerInboundConverterOption());
+             });
                
                this.additionalBeanSpecificationTextarea
                      .change(function() {
@@ -695,11 +722,36 @@ define(
                this.consumerRouteTextarea
                   .val(this.getApplication().attributes["carnot:engine:camel::consumerRoute"]);
                
-               this.consumerBpmTypeConverter.prop("checked",
-                     this.getApplication().attributes["carnot:engine:camel::consumerBpmTypeConverter"]);
-               
                this.consumerInboundConversion
                   .val(this.getApplication().attributes["carnot:engine:camel::consumerInboundConversion"]);
+               
+               if (this.getApplication().attributes["carnot:engine:camel::consumerInboundConversion"] != undefined)
+               {
+                  var csvInboundIndex = this.getApplication().attributes["carnot:engine:camel::consumerInboundConversion"]
+                           .indexOf("fromCSV");
+
+                  if (csvInboundIndex != -1)
+                  {
+                     var option = this.getApplication().attributes["carnot:engine:camel::consumerInboundConversion"];
+                     var options = option.split("delimiter=");
+                     if (options.length == 2)
+                     {
+                        this.consumerInboundConverterDelimiterInput.val(options[1]);
+                     }
+                     this.consumerInboundConversion.val("fromCSV");
+                  }
+                  else
+                  {
+                     this.consumerInboundConversion
+                              .val(this.getApplication().attributes["carnot:engine:camel::consumerInboundConversion"]);
+                  }
+               }
+               else
+               {
+                  this.consumerInboundConversion
+                           .val(this.getApplication().attributes["carnot:engine:camel::consumerInboundConversion"]);
+               }
+               
                if (this.invocationPatternInput.val() == 'send'){
                   this.invocationTypeInput.prop('disabled', true);
                   this.producerRouteTextarea.prop('disabled', false);
@@ -719,6 +771,10 @@ define(
                }
                if(this.consumerBpmTypeConverter.prop("checked")) {
                   this.consumerInboundConversion.prop('disabled', false);
+                  if (this.consumerInboundConversion.val() === "fromCSV")
+                  {
+                     this.showConsumerInboundConverterOption();
+                  }
                }else{
                   this.consumerInboundConversion.prop('disabled', true);
                } 
@@ -1078,6 +1134,7 @@ define(
             GenericEndpointOverlay.prototype.enableConsumerTab = function() {
                this.consumerRouteTextarea.prop('disabled', false);
             };
+            
             GenericEndpointOverlay.prototype.showProducerOutboundConverterOption = function()
             {
                this.producerOutboundConverterOption.show();
@@ -1097,7 +1154,17 @@ define(
             {
                this.producerInboundConverterOption.hide();
             };
+            
+            GenericEndpointOverlay.prototype.showConsumerInboundConverterOption = function()
+            {
+               this.consumerInboundConverterOption.show();
+            };
 
+            GenericEndpointOverlay.prototype.hideConsumerInboundConverterOption = function()
+            {
+               this.consumerInboundConverterOption.hide();
+            };
+            
             GenericEndpointOverlay.prototype.getProducerOutboundConverterOption = function()
             {
                var option = "";
@@ -1135,6 +1202,21 @@ define(
                   option += separator;
                   option += "delimiter="
                            + this.producerInboundConverterDelimiterInput.val();
+               }
+               return option;
+            };
+            
+            GenericEndpointOverlay.prototype.getConsumerInboundConverterOption = function()
+            {
+               var option = "";
+               var separator = "?";
+               if (this.consumerInboundConverterDelimiterInput
+                        .val() != null && this.consumerInboundConverterDelimiterInput
+                        .val().length != 0)
+               {
+                  option += separator;
+                  option += "delimiter="
+                           + this.consumerInboundConverterDelimiterInput.val();
                }
                return option;
             };

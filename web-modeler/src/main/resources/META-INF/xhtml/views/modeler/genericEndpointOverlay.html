@@ -227,7 +227,7 @@
 										<tr>
 											<td><label for="producerOutboundConverterDelimiterInput">Delimiter</label></td>
 											<td><input id="producerOutboundConverterDelimiterInput"
-												type="text" maxlength="5" class="layoutInputConverterOption"  value=","/>
+												type="text" maxlength="7" class="layoutInputConverterOption"  value=","/>
 											</td>
 										</tr>
 										<tr>
@@ -246,7 +246,7 @@
 											<td style="padding-left: 10px;"><label
 												for="producerInboundConverterDelimiterInput">Delimiter</label></td>
 											<td><input id="producerInboundConverterDelimiterInput"
-												type="text" maxlength="5" class="layoutInputConverterOption"  value=","/>
+												type="text" maxlength="7" class="layoutInputConverterOption"  value=","/>
 											</td>
 										</tr>
 									</table>
@@ -274,19 +274,46 @@
                     <td>
                         <table cellpadding="0" cellspacing="0" class="layoutTable">
                             <tr>
-                                <td><input id="consumerBpmTypeConverter" type="checkbox"></input></td>
-                                <td><label for="consumerBpmTypeConverter">Include BPM Type Converter</label></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td style="padding-left: 10px;"><label for="consumerInboundConversion">Inbound Conversion</label></td>
-                                <td><select id="consumerInboundConversion" disabled="disabled">
-                                    <option value="None">None</option>
-                                    <option value="fromXML">From XML</option>
-                                    <option value="fromJSON">From JSON</option>
-                                </select></td>
+                            	<td>
+									<table cellpadding="0" cellspacing="0" class="layoutTable">
+										<tr>
+											<td><input id="consumerBpmTypeConverter" type="checkbox"></input></td>
+											<td><label for="consumerBpmTypeConverter">Include BPM Type Converter</label></td>
+										</tr>
+									</table>
+								</td>
+								<td>
+									<table cellpadding="0" cellspacing="0" class="layoutTable">
+										<tr>
+											<td style="padding-left: 10px;"><label for="consumerInboundConversion">Inbound Conversion</label></td>
+			                                <td><select id="consumerInboundConversion" disabled="disabled">
+			                                    <option value="None">None</option>
+			                                    <option value="fromXML">From XML</option>
+			                                    <option value="fromJSON">From JSON</option>
+			                                    <option value="fromCSV">From CSV</option>
+			                                	</select>
+			                                </td>
+		                                </tr>
+		                           </table>
+								</td>		                              
                             </tr>
-                        </table>
+                            <tr>
+                            	<td></td>
+                            	<td>
+									<table id="consumerInboundConverterOptionTab" cellpadding="0"
+										cellspacing="0" style="display: none;" class="layoutTable">
+										<tr>
+											<td style="padding-left: 10px;"><label
+												for="consumerInboundConverterDelimiterInput">Delimiter</label>
+											</td>
+											<td><input id="consumerInboundConverterDelimiterInput"
+												type="text" maxlength="7" class="layoutInputConverterOption"
+												value="," /></td>
+										</tr>
+									</table>
+								</td>
+                            </tr>
+						</table>
                     </td>
                 </tr>
                 <tr>
