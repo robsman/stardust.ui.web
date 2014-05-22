@@ -184,7 +184,7 @@ public class MobileWorkflowResource {
    
    @GET
    @Produces(MediaType.APPLICATION_JSON)
-   @Path("participants")
+   @Path("activity-instances/{oid: \\d+}/delegatees")
    public Response getParticipants(){
 	   try{
 		   return Response.ok(getMobileWorkflowService()
