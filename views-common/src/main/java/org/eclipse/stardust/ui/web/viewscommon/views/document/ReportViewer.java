@@ -40,7 +40,7 @@ public class ReportViewer implements IDocumentViewer, ViewEventHandler
    private static final String ANCHOR_ID = "reportViewerFrameAnchor";
    private static final String KEY_PARAM = "reportViewerName";
    
-   private final MIMEType[] mimeTypes = {MimeTypesHelper.BPM_RPT_DESIGN};
+   private final MIMEType[] mimeTypes = {MimeTypesHelper.BPM_RPT_DESIGN, MimeTypesHelper.BPM_RPT};
    private boolean favoriteReport;
    private MessagesViewsCommonBean propsBean;
    private IDocumentContentInfo documentContentInfo;
@@ -195,7 +195,10 @@ public class ReportViewer implements IDocumentViewer, ViewEventHandler
 
       event.getView().getViewParams().put("name", reportName);
       event.getView().getViewParams().put("path", reportPath);
-      event.getView().getViewParams().put("viewMode", "instance");
+      if (MimeTypesHelper.detectMimeType(reportName, "").equals(MimeTypesHelper.BPM_RPT))
+      {
+         event.getView().getViewParams().put("viewMode", "instance");
+      }
 
       String iframeId = "mf_" + event.getView().getIdentityParams();
 

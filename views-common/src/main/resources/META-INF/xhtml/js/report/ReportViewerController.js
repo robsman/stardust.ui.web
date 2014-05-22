@@ -22,7 +22,7 @@ define(
 				ReportRenderingController) {
 			var angularCompile;
 			return {
-				create : function(angular, name, path, options) {
+				create : function(angular, name, path, viewMode, options) {
 					var controller = new ReportViewerController();
 
 					var angularAdapter = new bpm.portal.AngularAdapter(null);
@@ -41,7 +41,7 @@ define(
 					var renderingController = ReportRenderingController
 							.create(angularCompile);
 
-					controller.initialize(renderingController, name, path);
+					controller.initialize(renderingController, name, path, viewMode);
 
 					return controller;
 				}
@@ -64,14 +64,22 @@ define(
 				 * 
 				 */
 				ReportViewerController.prototype.initialize = function(
-						renderingController, name, path) {
+						renderingController, name, path, viewMode) {
+
+					if (viewMode == "instance") {
+						this.instance = true;
+					} else {
+						this.instance = false;
+					}
+					
 					var self = this;
 					this.renderingController = renderingController;
 
 					// fetch report definition
-					this.loadOrCreateReportDefinition(name, path);
 
-					jQuery.when(this.loadOrCreateReportDefinition(name, path))
+					jQuery.when(self.reportingService
+							.refreshPreferenceData(), self.reportingService
+							.refreshModelData(), self.loadOrCreateReportDefinition(name, path))
 							.done(
 									function() {
 										// fetch and render report-data
@@ -95,7 +103,13 @@ define(
 					if (path) {
 						this.reportingService.retrieveReportDefinition(path)
 								.done(function(report) {
-									self.report = report;
+									if(self.instance){
+										self.report = report.report_definition;	
+										self.reportingService.setReportData(report.report_data);
+									}else{
+										self.report = report;
+									}	
+									
 									console.log("Loaded report definition:");
 									console.log(self.report);
 									deferred.resolve();

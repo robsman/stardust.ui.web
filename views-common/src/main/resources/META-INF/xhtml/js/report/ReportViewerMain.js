@@ -93,6 +93,6 @@ require(
 							ReportViewerController.create(angularjs, jQuery
 									.url(window.location.search).param("name"),
 									jQuery.url(window.location.search)
-											.param("path"), {});
+											.param("path"),jQuery.url(window.location.search).param("viewMode"), {});
 						});
 		});

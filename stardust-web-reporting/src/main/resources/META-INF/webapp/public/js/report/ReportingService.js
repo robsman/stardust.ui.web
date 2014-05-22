@@ -749,15 +749,23 @@ define(
 				};
 
 				/**
+				 * used only in case of report instance viewer
+				 */
+				ReportingService.prototype.setReportData = function(reportData) {
+					this.reportData = reportData;
+				}
+				
+				/**
 				 * 
 				 */
 				ReportingService.prototype.retrieveData = function(report) {
 					var deferred = jQuery.Deferred();
-
-					if(! (typeof report_data === 'undefined')){
+					if(this.reportData){ //used only in case of report instance viewer
+						deferred.resolve(this.reportData);
+					}
+					else if(! (typeof report_data === 'undefined')){//email based report viewer
 						deferred.resolve(report_data);
 					}else{
-					
 						if (this.mode === "test") {
 							if (this.metadata.objects[report.data.primaryObject].id === "processInstance") {
 								deferred.resolve(this
@@ -1156,7 +1164,7 @@ define(
 				 * 
 				 */
 				ReportingService.prototype.getRootUrl = function(html) {
-					return location.href.substring(0, location.href
+					return window.location.href.substring(0, location.href
 							.indexOf("/plugins"));
 
 				};

@@ -61,6 +61,7 @@ public class MimeTypesHelper implements Serializable
          "application/vnd.openxmlformats-officedocument.presentationml.presentation", "pptx", "document-powerpoint.png", "");
 
    public static final MIMEType BPM_RPT_DESIGN = new MIMEType("application/bpmrptdesign", "bpmrptdesign", "report.png", "Reports");
+   public static final MIMEType BPM_RPT = new MIMEType("application/bpmrpt", "bpmrpt", "report.png", "Reports");
    
    public static final MIMEType CSS = new MIMEType("text/css", "css", "document-text.png", "CSS");
 
@@ -243,6 +244,7 @@ public class MimeTypesHelper implements Serializable
       allMimeTypes.add(MS2007_XLS);
       allMimeTypes.add(MS2007_PPT);
       allMimeTypes.add(BPM_RPT_DESIGN);
+      allMimeTypes.add(BPM_RPT);
       allMimeTypes.add(CSS);
       allMimeTypes.add(X_MPEG);
       allMimeTypes.add(CSV);
