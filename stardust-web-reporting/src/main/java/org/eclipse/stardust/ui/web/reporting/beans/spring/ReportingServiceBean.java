@@ -18,52 +18,12 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletContext;
-
-import org.eclipse.stardust.common.StringUtils;
-import org.eclipse.stardust.common.error.ObjectNotFoundException;
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.engine.api.model.Activity;
-import org.eclipse.stardust.engine.api.model.DataPath;
-import org.eclipse.stardust.engine.api.model.Participant;
-import org.eclipse.stardust.engine.api.model.ProcessDefinition;
-import org.eclipse.stardust.engine.api.model.QualifiedModelParticipantInfo;
-import org.eclipse.stardust.engine.api.query.UnsupportedFilterException;
-import org.eclipse.stardust.engine.api.runtime.DmsUtils;
-import org.eclipse.stardust.engine.api.runtime.Document;
-import org.eclipse.stardust.engine.api.runtime.DocumentInfo;
-import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
-import org.eclipse.stardust.engine.api.runtime.Folder;
-import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
-import org.eclipse.stardust.engine.api.runtime.UserService;
-import org.eclipse.stardust.reporting.rt.service.ReportingService;
-import org.eclipse.stardust.reporting.rt.service.beans.ReportingServiceImpl;
-import org.eclipse.stardust.ui.web.common.spi.user.User;
-import org.eclipse.stardust.ui.web.common.spi.user.UserProvider;
-import org.eclipse.stardust.ui.web.reporting.beans.spring.portal.CriticalityConfigurationService;
-import org.eclipse.stardust.ui.web.reporting.beans.spring.portal.SearchHandlerChain;
-import org.eclipse.stardust.ui.web.reporting.beans.spring.portal.XPathCacheManager;
-import org.eclipse.stardust.ui.web.reporting.common.JsonMarshaller;
-import org.eclipse.stardust.ui.web.reporting.common.portal.DescriptorUtils;
-import org.eclipse.stardust.ui.web.reporting.common.portal.DescriptorUtils.DescriptorMetadata;
-import org.eclipse.stardust.ui.web.reporting.common.portal.criticality.CriticalityCategory;
-import org.eclipse.stardust.ui.web.reporting.common.portal.criticality.CriticalityConfigurationUtil;
-import org.eclipse.stardust.ui.web.reporting.core.ReportingServicePojo;
-import org.eclipse.stardust.ui.web.reporting.scheduling.SchedulingFactory;
-import org.eclipse.stardust.ui.web.reporting.scheduling.SchedulingRecurrence;
-import org.eclipse.stardust.ui.web.reporting.ui.UiHelper;
-import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
-import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -73,6 +33,36 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+
+import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.common.error.ObjectNotFoundException;
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.engine.api.model.*;
+import org.eclipse.stardust.engine.api.query.UnsupportedFilterException;
+import org.eclipse.stardust.engine.api.runtime.*;
+import org.eclipse.stardust.reporting.rt.ReportParameter;
+import org.eclipse.stardust.reporting.rt.mapping.ReportDefinition;
+import org.eclipse.stardust.reporting.rt.mapping.ReportRequest;
+import org.eclipse.stardust.reporting.rt.service.ReportFormat;
+import org.eclipse.stardust.reporting.rt.service.ReportingService;
+import org.eclipse.stardust.reporting.rt.util.JsonMarshaller;
+import org.eclipse.stardust.ui.web.common.spi.user.User;
+import org.eclipse.stardust.ui.web.common.spi.user.UserProvider;
+import org.eclipse.stardust.ui.web.reporting.beans.spring.portal.CriticalityConfigurationService;
+import org.eclipse.stardust.ui.web.reporting.beans.spring.portal.SearchHandlerChain;
+import org.eclipse.stardust.ui.web.reporting.beans.spring.portal.XPathCacheManager;
+import org.eclipse.stardust.ui.web.reporting.common.portal.DescriptorUtils;
+import org.eclipse.stardust.ui.web.reporting.common.portal.DescriptorUtils.DescriptorMetadata;
+import org.eclipse.stardust.ui.web.reporting.common.portal.criticality.CriticalityCategory;
+import org.eclipse.stardust.ui.web.reporting.common.portal.criticality.CriticalityConfigurationUtil;
+import org.eclipse.stardust.ui.web.reporting.scheduling.SchedulingFactory;
+import org.eclipse.stardust.ui.web.reporting.scheduling.SchedulingRecurrence;
+import org.eclipse.stardust.ui.web.reporting.ui.UiHelper;
+import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
 
 /**
  *
@@ -128,9 +118,6 @@ public class ReportingServiceBean
    @Resource
    private CriticalityConfigurationService criticalityConfigurationService;
 
-   private ReportingServicePojo reportingServicePojo;
-   private ReportingService reportingService;
-
    private JsonMarshaller jsonMarshaller;
 
    private Gson gson = new Gson();
@@ -141,21 +128,6 @@ public class ReportingServiceBean
       reportDefinitionJsons = new HashMap<String, JsonObject>();
    }
 
-   private ReportingServicePojo getReportingServicePojo()
-   {
-      // this is a test if dependencies can be found in the build
-      if(reportingService == null)
-      {
-         reportingService = new ReportingServiceImpl();
-      }
-
-      if(reportingServicePojo == null)
-      {
-         reportingServicePojo = new ReportingServicePojo(getServiceFactory());
-      }
-
-      return reportingServicePojo;
-   }
 
    private ServiceFactory getServiceFactory()
    {
@@ -319,17 +291,29 @@ public class ReportingServiceBean
       return preferencesJson;
    }
 
-
-
    /**
     *
     * @return
     * @throws ParseException
     * @throws UnsupportedFilterException
     */
-   public JsonObject getReportData(JsonObject reportJson) throws UnsupportedFilterException, ParseException
+   public String getReportData(String reportJson, HttpServletRequest httpRequest) throws UnsupportedFilterException, ParseException
    {
-      return getReportingServicePojo().getReportData(reportJson);
+      ReportingService reportingService = getServiceFactory().getService(ReportingService.class);
+      ReportDefinition reportDefinition = jsonMarshaller.gson().fromJson(reportJson, ReportDefinition.class);
+      Collection<ReportParameter> reportParameters = new ArrayList<ReportParameter>();
+
+      @SuppressWarnings("unchecked")
+      Map<String, String[]> parameterMap = httpRequest.getParameterMap();
+      for(String paramId: parameterMap.keySet())
+      {
+         String[] paramValues = parameterMap.get(paramId);
+         ReportParameter rp  = new ReportParameter(paramId, paramValues);
+         reportParameters.add(rp);
+      }
+
+      ReportRequest reportRequest = new ReportRequest(reportDefinition.getDataSet(), reportParameters);
+      return reportingService.getReport(reportRequest, ReportFormat.JSON);
    }
 
    /**

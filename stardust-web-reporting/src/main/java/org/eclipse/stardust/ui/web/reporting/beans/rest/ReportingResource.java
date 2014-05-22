@@ -7,31 +7,23 @@ import java.util.StringTokenizer;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.eclipse.stardust.common.StringUtils;
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.ui.web.common.util.GsonUtils;
-import org.eclipse.stardust.ui.web.reporting.beans.spring.ReportingServiceBean;
-import org.eclipse.stardust.ui.web.reporting.common.JsonMarshaller;
-import org.eclipse.stardust.ui.web.reporting.common.LanguageUtil;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+
+import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.reporting.rt.util.JsonMarshaller;
+import org.eclipse.stardust.ui.web.common.util.GsonUtils;
+import org.eclipse.stardust.ui.web.reporting.beans.spring.ReportingServiceBean;
+import org.eclipse.stardust.ui.web.reporting.common.LanguageUtil;
 
 /**
  *
@@ -68,7 +60,7 @@ public class ReportingResource
          return Response.serverError().build();
       }
    }
-   
+
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("preference-data")
@@ -85,9 +77,9 @@ public class ReportingResource
          return Response.serverError().build();
       }
    }
-   
-   
-   
+
+
+
 
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
@@ -100,9 +92,7 @@ public class ReportingResource
          trace.debug("report-data");
          trace.debug(postedData);
 
-         JsonObject json = jsonIo.readJsonObject(postedData);
-
-         return Response.ok(reportingService.getReportData(json).toString(), MediaType.APPLICATION_JSON_TYPE)
+         return Response.ok(reportingService.getReportData(postedData, httpRequest), MediaType.APPLICATION_JSON_TYPE)
                .build();
       }
       catch (Exception e)
@@ -313,7 +303,7 @@ public class ReportingResource
          return Response.status(Status.FORBIDDEN).build();
       }
    }
-   
+
    @GET
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.TEXT_PLAIN)
@@ -323,11 +313,11 @@ public class ReportingResource
       try
       {
           trace.debug("Save report definitions: " + prettyPrinter.toJson(schedulingInfo));
-           
+
          JsonObject json = jsonIo.readJsonObject(schedulingInfo);
-         
+
          return Response.ok(reportingService.getNextExecutionDate(json), MediaType.TEXT_PLAIN).build();
-         
+
       }
       catch (Exception e)
       {
@@ -336,7 +326,7 @@ public class ReportingResource
          return Response.serverError().build();
       }
    }
-   
+
    @GET
    @Path("search/{serviceName}/{searchValue}")
    public Response search(@PathParam("serviceName") String serviceName, @PathParam("searchValue") String searchValue)
@@ -362,7 +352,7 @@ public class ReportingResource
          return Response.status(Status.FORBIDDEN).build();
       }
    }
-   
+
    /**
     * @param reportId
     * @param reportName

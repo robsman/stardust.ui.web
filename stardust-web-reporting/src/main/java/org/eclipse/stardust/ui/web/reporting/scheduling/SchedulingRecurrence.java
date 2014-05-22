@@ -1,17 +1,14 @@
 package org.eclipse.stardust.ui.web.reporting.scheduling;
 
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.ui.web.reporting.core.ReportingServicePojo;
-
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.quartz.CronExpression;
 
 import com.google.gson.JsonObject;
+
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
 
 public abstract class SchedulingRecurrence
 {
