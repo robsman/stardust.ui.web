@@ -388,12 +388,12 @@ div.right {
 
 .dataTable thead {
 	margin-top: 10px;
-	background-image: -webkit-linear-gradient(top, #FFFFFF, #E6E6E6);
+	/*background-image: -webkit-linear-gradient(top, #FFFFFF, #E6E6E6);
 	background-image: -moz-linear-gradient(top, #FFFFFF, #E6E6E6);
 	background-image: -ms-linear-gradient(top, #FFFFFF, #E6E6E6);
 	background-image: -o-linear-gradient(top, #FFFFFF, #E6E6E6);
 	background-image: -webkit-linear-gradient(top, #FFFFFF, #E6E6E6);
-	background-image: -webkit-linear-gradient(top, #FFFFFF, #E6E6E6);
+	background-image: -webkit-linear-gradient(top, #FFFFFF, #E6E6E6);*/
 }
 
 .dataTable thead th {
@@ -659,7 +659,7 @@ table.dataTable thead {
 }
 
 table.dataTable thead th {
-   border-bottom: 1px solid #111;
+   border-bottom: 1px solid #111; 
    font-weight: bold;
    font-size: 12px;
    color: #111;
