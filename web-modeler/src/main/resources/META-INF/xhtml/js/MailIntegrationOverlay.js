@@ -935,7 +935,7 @@ define(
 					if (this.responseTypeSelect.val() != "none") {
 						markup += this.createResponseOptionString();
 					}
-               markup=markup.replace(new RegExp("(&#39;)", 'g'), "\\'")
+               markup=markup.replace(new RegExp("(&#39;)", 'g'), "\\'");
                
 					route += "      response = '"
 							// + markup.replace(new RegExp("\"", 'g'), "'")
