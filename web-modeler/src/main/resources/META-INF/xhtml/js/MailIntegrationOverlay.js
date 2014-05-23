@@ -907,8 +907,8 @@ define(
 							route += "}\n";
 
                   } else if (accessPoint.dataType == "dmsDocument") {
-                	  
-                	  route += "var " + accessPoint.id + ";\n";
+                    
+                    route += "var " + accessPoint.id + ";\n";
                       route += "if(request.headers.get('"
                             + accessPoint.id + "')!=null){\n";
                       route += accessPoint.id
@@ -935,23 +935,22 @@ define(
 					if (this.responseTypeSelect.val() != "none") {
 						markup += this.createResponseOptionString();
 					}
-
+               markup=markup.replace(new RegExp("(&#39;)", 'g'), "\\'")
+               
 					route += "      response = '"
 							// + markup.replace(new RegExp("\"", 'g'), "'")
 							+ markup.replace(new RegExp("\n", 'g'), " ")
 									.replace(new RegExp("<", 'g'), "&lt;")
 									.replace(new RegExp(">", 'g'), "&gt;")
+                           
                            .replace(new RegExp("toDate", 'g'), "formatDate")
-									.replace(new RegExp("&nbsp;", 'g'),
-											"&amp;nbsp;").replace(
-											new RegExp("&copy;", 'g'),
-											"&amp;copy;").replace(
-											new RegExp("&acute;", 'g'),
-											"&amp;acute;").replace(
-											new RegExp("{{", 'g'), "' + ")
+                           .replace(new RegExp("&nbsp;", 'g'),"&amp;nbsp;")
+                           .replace(new RegExp("&copy;", 'g'),"&amp;copy;")
+                           .replace(new RegExp("&acute;", 'g'),"&amp;acute;")
+                           .replace(new RegExp("{{", 'g'), "' + ")
 									.replace(new RegExp("}}", 'g'), " + '")
 							+ "';\n";
-
+               
 					route += "      setOutHeader('response', response);\n";
 
 					if (this.identifierInSubjectInput.val() != null
@@ -999,7 +998,7 @@ define(
 					route += "   <simple>$simple{in.header.response}</simple>\n";
 					route += "</setBody>\n";
 
-			  // add attachment document
+           // add attachment document
                route += "<process ref=\"addAttachmentProcessor\"/>\n";
                
 					// execute smpt endpoint
