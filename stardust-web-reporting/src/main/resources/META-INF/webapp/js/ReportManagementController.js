@@ -169,8 +169,8 @@ define(
 														},
 														clone : {
                                              label : "Clone", // I18N
-                                             /*icon : self.reportingService.getRootUrl()
-                                                         + "/plugins/views-common/images/icons/clone.png",*/
+                                             icon : self.reportingService.getRootUrl()
+                                                         + "/plugins/bpm-reporting/images/icons/report_add.png",
                                              action : function(
                                                    obj) {
                                                 self.openView("reportDefinitionView",
