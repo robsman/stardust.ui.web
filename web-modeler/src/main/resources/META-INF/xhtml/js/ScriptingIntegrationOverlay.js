@@ -361,6 +361,7 @@ define(
                      .submitChanges({
                         attributes : {
                            "carnot:engine:camel::camelContextId" : "defaultCamelContext",
+                           "carnot:engine:camel::transactedRoute" : "false",
                            "carnot:engine:camel::applicationIntegrationOverlay" : "scriptingIntegrationOverlay"
                         }
                      });
@@ -536,6 +537,7 @@ define(
                         attributes : {
                            "carnot:engine:camel::applicationIntegrationOverlay" : "scriptingIntegrationOverlay",
                            "carnot:engine:camel::camelContextId" : "defaultCamelContext",
+                           "carnot:engine:camel::transactedRoute" : "false",
                            "carnot:engine:camel::routeEntries" : this
                                  .getRoute(),
                            "stardust:scriptingOverlay::language" : this.languageSelect
@@ -563,6 +565,7 @@ define(
                         attributes : {
                            "carnot:engine:camel::applicationIntegrationOverlay" : "scriptingIntegrationOverlay",
                            "carnot:engine:camel::camelContextId" : "defaultCamelContext",
+                           "carnot:engine:camel::transactedRoute" : "false",
                            "carnot:engine:camel::routeEntries" : this
                                  .getRoute(),
                            "stardust:scriptingOverlay::scriptCode" : this.codeEditor
