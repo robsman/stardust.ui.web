@@ -967,6 +967,7 @@ define(
                         attributes : {
                            "carnot:engine:camel::applicationIntegrationOverlay" : "restServiceOverlay",
                            "carnot:engine:camel::camelContextId" : "defaultCamelContext",
+                           "carnot:engine:camel::transactedRoute" : "false",
                            "carnot:engine:camel::routeEntries" : this.getRoute(),
                            "stardust:restServiceOverlay::uri" : this.uriInput.val(),
                            "stardust:restServiceOverlay::command" : this.commandSelect.val(),
@@ -1006,6 +1007,7 @@ define(
                         attributes : {
                            "carnot:engine:camel::applicationIntegrationOverlay" : "restServiceOverlay",
                            "carnot:engine:camel::camelContextId" : "defaultCamelContext",
+                           "carnot:engine:camel::transactedRoute" : "false",
                            "carnot:engine:camel::routeEntries" : this.getRoute(),
                            "stardust:restServiceOverlay::uri" : this.uriInput.val(),
                            "stardust:restServiceOverlay::command" : this.commandSelect.val(),
