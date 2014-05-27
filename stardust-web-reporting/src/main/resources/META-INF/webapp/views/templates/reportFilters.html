@@ -1,0 +1,255 @@
+<div>
+	<table cellpadding="0" cellspacing="0" class="formTable"
+		style="margin-top: 10px;">
+		<tr ng-repeat="x in reportFilterController.filters">
+			<td valign="top">
+				<div ng-show="!reportFilterController.parameterDisplay">
+					<table cellpadding="0" cellspacing="0" class="layoutTable">
+						<tbody>
+							<tr>
+								<td valign="top"><a href=""
+									ng-click="reportFilterController.deleteFilter(x.index)"><img
+										ng-src="{{reportFilterController.baseUrl}}/public/css/images/delete.png"
+										title="{{reportFilterController.getI18N('reporting.definitionView.additionalFiltering.removeFilter')}}" />
+								</a></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</td>
+			<td valign="top">
+				<div>
+					<table cellpadding="0" cellspacing="0" class="layoutTable">
+						<tbody>
+							<tr>
+								<td valign="top"><select ng-model="x.dimension"
+									ng-change="reportFilterController.onFilterDimensionChange(x.index)"
+									ng-options="y.id as y.name group by reportFilterController.primaryObjectEnumGroup(y.id) for y in reportFilterController.getPrimaryObjectEnumByGroup() | orderBy:['order','name']">
+								</select></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</td>
+			<td valign="top">
+				<div
+					ng-show="reportFilterController.getDimension(x.dimension).type == reportFilterController.getMetadata().stringType">
+					<table cellpadding="0" cellspacing="0" class="layoutTable">
+						<tr>
+							<td><select ng-model="x.operator"
+								ng-options="o.id as o.label for o in reportFilterController.getOperatorsEnum(getDimension(x.dimension))"></td>
+							<td><input type="text" ng-model="x.value"></td>
+							<td ng-include="'parameterControl.html'"></td>
+						</tr>
+					</table>
+				</div>
+				<div
+					ng-show="reportFilterController.getDimension(x.dimension).type == reportFilterController.getMetadata().booleanType">
+					<table cellpadding="0" cellspacing="0" class="layoutTable">
+						<tr>
+							<td><label>{{getI18N('reporting.definitionView.checkbox.default')}}</label>
+							</td>
+							<td><input type="checkbox" ng-model="x.value" /></td>
+							<td ng-include="'parameterControl.html'"></td>
+						</tr>
+					</table>
+				</div>
+				<div
+					ng-show="reportFilterController.getDimension(x.dimension).type == reportFilterController.getMetadata().integerType">
+					<table cellpadding="0" cellspacing="0" class="layoutTable">
+						<tr>
+							<td><select ng-model="x.operator"
+								ng-options="o.id as o.label for o in reportFilterController.getOperatorsEnum(reportFilterController.getDimension(x.dimension))"></td>
+
+							<td ng-show="x.operator != 'B'"><input style="width: 127px;"
+								type="number" ng-model="x.value"></td>
+							<td ng-show="x.operator == 'B'">
+								<table>
+									<tr>
+										<td><label>{{getI18N('reporting.definitionView.from.label')}}</label></td>
+										<td><input type="number" ng-model="x.value.From"></td>
+									</tr>
+									<tr>
+										<td><label>{{getI18N('reporting.definitionView.to.label')}}</label></td>
+										<td><input type="number" ng-model="x.value.To"></td>
+									</tr>
+
+								</table>
+							</td>
+							<td ng-include="'parameterControl.html'"></td>
+						</tr>
+					</table>
+				</div>
+				<div
+					ng-show="reportFilterController.getDimension(x.dimension).type == reportFilterController.getMetadata().timestampType">
+
+					<div ng-show="x.metadata.fromTo" style="margin-left: 10px;">
+						<table cellpadding="0" cellspacing="0" class="layoutTable">
+							<tr>
+								<td><label>{{getI18N('reporting.definitionView.from.label')}}</label></td>
+								<td><input type="text" ng-model="x.value.from" sd-datetime /></td>
+								<td ng-include="'parameterControl.html'"></td>
+							</tr>
+							<tr>
+								<td><label>{{getI18N('reporting.definitionView.to.label')}}</label></td>
+								<td><input type="text" ng-model="x.value.to" sd-datetime /></td>
+								<td ng-include="'parameterControl.html'"></td>
+							</tr>
+						</table>
+
+						<a style="font-size: 9px;"
+							ng-click="x.metadata.fromTo = false; reportFilterController.toggleToAndDuration('filters.' + x.dimension + '.to');"
+							class="smallLink">
+							{{getI18N('reporting.definitionView.switchToStartDateAndDuration.label')}}
+							&raquo;</a>
+					</div>
+					<div ng-show="!x.metadata.fromTo" style="margin-left: 10px;">
+						<table cellpadding="0" cellspacing="0" class="formTable">
+							<tr>
+								<td><label>{{getI18N('reporting.definitionView.from.label')}}</label></td>
+								<td><input type="text" ng-model="x.value.from" sd-datetime /></td>
+								<td ng-include="'parameterControl.html'"></td>
+							</tr>
+							<tr>
+								<td><label>{{getI18N('reporting.definitionView.duration.label')}}</label></td>
+								<td><input type="number" ng-model="x.value.duration"
+									style="width: 50px;" /> <select
+									ng-model="x.value.durationUnit">
+										<option value="s">Second(s)</option>
+										<option value="m">Minutes(s)</option>
+										<option value="h">Hour(s)</option>
+										<option value="d">Day(s)</option>
+										<option value="w">Week(s)</option>
+										<option value="M">Month(s)</option>
+										<option value="Y">Year(s)</option>
+								</select></td>
+								<td></td>
+								<td ng-include="'parameterControl.html'"></td>
+							</tr>
+						</table>
+						<a style="font-size: 9px;"
+							ng-click="x.metadata.fromTo = true; toggleToAndDuration('filters.' + x.dimension + '.duration');"
+							class="smallLink">{{getI18N('reporting.definitionView.switchToStartDateAndEndDate.label')}}
+							&raquo;</a>
+					</div>
+				</div>
+				<div
+					ng-show="reportFilterController.getDimension(x.dimension).type == reportFilterController.getMetadata().enumerationType"
+					style="height: auto;">
+					<table class="filterTable"
+						ng-show="x.dimension == 'processName' || x.dimension == 'activityName'">
+						<tr ng-show="x.dimension == 'activityName'">
+							<td><label class="section2">{{getI18N('reporting.definitionView.process.title')}}</label></td>
+						</tr>
+						<tr
+							ng-show="x.dimension == 'processName' || x.dimension == 'activityName'">
+							<td valign="top"><a href=""
+								ng-click="reportFilterController.toggleFilter(x, 'process_filter_auxiliary')"
+								ng-class="{true:'disabled', false:'enabled'}[x.metadata.process_filter_auxiliary]">
+									<img ng-src="{{reportFilterController.baseUrl}}/public/css/images/process_auxiliary.png"
+									title="{{getI18N('reporting.definitionView.process.filter.auxiliary.' + x.metadata.process_filter_auxiliary)}}" />
+							</a></td>
+						</tr>
+						<tr ng-show="x.dimension == 'activityName'">
+							<td valign="top"><select multiple="multiple"
+								style="height: 100px; width: 250px;"
+								ng-model="x.metadata.selectedProcesses"
+								ng-change="reportFilterController.selectedProcessChanged(x)"
+								ng-options="p.id as p.name for p in reportFilterController.getEnumerators2(reportFilterController.getDimension('processName'), x)"></select>
+							</td>
+						</tr>
+					</table>
+					<table class="filterTable" ng-show="x.dimension == 'activityName'">
+						<tr>
+							<td><label class="section2">{{getI18N('reporting.definitionView.activity.title')}}</label></td>
+						</tr>
+					</table>
+					<table class="filterTable" ng-show="x.dimension == 'activityName'">
+						<tr>
+							<td valign="top"><a href=""
+								ng-click="reportFilterController.toggleFilter(x, 'activity_filter_nonInteractive')"
+								ng-class="{true:'disabled', false:'enabled'}[x.metadata.activity_filter_nonInteractive]">
+									<img ng-src="{{reportFilterController.baseUrl}}/public/css/images/activity_application.png"
+									title="{{getI18N('reporting.definitionView.activity.filter.nonInteractive.' + x.metadata.activity_filter_nonInteractive)}}" />
+							</a></td>
+							<td valign="top"><a href=""
+								ng-click="reportFilterController.toggleFilter(x, 'activity_filter_interactive')"
+								ng-class="{true:'disabled', false:'enabled'}[x.metadata.activity_filter_interactive]">
+									<img ng-src="{{reportFilterController.baseUrl}}/public/css/images/activity_manual.png"
+									title="{{getI18N('reporting.definitionView.activity.filter.interactive.' + x.metadata.activity_filter_interactive)}}" />
+							</a></td>
+							<td valign="top"><a href=""
+								ng-click="reportFilterController.toggleFilter(x, 'activity_filter_auxiliary')"
+								ng-class="{true:'disabled', false:'enabled'}[x.metadata.activity_filter_auxiliary]">
+									<img ng-src="{{reportFilterController.baseUrl}}/public/css/images/activity_auxiliary.png"
+									title="{{getI18N('reporting.definitionView.activity.filter.auxiliary.' + x.metadata.activity_filter_auxiliary)}}" />
+							</a></td>
+						</tr>
+					</table>
+					<table class="filterTable"
+						ng-show="reportFilterController.getDimension(x.dimension).display != 'singleSelect'">
+						<tr>
+							<td valign="top"><select multiple="multiple"
+								style="height: 100px; width: 250px;" ng-model="x.value"
+								ng-change="reportFilterController.selectionChanged(reportFilterController.getDimension(x.dimension), x)"
+								ng-options="y.id as y.name for y in reportFilterController.getEnumerators2(reportFilterController.getDimension(x.dimension), x)"></select>
+							</td>
+							<td ng-include="'parameterControl.html'"></td>
+						</tr>
+					</table>
+					<table class="filterTable"
+						ng-show="reportFilterController.getDimension(x.dimension).display == 'singleSelect'">
+						<tr>
+							<td><select ng-model="x.operator"
+								ng-options="o.id as o.label for o in reportFilterController.getOperatorsEnum(reportFilterController.getDimension(x.dimension))"></td>
+							<td valign="top"><select ng-model="x.value"
+								ng-change="reportFilterController.selectionChanged(reportFilterController.getDimension(x.dimension), x)"
+								ng-options="y.id as y.name for y in reportFilterController.getEnumerators2(reportFilterController.getDimension(x.dimension), x)"></select>
+							</td>
+							<td ng-include="'parameterControl.html'"></td>
+						</tr>
+					</table>
+				</div>
+
+				<div
+					ng-show="reportFilterController.getDimension(x.dimension).type == reportFilterController.getMetadata().autocompleteType">
+					<table cellpadding="0" cellspacing="0" class="layoutTable">
+						<tr>
+							<td>
+								<!-- ng-controller="reportFilterController.getDimension(x.dimension).controller" -->
+								<div ng-controller="AutocompleteCntr" auto-complete=""
+									data-matches="data" data-match-str="matchVal"
+									data-change="getMatches(reportFilterController.getDimension(x.dimension).service, matchVal)"
+									data-text-property="name" data-tag-preclass="tagPreMapper"
+									data-container-class="rel-container"
+									data-item-preclass="tagPreMapper"
+									data-item-hot-class="rel-item-hot"
+									data-selected-matches="x.value"></div>
+							</td>
+							<td ng-include="'parameterControl.html'"></td>
+						</tr>
+					</table>
+				</div>
+			</td>
+		</tr>
+		<tr ng-show="!reportFilterController.parameterDisplay">
+			<td>
+				<div>
+					<table cellpadding="0" cellspacing="0" class="layoutTable">
+						<tbody>
+							<tr>
+								<td valign="top"><a href=""
+									ng-click="reportFilterController.addFilter()"><img
+										ng-src="{{reportFilterController.baseUrl}}/public/css/images/add.png"
+										title="{{getI18N('reporting.definitionView.additionalFiltering.addFilter')}}" />
+								</a></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</td>
+			<td></td>
+			<td></td>
+		</tr>
+	</table>
+</div>

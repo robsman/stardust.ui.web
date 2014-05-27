@@ -1,0 +1,100 @@
+<div>
+<!-- <div id="ippViewToolbar">
+			<table class="breadCrumbsToolbarWrapper" cellpadding="0"
+				cellspacing="0">
+				<tbody>
+					<tr>
+						<td class="toolbarGroupRight"><table cellpadding="0"
+								cellspacing="0">
+								<tbody>
+									<tr>
+										<td><table>
+												<tbody>
+													<tr>
+														<td><a ng-click="saveReport()"><img alt=""
+																ng-src="{{reportFilterController.baseUrl}}/public/css/images/disk.png" title={{getI18N('reporting.definitionView.save.label')}}></a></td>
+														<td><a ng-click="saveReport()"><img alt=""
+																ng-src="{{reportFilterController.baseUrl}}/public/css/images/disk.png" title={{getI18N('reporting.definitionView.save.label1')}}></a></td>
+														<td><a ng-click="saveReport()"><img alt=""
+																ng-src="{{reportFilterController.baseUrl}}/public/css/images/disk.png" title={{getI18N('reporting.definitionView.save.label2')}}></a></td>
+													</tr>
+												</tbody>
+											</table></td>
+									</tr>
+								</tbody>
+							</table></td>
+						<td><span id="ippViewToolbarEnd"></span></td>
+					</tr>
+				</tbody>
+			</table>
+		</div> -->
+
+	<div ng-show="report.dataSet.type != 'processHistory' && !instance">
+		<div class="heading">{{getI18N('reporting.definitionView.parameters.title')}}</div>
+		<div>
+			<report-filter controller="reportParameterController"></report-filter>
+		</div>
+	</div>
+	<div
+		ng-show="report.layout.type == 'table' || report.layout.subType == reportingService.metadata.layoutSubTypes.table.id">
+		<div class="heading">{{report.layout.title}}</div>
+		<div class="dataTableFrame">
+			<div class="dataTableControls">
+				<table style="padding: 5px;">
+					<tr>
+						<td><a href="" ng-click="refreshPreviewData()"> <img
+								ng-src="{{reportFilterController.baseUrl}}/public/css/images/refresh.png" title="Refresh" />
+						</a></td>
+						<td><a href="{{getReportUri()}}" target="_blank"> <img
+								ng-src="{{reportFilterController.baseUrl}}/public/css/images/report.png"
+								title="Open in separate Window" />
+						</a></td>
+					</tr>
+				</table>
+			</div>
+			<div class="dynamicTable" style="margin-top: 10px;"></div>
+		</div>
+	</div>
+	<div
+		ng-show="report.dataSet.type == 'seriesGroup' && report.layout.subType == reportingService.metadata.layoutSubTypes.chart.id">
+		<div class="heading">{{report.layout.title}}</div>
+		<table>
+			<tr>
+				<td><a href="" ng-click="refreshPreview()"> <img
+						ng-src="{{reportFilterController.baseUrl}}/public/css/images/refresh.png" title="Refresh" />
+				</a></td>
+				<td><a href="" ng-click="printChart()"> <img
+						ng-src="{{reportFilterController.baseUrl}}/public/css/images/print.png" title="Print" />
+				</a></td>
+				<td><a href="{{getReportUri()}}" target="_blank"> <img
+						ng-src="{{reportFilterController.baseUrl}}/public/css/images/report.png"
+						title="Open in separate Window" />
+				</a></td>
+			</tr>
+		</table>
+		<div style="border: 1px solid #aaaaaa; padding: 10px;">
+			<div id="chartView" style="height: 400px; width: 800px;"></div>
+		</div>
+	</div>
+	<div ng-show="report.layout.type == 'document'">
+		<div class="heading">{{getI18N('reporting.definitionView.composite.title')}}</div>
+		<table>
+			<tr>
+				<td><a href="" ng-click=""> <img
+						ng-src="{{reportFilterController.baseUrl}}/public/css/images/refresh.png" title="Refresh" />
+				</a></td>
+				<td><a href="" ng-click=""> <img
+						ng-src="{{reportFilterController.baseUrl}}/public/css/images/print.png" title="Print" />
+				</a></td>
+				<td><a href="{{getReportUri()}}" target="_blank"> <img
+						ng-src="{{reportFilterController.baseUrl}}/public/css/images/report.png"
+						title="Open in separate Window" />
+				</a></td>
+			</tr>
+		</table>
+		<iframe id="documentFrame" allowtransparency="true" frameborder="0"
+			sandbox="allow-same-origin allow-forms allow-scripts"
+			scrolling="auto"
+			style="border: 1px solid #dddddd; width: 100%; height: 100%;"></iframe>
+	</div>
+</div>

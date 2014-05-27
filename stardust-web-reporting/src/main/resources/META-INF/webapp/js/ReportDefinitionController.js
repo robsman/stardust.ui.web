@@ -19,12 +19,14 @@ define(
 				"bpm-reporting/public/js/report/ReportingService",
 				"bpm-reporting/public/js/report/ReportRenderingController",
 				"bpm-reporting/js/SchedulingController",
+				"bpm-reporting/js/ReportFilterController",
+				"bpm-reporting/js/ReportHelper",
 				"bpm-reporting/js/utils",
 				"bpm-reporting/js/m_codeEditorAce",
 				"bpm-reporting/js/m_autoCompleters"],
 		function(I18NUtils, AngularAdapter, ReportingService,
-				ReportRenderingController, SchedulingController, utils, 
-				m_codeEditorAce, m_autoCompleters) {
+				ReportRenderingController, SchedulingController, ReportFilterController, ReportHelper,
+				utils, m_codeEditorAce, m_autoCompleters) {
 		      var angularAdapter = null; 
 		      var angularCompile = null;
 			return {
@@ -36,6 +38,8 @@ define(
 			        //initialize controller and services
 			        var angularModule = angularAdapter.initializeModule(angular);
 			        controller.initializeAutocompleteDir(angularModule);
+			        
+			        controller.initializeFilterDir(angularModule);
 
 			        //bootstrap module
 			        angularAdapter.initialize(angular);
@@ -71,15 +75,11 @@ define(
 				 */
 				ReportDefinitionController.prototype.initialize = function(
 						renderingController, name, path, isClone) {
-					this.constants = {
-							ALL_PROCESSES : {id: "allProcesses", name: this.getI18N("reporting.definitionView.additionalFiltering.allprocesses")},
-							ALL_ACTIVITIES : {id: "allActivities", name: this.getI18N("reporting.definitionView.additionalFiltering.allactivities")}
-					};
-
 					
 					this.renderingController = renderingController;
 					this.schedulingController = SchedulingController.create();
-
+					this.reportHelper = ReportHelper.create(this.reportingService);
+					
 					this.path = path;
 					this.isClone = isClone;
 
@@ -103,7 +103,6 @@ define(
 					this.schedulingParticipantsSelect = jQuery("#schedulingParticipantsSelect");
 					this.startDateId = jQuery("#startDateId");
 					this.endDateId = jQuery("#endDateId");
-					this.filterSelected = [];
 					
 					this.scheduling = {
                         "nextExecutionDate" : null,
@@ -362,6 +361,7 @@ define(
 
 									if (ui.newPanel.selector === "#previewTab") {
 										self.renderingController.refreshPreview(self.report, self);
+										self.resetParamFilters();
 										self.updateView();
 									}
 								}
@@ -421,7 +421,7 @@ define(
 									"visible");
 
 								self.populateAutoCompleteKeywordList();
-
+								
 							}).fail(function ()	{
 										console.debug(error);
 										document.body.style.cursor = "default";
@@ -430,6 +430,23 @@ define(
 							console.debug('refreshModelData preferencedata success.............');
 						}).fail(function () {
 							console.debug('refreshModelData preferencedata falied.............');
+					});
+				};
+				
+				/**
+				 * 
+				 */
+				ReportDefinitionController.prototype.initializeFilterDir = function(
+						angularModule) {
+					var self = this;
+					angularModule.directive('reportFilter', function() {
+						return {
+							restrict : 'E',
+							scope : {
+								reportFilterController : '=controller'
+							},
+							templateUrl : 'templates/reportFilters.html'
+						};
 					});
 				};
 				
@@ -467,7 +484,7 @@ define(
 			          };
 			        });
 			      };
-				
+
 				/**
 				 * 
 				 */
@@ -504,10 +521,11 @@ define(
 
 									self.report = report;
 									
-									self.loadFilters();
 									console.log("Loaded report definition:");
 									console.log(self.report);
 
+									self.initFilters();
+									
 									deferred.resolve();
 								}).fail(function() {
 									deferred.reject();
@@ -611,6 +629,8 @@ define(
 						this.report.dataSet.firstDimension = this
                         .getPrimaryObject().dimensions.processInstanceStartTimestamp.id;
 						
+						this.initFilters();
+						
 						deferred.resolve();
 					}
 
@@ -618,6 +638,32 @@ define(
 
 				};
 
+				/**
+				 * 
+				 */
+				ReportDefinitionController.prototype.initFilters = function() {
+					var self = this;
+					self.reportFilterController = ReportFilterController
+					.create(self.report, self.report.dataSet.filters, self.reportingService, self.reportHelper, false);
+					self.reportFilterController.baseUrl = "..";
+					
+					self.parameters = angular.copy(self.report.dataSet.filters);
+					self.reportParameterController = ReportFilterController
+					.create(self.report, self.parameters, self.reportingService, self.reportHelper, true);
+					self.reportParameterController.baseUrl = "..";
+					
+					self.reportFilterController.loadFilters();
+					self.reportParameterController.loadFilters();
+				};
+				
+				/**
+				 * 
+				 */
+				ReportDefinitionController.prototype.resetParamFilters = function() {
+					this.parameters = angular.copy(this.report.dataSet.filters);
+					this.reportParameterController.resetReport(this.report, this.parameters);
+				}
+				
 				/**
 				 * 
 				 */
@@ -632,59 +678,16 @@ define(
 					return this.reportingService.metadata.objects[this.report.dataSet.primaryObject];
 				};
 				
+				/**
+				 * 
+				 */
 				ReportDefinitionController.prototype.primaryObjectEnumGroup = function(id) {
-					var dimension = this.getDimension(id);
-					
-					if(!dimension){
-						dimension = this.getComputedColumnAsDimensions()[id];
-					}
-					
-					if(!dimension){
-						return;
-					}
-					
-					if(dimension.metadata && dimension.metadata.isDescriptor){
-						return this.getI18N("reporting.definitionView.descriptors");
-					}else if(dimension.metadata && dimension.metadata.isComputedType){
-						return this.getI18N("reporting.definitionView.computedColumns");
-					}
-					return this.getI18N("reporting.definitionView." + this.report.dataSet.primaryObject);
-				};
-				
-				ReportDefinitionController.prototype.getPrimaryObjectEnum = function() {
-					var dimensionsObj = this.reportingService.metadata.objects[this.report.dataSet.primaryObject].dimensions;
-					var enumerators = [];
-					for ( var n in dimensionsObj) {
-						enumerators.push(dimensionsObj[n]);
-					}
-					
-					dimensionsObj = this.getComputedColumnAsDimensions();
-					
-					for ( var n in dimensionsObj) {
-						enumerators.push(dimensionsObj[n]);
-					}
-
-					enumerators.sort(function(object1, object2){
-						return object1.name.localeCompare(object2.name);
-					});
-					
-					return enumerators;
+					return this.reportHelper.primaryObjectEnumGroup(id, this.report);
 				};
 				
 				/**
-             * Adding order parameter to dimension object used in Filtering for displaying 
-             * it on UI in specific order
-             */
-            ReportDefinitionController.prototype.getPrimaryObjectEnumByGroup = function() {
-               var dimensions = this.filterPrimaryObjectEnum();
-               for ( var dimension in dimensions)
-               {
-                  var group = this.primaryObjectEnumGroup(dimensions[dimension].id);
-                  dimensions[dimension].order = this.getDimensionsDisplayOrder(dimensions[dimension].id); 
-               }
-               return dimensions;
-            };
-				
+				 * 
+				 */
 				ReportDefinitionController.prototype.getAvailableCumulantsEnum = function() {
 					var cumulants = this.reportingService.metadata.cumulants;
 					var enumerators = [];
@@ -719,19 +722,6 @@ define(
 					return enumerators;
 				};
 				
-				
-				ReportDefinitionController.prototype.toggleFilter = function(filter, property) {
-					filter.metadata[property] = !filter.metadata[property]; 
-					//this.updateView();
-				};
-				
-				ReportDefinitionController.prototype.selectedProcessChanged = function(filter) {
-					var self = this;
-					if(filter.metadata.selectedProcesses.some(function (id) {return self.constants.ALL_PROCESSES.id == id;})){
-						filter.metadata.selectedProcesses = [this.constants.ALL_PROCESSES.id];
-					}
-				};
-				
 				/**
 				 * 
 				 */
@@ -746,23 +736,6 @@ define(
 					return this.getPrimaryObject().dimensions[id];
 				};
 
-				ReportDefinitionController.prototype.getComputedColumnAsDimensions = function() {
-					var dimensions = {};
-					for ( var n in this.report.dataSet.computedColumns) {
-						var column = this.report.dataSet.computedColumns[n];
-
-						dimensions[column.id] = {
-							id : column.id,
-							name : column.name,
-							type : this.reportingService.metadata[column.type],
-							metadata : {
-								isComputedType : true
-							}
-						};
-					}
-					
-					return dimensions;
-				};
 				/**
 				 * 
 				 */
@@ -796,7 +769,7 @@ define(
 
 					if (!initialize) {
 						this.report.dataSet.filters = [];
-						this.filterSelected = [];
+						reportFilterController.filterSelected = [];
 						this.resetReportDefinitionProperties();
 					}
 
@@ -923,239 +896,6 @@ define(
 					return this.reportingService.getEnumerators(qualifier[0],
 							qualifier[1], qualifier[2]);
 				};
-				
-				ReportDefinitionController.prototype.getOperatorsEnum = function(dimension){
-					var operators = [];
-					
-					if(!dimension){
-						return operators; 
-					}
-					
-					//operators can be data type specific or filter specific
-					var dimensionOperator = dimension.operators;
-					if(!dimensionOperator && dimension.type){
-						dimensionOperator = dimension.type.operators;
-					}
-					
-					if(dimensionOperator){
-						for (var i in dimensionOperator){
-							operators.push({"id" : dimensionOperator[i], 
-									"label" : this.getI18N("reporting.definitionView.additionalFiltering.operator." + dimensionOperator[i])});
-						}
-					}else{
-						// return default list
-						operators.push({"id" : "E", "label" : this.getI18N("reporting.definitionView.additionalFiltering.operator.E")});
-						operators.push({"id" : "LE", "label" : this.getI18N("reporting.definitionView.additionalFiltering.operator.LE")});
-						operators.push({"id" : "GE", "label" : this.getI18N("reporting.definitionView.additionalFiltering.operator.GE")});
-						operators.push({"id" : "NE", "label" : this.getI18N("reporting.definitionView.additionalFiltering.operator.NE")});
-					}
-					return operators;
-				}
-						
-				
-				ReportDefinitionController.prototype.getEnumerators2 = function(
-						dimension, filter) {
-					if (!dimension || !dimension.enumerationType) {
-						return null;
-					}
-
-					var qualifier = dimension.enumerationType.split(":");
-
-					var enumItems = this.reportingService.getEnumerators2(qualifier[0], qualifier[1]);
-					
-					var filteredEnumItems = enumItems;
-					
-					if(filter && (filter.dimension == "processName" || filter.dimension == "activityName")){
-						//processes
-						if ((dimension.id == "processName" || dimension.id == "activityName")) {
-							filteredEnumItems = [];
-							filteredEnumItems.push(this.constants.ALL_PROCESSES);
-							for (var i = 0; i < enumItems.length; i++) {
-								var process = enumItems[i];
-								if (!filter.metadata.process_filter_auxiliary || !process.auxiliary) {
-									filteredEnumItems.push(process);
-								}
-							}
-						} 
-						
-						//activities
-						if (dimension.id == "activityName") {
-							var selectedProcesses = [];
-							self = this;
-							
-							if (!filter.metadata.selectedProcesses
-									|| filter.metadata.selectedProcesses.length < 1) {
-								selectedProcesses = selectedProcesses.concat(filteredEnumItems);
-							}else if(filter.metadata.selectedProcesses.some(function (id) {return self.constants.ALL_PROCESSES.id == id;})){
-								selectedProcesses = selectedProcesses.concat(filteredEnumItems);
-							}else{
-								filteredEnumItems.forEach(function(item){
-									if(filter.metadata.selectedProcesses.some(function (id) {return  item.id == id;})){
-										selectedProcesses.push(item);
-									}
-								});
-							}
-							
-							filteredEnumItems = [];
-							filteredEnumItems.push(this.constants.ALL_ACTIVITIES);
-							
-							for (var i = 0; i < selectedProcesses.length; i++) {
-								var process = selectedProcesses[i];
-								if(process == this.constants.ALL_PROCESSES){
-									continue;
-								}
-								for (var j = 0; j < process.activities.length; j++){
-									var activity = process.activities[j];
-									if (!filter.metadata.activity_filter_auxiliary || !activity.auxiliary) {
-										if(!filter.metadata.activity_filter_interactive || !activity.interactive){
-											if(!filter.metadata.activity_filter_nonInteractive || activity.interactive){
-												filteredEnumItems.push(activity);	
-											}
-										}
-									}	
-								}
-							}
-							
-						} 
-					}
-					
-					return filteredEnumItems;
-				};
-
-				
-				ReportDefinitionController.prototype.selectionChanged = function(dimension, filter) {
-					var self = this;
-					if(dimension.id == "processName" && filter.value.some(function (id) {return self.constants.ALL_PROCESSES.id == id;})){
-						filter.value = [this.constants.ALL_PROCESSES.id];
-					}
-					
-					if(dimension.id == "activityName" && filter.value.some(function (id) {return self.constants.ALL_ACTIVITIES.id == id;})){
-						filter.value = [this.constants.ALL_ACTIVITIES.id];
-					}
-					
-					if(dimension.id == "criticality"){
-						filter.metadata = this.getCriticalityForName(filter.value); 
-					}
-				};
-				
-				/**
-				 * 
-				 */
-				ReportDefinitionController.prototype.addFilter = function() {
-					var index = this.report.dataSet.filters.length;
-
-					this.report.dataSet.filters.push({
-						index : index,
-						value : null,
-
-						// TODO: Operator only for respective types
-
-						operator : "equal"
-					});
-					
-					this.filterSelected.push({
-					         index : index,
-					         value : []
-					      });
-				};
-
-				ReportDefinitionController.prototype.getCriticalityForName = function(name) {
-					var criticality;
-					this.reportingService.preferenceData.criticality.forEach(function(item){
-						if(item.name == name){
-							criticality = item;
-						}
-					});
-					
-					return criticality;
-				};
-				
-				/**
-				 * 
-				 */
-				ReportDefinitionController.prototype.deleteFilter = function(
-						index) {
-					var newFilters = [];
-
-					for ( var n = 0; n < this.report.dataSet.filters.length; ++n) {
-						if (n == index) {
-							continue;
-						}
-
-						newFilters.push(this.report.dataSet.filters[n]);
-					}
-
-					this.report.dataSet.filters = newFilters;
-					
-					//Remove parameters from parameter
-					this.removeParametersFromParameterList(index);
-					
-				};
-
-				/**
-				 * Filters are stored in an array. Retrieves a filter by ID from
-				 * that array.
-				 */
-				ReportDefinitionController.prototype.getFilterByDimension = function(
-						dimension) {
-					for ( var n = 0; n < this.report.dataSet.filters.length; ++n) {
-						if (this.report.dataSet.filters[n].dimension == dimension) {
-							return this.report.dataSet.filters[n];
-						}
-						//TODO: this is always thrown commenting temporarily
-						/*throw "No filter found with dimension " + dimension
-								+ ".";*/
-					}
-				};
-
-				/**
-				 * Reinitializes filter values and operator.
-				 */
-				ReportDefinitionController.prototype.onFilterDimensionChange = function(
-						index) {
-					this.report.dataSet.filters[index].value = null;
-					this.report.dataSet.filters[index].metadata = null;
-					this.report.dataSet.filters[index].operator = null;
-					
-					if(this.report.dataSet.filters[index].dimension == 'processName'){
-						this.report.dataSet.filters[index].metadata = { process_filter_auxiliary : true };
-						this.report.dataSet.filters[index].value = [this.constants.ALL_PROCESSES.id];
-					}else if(this.report.dataSet.filters[index].dimension == 'activityName'){
-						this.report.dataSet.filters[index].metadata = activityFilterTemplate();
-						this.report.dataSet.filters[index].metadata.selectedProcesses.push(this.constants.ALL_PROCESSES.id);
-						this.report.dataSet.filters[index].value = [this.constants.ALL_ACTIVITIES.id];
-					}else{
-						var dimenison = this
-								.getDimension(this.report.dataSet.filters[index].dimension);
-						
-						if (dimenison && dimenison.metadata
-								&& dimenison.metadata.isDescriptor) {
-							this.report.dataSet.filters[index].metadata = dimenison.metadata;
-						}
-						
-						if(dimenison && (dimenison.type == this.reportingService.metadata.autocompleteType)){
-							this.report.dataSet.filters[index].value = [];
-						}
-						
-						if(dimenison && (dimenison.type == this.reportingService.metadata.timestampType)){
-							this.report.dataSet.filters[index].value = {
-									from :"",
-									to : "",
-									duration: "",
-									durationUnit: ""
-							};
-							if(!this.report.dataSet.filters[index].metadata){
-								this.report.dataSet.filters[index].metadata = {};
-							}
-							this.report.dataSet.filters[index].metadata.fromTo = true;
- 						}
-					}
-
-					// TODO: Operator only for respective types
-					this.report.dataSet.filters[index].operator = "equal";
-					
-					this.removeParametersFromParameterList(index);
-				};
 
 				/**
 				 * Returns a consolidated list of possible dimensions excluding
@@ -1233,7 +973,7 @@ define(
                for ( var dimension in dimensions)
                {
                   var group = this.primaryObjectEnumGroup(dimensions[dimension].id);
-                  dimensions[dimension].order = this.getDimensionsDisplayOrder(dimensions[dimension].id); 
+                  dimensions[dimension].order = this.reportHelper.getDimensionsDisplayOrder(dimensions[dimension].id, this.report); 
                }
                
 					return dimensions;
@@ -1390,44 +1130,6 @@ define(
 					return JSON.stringify(this.report, null, 3);
 				};
 
-				/**
-				 * 
-				 */
-				ReportDefinitionController.prototype.addParameter = function(
-						id, name, type, value, operator) {
-					
-					var currentFilter = this.report.dataSet.filters;
-					
-					for ( var int = 0; int < this.report.dataSet.filters.length; int++)
-               {
-                  if (id.indexOf(this.report.dataSet.filters[int].dimension) != -1)
-                  {
-                     this.filterSelected[int].value.push({
-                              id : id,
-                              name : name,
-                              type : type,
-                              value : value,
-                              operator : operator
-                     });
-                     if (this.report.dataSet.filters[int].metadata == null)
-                     {
-                        this.report.dataSet.filters[int].metadata = {};
-                     }
-                     this.report.dataSet.filters[int].metadata.parameterizable = true;
-                  }
-               }
-					
-					if (id != null && id.length != 0)
-               {
-					   this.report.parameters[id] = {
-			                  id : id,
-			                  name : name,
-			                  type : type,
-			                  value : value,
-			                  operator : operator
-			               };
-               }
-				};
 
 				/**
 				 * Expects an array of parameters.
@@ -1440,21 +1142,6 @@ define(
 				};
 
 				/**
-				 * 
-				 */
-				ReportDefinitionController.prototype.removeParameter = function(
-						id) {
-					delete this.report.parameters[id];
-					for ( var int = 0; int < this.report.dataSet.filters.length; int++)
-               {
-                  if (id.indexOf(this.report.dataSet.filters[int].dimension) != -1)
-                  {
-                     delete this.report.dataSet.filters[int].metadata.parameterizable;
-                  }
-               }
-				};
-
-				/**
 				 * Expects an array of parameter IDs.
 				 */
 				ReportDefinitionController.prototype.removeParameters = function(
@@ -1464,14 +1151,6 @@ define(
 					}
 				};
 
-				/**
-				 * 
-				 */
-				ReportDefinitionController.prototype.existsParameter = function(
-						id) {
-					return this.report.parameters[id] != null;
-				};
-				
 				/**
              * 
              */
@@ -1522,39 +1201,6 @@ define(
 					}
 
 					return false;
-				};
-
-				/**
-				 * 
-				 */
-				ReportDefinitionController.prototype.getParameterDefaultValue = function(
-						id) {
-					if (id.indexOf("firstDimension") >= 0) {
-						return this.report.dataSet[id];
-					} else if (id.indexOf("firstDimension") >= 0) {
-						return this.report.dataSet[id];
-					} else if (id.indexOf("filters.") >= 0) {
-						var path = id.split(".");
-
-						var dimension = this.getDimension(this.getFilterByDimension(path[1]).dimension);
-						if (dimension.type.id == this.reportingService.metadata.timestampType.id) {
-						   if (path[2] === "from")
-                     {
-                        return this.getFilterByDimension(path[1]).value.from;
-                     } else if (path[2] === "to") {
-                        return this.getFilterByDimension(path[1]).value.to;
-                     } else if (path[2] === "duration") {
-                        return this.getFilterByDimension(path[1]).value.duration;
-                     } else if (path[2] === "durationUnit") {
-                        return this.getFilterByDimension(path[1]).value.durationUnit;
-                     }
-						   return this.getFilterByDimension(path[1]).value.path[2];
-						} else
-						{
-						   return this.getFilterByDimension(path[1]).value;
-						}
-						return null;
-					}
 				};
 
 				/**
@@ -1994,20 +1640,6 @@ define(
             }
             return false;
         };
-        
-        /**
-         * This function will remove parameters from parameter list
-         */
-       ReportDefinitionController.prototype.removeParametersFromParameterList = function(index) {
-          if (this.filterSelected[index].value != null)
-          {
-             var params = this.filterSelected[index].value;
-             for ( var param in params)
-             {
-                this.removeParameter(this.filterSelected[index].value[param].id);
-			}
-          }
-       };
       
       
                /**
@@ -2039,69 +1671,11 @@ define(
                  for ( var dimension in dimensions)
                  {
                     var group = this.primaryObjectEnumGroup(dimensions[dimension].id);
-                    dimensions[dimension].order = this.getDimensionsDisplayOrder(dimensions[dimension].id); 
+                    dimensions[dimension].order = this.reportHelper.getDimensionsDisplayOrder(dimensions[dimension].id, this.report); 
                  }
                  return dimensions
               };
               
-              /**
-               * Returns the order index of a dimension depending on its group .
-               */
-              ReportDefinitionController.prototype.getDimensionsDisplayOrder = function(id) {
-                 var dimension = this.getDimension(id);
-                 
-                 if(!dimension){
-                    dimension = this.getComputedColumnAsDimensions()[id];
-                    return;
-                 }
-                 
-                 if(dimension.metadata && dimension.metadata.isDescriptor){
-                    return 2;
-                 }else if(dimension.metadata && dimension.metadata.isComputedType){
-                    return 3;
-                 }
-                 return 1;
-              };
-              
-              /**
-               * 
-               */
-              ReportDefinitionController.prototype.toggleToAndDuration = function(param) {
-                 if (this.existsParameter(param))
-                 {
-                    this.removeParameter(param);
-                 }
-              };
-              
-             /**
-                * This function will populte the filter variables by loading previously
-                * saved filters
-                */
-             ReportDefinitionController.prototype.loadFilters = function() {
-                if (this.filterSelected.length != this.report.dataSet.filters.length) {
-                   for (var item in this.report.dataSet.filters)
-                   {
-                      this.filterSelected.push({
-                         index : this.report.dataSet.filters.length,
-                         value : []
-                      });
-                   }
-                }
-             };
-             
-             /**
-                * This function will return UI Displayable param name
-                * 
-                */
-            ReportDefinitionController.prototype.getParamDisplayName = function(id) {
-               var pattern = "Filter for";
-                  if (id.indexOf(pattern) >= 0) 
-                  {
-                     return id.substr(pattern.length, id.length);
-                  }
-               return id;
-            };
-            
             /* This function will return Report Definition with default values
             * 
             */
@@ -2143,7 +1717,7 @@ define(
                for ( var dimension in dimensions)
                {
                   var group = this.primaryObjectEnumGroup(dimensions[dimension].id);
-                  dimensions[dimension].order = this.getDimensionsDisplayOrder(dimensions[dimension].id); 
+                  dimensions[dimension].order = this.reportHelper.getDimensionsDisplayOrder(dimensions[dimension].id, this.report); 
                }
                return dimensions;
             };
@@ -2175,23 +1749,6 @@ define(
             };
             
             /**
-             * Dimensions of type durationType are not filterable and 
-             * Groupable so filtering them out. 
-             */
-            ReportDefinitionController.prototype.filterPrimaryObjectEnum = function() {
-               var dimensions = this.getPrimaryObjectEnum();
-               
-               for (var i = dimensions.length -1; i >= 0 ; i--){
-                  if (this.reportingService.metadata.durationType.id == dimensions[i].type.id)
-                  {
-                     dimensions.splice(i, 1);
-                  }
-               }
-               
-               return dimensions;
-            };
-            
-            /**
              * Function to clone a JS object.
              */
             ReportDefinitionController.prototype.cloneReportDefinition = function(report) {
@@ -2199,20 +1756,7 @@ define(
                return clonedReport;
             };
 		}
-			
 
-		function activityFilterTemplate(){
-				return {
-					// Processes
-					process_filter_auxiliary : true,
-					selectedProcesses : [],
-
-					// Activities
-					activity_filter_auxiliary : true,
-					activity_filter_interactive : false,
-					activity_filter_nonInteractive : true
-				};
-			}
 		function replaceSpecialChars(id){
 			 // Logic to handle special characters like '{' in column id
            // column.id is typically like {Model71}ChangeOfAddress:{Model71}ConfirmationNumber
