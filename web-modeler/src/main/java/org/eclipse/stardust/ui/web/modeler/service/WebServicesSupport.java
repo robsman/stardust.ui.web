@@ -3,6 +3,7 @@ package org.eclipse.stardust.ui.web.modeler.service;
 import java.util.Collection;
 import java.util.List;
 
+import javax.annotation.Resource;
 import javax.wsdl.Binding;
 import javax.wsdl.BindingInput;
 import javax.wsdl.BindingOperation;
@@ -19,7 +20,6 @@ import javax.xml.namespace.QName;
 import org.eclipse.stardust.engine.extensions.jaxws.app.WSConstants;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.util.VariableContext;
-import org.eclipse.stardust.ui.web.modeler.xpdl.edit.utils.CommandHandlerUtils;
 
 import org.springframework.context.ApplicationContext;
 
@@ -29,6 +29,8 @@ import com.google.gson.JsonObject;
 @org.springframework.stereotype.Service
 public class WebServicesSupport
 {
+   @Resource
+   private ModelService modelService;
 
    /**
     * Returns a JSON representation of the service structure underneath the
@@ -88,7 +90,7 @@ public class WebServicesSupport
     * @param postedData
     *           a JsonObject that contains a primitive (String) member with the name
     *           "wsdlUrl" that specifies the URL from where the WSDL should be loaded.
-    * @param springContext 
+    * @param springContext
     * @return the JsonObject containing the representation of the services.
     */
    public JsonObject getWebServiceStructure(JsonObject postedData, ApplicationContext springContext)
@@ -99,8 +101,8 @@ public class WebServicesSupport
 
       if (wsdlUrl != null && wsdlUrl.indexOf("${") > -1)
       {
-         ModelType model = CommandHandlerUtils.getModelBuilderFacade(springContext).getModelManagementStrategy()
-               .getModels().get(modelID);
+         ModelType model = modelService.getModelManagementStrategy().getModels()
+               .get(modelID);
          if (model != null)
          {
             VariableContext variableContext = new VariableContext();

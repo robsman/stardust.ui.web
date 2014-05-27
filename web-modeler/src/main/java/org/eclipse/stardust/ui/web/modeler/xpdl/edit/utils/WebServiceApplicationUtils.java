@@ -8,7 +8,7 @@
  * Contributors:
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
-package org.eclipse.stardust.ui.web.modeler.service;
+package org.eclipse.stardust.ui.web.modeler.xpdl.edit.utils;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -37,6 +37,8 @@ import org.eclipse.stardust.model.xpdl.carnot.util.*;
 import org.eclipse.stardust.model.xpdl.xpdl2.*;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.TypeDeclarationUtils;
 import org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils;
+import org.eclipse.stardust.ui.web.modeler.service.JaxWSResource;
+import org.eclipse.stardust.ui.web.modeler.service.WebServicesSupport;
 
 import org.eclipse.xsd.XSDNamedComponent;
 
