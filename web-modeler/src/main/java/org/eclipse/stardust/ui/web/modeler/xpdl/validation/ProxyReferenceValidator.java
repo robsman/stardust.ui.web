@@ -8,7 +8,7 @@
  * Contributors:
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
-package org.eclipse.stardust.ui.web.validation;
+package org.eclipse.stardust.ui.web.modeler.xpdl.validation;
 
 import java.util.ArrayList;
 import java.util.List;

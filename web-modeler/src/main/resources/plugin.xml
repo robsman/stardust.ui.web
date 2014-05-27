@@ -14,33 +14,33 @@
 <plugin>
    	<extension point="org.eclipse.stardust.modeling.validation.modelValidator">
 		<modelValidator id="org.eclipse.stardust.ui.web.validation.typeDeclarationValidator"
-			class="org.eclipse.stardust.ui.web.validation.TypeDeclarationValidator"
+			class="org.eclipse.stardust.ui.web.modeler.xpdl.validation.TypeDeclarationValidator"
 			targetType="org.eclipse.stardust.model.xpdl.carnot.ModelType"/>
 	</extension>
 	<extension point="org.eclipse.stardust.modeling.validation.modelElementValidator">
-	<modelElementValidator id="org.eclipse.stardust.ui.web.validation.StructuredDataValidator"
-		class="org.eclipse.stardust.ui.web.validation.StructuredDataValidator"
+	<modelElementValidator id="org.eclipse.stardust.ui.web.modeler.xpdl.validation.StructuredDataValidator"
+		class="org.eclipse.stardust.ui.web.modeler.xpdl.validation.StructuredDataValidator"
 		metaTypeId="struct"
 		targetType="org.eclipse.stardust.model.xpdl.carnot.DataType">
 		<filter	name="metaType"	value="struct"/>
 	</modelElementValidator>
    <modelElementValidator
-         class="org.eclipse.stardust.ui.web.validation.ProxyReferenceValidator"
+         class="org.eclipse.stardust.ui.web.modeler.xpdl.validation.ProxyReferenceValidator"
          id="org.eclipse.stardust.ui.web.validation.proxyReferenceValidator"
          targetType="org.eclipse.stardust.model.xpdl.carnot.IIdentifiableModelElement">
    </modelElementValidator>
    <modelElementValidator
-         class="org.eclipse.stardust.ui.web.validation.EventValidator"
+         class="org.eclipse.stardust.ui.web.modeler.xpdl.validation.EventValidator"
          id="org.eclipse.stardust.ui.web.validation.eventHandlerValidator"
          targetType="org.eclipse.stardust.model.xpdl.carnot.EventHandlerType">
    </modelElementValidator>
    <modelElementValidator
-         class="org.eclipse.stardust.ui.web.validation.EventValidator"
+         class="org.eclipse.stardust.ui.web.modeler.xpdl.validation.EventValidator"
          id="org.eclipse.stardust.ui.web.validation.eventHandlerValidator"
          targetType="org.eclipse.stardust.model.xpdl.carnot.ActivityType">
    </modelElementValidator>
    <modelElementValidator
-         class="org.eclipse.stardust.ui.web.validation.DataMappingValidator"
+         class="org.eclipse.stardust.ui.web.modeler.xpdl.validation.DataMappingValidator"
          id="org.eclipse.stardust.ui.web.validation.dataMappingValidator"
          targetType="org.eclipse.stardust.model.xpdl.carnot.DataMappingType">
    </modelElementValidator>
