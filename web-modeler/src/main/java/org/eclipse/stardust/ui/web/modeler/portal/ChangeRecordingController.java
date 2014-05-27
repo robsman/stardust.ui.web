@@ -1,4 +1,4 @@
-package org.eclipse.stardust.ui.web.modeler.ui;
+package org.eclipse.stardust.ui.web.modeler.portal;
 
 import javax.annotation.Resource;
 

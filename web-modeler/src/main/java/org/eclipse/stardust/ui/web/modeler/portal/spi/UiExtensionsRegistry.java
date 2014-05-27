@@ -1,4 +1,4 @@
-package org.eclipse.stardust.ui.web.modeler.ui;
+package org.eclipse.stardust.ui.web.modeler.portal.spi;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
@@ -17,7 +17,6 @@ import org.springframework.stereotype.Component;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.ui.web.modeler.ui.extension.ExtensionDiscoveryUtils;
 
 @Component
 @Scope("singleton")

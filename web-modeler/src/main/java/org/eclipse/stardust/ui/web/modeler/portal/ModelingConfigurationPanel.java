@@ -26,7 +26,6 @@ import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.common.views.PortalConfiguration;
 import org.eclipse.stardust.ui.web.common.views.PortalConfigurationListener;
 import org.eclipse.stardust.ui.web.modeler.portal.messages.Messages;
-import org.eclipse.stardust.ui.web.modeler.ui.UserPreferencesEntries;
 
 /**
  * 

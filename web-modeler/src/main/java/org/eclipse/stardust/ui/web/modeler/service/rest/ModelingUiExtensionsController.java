@@ -9,7 +9,7 @@ import javax.ws.rs.Produces;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.ui.web.modeler.ui.UiExtensionsRegistry;
+import org.eclipse.stardust.ui.web.modeler.portal.spi.UiExtensionsRegistry;
 
 @Path("/config/ui")
 public class ModelingUiExtensionsController

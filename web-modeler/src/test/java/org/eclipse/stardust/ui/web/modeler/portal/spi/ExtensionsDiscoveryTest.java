@@ -1,4 +1,4 @@
-package org.eclipse.stardust.ui.web.modeler.ui.extension;
+package org.eclipse.stardust.ui.web.modeler.portal.spi;
 
 import static java.util.Arrays.asList;
 
