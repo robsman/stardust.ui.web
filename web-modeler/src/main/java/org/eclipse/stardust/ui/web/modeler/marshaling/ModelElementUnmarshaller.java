@@ -1101,7 +1101,23 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
 
             if (isEmpty(newId))
             {
-               if (element instanceof IIdentifiableElement)
+               if (element instanceof EventHandlerType)
+               {
+                  //Make sure that event handler IDs are unique within a process (and not only within activity)
+                  List<EventHandlerType> eventHandlers = new ArrayList<EventHandlerType>();
+                  ProcessDefinitionType process = ModelUtils
+                        .findContainingProcess(element);
+                  for (Iterator<ActivityType> i = process.getActivity().iterator(); i
+                        .hasNext();)
+                  {
+                     ActivityType activity = i.next();
+                     eventHandlers.addAll(activity.getEventHandler());
+                  }
+                  newId = NameIdUtilsExtension.createIdFromName(eventHandlers,
+                        (IIdentifiableElement) element, base);
+
+               }
+               else if (element instanceof IIdentifiableElement)
                {
                   newId = NameIdUtilsExtension.createIdFromName(null,
                         (IIdentifiableElement) element, base);
