@@ -39,8 +39,6 @@ import org.w3c.dom.NodeList;
 
 import org.eclipse.stardust.model.xpdl.carnot.spi.IStardustExtensionRegistry;
 import org.eclipse.stardust.modeling.validation.ServerConfigurationElement;
-import org.eclipse.stardust.ui.web.modeler.service.StardustExtension;
-import org.eclipse.stardust.ui.web.modeler.service.StardustExtensionPoint;
 
 public class StardustExtensionRegistry implements IStardustExtensionRegistry
 {
