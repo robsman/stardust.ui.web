@@ -758,7 +758,7 @@ define(
 				/**
 				 * 
 				 */
-				ReportingService.prototype.retrieveData = function(report) {
+				ReportingService.prototype.retrieveData = function(report, parameters) {
 					var deferred = jQuery.Deferred();
 					if(this.reportData){ //used only in case of report instance viewer
 						deferred.resolve(this.reportData);
@@ -784,7 +784,10 @@ define(
 	
 								console.debug("Report Definition");
 								console.debug(report);
-	
+								if(!parameters){
+									parameters = "";
+								}
+									
 								jQuery
 										.ajax(
 												{
@@ -797,7 +800,7 @@ define(
 																				.getBasicAuthenticationHeader());
 													},
 													url : self.getRootUrl()
-															+ "/services/rest/bpm-reporting/report-data",
+															+ "/services/rest/bpm-reporting/report-data?parameters=" + JSON.stringify(parameters),
 													contentType : "application/json",
 													data : JSON.stringify(report)
 												}).done(function(data) {

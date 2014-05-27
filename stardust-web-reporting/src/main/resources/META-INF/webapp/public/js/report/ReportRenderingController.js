@@ -115,7 +115,7 @@ define(
 						this.createTable();
 					} else if (this.report.layout.type == 'document') {
 						self.reportingService
-								.retrieveData(self.report)
+								.retrieveData(self.report, self.parameters)
 								.done(
 										function(data) {
 											console.log("Data for Document");
@@ -373,7 +373,7 @@ define(
 				 */
 				ReportRenderingController.prototype.createChart = function() {
 					var deferred = this.reportingService
-							.retrieveData(this.report);
+							.retrieveData(this.report, this.parameters);
 					var self = this;
 
 					document.body.style.cursor = "wait";
@@ -555,7 +555,7 @@ define(
                }
 
 					var deferred = this.reportingService
-							.retrieveData(this.report);
+							.retrieveData(this.report, this.parameters);
 					var self = this;
 
 					deferred
@@ -675,7 +675,7 @@ define(
                   return;
                }
                
-               self.reportingService.retrieveData(self.report)
+               self.reportingService.retrieveData(self.report, self.parameters)
                .done(
                      function(data) {
                         var rows = data.recordSet;
@@ -693,10 +693,13 @@ define(
             /**
              * 
              */
-            ReportRenderingController.prototype.refreshPreview = function(report, scopeController) {
+            ReportRenderingController.prototype.refreshPreview = function(report, parameters, scopeController) {
             	if (report) {
 					this.report = report;
 				}
+
+            	this.parameters = parameters;
+            	
 				var self = this;
 				if(this.report.dataSet.type === 'seriesGroup' && this.report.layout.subType == this.reportingService.metadata.layoutSubTypes.table.id){
 						this.getPreviewData(self.report).done(
@@ -1095,8 +1098,6 @@ define(
                   };
 		
 		ReportRenderingController.prototype.refreshRecordSet = function(scopeController) {
-			console.log("refreshPreview");
-			
 			var columns = this.reportingService.getColumnDimensions(this.report);
 			
 		
@@ -1134,32 +1135,9 @@ define(
             
             var divElem = angular.element(".dynamicTable");
             angularCompile(divElem)(divElem.scope());
-           
-       if (columns.length != 0)
-       {   
-			var self = this;
-               setTimeout(function () {
-            	   self.refreshPreviewData(scopeController);
-               }, 200);
-       } 
 		};
 		
-		/**
-     * 
-     */
-    ReportRenderingController.prototype.refreshPreviewData = function(scopeController) {
-       var self = this;	
-       
-   	   this.getPreviewData().done(
-		function(data) {
-			// Format data before displaying the Results
-        	  scopeController.rows = self.formatPreviewData(data.rows);
-			scopeController.updateView();
-		}).fail(function(err) {
-			console.log("Failed getting Preview Date: " + err);
-		});   
-    };
-    
+	    
 /**
  * 
  */

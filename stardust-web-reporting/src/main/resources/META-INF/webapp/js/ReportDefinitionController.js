@@ -360,7 +360,7 @@ define(
 									event, ui) {
 
 									if (ui.newPanel.selector === "#previewTab") {
-										self.renderingController.refreshPreview(self.report, self);
+										self.renderingController.refreshPreview(self.report, self.parameters, self);
 										self.resetParamFilters();
 										self.updateView();
 									}
@@ -451,9 +451,8 @@ define(
 				};
 				
 				ReportDefinitionController.prototype.refreshPreviewData = function() {
-					this.renderingController.refreshPreviewData(this);
+					this.renderingController.refreshPreview(this.report, this.parameters, this);
 				};
-				
 				
 				ReportDefinitionController.prototype.initializeAutocompleteDir = function(angularModule) {
 					var self = this; 

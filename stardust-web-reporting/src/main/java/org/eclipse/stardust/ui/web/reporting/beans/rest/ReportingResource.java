@@ -78,21 +78,18 @@ public class ReportingResource
       }
    }
 
-
-
-
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("report-data")
-   public Response getReportData(String postedData)
+   public Response getReportData(String postedData, @QueryParam("parameters") String parameters)
    {
       try
       {
          trace.debug("report-data");
          trace.debug(postedData);
 
-         return Response.ok(reportingService.getReportData(postedData, httpRequest), MediaType.APPLICATION_JSON_TYPE)
+         return Response.ok(reportingService.getReportData(postedData, parameters), MediaType.APPLICATION_JSON_TYPE)
                .build();
       }
       catch (Exception e)
