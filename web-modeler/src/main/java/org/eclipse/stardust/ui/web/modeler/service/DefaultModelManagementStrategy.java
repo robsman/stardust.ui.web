@@ -23,9 +23,9 @@ import org.eclipse.stardust.model.xpdl.carnot.util.VariableContext;
 import org.eclipse.stardust.ui.web.modeler.common.ModelPersistenceService;
 import org.eclipse.stardust.ui.web.modeler.common.ServiceFactoryLocator;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelPersistenceHandler;
-import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
-import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 
 /**
  *
@@ -51,6 +51,21 @@ public class DefaultModelManagementStrategy extends
    private final ModelPersistenceService persistenceService;
 
    private final ServiceFactoryLocator serviceFactoryLocator;
+
+   private final DmsPersistenceUtils persistenceUtils = new DmsPersistenceUtils()
+   {
+      @Override
+      public User getUser()
+      {
+         return getServiceFactory().getUserService().getUser();
+      }
+
+      @Override
+      public DocumentManagementService getDocumentManagementService()
+      {
+         return getServiceFactory().getDocumentManagementService();
+      }
+   };
 
    @Autowired
 	public DefaultModelManagementStrategy(ModelPersistenceService persistenceService, ServiceFactoryLocator serviceFactoryLocator)
@@ -196,7 +211,7 @@ public class DefaultModelManagementStrategy extends
             docInfo.setOwner(getServiceFactory().getUserService()
                   .getUser()
                   .getAccount());
-            docInfo.setContentType(MimeTypesHelper.XML.getType());
+            docInfo.setContentType(MediaType.TEXT_XML_VALUE); // TODO shouldn't this be application/xml? if so, how to migrate existing data?
 
             modelDocument = getDocumentManagementService().createDocument(MODELS_DIR,
                   docInfo, baos.toByteArray(), null);
@@ -211,8 +226,8 @@ public class DefaultModelManagementStrategy extends
          }
          else
          {
-            getDocumentManagementService().updateDocument(modelDocument, baos.toByteArray(), null, false, null, null,
-                  false);
+            getDocumentManagementService().updateDocument(modelDocument,
+                  baos.toByteArray(), null, false, null, null, false);
          }
       }
    }
@@ -245,13 +260,13 @@ public class DefaultModelManagementStrategy extends
          boolean createNewVersion)
    {
 
-      if (DocumentMgmtUtility.isExistingResource("/process-models", fileName))
+      if (persistenceUtils.isExistingResource("/process-models", fileName))
       {
          if (createNewVersion)
          {
             Document modelDocument = getDocumentManagementService().getDocument(
                   MODELS_DIR + fileName);
-            DocumentMgmtUtility.updateDocument(modelDocument, fileContent,
+            persistenceUtils.updateDocument(modelDocument, fileContent,
                   modelDocument.getDescription(), "", false);
 
             return ModelUploadStatus.NEW_MODEL_VERSION_CREATED;
@@ -264,7 +279,7 @@ public class DefaultModelManagementStrategy extends
          DocumentInfo docInfo = DmsUtils.createDocumentInfo(fileName);
 
          docInfo.setOwner(getServiceFactory().getUserService().getUser().getAccount());
-         docInfo.setContentType(MimeTypesHelper.XML.getType());
+         docInfo.setContentType(MediaType.TEXT_XML_VALUE);
 
          getDocumentManagementService().createDocument(MODELS_DIR, docInfo, fileContent,
                null);
