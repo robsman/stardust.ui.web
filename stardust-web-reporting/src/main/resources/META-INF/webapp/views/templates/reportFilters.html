@@ -39,7 +39,7 @@
 							<td><select ng-model="x.operator"
 								ng-options="o.id as o.label for o in reportFilterController.getOperatorsEnum(getDimension(x.dimension))"></td>
 							<td><input type="text" ng-model="x.value"></td>
-							<td ng-include="'parameterControl.html'"></td>
+							<td ng-include="'templates/parameterControl.html'"></td>
 						</tr>
 					</table>
 				</div>
@@ -50,7 +50,7 @@
 							<td><label>{{getI18N('reporting.definitionView.checkbox.default')}}</label>
 							</td>
 							<td><input type="checkbox" ng-model="x.value" /></td>
-							<td ng-include="'parameterControl.html'"></td>
+							<td ng-include="'templates/parameterControl.html'"></td>
 						</tr>
 					</table>
 				</div>
@@ -76,7 +76,7 @@
 
 								</table>
 							</td>
-							<td ng-include="'parameterControl.html'"></td>
+							<td ng-include="'templates/parameterControl.html'"></td>
 						</tr>
 					</table>
 				</div>
@@ -88,12 +88,12 @@
 							<tr>
 								<td><label>{{getI18N('reporting.definitionView.from.label')}}</label></td>
 								<td><input type="text" ng-model="x.value.from" sd-datetime /></td>
-								<td ng-include="'parameterControl.html'"></td>
+								<td ng-include="'templates/parameterControl.html'"></td>
 							</tr>
 							<tr>
 								<td><label>{{getI18N('reporting.definitionView.to.label')}}</label></td>
 								<td><input type="text" ng-model="x.value.to" sd-datetime /></td>
-								<td ng-include="'parameterControl.html'"></td>
+								<td ng-include="'templates/parameterControl.html'"></td>
 							</tr>
 						</table>
 
@@ -108,7 +108,7 @@
 							<tr>
 								<td><label>{{getI18N('reporting.definitionView.from.label')}}</label></td>
 								<td><input type="text" ng-model="x.value.from" sd-datetime /></td>
-								<td ng-include="'parameterControl.html'"></td>
+								<td ng-include="'templates/parameterControl.html'"></td>
 							</tr>
 							<tr>
 								<td><label>{{getI18N('reporting.definitionView.duration.label')}}</label></td>
@@ -124,7 +124,7 @@
 										<option value="Y">Year(s)</option>
 								</select></td>
 								<td></td>
-								<td ng-include="'parameterControl.html'"></td>
+								<td ng-include="'templates/parameterControl.html'"></td>
 							</tr>
 						</table>
 						<a style="font-size: 9px;"
@@ -194,7 +194,7 @@
 								ng-change="reportFilterController.selectionChanged(reportFilterController.getDimension(x.dimension), x)"
 								ng-options="y.id as y.name for y in reportFilterController.getEnumerators2(reportFilterController.getDimension(x.dimension), x)"></select>
 							</td>
-							<td ng-include="'parameterControl.html'"></td>
+							<td ng-include="'templates/parameterControl.html'"></td>
 						</tr>
 					</table>
 					<table class="filterTable"
@@ -206,7 +206,7 @@
 								ng-change="reportFilterController.selectionChanged(reportFilterController.getDimension(x.dimension), x)"
 								ng-options="y.id as y.name for y in reportFilterController.getEnumerators2(reportFilterController.getDimension(x.dimension), x)"></select>
 							</td>
-							<td ng-include="'parameterControl.html'"></td>
+							<td ng-include="'templates/parameterControl.html'"></td>
 						</tr>
 					</table>
 				</div>
@@ -226,7 +226,7 @@
 									data-item-hot-class="rel-item-hot"
 									data-selected-matches="x.value"></div>
 							</td>
-							<td ng-include="'parameterControl.html'"></td>
+							<td ng-include="'templates/parameterControl.html'"></td>
 						</tr>
 					</table>
 				</div>
