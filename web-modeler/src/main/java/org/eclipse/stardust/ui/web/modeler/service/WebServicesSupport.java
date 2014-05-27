@@ -19,7 +19,8 @@ import javax.xml.namespace.QName;
 import org.eclipse.stardust.engine.extensions.jaxws.app.WSConstants;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.util.VariableContext;
-import org.eclipse.stardust.ui.web.modeler.edit.utils.CommandHandlerUtils;
+import org.eclipse.stardust.ui.web.modeler.xpdl.edit.utils.CommandHandlerUtils;
+
 import org.springframework.context.ApplicationContext;
 
 import com.google.gson.JsonNull;

@@ -26,11 +26,11 @@ import org.eclipse.stardust.modeling.validation.Issue;
 import org.eclipse.stardust.modeling.validation.ValidationService;
 import org.eclipse.stardust.modeling.validation.ValidatorRegistry;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
-import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementMarshaller;
-import org.eclipse.stardust.ui.web.modeler.marshaling.ModelElementUnmarshaller;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelBinding;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelFormat;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelingSessionScoped;
+import org.eclipse.stardust.ui.web.modeler.xpdl.marshalling.ModelElementMarshaller;
+import org.eclipse.stardust.ui.web.modeler.xpdl.marshalling.ModelElementUnmarshaller;
 import org.eclipse.stardust.ui.web.modeler.xpdl.validation.ValidationExtensionRegistry;
 
 @Service
