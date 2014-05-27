@@ -1053,6 +1053,7 @@ define(
 								},
 								attributes : {
 									"carnot:engine:camel::applicationIntegrationOverlay" : "mailIntegrationOverlay",
+                           "carnot:engine:camel::transactedRoute" : "false",
 									"carnot:engine:camel::camelContextId" : "defaultCamelContext",
 									"carnot:engine:camel::invocationPattern" : invocationPatternChanges,
 									"carnot:engine:camel::invocationType" : invocationTypeChanges,
