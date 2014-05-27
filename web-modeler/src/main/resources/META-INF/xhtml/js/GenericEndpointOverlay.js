@@ -246,6 +246,10 @@ define(
                     if (!self.validateProducerRoute()) {
                         return;
                     }
+                    
+                    if(!self.validateCsvDelimiter(self.producerOutboundConverterDelimiterInput)) {
+                       return;
+                    }
 
                     self.view.submitModelElementAttributeChange(
                              "carnot:engine:camel::producerOutboundConversion",
@@ -309,7 +313,11 @@ define(
                    if (!self.validateProducerRoute()) {
                       return;
                    }
-
+                   
+                   if(!self.validateCsvDelimiter(self.producerInboundConverterDelimiterInput)) {
+                      return;
+                   }
+                   
                    self.view.submitModelElementAttributeChange(
                             "carnot:engine:camel::producerInboundConversion",
                             self.producerInboundConversion.val()
@@ -394,7 +402,11 @@ define(
                  if (!self.validateConsumerRoute()) {
                     return;
                  }
-
+                 
+                 if(!self.validateCsvDelimiter(self.consumerInboundConverterDelimiterInput)) {
+                    return;
+                 }
+                 
                  self.view.submitModelElementAttributeChange(
                           "carnot:engine:camel::consumerInboundConversion",
                           self.consumerInboundConversion.val()
@@ -1219,6 +1231,33 @@ define(
                            + this.consumerInboundConverterDelimiterInput.val();
                }
                return option;
+            };
+            
+            GenericEndpointOverlay.prototype.validateCsvDelimiter = function(csvDelimiterInput)
+            {
+               var delimiter = csvDelimiterInput.val();
+               csvDelimiterInput.removeClass("error");
+               
+               if(delimiter.length == 0)
+               {
+                  csvDelimiterInput.addClass("error");
+                  this.view.errorMessages
+                  .push("No value has been specified for CSV Delimiter.");
+               }
+               else if(delimiter.indexOf("\"") != -1 || (delimiter.indexOf("&") != -1 && delimiter.length == 1)
+                         || delimiter.indexOf("'") != -1 || delimiter.indexOf("\\n") != -1
+                         || delimiter.indexOf("\\r") != -1 )
+               {
+                  csvDelimiterInput.addClass("error");
+                  this.view.errorMessages
+                  .push("CSV Delimiter is not valid.");
+               }
+               
+               if(this.view.errorMessages.length > 0) {
+                  this.view.showErrorMessages();
+                  return false;
+               }
+               return true;
             };
 
          }
