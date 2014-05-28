@@ -1131,41 +1131,6 @@ define(
 
 
 				/**
-				 * Expects an array of parameters.
-				 */
-				ReportDefinitionController.prototype.addParameters = function(
-						parameters) {
-					for ( var n = 0; n < parameters.length; ++n) {
-						this.report.parameters[parameters[n].id] = parameters[n];
-					}
-				};
-
-				/**
-				 * Expects an array of parameter IDs.
-				 */
-				ReportDefinitionController.prototype.removeParameters = function(
-						ids) {
-					for ( var n = 0; n < ids.length; ++n) {
-						this.removeParameter(ids[n]);
-					}
-				};
-
-				/**
-             * 
-             */
-            ReportDefinitionController.prototype.existsDimension = function(
-                  dimensionName) {
-               for ( var parameter in this.report.parameters)
-               {
-                  if (this.report.parameters[parameter].name == dimensionName)
-                  {
-                     return true;
-                  }
-               }
-               return false;
-            };
-
-				/**
 				 * 
 				 */
 				ReportDefinitionController.prototype.getParameters = function() {

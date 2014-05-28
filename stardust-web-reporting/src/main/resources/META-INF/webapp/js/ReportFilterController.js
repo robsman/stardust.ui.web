@@ -409,6 +409,7 @@ define(
 
 					if (filter
 							&& (filter.dimension == "processName" || filter.dimension == "activityName")) {
+						self = this;
 						// processes
 						if ((dimension.id == "processName" || dimension.id == "activityName")) {
 							filteredEnumItems = [];
@@ -474,6 +475,27 @@ define(
 								}
 							}
 
+						}
+						
+						//persist all processes or all activities
+						var selectedAll = false;
+						for ( var valueInd in filter.value) {
+							if (filter.value[valueInd] == self.constants.ALL_PROCESSES.id
+									|| filter.value[valueInd] == self.constants.ALL_ACTIVITIES.id) {
+								selectedAll = true;
+							}
+						}
+
+						if (selectedAll) {
+							filter.allValues = [];
+							for ( var itemInd in filteredEnumItems) {
+								var itemId = filteredEnumItems[itemInd].id;
+								if (itemId != self.constants.ALL_PROCESSES.id && itemId != self.constants.ALL_ACTIVITIES.id) {
+									filter.allValues.push(itemId);
+								}
+							}
+						} else {
+							delete filter.allValues;
 						}
 					}
 

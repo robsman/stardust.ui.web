@@ -297,19 +297,21 @@ public class ReportingServiceBean
     * @throws ParseException
     * @throws UnsupportedFilterException
     */
-   public String getReportData(String reportJson, String parametersJson) throws UnsupportedFilterException, ParseException
+   public String getReportData(String reportJson, HttpServletRequest httpRequest) throws UnsupportedFilterException, ParseException
    {
       ReportingService reportingService = getServiceFactory().getService(ReportingService.class);
       ReportDefinition reportDefinition = jsonMarshaller.gson().fromJson(reportJson, ReportDefinition.class);
       Collection<ReportParameter> reportParameters = new ArrayList<ReportParameter>();
 
       @SuppressWarnings("unchecked")
-      Map<String, String[]> parameterMap = new HashMap<String, String[]>(); //httpRequest.getParameterMap(); TODO
+      Map<String, String[]> parameterMap = httpRequest.getParameterMap();
       for(String paramId: parameterMap.keySet())
       {
-         String[] paramValues = parameterMap.get(paramId);
-         ReportParameter rp  = new ReportParameter(paramId, paramValues);
-         reportParameters.add(rp);
+         if(paramId != "reportPath"){
+            String[] paramValues = parameterMap.get(paramId);
+            ReportParameter rp  = new ReportParameter(paramId, paramValues);
+            reportParameters.add(rp);   
+         }
       }
 
       ReportRequest reportRequest = new ReportRequest(reportDefinition.getDataSet(), reportParameters);
@@ -640,8 +642,8 @@ public class ReportingServiceBean
    }
 
    /**
-	 *
-	 */
+     *
+     */
    private void saveReportDefinitionDocument(JsonObject reportDefinitionJson, Folder folder, String name)
    {
       String reportContent = reportDefinitionJson.toString();

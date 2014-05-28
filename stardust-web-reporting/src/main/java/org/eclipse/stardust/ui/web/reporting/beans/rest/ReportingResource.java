@@ -1,6 +1,7 @@
 package org.eclipse.stardust.ui.web.reporting.beans.rest;
 
 import java.util.Enumeration;
+import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
@@ -78,18 +79,19 @@ public class ReportingResource
       }
    }
 
+
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("report-data")
-   public Response getReportData(String postedData, @QueryParam("parameters") String parameters)
+   public Response getReportData(String postedData)
    {
       try
       {
          trace.debug("report-data");
          trace.debug(postedData);
 
-         return Response.ok(reportingService.getReportData(postedData, parameters), MediaType.APPLICATION_JSON_TYPE)
+         return Response.ok(reportingService.getReportData(postedData, httpRequest), MediaType.APPLICATION_JSON_TYPE)
                .build();
       }
       catch (Exception e)
@@ -100,6 +102,28 @@ public class ReportingResource
       }
    }
 
+   
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("report-data")
+   public Response getReportData()
+   {
+      try
+      {
+         trace.debug("GET report-data");
+         String[] reportPathObj = (String[]) httpRequest.getParameterMap().get("reportPath");
+         String reportJson = reportingService.loadReportDefinition(reportPathObj[0]).toString();
+         return Response.ok(reportingService.getReportData(reportJson, httpRequest), MediaType.APPLICATION_JSON_TYPE)
+               .build();
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
+
+         return Response.serverError().build();
+      }
+   }
+   
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("report-definitions")

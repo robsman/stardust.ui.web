@@ -784,10 +784,10 @@ define(
 	
 								console.debug("Report Definition");
 								console.debug(report);
-								if(!parameters){
-									parameters = "";
-								}
-									
+								
+								//convert parameters
+								var parametersString = convertToParametersString(parameters);
+								
 								jQuery
 										.ajax(
 												{
@@ -800,7 +800,7 @@ define(
 																				.getBasicAuthenticationHeader());
 													},
 													url : self.getRootUrl()
-															+ "/services/rest/bpm-reporting/report-data?parameters=" + JSON.stringify(parameters),
+															+ "/services/rest/bpm-reporting/report-data?" + parametersString,
 													contentType : "application/json",
 													data : JSON.stringify(report)
 												}).done(function(data) {
@@ -814,6 +814,49 @@ define(
 					return deferred.promise();
 				};
 
+				/**
+				 * 
+				 */
+				ReportingService.prototype.retrieveDataForReportPath = function(path, parameters) {
+					var deferred = jQuery.Deferred();
+
+					var self = this;
+
+					console.debug("Report Definition");
+					
+					//convert parameters
+ 					var parametersString = convertToParametersString(parameters);
+					
+					if (parametersString && parametersString != "") {
+						parametersString = "reportPath=" + path + "&" + parametersString;
+					} else {
+						parametersString = "reportPath=" + path;
+					}
+					
+					jQuery
+							.ajax(
+									{
+										type : "GET",
+										beforeSend : function(request) {
+											request
+													.setRequestHeader(
+															"Authentication",
+															self
+																	.getBasicAuthenticationHeader());
+										},
+										url : self.getRootUrl()
+												+ "/services/rest/bpm-reporting/report-data?" + parametersString,
+										contentType : "application/json",
+									}).done(function(data) {
+								deferred.resolve(data);
+							}).fail(function() {
+								deferred.reject([]);
+							});
+					
+					return deferred.promise();
+				};
+				
+				
 				/**
 				 * 
 				 */
@@ -1719,5 +1762,24 @@ define(
 					return inData;
             };
             
+			}
+			/**
+			 *	convert parameters 
+			 */
+			function convertToParametersString(parameters){
+				var parametersString = "";
+				if(parameters){
+					for(var itemInd in parameters){
+						parametersString += parameters[itemInd].dimension + "=";
+						if(parameters[itemInd].allValues){
+							parametersString += parameters[itemInd].allValues; 		
+						}else{
+							parametersString += parameters[itemInd].value;
+						}
+						parametersString += "&";
+					}
+				}
+				parametersString = parametersString.slice(0, -1);
+				return parametersString; 
 			}
 		});
