@@ -117,21 +117,9 @@ define(
 				 * 
 				 */
 				ReportFilterController.prototype.deleteFilter = function(index) {
-					var newFilters = [];
-
-					for (var n = 0; n < this.filters.length; ++n) {
-						if (n == index) {
-							continue;
-						}
-
-						newFilters.push(this.filters[n]);
-					}
-
-					this.filters = newFilters;
-
+					this.filters.splice(index, 1);
 					// Remove parameters from parameter
 					this.removeParametersFromParameterList(index);
-
 				};
 				/**
 				 * This function will remove parameters from parameter list

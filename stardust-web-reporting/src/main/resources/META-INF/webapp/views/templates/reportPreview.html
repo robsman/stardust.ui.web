@@ -29,7 +29,7 @@
 			</table>
 		</div> -->
 
-	<div ng-show="report.dataSet.type != 'processHistory' && !instance">
+	<div ng-show="report.dataSet.type != 'processHistory' && !instance && parameters && parameters.length > 0">
 		<div class="heading">{{getI18N('reporting.definitionView.parameters.title')}}</div>
 		<div>
 			<report-filter controller="reportParameterController"></report-filter>
