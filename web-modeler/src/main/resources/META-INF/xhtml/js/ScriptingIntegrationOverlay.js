@@ -262,7 +262,7 @@ define(
                            parameterObjectString += "\"\"";
                         } else if (parameterDefinition.primitiveDataType === "Boolean"||parameterDefinition.primitiveDataType === "boolean") {
                            parameterObjectString += "false";
-                        } if(parameterDefinition.primitiveDataType === "Timestamp"){
+                        }else if(parameterDefinition.primitiveDataType === "Timestamp"){
                            parameterObjectString += "null";
                         }else {
                            parameterObjectString += "0";
