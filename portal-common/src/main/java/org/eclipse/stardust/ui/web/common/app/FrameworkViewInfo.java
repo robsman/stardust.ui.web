@@ -12,8 +12,6 @@ package org.eclipse.stardust.ui.web.common.app;
 
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 
-import com.icesoft.util.encoding.Base64;
-
 
 /**
  * @author Subodh.Godbole
@@ -21,6 +19,8 @@ import com.icesoft.util.encoding.Base64;
  */
 public class FrameworkViewInfo
 {
+   public static String DEFAULT_VIEW_KEY = "_all_";
+
    private String html5FwViewId;
    private String viewId;
    private String typeId;
@@ -63,7 +63,9 @@ public class FrameworkViewInfo
          }
 
          typeId = view.getDefinition().getName();
-         id = StringUtils.isNotEmpty(view.getViewKey()) ? view.getViewKey() : "all";
+         
+         // HTML5 Framework fails if id is blank, so have some default
+         id = StringUtils.isNotEmpty(view.getViewKey()) ? view.getViewKey() : DEFAULT_VIEW_KEY;
          
          if(!StringUtils.isEmpty(typeId) && !typeId.equals("configurationTreeView"))
          {

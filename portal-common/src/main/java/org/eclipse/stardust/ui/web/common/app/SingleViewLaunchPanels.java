@@ -119,7 +119,11 @@ public class SingleViewLaunchPanels implements InitializingBean
             List<String> values = StringUtils.splitAndKeepOrder(value, ":");
             String viewId = values.get(0);
             String viewKey = (values.size() == 2) ? values.get(1) : null;
-   
+            if(FrameworkViewInfo.DEFAULT_VIEW_KEY.equals(viewKey))
+            {
+               viewKey = null;
+            }
+            
             View view = portalApp.getPortalUiController().findView(viewId, viewKey);
             if (null != view)
             {
