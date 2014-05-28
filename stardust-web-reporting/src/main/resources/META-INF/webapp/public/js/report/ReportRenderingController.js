@@ -1135,7 +1135,32 @@ define(
             
             var divElem = angular.element(".dynamicTable");
             angularCompile(divElem)(divElem.scope());
-		};
+            
+            
+            if (columns.length != 0)
+            {   
+     			var self = this;
+                    setTimeout(function () {
+                 	   self.refreshPreviewData(scopeController);
+                    }, 200);
+            } 
+     		};
+     		
+     		/**
+          * 
+          */
+         ReportRenderingController.prototype.refreshPreviewData = function(scopeController) {
+            var self = this;	
+            
+        	   this.getPreviewData().done(
+     		function(data) {
+     			// Format data before displaying the Results
+             	  scopeController.rows = self.formatPreviewData(data.rows);
+     			scopeController.updateView();
+     		}).fail(function(err) {
+     			console.log("Failed getting Preview Date: " + err);
+     		});   
+         };
 		
 	    
 /**
