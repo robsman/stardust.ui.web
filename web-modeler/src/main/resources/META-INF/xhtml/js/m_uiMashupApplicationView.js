@@ -208,6 +208,12 @@ define(
 				m_utils.jQuerySelect("#addParameterDefinitionButton")
 					.attr("title",m_i18nUtils.getProperty("modeler.element.properties.commonProperties.add"));
 
+				m_utils.jQuerySelect("label#formButtonsSelectionTitleLabel")
+					.text(m_i18nUtils.getProperty("modeler.model.propertyView.uiMashup.configuration.configurationProperties.embedded.formButtonsSelectionTitle"));
+				
+				m_utils.jQuerySelect("label[for='generateMobileCodeInput']")
+					.text(m_i18nUtils.getProperty("modeler.model.propertyView.uiMashup.configuration.configurationProperties.embedded.generateMobileCodeInputLabel"));
+				
 				m_utils.jQuerySelect("label[for='generateCompleteButtonInput']")
 					.text(m_i18nUtils.getProperty("modeler.model.propertyView.uiMashup.configuration.configurationProperties.embedded.generateCompleteButton"));
 
@@ -232,6 +238,7 @@ define(
 				m_utils.jQuerySelect("a#generateMarkupForAngularLink")
 					.text(m_i18nUtils.getProperty("modeler.model.propertyView.uiMashup.configuration.configurationProperties.embedded.generateMarkup"));
 			}
+
 			/**
 			 *
 			 */
@@ -266,6 +273,7 @@ define(
 					this.generateQaFailButtonInput = m_utils.jQuerySelect("#generateQaFailButtonInput");
 					this.generateTabsForFirstLevelInput = m_utils.jQuerySelect("#generateTabsForFirstLevelInput");
 					this.generateTabsForFirstLevelTablesInput = m_utils.jQuerySelect("#generateTabsForFirstLevelTablesInput");
+					this.generateMobileCodeInput = m_utils.jQuerySelect("#generateMobileCodeInput");
 
 					this.parameterDefinitionsPanel = m_parameterDefinitionsPanel
 							.create({
@@ -317,12 +325,22 @@ define(
 												.submitExternalWebAppContextAttributesChange({
 													"carnot:engine:ui:externalWebApp:embedded" : false,
 													"carnot:engine:ui:externalWebApp:uri" : event.data.view.urlInput
-															.val()
+															.val(),
+													"ui:externalWebApp:embedded:generateMobileMarkup" : null
 												});
 									});
 
 					this.generateTable = m_utils.jQuerySelect("#generateTable");
 
+					this.generateMobileCodeInput
+							.change(
+									{
+										view : this
+									},
+									function(event) {
+										event.data.view.submitEmbeddedModeChanges();
+									});
+					
 					this.generateMarkupForAngularLink.click({
 						view : this
 					}, function(event) {
@@ -349,6 +367,7 @@ define(
 						view : this
 					}, function(event) {
 						event.data.view.setEmbedded();
+						event.data.view.generateMobileCodeInput.prop("checked",true);						
 						event.data.view.submitEmbeddedModeChanges();
 					});
 
@@ -402,6 +421,7 @@ define(
 							.submitExternalWebAppContextAttributesChange({
 								"carnot:engine:ui:externalWebApp:embedded" : true,
 								"carnot:engine:ui:externalWebApp:uri" : null,
+								"ui:externalWebApp:embedded:generateMobileMarkup" : this.generateMobileCodeInput.prop("checked"),
 								"carnot:engine:ui:externalWebApp:markup" : CKEDITOR.instances[this.editorTextArea.id].getData()
 
 							});
@@ -453,6 +473,10 @@ define(
 				UiMashupApplicationView.prototype.setEmbedded = function() {
 					this.viaUriInput.prop("checked", false);
 					this.embeddedInput.prop("checked", true);
+					this.generateMobileCodeInput
+							.prop(
+									"checked",
+									this.getContext().attributes["ui:externalWebApp:embedded:generateMobileMarkup"]);
 
 					m_dialog.makeInvisible(this.viaUriRow);
 					m_dialog.makeVisible(this.embeddedRow);
@@ -656,7 +680,8 @@ define(
 								tabsForFirstLevel : this.generateTabsForFirstLevelInput
 										.prop("checked"),
 								tabsForFirstLevelTables : this.generateTabsForFirstLevelTablesInput
-										.prop("checked")
+										.prop("checked"),
+								generateMobileMarkup : this.generateMobileCodeInput.prop("checked")
 							});
 
 					return generator
