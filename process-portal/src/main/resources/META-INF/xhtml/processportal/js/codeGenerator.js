@@ -374,32 +374,36 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 								path.typeName == "java.util.Calendar" || path.typeName == "time") {
 							if (path.typeName == "time") {
 								elem.attributes['ng-show'] = "false"; // Permonently Hide Date Part
+							} else if (path.typeName == "dateTime") {
+								this.handleDateTimeInputs(elem);
 							} else {
 								elem.attributes['class'] = "panel-input-dateTime-date " + elem.attributes['class'];
 							}
 	
-							// Input field for Time Part
-							var elem2 = this.addTimeInputField(elemWrapper);
-							
-							var validations2 = [];
-							validations2.push({type: "ng-pattern", value: /^(0?[0-9]|1[0-9]|2[0123]):[0-5][0-9]$/, 
-								msg: this.getI18NLabel("validation.err.time", "Invalid Time")});
-	
-							this.processValidations(elem2, validations2, 
-									options.ngFormName ? options.ngFormName : this.formElemName, elemWrapper, elemMain);
-	
-							// (loopVar + "." + child.id) : (loopVar + "['" + child.id + "']");
-							var ngModel2 = options.ngModel == undefined ? this.convertFullIdToBinding(path) : options.ngModel;
-							if (ngModel2.lastIndexOf("']") > -1) {
-								var index = ngModel2.lastIndexOf("']");
-								var part1 = ngModel2.substring(0, index);
-								var part2 = ngModel2.substring(index);
-								ngModel2 = part1 + "_timePart" + part2;
-							} else {
-								ngModel2 += "_timePart";
+							if (this.haveSeparateFieldForTime(path)) {
+								// Input field for Time Part
+								var elem2 = this.addTimeInputField(elemWrapper);
+								
+								var validations2 = [];
+								validations2.push({type: "ng-pattern", value: /^(0?[0-9]|1[0-9]|2[0123]):[0-5][0-9]$/, 
+									msg: this.getI18NLabel("validation.err.time", "Invalid Time")});
+		
+								this.processValidations(elem2, validations2, 
+										options.ngFormName ? options.ngFormName : this.formElemName, elemWrapper, elemMain);
+		
+								// (loopVar + "." + child.id) : (loopVar + "['" + child.id + "']");
+								var ngModel2 = options.ngModel == undefined ? this.convertFullIdToBinding(path) : options.ngModel;
+								if (ngModel2.lastIndexOf("']") > -1) {
+									var index = ngModel2.lastIndexOf("']");
+									var part1 = ngModel2.substring(0, index);
+									var part2 = ngModel2.substring(index);
+									ngModel2 = part1 + "_timePart" + part2;
+								} else {
+									ngModel2 += "_timePart";
+								}
+		
+								elem2.attributes['ng-model'] = ngModel2;
 							}
-	
-							elem2.attributes['ng-model'] = ngModel2;
 						}
 					}
 
@@ -427,6 +431,20 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			}
 			
 			return elemMain;
+		};
+		
+		/**
+		 * 
+		 */
+		CodeGenerator.prototype.handleDateTimeInputs = function(elem) {
+			// DO nothing. Subclasses may handle things differently
+		};
+		
+		/**
+		 * 
+		 */
+		CodeGenerator.prototype.haveSeparateFieldForTime = function(path) {
+			return true;
 		};
 		
 		/**

@@ -126,7 +126,25 @@ define(["processportal/js/codeGenerator", "processportal/js/htmlElement", "bpm-m
 				}
 			}
 		};
-
+		
+		/**
+		 * 
+		 */
+		CodeGeneratorMobile.prototype.handleDateTimeInputs = function(elem) {
+			elem.attributes['type'] = "datetime";
+		};
+				
+		/**
+		 * 
+		 */
+		CodeGeneratorMobile.prototype.haveSeparateFieldForTime = function(path) {
+			if (path.typeName == "time") {
+				return true;
+			} else {
+				return false;
+			}
+		};
+		
 		/**
 		 * 
 		 */

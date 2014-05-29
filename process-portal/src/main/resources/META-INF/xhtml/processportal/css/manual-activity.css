@@ -293,4 +293,8 @@ body, table {
     margin-left: 10px;
     position: absolute;
     background-color: #F3F3F3;     
-}    
+}
+
+.hideIfDesktop {
+	display: none;
+}
