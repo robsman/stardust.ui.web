@@ -72,6 +72,9 @@ public class Constants
    public static final String DATA_TYPE_ATTR = "carnot:engine:dataType";
    public static final String ENUM_STRUCT_TYPE = "EnumStructType";
    public static final String ENUM_TYPE = "Enumeration";
+   public static final String TECH_USER_PARAM_ACCOUNT = "Security.ResetPassword.TechnicalUser.Account";
+   public static final String TECH_USER_PARAM_PASSWORD = "Security.ResetPassword.TechnicalUser.Password";
+   public static final String TECH_USER_PARAM_REALM = "Security.ResetPassword.TechnicalUser.Realm";
    
    public ActivityInstanceStates getActivityInstanceState()
    {

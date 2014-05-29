@@ -10,9 +10,15 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.login.dialogs;
 
+import static org.eclipse.stardust.common.StringUtils.isEmpty;
+
 import java.util.Collections;
 import java.util.Map;
 
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
+
+import org.eclipse.stardust.common.config.Parameters;
 import org.eclipse.stardust.engine.core.runtime.beans.removethis.SecurityProperties;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
@@ -78,10 +84,17 @@ public class ResetPasswordDialog extends PopupDialog
          {
             trace.debug("Resetting Pwd for - " + account);
          }
-
+         FacesContext fc = FacesContext.getCurrentInstance();
+         HttpServletRequest req = (HttpServletRequest) fc.getExternalContext().getRequest();
+         String url = Parameters.instance().getString("Security.Password.ResetServletUrl");
+         if (StringUtils.isNotEmpty(url))
+         {
+            // allow base URI override via parameter
+            url = expandUriTemplate(url, req);
+            Parameters.instance().set("Security.Password.ResetServletUrl", url);
+         }
          trace.info("About to call reset pwd for " + account + ", props: " + loginProperties);
-         sessionCtx.getServiceFactory().getUserService().resetPassword(account, loginProperties, null);
-
+         sessionCtx.getServiceFactory().getUserService().generatePasswordResetToken(account);
          if (trace.isDebugEnabled())
          {
             trace.debug("Reset Pwd Success for - " + account);
@@ -98,6 +111,45 @@ public class ResetPasswordDialog extends PopupDialog
       setVisible(!success); // This is required, otherwise Popup Dialog disappears
    }
 
+   /**
+    * 
+    * @param uriTemplate
+    * @param req
+    * @return
+    */
+   private String expandUriTemplate(String uriTemplate, HttpServletRequest req)
+   {
+      String uri = uriTemplate;
+
+      if (uri.contains("${request.scheme}"))
+      {
+         uri = uri.replace("${request.scheme}", req.getScheme());
+      }
+      if (uri.contains("${request.serverName}"))
+      {
+         uri = uri.replace("${request.serverName}", req.getServerName());
+      }
+      if (uri.contains("${request.serverLocalName}") && !isEmpty(req.getLocalName()))
+      {
+         uri = uri.replace("${request.serverLocalName}", req.getLocalName());
+      }
+      if (uri.contains("${request.serverPort}"))
+      {
+         uri = uri
+               .replace("${request.serverPort}", Integer.toString(req.getServerPort()));
+      }
+      if (uri.contains("${request.serverLocalPort}"))
+      {
+         uri = uri.replace("${request.serverLocalPort}",
+               Integer.toString(req.getLocalPort()));
+      }
+      if (uri.contains("/${request.contextPath}"))
+      {
+         uri = uri.replace("/${request.contextPath}", req.getContextPath());
+      }
+      return uri;
+   }
+   
    @Override
    public void reset()
    {

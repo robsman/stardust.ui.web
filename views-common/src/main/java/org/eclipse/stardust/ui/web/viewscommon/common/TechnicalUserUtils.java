@@ -30,9 +30,6 @@ public class TechnicalUserUtils
 
    protected static final Logger trace = LogManager.getLogger(TechnicalUserUtils.class);
 
-   public static final String TECH_USER_PARAM_ACCOUNT = "Security.ResetPassword.TechnicalUser.Account";
-   public static final String TECH_USER_PARAM_PASSWORD = "Security.ResetPassword.TechnicalUser.Password";
-   public static final String TECH_USER_PARAM_REALM = "Security.ResetPassword.TechnicalUser.Realm";
    public static final String TECH_USER_ACCOUNT = "motu";
    public static final String TECH_USER_PASSWORD = "motu";
    public static final String TECH_USER_REALM = "carnot";
@@ -52,9 +49,9 @@ public class TechnicalUserUtils
 
       Parameters parameters = Parameters.instance();
 
-      String user = parameters.getString(TECH_USER_PARAM_ACCOUNT);
-      String pwd = parameters.getString(TECH_USER_PARAM_PASSWORD);
-      String realm = parameters.getString(TECH_USER_PARAM_REALM);
+      String user = parameters.getString(Constants.TECH_USER_PARAM_ACCOUNT);
+      String pwd = parameters.getString(Constants.TECH_USER_PARAM_PASSWORD);
+      String realm = parameters.getString(Constants.TECH_USER_PARAM_REALM);
 
       Map<String, String> properties = CollectionUtils.newHashMap();
       properties.put(SecurityProperties.REALM, realm);

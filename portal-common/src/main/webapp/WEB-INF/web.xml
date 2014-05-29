@@ -225,6 +225,14 @@
 		<url-pattern>/fsd-content/*</url-pattern>
 	</servlet-mapping>
 
+	<servlet>
+		<servlet-name>resetServlet</servlet-name>
+		<servlet-class>org.eclipse.stardust.ui.web.viewscommon.login.ResetPasswordServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>resetServlet</servlet-name>
+		<url-pattern>/resetServlet/*</url-pattern>
+	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>faces</servlet-name>
 		<url-pattern>/faces/*</url-pattern>
