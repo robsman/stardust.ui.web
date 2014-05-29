@@ -1,5 +1,5 @@
 define(
-      [ "bpm-modeler/js/m_utils", 
+      [ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_urlUtils",
         "bpm-modeler/js/m_i18nUtils",
         "bpm-modeler/js/m_constants",
         "bpm-modeler/js/m_commandsController",
@@ -9,7 +9,7 @@ define(
         "bpm-modeler/js/m_typeDeclaration",
         "bpm-modeler/js/m_parameterDefinitionsPanel",
         "bpm-modeler/js/m_codeEditorAce" ],
-      function(m_utils, m_i18nUtils, m_constants, m_commandsController,
+      function(m_utils,m_urlUtils, m_i18nUtils, m_constants, m_commandsController,
             m_command, m_model, m_accessPoint, m_typeDeclaration,
             m_parameterDefinitionsPanel, m_codeEditorAce) {
          return {
@@ -103,6 +103,36 @@ define(
                         hideEnumerations:true
                      });
 
+               this.deleteParameterDefinitionButton = m_utils.jQuerySelect("#parametersTab #deleteParameterDefinitionButton");
+               this.deleteParameterDefinitionButton.attr("src", m_urlUtils
+                        .getContextName()
+                        + "/plugins/bpm-modeler/images/icons/delete.png");
+               
+               this.deleteParameterDefinitionButton.click({
+                  panel : this
+               }, function(event) {
+                  event.data.panel.parameterDefinitionsPanel.deleteParameterDefinition();
+                  if(event.data.panel.parameterDefinitionsPanel.currentParameterDefinition.direction=="IN"){
+                     if(event.data.panel.getApplication().attributes["carnot:engine:camel::inBodyAccessPoint"]!=null && event.data.panel.getApplication().attributes["carnot:engine:camel::inBodyAccessPoint"]==event.data.panel.parameterDefinitionsPanel.currentParameterDefinition.id)
+                        {
+                        
+                     event.data.panel.view
+                     .submitModelElementAttributeChange(
+                           "carnot:engine:camel::inBodyAccessPoint",
+                           null);
+                        }
+                  }
+                  else{
+                     if(event.data.panel.getApplication().attributes["carnot:engine:camel::outBodyAccessPoint"]!=null && event.data.panel.getApplication().attributes["carnot:engine:camel::outBodyAccessPoint"]==event.data.panel.parameterDefinitionsPanel.currentParameterDefinition.id)
+                     {
+                     event.data.panel.view
+                     .submitModelElementAttributeChange(
+                           "carnot:engine:camel::outBodyAccessPoint",
+                           null);
+                     }
+                  }
+               });
+               
                var self = this;
                            
                this.camelContextInput.change(function() {
