@@ -60,4 +60,10 @@ public class PlainTextViewer implements IDocumentViewer
 
    public void closeDocument()
    {}
+
+   @Override
+   public boolean isHideToolbar()
+   {
+      return false;
+   }
 }

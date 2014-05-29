@@ -253,4 +253,10 @@ public class ReportViewer implements IDocumentViewer, ViewEventHandler
       PortalApplicationEventScript.getInstance().addEventScript(
             "InfinityBpm.Core.changeMouseCursorStyle(\"" + style + "\");");
    }
+
+   @Override
+   public boolean isHideToolbar()
+   {
+      return true;
+   }
 }

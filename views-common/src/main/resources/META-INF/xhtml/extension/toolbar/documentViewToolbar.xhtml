@@ -6,7 +6,7 @@
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 
-	<ice:panelGrid columns="9">
+	<ice:panelGrid columns="9" rendered="#{!documentHandlerBean.contentHandler.hideToolbar}">
 	
 		<ice:commandLink disabled="#{!documentHandlerBean.showPrev}"
 			action="#{documentHandlerBean.showPreviousVersion}">

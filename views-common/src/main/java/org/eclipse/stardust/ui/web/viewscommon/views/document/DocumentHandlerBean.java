@@ -109,6 +109,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
    private boolean disableAutoDownload = false;
    private String loadUnsuccessfulMsg;
    private ConfirmationDialog confirmationDialog;
+   private boolean hideToolbar = false;
    
    private String docInteractionId = null;
 
@@ -1348,5 +1349,11 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
    public boolean isDisableAutoDownload()
    {
       return disableAutoDownload;
-   }  
+   }
+
+   public boolean isHideToolbar()
+   {
+      return hideToolbar;
+   }
+
 }

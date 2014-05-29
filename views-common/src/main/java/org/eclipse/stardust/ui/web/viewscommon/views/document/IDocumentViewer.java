@@ -68,4 +68,9 @@ public interface IDocumentViewer
     */
    void closeDocument();
    
+   /**
+    * hide toolbar completely, specially required in case of html based views
+    */
+   boolean isHideToolbar();
+   
 }

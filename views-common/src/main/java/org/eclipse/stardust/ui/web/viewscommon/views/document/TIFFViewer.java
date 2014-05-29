@@ -644,4 +644,10 @@ public class TIFFViewer implements IDocumentViewer, ICustomDocumentSaveHandler, 
             ? DocumentMgmtUtility.stripOffSpecialCharacters(docInfo.getId())
             : docInfo.getId();
    }
+
+   @Override
+   public boolean isHideToolbar()
+   {
+      return false;
+   }
 }

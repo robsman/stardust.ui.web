@@ -76,4 +76,10 @@ public class PdfViewer implements IDocumentViewer
          pdfDocumentHandler.getCurrentDocumentState().closeDocument();
       }
    }
+
+   @Override
+   public boolean isHideToolbar()
+   {
+      return false;
+   }
 }

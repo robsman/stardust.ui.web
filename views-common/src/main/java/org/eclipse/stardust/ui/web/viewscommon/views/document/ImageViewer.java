@@ -72,4 +72,10 @@ public class ImageViewer implements IDocumentViewer
 
    public void closeDocument()
    {}
+
+   @Override
+   public boolean isHideToolbar()
+   {
+      return false;
+   }
 }
