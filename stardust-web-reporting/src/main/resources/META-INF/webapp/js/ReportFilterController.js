@@ -47,7 +47,7 @@ define(
 					this.filters = filters;
 					this.report = report;
 				}
-				
+
 				/**
 				 * 
 				 */
@@ -71,9 +71,7 @@ define(
 					this.reportHelper = reportHelper;
 					this.filters = filters;
 					this.report = report;
-					this.parameterDisplay = paremetersDisplay; 
-					
-					this.filterSelected = [];
+					this.parameterDisplay = paremetersDisplay;
 				}
 
 				/**
@@ -99,47 +97,18 @@ define(
 				};
 
 				/**
-				 * This function will populte the filter variables by loading
-				 * previously saved filters
-				 */
-				ReportFilterController.prototype.loadFilters = function() {
-					if (this.filterSelected.length != this.filters.length) {
-						for ( var item in this.filters) {
-							this.filterSelected.push({
-								index : this.filters.length,
-								value : []
-							});
-						}
-					}
-				};
-
-				/**
 				 * 
 				 */
-				ReportFilterController.prototype.deleteFilter = function(index) {
-					this.filters.splice(index, 1);
-					// Remove parameters from parameter
-					this.removeParametersFromParameterList(index);
-				};
-				/**
-				 * This function will remove parameters from parameter list
-				 */
-				ReportFilterController.prototype.removeParametersFromParameterList = function(
-						index) {
-					if (this.filterSelected[index].value != null) {
-						var params = this.filterSelected[index].value;
-						for ( var param in params) {
-							this
-									.removeParameter(this.filterSelected[index].value[param].id);
-						}
-					}
+				ReportFilterController.prototype.deleteFilter = function(filter) {
+					this.filters.splice(this.getIndex(filter.dimension), 1);
 				};
 
 				/**
 				 * Reinitializes filter values and operator.
 				 */
 				ReportFilterController.prototype.onFilterDimensionChange = function(
-						index) {
+						filter) {
+					var index = this.getIndex(filter.dimension);
 					this.filters[index].value = null;
 					this.filters[index].metadata = null;
 					this.filters[index].operator = null;
@@ -172,9 +141,7 @@ define(
 								&& (dimenison.type == this.reportingService.metadata.timestampType)) {
 							this.filters[index].value = {
 								from : "",
-								to : "",
-								duration : "",
-								durationUnit : ""
+								to : ""
 							};
 							if (!this.filters[index].metadata) {
 								this.filters[index].metadata = {};
@@ -190,20 +157,28 @@ define(
 				};
 
 				/**
+				 * 
+				 */
+				ReportFilterController.prototype.getIndex = function(id) {
+					for (var int = 0; int < this.filters.length; int++) {
+						if (id.indexOf(this.filters[int].dimension) != -1) {
+							return int;
+						}
+					}
+				};
+
+				/**
 				 * Adding order parameter to dimension object used in Filtering
 				 * for displaying it on UI in specific order
 				 */
 				ReportFilterController.prototype.getPrimaryObjectEnumByGroup = function() {
-					var dimensions = this
-							.filterPrimaryObjectEnum(this.report);
+					var dimensions = this.filterPrimaryObjectEnum(this.report);
 					for ( var dimension in dimensions) {
 						var group = this.reportHelper.primaryObjectEnumGroup(
-								dimensions[dimension].id,
-								this.report);
+								dimensions[dimension].id, this.report);
 						dimensions[dimension].order = this.reportHelper
 								.getDimensionsDisplayOrder(
-										dimensions[dimension].id,
-										this.report);
+										dimensions[dimension].id, this.report);
 					}
 					return dimensions;
 				};
@@ -297,7 +272,6 @@ define(
 				 * 
 				 */
 				ReportFilterController.prototype.removeParameter = function(id) {
-					delete this.report.parameters[id];
 					for (var int = 0; int < this.filters.length; int++) {
 						if (id.indexOf(this.filters[int].dimension) != -1) {
 							delete this.filters[int].metadata.parameterizable;
@@ -309,7 +283,13 @@ define(
 				 * 
 				 */
 				ReportFilterController.prototype.existsParameter = function(id) {
-					return this.report.parameters[id] != null;
+					for (var int = 0; int < this.filters.length; int++) {
+						if (id.indexOf(this.filters[int].dimension) != -1) {
+							return this.filters[int].metadata
+									&& this.filters[int].metadata.parameterizable;
+						}
+					}
+					return false;
 				};
 
 				/**
@@ -317,33 +297,11 @@ define(
 				 */
 				ReportFilterController.prototype.addParameter = function(id,
 						name, type, value, operator) {
-
-					var currentFilter = this.filters;
-
 					for (var int = 0; int < this.filters.length; int++) {
-						if (id.indexOf(this.filters[int].dimension) != -1) {
-							this.filterSelected[int].value.push({
-								id : id,
-								name : name,
-								type : type,
-								value : value,
-								operator : operator
-							});
-							if (this.filters[int].metadata == null) {
-								this.filters[int].metadata = {};
-							}
-							this.filters[int].metadata.parameterizable = true;
+						if (this.filters[int].metadata == null) {
+							this.filters[int].metadata = {};
 						}
-					}
-
-					if (id != null && id.length != 0) {
-						this.report.parameters[id] = {
-							id : id,
-							name : name,
-							type : type,
-							value : value,
-							operator : operator
-						};
+						this.filters[int].metadata.parameterizable = true;
 					}
 				};
 
@@ -351,9 +309,12 @@ define(
 				 * 
 				 */
 				ReportFilterController.prototype.toggleToAndDuration = function(
-						param) {
-					if (this.existsParameter(param)) {
-						this.removeParameter(param);
+						filter) {
+					if (filter.metadata.fromTo) {
+						delete filter.value.duration;
+						delete filter.value.durationUnit;
+					} else {
+						delete filter.value.to;
 					}
 				};
 
@@ -464,8 +425,8 @@ define(
 							}
 
 						}
-						
-						//persist all processes or all activities
+
+						// persist all processes or all activities
 						var selectedAll = false;
 						for ( var valueInd in filter.value) {
 							if (filter.value[valueInd] == self.constants.ALL_PROCESSES.id
@@ -478,7 +439,8 @@ define(
 							filter.allValues = [];
 							for ( var itemInd in filteredEnumItems) {
 								var itemId = filteredEnumItems[itemInd].id;
-								if (itemId != self.constants.ALL_PROCESSES.id && itemId != self.constants.ALL_ACTIVITIES.id) {
+								if (itemId != self.constants.ALL_PROCESSES.id
+										&& itemId != self.constants.ALL_ACTIVITIES.id) {
 									filter.allValues.push(itemId);
 								}
 							}
@@ -615,20 +577,8 @@ define(
 				 * 
 				 */
 				ReportFilterController.prototype.addFilter = function() {
-					var index = this.filters.length;
-
 					this.filters.push({
-						index : index,
 						value : null,
-
-						// TODO: Operator only for respective types
-
-						operator : "equal"
-					});
-
-					this.filterSelected.push({
-						index : index,
-						value : []
 					});
 				};
 

@@ -9,9 +9,9 @@
 						<tbody>
 							<tr>
 								<td valign="top"><a href=""
-									ng-click="reportFilterController.deleteFilter(x.index)"><img
+									ng-click="reportFilterController.deleteFilter(x)"><img
 										ng-src="{{reportFilterController.baseUrl}}/public/css/images/delete.png"
-										title="{{reportFilterController.getI18N('reporting.definitionView.additionalFiltering.removeFilter')}}" />
+										title="{{reportFilterController.reportFilterController.getI18N('reporting.definitionView.additionalFiltering.removeFilter')}}" />
 								</a></td>
 							</tr>
 						</tbody>
@@ -24,7 +24,7 @@
 						<tbody>
 							<tr>
 								<td valign="top"><select ng-model="x.dimension" ng-disabled="reportFilterController.parameterDisplay"
-									ng-change="reportFilterController.onFilterDimensionChange(x.index)"
+									ng-change="reportFilterController.onFilterDimensionChange(x)"
 									ng-options="y.id as y.name group by reportFilterController.primaryObjectEnumGroup(y.id) for y in reportFilterController.getPrimaryObjectEnumByGroup() | orderBy:['order','name']">
 								</select></td>
 							</tr>
@@ -48,7 +48,7 @@
 					ng-show="reportFilterController.getDimension(x.dimension).type == reportFilterController.getMetadata().booleanType">
 					<table cellpadding="0" cellspacing="0" class="layoutTable">
 						<tr>
-							<td><label>{{getI18N('reporting.definitionView.checkbox.default')}}</label>
+							<td><label>{{reportFilterController.getI18N('reporting.definitionView.checkbox.default')}}</label>
 							</td>
 							<td><input type="checkbox" ng-model="x.value" /></td>
 							<td ng-include="'templates/parameterControl.html'"></td>
@@ -67,11 +67,11 @@
 							<td ng-show="x.operator == 'B'">
 								<table>
 									<tr>
-										<td><label>{{getI18N('reporting.definitionView.from.label')}}</label></td>
+										<td><label>{{reportFilterController.getI18N('reporting.definitionView.from.label')}}</label></td>
 										<td><input type="number" ng-model="x.value.From"></td>
 									</tr>
 									<tr>
-										<td><label>{{getI18N('reporting.definitionView.to.label')}}</label></td>
+										<td><label>{{reportFilterController.getI18N('reporting.definitionView.to.label')}}</label></td>
 										<td><input type="number" ng-model="x.value.To"></td>
 									</tr>
 
@@ -87,32 +87,31 @@
 					<div ng-show="x.metadata.fromTo" style="margin-left: 10px;">
 						<table cellpadding="0" cellspacing="0" class="layoutTable">
 							<tr>
-								<td><label>{{getI18N('reporting.definitionView.from.label')}}</label></td>
+								<td><label>{{reportFilterController.getI18N('reporting.definitionView.from.label')}}</label></td>
 								<td><input type="text" ng-model="x.value.from" sd-datetime /></td>
-								<td ng-include="'templates/parameterControl.html'"></td>
+								<td rowspan="2" ng-include="'templates/parameterControl.html'"></td>
 							</tr>
 							<tr>
-								<td><label>{{getI18N('reporting.definitionView.to.label')}}</label></td>
+								<td><label>{{reportFilterController.getI18N('reporting.definitionView.to.label')}}</label></td>
 								<td><input type="text" ng-model="x.value.to" sd-datetime /></td>
-								<td ng-include="'templates/parameterControl.html'"></td>
 							</tr>
 						</table>
 
 						<a style="font-size: 9px;"
-							ng-click="x.metadata.fromTo = false; reportFilterController.toggleToAndDuration('filters.' + x.dimension + '.to');"
+							ng-click="x.metadata.fromTo = false; reportFilterController.toggleToAndDuration(x);"
 							class="smallLink">
-							{{getI18N('reporting.definitionView.switchToStartDateAndDuration.label')}}
+							{{reportFilterController.getI18N('reporting.definitionView.switchToStartDateAndDuration.label')}}
 							&raquo;</a>
 					</div>
 					<div ng-show="!x.metadata.fromTo" style="margin-left: 10px;">
 						<table cellpadding="0" cellspacing="0" class="formTable">
 							<tr>
-								<td><label>{{getI18N('reporting.definitionView.from.label')}}</label></td>
+								<td><label>{{reportFilterController.getI18N('reporting.definitionView.from.label')}}</label></td>
 								<td><input type="text" ng-model="x.value.from" sd-datetime /></td>
-								<td ng-include="'templates/parameterControl.html'"></td>
+								<td rowspan="2" ng-include="'templates/parameterControl.html'"></td>
 							</tr>
 							<tr>
-								<td><label>{{getI18N('reporting.definitionView.duration.label')}}</label></td>
+								<td><label>{{reportFilterController.getI18N('reporting.definitionView.duration.label')}}</label></td>
 								<td><input type="number" ng-model="x.value.duration"
 									style="width: 50px;" /> <select
 									ng-model="x.value.durationUnit">
@@ -125,12 +124,11 @@
 										<option value="Y">Year(s)</option>
 								</select></td>
 								<td></td>
-								<td ng-include="'templates/parameterControl.html'"></td>
 							</tr>
 						</table>
 						<a style="font-size: 9px;"
-							ng-click="x.metadata.fromTo = true; toggleToAndDuration('filters.' + x.dimension + '.duration');"
-							class="smallLink">{{getI18N('reporting.definitionView.switchToStartDateAndEndDate.label')}}
+							ng-click="x.metadata.fromTo = true; reportFilterController.toggleToAndDuration(x);"
+							class="smallLink">{{reportFilterController.getI18N('reporting.definitionView.switchToStartDateAndEndDate.label')}}
 							&raquo;</a>
 					</div>
 				</div>
@@ -140,7 +138,7 @@
 					<table class="filterTable"
 						ng-show="x.dimension == 'processName' || x.dimension == 'activityName'">
 						<tr ng-show="x.dimension == 'activityName'">
-							<td><label class="section2">{{getI18N('reporting.definitionView.process.title')}}</label></td>
+							<td><label class="section2">{{reportFilterController.getI18N('reporting.definitionView.process.title')}}</label></td>
 						</tr>
 						<tr
 							ng-show="x.dimension == 'processName' || x.dimension == 'activityName'">
@@ -148,7 +146,7 @@
 								ng-click="reportFilterController.toggleFilter(x, 'process_filter_auxiliary')"
 								ng-class="{true:'disabled', false:'enabled'}[x.metadata.process_filter_auxiliary]">
 									<img ng-src="{{reportFilterController.baseUrl}}/public/css/images/process_auxiliary.png"
-									title="{{getI18N('reporting.definitionView.process.filter.auxiliary.' + x.metadata.process_filter_auxiliary)}}" />
+									title="{{reportFilterController.getI18N('reporting.definitionView.process.filter.auxiliary.' + x.metadata.process_filter_auxiliary)}}" />
 							</a></td>
 						</tr>
 						<tr ng-show="x.dimension == 'activityName'">
@@ -162,7 +160,7 @@
 					</table>
 					<table class="filterTable" ng-show="x.dimension == 'activityName'">
 						<tr>
-							<td><label class="section2">{{getI18N('reporting.definitionView.activity.title')}}</label></td>
+							<td><label class="section2">{{reportFilterController.getI18N('reporting.definitionView.activity.title')}}</label></td>
 						</tr>
 					</table>
 					<table class="filterTable" ng-show="x.dimension == 'activityName'">
@@ -171,19 +169,19 @@
 								ng-click="reportFilterController.toggleFilter(x, 'activity_filter_nonInteractive')"
 								ng-class="{true:'disabled', false:'enabled'}[x.metadata.activity_filter_nonInteractive]">
 									<img ng-src="{{reportFilterController.baseUrl}}/public/css/images/activity_application.png"
-									title="{{getI18N('reporting.definitionView.activity.filter.nonInteractive.' + x.metadata.activity_filter_nonInteractive)}}" />
+									title="{{reportFilterController.getI18N('reporting.definitionView.activity.filter.nonInteractive.' + x.metadata.activity_filter_nonInteractive)}}" />
 							</a></td>
 							<td valign="top"><a href=""
 								ng-click="reportFilterController.toggleFilter(x, 'activity_filter_interactive')"
 								ng-class="{true:'disabled', false:'enabled'}[x.metadata.activity_filter_interactive]">
 									<img ng-src="{{reportFilterController.baseUrl}}/public/css/images/activity_manual.png"
-									title="{{getI18N('reporting.definitionView.activity.filter.interactive.' + x.metadata.activity_filter_interactive)}}" />
+									title="{{reportFilterController.getI18N('reporting.definitionView.activity.filter.interactive.' + x.metadata.activity_filter_interactive)}}" />
 							</a></td>
 							<td valign="top"><a href=""
 								ng-click="reportFilterController.toggleFilter(x, 'activity_filter_auxiliary')"
 								ng-class="{true:'disabled', false:'enabled'}[x.metadata.activity_filter_auxiliary]">
 									<img ng-src="{{reportFilterController.baseUrl}}/public/css/images/activity_auxiliary.png"
-									title="{{getI18N('reporting.definitionView.activity.filter.auxiliary.' + x.metadata.activity_filter_auxiliary)}}" />
+									title="{{reportFilterController.getI18N('reporting.definitionView.activity.filter.auxiliary.' + x.metadata.activity_filter_auxiliary)}}" />
 							</a></td>
 						</tr>
 					</table>
@@ -242,7 +240,7 @@
 								<td valign="top"><a href=""
 									ng-click="reportFilterController.addFilter()"><img
 										ng-src="{{reportFilterController.baseUrl}}/public/css/images/add.png"
-										title="{{getI18N('reporting.definitionView.additionalFiltering.addFilter')}}" />
+										title="{{reportFilterController.getI18N('reporting.definitionView.additionalFiltering.addFilter')}}" />
 								</a></td>
 							</tr>
 						</tbody>

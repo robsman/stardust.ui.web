@@ -650,9 +650,6 @@ define(
 					self.reportParameterController = ReportFilterController
 					.create(self.report, self.parameters, self.reportingService, self.reportHelper, true);
 					self.reportParameterController.baseUrl = "..";
-					
-					self.reportFilterController.loadFilters();
-					self.reportParameterController.loadFilters();
 				};
 				
 				/**
@@ -1156,14 +1153,15 @@ define(
 				 * 
 				 */
 				ReportDefinitionController.prototype.hasParameters = function() {
-					var key;
-
-					for (key in this.report.parameters) {
-						if (this.report.parameters.hasOwnProperty(key)) {
+					if(!this.parameters){
+						return false;
+					}
+					
+					for (var int = 0; int < this.parameters.length; int++) {
+						if (this.parameters[int].metadata.parameterizable) {
 							return true;
 						}
 					}
-
 					return false;
 				};
 

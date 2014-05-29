@@ -1770,11 +1770,20 @@ define(
 				var parametersString = "";
 				if(parameters){
 					for(var itemInd in parameters){
+						if(parameters[itemInd].metadata == null || !parameters[itemInd].metadata.parameterizable){
+							continue;
+						}
+						
+						//indicate descroptor as ^ prefix
+						if(parameters[itemInd].metadata.isDescriptor){
+							parametersString += "^";
+						}
 						parametersString += parameters[itemInd].dimension + "=";
+						
 						if(parameters[itemInd].allValues){
 							parametersString += parameters[itemInd].allValues; 		
 						}else{
-							parametersString += parameters[itemInd].value;
+							parametersString += JSON.stringify(parameters[itemInd].value);
 						}
 						parametersString += "&";
 					}
