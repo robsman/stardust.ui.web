@@ -72,12 +72,11 @@ public class ResetPasswordServlet extends HttpServlet
          context = WebApplicationContextUtils.getWebApplicationContext(req.getSession().getServletContext());
          User user = serviceFactory.getUserService().getUser(new Integer(oid));
          serviceFactory.getUserService().resetPassword(user.getAccount(), getLoginProperties(), token);
-         out.println("Password generated and sent to registered email id</br>");
+         out.println("Password generated and sent to registered Email Id</br>");
       }
       catch (Exception e)
       {
          out.println("Request failed - " + e.getMessage() + "<br/>");
-         out.println("Click <a href=\"plugins/views-common/login.iface\">here</a> to Login");
       }
       finally
       {
