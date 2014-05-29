@@ -1774,10 +1774,6 @@ define(
 							continue;
 						}
 						
-						//indicate descroptor as ^ prefix
-						if(parameters[itemInd].metadata.isDescriptor){
-							parametersString += "^";
-						}
 						parametersString += parameters[itemInd].dimension + "=";
 						
 						if(parameters[itemInd].allValues){

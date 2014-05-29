@@ -364,6 +364,10 @@ define(
 										self.resetParamFilters();
 										self.updateView();
 									}
+									if (ui.newPanel.selector === "#schedulingTab") {
+										self.resetParamFilters();
+										self.updateView();
+									}
 								}
 							});
 
@@ -646,7 +650,8 @@ define(
 					.create(self.report, self.report.dataSet.filters, self.reportingService, self.reportHelper, false);
 					self.reportFilterController.baseUrl = "..";
 					
-					self.parameters = angular.copy(self.report.dataSet.filters);
+					this.prepareParameters();
+					
 					self.reportParameterController = ReportFilterController
 					.create(self.report, self.parameters, self.reportingService, self.reportHelper, true);
 					self.reportParameterController.baseUrl = "..";
@@ -656,8 +661,20 @@ define(
 				 * 
 				 */
 				ReportDefinitionController.prototype.resetParamFilters = function() {
-					this.parameters = angular.copy(this.report.dataSet.filters);
+					this.prepareParameters();
 					this.reportParameterController.resetReport(this.report, this.parameters);
+				}
+				
+				/**
+				 * 
+				 */
+				ReportDefinitionController.prototype.prepareParameters = function() {
+					this.parameters = [];
+					for (var int = 0; int < this.report.dataSet.filters.length; int++) {
+						if (this.report.dataSet.filters[int].metadata.parameterizable) {
+							this.parameters.push(angular.copy(this.report.dataSet.filters[int]));
+						}
+					}
 				}
 				
 				/**
@@ -848,15 +865,6 @@ define(
 							.getFirstDimension().name;
 
 					this.populateGroupBy();
-					
-					//Remove the First Dimension parameters from the list
-					for ( var parameter in this.report.parameters)
-               {
-                  if (this.report.parameters[parameter].id.indexOf("filters.") === -1)
-                  {
-                     delete this.report.parameters[parameter];
-                  }
-               }
 					
 					this.report.dataSet.firstDimensionParameters = [];
 
@@ -1126,24 +1134,20 @@ define(
 					return JSON.stringify(this.report, null, 3);
 				};
 
-
-				/**
-				 * 
-				 */
-				ReportDefinitionController.prototype.getParameters = function() {
-					return this.report.parameters;
-				};
 				
 				/**
              * 
              */
             ReportDefinitionController.prototype.getParametersOfTypeTimestamp = function() {
                var parametersOfTypeTimestamp = {};
-               for ( var parameter in this.report.parameters)
+               
+               for ( var parameter in this.parameters)
                {
-                  if (this.report.parameters[parameter].type == this.reportingService.metadata.timestampType.id)
+            	   var dimension = this.getDimension(this.parameters[parameter].dimension);
+                  if (dimension.type.id == this.reportingService.metadata.timestampType.id)
                   {
-                     parametersOfTypeTimestamp[this.report.parameters[parameter].id] = this.report.parameters[parameter];
+                	  parametersOfTypeTimestamp[dimension.id + ".from"] = dimension.id + "(" + this.getI18N("reporting.definitionView.from.label") + ")"; 
+                	  parametersOfTypeTimestamp[dimension.id + ".to"] = dimension.id + "(" + this.getI18N("reporting.definitionView.to.label") + ")";
                   }
                }
                return parametersOfTypeTimestamp;
@@ -1153,15 +1157,10 @@ define(
 				 * 
 				 */
 				ReportDefinitionController.prototype.hasParameters = function() {
-					if(!this.parameters){
-						return false;
+					if(this.parameters && this.parameters.length > 0){
+						return true;
 					}
 					
-					for (var int = 0; int < this.parameters.length; int++) {
-						if (this.parameters[int].metadata.parameterizable) {
-							return true;
-						}
-					}
 					return false;
 				};
 

@@ -1050,7 +1050,7 @@ table.formTable td {
 													<td valign="top"><label>{{getI18N('reporting.definitionView.mapStartTimestamp.label')}}</label></td>
 													<td valign="top"><select multiple="multiple"
 														ng-model="report.scheduling.parametersForStartTime"
-														ng-options="enum.id as enum.name for (key, enum) in getParametersOfTypeTimestamp()"
+														ng-options="id as name for (id, name) in getParametersOfTypeTimestamp()"
 														style="height: 50px;">
 													</select></td>
 												</tr>

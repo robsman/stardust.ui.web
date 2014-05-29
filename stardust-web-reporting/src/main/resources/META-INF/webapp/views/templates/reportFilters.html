@@ -1,8 +1,7 @@
 <div>
 	<table cellpadding="0" cellspacing="0" class="formTable"
 		style="margin-top: 10px;">
-		<tr ng-repeat="x in reportFilterController.filters" 
-			ng-if="!reportFilterController.parameterDisplay || (x.metadata != null && x.metadata.parameterizable == true)">
+		<tr ng-repeat="x in reportFilterController.filters">
 			<td valign="top">
 				<div ng-show="!reportFilterController.parameterDisplay">
 					<table cellpadding="0" cellspacing="0" class="layoutTable">
