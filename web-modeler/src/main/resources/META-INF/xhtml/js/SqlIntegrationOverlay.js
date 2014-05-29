@@ -1234,7 +1234,7 @@ define(
 
                beanDefinition += "<bean id=\""
                      + this.getDataSourceName()
-                     + "\" class=\"org.apache.tomcat.dbcp.dbcp.BasicDataSource\" destroy-method=\"close\">";
+                     + "\" class=\"org.apache.commons.dbcp.BasicDataSource\" destroy-method=\"close\">";
                beanDefinition += "<property name=\"url\" value=\"" + url
                      + "\" />";
                beanDefinition += "<property name=\"driverClassName\" value=\""

@@ -875,7 +875,7 @@ define(
 					route += "var partition = request.headers.get('ippPartition');\n";
 					route += "var investigate = false;\n";
                route += "var attachments = {};\n";
-
+               var includeAttachmentBean=false;
 					for ( var n = 0; n < this.getApplication().contexts.application.accessPoints.length; ++n) {
 
 						var accessPoint = this.getApplication().contexts.application.accessPoints[n];
@@ -917,6 +917,7 @@ define(
                       route += "attachments[" + accessPoint.id + "]" + " =  request.headers.get('"
                       + accessPoint.id + "');\n";
                       route += "}\n";
+					  includeAttachmentBean=true; 
                   }
 
                   /*} else {
@@ -999,6 +1000,7 @@ define(
 					route += "</setBody>\n";
 
            // add attachment document
+			  if(includeAttachmentBean)
                route += "<process ref=\"addAttachmentProcessor\"/>\n";
                
 					// execute smpt endpoint
