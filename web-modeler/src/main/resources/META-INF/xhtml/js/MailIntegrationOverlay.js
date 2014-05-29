@@ -917,7 +917,7 @@ define(
                       route += "attachments[" + accessPoint.id + "]" + " =  request.headers.get('"
                       + accessPoint.id + "');\n";
                       route += "}\n";
-					  includeAttachmentBean=true; 
+                 includeAttachmentBean=true; 
                   }
 
                   /*} else {
@@ -937,21 +937,14 @@ define(
 						markup += this.createResponseOptionString();
 					}
                markup=markup.replace(new RegExp("(&#39;)", 'g'), "\\'");
-               
+               route+="<![CDATA[";
 					route += "      response = '"
-							// + markup.replace(new RegExp("\"", 'g'), "'")
 							+ markup.replace(new RegExp("\n", 'g'), " ")
-									.replace(new RegExp("<", 'g'), "&lt;")
-									.replace(new RegExp(">", 'g'), "&gt;")
-                           
                            .replace(new RegExp("toDate", 'g'), "formatDate")
-                           .replace(new RegExp("&nbsp;", 'g'),"&amp;nbsp;")
-                           .replace(new RegExp("&copy;", 'g'),"&amp;copy;")
-                           .replace(new RegExp("&acute;", 'g'),"&amp;acute;")
                            .replace(new RegExp("{{", 'g'), "' + ")
 									.replace(new RegExp("}}", 'g'), " + '")
 							+ "';\n";
-               
+               route+="]]>";
 					route += "      setOutHeader('response', response);\n";
 
 					if (this.identifierInSubjectInput.val() != null
@@ -1000,7 +993,7 @@ define(
 					route += "</setBody>\n";
 
            // add attachment document
-			  if(includeAttachmentBean)
+           if(includeAttachmentBean)
                route += "<process ref=\"addAttachmentProcessor\"/>\n";
                
 					// execute smpt endpoint
