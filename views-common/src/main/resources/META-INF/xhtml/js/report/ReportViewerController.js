@@ -93,7 +93,7 @@ define(
 										// fetch and render report-data
 										self.renderingController
 												.refreshPreview(self.report,
-														self);
+														self, self.parameters);
 										self.updateView();
 									});
 
@@ -121,18 +121,7 @@ define(
 												self.report = report;
 											}
 
-											self.parameters = angular
-													.copy(self.report.dataSet.filters);
-											self.reportParameterController = ReportFilterController
-													.create(
-															self.report,
-															self.report.dataSet.filters,
-															self.reportingService,
-															self.reportHelper,
-															false);
-											self.reportParameterController.baseUrl = "bpm-reporting";
-											self.reportParameterController
-													.loadFilters();
+											self.initFilters();
 
 											console
 													.log("Loaded report definition:");
@@ -169,6 +158,40 @@ define(
 											templateUrl : 'bpm-reporting/views/templates/reportFilters.html'
 										};
 									});
+				};
+
+				/**
+				 * 
+				 */
+				ReportViewerController.prototype.refreshPreviewData = function() {
+					this.renderingController.refreshPreview(this.report, this,
+							this.parameters);
+				};
+
+				/**
+				 * 
+				 * @returns {Boolean}
+				 */
+				ReportViewerController.prototype.hasParameters = function() {
+					if (this.parameters && this.parameters.length > 0) {
+						return true;
+					}
+
+					return false;
+				};
+
+				/**
+				 * 
+				 */
+				ReportViewerController.prototype.initFilters = function() {
+					var self = this;
+					this.parameters = this.reportHelper
+							.prepareParameters(this.report.dataSet.filters);
+					self.reportParameterController = ReportFilterController
+							.create(self.report, self.parameters,
+									self.reportingService, self.reportHelper,
+									true);
+					self.reportParameterController.baseUrl = "bpm-reporting";
 				};
 
 				/**
