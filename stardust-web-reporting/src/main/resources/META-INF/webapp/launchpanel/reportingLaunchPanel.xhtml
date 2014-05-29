@@ -35,6 +35,13 @@
 				<ice:outputText value="REPLACEME"
 					styleClass="action-link" escape="false" />
 			</ice:commandLink>
+         <ice:commandLink id="views_close_link"
+            action="#{jsfViewUpdaterBean.closeViewsForElement}" visible="false">
+            <f:param name="name" value="REPLACEME" />
+            <f:param name="path" value="REPLACEME" />
+            <ice:outputText value="Update view &amp;raquo;"
+               styleClass="action-link" escape="false" />
+         </ice:commandLink>
 		</ice:panelGroup>
 		<ice:panelGroup styleClass="clearing" />
 	</ice:panelGrid>

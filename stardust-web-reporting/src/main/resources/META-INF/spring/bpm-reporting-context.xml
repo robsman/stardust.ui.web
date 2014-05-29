@@ -11,4 +11,8 @@
 
 	<context:annotation-config />
 	<context:component-scan base-package="org.eclipse.stardust.ui.web.reporting" />
+   
+   <bean name="jsfViewUpdaterBean" class="org.eclipse.stardust.ui.web.reporting.portal.JsfViewUpdaterBean"
+      scope="session">
+   </bean>
 </beans>

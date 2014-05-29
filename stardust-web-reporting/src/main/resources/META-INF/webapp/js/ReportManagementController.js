@@ -129,10 +129,11 @@ define(
 															icon : self.reportingService.getRootUrl()
                                                          + "/plugins/views-common/images/icons/delete.png",
 															action : function(
-																	obj) { 
+																	obj) {
 				                                       self.deleteElementAction(
 				                                             obj.context.lastChild.data,
 				                                             function() {
+				                                                self.closeView(obj.attr("name"), obj.attr("path"));
 				                                                self.reportingService
 		                                                      .deleteReportDefinition(
 		                                                            obj
@@ -461,6 +462,28 @@ define(
 
 	            return popupData;
 	         };
+	         
+	         /**
+             * 
+             */
+            ReportManagementController.prototype.closeView = function(
+                     name, path) {
+               var link = jQuery("a[id $= 'views_close_link']", this.getOutlineWindowAndDocument().doc);
+               var linkId = link.attr('id');
+               var form = link.parents('form:first');
+               var formId = form.attr('id');
+               
+               var portalWinDoc = this.getOutlineWindowAndDocument();
+               
+               var link = portalWinDoc.doc.getElementById(linkId);
+               var linkForm = portalWinDoc.win.formOf(link);
+
+               linkForm[formId + ':_idcl'].value = linkId;
+               linkForm['name'].value = name;
+               linkForm['path'].value = path;
+
+               portalWinDoc.win.iceSubmit(linkForm, link);
+            };
 				
 			}
 			
