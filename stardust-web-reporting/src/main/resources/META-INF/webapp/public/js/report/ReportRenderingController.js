@@ -189,6 +189,11 @@ define(
 								shadowAlpha : 0.07
 							}
 						},
+						title: {
+					        text: this.report.layout.chart.options.title,   // title for the plot,
+					        show: true,
+					        textAlign: "left"
+					    },
 						axes : {
 							xaxis : {},
 							x2axis : {},
@@ -210,7 +215,6 @@ define(
 
 					// Copy configuration from Report Definition
 
-					chartOptions.title = this.report.layout.chart.options.title;
 					chartOptions.axes.xaxis.label = this.report.layout.chart.options.axes.xaxis.label;
 					chartOptions.axes.xaxis.tickOptions = this.report.layout.chart.options.axes.xaxis.tickOptions;
 					chartOptions.axes.yaxis.label = this.report.layout.chart.options.axes.yaxis.label;

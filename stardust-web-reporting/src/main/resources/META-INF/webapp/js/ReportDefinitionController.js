@@ -782,7 +782,7 @@ define(
 
 					if (!initialize) {
 						this.report.dataSet.filters = [];
-						reportFilterController.filterSelected = [];
+						this.reportFilterController.filterSelected = [];
 						this.resetReportDefinitionProperties();
 					}
 
