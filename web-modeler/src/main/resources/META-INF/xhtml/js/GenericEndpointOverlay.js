@@ -764,8 +764,8 @@ define(
                this.consumerRouteTextarea
                   .val(this.getApplication().attributes["carnot:engine:camel::consumerRoute"]);
                
-               this.consumerInboundConversion
-                  .val(this.getApplication().attributes["carnot:engine:camel::consumerInboundConversion"]);
+               this.consumerBpmTypeConverter.prop("checked",
+                        this.getApplication().attributes["carnot:engine:camel::consumerBpmTypeConverter"]);
                
                if (this.getApplication().attributes["carnot:engine:camel::consumerInboundConversion"] != undefined)
                {
