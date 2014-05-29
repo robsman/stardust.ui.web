@@ -23,7 +23,7 @@
 					<table cellpadding="0" cellspacing="0" class="layoutTable">
 						<tbody>
 							<tr>
-								<td valign="top"><select ng-model="x.dimension"
+								<td valign="top"><select ng-model="x.dimension" ng-disabled="reportFilterController.parameterDisplay"
 									ng-change="reportFilterController.onFilterDimensionChange(x.index)"
 									ng-options="y.id as y.name group by reportFilterController.primaryObjectEnumGroup(y.id) for y in reportFilterController.getPrimaryObjectEnumByGroup() | orderBy:['order','name']">
 								</select></td>
@@ -37,7 +37,7 @@
 					ng-show="reportFilterController.getDimension(x.dimension).type == reportFilterController.getMetadata().stringType">
 					<table cellpadding="0" cellspacing="0" class="layoutTable">
 						<tr>
-							<td><select ng-model="x.operator"
+							<td><select ng-model="x.operator" ng-disabled="reportFilterController.parameterDisplay"
 								ng-options="o.id as o.label for o in reportFilterController.getOperatorsEnum(getDimension(x.dimension))"></td>
 							<td><input type="text" ng-model="x.value"></td>
 							<td ng-include="'templates/parameterControl.html'"></td>
@@ -59,7 +59,7 @@
 					ng-show="reportFilterController.getDimension(x.dimension).type == reportFilterController.getMetadata().integerType">
 					<table cellpadding="0" cellspacing="0" class="layoutTable">
 						<tr>
-							<td><select ng-model="x.operator"
+							<td><select ng-model="x.operator" ng-disabled="reportFilterController.parameterDisplay"
 								ng-options="o.id as o.label for o in reportFilterController.getOperatorsEnum(reportFilterController.getDimension(x.dimension))"></td>
 
 							<td ng-show="x.operator != 'B'"><input style="width: 127px;"
@@ -201,7 +201,7 @@
 					<table class="filterTable"
 						ng-show="reportFilterController.getDimension(x.dimension).display == 'singleSelect'">
 						<tr>
-							<td><select ng-model="x.operator"
+							<td><select ng-model="x.operator" ng-disabled="reportFilterController.parameterDisplay"
 								ng-options="o.id as o.label for o in reportFilterController.getOperatorsEnum(reportFilterController.getDimension(x.dimension))"></td>
 							<td valign="top"><select ng-model="x.value"
 								ng-change="reportFilterController.selectionChanged(reportFilterController.getDimension(x.dimension), x)"
