@@ -1,6 +1,6 @@
 define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_i18nUtils",
-				"bpm-modeler/js/m_constants",
+            "bpm-modeler/js/m_constants","bpm-modeler/js/m_urlUtils",
 				"bpm-modeler/js/m_commandsController",
 				"bpm-modeler/js/m_command", "bpm-modeler/js/m_model",
 				"bpm-modeler/js/m_accessPoint",
@@ -8,7 +8,7 @@ define(
 				"bpm-modeler/js/m_parameterDefinitionsPanel",
 				"bpm-modeler/js/m_codeEditorAce",
 				"bpm-modeler/js/m_modelElementUtils" ],
-		function(m_utils, m_i18nUtils, m_constants, m_commandsController,
+      function(m_utils, m_i18nUtils, m_constants,m_urlUtils, m_commandsController,
 				m_command, m_model, m_accessPoint, m_typeDeclaration,
 				m_parameterDefinitionsPanel, m_codeEditorAce,
 				m_modelElementUtils) {
@@ -226,17 +226,24 @@ define(
 									m_i18nUtils
 											.getProperty("modeler.model.applicationOverlay.email.responseTypeSelect.http.typeHint.label"));
 
-					// m_utils.jQuerySelect("#label[for='responseOptionsTypeSelect']").text(m_i18nUtils
-					// .getProperty("modeler.model.applicationOverlay.email.responseTypeSelect.http.type.label"));
-
 					m_utils.jQuerySelect("#responseHttpUrlIHintLabel")
 							.text(
 									m_i18nUtils
 											.getProperty("modeler.model.applicationOverlay.email.responseTypeSelect.http.urlHint.label"));
 
-					// m_utils.jQuerySelect("#label[for='responseHttpUrlInput']").text(m_i18nUtils
-					// .getProperty("modeler.model.applicationOverlay.email.responseTypeSelect.http.url.label"));
+               this.deleteParameterDefinitionButton = m_utils.jQuerySelect("#parametersTab #deleteParameterDefinitionButton");
+               this.deleteParameterDefinitionButton.attr("src", m_urlUtils
+                        .getContextName()
+                        + "/plugins/bpm-modeler/images/icons/delete.png");
 
+               this.deleteParameterDefinitionButton.click({
+                  panel : this
+               }, function(event) {
+                  event.data.panel.parameterDefinitionsPanel.deleteParameterDefinition();
+                  event.data.panel.getApplication().contexts.application.accessPoints=event.data.panel.parameterDefinitionsPanel.parameterDefinitions
+                  event.data.panel.submitChanges();
+               });
+               
 					var self = this;
 
 					this.serverInput.change(function() {
