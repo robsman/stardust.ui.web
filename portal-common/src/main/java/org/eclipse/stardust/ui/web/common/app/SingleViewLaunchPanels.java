@@ -113,65 +113,13 @@ public class SingleViewLaunchPanels implements InitializingBean
          {
             trace.debug("Closing view: " + value);
          }
-
+         
          if (StringUtils.isNotEmpty(value))
          {
-            List<String> values = StringUtils.splitAndKeepOrder(value, ":");
-            String viewId = values.get(0);
-            String viewKey = (values.size() == 2) ? values.get(1) : null;
-            if(FrameworkViewInfo.DEFAULT_VIEW_KEY.equals(viewKey))
+            List<String> views = StringUtils.splitAndKeepOrder(value, "$$");
+            for (String viewInfo : views)
             {
-               viewKey = null;
-            }
-            
-            View view = portalApp.getPortalUiController().findView(viewId, viewKey);
-            if (null != view)
-            {
-               if (trace.isDebugEnabled())
-               {
-                  trace.debug("Trying to Close View: " + view);
-                  trace.debug("Before:: View Count: " + portalApp.getOpenViewsSize());
-               }
-               portalApp.closeView(view);
-               if (trace.isDebugEnabled())
-               {
-                  trace.debug("After:: View Count: " + portalApp.getOpenViewsSize());
-               }
-               // After succesfull view close, sync active view
-               portalApp.addEventScript("parent.BridgeUtils.View.syncActiveView();");
-               
-               String sessionId = SessionRendererHelper.getPortalSessionRendererId(portalApp.getLoggedInUser());
-               sessionId += view.getIdentityParams();
-               sessionId = Base64.encode(sessionId);
-               //SessionRendererHelper.removeCurrentSession(sessionId);
-            }
-            else
-            {
-               if (trace.isDebugEnabled())
-               {
-                  trace.debug("Could not close view: " + value);
-               }
-               // Unexpected Situation! View is not open at IPP, but it's open on UI at HTML5 Framework.
-               // Fire JS for it's closing. It might be internal/native or external view
-               // TODO: Enhance?
-               if ("configurationTreeView".equals(viewId))
-               {
-                  String html5FWViewId = "/bpm/portal/configurationTreeView";
-                  String script = "parent.BridgeUtils.View.closeView('" + html5FWViewId + "');";
-                  portalApp.addEventScript(script);                  
-               }
-               else
-               {
-                  // For External
-                  String html5FWViewId = "/bpm/portal/Ext/" + viewId + "/" + viewKey;
-                  String script = "parent.BridgeUtils.View.closeView('" + html5FWViewId + "');";
-                  portalApp.addEventScript(script);
-   
-                  // For Internal/Native
-                  html5FWViewId = "/bpm/portal/Int/" + viewId + "/" + viewKey;
-                  script = "parent.BridgeUtils.View.closeView('" + html5FWViewId + "');";
-                  portalApp.addEventScript(script);
-               }
+               closeView(viewInfo, portalApp);
             }
 
             portalApp.printOpenViews();
@@ -180,6 +128,71 @@ public class SingleViewLaunchPanels implements InitializingBean
       catch (Exception e)
       {
          trace.error("", e);
+      }
+   }
+   
+   /**
+    * @param value
+    * @param portalApp
+    */
+   private void closeView(String value, PortalApplication portalApp)
+   {
+      List<String> values = StringUtils.splitAndKeepOrder(value, ":");
+      String viewId = values.get(0);
+      String viewKey = (values.size() == 2) ? values.get(1) : null;
+      if(FrameworkViewInfo.DEFAULT_VIEW_KEY.equals(viewKey))
+      {
+         viewKey = null;
+      }
+      
+      View view = portalApp.getPortalUiController().findView(viewId, viewKey);
+      if (null != view)
+      {
+         if (trace.isDebugEnabled())
+         {
+            trace.debug("Trying to Close View: " + view);
+            trace.debug("Before:: View Count: " + portalApp.getOpenViewsSize());
+         }
+         portalApp.closeView(view);
+         if (trace.isDebugEnabled())
+         {
+            trace.debug("After:: View Count: " + portalApp.getOpenViewsSize());
+         }
+         // After succesfull view close, sync active view
+         portalApp.addEventScript("parent.BridgeUtils.View.syncActiveView();");
+         
+         String sessionId = SessionRendererHelper.getPortalSessionRendererId(portalApp.getLoggedInUser());
+         sessionId += view.getIdentityParams();
+         sessionId = Base64.encode(sessionId);
+         //SessionRendererHelper.removeCurrentSession(sessionId);
+      }
+      else
+      {
+         if (trace.isDebugEnabled())
+         {
+            trace.debug("Could not close view: " + value);
+         }
+         // Unexpected Situation! View is not open at IPP, but it's open on UI at HTML5 Framework.
+         // Fire JS for it's closing. It might be internal/native or external view
+         // TODO: Enhance?
+         if ("configurationTreeView".equals(viewId))
+         {
+            String html5FWViewId = "/bpm/portal/configurationTreeView";
+            String script = "parent.BridgeUtils.View.closeView('" + html5FWViewId + "');";
+            portalApp.addEventScript(script);                  
+         }
+         else
+         {
+            // For External
+            String html5FWViewId = "/bpm/portal/Ext/" + viewId + "/" + viewKey;
+            String script = "parent.BridgeUtils.View.closeView('" + html5FWViewId + "');";
+            portalApp.addEventScript(script);
+
+            // For Internal/Native
+            html5FWViewId = "/bpm/portal/Int/" + viewId + "/" + viewKey;
+            script = "parent.BridgeUtils.View.closeView('" + html5FWViewId + "');";
+            portalApp.addEventScript(script);
+         }
       }
    }
 

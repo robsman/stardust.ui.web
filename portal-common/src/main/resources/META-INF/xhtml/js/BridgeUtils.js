@@ -340,6 +340,9 @@ if (!window["BridgeUtils"].View) {
 
 		var unsubscribers = [];
 
+		var viewsToClose = [];
+		var viewsToCloseHandler = null;
+
 		/*
 		 *
 		 */
@@ -530,9 +533,34 @@ if (!window["BridgeUtils"].View) {
 				} else {
 					ret = false;
 
-					var viewInfo = getViewInfoFromNavPath(view.path);
-					BridgeUtils.log("Firring viewClosed for = " + viewInfo.viewId + ":" + viewInfo.viewKey);
-					doPartialSubmit("portalLaunchPanels", "viewFormLP", "viewClosing", viewInfo.viewId + ":" + viewInfo.viewKey);
+					// Safety Check
+					if (viewsToClose == undefined || viewsToClose == null) {
+						viewsToClose = [];
+					}
+
+					viewsToClose.push(view.path);
+
+					// Do not close view synchronously, but club all viewClosingIntents together
+					if (!viewsToCloseHandler) {
+						viewsToCloseHandler = window.setTimeout(function(){
+							var views = viewsToClose;
+							
+							viewsToCloseHandler = null;
+							viewsToClose = [];
+
+							var viewClosePaths = "";
+							for(var path in views) {
+								var viewInfo = getViewInfoFromNavPath(views[path]);
+								if (viewClosePaths != "") {
+									viewClosePaths += "$$";
+								}
+								viewClosePaths += (viewInfo.viewId + ":" + viewInfo.viewKey);
+							}
+
+							BridgeUtils.log("Firring viewClosed for = " + viewClosePaths);
+							doPartialSubmit("portalLaunchPanels", "viewFormLP", "viewClosing", viewClosePaths);
+						});
+					}
 				}
 			}
 
