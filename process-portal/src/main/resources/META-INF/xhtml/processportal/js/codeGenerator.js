@@ -86,7 +86,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 			this.generateChildren(elemMain, paths);
 
 			var html = elemForm.toHtml();
-			this.generateNestedTypeDialogIFRAME(html);
+			html = this.generateNestedTypeDialogIFRAME(html);
 
 			this.bindingPrefix = undefined;
 			this.i18nLabelProvider = undefined;
@@ -132,6 +132,7 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 					"</div>";
 				html += "\n" + nestedListsDiv;
 			}
+			return html;
 		}
 
 		/*
