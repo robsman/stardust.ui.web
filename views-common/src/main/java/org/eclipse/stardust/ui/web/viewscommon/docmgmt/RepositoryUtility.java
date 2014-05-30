@@ -619,6 +619,22 @@ public class RepositoryUtility
       DefaultMutableTreeNode node = rootNode;
       DefaultMutableTreeNode searchNode = null;
       String[] path = resourcePath.split("/");
+      String defaultRepository = DocumentMgmtUtility.getDocumentManagementService().getDefaultRepository();
+      // Search is only applicable on default Repository, traverse to default repo node
+      Enumeration<DefaultMutableTreeNode> repositoryRoot = node.breadthFirstEnumeration();
+      while (repositoryRoot.hasMoreElements())
+      {
+         DefaultMutableTreeNode nodeTemp = repositoryRoot.nextElement();
+         if (nodeTemp.getUserObject() instanceof RepositoryNodeUserObject)
+         {
+            RepositoryNodeUserObject repositoryNode = (RepositoryNodeUserObject) nodeTemp.getUserObject();
+            if (repositoryNode.getRepositoryInstance().getRepositoryId().equalsIgnoreCase(defaultRepository))
+            {
+               node = repositoryNode.getWrapper();
+               break;
+            }
+         }
+      }
       for (int i = 1; i < path.length; i++)
       {
          Enumeration<DefaultMutableTreeNode> en =node.breadthFirstEnumeration();
