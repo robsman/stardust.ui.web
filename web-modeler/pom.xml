@@ -36,8 +36,7 @@
       <dependency>
          <groupId>org.eclipse.stardust.modeling.core</groupId>
          <artifactId>ipp-bpm-model-validation</artifactId>
-         <!-- temporarily fixating to 1.1.2, until ipp-bpm-model-validation was properly refactored into the components build phase -->
-         <version>${legacy.build.version}</version>
+         <version>${project.version}</version>
          <scope>compile</scope>
       </dependency>
       <dependency>

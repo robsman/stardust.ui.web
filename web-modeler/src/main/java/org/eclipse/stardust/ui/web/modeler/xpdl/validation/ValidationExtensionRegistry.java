@@ -11,6 +11,9 @@
 
 package org.eclipse.stardust.ui.web.modeler.xpdl.validation;
 
+import static java.util.Collections.emptyList;
+import static org.eclipse.stardust.common.CollectionUtils.newList;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -26,9 +29,12 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.stardust.common.CollectionUtils;
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.model.xpdl.carnot.spi.SpiConstants;
+import org.eclipse.stardust.modeling.validation.ExtensionDescriptor;
 import org.eclipse.stardust.modeling.validation.IValidationExtensionRegistry;
+import org.eclipse.stardust.modeling.validation.PojoExtensionDescriptor;
 import org.eclipse.stardust.modeling.validation.ServerConfigurationElement;
 import org.eclipse.stardust.modeling.validation.ValidationConstants;
 
@@ -39,6 +45,8 @@ import org.eclipse.stardust.modeling.validation.ValidationConstants;
 */
 public class ValidationExtensionRegistry implements IValidationExtensionRegistry
 {
+   private static final Logger trace = LogManager.getLogger(ValidationExtensionRegistry.class);
+
    private final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
    private static IValidationExtensionRegistry valdationExtensionRegistry;
    private static final IConfigurationElement[] EMPTY_VALIDATORS = new IConfigurationElement[0];
@@ -75,87 +83,106 @@ public class ValidationExtensionRegistry implements IValidationExtensionRegistry
    {
    }
 
-   public IConfigurationElement[] filterElements(String extensionPointId_) throws IOException
+   @Override
+   public List<ExtensionDescriptor> getExtensionDescriptorsFor(String extensionPointId_)
    {
-      List<IConfigurationElement> result = CollectionUtils.newList();
+      List<ExtensionDescriptor> result = newList();
 
-      Enumeration<URL> resources = classLoader.getResources("plugin.xml");
-      while (resources.hasMoreElements())
+      List<Plugin> plugins = newList();
+      try
       {
-         URL url = (URL) resources.nextElement();
-         InputStream openStream = url.openStream();
-         try
+         Enumeration<URL> resources = classLoader.getResources("plugin.xml");
+         while (resources.hasMoreElements())
          {
-            Plugin plugin = read(openStream);
-            List<Extension> extensions = plugin != null ? plugin.extensions : null;
-            if(extensions != null)
+            URL url = (URL) resources.nextElement();
+            InputStream openStream = url.openStream();
+            try
             {
-               for(Extension extension : extensions)
-               {
-                  String extensionPointId = extension.extensionPointId;
+               Plugin plugin = read(openStream);
+               plugins.add(plugin);
+            }
+            catch (JAXBException je)
+            {
+               trace.error("Failed parsing validation extension descriptor " + url, je);
+            }
+            finally
+            {
+               openStream.close();
+            }
+         }
+      }
+      catch (IOException ioe)
+      {
+         trace.error("Failed resolving validation extensions: " + extensionPointId_, ioe);
+         return emptyList();
+      }
 
-                  if(extensionPointId.equals(extensionPointId_))
+      for (Plugin plugin : plugins)
+      {
+         List<Extension> extensions = plugin != null ? plugin.extensions : null;
+         if(extensions != null)
+         {
+            for(Extension extension : extensions)
+            {
+               String extensionPointId = extension.extensionPointId;
+
+               if(extensionPointId.equals(extensionPointId_))
+               {
+                  if(extensionPointId_.equals(ValidationConstants.MODEL_VALIDATOR_EXTENSION_POINT))
                   {
-                     if(extensionPointId_.equals(ValidationConstants.MODEL_VALIDATOR_EXTENSION_POINT))
+                     List<ModelValidator> validators = extension.modelValidators;
+                     if(validators != null)
                      {
-                        List<ModelValidator> validators = extension.modelValidators;
-                        if(validators != null)
+                        for(ModelValidator validator : validators)
                         {
-                           for(ModelValidator validator : validators)
-                           {
-                              Class<?> validatorClass = validator.validatorClass;
-                              ServerConfigurationElement configurationElement = new ServerConfigurationElement();
-                              configurationElement.setTheClass(validatorClass);
-                              result.add(configurationElement);
-                           }
+                           Class<?> validatorClass = validator.validatorClass;
+                           ServerConfigurationElement configurationElement = new ServerConfigurationElement();
+                           configurationElement.setTheClass(validatorClass);
+                           result.add(new PojoExtensionDescriptor(configurationElement));
                         }
                      }
-                     else
+                  }
+                  else
+                  {
+                     List<ModelElementValidator> validators = extension.modelElementValidators;
+                     if(validators != null)
                      {
-                        List<ModelElementValidator> validators = extension.modelElementValidators;
-                        if(validators != null)
+                        for(ModelElementValidator validator : validators)
                         {
-                           for(ModelElementValidator validator : validators)
+                           if(!excludeValidation(validator.id))
                            {
-                              if(!excludeValidation(validator.id))
+                              Class<?> validatorClass = validator.validatorClass;
+
+                              ServerConfigurationElement configurationElement = new ServerConfigurationElement();
+                              configurationElement.setTheClass(validatorClass);
+                              configurationElement.addAttribute(ValidationConstants.EP_ATTR_TARGET_TYPE, validator.targetType);
+                              configurationElement.addAttribute("pageContributor", "disabled");
+
+                              List<Filter> filters = validator.filters;
+                              List<IConfigurationElement> children = new ArrayList<IConfigurationElement>();
+                              if(filters != null)
                               {
-                                 Class<?> validatorClass = validator.validatorClass;
-
-                                 ServerConfigurationElement configurationElement = new ServerConfigurationElement();
-                                 configurationElement.setTheClass(validatorClass);
-                                 configurationElement.addAttribute(ValidationConstants.EP_ATTR_TARGET_TYPE, validator.targetType);
-                                 configurationElement.addAttribute("pageContributor", "disabled");
-
-                                 List<Filter> filters = validator.filters;
-                                 List<IConfigurationElement> children = new ArrayList<IConfigurationElement>();
-                                 if(filters != null)
+                                 for(Filter filter : filters)
                                  {
-                                    for(Filter filter : filters)
-                                    {
-                                       ServerConfigurationElement filterElement = new ServerConfigurationElement();
-                                       filterElement.addAttribute(SpiConstants.ATTR_NAME, filter.name);
-                                       filterElement.addAttribute(SpiConstants.ATTR_VALUE, filter.value);
-                                       children.add(filterElement);
-                                    }
+                                    ServerConfigurationElement filterElement = new ServerConfigurationElement();
+                                    filterElement.addAttribute(SpiConstants.ATTR_NAME, filter.name);
+                                    filterElement.addAttribute(SpiConstants.ATTR_VALUE, filter.value);
+                                    children.add(filterElement);
                                  }
-                                 configurationElement.addChildren("filter", children.isEmpty() ? EMPTY_VALIDATORS : children.toArray(new IConfigurationElement[children.size()]));
-
-                                 result.add(configurationElement);
                               }
+                              configurationElement.addChildren("filter", children.isEmpty() ? EMPTY_VALIDATORS : children.toArray(new IConfigurationElement[children.size()]));
+
+                              result.add(new PojoExtensionDescriptor(configurationElement));
                            }
                         }
                      }
                   }
                }
-
             }
-         }
-         catch (JAXBException e)
-         {
          }
       }
 
-      return result.isEmpty() ? EMPTY_VALIDATORS : result.toArray(new IConfigurationElement[result.size()]);
+      return result;
    }
 
    private boolean excludeValidation(String validationId)
@@ -169,19 +196,6 @@ public class ValidationExtensionRegistry implements IValidationExtensionRegistry
       }
 
       return false;
-   }
-
-   public IConfigurationElement[] getConfigurationElementsFor(String extensionPointId)
-   {
-      try
-      {
-         return filterElements(extensionPointId);
-      }
-      catch (IOException e)
-      {
-      }
-
-      return EMPTY_VALIDATORS;
    }
 
    public static IValidationExtensionRegistry getInstance()
