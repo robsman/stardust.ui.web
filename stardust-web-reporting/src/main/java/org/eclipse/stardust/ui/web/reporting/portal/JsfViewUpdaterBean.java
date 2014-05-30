@@ -19,25 +19,32 @@ public class JsfViewUpdaterBean
    /**
     * Finds and updates a view's parameter.
     */
-   /*public void updateView()
+   public void updateView()
    {
       FacesContext context = FacesContext.getCurrentInstance();
       Map<String, String> params = context.getExternalContext().getRequestParameterMap();
-      String viewId = params.get("viewId");
-      String viewKey = params.get("viewIdentity");
-      View view = PortalApplication.getInstance().getViewById(viewId, viewKey);
-      if (null != view)
+      String name = params.get("name");
+      String path = params.get("path");
+      
+      List<View> openViews = PortalApplication.getInstance().getOpenViews();
+      for (View view : openViews)
       {
-         Map<String, Object> viewParams = View.parseParams(params.get("viewParams"));
-         updateViewImage(view, viewParams);
-         view.getViewParams().putAll(viewParams);
-         view.resolveLabelAndDescription();
-         PortalApplication.getInstance().updateViewTitle(view);
-         PortalApplication.getInstance().updateViewIconClass(view);
+         Map<String, Object> viewParams = view.getViewParams();
+         if (null != viewParams
+               &&(name.equals(viewParams.get("name"))
+                     && path.equals(viewParams.get("path"))))
+         {
+            Map<String, Object> newViewParams = View.parseParams(params.get("viewParams"));
+//            updateViewImage(view, viewParams);
+            view.getViewParams().putAll(newViewParams);
+            view.resolveLabelAndDescription();
+            PortalApplication.getInstance().updateViewTitle(view);
+            PortalApplication.getInstance().updateViewIconClass(view);
+         }
       }
    }
 
-   *//**
+   /**
     * Updates a view tab's icon.
     *//*
    public void updateViewIconForElement()

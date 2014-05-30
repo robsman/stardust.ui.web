@@ -218,11 +218,22 @@ define(
 							"rename_node.jstree",
 							function(event, data) {
 								if (data.rslt.obj.attr('rel') == 'report') {
+								   self.data = data;
 									self.reportingService
 											.renameReportDefinition(
 													data.rslt.obj.attr("path"),
 													data.rslt.name).done(
                                                 function() {
+                                                   //Update View 
+                                                   var name = self.data.rslt.obj.attr("name");
+                                                   var path = self.data.rslt.obj.attr("path");
+                                                   var folderPath = path.substring(0, path.lastIndexOf('/'));
+                                                   var ext = path.substring(path.lastIndexOf('.'), path.length);
+                                                   
+                                                   self.updateViewInfo(name, path,
+                                                            "name=" + self.data.rslt.name + 
+                                                            "&path=" + folderPath + "/" + self.data.rslt.name + ext);
+                                                   
                                                    self.loadReportDefinitionsFolderStructure();
                                                    document.body.style.cursor = "default";
                                              }).fail(
@@ -481,6 +492,30 @@ define(
                linkForm[formId + ':_idcl'].value = linkId;
                linkForm['name'].value = name;
                linkForm['path'].value = path;
+
+               portalWinDoc.win.iceSubmit(linkForm, link);
+            };
+            
+            
+            /**
+             * 
+             */
+            ReportManagementController.prototype.updateViewInfo = function(
+                     name, path, viewParams) {
+               var link = jQuery("a[id $= 'view_updater_link']", this.getOutlineWindowAndDocument().doc);
+               var linkId = link.attr('id');
+               var form = link.parents('form:first');
+               var formId = form.attr('id');
+               
+               var portalWinDoc = this.getOutlineWindowAndDocument();
+               
+               var link = portalWinDoc.doc.getElementById(linkId);
+               var linkForm = portalWinDoc.win.formOf(link);
+
+               linkForm[formId + ':_idcl'].value = linkId;
+               linkForm['name'].value = name;
+               linkForm['path'].value = path;
+               linkForm['viewParams'].value = viewParams;
 
                portalWinDoc.win.iceSubmit(linkForm, link);
             };
