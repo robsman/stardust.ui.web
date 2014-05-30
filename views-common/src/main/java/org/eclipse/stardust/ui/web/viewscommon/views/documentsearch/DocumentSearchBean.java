@@ -85,6 +85,7 @@ public class DocumentSearchBean extends UIComponentBean
    public static final String BEAN_ID = "DocumentSearchBean";
    public static final String WORKFLOW_PERSPECTIVE = "workflow-perspective";
    public static final String DOCUMENT_NAME = "documentName";
+   public static final String REPOSITORY = "repositoryId";
    public static final String DOCUMENT_PATH = "path";
    public static final String AUTHOR = "authorFullName";
    public static final String DOCUMENT_ID = "documentId";
@@ -131,6 +132,9 @@ public class DocumentSearchBean extends UIComponentBean
             "documentSearchTable.column.documentName"), ResourcePaths.VIEW_DOCUMENT_SEARCH_COLUMN,
             new TableDataFilterPopup(new TableDataFilterSearch()), true, true);
 
+      ColumnPreference repositoryCol = new ColumnPreference(REPOSITORY, REPOSITORY, ColumnDataType.STRING, this
+            .getMessages().getString("documentSearchTable.column.repository"),false, false);
+      
       ColumnPreference pathCol = new ColumnPreference(DOCUMENT_PATH, DOCUMENT_PATH, this.getMessages().getString(
             "documentSearchTable.column.documentPath"), ResourcePaths.VIEW_DOCUMENT_SEARCH_COLUMN, false, false);
 
@@ -181,6 +185,7 @@ public class DocumentSearchBean extends UIComponentBean
       documentSearchFixedCols2.add(actionsCol);
 
       List<ColumnPreference> documentSearchCols = new ArrayList<ColumnPreference>();
+      documentSearchCols.add(repositoryCol);
       documentSearchCols.add(pathCol);
       documentSearchCols.add(documentsIdCol);
       documentSearchCols.add(authorCol);

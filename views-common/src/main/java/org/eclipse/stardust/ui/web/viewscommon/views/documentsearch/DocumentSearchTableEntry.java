@@ -20,6 +20,7 @@ import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.query.ProcessInstances;
 import org.eclipse.stardust.engine.api.runtime.*;
+import org.eclipse.stardust.engine.core.spi.dms.RepositoryIdUtils;
 import org.eclipse.stardust.ui.web.common.table.DefaultRowModel;
 import org.eclipse.stardust.ui.web.viewscommon.common.DocumentToolTip;
 import org.eclipse.stardust.ui.web.viewscommon.common.ToolTip;
@@ -53,6 +54,7 @@ public class DocumentSearchTableEntry extends DefaultRowModel
    private String documentId;
    private String documentName;
    private String documentPath;
+   private String repositoryId;
    private User user;
    private boolean popupVisible;
    private long fileSize;
@@ -82,6 +84,7 @@ public class DocumentSearchTableEntry extends DefaultRowModel
       this.fileSize = doc.getSize();
       this.fileSizeLabel = DocumentMgmtUtility.getHumanReadableFileSize(this.fileSize);
       this.documentPath = getFolderFromFullPath(doc.getPath());
+      this.repositoryId = RepositoryIdUtils.extractRepositoryId(doc);
       document = doc;
 
       user = DocumentMgmtUtility.getOwnerOfDocument(document);
@@ -268,6 +271,16 @@ public class DocumentSearchTableEntry extends DefaultRowModel
    public final void setDocumentPath(String documentPath)
    {
       this.documentPath = documentPath;
+   }
+
+   public String getRepositoryId()
+   {
+      return repositoryId;
+   }
+
+   public void setRepositoryId(String repositoryId)
+   {
+      this.repositoryId = repositoryId;
    }
 
    public boolean isSelectedRow()
