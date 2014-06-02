@@ -447,6 +447,19 @@ define(
                                  code += accessPoint.id+ " =  request.headers.get('"+ accessPoint.id + "');\n";
                               }
                         code += "}\n";
+                        if(accessPoint.primitiveDataType==="string" ||accessPoint.primitiveDataType==="String"){
+                        code+="else {\n";
+                        code += accessPoint.id+ " =\"\";\n";
+                        code+="}\n";
+                        }else if(accessPoint.primitiveDataType==="Timestamp" ){
+                           code+="else {\n";
+                           code += accessPoint.id+ " =new java.util.Date();\n";
+                           code+="}\n";
+                        }else if(accessPoint.primitiveDataType==="double"){
+                           code+="else {\n";
+                           code += accessPoint.id+ " = new Number(0);\n";
+                           code+="}\n";
+                        }
                      } else if (accessPoint.dataType == "struct") {
                         code += "var " + accessPoint.id + ";\n";
                         code += "if(request.headers.get('"
