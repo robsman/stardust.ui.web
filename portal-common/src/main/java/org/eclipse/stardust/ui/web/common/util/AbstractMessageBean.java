@@ -66,25 +66,13 @@ public abstract class AbstractMessageBean implements Map<String, String>, Serial
          }
 
          int i = 0;
-         while (value.indexOf("{") >= 0)
+         // For jcrId used for Extract Page msg, multiple'{ and }' are part of value
+         // added check for param length
+         while (value.indexOf("{") >= 0 && i < params.length)
          {
-            if (value.indexOf("{") + 2 == value.indexOf("}"))
-            {
-               value = value.replace(value.substring(value.indexOf("{"), value.indexOf("}") + 1), params[i++]);
-            }
-            else
-            // for ExtractPage Version comment jcr string contains '{,}' as data
-            {
-               int currentSIndex = value.indexOf("{") + 1;
-               int currentEIndex = value.indexOf("}") + 1;
-               if (value.indexOf("{", currentSIndex) > 0)
-               {
-                  value = value.replace(
-                        value.substring(value.indexOf("{", currentSIndex), value.indexOf("}", currentEIndex) + 1),
-                        params[i++]);
-               }
-               break;
-            }
+            int startInd = value.indexOf("{" + i + "}");
+            int lenght = new String("{" + i + "}").length();
+            value = value.replace(value.substring(startInd, startInd + lenght), params[i++]);
          }
       }
 
