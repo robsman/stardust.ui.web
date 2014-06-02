@@ -197,6 +197,10 @@ define(
 					writeTag("               };");
 					writeTag("            if (isMobile) {");
 					writeTag("            	requireConfigShim['jquery-mobile'] = ['jquery'];");
+					writeTag("              requireConfigShim['bpm.portal.Interaction'] = [ 'jquery', 'jquery-mobile' ];");
+					writeTag("              requireConfigShim['bpm.portal.GenericAngular'] = [ 'jquery', 'jquery-mobile' ];");
+					writeTag("              requireConfigShim['bpm.portal.GenericController'] = [ 'jquery', 'jquery-mobile' ];");
+					writeTag("              requireConfigShim['bpm.portal.UIMashupController'] = [ 'jquery', 'jquery-mobile' ];");
 					writeTag("   }");
 					writeTag("            require.config({waitSeconds: 0, baseUrl : baseUrl + '/plugins/',");
 					writeTag("               paths : requireConfigPaths,");
@@ -209,17 +213,9 @@ define(
 					writeTag("            }");
 					writeTag("            require(mashupDeps, function(require, jquery, jqueryUi,");
 					writeTag("   json, jqueryUrl, angularjs, xml2json, stardustPortalInteraction, stardustGenericController) {");
-					writeTag("      jQuery(document).ready(");
-					writeTag("      function() {");
-					writeTag("            // Move the controller from Div to HTML");
-					writeTag("            var ctrlDiv = jQuery(\"div[ng-controller]='ManualActivityCtrl'\");");
-					writeTag("            ctrlDiv.removeAttr('ng-controller');");
-					writeTag("            jQuery('html').attr('ng-controller', 'ManualActivityCtrl');");
-					emptyLine();
 					writeTag("            uiMashupController = new bpm.portal.UIMashupController();");
 					writeTag("            uiMashupController.init();");
 					writeTag("      });");
-					writeTag("   });");
 					writeTag("}");
 					
 					writeTag("function waitToLoad() {");
@@ -265,9 +261,13 @@ define(
 						parameterDefinitions) {
 					writeTag("<body>");
 					indentUp();
+					writeTag("<div ng-controller='ManualActivityCtrl' class='ng-cloak'>");
+					indentUp();
 
 					this.generateCode(parameterDefinitions);
 
+					indentDown();
+					writeTag("</div>");
 					indentDown();
 					writeTag("</body>");
 				}
@@ -328,7 +328,6 @@ define(
 					// but due to HTML editor's limitations, need to add this at div level
 					// at run time this will be moved to <html> in the initialization block
 					writeTag("<div class='hideIfMobile'>");
-					writeTag("<div ng-controller='ManualActivityCtrl' class='ng-cloak'>");
 					indentUp();
 					writeTag("<div class='metaData' style='display: none' data-dataMappings='" + 
 								JSON.stringify(jsonDMs) + "' data-binding='" + JSON.stringify(data.binding) + "'></div>\n");
@@ -340,7 +339,6 @@ define(
 					writeTag("<div class='nestedMarkups' style='display: none'>\n" + nestedHTML + "\n</div>");
 					writeTag("<!-- END nestedMarkups -->");
 					writeTag("</div>");
-					writeTag("</div>");
 					
 					if (this.options.generateMobileMarkup) {
 						// Get code generator mobile
@@ -350,7 +348,6 @@ define(
 						// but due to HTML editor's limitations, need to add this at div level
 						// at run time this will be moved to <html> in the initialization block
 						writeTag("<div class='hideIfDesktop'>");
-						writeTag("<div ng-controller='ManualActivityCtrl' class='ng-cloak'>");
 						indentUp();
 						writeTag("<div class='metaData' style='display: none' data-dataMappings='" + 
 									JSON.stringify(jsonDMs) + "' data-binding='" + JSON.stringify(data.binding) + "'></div>\n");
@@ -361,7 +358,6 @@ define(
 						writeTag("\n<!-- START nestedMarkups -->");
 						writeTag("<div class='nestedMarkups' style='display: none'>\n" + nestedHTML + "\n</div>");
 						writeTag("<!-- END nestedMarkups -->");
-						writeTag("</div>");
 						writeTag("</div>");
 					}
 
