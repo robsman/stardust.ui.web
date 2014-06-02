@@ -415,7 +415,12 @@ if (!window["BridgeUtils"].View) {
 			BridgeUtils.runInAngularContext(function($scope) {
 				
 				var view = getViewPanel($scope, html5FWViewId);
-				
+
+				// If View is already open update the view params
+				if (view) {
+					jQuery.extend(view.params, params);
+				}
+
 				// If View not there, create it. If exists then open it if force = true
 				if (!view || force) {
 					$scope.open(viewId, true, params);
