@@ -15,10 +15,10 @@ define(
 				"bpm-modeler/js/m_commandsController",
 				"bpm-modeler/js/m_elementConfiguration",
 				"bpm-modeler/js/m_i18nUtils",
-				"processportal/js/codeGenerator" ],
+				"processportal/js/codeGenerator", "processportal/js/codeGeneratorMobile" ],
 		function(m_utils, m_urlUtils, m_constants, m_model, m_modelElement,
 				m_command, m_commandsController, m_elementConfiguration,
-				m_i18nUtils, codeGenerator) {
+				m_i18nUtils, codeGenerator, codeGeneratorMobile) {
 			var markup = "";
 			var indentLevel = 0;
 
@@ -86,6 +86,10 @@ define(
 					if (!this.options.tabsForFirstLevelTables === undefined) {
 						this.options.tabsForFirstLevelTables = false;
 					}
+					
+					if (!this.options.generateMobileMarkup === undefined) {
+						this.options.generateMobileMarkup = false;
+					}
 				}
 
 				/**
@@ -150,9 +154,14 @@ define(
 					writeTag("    head.appendChild(style);");
 					writeTag("}");
 
+					writeTag("function mobilecheck() {");
+					writeTag(" 	var check = false;");
+			     	writeTag(" 	(function(a){if(/(android|bb\\d+|meego).+mobile|avantgo|bada\\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i.test(a)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\\-(n|u)|c55\\/|capi|ccwa|cdm\\-|cell|chtm|cldc|cmd\\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\\-s|devi|dica|dmob|do(c|p)o|ds(12|\\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\\-|_)|g1 u|g560|gene|gf\\-5|g\\-mo|go(\\.w|od)|gr(ad|un)|haie|hcit|hd\\-(m|p|t)|hei\\-|hi(pt|ta)|hp( i|ip)|hs\\-c|ht(c(\\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\\-(20|go|ma)|i230|iac( |\\-|\\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\\/)|klon|kpt |kwc\\-|kyo(c|k)|le(no|xi)|lg( g|\\/(k|l|u)|50|54|\\-[a-w])|libw|lynx|m1\\-w|m3ga|m50\\/|ma(te|ui|xo)|mc(01|21|ca)|m\\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\\-2|po(ck|rt|se)|prox|psio|pt\\-g|qa\\-a|qc(07|12|21|32|60|\\-[2-7]|i\\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\\-|oo|p\\-)|sdk\\/|se(c(\\-|0|1)|47|mc|nd|ri)|sgh\\-|shar|sie(\\-|m)|sk\\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\\-|v\\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\\-|tdg\\-|tel(i|m)|tim\\-|t\\-mo|to(pl|sh)|ts(70|m\\-|m3|m5)|tx\\-9|up(\\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\\-|your|zeto|zte\\-/i.test(a.substr(0,4)))check = true})(navigator.userAgent||navigator.vendor||window.opera);");
+			     	writeTag("	return check;");
+			     	writeTag("}");
+			     	writeTag("var isMobile = " + this.options.generateMobileMarkup + " && mobilecheck();");
 					writeTag("function initialize() {");
-					writeTag("   require.config({waitSeconds: 0, baseUrl : baseUrl + '/plugins/',");
-					writeTag("   paths : {");
+					writeTag("            var requireConfigPaths = {");
 					writeTag("         'jquery' : [ 'views-common/js/libs/jquery/jquery-1.7.2.min',");
 					writeTag("         '//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min' ],");
 					writeTag("         'jquery-ui' : ['views-common/js/libs/jquery/plugins/jquery-ui-1.10.2.min',");
@@ -170,8 +179,11 @@ define(
 					writeTag("    'bpm.portal.GenericAngularApp' : [ 'processportal/js/GenericAngularApp' ],");
 					writeTag("    'bpm.portal.GenericController' : [ 'processportal/js/GenericController' ],");
 					writeTag("    'bpm.portal.UIMashupController' : [ 'processportal/js/UIMashupController' ]");
-					writeTag("   },");
-					writeTag("   shim : {");
+					writeTag("               };");
+					writeTag("            if (isMobile) {");
+					writeTag("            	requireConfigPaths['jquery-mobile'] = ['mobile-workflow/public/js/libs/jquery/plugins/jquery.mobile-1.4.0', '//code.jquery.com/mobile/1.4.0/jquery.mobile-1.4.0'];");
+					writeTag("            }");
+					writeTag("            var requireConfigShim = {");
 					writeTag("      'jquery-ui' : [ 'jquery' ],");
 					writeTag("      'jquery.url' : [ 'jquery' ],");
 					writeTag("      'angularjs' : {");
@@ -182,10 +194,20 @@ define(
 					writeTag("         'bpm.portal.GenericAngular' : [ 'jquery' ],");
 					writeTag("         'bpm.portal.GenericController' : [ 'jquery' ],");
 					writeTag("         'bpm.portal.UIMashupController' : [ 'jquery' ]");
+					writeTag("               };");
+					writeTag("            if (isMobile) {");
+					writeTag("            	requireConfigShim['jquery-mobile'] = ['jquery'];");
 					writeTag("   }");
+					writeTag("            require.config({waitSeconds: 0, baseUrl : baseUrl + '/plugins/',");
+					writeTag("               paths : requireConfigPaths,");
+					writeTag("               shim : requireConfigShim");
 					writeTag("});");
-					writeTag("require([ 'require', 'jquery', 'jquery-ui', 'json', 'jquery.url', 'angularjs',");
-					writeTag("      'xml2json', 'bpm.portal.Interaction', 'bpm.portal.GenericAngularApp', 'bpm.portal.GenericController', 'bpm.portal.UIMashupController' ], function(require, jquery, jqueryUi,");
+					writeTag("            var mashupDeps = [ 'require', 'jquery', 'jquery-ui', 'json', 'jquery.url', 'angularjs',");
+					writeTag("               'xml2json', 'bpm.portal.Interaction', 'bpm.portal.GenericAngularApp', 'bpm.portal.GenericController', 'bpm.portal.UIMashupController' ];");
+					writeTag("            if (isMobile) {");
+					writeTag("            	mashupDeps.push('jquery-mobile');");
+					writeTag("            }");
+					writeTag("            require(mashupDeps, function(require, jquery, jqueryUi,");
 					writeTag("   json, jqueryUrl, angularjs, xml2json, stardustPortalInteraction, stardustGenericController) {");
 					writeTag("      jQuery(document).ready(");
 					writeTag("      function() {");
@@ -221,7 +243,13 @@ define(
 					writeTag("injectCSS(head, baseUrl + '/plugins/views-common/css/thirdparty/jquery/jquery-ui-1.10.2.custom.css');");
 					writeTag("injectCSS(head, baseUrl + '/plugins/processportal/css/bpm-form.css');");
 
+					writeTag("         if (isMobile) {");
+					writeTag("         	injectCSS(head, baseUrl + '/plugins/mobile-workflow/public/css/jquery.mobile/jquery.mobile-1.4.0.css');");
+					writeTag("         	injectCSS(head, baseUrl + '/plugins/processportal/css/manual-activity-mobile.css');");
+					writeTag("         } else {");
+					writeTag("         	injectCSS(head, baseUrl + '/plugins/mobile-workflow/public/css/jquery.mobile/jquery.mobile-1.4.0.css');");
 						writeTag("injectCSS(head, baseUrl + '/plugins/processportal/css/manual-activity.css');");
+					writeTag("         }");
 					writeTag("addStyle(head, '[ng\\\\:cloak], [ng-cloak], .ng-cloak {display: none;}');");
 
 					writeTag("waitToLoad();");
@@ -299,6 +327,7 @@ define(
 					// This controller is actually required at <html> element level, 
 					// but due to HTML editor's limitations, need to add this at div level
 					// at run time this will be moved to <html> in the initialization block
+					writeTag("<div class='hideIfMobile'>");
 					writeTag("<div ng-controller='ManualActivityCtrl' class='ng-cloak'>");
 					indentUp();
 					writeTag("<div class='metaData' style='display: none' data-dataMappings='" + 
@@ -306,20 +335,44 @@ define(
 					writeTag(data.html);
 
 					// TODO: Generate Nested Structures
-					var nestedHTML = generateNested(prefs, data.nestedBindings);
+					var nestedHTML = generateNested(prefs, data.nestedBindings, codeGenerator);
 					writeTag("\n<!-- START nestedMarkups -->");
 					writeTag("<div class='nestedMarkups' style='display: none'>\n" + nestedHTML + "\n</div>");
 					writeTag("<!-- END nestedMarkups -->");
+					writeTag("</div>");
+					writeTag("</div>");
+					
+					if (this.options.generateMobileMarkup) {
+						// Get code generator mobile
+						data = codeGeneratorMobile.create(prefs).generate(jsonDMs, "dm");
+	
+						// This controller is actually required at <html> element level, 
+						// but due to HTML editor's limitations, need to add this at div level
+						// at run time this will be moved to <html> in the initialization block
+						writeTag("<div class='hideIfDesktop'>");
+						writeTag("<div ng-controller='ManualActivityCtrl' class='ng-cloak'>");
+						indentUp();
+						writeTag("<div class='metaData' style='display: none' data-dataMappings='" + 
+									JSON.stringify(jsonDMs) + "' data-binding='" + JSON.stringify(data.binding) + "'></div>\n");
+						writeTag(data.html);
+	
+						// TODO: Generate Nested Structures
+						var nestedHTML = generateNested(prefs, data.nestedBindings, codeGeneratorMobile);
+						writeTag("\n<!-- START nestedMarkups -->");
+						writeTag("<div class='nestedMarkups' style='display: none'>\n" + nestedHTML + "\n</div>");
+						writeTag("<!-- END nestedMarkups -->");
+						writeTag("</div>");
+						writeTag("</div>");
+					}
 
 					this.generateButtons();
 					indentDown();
-					writeTag("</div>");
 				}
 
 				/*
 				 * 
 				 */
-				function generateNested(prefs, nestedStructs) {
+				function generateNested(prefs, nestedStructs, codeGenerator) {
 					var nestedHTML = "";
 					if (nestedStructs) {
 						for(var i in nestedStructs) {
@@ -334,7 +387,7 @@ define(
 										  "<div class='nestedMarkup' data-xpath='" + xPath + 
 										  		"' data-binding='" + JSON.stringify(data.binding) + "'>" + data.html + 
 										  "</div>\n<!-- END " + xPath + " -->\n";
-							nestedHTML += generateNested(prefs, data.nestedBindings);
+							nestedHTML += generateNested(prefs, data.nestedBindings, codeGenerator);
 						}
 					}
 					return nestedHTML;
@@ -410,6 +463,8 @@ define(
 				 * 
 				 */
 				MarkupGenerator.prototype.generateButtons = function() {
+					writeTag("<div class='hideIfMobile'>");
+					indentUp();
 					writeTag("<table id='buttonTable'>");
 					indentUp();
 					writeTag("<tr>");
@@ -467,6 +522,51 @@ define(
 					writeTag("</tr>");
 					indentDown();
 					writeTag("</table>");
+					indentDown();
+					writeTag("</div>");
+					
+					if (this.options.generateMobileMarkup) {
+						this.generateButtonsForMobile();
+					}
+				};
+				
+
+				/**
+				 * 
+				 */
+				MarkupGenerator.prototype.generateButtonsForMobile = function() {
+					writeTag("<div class='hideIfDesktop'>");
+					indentUp();
+					writeTag("<div class='ui-body ui-body-a ui-corner-all'>");
+					indentUp();
+
+					if (this.options.generateCompleteButton) {
+						writeTag("<button ng-click='completeActivity()' class='ui-btn ui-shadow ui-corner-all' style='width: 100%'>Complete</button><br>");
+					}
+
+					if (this.options.generateSuspendButton) {
+						writeTag("<button ng-click='suspendActivity()' class='ui-btn ui-shadow ui-corner-all' style='width: 100%'>Suspend</button><br>");
+					}
+
+					if (this.options.generateSaveButton) {
+						writeTag("<button ng-click='suspendActivity(true)' class='ui-btn ui-shadow ui-corner-all' style='width: 100%'>Suspend And Save</button><br>");
+					}
+
+					if (this.options.generateAbortButton) {
+						writeTag("<button ng-click='abortActivity()' class='ui-btn ui-shadow ui-corner-all' style='width: 100%'>Abort</button><br>");
+					}
+
+					if (this.options.generateQaPassButton) {
+						writeTag("<button ng-click='qaPassActivity()' class='ui-btn ui-shadow ui-corner-all' style='width: 100%'>Quality Assurance Success</button><br>");
+					}
+
+					if (this.options.generateQaFailButton) {
+						writeTag("<button ng-click='qaFailActivity()' class='ui-btn ui-shadow ui-corner-all' style='width: 100%'>Quality Assurance Fail</button><br>");
+					}
+					indentDown();
+					writeTag("</div>");
+					indentDown();
+					writeTag("</div>");
 				};
 					}
 
