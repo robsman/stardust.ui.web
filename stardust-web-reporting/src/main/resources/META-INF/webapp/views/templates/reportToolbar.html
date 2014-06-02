@@ -1,0 +1,39 @@
+<!-- view specific Toolbar -->
+<div id="ippViewToolbar">
+	<table class="breadCrumbsToolbarWrapper" cellpadding="0"
+		cellspacing="0">
+		<tbody>
+			<tr>
+				<td style="width: 99%"></td>
+				<td class="toolbarGroupRight"><table cellpadding="0"
+						cellspacing="0">
+						<tbody>
+							<tr>
+								<td><table>
+										<tbody>
+											<tr>
+												<td ng-show="showRerunBtn"><a ng-click="reRun()"><img alt=""
+														src="../public/css/images/refresh.png" title={{getI18N('reporting.definitionView.reRun.label')}}></a></td>
+												<td ng-show="showFavoriteBtn"><a ng-click="addToFavorites()"><img alt=""
+														src="../public/css/images/report-add-favorite.png" title={{getI18N('reporting.definitionView.addToFavorite.label')}}></a></td>
+												<td ng-show="showFavoriteBtn"><a ng-click="removeFromFavorites()"><img alt=""
+														src="../public/css/images/report-remove-favorite.png" title={{getI18N('reporting.definitionView.removeFromFavorite.label')}}></a></td>
+												<td ng-show="showSaveInstanceBtn"><a ng-click="saveReportInstance()"><img alt=""
+														src="../public/css/images/report_disk.png" title={{getI18N('reporting.definitionView.saveInstance.label')}}></a></td>
+												<td ng-show="showSaveBtn"><a ng-click="saveReport()"><img alt=""
+														src="../public/css/images/disk.png" title={{getI18N('reporting.definitionView.save.label')}}></a></td>
+												<!-- <td ng-show="showPopoutBtn"><a ng-click="popout()"><img alt=""
+														src="../public/css/images/report-pop-in.png" title={{getI18N('reporting.definitionView.popout.label')}}></a></td> -->
+												<td ng-show="showPopoutBtn"><a ng-click="popout()"><img alt=""
+														src="../public/css/images/report-pop-out.png" title={{getI18N('reporting.definitionView.popout.label')}}></a></td>
+											</tr>
+										</tbody>
+								</table></td>
+							</tr>
+						</tbody>
+					</table></td>
+				<td><span id="ippViewToolbarEnd"></span></td>
+			</tr>
+		</tbody>
+	</table>
+</div>

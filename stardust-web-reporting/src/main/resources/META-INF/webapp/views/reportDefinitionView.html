@@ -32,34 +32,7 @@ table.formTable td {
 	src="../public/js/libs/require/2.0.5/require.js"></script>
 </head>
 <body>
-	<!-- view specific Toolbar -->
-	<div id="ippViewToolbar">
-		<table class="breadCrumbsToolbarWrapper" cellpadding="0"
-			cellspacing="0">
-			<tbody>
-				<tr>
-					<td style="width: 99%"></td>
-					<td class="toolbarGroupRight"><table cellpadding="0"
-							cellspacing="0">
-							<tbody>
-								<tr>
-									<td><table>
-											<tbody>
-												<tr>
-													<td><a ng-click="saveReport()"><img alt=""
-															src="../public/css/images/disk.png"
-															title={{getI18N('reporting.definitionView.save.label')}}></a></td>
-												</tr>
-											</tbody>
-										</table></td>
-								</tr>
-							</tbody>
-						</table></td>
-					<td><span id="ippViewToolbarEnd"></span></td>
-				</tr>
-			</tbody>
-		</table>
-	</div>
+	<div ng-include="'templates/reportToolbar.html'"></div>
 	<div id="reportDefinitionView" style="visibility: hidden;">
 		<table cellpadding="0" cellspacing="0" class="layoutTable"
 			style="width: 1200px; margin: 10px;">
@@ -964,65 +937,7 @@ table.formTable td {
 						</div>
 						
 						<div id="definitionTab">
-							<table>
-								<tr>
-									<td valign="top">
-										<div ng-show="report.storage.state == 'created'">
-											<p>{{getI18N('reporting.definitionView.saveReport.text')}}</p>
-											<input type="text" ng-model="report.name"
-												style="width: 250px;"></input>
-											<p>{{getI18N('reporting.definitionView.withDescription.text')}}</p>
-											<textarea rows="5" cols="60" ng-model="report.description"></textarea>
-										</div>
-										<div ng-show="report.storage.state == 'saved'">
-											<table cellpadding="0" cellspacing="0" class="formTable">
-												<tr>
-													<td><label>{{getI18N('reporting.definitionView.name.label')}}</label></td>
-													<td><input type="text" ng-model="report.name"
-														style="width: 250px;"></input></td>
-												</tr>
-											</table>
-											<table>
-												<tr>
-													<td><label>{{getI18N('reporting.definitionView.description.label')}}</label></td>
-												</tr>
-												<tr>
-													<td><textarea rows="5" cols="60"
-															ng-model="report.description"></textarea></td>
-												</tr>
-											</table>
-										</div>
-									</td>
-								</tr>
-								<tr>
-									<td valign="top" ng-show="report.storage.state == 'created'">
-										<div ng-show="report.storage.state == 'created'">
-											<p>{{getI18N('reporting.definitionView.forOnDemand.text')}}</p>
-										</div>
-										<table>
-											<tr>
-												<td><input type="radio" 
-													ng-model="report.storage.location" value="personalFolder" /></td>
-												<td colspan="2">{{getI18N('reporting.definitionView.personalReportTemplate.label')}}</td>
-											</tr>
-											<tr>
-												<td><input type="radio" 
-													ng-model="report.storage.location" value="publicFolder" /></td>
-												<td colspan="2">{{getI18N('reporting.definitionView.globalReportTemplate.label')}}</td>
-											</tr>
-											<tr>
-												<td><input type="radio" 
-													ng-model="report.storage.location"
-													value="participantFolder" /></td>
-												<td>{{getI18N('reporting.definitionView.organizationRoleReportTemplate.label')}}</td>
-												<td>
-													<select id="participantsSelect"></select>
-												</td>
-											</tr>
-										</table>
-									</td>
-								</tr>
-							</table>
+								<div ng-include="'templates/reportStorage.html'"></div>
 								<div style="color:white">{{report}}</div>
 						</div>
 						<div id="schedulingTab">

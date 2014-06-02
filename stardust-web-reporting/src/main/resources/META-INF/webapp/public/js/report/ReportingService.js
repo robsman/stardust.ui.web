@@ -615,7 +615,22 @@ define(
 
 					return deferred.promise();
 				};
+				
+				/**
+				 * 
+				 */
+				ReportingService.prototype.getModelParticipants = function() {
+					var modelParticipantsObj = this.modelData.participants;
+					var modelParticipants = {};
+					for (var n in modelParticipantsObj) {
+						modelParticipants[modelParticipantsObj[n].id] = modelParticipantsObj[n].name; 
+					}
+					return modelParticipants;
+				}
 
+				/**
+				 * 
+				 */
 				ReportingService.prototype.refreshPreferenceData = function() {
 					var deferred = jQuery.Deferred();
 						var self = this;
@@ -1025,6 +1040,38 @@ define(
 					return deferred.promise();
 				};
 
+				/**
+				 * 
+				 */
+				ReportingService.prototype.saveReportInstance = function(
+						reportDI) {
+					var deferred = jQuery.Deferred();
+					var self = this;
+
+					jQuery
+							.ajax(
+									{
+										type : "PUT",
+										beforeSend : function(request) {
+											request
+													.setRequestHeader(
+															"Authentication",
+															self
+																	.getBasicAuthenticationHeader());
+										},
+										url : self.getRootUrl()
+												+ "/services/rest/bpm-reporting/report-instance",
+										contentType : "application/json",
+										data : JSON.stringify(reportDI)
+									}).done(function(report) {
+								deferred.resolve(report);
+							}).fail(function(response) {
+								deferred.reject(response);
+							});
+
+					return deferred.promise();
+				};
+				
 				/**
 				 * Saves all cached Report Definitions.
 				 */

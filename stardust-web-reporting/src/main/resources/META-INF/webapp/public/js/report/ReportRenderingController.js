@@ -55,19 +55,6 @@ define(
 						report, masterController) {
 					this.report = report;
 
-					for ( var id in this.report.parameters) {
-						var parameter = this.report.parameters[id];
-						var value = jQuery.url().param("parameter_" + id);
-
-						if (value) {
-							console.log("Replacing parameter [" + id + "] = "
-									+ this.report.parameters[id] + " by "
-									+ value);
-						}
-
-						parameter.value = value;
-					}
-
 					// TODO Angular may have better concepts for
 					// modularization/nesting
 
@@ -120,7 +107,7 @@ define(
 										function(data) {
 											console.log("Data for Document");
 											console.log(data);
-
+											
 											var html = "<html ng-app><head>"
 													// TODO Read local
 													+ "<script src='"
@@ -553,11 +540,6 @@ define(
 
 					document.body.style.cursor = "wait";
 					
-					if (this.report.parameters.length == 0)
-               {
-                  return;
-               }
-
 					var deferred = this.reportingService
 							.retrieveData(this.report, this.parameters);
 					var self = this;
@@ -674,11 +656,6 @@ define(
                var deferred = jQuery.Deferred();
                var self = this;
                
-               if (this.report.parameters.length == 0)
-               {
-                  return;
-               }
-               
                self.reportingService.retrieveData(self.report, self.parameters)
                .done(
                      function(data) {
@@ -688,16 +665,37 @@ define(
                   deferred.reject(data);
                });
                
-               
                return deferred.promise();
                
             };
 
+            /**
+             *  Use this method to retrieve to report data from service
+             */
+            ReportRenderingController.prototype.getReportData = function(report) {
+                if(report){
+             	   this.report = report;
+                }	
+                var deferred = jQuery.Deferred();
+                var self = this;
+                
+                self.reportingService.retrieveData(self.report, self.parameters)
+                .done(
+                      function(data) {
+                        deferred.resolve(data);
+                      }).fail(function(data) {
+                   deferred.reject(data);
+                });
+                
+                return deferred.promise();
+                
+             };
+            
             //TABLE data processing
             /**
              * 
              */
-            ReportRenderingController.prototype.refreshPreview = function(report, parameters, scopeController) {
+            ReportRenderingController.prototype.refreshPreview = function(report, scopeController, parameters) {
             	if (report) {
 					this.report = report;
 				}
@@ -1234,7 +1232,96 @@ ReportRenderingController.prototype.formatPreviewData = function(data) {
 		ReportRenderingController.prototype.getI18N = function(key) {
 			return I18NUtils.getProperty(key);
 		};
+		
+		//Report Instance
+		   /**
+         * 
+         */
+        ReportRenderingController.prototype.saveReportInstance = function(report, parameters) {
+        	var self = this;
+        	if (report) {
+				this.report = report;
+			}
+        	this.parameters = parameters;
 
+        	if (this.report.storage.state == "saved") {
+        		this.getReportData(this.report, this.parameters)
+                .done(
+                      function(data) {
+                    	// save report instance along with report definition
+                    		self.saveReportInstance_(self.report, data, null);
+                      }).fail(function(data) {
+                
+                      });
+				return;
+			}else{
+				if (parent.iPopupDialog) {
+					parent.iPopupDialog.openPopup(self.prepareSaveReportInstance());
+				}
+			}
+		};
+        
+		/**
+		 * @param reportInstanceMetadata - contains report Name and report Location if any
+		 */
+		ReportRenderingController.prototype.saveReportInstance_ = function(report, reportData, reportMetadata) {
+			var reportDI =  {};
+			reportDI.definition = report;
+			reportDI.data = reportData;
+			reportDI.metadata = reportMetadata;
+			var self= this;
+			var deferred = jQuery.Deferred();
+			this.reportingService.saveReportInstance(reportDI)
+            .done(
+                  function(data) {
+                    deferred.resolve(data);
+                  }).fail(function(data) {
+               deferred.reject(data);
+            });
+			
+			return deferred.promise();
+		};
+		
+		/**
+		 * 
+		 */
+		ReportRenderingController.prototype.saveReportInstanceAdhoc = function(reportMetadata) {
+			var self = this;
+			this.getReportData(this.report, this.parameters)
+            .done(
+                  function(data) {
+                	// save report instance along with report definition
+                		self.saveReportInstance_(self.report, data, reportMetadata);
+                  }).fail(function(data) {
+                  
+                  });
+		};
+
+		/**
+         * 
+         */
+        ReportRenderingController.prototype.prepareSaveReportInstance = function() {
+					var self = this;
+					var popupData = {
+						attributes : {
+							width : "650px",
+							height : "290px",
+							src : this.reportingService.getRootUrl()
+									+ "/plugins/bpm-reporting/views/templates/reportStoragePopup.html"
+						},
+						payload : {
+							I18N : {},
+							report : self.report,
+							modelParticipants : self.reportingService
+									.getModelParticipants(),
+							acceptFunction : function(reportMD) {
+								self.saveReportInstanceAdhoc(reportMD);
+                            }
+						}
+					};
+
+					return popupData;
+				};
 			}
 			
 			function transposeArray(aInput) {

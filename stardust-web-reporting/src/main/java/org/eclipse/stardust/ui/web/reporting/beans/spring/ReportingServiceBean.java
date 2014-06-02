@@ -18,29 +18,36 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
-import java.util.*;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
-import org.springframework.stereotype.Component;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.engine.api.model.*;
+import org.eclipse.stardust.engine.api.model.Activity;
+import org.eclipse.stardust.engine.api.model.DataPath;
+import org.eclipse.stardust.engine.api.model.Participant;
+import org.eclipse.stardust.engine.api.model.ProcessDefinition;
+import org.eclipse.stardust.engine.api.model.QualifiedModelParticipantInfo;
 import org.eclipse.stardust.engine.api.query.UnsupportedFilterException;
-import org.eclipse.stardust.engine.api.runtime.*;
+import org.eclipse.stardust.engine.api.runtime.DmsUtils;
+import org.eclipse.stardust.engine.api.runtime.Document;
+import org.eclipse.stardust.engine.api.runtime.DocumentInfo;
+import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
+import org.eclipse.stardust.engine.api.runtime.Folder;
+import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
+import org.eclipse.stardust.engine.api.runtime.UserService;
 import org.eclipse.stardust.reporting.rt.ReportParameter;
 import org.eclipse.stardust.reporting.rt.mapping.ReportDefinition;
 import org.eclipse.stardust.reporting.rt.mapping.ReportRequest;
@@ -49,6 +56,9 @@ import org.eclipse.stardust.reporting.rt.service.ReportingService;
 import org.eclipse.stardust.reporting.rt.util.JsonMarshaller;
 import org.eclipse.stardust.ui.web.common.spi.user.User;
 import org.eclipse.stardust.ui.web.common.spi.user.UserProvider;
+import org.eclipse.stardust.ui.web.common.util.DateUtils;
+import org.eclipse.stardust.ui.web.common.util.GsonUtils;
+import org.eclipse.stardust.ui.web.html5.rest.RestControllerUtils;
 import org.eclipse.stardust.ui.web.reporting.beans.spring.portal.CriticalityConfigurationService;
 import org.eclipse.stardust.ui.web.reporting.beans.spring.portal.SearchHandlerChain;
 import org.eclipse.stardust.ui.web.reporting.beans.spring.portal.XPathCacheManager;
@@ -61,8 +71,17 @@ import org.eclipse.stardust.ui.web.reporting.scheduling.SchedulingRecurrence;
 import org.eclipse.stardust.ui.web.reporting.ui.UiHelper;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.DMSUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.stereotype.Component;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 /**
  *
@@ -82,11 +101,21 @@ public class ReportingServiceBean
    private static final String REPORTS_ROOT_FOLDER = "/reports";
    private static final String REPORT_DESIGN = "/designs";
    private static final String PUBLIC_REPORT_DEFINITIONS_DIR = REPORTS_ROOT_FOLDER + REPORT_DESIGN;
-   private static final String PARTICIPANT_REPORT_DEFINITIONS_DIR_TMP = REPORTS_ROOT_FOLDER + "/PARTICIPANT_ID" + REPORT_DESIGN;
+   private static final String PARTICIPANT_REPORT_DEFINITIONS_DIR = REPORTS_ROOT_FOLDER + "/PARTICIPANT_ID" + REPORT_DESIGN;
    private static final String USER_REPORT_DIR = "/documents/reports/designs";
-
    private static final String REPORT_DEFINITION_EXT = ".bpmrptdesign";
-
+   
+   //Report Instance Constant
+   private static final String REPORT_INSTANCE_EXT = ".bpmrpt";
+   private static final String REPORT_INSTANCE = "/saved-reports";
+   private static final String AD_HOC = "/ad-hoc";
+   private static final String PUBLIC_REPORT_INSTANCE_DIR = REPORTS_ROOT_FOLDER + REPORT_INSTANCE;
+   private static final String PUBLIC_REPORT_INSTANCE_ADHOC_DIR = PUBLIC_REPORT_INSTANCE_DIR + AD_HOC;
+   private static final String PARTICIPANT_REPORT_INSTANCE_DIR = REPORTS_ROOT_FOLDER + "/PARTICIPANT_ID" + REPORT_INSTANCE;
+   private static final String PARTICIPANT_REPORT_INSTANCE_ADHOC_DIR = PARTICIPANT_REPORT_INSTANCE_DIR + AD_HOC;
+   private static final String USER_REPORT_INSTANCE_DIR = "/documents/reports/saved-reports";
+   private static final String USER_REPORT_INSTANCE_ADHOC_DIR = USER_REPORT_INSTANCE_DIR + AD_HOC;
+   
    private DocumentManagementService documentManagementService;
 
    private UserService userService;
@@ -340,18 +369,18 @@ public class ReportingServiceBean
          }
          else if (location.equals("personalFolder"))
          {
-            folder = findOrCreateFolder(getUserDocumentFolderPath());
+            folder = findOrCreateFolder(getUserDocumentFolderPath(USER_REPORT_DIR));
          }
          else if (location.equals("participantFolder"))
          {
-            folder = findOrCreateFolder(getParticipantDocumentFolderPath(storageJson.get("participant").getAsString()));
+            folder = findOrCreateFolder(getParticipantDocumentFolderPath(PARTICIPANT_REPORT_DEFINITIONS_DIR, storageJson.get("participant").getAsString()));
          }
 
          // Mark Report Definition as saved
 
          reportJson.get("storage").getAsJsonObject().addProperty("state", "saved");
 
-         saveReportDefinitionDocument(reportJson, folder, name);
+         saveReportDocument(reportJson, folder, name + REPORT_DEFINITION_EXT);
 
          // Add to cache
 
@@ -498,19 +527,19 @@ public class ReportingServiceBean
     *
     * @return
     */
-   private String getUserDocumentFolderPath()
+   private String getUserDocumentFolderPath(String path)
    {
       return "/realms/" + getUserService().getUser().getRealm().getId() + "/users/"
-            + getUserService().getUser().getId() + USER_REPORT_DIR;
+            + getUserService().getUser().getId() + path;
    }
 
    /**
     *
     * @return
     */
-   private String getParticipantDocumentFolderPath(String participant)
+   private String getParticipantDocumentFolderPath(String basePath, String participant)
    {
-      return PARTICIPANT_REPORT_DEFINITIONS_DIR_TMP.replace("PARTICIPANT_ID", participant);
+      return basePath.replace("PARTICIPANT_ID", participant);
    }
 
    /**
@@ -523,7 +552,7 @@ public class ReportingServiceBean
       try
       {
          Folder publicFolder = findOrCreateFolder(PUBLIC_REPORT_DEFINITIONS_DIR);
-         Folder personalFolder = findOrCreateFolder(getUserDocumentFolderPath());
+         Folder personalFolder = findOrCreateFolder(getUserDocumentFolderPath(USER_REPORT_DIR));
          Folder participantFolder = findOrCreateFolder(REPORTS_ROOT_FOLDER);
 
          JsonObject rootFolderJson = new JsonObject();
@@ -644,18 +673,21 @@ public class ReportingServiceBean
    /**
      *
      */
-   private void saveReportDefinitionDocument(JsonObject reportDefinitionJson, Folder folder, String name)
+   private void saveReportDocument(JsonObject reportDefinitionJson, Folder folder, String name)
    {
       String reportContent = reportDefinitionJson.toString();
-      String path = folder.getPath() + "/" + name + REPORT_DEFINITION_EXT;
+      String path = folder.getPath() + "/" + name;
       Document reportDesignDocument = getDocumentManagementService().getDocument(path);
 
       if (null == reportDesignDocument)
       {
-         DocumentInfo documentInfo = DmsUtils.createDocumentInfo(name + REPORT_DEFINITION_EXT);
+         DocumentInfo documentInfo = DmsUtils.createDocumentInfo(name);
 
          documentInfo.setOwner(getServiceFactory().getWorkflowService().getUser().getAccount());
-         documentInfo.setContentType(MimeTypesHelper.DEFAULT.getType());
+         MimeTypesHelper mimeTypesHelper = (MimeTypesHelper) RestControllerUtils.resolveSpringBean(
+               "ippMimeTypesHelper", servletContext);
+         
+         documentInfo.setContentType(mimeTypesHelper.detectMimeTypeI(name, "").getType());
 
          reportDesignDocument = getDocumentManagementService().createDocument(folder.getPath(), documentInfo,
                reportContent.getBytes(), null);
@@ -795,5 +827,105 @@ public class ReportingServiceBean
 
       return sc.prcoessSchedule(json);
 
+   }
+   
+   /**
+    * @param reportInstanceJson
+    * @return
+    */
+   public JsonObject saveReportInstance(JsonObject reportInstanceJson)
+   {
+      try
+      {
+         String location;
+         String participant;
+         String name;
+
+         // fetch report definition
+         JsonObject reportJson = GsonUtils.extractObject(reportInstanceJson, "definition");
+
+         // evaluate storage location
+         JsonObject storageJson = GsonUtils.extractObject(reportJson, "storage");
+         JsonObject metadataJson = GsonUtils.extractObject(reportInstanceJson, "metadata");
+
+         if (metadataJson != null)
+         {
+            location = GsonUtils.extractString(metadataJson, "location");
+            participant = GsonUtils.extractString(metadataJson, "participant");
+            name = GsonUtils.extractString(metadataJson, "name");
+         }
+         else
+         {
+            location = GsonUtils.extractString(storageJson, "location");
+            participant = GsonUtils.extractString(storageJson, "participant");
+            name = GsonUtils.extractString(reportJson, "name");
+         }
+
+         if(StringUtils.isEmpty(name)){
+            name = "Report";
+         }
+         
+         Folder folder = null;
+
+         String reportFilePath = "/" + name;
+
+         boolean isSaved = "saved".equals(reportJson.get("storage").getAsJsonObject().get("state").getAsString());
+         String basePath = "";
+
+         if (location.equals("publicFolder"))
+         {
+            if (isSaved)
+            {
+               basePath = PUBLIC_REPORT_INSTANCE_DIR + reportFilePath;
+            }
+            else
+            {
+               basePath = PUBLIC_REPORT_INSTANCE_ADHOC_DIR;
+            }
+         }
+         else if (location.equals("personalFolder"))
+         {
+            if (isSaved)
+            {
+               basePath = getUserDocumentFolderPath(USER_REPORT_INSTANCE_DIR) + reportFilePath;
+            }
+            else
+            {
+               basePath = getUserDocumentFolderPath(USER_REPORT_INSTANCE_ADHOC_DIR);
+            }
+         }
+         else if (location.equals("participantFolder"))
+         {
+            if (isSaved)
+            {
+               basePath = getParticipantDocumentFolderPath(PARTICIPANT_REPORT_INSTANCE_DIR, participant)
+                     + reportFilePath;
+            }
+            else
+            {
+               basePath = getParticipantDocumentFolderPath(PARTICIPANT_REPORT_INSTANCE_ADHOC_DIR, participant);
+            }
+         }
+
+         folder = findOrCreateFolder(basePath);
+
+         saveReportDocument(reportInstanceJson, folder, name + "-" + getTimeStampString() + REPORT_INSTANCE_EXT);
+
+         return reportInstanceJson;
+      }
+      finally
+      {
+         //TODO:
+      }
+   }
+   
+   /**
+    * TODO: Localize date, also consider time zone of user
+    * @return
+    */
+   public static String getTimeStampString()
+   {
+      SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd-hhmmss");
+      return DMSUtils.replaceAllSpecialChars(DATE_FORMAT.format(new Date()));
    }
 }

@@ -62,7 +62,7 @@ define(
 			 */
 			function ReportDefinitionController() {
 				this.reportingService = ReportingService.instance();
-
+				
 				/**
 				 * 
 				 */
@@ -75,6 +75,11 @@ define(
 				 */
 				ReportDefinitionController.prototype.initialize = function(
 						renderingController, name, path, isClone) {
+					
+					//set toolbar
+					this.showFavoriteBtn = true;
+					this.showSaveInstanceBtn = true;
+					this.showSaveBtn = true;
 					
 					this.renderingController = renderingController;
 					this.schedulingController = SchedulingController.create();
@@ -244,22 +249,7 @@ define(
 							});
 
 							//Participants Select
-							self.participantsSelect.empty();
-							var modelParticipants = self.reportingService.modelData.participants;
-							for (var n in modelParticipants) {
-								self.participantsSelect
-								.append("<option value='"
-									 + modelParticipants[n].id
-									 + "'>"
-									 + modelParticipants[n].name
-									 + "</option>");
-							}
-
-							self.participantsSelect.change(function () {
-								self.report.storage.location = "participantFolder";
-								self.report.storage.participant = self.participantsSelect.val();
-								self.updateView();
-							});
+							self.modelParticipants = self.reportingService.getModelParticipants();
 
 							//Participants Select
 							self.schedulingParticipantsSelect.empty();
@@ -360,7 +350,7 @@ define(
 									event, ui) {
 
 									if (ui.newPanel.selector === "#previewTab") {
-										self.renderingController.refreshPreview(self.report, self.parameters, self);
+										self.renderingController.refreshPreview(self.report, self, self.parameters);
 										self.resetParamFilters();
 										self.updateView();
 									}
@@ -455,7 +445,7 @@ define(
 				};
 				
 				ReportDefinitionController.prototype.refreshPreviewData = function() {
-					this.renderingController.refreshPreview(this.report, this.parameters, this);
+					this.renderingController.refreshPreview(this.report, this, this.parameters);
 				};
 				
 				ReportDefinitionController.prototype.initializeAutocompleteDir = function(angularModule) {
@@ -669,12 +659,7 @@ define(
 				 * 
 				 */
 				ReportDefinitionController.prototype.prepareParameters = function() {
-					this.parameters = [];
-					for (var int = 0; int < this.report.dataSet.filters.length; int++) {
-						if (this.report.dataSet.filters[int].metadata.parameterizable) {
-							this.parameters.push(angular.copy(this.report.dataSet.filters[int]));
-						}
-					}
+					this.parameters = this.reportHelper.prepareParameters(this.report.dataSet.filters);
 				}
 				
 				/**
@@ -1146,8 +1131,8 @@ define(
             	   var dimension = this.getDimension(this.parameters[parameter].dimension);
                   if (dimension.type.id == this.reportingService.metadata.timestampType.id)
                   {
-                	  parametersOfTypeTimestamp[dimension.id + ".from"] = dimension.id + "(" + this.getI18N("reporting.definitionView.from.label") + ")"; 
-                	  parametersOfTypeTimestamp[dimension.id + ".to"] = dimension.id + "(" + this.getI18N("reporting.definitionView.to.label") + ")";
+                	  parametersOfTypeTimestamp[dimension.id + ".from"] = dimension.id + " (" + this.getI18N("reporting.definitionView.from.label") + ")"; 
+                	  parametersOfTypeTimestamp[dimension.id + ".to"] = dimension.id + " (" + this.getI18N("reporting.definitionView.to.label") + ")";
                   }
                }
                return parametersOfTypeTimestamp;
@@ -1716,6 +1701,13 @@ define(
                var clonedReport = jQuery.extend(true, {}, report);               
                return clonedReport;
             };
+            
+            /**
+             * 
+             */
+            ReportDefinitionController.prototype.saveReportInstance = function() {
+            	this.renderingController.saveReportInstance(self.report, self.parameters);
+    		};
 		}
 
 		function replaceSpecialChars(id){

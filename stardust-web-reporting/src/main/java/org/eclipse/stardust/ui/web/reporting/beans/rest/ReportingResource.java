@@ -1,22 +1,25 @@
 package org.eclipse.stardust.ui.web.reporting.beans.rest;
 
 import java.util.Enumeration;
-import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
@@ -25,6 +28,10 @@ import org.eclipse.stardust.reporting.rt.util.JsonMarshaller;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.reporting.beans.spring.ReportingServiceBean;
 import org.eclipse.stardust.ui.web.reporting.common.LanguageUtil;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 
 /**
  *
@@ -226,6 +233,27 @@ public class ReportingResource
       }
    }
 
+   @PUT
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.TEXT_PLAIN)
+   @Path("report-instance")
+   public Response saveReportInstance(String postedData)
+   {
+      try
+      {
+         trace.debug("Save report instance: " + prettyPrinter.toJson(postedData));
+
+         JsonObject reportInstancejson = jsonIo.readJsonObject(postedData);
+
+         return Response.ok(reportingService.saveReportInstance(reportInstancejson).toString(), MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
+
+         return Response.serverError().build();
+      }
+   }
    @PUT
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.TEXT_PLAIN)

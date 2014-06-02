@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<link type="text/css" rel="stylesheet"
+	href="../../../common/css/iPopupDialogStyle.css">
+</link>
+<link href="../../public/css/bpm-reporting.css" rel="stylesheet"
+	type="text/css">
+
+<script data-require="require.js@*"
+	data-main="../../js/ReportStoragePopupMain" data-semver="2.1.4"
+	src="../../public/js/libs/require/2.0.5/require.js"></script>
+</head>
+
+<body ng-controller="ReportStorageController"
+	style="height: 100%; width: 100%; overflow: hidden; margin: 0px;">
+	<div id="titleBar" class="iPopupDialogTitleBar">
+		<span class="iPopupDialogTitleText">Save
+				Report Instance
+		</span> <input type="button" title="Close" ng-click="closePopup()"
+			class="iPopupDialogCloseControl" />
+	</div>
+	<div class="iPopupDialogContentArea">
+		<div class="iPopupDialogSpacerDiv"></div>
+		<td class="iPopupDialogContentTabCol2"><span id="contentText"
+			class="iPopupDialogContentText"></span></td> <label>Please specify
+			the name and storage location for this report instance.</label>
+		<table>
+			<tr>
+				<td valign="top">
+					<table cellpadding="0" cellspacing="0" class="formTable">
+						<tr>
+							<td style="padding:5px 0px 5px 0px"><label>Report Name: </label></td>
+						</tr>
+						<tr>
+							<td><input type="text" ng-model="reportMetada.name"
+								style="width: 250px;"></input></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td valign="top" style="padding-top:5px"><label>Storage Location: </label>
+					<table>
+						<tr>
+							<td><input type="radio" ng-model="reportMetada.location"
+								value="personalFolder" /></td>
+							<td colspan="2">Personal Report</td>
+						</tr>
+						<tr>
+							<td><input type="radio" ng-model="reportMetada.location"
+								value="publicFolder" /></td>
+							<td colspan="2">Globally Available</td>
+						</tr>
+						<tr>
+							<td><input type="radio" ng-model="reportMetada.location"
+								value="participantFolder" /></td>
+							<td>Report for Role/Organization</td>
+							<td><select ng-model="reportMetada.participant"
+								ng-change="reportMetada.location = 'participantFolder'"
+								ng-options="key as value for (key, value) in modelParticipants"><option></option>
+							</select></td>
+						</tr>
+					</table></td>
+			</tr>
+		</table>
+	</div>
+	<div id="controlsBar" class="iPopupDialogControlsArea">
+		<input type="button" value="Save" class="iPopupDialogControlButton"
+			ng-click="saveReportInstance()" /> <input type="button"
+			value="Cancel" onClick="closePopup();"
+			class="iPopupDialogControlButton" />
+	</div>
+</body>
+
+
+</html>
