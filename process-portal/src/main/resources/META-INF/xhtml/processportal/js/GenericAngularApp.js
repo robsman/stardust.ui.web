@@ -101,15 +101,17 @@ if (!window.bpm.portal.GenericAngularApp) {
 							var validatorFunc = function(value, toUI) {
 								var success = false;
 								var val;
-								
+
 								if (value == undefined || value == null || value == "") {
 									success = true;
 								} else {
 									try {
+										var _value = "" + value; // Convert to String. Below code expects it to be String 
+
 										if (validate === "byte" || validate === "short" || validate === "integer" || validate === "long") {
-											val = new Number(value);
+											val = new Number(_value);
 											if (!isNaN(val)) {
-												if (value.indexOf(".") >= 0) {
+												if (_value.indexOf(".") >= 0) {
 													// Decimal no. Invalid
 												} else if (validate === "byte") {
 													if (val >= -128 && val <= 127) {
@@ -130,7 +132,7 @@ if (!window.bpm.portal.GenericAngularApp) {
 												}
 											}
 										} else if (validate === "duration") {
-											var parts = value.split(":");
+											var parts = _value.split(":");
 											if (parts.length == 6) {
 												success = true;
 												for(var i in parts) {
