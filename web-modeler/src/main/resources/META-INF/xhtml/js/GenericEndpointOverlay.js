@@ -411,9 +411,10 @@ define(
                                           + self.getConsumerInboundConverterOption());
                      }
                      else {
-                     self.view.submitModelElementAttributeChange(
-                           "carnot:engine:camel::consumerInboundConversion",
-                           self.consumerInboundConversion.val());
+                        self.hideConsumerInboundConverterOption();
+                        self.view.submitModelElementAttributeChange(
+                              "carnot:engine:camel::consumerInboundConversion",
+                              self.consumerInboundConversion.val());
                      }
                   }
                   else {
