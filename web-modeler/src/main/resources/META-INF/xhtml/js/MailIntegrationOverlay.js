@@ -944,6 +944,8 @@ define(
 						markup += this.createResponseOptionString();
 					}
                markup=markup.replace(new RegExp("(&#39;)", 'g'), "\\'");
+               markup=markup.replace(new RegExp("(&amp;)", 'g'), "&");
+               markup=markup.replace(new RegExp("(&quot;)", 'g'), "\"");
                route+="<![CDATA[";
 					route += "      response = '"
 							+ markup.replace(new RegExp("\n", 'g'), " ")
