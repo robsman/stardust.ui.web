@@ -47,6 +47,7 @@ public class ReportViewer implements IDocumentViewer, ViewEventHandler
 
    private String reportPath = "";
    private String reportName = "";
+   private String reportId;
 
    /*
     * (non-Javadoc)
@@ -64,6 +65,7 @@ public class ReportViewer implements IDocumentViewer, ViewEventHandler
          JCRDocument jcrDocument = (JCRDocument) documentContentInfo;
          reportName = jcrDocument.getName();
          reportPath = jcrDocument.getDocument().getPath();
+         reportId = jcrDocument.getId();
       }
       else
       {
@@ -195,7 +197,9 @@ public class ReportViewer implements IDocumentViewer, ViewEventHandler
 
       event.getView().getViewParams().put("name", reportName);
       event.getView().getViewParams().put("path", reportPath);
-      if (MimeTypesHelper.detectMimeType(reportName, "").equals(MimeTypesHelper.BPM_RPT))
+      event.getView().getViewParams().put("documentId", reportId);
+       
+      if (MimeTypesHelper.detectMimeType(reportName, "").equals(MimeTypesHelper.BPM_RPT) && !"reRun".equals(event.getView().getViewParams().get("viewMode")))
       {
          event.getView().getViewParams().put("viewMode", "instance");
       }

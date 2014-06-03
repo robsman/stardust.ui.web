@@ -239,7 +239,7 @@ public class GsonUtils
    public static JsonObject extractObject(JsonObject json, String memberName)
    {
       JsonElement member = json.get(memberName);
-      return (null != member) ? member.getAsJsonObject() : null;
+      return (null != member && !member.isJsonNull()) ? member.getAsJsonObject() : null;
    }
 
    /**

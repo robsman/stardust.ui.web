@@ -72,6 +72,13 @@ define(
 				/**
 				 * 
 				 */
+				ReportRenderingController.prototype.setReportData = function(reportData) {
+					this.reportData = reportData;
+				}
+				
+				/**
+				 * 
+				 */
 				ReportRenderingController.prototype.getPrimaryObject = function() {
 					return this.reportingService.metadata.objects[this.report.dataSet.primaryObject];
 				};
@@ -101,8 +108,7 @@ define(
 					if (this.report.layout.type == 'table') {
 						this.createTable();
 					} else if (this.report.layout.type == 'document') {
-						self.reportingService
-								.retrieveData(self.report, self.parameters)
+						self.getReportData(self.report, self.parameters)
 								.done(
 										function(data) {
 											console.log("Data for Document");
@@ -363,8 +369,7 @@ define(
 				 * 
 				 */
 				ReportRenderingController.prototype.createChart = function() {
-					var deferred = this.reportingService
-							.retrieveData(this.report, this.parameters);
+					var deferred = this.getReportData(this.report, this.parameters);
 					var self = this;
 
 					document.body.style.cursor = "wait";
@@ -540,8 +545,7 @@ define(
 
 					document.body.style.cursor = "wait";
 					
-					var deferred = this.reportingService
-							.retrieveData(this.report, this.parameters);
+					var deferred = this.getReportData(this.report, this.parameters);
 					var self = this;
 
 					deferred
@@ -646,40 +650,17 @@ define(
 				};
 				
 				
-	           /**
-             *   This function returns Preview Data
-             */
-            ReportRenderingController.prototype.getPreviewData = function(report) {
-               if(report){
-            	   this.report = report;
-               }	
-               var deferred = jQuery.Deferred();
-               var self = this;
-               
-               self.reportingService.retrieveData(self.report, self.parameters)
-               .done(
-                     function(data) {
-                        var rows = data.recordSet;
-                        deferred.resolve(data);
-                     }).fail(function(data) {
-                  deferred.reject(data);
-               });
-               
-               return deferred.promise();
-               
-            };
-
             /**
              *  Use this method to retrieve to report data from service
              */
-            ReportRenderingController.prototype.getReportData = function(report) {
-                if(report){
-             	   this.report = report;
-                }	
+            ReportRenderingController.prototype.getReportData = function(report, parameters) {
                 var deferred = jQuery.Deferred();
+
+                if(this.reportData){
+                    deferred.resolve(this.reportData);
+                }
                 var self = this;
-                
-                self.reportingService.retrieveData(self.report, self.parameters)
+                self.reportingService.retrieveData(report, parameters)
                 .done(
                       function(data) {
                         deferred.resolve(data);
@@ -704,7 +685,7 @@ define(
             	
 				var self = this;
 				if(this.report.dataSet.type === 'seriesGroup' && this.report.layout.subType == this.reportingService.metadata.layoutSubTypes.table.id){
-						this.getPreviewData(self.report).done(
+						this.getReportData(self.report, self.parameters).done(
 								function(data) {
 									self.refreshSeriesTable(data, scopeController);
 								}).fail(function(err) {
@@ -1154,7 +1135,7 @@ define(
          ReportRenderingController.prototype.refreshPreviewData = function(scopeController) {
             var self = this;	
             
-        	   this.getPreviewData().done(
+        	   this.getReportData(this.report, this.parameters).done(
      		function(data) {
      			// Format data before displaying the Results
              	  scopeController.rows = self.formatPreviewData(data.rows);

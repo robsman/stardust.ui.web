@@ -764,21 +764,11 @@ define(
 				};
 
 				/**
-				 * used only in case of report instance viewer
-				 */
-				ReportingService.prototype.setReportData = function(reportData) {
-					this.reportData = reportData;
-				}
-				
-				/**
 				 * 
 				 */
 				ReportingService.prototype.retrieveData = function(report, parameters) {
 					var deferred = jQuery.Deferred();
-					if(this.reportData){ //used only in case of report instance viewer
-						deferred.resolve(this.reportData);
-					}
-					else if(! (typeof report_data === 'undefined')){//email based report viewer
+					if(! (typeof report_data === 'undefined')){//email based report viewer
 						deferred.resolve(report_data);
 					}else{
 						if (this.mode === "test") {

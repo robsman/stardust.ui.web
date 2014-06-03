@@ -90,9 +90,12 @@ require(
 				TableTools, CkEditor, ace) {
 					jQuery(document).ready(
 						function() {
-							ReportViewerController.create(angularjs, jQuery
-									.url(window.location.search).param("name"),
-									jQuery.url(window.location.search)
-											.param("path"),jQuery.url(window.location.search).param("viewMode"), {});
+							ReportViewerController.create(angularjs, getParam("name"),
+									getParam("path"), getParam("documentId"), getParam("viewMode"), {});
 						});
+						
+						function getParam(name) {
+							return jQuery.url(window.location.search).param(name);
+						}
+						
 		});

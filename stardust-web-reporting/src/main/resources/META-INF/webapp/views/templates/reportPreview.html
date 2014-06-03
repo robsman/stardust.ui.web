@@ -1,6 +1,6 @@
 <div>
 	<div
-		ng-show="report.dataSet.type != 'processHistory' && !instance && hasParameters()">
+		ng-show="report.dataSet.type != 'processHistory' && !isInstance() && hasParameters()">
 		<div class="heading">{{getI18N('reporting.definitionView.parameters.title')}}</div>
 		<div>
 			<report-filter controller="reportParameterController"></report-filter>

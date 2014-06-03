@@ -24,9 +24,10 @@ define(
 				ReportRenderingController, ReportFilterController, ReportHelper) {
 			var angularCompile;
 			return {
-				create : function(angular, name, path, viewMode, options) {
+				create : function(angular, name, path, documentId, viewMode, options) {
 					var controller = new ReportViewerController();
-
+					controller.documentId =  documentId;
+					
 					var angularAdapter = new bpm.portal.AngularAdapter(null);
 
 					// initialize controller and services
@@ -72,10 +73,21 @@ define(
 				ReportViewerController.prototype.initialize = function(
 						renderingController, name, path, viewMode) {
 
-					if (viewMode == "instance") {
+					this.path = path;
+					this.viewMode = viewMode;
+					
+					//set toolbar - report Definition Viewer
+					this.showFavoriteBtn = true;
+					this.showSaveInstanceBtn = true;
+					this.showPopoutBtn = true;
+					
+					if (this.isInstance()) {
 						this.instance = true;
-					} else {
+						this.showRerunBtn = true;
+						this.showSaveInstanceBtn = false;
+					} else if(this.isReRun()) {
 						this.instance = false;
+						this.showFavoriteBtn = false;
 					}
 
 					var self = this;
@@ -84,7 +96,6 @@ define(
 							.create(this.reportingService);
 
 					// fetch report definition
-
 					jQuery.when(self.reportingService.refreshPreferenceData(),
 							self.reportingService.refreshModelData(),
 							self.loadOrCreateReportDefinition(name, path))
@@ -113,11 +124,12 @@ define(
 								.retrieveReportDefinition(path)
 								.done(
 										function(report) {
-											if (self.instance) {
-												self.report = report.report_definition;
-												self.reportingService
-														.setReportData(report.report_data);
-											} else {
+											if (self.isInstance()) {
+												self.report = report.definition;
+												self.renderingController.setReportData(report.data);
+											} else if(self.isReRun()){
+												self.report = report.definition;
+											} else{
 												self.report = report;
 											}
 
@@ -159,13 +171,40 @@ define(
 										};
 									});
 				};
+				
+				/**
+				 * 
+				 */
+				ReportViewerController.prototype.reRun = function() {
+					// open new instance and get data there
 
+					var msg = {};
+					msg.type = "OpenView";
+					msg.data = {};
+					msg.data.viewId = "documentView";
+					msg.data.viewKey = "documentOID=" + this.documentId
+							+ "_instance";
+					msg.data.viewKey = window.btoa(msg.data.viewKey);
+
+					msg.data.params = {};
+					msg.data.params.documentId = this.documentId;
+					msg.data.params.viewMode = "reRun";
+					parent.postMessage(JSON.stringify(msg), "*");
+				};
+
+				 /**
+					 * 
+					 */
+				ReportViewerController.prototype.saveReportInstance = function() {
+					this.report.storage.state = "created" //TODO: need to find some other way
+					this.renderingController.saveReportInstance(this.report, this.parameters);
+				};
+				
 				/**
 				 * 
 				 */
 				ReportViewerController.prototype.refreshPreviewData = function() {
-					this.renderingController.refreshPreview(this.report, this,
-							this.parameters);
+					this.renderingController.refreshPreview(this.report, this, this.parameters);
 				};
 
 				/**
@@ -243,6 +282,36 @@ define(
 										};
 									});
 				};
-			}
+
+				/**
+				 * 
+				 */
+				ReportViewerController.prototype.isInstance = function() {
+					if (this.viewMode == "instance") {
+						return true;
+					}
+					return false;
+				};
+
+				/**
+				 * 
+				 */
+				ReportViewerController.prototype.isReRun = function() {
+					if (this.viewMode == "reRun") {
+						return true;
+					}
+					return false;
+				};
+
+				/**
+				 * 
+				 */
+				ReportViewerController.prototype.isReportDefinition = function() {
+					if (!isInstance() && !isReRun()) {
+						return true;
+					}
+					return false;
+				};
+			};
 
 		});
