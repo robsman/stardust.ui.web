@@ -13,7 +13,6 @@ import org.eclipse.stardust.model.xpdl.carnot.CarnotWorkflowModelFactory;
 import org.eclipse.stardust.modeling.validation.IModelElementValidator;
 import org.eclipse.stardust.modeling.validation.ValidatorRegistry;
 import org.eclipse.stardust.modeling.validation.impl.ProcessInterfaceValidator;
-import org.eclipse.stardust.ui.web.validation.ProxyReferenceValidator;
 import org.junit.Test;
 
 public class XpdlValidationTest
