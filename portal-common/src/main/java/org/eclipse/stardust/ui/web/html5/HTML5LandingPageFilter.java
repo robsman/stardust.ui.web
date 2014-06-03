@@ -47,6 +47,8 @@ public class HTML5LandingPageFilter implements Filter
 
       if(!response.isCommitted())
       {
+         // This is required in HTTP header for IE9
+         response.setHeader("X-UA-Compatible", "IE=edge,chrome=1");
          request.getRequestDispatcher(landingPage).forward(request, response);
          return;
       }
