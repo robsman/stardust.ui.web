@@ -347,7 +347,11 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 					} else {
 						elem.attributes['type'] = "text";
 					}
-					elem.attributes['class'] = "panel-input";
+
+					if (!elem.attributes['class']) { 
+						elem.attributes['class'] = "panel-input";
+					}
+
 					var valInfo = this.getValidationInfo(path);
 					if (valInfo.type) {
 						validations.push({type: valInfo.type, value: valInfo.value, 

@@ -200,9 +200,14 @@ body, table {
 	border: none;
 }
 
-.panel-select .panel-checkbox {
+.panel-select {
 	text-align: left;
 	padding: 3px;
+}
+
+.panel-checkbox {
+	text-align: left;
+	margin-left: 0px;
 }
 
 .panel-output {
