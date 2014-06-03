@@ -22,40 +22,40 @@ define(
 				}
 			};
 
-			// Toolbar groups configuration.
-
-			var editorToolbarGroups = [ {
-				name : 'clipboard',
-				groups : [ 'clipboard', 'undo' ]
-			}, {
-				name : 'editing',
-				groups : [ 'find', 'selection', 'spellchecker' ]
-			}, {
-				name : 'links'
-			}, {
-				name : 'insert'
-			}, {
-				name : 'forms'
-			}, {
-				name : 'tools'
-			}, {
-				name : 'document',
-				groups : [ 'mode', 'document', 'doctools' ]
-			}, {
-				name : 'others'
-			}, '/', {
-				name : 'basicstyles',
-				groups : [ 'basicstyles', 'cleanup' ]
-			}, {
-				name : 'paragraph',
-				groups : [ 'list', 'indent', 'blocks', 'align', 'bidi' ]
-			}, {
-				name : 'styles'
-			}, {
-				name : 'colors'
-			} ];
-
-			function MailIntegrationOverlay() {
+         function MailIntegrationOverlay() {
+                  // Toolbar groups configuration.
+            MailIntegrationOverlay.prototype.getToolbarConfiguration= function(view){
+               return [ {
+                  name : 'clipboard',
+                  groups : [ 'clipboard', 'undo' ]
+               }, {
+                  name : 'editing',
+                  groups : [ 'find', 'selection', 'spellchecker' ]
+               }, {
+                  name : 'links'
+               }, {
+                  name : 'insert'
+               }, {
+                  name : 'forms'
+               }, {
+                  name : 'tools'
+               }, {
+                  name : 'document',
+                  groups : [ 'mode', 'document', 'doctools' ]
+               }, {
+                  name : 'others'
+               }, '/', {
+                  name : 'basicstyles',
+                  groups : [ 'basicstyles', 'cleanup' ]
+               }, {
+                  name : 'paragraph',
+                  groups : [ 'list', 'indent', 'blocks', 'align', 'bidi' ]
+               }, {
+                  name : 'styles'
+               }, {
+                  name : 'colors'
+               } ];
+            }
 
 				MailIntegrationOverlay.prototype.initialize = function(view) {
 
@@ -103,7 +103,7 @@ define(
 					this.responseHttpUrlInput = m_utils.jQuerySelect("#responseTab #responseHttpUrlInput");
 
 					CKEDITOR.replace(this.mailTemplateEditor.id, {
-						toolbarGroups : editorToolbarGroups
+                  toolbarGroups : this.getToolbarConfiguration()
 					});
 
 					this.resetButton = m_utils.jQuerySelect("#testTab #resetButton");
