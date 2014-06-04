@@ -1063,6 +1063,82 @@ define(
 				};
 				
 				/**
+				 * 
+				 */
+				ReportingService.prototype.isFavoriteReport = function(id) {
+					return this.preferenceData.favoriteReports.indexOf(id) > -1;
+				};
+				
+				/**
+				 * 
+				 */
+				ReportingService.prototype.addToFavorites = function(name, id) {
+					var deferred = jQuery.Deferred();
+					var self = this;
+
+					self.preferenceData.favoriteReports.push(id);
+					
+					var reportMetadata = {
+						name : name,
+						id : id
+					};
+					
+					jQuery
+							.ajax(
+									{
+										type : "PUT",
+										beforeSend : function(request) {
+											request
+													.setRequestHeader(
+															"Authentication",
+															self
+																	.getBasicAuthenticationHeader());
+										},
+										url : self.getRootUrl()
+												+ "/services/rest/bpm-reporting/favorite",
+										contentType : "application/json",
+										data : JSON.stringify(reportMetadata)
+									}).done(function() {
+									
+								deferred.resolve();
+							}).fail(function(response) {
+								deferred.reject();
+							});
+
+					return deferred.promise();
+				};
+				
+				
+				ReportingService.prototype.removeFromFavorites = function(id) {
+					var deferred = jQuery.Deferred();
+					var self = this;
+
+					var index = self.preferenceData.favoriteReports.indexOf(id);
+					self.preferenceData.favoriteReports.splice(index, 1);
+					
+					jQuery
+							.ajax(
+									{
+										type : "DELETE",
+										beforeSend : function(request) {
+											request
+													.setRequestHeader(
+															"Authentication",
+															self
+																	.getBasicAuthenticationHeader());
+										},
+										url : self.getRootUrl()
+												+ "/services/rest/bpm-reporting/favorite?reportId=" + window.btoa(id),
+										contentType : "application/json",
+									}).done(function() {
+									deferred.resolve();
+							}).fail(function(response) {
+								deferred.reject();
+							});
+
+					return deferred.promise();
+				};
+				/**
 				 * Saves all cached Report Definitions.
 				 */
 				ReportingService.prototype.saveReportDefinitions = function() {

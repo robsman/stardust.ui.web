@@ -8,7 +8,7 @@
  * Contributors:
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
-package org.eclipse.stardust.ui.web.viewscommon.utils;
+package org.eclipse.stardust.ui.web.html5;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
@@ -19,9 +19,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
- * JSF managed bean utilities
  * 
- * @author rsauer
  * @author Yogesh.Manware
  * 
  */
@@ -31,7 +29,7 @@ public abstract class ManagedBeanUtils
    {
       return getManagedBean(FacesContext.getCurrentInstance(), beanId);
    }
-   
+
    /**
     * 
     * @param context
@@ -42,20 +40,20 @@ public abstract class ManagedBeanUtils
    {
       Object bean = null;
       if (FacesContext.getCurrentInstance() != null)
-   {
+      {
          bean = context.getApplication().getVariableResolver().resolveVariable(context, beanId);
-   }
+      }
       else
-   {
+      {
          ServletContext servletContext = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
                .getRequest().getSession().getServletContext();
          ApplicationContext applicationContext = WebApplicationContextUtils
                .getRequiredWebApplicationContext(servletContext);
          bean = applicationContext.getBean(beanId);
-   }
+      }
       return bean;
    }
-   
+
    private ManagedBeanUtils()
    {}
-   }
+}

@@ -56,7 +56,6 @@ import org.eclipse.stardust.reporting.rt.service.ReportingService;
 import org.eclipse.stardust.reporting.rt.util.JsonMarshaller;
 import org.eclipse.stardust.ui.web.common.spi.user.User;
 import org.eclipse.stardust.ui.web.common.spi.user.UserProvider;
-import org.eclipse.stardust.ui.web.common.util.DateUtils;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.html5.rest.RestControllerUtils;
 import org.eclipse.stardust.ui.web.reporting.beans.spring.portal.CriticalityConfigurationService;
@@ -70,6 +69,7 @@ import org.eclipse.stardust.ui.web.reporting.scheduling.SchedulingFactory;
 import org.eclipse.stardust.ui.web.reporting.scheduling.SchedulingRecurrence;
 import org.eclipse.stardust.ui.web.reporting.ui.UiHelper;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
@@ -123,11 +123,6 @@ public class ReportingServiceBean
    @Resource
    private SearchHandlerChain searchHandlerChain;
 
-   /**
-    * Stores uncommitted changes.
-    */
-   private Map<String, JsonObject> reportDefinitionJsons;
-
    //a bean with name "modelService" already exists in the spring context
    //see org.eclipse.stardust.ui.web.modeler.service.ModelService
    //to not accidently inject this bean(for example by naming the property
@@ -154,7 +149,6 @@ public class ReportingServiceBean
    public ReportingServiceBean()
    {
       jsonMarshaller = new JsonMarshaller();
-      reportDefinitionJsons = new HashMap<String, JsonObject>();
    }
 
 
@@ -315,8 +309,18 @@ public class ReportingServiceBean
       criticalityList.add(cat);
       preferencesJson.add("criticality", gson.toJsonTree(criticalityList));
 
+      //Favorite Reports
+      ArrayList<String> favoriteReportList = new ArrayList<String>();
+      HashMap<String, String> favoriteReportsMap = RepositoryUtility.getFavoriteReports();
+      for (Entry<String, String> docIdName : favoriteReportsMap.entrySet())
+      {
+         favoriteReportList.add(docIdName.getKey());
+      }
+      
+      preferencesJson.add("favoriteReports", gson.toJsonTree(favoriteReportList));
+      
       //add other preferences here
-
+      
       return preferencesJson;
    }
 
@@ -377,16 +381,9 @@ public class ReportingServiceBean
          }
 
          // Mark Report Definition as saved
-
          reportJson.get("storage").getAsJsonObject().addProperty("state", "saved");
 
          saveReportDocument(reportJson, folder, name + REPORT_DEFINITION_EXT);
-
-         // Add to cache
-
-         reportDefinitionJsons.put(folder.getPath() + "/" + name, reportJson);
-
-         trace.debug(reportDefinitionJsons);
 
          return reportJson;
       }
@@ -416,10 +413,7 @@ public class ReportingServiceBean
       try
       {
          // Replace in cache
-
-         JsonObject reportJson = reportDefinitionJsons.remove(path);
-
-         reportDefinitionJsons.put(renameReportDefinitionDocument(path, name), reportJson);
+         renameReportDefinitionDocument(path, name);
       }
       finally
       {
@@ -427,28 +421,28 @@ public class ReportingServiceBean
    }
 
    /**
-    *
+    * 
     * @param json
     */
    public JsonObject loadReportDefinition(String path)
    {
-      if (reportDefinitionJsons.get(path) != null)
+      Document document = getDocumentManagementService().getDocument(path);
+
+      if (document != null)
       {
-         return reportDefinitionJsons.get(path);
+         JsonObject reportDefinitionJson = jsonMarshaller.readJsonObject(new String(getDocumentManagementService().retrieveDocumentContent(
+               document.getId())));
+         
+         //add report specific meta-data
+         JsonObject metaDataObj = new JsonObject(); 
+         metaDataObj.addProperty("documentId", document.getId());
+         reportDefinitionJson.add("metadata", metaDataObj);
+         
+         return reportDefinitionJson;
       }
       else
       {
-         Document document = getDocumentManagementService().getDocument(path);
-
-         if (document != null)
-         {
-            return jsonMarshaller.readJsonObject(new String(getDocumentManagementService().retrieveDocumentContent(
-                  document.getId())));
-         }
-         else
-         {
-            throw new ObjectNotFoundException("Document " + path + " does not exist.");
-         }
+         throw new ObjectNotFoundException("Document " + path + " does not exist.");
       }
    }
 
@@ -917,6 +911,25 @@ public class ReportingServiceBean
       {
          //TODO:
       }
+   }
+   
+   /**
+    * @param reportMetadata
+    * @return
+    */
+   public void addToFavorites(JsonObject reportMetadata)
+   {
+      RepositoryUtility.addToFavorite(GsonUtils.extractString(reportMetadata, "name"),
+            GsonUtils.extractString(reportMetadata, "id"));
+   }
+
+   /**
+    * @param reportId
+    * @return
+    */
+   public void removeFromFavorites(String reportId)
+   {
+      RepositoryUtility.removeFromFavorite(reportId);
    }
    
    /**

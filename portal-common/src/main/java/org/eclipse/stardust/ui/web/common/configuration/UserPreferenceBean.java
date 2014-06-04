@@ -13,7 +13,8 @@ package org.eclipse.stardust.ui.web.common.configuration;
 import java.io.Serializable;
 
 import org.eclipse.stardust.ui.web.common.spi.preference.PreferenceProvider;
-import org.eclipse.stardust.ui.web.common.util.FacesUtils;
+import org.eclipse.stardust.ui.web.html5.ManagedBeanUtils;
+import org.eclipse.stardust.ui.web.html5.rest.RestControllerUtils;
 
 
 
@@ -35,7 +36,7 @@ public class UserPreferenceBean implements Serializable
     */
    public static UserPreferenceBean getInstance()
    {
-      return (UserPreferenceBean)FacesUtils.getBeanFromContext(BEAN_ID);
+      return (UserPreferenceBean) ManagedBeanUtils.getManagedBean(BEAN_ID);
    }
 
    public PreferenceProvider getPreferenceProvider()

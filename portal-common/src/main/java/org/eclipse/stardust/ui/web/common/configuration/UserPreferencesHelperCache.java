@@ -14,7 +14,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.stardust.ui.web.common.util.FacesUtils;
+import org.eclipse.stardust.ui.web.html5.ManagedBeanUtils;
 
 
 /**
@@ -34,7 +34,7 @@ public class UserPreferencesHelperCache implements Serializable
     */
    public static UserPreferencesHelperCache getInstance()
    {
-      return (UserPreferencesHelperCache)FacesUtils.getBeanFromContext(BEAN_NAME);
+      return (UserPreferencesHelperCache) ManagedBeanUtils.getManagedBean(BEAN_NAME);
    }
    
    /**

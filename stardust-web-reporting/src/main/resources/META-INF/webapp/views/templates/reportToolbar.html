@@ -16,11 +16,11 @@
 														alt=""
 														src="{{reportingService.getRootUrl()}}/plugins/bpm-reporting/public/css/images/refresh.png"
 														title={{getI18N('reporting.definitionView.reRun.label')}}></a></td>
-												<td ng-show="showFavoriteBtn"><a
+												<td ng-show="showFavoriteBtn && !isFavorite()" ><a
 													ng-click="addToFavorites()"><img alt=""
 														src="{{reportingService.getRootUrl()}}/plugins/bpm-reporting/public/css/images/report-add-favorite.png"
 														title={{getI18N('reporting.definitionView.addToFavorite.label')}}></a></td>
-												<td ng-show="showFavoriteBtn"><a
+												<td ng-show="showFavoriteBtn && isFavorite()"><a
 													ng-click="removeFromFavorites()"><img alt=""
 														src="{{reportingService.getRootUrl()}}/plugins/bpm-reporting/public/css/images/report-remove-favorite.png"
 														title={{getI18N('reporting.definitionView.removeFromFavorite.label')}}></a></td>

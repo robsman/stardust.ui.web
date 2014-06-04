@@ -21,6 +21,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.jackrabbit.util.Base64;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
@@ -254,6 +255,50 @@ public class ReportingResource
          return Response.serverError().build();
       }
    }
+   
+   @PUT
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.TEXT_PLAIN)
+   @Path("favorite")
+   public Response addToFavorites(String postedData)
+   {
+      try
+      {
+         trace.debug("Add to Favorites: " + prettyPrinter.toJson(postedData));
+
+         JsonObject reportInstancejson = jsonIo.readJsonObject(postedData);
+
+         reportingService.addToFavorites(reportInstancejson);
+
+         return Response.ok("OK", MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
+
+         return Response.serverError().build();
+      }
+   }
+
+   @DELETE
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.TEXT_PLAIN)
+   @Path("favorite")
+   public Response removeFromFavorites(@QueryParam("reportId") String reportId)
+   {
+      try
+      {
+         reportingService.removeFromFavorites(Base64.decode(reportId));
+         return Response.ok("OK", MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
+
+         return Response.serverError().build();
+      }
+   }   
+   
    @PUT
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.TEXT_PLAIN)

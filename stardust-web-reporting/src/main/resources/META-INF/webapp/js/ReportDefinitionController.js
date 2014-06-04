@@ -77,7 +77,6 @@ define(
 						renderingController, name, path, isClone) {
 					
 					//set toolbar
-					this.showFavoriteBtn = true;
 					this.showSaveInstanceBtn = true;
 					this.showSaveBtn = true;
 					
@@ -399,6 +398,12 @@ define(
 			
 								self.factSelect.val(self.report.dataSet.fact);
 								
+								if (self.report.storage.state == "saved") {
+									self.showFavoriteBtn = true;
+								} else {
+									self.showFavoriteBtn = false;
+								}
+
 								self.updateView();
 
 								document.body.style.cursor = "default";
@@ -1708,6 +1713,38 @@ define(
             ReportDefinitionController.prototype.saveReportInstance = function() {
             	this.renderingController.saveReportInstance(self.report, self.parameters);
     		};
+    		
+    		/**
+             * 
+             */
+            ReportDefinitionController.prototype.addToFavorites = function() {
+            	var self = this;
+            	this.reportingService.addToFavorites(this.report.name, this.report.metadata.documentId).done(function(){
+            		self.updateView();	
+            	});
+    		};
+    		
+    		/**
+    		 * 
+    		 */
+    		ReportDefinitionController.prototype.removeFromFavorites = function() {
+    			var self = this;
+            	this.reportingService.removeFromFavorites(this.report.metadata.documentId).done(function(){
+            		self.updateView();
+            	});
+    		};
+    		
+    		/**
+    		 * 
+    		 */
+    		ReportDefinitionController.prototype.isFavorite = function() {
+				if (this.report && this.report.metadata
+						&& this.report.metadata.documentId) {
+					return this.reportingService
+							.isFavoriteReport(this.report.metadata.documentId);
+				}
+				return false;
+			};
 		}
 
 		function replaceSpecialChars(id){

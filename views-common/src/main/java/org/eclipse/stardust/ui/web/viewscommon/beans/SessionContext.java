@@ -116,6 +116,11 @@ public final class SessionContext implements Serializable
    public static SessionContext findSessionContext(FacesContext context)
    {
       Object val = null;
+      if (context == null)
+      {
+         val = ManagedBeanUtils.getManagedBean(BEAN_ID);
+      }
+      
       try
       {
          ValueBinding valueBinding = createValueBinding(context, BEAN_ID_EXPRESSION);
@@ -123,6 +128,11 @@ public final class SessionContext implements Serializable
          if (val == null || !(val instanceof SessionContext))
          {
             val = new SessionContext();
+            valueBinding.setValue(context, val);
+         }
+         
+         if (valueBinding == null)
+         {
             valueBinding.setValue(context, val);
          }
       }
