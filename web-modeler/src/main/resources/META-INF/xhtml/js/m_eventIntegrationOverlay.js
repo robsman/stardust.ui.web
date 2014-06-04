@@ -354,6 +354,27 @@ define(
 								}
 							});
 				};
+								
+				EventIntegrationOverlay.prototype.validateCsvDelimiter = function(csvDelimiterInput) {
+				    
+	             var delimiter = csvDelimiterInput.val();
+	             csvDelimiterInput.removeClass("error");
+	             
+	             if(delimiter.length == 0)
+	             {
+	                csvDelimiterInput.addClass("error");
+	                this.page.propertiesPanel.errorMessages
+	                .push("No value has been specified for CSV Delimiter.");
+	             }
+	             else if(delimiter.indexOf("\"") != -1 || (delimiter.indexOf("&") != -1 && delimiter.length == 1)
+	                       || delimiter.indexOf("'") != -1 || delimiter.indexOf("\\n") != -1
+	                       || delimiter.indexOf("\\r") != -1 )
+	             {
+	                csvDelimiterInput.addClass("error");
+	                this.page.propertiesPanel.errorMessages
+	                .push("CSV Delimiter is not valid.");
+	             }
+	          };
 			}
 
 			/**

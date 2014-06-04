@@ -137,14 +137,15 @@ define(
                            panel : this
                         },
                         function(event) {
-                           event.data.panel.hideConverterOptions(event.data.panel);
+                           event.data.panel.showConverterOptions(event.data.panel);
                         
                      if (!event.data.panel.validate()) {
                         return;
                      }
 
                      if (event.data.panel.producerInboundConversion.val() == m_constants.TO_BE_DEFINED) {
-                                    event.data.panel.submitChanges({
+                        event.data.panel.hideConverterOptions(event.data.panel);            
+                        event.data.panel.submitChanges({
                      modelElement : {
                         attributes : {
                            "carnot:engine:camel::producerInboundConversion" : null
@@ -162,8 +163,7 @@ define(
                         }
                      }
                   });
-                  event.data.panel.showConverterOptions(event.data.panel);
-                  
+                 
                      }
                   });
                
@@ -466,6 +466,13 @@ define(
                this.page.propertiesPanel.errorMessages=[];
                this.page.propertiesPanel.warningMessages=[];
                this.page.propertiesPanel.clearWarningMessages();
+               
+               if(this.producerInboundConversion != null 
+                        && this.producerInboundConversion.val() != m_constants.TO_BE_DEFINED 
+                        && this.producerInboundConversion.val().indexOf("fromCSV") != -1)
+               {
+                  this.validateCsvDelimiter(this.producerInboundConverterDelimiterInput);
+               }
                
                if (m_utils.isEmptyString(this.camelContextInput.val()) ||
                      this.camelContextInput.val() == m_i18nUtils

@@ -224,7 +224,7 @@ define(
                                     function(event)
                                     {
                                        event.data.panel
-                                                .hideConverterOptions(event.data.panel);
+                                       .showConverterOptions(event.data.panel);
 
                                        if (!event.data.panel.validate())
                                        {
@@ -234,6 +234,8 @@ define(
                                        if (event.data.panel.producerInboundConversion
                                                 .val() == m_constants.TO_BE_DEFINED)
                                        {
+                                          event.data.panel
+                                          .hideConverterOptions(event.data.panel);
                                           event.data.panel
                                                    .submitChanges({
                                                       modelElement : {
@@ -248,7 +250,7 @@ define(
                                           var uri = event.data.panel.producerInboundConversion
                                                    .val();
                                           if (uri == "fromCSV")
-                                             uri += "?delimiter=,"
+                                             uri += "?delimiter=,";
                                           event.data.panel
                                                    .submitChanges({
                                                       modelElement : {
@@ -257,8 +259,6 @@ define(
                                                          }
                                                       }
                                                    });
-                                          event.data.panel
-                                                   .showConverterOptions(event.data.panel);
 
                                        }
                                     });
@@ -842,6 +842,14 @@ define(
                   this.page.propertiesPanel.errorMessages = [];
                   this.page.propertiesPanel.warningMessages = [];
                   this.page.propertiesPanel.clearWarningMessages();
+                  
+                  if(this.producerInboundConversion != null 
+                           && this.producerInboundConversion.val() != m_constants.TO_BE_DEFINED 
+                           && this.producerInboundConversion.val().indexOf("fromCSV") != -1)
+                  {
+                     this.validateCsvDelimiter(this.producerInboundConverterDelimiterInput);
+                  }
+                  
                   var intRegex = /^\d+$/;
 
                   if (((!intRegex.test(this.grouping.val())) || (this.grouping.val() < 1))
