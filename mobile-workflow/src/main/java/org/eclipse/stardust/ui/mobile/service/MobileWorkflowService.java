@@ -21,6 +21,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -74,7 +75,6 @@ import org.eclipse.stardust.engine.api.query.ProcessInstanceFilter;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
 import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.query.UserQuery;
-import org.eclipse.stardust.engine.api.query.Worklist;
 import org.eclipse.stardust.engine.api.query.WorklistQuery;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
@@ -107,10 +107,11 @@ import org.eclipse.stardust.ui.mobile.service.ActivitySearchHelper.ActivitySearc
 import org.eclipse.stardust.ui.mobile.service.DocumentSearchHelper.DocumentSearchCriteria;
 import org.eclipse.stardust.ui.mobile.service.ProcessSearchHelper.ProcessSearchCriteria;
 import org.eclipse.stardust.ui.mobile.service.WorklistHelper.WorklistCriteria;
-import org.eclipse.stardust.ui.web.processportal.common.PPUtils;
+import org.eclipse.stardust.ui.web.common.messages.CommonPropertiesMessageBean;
 import org.eclipse.stardust.ui.web.processportal.service.rest.DataException;
 import org.eclipse.stardust.ui.web.processportal.service.rest.InteractionDataUtils;
 import org.eclipse.stardust.ui.web.processportal.view.manual.ManualActivityUi;
+import org.eclipse.stardust.ui.web.viewscommon.common.constant.ProcessPortalConstants;
 import org.eclipse.stardust.ui.web.viewscommon.common.controller.ExternalWebAppActivityInteractionController;
 import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
@@ -119,7 +120,6 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ClientSideDataFlowUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.SpiUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
-import org.eclipse.stardust.ui.web.viewscommon.utils.WorklistUtils;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.TypedDocument;
 
 public class MobileWorkflowService implements ServletContextAware {
@@ -447,8 +447,11 @@ public class MobileWorkflowService implements ServletContextAware {
 
          for (DataPath dataPath : activityInstance.getDescriptorDefinitions())
          {
-            descriptorsJson.addProperty(dataPath.getId(),
-                  (String) activityInstance.getDescriptorValue(dataPath.getId()).toString());
+            descriptorsJson.addProperty(
+                  dataPath.getId(),
+                  formatDescriptorValue(
+                        activityInstance.getDescriptorValue(dataPath.getId()),
+                        dataPath.getId()));
          }
       }
       resultJson.add("paginationResponse", SearchHelperUtil.getPaginationResponseObject(activityInstances));
@@ -2093,5 +2096,54 @@ public class MobileWorkflowService implements ServletContextAware {
          uri = uri.replace("/${request.contextPath}", req.getContextPath());
       }
       return uri;
+   }
+   
+   /**
+    * Format Descriptors based on their types
+    * 
+    * @param valueObj
+    * @param accessPath
+    * @return
+    */
+   private String formatDescriptorValue(Object valueObj, String accessPath)
+   {
+      String value = "";
+      CommonPropertiesMessageBean props = new CommonPropertiesMessageBean(
+            httpRequest.getLocale());
+      if (valueObj instanceof Date)
+      {
+         if (StringUtils.isNotEmpty(accessPath))
+         {
+            String dateFormat = props.getString("portalFramework.formats.defaultDateTimeFormat");
+            if (accessPath.equalsIgnoreCase(ProcessPortalConstants.DATE_TYPE))
+            {
+               SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
+                     props.getString("portalFramework.formats.defaultDateFormat"),
+                     httpRequest.getLocale());
+               value = simpleDateFormat.format(valueObj);
+}
+            else if (accessPath.equalsIgnoreCase(ProcessPortalConstants.TIME_TYPE))
+            {
+               SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
+                     props.getString("portalFramework.formats.defaultTimeFormat"),
+                     httpRequest.getLocale());
+               value = simpleDateFormat.format(valueObj);
+            }
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat,
+                  httpRequest.getLocale());
+            value = simpleDateFormat.format(valueObj);
+         }
+      }
+      else if (valueObj instanceof Boolean)
+      {
+         value = (Boolean) valueObj
+               ? props.getString("common.true")
+               : props.getString("common.false");
+      }
+      else
+      {
+         value = valueObj != null ? valueObj.toString() : "";
+      }
+      return value;
    }
 }
