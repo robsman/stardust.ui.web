@@ -49,6 +49,13 @@
 	       	<ice:inputHidden id="timerInvoked" value="#{ippSingleViewLaunchPanels.emptyString}"
 	   			valueChangeListener="#{timerManager.processTimerEvent}"
 	   			partialSubmit="true" immediate="true" />
+
+	   		<!-- To Track Connection Status -->
+	   		<div style="display: none">
+	   			<ice:outputConnectionStatus id="iceConnectionStatus" showPopupOnDisconnect="true"
+	   				disconnectedLabel="ICE_DISCONNECTED" activeLabel="ICE_ACTIVE" 
+	   				inactiveLabel="ICE_INACTIVE" cautionLabel="ICE_CAUTION" />
+	   		</div>
 		</ice:form>
 	</div>
 

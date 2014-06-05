@@ -9,6 +9,8 @@ if (!window["BridgeUtils"]) {
 		var scriptRunning;
 		var timeoutService;
 
+		var handlingTroubledConnection;
+
 		/*
 		 * type: i = Info, w = Warning, e = Error, d or undefined = Debug
 		 */
@@ -38,17 +40,17 @@ if (!window["BridgeUtils"]) {
 
 			log("Listening for session expiry");
 			win.Ice.onSessionExpired('document:body', function() {
-	        	parent.BridgeUtils.handleServerDisconnect("SessionExpired");
+	        	parent.BridgeUtils.handleServerDisconnect("SessionExpired", win);
 	        });
 
 			log("Listening for Connection Trouble");
 			win.Ice.onConnectionTrouble('document:body', function() {
-	        	parent.BridgeUtils.handleServerDisconnect("ConnectionTrouble");
+	        	parent.BridgeUtils.handleServerDisconnect("ConnectionTrouble", win);
 	        });
 
 			log("Listening for Connection Lost");
 			win.Ice.onConnectionLost('document:body', function() {
-	        	parent.BridgeUtils.handleServerDisconnect("ConnectionLost");
+	        	parent.BridgeUtils.handleServerDisconnect("ConnectionLost", win);
 	        });
 
 			// Main View
@@ -119,14 +121,76 @@ if (!window["BridgeUtils"]) {
 		/*
 		 *
 		 */
-		function handleServerDisconnect(type) {
-		log("Handling Server Disconnect for " + type);
+		function handleServerDisconnect(type, win) {
+			var loc = win ? win.location : "";
+	    	log("Handling Server Disconnect of type '" + type + "' for: " + loc);
+
+	    	if (type == "ConnectionTrouble") {
+	    		if (!handlingTroubledConnection) {
+	    			handlingTroubledConnection = true;
+	    			handleTroubledConnection(loc);
+	    		}
+	    	} else {
+	    		handleServerDisconnected();
+	    	}
+
+	    	log("Handled Server Disconnect of type '" + type + "' for: " + loc);
+	    }
+
+		/*
+		 * 
+		 */
+		function handleServerDisconnected() {
 	    	BridgeUtils.FrameManager.forceCloseAll();
 		runInAngularContext(function($scope) {
 	    		BridgeUtils.logout(true);
 			});
-		log("Handled Server Disconnect for " + type);
 	    }
+
+		/*
+		 *
+		 */
+		function handleTroubledConnection(loc) {
+			log("Handling Toubled Connection for: " + loc, "w");
+			
+			try {
+				var launchPanelIframe = document.getElementById("portalLaunchPanels");
+				var conStatus = launchPanelIframe.contentDocument.getElementById("viewFormLP:iceConnectionStatus");
+				
+				var visibleConStatus;
+				for(var i = 0; i < conStatus.childNodes.length; i++) {
+					var elem = conStatus.childNodes[i];
+					if(elem && elem.style && elem.style.visibility == "visible") {
+						visibleConStatus = elem;
+						break;
+					}
+				}
+				
+				log("Connection Status: " + visibleConStatus + ", class: " + (visibleConStatus ? visibleConStatus.className : ""));
+
+				if (visibleConStatus && visibleConStatus.className == "iceOutConStatDisconnect") {
+					handlingTroubledConnection = false;
+					log("Toubled Connection became Lost for: " + loc);
+					handleServerDisconnected();
+				} else if (visibleConStatus && visibleConStatus.className == "iceOutConStatCaution") {
+					log("Snoozing for handling Toubled Connection for: " + loc);
+					window.setTimeout(function(){
+						handleTroubledConnection(loc);
+					}, 5000);
+				} else {
+					// Connection became alive
+					handlingTroubledConnection = false;
+					log("Troubled Connection became Alive: " + loc, "i");
+				}
+			} catch(e) {
+				log("Unexpected Error in handling Troubled Connection", "e");
+				log(e, "e");
+				
+				handlingTroubledConnection = false;
+
+				handleServerDisconnected();
+			}
+		}
 
 		/*
 		 *
