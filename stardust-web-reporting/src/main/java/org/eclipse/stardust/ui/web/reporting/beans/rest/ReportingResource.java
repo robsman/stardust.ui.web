@@ -21,7 +21,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.apache.jackrabbit.util.Base64;
+import org.eclipse.stardust.common.Base64;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
@@ -288,7 +288,7 @@ public class ReportingResource
    {
       try
       {
-         reportingService.removeFromFavorites(Base64.decode(reportId));
+         reportingService.removeFromFavorites(new String(Base64.decode(reportId.getBytes())));
          return Response.ok("OK", MediaType.APPLICATION_JSON).build();
       }
       catch (Exception e)

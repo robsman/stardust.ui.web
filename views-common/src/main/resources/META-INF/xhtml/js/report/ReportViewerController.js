@@ -200,6 +200,37 @@ define(
 					this.renderingController.saveReportInstance(this.report, this.parameters);
 				};
 				
+	    		/**
+	             * 
+	             */
+				ReportViewerController.prototype.addToFavorites = function() {
+	            	var self = this;
+	            	this.reportingService.addToFavorites(this.report.name, this.documentId).done(function(){
+	            		self.updateView();	
+	            	});
+	    		};
+	    		
+	    		/**
+	    		 * 
+	    		 */
+	    		ReportViewerController.prototype.removeFromFavorites = function() {
+	    			var self = this;
+	            	this.reportingService.removeFromFavorites(this.documentId).done(function(){
+	            		self.updateView();
+	            	});
+	    		};
+	    		
+	    		/**
+	    		 * 
+	    		 */
+	    		ReportViewerController.prototype.isFavorite = function() {
+					if (this.documentId) {
+						return this.reportingService.isFavoriteReport(this.documentId);
+					}
+					return false;
+				};
+				
+				
 				/**
 				 * 
 				 */
