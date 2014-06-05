@@ -12,7 +12,7 @@
  * @author Shrikant.Gangal
  */
 
-define(["processportal/js/codeGenerator", "processportal/js/htmlElement", "bpm-modeler/js/m_utils"], function(codeGenerator, htmlElement, m_utils){
+define(["processportal/js/codeGenerator", "processportal/js/htmlElement", "processportal/js/m_utils"], function(codeGenerator, htmlElement, m_utils){
 	return {
 		create: function(prefs) {
 			return new CodeGeneratorMobile(prefs);
