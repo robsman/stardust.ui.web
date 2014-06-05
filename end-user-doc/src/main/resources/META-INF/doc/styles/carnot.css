@@ -60,13 +60,14 @@ p {
 }
 
 p.image {
-	font-family: 	Geneva, Arial, Helvetica, sans-serif;
-	font-size: 		9pt;
-	color: 			#000000;
-	font-style: normal;
-	line-height: 28px;
-	font-weight: normal;
-	text-align: center;
+   font-family:   Geneva, Arial, Helvetica, sans-serif;
+   font-size:     9pt;
+   color:         #000000;
+   font-style: normal;
+   padding-top: 15px;
+   line-height: 18px;
+   font-weight: normal;
+   text-align: center;
 }
 
 p.note {
