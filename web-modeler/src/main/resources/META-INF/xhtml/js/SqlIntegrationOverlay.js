@@ -166,7 +166,6 @@ define(
                      self.directConfigTab.hide();
                      self.jndiConfigTab.show();
                   }
-                  // self.submitChanges();
                   self.view.submitModelElementAttributeChange(
                         "stardust:sqlScriptingOverlay::connectionType",
                         self.connectionTypeSelect.val());
@@ -181,50 +180,21 @@ define(
                            return;
                         }
 
-                        if (event.data.panel.databaseTypeSelect.val() == "others") {
-                           event.data.panel.showHideCommonDbConfig(true);
-                           event.data.panel.showHideOthersDbConfig();
-                           
-                           event.data.panel.view
-                           .submitModelElementAttributeChange(
-                                 "stardust:sqlScriptingOverlay::databasetype",
-                                 self.databaseTypeSelect
-                                       .val());
-                           event.data.panel.view
-                                 .submitModelElementAttributeChange(
-                                       "stardust:sqlScriptingOverlay::hostname",
-                                       null);
-                           event.data.panel.view
-                                 .submitModelElementAttributeChange(
-                                       "stardust:sqlScriptingOverlay::port",
-                                       null);
-                           event.data.panel.view
-                                 .submitModelElementAttributeChange(
-                                       "stardust:sqlScriptingOverlay::dbname",
-                                       null);
-
-                        } else {
-                           event.data.panel.showHideCommonDbConfig();
-                           event.data.panel.showHideOthersDbConfig(true);
-
-                           event.data.panel.view
-                                 .submitModelElementAttributeChange(
-                                       "stardust:sqlScriptingOverlay::databasetype",
-                                       self.databaseTypeSelect
-                                             .val());
-                           event.data.panel.view
-                                 .submitModelElementAttributeChange(
-                                       "stardust:sqlScriptingOverlay::url",
-                                       null);
-                           event.data.panel.view
-                                 .submitModelElementAttributeChange(
-                                       "stardust:sqlScriptingOverlay::driverClassName",
-                                       null);
-                        }
-                        
-                        event.data.panel.view.submitModelElementAttributeChange("carnot:engine:camel::additionalSpringBeanDefinitions" , event.data.panel.populateDataSourceBeanDefinition());
-                        
-                     });
+                  event.data.panel.view.submitModelElementAttributeChange("stardust:sqlScriptingOverlay::url",null);
+                  event.data.panel.view.submitModelElementAttributeChange("stardust:sqlScriptingOverlay::driverClassName",null);
+                  event.data.panel.view.submitModelElementAttributeChange("stardust:sqlScriptingOverlay::hostname",null);
+                  event.data.panel.view.submitModelElementAttributeChange("stardust:sqlScriptingOverlay::port",null);
+                  event.data.panel.view.submitModelElementAttributeChange("stardust:sqlScriptingOverlay::dbname",null);
+                  event.data.panel.view.submitModelElementAttributeChange("stardust:sqlScriptingOverlay::databasetype",
+                  self.databaseTypeSelect.val());
+                  if (event.data.panel.databaseTypeSelect.val() == "others") {
+                     event.data.panel.showHideCommonDbConfig(true);
+                     event.data.panel.showHideOthersDbConfig();
+                  } else {
+                     event.data.panel.showHideCommonDbConfig();
+                     event.data.panel.showHideOthersDbConfig(true);
+                  }
+               });
 
                this.urlInput
                      .change(
@@ -235,8 +205,7 @@ define(
                               if (!event.data.panel.validate()) {
                                  return;
                               }
-                              event.data.panel
-                              .submitChanges();
+                              event.data.panel.submitChanges();
                            });
 
                this.driverInput
@@ -248,8 +217,7 @@ define(
                               if (!event.data.panel.validate()) {
                                  return;
                               }
-                              event.data.panel
-                              .submitChanges();
+                              event.data.panel.submitChanges();
                });
 
                this.hostInput
@@ -261,24 +229,7 @@ define(
                               if (!event.data.panel.validate()) {
                                  return;
                               }
-                              event.data.panel
-                                    .submitChanges({
-                                       modelElement : {
-                                          attributes : {
-                                             "stardust:sqlScriptingOverlay::hostname" : event.data.panel.hostInput
-                                                   .val()
-                                          }
-                                       }
-                                    });
-                              event.data.panel
-                              .submitChanges({
-                                 modelElement : {
-                                    attributes : {
-                                       "carnot:engine:camel::additionalSpringBeanDefinitions" : event.data.panel.populateDataSourceBeanDefinition()
-                                    }
-                                 }
-                              });
-
+                              event.data.panel.submitChanges();
                            });
 
                this.portInput
@@ -290,23 +241,7 @@ define(
                               if (!event.data.panel.validate()) {
                                  return;
                               }
-                              event.data.panel
-                                    .submitChanges({
-                                       modelElement : {
-                                          attributes : {
-                                             "stardust:sqlScriptingOverlay::port" : event.data.panel.portInput
-                                                   .val()
-                                          }
-                                       }
-                                    });
-                              event.data.panel
-                              .submitChanges({
-                                 modelElement : {
-                                    attributes : {
-                                       "carnot:engine:camel::additionalSpringBeanDefinitions" : event.data.panel.populateDataSourceBeanDefinition()
-                                    }
-                                 }
-                              });
+                              event.data.panel.submitChanges();
                            });
 
                this.dataBaseNameInput
@@ -318,23 +253,7 @@ define(
                               if (!event.data.panel.validate()) {
                                  return;
                               }
-                              event.data.panel
-                                    .submitChanges({
-                                       modelElement : {
-                                          attributes : {
-                                             "stardust:sqlScriptingOverlay::dbname" : event.data.panel.dataBaseNameInput
-                                                   .val()
-                                          }
-                                       }
-                                    });
-                              event.data.panel
-                              .submitChanges({
-                                 modelElement : {
-                                    attributes : {
-                                       "carnot:engine:camel::additionalSpringBeanDefinitions" : event.data.panel.populateDataSourceBeanDefinition()
-                                    }
-                                 }
-                              });
+                              event.data.panel.submitChanges();
                            });
 
                this.userNameInput
@@ -346,23 +265,7 @@ define(
                               if (!event.data.panel.validate()) {
                                  return;
                               }
-                              event.data.panel
-                                    .submitChanges({
-                                       modelElement : {
-                                          attributes : {
-                                             "stardust:sqlScriptingOverlay::username" : event.data.panel.userNameInput
-                                                   .val()
-                                          }
-                                       }
-                                    });
-                              event.data.panel
-                              .submitChanges({
-                                 modelElement : {
-                                    attributes : {
-                                       "carnot:engine:camel::additionalSpringBeanDefinitions" : event.data.panel.populateDataSourceBeanDefinition()
-                                    }
-                                 }
-                              });
+                              event.data.panel.submitChanges();
                            });
 
                this.passwordInput
@@ -374,23 +277,7 @@ define(
                               if (!event.data.panel.validate()) {
                                  return;
                               }
-                              event.data.panel
-                                    .submitChanges({
-                                       modelElement : {
-                                          attributes : {
-                                             "stardust:sqlScriptingOverlay::password" : event.data.panel.passwordInput
-                                                   .val()
-                                          }
-                                       }
-                                    });
-                              event.data.panel
-                              .submitChanges({
-                                 modelElement : {
-                                    attributes : {
-                                       "carnot:engine:camel::additionalSpringBeanDefinitions" : event.data.panel.populateDataSourceBeanDefinition()
-                                    }
-                                 }
-                              });
+                              event.data.panel.submitChanges();
                            });
 
                this.useCVforPassowrdInput
@@ -399,8 +286,6 @@ define(
                               panel : this
                            },
                            function(event) {
-                              // self.submitChanges();
-
                               event.data.panel
                                     .submitChanges({
                                        modelElement : {
@@ -454,8 +339,6 @@ define(
                                  .submitModelElementAttributeChange(
                                        "carnot:engine:camel::inBodyAccessPoint",
                                        null);
-                           // self.inputBodyAccessPointInput.val(
-                           // m_constants.TO_BE_DEFINED);
 
                         } else {
                            var accessPoints = {};
@@ -471,7 +354,7 @@ define(
                               }
                            }
                            var inAccessPoint = self.getApplication().contexts.application.accessPoints;
-                           var structuredData;// =self.getScopeModel().findData(self.outputBodyAccessPointInput.val());
+                           var structuredData;
                            for ( var i in self.getScopeModel().typeDeclarations) {
                               if (self.getScopeModel().typeDeclarations[i]
                                     .isSequence()) {
@@ -516,10 +399,6 @@ define(
                                           }
                                        });
                               }
-                              // if
-                              // (!accessPoints[self.outputBodyAccessPointInput.val()])
-                              // {
-
                               self.view
                                     .submitChanges({
                                        contexts : {
@@ -585,21 +464,8 @@ define(
                               }
                            }
                            var outAccessPoint = self.getApplication().contexts.application.accessPoints;
-                           var structuredData;// =self.getScopeModel().findData(self.outputBodyAccessPointInput.val());
+                           var structuredData;
                            var isStructuredData = false;
-                        /* for ( var i in self.getScopeModel().typeDeclarations) {
-                              if (self.getScopeModel().typeDeclarations[i]
-                                    .isSequence()) {
-                                 if (self.getScopeModel().id+":"+self.getScopeModel().typeDeclarations[i].id
-                                        == self.outputBodyAccessPointInput
-                                       .val()) {
-                                    structuredData = self
-                                          .getScopeModel().typeDeclarations[i];
-                                    isStructuredData = true;
-                                    break;
-                                 }
-                              }
-                           }*/
 
                            for ( var i in self.getScopeModel().dataItems) {
                            
@@ -645,9 +511,6 @@ define(
                                           });
                                  } 
                               }
-                              // if
-                              // (!accessPoints[self.outputBodyAccessPointInput.val()])
-                              // {
 
                               self.view
                                     .submitChanges({
@@ -657,7 +520,6 @@ define(
                                           }
                                        }
                                     });
-                              // }
 
                               self.view
                                     .submitModelElementAttributeChange(
@@ -819,9 +681,7 @@ define(
 
                this.outputBodyAccessPointInput
                      .val(this.getApplication().attributes["carnot:engine:camel::outBodyAccessPoint"]);
-               // if(this.getApplication().attributes["stardust:sqlScriptingOverlay::outputType"]==null
-               // ||
-               // this.getApplication().attributes["stardust:sqlScriptingOverlay::outputType"]=="")
+
                if (this.getApplication().attributes["stardust:sqlScriptingOverlay::outputType"] != null)
                   this.expectedResultSetInput
                         .val(this.getApplication().attributes["stardust:sqlScriptingOverlay::outputType"]);
@@ -834,10 +694,6 @@ define(
                      .getSession()
                      .setValue(
                            this.getApplication().attributes["stardust:sqlScriptingOverlay::sqlQuery"]);
-               /*
-                * this.dataSourceNameInput
-                * .val(this.getApplication().attributes["stardust:sqlOverlay::dataSourceId"]);
-                */
                // Initialize the UI to show only primitives IN only
                this.parameterDefinitionDirectionSelect = m_utils
                      .jQuerySelect("#parametersTab #parameterDefinitionDirectionSelect");
@@ -903,7 +759,6 @@ define(
                this.initializeParameterDefinitionsTable();
                this.parameterDefinitionsPanel
                      .selectCurrentParameterDefinition();
-               // this.parameterDefinitionsPanel.populateParameterDefinitionFields();
             };
 
             SqlIntegrationOverlay.prototype.initializeParameterDefinitionsTable = function() {
@@ -1012,7 +867,6 @@ define(
                                     panel : this
                                  },
                                  function(event) {
-                                    // event.data.panel.deselectParameterDefinitions();
                                     event.data.panel.parameterDefinitionsPanel
                                           .deselectParameterDefinitions()
                                     m_utils.jQuerySelect(this)
@@ -1021,10 +875,6 @@ define(
                                     var index = m_utils
                                           .jQuerySelect(this)
                                           .attr("id");
-
-                                    // event.data.panel.currentParameterDefinition
-                                    // =
-                                    // event.data.panel.parameterDefinitions[index];
                                     event.data.panel.parameterDefinitionsPanel.currentParameterDefinition = event.data.panel.parameterDefinitionsPanel.parameterDefinitions[index];
                                     event.data.panel.parameterDefinitionsPanel.selectedRowIndex = index;
 
@@ -1183,8 +1033,9 @@ define(
                         + this.portInput.val() + "/"
                         + this.dataBaseNameInput.val();
                } else if (this.databaseTypeSelect.val() == "others") {
-                  driverClassName = this.getApplication().attributes["stardust:sqlScriptingOverlay::driverClassName"];
-                  url = this.getApplication().attributes["stardust:sqlScriptingOverlay::url"];
+                  driverClassName =this.driverInput.val();
+                  url =this.urlInput.val(); 
+                     //this.getApplication().attributes["stardust:sqlScriptingOverlay::url"];
                }
 
                beanDefinition += "<bean id=\""
@@ -1384,8 +1235,8 @@ define(
                                  .populateDataSourceBeanDefinition(),
                            "carnot:engine:camel::routeEntries" : this
                                  .getRoute(),
-                                 "stardust:sqlScriptingOverlay::url" : this.urlInput.val(),
-                           "stardust:sqlScriptingOverlay::driverClassName" : this.driverInput.val()
+                                 "stardust:sqlScriptingOverlay::url" : (this.urlInput.val()!=null)?this.urlInput.val():null,
+                           "stardust:sqlScriptingOverlay::driverClassName" : (this.driverInput.val()!=null)?this.driverInput.val():null
                         }
                      });
             };
@@ -1393,44 +1244,6 @@ define(
              * 
              */
             SqlIntegrationOverlay.prototype.validate = function() {
-               var valid = true;
-               // this.outputBodyAccessPointInput.removeClass("error");
-               /*if(m_utils.isEmptyString(this.outputBodyAccessPointInput.val()) || this.outputBodyAccessPointInput.val()==m_constants.TO_BE_DEFINED){
-                   this.view.errorMessages .push("No Out Mapping provided."); 
-                   this.outputBodyAccessPointInput.addClass("error"); 
-                   valid = false;
-               }*/
-
-               /*
-               if(m_utils.isEmptyString(this.codeEditor.getEditor().getSession().getValue())){
-                   this.view.errorMessages .push("No SQL Query provided."); 
-                   valid = false;
-               }
-
-               if(this.connectionTypeSelect.val()=="direct" && (this.databaseTypeSelect.val()!="others" && this.databaseTypeSelect.val()!=m_constants.TO_BE_DEFINED) ){
-                  //when using direct connection verify host,port,databasename
-                  this.hostInput.removeClass("error");
-                  this.portInput.removeClass("error");
-                  this.dataBaseNameInput.removeClass("error");
-                  
-                  if(m_utils.isEmptyString(this.hostInput.val()) ){
-                      this.view.errorMessages .push("No Host provided."); 
-                      this.hostInput.addClass("error"); 
-                      valid = false;
-                  }
-                  
-                  if(m_utils.isEmptyString(this.portInput.val()) ){
-                      this.view.errorMessages .push("No port number provided.");
-                      this.portInput.addClass("error"); 
-                      valid = false;
-                  }
-                  if(m_utils.isEmptyString(this.dataBaseNameInput.val()) ){
-                      this.view.errorMessages .push("No SID name provided.");
-                      this.dataBaseNameInput.addClass("error"); 
-                      valid = false;
-                  }
-               }
-                */
                return true;  
             };
          }
