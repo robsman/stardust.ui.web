@@ -627,16 +627,43 @@ if (!window.bpm.portal.AngularAdapter) {
 						if(attrs.dateFormat){
 							dateFormat = attrs.dateFormat;
 						}
-						element.datetimepicker({
-							inline : true,
-							timeFormat : timeFormat,
-							dateFormat : dateFormat,
-							onSelect : function(date) {
-								scope.$apply(function () {
-								   controller.$setViewValue(date);
-								});
-							}
-						});
+						
+
+						var baseUrl = window.location.href.substring(0, location.href.indexOf("/plugins"));
+						var url = baseUrl
+								+ "/plugins/bpm-reporting/public/js/libs/jquery/plugins/jquery-ui-timepicker/jquery-ui-timepicker-addon.min.js";
+						
+						jQuery.get(url)
+					    .done(function() { 
+					    	require(
+									[url],
+									function(datetime) {
+										element.datetimepicker({
+											inline : true,
+											timeFormat : timeFormat,
+											dateFormat : dateFormat,
+											onSelect : function(date) {
+												scope.$apply(function () {
+												   controller.$setViewValue(date);
+												});
+											}
+										});		
+									}); 
+					    }).fail(function() { 
+					    	element.datepicker({
+								inline : true,
+								dateFormat : 'yy/mm/dd', // I18N
+								onSelect : function(datetext) {
+									var d = new Date(); // for now
+							        datetext = datetext + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds() + ":000";
+							        this.value = datetext;
+							        controller.$setViewValue(datetext);
+									scope.$apply(function () {
+									   controller.$setViewValue(datetext);
+									});
+								}
+							});
+					    });
 					}
 				};
 			});

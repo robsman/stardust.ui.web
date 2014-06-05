@@ -152,8 +152,6 @@ define(
 
 					// TODO: Operator only for respective types
 					this.filters[index].operator = "equal";
-
-					this.removeParametersFromParameterList(index);
 				};
 
 				/**
