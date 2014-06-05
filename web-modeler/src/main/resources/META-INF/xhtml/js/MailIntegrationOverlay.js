@@ -481,8 +481,10 @@ define(
 						}
 
 						if (index > 0) {
-							parameterObjectString += ", ";
-						}
+                	  if (parameterDefinition.dataType != "dmsDocument") {
+                		  parameterObjectString += ", ";
+                	  }
+                  }
 
 						++index;
 
@@ -506,20 +508,9 @@ define(
 							parameterObjectString += ": ";
 							parameterObjectString += JSON.stringify(
 									typeDeclaration.createInstance(), null, 3);
-						} else if (parameterDefinition.dataType == "dmsDocument") {
-							var typeDeclaration = m_model
-									.findTypeDeclaration(parameterDefinition.structuredDataTypeFullId);
+                  }
 
-							parameterObjectString += parameterDefinition.id;
-							parameterObjectString += ": ";
-							parameterObjectString += JSON
-									.stringify(
-											typeDeclaration
-													.createInstance({
-														initializePrimitives : initializePrimitives
-													}), null, 3);
-						}
-					}
+               }
 
 					parameterObjectString += "}";
 
