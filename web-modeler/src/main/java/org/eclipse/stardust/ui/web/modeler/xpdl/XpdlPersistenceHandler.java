@@ -66,10 +66,20 @@ public class XpdlPersistenceHandler implements ModelPersistenceHandler<ModelType
    @Override
    public void saveModel(ModelType model, OutputStream modelContent) throws IOException
    {
-      ModelManagementStrategy strategy = modelService.currentSession().modelManagementStrategy();
+      ModelManagementStrategy strategy = modelService.currentSession()
+            .modelManagementStrategy();
       WebModelerModelManager modelMgr = new WebModelerModelManager(strategy);
       modelMgr.setModel(model);
-      modelMgr.save(URI.createURI(generateDefaultFileName(model)), modelContent);
+      URI uri = null;
+      if (model.eResource() == null)
+      {
+         uri = URI.createURI(generateDefaultFileName(model));
+      }
+      else
+      {
+         uri = model.eResource().getURI();
+      }
+      modelMgr.save(uri, modelContent);
    }
 
    @Override
