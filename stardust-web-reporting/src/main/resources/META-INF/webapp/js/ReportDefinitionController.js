@@ -655,6 +655,13 @@ define(
 				/**
 				 * 
 				 */
+				ReportDefinitionController.prototype.resetFilters = function() {
+					this.reportFilterController.resetReport(this.report, this.report.dataSet.filters);
+				};
+				
+				/**
+				 * 
+				 */
 				ReportDefinitionController.prototype.resetParamFilters = function() {
 					this.prepareParameters();
 					this.reportParameterController.resetReport(this.report, this.parameters);
@@ -1639,7 +1646,10 @@ define(
                this.report.dataSet.firstDimensionCumulationIntervalCount = 1;
                this.report.dataSet.firstDimensionCumulationIntervalUnit = "d";
                this.report.dataSet.groupBy = "None";
-            }
+               
+               this.resetFilters();
+               this.resetParamFilters();
+            };
             
             /**
              * Getting latest Record Set Available columns &
