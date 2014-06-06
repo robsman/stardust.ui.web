@@ -38,7 +38,8 @@ define(["processportal/js/codeGenerator", "processportal/js/htmlElement", "proce
 		 * 
 		 */
 		CodeGeneratorMobile.prototype.generateNestedTypeDialogIFRAME = function(html) {
-			// Do nothing for mobile clients
+			// return as is for mobile clients.
+			return html;
 		};
 		
 		/*
