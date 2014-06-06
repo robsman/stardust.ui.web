@@ -36,7 +36,7 @@
 					styleClass="action-link" escape="false" />
 			</ice:commandLink>
          <ice:commandLink id="view_updater_link"
-            action="#{jsfViewUpdaterBean.updateView}" visible="false">
+            action="#{jsfReportingViewUpdaterBean.updateView}" visible="false">
             <f:param name="name" value="REPLACEME" />
             <f:param name="path" value="REPLACEME" />
             <f:param name="viewParams" value="REPLACEME" />
@@ -44,7 +44,7 @@
                styleClass="action-link" escape="false" />
          </ice:commandLink>
          <ice:commandLink id="views_close_link"
-            action="#{jsfViewUpdaterBean.closeViewsForElement}" visible="false">
+            action="#{jsfReportingViewUpdaterBean.closeViewsForElement}" visible="false">
             <f:param name="name" value="REPLACEME" />
             <f:param name="path" value="REPLACEME" />
             <ice:outputText value="Update view &amp;raquo;"

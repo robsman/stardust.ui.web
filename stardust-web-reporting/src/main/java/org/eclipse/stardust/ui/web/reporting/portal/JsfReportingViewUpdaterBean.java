@@ -10,10 +10,10 @@ import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.app.View;
 
 /**
- * @author Shrikant.Gangal
+ * @author Aditya.Gaikwad
  *
  */
-public class JsfViewUpdaterBean
+public class JsfReportingViewUpdaterBean
 {
    public static final String VIEW_ICON_PARAM_KEY = "viewIcon";
    /**
