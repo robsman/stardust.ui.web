@@ -904,6 +904,7 @@ define(
                {
                   this.grouping.removeClass("error");
                   this.directoryNameInput.removeClass("error");
+				  this.repeatIntervalInput.removeClass("error");
                   this.page.propertiesPanel.errorMessages = [];
                   this.page.propertiesPanel.warningMessages = [];
                   this.page.propertiesPanel.clearWarningMessages();
@@ -964,6 +965,13 @@ define(
 
                   }
 
+				  if (!(this.repeatIntervalInput.val()>0))
+                  {
+                     this.page.propertiesPanel.errorMessages
+                              .push("Repeat interval must be a positive number.");
+                     this.repeatIntervalInput.addClass("error");
+                  }
+                  
                   if (this.page.overlay.parameterDefinitionsPanel.parameterDefinitions.length == 0)
                   {
                      this.page.propertiesPanel.warningMessages
