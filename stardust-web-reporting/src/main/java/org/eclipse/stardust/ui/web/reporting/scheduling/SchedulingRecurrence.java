@@ -84,11 +84,16 @@ public abstract class SchedulingRecurrence
       // Format of the date defined in the input String
       startDate = SchedulingUtils.getParsedDate(input, "yyyy-MM-dd hh:mm aa");
 
-      trace.info("Start Date: " + startDate);
-
       startTime = startDate.getSeconds() + SchedulingUtils.BLANK_SPACE
             + startDate.getMinutes() + SchedulingUtils.BLANK_SPACE + startDate.getHours()
             + SchedulingUtils.BLANK_SPACE;
+      
+      //Set Current time to compare with Scheduled Execution time.
+      startDate.setHours(new Date().getHours());
+      startDate.setMinutes(new Date().getMinutes());
+      startDate.setSeconds(new Date().getSeconds());
+      
+      trace.info("Start Date: " + startDate);
 
       String cronExpressionInput = this.generateSchedule(json);
 
