@@ -868,7 +868,6 @@ define(
 										var childElementsArray = [];
 										m_utils.insertArrayAt(childElementsArray, childSchemaType.type.body);
 										m_utils.insertArrayAt(childElementsArray, childSchemaType.getAttributes());
-										this.inputData[accessPoint.id] = childSchemaType;
 										var elemName = childElement.name ? childElement.name : (childSchemaType.name ? m_typeDeclaration.parseQName(childSchemaType.name).name : "");
 										this.initializeTableRowsRecursively(output, accessPoint,
 												childElementsArray, path,
