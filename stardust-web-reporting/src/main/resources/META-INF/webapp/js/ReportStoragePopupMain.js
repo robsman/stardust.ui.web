@@ -14,6 +14,9 @@ require
 				'angularjs' : {
 					require : "jquery",
 					exports : "angular"
+				},
+				'i18n' : {
+					exports : "InfinityBPMI18N"
 				}
 			}
 		});

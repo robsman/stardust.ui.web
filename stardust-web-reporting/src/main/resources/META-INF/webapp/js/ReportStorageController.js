@@ -45,7 +45,7 @@ define([ "bpm-reporting/public/js/report/I18NUtils" ], function(I18NUtils) {
 		 * 
 		 */
 		ReportStorageController.prototype.getI18N = function(key) {
-			return key;
+			return I18NUtils.getProperty(key);
 		};
 
 		/**
@@ -59,6 +59,7 @@ define([ "bpm-reporting/public/js/report/I18NUtils" ], function(I18NUtils) {
 				location : "personalFolder"
 			};
 			this.updateView();
+			jQuery("#reportStoragePopup").css("visibility", "visible");			
 		};
 
 		/**
