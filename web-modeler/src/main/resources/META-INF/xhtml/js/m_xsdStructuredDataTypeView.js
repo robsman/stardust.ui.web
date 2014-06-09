@@ -730,6 +730,8 @@ define(
 						var moved = typeDeclaration.moveElement(m_utils.jQuerySelect(tableRow).data("elementName"), -1);
 
 						if (moved) {
+							m_utils.jQuerySelect(tableRow).removeClass("selected");
+							m_utils.jQuerySelect(tableRow).prev().addClass("selected");
 							view.submitChanges({
 								typeDeclaration : typeDeclaration.typeDeclaration
 							});
@@ -745,6 +747,8 @@ define(
 						var moved = typeDeclaration.moveElement(m_utils.jQuerySelect(tableRow).data("elementName"), 1);
 
 						if (moved) {
+							m_utils.jQuerySelect(tableRow).next().addClass("selected");
+							m_utils.jQuerySelect(tableRow).removeClass("selected");
 							view.submitChanges({
 								typeDeclaration : typeDeclaration.typeDeclaration
 							});
