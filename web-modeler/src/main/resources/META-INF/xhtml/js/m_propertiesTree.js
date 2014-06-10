@@ -186,6 +186,7 @@ define(
 				this.categories = null;
 				this.element = null;
 				this.view = null;
+				this.scrollPos = 0;
 
 				/**
 				 *
@@ -275,6 +276,9 @@ define(
 							// Restore the selected tree nodes
 							m_utils.jQuerySelect("#fieldPropertiesTable #" + selectedRowId)
 									.addClass("selected");
+							
+							// Restore scroll position
+							m_utils.jQuerySelect("table#fieldPropertiesTable").closest("div.tablescroll_wrapper").scrollTop(this.scrollPos);
 						},
 
 						/**
@@ -424,6 +428,7 @@ define(
 									.on(
 											"change",
 											function(event) {
+												self.scrollPos = jQuery(this).closest("div.tablescroll_wrapper").scrollTop();
 												self.updateAnnotation(
 														this.name, m_utils.jQuerySelect(
 																event.target)
@@ -434,6 +439,7 @@ define(
 									.on(
 											"change",
 											function(event) {
+												self.scrollPos = jQuery(this).closest("div.tablescroll_wrapper").scrollTop();
 												self.updateAnnotation(
 														this.name, m_utils.jQuerySelect(
 																event.target)
@@ -444,6 +450,7 @@ define(
 									"table#fieldPropertiesTable tbody tr input:checkbox")
 									.change(
 											function(event) {
+												self.scrollPos = jQuery(this).closest("div.tablescroll_wrapper").scrollTop();
 												self
 														.updateAnnotation(
 																this.name,
