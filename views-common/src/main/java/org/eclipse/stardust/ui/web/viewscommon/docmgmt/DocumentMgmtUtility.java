@@ -22,6 +22,7 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -51,6 +52,7 @@ import org.eclipse.stardust.engine.api.runtime.DocumentInfo;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementServiceException;
 import org.eclipse.stardust.engine.api.runtime.Folder;
+import org.eclipse.stardust.engine.api.runtime.Grant;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstanceState;
 import org.eclipse.stardust.engine.api.runtime.User;
@@ -92,10 +94,13 @@ public class DocumentMgmtUtility
    private static final String YYYYMMDD_FORMAT = "yyyyMMdd";
    private static final String DATE_TIME_SECONDS = "MM/dd/yy hh:mm:ss a";
    private static final String REALMS_FOLDER = "realms/";
-   private static final String REPORT_DESIGNS = "/reports/designs";
+   private static final String REPORT_DESIGNS = "/designs";
    private static final String ARCHIVED_REPORTS = "/reports/archived";
    private static final Logger trace = LogManager.getLogger(DocumentMgmtUtility.class); 
    private static final String UNVERSIONED = "UNVERSIONED";
+   private static final String SAVED_REPORTS = "/saved-reports";
+   private static final String AD_HOC = "/ad-hoc";
+   private static final String REPORTS_ROOT_FOLDER = "/reports";
    
    private static final String CONTENT_TYPE = "text/plain";
    private static final String SPECIAL_CHARACTER_SET = "[\\\\/:*?\"<>|\\[\\]]";
@@ -1100,7 +1105,7 @@ public class DocumentMgmtUtility
     */
    public static String getMyReportDesignsPath()
    {
-      return getMyDocumentsPath() + REPORT_DESIGNS; 
+      return getMyDocumentsPath() + REPORTS_ROOT_FOLDER + REPORT_DESIGNS; 
    }
    
    /**
@@ -1261,6 +1266,73 @@ public class DocumentMgmtUtility
    {
       ProcessInstanceQuery processQuery = ProcessInstanceQuery.findHavingDocument(document);
       return DocumentSearchProvider.getQueryService().getAllProcessInstances(processQuery);
+   }
+   
+   /**
+    * @return
+    */
+   public static String getPublicReportDefinitionsPath()
+   {
+      return REPORTS_ROOT_FOLDER + REPORT_DESIGNS; 
+   }
+   
+   /**
+    * @return
+    */
+   public static String getPrivateSavedReportsPath()
+   {
+      return getMyDocumentsPath() + REPORTS_ROOT_FOLDER + SAVED_REPORTS; 
+   }
+   
+   /**
+    * @return
+    */
+   public static String getPublicSavedReportsPath()
+   {
+      return REPORTS_ROOT_FOLDER + SAVED_REPORTS; 
+   }
+   
+   /**
+    * @return
+    */
+   public static String getPrivateSavedReportsAdHocPath()
+   {
+      return getPrivateSavedReportsPath() + AD_HOC; 
+   }
+   
+   /**
+    * @return
+    */
+   public static String getPublicSavedReportsAdHocPath()
+   {
+      return getPublicSavedReportsPath() + AD_HOC; 
+   }
+   
+   /**
+    * @return
+    */
+   public static List<Grant> getRoleOrgReportDefinitionsGrants()
+   {
+      User user = DocumentMgmtUtility.getUser();
+      List<Grant> allGrants = user.getAllGrants();
+      return allGrants; 
+   }
+   
+   /**
+    * @return
+    */
+   public static String getRoleOrgReportDefinitionsPath(String qualifiedId)
+   {
+      return REPORTS_ROOT_FOLDER + "/" + qualifiedId  + REPORT_DESIGNS; 
+   }
+   
+   /**
+    * @return
+    */
+   public static String getRoleOrgSavedReportsPath(String qualifiedId, boolean isAdHoc)
+   {
+      return (isAdHoc) ? REPORTS_ROOT_FOLDER + "/" + qualifiedId  + SAVED_REPORTS + AD_HOC : 
+      REPORTS_ROOT_FOLDER + "/" + qualifiedId  + SAVED_REPORTS; 
    }
    
 }

@@ -39,6 +39,13 @@ public class I18nFolderUtils
    public static final String NOTES_V = "notes";
    public static final String PREDEFINED_REPORTS = "predefinedReports";
    public static final String REPORTS = "reports";
+   public static final String REPORT_MANAGER_REPORTS = "reportManagerReport";
+   public static final String PRIVATE_REPORT_DEFINITIONS = "privateReportDefinitions";
+   public static final String PUBLIC_REPORT_DEFINITIONS = "publicReportDefinitions";
+   public static final String PRIVATE_SAVED_REPORTS = "privateSavedReports";
+   public static final String PUBLIC_SAVED_REPORTS = "publicSavedReports";
+   public static final String AD_HOC = "AdHoc";
+   
    // virtual folders ends
    
    public static final String PROCESS_MODELS = "process-models";
@@ -159,6 +166,19 @@ public class I18nFolderUtils
             "views.myDocumentsTreeView.documentTree.commonDocumentsFolderLabel"));
       systemFolders_virtual.add(new SystemFolder(PREDEFINED_REPORTS, PREDEFINED_REPORTS));
       systemFolders_virtual.add(new SystemFolder(REPORTS, "views.genericRepositoryView.systemFolders.reports.label"));
+      
+      systemFolders_virtual.add(new SystemFolder(REPORT_MANAGER_REPORTS, "views.genericRepositoryView.systemFolders.reportManagerReport.label"));
+      
+      systemFolders_virtual.add(new SystemFolder(PRIVATE_REPORT_DEFINITIONS, "views.genericRepositoryView.systemFolders.privateReportDefinitions.label"));
+      systemFolders_virtual.add(new SystemFolder(PUBLIC_REPORT_DEFINITIONS, "views.genericRepositoryView.systemFolders.publicReportDefinitions.label"));
+      
+      systemFolders_virtual.add(new SystemFolder(PRIVATE_SAVED_REPORTS, "views.genericRepositoryView.systemFolders.privateSavedReports.label"));
+      systemFolders_virtual.add(new SystemFolder(PUBLIC_SAVED_REPORTS, "views.genericRepositoryView.systemFolders.publicSavedReports.label"));
+      systemFolders_virtual.add(new SystemFolder(PRIVATE_SAVED_REPORTS + AD_HOC, "views.genericRepositoryView.systemFolders.savedReports.adHoc.label"));
+      systemFolders_virtual.add(new SystemFolder(PUBLIC_SAVED_REPORTS + AD_HOC, "views.genericRepositoryView.systemFolders.savedReports.adHoc.label"));
+      
+      systemFolders_virtual.add(new SystemFolder(MY_SAVED_REPORTS_V  + AD_HOC, "views.genericRepositoryView.systemFolders.savedReports.adHoc.label"));
+      
       systemFolders_virtual.add(new SystemFolder(MY_REPORT_DESIGNS_V, MY_REPORT_DESIGNS_V));
       systemFolders_virtual.add(new SystemFolder(MY_SAVED_REPORTS_V, MY_SAVED_REPORTS_V));
       systemFolders_virtual.add(new SystemFolder(PROCESS_DOCUMENTS_V,

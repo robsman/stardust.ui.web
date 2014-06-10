@@ -27,6 +27,7 @@ import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.dto.Note;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.Folder;
+import org.eclipse.stardust.engine.api.runtime.Grant;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.core.spi.dms.IRepositoryInstanceInfo;
 import org.eclipse.stardust.engine.core.spi.dms.RepositoryIdUtils;
@@ -317,11 +318,74 @@ public class RepositoryUtility
    public static DefaultTreeModel createMyReportsModel()
    {
       // create Reports Node
-      DefaultMutableTreeNode reportsNode = createVirtualNode(I18nFolderUtils.getLabel(I18nFolderUtils.REPORTS),
+      DefaultMutableTreeNode reportsNode = createVirtualNode(I18nFolderUtils.getLabel(I18nFolderUtils.REPORT_MANAGER_REPORTS),
             ResourcePaths.I_FOLDER, null);
+      //Predefined Reports
       reportsNode.add(createPredefinedReportNode());
-      reportsNode.add(createReportDesignsNode());
-      reportsNode.add(createArchivedReportsNode());
+      //Report Definitions
+      DefaultMutableTreeNode reportDefinitions = createVirtualNode(
+            I18nFolderUtils.getLabel(I18nFolderUtils.MY_REPORT_DESIGNS_V),
+            ResourcePaths.I_FOLDER, null);
+      ((RepositoryResourceUserObject)reportDefinitions.getUserObject()).setExpanded(false);
+      reportsNode.add(reportDefinitions);
+      
+      //Private Report Definitions
+      DefaultMutableTreeNode privateReportDefinitionsNode = createPrivateReportDefinitionsNode();
+      reportDefinitions.add(privateReportDefinitionsNode);
+      
+      //Public Report Definitions
+      DefaultMutableTreeNode publicReportDefinitionsNode = createPublicReportDefinitionsNode();
+      reportDefinitions.add(publicReportDefinitionsNode);
+      
+      List<DefaultMutableTreeNode> roleOrgReportDefinitionsNode = createRoleOrgReportDefinitionsNode();
+      for (DefaultMutableTreeNode defaultMutableTreeNode : roleOrgReportDefinitionsNode)
+      {
+         reportDefinitions.add(defaultMutableTreeNode);
+      }
+      
+      //Saved Reports
+      DefaultMutableTreeNode savedReportsNode = createVirtualNode(
+            I18nFolderUtils.getLabel(I18nFolderUtils.MY_SAVED_REPORTS_V),
+            ResourcePaths.I_FOLDER, null);
+      ((RepositoryResourceUserObject)savedReportsNode.getUserObject()).setExpanded(false);
+      reportsNode.add(savedReportsNode);
+
+      // Private Saved Reports
+      DefaultMutableTreeNode privateSavedReports = createSavedReportsNode(
+            DocumentMgmtUtility.getPrivateSavedReportsPath(),
+            I18nFolderUtils.PRIVATE_SAVED_REPORTS);
+      savedReportsNode.add(privateSavedReports);
+
+      populateFolderContents(privateSavedReports);
+
+      DefaultMutableTreeNode privateSavedReportsAdHocNode = createSavedReportsNode(
+            DocumentMgmtUtility.getPrivateSavedReportsAdHocPath(),
+            I18nFolderUtils.PRIVATE_SAVED_REPORTS + I18nFolderUtils.AD_HOC);
+      privateSavedReports.add(privateSavedReportsAdHocNode);
+
+      // Public Saved Reports
+      DefaultMutableTreeNode publicSavedReports = createSavedReportsNode(
+            DocumentMgmtUtility.getPublicSavedReportsPath(),
+            I18nFolderUtils.PUBLIC_SAVED_REPORTS);
+      savedReportsNode.add(publicSavedReports);
+      
+      populateFolderContents(publicSavedReports);
+
+      DefaultMutableTreeNode publicSavedReportsAdHocNode = createSavedReportsNode(
+            DocumentMgmtUtility.getPublicSavedReportsAdHocPath(),
+            I18nFolderUtils.PUBLIC_SAVED_REPORTS + I18nFolderUtils.AD_HOC);
+      publicSavedReports.add(publicSavedReportsAdHocNode);
+      
+      List<DefaultMutableTreeNode> roleOrgSavedReportsNode = createRoleOrgSavedReportsNode(false);
+      
+      List<DefaultMutableTreeNode> roleOrgSavedReportsAdHocNode = createRoleOrgSavedReportsNode(true);
+      
+      for (int i = 0; i < roleOrgSavedReportsNode.size(); i++)
+      {
+         roleOrgSavedReportsNode.get(i).add(roleOrgSavedReportsAdHocNode.get(i));
+         savedReportsNode.add(roleOrgSavedReportsNode.get(i));
+      }
+      
       return new DefaultTreeModel(reportsNode);
    }
 
@@ -1542,5 +1606,190 @@ public class RepositoryUtility
          userObject.setIcon(ResourcePaths.I_REPOSITORY_DEFAULT);
       }
       return label;
+   }
+   
+   /**
+    * Create Private Report Definitions node
+    * 
+    * @return
+    */
+   private static DefaultMutableTreeNode createPrivateReportDefinitionsNode()
+   {
+      String myReportDesignsPath = DocumentMgmtUtility.getMyReportDesignsPath();
+      Folder folder = DocumentMgmtUtility.getFolder(myReportDesignsPath);
+      DefaultMutableTreeNode myReportDesignsNode;
+      RepositoryResourceUserObject resourceObject = null;
+      if (null == folder)
+      {
+         myReportDesignsNode = createFolderProxyNode(I18nFolderUtils.getLabel(I18nFolderUtils.PRIVATE_REPORT_DEFINITIONS),
+               ResourcePaths.I_FOLDER, null, myReportDesignsPath);
+         resourceObject = (RepositoryResourceUserObject) myReportDesignsNode.getUserObject();
+      }
+      else
+      {
+         myReportDesignsNode = createFolderNode(folder);
+         RepositoryFolderUserObject folderObject = (RepositoryFolderUserObject) myReportDesignsNode.getUserObject();
+         folderObject.setLabel(I18nFolderUtils.getLabel(I18nFolderUtils.PRIVATE_REPORT_DEFINITIONS));
+         folderObject.setIcon(ResourcePaths.I_FOLDER);
+         resourceObject = folderObject;
+      }
+      resourceObject.setEditable(false);
+      resourceObject.setCanCreateFile(false);
+      resourceObject.setDeletable(false);
+      resourceObject.setCanCreateFolder(true);
+      return myReportDesignsNode;
+   }
+   
+   /**
+    * Create Public Report Definitions node
+    * 
+    * @return
+    */
+   private static DefaultMutableTreeNode createPublicReportDefinitionsNode()
+   {
+      String publicReportDefinitionsPath = DocumentMgmtUtility.getPublicReportDefinitionsPath();
+      Folder folder = DocumentMgmtUtility.getFolder(publicReportDefinitionsPath);
+      DefaultMutableTreeNode myReportDesignsNode;
+      RepositoryResourceUserObject resourceObject = null;
+      if (null == folder)
+      {
+         myReportDesignsNode = createFolderProxyNode(I18nFolderUtils.getLabel(I18nFolderUtils.PUBLIC_REPORT_DEFINITIONS),
+               ResourcePaths.I_FOLDER, null, publicReportDefinitionsPath);
+         resourceObject = (RepositoryResourceUserObject) myReportDesignsNode.getUserObject();
+      }
+      else
+      {
+         myReportDesignsNode = createFolderNode(folder);
+         RepositoryFolderUserObject folderObject = (RepositoryFolderUserObject) myReportDesignsNode.getUserObject();
+         folderObject.setLabel(I18nFolderUtils.getLabel(I18nFolderUtils.PUBLIC_REPORT_DEFINITIONS));
+         folderObject.setIcon(ResourcePaths.I_FOLDER);
+         resourceObject = folderObject;
+      }
+      resourceObject.setEditable(false);
+      resourceObject.setCanCreateFile(false);
+      resourceObject.setDeletable(false);
+      resourceObject.setCanCreateFolder(true);
+      return myReportDesignsNode;
+   }
+   
+   /**
+    * Create Role/ORG Report Definitions node
+    * 
+    * @return
+    */
+   private static List<DefaultMutableTreeNode> createRoleOrgReportDefinitionsNode()
+   {
+      
+       List<Grant> roleOrgReportDefinitionsGrants = DocumentMgmtUtility.getRoleOrgReportDefinitionsGrants();
+       List<DefaultMutableTreeNode> roleOrgReportDefinitionsNodes = new ArrayList<DefaultMutableTreeNode>();
+       
+       for (Grant grant : roleOrgReportDefinitionsGrants)
+       {
+          String roleOrgReportDefinitionsPath = DocumentMgmtUtility.getRoleOrgReportDefinitionsPath(grant.getQualifiedId());
+          Folder folder = DocumentMgmtUtility.getFolder(roleOrgReportDefinitionsPath);
+          DefaultMutableTreeNode roleOrgReportDefinitionsNode = null;
+          RepositoryResourceUserObject resourceObject = null;
+          String folderLabel = grant.getQualifiedId() + " " + I18nFolderUtils.getLabel(I18nFolderUtils.MY_REPORT_DESIGNS_V);
+          if (null == folder)
+          {
+             roleOrgReportDefinitionsNode = createFolderProxyNode(folderLabel,
+                   ResourcePaths.I_FOLDER, null, roleOrgReportDefinitionsPath);
+             resourceObject = (RepositoryResourceUserObject) roleOrgReportDefinitionsNode.getUserObject();
+          }
+          else
+          {
+             roleOrgReportDefinitionsNode = createFolderNode(folder);
+             RepositoryFolderUserObject folderObject = (RepositoryFolderUserObject) roleOrgReportDefinitionsNode.getUserObject();
+             folderObject.setLabel(I18nFolderUtils.getLabel(folderLabel));
+             folderObject.setIcon(ResourcePaths.I_FOLDER);
+             resourceObject = folderObject;
+          }
+          resourceObject.setEditable(false);
+          resourceObject.setCanCreateFile(false);
+          resourceObject.setDeletable(false);
+          resourceObject.setCanCreateFolder(true);
+          
+          roleOrgReportDefinitionsNodes.add(roleOrgReportDefinitionsNode);
+       }
+      
+      return roleOrgReportDefinitionsNodes;
+   }
+   
+   /**
+    * Create Saved Reports node
+    * 
+    * @return
+    */
+   private static DefaultMutableTreeNode createSavedReportsNode(String savedReportsPath, String reportType)
+   {
+      Folder folder = DocumentMgmtUtility.getFolder(savedReportsPath);
+      DefaultMutableTreeNode savedReportsNode;
+      RepositoryResourceUserObject resourceObject = null;
+      if (null == folder)
+      {
+         savedReportsNode = createFolderProxyNode(I18nFolderUtils.getLabel(reportType),
+               ResourcePaths.I_FOLDER, null, savedReportsPath);
+         resourceObject = (RepositoryResourceUserObject) savedReportsNode.getUserObject();
+      }
+      else
+      {
+         savedReportsNode = createFolderNode(folder);
+         RepositoryFolderUserObject folderObject = (RepositoryFolderUserObject) savedReportsNode.getUserObject();
+         folderObject.setLabel(I18nFolderUtils.getLabel(reportType));
+         folderObject.setIcon(ResourcePaths.I_FOLDER);
+         resourceObject = folderObject;
+      }
+      resourceObject.setCanCreateFolder(true);
+      resourceObject.setEditable(false);
+      resourceObject.setCanCreateFile(false);
+      resourceObject.setDeletable(false);
+      resourceObject.setCanUploadFile(false);
+      return savedReportsNode;
+   }
+   
+   /**
+    * Create Role/Org Saved Reports node
+    * 
+    * @return
+    */
+   private static List<DefaultMutableTreeNode> createRoleOrgSavedReportsNode(
+         boolean isAdHoc)
+   {
+      List<Grant> roleOrgSavedReportsGrants = DocumentMgmtUtility
+            .getRoleOrgReportDefinitionsGrants();
+      List<DefaultMutableTreeNode> roleOrgSavedReportsNodes = new ArrayList<DefaultMutableTreeNode>();
+
+      for (Grant grant : roleOrgSavedReportsGrants)
+      {
+         String roleOrgSavedReportsPath = DocumentMgmtUtility.getRoleOrgSavedReportsPath(
+               grant.getQualifiedId(), isAdHoc);
+
+         String folderLabel = (isAdHoc) ? I18nFolderUtils.getLabel(I18nFolderUtils.MY_SAVED_REPORTS_V
+                     + I18nFolderUtils.AD_HOC) 
+               : grant.getQualifiedId() + " "
+                  + I18nFolderUtils.getLabel(I18nFolderUtils.MY_SAVED_REPORTS_V);
+
+         DefaultMutableTreeNode savedReportsNode = createSavedReportsNode(
+               roleOrgSavedReportsPath, folderLabel);
+
+         roleOrgSavedReportsNodes.add(savedReportsNode);
+      }
+
+      return roleOrgSavedReportsNodes;
+   }
+   
+   /**
+    * 
+    * 
+    * @param node
+    */
+   public static void populateFolderContents(DefaultMutableTreeNode node)
+   {
+      if (node.getUserObject() instanceof RepositoryFolderUserObject)
+      {
+         expandTree(node);
+         RepositoryFolderUserObject folderUserObject = (RepositoryFolderUserObject) node.getUserObject();
+         folderUserObject.setExpanded(false);
+      }
    }
 }
