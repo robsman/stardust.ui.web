@@ -151,7 +151,7 @@ if (!window["BridgeUtils"]) {
 		 *
 		 */
 		function handleTroubledConnection(loc) {
-			log("Handling Toubled Connection for: " + loc, "w");
+			log("Handling Troubled Connection for: " + loc, "w");
 			
 			try {
 				var launchPanelIframe = document.getElementById("portalLaunchPanels");
@@ -170,17 +170,17 @@ if (!window["BridgeUtils"]) {
 
 				if (visibleConStatus && visibleConStatus.className == "iceOutConStatDisconnect") {
 					handlingTroubledConnection = false;
-					log("Toubled Connection became Lost for: " + loc);
+					log("Troubled Connection became Lost for: " + loc);
 					handleServerDisconnected();
 				} else if (visibleConStatus && visibleConStatus.className == "iceOutConStatCaution") {
-					log("Snoozing for handling Toubled Connection for: " + loc);
+					log("Snoozing for handling Troubled Connection for: " + loc);
 					window.setTimeout(function(){
 						handleTroubledConnection(loc);
 					}, 5000);
 				} else {
 					// Connection became alive
 					handlingTroubledConnection = false;
-					log("Troubled Connection became Alive: " + loc, "i");
+					log("Troubled Connection became Alive for: " + loc, "i");
 				}
 			} catch(e) {
 				log("Unexpected Error in handling Troubled Connection", "e");
