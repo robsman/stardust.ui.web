@@ -22,14 +22,24 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
-import org.eclipse.stardust.engine.api.model.*;
+import org.eclipse.stardust.engine.api.model.Data;
+import org.eclipse.stardust.engine.api.model.DataMapping;
+import org.eclipse.stardust.engine.api.model.DataPath;
+import org.eclipse.stardust.engine.api.model.Model;
+import org.eclipse.stardust.engine.api.model.Participant;
+import org.eclipse.stardust.engine.api.model.PredefinedConstants;
+import org.eclipse.stardust.engine.api.model.ProcessDefinition;
+import org.eclipse.stardust.engine.api.model.Reference;
 import org.eclipse.stardust.engine.api.query.DeployedModelQuery;
 import org.eclipse.stardust.engine.api.runtime.DeployedModel;
 import org.eclipse.stardust.engine.api.runtime.DeployedModelDescription;
 import org.eclipse.stardust.engine.api.runtime.Models;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.engine.core.runtime.beans.DocumentTypeUtils;
+import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
+import org.eclipse.stardust.engine.core.struct.TypedXPath;
 import org.eclipse.stardust.engine.extensions.dms.data.DocumentType;
+import org.eclipse.stardust.engine.extensions.xml.data.XPathUtils;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
@@ -306,6 +316,50 @@ public class ModelUtils
       return allDocumentTypes;
    }
 
+   /**
+    * 
+    * @param dataMapping
+    * @return
+    */
+   public static Set<TypedXPath> getXPaths(DataMapping dataMapping)
+   {
+      Model model = ModelCache.findModelCache().getModel(dataMapping.getModelOID());
+      Data data = model.getData(dataMapping.getDataId());
+      Reference ref = data.getReference();
+      Model refModel = model;
+
+      String typeDeclarationId = null;
+      if (ref == null)
+      {
+         typeDeclarationId = (String) data.getAttribute(StructuredDataConstants.TYPE_DECLARATION_ATT);
+         if (data.getModelOID() != refModel.getModelOID())
+         {
+            refModel = org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils.getModel(data.getModelOID());
+         }
+         if (!StringUtils.isEmpty(typeDeclarationId) && typeDeclarationId.indexOf("typeDeclaration") == 0)
+         {
+            // For data created in current model, Structured type in different model
+            try
+            {
+               String parts[] = typeDeclarationId.split("\\{")[1].split("\\}");
+               typeDeclarationId = parts[1];
+               Model newRefModel = org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils.getModel(parts[0]);
+               refModel = newRefModel != null ? newRefModel : refModel;
+            }
+            catch (Exception e)
+            {
+               trace.error("Error occured in Type declaration parsing", e);
+            }
+         }
+      }
+      else
+      {
+         typeDeclarationId = ref.getId();
+         refModel = ModelCache.findModelCache().getModel(ref.getModelOid());
+      }
+      return XPathUtils.getXPaths(refModel, typeDeclarationId, dataMapping.getDataPath());
+   }
+   
    public static DocumentType getDocumentTypeFromData(Model model, Data data)
    {
       DocumentType result = null;

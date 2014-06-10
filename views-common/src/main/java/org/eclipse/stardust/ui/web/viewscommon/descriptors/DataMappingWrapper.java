@@ -60,6 +60,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.CommonDescriptorUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
 
 
 public class DataMappingWrapper implements IGenericInputField, Serializable
@@ -212,8 +213,7 @@ public class DataMappingWrapper implements IGenericInputField, Serializable
       enumList.clear();
       if(null == xpaths || xpaths.isEmpty())
       {
-         xpaths = XPathUtils.getXPaths(ModelCache.findModelCache().getModel(dataMapping.getModelOID()),
-               dataMapping);   
+         xpaths = ModelUtils.getXPaths(dataMapping);   
       }
       Iterator<TypedXPath> xpathIterator = xpaths.iterator();
       while (xpathIterator.hasNext())

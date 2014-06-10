@@ -41,7 +41,6 @@ import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.WorkflowService;
 import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
 import org.eclipse.stardust.engine.core.struct.TypedXPath;
-import org.eclipse.stardust.engine.extensions.xml.data.XPathUtils;
 import org.eclipse.stardust.ui.web.common.configuration.UserPreferencesHelper;
 import org.eclipse.stardust.ui.web.common.spi.preference.PreferenceScope;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
@@ -394,9 +393,9 @@ public class CommonDescriptorUtils
    */
    public static boolean isEnumerationType(DataMapping dataMapping)
    {
-      Model model = ModelCache.findModelCache().getModel(dataMapping.getModelOID());
       boolean isEnum = false;
-      Set<TypedXPath> xpaths = XPathUtils.getXPaths(model, dataMapping);
+
+      Set<TypedXPath> xpaths = ModelUtils.getXPaths(dataMapping);
       for (TypedXPath path : xpaths)
       {
          if (path.getParentXPath() == null)
