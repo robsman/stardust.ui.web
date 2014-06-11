@@ -321,7 +321,7 @@ public class RepositoryUtility
       DefaultMutableTreeNode reportsNode = createVirtualNode(I18nFolderUtils.getLabel(I18nFolderUtils.REPORT_MANAGER_REPORTS),
             ResourcePaths.I_FOLDER, null);
       //Predefined Reports
-      reportsNode.add(createPredefinedReportNode());
+      //reportsNode.add(createPredefinedReportNode());
       //Report Definitions
       DefaultMutableTreeNode reportDefinitions = createVirtualNode(
             I18nFolderUtils.getLabel(I18nFolderUtils.MY_REPORT_DESIGNS_V),
@@ -382,6 +382,7 @@ public class RepositoryUtility
       
       for (int i = 0; i < roleOrgSavedReportsNode.size(); i++)
       {
+         populateFolderContents(roleOrgSavedReportsNode.get(i));
          roleOrgSavedReportsNode.get(i).add(roleOrgSavedReportsAdHocNode.get(i));
          savedReportsNode.add(roleOrgSavedReportsNode.get(i));
       }
