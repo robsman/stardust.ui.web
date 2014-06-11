@@ -86,7 +86,7 @@ public class RepositoryUtility
     */
    public static DefaultTreeModel createDocumentRepoModel()
    {
-      DefaultMutableTreeNode repositoryRootNode = createVirtualNode("Repositories", ResourcePaths.I_REPOSITORY_ROOT, null);
+      DefaultMutableTreeNode repositoryRootNode = createVirtualNode(MessagesViewsCommonBean.getInstance().getString("views.genericRepositoryView.repositories.label"), ResourcePaths.I_REPOSITORY_ROOT, null);
       List<IRepositoryInstanceInfo> repositoryInstanceInfos = DocumentMgmtUtility.getDocumentManagementService()
       .getRepositoryInstanceInfos();
       String defaultRepository = DocumentMgmtUtility.getDocumentManagementService().getDefaultRepository();
