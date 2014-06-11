@@ -412,6 +412,27 @@ define(
 											seriesIds.push(prop);
 										}
 										
+										if (self.report.dataSet.firstDimension === self.reportingService.metadata.objects.processInstance.dimensions.priority.id)
+										{
+										   var qualifier = [ "staticData", "priorityLevel" ];
+										   var enumItems = self.reportingService.getEnumerators2(qualifier[0], qualifier[1]);
+
+										   data.seriesGroup.forEach(function(group)
+										   {
+										      for ( var i = 0; i < group.length; i++)
+										      {
+										         for ( var item in enumItems)
+										         {
+										            if (enumItems[item].id == group[i][0])
+										            {
+										               group[i][0] = enumItems[item].name;
+										               break;
+										            }
+										         }
+										      }
+										   })
+										}
+										
 										console
 												.log("Report Data before preprocessing");
 										console.log(data);

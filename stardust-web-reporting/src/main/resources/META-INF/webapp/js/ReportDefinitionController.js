@@ -764,6 +764,7 @@ define(
 					} else if (this.report.dataSet.type === 'seriesGroup') {
 						this.report.layout.type = "simpleReport";
 						this.report.layout.subType = "chart";
+						this.report.dataSet.columns = [];
 					} else if (this.report.dataSet.type === 'recordSet') {
 						this.report.layout.type = "table";
 					}
