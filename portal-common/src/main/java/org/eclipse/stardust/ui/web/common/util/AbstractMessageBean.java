@@ -64,15 +64,27 @@ public abstract class AbstractMessageBean implements Map<String, String>, Serial
             paramList.add("");
             params = (String[]) paramList.toArray(new String[paramList.size()]);
          }
-
-         int i = 0;
+         
+         // Maintained 2 seperate counters, as index used in 'value' may not be in
+         // sequence
+         // i.e {0},{1},{2} or may be {0}, {2},{3}
+         int iterateIndex = 0;
+         // Index to maintain check if all params are substituted
+         int paramIndex = 0;
          // For jcrId used for Extract Page msg, multiple'{ and }' are part of value
          // added check for param length
-         while (value.indexOf("{") >= 0 && i < params.length)
+         while (value.indexOf("{") >= 0 && paramIndex < params.length)
          {
-            int startInd = value.indexOf("{" + i + "}");
-            int lenght = new String("{" + i + "}").length();
-            value = value.replace(value.substring(startInd, startInd + lenght), params[i++]);
+            int startInd = value.indexOf("{" + iterateIndex + "}");
+            int lenght = new String("{" + iterateIndex + "}").length();
+            // If 'value' has iterateIndex value say '{1}' replace with param runtime value  
+            if(startInd != -1)
+            {
+               value = value.replace(value.substring(startInd, startInd + lenght), params[paramIndex]);
+               paramIndex++;
+            }
+            // increments if index available or not in value String
+            iterateIndex++;
          }
       }
 
