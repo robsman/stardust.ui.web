@@ -75,6 +75,25 @@ define(
 						}
 				};
 				
+				this.metadata.recordSetAggregationFunctions  = {
+	                  average : {
+	                     id : "average",
+	                     name : this.getI18N("reporting.definitionView.layout.table.recordSet.aggregation.average"),
+	                  },
+	                  stdDeviation : {
+	                     id : "stdDeviation",
+	                     name : this.getI18N("reporting.definitionView.layout.table.recordSet.aggregation.stdDeviation"),
+	                  },
+	                  minimum : {
+	                     id : "minimum",
+	                     name : this.getI18N("reporting.definitionView.layout.table.recordSet.aggregation.minimum"),
+	                  },
+	                  maximum : {
+	                     id : "maximum",
+	                     name : this.getI18N("reporting.definitionView.layout.table.recordSet.aggregation.maximum"),
+	                  }
+	            };
+				
 				this.metadata.chartTypes = {
 					xyPlot : {
 						id : "xyPlot",
@@ -1488,10 +1507,10 @@ define(
 					var dimensions = [];
 
 					for ( var m in report.dataSet.columns) {
-						if (this.getPrimaryObject(report.dataSet.primaryObject).dimensions[report.dataSet.columns[m]] != null) {
+						if (this.getPrimaryObject(report.dataSet.primaryObject).dimensions[report.dataSet.columns[m].id] != null) {
 							dimensions.push(this.getDimension(
 									report.dataSet.primaryObject,
-									report.dataSet.columns[m]));
+									report.dataSet.columns[m].id));
 						} else {
 							// Must be a joined field or computed column
 

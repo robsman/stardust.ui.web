@@ -39,6 +39,15 @@ define(
 				 */
 				ReportHelper.prototype.primaryObjectEnumGroup = function(id,
 						report) {
+				   
+				     if (report.dataSet.groupBy != null && report.dataSet.groupBy != 'None')
+	               {
+	                  var index = id.indexOf("#");
+	                  if(index != -1) { 
+	                     id = id.substr( 0, index );
+	                  }
+	               }
+				     
 					var dimension = this.getDimension(id, report);
 
 					if (!dimension) {
@@ -107,6 +116,13 @@ define(
 				 */
 				ReportHelper.prototype.getDimensionsDisplayOrder = function(id,
 						report) {
+				   if (report.dataSet.groupBy != null && report.dataSet.groupBy != 'None')
+               {
+                  var index = id.indexOf("#");
+                  if(index != -1) { 
+                     id = id.substr( 0, index );
+                  }
+               }
 					var dimension = this.getDimension(id, report);
 
 					if (!dimension) {

@@ -301,19 +301,19 @@ table.formTable td {
 										<td style="vertical-align: center"><table cellpadding="0"
 												cellspacing="0">
 												<tr>
-													<td><button ng-click="removeItems(selColumns, this.report.dataSet.columns)">&#x3c;</button></td>
+													<td><button ng-click="moveItemsLeft(selColumns, this.report.dataSet.columns)">&#x3c;</button></td>
 												</tr>
 												<tr>
-													<td><button ng-click="addItems(availableColumns, this.report.dataSet.columns)">&#x3e;</button></td>
+													<td><button ng-click="moveItemsRight(availableColumns, this.report.dataSet.columns)">&#x3e;</button></td>
 												</tr>
 												<tr>
 													<td>
-                                          <button ng-click="removeAllItems(this.report.dataSet.columns)">&#xab;</button>
+                                          <button ng-click="moveAllItemsLeft(this.report.dataSet.columns)">&#xab;</button>
 													</td>
 												</tr>
 												<tr>
 													<td>
-                                          <button ng-click="addAllItems(getRecordSetAvailableColumns(), this.report.dataSet.columns)">&#xbb;</button>
+                                          <button ng-click="moveAllItemsRight(getRecordSetAvailableColumns(), this.report.dataSet.columns)">&#xbb;</button>
 													</td>
 												</tr>
 											</table></td>
@@ -324,10 +324,10 @@ table.formTable td {
                               <td style="vertical-align: top">
                                  <table cellpadding="0" cellspacing="0">
                                     <tr>
-                                       <td><button ng-click="moveItemUp(selColumns, this.report.dataSet.columns)">&#x2c4;</button></td>
+                                       <td><button ng-click="moveItemUpWard(selColumns, this.report.dataSet.columns)">&#x2c4;</button></td>
                                     </tr>
                                     <tr>
-                                       <td><button ng-click="moveItemDown(selColumns, this.report.dataSet.columns)">&#x2c5;</button></td>
+                                       <td><button ng-click="moveItemDownWard(selColumns, this.report.dataSet.columns)">&#x2c5;</button></td>
                                     </tr>
                                  </table>
                               </td>

@@ -433,6 +433,27 @@ define(
 										   })
 										}
 										
+										if (self.report.dataSet.firstDimension === self.reportingService.metadata.objects.
+										                                    processInstance.dimensions.priority.id)
+                              {
+										   var qualifier = ["staticData", "priorityLevel"];
+										   var enumItems = self.reportingService.getEnumerators2(qualifier[0], qualifier[1]);
+                              
+   										data.seriesGroup.forEach(function(group) {
+   										   for ( var i = 0; i < group.length; i++)
+                                    {
+   								            for ( var item in enumItems)
+   								            {
+   								               if (enumItems[item].id == group[i][0])
+   								               {
+   								                  group[i][0] = enumItems[item].name;
+   								                  break;
+   								               }
+   								            }
+                                    }
+   										})
+                              }
+										
 										console
 												.log("Report Data before preprocessing");
 										console.log(data);
@@ -1102,8 +1123,7 @@ define(
                   };
 		
 		ReportRenderingController.prototype.refreshRecordSet = function(scopeController) {
-			var columns = this.reportingService.getColumnDimensions(this.report);
-			
+			   var columns = this.reportingService.getColumnDimensions(this.report);
 		
             var TEMPLATE = "<table cellpadding=\"0\" cellspacing=\"0\" class=\"dataTable\"><thead><tr>_HEADERS_</tr></thead><tbody><tr sd-table-data=\"row in rows\">_COLUMNS_</tr></tbody></table>";
                
@@ -1118,12 +1138,20 @@ define(
                
             for (x in columns) {
                var column = columns[x];
-               headers += "<th>" + column.name + "</th>";
+               var columnDisplayName = column.name;
+               if (this.report.dataSet.groupBy != null && this.report.dataSet.groupBy != 'None') {
+                  var aggregations = this.reportingService.metadata.recordSetAggregationFunctions;
+                  for ( var n in aggregations ) {
+                     if (this.report.dataSet.columns[x].metaData.aggregationFunction === aggregations[n].id)
+                     {
+                        columnDisplayName += " (" + aggregations[n].name + ")";
+                        break;
+                     }
+                  }
+               }
+               headers += "<th>" + columnDisplayName + "</th>";
                    var col = column.id;
                    console.log(col);
-                   // Logic to handle special characters like '{' in column id
-                   // column.id is typically like {Model71}ChangeOfAddress:{Model71}ConfirmationNumber
-                   // So Getting the last word i.e. ConfirmationNumber
                    col = replaceSpecialChars(col);
                    var style = "";
                    if (column.type.id == this.reportingService.metadata.timestampType.id)
@@ -1131,7 +1159,7 @@ define(
                       style = " style = \"text-align: right;\"";
                    }
                    cols += "<td" + style +">{{row." + col + "}}</td>";
-                }
+            }
             TEMPLATE_COPY = TEMPLATE_COPY.replace("_HEADERS_", headers);
             TEMPLATE_COPY = TEMPLATE_COPY.replace("_COLUMNS_", cols);
               
@@ -1143,8 +1171,8 @@ define(
             
             if (columns.length != 0)
             {   
-     			var self = this;
-                    setTimeout(function () {
+               var self = this;
+               setTimeout(function () {
                  	   self.refreshPreviewData(scopeController);
                     }, 200);
             } 

@@ -874,6 +874,7 @@ define(
              */
             ReportDefinitionController.prototype.changeGroupBy = function() {
                this.populateChartTypes();
+               this.report.dataSet.columns = [];
                this.updateView();
             };
 
@@ -1658,13 +1659,35 @@ define(
              */
             ReportDefinitionController.prototype.getRecordSetAvailableColumns = function() {
                var dimensions = this.reportingService.getCumulatedDimensions(this.report);
+               var aggregatedDimensions = [];
+               
+               var self = this;
+               
+               if (self.report.dataSet.groupBy != null && self.report.dataSet.groupBy != 'None')
+               {
+                  dimensions.forEach(function(dimension) {
+                     if (self.isNumeric(dimension))
+                     {
+                        self.createAggegateDimensions(dimension, aggregatedDimensions);
+                     }
+                  });
+                  dimensions = aggregatedDimensions;
+               }
+               
                var enumerators = [];
                for ( var n in dimensions ) {
                   var add = true; 
                   if (this.report.dataSet.columns) {
                      this.report.dataSet.columns
-                           .forEach(function(columnId) {
-                              if (dimensions[n].id == columnId) {
+                           .forEach(function(column) {
+                              if (self.report.dataSet.groupBy && self.report.dataSet.groupBy != 'None') 
+                              {
+                                 if ((column.id + "#" + column.metaData.aggregationFunction) === dimensions[n].id)
+                                 {
+                                    add = false;
+                                 }
+                              } else if (dimensions[n].id == column.id) 
+                              {
                                  add = false;
                               }
                            });
@@ -1696,16 +1719,205 @@ define(
                
                var availableColumns = this.reportingService.getCumulatedDimensions(this.report);
                var selColumns = this.report.dataSet.columns;
+               
+               var aggregatedDimensions = [];   
+               var self = this;
+               
+               if (this.report.dataSet.groupBy && this.report.dataSet.groupBy != 'None')
+               {
+                  availableColumns.forEach(function(dimension) {
+                     if (self.isNumeric(dimension))
+                     {
+                        self.createAggegateDimensions(dimension, aggregatedDimensions);
+                     }
+                  });
+                  availableColumns = aggregatedDimensions;
+               }
                 
                for (var i in selColumns) {
                   for ( var k in availableColumns) {
-                     if (selColumns[i] === availableColumns[k].id)
+                     if (this.report.dataSet.groupBy && this.report.dataSet.groupBy != 'None') 
+                     {
+                        if ((selColumns[i].id + "#" + selColumns[i].metaData.aggregationFunction) === availableColumns[k].id)
+                        {
+                           enumerators.push(availableColumns[k]);
+                           break;
+                        }
+                     } else if (selColumns[i].id === availableColumns[k].id)
                      {
                         enumerators.push(availableColumns[k]);
                         break;
                      }
+            };
+            
+            ReportDefinitionController.prototype.moveItemsRight = function (selectedItems, list) {
+               var self = this;
+               selectedItems.forEach(function(itemId){
+                  var index = self.getItemIndex(itemId, list);
+                  if (index == -1) {
+                     self.addItem(list, itemId, "h");
                   }
+               });
+            };
+            
+            ReportDefinitionController.prototype.moveItemsLeft = function (selectedItems, list) {
+               var self = this;
+               selectedItems.forEach(function(itemId){
+                  var index = self.getItemIndex(itemId, list);
+                  if (index != -1) {
+                     self.removeItem(list, itemId);
+                  }
+               });
+            };
+            
+            ReportDefinitionController.prototype.moveAllItemsRight = function (selectedItems, list) {
+               var self = this;
+               selectedItems.forEach(function(item){
+                  var index = self.getItemIndex(item.id, list);
+                  if (index == -1) {
+                     self.addItem(list, item.id, "h");
+                  }
+               });
+            };
+            
+            ReportDefinitionController.prototype.moveAllItemsLeft = function (list) {
+               list.length = 0;
+            };
+            
+            /**
+             * 
+             */
+            ReportDefinitionController.prototype.moveItemUpWard = function(item, list) {
+                if (this.isMultiSelected(item))
+                {
+                   return;
                 }
+                
+                var index = this.getItemIndex(item[0], list);
+                if (index != -1) {
+                   list.splice(index - 1, 0, list.splice(index, 1)[0]);
+                }
+            };
+            
+            /**
+             * 
+             */
+            ReportDefinitionController.prototype.moveItemDownWard = function(item, list) {
+               if (this.isMultiSelected(item))
+               {
+                  return;
+               }
+               
+               var index = this.getItemIndex(item[0], list);
+               if (index != -1) {
+                  list.splice(index + 1, 0, list.splice(index, 1)[0]);
+               }
+           };
+           
+           /**
+            * 
+            */
+           ReportDefinitionController.prototype.createAggegateDimensions = function(dimension, enumerators) {
+              var aggregations = this.reportingService.metadata.recordSetAggregationFunctions;
+              
+              for ( var n in aggregations ) {
+                 var obj = this  .cloneReportDefinition(dimension);
+                 obj.id = obj.id + "#" + aggregations[n].id;
+                 obj.name = obj.name + " (" + aggregations[n].name + ")";
+                 enumerators.push(obj);
+              }
+           };
+           
+           /**
+            * Adds item to columnDurationUnit
+            */
+           ReportDefinitionController.prototype.addItem = function(list, itemId, colDurationUnit) {
+              //Strip Aggregation Function from ID
+              var colId = StripAggregationFromColumnId(itemId);
+              var aggregationFunction = "None";
+              
+              var primaryObject = this.reportingService.metadata.objects[this.report.dataSet.primaryObject];
+              var dimension = primaryObject.dimensions[colId];
+              
+              var isDescriptor = (dimension.metadata && dimension.metadata.isDescriptor)? true : false;
+              
+              if (this.report.dataSet.groupBy != null && this.report.dataSet.groupBy != 'None') {
+                 aggregationFunction = getAggregationAndColumnId(itemId)[1];
+              }
+              
+              this.addMetadata(list, dimension, isDescriptor, colDurationUnit, aggregationFunction);
+           };
+           
+           /**
+            * Removes item from columnDurationUnit
+            */
+           ReportDefinitionController.prototype.removeItem = function(list, itemId) {
+              var aggregationFunction = getAggregationAndColumnId(itemId);
+              this.removeMetadata(list, aggregationFunction[0], aggregationFunction[1]); 
+           };
+           
+           /**
+            * Adds item's metadata to columnDurationUnit
+            */
+           ReportDefinitionController.prototype.addMetadata = function(list, dimension, isDescriptor, 
+                    durationUnit, aggregationFunction) {
+              list.push({
+                 "id": dimension.id,
+                 "metaData": {
+                    "descriptor": isDescriptor,
+                    "durationUnit": durationUnit,
+                    "aggregationFunction": aggregationFunction
+                 }
+              });
+           };
+           
+           /**
+            * Removes item to columnDurationUnit
+            */
+           ReportDefinitionController.prototype.removeMetadata = function(list, dimensionId, aggregationFunction) {
+              
+              for ( var i = this.report.dataSet.columns.length - 1; i >= 0; i--)
+              {
+                 if (this.report.dataSet.groupBy && (this.report.dataSet.groupBy != 'None')) {
+                    if (list[i].id === dimensionId && 
+                             list[i].metaData.aggregationFunction === aggregationFunction)
+                    {
+                       list.splice(i, 1);
+                    }
+                 } else if (list.id === dimensionId) {
+                    list.splice(i, 1);
+                 }
+              }
+           };
+           
+           /**
+            * Get item index from list
+            */
+           ReportDefinitionController.prototype.getItemIndex = function(itemId, list) {
+              
+              var colId = StripAggregationFromColumnId(itemId);
+              var aggregationFunction = "None";
+              
+              if (this.report.dataSet.groupBy != null && this.report.dataSet.groupBy != 'None') {
+                 aggregationFunction = getAggregationAndColumnId(itemId)[1];
+              }
+              for ( var i = 0; i < list.length; i++)
+              {
+                 if (this.report.dataSet.groupBy && (this.report.dataSet.groupBy != 'None')) 
+                 {
+                    if (list[i].id === colId && 
+                             list[i].metaData.aggregationFunction === aggregationFunction)
+                      {
+                         return i;
+                      }
+                 } else if (list[i].id === colId) 
+                    {
+                         return i;
+                    }
+              }
+              return -1;
+           };
+		}
                return enumerators;
               
             };
@@ -1756,6 +1968,343 @@ define(
 				}
 				return false;
 			};
+			
+			ReportDefinitionController.prototype.moveItemsRight = function (selectedItems, list) {
+            alert("In moveItemsRight");
+            var self = this;
+            selectedItems.forEach(function(itemId){
+               var index = self.getItemIndex(itemId, list);
+               if (index == -1) {
+                  self.addItem(list, itemId, "h");
+               }
+            });
+         };
+         
+         ReportDefinitionController.prototype.moveItemsLeft = function (selectedItems, list) {
+            var self = this;
+            selectedItems.forEach(function(itemId){
+               var index = self.getItemIndex(itemId, list);
+               if (index != -1) {
+                  self.removeItem(list, itemId);
+               }
+            });
+         };
+         
+         ReportDefinitionController.prototype.moveAllItemsRight = function (selectedItems, list) {
+            var self = this;
+            selectedItems.forEach(function(item){
+               var index = self.getItemIndex(item.id, list);
+               if (index == -1) {
+                  self.addItem(list, item.id, "h");
+               }
+            });
+         };
+         
+         ReportDefinitionController.prototype.moveAllItemsLeft = function (list) {
+            list.length = 0;
+         };
+         
+         /**
+          * 
+          */
+         ReportDefinitionController.prototype.moveItemUpWard = function(item, list) {
+             if (this.isMultiSelected(item))
+             {
+                return;
+             }
+             
+             var index = this.getItemIndex(item[0], list);
+             if (index != -1) {
+                list.splice(index - 1, 0, list.splice(index, 1)[0]);
+             }
+         };
+         
+         /**
+          * 
+          */
+         ReportDefinitionController.prototype.moveItemDownWard = function(item, list) {
+            if (this.isMultiSelected(item))
+            {
+               return;
+            }
+            
+            var index = this.getItemIndex(item[0], list);
+            if (index != -1) {
+               list.splice(index + 1, 0, list.splice(index, 1)[0]);
+            }
+        };
+        
+        /**
+         * 
+         */
+        ReportDefinitionController.prototype.createAggegateDimensions = function(dimension, enumerators) {
+           var aggregations = this.reportingService.metadata.recordSetAggregationFunctions;
+           
+           for ( var n in aggregations ) {
+              var obj = this  .cloneReportDefinition(dimension);
+              obj.id = obj.id + "#" + aggregations[n].id;
+              obj.name = obj.name + " (" + aggregations[n].name + ")";
+              enumerators.push(obj);
+           }
+        };
+        
+        /**
+         * Adds item to columnDurationUnit
+         */
+        ReportDefinitionController.prototype.addItem = function(list, itemId, colDurationUnit) {
+           //Strip Aggregation Function from ID
+           var colId = StripAggregationFromColumnId(itemId);
+           var aggregationFunction = "None";
+           
+           var primaryObject = this.reportingService.metadata.objects[this.report.dataSet.primaryObject];
+           var dimension = primaryObject.dimensions[colId];
+           
+           var isDescriptor = (dimension.metadata && dimension.metadata.isDescriptor)? true : false;
+           
+           if (this.report.dataSet.groupBy != null && this.report.dataSet.groupBy != 'None') {
+              aggregationFunction = getAggregationAndColumnId(itemId)[1];
+           }
+           
+           this.addMetadata(list, dimension, isDescriptor, colDurationUnit, aggregationFunction);
+        };
+        
+        /**
+         * Removes item from columnDurationUnit
+         */
+        ReportDefinitionController.prototype.removeItem = function(list, itemId) {
+           var aggregationFunction = getAggregationAndColumnId(itemId);
+           this.removeMetadata(list, aggregationFunction[0], aggregationFunction[1]); 
+        };
+        
+        /**
+         * Adds item's metadata to columnDurationUnit
+         */
+        ReportDefinitionController.prototype.addMetadata = function(list, dimension, isDescriptor, 
+                 durationUnit, aggregationFunction) {
+           list.push({
+              "id": dimension.id,
+              "metaData": {
+                 "descriptor": isDescriptor,
+                 "durationUnit": durationUnit,
+                 "aggregationFunction": aggregationFunction
+              }
+           });
+        };
+        
+        /**
+         * Removes item to columnDurationUnit
+         */
+        ReportDefinitionController.prototype.removeMetadata = function(list, dimensionId, aggregationFunction) {
+           
+           for ( var i = this.report.dataSet.columns.length - 1; i >= 0; i--)
+           {
+              if (this.report.dataSet.groupBy && (this.report.dataSet.groupBy != 'None')) {
+                 if (list[i].id === dimensionId && 
+                          list[i].metaData.aggregationFunction === aggregationFunction)
+                 {
+                    list.splice(i, 1);
+                 }
+              } else if (list.id === dimensionId) {
+                 list.splice(i, 1);
+              }
+           }
+        };
+        
+        /**
+         * Get item index from list
+         */
+        ReportDefinitionController.prototype.getItemIndex = function(itemId, list) {
+           
+           var colId = StripAggregationFromColumnId(itemId);
+           var aggregationFunction = "None";
+           
+           if (this.report.dataSet.groupBy != null && this.report.dataSet.groupBy != 'None') {
+              aggregationFunction = getAggregationAndColumnId(itemId)[1];
+           }
+           for ( var i = 0; i < list.length; i++)
+           {
+              if (this.report.dataSet.groupBy && (this.report.dataSet.groupBy != 'None')) 
+              {
+                 if (list[i].id === colId && 
+                          list[i].metaData.aggregationFunction === aggregationFunction)
+                   {
+                      return i;
+                   }
+              } else if (list[i].id === colId) 
+                 {
+                      return i;
+                 }
+           }
+           return -1;
+         };
+         
+         ReportDefinitionController.prototype.moveItemsRight = function (selectedItems, list) {
+            var self = this;
+            selectedItems.forEach(function(itemId){
+               var index = self.getItemIndex(itemId, list);
+               if (index == -1) {
+                  self.addItem(list, itemId, "h");
+               }
+            });
+         };
+         
+         ReportDefinitionController.prototype.moveItemsLeft = function (selectedItems, list) {
+            var self = this;
+            selectedItems.forEach(function(itemId){
+               var index = self.getItemIndex(itemId, list);
+               if (index != -1) {
+                  self.removeItem(list, itemId);
+               }
+            });
+         };
+         
+         ReportDefinitionController.prototype.moveAllItemsRight = function (selectedItems, list) {
+            var self = this;
+            selectedItems.forEach(function(item){
+               var index = self.getItemIndex(item.id, list);
+               if (index == -1) {
+                  self.addItem(list, item.id, "h");
+               }
+            });
+         };
+         
+         ReportDefinitionController.prototype.moveAllItemsLeft = function (list) {
+            list.length = 0;
+         };
+         
+         /**
+          * 
+          */
+         ReportDefinitionController.prototype.moveItemUpWard = function(item, list) {
+             if (this.isMultiSelected(item))
+             {
+                return;
+             }
+             
+             var index = this.getItemIndex(item[0], list);
+             if (index != -1) {
+                list.splice(index - 1, 0, list.splice(index, 1)[0]);
+             }
+         };
+         
+         /**
+          * 
+          */
+         ReportDefinitionController.prototype.moveItemDownWard = function(item, list) {
+            if (this.isMultiSelected(item))
+            {
+               return;
+            }
+            
+            var index = this.getItemIndex(item[0], list);
+            if (index != -1) {
+               list.splice(index + 1, 0, list.splice(index, 1)[0]);
+            }
+        };
+        
+        /**
+         * 
+         */
+        ReportDefinitionController.prototype.createAggegateDimensions = function(dimension, enumerators) {
+           var aggregations = this.reportingService.metadata.recordSetAggregationFunctions;
+           
+           for ( var n in aggregations ) {
+              var obj = this  .cloneReportDefinition(dimension);
+              obj.id = obj.id + "#" + aggregations[n].id;
+              obj.name = obj.name + " (" + aggregations[n].name + ")";
+              enumerators.push(obj);
+           }
+        };
+        
+        /**
+         * Adds item to columnDurationUnit
+         */
+        ReportDefinitionController.prototype.addItem = function(list, itemId, colDurationUnit) {
+           //Strip Aggregation Function from ID
+           var colId = StripAggregationFromColumnId(itemId);
+           var aggregationFunction = "None";
+           
+           var primaryObject = this.reportingService.metadata.objects[this.report.dataSet.primaryObject];
+           var dimension = primaryObject.dimensions[colId];
+           
+           var isDescriptor = (dimension.metadata && dimension.metadata.isDescriptor)? true : false;
+           
+           if (this.report.dataSet.groupBy != null && this.report.dataSet.groupBy != 'None') {
+              aggregationFunction = getAggregationAndColumnId(itemId)[1];
+           }
+           
+           this.addMetadata(list, dimension, isDescriptor, colDurationUnit, aggregationFunction);
+        };
+        
+        /**
+         * Removes item from columnDurationUnit
+         */
+        ReportDefinitionController.prototype.removeItem = function(list, itemId) {
+           var aggregationFunction = getAggregationAndColumnId(itemId);
+           this.removeMetadata(list, aggregationFunction[0], aggregationFunction[1]); 
+        };
+        
+        /**
+         * Adds item's metadata to columnDurationUnit
+         */
+        ReportDefinitionController.prototype.addMetadata = function(list, dimension, isDescriptor, 
+                 durationUnit, aggregationFunction) {
+           list.push({
+              "id": dimension.id,
+              "metaData": {
+                 "descriptor": isDescriptor,
+                 "durationUnit": durationUnit,
+                 "aggregationFunction": aggregationFunction
+              }
+           });
+        };
+        
+        /**
+         * Removes item to columnDurationUnit
+         */
+        ReportDefinitionController.prototype.removeMetadata = function(list, dimensionId, aggregationFunction) {
+           
+           for ( var i = this.report.dataSet.columns.length - 1; i >= 0; i--)
+           {
+              if (this.report.dataSet.groupBy && (this.report.dataSet.groupBy != 'None')) {
+                 if (list[i].id === dimensionId && 
+                          list[i].metaData.aggregationFunction === aggregationFunction)
+                 {
+                    list.splice(i, 1);
+                 }
+              } else if (list.id === dimensionId) {
+                 list.splice(i, 1);
+              }
+           }
+        };
+        
+        /**
+         * Get item index from list
+         */
+        ReportDefinitionController.prototype.getItemIndex = function(itemId, list) {
+           
+           var colId = StripAggregationFromColumnId(itemId);
+           var aggregationFunction = "None";
+           
+           if (this.report.dataSet.groupBy != null && this.report.dataSet.groupBy != 'None') {
+              aggregationFunction = getAggregationAndColumnId(itemId)[1];
+           }
+           for ( var i = 0; i < list.length; i++)
+           {
+              if (this.report.dataSet.groupBy && (this.report.dataSet.groupBy != 'None')) 
+              {
+                 if (list[i].id === colId && 
+                          list[i].metaData.aggregationFunction === aggregationFunction)
+                   {
+                      return i;
+                   }
+              } else if (list[i].id === colId) 
+                 {
+                      return i;
+                 }
+           }
+           return -1;
+        };
 		}
 
 		function replaceSpecialChars(id){
@@ -1767,5 +2316,20 @@ define(
              id = id.substr( lastIndex + 1, id.length );
            }
            return id;
-		}	
+		}
+		
+		function StripAggregationFromColumnId (columnId) {
+		   var index = columnId.indexOf("#");
+         if(index != -1) { 
+           columnId = columnId.substr( 0, index );
+         }
+         return columnId;
+      }
+      
+      function getAggregationAndColumnId (columnId) {
+         if(columnId.indexOf("#") != -1) { 
+            columnId = columnId.split("#");
+         }
+         return columnId;
+      }
 		});
