@@ -624,8 +624,7 @@ define(
 						};
 
 						this.report.dataSet.fact = this.getPrimaryObject().facts.count.id;
-						this.report.dataSet.firstDimension = this
-                        .getPrimaryObject().dimensions.processInstanceStartTimestamp.id;
+						this.setDefaultFirstDimension();
 						
 						this.initFilters();
 						
@@ -815,7 +814,7 @@ define(
 					{
 					   this.factSelect.append(group);
 					}
-
+					
 					this.populatelayoutSubTypes();
 					//this.populateChartTypes();
 					
@@ -1649,6 +1648,9 @@ define(
                this.report.dataSet.firstDimensionCumulationIntervalUnit = "d";
                this.report.dataSet.groupBy = "None";
                
+               this.setDefaultFirstDimension();
+               this.setDefaultFact();
+               
                this.resetFilters();
                this.resetParamFilters();
             };
@@ -2305,6 +2307,32 @@ define(
            }
            return -1;
         };
+        
+        /**
+         * Set firstDimension to default value
+         */
+        ReportDefinitionController.prototype.setDefaultFirstDimension = function() {
+           if (this.getPrimaryObject().id === this.reportingService.metadata.objects.processInstance.id)
+           {
+              this.report.dataSet.firstDimension = this.reportingService.metadata.objects.processInstance.dimensions.priority.id;
+           } else if (this.getPrimaryObject().id === this.reportingService.metadata.objects.activityInstance.id) {
+              this.report.dataSet.firstDimension = this.reportingService.metadata.objects.activityInstance.dimensions.activityInstanceDuration.id;
+           }
+           this.changeFirstDimension();
+        };
+        
+        /**
+         * Get Fact to default value
+         */
+        ReportDefinitionController.prototype.setDefaultFact = function() {
+           if (this.getPrimaryObject().id === this.reportingService.metadata.objects.processInstance.id || 
+                    this.getPrimaryObject().id === this.reportingService.metadata.objects.activityInstance.id)
+           {
+              this.factSelect.val(this.reportingService.metadata.objects.processInstance.facts.count.id);
+           }
+           this.factSelect.change();
+        };
+        
 		}
 
 		function replaceSpecialChars(id){
