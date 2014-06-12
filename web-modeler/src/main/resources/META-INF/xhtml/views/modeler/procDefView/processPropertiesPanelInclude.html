@@ -379,11 +379,9 @@
 					</tr>
 				</table>
 			</div>
-			<!--
-			<div ng-repeat="pdPropExt in processPropertiesPanel.extensions" id="{{pdPropExt.id}}" class="propertiesPage">
-				<ng-include src="pdPropExt.pageHtmlUrl" onload="propertiesPanelOnload(pdPropExt)" />
+			<div ng-repeat="ext in processPropertiesPanel.extensions" id="{{ext.id}}" class="propertiesPage">
+				<ng-include src="ext.pageHtmlUrl" onload="processPropertiesPanelOnload(ext)" />
 			</div>
-			 -->
 		</td>
 	</tr>
 </table>

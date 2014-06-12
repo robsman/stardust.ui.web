@@ -34,7 +34,7 @@ define(
 				// Inheritance
 
 				var propertiesPanel = m_propertiesPanel
-						.createPropertiesPanel("processPropertiesPanel");
+						.createPropertiesPanel("processPropertiesPanel", true);
 
 				m_utils.inheritFields(this, propertiesPanel);
 				m_utils.inheritMethods(ProcessPropertiesPanel.prototype,

@@ -18,9 +18,10 @@ define(
 				"bpm-modeler/js/m_command",
 				"bpm-modeler/js/m_commandsController",
 				"bpm-modeler/js/m_dialog",
-				"bpm-modeler/js/m_communicationController" ],
-		function(m_utils, m_constants, m_extensionManager, m_session, m_user,
-				m_command, m_commandsController, m_dialog, m_communicationController) {
+				"bpm-modeler/js/m_communicationController",
+				"bpm-modeler/js/m_angularContextUtils" ],
+		function(m_utils, m_constants, m_extensionManager, m_session, m_user, m_command,
+				 m_commandsController, m_dialog, m_communicationController, m_angularContextUtils) {
 
 			var currentPropertiesPanel = null;
 
@@ -64,8 +65,8 @@ define(
 					currentPropertiesPanel.show();
 				},
 
-				createPropertiesPanel : function(id) {
-					var propertiesPanel = new PropertiesPanel(id);
+				createPropertiesPanel : function(id, angularized) {
+					var propertiesPanel = new PropertiesPanel(id, angularized);
 
 					return propertiesPanel;
 				}
@@ -74,8 +75,9 @@ define(
 			/**
 			 *
 			 */
-			function PropertiesPanel(id) {
+			function PropertiesPanel(id, angularized) {
 				this.id = id;
+				this.angularized = angularized;
 				this.panel = m_utils.jQuerySelect("#" + this.id);
 				this.propertiesPageList = m_utils.jQuerySelect("#propertiesPageList");
 				this.applyButton = m_utils.jQuerySelect("#" + this.id + " #applyButton");
@@ -149,7 +151,9 @@ define(
 					var propertiesPages = m_extensionManager.findExtensions(
 							"propertiesPage", "panelId", this.id);
 					var extensions = {};
-					
+					var dynamicExtensions = [];
+					var dynamicPropertiesPages = [];
+
 					var propertiesPanel = m_utils.jQuerySelect("#" + this.id + " #propertiesPagesCell");
 					
 					for ( var n = 0; n < propertiesPages.length; n++) {
@@ -172,57 +176,61 @@ define(
 								+ extension.id);
 
 						if (extension.pageHtmlUrl != null) {
-							var pageDiv = m_utils.jQuerySelect("<div id=\""
-									+ extension.id
-									+ "\" class=\"propertiesPage\"></div>");
+							if (this.angularized) {
+								dynamicExtensions.push(extension);	
+							} else {
+								var pageDiv = m_utils.jQuerySelect("<div id=\""
+										+ extension.id
+										+ "\" class=\"propertiesPage\"></div>");
 
-							propertiesPanel.append(pageDiv);
+								propertiesPanel.append(pageDiv);
 
-							// TODO this variable may be overwritten in the
-							// loop, find mechanism to pass data to load
-							// callback
+								// TODO this variable may be overwritten in the
+								// loop, find mechanism to pass data to load
+								// callback
 
-							var panel = this;
+								var panel = this;
 
-							// TODO - review
-							// Replaced m_utils.jQuerySelect(<div>).load call with a synchronous ajax request as, the
-							// async load request caused the property page tabs to not get loaded in time,
-							// and in Chrome browser, these tabs didn't get displayed in the first instance.
-							m_communicationController
-									.syncGetData(
-											{
-												url : extension.pageHtmlUrl
-											},
-											{
-												error : function(err) {
-													var msg = "Properties Page Load Error: "
-															+ err.status
-															+ " "
-															+ err.statusText;
-
-													m_utils.jQuerySelect(this).append(msg);
-													m_utils.debug(msg);
+								// TODO - review
+								// Replaced m_utils.jQuerySelect(<div>).load call with a synchronous ajax request as, the
+								// async load request caused the property page tabs to not get loaded in time,
+								// and in Chrome browser, these tabs didn't get displayed in the first instance.
+								m_communicationController
+										.syncGetData(
+												{
+													url : extension.pageHtmlUrl
 												},
-												success : function(data) {
-													m_utils
-															.debug("Page loaded: "
-																	+ pageDiv
-																			.attr(
-																					"id"));
-													pageDiv.append(data);
-													var extension = extensions[pageDiv.attr("id")];
-													var page = extension.provider
-															.create(
-																	panel,
-																	extension.id,
-																	extension.title);
+												{
+													error : function(err) {
+														var msg = "Properties Page Load Error: "
+																+ err.status
+																+ " "
+																+ err.statusText;
 
-													page.hide();
-													page.profiles = extension.profiles;
-													panel.propertiesPages
-															.push(page);
-												}
-											});
+														m_utils.jQuerySelect(this).append(msg);
+														m_utils.debug(msg);
+													},
+													success : function(data) {
+														m_utils
+																.debug("Page loaded: "
+																		+ pageDiv
+																				.attr(
+																						"id"));
+														pageDiv.append(data);
+														var extension = extensions[pageDiv.attr("id")];
+														var page = extension.provider
+																.create(
+																		panel,
+																		extension.id,
+																		extension.title);
+
+														page.hide();
+														page.profiles = extension.profiles;
+														panel.propertiesPages
+																.push(page);
+													}
+												});
+							}
 						} else {
 							// Embedded Markup
 
@@ -233,6 +241,43 @@ define(
 
 							page.profiles = extension.profiles;
 						}
+					}
+
+					if (this.angularized) {
+						var self = this;
+						m_angularContextUtils.runInActiveViewContext(function($scope){
+							if (!$scope[self.id + "Onload"]) {
+								$scope[self.id + "Onload"] = function(extension) {
+									var page = extension.provider.create(self, extension.id, extension.title);
+									page.hide();
+									page.profiles = extension.profiles;
+									
+									dynamicPropertiesPages.push({extension: extension, page: page});
+
+									// Once all propertiesPages are loaded build the properties page list
+									// Sort the Pages with same order as defined in Extension
+									if (dynamicPropertiesPages.length == dynamicExtensions.length) {
+										for(var i in dynamicExtensions) {
+											for(var j in dynamicPropertiesPages) {
+												if (dynamicExtensions[i].id == dynamicPropertiesPages[j].extension.id) {
+													self.propertiesPages.push(dynamicPropertiesPages[j].page);
+													break;
+												} 
+											}
+										}
+										var showing = self.propertiesPageList.attr("showing");
+										if (!showing || self.id == showing) {
+											self.showPropertiesPageList();
+										}
+									}
+								};
+							}
+							
+							if (!$scope[self.id]) {
+								$scope[self.id] = {};
+							}
+							$scope[self.id].extensions = dynamicExtensions;
+						});
 					}
 				};
 
@@ -249,6 +294,8 @@ define(
 					m_dialog.makeVisible(this.propertiesPageList);
 
 					this.propertiesPageList.empty();
+
+					this.propertiesPageList.attr("showing", this.id);
 
 					for ( var n in this.propertiesPages) {
 						if (!m_user

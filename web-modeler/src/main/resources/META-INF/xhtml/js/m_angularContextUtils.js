@@ -12,14 +12,26 @@
  * Used to run a piece of code (usually non-angular) in angular context
  *
  * @author Shrikant.Gangal
+ * @author Subodh.Godbole
  */
-define(function() {
+define(["bpm-modeler/js/m_utils"], function(m_utils) {
 	return {
-		runInAngularContext : runInAngularContext
+		runInAngularContext : runInAngularContext,
+		runInActiveViewContext : runInActiveViewContext
 	};
 
+	/*
+	 * 
+	 */
 	function runInAngularContext(func, div) {
 		var scope = angular.element(div == undefined ? document.body : div).scope();
 		scope.$apply(func);
+	}
+
+	/*
+	 * 
+	 */
+	function runInActiveViewContext(func) {
+		runInAngularContext(func, m_utils.activeViewElement());
 	}
 });

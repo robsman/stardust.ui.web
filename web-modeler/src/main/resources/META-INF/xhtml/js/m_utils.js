@@ -175,6 +175,8 @@ define(
 
 				getOutlineWindowAndDocument : getOutlineWindowAndDocument,
 
+				activeViewElement : activeViewElement,
+				
 				jQuerySelect : jQuerySelect,
 				
 				executeTimeoutLoop : executeTimeoutLoop,
@@ -187,8 +189,7 @@ define(
 
 				getUniqueElementNameId : function(array, name) {
 					return getUniqueElementNameId(array, name);
-				},
-
+				}
 			};
 			
       function markControlReadonly(control, readonly) {
@@ -220,6 +221,25 @@ define(
 					}, delay);
 				}
 			};
+
+			/*
+			 * 
+			 */
+			function activeViewElement() {
+				// Find HTML5 Framework div for current View
+				var view = jQuery(".sg-view-panel").children(".sg-selected");
+
+				if (view == undefined || view.length == 0) {
+				  // Fallback portal-shell
+				  view = jQuery(".view-panel-active");
+				}
+				
+				if (view == undefined || view.length == 0) {
+					return null;	
+				} else {
+					return view;
+				}
+			}
 
 			/*
 			 *
