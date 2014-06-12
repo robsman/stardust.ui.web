@@ -39,7 +39,7 @@ define(
 				// Inheritance
 
 				var propertiesPanel = m_propertiesPanel
-						.createPropertiesPanel("eventPropertiesPanel");
+						.createPropertiesPanel("eventPropertiesPanel", true);
 
 				m_utils.inheritFields(this, propertiesPanel);
 				m_utils.inheritMethods(EventPropertiesPanel.prototype,

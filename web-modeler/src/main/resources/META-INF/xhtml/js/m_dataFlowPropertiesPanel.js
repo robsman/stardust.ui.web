@@ -38,7 +38,7 @@ define(
 			 */
 			function DataFlowPropertiesPanel() {
 				var propertiesPanel = m_propertiesPanel
-						.createPropertiesPanel("dataFlowPropertiesPanel");
+						.createPropertiesPanel("dataFlowPropertiesPanel", true);
 				
 				m_utils.inheritFields(this, propertiesPanel);
 				

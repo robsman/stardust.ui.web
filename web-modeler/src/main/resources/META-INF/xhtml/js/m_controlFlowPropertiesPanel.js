@@ -31,7 +31,7 @@ define(
 			 */
 			function ControlFlowPropertiesPanel() {
 				var propertiesPanel = m_propertiesPanel
-						.createPropertiesPanel("controlFlowPropertiesPanel");
+						.createPropertiesPanel("controlFlowPropertiesPanel", true);
 
 				m_utils.inheritFields(this, propertiesPanel);
 				m_utils.inheritMethods(ControlFlowPropertiesPanel.prototype,

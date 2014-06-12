@@ -56,6 +56,9 @@
 					</tr>
 				</table>
 			</div>
+			<div ng-repeat="ext in swimlanePropertiesPanel.extensions" id="{{ext.id}}" class="propertiesPage">
+				<ng-include src="ext.pageHtmlUrl" onload="swimlanePropertiesPanelOnload(ext)" />
+			</div>
 		</td>
 	</tr>
 </table>

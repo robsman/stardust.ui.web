@@ -32,7 +32,7 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js
 		// Inheritance
 
 		var propertiesPanel = m_propertiesPanel
-				.createPropertiesPanel("dataPropertiesPanel");
+				.createPropertiesPanel("dataPropertiesPanel", true);
 
 		m_utils.inheritFields(this, propertiesPanel);
 		m_utils.inheritMethods(DataPropertiesPanel.prototype, propertiesPanel);

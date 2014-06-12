@@ -12,6 +12,10 @@
 			</div></td>
 	</tr>
 	<tr>
-		<td id="propertiesPagesCell"></td>
+		<td id="propertiesPagesCell">
+			<div ng-repeat="ext in annotationPropertiesPanel.extensions" id="{{ext.id}}" class="propertiesPage">
+				<ng-include src="ext.pageHtmlUrl" onload="annotationPropertiesPanelOnload(ext)" />
+			</div>
+		</td>
 	</tr>
 </table>

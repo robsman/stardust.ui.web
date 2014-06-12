@@ -31,7 +31,7 @@ define(
 			 */
 			function GatewayPropertiesPanel() {
 				var propertiesPanel = m_propertiesPanel
-						.createPropertiesPanel("gatewayPropertiesPanel");
+						.createPropertiesPanel("gatewayPropertiesPanel", true);
 
 				m_utils.inheritFields(this, propertiesPanel);
 				m_utils.inheritMethods(GatewayPropertiesPanel.prototype,

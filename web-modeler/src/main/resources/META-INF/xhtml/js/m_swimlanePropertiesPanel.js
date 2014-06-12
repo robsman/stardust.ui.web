@@ -32,7 +32,7 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js
 	 */
 	function SwimlanePropertiesPanel() {
 		var propertiesPanel = m_propertiesPanel
-				.createPropertiesPanel("swimlanePropertiesPanel");
+				.createPropertiesPanel("swimlanePropertiesPanel", true);
 
 		m_utils.inheritFields(this, propertiesPanel);
 		m_utils.inheritMethods(SwimlanePropertiesPanel.prototype,

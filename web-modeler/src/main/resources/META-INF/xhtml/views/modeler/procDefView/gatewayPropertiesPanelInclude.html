@@ -64,6 +64,10 @@
 						</td>
 					</tr>
 				</table>
-			</div></td>
+			</div>
+			<div ng-repeat="ext in gatewayPropertiesPanel.extensions" id="{{ext.id}}" class="propertiesPage">
+				<ng-include src="ext.pageHtmlUrl" onload="gatewayPropertiesPanelOnload(ext)" />
+			</div>
+		</td>
 	</tr>
 </table>

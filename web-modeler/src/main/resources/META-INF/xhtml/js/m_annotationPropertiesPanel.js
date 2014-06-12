@@ -29,7 +29,7 @@ define(
 			 */
 			function AnnotationPropertiesPanel(models) {
 				var propertiesPanel = m_propertiesPanel
-						.createPropertiesPanel("annotationPropertiesPanel");
+						.createPropertiesPanel("annotationPropertiesPanel", true);
 
 				m_utils.inheritFields(this, propertiesPanel);
 				m_utils.inheritMethods(AnnotationPropertiesPanel.prototype,

@@ -64,6 +64,10 @@
 						</tr>
 					</table>
 				</div>
-			</div></td>
+			</div>
+			<div ng-repeat="ext in controlFlowPropertiesPanel.extensions" id="{{ext.id}}" class="propertiesPage">
+				<ng-include src="ext.pageHtmlUrl" onload="controlFlowPropertiesPanelOnload(ext)" />
+			</div>
+		</td>
 	</tr>
 </table>
