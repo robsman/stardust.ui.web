@@ -252,14 +252,9 @@ define(
 									|| pattern.indexOf("/>") != -1))) {
 
 					  // Find HTML5 Framework div for current View
-						var view = jQuery(".sg-view-panel").children(".sg-selected");
+						var view = activeViewElement();
 
-						if (view == undefined || view.length == 0) {
-						  // Fallback portal-shell
-						  var view = jQuery(".view-panel-active");
-						} 
-
-						if (view && view.length > 0) {
+						if (view) {
 							var ret = jQuery(pattern, jQuery(view));
 							if (ret.length > 0) {
 								return ret;
