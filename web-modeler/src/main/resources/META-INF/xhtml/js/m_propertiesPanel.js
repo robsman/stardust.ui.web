@@ -247,7 +247,10 @@ define(
 						var self = this;
 						m_angularContextUtils.runInActiveViewContext(function($scope){
 							if (!$scope[self.id + "Onload"]) {
+								m_utils.debug("Defining onload function: " + self.id + "Onload");
 								$scope[self.id + "Onload"] = function(extension) {
+									m_utils.debug("Loading extension: " + extension.id + ", for " + self.id);
+
 									var page = extension.provider.create(self, extension.id, extension.title);
 									page.hide();
 									page.profiles = extension.profiles;
@@ -257,6 +260,7 @@ define(
 									// Once all propertiesPages are loaded build the properties page list
 									// Sort the Pages with same order as defined in Extension
 									if (dynamicPropertiesPages.length == dynamicExtensions.length) {
+										m_utils.debug("All extensions for " + self.id + " are loaded");
 										for(var i in dynamicExtensions) {
 											for(var j in dynamicPropertiesPages) {
 												if (dynamicExtensions[i].id == dynamicPropertiesPages[j].extension.id) {
@@ -285,6 +289,8 @@ define(
 				 *
 				 */
 				PropertiesPanel.prototype.showPropertiesPageList = function() {
+					this.propertiesPageList.attr("showing", this.id);
+
 					if (this.propertiesPages.length == 1) {
 						m_dialog.makeInvisible(this.propertiesPageList);
 
@@ -294,8 +300,6 @@ define(
 					m_dialog.makeVisible(this.propertiesPageList);
 
 					this.propertiesPageList.empty();
-
-					this.propertiesPageList.attr("showing", this.id);
 
 					for ( var n in this.propertiesPages) {
 						if (!m_user
