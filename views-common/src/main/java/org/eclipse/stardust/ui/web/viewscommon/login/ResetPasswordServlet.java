@@ -28,18 +28,18 @@ import org.eclipse.stardust.engine.core.runtime.beans.removethis.SecurityPropert
 import org.eclipse.stardust.ui.web.common.util.CollectionUtils;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.Constants;
-import org.eclipse.stardust.ui.web.viewscommon.login.dialogs.LoginDialogBean;
-import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 public class ResetPasswordServlet extends HttpServlet
 {
+   /**
+    * 
+    */
+   private static final long serialVersionUID = -8452274833668988165L;
    public static final String TECH_USER_ACCOUNT = "motu";
    public static final String TECH_USER_PASSWORD = "motu";
 
    private final static String DEFAULT_LOGIN_PAGE = "plugins/views-common/login.iface";
 
-   private ApplicationContext context;
    private ServiceFactory serviceFactory;
    private String user;
    private String password;
@@ -69,7 +69,6 @@ public class ResetPasswordServlet extends HttpServlet
       {
          String oid = req.getParameter("oid");
          String token = req.getParameter("token");
-         context = WebApplicationContextUtils.getWebApplicationContext(req.getSession().getServletContext());
          User user = serviceFactory.getUserService().getUser(new Integer(oid));
          serviceFactory.getUserService().resetPassword(user.getAccount(), getLoginProperties(), token);
          out.println("Password generated and sent to registered Email Id</br>");
@@ -86,20 +85,38 @@ public class ResetPasswordServlet extends HttpServlet
 
    private Map<String, String> getLoginProperties()
    {
-      LoginDialogBean loginDlg = (LoginDialogBean) context.getBean("ippLoginDialog");
+      Boolean promptForPartition = Parameters.instance().getBoolean(SecurityProperties.PROMPT_FOR_PARTITION, false);
+      Boolean promptForRealm = Parameters.instance().getBoolean(SecurityProperties.PROMPT_FOR_REALM, false);
+      Boolean promptForDomain = Parameters.instance().getBoolean(SecurityProperties.PROMPT_FOR_DOMAIN, false);
+
+      String partition = null;
+      String realm = null;
+      String domain = null;
+      if (promptForPartition)
+      {
+         partition = Parameters.instance().getString(SecurityProperties.DEFAULT_PARTITION, "");
+      }
+      if (promptForRealm)
+      {
+         realm = Parameters.instance().getString(SecurityProperties.DEFAULT_REALM, "");
+      }
+      if (promptForDomain)
+      {
+         domain = Parameters.instance().getString(SecurityProperties.DEFAULT_DOMAIN, "");
+      }
 
       Map<String, String> properties = CollectionUtils.newHashMap();
-      if (loginDlg.isPromptForDomain() && !StringUtils.isEmpty(loginDlg.getDomain()))
+      if (promptForDomain && !StringUtils.isEmpty(domain))
       {
-         properties.put(SecurityProperties.DOMAIN, loginDlg.getDomain());
+         properties.put(SecurityProperties.DOMAIN, domain);
       }
-      if (loginDlg.isPromptForPartition() || !StringUtils.isEmpty(loginDlg.getPartition()))
+      if (promptForPartition || !StringUtils.isEmpty(partition))
       {
-         properties.put(SecurityProperties.PARTITION, loginDlg.getPartition());
+         properties.put(SecurityProperties.PARTITION, partition);
       }
-      if (loginDlg.isPromptForRealm() && !StringUtils.isEmpty(loginDlg.getRealm()))
+      if (promptForRealm && !StringUtils.isEmpty(realm))
       {
-         properties.put(SecurityProperties.REALM, loginDlg.getRealm());
+         properties.put(SecurityProperties.REALM, realm);
       }
       return Collections.unmodifiableMap(properties);
    }
