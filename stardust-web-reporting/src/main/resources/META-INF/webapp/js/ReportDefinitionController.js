@@ -1888,8 +1888,7 @@ define(
            var colId = StripAggregationFromColumnId(itemId);
            var aggregationFunction = "None";
            
-           var primaryObject = this.reportingService.metadata.objects[this.report.dataSet.primaryObject];
-           var dimension = primaryObject.dimensions[colId];
+           var dimension = this.getMetadataObjectFromId(colId);
            
            var isDescriptor = (dimension && dimension.metadata && dimension.metadata.isDescriptor)? true : false;
            
@@ -1905,7 +1904,8 @@ define(
          */
         ReportDefinitionController.prototype.removeItem = function(list, itemId) {
            var aggregationFunction = getAggregationAndColumnId(itemId);
-           this.removeMetadata(list, aggregationFunction[0], aggregationFunction[1]); 
+           (aggregationFunction instanceof Array) ? this.removeMetadata(list, aggregationFunction[0], aggregationFunction[1]) : 
+              this.removeMetadata(list, aggregationFunction); 
         };
         
         /**
@@ -1936,7 +1936,7 @@ define(
                  {
                     list.splice(i, 1);
                  }
-              } else if (list.id === dimensionId) {
+              } else if (list[i].id === dimensionId) {
                  list.splice(i, 1);
               }
            }
@@ -1993,6 +1993,21 @@ define(
               this.factSelect.val(this.reportingService.metadata.objects.processInstance.facts.count.id);
            }
            this.factSelect.change();
+        };
+        
+        /**
+         * Get Metadata Object from Id
+         */
+        ReportDefinitionController.prototype.getMetadataObjectFromId = function(objectId) {
+           var dimensions = this.reportingService.getCumulatedDimensions(this.report);
+           var self = this;
+           for ( var index in dimensions)
+           {
+              if (dimensions[index].id === objectId)
+              {
+                 return dimensions[index];
+              }
+           }
         };
         
 		}

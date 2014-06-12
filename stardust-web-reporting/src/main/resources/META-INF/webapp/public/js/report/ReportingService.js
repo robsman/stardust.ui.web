@@ -1515,7 +1515,7 @@ define(
 							// Must be a joined field or computed column
 
 							dimensions.push(this.getUserDefinedField(report,
-									report.dataSet.columns[m]));
+									report.dataSet.columns[m].id));
 						}
 					}
 
