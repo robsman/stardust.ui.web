@@ -30,7 +30,7 @@ define(
 			 */
 			function ActivityPropertiesPanel(models) {
 				var propertiesPanel = m_propertiesPanel
-						.createPropertiesPanel("activityPropertiesPanel");
+						.createPropertiesPanel("activityPropertiesPanel", true);
 
 				m_utils.inheritFields(this, propertiesPanel);
 				m_utils.inheritMethods(ActivityPropertiesPanel.prototype,
