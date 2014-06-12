@@ -150,22 +150,18 @@ if (!window.bpm.portal.AngularAdapter) {
 					transclude : "element",
 					compile : function (element, attrs,
 						linker) {
-						var aoColumnDefs = [{
+
+						var tableOptions = {aoColumnDefs: [{
 								sDefaultContent : "-",
 								sClass : "",
 								aTargets : ["_all"]
-							}
-						];
+							}]};
 
 						return {
 							post : function (scope, element,
 								attributes, controller) {
 								// Parse expression
 
-								if(attrs.options){
-				                      aoColumnDefs = aoColumnDefs.concat(options);
-				                }
-								
 								var expression = attrs.sdTableData;
 								var match = expression
 									.match(/^\s*(.+)\s+in\s+(.*?)\s*(\s+track\s+by\s+(.+)\s*)?$/),
@@ -238,13 +234,25 @@ if (!window.bpm.portal.AngularAdapter) {
 								valueIdentifier = match[3]
 									 || match[1];
 								keyIdentifier = match[2];
-
 								var elements = [];
 								var parent = element
 									.parent();
 								var table = jQuery(parent
 										.parent());
 
+								//apply dynamic functions
+								if (scope.renderingController) {
+									if (scope.renderingController.tableOptions) {
+										tableOptions = scope.renderingController.tableOptions;
+									}
+									
+									if (typeof scope.renderingController.fnDrawCallback == 'function') {
+										tableOptions.fnDrawCallback = function() {
+											scope.renderingController.fnDrawCallback(table);
+										};
+									}
+								} 
+									
 								scope
 								.$watch(
 									rhs,
@@ -452,11 +460,10 @@ if (!window.bpm.portal.AngularAdapter) {
 										// Create
 										// Datatables
 
+										
 										try {
 											table
-											.dataTable({
-												aoColumnDefs : aoColumnDefs
-											});
+											.dataTable(tableOptions);
 										} catch (x) {
 											console
 											.log("Cannot create data table");

@@ -72,6 +72,17 @@ define(
 				/**
 				 * 
 				 */
+				ReportRenderingController.prototype.fnDrawCallback = function(table){
+					if(this.report.layout.table.displayTotals){
+						var lastRow = table.find(".lastRow").remove();
+						lastRow.find("td:first").css('padding-left', '10px');
+						table.find("tbody").after(lastRow);	
+					}
+				};
+				
+				/**
+				 * 
+				 */
 				ReportRenderingController.prototype.setReportData = function(reportData) {
 					this.reportData = reportData;
 				}
@@ -332,36 +343,40 @@ define(
 				 * perform ui controlled I18n
 				 */
 				ReportRenderingController.prototype.performUII18n = function(inData, report){
-					if((typeof report_data === 'undefined')){
-						var primaryObject = this.reportingService.metadata.objects[report.dataSet.primaryObject];
-						var dimension = primaryObject.dimensions[report.dataSet.groupBy];
-						
-						//if groupby is empty or none
-						if(!dimension){
-							Object.keys(inData).forEach(function(key) {
-								inData[primaryObject.name] = inData[key];
-		                        delete inData[key];	
-							});
-						}
+					var primaryObject = this.reportingService.metadata.objects[report.dataSet.primaryObject];
+					var dimension = primaryObject.dimensions[report.dataSet.groupBy];
+					
+					//if groupby is empty or none
+					if(!dimension){
+						Object.keys(inData).forEach(function(key) {
+							inData[primaryObject.name] = inData[key];
+	                        delete inData[key];	
+						});
+					}
 
-						if (dimension && dimension.enumerationType) {
-							var qualifier = dimension.enumerationType.split(":");
-							var enums = this.reportingService.getEnumerators2(qualifier[0], qualifier[1]);
-							if(!enums){
-								return;
-							}
-							Object.keys(inData).forEach(function(key) {
-								for ( var item in enums)
-		                          {
-		                             if (enums[item].id == key)
-		                             {
-		                            	 inData[enums[item].name] = inData[key];
-		                                 delete inData[key];
-		                                break;
-		                             }
-		                          }
-							});
+					if (dimension && dimension.enumerationType) {
+						var qualifier = dimension.enumerationType.split(":");
+						var enums = null;
+			
+						//TODO: model Data must be added from server side
+						if(qualifier[0] != 'modelData' || this.reportingService.modelData){
+							enums = this.reportingService.getEnumerators2(qualifier[0], qualifier[1]);	
 						}
+						
+						if(!enums){
+							return;
+						}
+						Object.keys(inData).forEach(function(key) {
+							for ( var item in enums)
+	                          {
+	                             if (enums[item].id == key)
+	                             {
+	                            	 inData[enums[item].name] = inData[key];
+	                                 delete inData[key];
+	                                break;
+	                             }
+	                          }
+						});
 					}
 				};
 				
@@ -704,6 +719,9 @@ define(
 
             	this.parameters = parameters;
             	
+            	//reset
+            	this.tableOptions = null;
+            	
 				var self = this;
 				if(this.report.dataSet.type === 'seriesGroup' && this.report.layout.subType == this.reportingService.metadata.layoutSubTypes.table.id){
 						this.getReportData(self.report, self.parameters).done(
@@ -745,6 +763,8 @@ define(
 				   this.performUII18n(data, this.report);	
 				
                    self= this;
+                   this.options = {};
+                   
                    var configurations = self.getCumulantsTableConfig();
                    var disableSorting = configurations.disableSorting;
                    var multi_headers = configurations.multi_headers;
@@ -799,7 +819,14 @@ define(
 
                      var seriesArray = [];
                      inputArray.push(seriesArray);
-                     seriesArray.push("");
+                     
+                     var primaryObject = this.reportingService.metadata.objects[this.report.dataSet.primaryObject];
+                     var dimension = primaryObject.dimensions[this.report.dataSet.groupBy];
+					 if (dimension) {
+						seriesArray.push(dimension.name);
+					 } else {
+						seriesArray.push("");
+					 }
                      
                      var dimensionArrayComplete = false;
 
@@ -873,7 +900,16 @@ define(
                    } else { // fact is count
                      var seriesArray = [];
                      inputArray.push(seriesArray);
-                     seriesArray.push("");
+
+                     //prepare header
+                     var primaryObject = this.reportingService.metadata.objects[this.report.dataSet.primaryObject];
+                     var dimension = primaryObject.dimensions[this.report.dataSet.groupBy];
+                     
+                     if (dimension) {
+                    	 seriesArray.push(dimension.name);
+ 					 } else {
+ 						seriesArray.push("");
+ 					 }
 
                      var dimensionArrayComplete = false;
 
@@ -930,6 +966,7 @@ define(
 							sum += inputArray[i][inputArray[i].length-1];
 						}
 						inputArray[inputArray.length-1].push(sum);
+						
                      }
                    }
                    
@@ -998,17 +1035,32 @@ define(
                    
                    //Process
                    var TEMPLATE = "<table cellpadding=\"0\" cellspacing=\"0\" class=\"dataTable\"><thead><tr>_HEADERS_</tr></thead><tbody><tr sd-table-data=\"row in rows\">_COLUMNS_</tr></tbody></table>";
-                   var options = [];
 
                    if (multi_headers) {
                      if (!dimensionAsRow) {
-                       TEMPLATE = "<table cellpadding=\"0\" cellspacing=\"0\" class=\"dataTable\"><thead><tr>_TOPHEADERS_</tr></thead><thead><tr>_HEADERS_</tr></thead><tbody><tr options=_OPTIONS_ sd-table-data=\"row in rows\">_COLUMNS_</tr></tbody></table>";
+                       TEMPLATE = "<table cellpadding=\"0\" cellspacing=\"0\" class=\"dataTable\"><thead><tr>_TOPHEADERS_</tr></thead><thead><tr>_HEADERS_</tr></thead><tbody><tr sd-table-data=\"row in rows\">_COLUMNS_</tr></tbody></table>";
                      } 
                      else{
-                       TEMPLATE = "<table cellpadding=\"0\" cellspacing=\"0\" class=\"dataTable\"><thead><tr>_HEADERS_</tr></thead><tbody><tr options=_OPTIONS_ sd-table-data=\"row in rows\">_COLUMNS_</tr></tbody></table>";
+                       TEMPLATE = "<table cellpadding=\"0\" cellspacing=\"0\" class=\"dataTable\"><thead><tr>_HEADERS_</tr></thead><tbody><tr sd-table-data=\"row in rows\">_COLUMNS_</tr></tbody></table>";
                      }
-                     options = disableSorting;
+                     
+					this.tableOptions = {
+							aoColumnDefs : [ {
+								sDefaultContent : "-",
+								sClass : "",
+								aTargets : [ "_all" ]
+							}, {
+								aaSorting : []
+							}, {
+								bSortable : false,
+								aTargets : [ "_all" ]
+							} ]
+						};
+                   }else{
+                	   this.tableOptions = null;
                    }
+                   
+                   
                    var v1 = jQuery.extend({}, TEMPLATE);
 
                    var TEMPLATE_COPY = "";
@@ -1038,7 +1090,7 @@ define(
                        }
                      } else {
                        for (i = 0; i < topheaders.length - 1; i = i + 2) {
-                         topHeaders += "<th colspan=" + topheaders[i + 1] + ">" + topheaders[i] + "</th>";
+                         topHeaders += "<th style=\"border-bottom:none\" colspan=" + topheaders[i + 1] + ">" + topheaders[i] + "</th>";
                        }
                      }
 
@@ -1047,11 +1099,8 @@ define(
                      }
                    }
 
-                   TEMPLATE_COPY = TEMPLATE_COPY.replace("_OPTIONS_", options);
-
                    //transform the array
                    if (!dimensionAsRow) {
-                	   
                 	   tableArray = transposeArray(tableArray);
                    }
 

@@ -487,6 +487,7 @@ table.dataTable {
 	width: 100%;
 	margin: 0px;
 	border-bottom: 1px solid #111;
+	border-top: 1px solid #111;
 }
 
 table.dataTable thead {
@@ -663,7 +664,7 @@ table.dataTable thead {
 }
 
 table.dataTable thead th {
-   border-bottom: 1px solid #111; 
+   border-right: 1px dashed lightblue;
    font-weight: bold;
    font-size: 12px;
    color: #111;
