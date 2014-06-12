@@ -1,0 +1,389 @@
+<table cellpadding="0" cellspacing="0" class="layoutTable">
+	<tr>
+		<td>
+			<div class="propertiesPanelTitle">Process
+				Definition</div></td>
+	</tr>
+	<tr>
+		<td>
+			<div class="errorMessagesPanel">
+				<ul id="errorMessagesList">
+				</ul>
+			</div></td>
+	</tr>
+	<tr>
+		<td id="propertiesPagesCell" valign="top">
+			<div id="basicPropertiesPage" class="propertiesPage">
+				<div class="heading">General Properties</div>
+				<table>
+					<tr id="guidOutputRow">
+						<td><label for="guidOutput">UUID</label>
+						</td>
+						<td><div id="guidOutput" class="output" /></td>
+					</tr>
+					<tr id="idOutputRow">
+						<td><label for="idOutput">ID</label>
+						</td>
+						<td><div id="idOutput" class="output" /></td>
+					</tr>
+					<tr>
+						<td><label for="nameInput">Name</label>
+						</td>
+						<td><input id="nameInput" type="text" />
+						</td>
+					</tr>
+				</table>
+				<table>
+					<tr>
+						<td id="description"><label
+							for="descriptionInput">Description</label></td>
+					</tr>
+					<tr>
+						<td><textarea id="descriptionInput" cols="40"
+								rows="3"></textarea></td>
+					</tr>
+				</table>
+				<table style="margin-top: 10px; margin-bottom: 10px;">
+					<tr>
+						<td><div id="documentationCreationLinkPanel">
+								<a id="documentationCreationLink">Create
+									documentation for this Process &raquo;</a>
+							</div>
+							<div id="openDocumentViewLinkPanel">
+								<a id="openDocumentViewLink">Open documentation
+									&raquo;</a>
+							</div></td>
+					</tr>
+				</table>
+				<table style="margin-top: 10px;">
+					<tr>
+						<td><label for="defaultPriorityInput">Default
+								Priority</label>
+						</td>
+						<td><input id="defaultPriorityInput" type="text"
+							class="rightAligned" /></td>
+					</tr>
+				</table>
+			</div>
+			<div id="dataPathPropertiesPage" class="propertiesPage">
+				<div class="heading">Data Pathes</div>
+				<table>
+					<tr>
+						<td>
+							<div class="panelBorder" style="margin-bottom: 10px;">
+								<table width="100%" cellpadding="0" cellspacing="0"
+									class="layoutTable">
+									<tr>
+										<td><div class="toolBar">
+												<table>
+													<tr>
+														<td><input
+															id="deleteParameterDefinitionButton"
+															type="image"
+															src="plugins/bpm-modeler/images/icons/delete.png"
+															title="Delete" alt="Delete"
+															class="toolbarButton" />
+														</td>
+														<td><img
+															src="plugins/bpm-modeler/images/icons/toolbar-separator.png"></img>
+														</td>
+														<td><input
+															id="moveParameterDefinitionUpButton"
+															type="image"
+															src="plugins/bpm-modeler/images/icons/arrow_up.png"
+															title="Move Up" alt="Move Up"
+															class="toolbarButton" />
+														</td>
+														<td><img
+															src="plugins/bpm-modeler/images/icons/toolbar-separator.png"></img>
+														</td>
+														<td><input
+															id="moveParameterDefinitionDownButton"
+															type="image"
+															src="plugins/bpm-modeler/images/icons/arrow_down.png"
+															title="Move Down" alt="Move Down"
+															class="toolbarButton" />
+														</td>
+													</tr>
+												</table>
+											</div></td>
+									</tr>
+									<tr>
+										<td>
+											<div class="dataTable">
+												<table cellpadding="0" cellspacing="0"
+													id="parameterDefinitionsTable">
+													<tbody />
+												</table>
+											</div></td>
+									</tr>
+								</table>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<table id="directionlistTable">
+								<tr>
+									<td><input id="addParameterDefinitionButton"
+										type="image" src="plugins/bpm-modeler/images/icons/add.png"
+										title="Add" alt="Add" class="toolbarButton" />
+									</td>
+									<td></td>
+								</tr>
+								<tr>
+									<td><label for="parameterDefinitionIdOutput">Id</label>
+									</td>
+									<td><label id="parameterDefinitionIdOutput"></label></td>
+								</tr>
+								<tr>
+									<td><label for="parameterDefinitionNameInput">Name</label>
+									</td>
+									<td><input id="parameterDefinitionNameInput"
+										type="text" /></td>
+								</tr>
+								<tr>
+									<td><label
+										for="parameterDefinitionDirectionSelect">Direction</label>
+									</td>
+									<td><select
+										id="parameterDefinitionDirectionSelect">
+									</select>
+									</td>
+								</tr>
+								<tr>
+									<td><input
+										id="parameterDefinitionDescriptorInput"
+										type="checkbox" />
+									</td>
+									<td><label
+										for="parameterDefinitionDescriptorInput">Descriptor</label>
+									</td>
+								</tr>
+								<tr>
+									<td><input
+										id="parameterDefinitionKeyDescriptorInput"
+										type="checkbox" />
+									</td>
+									<td><label
+										for="parameterDefinitionKeyDescriptorInput">Key
+											Descriptor</label></td>
+								</tr>
+								<tr>
+									<td><label for="parameterDefinitionDataSelect">Data</label>
+									</td>
+									<td><select id="parameterDefinitionDataSelect">
+									</select>
+									</td>
+								</tr>
+								<tr>
+									<td><label for="parameterDefinitionPathInput">Path</label>
+									</td>
+									<td><input id="parameterDefinitionPathInput"
+										type="text" /></td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</table>
+			</div>
+			<div id="displayPropertiesPage" class="propertiesPage">
+				<div class="heading">Display</div>
+				<table>
+					<tr>
+						<td><input id="auxiliaryProcessInput"
+							type="checkbox" />
+						</td>
+						<td><label for="auxiliaryProcessInput">Is
+								Auxiliary Process</label></td>
+					</tr>
+				</table>
+			</div>
+			<div id="processInterfacePropertiesPage"
+				class="propertiesPage">
+				<div class="heading">Process Interface</div>
+				<table>
+					<tr>
+						<td>
+							<table id="processdefinitionselect">
+								<tr>
+									<td><label
+										for="processInterfaceTypeSelectInput">Type</label>
+									</td>
+									<td><select
+										id="processInterfaceTypeSelectInput">
+									</select></td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<div id="noInterfacePanel"></div>
+							<div id="providesProcessInterfacePanel">
+								<table>
+									<tr>
+										<td>
+											<table>
+												<tr>
+													<td><label
+														for="webServiceInterfaceCheckboxInput">Web
+															Service</label></td>
+													<td><input
+														id="webServiceInterfaceCheckboxInput"
+														type="checkbox"></input>
+													</td>
+												</tr>
+												<tr>
+													<td><label
+														for="restInterfaceCheckboxInput">REST
+															Service</label></td>
+													<td><input id="restInterfaceCheckboxInput"
+														type="checkbox"></input>
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<div class="heading">Parameter Definitions</div>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<div class="panelBorder">
+												<table cellpadding="0" cellspacing="0"
+													class="layoutTable">
+													<tr>
+														<td><div class="toolBar">
+																<!--table>
+																	<tr>
+																		<td><a
+																			id="processInterfaceFromDataCreationWizardLink">Create
+																				from Process Data &raquo;</a>
+																		</td>
+																	</tr>
+																</table-->
+																<table>
+																	<tr>
+																		<td><input
+																			id="deleteParameterDefinitionButton"
+																			type="image"
+																			src="plugins/bpm-modeler/images/icons/delete.png"
+																			title="Delete" alt="Delete"
+																			class="toolbarButton" />
+																		</td>
+																	</tr>
+																</table>
+															</div></td>
+													</tr>
+													<tr>
+														<td>
+															<div class="dataTable">
+																<table id="parameterDefinitionsTable"
+																	cellpadding="0" cellspacing="0">
+																	<tbody />
+																</table>
+															</div>
+														</td>
+													</tr>
+												</table>
+											</div></td>
+									</tr>
+									<tr>
+										<td>
+											<table id="parameterDefinitionTypeSelector"
+												style="margin-top: 10px;">
+												<tr>
+													<td><input
+														id="addParameterDefinitionButton" type="image"
+														src="plugins/bpm-modeler/images/icons/add.png" title="Add"
+														alt="Add" class="toolbarButton" />
+													</td>
+													<td></td>
+												</tr>
+												<tr>
+													<td><label
+														for="parameterDefinitionNameInput">Name</label>
+													</td>
+													<td><input
+														id="parameterDefinitionNameInput" type="text" />
+													</td>
+												</tr>
+												<tr>
+													<td><label
+														for="parameterDefinitionDirectionSelect">Direction</label>
+													</td>
+													<td><select
+														id="parameterDefinitionDirectionSelect">
+													</select>
+													</td>
+												</tr>
+												<tr>
+													<td><label for="dataTypeSelect">Data
+															Type</label></td>
+													<td><select id="dataTypeSelect" size="1">
+													</select>
+													</td>
+												</tr>
+												<tr id="primitiveDataTypeRow">
+													<td><label for="primitiveDataTypeSelect">Primitive
+														Type</label></td>
+													<td><select id="primitiveDataTypeSelect"
+														size="1">
+															<option value="String">Text</option>
+															<option value="boolean">Boolean
+																(True, False)</option>
+															<option value="int">Number (e.g.
+																18756)</option>
+															<option value="long">Long Number
+																(e.g. 18756)</option>
+															<option value="double">Scientific
+																(e.g. 3.1415)</option>
+															<option value="Calendar">Date (e.g.
+																14/05/2011)</option>
+													</select></td>
+												</tr>
+												<tr id="structuredDataTypeRow">
+													<td><label for="structuredDataTypeSelect">Structured
+															Type</label></td>
+													<td><select id="structuredDataTypeSelect"
+														size="1">
+													</select>
+													</td>
+												</tr>
+												<tr id="documentTypeRow">
+													<td><label for="documentTypeSelect">Document
+															Type</label>
+													</td>
+													<td><select id="documentTypeSelect"
+														size="1">
+													</select>
+													</td>
+												</tr>
+												<tr>
+													<td><label
+														for="parameterDefinitionDataSelect">Data</label>
+													</td>
+													<td><select
+														id="parameterDefinitionDataSelect">
+													</select>
+													</td>
+												</tr>
+											</table></td>
+									</tr>
+								</table>
+							</div>
+							<div id="implementsProcessInterface"></div></td>
+					</tr>
+				</table>
+			</div>
+			<!--
+			<div ng-repeat="pdPropExt in processPropertiesPanel.extensions" id="{{pdPropExt.id}}" class="propertiesPage">
+				<ng-include src="pdPropExt.pageHtmlUrl" onload="propertiesPanelOnload(pdPropExt)" />
+			</div>
+			 -->
+		</td>
+	</tr>
+</table>

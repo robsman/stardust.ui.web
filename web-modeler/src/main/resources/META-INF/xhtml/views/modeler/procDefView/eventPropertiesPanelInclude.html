@@ -1,0 +1,122 @@
+<table cellpadding="0" cellspacing="0" class="layoutTable">
+	<tr>
+		<td>
+			<div class="propertiesPanelTitle" id="event">
+				<span id="title">Event</span>
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<div class="errorMessagesPanel">
+				<ul id="errorMessagesList">
+				</ul>
+			</div></td>
+	</tr>
+	<tr>
+		<td>
+			<div class="warningMessagesPanel">
+				<ul id="warningMessagesList">
+				</ul>
+			</div></td>
+	</tr>
+	<tr>
+		<td id="propertiesPagesCell">
+			<div id="basicPropertiesPage" class="propertiesPage">
+				<div class="heading">General Properties</div>
+				<table>
+					<tr>
+						<td>
+							<table id="annotationName">
+								<tr id="guidOutputRow">
+									<td><label for="guidOutput">UUID</label>
+									</td>
+									<td><div id="guidOutput" class="output" />
+									</td>
+								</tr>
+								<tr id="idOutputRow">
+									<td><label for="idOutput">ID</label></td>
+									<td><div id="idOutput" class="output" />
+									</td>
+								</tr>
+								<tr>
+									<td><label for="nameInput">Name</label>
+									</td>
+									<td><input type="text" id="nameInput" />
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<table id="annotationdesc">
+								<tr>
+									<td><label for="descriptionInput">Description:</label>
+									</td>
+								</tr>
+								<tr>
+									<td><textarea id="descriptionInput" cols="40"
+											rows="3"></textarea></td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<table cellpadding="0" cellspacing="0"
+								class="layoutTable" style="margin-top: 10px;">
+								<tr>
+									<td><label for="eventClassSelect">Event
+											Class</label></td>
+									<td><select id="eventClassSelect" /></td>
+								</tr>
+							</table></td>
+					</tr>
+					<tr>
+						<td>
+							<div id="participantOutput" style="margin-top: 10px;" />
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<table cellpadding="0" cellspacing="0"
+								class="layoutTable" style="margin-top: 10px; margin-bottom: 10px;">
+								<tr>
+									<td><input id="interruptingInput"
+										type="checkbox" /></td>
+									<td><label for="interruptingInput" style="margin-left:5px">Interrupting</label>
+									</td>
+								</tr>
+							</table></td>
+					</tr>
+					<tr>
+						<td>
+							<table cellpadding="0" cellspacing="0"
+								class="layoutTable">
+								<tr>
+									<td>
+										<td><input id="throwingInput" type="radio" />
+									</td>
+										<td><label for="throwingInput">Throwing</label>
+									</td>
+										<td><input id="catchingInput" type="radio" />
+									</td>
+										<td><label for="catchingInput">Catching</label>
+									</td></td>
+								</tr>
+							</table></td>
+					</tr>
+					<tr>
+						<td>
+							<div id="intermediateEventPanel"
+								style="margin-top: 10px;">
+								<div id="bindingInformation"></div>
+							</div>
+						</td>
+					</tr>
+				</table>
+			</div>
+		</td>
+	</tr>
+</table>

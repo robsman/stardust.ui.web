@@ -1,0 +1,289 @@
+<table cellpadding="0" cellspacing="0" class="layoutTable">
+	<tr>
+		<td>
+			<div class="propertiesPanelTitle" id="activityheading">Activity</div>
+		</td>
+	</tr>
+	<tr id="errorMessagesRow">
+		<td>
+			<div class="errorMessagesPanel">
+				<ul id="errorMessagesList">
+				</ul>
+			</div></td>
+	</tr>
+	<tr>
+		<td id="propertiesPagesCell" valign="top">
+			<div id="basicPropertiesPage" class="propertiesPage">
+				<div class="heading">General Properties</div>
+				<table>
+					<tr id="guidOutputRow">
+						<td><label for="guidOutput">UUID</label></td>
+						<td><div id="guidOutput" class="output" />
+						</td>
+					</tr>
+					<tr id="idOutputRow">
+						<td><label for="idOutput">ID</label></td>
+						<td><div id="idOutput" class="output" />
+						</td>
+					</tr>
+					<tr>
+						<td><label for="nameInput" id="name">Name</label>
+						</td>
+						<td><input id="nameInput" type="text" />
+						</td>
+					</tr>
+				</table>
+				<table id="activitydescription">
+					<tr>
+						<td><label for="descriptionInput"
+							id="description">Description</label></td>
+					</tr>
+					<tr>
+						<td><textarea id="descriptionInput" cols="40"
+								rows="3"></textarea></td>
+					</tr>
+				</table>
+				<table>
+					<tr>
+						<td><div id="documentationCreationLinkPanel">
+								<a id="documentationCreationLink">Create
+									documentation for this Activity &raquo;</a>
+							</div>
+							<div id="openDocumentViewLinkPanel">
+								<a id="openDocumentViewLink">Open documentation
+									&raquo;</a>
+							</div></td>
+					</tr>
+				</table>
+				<table style="margin-bottom: 10px;">
+					<tr>
+						<td><input id="allowAbortByParticipantInput"
+							type="checkbox" />
+						</td>
+						<td><label for="allowAbortByParticipantInput">Allow
+								Abort by Participant</label></td>
+					</tr>
+					<tr>
+						<td><input id="hibernateInitiallyInput"
+							type="checkbox" />
+						</td>
+						<td><label for="hibernateInitiallyInput"
+							id="hibernate">Hibernate Initially</label></td>
+					</tr>
+					<tr>
+						<td><input id="supportsRelocationInput"
+							type="checkbox" />
+						</td>
+						<td><label for="supportsRelocationInput"
+							id="supportsRelocation">Supports Relocation</label></td>
+					</tr>
+					<tr>
+						<td><input id="isRelocationTargetInput"
+							type="checkbox" />
+						</td>
+						<td><label for="isRelocationTargetInput"
+							id="isRelocationTarget">Is Relocation Target</label>
+						</td>
+					</tr>
+				</table>
+				<table>
+					<tr>
+						<td><input id="taskInput" type="radio" />
+						</td>
+						<td><label for="taskInput">Task</label></td>
+						<td>
+							<select id="taskTypeList" size="1">
+							</select>
+							<img id="taskImplLink" style="padding-left: 5px;" class="imgLink" src="plugins/bpm-modeler/images/icons/pencil_go.png" />
+						</td>
+					</tr>
+					<tr>
+						<td></td>
+						<td></td>
+						<td colspan="2"><div id="participantOutput" /></td>
+					</tr>
+					<tr>
+						<td><input id="subprocessInput" type="radio" />
+						</td>
+						<td><label for="subprocessInput" id="subprocess">Subprocess</label>
+						</td>
+						<td colspan="2"><select id="subprocessList"
+							size="1">
+						</select></td>
+					</tr>
+					<tr id="subprocessExecutionRow">
+						<td></td>
+						<td></td>
+						<td><table cellspacing="0" cellpadding="0"
+								class="layoutTable">
+								<tr>
+									<td><label for="subprocessModeSelect">Execution</label>
+									</td>
+									<td><select id="subprocessModeSelect">
+											<option value="synchShared">Synchronous/Shared
+												Data</option>
+											<option value="synchSeparate">Synchronous/Separate
+												Data</option>
+											<option value="asynchSeparate">Asynchronous/Separate
+												Data</option>
+									</select></td>
+								</tr>
+								<tr>
+									<td></td>
+									<td><table>
+											<tr>
+												<td><input id="copyDataInput"
+													type="checkbox" />
+												</td>
+												<td><label for="copyDataInput">Copy
+														all Data</label></td>
+											</tr>
+										</table></td>
+								</tr>
+							</table>
+					</tr>
+				</table>
+				<table>
+					<tr>
+						<td><label for="processingTypeSelect">Processing Type</label></td>
+						<td>
+							<select id="processingTypeSelect">
+								<option value="singleInstance">Single-instance</option>
+								<option value="multiInstanceParallel">Multi-instance Parallel</option>
+								<option value="multiInstanceSequential">Multi-instance Sequential</option>
+							</select>
+						</td>
+						<td>
+							<img id="processingTypeLink" style="padding-left: 5px;" class="imgLink" src="plugins/bpm-modeler/images/icons/pencil_go.png" />
+						</td>
+					</tr>
+				</table>
+			</div></td>
+	</tr>
+	<tr>
+		<td id="propertiesPagesCell" valign="top">
+			<div id="implementationPropertiesPage"
+				class="propertiesPage">
+				<div id="implementationHeading" class="heading">Implementation</div>
+				<table>
+					<tr id="noImplementationRow">
+						<td colspan="2"><label id="noImplementationLabel" />
+						</td>
+					</tr>
+					<tr id="applicationRow">
+						<td><label for="applicationList">Application</label>
+						</td>
+						<td><select id="applicationList" size="1">
+						</select></td>
+						<td>
+							<img id="appViewLink" style="padding-left: 5px;" class="imgLink" src="plugins/bpm-modeler/images/icons/arrow.png" />
+						</td>
+					</tr>
+				</table>
+				<table>
+					<tr id="ruleSetRow">
+						<td><label for="ruleSetInput" id="ruleSetLabel">Rule
+								Set</label>
+						</td>
+						<td><select id="ruleSetList" size="1">
+						</select></td>
+					</tr>
+				</table>
+			</div></td>
+	</tr>
+	<tr>
+		<td>
+			<div id="displayPropertiesPage" class="propertiesPage">
+				<div class="heading">Display</div>
+				<table>
+					<tr>
+						<td><input id="auxiliaryActivityInput"
+							type="checkbox" /></td>
+						<td><label for="auxiliaryActivityInput">Is
+								Auxiliary Activity</label>
+						</td>
+					</tr>
+				</table>
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<div id="processingPropertiesPage" class="propertiesPage">
+				<div class="heading">Processing</div>
+				<table>
+					<tr>
+						<td><label for="processingTypeSelect">Processing Type</label></td>
+						<td>
+							<select id="processingTypeSelect">
+								<option value="singleInstance">Single-instance</option>
+								<option value="multiInstanceParallel">Multi-instance Parallel</option>
+								<option value="multiInstanceSequential">Multi-instance Sequential</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td><label for="inputListParam">Input List Parameter</label></td>
+						<td>
+							<select id="inputListParam">
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td><label for="indexListParam">Index List Parameter</label></td>
+						<td>
+							<select id="indexListParam">
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td><label for="outputListParam">Output List Parameter</label></td>
+						<td>
+							<select id="outputListParam">
+							</select>
+						</td>
+					</tr>
+				</table>
+				<table style="margin-top: 10px">
+					<tr>
+						<td><input id="batchSizeInput"
+									type="checkbox" /></td>
+						<td><label for="batchSizeInput"></label>
+						</td>
+					</tr>
+				</table>
+				<table>
+					<tr>
+						<td><label for="maximumBatchSize"></label>
+						</td>
+						<td>
+						<form name="batchForm">
+							<input id="maximumBatchSize" name="maximumBatchSize" ng-model="batchSize"
+								type="text" style="min-width:35px;width:35px;" 
+								ng-model-onblur ng-pattern="/^(\+|-)?([\d]{0,9})$/"/>
+							<div id="intMaximumBatchSize" 
+									ng-show="batchForm.maximumBatchSize.$error.pattern" style="color:red">Not a valid number</div>
+						</form>
+						</td>
+					</tr>
+				</table>
+			</div></td>
+	</tr>
+	<tr>
+		<td>
+			<div id="qualityControlPropertiesPage"
+				class="propertiesPage">
+				<div class="heading">Quality Assurance</div>
+				<table>
+					<tr>
+						<td><label for="qualityControlProbabilityInput">Quality
+								Assurance Probability</label>
+						</td>
+						<td><input id="qualityControlProbabilityInput"
+							type="text" /></td>
+						<td>%</td>
+					</tr>
+				</table>
+			</div></td>
+	</tr>
+</table>

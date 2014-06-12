@@ -1,0 +1,96 @@
+<div id="modelerPropertiesPanelWrapper" class="panelWrapperBorder"
+	style="height: 100%;">
+	<table border="0" cellpadding="0" cellspacing="0">
+		<tr>
+			<td valign="top">
+				<table>
+					<tr>
+						<td><img id="propertiesPanelHideControl"
+							src="plugins/bpm-modeler/images/icons/expand.png"
+							class="propertyPageVisibilityControl invisible"
+							title="Hide Property Panel"
+							style="padding-left: 5px; margin-top: 0;" />
+						</td>
+					</tr>
+					<tr>
+						<td> <!-- RUNTIME DATA to be inserted as Cells here -->
+							<table id="propertiesPageList">
+								<tr>
+									<td></td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</table>
+			</td>
+			<td valign="top">
+				<table border="0" cellpadding="0" cellspacing="0"
+					class="layoutTable">
+					<tr>
+						<td>
+							<div id="processPropertiesPanel" class="propertiesPanel invisible">
+								<ng-include src="'plugins/bpm-modeler/views/modeler/procDefView/processPropertiesPanelInclude.html'" />
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<div id="activityPropertiesPanel" class="propertiesPanel invisible">
+								<ng-include src="'plugins/bpm-modeler/views/modeler/procDefView/activityPropertiesPanelInclude.html'" />
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<div id="eventPropertiesPanel" class="propertiesPanel invisible">
+								<ng-include src="'plugins/bpm-modeler/views/modeler/procDefView/eventPropertiesPanelInclude.html'" />
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<div id="gatewayPropertiesPanel" class="propertiesPanel invisible">
+								<ng-include src="'plugins/bpm-modeler/views/modeler/procDefView/gatewayPropertiesPanelInclude.html'" />
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<div id="dataPropertiesPanel" class="propertiesPanel invisible">
+								<ng-include src="'plugins/bpm-modeler/views/modeler/procDefView/dataPropertiesPanelInclude.html'" />
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<div id="annotationPropertiesPanel" class="propertiesPanel invisible">
+								<ng-include src="'plugins/bpm-modeler/views/modeler/procDefView/annotationPropertiesPanelInclude.html'" />
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<div id="dataFlowPropertiesPanel" class="propertiesPanel invisible">
+								<ng-include src="'plugins/bpm-modeler/views/modeler/procDefView/dataFlowPropertiesPanelInclude.html'" />
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<div id="controlFlowPropertiesPanel" class="propertiesPanel invisible">
+								<ng-include src="'plugins/bpm-modeler/views/modeler/procDefView/controlFlowPropertiesPanelInclude.html'" />
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<div id="swimlanePropertiesPanel" class="propertiesPanel invisible">
+								<ng-include src="'plugins/bpm-modeler/views/modeler/procDefView/swimlanePropertiesPanelInclude.html'" />
+							</div>
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+</div>

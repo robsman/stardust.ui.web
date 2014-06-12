@@ -1,0 +1,162 @@
+<table cellpadding="0" id="dataopendataview" cellspacing="0"
+	class="layoutTable">
+	<tr>
+		<td>
+			<div class="propertiesPanelTitle" id="dataid">Data</div>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<div class="errorMessagesPanel">
+				<ul id="errorMessagesList">
+				</ul>
+			</div></td>
+	</tr>
+	<tr>
+		<td id="propertiesPagesCell">
+			<div id="basicPropertiesPage" class="propertiesPage">
+				<div class="heading">General Properties</div>
+				<div style="float: right;">
+					<a id="viewLink">Open Data View &raquo;</a>
+				</div>
+				<table id="dataname">
+					<tr id="guidOutputRow">
+						<td><label for="guidOutput">UUID</label>
+						</td>
+						<td><div id="guidOutput" class="output" /></td>
+					</tr>
+					<tr id="idOutputRow">
+						<td><label for="idOutput">ID</label>
+						</td>
+						<td><div id="idOutput" class="output" /></td>
+					</tr>
+					<tr>
+						<td><label for="nameInput">Name</label>
+						</td>
+						<td><input type="text" id="nameInput" /></td>
+					</tr>
+				</table>
+				<table id="datadescription">
+					<tr>
+						<td><label for="descriptionInput">Description</label>
+						</td>
+					</tr>
+					<tr>
+						<td><textarea id="descriptionInput" cols="40"
+								rows="3"></textarea></td>
+					</tr>
+				</table>
+				<table cellpadding="0" cellspacing="0"
+					id="datapublicvisibility" class="fieldSetTable"
+					style="margin-bottom: 10px;">
+					<tr>
+						<td><input id="publicVisibilityCheckbox"
+							type="checkbox"></input>
+						</td>
+						<td><label for="publicVisibilityCheckbox">Public
+								Visibility</label>
+						</td>
+					</tr>
+				</table>
+				<table style="margin-top: 10px; margin-bottom: 10px;">
+					<tr>
+						<td><div id="documentationCreationLinkPanel">
+								<a id="documentationCreationLink">Create
+									documentation for this Data item &raquo;</a>
+							</div>
+							<div id="openDocumentViewLinkPanel">
+								<a id="openDocumentViewLink">Open documentation
+									&raquo;</a>
+							</div></td>
+					</tr>
+				</table>
+				<table id="datatableid" style="margin-top: 10px;">
+					<tr id="datatypeid">
+						<td><label for="dataTypeSelect">Data Type</label>
+						</td>
+						<td><select id="dataTypeSelect" size="1">
+						</select></td>
+					</tr>
+					<tr id="primitiveDataTypeRow">
+						<td><label for="primitiveDataTypeSelect">Primitive
+							Type</label>
+						</td>
+						<td><select id="primitiveDataTypeSelect" size="1">
+						</select>
+						</td>
+					</tr>
+					<tr id="structuredDataTypeRow">
+						<td><label for="structuredDataTypeSelect">Data
+								Structure</label></td>
+						<td><select id="structuredDataTypeSelect"
+							size="1">
+						</select></td>
+					</tr>
+					<tr id="documentTypeRow">
+						<td><label for="documentTypeSelect">Document
+								Type</label></td>
+						<td><select id="documentTypeSelect" size="1">
+						</select></td>
+					</tr>
+					<tr id="otherTypeRow">
+						<td colspan="2"><div id="otherTypeName"></div></td>
+					</tr>
+					<tr id="primitiveDefaultTextInputRow" ng-show="dataType != null">
+						<td><label for="primitiveDefaultTextInput">Default
+								Value</label></td>
+						<td>
+							<form name="form">
+								<!-- Limitations / TODOs to make it more elegant/compact -->
+								<!-- Cannot use ng-switch, as it removes the entire switch block from DOM at bootstrap,
+													and then jQuery does not find elements, hence using multiple ng-show -->
+								<!-- For name or id - Angular Expression cannot be used -->
+								<!-- For ng-pattern - Angular Expression is somehow not working -->
+								<div ng-show="dataType == 'boolean'">
+									<input type="checkbox" id="booleanInputText" name="booleanInputText"
+											ng-model="defaultValue" />
+								</div>
+								<div ng-show="dataType == 'double'">
+									<input id="doubleInputText" name="doubleInputText" class="rightAligned"
+											type="text" ng-model="defaultValue" maxlength="620"
+											ng-model-onblur ng-pattern="/^[-+]?\d{0,308}(\.\d{1,309})?%?$/" />
+									<div id="doubleInputTextError"
+										ng-show="form.doubleInputText.$error.pattern" style="color:red">Not a valid number</div>
+								</div>
+								<div ng-show="dataType == 'int'">
+									<input id="intInputText" name="intInputText" class="rightAligned"
+											type="text" ng-model="defaultValue" maxlength="10"
+											ng-model-onblur ng-pattern="/^(\+|-)?([\d]{0,9})$/" />
+									<div id="intInputTextError"
+										ng-show="form.intInputText.$error.pattern" style="color:red">Not a valid number</div>
+								</div>
+								<div ng-show="dataType == 'long'">
+									<input id="longInputText" name="longInputText" class="rightAligned"
+											type="text" ng-model="defaultValue" maxlength="19"
+											ng-model-onblur ng-pattern="/^(\+|-)?([\d]{0,18})$/" />
+									<div id="longInputTextError"
+										ng-show="form.longInputText.$error.pattern" style="color:red">Not a valid number</div>
+								</div>
+								<div ng-show="dataType == 'Timestamp'">
+									<input id="TimestampInputText" name="TimestampInputText" type="text" />
+									<div id="TimestampInputTextError"
+										ng-show="timestampInputTextError" style="color:red">Not a valid date</div>
+								</div>
+								<div ng-show="dataType == 'String'">
+									<input id="StringInputText" name="StringInputText"
+										type="text" ng-model="defaultValue" ng-model-onblur />
+								</div>
+								<div ng-show="dataType == 'other'">
+									<input id="otherInputText" name="otherInputText"
+										type="text" ng-model="defaultValue" ng-model-onblur />
+								</div>
+								<div ng-show="enumDataType == true">
+									<select id="enumInputSelect" size="1"/>
+
+								</div>
+							</form>
+						</td>
+					</tr>
+				</table>
+			</div></td>
+	</tr>
+</table>

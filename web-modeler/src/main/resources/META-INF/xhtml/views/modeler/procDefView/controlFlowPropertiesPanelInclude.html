@@ -1,0 +1,69 @@
+<table id="controlFlowPropertiesPanelTable" cellpadding="0"
+	cellspacing="0" class="layoutTable">
+	<tr>
+		<td>
+			<div class="propertiesPanelTitle">Sequence Flow</div></td>
+	</tr>
+	<tr>
+		<td>
+			<div class="errorMessagesPanel">
+				<ul id="errorMessagesList">
+				</ul>
+			</div></td>
+	</tr>
+	<tr>
+		<td id="propertiesPagesCell">
+			<div id="basicPropertiesPage" class="propertiesPage">
+				<div class="heading">General Properties</div>
+				<table>
+					<tr>
+						<tr id="guidOutputRow">
+							<td><label for="guidOutput">UUID</label>
+							</td>
+							<td><div id="guidOutput" class="output" /></td>
+						</tr>
+						<tr id="idOutputRow">
+							<td><label for="idOutput">ID</label>
+							</td>
+							<td><div id="idOutput" class="output" /></td>
+						</tr>
+						<td><label for="nameInput">Name</label>
+						</td>
+						<td><input type="text" id="nameInput" /></td>
+					</tr>
+				</table>
+				<table>
+					<tr>
+						<td><label for="descriptionInput">Description</label>
+						</td>
+					</tr>
+					<tr>
+						<td><textarea id="descriptionInput" cols="40"
+								rows="3"></textarea></td>
+					</tr>
+				</table>
+				<div id="conditionPanel">
+					<table>
+						<tr>
+							<td><input id="otherwiseInput" type="checkbox" />
+							</td>
+							<td><label for="otherwiseInput">Default
+									Flow</label></td>
+						</tr>
+					</table>
+					<table style="width: 100%">
+						<tr>
+							<td><label for="conditionExpressionInput">Condition
+									Expression</label>
+							</td>
+						</tr>
+						<tr>
+							<td><div id="conditionExpressionDiv"
+									class="editorDivDefault"></div>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div></td>
+	</tr>
+</table>
