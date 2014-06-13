@@ -1,7 +1,10 @@
 package org.eclipse.stardust.ui.web.reporting.scheduling;
 
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import org.quartz.CronExpression;
 
@@ -74,6 +77,8 @@ public abstract class SchedulingRecurrence
 
    public String prcoessSchedule(JsonObject json)
    {
+      Date currentDate = Calendar.getInstance().getTime();
+
       String startDateStr = json.get("recurrenceRange").getAsJsonObject()
             .get("startDate").getAsString();
 
@@ -87,60 +92,19 @@ public abstract class SchedulingRecurrence
       startTime = startDate.getSeconds() + SchedulingUtils.BLANK_SPACE
             + startDate.getMinutes() + SchedulingUtils.BLANK_SPACE + startDate.getHours()
             + SchedulingUtils.BLANK_SPACE;
-      
-      //Set Current time to compare with Scheduled Execution time.
-      startDate.setHours(new Date().getHours());
-      startDate.setMinutes(new Date().getMinutes());
-      startDate.setSeconds(new Date().getSeconds());
-      
+
+      // Set Current time to compare with Scheduled Execution time.
+      startDate.setHours(0);
+      startDate.setMinutes(0);
+      startDate.setSeconds(0);
+
       trace.info("Start Date: " + startDate);
 
       String cronExpressionInput = this.generateSchedule(json);
 
-      String endMode = json.get("recurrenceRange").getAsJsonObject().get("endMode")
-            .getAsString();
-      Date endDate = null;
-      int count = 0; // stop after n occurences
-
-      // Logic to determine End Date
-      if (endMode.equals(SchedulingUtils.EndMode.NOEND.getEndMode()))
-      {
-         count = 2;
-
-      }
-      else if (endMode.equals(SchedulingUtils.EndMode.ENDAFTERNOOCCURENCES.getEndMode()))
-      {
-         int occurences = json.get("recurrenceRange").getAsJsonObject().get("occurences")
-               .getAsInt();
-         count = occurences;
-      }
-      else if (endMode.equals(SchedulingUtils.EndMode.ENDBYDATE.getEndMode()))
-      {
-
-         String endDateStr = json.get("recurrenceRange").getAsJsonObject().get("endDate")
-               .getAsString();
-         endDate = SchedulingUtils.getParsedDate(endDateStr,
-               SchedulingUtils.CLIENT_DATE_FORMAT);
-      }
-
-      if (endDate != null)
-      {
-         /*
-          * RRule rRule = null; try { rRule = new RRule(ical.toString()); } catch
-          * (ParseException e) { trace.error(e); } rRule.setUntil(new
-          * DateValueImpl(endDate.getYear(), endDate.getMonthOfYear(),
-          * endDate.getDayOfMonth())); ical = rRule.toIcal();
-          */
-
-      }
-      else if (endDate == null && count != 0)
-      {
-         // TODO
-         // cronExpressionInput = cronExpressionInput + ";COUNT=" + count;
-      }
-
       trace.info("CronExpression: " + cronExpressionInput.toString());
       CronExpression cronExpression = null;
+
       try
       {
          cronExpression = new CronExpression(cronExpressionInput);
@@ -150,18 +114,112 @@ public abstract class SchedulingRecurrence
          trace.error(e);
       }
 
-      trace.info("End Date: " + endDate);
+      String endMode = json.get("recurrenceRange").getAsJsonObject().get("endMode")
+            .getAsString();
+      Date endDate = null;
+      int count = 0; // stop after n occurrences
 
-      trace.info("Constructed Cron Expression: " + cronExpressionInput);
+      // Logic to determine End Date
+      if (endMode.equals(SchedulingUtils.EndMode.NOEND.getEndMode()))
+      {
+         trace.info("No End Date is selected");
+         if (startDate.before(currentDate))
+         { // Past Date
+            return getNextExecutionDate(cronExpression, currentDate);
+         }
+         else if (startDate.after(currentDate))
+         {
+            // Future Date
+            return getNextExecutionDate(cronExpression, startDate);
+         }
+      }
+      else if (endMode.equals(SchedulingUtils.EndMode.ENDAFTERNOOCCURENCES.getEndMode()))
+      {
+         int occurences = json.get("recurrenceRange").getAsJsonObject().get("occurences")
+               .getAsInt();
+         count = occurences;
+
+         if (count <= 0)
+         {
+            return null;
+         }
+
+         // Generate n Future Execution Dates
+         List<Date> nFutureExecutionDates = generateNFutureExecutionDates(cronExpression,
+               startDate, count);
+         trace.info("N Future occurences: " + nFutureExecutionDates.toString());
+         if (nFutureExecutionDates.get(nFutureExecutionDates.size() - 1).before(
+               currentDate))
+         {
+            trace.info("All Occurences are finished");
+            return null;
+         }
+         for (Date date : nFutureExecutionDates)
+         {
+            if (date.after(currentDate))
+            {
+               return SchedulingUtils.convertDate(date,
+                     SchedulingUtils.CLIENT_DATE_FORMAT);
+            }
+         }
+      }
+      else if (endMode.equals(SchedulingUtils.EndMode.ENDBYDATE.getEndMode()))
+      {
+         String endDateStr = json.get("recurrenceRange").getAsJsonObject().get("endDate")
+               .getAsString();
+         endDate = SchedulingUtils.getParsedDate(endDateStr,
+               SchedulingUtils.CLIENT_DATE_FORMAT);
+         endDate.setHours(23);
+         endDate.setMinutes(59);
+         endDate.setSeconds(59);
+
+         trace.info("End Date: " + endDate);
+
+         if (endDate != null)
+         {
+            if (startDate.after(endDate))
+            {
+               trace.info("Start Date is after End Date");
+               return null;
+            }
+            if (startDate.before(currentDate) && endDate.before(currentDate))
+            {// Start Date and End Date are less than current date.
+               trace.info("Start Date and End Date are less than current date");
+               return null;
+            }
+            else if (startDate.before(currentDate) && endDate.after(currentDate))
+            {
+               Date nextValidTimeAfter = cronExpression
+                     .getNextValidTimeAfter(currentDate);
+               trace.info("Next Execution Date: " + nextValidTimeAfter);
+               
+               return (nextValidTimeAfter.before(endDate)) ? SchedulingUtils.convertDate(
+                     nextValidTimeAfter, SchedulingUtils.CLIENT_DATE_FORMAT) : null;
+            }
+         }
+      }
+      return null;
+   }
+
+   private String getNextExecutionDate(CronExpression cronExpression, Date startDate)
+   {
       Date nextValidTimeAfter = cronExpression.getNextValidTimeAfter(startDate);
       trace.info("Next Execution Date: " + nextValidTimeAfter);
-
-      trace.info("Next to Next Time: "
-            + cronExpression.getNextValidTimeAfter(nextValidTimeAfter));
-      // trace.info("Get Time After: " + cronExpression.getTimeAfter(startDate));
-
       return SchedulingUtils.convertDate(nextValidTimeAfter,
             SchedulingUtils.CLIENT_DATE_FORMAT);
+   }
+
+   private List<Date> generateNFutureExecutionDates(CronExpression cronExpression,
+         Date startDate, int count)
+   {
+      List<Date> nFutureExecutionDates = new ArrayList<Date>(count);
+      for (int i = 0; i < count; i++)
+      {
+         Date nextValidTimeAfter = cronExpression.getNextValidTimeAfter(startDate);
+         nFutureExecutionDates.add(nextValidTimeAfter);
+         startDate = nextValidTimeAfter;
+      }
+      return nFutureExecutionDates;
    }
 
 }
