@@ -68,9 +68,10 @@ public class ResetPasswordServlet extends HttpServlet
       try
       {
          String oid = req.getParameter("oid");
+         String partition = req.getParameter("partition");
          String token = req.getParameter("token");
          User user = serviceFactory.getUserService().getUser(new Integer(oid));
-         serviceFactory.getUserService().resetPassword(user.getAccount(), getLoginProperties(), token);
+         serviceFactory.getUserService().resetPassword(user.getAccount(), getLoginProperties(partition), token);
          out.println("Password generated and sent to registered Email Id</br>");
       }
       catch (Exception e)
@@ -83,7 +84,7 @@ public class ResetPasswordServlet extends HttpServlet
       }
    }
 
-   private Map<String, String> getLoginProperties()
+   private Map<String, String> getLoginProperties(String tenant)
    {
       Boolean promptForPartition = Parameters.instance().getBoolean(SecurityProperties.PROMPT_FOR_PARTITION, false);
       Boolean promptForRealm = Parameters.instance().getBoolean(SecurityProperties.PROMPT_FOR_REALM, false);
@@ -94,7 +95,7 @@ public class ResetPasswordServlet extends HttpServlet
       String domain = null;
       if (promptForPartition)
       {
-         partition = Parameters.instance().getString(SecurityProperties.DEFAULT_PARTITION, "");
+         partition = Parameters.instance().getString(SecurityProperties.DEFAULT_PARTITION, tenant);
       }
       if (promptForRealm)
       {
