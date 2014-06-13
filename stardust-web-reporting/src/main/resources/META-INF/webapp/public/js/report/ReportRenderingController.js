@@ -1177,6 +1177,9 @@ define(
                      }
                   }
                }
+               if (column.type.id == this.reportingService.metadata.durationType.id) {
+                  columnDisplayName += " (" + this.report.dataSet.columns[x].metaData.durationUnit + ")";
+               }
                headers += "<th>" + columnDisplayName + "</th>";
                    var col = column.id;
                    console.log(col);
@@ -1266,6 +1269,20 @@ ReportRenderingController.prototype.formatPreviewData = function(data) {
           	  record[selColumn] = enumItems[record[selColumn]].name;  
             }
          }
+      } else if (selectedColumns[selColumn].id == this.
+               reportingService.metadata.objects.activityInstance.dimensions.criticality.id) {
+         //Formatting Criticality data to display string values
+         var qualifier = ["preferenceData", "criticality"];
+         
+         var enumItems = this.reportingService.getEnumerators2(qualifier[0], qualifier[1]);
+         
+         for ( var row in data)
+         {
+            var record = data[row];
+            var criticality = this.getCriticalityName(record[selColumn], enumItems);
+            record[selColumn] = criticality.name;  
+         }
+         
       }
    }
    
@@ -1380,7 +1397,23 @@ ReportRenderingController.prototype.formatPreviewData = function(data) {
 
 					return popupData;
 				};
-			}
+				
+				/**
+				 * 
+				 */
+				ReportRenderingController.prototype.getCriticalityName = function(criticalityRating, enumItems)
+				{
+				   criticalityRating *= 1000;
+				   var self = this;//enumItems.forEach(function(item)
+				   for ( var i = 0; i < enumItems.length; i++)
+				   {
+				      if (criticalityRating > enumItems[i].rangeFrom && criticalityRating <= enumItems[i].rangeTo)
+                  {
+                     return enumItems[i];
+                  }
+				   }
+				};
+		}
 			
 			function transposeArray(aInput) {
 			      return Object.keys(aInput[0]).map(
