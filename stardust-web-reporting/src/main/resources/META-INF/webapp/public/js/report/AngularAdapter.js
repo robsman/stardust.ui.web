@@ -135,6 +135,17 @@ if (!window.bpm.portal.AngularAdapter) {
 
 			var self = this;
 
+			/**
+			 *  tableArray - 2D array containing complete data of table column header + rows + footer
+				tableParameters.addLastRowAsFooter - if set true, will add last Row of above table as Footer. 
+				tableParameters.numberOfColHeaders - Number of rows to be used as column headers
+				tableParameters.rowHeaderIndex - column index to be used as row headers (mostly first of second column of the table)
+				tableParameters.groupByIndex - column index to which grouping will be applied
+				tableOptions - jquery data table options (future) 
+				callbackhandler - jquery data table callback handlers (future)
+			 */
+			
+			
 			this.angularModule.directive('sdDataTable', ['$compile', function($compile) {
 			    return {
 			        restrict: 'E',
