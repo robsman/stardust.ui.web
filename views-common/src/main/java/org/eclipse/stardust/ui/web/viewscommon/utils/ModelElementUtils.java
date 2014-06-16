@@ -20,6 +20,7 @@ import org.eclipse.stardust.engine.api.dto.DataMappingDetails;
 import org.eclipse.stardust.engine.api.dto.DataPathDetails;
 import org.eclipse.stardust.engine.api.dto.EventHandlerDetails;
 import org.eclipse.stardust.engine.api.model.*;
+import org.eclipse.stardust.engine.api.runtime.DeployedModelDescription;
 import org.eclipse.stardust.engine.core.compatibility.diagram.Diagram;
 
 
@@ -45,7 +46,7 @@ public class ModelElementUtils
       {
          return "Process." + modelElement.getId();
       }
-      if(modelElement instanceof Model)
+      if(modelElement instanceof Model || modelElement instanceof DeployedModelDescription)
       {
          return "Model";
       }
