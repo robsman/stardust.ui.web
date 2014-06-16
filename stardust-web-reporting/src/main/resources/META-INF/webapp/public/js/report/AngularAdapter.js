@@ -135,6 +135,119 @@ if (!window.bpm.portal.AngularAdapter) {
 
 			var self = this;
 
+			this.angularModule.directive('sdDataTable', ['$compile', function($compile) {
+			    return {
+			        restrict: 'E',
+			        scope: {
+			            tableArray: '=',
+			            tableOptions: '=',
+			            tableParameters: '=',
+			            callbackHandler: '='
+			        },
+			        link: function(scope, elem, attrs) {
+			            scope.$watch("tableArray", function(newVal, oldVal) {
+			                //debugger;
+			
+			                if (!scope.tableArray) {
+			                    return;
+			                }
+			
+			                var tableArray = scope.tableArray;
+			                var tableParameters = scope.tableParameters;
+			                if (!tableParameters) {
+			                    tableParameters = {
+			                        numberOfColHeaders: 1
+			                    };
+			                }
+			
+			                //Prepare Table - must be generic 
+			                var ROW_TEMPLATE = "<tr>_ROW_</tr>";
+			
+			                var TEMPLATE = "<table cellpadding=\"0\" cellspacing=\"0\" class=\"dataTable\"><thead>_ALLHEADERS_</thead><tbody><tr sd-table-data=\"row in rows\">_COLUMNS_</tr></tbody></table>";
+			
+			                if (tableParameters.addLastRowAsFooter) {
+			                    TEMPLATE = "<table cellpadding=\"0\" cellspacing=\"0\" class=\"dataTable\"><thead>_ALLHEADERS_</thead><tbody><tr sd-table-data=\"row in rows\">_COLUMNS_</tr></tbody><tfoot>_FOOTERS_</tfoot></table>";
+			                }
+			
+			                var TEMPLATE_COPY = getTemplateCopy(TEMPLATE);
+			
+			                //prepare headers
+			                var allHeaders = "";
+			                for (var i = 0; i < tableParameters.numberOfColHeaders; i++) {
+			                    var ROW_TEMPLATE_COPY = getTemplateCopy(ROW_TEMPLATE);
+			                    var headers = "";
+			                    var columns = tableArray.shift();
+			                    var colSpan = 1;
+			                    for (var x = 1; x < columns.length + 1; x++) {
+			                        if (columns[x] == columns[x - 1]) {
+			                            colSpan++;
+			                            continue;
+			                        }
+			                        headers += "<th colspan=" + colSpan + ">" + columns[x - 1] + "</th>";
+			                        colSpan = 1;
+			                    }
+			                    ROW_TEMPLATE_COPY = ROW_TEMPLATE_COPY.replace("_ROW_", headers);
+			                    allHeaders += ROW_TEMPLATE_COPY;
+			                }
+			
+			                TEMPLATE_COPY = TEMPLATE_COPY.replace("_ALLHEADERS_", allHeaders);
+			
+			                var cols = "";
+			                columns = tableArray[0];
+			                for (x in columns) {
+			                    if (x == tableParameters.rowHeaderIndex) {
+			                        cols += "<td style=\"font-weight:bold; font-size:small\">{{row[" + x + "]}}</td>";
+			                    } else {
+			                        cols += "<td style=\"text-align:center\">{{row[" + x + "]}}</td>";
+			                    }
+			                }
+			
+			                TEMPLATE_COPY = TEMPLATE_COPY.replace("_COLUMNS_", cols);
+			
+			                //add footer
+			                if (tableParameters.addLastRowAsFooter) {
+			                    var totalRow = tableArray.pop();
+			                    var footers = "";
+			                    for (var i = 0; i < totalRow.length; i++) {
+			                        if (i == 0) {
+			                            footers += "<td style=\"border-top:1px solid #AFD7ED; font-weight:bold; font-size:small; text-align:center\">" + totalRow[i] + "</td>";
+			                        } else {
+			                            footers += "<td style=\"border-top:1px solid #AFD7ED; text-align:center\">" + totalRow[i] + "</td>";
+			                        }
+			
+			                    }
+			                }
+			
+			                ROW_TEMPLATE_COPY = getTemplateCopy(ROW_TEMPLATE);
+			                ROW_TEMPLATE_COPY = ROW_TEMPLATE_COPY.replace("_ROW_", footers);
+			                TEMPLATE_COPY = TEMPLATE_COPY.replace("_FOOTERS_", ROW_TEMPLATE_COPY);
+			
+			                //E
+			                //create an angular element. (this is our "view")
+			
+			                var el = angular.element(TEMPLATE_COPY);
+			
+			                var compiled = angularCompile(el);
+			
+			                var divElem = elem;
+			
+			                //append our view to the element of the directive.
+			                divElem.html(el);
+			
+			                compiled(divElem.scope());
+			
+			                //put all data in parents scope for jquery data table usage
+			                scope.$parent.rows = tableArray;
+			
+			                scope.$parent.tableOptions = scope.tableOptions;
+			
+			                scope.$parent.$apply();
+			
+			            });
+			        }
+			    };
+			}]);
+			
 			/**
 			 * Problems:
 			 *
@@ -155,7 +268,8 @@ if (!window.bpm.portal.AngularAdapter) {
 								sDefaultContent : "-",
 								sClass : "",
 								aTargets : ["_all"]
-							}]};
+							}],
+							"aLengthMenu": [[5, 10, 25, 50, 100, 200, -1], [5, 10, 25, 50, 100, 200, "All"]]};
 
 						return {
 							post : function (scope, element,
@@ -241,17 +355,47 @@ if (!window.bpm.portal.AngularAdapter) {
 										.parent());
 
 								//apply dynamic functions
-								if (scope.renderingController) {
-									if (scope.renderingController.tableOptions) {
-										tableOptions = scope.renderingController.tableOptions;
-									}
-									
-									if (typeof scope.renderingController.fnDrawCallback == 'function') {
-										tableOptions.fnDrawCallback = function() {
-											scope.renderingController.fnDrawCallback(table);
-										};
-									}
-								} 
+								if (scope.tableOptions) {
+								    tableOptions = scope.tableOptions;
+								}
+								
+								//if group table rows
+								if (scope.tableParameters && scope.tableParameters.groupByIndex != undefined) {
+								    var groupIndex = scope.tableParameters.groupByIndex;
+								    if (!tableOptions) {
+								        tableOptions = {
+								            aoColumnDefs: []
+								        };
+								    }
+								
+								    if (!tableOptions.aoColumnDefs) {
+								        tableOptions.aoColumnDefs = [];
+								    }
+								
+								    tableOptions.aoColumnDefs.push({
+								        bVisible: false,
+								        aTargets: [groupIndex]
+								    });
+								
+								    tableOptions.fnDrawCallback = function() {
+								        var datas = table.fnGetData();
+								        var rows = table.fnGetNodes();
+								        var last = null;
+								        datas.forEach(function(data, index) {
+								            var group = data[groupIndex];
+								            if (last != group) {
+								                angular.element(rows).eq(index).before(('<tr class="group"><td colspan="SPAN">' + group + '</td></tr>').replace("SPAN", datas[0].length - 1));
+								                last = group;
+								            }
+								        });
+								    };
+								    
+								    //TODO: redraw table on group row click
+								   table.find('tbody').on( 'click', 'tr.group', function () {
+								    	//table.fnClearTable();
+									   scope.reloadTable();
+								    });
+								}
 									
 								scope
 								.$watch(
@@ -456,14 +600,14 @@ if (!window.bpm.portal.AngularAdapter) {
 										.last()
 										.addClass(
 											"lastRow");
-
+										
 										// Create
 										// Datatables
-
 										
 										try {
-											table
-											.dataTable(tableOptions);
+										
+											table.dataTable(tableOptions);
+
 										} catch (x) {
 											console
 											.log("Cannot create data table");
@@ -873,6 +1017,16 @@ if (!window.bpm.portal.AngularAdapter) {
 			});
 			/****Angular Ace Directive END *****/
 		};
+	}
+	function getTemplateCopy(template) {
+        var v1 = jQuery.extend({}, template);
+
+        var TEMPLATE_COPY = "";
+        for (v in v1) {
+          TEMPLATE_COPY += v1[v];
+        }
+        
+        return TEMPLATE_COPY;
 	}
 	  
 }

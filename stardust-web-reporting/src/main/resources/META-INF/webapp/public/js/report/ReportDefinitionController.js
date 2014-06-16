@@ -40,14 +40,11 @@ define([ "bpm-reporting/public/js/report/I18NUtils",
 					var renderingController = ReportRenderingController
 							.create(angularCompile);
 
-					controller.initialize(renderingController, "my Report 111",
-							"Report111", "instance");
+					controller.initialize(renderingController);
 
-					controller.renderingController.refreshPreview(report_definition, controller);
-					
 					controller.report = report_definition;
 					
-					//controller.refreshPreview(report_definition);
+					controller.reloadTable();
 					
 					controller.updateView();
 					
@@ -71,8 +68,7 @@ define([ "bpm-reporting/public/js/report/I18NUtils",
 				/**
 				 * 
 				 */
-				ReportDefinitionController.prototype.initialize = function(
-						renderingController, name, path, viewMode) {
+				ReportDefinitionController.prototype.initialize = function(renderingController) {
 					var self = this;
 					this.renderingController = renderingController;
 
@@ -93,6 +89,18 @@ define([ "bpm-reporting/public/js/report/I18NUtils",
 					
 					jQuery("#reportDefinitionView").css("visibility", "visible");
 				};
+				
+				/**
+				 * 
+				 */
+				ReportDefinitionController.prototype.reloadTable = function() {
+					var self = this;
+					this.renderingController.refreshPreview(this, this.report).done(function(){
+						self.updateView();	
+					});	
+				};
+				
+				
 			}
 
 			function transposeArray(aInput) {

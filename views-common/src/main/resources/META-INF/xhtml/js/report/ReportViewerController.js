@@ -102,9 +102,7 @@ define(
 							.done(
 									function() {
 										// fetch and render report-data
-										self.renderingController
-												.refreshPreview(self.report,
-														self, self.parameters);
+										self.renderingController.refreshPreview(self, self.report, self.parameters);
 										self.updateView();
 									});
 
@@ -234,8 +232,11 @@ define(
 				/**
 				 * 
 				 */
-				ReportViewerController.prototype.refreshPreviewData = function() {
-					this.renderingController.refreshPreview(this.report, this, this.parameters);
+				ReportViewerController.prototype.reloadTable = function() {
+					var self = this;
+					this.renderingController.refreshPreview(this, this.report, this.parameters).done(function(){
+						self.updateView();
+					});
 				};
 
 				/**

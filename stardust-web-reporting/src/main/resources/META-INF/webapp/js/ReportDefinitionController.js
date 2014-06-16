@@ -349,9 +349,12 @@ define(
 									event, ui) {
 
 									if (ui.newPanel.selector === "#previewTab") {
-										self.renderingController.refreshPreview(self.report, self, self.parameters);
-										self.resetParamFilters();
-										self.updateView();
+										
+										self.renderingController.refreshPreview(self, self.report, self.parameters).done(
+												function(){
+													self.resetParamFilters();
+													self.updateView();			
+												});
 									}
 									if (ui.newPanel.selector === "#schedulingTab") {
 										self.resetParamFilters();
@@ -449,8 +452,14 @@ define(
 					});
 				};
 				
-				ReportDefinitionController.prototype.refreshPreviewData = function() {
-					this.renderingController.refreshPreview(this.report, this, this.parameters);
+				/**
+				 * 
+				 */
+				ReportDefinitionController.prototype.reloadTable = function() {
+					var self = this;
+					this.renderingController.refreshPreview(this, this.report, this.parameters).done(function(){
+						self.updateView();	
+					});
 				};
 				
 				ReportDefinitionController.prototype.initializeAutocompleteDir = function(angularModule) {
@@ -762,7 +771,7 @@ define(
 						this.report.layout.type = "processDiagram";
 					} else if (this.report.dataSet.type === 'seriesGroup') {
 						this.report.layout.type = "simpleReport";
-						this.report.layout.subType = "chart";
+						this.report.layout.subType = this.metadata.layoutSubTypes.chart.id;
 						this.report.dataSet.columns = [];
 					} else if (this.report.dataSet.type === 'recordSet') {
 						this.report.layout.type = "table";

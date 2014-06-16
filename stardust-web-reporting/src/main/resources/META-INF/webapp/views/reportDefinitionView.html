@@ -849,12 +849,11 @@ table.formTable td {
 							</div> <!-- layout subtype == chart ends here -->
 							<div ng-show="report.layout.subType == reportingService.metadata.layoutSubTypes.table.id">
 								<table cellpadding="0" cellspacing="0"  style="margin-top: 10px;" class="formTable">
-									<!-- <tr>
+									<tr>
 										<td><label>{{getI18N('reporting.definitionView.layout.table.dimensionDisplay.label')}}</label></td>
 										<td><select id="dimensionDisplaySelect"></select></td>
-									</tr> -->
-									<!-- <tr ng-show="report.dataSet.fact != reportingService.metadata.objects.processInstance.facts.count.id"> -->
-									<tr>
+									</tr>
+									<tr ng-show="report.dataSet.fact != reportingService.metadata.objects.processInstance.facts.count.id">
 										<td><label>{{getI18N('reporting.definitionView.layout.table.cumulantsDisplay.label')}}</label></td>
 										<td><select id="cumulantsDisplaySelect"></select></td>
 									</tr>
@@ -918,12 +917,12 @@ table.formTable td {
 							</div> <!-- layout subtype == table ends here -->	
 							<div>
 							
-							<table style="margin-top: 10px;" cellpadding="0" cellspacing="0">
+							<!-- <table style="margin-top: 10px;" cellpadding="0" cellspacing="0">
                                     <tr>
                                     	<td><input type="checkbox" ng-model="report.layout.table.preview" /></td>
 										<td><label>Show Preview</label></td>
                                     </tr>
-							</table>
+							</table> -->
 							</div>
 						</div> <!-- simple report ends here -->
 							

@@ -10,7 +10,7 @@
 						<tr>
 							<td valign="top"><input type="submit"
 								value="{{getI18N('reporting.definitionView.submit.label')}}"
-								ng-click="refreshPreviewData()"></td>
+								ng-click="reloadTable()"></td>
 						</tr>
 					</tbody>
 				</table>
@@ -20,8 +20,10 @@
 	<div
 		ng-show="report.layout.type == 'table' || report.layout.subType == reportingService.metadata.layoutSubTypes.table.id">
 		<div class="heading">{{report.layout.title}}</div>
+		
 		<div class="dataTableFrame">
-			<div class="dynamicTable" style="margin-top: 10px;"></div>
+				<div class="dynamicTable"></div>
+				<sd-data-table table-array="tableArray" table-options="tableOptions" table-parameters="tableParameters" callback-handler=""> </sd-data-table>
 		</div>
 	</div>
 	<div
