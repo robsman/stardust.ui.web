@@ -488,7 +488,7 @@ public class MobileWorkflowService implements ServletContextAware {
                      String paramId = inMapping.getApplicationAccessPoint().getId();
       
                      Object inParam = ClientSideDataFlowUtils.evaluateClientSideInMapping(
-                           interaction.getModel(), inParams.get(paramId), inMapping, inValue);
+                           interaction.getModel(), ai.getActivity(), inParams.get(paramId), inMapping, inValue);
       
                      inParams.put(paramId, (Serializable) inParam);
                   }
@@ -570,7 +570,7 @@ public class MobileWorkflowService implements ServletContextAware {
                         try
                         {
                            Object outValue = ClientSideDataFlowUtils.evaluateClientSideOutMapping(
-                                 interaction.getModel(), outParam, outMapping);
+                                 interaction.getModel(), ai.getActivity(), outParam, outMapping);
 
                            outData.put(outMapping.getId(), (Serializable) outValue);
                         }
@@ -693,7 +693,7 @@ public class MobileWorkflowService implements ServletContextAware {
                         try
                         {
                            Object outValue = ClientSideDataFlowUtils.evaluateClientSideOutMapping(
-                                 interaction.getModel(), outParam, outMapping);
+                                 interaction.getModel(), ai.getActivity(), outParam, outMapping);
 
                            outData.put(outMapping.getId(), (Serializable) outValue);
                         }
@@ -1040,7 +1040,7 @@ public class MobileWorkflowService implements ServletContextAware {
                            String paramId = inMapping.getApplicationAccessPoint().getId();
       
                            Object inParam = ClientSideDataFlowUtils.evaluateClientSideInMapping(
-                                 interaction.getModel(), inParams.get(paramId), inMapping, inValue);
+                                 interaction.getModel(), ai.getActivity(), inParams.get(paramId), inMapping, inValue);
       
                            inParams.put(paramId, (Serializable) inParam);
                         }
