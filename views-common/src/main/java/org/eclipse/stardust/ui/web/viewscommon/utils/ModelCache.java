@@ -41,11 +41,12 @@ import org.eclipse.stardust.engine.api.runtime.DeployedModelDescription;
 import org.eclipse.stardust.engine.api.runtime.Grant;
 import org.eclipse.stardust.engine.api.runtime.Models;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
+import org.eclipse.stardust.engine.core.interactions.ModelResolver;
 import org.eclipse.stardust.ui.web.viewscommon.beans.ApplicationContext;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.Resetable;
 
-public class ModelCache implements Resetable, Serializable
+public class ModelCache implements Resetable, Serializable, ModelResolver
 {
    private final static long serialVersionUID = 1l;
 
@@ -171,8 +172,7 @@ public class ModelCache implements Resetable, Serializable
     */
    public void reset()
    {
-      SessionContext sessionContext = SessionContext.findSessionContext();
-      ServiceFactory serviceFactory = sessionContext.getServiceFactory();
+      ServiceFactory serviceFactory = getServiceFactory();
       if (serviceFactory != null)
       {
          try
@@ -257,6 +257,7 @@ public class ModelCache implements Resetable, Serializable
       }
 
    }
+
    private void registerSchemaLocator(DeployedModel model)
    {
       if (model instanceof ModelDetails)
@@ -411,12 +412,10 @@ public class ModelCache implements Resetable, Serializable
 
    public void updateModel(long oid)
    {
-      Map<Long, DeployedModel> modelCache = getCache();
-
-      if (isJsfContext())
+      ServiceFactory serviceFactory = getServiceFactory();
+      if (serviceFactory != null)
       {
-         SessionContext sessionContext = SessionContext.findSessionContext();
-         ServiceFactory serviceFactory = sessionContext.getServiceFactory();
+         Map<Long, DeployedModel> modelCache = getCache();
          DeployedModel model = fetchModel(serviceFactory, oid);
          modelCache.put(new Long(oid), model);
       }
@@ -453,12 +452,11 @@ public class ModelCache implements Resetable, Serializable
 
       if (null == model && oid != 0)
       {
-         if (isJsfContext())
+         ServiceFactory serviceFactory = getServiceFactory();
+         if (serviceFactory != null)
          {
-            SessionContext sessionContext = SessionContext.findSessionContext();
             // just sticking to a model description is much cheaper for production audit
             // trails, as alive is very costly to be evaluated
-            ServiceFactory serviceFactory = sessionContext.getServiceFactory();
             try
             {
                model = fetchModel(serviceFactory, oid);
@@ -467,7 +465,6 @@ public class ModelCache implements Resetable, Serializable
             {
                trace.error("unable to resolve model", e);
             }
-
 
             if (model != null)// update modelDescriptions
             {
@@ -516,5 +513,11 @@ public class ModelCache implements Resetable, Serializable
          }
       }
       return tempCache;
+   }
+
+   @Override
+   public ServiceFactory getServiceFactory()
+   {
+      return isJsfContext() ? SessionContext.findSessionContext().getServiceFactory() : null;
    }
 }

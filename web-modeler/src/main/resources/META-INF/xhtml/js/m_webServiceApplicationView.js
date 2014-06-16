@@ -464,12 +464,18 @@ define(
 												.ports[this.getDisplayName(this.application.attributes["carnot:engine:wsPortName"])];
 						this.styleOutput.empty();
 						this.styleOutput.append(port.style);
-
+						
+						var operationIn = this.application.attributes["carnot:engine:wsOperationInputName"];
+						var operationOut = this.application.attributes["carnot:engine:wsOperationOutputName"];
+						var operationName = this.application.attributes["carnot:engine:wsOperationName"];
+						if(operationIn && operationOut){
+							operationName = operationName + '(' + operationIn + ',' + operationOut + ')'
+						}
 						// Update use output for selected service and port and operation
 						var operation = this.application.webServiceStructure
 												.services[this.getDisplayName(this.application.attributes["carnot:engine:wsServiceName"])]
 													.ports[this.getDisplayName(this.application.attributes["carnot:engine:wsPortName"])]
-														.operations[this.application.attributes["carnot:engine:wsOperationName"]];
+														.operations[operationName];
 						this.useOutput.empty();
 						this.useOutput.append(operation.use);
 
@@ -717,7 +723,10 @@ define(
 					}
 
 					if (!operationSet) {
-						this.setOperation(this.application.attributes["carnot:engine:wsOperationName"]);
+						var operationInputName = this.application.attributes["carnot:engine:wsOperationInputName"];
+						var operationOutputName = this.application.attributes["carnot:engine:wsOperationOutputName"];
+						// On server round trip, InputName and OutputName are used to create operation Name
+						this.setOperation(this.application.attributes["carnot:engine:wsOperationName"], operationInputName, operationOutputName);
 					}
 				};
 
@@ -725,9 +734,12 @@ define(
 				 *
 				 */
 				WebServiceApplicationView.prototype.setOperation = function(
-						operationName) {
+						operationName, operationInputName, operationOutputName) {
 					this.operationSelect.val(operationName);
-
+					if(operationInputName && operationOutputName){
+						operationName = operationName + '(' + operationInputName + ',' + operationOutputName + ')'
+					}
+					
 					var operation = this.application.webServiceStructure.services[this.serviceSelect
 							.val()].ports[this.portSelect.val()].operations[operationName];
 					this.useOutput.empty();

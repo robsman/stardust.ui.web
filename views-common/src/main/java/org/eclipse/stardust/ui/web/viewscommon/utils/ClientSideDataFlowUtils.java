@@ -19,33 +19,21 @@ import org.eclipse.stardust.common.Assert;
 import org.eclipse.stardust.common.error.InternalException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.engine.api.model.AccessPoint;
-import org.eclipse.stardust.engine.api.model.Data;
-import org.eclipse.stardust.engine.api.model.DataMapping;
-import org.eclipse.stardust.engine.api.model.Model;
-import org.eclipse.stardust.engine.api.model.PredefinedConstants;
-import org.eclipse.stardust.engine.api.model.TypeDeclaration;
+import org.eclipse.stardust.engine.api.model.*;
 import org.eclipse.stardust.engine.core.pojo.data.Type;
 import org.eclipse.stardust.engine.core.spi.extensions.runtime.AccessPathEvaluationContext;
-import org.eclipse.stardust.engine.core.struct.ClientXPathMap;
-import org.eclipse.stardust.engine.core.struct.IXPathMap;
-import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
-import org.eclipse.stardust.engine.core.struct.StructuredDataConverter;
-import org.eclipse.stardust.engine.core.struct.StructuredDataXPathUtils;
-import org.eclipse.stardust.engine.core.struct.StructuredTypeRtUtils;
-import org.eclipse.stardust.engine.core.struct.TypedXPath;
+import org.eclipse.stardust.engine.core.struct.*;
 import org.eclipse.stardust.engine.core.struct.spi.StructuredDataXPathEvaluator;
 import org.eclipse.stardust.engine.core.struct.sxml.Document;
 import org.eclipse.stardust.engine.core.struct.sxml.Element;
 import org.eclipse.stardust.engine.core.struct.sxml.Node;
 import org.eclipse.stardust.engine.core.struct.sxml.Text;
 
-
 public class ClientSideDataFlowUtils
 {
    private static final Logger trace = LogManager.getLogger(ClientSideDataFlowUtils.class);
 
-   public static Object evaluateClientSideInMapping(Model model, Object accessPoint,
+   public static Object evaluateClientSideInMapping(Model model, Activity activity, Object accessPoint,
          DataMapping inMapping, Object inValue)
    {
       Object result = null;
@@ -55,9 +43,9 @@ public class ClientSideDataFlowUtils
          Data data = model.getData(inMapping.getDataId());
          if (data.getModelOID() != model.getModelOID())
          {
-            model = org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils.getModel(data.getModelOID());
+            model = ModelUtils.getModel(data.getModelOID());
          }
-         result = evaluateStructInMapping(model, inMapping.getApplicationAccessPoint(),
+         result = evaluateStructInMapping(model, activity, inMapping.getApplicationAccessPoint(),
                accessPoint, inMapping.getApplicationPath(), inValue);
       }
       else if (isPrimitiveType(model, inMapping.getApplicationAccessPoint()))
@@ -81,8 +69,8 @@ public class ClientSideDataFlowUtils
       return result;
    }
 
-   public static Object evaluateClientSideOutMapping(Model model, Object value,
-         DataMapping outMapping)
+   public static Object evaluateClientSideOutMapping(Model model, Activity activity,
+         Object value, DataMapping outMapping)
    {
       Object result = null;
 
@@ -91,9 +79,9 @@ public class ClientSideDataFlowUtils
          Data data = model.getData(outMapping.getDataId());
          if (data.getModelOID() != model.getModelOID())
          {
-            model = org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils.getModel(data.getModelOID());
+            model = ModelUtils.getModel(data.getModelOID());
          }
-         result = evaluateStructOutMapping(model, outMapping.getApplicationAccessPoint(),
+         result = evaluateStructOutMapping(model, activity, outMapping.getApplicationAccessPoint(),
                value, outMapping.getApplicationPath());
       }
       else if (isPrimitiveType(model, outMapping.getApplicationAccessPoint()))
@@ -120,17 +108,15 @@ public class ClientSideDataFlowUtils
     * This code was copied from
     * {@link StructuredDataXPathEvaluator#evaluate(org.eclipse.stardust.engine.core.spi.extensions.model.AccessPoint, Object, String, org.eclipse.stardust.engine.core.spi.extensions.runtime.AccessPathEvaluationContext)}
     * and stripped down.
+    * @param activity
     *
     * @TODO merge back
     *
     */
-   private static Object evaluateStructOutMapping(Model model,
+   private static Object evaluateStructOutMapping(Model model, Activity activity,
          AccessPoint accessPointDefinition, Object accessPointInstance, String outPath)
    {
-      TypeDeclaration typeDeclaration = model.getTypeDeclaration((String) accessPointDefinition.getAttribute(StructuredDataConstants.TYPE_DECLARATION_ATT));
-
-      @SuppressWarnings("unchecked")
-      Set<TypedXPath> xPaths = StructuredTypeRtUtils.getAllXPaths(model, typeDeclaration);
+      Set<TypedXPath> xPaths = ModelUtils.getXPaths(model, activity, accessPointDefinition);
 
       final IXPathMap xPathMap = new ClientXPathMap(xPaths);
 
@@ -140,7 +126,7 @@ public class ClientSideDataFlowUtils
       // data value is in accessPointInstance
       Node[] nodes = converter.toDom(accessPointInstance, "", true);
       Assert.condition(nodes.length == 1);
-      
+
       Object returnValue = null;
       if (nodes[0] instanceof Element)
       {
@@ -179,13 +165,10 @@ public class ClientSideDataFlowUtils
     * @TODO merge back
     *
     */
-   private static Object evaluateStructInMapping(Model model,
+   private static Object evaluateStructInMapping(Model model, Activity activity,
          AccessPoint accessPointDefinition, Object accessPointInstance, String inPath, Object value)
    {
-      TypeDeclaration typeDeclaration = model.getTypeDeclaration((String) accessPointDefinition.getAttribute(StructuredDataConstants.TYPE_DECLARATION_ATT));
-
-      @SuppressWarnings("unchecked")
-      Set<TypedXPath> xPaths = StructuredTypeRtUtils.getAllXPaths(model, typeDeclaration);
+      Set<TypedXPath> xPaths = ModelUtils.getXPaths(model, activity, accessPointDefinition);
 
       final IXPathMap xPathMap = new ClientXPathMap(xPaths);
 
@@ -229,8 +212,10 @@ public class ClientSideDataFlowUtils
       {
          // update accessPointInstance (do not just return another instance, try "refilling"
          // the existing one
-         ((Map)accessPointInstance).clear();
-         ((Map)accessPointInstance).putAll((Map)newAccessPointInstance);
+         @SuppressWarnings("unchecked")
+         Map<Object, Object> map = (Map<Object, Object>) accessPointInstance;
+         map.clear();
+         map.putAll((Map<? ,?>) newAccessPointInstance);
       }
       else
       {
@@ -249,5 +234,4 @@ public class ClientSideDataFlowUtils
    {
       return (ap.getAttribute(PredefinedConstants.TYPE_ATT) instanceof Type);
    }
-
 }

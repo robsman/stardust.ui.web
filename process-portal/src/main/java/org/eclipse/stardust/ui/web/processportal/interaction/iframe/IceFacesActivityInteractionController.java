@@ -174,8 +174,7 @@ public class IceFacesActivityInteractionController implements IActivityInteracti
          SessionContext ippSessionContext = SessionContext.findSessionContext();
 
          Interaction interaction = new Interaction(ippSessionContext.getUser(),
-               modelCache.getModel(ai.getModelOID()), ai, getContextId(ai),
-               ippSessionContext.getServiceFactory());
+               ai, getContextId(ai), modelCache);
 
          interaction.setInDataValues(inData);
 
@@ -300,7 +299,7 @@ public class IceFacesActivityInteractionController implements IActivityInteracti
       }
       return false;
    }
-   
+
    public boolean isTypedDocumentOpen(ActivityInstance activityInstance)
    {
       return false;

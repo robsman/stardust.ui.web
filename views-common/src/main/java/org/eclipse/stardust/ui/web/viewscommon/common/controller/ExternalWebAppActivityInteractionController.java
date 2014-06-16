@@ -21,7 +21,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,8 +29,6 @@ import java.util.Properties;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
-import org.eclipse.stardust.common.CollectionUtils;
-import org.eclipse.stardust.common.config.Parameters;
 import org.eclipse.stardust.common.error.InvalidArgumentException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
@@ -39,18 +36,14 @@ import org.eclipse.stardust.engine.api.model.ApplicationContext;
 import org.eclipse.stardust.engine.api.model.DataMapping;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.BpmRuntimeError;
-import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.engine.core.interactions.Interaction;
 import org.eclipse.stardust.engine.core.interactions.InteractionRegistry;
-import org.eclipse.stardust.engine.core.runtime.command.ServiceCommand;
 import org.eclipse.stardust.engine.core.runtime.command.impl.ExtractSessionInfoCommand;
-import org.eclipse.stardust.engine.core.runtime.internal.SessionManager;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.ClosePanelScenario;
 import org.eclipse.stardust.ui.web.viewscommon.common.PanelIntegrationStrategy;
 import org.eclipse.stardust.ui.web.viewscommon.common.controller.mashup.MashupContextConfigManager;
 import org.eclipse.stardust.ui.web.viewscommon.common.controller.mashup.MashupControllerUtils;
-import org.eclipse.stardust.ui.web.viewscommon.common.controller.mashup.service.MashupContextConfigRestController;
 import org.eclipse.stardust.ui.web.viewscommon.common.spi.IActivityInteractionController;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ClientSideDataFlowUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ManagedBeanUtils;
@@ -58,7 +51,6 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 
 import com.icesoft.faces.context.effects.JavascriptContext;
-
 
 /**
  * @author Robert.Sauer
@@ -124,8 +116,7 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
       return Constants.WORKFLOW_LAUNCH_ACTIVITY_IF_ANY;
    }*/
 
-   @SuppressWarnings("unchecked")
-   public void initializePanel(ActivityInstance ai, Map inData)
+   public void initializePanel(ActivityInstance ai, @SuppressWarnings("rawtypes") Map inData)
    {
       if (ai == null)
       {
@@ -140,12 +131,13 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
          SessionContext ippSessionContext = SessionContext.findSessionContext();
 
          Interaction interaction = new Interaction(ippSessionContext.getUser(),
-               modelCache.getModel(ai.getModelOID()), ai, getContextId(ai),
-               ippSessionContext.getServiceFactory());
+               ai, getContextId(ai), modelCache);
 
          // performing client side IN mappings
          Map<String, Serializable> inParams = newHashMap();
-         for (DataMapping inMapping : (List<DataMapping>) interaction.getDefinition().getAllInDataMappings())
+         @SuppressWarnings("unchecked")
+         List<DataMapping> allInDataMappings = (List<DataMapping>) interaction.getDefinition().getAllInDataMappings();
+         for (DataMapping inMapping : allInDataMappings)
          {
             Serializable inValue = (Serializable) inData.get(inMapping.getId());
             if (null != inValue)
@@ -155,7 +147,7 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
                   String paramId = inMapping.getApplicationAccessPoint().getId();
 
                   Object inParam = ClientSideDataFlowUtils.evaluateClientSideInMapping(
-                        interaction.getModel(), inParams.get(paramId), inMapping, inValue);
+                        interaction.getModel(), ai.getActivity(), inParams.get(paramId), inMapping, inValue);
 
                   inParams.put(paramId, (Serializable) inParam);
                }
@@ -405,15 +397,14 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
 
       return true;
    }
-      else 
+      else
       {
          unregisterInteraction(ai);
          return true;
       }
    }
 
-   @SuppressWarnings("unchecked")
-   public Map getOutDataValues(ActivityInstance ai)
+   public Map<?, ?> getOutDataValues(ActivityInstance ai)
    {
       InteractionRegistry registry = (InteractionRegistry) ManagedBeanUtils.getManagedBean(InteractionRegistry.BEAN_ID);
 
@@ -430,7 +421,9 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
             {
                // performing client side OUT mappings
                outData = newHashMap();
-               for (DataMapping outMapping : (List<DataMapping>) interaction.getDefinition().getAllOutDataMappings())
+               @SuppressWarnings("unchecked")
+               List<DataMapping> allOutDataMappings = (List<DataMapping>) interaction.getDefinition().getAllOutDataMappings();
+               for (DataMapping outMapping : allOutDataMappings)
                {
                   Serializable outParam = outParams.get(outMapping.getApplicationAccessPoint().getId());
                   if (null != outParam)
@@ -438,7 +431,7 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
                      try
                      {
                         Object outValue = ClientSideDataFlowUtils.evaluateClientSideOutMapping(
-                              interaction.getModel(), outParam, outMapping);
+                              interaction.getModel(), ai.getActivity(), outParam, outMapping);
 
                         outData.put(outMapping.getId(), (Serializable) outValue);
                      }

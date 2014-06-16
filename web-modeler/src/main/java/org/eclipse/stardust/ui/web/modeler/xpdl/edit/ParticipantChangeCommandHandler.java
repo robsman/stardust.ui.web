@@ -176,16 +176,20 @@ public class ParticipantChangeCommandHandler
 
             for (OrganizationType org : parentOrgs)
             {
-               // TODO - check why if a participant is deleted from member list get null pointer at
-               // Modification.determineChangedElement
-//               Iterator<ParticipantType> iter = org.getParticipant().iterator();
-//               while (iter.hasNext())
-//               {
-//                  if (modelParticipantInfo.equals(iter.next().getParticipant()))
-//                  {
-//                     iter.remove();
-//                  }
-//               }
+               ParticipantType removeMember = null;
+               for(ParticipantType child : org.getParticipant())
+               {
+                  if(modelParticipantInfo.equals(child.getParticipant()))
+                  {
+                     removeMember = child;
+                     break;
+                  }
+               }
+
+               if(removeMember != null)
+               {
+                  org.getParticipant().remove(removeMember);
+               }
                if (modelParticipantInfo.equals(org.getTeamLead()))
                {
                   org.setTeamLead(null);
@@ -226,10 +230,25 @@ public class ParticipantChangeCommandHandler
          {
             model.getRole().remove(participant.getParticipant());
          }
+      }
 
-         // TODO - check why if a participant is deleted from member list get null pointer at
-         // Modification.determineChangedElement
-         //iter.remove();
+      List<OrganizationType> parentOrgs = ModelBuilderFacade.getParentOrganizations(model, org);
+      for (OrganizationType organization : parentOrgs)
+      {
+         ParticipantType removeMember = null;
+         for(ParticipantType child : organization.getParticipant())
+         {
+            if(org.equals(child.getParticipant()))
+            {
+               removeMember = child;
+               break;
+            }
+         }
+
+         if(removeMember != null)
+         {
+            organization.getParticipant().remove(removeMember);
+         }
       }
       model.getOrganization().remove(org);
    }

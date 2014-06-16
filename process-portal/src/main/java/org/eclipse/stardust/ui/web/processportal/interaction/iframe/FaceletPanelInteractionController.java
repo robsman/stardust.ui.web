@@ -194,12 +194,8 @@ public class FaceletPanelInteractionController implements IActivityInteractionCo
          Interaction interaction = registry.getInteraction(Interaction.getInteractionId(ai));
          if (null == interaction)
          {
-            interaction = new Interaction(ippSessionContext.getUser(),
-                  modelCache.getModel(ai.getModelOID()), ai, getContextId(ai),
-                  ippSessionContext.getServiceFactory());
-
+            interaction = new Interaction(ippSessionContext.getUser(), ai, getContextId(ai), modelCache);
             interaction.setInDataValues(inData);
-
             registry.registerInteraction(interaction);
          }
 
@@ -306,7 +302,7 @@ public class FaceletPanelInteractionController implements IActivityInteractionCo
       return false;
    }
 
- 
+
    public boolean isTypedDocumentOpen(ActivityInstance activityInstance)
    {
       return false;

@@ -96,6 +96,8 @@ public class PortalUiController
    private IPerspectiveDefinition currentPerspective;
 
    private Map<String, IPerspectiveDefinition> perspectives;
+   
+   private Map<String, PerspectiveDefinition> systemPerspectives;
 
    private PerspectiveController perspectiveController;
    
@@ -244,7 +246,7 @@ public class PortalUiController
       
       // Collect Perspectives based on Role
       PerspectiveDefinition pd;
-      Map<String, PerspectiveDefinition> systemPerspectives = appContext.getBeansOfType(PerspectiveDefinition.class);
+      systemPerspectives = appContext.getBeansOfType(PerspectiveDefinition.class);
       for (String key : systemPerspectives.keySet())
       {
          pd = systemPerspectives.get(key);
@@ -1143,6 +1145,12 @@ public class PortalUiController
    {
       return perspectives;
    }
+   
+   public Map<String, PerspectiveDefinition> getSystemPerspectives()
+   {
+   return systemPerspectives;
+   }
+   
    
    /**
     * @param name

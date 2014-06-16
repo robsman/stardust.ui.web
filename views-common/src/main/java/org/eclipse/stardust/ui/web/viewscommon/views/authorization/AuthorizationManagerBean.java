@@ -36,6 +36,7 @@ import org.eclipse.stardust.engine.api.model.QualifiedModelParticipantInfo;
 import org.eclipse.stardust.engine.api.runtime.AdministrationService;
 import org.eclipse.stardust.ui.web.common.IPerspectiveDefinition;
 import org.eclipse.stardust.ui.web.common.LaunchPanel;
+import org.eclipse.stardust.ui.web.common.PerspectiveDefinition;
 import org.eclipse.stardust.ui.web.common.PopupUIComponentBean;
 import org.eclipse.stardust.ui.web.common.UiElement;
 import org.eclipse.stardust.ui.web.common.ViewDefinition;
@@ -768,7 +769,7 @@ public class AuthorizationManagerBean extends PopupUIComponentBean
       DefaultMutableTreeNode uiTreeNode = addAbsoluteNode(rootTreeNode, getMessages().getString("uiParticipant"),
             UiPermissionUtils.ICON_UI_PERM);
 
-      Map<String, IPerspectiveDefinition> perspectives = PortalUiController.getInstance().getPerspectives();
+      Map<String, PerspectiveDefinition> perspectives = PortalUiController.getInstance().getSystemPerspectives();
       
       List<IPerspectiveDefinition> allPerspectives = new ArrayList<IPerspectiveDefinition>();
       for (IPerspectiveDefinition perspectiveDef : perspectives.values())

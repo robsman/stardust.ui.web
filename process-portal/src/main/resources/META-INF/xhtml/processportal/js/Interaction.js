@@ -70,6 +70,7 @@ if (!window.bpm.portal.Interaction) {
 			} else {
 				var envelope, xml, type;
 				var converter = new X2JS();
+				converter.escapeMode(true);
 
 				for (var name in data) {
 					if (typeof data[name] !== "object") {
