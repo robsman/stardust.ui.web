@@ -1408,7 +1408,7 @@ define(
 							} else {
 								this.selectedComputedColumn = null;
 							}
-
+							this.expressionEditor.setValue("");
 							return;
 						}
 					}
@@ -1425,6 +1425,16 @@ define(
 					this.expressionEditor.setValue(this.selectedComputedColumn.formula);
 					
 				};
+				
+				/**
+             * 
+             */
+            ReportDefinitionController.prototype.byDefaultSelectFirstComputedColumn = function() {
+               if (this.report.dataSet.computedColumns.length > 0)
+               {
+                  this.selectComputedColumn(this.report.dataSet.computedColumns[0]);
+               }
+            };
 
 				/**
 				 * Auxiliary method because Angular does not support ternary
