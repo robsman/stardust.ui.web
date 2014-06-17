@@ -71,22 +71,6 @@ define([ "bpm-reporting/public/js/report/I18NUtils",
 				ReportDefinitionController.prototype.initialize = function(renderingController) {
 					var self = this;
 					this.renderingController = renderingController;
-
-					
-					//TODO: remove after testing
-					//report_definition.layout.table.preview = true;
-					
-					if((typeof report_data === 'undefined')){
-						report_data = this.reportingService
-						.getTestSimpleReportData(report_definition); // TODO:
-																// this
-																// would be
-																// html
-																// based
-																// script
-																// variable	
-					}
-					
 					jQuery("#reportDefinitionView").css("visibility", "visible");
 				};
 				

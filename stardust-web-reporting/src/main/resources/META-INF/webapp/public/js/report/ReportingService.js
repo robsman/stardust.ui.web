@@ -1022,6 +1022,8 @@ define(
 					var deferred = jQuery.Deferred();
 					var self = this;
 
+					revertUIAdjustment(report);
+					
 					jQuery
 							.ajax(
 									{
@@ -1057,6 +1059,8 @@ define(
 					var deferred = jQuery.Deferred();
 					var self = this;
 
+					revertUIAdjustment(reportDI.definition);
+					
 					jQuery
 							.ajax(
 									{
@@ -1210,6 +1214,11 @@ define(
 										},
 										url : self.getRootUrl() + "/services/rest/bpm-reporting/report-definition" + path
 									}).done(function(response) {
+								if(response.definition){
+									applyUIAdjustment(response.definition);
+								}else{
+									applyUIAdjustment(response);
+								}		
 								self.loadedReportDefinitions[path] = response;
 
 								console.debug("Loaded Report Definitions ");
@@ -1895,6 +1904,7 @@ define(
             };
             
 			}
+			
 			/**
 			 *	convert parameters 
 			 */
@@ -1907,9 +1917,9 @@ define(
 						}
 						
 						parametersString += parameters[itemInd].dimension + "=";
-						
-						if(parameters[itemInd].allValues){
-							parametersString += parameters[itemInd].allValues; 		
+						//here uiValue is the actual value that needs to be sent to server
+						if(parameters[itemInd].uiValue){
+							parametersString += JSON.stringify(parameters[itemInd].uiValue); 		
 						}else{
 							parametersString += JSON.stringify(parameters[itemInd].value);
 						}
@@ -1919,4 +1929,39 @@ define(
 				parametersString = parametersString.slice(0, -1);
 				return parametersString; 
 			}
+			
+			/**
+			 * 
+			 */
+			function applyUIAdjustment(report) {
+				var filters = report.dataSet.filters;
+			    if (!filters) {
+			        return;
+			    }
+			    for (var int = 0; int < filters.length; int++) {
+			        if (filters[int].uiValue) {
+			            var tmp = filters[int].uiValue;
+			            filters[int].uiValue = filters[int].value;
+			            filters[int].value = tmp;
+			        }
+			    }
+			};
+			
+			/**
+			 *
+			 */
+			function revertUIAdjustment(report) {
+				var filters = report.dataSet.filters;
+			    if (!filters) {
+			        return;
+			    }
+			    for (var int = 0; int < filters.length; int++) {
+			        if (filters[int].uiValue) {
+			            var tmp = filters[int].uiValue;
+			            filters[int].uiValue = filters[int].value;
+			            filters[int].value = tmp;
+			        }
+			    }
+			};
+			
 		});

@@ -154,7 +154,11 @@ define(
 									deferred.reject();
 								});
 					} else {
-						this.createChart();
+						this.createChart().done(function(){
+							deferred.resolve();
+						}).fail(function(){
+							deferred.reject();
+						});
 					}
 
 					return deferred.promise();
@@ -375,6 +379,9 @@ define(
 				 * 
 				 */
 				ReportRenderingController.prototype.createChart = function() {
+					var localDeferred = jQuery.Deferred();
+					
+					
 					var deferred = this.getReportData(this.report, this.parameters);
 					var self = this;
 
@@ -499,9 +506,13 @@ define(
 															}
 															document.body.style.cursor = "default";
 														}, 1000);
+										localDeferred.resolve();
 									}).fail(function() {
 								document.body.style.cursor = "default";
+								localDeferred.reject();
 							});
+					
+					return localDeferred.promise();
 				};
 
 				/**

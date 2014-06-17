@@ -434,16 +434,16 @@ define(
 						}
 
 						if (selectedAll) {
-							filter.allValues = [];
+							filter.uiValue = [];
 							for ( var itemInd in filteredEnumItems) {
 								var itemId = filteredEnumItems[itemInd].id;
 								if (itemId != self.constants.ALL_PROCESSES.id
 										&& itemId != self.constants.ALL_ACTIVITIES.id) {
-									filter.allValues.push(itemId);
+									filter.uiValue.push(itemId);
 								}
 							}
 						} else {
-							delete filter.allValues;
+							delete filter.uiValue;
 						}
 					}
 
