@@ -376,7 +376,7 @@ define(
 
 				var diagWidth = innerWidth - HORIZONTAL_SCROLL_OFFSET;
 
-				if (true == propertiesPaneVisible) {
+				if (!m_utils.jQuerySelect("#modelerPropertiesPanelWrapper").hasClass('invisible')) {
 					m_utils.jQuerySelect("#modelerPropertiesPanelWrapper").css("width", "auto");
 					diagWidth = diagWidth
 							- m_utils.jQuerySelect("#modelerPropertiesPanelWrapper")[0].offsetWidth;
