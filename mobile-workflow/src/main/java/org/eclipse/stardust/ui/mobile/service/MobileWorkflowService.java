@@ -1095,10 +1095,11 @@ public class MobileWorkflowService implements ServletContextAware {
    
    /**
     * Returns all participants 
-    * TODO: - Place holder
+    * TODO: - Place holder, should return all available delgatees for a process
+    * 		  given the activityOid and a like match on the delegateeName.
     * @return
     */
-   public JsonObject getParticipants(){
+   public JsonObject getDelegatees(String activityInstanceOid,String delegateeName){
 	   JsonObject resultJson = new JsonObject();
 	   JsonArray userInstancesJson = new JsonArray();
 	   List<Participant> participants= getQueryService().getAllParticipants();
@@ -1883,7 +1884,7 @@ public class MobileWorkflowService implements ServletContextAware {
       DocumentQuery query = DocumentSearchHelper.buildDocumentSearchQuery(criteria);
 
       Documents documents = documentManagementService.findDocuments(query);
-
+      
       JsonObject resultJson = new JsonObject();
       JsonArray documentsJson = new JsonArray();
 

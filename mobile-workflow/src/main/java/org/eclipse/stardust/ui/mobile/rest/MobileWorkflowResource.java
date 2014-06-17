@@ -185,15 +185,20 @@ public class MobileWorkflowResource {
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("activity-instances/{oid: \\d+}/delegatees")
-   public Response getParticipants(){
+   public Response getDelegatees(
+		   @PathParam("oid") String activityInstanceOid,
+		   @QueryParam("name") String delegateeName){
+	   
 	   try{
 		   return Response.ok(getMobileWorkflowService()
-				   .getParticipants().toString(),MediaType.APPLICATION_JSON_TYPE)
-			   .build();
+				   .getDelegatees(activityInstanceOid,delegateeName)
+				   .toString(),MediaType.APPLICATION_JSON_TYPE)
+				   .build();
 	   } catch(Exception e){
 		   e.printStackTrace();
 	       throw new RuntimeException(e);
 	   }
+	   
    }
    
    @GET
