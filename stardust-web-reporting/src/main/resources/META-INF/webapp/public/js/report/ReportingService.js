@@ -786,6 +786,9 @@ define(
 				 * 
 				 */
 				ReportingService.prototype.retrieveData = function(report, parameters) {
+					
+					revertUIAdjustment(report);
+					
 					var deferred = jQuery.Deferred();
 					if(! (typeof report_data === 'undefined')){//email based report viewer
 						deferred.resolve(report_data);
@@ -835,6 +838,9 @@ define(
 							}
 						}
 					}	
+					
+					applyUIAdjustment(report);
+					
 					return deferred.promise();
 				};
 
