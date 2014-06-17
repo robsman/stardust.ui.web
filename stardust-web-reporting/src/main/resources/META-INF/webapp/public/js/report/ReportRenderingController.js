@@ -360,9 +360,11 @@ define(
 	                          {
 	                             if (enums[item].id == key)
 	                             {
-	                            	 inData[enums[item].name] = inData[key];
-	                                 delete inData[key];
-	                                break;
+	                            	 if(enums[item].name != key){
+	                            		 inData[enums[item].name] = inData[key];
+		                                 delete inData[key];	 
+		                                 break;
+	                            	 }
 	                             }
 	                          }
 						});
