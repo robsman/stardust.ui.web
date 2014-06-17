@@ -175,7 +175,7 @@ define(
 			 *
 			 */
 			function WebServiceApplicationView() {
-				var view = m_modelElementView.create();
+				var view = m_modelElementView.create(true);
 				var initializing;
 
 				m_utils.inheritFields(this, view);

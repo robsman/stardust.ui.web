@@ -41,7 +41,7 @@ define(
 			function GenericApplicationView() {
 				// Inheritance
 
-				var view = m_modelElementView.create();
+				var view = m_modelElementView.create(true);
 				var viewManager = m_jsfViewManager.create();
 
 				m_utils.inheritFields(this, view);

@@ -17,13 +17,13 @@ define(
 				"bpm-modeler/js/m_session", "bpm-modeler/js/m_command",
 				"bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_user",
 				"bpm-modeler/js/m_dialog", "bpm-modeler/js/m_view",
-				"bpm-modeler/js/m_i18nUtils" ],
+				"bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_angularContextUtils" ],
 		function(m_utils, m_constants, m_extensionManager, m_session,
 				m_command, m_commandsController, m_user, m_dialog, m_view,
-				m_i18nUtils) {
+				m_i18nUtils, m_angularContextUtils) {
 			return {
-				create : function(id) {
-					var view = new ModelElementView();
+				create : function(angularized) {
+					var view = new ModelElementView(angularized);
 					i18modelelement();
 					return view;
 				}
@@ -119,7 +119,9 @@ define(
 			/**
 			 *
 			 */
-			function ModelElementView() {
+			function ModelElementView(angularized) {
+				this.angularized = angularized;
+
 				// Inheritance
 
 				var view = m_view.create();
@@ -155,6 +157,7 @@ define(
 							this.descriptionTextarea, "description");
 
 					this.propertiesPages = [];
+					this.dynamicExtensions = [];
 					var extensions = {};
 
 					if (this.propertiesTabs != null) {
@@ -190,6 +193,32 @@ define(
 				ModelElementView.prototype.loadPropertiesPage = function(
 						modelElement, extensions, propertiesPagesExtensions, n) {
 					if (n == propertiesPagesExtensions.length) {
+						if (this.angularized) {
+							var self = this;
+							var loadedCount = 0;
+							m_angularContextUtils.runInActiveViewContext(function($scope){
+								if (!$scope[self.id + "Onload"]) {
+									m_utils.debug("Defining onload function: " + self.id + "Onload");
+									$scope[self.id + "Onload"] = function(extension) {
+										m_utils.debug("Loading extension: " + extension.id + ", for " + self.id);
+										loadedCount++;
+
+										var page = extension.provider.create(self, extension.id);
+										self.propertiesPages.push(page);
+
+										if (loadedCount == self.dynamicExtensions.length) {
+											m_utils.debug("All extensions for " + self.id + " are loaded");
+										}
+									};
+								}
+								
+								if (!$scope[self.id]) {
+									$scope[self.id] = {};
+								}
+								$scope[self.id].extensions = self.dynamicExtensions;
+							});
+						}
+
 						this.propertiesTabs.tabs();
 						this.setModelElement(modelElement);
 						this.checkAndMarkIfReadonly();
@@ -232,36 +261,41 @@ define(
 					this.propertiesTabs.append(pageDiv);
 
 					if (extension.pageHtmlUrl != null) {
-						// TODO this variable may be overwritten in the
-						// loop, find mechanism to pass data to load
-						// callback
-
-						var view = this;
-
-						pageDiv.load(extension.pageHtmlUrl, function(response,
-								status, xhr) {
-							if (status == "error") {
-								var msg = "Properties Page Load Error: "
-										+ xhr.status + " " + xhr.statusText;
-
-								m_utils.jQuerySelect(this).append(msg);
-								view.loadPropertiesPage(modelElement,
-										propertiesPagesExtensions, ++n);
-							} else {
-								var extension = extensions[m_utils.jQuerySelect(this).attr(
-										"id")];
-								var page = extension.provider.create(view,
-										extension.id);
-
-								view.propertiesPages.push(page);
-
-								m_utils.debug("Page loaded");
-								m_utils.debug(view.propertiesPages);
-								view.loadPropertiesPage(modelElement,
-										extensions, propertiesPagesExtensions,
-										++n);
-							}
-						});
+						if (this.angularized) {
+							this.dynamicExtensions.push(extension);
+							this.loadPropertiesPage(modelElement, extensions, propertiesPagesExtensions, ++n);
+						} else {
+							// TODO this variable may be overwritten in the
+							// loop, find mechanism to pass data to load
+							// callback
+	
+							var view = this;
+	
+							pageDiv.load(extension.pageHtmlUrl, function(response,
+									status, xhr) {
+								if (status == "error") {
+									var msg = "Properties Page Load Error: "
+											+ xhr.status + " " + xhr.statusText;
+	
+									m_utils.jQuerySelect(this).append(msg);
+									view.loadPropertiesPage(modelElement,
+											propertiesPagesExtensions, ++n);
+								} else {
+									var extension = extensions[m_utils.jQuerySelect(this).attr(
+											"id")];
+									var page = extension.provider.create(view,
+											extension.id);
+	
+									view.propertiesPages.push(page);
+	
+									m_utils.debug("Page loaded");
+									m_utils.debug(view.propertiesPages);
+									view.loadPropertiesPage(modelElement,
+											extensions, propertiesPagesExtensions,
+											++n);
+								}
+							});
+						}
 					} else {
 						// Embedded Markup
 

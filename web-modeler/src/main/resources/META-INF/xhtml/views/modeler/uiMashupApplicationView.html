@@ -359,6 +359,9 @@
 								</tr>
 							</table>
 						</div>
+						<div ng-repeat="ext in uiMashupApplicationView.extensions" id="{{ext.id}}">
+							<ng-include src="ext.pageHtmlUrl" onload="uiMashupApplicationViewOnload(ext)" />
+						</div>
 					</div></td>
 			</tr>
 		</table>

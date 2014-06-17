@@ -243,7 +243,7 @@ define(
 			 *
 			 */
 			function UiMashupApplicationView() {
-				var view = m_modelElementView.create();
+				var view = m_modelElementView.create(true);
 
 				m_utils.inheritFields(this, view);
 				m_utils.inheritMethods(UiMashupApplicationView.prototype, view);

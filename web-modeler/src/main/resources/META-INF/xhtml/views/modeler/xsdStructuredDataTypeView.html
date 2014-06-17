@@ -300,6 +300,9 @@ table.layoutTable tr.widget td .widget {
 								</tr>
 							</table>
 						</div>
+						<div ng-repeat="ext in xsdStructuredDataTypeView.extensions" id="{{ext.id}}">
+							<ng-include src="ext.pageHtmlUrl" onload="xsdStructuredDataTypeViewOnload(ext)" />
+						</div>
 					</div></td>
 			</tr>
 		</table>

@@ -142,7 +142,7 @@ define(
 			 *
 			 */
 			function ConditionalPerformerView() {
-				var modelElementView = m_modelElementView.create();
+				var modelElementView = m_modelElementView.create(true);
 
 				m_utils.inheritFields(this, modelElementView);
 				m_utils.inheritMethods(ConditionalPerformerView.prototype,

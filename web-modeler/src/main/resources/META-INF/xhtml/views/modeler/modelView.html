@@ -224,6 +224,9 @@
 								</table>
 							</div>
 						</div>
+						<div ng-repeat="ext in modelView.extensions" id="{{ext.id}}">
+							<ng-include src="ext.pageHtmlUrl" onload="modelViewOnload(ext)" />
+						</div>
 					</div>
 				</td>
 			</tr>

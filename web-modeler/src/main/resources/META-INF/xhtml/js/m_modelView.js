@@ -126,7 +126,7 @@ define(
 			 *
 			 */
 			function ModelView() {
-				var modelElementView = m_modelElementView.create();
+				var modelElementView = m_modelElementView.create(true);
 
 				m_utils.inheritFields(this, modelElementView);
 				m_utils.inheritMethods(ModelView.prototype,

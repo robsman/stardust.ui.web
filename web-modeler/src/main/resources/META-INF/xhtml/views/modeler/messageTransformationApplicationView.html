@@ -476,6 +476,9 @@ div#messageTransformationApplicationView div#configurationTab div.tablescroll_wr
 								</table>
 							</div>
 						</div>
+						<div ng-repeat="ext in messageTransformationApplicationView.extensions" id="{{ext.id}}">
+							<ng-include src="ext.pageHtmlUrl" onload="messageTransformationApplicationViewOnload(ext)" />
+						</div>
 					</div></td>
 			</tr>
 		</table>
