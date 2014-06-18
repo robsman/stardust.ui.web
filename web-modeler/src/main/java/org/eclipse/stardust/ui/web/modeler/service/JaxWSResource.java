@@ -92,15 +92,6 @@ public class JaxWSResource {
 		return javaName;
 	}
 
-	public static Definition getDefinition(String wsdlURI) {
-		try {
-			String wsdl = XmlUtils.resolveResourceUri(wsdlURI);
-			return getDefinition(wsdl, newDocument(wsdl));
-		} catch (Exception e) {
-			throw new RuntimeException("Cannot parse WSDL.", e);
-		}
-	}
-
 	public static Definition getDefinition(String wsdlURI, InputSource source) {
 		try {
 			return getDefinition(wsdlURI, newDocument(source));
