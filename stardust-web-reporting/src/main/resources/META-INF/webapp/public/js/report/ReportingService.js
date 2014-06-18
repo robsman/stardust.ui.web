@@ -1049,11 +1049,13 @@ define(
 											report : report
 										})
 									}).done(function(report) {
+								applyUIAdjustment(report);		
 								deferred.resolve(report);
 							}).fail(function(response) {
 								deferred.reject(response);
 							});
 
+					applyUIAdjustment(report);
 					return deferred.promise();
 				};
 
@@ -1940,6 +1942,10 @@ define(
 			 * 
 			 */
 			function applyUIAdjustment(report) {
+				if(report.uiAdjustmentApplied){
+					return;
+				}
+				
 				var filters = report.dataSet.filters;
 			    if (!filters) {
 			        return;
@@ -1951,6 +1957,7 @@ define(
 			            filters[int].value = tmp;
 			        }
 			    }
+			    report.uiAdjustmentApplied = true;
 			};
 			
 			/**
@@ -1958,7 +1965,11 @@ define(
 			 */
 			function revertUIAdjustment(report) {
 				var filters = report.dataSet.filters;
-			    if (!filters) {
+				if(!report.uiAdjustmentApplied){
+					return;
+				}
+				
+				if (!filters) {
 			        return;
 			    }
 			    for (var int = 0; int < filters.length; int++) {
@@ -1968,6 +1979,7 @@ define(
 			            filters[int].value = tmp;
 			        }
 			    }
+			    report.uiAdjustmentApplied = false;
 			};
 			
 		});
