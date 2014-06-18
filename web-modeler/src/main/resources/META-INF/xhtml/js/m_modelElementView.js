@@ -208,6 +208,9 @@ define(
 
 										if (loadedCount == self.dynamicExtensions.length) {
 											m_utils.debug("All extensions for " + self.id + " are loaded");
+											self.propertiesTabs.tabs();
+											self.setModelElement(modelElement);
+											self.checkAndMarkIfReadonly();
 										}
 									};
 								}
@@ -218,10 +221,6 @@ define(
 								$scope[self.id].extensions = self.dynamicExtensions;
 							});
 						}
-
-						this.propertiesTabs.tabs();
-						this.setModelElement(modelElement);
-						this.checkAndMarkIfReadonly();
 
 						return;
 					}
