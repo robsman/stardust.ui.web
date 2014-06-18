@@ -30,6 +30,8 @@ import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.config.ExtensionProviderUtils;
 import org.eclipse.stardust.common.config.Parameters;
 import org.eclipse.stardust.common.error.PublicException;
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.web.dms.DmsContentServlet.ExecutionServiceProvider;
 import org.eclipse.stardust.engine.core.preferences.IPreferenceStorageManager;
 import org.eclipse.stardust.engine.core.preferences.PreferenceScope;
@@ -69,6 +71,8 @@ import org.eclipse.stardust.vfs.jcr.spring.JcrSpringSessionFactory;
  */
 public class SkinContentServlet extends AbstractVfsContentServlet
 {
+   private static final Logger trace = LogManager.getLogger(SkinContentServlet.class);
+
    static final long serialVersionUID = 1L;
 
    public static final String CLIENT_CONTEXT_PARAM = "clientContext";
@@ -282,7 +286,14 @@ public class SkinContentServlet extends AbstractVfsContentServlet
                .getExtensionProviders(ExecutionServiceProvider.class);
          for (ExecutionServiceProvider executionServiceProvider : exProviderList)
          {
-            forkingService = executionServiceProvider.getExecutionService(context);
+            try
+            {
+               forkingService = executionServiceProvider.getExecutionService(context);
+            }
+            catch (Exception e)
+            {
+               continue;
+            }
             if (forkingService != null)
             {
                break;
