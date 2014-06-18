@@ -1,16 +1,19 @@
-define(["bpm-modeler/js/m_model",
-        "./m_drlAttributes",
+define(["require",
+        "bpm-modeler/js/m_model",
+        "rules-manager/js/hotDecisionTable/m_drlAttributes",
         "bpm-modeler/js/m_urlUtils",
         "bpm-modeler/js/m_typeDeclaration",
         "rules-manager/js/m_i18nUtils",
         "rules-manager/js/hotDecisionTable/m_typeMapper"],
-		function(m_model,
+		function(
+				require,
+				m_model,
 				m_drlAttributes,
 				m_urlUtils,
 				m_typeDeclaration,
 				m_i18nUtils,
 				m_typeMapper){
-  
+
   /*************************************************
    * Parse the result of a typeDeclarations.getBody() 
    * method into a jsTree JSON object.
@@ -548,6 +551,13 @@ define(["bpm-modeler/js/m_model",
 	    		}
 	    	}
 	    }
+		
+	    /*REF CRNT-33005: Added as only in FireFox we were somehow arriving inside our define callback function with
+	     * the m_drlAttributes module not loaded*/
+		if(!m_drlAttributes){
+			m_drlAttributes=require("rules-manager/js/hotDecisionTable/m_drlAttributes");
+		}
+		
 	    var treeJSON=[ {data: {title: attributeTitle,icon: attributeRootImage},attr: {category: "Attribute"}, 
 	    		    children:[m_drlAttributes.getAttributeAsJSTreeData("salience",attributeImage),
 	    		              m_drlAttributes.getAttributeAsJSTreeData("enabled",attributeImage),
