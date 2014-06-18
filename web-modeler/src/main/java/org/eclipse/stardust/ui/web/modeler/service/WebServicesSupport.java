@@ -1,5 +1,6 @@
 package org.eclipse.stardust.ui.web.modeler.service;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
@@ -21,7 +22,9 @@ import org.eclipse.stardust.engine.extensions.jaxws.app.WSConstants;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.util.VariableContext;
 
+import org.eclipse.emf.common.util.URI;
 import org.springframework.context.ApplicationContext;
+import org.xml.sax.InputSource;
 
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
@@ -111,7 +114,16 @@ public class WebServicesSupport
          }
       }
 
-      Definition definition = JaxWSResource.getDefinition(wsdlUrl);
+      Definition definition = null;
+      try
+      {
+         URI uri = URI.createURI(wsdlUrl);
+         InputSource source = new InputSource(modelService.getClasspathUriConverter().createInputStream(uri));
+         definition = JaxWSResource.getDefinition(wsdlUrl, source);
+      }
+      catch (IOException e)
+      {
+      }
 
       @SuppressWarnings("unchecked")
       Collection<Service> services = definition.getServices().values();
