@@ -51,6 +51,7 @@ define(
 				initializeProcessPropertiesPanel : function(
 						processPropertiesPanel) {
 					if (currentPropertiesPanel != null) {
+						currentPropertiesPanel.hide();
 						m_utils.markControlsReadonly('modelerPropertiesPanelWrapper', false);
 					}
 
