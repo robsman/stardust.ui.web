@@ -1428,51 +1428,58 @@ define(
 						report) {
 					var dimensions = [];
 
-					for ( var m in this
-							.getPrimaryObject(report.dataSet.primaryObject).dimensions) {
-						dimensions
-								.push(this
-										.getPrimaryObject(report.dataSet.primaryObject).dimensions[m]);
+					for (var m in this.getPrimaryObject(report.dataSet.primaryObject).dimensions) {
+					    var dim = this.getPrimaryObject(report.dataSet.primaryObject).dimensions[m];
+
+					    if (dim.metadata && dim.metadata.isDescriptor) {
+					        dim.group = this.getI18N("reporting.definitionView.descriptors");
+					        dim.order = 2;
+					    } else {
+					        dim.group = this.getI18N("reporting.definitionView." + report.dataSet.primaryObject);
+					        dim.order = 1;
+					    }
+
+					    dimensions.push(dim);
 					}
 
 					// Joined external data
+					if (report.dataSet.joinExternalData && report.dataSet.externalJoins) {
+					    for (var l in report.dataSet.externalJoins) {
+					        var join = report.dataSet.externalJoins[l];
 
-					if (report.dataSet.joinExternalData
-							&& report.dataSet.externalJoins) {
-						for ( var l in report.dataSet.externalJoins) {
-							var join = report.dataSet.externalJoins[l];
+					        for (var k in join.fields) {
+					            var field = join.fields[k];
 
-							for ( var k in join.fields) {
-								var field = join.fields[k];
-
-								dimensions.push({
-									id : field.name,
-									name : field.name,
-									type : this.metadata[field.type]
-								});
-							}
-						}
+					            dimensions.push({
+					                id: field.name,
+					                name: field.name,
+					                type: this.metadata[field.type]
+					            });
+					        }
+					    }
 					}
 
 					// Computed columns
+					for (var n in report.dataSet.computedColumns) {
+					    var column = report.dataSet.computedColumns[n];
 
-					for ( var n in report.dataSet.computedColumns) {
-						var column = report.dataSet.computedColumns[n];
-
-						dimensions.push({
-							id : column.id,
-							name : column.name,
-							type : this.metadata[column.type],
-							metadata : {
-								isComputedType : true
-							}
-						});
+					    dimensions.push({
+					        id: column.id,
+					        name: column.name,
+					        type: this.metadata[column.type],
+					        metadata: {
+					            isComputedType: true
+					        },
+					        group: this.getI18N("reporting.definitionView.computedColumns"),
+					        order: 3,
+					    });
 					}
 
-					dimensions.sort(function(object1, object2){
-						return object1.name.localeCompare(object2.name);
+					//sort data
+					dimensions.sort(function(object1, object2) {
+					    return object1.name.localeCompare(object2.name);
 					});
-					
+
 					return dimensions;
 				};
 
@@ -1964,10 +1971,11 @@ define(
 			 *
 			 */
 			function revertUIAdjustment(report) {
-				var filters = report.dataSet.filters;
 				if(!report.uiAdjustmentApplied){
 					return;
 				}
+				
+				var filters = report.dataSet.filters;	
 				
 				if (!filters) {
 			        return;

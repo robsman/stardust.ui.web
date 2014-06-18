@@ -128,7 +128,7 @@ define(
 								.getDimension(this.filters[index].dimension);
 
 						if (dimenison && dimenison.metadata
-								&& dimenison.metadata.isDescriptor) {
+								&& (dimenison.metadata.isDescriptor || dimenison.metadata.isComputedType)) {
 							this.filters[index].metadata = dimenison.metadata;
 						}
 
@@ -169,45 +169,18 @@ define(
 				 * Adding order parameter to dimension object used in Filtering
 				 * for displaying it on UI in specific order
 				 */
-				ReportFilterController.prototype.getPrimaryObjectEnumByGroup = function() {
-					var dimensions = this.filterPrimaryObjectEnum(this.report);
-					for ( var dimension in dimensions) {
-						var group = this.reportHelper.primaryObjectEnumGroup(
-								dimensions[dimension].id, this.report);
-						dimensions[dimension].order = this.reportHelper
-								.getDimensionsDisplayOrder(
-										dimensions[dimension].id, this.report);
+				ReportFilterController.prototype.getDimensions = function() {
+					var dimensions = this.reportingService.getCumulatedDimensions(this.report);
+
+					for (var i = dimensions.length - 1; i >= 0; i--) {
+						if (this.reportingService.metadata.durationType.id == dimensions[i].type.id) {
+							dimensions.splice(i, 1);
+						}
 					}
+
 					return dimensions;
 				};
 
-				/**
-				 * 
-				 * @param report
-				 * @returns
-				 */
-				ReportFilterController.prototype.getPrimaryObjectEnum = function(
-						report) {
-					var dimensionsObj = this.reportingService.metadata.objects[report.dataSet.primaryObject].dimensions;
-					var enumerators = [];
-
-					for ( var n in dimensionsObj) {
-						enumerators.push(dimensionsObj[n]);
-					}
-
-					dimensionsObj = this.reportHelper
-							.getComputedColumnAsDimensions(report);
-
-					for ( var n in dimensionsObj) {
-						enumerators.push(dimensionsObj[n]);
-					}
-
-					enumerators.sort(function(object1, object2) {
-						return object1.name.localeCompare(object2.name);
-					});
-
-					return enumerators;
-				};
 				/**
 				 * 
 				 */
@@ -523,23 +496,6 @@ define(
 				};
 
 				/**
-				 * Dimensions of type durationType are not filterable and
-				 * Groupable so filtering them out.
-				 */
-				ReportFilterController.prototype.filterPrimaryObjectEnum = function(
-						report) {
-					var dimensions = this.getPrimaryObjectEnum(report);
-
-					for (var i = dimensions.length - 1; i >= 0; i--) {
-						if (this.reportingService.metadata.durationType.id == dimensions[i].type.id) {
-							dimensions.splice(i, 1);
-						}
-					}
-
-					return dimensions;
-				};
-
-				/**
 				 * 
 				 */
 				ReportFilterController.prototype.getParameterDefaultValue = function(
@@ -580,15 +536,16 @@ define(
 					});
 				};
 
-				ReportFilterController.prototype.getDimension = function(id) {
-					return this.getPrimaryObject().dimensions[id];
-				};
-
 				/**
 				 * 
 				 */
-				ReportFilterController.prototype.getPrimaryObject = function() {
-					return this.reportingService.metadata.objects[this.report.dataSet.primaryObject];
+				ReportFilterController.prototype.getDimension = function(id) {
+					var dimensions = this.getDimensions();
+					for(var i = 0; i < dimensions.length; i++){
+						if(id == dimensions[i].id){
+							return dimensions[i]
+						}
+					}
 				};
 
 				/**

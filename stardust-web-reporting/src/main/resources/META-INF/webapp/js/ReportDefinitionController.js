@@ -870,8 +870,6 @@ define(
 					this.report.layout.chart.options.axes.xaxis.label = this
 							.getFirstDimension().name;
 
-					this.populateGroupBy();
-					
 					this.report.dataSet.firstDimensionParameters = [];
 
 					this.updateView();
@@ -966,28 +964,16 @@ define(
 				/**
 				 * 
 				 */
-				ReportDefinitionController.prototype.populateGroupBy = function() {
-					
-				   var dimensions = []; 
-				   
-               for ( var i in this.getPrimaryObject().dimensions) {
-                  var dimension = this.getPrimaryObject().dimensions[i];
-
-                  // Only discrete types can be used as group criteria
-                  if (this.reportingService
-                        .isDiscreteType(dimension.type)) {
-                     dimensions.push(dimension);
-                  }
-               }
-               
-               //Adding oredr property which is used for sorting in UI
-               for ( var dimension in dimensions)
-               {
-                  var group = this.primaryObjectEnumGroup(dimensions[dimension].id);
-                  dimensions[dimension].order = this.reportHelper.getDimensionsDisplayOrder(dimensions[dimension].id, this.report); 
-               }
-               
-					return dimensions;
+				ReportDefinitionController.prototype.getGroupDimensions = function() {
+				    var dimensions = this.reportingService.getCumulatedDimensions(this.report);
+				    for (var i = dimensions.length - 1; i >= 0; i--) {
+				        // Only discrete types can be used as group criteria
+				        if (!this.reportingService.isDiscreteType(dimensions[i].type)) {
+				            dimensions.splice(i, 1);
+				        }
+				    }
+				
+				    return dimensions;
 				};
 
 				ReportDefinitionController.prototype.populatelayoutSubTypes = function() {

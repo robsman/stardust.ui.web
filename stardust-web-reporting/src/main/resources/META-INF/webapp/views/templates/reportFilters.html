@@ -24,7 +24,7 @@
 							<tr>
 								<td valign="top"><select ng-model="x.dimension" ng-disabled="reportFilterController.parameterDisplay"
 									ng-change="reportFilterController.onFilterDimensionChange(x)"
-									ng-options="y.id as y.name group by reportFilterController.primaryObjectEnumGroup(y.id) for y in reportFilterController.getPrimaryObjectEnumByGroup() | orderBy:['order','name']">
+									ng-options="y.id as y.name group by y.group for y in reportFilterController.getDimensions() | orderBy:['order','name']">
 								</select></td>
 							</tr>
 						</tbody>
