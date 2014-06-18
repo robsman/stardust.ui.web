@@ -351,7 +351,7 @@ define(
 						var qualifier = dimension.enumerationType.split(":");
 						var enums = null;
 			
-						//TODO: model Data must be added from server side
+						//model data must be added from server side
 						if(qualifier[0] != 'modelData' || this.reportingService.modelData){
 							enums = this.reportingService.getEnumerators2(qualifier[0], qualifier[1]);	
 						}

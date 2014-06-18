@@ -553,7 +553,7 @@ define(
 
 					for ( var n in this[type][scope]) {
 						enumerators.push(this[type][scope][n]);
-					}
+					}	
 
 					return enumerators;
 				};
@@ -564,72 +564,78 @@ define(
 				ReportingService.prototype.refreshModelData = function() {
 					var deferred = jQuery.Deferred();
 
-					if (this.mode === "test") {
-						// Mock data simulating server return values
-
-						this.modelData = {
-							processDefinitions : {
-								newAccountOpening : {
-									id : "newAccountOpening",
-									name : "New Account Opening"
-								},
-								complianceCheck : {
-									id : "complianceCheck",
-									name : "Compliance Check"
-								},
-								payment : {
-									id : "payment",
-									name : "Payment"
-								}
-							},
-							participants : {
-								accountManager : {
-									id : "accountManager",
-									name : "Account Manager"
-								},
-								complianceOfficer : {
-									id : "complianceOfficer",
-									name : "Compliance Officer"
-								},
-								mailroomClerk : {
-									id : "mailroomClerk",
-									name : "Mailroom Clerk"
-								},
-								branchManager : {
-									id : "branchManager",
-									name : "Branch Manager"
-								}
-							}
-						};
-
+					if(! (typeof model_data === 'undefined')){//email based report viewer
+						this.modelData = model_data;
+						this.addDescriptorData();
 						deferred.resolve();
-					} else {
-						var self = this;
+					}else{
+						if (this.mode === "test") {
+							// Mock data simulating server return values
 
-						jQuery
-								.ajax(
-										{
-											type : "GET",
-											beforeSend : function(request) {
-												request
-														.setRequestHeader(
-																"Authentication",
-																self
-																		.getBasicAuthenticationHeader());
-											},
-											url : self.getRootUrl()
-													+ "/services/rest/bpm-reporting/model-data",
-											contentType : "application/json"
-										}).done(function(data) {
-									self.modelData = data;
+							this.modelData = {
+								processDefinitions : {
+									newAccountOpening : {
+										id : "newAccountOpening",
+										name : "New Account Opening"
+									},
+									complianceCheck : {
+										id : "complianceCheck",
+										name : "Compliance Check"
+									},
+									payment : {
+										id : "payment",
+										name : "Payment"
+									}
+								},
+								participants : {
+									accountManager : {
+										id : "accountManager",
+										name : "Account Manager"
+									},
+									complianceOfficer : {
+										id : "complianceOfficer",
+										name : "Compliance Officer"
+									},
+									mailroomClerk : {
+										id : "mailroomClerk",
+										name : "Mailroom Clerk"
+									},
+									branchManager : {
+										id : "branchManager",
+										name : "Branch Manager"
+									}
+								}
+							};
 
-									self.addDescriptorData();
+							deferred.resolve();
+						} else {
+							var self = this;
 
-									deferred.resolve();
-								}).fail(function() {
-									deferred.reject();
-								});
+							jQuery
+									.ajax(
+											{
+												type : "GET",
+												beforeSend : function(request) {
+													request
+															.setRequestHeader(
+																	"Authentication",
+																	self
+																			.getBasicAuthenticationHeader());
+												},
+												url : self.getRootUrl()
+														+ "/services/rest/bpm-reporting/model-data",
+												contentType : "application/json"
+											}).done(function(data) {
+										self.modelData = data;
 
+										self.addDescriptorData();
+
+										deferred.resolve();
+									}).fail(function() {
+										deferred.reject();
+									});
+
+						}
 					}
 
 					return deferred.promise();
@@ -652,6 +658,11 @@ define(
 				 */
 				ReportingService.prototype.refreshPreferenceData = function() {
 					var deferred = jQuery.Deferred();
+					
+					if(! (typeof preference_data === 'undefined')){//email based report viewer
+						this.preferenceData = preference_data;
+						deferred.resolve();
+					}else{
 						var self = this;
 						jQuery
 							.ajax(
@@ -674,6 +685,9 @@ define(
 								deferred.reject();
 							});
 
+					}
+					
+						
 				
 
 					return deferred.promise();

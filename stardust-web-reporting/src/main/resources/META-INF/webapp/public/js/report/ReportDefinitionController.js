@@ -44,9 +44,15 @@ define([ "bpm-reporting/public/js/report/I18NUtils",
 
 					controller.report = report_definition;
 					
-					controller.reloadTable();
-					
-					controller.updateView();
+					jQuery.when(controller.reportingService.refreshPreferenceData(),
+					controller.reportingService.refreshModelData())
+					    .done(
+						function() {
+						    // fetch and render report-data
+						    controller.reloadTable();
+						}).fail(function(){
+							controller.reloadTable();
+						});
 					
 					return controller;
 				}
