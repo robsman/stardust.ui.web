@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.modeler.xpdl.edit.utils;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -38,9 +39,12 @@ import org.eclipse.stardust.model.xpdl.xpdl2.*;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.TypeDeclarationUtils;
 import org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils;
 import org.eclipse.stardust.ui.web.modeler.service.JaxWSResource;
+import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 import org.eclipse.stardust.ui.web.modeler.service.WebServicesSupport;
 
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.xsd.XSDNamedComponent;
+import org.xml.sax.InputSource;
 
 import com.google.gson.JsonObject;
 
@@ -61,7 +65,7 @@ public final class WebServiceApplicationUtils
             PredefinedConstants.WS_APPLICATION.equals(applicationType.getId());
    }
 
-   public static void updateWebServiceApplication(EObjectUUIDMapper mapper,
+   public static void updateWebServiceApplication(ModelService modelService, EObjectUUIDMapper mapper,
          ApplicationType application, JsonObject applicationJson)
    {
       if (applicationJson.has("attributes"))
@@ -69,7 +73,7 @@ public final class WebServiceApplicationUtils
          JsonObject attributes = GsonUtils.safeGetAsJsonObject(applicationJson, "attributes");
          updateAddressing(application, attributes);
          updateSecurity(application, attributes);
-         updateService(mapper, application, attributes);
+         updateService(modelService, mapper, application, attributes);
          String wsdlURL = GsonUtils.safeGetAsString(attributes, WSConstants.WS_WSDL_URL_ATT);
          if (StringUtils.isNotEmpty(wsdlURL))
          {
@@ -160,7 +164,7 @@ public final class WebServiceApplicationUtils
       }
    }
 
-   private static void updateService(EObjectUUIDMapper mapper, ApplicationType application, JsonObject attributes)
+   private static void updateService(ModelService modelService, EObjectUUIDMapper mapper, ApplicationType application, JsonObject attributes)
    {
       if (attributes.has(WSConstants.WS_WSDL_URL_ATT)
             || attributes.has(WSConstants.WS_SERVICE_NAME_ATT)
@@ -259,7 +263,18 @@ public final class WebServiceApplicationUtils
             wsdlUrl = variableContext.replaceAllVariablesByDefaultValue(wsdlUrl);
          }
 
-         Definition definition = JaxWSResource.getDefinition(wsdlUrl);
+         Definition definition = null;
+         try
+         {
+            URI uri = URI.createURI(wsdlUrl);
+            InputSource source = new InputSource(modelService.getClasspathUriConverter().createInputStream(uri));
+            definition = JaxWSResource.getDefinition(wsdlUrl, source);
+         }
+         catch (IOException e)
+         {
+         }
+
+
          Binding binding = null;
          if (serviceName.equals(WSConstants.DYNAMIC_BOUND_SERVICE_QNAME.getLocalPart()))
          {
