@@ -531,32 +531,33 @@ define(
 						var optionMarkup = "<hr><p>Select one of the following options:</p><ul>";
 
 						for ( var i = 0; i < typeDeclaration.getFacets().length; ++i) {
+					if ((typeDeclaration.getFacets()[i].classifier != "maxLength") && (typeDeclaration.getFacets()[i].classifier != "minLength")){
+						 var option = typeDeclaration.getFacets()[i];
 
-							var option = typeDeclaration.getFacets()[i];
+						 var hashCodeJS = "(";
+						 hashCodeJS += "processInstanceOid + '|' + ";
+						 hashCodeJS += "activityInstanceOid + '|' + ";
+						 hashCodeJS += "partition + '|false|";
+						 hashCodeJS += option.name;
+						 hashCodeJS += "').hashCode()";
 
-							var hashCodeJS = "(";
-							hashCodeJS += "processInstanceOid + '|' + ";
-							hashCodeJS += "activityInstanceOid + '|' + ";
-							hashCodeJS += "partition + '|false|";
-							hashCodeJS += option.name;
-							hashCodeJS += "').hashCode()";
-
-							optionMarkup += "<li><a href=&quot;";
-							optionMarkup += this.responseHttpUrlInput.val();
-							optionMarkup += "/mail-confirmation";
-							optionMarkup += "?activityInstanceOID=' + activityInstanceOid + '";
-							optionMarkup += "&amp;processInstanceOID=' + processInstanceOid + '";
-							optionMarkup += "&amp;partition=' + partition + '";
-							optionMarkup += "&amp;investigate=false";
-							optionMarkup += "&amp;outputValue=";
-							optionMarkup += option.name;
-							optionMarkup += "&amp;hashCode=' + ";
-							optionMarkup += hashCodeJS;
-							optionMarkup += "+ '";
-							optionMarkup += "&quot;>";
-							optionMarkup += option.name;
-							optionMarkup += "</a></li>";
-						}
+						 optionMarkup += "<li><a href=&quot;";
+						 optionMarkup += this.responseHttpUrlInput.val();
+						 optionMarkup += "/mail-confirmation";
+						 optionMarkup += "?activityInstanceOID=' + activityInstanceOid + '";
+						 optionMarkup += "&amp;processInstanceOID=' + processInstanceOid + '";
+						 optionMarkup += "&amp;partition=' + partition + '";
+						 optionMarkup += "&amp;investigate=false";
+						 optionMarkup += "&amp;outputValue=";
+						 optionMarkup += option.name;
+						 optionMarkup += "&amp;hashCode=' + ";
+						 optionMarkup += hashCodeJS;
+						 optionMarkup += "+ '";
+						 optionMarkup += "&quot;>";
+						 optionMarkup += option.name;
+						 optionMarkup += "</a></li>";
+					  }
+				  }
 
 						optionMarkup += "</ul>";
 
