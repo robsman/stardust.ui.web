@@ -143,6 +143,7 @@ import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
 import org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelUnmarshaller;
+import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 import org.eclipse.stardust.ui.web.modeler.service.XsdSchemaUtils;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelFormat;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelingSessionScoped;
@@ -167,6 +168,9 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
 
    @Resource
    private ModelingSession modelingSession;
+
+   @Resource
+   private ModelService modelService;
 
    // TODO For documentation creation
    private static final String MODEL_DOCUMENTATION_TEMPLATES_FOLDER = "/documents/templates/modeling/";
@@ -2322,7 +2326,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
          JsonPrimitive typeJson = applicationJson.get(ModelerConstants.TYPE_PROPERTY).getAsJsonPrimitive();
 
          if (!application.getType().getId().equals(typeJson.getAsString()))
-      {
+         {
             ModelType modelType = ModelUtils.findContainingModel(application);
             ApplicationTypeType type = getModelBuilderFacade()
                .findApplicationTypeType(modelType, typeJson.getAsString());
@@ -2331,13 +2335,13 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
             {
                application.setType(type);
             }
-      }
+         }
       }
 
       // (fh) must update before changing the attributes so we can compare with old values.
       if (WebServiceApplicationUtils.isWebServiceApplication(application))
       {
-         WebServiceApplicationUtils.updateWebServiceApplication(modelingSession.uuidMapper(),
+         WebServiceApplicationUtils.updateWebServiceApplication(modelService, modelingSession.uuidMapper(),
                application, applicationJson);
       }
 
