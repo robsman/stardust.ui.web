@@ -446,6 +446,7 @@ define(
 					if (dimension.id == "criticality") {
 						filter.metadata = this
 								.getCriticalityForName(filter.value);
+						filter.uiValue = [filter.metadata.rangeFrom, filter.metadata.rangeTo];
 					}
 				};
 				/**
