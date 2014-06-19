@@ -245,42 +245,33 @@ define(
 
 					if (this.angularized) {
 						var self = this;
+						var loadedCount = 0;
 						m_angularContextUtils.runInActiveViewContext(function($scope){
-							if (!$scope[self.id + "Onload"]) {
-								m_utils.debug("Defining onload function: " + self.id + "Onload");
-								$scope[self.id + "Onload"] = function(extension) {
-									m_utils.debug("Loading extension: " + extension.id + ", for " + self.id);
-
+							m_extensionManager.handleAngularizedExtensions($scope, dynamicExtensions, self, {
+								onload: function(extension) {
 									var page = extension.provider.create(self, extension.id, extension.title);
 									page.hide();
 									page.profiles = extension.profiles;
 									
 									dynamicPropertiesPages.push({extension: extension, page: page});
-
+								},
+								oncomplete: function() {
 									// Once all propertiesPages are loaded build the properties page list
 									// Sort the Pages with same order as defined in Extension
-									if (dynamicPropertiesPages.length == dynamicExtensions.length) {
-										m_utils.debug("All extensions for " + self.id + " are loaded");
-										for(var i in dynamicExtensions) {
-											for(var j in dynamicPropertiesPages) {
-												if (dynamicExtensions[i].id == dynamicPropertiesPages[j].extension.id) {
-													self.propertiesPages.push(dynamicPropertiesPages[j].page);
-													break;
-												} 
-											}
-										}
-										var showing = self.propertiesPageList.attr("showing");
-										if (!showing || self.id == showing) {
-											self.showPropertiesPageList();
+									for(var i in dynamicExtensions) {
+										for(var j in dynamicPropertiesPages) {
+											if (dynamicExtensions[i].id == dynamicPropertiesPages[j].extension.id) {
+												self.propertiesPages.push(dynamicPropertiesPages[j].page);
+												break;
+											} 
 										}
 									}
-								};
-							}
-							
-							if (!$scope[self.id]) {
-								$scope[self.id] = {};
-							}
-							$scope[self.id].extensions = dynamicExtensions;
+									var showing = self.propertiesPageList.attr("showing");
+									if (!showing || self.id == showing) {
+										self.showPropertiesPageList();
+									}
+								}
+							});
 						});
 					}
 				};

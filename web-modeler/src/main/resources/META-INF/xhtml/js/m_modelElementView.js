@@ -197,28 +197,17 @@ define(
 							var self = this;
 							var loadedCount = 0;
 							m_angularContextUtils.runInActiveViewContext(function($scope){
-								if (!$scope[self.id + "Onload"]) {
-									m_utils.debug("Defining onload function: " + self.id + "Onload");
-									$scope[self.id + "Onload"] = function(extension) {
-										m_utils.debug("Loading extension: " + extension.id + ", for " + self.id);
-										loadedCount++;
-
+								m_extensionManager.handleAngularizedExtensions($scope, self.dynamicExtensions, self, {
+									onload: function(extension) {
 										var page = extension.provider.create(self, extension.id);
 										self.propertiesPages.push(page);
-
-										if (loadedCount == self.dynamicExtensions.length) {
-											m_utils.debug("All extensions for " + self.id + " are loaded");
-											self.propertiesTabs.tabs();
-											self.setModelElement(modelElement);
-											self.checkAndMarkIfReadonly();
-										}
-									};
-								}
-								
-								if (!$scope[self.id]) {
-									$scope[self.id] = {};
-								}
-								$scope[self.id].extensions = self.dynamicExtensions;
+									},
+									oncomplete: function() {
+										self.propertiesTabs.tabs();
+										self.setModelElement(modelElement);
+										self.checkAndMarkIfReadonly();
+									}
+								});
 							});
 						}
 

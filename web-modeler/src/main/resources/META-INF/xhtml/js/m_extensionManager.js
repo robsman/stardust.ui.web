@@ -123,6 +123,35 @@ define(
 
 					throw "Cannot find default for Extension Point "
 							+ extensionPoint;
+				},
+
+				/**
+				 * Puts extension data onto scope also adds onload handlers for processing 
+				 */
+				handleAngularizedExtensions : function($scope, extensions, self, callbacks) {
+					if (!$scope[self.id + "Onload"]) {
+						var loadedCount = 0;
+						m_utils.debug("Defining onload function: " + self.id + "Onload");
+						
+						// Onload Handler
+						$scope[self.id + "Onload"] = function(extension) {
+							m_utils.debug("Loading extension: " + extension.id + ", for " + self.id);
+							loadedCount++;
+
+							callbacks.onload(extension);
+
+							if (loadedCount == extensions.length) {
+								m_utils.debug("All extensions for " + self.id + " are loaded");
+								callbacks.oncomplete();
+							}
+						};
+					}
+
+					// Define data on scope
+					if (!$scope[self.id]) {
+						$scope[self.id] = {};
+					}
+					$scope[self.id].extensions = extensions;
 				}
 			};
 
