@@ -37,9 +37,8 @@
 										value="#{views_common_msgPropsBean['views.bindRepositoryDialog.provider']}" />
 									<ice:selectOneMenu partialSubmit="true"
 										value="#{bindRepositoryDialogBean.selectedProvider}"
-										style="margin-left:30px;min-width:170px;">
-										<pc:automationTag value="auto-BCC-ProcSrch-SearchFor"
-											standAlone="false" />
+										style="margin-left:30px;min-width:170px;"
+										valueChangeListener="#{bindRepositoryDialogBean.providerChange}">
 										<f:selectItems
 											value="#{bindRepositoryDialogBean.providerItems}" />
 									</ice:selectOneMenu>
@@ -88,9 +87,6 @@
 												<ice:selectBooleanCheckbox id="transactionSupported"
 													value="#{bindRepositoryDialogBean.repositoryProviderInfo.transactionSupported}"
 													disabled="true">
-													<pc:automationTag
-														value="auto-BCC-GanttChart-ShowPercentValue"
-														standAlone="false" />
 												</ice:selectBooleanCheckbox>
 												<ice:outputLabel for="transactionSupported"
 													value="#{views_common_msgPropsBean['views.bindRepositoryDialog.provider.capabilities.transaction']}"
@@ -98,9 +94,6 @@
 												<ice:selectBooleanCheckbox id="metaDataSearchSupported"
 													value="#{bindRepositoryDialogBean.repositoryProviderInfo.metaDataSearchSupported}"
 													disabled="true">
-													<pc:automationTag
-														value="auto-BCC-GanttChart-ShowPercentValue"
-														standAlone="false" />
 												</ice:selectBooleanCheckbox>
 												<ice:outputLabel for="metaDataSearchSupported"
 													value="#{views_common_msgPropsBean['views.bindRepositoryDialog.provider.capabilities.metaDataSearch']}"
@@ -108,9 +101,6 @@
 												<ice:selectBooleanCheckbox id="metaDataWriteSupported"
 													value="#{bindRepositoryDialogBean.repositoryProviderInfo.metaDataWriteSupported}"
 													disabled="true">
-													<pc:automationTag
-														value="auto-BCC-GanttChart-ShowPercentValue"
-														standAlone="false" />
 												</ice:selectBooleanCheckbox>
 												<ice:outputLabel for="metaDataWriteSupported"
 													value="#{views_common_msgPropsBean['views.bindRepositoryDialog.provider.capabilities.metaDataStorage']}"
@@ -118,9 +108,6 @@
 												<ice:selectBooleanCheckbox id="accessControlPolicySupported"
 													value="#{bindRepositoryDialogBean.repositoryProviderInfo.accessControlPolicySupported}"
 													disabled="true">
-													<pc:automationTag
-														value="auto-BCC-GanttChart-ShowPercentValue"
-														standAlone="false" />
 												</ice:selectBooleanCheckbox>
 												<ice:outputLabel for="accessControlPolicySupported"
 													value="#{views_common_msgPropsBean['views.bindRepositoryDialog.provider.capabilities.aclPolicy']}"
@@ -128,9 +115,6 @@
 												<ice:selectBooleanCheckbox id="versioningSupported"
 													value="#{bindRepositoryDialogBean.repositoryProviderInfo.versioningSupported}"
 													disabled="true">
-													<pc:automationTag
-														value="auto-BCC-GanttChart-ShowPercentValue"
-														standAlone="false" />
 												</ice:selectBooleanCheckbox>
 												<ice:outputLabel for="versioningSupported"
 													value="#{views_common_msgPropsBean['views.bindRepositoryDialog.provider.capabilities.versioning']}"
@@ -138,9 +122,6 @@
 												<ice:selectBooleanCheckbox id="writeSupported"
 													value="#{bindRepositoryDialogBean.repositoryProviderInfo.writeSupported}"
 													disabled="true">
-													<pc:automationTag
-														value="auto-BCC-GanttChart-ShowPercentValue"
-														standAlone="false" />
 												</ice:selectBooleanCheckbox>
 												<ice:outputLabel for="writeSupported"
 													value="#{views_common_msgPropsBean['views.bindRepositoryDialog.provider.capabilities.writable']}"
@@ -182,14 +163,12 @@
 										var="entry">
 										<ice:outputText value="#{entry}" />
 										<ice:panelGroup>
-											<ice:inputText id="key#{entry}"
+											<ice:inputText
 												value="#{bindRepositoryDialogBean.attributesMap[entry]}"
 												valueChangeListener="#{bindRepositoryDialogBean.attributeChanged}"
 												partialSubmit="true" required="true" size="30">
 												<f:attribute name="key" value="#{entry}" />
 											</ice:inputText>
-											<ice:message for="key#{entry}" styleClass="iceMsgImage"
-												showSummary="false" showDetail="false" />
 										</ice:panelGroup>
 									</c:forEach>
 
@@ -239,9 +218,6 @@
 										<ice:selectBooleanCheckbox id="transactionSupported"
 											value="#{bindRepositoryDialogBean.repositoryInstanceInfo.transactionSupported}"
 											disabled="true">
-											<pc:automationTag
-												value="auto-BCC-GanttChart-ShowPercentValue"
-												standAlone="false" />
 										</ice:selectBooleanCheckbox>
 										<ice:outputLabel for="transactionSupported"
 											value="#{views_common_msgPropsBean['views.bindRepositoryDialog.provider.capabilities.transaction']}"
@@ -249,9 +225,6 @@
 										<ice:selectBooleanCheckbox id="metaDataSearchSupported"
 											value="#{bindRepositoryDialogBean.repositoryInstanceInfo.metaDataSearchSupported}"
 											disabled="true">
-											<pc:automationTag
-												value="auto-BCC-GanttChart-ShowPercentValue"
-												standAlone="false" />
 										</ice:selectBooleanCheckbox>
 										<ice:outputLabel for="metaDataSearchSupported"
 											value="#{views_common_msgPropsBean['views.bindRepositoryDialog.provider.capabilities.metaDataSearch']}"
@@ -259,9 +232,6 @@
 										<ice:selectBooleanCheckbox id="metaDataWriteSupported"
 											value="#{bindRepositoryDialogBean.repositoryInstanceInfo.metaDataWriteSupported}"
 											disabled="true">
-											<pc:automationTag
-												value="auto-BCC-GanttChart-ShowPercentValue"
-												standAlone="false" />
 										</ice:selectBooleanCheckbox>
 										<ice:outputLabel for="metaDataWriteSupported"
 											value="#{views_common_msgPropsBean['views.bindRepositoryDialog.provider.capabilities.metaDataStorage']}"
@@ -269,9 +239,6 @@
 										<ice:selectBooleanCheckbox id="accessControlPolicySupported"
 											value="#{bindRepositoryDialogBean.repositoryInstanceInfo.accessControlPolicySupported}"
 											disabled="true">
-											<pc:automationTag
-												value="auto-BCC-GanttChart-ShowPercentValue"
-												standAlone="false" />
 										</ice:selectBooleanCheckbox>
 										<ice:outputLabel for="accessControlPolicySupported"
 											value="#{views_common_msgPropsBean['views.bindRepositoryDialog.provider.capabilities.aclPolicy']}"
@@ -279,9 +246,6 @@
 										<ice:selectBooleanCheckbox id="versioningSupported"
 											value="#{bindRepositoryDialogBean.repositoryInstanceInfo.versioningSupported}"
 											disabled="true">
-											<pc:automationTag
-												value="auto-BCC-GanttChart-ShowPercentValue"
-												standAlone="false" />
 										</ice:selectBooleanCheckbox>
 										<ice:outputLabel for="versioningSupported"
 											value="#{views_common_msgPropsBean['views.bindRepositoryDialog.provider.capabilities.versioning']}"
@@ -289,9 +253,6 @@
 										<ice:selectBooleanCheckbox id="writeSupported"
 											value="#{bindRepositoryDialogBean.repositoryInstanceInfo.writeSupported}"
 											disabled="true">
-											<pc:automationTag
-												value="auto-BCC-GanttChart-ShowPercentValue"
-												standAlone="false" />
 										</ice:selectBooleanCheckbox>
 										<ice:outputLabel for="writeSupported"
 											value="#{views_common_msgPropsBean['views.bindRepositoryDialog.provider.capabilities.writable']}"

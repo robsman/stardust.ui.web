@@ -205,10 +205,33 @@ public class BindRepositoryDialog extends PopupUIComponentBean
 
    public void attributeChanged(ValueChangeEvent event)
    {
-      String key = (String) event.getComponent().getAttributes().get("key");
-      String value = event.getNewValue().toString();
-      attributesMap.put(key, value);
+      if (!event.getPhaseId().equals(javax.faces.event.PhaseId.INVOKE_APPLICATION))
+      {
+         event.setPhaseId(javax.faces.event.PhaseId.INVOKE_APPLICATION);
+         event.queue();
+         return;
+      }
+      else
+      {
+         String key = (String) event.getComponent().getAttributes().get("key");
+         String value = event.getNewValue().toString();
+         attributesMap.put(key, value);   
+      }
    }
+   
+   public void providerChange(ValueChangeEvent event)
+   {
+      if (!event.getPhaseId().equals(javax.faces.event.PhaseId.INVOKE_APPLICATION))
+      {
+         event.setPhaseId(javax.faces.event.PhaseId.INVOKE_APPLICATION);
+         event.queue();
+         return;
+      }
+         String value = event.getNewValue().toString();
+         this.repositoryProviderInfo = providerMap.get(value);
+         updateAttributeMap();
+   }
+
 
    public List<SelectItem> getProviderItems()
    {
