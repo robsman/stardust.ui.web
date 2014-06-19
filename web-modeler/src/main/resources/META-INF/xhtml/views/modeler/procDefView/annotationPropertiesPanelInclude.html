@@ -14,7 +14,8 @@
 	<tr>
 		<td id="propertiesPagesCell">
 			<div ng-repeat="ext in annotationPropertiesPanel.extensions" id="{{ext.id}}" class="propertiesPage">
-				<ng-include src="ext.pageHtmlUrl" onload="annotationPropertiesPanelOnload(ext)" />
+				<sd-include src="ext.pageHtmlUrl"
+					onload="annotationPropertiesPanelOnload(ext)" onfail="annotationPropertiesPanelOnfail(ext)" />
 			</div>
 		</td>
 	</tr>

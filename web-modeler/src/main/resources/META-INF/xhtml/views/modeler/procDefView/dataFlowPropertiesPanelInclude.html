@@ -131,7 +131,8 @@
 				</table>
 			</div>
 			<div ng-repeat="ext in dataFlowPropertiesPanel.extensions" id="{{ext.id}}" class="propertiesPage">
-				<ng-include src="ext.pageHtmlUrl" onload="dataFlowPropertiesPanelOnload(ext)" />
+				<sd-include src="ext.pageHtmlUrl"
+					onload="dataFlowPropertiesPanelOnload(ext)" onfail="dataFlowPropertiesPanelOnfail(ext)" />
 			</div>
 		</td>
 	</tr>

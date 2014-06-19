@@ -77,7 +77,8 @@
 							</table>
 						</div>
 						<div ng-repeat="ext in genericApplicationView.extensions" id="{{ext.id}}">
-							<ng-include src="ext.pageHtmlUrl" onload="genericApplicationViewOnload(ext)" />
+							<sd-include src="ext.pageHtmlUrl"
+								onload="genericApplicationViewOnload(ext)" onfail="genericApplicationViewOnfail(ext)" />
 						</div>
 					</div></td>
 			</tr>

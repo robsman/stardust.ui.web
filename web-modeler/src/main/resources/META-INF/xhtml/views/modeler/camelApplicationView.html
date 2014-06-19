@@ -112,7 +112,8 @@
 							</table>
 						</div>
 						<div ng-repeat="ext in camelApplicationView.extensions" id="{{ext.id}}">
-							<ng-include src="ext.pageHtmlUrl" onload="camelApplicationViewOnload(ext)" />
+							<sd-include src="ext.pageHtmlUrl"
+								onload="camelApplicationViewOnload(ext)" onfail="camelApplicationViewOnfail(ext)" />
 						</div>
 					</div></td>
 			</tr>

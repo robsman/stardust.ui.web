@@ -273,7 +273,8 @@
 				</table>
 			</div>
 			<div ng-repeat="ext in activityPropertiesPanel.extensions" id="{{ext.id}}" class="propertiesPage">
-				<ng-include src="ext.pageHtmlUrl" onload="activityPropertiesPanelOnload(ext)" />
+				<sd-include src="ext.pageHtmlUrl"
+					onload="activityPropertiesPanelOnload(ext)" onfail="activityPropertiesPanelOnfail(ext)" />
 			</div>
 		</td>
 	</tr>

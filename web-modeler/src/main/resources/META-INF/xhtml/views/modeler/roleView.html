@@ -162,7 +162,8 @@
 							</table>
 						</div>
 						<div ng-repeat="ext in roleView.extensions" id="{{ext.id}}">
-							<ng-include src="ext.pageHtmlUrl" onload="roleViewOnload(ext)" />
+							<sd-include src="ext.pageHtmlUrl"
+								onload="roleViewOnload(ext)" onfail="roleViewOnfail(ext)" />
 						</div>
 					</div>
 				</td>

@@ -135,16 +135,34 @@ define(
 						
 						// Onload Handler
 						$scope[self.id + "Onload"] = function(extension) {
-							m_utils.debug("Loading extension: " + extension.id + ", for " + self.id);
+							m_utils.debug("Loading extension: " + extension.id + ", for: " + self.id);
 							loadedCount++;
 
-							callbacks.onload(extension);
-
-							if (loadedCount == extensions.length) {
-								m_utils.debug("All extensions for " + self.id + " are loaded");
-								callbacks.oncomplete();
+							if (callbacks.onload) {
+								callbacks.onload(extension);
 							}
+
+							checkDone();
 						};
+
+						// Onfail Handler
+						$scope[self.id + "Onfail"] = function(extension) {
+							m_utils.debug("Failed to load extension: " + extension.id + ", for: " + self.id);
+							loadedCount++;
+							if (callbacks.onfail) {
+								callbacks.onfail(extension);
+							}
+							checkDone();
+						};
+						
+						function checkDone() {
+							if (loadedCount == extensions.length) {
+								m_utils.debug("All extensions loaded for: " + self.id);
+								if(callbacks.done) {
+									callbacks.done();
+								}
+							}
+						}
 					}
 
 					// Define data on scope

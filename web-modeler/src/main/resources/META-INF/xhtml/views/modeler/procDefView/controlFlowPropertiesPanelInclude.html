@@ -66,7 +66,8 @@
 				</div>
 			</div>
 			<div ng-repeat="ext in controlFlowPropertiesPanel.extensions" id="{{ext.id}}" class="propertiesPage">
-				<ng-include src="ext.pageHtmlUrl" onload="controlFlowPropertiesPanelOnload(ext)" />
+				<sd-include src="ext.pageHtmlUrl"
+					onload="controlFlowPropertiesPanelOnload(ext)" onfail="controlFlowPropertiesPanelOnfail(ext)" />
 			</div>
 		</td>
 	</tr>

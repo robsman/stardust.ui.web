@@ -255,7 +255,7 @@ define(
 									
 									dynamicPropertiesPages.push({extension: extension, page: page});
 								},
-								oncomplete: function() {
+								done: function() {
 									// Once all propertiesPages are loaded build the properties page list
 									// Sort the Pages with same order as defined in Extension
 									for(var i in dynamicExtensions) {
@@ -266,6 +266,17 @@ define(
 											} 
 										}
 									}
+									var showing = self.propertiesPageList.attr("showing");
+									if (!showing || self.id == showing) {
+										self.showPropertiesPageList();
+									}
+								},
+								onfail: function(extension) {
+									var msg = "Properties Page Load Error for: " + extension.id;
+									m_utils.debug(msg);
+									self.errorMessages.push(msg);
+									
+									self.showErrorMessages();
 									var showing = self.propertiesPageList.attr("showing");
 									if (!showing || self.id == showing) {
 										self.showPropertiesPageList();

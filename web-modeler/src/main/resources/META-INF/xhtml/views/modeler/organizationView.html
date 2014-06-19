@@ -167,7 +167,8 @@
 							</table>
 						</div>
 						<div ng-repeat="ext in organizationView.extensions" id="{{ext.id}}">
-							<ng-include src="ext.pageHtmlUrl" onload="organizationViewOnload(ext)" />
+							<sd-include src="ext.pageHtmlUrl"
+								onload="organizationViewOnload(ext)" onfail="organizationViewOnfail(ext)" />
 						</div>
 					</div>
 				</td>

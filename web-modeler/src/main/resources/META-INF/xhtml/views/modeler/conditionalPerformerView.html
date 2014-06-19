@@ -156,7 +156,8 @@
 							</table>
 						</div>
 						<div ng-repeat="ext in conditionalPerformerView.extensions" id="{{ext.id}}">
-							<ng-include src="ext.pageHtmlUrl" onload="conditionalPerformerViewOnload(ext)" />
+							<sd-include src="ext.pageHtmlUrl"
+								onload="conditionalPerformerViewOnload(ext)" onfail="conditionalPerformerViewOnfail(ext)" />
 						</div>
 					</div></td>
 			</tr>

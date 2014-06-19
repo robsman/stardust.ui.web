@@ -159,7 +159,8 @@
 				</table>
 			</div>
 			<div ng-repeat="ext in dataPropertiesPanel.extensions" id="{{ext.id}}" class="propertiesPage">
-				<ng-include src="ext.pageHtmlUrl" onload="dataPropertiesPanelOnload(ext)" />
+				<sd-include src="ext.pageHtmlUrl"
+					onload="dataPropertiesPanelOnload(ext)" onfail="dataPropertiesPanelOnfail(ext)" />
 			</div>
 		</td>
 	</tr>

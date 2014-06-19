@@ -380,7 +380,8 @@
 				</table>
 			</div>
 			<div ng-repeat="ext in processPropertiesPanel.extensions" id="{{ext.id}}" class="propertiesPage">
-				<ng-include src="ext.pageHtmlUrl" onload="processPropertiesPanelOnload(ext)" />
+				<sd-include src="ext.pageHtmlUrl"
+					onload="processPropertiesPanelOnload(ext)" onfail="processPropertiesPanelOnfail(ext)" />
 			</div>
 		</td>
 	</tr>

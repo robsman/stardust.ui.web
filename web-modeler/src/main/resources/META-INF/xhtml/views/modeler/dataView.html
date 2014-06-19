@@ -198,7 +198,8 @@
 							</table>
 						</div>
 						<div ng-repeat="ext in dataView.extensions" id="{{ext.id}}">
-							<ng-include src="ext.pageHtmlUrl" onload="dataViewOnload(ext)" />
+							<sd-include src="ext.pageHtmlUrl"
+								onload="dataViewOnload(ext)" onfail="dataViewOnfail(ext)" />
 						</div>
 					</div>
 				</td>

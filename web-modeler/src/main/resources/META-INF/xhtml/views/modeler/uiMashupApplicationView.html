@@ -360,7 +360,8 @@
 							</table>
 						</div>
 						<div ng-repeat="ext in uiMashupApplicationView.extensions" id="{{ext.id}}">
-							<ng-include src="ext.pageHtmlUrl" onload="uiMashupApplicationViewOnload(ext)" />
+							<sd-include src="ext.pageHtmlUrl"
+								onload="uiMashupApplicationViewOnload(ext)" onfail="uiMashupApplicationViewOnfail(ext)" />
 						</div>
 					</div></td>
 			</tr>

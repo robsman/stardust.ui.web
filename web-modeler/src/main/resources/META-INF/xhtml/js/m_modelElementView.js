@@ -202,10 +202,13 @@ define(
 										var page = extension.provider.create(self, extension.id);
 										self.propertiesPages.push(page);
 									},
-									oncomplete: function() {
-										self.propertiesTabs.tabs();
-										self.setModelElement(modelElement);
-										self.checkAndMarkIfReadonly();
+									done: function() {
+										// This needs to run out of angular context, hence use  window.setTimeout
+										window.setTimeout(function(){
+											self.propertiesTabs.tabs();
+											self.setModelElement(modelElement);
+											self.checkAndMarkIfReadonly();;
+										});
 									}
 								});
 							});
