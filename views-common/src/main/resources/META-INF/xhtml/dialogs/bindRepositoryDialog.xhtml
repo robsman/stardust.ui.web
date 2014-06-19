@@ -159,19 +159,25 @@
 									<ice:message for="repositoryId" styleClass="iceMsgInline"
 										rendered="#{bindRepositoryDialogBean.repositoryId == null}" />
 
-									<c:forEach items="#{bindRepositoryDialogBean.keyList}"
+									<ui:repeat value="#{bindRepositoryDialogBean.keyList}"
 										var="entry">
-										<ice:outputText value="#{entry}" />
-										<ice:panelGroup>
-											<ice:inputText
+										<ice:panelGroup style="padding:5px;margin-left:-3px;">
+											<ice:outputText value="#{entry}" />
+										</ice:panelGroup>
+									</ui:repeat>
+									<ui:repeat value="#{bindRepositoryDialogBean.keyList}"
+										var="entry">
+										<ice:panelGroup style="padding-top:2px;">
+											<ice:inputText id="key#{entry}"
 												value="#{bindRepositoryDialogBean.attributesMap[entry]}"
 												valueChangeListener="#{bindRepositoryDialogBean.attributeChanged}"
-												partialSubmit="true" required="true" size="30">
-												<f:attribute name="key" value="#{entry}" />
+												partialSubmit="true" size="30" required="true">
+											<f:attribute name="key" value="#{entry}" />	
 											</ice:inputText>
+											<ice:message for="key#{entry}" styleClass="iceMsgImage"
+												showSummary="false" showDetail="false" />
 										</ice:panelGroup>
-									</c:forEach>
-
+									</ui:repeat>
 								</ice:panelGrid>
 							</ice:panelGroup>
 
