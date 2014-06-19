@@ -229,8 +229,8 @@ public class ReportingServiceBean
 
                      descriptorsJson.add(dataPath.getId(), descriptorJson);
 
-                     descriptorJson.addProperty("id",
-                           processDefinition.getQualifiedId() + ":" + dataPath.getQualifiedId());
+                        descriptorJson.addProperty("id",
+                              processDefinition.getQualifiedId() + ":" + dataPath.getQualifiedId());
                      descriptorJson.addProperty("name", dataPath.getName());
                      descriptorJson.addProperty("type", UiHelper.mapDesciptorType(dataPath.getMappedType()).getId());
 
@@ -350,7 +350,7 @@ public class ReportingServiceBean
       ReportRequest reportRequest = new ReportRequest(reportDefinition.getDataSet(), reportParameters);
       return reportingService.getReport(reportRequest, ReportFormat.JSON);
    }
-
+   
    /**
     * Might be invoked for saving of multiple Report Definitions or directly (whereby json
     * contains a top-level element "report").
@@ -382,8 +382,10 @@ public class ReportingServiceBean
 
          // Mark Report Definition as saved
          reportJson.get("storage").getAsJsonObject().addProperty("state", "saved");
-
-         saveReportDocument(reportJson, folder, name + REPORT_DEFINITION_EXT);
+         
+         String path = saveReportDocument(reportJson, folder, name + REPORT_DEFINITION_EXT);
+         
+         reportJson.get("storage").getAsJsonObject().addProperty("path", path);
 
          return reportJson;
       }
@@ -437,6 +439,7 @@ public class ReportingServiceBean
          JsonObject metaDataObj = new JsonObject(); 
          metaDataObj.addProperty("documentId", document.getId());
          reportDefinitionJson.add("metadata", metaDataObj);
+         reportDefinitionJson.get("storage").getAsJsonObject().addProperty("path", document.getPath());
          
          return reportDefinitionJson;
       }
@@ -667,7 +670,7 @@ public class ReportingServiceBean
    /**
      *
      */
-   private void saveReportDocument(JsonObject reportDefinitionJson, Folder folder, String name)
+   private String saveReportDocument(JsonObject reportDefinitionJson, Folder folder, String name)
    {
       String reportContent = reportDefinitionJson.toString();
       String path = folder.getPath() + "/" + name;
@@ -696,6 +699,8 @@ public class ReportingServiceBean
          getDocumentManagementService().updateDocument(reportDesignDocument, reportContent.getBytes(), null, false,
                null, false);
       }
+      
+      return path;
    }
 
    /**

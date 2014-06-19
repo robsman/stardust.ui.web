@@ -1075,9 +1075,16 @@ define(
 
 					var self = this;
 					
+					if(self.path == null){
+						if(self.report && self.report.storage.path != null){
+							self.path = self.report.storage.path;
+						}
+					}
+					
 					//Check if Report name has been changed. If yes then first invoke rename and then save 
 					if (self.path != null)
                {
+						
 					   var ext = self.path.substring(self.path.lastIndexOf('.'), self.path.length);
 					   var id = self.path; 
 					   var lastIndex = id.lastIndexOf("/");
