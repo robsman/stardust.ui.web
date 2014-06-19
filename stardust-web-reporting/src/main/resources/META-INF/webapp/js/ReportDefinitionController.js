@@ -1119,7 +1119,7 @@ define(
                self.reportingService.saveReportDefinition(self.report)
                   .done(
                         function(report) {
-                           self.report = report;
+                           self.report.storage = report.storage;
                            window.parent.EventHub.events.publish("BPM-REPORTING-REPORT-CREATED");
                            self.updateView();
                         });
