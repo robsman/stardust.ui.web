@@ -20,6 +20,7 @@ import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.engine.core.spi.dms.RepositoryIdUtils;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
+import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.ToolTip;
 import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
@@ -336,7 +337,15 @@ public class RepositoryFolderUserObject extends RepositoryResourceUserObject
       }
       else if (label == "")
       {
-         label = I18nFolderUtils.getLabel(getFolder().getPath());
+         if(StringUtils.isNotEmpty(getFolder().getName()))
+         {
+            label = I18nFolderUtils.getLabel(getFolder().getName());   
+         }
+         else
+         {
+            label = I18nFolderUtils.getLabel(getFolder().getPath());
+         }
+         
       }
       return label;
    }
