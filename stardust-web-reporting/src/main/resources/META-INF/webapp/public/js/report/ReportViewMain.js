@@ -1,7 +1,7 @@
 require
 		.config({
 			waitSeconds: 0,
-			baseUrl : "../../../plugins/",
+			baseUrl : "plugins/",
 			paths : {
 				'jquery' : [ 'bpm-reporting/public/js/libs/jquery/jquery-1.7.2',
 						'//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min' ],
