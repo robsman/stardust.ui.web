@@ -23,16 +23,14 @@ public class JsfReportingViewUpdaterBean
    {
       FacesContext context = FacesContext.getCurrentInstance();
       Map<String, String> params = context.getExternalContext().getRequestParameterMap();
-      String name = params.get("name");
-      String path = params.get("path");
+      String reportUID = params.get("reportUID");
       
       List<View> openViews = PortalApplication.getInstance().getOpenViews();
       for (View view : openViews)
       {
          Map<String, Object> viewParams = view.getViewParams();
          if (null != viewParams
-               &&(name.equals(viewParams.get("name"))
-                     && path.equals(viewParams.get("path"))))
+                     && reportUID.equals(viewParams.get("reportUID")))
          {
             Map<String, Object> newViewParams = View.parseParams(params.get("viewParams"));
 //            updateViewImage(view, viewParams);

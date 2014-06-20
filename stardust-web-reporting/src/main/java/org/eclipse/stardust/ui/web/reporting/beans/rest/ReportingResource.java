@@ -214,10 +214,10 @@ public class ReportingResource
 
          if (operation.equals("rename"))
          {
-            reportingService
+            String updatedReportPath = reportingService
                   .renameReportDefinition(json.get("path").getAsString(), json.get("name").getAsString());
 
-            return Response.ok("", MediaType.TEXT_PLAIN).build();
+            return Response.ok(updatedReportPath, MediaType.TEXT_PLAIN).build();
          }
          else
          {

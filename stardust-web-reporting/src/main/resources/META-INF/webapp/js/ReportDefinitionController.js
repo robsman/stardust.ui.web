@@ -30,7 +30,7 @@ define(
 		      var angularAdapter = null; 
 		      var angularCompile = null;
 			return {
-				create : function(angular, name, path, isClone, options) {
+				create : function(angular, reportUID, name, path, isClone, options) {
 					var controller = new ReportDefinitionController();
 					
 			        var angularAdapter = new bpm.portal.AngularAdapter(options);
@@ -51,7 +51,7 @@ define(
 					
 					var renderingController = ReportRenderingController.create(angularCompile);
 
-					controller.initialize(renderingController, name, path, isClone);
+					controller.initialize(renderingController, reportUID, name, path, isClone);
 					
 					return controller;
 				}
@@ -74,7 +74,7 @@ define(
 				 * 
 				 */
 				ReportDefinitionController.prototype.initialize = function(
-						renderingController, name, path, isClone) {
+						renderingController, reportUID, name, path, isClone) {
 					
 					//set toolbar
 					this.showSaveInstanceBtn = true;
@@ -86,6 +86,7 @@ define(
 					
 					this.path = path;
 					this.isClone = isClone;
+					this.reportUID = reportUID;
 
 					this.dataSetPanel = jQuery("#dataSetPanel");
 					this.layoutPanel = jQuery("#layoutPanel");
@@ -158,6 +159,12 @@ define(
                      self.expressionEditor.addCompleter(sessionCompleter);
                   }
                });
+					
+					window.parent.EventHub.events.subscribe("BPM-REPORTING-REPORT-NAME-UPDATED", function(newName, newPath) {
+                  self.report.name = newName;
+                  self.report.storage.path = newPath; 
+                  self.updateView();
+               }, false);
 					
 					var self = this;
 
@@ -365,7 +372,7 @@ define(
 
 							self
 							.loadOrCreateReportDefinition(
-								name, path, isClone)
+								reportUID, name, path, isClone)
 							.done(
 								function () {
 								// TODO Need a
@@ -509,7 +516,7 @@ define(
 				 * 
 				 */
 				ReportDefinitionController.prototype.loadOrCreateReportDefinition = function(
-						name, path, isClone) {
+						reportUID, name, path, isClone) {
 					var deferred = jQuery.Deferred();
 
 					var self = this;
@@ -522,6 +529,8 @@ define(
                            {
 								      var clonedReport = self.cloneReportDefinition(report);
                               clonedReport.name = "Copy " + clonedReport.name;
+                              clonedReport.reportUID = reportUID;
+                              clonedReport.storage.path = null;
                               self.path = null;
                               report = clonedReport;
                            }
@@ -544,6 +553,7 @@ define(
 						// TODO Get chart options from central place
 
 						self.report = {
+						   reportUID : reportUID,      
 							name : name,
 							description : "",
 							storage : {
@@ -1075,10 +1085,8 @@ define(
 
 					var self = this;
 					
-					if(self.path == null){
-						if(self.report && self.report.storage.path != null){
-							self.path = self.report.storage.path;
-						}
+					if(self.report && self.report.storage.path != null){
+						self.path = self.report.storage.path;
 					}
 					
 					//Check if Report name has been changed. If yes then first invoke rename and then save 
@@ -1100,12 +1108,12 @@ define(
                               self.path,
                               self.report.name).done(
                                     function() {
-                                       //self.loadReportDefinitionsFolderStructure();
                                        self.reportingService.saveReportDefinition(self.report)
                                        .done(
                                              function(report) {
-                                                self.report = report;
-                                                window.parent.EventHub.events.publish("BPM-REPORTING-REPORT-CREATED");
+                                                self.report.storage = report.storage;
+                                                window.parent.EventHub.events.publish("BPM-REPORTING-REPORT-UPDATED", 
+                                                         self.report.reportUID, self.report.name);
                                                 self.updateView();
                                              });
                                              document.body.style.cursor = "default";
@@ -1120,7 +1128,11 @@ define(
                   .done(
                         function(report) {
                            self.report.storage = report.storage;
-                           window.parent.EventHub.events.publish("BPM-REPORTING-REPORT-CREATED");
+                           if (self.path == null)
+                           {// Create Case
+                              window.parent.EventHub.events.publish("BPM-REPORTING-REPORT-UPDATED", 
+                                       self.report.reportUID, self.report.name);
+                           }
                            self.updateView();
                         });
                document.body.style.cursor = "default";

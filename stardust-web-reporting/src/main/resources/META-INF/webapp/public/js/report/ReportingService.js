@@ -1321,10 +1321,10 @@ define(
 											path : path,
 											name : name
 										})
-									}).done(function() {
-								deferred.resolve();
-							}).fail(function() {
-								deferred.reject([]);
+									}).done(function(response) {
+								deferred.resolve(response);
+							}).fail(function(response) {
+								deferred.reject(response);
 							});
 
 					return deferred.promise();

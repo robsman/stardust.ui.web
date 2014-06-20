@@ -101,7 +101,9 @@ require(
 				        // directive modules to be loaded 
 				        options.directives = [autocomplete];
 				        
-						ReportDefinitionController.create(angularjs, jQuery
+						ReportDefinitionController.create(angularjs, 
+						      jQuery.url(window.location.search)
+                           .param("reportUID"), jQuery
 								.url(window.location.search).param("name"),
 								jQuery.url(window.location.search)
 										.param("path"), jQuery.url(window.location.search)

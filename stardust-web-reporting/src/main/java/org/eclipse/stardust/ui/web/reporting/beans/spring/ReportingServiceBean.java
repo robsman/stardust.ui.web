@@ -410,12 +410,12 @@ public class ReportingServiceBean
     *
     * @param json
     */
-   public void renameReportDefinition(String path, String name)
+   public String renameReportDefinition(String path, String name)
    {
       try
       {
          // Replace in cache
-         renameReportDefinitionDocument(path, name);
+         return renameReportDefinitionDocument(path, name);
       }
       finally
       {
@@ -674,6 +674,7 @@ public class ReportingServiceBean
    {
       String reportContent = reportDefinitionJson.toString();
       String path = folder.getPath() + "/" + name;
+      
       Document reportDesignDocument = getDocumentManagementService().getDocument(path);
 
       if (null == reportDesignDocument)

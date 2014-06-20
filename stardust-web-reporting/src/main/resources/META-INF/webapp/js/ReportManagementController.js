@@ -54,13 +54,14 @@ define(
 					jQuery("#createReport")
 							.click(
 									function() {
+									   var reportUID = new Date().getTime(); 
 										self
 												.openView(
 														"reportDefinitionView",
 														"name=Report Definition "
-																+ self.newReportDefinitionIndex,
-														"name=Report Definition "
-																+ self.newReportDefinitionIndex);
+																+ self.newReportDefinitionIndex
+																+ "&reportUID=" + reportUID,
+														"&reportUID=" + reportUID);
 
 										self.newReportDefinitionIndex++;
 									});
@@ -72,6 +73,10 @@ define(
 					});
 					window.parent.EventHub.events.subscribe("BPM-REPORTING-REPORT-CREATED", function(event) {
 							self.loadReportDefinitionsFolderStructure();
+					}, false);
+					window.parent.EventHub.events.subscribe("BPM-REPORTING-REPORT-UPDATED", function(reportUID, newName) {
+                  self.updateViewInfo(reportUID, "name=" + newName + "&reportUID=" + reportUID);
+					   self.loadReportDefinitionsFolderStructure();
 					}, false);
 					jQuery("#reportTree")
 							.jstree(
@@ -176,13 +181,11 @@ define(
                                                    obj) {
                                                 self.openView("reportDefinitionView",
                                                          "name="
-                                                               + obj.attr("name")
+                                                               + "Copy " + obj.attr("name")
                                                                + "&path=" + obj.attr("path")
+                                                               + "&reportUID=" + new Date().getTime()
                                                                + "&isClone=" + true,
-                                                         "name="
-                                                               + obj.attr("name")
-                                                               + "&path=" + obj.attr("path")
-                                                               + "&isClone=" + true);
+                                                         "&reportUID=" + new Date().getTime());
                                              }
                                           }
 													};
@@ -200,47 +203,64 @@ define(
 							function(event, data) {
 								if (data.rslt.obj.attr('rel') == 'report') {
 									self.openView("reportDefinitionView",
-											"name="
-													+ data.rslt.obj
-															.attr('name')
-													+ "&path="
-													+ data.rslt.obj
-															.attr('path'),
-											"name="
-													+ data.rslt.obj
-															.attr('name')
-													+ "&path="
-													+ data.rslt.obj
-															.attr('path'));
+									         "name="
+                                    + data.rslt.obj.attr('name')
+                                    + "&path=" + data.rslt.obj.attr("path")
+                                    + "&reportUID=" + data.rslt.obj.attr('reportUID'),
+                                    "&reportUID=" + data.rslt.obj.attr('reportUID'));
 								}
 							});
 					jQuery("#reportTree").bind(
 							"rename_node.jstree",
 							function(event, data) {
-								if (data.rslt.obj.attr('rel') == 'report') {
-								   self.data = data;
-									self.reportingService
-											.renameReportDefinition(
-													data.rslt.obj.attr("path"),
-													data.rslt.name).done(
-                                                function() {
-                                                   //Update View 
-                                                   var name = self.data.rslt.obj.attr("name");
-                                                   var path = self.data.rslt.obj.attr("path");
-                                                   var folderPath = path.substring(0, path.lastIndexOf('/'));
-                                                   var ext = path.substring(path.lastIndexOf('.'), path.length);
-                                                   
-                                                   self.updateViewInfo(name, path,
-                                                            "name=" + self.data.rslt.name + 
-                                                            "&path=" + folderPath + "/" + self.data.rslt.name + ext);
-                                                   
-                                                   self.loadReportDefinitionsFolderStructure();
-                                                   document.body.style.cursor = "default";
-                                             }).fail(
-                                                      function() {
-                                                         document.body.style.cursor = "default";
-                                                      });
-								}
+							   if (data.rslt.obj.attr('rel') == 'report')
+							   {
+							      self.data = data;
+
+							      //Fetch the Report, update name and save it.
+							      var deferred = jQuery.Deferred();
+							      self.reportingService.retrieveReportDefinition(self.data.rslt.obj.attr("path")).done(
+							               function(report)
+							               {
+							                  self.report = report;
+							                  self.reportingService.renameReportDefinition(data.rslt.obj.attr("path"),
+							                           data.rslt.name).done(
+							                           function(updatedReportPath)
+							                           {
+							                              self.updatedReportPath = updatedReportPath;
+							                              console.log(self.report);
+							                              self.report.name = self.data.rslt.name;
+							                              self.reportingService.saveReportDefinition(self.report).done(
+							                                       function(report)
+							                                       {
+							                                          //Update View 
+							                                          var newName = self.data.rslt.name;
+							                                          var reportUID = self.data.rslt.obj.attr("reportUID");
+							                                          
+							                                          self.updateViewInfo(reportUID, "name="
+							                                                   + newName + "&reportUID="
+							                                                   + reportUID);
+							                                          
+							                                          window.parent.EventHub.events.publish("BPM-REPORTING-REPORT-NAME-UPDATED",
+							                                                   newName, self.updatedReportPath);
+
+							                                          self.loadReportDefinitionsFolderStructure();
+							                                          self.updateView();
+							                                       });
+
+							                              deferred.resolve();
+							                           }).fail(function()
+							                  {
+							                     deferred.reject();
+							                  });
+
+							                  document.body.style.cursor = "default";
+							               }).fail(function()
+							      {
+							         document.body.style.cursor = "default";
+							      });
+							   }
+
 							});
 					this.loadReportDefinitionsFolderStructure();
 				};
@@ -501,7 +521,7 @@ define(
              * 
              */
             ReportManagementController.prototype.updateViewInfo = function(
-                     name, path, viewParams) {
+                     reportUID, viewParams) {
                var link = jQuery("a[id $= 'view_updater_link']", this.getOutlineWindowAndDocument().doc);
                var linkId = link.attr('id');
                var form = link.parents('form:first');
@@ -513,13 +533,12 @@ define(
                var linkForm = portalWinDoc.win.formOf(link);
 
                linkForm[formId + ':_idcl'].value = linkId;
-               linkForm['name'].value = name;
-               linkForm['path'].value = path;
+               linkForm['reportUID'].value = reportUID;
                linkForm['viewParams'].value = viewParams;
 
                portalWinDoc.win.iceSubmit(linkForm, link);
             };
-				
+            
 			}
 			
 			function createTree1(folder, trackIds, parent) {
@@ -563,6 +582,7 @@ define(
 														"last",
 														{
 															attr : {
+															   reportUID : reportDefinition.reportUID,
 																id : "report"
 																		+ reportNodeId,
 																rel : "report",
