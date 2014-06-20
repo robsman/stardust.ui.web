@@ -209,6 +209,10 @@ define(
 											self.setModelElement(modelElement);
 											self.checkAndMarkIfReadonly();;
 										});
+									},
+									onfail: function(extension) {
+										var msg = "Properties Page Load Error for: " + extension.id;
+										m_utils.jQuerySelect(self).append(msg);
 									}
 								});
 							});
