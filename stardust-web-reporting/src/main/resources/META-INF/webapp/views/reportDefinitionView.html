@@ -73,9 +73,9 @@ table.formTable td {
 							<li><a href="#schedulingTab"><table>
 										<tr>
 											<td><img src="../public/css/images/date.png"></img>
-											<td><span class="tabLabel" id="scheduling">{{getI18N('reporting.definitionView.schedulingTab.title')}}</span></a></td>
+											<td><span class="tabLabel" id="scheduling">{{getI18N('reporting.definitionView.schedulingTab.title')}}</span></td>
 										</tr>
-									</table></li>
+									</table></a></li>
 						</ul>
 						<div id="dataSourcesTab">
 							<table cellpadding="0" cellspacing="0" class="formTable">
@@ -972,7 +972,9 @@ table.formTable td {
                                  <table cellpadding="0" cellspacing="0" class="formTable">
                                     <tr>
                                        <td valign="top"><label style="display: inline-block;">{{getI18N('reporting.definitionView.executeReportAt.label')}}</label></td>
-                                       <td valign="top"><select 
+                                       <td valign="top">
+                                       <!-- <input type="text" ng-model="report.scheduling.executionTime"/> -->
+                                       <select 
                                           ng-model="report.scheduling.executionTime"
                                           ng-options="k as v for (k, v) in getExecutionTime()">
                                           <option value="" ng-hide="report.scheduling.executionTime">{{report.scheduling.executionTime}}</option>
