@@ -1950,7 +1950,21 @@ define(
 						if(parameters[itemInd].uiValue){
 							parametersString += JSON.stringify(parameters[itemInd].uiValue); 		
 						}else{
-							parametersString += JSON.stringify(parameters[itemInd].value);
+							//TODO: remove this when filter and parameter format is same for DATE
+							//special parameter, in case of date, there are multiple fields so change the format here
+							if(parameters[itemInd].value.from){
+								var pValue = ["from", "to", "duration", "durationUnit"];
+								var actualValue = parameters[itemInd].value; //complex object startDate = {from : "", to : ""};
+								var formattedValue = []; 
+								for (var int = 0; int < pValue.length; int++) {
+									if(actualValue[pValue[int]]){
+										formattedValue.push(actualValue[pValue[int]]);	
+									}
+								}
+								parametersString += JSON.stringify(formattedValue);
+							}else{
+								parametersString += JSON.stringify(parameters[itemInd].value);	
+							}
 						}
 						parametersString += "&";
 					}
