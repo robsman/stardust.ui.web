@@ -1149,6 +1149,16 @@ ReportRenderingController.prototype.formatPreviewData = function(data) {
             record[selColumn] = criticality.name;  
          }
          
+      } else if(selectedColumns[selColumn].type.id == this.
+               reportingService.metadata.timestampType.id) {
+         for ( var row in data)
+         {
+            var record = data[row];
+            if (record[selColumn])
+            {
+               record[selColumn] = record[selColumn].substring(0, 16);
+            }
+         }
       }
    }
    
