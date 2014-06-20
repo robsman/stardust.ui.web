@@ -194,6 +194,13 @@ public class IframePanelJsfPhaseListener implements PhaseListener
                            {
                               trace.debug("Trace: ", ve);
                            }
+
+                           // This is needed as Trinidad Page expects the message to be present in the context
+                           // So add message into FacesContext
+                           if (isTrinidadPage(facesContext))
+                           {
+                              FacesContext.getCurrentInstance().addMessage(null, ve.getFacesMessage());
+                           }
                         }
                         finally
                         {
