@@ -362,6 +362,10 @@ define(
 													self.resetParamFilters();
 													self.updateView();			
 												});
+
+										setTimeout(function () {
+										   self.initializeDataTableOptions();
+                             }, 500);
 									}
 									if (ui.newPanel.selector === "#schedulingTab") {
 										self.resetParamFilters();
@@ -413,7 +417,7 @@ define(
 								} else {
 									self.showFavoriteBtn = false;
 								}
-
+								
 								self.updateView();
 
 								document.body.style.cursor = "default";
@@ -634,7 +638,10 @@ define(
 									}
 								},
 								table : {
-									options : {}
+									options : {
+									   showSearchInput : true,
+							         showVisibleRowCountSelector : true  
+									}
 								},
 								document : {}
 							},
@@ -1164,6 +1171,8 @@ define(
                }
                return parametersOfTypeTimestamp;
             };
+            
+            
 
 				/**
 				 * 
@@ -2032,6 +2041,24 @@ define(
                  return dimensions[index];
               }
            }
+        };
+        
+        /**
+         * 
+         */
+        ReportDefinitionController.prototype.initializeDataTableOptions = function() {
+           (this.report.layout.table.options.showSearchInput) ? jQuery('.dataTables_filter').css({display:'block'}) :
+              jQuery('.dataTables_filter').css({display:'none'});
+           
+           (this.report.layout.table.options.showVisibleRowCountSelector) ? jQuery('.dataTables_length').css({display:'block'}) :
+              jQuery('.dataTables_length').css({display:'none'});
+           
+           
+           (this.report.layout.table.options.showSearchInput ||
+                    this.report.layout.table.options.showVisibleRowCountSelector) ? jQuery('div .heading').css({display:'block'}) :
+                       jQuery('div .heading').css({display:'none'});
+           
+           this.updateView();
         };
         
 		}
