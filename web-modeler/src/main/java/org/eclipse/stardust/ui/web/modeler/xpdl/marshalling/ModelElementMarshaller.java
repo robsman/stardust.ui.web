@@ -44,49 +44,7 @@ import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.utils.LaneParticipantUtil;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
-import org.eclipse.stardust.model.xpdl.carnot.AccessPointType;
-import org.eclipse.stardust.model.xpdl.carnot.ActivityImplementationType;
-import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
-import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
-import org.eclipse.stardust.model.xpdl.carnot.AnnotationSymbolType;
-import org.eclipse.stardust.model.xpdl.carnot.ApplicationType;
-import org.eclipse.stardust.model.xpdl.carnot.ApplicationTypeType;
-import org.eclipse.stardust.model.xpdl.carnot.AttributeType;
-import org.eclipse.stardust.model.xpdl.carnot.ConditionalPerformerType;
-import org.eclipse.stardust.model.xpdl.carnot.ContextType;
-import org.eclipse.stardust.model.xpdl.carnot.DataMappingConnectionType;
-import org.eclipse.stardust.model.xpdl.carnot.DataMappingType;
-import org.eclipse.stardust.model.xpdl.carnot.DataPathType;
-import org.eclipse.stardust.model.xpdl.carnot.DataSymbolType;
-import org.eclipse.stardust.model.xpdl.carnot.DataType;
-import org.eclipse.stardust.model.xpdl.carnot.DescriptionType;
-import org.eclipse.stardust.model.xpdl.carnot.DiagramType;
-import org.eclipse.stardust.model.xpdl.carnot.DirectionType;
-import org.eclipse.stardust.model.xpdl.carnot.EndEventSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.EventHandlerType;
-import org.eclipse.stardust.model.xpdl.carnot.IExtensibleElement;
-import org.eclipse.stardust.model.xpdl.carnot.IFlowObjectSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableModelElement;
-import org.eclipse.stardust.model.xpdl.carnot.IModelElement;
-import org.eclipse.stardust.model.xpdl.carnot.IModelParticipant;
-import org.eclipse.stardust.model.xpdl.carnot.INodeSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.ISwimlaneSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.IdRef;
-import org.eclipse.stardust.model.xpdl.carnot.IntermediateEventSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.JoinSplitType;
-import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.ModelType;
-import org.eclipse.stardust.model.xpdl.carnot.OrganizationType;
-import org.eclipse.stardust.model.xpdl.carnot.OrientationType;
-import org.eclipse.stardust.model.xpdl.carnot.ParameterMappingType;
-import org.eclipse.stardust.model.xpdl.carnot.ParticipantType;
-import org.eclipse.stardust.model.xpdl.carnot.PoolSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
-import org.eclipse.stardust.model.xpdl.carnot.RoleType;
-import org.eclipse.stardust.model.xpdl.carnot.StartEventSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.TransitionConnectionType;
-import org.eclipse.stardust.model.xpdl.carnot.TransitionType;
-import org.eclipse.stardust.model.xpdl.carnot.TriggerType;
+import org.eclipse.stardust.model.xpdl.carnot.*;
 import org.eclipse.stardust.model.xpdl.carnot.extensions.FormalParameterMappingsType;
 import org.eclipse.stardust.model.xpdl.carnot.impl.ProcessDefinitionTypeImpl;
 import org.eclipse.stardust.model.xpdl.carnot.util.ActivityUtil;
@@ -2786,6 +2744,7 @@ public class ModelElementMarshaller implements ModelMarshaller
             eObjectUUIDMapper().getUUID(transitionConnection));
 
       IFlowObjectSymbol sourceActivitySymbol = transitionConnection.getSourceActivitySymbol();
+
       IFlowObjectSymbol targetActivitySymbol = transitionConnection.getTargetActivitySymbol();
 
       if (transitionConnection.getTransition() != null)
@@ -2804,12 +2763,12 @@ public class ModelElementMarshaller implements ModelMarshaller
             connectionJson.addProperty(
                   ModelerConstants.FROM_MODEL_ELEMENT_OID,
                   /*resolveSymbolAssociatedWithActivity(transition.getFrom(), containingDiagram)*/
-                  sourceActivitySymbol.getElementOid());
+                  getActivitySymbol(sourceActivitySymbol).getElementOid());
          }
 
          // TODO Hack to identify gateways
 
-         if (isGatwayHost(transition.getFrom()))
+         if (isGatewayHost(transition.getFrom()))
          {
             connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_TYPE,
                   ModelerConstants.GATEWAY);
@@ -2834,10 +2793,10 @@ public class ModelElementMarshaller implements ModelMarshaller
             connectionJson.addProperty(
                   ModelerConstants.TO_MODEL_ELEMENT_OID,
                   /*resolveSymbolAssociatedWithActivity(transition.getTo(), containingDiagram)*/
-                  targetActivitySymbol.getElementOid());
+                  getActivitySymbol(targetActivitySymbol).getElementOid());
          }
 
-         if (isGatwayHost(transition.getTo()))
+         if (isGatewayHost(transition.getTo()))
          {
             connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_TYPE,
                   ModelerConstants.GATEWAY);
@@ -2937,7 +2896,16 @@ public class ModelElementMarshaller implements ModelMarshaller
       return connectionJson;
    }
 
-   private static boolean isGatwayHost(ActivityType activity)
+   private IFlowObjectSymbol getActivitySymbol(IFlowObjectSymbol symbol)
+   {
+      if (symbol instanceof GatewaySymbol)
+      {
+         return ((GatewaySymbol) symbol).getActivitySymbol();
+      }
+      return symbol;
+   }
+
+   private static boolean isGatewayHost(ActivityType activity)
    {
       return activity != null && activity.getId().toLowerCase().startsWith("gateway");
    }
