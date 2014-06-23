@@ -1694,20 +1694,10 @@ define(
              */
             ReportDefinitionController.prototype.getRecordSetAvailableColumns = function() {
                var dimensions = this.reportingService.getCumulatedDimensions(this.report);
-               var aggregatedDimensions = [];
                
                var self = this;
                
-               if (self.report.dataSet.groupBy != null && self.report.dataSet.groupBy != 'None')
-               {
-                  dimensions.forEach(function(dimension) {
-                     if (self.isNumeric(dimension))
-                     {
-                        self.createAggegateDimensions(dimension, aggregatedDimensions);
-                     }
-                  });
-                  dimensions = aggregatedDimensions;
-               }
+               dimensions = self.populateAggegateDimensions(dimensions);
                
                var enumerators = [];
                for ( var n in dimensions ) {
@@ -1717,6 +1707,15 @@ define(
                            .forEach(function(column) {
                               if (self.report.dataSet.groupBy && self.report.dataSet.groupBy != 'None') 
                               {
+                                 var groupDimensions = self.getGroupDimensions();
+                                 for ( var groupDim in groupDimensions)
+                                 {
+                                    if (groupDimensions[groupDim].id === dimensions[n].id && dimensions[n].id == column.id)
+                                    {
+                                       add = false;
+                                    }
+                                 }
+                                 
                                  if ((column.id + "#" + column.metaData.aggregationFunction) === dimensions[n].id)
                                  {
                                     add = false;
@@ -1755,24 +1754,24 @@ define(
                var availableColumns = this.reportingService.getCumulatedDimensions(this.report);
                var selColumns = this.report.dataSet.columns;
                
-               var aggregatedDimensions = [];   
                var self = this;
                
-               if (this.report.dataSet.groupBy && this.report.dataSet.groupBy != 'None')
-               {
-                  availableColumns.forEach(function(dimension) {
-                     if (self.isNumeric(dimension))
-                     {
-                        self.createAggegateDimensions(dimension, aggregatedDimensions);
-                     }
-                  });
-                  availableColumns = aggregatedDimensions;
-               }
+               availableColumns = self.populateAggegateDimensions(availableColumns);
                 
                for (var i in selColumns) {
                   for ( var k in availableColumns) {
                      if (this.report.dataSet.groupBy && this.report.dataSet.groupBy != 'None') 
                      {
+                        var groupDimensions = self.getGroupDimensions();
+                        for ( var groupDim in groupDimensions)
+                        {
+                           if (groupDimensions[groupDim].id === selColumns[i].id && selColumns[i].id === availableColumns[k].id)
+                           {
+                              enumerators.push(availableColumns[k]);
+                              break;
+                           }
+                        }
+                        
                         if ((selColumns[i].id + "#" + selColumns[i].metaData.aggregationFunction) === availableColumns[k].id)
                         {
                            enumerators.push(availableColumns[k]);
@@ -1926,7 +1925,9 @@ define(
            var isDescriptor = (dimension && dimension.metadata && dimension.metadata.isDescriptor)? true : false;
            
            if (this.report.dataSet.groupBy != null && this.report.dataSet.groupBy != 'None') {
-              aggregationFunction = getAggregationAndColumnId(itemId)[1];
+              var aggregationAndColId = getAggregationAndColumnId(itemId);
+              aggregationFunction = (aggregationAndColId instanceof Array) ? aggregationAndColId[1] : 
+                 aggregationFunction; 
            }
            
            this.addMetadata(list, dimension, isDescriptor, colDurationUnit, aggregationFunction);
@@ -1964,6 +1965,15 @@ define(
            for ( var i = this.report.dataSet.columns.length - 1; i >= 0; i--)
            {
               if (this.report.dataSet.groupBy && (this.report.dataSet.groupBy != 'None')) {
+                 var groupDimensions = this.getGroupDimensions();
+                 for ( var groupDim in groupDimensions)
+                 {
+                    if (groupDimensions[groupDim].id === list[i].id && list[i].id === dimensionId)
+                    {
+                       list.splice(i, 1);
+                       break;
+                    }
+                 }
                  if (list[i].id === dimensionId && 
                           list[i].metaData.aggregationFunction === aggregationFunction)
                  {
@@ -1984,17 +1994,28 @@ define(
            var aggregationFunction = "None";
            
            if (this.report.dataSet.groupBy != null && this.report.dataSet.groupBy != 'None') {
-              aggregationFunction = getAggregationAndColumnId(itemId)[1];
+              var aggregationAndColId = getAggregationAndColumnId(itemId);
+              aggregationFunction = (aggregationAndColId instanceof Array) ? aggregationAndColId[1] : 
+                 aggregationFunction; 
            }
            for ( var i = 0; i < list.length; i++)
            {
               if (this.report.dataSet.groupBy && (this.report.dataSet.groupBy != 'None')) 
               {
+                 var groupDimensions = this.getGroupDimensions();
+                 for ( var groupDim in groupDimensions)
+                 {
+                    if (groupDimensions[groupDim].id === list[i].id && list[i].id === colId)
+                    {
+                       return i;
+                    }
+                 }
+                 
                  if (list[i].id === colId && 
                           list[i].metaData.aggregationFunction === aggregationFunction)
-                   {
-                      return i;
-                   }
+                 {
+                    return i;
+                 }
               } else if (list[i].id === colId) 
                  {
                       return i;
@@ -2059,6 +2080,50 @@ define(
                        jQuery('div .heading').css({display:'none'});
            
            this.updateView();
+        };
+        
+        /**
+         * 
+         */
+        ReportDefinitionController.prototype.populateAggegateDimensions = function(dimensions) {
+           var aggregatedDimensions = [];
+           var self = this;
+           if (self.report.dataSet.groupBy && self.report.dataSet.groupBy != 'None')
+           {
+              dimensions.forEach(function(dimension) {
+                 if (self.isValidNumericAggegateDimension(dimension) || self.isDuration(dimension))
+                 {
+                    self.createAggegateDimensions(dimension, aggregatedDimensions);
+                 } else if (self.report.dataSet.groupBy === dimension.id) {
+                    aggregatedDimensions.push(self.getMetadataObjectFromId(self.report.dataSet.groupBy));
+                 }
+              });
+              return aggregatedDimensions;
+           }
+           return dimensions;
+        };
+        
+        /**
+          * Removing the OIDs from the column selector is a little bit of a special case
+          * since even though they are numeric, aggregate functions on OIDs do not make
+          * sense
+          */
+        ReportDefinitionController.prototype.isValidNumericAggegateDimension = function(dimension) {
+           var isValid = false;
+           var inValidNumericAggegateDimensions = [this.reportingService.metadata.objects.activityInstance.dimensions.processOID, 
+                    this.reportingService.metadata.objects.activityInstance.dimensions.activityOID];
+           if (this.isNumeric(dimension))
+           {
+              for ( var dim in inValidNumericAggegateDimensions)
+              {
+                 if (inValidNumericAggegateDimensions[dim].id === dimension.id)
+                 {
+                    return isValid;
+                 }
+              }
+              isValid = true;
+           }
+           return isValid;
         };
         
 		}

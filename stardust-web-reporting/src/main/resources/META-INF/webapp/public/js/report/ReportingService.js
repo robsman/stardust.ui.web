@@ -80,17 +80,17 @@ define(
 	                     id : "average",
 	                     name : this.getI18N("reporting.definitionView.layout.table.recordSet.aggregation.average"),
 	                  },
+	                  maximum : {
+                        id : "maximum",
+                        name : this.getI18N("reporting.definitionView.layout.table.recordSet.aggregation.maximum"),
+                     },
+                     minimum : {
+                        id : "minimum",
+                        name : this.getI18N("reporting.definitionView.layout.table.recordSet.aggregation.minimum"),
+                     },
 	                  stdDeviation : {
 	                     id : "stdDeviation",
 	                     name : this.getI18N("reporting.definitionView.layout.table.recordSet.aggregation.stdDeviation"),
-	                  },
-	                  minimum : {
-	                     id : "minimum",
-	                     name : this.getI18N("reporting.definitionView.layout.table.recordSet.aggregation.minimum"),
-	                  },
-	                  maximum : {
-	                     id : "maximum",
-	                     name : this.getI18N("reporting.definitionView.layout.table.recordSet.aggregation.maximum"),
 	                  }
 	            };
 				
