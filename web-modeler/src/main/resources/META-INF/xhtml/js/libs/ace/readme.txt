@@ -27,3 +27,18 @@ exports.JSHINT = JSLINT;
 
 Side-effects: ACE panels running in Javascript mode will now complain just like
 Douglas Crockford.
+
+3. ext-language_tools.js
+
+Modification:
+
+Line No 1017: 
+was - >  this.editor.insert(data.value || data);
+is  - >  this.editor.insert(data.name || data);
+
+Allows us to to separate the caption view (popup) from the value whereas before
+the values were linked meaning we could not insert a partial match - the prefix unless
+we changed all autocompleters to behave as such. Doing so caused numerous issues
+with the snippet autocompleter. Only out session autocompleter has been modified
+to behave using parital matches. All other autocompleters should still behave as before.
+
