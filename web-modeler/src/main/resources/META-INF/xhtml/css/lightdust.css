@@ -782,3 +782,14 @@ textarea:focus {
 	opacity : 0.5 !important;
 	cursor : default !important;
 }
+
+/*Ovveride for the ACE code editor*/
+.ace_autocomplete {
+    width: 300px; !important;
+    z-index: 200000;
+    background: #f8f8f8;
+    border: 1px lightgray solid;
+    position: fixed;
+    box-shadow: 2px 3px 5px rgba(0,0,0,.2);
+}
+@import ('/plugins/modern/public/skins/modern/modern.css')
