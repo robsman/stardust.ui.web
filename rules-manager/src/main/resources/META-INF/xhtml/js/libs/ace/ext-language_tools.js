@@ -1014,7 +1014,7 @@ var Autocomplete = function() {
             if (data.snippet)
                 snippetManager.insertSnippet(this.editor, data.snippet);
             else
-                this.editor.insert(data.value || data);
+                this.editor.insert(data.name || data);
         }
     };
 

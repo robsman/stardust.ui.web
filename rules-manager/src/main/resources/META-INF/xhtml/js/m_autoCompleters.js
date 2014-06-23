@@ -26,7 +26,7 @@ define([],function(){
 				        callback(null, keywords.map(function(word) {
 				            return {
 				                "name": word,
-				                "value": word,
+				                "value":  word.replace(prefix,""),
 				                "score": score,
 				                "meta": metaName
 				            };
