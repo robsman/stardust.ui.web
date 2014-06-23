@@ -434,13 +434,25 @@ public class ReportingServiceBean
       {
          JsonObject reportDefinitionJson = jsonMarshaller.readJsonObject(new String(getDocumentManagementService().retrieveDocumentContent(
                document.getId())));
-         
+          
          //add report specific meta-data
          JsonObject metaDataObj = new JsonObject(); 
          metaDataObj.addProperty("documentId", document.getId());
          reportDefinitionJson.add("metadata", metaDataObj);
-         reportDefinitionJson.get("storage").getAsJsonObject().addProperty("path", document.getPath());
          
+         // update storage data
+         JsonObject storage = GsonUtils.extractObject(reportDefinitionJson, "storage");
+         JsonObject definition = GsonUtils.extractObject(reportDefinitionJson, "definition");
+         if (definition != null)
+         {
+            storage = GsonUtils.extractObject(definition, "storage");
+         }
+         if (storage != null)
+         {
+            System.out.println();
+            storage.addProperty("path", document.getPath());
+         }
+
          return reportDefinitionJson;
       }
       else
