@@ -1999,7 +1999,7 @@ define(
 			 *
 			 */
 			function revertUIAdjustment(report) {
-				if(!report.uiAdjustmentApplied){
+				if(report.uiAdjustmentApplied == 'false'){
 					return;
 				}
 				
