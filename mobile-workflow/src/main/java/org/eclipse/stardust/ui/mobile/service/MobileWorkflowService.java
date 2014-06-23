@@ -27,6 +27,8 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +49,7 @@ import com.google.gson.JsonObject;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.Direction;
 import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.engine.api.dto.ActivityInstanceDetails;
 import org.eclipse.stardust.engine.api.dto.ContextKind;
 import org.eclipse.stardust.engine.api.dto.DataDetails;
@@ -57,17 +60,23 @@ import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetailsLevel;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetailsOptions;
 import org.eclipse.stardust.engine.api.model.Activity;
 import org.eclipse.stardust.engine.api.model.ApplicationContext;
+import org.eclipse.stardust.engine.api.model.ConditionalPerformer;
 import org.eclipse.stardust.engine.api.model.DataMapping;
 import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.ImplementationType;
+import org.eclipse.stardust.engine.api.model.ModelParticipant;
+import org.eclipse.stardust.engine.api.model.Organization;
 import org.eclipse.stardust.engine.api.model.Participant;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
+import org.eclipse.stardust.engine.api.model.Role;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.ActivityInstances;
 import org.eclipse.stardust.engine.api.query.DeployedModelQuery;
 import org.eclipse.stardust.engine.api.query.DescriptorPolicy;
 import org.eclipse.stardust.engine.api.query.DocumentQuery;
+import org.eclipse.stardust.engine.api.query.FilterAndTerm;
+import org.eclipse.stardust.engine.api.query.FilterOrTerm;
 import org.eclipse.stardust.engine.api.query.HistoricalEventPolicy;
 import org.eclipse.stardust.engine.api.query.ProcessDefinitionQuery;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceDetailsPolicy;
@@ -75,6 +84,7 @@ import org.eclipse.stardust.engine.api.query.ProcessInstanceFilter;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
 import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.query.UserQuery;
+import org.eclipse.stardust.engine.api.query.Users;
 import org.eclipse.stardust.engine.api.query.WorklistQuery;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
@@ -113,6 +123,7 @@ import org.eclipse.stardust.ui.web.processportal.service.rest.InteractionDataUti
 import org.eclipse.stardust.ui.web.processportal.view.manual.ManualActivityUi;
 import org.eclipse.stardust.ui.web.viewscommon.common.constant.ProcessPortalConstants;
 import org.eclipse.stardust.ui.web.viewscommon.common.controller.ExternalWebAppActivityInteractionController;
+import org.eclipse.stardust.ui.web.viewscommon.common.spi.user.impl.IppUser;
 import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
@@ -133,6 +144,9 @@ public class MobileWorkflowService implements ServletContextAware {
 	private Folder publicDocumentsRootFolder;
 	private @Autowired HttpServletRequest httpRequest;
 	private ServletContext servletContext;
+	
+	@Autowired
+	private org.springframework.context.ApplicationContext appContext;
 		  
    @Resource
    private org.eclipse.stardust.ui.web.processportal.interaction.InteractionRegistry interactionRegistryManual;
@@ -1094,24 +1108,34 @@ public class MobileWorkflowService implements ServletContextAware {
    }
    
    /**
-    * Returns all participants 
-    * TODO: - Place holder, should return all available delgatees for a process
-    * 		  given the activityOid and a like match on the delegateeName.
+    * @param activityInstanceOid
+    * @param delegateName
     * @return
     */
-   public JsonObject getDelegatees(String activityInstanceOid,String delegateeName){
-	   JsonObject resultJson = new JsonObject();
-	   JsonArray userInstancesJson = new JsonArray();
-	   List<Participant> participants= getQueryService().getAllParticipants();
-	   for (Participant participant : participants)
-      {
-		   JsonObject participantJSON = new JsonObject();
-		   participantJSON.addProperty("name", participant.getName());
-		   participantJSON.addProperty("id", participant.getId());
-		   userInstancesJson.add(participantJSON);
-      }
-	   resultJson.add("data", userInstancesJson);
-	   return resultJson;
+   public JsonObject getDelegates(String activityInstanceOid, String delegateName)
+   {
+      DelegationHelper helper = new DelegationHelper(getQueryService(),
+            getWorkflowService());
+      return helper.getMatchingDelegates(activityInstanceOid, delegateName);
+   }
+
+   /**
+    * @param activityInstanceOid
+    * @param delegateId
+    * @return
+    */
+   public JsonObject delegateActivity(String activityInstanceOid, String delegateId)
+   {
+      ActivityInstanceQuery query = ActivityInstanceQuery.findAll();
+      FilterAndTerm filter = query.getFilter().addAndTerm();
+      filter.and(ActivityInstanceQuery.OID.isEqual(Long.parseLong(activityInstanceOid)));
+      QueryResult<ActivityInstance> activityInstances = getQueryService().getAllActivityInstances(
+            query);
+
+      DelegationHelper helper = new DelegationHelper(getQueryService(),
+            getWorkflowService());
+      return getActivityInstanceJson(helper.delegateActivity(activityInstances.get(0),
+            delegateId));
    }
    
    /**

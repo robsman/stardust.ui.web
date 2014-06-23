@@ -33,6 +33,7 @@ import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.config.Parameters;
+import org.eclipse.stardust.common.error.AccessForbiddenException;
 import org.eclipse.stardust.engine.core.interactions.InteractionRegistry;
 import org.eclipse.stardust.ui.mobile.common.LanguageUtil;
 import org.eclipse.stardust.ui.mobile.service.ActivitySearchHelper;
@@ -181,24 +182,55 @@ public class MobileWorkflowResource {
          throw new RuntimeException(e);
       }
    }
-   
+
    @GET
    @Produces(MediaType.APPLICATION_JSON)
-   @Path("activity-instances/{oid: \\d+}/delegatees")
-   public Response getDelegatees(
-		   @PathParam("oid") String activityInstanceOid,
-		   @QueryParam("name") String delegateeName){
-	   
-	   try{
-		   return Response.ok(getMobileWorkflowService()
-				   .getDelegatees(activityInstanceOid,delegateeName)
-				   .toString(),MediaType.APPLICATION_JSON_TYPE)
-				   .build();
-	   } catch(Exception e){
-		   e.printStackTrace();
-	       throw new RuntimeException(e);
-	   }
-	   
+   @Path("activity-instances/{oid: \\d+}/delegates")
+   public Response getDelegates(@PathParam("oid") String activityInstanceOid,
+         @QueryParam("name") String delegateName)
+   {
+
+      try
+      {
+         return Response.ok(
+               getMobileWorkflowService().getDelegates(activityInstanceOid, delegateName)
+                     .toString(), MediaType.APPLICATION_JSON_TYPE).build();
+      }
+      catch (Exception e)
+      {
+         e.printStackTrace();
+         throw new RuntimeException(e);
+      }
+   }
+   
+   @POST
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("activity-instances/{oid: \\d+}/delegates/{delegateId}")
+   public Response delegateActivity(@PathParam("oid") String activityInstanceOid,
+         @PathParam("delegateId") String delegateId)
+   {
+
+      try
+      {
+         return Response.ok(
+               getMobileWorkflowService().delegateActivity(activityInstanceOid,
+                     delegateId).toString(), MediaType.APPLICATION_JSON_TYPE).build();
+      }
+      catch (AccessForbiddenException e)
+      {
+         e.printStackTrace();
+         return Response.status(Status.FORBIDDEN)
+               .entity(
+                     "'errorMessage' : 'AccessForbiddenException: " + e.getMessage()
+                           + "'")
+               .build();
+      }
+      catch (Exception e)
+      {
+         e.printStackTrace();
+         return Response.status(Status.BAD_REQUEST).build();
+      }
+
    }
    
    @GET

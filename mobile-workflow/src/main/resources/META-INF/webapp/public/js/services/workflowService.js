@@ -301,45 +301,77 @@ define(["angularjs"],function(angular){
 				return deferred.promise;
 			},
 			
-			"getParticipantMatches" : function(val){
-				var deferred = $q.defer(),
-					results=[],
-					data=[
-					      {"name" : "Alan", "type" : "user"},
-					      {"name" : "Amy", "type" : "user"},
-					      {"name" : "Aaron", "type" : "user"},
-					      {"name" : "Anistasia", "type" : "user"},
-					      {"name" : "Arthur", "type" : "user"},
-					      {"name" : "Anissa", "type" : "user"},
-					      {"name" : "Alex", "type" : "user"},
-					      {"name" : "Arnold", "type" : "user"},
-					      {"name" : "Alexis", "type" : "user"},
-					      {"name" : "Anne", "type" : "user"},
-					      {"name" : "Alfonse", "type" : "user"},
-					      {"name" : "Annie", "type" : "user"},
-					      {"name" : "Architect", "type" : "role"},
-					      {"name" : "Auditor", "type" : "role"},
-					      {"name" : "Accounts", "type" : "role"},
-					      {"name" : "Approval", "type" : "role"},
-					      {"name" : "Adjuster", "type" : "role"},
-					      {"name" : "Analysis", "type" : "role"},
-					      {"name" : "Accounts-l2", "type" : "role"},
-					      {"name" : "Accounting", "type" : "organization"},
-					      {"name" : "Advertising", "type" : "organization"},
-					      {"name" : "Asia", "type" : "organization"},
-					      {"name" : "Audits - Internal", "type" : "organization"},
-					      {"name" : "America - North", "type" : "organization"},
-					      {"name" : "America - South", "type" : "organization"},
-					      {"name" : "Audits - External", "type" : "organization"}
-					];
+			"getParticipantMatches" : function(activityOID, val){
+				var deferred = $q.defer();
+//					data=[
+//					      {"name" : "Alan", "type" : "user"},
+//					      {"name" : "Amy", "type" : "user"},
+//					      {"name" : "Aaron", "type" : "user"},
+//					      {"name" : "Anistasia", "type" : "user"},
+//					      {"name" : "Arthur", "type" : "user"},
+//					      {"name" : "Anissa", "type" : "user"},
+//					      {"name" : "Alex", "type" : "user"},
+//					      {"name" : "Arnold", "type" : "user"},
+//					      {"name" : "Alexis", "type" : "user"},
+//					      {"name" : "Anne", "type" : "user"},
+//					      {"name" : "Alfonse", "type" : "user"},
+//					      {"name" : "Annie", "type" : "user"},
+//					      {"name" : "Architect", "type" : "role"},
+//					      {"name" : "Auditor", "type" : "role"},
+//					      {"name" : "Accounts", "type" : "role"},
+//					      {"name" : "Approval", "type" : "role"},
+//					      {"name" : "Adjuster", "type" : "role"},
+//					      {"name" : "Analysis", "type" : "role"},
+//					      {"name" : "Accounts-l2", "type" : "role"},
+//					      {"name" : "Accounting", "type" : "organization"},
+//					      {"name" : "Advertising", "type" : "organization"},
+//					      {"name" : "Asia", "type" : "organization"},
+//					      {"name" : "Audits - Internal", "type" : "organization"},
+//					      {"name" : "America - North", "type" : "organization"},
+//					      {"name" : "America - South", "type" : "organization"},
+//					      {"name" : "Audits - External", "type" : "organization"}
+//					];
+//				
+//				data.forEach(function(v){
+//					if(v.name.indexOf(val) > -1){
+//						console.log("matched:" + v.name + " - " + val);
+//						results.push(v);
+//					}
+//				});
 				
-				data.forEach(function(v){
-					if(v.name.indexOf(val) > -1){
-						console.log("matched:" + v.name + " - " + val);
-						results.push(v);
-					}
+				var nameString = "";
+				if (val) {
+					nameString = "?name=" + val;
+				}
+				
+				$http({
+				    url: baseServiceUrl + "/activity-instances/" + activityOID + "/delegates" + nameString,
+				    method: "GET"
+				}).success(function(data, status, headers, config) {
+					deferred.resolve(data.data);
+				}).error(function(data, status, headers, config) {
+					deferred.reject(status);
 				});
-				deferred.resolve(results);
+				
+//				deferred.resolve(results);
+				return deferred.promise;
+			},
+			
+			"delegateActivity" : function(activityOID, id){
+				var deferred = $q.defer();				
+				if (id) {
+					$http({
+					    url: baseServiceUrl + "/activity-instances/" + activityOID + "/delegates/" + id,
+					    method: "POST"
+					}).success(function(data, status, headers, config) {
+						deferred.resolve(data.data);
+					}).error(function(data, status, headers, config) {
+						deferred.reject(status);
+					});
+				} else {
+					// TODO
+				}
+				
 				return deferred.promise;
 			},
 			

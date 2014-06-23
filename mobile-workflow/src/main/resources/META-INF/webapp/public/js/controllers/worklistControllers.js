@@ -1454,11 +1454,32 @@ define([],function(){
 				
 
 				$scope.getParticipantMatches = function(val){
-					workflowService.getParticipantMatches(val)
+					var activityOID = $scope.activityModel.item.oid;
+					
+					workflowService.getParticipantMatches(activityOID, val)
 						.then(function(data){
 							$scope.$apply(function(){
 								$scope.participantSearchModel.results=data;
 							});
+						})
+						.catch(function(){
+							$scope.$apply(function(){
+								$scope.errorModel.hasError=true;
+								$scope.errorModel.errorMessage = $rootScope.appData.errorText.recordretrieval;
+								$timeout(function(){
+									$scope.errorModel.hasError=false;
+								},$rootScope.appData.barDuration);
+							});
+						})
+						.finally();
+				}
+				
+				$scope.delegateActivity = function(val){
+					var activityOID = $scope.activityModel.item.oid;
+					
+					workflowService.delegateActivity(activityOID, val)
+						.then(function(data){
+							alert("activity delegated")
 						})
 						.catch(function(){
 							$scope.$apply(function(){
