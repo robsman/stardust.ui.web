@@ -440,7 +440,7 @@ public class ReportingServiceBean
          metaDataObj.addProperty("documentId", document.getId());
          reportDefinitionJson.add("metadata", metaDataObj);
          
-         // update storage data
+         //update storage data
          JsonObject storage = GsonUtils.extractObject(reportDefinitionJson, "storage");
          JsonObject definition = GsonUtils.extractObject(reportDefinitionJson, "definition");
          if (definition != null)
@@ -449,7 +449,6 @@ public class ReportingServiceBean
          }
          if (storage != null)
          {
-            System.out.println();
             storage.addProperty("path", document.getPath());
          }
 
