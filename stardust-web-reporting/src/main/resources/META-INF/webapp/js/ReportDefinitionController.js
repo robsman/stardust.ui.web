@@ -1965,13 +1965,16 @@ define(
            for ( var i = this.report.dataSet.columns.length - 1; i >= 0; i--)
            {
               if (this.report.dataSet.groupBy && (this.report.dataSet.groupBy != 'None')) {
-                 var groupDimensions = this.getGroupDimensions();
-                 for ( var groupDim in groupDimensions)
-                 {
-                    if (groupDimensions[groupDim].id === list[i].id && list[i].id === dimensionId)
+                 if (aggregationFunction === "None")
+                 {// For GroupBy selected value
+                    var groupDimensions = this.getGroupDimensions();
+                    for ( var groupDim in groupDimensions)
                     {
-                       list.splice(i, 1);
-                       break;
+                       if (groupDimensions[groupDim].id === list[i].id && list[i].id === dimensionId)
+                       {
+                          list.splice(i, 1);
+                          break;
+                       }
                     }
                  }
                  if (list[i].id === dimensionId && 
@@ -2002,12 +2005,15 @@ define(
            {
               if (this.report.dataSet.groupBy && (this.report.dataSet.groupBy != 'None')) 
               {
-                 var groupDimensions = this.getGroupDimensions();
-                 for ( var groupDim in groupDimensions)
-                 {
-                    if (groupDimensions[groupDim].id === list[i].id && list[i].id === colId)
+                 if (aggregationFunction === "None")
+                 {// For GroupBy selected value
+                    var groupDimensions = this.getGroupDimensions();
+                    for ( var groupDim in groupDimensions)
                     {
-                       return i;
+                       if (groupDimensions[groupDim].id === list[i].id && list[i].id === colId)
+                       {
+                          return i;
+                       }
                     }
                  }
                  
