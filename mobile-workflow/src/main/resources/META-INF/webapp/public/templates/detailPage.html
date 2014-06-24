@@ -26,32 +26,32 @@
 <div id="detailPageTabs" style="padding-top:0em;border-top:0em;">
   <div data-role="navbar">
 	<ul>
-		<li ng-click="activeSubView='activity';getNotes(activityModel.item.processInstanceOid)">
-			<a href="#activityTab" ng-class="{'ipp-btn-active' : activeSubView=='activity'}">
+		<li ng-click="tabModel.activeSubView='activity';getNotes(activityModel.item.processInstanceOid)">
+			<a href="#activityTab" ng-class="{'ipp-btn-active' : tabModel.activeSubView=='activity'}">
 				<i title="Activity" style="display:block;" class="sc sc-info sc-2x jqm-icon-block ipp-lightest"></i>
 				<span title="Activity" class="hide-media-sm ipp-lighter ipp-fw-normal">{{uiText.activity}}</span>
 			</a>		
 		</li>
-		<li ng-click="activeSubView='form'" >
-			<a ng-href="{{formTabTarget}}" ng-class="{'ipp-btn-active' : activeSubView=='form'}">
+		<li ng-click="tabModel.activeSubView='form'" >
+			<a ng-href="{{formTabTarget}}" ng-class="{'ipp-btn-active' : tabModel.activeSubView=='form'}">
 				<i style="display:block;" class="sc sc-cog sc-2x jqm-icon-block ipp-lightest"></i>
 				<span title="Form" class="hide-media-sm ipp-lighter ipp-fw-normal">{{uiText.form}}</span>	
 			</a>
 		</li>
-		<li ng-click="activeSubView='docs'">
-			<a href="#docsTab" ng-class="{'ipp-btn-active' : activeSubView=='docs'}">
+		<li ng-click="tabModel.activeSubView='docs'">
+			<a href="#docsTab" ng-class="{'ipp-btn-active' : tabModel.activeSubView=='docs'}">
 				<i style="display:block;" class="sc sc-documents-o sc-2x jqm-icon-block ipp-lightest"></i>
 				<span title="Documents" class="hide-media-sm ipp-lighter ipp-fw-normal">{{uiText.documents}} ({{documentModel.docs.length}})</span>
 			</a>
 		</li>
-		<li ng-click="activeSubView='notes'">
-		 	<a href="#notesTabContent" ng-class="{'ipp-btn-active' : activeSubView=='notes'}">
+		<li ng-click="tabModel.activeSubView='notes'">
+		 	<a href="#notesTabContent" ng-class="{'ipp-btn-active' : tabModel.activeSubView=='notes'}">
 				<i style="display:block;" class="sc sc-clipboard sc-2x jqm-icon-block ipp-lightest"></i>
 				<span title="Notes" class="hide-media-sm ipp-lighter ipp-fw-normal">{{uiText.notes}} ({{notesModel.notes.length}})</span>
 			</a>
 		</li>
-		<li ng-click="navigateTo('#processPage?id=' + activityModel.item.processInstanceOid);activeSubView='process'">
-			<a  id="#processTab" href="#" ng-class="{'ipp-btn-active' : activeSubView=='process'}">
+		<li ng-click="navigateTo('#processPage?id=' + activityModel.item.processInstanceOid);tabModel.activeSubView='process'">
+			<a  id="#processTab" href="#" ng-class="{'ipp-btn-active' : tabModel.activeSubView=='process'}">
 				<i style="display:block;" class="sc sc-cogs sc-2x jqm-icon-block ipp-lightest"></i>
 				<span title="Process" class="hide-media-sm ipp-lighter ipp-fw-normal">{{uiText.process}}</span>
 			</a>
@@ -63,13 +63,13 @@
  
 
   
-  <div ng-show="activeSubView=='activity'" id="activityTab" class="ui-body-d ui-content ipp-border-0x">
+  <div ng-show="tabModel.activeSubView=='activity'" id="activityTab" class="ui-body-d ui-content ipp-border-0x">
 		<div data-theme="a" 
 			 data-jqm-template data-jqm-widgets="" 
 			 data-template-url="templates/activityDetails.html">
 		</div>
   </div>
-  <div ng-show="activeSubView=='form'"  id="formTab" class="ui-body-d ui-content ipp-border-0x" style="text-align:center;">
+  <div ng-show="tabModel.activeSubView=='form'"  id="formTab" class="ui-body-d ui-content ipp-border-0x" style="text-align:center;">
     	<div ng-show="isMashupShowable()===true" 
     		 data-jqm-template 
 			 data-jqm-widgets=""
@@ -83,14 +83,14 @@
 			 data-template-url="templates/formDefault.html">
 		</div>
   </div>
-   <div ng-show="activeSubView=='docs'" id="docsTab" class="ui-body-d ui-content ipp-border-0x">
+   <div ng-show="tabModel.activeSubView=='docs'" id="docsTab" class="ui-body-d ui-content ipp-border-0x">
     	<div data-jqm-template 
 			 data-jqm-widgets="listview"
 			 data-bind-to="documentModel.docs"
 			 data-template-url="templates/documentPage.html">
 		</div>
   </div>
-   <div ng-show="activeSubView=='notes'" id="notesTabContent" class="ui-body-d ui-content ipp-border-0x">
+   <div ng-show="tabModel.activeSubView=='notes'" id="notesTabContent" class="ui-body-d ui-content ipp-border-0x">
    		<div data-jqm-template 
 			 data-jqm-widgets="listview"
 			 data-bind-to="notesModel.notes"
@@ -102,7 +102,7 @@
   </div>
 </div><!-- Tabs End  -->
 
-  <div class="ui-mini" style="text-align:center;" ng-show="activeSubView=='activity'">
+  <div class="ui-mini" style="text-align:center;" ng-show="tabModel.activeSubView=='activity'">
   
 	  <div ng-click="activate(activityModel.item.oid);" 
 	  	   ng-show="activityModel.item.activatable && isHotActivityConflict()==false && 

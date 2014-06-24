@@ -275,9 +275,7 @@ define([],function(){
 					
 					workflowService.getWorklistCount()
 					.then(function(data){
-						$scope.$apply(function(){
-							$scope.mainPageModel.worklistCount=data.total;
-						});
+						$scope.mainPageModel.worklistCount=data.total;
 						deferred.resolve();
 					})
 					.catch(deferred.reject);
@@ -310,7 +308,7 @@ define([],function(){
 						},$rootScope.appData.barDuration);
 					})
 					.finally(function(){
-						$scope.$apply();
+						//$scope.$apply();
 						edata.ui.bCDeferred.resolve();
 					});
 					
@@ -1383,20 +1381,20 @@ define([],function(){
 						"addafile"     : il18nService.getProperty("mobile.fileupload.header")
 				}
 				
-				
-				
+				/*Filter file name for supported image type extensions*/
 				$scope.isImageType = utilService.isImageType;
 				
 				/*Initialize our reinitialize our models*/
 				$scope.initModels=function(){
-					//$scope.$apply(function(){
 						$scope.notesModel = new notesModel();
 						$scope.errorModel=new errorModel();
 						$scope.infoModel = new infoModel();
 						$scope.activityModel = new worklistItem();
 						$scope.formModel = new mashupModel();
 						$scope.documentModel = new documentModel();
-						$scope.mashupModel = new mashupModel();
+						if(!$scope.mashupModel){
+							$scope.mashupModel = new mashupModel();
+						}
 						$scope.participantSearchModel = new participantSearchModel();
 						$scope.delegatePopupUI ={
 								setInputFocus : false
@@ -1408,8 +1406,15 @@ define([],function(){
 						$scope.isUploading =false;
 						$scope.formTabTarget = "#formTab";
 						$scope.previousPage="";
-						$scope.activeTab='activityTab';
-					//});
+						$scope.tabModel={
+							activeSubView : 'activity'
+						}
+						//$scope.activeTab='activityTab';
+						
+						//Check so that we dont overwrite an activated form
+						if($scope.mashupModel.externalUrl=="#"){
+							$scope.mashupModel.externalUrl="blank.html";
+						}
 				};
 				$scope.initModels();
 				
@@ -1439,8 +1444,9 @@ define([],function(){
 									    "&interactionId=" + data.contexts.externalWebApp.interactionId;
 								}
 								$scope.mashupModel.externalUrl= $sce.trustAsResourceUrl(url);
+								$scope.tabModel.activeSubView="form";
 							}
-							$scope.activeSubView="form";
+							
 							$scope.notesModel.notes = sortedNotes;
 							$scope.activityModel.item = data;
 							$scope.documentModel.docs = sortedDocs;
@@ -1454,30 +1460,23 @@ define([],function(){
 				
 
 				$scope.getParticipantMatches = function(val){
-					var activityOID = $scope.activityModel.item.oid;
-					
-					workflowService.getParticipantMatches(activityOID, val)
+					workflowService.getParticipantMatches($scope.activityModel.item.oid, val)
 						.then(function(data){
-							$scope.$apply(function(){
-								$scope.participantSearchModel.results=data;
-							});
+							$scope.participantSearchModel.results=data;
 						})
 						.catch(function(){
-							$scope.$apply(function(){
-								$scope.errorModel.hasError=true;
-								$scope.errorModel.errorMessage = $rootScope.appData.errorText.recordretrieval;
-								$timeout(function(){
-									$scope.errorModel.hasError=false;
-								},$rootScope.appData.barDuration);
-							});
+							$scope.errorModel.hasError=true;
+							$scope.errorModel.errorMessage = $rootScope.appData.errorText.recordretrieval;
+							
+							$timeout(function(){
+								$scope.errorModel.hasError=false;
+							},$rootScope.appData.barDuration);
 						})
-						.finally();
+						.finally($scope.$apply);
 				}
 				
 				$scope.delegateActivity = function(val){
-					var activityOID = $scope.activityModel.item.oid;
-					
-					workflowService.delegateActivity(activityOID, val)
+					workflowService.delegateActivity($scope.activityModel.item.oid, val)
 						.then(function(data){
 							alert("activity delegated")
 						})
@@ -1534,23 +1533,20 @@ define([],function(){
 								"?interactionId=" + data.contexts["default"]["interactionId"] +
 								"&isMobileClient=true";
 							}
-							
+
 							if (!url) return;
 							
 							/*Load new data for iframe, as soon as we modify externalUrl on our scope the 
 							  iframe will trigger a load.*/
-							$scope.$apply(function(){
-								$scope.mashupModel.externalUrl= $sce.trustAsResourceUrl(url);
-								$scope.mashupModel.interactionId= data.contexts.externalWebApp ? data.contexts.externalWebApp.interactionId : data.contexts["default"].interactionId;
-							});	
-							
-							$rootScope.$apply(function(){
-								$rootScope.appData.isActivityHot = true;
-								$rootScope.appData.hotActivityInstance = {
-										"oid" : $scope.activityModel.item.oid,
-										"name" : $scope.activityModel.item.activityName
-								};
-							});
+
+							$scope.mashupModel.externalUrl= $sce.trustAsResourceUrl(url);
+							$scope.mashupModel.interactionId= data.contexts.externalWebApp ? data.contexts.externalWebApp.interactionId : data.contexts["default"].interactionId;
+
+							$rootScope.appData.isActivityHot = true;
+							$rootScope.appData.hotActivityInstance = {
+									"oid" : $scope.activityModel.item.oid,
+									"name" : $scope.activityModel.item.activityName
+							};
 							
 						})
 						.then(function(){
@@ -1558,24 +1554,20 @@ define([],function(){
 							}
 						)
 						.then(function(data){
-							$scope.$apply(function(){
-								$scope.activityModel.item = data;
-							});
+							$scope.activityModel.item = data;
 						})
 						.catch(function(){
-							$scope.$apply(function(){
-								$scope.errorModel.hasError=true;
-								$scope.errorModel.errorMessage=$rootScope.appData.errorText.activation;
-								$timeout(function(){
-									$scope.errorModel.hasError=false;
-								},$rootScope.appData.barDuration);
-							});
+							$scope.errorModel.hasError=true;
+							$scope.errorModel.errorMessage=$rootScope.appData.errorText.activation;
+							$timeout(function(){
+								$scope.errorModel.hasError=false;
+							},$rootScope.appData.barDuration);
 						})
 						.finally(function(){
-							$scope.$apply(function(){
-								$scope.isAjaxLoading=false;
-								$scope.activeSubView=='form'
-							});
+							$scope.isAjaxLoading=false;
+							$scope.tabModel.activeSubView='form';
+							$scope.$apply();
+							$rootScope.$apply();
 						});
 				};
 				
@@ -1683,9 +1675,11 @@ define([],function(){
 
 							if(edata.data.activeTab=="formTab"){
 								$scope.activeSubView='form';
+								$scope.tabModel.activeSubView='form';
 							}
 							else{
 								$scope.activeSubView='activity';
+								$scope.tabModel.activeSubView='activity';
 							}
 
 						})

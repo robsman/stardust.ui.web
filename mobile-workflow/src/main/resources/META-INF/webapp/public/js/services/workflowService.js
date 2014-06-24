@@ -302,44 +302,9 @@ define(["angularjs"],function(angular){
 			},
 			
 			"getParticipantMatches" : function(activityOID, val){
-				var deferred = $q.defer();
-//					data=[
-//					      {"name" : "Alan", "type" : "user"},
-//					      {"name" : "Amy", "type" : "user"},
-//					      {"name" : "Aaron", "type" : "user"},
-//					      {"name" : "Anistasia", "type" : "user"},
-//					      {"name" : "Arthur", "type" : "user"},
-//					      {"name" : "Anissa", "type" : "user"},
-//					      {"name" : "Alex", "type" : "user"},
-//					      {"name" : "Arnold", "type" : "user"},
-//					      {"name" : "Alexis", "type" : "user"},
-//					      {"name" : "Anne", "type" : "user"},
-//					      {"name" : "Alfonse", "type" : "user"},
-//					      {"name" : "Annie", "type" : "user"},
-//					      {"name" : "Architect", "type" : "role"},
-//					      {"name" : "Auditor", "type" : "role"},
-//					      {"name" : "Accounts", "type" : "role"},
-//					      {"name" : "Approval", "type" : "role"},
-//					      {"name" : "Adjuster", "type" : "role"},
-//					      {"name" : "Analysis", "type" : "role"},
-//					      {"name" : "Accounts-l2", "type" : "role"},
-//					      {"name" : "Accounting", "type" : "organization"},
-//					      {"name" : "Advertising", "type" : "organization"},
-//					      {"name" : "Asia", "type" : "organization"},
-//					      {"name" : "Audits - Internal", "type" : "organization"},
-//					      {"name" : "America - North", "type" : "organization"},
-//					      {"name" : "America - South", "type" : "organization"},
-//					      {"name" : "Audits - External", "type" : "organization"}
-//					];
-//				
-//				data.forEach(function(v){
-//					if(v.name.indexOf(val) > -1){
-//						console.log("matched:" + v.name + " - " + val);
-//						results.push(v);
-//					}
-//				});
+				var deferred = $q.defer(),
+				    nameString;
 				
-				var nameString = "";
 				if (val) {
 					nameString = "?name=" + val;
 				}
@@ -353,7 +318,6 @@ define(["angularjs"],function(angular){
 					deferred.reject(status);
 				});
 				
-//				deferred.resolve(results);
 				return deferred.promise;
 			},
 			
