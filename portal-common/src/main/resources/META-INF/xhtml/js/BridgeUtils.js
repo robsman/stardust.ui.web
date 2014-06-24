@@ -67,7 +67,11 @@ if (!window["BridgeUtils"]) {
 		function runInAngularContext(func) {
 			// TODO document.body?
 			var scope = angular.element(document.body).scope();
-			scope.$apply(func);
+			if (!scope.$$phase) {
+				scope.$apply(func);
+			} else {
+				func(scope);
+			}
 		}
 
 		/*

@@ -25,7 +25,11 @@ define(["bpm-modeler/js/m_utils"], function(m_utils) {
 	 */
 	function runInAngularContext(func, div) {
 		var scope = angular.element(div == undefined ? document.body : div).scope();
-		scope.$apply(func);
+		if (!scope.$$phase) {
+			scope.$apply(func);
+		} else {
+			func(scope);
+		}
 	}
 
 	/*
