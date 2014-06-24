@@ -125,12 +125,12 @@ public abstract class SchedulingRecurrence
          trace.info("No End Date is selected");
          if (startDate.before(currentDate))
          { // Past Date
-            return getNextExecutionDate(cronExpression, currentDate);
+            return getNextExecutionDate(cronExpression, currentDate, null);
          }
          else if (startDate.after(currentDate))
          {
             // Future Date
-            return getNextExecutionDate(cronExpression, startDate);
+            return getNextExecutionDate(cronExpression, startDate, null);
          }
       }
       else if (endMode.equals(SchedulingUtils.EndMode.ENDAFTERNOOCCURENCES.getEndMode()))
@@ -179,7 +179,7 @@ public abstract class SchedulingRecurrence
          {
             if (startDate.after(endDate))
             {
-               trace.info("Start Date is after End Date");
+               trace.info("Invalid Dates: Start Date is after End Date");
                return null;
             }
             if (startDate.before(currentDate) && endDate.before(currentDate))
@@ -189,24 +189,32 @@ public abstract class SchedulingRecurrence
             }
             else if (startDate.before(currentDate) && endDate.after(currentDate))
             {
-               Date nextValidTimeAfter = cronExpression
-                     .getNextValidTimeAfter(currentDate);
-               trace.info("Next Execution Date: " + nextValidTimeAfter);
-               
-               return (nextValidTimeAfter.before(endDate)) ? SchedulingUtils.convertDate(
-                     nextValidTimeAfter, SchedulingUtils.CLIENT_DATE_FORMAT) : null;
+               // Current Running Scenario
+               return getNextExecutionDate(cronExpression, currentDate, endDate);
+            }
+            else if (startDate.after(currentDate))
+            {
+               // Future Date Scenario
+               return getNextExecutionDate(cronExpression, startDate, endDate);
             }
          }
       }
       return null;
    }
 
-   private String getNextExecutionDate(CronExpression cronExpression, Date startDate)
+   private String getNextExecutionDate(CronExpression cronExpression, Date startDate, Date endDate)
    {
       Date nextValidTimeAfter = cronExpression.getNextValidTimeAfter(startDate);
       trace.info("Next Execution Date: " + nextValidTimeAfter);
-      return SchedulingUtils.convertDate(nextValidTimeAfter,
-            SchedulingUtils.CLIENT_DATE_FORMAT);
+      if (endDate == null)
+      {
+         return SchedulingUtils.convertDate(nextValidTimeAfter,
+               SchedulingUtils.CLIENT_DATE_FORMAT);
+      } else if (endDate != null) {
+         return (nextValidTimeAfter.before(endDate)) ? SchedulingUtils.convertDate(
+               nextValidTimeAfter, SchedulingUtils.CLIENT_DATE_FORMAT) : null;
+      }
+      return null;
    }
 
    private List<Date> generateNFutureExecutionDates(CronExpression cronExpression,
