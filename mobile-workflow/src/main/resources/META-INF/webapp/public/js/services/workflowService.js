@@ -689,8 +689,22 @@ define(["angularjs"],function(angular){
                deferred.reject(status);
             });
             return deferred.promise;
-         }
-			
+         },
+         
+         "getVersionAndCopyrightInfo" : function() {
+				var deferred = $q.defer();
+				
+				$http({
+				    url: baseServiceUrl + "/versionAndCopyrightInfo",
+				    method: "GET"
+				}).success(function(data, status, headers, config) {
+					deferred.resolve(data);
+				}).error(function(data, status, headers, config) {
+					deferred.reject(status);
+				});
+				
+				return deferred.promise;
+         }			
 		};
 	
 	/*Angular window message handling setup*/

@@ -811,4 +811,16 @@ public class MobileWorkflowResource {
 			return Response.status(Status.FORBIDDEN).build();
 		}
 	}
+	
+   /**
+    * @return
+    */
+   @GET
+   @Path("/versionAndCopyrightInfo")
+   public Response getVersionAndCopyrightInfo()
+   {
+      return Response.ok(
+            getMobileWorkflowService().getVersionAndCopyrightInfo().toString(),
+            MediaType.TEXT_PLAIN_TYPE).build();
+   }
 }

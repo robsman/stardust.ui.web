@@ -110,10 +110,14 @@ define([],function(){
 			},
 			
 			/*simple binding for our persistent footer*/
-			"footerCtrl" : function($scope,$rootScope, $sce){
-				var title="SunGard &copy; " + (new Date()).getFullYear();
-				$scope.title = $sce.trustAsHtml(title);
-				$scope.version = "0.1";
+			"footerCtrl" : function($scope,$rootScope, $sce, workflowService){
+				workflowService.getVersionAndCopyrightInfo().then(function(data) {
+					$scope.title = $sce.trustAsHtml(data.copyrightInfo);
+					$scope.version = data.version;
+				}).catch(function() {
+					$scope.title = $sce.trustAsHtml("SunGard &copy; " + (new Date()).getFullYear());
+					$scope.version = 0.1;
+				});
 			}
 	};
 	return baseCtrl;

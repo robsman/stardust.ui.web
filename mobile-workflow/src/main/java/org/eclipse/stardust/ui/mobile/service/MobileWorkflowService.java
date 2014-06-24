@@ -123,6 +123,8 @@ import org.eclipse.stardust.ui.web.processportal.service.rest.InteractionDataUti
 import org.eclipse.stardust.ui.web.processportal.view.manual.ManualActivityUi;
 import org.eclipse.stardust.ui.web.viewscommon.common.constant.ProcessPortalConstants;
 import org.eclipse.stardust.ui.web.viewscommon.common.controller.ExternalWebAppActivityInteractionController;
+import org.eclipse.stardust.ui.web.viewscommon.common.spi.env.impl.IppCopyrightInfo;
+import org.eclipse.stardust.ui.web.viewscommon.common.spi.env.impl.IppVersion;
 import org.eclipse.stardust.ui.web.viewscommon.common.spi.user.impl.IppUser;
 import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
@@ -1972,6 +1974,18 @@ public class MobileWorkflowService implements ServletContextAware {
       }
       
       return resultJson;
+   }
+   
+   /**
+    * @return
+    */
+   public JsonObject getVersionAndCopyrightInfo()
+   {
+      JsonObject job = new JsonObject();
+      job.addProperty("version", new IppVersion().getCompleteString());
+      job.addProperty("copyrightInfo", new IppCopyrightInfo().getMessage());
+
+      return job;
    }
 
    /**
