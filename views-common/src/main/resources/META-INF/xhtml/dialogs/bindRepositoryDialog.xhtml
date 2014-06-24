@@ -39,6 +39,7 @@
 										value="#{bindRepositoryDialogBean.selectedProvider}"
 										style="margin-left:30px;min-width:170px;"
 										valueChangeListener="#{bindRepositoryDialogBean.providerChange}">
+										<pc:automationTag value="auto-COM-BindRepoDlg-Provider" standAlone="false"/>
 										<f:selectItems
 											value="#{bindRepositoryDialogBean.providerItems}" />
 									</ice:selectOneMenu>
@@ -80,6 +81,7 @@
 												<ice:selectBooleanCheckbox id="fullTextSearchSupported"
 													value="#{bindRepositoryDialogBean.repositoryProviderInfo.fullTextSearchSupported}"
 													disabled="true">
+													<pc:automationTag value="auto-COM-BindRepoDlg-BlnFullTextSearch" standAlone="false"/>
 												</ice:selectBooleanCheckbox>
 												<ice:outputLabel for="fullTextSearchSupported"
 													value="#{views_common_msgPropsBean['views.bindRepositoryDialog.provider.capabilities.fullSearch']}"
@@ -87,6 +89,7 @@
 												<ice:selectBooleanCheckbox id="transactionSupported"
 													value="#{bindRepositoryDialogBean.repositoryProviderInfo.transactionSupported}"
 													disabled="true">
+													<pc:automationTag value="auto-COM-BindRepoDlg-BlnTransactionSupport" standAlone="false"/>
 												</ice:selectBooleanCheckbox>
 												<ice:outputLabel for="transactionSupported"
 													value="#{views_common_msgPropsBean['views.bindRepositoryDialog.provider.capabilities.transaction']}"
@@ -94,6 +97,7 @@
 												<ice:selectBooleanCheckbox id="metaDataSearchSupported"
 													value="#{bindRepositoryDialogBean.repositoryProviderInfo.metaDataSearchSupported}"
 													disabled="true">
+													<pc:automationTag value="auto-COM-BindRepoDlg-BlnMetaDataSearch" standAlone="false"/>
 												</ice:selectBooleanCheckbox>
 												<ice:outputLabel for="metaDataSearchSupported"
 													value="#{views_common_msgPropsBean['views.bindRepositoryDialog.provider.capabilities.metaDataSearch']}"
@@ -101,6 +105,7 @@
 												<ice:selectBooleanCheckbox id="metaDataWriteSupported"
 													value="#{bindRepositoryDialogBean.repositoryProviderInfo.metaDataWriteSupported}"
 													disabled="true">
+													<pc:automationTag value="auto-COM-BindRepoDlg-BlnMetaDataWriteSupported" standAlone="false"/>
 												</ice:selectBooleanCheckbox>
 												<ice:outputLabel for="metaDataWriteSupported"
 													value="#{views_common_msgPropsBean['views.bindRepositoryDialog.provider.capabilities.metaDataStorage']}"
@@ -108,6 +113,7 @@
 												<ice:selectBooleanCheckbox id="accessControlPolicySupported"
 													value="#{bindRepositoryDialogBean.repositoryProviderInfo.accessControlPolicySupported}"
 													disabled="true">
+													<pc:automationTag value="auto-COM-BindRepoDlg-BlnACLPolicySupported" standAlone="false"/>
 												</ice:selectBooleanCheckbox>
 												<ice:outputLabel for="accessControlPolicySupported"
 													value="#{views_common_msgPropsBean['views.bindRepositoryDialog.provider.capabilities.aclPolicy']}"
@@ -115,6 +121,7 @@
 												<ice:selectBooleanCheckbox id="versioningSupported"
 													value="#{bindRepositoryDialogBean.repositoryProviderInfo.versioningSupported}"
 													disabled="true">
+													<pc:automationTag value="auto-COM-BindRepoDlg-BlnVersionSupported" standAlone="false"/>
 												</ice:selectBooleanCheckbox>
 												<ice:outputLabel for="versioningSupported"
 													value="#{views_common_msgPropsBean['views.bindRepositoryDialog.provider.capabilities.versioning']}"
@@ -122,6 +129,7 @@
 												<ice:selectBooleanCheckbox id="writeSupported"
 													value="#{bindRepositoryDialogBean.repositoryProviderInfo.writeSupported}"
 													disabled="true">
+													<pc:automationTag value="auto-COM-BindRepoDlg-BlnWriteSupported" standAlone="false"/>
 												</ice:selectBooleanCheckbox>
 												<ice:outputLabel for="writeSupported"
 													value="#{views_common_msgPropsBean['views.bindRepositoryDialog.provider.capabilities.writable']}"
@@ -149,6 +157,7 @@
 										<ice:inputText id="repositoryID" partialSubmit="true"
 											value="#{bindRepositoryDialogBean.repositoryId}"
 											required="true" size="30">
+											<pc:automationTag value="auto-COM-BindRepoDlg-RepositoryId" standAlone="false"/>
 											<f:validateLength minimum="1" />
 										</ice:inputText>
 										<ice:message for="repositoryID" styleClass="iceMsgImage"
@@ -172,6 +181,7 @@
 												value="#{bindRepositoryDialogBean.attributesMap[entry]}"
 												valueChangeListener="#{bindRepositoryDialogBean.attributeChanged}"
 												partialSubmit="true" size="30" required="true">
+											<pc:automationTag value="auto-COM-BindRepoDlg-key#{entry}" standAlone="false"/>
 											<f:attribute name="key" value="#{entry}" />	
 											</ice:inputText>
 											<ice:message for="key#{entry}" styleClass="iceMsgImage"
@@ -217,6 +227,7 @@
 										<ice:selectBooleanCheckbox id="fullTextSearchSupported"
 											value="#{bindRepositoryDialogBean.repositoryInstanceInfo.fullTextSearchSupported}"
 											disabled="true">
+											<pc:automationTag value="auto-COM-BindRepoDlg-BlnFullTextSearch" standAlone="false"/>
 										</ice:selectBooleanCheckbox>
 										<ice:outputLabel for="fullTextSearchSupported"
 											value="#{views_common_msgPropsBean['views.bindRepositoryDialog.provider.capabilities.fullSearch']}"
@@ -224,6 +235,7 @@
 										<ice:selectBooleanCheckbox id="transactionSupported"
 											value="#{bindRepositoryDialogBean.repositoryInstanceInfo.transactionSupported}"
 											disabled="true">
+											<pc:automationTag value="auto-COM-BindRepoDlg-BlnTransactionSupport" standAlone="false"/>
 										</ice:selectBooleanCheckbox>
 										<ice:outputLabel for="transactionSupported"
 											value="#{views_common_msgPropsBean['views.bindRepositoryDialog.provider.capabilities.transaction']}"
@@ -231,6 +243,7 @@
 										<ice:selectBooleanCheckbox id="metaDataSearchSupported"
 											value="#{bindRepositoryDialogBean.repositoryInstanceInfo.metaDataSearchSupported}"
 											disabled="true">
+											<pc:automationTag value="auto-COM-BindRepoDlg-BlnMetaDataSearch" standAlone="false"/>
 										</ice:selectBooleanCheckbox>
 										<ice:outputLabel for="metaDataSearchSupported"
 											value="#{views_common_msgPropsBean['views.bindRepositoryDialog.provider.capabilities.metaDataSearch']}"
@@ -238,6 +251,7 @@
 										<ice:selectBooleanCheckbox id="metaDataWriteSupported"
 											value="#{bindRepositoryDialogBean.repositoryInstanceInfo.metaDataWriteSupported}"
 											disabled="true">
+											<pc:automationTag value="auto-COM-BindRepoDlg-BlnMetaDataWriteSupported" standAlone="false"/>
 										</ice:selectBooleanCheckbox>
 										<ice:outputLabel for="metaDataWriteSupported"
 											value="#{views_common_msgPropsBean['views.bindRepositoryDialog.provider.capabilities.metaDataStorage']}"
@@ -245,6 +259,7 @@
 										<ice:selectBooleanCheckbox id="accessControlPolicySupported"
 											value="#{bindRepositoryDialogBean.repositoryInstanceInfo.accessControlPolicySupported}"
 											disabled="true">
+											<pc:automationTag value="auto-COM-BindRepoDlg-BlnACLPolicySupported" standAlone="false"/>
 										</ice:selectBooleanCheckbox>
 										<ice:outputLabel for="accessControlPolicySupported"
 											value="#{views_common_msgPropsBean['views.bindRepositoryDialog.provider.capabilities.aclPolicy']}"
@@ -252,6 +267,7 @@
 										<ice:selectBooleanCheckbox id="versioningSupported"
 											value="#{bindRepositoryDialogBean.repositoryInstanceInfo.versioningSupported}"
 											disabled="true">
+											<pc:automationTag value="auto-COM-BindRepoDlg-BlnVersionSupported" standAlone="false"/>
 										</ice:selectBooleanCheckbox>
 										<ice:outputLabel for="versioningSupported"
 											value="#{views_common_msgPropsBean['views.bindRepositoryDialog.provider.capabilities.versioning']}"
@@ -259,6 +275,7 @@
 										<ice:selectBooleanCheckbox id="writeSupported"
 											value="#{bindRepositoryDialogBean.repositoryInstanceInfo.writeSupported}"
 											disabled="true">
+											<pc:automationTag value="auto-COM-BindRepoDlg-BlnWriteSupported" standAlone="false"/>
 										</ice:selectBooleanCheckbox>
 										<ice:outputLabel for="writeSupported"
 											value="#{views_common_msgPropsBean['views.bindRepositoryDialog.provider.capabilities.writable']}"
@@ -270,6 +287,7 @@
 					</f:facet>
 					<f:facet name="south">
 						<ice:panelGroup>
+							<pc:automationTag value="auto-COM-BindRepoDlg-OkCancelBtnsBar" />
 							<ice:commandButton
 								value="#{views_common_msgPropsBean['common.ok']}"
 								action="#{bindRepositoryDialogBean.createRepository}"
