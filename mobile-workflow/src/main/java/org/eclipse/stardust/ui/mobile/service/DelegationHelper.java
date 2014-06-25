@@ -53,49 +53,6 @@ public class DelegationHelper
       JsonObject resultJson = new JsonObject();
       if (activityInstances.size() == 1)
       {
-
-         // TODO - use faces independent model cache once moved to portal-common.
-         // DeployedModel model = ModelCache.findModelCache().getModel(
-         // activityInstances.get(0).getModelOID());
-
-         // List<Participant> participants = serviceFactory.getQueryService()
-         // .getAllParticipants(activityInstances.get(0).getModelOID());
-         // System.out.println("@@@@@@@@@@@@@@@@@@@@@ getDefaultPerformerID " +
-         // activityInstances.get(0).getActivity().getDefaultPerformer().getId());
-         // // DeployedModel model = serviceFactory.getQueryService().getModel(
-         // // activityInstances.get(0).getModelOID(), false);
-         // // List<Participant> participants = model.getAllParticipants();
-         // String regex = "";
-         // if ( !StringUtils.isEmpty(delegateeName))
-         // {
-         // regex = RegExUtils.escape(delegateeName.toLowerCase())
-         // .replaceAll("\\*", ".*") + ".*";
-         // }
-         // Set<String> roles = new HashSet<String>();
-         // for (Participant participant : participants)
-         // {
-         //
-         // if (participant instanceof Role)
-         // {
-         // System.out.println("@@@@@@@@@@@ role: " + participant.getName());
-         // roles.add(participant.getId());
-         // }
-         // else
-         // {
-         // System.out.println("@@@@@@@@@@@ Not role: " + participant.getName());
-         // }
-         //
-         // if (StringUtils.isEmpty(regex)
-         // || participant.getName().toLowerCase().matches(regex))
-         // {
-         // JsonObject participantJSON = new JsonObject();
-         // participantJSON.addProperty("name", participant.getName());
-         // participantJSON.addProperty("id", participant.getId());
-         // // participantJSON.addProperty("id", participant inst);
-         // userInstancesJson.add(participantJSON);
-         // }
-         // }
-
          JsonArray userInstancesJson = new JsonArray();
 
          ModelParticipant modelParticipant = activityInstances.get(0)
@@ -155,19 +112,18 @@ public class DelegationHelper
          // FilterAndTerm userAndFilter = userQuery.getFilter();
          if ( !StringUtils.isEmpty(delegateName))
          {
+            String filterString = delegateName.replaceAll("\\*", "%") + "%";
             FilterOrTerm or = userQuery.getFilter().addOrTerm();
-            or.add(UserQuery.LAST_NAME.like(delegateName));
-            or.add(UserQuery.LAST_NAME.like(alternateFirstLetter(delegateName)));
-            or.add(UserQuery.FIRST_NAME.like(delegateName));
-            or.add(UserQuery.FIRST_NAME.like(alternateFirstLetter(delegateName)));
-            or.add(UserQuery.ACCOUNT.like(delegateName));
-            or.add(UserQuery.ACCOUNT.like(alternateFirstLetter(delegateName)));
+            or.add(UserQuery.LAST_NAME.like(filterString));
+            or.add(UserQuery.LAST_NAME.like(alternateFirstLetter(filterString)));
+            or.add(UserQuery.FIRST_NAME.like(filterString));
+            or.add(UserQuery.FIRST_NAME.like(alternateFirstLetter(filterString)));
+            or.add(UserQuery.ACCOUNT.like(filterString));
+            or.add(UserQuery.ACCOUNT.like(alternateFirstLetter(filterString)));
          }
          Users matchingUsers = queryService.getAllUsers(userQuery);
          for (User participant : matchingUsers)
          {
-            System.out.println("@@@@@@@@@@@@ participant " + participant.getName()
-                  + " grants " + participant.getAllGrants() + " in roles ? " + roles);
             if (org.eclipse.stardust.ui.web.common.util.UserUtils.isAuthorized(
                   new IppUser(participant), roles, new HashSet<String>()))
             {
@@ -278,7 +234,7 @@ public class DelegationHelper
    {
       if (StringUtils.isNotEmpty(searchString))
       {
-         if (searchString.equals(name) || alternateFirstLetter(searchString).equals(name))
+         if (name.startsWith(searchString) || name.startsWith(alternateFirstLetter(searchString)))
          {
             return true;
          }

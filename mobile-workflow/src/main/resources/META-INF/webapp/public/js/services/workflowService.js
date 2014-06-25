@@ -303,7 +303,7 @@ define(["angularjs"],function(angular){
 			
 			"getParticipantMatches" : function(activityOID, val){
 				var deferred = $q.defer(),
-				    nameString;
+				    nameString = "";
 				
 				if (val) {
 					nameString = "?name=" + val;
