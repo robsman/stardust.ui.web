@@ -1477,12 +1477,16 @@ define(
 					for (var n in report.dataSet.computedColumns) {
 					    var column = report.dataSet.computedColumns[n];
 
+					    var type = this.metadata[column.type]
+					    
 					    dimensions.push({
 					        id: column.id,
 					        name: column.name,
-					        type: this.metadata[column.type],
+					        type: type,
 					        metadata: {
-					            isComputedType: true
+					            isComputedType: true,
+					            name : column.name,
+					            type : type.id
 					        },
 					        group: this.getI18N("reporting.definitionView.computedColumns"),
 					        order: 3,
