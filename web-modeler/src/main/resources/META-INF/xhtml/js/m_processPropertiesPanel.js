@@ -58,6 +58,8 @@ define(
 					for ( var n in this.propertiesPages) {
 						this.propertiesPages[n].setElement();
 					}
+
+					this.setElementForAngular();
 				};
 
 				/**

@@ -176,6 +176,18 @@ define(
 					this.initializeViewSizeEventHandling();
 					// Set initial view size
 					this.setViewDivSize();
+
+					this.setElementForAngular();
+				};
+
+				/*
+				 * 
+				 */
+				ModelElementView.prototype.setElementForAngular = function() {
+					var self = this;
+					m_angularContextUtils.runInActiveViewContext(function($scope){
+						$scope.elemView = self;
+					});
 				};
 
 				/**

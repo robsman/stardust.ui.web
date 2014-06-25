@@ -102,6 +102,20 @@ define(
 
 					this.initializePropertiesPages();
 					this.hide();
+
+					this.setElementForAngular();
+				};
+
+				/*
+				 * 
+				 */
+				PropertiesPanel.prototype.setElementForAngular = function() {
+					if (this.angularized) {
+						var self = this;
+						m_angularContextUtils.runInActiveViewContext(function($scope){
+							$scope.propPanel = self;
+						});
+					}
 				};
 
 				/**
