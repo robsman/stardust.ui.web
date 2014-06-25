@@ -1084,10 +1084,11 @@ define(
         	   this.getReportData(this.report, this.parameters).done(
      		function(data) {
      			// Format data before displaying the Results
-             	  scopeController.rows = self.formatPreviewData(data.rows);
+     		   scopeController.rows = self.formatPreviewData(data.rows);
      			scopeController.updateView();
      		}).fail(function(err) {
      			console.log("Failed getting Preview Date: " + err);
+     			scopeController.rows = [];
      		});   
          };
 		
