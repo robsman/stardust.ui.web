@@ -1478,12 +1478,12 @@ define([],function(){
 				$scope.delegateActivity = function(val){
 					workflowService.delegateActivity($scope.activityModel.item.oid, val)
 						.then(function(data){
-							alert("activity delegated")
+							utilService.navigateTo($rootScope,"#worklistListViewPage");
 						})
 						.catch(function(){
 							$scope.$apply(function(){
 								$scope.errorModel.hasError=true;
-								$scope.errorModel.errorMessage = $rootScope.appData.errorText.recordretrieval;
+								$scope.errorModel.errorMessage = $rootScope.appData.errorText.delegation;
 								$timeout(function(){
 									$scope.errorModel.hasError=false;
 								},$rootScope.appData.barDuration);

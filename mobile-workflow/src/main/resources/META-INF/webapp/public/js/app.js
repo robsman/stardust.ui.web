@@ -80,7 +80,8 @@ define(function(require){
 					"refresh"         : il18nService.getProperty("mobile.error.document.refresh"),
 					"folder"          : il18nService.getProperty("mobile.error.folder"),
 					"priority"        : il18nService.getProperty("mobile.error.process.priority"),
-					"genericSave"     : il18nService.getProperty("mobile.error.general.save")
+					"genericSave"     : il18nService.getProperty("mobile.error.general.save"),
+					"delegation" 	  : il18nService.getProperty("mobile.error.delegation"),
 				}
 		};
 		
