@@ -34,7 +34,7 @@ td#toolbar div.toolDiv {
 
 div.toolDiv:hover {
 	background:
-		url(../images/icons/toolbarIconSelectHover.png) center
+		url(../../images/icons/toolbarIconSelectHover.png) center
 		repeat-x #ffd700;
 }
 
