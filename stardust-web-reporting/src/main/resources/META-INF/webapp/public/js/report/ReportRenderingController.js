@@ -93,8 +93,20 @@ define(
 				/**
 				 * 
 				 */
+				ReportRenderingController.prototype.getDimension = function(id) {
+					var dimensions = this.reportingService.getCumulatedDimensions(this.report);
+					for(var i = 0; i < dimensions.length; i++){
+						if(id == dimensions[i].id){
+							return dimensions[i]
+						}
+					}
+				};
+				
+				/**
+				 * 
+				 */
 				ReportRenderingController.prototype.getFirstDimension = function() {
-					return this.getPrimaryObject().dimensions[this.report.dataSet.firstDimension];
+					return this.getDimension([this.report.dataSet.firstDimension]);
 				};
 
 				/**
