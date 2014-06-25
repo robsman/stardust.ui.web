@@ -193,7 +193,7 @@ define([],function(){
 						},$rootScope.appData.barDuration);
 					})
 					.finally(function(){
-						$scope.isAjaxLoading=false;
+						$scope.isAjaxLoading=false;	
 						$scope.$apply();
 					});
 					
@@ -241,7 +241,6 @@ define([],function(){
 						$scope.errorModel.errorMessage = $rootScope.appData.errorText.pageload;
 					})
 					.finally(function(){
-						$scope.$apply();
 						$scope.isAjaxLoading=false;
 						edata.ui.bCDeferred.resolve();
 					});

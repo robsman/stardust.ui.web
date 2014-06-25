@@ -10,7 +10,7 @@
      <h4>{{uiText.searchAct}}</h4>
      <div style="position:absolute;top:11px;right:1em;">
 	     <a ng-show="showResults"  class="ipp-icon-minimal" href="#activityFilterPopup" data-rel="popup" data-transition="slide">
-	     	<i class="sc ipp-fs-2x sc-arrow-stem-ud"></i>
+	     	<i style="color:#FFF;" class="sc ipp-fs-2x sc-arrow-stem-ud"></i>
 	     </a>
      </div>
      
@@ -233,7 +233,7 @@
 			   ng-click="getResults(filter.sortBy,-1)" 
 			   class="sc sc-chevron-l ipp-margin-h-1x"></i>
 			<span>
-				{{activitySearchModel.paginationResponse.rowFrom}}
+				{{activitySearchModel.paginationResponse.rowFrom + 1}}
 				-
 				{{activitySearchModel.paginationResponse.rowFrom + activitySearchModel.paginationResponse.resultSetSize}}
 				&nbsp;of

@@ -27,6 +27,7 @@ define([],function(){
 		            progressHandler = scope.$eval(attr.onProgress);
 		        	
 		            btnMock.on("click",function(){
+		            	console.log("Mock button clicked, now trigger inpt");
 		            	inpt.click();
 		            });
 		            

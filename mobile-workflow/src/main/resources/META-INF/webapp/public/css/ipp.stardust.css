@@ -663,6 +663,26 @@ a.ui-btn:active .ipp-li-insert{
 	right: 3.2em;
 }
 
+.ipp-li-count-inverse{
+	background-color:#FFF !important;
+	border-radius: 1.35em !important;
+	color:#708090 !important;
+	border:none !important;
+	position: absolute;
+	font-size: 12.5px;
+	font-weight: 700;
+	text-align: center;
+	border-width: 1px;
+	border-style: solid;
+	padding: 0 .48em;
+	line-height: 1.6em;
+	min-height: 1.6em;
+	min-width: .64em;
+	top: 50%;
+	margin-top: -.88em;
+	-webkit-border-radius: .3125em;
+	right: 3.2em;
+}
 
 .ipp-li-count-secondary{
 	background-color:#0066cc !important;
@@ -767,6 +787,7 @@ a.ui-btn:active .ipp-li-insert{
 .ipp-header{
 	background-color:#7F4196 !important;
 	border-top:none !important;
+	border-radius:3px;
 	border-bottom:solid 1px #5d1f74 !important;
 	color:#fff !important;
 }
@@ -914,6 +935,21 @@ a.ui-btn:active .ipp-li-insert{
 	border: solid 1px #ddd;
 }
 
-.ipp-bgcolor-secondary span{
+.ipp-bgcolor-secondary span,
+.ipp-bgcolor-secondary.sc-arrow-stem-ud
+{
 	color:#FFFFFF;
+}
+
+/*adjustment to the position of our header back chevron*/
+.ipp-header .sc-chevron-l {
+	position: relative;
+	top: -2px;
+}
+
+i.sc-chevron-l,
+i.sc-chevron-r,
+i.sc-chevron-u,
+i.sc-chevron-d{
+	cursor:pointer;
 }

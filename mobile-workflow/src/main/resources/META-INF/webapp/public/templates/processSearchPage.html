@@ -10,7 +10,7 @@
      <h4>{{uiText.searchProcs}}</h4>
      <div style="position:absolute;top:11px;right:1em;">
 	     <a ng-show="showResults"  class="ipp-icon-minimal" href="#processFilterPopup" data-rel="popup" data-transition="slide">
-	     	<i class="sc sc-arrow-stem-ud"></i>
+	     	<i style="color:#FFF;" class="sc sc-arrow-stem-ud"></i>
 	     </a>
      </div>
      <div data-role="popup" id="processFilterPopup" data-theme="b">
@@ -200,7 +200,7 @@
 			   ng-click="getResults(filter.sortBy,-1)" 
 			   class="sc sc-chevron-l ipp-margin-h-1x"></i>
 			<span>
-				{{processSearchModel.paginationResponse.rowFrom}}
+				{{processSearchModel.paginationResponse.rowFrom + 1}}
 				-
 				{{processSearchModel.paginationResponse.rowFrom + processSearchModel.paginationResponse.resultSetSize}}
 				&nbsp;of

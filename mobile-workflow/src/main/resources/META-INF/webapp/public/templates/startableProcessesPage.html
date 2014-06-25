@@ -1,9 +1,12 @@
 <div class="ipp-header" data-role="header">
 	 <a href="#" data-rel="back" class="ipp-icon-minimal">
-	 	<i style="float:left;" class="sc sc-2x sc-chevron-l"></i>
+	 	<i style="float:left;color:#FFF;" class="sc sc-2x sc-chevron-l"></i>
 	 </a>
-     <h4>{{uiText.startWork}}</h4>
-     <span class="ipp-li-count">{{startableProcessModel.processes.length}}</span>	
+     <h4>
+     	{{uiText.startWork}}
+     	<span class="ipp-li-count-inverse ipp-li-count-relative">{{startableProcessModel.processes.length}}</span>
+     </h4>
+     	
 </div>
 
 <div  ng-show="errorModel.hasError==true" 
