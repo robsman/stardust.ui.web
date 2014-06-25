@@ -100,7 +100,11 @@ define(
 				 * 
 				 */
 				ReportFilterController.prototype.deleteFilter = function(filter) {
-					this.filters.splice(this.getIndex(filter.dimension), 1);
+					if(!filter.dimension){
+						this.filters.splice(this.filters.length-1, 1);
+					}else{
+						this.filters.splice(this.getIndex(filter.dimension), 1);	
+					}
 				};
 
 				/**
