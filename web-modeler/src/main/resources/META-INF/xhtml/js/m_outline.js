@@ -2787,7 +2787,7 @@ define(
 
 					setupEventHandling();
 
-					m_modelerUtils.fixDivTop(jQuery(".outlineFixedTop"));
+					m_modelerUtils.fixDivTop(jQuery(".outlineFixedDiv"), jQuery('.outlineScrollableDiv'));
 
 					outline = new Outline();
 

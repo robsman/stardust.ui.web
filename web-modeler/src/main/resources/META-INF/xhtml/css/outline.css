@@ -48,6 +48,9 @@ td#toolbar div.toolSeparator {
 	margin-top: 4px;
 }
 
-.outlineFixedTop {
+/* Need to provide opacity to the toolba when it is fixed positioned
+   and the tree is scrolling.
+   Should inherit color from outline div background if it has one. */
+.outlineFixedDiv {
 	background-color: #FFFFFF;
 }

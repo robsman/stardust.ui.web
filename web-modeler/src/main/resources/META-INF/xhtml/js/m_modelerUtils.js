@@ -188,13 +188,15 @@ define(
 				}
 			};
 
-			function fixDivTop(jDiv) {
+			function fixDivTop(fixedDiv, scrollableDiv) {
 				$(window).scroll(function() {
-				    if ($(window).scrollTop() > jDiv[0].scrollTop) {
-				    	jDiv.css({'position': 'fixed', 'top': '0', 'width': '100%'});
+				    if ($(window).scrollTop() > fixedDiv[0].scrollTop) {
+				    	scrollableDiv.css("padding-top", fixedDiv.height());
+				    	fixedDiv.css({'position': 'fixed', 'top': '0', 'width': '100%'});
 				    }
 				    else {
-				    	jDiv.css({'position': 'static', 'top': 'auto', 'width': '100%'});
+				    	scrollableDiv.css("padding-top","0px");
+				    	fixedDiv.css({'position': 'static', 'top': 'auto', 'width': '100%'});
 				    }
 				});
 			}
