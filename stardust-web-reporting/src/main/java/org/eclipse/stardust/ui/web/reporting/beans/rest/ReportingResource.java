@@ -33,6 +33,7 @@ import org.eclipse.stardust.ui.web.reporting.common.LanguageUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 /**
  *
@@ -480,5 +481,37 @@ public class ReportingResource
          trace.debug(e);
       }
       return Response.serverError().build();
+   }
+   
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("dateFormats")
+   @GET
+   public Response dateFormats(@Context HttpServletRequest request)
+   {
+      ResourceBundle rb = ResourceBundle.getBundle("portal-common-messages", request.getLocale());
+      JsonObject dates = new JsonObject();
+      dates.add("dateFormat", new JsonPrimitive(getStringFromResourceBundle(rb, "portalFramework.formats.defaultDateFormat")));
+      dates.add("dateTimeFormat", new JsonPrimitive(getStringFromResourceBundle(rb, "portalFramework.formats.defaultDateTimeFormat")));
+      dates.add("timeFormat", new JsonPrimitive(getStringFromResourceBundle(rb, "portalFramework.formats.defaultTimeFormat")));
+
+      return Response.ok(dates.toString(), MediaType.APPLICATION_JSON_TYPE).build();
+   }
+   
+   /**
+    * @param bundle
+    * @param data
+    * 
+    * TODO - this can move to some utility class
+    */
+   private String getStringFromResourceBundle(ResourceBundle bundle, String key)
+   {
+      try
+      {
+         return bundle.getString((String) key);
+      }
+      catch (Exception x)
+      {
+         return "%" + key + "%";
+      }
    }
 }

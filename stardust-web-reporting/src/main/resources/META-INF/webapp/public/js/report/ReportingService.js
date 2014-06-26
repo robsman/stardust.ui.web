@@ -1936,6 +1936,36 @@ define(
 					return inData;
             };
             
+            /**
+             * 
+             */
+            ReportingService.prototype.getDateFormats = function() {
+               var deferred = jQuery.Deferred();
+               var self = this;
+
+               jQuery
+                     .ajax(
+                           {
+                              type : "GET",
+                              beforeSend : function(request) {
+                                 request
+                                       .setRequestHeader(
+                                             "Authentication",
+                                             self
+                                                   .getBasicAuthenticationHeader());
+                              },
+                              url : self.getRootUrl()
+                                    + "/services/rest/bpm-reporting/dateFormats",
+                              contentType : "application/json"
+                           }).done(function(data) {
+                              deferred.resolve(data);
+                     }).fail(function() {
+                        deferred.reject(data);
+                     });
+               return deferred.promise();
+            };
+            
+            
 			}
 			
 			/**
