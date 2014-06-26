@@ -150,6 +150,7 @@ public class ProcessResourceMgmtBean extends UIComponentBean implements Resource
     */
    public void update()
    {
+      WorkflowFacade.getWorkflowFacade().initVars();
       initialize();
    }
 

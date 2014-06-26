@@ -121,7 +121,7 @@ public class WorkflowFacade implements Resetable
       initVars();
    }
 
-   private void initVars()
+   public void initVars()
    {
       roleItems = new HashMap/* <ParticipantDepartmentPair, RoleItem> */();
       userItems = new HashMap/* <Long, UserItem> */();
