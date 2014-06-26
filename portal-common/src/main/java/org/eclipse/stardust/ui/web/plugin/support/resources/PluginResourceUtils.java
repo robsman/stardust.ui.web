@@ -169,16 +169,6 @@ public class PluginResourceUtils
          fileNames.add(resource.getFilename());
       }
 
-      //TODO: review it along with CRNT-33433
-      resources = resolver.getResources("classpath*:/" + PATH_META_INF + "webapp/css/*-icons.css");
-      if (resources != null)
-      {
-         for (Resource resource : resources)
-         {
-            fileNames.add(resource.getFilename());
-         }
-      }
-      
       return fileNames;
    }
 

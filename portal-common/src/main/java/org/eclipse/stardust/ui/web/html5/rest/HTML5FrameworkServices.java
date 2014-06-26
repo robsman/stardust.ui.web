@@ -233,7 +233,7 @@ public class HTML5FrameworkServices
    public String addPluginViewIconStyleSheets(String contents)
    {
       final String STYLE_FILE_POSTFIX = "-icons.css";
-      final String STYLES_FILE_PATH = "xhtml/css/*-icons.css";
+      final String STYLES_FILE_PATH = "*/css/*-icons.css";
       StringBuffer pluginIconsStyles = new StringBuffer("");
 
       try
