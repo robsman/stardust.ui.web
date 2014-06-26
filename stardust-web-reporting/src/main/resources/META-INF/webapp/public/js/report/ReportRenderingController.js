@@ -47,7 +47,8 @@ define(
 			        multi_headers : false, //dont change this
 			      };
 			      
-			      var clientDateTimeFormat = "dd-mm-yy";
+			      var clientDateFormat = "mm/dd/yy";
+			      var serverDateFormat = "yy/mm/dd";
 			      
 			      var self = this;
 			      var deferred = jQuery.Deferred();
@@ -56,8 +57,8 @@ define(
 
                   console.log("Retrieved Date Formats: " + data.dateTimeFormat);
                   
-                  self.clientDateTimeFormat = data.dateTimeFormat; 
-                  self.dateFormat = "mm/dd/yy";
+                  self.clientDateFormat = clientDateFormat;
+                  self.serverDateFormat = serverDateFormat;
                   
                   deferred.resolve();
                }).fail(function() {
@@ -1016,7 +1017,7 @@ define(
 			
 			            for (var j = 0; j < inData[seriesName].length; j++) {
 			                if (!rowHeaderAdded) {
-			                   inData[seriesName][j][0] = this.formatDate(inData[seriesName][j][0], "yy/mm/dd", self.dateFormat);
+			                   inData[seriesName][j][0] = this.formatDate(inData[seriesName][j][0], self.serverDateFormat, self.clientDateFormat);
 			                    baseTable.push(inData[seriesName][j]);
 			                } else {
 			                    baseTable[baseTableIndex + j] = baseTable[baseTableIndex + j].concat(inData[seriesName][j].slice(1));
@@ -1187,7 +1188,23 @@ ReportRenderingController.prototype.formatPreviewData = function(data) {
             var record = data[row];
             if (record[selColumn])
             {
-               record[selColumn] = record[selColumn].substring(0, 16);
+               var dateStr = record[selColumn]
+               var datePart = "";
+               var timePart = "";
+         
+               var dateParts  = dateStr.split(" ");
+               if (dateParts.length == 1) {
+                  datePart = dateParts;
+               } else if (dateParts.length >= 2) {
+                  var timeParts = dateParts[1].split(":"); // Get 2 Parts, and stripoff seconds part
+                  datePart = dateParts[0];
+                  timePart = timeParts[0] + ":" + timeParts[1];
+               }
+               
+               record[selColumn] = this.formatDate(datePart, self.serverDateFormat, self.clientDateFormat);
+               
+               record[selColumn] = record[selColumn] + " " + timePart;
+               console.log("Final Date:" + record[selColumn]);
             }
          }
       }
