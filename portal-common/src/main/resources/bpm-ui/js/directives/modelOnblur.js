@@ -11,6 +11,7 @@ define(['bpm-ui/js/bpm-ui'], function (bpmUi) {
 	    return {
 	        restrict: 'A',
 	        require: 'ngModel',
+	        priority: 1,
 	        link: function(scope, elm, attr, ngModelCtrl) {
 	            if (attr.type === 'radio' || attr.type === 'checkbox') {
 	            	return;
