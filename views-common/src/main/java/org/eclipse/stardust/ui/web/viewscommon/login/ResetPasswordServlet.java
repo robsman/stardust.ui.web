@@ -95,7 +95,8 @@ public class ResetPasswordServlet extends HttpServlet
       String domain = null;
       if (promptForPartition)
       {
-         partition = Parameters.instance().getString(SecurityProperties.DEFAULT_PARTITION, tenant);
+         partition = StringUtils.isEmpty(tenant) ? Parameters.instance().getString(
+               SecurityProperties.DEFAULT_PARTITION, "") : tenant;
       }
       if (promptForRealm)
       {
