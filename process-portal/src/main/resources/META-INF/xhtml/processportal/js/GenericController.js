@@ -58,6 +58,36 @@ if (!window.bpm.portal.GenericController) {
 				module : "ManualActivityModule", ctrl: "ManualActivityCtrl", dateFormat: this.clientDateFormat});
 			ang.initialize();
 			this.angularCompile = ang.getCompiler();
+
+			this.loadCustomTheme();
+		};
+
+		/*
+		 * 
+		 */
+		GenericController.prototype.loadCustomTheme = function() {
+			var urlPrefix = "../..";
+			if (this.getContextRootUrl) {
+				urlPrefix = this.getContextRootUrl();	
+			}
+			
+			jQuery.ajax({
+				type : 'GET',
+				url : urlPrefix + "/services/rest/common/html5/api/themes/current/custom",
+				async : true
+			}).done(function(json){
+				var head = document.getElementsByTagName('head')[0];
+				
+				for(var i in json.stylesheets) {
+					var link = document.createElement('link');
+					link.href = urlPrefix + "/" + json.stylesheets[i];
+					link.rel = 'stylesheet';
+					link.type = 'text/css';
+					head.appendChild(link);
+				}
+			}).fail(function(err){
+				this.log("Failed in loading custom theme");
+			});
 		};
 
 		/*

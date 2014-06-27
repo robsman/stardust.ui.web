@@ -32,6 +32,13 @@ if (!window.bpm.portal.Interaction) {
 		/*
 		 * 
 		 */
+		Interaction.prototype.isModelerMode = function () {
+			return mode == MODE_MODELER;
+		};
+		
+		/*
+		 * 
+		 */
 		Interaction.prototype.fetchData = function(dataMapping, callbacks, controller) {
 			var endpoint = "/inData";
 			getData(interactionUri, endpoint, {

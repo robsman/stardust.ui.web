@@ -59,13 +59,20 @@ if (!window.bpm.portal.UIMashupController) {
 			jQuery(".nestedMarkups").html("");
 
 			var i18nLabelProvider = i18nProvider != undefined ? i18nProvider : this.i18nProvider();
-			var interactionProvider = new bpm.portal.Interaction();
-			this.initialize(dataMappings, bindings, clientDateFormat, i18nLabelProvider, interactionProvider, this.nestedMarkupProvider());
+			this.interactionProvider = new bpm.portal.Interaction();
+			this.initialize(dataMappings, bindings, clientDateFormat, i18nLabelProvider, this.interactionProvider, this.nestedMarkupProvider());
 
 			this.runInAngularContext(function($scope){
 				jQuery.extend($scope, self);
 				inheritMethods($scope, self);
 			});
+		};
+
+		/*
+		 * 
+		 */
+		UIMashupController.prototype.getContextRootUrl = function() {
+			return this.interactionProvider.isModelerMode() ? "../../../../../../../.." : "../../../../..";
 		};
 
 		/*

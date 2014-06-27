@@ -2734,6 +2734,29 @@ define(
 //						"close_node", "#" + model.uuid);
 			};
 
+			/*
+			 * 
+			 */
+			var loadCustomTheme = function() {
+				jQuery.ajax({
+					type : 'GET',
+					url : m_urlUtils.getContextName() + "/services/rest/common/html5/api/themes/current/custom",
+					async : true
+				}).done(function(json){
+					var head = document.getElementsByTagName('head')[0];
+					
+					for(var i in json.stylesheets) {
+						var link = document.createElement('link');
+						link.href = m_urlUtils.getContextName() + "/" + json.stylesheets[i];
+						link.rel = 'stylesheet';
+						link.type = 'text/css';
+						head.appendChild(link);
+					}
+				}).fail(function(err){
+					m_utils.debug("Failed in loading custom theme");
+				});
+			};
+
 			var i18nStaticLabels = function() {
 				m_utils.jQuerySelect("#createModel")
 						.attr(
@@ -2775,6 +2798,8 @@ define(
 					m_utils.initializeWaitCursor(m_utils.jQuerySelect("html"));
 					m_utils.showWaitCursor();
 
+					loadCustomTheme();
+					
 					if (newDisplayScope) {
 						displayScope = "#" + newDisplayScope + " ";
 					}

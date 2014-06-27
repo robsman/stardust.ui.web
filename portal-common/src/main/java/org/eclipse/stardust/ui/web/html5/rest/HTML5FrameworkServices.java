@@ -226,6 +226,30 @@ public class HTML5FrameworkServices
       return Response.ok(contents, MediaType.APPLICATION_JSON_TYPE).build();
    }
 
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("themes/current/custom")
+   public Response themesCustom(@QueryParam("context") String context, @QueryParam("appStage") String appStage)
+   {
+      String stylesJson = "{\"stylesheets\": [";
+      ThemeProvider themeProvider = RestControllerUtils.resolveSpringBean(ThemeProvider.class, servletContext);
+      List<String> styleSheets = themeProvider.getStyleSheets();
+      if (CollectionUtils.isNotEmpty(styleSheets))
+      {
+         StringBuffer sb = new StringBuffer();
+         Iterator<String> it = styleSheets.iterator();
+         while(it.hasNext())
+         {
+            String css = it.next();
+            sb.append(",\"").append(css.substring(1)).append("\"");
+         }
+         sb.deleteCharAt(0);
+         stylesJson += sb.toString();
+      }
+      stylesJson += "]}";
+      return Response.ok(stylesJson, MediaType.APPLICATION_JSON_TYPE).build();
+   }
+
    /**
     * @param contents
     * @return
