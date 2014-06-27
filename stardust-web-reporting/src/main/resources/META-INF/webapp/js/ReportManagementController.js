@@ -263,9 +263,34 @@ define(
 
 							});
 					this.loadReportDefinitionsFolderStructure();
+					this.loadCustomTheme();
+				};
+
+				/**
+				 * 
+				 */
+				ReportManagementController.prototype.loadCustomTheme = function() {
+				    var self = this;
+				
+				    jQuery.ajax({
+				        type: 'GET',
+				        url: self.reportingService.getRootUrl() + "/services/rest/common/html5/api/themes/current/custom",
+				        async: true
+				    }).done(function(json) {
+				        var head = document.getElementsByTagName('head')[0];
+				
+				        for (var i in json.stylesheets) {
+				            var link = document.createElement('link');
+				            link.href = self.reportingService.getRootUrl() + "/" + json.stylesheets[i];
+				            link.rel = 'stylesheet';
+				            link.type = 'text/css';
+				            head.appendChild(link);
+				        }
+				    }).fail(function(err) {
+				        m_utils.debug("Failed in loading custom theme");
+				    });
 				};
 				
-
 				/**
 				 * 
 				 */
