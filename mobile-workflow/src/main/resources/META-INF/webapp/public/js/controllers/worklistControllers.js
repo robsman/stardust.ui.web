@@ -1435,12 +1435,18 @@ define([],function(){
 							/*Navigation to this controllers page from the startableProcessPage is the only case
 							 *where we should load the mashup URL outside of an activate button click event.*/
 							if(prevPage==="startableProcessesPage"){
-								if(data.activatable){
-									url=data.contexts.externalWebApp["mashupUri"] +
-									    "?ippInteractionUri=" + data.contexts.externalWebApp.ippInteractionUri +
-									    "&ippPortalBaseUri=" + data.contexts.externalWebApp.ippPortalBaseURi +
-									    "&ippServicesBaseUri=" + data.contexts.externalWebApp.ippServicesBaseUri +
-									    "&interactionId=" + data.contexts.externalWebApp.interactionId;
+								if(data.activatable) {
+									if (data.contexts.externalWebApp) {
+										url=data.contexts.externalWebApp["mashupUri"] +
+												"?ippInteractionUri=" + data.contexts.externalWebApp.ippInteractionUri +
+												"&ippPortalBaseUri=" + data.contexts.externalWebApp.ippPortalBaseURi +
+												"&ippServicesBaseUri=" + data.contexts.externalWebApp.ippServicesBaseUri +
+												"&interactionId=" + data.contexts.externalWebApp.interactionId;
+									} else if (data.contexts["default"]) {
+										url=data.contexts["default"]["ippPortalBaseURi"] +
+										"?interactionId=" + data.contexts["default"]["interactionId"] +
+										"&isMobileClient=true";
+									}
 								}
 								$scope.mashupModel.externalUrl= $sce.trustAsResourceUrl(url);
 								$scope.tabModel.activeSubView="form";
