@@ -57,7 +57,7 @@ public class ResetPasswordServlet extends HttpServlet
          user = TECH_USER_ACCOUNT;
          password = TECH_USER_PASSWORD;
       }
-      serviceFactory = ServiceFactoryLocator.get(user, password);
+      
    }
 
    @Override
@@ -70,8 +70,10 @@ public class ResetPasswordServlet extends HttpServlet
          String oid = req.getParameter("oid");
          String partition = req.getParameter("partition");
          String token = req.getParameter("token");
+         Map<String, String> properties = getLoginProperties(partition);
+         serviceFactory = ServiceFactoryLocator.get(user, password, properties);
          User user = serviceFactory.getUserService().getUser(new Integer(oid));
-         serviceFactory.getUserService().resetPassword(user.getAccount(), getLoginProperties(partition), token);
+         serviceFactory.getUserService().resetPassword(user.getAccount(), properties, token);
          out.println("Password generated and sent to registered Email Id</br>");
       }
       catch (Exception e)
