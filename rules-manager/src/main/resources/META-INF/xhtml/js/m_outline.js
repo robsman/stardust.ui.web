@@ -1147,7 +1147,29 @@ define(
 				readAllRuleSets();
 			};
 
-			
+			/*
+			 * 
+			 */
+			var loadCustomTheme = function () {
+				jQuery.ajax({
+					type : 'GET',
+					url : m_urlUtils.getContextName() + "/services/rest/common/html5/api/themes/current/custom",
+					async : true
+				}).done(function(json){
+					var head = document.getElementsByTagName('head')[0];
+					
+					for(var i in json.stylesheets) {
+						var link = document.createElement('link');
+						link.href = m_urlUtils.getContextName() + "/" + json.stylesheets[i];
+						link.rel = 'stylesheet';
+						link.type = 'text/css';
+						head.appendChild(link);
+					}
+				}).fail(function(err){
+					m_utils.debug("Failed in loading custom theme");
+				});
+			};
+
 			var outline;
 
 			return {
@@ -1252,7 +1274,7 @@ define(
 
 					m_outlineToolbarController.init("rulesOutlineToolbar");
 					
-					
+					loadCustomTheme();
 					
 					return outline;
 				},
