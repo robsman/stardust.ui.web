@@ -514,4 +514,25 @@ public class ReportingResource
          return "%" + key + "%";
       }
    }
+   
+   @GET
+   @Consumes(MediaType.TEXT_PLAIN)
+   @Produces(MediaType.TEXT_PLAIN)
+   @Path("report-definition/upload")
+   public Response uploadReport(@QueryParam("uuid") String uuid)
+   {
+      try
+      {
+         return Response.ok(reportingService.uploadReport(uuid).toString(),
+               MediaType.APPLICATION_JSON).build();
+
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
+
+         return Response.serverError().build();
+      }
+   }
+
 }

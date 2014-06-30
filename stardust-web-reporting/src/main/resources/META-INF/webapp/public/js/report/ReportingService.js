@@ -1965,6 +1965,34 @@ define(
                return deferred.promise();
             };
             
+            /**
+             * 
+             */
+            ReportingService.prototype.uploadReport = function(uuid) {
+               var deferred = jQuery.Deferred();
+               var self = this;
+
+               jQuery
+                     .ajax(
+                           {
+                              type : "GET",
+                              beforeSend : function(request) {
+                                 request
+                                       .setRequestHeader(
+                                             "Authentication",
+                                             self
+                                                   .getBasicAuthenticationHeader());
+                              },
+                              url : self.getRootUrl()
+                                    + "/services/rest/bpm-reporting/report-definition/upload?uuid=" + uuid
+                           }).done(function(data) {
+                              deferred.resolve(data);
+                     }).fail(function() {
+                        deferred.reject(data);
+                     });
+               return deferred.promise();
+            };
+            
             
 			}
 			

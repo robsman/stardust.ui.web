@@ -12,7 +12,10 @@
 package org.eclipse.stardust.ui.web.reporting.beans.spring;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -30,6 +33,16 @@ import java.util.Map.Entry;
 import javax.annotation.Resource;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.io.IOUtils;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.stereotype.Component;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
@@ -69,19 +82,12 @@ import org.eclipse.stardust.ui.web.reporting.scheduling.SchedulingFactory;
 import org.eclipse.stardust.ui.web.reporting.scheduling.SchedulingRecurrence;
 import org.eclipse.stardust.ui.web.reporting.ui.UiHelper;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.FileStorage;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
-import org.springframework.stereotype.Component;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 
 /**
  *
@@ -957,5 +963,44 @@ public class ReportingServiceBean
    {
       SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd-hhmmss");
       return DMSUtils.replaceAllSpecialChars(DATE_FORMAT.format(new Date()));
+   }
+   
+   /**
+    * @param uuid
+    * @return
+    */
+   public JsonObject uploadReport(String uuid)
+   {
+      try
+      {
+         FileStorage fileStorage = (FileStorage) RestControllerUtils.resolveSpringBean(
+               "fileStorage", servletContext);
+
+         if (StringUtils.isNotEmpty(uuid))
+         {
+            String path = fileStorage.pullPath(uuid);
+            if (StringUtils.isNotEmpty(path))
+            {
+               File file = new File(path);
+               InputStream is = new FileInputStream(path);
+               String reportJsonTxt = IOUtils.toString(is);
+               
+               JsonMarshaller jsonIo = new JsonMarshaller();
+               JsonObject reportJson = jsonIo.readJsonObject(reportJsonTxt);
+               reportJson.addProperty("reportUID", new Date().getTime());
+               reportJson.get("storage").getAsJsonObject().addProperty("path", "");
+               
+               trace.info(reportJson);
+               
+               return saveReportDefinition(reportJson);
+            }
+         }
+         return null;
+      }
+      catch (Exception e)
+      {
+         trace.error("Exception while Uploading Report Definition " + e, e);
+      }
+      return null;
    }
 }

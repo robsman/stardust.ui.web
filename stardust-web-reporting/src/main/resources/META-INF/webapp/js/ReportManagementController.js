@@ -22,7 +22,7 @@ define(
 							.mergeControllerWithScope(controller);
 
 					controller.initialize();
-
+					
 					return controller;
 				}
 			};
@@ -189,7 +189,54 @@ define(
                                              }
                                           }
 													};
-												}
+												} else if ('folder' == node.attr('rel')) {
+                                       return {
+                                          ccp : false,
+                                          create : false,
+                                          rename : {
+                                             label : "Upload", // I18N
+                                             icon : self.reportingService.getRootUrl()
+                                                         + "/plugins/views-common/images/icons/rename.png",
+                                             action : function(
+                                                   obj) {
+                                                scope = angular.element(document).scope();
+                                                parent.iPopupDialog.openPopup({
+                                                   attributes : {
+                                                      width : "50%",
+                                                      height : "60%",
+                                                      src : "../views-common/popups/fileUploadPopupDialogContent.html"
+                                                   },
+                                                   payload : {
+                                                      title : "Upload a Document", //i18n
+                                                      message : "Upload a Document", //i18n
+                                                      documentTypeName : "Reference",
+                                                      acceptFunction : function(fileUploadData)
+                                                      {
+                                                         scope.runInAngularContext(function(scope)
+                                                         {
+                                                            //Form Data
+                                                            fileStorageUUID = fileUploadData.fileDetails.uuid;
+
+                                                            self.reportingService.uploadReport(fileStorageUUID)
+                                                            .done(
+                                                                  function() {
+                                                                     self
+                                                                           .loadReportDefinitionsFolderStructure();
+                                                                     document.body.style.cursor = "default";
+                                                                  })
+                                                         });
+
+                                                         /*if(fileUploadData.openDocument){
+                                                            self.openDocumentViewer(currentBindings[lastPart], false);
+                                                         }*/
+                                                      }
+                                                   }
+                                                });
+                                             }
+                                          }
+                                       };
+                                    
+                                    }
 											}
 										},
 										themes : {
