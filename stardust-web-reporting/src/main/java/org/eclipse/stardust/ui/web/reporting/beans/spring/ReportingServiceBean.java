@@ -8,7 +8,6 @@
  * Contributors:
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
-
 package org.eclipse.stardust.ui.web.reporting.beans.spring;
 
 import java.io.BufferedReader;
@@ -73,7 +72,6 @@ import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.html5.rest.RestControllerUtils;
 import org.eclipse.stardust.ui.web.reporting.beans.spring.portal.CriticalityConfigurationService;
 import org.eclipse.stardust.ui.web.reporting.beans.spring.portal.SearchHandlerChain;
-import org.eclipse.stardust.ui.web.reporting.beans.spring.portal.XPathCacheManager;
 import org.eclipse.stardust.ui.web.reporting.common.portal.DescriptorUtils;
 import org.eclipse.stardust.ui.web.reporting.common.portal.DescriptorUtils.DescriptorMetadata;
 import org.eclipse.stardust.ui.web.reporting.common.portal.criticality.CriticalityCategory;
@@ -88,6 +86,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.XPathCacheManager;
 
 /**
  *
@@ -367,34 +366,34 @@ public class ReportingServiceBean
    {
       try
       {
-         JsonObject storageJson = reportJson.get("storage").getAsJsonObject();
-         String name = reportJson.get("name").getAsString();
-         String location = storageJson.get("location").getAsString();
+      JsonObject storageJson = reportJson.get("storage").getAsJsonObject();
+      String name = reportJson.get("name").getAsString();
+      String location = storageJson.get("location").getAsString();
 
-         Folder folder = null;
+      Folder folder = null;
 
-         if (location.equals("publicFolder"))
-         {
-            folder = findOrCreateFolder(PUBLIC_REPORT_DEFINITIONS_DIR);
-         }
-         else if (location.equals("personalFolder"))
-         {
-            folder = findOrCreateFolder(getUserDocumentFolderPath(USER_REPORT_DIR));
-         }
-         else if (location.equals("participantFolder"))
-         {
-            folder = findOrCreateFolder(getParticipantDocumentFolderPath(PARTICIPANT_REPORT_DEFINITIONS_DIR, storageJson.get("participant").getAsString()));
-         }
-
-         // Mark Report Definition as saved
-         reportJson.get("storage").getAsJsonObject().addProperty("state", "saved");
-         
-         String path = saveReportDocument(reportJson, folder, name + REPORT_DEFINITION_EXT);
-         
-         reportJson.get("storage").getAsJsonObject().addProperty("path", path);
-
-         return reportJson;
+      if (location.equals("publicFolder"))
+      {
+         folder = findOrCreateFolder(PUBLIC_REPORT_DEFINITIONS_DIR);
       }
+      else if (location.equals("personalFolder"))
+      {
+         folder = findOrCreateFolder(getUserDocumentFolderPath(USER_REPORT_DIR));
+      }
+      else if (location.equals("participantFolder"))
+      {
+            folder = findOrCreateFolder(getParticipantDocumentFolderPath(PARTICIPANT_REPORT_DEFINITIONS_DIR, storageJson.get("participant").getAsString()));
+      }
+
+      // Mark Report Definition as saved
+      reportJson.get("storage").getAsJsonObject().addProperty("state", "saved");
+
+      String path = saveReportDocument(reportJson, folder, name + REPORT_DEFINITION_EXT);
+
+      reportJson.get("storage").getAsJsonObject().addProperty("path", path);
+
+      return reportJson;
+   }
       finally
       {
       }

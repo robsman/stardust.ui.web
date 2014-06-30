@@ -22,7 +22,7 @@ import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
 import org.eclipse.stardust.engine.core.struct.StructuredDataXPathUtils;
 import org.eclipse.stardust.engine.core.struct.TypedXPath;
 import org.eclipse.stardust.ui.web.reporting.beans.spring.IModelService;
-import org.eclipse.stardust.ui.web.reporting.beans.spring.portal.XPathCacheManager;
+import org.eclipse.stardust.ui.web.viewscommon.utils.XPathCacheManager;
 
 /**
  * @author Yogesh.Manware
