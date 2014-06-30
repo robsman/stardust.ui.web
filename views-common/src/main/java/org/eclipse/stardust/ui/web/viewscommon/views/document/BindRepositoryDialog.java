@@ -161,12 +161,13 @@ public class BindRepositoryDialog extends PopupUIComponentBean
                   MessagesViewsCommonBean.getInstance().getString("views.bindRepositoryDialog.repoId.empty"));
             return;
          }
-         else if (!Pattern.matches("^(?=.*[a-zA-Z]).+$", repositoryId))
+         else if (!Pattern.matches("^(?=.*[a-zA-Z\\d]).+$", repositoryId))
          {
             ExceptionHandler.handleException(getBeanId(),
                   MessagesViewsCommonBean.getInstance().getString("views.bindRepositoryDialog.repoId.invalid"));
             return;
          }
+         repositoryId = repositoryId.trim();
          Map<String, Serializable> attributes = CollectionUtils.newMap();
          attributes.put(IRepositoryConfiguration.PROVIDER_ID, getSelectedProvider());
          attributes.put(IRepositoryConfiguration.REPOSITORY_ID, getRepositoryId());
