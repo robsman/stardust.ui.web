@@ -27,8 +27,6 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -49,7 +47,6 @@ import com.google.gson.JsonObject;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.Direction;
 import org.eclipse.stardust.common.StringUtils;
-import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.engine.api.dto.ActivityInstanceDetails;
 import org.eclipse.stardust.engine.api.dto.ContextKind;
 import org.eclipse.stardust.engine.api.dto.DataDetails;
@@ -60,23 +57,17 @@ import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetailsLevel;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetailsOptions;
 import org.eclipse.stardust.engine.api.model.Activity;
 import org.eclipse.stardust.engine.api.model.ApplicationContext;
-import org.eclipse.stardust.engine.api.model.ConditionalPerformer;
 import org.eclipse.stardust.engine.api.model.DataMapping;
 import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.ImplementationType;
-import org.eclipse.stardust.engine.api.model.ModelParticipant;
-import org.eclipse.stardust.engine.api.model.Organization;
-import org.eclipse.stardust.engine.api.model.Participant;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
-import org.eclipse.stardust.engine.api.model.Role;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.ActivityInstances;
 import org.eclipse.stardust.engine.api.query.DeployedModelQuery;
 import org.eclipse.stardust.engine.api.query.DescriptorPolicy;
 import org.eclipse.stardust.engine.api.query.DocumentQuery;
 import org.eclipse.stardust.engine.api.query.FilterAndTerm;
-import org.eclipse.stardust.engine.api.query.FilterOrTerm;
 import org.eclipse.stardust.engine.api.query.HistoricalEventPolicy;
 import org.eclipse.stardust.engine.api.query.ProcessDefinitionQuery;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceDetailsPolicy;
@@ -84,7 +75,6 @@ import org.eclipse.stardust.engine.api.query.ProcessInstanceFilter;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
 import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.query.UserQuery;
-import org.eclipse.stardust.engine.api.query.Users;
 import org.eclipse.stardust.engine.api.query.WorklistQuery;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
@@ -125,7 +115,6 @@ import org.eclipse.stardust.ui.web.viewscommon.common.constant.ProcessPortalCons
 import org.eclipse.stardust.ui.web.viewscommon.common.controller.ExternalWebAppActivityInteractionController;
 import org.eclipse.stardust.ui.web.viewscommon.common.spi.env.impl.IppCopyrightInfo;
 import org.eclipse.stardust.ui.web.viewscommon.common.spi.env.impl.IppVersion;
-import org.eclipse.stardust.ui.web.viewscommon.common.spi.user.impl.IppUser;
 import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
@@ -957,7 +946,7 @@ public class MobileWorkflowService implements ServletContextAware {
       processInstanceQuery.where(ProcessInstanceQuery.OID.isEqual(activityInstance.getProcessInstanceOID()));
       processInstanceQuery.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
       
-      ProcessInstanceDetails processInstance = (ProcessInstanceDetails) getQueryService()
+      ProcessInstance processInstance = (ProcessInstanceDetails) getQueryService()
             .getAllProcessInstances(processInstanceQuery).get(0);
       
       activityInstanceJson.add("processInstance", processInstanceJson);
@@ -1007,7 +996,8 @@ public class MobileWorkflowService implements ServletContextAware {
 
       processInstanceJson.add("notes", notesJson);
 
-      for (Note note : processInstance.getAttributes().getNotes()) {
+      ProcessInstance scopedProcessInstance = getScopedProcessInstance(processInstance);
+      for (Note note : scopedProcessInstance.getAttributes().getNotes()) {
          JsonObject noteJson = marshalNote(note);
 
          notesJson.add(noteJson);
@@ -2184,5 +2174,26 @@ public class MobileWorkflowService implements ServletContextAware {
          value = valueObj != null ? valueObj.toString() : "";
       }
       return value;
+   }
+   
+   /**
+    * @param pi
+    * @return
+    */
+   private ProcessInstance getScopedProcessInstance(ProcessInstance pi)
+   {
+      try
+      {
+         // Get scoped process instance.
+         ProcessInstanceQuery spiq = ProcessInstanceQuery.findAll();
+         spiq.where(ProcessInstanceQuery.OID.isEqual(pi.getScopeProcessInstanceOID()));
+         spiq.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
+         return (ProcessInstanceDetails) getQueryService().getAllProcessInstances(spiq)
+               .get(0);
+      }
+      catch (Exception e)
+      {
+         return pi;
+      }
    }
 }
