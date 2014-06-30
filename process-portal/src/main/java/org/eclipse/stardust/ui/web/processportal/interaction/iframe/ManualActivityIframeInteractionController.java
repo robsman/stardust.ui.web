@@ -171,7 +171,7 @@ public class ManualActivityIframeInteractionController implements IActivityInter
             }
          }
 
-         JavascriptContext.addJavascriptCall(facesContext,
+         PortalApplication.getInstance().addEventScript(
                "parent.InfinityBpm.ProcessPortal.sendCloseCommandToExternalWebApp('" + getContentFrameId(ai) + "', '"
                      + scenario.getId() + "');");
 
