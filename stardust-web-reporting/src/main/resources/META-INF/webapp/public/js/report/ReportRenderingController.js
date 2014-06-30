@@ -1017,16 +1017,7 @@ define(
 		ReportRenderingController.prototype.refreshRecordSet = function(scopeController) {
 			   var columns = this.reportingService.getColumnDimensions(this.report);
 		
-            var TEMPLATE = "<table cellpadding=\"0\" cellspacing=\"0\" class=\"dataTable\"><thead><tr>_HEADERS_</tr></thead><tbody><tr sd-table-data=\"row in rows\">_COLUMNS_</tr></tbody></table>";
-               
-            var v1 = jQuery.extend({}, TEMPLATE);
-            var TEMPLATE_COPY = "";
-            for (v in v1) {
-               TEMPLATE_COPY += v1[v];
-            }
-               
-            var headers = "";
-            var cols = "";
+            var headers = [];
                
             for (x in columns) {
                var column = columns[x];
@@ -1044,31 +1035,14 @@ define(
                if (column.type.id == this.reportingService.metadata.durationType.id) {
                   columnDisplayName += " (" + this.report.dataSet.columns[x].metaData.durationUnit + ")";
                }
-               headers += "<th>" + columnDisplayName + "</th>";
-                   var col = column.id;
-                   console.log(col);
-                   col = replaceSpecialChars(col);
-                   var style = "";
-                   if (column.type.id == this.reportingService.metadata.timestampType.id)
-                   {
-                      style = " style = \"text-align: right;\"";
-                   }
-                   cols += "<td" + style +">{{row." + col + "}}</td>";
+               headers.push(columnDisplayName);
             }
-            TEMPLATE_COPY = TEMPLATE_COPY.replace("_HEADERS_", headers);
-            TEMPLATE_COPY = TEMPLATE_COPY.replace("_COLUMNS_", cols);
-              
-            jQuery(".dynamicTable").html(TEMPLATE_COPY);
-            
-            var divElem = angular.element(".dynamicTable");
-            angularCompile(divElem)(divElem.scope());
-            
             
             if (columns.length != 0)
             {   
                var self = this;
                setTimeout(function () {
-                 	   self.refreshPreviewData(scopeController);
+                 	   self.refreshPreviewData(scopeController, headers);
                     }, 200);
             } 
      		};
@@ -1076,13 +1050,20 @@ define(
      		/**
           * 
           */
-         ReportRenderingController.prototype.refreshPreviewData = function(scopeController) {
+         ReportRenderingController.prototype.refreshPreviewData = function(scopeController, headers) {
             var self = this;	
             
         	   this.getReportData(this.report, this.parameters).done(
      		function(data) {
      			// Format data before displaying the Results
      		   scopeController.rows = self.formatPreviewData(data.rows);
+     		   
+     		   scopeController.tableArray = [headers];
+     		   for ( var rowIndex in data.rows)
+            {
+     		      scopeController.tableArray.push(data.rows[rowIndex]);
+            }
+     		   
      			scopeController.updateView();
      		}).fail(function(err) {
      			console.log("Failed getting Preview Date: " + err);
