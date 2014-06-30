@@ -583,7 +583,7 @@ if (!window.bpm.portal.GenericController) {
 			msg.type = "OpenView";
 			msg.data = {};
 			msg.data.viewId = "documentView";
-			msg.data.viewKey = "documentOID=" + fileDetails.docId;
+			msg.data.viewKey = window.btoa("documentOID=" + fileDetails.docId);
 			msg.data.nested = true;
 			
 			msg.data.params = {};
@@ -807,7 +807,7 @@ if (!window.bpm.portal.GenericController) {
 			}
 			
 			$scope.documentTimeout = setTimeout(function() {
-				self.runInAngularContext(hideAllDocumentMenus_());
+				self.runInAngularContext(self.hideAllDocumentMenus_());
 			}, 3000);
 		};
 		
