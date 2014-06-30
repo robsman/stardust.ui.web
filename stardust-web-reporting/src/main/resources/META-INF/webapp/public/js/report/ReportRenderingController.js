@@ -47,25 +47,6 @@ define(
 			        multi_headers : false, //dont change this
 			      };
 			      
-			      var clientDateFormat = "mm/dd/yy";
-			      var serverDateFormat = "yy/mm/dd";
-			      
-			      var self = this;
-			      var deferred = jQuery.Deferred();
-               this.reportingService.getDateFormats()
-                  .done(function(data) {
-
-                  console.log("Retrieved Date Formats: " + data.dateTimeFormat);
-                  
-                  self.clientDateFormat = clientDateFormat;
-                  self.serverDateFormat = serverDateFormat;
-                  
-                  deferred.resolve();
-               }).fail(function() {
-                  deferred.reject();
-               });
-
-				
 				/**
 				 * 
 				 */
@@ -1003,7 +984,7 @@ define(
 			
 			            for (var j = 0; j < inData[seriesName].length; j++) {
 			                if (!rowHeaderAdded) {
-			                   inData[seriesName][j][0] = this.formatDate(inData[seriesName][j][0], self.serverDateFormat, self.clientDateFormat);
+			                   inData[seriesName][j][0] = this.formatDate(inData[seriesName][j][0], self.reportingService.serverDateFormat, self.reportingService.clientDateFormat);
 			                    baseTable.push(inData[seriesName][j]);
 			                } else {
 			                    baseTable[baseTableIndex + j] = baseTable[baseTableIndex + j].concat(inData[seriesName][j].slice(1));
@@ -1187,7 +1168,7 @@ ReportRenderingController.prototype.formatPreviewData = function(data) {
                   timePart = timeParts[0] + ":" + timeParts[1];
                }
                
-               record[selColumn] = this.formatDate(datePart, self.serverDateFormat, self.clientDateFormat);
+               record[selColumn] = this.formatDate(datePart, self.reportingService.serverDateFormat, self.reportingService.clientDateFormat);
                
                record[selColumn] = record[selColumn] + " " + timePart;
                console.log("Final Date:" + record[selColumn]);

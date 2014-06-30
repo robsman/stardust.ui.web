@@ -500,6 +500,10 @@ define(
 				// Cache for all loaded report definitions
 
 				this.loadedReportDefinitions = {};
+				
+				this.clientDateFormat = "mm/dd/yy";
+				
+				this.serverDateFormat = "yy/mm/dd";
 
 				/**
 				 * 
@@ -687,7 +691,7 @@ define(
 
 					}
 					
-						
+					this.getDateFormats();	
 				
 
 					return deferred.promise();
@@ -1958,6 +1962,8 @@ define(
                                     + "/services/rest/bpm-reporting/dateFormats",
                               contentType : "application/json"
                            }).done(function(data) {
+                              /*self.clientDateFormat = data.dateFormat;
+                              self.serverDateFormat = data.serverDateFormat;*/
                               deferred.resolve(data);
                      }).fail(function() {
                         deferred.reject();
