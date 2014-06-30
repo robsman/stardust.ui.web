@@ -17,6 +17,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Pattern;
 
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
@@ -33,6 +34,7 @@ import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.RepositoryVirtualUserObject;
+import org.springframework.util.StringUtils;
 
 public class BindRepositoryDialog extends PopupUIComponentBean
 {
@@ -153,10 +155,16 @@ public class BindRepositoryDialog extends PopupUIComponentBean
    {
       try
       {
-         if (repositoryId == null)
+         if (repositoryId == null || StringUtils.isEmpty(repositoryId.trim()))
          {
             ExceptionHandler.handleException(getBeanId(),
                   MessagesViewsCommonBean.getInstance().getString("views.bindRepositoryDialog.repoId.empty"));
+            return;
+         }
+         else if (!Pattern.matches("^(?=.*[a-zA-Z]).+$", repositoryId))
+         {
+            ExceptionHandler.handleException(getBeanId(),
+                  MessagesViewsCommonBean.getInstance().getString("views.bindRepositoryDialog.repoId.invalid"));
             return;
          }
          Map<String, Serializable> attributes = CollectionUtils.newMap();
