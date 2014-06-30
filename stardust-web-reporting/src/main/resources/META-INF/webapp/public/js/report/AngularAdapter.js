@@ -172,7 +172,7 @@ if (!window.bpm.portal.AngularAdapter) {
 							}
 			                
 			                //set table options - start
-				        	var baseTableClone = angular.copy(scope.tableArray);
+				        	scope.baseTableClone = angular.copy(scope.tableArray);
 				        	
 			                var tableOptions = {};
 			                
@@ -191,7 +191,7 @@ if (!window.bpm.portal.AngularAdapter) {
 								    sExtends: "text",
 								    sButtonText: "CSV",
 								    fnClick: function(nButton, oConfig, oFlash) {
-								        var data = baseTableClone;
+								        var data = scope.baseTableClone;
 								        var csvData = new Array();
 								        data.forEach(function(item, index, array) {
 								            var cvsRow = "";
@@ -241,7 +241,7 @@ if (!window.bpm.portal.AngularAdapter) {
 								    sButtonText: "Excel",
 								    fnClick: function(nButton, oConfig, oFlash) {
 								        // some data to export
-								        var data = baseTableClone;
+								        var data = scope.baseTableClone;
 								
 								        // prepare CSV data
 								        var csvData = new Array();
