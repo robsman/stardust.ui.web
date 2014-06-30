@@ -688,11 +688,8 @@ define(
 							}).fail(function() {
 								deferred.reject();
 							});
-
+						this.getDateFormats();
 					}
-					
-					this.getDateFormats();	
-				
 
 					return deferred.promise();
 				};
