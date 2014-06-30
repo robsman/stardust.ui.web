@@ -141,6 +141,8 @@ if (!window.bpm.portal.AngularAdapter) {
 				tableParameters.numberOfColHeaders - Number of rows to be used as column headers
 				tableParameters.rowHeaderIndex - column index to be used as row headers (mostly first of second column of the table)
 				tableParameters.groupByIndex - column index to which grouping will be applied
+				tableParameters.csv - export table data as csv - file name, by default enabled, false to disable
+				tableParameters.excel - export table data as excel - file name, by default enabled, false to disable
 				tableOptions - jquery data table options (future) 
 				callbackhandler - jquery data table callback handlers (future)
 			 */
@@ -156,20 +158,143 @@ if (!window.bpm.portal.AngularAdapter) {
 			            callbackHandler: '='
 			        },
 			        link: function(scope, elem, attrs) {
+			        	
 			            scope.$watch("tableArray", function(newVal, oldVal) {
 			                //debugger;
 			
 			                if (!scope.tableArray) {
 			                    return;
 			                }
-			
-			                var tableArray = scope.tableArray;
+			         
 			                var tableParameters = scope.tableParameters;
-			                if (!tableParameters) {
-			                    tableParameters = {
-			                        numberOfColHeaders: 1
-			                    };
+			        		if (!tableParameters) {
+							    tableParameters = {};
+							}
+			                
+			                //set table options - start
+				        	var baseTableClone = angular.copy(scope.tableArray);
+				        	
+			                var tableOptions = {};
+			                
+						    tableOptions.sDom =  'T<"clear ">lfrtip';
+						    
+						    tableOptions.oTableTools = {}
+						    tableOptions.oTableTools.aButtons =  [];
+						    
+						    if(tableParameters.csv != false){
+						    	
+						    	if(!tableParameters.csv){
+						    		tableParameters.csv = "data";
+						    	}
+						    	
+						    	tableOptions.oTableTools.aButtons.push({
+								    sExtends: "text",
+								    sButtonText: "CSV",
+								    fnClick: function(nButton, oConfig, oFlash) {
+								        var data = baseTableClone;
+								        var csvData = new Array();
+								        data.forEach(function(item, index, array) {
+								            var cvsRow = "";
+								            item.forEach(function(item2) {
+								                cvsRow += '"' + item2 + '"' + ",";
+								            });
+								            csvData.push(cvsRow);
+								        });
+								
+								        var buffer = csvData.join("\n");
+								        var fileName = tableParameters.csv + ".csv";
+								
+								        var link = nButton;
+								
+								        if (link.download !== undefined) { // feature detection
+								            // Browsers that support HTML5 download attribute
+								            var blob = new Blob([buffer], {
+								                type: 'text/csv;charset=utf-8;'
+								            });
+								            var url = URL.createObjectURL(blob);
+								            link.setAttribute("href", url);
+								            link.setAttribute("download", fileName);
+								            link.style = "visibility:hidden";
+								        }
+								
+								        if (navigator.msSaveBlob) { // IE 10+
+								            link.addEventListener("click", function(event) {
+								                var blob = new Blob([CSV], {
+								                    "type": "text/csv;charset=utf-8;"
+								                });
+								                navigator.msSaveBlob(blob, fileName);
+								            }, false);
+								        }
+								        nButton.style.setProperty('text-decoration', 'none');
+								    }
+								});
+						    }
+						    
+						    if(tableParameters.excel != false){
+						    	
+						    	if(!tableParameters.excel){
+						    		tableParameters.excel = "data";
+						    	}
+						    	
+							    tableOptions.oTableTools.aButtons.push({
+								    sExtends: "text",
+								    sButtonText: "Excel",
+								    fnClick: function(nButton, oConfig, oFlash) {
+								        // some data to export
+								        var data = baseTableClone;
+								
+								        // prepare CSV data
+								        var csvData = new Array();
+								        data.forEach(function(item, index, array) {
+								    		 csvData.push(item.join("\t"));
+								    	 });
+								
+								        // download stuff
+								        var buffer = csvData.join("\n");
+								        var fileName = tableParameters.excel + ".xls";
+								
+								        var link = nButton;
+								
+								        if (link.download !== undefined) { // feature detection
+								            // Browsers that support HTML5 download attribute
+								            var blob = new Blob([buffer], {
+								                type: 'data:application/vnd.ms-excel'
+								            });
+								            var url = URL.createObjectURL(blob);
+								            link.setAttribute("href", url);
+								            link.setAttribute("download", fileName);
+								            link.style = "visibility:hidden";
+								        }
+								
+								        if (navigator.msSaveBlob) { // IE 10+
+								            link.addEventListener("click", function(event) {
+								                var blob = new Blob([CSV], {
+								                    "type": "data:application/vnd.ms-excel"
+								                });
+								                navigator.msSaveBlob(blob, fileName);
+								            }, false);
+								        }
+								        nButton.style.setProperty('text-decoration', 'none');
+								    }
+								});
+						    }
+						    
+						    if(scope.tableOptions){
+						    	//merge table options
+							    for (var prop in scope.tableOptions) {
+							    	tableOptions[prop] = scope.tableOptions[prop];
+							    }
 			                }
+
+						    scope.$parent.tableOptions = tableOptions;
+			                //set table options - end
+						    
+						    //prepare table
+			                var tableArray = scope.tableArray;
+			                
+							if (!tableParameters.numberOfColHeaders) {
+							    tableParameters.numberOfColHeaders = 1;
+							}
 			
 			                //Prepare Table - must be generic 
 			                var ROW_TEMPLATE = "<tr>_ROW_</tr>";
@@ -227,14 +352,10 @@ if (!window.bpm.portal.AngularAdapter) {
 			                        }
 			
 			                    }
+			                    ROW_TEMPLATE_COPY = getTemplateCopy(ROW_TEMPLATE);
+				                ROW_TEMPLATE_COPY = ROW_TEMPLATE_COPY.replace("_ROW_", footers);
+				                TEMPLATE_COPY = TEMPLATE_COPY.replace("_FOOTERS_", ROW_TEMPLATE_COPY);
 			                }
-			
-			                ROW_TEMPLATE_COPY = getTemplateCopy(ROW_TEMPLATE);
-			                ROW_TEMPLATE_COPY = ROW_TEMPLATE_COPY.replace("_ROW_", footers);
-			                TEMPLATE_COPY = TEMPLATE_COPY.replace("_FOOTERS_", ROW_TEMPLATE_COPY);
-			
-			                //E
-			                //create an angular element. (this is our "view")
 			
 			                var el = angular.element(TEMPLATE_COPY);
 			
@@ -249,10 +370,8 @@ if (!window.bpm.portal.AngularAdapter) {
 			
 			                //put all data in parents scope for jquery data table usage
 			                scope.$parent.rows = tableArray;
-			
-			                scope.$parent.tableOptions = scope.tableOptions;
-			
-			                scope.$parent.$apply();
+						    
+						    scope.$parent.$apply();
 			
 			            });
 			        }
@@ -281,7 +400,7 @@ if (!window.bpm.portal.AngularAdapter) {
 								aTargets : ["_all"]
 							}],
 							"aLengthMenu": [[5, 10, 25, 50, 100, 200, -1], [5, 10, 25, 50, 100, 200, "All"]]};
-
+							 
 						return {
 							post : function (scope, element,
 								attributes, controller) {
@@ -365,11 +484,6 @@ if (!window.bpm.portal.AngularAdapter) {
 								var table = jQuery(parent
 										.parent());
 
-								//apply dynamic functions
-								if (scope.tableOptions) {
-								    tableOptions = scope.tableOptions;
-								}
-								
 								//if group table rows
 								if (scope.tableParameters && scope.tableParameters.groupByIndex != undefined) {
 								    var groupIndex = scope.tableParameters.groupByIndex;
@@ -400,14 +514,21 @@ if (!window.bpm.portal.AngularAdapter) {
 								            }
 								        });
 								    };
-								    
+							
 								    //TODO: redraw table on group row click
 								   table.find('tbody').on( 'click', 'tr.group', function () {
 								    	//table.fnClearTable();
 									   scope.reloadTable();
 								    });
 								}
-									
+
+								//merge table options
+								if (scope.tableOptions) {
+								    for (var prop in scope.tableOptions) {
+								    	tableOptions[prop] = scope.tableOptions[prop];
+								    }
+								}
+								
 								scope
 								.$watch(
 									rhs,

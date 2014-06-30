@@ -1960,7 +1960,7 @@ define(
                            }).done(function(data) {
                               deferred.resolve(data);
                      }).fail(function() {
-                        deferred.reject(data);
+                        deferred.reject();
                      });
                return deferred.promise();
             };

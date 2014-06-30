@@ -755,9 +755,6 @@ define(
             		this.parameters = parameters;	
             	}
             	
-            	//reset
-            	this.tableOptions = null;
-            	
 				var self = this;
 				if(this.report.dataSet.type === 'seriesGroup' && this.report.layout.subType == this.reportingService.metadata.layoutSubTypes.table.id){
 						this.getReportData(self.report, self.parameters).done(
@@ -823,7 +820,13 @@ define(
 			    //tableParameters.numberOfRowHeaders = 1;
 			    tableParameters.rowHeaderIndex = 0;
 			    tableParameters.addLastRowAsFooter = false;
-			
+			    
+			    var fileName = self.report.layout.title;
+			    if(!fileName){
+			    	fileName = self.report.name;
+			    }
+			    tableParameters.csv = fileName;
+			    tableParameters.excel = fileName;
 			
 			    var addTotalRow = false;
 			
@@ -866,23 +869,6 @@ define(
 			        if (this.tableDrawMode == 1 || this.tableDrawMode == 3 || this.tableDrawMode == 5) {
 			            tableParameters.addLastRowAsFooter = true;
 			        }
-			    }
-			
-			    if (this.tableDrawMode == 4 || this.tableDrawMode == 6) {
-			        this.tableOptions = {
-			            aoColumnDefs: [{
-			                sDefaultContent: "-",
-			                sClass: "",
-			                aTargets: ["_all"]
-			            }, {
-			                bVisible: false,
-			                aTargets: [0]
-			            }],
-			            "aLengthMenu": [
-			                [5, 10, 25, 50, 100, 200, -1],
-			                [5, 10, 25, 50, 100, 200, "All"]
-			            ]
-			        };
 			    }
 			
 			    // transform data
@@ -1038,10 +1024,10 @@ define(
 			    }
 			
 			    tableArray = baseTable;
-			
+			    
 			    //set the data in parent scope
-			    scopeController.tableArray = baseTable;
 			    scopeController.tableParameters = tableParameters;
+			    scopeController.tableArray = baseTable;
          };
 		
          /**
