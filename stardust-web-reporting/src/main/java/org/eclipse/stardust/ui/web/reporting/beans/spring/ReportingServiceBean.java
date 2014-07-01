@@ -72,6 +72,7 @@ import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.html5.rest.RestControllerUtils;
 import org.eclipse.stardust.ui.web.reporting.beans.spring.portal.CriticalityConfigurationService;
 import org.eclipse.stardust.ui.web.reporting.beans.spring.portal.SearchHandlerChain;
+import org.eclipse.stardust.ui.web.reporting.beans.spring.portal.XPathCacheManager;
 import org.eclipse.stardust.ui.web.reporting.common.portal.DescriptorUtils;
 import org.eclipse.stardust.ui.web.reporting.common.portal.DescriptorUtils.DescriptorMetadata;
 import org.eclipse.stardust.ui.web.reporting.common.portal.criticality.CriticalityCategory;
@@ -86,7 +87,6 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
-import org.eclipse.stardust.ui.web.viewscommon.utils.XPathCacheManager;
 
 /**
  *
