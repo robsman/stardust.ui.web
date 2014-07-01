@@ -68,16 +68,15 @@ public class JsfReportingViewUpdaterBean
    }
 */
    /**
-    * Retrieves elements "name" and path paramters from the request, and closes any open view for
-    * this element. 
+    * Retrieves the view from the request reportUID, and closes any open view with that reportUID. 
     */
    public void closeViewsForElement()
    {
       FacesContext context = FacesContext.getCurrentInstance();
       Map<String, String> params = context.getExternalContext().getRequestParameterMap();
-      String name = params.get("name");
-      String path = params.get("path");
-      if (null != name && null != path)
+      String reportUID = params.get("reportUID");
+      
+      if (null != reportUID)
       {
          List<View> openViews = PortalApplication.getInstance().getOpenViews();
          List<View> viewsToClose = new ArrayList<View>();
@@ -85,8 +84,7 @@ public class JsfReportingViewUpdaterBean
          {
             Map<String, Object> viewParams = view.getViewParams();
             if (null != viewParams
-                  &&(name.equals(viewParams.get("name"))
-                        && path.equals(viewParams.get("path"))))
+                  && reportUID.equals(viewParams.get("reportUID")))
             {
                viewsToClose.add(view);
             }

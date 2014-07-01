@@ -138,7 +138,7 @@ define(
 				                                       self.deleteElementAction(
 				                                             obj.context.lastChild.data,
 				                                             function() {
-				                                                self.closeView(obj.attr("name"), obj.attr("path"));
+				                                                self.closeView(obj.attr("reportUID"));
 				                                                self.reportingService
 		                                                      .deleteReportDefinition(
 		                                                            obj
@@ -570,7 +570,7 @@ define(
              * 
              */
             ReportManagementController.prototype.closeView = function(
-                     name, path) {
+                     reportUID) {
                var link = jQuery("a[id $= 'views_close_link']", this.getOutlineWindowAndDocument().doc);
                var linkId = link.attr('id');
                var form = link.parents('form:first');
@@ -582,8 +582,8 @@ define(
                var linkForm = portalWinDoc.win.formOf(link);
 
                linkForm[formId + ':_idcl'].value = linkId;
-               linkForm['name'].value = name;
-               linkForm['path'].value = path;
+                              
+               linkForm['reportUID'].value = reportUID;
 
                portalWinDoc.win.iceSubmit(linkForm, link);
             };
