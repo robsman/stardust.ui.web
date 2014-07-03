@@ -32,7 +32,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 
 /**
  * @author Subodh.Godbole
- * 
+ *
  */
 public class ResetPasswordDialog extends PopupDialog
 {
@@ -94,7 +94,7 @@ public class ResetPasswordDialog extends PopupDialog
             Parameters.instance().set("Security.Password.ResetServletUrl", url);
          }
          trace.info("About to call reset pwd for " + account + ", props: " + loginProperties);
-         sessionCtx.getServiceFactory().getUserService().generatePasswordResetToken(account);
+         sessionCtx.getServiceFactory().getUserService().generatePasswordResetToken(realm, account);
          if (trace.isDebugEnabled())
          {
             trace.debug("Reset Pwd Success for - " + account);
@@ -112,7 +112,7 @@ public class ResetPasswordDialog extends PopupDialog
    }
 
    /**
-    * 
+    *
     * @param uriTemplate
     * @param req
     * @return
@@ -149,7 +149,7 @@ public class ResetPasswordDialog extends PopupDialog
       }
       return uri;
    }
-   
+
    @Override
    public void reset()
    {
