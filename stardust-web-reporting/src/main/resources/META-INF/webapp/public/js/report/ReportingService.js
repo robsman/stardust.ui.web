@@ -1996,6 +1996,15 @@ define(
                return deferred.promise();
             };
             
+            /**
+            *
+            */
+            ReportingService.prototype.isValidReportName = function(reportName) {
+              var VALID_FILENAME_PATTERN = /[\\\\/:*?\"<>|\\[\\]]*/
+              return (! reportName.trim().match(VALID_FILENAME_PATTERN)) ? true : false;
+           };
+            
+            
             
 			}
 			

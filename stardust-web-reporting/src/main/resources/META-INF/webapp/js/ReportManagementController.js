@@ -193,10 +193,10 @@ define(
                                        return {
                                           ccp : false,
                                           create : false,
-                                          rename : {
+                                          upload : {
                                              label : "Upload", // I18N
                                              icon : self.reportingService.getRootUrl()
-                                                         + "/plugins/views-common/images/icons/rename.png",
+                                                         + "/plugins/views-common/images/icons/page_white_get.png",
                                              action : function(
                                                    obj) {
                                                 scope = angular.element(document).scope();
@@ -266,6 +266,12 @@ define(
 
 							      //Fetch the Report, update name and save it.
 							      var deferred = jQuery.Deferred();
+							      
+							      if(! self.reportingService.isValidReportName(self.data.rslt.name)) {
+							         self.loadReportDefinitionsFolderStructure();
+							         return;
+							      }
+							      
 							      self.reportingService.retrieveReportDefinition(self.data.rslt.obj.attr("path")).done(
 							               function(report)
 							               {
