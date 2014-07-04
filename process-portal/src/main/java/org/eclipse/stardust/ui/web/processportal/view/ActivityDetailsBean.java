@@ -238,6 +238,7 @@ public class ActivityDetailsBean extends UIComponentBean
 
    private boolean qualityAssuranceActionInProgress;
    private QAAction qualityAssuranceAction;
+   private boolean ownershipStatusOnSave;
    
    // Kind of constant, loaded from  properties
    // Temporary to support both modes for some time
@@ -1406,7 +1407,7 @@ public class ActivityDetailsBean extends UIComponentBean
       if (null != activityInstance)
       {
          ActivityInstance ai = activityInstance;
-
+         
          IActivityInteractionController interactionController = getInteractionController(ai
                .getActivity());
          if (null != interactionController)
@@ -1448,8 +1449,9 @@ public class ActivityDetailsBean extends UIComponentBean
       ActivityInstance ai = activityInstance;
       IActivityInteractionController interactionController = getInteractionController(ai.getActivity());
 
-      if (keepOwnership)
+      if (ownershipStatusOnSave || keepOwnership)
       {
+         ownershipStatusOnSave = false;
          ActivityInstance newAi = ActivityInstanceUtils.suspendToUserWorklist(ai,
                interactionController.getContextId(ai), outData);
          if (!closeView) // No need to set the AI if view is closing
@@ -1950,7 +1952,7 @@ public class ActivityDetailsBean extends UIComponentBean
             break;
          case SUSPEND_TO_USER_WORKLIST:
             params = getPinViewStatusParam();
-
+            
             suspendCurrentActivity(true, true, false);
 
             if(assemblyLineActivity && assemblyLinePushService)
@@ -1960,8 +1962,10 @@ public class ActivityDetailsBean extends UIComponentBean
             break;
          case SAVE_TO_USER_WORKLIST:
             params = getPinViewStatusParam();
-
-            suspendAndSaveCurrentActivity(true, true, false);
+            // Preserved keepOwnership flag , as after setting
+            // OutDataMapping,keepOwnership flag is lost
+            ownershipStatusOnSave = true;
+            suspendAndSaveCurrentActivity(ownershipStatusOnSave, true, false);
 
             if(assemblyLineActivity && assemblyLinePushService)
             {
