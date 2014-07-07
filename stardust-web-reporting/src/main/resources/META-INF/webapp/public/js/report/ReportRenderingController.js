@@ -251,10 +251,11 @@ define(
 
 						if (this.getFirstDimension().type == this.reportingService.metadata.timestampType) {
 							chartOptions.axes.xaxis.renderer = jQuery.jqplot.DateAxisRenderer;
-						} else if (this.getFirstDimension().type == this.reportingService.metadata.enumerationType) {
+						} else if (this.getFirstDimension().type == this.reportingService.metadata.enumerationType ||
+						         this.getFirstDimension().type == this.reportingService.metadata.stringType) {
 							chartOptions.axes.xaxis.renderer = jQuery.jqplot.CategoryAxisRenderer;
 						}
-
+						
 						chartOptions.axes.xaxis.tickRenderer = jQuery.jqplot.CanvasAxisTickRenderer;
 						
 					} else if (this.report.layout.chart.type === this.reportingService.metadata.chartTypes.candlestickChart.id) {
