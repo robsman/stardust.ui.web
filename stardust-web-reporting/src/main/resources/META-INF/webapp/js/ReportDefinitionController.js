@@ -768,14 +768,19 @@ define(
 				 * 
 				 */
 				ReportDefinitionController.prototype.getDimension = function(id) {
-					return this.getPrimaryObject().dimensions[id];
+				   var dimensions = this.reportingService.getCumulatedDimensions(this.report);
+               for(var i = 0; i < dimensions.length; i++){
+                  if(id == dimensions[i].id){
+                     return dimensions[i];
+                  }
+               }
 				};
 
 				/**
 				 * 
 				 */
 				ReportDefinitionController.prototype.getFirstDimension = function() {
-					return this.getPrimaryObject().dimensions[this.report.dataSet.firstDimension];
+				   return this.getDimension([this.report.dataSet.firstDimension]);
 				};
 
 				
