@@ -1981,7 +1981,7 @@ define(
            for ( var i = this.report.dataSet.columns.length - 1; i >= 0; i--)
            {
               if (this.report.dataSet.groupBy && (this.report.dataSet.groupBy != 'None')) {
-                 if (aggregationFunction === "None")
+                 if (aggregationFunction == null || aggregationFunction === "None")
                  {// For GroupBy selected value
                     var groupDimensions = this.getGroupDimensions();
                     for ( var groupDim in groupDimensions)
