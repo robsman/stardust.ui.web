@@ -62,7 +62,7 @@ define([ "bpm-reporting/public/js/report/I18NUtils", "bpm-reporting/js/utils" ],
 
                // monthsRecurrence : "weekday",
                day : new Date().getDay(),
-               dayIndex : (0 | new Date().getDate() / 7),
+               dayIndex : ((0 | new Date().getDate() / 7) + 1),
                monthIndex : 1
             },
             yearlyRecurrenceOptions : {
@@ -72,7 +72,7 @@ define([ "bpm-reporting/public/js/report/I18NUtils", "bpm-reporting/js/utils" ],
                onMonth : new Date().getMonth() + 1,
                onDay : utils.getDDFromDate(),
 
-               onTheXDay : (0 | new Date().getDate() / 7),
+               onTheXDay : ((0 | new Date().getDate() / 7) + 1),
                onTheXDayName : new Date().getDay(),
                onTheMonth : new Date().getMonth() + 1
             }
