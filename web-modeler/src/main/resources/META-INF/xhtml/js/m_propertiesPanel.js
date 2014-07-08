@@ -112,8 +112,12 @@ define(
 				PropertiesPanel.prototype.setElementForAngular = function() {
 					if (this.angularized) {
 						var self = this;
-						m_angularContextUtils.runInActiveViewContext(function($scope){
-							$scope.propPanel = self;
+
+						// Delay
+						window.setTimeout(function(){
+							m_angularContextUtils.runInActiveViewContext(function($scope){
+								$scope.propPanel = self;
+							});
 						});
 					}
 				};

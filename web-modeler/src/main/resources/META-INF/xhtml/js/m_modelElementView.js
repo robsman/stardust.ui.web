@@ -184,10 +184,16 @@ define(
 				 * 
 				 */
 				ModelElementView.prototype.setElementForAngular = function() {
-					var self = this;
-					m_angularContextUtils.runInActiveViewContext(function($scope){
-						$scope.elemView = self;
-					});
+					if (this.angularized) {
+						var self = this;
+						
+						// Delay
+						window.setTimeout(function(){
+							m_angularContextUtils.runInActiveViewContext(function($scope){
+								$scope.elemView = self;
+							});
+						});
+					}
 				};
 
 				/**
