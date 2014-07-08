@@ -1071,6 +1071,7 @@ define(
 										+ this.reportingService.metadata.chartTypes.pieChart.name
 										+ "</option>");
 					}
+					this.chartTypeSelect.val(this.report.layout.chart.type);
 				};
 
 				/**
