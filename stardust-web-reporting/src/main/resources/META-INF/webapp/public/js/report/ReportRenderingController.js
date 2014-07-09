@@ -46,7 +46,7 @@ define(
 			      this.countTableConfig = {
 			        multi_headers : false, //dont change this
 			      };
-			      
+
 				/**
 				 * 
 				 */
@@ -64,7 +64,7 @@ define(
 					}
 					
 					this.rows = [];
-					
+
 					// this.updateView();
 				};
 
@@ -127,12 +127,12 @@ define(
 											
 											var html = "<html ng-app><head>"
 													// TODO Read local
-													+ "<script src='"
+													+ "<scr" + "ipt" + "src='"
 													+ self.reportingService
 															.getRootUrl()
 													+ "/plugins/bpm-reporting/public/js/libs/angular/angular-1.2.11.js'>"
-													+ "</script>"
-													+ "<script>"
+													+ "</scr" + "ipt>"
+													+ "<scr" + "ipt>"
 													+ "function Controller($scope) {$scope.seriesGroup = "
 													+ (data.seriesGroup ? JSON
 															.stringify(data.seriesGroup)
@@ -147,7 +147,7 @@ define(
 													+ JSON
 															.stringify(data.groupIds)
 													+ ";}"
-													+ "</script></head><body><div ng-controller='Controller'>"
+													+ "</scri" + "pt></head><body><div ng-controller='Controller'>"
 													+ self.report.layout.document.markup
 													+ "</div></body></html>";
 
@@ -802,7 +802,7 @@ define(
 			    //tableParameters.numberOfRowHeaders = 1;
 			    tableParameters.rowHeaderIndex = 0;
 			    tableParameters.addLastRowAsFooter = false;
-			    
+			
 			    var fileName = self.report.layout.title;
 			    if(!fileName){
 			    	fileName = self.report.name;
@@ -1006,7 +1006,7 @@ define(
 			    }
 			
 			    tableArray = baseTable;
-			    
+			
 			    //set the data in parent scope
 			    scopeController.tableParameters = tableParameters;
 			    scopeController.tableArray = baseTable;
@@ -1037,7 +1037,7 @@ define(
                   columnDisplayName += " (" + this.report.dataSet.columns[x].metaData.durationUnit + ")";
                }
                headers.push(columnDisplayName);
-            }
+                   }
             
             if (columns.length != 0)
             {   
@@ -1148,15 +1148,15 @@ ReportRenderingController.prototype.formatPreviewData = function(data) {
                   var timeParts = dateParts[1].split(":"); // Get 2 Parts, and stripoff seconds part
                   datePart = dateParts[0];
                   timePart = timeParts[0] + ":" + timeParts[1];
-               }
+            }
                
                record[selColumn] = this.formatDate(datePart, self.reportingService.serverDateFormat, self.reportingService.clientDateFormat);
                
                record[selColumn] = record[selColumn] + " " + timePart;
                console.log("Final Date:" + record[selColumn]);
-            }
          }
       }
+   }
    }
    
    var a = [];
@@ -1297,7 +1297,7 @@ ReportRenderingController.prototype.formatPreviewData = function(data) {
                      value = jQuery.datepicker.formatDate(toFormat, date);
                   } catch(e) {
                      console.log(e);
-                  }
+		}
                }
                return value;
             };

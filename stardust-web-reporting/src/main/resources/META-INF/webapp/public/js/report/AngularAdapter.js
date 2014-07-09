@@ -165,12 +165,12 @@ if (!window.bpm.portal.AngularAdapter) {
 			                if (!scope.tableArray) {
 			                    return;
 			                }
-			         
+			
 			                var tableParameters = scope.tableParameters;
-			        		if (!tableParameters) {
+			                if (!tableParameters) {
 							    tableParameters = {};
-							}
-			                
+			                }
+			
 			                //set table options - start
 				        	scope.baseTableClone = angular.copy(scope.tableArray);
 				        	
@@ -352,9 +352,9 @@ if (!window.bpm.portal.AngularAdapter) {
 			                        }
 			
 			                    }
-			                    ROW_TEMPLATE_COPY = getTemplateCopy(ROW_TEMPLATE);
-				                ROW_TEMPLATE_COPY = ROW_TEMPLATE_COPY.replace("_ROW_", footers);
-				                TEMPLATE_COPY = TEMPLATE_COPY.replace("_FOOTERS_", ROW_TEMPLATE_COPY);
+			                ROW_TEMPLATE_COPY = getTemplateCopy(ROW_TEMPLATE);
+			                ROW_TEMPLATE_COPY = ROW_TEMPLATE_COPY.replace("_ROW_", footers);
+			                TEMPLATE_COPY = TEMPLATE_COPY.replace("_FOOTERS_", ROW_TEMPLATE_COPY);
 			                }
 			
 			                var el = angular.element(TEMPLATE_COPY);
@@ -370,8 +370,8 @@ if (!window.bpm.portal.AngularAdapter) {
 			
 			                //put all data in parents scope for jquery data table usage
 			                scope.$parent.rows = tableArray;
-						    
-						    scope.$parent.$apply();
+			
+			                scope.$parent.$apply();
 			
 			            });
 			        }
@@ -400,7 +400,7 @@ if (!window.bpm.portal.AngularAdapter) {
 								aTargets : ["_all"]
 							}],
 							"aLengthMenu": [[5, 10, 25, 50, 100, 200, -1], [5, 10, 25, 50, 100, 200, "All"]]};
-							 
+
 						return {
 							post : function (scope, element,
 								attributes, controller) {
@@ -514,14 +514,14 @@ if (!window.bpm.portal.AngularAdapter) {
 								            }
 								        });
 								    };
-							
+								    
 								    //TODO: redraw table on group row click
 								   table.find('tbody').on( 'click', 'tr.group', function () {
 								    	//table.fnClearTable();
 									   scope.reloadTable();
 								    });
 								}
-
+									
 								//merge table options
 								if (scope.tableOptions) {
 								    for (var prop in scope.tableOptions) {
@@ -757,10 +757,9 @@ if (!window.bpm.portal.AngularAdapter) {
 				};
 			});
 			
-			
-		   this.angularModule.controller("ReportDefinitionController", function($compile) {
+		   this.angularModule.controller("ReportDefinitionController", ['$compile', function($compile) {
             angularCompile = $compile;
-         });
+         }]);
 
 			this.angularModule
 					.directive(

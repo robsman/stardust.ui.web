@@ -84,10 +84,10 @@ require(
 				bubbleRenderer, canvasTextRenderer, canvasAxisLabelRenderer,
 				canvasAxisTickRenderer, categoryAxisRenderer, dateAxisRenderer,
 				cursor, highlighter, trendline, ohlcRenderer, pieRenderer, donutRenderer,
-				pointLabels, ReportController, dataTables,
+				pointLabels, ReportDefinitionController, dataTables,
 				TableTools, CkEditor, ace) {
 			jQuery(document).ready(
 					function() {
-						ReportController.create(angularjs);
+						ReportDefinitionController.create(angularjs);
 					});
 		});
