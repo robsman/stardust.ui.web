@@ -18,7 +18,7 @@
 
 <ul data-role="listview">
 	<li ng-repeat="process in startableProcessModel.processes">
-		<a ng-click="uiModel.showPopup=false;startProcess(process.id)" class="ipp-no-content" >
+		<a ng-click="uiModel.showPopup=false;startProcess(process.qualifiedId)" class="ipp-no-content" >
 			<span class="ipp-fs-small ipp-light ipp-fw-bold">{{process.name}}</span>
 			<p>
 				<span class="ipp-fs-smaller ipp-fw-normal ipp-lighter">{{process.description}}</span>

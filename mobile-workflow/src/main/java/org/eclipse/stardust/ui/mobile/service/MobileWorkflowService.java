@@ -292,6 +292,7 @@ public class MobileWorkflowService implements ServletContextAware {
          processDefinitionsJson.add(processDefinitionJson);
 
          processDefinitionJson.addProperty("id", processDefinition.getId());
+         processDefinitionJson.addProperty("qualifiedId", processDefinition.getQualifiedId());
          processDefinitionJson.addProperty("name",
                processDefinition.getName());
          processDefinitionJson.addProperty("description",
