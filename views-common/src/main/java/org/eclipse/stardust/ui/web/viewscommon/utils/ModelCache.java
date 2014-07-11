@@ -23,8 +23,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import javax.faces.context.FacesContext;
-
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.common.log.LogManager;
@@ -499,7 +497,8 @@ public class ModelCache implements Resetable, Serializable, ModelResolver
 
    private static boolean isJsfContext()
    {
-      return (FacesContext.getCurrentInstance() != null);
+      // TODO add real verification
+      return true;
    }
 
    public static ModelCache findModelCache()

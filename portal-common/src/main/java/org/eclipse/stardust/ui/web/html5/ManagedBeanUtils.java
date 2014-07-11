@@ -13,6 +13,8 @@ package org.eclipse.stardust.ui.web.html5;
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
 
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -25,6 +27,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 public abstract class ManagedBeanUtils
 {
+   private final static Logger trace = LogManager.getLogger(ManagedBeanUtils.class);
+   
    public static Object getManagedBean(String beanId)
    {
       return getManagedBean(FacesContext.getCurrentInstance(), beanId);
@@ -45,11 +49,18 @@ public abstract class ManagedBeanUtils
       }
       else
       {
-         ServletContext servletContext = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
-               .getRequest().getSession().getServletContext();
-         ApplicationContext applicationContext = WebApplicationContextUtils
-               .getRequiredWebApplicationContext(servletContext);
-         bean = applicationContext.getBean(beanId);
+         try
+         {
+            ServletContext servletContext = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
+                  .getRequest().getSession().getServletContext();
+            ApplicationContext applicationContext = WebApplicationContextUtils
+                  .getRequiredWebApplicationContext(servletContext);
+            bean = applicationContext.getBean(beanId);   
+         }
+         catch (Throwable t)
+         {
+            trace.error("Failed to retrieve or initialize spring based bean...." + beanId + "ERROR: " +  t.getMessage());
+         }
       }
       return bean;
    }
