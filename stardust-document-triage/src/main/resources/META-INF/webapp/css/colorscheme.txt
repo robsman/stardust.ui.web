@@ -1,0 +1,11 @@
+Primary Color:
+85718F	655A6B	49255D	BCA8C7	BFB0C7
+Secondary Color A:
+AC869B	816C78	702B52	D6B2C6	D6BBCA
+Secondary Color B:
+7D7794	625E6F	342760	B3ACC9	B9B4C9
+Complementary Color:
+D7D7A7	A1A186	8B8B36	EBEBC4	EBEBCE
+
+
+http://colorschemedesigner.com/#4H61T77qVw0w0
