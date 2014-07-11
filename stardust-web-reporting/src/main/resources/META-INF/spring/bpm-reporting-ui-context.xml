@@ -10,7 +10,7 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 		controller="reportingPerspective">
 		<ippui:preferences>
 			<ippui:preferencePage name="helpDocumentation"
-				include="/plugins/doc/portal/execution-clients/reports.html" />
+				include="/plugins/doc/portal/execution-clients/reports/reports.html" />
 		</ippui:preferences>
 		<ippui:launchPanel name="bpmReportingLaunchPanel"
 			include="/plugins/bpm-reporting/launchpanel/reportingLaunchPanel.xhtml" />
