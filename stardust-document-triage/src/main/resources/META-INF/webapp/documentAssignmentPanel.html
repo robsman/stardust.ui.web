@@ -6,13 +6,224 @@
 <link href="./css/font-awesome-4.1.0/css/font-awesome.css"
 	rel="stylesheet">
 <link href='./css/stardust-modern.css' rel='stylesheet' />
+<link href='./css/jquery/jquery-ui-1.10.2.custom.min.css'
+	rel='stylesheet' />
 <script data-main="./js/DocumentAssignmentPanelMain"
 	src="./js/libs/require/2.0.5/require-min.js"></script>
 <style>
+.section {
+	border: 1px solid #e0e0e0;
+}
+
+.scannedDocument {
+	border-bottom: 1px dashed #dddddd;
+	background-color: #E8E6FC;
+	margin: 10px;
+}
+
+.page:hover {
+	cursor: move;
+}
+
+.pendingInstancesTree td {
+	padding: 3px !important;
+}
+
+.selected {
+	background-color: #dddddd;
+}
+
+.highlighted td {
+	background-color: #E8E6FC;
+}
+
+.dragHelper {
+	font-size: 14px;
+	color: black;
+}
+
+.normalLine {
+	margin-bottom: 2px;
+	padding-bottom: 3px;
+}
+
+.cutLine {
+	width: 100%;
+	padding-bottom: 2px;
+	border-bottom: 1px dashed #AAAAAA;
+	margin-bottom: 2px;
+	padding-bottom: 2px;
+}
+
+.cutLine:hover {
+	background-color: #dddddd;
+}
 </style>
 </head>
 <body>
 	<div ng-controller="documentAssignmentPanelController"
-		style="margin: 10px;">{{nase}}</div>
+		style="margin: 10px;">
+		<table class="layoutTable" style="width: 100%; height: 100%">
+			<tr valign="top">
+				<td>
+					<table class="layoutTable" style="width: 100%;">
+						<tr>
+							<td>
+								<h2>Member Data</h2>
+								<div class="section" style="margin: 10px;">
+									<table class="formTable">
+										<tr>
+											<td><label>Member ID</label></td>
+											<td><input type="text" style="width: 100px;"
+												ng-model="businessObjectFilter.memberId"
+												ng-blur="filterBusinessObjects()"></input></td>
+											<td><label>Last Name</label></td>
+											<td><input type="text" style="width: 200px;"
+												ng-model="businessObjectFilter.lastName"
+												ng-blur="filterBusinessObjects()"></input></td>
+											<td><label>First Name</label></td>
+											<td><input type="text" style="width: 200px;"
+												ng-model="businessObjectFilter.firstName"
+												ng-blur="filterBusinessObjects()"></input></td>
+										</tr>
+									</table>
+									<div class="dataTableFrame"
+										style="margin-top: 10px; margin-bottom: 20px;">
+										<table cellpadding="0" cellspacing="0" class="dataTable">
+											<thead>
+												<tr>
+													<th>Member Id</th>
+													<th>First Name</th>
+													<th>Last Name</th>
+													<th>Date of Birth</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr sd-table-data="businessObject in businessObjects"
+													sd-table-selection="selectedBusinessObjects">
+													<td>{{businessObject.memberId}}</td>
+													<td>{{businessObject.firstName}}</td>
+													<td>{{businessObject.lastName}}</td>
+													<td align="right">{{$parent.formatIsoDate(businessObject.dateOfBirth)}}</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+								</div>
+							</td>
+						</tr>
+						<tr valign="top">
+							<td>
+								<table style="width: 100%;">
+									<tr valign="top">
+										<td><h2>Selected Page</h2>
+											<table>
+												<tr>
+													<td><a href="#" class="iconLink"><i
+															class="fa fa-rotate-right"></i></a></td>
+													<td><a href="#" class="iconLink"><i
+															class="fa fa-plus-circle"></i></a></td>
+													<td><a href="#" class="iconLink"><i
+															class="fa fa-minus-circle"></i></a></td>
+												</tr>
+											</table>
+											<div class="section"
+												style="height: 600px; overflow: auto; margin: 10px;">
+												<img src="./images/page{{selectedPage.number}}.png"
+													ng-show="selectedPage != null" />
+											</div></td>
+										<td style="width: 500px;">
+											<h2>Pending Processes</h2>
+											<div class="section"
+												style="height: 400px; overflow: auto; margin: 10px;">
+												<table cellpadding="0" cellspacing="0"
+													class="pendingInstancesTree">
+													<tr ng-repeat="treeItem in pendingActivitiesTree"
+														id="pendingActivitiesTreeRow{{$index}}"
+														class="{{getTreeItemClass(treeItem)}}">
+														<td><div ng-show="treeItem.activityInstance">
+																<i class="fa fa-gear"></i>
+															</div>
+															<div ng-show="treeItem.specificDocument"
+																style="margin-left: 10px;">
+																<span ng-hide="treeItem.specificDocument.url"><i
+																	class="fa fa-file-o"></i></span> <span
+																	ng-show="treeItem.specificDocument.url"><i
+																	class="fa fa-file"></i></span>
+															</div>
+															<div ng-show="treeItem.processAttachments"
+																style="margin-left: 10px;">
+																<i class="fa fa-folder-o"></i>
+															</div>
+															<div ng-show="treeItem.processAttachment"
+																style="margin-left: 20px;">
+																<i class="fa fa-file-o"></i>
+															</div></td>
+														<td><div ng-show="treeItem.activityInstance">{{treeItem.activityInstance.activity.name}}/{{treeItem.activityInstance.processInstance.processDefinition.name}}</div>
+															<div ng-show="treeItem.specificDocument">
+																{{treeItem.specificDocument.name}}
+																({{$parent.formatTimestamp(treeItem.specificDocument.creationTimestamp)}})</div>
+															<div ng-show="treeItem.processAttachment">{{treeItem.processAttachment.type}}
+																({{$parent.formatTimestamp(treeItem.processAttachment.creationTimestamp)}})</div></td>
+													</tr>
+												</table>
+									</div>
+									<h2>New Process</h2>
+									<div class="section" style="overflow: auto; margin: 10px;">
+									</div>
+									</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+					</table>
+				</td>
+				<td style="width: 300px;">
+					<h2>Scanned Documents</h2>
+					<table>
+						<tr>
+							<td><a href="#" class="iconLink" ng-click="mode = 'cut'"
+								ng-show="mode == 'normal'"><i class="fa fa-cut"></i></a><a
+								href="#" class="iconLink" ng-click="mode = 'normal'"
+								ng-show="mode == 'cut'"><i class="fa fa-reply"></i></a></td>
+						</tr>
+					</table>
+					<div class="section"
+						style="width: 100%; height: 700px; overflow: auto; margin: 10px;">
+						<div ng-repeat="document in scannedDocuments"
+							id="scannedDocumentDivision{{$index}}" class="scannedDocument">
+							<table class="formTable">
+								<tr>
+									<td>{{$parent.formatTimestamp(document.creationTimestamp)}}</td>
+								</tr>
+								<tr>
+									<td><select ng-model="document.type"><option>Select
+												Document Type ...</option>
+											<option value="Birth Certificate">Birth Certificate</option></select></td>
+								</tr>
+								<tr>
+									<td><select ng-model="document.category"><option>Select
+												Document Category ...</option>
+											<option value="Birth Certificate">Birth Certificate</option></select></td>
+								</tr>
+							</table>
+							<div ng-repeat="page in document.pages" class="page">
+								<table class="{{$parent.$parent.selectionClass(page)}}">
+									<tr>
+										<td align="right">{{page.number}}</td>
+										<td><a ng-click="$parent.$parent.selectPage(page)"> <img
+												src="./images/page{{$index + 1}}.png" width="30%" />
+										</a></td>
+									</tr>
+								</table>
+								<div class="normalLine" ng-show="mode == 'normal'"></div>
+								<div class="cutLine" ng-show="mode == 'cut'"></div>
+							</div>
+						</div>
+					</div>
+				</td>
+			</tr>
+		</table>
+	</div>
 </body>
 </html>

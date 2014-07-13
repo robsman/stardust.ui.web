@@ -49,7 +49,7 @@ define(
          */
         module
             .directive(
-                'ippTableData',
+                'sdTableData',
                 function() {
                   return {
                     restrict: "A",
@@ -69,7 +69,7 @@ define(
                         post: function(scope, element, attributes, controller) {
                           // Parse expression
 
-                          var expression = attrs.ippTableData;
+                          var expression = attrs.sdTableData;
                           var match = expression.match(/^\s*(.+)\s+in\s+(.*?)\s*(\s+track\s+by\s+(.+)\s*)?$/), trackByExp, trackByExpGetter, trackByIdExpFn, trackByIdArrayFn, trackByIdObjFn, lhs, rhs, valueIdentifier, keyIdentifier/*
                                                                                                                                                                                                                                          * ,
                                                                                                                                                                                                                                          * hashFnLocals = {
@@ -177,7 +177,7 @@ define(
                                 parent.append(clone); // Add
                                 // to
                                 // DOM
-                                jQuery(clone).prop("id", "ippTableRowIndex" + n);
+                                jQuery(clone).prop("id", "sdTableRowIndex" + n);
 
                                 block = {};
                                 block.el = clone;
@@ -203,11 +203,11 @@ define(
                             // meanwhile
 
                             window.setTimeout(function() {
-                              if (attributes.ippTableSelection) {
+                              if (attributes.sdTableSelection) {
                                 // Clear
                                 // selection
 
-                                scope.$eval(attributes.ippTableSelection).length = 0;
+                                scope.$eval(attributes.sdTableSelection).length = 0;
                                 table.find("tbody tr").removeClass("selectedRow");
 
                                 // Unbind
@@ -221,11 +221,11 @@ define(
 
                                 table.find("tbody tr").click(
                                     function(event) {
-                                      var selection = scope.$eval(attributes.ippTableSelection);
+                                      var selection = scope.$eval(attributes.sdTableSelection);
                                       var indexString = jQuery(this).prop("id");
 
-                                      indexString = indexString.substring(indexString.indexOf("ippTableRowIndex") +
-                                          "ippTableRowIndex".length);
+                                      indexString = indexString.substring(indexString.indexOf("sdTableRowIndex") +
+                                          "sdTableRowIndex".length);
 
                                       var index = parseInt(indexString);
 
@@ -273,7 +273,7 @@ define(
                             }, 1000);
                           });
 
-                          scope.$watch(attributes.ippTableSelection, function(value) {
+                          scope.$watch(attributes.sdTableSelection, function(value) {
                             var rowObjects = scope.$eval(rhs);
 
                             if (rowObjects) {
@@ -283,7 +283,7 @@ define(
                               for (var n = 0; n < rowObjects.length; ++n) {
                                 for (var m = 0; m < value.length; ++m) {
                                   if (rowObjects[n] == value[m]) {
-                                    table.find("#ippTableRowIndex" + n).addClass("selectedRow");
+                                    table.find("#sdTableRowIndex" + n).addClass("selectedRow");
                                   }
                                 }
                               }
@@ -296,7 +296,7 @@ define(
                 });
 
         module
-            .directive('ippDialog',
+            .directive('sdDialog',
                 function() {
                   return {
                     restrict: "A",
@@ -322,14 +322,14 @@ define(
                                     // the dialog field; not
                                     // robust
 
-                                    if (attributes.ippDialog.lastIndexOf(".") < 0) {
+                                    if (attributes.sdDialog.lastIndexOf(".") < 0) {
                                       scope[attributes.ippDialog] = dialog;
 
                                       console.log("Scope");
-                                      console.log(scope[attributes.ippDialog]);
+                                      console.log(scope[attributes.sdDialog]);
                                     } else {
-                                      scope.$eval(attributes.ippDialog.substring(0, attributes.ippDialog
-                                          .lastIndexOf(".")))[attributes.ippDialog.substring(attributes.ippDialog
+                                      scope.$eval(attributes.sdDialog.substring(0, attributes.ippDialog
+                                          .lastIndexOf(".")))[attributes.sdDialog.substring(attributes.ippDialog
                                           .lastIndexOf(".") + 1)] = dialog;
                                     }
                                   }, 1000);
