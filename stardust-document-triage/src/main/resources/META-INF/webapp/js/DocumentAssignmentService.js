@@ -21,17 +21,15 @@ define(
 			 */
 			function DocumentAssignmentService() {
 				this.nase = "Propase";
-				this.pendingActivities = [ {
-					activityInstance : {
+				this.pendingProcesses = [ {
+					processDefinition : {
+						name : "Disability Claim Processing"
+					},
+					pendingActivityInstances : [ {
 						activity : {
 							name : "Receive Doctor's Certificate"
-						},
-						processInstance : {
-							processDefinition : {
-								name : "Disability Claim Processing"
-							}
 						}
-					},
+					} ],
 					specificDocuments : [ {
 						name : "Doctor's Certificate",
 						document : null
@@ -49,16 +47,16 @@ define(
 						creationTimestamp : new Date().getTime()
 					} ]
 				}, {
-					activityInstance : {
-						activity : {
-							name : "Receive Signed Claim"
-						},
-						processInstance : {
-							processDefinition : {
-								name : "Disability Claim Processing"
-							}
+					processInstance : {
+						processDefinition : {
+							name : "Disability Claim Processing"
 						}
 					},
+					pendingActivityInstances : [ {
+						activity : {
+							name : "Receive Signed Claim"
+						}
+					} ],
 					specificDocuments : [ {
 						name : "Claim",
 						document : null
@@ -82,6 +80,15 @@ define(
 					creationTimestamp : new Date().getTime(),
 					pageCount : 3
 				} ];
+
+				this.startableProcesses = [ {
+					name : "Disability Claim Processing",
+					specificDocuments : [ {
+						name : "Doctor's Certificate"
+					}, {
+						name : "Pay Slip"
+					} ]
+				} ],
 
 				this.businessObjects = [ {
 					memberId : "4711",
@@ -113,10 +120,69 @@ define(
 				/**
 				 * 
 				 */
-				DocumentAssignmentService.prototype.getPendingActivities = function() {
+				DocumentAssignmentService.prototype.getPendingProcesses = function() {
+					var deferred = jQuery.Deferred();
+					var rootUrl = location.href.substring(0, location.href
+							.indexOf("/plugins"));
+					var self = this;
+
+					jQuery
+							.ajax(
+									{
+										url : rootUrl
+												+ "/services/rest/document-triage/processes/documentRendezvous.json",
+										type : "POST",
+										contentType : "application/json",
+										data : JSON.stringify({})
+									}).done(function(result) {
+								console.log("Result");
+								console.log(result.processInstances);
+
+								deferred.resolve(result.processInstances);
+							}).fail(function(data) {
+								deferred.reject(data);
+							});
+
+					return deferred.promise();
+				};
+
+				/**
+				 * 
+				 */
+				DocumentAssignmentService.prototype.completeDocumentRendezvous = function(
+						pendingActivityInstance, document) {
+					var deferred = jQuery.Deferred();
+					var rootUrl = location.href.substring(0, location.href
+							.indexOf("/plugins"));
+					var self = this;
+
+					jQuery
+							.ajax(
+									{
+										url : rootUrl
+												+ "/services/rest/document-triage/activities/completeRendezvous.json",
+										type : "POST",
+										contentType : "application/json",
+										data : JSON
+												.stringify({
+													pendingActivityInstance : pendingActivityInstance,
+													document : document
+												})
+									}).done(function() {
+								deferred.resolve();
+							}).fail(function(data) {
+								deferred.reject(data);
+							});
+
+					return deferred.promise();
+				};
+				/**
+				 * 
+				 */
+				DocumentAssignmentService.prototype.getStartableProcesses = function() {
 					var deferred = jQuery.Deferred();
 
-					this.delayedResolve(deferred, this.pendingActivities);
+					this.delayedResolve(deferred, this.startableProcesses);
 
 					return deferred.promise();
 				};

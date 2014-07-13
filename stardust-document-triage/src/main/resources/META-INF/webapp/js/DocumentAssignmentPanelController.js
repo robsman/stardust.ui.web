@@ -22,9 +22,26 @@ define(
 				 * 
 				 */
 				DocumentAssignmentPanelController.prototype.initialize = function() {
+					this.queryParameters = Utils.getQueryParameters();
+
+					// TODO Relative path and standardized API
+
+					var encodedId = this.queryParameters["ippInteractionUri"]
+							.substring("http://localhost:9090/server/services/rest/engine/interaction/".length + 1);
+					var decodedId = atob(encodedId || '');
+					var partsMatcher = new RegExp('^(\\d+)\\|(\\d+)$');
+					var decodedParts = partsMatcher.exec(decodedId);
+					var activityInstanceOid = decodedParts[1];
+
+					console.log("Activity Instance OID");
+					console.log(activityInstanceOid);
+
 					this.businessObjectFilter = {};
 					this.selectedBusinessObjects = [];
 					this.mode = "normal";
+					this.pageRotation = 0;
+					this.zoomFactor = 100;
+					this.pageInverted = false;
 
 					var self = this;
 
@@ -36,16 +53,16 @@ define(
 										self.scannedDocuments = scannedDocuments;
 
 										self.refreshPagesList();
+
 										DocumentAssignmentService
 												.instance()
-												.getPendingActivities()
+												.getStartableProcesses()
 												.done(
 														function(
-																pendingActivities) {
-															self.pendingActivities = pendingActivities;
-
+																startableProcesses) {
+															self.startableProcesses = startableProcesses;
 															self
-																	.refreshPendingActivitiesTree();
+																	.refreshStartableProcessesTree();
 															self.safeApply();
 
 															window
@@ -56,6 +73,7 @@ define(
 																			},
 																			1000);
 														}).fail();
+
 									}).fail();
 				};
 
@@ -106,14 +124,57 @@ define(
 								});
 					}
 
-					for (var n = 0; n < this.pendingActivitiesTree.length; ++n) {
-						if (this.pendingActivitiesTree[n].specificDocument) {
-							var specificDocumentRow = jQuery("#pendingActivitiesTreeRow"
+					for (var n = 0; n < this.pendingProcessesTree.length; ++n) {
+						if (this.pendingProcessesTree[n].pendingActivityInstance) {
+							var pendingActivityInstanceRow = jQuery("#pendingProcessesTreeRow"
+									+ n);
+							pendingActivityInstanceRow
+									.data({
+										ui : pendingActivityInstanceRow,
+										pendingActivityInstance : this.pendingProcessesTree[n].pendingActivityInstance
+									});
+							pendingActivityInstanceRow
+									.droppable({
+										hoverClass : "highlighted",
+										drop : function(event, ui) {
+											var scannedDocument = jQuery.data(
+													ui.draggable[0],
+													"scannedDocument");
+											var pendingActivityInstance = jQuery
+													.data(this,
+															"pendingActivityInstance");
+
+											DocumentAssignmentService
+													.instance()
+													.completeDocumentRendezvous(
+															pendingActivityInstance,
+															scannedDocument)
+													.done(
+															function(pendingProcesses) {
+																self.pendingProcesses = pendingProcess;
+																self
+																		.refreshPendingProcessesTree();
+																self
+																		.safeApply();
+
+																window
+																		.setTimeout(
+																				function() {
+																					self
+																							.bindDragAndDrop();
+																				},
+																				1000);
+															}).fail();
+										},
+										tolerance : "touch"
+									});
+						} else if (this.pendingProcessesTree[n].specificDocument) {
+							var specificDocumentRow = jQuery("#pendingProcessesTreeRow"
 									+ n);
 							specificDocumentRow
 									.data({
 										ui : specificDocumentRow,
-										specificDocument : this.pendingActivitiesTree[n].specificDocument
+										specificDocument : this.pendingProcessesTree[n].specificDocument
 									});
 							specificDocumentRow
 									.droppable({
@@ -135,7 +196,7 @@ define(
 																specificDocument.type = scannedDocument.type;
 
 																self
-																		.refreshPendingActivitiesTree();
+																		.refreshPendingProcessesTree();
 																self
 																		.safeApply();
 
@@ -150,13 +211,13 @@ define(
 										},
 										tolerance : "touch"
 									});
-						} else if (this.pendingActivitiesTree[n].processAttachments) {
-							var processAttachmentsRow = jQuery("#pendingActivitiesTreeRow"
+						} else if (this.pendingProcessesTree[n].processAttachments) {
+							var processAttachmentsRow = jQuery("#pendingProcessesTreeRow"
 									+ n);
 							processAttachmentsRow
 									.data({
 										ui : processAttachmentsRow,
-										processAttachments : this.pendingActivitiesTree[n].processAttachments
+										processAttachments : this.pendingProcessesTree[n].processAttachments
 									});
 							processAttachmentsRow
 									.droppable({
@@ -168,6 +229,8 @@ define(
 											var processAttachments = jQuery
 													.data(this,
 															"processAttachments");
+
+											jQuery("*").css("cursor", "wait");
 
 											DocumentAssignmentService
 													.instance()
@@ -183,9 +246,14 @@ define(
 																		.log(processAttachments);
 
 																self
-																		.refreshPendingActivitiesTree();
+																		.refreshPendingProcessesTree();
 																self
 																		.safeApply();
+
+																jQuery("*")
+																		.css(
+																				"cursor",
+																				"default");
 
 																window
 																		.setTimeout(
@@ -194,7 +262,14 @@ define(
 																							.bindDragAndDrop();
 																				},
 																				1000);
-															}).fail();
+															})
+													.fail(
+															function() {
+																jQuery("*")
+																		.css(
+																				"cursor",
+																				"default");
+															});
 										},
 										tolerance : "touch"
 									});
@@ -211,6 +286,50 @@ define(
 
 					console.log("Selected Page: ");
 					console.log(this.selectedPage);
+				};
+
+				/**
+				 * 
+				 */
+				DocumentAssignmentPanelController.prototype.rotatePage = function() {
+					this.pageRotation += 90;
+
+					jQuery("#pageImage").css("transform",
+							"rotate(" + this.pageRotation + "deg)");
+				};
+
+				/**
+				 * 
+				 */
+				DocumentAssignmentPanelController.prototype.zoomInPage = function() {
+					this.zoomFactor += 10;
+
+					jQuery("#pageImage").css("width", this.zoomFactor + "%");
+				};
+
+				/**
+				 * 
+				 */
+				DocumentAssignmentPanelController.prototype.zoomOutPage = function() {
+					this.zoomFactor = Math.max(0, this.zoomFactor - 10);
+
+					jQuery("#pageImage").css("width", this.zoomFactor + "%");
+				};
+
+				/**
+				 * 
+				 */
+				DocumentAssignmentPanelController.prototype.invertPage = function() {
+					if (this.pageInverted) {
+						jQuery("#pageImage").css("-webkit-filter", "none");
+
+						this.pageInverted = false;
+					} else {
+						jQuery("#pageImage").css("-webkit-filter",
+								"invert(100%)");
+
+						this.pageInverted = true;
+					}
 				};
 
 				/**
@@ -242,37 +361,64 @@ define(
 				/**
 				 * 
 				 */
-				DocumentAssignmentPanelController.prototype.refreshPendingActivitiesTree = function() {
-					this.pendingActivitiesTree = [];
+				DocumentAssignmentPanelController.prototype.refreshPendingProcessesTree = function() {
+					this.pendingProcessesTree = [];
 
-					for (var n = 0; n < this.pendingActivities.length; ++n) {
-						this.pendingActivitiesTree
-								.push({
-									pendingActivity : this.pendingActivities[n],
-									activityInstance : this.pendingActivities[n].activityInstance
-								});
+					for (var n = 0; n < this.pendingProcesses.length; ++n) {
+						this.pendingProcessesTree.push({
+							pendingProcess : this.pendingProcesses[n]
+						});
 
-						for (var m = 0; m < this.pendingActivities[n].specificDocuments.length; ++m) {
-							this.pendingActivitiesTree
+						for (var m = 0; m < this.pendingProcesses[n].pendingActivityInstances.length; ++m) {
+							this.pendingProcessesTree
 									.push({
-										pendingActivity : this.pendingActivities[n],
-										specificDocument : this.pendingActivities[n].specificDocuments[m]
+										pendingActivityInstance : this.pendingProcesses[n].pendingActivityInstances[m]
 									});
 						}
 
-						this.pendingActivitiesTree
-								.push({
-									pendingActivity : this.pendingActivities[n],
-									processAttachments : this.pendingActivities[n].processAttachments
-								});
-
-						for (var m = 0; m < this.pendingActivities[n].processAttachments.length; ++m) {
-							this.pendingActivitiesTree
+						for (var m = 0; m < this.pendingProcesses[n].specificDocuments.length; ++m) {
+							this.pendingProcessesTree
 									.push({
-										pendingActivity : this.pendingActivities[n],
-										processAttachment : this.pendingActivities[n].processAttachments[m]
+										specificDocument : this.pendingProcesses[n].specificDocuments[m]
 									});
 						}
+
+						this.pendingProcessesTree
+								.push({
+									processAttachments : this.pendingProcesses[n].processAttachments
+								});
+
+						for (var m = 0; m < this.pendingProcesses[n].processAttachments.length; ++m) {
+							this.pendingProcessesTree
+									.push({
+										processAttachment : this.pendingProcesses[n].processAttachments[m]
+									});
+						}
+					}
+				};
+
+				/**
+				 * 
+				 */
+				DocumentAssignmentPanelController.prototype.refreshStartableProcessesTree = function() {
+					this.startableProcessesTree = [];
+
+					for (var n = 0; n < this.startableProcesses.length; ++n) {
+						this.startableProcessesTree.push({
+							startableProcess : this.startableProcesses[n]
+						});
+
+						for (var m = 0; m < this.startableProcesses[n].specificDocuments.length; ++m) {
+							this.startableProcessesTree
+									.push({
+										specificDocument : this.startableProcesses[n].specificDocuments[m]
+									});
+						}
+
+						this.startableProcessesTree.push({
+							processAttachments : {}
+						// Dummy
+						});
 					}
 				};
 
@@ -293,9 +439,38 @@ define(
 				/**
 				 * 
 				 */
+				DocumentAssignmentPanelController.prototype.onBusinessObjectSelectionChange = function() {
+					console.log("Business Object Selection Changed");
+					console.log(this.selectedBusinessObjects);
+
+					var self = this;
+
+					jQuery("*").css("cursor", "wait");
+
+					DocumentAssignmentService.instance().getPendingProcesses()
+							.done(function(pendingProcesses) {
+								self.pendingProcesses = pendingProcesses;
+
+								self.refreshPendingProcessesTree();
+								self.safeApply();
+
+								jQuery("*").css("cursor", "default");
+
+								window.setTimeout(function() {
+									self.bindDragAndDrop();
+								}, 1000);
+							}).fail(function() {
+								jQuery("*").css("cursor", "default");
+							});
+
+				};
+
+				/**
+				 * 
+				 */
 				DocumentAssignmentPanelController.prototype.formatTimestamp = function(
 						timestamp) {
-					return Utils.formatDateTime(new Date(timestamp));
+					return Utils.formatDateTime(timestamp);
 				};
 
 				/**

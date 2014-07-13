@@ -35,5 +35,9 @@
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="var" path="CARNOT_ENGINE_LIBS/lib/carnot-engine.jar"/>
+	<classpathentry kind="var" path="STARDUST_SPRING_LIBS/lib/spring-beans.jar"/>
+	<classpathentry kind="var" path="STARDUST_PORTAL_LIBS/lib/ipp-portal-common.jar"/>
+	<classpathentry kind="var" path="STARDUST_PORTAL_LIBS/lib/ipp-views-common.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

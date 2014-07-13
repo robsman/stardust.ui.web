@@ -15,21 +15,28 @@
 	border: 1px solid #e0e0e0;
 }
 
-.scannedDocument {
+.scannedDocument td {
 	border-bottom: 1px dashed #dddddd;
 	background-color: #E8E6FC;
-	margin: 10px;
 }
 
 .page:hover {
 	cursor: move;
 }
 
-.pendingInstancesTree td {
+.pendingProcessesTree td {
 	padding: 3px !important;
 }
 
+.pendingProcessesTree i {
+	color: #A69A88;
+}
+
 .selected {
+	background-color: #dddddd;
+}
+
+.selected td {
 	background-color: #dddddd;
 }
 
@@ -61,8 +68,7 @@
 </style>
 </head>
 <body>
-	<div ng-controller="documentAssignmentPanelController"
-		style="margin: 10px;">
+	<div ng-controller="documentAssignmentPanelController">
 		<table class="layoutTable" style="width: 100%; height: 100%">
 			<tr valign="top">
 				<td>
@@ -70,7 +76,7 @@
 						<tr>
 							<td>
 								<h2>Member Data</h2>
-								<div class="section" style="margin: 10px;">
+								<div class="section" style="margin-bottom: 10px; padding: 10px;">
 									<table class="formTable">
 										<tr>
 											<td><label>Member ID</label></td>
@@ -100,7 +106,8 @@
 											</thead>
 											<tbody>
 												<tr sd-table-data="businessObject in businessObjects"
-													sd-table-selection="selectedBusinessObjects">
+													sd-table-selection="selectedBusinessObjects"
+													sd-table-selection-changed="onBusinessObjectSelectionChange()">
 													<td>{{businessObject.memberId}}</td>
 													<td>{{businessObject.firstName}}</td>
 													<td>{{businessObject.lastName}}</td>
@@ -117,31 +124,48 @@
 								<table style="width: 100%;">
 									<tr valign="top">
 										<td><h2>Selected Page</h2>
-											<table>
+											<table class="toolbar" style="width: 100%;">
 												<tr>
-													<td><a href="#" class="iconLink"><i
-															class="fa fa-rotate-right"></i></a></td>
-													<td><a href="#" class="iconLink"><i
-															class="fa fa-plus-circle"></i></a></td>
-													<td><a href="#" class="iconLink"><i
-															class="fa fa-minus-circle"></i></a></td>
+													<td><table class="formTable">
+															<tr>
+																<td><a href="#" class="iconLink"
+																	ng-click="rotatePage()"><i
+																		class="fa fa-rotate-right"></i></a></td>
+																<td><input type="number" style="text-align: right;"
+																	ng-model="zoomFactor"></input> <label>%</label></td>
+																<td><a href="#" class="iconLink"
+																	ng-click="zoomInPage()"><i
+																		class="fa fa-plus-circle"></i></a></td>
+																<td><a href="#" class="iconLink"
+																	ng-click="zoomOutPage()"><i
+																		class="fa fa-minus-circle"></i></a></td>
+																<td><a href="#" class="iconLink"
+																	ng-click="invertPage()"><i
+																		class="fa fa-star-half-o"></i></a></td>
+															</tr>
+														</table></td>
 												</tr>
 											</table>
 											<div class="section"
-												style="height: 600px; overflow: auto; margin: 10px;">
-												<img src="./images/page{{selectedPage.number}}.png"
+												style="height: 400px; overflow: auto; margin-top: 10px; margin-bottom: 10px;">
+												<img id="pageImage"
+													src="./images/page{{selectedPage.number}}.png"
 													ng-show="selectedPage != null" />
 											</div></td>
-										<td style="width: 500px;">
-											<h2>Pending Processes</h2>
+										<td style="width: 500px; padding-left: 10px !important;">
+											<h2>Pending Processes and Activities</h2>
 											<div class="section"
-												style="height: 400px; overflow: auto; margin: 10px;">
+												style="min-height: 20px; max-height: 250px; overflow: auto; margin-top: 10px; margin-bottom: 10px;">
 												<table cellpadding="0" cellspacing="0"
-													class="pendingInstancesTree">
-													<tr ng-repeat="treeItem in pendingActivitiesTree"
-														id="pendingActivitiesTreeRow{{$index}}"
+													class="pendingProcessesTree">
+													<tr ng-repeat="treeItem in pendingProcessesTree"
+														id="pendingProcessesTreeRow{{$index}}"
 														class="{{getTreeItemClass(treeItem)}}">
-														<td><div ng-show="treeItem.activityInstance">
+														<td><div ng-show="treeItem.pendingProcess">
+																<i class="fa fa-gears"></i>
+															</div>
+															<div ng-show="treeItem.pendingActivityInstance"
+																style="margin-left: 10px;">
 																<i class="fa fa-gear"></i>
 															</div>
 															<div ng-show="treeItem.specificDocument"
@@ -157,70 +181,111 @@
 															</div>
 															<div ng-show="treeItem.processAttachment"
 																style="margin-left: 20px;">
-																<i class="fa fa-file-o"></i>
+																<i class="fa fa-file"></i>
 															</div></td>
-														<td><div ng-show="treeItem.activityInstance">{{treeItem.activityInstance.activity.name}}/{{treeItem.activityInstance.processInstance.processDefinition.name}}</div>
+														<td><div ng-show="treeItem.pendingProcess">{{treeItem.pendingProcess.processDefinition.name}}
+																(#{{treeItem.pendingProcess.oid}})
+																{{$parent.formatTimestamp(treeItem.pendingProcess.start)}}</div>
+															<div ng-show="treeItem.pendingActivityInstance">{{treeItem.pendingActivityInstance.activity.name}}
+																(#{{treeItem.pendingActivityInstance.oid}})
+																{{$parent.formatTimestamp(treeItem.pendingActivityInstance.start)}}</div>
 															<div ng-show="treeItem.specificDocument">
 																{{treeItem.specificDocument.name}}
 																({{$parent.formatTimestamp(treeItem.specificDocument.creationTimestamp)}})</div>
+															<div ng-show="treeItem.processAttachments">Process
+																Attachments</div>
 															<div ng-show="treeItem.processAttachment">{{treeItem.processAttachment.type}}
 																({{$parent.formatTimestamp(treeItem.processAttachment.creationTimestamp)}})</div></td>
 													</tr>
 												</table>
-									</div>
-									<h2>New Process</h2>
-									<div class="section" style="overflow: auto; margin: 10px;">
-									</div>
-									</td>
+											</div>
+											<h2>Startable Processs</h2>
+											<div class="section"
+												style="min-height: 20px; max-height: 150px; overflow: auto; margin-top: 10px; margin-bottom: 10px;">
+												<table cellpadding="0" cellspacing="0"
+													class="pendingProcessesTree">
+													<tr ng-repeat="treeItem in startableProcessesTree"
+														id="startableProcessesTreeRow{{$index}}"
+														class="{{getTreeItemClass(treeItem)}}">
+														<td><div ng-show="treeItem.startableProcess">
+																<i class="fa fa-gears"></i>
+															</div>
+															<div ng-show="treeItem.specificDocument"
+																style="margin-left: 10px;">
+																<i class="fa fa-file-o"></i>
+															</div>
+															<div ng-show="treeItem.processAttachments"
+																style="margin-left: 10px;">
+																<i class="fa fa-folder-o"></i>
+															</div></td>
+														<td><div ng-show="treeItem.startableProcess">{{treeItem.startableProcess.name}}</div>
+															<div ng-show="treeItem.specificDocument">
+																{{treeItem.specificDocument.name}}</div>
+															<div ng-show="treeItem.processAttachments">Process
+																Attachments</div></td>
+													</tr>
+												</table>
+											</div>
+										</td>
 									</tr>
 								</table>
 							</td>
 						</tr>
 					</table>
 				</td>
-				<td style="width: 300px;">
+				<td style="width: 200px;">
 					<h2>Scanned Documents</h2>
-					<table>
+					<table class="toolbar" style="width: 100%;">
 						<tr>
-							<td><a href="#" class="iconLink" ng-click="mode = 'cut'"
-								ng-show="mode == 'normal'"><i class="fa fa-cut"></i></a><a
-								href="#" class="iconLink" ng-click="mode = 'normal'"
-								ng-show="mode == 'cut'"><i class="fa fa-reply"></i></a></td>
+							<td><table class="formTable">
+									<tr>
+										<td><a href="#" class="iconLink" ng-click="mode = 'cut'"
+											ng-show="mode == 'normal'"><i class="fa fa-cut"></i></a><a
+											href="#" class="iconLink" ng-click="mode = 'normal'"
+											ng-show="mode == 'cut'"><i class="fa fa-reply"></i></a></td>
+									</tr>
+								</table></td>
 						</tr>
 					</table>
 					<div class="section"
-						style="width: 100%; height: 700px; overflow: auto; margin: 10px;">
-						<div ng-repeat="document in scannedDocuments"
-							id="scannedDocumentDivision{{$index}}" class="scannedDocument">
-							<table class="formTable">
-								<tr>
-									<td>{{$parent.formatTimestamp(document.creationTimestamp)}}</td>
-								</tr>
-								<tr>
-									<td><select ng-model="document.type"><option>Select
-												Document Type ...</option>
-											<option value="Birth Certificate">Birth Certificate</option></select></td>
-								</tr>
-								<tr>
-									<td><select ng-model="document.category"><option>Select
-												Document Category ...</option>
-											<option value="Birth Certificate">Birth Certificate</option></select></td>
-								</tr>
-							</table>
-							<div ng-repeat="page in document.pages" class="page">
-								<table class="{{$parent.$parent.selectionClass(page)}}">
-									<tr>
-										<td align="right">{{page.number}}</td>
-										<td><a ng-click="$parent.$parent.selectPage(page)"> <img
-												src="./images/page{{$index + 1}}.png" width="30%" />
-										</a></td>
-									</tr>
-								</table>
-								<div class="normalLine" ng-show="mode == 'normal'"></div>
-								<div class="cutLine" ng-show="mode == 'cut'"></div>
-							</div>
-						</div>
-					</div>
+						style="width: 100%; height: 500px; overflow: auto; margin: 10px;">
+						<table cellpadding="0" cellspacing="0" style="width: 100%;">
+							<tr ng-repeat="document in scannedDocuments"
+								id="scannedDocumentDivision{{$index}}" class="scannedDocument">
+								<td>
+									<table class="formTable">
+										<tr>
+											<td>{{$parent.formatTimestamp(document.creationTimestamp)}}</td>
+										</tr>
+										<tr>
+											<td><select ng-model="document.type"><option>Select
+														Document Type ...</option>
+													<option value="Birth Certificate">Birth
+														Certificate</option></select></td>
+										</tr>
+										<tr>
+											<td><select ng-model="document.category"><option>Select
+														Document Category ...</option>
+													<option value="Birth Certificate">Birth
+														Certificate</option></select></td>
+										</tr>
+									</table>
+									<div ng-repeat="page in document.pages" class="page">
+										<table class="{{$parent.$parent.selectionClass(page)}}">
+											<tr>
+												<td align="right">{{page.number}}</td>
+												<td><a ng-click="$parent.$parent.selectPage(page)">
+														<img src="./images/page{{$index + 1}}.png" width="40%" />
+												</a></td>
+											</tr>
+										</table>
+										<div class="normalLine" ng-show="mode == 'normal'"></div>
+										<div class="cutLine" ng-show="mode == 'cut'"></div>
+									</div>
+									<div style="height: 5px; background-color: white;"></div>
+								</td>
+							</tr>
+						</table>
 				</td>
 			</tr>
 		</table>

@@ -16,12 +16,15 @@ import javax.ws.rs.core.Response.Status;
 import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.documenttriage.common.LanguageUtil;
 import org.eclipse.stardust.ui.web.documenttriage.service.DocumentTriageService;
 
-
 @Path("/")
 public class DocumentTriageResource {
+	private static final Logger trace = LogManager
+			.getLogger(DocumentTriageResource.class);
 	private DocumentTriageService documentTriageService;
 	private final JsonMarshaller jsonIo = new JsonMarshaller();
 
@@ -30,7 +33,7 @@ public class DocumentTriageResource {
 
 	@Context
 	private ServletContext servletContext;
-	   
+
 	/**
 	 * 
 	 * @return
@@ -39,98 +42,98 @@ public class DocumentTriageResource {
 		return documentTriageService;
 	}
 
-	/**
-	 * 
-	 * @param documentTriageService
-	 */
-	public void setDocumentTriageService(
-	      DocumentTriageService documentTriageService) {
-		this.documentTriageService = documentTriageService;
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("processes/documentRendezvous.json")
+	public Response startChecklist(String postedData) {
+		try {
+			JsonObject json = jsonIo.readJsonObject(postedData);
+
+			return Response.ok(
+					getDocumentTriageService().getPendingProcesses(json)
+							.toString(), MediaType.APPLICATION_JSON).build();
+		} catch (Exception e) {
+			trace.error(e, e);
+
+			return Response.serverError().build();
+		}
 	}
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("login")
-	public Response login(String postedData) {
+	@Path("activities/completeRendezvous.json")
+	public Response completeRendezvous(String postedData) {
 		try {
 			JsonObject json = jsonIo.readJsonObject(postedData);
 
 			return Response.ok(
-					getDocumentTriageService().login(json).toString(),
-					MediaType.APPLICATION_JSON_TYPE).build();
+					getDocumentTriageService().completeRendezvous(json)
+							.toString(), MediaType.APPLICATION_JSON).build();
 		} catch (Exception e) {
-			e.printStackTrace();
+			trace.error(e, e);
 
-			throw new RuntimeException(e);
+			return Response.serverError().build();
 		}
 	}
-	
-   @POST
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
-   @Path("logout")
-   public Response logout(String postedData) {
-      try {
-         JsonObject json = jsonIo.readJsonObject(postedData);
 
-         return Response.ok(
-               getDocumentTriageService().logout().toString(),
-               MediaType.APPLICATION_JSON_TYPE).build();
-      } catch (Exception e) {
-         e.printStackTrace();
+	/**
+	 * 
+	 * @param documentTriageService
+	 */
+	public void setDocumentTriageService(
+			DocumentTriageService documentTriageService) {
+		this.documentTriageService = documentTriageService;
+	}
 
-         throw new RuntimeException(e);
-      }
-   }
-   
-   @GET
-   @Produces(MediaType.TEXT_PLAIN)
-   @Path("/language")
-   public Response getLanguage()
-   {
-      StringTokenizer tok = new StringTokenizer(httpRequest.getHeader("Accept-language"), ",");
-      if (tok.hasMoreTokens())
-      {
-         return Response.ok(LanguageUtil.getLocale(tok.nextToken()), MediaType.TEXT_PLAIN_TYPE).build();
-      }
-      return Response.ok("en", MediaType.TEXT_PLAIN_TYPE).build();
-   }
-   
-   /**
-    * @param bundleName
-    * @param locale
-    * @return
-    */
-   @GET
-   @Path("/{bundleName}/{locale}")
-   public Response getRetrieve(@PathParam("bundleName") String bundleName,
-         @PathParam("locale") String locale) {
-      final String POST_FIX = "client-messages";
+	@GET
+	@Produces(MediaType.TEXT_PLAIN)
+	@Path("/language")
+	public Response getLanguage() {
+		StringTokenizer tok = new StringTokenizer(
+				httpRequest.getHeader("Accept-language"), ",");
+		if (tok.hasMoreTokens()) {
+			return Response.ok(LanguageUtil.getLocale(tok.nextToken()),
+					MediaType.TEXT_PLAIN_TYPE).build();
+		}
+		return Response.ok("en", MediaType.TEXT_PLAIN_TYPE).build();
+	}
 
-      if (StringUtils.isNotEmpty(bundleName) && bundleName.endsWith(POST_FIX)) {
-         try {
-            StringBuffer bundleData = new StringBuffer();
-            ResourceBundle bundle = ResourceBundle.getBundle(bundleName,
-                  LanguageUtil.getLocaleObject(locale));
+	/**
+	 * @param bundleName
+	 * @param locale
+	 * @return
+	 */
+	@GET
+	@Path("/{bundleName}/{locale}")
+	public Response getRetrieve(@PathParam("bundleName") String bundleName,
+			@PathParam("locale") String locale) {
+		final String POST_FIX = "client-messages";
 
-            String key;
-            Enumeration<String> keys = bundle.getKeys();
-            while (keys.hasMoreElements()) {
-               key = keys.nextElement();
-               bundleData.append(key).append("=")
-                     .append(bundle.getString(key)).append("\n");
-            }
+		if (StringUtils.isNotEmpty(bundleName) && bundleName.endsWith(POST_FIX)) {
+			try {
+				StringBuffer bundleData = new StringBuffer();
+				ResourceBundle bundle = ResourceBundle.getBundle(bundleName,
+						LanguageUtil.getLocaleObject(locale));
 
-            return Response.ok(bundleData.toString(),
-                  MediaType.TEXT_PLAIN_TYPE).build();
-         } catch (MissingResourceException mre) {
-            return Response.status(Status.NOT_FOUND).build();
-         } catch (Exception e) {
-            return Response.status(Status.BAD_REQUEST).build();
-         }
-      } else {
-         return Response.status(Status.FORBIDDEN).build();
-      }
-   }
+				String key;
+				Enumeration<String> keys = bundle.getKeys();
+				while (keys.hasMoreElements()) {
+					key = keys.nextElement();
+					bundleData.append(key).append("=")
+							.append(bundle.getString(key)).append("\n");
+				}
+
+				return Response.ok(bundleData.toString(),
+						MediaType.TEXT_PLAIN_TYPE).build();
+			} catch (MissingResourceException mre) {
+				return Response.status(Status.NOT_FOUND).build();
+			} catch (Exception e) {
+				return Response.status(Status.BAD_REQUEST).build();
+			}
+		} else {
+			return Response.status(Status.FORBIDDEN).build();
+		}
+	}
 }
