@@ -20,9 +20,11 @@ import javax.annotation.Resource;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import org.eclipse.stardust.common.Direction;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.DataPath;
+import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.AdministrationService;
@@ -177,6 +179,8 @@ public class DocumentTriageService {
 			pendingActivityInstances.add(activityInstanceJson);
 
 			activityInstanceJson.addProperty("oid", activityInstance.getOID());
+			activityInstanceJson.addProperty("start", activityInstance
+					.getStartTime().getTime());
 
 			JsonObject activityJson = new JsonObject();
 
@@ -203,13 +207,38 @@ public class DocumentTriageService {
 					.getTerminationTime().getTime());
 		}
 
+		ProcessDefinition processDefinition = getQueryService()
+				.getProcessDefinition(processInstance.getModelOID(),
+						processInstance.getProcessID());
+
 		JsonObject processJson = new JsonObject();
 
 		processInstanceJson.add("processDefinition", processJson);
 
 		processJson.addProperty("name", processInstance.getProcessName());
 		processJson.addProperty("id", processInstance.getProcessID());
-		// processJson.addProperty("description", processInstance.get
+		processJson.addProperty("description",
+				processDefinition.getDescription());
+
+		JsonArray specificDocumentsJson = new JsonArray();
+
+		processInstanceJson.add("specificDocuments", specificDocumentsJson);
+
+		for (DataPath dataPath : (List<DataPath>) processDefinition
+				.getAllDataPaths()) {
+			if (!dataPath.getDirection().equals(Direction.OUT)
+					|| dataPath.getId().equals("PROCESS_ATTACHMENTS")) {
+				continue;
+			}
+
+			JsonObject specificDocumentJson = new JsonObject();
+
+			specificDocumentsJson.add(specificDocumentJson);
+
+			specificDocumentJson.addProperty("name", dataPath.getName());
+			specificDocumentJson.addProperty("type", dataPath.getMappedType()
+					.getName());
+		}
 
 		JsonArray descriptorsJson = new JsonArray();
 
@@ -226,21 +255,26 @@ public class DocumentTriageService {
 					.getDescriptorValue(dataPath.getId()).toString());
 		}
 
-		JsonArray specificDocumentsJson = new JsonArray();
+		processInstanceJson.add("processAttachments", getProcessAttachments(processInstance));
 
-		processInstanceJson.add("specificDocuments", specificDocumentsJson);
+		return processInstanceJson;
+	}
 
+	/**
+	 * TODO Reuse!!!
+	 * 
+	 * @param path
+	 * @return
+	 */
+	public JsonArray getProcessAttachments(ProcessInstance processInstance) {
 		String path = DocumentMgmtUtility
 				.getProcessAttachmentsFolderPath(processInstance);
-
 		Folder processAttFolder = getOrCreateFolder(path);
 
 		processAttFolder = getDocumentManagementService().getFolder(
 				processAttFolder.getId(), Folder.LOD_LIST_MEMBERS);
 
 		JsonArray attachmentsJson = new JsonArray();
-
-		processInstanceJson.add("processAttachments", attachmentsJson);
 
 		for (Document attachment : (List<Document>) processAttFolder
 				.getDocuments()) {
@@ -255,7 +289,7 @@ public class DocumentTriageService {
 			attachmentJson.addProperty("uuid", attachment.getId());
 		}
 
-		return processInstanceJson;
+		return attachmentsJson;
 	}
 
 	/**
@@ -306,5 +340,50 @@ public class DocumentTriageService {
 						.get("oid").getAsLong(), null, null);
 
 		return getPendingProcesses(null);
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public JsonObject getStartableProcesses() {
+		JsonObject resultJson = new JsonObject();
+		JsonArray processDefinitionsJson = new JsonArray();
+
+		resultJson.add("processDefinitions", processDefinitionsJson);
+
+		for (ProcessDefinition processDefinition : getWorkflowService()
+				.getStartableProcessDefinitions()) {
+			JsonObject processDefinitionJson = new JsonObject();
+
+			processDefinitionsJson.add(processDefinitionJson);
+
+			processDefinitionJson.addProperty("id", processDefinition.getId());
+			processDefinitionJson.addProperty("name",
+					processDefinition.getName());
+
+			JsonArray attachmentsJson = new JsonArray();
+
+			processDefinitionJson.add("processAttachments", attachmentsJson);
+		}
+
+		return resultJson;
+	}
+
+	/**
+	 * 
+	 * @param activityInstanceOid
+	 * @return
+	 */
+	public JsonObject getProcessesAttachments(long activityInstanceOid) {
+		JsonObject resultJson = new JsonObject();
+		ActivityInstance activityInstance = getWorkflowService()
+				.getActivityInstance(activityInstanceOid);
+		ProcessInstance processInstance = getWorkflowService()
+				.getProcessInstance(activityInstance.getProcessInstanceOID());
+		
+		resultJson.add("processAttachments", getProcessAttachments(processInstance));
+		
+		return resultJson;
 	}
 }

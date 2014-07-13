@@ -42,11 +42,26 @@ public class DocumentTriageResource {
 		return documentTriageService;
 	}
 
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("activities/{activityInstanceOid}/attachments.json")
+	public Response getProcessesAttachments(@PathParam("activityInstanceOid") long activityInstanceOid) {
+		try {
+			return Response.ok(
+					getDocumentTriageService().getProcessesAttachments(activityInstanceOid)
+							.toString(), MediaType.APPLICATION_JSON).build();
+		} catch (Exception e) {
+			trace.error(e, e);
+
+			return Response.serverError().build();
+		}
+	}
+
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("processes/documentRendezvous.json")
-	public Response startChecklist(String postedData) {
+	public Response gtePendingProcesses(String postedData) {
 		try {
 			JsonObject json = jsonIo.readJsonObject(postedData);
 
@@ -70,6 +85,21 @@ public class DocumentTriageResource {
 
 			return Response.ok(
 					getDocumentTriageService().completeRendezvous(json)
+							.toString(), MediaType.APPLICATION_JSON).build();
+		} catch (Exception e) {
+			trace.error(e, e);
+
+			return Response.serverError().build();
+		}
+	}
+
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("processes/startable.json")
+	public Response getStartableProcesses() {
+		try {
+			return Response.ok(
+					getDocumentTriageService().getStartableProcesses()
 							.toString(), MediaType.APPLICATION_JSON).build();
 		} catch (Exception e) {
 			trace.error(e, e);

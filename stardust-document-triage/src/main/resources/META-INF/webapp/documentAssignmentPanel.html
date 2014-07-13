@@ -123,7 +123,7 @@
 							<td>
 								<table style="width: 100%;">
 									<tr valign="top">
-										<td><h2>Selected Page</h2>
+										<td style="width: 50%;"><h2>Selected Page</h2>
 											<table class="toolbar" style="width: 100%;">
 												<tr>
 													<td><table class="formTable">
@@ -152,7 +152,7 @@
 													src="./images/page{{selectedPage.number}}.png"
 													ng-show="selectedPage != null" />
 											</div></td>
-										<td style="width: 500px; padding-left: 10px !important;">
+										<td style="width: 50%; padding-left: 10px !important;">
 											<h2>Pending Processes and Activities</h2>
 											<div class="section"
 												style="min-height: 20px; max-height: 250px; overflow: auto; margin-top: 10px; margin-bottom: 10px;">
@@ -161,7 +161,8 @@
 													<tr ng-repeat="treeItem in pendingProcessesTree"
 														id="pendingProcessesTreeRow{{$index}}"
 														class="{{getTreeItemClass(treeItem)}}">
-														<td><div ng-show="treeItem.pendingProcess">
+														<td>
+															<div ng-show="treeItem.pendingProcess">
 																<i class="fa fa-gears"></i>
 															</div>
 															<div ng-show="treeItem.pendingActivityInstance"
@@ -175,14 +176,15 @@
 																	ng-show="treeItem.specificDocument.url"><i
 																	class="fa fa-file"></i></span>
 															</div>
-															<div ng-show="treeItem.processAttachments"
+															<div ng-show="treeItem.processAttachments != null"
 																style="margin-left: 10px;">
 																<i class="fa fa-folder-o"></i>
 															</div>
 															<div ng-show="treeItem.processAttachment"
 																style="margin-left: 20px;">
 																<i class="fa fa-file"></i>
-															</div></td>
+															</div>
+														</td>
 														<td><div ng-show="treeItem.pendingProcess">{{treeItem.pendingProcess.processDefinition.name}}
 																(#{{treeItem.pendingProcess.oid}})
 																{{$parent.formatTimestamp(treeItem.pendingProcess.start)}}</div>
@@ -190,8 +192,9 @@
 																(#{{treeItem.pendingActivityInstance.oid}})
 																{{$parent.formatTimestamp(treeItem.pendingActivityInstance.start)}}</div>
 															<div ng-show="treeItem.specificDocument">
-																{{treeItem.specificDocument.name}}
-																({{$parent.formatTimestamp(treeItem.specificDocument.creationTimestamp)}})</div>
+																{{treeItem.specificDocument.name}} <span
+																	ng-show="treeItem.specificDocument.url">({{$parent.formatTimestamp(treeItem.specificDocument.creationTimestamp)}})</span>
+															</div>
 															<div ng-show="treeItem.processAttachments">Process
 																Attachments</div>
 															<div ng-show="treeItem.processAttachment">{{treeItem.processAttachment.type}}
@@ -262,13 +265,7 @@
 														Document Type ...</option>
 													<option value="Birth Certificate">Birth
 														Certificate</option></select></td>
-										</tr>
-										<tr>
-											<td><select ng-model="document.category"><option>Select
-														Document Category ...</option>
-													<option value="Birth Certificate">Birth
-														Certificate</option></select></td>
-										</tr>
+										</tr>										
 									</table>
 									<div ng-repeat="page in document.pages" class="page">
 										<table class="{{$parent.$parent.selectionClass(page)}}">

@@ -20,76 +20,6 @@ define(
 			 * 
 			 */
 			function DocumentAssignmentService() {
-				this.nase = "Propase";
-				this.pendingProcesses = [ {
-					processDefinition : {
-						name : "Disability Claim Processing"
-					},
-					pendingActivityInstances : [ {
-						activity : {
-							name : "Receive Doctor's Certificate"
-						}
-					} ],
-					specificDocuments : [ {
-						name : "Doctor's Certificate",
-						document : null
-					}, {
-						name : "Pay Slip",
-						document : {
-							uri : "xyz"
-						}
-					} ],
-					processAttachments : [ {
-						creationTimestamp : new Date().getTime()
-					}, {
-						creationTimestamp : new Date().getTime()
-					}, {
-						creationTimestamp : new Date().getTime()
-					} ]
-				}, {
-					processInstance : {
-						processDefinition : {
-							name : "Disability Claim Processing"
-						}
-					},
-					pendingActivityInstances : [ {
-						activity : {
-							name : "Receive Signed Claim"
-						}
-					} ],
-					specificDocuments : [ {
-						name : "Claim",
-						document : null
-					}, {
-						name : "Pay Slip",
-						document : {
-							uri : "xyz"
-						}
-					} ],
-					processAttachments : [ {
-						creationTimestamp : new Date().getTime()
-					}, {
-						creationTimestamp : new Date().getTime()
-					} ]
-				} ];
-
-				this.scannedDocuments = [ {
-					creationTimestamp : new Date().getTime(),
-					pageCount : 5
-				}, {
-					creationTimestamp : new Date().getTime(),
-					pageCount : 3
-				} ];
-
-				this.startableProcesses = [ {
-					name : "Disability Claim Processing",
-					specificDocuments : [ {
-						name : "Doctor's Certificate"
-					}, {
-						name : "Pay Slip"
-					} ]
-				} ],
-
 				this.businessObjects = [ {
 					memberId : "4711",
 					firstName : "Haile",
@@ -109,10 +39,39 @@ define(
 				/**
 				 * 
 				 */
-				DocumentAssignmentService.prototype.getScannedDocuments = function() {
+				DocumentAssignmentService.prototype.getScannedDocuments = function(
+						activityInstanceOid) {
 					var deferred = jQuery.Deferred();
+					var rootUrl = location.href.substring(0, location.href
+							.indexOf("/plugins"));
+					var self = this;
 
-					this.delayedResolve(deferred, this.scannedDocuments);
+					jQuery
+							.ajax(
+									{
+										url : rootUrl
+												+ "/services/rest/document-triage/activities/"
+												+ activityInstanceOid
+												+ "/attachments.json",
+										type : "GET",
+										contentType : "application/json"
+									})
+							.done(
+									function(result) {
+										console.log("Process Attachments");
+										console.log(result);
+
+										for (var n = 0; n < result.processAttachments.length; ++n) {
+											result.processAttachments[n].creationTimestamp = new Date()
+													.getTime();
+											result.processAttachments[n].pageCount = 3;
+										}
+
+										deferred
+												.resolve(result.processAttachments);
+									}).fail(function(data) {
+								deferred.reject(data);
+							});
 
 					return deferred.promise();
 				};
@@ -168,8 +127,8 @@ define(
 													pendingActivityInstance : pendingActivityInstance,
 													document : document
 												})
-									}).done(function() {
-								deferred.resolve();
+									}).done(function(result) {
+								deferred.resolve(result.processInstances);
 							}).fail(function(data) {
 								deferred.reject(data);
 							});
@@ -181,8 +140,22 @@ define(
 				 */
 				DocumentAssignmentService.prototype.getStartableProcesses = function() {
 					var deferred = jQuery.Deferred();
+					var rootUrl = location.href.substring(0, location.href
+							.indexOf("/plugins"));
+					var self = this;
 
-					this.delayedResolve(deferred, this.startableProcesses);
+					jQuery
+							.ajax(
+									{
+										url : rootUrl
+												+ "/services/rest/document-triage/processes/startable.json",
+										type : "GET",
+										contentType : "application/json"
+									}).done(function(result) {
+								deferred.resolve(result.processDefinitions);
+							}).fail(function(data) {
+								deferred.reject(data);
+							});
 
 					return deferred.promise();
 				};

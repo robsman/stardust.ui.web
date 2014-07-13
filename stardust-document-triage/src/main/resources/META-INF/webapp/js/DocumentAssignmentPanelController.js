@@ -31,10 +31,11 @@ define(
 					var decodedId = atob(encodedId || '');
 					var partsMatcher = new RegExp('^(\\d+)\\|(\\d+)$');
 					var decodedParts = partsMatcher.exec(decodedId);
-					var activityInstanceOid = decodedParts[1];
+					
+					this.activityInstanceOid = decodedParts[1];
 
 					console.log("Activity Instance OID");
-					console.log(activityInstanceOid);
+					console.log(this.activityInstanceOid);
 
 					this.businessObjectFilter = {};
 					this.selectedBusinessObjects = [];
@@ -47,7 +48,7 @@ define(
 
 					DocumentAssignmentService
 							.instance()
-							.getScannedDocuments()
+							.getScannedDocuments(this.activityInstanceOid)
 							.done(
 									function(scannedDocuments) {
 										self.scannedDocuments = scannedDocuments;
@@ -150,8 +151,9 @@ define(
 															pendingActivityInstance,
 															scannedDocument)
 													.done(
-															function(pendingProcesses) {
-																self.pendingProcesses = pendingProcess;
+															function(
+																	pendingProcesses) {
+																self.pendingProcesses = pendingProcesses;
 																self
 																		.refreshPendingProcessesTree();
 																self
@@ -166,7 +168,7 @@ define(
 																				1000);
 															}).fail();
 										},
-										tolerance : "touch"
+										tolerance : "pointer"
 									});
 						} else if (this.pendingProcessesTree[n].specificDocument) {
 							var specificDocumentRow = jQuery("#pendingProcessesTreeRow"
@@ -209,7 +211,7 @@ define(
 																				1000);
 															}).fail();
 										},
-										tolerance : "touch"
+										tolerance : "pointer"
 									});
 						} else if (this.pendingProcessesTree[n].processAttachments) {
 							var processAttachmentsRow = jQuery("#pendingProcessesTreeRow"
@@ -271,7 +273,7 @@ define(
 																				"default");
 															});
 										},
-										tolerance : "touch"
+										tolerance : "pointer"
 									});
 						}
 					}
@@ -395,6 +397,9 @@ define(
 									});
 						}
 					}
+					
+					console.log("Pending Processes Tree");
+					console.log(this.pendingProcessesTree);
 				};
 
 				/**
@@ -407,6 +412,10 @@ define(
 						this.startableProcessesTree.push({
 							startableProcess : this.startableProcesses[n]
 						});
+
+						if (!this.startableProcesses[n].specificDocuments) {
+							this.startableProcesses[n].specificDocuments = [];
+						}
 
 						for (var m = 0; m < this.startableProcesses[n].specificDocuments.length; ++m) {
 							this.startableProcessesTree
