@@ -595,13 +595,7 @@ if (!window["BridgeUtils"].View) {
 					BridgeUtils.log("iFrame to be removed = " + iframeId);
 	
 					if (iframe) {
-						iframe.style.display = "none";
-						iframe.src = "about:blank"; // Must change url before relocating iFrame
-	
-						var frameContainer = BridgeUtils.FrameManager.getFrameContainer();
-						frameContainer.appendChild(iframe);
-	
-						BridgeUtils.FrameManager.close(iframeId);
+						BridgeUtils.FrameManager.prepareForClose(iframe);
 					}
 				} else {
 					ret = false;
@@ -1801,9 +1795,7 @@ if (!window["BridgeUtils"].FrameManager) {
 					contentFrame.setAttribute("isClosing", "true");
 
 					contentFrame.style.display = 'none';
-					if (contentFrame.src != "about:blank") {
-						contentFrame.src = "about:blank";
-					}
+					BridgeUtils.FrameManager.prepareForClose(contentFrame);
 
 					BridgeUtils.log("Scheduling delayed iFrame Closing = " + contentId);
 					window.setTimeout(function() {
@@ -1817,6 +1809,42 @@ if (!window["BridgeUtils"].FrameManager) {
 					BridgeUtils.log("iFrame is already in Closing = " + contentId);
 				}
 			});
+		}
+
+		/*
+		 * This is more applicable to ICEfaces sourced iFrames
+		 */
+		function prepareForClose(contentFrame) {
+			var ret = false;
+			var contentFrameId = contentFrame.getAttribute("id");
+
+			// Use direct way of disposal
+			try {
+				if (contentFrame.contentWindow.disposeOnViewRemoval) {
+					// There has to be at lest one form
+					var forms = contentFrame.contentDocument.getElementsByTagName("form");
+					if (forms.length >= 1) {
+						BridgeUtils.log("Disposing View via content id " + forms[0].id);
+						contentFrame.contentWindow.disposeOnViewRemoval(forms[0].id);
+					}
+					BridgeUtils.log("View Disposal was successful for " + contentFrameId);
+					ret = true;
+				}
+			} catch(e) {
+				BridgeUtils.log("Failed in View Disposal for " + contentFrameId, "e");
+				BridgeUtils.log(e, "e");
+			}
+
+			// Fallback to indirect way of disposal
+			if (!ret) {
+				BridgeUtils.log("Falling back to indirect way of View Disposal for " + contentFrameId);
+				contentFrame.style.display = "none";
+				if (contentFrame.src != "about:blank") {
+					contentFrame.src = "about:blank";
+				}
+			}
+
+			return ret;
 		}
 
 		/*
@@ -2057,6 +2085,7 @@ if (!window["BridgeUtils"].FrameManager) {
 			createOrActivate : createOrActivate,
 			deactivate : deactivate,
 			close : close,
+			prepareForClose : prepareForClose,
 			forceCloseAll : forceCloseAll,
 			resizeAndReposition : resizeAndReposition,
 			resizeAndRepositionAllActive : resizeAndRepositionAllActive,
