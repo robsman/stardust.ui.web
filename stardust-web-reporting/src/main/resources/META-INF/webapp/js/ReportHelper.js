@@ -145,7 +145,7 @@ define(
 				ReportHelper.prototype.prepareParameters = function(filters) {
 					var parameters = [];
 					for (var int = 0; int < filters.length; int++) {
-						if (filters[int].metadata.parameterizable) {
+						if (filters[int].metadata && filters[int].metadata.parameterizable) {
 							parameters.push(angular.copy(filters[int]));
 						}
 					}
