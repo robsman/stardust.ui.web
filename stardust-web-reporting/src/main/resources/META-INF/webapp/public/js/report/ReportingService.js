@@ -351,7 +351,7 @@ define(
 								id : "participantPerformerName",
 								name : this.getI18N("reporting.definitionView.additionalFiltering.performer"),
 								type : this.metadata.enumerationType,
-								enumerationType : "modelData:processDefinitions:name"
+								enumerationType : "modelData:participants:name"
 							},
 							state : {
 								id : "state",
