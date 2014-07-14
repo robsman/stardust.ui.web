@@ -108,6 +108,24 @@ public class DocumentTriageResource {
 		}
 	}
 
+	@PUT
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("processes.json")
+	public Response startProcess(String postedData) {
+		try {
+			JsonObject json = jsonIo.readJsonObject(postedData);
+
+			return Response.ok(
+					getDocumentTriageService().startProcess(json)
+							.toString(), MediaType.APPLICATION_JSON).build();
+		} catch (Exception e) {
+			trace.error(e, e);
+
+			return Response.serverError().build();
+		}
+	}
+	
 	/**
 	 * 
 	 * @param documentTriageService

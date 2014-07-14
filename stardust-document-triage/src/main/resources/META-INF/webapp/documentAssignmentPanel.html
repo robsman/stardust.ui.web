@@ -6,7 +6,7 @@
 <link href="./css/font-awesome-4.1.0/css/font-awesome.css"
 	rel="stylesheet">
 <link href='./css/stardust-modern.css' rel='stylesheet' />
-<link href='./css/jquery/jquery-ui-1.10.2.custom.min.css'
+<link href='./css/thirdparty/jquery/jquery-ui-1.10.2.custom.min.css'
 	rel='stylesheet' />
 <script data-main="./js/DocumentAssignmentPanelMain"
 	src="./js/libs/require/2.0.5/require-min.js"></script>
@@ -45,8 +45,9 @@
 }
 
 .dragHelper {
-	font-size: 14px;
+	font-size: 11px;
 	color: black;
+	background-color: white !important;
 }
 
 .normalLine {
@@ -75,7 +76,6 @@
 					<table class="layoutTable" style="width: 100%;">
 						<tr>
 							<td>
-								<h2>Member Data</h2>
 								<div class="section" style="margin-bottom: 10px; padding: 10px;">
 									<table class="formTable">
 										<tr>
@@ -123,7 +123,7 @@
 							<td>
 								<table style="width: 100%;">
 									<tr valign="top">
-										<td style="width: 50%;"><h2>Selected Page</h2>
+										<td style="width: 50%;">
 											<table class="toolbar" style="width: 100%;">
 												<tr>
 													<td><table class="formTable">
@@ -151,7 +151,8 @@
 												<img id="pageImage"
 													src="./images/page{{selectedPage.number}}.png"
 													ng-show="selectedPage != null" />
-											</div></td>
+											</div>
+										</td>
 										<td style="width: 50%; padding-left: 10px !important;">
 											<h2>Pending Processes and Activities</h2>
 											<div class="section"
@@ -237,7 +238,6 @@
 					</table>
 				</td>
 				<td style="width: 200px;">
-					<h2>Scanned Documents</h2>
 					<table class="toolbar" style="width: 100%;">
 						<tr>
 							<td><table class="formTable">
@@ -258,14 +258,16 @@
 								<td>
 									<table class="formTable">
 										<tr>
-											<td>{{$parent.formatTimestamp(document.creationTimestamp)}}</td>
+											<td><span style="font-size: 9px;">{{document.name}}
+													{{$parent.formatTimestamp(document.creationTimestamp)}}
+													{{document.contentType}}</span></td>
 										</tr>
 										<tr>
 											<td><select ng-model="document.type"><option>Select
 														Document Type ...</option>
 													<option value="Birth Certificate">Birth
 														Certificate</option></select></td>
-										</tr>										
+										</tr>
 									</table>
 									<div ng-repeat="page in document.pages" class="page">
 										<table class="{{$parent.$parent.selectionClass(page)}}">
@@ -286,6 +288,29 @@
 				</td>
 			</tr>
 		</table>
+		<div sd-dialog="startProcessDialog" style="visibility: hidden;">
+			<table cellpadding="0" cellspacing="0"
+				style="width: 100%; margin-top: 10px;">
+				<tr>
+					<td>The process <strong>{{startProcessDialog.startableProcess.name}}</strong>
+						was started with the selected document.
+					</td>
+				</tr>
+			</table>
+			<table cellpadding="0" cellspacing="0"
+				style="width: 100%; margin-top: 10px;">
+				<tr>
+					<td align="center">
+						<table cellpadding="0" cellspacing="0">
+							<tr>
+								<td><input type="button" class="button" value="Close"
+									ng-click="closeStartProcessDialog()" /></td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</div>
 	</div>
 </body>
 </html>

@@ -31,12 +31,9 @@ define(
 					var decodedId = atob(encodedId || '');
 					var partsMatcher = new RegExp('^(\\d+)\\|(\\d+)$');
 					var decodedParts = partsMatcher.exec(decodedId);
-					
+
 					this.activityInstanceOid = decodedParts[1];
-
-					console.log("Activity Instance OID");
-					console.log(this.activityInstanceOid);
-
+					this.startProcessDialog = {};
 					this.businessObjectFilter = {};
 					this.selectedBusinessObjects = [];
 					this.mode = "normal";
@@ -115,8 +112,19 @@ define(
 										top : 0,
 										left : 0
 									},
-									helper : function(event) {
-										return jQuery("<div class='ui-widget-header dragHelper'>Bla Barbara<i class='fa fa-files'></i></div>");
+									helper : function(event, ui) {
+										var scannedDocument = jQuery.data(
+												event.currentTarget,
+												"scannedDocument");
+
+										return jQuery("<div class='ui-widget-header dragHelper'><i class='fa fa-files-o' style='font-size: 14px;'></i> "
+												+ scannedDocument.name
+												+ " "
+												+ self
+														.formatTimestamp(scannedDocument.creationTimestamp)
+												+ " "
+												+ scannedDocument.contentType
+												+ "</div>");
 									},
 									drag : function(event) {
 									},
@@ -125,58 +133,172 @@ define(
 								});
 					}
 
-					for (var n = 0; n < this.pendingProcessesTree.length; ++n) {
-						if (this.pendingProcessesTree[n].pendingActivityInstance) {
-							var pendingActivityInstanceRow = jQuery("#pendingProcessesTreeRow"
-									+ n);
-							pendingActivityInstanceRow
-									.data({
-										ui : pendingActivityInstanceRow,
-										pendingActivityInstance : this.pendingProcessesTree[n].pendingActivityInstance
-									});
-							pendingActivityInstanceRow
-									.droppable({
-										hoverClass : "highlighted",
-										drop : function(event, ui) {
-											var scannedDocument = jQuery.data(
-													ui.draggable[0],
-													"scannedDocument");
-											var pendingActivityInstance = jQuery
-													.data(this,
-															"pendingActivityInstance");
+					if (this.pendingProcessesTree) {
+						for (var n = 0; n < this.pendingProcessesTree.length; ++n) {
+							if (this.pendingProcessesTree[n].pendingActivityInstance) {
+								var pendingActivityInstanceRow = jQuery("#pendingProcessesTreeRow"
+										+ n);
+								pendingActivityInstanceRow
+										.data({
+											ui : pendingActivityInstanceRow,
+											pendingActivityInstance : this.pendingProcessesTree[n].pendingActivityInstance
+										});
+								pendingActivityInstanceRow
+										.droppable({
+											hoverClass : "highlighted",
+											drop : function(event, ui) {
+												var scannedDocument = jQuery
+														.data(ui.draggable[0],
+																"scannedDocument");
+												var pendingActivityInstance = jQuery
+														.data(this,
+																"pendingActivityInstance");
 
-											DocumentAssignmentService
-													.instance()
-													.completeDocumentRendezvous(
-															pendingActivityInstance,
-															scannedDocument)
-													.done(
-															function(
-																	pendingProcesses) {
-																self.pendingProcesses = pendingProcesses;
-																self
-																		.refreshPendingProcessesTree();
-																self
-																		.safeApply();
+												DocumentAssignmentService
+														.instance()
+														.completeDocumentRendezvous(
+																pendingActivityInstance,
+																scannedDocument)
+														.done(
+																function(
+																		pendingProcesses) {
+																	self.pendingProcesses = pendingProcesses;
+																	self
+																			.refreshPendingProcessesTree();
+																	self
+																			.safeApply();
 
-																window
-																		.setTimeout(
-																				function() {
-																					self
-																							.bindDragAndDrop();
-																				},
-																				1000);
-															}).fail();
-										},
-										tolerance : "pointer"
-									});
-						} else if (this.pendingProcessesTree[n].specificDocument) {
-							var specificDocumentRow = jQuery("#pendingProcessesTreeRow"
+																	window
+																			.setTimeout(
+																					function() {
+																						self
+																								.bindDragAndDrop();
+																					},
+																					1000);
+																}).fail();
+											},
+											tolerance : "pointer"
+										});
+							} else if (this.pendingProcessesTree[n].specificDocument) {
+								var specificDocumentRow = jQuery("#pendingProcessesTreeRow"
+										+ n);
+								specificDocumentRow
+										.data({
+											ui : specificDocumentRow,
+											specificDocument : this.pendingProcessesTree[n].specificDocument
+										});
+								specificDocumentRow
+										.droppable({
+											hoverClass : "highlighted",
+											drop : function(event, ui) {
+												var scannedDocument = jQuery
+														.data(ui.draggable[0],
+																"scannedDocument");
+												var specificDocument = jQuery
+														.data(this,
+																"specificDocument");
+
+												DocumentAssignmentService
+														.instance()
+														.addProcessAttachment()
+														.done(
+																function() {
+																	specificDocument.url = "bla";
+																	specificDocument.creationTimestamp = scannedDocument.creationTimestamp;
+																	specificDocument.type = scannedDocument.type;
+
+																	self
+																			.refreshPendingProcessesTree();
+																	self
+																			.safeApply();
+
+																	window
+																			.setTimeout(
+																					function() {
+																						self
+																								.bindDragAndDrop();
+																					},
+																					1000);
+																}).fail();
+											},
+											tolerance : "pointer"
+										});
+							} else if (this.pendingProcessesTree[n].processAttachments) {
+								var processAttachmentsRow = jQuery("#pendingProcessesTreeRow"
+										+ n);
+								processAttachmentsRow
+										.data({
+											ui : processAttachmentsRow,
+											processAttachments : this.pendingProcessesTree[n].processAttachments
+										});
+								processAttachmentsRow
+										.droppable({
+											hoverClass : "highlighted",
+											drop : function(event, ui) {
+												var scannedDocument = jQuery
+														.data(ui.draggable[0],
+																"scannedDocument");
+												var processAttachments = jQuery
+														.data(this,
+																"processAttachments");
+
+												jQuery("*").css("cursor",
+														"wait");
+
+												DocumentAssignmentService
+														.instance()
+														.addProcessAttachment()
+														.done(
+																function() {
+																	processAttachments
+																			.push(scannedDocument);
+
+																	console
+																			.log("Extended Process Attachments");
+																	console
+																			.log(processAttachments);
+
+																	self
+																			.refreshPendingProcessesTree();
+																	self
+																			.safeApply();
+
+																	jQuery("*")
+																			.css(
+																					"cursor",
+																					"default");
+
+																	window
+																			.setTimeout(
+																					function() {
+																						self
+																								.bindDragAndDrop();
+																					},
+																					1000);
+																})
+														.fail(
+																function() {
+																	jQuery("*")
+																			.css(
+																					"cursor",
+																					"default");
+																});
+											},
+											tolerance : "pointer"
+										});
+							}
+						}
+					}
+
+					for (var n = 0; n < this.startableProcessesTree.length; ++n) {
+						if (this.startableProcessesTree[n].specificDocument) {
+							var specificDocumentRow = jQuery("#startableProcessesTreeRow"
 									+ n);
 							specificDocumentRow
 									.data({
 										ui : specificDocumentRow,
-										specificDocument : this.pendingProcessesTree[n].specificDocument
+										processDetails : this.startableProcessesTree[n].processDetails,
+										specificDocument : this.startableProcessesTree[n].specificDocument
 									});
 							specificDocumentRow
 									.droppable({
@@ -185,41 +307,38 @@ define(
 											var scannedDocument = jQuery.data(
 													ui.draggable[0],
 													"scannedDocument");
+											var processDetails = jQuery.data(
+													this, "processDetails");
 											var specificDocument = jQuery.data(
 													this, "specificDocument");
 
 											DocumentAssignmentService
 													.instance()
-													.addProcessAttachment()
+													.startProcess(
+															scannedDocument,
+															processDetails,
+															specificDocument)
 													.done(
-															function() {
-																specificDocument.url = "bla";
-																specificDocument.creationTimestamp = scannedDocument.creationTimestamp;
-																specificDocument.type = scannedDocument.type;
-
+															function(result) {
 																self
-																		.refreshPendingProcessesTree();
+																		.openStartProcessDialog(
+																				result.scannedDocument,
+																				result.startableProcess,
+																				result.specificDocument);
 																self
 																		.safeApply();
-
-																window
-																		.setTimeout(
-																				function() {
-																					self
-																							.bindDragAndDrop();
-																				},
-																				1000);
 															}).fail();
 										},
 										tolerance : "pointer"
 									});
-						} else if (this.pendingProcessesTree[n].processAttachments) {
-							var processAttachmentsRow = jQuery("#pendingProcessesTreeRow"
+						} else if (this.startableProcessesTree[n].processAttachments) {
+							var processAttachmentsRow = jQuery("#startableProcessesTreeRow"
 									+ n);
 							processAttachmentsRow
 									.data({
 										ui : processAttachmentsRow,
-										processAttachments : this.pendingProcessesTree[n].processAttachments
+										processDetails : this.startableProcessesTree[n].processDetails,
+										processAttachments : this.startableProcessesTree[n].processAttachments
 									});
 							processAttachmentsRow
 									.droppable({
@@ -228,50 +347,23 @@ define(
 											var scannedDocument = jQuery.data(
 													ui.draggable[0],
 													"scannedDocument");
-											var processAttachments = jQuery
-													.data(this,
-															"processAttachments");
-
-											jQuery("*").css("cursor", "wait");
+											var processDetails = jQuery.data(
+													this, "processDetails");
 
 											DocumentAssignmentService
 													.instance()
-													.addProcessAttachment()
+													.startProcess(
+															scannedDocument,
+															processDetails)
 													.done(
-															function() {
-																processAttachments
-																		.push(scannedDocument);
-
-																console
-																		.log("Extended Process Attachments");
-																console
-																		.log(processAttachments);
-
+															function(result) {
 																self
-																		.refreshPendingProcessesTree();
+																		.openStartProcessDialog(
+																				result.scannedDocument,
+																				result.startableProcess);
 																self
 																		.safeApply();
-
-																jQuery("*")
-																		.css(
-																				"cursor",
-																				"default");
-
-																window
-																		.setTimeout(
-																				function() {
-																					self
-																							.bindDragAndDrop();
-																				},
-																				1000);
-															})
-													.fail(
-															function() {
-																jQuery("*")
-																		.css(
-																				"cursor",
-																				"default");
-															});
+															}).fail();
 										},
 										tolerance : "pointer"
 									});
@@ -397,9 +489,6 @@ define(
 									});
 						}
 					}
-					
-					console.log("Pending Processes Tree");
-					console.log(this.pendingProcessesTree);
 				};
 
 				/**
@@ -420,11 +509,13 @@ define(
 						for (var m = 0; m < this.startableProcesses[n].specificDocuments.length; ++m) {
 							this.startableProcessesTree
 									.push({
+										processDetails : this.startableProcesses[n],
 										specificDocument : this.startableProcesses[n].specificDocuments[m]
 									});
 						}
 
 						this.startableProcessesTree.push({
+							processDetails : this.startableProcesses[n],
 							processAttachments : {}
 						// Dummy
 						});
@@ -472,6 +563,27 @@ define(
 								jQuery("*").css("cursor", "default");
 							});
 
+				};
+
+				/**
+				 * 
+				 */
+				DocumentAssignmentPanelController.prototype.openStartProcessDialog = function(
+						scannedDocument, startableProcess, specificDocument) {
+					this.startProcessDialog.scannedDocument = scannedDocument;
+					this.startProcessDialog.startableProcess = startableProcess;
+					this.startProcessDialog.specificDocument = specificDocument;
+
+					this.startProcessDialog.dialog("option", "width", 400);
+					this.startProcessDialog.dialog("option", "modal", true);
+					this.startProcessDialog.dialog("open");
+				};
+
+				/**
+				 * 
+				 */
+				DocumentAssignmentPanelController.prototype.closeStartProcessDialog = function() {
+					this.startProcessDialog.dialog("close");
 				};
 
 				/**

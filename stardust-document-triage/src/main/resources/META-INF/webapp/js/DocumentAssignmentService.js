@@ -174,6 +174,39 @@ define(
 				/**
 				 * 
 				 */
+				DocumentAssignmentService.prototype.startProcess = function(
+						scannedDocument, startableProcess, specificDocument) {
+					var deferred = jQuery.Deferred();
+
+					var rootUrl = location.href.substring(0, location.href
+							.indexOf("/plugins"));
+					var self = this;
+
+					jQuery
+							.ajax(
+									{
+										url : rootUrl
+												+ "/services/rest/document-triage/processes.json",
+										type : "PUT",
+										contentType : "application/json",
+										data : JSON
+												.stringify({
+													scannedDocument : scannedDocument,
+													startableProcess : startableProcess,
+													specificDocument : specificDocument
+												})
+									}).done(function(result) {
+								deferred.resolve(result);
+							}).fail(function(data) {
+								deferred.reject(data);
+							});
+
+					return deferred.promise();
+				};
+
+				/**
+				 * 
+				 */
 				DocumentAssignmentService.prototype.addProcessAttachment = function() {
 					var deferred = jQuery.Deferred();
 

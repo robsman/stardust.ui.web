@@ -427,82 +427,47 @@ define(
 											return {
 												post : function(scope, element,
 														attributes, controller) {
-													// Delayed to allow Angular
-													// to finish
+													var dialog = jQuery(element)
+															.dialog(
+																	{
+																		autoOpen : false,
+																		resize : "auto",
+																		width : 800,
+																		resizeable : false
+																	});
 
-													window
-															.setTimeout(
-																	function() {
-																		dialog = jQuery(
-																				element)
-																				.dialog(
-																						{
-																							autoOpen : false,
-																							resize : "auto",
-																							width : 800,
-																							resizeable : false
-																						});
+													dialog.css("visibility",
+															"visible");
 
-																		dialog
-																				.css(
-																						"visibility",
-																						"visible");
+													// TODO
+													// Requires
+													// format
+													// segment1.segment2
+													// ...
+													// for
+													// the
+													// dialog
+													// field;
+													// not
+													// robust
 
-																		// TODO
-																		// Requires
-																		// format
-																		// segment1.segment2
-																		// ...
-																		// for
-																		// the
-																		// dialog
-																		// field;
-																		// not
-																		// robust
-
-																		if (attributes.sdDialog
-																				.lastIndexOf(".") < 0) {
-																			scope[attributes.ippDialog] = dialog;
-
-																			console
-																					.log("Scope");
-																			console
-																					.log(scope[attributes.sdDialog]);
-																		} else {
-																			scope
-																					.$eval(attributes.sdDialog
-																							.substring(
-																									0,
-																									attributes.ippDialog
-																											.lastIndexOf(".")))[attributes.sdDialog
-																					.substring(attributes.ippDialog
-																							.lastIndexOf(".") + 1)] = dialog;
-																		}
-																	}, 1000);
-												}
-											};
-										}
-									};
-								});
-
-				module
-						.directive(
-								'ippCalendar',
-								function() {
-									return {
-										restrict : "A",
-										compile : function(element, attrs) {
-											return {
-												post : function(scope, element,
-														attributes, controller) {
-
-													scope[attributes.sdDialog] = jQuery(
-															element)
-															.fullCalendar(
-																	scope
-																			.$eval(attributes.ippCalendarOptions));
-													scope[attributes.sdDialog]
-															.fullCalendar('today');
+													if (attributes.sdDialog
+															.lastIndexOf(".") < 0) {
+														scope[attributes.sdDialog] = dialog;
+													} else {
+														scope
+																.$eval(attributes.sdDialog
+																		.substring(
+																				0,
+																				attributes.sdDialog
+																						.lastIndexOf(".")))[attributes.sdDialog
+																.substring(attributes.sdDialog
+																		.lastIndexOf(".") + 1)] = dialog;
+													}
+													
+													console.log("=============> Scope");
+													console
+															.log(scope);
 												}
 											};
 										}
