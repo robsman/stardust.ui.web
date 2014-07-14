@@ -24,10 +24,13 @@ define(
 				DocumentAssignmentPanelController.prototype.initialize = function() {
 					this.queryParameters = Utils.getQueryParameters();
 
-					// TODO Relative path and standardized API
+					// TODO Standardized API
 
+					var pattern = "/server/services/rest/engine/interactions/";
 					var encodedId = this.queryParameters["ippInteractionUri"]
-							.substring("http://localhost:9090/server/services/rest/engine/interaction/".length + 1);
+							.substring(this.queryParameters["ippInteractionUri"]
+									.indexOf(pattern)
+									+ pattern.length);
 					var decodedId = atob(encodedId || '');
 					var partsMatcher = new RegExp('^(\\d+)\\|(\\d+)$');
 					var decodedParts = partsMatcher.exec(decodedId);
