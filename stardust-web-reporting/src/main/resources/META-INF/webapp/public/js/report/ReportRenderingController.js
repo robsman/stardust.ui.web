@@ -257,6 +257,7 @@ define(
 						}
 						
 						chartOptions.axes.xaxis.tickRenderer = jQuery.jqplot.CanvasAxisTickRenderer;
+						chartOptions.axes.yaxis.tickRenderer = jQuery.jqplot.CanvasAxisTickRenderer;
 						
 					} else if (this.report.layout.chart.type === this.reportingService.metadata.chartTypes.candlestickChart.id) {
 						if (this.getFirstDimension().type == this.reportingService.metadata.timestampType) {
@@ -267,6 +268,8 @@ define(
 						chartOptions.series.push({
 							renderer:$.jqplot.OHLCRenderer, rendererOptions:{candleStick:false }
 						})
+						chartOptions.axes.xaxis.tickRenderer = jQuery.jqplot.CanvasAxisTickRenderer;
+                  chartOptions.axes.yaxis.tickRenderer = jQuery.jqplot.CanvasAxisTickRenderer;
 						
 					} else if (this.report.layout.chart.type === this.reportingService.metadata.chartTypes.barChart.id) {
 						chartOptions.seriesDefaults.renderer = $.jqplot.BarRenderer;
@@ -284,6 +287,7 @@ define(
 						}
 
 						chartOptions.axes.xaxis.tickRenderer = jQuery.jqplot.CanvasAxisTickRenderer;
+                  chartOptions.axes.yaxis.tickRenderer = jQuery.jqplot.CanvasAxisTickRenderer;
 						
 						chartOptions.axes.yaxis.pad = 1.05;
 					} else if (this.report.layout.chart.type === this.reportingService.metadata.chartTypes.bubbleChart.id) {
