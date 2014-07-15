@@ -26,7 +26,7 @@ define(
 
 					// TODO Standardized API
 
-					var pattern = "/server/services/rest/engine/interactions/";
+					var pattern = "/services/rest/engine/interactions/";
 					var encodedId = this.queryParameters["ippInteractionUri"]
 							.substring(this.queryParameters["ippInteractionUri"]
 									.indexOf(pattern)

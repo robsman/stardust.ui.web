@@ -26,7 +26,7 @@
 	<packaging>jar</packaging>
 
    <properties>
-      <ipp.version>8.0.0-RC3-SNAPSHOT</ipp.version>
+      <ipp.version>8.0.0-RC6-SNAPSHOT</ipp.version>
    </properties>
 
 	<dependencies>
