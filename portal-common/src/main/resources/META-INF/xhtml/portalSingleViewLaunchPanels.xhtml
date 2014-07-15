@@ -7,12 +7,12 @@
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 
 	<ice:panelGroup>
-		<div class="topMenu" style="line-height:0px;">
+		<div class="topMenu">
 			<ice:form partialSubmit="true">
 				<table>
 					<tr>
 						<td class="topMenuTd" style="width: 100%">
-							<ice:panelGroup	styleClass="topMenuIframeBar">
+							<ice:panelGroup	styleClass="topMenuIframeBar" style="line-height:0px;"> 
 								<ice:panelGrid columns="2" styleClass="menuItm">
 									<ice:commandLink
 										action="#{ippPortalUi.perspectiveMenuIframeHandler.togglePopup}"
@@ -34,7 +34,7 @@
 							</ice:panelGroup>
 						</td>
 						<td class="topMenuTd">
-							<ice:menuBar styleClass="topMenuBar" orientation="horizontal" displayOnClick="true">
+							<ice:menuBar styleClass="topMenuBar" orientation="horizontal" displayOnClick="true" style="line-height:18px;">
 								<!-- HELP Menu Item -->
 								<c:if test="#{not empty ippPortalApp.helpDocPreference}">
 									<pc:automationTag value="auto-FW-HelpMenu" />
