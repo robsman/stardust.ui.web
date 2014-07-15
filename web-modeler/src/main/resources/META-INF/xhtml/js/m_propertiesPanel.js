@@ -50,8 +50,9 @@ define(
 
 				initializeProcessPropertiesPanel : function(
 						processPropertiesPanel) {
+					var tempPanel = null;
 					if (currentPropertiesPanel != null) {
-						currentPropertiesPanel.hide();
+						tempPanel = currentPropertiesPanel;
 						m_utils.markControlsReadonly('modelerPropertiesPanelWrapper', false);
 					}
 
@@ -63,6 +64,9 @@ define(
 					}
 
 					currentPropertiesPanel.show();
+					if(tempPanel!=null && tempPanel.id != currentPropertiesPanel.id){
+						tempPanel.hide();
+					}
 				},
 
 				createPropertiesPanel : function(id, angularized) {
