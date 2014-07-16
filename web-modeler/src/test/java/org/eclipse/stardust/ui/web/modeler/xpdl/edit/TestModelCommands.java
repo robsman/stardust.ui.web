@@ -1,4 +1,4 @@
-package org.eclipse.stardust.ui.web.modeler.edit.model.element;
+package org.eclipse.stardust.ui.web.modeler.xpdl.edit;
 
 import static com.google.common.io.ByteStreams.toByteArray;
 import static com.google.common.io.Closeables.closeQuietly;
@@ -43,12 +43,11 @@ import org.eclipse.stardust.ui.web.modeler.model.conversion.RequestExecutor;
 import org.eclipse.stardust.ui.web.modeler.service.DefaultModelManagementStrategy;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 import org.eclipse.stardust.ui.web.modeler.service.ModelerSessionController;
-import org.eclipse.stardust.ui.web.modeler.service.rest.ModelerResource;
 import org.eclipse.stardust.ui.web.modeler.utils.test.ChangeApiDriver;
 import org.eclipse.stardust.ui.web.modeler.utils.test.MockServiceFactoryLocator;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"../../../web-modeler-test-context.xml"})
+@ContextConfiguration(locations = {"../../web-modeler-test-context.xml"})
 @FixMethodOrder(MethodSorters.JVM)
 public class TestModelCommands
 {
@@ -59,9 +58,6 @@ public class TestModelCommands
 
    @Resource
    JsonMarshaller jsonIo;
-
-   @Resource
-   ModelerResource modelerRestController;
 
    @Resource
    ModelService modelService;
@@ -114,7 +110,7 @@ public class TestModelCommands
                public byte[] answer(InvocationOnMock invocation) throws Throwable
                {
                   InputStream isModel = getClass().getResourceAsStream(
-                        "../../../service/rest/" + xpdlModel.getName());
+                        "../../service/rest/" + xpdlModel.getName());
                   try
                   {
                      return toByteArray(isModel);
