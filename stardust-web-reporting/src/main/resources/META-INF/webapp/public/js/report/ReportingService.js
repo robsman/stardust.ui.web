@@ -2003,8 +2003,16 @@ define(
               var VALID_FILENAME_PATTERN = /[\\\\/:*?\"<>|\\[\\]]*/
               return (! reportName.trim().match(VALID_FILENAME_PATTERN)) ? true : false;
            };
-            
-            
+           
+            /**
+             * Removes any forward slashes from the input parameter
+             */
+            ReportingService.prototype.validateReportName = function(reportName) {
+               if(! this.isValidReportName(reportName)) {
+                 return reportName.replace(/\//g, '');
+               };
+               return reportName;
+            }
             
 			}
 			

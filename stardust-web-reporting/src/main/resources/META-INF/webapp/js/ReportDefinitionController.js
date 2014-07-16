@@ -1102,26 +1102,11 @@ define(
 						self.path = self.report.storage.path;
 					}
 					
+					self.report.name = self.reportingService.validateReportName(self.report.name);
+					
 					//Check if Report name has been changed. If yes then first invoke rename and then save 
 					if (self.path != null)
                {
-					   if(! self.reportingService.isValidReportName(self.report.name)) {
-					      var deferred = jQuery.Deferred();
-					      
-					      this.reportingService.retrieveReportDefinition(self.path)
-                     .done(function(report) {
-                        
-                        self.report.name = report.name;
-                        self.updateView();
-                       
-                        deferred.resolve();
-                     }).fail(function() {
-                        deferred.reject();
-                     });
-					      
-                     return;
-                  }
-						
 					   var ext = self.path.substring(self.path.lastIndexOf('.'), self.path.length);
 					   var id = self.path; 
 					   var lastIndex = id.lastIndexOf("/");
