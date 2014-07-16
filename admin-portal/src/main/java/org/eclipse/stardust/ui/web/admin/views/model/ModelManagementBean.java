@@ -468,6 +468,7 @@ public class ModelManagementBean extends UIComponentBean implements ViewEventHan
    {
       ModelManagementTreeItem node = new ModelManagementTreeItem(parentItem);
       node.setComment(model.getDeploymentComment());
+      node.setDeploymentTime(model.getDeploymentTime());
       node.setLabel(I18nUtils.getLabel(ModelUtils.getModel(model.getModelOID()), model.getName()));
       node.setOid(model.getModelOID());
       node.setType(type);
@@ -630,13 +631,13 @@ public class ModelManagementBean extends UIComponentBean implements ViewEventHan
             "column.oid"));
       colOid.setColumnAlignment(ColumnAlignment.CENTER);
       
-      ColumnPreference colDeploymentTime = new ColumnPreference("DeploymentTime", null, this.getMessages().getString(
-    		  "column.deploymentTime"), ResourcePaths.V_MODEL_MANAGEMENT_VIEW_COLUMNS, true, false);
+      ColumnPreference colDeploymentTime = new ColumnPreference("DeploymentTime", "deploymentTime", ColumnPreference.ColumnDataType.DATE, this.getMessages().getString(
+    		  "column.deploymentTime"), true, false);
 
-      ColumnPreference colvalidFrom = new ColumnPreference("ValidFrom", null, this.getMessages().getString(
+      ColumnPreference colvalidFrom = new ColumnPreference("ValidFrom", "validFrom", this.getMessages().getString(
             "column.validFrom"), ResourcePaths.V_MODEL_MANAGEMENT_VIEW_COLUMNS, true, false);
 
-      ColumnPreference colComment = new ColumnPreference("Comment", null, this.getMessages()
+      ColumnPreference colComment = new ColumnPreference("Comment", "comment", this.getMessages()
             .getString("column.comment"), ResourcePaths.V_MODEL_MANAGEMENT_VIEW_COLUMNS, true, false);
 
       colComment.setColumnAlignment(ColumnAlignment.LEFT);
