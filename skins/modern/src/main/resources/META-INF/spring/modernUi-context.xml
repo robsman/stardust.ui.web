@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ippui="http://infinity.com/bpm/portal/common/uiDefinition"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+		http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/portal/common/uiDefinition.xsd">
+
+	<ippui:perspectiveExtension
+		targetPerspective="*" id="ippModernThemePerspective">
+
+		<!-- Toolbar Extensions come here -->
+		<ippui:toolbarExtension>
+		</ippui:toolbarExtension>
+
+		<!-- Views Extensions come here -->
+		<ippui:viewsExtension>
+		</ippui:viewsExtension>
+	</ippui:perspectiveExtension>
+</beans>
