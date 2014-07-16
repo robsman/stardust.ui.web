@@ -107,10 +107,14 @@
          </fileset>
       </copy>
 
-      <copy todir="${build.src}">
+      <!-- Copy NL property file for locale "en" to NL property with no locale. -->
+      <copy todir="${build.classes}" overwrite="true">
          <fileset dir="${resources.src}">
-            <include name="**/*.*" />
+            <include name="**/*_en.properties" />
          </fileset>
+         <filtermapper>
+           <replacestring from="_en.properties" to=".properties"/>
+         </filtermapper>
       </copy>
    </target>
 
@@ -178,6 +182,7 @@
             <include name="**/*_de.properties"/>
             <include name="**/*_en.properties"/>
             <include name="**/*_zh_CN.properties"/>
+            <include name="**/*_zh_TW.properties"/>
          </fileset>
       </copy>
    </target>

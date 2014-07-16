@@ -52,6 +52,15 @@
       <ant target="copy-nls-resources" dir="${project.dir}/../web-modeler" inheritall="false">
          <property name="build.nls.dir" value="${build.nls.dir}" />
       </ant>
+      <ant target="copy-nls-resources" dir="${project.dir}/../stardust-web-reporting" inheritall="false">
+         <property name="build.nls.dir" value="${build.nls.dir}" />
+      </ant>
+      <ant target="copy-nls-resources" dir="${project.dir}/../rules-manager" inheritall="false">
+         <property name="build.nls.dir" value="${build.nls.dir}" />
+      </ant>
+      <ant target="copy-nls-resources" dir="${project.dir}/../mobile-workflow" inheritall="false">
+         <property name="build.nls.dir" value="${build.nls.dir}" />
+      </ant>
    </target>
 
 </project>

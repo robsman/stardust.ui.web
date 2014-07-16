@@ -18,12 +18,12 @@
 
 <project name="stardust-web-reporting" default="build" basedir="." xmlns:ipp="com.infinity.bpm.ant.macros">
    
-	<property name="project.dir" value="." />
-	<property name="project.src" value="${project.dir}/src/main/java" />
-	<property name="resources.src" value="${project.dir}/src/main/resources" />
+   <property name="project.dir" value="." />
+   <property name="project.src" value="${project.dir}/src/main/java" />
+   <property name="resources.src" value="${project.dir}/src/main/resources" />
    
    <property name="project.etc" value="${project.dir}/etc" />
-	<property file="${project.etc}/private.properties"/>   
+   <property file="${project.etc}/private.properties"/>   
 
    <!-- if portal.wst.plugin.dir was set via external property -->
    <available file="${portal.wst.plugin.dir}" property="portal.wst.plugin.dir.present" type="dir"/>
@@ -32,52 +32,51 @@
 
    <import file="../../build.tools/commons-build.xml" />
 
-	<target name="initOnDevelopment" if="setup.development">
-		<echo message="Performing a development build ..." />
+   <target name="initOnDevelopment" if="setup.development">
+      <echo message="Performing a development build ..." />
 
-		<property name="javac.debuglevel" value="lines,source,vars" />
-	</target>
+      <property name="javac.debuglevel" value="lines,source,vars" />
+   </target>
 
-	<target name="initOnProduction" unless="setup.development">
-		<echo message="Performing a production build ..." />
+   <target name="initOnProduction" unless="setup.development">
+      <echo message="Performing a production build ..." />
 
-		<property name="javac.debuglevel" value="lines,source,vars" />
-	</target>
+      <property name="javac.debuglevel" value="lines,source,vars" />
+   </target>
 
-	<target name="init" depends="initOnDevelopment, initOnProduction">
-		<property name="build.dir" value="${project.dir}/build"/>
-	</target>
+   <target name="init" depends="initOnDevelopment, initOnProduction">
+      <property name="build.dir" value="${project.dir}/build"/>
+   </target>
 
-	<target name="clean" depends="init" description="removes all build results">
-		<delete dir="${build.dir}" />
-	</target>
+   <target name="clean" depends="init" description="removes all build results">
+      <delete dir="${build.dir}" />
+   </target>
 
-	<target name="initBuild" depends="init">
-		<property name="build.classes" value="${build.dir}/classes" />
-		<property name="build.lib" value="${build.dir}/lib" />
-		<property name="build.src" value="${build.dir}/src" />
+   <target name="initBuild" depends="init">
+      <property name="build.classes" value="${build.dir}/classes" />
+      <property name="build.lib" value="${build.dir}/lib" />
+      <property name="build.src" value="${build.dir}/src" />
 
-		<property name="reporting.jarfile" value="${artifactId}.jar" />
-		<property name="reporting.jar" value="${build.lib}/${reporting.jarfile}" />
-		<property name="reporting.src-jarfile" value="${artifactId}-sources.jar" />
-		<property name="reporting.src-jar" value="${build.lib}/${reporting.src-jarfile}" />
-	</target>
+      <property name="reporting.jarfile" value="${artifactId}.jar" />
+      <property name="reporting.jar" value="${build.lib}/${reporting.jarfile}" />
+      <property name="reporting.src-jarfile" value="${artifactId}-sources.jar" />
+      <property name="reporting.src-jar" value="${build.lib}/${reporting.src-jarfile}" />
+   </target>
 
-	<target name="initBuildDirectories" depends="initBuild">
-		<mkdir dir="${build.classes}"/>
-		<mkdir dir="${build.lib}"/>
-		<mkdir dir="${build.src}"/>
-	</target>
+   <target name="initBuildDirectories" depends="initBuild">
+      <mkdir dir="${build.classes}"/>
+      <mkdir dir="${build.lib}"/>
+      <mkdir dir="${build.src}"/>
+   </target>
 
-	<target name="prepareSources" depends="initBuild">
-		<echo message="Preparing sources for a safe but slow build." />
-		<copy todir="${build.src}">
-			<fileset dir="${project.src}">
-				<include name="**/*.java" />
-			</fileset>
-		</copy>
-
-	</target>
+   <target name="prepareSources" depends="initBuild">
+      <echo message="Preparing sources for a safe but slow build." />
+      <copy todir="${build.src}">
+         <fileset dir="${project.src}">
+            <include name="**/*.java" />
+         </fileset>
+      </copy>
+   </target>
 
    <target name="init.ivy">
       <echo message="Using Ivy for dependency management." />
@@ -85,53 +84,55 @@
    </target>
 
    <target name="initClasspath" depends="init.ivy" >
-
       <init-ivy-classpath />
-
    </target>
 
-	<target name="compile.jdk16" depends="init" description="Compiling Java 6 code.">
-		<ipp:javac-java6 srcdir="${build.src}" destdir="${build.classes}">
-			<include name="**/*.java" />
-			<classpath id="compile6.classpath">
-				<path path="${build.classes}" />
-				<path refid="compile.deps" />
-			</classpath>
-		</ipp:javac-java6>
-	</target>
+   <target name="compile.jdk16" depends="init" description="Compiling Java 6 code.">
+      <ipp:javac-java6 srcdir="${build.src}" destdir="${build.classes}">
+         <include name="**/*.java" />
+         <classpath id="compile6.classpath">
+            <path path="${build.classes}" />
+            <path refid="compile.deps" />
+         </classpath>
+      </ipp:javac-java6>
+   </target>
 
-	<target name="compile" depends="prepareSources, initBuildDirectories, initClasspath, compile.jdk16" 
-	   description="compiles the portal API classes" unless="skip.compile" />
+   <target name="compile" depends="prepareSources, initBuildDirectories, initClasspath, compile.jdk16" 
+      description="compiles the portal API classes" unless="skip.compile" />
    
-	   <target name="copyDatFiles" depends="initBuildDirectories">
-	      <copy todir="${build.classes}">
-			<fileset dir="${resources.src}">
-				<include name="**/*.*" />
-			</fileset>
-	      </copy>
-	      <copy todir="${build.src}">
-			<fileset dir="${resources.src}">
-				<include name="**/*.*" />
-			</fileset>
-	      </copy>
-	   </target>
+   <target name="copyDatFiles" depends="initBuildDirectories">
+      <copy todir="${build.classes}">
+         <fileset dir="${resources.src}">
+            <include name="**/*.*" />
+         </fileset>
+      </copy>
+      <!-- Copy NL property file for locale "en" to NL property with no locale. -->
+      <copy todir="${build.classes}" overwrite="true">
+         <fileset dir="${resources.src}">
+            <include name="**/*_en.properties" />
+         </fileset>
+         <filtermapper>
+           <replacestring from="_en.properties" to=".properties"/>
+         </filtermapper>
+      </copy>
+   </target>
 
-	<target name="jar" depends="compile, copyDatFiles">
-		<ipp:jar jarfile="${reporting.jar}" implementationTitle="Infinity Process Engine - Reporting">
-			<fileset dir="${build.classes}" id="fileset.carnot.base.jar">
-				<include name="**/*.*" />
-			</fileset>
-		</ipp:jar>
-	</target>
+   <target name="jar" depends="compile, copyDatFiles">
+      <ipp:jar jarfile="${reporting.jar}" implementationTitle="Infinity Process Engine - Reporting">
+         <fileset dir="${build.classes}" id="fileset.carnot.base.jar">
+            <include name="**/*.*" />
+         </fileset>
+      </ipp:jar>
+   </target>
 
-	<target name="jar.src" depends="compile">
-	   <delete file="${reporting.src-jar}" />
-		<ipp:jar jarfile="${reporting.src-jar}" implementationTitle="Infinity Process Engine - Reporting Sources">
-			<fileset dir="${build.src}">
-				<include name="**/*.*" />
-			</fileset>
-		</ipp:jar>
-	</target>
+   <target name="jar.src" depends="compile">
+      <delete file="${reporting.src-jar}" />
+      <ipp:jar jarfile="${reporting.src-jar}" implementationTitle="Infinity Process Engine - Reporting Sources">
+         <fileset dir="${build.src}">
+            <include name="**/*.*" />
+         </fileset>
+      </ipp:jar>
+   </target>
 
    <target name="build" depends="jar, jar.src, build.ivy" />
 
@@ -154,8 +155,8 @@
       </copy>
    </target>
    
-	<target name="dist" depends="build, copyToPortalWstPlugin">
-	</target>
+   <target name="dist" depends="build, copyToPortalWstPlugin">
+   </target>
    
    <target name="deploy" depends="build, dependencies:report"/>
 
@@ -164,7 +165,7 @@
 
       <ipp:init-mvn localMavenRepository="${maven.localRepository}" />
       <ipp:mvn-install file="${reporting.jar}" 
-      	pomFile="${build.lib}/${artifactId}.pom" />
+         pomFile="${build.lib}/${artifactId}.pom" />
    </target>
    
    <target name="publish" depends="initBuild"
@@ -172,7 +173,20 @@
 
       <ipp:init-mvn />
       <ipp:mvn-deploy file="${reporting.jar}" 
-      	pomFile="${build.lib}/${artifactId}.pom" />
+         pomFile="${build.lib}/${artifactId}.pom" />
+   </target>
+   
+   <!-- target is invoked by stardust-engine-nls project -->
+   <target name="copy-nls-resources" 
+      description="copies the resources into a given folder">
+      <copy todir="${build.nls.dir}">
+         <fileset dir="${resources.src}">
+            <include name="**/*_de.properties"/>
+            <include name="**/*_en.properties"/>
+            <include name="**/*_zh_CN.properties"/>
+            <include name="**/*_zh_TW.properties"/>
+         </fileset>
+      </copy>
    </target>
    
    <target name="dependencies:report" depends="init,init.ivy">

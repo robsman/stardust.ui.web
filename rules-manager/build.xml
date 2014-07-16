@@ -123,12 +123,28 @@
       </ipp:javac-java6>
    </target>
 
-   <target name="jar" depends="compile">
+   <target name="copyDatFiles" depends="initBuildDirectories">
+      <copy todir="${build.classes}">
+         <fileset dir="${project.resources}">
+            <include name="**/*.*" />
+         </fileset>
+      </copy>
+      <!-- Copy NL property file for locale "en" to NL property with no locale. -->
+      <copy todir="${build.classes}" overwrite="true">
+         <fileset dir="${project.resources}">
+            <include name="**/*_en.properties" />
+         </fileset>
+         <filtermapper>
+           <replacestring from="_en.properties" to=".properties"/>
+         </filtermapper>
+      </copy>
+   </target>
+         
+   <target name="jar" depends="compile,copyDatFiles">
       <ipp:jar jarfile="${stardust-rules-manager.jar}" implementationTitle="Rules Manager">
          <fileset dir="${build.classes}" id="fileset.xpdl.builder.jar">
-         	<include name="**/*.class" />
+            <include name="**/*.*" />
          </fileset>
-         <fileset dir="${project.resources}" includes="**/*.*" />
       </ipp:jar>
    </target>
 
