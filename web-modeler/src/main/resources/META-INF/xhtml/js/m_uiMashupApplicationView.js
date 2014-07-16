@@ -262,6 +262,7 @@ define(
 					this.viaUriRow = m_utils.jQuerySelect("#viaUriRow");
 					this.embeddedRow = m_utils.jQuerySelect("#embeddedRow");
 					this.generateMarkupForAngularLink = m_utils.jQuerySelect("#generateMarkupForAngularLink");
+					this.resetMarkupLink = m_utils.jQuerySelect("#resetMarkupLink");
 					this.urlInput = m_utils.jQuerySelect("#urlInput");
 					this.publicVisibilityCheckbox = m_utils.jQuerySelect("#publicVisibilityCheckbox");
 					this.numberOfLabelInputPairsInput = m_utils.jQuerySelect("#numberOfLabelInputPairsInput");
@@ -325,12 +326,12 @@ define(
 												.submitExternalWebAppContextAttributesChange({
 													"carnot:engine:ui:externalWebApp:embedded" : false,
 													"carnot:engine:ui:externalWebApp:uri" : event.data.view.urlInput
-															.val(),
-													"ui:externalWebApp:embedded:generateMobileMarkup" : null
+															.val()
 												});
 									});
 
-					this.generateTable = m_utils.jQuerySelect("#generateTable");
+					this.generateMarkupControls = m_utils.jQuerySelect("#generateMarkupControls");
+					this.resetMarkupControls = m_utils.jQuerySelect("#resetMarkupControls");
 
 					this.generateMobileCodeInput
 							.change(
@@ -348,6 +349,15 @@ define(
 								.setData(event.data.view.generateMarkup());
 						event.data.view.submitEmbeddedModeChanges();
 					});
+					
+					this.resetMarkupLink.click({
+						view : this
+					}, function(event) {
+						CKEDITOR.instances[event.data.view.editorTextArea.id]
+								.setData(null);
+						event.data.view.submitEmbeddedModeChanges();
+					});
+					
 					this.viaUriInput
 							.click(
 									{
@@ -421,7 +431,6 @@ define(
 							.submitExternalWebAppContextAttributesChange({
 								"carnot:engine:ui:externalWebApp:embedded" : true,
 								"carnot:engine:ui:externalWebApp:uri" : null,
-								"ui:externalWebApp:embedded:generateMobileMarkup" : this.generateMobileCodeInput.prop("checked"),
 								"carnot:engine:ui:externalWebApp:markup" : CKEDITOR.instances[this.editorTextArea.id].getData()
 
 							});
@@ -473,10 +482,6 @@ define(
 				UiMashupApplicationView.prototype.setEmbedded = function() {
 					this.viaUriInput.prop("checked", false);
 					this.embeddedInput.prop("checked", true);
-					this.generateMobileCodeInput
-							.prop(
-									"checked",
-									this.getContext().attributes["ui:externalWebApp:embedded:generateMobileMarkup"]);
 
 					m_dialog.makeInvisible(this.viaUriRow);
 					m_dialog.makeVisible(this.embeddedRow);
@@ -530,10 +535,18 @@ define(
 						this.setEmbedded();
 						var self = this;
 						CKEDITOR.instances[self.editorTextArea.id].setData(self.getContext().attributes["carnot:engine:ui:externalWebApp:markup"]);
+						if (self.getContext().attributes["carnot:engine:ui:externalWebApp:markup"]) {							
+							this.generateMarkupControls.hide();
+							this.resetMarkupControls.show();
+						} else {
+							this.resetMarkupControls.hide();
+							this.generateMarkupControls.show();
+						}
 					} else {
 						this.setViaUri();
 						this.urlInput
 								.val(this.getContext().attributes["carnot:engine:ui:externalWebApp:uri"]);
+						CKEDITOR.instances[this.editorTextArea.id].setData(null);
 					}
 
 					this.initializeModelElement(application);
@@ -552,6 +565,7 @@ define(
 						this.generateAbortButtonInput.prop("checked", true);
 						this.generateQaPassButtonInput.prop("checked", false);
 						this.generateQaFailButtonInput.prop("checked", false);
+						this.generateMobileCodeInput.prop("checked", true);
 					}
 				};
 				
