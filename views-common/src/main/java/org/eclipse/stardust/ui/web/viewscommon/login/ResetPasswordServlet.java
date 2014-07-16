@@ -69,10 +69,17 @@ public class ResetPasswordServlet extends HttpServlet
       {
          String oid = req.getParameter("oid");
          String partition = req.getParameter("partition");
+         String realm = req.getParameter("realm");
          String token = req.getParameter("token");
-         Map<String, String> properties = getLoginProperties(partition);
+         Map<String, String> properties = CollectionUtils.newHashMap();
+         // fetch serviceFactory from partition
+         if (!StringUtils.isEmpty(partition))
+         {
+            properties.put(SecurityProperties.PARTITION, partition);
+         }
          serviceFactory = ServiceFactoryLocator.get(user, password, properties);
          User user = serviceFactory.getUserService().getUser(new Integer(oid));
+         properties = getLoginProperties(partition, realm);
          serviceFactory.getUserService().resetPassword(user.getAccount(), properties, token);
          out.println("Password generated and sent to registered Email Id</br>");
       }
@@ -86,7 +93,7 @@ public class ResetPasswordServlet extends HttpServlet
       }
    }
 
-   private Map<String, String> getLoginProperties(String tenant)
+   private Map<String, String> getLoginProperties(String tenant, String userRealm)
    {
       Boolean promptForPartition = Parameters.instance().getBoolean(SecurityProperties.PROMPT_FOR_PARTITION, false);
       Boolean promptForRealm = Parameters.instance().getBoolean(SecurityProperties.PROMPT_FOR_REALM, false);
@@ -102,7 +109,9 @@ public class ResetPasswordServlet extends HttpServlet
       }
       if (promptForRealm)
       {
-         realm = Parameters.instance().getString(SecurityProperties.DEFAULT_REALM, "");
+         realm = StringUtils.isEmpty(userRealm)
+               ? Parameters.instance().getString(SecurityProperties.DEFAULT_REALM, "")
+               : userRealm;
       }
       if (promptForDomain)
       {
