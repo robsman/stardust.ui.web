@@ -49,12 +49,14 @@ td#toolbar div.toolSeparator {
 }
 
 /* Need to provide opacity to the toolbar when it is fixed positioned
-   and the tree is scrolling.
+   and the tree is scrolling (hence the bg color #FFFFFF).
    Should inherit color from outline div background if it has one.
    
    z-index value for fixed div should be greater than the scrolling div
    (for now a value of 1 is sufficient as the scrolling div doesn't have z-index defined)  */
 .outlineFixedDiv {
+	position: fixed;
 	background-color: #FFFFFF;
+	top: 0px;
 	z-index: 1;
 }

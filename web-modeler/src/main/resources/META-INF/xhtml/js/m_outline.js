@@ -2812,7 +2812,7 @@ define(
 
 					setupEventHandling();
 
-					m_modelerUtils.fixDivTop(jQuery(".outlineFixedDiv"), jQuery('.outlineScrollableDiv'));
+					jQuery('.outlineScrollableDiv').css("padding-top", jQuery(".outlineFixedDiv").height());
 
 					outline = new Outline();
 

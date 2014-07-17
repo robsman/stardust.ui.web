@@ -44,9 +44,7 @@ define(
 
 				openParticipantView : openParticipantView,
 
-				openTypeDeclarationView : openTypeDeclarationView,
-
-				fixDivTop : fixDivTop
+				openTypeDeclarationView : openTypeDeclarationView
 			};
 
 			function getScrollpaneScrollPosition() {
@@ -187,17 +185,4 @@ define(
 							structuredDataType.uuid);
 				}
 			};
-
-			function fixDivTop(fixedDiv, scrollableDiv) {
-				$(window).scroll(function() {
-				    if ($(window).scrollTop() > fixedDiv[0].scrollTop) {
-				    	scrollableDiv.css("padding-top", fixedDiv.height());
-				    	fixedDiv.css({'position': 'fixed', 'top': '0', 'width': '100%'});
-				    }
-				    else {
-				    	scrollableDiv.css("padding-top","0px");
-				    	fixedDiv.css({'position': 'static', 'top': 'auto', 'width': '100%'});
-				    }
-				});
-			}
 		});
