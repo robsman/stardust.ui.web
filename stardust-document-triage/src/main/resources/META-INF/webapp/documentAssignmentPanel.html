@@ -63,6 +63,15 @@
 	padding-bottom: 2px;
 }
 
+.pendingProcessesTree td{
+	padding:0 !important;
+	margin:0 !important;
+}
+
+.pendingProcessesTree td > div {
+	padding: 3px !important;
+}
+
 .cutLine:hover {
 	background-color: #dddddd;
 }
@@ -197,9 +206,10 @@
 														<td><div ng-show="treeItem.pendingProcess">{{treeItem.pendingProcess.processDefinition.name}}
 																(#{{treeItem.pendingProcess.oid}})
 																{{$parent.formatTimestamp(treeItem.pendingProcess.start)}}</div>
-															<div ng-show="treeItem.pendingProcess.descriptors.length >0">Descriptors</div>
-															<div ng-show="treeItem.processDescriptor">
-																{{treeItem.processDescriptor.name}}: {{treeItem.processDescriptor.value}}
+															<div ng-show="treeItem.pendingProcess.descriptors.length >0">Descriptors-
+																<span ng-repeat="item in treeItem.pendingProcess.descriptors">
+																	<span ng-if="item.value != ''">{{item.name}}:{{item.value}}</span> <span ng-if="!$last && item.value != ''">, </span>
+																</span>
 															</div>
 															<div ng-show="treeItem.pendingActivityInstance">{{treeItem.pendingActivityInstance.activity.name}}
 																(#{{treeItem.pendingActivityInstance.oid}})
@@ -213,7 +223,6 @@
 															<div ng-show="treeItem.processAttachment">{{treeItem.processAttachment.type}}
 																({{$parent.formatTimestamp(treeItem.processAttachment.creationTimestamp)}})</div>
 														</td>
-														
 													</tr>
 												</table>
 											</div>
@@ -222,7 +231,8 @@
 												style="min-height: 20px; max-height: 150px; overflow: auto; margin-top: 10px; margin-bottom: 10px;">
 												<table cellpadding="0" cellspacing="0"
 													class="pendingProcessesTree">
-													<tr ng-class="{treeBranch:treeItem.startableProcess}" ng-repeat="treeItem in startableProcessesTree"
+													<tr ng-class="{treeBranch:treeItem.startableProcess}" 
+													    ng-repeat="treeItem in startableProcessesTree"
 														id="startableProcessesTreeRow{{$index}}"
 														class="{{getTreeItemClass(treeItem)}}">
 														<td><div ng-show="treeItem.startableProcess">
@@ -236,25 +246,27 @@
 																style="margin-left: 10px;">
 																<i class="fa fa-folder-o"></i>
 															</div>
-															<div ng-show="treeItem.processAttachment"
-																style="margin-left: 10px;">
-																<i class="fa fa-file"></i>
-															</div>
+															
 														</td>
-														<td><div ng-show="treeItem.startableProcess">{{treeItem.startableProcess.name}}</div>
+														<td>
+															<div ng-show="treeItem.startableProcess">{{treeItem.startableProcess.name}}</div>
 															<div ng-show="treeItem.specificDocument">
 																{{treeItem.specificDocument.name}}</div>
 													
 															<div ng-show="treeItem.processAttachments.length >=0">Process
 																Attachments</div>
-															<div ng-show="treeItem.processAttachment">
+															<div ng-show="treeItem.processAttachment"
+																xstyle="margin-left: 10px;">
+																<i class="fa fa-file"></i>
 																{{treeItem.processAttachment.type}}
 																{{treeItem.processAttachment.name}}
-																({{$parent.formatTimestamp(treeItem.processAttachment.creationTimestamp)}})</div></td>
+																({{$parent.formatTimestamp(treeItem.processAttachment.creationTimestamp)}})
+															</div>
+															
 
 														</td>
 														<td ng-if="treeItem.startableProcess && selectedBusinessObjects.length >0 && treeItem.startableProcess.processAttachments.length > 0">
-															<i ng-click="startProcess(treeItem,selectedBusinessObjects)" class="fa fa-check-circle"></i>
+															<a class="iconLink" href="#"><i ng-click="startProcess(treeItem,selectedBusinessObjects)" class="fa fa-rocket"></i></a>
 														</td>
 													</tr>
 												</table>
@@ -280,7 +292,7 @@
 						</tr>
 					</table>
 					<div class="section"
-						style="width: 100%; height: 500px; overflow: auto; margin: 10px;">
+						 style="width: 100%; height: 500px; overflow: auto; margin: 10px;">
 						<table cellpadding="0" cellspacing="0" style="width: 100%;">
 							<tr ng-repeat="document in scannedDocuments"
 								id="scannedDocumentDivision{{$index}}" class="scannedDocument">
@@ -292,7 +304,7 @@
 													{{document.contentType}}</span></td>
 										</tr>
 										<tr>
-											<td><select ng-model="document.type"><option>Select
+											<td ng-if="0"><select ng-model="document.type"><option>Select
 														Document Type ...</option>
 													<option value="Birth Certificate">Birth
 														Certificate</option></select></td>
@@ -314,6 +326,7 @@
 								</td>
 							</tr>
 						</table>
+					</div>
 				</td>
 			</tr>
 		</table>
