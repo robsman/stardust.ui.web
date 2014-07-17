@@ -87,6 +87,12 @@ public class ResetPasswordDialog extends PopupDialog
          FacesContext fc = FacesContext.getCurrentInstance();
          HttpServletRequest req = (HttpServletRequest) fc.getExternalContext().getRequest();
          String url = Parameters.instance().getString("Security.Password.ResetServletUrl");
+
+         if (StringUtils.isEmpty(url))
+         {
+            url = "${request.scheme}://${request.serverName}:${request.serverPort}/${request.contextPath}/resetServlet";
+         }
+
          if (StringUtils.isNotEmpty(url))
          {
             // allow base URI override via parameter
