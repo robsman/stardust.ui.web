@@ -44,7 +44,51 @@ import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.utils.LaneParticipantUtil;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
-import org.eclipse.stardust.model.xpdl.carnot.*;
+import org.eclipse.stardust.model.xpdl.carnot.AccessPointType;
+import org.eclipse.stardust.model.xpdl.carnot.ActivityImplementationType;
+import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
+import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
+import org.eclipse.stardust.model.xpdl.carnot.AnnotationSymbolType;
+import org.eclipse.stardust.model.xpdl.carnot.ApplicationType;
+import org.eclipse.stardust.model.xpdl.carnot.ApplicationTypeType;
+import org.eclipse.stardust.model.xpdl.carnot.AttributeType;
+import org.eclipse.stardust.model.xpdl.carnot.Code;
+import org.eclipse.stardust.model.xpdl.carnot.ConditionalPerformerType;
+import org.eclipse.stardust.model.xpdl.carnot.ContextType;
+import org.eclipse.stardust.model.xpdl.carnot.DataMappingConnectionType;
+import org.eclipse.stardust.model.xpdl.carnot.DataMappingType;
+import org.eclipse.stardust.model.xpdl.carnot.DataPathType;
+import org.eclipse.stardust.model.xpdl.carnot.DataSymbolType;
+import org.eclipse.stardust.model.xpdl.carnot.DataType;
+import org.eclipse.stardust.model.xpdl.carnot.DescriptionType;
+import org.eclipse.stardust.model.xpdl.carnot.DiagramType;
+import org.eclipse.stardust.model.xpdl.carnot.DirectionType;
+import org.eclipse.stardust.model.xpdl.carnot.EndEventSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.EventHandlerType;
+import org.eclipse.stardust.model.xpdl.carnot.GatewaySymbol;
+import org.eclipse.stardust.model.xpdl.carnot.IExtensibleElement;
+import org.eclipse.stardust.model.xpdl.carnot.IFlowObjectSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableModelElement;
+import org.eclipse.stardust.model.xpdl.carnot.IModelElement;
+import org.eclipse.stardust.model.xpdl.carnot.IModelParticipant;
+import org.eclipse.stardust.model.xpdl.carnot.INodeSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.ISwimlaneSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.IdRef;
+import org.eclipse.stardust.model.xpdl.carnot.IntermediateEventSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.JoinSplitType;
+import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.ModelType;
+import org.eclipse.stardust.model.xpdl.carnot.OrganizationType;
+import org.eclipse.stardust.model.xpdl.carnot.OrientationType;
+import org.eclipse.stardust.model.xpdl.carnot.ParameterMappingType;
+import org.eclipse.stardust.model.xpdl.carnot.ParticipantType;
+import org.eclipse.stardust.model.xpdl.carnot.PoolSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
+import org.eclipse.stardust.model.xpdl.carnot.RoleType;
+import org.eclipse.stardust.model.xpdl.carnot.StartEventSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.TransitionConnectionType;
+import org.eclipse.stardust.model.xpdl.carnot.TransitionType;
+import org.eclipse.stardust.model.xpdl.carnot.TriggerType;
 import org.eclipse.stardust.model.xpdl.carnot.extensions.FormalParameterMappingsType;
 import org.eclipse.stardust.model.xpdl.carnot.impl.ProcessDefinitionTypeImpl;
 import org.eclipse.stardust.model.xpdl.carnot.util.ActivityUtil;
@@ -57,19 +101,19 @@ import org.eclipse.stardust.model.xpdl.carnot.util.VariableContext;
 import org.eclipse.stardust.model.xpdl.carnot.util.VariableContextHelper;
 import org.eclipse.stardust.model.xpdl.util.IConnectionManager;
 import org.eclipse.stardust.model.xpdl.xpdl2.DataTypeType;
-import org.eclipse.stardust.model.xpdl.xpdl2.LoopType;
-import org.eclipse.stardust.model.xpdl.xpdl2.LoopTypeType;
-import org.eclipse.stardust.model.xpdl.xpdl2.extensions.LoopDataRefType;
 import org.eclipse.stardust.model.xpdl.xpdl2.DeclaredTypeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.ExternalPackage;
 import org.eclipse.stardust.model.xpdl.xpdl2.ExternalReferenceType;
 import org.eclipse.stardust.model.xpdl.xpdl2.FormalParameterType;
 import org.eclipse.stardust.model.xpdl.xpdl2.FormalParametersType;
 import org.eclipse.stardust.model.xpdl.xpdl2.LoopMultiInstanceType;
+import org.eclipse.stardust.model.xpdl.xpdl2.LoopType;
+import org.eclipse.stardust.model.xpdl.xpdl2.LoopTypeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.MIOrderingType;
 import org.eclipse.stardust.model.xpdl.xpdl2.ModeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
 import org.eclipse.stardust.model.xpdl.xpdl2.XpdlTypeType;
+import org.eclipse.stardust.model.xpdl.xpdl2.extensions.LoopDataRefType;
 import org.eclipse.stardust.modeling.repository.common.descriptors.EObjectDescriptor;
 import org.eclipse.stardust.ui.web.modeler.edit.LockInfo;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
@@ -865,6 +909,7 @@ public class ModelElementMarshaller implements ModelMarshaller
 
       if (null != activity)
       {
+
          activityJson.addProperty(ModelerConstants.OID_PROPERTY, activity.getElementOid());
          activityJson.addProperty(ModelerConstants.ID_PROPERTY, activity.getId());
          activityJson.addProperty(ModelerConstants.NAME_PROPERTY, activity.getName());
@@ -1086,8 +1131,47 @@ public class ModelElementMarshaller implements ModelMarshaller
          }
       }
          }
+         if (activity.getQualityControlPerformer() != null)
+         {
+            JsonObject qcJson = new JsonObject();
+            qcJson.addProperty(ModelerConstants.PARTICIPANT_FULL_ID, activity
+                  .getQualityControlPerformer().getId());
+            JsonArray validCodesJson = new JsonArray();
+            for (Iterator<Code> i = activity.getValidQualityCodes().iterator(); i
+                  .hasNext();)
+            {
+               Code code = i.next();
+               Code resolvedCode = resolveCode(activity, code);
+               JsonObject codeJson = new JsonObject();
+               codeJson.addProperty(ModelerConstants.QC_CODE, resolvedCode.getCode());
+               codeJson.addProperty(ModelerConstants.QC_NAME, resolvedCode.getName());
+               codeJson.addProperty(ModelerConstants.QC_VALUE, resolvedCode.getValue());
+               validCodesJson.add(codeJson);
+            }
+            qcJson.add(ModelerConstants.QC_VALID_CODES, validCodesJson);
+            activityJson.add(ModelerConstants.QUALITYCONTROL, qcJson);
+         }
       }
       return activityJson;
+   }
+
+   private Code resolveCode(ActivityType activity, Code code)
+   {
+      URI proxyURI = ((InternalEObject) code).eProxyURI();
+      ModelType model = ModelUtils.findContainingModel(activity);
+      if (model.getQualityControl() != null)
+      {
+         for (Iterator<Code> i = model.getQualityControl().getCode().iterator(); i
+               .hasNext();)
+         {
+            Code modelCode = i.next();
+            if (modelCode.getCode().equals(proxyURI.fragment()))
+            {
+               return modelCode;
+            }
+         }
+      }
+      return null;
    }
 
    private List<String> getContextList(ActivityType activity)
@@ -3218,6 +3302,24 @@ public class ModelElementMarshaller implements ModelMarshaller
    public JsonObject toModelJson(ModelType model, boolean excludeCVs)
    {
       JsonObject modelJson = toModelOnlyJson(model);
+
+      if (model.getQualityControl() != null)
+      {
+         JsonObject qcJson = new JsonObject();
+         JsonArray codesJson = new JsonArray();
+         for (Iterator<Code> i = model.getQualityControl().getCode().iterator(); i
+               .hasNext();)
+         {
+            JsonObject codeJson = new JsonObject();
+            Code code = i.next();
+            codeJson.addProperty(ModelerConstants.QC_CODE, code.getCode());
+            codeJson.addProperty(ModelerConstants.QC_NAME, code.getName());
+            codeJson.addProperty(ModelerConstants.QC_VALUE, code.getValue());
+            codesJson.add(codeJson);
+         }
+         qcJson.add(ModelerConstants.QC_CODES, codesJson);
+         modelJson.add(ModelerConstants.QUALITYCONTROL, qcJson);
+      }
 
       if (!excludeCVs)
       {
