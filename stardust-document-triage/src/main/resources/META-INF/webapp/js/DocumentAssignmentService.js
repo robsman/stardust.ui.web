@@ -23,11 +23,17 @@ define(
 				this.businessObjects = [ {
 					memberId : "4711",
 					firstName : "Haile",
-					lastName : "Selassie"
+					lastName : "Selassie",
+					scheme: 0090001,
+					schemeName: 0090002,
+					nationalID: 80030300030
 				}, {
 					memberId : "0815",
 					firstName : "Jan",
-					lastName : "Smuts"
+					lastName : "Smuts",
+					scheme: 0090022,
+					schemeName: 0090004,
+					nationalID: 677700000
 				} ];
 
 				/**
@@ -62,9 +68,13 @@ define(
 										console.log(result);
 
 										for (var n = 0; n < result.processAttachments.length; ++n) {
+											debugger;
 											result.processAttachments[n].creationTimestamp = new Date()
 													.getTime();
-											result.processAttachments[n].pageCount = 3;
+											result.processAttachments[n].pageCount = result.processAttachments[n].numPages;
+											result.processAttachments[n].url = rootUrl + 
+																			   "/services/rest/document-triage/documents/" +
+																			   result.processAttachments[n].uuid + "/";
 										}
 
 										deferred
@@ -174,8 +184,7 @@ define(
 				/**
 				 * 
 				 */
-				DocumentAssignmentService.prototype.startProcess = function(
-						scannedDocument, startableProcess, specificDocument) {
+				DocumentAssignmentService.prototype.startProcess = function(data) {
 					var deferred = jQuery.Deferred();
 					var rootUrl = location.href.substring(0, location.href
 							.indexOf("/plugins"));
@@ -184,17 +193,13 @@ define(
 					jQuery
 							.ajax(
 									{
-										url : rootUrl
+										"url" : rootUrl
 												+ "/services/rest/document-triage/processes.json",
-										type : "PUT",
-										contentType : "application/json",
-										data : JSON
-												.stringify({
-													scannedDocument : scannedDocument,
-													startableProcess : startableProcess,
-													specificDocument : specificDocument
-												})
-									}).done(function(result) {
+										"type" : "PUT",
+										"contentType" : "application/json",
+										"data" : JSON.stringify(data)
+									}
+									).done(function(result) {
 								deferred.resolve(result);
 							}).fail(function(data) {
 								deferred.reject(data);

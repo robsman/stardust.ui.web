@@ -1,5 +1,7 @@
 package org.eclipse.stardust.ui.web.documenttriage.rest;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -8,9 +10,7 @@ import java.util.StringTokenizer;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.*;
 import javax.ws.rs.core.Response.Status;
 
 import com.google.gson.JsonObject;
@@ -56,6 +56,28 @@ public class DocumentTriageResource {
 			return Response.serverError().build();
 		}
 	}
+
+   @GET
+   @Produces({"image/png"})
+   @Path("documents/{documentId}/{pageNumber}")
+   public Response getDocumentImage(@PathParam("documentId") String documentId, @PathParam("pageNumber") int pageNumber) {
+      try {
+         final byte[] image = getDocumentTriageService().getDocumentImage(documentId, pageNumber);
+
+         return Response.ok().entity(new StreamingOutput(){
+             @Override
+             public void write(OutputStream output)
+                throws IOException, WebApplicationException {
+                output.write(image);
+                output.flush();
+             }
+         }).build();
+      } catch (Exception e) {
+         trace.error(e, e);
+
+         return Response.serverError().build();
+      }
+   }
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
