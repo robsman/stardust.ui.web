@@ -151,8 +151,8 @@ define(
 											m_utils.debug("===> Preferences");
 											m_utils.debug(json);
 
-											m_globalVariables.set("modelingSession.technologyPreview", json.showTechnologyPreview);
-											m_globalVariables.set("modelingSession.currentProfile", json.defaultProfile);
+											m_globalVariables.get("modelingSession").technologyPreview =  json.showTechnologyPreview;
+											m_globalVariables.get("modelingSession").currentProfile = json.defaultProfile;
 										},
 										"error" : function() {
 											alert('Error occured while fetching models');
