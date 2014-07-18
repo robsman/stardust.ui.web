@@ -91,52 +91,53 @@
 										<tr>
 											<td><label>Business Object</label></td>
 											<td><select ng-model="businessObject"
-												ng-options="businessObject as businessObject.label for businessObject in businessObjects"></select></td>
+												ng-options="businessObject as businessObject.label for businessObject in businessObjects"
+												ng-change="onBusinessObjectChanged()"></select></td>
 										</tr>
 									</table>
-									<table class="formTable">
-										<tr>
-											<td><label>Member ID</label></td>
-											<td><input type="text" style="width: 100px;"
-												ng-model="businessObjectFilter.memberId"
-												ng-blur="filterBusinessObjects()"></input></td>
-											<td><label>Last Name</label></td>
-											<td><input type="text" style="width: 200px;"
-												ng-model="businessObjectFilter.lastName"
-												ng-blur="filterBusinessObjects()"></input></td>
-											<td><label>First Name</label></td>
-											<td><input type="text" style="width: 200px;"
-												ng-model="businessObjectFilter.firstName"
-												ng-blur="filterBusinessObjects()"></input></td>
-										</tr>
-									</table>
-									<div class="dataTableFrame"
-										style="margin-top: 10px; margin-bottom: 20px;">
-										<table cellpadding="0" cellspacing="0" class="dataTable">
-											<thead>
-												<tr>
-													<th>Member No</th>
-													<th>Member Name</th>
-													<th>Scheme #</th>
-													<th>Scheme Name</th>
-													<th>National ID</th>
-													<th>Product</th>
-												</tr>
-											</thead>
-											<tbody>
-												<tr sd-table-data="businessObject in businessObjects"
-													sd-table-selection="selectedBusinessObjects"
-													sd-table-selection-changed="onBusinessObjectSelectionChange()">
-													<td>{{businessObject.memberId}}</td>
-													<td>{{businessObject.lastName}}
-														{{businessObject.firstName}}</td>
-													<td>{{businessObject.scheme}}</td>
-													<td>{{businessObject.schemeName}}</td>
-													<td>{{businessObject.nationalID}}</td>
-													<td>Tier-1</td>
-												</tr>
-											</tbody>
+									<div ng-show="businessObject != null">
+										<table class="formTable">
+											<tr>
+												<td><label>{{primaryKeyField.name}}</label> <input
+													type="text" style="width: 100px; margin-left: 5px;"
+													ng-model="primaryKeyField.filterValue"
+													ng-blur="filterBusinessObjects()"></input></td>
+												<td ng-repeat="field in keyFields"><label
+													style="margin-left: 5px;">{{field.name}}</label> <input
+													type="text" style="width: 100px; margin-left: 5px;"
+													ng-model="keyField.filterValue"
+													ng-blur="filterBusinessObjects()"></input></td>
+											</tr>
 										</table>
+										<div class="dataTableFrame"
+											style="margin-top: 10px; margin-bottom: 20px;">
+											<table cellpadding="0" cellspacing="0" class="dataTable"
+												style="width: 100%;">
+												<thead>
+													<tr>
+														<th>Member No</th>
+														<th>Member Name</th>
+														<th>Scheme #</th>
+														<th>Scheme Name</th>
+														<th>National ID</th>
+														<th>Product</th>
+													</tr>
+												</thead>
+												<tbody>
+													<tr sd-table-data="businessObject in businessObjects"
+														sd-table-selection="selectedBusinessObjects"
+														sd-table-selection-changed="onBusinessObjectSelectionChange()">
+														<td>{{businessObject.memberId}}</td>
+														<td>{{businessObject.lastName}}
+															{{businessObject.firstName}}</td>
+														<td>{{businessObject.scheme}}</td>
+														<td>{{businessObject.schemeName}}</td>
+														<td>{{businessObject.nationalID}}</td>
+														<td>Tier-1</td>
+													</tr>
+												</tbody>
+											</table>
+										</div>
 									</div>
 								</div>
 							</td>

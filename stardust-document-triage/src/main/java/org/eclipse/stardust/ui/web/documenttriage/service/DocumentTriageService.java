@@ -583,9 +583,7 @@ public class DocumentTriageService {
 				CommonProperties.PROCESS_ATTACHMENTS, processAttachments);
 	}
 
-
 	/*** Business Object-related REST Services ***/
-
 
 	/**
 	 * 
@@ -594,45 +592,58 @@ public class DocumentTriageService {
 	public JsonObject getBusinessObjects() {
 		JsonObject resultJson = new JsonObject();
 		JsonArray modelsJson = new JsonArray();
-		
+
 		resultJson.add("models", modelsJson);
-		
-		JsonObject modelJson = new JsonObject();;
-		
+
+		JsonObject modelJson = new JsonObject();
+		;
+
 		modelsJson.add(modelJson);
-		
+
 		modelJson.addProperty("oid", 1);
 		modelJson.addProperty("name", "General Claim Processing");
 
 		JsonArray businessObjectsJson = new JsonArray();
-		
+
 		modelJson.add("businessObjects", businessObjectsJson);
-		
+
 		JsonObject businessObjectJson = new JsonObject();
-		
+
 		businessObjectsJson.add(businessObjectJson);
-		
+
 		businessObjectJson.addProperty("id", "Member");
 		businessObjectJson.addProperty("name", "Member");
-		
+
 		JsonArray fieldsJson = new JsonArray();
-		
+
 		businessObjectJson.add("fields", fieldsJson);
-		
+
 		JsonObject fieldJson = new JsonObject();
-		
+
 		fieldsJson.add(fieldJson);
-		
-		fieldJson.addProperty("name", "id");
+
+		fieldJson.addProperty("id", "id");
+		fieldJson.addProperty("name", "Member Id");
 		fieldJson.addProperty("type", "string");
 		fieldJson.addProperty("key", true);
 		fieldJson.addProperty("primaryKey", true);
-		
+
 		fieldJson = new JsonObject();
-		
+
 		fieldsJson.add(fieldJson);
-		
-		fieldJson.addProperty("name", "firstName");
+
+		fieldJson.addProperty("id", "firstName");
+		fieldJson.addProperty("name", "First Name");
+		fieldJson.addProperty("type", "string");
+		fieldJson.addProperty("key", true);
+		fieldJson.addProperty("primaryKey", false);
+
+		fieldJson = new JsonObject();
+
+		fieldsJson.add(fieldJson);
+
+		fieldJson.addProperty("id", "lastName");
+		fieldJson.addProperty("name", "Last Name");
 		fieldJson.addProperty("type", "string");
 		fieldJson.addProperty("key", true);
 		fieldJson.addProperty("primaryKey", false);
@@ -648,7 +659,7 @@ public class DocumentTriageService {
 	 */
 	public JsonObject getBusinessObject(String modelOid, String businessObjectId) {
 		JsonObject resultJson = new JsonObject();
-		
+
 		return resultJson;
 	}
 
@@ -661,7 +672,7 @@ public class DocumentTriageService {
 	public JsonObject getBusinessObjectInstances(String modelOid,
 			String businessObjectId) {
 		JsonObject resultJson = new JsonObject();
-		
+
 		return resultJson;
 	}
 
@@ -675,7 +686,7 @@ public class DocumentTriageService {
 	public JsonObject getBusinessObjectProcessInstances(String modelOid,
 			String businessObjectId, String primaryKey) {
 		JsonObject resultJson = new JsonObject();
-		
+
 		return resultJson;
 	}
 }

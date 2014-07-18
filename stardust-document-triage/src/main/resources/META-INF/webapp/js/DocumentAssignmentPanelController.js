@@ -97,9 +97,6 @@ define(
 				DocumentAssignmentPanelController.prototype.refreshBusinessObjects = function() {
 					this.businessObjects = [];
 
-					console.log("====> Business Object Models");
-					console.log(this.businessObjectModels);
-
 					for (var n = 0; n < this.businessObjectModels.length; ++n) {
 						for (var m = 0; m < this.businessObjectModels[n].businessObjects.length; ++m) {
 							this.businessObjects
@@ -112,7 +109,33 @@ define(
 									});
 						}
 					}
+				};
 
+				/**
+				 * 
+				 */
+				DocumentAssignmentPanelController.prototype.onBusinessObjectChanged = function() {
+					this.keyFields = [];
+					this.topLevelFields = [];
+
+					if (!this.businessObject) {
+						return;
+					}
+
+					console.log("Business Object");
+					console.log(this.businessObject);
+
+					for (var n = 0; n < this.businessObject.businessObject.fields.length; ++n) {
+						if (this.businessObject.businessObject.fields[n].primaryKey) {
+							this.primaryKeyField = this.businessObject.businessObject.fields[n];
+						} else if (this.businessObject.businessObject.fields[n].key) {
+							this.keyFields
+									.push(this.businessObject.businessObject.fields[n]);
+						}
+
+						this.topLevelFields
+								.push(this.businessObject.businessObject.fields[n]);
+					}
 				};
 
 				/**
