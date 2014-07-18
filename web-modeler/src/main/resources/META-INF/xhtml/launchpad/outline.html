@@ -11,6 +11,20 @@
 <div id="outlineLoadingMsg" style="font-family: Helvetica,Arial,sans-serif; font-size: 11px;">
 </div>
 <div id="outlineDiv" style="visibility: hidden;">
+<div class="outlineScrollableDiv">
+	<table style="width: 100%;">
+		<tr>
+			<td>
+				<div id="outline"
+					style="text-align: left; list-style-type: none; background-color: white; height: auto;">
+				</div>
+			</td>
+		</tr>
+	</table>
+</div>
+<!-- IMPORTANT: Order in which elements appear in HTML affect their stacking order (if they have same z-index and other factors).
+	 Hence, the "outlineFixedDiv" should be placed after "outlineScrollableDiv"
+	 (other option is to assign outlineFixedDiv a greater z-index) -->
 <div class="outlineFixedDiv">
 	<table style="width: 100%;">
 		<tr>
@@ -80,17 +94,6 @@
 		<tr>
 			<td>
 				<div id="outlineMessageDiv">
-				</div>
-			</td>
-		</tr>
-	</table>
-</div>
-<div class="outlineScrollableDiv">
-	<table style="width: 100%;">
-		<tr>
-			<td>
-				<div id="outline"
-					style="text-align: left; list-style-type: none; background-color: white; height: auto;">
 				</div>
 			</td>
 		</tr>
