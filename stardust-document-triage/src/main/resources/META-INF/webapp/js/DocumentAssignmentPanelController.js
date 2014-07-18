@@ -730,7 +730,7 @@ define(
 					var self = this;
 
 					DocumentAssignmentService.instance()
-							.getBusinessObjectInstances().done(
+							.getBusinessObjectInstances(this.primaryKeyField, this.keyFields).done(
 									function(businessObjects) {
 										self.businessObjects = businessObjects;
 

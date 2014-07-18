@@ -363,18 +363,20 @@ define(
 
 																							// Create
 																							// Datatables
+																							
+																							// TODO Issues with nested repeats etc.
 
-																							try {
-																								table
-																										.dataTable({
-																											aoColumnDefs : aoColumnDefs
-																										});
-																							} catch (x) {
-																								console
-																										.log("Cannot create data table");
-																								console
-																										.log(x);
-																							}
+//																							try {
+//																								table
+//																										.dataTable({
+//																											aoColumnDefs : aoColumnDefs
+//																										});
+//																							} catch (x) {
+//																								console
+//																										.log("Cannot create data table");
+//																								console
+//																										.log(x);
+//																							}
 
 																							document.body.style.cursor = "default";
 																						},

@@ -105,7 +105,7 @@
 												<td ng-repeat="field in keyFields"><label
 													style="margin-left: 5px;">{{field.name}}</label> <input
 													type="text" style="width: 100px; margin-left: 5px;"
-													ng-model="keyField.filterValue"
+													ng-model="field.filterValue"
 													ng-blur="filterBusinessObjects()"></input></td>
 											</tr>
 										</table>
@@ -115,25 +115,19 @@
 												style="width: 100%;">
 												<thead>
 													<tr>
-														<th>Member No</th>
-														<th>Member Name</th>
-														<th>Scheme #</th>
-														<th>Scheme Name</th>
-														<th>National ID</th>
-														<th>Product</th>
+														<th ng-repeat="field in topLevelFields">{{field.name}}</th>
 													</tr>
 												</thead>
 												<tbody>
 													<tr sd-table-data="businessObject in businessObjects"
 														sd-table-selection="selectedBusinessObjects"
 														sd-table-selection-changed="onBusinessObjectSelectionChange()">
-														<td>{{businessObject.memberId}}</td>
-														<td>{{businessObject.lastName}}
-															{{businessObject.firstName}}</td>
-														<td>{{businessObject.scheme}}</td>
-														<td>{{businessObject.schemeName}}</td>
-														<td>{{businessObject.nationalID}}</td>
-														<td>Tier-1</td>
+														<td ng-repeat="field in topLevelFields">{{businessObject[field.id]}}</td>
+														<!--{{businessObject.lastName}}
+															{{businessObject.firstName}}
+														{{businessObject.scheme}}
+														{{businessObject.schemeName}}
+														{{businessObject.nationalID}}-->
 													</tr>
 												</tbody>
 											</table>

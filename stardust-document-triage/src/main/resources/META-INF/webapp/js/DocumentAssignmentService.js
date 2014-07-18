@@ -21,14 +21,14 @@ define(
 			 */
 			function DocumentAssignmentService() {
 				this.businessObjects = [ {
-					memberId : "4711",
+					id : "4711",
 					firstName : "Haile",
 					lastName : "Selassie",
 					scheme : 0090001,
 					schemeName : 0090002,
 					nationalID : 80030300030
 				}, {
-					memberId : "0815",
+					id : "0815",
 					firstName : "Jan",
 					lastName : "Smuts",
 					scheme : 0090022,
@@ -201,8 +201,33 @@ define(
 				/**
 				 * 
 				 */
-				DocumentAssignmentService.prototype.getBusinessObjectInstances = function() {
+				DocumentAssignmentService.prototype.getBusinessObjectInstances = function(
+						primaryKeyField, keyFields) {
 					var deferred = jQuery.Deferred();
+					var queryString = "?";
+
+					if (primaryKeyField && primaryKeyField.filterValue) {
+						queryString += primaryKeyField.id;
+						queryString += "=";
+						queryString += primaryKeyField.filterValue;
+						queryString += "&";
+
+					}
+
+					if (keyFields) {
+						for (var n = 0; n < keyFields.length; ++n) {
+							if (keyFields[n].filterValue) {
+								queryString += keyFields[n].id;
+								queryString += "=";
+								queryString += keyFields[n].filterValue;
+								queryString += "&";
+
+							}
+						}
+					}
+
+					console.log("Filter String");
+					console.log(queryString);
 
 					this.delayedResolve(deferred, this.businessObjects);
 
