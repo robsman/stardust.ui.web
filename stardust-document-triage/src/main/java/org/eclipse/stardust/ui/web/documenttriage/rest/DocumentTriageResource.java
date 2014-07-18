@@ -229,22 +229,6 @@ public class DocumentTriageResource {
 	}
 
 	@GET
-	@Path("/businessObject/{modelOid}/{businessObjectId}.json")
-	public Response getBusinessObject(@PathParam("modelOid") String modelOid,
-			@PathParam("businessObjectId") String businessObjectId) {
-		try {
-			return Response.ok(
-					getDocumentTriageService().getBusinessObject(modelOid,
-							businessObjectId).toString(),
-					MediaType.APPLICATION_JSON).build();
-		} catch (Exception e) {
-			trace.error(e, e);
-
-			return Response.serverError().build();
-		}
-	}
-
-	@GET
 	@Path("/businessObject/{modelOid}/{businessObjectId}/instances.json")
 	public Response getBusinessObjectInstances(
 			@PathParam("modelOid") String modelOid,

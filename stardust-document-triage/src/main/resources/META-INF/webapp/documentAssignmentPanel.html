@@ -101,12 +101,12 @@
 												<td><label>{{primaryKeyField.name}}</label> <input
 													type="text" style="width: 100px; margin-left: 5px;"
 													ng-model="primaryKeyField.filterValue"
-													ng-blur="filterBusinessObjects()"></input></td>
+													ng-blur="filterBusinessObjectInstances()"></input></td>
 												<td ng-repeat="field in keyFields"><label
 													style="margin-left: 5px;">{{field.name}}</label> <input
 													type="text" style="width: 100px; margin-left: 5px;"
 													ng-model="field.filterValue"
-													ng-blur="filterBusinessObjects()"></input></td>
+													ng-blur="filterBusinessObjectInstances()"></input></td>
 											</tr>
 										</table>
 										<div class="dataTableFrame"
@@ -119,15 +119,11 @@
 													</tr>
 												</thead>
 												<tbody>
-													<tr sd-table-data="businessObject in businessObjects"
-														sd-table-selection="selectedBusinessObjects"
-														sd-table-selection-changed="onBusinessObjectSelectionChange()">
-														<td ng-repeat="field in topLevelFields">{{businessObject[field.id]}}</td>
-														<!--{{businessObject.lastName}}
-															{{businessObject.firstName}}
-														{{businessObject.scheme}}
-														{{businessObject.schemeName}}
-														{{businessObject.nationalID}}-->
+													<tr
+														sd-table-data="businessObjectInstance in businessObjectInstances"
+														sd-table-selection="selectedBusinessObjectInstances"
+														sd-table-selection-changed="onBusinessObjectInstanceSelectionChange()">
+														<td ng-repeat="field in topLevelFields">{{businessObjectInstance[field.id]}}</td>
 													</tr>
 												</tbody>
 											</table>

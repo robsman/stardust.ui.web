@@ -607,23 +607,29 @@ public class DocumentTriageService {
 
 		modelJson.add("businessObjects", businessObjectsJson);
 
-		JsonObject businessObjectJson = new JsonObject();
+		JsonObject businessObjectJson = null;
+		JsonArray fieldsJson = null;
+		JsonObject fieldJson = null;
+
+		// Member
+		
+		businessObjectJson = new JsonObject();
 
 		businessObjectsJson.add(businessObjectJson);
 
 		businessObjectJson.addProperty("id", "Member");
 		businessObjectJson.addProperty("name", "Member");
 
-		JsonArray fieldsJson = new JsonArray();
+		fieldsJson = new JsonArray();
 
 		businessObjectJson.add("fields", fieldsJson);
 
-		JsonObject fieldJson = new JsonObject();
+		fieldJson = new JsonObject();
 
 		fieldsJson.add(fieldJson);
 
 		fieldJson.addProperty("id", "id");
-		fieldJson.addProperty("name", "Member Id");
+		fieldJson.addProperty("name", "Member ID");
 		fieldJson.addProperty("type", "string");
 		fieldJson.addProperty("key", true);
 		fieldJson.addProperty("primaryKey", true);
@@ -648,17 +654,68 @@ public class DocumentTriageService {
 		fieldJson.addProperty("key", true);
 		fieldJson.addProperty("primaryKey", false);
 
-		return resultJson;
-	}
+		fieldJson = new JsonObject();
 
-	/**
-	 * 
-	 * @param modelOid
-	 * @param businessObjectId
-	 * @return
-	 */
-	public JsonObject getBusinessObject(String modelOid, String businessObjectId) {
-		JsonObject resultJson = new JsonObject();
+		fieldsJson.add(fieldJson);
+
+		fieldJson.addProperty("id", "scheme");
+		fieldJson.addProperty("name", "Scheme Name");
+		fieldJson.addProperty("type", "string");
+		fieldJson.addProperty("key", false);
+		fieldJson.addProperty("primaryKey", false);
+
+		fieldJson = new JsonObject();
+
+		fieldsJson.add(fieldJson);
+
+		fieldJson.addProperty("id", "schemeId");
+		fieldJson.addProperty("name", "Scheme ID");
+		fieldJson.addProperty("type", "string");
+		fieldJson.addProperty("key", false);
+		fieldJson.addProperty("primaryKey", false);
+
+		fieldJson = new JsonObject();
+
+		fieldsJson.add(fieldJson);
+
+		fieldJson.addProperty("id", "nationalId");
+		fieldJson.addProperty("name", "National ID");
+		fieldJson.addProperty("type", "string");
+		fieldJson.addProperty("key", false);
+		fieldJson.addProperty("primaryKey", false);
+
+		// Member
+		
+		businessObjectJson = new JsonObject();
+
+		businessObjectsJson.add(businessObjectJson);
+
+		businessObjectJson.addProperty("id", "Fund");
+		businessObjectJson.addProperty("name", "Fund");
+
+		fieldsJson = new JsonArray();
+
+		businessObjectJson.add("fields", fieldsJson);
+
+		fieldJson = new JsonObject();
+
+		fieldsJson.add(fieldJson);
+
+		fieldJson.addProperty("id", "id");
+		fieldJson.addProperty("name", "Fund Id");
+		fieldJson.addProperty("type", "string");
+		fieldJson.addProperty("key", true);
+		fieldJson.addProperty("primaryKey", true);
+
+		fieldJson = new JsonObject();
+
+		fieldsJson.add(fieldJson);
+
+		fieldJson.addProperty("id", "name");
+		fieldJson.addProperty("name", "Fund Name");
+		fieldJson.addProperty("type", "string");
+		fieldJson.addProperty("key", true);
+		fieldJson.addProperty("primaryKey", false);
 
 		return resultJson;
 	}
@@ -672,6 +729,42 @@ public class DocumentTriageService {
 	public JsonObject getBusinessObjectInstances(String modelOid,
 			String businessObjectId) {
 		JsonObject resultJson = new JsonObject();
+		JsonArray businessObjectInstances = new JsonArray();
+
+		resultJson.add("businessObjectInstances", businessObjectInstances);
+
+		JsonObject businessObjectInstance = null;
+
+		if (businessObjectId.equals("Member")) {
+			businessObjectInstance = new JsonObject();
+
+			businessObjectInstances.add(businessObjectInstance);
+
+			businessObjectInstance.addProperty("id", "4711");
+			businessObjectInstance.addProperty("firstName", "Haile");
+			businessObjectInstance.addProperty("lastName", "Selassie");
+			businessObjectInstance.addProperty("scheme", "1");
+			businessObjectInstance.addProperty("schemeName", "Scheme-1");
+			businessObjectInstance.addProperty("nationalId", "SA");
+
+			businessObjectInstance = new JsonObject();
+
+			businessObjectInstances.add(businessObjectInstance);
+
+			businessObjectInstance.addProperty("id", "0815");
+			businessObjectInstance.addProperty("firstName", "Jan");
+			businessObjectInstance.addProperty("lastName", "Smuts");
+			businessObjectInstance.addProperty("scheme", "2");
+			businessObjectInstance.addProperty("schemeName", "Scheme-2");
+			businessObjectInstance.addProperty("nationalId", "SA");
+		} else if (businessObjectId.equals("Fund")) {
+			businessObjectInstance = new JsonObject();
+
+			businessObjectInstances.add(businessObjectInstance);
+
+			businessObjectInstance.addProperty("id", "4711");
+			businessObjectInstance.addProperty("name", "Haile");
+		}
 
 		return resultJson;
 	}

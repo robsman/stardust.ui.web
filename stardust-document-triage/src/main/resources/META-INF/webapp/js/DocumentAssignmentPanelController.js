@@ -38,7 +38,7 @@ define(
 					this.activityInstanceOid = decodedParts[1];
 					this.startProcessDialog = {};
 					this.businessObjectFilter = {};
-					this.selectedBusinessObjects = [];
+					this.selectedBusinessObjectInstances = [];
 					this.mode = "normal";
 					this.pageRotation = 0;
 					this.zoomFactor = 100;
@@ -121,9 +121,6 @@ define(
 					if (!this.businessObject) {
 						return;
 					}
-
-					console.log("Business Object");
-					console.log(this.businessObject);
 
 					for (var n = 0; n < this.businessObject.businessObject.fields.length; ++n) {
 						if (this.businessObject.businessObject.fields[n].primaryKey) {
@@ -726,13 +723,19 @@ define(
 				/**
 				 * 
 				 */
-				DocumentAssignmentPanelController.prototype.filterBusinessObjects = function() {
+				DocumentAssignmentPanelController.prototype.filterBusinessObjectInstances = function() {
 					var self = this;
 
 					DocumentAssignmentService.instance()
-							.getBusinessObjectInstances(this.primaryKeyField, this.keyFields).done(
-									function(businessObjects) {
-										self.businessObjects = businessObjects;
+							.getBusinessObjectInstances(
+									this.businessObject.modelOid,
+									this.businessObject.businessObject.id,
+									this.primaryKeyField, this.keyFields).done(
+									function(businessObjectInstances) {
+										self.businessObjectInstances = businessObjectInstances;
+										
+										console.log("Instances here");
+										console.log(self.businessObjectInstances);
 
 										self.safeApply();
 									}).fail();
@@ -741,9 +744,9 @@ define(
 				/**
 				 * 
 				 */
-				DocumentAssignmentPanelController.prototype.onBusinessObjectSelectionChange = function() {
-					console.log("Business Object Selection Changed");
-					console.log(this.selectedBusinessObjects);
+				DocumentAssignmentPanelController.prototype.onBusinessObjectInstanceSelectionChange = function() {
+					console.log("Business Object Instance Selection Changed");
+					console.log(this.selectedBusinessObjectInstances);
 
 					var self = this;
 

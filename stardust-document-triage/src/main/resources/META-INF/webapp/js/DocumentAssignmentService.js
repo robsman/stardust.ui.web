@@ -20,21 +20,6 @@ define(
 			 * 
 			 */
 			function DocumentAssignmentService() {
-				this.businessObjects = [ {
-					id : "4711",
-					firstName : "Haile",
-					lastName : "Selassie",
-					scheme : 0090001,
-					schemeName : 0090002,
-					nationalID : 80030300030
-				}, {
-					id : "0815",
-					firstName : "Jan",
-					lastName : "Smuts",
-					scheme : 0090022,
-					schemeName : 0090004,
-					nationalID : 677700000
-				} ];
 
 				/**
 				 * 
@@ -202,8 +187,7 @@ define(
 				 * 
 				 */
 				DocumentAssignmentService.prototype.getBusinessObjectInstances = function(
-						primaryKeyField, keyFields) {
-					var deferred = jQuery.Deferred();
+						modelOid, businessObjectId, primaryKeyField, keyFields) {
 					var queryString = "?";
 
 					if (primaryKeyField && primaryKeyField.filterValue) {
@@ -229,7 +213,29 @@ define(
 					console.log("Filter String");
 					console.log(queryString);
 
-					this.delayedResolve(deferred, this.businessObjects);
+					var deferred = jQuery.Deferred();
+					var rootUrl = location.href.substring(0, location.href
+							.indexOf("/plugins"));
+					var self = this;
+
+					jQuery
+							.ajax(
+									{
+										url : rootUrl
+												+ "/services/rest/document-triage/businessObject/"
+												+ modelOid + "/"
+												+ businessObjectId
+												+ "/instances.json",
+										type : "GET",
+										contentType : "application/json"
+									})
+							.done(
+									function(result) {
+										deferred
+												.resolve(result.businessObjectInstances);
+									}).fail(function(data) {
+								deferred.reject(data);
+							});
 
 					return deferred.promise();
 				};
