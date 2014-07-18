@@ -115,6 +115,7 @@ define(
 				 * 
 				 */
 				DocumentAssignmentPanelController.prototype.onBusinessObjectChanged = function() {
+					this.businessObjectInstances = [];
 					this.keyFields = [];
 					this.topLevelFields = [];
 
