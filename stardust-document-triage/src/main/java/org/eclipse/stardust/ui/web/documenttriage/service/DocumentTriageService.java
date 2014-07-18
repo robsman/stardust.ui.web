@@ -185,17 +185,19 @@ public class DocumentTriageService {
 	}
 
 	private JsonObject loadProcessInstance(long oid) {
-		/*ProcessInstance processInstance = getWorkflowService()
-				.getProcessInstance(oid);*/
-		
-      ProcessInstanceQuery processInstanceQuery = ProcessInstanceQuery.findAll();
+		/*
+		 * ProcessInstance processInstance = getWorkflowService()
+		 * .getProcessInstance(oid);
+		 */
 
-      processInstanceQuery.where(ProcessInstanceQuery.OID.isEqual(oid));
-      processInstanceQuery.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
-      ProcessInstance processInstance = (ProcessInstanceDetails) getQueryService()
-      .getAllProcessInstances(processInstanceQuery).get(0);
+		ProcessInstanceQuery processInstanceQuery = ProcessInstanceQuery
+				.findAll();
 
-		
+		processInstanceQuery.where(ProcessInstanceQuery.OID.isEqual(oid));
+		processInstanceQuery.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
+		ProcessInstance processInstance = (ProcessInstanceDetails) getQueryService()
+				.getAllProcessInstances(processInstanceQuery).get(0);
+
 		JsonObject processInstanceJson = new JsonObject();
 
 		processInstanceJson.addProperty("oid", processInstance.getOID());
@@ -234,14 +236,11 @@ public class DocumentTriageService {
 
 			descriptorJson.addProperty("id", dataPath.getId());
 			descriptorJson.addProperty("name", dataPath.getName());
-			if (processInstance.getDescriptorValue(dataPath.getId()) != null)
-			{
-	         descriptorJson.addProperty("value", processInstance
-	               .getDescriptorValue(dataPath.getId()).toString());
-			}
-			else
-			{
-            descriptorJson.addProperty("value", "");
+			if (processInstance.getDescriptorValue(dataPath.getId()) != null) {
+				descriptorJson.addProperty("value", processInstance
+						.getDescriptorValue(dataPath.getId()).toString());
+			} else {
+				descriptorJson.addProperty("value", "");
 			}
 		}
 
@@ -267,7 +266,7 @@ public class DocumentTriageService {
 
 		JsonArray attachmentsJson = new JsonArray();
 
-      String MIMETYPE_PDF = "application/pdf", MIMETYPE_TIFF = "image/tiff"; 
+		String MIMETYPE_PDF = "application/pdf", MIMETYPE_TIFF = "image/tiff";
 		for (Document attachment : (List<Document>) processAttFolder
 				.getDocuments()) {
 			JsonObject attachmentJson = new JsonObject();
@@ -275,22 +274,25 @@ public class DocumentTriageService {
 			attachmentsJson.add(attachmentJson);
 
 			attachmentJson.addProperty("name", attachment.getName());
-			attachmentJson.addProperty("creationTimestamp", attachment.getDateCreated().getTime());
+			attachmentJson.addProperty("creationTimestamp", attachment
+					.getDateCreated().getTime());
 			attachmentJson.addProperty("contentType",
 					attachment.getContentType());
 			attachmentJson.addProperty("path", attachment.getPath());
 			attachmentJson.addProperty("uuid", attachment.getId());
-			
-			byte[] data = getDocumentManagementService().retrieveDocumentContent(attachment.getId());
-	      if (MIMETYPE_PDF.equalsIgnoreCase(attachment.getContentType())) {
-            attachmentJson.addProperty("numPages", PdfPageCapture.getNumPages(data));
-	      }
-	      else if (MIMETYPE_TIFF.equalsIgnoreCase(attachment.getContentType())) {
-            attachmentJson.addProperty("numPages", TiffReader.getNumPages(data));
-	      }
-	      else { // Any other type, except PDF or TIFF
-	         attachmentJson.addProperty("numPages", 0);
-	      }
+
+			byte[] data = getDocumentManagementService()
+					.retrieveDocumentContent(attachment.getId());
+			if (MIMETYPE_PDF.equalsIgnoreCase(attachment.getContentType())) {
+				attachmentJson.addProperty("numPages",
+						PdfPageCapture.getNumPages(data));
+			} else if (MIMETYPE_TIFF.equalsIgnoreCase(attachment
+					.getContentType())) {
+				attachmentJson.addProperty("numPages",
+						TiffReader.getNumPages(data));
+			} else { // Any other type, except PDF or TIFF
+				attachmentJson.addProperty("numPages", 0);
+			}
 		}
 
 		return attachmentsJson;
@@ -343,33 +345,41 @@ public class DocumentTriageService {
 				.getActivityInstance(
 						json.get("pendingActivityInstance").getAsJsonObject()
 								.get("oid").getAsLong());
-		
-		Document sourceDocument = getDocumentManagementService().getDocument(json.get("document").getAsJsonObject().get("uuid").getAsString());
-		
-      /*List<ApplicationContext> applicationContexts = activityInstance.getActivity().getAllApplicationContexts();
-		for (ApplicationContext applicationContext : applicationContexts)
-      {
-         List<AccessPoint> accessPoints = applicationContext.getAllAccessPoints();
-         List<DataMapping> dataMappings = applicationContext.getAllDataMappings();
-         int x = 5;
-      }*/
-		
-		// TODO: Code assumes that there is always exactly one Document OUT data mapping 
-      String APPLICATION_CONTEXT_DEFAULT = "default";
-      
-      // Get Data Id for the (Document Rendezvous) OUT Data Mapping 
-		ApplicationContext defaultContext = activityInstance.getActivity().getApplicationContext(APPLICATION_CONTEXT_DEFAULT);
-		DataMapping outDataMapping = (DataMapping) defaultContext.getAllOutDataMappings().get(0);
+
+		Document sourceDocument = getDocumentManagementService().getDocument(
+				json.get("document").getAsJsonObject().get("uuid")
+						.getAsString());
+
+		/*
+		 * List<ApplicationContext> applicationContexts =
+		 * activityInstance.getActivity().getAllApplicationContexts(); for
+		 * (ApplicationContext applicationContext : applicationContexts) {
+		 * List<AccessPoint> accessPoints =
+		 * applicationContext.getAllAccessPoints(); List<DataMapping>
+		 * dataMappings = applicationContext.getAllDataMappings(); int x = 5; }
+		 */
+
+		// TODO: Code assumes that there is always exactly one Document OUT data
+		// mapping
+		String APPLICATION_CONTEXT_DEFAULT = "default";
+
+		// Get Data Id for the (Document Rendezvous) OUT Data Mapping
+		ApplicationContext defaultContext = activityInstance.getActivity()
+				.getApplicationContext(APPLICATION_CONTEXT_DEFAULT);
+		DataMapping outDataMapping = (DataMapping) defaultContext
+				.getAllOutDataMappings().get(0);
 		String dataMappingId = outDataMapping.getId();
-		
+
 		Map<String, Object> outData = new HashMap<String, Object>();
 		outData.put(dataMappingId, (Object) sourceDocument);
-		
+
 		getWorkflowService().activateAndComplete(activityInstance.getOID(),
 				APPLICATION_CONTEXT_DEFAULT, outData);
 
-      /*getWorkflowService().activateAndComplete(activityInstance.getOID(),
-            null, null);*/
+		/*
+		 * getWorkflowService().activateAndComplete(activityInstance.getOID(),
+		 * null, null);
+		 */
 		return getPendingProcesses(null);
 	}
 
@@ -456,115 +466,216 @@ public class DocumentTriageService {
 				parameters.get("startableProcess").getAsJsonObject().get("id")
 						.getAsString(), null, true);
 
-      List<String> sourceDocumentIds = new ArrayList<String>();
-		JsonArray processAttachments = parameters.get("startableProcess").getAsJsonObject().get("processAttachments").getAsJsonArray();
-		for (JsonElement processAttachment : processAttachments)
-      {
-		   sourceDocumentIds.add(processAttachment.getAsJsonObject().get("uuid").getAsString());
-      }
-		
-		/*List<String> sourceDocumentIds = new ArrayList<String>();
-		sourceDocumentIds.add("{jcrUuid}26efea2d-3fb3-4068-99b0-6942bf636138");
-		sourceDocumentIds.add("{jcrUuid}2629618c-c47b-4dc0-bc65-e1a16e41ec5b");*/
-		
-		if (sourceDocumentIds.size() > 0)
-		{
-   		List<Document> sourceDocuments = getDocumentManagementService().getDocuments(sourceDocumentIds);
-         // Add attachments
-   		for (Document document : sourceDocuments)
-         {
-   	      addProcessAttachment(pi.getOID(), document.getName(), getDocumentManagementService().retrieveDocumentContent(document.getId()));
-         }
+		List<String> sourceDocumentIds = new ArrayList<String>();
+		JsonArray processAttachments = parameters.get("startableProcess")
+				.getAsJsonObject().get("processAttachments").getAsJsonArray();
+		for (JsonElement processAttachment : processAttachments) {
+			sourceDocumentIds.add(processAttachment.getAsJsonObject()
+					.get("uuid").getAsString());
 		}
-		
-		
+
+		/*
+		 * List<String> sourceDocumentIds = new ArrayList<String>();
+		 * sourceDocumentIds
+		 * .add("{jcrUuid}26efea2d-3fb3-4068-99b0-6942bf636138");
+		 * sourceDocumentIds
+		 * .add("{jcrUuid}2629618c-c47b-4dc0-bc65-e1a16e41ec5b");
+		 */
+
+		if (sourceDocumentIds.size() > 0) {
+			List<Document> sourceDocuments = getDocumentManagementService()
+					.getDocuments(sourceDocumentIds);
+			// Add attachments
+			for (Document document : sourceDocuments) {
+				addProcessAttachment(
+						pi.getOID(),
+						document.getName(),
+						getDocumentManagementService().retrieveDocumentContent(
+								document.getId()));
+			}
+		}
+
 		return parameters;
 	}
 
-   /**
-    * @param documentId
-    * @param pageNumber
-    * @return
-    */
-   public byte[] getDocumentImage(String documentId, int pageNumber)
-   {
-      byte[] image = null;
-      
-      Document document = getDocumentManagementService().getDocument(documentId);
-      String contentType = document.getContentType();
-      byte[] data = documentManagementService.retrieveDocumentContent(documentId);
+	/**
+	 * @param documentId
+	 * @param pageNumber
+	 * @return
+	 */
+	public byte[] getDocumentImage(String documentId, int pageNumber) {
+		byte[] image = null;
 
-      String MIMETYPE_PDF = "application/pdf", MIMETYPE_TIFF = "image/tiff"; 
-      if (MIMETYPE_PDF.equalsIgnoreCase(contentType)) {
-         image = PdfPageCapture.getPageImage(data, pageNumber);
-      }
-      else if (MIMETYPE_TIFF.equalsIgnoreCase(contentType)) {
-         image = TiffReader.getPageImage(data, pageNumber);
-      }
-      else { // Any other type, except PDF or TIFF
-      
-      }
-      
-      return image;
-   }
-   
-   /**
-    * @param pi
-    * @return
-    */
-   private List<Document> fetchProcessAttachments(ProcessInstance processInstance)
-   {
-      List<Document> processAttachments = new ArrayList<Document>();
+		Document document = getDocumentManagementService().getDocument(
+				documentId);
+		String contentType = document.getContentType();
+		byte[] data = documentManagementService
+				.retrieveDocumentContent(documentId);
 
-      DeployedModel model = getQueryService().getModel(processInstance.getModelOID());
-      ProcessDefinition processDefinition = model.getProcessDefinition(processInstance.getProcessID()) ;
-      List dataPaths = processDefinition.getAllDataPaths();
-      
-      for (int n = 0; n < dataPaths.size(); ++n)
-      {
-         DataPath dataPath = (DataPath) dataPaths.get(n);
+		String MIMETYPE_PDF = "application/pdf", MIMETYPE_TIFF = "image/tiff";
+		if (MIMETYPE_PDF.equalsIgnoreCase(contentType)) {
+			image = PdfPageCapture.getPageImage(data, pageNumber);
+		} else if (MIMETYPE_TIFF.equalsIgnoreCase(contentType)) {
+			image = TiffReader.getPageImage(data, pageNumber);
+		} else { // Any other type, except PDF or TIFF
 
-         if (!dataPath.getDirection().equals(Direction.IN))
-         {
-            continue;
-         }
+		}
 
-         try
-         {
-            if (dataPath.getId().equals(CommonProperties.PROCESS_ATTACHMENTS))
-            {
-               Object object = getWorkflowService().getInDataPath(processInstance.getOID(), dataPath.getId());
+		return image;
+	}
 
-               if (object != null)
-               {
-                  processAttachments.addAll((Collection) object);
-                  break;
-               }
-            }
-         }
-         catch (Exception e)
-         {
-            System.out.println("Error fetching Process Attachments: " + e.getMessage());
-         }
-      }
-      
-      return processAttachments;
-   }
+	/**
+	 * @param pi
+	 * @return
+	 */
+	private List<Document> fetchProcessAttachments(
+			ProcessInstance processInstance) {
+		List<Document> processAttachments = new ArrayList<Document>();
 
-   public void addProcessAttachment(long processOid, String fileName, byte[] bytes) {
-        ProcessInstance processInstance = getWorkflowService().getProcessInstance(processOid);
-         List<Document> processAttachments = fetchProcessAttachments(processInstance);
+		DeployedModel model = getQueryService().getModel(
+				processInstance.getModelOID());
+		ProcessDefinition processDefinition = model
+				.getProcessDefinition(processInstance.getProcessID());
+		List dataPaths = processDefinition.getAllDataPaths();
 
-         DocumentInfo docInfo = DmsUtils.createDocumentInfo(fileName);
-         String folderPath = DocumentMgmtUtility.getProcessAttachmentsFolderPath(processInstance);
-         getOrCreateFolder(folderPath);
-         Document document = getDocumentManagementService().createDocument(folderPath, docInfo, bytes, "");
-         
-         processAttachments.add(document);
-         getWorkflowService().setOutDataPath(processInstance.getOID(),
-                 CommonProperties.PROCESS_ATTACHMENTS, processAttachments);
-   }
+		for (int n = 0; n < dataPaths.size(); ++n) {
+			DataPath dataPath = (DataPath) dataPaths.get(n);
+
+			if (!dataPath.getDirection().equals(Direction.IN)) {
+				continue;
+			}
+
+			try {
+				if (dataPath.getId().equals(
+						CommonProperties.PROCESS_ATTACHMENTS)) {
+					Object object = getWorkflowService().getInDataPath(
+							processInstance.getOID(), dataPath.getId());
+
+					if (object != null) {
+						processAttachments.addAll((Collection) object);
+						break;
+					}
+				}
+			} catch (Exception e) {
+				System.out.println("Error fetching Process Attachments: "
+						+ e.getMessage());
+			}
+		}
+
+		return processAttachments;
+	}
+
+	public void addProcessAttachment(long processOid, String fileName,
+			byte[] bytes) {
+		ProcessInstance processInstance = getWorkflowService()
+				.getProcessInstance(processOid);
+		List<Document> processAttachments = fetchProcessAttachments(processInstance);
+
+		DocumentInfo docInfo = DmsUtils.createDocumentInfo(fileName);
+		String folderPath = DocumentMgmtUtility
+				.getProcessAttachmentsFolderPath(processInstance);
+		getOrCreateFolder(folderPath);
+		Document document = getDocumentManagementService().createDocument(
+				folderPath, docInfo, bytes, "");
+
+		processAttachments.add(document);
+		getWorkflowService().setOutDataPath(processInstance.getOID(),
+				CommonProperties.PROCESS_ATTACHMENTS, processAttachments);
+	}
 
 
+	/*** Business Object-related REST Services ***/
 
+
+	/**
+	 * 
+	 * @return
+	 */
+	public JsonObject getBusinessObjects() {
+		JsonObject resultJson = new JsonObject();
+		JsonArray modelsJson = new JsonArray();
+		
+		resultJson.add("models", modelsJson);
+		
+		JsonObject modelJson = new JsonObject();;
+		
+		modelsJson.add(modelJson);
+		
+		modelJson.addProperty("oid", 1);
+		modelJson.addProperty("name", "General Claim Processing");
+
+		JsonArray businessObjectsJson = new JsonArray();
+		
+		modelJson.add("businessObjects", businessObjectsJson);
+		
+		JsonObject businessObjectJson = new JsonObject();
+		
+		businessObjectsJson.add(businessObjectJson);
+		
+		businessObjectJson.addProperty("id", "Member");
+		businessObjectJson.addProperty("name", "Member");
+		
+		JsonArray fieldsJson = new JsonArray();
+		
+		businessObjectJson.add("fields", fieldsJson);
+		
+		JsonObject fieldJson = new JsonObject();
+		
+		fieldsJson.add(fieldJson);
+		
+		fieldJson.addProperty("name", "id");
+		fieldJson.addProperty("type", "string");
+		fieldJson.addProperty("key", true);
+		fieldJson.addProperty("primaryKey", true);
+		
+		fieldJson = new JsonObject();
+		
+		fieldsJson.add(fieldJson);
+		
+		fieldJson.addProperty("name", "firstName");
+		fieldJson.addProperty("type", "string");
+		fieldJson.addProperty("key", true);
+		fieldJson.addProperty("primaryKey", false);
+
+		return resultJson;
+	}
+
+	/**
+	 * 
+	 * @param modelOid
+	 * @param businessObjectId
+	 * @return
+	 */
+	public JsonObject getBusinessObject(String modelOid, String businessObjectId) {
+		JsonObject resultJson = new JsonObject();
+		
+		return resultJson;
+	}
+
+	/**
+	 * 
+	 * @param modelOid
+	 * @param businessObjectId
+	 * @return
+	 */
+	public JsonObject getBusinessObjectInstances(String modelOid,
+			String businessObjectId) {
+		JsonObject resultJson = new JsonObject();
+		
+		return resultJson;
+	}
+
+	/**
+	 * 
+	 * @param modelOid
+	 * @param businessObjectId
+	 * @param primaryKey
+	 * @return
+	 */
+	public JsonObject getBusinessObjectProcessInstances(String modelOid,
+			String businessObjectId, String primaryKey) {
+		JsonObject resultJson = new JsonObject();
+		
+		return resultJson;
+	}
 }

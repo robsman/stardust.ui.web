@@ -24,22 +24,50 @@ define(
 					memberId : "4711",
 					firstName : "Haile",
 					lastName : "Selassie",
-					scheme: 0090001,
-					schemeName: 0090002,
-					nationalID: 80030300030
+					scheme : 0090001,
+					schemeName : 0090002,
+					nationalID : 80030300030
 				}, {
 					memberId : "0815",
 					firstName : "Jan",
 					lastName : "Smuts",
-					scheme: 0090022,
-					schemeName: 0090004,
-					nationalID: 677700000
+					scheme : 0090022,
+					schemeName : 0090004,
+					nationalID : 677700000
 				} ];
 
 				/**
 				 * 
 				 */
 				DocumentAssignmentService.prototype.initialize = function() {
+				};
+
+				/**
+				 * 
+				 */
+				DocumentAssignmentService.prototype.getBusinessObjects = function() {
+					var deferred = jQuery.Deferred();
+					var rootUrl = location.href.substring(0, location.href
+							.indexOf("/plugins"));
+					var self = this;
+
+					jQuery
+							.ajax(
+									{
+										url : rootUrl
+												+ "/services/rest/document-triage/businessObject.json",
+										type : "GET",
+										contentType : "application/json"
+									}).done(function(result) {
+								console.log("=======> Models");
+								console.log(result.models);
+
+								deferred.resolve(result.models);
+							}).fail(function(data) {
+								deferred.reject(data);
+							});
+
+					return deferred.promise();
 				};
 
 				/**
@@ -68,13 +96,13 @@ define(
 										console.log(result);
 
 										for (var n = 0; n < result.processAttachments.length; ++n) {
-											debugger;
 											result.processAttachments[n].creationTimestamp = new Date()
 													.getTime();
 											result.processAttachments[n].pageCount = result.processAttachments[n].numPages;
-											result.processAttachments[n].url = rootUrl + 
-																			   "/services/rest/document-triage/documents/" +
-																			   result.processAttachments[n].uuid + "/";
+											result.processAttachments[n].url = rootUrl
+													+ "/services/rest/document-triage/documents/"
+													+ result.processAttachments[n].uuid
+													+ "/";
 										}
 
 										deferred
@@ -173,7 +201,7 @@ define(
 				/**
 				 * 
 				 */
-				DocumentAssignmentService.prototype.getBusinessObjects = function() {
+				DocumentAssignmentService.prototype.getBusinessObjectInstances = function() {
 					var deferred = jQuery.Deferred();
 
 					this.delayedResolve(deferred, this.businessObjects);
@@ -184,7 +212,8 @@ define(
 				/**
 				 * 
 				 */
-				DocumentAssignmentService.prototype.startProcess = function(data) {
+				DocumentAssignmentService.prototype.startProcess = function(
+						data) {
 					var deferred = jQuery.Deferred();
 					var rootUrl = location.href.substring(0, location.href
 							.indexOf("/plugins"));
@@ -198,8 +227,7 @@ define(
 										"type" : "PUT",
 										"contentType" : "application/json",
 										"data" : JSON.stringify(data)
-									}
-									).done(function(result) {
+									}).done(function(result) {
 								deferred.resolve(result);
 							}).fail(function(data) {
 								deferred.reject(data);

@@ -45,11 +45,13 @@ public class DocumentTriageResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("activities/{activityInstanceOid}/attachments.json")
-	public Response getProcessesAttachments(@PathParam("activityInstanceOid") long activityInstanceOid) {
+	public Response getProcessesAttachments(
+			@PathParam("activityInstanceOid") long activityInstanceOid) {
 		try {
 			return Response.ok(
-					getDocumentTriageService().getProcessesAttachments(activityInstanceOid)
-							.toString(), MediaType.APPLICATION_JSON).build();
+					getDocumentTriageService().getProcessesAttachments(
+							activityInstanceOid).toString(),
+					MediaType.APPLICATION_JSON).build();
 		} catch (Exception e) {
 			trace.error(e, e);
 
@@ -57,27 +59,30 @@ public class DocumentTriageResource {
 		}
 	}
 
-   @GET
-   @Produces({"image/png"})
-   @Path("documents/{documentId}/{pageNumber}")
-   public Response getDocumentImage(@PathParam("documentId") String documentId, @PathParam("pageNumber") int pageNumber) {
-      try {
-         final byte[] image = getDocumentTriageService().getDocumentImage(documentId, pageNumber);
+	@GET
+	@Produces({ "image/png" })
+	@Path("documents/{documentId}/{pageNumber}")
+	public Response getDocumentImage(
+			@PathParam("documentId") String documentId,
+			@PathParam("pageNumber") int pageNumber) {
+		try {
+			final byte[] image = getDocumentTriageService().getDocumentImage(
+					documentId, pageNumber);
 
-         return Response.ok().entity(new StreamingOutput(){
-             @Override
-             public void write(OutputStream output)
-                throws IOException, WebApplicationException {
-                output.write(image);
-                output.flush();
-             }
-         }).build();
-      } catch (Exception e) {
-         trace.error(e, e);
+			return Response.ok().entity(new StreamingOutput() {
+				@Override
+				public void write(OutputStream output) throws IOException,
+						WebApplicationException {
+					output.write(image);
+					output.flush();
+				}
+			}).build();
+		} catch (Exception e) {
+			trace.error(e, e);
 
-         return Response.serverError().build();
-      }
-   }
+			return Response.serverError().build();
+		}
+	}
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -139,15 +144,15 @@ public class DocumentTriageResource {
 			JsonObject json = jsonIo.readJsonObject(postedData);
 
 			return Response.ok(
-					getDocumentTriageService().startProcess(json)
-							.toString(), MediaType.APPLICATION_JSON).build();
+					getDocumentTriageService().startProcess(json).toString(),
+					MediaType.APPLICATION_JSON).build();
 		} catch (Exception e) {
 			trace.error(e, e);
 
 			return Response.serverError().build();
 		}
 	}
-	
+
 	/**
 	 * 
 	 * @param documentTriageService
@@ -204,6 +209,73 @@ public class DocumentTriageResource {
 			}
 		} else {
 			return Response.status(Status.FORBIDDEN).build();
+		}
+	}
+
+	/*** Business Object-related REST Services ***/
+
+	@GET
+	@Path("/businessObject.json")
+	public Response getBusinessObject() {
+		try {
+			return Response.ok(
+					getDocumentTriageService().getBusinessObjects().toString(),
+					MediaType.APPLICATION_JSON).build();
+		} catch (Exception e) {
+			trace.error(e, e);
+
+			return Response.serverError().build();
+		}
+	}
+
+	@GET
+	@Path("/businessObject/{modelOid}/{businessObjectId}.json")
+	public Response getBusinessObject(@PathParam("modelOid") String modelOid,
+			@PathParam("businessObjectId") String businessObjectId) {
+		try {
+			return Response.ok(
+					getDocumentTriageService().getBusinessObject(modelOid,
+							businessObjectId).toString(),
+					MediaType.APPLICATION_JSON).build();
+		} catch (Exception e) {
+			trace.error(e, e);
+
+			return Response.serverError().build();
+		}
+	}
+
+	@GET
+	@Path("/businessObject/{modelOid}/{businessObjectId}/instances.json")
+	public Response getBusinessObjectInstances(
+			@PathParam("modelOid") String modelOid,
+			@PathParam("businessObjectId") String businessObjectId) {
+		try {
+			return Response.ok(
+					getDocumentTriageService().getBusinessObjectInstances(
+							modelOid, businessObjectId).toString(),
+					MediaType.APPLICATION_JSON).build();
+		} catch (Exception e) {
+			trace.error(e, e);
+
+			return Response.serverError().build();
+		}
+	}
+
+	@GET
+	@Path("/businessObject/{modelOid}/{businessObjectId}/{primaryKey}/processInstances.json")
+	public Response getBusinessObjectProcessInstances(
+			@PathParam("modelOid") String modelOid,
+			@PathParam("businessObjectId") String businessObjectId, @PathParam("primaryKey") String primaryKey) {
+		try {
+			return Response.ok(
+					getDocumentTriageService()
+							.getBusinessObjectProcessInstances(modelOid,
+									businessObjectId, primaryKey).toString(),
+					MediaType.APPLICATION_JSON).build();
+		} catch (Exception e) {
+			trace.error(e, e);
+
+			return Response.serverError().build();
 		}
 	}
 }
