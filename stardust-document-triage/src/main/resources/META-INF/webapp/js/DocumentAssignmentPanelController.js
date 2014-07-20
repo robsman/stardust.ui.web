@@ -3,9 +3,12 @@
  ******************************************************************************/
 
 define(
-		[ "document-triage/js/Utils",
+		[
+				"document-triage/js/Utils",
+				"business-object-management/js/BusinessObjectManagementPanelController",
 				"document-triage/js/DocumentAssignmentService" ],
-		function(Utils, DocumentAssignmentService) {
+		function(Utils, BusinessObjectManagementPanelController,
+				DocumentAssignmentService) {
 			return {
 				create : function() {
 					var controller = new DocumentAssignmentPanelController();
@@ -22,27 +25,16 @@ define(
 				 * 
 				 */
 				DocumentAssignmentPanelController.prototype.initialize = function() {
-					this.queryParameters = Utils.getQueryParameters();
+					this.retrieveActivityInstanceFromUri();
 
-					// TODO Standardized API
-					// TODO: retrieve a proper base url and replace pepper-test
-					var pattern = "/services/rest/engine/interactions/";
-					var encodedId = this.queryParameters["ippInteractionUri"]
-							.substring(this.queryParameters["ippInteractionUri"]
-									.indexOf(pattern)
-									+ pattern.length);
-					var decodedId = atob(encodedId || '');
-					var partsMatcher = new RegExp('^(\\d+)\\|(\\d+)$');
-					var decodedParts = partsMatcher.exec(decodedId);
-
-					this.activityInstanceOid = decodedParts[1];
 					this.startProcessDialog = {};
 					this.businessObjectFilter = {};
 					this.selectedBusinessObjectInstances = [];
-					this.mode = "normal";
-					this.pageRotation = 0;
-					this.zoomFactor = 100;
-					this.pageInverted = false;
+
+					this.initializePageRendering();
+
+					this.businessObjectManagementPanelController = BusinessObjectManagementPanelController
+							.create();
 
 					var self = this;
 
@@ -62,21 +54,19 @@ define(
 														function(
 																startableProcesses) {
 															self.startableProcesses = startableProcesses;
+															
 															self
 																	.refreshStartableProcessesTree();
-
-															DocumentAssignmentService
-																	.instance()
-																	.getBusinessObjects()
+															self.businessObjectManagementPanelController
+																	.initialize(
+																			self)
 																	.done(
-																			function(
-																					businessObjectModels) {
-																				self.businessObjectModels = businessObjectModels;
-																				self
-																						.refreshBusinessObjects();
+																			function() {
+																				console.log("===> BO initialized");
+																				console.log(self.businessObjectManagementPanelController);
+																				
 																				self
 																						.safeApply();
-
 																				window
 																						.setTimeout(
 																								function() {
@@ -87,53 +77,36 @@ define(
 																			})
 																	.fail();
 														}).fail();
-
 									}).fail();
 				};
 
 				/**
 				 * 
 				 */
-				DocumentAssignmentPanelController.prototype.refreshBusinessObjects = function() {
-					this.businessObjects = [];
+				DocumentAssignmentPanelController.prototype.retrieveActivityInstanceFromUri = function() {
+					this.queryParameters = Utils.getQueryParameters();
 
-					for (var n = 0; n < this.businessObjectModels.length; ++n) {
-						for (var m = 0; m < this.businessObjectModels[n].businessObjects.length; ++m) {
-							this.businessObjects
-									.push({
-										label : this.businessObjectModels[n].name
-												+ "/"
-												+ this.businessObjectModels[n].businessObjects[m].name,
-										model : this.businessObjectModels[n],
-										businessObject : this.businessObjectModels[n].businessObjects[m]
-									});
-						}
-					}
+					// TODO Standardized API
+					// TODO: retrieve a proper base url and replace pepper-test
+					var pattern = "/services/rest/engine/interactions/";
+					var encodedId = this.queryParameters["ippInteractionUri"]
+							.substring(this.queryParameters["ippInteractionUri"]
+									.indexOf(pattern)
+									+ pattern.length);
+					var decodedId = atob(encodedId || '');
+					var partsMatcher = new RegExp('^(\\d+)\\|(\\d+)$');
+					var decodedParts = partsMatcher.exec(decodedId);
+					this.activityInstanceOid = decodedParts[1];
 				};
 
 				/**
 				 * 
 				 */
-				DocumentAssignmentPanelController.prototype.onBusinessObjectChanged = function() {
-					this.businessObjectInstances = [];
-					this.keyFields = [];
-					this.topLevelFields = [];
-
-					if (!this.businessObject) {
-						return;
-					}
-
-					for (var n = 0; n < this.businessObject.businessObject.fields.length; ++n) {
-						if (this.businessObject.businessObject.fields[n].primaryKey) {
-							this.primaryKeyField = this.businessObject.businessObject.fields[n];
-						} else if (this.businessObject.businessObject.fields[n].key) {
-							this.keyFields
-									.push(this.businessObject.businessObject.fields[n]);
-						}
-
-						this.topLevelFields
-								.push(this.businessObject.businessObject.fields[n]);
-					}
+				DocumentAssignmentPanelController.prototype.initializePageRendering = function() {
+					this.mode = "normal";
+					this.pageRotation = 0;
+					this.zoomFactor = 100;
+					this.pageInverted = false;
 				};
 
 				/**
@@ -558,7 +531,7 @@ define(
 												result.startableProcess);
 										that.safeApply();
 									}).fail();
-				}
+				};
 
 				/**
 				 * 
@@ -636,6 +609,9 @@ define(
 				DocumentAssignmentPanelController.prototype.refreshPendingProcessesTree = function() {
 					this.pendingProcessesTree = [];
 
+					console.log("Pending Processes");
+					console.log(this.pendingProcesses);
+
 					for (var n = 0; n < this.pendingProcesses.length; ++n) {
 						this.pendingProcessesTree.push({
 							pendingProcess : this.pendingProcesses[n]
@@ -662,7 +638,6 @@ define(
 									});
 						}
 
-						// this.pendingProcessesTree.push({processDescriptors:this.pendingProcesses[n].descriptors});
 						this.pendingProcessesTree
 								.push({
 									processAttachments : this.pendingProcesses[n].processAttachments
@@ -674,7 +649,6 @@ define(
 										processAttachment : this.pendingProcesses[n].processAttachments[m]
 									});
 						}
-
 					}
 				};
 
@@ -724,31 +698,7 @@ define(
 				/**
 				 * 
 				 */
-				DocumentAssignmentPanelController.prototype.filterBusinessObjectInstances = function() {
-					var self = this;
-
-					DocumentAssignmentService.instance()
-							.getBusinessObjectInstances(
-									this.businessObject.modelOid,
-									this.businessObject.businessObject.id,
-									this.primaryKeyField, this.keyFields).done(
-									function(businessObjectInstances) {
-										self.businessObjectInstances = businessObjectInstances;
-										
-										console.log("Instances here");
-										console.log(self.businessObjectInstances);
-
-										self.safeApply();
-									}).fail();
-				};
-
-				/**
-				 * 
-				 */
 				DocumentAssignmentPanelController.prototype.onBusinessObjectInstanceSelectionChange = function() {
-					console.log("Business Object Instance Selection Changed");
-					console.log(this.selectedBusinessObjectInstances);
-
 					var self = this;
 
 					jQuery("*").css("cursor", "wait");
@@ -768,7 +718,6 @@ define(
 							}).fail(function() {
 								jQuery("*").css("cursor", "default");
 							});
-
 				};
 
 				/**

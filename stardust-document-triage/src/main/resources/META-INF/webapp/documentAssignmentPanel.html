@@ -86,51 +86,8 @@
 					<table class="layoutTable" style="width: 100%;">
 						<tr>
 							<td>
-								<div class="section" style="margin-bottom: 10px; padding: 10px;">
-									<table class="formTable">
-										<tr>
-											<td><label>Business Object</label></td>
-											<td><select ng-model="businessObject"
-												ng-options="businessObject as businessObject.label for businessObject in businessObjects"
-												ng-change="onBusinessObjectChanged()"><option
-														value="">Select ...</select></td>
-										</tr>
-									</table>
-									<div ng-show="businessObject != null" style="margin-top: 10px;">
-										<table class="formTable">
-											<tr>
-												<td><label>{{primaryKeyField.name}}</label> <input
-													type="text" style="width: 100px; margin-left: 5px;"
-													ng-model="primaryKeyField.filterValue"
-													ng-blur="filterBusinessObjectInstances()"></input></td>
-												<td ng-repeat="field in keyFields"><label
-													style="margin-left: 5px;">{{field.name}}</label> <input
-													type="text" style="width: 100px; margin-left: 5px;"
-													ng-model="field.filterValue"
-													ng-blur="filterBusinessObjectInstances()"></input></td>
-											</tr>
-										</table>
-										<div class="dataTableFrame"
-											style="margin-top: 20px; margin-bottom: 20px;">
-											<table cellpadding="0" cellspacing="0" class="dataTable"
-												style="width: 100%;">
-												<thead>
-													<tr>
-														<th ng-repeat="field in topLevelFields">{{field.name}}</th>
-													</tr>
-												</thead>
-												<tbody>
-													<tr
-														sd-table-data="businessObjectInstance in businessObjectInstances"
-														sd-table-selection="selectedBusinessObjectInstances"
-														sd-table-selection-changed="onBusinessObjectInstanceSelectionChange()">
-														<td ng-repeat="field in topLevelFields">{{businessObjectInstance[field.id]}}</td>
-													</tr>
-												</tbody>
-											</table>
-										</div>
-									</div>
-								</div>
+								<div
+									ng-include="'../business-object-management/businessObjectSearchPanel.html'"></div>
 							</td>
 						</tr>
 						<tr valign="top">
@@ -180,7 +137,7 @@
 																<i class="fa fa-gears"></i>
 															</div>
 															<div style="margin-left: 10px;"
-																ng-show="treeItem.pendingProcess.descriptors.length >0">
+																ng-show="treeItem.pendingProcess.descriptors.length > 0">
 																<i class="fa fa-tag"></i>
 															</div>
 															<div ng-show="treeItem.pendingActivityInstance"
