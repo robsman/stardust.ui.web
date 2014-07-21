@@ -1135,7 +1135,7 @@ img
 .category-tree-category-icon:hover
 {
 	cursor: help;
-	border: 1px dotted black;
+	border: 1px dotted #FFF;
 	margin: 0px;
 }
 
@@ -1147,7 +1147,7 @@ img
 .category-tree-category-label:hover
 {
 	cursor: help;
-	border: 1px dotted black;
+	border: 1px dotted #FFF;
 	margin: 0px;
 }
 
@@ -1164,7 +1164,7 @@ img
 .category-tree-view-icon:hover
 {
 	cursor: help;
-	border: 1px dotted black;
+	border: 1px dotted #FFF;
 	margin: 0px;
 }
 
@@ -1176,7 +1176,7 @@ img
 .category-tree-view-label:hover
 {
 	cursor: help;
-	border: 1px dotted black;
+	border: 1px solid #FFF;
 	margin: 0px;
 }
 
@@ -1428,7 +1428,7 @@ img
 }
 
 .manAvtyValAdprPnlPos .manAvtyValAdprPnlPosElem {
-	border: 1px dotted;
+	border: 1px dotted #FFF;
 	cursor: move;
 	margin: 1px;
 	padding-left: 10px;
@@ -1437,7 +1437,7 @@ img
 }
 
 .manAvtyValAdprPnlPos-dis .manAvtyValAdprPnlPosElem {
-	border: 1px dotted;
+	border: 1px dotted #FFF;
 	cursor: normal;
 	margin: 1px;
 	padding-left: 10px;
@@ -1499,7 +1499,7 @@ img
 }
 
 .pnlPopUpBrdrUserDialog .icePnlBrdrNorth {
-	border-bottom: 1px dotted grey;
+	border-bottom: 1px dotted #FFF;
 	height: auto;
 }
 
@@ -1758,9 +1758,11 @@ select.icon-menu option {
 	font-family: Lato,Arial,Helvetica,sans-serif;
 }
 
-table.autoCompTable, table.autoCompTable > tbody > tr, table.autoCompTable > tbody > tr > td
+table.autoCompTable, 
+table.autoCompTable > tbody > tr, 
+table.autoCompTable > tbody > tr > td
 {
-	border: 1px solid #CCCCCC;
+	border: none;
 }
 
 .autoCompTableHeaderRow
@@ -1768,7 +1770,7 @@ table.autoCompTable, table.autoCompTable > tbody > tr, table.autoCompTable > tbo
 	background-color: #F2F2F2;
 	text-align: center;
 	font-family: Lato,Arial,Helvetica,sans-serif;
-	font: bold 11px tahoma;
+	font: bold 11px Lato;
 }
 
 .autoCompTableRemoveCol
@@ -2033,7 +2035,7 @@ table.autoCompTable, table.autoCompTable > tbody > tr, table.autoCompTable > tbo
 }
 
 .pnlBrdrDemo .icePnlBrdrCenter {
-	border-left: 1px dotted #CCCCCC;
+	border-left: 1px dotted #FFF;
 	font-weight: lighter;
 	text-align: left;
 	vertical-align: middle;
@@ -2550,7 +2552,6 @@ table.iceSelInpDate tbody tr td table{
     background-color: #FFFFFF;
     border-collapse: collapse;
     border: none;
-    border-left: 1px solid #d9d9d9;
     margin: 4px 0 0 0;
 }
 
@@ -3670,7 +3671,7 @@ table.iceSelInpDate tbody tr td table{
 
 .iceSelInpTxtSelRow {
     display: block;
-    background-color: #4591A1;
+    background-color: #FFF;
     color: #FFFFFF;
     padding: 2px;
     padding-left: 10px;
@@ -3679,7 +3680,7 @@ table.iceSelInpDate tbody tr td table{
 }
 
 .iceSelInpTxtSelRow span {
-    color: #FFFFFF;
+    color: #DDD;
 }
 
 /*
@@ -4186,14 +4187,14 @@ table.iceSelInpDate tbody tr td table{
 .iceCmdLnk-dis, .iceOutLnk-dis {
     color: #ABABAB;
     text-decoration: none;
-    border-bottom: 1px dotted #CCCCCC;
+    border-bottom: 1px dotted transparent;
     cursor: default;
 }
 
 .iceOutTxt-dis, .iceOutLbl-dis {
     color: #ABABAB;
     text-decoration: none;
-    border-bottom: 1px dotted #CCCCCC;
+    border-bottom: 1px dotted #transparent;
     cursor: default;
 }
 
@@ -4203,14 +4204,14 @@ table.iceSelInpDate tbody tr td table{
     margin: 2px;
     padding: 3px;
     font: 11px Lato;
-    border: 1px dotted #CCCCCC;
+    border: 1px dotted transparent;
 }
 
 .iceInpTxtArea-dis {
     font-family: Lato, Arial, Helvetica, sans-serif;
     font-size: .95em;
     color: #ABABAB;
-    border: 1px dotted #CCCCCC;
+    border: 1px dotted transparent;
     cursor: default;
     margin: 2px;
     padding: 2px;
@@ -4292,7 +4293,7 @@ table.iceSelInpDate tbody tr td table{
 .iceSubMenuRow-dis a:hover {
     color: #ABABAB;
     text-decoration: none;
-    border-bottom: 1px dotted #CCCCCC;
+    border-bottom: 1px dotted transparent;
     cursor: default;
 }
 
@@ -5539,13 +5540,14 @@ Disabled classes for the calendar controls
 }
 
 .icePnlClpsblColpsdHdr .iceOutTxt:hover,
-.icePnlClpsblHdr .iceOutTxt, 
-.icePnlClpsblHdr .iceOutTxt:hover {
+.icePnlClpsblHdr .iceOutTxt{
 	color: #A69A88;
 	font: 14px Lato;
 	font-weight:500;
 } 
-
+.icePnlClpsblHdr .iceOutTxt:hover {
+	color: #A69A88;
+}
 /* Styles for ice:tree */
 
 .iceTreeRow a, .iceTreeRow a .iceOutTxt {
@@ -6632,9 +6634,6 @@ img[src *='arrow_refresh.png']{
 	opacity: 0.7;
 }
 img[src *='arrow_refresh.png']:hover{
-	border: 1px dotted transparent;
-	margin: 0px;
-	height: 0px;
 	background-repeat: no-repeat !important;
 	opacity:1.0;
 }
@@ -6780,7 +6779,6 @@ img[src *='arrow-first.gif']:hover{
 }
 
 img[src *='panelHeader-triggerExpand.png']{
-	
 	background: url("./images/flat-icons/panelHeader-triggerExpand.png") no-repeat;
 	width:18px;
 	padding: 18px 0 0 0 !important;
@@ -6929,6 +6927,11 @@ body > .icePnlGrp{
 	/*border: none !important;*/
 }
 
+div.icePnlGrp.toolbar-button:hover{
+	margin: 0 !important;
+	padding: 2px !important;
+}
+
 .icePnlTb{
 	/*background: url( './images/calendar16X16.png' ) no-repeat !important;
 	background-position:center bottom;
@@ -6979,6 +6982,11 @@ tr td.iceDatPgrCol:last-of-type{
 .iceCmdBtn.toolbar-button:hover{
       margin:0 0 0 0;
       opacity: 1.0;
+      border:solid 3px transparent !important;
+}
+/*keep other topolbar buttons behaving on mouseover as well*/
+img.toolbar-button:hover{
+	border:solid 1px transparent !important;
 }
 
 /*Opacity setting for all disabled link and cmd buttons*/
@@ -6995,6 +7003,12 @@ tr td.iceDatPgrCol:last-of-type{
 	color: white;
 	border-color: #21659d;
 }
+
+input.secondary{
+	background:#FFF !important;
+	color:#333 !important;
+}
+
 .iceCmdBtn.toolbar-button{
 	background:#FFF;
 	border: solid 1px #FFF !important;
@@ -7978,7 +7992,7 @@ img[src *='application_camel.png']{
      opacity: 0.7;
 }
 
-img[src *='application_edit.png'],
+img[src *='application_edit.png']
 {
      background-image:url('./images/flat-icons/application_edit.png');
      width:16px;
@@ -8393,12 +8407,16 @@ img[src *='bullet_error.png']{
      opacity: 0.7;
 }
 
-img[src *='button-bid-accept.png']{
-     background-image:url('./images/flat-icons/button-bid-accept.png');
+img[src *='button_bid_accept.gif'],
+input[src *='button_bid_accept.gif']{
+	 background:none !important;
+	 border:none !important;
+     background-image:url('./images/flat-icons/button-bid-accept.png') !important;
      width:16px;
      background-size: 16px 16px;
-     padding: 16px 0 0 0 !important;
-     height:0px;
+     padding: 14px 0 0 0 !important;
+     height:0px !important;
+     width: 16px !important;
      background-repeat: no-repeat !important;
      opacity: 0.7;
 }
@@ -8820,8 +8838,9 @@ img[src *='cross-small-circle.png']{
      opacity: 0.7;
 }
 
-img[src *='cross.png']{
-     background-image:url('./images/flat-icons/cross.png');
+img[src *='cross.png'],
+input[src *='cross.png']{
+     background-image:url('./images/flat-icons/cross.png') !important;
      width:16px;
      background-size: 16px 16px;
      padding: 16px 0 0 0 !important;
@@ -9159,7 +9178,9 @@ img[src *='dialog-icon-warning.png']{
 
 img[src *='dialog-windowbttn-close.png'],
 input[src *='dialog-windowbttn-close.png']{
-     background-image:url('./images/flat-icons/dialog-windowbttn-close.png');
+	 background: none !important;
+	 border: none !important;
+     background-image:url('./images/flat-icons/dialog-windowbttn-close.png') !important;
      width:16px;
      background-size: 16px 16px;
      padding: 16px 0 0 0 !important;
@@ -9438,8 +9459,8 @@ img[src *='dt_icon.png']{
      opacity: 0.7;
 }
 
-img[src *='edit.png'],
-input[src *='edit.png']{
+img[src *='/edit.png'],
+input[src *='/edit.png']{
      background-image:url('./images/flat-icons/edit.png');
      width:16px;
      background-size: 16px 16px;
@@ -9484,8 +9505,9 @@ img[src *='email_attach.png']{
      opacity: 0.7;
 }
 
-img[src *='email_go.png']{
-     background-image:url('./images/flat-icons/email_go.png');
+img[src *='email_go.png'],
+input[src *='email_go.png']{
+     background-image:url('./images/flat-icons/email_go.png') !important;
      width:16px;
      background-size: 16px 16px;
      padding: 16px 0 0 0 !important;
@@ -9663,7 +9685,9 @@ input[src *='external_sw.png']{
 
 img[src *='eye.png'],
 input[src *='eye.png']{
-     background-image:url('./images/flat-icons/eye.png');
+	 background: none !important;
+	 border:none !important;
+     background-image:url('./images/flat-icons/eye.png') !important;
      width:16px;
      background-size: 16px 16px;
      padding: 16px 0 0 0 !important;
@@ -10270,7 +10294,7 @@ img[src *='lighting_delete.png']{
      opacity: 0.7;
 }
 
-img[src *='link.png']{
+img[src *='/link.png']{
      background-image:url('./images/flat-icons/link.png');
      width:16px;
      background-size: 16px 16px;
@@ -10282,6 +10306,16 @@ img[src *='link.png']{
 
 img[src *='lock_edit.png']{
      background-image:url('./images/flat-icons/lock_edit.png');
+     width:16px;
+     background-size: 16px 16px;
+     padding: 16px 0 0 0 !important;
+     height:0px;
+     background-repeat: no-repeat !important;
+     opacity: 0.7;
+}
+
+img[src *='lock_open.png']{
+     background-image:url('./images/flat-icons/lock_open.png') !important;
      width:16px;
      background-size: 16px 16px;
      padding: 16px 0 0 0 !important;
@@ -10427,7 +10461,7 @@ img[src *='model-locked.png']{
 
 img[src *='model.gif'],
 input[src *='model.gif']{
-     background-image:url('./images/flat-icons/model.png');
+     background-image:url('./images/flat-icons/model.png') !important;
      width:16px;
      background-size: 16px 16px;
      padding: 16px 0 0 0 !important;
@@ -10588,7 +10622,7 @@ img[src *='page_white.png']{
 
 img[src *='page_white_add.png']{
      background-image:url('./images/flat-icons/page_white_add.png');
-     width:16px;
+     width:16px !important;
      background-size: 16px 16px;
      padding: 16px 0 0 0 !important;
      height:0px;
@@ -10859,7 +10893,7 @@ input[src *='process-runtime-settings.png']:hover{
 
 img[src *='process.png'],
 input[src *='process.png']{
-     background-image:url('./images/flat-icons/process.png');
+     background-image:url('./images/flat-icons/process.png') !important;
      width:16px;
      background-size: 16px 16px;
      padding: 16px 0 0 0 !important;
@@ -11516,6 +11550,16 @@ img[src *='structured-types.png']{
      opacity: 0.7;
 }
 
+img[src *='submenu.gif']{
+     background-image:url("./images/flat-icons/panelHeader-triggerExpand.png");
+     width:16px;
+     background-size: 16px 16px;
+     padding: 16px 0 0 0 !important;
+     height:0px;
+     background-repeat: no-repeat !important;
+     opacity: 0.7;
+}
+
 img[src *='subprocess-marker_wrench.png']{
      background-image:url('./images/flat-icons/subprocess-marker_wrench.png');
      width:16px;
@@ -11837,6 +11881,16 @@ img[src *='traffic_light.png']{
      width:16px;
      background-size: 16px 16px;
      padding: 16px 0 0 0 !important;
+     height:0px;
+     background-repeat: no-repeat !important;
+     opacity: 0.7;
+}
+
+img[src *='tree_folder_closed.gif']{
+     background-image:url('./images/flat-icons/tree_folder_closed.png');
+     width:16px;
+     background-size: 16px 11px;
+     padding: 11px 0 0 0 !important;
      height:0px;
      background-repeat: no-repeat !important;
      opacity: 0.7;
@@ -12349,6 +12403,16 @@ input[src *='zoom_out.png']{
 input[src *='zoom_out.png']:hover{
 	background: none;
 	background-image:url('./images/flat-icons/zoom_out.png');
+}
+
+#typeDeclarationViewLink{
+	 background-image:url('./images/flat-icons/b_next.png') !important;
+     width:16px;
+     background-size: 16px 16px;
+     padding: 16px 0 0 0 !important;
+     height:0px;
+     background-repeat: no-repeat !important;
+     opacity: 0.7;
 }
 
 /* RULES MANAGER PLUGIN OVERRIDES*/
