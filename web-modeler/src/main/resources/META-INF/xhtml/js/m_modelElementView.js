@@ -190,7 +190,7 @@ define(
 						// Delay
 						window.setTimeout(function(){
 							m_angularContextUtils.runInActiveViewContext(function($scope){
-								$scope.elemView = self;
+								$scope.elementView  = self;
 							});
 						});
 					}

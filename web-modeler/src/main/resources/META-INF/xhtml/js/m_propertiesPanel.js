@@ -120,7 +120,7 @@ define(
 						// Delay
 						window.setTimeout(function(){
 							m_angularContextUtils.runInActiveViewContext(function($scope){
-								$scope.propPanel = self;
+								$scope.propertiesPanel = self;
 							});
 						});
 					}
