@@ -32,6 +32,13 @@ define(
 			 */
 			function ReportManagementController() {
 				this.reportingService = ReportingService.instance();
+				
+				/**
+             * 
+             */
+				ReportManagementController.prototype.getI18N = function(key) {
+               return I18NUtils.getProperty(key);
+            };
 
 				/**
 				 * 
@@ -51,6 +58,9 @@ define(
 						title : "<div></div>"
 					});
 
+					jQuery("#createReport").attr("title", I18NUtils.getProperty('reporting.launchpanels.myReports.create.label'));
+               jQuery("#refreshReports").attr("title", I18NUtils.getProperty('reporting.launchpanels.myReports.refresh.label'));
+               
 					jQuery("#createReport")
 							.click(
 									function() {
@@ -71,6 +81,7 @@ define(
 					jQuery("#refreshReports").click(function() {
 						self.loadReportDefinitionsFolderStructure();
 					});
+					
 					window.parent.EventHub.events.subscribe("BPM-REPORTING-REPORT-CREATED", function(event) {
 							self.loadReportDefinitionsFolderStructure();
 					}, false);
