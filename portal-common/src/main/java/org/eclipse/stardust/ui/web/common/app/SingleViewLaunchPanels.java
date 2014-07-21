@@ -64,8 +64,8 @@ public class SingleViewLaunchPanels implements InitializingBean
             List<String> values = StringUtils.splitAndKeepOrder(value, ":");
             String viewId = values.get(0);
             String viewKey = (values.size() == 2) ? values.get(1) : null;
-   
-            View view = portalApp.getPortalUiController().findView(viewId, viewKey);
+            
+            View view = findView(viewId, viewKey, portalApp);
    
             View focusView = portalApp.getFocusView();
             if (trace.isDebugEnabled())
@@ -140,12 +140,8 @@ public class SingleViewLaunchPanels implements InitializingBean
       List<String> values = StringUtils.splitAndKeepOrder(value, ":");
       String viewId = values.get(0);
       String viewKey = (values.size() == 2) ? values.get(1) : null;
-      if(FrameworkViewInfo.DEFAULT_VIEW_KEY.equals(viewKey))
-      {
-         viewKey = null;
-      }
-      
-      View view = portalApp.getPortalUiController().findView(viewId, viewKey);
+            
+      View view = findView(viewId, viewKey, portalApp);
       if (null != view)
       {
          if (trace.isDebugEnabled())
@@ -267,7 +263,23 @@ public class SingleViewLaunchPanels implements InitializingBean
          trace.error("", e);
       }
    }
-
+   
+   /**
+    * 
+    * @param viewId
+    * @param viewKey
+    * @param portalApp
+    * @return
+    */
+   private View findView(String viewId, String viewKey, PortalApplication portalApp)
+   {
+      if (FrameworkViewInfo.DEFAULT_VIEW_KEY.equals(viewKey))
+      {
+         viewKey = null;
+      }
+      return portalApp.getPortalUiController().findView(viewId, viewKey);
+   }
+   
    public PortalApplicationSingleViewEventScript getSingleViewEventScript()
    {
       return singleViewEventScript;
