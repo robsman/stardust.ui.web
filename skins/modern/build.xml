@@ -1,0 +1,98 @@
+<!--
+    Copyright (c) 2014 SunGard CSA LLC and others.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+   
+    Contributors:
+       SunGard CSA LLC - initial API and implementation and/or initial documentation
+ -->
+<project name="stardust-modern-skin" default="build" basedir="." xmlns:ipp="com.infinity.bpm.ant.macros">
+
+   <property name="project.dir" value="." />
+   <property name="resources.src" value="${project.dir}/src/main/resources" />
+
+   <property name="project.etc" value="${project.dir}/etc" />
+   <property file="${project.etc}/private.properties"/>
+
+   <!-- if portal.wst.plugin.dir was set via external property -->
+   <available file="${portal.wst.plugin.dir}" property="portal.wst.plugin.dir.present" type="dir"/>
+
+   <property name="artifactId" value="stardust-modern-skin" />
+
+   <import file="${project.dir}/../../../build.tools/commons-build.xml" />
+
+   <target name="init">
+      <property name="build.home" value="${project.dir}/build"/>
+      <property name="build.dir" value="${build.home}"/>
+   </target>
+
+   <target name="clean" depends="init" description="removes all build results">
+      <delete dir="${build.dir}" />
+   </target>
+
+   <target name="initBuild" depends="init">
+      <property name="build.lib" value="${build.dir}/lib" />
+      <property name="build.classes" value="${build.dir}/classes" />
+
+      <property name="modern-skin.jarfile" value="${artifactId}.jar" />
+      <property name="modern-skin.jar" value="${build.lib}/${modern-skin.jarfile}" />
+   </target>
+
+   <target name="initBuildDirectories" depends="initBuild">
+      <mkdir dir="${build.lib}"/>
+   </target>
+
+   <target name="init.ivy">
+      <echo message="Using Ivy for dependency management." />
+      <init-ivy />
+   </target>
+
+   <target name="copyDatFiles" depends="initBuildDirectories">
+      <copy todir="${build.classes}">
+         <fileset dir="${resources.src}">
+            <include name="**/*.*" />
+         </fileset>
+      </copy>
+   </target>
+
+   <target name="jar" depends="copyDatFiles">
+      <ipp:jar jarfile="${modern-skin.jar}" implementationTitle="Infinity Process Engine - Modern Skin">
+         <fileset dir="${build.classes}">
+            <include name="**/*.*" />
+         </fileset>
+      </ipp:jar>
+   </target>
+
+   <target name="build" depends="jar, init.ivy" xmlns:ivy="antlib:org.apache.ivy.ant">
+      <ivy:resolve file="${project.dir}/ivy.xml" transitive="false" />
+      <ivy-publish-local artifactId="${artifactId}" artifactDir="${build.lib}" />
+   </target>
+
+   <target name="initPortalWstPluginDir" unless="portal.wst.plugin.dir">
+      <property name="portal.wst.plugin.dir" value="${project.dir}/../../../ide.wst/org.eclipse.stardust.ide.wst.facet.portal"/>
+      <available file="${portal.wst.plugin.dir}" property="portal.wst.plugin.dir.present" type="dir"/>
+   </target>
+
+   <target name="copyToPortalWstPlugin" depends="initBuildDirectories, initPortalWstPluginDir" if="portal.wst.plugin.dir.present">
+      <copy todir="${portal.wst.plugin.dir}/lib">
+         <fileset dir="${build.lib}">
+            <include name="${modern-skin.jarfile}" />
+         </fileset>
+      </copy>
+   </target>
+
+   <target name="dist" depends="build, copyToPortalWstPlugin">
+   </target>
+
+   <target name="deploy" depends="build, copyToPortalWstPlugin"/>
+
+   <target name="install" if="maven.localRepository" depends="initBuild"
+      description="installs the artifacts into a local Maven repository">
+
+      <ipp:init-mvn localMavenRepository="${maven.localRepository}" />
+      <ipp:mvn-install file="${modern-skin.jar}" pomFile="${build.lib}/${artifactId}.pom" />
+   </target>
+
+</project>

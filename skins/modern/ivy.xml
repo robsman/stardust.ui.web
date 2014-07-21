@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivy-module version="2.0"
+   xmlns:m="http://ant.apache.org/ivy/maven"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
+
+   <info organisation="org.eclipse.stardust.ui.web" module="stardust-modern-skin"
+      revision="${ipp.version.full}" />
+
+   <configurations>
+      <conf name="stardust-modern-skin-compile" description="Modern Skin - Compile Scope" />
+      <conf name="stardust-modern-skin-runtime" extends="stardust-modern-skin-compile" description="Modern Skin - Runtime Scope" />
+      
+      <conf name="compile" extends="stardust-modern-skin-compile" visibility="private" />
+      
+      <conf name="test" visibility="private" description="Test dependencies" />
+      
+      <conf name="pom" description="stardust-modern-skin POMs" />
+   </configurations>
+
+   <publications>
+      <artifact name="stardust-modern-skin" type="jar" conf="stardust-modern-skin-compile, stardust-modern-skin-runtime" />
+      
+      <artifact name="stardust-modern-skin" type="pom" conf="pom" ext="pom" />
+   </publications>
+
+   <dependencies/>
+</ivy-module>
