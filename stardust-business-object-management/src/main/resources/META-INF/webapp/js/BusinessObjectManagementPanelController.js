@@ -46,7 +46,6 @@ define(
 							});
 
 					return deferred.promise();
-
 				};
 
 				/**
@@ -112,31 +111,6 @@ define(
 
 										self.rootController.safeApply();
 									}).fail();
-				};
-
-				/**
-				 * 
-				 */
-				BusinessObjectManagementPanelController.prototype.onBusinessObjectInstanceSelectionChange = function() {
-					// var self = this;
-					//
-					// jQuery("*").css("cursor", "wait");
-					//
-					// DocumentAssignmentService.instance().getPendingProcesses()
-					// .done(function(pendingProcesses) {
-					// self.pendingProcesses = pendingProcesses;
-					//
-					// self.refreshPendingProcessesTree();
-					// self.safeApply();
-					//
-					// jQuery("*").css("cursor", "default");
-					//
-					// window.setTimeout(function() {
-					// self.bindDragAndDrop();
-					// }, 1000);
-					// }).fail(function() {
-					// jQuery("*").css("cursor", "default");
-					// });
 				};
 			}
 		});
