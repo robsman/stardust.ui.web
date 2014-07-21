@@ -77,6 +77,7 @@ import org.eclipse.stardust.model.xpdl.carnot.ApplicationType;
 import org.eclipse.stardust.model.xpdl.carnot.ApplicationTypeType;
 import org.eclipse.stardust.model.xpdl.carnot.CarnotWorkflowModelFactory;
 import org.eclipse.stardust.model.xpdl.carnot.CarnotWorkflowModelPackage;
+import org.eclipse.stardust.model.xpdl.carnot.Code;
 import org.eclipse.stardust.model.xpdl.carnot.ConditionalPerformerType;
 import org.eclipse.stardust.model.xpdl.carnot.DataMappingConnectionType;
 import org.eclipse.stardust.model.xpdl.carnot.DataMappingType;
@@ -104,6 +105,7 @@ import org.eclipse.stardust.model.xpdl.carnot.OrganizationType;
 import org.eclipse.stardust.model.xpdl.carnot.OrientationType;
 import org.eclipse.stardust.model.xpdl.carnot.PoolSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
+import org.eclipse.stardust.model.xpdl.carnot.QualityControlType;
 import org.eclipse.stardust.model.xpdl.carnot.RoleType;
 import org.eclipse.stardust.model.xpdl.carnot.StartEventSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.SubProcessModeType;
@@ -316,6 +318,25 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       }
    }
 
+   private Code resolveCode(ActivityType activity, String code)
+   {
+      ModelType model = ModelUtils.findContainingModel(activity);
+
+      if (model.getQualityControl() != null)
+      {
+         for (Iterator<Code> i = model.getQualityControl().getCode().iterator(); i
+               .hasNext();)
+         {
+            Code modelCode = i.next();
+            if (modelCode != null && modelCode.getCode().equals(code))
+            {
+               return modelCode;
+            }
+         }
+      }
+      return null;
+   }
+
    /**
     *
     * @param element
@@ -336,6 +357,33 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       mapDeclaredProperties(activity, activityJson, propertiesMap.get(ActivityType.class));
       storeAttributes(activity, activityJson);
       storeDescription(activity, activityJson);
+
+      if (activityJson.has(ModelerConstants.QUALITYCONTROL))
+      {
+         JsonObject qcJson = activityJson
+               .getAsJsonObject(ModelerConstants.QUALITYCONTROL);
+         String fullParticipantID = qcJson.get(ModelerConstants.PARTICIPANT_FULL_ID)
+               .getAsString();
+         IModelParticipant performer = getModelBuilderFacade().findParticipant(
+               fullParticipantID);
+         activity.setQualityControlPerformer(performer);
+
+         activity.getValidQualityCodes().clear();
+
+         JsonArray qcCodes = qcJson.getAsJsonArray(ModelerConstants.QC_VALID_CODES);
+         for (Iterator<JsonElement> i = qcCodes.iterator(); i.hasNext();)
+         {
+            JsonObject qcCode = (JsonObject) i.next();
+            Code code = resolveCode(activity, qcCode.get(ModelerConstants.QC_CODE)
+                  .getAsString());
+
+            if (code != null)
+            {
+               activity.getValidQualityCodes().add(code);
+            }
+
+         }
+      }
 
       if (isGateway)
       {
@@ -3022,6 +3070,30 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
             DescriptionType dt = AbstractElementBuilder.F_CWM.createDescriptionType();
             dt.getMixed().add(FeatureMapUtil.createRawTextEntry(description));
             model.setDescription(dt);
+         }
+      }
+
+      if (modelJson.has(ModelerConstants.QUALITYCONTROL))
+      {
+         QualityControlType qualityControl = CarnotWorkflowModelFactory.eINSTANCE
+               .createQualityControlType();
+         model.setQualityControl(qualityControl);
+         JsonObject qcJson = modelJson.getAsJsonObject(ModelerConstants.QUALITYCONTROL);
+         if (qcJson.has(ModelerConstants.QC_CODES))
+         {
+            JsonArray qcCodes = qcJson.getAsJsonArray(ModelerConstants.QC_CODES);
+            for (Iterator<JsonElement> i = qcCodes.iterator(); i.hasNext();)
+            {
+               JsonObject qcCode = (JsonObject) i.next();
+               Code code = CarnotWorkflowModelFactory.eINSTANCE.createCode();
+               code.setCode(qcCode.get(ModelerConstants.QC_CODE).getAsString());
+               code.setName(qcCode.get(ModelerConstants.QC_NAME).getAsString());
+               if (qcCode.get(ModelerConstants.QC_VALUE) != null)
+               {
+                  code.setValue(qcCode.get(ModelerConstants.QC_VALUE).getAsString());
+               }
+               qualityControl.getCode().add(code);
+            }
          }
       }
    }

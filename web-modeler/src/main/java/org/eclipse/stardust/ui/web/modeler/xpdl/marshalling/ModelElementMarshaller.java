@@ -1131,41 +1131,58 @@ public class ModelElementMarshaller implements ModelMarshaller
          }
       }
          }
+
          if (activity.getQualityControlPerformer() != null)
          {
             JsonObject qcJson = new JsonObject();
-            qcJson.addProperty(ModelerConstants.PARTICIPANT_FULL_ID, activity
-                  .getQualityControlPerformer().getId());
+            qcJson.addProperty(
+                  ModelerConstants.PARTICIPANT_FULL_ID,
+                  getModelBuilderFacade().createFullId(
+                        ModelUtils.findContainingModel(activity),
+                        activity.getQualityControlPerformer()));
+
             JsonArray validCodesJson = new JsonArray();
             for (Iterator<Code> i = activity.getValidQualityCodes().iterator(); i
                   .hasNext();)
             {
                Code code = i.next();
                Code resolvedCode = resolveCode(activity, code);
-               JsonObject codeJson = new JsonObject();
-               codeJson.addProperty(ModelerConstants.QC_CODE, resolvedCode.getCode());
-               codeJson.addProperty(ModelerConstants.QC_NAME, resolvedCode.getName());
-               codeJson.addProperty(ModelerConstants.QC_VALUE, resolvedCode.getValue());
-               validCodesJson.add(codeJson);
+               if (resolvedCode != null)
+               {
+                  JsonObject codeJson = new JsonObject();
+                  codeJson.addProperty(ModelerConstants.QC_CODE, resolvedCode.getCode());
+                  codeJson.addProperty(ModelerConstants.QC_NAME, resolvedCode.getName());
+                  codeJson
+                        .addProperty(ModelerConstants.QC_VALUE, resolvedCode.getValue());
+                  validCodesJson.add(codeJson);
+               }
             }
             qcJson.add(ModelerConstants.QC_VALID_CODES, validCodesJson);
             activityJson.add(ModelerConstants.QUALITYCONTROL, qcJson);
          }
       }
+
       return activityJson;
    }
 
    private Code resolveCode(ActivityType activity, Code code)
    {
-      URI proxyURI = ((InternalEObject) code).eProxyURI();
+      String codeID = code.getCode();
+      if (code.eIsProxy())
+      {
+         URI proxyURI = ((InternalEObject) code).eProxyURI();
+         codeID = proxyURI.fragment();
+      }
+
       ModelType model = ModelUtils.findContainingModel(activity);
+
       if (model.getQualityControl() != null)
       {
          for (Iterator<Code> i = model.getQualityControl().getCode().iterator(); i
                .hasNext();)
          {
             Code modelCode = i.next();
-            if (modelCode.getCode().equals(proxyURI.fragment()))
+            if (modelCode != null && modelCode.getCode().equals(codeID))
             {
                return modelCode;
             }
