@@ -27,7 +27,7 @@ define(
 				DocumentAssignmentPanelController.prototype.initialize = function() {
 					this.pageModel={};
 					this.pageModel.currentDocument="";
-					this.pageModel.pageIndex=[];
+					this.pageModel.pageIndex={};
 					this.retrieveActivityInstanceFromUri();
 					this.startProcessDialog = {};
 					this.businessObjectFilter = {};
@@ -541,10 +541,33 @@ define(
 				 */
 				DocumentAssignmentPanelController.prototype.selectPage = function(page, url, e) {
 					this.selectedPage = page;
+					if(e.ctrlKey){
+						if(this.pageModel.pageIndex.hasOwnProperty(page.number)){
+							delete this.pageModel.pageIndex[page.number];
+						}else{
+							this.pageModel.pageIndex[page.number]=url;
+						}
+					}
+					else if(e.shiftKey){
+						//stubbed for later
+					}
+					else{
+						this.pageModel.pageIndex={};
+						this.pageModel.pageIndex[page.number]=url;
+					}
+					console.log(this.pageModel.pageIndex);
 					this.selectedPage.url = url;
-					console.log("Selected Page: ");
-					console.log(this.selectedPage);
 				};
+				
+				DocumentAssignmentPanelController.prototype.isPageSelected = function(page){
+					
+					if(this.pageModel.pageIndex.hasOwnProperty(page.number) &&
+					   this.pageModel.pageIndex[page.number]==page.url){
+						return true;
+					}else{
+						return false;
+					}
+				}
 
 				DocumentAssignmentPanelController.prototype.startProcess = function(
 						treeItem, busObj) {

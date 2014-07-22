@@ -24,8 +24,64 @@
 	cursor: move;
 }
 
+.stackPage{
+	margin-bottom:10px;
+	display:inline-block;
+}
+
+.stackPage > div{
+	width:40px;
+	height:51.75px;
+	background-color:#FFF;
+	background-size:40px 51.75px;
+	border:solid 1px #AAA;
+	position:relative;
+	display:inline-block;
+	box-shadow: 3px 3px 20px #888888;
+}
+.stackPage :nth-child(2){
+	margin-left:-40px;
+	top:2px;
+}
+.stackPage :nth-child(3){
+	margin-left:-40px;
+	top:4px;
+}
+
+.verticalMenu{
+	display: inline-block;
+	padding: 3px;
+	border: solid 1px #AAA;
+	background: #DDD;
+	border-radius: 4px;
+	margin-left:5px;
+	text-align:center;
+	position:relative;
+	top:-25px;
+	height:45px;
+}
+
+.verticalMenu > i{
+	display:block;
+}
+
+.verticalMenu > i:last-child{
+	position: absolute;
+	bottom: 0;
+	left:6px;
+}
+
+.documentInfo{
+	margin-top:-25px;
+}
+
+.documentInfo > span{
+	display:block;
+}
+
 .pendingProcessesTree td {
-	padding: 3px !important;
+	left:10px;
+	top:10px;
 }
 
 .pendingProcessesTree i {
@@ -272,32 +328,52 @@
 								<td>
 									<table class="formTable">
 										<tr>
-											<td>
-												<i class="fa fa-3x fa-files-o"></i>
+											<td colspan="2">
+												<div class="stackPage"
+													 ng-click="$parent.selectPage(document.pages[0],document.url + 0,$event,document.pages)">
+													<div></div>
+													<div></div>
+													<div style="background-image:url({{document.url}}0)">
+													</div>
+												</div>					
+
+											
+												<div class="verticalMenu">
+													<i class="fa fa-warning"></i>
+													<i class="fa fa-arrows-h"></i>
+													<i class="fa" 
+													   ng-show="document.pages.length>0"
+													   ng-class="{'fa-caret-down':showChildren,'fa-caret-up':!showChildren}" 
+													   ng-click="showChildren=!showChildren">
+													</i>
+												</div>
+												
 											</td>
-										</tr>
 										<tr>
-											<td>
-												<div>{{document.name}}</div>
-												{{$parent.formatTimestamp(document.creationTimestamp)}}&nbsp;
-												<i class="fa" 
-												   ng-show="document.pages.length>0"
-												   ng-class="{'fa-caret-down':showChildren,'fa-caret-up':!showChildren}" 
-												   ng-click="showChildren=!showChildren">
-												</i>
+										<tr>
+											<td colspan="2">
+												<div class="documentInfo">
+													<span>{{document.name}}</span>
+													<span>{{$parent.formatTimestamp(document.creationTimestamp)}}</span>
+												</div>
 											</td>
 										<tr>
 									</table>
 									<div ng-show="showChildren" 
 									     ng-repeat="page in document.pages" 
 									     class="page">
-										<table class="{{$parent.$parent.selectionClass(page)}}">
+										<table ng-class="{'selected':isPageSelected(page),'unselected':!isPageSelected(page)}">
 											<tr>
 												<td align="right">{{page.number}}</td>
 												<td>
-													<a ng-click="$parent.$parent.selectPage(page,document.url + $index,$event)">
+													<a style="display:inline;" ng-click="$parent.$parent.selectPage(page,document.url + $index,$event,document.pages)">
 														<img src="{{document.url + $index}}" width="40%" />
 													</a>
+													<div style="display:inline-block;">
+														<i style="display:block;" class="fa fa-warning"></i>
+														<i style="display:block;" class="fa fa-arrow-up"></i>
+														<i style="display:block;" class="fa fa-arrow-down"></i>
+													</div>
 												</td>
 											</tr>
 										</table>
