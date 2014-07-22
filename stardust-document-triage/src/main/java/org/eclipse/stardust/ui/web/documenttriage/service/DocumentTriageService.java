@@ -217,9 +217,24 @@ public class DocumentTriageService {
 		processJson.addProperty("description",
 				processDefinition.getDescription());
 
-		processInstanceJson.add("specificDocuments",
-				getSpecificDocuments(processDefinition));
-
+		JsonArray specificDocuments = getSpecificDocuments(processDefinition);
+		String inDataPathId = "";
+		boolean isEmpty = true;
+		for (JsonElement specificDocument : specificDocuments)
+      {
+		   inDataPathId = specificDocument.getAsJsonObject().get("inDataPathId").getAsString();
+		   Document doc=null; 
+		   if(inDataPathId !=""){
+			   doc = (Document) getWorkflowService().getInDataPath(oid, inDataPathId);
+		   }
+		   if (doc != null) {
+	         isEmpty = false;
+		   }
+         specificDocument.getAsJsonObject().addProperty("isEmpty", isEmpty);
+      }
+		
+		processInstanceJson.add("specificDocuments", specificDocuments);
+		
 		JsonArray descriptorsJson = new JsonArray();
 
 		processInstanceJson.add("descriptors", descriptorsJson);
@@ -418,12 +433,29 @@ public class DocumentTriageService {
 			specificDocumentJson.addProperty("name", dataPath.getName());
 			specificDocumentJson.addProperty("type", dataPath.getMappedType()
 					.getName());
+         specificDocumentJson.addProperty("data", dataPath.getData());
+         specificDocumentJson.addProperty("inDataPathId", getInDataPathId(processDefinition, dataPath.getData()));
 		}
 
 		return specificDocumentsJson;
 	};
 
-	/**
+   private String getInDataPathId(ProcessDefinition processDefinition, String dataId) {
+      String inDataPathId = "";
+      
+      for (DataPath dataPath : (List<DataPath>) processDefinition
+            .getAllDataPaths()) {
+         if (dataPath.getDirection().equals(Direction.IN)
+               && dataPath.getData().equals(dataId)) {
+            inDataPathId = dataPath.getId();
+            break;
+         }
+      }
+
+      return inDataPathId;
+   }
+
+   /**
 	 * 
 	 * @param activityInstanceOid
 	 * @return

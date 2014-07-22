@@ -113,7 +113,25 @@ define(
 					var decodedParts = partsMatcher.exec(decodedId);
 					this.activityInstanceOid = decodedParts[1];
 				};
+				
+				DocumentAssignmentPanelController.prototype.openProcessHistory = function(workItem) {
+					debugger;
+				      var message = {
+				        "type": "OpenView",
+				        "data": {
+				          "viewId": "ganttChartView",
+				          "viewKey": "processInstanceOid=" + workItem.processInstance.oid,
+				          "params": {
+				            "oid": "" + workItem.oid,
+				            "processInstanceOid": "" + workItem.processInstance.oid
+				          }
+				        }
+				      };
 
+				      parent.postMessage(JSON.stringify(message), "*");
+				    };
+
+				
 				/**
 				 * 
 				 */
@@ -295,8 +313,7 @@ define(
 												var processDetails = jQuery.data(this,"processDetails");
 												var processOID = jQuery.data(this,"processOID");
 												
-												jQuery("*").css("cursor",
-														"wait");
+												jQuery("*").css("cursor","wait");
 												debugger;
 												DocumentAssignmentService
 														.instance()
@@ -351,92 +368,21 @@ define(
 											var scannedDocument = jQuery.data(
 													ui.draggable[0],
 													"scannedDocument");
-											var processDetails = jQuery.data(
-													this, "processDetails");
-											var specificDocument = jQuery.data(
-													this, "specificDocument");
+											var processDetails = jQuery.data(this, "processDetails");
 											
-											DocumentAssignmentService
-											.instance()
-											.addProcessDocument()
-											.done(
-													function() {
-														specificDocument.url = "bla";
-														specificDocument.creationTimestamp = scannedDocument.creationTimestamp;
-														specificDocument.type = scannedDocument.type;
+											var specificDocument = jQuery.data(this, "specificDocument");
+	
+												specificDocument.url = "bla";
+												specificDocument.creationTimestamp = scannedDocument.creationTimestamp;
+												specificDocument.type = scannedDocument.type;
+												specificDocument.scannedDocument = scannedDocument;
+												self.refreshStartableProcessesTree();
+												self.safeApply();
+												window.setTimeout(
+														function() {
+															self.bindDragAndDrop();
+														},1000);
 
-														self
-																.refreshStartableProcessesTree();
-														self
-																.safeApply();
-
-														window
-																.setTimeout(
-																		function() {
-																			self
-																					.bindDragAndDrop();
-																		},
-																		1000);
-													}).fail();
-											
-											debugger;
-											/*
-											var trPrev = jQuery(this), isBranch = false, rootProcTD = jQuery("<td></td>"), startProcBtn, removeProcBtn;
-											while (trPrev && !isBranch) {
-												if (trPrev
-														.hasClass("treeBranch")) {
-													isBranch = true;
-												} else {
-													trPrev = jQuery(trPrev)
-															.prev('tr');
-												}
-											}
-											removeProcBtn = jQuery("<i style='color:red;font-size:1.5em;padding-left:1em;' class='fa fa-times-circle'>");
-											startProcBtn = jQuery("<i style='color:green;font-size:1.5em;padding-left:0.25em;' class='fa fa-check-circle'>");
-
-											rootProcTD.append(removeProcBtn);
-											rootProcTD.append(startProcBtn);
-
-											removeProcBtn.bind("click",
-													function() {
-														rootProcTD.remove();
-													});
-
-											startProcBtn
-													.bind(
-															"click",
-															function() {
-																var rawScope = angular
-																		.element(
-																				"#docRendevous")
-																		.scope(), businessObjs = rawScope.selectedBusinessObjects;
-																if (businessObjs
-																		&& businessObjs.length > 0) {
-																	DocumentAssignmentService
-																			.instance()
-																			.startProcess(
-																					scannedDocument,
-																					processDetails,
-																					specificDocument)
-																			.done(
-																					function(
-																							result) {
-																						self
-																								.openStartProcessDialog(
-																										result.scannedDocument,
-																										result.startableProcess,
-																										result.specificDocument);
-																						self
-																								.safeApply();
-																					})
-																			.fail();
-																} else {
-																	alert("Please associate a business object with the document.");
-																}
-															});
-
-											trPrev.append(rootProcTD);
-											*/
 										},
 										tolerance : "pointer"
 									});
@@ -459,81 +405,13 @@ define(
 											var processDetails = jQuery.data(
 													this, "processDetails");
 											
-											var processAttachments = jQuery
-													.data(this,
-															"processAttachments");
-											
-											
-											DocumentAssignmentService
-													.instance()
-													.addProcessDocument()
-													.done(
-															function() {
-																processAttachments
-																		.push(scannedDocument);
-																self
-																		.refreshStartableProcessesTree();
-																self
-																		.safeApply();
-																window
-																		.setTimeout(
-																				function() {
-																					self
-																							.bindDragAndDrop();
-																				},
-																				1000);
-															});
-
-											return;
-											var trPrev = jQuery(this), isBranch = false, rootProcTD = jQuery("<td></td>"), startProcBtn, removeProcBtn;
-											while (trPrev && !isBranch) {
-												if (trPrev
-														.hasClass("treeBranch")) {
-													isBranch = true;
-												} else {
-													trPrev = jQuery(trPrev)
-															.prev('tr');
-												}
-											}
-
-											removeProcBtn = jQuery("<i style='color:red;font-size:1.5em;padding-left:1em;' class='fa fa-times-circle'>");
-											startProcBtn = jQuery("<i style='color:green;font-size:1.5em;padding-left:0.25em;' class='fa fa-check-circle'>");
-
-											jQuery(this)
-													.append(
-															"<tr><td>text here<td><tr>");
-											rootProcTD.append(removeProcBtn);
-											rootProcTD.append(startProcBtn);
-
-											removeProcBtn.bind("click",
-													function() {
-														rootProcTD.remove();
-													});
-
-											startProcBtn
-													.bind(
-															"click",
-															function() {
-																DocumentAssignmentService
-																		.instance()
-																		.startProcess(
-																				scannedDocument,
-																				processDetails)
-																		.done(
-																				function(
-																						result) {
-																					self
-																							.openStartProcessDialog(
-																									result.scannedDocument,
-																									result.startableProcess);
-																					self
-																							.safeApply();
-																				})
-																		.fail();
-															});
-
-											trPrev.append(rootProcTD);
-
+											var processAttachments = jQuery.data(this,"processAttachments");
+												processAttachments.push(scannedDocument);
+												self.refreshStartableProcessesTree();
+												self.safeApply();
+												window.setTimeout(function() {
+																	self.bindDragAndDrop();
+																},1000);										
 										},
 										tolerance : "pointer"
 									});
@@ -574,15 +452,24 @@ define(
 					}
 				}
 
-				DocumentAssignmentPanelController.prototype.startProcess = function(
-						treeItem, busObj) {
+				DocumentAssignmentPanelController.prototype.startProcess = function(treeItem, busObj) {
 					debugger;
-					var that = this;
-					var data = {
-						"businessObject" : busObj,
-						"startableProcess" : treeItem.startableProcess
-					};
-					console.log(JSON.stringify(data));
+					var that = this,
+						data={
+							processDefinitionId:treeItem.startableProcess.id,
+							businessObject:busObj,
+							specificDocuments:[],
+							processAttachments:treeItem.startableProcess.processAttachments
+						},
+						i;
+					
+					for(i=0;i<treeItem.startableProcess.specificDocuments.length;i++){
+						data.specificDocuments.push({
+								"dataPathId" : treeItem.startableProcess.specificDocuments[i].id,
+								"document" : treeItem.startableProcess.specificDocuments[i].scannedDocument
+							});
+					}
+					
 					DocumentAssignmentService.instance().startProcess(data)
 							.done(
 									function(result) {
