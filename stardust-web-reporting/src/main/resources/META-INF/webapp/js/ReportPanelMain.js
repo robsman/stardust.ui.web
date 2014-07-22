@@ -29,6 +29,7 @@ require
 				'highlighter' : [ 'bpm-reporting/public/js/libs/jqplot/plugins/jqplot.highlighter.min' ],
 				'ohlcRenderer' : [ 'bpm-reporting/public/js/libs/jqplot/plugins/jqplot.ohlcRenderer.min' ],
 				'pieRenderer' : [ 'bpm-reporting/public/js/libs/jqplot/plugins/jqplot.pieRenderer.min' ],
+				'enhancedLegendRenderer' : [ 'bpm-reporting/public/js/libs/jqplot/plugins/jqplot.enhancedLegendRenderer.min' ],  
 				'pointLabels' : [ 'bpm-reporting/public/js/libs/jqplot/plugins/jqplot.pointLabels.min' ],
 				'dataTables' : [ 'bpm-reporting/public/js/libs/datatables/jquery.dataTables.min' ],
 				'TableTools' : [ 'bpm-reporting/public/js/libs/datatables/extras/TableTools/TableTools.min' ],
@@ -56,6 +57,7 @@ require
 				'highlighter' : [ 'jquery.jqplot' ],
 				'ohlcRenderer' : [ 'jquery.jqplot' ],
 				'pieRenderer' : [ 'jquery.jqplot' ],
+				'enhancedLegendRenderer' : [ 'jquery.jqplot' ],
 				'pointLabels' : [ 'jquery.jqplot' ],
 				'dataTables' : [ 'jquery' ],
 				'TableTools' : [ 'dataTables' ]
@@ -70,14 +72,14 @@ require(
 				"bubbleRenderer", "canvasTextRenderer",
 				"canvasAxisLabelRenderer", "canvasAxisTickRenderer",
 				"categoryAxisRenderer", "dateAxisRenderer", "highlighter",
-				"ohlcRenderer", "pieRenderer", "pointLabels",
+				"ohlcRenderer", "pieRenderer", "enhancedLegendRenderer", "pointLabels",
 				"bpm-reporting/public/js/report/ReportRenderingController", "bpm-reporting/public/js/report/ReportingService",
 				"dataTables", "TableTools" ],
 		function(require, jquery, jqueryUrl, jqueryUi, json, angularjs,
 				jqueryBase62, jqueryJqPlot, barRenderer, bubbleRenderer,
 				canvasTextRenderer, canvasAxisLabelRenderer,
 				canvasAxisTickRenderer, categoryAxisRenderer, dateAxisRenderer,
-				highlighter, ohlcRenderer, pieRenderer, pointLabels,
+				highlighter, ohlcRenderer, pieRenderer, enhancedLegendRenderer, pointLabels,
 				ReportRenderingController, ReportingService, dataTables,
 				TableTools) {
 			jQuery(document)

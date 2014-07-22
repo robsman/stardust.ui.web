@@ -32,6 +32,7 @@ require
 				'ohlcRenderer' : [ 'bpm-reporting/public/js/libs/jqplot/plugins/jqplot.ohlcRenderer.min' ],
 				'pieRenderer' : [ 'bpm-reporting/public/js/libs/jqplot/plugins/jqplot.pieRenderer.min' ],
 				'donutRenderer' : [ 'bpm-reporting/public/js/libs/jqplot/plugins/jqplot.donutRenderer.min' ],
+				'enhancedLegendRenderer' : [ 'bpm-reporting/public/js/libs/jqplot/plugins/jqplot.enhancedLegendRenderer.min' ],				
 				'pointLabels' : [ 'bpm-reporting/public/js/libs/jqplot/plugins/jqplot.pointLabels.min' ],
 				'dataTables' : [ 'bpm-reporting/public/js/libs/datatables/jquery.dataTables.min' ],
 				'TableTools' : [ 'bpm-reporting/public/js/libs/datatables/extras/TableTools/TableTools.min' ],
@@ -64,6 +65,7 @@ require
 				'ohlcRenderer' : [ 'jquery.jqplot' ],
 				'pieRenderer' : [ 'jquery.jqplot' ],
 				'donutRenderer' : [ 'jquery.jqplot' ],
+				'enhancedLegendRenderer' : [ 'jquery.jqplot' ],
 				'pointLabels' : [ 'jquery.jqplot' ],
 				'dataTables' : [ 'jquery' ],
 				'TableTools' : [ 'dataTables' ]
@@ -76,14 +78,14 @@ require(
 				"bubbleRenderer", "canvasTextRenderer",
 				"canvasAxisLabelRenderer", "canvasAxisTickRenderer",
 				"categoryAxisRenderer", "dateAxisRenderer", "cursor",
-				"highlighter", "trendline", "ohlcRenderer", "pieRenderer", "donutRenderer",
+				"highlighter", "trendline", "ohlcRenderer", "pieRenderer", "donutRenderer", "enhancedLegendRenderer",
 				"pointLabels", "bpm-reporting/js/ReportDefinitionController",
 				"dataTables", "TableTools",
 				"ckeditor", "ace", "bpm-reporting/js/autocomplete/autocomplete"], function(require, jquery, jqueryUrl, jqueryUi,
 				json, angularjs, jqueryBase64, jqueryJqPlot, barRenderer,
 				bubbleRenderer, canvasTextRenderer, canvasAxisLabelRenderer,
 				canvasAxisTickRenderer, categoryAxisRenderer, dateAxisRenderer,
-				cursor, highlighter, trendline, ohlcRenderer, pieRenderer, donutRenderer,
+				cursor, highlighter, trendline, ohlcRenderer, pieRenderer, donutRenderer, enhancedLegendRenderer, 
 				pointLabels, ReportDefinitionController, dataTables,
 				TableTools, CkEditor, ace, autocomplete) {
 			jQuery(document).ready(
