@@ -355,13 +355,8 @@ public class RepositoryUtility
             DocumentMgmtUtility.getPrivateSavedReportsPath(),
             I18nFolderUtils.PRIVATE_SAVED_REPORTS);
       savedReportsNode.add(privateSavedReports);
-
+      
       populateFolderContents(privateSavedReports);
-
-      DefaultMutableTreeNode privateSavedReportsAdHocNode = createSavedReportsNode(
-            DocumentMgmtUtility.getPrivateSavedReportsAdHocPath(),
-            I18nFolderUtils.PRIVATE_SAVED_REPORTS + I18nFolderUtils.AD_HOC);
-      privateSavedReports.add(privateSavedReportsAdHocNode);
 
       // Public Saved Reports
       DefaultMutableTreeNode publicSavedReports = createSavedReportsNode(
@@ -371,19 +366,11 @@ public class RepositoryUtility
       
       populateFolderContents(publicSavedReports);
 
-      DefaultMutableTreeNode publicSavedReportsAdHocNode = createSavedReportsNode(
-            DocumentMgmtUtility.getPublicSavedReportsAdHocPath(),
-            I18nFolderUtils.PUBLIC_SAVED_REPORTS + I18nFolderUtils.AD_HOC);
-      publicSavedReports.add(publicSavedReportsAdHocNode);
-      
       List<DefaultMutableTreeNode> roleOrgSavedReportsNode = createRoleOrgSavedReportsNode(false);
-      
-      List<DefaultMutableTreeNode> roleOrgSavedReportsAdHocNode = createRoleOrgSavedReportsNode(true);
       
       for (int i = 0; i < roleOrgSavedReportsNode.size(); i++)
       {
          populateFolderContents(roleOrgSavedReportsNode.get(i));
-         roleOrgSavedReportsNode.get(i).add(roleOrgSavedReportsAdHocNode.get(i));
          savedReportsNode.add(roleOrgSavedReportsNode.get(i));
       }
       
