@@ -418,6 +418,8 @@ define(
 									self.showFavoriteBtn = false;
 								}
 								
+								self.schedulingParticipantsSelect.val(self.report.scheduling.delivery.participant);
+								
 								self.updateView();
 
 								document.body.style.cursor = "default";
