@@ -1,0 +1,2049 @@
+From c952bc944c87fc23789d93b416da71ae2192957a Mon Sep 17 00:00:00 2001
+From: "Gille, Marc" <Marc.Gille@sungard.com>
+Date: Sun, 20 Jul 2014 15:59:55 -0400
+Subject: [PATCH 5/6] Initial checkin.
+
+---
+ stardust-business-object-management/.classpath     |  40 +++
+ stardust-business-object-management/.factorypath   |   2 +
+ stardust-business-object-management/.gitignore     |   3 +
+ stardust-business-object-management/.jsdtscope     |   6 +
+ stardust-business-object-management/.project       |  43 +++
+ .../.settings/.jsdtscope                           |  11 +
+ .../.settings/org.apache.ivyde.eclipse.prefs       |   2 +
+ .../.settings/org.eclipse.core.resources.prefs     |   4 +
+ .../.settings/org.eclipse.jdt.core.prefs           |  99 +++++++
+ .../org.eclipse.ltk.core.refactoring.prefs         |   2 +
+ .../.settings/org.eclipse.m2e.core.prefs           |   4 +
+ .../.settings/org.eclipse.wst.common.component     |   8 +
+ .../org.eclipse.wst.common.project.facet.core.xml  |   9 +
+ .../org.eclipse.wst.jsdt.ui.superType.container    |   1 +
+ .../org.eclipse.wst.jsdt.ui.superType.name         |   1 +
+ .../.settings/org.eclipse.wst.validation.prefs     |   3 +
+ .../.settings/org.maven.ide.eclipse.prefs          |   8 +
+ stardust-business-object-management/build.xml      | 190 ++++++++++++
+ .../common/LanguageUtil.java                       |  48 +++
+ .../rest/BusinessObjectManagementResource.java     |  96 ++++++
+ .../rest/JsonMarshaller.java                       | 221 ++++++++++++++
+ .../service/BusinessObjectManagementService.java   | 315 ++++++++++++++++++++
+ .../src/main/resources/META-INF/MANIFEST.MF        |   3 +
+ .../business-object-management.portal-plugin       |   1 +
+ .../spring/business-object-management-context.xml  |  20 ++
+ .../META-INF/spring/jax-rs-cxf-context.xml         |  26 ++
+ .../META-INF/views/documentAssignmentPanel.html    | 321 +++++++++++++++++++++
+ .../META-INF/webapp/businessObjectSearchPanel.html |  50 ++++
+ .../js/BusinessObjectManagementPanelController.js  | 142 +++++++++
+ .../webapp/js/BusinessObjectManagementService.js   | 114 ++++++++
+ 30 files changed, 1793 insertions(+)
+ create mode 100644 stardust-business-object-management/.classpath
+ create mode 100644 stardust-business-object-management/.factorypath
+ create mode 100644 stardust-business-object-management/.gitignore
+ create mode 100644 stardust-business-object-management/.jsdtscope
+ create mode 100644 stardust-business-object-management/.project
+ create mode 100644 stardust-business-object-management/.settings/.jsdtscope
+ create mode 100644 stardust-business-object-management/.settings/org.apache.ivyde.eclipse.prefs
+ create mode 100644 stardust-business-object-management/.settings/org.eclipse.core.resources.prefs
+ create mode 100644 stardust-business-object-management/.settings/org.eclipse.jdt.core.prefs
+ create mode 100644 stardust-business-object-management/.settings/org.eclipse.ltk.core.refactoring.prefs
+ create mode 100644 stardust-business-object-management/.settings/org.eclipse.m2e.core.prefs
+ create mode 100644 stardust-business-object-management/.settings/org.eclipse.wst.common.component
+ create mode 100644 stardust-business-object-management/.settings/org.eclipse.wst.common.project.facet.core.xml
+ create mode 100644 stardust-business-object-management/.settings/org.eclipse.wst.jsdt.ui.superType.container
+ create mode 100644 stardust-business-object-management/.settings/org.eclipse.wst.jsdt.ui.superType.name
+ create mode 100644 stardust-business-object-management/.settings/org.eclipse.wst.validation.prefs
+ create mode 100644 stardust-business-object-management/.settings/org.maven.ide.eclipse.prefs
+ create mode 100644 stardust-business-object-management/build.xml
+ create mode 100644 stardust-business-object-management/src/main/java/org/eclipse/stardust/ui/web/business_object_management/common/LanguageUtil.java
+ create mode 100644 stardust-business-object-management/src/main/java/org/eclipse/stardust/ui/web/business_object_management/rest/BusinessObjectManagementResource.java
+ create mode 100644 stardust-business-object-management/src/main/java/org/eclipse/stardust/ui/web/business_object_management/rest/JsonMarshaller.java
+ create mode 100644 stardust-business-object-management/src/main/java/org/eclipse/stardust/ui/web/business_object_management/service/BusinessObjectManagementService.java
+ create mode 100644 stardust-business-object-management/src/main/resources/META-INF/MANIFEST.MF
+ create mode 100644 stardust-business-object-management/src/main/resources/META-INF/business-object-management.portal-plugin
+ create mode 100644 stardust-business-object-management/src/main/resources/META-INF/spring/business-object-management-context.xml
+ create mode 100644 stardust-business-object-management/src/main/resources/META-INF/spring/jax-rs-cxf-context.xml
+ create mode 100644 stardust-business-object-management/src/main/resources/META-INF/views/documentAssignmentPanel.html
+ create mode 100644 stardust-business-object-management/src/main/resources/META-INF/webapp/businessObjectSearchPanel.html
+ create mode 100644 stardust-business-object-management/src/main/resources/META-INF/webapp/js/BusinessObjectManagementPanelController.js
+ create mode 100644 stardust-business-object-management/src/main/resources/META-INF/webapp/js/BusinessObjectManagementService.js
+
+diff --git a/stardust-business-object-management/.classpath b/stardust-business-object-management/.classpath
+new file mode 100644
+index 0000000..0c73293
+--- /dev/null
++++ b/stardust-business-object-management/.classpath
+@@ -0,0 +1,40 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<classpath>
++	<classpathentry kind="src" output="target/classes" path="src/main/java">
++		<attributes>
++			<attribute name="optional" value="true"/>
++			<attribute name="maven.pomderived" value="true"/>
++		</attributes>
++	</classpathentry>
++	<classpathentry excluding="**" kind="src" output="target/classes" path="src/main/resources">
++		<attributes>
++			<attribute name="maven.pomderived" value="true"/>
++		</attributes>
++	</classpathentry>
++	<classpathentry kind="src" output="target/test-classes" path="src/test/java">
++		<attributes>
++			<attribute name="optional" value="true"/>
++			<attribute name="maven.pomderived" value="true"/>
++		</attributes>
++	</classpathentry>
++	<classpathentry kind="var" path="STARDUST_JAXWS_CXF_LIBS/lib/gson.jar"/>
++	<classpathentry kind="var" path="STARDUST_PORTAL_LIBS/lib/slf4j-log4j12.jar"/>
++	<classpathentry kind="var" path="STARDUST_CXF_LIBS/lib/commons-logging.jar"/>
++	<classpathentry kind="var" path="STARDUST_CXF_LIBS/lib/stardust-engine-ws-cxf.jar"/>
++	<classpathentry kind="var" path="CARNOT_ENGINE_BASE_LIBS/lib/carnot-base.jar"/>
++	<classpathentry kind="var" path="STARDUST_JAXWS_CXF_LIBS/lib/cxf-rt-frontend-jaxrs.jar"/>
++	<classpathentry kind="var" path="STARDUST_PORTAL_LIBS/lib/slf4j-api.jar"/>
++	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/org.eclipse.jst.server.tomcat.runtimeTarget/Apache Tomcat v7.0">
++		<attributes>
++			<attribute name="owner.project.facets" value="jst.utility"/>
++		</attributes>
++	</classpathentry>
++	<classpathentry kind="var" path="CARNOT_ENGINE_LIBS/lib/carnot-engine.jar"/>
++	<classpathentry kind="var" path="STARDUST_SPRING_LIBS/lib/spring-beans.jar"/>
++	<classpathentry kind="var" path="STARDUST_PORTAL_LIBS/lib/ipp-portal-common.jar"/>
++	<classpathentry kind="var" path="STARDUST_PORTAL_LIBS/lib/ipp-views-common.jar"/>
++	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
++	<classpathentry kind="var" path="STARDUST_PORTAL_LIBS/lib/icepdf-core-5.0.0.jar"/>
++	<classpathentry kind="var" path="STARDUST_PORTAL_LIBS/lib/jsr311-api-1.1.1-eclipse01.jar"/>
++	<classpathentry kind="output" path="target/classes"/>
++</classpath>
+diff --git a/stardust-business-object-management/.factorypath b/stardust-business-object-management/.factorypath
+new file mode 100644
+index 0000000..610dea5
+--- /dev/null
++++ b/stardust-business-object-management/.factorypath
+@@ -0,0 +1,2 @@
++<factorypath>
++</factorypath>
+diff --git a/stardust-business-object-management/.gitignore b/stardust-business-object-management/.gitignore
+new file mode 100644
+index 0000000..5b5ba90
+--- /dev/null
++++ b/stardust-business-object-management/.gitignore
+@@ -0,0 +1,3 @@
++build/
++/target
++/bin
+diff --git a/stardust-business-object-management/.jsdtscope b/stardust-business-object-management/.jsdtscope
+new file mode 100644
+index 0000000..000a6e8
+--- /dev/null
++++ b/stardust-business-object-management/.jsdtscope
+@@ -0,0 +1,6 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<classpath>
++	<classpathentry kind="src" path=""/>
++	<classpathentry kind="con" path="org.eclipse.wst.jsdt.launching.JRE_CONTAINER"/>
++	<classpathentry kind="output" path=""/>
++</classpath>
+diff --git a/stardust-business-object-management/.project b/stardust-business-object-management/.project
+new file mode 100644
+index 0000000..60651ef
+--- /dev/null
++++ b/stardust-business-object-management/.project
+@@ -0,0 +1,43 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<projectDescription>
++	<name>stardust-business-object-management</name>
++	<comment></comment>
++	<projects>
++	</projects>
++	<buildSpec>
++		<buildCommand>
++			<name>org.eclipse.wst.jsdt.core.javascriptValidator</name>
++			<arguments>
++			</arguments>
++		</buildCommand>
++		<buildCommand>
++			<name>org.eclipse.jdt.core.javabuilder</name>
++			<arguments>
++			</arguments>
++		</buildCommand>
++		<buildCommand>
++			<name>org.eclipse.wst.common.project.facet.core.builder</name>
++			<arguments>
++			</arguments>
++		</buildCommand>
++		<buildCommand>
++			<name>org.eclipse.wst.validation.validationbuilder</name>
++			<arguments>
++			</arguments>
++		</buildCommand>
++		<buildCommand>
++			<name>org.eclipse.m2e.core.maven2Builder</name>
++			<arguments>
++			</arguments>
++		</buildCommand>
++	</buildSpec>
++	<natures>
++		<nature>org.eclipse.m2e.core.maven2Nature</nature>
++		<nature>org.eclipse.jem.workbench.JavaEMFNature</nature>
++		<nature>org.eclipse.wst.common.modulecore.ModuleCoreNature</nature>
++		<nature>org.eclipse.wst.common.project.facet.core.nature</nature>
++		<nature>org.eclipse.jdt.core.javanature</nature>
++		<nature>org.eclipse.wst.jsdt.core.jsNature</nature>
++		<nature>org.apache.ivyde.eclipse.ivynature</nature>
++	</natures>
++</projectDescription>
+diff --git a/stardust-business-object-management/.settings/.jsdtscope b/stardust-business-object-management/.settings/.jsdtscope
+new file mode 100644
+index 0000000..bbb8e68
+--- /dev/null
++++ b/stardust-business-object-management/.settings/.jsdtscope
+@@ -0,0 +1,11 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<classpath>
++	<classpathentry kind="con" path="org.eclipse.wst.jsdt.launching.JRE_CONTAINER"/>
++	<classpathentry kind="con" path="org.eclipse.wst.jsdt.launching.WebProject">
++		<attributes>
++			<attribute name="hide" value="true"/>
++		</attributes>
++	</classpathentry>
++	<classpathentry kind="con" path="org.eclipse.wst.jsdt.launching.baseBrowserLibrary"/>
++	<classpathentry kind="output" path=""/>
++</classpath>
+diff --git a/stardust-business-object-management/.settings/org.apache.ivyde.eclipse.prefs b/stardust-business-object-management/.settings/org.apache.ivyde.eclipse.prefs
+new file mode 100644
+index 0000000..a95f744
+--- /dev/null
++++ b/stardust-business-object-management/.settings/org.apache.ivyde.eclipse.prefs
+@@ -0,0 +1,2 @@
++eclipse.preferences.version=1
++org.apache.ivyde.eclipse.standaloneretrieve=<?xml version\="1.0" encoding\="UTF-8" standalone\="no"?><setuplist/>
+diff --git a/stardust-business-object-management/.settings/org.eclipse.core.resources.prefs b/stardust-business-object-management/.settings/org.eclipse.core.resources.prefs
+new file mode 100644
+index 0000000..bae30bb
+--- /dev/null
++++ b/stardust-business-object-management/.settings/org.eclipse.core.resources.prefs
+@@ -0,0 +1,4 @@
++#Thu May 15 06:01:18 CDT 2014
++eclipse.preferences.version=1
++encoding//src/main/java=UTF-8
++encoding//src/main/resources=UTF-8
+diff --git a/stardust-business-object-management/.settings/org.eclipse.jdt.core.prefs b/stardust-business-object-management/.settings/org.eclipse.jdt.core.prefs
+new file mode 100644
+index 0000000..812fbdb
+--- /dev/null
++++ b/stardust-business-object-management/.settings/org.eclipse.jdt.core.prefs
+@@ -0,0 +1,99 @@
++eclipse.preferences.version=1
++org.eclipse.jdt.core.compiler.annotation.inheritNullAnnotations=disabled
++org.eclipse.jdt.core.compiler.annotation.missingNonNullByDefaultAnnotation=ignore
++org.eclipse.jdt.core.compiler.annotation.nonnull=org.eclipse.jdt.annotation.NonNull
++org.eclipse.jdt.core.compiler.annotation.nonnullbydefault=org.eclipse.jdt.annotation.NonNullByDefault
++org.eclipse.jdt.core.compiler.annotation.nullable=org.eclipse.jdt.annotation.Nullable
++org.eclipse.jdt.core.compiler.annotation.nullanalysis=disabled
++org.eclipse.jdt.core.compiler.codegen.inlineJsrBytecode=enabled
++org.eclipse.jdt.core.compiler.codegen.targetPlatform=1.6
++org.eclipse.jdt.core.compiler.codegen.unusedLocal=preserve
++org.eclipse.jdt.core.compiler.compliance=1.6
++org.eclipse.jdt.core.compiler.debug.lineNumber=generate
++org.eclipse.jdt.core.compiler.debug.localVariable=generate
++org.eclipse.jdt.core.compiler.debug.sourceFile=generate
++org.eclipse.jdt.core.compiler.problem.annotationSuperInterface=warning
++org.eclipse.jdt.core.compiler.problem.assertIdentifier=error
++org.eclipse.jdt.core.compiler.problem.autoboxing=ignore
++org.eclipse.jdt.core.compiler.problem.comparingIdentical=warning
++org.eclipse.jdt.core.compiler.problem.deadCode=warning
++org.eclipse.jdt.core.compiler.problem.deprecation=warning
++org.eclipse.jdt.core.compiler.problem.deprecationInDeprecatedCode=disabled
++org.eclipse.jdt.core.compiler.problem.deprecationWhenOverridingDeprecatedMethod=disabled
++org.eclipse.jdt.core.compiler.problem.discouragedReference=warning
++org.eclipse.jdt.core.compiler.problem.emptyStatement=ignore
++org.eclipse.jdt.core.compiler.problem.enumIdentifier=error
++org.eclipse.jdt.core.compiler.problem.explicitlyClosedAutoCloseable=ignore
++org.eclipse.jdt.core.compiler.problem.fallthroughCase=ignore
++org.eclipse.jdt.core.compiler.problem.fatalOptionalError=disabled
++org.eclipse.jdt.core.compiler.problem.fieldHiding=ignore
++org.eclipse.jdt.core.compiler.problem.finalParameterBound=warning
++org.eclipse.jdt.core.compiler.problem.finallyBlockNotCompletingNormally=warning
++org.eclipse.jdt.core.compiler.problem.forbiddenReference=warning
++org.eclipse.jdt.core.compiler.problem.hiddenCatchBlock=warning
++org.eclipse.jdt.core.compiler.problem.includeNullInfoFromAsserts=disabled
++org.eclipse.jdt.core.compiler.problem.incompatibleNonInheritedInterfaceMethod=warning
++org.eclipse.jdt.core.compiler.problem.incompleteEnumSwitch=warning
++org.eclipse.jdt.core.compiler.problem.indirectStaticAccess=ignore
++org.eclipse.jdt.core.compiler.problem.localVariableHiding=ignore
++org.eclipse.jdt.core.compiler.problem.methodWithConstructorName=warning
++org.eclipse.jdt.core.compiler.problem.missingDefaultCase=ignore
++org.eclipse.jdt.core.compiler.problem.missingDeprecatedAnnotation=ignore
++org.eclipse.jdt.core.compiler.problem.missingEnumCaseDespiteDefault=disabled
++org.eclipse.jdt.core.compiler.problem.missingHashCodeMethod=ignore
++org.eclipse.jdt.core.compiler.problem.missingOverrideAnnotation=ignore
++org.eclipse.jdt.core.compiler.problem.missingOverrideAnnotationForInterfaceMethodImplementation=enabled
++org.eclipse.jdt.core.compiler.problem.missingSerialVersion=warning
++org.eclipse.jdt.core.compiler.problem.missingSynchronizedOnInheritedMethod=ignore
++org.eclipse.jdt.core.compiler.problem.noEffectAssignment=warning
++org.eclipse.jdt.core.compiler.problem.noImplicitStringConversion=warning
++org.eclipse.jdt.core.compiler.problem.nonExternalizedStringLiteral=ignore
++org.eclipse.jdt.core.compiler.problem.nonnullParameterAnnotationDropped=warning
++org.eclipse.jdt.core.compiler.problem.nullAnnotationInferenceConflict=error
++org.eclipse.jdt.core.compiler.problem.nullReference=warning
++org.eclipse.jdt.core.compiler.problem.nullSpecViolation=error
++org.eclipse.jdt.core.compiler.problem.nullUncheckedConversion=warning
++org.eclipse.jdt.core.compiler.problem.overridingPackageDefaultMethod=warning
++org.eclipse.jdt.core.compiler.problem.parameterAssignment=ignore
++org.eclipse.jdt.core.compiler.problem.possibleAccidentalBooleanAssignment=ignore
++org.eclipse.jdt.core.compiler.problem.potentialNullReference=ignore
++org.eclipse.jdt.core.compiler.problem.potentiallyUnclosedCloseable=ignore
++org.eclipse.jdt.core.compiler.problem.rawTypeReference=warning
++org.eclipse.jdt.core.compiler.problem.redundantNullAnnotation=warning
++org.eclipse.jdt.core.compiler.problem.redundantNullCheck=ignore
++org.eclipse.jdt.core.compiler.problem.redundantSpecificationOfTypeArguments=ignore
++org.eclipse.jdt.core.compiler.problem.redundantSuperinterface=ignore
++org.eclipse.jdt.core.compiler.problem.reportMethodCanBePotentiallyStatic=ignore
++org.eclipse.jdt.core.compiler.problem.reportMethodCanBeStatic=ignore
++org.eclipse.jdt.core.compiler.problem.specialParameterHidingField=disabled
++org.eclipse.jdt.core.compiler.problem.staticAccessReceiver=warning
++org.eclipse.jdt.core.compiler.problem.suppressOptionalErrors=disabled
++org.eclipse.jdt.core.compiler.problem.suppressWarnings=enabled
++org.eclipse.jdt.core.compiler.problem.syntacticNullAnalysisForFields=disabled
++org.eclipse.jdt.core.compiler.problem.syntheticAccessEmulation=ignore
++org.eclipse.jdt.core.compiler.problem.typeParameterHiding=warning
++org.eclipse.jdt.core.compiler.problem.unavoidableGenericTypeProblems=enabled
++org.eclipse.jdt.core.compiler.problem.uncheckedTypeOperation=warning
++org.eclipse.jdt.core.compiler.problem.unclosedCloseable=warning
++org.eclipse.jdt.core.compiler.problem.undocumentedEmptyBlock=ignore
++org.eclipse.jdt.core.compiler.problem.unhandledWarningToken=warning
++org.eclipse.jdt.core.compiler.problem.unnecessaryElse=ignore
++org.eclipse.jdt.core.compiler.problem.unnecessaryTypeCheck=ignore
++org.eclipse.jdt.core.compiler.problem.unqualifiedFieldAccess=ignore
++org.eclipse.jdt.core.compiler.problem.unusedDeclaredThrownException=ignore
++org.eclipse.jdt.core.compiler.problem.unusedDeclaredThrownExceptionExemptExceptionAndThrowable=enabled
++org.eclipse.jdt.core.compiler.problem.unusedDeclaredThrownExceptionIncludeDocCommentReference=enabled
++org.eclipse.jdt.core.compiler.problem.unusedDeclaredThrownExceptionWhenOverriding=disabled
++org.eclipse.jdt.core.compiler.problem.unusedImport=warning
++org.eclipse.jdt.core.compiler.problem.unusedLabel=warning
++org.eclipse.jdt.core.compiler.problem.unusedLocal=warning
++org.eclipse.jdt.core.compiler.problem.unusedObjectAllocation=ignore
++org.eclipse.jdt.core.compiler.problem.unusedParameter=ignore
++org.eclipse.jdt.core.compiler.problem.unusedParameterIncludeDocCommentReference=enabled
++org.eclipse.jdt.core.compiler.problem.unusedParameterWhenImplementingAbstract=disabled
++org.eclipse.jdt.core.compiler.problem.unusedParameterWhenOverridingConcrete=disabled
++org.eclipse.jdt.core.compiler.problem.unusedPrivateMember=warning
++org.eclipse.jdt.core.compiler.problem.unusedTypeParameter=ignore
++org.eclipse.jdt.core.compiler.problem.unusedWarningToken=warning
++org.eclipse.jdt.core.compiler.problem.varargsArgumentNeedCast=warning
++org.eclipse.jdt.core.compiler.source=1.6
+diff --git a/stardust-business-object-management/.settings/org.eclipse.ltk.core.refactoring.prefs b/stardust-business-object-management/.settings/org.eclipse.ltk.core.refactoring.prefs
+new file mode 100644
+index 0000000..b196c64
+--- /dev/null
++++ b/stardust-business-object-management/.settings/org.eclipse.ltk.core.refactoring.prefs
+@@ -0,0 +1,2 @@
++eclipse.preferences.version=1
++org.eclipse.ltk.core.refactoring.enable.project.refactoring.history=false
+diff --git a/stardust-business-object-management/.settings/org.eclipse.m2e.core.prefs b/stardust-business-object-management/.settings/org.eclipse.m2e.core.prefs
+new file mode 100644
+index 0000000..f897a7f
+--- /dev/null
++++ b/stardust-business-object-management/.settings/org.eclipse.m2e.core.prefs
+@@ -0,0 +1,4 @@
++activeProfiles=
++eclipse.preferences.version=1
++resolveWorkspaceProjects=true
++version=1
+diff --git a/stardust-business-object-management/.settings/org.eclipse.wst.common.component b/stardust-business-object-management/.settings/org.eclipse.wst.common.component
+new file mode 100644
+index 0000000..228a2bd
+--- /dev/null
++++ b/stardust-business-object-management/.settings/org.eclipse.wst.common.component
+@@ -0,0 +1,8 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project-modules id="moduleCoreId" project-version="1.5.0">
++<wb-module deploy-name="stardust-business-object-management">
++        <wb-resource deploy-path="/" source-path="/src/main/java"/>
++        <wb-resource deploy-path="/" source-path="/src/main/resources"/>
++        <wb-resource deploy-path="/" source-path="/src/test/java"/>
++</wb-module>
++</project-modules>
+diff --git a/stardust-business-object-management/.settings/org.eclipse.wst.common.project.facet.core.xml b/stardust-business-object-management/.settings/org.eclipse.wst.common.project.facet.core.xml
+new file mode 100644
+index 0000000..8a19907
+--- /dev/null
++++ b/stardust-business-object-management/.settings/org.eclipse.wst.common.project.facet.core.xml
+@@ -0,0 +1,9 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<faceted-project>
++  <runtime name="Apache Tomcat v7.0"/>
++  <fixed facet="jst.java"/>
++  <fixed facet="jst.utility"/>
++  <installed facet="jst.utility" version="1.0"/>
++  <installed facet="wst.jsdt.web" version="1.0"/>
++  <installed facet="jst.java" version="1.6"/>
++</faceted-project>
+diff --git a/stardust-business-object-management/.settings/org.eclipse.wst.jsdt.ui.superType.container b/stardust-business-object-management/.settings/org.eclipse.wst.jsdt.ui.superType.container
+new file mode 100644
+index 0000000..3bd5d0a
+--- /dev/null
++++ b/stardust-business-object-management/.settings/org.eclipse.wst.jsdt.ui.superType.container
+@@ -0,0 +1 @@
++org.eclipse.wst.jsdt.launching.baseBrowserLibrary
+\ No newline at end of file
+diff --git a/stardust-business-object-management/.settings/org.eclipse.wst.jsdt.ui.superType.name b/stardust-business-object-management/.settings/org.eclipse.wst.jsdt.ui.superType.name
+new file mode 100644
+index 0000000..05bd71b
+--- /dev/null
++++ b/stardust-business-object-management/.settings/org.eclipse.wst.jsdt.ui.superType.name
+@@ -0,0 +1 @@
++Window
+\ No newline at end of file
+diff --git a/stardust-business-object-management/.settings/org.eclipse.wst.validation.prefs b/stardust-business-object-management/.settings/org.eclipse.wst.validation.prefs
+new file mode 100644
+index 0000000..5a309eb
+--- /dev/null
++++ b/stardust-business-object-management/.settings/org.eclipse.wst.validation.prefs
+@@ -0,0 +1,3 @@
++#Wed Jun 04 16:03:16 CDT 2014
++disabled=06target
++eclipse.preferences.version=1
+diff --git a/stardust-business-object-management/.settings/org.maven.ide.eclipse.prefs b/stardust-business-object-management/.settings/org.maven.ide.eclipse.prefs
+new file mode 100644
+index 0000000..6bc5de6
+--- /dev/null
++++ b/stardust-business-object-management/.settings/org.maven.ide.eclipse.prefs
+@@ -0,0 +1,8 @@
++#Fri Jun 08 17:17:12 CEST 2012
++activeProfiles=
++eclipse.preferences.version=1
++fullBuildGoals=process-test-resources
++resolveWorkspaceProjects=true
++resourceFilterGoals=process-resources resources\:testResources
++skipCompilerPlugin=true
++version=1
+diff --git a/stardust-business-object-management/build.xml b/stardust-business-object-management/build.xml
+new file mode 100644
+index 0000000..dccdf29
+--- /dev/null
++++ b/stardust-business-object-management/build.xml
+@@ -0,0 +1,190 @@
++<!--
++    Copyright (c) 2011 SunGard CSA LLC and others.
++    All rights reserved. This program and the accompanying materials
++    are made available under the terms of the Eclipse Public License v1.0
++    which accompanies this distribution, and is available at
++    http://www.eclipse.org/legal/epl-v10.html
++   
++    Contributors:
++       SunGard CSA LLC - initial API and implementation and/or initial documentation
++ -->
++<!--
++  To execute this build script, you have to configure your environment as follows:
++  - Java property java.home must point to an existent JAVA_HOME (either via parameter 
++    (e.g. antit.bat -Djava.home=C:/Programme/Java15) or create a private.properties file
++    in the etc folder of the project and put the property in there)
++  - you need an Infinity installation or you have to execute at least the latakia build file
++-->
++
++<project name="stardust-business-object-management" default="build" basedir="." xmlns:ipp="com.infinity.bpm.ant.macros">
++   
++   <property name="project.dir" value="." />
++   <property name="project.src" value="${project.dir}/src/main/java" />
++   <property name="resources.src" value="${project.dir}/src/main/resources" />
++   <property name="project.etc" value="${project.dir}/etc" />
++   <property file="${project.etc}/private.properties"/>
++   
++   <property name="artifactId" value="stardust-business-object-management" />
++
++   <import file="../../build.tools/commons-build.xml" />
++
++   <target name="initOnDevelopment" if="setup.development">
++      <echo message="Performing a development build ..." />
++
++      <property name="javac.debuglevel" value="lines,source,vars" />
++   </target>
++
++   <target name="initOnProduction" unless="setup.development">
++      <echo message="Performing a production build ..." />
++
++      <property name="javac.debuglevel" value="lines,source,vars" />
++   </target>
++
++   <target name="init" depends="initOnDevelopment, initOnProduction">
++      <property name="build.dir" value="${project.dir}/build"/>
++   </target>
++
++   <target name="clean" depends="init" description="removes all build results">
++      <delete dir="${build.dir}" />
++   </target>
++
++   <target name="initBuild" depends="init">
++      <property name="build.classes" value="${build.dir}/classes" />
++      <property name="build.lib" value="${build.dir}/lib" />
++      <property name="build.src" value="${build.dir}/src" />
++
++      <property name="document.triage.jarfile" value="${artifactId}.jar" />
++      <property name="document.triage.jar" value="${build.lib}/${document.triage.jarfile}" />
++      <property name="document.triage.src.jarfile" value="${artifactId}-sources.jar" />
++      <property name="document.triage.src.jar" value="${build.lib}/${document.triage.src.jarfile}" />
++   </target>
++
++   <target name="initBuildDirectories" depends="initBuild">
++      <mkdir dir="${build.classes}"/>
++      <mkdir dir="${build.lib}"/>
++      <mkdir dir="${build.src}"/>
++   </target>
++
++   <target name="prepareSources" depends="initBuild">
++      <echo message="Preparing sources for a safe but slow build." />
++      <copy todir="${build.src}" overwrite="true">
++         <fileset dir="${project.src}">
++            <include name="**/*.java" />
++         </fileset>
++      </copy>
++   </target>
++   
++   <target name="init.ivy">
++      <echo message="Using Ivy for dependency management." />
++      <init-ivy />
++   </target>
++
++   <target name="initClasspath" depends="init.ivy" >
++
++      <init-ivy-classpath />
++
++      <path id="compile.classpath">
++         <path refid="compile.deps" />
++      </path>
++   </target>
++
++   <target name="compile.jdk16" depends="init" description="Compiling Java 6 code.">
++      <ipp:javac-java6 srcdir="${build.src}" destdir="${build.classes}">
++         <include name="**/*.java" />
++         <classpath id="compile6.classpath">
++            <path refid="compile.classpath" />
++         </classpath>
++      </ipp:javac-java6>
++   </target>
++
++   <target name="compile" depends="prepareSources, initBuildDirectories, initClasspath, compile.jdk16" 
++      description="compiles the portal API classes" unless="skip.compile" />
++   
++   <target name="copyDatFiles" depends="initBuildDirectories">
++      <copy todir="${build.classes}">
++         <fileset dir="${resources.src}">
++            <include name="**/*.*" />
++         </fileset>
++      </copy>
++
++      <copy todir="${build.src}">
++         <fileset dir="${resources.src}">
++            <include name="**/*.*" />
++         </fileset>
++      </copy>
++   </target>
++
++   <target name="jar" depends="compile, copyDatFiles">
++      <ipp:jar jarfile="${document.triage.jar}" implementationTitle="Infinity Process Engine - Document Triage">
++         <fileset dir="${build.classes}">
++            <include name="**/*.*" />
++         </fileset>
++      </ipp:jar>
++   </target>
++
++   <target name="jar.src" depends="compile">
++      <delete file="${document.triage.src.jar}" />
++      <ipp:jar jarfile="${document.triage.src.jar}" implementationTitle="Infinity Process Engine - Document Triage Sources">
++         <fileset dir="${build.src}">
++            <include name="**/*.*" />
++         </fileset>
++      </ipp:jar>
++   </target>
++
++   <target name="build" depends="jar, jar.src, build.ivy" />
++
++   <target name="build.ivy" if="dependencies.mode.ivy"
++      depends="jar, jar.src">
++      
++      <ivy-publish-local artifactId="${artifactId}" artifactDir="${build.lib}" />
++   </target>
++
++   <target name="initPortalWstPluginDir" unless="portal.wst.plugin.dir">
++      <property name="portal.wst.plugin.dir" value="${project.dir}/../../ide.wst/org.eclipse.stardust.ide.wst.facet.portal"/>
++      <available file="${portal.wst.plugin.dir}" property="portal.wst.plugin.dir.present" type="dir"/>
++   </target>
++   
++   <target name="dist" depends="build, initPortalWstPluginDir" if="portal.wst.plugin.dir.present">
++      <copy todir="${portal.wst.plugin.dir}/lib">
++         <fileset dir="${build.lib}">
++            <include name="${document.triage.jarfile}" />
++         </fileset>
++      </copy>
++   </target>
++   
++   <target name="deploy" depends="build,dependencies:report"/>
++
++   <target name="install" if="maven.localRepository" depends="initBuild"
++      description="installs the artifacts into a local Maven repository">
++
++      <ipp:init-mvn localMavenRepository="${maven.localRepository}" />
++      <ipp:mvn-install file="${document.triage.jar}" 
++         pomFile="${build.lib}/${artifactId}.pom" />
++   </target>
++   
++   <target name="publish" depends="initBuild"
++     description="publish artifacts into a remote Maven repository">
++
++      <ipp:init-mvn />
++      <ipp:mvn-deploy file="${document.triage.jar}" 
++         pomFile="${build.lib}/${artifactId}.pom" />
++   </target>
++   
++   <!-- target is invoked by stardust-ui-web-nls project -->
++   <target name="copy-nls-resources" 
++      description="copies the resources into a given folder">
++      <copy todir="${build.nls.dir}">
++         <fileset dir="${resources.src}">
++            <include name="**/*_de.properties"/>
++            <include name="**/*_en.properties"/>
++            <include name="**/*_zh_CN.properties"/>
++         </fileset>
++      </copy>
++   </target>
++
++   <target name="dependencies:report" depends="init,init.ivy">
++      <property name="build.report" location="${build.dir}/report" />
++      <ivy-report ivyFile="${project.dir}/ivy.xml" outputDir="${build.report}" />
++   </target>
++
++</project>
+diff --git a/stardust-business-object-management/src/main/java/org/eclipse/stardust/ui/web/business_object_management/common/LanguageUtil.java b/stardust-business-object-management/src/main/java/org/eclipse/stardust/ui/web/business_object_management/common/LanguageUtil.java
+new file mode 100644
+index 0000000..23fe147
+--- /dev/null
++++ b/stardust-business-object-management/src/main/java/org/eclipse/stardust/ui/web/business_object_management/common/LanguageUtil.java
+@@ -0,0 +1,48 @@
++package org.eclipse.stardust.ui.web.business_object_management.common;
++
++import java.util.HashMap;
++import java.util.Locale;
++import java.util.Map;
++
++public class LanguageUtil {
++	// Map that holds accept-language header vs locale strings
++	// Language entry only needs to be added when these are different
++	// e.g. "zh" vs "zh_CN"
++	private static Map<String, String> LANG_POST_FIX_MAP = new HashMap<String, String>();;
++
++	// TODO - find a better way of initializing the map
++	static {
++		LANG_POST_FIX_MAP.put("zh", "zh_CN");
++	}
++
++	/**
++	 * @param langHeaderString
++	 * @return
++	 */
++	public static String getLocale(String langHeaderString) {
++		String langPostFix = LANG_POST_FIX_MAP.get(langHeaderString.substring(
++				0, 2));
++		if (null == langPostFix) {
++			langPostFix = langHeaderString.substring(0, 2);
++		}
++
++		return langPostFix;
++	}
++
++	/**
++	 * @param locale
++	 * @return
++	 */
++	public static Locale getLocaleObject(String locale) {
++		String[] localeParts = locale.split("_");
++		if (2 < localeParts.length) {
++			return new Locale(localeParts[0], localeParts[1], localeParts[2]);
++		} else if (1 < localeParts.length) {
++			return new Locale(localeParts[0], localeParts[1]);
++		} else if (0 < localeParts.length) {
++			return new Locale(localeParts[0]);
++		} else {
++			return new Locale("en");
++		}
++	}
++}
+diff --git a/stardust-business-object-management/src/main/java/org/eclipse/stardust/ui/web/business_object_management/rest/BusinessObjectManagementResource.java b/stardust-business-object-management/src/main/java/org/eclipse/stardust/ui/web/business_object_management/rest/BusinessObjectManagementResource.java
+new file mode 100644
+index 0000000..e04dd17
+--- /dev/null
++++ b/stardust-business-object-management/src/main/java/org/eclipse/stardust/ui/web/business_object_management/rest/BusinessObjectManagementResource.java
+@@ -0,0 +1,96 @@
++package org.eclipse.stardust.ui.web.business_object_management.rest;
++
++import javax.servlet.ServletContext;
++import javax.servlet.http.HttpServletRequest;
++import javax.ws.rs.GET;
++import javax.ws.rs.Path;
++import javax.ws.rs.PathParam;
++import javax.ws.rs.core.Context;
++import javax.ws.rs.core.MediaType;
++import javax.ws.rs.core.Response;
++
++import org.eclipse.stardust.common.log.LogManager;
++import org.eclipse.stardust.common.log.Logger;
++import org.eclipse.stardust.ui.web.business_object_management.service.BusinessObjectManagementService;
++
++@Path("/")
++public class BusinessObjectManagementResource {
++	private static final Logger trace = LogManager
++			.getLogger(BusinessObjectManagementResource.class);
++	private BusinessObjectManagementService businessObjectManagementService;
++	private final JsonMarshaller jsonIo = new JsonMarshaller();
++
++	@Context
++	private HttpServletRequest httpRequest;
++
++	@Context
++	private ServletContext servletContext;
++
++	/**
++	 * 
++	 * @return
++	 */
++	public BusinessObjectManagementService getBusinessObjectManagementService() {
++		return businessObjectManagementService;
++	}
++
++	/**
++	 * 
++	 * @param businessObjectManagementService
++	 */
++	public void setBusinessObjectManagementService(
++			BusinessObjectManagementService businessObjectManagementService) {
++		this.businessObjectManagementService = businessObjectManagementService;
++	}
++
++	@GET
++	@Path("/businessObject.json")
++	public Response getBusinessObject() {
++		try {
++			return Response.ok(
++					getBusinessObjectManagementService().getBusinessObjects()
++							.toString(), MediaType.APPLICATION_JSON).build();
++		} catch (Exception e) {
++			trace.error(e, e);
++
++			return Response.serverError().build();
++		}
++	}
++
++	@GET
++	@Path("/businessObject/{modelOid}/{businessObjectId}/instances.json")
++	public Response getBusinessObjectInstances(
++			@PathParam("modelOid") String modelOid,
++			@PathParam("businessObjectId") String businessObjectId) {
++		try {
++			return Response.ok(
++					getBusinessObjectManagementService()
++							.getBusinessObjectInstances(modelOid,
++									businessObjectId).toString(),
++					MediaType.APPLICATION_JSON).build();
++		} catch (Exception e) {
++			trace.error(e, e);
++
++			return Response.serverError().build();
++		}
++	}
++
++	@GET
++	@Path("/businessObject/{modelOid}/{businessObjectId}/{primaryKey}/processInstances.json")
++	public Response getBusinessObjectProcessInstances(
++			@PathParam("modelOid") String modelOid,
++			@PathParam("businessObjectId") String businessObjectId,
++			@PathParam("primaryKey") String primaryKey) {
++		try {
++			return Response.ok(
++					getBusinessObjectManagementService()
++							.getBusinessObjectProcessInstances(modelOid,
++									businessObjectId, primaryKey).toString(),
++					MediaType.APPLICATION_JSON).build();
++		} catch (Exception e) {
++			trace.error(e, e);
++
++			return Response.serverError().build();
++		}
++	}
++}
+diff --git a/stardust-business-object-management/src/main/java/org/eclipse/stardust/ui/web/business_object_management/rest/JsonMarshaller.java b/stardust-business-object-management/src/main/java/org/eclipse/stardust/ui/web/business_object_management/rest/JsonMarshaller.java
+new file mode 100644
+index 0000000..fa06d6a
+--- /dev/null
++++ b/stardust-business-object-management/src/main/java/org/eclipse/stardust/ui/web/business_object_management/rest/JsonMarshaller.java
+@@ -0,0 +1,221 @@
++/*******************************************************************************
++ * Copyright (c) 2013 SunGard CSA LLC and others.
++ * All rights reserved. This program and the accompanying materials
++ * are made available under the terms of the Eclipse Public License v1.0
++ * which accompanies this distribution, and is available at
++ * http://www.eclipse.org/legal/epl-v10.html
++ *
++ * Contributors:
++ *    SunGard CSA LLC - initial API and implementation and/or initial documentation
++ *******************************************************************************/
++
++package org.eclipse.stardust.ui.web.business_object_management.rest;
++
++import java.lang.reflect.Type;
++import java.util.Map;
++
++import javax.ws.rs.WebApplicationException;
++import javax.ws.rs.core.Response.Status;
++
++import com.google.gson.*;
++
++import org.eclipse.stardust.common.log.LogManager;
++import org.eclipse.stardust.common.log.Logger;
++
++// TODO Reuse already available marshaller; this is copy and paste
++
++public class JsonMarshaller
++{
++   private static final Logger trace = LogManager.getLogger(JsonMarshaller.class);
++
++   private final Gson gson = new GsonBuilder() //
++      .registerTypeAdapter(JsonObject.class, new JsonObjectSerializationHandler())
++      .registerTypeAdapter(JsonArray.class, new JsonArraySerializationHandler())
++      .create();
++
++   private final Gson gsonForUpdates = new GsonBuilder().serializeNulls()
++         .registerTypeAdapter(JsonObject.class, new JsonObjectSerializationHandler())
++         .registerTypeAdapter(JsonArray.class, new JsonArraySerializationHandler())
++         .create();
++
++   private final JsonParser jsonParser = new JsonParser();
++
++   public Gson gson()
++   {
++      return gson;
++   }
++
++   public JsonObject readJsonObject(String jsonText)
++         throws javax.ws.rs.WebApplicationException
++   {
++      try
++      {
++         JsonElement parsedJson = jsonParser.parse(jsonText);
++         if ((null != parsedJson) && parsedJson.isJsonObject())
++         {
++            return parsedJson.getAsJsonObject();
++         }
++         else
++         {
++            trace.warn("Expected a JSON object, but received something else.");
++            throw new WebApplicationException(Status.BAD_REQUEST);
++         }
++      }
++      catch (JsonParseException jpe)
++      {
++         trace.warn("Expected a JSON object, but received no valid JSON at all.", jpe);
++         throw new WebApplicationException(jpe, Status.BAD_REQUEST);
++      }
++   }
++
++   public String writeJsonObject(JsonObject json)
++   {
++      return gson.toJson(json);
++   }
++
++   public void writeIntoJsonObject(JsonObject update, JsonObject master)
++   {
++      // merge
++      mergeUpdate(update, master);
++   }
++
++   public <T> void writeIntoJsonObject(T update, JsonObject master)
++   {
++      // merge
++      mergeUpdate(gsonForUpdates.toJsonTree(update).getAsJsonObject(), master);
++   }
++
++   private void mergeUpdate(JsonObject update, JsonObject master)
++   {
++      for (Map.Entry<String, JsonElement> attr : update.entrySet())
++      {
++         if ((null == attr.getValue()) || attr.getValue().isJsonNull())
++         {
++            // TODO use singleton to reduce memory footprint
++            master.add(attr.getKey(), new JsonNull());
++         }
++
++         assertCompatibility(master.get(attr.getKey()), attr.getValue());
++         if (attr.getValue() instanceof JsonPrimitive)
++         {
++            if (!master.has(attr.getKey()) || !master.get(attr.getKey()).equals(attr.getValue()))
++            {
++               master.add(attr.getKey(), attr.getValue());
++            }
++         }
++         else if (attr.getValue() instanceof JsonObject)
++         {
++            if ( !master.has(attr.getKey()) || master.get(attr.getKey()).isJsonNull())
++            {
++               // copy whole subtree
++               master.add(attr.getKey(), attr.getValue());
++            }
++            else
++            {
++               // recurse to merge attribute updates
++               mergeUpdate(attr.getValue().getAsJsonObject(), master.get(attr.getKey()).getAsJsonObject());
++            }
++         }
++         else if (attr.getValue() instanceof JsonArray)
++         {
++            // TODO any way to correlate elements between arrays? will need concept of
++            // element identity to merge elements
++            master.add(attr.getKey(), attr.getValue());
++         }
++      }
++   }
++
++   private void assertCompatibility(JsonElement master, JsonElement update)
++   {
++      if ((null == update) || update.isJsonNull())
++      {
++         // assume any attribute can be set to null
++      }
++      else if (null != update)
++      {
++         if ((null == master) || master.isJsonNull())
++         {
++            // assume compatibility as null carries no type
++         }
++         else if (update.isJsonPrimitive())
++         {
++            if ( !master.isJsonPrimitive())
++            {
++               throw new IllegalArgumentException(
++                     "Must not structurally change JSON objects (expecting primitive, got " + master + ").");
++            }
++            // TODO further checks for check primitive types?
++         }
++         else if (update.isJsonArray())
++         {
++            if ( !master.isJsonArray())
++            {
++               throw new IllegalArgumentException(
++                     "Must not structurally change JSON objects (expecting array, got " + master + ").");
++            }
++         }
++         else if (update.isJsonObject())
++         {
++            if ( !master.isJsonObject())
++            {
++               throw new IllegalArgumentException(
++                     "Must not structurally change JSON objects (expecting object, got " + master + ").");
++            }
++         }
++      }
++   }
++
++   private static class JsonObjectSerializationHandler
++         implements JsonSerializer<JsonObject>, JsonDeserializer<JsonObject>
++   {
++      @Override
++      public JsonObject serialize(JsonObject src, Type typeOfSrc,
++            JsonSerializationContext context)
++      {
++         // just use the object as is
++         return src;
++      }
++
++      @Override
++      public JsonObject deserialize(JsonElement json, Type typeOfT,
++            JsonDeserializationContext context) throws JsonParseException
++      {
++         if (json.isJsonObject() && JsonObject.class.equals(typeOfT))
++         {
++            // just use the object as is
++            return json.getAsJsonObject();
++         }
++         else
++         {
++            return new JsonObject();
++         }
++      }
++   }
++
++   private static class JsonArraySerializationHandler
++         implements JsonSerializer<JsonArray>, JsonDeserializer<JsonArray>
++   {
++      @Override
++      public JsonArray serialize(JsonArray src, Type typeOfSrc,
++            JsonSerializationContext context)
++      {
++         // just use the object as is
++         return src;
++      }
++
++      @Override
++      public JsonArray deserialize(JsonElement json, Type typeOfT,
++            JsonDeserializationContext context) throws JsonParseException
++      {
++         if (json.isJsonArray() && JsonArray.class.equals(typeOfT))
++         {
++            // just use the object as is
++            return json.getAsJsonArray();
++         }
++         else
++         {
++            return new JsonArray();
++         }
++      }
++   }
++}
+diff --git a/stardust-business-object-management/src/main/java/org/eclipse/stardust/ui/web/business_object_management/service/BusinessObjectManagementService.java b/stardust-business-object-management/src/main/java/org/eclipse/stardust/ui/web/business_object_management/service/BusinessObjectManagementService.java
+new file mode 100644
+index 0000000..277cad4
+--- /dev/null
++++ b/stardust-business-object-management/src/main/java/org/eclipse/stardust/ui/web/business_object_management/service/BusinessObjectManagementService.java
+@@ -0,0 +1,315 @@
++/*******************************************************************************
++ * Copyright (c) 2013 SunGard CSA LLC and others.
++ * All rights reserved. This program and the accompanying materials
++ * are made available under the terms of the Eclipse Public License v1.0
++ * which accompanies this distribution, and is available at
++ * http://www.eclipse.org/legal/epl-v10.html
++ *
++ * Contributors:
++ *    SunGard CSA LLC - initial API and implementation and/or initial documentation
++ *******************************************************************************/
++
++package org.eclipse.stardust.ui.web.business_object_management.service;
++
++import java.util.*;
++
++import javax.annotation.Resource;
++
++import com.google.gson.JsonArray;
++import com.google.gson.JsonElement;
++import com.google.gson.JsonObject;
++
++import org.eclipse.stardust.common.Direction;
++import org.eclipse.stardust.common.log.LogManager;
++import org.eclipse.stardust.common.log.Logger;
++import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetails;
++import org.eclipse.stardust.engine.api.model.*;
++import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
++import org.eclipse.stardust.engine.api.query.DescriptorPolicy;
++import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
++import org.eclipse.stardust.engine.api.runtime.*;
++import org.eclipse.stardust.ui.web.business_object_management.rest.JsonMarshaller;
++import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
++import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
++import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
++
++public class BusinessObjectManagementService {
++	private static final Logger trace = LogManager
++			.getLogger(BusinessObjectManagementService.class);
++	@Resource
++	private SessionContext sessionContext;
++	private DocumentManagementService documentManagementService;
++	private UserService userService;
++	private QueryService queryService;
++	private WorkflowService workflowService;
++	private AdministrationService administrationService;
++
++	public BusinessObjectManagementService() {
++		super();
++
++		new JsonMarshaller();
++	}
++
++	private ServiceFactory getServiceFactory() {
++		return sessionContext.getServiceFactory();
++	}
++
++	/**
++	 * 
++	 * @return
++	 */
++	DocumentManagementService getDocumentManagementService() {
++		if (documentManagementService == null) {
++			documentManagementService = getServiceFactory()
++					.getDocumentManagementService();
++		}
++
++		return documentManagementService;
++	}
++
++	/**
++	 * 
++	 * @return
++	 */
++	private UserService getUserService() {
++		if (userService == null) {
++			userService = getServiceFactory().getUserService();
++		}
++
++		return userService;
++	}
++
++	/**
++	 * 
++	 * @return
++	 */
++	private QueryService getQueryService() {
++		if (queryService == null) {
++			queryService = getServiceFactory().getQueryService();
++		}
++
++		return queryService;
++	}
++
++	/**
++	 * 
++	 * @return
++	 */
++	private WorkflowService getWorkflowService() {
++		if (workflowService == null) {
++			workflowService = getServiceFactory().getWorkflowService();
++		}
++
++		return workflowService;
++	}
++
++	/**
++	 * 
++	 * @return
++	 */
++	private AdministrationService getAdministrationService() {
++		if (administrationService == null) {
++			administrationService = getServiceFactory()
++					.getAdministrationService();
++		}
++
++		return administrationService;
++	}
++
++	/**
++	 * 
++	 * @return
++	 */
++	public JsonObject getBusinessObjects() {
++		JsonObject resultJson = new JsonObject();
++		JsonArray modelsJson = new JsonArray();
++
++		resultJson.add("models", modelsJson);
++
++		JsonObject modelJson = new JsonObject();
++
++		modelsJson.add(modelJson);
++
++		modelJson.addProperty("oid", 1);
++		modelJson.addProperty("name", "General Claim Processing");
++
++		JsonArray businessObjectsJson = new JsonArray();
++
++		modelJson.add("businessObjects", businessObjectsJson);
++
++		JsonObject businessObjectJson = null;
++		JsonArray fieldsJson = null;
++		JsonObject fieldJson = null;
++
++		// Member
++
++		businessObjectJson = new JsonObject();
++
++		businessObjectsJson.add(businessObjectJson);
++
++		businessObjectJson.addProperty("id", "Member");
++		businessObjectJson.addProperty("name", "Member");
++
++		fieldsJson = new JsonArray();
++
++		businessObjectJson.add("fields", fieldsJson);
++
++		fieldJson = new JsonObject();
++
++		fieldsJson.add(fieldJson);
++
++		fieldJson.addProperty("id", "id");
++		fieldJson.addProperty("name", "Member ID");
++		fieldJson.addProperty("type", "string");
++		fieldJson.addProperty("key", true);
++		fieldJson.addProperty("primaryKey", true);
++
++		fieldJson = new JsonObject();
++
++		fieldsJson.add(fieldJson);
++
++		fieldJson.addProperty("id", "firstName");
++		fieldJson.addProperty("name", "First Name");
++		fieldJson.addProperty("type", "string");
++		fieldJson.addProperty("key", true);
++		fieldJson.addProperty("primaryKey", false);
++
++		fieldJson = new JsonObject();
++
++		fieldsJson.add(fieldJson);
++
++		fieldJson.addProperty("id", "lastName");
++		fieldJson.addProperty("name", "Last Name");
++		fieldJson.addProperty("type", "string");
++		fieldJson.addProperty("key", true);
++		fieldJson.addProperty("primaryKey", false);
++
++		fieldJson = new JsonObject();
++
++		fieldsJson.add(fieldJson);
++
++		fieldJson.addProperty("id", "scheme");
++		fieldJson.addProperty("name", "Scheme Name");
++		fieldJson.addProperty("type", "string");
++		fieldJson.addProperty("key", false);
++		fieldJson.addProperty("primaryKey", false);
++
++		fieldJson = new JsonObject();
++
++		fieldsJson.add(fieldJson);
++
++		fieldJson.addProperty("id", "schemeId");
++		fieldJson.addProperty("name", "Scheme ID");
++		fieldJson.addProperty("type", "string");
++		fieldJson.addProperty("key", false);
++		fieldJson.addProperty("primaryKey", false);
++
++		fieldJson = new JsonObject();
++
++		fieldsJson.add(fieldJson);
++
++		fieldJson.addProperty("id", "nationalId");
++		fieldJson.addProperty("name", "National ID");
++		fieldJson.addProperty("type", "string");
++		fieldJson.addProperty("key", false);
++		fieldJson.addProperty("primaryKey", false);
++
++		// Member
++
++		businessObjectJson = new JsonObject();
++
++		businessObjectsJson.add(businessObjectJson);
++
++		businessObjectJson.addProperty("id", "Fund");
++		businessObjectJson.addProperty("name", "Fund");
++
++		fieldsJson = new JsonArray();
++
++		businessObjectJson.add("fields", fieldsJson);
++
++		fieldJson = new JsonObject();
++
++		fieldsJson.add(fieldJson);
++
++		fieldJson.addProperty("id", "id");
++		fieldJson.addProperty("name", "Fund Id");
++		fieldJson.addProperty("type", "string");
++		fieldJson.addProperty("key", true);
++		fieldJson.addProperty("primaryKey", true);
++
++		fieldJson = new JsonObject();
++
++		fieldsJson.add(fieldJson);
++
++		fieldJson.addProperty("id", "name");
++		fieldJson.addProperty("name", "Fund Name");
++		fieldJson.addProperty("type", "string");
++		fieldJson.addProperty("key", true);
++		fieldJson.addProperty("primaryKey", false);
++
++		return resultJson;
++	}
++
++	/**
++	 * 
++	 * @param modelOid
++	 * @param businessObjectId
++	 * @return
++	 */
++	public JsonObject getBusinessObjectInstances(String modelOid,
++			String businessObjectId) {
++		JsonObject resultJson = new JsonObject();
++		JsonArray businessObjectInstances = new JsonArray();
++
++		resultJson.add("businessObjectInstances", businessObjectInstances);
++
++		JsonObject businessObjectInstance = null;
++
++		if (businessObjectId.equals("Member")) {
++			businessObjectInstance = new JsonObject();
++
++			businessObjectInstances.add(businessObjectInstance);
++
++			businessObjectInstance.addProperty("id", "4711");
++			businessObjectInstance.addProperty("firstName", "Haile");
++			businessObjectInstance.addProperty("lastName", "Selassie");
++			businessObjectInstance.addProperty("scheme", "1");
++			businessObjectInstance.addProperty("schemeName", "Scheme-1");
++			businessObjectInstance.addProperty("nationalId", "SA");
++
++			businessObjectInstance = new JsonObject();
++
++			businessObjectInstances.add(businessObjectInstance);
++
++			businessObjectInstance.addProperty("id", "0815");
++			businessObjectInstance.addProperty("firstName", "Jan");
++			businessObjectInstance.addProperty("lastName", "Smuts");
++			businessObjectInstance.addProperty("scheme", "2");
++			businessObjectInstance.addProperty("schemeName", "Scheme-2");
++			businessObjectInstance.addProperty("nationalId", "SA");
++		} else if (businessObjectId.equals("Fund")) {
++			businessObjectInstance = new JsonObject();
++
++			businessObjectInstances.add(businessObjectInstance);
++
++			businessObjectInstance.addProperty("id", "4711");
++			businessObjectInstance.addProperty("name", "Haile");
++		}
++
++		return resultJson;
++	}
++
++	/**
++	 * 
++	 * @param modelOid
++	 * @param businessObjectId
++	 * @param primaryKey
++	 * @return
++	 */
++	public JsonObject getBusinessObjectProcessInstances(String modelOid,
++			String businessObjectId, String primaryKey) {
++		JsonObject resultJson = new JsonObject();
++
++		return resultJson;
++	}
++}
+diff --git a/stardust-business-object-management/src/main/resources/META-INF/MANIFEST.MF b/stardust-business-object-management/src/main/resources/META-INF/MANIFEST.MF
+new file mode 100644
+index 0000000..254272e
+--- /dev/null
++++ b/stardust-business-object-management/src/main/resources/META-INF/MANIFEST.MF
+@@ -0,0 +1,3 @@
++Manifest-Version: 1.0
++Class-Path: 
++
+diff --git a/stardust-business-object-management/src/main/resources/META-INF/business-object-management.portal-plugin b/stardust-business-object-management/src/main/resources/META-INF/business-object-management.portal-plugin
+new file mode 100644
+index 0000000..0c38d0a
+--- /dev/null
++++ b/stardust-business-object-management/src/main/resources/META-INF/business-object-management.portal-plugin
+@@ -0,0 +1 @@
++/META-INF/webapp/
+\ No newline at end of file
+diff --git a/stardust-business-object-management/src/main/resources/META-INF/spring/business-object-management-context.xml b/stardust-business-object-management/src/main/resources/META-INF/spring/business-object-management-context.xml
+new file mode 100644
+index 0000000..3c9fabf
+--- /dev/null
++++ b/stardust-business-object-management/src/main/resources/META-INF/spring/business-object-management-context.xml
+@@ -0,0 +1,20 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<beans xmlns="http://www.springframework.org/schema/beans"
++	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
++	xmlns:p="http://www.springframework.org/schema/p" xmlns:util="http://www.springframework.org/schema/util"
++	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:ippui="http://infinity.com/bpm/ui/common/uiDefinition"
++	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
++		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
++		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
++		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
++		http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/portal/common/uiDefinition.xsd">
++
++	<context:annotation-config />
++	<context:component-scan base-package="org.eclipse.stardust.ui.web.business_object_management" />
++
++	<bean id="businessObjectManagementService"
++		class="org.eclipse.stardust.ui.web.business_object_management.service.BusinessObjectManagementService" scope="session">
++		<aop:scoped-proxy/>
++	</bean>
++
++</beans>
+diff --git a/stardust-business-object-management/src/main/resources/META-INF/spring/jax-rs-cxf-context.xml b/stardust-business-object-management/src/main/resources/META-INF/spring/jax-rs-cxf-context.xml
+new file mode 100644
+index 0000000..e8e10fc
+--- /dev/null
++++ b/stardust-business-object-management/src/main/resources/META-INF/spring/jax-rs-cxf-context.xml
+@@ -0,0 +1,26 @@
++<?xml version="1.0" encoding="UTF-8"?>
++
++<!-- Copyright (c) 2012 SunGard CSA LLC and others. All rights reserved.
++	This program and the accompanying materials are made available under the
++	terms of the Eclipse Public License v1.0 which accompanies this distribution,
++	and is available at http://www.eclipse.org/legal/epl-v10.html Contributors:
++	SunGard CSA LLC - initial API and implementation and/or initial documentation -->
++
++<beans xmlns="http://www.springframework.org/schema/beans"
++	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jaxrs="http://cxf.apache.org/jaxrs"
++	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
++                       http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
++
++	<jaxrs:server id="businessObjectManagement" address="/business-object-management">
++		<jaxrs:serviceBeans>
++			<ref bean="businessObjectManagementResource" />
++		</jaxrs:serviceBeans>
++	</jaxrs:server>
++
++	<bean id="businessObjectManagementResource"
++		class="org.eclipse.stardust.ui.web.business_object_management.rest.BusinessObjectManagementResource">
++		<property name="businessObjectManagementService" ref="businessObjectManagementService" />
++	</bean>
++
++</beans>
++
+diff --git a/stardust-business-object-management/src/main/resources/META-INF/views/documentAssignmentPanel.html b/stardust-business-object-management/src/main/resources/META-INF/views/documentAssignmentPanel.html
+new file mode 100644
+index 0000000..bb0ea58
+--- /dev/null
++++ b/stardust-business-object-management/src/main/resources/META-INF/views/documentAssignmentPanel.html
+@@ -0,0 +1,321 @@
++<html>
++<head>
++<link
++	href='http://fonts.googleapis.com/css?family=Lato:400,700,300italic,400italic'
++	rel='stylesheet' type='text/css'>
++<link href="./css/font-awesome-4.1.0/css/font-awesome.css"
++	rel="stylesheet">
++<link href='./css/stardust-modern.css' rel='stylesheet' />
++<link href='./css/thirdparty/jquery/jquery-ui-1.10.2.custom.min.css'
++	rel='stylesheet' />
++<script data-main="./js/DocumentAssignmentPanelMain"
++	src="./js/libs/require/2.0.5/require-min.js"></script>
++<style>
++.section {
++	border: 1px solid #e0e0e0;
++}
++
++.scannedDocument td {
++	border-bottom: 1px dashed #dddddd;
++	background-color: #E8E6FC;
++}
++
++.page:hover {
++	cursor: move;
++}
++
++.pendingProcessesTree td {
++	padding: 3px !important;
++}
++
++.pendingProcessesTree i {
++	color: #A69A88;
++}
++
++.selected {
++	background-color: #dddddd;
++}
++
++.selected td {
++	background-color: #dddddd;
++}
++
++.highlighted td {
++	background-color: #E8E6FC;
++}
++
++.dragHelper {
++	font-size: 11px;
++	color: black;
++	background-color: white !important;
++}
++
++.normalLine {
++	margin-bottom: 2px;
++	padding-bottom: 3px;
++}
++
++.cutLine {
++	width: 100%;
++	padding-bottom: 2px;
++	border-bottom: 1px dashed #AAAAAA;
++	margin-bottom: 2px;
++	padding-bottom: 2px;
++}
++
++.pendingProcessesTree td {
++	padding: 0 !important;
++	margin: 0 !important;
++}
++
++.pendingProcessesTree td>div {
++	padding: 3px !important;
++}
++
++.cutLine:hover {
++	background-color: #dddddd;
++}
++</style>
++</head>
++<body>
++	<div id="docRendevous"
++		ng-controller="documentAssignmentPanelController">
++		<table class="layoutTable" style="width: 100%; height: 100%">
++			<tr valign="top">
++				<td>
++					<table class="layoutTable" style="width: 100%;">
++						<tr>
++							<td>
++								<div ng-include="'businessObjectSearchPanel.html'"></div>
++							</td>
++						</tr>
++						<tr valign="top">
++							<td>
++								<table style="width: 100%;">
++									<tr valign="top">
++
++
++										<td style="width: 50%;">
++											<table class="toolbar" style="width: 100%;">
++												<tr>
++													<td><table class="formTable">
++															<tr>
++																<td><a href="#" class="iconLink"
++																	ng-click="rotatePage()"><i
++																		class="fa fa-rotate-right"></i></a></td>
++																<td><input type="number" style="text-align: right;"
++																	ng-model="zoomFactor"></input> <label>%</label></td>
++																<td><a href="#" class="iconLink"
++																	ng-click="zoomInPage()"><i
++																		class="fa fa-plus-circle"></i></a></td>
++																<td><a href="#" class="iconLink"
++																	ng-click="zoomOutPage()"><i
++																		class="fa fa-minus-circle"></i></a></td>
++																<td><a href="#" class="iconLink"
++																	ng-click="invertPage()"><i
++																		class="fa fa-star-half-o"></i></a></td>
++															</tr>
++														</table></td>
++												</tr>
++											</table>
++											<div class="section"
++												style="height: 400px; overflow: auto; margin-top: 10px; margin-bottom: 10px; max-width: 800px;">
++												<img id="pageImage" src={{selectedPage.url}}
++													ng-show="selectedPage != null" />
++											</div>
++										</td>
++										<td style="width: 50%; padding-left: 10px !important;">
++											<h2>Pending Processes and Activities</h2>
++											<div class="section"
++												style="min-height: 20px; max-height: 250px; overflow: auto; margin-top: 10px; margin-bottom: 10px;">
++												<table cellpadding="0" cellspacing="0"
++													class="pendingProcessesTree">
++													<tr ng-repeat="treeItem in pendingProcessesTree"
++														id="pendingProcessesTreeRow{{$index}}"
++														class="{{getTreeItemClass(treeItem)}}">
++														<td>
++															<div ng-show="treeItem.pendingProcess">
++																<i class="fa fa-gears"></i>
++															</div>
++															<div style="margin-left: 10px;"
++																ng-show="treeItem.pendingProcess.descriptors.length > 0">
++																<i class="fa fa-tag"></i>
++															</div>
++															<div ng-show="treeItem.pendingActivityInstance"
++																style="margin-left: 10px;">
++																<i class="fa fa-gear"></i>
++															</div>
++															<div ng-show="treeItem.specificDocument"
++																style="margin-left: 10px;">
++																<span ng-hide="treeItem.specificDocument.url"><i
++																	class="fa fa-file-o"></i></span> <span
++																	ng-show="treeItem.specificDocument.url"><i
++																	class="fa fa-file"></i></span>
++															</div>
++															<div ng-show="treeItem.processAttachments != null"
++																style="margin-left: 10px;">
++																<i class="fa fa-folder-o"></i>
++															</div>
++															<div ng-show="treeItem.processAttachment"
++																style="margin-left: 20px;">
++																<i class="fa fa-file"></i>
++															</div>
++														</td>
++														<td><div ng-show="treeItem.pendingProcess">{{treeItem.pendingProcess.processDefinition.name}}
++																(#{{treeItem.pendingProcess.oid}})
++																{{$parent.formatTimestamp(treeItem.pendingProcess.start)}}</div>
++															<div
++																ng-show="treeItem.pendingProcess.descriptors.length >0">
++																Descriptors- <span
++																	ng-repeat="item in treeItem.pendingProcess.descriptors">
++																	<span ng-if="item.value != ''">{{item.name}}:{{item.value}}</span>
++																	<span ng-if="!$last && item.value != ''">, </span>
++																</span>
++															</div>
++															<div ng-show="treeItem.pendingActivityInstance">{{treeItem.pendingActivityInstance.activity.name}}
++																(#{{treeItem.pendingActivityInstance.oid}})
++																{{$parent.formatTimestamp(treeItem.pendingActivityInstance.start)}}</div>
++															<div ng-show="treeItem.specificDocument">
++																{{treeItem.specificDocument.name}} <span
++																	ng-show="treeItem.specificDocument.url">({{$parent.formatTimestamp(treeItem.specificDocument.creationTimestamp)}})</span>
++															</div>
++															<div ng-show="treeItem.processAttachments">Process
++																Attachments</div>
++															<div ng-show="treeItem.processAttachment">{{treeItem.processAttachment.type}}
++																({{$parent.formatTimestamp(treeItem.processAttachment.creationTimestamp)}})</div>
++														</td>
++													</tr>
++												</table>
++											</div>
++											<h2>Startable Processes</h2>
++											<div class="section"
++												style="min-height: 20px; max-height: 150px; overflow: auto; margin-top: 10px; margin-bottom: 10px;">
++												<table cellpadding="0" cellspacing="0"
++													class="pendingProcessesTree">
++													<tr ng-class="{treeBranch:treeItem.startableProcess}"
++														ng-repeat="treeItem in startableProcessesTree"
++														id="startableProcessesTreeRow{{$index}}"
++														class="{{getTreeItemClass(treeItem)}}">
++														<td><div ng-show="treeItem.startableProcess">
++																<i class="fa fa-gears"></i>
++															</div>
++															<div ng-show="treeItem.specificDocument"
++																style="margin-left: 10px;">
++																<i class="fa fa-file-o"></i>
++															</div>
++															<div ng-show="treeItem.processAttachments.length >=0"
++																style="margin-left: 10px;">
++																<i class="fa fa-folder-o"></i>
++															</div></td>
++														<td>
++															<div ng-show="treeItem.startableProcess">{{treeItem.startableProcess.name}}</div>
++															<div ng-show="treeItem.specificDocument">
++																{{treeItem.specificDocument.name}}</div>
++
++															<div ng-show="treeItem.processAttachments.length >=0">Process
++																Attachments</div>
++															<div ng-show="treeItem.processAttachment"
++																xstyle="margin-left: 10px;">
++																<i class="fa fa-file"></i>
++																{{treeItem.processAttachment.type}}
++																{{treeItem.processAttachment.name}}
++																({{$parent.formatTimestamp(treeItem.processAttachment.creationTimestamp)}})
++															</div>
++
++
++														</td>
++														<td
++															ng-if="treeItem.startableProcess && selectedBusinessObjects.length >0 && treeItem.startableProcess.processAttachments.length > 0">
++															<a class="iconLink" href="#"><i
++																ng-click="startProcess(treeItem,selectedBusinessObjects)"
++																class="fa fa-rocket"></i></a>
++														</td>
++													</tr>
++												</table>
++											</div>
++										</td>
++									</tr>
++								</table>
++							</td>
++						</tr>
++					</table>
++				</td>
++				<td style="width: 200px;">
++					<table class="toolbar" style="width: 100%;">
++						<tr>
++							<td><table class="formTable">
++									<tr>
++										<td><a href="#" class="iconLink" ng-click="mode = 'cut'"
++											ng-show="mode == 'normal'"><i class="fa fa-cut"></i></a><a
++											href="#" class="iconLink" ng-click="mode = 'normal'"
++											ng-show="mode == 'cut'"><i class="fa fa-reply"></i></a></td>
++									</tr>
++								</table></td>
++						</tr>
++					</table>
++					<div class="section"
++						style="width: 100%; height: 500px; overflow: auto; margin: 10px;">
++						<table cellpadding="0" cellspacing="0" style="width: 100%;">
++							<tr ng-repeat="document in scannedDocuments"
++								id="scannedDocumentDivision{{$index}}" class="scannedDocument">
++								<td>
++									<table class="formTable">
++										<tr>
++											<td><span style="font-size: 9px;">{{document.name}}
++													{{$parent.formatTimestamp(document.creationTimestamp)}}
++													{{document.contentType}}</span></td>
++										</tr>
++										<tr>
++											<td ng-if="0"><select ng-model="document.type"><option>Select
++														Document Type ...</option>
++													<option value="Birth Certificate">Birth
++														Certificate</option></select></td>
++										</tr>
++									</table>
++									<div ng-repeat="page in document.pages" class="page">
++										<table class="{{$parent.$parent.selectionClass(page)}}">
++											<tr>
++												<td align="right">{{page.number}}</td>
++												<td><a
++													ng-click="$parent.$parent.selectPage(page,document.url + $index)">
++														<img src="{{document.url + $index}}" width="40%" />
++												</a></td>
++											</tr>
++										</table>
++										<div class="normalLine" ng-show="mode == 'normal'"></div>
++										<div class="cutLine" ng-show="mode == 'cut'"></div>
++									</div>
++									<div style="height: 5px; background-color: white;"></div>
++								</td>
++							</tr>
++						</table>
++					</div>
++				</td>
++			</tr>
++		</table>
++		<div sd-dialog="startProcessDialog" style="visibility: hidden;">
++			<table cellpadding="0" cellspacing="0"
++				style="width: 100%; margin-top: 10px;">
++				<tr>
++					<td>The process <strong>{{startProcessDialog.startableProcess.name}}</strong>
++						was started with the selected document.
++					</td>
++				</tr>
++			</table>
++			<table cellpadding="0" cellspacing="0"
++				style="width: 100%; margin-top: 10px;">
++				<tr>
++					<td align="center">
++						<table cellpadding="0" cellspacing="0">
++							<tr>
++								<td><input type="button" class="button" value="Close"
++									ng-click="closeStartProcessDialog()" /></td>
++							</tr>
++						</table>
++					</td>
++				</tr>
++			</table>
++		</div>
++	</div>
++</body>
++</html>
+\ No newline at end of file
+diff --git a/stardust-business-object-management/src/main/resources/META-INF/webapp/businessObjectSearchPanel.html b/stardust-business-object-management/src/main/resources/META-INF/webapp/businessObjectSearchPanel.html
+new file mode 100644
+index 0000000..c7c391c
+--- /dev/null
++++ b/stardust-business-object-management/src/main/resources/META-INF/webapp/businessObjectSearchPanel.html
+@@ -0,0 +1,50 @@
++<div class="section" style="margin-bottom: 10px; padding: 10px;">
++	<table class="formTable">
++		<tr>
++			<td><label>Business Object</label></td>
++			<td><select
++				ng-model="businessObjectManagementPanelController.businessObject"
++				ng-options="businessObject as businessObject.label for businessObject in businessObjectManagementPanelController.businessObjects"
++				ng-change="businessObjectManagementPanelController.onBusinessObjectChanged()"><option
++						value="">Select ...</select></td>
++		</tr>
++	</table>
++	<div
++		ng-show="businessObjectManagementPanelController.businessObject != null"
++		style="margin-top: 10px;">
++		<table class="formTable">
++			<tr>
++				<td><label>{{primaryKeyField.name}}</label> <input type="text"
++					style="width: 100px; margin-left: 5px;"
++					ng-model="businessObjectManagementPanelController.primaryKeyField.filterValue"
++					ng-blur="businessObjectManagementPanelController.filterBusinessObjectInstances()"></input></td>
++				<td
++					ng-repeat="field in businessObjectManagementPanelController.keyFields"><label
++					style="margin-left: 5px;">{{field.name}}</label> <input type="text"
++					style="width: 100px; margin-left: 5px;"
++					ng-model="field.filterValue"
++					ng-blur="businessObjectManagementPanelController.filterBusinessObjectInstances()"></input></td>
++			</tr>
++		</table>
++		<div class="dataTableFrame"
++			style="margin-top: 20px; margin-bottom: 20px;">
++			<table cellpadding="0" cellspacing="0" class="dataTable"
++				style="width: 100%;">
++				<thead>
++					<tr>
++						<th ng-repeat="field in businessObjectManagementPanelController.topLevelFields">{{field.name}}</th>
++					</tr>
++				</thead>
++				<tbody>
++					<tr
++						sd-table-data="businessObjectInstance in businessObjectManagementPanelController.businessObjectInstances"
++						sd-table-selection="businessObjectManagementPanelController.selectedBusinessObjectInstances"
++						sd-table-selection-changed="onBusinessObjectInstanceSelectionChange()">
++						<td
++							ng-repeat="field in businessObjectManagementPanelController.topLevelFields">{{businessObjectInstance[field.id]}}</td>
++					</tr>
++				</tbody>
++			</table>
++		</div>
++	</div>
++</div>
+\ No newline at end of file
+diff --git a/stardust-business-object-management/src/main/resources/META-INF/webapp/js/BusinessObjectManagementPanelController.js b/stardust-business-object-management/src/main/resources/META-INF/webapp/js/BusinessObjectManagementPanelController.js
+new file mode 100644
+index 0000000..7de8002
+--- /dev/null
++++ b/stardust-business-object-management/src/main/resources/META-INF/webapp/js/BusinessObjectManagementPanelController.js
+@@ -0,0 +1,142 @@
++/*******************************************************************************
++ * Copyright (c) 2014 SunGard CSA LLC. All rights reserved.
++ ******************************************************************************/
++
++define(
++		[ "document-triage/js/Utils",
++				"business-object-management/js/BusinessObjectManagementService" ],
++		function(Utils, BusinessObjectManagementService) {
++			return {
++				create : function() {
++					var controller = new BusinessObjectManagementPanelController();
++
++					return controller;
++				}
++			};
++
++			/**
++			 * 
++			 */
++			function BusinessObjectManagementPanelController() {
++				/**
++				 * 
++				 */
++				BusinessObjectManagementPanelController.prototype.initialize = function(
++						rootController) {
++					this.rootController = rootController;
++					this.businessObjectFilter = {};
++					this.selectedBusinessObjectInstances = [];
++
++					var deferred = jQuery.Deferred();
++					var rootUrl = location.href.substring(0, location.href
++							.indexOf("/plugins"));
++					var self = this;
++
++					BusinessObjectManagementService
++							.instance()
++							.getBusinessObjects()
++							.done(
++									function(businessObjectModels) {
++										self.businessObjectModels = businessObjectModels;
++
++										self.refreshBusinessObjects();
++										deferred.resolve();
++									}).fail(function() {
++								deferred.reject();
++							});
++
++					return deferred.promise();
++
++				};
++
++				/**
++				 * 
++				 */
++				BusinessObjectManagementPanelController.prototype.refreshBusinessObjects = function() {
++					this.businessObjects = [];
++
++					for (var n = 0; n < this.businessObjectModels.length; ++n) {
++						for (var m = 0; m < this.businessObjectModels[n].businessObjects.length; ++m) {
++							this.businessObjects
++									.push({
++										label : this.businessObjectModels[n].name
++												+ "/"
++												+ this.businessObjectModels[n].businessObjects[m].name,
++										model : this.businessObjectModels[n],
++										businessObject : this.businessObjectModels[n].businessObjects[m]
++									});
++						}
++					}
++				};
++
++				/**
++				 * 
++				 */
++				BusinessObjectManagementPanelController.prototype.onBusinessObjectChanged = function() {
++					this.businessObjectInstances = [];
++					this.keyFields = [];
++					this.topLevelFields = [];
++
++					if (!this.businessObject) {
++						return;
++					}
++
++					for (var n = 0; n < this.businessObject.businessObject.fields.length; ++n) {
++						if (this.businessObject.businessObject.fields[n].primaryKey) {
++							this.primaryKeyField = this.businessObject.businessObject.fields[n];
++						} else if (this.businessObject.businessObject.fields[n].key) {
++							this.keyFields
++									.push(this.businessObject.businessObject.fields[n]);
++						}
++
++						this.topLevelFields
++								.push(this.businessObject.businessObject.fields[n]);
++					}
++				};
++
++				/**
++				 * 
++				 */
++				BusinessObjectManagementPanelController.prototype.filterBusinessObjectInstances = function() {
++					var self = this;
++
++					BusinessObjectManagementService
++							.instance()
++							.getBusinessObjectInstances(
++									this.businessObject.modelOid,
++									this.businessObject.businessObject.id,
++									this.primaryKeyField, this.keyFields)
++							.done(
++									function(businessObjectInstances) {
++										self.businessObjectInstances = businessObjectInstances;
++
++										self.rootController.safeApply();
++									}).fail();
++				};
++
++				/**
++				 * 
++				 */
++				BusinessObjectManagementPanelController.prototype.onBusinessObjectInstanceSelectionChange = function() {
++					// var self = this;
++					//
++					// jQuery("*").css("cursor", "wait");
++					//
++					// DocumentAssignmentService.instance().getPendingProcesses()
++					// .done(function(pendingProcesses) {
++					// self.pendingProcesses = pendingProcesses;
++					//
++					// self.refreshPendingProcessesTree();
++					// self.safeApply();
++					//
++					// jQuery("*").css("cursor", "default");
++					//
++					// window.setTimeout(function() {
++					// self.bindDragAndDrop();
++					// }, 1000);
++					// }).fail(function() {
++					// jQuery("*").css("cursor", "default");
++					// });
++				};
++			}
++		});
+diff --git a/stardust-business-object-management/src/main/resources/META-INF/webapp/js/BusinessObjectManagementService.js b/stardust-business-object-management/src/main/resources/META-INF/webapp/js/BusinessObjectManagementService.js
+new file mode 100644
+index 0000000..276ffde
+--- /dev/null
++++ b/stardust-business-object-management/src/main/resources/META-INF/webapp/js/BusinessObjectManagementService.js
+@@ -0,0 +1,114 @@
++/*******************************************************************************
++ * Copyright (c) 2014 SunGard CSA LLC. All rights reserved.
++ ******************************************************************************/
++
++define(
++		[ "document-triage/js/Utils" ],
++		function(Utils) {
++			return {
++				instance : function() {
++
++					if (!document.BusinessObjectManagementService) {
++						document.BusinessObjectManagementService = new BusinessObjectManagementService();
++					}
++
++					return document.BusinessObjectManagementService;
++				}
++			};
++
++			/**
++			 * 
++			 */
++			function BusinessObjectManagementService() {
++
++				/**
++				 * 
++				 */
++				BusinessObjectManagementService.prototype.initialize = function() {
++				};
++
++				/**
++				 * 
++				 */
++				BusinessObjectManagementService.prototype.getBusinessObjects = function() {
++					var deferred = jQuery.Deferred();
++					var rootUrl = location.href.substring(0, location.href
++							.indexOf("/plugins"));
++					var self = this;
++
++					jQuery
++							.ajax(
++									{
++										url : rootUrl
++												+ "/services/rest/business-object-management/businessObject.json",
++										type : "GET",
++										contentType : "application/json"
++									}).done(function(result) {
++								console.log("=======> Models");
++								console.log(result.models);
++
++								deferred.resolve(result.models);
++							}).fail(function(data) {
++								deferred.reject(data);
++							});
++
++					return deferred.promise();
++				};
++
++				/**
++				 * 
++				 */
++				BusinessObjectManagementService.prototype.getBusinessObjectInstances = function(
++						modelOid, businessObjectId, primaryKeyField, keyFields) {
++					var queryString = "?";
++
++					if (primaryKeyField && primaryKeyField.filterValue) {
++						queryString += primaryKeyField.id;
++						queryString += "=";
++						queryString += primaryKeyField.filterValue;
++						queryString += "&";
++					}
++
++					if (keyFields) {
++						for (var n = 0; n < keyFields.length; ++n) {
++							if (keyFields[n].filterValue) {
++								queryString += keyFields[n].id;
++								queryString += "=";
++								queryString += keyFields[n].filterValue;
++								queryString += "&";
++
++							}
++						}
++					}
++
++					console.log("Filter String");
++					console.log(queryString);
++
++					var deferred = jQuery.Deferred();
++					var rootUrl = location.href.substring(0, location.href
++							.indexOf("/plugins"));
++					var self = this;
++
++					jQuery
++							.ajax(
++									{
++										url : rootUrl
++												+ "/services/rest/business-object-management/businessObject/"
++												+ modelOid + "/"
++												+ businessObjectId
++												+ "/instances.json",
++										type : "GET",
++										contentType : "application/json"
++									})
++							.done(
++									function(result) {
++										deferred
++												.resolve(result.businessObjectInstances);
++									}).fail(function(data) {
++								deferred.reject(data);
++							});
++
++					return deferred.promise();
++				};
++			}
++		});
+-- 
+1.9.4.msysgit.0
+

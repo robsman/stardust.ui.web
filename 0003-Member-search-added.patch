@@ -1,0 +1,115 @@
+From 2c4c4f5892a59d5510417b2156ad8b9d3de054d4 Mon Sep 17 00:00:00 2001
+From: "Gille, Marc" <Marc.Gille@sungard.com>
+Date: Sat, 19 Jul 2014 19:08:20 -0400
+Subject: [PATCH 3/6] Member search added.
+
+---
+ .../resources/META-INF/webapp/indexingPanel.html   | 43 ++++++++++++++++++++--
+ .../META-INF/webapp/js/IndexingPanelController.js  | 18 +++------
+ 2 files changed, 44 insertions(+), 17 deletions(-)
+
+diff --git a/liberty-indexing/src/main/resources/META-INF/webapp/indexingPanel.html b/liberty-indexing/src/main/resources/META-INF/webapp/indexingPanel.html
+index 017602a..d2b63bf 100644
+--- a/liberty-indexing/src/main/resources/META-INF/webapp/indexingPanel.html
++++ b/liberty-indexing/src/main/resources/META-INF/webapp/indexingPanel.html
+@@ -3,10 +3,12 @@
+ <link
+ 	href='http://fonts.googleapis.com/css?family=Lato:400,700,300italic,400italic'
+ 	rel='stylesheet' type='text/css'>
+-<link href="../document-triage/css/font-awesome-4.1.0/css/font-awesome.css"
++<link
++	href="../document-triage/css/font-awesome-4.1.0/css/font-awesome.css"
+ 	rel="stylesheet">
+ <link href='../document-triage/css/stardust-modern.css' rel='stylesheet' />
+-<link href='../document-triage/css/thirdparty/jquery/jquery-ui-1.10.2.custom.min.css'
++<link
++	href='../document-triage/css/thirdparty/jquery/jquery-ui-1.10.2.custom.min.css'
+ 	rel='stylesheet' />
+ <script data-main="./js/IndexingPanelMain"
+ 	src="./js/libs/require/2.0.5/require-min.js"></script>
+@@ -85,14 +87,47 @@
+ 					<table class="layoutTable" style="width: 100%;">
+ 						<tr>
+ 							<td>
++								<div class="section" style="margin-bottom: 10px; padding: 10px;">
++									<table class="formTable">
++										<tr>
++											<td><label>Member Id</label> <input type="text"
++												style="width: 100px; margin-left: 5px;" ng-model="memberId"
++												ng-blur="filterMembers()"></input></td>
++										</tr>
++									</table>
++									<div class="dataTableFrame"
++										style="margin-top: 20px; margin-bottom: 20px;">
++										<table cellpadding="0" cellspacing="0" class="dataTable"
++											style="width: 100%;">
++											<thead>
++												<tr>
++													<th>Member ID</th>
++													<th>First Name</th>
++													<th>Last Name</th>
++													<th>Scheme</th>
++													<th>Scheme Name</th>
++													<th>National ID</th>
++												</tr>
++											</thead>
++											<tbody>
++												<tr sd-table-data="member in members">
++													<td>{{member.id}}</td>
++													<td>{{member.firstName}}</td>
++													<td>{{member.lastName}}</td>
++													<td>{{member.scheme}}</td>
++													<td>{{member.schemeName}}</td>
++													<td>{{member.nationalId}}</td>
++												</tr>
++											</tbody>
++										</table>
++									</div>
++								</div>
+ 							</td>
+ 						</tr>
+ 						<tr valign="top">
+ 							<td>
+ 								<table style="width: 100%;">
+ 									<tr valign="top">
+-
+-
+ 										<td style="width: 50%;">
+ 											<table class="toolbar" style="width: 100%;">
+ 												<tr>
+diff --git a/liberty-indexing/src/main/resources/META-INF/webapp/js/IndexingPanelController.js b/liberty-indexing/src/main/resources/META-INF/webapp/js/IndexingPanelController.js
+index 5c9ae43..0f195ed 100644
+--- a/liberty-indexing/src/main/resources/META-INF/webapp/js/IndexingPanelController.js
++++ b/liberty-indexing/src/main/resources/META-INF/webapp/js/IndexingPanelController.js
+@@ -133,23 +133,15 @@ define(
+ 				/**
+ 				 * 
+ 				 */
+-				IndexingPanelController.prototype.filterBusinessObjectInstances = function() {
++				IndexingPanelController.prototype.filterMembers = function() {
+ 					var self = this;
+ 
+-					DocumentAssignmentService
++					ndexingService
+ 							.instance()
+-							.getBusinessObjectInstances(
+-									this.businessObject.modelOid,
+-									this.businessObject.businessObject.id,
+-									this.primaryKeyField, this.keyFields)
++							.getMembers(this.memberId, this.firstName, this.lastName)
+ 							.done(
+-									function(businessObjectInstances) {
+-										self.businessObjectInstances = businessObjectInstances;
+-
+-										console.log("Instances here");
+-										console
+-												.log(self.businessObjectInstances);
+-
++									function(members) {
++										self.members = members;
+ 										self.safeApply();
+ 									}).fail();
+ 				};
+-- 
+1.9.4.msysgit.0
+
