@@ -453,7 +453,7 @@ define(
 				}
 
 				DocumentAssignmentPanelController.prototype.startProcess = function(treeItem, busObj) {
-					debugger;
+					
 					var that = this,
 						data={
 							processDefinitionId:treeItem.startableProcess.id,
@@ -464,12 +464,14 @@ define(
 						i;
 					
 					for(i=0;i<treeItem.startableProcess.specificDocuments.length;i++){
-						data.specificDocuments.push({
-								"dataPathId" : treeItem.startableProcess.specificDocuments[i].id,
-								"document" : treeItem.startableProcess.specificDocuments[i].scannedDocument
-							});
+						if(treeItem.startableProcess.specificDocuments[i].scannedDocument){
+							data.specificDocuments.push({
+									"dataPathId" : treeItem.startableProcess.specificDocuments[i].id,
+									"document" : treeItem.startableProcess.specificDocuments[i].scannedDocument
+								});
+						}
 					}
-					
+					debugger;
 					DocumentAssignmentService.instance().startProcess(data)
 							.done(
 									function(result) {

@@ -286,8 +286,7 @@ define(
 				/**
 				 * 
 				 */
-				DocumentAssignmentService.prototype.startProcess = function(
-						data) {
+				DocumentAssignmentService.prototype.startProcess = function(data) {
 					var deferred = jQuery.Deferred();
 					var rootUrl = location.href.substring(0, location.href
 							.indexOf("/plugins"));

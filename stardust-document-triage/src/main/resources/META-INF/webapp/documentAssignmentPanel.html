@@ -15,6 +15,17 @@
 	border: 1px solid #e0e0e0;
 }
 
+.sectionTitle{
+	font-weight: 400;
+	font-size: 14px;
+	color: #A69A88;
+	text-transform: uppercase;
+}
+
+.sectionTitle > label{
+	float:right;
+}
+
 .scannedDocument td {
 	border-bottom: 1px dashed #dddddd;
 	background-color: #E8E6FC;
@@ -63,6 +74,7 @@
 
 .verticalMenu > i{
 	display:block;
+	cursor:pointer;
 }
 
 .verticalMenu > i:last-child{
@@ -180,8 +192,16 @@
 											</div>
 										</td>
 										<td style="width: 50%; padding-left: 10px !important;">
-											<h2>Pending Processes and Activities</h2>
-											<input type="checkbox"><span>Include Completed Processes & Activities</span>
+											<div>
+												<span class="sectionTitle">
+													Pending Processes and Activities
+												</span>
+												<label style="float:right">
+													<input type="checkbox" name="showCompleted" value="value" />
+													Show Completed
+												</label>
+											</div>
+											
 											<div class="section"
 												style="min-height: 20px; max-height: 250px; overflow: auto; margin-top: 10px; margin-bottom: 10px;">
 												<table cellpadding="0" cellspacing="0"
