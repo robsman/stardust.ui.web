@@ -164,11 +164,13 @@
 																(#{{treeItem.pendingProcess.oid}})
 																{{$parent.formatTimestamp(treeItem.pendingProcess.start)}}</div>
 															<div
-																ng-show="treeItem.pendingProcess.descriptors.length >0">
-																Descriptors- <span
+																ng-show="treeItem.pendingProcess.descriptors.length > 0">
+																<span
 																	ng-repeat="item in treeItem.pendingProcess.descriptors">
-																	<span ng-if="item.value != ''">{{item.name}}:{{item.value}}</span>
-																	<span ng-if="!$last && item.value != ''">, </span>
+																	<span ng-show="item.value != null && item.value.length">{{item.name}}:
+																		{{item.value}}</span><span
+																	ng-hide="$last || item.value == null || !item.value.length">,
+																</span>
 																</span>
 															</div>
 															<div ng-show="treeItem.pendingActivityInstance">{{treeItem.pendingActivityInstance.activity.name}}
@@ -184,12 +186,10 @@
 																{{treeItem.processAttachment.type}}
 																{{treeItem.processAttachment.name}}
 																({{$parent.formatTimestamp(treeItem.processAttachment.creationTimestamp)}})
-																<select ng-select 
-																        ng-model="treeItem.selectedDocType"
-																        ng-options="item for item in documentTypes">
+																<select ng-select ng-model="treeItem.selectedDocType"
+																	ng-options="item for item in documentTypes">
 																</select>
-															</div>
-														</td>
+															</div></td>
 													</tr>
 												</table>
 											</div>
@@ -207,8 +207,10 @@
 															</div>
 															<div ng-show="treeItem.specificDocument"
 																style="margin-left: 10px;">
-																<i ng-hide="treeItem.specificDocument.url" class="fa fa-file-o"></i>
-																<i ng-show="treeItem.specificDocument.url" class="fa fa-file"></i>
+																<i ng-hide="treeItem.specificDocument.url"
+																	class="fa fa-file-o"></i> <i
+																	ng-show="treeItem.specificDocument.url"
+																	class="fa fa-file"></i>
 															</div>
 															<div ng-show="treeItem.processAttachments.length >=0"
 																style="margin-left: 10px;">
@@ -217,8 +219,8 @@
 														<td>
 															<div ng-show="treeItem.startableProcess">{{treeItem.startableProcess.name}}</div>
 															<div ng-show="treeItem.specificDocument">
-																{{treeItem.specificDocument.name}}
-																<span ng-show="treeItem.specificDocument.url">({{$parent.formatTimestamp(treeItem.specificDocument.creationTimestamp)}})</span>
+																{{treeItem.specificDocument.name}} <span
+																	ng-show="treeItem.specificDocument.url">({{$parent.formatTimestamp(treeItem.specificDocument.creationTimestamp)}})</span>
 															</div>
 															<div ng-show="treeItem.processAttachments.length >=0">Process
 																Attachments</div>
@@ -227,20 +229,18 @@
 																{{treeItem.processAttachment.type}}
 																{{treeItem.processAttachment.name}}
 																({{$parent.formatTimestamp(treeItem.processAttachment.creationTimestamp)}})
-																<select ng-select 
-																        ng-model="treeItem.processDetails.selectedDocType"
-																        ng-options="item for item in documentTypes">
+																<select ng-select
+																	ng-model="treeItem.processDetails.selectedDocType"
+																	ng-options="item for item in documentTypes">
 																</select>
 															</div>
 
 
 														</td>
-														<td
-															ng-if="processCanStart(treeItem);">
-															<a class="iconLink" href="#"><i
+														<td ng-if="processCanStart(treeItem);"><a
+															class="iconLink" href="#"><i
 																ng-click="startProcess(treeItem,selectedBusinessObjectInstances[0])"
-																class="fa fa-rocket"></i></a>
-														</td>
+																class="fa fa-rocket"></i></a></td>
 													</tr>
 												</table>
 											</div>
