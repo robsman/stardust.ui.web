@@ -12,7 +12,6 @@ define(
 			return {
 				create : function() {
 					var controller = new DocumentAssignmentPanelController();
-
 					return controller;
 				}
 			};
@@ -33,7 +32,7 @@ define(
 					this.businessObjectFilter = {};
 					this.selectedBusinessObjectInstances = [];					
 					this.initializePageRendering();
-
+					this.documentTypes=[];
 					this.businessObjectManagementPanelController = BusinessObjectManagementPanelController
 							.create();
 
@@ -41,7 +40,9 @@ define(
 										
 					DocumentAssignmentService.instance().getDocumentTypes()
 					.done(function(docTypes){
-						self.documentTypes=docTypes;
+						debugger;
+						self.documentTypes.push({name:"None",documentTypeId:"",schemaLocation:""});
+						self.documentTypes=self.documentTypes.concat(docTypes);
 					});
 					
 					DocumentAssignmentService
@@ -85,7 +86,15 @@ define(
 														}).fail();
 									}).fail();
 				};
-
+				
+				DocumentAssignmentPanelController.prototype.setDocumentType = function(docType,proc){
+					DocumentAssignmentService.instance().setDocumentType(docType,proc)
+					.done(function(result){
+						
+					});
+					
+				}
+				
 				/**
 				 * 
 				 */
@@ -225,7 +234,8 @@ define(
 								specificDocumentRow
 										.data({
 											ui : specificDocumentRow,
-											specificDocument : this.pendingProcessesTree[n].specificDocument
+											specificDocument : this.pendingProcessesTree[n].specificDocument,
+											processOID : this.pendingProcessesTree[n].pendingProcessOID
 										});
 								specificDocumentRow
 										.droppable({
@@ -237,29 +247,31 @@ define(
 												var specificDocument = jQuery
 														.data(this,
 																"specificDocument");
+												
+												var processOID = jQuery.data(this,"processOID");
+												debugger;
+												DocumentAssignmentService.instance()
+												.addProcessDocument(processOID,scannedDocument,specificDocument.id)
+												.done(
+														function(pendingProcesses) {
+															
+															self.pendingProcesses = pendingProcesses;
+															self.refreshPendingProcessesTree();
+															self.safeApply();
 
-												DocumentAssignmentService
-														.instance()
-														.addProcessAttachment()
-														.done(
-																function() {
-																	specificDocument.url = "bla";
-																	specificDocument.creationTimestamp = scannedDocument.creationTimestamp;
-																	specificDocument.type = scannedDocument.type;
+															jQuery("*")
+																	.css(
+																			"cursor",
+																			"default");
 
-																	self
-																			.refreshPendingProcessesTree();
-																	self
-																			.safeApply();
-
-																	window
-																			.setTimeout(
-																					function() {
-																						self
-																								.bindDragAndDrop();
-																					},
-																					1000);
-																}).fail();
+															window
+																	.setTimeout(
+																			function() {
+																				self
+																						.bindDragAndDrop();
+																			},
+																			1000);
+														}).fail();
 											},
 											tolerance : "pointer"
 										});
@@ -270,8 +282,8 @@ define(
 										.data({
 											ui : processAttachmentsRow,
 											processAttachments : this.pendingProcessesTree[n].processAttachments,
-											processDetails : this.pendingProcessesTree[n]
-											
+											processDetails : this.pendingProcessesTree[n],
+											processOID : this.pendingProcessesTree[n].pendingProcessOID
 										});
 								processAttachmentsRow
 										.droppable({
@@ -281,27 +293,20 @@ define(
 												var scannedDocument = jQuery.data(ui.draggable[0],"scannedDocument");
 												var processAttachments = jQuery.data(this,"processAttachments");
 												var processDetails = jQuery.data(this,"processDetails");
-
+												var processOID = jQuery.data(this,"processOID");
+												
 												jQuery("*").css("cursor",
 														"wait");
-												
+												debugger;
 												DocumentAssignmentService
 														.instance()
-														.addProcessAttachment()
+														.addProcessDocument(processOID,scannedDocument,"PROCESS_ATTACHMENTS")
 														.done(
-																function() {
-																	processAttachments
-																			.push(scannedDocument);
-
-																	console
-																			.log("Extended Process Attachments");
-																	console
-																			.log(processAttachments);
-
-																	self
-																			.refreshPendingProcessesTree();
-																	self
-																			.safeApply();
+																function(pendingProcesses) {
+																	
+																	self.pendingProcesses = pendingProcesses;
+																	self.refreshPendingProcessesTree();
+																	self.safeApply();
 
 																	jQuery("*")
 																			.css(
@@ -353,7 +358,7 @@ define(
 											
 											DocumentAssignmentService
 											.instance()
-											.addProcessAttachment()
+											.addProcessDocument()
 											.done(
 													function() {
 														specificDocument.url = "bla";
@@ -461,7 +466,7 @@ define(
 											
 											DocumentAssignmentService
 													.instance()
-													.addProcessAttachment()
+													.addProcessDocument()
 													.done(
 															function() {
 																processAttachments
@@ -689,13 +694,15 @@ define(
 						for (m = 0; m < this.pendingProcesses[n].specificDocuments.length; ++m) {
 							this.pendingProcessesTree
 									.push({
-										specificDocument : this.pendingProcesses[n].specificDocuments[m]
+										specificDocument : this.pendingProcesses[n].specificDocuments[m],
+										pendingProcessOID : this.pendingProcesses[n].oid
 									});
 						}
 
 						this.pendingProcessesTree
 								.push({
-									processAttachments : this.pendingProcesses[n].processAttachments
+									processAttachments : this.pendingProcesses[n].processAttachments,
+									pendingProcessOID : this.pendingProcesses[n].oid
 								});
 
 						for (m = 0; m < this.pendingProcesses[n].processAttachments.length; ++m) {

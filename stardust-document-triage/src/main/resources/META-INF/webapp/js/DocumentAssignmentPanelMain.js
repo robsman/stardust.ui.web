@@ -13,7 +13,7 @@ require
 					require : "jquery",
 					exports : "angular"
 				},
-				'jquery.dataTables' : [ 'jquery' ],
+				'jquery.dataTables' : [ 'jquery' ]
 			}
 		});
 

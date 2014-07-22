@@ -99,12 +99,46 @@ define(
 					return deferred.promise();
 				};
 				
+				DocumentAssignmentService.prototype.setDocumentType = function(docType,proc){
+					debugger;
+					var deferred = jQuery.Deferred();
+					var rootUrl = location.href.substring(0, location.href
+							.indexOf("/plugins"));
+					
+					jQuery.ajax(
+							{
+								url : rootUrl
+										+ "/services/rest/document-triage/documents/"+ proc.processAttachment.uuid +"/document-type",
+								type : "PUT",
+								data: JSON.stringify(docType),
+								contentType : "application/json"
+							}).fail(function(err){
+								debugger;
+								deferred.reject(err);
+							}).done(function(data){
+								debugger;
+								deferred.resolve(data);
+							});
+					
+					return deferred.promise();
+					
+				};
 				
 				DocumentAssignmentService.prototype.getDocumentTypes = function(){
 					var deferred = jQuery.Deferred();
 					var rootUrl = location.href.substring(0, location.href
 							.indexOf("/plugins"));
-					deferred.resolve(["None","Pay Slip","Disability Certificate","Police Report"]);
+					
+					jQuery.ajax(
+							{
+								url : rootUrl
+										+ "/services/rest/document-triage/document-types.json",
+								type : "GET",
+								contentType : "application/json"
+							}).done(function(data){
+								deferred.resolve(data);
+							});
+					
 					return deferred.promise();
 				};
 				
@@ -248,7 +282,7 @@ define(
 
 					return deferred.promise();
 				};
-
+				
 				/**
 				 * 
 				 */
@@ -279,10 +313,38 @@ define(
 				/**
 				 * 
 				 */
-				DocumentAssignmentService.prototype.addProcessAttachment = function() {
+				DocumentAssignmentService.prototype.addProcessDocument = function(processOID,scannedDocument,dataPathId) {
+					var rootUrl = location.href.substring(0, location.href
+							.indexOf("/plugins"));
+					var self = this;
 					var deferred = jQuery.Deferred();
-
-					this.delayedResolve(deferred, null);
+					var data;
+					debugger;
+					/*
+					 * if datapathID == process_attachments
+					 * then data is []
+					 * else
+					 * data is {}
+					 * */
+					if(dataPathId=="PROCESS_ATTACHMENTS"){
+						data={"data" : [scannedDocument]};
+					}else{
+						data={"data" : scannedDocument};
+					}
+					jQuery.ajax(
+									{
+										"url" : rootUrl
+												+ "/services/rest/document-triage/processes/" + processOID + "/documents/" + dataPathId,
+										"type" : "POST",
+										"contentType" : "application/json",
+										"data" : JSON.stringify(data)
+									}).done(function(result) {
+								deferred.resolve(result.processInstances);
+							}).fail(function(data) {
+								deferred.reject(data);
+							});
+					
+					//this.delayedResolve(deferred, null);
 
 					return deferred.promise();
 				};

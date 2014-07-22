@@ -101,8 +101,9 @@ public class DocumentTriageResource {
    }
 
    @POST
+   @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
-   @Path("processes/{processInstanceOid: \\d+}/{dataPathId}")
+   @Path("processes/{processInstanceOid: \\d+}/documents/{dataPathId}")
    public Response addDocument(@PathParam("processInstanceOid") String processInstanceOid, @PathParam("dataPathId") String dataPathId, String postedData) {
       try {
          JsonObject json = jsonIo.readJsonObject(postedData);
@@ -118,6 +119,7 @@ public class DocumentTriageResource {
    }
 
    @PUT
+   @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("documents/{documentId}/document-type")
    public Response setDocumentType(@PathParam("documentId") String documentId, String postedData) {

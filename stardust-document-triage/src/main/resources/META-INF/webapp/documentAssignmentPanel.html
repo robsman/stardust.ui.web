@@ -242,8 +242,10 @@
 																{{treeItem.processAttachment.type}}
 																{{treeItem.processAttachment.name}}
 																({{$parent.formatTimestamp(treeItem.processAttachment.creationTimestamp)}})
-																<select ng-select ng-model="treeItem.selectedDocType"
-																	ng-options="item for item in documentTypes">
+																<select ng-select 
+																        ng-model="treeItem.selectedDocType"
+																        ng-change="setDocumentType(treeItem.selectedDocType,treeItem)"
+																	    ng-options="item.name for item in documentTypes">
 																</select>
 															</div></td>
 													</tr>
@@ -286,8 +288,9 @@
 																{{treeItem.processAttachment.name}}
 																({{$parent.formatTimestamp(treeItem.processAttachment.creationTimestamp)}})
 																<select ng-select
+																	ng-change="setDocumentType(treeItem.processDetails.selectedDocType,treeItem)"
 																	ng-model="treeItem.processDetails.selectedDocType"
-																	ng-options="item for item in documentTypes">
+																	ng-options="item.name for item in documentTypes">
 																</select>
 															</div>
 

@@ -251,47 +251,49 @@ public class DocumentTriageService {
 	 * @param path
 	 * @return
 	 */
-	private JsonArray getProcessAttachments(ProcessInstance processInstance) {
-		String path = DocumentMgmtUtility
-				.getProcessAttachmentsFolderPath(processInstance);
-		Folder processAttFolder = getOrCreateFolder(path);
+    private JsonArray getProcessAttachments(ProcessInstance processInstance) {
+        /*String path = DocumentMgmtUtility
+                    .getProcessAttachmentsFolderPath(processInstance);
+        Folder processAttFolder = getOrCreateFolder(path);
 
-		processAttFolder = getDocumentManagementService().getFolder(
-				processAttFolder.getId(), Folder.LOD_LIST_MEMBERS);
+        processAttFolder = getDocumentManagementService().getFolder(
+                    processAttFolder.getId(), Folder.LOD_LIST_MEMBERS);
 
-		JsonArray attachmentsJson = new JsonArray();
+        List<Document> documents = processAttFolder.getDocuments();*/
 
-		String MIMETYPE_PDF = "application/pdf", MIMETYPE_TIFF = "image/tiff";
-		for (Document attachment : (List<Document>) processAttFolder
-				.getDocuments()) {
-			JsonObject attachmentJson = new JsonObject();
+	JsonArray attachmentsJson = new JsonArray();
+     List<Document> documents = fetchProcessAttachments(processInstance);
 
-			attachmentsJson.add(attachmentJson);
+        String MIMETYPE_PDF = "application/pdf", MIMETYPE_TIFF = "image/tiff";
+        for (Document attachment : documents) {
+              JsonObject attachmentJson = new JsonObject();
 
-			attachmentJson.addProperty("name", attachment.getName());
-			attachmentJson.addProperty("creationTimestamp", attachment
-					.getDateCreated().getTime());
-			attachmentJson.addProperty("contentType",
-					attachment.getContentType());
-			attachmentJson.addProperty("path", attachment.getPath());
-			attachmentJson.addProperty("uuid", attachment.getId());
+              attachmentsJson.add(attachmentJson);
 
-			byte[] data = getDocumentManagementService()
-					.retrieveDocumentContent(attachment.getId());
-			if (MIMETYPE_PDF.equalsIgnoreCase(attachment.getContentType())) {
-				attachmentJson.addProperty("numPages",
-						PdfPageCapture.getNumPages(data));
-			} else if (MIMETYPE_TIFF.equalsIgnoreCase(attachment
-					.getContentType())) {
-				attachmentJson.addProperty("numPages",
-						TiffReader.getNumPages(data));
-			} else { // Any other type, except PDF or TIFF
-				attachmentJson.addProperty("numPages", 0);
-			}
-		}
+              attachmentJson.addProperty("name", attachment.getName());
+              attachmentJson.addProperty("creationTimestamp", attachment
+                          .getDateCreated().getTime());
+              attachmentJson.addProperty("contentType",
+                          attachment.getContentType());
+              attachmentJson.addProperty("path", attachment.getPath());
+              attachmentJson.addProperty("uuid", attachment.getId());
 
-		return attachmentsJson;
-	}
+              byte[] data = getDocumentManagementService()
+                          .retrieveDocumentContent(attachment.getId());
+              if (MIMETYPE_PDF.equalsIgnoreCase(attachment.getContentType())) {
+                    attachmentJson.addProperty("numPages",
+                                PdfPageCapture.getNumPages(data));
+              } else if (MIMETYPE_TIFF.equalsIgnoreCase(attachment
+                          .getContentType())) {
+                    attachmentJson.addProperty("numPages",
+                                TiffReader.getNumPages(data));
+              } else { // Any other type, except PDF or TIFF
+                    attachmentJson.addProperty("numPages", 0);
+              }
+        }
+
+        return attachmentsJson;
+  }
 
 	/**
 	 * TODO Reuse!!!
@@ -546,25 +548,23 @@ public class DocumentTriageService {
 		return processAttachments;
 	}
 	
-	public JsonObject getDocumentTypes() {
+	public JsonArray getDocumentTypes() {
 	   
-	   JsonObject resultJson = new JsonObject();
       JsonArray documentTypesJson = new JsonArray();
-
-      resultJson.add("documentTypes", documentTypesJson);	   
+       
 	   List<DocumentType> activeDocumentTypes = getActiveDocumentTypes();
 	   for (DocumentType documentType : activeDocumentTypes)
       {
          JsonObject documentTypeJson = new JsonObject();
          documentTypeJson.addProperty("documentTypeId", documentType.getDocumentTypeId());
-         documentTypeJson.addProperty("name", documentType.getDocumentTypeId());
+         documentTypeJson.addProperty("name", documentType.getDocumentTypeId().substring(documentType.getDocumentTypeId().lastIndexOf('}') + 1));
          // TODO: Get "name" using name = model.getTypeDeclaration(documentType).getName();
          documentTypeJson.addProperty("schemaLocation", documentType.getSchemaLocation());
          
          documentTypesJson.add(documentTypeJson);
       }
 	   
-	   return resultJson;
+	   return documentTypesJson;
 	}
 	
 	public JsonObject setDocumentType(String documentId, JsonObject json) {
@@ -602,13 +602,13 @@ public class DocumentTriageService {
       JsonObject resultJson = new JsonObject();
       
       if (CommonProperties.PROCESS_ATTACHMENTS.equals(dataPathId)) {
-         JsonArray processAttachments = json.getAsJsonArray();
+         JsonArray processAttachments = json.get("data").getAsJsonArray();
          addProcessAttachments(processInstanceOid, processAttachments);
       }
       else {
          // TODO: Currently assume that it is always a Document (and not a DocumentList)
          
-         String sourceDocumentId = json.get("uuid").getAsString();
+         String sourceDocumentId = json.get("data").getAsJsonObject().get("uuid").getAsString();
          Document document = getDocumentManagementService().getDocument(sourceDocumentId);
 
          Map<String, Document> documentDataPathMap = new HashMap<String, Document>();
@@ -617,8 +617,7 @@ public class DocumentTriageService {
          addSpecificDocuments(processInstanceOid, documentDataPathMap);
       }
 	   
-	   
-      return resultJson; 
+      return getPendingProcesses(null); 
 	}
    
    private void addSpecificDocuments(long processInstanceOid, Map<String, Document> documentDataPathMap) {
@@ -657,12 +656,18 @@ public class DocumentTriageService {
    }
 
    private Document setDocumentType(String documentId, String documentTypeId, String schemaLocation) {
-      DocumentType documentType = new DocumentType(documentTypeId, schemaLocation);
-      Document document = getDocumentManagementService().getDocument(documentId);
-      document.setDocumentType(documentType);
-      
-      Document updatedDocument = getDocumentManagementService().updateDocument(document, false, "", "", false);
-      
-      return updatedDocument;
-   }
+	      DocumentType documentType = null;
+	      Document document = getDocumentManagementService().getDocument(documentId);
+
+	      if (documentTypeId != null && documentTypeId.length() > 0) {
+	         documentType = new DocumentType(documentTypeId, schemaLocation);
+	      }
+	      
+	      document.setDocumentType(documentType);
+	      
+	      Document updatedDocument = getDocumentManagementService().updateDocument(document, false, "", "", false);
+	      
+	      return updatedDocument;
+	   }
+
 }
