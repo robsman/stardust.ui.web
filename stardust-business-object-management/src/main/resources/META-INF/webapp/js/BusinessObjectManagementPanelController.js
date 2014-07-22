@@ -23,13 +23,13 @@ define(
 				 */
 				BusinessObjectManagementPanelController.prototype.initialize = function(
 						rootController) {
+					console.log("Initialize Search");
+
 					this.rootController = rootController;
 					this.businessObjectFilter = {};
 					this.selectedBusinessObjectInstances = [];
 
 					var deferred = jQuery.Deferred();
-					var rootUrl = location.href.substring(0, location.href
-							.indexOf("/plugins"));
 					var self = this;
 
 					BusinessObjectManagementService
@@ -39,7 +39,10 @@ define(
 									function(businessObjectModels) {
 										self.businessObjectModels = businessObjectModels;
 
+										console.log(self.businessObjectModels);
+
 										self.refreshBusinessObjects();
+
 										deferred.resolve();
 									}).fail(function() {
 								deferred.reject();

@@ -11,27 +11,21 @@
 
 package org.eclipse.stardust.ui.web.business_object_management.service;
 
-import java.util.*;
-
 import javax.annotation.Resource;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-
-import org.eclipse.stardust.common.Direction;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetails;
-import org.eclipse.stardust.engine.api.model.*;
-import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
-import org.eclipse.stardust.engine.api.query.DescriptorPolicy;
-import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
-import org.eclipse.stardust.engine.api.runtime.*;
+import org.eclipse.stardust.engine.api.runtime.AdministrationService;
+import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
+import org.eclipse.stardust.engine.api.runtime.QueryService;
+import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
+import org.eclipse.stardust.engine.api.runtime.UserService;
+import org.eclipse.stardust.engine.api.runtime.WorkflowService;
 import org.eclipse.stardust.ui.web.business_object_management.rest.JsonMarshaller;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
-import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
-import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 public class BusinessObjectManagementService {
 	private static final Logger trace = LogManager
