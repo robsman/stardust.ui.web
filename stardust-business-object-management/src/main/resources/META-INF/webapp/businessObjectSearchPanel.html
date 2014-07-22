@@ -39,7 +39,7 @@
 					<tr
 						sd-table-data="businessObjectInstance in businessObjectManagementPanelController.businessObjectInstances"
 						sd-table-selection="businessObjectManagementPanelController.selectedBusinessObjectInstances"
-						sd-table-selection-changed="onBusinessObjectInstanceSelectionChange()">
+						sd-table-selection-changed="businessObjectManagementPanelController.rootController.onBusinessObjectInstanceSelectionChange()">
 						<td
 							ng-repeat="field in businessObjectManagementPanelController.topLevelFields">{{businessObjectInstance[field.id]}}</td>
 					</tr>
