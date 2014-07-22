@@ -44,12 +44,12 @@ public class DocumentTriageResource {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("activities/{activityInstanceOid}/attachments.json")
+	@Path("activities/{activityInstanceOid: \\d+}/attachments.json")
 	public Response getProcessesAttachments(
 			@PathParam("activityInstanceOid") long activityInstanceOid) {
 		try {
 			return Response.ok(
-					getDocumentTriageService().getProcessesAttachments(
+					getDocumentTriageService().getProcessAttachmentsForActivityInstance(
 							activityInstanceOid).toString(),
 					MediaType.APPLICATION_JSON).build();
 		} catch (Exception e) {
@@ -83,6 +83,56 @@ public class DocumentTriageResource {
 			return Response.serverError().build();
 		}
 	}
+
+   @POST
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("processes/{processInstanceOid: \\d+}/documents")
+   public Response addDocument(@PathParam("processInstanceOid") String processInstanceOid, String postedData) {
+      try {
+         JsonObject json = jsonIo.readJsonObject(postedData);
+         
+         // TODO: Implementation pending
+         return Response.ok(new JsonObject(), MediaType.APPLICATION_JSON).build();
+      } catch (Exception e) {
+         trace.error(e, e);
+
+         return Response.serverError().build();
+      }
+   }
+
+   @POST
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("processes/{processInstanceOid: \\d+}/{dataPathId}")
+   public Response addDocument(@PathParam("processInstanceOid") String processInstanceOid, @PathParam("dataPathId") String dataPathId, String postedData) {
+      try {
+         JsonObject json = jsonIo.readJsonObject(postedData);
+         
+         return Response.ok(
+               getDocumentTriageService().addProcessInstanceDocument(Long.parseLong(processInstanceOid), dataPathId, json)
+                     .toString(), MediaType.APPLICATION_JSON).build();
+      } catch (Exception e) {
+         trace.error(e, e);
+
+         return Response.serverError().build();
+      }
+   }
+
+   @PUT
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("documents/{documentId}/document-type")
+   public Response setDocumentType(@PathParam("documentId") String documentId, String postedData) {
+      try {
+         JsonObject json = jsonIo.readJsonObject(postedData);
+         
+         return Response.ok(
+               getDocumentTriageService().setDocumentType(documentId, json)
+                     .toString(), MediaType.APPLICATION_JSON).build();
+      } catch (Exception e) {
+         trace.error(e, e);
+
+         return Response.serverError().build();
+      }
+   }
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -152,6 +202,21 @@ public class DocumentTriageResource {
 			return Response.serverError().build();
 		}
 	}
+
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("document-types.json")
+   public Response getDocumentTypes() {
+      try {
+         return Response.ok(
+               getDocumentTriageService().getDocumentTypes()
+                     .toString(), MediaType.APPLICATION_JSON).build();
+      } catch (Exception e) {
+         trace.error(e, e);
+
+         return Response.serverError().build();
+      }
+   }
 
 	/**
 	 * 

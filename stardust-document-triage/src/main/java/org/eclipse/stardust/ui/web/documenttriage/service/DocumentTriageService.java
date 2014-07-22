@@ -25,9 +25,12 @@ import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetails;
 import org.eclipse.stardust.engine.api.model.*;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
+import org.eclipse.stardust.engine.api.query.DeployedModelQuery;
 import org.eclipse.stardust.engine.api.query.DescriptorPolicy;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
 import org.eclipse.stardust.engine.api.runtime.*;
+import org.eclipse.stardust.engine.core.runtime.beans.DocumentTypeUtils;
+import org.eclipse.stardust.engine.extensions.dms.data.DocumentType;
 import org.eclipse.stardust.ui.web.documenttriage.rest.JsonMarshaller;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
@@ -182,11 +185,6 @@ public class DocumentTriageService {
 	}
 
 	private JsonObject loadProcessInstance(long oid) {
-		/*
-		 * ProcessInstance processInstance = getWorkflowService()
-		 * .getProcessInstance(oid);
-		 */
-
 		ProcessInstanceQuery processInstanceQuery = ProcessInstanceQuery
 				.findAll();
 
@@ -253,7 +251,7 @@ public class DocumentTriageService {
 	 * @param path
 	 * @return
 	 */
-	public JsonArray getProcessAttachments(ProcessInstance processInstance) {
+	private JsonArray getProcessAttachments(ProcessInstance processInstance) {
 		String path = DocumentMgmtUtility
 				.getProcessAttachmentsFolderPath(processInstance);
 		Folder processAttFolder = getOrCreateFolder(path);
@@ -301,7 +299,7 @@ public class DocumentTriageService {
 	 * @param path
 	 * @return
 	 */
-	public Folder getOrCreateFolder(String path) {
+	private Folder getOrCreateFolder(String path) {
 		String[] pathSteps = path.split("/");
 
 		String parentPath = "/";
@@ -347,15 +345,6 @@ public class DocumentTriageService {
 				json.get("document").getAsJsonObject().get("uuid")
 						.getAsString());
 
-		/*
-		 * List<ApplicationContext> applicationContexts =
-		 * activityInstance.getActivity().getAllApplicationContexts(); for
-		 * (ApplicationContext applicationContext : applicationContexts) {
-		 * List<AccessPoint> accessPoints =
-		 * applicationContext.getAllAccessPoints(); List<DataMapping>
-		 * dataMappings = applicationContext.getAllDataMappings(); int x = 5; }
-		 */
-
 		// TODO: Code assumes that there is always exactly one Document OUT data
 		// mapping
 		String APPLICATION_CONTEXT_DEFAULT = "default";
@@ -373,10 +362,6 @@ public class DocumentTriageService {
 		getWorkflowService().activateAndComplete(activityInstance.getOID(),
 				APPLICATION_CONTEXT_DEFAULT, outData);
 
-		/*
-		 * getWorkflowService().activateAndComplete(activityInstance.getOID(),
-		 * null, null);
-		 */
 		return getPendingProcesses(null);
 	}
 
@@ -441,7 +426,7 @@ public class DocumentTriageService {
 	 * @param activityInstanceOid
 	 * @return
 	 */
-	public JsonObject getProcessesAttachments(long activityInstanceOid) {
+	public JsonObject getProcessAttachmentsForActivityInstance(long activityInstanceOid) {
 		JsonObject resultJson = new JsonObject();
 		ActivityInstance activityInstance = getWorkflowService()
 				.getActivityInstance(activityInstanceOid);
@@ -460,41 +445,39 @@ public class DocumentTriageService {
 	 * @return
 	 */
 	public JsonObject startProcess(JsonObject parameters) {
+      JsonObject startableProcessJson = parameters.get("startableProcess").getAsJsonObject();
 		ProcessInstance pi = getWorkflowService().startProcess(
-				parameters.get("startableProcess").getAsJsonObject().get("id")
-						.getAsString(), null, true);
+		      startableProcessJson.get("id").getAsString(), null, true);
 
-		List<String> sourceDocumentIds = new ArrayList<String>();
-		JsonArray processAttachments = parameters.get("startableProcess")
-				.getAsJsonObject().get("processAttachments").getAsJsonArray();
+		// TODO: Process Data
+		
+      // TODO: Specific Documents
+      
+		// Process Attachments
+		JsonArray processAttachments = startableProcessJson.get("processAttachments").getAsJsonArray();
+		addProcessAttachments(pi.getOID(), processAttachments);
+
+		return parameters;
+	}
+
+   private void addProcessAttachments(long processInstanceOid, JsonArray processAttachments)
+   {
+      List<String> sourceDocumentIds = new ArrayList<String>();
+      
 		for (JsonElement processAttachment : processAttachments) {
 			sourceDocumentIds.add(processAttachment.getAsJsonObject()
 					.get("uuid").getAsString());
 		}
 
-		/*
-		 * List<String> sourceDocumentIds = new ArrayList<String>();
-		 * sourceDocumentIds
-		 * .add("{jcrUuid}26efea2d-3fb3-4068-99b0-6942bf636138");
-		 * sourceDocumentIds
-		 * .add("{jcrUuid}2629618c-c47b-4dc0-bc65-e1a16e41ec5b");
-		 */
-
 		if (sourceDocumentIds.size() > 0) {
 			List<Document> sourceDocuments = getDocumentManagementService()
 					.getDocuments(sourceDocumentIds);
 			// Add attachments
-			for (Document document : sourceDocuments) {
-				addProcessAttachment(
-						pi.getOID(),
-						document.getName(),
-						getDocumentManagementService().retrieveDocumentContent(
-								document.getId()));
+         for (Document document : sourceDocuments) {
+            addProcessAttachment(processInstanceOid, document);
 			}
 		}
-
-		return parameters;
-	}
+   }
 
 	/**
 	 * @param documentId
@@ -516,7 +499,7 @@ public class DocumentTriageService {
 		} else if (MIMETYPE_TIFF.equalsIgnoreCase(contentType)) {
 			image = TiffReader.getPageImage(data, pageNumber);
 		} else { // Any other type, except PDF or TIFF
-
+		   // TODO
 		}
 
 		return image;
@@ -562,8 +545,41 @@ public class DocumentTriageService {
 
 		return processAttachments;
 	}
+	
+	public JsonObject getDocumentTypes() {
+	   
+	   JsonObject resultJson = new JsonObject();
+      JsonArray documentTypesJson = new JsonArray();
 
-	public void addProcessAttachment(long processOid, String fileName,
+      resultJson.add("documentTypes", documentTypesJson);	   
+	   List<DocumentType> activeDocumentTypes = getActiveDocumentTypes();
+	   for (DocumentType documentType : activeDocumentTypes)
+      {
+         JsonObject documentTypeJson = new JsonObject();
+         documentTypeJson.addProperty("documentTypeId", documentType.getDocumentTypeId());
+         documentTypeJson.addProperty("name", documentType.getDocumentTypeId());
+         // TODO: Get "name" using name = model.getTypeDeclaration(documentType).getName();
+         documentTypeJson.addProperty("schemaLocation", documentType.getSchemaLocation());
+         
+         documentTypesJson.add(documentTypeJson);
+      }
+	   
+	   return resultJson;
+	}
+	
+	public JsonObject setDocumentType(String documentId, JsonObject json) {
+	 
+      JsonObject resultJson = new JsonObject();
+      
+      String documentTypeId = json.get("documentTypeId").getAsString();
+      String schemaLocation = json.get("schemaLocation").getAsString();
+      
+      Document document = setDocumentType(documentId, documentTypeId, schemaLocation);
+
+      return resultJson; 
+	}
+
+	/*public void addProcessAttachment(long processOid, String fileName,
 			byte[] bytes) {
 		ProcessInstance processInstance = getWorkflowService()
 				.getProcessInstance(processOid);
@@ -579,5 +595,74 @@ public class DocumentTriageService {
 		processAttachments.add(document);
 		getWorkflowService().setOutDataPath(processInstance.getOID(),
 				CommonProperties.PROCESS_ATTACHMENTS, processAttachments);
+	}*/
+	
+	public JsonObject addProcessInstanceDocument(long processInstanceOid, String dataPathId, JsonObject json)
+	{
+      JsonObject resultJson = new JsonObject();
+      
+      if (CommonProperties.PROCESS_ATTACHMENTS.equals(dataPathId)) {
+         JsonArray processAttachments = json.getAsJsonArray();
+         addProcessAttachments(processInstanceOid, processAttachments);
+      }
+      else {
+         // TODO: Currently assume that it is always a Document (and not a DocumentList)
+         
+         String sourceDocumentId = json.get("uuid").getAsString();
+         Document document = getDocumentManagementService().getDocument(sourceDocumentId);
+
+         Map<String, Document> documentDataPathMap = new HashMap<String, Document>();
+         documentDataPathMap.put(dataPathId, document);
+         
+         addSpecificDocuments(processInstanceOid, documentDataPathMap);
+      }
+	   
+	   
+      return resultJson; 
 	}
+   
+   private void addSpecificDocuments(long processInstanceOid, Map<String, Document> documentDataPathMap) {
+      getWorkflowService().setOutDataPaths(processInstanceOid, documentDataPathMap);
+   }
+   
+   public void addProcessAttachment(long processInstanceOid, Document document) {
+      ProcessInstance processInstance = getWorkflowService()
+            .getProcessInstance(processInstanceOid);
+      List<Document> processAttachments = fetchProcessAttachments(processInstance);
+
+      processAttachments.add(document);
+      getWorkflowService().setOutDataPath(processInstance.getOID(),
+            CommonProperties.PROCESS_ATTACHMENTS, processAttachments);
+   }
+   
+   private List<DocumentType> getActiveDocumentTypes() {
+      List<DocumentType> allDocumentTypes = new ArrayList<DocumentType>();
+      
+      // Get all "active" models
+      Models deployedModelDescriptions = getQueryService().getModels(DeployedModelQuery.findActive());
+      
+      List<DeployedModel> deployedModels = new ArrayList<DeployedModel>();
+      for (DeployedModelDescription deployedModelDescription : deployedModelDescriptions)
+      {
+         deployedModels.add(getQueryService().getModel(deployedModelDescription.getModelOID()));
+      }
+      
+      // Get Document Types in each "active" model
+      for (DeployedModel deployedModel : deployedModels)
+      {
+         allDocumentTypes.addAll(DocumentTypeUtils.getDeclaredDocumentTypes(deployedModel));
+      }
+      
+      return allDocumentTypes;
+   }
+
+   private Document setDocumentType(String documentId, String documentTypeId, String schemaLocation) {
+      DocumentType documentType = new DocumentType(documentTypeId, schemaLocation);
+      Document document = getDocumentManagementService().getDocument(documentId);
+      document.setDocumentType(documentType);
+      
+      Document updatedDocument = getDocumentManagementService().updateDocument(document, false, "", "", false);
+      
+      return updatedDocument;
+   }
 }
