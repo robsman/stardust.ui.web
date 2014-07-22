@@ -63,13 +63,13 @@ require(
 				"canvasAxisLabelRenderer", "canvasAxisTickRenderer",
 				"categoryAxisRenderer", "dateAxisRenderer", "cursor",
 				"highlighter", "trendline", "ohlcRenderer", "pieRenderer", "donutRenderer",
-				"pointLabels", "../report/ReportDefinitionController",
+				"enhancedLegendRenderer", "pointLabels", "../report/ReportDefinitionController",
 				"dataTables"], function(require, jquery, jqueryUi,
 				json, angularjs, jqueryJqPlot, barRenderer,
 				bubbleRenderer, canvasTextRenderer, canvasAxisLabelRenderer,
 				canvasAxisTickRenderer, categoryAxisRenderer, dateAxisRenderer,
 				cursor, highlighter, trendline, ohlcRenderer, pieRenderer, donutRenderer,
-				pointLabels, ReportDefinitionController, dataTables) {
+				enhancedLegendRenderer, pointLabels, ReportDefinitionController, dataTables) {
 				jQuery(document).ready(
 					function() {
 						ReportDefinitionController.create(angularjs);
