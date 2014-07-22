@@ -1377,7 +1377,8 @@ table.formTable td {
 														ng-model="report.scheduling.delivery.mode" /></td>
 													<td>{{getI18N('reporting.definitionView.saveForOrganizationRole.label')}}</td>
 													<td><select id="schedulingParticipantsSelect" 
-														ng-model="report.scheduling.delivery.participant"></select></td>
+														ng-model="report.scheduling.delivery.participant"
+                                          ng-disabled="report.scheduling.delivery.mode != 'participantFolder'"></select></td>
 												</tr>
 												<tr>
 													<td><input type="radio" value="eMailToMe"

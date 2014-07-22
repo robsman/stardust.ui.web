@@ -418,7 +418,13 @@ define(
 									self.showFavoriteBtn = false;
 								}
 								
-								self.schedulingParticipantsSelect.val(self.report.scheduling.delivery.participant);
+								if (!self.report.scheduling.delivery.participant)
+		                  {
+		                     self.schedulingParticipantsSelect.val(jQuery("#schedulingParticipantsSelect option:first").val());
+		                     self.report.scheduling.delivery.participant = self.schedulingParticipantsSelect.val(); 
+		                  } else {
+		                     self.schedulingParticipantsSelect.val(self.report.scheduling.delivery.participant);
+		                  }
 								
 								self.updateView();
 
