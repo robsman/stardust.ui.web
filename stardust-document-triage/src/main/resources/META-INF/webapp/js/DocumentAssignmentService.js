@@ -98,7 +98,16 @@ define(
 
 					return deferred.promise();
 				};
-
+				
+				
+				DocumentAssignmentService.prototype.getDocumentTypes = function(){
+					var deferred = jQuery.Deferred();
+					var rootUrl = location.href.substring(0, location.href
+							.indexOf("/plugins"));
+					deferred.resolve(["None","Pay Slip","Disability Certificate","Police Report"]);
+					return deferred.promise();
+				};
+				
 				/**
 				 * 
 				 */

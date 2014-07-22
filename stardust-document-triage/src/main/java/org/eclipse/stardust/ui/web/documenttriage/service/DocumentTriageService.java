@@ -426,7 +426,8 @@ public class DocumentTriageService {
 			JsonObject specificDocumentJson = new JsonObject();
 
 			specificDocumentsJson.add(specificDocumentJson);
-
+			
+			specificDocumentJson.addProperty("id", dataPath.getId());
 			specificDocumentJson.addProperty("name", dataPath.getName());
 			specificDocumentJson.addProperty("type", dataPath.getMappedType()
 					.getName());

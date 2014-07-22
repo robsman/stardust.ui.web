@@ -178,10 +178,17 @@
 																{{treeItem.specificDocument.name}} <span
 																	ng-show="treeItem.specificDocument.url">({{$parent.formatTimestamp(treeItem.specificDocument.creationTimestamp)}})</span>
 															</div>
-															<div ng-show="treeItem.processAttachments">Process
+															<div ng-show="treeItem.processAttachments.length >=0">Process
 																Attachments</div>
-															<div ng-show="treeItem.processAttachment">{{treeItem.processAttachment.type}}
-																({{$parent.formatTimestamp(treeItem.processAttachment.creationTimestamp)}})</div>
+															<div ng-show="treeItem.processAttachment">
+																{{treeItem.processAttachment.type}}
+																{{treeItem.processAttachment.name}}
+																({{$parent.formatTimestamp(treeItem.processAttachment.creationTimestamp)}})
+																<select ng-select 
+																        ng-model="treeItem.selectedDocType"
+																        ng-options="item for item in documentTypes">
+																</select>
+															</div>
 														</td>
 													</tr>
 												</table>
@@ -200,7 +207,8 @@
 															</div>
 															<div ng-show="treeItem.specificDocument"
 																style="margin-left: 10px;">
-																<i class="fa fa-file-o"></i>
+																<i ng-hide="treeItem.specificDocument.url" class="fa fa-file-o"></i>
+																<i ng-show="treeItem.specificDocument.url" class="fa fa-file"></i>
 															</div>
 															<div ng-show="treeItem.processAttachments.length >=0"
 																style="margin-left: 10px;">
@@ -209,24 +217,28 @@
 														<td>
 															<div ng-show="treeItem.startableProcess">{{treeItem.startableProcess.name}}</div>
 															<div ng-show="treeItem.specificDocument">
-																{{treeItem.specificDocument.name}}</div>
-
+																{{treeItem.specificDocument.name}}
+																<span ng-show="treeItem.specificDocument.url">({{$parent.formatTimestamp(treeItem.specificDocument.creationTimestamp)}})</span>
+															</div>
 															<div ng-show="treeItem.processAttachments.length >=0">Process
 																Attachments</div>
-															<div ng-show="treeItem.processAttachment"
-																xstyle="margin-left: 10px;">
+															<div ng-show="treeItem.processAttachment">
 																<i class="fa fa-file"></i>
 																{{treeItem.processAttachment.type}}
 																{{treeItem.processAttachment.name}}
 																({{$parent.formatTimestamp(treeItem.processAttachment.creationTimestamp)}})
+																<select ng-select 
+																        ng-model="treeItem.processDetails.selectedDocType"
+																        ng-options="item for item in documentTypes">
+																</select>
 															</div>
 
 
 														</td>
 														<td
-															ng-if="treeItem.startableProcess && selectedBusinessObjects.length >0 && treeItem.startableProcess.processAttachments.length > 0">
+															ng-if="processCanStart(treeItem);">
 															<a class="iconLink" href="#"><i
-																ng-click="startProcess(treeItem,selectedBusinessObjects)"
+																ng-click="startProcess(treeItem,selectedBusinessObjectInstances[0])"
 																class="fa fa-rocket"></i></a>
 														</td>
 													</tr>
