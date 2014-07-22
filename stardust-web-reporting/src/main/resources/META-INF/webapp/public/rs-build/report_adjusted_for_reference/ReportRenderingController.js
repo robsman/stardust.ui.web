@@ -180,7 +180,7 @@ define(
 				 * and settings stored with the report definition.
 				 */
 				ReportRenderingController.prototype.createChartOptions = function(
-						groupIds) {
+						groupIds, data) {
 					var chartOptions = {
 						series : [],
 						seriesDefaults : {
@@ -210,6 +210,7 @@ define(
 						},
 						legend : {
 							show: true,
+							    renderer: $.jqplot.EnhancedLegendRenderer,
 			                location: 'ne',
 			                placement: 'outside',
 			                fontSize: '11px'
@@ -243,6 +244,47 @@ define(
 							speed : 2500
 						}
 					};
+					//For Legend Positioning.
+					if (this.report.dataSet.type === 'seriesGroup'
+			         && this.report.layout.subType === this.reportingService.metadata.layoutSubTypes.chart.id
+			         || this.report.layout.chart.type === this.reportingService.metadata.chartTypes.pieChart.id)
+      			{
+					   var northSide = [ "n" ];
+					   var southSide = [ "s" ];
+      			   var eastSide = [ "ne", "e", "se" ];
+      			   var westSide = [ "w", "nw", "sw" ];
+      			   var dataLength = (this.report.dataSet.groupBy != null && 
+      			       this.report.dataSet.groupBy != 'None') ? data.seriesGroup.length 
+      			                : data.seriesGroup[0].length
+      			   //TODO Donut chart might need more processing.
+      			   if (this.report.layout.chart.type === this.reportingService.metadata.chartTypes.donutChart.id)
+                  {
+      			      dataLength = data.seriesGroup[0].length; 
+                  }
+      			/*   if (northSide.indexOf(this.report.layout.chart.options.legend.location) != -1)
+                  {
+      			      chartOptions.legend.rendererOptions = {
+                              numberRows : Math.ceil(data.seriesGroup.length / 16)
+                           }
+                  } else */if (southSide.indexOf(this.report.layout.chart.options.legend.location) != -1)
+                  {
+                     chartOptions.legend.marginTop = "65px";
+                     chartOptions.legend.rendererOptions = {
+                        numberRows : Math.ceil( dataLength/ 14)
+                     }
+                  } else if (eastSide.indexOf(this.report.layout.chart.options.legend.location) != -1)
+      			   {
+      			      chartOptions.legend.rendererOptions = {
+      			         numberColumns : Math.ceil(dataLength / 10)
+      			      }
+      			   } /*else if (westSide.indexOf(this.report.layout.chart.options.legend.location) != -1)
+                  {
+      			      chartOptions.legend.marginRight = "96px";
+                     chartOptions.legend.rendererOptions = {
+                        numberColumns : Math.ceil(data.seriesGroup.length / 10)
+                     }
+                  }  */
+      			}
 
 					// TODO There is more
 
@@ -257,6 +299,7 @@ define(
 						}
 						
 						chartOptions.axes.xaxis.tickRenderer = jQuery.jqplot.CanvasAxisTickRenderer;
+						chartOptions.axes.yaxis.tickRenderer = jQuery.jqplot.CanvasAxisTickRenderer;
 						
 					} else if (this.report.layout.chart.type === this.reportingService.metadata.chartTypes.candlestickChart.id) {
 						if (this.getFirstDimension().type == this.reportingService.metadata.timestampType) {
@@ -267,6 +310,8 @@ define(
 						chartOptions.series.push({
 							renderer:$.jqplot.OHLCRenderer, rendererOptions:{candleStick:false }
 						})
+						chartOptions.axes.xaxis.tickRenderer = jQuery.jqplot.CanvasAxisTickRenderer;
+                  chartOptions.axes.yaxis.tickRenderer = jQuery.jqplot.CanvasAxisTickRenderer;
 						
 					} else if (this.report.layout.chart.type === this.reportingService.metadata.chartTypes.barChart.id) {
 						chartOptions.seriesDefaults.renderer = $.jqplot.BarRenderer;
@@ -284,6 +329,7 @@ define(
 						}
 
 						chartOptions.axes.xaxis.tickRenderer = jQuery.jqplot.CanvasAxisTickRenderer;
+                  chartOptions.axes.yaxis.tickRenderer = jQuery.jqplot.CanvasAxisTickRenderer;
 						
 						chartOptions.axes.yaxis.pad = 1.05;
 					} else if (this.report.layout.chart.type === this.reportingService.metadata.chartTypes.bubbleChart.id) {
@@ -479,7 +525,7 @@ define(
 //											    }
 //										};
 										var chartOptions = self
-												.createChartOptions(seriesIds);
+												.createChartOptions(seriesIds, data);
 										// Clean Canvas
 										if (self.chart) {
 											self.chart.destroy();

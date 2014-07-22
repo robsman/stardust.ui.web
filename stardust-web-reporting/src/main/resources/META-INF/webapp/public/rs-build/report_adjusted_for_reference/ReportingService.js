@@ -351,7 +351,7 @@ define(
 								id : "participantPerformerName",
 								name : this.getI18N("reporting.definitionView.additionalFiltering.performer"),
 								type : this.metadata.enumerationType,
-								enumerationType : "modelData:processDefinitions:name"
+								enumerationType : "modelData:participants:name"
 							},
 							state : {
 								id : "state",
@@ -2004,7 +2004,15 @@ define(
               return (! reportName.trim().match(VALID_FILENAME_PATTERN)) ? true : false;
            };
             
-            
+            /**
+             * Removes any forward slashes from the input parameter
+             */
+            ReportingService.prototype.validateReportName = function(reportName) {
+               if(! this.isValidReportName(reportName)) {
+                 return reportName.replace(/\//g, '');
+               };
+               return reportName;
+            }
             
 			}
 			
