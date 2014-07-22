@@ -272,25 +272,33 @@
 								<td>
 									<table class="formTable">
 										<tr>
-											<td><span style="font-size: 9px;">{{document.name}}
-													{{$parent.formatTimestamp(document.creationTimestamp)}}
-													{{document.contentType}}</span></td>
+											<td>
+												<i class="fa fa-3x fa-files-o"></i>
+											</td>
 										</tr>
 										<tr>
-											<td ng-if="0"><select ng-model="document.type"><option>Select
-														Document Type ...</option>
-													<option value="Birth Certificate">Birth
-														Certificate</option></select></td>
-										</tr>
+											<td>
+												<div>{{document.name}}</div>
+												{{$parent.formatTimestamp(document.creationTimestamp)}}&nbsp;
+												<i class="fa" 
+												   ng-show="document.pages.length>0"
+												   ng-class="{'fa-caret-down':showChildren,'fa-caret-up':!showChildren}" 
+												   ng-click="showChildren=!showChildren">
+												</i>
+											</td>
+										<tr>
 									</table>
-									<div ng-repeat="page in document.pages" class="page">
+									<div ng-show="showChildren" 
+									     ng-repeat="page in document.pages" 
+									     class="page">
 										<table class="{{$parent.$parent.selectionClass(page)}}">
 											<tr>
 												<td align="right">{{page.number}}</td>
-												<td><a
-													ng-click="$parent.$parent.selectPage(page,document.url + $index)">
+												<td>
+													<a ng-click="$parent.$parent.selectPage(page,document.url + $index,$event)">
 														<img src="{{document.url + $index}}" width="40%" />
-												</a></td>
+													</a>
+												</td>
 											</tr>
 										</table>
 										<div class="normalLine" ng-show="mode == 'normal'"></div>

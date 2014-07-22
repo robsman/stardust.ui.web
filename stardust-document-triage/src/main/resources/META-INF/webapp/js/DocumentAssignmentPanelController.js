@@ -25,12 +25,13 @@ define(
 				 * 
 				 */
 				DocumentAssignmentPanelController.prototype.initialize = function() {
+					this.pageModel={};
+					this.pageModel.currentDocument="";
+					this.pageModel.pageIndex=[];
 					this.retrieveActivityInstanceFromUri();
-
 					this.startProcessDialog = {};
 					this.businessObjectFilter = {};
-					this.selectedBusinessObjectInstances = [];
-
+					this.selectedBusinessObjectInstances = [];					
 					this.initializePageRendering();
 
 					this.businessObjectManagementPanelController = BusinessObjectManagementPanelController
@@ -538,8 +539,7 @@ define(
 				/**
 				 * 
 				 */
-				DocumentAssignmentPanelController.prototype.selectPage = function(
-						page, url) {
+				DocumentAssignmentPanelController.prototype.selectPage = function(page, url, e) {
 					this.selectedPage = page;
 					this.selectedPage.url = url;
 					console.log("Selected Page: ");
