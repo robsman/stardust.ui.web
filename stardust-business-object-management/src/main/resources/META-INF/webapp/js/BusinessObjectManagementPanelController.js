@@ -3,7 +3,7 @@
  ******************************************************************************/
 
 define(
-		[ "document-triage/js/Utils",
+		[ "business-object-management/js/Utils",
 				"business-object-management/js/BusinessObjectManagementService" ],
 		function(Utils, BusinessObjectManagementService) {
 			return {

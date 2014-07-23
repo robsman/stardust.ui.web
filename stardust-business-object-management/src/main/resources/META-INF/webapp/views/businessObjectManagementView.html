@@ -11,11 +11,48 @@
 <script data-main="../js/BusinessObjectManagementViewMain"
 	src="../js/libs/require/2.0.5/require-min.js"></script>
 <style>
+ul.errorMessagesPanel {
+	margin-left: 0px;
+	background: #ffcc33;
+	padding: 5px;
+	border: 1px solid #b25900;
+}
+
+.errorMessagesPanel li {
+	color: #b25900;
+}
 </style>
 </head>
 <body>
 	<div ng-controller="businessObjectManagementViewController">
+		<h2>Business Object Selection and Search</h2>
 		<div ng-include="'../businessObjectSearchPanel.html'"></div>
+		<table style="width: 100%;">
+			<tr>
+				<td><h2>{{businessObjectManagementPanelController.businessObject.businessObject.name}}</h2></td>
+				<td align="right"><input type="button" value="Save"
+					ng-click="saveBusinessObjectInstance()"></input><input
+					type="button" value="Create"
+					ng-click="createBusinessObjectInstance()"
+					style="margin-left: 10px;"></input></td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<ul class="errorMessagesPanel" ng-show="messages.length > 0">
+						<li ng-repeat="message in messages">{{message}}</li>
+					</ul>
+					<table class="formTable">
+						<tr>
+							<td
+								ng-repeat="field in businessObjectManagementPanelController.topLevelFields"><label
+								style="margin-left: 5px;">{{field.name}}</label> <input
+								type="text" style="width: 100px; margin-left: 5px;"
+								ng-model="currentBusinessObjectInstance[field.id]"></input></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
 	</div>
 </body>
 </html>

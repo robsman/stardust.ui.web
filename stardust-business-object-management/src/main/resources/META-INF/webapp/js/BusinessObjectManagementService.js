@@ -3,7 +3,7 @@
  ******************************************************************************/
 
 define(
-		[ "document-triage/js/Utils" ],
+		[ "business-object-management/js/Utils" ],
 		function(Utils) {
 			return {
 				instance : function() {
@@ -96,9 +96,93 @@ define(
 												+ "/services/rest/business-object-management/businessObject/"
 												+ modelOid + "/"
 												+ businessObjectId
-												+ "/instances.json",
+												+ "/instance.json",
 										type : "GET",
 										contentType : "application/json"
+									})
+							.done(
+									function(result) {
+										deferred
+												.resolve(result.businessObjectInstances);
+									}).fail(function(data) {
+								deferred.reject(data);
+							});
+
+					return deferred.promise();
+				};
+
+				/**
+				 * 
+				 */
+				BusinessObjectManagementService.prototype.createBusinessObjectInstance = function(
+						modelOid, businessObjectId, primaryKey,
+						businessObjectInstance) {
+					console.log("Model OID: " + modelOid);
+					console.log("Business Object ID: " + businessObjectId);
+					console.log("Primary Key: " + primaryKey);
+					console.log("Business Object Instance:");
+					console.log(businessObjectInstance);
+
+					var deferred = jQuery.Deferred();
+					var rootUrl = location.href.substring(0, location.href
+							.indexOf("/plugins"));
+					var self = this;
+
+					jQuery
+							.ajax(
+									{
+										url : rootUrl
+												+ "/services/rest/business-object-management/businessObject/"
+												+ modelOid + "/"
+												+ businessObjectId
+												+ "/instance/" + primaryKey
+												+ ".json",
+										type : "PUT",
+										contentType : "application/json",
+										data : JSON
+												.stringify(businessObjectInstance)
+									})
+							.done(
+									function(result) {
+										deferred
+												.resolve(result.businessObjectInstances);
+									}).fail(function(data) {
+								deferred.reject(data);
+							});
+
+					return deferred.promise();
+				};
+
+				/**
+				 * 
+				 */
+				BusinessObjectManagementService.prototype.updateBusinessObjectInstance = function(
+						modelOid, businessObjectId, primaryKey,
+						businessObjectInstance) {
+					console.log("Model OID: " + modelOid);
+					console.log("Business Object ID: " + businessObjectId);
+					console.log("Primary Key: " + primaryKey);
+					console.log("Business Object Instance:");
+					console.log(businessObjectInstance);
+
+					var deferred = jQuery.Deferred();
+					var rootUrl = location.href.substring(0, location.href
+							.indexOf("/plugins"));
+					var self = this;
+
+					jQuery
+							.ajax(
+									{
+										url : rootUrl
+												+ "/services/rest/business-object-management/businessObject/"
+												+ modelOid + "/"
+												+ businessObjectId
+												+ "/instance/" + primaryKey
+												+ ".json",
+										type : "POST",
+										contentType : "application/json",
+										data : JSON
+												.stringify(businessObjectInstance)
 									})
 							.done(
 									function(result) {

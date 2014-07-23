@@ -111,19 +111,19 @@ public class BusinessObjectManagementService {
 	}
 
 	/**
-	 * Returns the type definition of all process data across models with an SDT type.
+	 * Returns the type definition of all process data across models with an SDT
+	 * type.
 	 * 
 	 * @return
 	 */
 	public JsonObject getBusinessObjects() {
-		/* 
-		Code e.g.
-		
-		BusinessObjectQuery query = BusinessObjectInstanceQuery.findAll();
-		
-		getQueryService().findAllBusinessObjects(query);
-		
-		*/
+		/*
+		 * Code e.g.
+		 * 
+		 * BusinessObjectQuery query = BusinessObjectInstanceQuery.findAll();
+		 * 
+		 * getQueryService().findAllBusinessObjects(query);
+		 */
 
 		JsonObject resultJson = new JsonObject();
 		JsonArray modelsJson = new JsonArray();
@@ -255,7 +255,8 @@ public class BusinessObjectManagementService {
 	}
 
 	/**
-	 * Returns all distinct entries (distinguished by the primary key) of the structured_data_value table for a given Business Object (= Process Data).
+	 * Returns all distinct entries (distinguished by the primary key) of the
+	 * structured_data_value table for a given Business Object (= Process Data).
 	 * 
 	 * @param modelOid
 	 * @param businessObjectId
@@ -263,16 +264,16 @@ public class BusinessObjectManagementService {
 	 */
 	public JsonObject getBusinessObjectInstances(String modelOid,
 			String businessObjectId) {
-		/* 
-		
-		Code e.g.
-		
-		BusinessObjectInstanceQuery query = BusinessObjectInstanceQuery.findAll(modelOid, businessObjectId);
-		
-		getQueryService().findAllBusinessObjectInstances(query);
-		
-		*/
-		
+		/*
+		 * 
+		 * Code e.g.
+		 * 
+		 * BusinessObjectInstanceQuery query =
+		 * BusinessObjectInstanceQuery.findAll(modelOid, businessObjectId);
+		 * 
+		 * getQueryService().findAllBusinessObjectInstances(query);
+		 */
+
 		JsonObject resultJson = new JsonObject();
 		JsonArray businessObjectInstances = new JsonArray();
 
@@ -319,18 +320,55 @@ public class BusinessObjectManagementService {
 	 * @param modelOid
 	 * @param businessObjectId
 	 * @param primaryKey
+	 * @param json
+	 * @return
+	 */
+	public JsonObject createBusinessObjectInstance(String modelOid,
+			String businessObjectId, String primaryKey, JsonObject json) {
+		System.out.println("Model OID: " + modelOid);
+		System.out.println("Business Object ID: " + businessObjectId);
+		System.out.println("Primary Key: " + primaryKey);
+		System.out.println(json);
+
+		return json;
+	}
+
+	/**
+	 * 
+	 * @param modelOid
+	 * @param businessObjectId
+	 * @param primaryKey
+	 * @param json
+	 * @return
+	 */
+	public JsonObject updateBusinessObjectInstance(String modelOid,
+			String businessObjectId, String primaryKey, JsonObject json) {
+		System.out.println("Model OID: " + modelOid);
+		System.out.println("Business Object ID: " + businessObjectId);
+		System.out.println("Primary Key: " + primaryKey);
+		System.out.println(json);
+
+		return json;
+	}
+
+	/**
+	 * 
+	 * @param modelOid
+	 * @param businessObjectId
+	 * @param primaryKey
 	 * @return
 	 */
 	public JsonObject getBusinessObjectProcessInstances(String modelOid,
 			String businessObjectId, String primaryKey) {
-		/* 
-		Code e.g.
-		
-		ProcessInstanceQuery query = ProcessInstanceQuery.findAllForBusinessObjectInstance(modelOid, businessObjectId, primaryKey);
-		
-		getQueryService().findAllProcessInstances(query);
-		
-		*/
+		/*
+		 * Code e.g.
+		 * 
+		 * ProcessInstanceQuery query =
+		 * ProcessInstanceQuery.findAllForBusinessObjectInstance(modelOid,
+		 * businessObjectId, primaryKey);
+		 * 
+		 * getQueryService().findAllProcessInstances(query);
+		 */
 
 		JsonObject resultJson = new JsonObject();
 
