@@ -41,40 +41,46 @@
 }
 
 .stackPage > div{
-	width:40px;
-	height:51.75px;
+	width:68px;
+	height:100px;
 	background-color:#FFF;
-	background-size:40px 51.75px;
+	background-size:68px 100px;
 	border:solid 1px #AAA;
 	position:relative;
 	display:inline-block;
 	box-shadow: 3px 3px 20px #888888;
 }
 .stackPage :nth-child(2){
-	margin-left:-40px;
+	margin-left:-63px;
 	top:2px;
 }
 .stackPage :nth-child(3){
-	margin-left:-40px;
+	margin-left:-63px;
 	top:4px;
 }
 
+.documentHeader{
+	text-align:center;
+	padding:3px;
+}
 .verticalMenu{
 	display: inline-block;
 	padding: 3px;
-	border: solid 1px #AAA;
-	background: #DDD;
+	x-border: solid 1px #AAA;
+	x-background: #EEE;
 	border-radius: 4px;
 	margin-left:5px;
 	text-align:center;
 	position:relative;
-	top:-25px;
-	height:45px;
+	top:-75px;
+	height:100px;
 }
 
 .verticalMenu > i{
 	display:block;
+	color:#A69A88;
 	cursor:pointer;
+	font-size:1.4em;
 }
 
 .verticalMenu > i:last-child{
@@ -83,8 +89,30 @@
 	left:6px;
 }
 
+.verticalMenu2{
+	display: inline-block;
+	padding: 3px;
+	x-border: solid 1px #AAA;
+	x-background: #EEE;
+	border-radius: 4px;
+	margin-left:5px;
+	text-align:center;
+	position:relative;
+}
+
+.verticalMenu2 > i{
+	display:block;
+	color:#A69A88;
+	cursor:pointer;
+	font-size:1.4em;
+}
+
+.pageNumber{
+	position:relative;
+	left:40px;
+}
 .documentInfo{
-	margin-top:-25px;
+	text-align:center;
 }
 
 .documentInfo > span{
@@ -239,8 +267,10 @@
 														</td>
 														<td><div ng-show="treeItem.pendingProcess">{{treeItem.pendingProcess.processDefinition.name}}
 																(#{{treeItem.pendingProcess.oid}})
-																{{$parent.formatTimestamp(treeItem.pendingProcess.start)}}
-																&nbsp;<i ng-click="openProcessHistory(treeItem)" class="fa fa-info-circle"></i>
+																&nbsp;
+																<i ng-click="openProcessHistory(treeItem)" 
+																   title="Process History"
+																   class="fa fa-info-circle"></i>
 																</div>
 															<div
 																ng-show="treeItem.pendingProcess.descriptors.length > 0">
@@ -254,17 +284,15 @@
 															</div>
 															<div ng-show="treeItem.pendingActivityInstance">{{treeItem.pendingActivityInstance.activity.name}}
 																(#{{treeItem.pendingActivityInstance.oid}})
-																{{$parent.formatTimestamp(treeItem.pendingActivityInstance.start)}}</div>
+															</div>
 															<div ng-show="treeItem.specificDocument">
-																{{treeItem.specificDocument.name}} <span
-																	ng-show="treeItem.specificDocument.url">({{$parent.formatTimestamp(treeItem.specificDocument.creationTimestamp)}})</span>
+																{{treeItem.specificDocument.name}}
 															</div>
 															<div ng-show="treeItem.processAttachments.length >=0">Process
 																Attachments</div>
 															<div ng-show="treeItem.processAttachment">
 																{{treeItem.processAttachment.type}}
-																{{treeItem.processAttachment.name}}
-																({{$parent.formatTimestamp(treeItem.processAttachment.creationTimestamp)}})
+																{{treeItem.processAttachment.name}}						
 																<select ng-select 
 																        ng-model="treeItem.selectedDocType"
 																        ng-change="setDocumentType(treeItem.selectedDocType,treeItem)"
@@ -301,16 +329,13 @@
 														<td>
 															<div ng-show="treeItem.startableProcess">{{treeItem.startableProcess.name}}</div>
 															<div ng-show="treeItem.specificDocument">
-																{{treeItem.specificDocument.name}} <span
-																	ng-show="treeItem.specificDocument.url">({{$parent.formatTimestamp(treeItem.specificDocument.creationTimestamp)}})</span>
+																{{treeItem.specificDocument.name}}
 															</div>
 															<div ng-show="treeItem.processAttachments.length >=0">Process
 																Attachments</div>
 															<div ng-show="treeItem.processAttachment">
 																<i class="fa fa-file"></i>
-																{{treeItem.processAttachment.type}}
-																{{treeItem.processAttachment.name}}
-																({{$parent.formatTimestamp(treeItem.processAttachment.creationTimestamp)}})
+																&nbsp;{{treeItem.processAttachment.name}}
 																<select ng-select
 																	ng-model="treeItem.processDetails.selectedDocType"
 																	ng-options="item.name for item in documentTypes">
@@ -320,9 +345,11 @@
 
 														</td>
 														<td ng-if="processCanStart(treeItem);"><a
-															class="iconLink" href="#"><i
+															class="iconLink" href="#">
+															<i	title="Start Process"
 																ng-click="startProcess(treeItem,selectedBusinessObjectInstances[0])"
-																class="fa fa-rocket"></i></a></td>
+																class="fa fa-rocket">
+															</i></a></td>
 													</tr>
 												</table>
 											</div>
@@ -352,7 +379,8 @@
 							<tr ng-repeat="document in scannedDocuments"
 								id="scannedDocumentDivision{{$index}}" class="scannedDocument">
 								<td>
-									<table class="formTable">
+									<table ng-show="!uiModel.showChildren" 
+									       class="formTable">
 										<tr>
 											<td colspan="2">
 												<div class="stackPage"
@@ -364,13 +392,14 @@
 												</div>					
 
 											
-												<div class="verticalMenu">
+												<div class="verticalMenu2">
 													<i class="fa fa-warning"></i>
-													<i class="fa fa-arrows-h"></i>
+													<i title="Reverse Pages" class="fa fa-arrows-h"></i>
 													<i class="fa" 
+													   title="Expand/Collapse Pages"
 													   ng-show="document.pages.length>0"
-													   ng-class="{'fa-caret-down':showChildren,'fa-caret-up':!showChildren}" 
-													   ng-click="showChildren=!showChildren">
+													   ng-class="{'fa-caret-down':uiModel.showChildren,'fa-caret-up':!uiModel.showChildren}" 
+													   ng-click="uiModel.showChildren=!uiModel.showChildren">
 													</i>
 												</div>
 												
@@ -380,26 +409,27 @@
 											<td colspan="2">
 												<div class="documentInfo">
 													<span>{{document.name}}</span>
-													<span>{{$parent.formatTimestamp(document.creationTimestamp)}}</span>
 												</div>
 											</td>
 										<tr>
 									</table>
-									<div ng-show="showChildren" 
+									<div class="documentHeader" ng-show="uiModel.showChildren">{{document.name}}</div>
+									<div ng-show="uiModel.showChildren" 
 									     ng-repeat="page in document.pages" 
 									     class="page">
 										<table ng-class="{'selected':isPageSelected(page),'unselected':!isPageSelected(page)}">
 											<tr>
-												<td align="right">{{page.number}}</td>
 												<td>
 													<a style="display:inline;" ng-click="$parent.$parent.selectPage(page,document.url + $index,$event,document.pages)">
 														<img src="{{document.url + $index}}" width="40%" />
 													</a>
-													<div style="display:inline-block;">
+													<div class="verticalMenu2">
 														<i style="display:block;" class="fa fa-warning"></i>
-														<i style="display:block;" class="fa fa-arrow-up"></i>
-														<i style="display:block;" class="fa fa-arrow-down"></i>
+														<i title="Move Page Up" style="display:block;" class="fa fa-arrow-up"></i>
+														<i title="Move Page Down" style="display:block;" class="fa fa-arrow-down"></i>
+														<i title="Collapse" style="display:block;" ng-click="uiModel.showChildren=false" class="fa fa-caret-up"></i>
 													</div>
+													<div class="pageNumber">{{page.number}}</div>
 												</td>
 											</tr>
 										</table>

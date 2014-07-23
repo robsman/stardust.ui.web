@@ -25,6 +25,8 @@ define(
 				 */
 				DocumentAssignmentPanelController.prototype.initialize = function() {
 					this.pageModel={};
+					this.uiModel={};
+					this.uiModel.showChildren=false;
 					this.pageModel.currentDocument="";
 					this.pageModel.pageIndex={};
 					this.retrieveActivityInstanceFromUri();
@@ -32,7 +34,7 @@ define(
 					this.businessObjectFilter = {};
 					this.selectedBusinessObjectInstances = [];					
 					this.initializePageRendering();
-					this.documentTypes=[];
+					this.documentTypes=[{name:"None",documentTypeId:"",schemaLocation:""}];
 					this.businessObjectManagementPanelController = BusinessObjectManagementPanelController
 							.create();
 
@@ -41,7 +43,6 @@ define(
 					DocumentAssignmentService.instance().getDocumentTypes()
 					.done(function(docTypes){
 						debugger;
-						self.documentTypes.push({name:"None",documentTypeId:"",schemaLocation:""});
 						self.documentTypes=self.documentTypes.concat(docTypes);
 					});
 					
@@ -116,14 +117,15 @@ define(
 				
 				DocumentAssignmentPanelController.prototype.openProcessHistory = function(workItem) {
 					debugger;
+					var oid=workItem.pendingProcess.oid;
 				      var message = {
 				        "type": "OpenView",
 				        "data": {
-				          "viewId": "ganttChartView",
-				          "viewKey": "processInstanceOid=" + workItem.processInstance.oid,
+				          "viewId": "processInstanceDetailsView",
+				          "viewKey": "processInstanceOID=" + oid,
 				          "params": {
-				            "oid": "" + workItem.oid,
-				            "processInstanceOid": "" + workItem.processInstance.oid
+				            "oid": "" + oid,
+				            "processInstanceOID": "" + oid
 				          }
 				        }
 				      };
@@ -186,11 +188,6 @@ define(
 
 										return jQuery("<div class='ui-widget-header dragHelper'><i class='fa fa-files-o' style='font-size: 14px;'></i> "
 												+ scannedDocument.name
-												+ " "
-												+ self
-														.formatTimestamp(scannedDocument.creationTimestamp)
-												+ " "
-												+ scannedDocument.contentType
 												+ "</div>");
 									},
 									drag : function(event) {
