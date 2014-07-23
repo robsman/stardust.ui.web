@@ -41,15 +41,15 @@ ul.errorMessagesPanel {
 					<ul class="errorMessagesPanel" ng-show="messages.length > 0">
 						<li ng-repeat="message in messages">{{message}}</li>
 					</ul>
-					<table class="formTable">
-						<tr>
-							<td
-								ng-repeat="field in businessObjectManagementPanelController.topLevelFields"><label
-								style="margin-left: 5px;">{{field.name}}</label> <input
-								type="text" style="width: 100px; margin-left: 5px;"
-								ng-model="currentBusinessObjectInstance[field.id]"></input></td>
-						</tr>
-					</table>
+					<div ng-repeat="instance in [currentBusinessObjectInstance]">
+						<table class="formTable">
+							<tr
+								ng-repeat="field in businessObjectManagementPanelController.topLevelFields">
+								<td><label style="margin-left: 5px;">{{field.name}}</label></td>
+								<td><span ng-include="'../objectPanelField.html'"></span></td>
+							</tr>
+						</table>
+					</div>
 				</td>
 			</tr>
 		</table>

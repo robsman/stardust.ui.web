@@ -192,6 +192,46 @@ public class BusinessObjectManagementService {
 
 		fieldsJson.add(fieldJson);
 
+		fieldJson.addProperty("id", "dateOfBirth");
+		fieldJson.addProperty("name", "Date of Birth");
+		fieldJson.addProperty("type", "date");
+		fieldJson.addProperty("key", true);
+		fieldJson.addProperty("primaryKey", false);
+
+		fieldJson = new JsonObject();
+
+		fieldsJson.add(fieldJson);
+
+		fieldJson.addProperty("id", "amlChecked");
+		fieldJson.addProperty("name", "AML Checked");
+		fieldJson.addProperty("type", "boolean");
+		fieldJson.addProperty("key", false);
+		fieldJson.addProperty("primaryKey", false);
+		
+		fieldJson = new JsonObject();
+
+		fieldsJson.add(fieldJson);
+
+		fieldJson.addProperty("id", "numberOfDependents");
+		fieldJson.addProperty("name", "Number of Dependents");
+		fieldJson.addProperty("type", "integer");
+		fieldJson.addProperty("key", false);
+		fieldJson.addProperty("primaryKey", false);
+
+		fieldJson = new JsonObject();
+
+		fieldsJson.add(fieldJson);
+
+		fieldJson.addProperty("id", "annualSalary");
+		fieldJson.addProperty("name", "Annual Salary");
+		fieldJson.addProperty("type", "decimal");
+		fieldJson.addProperty("key", false);
+		fieldJson.addProperty("primaryKey", false);
+
+		fieldJson = new JsonObject();
+
+		fieldsJson.add(fieldJson);
+
 		fieldJson.addProperty("id", "scheme");
 		fieldJson.addProperty("name", "Scheme Name");
 		fieldJson.addProperty("type", "string");
