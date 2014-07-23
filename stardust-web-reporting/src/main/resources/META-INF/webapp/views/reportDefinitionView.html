@@ -277,11 +277,11 @@ table.formTable td {
 						<div id="dataSetTab">
 							<table cellpadding="0" cellspacing="0" class="formTable">
 								<tr>
-									<td><input ng-model="report.dataSet.type"
+									<td><input id="auto-reporting-dataSetTab-seriesGroup" ng-model="report.dataSet.type"
 										ng-change="changeDataSetType()" value="seriesGroup"
 										type="radio"></td>
 									<td><label>{{getI18N('reporting.definitionView.seriesGroup.label')}}</label></td>
-									<td><input ng-model="report.dataSet.type"
+									<td><input id="auto-reporting-dataSetTab-recordSet" ng-model="report.dataSet.type"
 										ng-change="changeDataSetType()" value="recordSet" type="radio"></td>
 									<td><label>{{getI18N('reporting.definitionView.recordSet.label')}}</label></td>
 								</tr>
@@ -361,7 +361,7 @@ table.formTable td {
 												<tr>
 													<td><label
 														style="display: inline-block;">{{getI18N('reporting.definitionView.firstDimension.label')}}</label></td>
-													<td><select ng-model="report.dataSet.firstDimension"
+													<td><select id="auto-reporting-dataSetTab-firstDimension" ng-model="report.dataSet.firstDimension"
                                           ng-init="report.dataSet.firstDimension = report.dataSet.firstDimension || (getCumulatedDimensionsByGroup() | orderBy:['order','name'])[0].id"
 														ng-options="dimension.id as dimension.name group by primaryObjectEnumGroup(dimension.id) for dimension in getCumulatedDimensionsByGroup() | orderBy:['order','name']"
 														ng-change="changeFirstDimension()">
@@ -513,7 +513,7 @@ table.formTable td {
 							<table cellpadding="0" cellspacing="0" class="formTable"
 								style="margin-top: 10px; margin-bottom: 10px;">
 								<tr>
-									<td><input ng-model="report.layout.type"
+									<td><input id="auto-reporting-layoutTab-simpleReport" ng-model="report.layout.type"
 										ng-show="report.dataSet.type == 'seriesGroup'" value="simpleReport"
 										type="radio"></td>
 									<td><label ng-show="report.dataSet.type == 'seriesGroup'">{{getI18N('reporting.definitionView.simpletReport.label')}}</label></td>
@@ -523,7 +523,7 @@ table.formTable td {
 										type="radio"></td>
 									<td><label ng-show="report.dataSet.type == 'recordSet'">{{getI18N('reporting.definitionView.table.label')}}</label></td>
 									
-									<td><input ng-model="report.layout.type" value="document"
+									<td><input id="auto-reporting-layoutTab-compositeReport" ng-model="report.layout.type" value="document"
 										type="radio"></td>
 									<td><label>{{getI18N('reporting.definitionView.composite.label')}}</label></td>
 									
@@ -553,7 +553,7 @@ table.formTable td {
 								<table cellpadding="0" cellspacing="0" class="formTable">
 									<tr>
 										<td><label>{{getI18N('reporting.definitionView.layoutTitle.label')}}</label></td>
-										<td colspan="2"><input type="text" ng-model="report.layout.title" style="width: 250px;" /> </td>
+										<td colspan="2"><input id="auto-reporting-layoutTab-reportTitle" type="text" ng-model="report.layout.title" style="width: 250px;" /> </td>
 									</tr>
 									<tr>
 										<td><label>{{getI18N('reporting.definitionView.layoutType.label')}}</label></td>
@@ -575,17 +575,17 @@ table.formTable td {
 												<div class="heading">{{getI18N('reporting.definitionView.cursor.title')}}</div>
 												<table cellpadding="0" cellspacing="0" class="formTable">
 													<tr>
-														<td><input type="checkbox"
+														<td><input id="auto-reporting-layoutTab-showCursor" type="checkbox"
 															ng-model="report.layout.chart.options.cursor.show" /></td>
 														<td><label>{{getI18N('reporting.definitionView.showCursor.label')}}</label></td>
 													</tr>
 													<tr>
-														<td><input type="checkbox"
+														<td><input id="auto-reporting-layoutTab-showTooltip" type="checkbox"
 															ng-model="report.layout.chart.options.cursor.showTooltip" /></td>
 														<td><label>{{getI18N('reporting.definitionView.showTooltip.label')}}</label></td>
 													</tr>
 													<tr>
-														<td><input type="checkbox"
+														<td><input id="auto-reporting-layoutTab-zoom" type="checkbox"
 															ng-model="report.layout.chart.options.cursor.zoom" /></td>
 														<td><label>{{getI18N('reporting.definitionView.zoom.label')}}</label></td>
 													</tr>
@@ -597,7 +597,7 @@ table.formTable td {
 												<div class="heading">{{getI18N('reporting.definitionView.highlighter.title')}}</div>
 												<table cellpadding="0" cellspacing="0" class="formTable">
 													<tr>
-														<td><input type="checkbox"
+														<td><input id="auto-reporting-layoutTab-showHighlighter" type="checkbox"
 															ng-model="report.layout.chart.options.highlighter.show" /></td>
 														<td><label>{{getI18N('reporting.definitionView.showHighlighter.label')}}</label></td>
 													</tr>
@@ -609,7 +609,7 @@ table.formTable td {
 												<div class="heading">{{getI18N('reporting.definitionView.legend.title')}}</div>
 												<table cellpadding="0" cellspacing="0" class="formTable">
 													<tr>
-														<td><input type="checkbox"
+														<td><input id="auto-reporting-layoutTab-showLegend" type="checkbox"
 															ng-model="report.layout.chart.options.legend.show" /></td>
 														<td><label>{{getI18N('reporting.definitionView.showLegend.label')}}</label></td>
 													</tr>
@@ -617,7 +617,7 @@ table.formTable td {
 												<table cellpadding="0" cellspacing="0" class="formTable">
 													<tr>
 														<td><label>{{getI18N('reporting.definitionView.legendPosition.label')}}</label></td>
-														<td><select
+														<td><select id="auto-reporting-layoutTab-legendLocation" 
 															ng-model="report.layout.chart.options.legend.location">
 																<option value="w" selected>{{getI18N('reporting.definitionView.west.label')}}</option>
 																<option value="nw">{{getI18N('reporting.definitionView.northWest.label')}}</option>
@@ -637,7 +637,7 @@ table.formTable td {
 												<div class="heading">{{getI18N('reporting.definitionView.animation.title')}}</div>
 												<table cellpadding="0" cellspacing="0" class="formTable">
 													<tr>
-														<td><input type="checkbox"
+														<td><input id="auto-reporting-layoutTab-showAnimation" type="checkbox"
 															ng-model="report.layout.chart.options.animate" /></td>
 														<td><label>{{getI18N('reporting.definitionView.showAnimation.label')}}</label></td>
 													</tr>
@@ -652,22 +652,22 @@ table.formTable td {
 												<table cellpadding="0" cellspacing="0" class="formTable">
 													<tr>
 														<td><label>{{getI18N('reporting.definitionView.minimum.label')}}</label></td>
-														<td><input type="number"
+														<td><input id="auto-reporting-layoutTab-xaxisMin" type="number"
 															ng-model="report.layout.chart.options.axes.xaxis.min" /></td>
 													</tr>
 													<tr>
 														<td><label>{{getI18N('reporting.definitionView.maximum.label')}}</label></td>
-														<td><input type="number"
+														<td><input id="auto-reporting-layoutTab-xaxisMax" type="number"
 															ng-model="report.layout.chart.options.axes.xaxis.max" /></td>
 													</tr>
 													<tr>
 														<td><label>{{getI18N('reporting.definitionView.label.label')}}</label></td>
-														<td><input
+														<td><input id="auto-reporting-layoutTab-xaxisLabel"  
 															ng-model="report.layout.chart.options.axes.xaxis.label" /></td>
 													</tr>
 													<tr>
 														<td><label>{{getI18N('reporting.definitionView.tickPosition.label')}}</label></td>
-														<td><select
+														<td><select id="auto-reporting-layoutTab-xaxisTickPosition"   
 															ng-model="report.layout.chart.options.axes.xaxis.tickOptions.mark">
 																<option value="inside">{{getI18N('reporting.definitionView.inside.label')}}</option>
 																<option value="outside">{{getI18N('reporting.definitionView.outside.label')}}</option>
@@ -676,33 +676,33 @@ table.formTable td {
 													</tr>
 													<tr>
 														<td><label>{{getI18N('reporting.definitionView.markSize.label')}}</label></td>
-														<td><input type="number"
+														<td><input id="auto-reporting-layoutTab-xaxisTtickOptionsMarkSize" type="number"
 															ng-model="report.layout.chart.options.axes.xaxis.tickOptions.markSize" /></td>
 													</tr>
 													<tr>
 														<td><label>{{getI18N('reporting.definitionView.labelFormatString.label')}}</label></td>
-														<td><input
+														<td><input id="auto-reporting-layoutTab-xaxisTickOptionsFormatString" 
 															ng-model="report.layout.chart.options.axes.xaxis.tickOptions.formatString" /></td>
 													</tr>
 													<tr>
 														<td><label>{{getI18N('reporting.definitionView.labelAngle.label')}}</label></td>
-														<td><input type="number"
+														<td><input id="auto-reporting-layoutTab-xaxisTickOptionsAngle" type="number"
 															ng-model="report.layout.chart.options.axes.xaxis.tickOptions.angle" /></td>
 													</tr>
 												</table>
 												<table cellpadding="0" cellspacing="0" class="formTable">
 													<tr>
-														<td><input type="checkbox"
+														<td><input id="auto-reporting-layoutTab-xaxisTickOptionsShowGridline" type="checkbox"
 															ng-model="report.layout.chart.options.axes.xaxis.tickOptions.showGridline" /></td>
 														<td><label>{{getI18N('reporting.definitionView.showGridLine.label')}}</label></td>
 													</tr>
 													<tr>
-														<td><input type="checkbox"
+														<td><input id="auto-reporting-layoutTab-xaxisTickOptionsShowTickMarks" type="checkbox"
 															ng-model="report.layout.chart.options.axes.xaxis.showTickMarks" /></td>
 														<td><label>{{getI18N('reporting.definitionView.showTickMarks.label')}}</label></td>
 													</tr>
 													<tr>
-														<td><input type="checkbox"
+														<td><input id="auto-reporting-layoutTab-xaxisTickOptionsShowTickLabels" type="checkbox"
 															ng-model="report.layout.chart.options.axes.xaxis.showTicks" /></td>
 														<td><label>{{getI18N('reporting.definitionView.showTickLabels.label')}}</label></td>
 													</tr>
@@ -716,22 +716,22 @@ table.formTable td {
 												<table cellpadding="0" cellspacing="0" class="formTable">
 													<tr>
 														<td><label>{{getI18N('reporting.definitionView.minimum.label')}}</label></td>
-														<td><input type="number"
+														<td><input id="auto-reporting-layoutTab-yaxisMin" type="number"
 															ng-model="report.layout.chart.options.axes.yaxis.min" /></td>
 													</tr>
 													<tr>
 														<td><label>{{getI18N('reporting.definitionView.maximum.label')}}</label></td>
-														<td><input type="number"
+														<td><input id="auto-reporting-layoutTab-yaxisMax" type="number"
 															ng-model="report.layout.chart.options.axes.yaxis.max" /></td>
 													</tr>
 													<tr>
 														<td><label>{{getI18N('reporting.definitionView.label.label')}}</label></td>
-														<td><input
+														<td><input id="auto-reporting-layoutTab-yaxisLabel" 
 															ng-model="report.layout.chart.options.axes.yaxis.label" /></td>
 													</tr>
 													<tr>
 														<td><label>{{getI18N('reporting.definitionView.tickPosition.label')}}</label></td>
-														<td><select
+														<td><select id="auto-reporting-layoutTab-yaxisTickPosition" 
 															ng-model="report.layout.chart.options.axes.yaxis.tickOptions.mark">
 																<option value="inside">{{getI18N('reporting.definitionView.inside.label')}}</option>
 																<option value="outside">{{getI18N('reporting.definitionView.outside.label')}}</option>
@@ -740,33 +740,33 @@ table.formTable td {
 													</tr>
 													<tr>
 														<td><label>{{getI18N('reporting.definitionView.markSize.label')}}</label></td>
-														<td><input type="number"
+														<td><input id="auto-reporting-layoutTab-yaxisTtickOptionsMarkSize" type="number"
 															ng-model="report.layout.chart.options.axes.yaxis.tickOptions.markSize" /></td>
 													</tr>
 													<tr>
 														<td><label>{{getI18N('reporting.definitionView.labelFormatString.label')}}</label></td>
-														<td><input
+														<td><input id="auto-reporting-layoutTab-yaxisTickOptionsFormatString" 
 															ng-model="report.layout.chart.options.axes.yaxis.tickOptions.formatString" /></td>
 													</tr>
 													<tr>
 														<td><label>{{getI18N('reporting.definitionView.labelAngle.label')}}</label></td>
-														<td><input type="number"
+														<td><input id="auto-reporting-layoutTab-yaxisTickOptionsAngle" type="number"
 															ng-model="report.layout.chart.options.axes.yaxis.tickOptions.angle" /></td>
 													</tr>
 												</table>
 												<table cellpadding="0" cellspacing="0" class="formTable">
 													<tr>
-														<td><input type="checkbox"
+														<td><input id="auto-reporting-layoutTab-yaxisTickOptionsShowGridline" type="checkbox"
 															ng-model="report.layout.chart.options.axes.yaxis.tickOptions.showGridline" /></td>
 														<td><label>{{getI18N('reporting.definitionView.showGridLine.label')}}</label></td>
 													</tr>
 													<tr>
-														<td><input type="checkbox"
+														<td><input id="auto-reporting-layoutTab-yaxisTickOptionsShowTickMarks" type="checkbox"
 															ng-model="report.layout.chart.options.axes.yaxis.showTickMarks" /></td>
 														<td><label>{{getI18N('reporting.definitionView.showTickMarks.label')}}</label></td>
 													</tr>
 													<tr>
-														<td><input type="checkbox"
+														<td><input id="auto-reporting-layoutTab-yaxisTickOptionsShowTickLabels" type="checkbox"
 															ng-model="report.layout.chart.options.axes.yaxis.showTicks" /></td>
 														<td><label>{{getI18N('reporting.definitionView.showTickLabels.label')}}</label></td>
 													</tr>
@@ -780,20 +780,20 @@ table.formTable td {
 												<table cellpadding="0" cellspacing="0" class="formTable">
 													<tr>
 														<td><label>{{getI18N('reporting.definitionView.lineWidth.label')}}</label></td>
-														<td><input
+														<td><input id="auto-reporting-layoutTab-seriesDefaultsLineWidth"  
 															ng-model="report.layout.chart.options.seriesDefaults.lineWidth" />
 														</td>
 													</tr>
 													<tr>
 														<td><label>{{getI18N('reporting.definitionView.lineColorCss.label')}}</label></td>
-														<td><input
+														<td><input id="auto-reporting-layoutTab-seriesDefaultsLineColor" 
 															ng-model="report.layout.chart.options.seriesDefaults.color" />
 														</td>
 													</tr>
 												</table>
 												<table cellpadding="0" cellspacing="0" class="formTable">
 													<tr>
-														<td><input type="checkbox"
+														<td><input id="auto-reporting-layoutTab-seriesDefaultsShowShadow" type="checkbox"
 															ng-model="report.layout.chart.options.seriesDefaults.shadow" />
 														</td>
 														<td><label>{{getI18N('reporting.definitionView.showShadow.label')}}</label></td>
@@ -801,7 +801,7 @@ table.formTable td {
 												</table>
 												<table cellpadding="0" cellspacing="0" class="formTable">
 													<tr>
-														<td><input type="checkbox"
+														<td><input id="auto-reporting-layoutTab-seriesDefaultsShowMarker" type="checkbox"
 															ng-model="report.layout.chart.options.seriesDefaults.showMarker" />
 														</td>
 														<td><label>{{getI18N('reporting.definitionView.showMarker.label')}}</label></td>
@@ -810,7 +810,7 @@ table.formTable td {
 												<table cellpadding="0" cellspacing="0" class="formTable">
 													<tr>
 														<td><label>{{getI18N('reporting.definitionView.markerStyle.label')}}</label></td>
-														<td><select
+														<td><select id="auto-reporting-layoutTab-seriesDefaultsMarkerStyle" 
 															ng-model="report.layout.chart.options.seriesDefaults.markerOptions.style">
 																<option value="circle">{{getI18N('reporting.definitionView.circle.label')}}</option>
 																<option value="diamond">{{getI18N('reporting.definitionView.diamond.label')}}</option>
@@ -823,19 +823,19 @@ table.formTable td {
 												</table>
 												<table cellpadding="0" cellspacing="0" class="formTable">
 													<tr>
-														<td><input type="checkbox"
+														<td><input id="auto-reporting-layoutTab-seriesDefaultsShowMarkerShadow" type="checkbox"
 															ng-model="report.layout.chart.options.seriesDefaults.markerOptions.shadow" />
 														</td>
 														<td><label>{{getI18N('reporting.definitionView.showMarkerShadow.label')}}</label></td>
 													</tr>
 													<tr>
-														<td><input type="checkbox"
+														<td><input id="auto-reporting-layoutTab-seriesDefaultsShowPrintLabel" type="checkbox"
 															ng-model="report.layout.chart.options.seriesDefaults.pointLabels.show" />
 														</td>
 														<td><label>{{getI18N('reporting.definitionView.showPointLabel.label')}}</label></td>
 													</tr>
 													<tr>
-														<td><input type="checkbox"
+														<td><input id="auto-reporting-layoutTab-seriesDefaultsShowTrendLine" type="checkbox"
 															ng-model="report.layout.chart.options.seriesDefaults.trendline.show" />
 														</td>
 														<td><label>{{getI18N('reporting.definitionView.showTrendLine.label')}}</label></td>
@@ -944,7 +944,7 @@ table.formTable td {
 									<td valign="top">
 										<table>
 											<tr>
-												<td><input type="checkbox"
+												<td><input id="auto-reporting-schedulingTab-active" type="checkbox"
 													ng-model="report.scheduling.active"></input></td>
 												<td>{{getI18N('reporting.definitionView.scheduleReport.text')}}</td>
 											</tr>
@@ -961,7 +961,7 @@ table.formTable td {
 											<table cellpadding="0" cellspacing="0" class="formTable">
 												<tr>
 													<td valign="top"><label>{{getI18N('reporting.definitionView.mapStartTimestamp.label')}}</label></td>
-													<td valign="top"><select multiple="multiple"
+													<td valign="top"><select id="auto-reporting-schedulingTab-parametersForStartTime" multiple="multiple"
 														ng-model="report.scheduling.parametersForStartTime"
 														ng-options="id as name for (id, name) in getParametersOfTypeTimestamp()"
 														style="height: 50px;">
@@ -974,7 +974,7 @@ table.formTable td {
                                        <td valign="top"><label style="display: inline-block;">{{getI18N('reporting.definitionView.executeReportAt.label')}}</label></td>
                                        <td valign="top">
                                        <!-- <input type="text" ng-model="report.scheduling.executionTime"/> -->
-                                       <select 
+                                       <select id="auto-reporting-schedulingTab-executionTime" 
                                           ng-model="report.scheduling.executionTime"
                                           ng-options="k as v for (k, v) in getExecutionTime()">
                                           <option value="" ng-hide="report.scheduling.executionTime">{{report.scheduling.executionTime}}</option>
@@ -989,25 +989,25 @@ table.formTable td {
 														style="margin-right: 10px; padding-right: 10px;">
 														<table>
 															<tr>
-																<td><input type="radio"
+																<td><input id="auto-reporting-schedulingTab-recurrenceIntervalDaily" type="radio"
 																	ng-model="report.scheduling.recurrenceInterval"
 																	ng-value="schedulingController.DAILY" /></td>
 																<td><label>{{getI18N('reporting.definitionView.daily.label')}}</label></td>
 															</tr>
 															<tr>
-																<td><input type="radio"
+																<td><input id="auto-reporting-schedulingTab-recurrenceIntervalWeekly" type="radio"
 																	ng-model="report.scheduling.recurrenceInterval"
 																	ng-value="schedulingController.WEEKLY" /></td>
 																<td><label>{{getI18N('reporting.definitionView.weekly.label')}}</label></td>
 															</tr>
 															<tr>
-																<td><input type="radio"
+																<td><input id="auto-reporting-schedulingTab-recurrenceIntervalMonthly" type="radio"
 																	ng-model="report.scheduling.recurrenceInterval"
 																	ng-value="schedulingController.MONTHLY" /></td>
 																<td><label>{{getI18N('reporting.definitionView.monthly.label')}}</label></td>
 															</tr>
 															<tr>
-																<td><input type="radio"
+																<td><input id="auto-reporting-schedulingTab-recurrenceIntervalYearly" type="radio"
 																	ng-model="report.scheduling.recurrenceInterval"
 																	ng-value="schedulingController.YEARLY" /></td>
 																<td><label>{{getI18N('reporting.definitionView.yearly.label')}}</label></td>
@@ -1020,11 +1020,11 @@ table.formTable td {
 															ng-show="report.scheduling.recurrenceInterval == schedulingController.DAILY">
 															<table>
 																<tr>
-																	<td><input type="radio"
+																	<td><input id="auto-reporting-schedulingTab-daysRecurrence" type="radio"
 																		ng-model="report.scheduling.dailyRecurrenceOptions.daysRecurrence"
 																		value="interval" /></td>
 																	<td><label>{{getI18N('reporting.definitionView.every.label')}}</label></td>
-																	<td><input type="number" min="1"
+																	<td><input id="auto-reporting-schedulingTab-daysIntervalCount" type="number" min="1"
 																		style="width: 50px;"
 																		ng-model="report.scheduling.dailyRecurrenceOptions.daysIntervalCount"
 																		ng-disabled="report.scheduling.dailyRecurrenceOptions.daysRecurrence != 'interval'" />
@@ -1032,7 +1032,7 @@ table.formTable td {
 																	<td><label>{{getI18N('reporting.definitionView.daily.days.label')}}</label></td>
 																</tr>
 																<tr>
-																	<td><input type="radio"
+																	<td><input id="auto-reporting-schedulingTab-daysIntervalWeekdays" type="radio"
 																		ng-model="report.scheduling.dailyRecurrenceOptions.daysRecurrence"
 																		value="weekdays" /></td>
 																	<td colspan="3"><label>{{getI18N('reporting.definitionView.everyWeekday.label')}}</label></td>
@@ -1047,7 +1047,7 @@ table.formTable td {
 																		<table>
 																			<tr>
 																				<td><label>{{getI18N('reporting.definitionView.recursEvery.label')}}</label></td>
-																				<td><input type="number" min="1"
+																				<td><input id="auto-reporting-schedulingTab-recurrenceWeekCount" type="number" min="1"
 																					style="width: 50px;"
 																					ng-model="report.scheduling.weeklyRecurrenceOptions.recurrenceWeekCount" />
 																				</td>
@@ -1063,7 +1063,7 @@ table.formTable td {
 																				<td>
 																					<table>
 																						<tr>
-																							<td><input type="checkbox"
+																							<td><input id="auto-reporting-schedulingTab-weeklyMondays" type="checkbox"
 																								ng-model="report.scheduling.weeklyRecurrenceOptions.mondays" />
 																							</td>
 																							<td><label>{{getI18N('reporting.definitionView.monday.label')}}</label></td>
@@ -1073,7 +1073,7 @@ table.formTable td {
 																				<td>
 																					<table>
 																						<tr>
-																							<td><input type="checkbox"
+																							<td><input id="auto-reporting-schedulingTab-weeklyTuesdays" type="checkbox"
 																								ng-model="report.scheduling.weeklyRecurrenceOptions.tuesdays" />
 																							</td>
 																							<td><label>{{getI18N('reporting.definitionView.tuesday.label')}}</label></td>
@@ -1083,7 +1083,7 @@ table.formTable td {
 																				<td>
 																					<table>
 																						<tr>
-																							<td><input type="checkbox"
+																							<td><input id="auto-reporting-schedulingTab-weeklyWednesdays" type="checkbox"
 																								ng-model="report.scheduling.weeklyRecurrenceOptions.wednesdays" />
 																							</td>
 																							<td><label>{{getI18N('reporting.definitionView.wednesday.label')}}</label></td>
@@ -1093,7 +1093,7 @@ table.formTable td {
 																				<td>
 																					<table>
 																						<tr>
-																							<td><input type="checkbox"
+																							<td><input id="auto-reporting-schedulingTab-weeklyThursdays" type="checkbox"
 																								ng-model="report.scheduling.weeklyRecurrenceOptions.thursdays" />
 																							</td>
 																							<td><label>{{getI18N('reporting.definitionView.thursday.label')}}</label></td>
@@ -1105,7 +1105,7 @@ table.formTable td {
 																				<td>
 																					<table>
 																						<tr>
-																							<td><input type="checkbox"
+																							<td><input id="auto-reporting-schedulingTab-weeklyFridays" type="checkbox"
 																								ng-model="report.scheduling.weeklyRecurrenceOptions.fridays" />
 																							</td>
 																							<td><label>{{getI18N('reporting.definitionView.friday.label')}}</label></td>
@@ -1115,7 +1115,7 @@ table.formTable td {
 																				<td>
 																					<table>
 																						<tr>
-																							<td><input type="checkbox"
+																							<td><input id="auto-reporting-schedulingTab-weeklySaturdays" type="checkbox"
 																								ng-model="report.scheduling.weeklyRecurrenceOptions.saturdays" />
 																							</td>
 																							<td><label>{{getI18N('reporting.definitionView.saturday.label')}}</label></td>
@@ -1125,7 +1125,7 @@ table.formTable td {
 																				<td>
 																					<table>
 																						<tr>
-																							<td><input type="checkbox"
+																							<td><input id="auto-reporting-schedulingTab-weeklySundays" type="checkbox"
 																								ng-model="report.scheduling.weeklyRecurrenceOptions.sundays" />
 																							</td>
 																							<td><label>{{getI18N('reporting.definitionView.sunday.label')}}</label></td>
@@ -1146,18 +1146,18 @@ table.formTable td {
 																	<td>
 																		<table>
 																			<tr>
-																				<td><input type="radio"
+																				<td><input id="auto-reporting-schedulingTab-monthsRecurrence" type="radio"
 																					ng-model="report.scheduling.monthlyRecurrenceOptions.monthsRecurrence"
 																					value="day" /></td>
 																				<td><label>{{getI18N('reporting.definitionView.day.label')}}</label></td>
 																				<td><table>
 																						<tr>
-																							<td><input type="number" min="1" max="31"
+																							<td><input id="auto-reporting-schedulingTab-monthsRecurrenceDayNumber" type="number" min="1" max="31"
 																								ng-disabled="report.scheduling.monthlyRecurrenceOptions.monthsRecurrence != 'day'" 
                                                                         ng-model="report.scheduling.monthlyRecurrenceOptions.dayNumber" 
 																								style="width: 50px;"></input></td>
 																							<td><label>{{getI18N('reporting.definitionView.ofEvery.label')}}</label></td>
-																							<td><input type="number"
+																							<td><input id="auto-reporting-schedulingTab-monthsRecurrenceMonth" type="number"
 																								ng-disabled="report.scheduling.monthlyRecurrenceOptions.monthsRecurrence != 'day'" 
                                                                         ng-model="report.scheduling.monthlyRecurrenceOptions.month" 
 																								style="width: 50px;"></input></td>
@@ -1166,13 +1166,13 @@ table.formTable td {
 																					</table></td>
 																			</tr>
 																			<tr>
-																				<td><input type="radio"
+																				<td><input id="auto-reporting-schedulingTab-monthsRecurrenceWeekday" type="radio"
 																					ng-model="report.scheduling.monthlyRecurrenceOptions.monthsRecurrence"
 																					value="weekday" /></td>
 																				<td><label>{{getI18N('reporting.definitionView.the.label')}}</label></td>
 																				<td><table>
 																						<tr>
-                                                                     <td><select
+                                                                     <td><select id="auto-reporting-schedulingTab-monthsRecurrenceDayIndex"  
                                                                         ng-model="report.scheduling.monthlyRecurrenceOptions.dayIndex"
                                                                         ng-disabled="report.scheduling.monthlyRecurrenceOptions.monthsRecurrence != 'weekday'"
                                                                         style="width: 50px;">
@@ -1183,7 +1183,7 @@ table.formTable td {
                                                                            <option value="5">{{getI18N('reporting.definitionView.last.label')}}</option>
                                                                            <option value="" ng-hide="report.scheduling.monthlyRecurrenceOptions.dayIndex">{{report.scheduling.monthlyRecurrenceOptions.dayIndex}}</option>
                                                                      </select></td>
-                                                                     <td><select
+                                                                     <td><select id="auto-reporting-schedulingTab-monthsRecurrenceDay" 
 																								ng-disabled="report.scheduling.monthlyRecurrenceOptions.monthsRecurrence != 'weekday'" 
                                                                            ng-model="report.scheduling.monthlyRecurrenceOptions.day" >
                                                                            <option value="1">{{getI18N('reporting.definitionView.monday.label')}}</option>
@@ -1196,7 +1196,7 @@ table.formTable td {
                                                                            <option value="" ng-hide="report.scheduling.monthlyRecurrenceOptions.day">{{report.scheduling.monthlyRecurrenceOptions.day}}</option>
 																							</select></td>
 																							<td><label>{{getI18N('reporting.definitionView.ofEvery.label')}}</label></td>
-																							<td><input type="number" min="1"
+																							<td><input id="auto-reporting-schedulingTab-monthsRecurrenceMonthIndex" type="number" min="1"
 																								ng-disabled="report.scheduling.monthlyRecurrenceOptions.monthsRecurrence != 'weekday'" 
                                                                         ng-model="report.scheduling.monthlyRecurrenceOptions.monthIndex" 
 																								style="width: 50px;"></input></td>
@@ -1217,7 +1217,7 @@ table.formTable td {
 																		<table>
 																			<tr>
 																				<td><label>{{getI18N('reporting.definitionView.recursEvery.label')}}</label></td>
-                                                            <td><input type="number"
+                                                            <td><input id="auto-reporting-schedulingTab-recurEveryYear" type="number"
                                                                ng-model="report.scheduling.yearlyRecurrenceOptions.recurEveryYear"
                                                                style="width: 50px;" /></td>
                                                             <td><label>{{getI18N('reporting.definitionView.yearly.years.label')}}</label></td>
@@ -1225,12 +1225,12 @@ table.formTable td {
 																		</table>
 																		<table>
 																			<tr>
-																				<td><input type="radio" value="weekday"
+																				<td><input id="auto-reporting-schedulingTab-yearlyRecurrenceFirst" type="radio" value="weekday"
 																					ng-model="report.scheduling.yearlyRecurrenceOptions.yearlyRecurrence" /></td>
 																				<td><label>on</label></td>
 																				<td><table cellpadding="0" cellspacing="0">
 																						<tr>
-																							<td><select
+																							<td><select id="auto-reporting-schedulingTab-yearlyRecurrenceOnMonth"  
                                                                         ng-model="report.scheduling.yearlyRecurrenceOptions.onMonth"
 																								ng-disabled="report.scheduling.yearlyRecurrenceOptions.yearlyRecurrence != 'weekday'">
 																									<option value="1">{{getI18N('reporting.definitionView.january.label')}}</option>
@@ -1246,7 +1246,7 @@ table.formTable td {
 																									<option value="11">{{getI18N('reporting.definitionView.november.label')}}</option>
 																									<option value="12">{{getI18N('reporting.definitionView.december.label')}}</option>
                                                                            <option value="" ng-hide="report.scheduling.yearlyRecurrenceOptions.onMonth">{{report.scheduling.yearlyRecurrenceOptions.onMonth}}</option>
-																									<td><input type="number"
+																									<td><input id="auto-reporting-schedulingTab-yearlyRecurrenceOnDay" type="number"
                                                                               ng-model="report.scheduling.yearlyRecurrenceOptions.onDay"
 																										ng-disabled="report.scheduling.yearlyRecurrenceOptions.yearlyRecurrence != 'weekday'"
 																										style="width: 50px;"></input></td>
@@ -1256,12 +1256,12 @@ table.formTable td {
 																		</table>
 																		<table>
 																			<tr>
-																				<td><input type="radio" value="date"
+																				<td><input id="auto-reporting-schedulingTab-yearlyRecurrenceSecond" type="radio" value="date"
 																					ng-model="report.scheduling.yearlyRecurrenceOptions.yearlyRecurrence" /></td>
 																				<td><label>{{getI18N('reporting.definitionView.onThe.label')}}</label></td>
 																				<td><table>
 																						<tr>
-																							<td><select
+																							<td><select id="auto-reporting-schedulingTab-yearlyRecurrenceOnTheXDay" 
                                                                         ng-model="report.scheduling.yearlyRecurrenceOptions.onTheXDay"
 																								ng-disabled="report.scheduling.yearlyRecurrenceOptions.yearlyRecurrence != 'date'"><option  value="1">{{getI18N('reporting.definitionView.first.label')}}</option>
 																									<option value="2">{{getI18N('reporting.definitionView.second.label')}}</option>
@@ -1270,7 +1270,7 @@ table.formTable td {
 																									<option value="5">{{getI18N('reporting.definitionView.last.label')}}</option>
                                                                            <option value="" ng-hide="report.scheduling.yearlyRecurrenceOptions.onTheXDay">{{report.scheduling.yearlyRecurrenceOptions.onTheXDay}}</option>
 																							</select></td>
-																							<td><select
+																							<td><select id="auto-reporting-schedulingTab-yearlyRecurrenceOnTheXDayName"  
                                                                         ng-model="report.scheduling.yearlyRecurrenceOptions.onTheXDayName"
 																								ng-disabled="report.scheduling.yearlyRecurrenceOptions.yearlyRecurrence != 'date'"><option value="1">{{getI18N('reporting.definitionView.monday.label')}}</option>
 																									<option value="2">{{getI18N('reporting.definitionView.tuesday.label')}}</option>
@@ -1282,7 +1282,7 @@ table.formTable td {
                                                                            <option value="" ng-hide="report.scheduling.yearlyRecurrenceOptions.onTheXDayName">{{report.scheduling.yearlyRecurrenceOptions.onTheXDayName}}</option>
 																							</select></td>
 																							<td><label>{{getI18N('reporting.definitionView.of.label')}}</label></td>
-																							<td><select
+																							<td><select id="auto-reporting-schedulingTab-yearlyRecurrenceOnTheMonth"  
                                                                         ng-model="report.scheduling.yearlyRecurrenceOptions.onTheMonth"
 																								ng-disabled="report.scheduling.yearlyRecurrenceOptions.yearlyRecurrence != 'date'">
 																									<option value="1">{{getI18N('reporting.definitionView.january.label')}}</option>
@@ -1326,24 +1326,24 @@ table.formTable td {
 													<td valign="top">
 														<table>
 															<tr>
-																<td><input type="radio"
+																<td><input id="auto-reporting-schedulingTab-noEnd" type="radio"
 																	ng-model="report.scheduling.recurrenceRange.endMode"
 																	value="noEnd" /></td>
 																<td><label>{{getI18N('reporting.definitionView.noEnd.label')}}</label></td>
 															</tr>
 															<tr>
-																<td><input type="radio"
+																<td><input id="auto-reporting-schedulingTab-endAfter" type="radio"
 																	ng-model="report.scheduling.recurrenceRange.endMode"
 																	value="endAfterNOcurrences" /></td>
 																<td><label>{{getI18N('reporting.definitionView.endAfter.label')}}</label></td>
-																<td><input type="number"
+																<td><input id="auto-reporting-schedulingTab-occurences" type="number"
 																	ng-model="report.scheduling.recurrenceRange.occurences"
 																	ng-disabled="report.scheduling.recurrenceRange.endMode != 'endAfterNOcurrences'"
 																	style="width: 50px;" /></td>
 																<td><label>{{getI18N('reporting.definitionView.occurences.label')}}</label></td>
 															</tr>
 															<tr>
-																<td><input type="radio"
+																<td><input id="auto-reporting-schedulingTab-endByDate" type="radio"
 																	ng-model="report.scheduling.recurrenceRange.endMode"
 																	value="endByDate" /></td>
 																<td><label>{{getI18N('reporting.definitionView.endBy.label')}}</label></td>
@@ -1363,17 +1363,17 @@ table.formTable td {
 											<div class="heading">{{getI18N('reporting.definitionView.delivery.title')}}</div>
 											<table>
 												<tr>
-													<td><input type="radio" value="personalFolder"
+													<td><input id="auto-reporting-schedulingTab-saveUnderPersonal" type="radio" value="personalFolder"
 														ng-model="report.scheduling.delivery.mode" /></td>
 													<td colspan="2">{{getI18N('reporting.definitionView.saveUnderPersonal.label')}}</td>
 												</tr>
 												<tr>
-													<td><input type="radio" value="publicFolder"
+													<td><input id="auto-reporting-schedulingTab-saveUnderPublic" type="radio" value="publicFolder"
 														ng-model="report.scheduling.delivery.mode" /></td>
 													<td colspan="2">{{getI18N('reporting.definitionView.saveUnderPublic.label')}}</td>
 												</tr>
 												<tr>
-													<td><input type="radio" value="participantFolder"
+													<td><input id="auto-reporting-schedulingTab-saveForOrganizationRole" type="radio" value="participantFolder"
 														ng-model="report.scheduling.delivery.mode" /></td>
 													<td>{{getI18N('reporting.definitionView.saveForOrganizationRole.label')}}</td>
 													<td><select id="schedulingParticipantsSelect" 
@@ -1381,12 +1381,12 @@ table.formTable td {
                                           ng-disabled="report.scheduling.delivery.mode != 'participantFolder'"></select></td>
 												</tr>
 												<tr>
-													<td><input type="radio" value="eMailToMe"
+													<td><input id="auto-reporting-schedulingTab-emailToMe" type="radio" value="eMailToMe"
 														ng-model="report.scheduling.delivery.mode" /></td>
 													<td colspan="2">{{getI18N('reporting.definitionView.emailToMe.label')}}</td>
 												</tr>
 												<tr>
-													<td><input type="radio" value="eMailToAddress"
+													<td><input id="auto-reporting-schedulingTab-emailTo" type="radio" value="eMailToAddress"
 														ng-model="report.scheduling.delivery.mode" /></td>
 													<td>{{getI18N('reporting.definitionView.emailTo.label')}}</td>
 													<td><input type="text"
@@ -1404,7 +1404,7 @@ table.formTable td {
 																	src="../images/icons/date.png" /></td>
 																<td style="color: #8ba7aa;">
 																	<div style="text-align: left;">{{scheduling.nextExecutionDateDay}}</div>
-																	<div
+																	<div id="auto-reporting-schedulingTab-nextExecution" 
 																		style="font-size: 25px; text-align: left; margin-top: 5px;">
 																		{{scheduling.nextExecutionDate + " " + getExecutionTime()[report.scheduling.executionTime]}}</div>
 																</td>

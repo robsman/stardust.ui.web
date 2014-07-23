@@ -16,7 +16,7 @@
 														alt=""
 														ng-src="{{reportingService.getRootUrl()}}/plugins/bpm-reporting/public/css/images/refresh.png"
 														title={{getI18N('reporting.definitionView.reRun.label')}}></a></td>
-												<td ng-show="showFavoriteBtn && !isFavorite()" ><a
+												<td ng-show="showFavoriteBtn && !isFavorite()" ><a id="auto-reporting-toolbar-addToFavorites" 
 													ng-click="addToFavorites()"><img alt=""
 														ng-src="{{reportingService.getRootUrl()}}/plugins/bpm-reporting/public/css/images/report-add-favorite.png"
 														title={{getI18N('reporting.definitionView.addToFavorite.label')}}></a></td>
@@ -24,11 +24,11 @@
 													ng-click="removeFromFavorites()"><img alt=""
 														ng-src="{{reportingService.getRootUrl()}}/plugins/bpm-reporting/public/css/images/report-remove-favorite.png"
 														title={{getI18N('reporting.definitionView.removeFromFavorite.label')}}></a></td>
-												<td ng-show="showSaveInstanceBtn"><a
+												<td ng-show="showSaveInstanceBtn"><a id="auto-reporting-toolbar-saveRI" 
 													ng-click="saveReportInstance()"><img alt=""
 														ng-src="{{reportingService.getRootUrl()}}/plugins/bpm-reporting/public/css/images/report_disk.png"
 														title={{getI18N('reporting.definitionView.saveInstance.label')}}></a></td>
-												<td ng-show="showSaveBtn"><a ng-click="saveReport()"><img
+												<td ng-show="showSaveBtn"><a id="auto-reporting-toolbar-saveReport" ng-click="saveReport()"><img
 														alt="" ng-src="{{reportingService.getRootUrl()}}/plugins/bpm-reporting/public/css/images/disk.png"
 														title={{getI18N('reporting.definitionView.save.label')}}></a></td>
 												<!-- <td ng-show="showPopoutBtn"><a ng-click="popout()"><img alt=""

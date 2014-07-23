@@ -3,15 +3,15 @@
 		<td valign="top">
 			<div ng-show="report.storage.state == 'created'">
 				<p>{{getI18N('reporting.definitionView.saveReport.text')}}</p>
-				<input type="text" ng-model="report.name" style="width: 250px;"></input>
+				<input id="auto-reporting-storageTab-createdRDName" type="text" ng-model="report.name" style="width: 250px;"></input>
 				<p>{{getI18N('reporting.definitionView.withDescription.text')}}</p>
-				<textarea rows="5" cols="60" ng-model="report.description"></textarea>
+				<textarea id="auto-reporting-storageTab-createdRDDescription" rows="5" cols="60" ng-model="report.description"></textarea>
 			</div>
 			<div ng-show="report.storage.state == 'saved'">
 				<table cellpadding="0" cellspacing="0" class="formTable">
 					<tr>
 						<td><label>{{getI18N('reporting.definitionView.name.label')}}</label></td>
-						<td><input type="text" ng-model="report.name"
+						<td><input id="auto-reporting-storageTab-savedRDName" type="text" ng-model="report.name"
 							style="width: 250px;"></input></td>
 					</tr>
 				</table>
@@ -20,7 +20,7 @@
 						<td><label>{{getI18N('reporting.definitionView.description.label')}}</label></td>
 					</tr>
 					<tr>
-						<td><textarea rows="5" cols="60"
+						<td><textarea id="auto-reporting-storageTab-savedRDDescription" rows="5" cols="60"
 								ng-model="report.description"></textarea></td>
 					</tr>
 				</table>
@@ -34,17 +34,17 @@
 			</div>
 			<table>
 				<tr>
-					<td><input type="radio" ng-model="report.storage.location"
+					<td><input id="auto-reporting-storageTab-RDPersonal" type="radio" ng-model="report.storage.location"
 						value="personalFolder" /></td>
 					<td colspan="2">{{getI18N('reporting.definitionView.personalReportTemplate.label')}}</td>
 				</tr>
 				<tr>
-					<td><input type="radio" ng-model="report.storage.location"
+					<td><input id="auto-reporting-storageTab-RDGlobal" type="radio" ng-model="report.storage.location"
 						value="publicFolder" /></td>
 					<td colspan="2">{{getI18N('reporting.definitionView.globalReportTemplate.label')}}</td>
 				</tr>
 				<tr>
-					<td><input type="radio" ng-model="report.storage.location"
+					<td><input id="auto-reporting-storageTab-RDRole" type="radio" ng-model="report.storage.location"
 						value="participantFolder" /></td>
 					<td>{{getI18N('reporting.definitionView.organizationRoleReportTemplate.label')}}</td>
 					<td><select ng-model="report.storage.participant"
