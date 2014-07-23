@@ -400,7 +400,7 @@ public class DocumentTriageService {
 
 			processDefinitionJson.addProperty("modelOid",
 					processDefinition.getModelOID());
-			processDefinitionJson.addProperty("id", processDefinition.getId());
+			processDefinitionJson.addProperty("id", processDefinition.getQualifiedId());
 			processDefinitionJson.addProperty("name",
 					processDefinition.getName());
 
@@ -479,16 +479,41 @@ public class DocumentTriageService {
 	 * @return
 	 */
 	public JsonObject startProcess(JsonObject parameters) {
-      JsonObject startableProcessJson = parameters.get("startableProcess").getAsJsonObject();
-		ProcessInstance pi = getWorkflowService().startProcess(
-		      startableProcessJson.get("id").getAsString(), null, true);
-
-		// TODO: Process Data
+		// TODO: Use "Business Object" concepts here for Process Data
+		JsonObject businessObject = parameters.get("businessObject").getAsJsonObject();
+      Map<String, String> memberInfo = new HashMap<String, String>();
+      memberInfo.put("id", businessObject.get("id").getAsString());
+      memberInfo.put("firstName", businessObject.get("firstName").getAsString());
+      memberInfo.put("lastName", businessObject.get("lastName").getAsString());
+      memberInfo.put("dateOfBirth", "");
+      
+		Map<String, Object> processData = new HashMap<String, Object>();
+		processData.put("Member", memberInfo);
 		
-      // TODO: Specific Documents
+      // Start new Process Instance
+      String processDefinitionId = parameters.get("processDefinitionId").getAsString();
+      ProcessInstance pi = getWorkflowService().startProcess(processDefinitionId, processData, true);
+
+      // Specific Documents
+      Map<String, Document> documentDataPathMap = new HashMap<String, Document>();
+      String dataPathId, documentId;
+      Document document;
+
+      JsonArray specificDocuments = parameters.get("specificDocuments").getAsJsonArray();
+      for (JsonElement specificDocument : specificDocuments)
+      {
+         dataPathId = specificDocument.getAsJsonObject().get("dataPathId").getAsString();
+         
+         documentId = specificDocument.getAsJsonObject().get("document").getAsJsonObject().get("uuid").getAsString();
+         document = getDocumentManagementService().getDocument(documentId);
+            
+         documentDataPathMap.put(dataPathId, document);
+      }
+
+      addSpecificDocuments(pi.getOID(), documentDataPathMap);
       
 		// Process Attachments
-		JsonArray processAttachments = startableProcessJson.get("processAttachments").getAsJsonArray();
+		JsonArray processAttachments = parameters.get("processAttachments").getAsJsonArray();
 		addProcessAttachments(pi.getOID(), processAttachments);
 
 		return parameters;
