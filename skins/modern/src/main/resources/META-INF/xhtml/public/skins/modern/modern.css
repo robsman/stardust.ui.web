@@ -7383,7 +7383,7 @@ x-input[src *='database_link.png']{
 	background-repeat:no-repeat !important;
 	opacity: 0.7;
 }
-input[src *=database_link.png']:hover{
+input[src *='database_link.png']:hover{
 	opacity:1.0;
 }
 
