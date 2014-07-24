@@ -1,0 +1,230 @@
+/*Classes for a card like stack of images,
+  Supports 10 max. 
+  Last img in DOM flow is on top.
+ */
+
+.imageStack{
+  position:relative;
+  display:inline-block;
+  margin:5px;
+}
+
+.imageStack > img{
+  border:solid 1px #999;
+  float:left;
+  position:absolute;
+  background:#FFF;
+  width:80px;
+  box-shadow: 3px 0px 5px #AAA;
+}
+
+.imageStack > img:nth-child(10){
+  top:28px;
+  left:0px;
+  
+}
+.imageStack > img:nth-child(9){
+  top:25px;
+  left:3px;
+}
+.imageStack > img:nth-child(8){
+  top:21px;
+  left:6px;
+}
+.imageStack > img:nth-child(7){
+  top:18px;
+  left:9px;
+}
+.imageStack > img:nth-child(6){
+  top:15px;
+  left:12px;
+}
+.imageStack > img:nth-child(5){
+  top:12px;
+  left:15px;
+}
+.imageStack > img:nth-child(4){
+  top:9px;
+  left:18px;
+}
+.imageStack > img:nth-child(3){
+  top:6px;
+  left:21px;
+}
+.imageStack > img:nth-child(2){
+  top:3px;
+  left:24px;
+}
+.imageStack > img:nth-child(1){
+  top:0px;
+  left:27px;
+}
+
+.section {
+	border: 1px solid #e0e0e0;
+}
+
+.sectionTitle{
+	font-weight: 400;
+	font-size: 14px;
+	color: #A69A88;
+	display:block;
+	text-transform: uppercase;
+}
+
+.sectionTitle > label{
+	display:block;
+	float:right;
+}
+
+.scannedDocument td {
+	border-bottom: 1px dashed #dddddd;
+	background-color: #E8E6FC;
+}
+
+.page:hover {
+	cursor: move;
+}
+
+.stackPage{
+	margin-bottom:10px;
+	display:inline-block;
+}
+
+.stackPage > div{
+	width:68px;
+	height:100px;
+	background-color:#FFF;
+	background-size:68px 100px;
+	border:solid 1px #AAA;
+	position:relative;
+	display:inline-block;
+	box-shadow: 3px 3px 20px #888888;
+}
+.stackPage :nth-child(2){
+	margin-left:-63px;
+	top:2px;
+}
+.stackPage :nth-child(3){
+	margin-left:-63px;
+	top:4px;
+}
+
+.documentHeader{
+	text-align:center;
+	padding:3px;
+}
+.verticalMenu{
+	display: inline-block;
+	padding: 3px;
+	x-border: solid 1px #AAA;
+	x-background: #EEE;
+	border-radius: 4px;
+	margin-left:5px;
+	text-align:center;
+	position:relative;
+	top:-75px;
+	height:100px;
+}
+
+.verticalMenu > i{
+	display:block;
+	color:#A69A88;
+	cursor:pointer;
+	font-size:1.4em;
+}
+
+.verticalMenu > i:last-child{
+	position: absolute;
+	bottom: 0;
+	left:6px;
+}
+
+.verticalMenu2{
+	display: inline-block;
+	padding: 3px;
+	border-radius: 4px;
+	margin-left:5px;
+	text-align:center;
+	position:relative;
+	float: right;
+	margin-right: 10px;
+}
+
+.verticalMenu2 > i,
+.menu-icon{
+	display:block;
+	color:#A69A88;
+	cursor:pointer;
+	font-size:1.4em;
+}
+
+.menu-icon{
+	display:inline;
+	margin-left:1em;
+}
+
+.pageNumber{
+	position:relative;
+	left:40px;
+}
+.documentInfo{
+	text-align:center;
+}
+
+.documentInfo > span{
+	display:block;
+}
+
+.pendingProcessesTree td {
+	left:10px;
+	top:10px;
+}
+
+.pendingProcessesTree i {
+	color: #A69A88;
+}
+
+.selected {
+	background-color: #dddddd;
+}
+
+.selected td {
+	background-color: #dddddd;
+}
+
+.highlighted td {
+	background-color: #E8E6FC;
+}
+
+.dragHelper {
+	font-size: 11px;
+	color: black;
+	background-color: white !important;
+}
+
+.normalLine {
+	margin-bottom: 2px;
+	padding-bottom: 3px;
+}
+
+.cutLine {
+	width: 100%;
+	padding-bottom: 2px;
+	border-bottom: 1px dashed #AAAAAA;
+	margin-bottom: 2px;
+	padding-bottom: 2px;
+}
+
+.pendingProcessesTree td {
+	padding: 0 !important;
+	margin: 0 !important;
+}
+
+.pendingProcessesTree td>div {
+	padding: 3px !important;
+}
+
+.cutLine:hover {
+	background-color: #dddddd;
+}

@@ -172,6 +172,7 @@ img {
 .iconLink {
 	font-size: 14px;
 	color: #A69A88 !important;
+	cursor: pointer !important;
 }
 
 .iconLink:hover {

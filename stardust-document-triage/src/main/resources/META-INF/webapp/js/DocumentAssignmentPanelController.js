@@ -42,7 +42,6 @@ define(
 										
 					DocumentAssignmentService.instance().getDocumentTypes()
 					.done(function(docTypes){
-						debugger;
 						self.documentTypes=self.documentTypes.concat(docTypes);
 					});
 					
@@ -88,13 +87,22 @@ define(
 									}).fail();
 				};
 				
+				/**
+				 * 
+				 */
 				DocumentAssignmentPanelController.prototype.setDocumentType = function(docType,proc){
 					DocumentAssignmentService.instance().setDocumentType(docType,proc)
 					.done(function(result){
-						
-					});
-					
-				}
+						//stubbed
+					});					
+				};
+				
+				/**
+				 * Clamp a number between a range;
+				 */
+				DocumentAssignmentPanelController.prototype.clamp = function(number,min,max){
+					return Math.max(min, Math.min(number, max));
+				};
 				
 				/**
 				 * 
@@ -116,7 +124,6 @@ define(
 				};
 				
 				DocumentAssignmentPanelController.prototype.openProcessHistory = function(workItem) {
-					debugger;
 					var oid=workItem.pendingProcess.oid;
 				      var message = {
 				        "type": "OpenView",
@@ -264,7 +271,6 @@ define(
 																"specificDocument");
 												
 												var processOID = jQuery.data(this,"processOID");
-												debugger;
 												DocumentAssignmentService.instance()
 												.addProcessDocument(processOID,scannedDocument,specificDocument.id)
 												.done(
@@ -311,7 +317,6 @@ define(
 												var processOID = jQuery.data(this,"processOID");
 												
 												jQuery("*").css("cursor","wait");
-												debugger;
 												DocumentAssignmentService
 														.instance()
 														.addProcessDocument(processOID,scannedDocument,"PROCESS_ATTACHMENTS")
@@ -468,7 +473,7 @@ define(
 								});
 						}
 					}
-					debugger;
+
 					DocumentAssignmentService.instance().startProcess(data)
 							.done(
 									function(result) {
@@ -644,8 +649,31 @@ define(
 				};
 				
 				DocumentAssignmentPanelController.prototype.processCanStart = function(proc){
-					return this.selectedBusinessObjectInstances.length > 0 && 
-						   (proc.startableProcess.processAttachments.length >0 || proc.startableProcess.specificDocuments.length >0 );
+					var hasBusinessObject=false,
+						hasProcessAttachment=false,
+						hasSpecificDocument = false,
+						i;
+					
+					hasBusinessObject = this.selectedBusinessObjectInstances.length > 0;
+					hasProcessAttachment = proc.startableProcess.processAttachments.length >0;
+					
+					for(i=0;i<proc.startableProcess.specificDocuments.length;i++){
+						if(proc.startableProcess.specificDocuments[i].scannedDocument){
+							hasSpecificDocument=true;
+							break;
+						}
+					}
+					
+					if(hasBusinessObject && (hasProcessAttachment || hasSpecificDocument)){
+						return true;
+					}
+					else{
+						console.log(hasBusinessObject + "," + hasProcessAttachment + "," + hasSpecificDocument);
+						console.log(proc);
+						return false;
+					}
+						
+					
 				}
 				
 				/**
