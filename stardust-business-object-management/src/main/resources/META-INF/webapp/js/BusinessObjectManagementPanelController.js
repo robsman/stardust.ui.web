@@ -78,6 +78,7 @@ define(
 					this.businessObjectInstances = [];
 					this.keyFields = [];
 					this.topLevelFields = [];
+					this.fieldColumns = [ [] ];
 
 					if (!this.businessObject) {
 						return;
@@ -92,6 +93,13 @@ define(
 						}
 
 						this.topLevelFields
+								.push(this.businessObject.businessObject.fields[n]);
+
+						if (this.fieldColumns[this.fieldColumns.length - 1].length == 5) {
+							this.fieldColumns.push([]);
+						}
+
+						this.fieldColumns[this.fieldColumns.length - 1]
 								.push(this.businessObject.businessObject.fields[n]);
 					}
 				};

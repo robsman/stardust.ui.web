@@ -42,9 +42,7 @@ define(
 				 */
 				BusinessObjectManagementViewController.prototype.onBusinessObjectInstanceSelectionChange = function() {
 					this.currentBusinessObjectInstance = this.businessObjectManagementPanelController.selectedBusinessObjectInstances[0];
-
-					console.log("BOI");
-					console.log(this.currentBusinessObjectInstance);
+					this.messages = [];
 
 					this.safeApply();
 				};
@@ -66,14 +64,16 @@ define(
 
 					this.messages = [];
 
-					if (this.newBusinessObjectInstance) {
-						if (this.currentBusinessObjectInstance[this.businessObjectManagementPanelController.primaryKeyField.id] == null
-								|| this.currentBusinessObjectInstance[this.businessObjectManagementPanelController.primaryKeyField.id].length == 0) {
-							this.messages = [ "Primary Key "
-									+ this.businessObjectManagementPanelController.primaryKeyField.name
-									+ " not set." ];
-						}
+					if (this.currentBusinessObjectInstance[this.businessObjectManagementPanelController.primaryKeyField.id] == null
+							|| this.currentBusinessObjectInstance[this.businessObjectManagementPanelController.primaryKeyField.id].length == 0) {
+						this.messages = [ "Primary Key "
+								+ this.businessObjectManagementPanelController.primaryKeyField.name
+								+ " not set." ];
 
+						return;
+					}
+
+					if (this.newBusinessObjectInstance) {
 						BusinessObjectManagementService
 								.instance()
 								.createBusinessObjectInstance(

@@ -27,26 +27,40 @@ ul.errorMessagesPanel {
 	<div ng-controller="businessObjectManagementViewController">
 		<h2>Business Object Selection and Search</h2>
 		<div ng-include="'../businessObjectSearchPanel.html'"></div>
-		<table style="width: 100%;">
+		<table style="width: 100%;"
+			ng-show="businessObjectManagementPanelController.businessObject != null">
 			<tr>
 				<td><h2>{{businessObjectManagementPanelController.businessObject.businessObject.name}}</h2></td>
 				<td align="right"><input type="button" value="Save"
-					ng-click="saveBusinessObjectInstance()"></input><input
+					ng-click="saveBusinessObjectInstance()"
+					ng-show="currentBusinessObjectInstance != null"></input><input
 					type="button" value="Create"
 					ng-click="createBusinessObjectInstance()"
 					style="margin-left: 10px;"></input></td>
 			</tr>
-			<tr>
+			<tr ng-show="currentBusinessObjectInstance != null">
 				<td colspan="2">
-					<ul class="errorMessagesPanel" ng-show="messages.length > 0">
-						<li ng-repeat="message in messages">{{message}}</li>
-					</ul>
+					<table>
+						<tr>
+							<td>
+								<ul class="errorMessagesPanel" ng-show="messages.length > 0">
+									<li ng-repeat="message in messages">{{message}}</li>
+								</ul>
+							</td>
+						</tr>
+					</table>
 					<div ng-repeat="instance in [currentBusinessObjectInstance]">
-						<table class="formTable">
-							<tr
-								ng-repeat="field in businessObjectManagementPanelController.topLevelFields">
-								<td><label style="margin-left: 5px;">{{field.name}}</label></td>
-								<td><span ng-include="'../objectPanelField.html'"></span></td>
+						<table>
+							<tr>
+								<td
+									ng-repeat="column in businessObjectManagementPanelController.fieldColumns">
+									<table class="formTable">
+										<tr ng-repeat="field in column">
+											<td><label style="margin-left: 5px;">{{field.name}}</label></td>
+											<td><span ng-include="'../objectPanelField.html'"></span></td>
+										</tr>
+									</table>
+								</td>
 							</tr>
 						</table>
 					</div>
