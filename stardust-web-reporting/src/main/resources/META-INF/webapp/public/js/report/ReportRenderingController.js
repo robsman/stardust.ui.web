@@ -255,14 +255,19 @@ define(
       			   var eastSide = [ "ne", "e", "se" ];
       			   var westSide = [ "w", "nw", "sw" ];
       			   
-      			   var dataLength = (this.report.dataSet.groupBy != null && 
-      			       this.report.dataSet.groupBy != 'None') ? data.seriesGroup.length 
-      			                : data.seriesGroup[0].length
+      			   var dataLength = data.seriesGroup.length;
       			   
       			   //TODO Donut chart might need more processing.
       			   if (this.report.layout.chart.type === this.reportingService.metadata.chartTypes.donutChart.id)
                   {
       			      dataLength = data.seriesGroup[0].length; 
+                  }
+      			   
+      			   if (dataLength > 12)
+                  {
+      			      jQuery("#dataSetExceedWarning").show();
+                  } else {
+                     jQuery("#dataSetExceedWarning").hide();
                   }
       
       			/*   if (northSide.indexOf(this.report.layout.chart.options.legend.location) != -1)
