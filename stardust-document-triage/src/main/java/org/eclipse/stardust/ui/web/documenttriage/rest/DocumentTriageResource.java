@@ -118,6 +118,36 @@ public class DocumentTriageResource {
       }
    }
 
+   @DELETE
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("processes/{processInstanceOid: \\d+}/documents/{dataPathId}{documentId: (/documentId)?}")
+   public Response removeDocument(@PathParam("processInstanceOid") String processInstanceOid, @PathParam("dataPathId") String dataPathId, @PathParam("documentId") String documentId) {
+      try {
+         return Response.ok(
+               getDocumentTriageService().removeProcessInstanceDocument(Long.parseLong(processInstanceOid), dataPathId, documentId)
+                     .toString(), MediaType.APPLICATION_JSON).build();
+      } catch (Exception e) {
+         trace.error(e, e);
+
+         return Response.serverError().build();
+      }
+   }
+
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("documents/{documentId}/document-type")
+   public Response getDocumentType(@PathParam("documentId") String documentId) {
+      try {
+         return Response.ok(
+               getDocumentTriageService().getDocumentType(documentId)
+                     .toString(), MediaType.APPLICATION_JSON).build();
+      } catch (Exception e) {
+         trace.error(e, e);
+
+         return Response.serverError().build();
+      }
+   }
+
    @PUT
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)

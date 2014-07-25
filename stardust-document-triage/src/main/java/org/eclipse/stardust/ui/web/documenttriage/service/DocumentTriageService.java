@@ -267,17 +267,8 @@ public class DocumentTriageService {
 	 * @return
 	 */
     private JsonArray getProcessAttachments(ProcessInstance processInstance) {
-        /*String path = DocumentMgmtUtility
-                    .getProcessAttachmentsFolderPath(processInstance);
-        Folder processAttFolder = getOrCreateFolder(path);
-
-        processAttFolder = getDocumentManagementService().getFolder(
-                    processAttFolder.getId(), Folder.LOD_LIST_MEMBERS);
-
-        List<Document> documents = processAttFolder.getDocuments();*/
-
-	JsonArray attachmentsJson = new JsonArray();
-     List<Document> documents = fetchProcessAttachments(processInstance);
+        JsonArray attachmentsJson = new JsonArray();
+        List<Document> documents = fetchProcessAttachments(processInstance);
 
         String MIMETYPE_PDF = "application/pdf", MIMETYPE_TIFF = "image/tiff";
         for (Document attachment : documents) {
@@ -305,6 +296,16 @@ public class DocumentTriageService {
               } else { // Any other type, except PDF or TIFF
                     attachmentJson.addProperty("numPages", 0);
               }
+              
+              JsonObject documentTypeJson = new JsonObject();
+              DocumentType documentType = attachment.getDocumentType();
+              if (documentType != null) {
+                 documentTypeJson.addProperty("documentTypeId", documentType.getDocumentTypeId());
+                 documentTypeJson.addProperty("name", documentType.getDocumentTypeId().substring(documentType.getDocumentTypeId().lastIndexOf('}') + 1));
+                 // TODO: Get "name" using name = model.getTypeDeclaration(documentType).getName();
+                 documentTypeJson.addProperty("schemaLocation", documentType.getSchemaLocation());
+              }
+              attachmentJson.add("documentType", documentTypeJson);
         }
 
         return attachmentsJson;
@@ -624,6 +625,20 @@ public class DocumentTriageService {
 	   return documentTypesJson;
 	}
 	
+   public JsonObject getDocumentType(String documentId) {
+      
+      JsonObject documentTypeJson = new JsonObject();
+      
+      DocumentType documentType = getDocumentManagementService().getDocument(documentId).getDocumentType();
+
+      documentTypeJson.addProperty("documentTypeId", documentType.getDocumentTypeId());
+      documentTypeJson.addProperty("name", documentType.getDocumentTypeId().substring(documentType.getDocumentTypeId().lastIndexOf('}') + 1));
+      // TODO: Get "name" using name = model.getTypeDeclaration(documentType).getName();
+      documentTypeJson.addProperty("schemaLocation", documentType.getSchemaLocation());
+
+      return documentTypeJson; 
+   }
+
 	public JsonObject setDocumentType(String documentId, JsonObject json) {
 	 
       JsonObject resultJson = new JsonObject();
@@ -677,16 +692,56 @@ public class DocumentTriageService {
       return getPendingProcesses(null); 
 	}
    
+   public JsonObject removeProcessInstanceDocument(long processInstanceOid, String dataPathId, String documentId)
+   {
+      JsonObject resultJson = new JsonObject();
+      
+      if (CommonProperties.PROCESS_ATTACHMENTS.equals(dataPathId)) {
+         removeProcessAttachment(processInstanceOid, documentId);
+      }
+      else {
+         // TODO: Currently assume that it is always a Document (and not a DocumentList)
+         
+         Map<String, Document> documentDataPathMap = new HashMap<String, Document>();
+         documentDataPathMap.put(dataPathId, null);
+         
+         removeSpecificDocuments(processInstanceOid, documentDataPathMap);
+      }
+      
+      return getPendingProcesses(null); 
+   }
+   
    private void addSpecificDocuments(long processInstanceOid, Map<String, Document> documentDataPathMap) {
       getWorkflowService().setOutDataPaths(processInstanceOid, documentDataPathMap);
    }
    
-   public void addProcessAttachment(long processInstanceOid, Document document) {
+   private void removeSpecificDocuments(long processInstanceOid, Map<String, Document> documentDataPathMap) {
+      getWorkflowService().setOutDataPaths(processInstanceOid, documentDataPathMap);
+   }
+   
+   private void addProcessAttachment(long processInstanceOid, Document document) {
       ProcessInstance processInstance = getWorkflowService()
             .getProcessInstance(processInstanceOid);
       List<Document> processAttachments = fetchProcessAttachments(processInstance);
 
       processAttachments.add(document);
+      getWorkflowService().setOutDataPath(processInstance.getOID(),
+            CommonProperties.PROCESS_ATTACHMENTS, processAttachments);
+   }
+   
+   private void removeProcessAttachment(long processInstanceOid, String documentId) {
+      ProcessInstance processInstance = getWorkflowService()
+            .getProcessInstance(processInstanceOid);
+      List<Document> processAttachments = fetchProcessAttachments(processInstance);
+
+      // Remove the document from the PROCESS_ATTACHMENTS list
+      for (Iterator<Document> iter = processAttachments.listIterator(); iter.hasNext(); ) {
+         Document document = iter.next();
+         if (document.getId().equals(documentId)) {
+             iter.remove();
+         }
+      }
+      
       getWorkflowService().setOutDataPath(processInstance.getOID(),
             CommonProperties.PROCESS_ATTACHMENTS, processAttachments);
    }
