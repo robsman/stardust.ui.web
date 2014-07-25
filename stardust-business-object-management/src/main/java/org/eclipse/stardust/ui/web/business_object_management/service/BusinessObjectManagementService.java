@@ -31,7 +31,7 @@ import org.eclipse.stardust.engine.core.struct.XPathAnnotations;
 import org.eclipse.stardust.ui.web.business_object_management.rest.JsonMarshaller;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
-import org.eclipse.stardust.ui.web.viewscommon.utils.XPathCacheManager;
+//import org.eclipse.stardust.ui.web.viewscommon.utils.XPathCacheManager;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -305,7 +305,7 @@ public class BusinessObjectManagementService {
       XPathAnnotations annotations = xPath.getAnnotations();
       JsonObject json = new JsonObject();
       json.addProperty("id", xPath.getId());
-      json.addProperty("name", xPath.getId());
+      json.addProperty("name", xPath.getId()); // TODO fetch from annotations
       if (xPath.getType() == BigData.NULL)
       {
          json.addProperty("type", xPath.getXsdTypeName());
