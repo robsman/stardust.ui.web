@@ -207,6 +207,13 @@ public class BusinessObjectManagementService {
    {
       ModelCache modelCache = ModelCache.findModelCache();
 
+      // TODO@Florin modelCache is null
+      
+      if (modelCache == null)
+      {
+    	  return;
+      }
+      
       for (DeployedModel deployedModel : modelCache.getAllModels())
       {
          if (!PredefinedConstants.PREDEFINED_MODEL_ID.equals(deployedModel.getId()))
