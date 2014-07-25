@@ -89,9 +89,15 @@ define(
 				DocumentAssignmentPanelController.prototype.initializeBaseState = function() {
 					this.pageModel = {};
 					this.uiModel = {};
-					this.uiModel.showChildren = false;
+					
 					this.pageModel.currentDocument = "";
 					this.pageModel.pageIndex = {};
+					this.pageModel.selectedPage={};
+					
+					this.uiModel.showChildren = false;
+					
+					
+					
 					this.retrieveActivityInstanceFromUri();
 					this.startProcessDialog = {};
 					this.businessObjectFilter = {};
@@ -119,6 +125,7 @@ define(
 				 */
 				DocumentAssignmentPanelController.prototype.clamp = function(
 						number, min, max) {
+					console.log("Clamping: " + number + "," + min + "," + max);
 					return Math.max(min, Math.min(number, max));
 				};
 
@@ -473,7 +480,8 @@ define(
 				 */
 				DocumentAssignmentPanelController.prototype.selectPage = function(
 						page, url, e) {
-					this.selectedPage = page;
+					console.log("Calling Selected Page");
+					this.pageModel.selectedPage = page;
 					if (e.ctrlKey) {
 						if (this.pageModel.pageIndex
 								.hasOwnProperty(page.number)) {
@@ -488,7 +496,7 @@ define(
 						this.pageModel.pageIndex[page.number] = url;
 					}
 					console.log(this.pageModel.pageIndex);
-					this.selectedPage.url = url;
+					this.pageModel.selectedPage.url = url;
 				};
 
 				DocumentAssignmentPanelController.prototype.isPageSelected = function(
@@ -581,7 +589,7 @@ define(
 				 */
 				DocumentAssignmentPanelController.prototype.selectionClass = function(
 						page) {
-					if (this.selectedPage == page) {
+					if (this.pageModel.selectedPage == page) {
 						return "selected";
 					} else {
 						return "unselected";
@@ -701,15 +709,19 @@ define(
 					var hasBusinessObject = false, hasProcessAttachment = false, hasSpecificDocument = false, i;
 
 					hasBusinessObject = this.selectedBusinessObjectInstances.length > 0;
-					hasProcessAttachment = proc.startableProcess.processAttachments.length > 0;
-
-					for (i = 0; i < proc.startableProcess.specificDocuments.length; i++) {
-						if (proc.startableProcess.specificDocuments[i].scannedDocument) {
-							hasSpecificDocument = true;
-							break;
-						}
+					
+					if(proc.startableProcess){
+						hasProcessAttachment = proc.startableProcess.processAttachments.length > 0;
 					}
 
+					if(proc.startableProcess && proc.startableProcess.specificDocuments){
+						for (i = 0; i < proc.startableProcess.specificDocuments.length; i++) {
+							if (proc.startableProcess.specificDocuments[i].scannedDocument) {
+								hasSpecificDocument = true;
+								break;
+							}
+						}
+					}
 					if (hasBusinessObject
 							&& (hasProcessAttachment || hasSpecificDocument)) {
 						return true;

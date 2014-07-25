@@ -5,7 +5,7 @@
 		<td>
 			<div ng-show="!document.showChildren" class="formTable">
 
-				<div style="height: {{100+ 3*clamp(document.pages.length, 0, 10)"
+				<div style="height: {{100+ 3*clamp(document.pages.length, 0, 10)}}"
 					class="imageStack"
 					ng-click="$parent.selectPage(document.pages[0],document.url + 0,$event,document.pages)">
 					<img src="{{document.url}}0" style="height: 100px;"
@@ -36,7 +36,7 @@
 					ng-class="{'selected':isPageSelected(page),'unselected':!isPageSelected(page)}">
 					<tr>
 						<td><a style="display: inline;"
-							ng-click="$parent.$parent.selectPage(page,document.url + $index,$event,document.pages)">
+							ng-click="selectPage(page,document.url + $index,$event,document.pages)">
 								<img src="{{document.url + $index}}" width="100%" />
 						</a>
 							<div class="pageNumber">
