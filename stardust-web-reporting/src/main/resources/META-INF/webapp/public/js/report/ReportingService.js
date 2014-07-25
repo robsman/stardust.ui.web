@@ -97,37 +97,37 @@ define(
 				this.metadata.chartTypes = {
 					xyPlot : {
 						id : "xyPlot",
-						name : "XY Plot",
+						name : this.getI18N("reporting.definitionView.layout.subType.xyPlot.label"),
 						hasDefaultSeries : true,
 						hasAxes : true
 					},
 					candlestickChart : {
 						id : "candlestickChart",
-						name : "Candlestick",
+						name : this.getI18N("reporting.definitionView.layout.subType.candlestickChart.label"),
 						hasDefaultSeries : true,
 						hasAxes : true
 					},
 					pieChart : {
 						id : "pieChart",
-						name : "Pie Chart",
+						name : this.getI18N("reporting.definitionView.layout.subType.pieChart.label"),
 						hasDefaultSeries : false,
 						hasAxes : false
 					},
 					barChart : {
 						id : "barChart",
-						name : "Bar Chart",
+						name : this.getI18N("reporting.definitionView.layout.subType.barChart.label"),
 						hasDefaultSeries : true,
 						hasAxes : true
 					},
 					bubbleChart : {
 						id : "bubbleChart",
-						name : "Bubble Chart",
+						name : this.getI18N("reporting.definitionView.layout.subType.bubbleChart.label"),
 						hasDefaultSeries : false,
 						hasAxes : true
 					},
 					donutChart : {
 						id : "donutChart",
-						name : "Donut Chart", //TODO: I18n
+						name : this.getI18N("reporting.definitionView.layout.subType.donutChart.label"),
 						hasDefaultSeries : false,
 						hasAxes : true
 					}
@@ -135,42 +135,40 @@ define(
 
 				this.metadata.stringType = {
 					id : "stringType",
-					name : "String"
+					name : this.getI18N("reporting.definitionView.metadata.stringType.label"),
 				};
 				this.metadata.integerType = {
 					id : "integerType",
-					name : "Integer",
-					operators : ["E", "LE", "GE", "NE", "I", "NI"]
+					name : this.getI18N("reporting.definitionView.metadata.integerType.label"),
+					operators : ["E", "LE", "GE", "NE", "I", "NI"],
 				};
 				this.metadata.decimalType = {
 					id : "decimalType",
-					name : "Decimal"
+					name : this.getI18N("reporting.definitionView.metadata.decimalType.label"),
 				};
-				
 				this.metadata.booleanType = {
-						id : "booleanType",
-						name : "Boolean"
+					id : "booleanType",
+					name : this.getI18N("reporting.definitionView.metadata.booleanType.label"),
 				};
 				this.metadata.countType = {
 					id : "countType",
-					name : "Count"
+					name : this.getI18N("reporting.definitionView.metadata.countType.label"),
 				};
 				this.metadata.timestampType = {
 					id : "timestampType",
-					name : "Timestamp"
+					name : this.getI18N("reporting.definitionView.metadata.timestampType.label"),
 				};
 				this.metadata.durationType = {
 					id : "durationType",
-					name : "Duration"
+					name : this.getI18N("reporting.definitionView.metadata.durationType.label"),
 				};
 				this.metadata.enumerationType = {
 					id : "enumerationType",
-					name : "Enumeration"
+					name : this.getI18N("reporting.definitionView.metadata.enumerationType.label"),
 				};
-
 				this.metadata.autocompleteType = {
-						id : "autocompleteType",
-						name : "Autocomplete"
+					id : "autocompleteType",
+					name : this.getI18N("reporting.definitionView.metadata.autocompleteType.label"),
 				};
 				
 				this.metadata.objects = {

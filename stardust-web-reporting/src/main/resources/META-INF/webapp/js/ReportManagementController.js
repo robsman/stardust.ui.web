@@ -126,7 +126,7 @@ define(
 														ccp : false,
 														create : false,
 														rename : {
-															label : "Rename", // I18N
+															label : I18NUtils.getProperty('reporting.definitionView.contextmenu.rename.label'), 
 															icon : self.reportingService.getRootUrl()
                                                          + "/plugins/views-common/images/icons/rename.png",
 															action : function(
@@ -141,7 +141,7 @@ define(
 															}
 														},
 														deleteReport : {
-															label : "Delete", // I18N
+															label : I18NUtils.getProperty('reporting.definitionView.contextmenu.delete.label'), // I18N
 															icon : self.reportingService.getRootUrl()
                                                          + "/plugins/views-common/images/icons/delete.png",
 															action : function(
@@ -175,7 +175,7 @@ define(
 															         }
 														},
 														download : {
-															label : "Download", // I18N
+															label : I18NUtils.getProperty('reporting.definitionView.contextmenu.download.label'), 
 															icon : self.reportingService.getRootUrl()
                                                          + "/plugins/views-common/images/icons/page_white_put.png",
 															action : function(
@@ -185,7 +185,7 @@ define(
 															}
 														},
 														clone : {
-                                             label : "Clone", // I18N
+                                             label : I18NUtils.getProperty('reporting.definitionView.contextmenu.clone.label'),
                                              icon : self.reportingService.getRootUrl()
                                                          + "/plugins/bpm-reporting/images/icons/report_add.png",
                                              action : function(
@@ -205,7 +205,7 @@ define(
                                           ccp : false,
                                           create : false,
                                           upload : {
-                                             label : "Upload", // I18N
+                                             label : I18NUtils.getProperty('reporting.definitionView.contextmenu.upload.label'),
                                              icon : self.reportingService.getRootUrl()
                                                          + "/plugins/views-common/images/icons/page_white_get.png",
                                              action : function(

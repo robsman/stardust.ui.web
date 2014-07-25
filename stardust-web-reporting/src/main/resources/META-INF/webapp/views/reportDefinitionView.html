@@ -343,13 +343,13 @@ table.formTable td {
 										</select></td>
 										<td><label ng-show="isDuration(getFact())">{{getI18N('reporting.definitionView.unit.label')}}</label></td>
 										<td><select ng-model="report.dataSet.factDurationUnit"
-											ng-show="isDuration(getFact())"><option value="s">Seconds</option>
-												<option value="m">Minutes</option>
-												<option value="h">Hours</option>
-												<option value="d">Days</option>
-												<option value="w">Weeks</option>
-												<option value="M">Months</option>
-												<option value="Y">Years</option>
+											ng-show="isDuration(getFact())"><option value="s">{{getI18N('reporting.definitionView.seconds.label')}}</option>
+												<option value="m">{{getI18N('reporting.definitionView.minutes.label')}}</option>
+												<option value="h">{{getI18N('reporting.definitionView.hours.label')}}</option>
+												<option value="d">{{getI18N('reporting.definitionView.days.label')}}</option>
+												<option value="w">{{getI18N('reporting.definitionView.weeks.label')}}</option>
+												<option value="M">{{getI18N('reporting.definitionView.months.label')}}</option>
+												<option value="Y">{{getI18N('reporting.definitionView.years.label')}}</option>
 										</select></td>
 									</tr>
 								</table>
@@ -433,13 +433,13 @@ table.formTable td {
                                           <td><select
                                              ng-model="report.dataSet.firstDimensionDurationUnit"
                                              ng-show="isDuration(getFirstDimension())"><option
-                                                   value="s">Seconds</option>
-                                                <option value="m">Minutes</option>
-                                                <option value="h">Hours</option>
-                                                <option value="d">Days</option>
-                                                <option value="w">Weeks</option>
-                                                <option value="M">Months</option>
-                                                <option value="Y">Years</option>
+                                                   value="s">{{getI18N('reporting.definitionView.seconds.label')}}</option>
+                                                <option value="m">{{getI18N('reporting.definitionView.minutes.label')}}</option>
+                                                <option value="h">{{getI18N('reporting.definitionView.hours.label')}}</option>
+                                                <option value="d">{{getI18N('reporting.definitionView.days.label')}}</option>
+                                                <option value="w">{{getI18N('reporting.definitionView.weeks.label')}}</option>
+                                                <option value="M">{{getI18N('reporting.definitionView.months.label')}}</option>
+                                                <option value="Y">{{getI18N('reporting.definitionView.years.label')}}</option>
                                           </select></td>
                                        </tr>
                                     </table>
@@ -500,7 +500,7 @@ table.formTable td {
 														ng-model="report.dataSet.groupBy"
                                           ng-options="dimension.id as dimension.name group by dimension.group for dimension in getGroupDimensions() | orderBy:['order','name']"
                                           ng-change="changeGroupBy()">
-                                          <option value="">None</option>  
+                                          <option value="">{{getI18N('reporting.definitionView.groupBy.option.none.label')}}</option>  
 													</select></td>
 												</tr>
 											</table>
