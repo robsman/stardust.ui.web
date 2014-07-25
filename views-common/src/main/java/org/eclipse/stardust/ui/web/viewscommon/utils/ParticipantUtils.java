@@ -165,7 +165,10 @@ public class ParticipantUtils
    public static Participant getParticipant(ParticipantInfo participantInfo)
    {
       Participant participant = null;
-
+      if (participantInfo == null)
+      {
+         return participant;
+      }
       // Optimization
       if (participantInfo instanceof Participant)
       {
