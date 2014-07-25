@@ -265,9 +265,8 @@ define(
       			   
       			   if (dataLength > 12)
                   {
+      			      jQuery("#dataSetExceedWarning").text(this.getI18N('reporting.definitionView.preview.dataSetExceed.message'));
       			      jQuery("#dataSetExceedWarning").show();
-                  } else {
-                     jQuery("#dataSetExceedWarning").hide();
                   }
       
       			/*   if (northSide.indexOf(this.report.layout.chart.options.legend.location) != -1)
@@ -782,6 +781,8 @@ define(
              * 
              */
             ReportRenderingController.prototype.refreshPreview = function(scopeController, report, parameters) {
+               jQuery("#dataSetExceedWarning").empty();
+               jQuery("#dataSetExceedWarning").hide();
 				var deferred = jQuery.Deferred();
             	
             	if (report) {
