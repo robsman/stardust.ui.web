@@ -1000,6 +1000,8 @@ define(
 				        // Only discrete types can be used as group criteria
 				        if (!this.reportingService.isDiscreteType(dimensions[i].type)) {
 				            dimensions.splice(i, 1);
+				        } else if (!this.isValidGroupableDimension(dimensions[i])) {
+				           dimensions.splice(i, 1);
 				        }
 				    }
 				
@@ -2145,6 +2147,24 @@ define(
               isValid = true;
            }
            return isValid;
+        };
+        
+        /**
+         * Process OID, Activity OID should not be a grouping criteria and it should be removed.
+         */
+        ReportDefinitionController.prototype.isValidGroupableDimension = function(dimension) {
+          var isValid = false;
+          var inValidGroupableDimensions = [this.reportingService.metadata.objects.activityInstance.dimensions.processOID, 
+                   this.reportingService.metadata.objects.activityInstance.dimensions.activityOID];
+          for ( var dim in inValidGroupableDimensions)
+             {
+                if (inValidGroupableDimensions[dim].id === dimension.id)
+                {
+                   return isValid;
+                }
+             }
+          isValid = true;
+          return isValid;
         };
         
 		}
