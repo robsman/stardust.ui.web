@@ -89,15 +89,13 @@ define(
 				DocumentAssignmentPanelController.prototype.initializeBaseState = function() {
 					this.pageModel = {};
 					this.uiModel = {};
-					
+
 					this.pageModel.currentDocument = "";
 					this.pageModel.pageIndex = {};
-					this.pageModel.selectedPage={};
-					
+					this.pageModel.selectedPage = {};
+
 					this.uiModel.showChildren = false;
-					
-					
-					
+
 					this.retrieveActivityInstanceFromUri();
 					this.startProcessDialog = {};
 					this.businessObjectFilter = {};
@@ -481,16 +479,20 @@ define(
 				DocumentAssignmentPanelController.prototype.selectPage = function(
 						page, url, e) {
 					console.log("Calling Selected Page");
+					console.log(e);
+
 					this.pageModel.selectedPage = page;
-					if (e.ctrlKey) {
-						if (this.pageModel.pageIndex
-								.hasOwnProperty(page.number)) {
-							delete this.pageModel.pageIndex[page.number];
-						} else {
-							this.pageModel.pageIndex[page.number] = url;
+					if (e) {
+						if (e.ctrlKey) {
+							if (this.pageModel.pageIndex
+									.hasOwnProperty(page.number)) {
+								delete this.pageModel.pageIndex[page.number];
+							} else {
+								this.pageModel.pageIndex[page.number] = url;
+							}
+						} else if (e.shiftKey) {
+							// stubbed for later
 						}
-					} else if (e.shiftKey) {
-						// stubbed for later
 					} else {
 						this.pageModel.pageIndex = {};
 						this.pageModel.pageIndex[page.number] = url;
@@ -709,12 +711,13 @@ define(
 					var hasBusinessObject = false, hasProcessAttachment = false, hasSpecificDocument = false, i;
 
 					hasBusinessObject = this.selectedBusinessObjectInstances.length > 0;
-					
-					if(proc.startableProcess){
+
+					if (proc.startableProcess) {
 						hasProcessAttachment = proc.startableProcess.processAttachments.length > 0;
 					}
 
-					if(proc.startableProcess && proc.startableProcess.specificDocuments){
+					if (proc.startableProcess
+							&& proc.startableProcess.specificDocuments) {
 						for (i = 0; i < proc.startableProcess.specificDocuments.length; i++) {
 							if (proc.startableProcess.specificDocuments[i].scannedDocument) {
 								hasSpecificDocument = true;
