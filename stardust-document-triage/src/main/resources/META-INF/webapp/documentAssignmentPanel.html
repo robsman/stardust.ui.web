@@ -1,16 +1,21 @@
 <html>
 <head>
-<link href='http://fonts.googleapis.com/css?family=Lato:400,700,300italic,400italic' rel='stylesheet' type='text/css'>
-<link href="./css/font-awesome-4.1.0/css/font-awesome.css" rel="stylesheet">
+<link
+	href='http://fonts.googleapis.com/css?family=Lato:400,700,300italic,400italic'
+	rel='stylesheet' type='text/css'>
+<link href="./css/font-awesome-4.1.0/css/font-awesome.css"
+	rel="stylesheet">
 <link href='./css/stardust-modern.css' rel='stylesheet' />
 <link href='./css/document-triage.css' rel='stylesheet' />
-<link href='./css/thirdparty/jquery/jquery-ui-1.10.2.custom.min.css' rel='stylesheet' />
-<script data-main="./js/DocumentAssignmentPanelMain" src="./js/libs/require/2.0.5/require-min.js"></script>
+<link href='./css/thirdparty/jquery/jquery-ui-1.10.2.custom.min.css'
+	rel='stylesheet' />
+<script data-main="./js/DocumentAssignmentPanelMain"
+	src="./js/libs/require/2.0.5/require-min.js"></script>
 
 </head>
 <body>
 	<div id="docRendevous"
-		 ng-controller="documentAssignmentPanelController">
+		ng-controller="documentAssignmentPanelController">
 		<table class="layoutTable" style="width: 100%; height: 100%">
 			<tr valign="top">
 				<td>
@@ -26,45 +31,15 @@
 								<table style="width: 100%;">
 									<tr valign="top">
 										<td style="width: 50%;">
-											<table class="toolbar" style="width: 100%;">
-												<tr>
-													<td><table class="formTable">
-															<tr>
-																<td><a href="#" class="iconLink"
-																	ng-click="rotatePage()"><i
-																		class="fa fa-rotate-right"></i></a></td>
-																<td><input type="number" style="text-align: right;"
-																	ng-model="zoomFactor"></input> <label>%</label></td>
-																<td><a href="#" class="iconLink"
-																	ng-click="zoomInPage()"><i
-																		class="fa fa-plus-circle"></i></a></td>
-																<td><a href="#" class="iconLink"
-																	ng-click="zoomOutPage()"><i
-																		class="fa fa-minus-circle"></i></a></td>
-																<td><a href="#" class="iconLink"
-																	ng-click="invertPage()"><i
-																		class="fa fa-star-half-o"></i></a></td>
-															</tr>
-														</table></td>
-												</tr>
-											</table>
-											<div class="section"
-												style="height: 400px; overflow: auto; margin-top: 10px; margin-bottom: 10px; max-width: 800px;">
-												<img id="pageImage" src={{selectedPage.url}}
-													ng-show="selectedPage != null" />
-											</div>
+											<div ng-include="'pageViewPanel.html'"></div>
 										</td>
 										<td style="width: 50%; padding-left: 10px !important;">
 											<div>
-												<span class="sectionTitle">
-													Pending Processes and Activities
-												</span>
-												<label>
-													<input type="checkbox" name="showCompleted" value="value" />
-													Show Completed
+												<span class="sectionTitle">Pending Processes and
+													Activities </span> <label> <input type="checkbox"
+													name="showCompleted" value="value" /> Show Completed
 												</label>
 											</div>
-											
 											<div class="section"
 												style="min-height: 20px; max-height: 250px; overflow: auto; margin-top: 10px; margin-bottom: 10px;">
 												<table cellpadding="0" cellspacing="0"
@@ -86,10 +61,10 @@
 															</div>
 															<div ng-show="treeItem.specificDocument"
 																style="margin-left: 10px;">
-													
-															    <i class="fa" 
-															       ng-class="{'fa-file':!treeItem.specificDocument.isEmpty,'fa-file-o':treeItem.specificDocument.isEmpty}">
-															    </i>
+
+																<i class="fa"
+																	ng-class="{'fa-file':!treeItem.specificDocument.isEmpty,'fa-file-o':treeItem.specificDocument.isEmpty}">
+																</i>
 															</div>
 															<div ng-show="treeItem.processAttachments != null"
 																style="margin-left: 10px;">
@@ -100,13 +75,13 @@
 																<i class="fa fa-file"></i>
 															</div>
 														</td>
-														<td><div ng-show="treeItem.pendingProcess">{{treeItem.pendingProcess.processDefinition.name}}
-																(#{{treeItem.pendingProcess.oid}})
-																&nbsp;
-																<i ng-click="openProcessHistory(treeItem)" 
-																   title="Process History"
-																   class="fa fa-info-circle iconLink"></i>
-																</div>
+														<td><div ng-show="treeItem.pendingProcess">
+																{{treeItem.pendingProcess.processDefinition.name}}
+																(#{{treeItem.pendingProcess.oid}}) &nbsp; <i
+																	ng-click="openProcessHistory(treeItem)"
+																	title="Process History"
+																	class="fa fa-info-circle iconLink"></i>
+															</div>
 															<div
 																ng-show="treeItem.pendingProcess.descriptors.length > 0">
 																<span
@@ -118,23 +93,19 @@
 																</span>
 															</div>
 															<div ng-show="treeItem.pendingActivityInstance">{{treeItem.pendingActivityInstance.activity.name}}
-																(#{{treeItem.pendingActivityInstance.oid}})
-															</div>
+																(#{{treeItem.pendingActivityInstance.oid}})</div>
 															<div ng-show="treeItem.specificDocument">
-																{{treeItem.specificDocument.name}}
-															</div>
+																{{treeItem.specificDocument.name}}</div>
 															<div ng-show="treeItem.processAttachments.length >=0">Process
 																Attachments</div>
 															<div ng-show="treeItem.processAttachment">
 																{{treeItem.processAttachment.type}}
-																{{treeItem.processAttachment.name}}						
-																<select ng-select 
-																        ng-model="selectedDocType"
-																        ng-change="setDocumentType(selectedDocType,treeItem)"
-																	    ng-options="item.name for item in documentTypes">
+																{{treeItem.processAttachment.name}} <select ng-select
+																	ng-model="selectedDocType"
+																	ng-change="setDocumentType(selectedDocType,treeItem)"
+																	ng-options="item.name for item in documentTypes">
 																</select>
-															</div>
-														</td>
+															</div></td>
 													</tr>
 												</table>
 											</div>
@@ -163,23 +134,21 @@
 															</div></td>
 														<td>
 															<div ng-show="treeItem.startableProcess">
-																{{treeItem.startableProcess.name}}
-																<a href="#" ng-show="processCanStart(treeItem);">
-																	<i	title="Start Process"
-																		ng-click="startProcess(treeItem,selectedBusinessObjectInstances[0])"
-																		class="fa fa-rocket iconLink">
-																	</i>
+																{{treeItem.startableProcess.name}} <a href="#"
+																	ng-show="processCanStart(treeItem);"> <i
+																	title="Start Process"
+																	ng-click="startProcess(treeItem,selectedBusinessObjectInstances[0])"
+																	class="fa fa-rocket iconLink"> </i>
 																</a>
 															</div>
 															<div ng-show="treeItem.specificDocument">
-																{{treeItem.specificDocument.name}}
-															</div>
+																{{treeItem.specificDocument.name}}</div>
 															<div ng-show="treeItem.processAttachments.length >=0">Process
 																Attachments</div>
 															<div ng-show="treeItem.processAttachment">
 																<i class="fa fa-file"></i>
-																&nbsp;{{treeItem.processAttachment.name}}
-																<select ng-select
+																&nbsp;{{treeItem.processAttachment.name}} <select
+																	ng-select
 																	ng-model="treeItem.processAttachment.selectedDocType"
 																	ng-options="item.name for item in documentTypes">
 																</select>
@@ -196,9 +165,7 @@
 					</table>
 				</td>
 				<td style="width: 160px;">
-					<table ng-if="false" 
-					       class="toolbar" 
-					       style="width: 100%;">
+					<table ng-if="false" class="toolbar" style="width: 100%;">
 						<tr>
 							<td><table class="formTable">
 									<tr>
@@ -212,65 +179,7 @@
 					</table>
 					<div class="section"
 						style="width: 100%; height: 500px; overflow: auto; margin: 10px;">
-						<table cellpadding="0" cellspacing="0" style="width: 100%;">
-							<tr ng-repeat="document in scannedDocuments"
-							    ng-init="document.showChildren=false"
-								id="scannedDocumentDivision{{$index}}" 
-								class="scannedDocument">
-								<td>
-									<div ng-show="!document.showChildren" 
-									     class="formTable">
-
-												<div style="height:{{100 + 3*clamp(document.pages.length,0,10)}}" class="imageStack"
-													 ng-click="$parent.selectPage(document.pages[0],document.url + 0,$event,document.pages)">
-													<img src="{{document.url}}0" 
-													     style="height:100px;"
-													     title="Page {{(clamp(document.pages.length,0,10))-$index}} of {{document.pages.length}}" 
-													     ng-repeat="page in document.pages | limitTo: 10"/>
-												</div>				
-
-											
-												<div class="verticalMenu2">
-													<i class="fa fa-warning"></i>
-													<i title="Reverse Pages" class="fa fa-arrows-h"></i>
-													<i class="fa" 
-													   title="Expand/Collapse Pages"
-													   ng-show="document.pages.length>0"
-													   ng-class="{'fa-caret-down':document.showChildren,'fa-caret-up':!document.showChildren}" 
-													   ng-click="document.showChildren=!document.showChildren">
-													</i>
-												</div>
-
-												<div class="documentInfo">
-													<span>{{document.name}}</span>
-												</div>
-
-									</div>
-									<div class="documentHeader" 
-									     ng-show="document.showChildren">
-									     {{document.name}}
-									     <i title="Collapse" ng-click="document.showChildren=false" class="fa fa-caret-up menu-icon"></i>
-									</div>
-									<div ng-show="document.showChildren" 
-									     ng-repeat="page in document.pages" 
-									     class="page">
-										<table ng-class="{'selected':isPageSelected(page),'unselected':!isPageSelected(page)}">
-											<tr>
-												<td>
-													<a style="display:inline;" ng-click="$parent.$parent.selectPage(page,document.url + $index,$event,document.pages)">
-														<img src="{{document.url + $index}}" width="100%" />
-													</a>
-													<div class="pageNumber"> {{page.number}}<i class="fa fa-warning menu-icon"></i></div>
-												</td>
-											</tr>
-										</table>
-										<div class="normalLine" ng-show="mode == 'normal'"></div>
-										<div class="cutLine" ng-show="mode == 'cut'"></div>
-									</div>
-									<div style="height: 5px; background-color: white;"></div>
-								</td>
-							</tr>
-						</table>
+						<div ng-include="'scannedDocumentsPanel.html'"></div>
 					</div>
 				</td>
 			</tr>

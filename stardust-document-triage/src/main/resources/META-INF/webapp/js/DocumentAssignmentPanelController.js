@@ -24,27 +24,21 @@ define(
 				 * 
 				 */
 				DocumentAssignmentPanelController.prototype.initialize = function() {
-					this.pageModel={};
-					this.uiModel={};
-					this.uiModel.showChildren=false;
-					this.pageModel.currentDocument="";
-					this.pageModel.pageIndex={};
-					this.retrieveActivityInstanceFromUri();
-					this.startProcessDialog = {};
-					this.businessObjectFilter = {};
-					this.selectedBusinessObjectInstances = [];					
+					this.initializeBaseState();
 					this.initializePageRendering();
-					this.documentTypes=[{name:"None",documentTypeId:"",schemaLocation:""}];
+
 					this.businessObjectManagementPanelController = BusinessObjectManagementPanelController
 							.create();
 
 					var self = this;
-										
+
 					DocumentAssignmentService.instance().getDocumentTypes()
-					.done(function(docTypes){
-						self.documentTypes=self.documentTypes.concat(docTypes);
-					});
-					
+							.done(
+									function(docTypes) {
+										self.documentTypes = self.documentTypes
+												.concat(docTypes);
+									});
+
 					DocumentAssignmentService
 							.instance()
 							.getScannedDocuments(this.activityInstanceOid)
@@ -61,7 +55,7 @@ define(
 														function(
 																startableProcesses) {
 															self.startableProcesses = startableProcesses;
-															
+
 															self
 																	.refreshStartableProcessesTree();
 															self.businessObjectManagementPanelController
@@ -69,9 +63,11 @@ define(
 																			self)
 																	.done(
 																			function() {
-																				console.log("===> BO initialized");
-																				console.log(self.businessObjectManagementPanelController);
-																				
+																				console
+																						.log("===> BO initialized");
+																				console
+																						.log(self.businessObjectManagementPanelController);
+
 																				self
 																						.safeApply();
 																				window
@@ -86,24 +82,46 @@ define(
 														}).fail();
 									}).fail();
 				};
-				
+
 				/**
 				 * 
 				 */
-				DocumentAssignmentPanelController.prototype.setDocumentType = function(docType,proc){
-					DocumentAssignmentService.instance().setDocumentType(docType,proc)
-					.done(function(result){
-						//stubbed
-					});					
+				DocumentAssignmentPanelController.prototype.initializeBaseState = function() {
+					this.pageModel = {};
+					this.uiModel = {};
+					this.uiModel.showChildren = false;
+					this.pageModel.currentDocument = "";
+					this.pageModel.pageIndex = {};
+					this.retrieveActivityInstanceFromUri();
+					this.startProcessDialog = {};
+					this.businessObjectFilter = {};
+					this.selectedBusinessObjectInstances = [];
+					this.documentTypes = [ {
+						name : "None",
+						documentTypeId : "",
+						schemaLocation : ""
+					} ];
 				};
-				
+
+				/**
+				 * 
+				 */
+				DocumentAssignmentPanelController.prototype.setDocumentType = function(
+						docType, proc) {
+					DocumentAssignmentService.instance().setDocumentType(
+							docType, proc).done(function(result) {
+						// stubbed
+					});
+				};
+
 				/**
 				 * Clamp a number between a range;
 				 */
-				DocumentAssignmentPanelController.prototype.clamp = function(number,min,max){
+				DocumentAssignmentPanelController.prototype.clamp = function(
+						number, min, max) {
 					return Math.max(min, Math.min(number, max));
 				};
-				
+
 				/**
 				 * 
 				 */
@@ -122,25 +140,25 @@ define(
 					var decodedParts = partsMatcher.exec(decodedId);
 					this.activityInstanceOid = decodedParts[1];
 				};
-				
-				DocumentAssignmentPanelController.prototype.openProcessHistory = function(workItem) {
-					var oid=workItem.pendingProcess.oid;
-				      var message = {
-				        "type": "OpenView",
-				        "data": {
-				          "viewId": "processInstanceDetailsView",
-				          "viewKey": "processInstanceOID=" + oid,
-				          "params": {
-				            "oid": "" + oid,
-				            "processInstanceOID": "" + oid
-				          }
-				        }
-				      };
 
-				      parent.postMessage(JSON.stringify(message), "*");
-				    };
+				DocumentAssignmentPanelController.prototype.openProcessHistory = function(
+						workItem) {
+					var oid = workItem.pendingProcess.oid;
+					var message = {
+						"type" : "OpenView",
+						"data" : {
+							"viewId" : "processInstanceDetailsView",
+							"viewKey" : "processInstanceOID=" + oid,
+							"params" : {
+								"oid" : "" + oid,
+								"processInstanceOID" : "" + oid
+							}
+						}
+					};
 
-				
+					parent.postMessage(JSON.stringify(message), "*");
+				};
+
 				/**
 				 * 
 				 */
@@ -269,30 +287,38 @@ define(
 												var specificDocument = jQuery
 														.data(this,
 																"specificDocument");
-												
-												var processOID = jQuery.data(this,"processOID");
-												DocumentAssignmentService.instance()
-												.addProcessDocument(processOID,scannedDocument,specificDocument.id)
-												.done(
-														function(pendingProcesses) {
-															
-															self.pendingProcesses = pendingProcesses;
-															self.refreshPendingProcessesTree();
-															self.safeApply();
 
-															jQuery("*")
-																	.css(
-																			"cursor",
-																			"default");
+												var processOID = jQuery.data(
+														this, "processOID");
+												DocumentAssignmentService
+														.instance()
+														.addProcessDocument(
+																processOID,
+																scannedDocument,
+																specificDocument.id)
+														.done(
+																function(
+																		pendingProcesses) {
 
-															window
-																	.setTimeout(
-																			function() {
-																				self
-																						.bindDragAndDrop();
-																			},
-																			1000);
-														}).fail();
+																	self.pendingProcesses = pendingProcesses;
+																	self
+																			.refreshPendingProcessesTree();
+																	self
+																			.safeApply();
+
+																	jQuery("*")
+																			.css(
+																					"cursor",
+																					"default");
+
+																	window
+																			.setTimeout(
+																					function() {
+																						self
+																								.bindDragAndDrop();
+																					},
+																					1000);
+																}).fail();
 											},
 											tolerance : "pointer"
 										});
@@ -310,22 +336,36 @@ define(
 										.droppable({
 											hoverClass : "highlighted",
 											drop : function(event, ui) {
-												
-												var scannedDocument = jQuery.data(ui.draggable[0],"scannedDocument");
-												var processAttachments = jQuery.data(this,"processAttachments");
-												var processDetails = jQuery.data(this,"processDetails");
-												var processOID = jQuery.data(this,"processOID");
-												
-												jQuery("*").css("cursor","wait");
+
+												var scannedDocument = jQuery
+														.data(ui.draggable[0],
+																"scannedDocument");
+												var processAttachments = jQuery
+														.data(this,
+																"processAttachments");
+												var processDetails = jQuery
+														.data(this,
+																"processDetails");
+												var processOID = jQuery.data(
+														this, "processOID");
+
+												jQuery("*").css("cursor",
+														"wait");
 												DocumentAssignmentService
 														.instance()
-														.addProcessDocument(processOID,scannedDocument,"PROCESS_ATTACHMENTS")
+														.addProcessDocument(
+																processOID,
+																scannedDocument,
+																"PROCESS_ATTACHMENTS")
 														.done(
-																function(pendingProcesses) {
-																	
+																function(
+																		pendingProcesses) {
+
 																	self.pendingProcesses = pendingProcesses;
-																	self.refreshPendingProcessesTree();
-																	self.safeApply();
+																	self
+																			.refreshPendingProcessesTree();
+																	self
+																			.safeApply();
 
 																	jQuery("*")
 																			.css(
@@ -356,7 +396,8 @@ define(
 
 					for (var n = 0; n < this.startableProcessesTree.length; ++n) {
 						if (this.startableProcessesTree[n].specificDocument) {
-							var specificDocumentRow = jQuery("#startableProcessesTreeRow" + n);
+							var specificDocumentRow = jQuery("#startableProcessesTreeRow"
+									+ n);
 							specificDocumentRow
 									.data({
 										ui : specificDocumentRow,
@@ -370,20 +411,22 @@ define(
 											var scannedDocument = jQuery.data(
 													ui.draggable[0],
 													"scannedDocument");
-											var processDetails = jQuery.data(this, "processDetails");
-											
-											var specificDocument = jQuery.data(this, "specificDocument");
-	
-												specificDocument.url = "bla";
-												specificDocument.creationTimestamp = scannedDocument.creationTimestamp;
-												specificDocument.type = scannedDocument.type;
-												specificDocument.scannedDocument = scannedDocument;
-												self.refreshStartableProcessesTree();
-												self.safeApply();
-												window.setTimeout(
-														function() {
-															self.bindDragAndDrop();
-														},1000);
+											var processDetails = jQuery.data(
+													this, "processDetails");
+
+											var specificDocument = jQuery.data(
+													this, "specificDocument");
+
+											specificDocument.url = "bla";
+											specificDocument.creationTimestamp = scannedDocument.creationTimestamp;
+											specificDocument.type = scannedDocument.type;
+											specificDocument.scannedDocument = scannedDocument;
+											self
+													.refreshStartableProcessesTree();
+											self.safeApply();
+											window.setTimeout(function() {
+												self.bindDragAndDrop();
+											}, 1000);
 
 										},
 										tolerance : "pointer"
@@ -406,14 +449,18 @@ define(
 													"scannedDocument");
 											var processDetails = jQuery.data(
 													this, "processDetails");
-											
-											var processAttachments = jQuery.data(this,"processAttachments");
-												processAttachments.push(scannedDocument);
-												self.refreshStartableProcessesTree();
-												self.safeApply();
-												window.setTimeout(function() {
-																	self.bindDragAndDrop();
-																},1000);										
+
+											var processAttachments = jQuery
+													.data(this,
+															"processAttachments");
+											processAttachments
+													.push(scannedDocument);
+											self
+													.refreshStartableProcessesTree();
+											self.safeApply();
+											window.setTimeout(function() {
+												self.bindDragAndDrop();
+											}, 1000);
 										},
 										tolerance : "pointer"
 									});
@@ -424,53 +471,54 @@ define(
 				/**
 				 * 
 				 */
-				DocumentAssignmentPanelController.prototype.selectPage = function(page, url, e) {
+				DocumentAssignmentPanelController.prototype.selectPage = function(
+						page, url, e) {
 					this.selectedPage = page;
-					if(e.ctrlKey){
-						if(this.pageModel.pageIndex.hasOwnProperty(page.number)){
+					if (e.ctrlKey) {
+						if (this.pageModel.pageIndex
+								.hasOwnProperty(page.number)) {
 							delete this.pageModel.pageIndex[page.number];
-						}else{
-							this.pageModel.pageIndex[page.number]=url;
+						} else {
+							this.pageModel.pageIndex[page.number] = url;
 						}
-					}
-					else if(e.shiftKey){
-						//stubbed for later
-					}
-					else{
-						this.pageModel.pageIndex={};
-						this.pageModel.pageIndex[page.number]=url;
+					} else if (e.shiftKey) {
+						// stubbed for later
+					} else {
+						this.pageModel.pageIndex = {};
+						this.pageModel.pageIndex[page.number] = url;
 					}
 					console.log(this.pageModel.pageIndex);
 					this.selectedPage.url = url;
 				};
-				
-				DocumentAssignmentPanelController.prototype.isPageSelected = function(page){
-					
-					if(this.pageModel.pageIndex.hasOwnProperty(page.number) &&
-					   this.pageModel.pageIndex[page.number]==page.url){
+
+				DocumentAssignmentPanelController.prototype.isPageSelected = function(
+						page) {
+
+					if (this.pageModel.pageIndex.hasOwnProperty(page.number)
+							&& this.pageModel.pageIndex[page.number] == page.url) {
 						return true;
-					}else{
+					} else {
 						return false;
 					}
 				}
 
-				DocumentAssignmentPanelController.prototype.startProcess = function(treeItem, busObj) {
-					
-					var that = this,
-						data={
-							processDefinitionId:treeItem.startableProcess.id,
-							businessObject:busObj,
-							specificDocuments:[],
-							processAttachments:treeItem.startableProcess.processAttachments
-						},
-						i;
-					
-					for(i=0;i<treeItem.startableProcess.specificDocuments.length;i++){
-						if(treeItem.startableProcess.specificDocuments[i].scannedDocument){
-							data.specificDocuments.push({
-									"dataPathId" : treeItem.startableProcess.specificDocuments[i].id,
-									"document" : treeItem.startableProcess.specificDocuments[i].scannedDocument
-								});
+				DocumentAssignmentPanelController.prototype.startProcess = function(
+						treeItem, busObj) {
+
+					var that = this, data = {
+						processDefinitionId : treeItem.startableProcess.id,
+						businessObject : busObj,
+						specificDocuments : [],
+						processAttachments : treeItem.startableProcess.processAttachments
+					}, i;
+
+					for (i = 0; i < treeItem.startableProcess.specificDocuments.length; i++) {
+						if (treeItem.startableProcess.specificDocuments[i].scannedDocument) {
+							data.specificDocuments
+									.push({
+										"dataPathId" : treeItem.startableProcess.specificDocuments[i].id,
+										"document" : treeItem.startableProcess.specificDocuments[i].scannedDocument
+									});
 						}
 					}
 
@@ -647,35 +695,34 @@ define(
 						}
 					}
 				};
-				
-				DocumentAssignmentPanelController.prototype.processCanStart = function(proc){
-					var hasBusinessObject=false,
-						hasProcessAttachment=false,
-						hasSpecificDocument = false,
-						i;
-					
+
+				DocumentAssignmentPanelController.prototype.processCanStart = function(
+						proc) {
+					var hasBusinessObject = false, hasProcessAttachment = false, hasSpecificDocument = false, i;
+
 					hasBusinessObject = this.selectedBusinessObjectInstances.length > 0;
-					hasProcessAttachment = proc.startableProcess.processAttachments.length >0;
-					
-					for(i=0;i<proc.startableProcess.specificDocuments.length;i++){
-						if(proc.startableProcess.specificDocuments[i].scannedDocument){
-							hasSpecificDocument=true;
+					hasProcessAttachment = proc.startableProcess.processAttachments.length > 0;
+
+					for (i = 0; i < proc.startableProcess.specificDocuments.length; i++) {
+						if (proc.startableProcess.specificDocuments[i].scannedDocument) {
+							hasSpecificDocument = true;
 							break;
 						}
 					}
-					
-					if(hasBusinessObject && (hasProcessAttachment || hasSpecificDocument)){
+
+					if (hasBusinessObject
+							&& (hasProcessAttachment || hasSpecificDocument)) {
 						return true;
-					}
-					else{
-						console.log(hasBusinessObject + "," + hasProcessAttachment + "," + hasSpecificDocument);
+					} else {
+						console.log(hasBusinessObject + ","
+								+ hasProcessAttachment + ","
+								+ hasSpecificDocument);
 						console.log(proc);
 						return false;
 					}
-						
-					
+
 				}
-				
+
 				/**
 				 * 
 				 */
@@ -683,19 +730,22 @@ define(
 					var self = this;
 
 					jQuery("*").css("cursor", "wait");
-					DocumentAssignmentService.instance().getPendingProcesses()
-							.done(function(pendingProcesses) {
-								self.pendingProcesses = pendingProcesses;
-								self.selectedBusinessObjectInstances=self.businessObjectManagementPanelController.selectedBusinessObjectInstances;
-								self.refreshPendingProcessesTree();
-								self.safeApply();
+					DocumentAssignmentService
+							.instance()
+							.getPendingProcesses()
+							.done(
+									function(pendingProcesses) {
+										self.pendingProcesses = pendingProcesses;
+										self.selectedBusinessObjectInstances = self.businessObjectManagementPanelController.selectedBusinessObjectInstances;
+										self.refreshPendingProcessesTree();
+										self.safeApply();
 
-								jQuery("*").css("cursor", "default");
+										jQuery("*").css("cursor", "default");
 
-								window.setTimeout(function() {
-									self.bindDragAndDrop();
-								}, 1000);
-							}).fail(function() {
+										window.setTimeout(function() {
+											self.bindDragAndDrop();
+										}, 1000);
+									}).fail(function() {
 								jQuery("*").css("cursor", "default");
 							});
 				};

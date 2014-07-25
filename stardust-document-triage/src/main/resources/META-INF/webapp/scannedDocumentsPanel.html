@@ -1,0 +1,53 @@
+<table cellpadding="0" cellspacing="0" style="width: 100%;">
+	<tr ng-repeat="document in scannedDocuments"
+		ng-init="document.showChildren=false"
+		id="scannedDocumentDivision{{$index}}" class="scannedDocument">
+		<td>
+			<div ng-show="!document.showChildren" class="formTable">
+
+				<div style="height: {{100+ 3*clamp(document.pages.length, 0, 10)"
+					class="imageStack"
+					ng-click="$parent.selectPage(document.pages[0],document.url + 0,$event,document.pages)">
+					<img src="{{document.url}}0" style="height: 100px;"
+						title="Page {{(clamp(document.pages.length,0,10))-$index}} of {{document.pages.length}}"
+						ng-repeat="page in document.pages | limitTo: 10" />
+				</div>
+
+
+				<div class="verticalMenu2">
+					<i class="fa fa-warning"></i> <i title="Reverse Pages"
+						class="fa fa-arrows-h"></i> <i class="fa"
+						title="Expand/Collapse Pages" ng-show="document.pages.length>0"
+						ng-class="{'fa-caret-down':document.showChildren,'fa-caret-up':!document.showChildren}"
+						ng-click="document.showChildren=!document.showChildren"> </i>
+				</div>
+				<div class="documentInfo">
+					<span>{{document.name}}</span>
+				</div>
+			</div>
+			<div class="documentHeader" ng-show="document.showChildren">
+				{{document.name}} <i title="Collapse"
+					ng-click="document.showChildren=false"
+					class="fa fa-caret-up menu-icon"></i>
+			</div>
+			<div ng-show="document.showChildren"
+				ng-repeat="page in document.pages" class="page">
+				<table
+					ng-class="{'selected':isPageSelected(page),'unselected':!isPageSelected(page)}">
+					<tr>
+						<td><a style="display: inline;"
+							ng-click="$parent.$parent.selectPage(page,document.url + $index,$event,document.pages)">
+								<img src="{{document.url + $index}}" width="100%" />
+						</a>
+							<div class="pageNumber">
+								{{page.number}}<i class="fa fa-warning menu-icon"></i>
+							</div></td>
+					</tr>
+				</table>
+				<div class="normalLine" ng-show="mode == 'normal'"></div>
+				<div class="cutLine" ng-show="mode == 'cut'"></div>
+			</div>
+			<div style="height: 5px; background-color: white;"></div>
+		</td>
+	</tr>
+</table>

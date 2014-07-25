@@ -1,0 +1,23 @@
+<table class="toolbar" style="width: 100%;">
+	<tr>
+		<td><table class="formTable">
+				<tr>
+					<td><a href="#" class="iconLink" ng-click="rotatePage()"><i
+							class="fa fa-rotate-right"></i></a></td>
+					<td><input type="number" style="text-align: right;"
+						ng-model="zoomFactor"></input> <label>%</label></td>
+					<td><a href="#" class="iconLink" ng-click="zoomInPage()"><i
+							class="fa fa-plus-circle"></i></a></td>
+					<td><a href="#" class="iconLink" ng-click="zoomOutPage()"><i
+							class="fa fa-minus-circle"></i></a></td>
+					<td><a href="#" class="iconLink" ng-click="invertPage()"><i
+							class="fa fa-star-half-o"></i></a></td>
+				</tr>
+			</table></td>
+	</tr>
+</table>
+<div class="section"
+	style="height: 400px; overflow: auto; margin-top: 10px; margin-bottom: 10px; max-width: 800px;">
+	<img id="pageImage" src={{selectedPage.url}}
+		ng-show="selectedPage != null" />
+</div>
