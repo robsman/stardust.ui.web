@@ -161,12 +161,31 @@ public class PluginResourceUtils
          String resourcePath) throws IOException
    {
       Set<String> fileNames = new HashSet<String>();
-      Resource[] resources = resolver.getResources("classpath*:/" + PATH_META_INF
-            + resourcePath);
       
-      for (Resource resource : resources)
+      Resource[] resources;
+      
+      try
       {
-         fileNames.add(resource.getFilename());
+         try
+         {
+            resources = resolver.getResources("classpath*:/" + PATH_META_INF + resourcePath);   
+         }
+         catch (Exception e)
+         {
+            log.error("Trying to resolve path without META-INF as exception occurred with search pattern: " + "classpath*:/" + PATH_META_INF + resourcePath, e);
+            // JBoss is unable to find META-INF some times, workaround for the scenario
+            // TODO: This will also find the resources which are not under "META_INF" directory. 
+            resources = resolver.getResources("classpath*:/**/" + resourcePath);
+         }   
+         
+         for (Resource resource : resources)
+         {
+            fileNames.add(resource.getFilename());
+         }
+      }
+      catch (Exception e)
+      {
+         e.printStackTrace();
       }
 
       return fileNames;
