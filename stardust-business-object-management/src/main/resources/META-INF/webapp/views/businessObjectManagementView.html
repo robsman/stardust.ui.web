@@ -25,8 +25,20 @@ ul.errorMessagesPanel {
 </head>
 <body>
 	<div ng-controller="businessObjectManagementViewController">
-		<h2>Business Object Selection and Search</h2>
-		<div ng-include="'../businessObjectSearchPanel.html'"></div>
+		<table cellspacing="0" cellpadding="0" class="layoutTable">
+			<tr valign="center">
+				<td><a href="#" class="iconLink"><i
+						class="fa fa-chevron-up" ng-click="searchCollapsed = true"
+						ng-hide="searchCollapsed"></i></a><a href="#" class="iconLink"><i
+						class="fa fa-chevron-down" ng-click="searchCollapsed = false"
+						ng-show="searchCollapsed"></i></a></td>
+				<td style="padding-left: 5px !important;"><h2
+						style="margin-bottom: 0px;">Business Object Selection and
+						Search</h2></td>
+			</tr>
+		</table>
+		<div ng-hide="searchCollapsed"
+			ng-include="'../businessObjectSearchPanel.html'"></div>
 		<table style="width: 100%;"
 			ng-show="businessObjectManagementPanelController.businessObject != null">
 			<tr>
