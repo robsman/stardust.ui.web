@@ -91,7 +91,7 @@ public class DocumentTriageResource {
       try {
          JsonObject json = jsonIo.readJsonObject(postedData);
          
-         return Response.ok(getDocumentTriageService().splitDocument(processInstanceOid, documentId, postedData).toString(),
+         return Response.ok(getDocumentTriageService().splitDocument(processInstanceOid, documentId, json).toString(),
                MediaType.APPLICATION_JSON).build();
       } catch (Exception e) {
          trace.error(e, e);
