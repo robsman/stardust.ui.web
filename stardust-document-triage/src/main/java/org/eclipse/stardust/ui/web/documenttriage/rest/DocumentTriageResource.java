@@ -137,6 +137,7 @@ public class DocumentTriageResource {
    @DELETE
    @Produces(MediaType.APPLICATION_JSON)
    @Path("processes/{processInstanceOid: \\d+}/documents/{dataPathId}{documentId: (/documentId)?}")
+//   @Path("processes/{processInstanceOid: \\d+}/documents/{dataPathId}/{documentId}")
    public Response removeDocument(@PathParam("processInstanceOid") String processInstanceOid, @PathParam("dataPathId") String dataPathId, @PathParam("documentId") String documentId) {
       try {
          return Response.ok(
