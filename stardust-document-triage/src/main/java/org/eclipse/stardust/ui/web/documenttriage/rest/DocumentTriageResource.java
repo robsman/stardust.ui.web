@@ -60,8 +60,8 @@ public class DocumentTriageResource {
 	}
 
 	@GET
-	@Produces({ "image/png" })
-	@Path("documents/{documentId}/{pageNumber}")
+	@Produces("image/png")
+	@Path("documents/{documentId}/{pageNumber: \\d+}")
 	public Response getDocumentImage(
 			@PathParam("documentId") String documentId,
 			@PathParam("pageNumber") int pageNumber) {
@@ -83,6 +83,22 @@ public class DocumentTriageResource {
 			return Response.serverError().build();
 		}
 	}
+
+   @POST
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("processes/{processInstanceOid: \\d+}/documents/{documentId}/split")
+   public Response splitDocument(@PathParam("processInstanceOid") long processInstanceOid, @PathParam("documentId") String documentId, String postedData) {
+      try {
+         JsonObject json = jsonIo.readJsonObject(postedData);
+         
+         return Response.ok(getDocumentTriageService().splitDocument(processInstanceOid, documentId, postedData).toString(),
+               MediaType.APPLICATION_JSON).build();
+      } catch (Exception e) {
+         trace.error(e, e);
+
+         return Response.serverError().build();
+      }
+   }
 
    @POST
    @Produces(MediaType.APPLICATION_JSON)

@@ -23,7 +23,10 @@ import org.eclipse.stardust.common.Direction;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetails;
-import org.eclipse.stardust.engine.api.model.*;
+import org.eclipse.stardust.engine.api.model.ApplicationContext;
+import org.eclipse.stardust.engine.api.model.DataMapping;
+import org.eclipse.stardust.engine.api.model.DataPath;
+import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.DeployedModelQuery;
 import org.eclipse.stardust.engine.api.query.DescriptorPolicy;
@@ -516,7 +519,7 @@ public class DocumentTriageService {
 		// Process Attachments
 		JsonArray processAttachments = parameters.get("processAttachments").getAsJsonArray();
 		addProcessAttachments(pi.getOID(), processAttachments);
-
+		
 		return parameters;
 	}
 
@@ -565,6 +568,48 @@ public class DocumentTriageService {
 		return image;
 	}
 
+   public JsonObject splitDocument(long processInstanceOid, String documentId, JsonObject postedData) {
+      JsonObject resultJson = new JsonObject();
+      
+      byte[] image = null;
+      Set<Integer> pageNumbers = new HashSet<Integer>();
+      
+      JsonArray pages = postedData.get("pages").getAsJsonArray();
+      for (JsonElement jsonElement : pages)
+      {
+         pageNumbers.add(jsonElement.getAsInt());
+      }
+
+      Document document = getDocumentManagementService().getDocument(
+            documentId);
+      String contentType = document.getContentType();
+      byte[] data = documentManagementService
+            .retrieveDocumentContent(documentId);
+
+      String MIMETYPE_PDF = "application/pdf", MIMETYPE_TIFF = "image/tiff";
+      if (MIMETYPE_PDF.equalsIgnoreCase(contentType)) {
+         image = PdfPageCapture.getSplitTiff(data, pageNumbers);
+      } else if (MIMETYPE_TIFF.equalsIgnoreCase(contentType)) {
+         image = TiffReader.getSplitTiff(data, pageNumbers);
+      } else { // Any other type, except PDF or TIFF
+         // TODO
+      }
+      
+      String fileName = document.getName(), extension = "";
+
+      int i = fileName.lastIndexOf('.');
+      if (i > 0) {
+          extension = fileName.substring(i+1);
+          fileName = fileName.substring(0, i - 1);
+      }
+      
+      fileName = fileName + "_" + UUID.randomUUID() + ".tiff";
+      
+      Document createdDocument = addProcessAttachment(processInstanceOid, fileName, image);
+      
+      return resultJson;
+   }
+   
 	/**
 	 * @param pi
 	 * @return
@@ -651,7 +696,7 @@ public class DocumentTriageService {
       return resultJson; 
 	}
 
-	/*public void addProcessAttachment(long processOid, String fileName,
+	public Document addProcessAttachment(long processOid, String fileName,
 			byte[] bytes) {
 		ProcessInstance processInstance = getWorkflowService()
 				.getProcessInstance(processOid);
@@ -667,7 +712,9 @@ public class DocumentTriageService {
 		processAttachments.add(document);
 		getWorkflowService().setOutDataPath(processInstance.getOID(),
 				CommonProperties.PROCESS_ATTACHMENTS, processAttachments);
-	}*/
+		
+		return document;
+	}
 	
 	public JsonObject addProcessInstanceDocument(long processInstanceOid, String dataPathId, JsonObject json)
 	{

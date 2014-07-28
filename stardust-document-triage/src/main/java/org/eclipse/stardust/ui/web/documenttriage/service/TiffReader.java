@@ -4,54 +4,60 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Iterator;
+import java.util.*;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.ImageWriter;
 
+import org.eclipse.stardust.ui.web.viewscommon.views.document.tiff.ImageUtils;
+
 public class TiffReader
 {
-   public static byte[] getPageImage(byte[] data, int pageNumber) {
-
-      byte[] output = null;
+   public static byte[] getPageImage(byte[] data, int pageNumber)
+   {
+      BufferedImage[] extractedTiffImages = null;
+      byte[] extractedImage = null;
       
-      ImageReader reader = getTIFFReader();
       try
       {
-         reader.setInput(ImageIO.createImageInputStream(new ByteArrayInputStream(data)));
+         HashSet<Integer> pageSet = new HashSet<Integer>();
+         pageSet.add(pageNumber + 1);
+         
+         extractedTiffImages = ImageUtils.extractTIFFImage(data, pageSet);
+         extractedImage = getPNGEnodedImageBytes(extractedTiffImages[0]);
       }
-      catch (IOException e)
+      catch (Exception e)
       {
          // TODO Auto-generated catch block
          e.printStackTrace();
       }
+      
+      return extractedImage;
+   }
 
-      BufferedImage bufferedImage = null;
+   public static byte[] getSplitTiff(byte[] data, Set<Integer> pageNumbers)
+   {
+      byte[] tiffDocument = null;
+      
       try
       {
-         synchronized (reader)
-         {
-            bufferedImage = reader.read(pageNumber, null);
-         }
+         tiffDocument = ImageUtils.createTiffImage(ImageUtils.extractTIFFImage(data, pageNumbers));
       }
-      catch (IOException e)
+      catch (Exception e)
       {
+         // TODO Auto-generated catch block
          e.printStackTrace();
       }
       
-      output = getPNGEnodedImageBytes(bufferedImage);
-      bufferedImage.flush();
-      reader.dispose();
-      
-      return output;
+      return tiffDocument;
    }
-
+   
    public static int getNumPages(byte[] data)
    {
       int numPages = 0;
       
-      ImageReader reader = getTIFFReader();
+      ImageReader reader = ImageUtils.getTiffImageReader();
       try
       {
          reader.setInput(ImageIO.createImageInputStream(new ByteArrayInputStream(data)));
@@ -65,31 +71,6 @@ public class TiffReader
       reader.dispose();
       
       return numPages; 
-   }
-   
-   private static ImageReader getTIFFReader()
-   {
-      final int TIFF_READER_SCAN_RETRY_COUNT_MAX = 1;
-      final String TIFF_FORMAT_NAME = "tiff";
-      int retryCount = 0;
-      Iterator<ImageReader> readers = ImageIO.getImageReadersByFormatName(TIFF_FORMAT_NAME);
-      
-      while (!readers.hasNext())
-      {
-         if (retryCount < TIFF_READER_SCAN_RETRY_COUNT_MAX)
-         {
-            ImageIO.scanForPlugins();            
-            readers = ImageIO.getImageReadersByFormatName(TIFF_FORMAT_NAME);
-            retryCount++;
-         }
-         else
-         {
-            System.out.println("TIFF Error");
-         }
-      }
-
-      ImageReader reader = (ImageReader) readers.next();
-      return reader;
    }
    
    /**
@@ -119,5 +100,4 @@ public class TiffReader
 
       return bs.toByteArray();
    }
-   
 }

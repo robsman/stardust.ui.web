@@ -4,7 +4,10 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageWriter;
@@ -14,6 +17,8 @@ import org.icepdf.core.exceptions.PDFSecurityException;
 import org.icepdf.core.pobjects.Document;
 import org.icepdf.core.pobjects.Page;
 import org.icepdf.core.util.GraphicsRenderingHints;
+
+import org.eclipse.stardust.ui.web.viewscommon.views.document.tiff.ImageUtils;
 
 public class PdfPageCapture {
 
@@ -77,6 +82,47 @@ public class PdfPageCapture {
       document.dispose();
       
       return numPages; 
+   }
+   
+   public static byte[] getSplitTiff(byte[] data, Set<Integer> pageNumbers)
+   {
+      byte[] tiffDocument = null;
+      List<BufferedImage> images = new ArrayList<BufferedImage>();
+      
+      try
+      {
+         // open the file
+         Document document = new Document();
+         document.setByteArray(data, 0, data.length, null);
+
+         // save page captures to file.
+         float scale = 1.0f;
+         float rotation = 0f;
+
+         BufferedImage image = null;
+         for (Integer pageNumber : pageNumbers)
+         {
+            // Paint the page content to an image and
+            // write the image to a byte array
+            image = (BufferedImage) document.getPageImage(
+                pageNumber, GraphicsRenderingHints.PRINT, Page.BOUNDARY_CROPBOX, rotation, scale);
+            image.flush();
+            
+            images.add(image);
+         }
+         
+         // clean up resources
+         document.dispose();
+
+         tiffDocument = ImageUtils.createTiffImage(images.toArray(new BufferedImage[images.size()]));
+      }
+      catch (Exception e)
+      {
+         // TODO Auto-generated catch block
+         e.printStackTrace();
+      }
+      
+      return tiffDocument;
    }
    
    /**
