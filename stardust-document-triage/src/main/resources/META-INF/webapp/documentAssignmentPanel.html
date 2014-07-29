@@ -63,7 +63,7 @@
 																style="margin-left: 10px;">
 
 																<i class="fa"
-																	ng-class="{'fa-file':!treeItem.specificDocument.isEmpty,'fa-file-o':treeItem.specificDocument.isEmpty}">
+																	ng-class="{'fa-file':treeItem.specificDocument.document,'fa-file-o':!treeItem.specificDocument.document}">
 																</i>
 															</div>
 															<div ng-show="treeItem.processAttachments != null"

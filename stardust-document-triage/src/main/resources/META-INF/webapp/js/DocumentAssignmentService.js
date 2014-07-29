@@ -26,7 +26,33 @@ define(
 				 */
 				DocumentAssignmentService.prototype.initialize = function() {
 				};
+				
+				DocumentAssignmentService.prototype.deleteAttachment = function(oid,dataPathId,urn){
+					
+					var deferred = jQuery.Deferred(),
+						rootUrl = location.href.substring(0, location.href.indexOf("/plugins")),
+						self = this,
+						urlFrag;
+					
+					urlFrag=+ oid + "/documents/" + dataPathId;
+					
+					if(dataPathId=="PROCESS_ATTACHMENTS"){
+						urlFrag += "/" + urn
+					}
+					
+					jQuery.ajax({
+								url : rootUrl + "/services/rest/document-triage/processes/" + urlFrag,
+								type : "DELETE",
+								contentType : "application/json"
+							}).done(function(result) {
+						deferred.resolve(result);
+					}).fail(function(data) {
+						deferred.reject(data);
+					});
 
+					return deferred.promise();
+				};
+				
 				/**
 				 * 
 				 */

@@ -103,10 +103,17 @@ define(
 					}
 				};
 				
+				DocumentAssignmentPanelController.prototype.removeSpecificDocumentPending=function(proc,attach,specDocId){
+					for(var i=0;i<proc.specificDocuments.length;i++){
+						if(proc.specificDocuments[i].id==specDocId){
+							delete proc.specificDocuments[i].document;
+						}
+					}
+				}
+				
 				DocumentAssignmentPanelController.prototype.removeSpecificDocumentStartable=function(proc,attach,specDocId){
 					for(var i=0;i<proc.specificDocuments.length;i++){
 						if(proc.specificDocuments[i].id==specDocId){
-							debugger;
 							delete proc.specificDocuments[i].scannedDocument;
 						}
 					}
@@ -123,7 +130,6 @@ define(
 				}
 				
 				DocumentAssignmentPanelController.prototype.removeProcessAttachmentPending=function(proc,attach){
-					debugger;
 					for(var i=0;i<proc.processAttachments.length;i++){
 						if(proc.processAttachments[i].uuid==attach.uuid){
 							proc.processAttachments.splice(i,1);
@@ -299,10 +305,11 @@ define(
 							    	hoverClass : "highlighted",
 							    	drop : function(event, ui){
 							    		
-							    		var ed=jQuery.data(ui.draggable[0],"dragData");
+							    		var ed=jQuery.data(ui.draggable[0],"dragData"),
+							    			workService =DocumentAssignmentService.instance();
 							    		
 							    		switch(ed.sourceType){
-								    		case "proccessAttachment_startable":
+								    		case "proccessAttachment_startable":	    			
 								    			self.removeProcessAttachmentStartable(ed.process,ed.attachment);
 								    			self.refreshStartableProcessesTree();
 								    			break;
@@ -311,22 +318,27 @@ define(
 								    			self.refreshStartableProcessesTree();
 								    			break;
 								    		case "specificDocument_pending":
-								    			self.removeSpecificDocumentStartable(ed.process,ed.attachment,ed.specificDocumentId);
-								    			self.refreshPendingProcessesTree();
+								    			workService.deleteAttachment(ed.process.oid,ed.specificDocumentId,"")
+								    			.done(function(pendingProcesses){
+								    				self.pendingProcesses = pendingProcesses.processInstances;
+									    			self.refreshPendingProcessesTree();
+								    			})
+								    			.fail(function(){
+								    				//stubbed
+								    			});
 								    			break;
 								    		case "proccessAttachment_pending":
-								    			self.removeProcessAttachmentPending(ed.process,ed.attachment);
-								    			self.refreshPendingProcessesTree();
+								    			workService.deleteAttachment(ed.process.oid,"PROCESS_ATTACHMENTS",ed.attachment.uuid)
+								    			.done(function(pendingProcesses){
+								    				self.pendingProcesses = pendingProcesses.processInstances;
+								    				//self.removeProcessAttachmentPending(ed.process,ed.attachment);
+									    			self.refreshPendingProcessesTree();
+								    			}).fail(function(){
+								    				//stubbed
+								    			});
 								    			break;
 							    		}
-							    		/*
-							    		if(ed.sourceType=="proccessAttachment_startable"){
-							    			self.removeProcessAttachmentStartable(ed.process,ed.attachment);
-							    		}
-							    		else if(ed.sourceType=="specificDocument_startable"){
-							    			self.removeSpecificDocumentStartable(ed.process,ed.attachment,ed.specificDocumentId);
-							    		}*/
-							    		self.refreshStartableProcessesTree();
+							    		
 							    		self.safeApply();
 							    		window.setTimeout(function() {
 											self.bindDragAndDrop();
@@ -610,18 +622,20 @@ define(
 						page, url, e) {
 					console.log("Calling Selected Page");
 					this.pageModel.selectedPage = page;
-					if (e.ctrlKey) {
-						if (this.pageModel.pageIndex
-								.hasOwnProperty(page.number)) {
-							delete this.pageModel.pageIndex[page.number];
+					if(e){
+						if (e.ctrlKey) {
+							if (this.pageModel.pageIndex
+									.hasOwnProperty(page.number)) {
+								delete this.pageModel.pageIndex[page.number];
+							} else {
+								this.pageModel.pageIndex[page.number] = url;
+							}
+						} else if (e.shiftKey) {
+							// stubbed for later
 						} else {
+							this.pageModel.pageIndex = {};
 							this.pageModel.pageIndex[page.number] = url;
 						}
-					} else if (e.shiftKey) {
-						// stubbed for later
-					} else {
-						this.pageModel.pageIndex = {};
-						this.pageModel.pageIndex[page.number] = url;
 					}
 					console.log(this.pageModel.pageIndex);
 					this.pageModel.selectedPage.url = url;
@@ -815,7 +829,6 @@ define(
 
 						doc=that.getScannedDocument(attchId);
 						proc = that.getPendingProcess(procId);
-						debugger;
 						eventData={
 								sourceType:"proccessAttachment_pending",
 								process: proc,
