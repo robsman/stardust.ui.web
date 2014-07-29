@@ -172,7 +172,26 @@
    </dependencies>
 
    <build>
+      <resources>
+         <!-- use the generated resources at first because already available files
+               will not be overridden -->
+         <resource>
+            <directory>${project.build.directory}/generated-resources</directory>
+         </resource>
+         <resource>
+            <directory>src/main/resources</directory>
+         </resource>
+      </resources>
       <plugins>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+               <execution>
+                  <id>replace-i18n-default-bundle</id>
+               </execution>
+            </executions>
+         </plugin>
          <plugin>
             <artifactId>maven-surefire-plugin</artifactId>
             <configuration>
