@@ -238,7 +238,6 @@ public class DocumentTriageService
 
       JsonArray specificDocuments = getSpecificDocuments(processDefinition);
       String inDataPathId = "";
-      boolean isEmpty = true;
       for (JsonElement specificDocument : specificDocuments)
       {
          inDataPathId = specificDocument.getAsJsonObject().get("inDataPathId")
@@ -250,9 +249,10 @@ public class DocumentTriageService
          }
          if (doc != null)
          {
-            isEmpty = false;
+            JsonObject existingDocument = new JsonObject();
+            existingDocument.addProperty("uuid", doc.getId());
+            specificDocument.getAsJsonObject().add("document", existingDocument);
          }
-         specificDocument.getAsJsonObject().addProperty("isEmpty", isEmpty);
       }
 
       processInstanceJson.add("specificDocuments", specificDocuments);
@@ -472,7 +472,7 @@ public class DocumentTriageService
          specificDocumentJson.addProperty("type", dataPath.getMappedType().getName());
          specificDocumentJson.addProperty("data", dataPath.getData());
          specificDocumentJson.addProperty("inDataPathId",
-               getInDataPathId(processDefinition, dataPath.getData()));
+               getInDataPathId(processDefinition, dataPath.getId()));
       }
 
       return specificDocumentsJson;
