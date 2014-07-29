@@ -47,6 +47,26 @@ public class DocumentTriageResource
 
    @GET
    @Produces(MediaType.APPLICATION_JSON)
+   @Path("activities/{activityInstanceOid: \\d+}")
+   public Response getActivityInstance(@PathParam("activityInstanceOid")
+   long activityInstanceOid)
+   {
+      try
+      {
+         return Response.ok(
+               getDocumentTriageService().getActivityInstance(activityInstanceOid)
+                     .toString(), MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
+
+         return Response.serverError().build();
+      }
+   }
+
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
    @Path("activities/{activityInstanceOid: \\d+}/attachments.json")
    public Response getProcessesAttachments(@PathParam("activityInstanceOid")
    long activityInstanceOid)

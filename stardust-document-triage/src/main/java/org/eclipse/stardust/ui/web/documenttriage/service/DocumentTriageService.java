@@ -511,6 +511,22 @@ public class DocumentTriageService
     * @param activityInstanceOid
     * @return
     */
+   public JsonObject getActivityInstance(long activityInstanceOid)
+   {
+      JsonObject resultJson = new JsonObject();
+      ActivityInstance activityInstance = getWorkflowService().getActivityInstance(
+            activityInstanceOid);
+
+      resultJson.addProperty("processInstanceOid", activityInstance.getProcessInstanceOID());
+
+      return resultJson;
+   }
+
+   /**
+    * 
+    * @param activityInstanceOid
+    * @return
+    */
    public JsonObject getProcessAttachmentsForActivityInstance(long activityInstanceOid)
    {
       JsonObject resultJson = new JsonObject();
