@@ -531,6 +531,7 @@ public class DocumentTriageService
     */
    public JsonObject startProcess(JsonObject parameters)
    {
+      /*
       JsonObject param = new JsonObject();
       String str = "[1, 5, 16]";
       JsonParser parser = new JsonParser();
@@ -546,6 +547,7 @@ public class DocumentTriageService
       {
          return new JsonObject();
       }
+      */
       
       // TODO: Use "Business Object" concepts here for Process Data
       JsonObject businessObject = parameters.get("businessObject").getAsJsonObject();
