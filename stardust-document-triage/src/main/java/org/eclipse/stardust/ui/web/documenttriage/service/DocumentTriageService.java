@@ -18,6 +18,7 @@ import javax.annotation.Resource;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import org.eclipse.stardust.common.Direction;
 import org.eclipse.stardust.common.log.LogManager;
@@ -297,52 +298,62 @@ public class DocumentTriageService
       JsonArray attachmentsJson = new JsonArray();
       List<Document> documents = fetchProcessAttachments(processInstance);
 
-      String MIMETYPE_PDF = "application/pdf", MIMETYPE_TIFF = "image/tiff";
       for (Document attachment : documents)
       {
-         JsonObject attachmentJson = new JsonObject();
+         JsonObject attachmentJson = marshalDocument(attachment);
 
          attachmentsJson.add(attachmentJson);
-
-         attachmentJson.addProperty("name", attachment.getName());
-         attachmentJson.addProperty("creationTimestamp", attachment.getDateCreated()
-               .getTime());
-         attachmentJson.addProperty("contentType", attachment.getContentType());
-         attachmentJson.addProperty("path", attachment.getPath());
-         attachmentJson.addProperty("uuid", attachment.getId());
-
-         byte[] data = getDocumentManagementService().retrieveDocumentContent(
-               attachment.getId());
-         if (MIMETYPE_PDF.equalsIgnoreCase(attachment.getContentType()))
-         {
-            attachmentJson.addProperty("numPages", PdfPageCapture.getNumPages(data));
-         }
-         else if (MIMETYPE_TIFF.equalsIgnoreCase(attachment.getContentType()))
-         {
-            attachmentJson.addProperty("numPages", TiffReader.getNumPages(data));
-         }
-         else
-         { // Any other type, except PDF or TIFF
-            attachmentJson.addProperty("numPages", 0);
-         }
-
-         JsonObject documentTypeJson = new JsonObject();
-         DocumentType documentType = attachment.getDocumentType();
-         if (documentType != null)
-         {
-            documentTypeJson.addProperty("documentTypeId",
-                  documentType.getDocumentTypeId());
-            documentTypeJson.addProperty("name", documentType.getDocumentTypeId()
-                  .substring(documentType.getDocumentTypeId().lastIndexOf('}') + 1));
-            // TODO: Get "name" using name =
-            // model.getTypeDeclaration(documentType).getName();
-            documentTypeJson.addProperty("schemaLocation",
-                  documentType.getSchemaLocation());
-         }
-         attachmentJson.add("documentType", documentTypeJson);
       }
 
       return attachmentsJson;
+   }
+
+   /**
+    * @param document
+    * @return
+    */
+   private JsonObject marshalDocument(Document document)
+   {
+      JsonObject attachmentJson = new JsonObject();
+      String MIME_TYPE_PDF = "application/pdf", MIME_TYPE_TIFF = "image/tiff";
+
+      attachmentJson.addProperty("name", document.getName());
+      attachmentJson
+            .addProperty("creationTimestamp", document.getDateCreated().getTime());
+      attachmentJson.addProperty("contentType", document.getContentType());
+      attachmentJson.addProperty("path", document.getPath());
+      attachmentJson.addProperty("uuid", document.getId());
+
+      byte[] data = getDocumentManagementService().retrieveDocumentContent(
+            document.getId());
+      if (MIME_TYPE_PDF.equalsIgnoreCase(document.getContentType()))
+      {
+         attachmentJson.addProperty("numPages", PdfPageCapture.getNumPages(data));
+      }
+      else if (MIME_TYPE_TIFF.equalsIgnoreCase(document.getContentType()))
+      {
+         attachmentJson.addProperty("numPages", TiffReader.getNumPages(data));
+      }
+      else
+      { // Any other type, except PDF or TIFF
+         attachmentJson.addProperty("numPages", 0);
+      }
+
+      JsonObject documentTypeJson = new JsonObject();
+      DocumentType documentType = document.getDocumentType();
+      if (documentType != null)
+      {
+         documentTypeJson.addProperty("documentTypeId", documentType.getDocumentTypeId());
+         documentTypeJson.addProperty(
+               "name",
+               documentType.getDocumentTypeId().substring(
+                     documentType.getDocumentTypeId().lastIndexOf('}') + 1));
+         // TODO: Get "name" using name =
+         // model.getTypeDeclaration(documentType).getName();
+         documentTypeJson.addProperty("schemaLocation", documentType.getSchemaLocation());
+      }
+      attachmentJson.add("documentType", documentTypeJson);
+      return attachmentJson;
    }
 
    /**
@@ -520,6 +531,22 @@ public class DocumentTriageService
     */
    public JsonObject startProcess(JsonObject parameters)
    {
+      JsonObject param = new JsonObject();
+      String str = "[1, 5, 16]";
+      JsonParser parser = new JsonParser();
+      JsonElement pagesElement = parser.parse(str);
+      JsonArray pages = pagesElement.getAsJsonArray();
+      param.add("pages", pagesElement);
+      
+//    String splitDocId = "{urn:repositoryId:System}{jcrUuid}463938a0-7df7-4387-b49f-d9e407656613";
+      String splitDocId = "{urn:repositoryId:System}{jcrUuid}7b8c3da0-6d18-4215-ad32-be7f5bd7a2f6"; // patent.tiff
+      JsonObject j = splitDocument(5, splitDocId, param);      
+      
+      if (true)
+      {
+         return new JsonObject();
+      }
+      
       // TODO: Use "Business Object" concepts here for Process Data
       JsonObject businessObject = parameters.get("businessObject").getAsJsonObject();
       Map<String, String> memberInfo = new HashMap<String, String>();
@@ -619,8 +646,6 @@ public class DocumentTriageService
    public JsonObject splitDocument(long processInstanceOid, String documentId,
          JsonObject postedData)
    {
-      JsonObject resultJson = new JsonObject();
-
       byte[] image = null;
       Set<Integer> pageNumbers = new HashSet<Integer>();
 
@@ -648,20 +673,19 @@ public class DocumentTriageService
          // TODO
       }
 
-      String fileName = document.getName(), extension = "";
+      String fileName = document.getName();
 
       int i = fileName.lastIndexOf('.');
       if (i > 0)
       {
-         extension = fileName.substring(i + 1);
-         fileName = fileName.substring(0, i - 1);
+         fileName = fileName.substring(0, i);
       }
 
       fileName = fileName + "_" + UUID.randomUUID() + ".tiff";
 
       Document createdDocument = addProcessAttachment(processInstanceOid, fileName, image);
 
-      return resultJson;
+      return marshalDocument(createdDocument);
    }
 
    /**
@@ -675,7 +699,7 @@ public class DocumentTriageService
       DeployedModel model = getQueryService().getModel(processInstance.getModelOID());
       ProcessDefinition processDefinition = model.getProcessDefinition(processInstance
             .getProcessID());
-      List dataPaths = processDefinition.getAllDataPaths();
+      List<DataPath> dataPaths = processDefinition.getAllDataPaths();
 
       for (int n = 0; n < dataPaths.size(); ++n)
       {
@@ -772,6 +796,10 @@ public class DocumentTriageService
       List<Document> processAttachments = fetchProcessAttachments(processInstance);
 
       DocumentInfo docInfo = DmsUtils.createDocumentInfo(fileName);
+      if (fileName.endsWith(".tiff"))
+      {
+         docInfo.setContentType("image/tiff");
+      }
       String folderPath = DocumentMgmtUtility
             .getProcessAttachmentsFolderPath(processInstance);
       getOrCreateFolder(folderPath);

@@ -42,6 +42,14 @@ public class TiffReader
       
       try
       {
+         Set<Integer> tempSet = new HashSet<Integer>();
+         for (Integer pageNumber : pageNumbers)
+         {
+            tempSet.add(pageNumber + 1);
+         }
+         pageNumbers.clear();
+         pageNumbers.addAll(tempSet);
+
          tiffDocument = ImageUtils.createTiffImage(ImageUtils.extractTIFFImage(data, pageNumbers));
       }
       catch (Exception e)
