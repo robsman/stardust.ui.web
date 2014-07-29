@@ -224,11 +224,11 @@ define(
                         name : this.getI18N("reporting.definitionView.additionalFiltering.processOID"),
                         type : this.metadata.integerType
                      },
-                     processID : {
+                     /*processID : {
                         id : "processID",
                         name : this.getI18N("reporting.definitionView.additionalFiltering.processID"),
                         type : this.metadata.integerType
-                     },
+                     },*/
 							processName : {
 								id : "processName",
 								name : this.getI18N("reporting.definitionView.additionalFiltering.processName"),
@@ -327,21 +327,21 @@ define(
                         name : this.getI18N("reporting.definitionView.additionalFiltering.processOID"),
                         type : this.metadata.integerType
                      },
-                     processID : {
+                     /*processID : {
                         id : "processID",
                         name : this.getI18N("reporting.definitionView.additionalFiltering.processID"),
                         type : this.metadata.integerType
-                     },
+                     },*/
                      activityOID : {
                         id : "activityOID",
                         name : this.getI18N("reporting.definitionView.additionalFiltering.activityOID"),
                         type : this.metadata.integerType
                      },
-                     activityID : {
+                     /*activityID : {
                         id : "activityID",
                         name : this.getI18N("reporting.definitionView.additionalFiltering.activityID"),
                         type : this.metadata.integerType
-                     },                     
+                     },*/                     
 							activityName : {
 								id : "activityName",
 								name : this.getI18N("reporting.definitionView.additionalFiltering.activityName"),
