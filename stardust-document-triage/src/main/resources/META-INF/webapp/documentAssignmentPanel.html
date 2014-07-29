@@ -94,16 +94,28 @@
 															</div>
 															<div ng-show="treeItem.pendingActivityInstance">{{treeItem.pendingActivityInstance.activity.name}}
 																(#{{treeItem.pendingActivityInstance.oid}})</div>
-															<div ng-show="treeItem.specificDocument">
-																{{treeItem.specificDocument.name}}</div>
+															<div ng-show="treeItem.specificDocument"
+																 data-proc-id="{{treeItem.pendingProcessOID}}"
+																 data-specDoc-id="{{treeItem.specificDocument.id}}"
+																 data-attach-id="{{treeItem.specificDocument.scannedDocument.uuid}}"
+																 ng-class="{'data-specAttch-pend':treeItem.specificDocument}">
+																{{treeItem.specificDocument.name}}
+															</div>
 															<div ng-show="treeItem.processAttachments.length >=0">Process
 																Attachments</div>
-															<div ng-show="treeItem.processAttachment">
-																{{treeItem.processAttachment.type}}
-																{{treeItem.processAttachment.name}} <select ng-select
-																	ng-model="selectedDocType"
-																	ng-change="setDocumentType(selectedDocType,treeItem)"
-																	ng-options="item.name for item in documentTypes">
+															<div  ng-show="treeItem.processAttachment"
+																  ng-class="{'data-procAttch-pend' : treeItem.processAttachment}" 
+															      data-proc-id="{{treeItem.pendingProcessOID}}"
+															      data-attach-id="{{treeItem.processAttachment.uuid}}">
+																{{treeItem.processAttachment.name}}
+																<select ng-select 
+																        ng-model="selectedDocType"
+																        ng-change="setDocumentType(selectedDocType,treeItem)">
+																	<option ng-repeat="item in documentTypes"
+																			value="{{item.documentTypeId}}"
+																			ng-selected="item.documentTypeId==treeItem.processAttachment.documentType.documentTypeId">
+																			{{item.name}}
+																	</option>
 																</select>
 															</div></td>
 													</tr>
@@ -123,9 +135,9 @@
 															</div>
 															<div ng-show="treeItem.specificDocument"
 																style="margin-left: 10px;">
-																<i ng-hide="treeItem.specificDocument.url"
+																<i ng-hide="treeItem.specificDocument.scannedDocument"
 																	class="fa fa-file-o"></i> <i
-																	ng-show="treeItem.specificDocument.url"
+																	ng-show="treeItem.specificDocument.scannedDocument"
 																	class="fa fa-file"></i>
 															</div>
 															<div ng-show="treeItem.processAttachments.length >=0"
@@ -141,15 +153,22 @@
 																	class="fa fa-rocket iconLink"> </i>
 																</a>
 															</div>
-															<div ng-show="treeItem.specificDocument">
+															<div ng-show="treeItem.specificDocument"
+																 data-proc-id="{{treeItem.processDetails.id}}"
+																 data-specDoc-id="{{treeItem.specificDocument.id}}"
+																 data-attach-id="{{treeItem.specificDocument.scannedDocument.uuid}}"
+																 ng-class="{'data-specAttch-start':treeItem.specificDocument}">
 																{{treeItem.specificDocument.name}}</div>
 															<div ng-show="treeItem.processAttachments.length >=0">Process
 																Attachments</div>
-															<div ng-show="treeItem.processAttachment">
+															<div ng-class="{'data-procAttch-start' : treeItem.processAttachment}" 
+															     data-proc-id="{{treeItem.processDetails.id}}"
+															     data-attach-id="{{treeItem.processAttachment.uuid}}"
+															     ng-show="treeItem.processAttachment">
 																<i class="fa fa-file"></i>
 																&nbsp;{{treeItem.processAttachment.name}} <select
 																	ng-select
-																	ng-model="treeItem.processAttachment.selectedDocType"
+																	ng-model="selectedDocType"
 																	ng-options="item.name for item in documentTypes">
 																</select>
 															</div>

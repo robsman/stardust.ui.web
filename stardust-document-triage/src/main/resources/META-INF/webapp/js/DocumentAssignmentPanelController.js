@@ -26,7 +26,6 @@ define(
 				DocumentAssignmentPanelController.prototype.initialize = function() {
 					this.initializeBaseState();
 					this.initializePageRendering();
-
 					this.businessObjectManagementPanelController = BusinessObjectManagementPanelController
 							.create();
 
@@ -82,20 +81,97 @@ define(
 														}).fail();
 									}).fail();
 				};
+				
+				DocumentAssignmentPanelController.prototype.removeSpecificAttachment = function(data,e){
+					var i=0,
+					    j=0,
+						treeItem,
+						proc,
+						specAttch;
+					for(;i<this.$parent.startableProcesses.length;i++){
+						proc=this.$parent.startableProcesses[i];
+						if(proc.id==this.treeItem.processDetails.id){
+							for(;j<this.treeItem.processDetails.specificDocuments.length;j++){
+								specAttch=this.treeItem.processDetails.specificDocuments[j];
+								if(specAttch.id==this.treeItem.specificDocument.id){
+									//delete specAttch.scannedDocument;
+									this.$parent.refreshStartableProcessesTree();
+									this.safeApply();
+								}
+							}
+						}
+					}
+				};
+				
+				DocumentAssignmentPanelController.prototype.removeSpecificDocumentStartable=function(proc,attach,specDocId){
+					for(var i=0;i<proc.specificDocuments.length;i++){
+						if(proc.specificDocuments[i].id==specDocId){
+							debugger;
+							delete proc.specificDocuments[i].scannedDocument;
+						}
+					}
+				}
+				
+				DocumentAssignmentPanelController.prototype.removeProcessAttachmentStartable=function(proc,attach){
+					for(var i=0;i<proc.processAttachments.length;i++){
+						if(proc.processAttachments[i].uuid==attach.uuid){
+							proc.processAttachments.splice(i,1);
+							return true;
+						}
+					}
+					return false;
+				}
+				
+				DocumentAssignmentPanelController.prototype.removeProcessAttachmentPending=function(proc,attach){
+					debugger;
+					for(var i=0;i<proc.processAttachments.length;i++){
+						if(proc.processAttachments[i].uuid==attach.uuid){
+							proc.processAttachments.splice(i,1);
+							return true;
+						}
+					}
+					return false;
+				}
+				
+				DocumentAssignmentPanelController.prototype._removeProcessAttachment=function(data,e){
+					var i=0,
+					    j=0,
+						treeItem,
+						proc,
+						procAttch;
 
+					for(;i<this.$parent.startableProcesses.length;i++){
+						proc=this.$parent.startableProcesses[i];
+						if(proc.id==this.treeItem.processDetails.id){
+							for(;j<this.treeItem.processDetails.processAttachments.length;j++){
+								procAttch=this.treeItem.processDetails.processAttachments[j];
+								if(procAttch.uuid==this.treeItem.processAttachment.uuid){
+									this.treeItem.processDetails.processAttachments.splice(j,1);
+									this.$parent.refreshStartableProcessesTree();
+									this.safeApply();
+									break;
+								}
+							}
+						}
+					}
+					
+				};
+				
 				/**
 				 * 
 				 */
 				DocumentAssignmentPanelController.prototype.initializeBaseState = function() {
 					this.pageModel = {};
 					this.uiModel = {};
-
+					
 					this.pageModel.currentDocument = "";
 					this.pageModel.pageIndex = {};
-					this.pageModel.selectedPage = {};
-
+					this.pageModel.selectedPage={};
 					this.uiModel.showChildren = false;
-
+					
+					
+					this.startableProcesses=[];
+					
 					this.retrieveActivityInstanceFromUri();
 					this.startProcessDialog = {};
 					this.businessObjectFilter = {};
@@ -110,12 +186,28 @@ define(
 				/**
 				 * 
 				 */
-				DocumentAssignmentPanelController.prototype.setDocumentType = function(
-						docType, proc) {
-					DocumentAssignmentService.instance().setDocumentType(
-							docType, proc).done(function(result) {
-						// stubbed
-					});
+				DocumentAssignmentPanelController.prototype.setDocumentType = function(docTypeId, proc) {
+					var i=0,
+						docType,
+						docTypeFound=false;
+					
+					/*Loop through docTypes until we match our ID*/
+					for(i=0;i<this.documentTypes.length;i++){
+						if(this.documentTypes[i].documentTypeId==docTypeId){
+							docType=this.documentTypes[i];
+							docTypeFound=true;
+							break;
+						}
+					}
+					
+					if(docTypeFound){
+						DocumentAssignmentService.instance().setDocumentType(
+								docType, proc).done(function(result) {
+						});
+					}else{
+						//stubbed;
+						console.log("Selected docType could not be matched");
+					}
 				};
 
 				/**
@@ -203,6 +295,44 @@ define(
 							scannedDocument : this.scannedDocuments[m]
 						});
 						scannedDocumentDivision
+							    .droppable({
+							    	hoverClass : "highlighted",
+							    	drop : function(event, ui){
+							    		
+							    		var ed=jQuery.data(ui.draggable[0],"dragData");
+							    		
+							    		switch(ed.sourceType){
+								    		case "proccessAttachment_startable":
+								    			self.removeProcessAttachmentStartable(ed.process,ed.attachment);
+								    			self.refreshStartableProcessesTree();
+								    			break;
+								    		case "specificDocument_startable":
+								    			self.removeSpecificDocumentStartable(ed.process,ed.attachment,ed.specificDocumentId);
+								    			self.refreshStartableProcessesTree();
+								    			break;
+								    		case "specificDocument_pending":
+								    			self.removeSpecificDocumentStartable(ed.process,ed.attachment,ed.specificDocumentId);
+								    			self.refreshPendingProcessesTree();
+								    			break;
+								    		case "proccessAttachment_pending":
+								    			self.removeProcessAttachmentPending(ed.process,ed.attachment);
+								    			self.refreshPendingProcessesTree();
+								    			break;
+							    		}
+							    		/*
+							    		if(ed.sourceType=="proccessAttachment_startable"){
+							    			self.removeProcessAttachmentStartable(ed.process,ed.attachment);
+							    		}
+							    		else if(ed.sourceType=="specificDocument_startable"){
+							    			self.removeSpecificDocumentStartable(ed.process,ed.attachment,ed.specificDocumentId);
+							    		}*/
+							    		self.refreshStartableProcessesTree();
+							    		self.safeApply();
+							    		window.setTimeout(function() {
+											self.bindDragAndDrop();
+										}, 1000);
+							    	}
+							    })
 								.draggable({
 									distance : 20,
 									opacity : 0.7,
@@ -479,20 +609,16 @@ define(
 				DocumentAssignmentPanelController.prototype.selectPage = function(
 						page, url, e) {
 					console.log("Calling Selected Page");
-					console.log(e);
-
 					this.pageModel.selectedPage = page;
-					if (e) {
-						if (e.ctrlKey) {
-							if (this.pageModel.pageIndex
-									.hasOwnProperty(page.number)) {
-								delete this.pageModel.pageIndex[page.number];
-							} else {
-								this.pageModel.pageIndex[page.number] = url;
-							}
-						} else if (e.shiftKey) {
-							// stubbed for later
+					if (e.ctrlKey) {
+						if (this.pageModel.pageIndex
+								.hasOwnProperty(page.number)) {
+							delete this.pageModel.pageIndex[page.number];
+						} else {
+							this.pageModel.pageIndex[page.number] = url;
 						}
+					} else if (e.shiftKey) {
+						// stubbed for later
 					} else {
 						this.pageModel.pageIndex = {};
 						this.pageModel.pageIndex[page.number] = url;
@@ -534,12 +660,23 @@ define(
 
 					DocumentAssignmentService.instance().startProcess(data)
 							.done(
-									function(result) {
-										that.openStartProcessDialog(
-												result.scannedDocument,
-												result.startableProcess);
-										that.safeApply();
-									}).fail();
+								function(result) {
+									that.openStartProcessDialog(
+											result.scannedDocument,
+											result.startableProcess);
+								})
+							.then(function(){
+								DocumentAssignmentService
+								.instance()
+								.getStartableProcesses()
+								.done(function(startableProcesses){
+									/*TODO:ZZM This is fragile and will break eventually, needs refactoring to avoid $parent references*/
+									that.$parent.startableProcesses = startableProcesses;
+									that.$parent.refreshStartableProcessesTree();
+									that.safeApply();
+								});
+							})
+							.fail();
 				};
 
 				/**
@@ -616,10 +753,8 @@ define(
 				 * 
 				 */
 				DocumentAssignmentPanelController.prototype.refreshPendingProcessesTree = function() {
+					var that=this;
 					this.pendingProcessesTree = [];
-
-					console.log("Pending Processes");
-					console.log(this.pendingProcesses);
 
 					for (var n = 0; n < this.pendingProcesses.length; ++n) {
 						this.pendingProcessesTree.push({
@@ -657,18 +792,137 @@ define(
 						for (m = 0; m < this.pendingProcesses[n].processAttachments.length; ++m) {
 							this.pendingProcessesTree
 									.push({
-										processAttachment : this.pendingProcesses[n].processAttachments[m]
+										processAttachment : this.pendingProcesses[n].processAttachments[m],
+										pendingProcessOID : this.pendingProcesses[n].oid
 									});
 						}
 					}
-				};
+					
+					this.safeApply();
+					
+					/*DOM 'tree' is rebuilt so query for rows and bind draggable behaivor*/
+					var procAttachStartable=jQuery(".data-procAttch-pend").each(function(i,ele){
+						var $ele,
+							procId,
+							attchId,
+							eventData,
+							doc,
+							proc;
+						
+						$ele =$(this);
+						procId = $ele.attr("data-proc-id");
+						attchId = $ele.attr("data-attach-id");
 
+						doc=that.getScannedDocument(attchId);
+						proc = that.getPendingProcess(procId);
+						debugger;
+						eventData={
+								sourceType:"proccessAttachment_pending",
+								process: proc,
+								attachment: doc
+						}
+						
+						jQuery(ele).draggable({
+							distance : 20,
+							opacity : 0.7,
+							cursor : "move",
+							cursorAt : {
+								top : 0,
+								left : 0
+							},
+							helper : function(event, ui) {
+								return jQuery("<div class='ui-widget-header dragHelper'><i class='fa fa-files-o' style='font-size: 14px;'></i> "
+										+ doc.name
+										+ "</div>");
+							},
+							drag : function(event) {
+							},
+							stop : function(event) {
+							}
+						}).data("dragData",eventData);
+					});
+					
+					var specDocStartable = jQuery(".data-specAttch-pend").each(function(i,ele){
+						
+						var $ele,
+							procId,
+							attchId,
+							eventData,
+							doc,
+							specDocId,
+							proc;
+						
+						$ele =$(this);
+						procId = $ele.attr("data-proc-id");
+						attchId = $ele.attr("data-attach-id");
+						specDocId = $ele.attr("data-specdoc-id")
+						
+						doc=that.getScannedDocument(attchId);
+						proc = that.getPendingProcess(procId);
+						
+						eventData={
+								sourceType:"specificDocument_pending",
+								process: proc,
+								attachment: doc,
+								specificDocumentId: specDocId
+						}
+						
+						jQuery(ele).draggable({
+							distance : 20,
+							opacity : 0.7,
+							cursor : "move",
+							cursorAt : {
+								top : 0,
+								left : 0
+							},
+							helper : function(event, ui) {
+								return jQuery("<div class='ui-widget-header dragHelper'><i class='fa fa-files-o' style='font-size: 14px;z-index:9999;'></i> "
+										+ "TODO.todo"
+										+ "</div>");
+							},
+							drag : function(event) {
+							},
+							stop : function(event) {
+							}
+						}).data("dragData",eventData);
+						
+					});
+				};
+				
+				
+				DocumentAssignmentPanelController.prototype.getScannedDocument=function(Id){
+					var i=0;
+					for(;i<this.scannedDocuments.length;i++){
+						if(this.scannedDocuments[i].uuid==Id){
+							return this.scannedDocuments[i];
+						}
+					}
+				}
+				
+				DocumentAssignmentPanelController.prototype.getPendingProcess=function(Id){
+					var i=0;
+					for(;i<this.pendingProcesses.length;i++){
+						if(this.pendingProcesses[i].oid==Id){
+							return this.pendingProcesses[i];
+						}
+					}
+				}
+				
+				DocumentAssignmentPanelController.prototype.getStartableProcess=function(Id){
+					var i=0;
+					for(;i<this.startableProcesses.length;i++){
+						if(this.startableProcesses[i].id==Id){
+							return this.startableProcesses[i];
+						}
+					}
+				}
 				/**
 				 * 
 				 */
 				DocumentAssignmentPanelController.prototype.refreshStartableProcessesTree = function() {
+					var that=this;
 					this.startableProcessesTree = [];
-
+					
 					for (var n = 0; n < this.startableProcesses.length; ++n) {
 						this.startableProcessesTree.push({
 							startableProcess : this.startableProcesses[n]
@@ -704,20 +958,110 @@ define(
 									});
 						}
 					}
-				};
+					
+					this.safeApply();
+					
+					/*after this point we have our new DOM buit for the tree so now add drag-drop for these as required*/
+					var specDocStartable = jQuery(".data-specAttch-start").each(function(i,ele){
+						
+						var $ele,
+							procId,
+							attchId,
+							eventData,
+							doc,
+							specDocId,
+							proc;
+						
+						$ele =$(this);
+						procId = $ele.attr("data-proc-id");
+						attchId = $ele.attr("data-attach-id");
+						specDocId = $ele.attr("data-specdoc-id")
+						
+						doc=that.getScannedDocument(attchId);
+						proc = that.getStartableProcess(procId);
+						
+						eventData={
+								sourceType:"specificDocument_startable",
+								process: proc,
+								attachment: doc,
+								specificDocumentId: specDocId
+						}
+						
+						jQuery(ele).draggable({
+							distance : 20,
+							opacity : 0.7,
+							cursor : "move",
+							cursorAt : {
+								top : 0,
+								left : 0
+							},
+							helper : function(event, ui) {
+								return jQuery("<div class='ui-widget-header dragHelper'><i class='fa fa-files-o' style='font-size: 14px;'></i> "
+										+ doc.name
+										+ "</div>");
+							},
+							drag : function(event) {
+							},
+							stop : function(event) {
+							}
+						}).data("dragData",eventData);
+						
+					});
+					
+					var procAttachStartable=jQuery(".data-procAttch-start").each(function(i,ele){
+						var $ele,
+							procId,
+							attchId,
+							eventData,
+							doc,
+							proc;
+						
+						$ele =$(this);
+						procId = $ele.attr("data-proc-id");
+						attchId = $ele.attr("data-attach-id");
 
+						doc=that.getScannedDocument(attchId);
+						proc = that.getStartableProcess(procId);
+						
+						eventData={
+								sourceType:"proccessAttachment_startable",
+								process: proc,
+								attachment: doc
+						}
+						
+						jQuery(ele).draggable({
+							distance : 20,
+							opacity : 0.7,
+							cursor : "move",
+							cursorAt : {
+								top : 0,
+								left : 0
+							},
+							helper : function(event, ui) {
+								return jQuery("<div class='ui-widget-header dragHelper'><i class='fa fa-files-o' style='font-size: 14px;'></i> "
+										+ doc.name
+										+ "</div>");
+							},
+							drag : function(event) {
+							},
+							stop : function(event) {
+							}
+						}).data("dragData",eventData);
+					});
+					
+				};
+				
 				DocumentAssignmentPanelController.prototype.processCanStart = function(
 						proc) {
 					var hasBusinessObject = false, hasProcessAttachment = false, hasSpecificDocument = false, i;
 
 					hasBusinessObject = this.selectedBusinessObjectInstances.length > 0;
-
-					if (proc.startableProcess) {
+					
+					if(proc.startableProcess){
 						hasProcessAttachment = proc.startableProcess.processAttachments.length > 0;
 					}
 
-					if (proc.startableProcess
-							&& proc.startableProcess.specificDocuments) {
+					if(proc.startableProcess && proc.startableProcess.specificDocuments){
 						for (i = 0; i < proc.startableProcess.specificDocuments.length; i++) {
 							if (proc.startableProcess.specificDocuments[i].scannedDocument) {
 								hasSpecificDocument = true;
@@ -729,10 +1073,6 @@ define(
 							&& (hasProcessAttachment || hasSpecificDocument)) {
 						return true;
 					} else {
-						console.log(hasBusinessObject + ","
-								+ hasProcessAttachment + ","
-								+ hasSpecificDocument);
-						console.log(proc);
 						return false;
 					}
 

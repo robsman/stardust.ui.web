@@ -7,7 +7,7 @@
 
 				<div style="height: {{100+ 3*clamp(document.pages.length, 0, 10)}}"
 					class="imageStack"
-					ng-click="$parent.selectPage(document.pages[0],document.url + 0,$event,document.pages)">
+					ng-click="selectPage(document.pages[0],document.url + 0,$event,document.pages)">
 					<img src="{{document.url}}0" style="height: 100px;"
 						title="Page {{(clamp(document.pages.length,0,10))-$index}} of {{document.pages.length}}"
 						ng-repeat="page in document.pages | limitTo: 10" />
@@ -21,9 +21,11 @@
 						ng-class="{'fa-caret-down':document.showChildren,'fa-caret-up':!document.showChildren}"
 						ng-click="document.showChildren=!document.showChildren"> </i>
 				</div>
+				
 				<div class="documentInfo">
 					<span>{{document.name}}</span>
 				</div>
+				
 			</div>
 			<div class="documentHeader" ng-show="document.showChildren">
 				{{document.name}} <i title="Collapse"

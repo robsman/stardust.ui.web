@@ -21,7 +21,7 @@ require
 
 require([ "require", "jquery", "jquery-ui", "angularjs", "jquery.dataTables",
 		"document-triage/js/Utils", "document-triage/js/AngularDirectives",
-		"document-triage/js/DocumentAssignmentPanelController","ngDialog" ], function(
+		"document-triage/js/DocumentAssignmentPanelController","ngDialog"], function(
 		require, jquery, jqueryUi, angularjs, jqueryDataTables, Utils,
 		AngularDirectives, DocumentAssignmentPanelController,ngDialog) {
 	jQuery(document).ready(
