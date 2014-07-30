@@ -27,6 +27,48 @@ define(
 				DocumentAssignmentService.prototype.initialize = function() {
 				};
 				
+				DocumentAssignmentService.prototype.getActivity=function(oid){
+					var deferred = jQuery.Deferred(),
+						rootUrl = location.href.substring(0, location.href.indexOf("/plugins")),
+						self = this;
+
+					jQuery.ajax({
+						url : rootUrl + "/services/rest/document-triage/activities/" + oid,
+						type : "GET",
+						contentType : "application/json"
+					}).done(function(result) {
+						deferred.resolve(result);
+					}).fail(function(data) {
+						deferred.reject(data);
+					});
+		
+					return deferred.promise();
+				};
+				
+				DocumentAssignmentService.prototype.splitDocument = function(oid,uuid,pages){
+					
+					var deferred = jQuery.Deferred(),
+						rootUrl = location.href.substring(0, location.href.indexOf("/plugins")),
+						urlFrag,
+						self = this;
+					
+					urlFrag= oid + "/documents/" + uuid + "/split";
+					
+					jQuery.ajax({
+						url : rootUrl + "/services/rest/document-triage/processes/" + urlFrag,
+						type : "POST",
+						contentType : "application/json",
+						data : JSON.stringify({"pages" : pages})
+					}).done(function(result) {
+						deferred.resolve(result);
+					}).fail(function(data) {
+						deferred.reject(data);
+					});
+		
+					return deferred.promise();
+					
+				};
+				
 				DocumentAssignmentService.prototype.deleteAttachment = function(oid,dataPathId,urn){
 					
 					var deferred = jQuery.Deferred(),
@@ -37,7 +79,7 @@ define(
 					urlFrag=+ oid + "/documents/" + dataPathId;
 					
 					if(dataPathId=="PROCESS_ATTACHMENTS"){
-						urlFrag += "/" + urn
+						urlFrag += "/" + urn;
 					}
 					
 					jQuery.ajax({

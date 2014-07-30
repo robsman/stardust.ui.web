@@ -30,7 +30,13 @@ define(
 							.create();
 
 					var self = this;
-
+					
+					DocumentAssignmentService.instance()
+					.getActivity(self.activityInstanceOid)
+					.then(function(data){
+						self.processoid = data.processInstanceOid;
+					});
+					
 					DocumentAssignmentService.instance().getDocumentTypes()
 							.done(
 									function(docTypes) {
@@ -81,6 +87,36 @@ define(
 														}).fail();
 									}).fail();
 				};
+				
+				
+				DocumentAssignmentPanelController.prototype.refreshScannedDocuments = function(id){
+					
+					var deferred = jQuery.Deferred();
+						self=this;
+					DocumentAssignmentService.instance().getScannedDocuments(id)
+					.done(function(scannedDocuments) {
+							self.scannedDocuments = scannedDocuments;
+							//self.refreshPagesList();
+							for (var n = 0; n < self.scannedDocuments.length; ++n) {
+								self.scannedDocuments[n].pages = [];
+
+								for (var m = 0; m < self.scannedDocuments[n].pageCount; ++m) {
+									self.scannedDocuments[n].pages.push({
+										number : m + 1
+									});
+								}
+							}
+							window.setTimeout(function() {self.bindDragAndDrop();},1000);
+							
+							deferred.resolve();
+					})
+					.fail(function(status){
+						deferred.reject(status);
+					});
+					
+					return deferred.promise;
+				}
+				
 				
 				DocumentAssignmentPanelController.prototype.removeSpecificAttachment = function(data,e){
 					var i=0,
@@ -300,6 +336,7 @@ define(
 							ui : scannedDocumentDivision,
 							scannedDocument : this.scannedDocuments[m]
 						});
+						
 						scannedDocumentDivision
 							    .droppable({
 							    	hoverClass : "highlighted",
@@ -307,7 +344,7 @@ define(
 							    		
 							    		var ed=jQuery.data(ui.draggable[0],"dragData"),
 							    			workService =DocumentAssignmentService.instance();
-							    		
+							    		debugger;
 							    		switch(ed.sourceType){
 								    		case "proccessAttachment_startable":	    			
 								    			self.removeProcessAttachmentStartable(ed.process,ed.attachment);
@@ -354,12 +391,19 @@ define(
 										left : 0
 									},
 									helper : function(event, ui) {
-										var scannedDocument = jQuery.data(
-												event.currentTarget,
-												"scannedDocument");
-
+										
+										var scannedDocument = jQuery.data(event.currentTarget,"scannedDocument"),
+										    pageNumbers=[],
+										    key;
+										
+										for (var key in self.pageModel.pageIndex) {
+										  if (self.pageModel.pageIndex.hasOwnProperty(key)) {
+										    pageNumbers.push(key);
+										  }
+										}
+										
 										return jQuery("<div class='ui-widget-header dragHelper'><i class='fa fa-files-o' style='font-size: 14px;'></i> "
-												+ scannedDocument.name
+												+ scannedDocument.name + " " + pageNumbers.toString()
 												+ "</div>");
 									},
 									drag : function(event) {
@@ -383,35 +427,59 @@ define(
 										.droppable({
 											hoverClass : "highlighted",
 											drop : function(event, ui) {
-												var scannedDocument = jQuery
-														.data(ui.draggable[0],
-																"scannedDocument");
-												var pendingActivityInstance = jQuery
-														.data(this,
-																"pendingActivityInstance");
-
-												DocumentAssignmentService
-														.instance()
-														.completeDocumentRendezvous(
-																pendingActivityInstance,
-																scannedDocument)
-														.done(
-																function(
-																		pendingProcesses) {
-																	self.pendingProcesses = pendingProcesses;
-																	self
-																			.refreshPendingProcessesTree();
-																	self
-																			.safeApply();
-
-																	window
-																			.setTimeout(
-																					function() {
-																						self
-																								.bindDragAndDrop();
-																					},
-																					1000);
-																}).fail();
+												var scannedDocument = jQuery.data(ui.draggable[0],"scannedDocument")
+												    pendingActivityInstance = jQuery.data(this,"pendingActivityInstance"),
+												    pages=self.getSelectedPageNums();
+												
+												/*Adjust for Zero based page indexing*/
+												pages =	pages.map(function(num){return num -1;});
+												
+												if(pages.length > 0){
+													DocumentAssignmentService.instance()
+													.splitDocument(self.processoid,scannedDocument.uuid,pages)
+													.then(function(result){
+														/*swap our scannedDocument for the new document generated on the server.*/
+														scannedDocument=result; 
+														/*Now pull all our associated documents from the server*/
+														return DocumentAssignmentService.instance()
+															.getScannedDocuments(self.activityInstanceOid);
+													})
+													.then(function(scannedDocuments){
+														self.scannedDocuments = scannedDocuments;
+														return DocumentAssignmentService.instance()
+															.completeDocumentRendezvous(pendingActivityInstance,scannedDocument);
+													})
+													.then(function(pendingProcesses){
+														self.pendingProcesses = pendingProcesses;
+													})
+													.fail(function(){
+														//TODO: Error Handling
+													})
+													.always(function(){
+														self.refreshPagesList();
+														self.pageModel.pageIndex={};
+														self.refreshPendingProcessesTree();
+														self.safeApply();
+														window.setTimeout(function() {
+															self.bindDragAndDrop();
+														},1000);
+													});
+												}
+												else{
+													DocumentAssignmentService.instance()
+													.completeDocumentRendezvous(pendingActivityInstance,scannedDocument)
+													.done(function(pendingProcesses) {
+														self.pendingProcesses = pendingProcesses;
+														self.refreshPendingProcessesTree();
+														self.safeApply();
+														window.setTimeout(function() {
+															self.bindDragAndDrop();
+														},1000);
+													}).fail();
+												}
+												
+												
+												
 											},
 											tolerance : "pointer"
 										});
@@ -428,44 +496,80 @@ define(
 										.droppable({
 											hoverClass : "highlighted",
 											drop : function(event, ui) {
-												var scannedDocument = jQuery
-														.data(ui.draggable[0],
-																"scannedDocument");
-												var specificDocument = jQuery
-														.data(this,
-																"specificDocument");
+												var scannedDocument = jQuery.data(ui.draggable[0],"scannedDocument"),
+													specificDocument = jQuery.data(this,"specificDocument"),
+													processOID = jQuery.data(this, "processOID"),
+													pages=self.getSelectedPageNums();
+												
+												/*Adjust for Zero based page indexing*/
+												pages =	pages.map(function(num){return num -1;});
+												
+												/*************/
+												if(pages.length > 0){
+													DocumentAssignmentService.instance()
+													.splitDocument(self.processoid,scannedDocument.uuid,pages)
+													.then(function(result){
+														
+														/*swap our scannedDocument for the new document generated on the server.*/
+														scannedDocument=result; 
+														
+														/*Now pull all our associated documents from the server*/
+														DocumentAssignmentService.instance()
+														.getScannedDocuments(self.activityInstanceOid)
+														.done(function(scannedDocuments) {
+															
+															/*Refresh scanned documents view*/
+															self.scannedDocuments = scannedDocuments;
+															self.refreshPagesList();
+															self.pageModel.pageIndex={};
+															
+															/*Now attach our new document to the process*/
+															DocumentAssignmentService.instance()
+															.addProcessDocument(processOID,scannedDocument,specificDocument.id)
+															.done(function(pendingProcesses) {
+																
+																/*Refresh data and views*/
+																self.pendingProcesses = pendingProcesses;
+																self.refreshPendingProcessesTree();
+																self.safeApply();
+																jQuery("*").css("cursor","default");
+																window.setTimeout(function() {
+																	self.bindDragAndDrop();
+																},1000);
+																	
+															})
+															.fail(function() {
+																jQuery("*").css("cursor","default");
+															});
+															
+															
+															self.safeApply();
+															window.setTimeout(function() {
+																self.bindDragAndDrop();
+															}, 1000);
+														});
+													})
+													.fail(function(){});
+													
+												}
+												else{
+													DocumentAssignmentService.instance()
+													.addProcessDocument(processOID,scannedDocument,specificDocument.id)
+													.done(function(pendingProcesses) {
+														self.pendingProcesses = pendingProcesses;
+														self.refreshPendingProcessesTree();
+														self.safeApply();
+														jQuery("*").css("cursor","default");
+														window.setTimeout(
+															function() {
+																self.bindDragAndDrop();
+															},1000);
+													}).fail(function(){
+														jQuery("*").css("cursor","default");
+													});
+												}
+												/*************/
 
-												var processOID = jQuery.data(
-														this, "processOID");
-												DocumentAssignmentService
-														.instance()
-														.addProcessDocument(
-																processOID,
-																scannedDocument,
-																specificDocument.id)
-														.done(
-																function(
-																		pendingProcesses) {
-
-																	self.pendingProcesses = pendingProcesses;
-																	self
-																			.refreshPendingProcessesTree();
-																	self
-																			.safeApply();
-
-																	jQuery("*")
-																			.css(
-																					"cursor",
-																					"default");
-
-																	window
-																			.setTimeout(
-																					function() {
-																						self
-																								.bindDragAndDrop();
-																					},
-																					1000);
-																}).fail();
 											},
 											tolerance : "pointer"
 										});
@@ -484,56 +588,80 @@ define(
 											hoverClass : "highlighted",
 											drop : function(event, ui) {
 
-												var scannedDocument = jQuery
-														.data(ui.draggable[0],
-																"scannedDocument");
-												var processAttachments = jQuery
-														.data(this,
-																"processAttachments");
-												var processDetails = jQuery
-														.data(this,
-																"processDetails");
-												var processOID = jQuery.data(
-														this, "processOID");
+												var scannedDocument = jQuery.data(ui.draggable[0],"scannedDocument"),
+													processAttachments = jQuery.data(this,"processAttachments"),
+													processDetails = jQuery.data(this,"processDetails"),
+													processOID = jQuery.data(this, "processOID"),
+													pages=self.getSelectedPageNums();
+												
+												/*Adjust for Zero based page indexing*/
+												pages =	pages.map(function(num){return num -1;});
+												
+												jQuery("*").css("cursor","wait");
 
-												jQuery("*").css("cursor",
-														"wait");
-												DocumentAssignmentService
-														.instance()
-														.addProcessDocument(
-																processOID,
-																scannedDocument,
-																"PROCESS_ATTACHMENTS")
-														.done(
-																function(
-																		pendingProcesses) {
-
+												if(pages.length > 0){
+													DocumentAssignmentService.instance()
+													.splitDocument(self.processoid,scannedDocument.uuid,pages)
+													.then(function(result){
+														
+														/*swap our scannedDocument for the new document generated on the server.*/
+														scannedDocument=result; 
+														
+														/*Now pull all our associated documents from the server*/
+														DocumentAssignmentService.instance()
+														.getScannedDocuments(self.activityInstanceOid)
+														.done(function(scannedDocuments) {
+															
+															/*Refresh scanned documents view*/
+															self.scannedDocuments = scannedDocuments;
+															self.refreshPagesList();
+															self.pageModel.pageIndex={};
+															
+															/*Now attach our new document to the process*/
+															DocumentAssignmentService.instance()
+															.addProcessDocument(processOID,scannedDocument,"PROCESS_ATTACHMENTS")
+															.done(function(pendingProcesses) {
+																
+																	/*Refresh data and views*/
 																	self.pendingProcesses = pendingProcesses;
-																	self
-																			.refreshPendingProcessesTree();
-																	self
-																			.safeApply();
-
-																	jQuery("*")
-																			.css(
-																					"cursor",
-																					"default");
-
-																	window
-																			.setTimeout(
-																					function() {
-																						self
-																								.bindDragAndDrop();
-																					},
-																					1000);
-																})
-														.fail(
-																function() {
-																	jQuery("*")
-																			.css(
-																					"cursor",
-																					"default");
-																});
+																	self.refreshPendingProcessesTree();
+																	self.safeApply();
+																	jQuery("*").css("cursor","default");
+																	window.setTimeout(function() {
+																		self.bindDragAndDrop();
+																	},1000);
+																	
+															})
+															.fail(function() {
+																jQuery("*").css("cursor","default");
+															});
+															
+															
+															self.safeApply();
+															window.setTimeout(function() {
+																self.bindDragAndDrop();
+															}, 1000);
+														});
+													})
+													.fail(function(){});
+												}
+												/*Pages are empty so we are dragging an entire existing document*/
+												else{
+													DocumentAssignmentService.instance()
+													.addProcessDocument(processOID,scannedDocument,"PROCESS_ATTACHMENTS")
+													.done(function(pendingProcesses) {
+															self.pendingProcesses = pendingProcesses;
+															self.refreshPendingProcessesTree();
+															self.safeApply();
+															jQuery("*").css("cursor","default");
+															window.setTimeout(function() {
+																self.bindDragAndDrop();
+															},1000);
+													})
+													.fail(function() {
+																jQuery("*").css("cursor","default");
+													});
+												}
 											},
 											tolerance : "pointer"
 										});
@@ -555,25 +683,51 @@ define(
 									.droppable({
 										hoverClass : "highlighted",
 										drop : function(event, ui) {
-											var scannedDocument = jQuery.data(
-													ui.draggable[0],
-													"scannedDocument");
-											var processDetails = jQuery.data(
-													this, "processDetails");
-
-											var specificDocument = jQuery.data(
-													this, "specificDocument");
-
-											specificDocument.url = "bla";
-											specificDocument.creationTimestamp = scannedDocument.creationTimestamp;
-											specificDocument.type = scannedDocument.type;
-											specificDocument.scannedDocument = scannedDocument;
-											self
-													.refreshStartableProcessesTree();
-											self.safeApply();
-											window.setTimeout(function() {
-												self.bindDragAndDrop();
-											}, 1000);
+											var scannedDocument = jQuery.data(ui.draggable[0],"scannedDocument"),
+											    processDetails = jQuery.data(this, "processDetails"),
+											    specificDocument = jQuery.data(this, "specificDocument"),
+											    pages=self.getSelectedPageNums();
+											
+											/*Adjust for Zero based page indexing*/
+											pages =	pages.map(function(num){return num -1;});
+											
+											if(pages.length>0){
+												DocumentAssignmentService.instance()
+												.splitDocument(self.processoid,scannedDocument.uuid,pages)
+												.then(function(result){
+													/*swap our scannedDocument for the new document generated on the server.*/
+													scannedDocument=result; 
+													/*Now pull all our associated documents from the server*/
+													return DocumentAssignmentService.instance()
+													.getScannedDocuments(self.activityInstanceOid)
+												})
+												.then(function(scannedDocuments){
+													self.scannedDocuments = scannedDocuments;
+												})
+												.fail(function(){
+													//TODO: Error Handling
+												})
+												.always(function(){
+													specificDocument.scannedDocument=scannedDocument;
+													self.refreshStartableProcessesTree();
+													self.refreshPagesList();
+													self.pageModel.pageIndex={};
+													self.safeApply();
+													window.setTimeout(function() {
+														self.bindDragAndDrop();
+													}, 1000);
+												});
+											}else{
+												specificDocument.scannedDocument = scannedDocument;
+												self.refreshStartableProcessesTree();
+												self.safeApply();
+												window.setTimeout(function() {
+													self.bindDragAndDrop();
+												}, 1000);
+											}
+											//specificDocument.creationTimestamp = scannedDocument.creationTimestamp;
+											//specificDocument.type = scannedDocument.type;
+											
 
 										},
 										tolerance : "pointer"
@@ -591,30 +745,70 @@ define(
 									.droppable({
 										hoverClass : "highlighted",
 										drop : function(event, ui) {
-											var scannedDocument = jQuery.data(
-													ui.draggable[0],
-													"scannedDocument");
-											var processDetails = jQuery.data(
-													this, "processDetails");
-
-											var processAttachments = jQuery
-													.data(this,
-															"processAttachments");
-											processAttachments
-													.push(scannedDocument);
-											self
-													.refreshStartableProcessesTree();
-											self.safeApply();
-											window.setTimeout(function() {
-												self.bindDragAndDrop();
-											}, 1000);
+											
+											var scannedDocument = jQuery.data(ui.draggable[0],"scannedDocument")
+											    processDetails = jQuery.data(this, "processDetails"),
+											    processAttachments = jQuery.data(this,"processAttachments");
+												pages=self.getSelectedPageNums();
+											
+											/*Adjust for Zero based page indexing*/
+											pages =	pages.map(function(num){return num -1;});
+												
+											/*If pages contains any values then we must split into a new document*/	
+											if(pages.length > 0){
+												DocumentAssignmentService.instance()
+												.splitDocument(self.processoid,scannedDocument.uuid,pages)
+												.then(function(result){
+													/*swap our scannedDocument for the new document generated on the server.*/
+													scannedDocument=result; 
+													/*Now pull all our associated documents from the server*/
+													return DocumentAssignmentService.instance()
+													.getScannedDocuments(self.activityInstanceOid);
+												})
+												.then(function(scannedDocuments){
+													self.scannedDocuments = scannedDocuments;
+												})
+												.fail(function(){
+													//TODO:Error handling
+												})
+												.always(function(){
+													processAttachments.push(scannedDocument);
+													self.refreshStartableProcessesTree();
+													self.refreshPagesList();
+													self.pageModel.pageIndex={};
+													self.safeApply();
+													window.setTimeout(function() {
+														self.bindDragAndDrop();
+													}, 1000);
+												});
+											}
+											/*Pages are empty so we are dragging an entire existing document*/
+											else{
+												processAttachments.push(scannedDocument);
+												self.refreshStartableProcessesTree();
+												self.safeApply();
+												window.setTimeout(function() {
+													self.bindDragAndDrop();
+												}, 1000);
+											}
+											
 										},
 										tolerance : "pointer"
 									});
 						}
 					}
 				};
-
+				
+				DocumentAssignmentPanelController.prototype.getSelectedPageNums=function(){
+					var pageNumbers=[];
+					for (var key in this.pageModel.pageIndex) {
+						  if (this.pageModel.pageIndex.hasOwnProperty(key)) {
+						    pageNumbers.push(key);
+						  }
+						}
+					return pageNumbers;
+				}
+				
 				/**
 				 * 
 				 */
