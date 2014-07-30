@@ -30,7 +30,7 @@ define(
 							.create();
 
 					var self = this;
-					
+					debugger;
 					DocumentAssignmentService.instance()
 					.getActivity(self.activityInstanceOid)
 					.then(function(data){
@@ -43,7 +43,7 @@ define(
 										self.documentTypes = self.documentTypes
 												.concat(docTypes);
 									});
-
+					
 					DocumentAssignmentService
 							.instance()
 							.getScannedDocuments(this.activityInstanceOid)
@@ -87,7 +87,37 @@ define(
 														}).fail();
 									}).fail();
 				};
-				
+
+				/**
+				 * Opens a confirmation dialog for the case of a split document creation.
+				 * Returns a jQuery promise that is resolved or rejected based on the users
+				 * choice within the dialog.
+				 */
+				DocumentAssignmentPanelController.prototype.openSplitDialog = function(docObj,pages){
+
+					var dialogScope = this.$new(),
+						deferred = jQuery.Deferred();
+					
+					dialogScope.document=docObj;
+					dialogScope.pages = pages.map(function(num){return num +1}).toString();
+					
+					this.ngDialog.openConfirm({
+					    template: './templates/documentSplitConfirm.html',
+					    className: 'ngdialog-theme-default',
+					    scope: dialogScope
+					})
+					.then(function(){
+						debugger
+						deferred.resolve(docObj);
+					})
+					.catch(function(){
+						debugger;
+						deferred.reject(docObj);
+					});
+					
+					return deferred.promise();
+
+				}
 				
 				DocumentAssignmentPanelController.prototype.refreshScannedDocuments = function(id){
 					
@@ -391,16 +421,18 @@ define(
 										left : 0
 									},
 									helper : function(event, ui) {
-										
+										debugger;
 										var scannedDocument = jQuery.data(event.currentTarget,"scannedDocument"),
 										    pageNumbers=[],
 										    key;
 										
 										for (var key in self.pageModel.pageIndex) {
 										  if (self.pageModel.pageIndex.hasOwnProperty(key)) {
+											isRootDoc=false;
 										    pageNumbers.push(key);
 										  }
 										}
+										
 										
 										return jQuery("<div class='ui-widget-header dragHelper'><i class='fa fa-files-o' style='font-size: 14px;'></i> "
 												+ scannedDocument.name + " " + pageNumbers.toString()
@@ -435,8 +467,11 @@ define(
 												pages =	pages.map(function(num){return num -1;});
 												
 												if(pages.length > 0){
-													DocumentAssignmentService.instance()
-													.splitDocument(self.processoid,scannedDocument.uuid,pages)
+													self.openSplitDialog(scannedDocument,pages)
+													.then(function(){
+														return DocumentAssignmentService.instance()
+														.splitDocument(self.processoid,scannedDocument.uuid,pages);
+													})			
 													.then(function(result){
 														/*swap our scannedDocument for the new document generated on the server.*/
 														scannedDocument=result; 
@@ -469,6 +504,7 @@ define(
 													DocumentAssignmentService.instance()
 													.completeDocumentRendezvous(pendingActivityInstance,scannedDocument)
 													.done(function(pendingProcesses) {
+														self.pageModel.pageIndex={};
 														self.pendingProcesses = pendingProcesses;
 														self.refreshPendingProcessesTree();
 														self.safeApply();
@@ -506,8 +542,11 @@ define(
 												
 												/*************/
 												if(pages.length > 0){
-													DocumentAssignmentService.instance()
-													.splitDocument(self.processoid,scannedDocument.uuid,pages)
+													self.openSplitDialog(scannedDocument,pages)
+													.then(function(){
+														return DocumentAssignmentService.instance()
+														.splitDocument(self.processoid,scannedDocument.uuid,pages)
+													})
 													.then(function(result){
 														
 														/*swap our scannedDocument for the new document generated on the server.*/
@@ -556,6 +595,7 @@ define(
 													DocumentAssignmentService.instance()
 													.addProcessDocument(processOID,scannedDocument,specificDocument.id)
 													.done(function(pendingProcesses) {
+														self.pageModel.pageIndex={};
 														self.pendingProcesses = pendingProcesses;
 														self.refreshPendingProcessesTree();
 														self.safeApply();
@@ -600,10 +640,12 @@ define(
 												jQuery("*").css("cursor","wait");
 
 												if(pages.length > 0){
-													DocumentAssignmentService.instance()
-													.splitDocument(self.processoid,scannedDocument.uuid,pages)
+													self.openSplitDialog(scannedDocument,pages)
+													.then(function(){
+														return DocumentAssignmentService.instance()
+														.splitDocument(self.processoid,scannedDocument.uuid,pages);
+													})
 													.then(function(result){
-														
 														/*swap our scannedDocument for the new document generated on the server.*/
 														scannedDocument=result; 
 														
@@ -650,6 +692,7 @@ define(
 													DocumentAssignmentService.instance()
 													.addProcessDocument(processOID,scannedDocument,"PROCESS_ATTACHMENTS")
 													.done(function(pendingProcesses) {
+															self.pageModel.pageIndex={};
 															self.pendingProcesses = pendingProcesses;
 															self.refreshPendingProcessesTree();
 															self.safeApply();
@@ -692,23 +735,27 @@ define(
 											pages =	pages.map(function(num){return num -1;});
 											
 											if(pages.length>0){
-												DocumentAssignmentService.instance()
-												.splitDocument(self.processoid,scannedDocument.uuid,pages)
+												
+												self.openSplitDialog(scannedDocument,pages)
+												.then(function(result){
+													return DocumentAssignmentService.instance()
+													.splitDocument(self.processoid,scannedDocument.uuid,pages);
+												})
 												.then(function(result){
 													/*swap our scannedDocument for the new document generated on the server.*/
 													scannedDocument=result; 
 													/*Now pull all our associated documents from the server*/
 													return DocumentAssignmentService.instance()
-													.getScannedDocuments(self.activityInstanceOid)
+													.getScannedDocuments(self.activityInstanceOid);
 												})
 												.then(function(scannedDocuments){
 													self.scannedDocuments = scannedDocuments;
+													specificDocument.scannedDocument=scannedDocument;
 												})
 												.fail(function(){
 													//TODO: Error Handling
 												})
 												.always(function(){
-													specificDocument.scannedDocument=scannedDocument;
 													self.refreshStartableProcessesTree();
 													self.refreshPagesList();
 													self.pageModel.pageIndex={};
@@ -718,6 +765,7 @@ define(
 													}, 1000);
 												});
 											}else{
+												self.pageModel.pageIndex={};
 												specificDocument.scannedDocument = scannedDocument;
 												self.refreshStartableProcessesTree();
 												self.safeApply();
@@ -725,10 +773,7 @@ define(
 													self.bindDragAndDrop();
 												}, 1000);
 											}
-											//specificDocument.creationTimestamp = scannedDocument.creationTimestamp;
-											//specificDocument.type = scannedDocument.type;
 											
-
 										},
 										tolerance : "pointer"
 									});
@@ -756,12 +801,15 @@ define(
 												
 											/*If pages contains any values then we must split into a new document*/	
 											if(pages.length > 0){
-												DocumentAssignmentService.instance()
-												.splitDocument(self.processoid,scannedDocument.uuid,pages)
+												
+												self.openSplitDialog(scannedDocument,pages)
 												.then(function(result){
-													/*swap our scannedDocument for the new document generated on the server.*/
+													return DocumentAssignmentService.instance()
+													.splitDocument(self.processoid,scannedDocument.uuid,pages)
+												})
+												.then(function(result){
 													scannedDocument=result; 
-													/*Now pull all our associated documents from the server*/
+													processAttachments.push(scannedDocument);
 													return DocumentAssignmentService.instance()
 													.getScannedDocuments(self.activityInstanceOid);
 												})
@@ -771,8 +819,7 @@ define(
 												.fail(function(){
 													//TODO:Error handling
 												})
-												.always(function(){
-													processAttachments.push(scannedDocument);
+												.always(function(){		
 													self.refreshStartableProcessesTree();
 													self.refreshPagesList();
 													self.pageModel.pageIndex={};
@@ -784,6 +831,7 @@ define(
 											}
 											/*Pages are empty so we are dragging an entire existing document*/
 											else{
+												self.pageModel.pageIndex={};
 												processAttachments.push(scannedDocument);
 												self.refreshStartableProcessesTree();
 												self.safeApply();
@@ -1038,7 +1086,7 @@ define(
 								left : 0
 							},
 							helper : function(event, ui) {
-								return jQuery("<div class='ui-widget-header dragHelper'><i class='fa fa-files-o' style='font-size: 14px;'></i> "
+								return jQuery("<div style='white-space: nowrap;width:200px;text-overflow:ellipsis;overflow: hidden;' class='ui-widget-header dragHelper'><i class='fa fa-files-o' style='font-size: 14px;'></i> "
 										+ doc.name
 										+ "</div>");
 							},
@@ -1245,7 +1293,7 @@ define(
 								left : 0
 							},
 							helper : function(event, ui) {
-								return jQuery("<div class='ui-widget-header dragHelper'><i class='fa fa-files-o' style='font-size: 14px;'></i> "
+								return jQuery("<div style='white-space: nowrap;width:200px;text-overflow:ellipsis;overflow: hidden;' class='ui-widget-header dragHelper'><i class='fa fa-files-o' style='font-size: 14px;'></i> "
 										+ doc.name
 										+ "</div>");
 							},

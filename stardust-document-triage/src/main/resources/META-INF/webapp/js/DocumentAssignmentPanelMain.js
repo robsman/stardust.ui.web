@@ -26,21 +26,19 @@ require([ "require", "jquery", "jquery-ui", "angularjs", "jquery.dataTables",
 		AngularDirectives, DocumentAssignmentPanelController,ngDialog) {
 	jQuery(document).ready(
 			function() {
-				var module = angularjs.module(
-						"documentAssignmentPanelApplication", []);
+				
+				var module;
+				ngDialog.init(angularjs,window);
+				module = angularjs.module("documentAssignmentPanelApplication", ["ngDialog"]);
 
-				module
-						.controller('documentAssignmentPanelController',
-								function($scope) {
-
-									Utils.inheritMethods($scope,
-											DocumentAssignmentPanelController
-													.create());
-
-									$scope.initialize();
-								});
+				module.controller('documentAssignmentPanelController',function($scope,ngDialog) {
+					$scope.ngDialog = ngDialog;	
+					Utils.inheritMethods($scope,DocumentAssignmentPanelController.create());
+					$scope.initialize();
+				});
+				
 				AngularDirectives.initialize(module);
-				angular.bootstrap(document,
-						[ "documentAssignmentPanelApplication" ]);
+				angular.bootstrap(document,[ "documentAssignmentPanelApplication" ]);
+				
 			});
 });

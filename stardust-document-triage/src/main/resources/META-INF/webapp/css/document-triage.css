@@ -228,3 +228,65 @@
 .cutLine:hover {
 	background-color: #dddddd;
 }
+
+/*Classes for our confirmation popups*/
+.confirmation-header span{
+	color: #708090;
+	font-weight: 600;
+	font-size: 14px;
+	vertical-align:text-bottom;
+}
+
+.confirmation-header i.stop{
+	color:red;
+}
+
+.confirmation-header i.caution{
+	color:#ffb404;
+}
+
+.confirmation-header i.go{
+	color:green;
+}
+
+.confirmation-contents{
+	margin-left:2em;
+}
+
+
+.confirmation-contents span,
+.confirmation-contents label{
+	color: #5C6E87;
+}
+
+.confirmation-contents label{
+	vertical-align:top;
+}
+
+.confirmation-contents .header{
+	font-weight: 500;
+	font-size: 12px;
+	margin-left:0em;
+}
+
+.confirmation-buttonpane{
+	border-top: solid 1px #ddd;
+	margin-top: 1em;
+	padding-top: 0.5em;
+}
+
+.confirmation-buttonpane button{
+	border-radius: 3px;
+	border: solid 1px #AAA;
+}
+
+.confirmation-buttonpane button:first-child{
+	background: #24415E;
+	color: white;
+	border-color: #21659d;
+}
+
+.confirmation-buttonpane button:first-child ~ button{
+	background: #FFF;
+	color: #333;
+}
