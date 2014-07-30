@@ -9,7 +9,4 @@
   http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
 
 	<!--Bean definitions -->
-	<bean id="skinDefaultPreference" class="java.lang.String">
-		<constructor-arg value="modern" />
-	</bean>
 </beans>
