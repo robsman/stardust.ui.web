@@ -3,9 +3,9 @@
 		ng-click="reportFilterController.removeParameter('filters.' + x.dimension)"
 		ng-show="reportFilterController.existsParameter('filters.' + x.dimension)"><img
 		ng-src="{{reportFilterController.baseUrl}}/public/css/images/parameter.png"
-		title="Parameter (filters.{{x.dimension}})" /> <a href=""
+		title="{{reportFilterController.getI18N('reporting.definitionView.dataSet.filtering.disableParameter.label')}}" /> <a href=""
 		ng-click="reportFilterController.addParameter('filters.' + x.dimension, 'Filter for ' + reportFilterController.getDimension(x.dimension).name, reportFilterController.getMetadata().stringType.id)"
 		ng-show="!reportFilterController.existsParameter('filters.' + x.dimension)"><img
 			ng-src="{{reportFilterController.baseUrl}}/public/css/images/no-parameter.png"
-			title="No Parameter (filters.{{x.dimension}})" />
+			title="{{reportFilterController.getI18N('reporting.definitionView.dataSet.filtering.enableParameter.label')}}" />
 </div>
