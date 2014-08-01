@@ -50,6 +50,11 @@ ul.errorMessagesPanel {
 					ng-click="createBusinessObjectInstance()"
 					style="margin-left: 10px;"></input></td>
 			</tr>
+			<tr ng-show="currentBusinessObjectInstance == null">
+				<td colspan="2"><em>No
+						{{businessObjectManagementPanelController.businessObject.businessObject.name}}
+						selected.</em></td>
+			</tr>
 			<tr ng-show="currentBusinessObjectInstance != null">
 				<td colspan="2">
 					<table>
