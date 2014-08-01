@@ -22,6 +22,7 @@ jQuery(function () {
 						parseFloat(urlUtils.getQueryParam('canvasWidth')),
 						parseFloat(urlUtils.getQueryParam('canvasHeight')),
 						'toolbar');
+		loadCustomTheme();
 	});
 });
 
@@ -46,4 +47,26 @@ function configurei18n()
 function getNextRandom()
 {
 	return new Date().getTime();
+}
+
+function loadCustomTheme() {
+	var m_urlUtils = require('m_urlUtils');
+	jQuery.ajax({
+		type : 'GET',
+		url : m_urlUtils.getContextName() + "/services/rest/common/html5/api/themes/current/custom",
+		async : true
+	}).done(function(json){
+		var head = document.getElementsByTagName('head')[0];
+		for(var i in json.stylesheets) {
+			var link = document.createElement('link');
+			link.href = m_urlUtils.getContextName() + "/" + json.stylesheets[i];
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			head.appendChild(link);
+		}
+	}).fail(function(err){
+		if(console && console.error){
+			console.error("Failed in loading custom theme");
+		}
+	});
 }
