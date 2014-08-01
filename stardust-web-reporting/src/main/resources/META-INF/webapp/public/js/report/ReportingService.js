@@ -819,7 +819,7 @@ define(
 					
 					var deferred = jQuery.Deferred();
 					if(! (typeof report_data === 'undefined')){//email based report viewer
-						deferred.resolve(report_data);
+						deferred.resolve(angular.copy(report_data));
 					}else{
 						if (this.mode === "test") {
 							if (this.metadata.objects[report.data.primaryObject].id === "processInstance") {
@@ -832,7 +832,7 @@ define(
 								deferred.resolve(this.retrieveRoleData(report));
 							}
 						} else {
-							if(report.layout.table.preview && report.layout.type == "simpleReport"){
+							if(report.layout.table && report.layout.table.preview && report.layout.type == "simpleReport"){
 									deferred.resolve(this.getTestSimpleReportData(report));
 							}else{
 								var self = this;
@@ -2016,7 +2016,7 @@ define(
               var VALID_FILENAME_PATTERN = /[\\\\/:*?\"<>|\\[\\]]*/
               return (! reportName.trim().match(VALID_FILENAME_PATTERN)) ? true : false;
            };
-           
+            
             /**
              * Removes any forward slashes from the input parameter
              */

@@ -257,13 +257,36 @@ define(
 				 */
 				ReportViewerController.prototype.initFilters = function() {
 					var self = this;
-					this.parameters = this.reportHelper
-							.prepareParameters(this.report.dataSet.filters);
-					self.reportParameterController = ReportFilterController
-							.create(self.report, self.parameters,
-									self.reportingService, self.reportHelper,
-									true);
+
+					this.parameters = this.reportHelper.prepareParameters(this.report.dataSet.filters);
+					self.reportParameterController = ReportFilterController.create(self.report, self.parameters,
+														self.reportingService,
+														self.reportHelper, true);
+					
 					self.reportParameterController.baseUrl = "bpm-reporting";
+					
+					var qualifiedParameters = jQuery.url(window.location.search).param("qualifiedParameters");
+									
+					if(this.isEmbedded()){
+						for (var param in this.parameters) {
+							var columnName = this.parameters[param].dimension;
+							if(!qualifiedParameters && columnName.lastIndexOf("}") != -1){
+								  columnName = columnName.substring(columnName.lastIndexOf("}") + 1, columnName.length);
+							}
+							var value = jQuery.url(window.location.search).param(columnName);
+							
+							if(value){
+								this.parameters[param].value = value;
+								
+								//TODO: temporary code since parameters are not working as on 17th July
+								/*for (var filterInd in this.report.dataSet.filters) {
+									if(this.parameters[param].dimension == this.report.dataSet.filters[filterInd].dimension){
+										this.report.dataSet.filters[filterInd].value = value;
+									}
+								}*/
+							}
+						}
+					}
 				};
 
 				/**
@@ -326,6 +349,15 @@ define(
 					return false;
 				};
 
+				/**
+				 * 
+				 */
+				ReportViewerController.prototype.isEmbedded = function() {
+					if (this.viewMode == "embedded") {
+						return true;
+					}
+					return false;
+				};
 				/**
 				 * 
 				 */

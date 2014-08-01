@@ -118,52 +118,6 @@ define(
 
 					if (this.report.layout.type == 'table') {
 						this.createTable();
-					} else if (this.report.layout.type == 'document') {
-						self.getReportData(self.report, self.parameters)
-								.done(
-										function(data) {
-											console.log("Data for Document");
-											console.log(data);
-											
-											var html = "<html ng-app><head>"
-													// TODO Read local
-													+ "<scr" + "ipt" + "src='"
-													+ self.reportingService
-															.getRootUrl()
-													+ "/plugins/bpm-reporting/public/js/libs/angular/angular-1.2.11.js'>"
-													+ "</scr" + "ipt>"
-													+ "<scr" + "ipt>"
-													+ "function Controller($scope) {$scope.seriesGroup = "
-													+ (data.seriesGroup ? JSON
-															.stringify(data.seriesGroup)
-															: "null")
-													+ ";"
-													+ "$scope.recordSet = "
-													+ (data.recordSet ? JSON
-															.stringify(data.recordSet)
-															: "null")
-													+ ";"
-													+ "$scope.groupIds = "
-													+ JSON
-															.stringify(data.groupIds)
-													+ ";}"
-													+ "</scri" + "pt></head><body><div ng-controller='Controller'>"
-													+ self.report.layout.document.markup
-													+ "</div></body></html>";
-
-											console.log(html);
-
-											var documentFrame = document
-													.getElementById('documentFrame');
-											var frameDocument = documentFrame.contentDocument
-													|| documentFrame.contentWindow.document;
-
-											frameDocument.write(html);
-											frameDocument.close();
-											deferred.resolve();
-										}).fail(function() {
-									deferred.reject();
-								});
 					} else {
 						this.createChart().done(function(){
 							deferred.resolve();
@@ -244,7 +198,7 @@ define(
 							speed : 2500
 						}
 					};
-					
+
 					//For Legend Positioning.
 					if (this.report.dataSet.type === 'seriesGroup'
 			         && this.report.layout.subType === this.reportingService.metadata.layoutSubTypes.chart.id
@@ -794,7 +748,9 @@ define(
             	}
             	
 				var self = this;
-				if(this.report.dataSet.type === 'seriesGroup' && this.report.layout.subType == this.reportingService.metadata.layoutSubTypes.table.id){
+				if (this.report.layout.type == 'document') {
+					this.renderCompositeReport();
+				}else if(this.report.dataSet.type === 'seriesGroup' && this.report.layout.subType == this.reportingService.metadata.layoutSubTypes.table.id){
 						this.getReportData(self.report, self.parameters).done(
 								function(data) {
 									self.refreshSeriesTable(data, scopeController);
@@ -820,6 +776,70 @@ define(
 				return deferred.promise();
 			};
 
+			/**
+			 * 
+			 */
+			ReportRenderingController.prototype.renderCompositeReport = function() {
+				var deferred = jQuery.Deferred();
+			    var self = this;
+			    
+			    var isSeriesGroup = self.report.dataSet.type === 'seriesGroup';
+			    
+			    self.getReportData(self.report, self.parameters)
+			        .done(function(data) {
+			        console.log("Data for Document");
+			        console.log(data);
+			
+			        var html = "<html ng-app='STARTDUST_REPORTING'><head>"
+			          	// TODO Read local
+			          	 + "<scr"
+			          	 + "ipt"
+			          	 + " src='"
+			          	 + self.reportingService
+			          	.getRootUrl()
+			          	 + "/plugins/bpm-reporting/public/js/libs/angular/angular-1.2.11.js'>"
+			          	 + "</scr"
+			          	 + "ipt>"
+			          	 + "<scr"
+			          	 + "ipt"
+			          	 + " src='"
+			          	 + self.reportingService
+			          	.getRootUrl()
+			          	 + "/plugins/bpm-reporting/public/js/report/programmaticAccessHelper.js'>"
+			          	 + "</scr"
+			          	 + "ipt>"
+			          	 + "<scr"
+			          	 + "ipt>"
+			          	 + "var __reportData="
+			          	 + (data ? JSON.stringify(data)
+			          		 : "null")
+			          	 + ";"
+			          	 + "var __isSeriesGroup="
+			          	 + isSeriesGroup
+			          	 + ";"
+			          	 + "</scri"
+			          	 + "pt></head><body><div ng-controller='Controller'>"
+			          	 + self.report.layout.document.markup
+			          	+ "</div></body></html>";
+			        
+			        console.log(html);
+			
+			        var documentFrame = document.getElementById('documentFrame');
+			        var frameDocument = documentFrame.contentDocument || documentFrame.contentWindow.document;
+			
+			        frameDocument.write(html);
+			        frameDocument.close();
+			        deferred.resolve();
+			    }).fail(function() {
+			        deferred.reject();
+			    });
+			    
+			    return deferred.promise();
+			};
+			
+			
+			
+			
 			ReportRenderingController.prototype.getCumulantsTableConfig = function(){
 		    	  if(this.report.dataSet.fact == this.reportingService.metadata.objects.processInstance.facts.count.id){
 		    		  return this.countTableConfig;

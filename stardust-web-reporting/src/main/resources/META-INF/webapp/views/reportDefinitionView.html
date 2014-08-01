@@ -523,8 +523,7 @@ table.formTable td {
 										type="radio"></td>
 									<td><label ng-show="report.dataSet.type == 'recordSet'">{{getI18N('reporting.definitionView.table.label')}}</label></td>
 									
-									<td><input id="auto-reporting-layoutTab-compositeReport" ng-model="report.layout.type" value="document"
-										type="radio"></td>
+									<td><input id="auto-reporting-layoutTab-compositeReport" ng-model="report.layout.type" value="document" ng-change="layoutChanged()" type="radio"></td>
 									<td><label>{{getI18N('reporting.definitionView.composite.label')}}</label></td>
 									
 									<td><input ng-model="report.layout.type"
@@ -944,7 +943,7 @@ table.formTable td {
 									<td valign="top">
 										<table>
 											<tr>
-												<td><input id="auto-reporting-schedulingTab-active" type="checkbox"
+												<td><input id="auto-reporting-schedulingTab-active"  ng-disabled="report.layout.type == 'document'" type="checkbox"
 													ng-model="report.scheduling.active"></input></td>
 												<td>{{getI18N('reporting.definitionView.scheduleReport.text')}}</td>
 											</tr>

@@ -172,6 +172,10 @@ define(
 
 					CKEDITOR.replace("documentTemplateEditor", {
 						allowedContent : true,
+						enterMode : CKEDITOR.ENTER_BR,
+						autoParagraph : false,
+						fillEmptyBlocks: false,
+						entities: false,
 						toolbarGroups : [
 								{
 									name : 'clipboard',
@@ -307,8 +311,10 @@ define(
 
 							self.chartTypeSelect
 							.change(function () {
-								self.report.layout.chart.type = self.chartTypeSelect
-									.val();
+								if(self.report.layout.chart){
+									self.report.layout.chart.type = self.chartTypeSelect
+									.val();	
+								}
 
 								self.updateView();
 							});
@@ -356,16 +362,18 @@ define(
 									event, ui) {
 
 									if (ui.newPanel.selector === "#previewTab") {
-										
+										self.resetParamFilters();
 										self.renderingController.refreshPreview(self, self.report, self.parameters).done(
 												function(){
-													self.resetParamFilters();
+													//self.resetParamFilters();
 													self.updateView();			
 												});
 
-										setTimeout(function () {
-										   self.initializeDataTableOptions();
-                             }, 500);
+										if(self.report.layout.table){
+											setTimeout(function () {
+												   self.initializeDataTableOptions();
+													}, 500);
+										}	
 									}
 									if (ui.newPanel.selector === "#schedulingTab") {
 										self.resetParamFilters();
@@ -395,11 +403,15 @@ define(
 								self.layoutSubTypeSelect.val(self.report.layout.subType);
 								jQuery("#layoutSubTypeSelect").change();
 
-								self.dimensionDisplaySelect.val(self.report.layout.table.dimensionDisplay);
-								self.cumulantsDisplaySelect.val(self.report.layout.table.cumulantsDisplay);
+								if(self.report.layout.table){
+									self.dimensionDisplaySelect.val(self.report.layout.table.dimensionDisplay);
+									self.cumulantsDisplaySelect.val(self.report.layout.table.cumulantsDisplay);	
+								}
 
-								self.chartTypeSelect
-								.val(self.report.layout.chart.type);
+								if(self.report.layout.chart){
+									self.chartTypeSelect
+									.val(self.report.layout.chart.type);	
+								}
 
 								self.schedulingController
 								.initialize(self.report.scheduling);
@@ -418,19 +430,23 @@ define(
 									self.showFavoriteBtn = false;
 								}
 								
+								if(self.report.layout.type == 'document'){
+									self.showSaveInstanceBtn = false;
+								}
+								
 								if (!self.report.scheduling.delivery.participant)
 		                  {
 		                     self.schedulingParticipantsSelect.val(jQuery("#schedulingParticipantsSelect option:first").val());
 		                     self.report.scheduling.delivery.participant = self.schedulingParticipantsSelect.val(); 
 		                  } else {
-		                     self.schedulingParticipantsSelect.val(self.report.scheduling.delivery.participant);
+								self.schedulingParticipantsSelect.val(self.report.scheduling.delivery.participant);
 		                  }
 								
 								self.updateView();
 
 								document.body.style.cursor = "default";
 
-								if (self.report.document) {
+								if (self.report.layout.type == "document") {
 									CKEDITOR.instances["documentTemplateEditor"]
 									.setData(self.report.layout.document.markup);
 								}
@@ -811,6 +827,15 @@ define(
 				/**
 				 * 
 				 */
+				ReportDefinitionController.prototype.layoutChanged = function() {
+					this.report.layout = {};
+					this.report.layout.type = 'document';
+					this.report.layout.subType = null;
+				};
+
+				/**
+				 * 
+				 */
 				ReportDefinitionController.prototype.changePrimaryObject = function(
 						initialize) {
 					this.primaryObjectSelect
@@ -861,9 +886,11 @@ define(
 					
 					this.populateCumulantsDisplay();
 					
-					this.report.layout.chart.options.title = this
-							.getPrimaryObject().name;
-					
+					if(this.report.layout.chart){
+						this.report.layout.chart.options.title = this
+						.getPrimaryObject().name;	
+					}
+
 					this.updateView();
 				};
 
@@ -878,9 +905,10 @@ define(
 					if (true) {
 						this.populateFactProcessDataSelect();
 					}
-
-					this.report.layout.chart.options.axes.yaxis.label = this
-							.getFact().name;
+					if(this.report.layout.chart){
+						this.report.layout.chart.options.axes.yaxis.label = this
+						.getFact().name;	
+					}
 				};
 
 				/**
@@ -896,9 +924,10 @@ define(
 					}
 
 					this.populateChartTypes();
-
-					this.report.layout.chart.options.axes.xaxis.label = this
-							.getFirstDimension().name;
+					if(this.report.layout.chart){
+						this.report.layout.chart.options.axes.xaxis.label = this
+						.getFirstDimension().name;	
+					}
 
 					this.report.dataSet.firstDimensionParameters = [];
 
@@ -1081,14 +1110,19 @@ define(
 										+ this.reportingService.metadata.chartTypes.pieChart.name
 										+ "</option>");
 					}
-					this.chartTypeSelect.val(this.report.layout.chart.type);
+					
+					if(this.report.layout.chart){
+						this.chartTypeSelect.val(this.report.layout.chart.type);	
+					}
 				};
 
 				/**
 				 * 
 				 */
 				ReportDefinitionController.prototype.getChartType = function() {
-					return this.reportingService.metadata.chartTypes[this.report.layout.chart.type];
+					if(this.report.layout.chart){
+						return this.reportingService.metadata.chartTypes[this.report.layout.chart.type];	
+					}
 				};
 				
 				/**
@@ -1112,11 +1146,18 @@ define(
 						self.path = self.report.storage.path;
 					}
 					
+					//update markup
+					if (this.report.layout.type == "document") {
+					    self.report.layout.document = {
+					        markup: CKEDITOR.instances["documentTemplateEditor"].getData()
+					    };
+					}
+					
 					self.report.name = self.reportingService.validateReportName(self.report.name);
 					
 					//Check if Report name has been changed. If yes then first invoke rename and then save 
 					if (self.path != null)
-               {
+					{
 					   var ext = self.path.substring(self.path.lastIndexOf('.'), self.path.length);
 					   var id = self.path; 
 					   var lastIndex = id.lastIndexOf("/");
@@ -1257,15 +1298,10 @@ define(
 							CKEDITOR.instances["documentTemplateEditor"]
 									.setData(CKEDITOR.instances["documentTemplateEditor"]
 											.getData()
-											+ "<iframe allowtransparency='true' frameborder='0' "
-											+ "sandbox='allow-same-origin allow-forms allow-scripts' "
-											+ "scrolling='auto' style='border: none; width: 100%; height: 100%;' "
-											+ "src='"
-											+ this.reportingService
-													.getRootUrl()
-											+ "/plugins/bpm-reporting/views/reportPanel.html?path="
-											+ parent.iDnD.getTransferObject().path
-											+ "'></iframe>");
+											+ '<sd-report-iframe path="'
+											+ parent.iDnD.getTransferObject().path + '"'
+											+ " parameters=></sd-report-iframe>"
+											+ "<!-- Syntax for passing Parameters is {{'&Param1Name='+record.param1Name+'&param2Name='+record.param2Name}} -->");
 						}
 					}
 
@@ -2161,12 +2197,12 @@ define(
                 if (inValidGroupableDimensions[dim].id === dimension.id)
                 {
                    return isValid;
-                }
+		}
              }
           isValid = true;
           return isValid;
         };
-        
+
 		}
 
 		function replaceSpecialChars(id){
