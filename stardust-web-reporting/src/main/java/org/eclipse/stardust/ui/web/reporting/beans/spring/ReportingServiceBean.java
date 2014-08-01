@@ -387,9 +387,14 @@ public class ReportingServiceBean
       // Mark Report Definition as saved
       reportJson.get("storage").getAsJsonObject().addProperty("state", "saved");
 
-      String path = saveReportDocument(reportJson, folder, name + REPORT_DEFINITION_EXT);
+      Document document = saveReportDocument(reportJson, folder, name + REPORT_DEFINITION_EXT);
 
-      reportJson.get("storage").getAsJsonObject().addProperty("path", path);
+      reportJson.get("storage").getAsJsonObject().addProperty("path", document.getPath());
+
+      //add report specific meta-data
+      JsonObject metaDataObj = new JsonObject(); 
+      metaDataObj.addProperty("documentId", document.getId());
+      reportJson.add("metadata", metaDataObj);
 
       return reportJson;
    }
@@ -685,7 +690,7 @@ public class ReportingServiceBean
    /**
      *
      */
-   private String saveReportDocument(JsonObject reportDefinitionJson, Folder folder, String name)
+   private Document saveReportDocument(JsonObject reportDefinitionJson, Folder folder, String name)
    {
       String reportContent = reportDefinitionJson.toString();
       String path = folder.getPath() + "/" + name;
@@ -712,11 +717,11 @@ public class ReportingServiceBean
       }
       else
       {
-         getDocumentManagementService().updateDocument(reportDesignDocument, reportContent.getBytes(), null, false,
+         reportDesignDocument = getDocumentManagementService().updateDocument(reportDesignDocument, reportContent.getBytes(), null, false,
                null, false);
       }
       
-      return path;
+      return reportDesignDocument;
    }
 
    /**

@@ -1193,11 +1193,13 @@ define(
                   .done(
                         function(report) {
                            self.report.storage = report.storage;
+                           self.report.metadata = report.metadata;
                            if (self.path == null)
                            {// Create Case
                               window.parent.EventHub.events.publish("BPM-REPORTING-REPORT-UPDATED", 
                                        self.report.reportUID, self.report.name);
                            }
+                           self.showFavoriteBtn = true;
                            self.updateView();
                         });
                document.body.style.cursor = "default";
