@@ -421,8 +421,7 @@ define(
 								type = element.type.split(":")[1];
 							}
 							var childTypeDeclaration = model.findTypeDeclarationBySchemaName(type);
-	
-							if (childTypeDeclaration == null || childTypeDeclaration.isEnumeration()) { // Primitive
+							if (childTypeDeclaration == null || childTypeDeclaration.isEnumeration() || childTypeDeclaration.getElements().length == 0) { // Primitive
 								jsonChild.id = element.name;
 								jsonChild.name = element.name;
 								jsonChild.fullXPath = jsonRet.fullXPath + "/" + element.name;
