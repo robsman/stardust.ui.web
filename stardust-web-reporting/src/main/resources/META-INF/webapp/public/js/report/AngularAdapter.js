@@ -134,7 +134,7 @@ if (!window.bpm.portal.AngularAdapter) {
 			console.debug("Format constraints initialized");
 
 			var self = this;
-
+			
 			/**
 			 *  tableArray - 2D array containing complete data of table column header + rows + footer
 				tableParameters.addLastRowAsFooter - if set true, will add last Row of above table as Footer. 
@@ -214,7 +214,6 @@ if (!window.bpm.portal.AngularAdapter) {
 								            var url = URL.createObjectURL(blob);
 								            link.setAttribute("href", url);
 								            link.setAttribute("download", fileName);
-								            link.style = "visibility:hidden";
 								        }
 								
 								        if (navigator.msSaveBlob) { // IE 10+
@@ -263,7 +262,6 @@ if (!window.bpm.portal.AngularAdapter) {
 								            var url = URL.createObjectURL(blob);
 								            link.setAttribute("href", url);
 								            link.setAttribute("download", fileName);
-								            link.style = "visibility:hidden";
 								        }
 								
 								        if (navigator.msSaveBlob) { // IE 10+
@@ -286,7 +284,7 @@ if (!window.bpm.portal.AngularAdapter) {
 							    }
 			                }
 
-						    scope.$parent.tableOptions = tableOptions;
+						    scope.tableOptions = tableOptions;
 			                //set table options - end
 						    
 						    //prepare table
@@ -365,14 +363,9 @@ if (!window.bpm.portal.AngularAdapter) {
 			
 			                //append our view to the element of the directive.
 			                divElem.html(el);
-			
-			                compiled(divElem.scope());
-			
-			                //put all data in parents scope for jquery data table usage
-			                scope.$parent.rows = tableArray;
-			
-			                scope.$parent.$apply();
-			
+			               
+			                compiled(scope);
+			                scope.rows  = tableArray;
 			            });
 			        }
 			    };
@@ -920,16 +913,20 @@ if (!window.bpm.portal.AngularAdapter) {
 					    	require(
 									[url],
 									function(datetime) {
-										element.datetimepicker({
-											inline : true,
-											timeFormat : timeFormat,
-											dateFormat : dateFormat,
-											onSelect : function(date) {
-												scope.$apply(function () {
-												   controller.$setViewValue(date);
-												});
-											}
-										});		
+										try {
+											element.datetimepicker({
+												inline : true,
+												timeFormat : timeFormat,
+												dateFormat : dateFormat,
+												onSelect : function(date) {
+													scope.$apply(function () {
+													   controller.$setViewValue(date);
+													});
+												}
+											});	
+										} catch (e) {
+											// TODO: handle exception
+										}
 									}); 
 					    }).fail(function() { 
 					    	element.datepicker({
