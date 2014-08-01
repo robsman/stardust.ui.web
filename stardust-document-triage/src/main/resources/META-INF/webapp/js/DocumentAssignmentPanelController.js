@@ -30,7 +30,6 @@ define(
 							.create();
 
 					var self = this;
-					debugger;
 					DocumentAssignmentService.instance()
 					.getActivity(self.activityInstanceOid)
 					.then(function(data){
@@ -287,7 +286,6 @@ define(
 				 */
 				DocumentAssignmentPanelController.prototype.clamp = function(
 						number, min, max) {
-					console.log("Clamping: " + number + "," + min + "," + max);
 					return Math.max(min, Math.min(number, max));
 				};
 
@@ -364,7 +362,7 @@ define(
 								+ m);
 						scannedDocumentDivision.data({
 							ui : scannedDocumentDivision,
-							scannedDocument : this.scannedDocuments[m]
+							scannedDocument : angular.copy(this.scannedDocuments[m])
 						});
 						
 						scannedDocumentDivision
@@ -374,7 +372,6 @@ define(
 							    		
 							    		var ed=jQuery.data(ui.draggable[0],"dragData"),
 							    			workService =DocumentAssignmentService.instance();
-							    		debugger;
 							    		switch(ed.sourceType){
 								    		case "proccessAttachment_startable":	    			
 								    			self.removeProcessAttachmentStartable(ed.process,ed.attachment);
@@ -435,7 +432,7 @@ define(
 										
 										
 										return jQuery("<div class='ui-widget-header dragHelper'><i class='fa fa-files-o' style='font-size: 14px;'></i> "
-												+ scannedDocument.name + " " + pageNumbers.toString()
+												+ scannedDocument.name + " (Pages:" + pageNumbers.toString() + ")"
 												+ "</div>");
 									},
 									drag : function(event) {
@@ -470,7 +467,7 @@ define(
 													self.openSplitDialog(scannedDocument,pages)
 													.then(function(){
 														return DocumentAssignmentService.instance()
-														.splitDocument(self.processoid,scannedDocument.uuid,pages);
+															.splitDocument(self.processoid,scannedDocument.uuid,pages);
 													})			
 													.then(function(result){
 														/*swap our scannedDocument for the new document generated on the server.*/
@@ -847,6 +844,20 @@ define(
 					}
 				};
 				
+				DocumentAssignmentPanelController.prototype.setStagedDocType = function(treeItem,docTypeId){
+					var i=0,
+						docType;
+					
+					for(;i<this.documentTypes.length;i++){
+						if(this.documentTypes[i].documentTypeId==docTypeId){
+							docType=this.documentTypes[i];
+							docTypeFound=true;
+							break;
+						}
+					}
+					treeItem.processAttachment.documentType=docType;
+				}
+				
 				DocumentAssignmentPanelController.prototype.getSelectedPageNums=function(){
 					var pageNumbers=[];
 					for (var key in this.pageModel.pageIndex) {
@@ -882,7 +893,10 @@ define(
 					console.log(this.pageModel.pageIndex);
 					this.pageModel.selectedPage.url = url;
 				};
-
+				DocumentAssignmentPanelController.prototype.resetPageModel = function(){
+					this.pageModel.pageIndex={};
+				}
+				
 				DocumentAssignmentPanelController.prototype.isPageSelected = function(
 						page) {
 
@@ -896,7 +910,7 @@ define(
 
 				DocumentAssignmentPanelController.prototype.startProcess = function(
 						treeItem, busObj) {
-
+					debugger;
 					var that = this, data = {
 						processDefinitionId : treeItem.startableProcess.id,
 						businessObject : busObj,

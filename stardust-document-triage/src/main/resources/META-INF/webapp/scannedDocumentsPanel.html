@@ -7,6 +7,7 @@
 
 				<div style="height: {{100+ 3*clamp(document.pages.length, 0, 10)}}"
 					class="imageStack"
+					ng-mousedown="resetPageModel()"
 					ng-click="selectPage(document.pages[0],document.url + 0,$event,document.pages)">
 					<img ng-src="{{document.url}}0" style="height: 100px;"
 						title="Page {{(clamp(document.pages.length,0,10))-$index}} of {{document.pages.length}}"
@@ -19,7 +20,7 @@
 						class="fa fa-arrows-h"></i> <i class="fa"
 						title="Expand/Collapse Pages" ng-show="document.pages.length>0"
 						ng-class="{'fa-caret-down':document.showChildren,'fa-caret-up':!document.showChildren}"
-						ng-click="document.showChildren=!document.showChildren"> </i>
+						ng-click="document.showChildren=!document.showChildren;resetPageModel()"> </i>
 				</div>
 				
 				<div class="documentInfo">
@@ -29,11 +30,11 @@
 			</div>
 			<div class="documentHeader" ng-show="document.showChildren">
 				{{document.name}} <i title="Collapse"
-					ng-click="document.showChildren=false"
+					ng-click="document.showChildren=false;resetPageModel()"
 					class="fa fa-caret-up menu-icon"></i>
 			</div>
 			<div ng-show="document.showChildren"
-				ng-repeat="page in document.pages" class="page">
+				 ng-repeat="page in document.pages" class="page">
 				<table
 					ng-class="{'selected':isPageSelected(page),'unselected':!isPageSelected(page)}">
 					<tr>

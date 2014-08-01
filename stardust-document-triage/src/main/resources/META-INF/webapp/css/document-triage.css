@@ -77,6 +77,21 @@
 	float:right;
 }
 
+.treeContainer{
+	height:40%;
+	overflow:auto;
+	margin-top: 10px; 
+	margin-bottom: 10px;
+}
+
+i.expando {
+	float: right;
+	margin-right: 1em;
+	color: #A69A88;
+	font-size: 1.5em;
+	cursor: pointer;
+}
+
 .scannedDocument td {
 	border-bottom: 1px dashed #dddddd;
 	background-color: #E8E6FC;

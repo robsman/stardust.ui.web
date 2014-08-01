@@ -21,11 +21,10 @@
 			  
 		<script data-main="./js/DocumentAssignmentPanelMain"
 			    src="./js/libs/require/2.0.5/require-min.js"></script>
-			    
 	</head>
 <body>
 	<div id="docRendevous"
-		ng-controller="documentAssignmentPanelController">
+		 ng-controller="documentAssignmentPanelController">
 		<table class="layoutTable" style="width: 100%; height: 100%">
 			<tr valign="top">
 				<td>
@@ -36,7 +35,7 @@
 									ng-include="'../business-object-management/businessObjectSearchPanel.html'"></div>
 							</td>
 						</tr>
-						<tr valign="top">
+						<tr id="pageViewPanel" valign="top">
 							<td>
 								<table style="width: 100%;">
 									<tr valign="top">
@@ -45,13 +44,20 @@
 										</td>
 										<td style="width: 50%; padding-left: 10px !important;">
 											<div>
-												<span class="sectionTitle">Pending Processes and
-													Activities </span> <label> <input type="checkbox"
-													name="showCompleted" value="value" /> Show Completed
+												<span class="sectionTitle">
+												Pending Processes and Activities 
+												</span> 
+												<i ng-init="hidePending=false" 
+												   ng-click="hidePending=!hidePending"
+												   ng-class="{'fa-caret-down':hidePending,'fa-caret-right':!hidePending}" 
+												   class="fa expando"></i>
+												<label> 
+													<input type="checkbox" name="showCompleted" value="value" /> Show Completed
 												</label>
 											</div>
-											<div class="section"
-												style="min-height: 20px; max-height: 250px; overflow: auto; margin-top: 10px; margin-bottom: 10px;">
+											<div class="treeContainer section"
+											     id="pendingTreeContainer"
+											     ng-show="hidePending">
 												<table cellpadding="0" cellspacing="0"
 													class="pendingProcessesTree">
 													<tr ng-repeat="treeItem in pendingProcessesTree"
@@ -131,9 +137,16 @@
 													</tr>
 												</table>
 											</div>
-											<h2>Startable Processes</h2>
-											<div class="section"
-												style="min-height: 20px; max-height: 150px; overflow: auto; margin-top: 10px; margin-bottom: 10px;">
+											<span id="sectionHeadStartable" style="display:inline" class="sectionTitle">Startable Processes</span>
+											<i ng-init="hideStarting=false" 
+												   ng-click="hideStarting=!hideStarting"
+												   ng-class="{'fa-caret-down':!hideStarting,'fa-caret-right':hideStarting}" 
+												   class="fa expando">
+											</i>
+											<div class="treeContainer section"
+												 ng-stretch-v 
+												 data-watch="#pendingTreeContainer,#pageViewPanel,#sectionHeadStartable"
+											     ng-show="!hideStarting">
 												<table cellpadding="0" cellspacing="0"
 													class="pendingProcessesTree">
 													<tr ng-class="{treeBranch:treeItem.startableProcess}"
@@ -176,10 +189,14 @@
 															     data-attach-id="{{treeItem.processAttachment.uuid}}"
 															     ng-show="treeItem.processAttachment">
 																<i class="fa fa-file"></i>
-																&nbsp;{{treeItem.processAttachment.name}} <select
-																	ng-select
-																	ng-model="selectedDocType"
-																	ng-options="item.name for item in documentTypes">
+																&nbsp;{{treeItem.processAttachment.name}} 
+																<select ng-model="selectedDocType" 
+																        ng-change="setStagedDocType(treeItem,selectedDocType)">
+																	<option ng-selected="item.documentTypeId==treeItem.processAttachment.documentType.documentTypeId" 
+																	        value={{item.documentTypeId}}
+																	        ng-repeat="item in documentTypes">
+																		{{item.name}}
+																	</option>
 																</select>
 															</div>
 														</td>
@@ -207,7 +224,8 @@
 						</tr>
 					</table>
 					<div class="section"
-						style="width: 100%; height: 500px; overflow: auto; margin: 10px;">
+						 ng-stretch-v
+						 style="width: 100%;overflow: auto;">
 						<div ng-include="'scannedDocumentsPanel.html'"></div>
 					</div>
 				</td>
