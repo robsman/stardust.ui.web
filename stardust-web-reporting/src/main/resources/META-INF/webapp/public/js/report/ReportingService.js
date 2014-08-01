@@ -136,6 +136,7 @@ define(
 				this.metadata.stringType = {
 					id : "stringType",
 					name : this.getI18N("reporting.definitionView.metadata.stringType.label"),
+					operators : ["E", "NE", "I", "NI"],
 				};
 				this.metadata.integerType = {
 					id : "integerType",

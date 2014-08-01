@@ -559,6 +559,25 @@ define(
 				ReportFilterController.prototype.getMetadata = function() {
 					return this.reportingService.metadata;
 				};
+				
+				/**
+             * 
+             */
+            ReportFilterController.prototype.isCompColNumeric = function(id) {
+               var dimensions = this.getDimensions();
+               for(var i = 0; i < dimensions.length; i++){
+                  if(id == dimensions[i].id){
+                     var dimension = dimensions[i];
+                     if (dimension.type.id === this.getMetadata().integerType.id || 
+                              dimension.type.id === this.getMetadata().decimalType.id ||
+                              dimension.type.id === this.getMetadata().countType.id)
+                     {
+                        return true;
+                     }
+                  }
+               }
+               return false;
+            };
 
 			}
 			function activityFilterTemplate() {
