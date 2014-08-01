@@ -1847,6 +1847,10 @@ public class ActivityDetailsBean extends UIComponentBean
 
       if (completionLog.isCloseViewAndProceed())
       {
+         // There are various scenarios in which this is may have been done
+         // Activity is completed, so make final attempt so that if it's there is will be unregistered! 
+         interactionController.unregisterInteraction(ai);
+
          this.interaction = null;
          ActivityInstance nextActivityObject = null;
 
