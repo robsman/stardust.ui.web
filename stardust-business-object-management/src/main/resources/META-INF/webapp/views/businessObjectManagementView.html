@@ -39,51 +39,64 @@ ul.errorMessagesPanel {
 		</table>
 		<div ng-hide="searchCollapsed"
 			ng-include="'../businessObjectSearchPanel.html'"></div>
-		<table style="width: 100%;"
+		<div id="businessObjectTabs" class="minimalTabs"
+			style="margin-top: 10px;"
 			ng-show="businessObjectManagementPanelController.businessObject != null">
-			<tr>
-				<td><h2>{{businessObjectManagementPanelController.businessObject.businessObject.name}}</h2></td>
-				<td align="right"><input type="button" value="Save"
-					ng-click="saveBusinessObjectInstance()"
-					ng-show="currentBusinessObjectInstance != null"></input><input
-					type="button" value="Create"
-					ng-click="createBusinessObjectInstance()"
-					style="margin-left: 10px;"></input></td>
-			</tr>
-			<tr ng-show="currentBusinessObjectInstance == null">
-				<td colspan="2"><em>No
-						{{businessObjectManagementPanelController.businessObject.businessObject.name}}
-						selected.</em></td>
-			</tr>
-			<tr ng-show="currentBusinessObjectInstance != null">
-				<td colspan="2">
-					<table>
-						<tr>
-							<td>
-								<ul class="errorMessagesPanel" ng-show="messages.length > 0">
-									<li ng-repeat="message in messages">{{message}}</li>
-								</ul>
-							</td>
-						</tr>
-					</table>
-					<div ng-repeat="instance in [currentBusinessObjectInstance]">
-						<table>
-							<tr>
-								<td
-									ng-repeat="column in businessObjectManagementPanelController.fieldColumns">
-									<table class="formTable">
-										<tr ng-repeat="field in column">
-											<td><label style="margin-left: 5px;">{{field.name}}</label></td>
-											<td><span ng-include="'../objectPanelField.html'"></span></td>
-										</tr>
-									</table>
-								</td>
-							</tr>
-						</table>
-					</div>
-				</td>
-			</tr>
-		</table>
+			<ul id="businessObjectTabsList">
+				<li><a href="#businessObjectTab"><span class="tabLabel">{{businessObjectManagementPanelController.businessObject.businessObject.name}}
+							Data</span></a></li>
+				<li ng-show="currentBusinessObjectInstance != null"><a
+					href="#processesTab"><span class="tabLabel">Processes
+							with
+							{{businessObjectManagementPanelController.businessObject.businessObject.name}}</span></a></li>
+			</ul>
+			<div id="businessObjectTab">
+				<table style="width: 100%;">
+					<tr>
+						<td align="right"><input type="button" value="Save"
+							ng-click="saveBusinessObjectInstance()"
+							ng-show="currentBusinessObjectInstance != null"></input><input
+							type="button" value="Create"
+							ng-click="createBusinessObjectInstance()"
+							style="margin-left: 10px;"></input></td>
+					</tr>
+					<tr ng-show="currentBusinessObjectInstance == null">
+						<td><em>No
+								{{businessObjectManagementPanelController.businessObject.businessObject.name}}
+								selected.</em></td>
+					</tr>
+					<tr ng-show="currentBusinessObjectInstance != null">
+						<td>
+							<table>
+								<tr>
+									<td>
+										<ul class="errorMessagesPanel" ng-show="messages.length > 0">
+											<li ng-repeat="message in messages">{{message}}</li>
+										</ul>
+									</td>
+								</tr>
+							</table>
+							<div ng-repeat="instance in [currentBusinessObjectInstance]">
+								<table>
+									<tr>
+										<td
+											ng-repeat="column in businessObjectManagementPanelController.fieldColumns">
+											<table class="formTable">
+												<tr ng-repeat="field in column">
+													<td><label style="margin-left: 5px;">{{field.name}}</label></td>
+													<td><span ng-include="'../objectPanelField.html'"></span></td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+							</div>
+						</td>
+					</tr>
+				</table>
+			</div>
+			<div id="processesTab"></div>
+		</div>
 	</div>
 </body>
 </html>

@@ -34,6 +34,7 @@ define(
 					this.businessObjectManagementPanelController.initialize(
 							this).done(function() {
 						self.safeApply();
+						jQuery("#businessObjectTabs").tabs();
 					});
 				};
 
