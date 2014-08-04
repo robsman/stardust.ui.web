@@ -34,6 +34,14 @@ if (!window.bpm.portal.UIMashupController) {
 		 * So defining new method
 		 */
 		UIMashupController.prototype.init = function(i18nProvider) {
+			// Delete mobile markup if desktop and vice versa
+			//  as having both at the same time causes issues.
+			if (isMobile) {
+				jQuery(".hideIfMobile").remove();
+			} else {
+				jQuery(".hideIfDesktop").remove();
+			}
+
 			var clientDateFormat = "yy-mm-dd";
 
 			var metaData = jQuery(".metaData");
@@ -69,14 +77,14 @@ if (!window.bpm.portal.UIMashupController) {
 		};
 
 		/*
-		 * 
+		 *
 		 */
 		UIMashupController.prototype.getContextRootUrl = function() {
 			return this.interactionProvider.isModelerMode() ? "../../../../../../../.." : "../../../../..";
 		};
 
 		/*
-		 * 
+		 *
 		 */
 		UIMashupController.prototype.i18nProvider = function() {
 			return {
@@ -84,7 +92,7 @@ if (!window.bpm.portal.UIMashupController) {
 			};
 
 			/*
-			 * 
+			 *
 			 */
 			function getLabel(val, defaultValue) {
 				var ret = val;
@@ -96,7 +104,7 @@ if (!window.bpm.portal.UIMashupController) {
 		};
 
 		/*
-		 * 
+		 *
 		 */
 		UIMashupController.prototype.nestedMarkupProvider = function() {
 			return {
@@ -104,7 +112,7 @@ if (!window.bpm.portal.UIMashupController) {
 			};
 
 			/*
-			 * 
+			 *
 			 */
 			function getMarkup(path, prefix, i18nProvider, ignoreParentXPath, formName) {
 				var markupDetails = self.nestedMarkupsDetails[path.fullXPath];
@@ -121,7 +129,7 @@ if (!window.bpm.portal.UIMashupController) {
 		};
 
 		/*
-		 * 
+		 *
 		 */
 		function inheritMethods (childObject, parentObject) {
 			for (var member in parentObject) {
