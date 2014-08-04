@@ -422,6 +422,8 @@ define(
 						} else {
 							delete filter.uiValue;
 						}
+					}else {
+						delete filter.uiValue;
 					}
 
 					return filteredEnumItems;

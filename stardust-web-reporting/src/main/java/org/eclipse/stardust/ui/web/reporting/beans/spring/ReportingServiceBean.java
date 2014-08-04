@@ -345,7 +345,16 @@ public class ReportingServiceBean
       for(String paramId: parameterMap.keySet())
       {
          if(paramId != "reportPath"){
-            String[] paramValues = parameterMap.get(paramId);
+            String[] paramV = parameterMap.get(paramId);
+            String[] paramValues;
+            if (paramV.length == 1)
+            {
+               paramValues = paramV[0].split(",");
+            }
+            else
+            {
+               paramValues = paramV;
+            }
             ReportParameter rp  = new ReportParameter(paramId, paramValues);
             reportParameters.add(rp);   
          }

@@ -2044,22 +2044,23 @@ define(
 						parametersString += parameters[itemInd].dimension + "=";
 						//here uiValue is the actual value that needs to be sent to server
 						if(parameters[itemInd].uiValue){
-							parametersString += JSON.stringify(parameters[itemInd].uiValue); 		
+							//uiValue is array of strings
+							parametersString += getFlatStringFromValue(parameters[itemInd].uiValue); 		
 						}else{
 							//TODO: remove this when filter and parameter format is same for DATE
 							//special parameter, in case of date, there are multiple fields so change the format here
 							if(parameters[itemInd].value.from){
 								var pValue = ["from", "to", "duration", "durationUnit"];
 								var actualValue = parameters[itemInd].value; //complex object startDate = {from : "", to : ""};
-								var formattedValue = []; 
+								var formattedValue = ""; 
 								for (var int = 0; int < pValue.length; int++) {
 									if(actualValue[pValue[int]]){
-										formattedValue.push(actualValue[pValue[int]]);	
+										formattedValue += actualValue[pValue[int]] + ",";	
 									}
 								}
-								parametersString += JSON.stringify(formattedValue);
+								parametersString += formattedValue.slice(0,-1);
 							}else{
-								parametersString += JSON.stringify(parameters[itemInd].value);	
+								parametersString += getFlatStringFromValue(parameters[itemInd].value);
 							}
 						}
 						parametersString += "&";
@@ -2067,6 +2068,29 @@ define(
 				}
 				parametersString = parametersString.slice(0, -1);
 				return parametersString; 
+			}
+			
+			/**
+			 * 
+			 */
+			function getFlatStringFromValue(value){
+				var flatString = "";
+				if(isArray(value)){
+					for(var i = 0; i < value.length; i++){
+						flatString += value[i] + ",";
+					}	
+					flatString = flatString.slice(0, -1);
+				}else{
+					flatString = value;
+				}
+				return flatString;
+			}
+			
+			/**
+			 * returns true if the object is of type Array
+			 */
+			function isArray(obj) {
+				return Object.prototype.toString.call(obj) === '[object Array]';
 			}
 			
 			/**
