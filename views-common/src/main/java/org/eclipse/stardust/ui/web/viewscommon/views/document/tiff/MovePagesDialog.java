@@ -133,7 +133,7 @@ public class MovePagesDialog extends PopupUIComponentBean
             }
             else
             {
-               if(lastValue > targetPageNumber)
+               if(firstValue == lastValue && lastValue +1 >= targetPageNumber)
                {
                   validationMessageBean.addError(
                         COMMON_MESSAGE_BEAN.getParamString("views.movePagesDialog.error.invalidPageRange"), "movePageMsg");
