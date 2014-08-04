@@ -105,15 +105,16 @@ define(
 									.getProperty("modeler.general.thisModel")
 							+ "'>");
 
-					for ( var i in this.getModel().applications) {
+					var appsSorted = m_utils.convertToSortedArray(this.getModel().applications, "name", true);
+					for ( var i in appsSorted) {
 						if (!this
-								.checkCompatibility(this.getModel().applications[i])) {
+								.checkCompatibility(appsSorted[i])) {
 							continue;
 						}
 
 						this.applicationList.append("<option value='"
-								+ this.getModel().applications[i].getFullId()
-								+ "'>" + this.getModel().applications[i].name
+								+ appsSorted[i].getFullId()
+								+ "'>" + appsSorted[i].name
 								+ "</option>");
 					}
 
@@ -123,30 +124,32 @@ define(
 									.getProperty("modeler.general.otherModels")
 							+ "'>");
 
-					for ( var n in m_model.getModels()) {
-						if (m_model.getModels()[n] == this.getModel()) {
+					var modelsSorted = m_utils.convertToSortedArray(m_model.getModels(), "name", true);
+					for ( var n in modelsSorted) {
+						if (modelsSorted[n] == this.getModel()) {
 							continue;
 						}
 
-						for ( var m in m_model.getModels()[n].applications) {
+						var appsSorted = m_utils.convertToSortedArray(modelsSorted[n].applications, "name", true);
+						for ( var m in appsSorted) {
 							if (!m_modelElementUtils
-									.hasPublicVisibility(m_model.getModels()[n].applications[m])) {
+									.hasPublicVisibility(appsSorted[m])) {
 								continue;
 							}
 
 							if (!this
-									.checkCompatibility(m_model.getModels()[n].applications[m])) {
+									.checkCompatibility(appsSorted[m])) {
 								continue;
 							}
 
 							this.applicationList
 									.append("<option value='"
-											+ m_model.getModels()[n].applications[m]
+											+ appsSorted[m]
 													.getFullId()
 											+ "'>"
-											+ m_model.getModels()[n].name
+											+ modelsSorted[n].name
 											+ "/"
-											+ m_model.getModels()[n].applications[m].name
+											+ appsSorted[m].name
 											+ "</option>");
 						}
 					}
@@ -182,6 +185,7 @@ define(
 					var ruleSets = m_ruleSetsHelper.getRuleSets();
 
 					if (ruleSets) {
+						ruleSets = m_utils.convertToSortedArray(ruleSets, "name", true);
 						for ( var i in ruleSets) {
 							if (ruleSets[i].state.isDeleted != true) {
 								this.ruleSetList.append("<option value='"

@@ -318,19 +318,20 @@ define(
 					optionsString += "<optgroup label='" + m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.element.selectTypeSection.thisModel") + "'>";
 					if (typeDeclaration) {
 						var thisModel = m_model.findModelForElement(typeDeclaration.uuid);
-						for (var i in thisModel.typeDeclarations) {
-							if (thisModel.typeDeclarations[i].uuid !== typeDeclaration.uuid
-									&& thisModel.typeDeclarations[i].isSequence()
+						var typeDeclarationsSorted = m_utils.convertToSortedArray(thisModel.typeDeclarations, "name", true);
+						for (var i in typeDeclarationsSorted) {
+							if (typeDeclarationsSorted[i].uuid !== typeDeclaration.uuid
+									&& typeDeclarationsSorted[i].isSequence()
 									&& (typeDeclaration.getType() === "importedStructuredDataType"
-										|| thisModel.typeDeclarations[i].getType() !== "importedStructuredDataType")) {
-								optionsString += "<option value='" + thisModel.typeDeclarations[i].uuid + "'>" + thisModel.typeDeclarations[i].name + "</option>";
+										|| typeDeclarationsSorted[i].getType() !== "importedStructuredDataType")) {
+								optionsString += "<option value='" + typeDeclarationsSorted[i].uuid + "'>" + typeDeclarationsSorted[i].name + "</option>";
 							}
 						}
 					}
 					optionsString += "</optgroup>";
 
 					optionsString += "<optgroup label='" + m_i18nUtils.getProperty("modeler.element.properties.commonProperties.otherModel") + "'>";
-					var allModels = m_model.getModels();
+					var allModels = m_utils.convertToSortedArray(m_model.getModels(), "name", true);
 					for ( var i in allModels) {
 						var model = allModels[i];
 
@@ -338,8 +339,9 @@ define(
 							continue;
 						}
 
-						for ( var n in model.typeDeclarations) {
-							var typeDeclarationN = model.typeDeclarations[n];
+						var typeDeclartionsSorted = m_utils.convertToSortedArray(model.typeDeclarations, "name", true);
+						for ( var n in typeDeclartionsSorted) {
+							var typeDeclarationN = typeDeclartionsSorted[n];
 							if (m_modelElementUtils
 									.hasPublicVisibility(typeDeclarationN)
 									&& typeDeclarationN.isSequence()
@@ -1043,16 +1045,20 @@ define(
 
 					select += "<optgroup label='" + m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.element.selectTypeSection.primitives") + "'>";
 
-					jQuery.each(m_typeDeclaration.getXsdCoreTypes(), function() {
-						var typeQName = "xsd:" + this;
+					var typesWithLables = [];
+					jQuery.each(m_typeDeclaration.getXsdCoreTypes(), function(i, val) {
+						typesWithLables.push({type: "xsd:" + val, label: m_structuredTypeBrowser.getSchemaTypeLabel("xsd:" + val)});
+					})					
+					jQuery.each(m_utils.convertToSortedArray(typesWithLables, "label", true), function() {
+						var typeQName = this.type;
 						select += "<option value='" + typeQName + "' ";
 						if (schemaType && schemaType.isBuiltinType() && (typeQName === schemaType.name)) {
 							select += "selected ";
 							selected = true;
 						}
-						var label = m_structuredTypeBrowser.getSchemaTypeLabel(typeQName);
+						var label = this.label;
 
-						select += "title='xsd:" + this + "'>" + label || typeQName + "</option>";
+						select += "title='" + this.type + "'>" + label || typeQName + "</option>";
 					});
 
 					select += "</optgroup>";
@@ -1076,7 +1082,7 @@ define(
 					}
 					
 					
-					jQuery.each(this.typeDeclaration.model.typeDeclarations, function() {
+					jQuery.each(m_utils.convertToSortedArray(this.typeDeclaration.model.typeDeclarations, "name", true), function() {
 						var typeDeclaration = this;
 						if (thisTypeDeclaration.uuid != typeDeclaration.uuid) {
 							var tdType = typeDeclaration.asSchemaType();
@@ -1095,8 +1101,9 @@ define(
 					select += "</optgroup>";
 
 					select += "<optgroup label='" + m_i18nUtils.getProperty("modeler.element.properties.commonProperties.otherModel") + "'>";
-					 for ( var i in m_model.getModels()) {
-							var model = m_model.getModels()[i];
+					var modelsSorted = m_utils.convertToSortedArray(m_model.getModels(), "name", true);
+					 for ( var i in modelsSorted) {
+							var model = modelsSorted[i];
 
 							if (model == this.typeDeclaration.model) {
 								continue;
@@ -1128,7 +1135,7 @@ define(
 
 					select += "<optgroup label='" + m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.element.selectTypeSection.extraPrimitives") + "'>";
 
-					jQuery.each(m_typeDeclaration.getXsdExtraTypes(), function() {
+					jQuery.each(m_typeDeclaration.getXsdExtraTypes().sort(), function() {
 						var typeQName = "xsd:" + this;
 						select += "<option value='" + typeQName + "' ";
 						if (schemaType && schemaType.isBuiltinType() && (typeQName === schemaType.name)) {

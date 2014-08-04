@@ -187,30 +187,21 @@ define(
 				 *
 				 */
 				DataTypeSelector.prototype.initializeDataTypeOptions = function() {
-					this.dataTypeSelect.empty();
-
-					var propertiesData = m_i18nUtils
-							.getProperty("modeler.element.properties.commonProperties.primitive");
-
-					this.dataTypeSelect.append("<option value='primitive'>"
-							+ propertiesData + "</option>");
-
-					propertiesData = m_i18nUtils
-							.getProperty("modeler.element.properties.commonProperties.structureData");
-
-					this.dataTypeSelect.append("<option value='struct'>"
-							+ propertiesData + "</option>");
-
-					if (this.supportsDocumentTypes) {
-						propertiesData = m_i18nUtils
-								.getProperty("modeler.element.properties.commonProperties.document");
-						this.dataTypeSelect
-								.append("<option value='dmsDocument'>"
-										+ propertiesData + "</option>");
-					}
+					var dataTypes = [];
+					dataTypes.push({type: "primitive", name:  m_i18nUtils.getProperty("modeler.element.properties.commonProperties.primitive")});
+					dataTypes.push({type: "struct", name:  m_i18nUtils.getProperty("modeler.element.properties.commonProperties.structureData")});
+					dataTypes.push({type: "dmsDocument", name:  m_i18nUtils.getProperty("modeler.element.properties.commonProperties.document")});
+					
+					var self = this;
+					this.dataTypeSelect.empty();					
+					jQuery.each(m_utils.convertToSortedArray(dataTypes, "name", true), function() {
+						var dataType = this;
+						self.dataTypeSelect.append("<option value=" + dataType.type + ">"
+								+ dataType.name + "</option>");
+					});
 
 					if (this.supportsOtherData) {
-						propertiesData = m_i18nUtils
+						var propertiesData = m_i18nUtils
 								.getProperty("modeler.element.properties.commonProperties.other");
 						this.dataTypeSelect.append("<option value='other'>"
 								+ propertiesData + "</option>");
@@ -233,49 +224,33 @@ define(
 				 */
 				DataTypeSelector.prototype.populatePrimitivesSelectInput = function() {
 					this.primitiveDataTypeSelect.empty();
-
-					var dataType = null;
-					dataType = m_i18nUtils
-							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.string");
-					this.primitiveDataTypeSelect
-							.append("<option value=\"String\" title=\"String\">" + dataType
-									+ "</option>");
-					dataType = m_i18nUtils
-							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.boolean");
-					this.primitiveDataTypeSelect
-							.append("<option value=\"boolean\" title=\"boolean\">" + dataType
-									+ "</option>");
-					dataType = m_i18nUtils
-							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.int");
-					this.primitiveDataTypeSelect
-							.append("<option value=\"int\" title=\"int\">" + dataType
-									+ "</option>");
-					dataType = m_i18nUtils
-							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.long");
-					this.primitiveDataTypeSelect
-							.append("<option value=\"long\" title=\"long\">" + dataType
-									+ "</option>");
-					dataType = m_i18nUtils
-							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.double");
-					this.primitiveDataTypeSelect
-							.append("<option value=\"double\" title=\"double\">" + dataType
-									+ "</option>");
-					dataType = m_i18nUtils
-							.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.timestamp");
-					this.primitiveDataTypeSelect
-							.append("<option value=\"Timestamp\" title=\"Timestamp\">" + dataType
-									+ "</option>");
+					
+					var dataTypes = [];					
+					dataTypes.push({type: "String", name: m_i18nUtils.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.string")});
+					dataTypes.push({type: "boolean", name: m_i18nUtils.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.boolean")});
+					dataTypes.push({type: "int", name: m_i18nUtils.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.int")});
+					dataTypes.push({type: "long", name: m_i18nUtils.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.long")});
+					dataTypes.push({type: "double", name: m_i18nUtils.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.double")});
+					dataTypes.push({type: "Timestamp", name: m_i18nUtils.getProperty("modeler.propertyView.dataTypeProperties.dataTypeSelect.timestamp")});
+					
+					var self = this;
+					jQuery.each(m_utils.convertToSortedArray(dataTypes, "name", true), function() {
+						var dataType = this;
+						self.primitiveDataTypeSelect.append("<option value=" + dataType.type + " title=" + dataType.type + ">" + dataType.name
+								+ "</option>");
+					});
 
 					if (this.scopeModel && this.hideEnumerations != true) {
 						this.primitiveDataTypeSelect
 								.append("<optgroup label='" + m_i18nUtils.getProperty("modeler.enum.thisModel") + "'>");
 
-						for ( var i in this.scopeModel.typeDeclarations) {
-							if (this.scopeModel.typeDeclarations[i].isSequence()) continue;
-							if (this.scopeModel.typeDeclarations[i].isEnumeration()){
+						var typeDeclarationsSorted = m_utils.convertToSortedArray(this.scopeModel.typeDeclarations, "name", true);
+						for ( var i in typeDeclarationsSorted) {
+							if (typeDeclarationsSorted[i].isSequence()) continue;
+							if (typeDeclarationsSorted[i].isEnumeration()){
 								this.primitiveDataTypeSelect
-								.append("<option value='" + this.scopeModel.typeDeclarations[i].getFullId() + "'>"
-										+ this.scopeModel.typeDeclarations[i].name
+								.append("<option value='" + typeDeclarationsSorted[i].getFullId() + "'>"
+										+ typeDeclarationsSorted[i].name
 										+ "</option>");
 							}
 
@@ -286,25 +261,26 @@ define(
 						this.primitiveDataTypeSelect
 								.append("</optgroup><optgroup label='" + m_i18nUtils.getProperty("modeler.enum.otherModels") + "'>");
 
-						for ( var n in m_model.getModels()) {
+						var modelsSorted = m_utils.convertToSortedArray(m_model.getModels(), "name", true);
+						for ( var n in modelsSorted) {
 							if (this.scopeModel
-									&& m_model.getModels()[n] == this.scopeModel) {
+									&& modelsSorted[n] == this.scopeModel) {
 								continue;
 							}
 
-							for ( var m in m_model.getModels()[n].typeDeclarations) {
+							var typeDeclarationsSorted = m_utils.convertToSortedArray(modelsSorted[n].typeDeclarations, "name", true);
+							for ( var m in typeDeclarationsSorted) {
 								if (m_modelElementUtils
-										.hasPublicVisibility(m_model
-												.getModels()[n].typeDeclarations[m])) {
+										.hasPublicVisibility(typeDeclarationsSorted[m])) {
 
-									if (m_model.getModels()[n].typeDeclarations[m].isSequence()) continue;
-										if (m_model.getModels()[n].typeDeclarations[m]
+									if (typeDeclarationsSorted[m].isSequence()) continue;
+										if (typeDeclarationsSorted[m]
 												.getType() == "enumStructuredDataType") {
 											this.primitiveDataTypeSelect
-													.append("<option value='"+m_model.getModels()[n].typeDeclarations[m].getFullId()+"'>"
-															+ m_model.getModels()[n].name
+													.append("<option value='"+typeDeclarationsSorted[m].getFullId()+"'>"
+															+ modelsSorted[n].name
 															+ "/"
-															+ m_model.getModels()[n].typeDeclarations[m].name
+															+ typeDeclarationsSorted[m].name
 															+ "</option>");
 										}
 								}
@@ -340,16 +316,17 @@ define(
 						this.structuredDataTypeSelect
 								.append("<optgroup label='" + m_i18nUtils.getProperty("modeler.general.thisModel") + "'>");
 
-						for ( var i in this.scopeModel.typeDeclarations) {
-							if (!this.scopeModel.typeDeclarations[i].isSequence()) continue;
+						var typeDeclarationsSorted = m_utils.convertToSortedArray(this.scopeModel.typeDeclarations, "name", true);
+						for ( var i in typeDeclarationsSorted) {
+							if (!typeDeclarationsSorted[i].isSequence()) continue;
 							// Enum data is shown under primitive
-							if (this.scopeModel.typeDeclarations[i].getType() != "enumStructuredDataType") {
+							if (typeDeclarationsSorted[i].getType() != "enumStructuredDataType") {
 							this.structuredDataTypeSelect
 									.append("<option value='"
-											+ this.scopeModel.typeDeclarations[i]
+											+ typeDeclarationsSorted[i]
 													.getFullId()
 											+ "'>"
-											+ this.scopeModel.typeDeclarations[i].name
+											+ typeDeclarationsSorted[i].name
 											+ "</option>");
 							}
 						}
@@ -359,28 +336,29 @@ define(
 						this.structuredDataTypeSelect
 								.append("</optgroup><optgroup label='" + m_i18nUtils.getProperty("modeler.general.otherModels") + "'>");
 
-						for ( var n in m_model.getModels()) {
+						var modelsSorted = m_utils.convertToSortedArray(m_model.getModels(), "name", true);
+						for ( var n in modelsSorted) {
 							if (this.scopeModel
-									&& m_model.getModels()[n] == this.scopeModel) {
+									&& modelsSorted[n] == this.scopeModel) {
 								continue;
 							}
 
-							for ( var m in m_model.getModels()[n].typeDeclarations) {
+							var typeDeclarationsSorted = m_utils.convertToSortedArray(modelsSorted[n].typeDeclarations, "name", true);
+							for ( var m in typeDeclarationsSorted) {
 								if (m_modelElementUtils
-										.hasPublicVisibility(m_model
-												.getModels()[n].typeDeclarations[m])) {
-									if (!m_model.getModels()[n].typeDeclarations[m].isSequence()) continue;
+										.hasPublicVisibility(typeDeclarationsSorted[m])) {
+									if (!typeDeclarationsSorted[m].isSequence()) continue;
 									// Enum data is shown under primitive
-									if (m_model.getModels()[n].typeDeclarations[m]
+									if (typeDeclarationsSorted[m]
 											.getType() != "enumStructuredDataType") {
 										this.structuredDataTypeSelect
 										.append("<option value='"
-												+ m_model.getModels()[n].typeDeclarations[m]
+												+ typeDeclarationsSorted[m]
 														.getFullId()
 												+ "'>"
-												+ m_model.getModels()[n].name
+												+ modelsSorted[n].name
 												+ "/"
-												+ m_model.getModels()[n].typeDeclarations[m].name
+												+ typeDeclarationsSorted[m].name
 												+ "</option>");
 									}
 								}
@@ -403,19 +381,20 @@ define(
 					this.documentTypeSelect
 							.append("<optgroup label='" + m_i18nUtils.getProperty("modeler.general.thisModel") + "'>");
 
+					var typeDeclarationsSorted = m_utils.convertToSortedArray(this.scopeModel.typeDeclarations, "name", true);
 					if (this.scopeModel) {
-						for ( var i in this.scopeModel.typeDeclarations) {
+						for ( var i in typeDeclarationsSorted) {
 							// Only composite structured types and not
 							// enumerations
 							// are listed here
-							if (this.scopeModel.typeDeclarations[i]
+							if (typeDeclarationsSorted[i]
 									.isSequence()) {
 								this.documentTypeSelect
 										.append("<option value='"
-												+ this.scopeModel.typeDeclarations[i]
+												+ typeDeclarationsSorted[i]
 														.getFullId()
 												+ "'>"
-												+ this.scopeModel.typeDeclarations[i].name
+												+ typeDeclarationsSorted[i].name
 												+ "</option>");
 							}
 						}
@@ -425,29 +404,30 @@ define(
 						this.documentTypeSelect
 								.append("</optgroup><optgroup label='" + m_i18nUtils.getProperty("modeler.general.otherModels") + "'>");
 
-						for ( var n in m_model.getModels()) {
+						var modelsSorted = m_utils.convertToSortedArray(m_model.getModels(), "name", true);
+						for ( var n in modelsSorted) {
 							if (this.scopeModel
-									&& m_model.getModels()[n] == this.scopeModel) {
+									&& modelsSorted[n] == this.scopeModel) {
 								continue;
 							}
 
-							for ( var m in m_model.getModels()[n].typeDeclarations) {
+							var typeDeclarationsSorted = m_utils.convertToSortedArray(modelsSorted[n].typeDeclarations, "name", true);
+							for ( var m in typeDeclarationsSorted) {
 								// Only composite structured types (with public
 								// visibility) and not
 								// enumerations are listed here
-								if (m_model.getModels()[n].typeDeclarations[m]
+								if (typeDeclarationsSorted[m]
 										.isSequence()
 										&& m_modelElementUtils
-												.hasPublicVisibility(m_model
-														.getModels()[n].typeDeclarations[m])) {
+												.hasPublicVisibility(typeDeclarationsSorted[m])) {
 									this.documentTypeSelect
 											.append("<option value='"
-													+ m_model.getModels()[n].typeDeclarations[m]
+													+ typeDeclarationsSorted[m]
 															.getFullId()
 													+ "'>"
-													+ m_model.getModels()[n].name
+													+ modelsSorted[n].name
 													+ "/"
-													+ m_model.getModels()[n].typeDeclarations[m].name
+													+ typeDeclarationsSorted[m].name
 													+ "</option>");
 								}
 							}

@@ -101,25 +101,25 @@ define(
 
         // Structured Data Types
         var structTypesNode = self.buildContainerNode("structuredTypes", modelNode);
-        jQuery.each(this.model.typeDeclarations, function(index, typeDeclaration) {
+        jQuery.each(m_utils.convertToSortedArray(this.model.typeDeclarations, "name", true), function(index, typeDeclaration) {
           self.buildTypeDeclarationNode(typeDeclaration, structTypesNode);
         });
 
         // Data
         var globalDataNode = self.buildContainerNode("data", modelNode);
-        jQuery.each(this.model.dataItems, function(index, data) {
+        jQuery.each(m_utils.convertToSortedArray(this.model.dataItems, "name", true), function(index, data) {
           self.buildDataNode(data, globalDataNode);
         });
 
         // Applications
         var globalAppsNode = self.buildContainerNode("applications", modelNode);
-        jQuery.each(this.model.applications, function(index, application) {
+        jQuery.each(m_utils.convertToSortedArray(this.model.applications, "name", true), function(index, application) {
           self.buildApplicationNode(application, globalAppsNode);
         });
 
         // Participants
         var globalParticipantsNode = self.buildContainerNode("participants", modelNode);
-        jQuery.each(this.model.participants, function(index, participant) {
+        jQuery.each(m_utils.convertToSortedArray(this.model.participants, "name", true), function(index, participant) {
           // start with top level participants
           if (!participant.parentUUID) {
             self.buildParticipantNode(participant, globalParticipantsNode);
@@ -127,7 +127,7 @@ define(
         });
 
         // Processes
-        jQuery.each(this.model.processes, function(index, process) {
+        jQuery.each(m_utils.convertToSortedArray(this.model.processes, "name", true), function(index, process) {
           self.buildProcessNode(process, modelNode);
         });
 
@@ -236,7 +236,7 @@ define(
 
         if (participant.childParticipants) {
           var self = this;
-          jQuery.each(participant.childParticipants, function(index, childParticipant) {
+          jQuery.each(m_utils.convertToSortedArray(participant.childParticipants, "name", true), function(index, childParticipant) {
             self.buildParticipantNode(childParticipant, participantNode);
           });
         }
@@ -314,7 +314,7 @@ define(
         var outline = this;
         var outlineRoot = jQuery(displayScope + "#outline");
 
-        jQuery.each(m_utils.convertToSortedArray(m_model.getModels(), "name", false),
+        jQuery.each(m_utils.convertToSortedArray(m_model.getModels(), "name", true),
             function(index, model) {
               newOutlineTreeDomBuilder(model).buildModelNode(outlineRoot);
               refreshModelStatus(model);
@@ -322,7 +322,7 @@ define(
 
         // Errored models
         jQuery.each(m_utils.convertToSortedArray(m_model.getErroredModels(), "name",
-            false), function(index, model) {
+            true), function(index, model) {
           newOutlineTreeDomBuilder(model).buildErroredModelNode(outlineRoot);
           //refreshModelStatus(model);
         });

@@ -350,10 +350,11 @@ define(
 									.getProperty("modeler.general.thisModel")
 							+ "'>");
 
-					for ( var i in this.getModel().processes) {
+					var processesSorted = m_utils.convertToSortedArray(this.getModel().processes, "name", true);
+					for ( var i in processesSorted) {
 						this.subprocessList.append("<option value='"
-								+ this.getModel().processes[i].getFullId()
-								+ "'>" + this.getModel().processes[i].name
+								+ processesSorted[i].getFullId()
+								+ "'>" + processesSorted[i].name
 								+ "</option>");
 					}
 
@@ -364,21 +365,23 @@ define(
 									.getProperty("modeler.general.otherModels")
 							+ "'>");
 
-					for ( var n in m_model.getModels()) {
-						if (m_model.getModels()[n] == this.getModel()) {
+					var modelsSorted = m_utils.convertToSortedArray(m_model.getModels(), "name", true);
+					for ( var n in modelsSorted) {
+						if (modelsSorted[n] == this.getModel()) {
 							continue;
 						}
 
-						for ( var m in m_model.getModels()[n].processes) {
-							if (!(m_model.getModels()[n].processes[m].processInterfaceType === m_constants.NO_PROCESS_INTERFACE_KEY)) {
+						var processesSorted = m_utils.convertToSortedArray(modelsSorted[n].processes, "name", true);
+						for ( var m in processesSorted) {
+							if (!(processesSorted[m].processInterfaceType === m_constants.NO_PROCESS_INTERFACE_KEY)) {
 								this.subprocessList
 										.append("<option value='"
-												+ m_model.getModels()[n].processes[m]
+												+ processesSorted[m]
 														.getFullId()
 												+ "'>"
-												+ m_model.getModels()[n].name
+												+ modelsSorted[n].name
 												+ "/"
-												+ m_model.getModels()[n].processes[m].name
+												+ processesSorted[m].name
 												+ "</option>");
 							}
 						}

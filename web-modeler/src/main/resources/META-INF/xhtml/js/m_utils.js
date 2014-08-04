@@ -487,7 +487,7 @@ define(
 					}
 				}
 
-				var ascendingFactor = ascending ? -1 : 1;
+				var ascendingFactor = ascending ? 1 : -1;
 
 				sortedObjects.sort(function(left, right) {
 					var leftValue = left[field].toLowerCase();

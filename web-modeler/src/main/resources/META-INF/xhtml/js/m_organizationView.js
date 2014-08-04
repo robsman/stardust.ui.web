@@ -404,10 +404,11 @@ define(
 					this.departmentDataSelect
 							.append("<optgroup label=\""+modellabel+"\">");
 
-					for ( var i in this.getModelElement().model.dataItems) {
-						var dataItem = this.getModelElement().model.dataItems[i];
+					var dataItemsSorted = m_utils.convertToSortedArray(this.getModelElement().model.dataItems, "name", true);
+					for ( var i in dataItemsSorted) {
+						var dataItem = dataItemsSorted[i];
 
-						if (!this.getModelElement().model.dataItems[i].externalReference) {
+						if (!dataItemsSorted[i].externalReference) {
 							this.departmentDataSelect.append("<option value='"
 									+ dataItem.id + "'>" + dataItem.name
 									+ "</option>");
@@ -418,17 +419,19 @@ define(
 					this.departmentDataSelect
 							.append("</optgroup><optgroup label=\""+modellabel+"\">");
 
-					for ( var n in m_model.getModels()) {
-						if (this.getModelElement().model == m_model.getModels()[n]) {
+					var modelsSorted = m_utils.convertToSortedArray(m_model.getModels(), "name", true);
+					for ( var n in modelsSorted) {
+						if (this.getModelElement().model == modelsSorted[n]) {
 							continue;
 						}
 
-						for ( var m in m_model.getModels()[n].dataItems) {
-							var dataItem = m_model.getModels()[n].dataItems[m];
+						var dataItemsSorted = m_utils.convertToSortedArray(modelsSorted[n].dataItems, "name", true);
+						for ( var m in dataItemsSorted) {
+							var dataItem = dataItemsSorted[m];
 
 							this.departmentDataSelect.append("<option value='"
 									+ dataItem.getFullId() + "'>"
-									+ m_model.getModels()[n].name + "/"
+									+ modelsSorted[n].name + "/"
 									+ dataItem.name + "</option>");
 						}
 					}
@@ -475,8 +478,9 @@ define(
 					this.leaderSelect.append("<option value='"
 							+ m_constants.TO_BE_DEFINED + "'>("+dataNone+")</option>");
 
-					for ( var i in this.getModelElement().model.participants) {
-						var participant = this.getModelElement().model.participants[i];
+					var participantsSorted = m_utils.convertToSortedArray(this.getModelElement().model.participants, "name", true);
+					for ( var i in participantsSorted) {
+						var participant = participantsSorted[i];
 
 						if (participant.parentUUID == this.getModelElement().uuid
 								&& (participant.type == m_constants.ROLE_PARTICIPANT_TYPE

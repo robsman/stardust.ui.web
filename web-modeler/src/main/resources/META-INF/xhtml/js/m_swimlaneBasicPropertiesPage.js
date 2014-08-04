@@ -75,16 +75,17 @@ define(
 					this.participantList
 							.append("<optgroup label=\""+modelname+"\">");
 
-					for ( var i in this.getModel().participants) {
+					var psrticipantsSorted = m_utils.convertToSortedArray(this.getModel().participants, "name", true);
+					for ( var i in psrticipantsSorted) {
 						// Show only participants from this model and not
 						// external references.
-						if (!this.getModel().participants[i].externalReference) {
+						if (!psrticipantsSorted[i].externalReference) {
 							this.participantList
 							.append("<option value='"
-									+ this.getModel().participants[i]
+									+ psrticipantsSorted[i]
 											.getFullId()
 									+ "'>"
-									+ this.getModel().participants[i].name
+									+ psrticipantsSorted[i].name
 									+ "</option>");
 						}
 					}
@@ -92,23 +93,25 @@ define(
 					this.participantList
 							.append("</optgroup><optgroup label=\""+othermodel+"\">");
 
-					for ( var n in m_model.getModels()) {
-						if (m_model.getModels()[n] == this.getModel()) {
+					var modelsSorted = m_utils.convertToSortedArray(m_model.getModels(), "name", true);
+					for ( var n in modelsSorted) {
+						if (modelsSorted[n] == this.getModel()) {
 							continue;
 						}
 
-						for ( var m in m_model.getModels()[n].participants) {
-							if (m_modelElementUtils.hasPublicVisibility(m_model.getModels()[n].participants[m])
-									&& !m_model.getModels()[n].participants[m].externalReference
-									&& !(m_constants.ADMIN_ROLE_ID === m_model.getModels()[n].participants[m].id)) {
+						var participantsSorted = m_utils.convertToSortedArray(modelsSorted[n].participants, "name", true);
+						for ( var m in participantsSorted) {
+							if (m_modelElementUtils.hasPublicVisibility(participantsSorted[m])
+									&& !participantsSorted[m].externalReference
+									&& !(m_constants.ADMIN_ROLE_ID === participantsSorted[m].id)) {
 								this.participantList
 								.append("<option value='"
-										+ m_model.getModels()[n].participants[m]
+										+ participantsSorted[m]
 												.getFullId()
 										+ "'>"
-										+ m_model.getModels()[n].name
+										+ modelsSorted[n].name
 										+ "/"
-										+ m_model.getModels()[n].participants[m].name
+										+ participantsSorted[m].name
 										+ "</option>");
 							}
 						}
