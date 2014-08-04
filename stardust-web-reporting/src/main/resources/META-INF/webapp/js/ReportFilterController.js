@@ -423,9 +423,10 @@ define(
 							delete filter.uiValue;
 						}
 					}else {
-						delete filter.uiValue;
+						if(filter.dimension != "criticality"){
+							delete filter.uiValue;	
+						}
 					}
-
 					return filteredEnumItems;
 				};
 
@@ -452,7 +453,7 @@ define(
 					if (dimension.id == "criticality") {
 						filter.metadata = this
 								.getCriticalityForName(filter.value);
-						filter.uiValue = [filter.metadata.rangeFrom, filter.metadata.rangeTo];
+						filter.uiValue = [filter.metadata.rangeFrom/1000, filter.metadata.rangeTo/1000];
 					}
 				};
 				/**
