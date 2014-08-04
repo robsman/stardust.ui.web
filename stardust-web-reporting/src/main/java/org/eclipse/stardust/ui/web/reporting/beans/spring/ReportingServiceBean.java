@@ -304,13 +304,13 @@ public class ReportingServiceBean
 
       // criticality
       ArrayList<CriticalityCategory> criticalityList = new ArrayList<CriticalityCategory>();
-      CriticalityCategory cat = CriticalityConfigurationUtil.getAllCriticalityCategory();
-      cat.setName("All"); //TODO I18n
-      criticalityList.add(cat);
       criticalityList.addAll(criticalityPrefs);
-      cat = CriticalityConfigurationUtil.getUndefinedCriticalityCategory();
+
+      // temporary commented - uncomment it when CRNT-33822 is resolved
+      /*CriticalityCategory cat = CriticalityConfigurationUtil.getUndefinedCriticalityCategory();
       cat.setName("Undefined"); //TODO I18n
-      criticalityList.add(cat);
+      criticalityList.add(cat);*/
+      
       preferencesJson.add("criticality", gson.toJsonTree(criticalityList));
 
       //Favorite Reports
