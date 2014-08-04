@@ -11,6 +11,8 @@ import javax.annotation.Resource;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
+import org.eclipse.stardust.model.xpdl.carnot.DiagramType;
+import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
@@ -42,6 +44,11 @@ public class ProcessChangeCommandHandler
       
       EObjectUUIDMapper mapper = modelService().uuidMapper();
       mapper.map(processDefinition);
+      DiagramType diagram = processDefinition.getDiagram().get(0);
+      for(LaneSymbol lane : diagram.getPoolSymbols().get(0).getLanes())
+      {
+         mapper.map(lane);
+      }
    }
 
    /**
