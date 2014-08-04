@@ -1,9 +1,9 @@
 <div ng-show="!reportFilterController.parameterDisplay">
-	<a href=""
+	<a id="disParam{{$index}}" href=""
 		ng-click="reportFilterController.removeParameter('filters.' + x.dimension)"
 		ng-show="reportFilterController.existsParameter('filters.' + x.dimension)"><img
 		ng-src="{{reportFilterController.baseUrl}}/public/css/images/parameter.png"
-		title="{{reportFilterController.getI18N('reporting.definitionView.dataSet.filtering.disableParameter.label')}}" /> <a href=""
+		title="{{reportFilterController.getI18N('reporting.definitionView.dataSet.filtering.disableParameter.label')}}" /> <a id="enaParam{{$index}}" href=""
 		ng-click="reportFilterController.addParameter('filters.' + x.dimension, 'Filter for ' + reportFilterController.getDimension(x.dimension).name, reportFilterController.getMetadata().stringType.id)"
 		ng-show="!reportFilterController.existsParameter('filters.' + x.dimension)"><img
 			ng-src="{{reportFilterController.baseUrl}}/public/css/images/no-parameter.png"
