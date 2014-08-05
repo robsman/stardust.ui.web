@@ -353,18 +353,33 @@ define(
                return this.view.getModelElement().model;
             };
 
+            ScriptingIntegrationOverlay.prototype.toArray = function(attributes){
+               var arr=new Array();
+               for( var i in attributes ) {
+                   if (attributes.hasOwnProperty(i)){
+                       arr.push(attributes[i]);
+                   }
+               }
+               return arr;
+           };
             /**
              * 
              */
             ScriptingIntegrationOverlay.prototype.activate = function() {
+             
+               if (this.toArray(this.view.getApplication().attributes).length==2)
+               {
                this.view
                      .submitChanges({
                         attributes : {
                            "carnot:engine:camel::camelContextId" : "defaultCamelContext",
                            "carnot:engine:camel::transactedRoute" : "false",
+                           "carnot:engine:camel::invocationPattern" : "sendReceive",
+                           "carnot:engine:camel::invocationType" : "synchronous",
                            "carnot:engine:camel::applicationIntegrationOverlay" : "scriptingIntegrationOverlay"
                         }
                      });
+               }
             };
 
             /**
@@ -438,7 +453,6 @@ define(
                                  code += accessPoint.id+ " = new Number( request.headers.get('" + accessPoint.id + "'));\n";        
                               }else if(accessPoint.primitiveDataType==="boolean"|| accessPoint.primitiveDataType==="Boolean"){
                                  //In ECMA-262, all nonempty strings convert to true
-                                 
                                  code +="\nif(request.headers.get('" + accessPoint.id + "')=='true' ||request.headers.get('" + accessPoint.id + "')=='True' ||request.headers.get('" + accessPoint.id + "')=='y'||request.headers.get('" + accessPoint.id + "')==1){";
                                  code += accessPoint.id+ " = true;\n";
                                  code +="\n}else if(request.headers.get('" + accessPoint.id + "')=='false' ||request.headers.get('" + accessPoint.id + "')=='False' ||request.headers.get('" + accessPoint.id + "')=='n'||request.headers.get('" + accessPoint.id + "')==0){\n"+accessPoint.id+ " = false;}";
@@ -550,6 +564,8 @@ define(
                         attributes : {
                            "carnot:engine:camel::applicationIntegrationOverlay" : "scriptingIntegrationOverlay",
                            "carnot:engine:camel::camelContextId" : "defaultCamelContext",
+                           "carnot:engine:camel::invocationPattern" : "sendReceive",
+                           "carnot:engine:camel::invocationType" : "synchronous",
                            "carnot:engine:camel::transactedRoute" : "false",
                            "carnot:engine:camel::routeEntries" : this
                                  .getRoute(),
@@ -618,7 +634,21 @@ define(
              * 
              */
             ScriptingIntegrationOverlay.prototype.validate = function() {
-               return true;
+               var valid = true;
+               this.view.clearErrorMessages();
+               m_utils.jQuerySelect("#codeEditorElmt").removeClass("error")
+               if(m_utils.isEmptyString(this.codeEditor.getEditor().getSession().getValue())){
+                  if (this.languageSelect.val() === "JavaScript") {
+                     this.view.errorMessages.push("No JavaScript expression provided.");
+                  }else if(this.languageSelect.val() === "Groovy"){
+                     this.view.errorMessages.push("No Groovy script provided.");   
+                  }else{
+                     this.view.errorMessages.push("No Python script provided.");
+                  }
+                  m_utils.jQuerySelect("#codeEditorElmt").addClass("error");
+                  valid=false;
+               }
+               return valid;
             };
          }
       });
