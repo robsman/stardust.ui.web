@@ -152,10 +152,15 @@ define(
 							}
 							this.filters[index].metadata.fromTo = true;
 						}
+						
+						if (dimenison
+								&& (dimenison.type == this.reportingService.metadata.booleanType)) {
+							this.filters[index].value = false;
+						}
 					}
 
 					// TODO: Operator only for respective types
-					this.filters[index].operator = "equal";
+					this.filters[index].operator = "E";
 				};
 
 				/**
