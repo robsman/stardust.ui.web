@@ -435,10 +435,6 @@ define(
 							id : "Alive",
 							name : this.getI18N("reporting.definitionView.additionalFiltering.activityState.alive")
 						},
-						application : {
-							id : "Application",
-							name : this.getI18N("reporting.definitionView.additionalFiltering.activityState.application")
-						},
 						suspended : {
 							id : "Suspended",
 							name : this.getI18N("reporting.definitionView.additionalFiltering.activityState.suspended")
@@ -462,11 +458,7 @@ define(
 						interrupted : {
 							id : "Interrupted",
 							name : this.getI18N("reporting.definitionView.additionalFiltering.activityState.interrupted")
-						},
-						created : {
-							id : "Created",
-							name : this.getI18N("reporting.definitionView.additionalFiltering.activityState.created")
-						}
+						}						
 					},
 					priorityLevel : {
 						low : {
