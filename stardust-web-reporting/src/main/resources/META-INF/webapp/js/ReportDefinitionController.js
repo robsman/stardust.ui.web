@@ -673,6 +673,8 @@ define(
 									.createDefaultSettings()
 						};
 
+						this.report.storage.participant = "Administrator";
+						
 						this.report.dataSet.fact = this.getPrimaryObject().facts.count.id;
 						this.setDefaultFirstDimension();
 						
