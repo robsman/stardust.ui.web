@@ -48,7 +48,7 @@ public class MyReportsPanelBean extends AbstractLaunchPanel
       }
       else
       {
-         DocumentViewUtil.openJCRDocument(documentId);
+         DocumentViewUtil.openJCRDocument(documentId, false);
       }
    }
 

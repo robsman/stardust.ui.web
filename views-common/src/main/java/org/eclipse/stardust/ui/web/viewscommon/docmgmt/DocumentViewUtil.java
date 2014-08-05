@@ -253,4 +253,117 @@ public class DocumentViewUtil
       }
       return openDocument(viewKey.toString(), documentContentInfo, viewParams);
    }
+   
+   /**
+    * @param documentId
+    * @param nestedView
+    * @return
+    */
+   // TODO: Refactoring required for below Overloaded method, old to be deleted(deprecated)
+   public static View openJCRDocument(String documentId, boolean nestedView)
+   {
+      return openJCRDocument(documentId, null, null, nestedView);
+   }
+   
+   /**
+    * @param documentId
+    * @param name
+    * @param viewParams
+    * @param nestedView
+    * @return
+    */
+   // TODO: Refactoring required for below Overloaded method, old to be deleted(deprecated)
+   public static View openJCRDocument(String documentId, String name, Map<String, Object> viewParams, boolean nestedView)
+   {
+      try
+      {
+         return openJCRDocument(DocumentMgmtUtility.getDocument(documentId), name, viewParams, nestedView);
+      }
+      catch (ResourceNotFoundException e)
+      {
+         ExceptionHandler.handleException(e);
+      }
+      return null;
+   }
+   
+   /**
+    * @param document
+    * @param name
+    * @param viewParams
+    * @param viewParams
+    * @param nestedView
+    * @return
+    */
+   // TODO: Refactoring required for below Overloaded method, old to be deleted(deprecated)
+   public static View openJCRDocument(Document document, String name, Map<String, Object> viewParams, boolean nestedView)
+   {
+      return openJCRDocument(null, document, name, viewParams, nestedView);
+   }
+   
+   /**
+    * @param viewKey
+    * @param document
+    * @param name
+    * @param viewParams
+    * @param nestedView
+    * @return
+    */
+   // TODO: Refactoring required for below Overloaded method, old to be deleted(deprecated)
+   public static View openJCRDocument(String viewKey, Document document, String name, Map<String, Object> viewParams, boolean nestedView)
+   {
+      if (!DMSHelper.hasPrivilege(document.getId(), DmsPrivilege.READ_PRIVILEGE))
+      {
+         RepositoryUtility.showErrorPopup("common.authorization.msg", null, null);
+         return null;
+      }
+
+      JCRDocument documentContentInfo;
+      documentContentInfo = new JCRDocument(document);
+
+      if (StringUtils.isNotEmpty(name))
+      {
+         documentContentInfo.setName(name);
+      }
+
+      // create viewKey
+      if (StringUtils.isEmpty(viewKey))
+      {
+         try
+         {
+            // TODO review by portal team
+            // documentId can contain ':' or other special characters that need to be encoded. e.g. {urn:repositoryId:<repositoryId}<id>
+            viewKey = "documentOID=" + URLEncoder.encode(document.getId(), "UTF-8");
+         }
+         catch (UnsupportedEncodingException e)
+         {
+            // if encoding fails, fallback to old ID format
+            viewKey = "documentOID=" + RepositoryIdUtils.stripRepositoryId(document.getId());
+         }
+      }
+
+      return openDocument(viewKey, documentContentInfo, viewParams, nestedView);
+   }
+   
+   /**
+    * @param viewKey
+    * @param documentContentInfo
+    * @param viewParams
+    * @param nestedView
+    * @return
+    */
+   // TODO: Refactoring required for below Overloaded method, old to be deleted(deprecated)
+   public static View openDocument(String viewKey, IDocumentContentInfo documentContentInfo,
+         Map<String, Object> viewParams, boolean nestedView)
+   {
+      Map<String, Object> params = CollectionUtils.newTreeMap();
+      params.put("documentInfo", documentContentInfo);
+      if (CollectionUtils.isNotEmpty(viewParams))
+      {
+         params.putAll(viewParams);
+      }
+      // Again Encode id with Bas64 to handle special char ':' in viewKey
+      // ex: {urn:repositoryId:repo1}{jcrUuid}
+      viewKey = Base64.encode(viewKey);
+      return PortalApplication.getInstance().openViewById("documentView", viewKey, params, null, nestedView);
+   }
 }
