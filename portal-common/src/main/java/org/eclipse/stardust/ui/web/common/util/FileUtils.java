@@ -300,9 +300,9 @@ public class FileUtils
    {
       byte[] buffer = null;
       ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+      ZipOutputStream out = new ZipOutputStream(outputStream);
       try
       {
-         ZipOutputStream out = new ZipOutputStream(outputStream);
          // Now we set the compression level. This step is optional.
          // If we don't set compression levels, default values will be used.
          // I am just setting them so that you know how to do it.
@@ -323,7 +323,6 @@ public class FileUtils
             out.closeEntry();
 
          }
-
       }
       catch (Exception e)
       {
@@ -332,6 +331,7 @@ public class FileUtils
       finally
       {
          close(outputStream);
+         close(out);
       }
       buffer = outputStream.toByteArray();
       return buffer;
