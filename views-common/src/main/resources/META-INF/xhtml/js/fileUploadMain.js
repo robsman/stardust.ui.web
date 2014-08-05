@@ -11,17 +11,8 @@
 /**
  * @author Yogesh.Manware
  */
-
-require.config({
-	baseUrl: "../../",
-	paths: {
-		'jquery' : ['views-common/js/libs/jquery/jquery-1.7.2.min', '//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min'],
-		'jquery.form': ['views-common/js/libs/jquery/plugins/jquery.form', 'https://raw.github.com/malsup/form/5d413a0169b673c9ee81d5f458b1c955ff1b8027/jquery.form'],
-		'json' : ['views-common/js/libs/json/json2', '//cdnjs.cloudflare.com/ajax/libs/json2/20110223/json2'] 
-	},
-	shim: {
-		'jquery.form' : [ 'jquery' ]
-	}
+commonRequire.config({
+	baseUrl : "../../"
 });
 
 require(["jquery", "jquery.form", "../plugins/views-common/js/m_fileUploadDialog"], function(){
