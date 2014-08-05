@@ -45,6 +45,33 @@ define(
 					return deferred.promise();
 				};
 				
+				DocumentAssignmentService.prototype.reorderDocument = function(uuid,pages){
+					var deferred = jQuery.Deferred(),
+						rootUrl = location.href.substring(0, location.href.indexOf("/plugins")),
+						urlFrag,
+						self = this;
+				
+					urlFrag= "documents/" + uuid + "/reorder";
+					
+					
+					deferred.resolve(); //TODO: remove once endpoint is present.
+					return deferred.promise();//TODO: move below ajax once rest endpoint is present.
+					
+					jQuery.ajax({
+						url : rootUrl + "/services/rest/document-triage/" + urlFrag,
+						type : "POST",
+						contentType : "application/json",
+						data : JSON.stringify({"pages" : pages})
+					}).done(function(result) {
+						deferred.resolve(result);
+					}).fail(function(data) {
+						deferred.reject(data);
+					});
+		
+					
+					
+				};
+				
 				DocumentAssignmentService.prototype.splitDocument = function(oid,uuid,pages){
 					
 					var deferred = jQuery.Deferred(),

@@ -106,11 +106,9 @@ define(
 					    scope: dialogScope
 					})
 					.then(function(){
-						debugger
 						deferred.resolve(docObj);
 					})
 					.catch(function(){
-						debugger;
 						deferred.reject(docObj);
 					});
 					
@@ -334,8 +332,19 @@ define(
 					this.pageRotation = 0;
 					this.zoomFactor = 100;
 					this.pageInverted = false;
+					this.currentPage=0;
 				};
-
+				
+				DocumentAssignmentPanelController.prototype.setPageRelative = function(offset){
+					debugger;
+					this.currentPage = this.currentPage + offset;
+					this.pageModel.selectedPage.number = this.currentPage;
+				}
+				
+				DocumentAssignmentPanelController.prototype.setPageAbsolute = function(index){
+					this.currentPage = index;
+					this.pageModel.selectedPage.number = this.currentPage;
+				}
 				/**
 				 * 
 				 */
@@ -349,6 +358,8 @@ define(
 							});
 						}
 					}
+					
+					
 				};
 
 				/**
@@ -369,7 +380,7 @@ define(
 							    .droppable({
 							    	hoverClass : "highlighted",
 							    	drop : function(event, ui){
-							    		
+							    			alert("dropped");
 							    		var ed=jQuery.data(ui.draggable[0],"dragData"),
 							    			workService =DocumentAssignmentService.instance();
 							    		switch(ed.sourceType){
@@ -390,6 +401,9 @@ define(
 								    			.fail(function(){
 								    				//stubbed
 								    			});
+								    			break;
+								    		case "pageReorder":
+								    			/* Do nothing, this should be handled by the reorder target div.*/
 								    			break;
 								    		case "proccessAttachment_pending":
 								    			workService.deleteAttachment(ed.process.oid,"PROCESS_ATTACHMENTS",ed.attachment.uuid)
@@ -418,7 +432,7 @@ define(
 										left : 0
 									},
 									helper : function(event, ui) {
-										debugger;
+
 										var scannedDocument = jQuery.data(event.currentTarget,"scannedDocument"),
 										    pageNumbers=[],
 										    key;
@@ -441,7 +455,84 @@ define(
 									}
 								});
 					}
-
+					
+					/*Drag events for individual pages, must mimic container drag*/
+					jQuery(".page.reorderable").each(function(){
+						var that = this;
+						$(this).draggable({
+							distance : 20,
+							opacity : 0.7,
+							cursor : "move",
+							cursorAt : {
+								top : 0,
+								left : 0
+							},
+							helper : function(event, ui) {
+								
+								var docUUID,
+									scannedDocument = {};
+								    pageNumbers=[],
+								    key;
+								
+								docUUID = $(that).attr("data-doc-uuid");
+								scannedDocument = self.getScannedDocument(docUUID);
+								
+								for (var key in self.pageModel.pageIndex) {
+								  if (self.pageModel.pageIndex.hasOwnProperty(key)) {
+									isRootDoc=false;
+								    pageNumbers.push(key);
+								  }
+								}
+								
+								$(that).data({
+									ui : {},
+									scannedDocument : angular.copy(scannedDocument),
+									dragData :{ sourceType: "pageReorder"},
+									pages: pageNumbers
+								});
+								
+								return jQuery("<div class='ui-widget-header dragHelper'><i class='fa fa-files-o' style='font-size: 14px;'></i> "
+										+ scannedDocument.name + " (Pages-img:" + pageNumbers.toString() + ")"
+										+ "</div>");
+							},
+							drag : function(event) {
+							},
+							stop : function(event) {
+							}
+						});
+					});
+					
+					/*All elements with a class of 'reorderTarget' are drop targets for a pageReorder drag event
+					 *These events are only initiated from the scanned Document panel*/
+					jQuery(".reorderTarget").each(function(){
+						$(this).droppable({
+								hoverClass : "dragover",
+						    	drop : function(event, ui){
+						    		var ed, /*eventData*/
+						    			doc; /*scanned document associated with drag*/
+						    		ed=jQuery.data(ui.draggable[0]);
+						    		if(ed.dragData && ed.dragData.sourceType=="pageReorder"){
+							    		doc=ed.scannedDocument;
+							    		DocumentAssignmentService.instance().reorderDocument(doc.uuid,ed.pages)
+							    		.then(function(data){
+							    			/*
+							    			return DocumentAssignmentService.instance()
+							    					.refreshScannedDocuments(self.processoid);
+							    			*/
+							    		})
+							    		.fail(function(){
+							    			
+							    		})
+							    		.always(function(){
+							    			
+							    		});
+							    		
+						    		}
+						    	}
+							}
+						);
+					});
+					
 					if (this.pendingProcessesTree) {
 						for (var n = 0; n < this.pendingProcessesTree.length; ++n) {
 							if (this.pendingProcessesTree[n].pendingActivityInstance) {
@@ -871,10 +962,12 @@ define(
 				/**
 				 * 
 				 */
-				DocumentAssignmentPanelController.prototype.selectPage = function(
-						page, url, e) {
-					console.log("Calling Selected Page");
+				DocumentAssignmentPanelController.prototype.selectPage = function(page,url,e,document) {
+					
 					this.pageModel.selectedPage = page;
+					this.pageModel.totalPages = document.pages.length;
+					this.pageModel.document = document;
+
 					if(e){
 						if (e.ctrlKey) {
 							if (this.pageModel.pageIndex
@@ -893,6 +986,36 @@ define(
 					console.log(this.pageModel.pageIndex);
 					this.pageModel.selectedPage.url = url;
 				};
+				
+				/**
+				 * Given the uuid of the currently selected document this will imitate selecting the next or 
+				 * previous document (+- some offset) from the scanned document division, minus meaningful events.
+				 */
+				DocumentAssignmentPanelController.prototype.selectDocumentRelative = function(uuid,offset){
+					
+					var document,
+						i,
+						currentIndex,
+						offsetIndex,
+						located=false;
+					
+					/*locate indexed position of our current document*/
+					for(i=0;i < this.scannedDocuments.length && !located;i++){
+						if(this.scannedDocuments[i].uuid==uuid){
+							currentIndex=i;
+							offsetIndex = currentIndex + offset;
+							located=true;
+						}
+					}
+					debugger;
+					/*if we located the current document and our calculated offset is in range*/
+					if(located && (offsetIndex >= 0 && offsetIndex < this.scannedDocuments.length)){
+						document = this.scannedDocuments[offsetIndex];
+						this.selectPage(document.pages[0],document.url,{},document);
+						this.safeApply();
+					}
+				}
+				
 				DocumentAssignmentPanelController.prototype.resetPageModel = function(){
 					this.pageModel.pageIndex={};
 				}

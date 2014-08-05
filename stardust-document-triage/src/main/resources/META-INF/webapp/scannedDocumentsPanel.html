@@ -1,6 +1,6 @@
 <table cellpadding="0" cellspacing="0" style="width: 100%;">
 	<tr ng-repeat="document in scannedDocuments"
-		ng-init="document.showChildren=false"
+		ng-init="document.showChildren=false,documentIndex=$index""
 		id="scannedDocumentDivision{{$index}}" class="scannedDocument">
 		<td>
 			<div ng-show="!document.showChildren" class="formTable">
@@ -8,7 +8,7 @@
 				<div style="height: {{100+ 3*clamp(document.pages.length, 0, 10)}}"
 					class="imageStack"
 					ng-mousedown="resetPageModel()"
-					ng-click="selectPage(document.pages[0],document.url + 0,$event,document.pages)">
+					ng-click="selectPage(document.pages[0],document.url,$event,document)">
 					<img ng-src="{{document.url}}0" style="height: 100px;"
 						title="Page {{(clamp(document.pages.length,0,10))-$index}} of {{document.pages.length}}"
 						ng-repeat="page in document.pages | limitTo: 10" />
@@ -34,16 +34,19 @@
 					class="fa fa-caret-up menu-icon"></i>
 			</div>
 			<div ng-show="document.showChildren"
-				 ng-repeat="page in document.pages" class="page">
-				<table
-					ng-class="{'selected':isPageSelected(page),'unselected':!isPageSelected(page)}">
+			     data-doc-url="{{document.url}}"
+			     data-doc-uuid = "{{document.uuid}}"
+			     data-page-index = "{{$index}}"
+				 ng-repeat="page in document.pages" 
+				 class="page reorderable">
+				<table ng-class="{'selected':isPageSelected(page),'unselected':!isPageSelected(page)}">
 					<tr>
 						<td style="text-align:center;">
-						<a style="display: inline;"
-							ng-click="selectPage(page,document.url + $index,$event,document.pages)">
+							<a style="display: inline;"
+							   ng-click="selectPage(page,document.url,$event,document)">
 								<img style="margin-top:1em;" ng-src="{{document.url + $index}}" width="80%" />
-						</a>
-							<div>
+							</a>
+							<div class="reorderTarget">
 								{{page.number}}<i class="fa fa-warning menu-icon"></i>
 							</div>
 						</td>

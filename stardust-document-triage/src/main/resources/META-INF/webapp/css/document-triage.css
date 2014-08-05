@@ -305,3 +305,25 @@ i.expando {
 	background: #FFF;
 	color: #333;
 }
+
+.reorderTarget{
+	border:solid 1px transparent;
+	border-bottom: dotted 1px #AAA;
+}
+	
+.dragover{
+	border:dotted 1px #AAA;
+	border-radius:3px;
+	padding:1em;
+}
+
+.document-name{
+  	max-width: 250px;
+  	white-space: nowrap;
+  	overflow: hidden;
+  	text-overflow: ellipsis;
+}
+
+span.document-name{
+  	display:inline-block;
+}

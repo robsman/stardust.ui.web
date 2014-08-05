@@ -2,8 +2,41 @@
 	<tr>
 		<td><table class="formTable">
 				<tr>
-					<td><a href="#" class="iconLink" ng-click="rotatePage()"><i
-							class="fa fa-rotate-right"></i></a></td>
+					<td>
+						<a href="#" 
+						   ng-click="setPageAbsolute(1)">
+							<i class="fa fa-backward"></i>
+						</a>
+					</td>
+					<td>
+						<a href="#" 
+						   ng-click="setPageRelative(-1)">
+							<i class="fa fa-step-backward"></i>
+						</a>
+					</td>
+					<td>
+						{{pageModel.selectedPage.number}} of {{pageModel.totalPages}}
+					</td>
+					<td>
+						<a href="#" 
+						   ng-click="setPageRelative(+1)">
+							<i class="fa fa-step-forward"></i>
+						</a>
+					</td>
+					<td>
+						<a href="#" 
+						   ng-click="setPageAbsolute(pageModel.totalPages)">
+							<i class="fa fa-forward"></i>
+						</a>
+					</td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td>
+						<a href="#" class="iconLink" ng-click="rotatePage()">
+							<i class="fa fa-rotate-right"></i>
+						</a>
+					</td>
 					<td><input type="number" style="text-align: right;"
 						ng-model="zoomFactor"></input> <label>%</label></td>
 					<td><a href="#" class="iconLink" ng-click="zoomInPage()"><i
@@ -12,6 +45,19 @@
 							class="fa fa-minus-circle"></i></a></td>
 					<td><a href="#" class="iconLink" ng-click="invertPage()"><i
 							class="fa fa-star-half-o"></i></a></td>
+					<td>
+						<a href="#" ng-click="selectDocumentRelative(pageModel.document.uuid,-1)">
+							<i class="fa fa-step-backward"></i>
+						</a>
+					</td>
+					<td>
+						<span class="document-name">{{pageModel.document.name}}</span>
+					</td>
+					<td>
+						<a href="#" ng-click="selectDocumentRelative(pageModel.document.uuid,+1)">
+							<i class="fa fa-step-forward"></i>
+						</a>
+					</td>
 				</tr>
 			</table></td>
 	</tr>
@@ -22,6 +68,6 @@
      id="pageViewDivision" 
      class="section"
 	style="min-height: 330px; overflow: auto; margin-top: 10px; margin-bottom: 10px; max-width: 800px;">
-	<img id="pageImage" ng-src={{pageModel.selectedPage.url}}
-		ng-show="pageModel.selectedPage != null" />
+	<img id="pageImage" ng-src="{{pageModel.selectedPage.url}}{{pageModel.selectedPage.number-1}}"
+		ng-show="pageModel.selectedPage != null && pageModel.selectedPage.number" />
 </div>
