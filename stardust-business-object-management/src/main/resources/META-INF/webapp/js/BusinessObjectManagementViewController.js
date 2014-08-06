@@ -25,6 +25,24 @@ define(
 				 * 
 				 */
 				BusinessObjectManagementViewController.prototype.initialize = function() {
+					this.formColumns = [ {
+						min : 0,
+						max : 3
+					}, {
+						min : 4,
+						max : 7
+					}, {
+						min : 8,
+						max : 11
+					}, {
+						min : 12,
+						max : 15
+					}, {
+						min : 16,
+						max : 19
+					} ]; // TODO
+					// Calculate
+
 					this.messages = [];
 					this.businessObjectManagementPanelController = BusinessObjectManagementPanelController
 							.create();
@@ -42,7 +60,16 @@ define(
 				 * 
 				 */
 				BusinessObjectManagementViewController.prototype.onBusinessObjectInstanceSelectionChange = function() {
+					console.log("===> Event fired");
+					console
+							.log(this.businessObjectManagementPanelController.selectedBusinessObjectInstances);
+
 					this.currentBusinessObjectInstance = this.businessObjectManagementPanelController.selectedBusinessObjectInstances[0];
+
+					this.createMissingComplexFieldInstances(
+							this.currentBusinessObjectInstance, this
+									.getBusinessObject());
+
 					this.messages = [];
 
 					this.safeApply();
@@ -55,6 +82,11 @@ define(
 					this.messages = [];
 					this.currentBusinessObjectInstance = {};
 					this.newBusinessObjectInstance = this.currentBusinessObjectInstance;
+
+					this.createMissingComplexFieldInstances(
+							this.currentBusinessObjectInstance, this
+									.getBusinessObject());
+					this.searchCollapsed = true;
 				};
 
 				/**
@@ -98,6 +130,140 @@ define(
 								.done(function() {
 									self.safeApply();
 								}).fail();
+					}
+				};
+
+				/**
+				 * 
+				 */
+				BusinessObjectManagementViewController.prototype.clearBusinessObjectInstance = function() {
+					this.messages = [];
+					this.currentBusinessObjectInstance = null;
+					this.newBusinessObjectInstance = null;
+					this.searchCollapsed = false;
+				};
+
+				/**
+				 * 
+				 */
+				BusinessObjectManagementViewController.prototype.getBusinessObjectInstance = function() {
+					return this.currentBusinessObjectInstance;
+				};
+
+				/**
+				 * 
+				 */
+				BusinessObjectManagementViewController.prototype.getBusinessObject = function() {
+					if (this.businessObjectManagementPanelController.businessObject) {
+						return this.businessObjectManagementPanelController.businessObject.businessObject;
+					}
+
+					return null;
+				};
+
+				/**
+				 * 
+				 */
+				BusinessObjectManagementViewController.prototype.getPrimitiveFieldColumns = function(
+						type) {
+					var fieldColumns = [ [] ];
+
+					if (!type || !this.getBusinessObject()) {
+						return fieldColumns;
+					}
+
+					for (var n = 0; n < type.fields.length; ++n) {
+						// Skip non primitive fields
+
+						if (this.getBusinessObject().types[type.fields[n].type]) {
+							continue;
+						}
+
+						// TODO Make 5 configurable
+
+						if (fieldColumns[fieldColumns.length - 1].length == 5) {
+							fieldColumns.push([]);
+						}
+
+						fieldColumns[fieldColumns.length - 1]
+								.push(type.fields[n]);
+					}
+
+					return fieldColumns;
+				};
+
+				/**
+				 * 
+				 */
+				BusinessObjectManagementViewController.prototype.getPrimitiveFields = function(
+						type) {
+					var fields = [];
+
+					if (!type || !this.getBusinessObject()) {
+						return fields;
+					}
+
+					for (var n = 0; n < type.fields.length; ++n) {
+						// Skip complex fields
+
+						if (this.getBusinessObject().types[type.fields[n].type]) {
+							continue;
+						}
+
+						fields.push(type.fields[n]);
+					}
+
+					return fields;
+				};
+
+				/**
+				 * 
+				 */
+				BusinessObjectManagementViewController.prototype.getComplexFields = function(
+						type) {
+					var fields = [];
+
+					if (!type || !this.getBusinessObject()) {
+						return fields;
+					}
+
+					for (var n = 0; n < type.fields.length; ++n) {
+						// Skip primitive fields
+
+						if (!this.getBusinessObject().types[type.fields[n].type]) {
+							continue;
+						}
+
+						fields.push(type.fields[n]);
+					}
+
+					return fields;
+				};
+
+				/**
+				 * 
+				 */
+				BusinessObjectManagementViewController.prototype.createMissingComplexFieldInstances = function(
+						instance, type) {
+					for (var n = 0; n < type.fields.length; ++n) {
+						var fieldType = this.getBusinessObject().types[type.fields[n].type];
+
+						// Skip primitive fields
+
+						if (!fieldType) {
+							continue;
+						}
+
+						if (!instance[type.fields[n].id]) {
+							if (type.fields[n].cardinality == "0-1") {
+								instance[type.fields[n].id] = {};
+
+								this.createMissingComplexFieldInstances(
+										instance[type.fields[n].id], fieldType);
+							} else {
+								instance[type.fields[n].id] = [];
+							}
+						}
 					}
 				};
 

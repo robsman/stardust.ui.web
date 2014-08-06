@@ -59,6 +59,10 @@ define(
 
 					for (var n = 0; n < this.businessObjectModels.length; ++n) {
 						for (var m = 0; m < this.businessObjectModels[n].businessObjects.length; ++m) {
+							if (!this.businessObjectModels[n].businessObjects[m].types) {
+								this.businessObjectModels[n].businessObjects[m].types = {};
+							}
+
 							this.businessObjects
 									.push({
 										label : this.businessObjectModels[n].name
@@ -78,13 +82,16 @@ define(
 					this.businessObjectInstances = [];
 					this.keyFields = [];
 					this.topLevelFields = [];
-					this.fieldColumns = [ [] ];
 
 					if (!this.businessObject) {
 						return;
 					}
 
 					for (var n = 0; n < this.businessObject.businessObject.fields.length; ++n) {
+						if (this.businessObject.businessObject.types[this.businessObject.businessObject.fields[n].type]) {
+							continue;
+						}
+
 						if (this.businessObject.businessObject.fields[n].primaryKey) {
 							this.primaryKeyField = this.businessObject.businessObject.fields[n];
 						} else if (this.businessObject.businessObject.fields[n].key) {
@@ -93,13 +100,6 @@ define(
 						}
 
 						this.topLevelFields
-								.push(this.businessObject.businessObject.fields[n]);
-
-						if (this.fieldColumns[this.fieldColumns.length - 1].length == 5) {
-							this.fieldColumns.push([]);
-						}
-
-						this.fieldColumns[this.fieldColumns.length - 1]
 								.push(this.businessObject.businessObject.fields[n]);
 					}
 				};
