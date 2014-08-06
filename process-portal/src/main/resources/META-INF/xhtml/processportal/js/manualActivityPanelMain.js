@@ -11,7 +11,7 @@
 /**
  * @author Subodh.Godbole
  */
-commonRequire.config({
+bpm.portal.viewsCommonRequire.config({
 	baseUrl : "../../plugins/"
 });
 

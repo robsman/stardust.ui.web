@@ -1,5 +1,5 @@
 console.log("Initialize");
-commonRequire.config({baseUrl: "../../"});
+bpm.portal.reportingRequire.config({baseUrl: "../../"});
 
 console.log("Before require");
 

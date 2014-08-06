@@ -11,7 +11,7 @@
 /**
  * @author Robert Sauer
  */
-commonRequire.config({baseUrl: "/pepper-test/plugins/"});
+bpm.portal.modelerRequire.config({baseUrl: "/pepper-test/plugins/"});
 
 require(["require",
          "jquery",

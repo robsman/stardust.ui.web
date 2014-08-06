@@ -13,7 +13,7 @@
 /**
  * @author Robert Sauer
  */
-commonRequire.config({});
+bpm.portal.modelerRequire.config();
 
 define('reportMain',[
 		 "reportApp",

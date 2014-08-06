@@ -11,7 +11,7 @@
 /**
  * @author Robert Sauer
  */
-commonRequire.config({});
+bpm.portal.modelerRequire.config();
 
 require(["require",
 	 "jquery",

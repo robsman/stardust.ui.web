@@ -12,7 +12,7 @@
  * @author Marc Gille
  * @author Robert Sauer
  */
-commonRequire.config({baseUrl: "../../../"});
+bpm.portal.modelerRequire.config({baseUrl: "../../../"});
 
 require([ "require", "jquery", "jquery.tablescroll", "jquery.treeTable",
 		"jquery.url", "bpm-modeler/js/m_serviceWrapperWizard", "i18n"], function(require) {

@@ -1,4 +1,4 @@
-commonRequire.config({baseUrl: "../../../"});
+bpm.portal.reportingRequire.config({baseUrl: "../../../"});
 
 require([ "require", "jquery", "angularjs",
 		"bpm-reporting/js/ReportStorageController" ], function(require, jquery,

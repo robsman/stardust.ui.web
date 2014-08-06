@@ -1,4 +1,4 @@
-commonRequire.config({baseUrl: "../../"});
+bpm.portal.reportingRequire.config({baseUrl: "../../"});
 
 require(
 		[ "require", "jquery", "jquery.url", "jquery-ui", "json", "angularjs",

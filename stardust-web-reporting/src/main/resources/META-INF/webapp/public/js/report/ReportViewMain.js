@@ -1,4 +1,4 @@
-commonRequire.config({});
+bpm.portal.reportingRequire.config();
 
 require(
 		[ "require", "jquery", "jquery.url", "jquery-ui", "json", "angularjs",

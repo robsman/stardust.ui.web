@@ -12,7 +12,7 @@
  * @author Marc Gille
  * @author Robert Sauer
  */
-commonRequire.config({baseUrl: "../../../"});
+bpm.portal.modelerRequire.config({baseUrl: "../../../"});
 
 require(["require",
          "jquery",

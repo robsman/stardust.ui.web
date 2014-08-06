@@ -12,7 +12,7 @@
  * @author Omkar.Patil
  * @author Robert Sauer
  */
-commonRequire.config({baseUrl: "../../"});
+bpm.portal.modelerRequire.config({baseUrl: "../../"});
 
 define([
          "jquery",

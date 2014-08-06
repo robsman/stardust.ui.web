@@ -11,7 +11,7 @@
 /**
  * @author Yogesh.Manware
  */
-commonRequire.config({
+bpm.portal.viewsCommonRequire.config({
 	baseUrl : "../../"
 });
 
