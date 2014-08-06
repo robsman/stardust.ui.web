@@ -145,12 +145,9 @@ public class BusinessObjectManagementService {
       fillTestModelsJson(modelsJson);
 
       ModelCache modelCache = ModelCache.findModelCache();
-      if (modelCache == null)
-      {
-         fillDescriptionsFromQuery(modelsJson);
-      }
-      else
-      {
+		if (modelCache == null) {
+			fillDescriptionsFromQuery(modelsJson);
+		} else {
          fillDescriptionsFromLocalCache(modelsJson, modelCache);
       }
 
@@ -159,8 +156,7 @@ public class BusinessObjectManagementService {
       return resultJson;
    }
 
-   private void fillTestModelsJson(JsonArray modelsJson)
-   {
+	private void fillTestModelsJson(JsonArray modelsJson) {
       JsonArray businessObjectsJson = new JsonArray();
       businessObjectsJson.add(getMemberTestJson());
       businessObjectsJson.add(getFundTestJson());
@@ -173,32 +169,87 @@ public class BusinessObjectManagementService {
       modelsJson.add(modelJson);
    }
 
-   private JsonObject getMemberTestJson()
-   {
+	private JsonObject getMemberTestJson() {
       JsonArray memberFieldsJson = new JsonArray();
-      memberFieldsJson.add(toTestField("id", "Member ID", "string", true, true));
-      memberFieldsJson.add(toTestField("firstName", "First Name", "string", true, false));
-      memberFieldsJson.add(toTestField("lastName", "Last Name", "string", true, false));
-      memberFieldsJson.add(toTestField("dateOfBirth", "Date of Birth", "date", true, false));
-      memberFieldsJson.add(toTestField("amlChecked", "AML Checked", "boolean", false, false));
-      memberFieldsJson.add(toTestField("numberOfDependents", "Number of Dependents", "integer", false, false));
-      memberFieldsJson.add(toTestField("annualSalary", "Annual Salary", "decimal", false, false));
-      memberFieldsJson.add(toTestField("scheme", "Scheme Name", "string", false, false));
-      memberFieldsJson.add(toTestField("schemeId", "Scheme ID", "string", false, false));
-      memberFieldsJson.add(toTestField("nationalId", "National ID", "string", false, false));
+		memberFieldsJson.add(toTestField("id", "Member ID", "string", true,
+				true));
+		memberFieldsJson.add(toTestField("firstName", "First Name", "string",
+				true, false));
+		memberFieldsJson.add(toTestField("lastName", "Last Name", "string",
+				true, false));
+		memberFieldsJson.add(toTestField("dateOfBirth", "Date of Birth",
+				"date", true, false));
+		memberFieldsJson.add(toTestField("amlChecked", "AML Checked",
+				"boolean", false, false));
+		memberFieldsJson.add(toTestField("numberOfDependents",
+				"Number of Dependents", "integer", false, false));
+		memberFieldsJson.add(toTestField("annualSalary", "Annual Salary",
+				"decimal", false, false));
+		memberFieldsJson.add(toTestField("scheme", "Scheme Name", "string",
+				false, false));
+		memberFieldsJson.add(toTestField("schemeId", "Scheme ID", "string",
+				false, false));
+		memberFieldsJson.add(toTestField("nationalId", "National ID", "string",
+				false, false));
+		memberFieldsJson.add(toTestField("address", "Address", "Address",
+				false, false));
+		memberFieldsJson.add(toTestToManyField("policies", "Policies",
+				"Policy", false, false));
 
       JsonObject memberJson = new JsonObject();
       memberJson.addProperty("id", "Member");
       memberJson.addProperty("name", "Member");
       memberJson.add("fields", memberFieldsJson);
+
+		JsonObject typesJson = new JsonObject();
+
+		memberJson.add("types", typesJson);
+
+		JsonObject addressJson = new JsonObject();
+
+		typesJson.add("Address", addressJson);
+
+		JsonArray fieldsJson = new JsonArray();
+
+		addressJson.add("fields", fieldsJson);
+
+		fieldsJson.add(toTestField("addressline1", "Addressline 1", "string",
+				false, false));
+		fieldsJson.add(toTestField("addressline2", "Addressline 2", "string",
+				false, false));
+		fieldsJson.add(toTestField("city", "City", "string", false, false));
+		fieldsJson.add(toTestField("zipCode", "ZIP Code", "string", false,
+				false));
+
+		JsonObject policyJson = new JsonObject();
+
+		typesJson.add("Policy", policyJson);
+
+		fieldsJson = new JsonArray();
+
+		policyJson.add("fields", fieldsJson);
+
+		fieldsJson.add(toTestField("id", "ID", "string", false, false));
+		fieldsJson.add(toTestField("name", "Name", "string", false, false));
+		fieldsJson.add(toTestField("monthlyFee", "Monthly Fee", "decimal",
+				false, false));
+		fieldsJson.add(toTestField("closingDate", "Closing Date", "date",
+				false, false));
+		fieldsJson.add(toTestField("review", "Rate Review", "boolean", false,
+				false));
+
       return memberJson;
    }
 
-   private JsonObject getFundTestJson()
-   {
+	/**
+	 * 
+	 * @return
+	 */
+	private JsonObject getFundTestJson() {
       JsonArray fundFieldsJson = new JsonArray();
       fundFieldsJson.add(toTestField("id", "Fund Id", "string", true, true));
-      fundFieldsJson.add(toTestField("name", "Fund Name", "string", true, false));
+		fundFieldsJson.add(toTestField("name", "Fund Name", "string", true,
+				false));
 
       JsonObject fundJson = new JsonObject();
       fundJson.addProperty("id", "Fund");
@@ -207,52 +258,91 @@ public class BusinessObjectManagementService {
       return fundJson;
    }
 
-   private JsonObject toTestField(String id, String name, String type, boolean key, boolean primaryKey)
-   {
+	/**
+	 * 
+	 * @param id
+	 * @param name
+	 * @param type
+	 * @param key
+	 * @param primaryKey
+	 * @return
+	 */
+	private JsonObject toTestField(String id, String name, String type,
+			boolean key, boolean primaryKey) {
+		return toTestField(id, name, type, key, primaryKey, "0-1");
+	}
+
+	/**
+	 * 
+	 * @param id
+	 * @param name
+	 * @param type
+	 * @param key
+	 * @param primaryKey
+	 * @return
+	 */
+	private JsonObject toTestToManyField(String id, String name, String type,
+			boolean key, boolean primaryKey) {
+		return toTestField(id, name, type, key, primaryKey, "0-N");
+	}
+
+	/**
+	 * 
+	 * @param id
+	 * @param name
+	 * @param type
+	 * @param key
+	 * @param primaryKey
+	 * @return
+	 */
+	private JsonObject toTestField(String id, String name, String type,
+			boolean key, boolean primaryKey, String cardinality) {
       JsonObject json = new JsonObject();
       json.addProperty("id", id);
       json.addProperty("name", name);
       json.addProperty("type", type);
       json.addProperty("key", key);
       json.addProperty("primaryKey", primaryKey);
+		json.addProperty("cardinality", cardinality);
+
       return json;
    }
 
-   private void fillDescriptionsFromLocalCache(JsonArray modelsJson, ModelCache modelCache)
-   {
-      for (DeployedModel deployedModel : modelCache.getAllModels())
-      {
-         if (!PredefinedConstants.PREDEFINED_MODEL_ID.equals(deployedModel.getId()))
-         {
+	private void fillDescriptionsFromLocalCache(JsonArray modelsJson,
+			ModelCache modelCache) {
+		for (DeployedModel deployedModel : modelCache.getAllModels()) {
+			if (!PredefinedConstants.PREDEFINED_MODEL_ID.equals(deployedModel
+					.getId())) {
             JsonArray businessObjectsJson = new JsonArray();
             @SuppressWarnings("unchecked")
             List<Data> allData = (List<Data>) deployedModel.getAllData();
-            for (Data data : allData)
-            {
-               if (PredefinedConstants.STRUCTURED_DATA.equals(data.getTypeId()))
-               {
-                  String typeDeclarationId = (String) data.getAttribute(StructuredDataConstants.TYPE_DECLARATION_ATT);
-                  DeployedModel model = modelCache.getModel(data.getModelOID());
+				for (Data data : allData) {
+					if (PredefinedConstants.STRUCTURED_DATA.equals(data
+							.getTypeId())) {
+						String typeDeclarationId = (String) data
+								.getAttribute(StructuredDataConstants.TYPE_DECLARATION_ATT);
+						DeployedModel model = modelCache.getModel(data
+								.getModelOID());
                   Reference ref = data.getReference();
-                  if (ref != null)
-                  {
+						if (ref != null) {
                      model = modelCache.getModel(ref.getModelOid());
                      typeDeclarationId = ref.getId();
                   }
-                  TypeDeclaration typeDeclaration = model.getTypeDeclaration(typeDeclarationId);
-                  Set<TypedXPath> xPaths = StructuredTypeRtUtils.getAllXPaths(model, typeDeclaration);
-                  for (TypedXPath xPath : xPaths)
-                  {
+						TypeDeclaration typeDeclaration = model
+								.getTypeDeclaration(typeDeclarationId);
+						Set<TypedXPath> xPaths = StructuredTypeRtUtils
+								.getAllXPaths(model, typeDeclaration);
+						for (TypedXPath xPath : xPaths) {
                      if (xPath.getXPath().isEmpty()) // root xpath
                      {
-                        businessObjectsJson.add(toJson(data, xPath, deployedModel.getModelOID()));
+								businessObjectsJson.add(toJson(data, xPath,
+										deployedModel.getModelOID()));
                         break;
                      }
                   }
                }
             }
-            if (businessObjectsJson.size() > 0)
-            {
+				if (businessObjectsJson.size() > 0) {
                JsonObject modelJson = new JsonObject();
                modelJson.addProperty("oid", deployedModel.getModelOID());
                modelJson.addProperty("id", deployedModel.getId());
@@ -292,15 +382,13 @@ public class BusinessObjectManagementService {
       }
    }
 
-   private JsonObject toJson(Data data, TypedXPath xPath, int modelOid)
-   {
+   private JsonObject toJson(Data data, TypedXPath xPath, int modelOid) {
       JsonObject json = new JsonObject();
       json.addProperty("id", data.getId());
       json.addProperty("name", data.getName());
       JsonObject types = new JsonObject();
       addStructuralInformation(json, xPath.getChildXPaths(), types);
-      if (types.entrySet().size() > 0)
-      {
+		if (types.entrySet().size() > 0) {
          json.add("types", types);
       }
       return json;
@@ -317,24 +405,6 @@ public class BusinessObjectManagementService {
       {
          json.add("types", types);
       }
-      return json;
-   }
-
-   private JsonObject toJson(TypedXPath xPath, JsonObject types)
-   {
-      XPathAnnotations annotations = xPath.getAnnotations();
-      JsonObject json = new JsonObject();
-      json.addProperty("id", xPath.getId());
-      json.addProperty("name", xPath.getId()); // TODO fetch from annotations
-      String key = StringUtils.isEmpty(xPath.getXsdTypeNs())
-            ? "anonymous" + (types.entrySet().size() + 1)
-            : xPath.getType() != BigData.NULL
-                  ? xPath.getXsdTypeName()
-                  : "{" + xPath.getXsdTypeNs() + "}" + xPath.getXsdTypeName();
-      json.addProperty("type", key);
-      json.addProperty("list", xPath.isList());
-      json.addProperty("key", annotations.isIndexed());
-      json.addProperty("primaryKey", false); // TODO
       return json;
    }
 
@@ -370,27 +440,40 @@ public class BusinessObjectManagementService {
       return fields;
    }
 
-   private void addStructuralInformation(JsonObject json, List<TypedXPath> xPaths, JsonObject types)
-   {
+	private JsonObject toJson(TypedXPath xPath, JsonObject types) {
+      XPathAnnotations annotations = xPath.getAnnotations();
+      JsonObject json = new JsonObject();
+      json.addProperty("id", xPath.getId());
+      json.addProperty("name", xPath.getId()); // TODO fetch from annotations
+		String key = StringUtils.isEmpty(xPath.getXsdTypeNs()) ? "anonymous"
+				+ (types.entrySet().size() + 1)
+				: xPath.getType() != BigData.NULL ? xPath.getXsdTypeName()
+						: "{" + xPath.getXsdTypeNs() + "}"
+								+ xPath.getXsdTypeName();
+      json.addProperty("type", key);
+      json.addProperty("list", xPath.isList());
+      json.addProperty("key", annotations.isIndexed());
+      json.addProperty("primaryKey", false); // TODO
+      return json;
+   }
+
+	private void addStructuralInformation(JsonObject json,
+			List<TypedXPath> xPaths, JsonObject types) {
       JsonArray fields = new JsonArray();
-      if (xPaths != null)
-      {
-         for (TypedXPath xPath : xPaths)
-         {
+		if (xPaths != null) {
+			for (TypedXPath xPath : xPaths) {
             fields.add(toJson(xPath, types));
-            if (xPath.getType() == BigData.NULL)
-            {
-               String key = StringUtils.isEmpty(xPath.getXsdTypeNs())
-                     ? "anonymous" + (types.entrySet().size() + 1)
-                     : StringUtils.isEmpty(xPath.getXsdTypeNs())
-                           ? xPath.getXsdTypeName()
-                           : "{" + xPath.getXsdTypeNs() + "}" + xPath.getXsdTypeName();
-               if (!types.has(key))
-               {
+				if (xPath.getType() == BigData.NULL) {
+					String key = StringUtils.isEmpty(xPath.getXsdTypeNs()) ? "anonymous"
+							+ (types.entrySet().size() + 1)
+							: StringUtils.isEmpty(xPath.getXsdTypeNs()) ? xPath
+									.getXsdTypeName() : "{"
+									+ xPath.getXsdTypeNs() + "}"
+									+ xPath.getXsdTypeName();
+					if (!types.has(key)) {
                   JsonObject type = new JsonObject();
                   List<TypedXPath> childXPaths = xPath.getChildXPaths();
-                  if (childXPaths != null && !childXPaths.isEmpty())
-                  {
+						if (childXPaths != null && !childXPaths.isEmpty()) {
                      addStructuralInformation(type, childXPaths, types);
                   }
                   types.add(key, type);
@@ -435,8 +518,10 @@ public class BusinessObjectManagementService {
       resultJson.add("businessObjectInstances", businessObjectInstances);
 
       if (businessObjectId.equals("Member")) {
-         businessObjectInstances.add(getMemberInstance("4711", "Haile", "Selassie", "1", "Scheme-1", "SA"));
-         businessObjectInstances.add(getMemberInstance("0815", "Jan", "Smuts", "2", "Scheme-2", "SA"));
+			businessObjectInstances.add(getMemberInstance("4711", "Haile",
+					"Selassie", "1", "Scheme-1", "SA"));
+			businessObjectInstances.add(getMemberInstance("0815", "Jan",
+					"Smuts", "2", "Scheme-2", "SA"));
       } else if (businessObjectId.equals("Fund")) {
          businessObjectInstances.add(getFundInstance("4711", "Haile"));
       } else {
@@ -475,61 +560,42 @@ public class BusinessObjectManagementService {
       return new JsonObject();
    }
 
-   private JsonElement toMapValueJson(Map<?, ?> map)
-   {
+	private JsonElement toMapValueJson(Map<?, ?> map) {
       JsonObject json = new JsonObject();
-      for (Map.Entry<?, ?> entry : map.entrySet())
-      {
+		for (Map.Entry<?, ?> entry : map.entrySet()) {
          String key = entry.getKey().toString();
          Object value = entry.getValue();
-         if (value instanceof Map)
-         {
+			if (value instanceof Map) {
             json.add(key, toMapValueJson((Map<?, ?>) value));
-         }
-         else if (value instanceof List)
-         {
+			} else if (value instanceof List) {
             json.add(key, toListValueJson((List<?>) value));
-         }
-         else if (value != null)
-         {
+			} else if (value != null) {
             json.addProperty(key, value.toString());
-         }
-         else
-         {
+			} else {
             json.add(key, null);
          }
       }
       return json;
    }
 
-   private JsonArray toListValueJson(List< ? > values)
-   {
+	private JsonArray toListValueJson(List<?> values) {
       JsonArray json = new JsonArray();
-      for (Object value : values)
-      {
-         if (value instanceof Map)
-         {
+		for (Object value : values) {
+			if (value instanceof Map) {
             json.add(toMapValueJson((Map<?, ?>) value));
-         }
-         else if (value instanceof List)
-         {
+			} else if (value instanceof List) {
             json.add(toListValueJson((List<?>) value));
-         }
-         else if (value != null)
-         {
+			} else if (value != null) {
             json.add(new JsonPrimitive(value.toString()));
-         }
-         else
-         {
+			} else {
             json.add(null);
          }
       }
       return json;
    }
 
-   private JsonObject getMemberInstance(String id, String firstName, String lastName,
-         String scheme, String schemeName, String nationalId)
-   {
+	private JsonObject getMemberInstance(String id, String firstName,
+			String lastName, String scheme, String schemeName, String nationalId) {
       JsonObject member = new JsonObject();
       member.addProperty("id", id);
       member.addProperty("firstName", firstName);
@@ -540,8 +606,7 @@ public class BusinessObjectManagementService {
       return member;
    }
 
-   private JsonObject getFundInstance(String id, String name)
-   {
+	private JsonObject getFundInstance(String id, String name) {
       JsonObject fund = new JsonObject();
       fund.addProperty("id", id);
       fund.addProperty("name", name);

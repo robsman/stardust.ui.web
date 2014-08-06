@@ -21,17 +21,21 @@ ul.errorMessagesPanel {
 .errorMessagesPanel li {
 	color: #b25900;
 }
+
+.dataTable input {
+	border: none !important;
+}
 </style>
 </head>
 <body>
 	<div ng-controller="businessObjectManagementViewController">
 		<table cellspacing="0" cellpadding="0" class="layoutTable">
 			<tr valign="center">
-				<td><a href="#" class="iconLink"><i
-						class="fa fa-chevron-up" ng-click="searchCollapsed = true"
-						ng-hide="searchCollapsed"></i></a><a href="#" class="iconLink"><i
-						class="fa fa-chevron-down" ng-click="searchCollapsed = false"
-						ng-show="searchCollapsed"></i></a></td>
+				<td><a href="#" class="iconLink"
+					ng-click="searchCollapsed = true" ng-hide="searchCollapsed"><i
+						class="fa fa-chevron-up"></i></a><a href="#" class="iconLink"
+					ng-click="searchCollapsed = false" ng-show="searchCollapsed"><i
+						class="fa fa-chevron-down"></i></a></td>
 				<td style="padding-left: 5px !important;"><h2
 						style="margin-bottom: 0px;">Business Object Selection and
 						Search</h2></td>
@@ -58,6 +62,9 @@ ul.errorMessagesPanel {
 							ng-show="currentBusinessObjectInstance != null"></input><input
 							type="button" value="Create"
 							ng-click="createBusinessObjectInstance()"
+							style="margin-left: 10px;"></input><input type="button"
+							value="Clear" ng-show="currentBusinessObjectInstance != null"
+							ng-click="clearBusinessObjectInstance()"
 							style="margin-left: 10px;"></input></td>
 					</tr>
 					<tr ng-show="currentBusinessObjectInstance == null">
@@ -77,19 +84,9 @@ ul.errorMessagesPanel {
 								</tr>
 							</table>
 							<div ng-repeat="instance in [currentBusinessObjectInstance]">
-								<table>
-									<tr>
-										<td
-											ng-repeat="column in businessObjectManagementPanelController.fieldColumns">
-											<table class="formTable">
-												<tr ng-repeat="field in column">
-													<td><label style="margin-left: 5px;">{{field.name}}</label></td>
-													<td><span ng-include="'../objectPanelField.html'"></span></td>
-												</tr>
-											</table>
-										</td>
-									</tr>
-								</table>
+								<div ng-repeat="type in [getBusinessObject()]">
+									<div ng-include="'./objectPanel.html'"></div>
+								</div>
 							</div>
 						</td>
 					</tr>
