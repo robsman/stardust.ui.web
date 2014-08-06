@@ -10,9 +10,8 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.messages;
 
-import javax.faces.context.FacesContext;
-
 import org.eclipse.stardust.ui.web.common.util.AbstractMessageBean;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ManagedBeanUtils;
 
 
 public class MessagesViewsCommonBean extends AbstractMessageBean
@@ -31,10 +30,6 @@ public class MessagesViewsCommonBean extends AbstractMessageBean
     */
    public static MessagesViewsCommonBean getInstance()
    {
-      return (MessagesViewsCommonBean) FacesContext.getCurrentInstance().getApplication()
-            .getVariableResolver().resolveVariable(FacesContext.getCurrentInstance(),
-                  BEAN_NAME);
-
+      return (MessagesViewsCommonBean) ManagedBeanUtils.getManagedBean(BEAN_NAME);
    }
-
 }

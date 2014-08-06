@@ -61,16 +61,15 @@ import org.eclipse.stardust.ui.web.common.spi.user.User;
 import org.eclipse.stardust.ui.web.common.spi.user.UserProvider;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.html5.rest.RestControllerUtils;
-import org.eclipse.stardust.ui.web.reporting.beans.spring.portal.CriticalityConfigurationService;
 import org.eclipse.stardust.ui.web.reporting.beans.spring.portal.SearchHandlerChain;
 import org.eclipse.stardust.ui.web.reporting.common.portal.DescriptorUtils;
 import org.eclipse.stardust.ui.web.reporting.common.portal.DescriptorUtils.DescriptorMetadata;
-import org.eclipse.stardust.ui.web.reporting.common.portal.criticality.CriticalityCategory;
-import org.eclipse.stardust.ui.web.reporting.common.portal.criticality.CriticalityConfigurationUtil;
 import org.eclipse.stardust.ui.web.reporting.scheduling.SchedulingFactory;
 import org.eclipse.stardust.ui.web.reporting.scheduling.SchedulingRecurrence;
 import org.eclipse.stardust.ui.web.reporting.ui.UiHelper;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
+import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityCategory;
+import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityConfigurationUtil;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.FileStorage;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
@@ -142,9 +141,6 @@ public class ReportingServiceBean
 
    @Resource(name=XPathCacheManager.BEAN_ID)
    private XPathCacheManager xPathCacheManager;
-
-   @Resource
-   private CriticalityConfigurationService criticalityConfigurationService;
 
    private JsonMarshaller jsonMarshaller;
 
@@ -297,8 +293,7 @@ public class ReportingServiceBean
     */
    public JsonObject getPreferenceData()
    {
-      List<CriticalityCategory> criticalityPrefs = CriticalityConfigurationUtil
-            .getCriticalityCategoriesList(criticalityConfigurationService.readCriticalityCategoryPrefsMap());
+      List<CriticalityCategory> criticalityPrefs = CriticalityConfigurationUtil.getCriticalityCategoriesList();
 
       JsonObject preferencesJson = new JsonObject();
 
