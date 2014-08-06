@@ -31,7 +31,7 @@ public class Descriptor implements Serializable
    public Descriptor(DataPath dataPath, IDescriptorFilterModel filterModel)
    {
       this.dataPath = dataPath;
-      DescriptorFilterUtils.DescriptorFlags flags = DescriptorFilterUtils.getSortableAndFilterableFlags(dataPath);
+      DescriptorFilterUtils.DataPathMetadata flags = DescriptorFilterUtils.getDataPathMetadata(dataPath);
       filterable = flags.isFilterable();
       sortable = flags.isSortable();
       if(sortable)

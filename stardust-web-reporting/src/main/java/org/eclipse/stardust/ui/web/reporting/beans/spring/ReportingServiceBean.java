@@ -62,17 +62,17 @@ import org.eclipse.stardust.ui.web.common.spi.user.UserProvider;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.html5.rest.RestControllerUtils;
 import org.eclipse.stardust.ui.web.reporting.beans.spring.portal.SearchHandlerChain;
-import org.eclipse.stardust.ui.web.reporting.common.portal.DescriptorUtils;
-import org.eclipse.stardust.ui.web.reporting.common.portal.DescriptorUtils.DescriptorMetadata;
 import org.eclipse.stardust.ui.web.reporting.scheduling.SchedulingFactory;
 import org.eclipse.stardust.ui.web.reporting.scheduling.SchedulingRecurrence;
 import org.eclipse.stardust.ui.web.reporting.ui.UiHelper;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityCategory;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityConfigurationUtil;
+import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils.DataPathMetadata;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.FileStorage;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.CommonDescriptorUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
@@ -215,10 +215,9 @@ public class ReportingServiceBean
 
             processesJson.add(processDefinition.getId(), processJson);
 
-            Map<DataPath, DescriptorMetadata> dataPaths = DescriptorUtils.getAllDescriptors(processDefinition, true,
-                  modelService, servletContext, xPathCacheManager);
+            Map<DataPath, DataPathMetadata> dataPaths = CommonDescriptorUtils.getAllDescriptorsWithMetadata(processDefinition, true); 
 
-            for (Entry<DataPath, DescriptorMetadata> dataPathEntry : dataPaths.entrySet())
+            for (Entry<DataPath, DataPathMetadata> dataPathEntry : dataPaths.entrySet())
             {
                DataPath dataPath = dataPathEntry.getKey();
                if (dataPath.isDescriptor())
@@ -235,7 +234,7 @@ public class ReportingServiceBean
                      descriptorJson.addProperty("type", UiHelper.mapDesciptorType(dataPath.getMappedType()).getId());
 
                      // metadata for Engine
-                     DescriptorUtils.DescriptorMetadata metadata = dataPathEntry.getValue();
+                     DataPathMetadata metadata = dataPathEntry.getValue();
                      JsonObject metadataJson = new JsonObject();
                      metadataJson.addProperty("isDescriptor", true);
                      metadataJson.addProperty("isStructuredType", metadata.isStructured());

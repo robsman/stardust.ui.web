@@ -68,7 +68,7 @@ public class DescriptorFilterUtils
     */
    public static void applySorting(Query query, String descriptorId, DataPath dataPath, boolean ascending)
    {
-      DescriptorFlags descriptorFlags = getSortableAndFilterableFlags(dataPath);
+      DataPathMetadata descriptorFlags = getDataPathMetadata(dataPath);
       if (descriptorFlags.isSortable())
       {
          query.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
@@ -93,7 +93,7 @@ public class DescriptorFilterUtils
     */
    public static boolean isDataFilterable(DataPath dataPath)
    {
-      return getSortableAndFilterableFlags(dataPath).isFilterable();
+      return getDataPathMetadata(dataPath).isFilterable();
    }
    
    
@@ -106,7 +106,7 @@ public class DescriptorFilterUtils
     */
    public static boolean isDataSortable(DataPath dataPath)
    {
-      return getSortableAndFilterableFlags(dataPath).isSortable();
+      return getDataPathMetadata(dataPath).isSortable();
    }
 
    /**
@@ -116,10 +116,10 @@ public class DescriptorFilterUtils
     *           <code>DataPath</DataPath> that is to be evaluated
     * @return Wrapper for the sortable and filterable flag
     */
-   public static DescriptorFlags getSortableAndFilterableFlags(DataPath dataPath)
+   public static DataPathMetadata getDataPathMetadata(DataPath dataPath)
    {
       Model model = ModelCache.findModelCache().getModel(dataPath.getModelOID());
-      DescriptorFlags flags = new DescriptorFlags();
+      DataPathMetadata dataPathMD = new DataPathMetadata();
       if (model != null)
       {
          Data data = model.getData(dataPath.getData());
@@ -129,6 +129,7 @@ public class DescriptorFilterUtils
             String typeId = dataDetails.getTypeId();
             if (StructuredDataConstants.STRUCTURED_DATA.equals(typeId))
             {
+               dataPathMD.structured = true;
                String myXPath = dataPath.getAccessPath();
                // Pepper models, return null for Access Path, Eclipse model returns "" for
                // Structured Enum
@@ -141,6 +142,8 @@ public class DescriptorFilterUtils
                   // the XPath must be simplified (e.g. indexes will be removed)
                   myXPath = StructuredDataXPathUtils.getXPathWithoutIndexes(myXPath);
    
+                  dataPathMD.xPath = myXPath;
+                  
                   // For performance get data from Cache
                   IXPathMap xPathMap = XPathCacheManager.getInstance().getXpathMap(model, dataPath);
                   if (null == xPathMap)
@@ -168,8 +171,8 @@ public class DescriptorFilterUtils
                      else if (typedXPath.getType() != BigData.NULL)
                      {
                         // it is a list of primitives or a single primitive
-                        flags.filterable = true;
-                        flags.sortable = !typedXPath.isList();
+                        dataPathMD.filterable = true;
+                        dataPathMD.sortable = !typedXPath.isList();
                      }
                   }
                }
@@ -184,17 +187,17 @@ public class DescriptorFilterUtils
                if (!PredefinedConstants.CURRENT_DATE.equals(data.getId())
                      && !PredefinedConstants.ROOT_PROCESS_ID.equals(data.getId()))
                {
-                  flags = new DescriptorFlags(true, true);
+                  dataPathMD = new DataPathMetadata(true, true);
                }
                Class mappedType = dataPath.getMappedType();
                if (Float.class.equals(mappedType) || Double.class.equals(mappedType))
                {
-                  flags.sortable = false;
+                  dataPathMD.sortable = false;
                }
             }
          }
       }
-      return flags;
+      return dataPathMD;
    }
 
    /**
@@ -884,18 +887,27 @@ public class DescriptorFilterUtils
       return filter;
    }
 
-   public static class DescriptorFlags
+   public static class DataPathMetadata
    {
       private boolean sortable;
 
       private boolean filterable;
+      
+      private boolean structured;
 
-      public DescriptorFlags()
+      private String xPath;
+
+      public String getxPath()
       {
-         sortable = filterable = false;
+         return xPath;
       }
 
-      public DescriptorFlags(boolean sortable, boolean filterable)
+      public DataPathMetadata()
+      {
+         sortable = filterable = structured = false;
+      }
+
+      public DataPathMetadata(boolean sortable, boolean filterable)
       {
          this.sortable = sortable;
          this.filterable = filterable;
@@ -909,6 +921,11 @@ public class DescriptorFilterUtils
       public boolean isFilterable()
       {
          return filterable;
+      }
+      
+      public boolean isStructured()
+      {
+         return structured;
       }
    }
 

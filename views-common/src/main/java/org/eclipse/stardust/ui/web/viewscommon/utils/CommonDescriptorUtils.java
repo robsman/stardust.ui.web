@@ -12,6 +12,7 @@ package org.eclipse.stardust.ui.web.viewscommon.utils;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -50,6 +51,7 @@ import org.eclipse.stardust.ui.web.viewscommon.common.ModelElementComparator;
 import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.viewscommon.common.constant.ProcessPortalConstants;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils;
+import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils.DataPathMetadata;
 
 
 
@@ -239,7 +241,33 @@ public class CommonDescriptorUtils
       return allDescriptors;
    }
 
-  
+ 
+   /**
+    * @param process
+    * @param onlyFilterable
+    * @return
+    */
+   public static Map<DataPath, DataPathMetadata> getAllDescriptorsWithMetadata(ProcessDefinition process, boolean onlyFilterable)
+   {
+      Map<DataPath, DataPathMetadata> allDescriptors = new HashMap<DataPath, DataPathMetadata>();
+
+      for (Iterator descrItr = process.getAllDataPaths().iterator(); descrItr.hasNext();)
+      {
+         DataPath path = (DataPath) descrItr.next();
+         if (Direction.IN.equals(path.getDirection()) && path.isDescriptor())
+         {
+            DataPathMetadata metadata = DescriptorFilterUtils.getDataPathMetadata(path);
+
+            if (!onlyFilterable || metadata.isFilterable())
+            {
+               allDescriptors.put(path, metadata);
+            }
+         }
+      }
+
+      return allDescriptors;
+   }
+   
    /**
     * Default value will be true.
     * @param prefScope
