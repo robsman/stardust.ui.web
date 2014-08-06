@@ -1042,6 +1042,7 @@ define(
 										this.diagram.modelId, this.oid, changes);
 
 						m_commandsController.submitCommand(command);
+						this.preDragState = null;
 					}
 
 				};

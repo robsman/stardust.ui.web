@@ -643,7 +643,7 @@ define(
 							}
 						}
 
-						var swimLaneHeight = 0;
+						var swimLaneHeight;
 						for ( var n in this.laneSymbols) {
 							var dX = currentX - this.laneSymbols[n].x;
 							var laneYMargin = topMargin - this.laneSymbols[n].y;
@@ -665,7 +665,9 @@ define(
 										dX + symbolDx, dY);
 							}
 
-							if (swimLaneHeight < this.laneSymbols[n].height) {
+							if (!swimLaneHeight ||
+									(this.laneSymbols[n].preDragState
+											&& this.laneSymbols[n].preDragState.height != this.laneSymbols[n].height)) {
 								swimLaneHeight = this.laneSymbols[n].height;
 							}
 
@@ -696,7 +698,7 @@ define(
 						var currentY = this.y
 								+ m_constants.POOL_SWIMLANE_MARGIN;
 
-						var swimLaneWidth = 0;
+						var swimLaneWidth;
 						for ( var n in this.laneSymbols) {
 							var dY = currentY - this.laneSymbols[n].y;
 
@@ -709,7 +711,9 @@ define(
 										dX, dY);
 							}
 
-							if (swimLaneWidth < this.laneSymbols[n].width) {
+							if (!swimLaneWidth ||
+									(this.laneSymbols[n].preDragState
+											&& this.laneSymbols[n].preDragState.width != this.laneSymbols[n].width)) {
 								swimLaneWidth = this.laneSymbols[n].width;
 							}
 
