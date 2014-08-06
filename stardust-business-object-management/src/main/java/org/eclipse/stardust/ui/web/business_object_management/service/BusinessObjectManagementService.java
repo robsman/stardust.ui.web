@@ -26,10 +26,10 @@ import org.eclipse.stardust.engine.api.model.Data;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.model.Reference;
 import org.eclipse.stardust.engine.api.model.TypeDeclaration;
-import org.eclipse.stardust.engine.api.query.BusinessObjectQuery;
+//import org.eclipse.stardust.engine.api.query.BusinessObjectQuery;
 import org.eclipse.stardust.engine.api.runtime.*;
 //import org.eclipse.stardust.engine.api.runtime.BusinessObject.Definition;
-import org.eclipse.stardust.engine.api.runtime.BusinessObject.Value;
+//import org.eclipse.stardust.engine.api.runtime.BusinessObject.Value;
 import org.eclipse.stardust.engine.core.runtime.beans.BigData;
 import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
 import org.eclipse.stardust.engine.core.struct.StructuredTypeRtUtils;
@@ -413,7 +413,7 @@ public class BusinessObjectManagementService {
          businessObjectInstances.add(getFundInstance("4711", "Haile"));
       } else {
 
-         BusinessObjectQuery query = BusinessObjectQuery.findForBusinessObject(Long.parseLong(modelOid), businessObjectId);
+         /*BusinessObjectQuery query = BusinessObjectQuery.findForBusinessObject(Long.parseLong(modelOid), businessObjectId);
          query.setPolicy(new BusinessObjectQuery.Policy(BusinessObjectQuery.Option.WITH_VALUES));
          BusinessObjects bos = getQueryService().getBusinessObjects(query);
 
@@ -427,14 +427,14 @@ public class BusinessObjectManagementService {
                   businessObjectInstances.add(toJson(value));
                }
             }
-         }
+         }*/
 
       }
 
       return resultJson;
    }
 
-   private JsonElement toJson(Value value)
+   /*private JsonElement toJson(Value value)
    {
       Serializable object = value.getValue();
       if (object instanceof Map)
@@ -442,7 +442,7 @@ public class BusinessObjectManagementService {
          return toMapValueJson((Map<?, ?>) object);
       }
       return new JsonObject();
-   }
+   }*/
 
    private JsonElement toMapValueJson(Map<?, ?> map)
    {
