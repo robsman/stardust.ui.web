@@ -29,8 +29,6 @@ import org.eclipse.stardust.engine.core.struct.StructuredTypeRtUtils;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
-import org.eclipse.stardust.ui.web.common.util.FacesUtils;
-
 import org.eclipse.xsd.XSDNamedComponent;
 import org.eclipse.xsd.XSDSchema;
 
@@ -68,7 +66,7 @@ public class XPathCacheManager
     */
    public static XPathCacheManager getInstance()
    {
-      return (XPathCacheManager) FacesUtils.getBeanFromContext(BEAN_ID);
+      return (XPathCacheManager) ManagedBeanUtils.getManagedBean(BEAN_ID);
    }
 
    /**

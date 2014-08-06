@@ -18,8 +18,8 @@ import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.runtime.AdministrationService;
 import org.eclipse.stardust.engine.core.preferences.PreferenceScope;
 import org.eclipse.stardust.engine.core.preferences.Preferences;
-import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ManagedBeanUtils;
 
 /**
  * 
@@ -39,7 +39,7 @@ public class PartitionPreferenceCache implements Serializable
 
    public static PartitionPreferenceCache getCurrent()
    {
-      return (PartitionPreferenceCache) FacesUtils.getBeanFromContext(BEAN_NAME);
+      return (PartitionPreferenceCache) ManagedBeanUtils.getManagedBean(BEAN_NAME);
    }
 
    /**
