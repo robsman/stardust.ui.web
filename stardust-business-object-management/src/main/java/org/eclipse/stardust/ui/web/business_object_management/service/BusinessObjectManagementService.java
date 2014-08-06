@@ -335,21 +335,15 @@ public class BusinessObjectManagementService {
       JsonObject json = new JsonObject();
       json.addProperty("id", xPath.getId());
       json.addProperty("name", xPath.getId()); // TODO fetch from annotations
-      String key = StringUtils.isEmpty(xPath.getXsdTypeNs()) || xPath.getType() != BigData.NULL
-            ? xPath.getXsdTypeName()
-            : "{" + xPath.getXsdTypeNs() + "}" + xPath.getXsdTypeName();
+      String key = StringUtils.isEmpty(xPath.getXsdTypeNs())
+            ? "anonymous" + (types.entrySet().size() + 1)
+            : xPath.getType() != BigData.NULL
+                  ? xPath.getXsdTypeName()
+                  : "{" + xPath.getXsdTypeNs() + "}" + xPath.getXsdTypeName();
       json.addProperty("type", key);
       json.addProperty("list", xPath.isList());
       json.addProperty("key", annotations.isIndexed());
       json.addProperty("primaryKey", false); // TODO
-      if (StringUtils.isEmpty(xPath.getXsdTypeName()) && xPath.getType() == BigData.NULL)
-      {
-         List<TypedXPath> childXPaths = xPath.getChildXPaths();
-         if (childXPaths != null && !childXPaths.isEmpty())
-         {
-            addStructuralInformation(json, childXPaths, types);
-         }
-      }
       return json;
    }
 
@@ -361,11 +355,13 @@ public class BusinessObjectManagementService {
          for (TypedXPath xPath : xPaths)
          {
             fields.add(toJson(xPath, types));
-            if (StringUtils.isNotEmpty(xPath.getXsdTypeName()) && xPath.getType() == BigData.NULL)
+            if (xPath.getType() == BigData.NULL)
             {
                String key = StringUtils.isEmpty(xPath.getXsdTypeNs())
-                     ? xPath.getXsdTypeName()
-                     : "{" + xPath.getXsdTypeNs() + "}" + xPath.getXsdTypeName();
+                     ? "anonymous" + (types.entrySet().size() + 1)
+                     : StringUtils.isEmpty(xPath.getXsdTypeNs())
+                           ? xPath.getXsdTypeName()
+                           : "{" + xPath.getXsdTypeNs() + "}" + xPath.getXsdTypeName();
                if (!types.has(key))
                {
                   JsonObject type = new JsonObject();
