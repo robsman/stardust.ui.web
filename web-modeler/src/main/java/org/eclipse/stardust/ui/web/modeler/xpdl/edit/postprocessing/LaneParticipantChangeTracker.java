@@ -103,9 +103,12 @@ public class LaneParticipantChangeTracker implements ChangePostprocessor
       {
          AttributeType attribute = AttributeUtil.setAttribute(manualTrigger,
                PredefinedConstants.PARTICIPANT_ATT, newPerformerId);
-         ModelUtils.setReference(attribute,
-               ModelUtils.findContainingModel(manualTrigger), "role+organization");
-         modification.markAlsoModified(manualTrigger);
+         if (attribute != null)
+         {
+            ModelUtils.setReference(attribute,
+                  ModelUtils.findContainingModel(manualTrigger), "role+organization");
+            modification.markAlsoModified(manualTrigger);
+         }
       }
    }
 }
