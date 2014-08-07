@@ -136,16 +136,17 @@ define(
 				this.metadata.stringType = {
 					id : "stringType",
 					name : this.getI18N("reporting.definitionView.metadata.stringType.label"),
-					operators : ["E", "NE", "I", "NI"],
+					operators : ["E", "NE", "I", "NI", "L"],
 				};
 				this.metadata.integerType = {
 					id : "integerType",
 					name : this.getI18N("reporting.definitionView.metadata.integerType.label"),
-					operators : ["E", "LE", "GE", "NE", "I", "NI"],
+					operators : ["E", "LE", "GE", "NE", "I", "NI"]
 				};
 				this.metadata.decimalType = {
 					id : "decimalType",
 					name : this.getI18N("reporting.definitionView.metadata.decimalType.label"),
+					operators : ["E", "LE", "GE", "NE", "I", "NI"]
 				};
 				this.metadata.booleanType = {
 					id : "booleanType",
@@ -220,7 +221,7 @@ define(
                         name : this.getI18N("reporting.definitionView.rootProcessInstanceDuration"),
                         type : this.metadata.durationType
                      },
-							processOID : {
+					processOID : {
                         id : "processOID",
                         name : this.getI18N("reporting.definitionView.additionalFiltering.processOID"),
                         type : this.metadata.integerType

@@ -36,9 +36,10 @@
 					ng-show="reportFilterController.getDimension(x.dimension).type == reportFilterController.getMetadata().stringType">
 					<table cellpadding="0" cellspacing="0" class="layoutTable">
 						<tr>
-							<td><select id="oper{{$index}}" ng-model="x.operator" ng-disabled="reportFilterController.parameterDisplay"
+							<td><select id="oper{{$index}}" ng-model="x.operator" ng-disabled="reportFilterController.parameterDisplay" 
+								ng-change="reportFilterController.onOperatorChange(x)"
 								ng-options="o.id as o.label for o in reportFilterController.getOperatorsEnum(reportFilterController.getDimension(x.dimension))"></td>
-							<td><input id="value{{$index}}" type="text" ng-model="x.value"></td>
+							<td><input id="value{{$index}}" type="text" ng-model="x.value" ng-change="reportFilterController.onValueChange(x)"></td>
 							<td ng-include="'templates/parameterControl.html'"></td>
 						</tr>
 					</table>
@@ -59,11 +60,12 @@
 					<table cellpadding="0" cellspacing="0" class="layoutTable">
 						<tr>
 							<td><select id="oper{{$index}}" ng-model="x.operator" ng-disabled="reportFilterController.parameterDisplay"
+								ng-change="reportFilterController.onOperatorChange(x)"
 								ng-options="o.id as o.label for o in reportFilterController.getOperatorsEnum(reportFilterController.getDimension(x.dimension))"></td>
 
-							<td ng-show="x.operator != 'B'"><input id="value{{$index}}" style="width: 127px;"
+							<td ng-show="x.operator != 'B' && !(x.operator == 'I' || x.operator == 'NI')"><input id="value{{$index}}" style="width: 127px;"
 								type="number" ng-model="x.value"></td>
-							<td ng-show="x.operator == 'B'">
+							<td ng-show="x.operator == 'B' && !(x.operator == 'I' || x.operator == 'NI')">
 								<table>
 									<tr>
 										<td><label>{{reportFilterController.getI18N('reporting.definitionView.from.label')}}</label></td>
@@ -75,6 +77,10 @@
 									</tr>
 
 								</table>
+							</td>
+							<td ng-show="x.operator == 'I' || x.operator == 'NI'">
+								<input id="value{{$index}}" style="width: 127px;" type="String" ng-model="x.value" 
+									ng-change="reportFilterController.onValueChange(x)">
 							</td>
 							<td ng-include="'templates/parameterControl.html'"></td>
 						</tr>

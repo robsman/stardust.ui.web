@@ -115,8 +115,9 @@ define(
 					var index = this.getIndex(filter.dimension);
 					this.filters[index].value = null;
 					this.filters[index].metadata = null;
-					this.filters[index].operator = null;
-
+					this.filters[index].operator = "E";
+					delete this.filters[index].uiValue;
+					
 					if (this.filters[index].dimension == 'processName') {
 						this.filters[index].metadata = {
 							process_filter_auxiliary : true
@@ -158,9 +159,6 @@ define(
 							this.filters[index].value = false;
 						}
 					}
-
-					// TODO: Operator only for respective types
-					this.filters[index].operator = "E";
 				};
 
 				/**
@@ -190,6 +188,45 @@ define(
 					return dimensions;
 				};
 
+				/**
+				 * 
+				 */
+				ReportFilterController.prototype.onOperatorChange = function(dimension){
+					this.onValueChange(dimension);
+				};
+				
+				/**
+				 * 
+				 */
+				ReportFilterController.prototype.onValueChange = function(dimension){
+					var index = this.getIndex(dimension.dimension);
+					var filter = this.filters[index];
+					if (filter.operator == "I" || filter.operator == "NI") {
+						//String
+						var dim = this.getDimension(dimension.dimension);
+						if(dim.type.id === this.getMetadata().stringType.id){
+							filter.uiValue = filter.value.split(",");
+							for(var i = 0; i < filter.uiValue.length; i++){
+								filter.uiValue[i] = filter.uiValue[i].trim();
+							}	
+						}else{ //numeric
+							var uiValue = filter.value.split(",");
+							filter.uiValue = [];
+							for (var i = 0; i < uiValue.length; i++) {
+								uiValue[i] = uiValue[i].trim();
+								if (uiValue[i]) {
+									filter.uiValue[i] = parseInt(uiValue[i]);
+								}
+							}	
+						}
+						
+					} else {
+						if(filter.dimension != "criticality"){
+							delete filter.uiValue;	
+						}
+					}
+				};
+				
 				/**
 				 * 
 				 */
@@ -428,10 +465,6 @@ define(
 							}
 						} else {
 							delete filter.uiValue;
-						}
-					}else {
-						if(filter.dimension != "criticality"){
-							delete filter.uiValue;	
 						}
 					}
 					return filteredEnumItems;
