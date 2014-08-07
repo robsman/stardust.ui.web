@@ -99,7 +99,7 @@ define(
                         supportsDataMappings : true,
                         supportsDescriptors : false,
                         supportsDataTypeSelection : true,
-                        supportsDocumentTypes : false,
+                        supportsDocumentTypes : true,
                         hideEnumerations:true
                      });
 

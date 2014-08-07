@@ -1013,7 +1013,7 @@ define(
 
            // add attachment document
            if(includeAttachmentBean)
-               route += "<process ref=\"addAttachmentProcessor\"/>\n";
+               route += "<to uri=\"bean:attachmentBeanHandler?method=toAttachment\"/>\n";
                
 					// execute smpt endpoint
                route += "<to uri=\""+this.protocolSelect.val()+"://" + this.serverInput.val()
