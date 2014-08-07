@@ -20,13 +20,21 @@
 		<table style="vertical-align: top;">
 			<tr>
 				<td style="vertical-align: top;">
-					<ice:panelGrid columns="2">
+					<ice:panelGrid columns="3">
 						<ice:outputText value="#{processSearchBean.messages['searchFor.label']}#{processSearchBean.messages['colon']}" styleClass="label-form" />
 						<ice:selectOneMenu partialSubmit="true" valueChangeListener="#{processSearchBean.searchOptionChangeListener}"
 							value="#{processSearchBean.selectedSearchOption}">
 							<pc:automationTag value="auto-BCC-ProcSrch-SearchFor" standAlone="false"/>
 							<f:selectItems value="#{processSearchBean.searchOptions}" />
 						</ice:selectOneMenu>
+						<ice:panelGroup panelTooltip="processToolTip">
+							<ice:commandLink
+								action="#{processSearchBean.oldestPIStartTime}">
+								<ice:graphicImage
+									value="/plugins/views-common/images/icons/information.png"
+									title="" />
+							</ice:commandLink>
+						</ice:panelGroup>
 					</ice:panelGrid>
 				</td>
 			</tr>
@@ -442,6 +450,23 @@
 				</td>
 			</tr>
 		</table>
+		<ice:panelGroup style="display: inline;">
+			<ice:panelTooltip id="processToolTip" hideOn="mouseout" hoverDelay="500"
+				styleClass="tooltip2">
+				<f:facet name="header">
+				</f:facet>
+				<f:facet name="body" >
+					<ice:panelGroup>
+						<ice:panelGrid columns="1"
+							columnClasses="tooltip2Label, tooltip2Data">
+							<ice:outputLabel
+								value="Oldest Audit Trail Entry" />
+							<ice:outputText value="#{processSearchBean.auditTrailOldestPI}" />
+						</ice:panelGrid>
+					</ice:panelGroup>
+				</f:facet>
+			</ice:panelTooltip>
+		</ice:panelGroup>
 	</ice:panelCollapsible>
 	<ice:panelGroup styleClass="clearing"/>
 	<ice:panelGroup style="margin: 0px; padding: 0px;" rendered="#{processSearchBean.selectedSearchOption eq 0 and processSearchBean.processTableInitialized}">

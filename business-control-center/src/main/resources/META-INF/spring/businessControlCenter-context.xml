@@ -83,9 +83,8 @@
    
    <bean name="processSearchBean"
 		class="org.eclipse.stardust.ui.web.bcc.views.ProcessSearchBean"
-		scope="portalTab">
-	</bean>
-	
+		scope="portalTab">	</bean>
+		<bean id="auditTrailProcessInstanceInfo" class="org.eclipse.stardust.ui.web.bcc.AuditTrailProcessInstanceInfo" scope="session">	</bean>	
    <bean name="processResourceMgmtBean" class="org.eclipse.stardust.ui.web.bcc.views.ProcessResourceMgmtBean"
         scope="portalTab">
    </bean>
