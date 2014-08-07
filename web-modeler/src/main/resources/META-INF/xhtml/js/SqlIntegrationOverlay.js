@@ -1259,6 +1259,64 @@ define(
              * 
              */
             SqlIntegrationOverlay.prototype.validate = function() {
+               var valid = true;
+               
+               if(m_utils.isEmptyString(this.codeEditor.getEditor().getSession().getValue())){
+                   this.view.errorMessages .push("No SQL Query provided."); 
+                   valid = false;
+               }
+
+               if(this.connectionTypeSelect.val()=="direct" && (this.databaseTypeSelect.val()!="others" && this.databaseTypeSelect.val()!=m_constants.TO_BE_DEFINED) ){
+                  //when using direct connection verify host,port,databasename
+                                                                 
+                  this.showHideCommonDbConfig();
+                  this.showHideOthersDbConfig(true);
+                                                                 
+                  this.hostInput.removeClass("error");
+                  this.portInput.removeClass("error");
+                  this.dataBaseNameInput.removeClass("error");
+                 
+                  if(m_utils.isEmptyString(this.hostInput.val()) ){
+                      this.view.errorMessages .push("No Data Source Host provided."); 
+                      this.hostInput.addClass("error"); 
+                      valid = false;
+                  }
+                  
+                 var numRegexp=new RegExp("[^0-9]");
+                 if( numRegexp.test(this.portInput.val()) || 
+					(m_utils.isEmptyString(this.portInput.val())) || 
+					(Number(this.portInput.val() ) < 1  ||  Number(this.portInput.val()) > 65535) 
+				) {
+                      this.view.errorMessages .push("Port number should be from 1-65535.");
+                      this.portInput.addClass("error"); 
+                      valid = false;
+                  }
+                  if(m_utils.isEmptyString(this.dataBaseNameInput.val()) ){
+                      this.view.errorMessages .push("No Data Source Name provided.");
+                      this.dataBaseNameInput.addClass("error"); 
+                      valid = false;
+                  }
+               }
+                                                  
+    		if(this.connectionTypeSelect.val()=="direct" && (this.databaseTypeSelect.val() =="others") ){
+    				//when using others connection verify url/driver                                          
+                     this.showHideCommonDbConfig(true);
+                     this.showHideOthersDbConfig();
+                     this.urlInput.removeClass("error");
+                     this.driverInput.removeClass("error");
+                      
+               if(m_utils.isEmptyString(this.urlInput.val()) ){
+                      this.view.errorMessages .push("No URL provided.");
+                      this.urlInput.addClass("error"); 
+                      valid = false;
+                  }
+                                                  
+                if(m_utils.isEmptyString(this.driverInput.val()) ){
+                      this.view.errorMessages .push("No Driver provided.");
+                      this.driverInput.addClass("error"); 
+                      valid = false;
+                  }
+               
                return true;  
             };
          }
