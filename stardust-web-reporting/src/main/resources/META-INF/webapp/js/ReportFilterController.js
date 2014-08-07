@@ -253,7 +253,7 @@ define(
 				 */
 				ReportFilterController.prototype.removeParameter = function(id) {
 					for (var int = 0; int < this.filters.length; int++) {
-						if (id.indexOf(this.filters[int].dimension) != -1) {
+						if (id == this.filters[int].dimension) {
 							delete this.filters[int].metadata.parameterizable;
 						}
 					}
@@ -264,7 +264,7 @@ define(
 				 */
 				ReportFilterController.prototype.existsParameter = function(id) {
 					for (var int = 0; int < this.filters.length; int++) {
-						if (id.indexOf(this.filters[int].dimension) != -1) {
+						if (id == this.filters[int].dimension) {
 							return this.filters[int].metadata
 									&& this.filters[int].metadata.parameterizable;
 						}
@@ -278,10 +278,12 @@ define(
 				ReportFilterController.prototype.addParameter = function(id,
 						name, type, value, operator) {
 					for (var int = 0; int < this.filters.length; int++) {
-						if (this.filters[int].metadata == null) {
-							this.filters[int].metadata = {};
+						if (id == this.filters[int].dimension){
+							if (this.filters[int].metadata == null) {
+								this.filters[int].metadata = {};
+							}
+							this.filters[int].metadata.parameterizable = true;	
 						}
-						this.filters[int].metadata.parameterizable = true;
 					}
 				};
 
