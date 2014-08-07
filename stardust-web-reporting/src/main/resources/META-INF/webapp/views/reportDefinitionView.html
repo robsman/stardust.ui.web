@@ -343,7 +343,7 @@ table.formTable td {
 										<td><select id="factSelect">
 										</select></td>
 										<td><label ng-show="isDuration(getFact())">{{getI18N('reporting.definitionView.unit.label')}}</label></td>
-										<td><select ng-model="report.dataSet.factDurationUnit"
+										<td><select id="auto-reporting-dataSetTab-factDurationUnit" ng-model="report.dataSet.factDurationUnit"
 											ng-show="isDuration(getFact())"><option value="s">{{getI18N('reporting.definitionView.seconds.label')}}</option>
 												<option value="m">{{getI18N('reporting.definitionView.minutes.label')}}</option>
 												<option value="h">{{getI18N('reporting.definitionView.hours.label')}}</option>
@@ -386,10 +386,10 @@ table.formTable td {
 												<table cellpadding="0" cellspacing="0" class="formTable">
 													<tr>
 														<td><label>{{getI18N('reporting.definitionView.cumulationInterval.label')}}</label></td>
-														<td><input type="number" style="width: 50px;"
+														<td><input id="auto-reporting-dataSetTab-firstDimensionCumulationIntervalCount" type="number" style="width: 50px;"
 															ng-model="report.dataSet.firstDimensionCumulationIntervalCount"></input>
 														</td>
-														<td><select
+														<td><select id="auto-reporting-dataSetTab-firstDimensionCumulationIntervalUnit" 
 															ng-model="report.dataSet.firstDimensionCumulationIntervalUnit">
 																<option value="s">{{getI18N('reporting.definitionView.seconds.label')}}</option>
 																<option value="m">{{getI18N('reporting.definitionView.minutes.label')}}</option>
@@ -408,7 +408,7 @@ table.formTable td {
 													<tr>
 														<td style="padding-left: 20px;"><label>Cumulation
 																Interval</label></td>
-														<td><input type="number" style="width: 50px;"
+														<td><input id="auto-reporting-dataSetTab-firstDimensionCumulationIntervalWidthInt" type="number" style="width: 50px;"
 															ng-model="report.dataSet.firstDimensionCumulationIntervalWidth"></input>
 														</td>
 													</tr>
@@ -420,7 +420,7 @@ table.formTable td {
 													<tr>
 														<td style="padding-left: 20px;"><label>Cumulation
 																Interval</label></td>
-														<td><input style="width: 100px;"
+														<td><input id="auto-reporting-dataSetTab-firstDimensionCumulationIntervalWidthDec"  style="width: 100px;"
 															ng-model="report.dataSet.firstDimensionCumulationIntervalWidth"></input>
 														</td>
 													</tr>
@@ -431,7 +431,7 @@ table.formTable td {
                                     <table cellpadding="0" cellspacing="0" class="formTable">
                                        <tr>
                                           <td><label ng-show="isDuration(getFirstDimension())">{{getI18N('reporting.definitionView.unit.label')}}</label></td>
-                                          <td><select
+                                          <td><select id="auto-reporting-dataSetTab-firstDimensionDurationUnit" 
                                              ng-model="report.dataSet.firstDimensionDurationUnit"
                                              ng-show="isDuration(getFirstDimension())"><option
                                                    value="s">{{getI18N('reporting.definitionView.seconds.label')}}</option>
