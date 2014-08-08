@@ -18,6 +18,7 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.stardust.common.utils.io.CloseableUtil;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.springframework.core.io.Resource;
@@ -147,48 +148,82 @@ public class PluginResourceUtils
             log.warn("Failed reading plugin descriptor " + pdName, ioe);
          }
       }
-
+  
       return prefix;
    }
    
    /**
+    * 
     * @param resolver
     * @param resourcePath
     * @return
     * @throws IOException
     */
-   public static Set<String> getMatchingFileNames(ResourcePatternResolver resolver,
-         String resourcePath) throws IOException
+   public static Set<String> getMatchingFileNames(ResourcePatternResolver resolver, String resourcePath)
+         throws IOException
    {
-      Set<String> fileNames = new HashSet<String>();
-      
-      Resource[] resources;
+      Set<String> allFiles = new HashSet<String>();
       
       try
       {
+         Resource[] pluginFiles;
          try
          {
-            resources = resolver.getResources("classpath*:/" + PATH_META_INF + resourcePath);   
+            pluginFiles = resolver.getResources("classpath*:/META-INF/*.portal-plugin");
          }
          catch (Exception e)
          {
-            log.error("Trying to resolve path without META-INF as exception occurred with search pattern: " + "classpath*:/" + PATH_META_INF + resourcePath, e);
-            // JBoss is unable to find META-INF some times, workaround for the scenario
-            // TODO: This will also find the resources which are not under "META_INF" directory. 
-            resources = resolver.getResources("classpath*:/**/" + resourcePath);
-         }   
-         
-         for (Resource resource : resources)
+            log.debug("exception occurred while searching resources with classpath*:/META-INF/*.portal-plugin");
+            pluginFiles = resolver.getResources("classpath*:/**/*.portal-plugin");
+         }
+
+         Set<String> resourcePathRoots = new HashSet<String>();
+
+         for (Resource resource : pluginFiles)
          {
-            fileNames.add(resource.getFilename());
+            String pluginId = resource.getFilename().substring(0, resource.getFilename().lastIndexOf("."));
+            log.debug("Inspecting portal plugin '" + pluginId + "' (" + resource.getURI()
+                  + ") for modeler extensions ...");
+
+            InputStream isPluginDescriptor = resource.getInputStream();
+
+            try
+            {
+               String firstLine = new BufferedReader(new InputStreamReader(isPluginDescriptor)).readLine();
+               resourcePathRoots.add(firstLine);
+               log.debug("resorucePath for Plugin '" + pluginId + " -> " + firstLine);
+            }
+            finally
+            {
+               CloseableUtil.closeQuietly(isPluginDescriptor);
+            }
+         }
+
+         for (String resourcePathRoot : resourcePathRoots)
+         {
+            try
+            {
+               Resource[] resources = resolver.getResources("classpath*:" + resourcePathRoot + resourcePath);
+
+               for (Resource resource2 : resources)
+               {
+                  log.debug("found resoruce -> " + resource2.getFilename());
+                  allFiles.add(resource2.getFilename());
+               }
+            }
+            catch (Exception e)
+            {
+               log.debug("Exception occurred while search resoruces for : " + "classpath*:" + resourcePathRoot
+                     + resourcePath, e);
+            }
          }
       }
-      catch (Exception e)
+      catch (IOException e)
       {
-         e.printStackTrace();
+         log.debug("Exception occurred while finding files." + resourcePath);
       }
 
-      return fileNames;
+      return allFiles;
    }
 
    private PluginResourceUtils()

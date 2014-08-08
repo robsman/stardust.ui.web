@@ -111,6 +111,8 @@ public class HTML5FrameworkServices
    {
       trace.debug("Retrieving navigation");
 
+      themesCurrent(null, null);
+      
       String contents = getCodeResource("bpm-ui/templates/navigation.json");
       contents = StringUtils.replace(contents, "FULL_PATH", getDeploymentBaseURL(uriInfo, false));
       contents = StringUtils.replace(contents, "LOGGED_IN_USER_LABEL",
@@ -257,13 +259,13 @@ public class HTML5FrameworkServices
    public String addPluginViewIconStyleSheets(String contents)
    {
       final String STYLE_FILE_POSTFIX = "-icons.css";
-      final String STYLES_FILE_PATH = "*/css/*-icons.css";
+      final String STYLES_FILE_PATH = "css/*-icons.css";
       StringBuffer pluginIconsStyles = new StringBuffer("");
 
       try
       {
-         Set<String> cssFileNames = PluginResourceUtils.getMatchingFileNames(getAppContext(),
-               STYLES_FILE_PATH);
+         Set<String> cssFileNames = PluginResourceUtils.getMatchingFileNames(getAppContext(), STYLES_FILE_PATH);
+         
          for (String fileName : cssFileNames)
          {
             String pluginName = (fileName.substring(0, fileName.indexOf(STYLE_FILE_POSTFIX)));
