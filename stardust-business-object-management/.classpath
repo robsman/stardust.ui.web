@@ -29,12 +29,12 @@
 			<attribute name="owner.project.facets" value="jst.utility"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="var" path="CARNOT_ENGINE_LIBS/lib/carnot-engine.jar"/>
 	<classpathentry kind="var" path="STARDUST_SPRING_LIBS/lib/spring-beans.jar"/>
 	<classpathentry kind="var" path="STARDUST_PORTAL_LIBS/lib/ipp-portal-common.jar"/>
 	<classpathentry kind="var" path="STARDUST_PORTAL_LIBS/lib/ipp-views-common.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="var" path="STARDUST_PORTAL_LIBS/lib/icepdf-core-5.0.0.jar"/>
-	<classpathentry kind="var" path="STARDUST_PORTAL_LIBS/lib/jsr311-api-1.1.1-eclipse01.jar"/>
+	<classpathentry kind="lib" path="/server/lib/carnot-engine.jar"/>
+	<classpathentry kind="var" path="STARDUST_PORTAL_LIBS/lib/jsr311-api-1.1.1.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
