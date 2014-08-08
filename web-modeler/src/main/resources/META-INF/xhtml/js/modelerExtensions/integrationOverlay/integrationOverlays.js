@@ -17,6 +17,7 @@ define(
             "bpm-modeler/js/SqlIntegrationOverlay",
             "bpm-modeler/js/StoredProcedureIntegrationOverlay",
             "bpm-modeler/js/TemplatingIntegrationOverlay",
+            "bpm-modeler/js/SmsIntegrationOverlay",
             "bpm-modeler/js/m_manualTriggerIntegrationOverlay",
             "bpm-modeler/js/m_timerEventIntegrationOverlay",
             "bpm-modeler/js/m_intermediateTimerEventIntegrationOverlay",
@@ -26,7 +27,7 @@ define(
             "bpm-modeler/js/m_messageEventIntegrationOverlay",
             "bpm-modeler/js/m_scanEventIntegrationOverlay",
             "bpm-modeler/js/m_genericCamelRouteEventIntegrationOverlay" ],
-      function(GenericEndpointOverlay, MailIntegrationOverlay, RestServiceOverlay, RulesIntegrationOverlay, ScriptingIntegrationOverlay,SqlIntegrationOverlay,StoredProcedureIntegrationOverlay,TemplatingIntegrationOverlay, m_manualTriggerIntegrationOverlay,
+      function(GenericEndpointOverlay, MailIntegrationOverlay, RestServiceOverlay, RulesIntegrationOverlay, ScriptingIntegrationOverlay,SqlIntegrationOverlay,StoredProcedureIntegrationOverlay,TemplatingIntegrationOverlay,SmsIntegrationOverlay, m_manualTriggerIntegrationOverlay,
             m_timerEventIntegrationOverlay,  m_intermediateTimerEventIntegrationOverlay, m_intermediateErrorEventIntegrationOverlay,
             m_fileEventIntegrationOverlay, m_emailEventIntegrationOverlay,
             m_messageEventIntegrationOverlay,
@@ -66,6 +67,12 @@ define(
                name : "Templating Invocation",
                pageHtmlUrl: "plugins/bpm-modeler/views/modeler/templatingIntegrationOverlay.html",
                provider : TemplatingIntegrationOverlay
+            },
+            {
+               id : "smsIntegrationOverlay",
+               name : "SMS Invocation",
+               pageHtmlUrl: "plugins/bpm-modeler/views/modeler/smsIntegrationOverlay.html",
+               provider : SmsIntegrationOverlay
             },
             {
                id : "sqlIntegrationOverlay",
