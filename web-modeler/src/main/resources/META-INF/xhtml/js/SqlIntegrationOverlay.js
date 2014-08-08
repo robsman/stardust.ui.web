@@ -218,7 +218,7 @@ define(
                               if (!event.data.panel.validate()) {
                                  return;
                               }
-                              event.data.panel.submitChanges();
+                              event.data.panel.submitParameterDefinitionsChanges(event.data.panel.getApplication().contexts.application.accessPoints);
                });
 
                this.hostInput
@@ -230,7 +230,7 @@ define(
                               if (!event.data.panel.validate()) {
                                  return;
                               }
-                              event.data.panel.submitChanges();
+                              event.data.panel.submitParameterDefinitionsChanges(event.data.panel.getApplication().contexts.application.accessPoints);
                            });
 
                this.portInput
@@ -242,7 +242,7 @@ define(
                               if (!event.data.panel.validate()) {
                                  return;
                               }
-                              event.data.panel.submitChanges();
+                              event.data.panel.submitParameterDefinitionsChanges(event.data.panel.getApplication().contexts.application.accessPoints);
                            });
 
                this.dataBaseNameInput
@@ -254,7 +254,7 @@ define(
                               if (!event.data.panel.validate()) {
                                  return;
                               }
-                              event.data.panel.submitChanges();
+                              event.data.panel.submitParameterDefinitionsChanges(event.data.panel.getApplication().contexts.application.accessPoints);
                            });
 
                this.userNameInput
@@ -266,7 +266,7 @@ define(
                               if (!event.data.panel.validate()) {
                                  return;
                               }
-                              event.data.panel.submitChanges();
+                              event.data.panel.submitParameterDefinitionsChanges(event.data.panel.getApplication().contexts.application.accessPoints);
                            });
 
                this.passwordInput
@@ -278,7 +278,7 @@ define(
                               if (!event.data.panel.validate()) {
                                  return;
                               }
-                              event.data.panel.submitChanges();
+                              event.data.panel.submitParameterDefinitionsChanges(event.data.panel.getApplication().contexts.application.accessPoints);
                            });
 
                this.useCVforPassowrdInput
@@ -1316,8 +1316,8 @@ define(
                       this.driverInput.addClass("error"); 
                       valid = false;
                   }
-               
-               return true;  
+               }
+               return valid;  
             };
          }
       });
