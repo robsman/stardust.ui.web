@@ -138,6 +138,10 @@ define(
 					var chartOptions = {
 						series : [],
 						seriesDefaults : {
+							lineWidth : 1.5,
+							markerOptions : {
+								style : "filledCircle"
+							},
 							pointLabels : {},
 							trendline : {
 								color : '#666666',
@@ -165,12 +169,12 @@ define(
 						legend : {
 							show: true,
 							    renderer: $.jqplot.EnhancedLegendRenderer,
-			                location: 'ne',
+			                location: 'e',
 			                placement: 'outside',
 			                fontSize: '11px'
 						},
 						highlighter : {},
-						cursor : {},
+						cursor : {show : true},
 						zoom : {},
 						seriesColors: [ "#4bb2c5", "#c5b47f", "#EAA228", "#579575", "#839557", "#958c12",
 						                 "#953579", "#4b5de4", "#d8b83f", "#ff5800", "#0085cc"]
@@ -178,10 +182,22 @@ define(
 
 					// Copy configuration from Report Definition
 
-					chartOptions.axes.xaxis.label = this.report.layout.chart.options.axes.xaxis.label;
+					if (this.report.layout.chart.options.axes.xaxis.showTicks) {
+						chartOptions.axes.xaxis.label = this.report.layout.chart.options.axes.xaxis.label;
+					}
 					chartOptions.axes.xaxis.tickOptions = this.report.layout.chart.options.axes.xaxis.tickOptions;
-					chartOptions.axes.yaxis.label = this.report.layout.chart.options.axes.yaxis.label;
+					chartOptions.axes.xaxis.tickOptions.showMark = this.report.layout.chart.options.axes.xaxis.showTickMarks;
+					chartOptions.axes.xaxis.showTickMarks = this.report.layout.chart.options.axes.xaxis.showTickMarks;
+					chartOptions.axes.xaxis.showTicks = this.report.layout.chart.options.axes.xaxis.showTicks;
+					
+					if (this.report.layout.chart.options.axes.yaxis.showTicks) {
+						chartOptions.axes.yaxis.label = this.report.layout.chart.options.axes.yaxis.label;
+					}
 					chartOptions.axes.yaxis.tickOptions = this.report.layout.chart.options.axes.yaxis.tickOptions;
+					chartOptions.axes.yaxis.tickOptions.showMark = this.report.layout.chart.options.axes.yaxis.showTickMarks;
+					chartOptions.axes.yaxis.showTickMarks = this.report.layout.chart.options.axes.yaxis.showTickMarks;
+					chartOptions.axes.yaxis.showTicks = this.report.layout.chart.options.axes.yaxis.showTicks;
+					
 					chartOptions.legend.show = this.report.layout.chart.options.legend.show;
 					chartOptions.legend.location = this.report.layout.chart.options.legend.location;
 					chartOptions.highlighter.show = this.report.layout.chart.options.highlighter.show;
@@ -192,12 +208,13 @@ define(
 					chartOptions.seriesDefaults.shadow = this.report.layout.chart.options.seriesDefaults.shadow;
 					chartOptions.seriesDefaults.pointLabels.show = this.report.layout.chart.options.seriesDefaults.pointLabels.show;
 					chartOptions.seriesDefaults.trendline.show = this.report.layout.chart.options.seriesDefaults.trendline.show;
-					chartOptions.seriesDefaults.trendline.show = this.report.layout.chart.options.seriesDefaults.trendline.show;
 					chartOptions.seriesDefaults.rendererOptions = {
 						animation : {
 							speed : 2500
 						}
 					};
+					chartOptions.animate = this.report.layout.chart.options.animate;
+					chartOptions.animateReplot = this.report.layout.chart.options.animateReplot;
 
 					//For Legend Positioning.
 					if (this.report.dataSet.type === 'seriesGroup'

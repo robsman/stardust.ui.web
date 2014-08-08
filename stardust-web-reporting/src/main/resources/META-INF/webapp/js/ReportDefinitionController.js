@@ -637,16 +637,24 @@ define(
 												tickOptions : {
 													mark : "outside",
 													markSize : 4,
-													angle : 0
-												}
+													angle : 0,
+													showMark : true,
+													showGridline : true
+												},
+												showTickMarks : true,
+												showTicks : true
 											},
 											x2axis : {},
 											yaxis : {
 												tickOptions : {
 													mark : "outside",
 													markSize : 4,
-													angle : 0
-												}
+													angle : 0,
+													showMark : true,
+													showGridline : true
+												},
+												showTickMarks : true,
+												showTicks : true
 											},
 											y2axis : {}
 										},
