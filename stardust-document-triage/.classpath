@@ -35,6 +35,6 @@
 	<classpathentry kind="var" path="STARDUST_PORTAL_LIBS/lib/ipp-views-common.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="var" path="STARDUST_PORTAL_LIBS/lib/icepdf-core-5.0.0.jar"/>
-	<classpathentry kind="var" path="STARDUST_PORTAL_LIBS/lib/jsr311-api-1.1.1-eclipse01.jar"/>
+	<classpathentry kind="var" path="STARDUST_PORTAL_LIBS/lib/jsr311-api-1.1.1.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
