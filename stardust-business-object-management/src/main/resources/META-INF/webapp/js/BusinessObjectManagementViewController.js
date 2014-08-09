@@ -79,6 +79,7 @@ define(
 				 * 
 				 */
 				BusinessObjectManagementViewController.prototype.createBusinessObjectInstance = function() {
+					console.log("Create BO");
 					this.messages = [];
 					this.currentBusinessObjectInstance = {};
 					this.newBusinessObjectInstance = this.currentBusinessObjectInstance;
@@ -107,6 +108,9 @@ define(
 					}
 
 					if (this.newBusinessObjectInstance) {
+						this
+								.cleanUpAngularFields(this.newBusinessObjectInstance);
+
 						BusinessObjectManagementService
 								.instance()
 								.createBusinessObjectInstance(
@@ -120,6 +124,9 @@ define(
 
 						this.newBusinessObjectInstance = null;
 					} else {
+						this
+								.cleanUpAngularFields(this.currentBusinessObjectInstance);
+
 						BusinessObjectManagementService
 								.instance()
 								.updateBusinessObjectInstance(
@@ -253,20 +260,52 @@ define(
 
 						// Skip primitive fields
 
-						if (!type.fields[n].list || !fieldType) {
+						if (!type.fields[n].list && !fieldType) {
 							continue;
 						}
 
 						if (!instance[type.fields[n].id]) {
 							if (!type.fields[n].list) {
 								instance[type.fields[n].id] = {};
-
-								this.createMissingComplexFieldInstances(
-										instance[type.fields[n].id], fieldType);
 							} else {
 								instance[type.fields[n].id] = [];
 							}
 						}
+
+						if (fieldType) {
+							this.createMissingComplexFieldInstances(
+									instance[type.fields[n].id], fieldType);
+						}
+					}
+				};
+
+				/**
+				 * Strips all "$" and "$$" fields injected by AngularJS.
+				 */
+				BusinessObjectManagementViewController.prototype.cleanUpAngularFields = function(
+						instance) {
+					console.log("Instance");
+					console.log(instance);
+
+					if (!instance
+							|| (typeof instance !== 'object' && !jQuery
+									.isArray(instance))) {
+						return;
+					}
+
+					for ( var key in instance) {
+						console.log(key);
+						console.log(instance[key]);
+
+						if (key.indexOf("$") == 0) {
+							delete instance[key];
+
+							console.log("Delete");
+
+							continue;
+						}
+
+						this.cleanUpAngularFields(instance[key]);
 					}
 				};
 
