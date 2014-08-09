@@ -13,14 +13,14 @@
 		ng-show="businessObjectManagementPanelController.businessObject != null">
 		<table class="formTable">
 			<tr>
-				<td><label>{{businessObjectManagementPanelController.primaryKeyField.name}}</label> <input type="text"
-					style="width: 100px; margin-left: 5px;"
+				<td><label>{{businessObjectManagementPanelController.primaryKeyField.label}}</label>
+					<input type="text" style="width: 100px; margin-left: 5px;"
 					ng-model="businessObjectManagementPanelController.primaryKeyField.filterValue"
 					ng-blur="businessObjectManagementPanelController.filterBusinessObjectInstances()"></input></td>
 				<td
 					ng-repeat="field in businessObjectManagementPanelController.keyFields"><label
-					style="margin-left: 5px;">{{field.name}}</label> <input type="text"
-					style="width: 100px; margin-left: 5px;"
+					style="margin-left: 5px;">{{field.label}}</label> <input
+					type="text" style="width: 100px; margin-left: 5px;"
 					ng-model="field.filterValue"
 					ng-blur="businessObjectManagementPanelController.filterBusinessObjectInstances()"></input></td>
 			</tr>
@@ -32,7 +32,7 @@
 				<thead>
 					<tr>
 						<th
-							ng-repeat="field in businessObjectManagementPanelController.topLevelFields">{{field.name}}</th>
+							ng-repeat="field in businessObjectManagementPanelController.topLevelFields">{{field.label}}</th>
 					</tr>
 				</thead>
 				<tbody>

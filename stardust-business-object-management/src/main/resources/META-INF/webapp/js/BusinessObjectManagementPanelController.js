@@ -87,7 +87,21 @@ define(
 						return;
 					}
 
+					// Create labels for all used types
+
+					for ( var type in this.businessObject.businessObject.types) {
+						for (var n = 0; n < this.businessObject.businessObject.types[type].fields.length; ++n) {
+							this.businessObject.businessObject.types[type].fields[n].label = this
+									.createLabel(this.businessObject.businessObject.types[type].fields[n].name);
+						}
+					}
+
 					for (var n = 0; n < this.businessObject.businessObject.fields.length; ++n) {
+						// TODO Retrieve label from annotations
+
+						this.businessObject.businessObject.fields[n].label = this
+								.createLabel(this.businessObject.businessObject.fields[n].name);
+
 						if (this.businessObject.businessObject.types[this.businessObject.businessObject.fields[n].type]) {
 							continue;
 						}
@@ -104,6 +118,19 @@ define(
 					}
 				};
 
+				BusinessObjectManagementPanelController.prototype.createLabel = function(
+						str) {
+					return str
+					// insert a space between lower & upper
+					.replace(/([a-z])([A-Z])/g, '$1 $2')
+					// space before last upper in a sequence followed by lower
+					.replace(/\b([A-Z]+)([A-Z])([a-z])/, '$1 $2$3')
+					// uppercase the first character
+					.replace(/^./, function(str) {
+						return str.toUpperCase();
+					})
+				};
+
 				/**
 				 * 
 				 */
@@ -113,7 +140,7 @@ define(
 					BusinessObjectManagementService
 							.instance()
 							.getBusinessObjectInstances(
-									this.businessObject.modelOid,
+									this.businessObject.model.oid,
 									this.businessObject.businessObject.id,
 									this.primaryKeyField, this.keyFields)
 							.done(

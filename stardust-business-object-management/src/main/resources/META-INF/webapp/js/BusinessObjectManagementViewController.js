@@ -175,7 +175,8 @@ define(
 					for (var n = 0; n < type.fields.length; ++n) {
 						// Skip non primitive fields
 
-						if (this.getBusinessObject().types[type.fields[n].type]) {
+						if (type.fields[n].list
+								|| this.getBusinessObject().types[type.fields[n].type]) {
 							continue;
 						}
 
@@ -206,7 +207,8 @@ define(
 					for (var n = 0; n < type.fields.length; ++n) {
 						// Skip complex fields
 
-						if (this.getBusinessObject().types[type.fields[n].type]) {
+						if (type.fields[n].list
+								|| this.getBusinessObject().types[type.fields[n].type]) {
 							continue;
 						}
 
@@ -230,7 +232,8 @@ define(
 					for (var n = 0; n < type.fields.length; ++n) {
 						// Skip primitive fields
 
-						if (!this.getBusinessObject().types[type.fields[n].type]) {
+						if (!type.fields[n].list
+								&& !this.getBusinessObject().types[type.fields[n].type]) {
 							continue;
 						}
 
@@ -250,12 +253,12 @@ define(
 
 						// Skip primitive fields
 
-						if (!fieldType) {
+						if (!type.fields[n].list || !fieldType) {
 							continue;
 						}
 
 						if (!instance[type.fields[n].id]) {
-							if (type.fields[n].cardinality == "0-1") {
+							if (!type.fields[n].list) {
 								instance[type.fields[n].id] = {};
 
 								this.createMissingComplexFieldInstances(

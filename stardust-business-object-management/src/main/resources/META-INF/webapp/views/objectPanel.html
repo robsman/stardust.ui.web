@@ -4,7 +4,7 @@
 			<table class="formTable">
 				<tr ng-repeat="field in getPrimitiveFields(type)"
 					ng-if="$index >= column.min && $index <= column.max">
-					<td><label style="margin-left: 5px;">{{field.name}}</label></td>
+					<td><label style="margin-left: 5px;">{{field.label}}</label></td>
 					<td><input ng-show="field.type == 'string'" type="text"
 						style="width: 200px;" ng-model="instance[field.id]"></input> <input
 						ng-show="field.type == 'boolean'" type="checkbox"
@@ -26,21 +26,21 @@
 <table>
 	<tr ng-repeat="field in getComplexFields(type)">
 		<td>
-			<h2>{{field.name}}</h2>
-			<div ng-show="field.cardinality == '0-1'"
+			<h2>{{field.label}}</h2>
+			<div ng-hide="field.list"
 				ng-repeat="type in [getBusinessObject().types[field.type]]">
 				<div ng-repeat="instance in [instance[field.id]]">
 					<div ng-include="'./objectPanel.html'"></div>
 				</div>
 			</div>
-			<div ng-show="field.cardinality == '0-N'">
+			<div ng-show="field.list">
 				<table cellpadding="0" cellspacing="0" class="dataTable"
 					style="width: 100%;"">
 					<thead>
 						<tr>
 							<th></th>
 							<th
-								ng-repeat="field in getPrimitiveFields(getBusinessObject().types[field.type])">{{field.name}}</th>
+								ng-repeat="field in getPrimitiveFields(getBusinessObject().types[field.type])">{{field.label}}</th>
 						</tr>
 					</thead>
 					<tbody>

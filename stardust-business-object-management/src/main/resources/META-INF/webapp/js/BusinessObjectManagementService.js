@@ -20,7 +20,6 @@ define(
 			 * 
 			 */
 			function BusinessObjectManagementService() {
-
 				/**
 				 * 
 				 */
