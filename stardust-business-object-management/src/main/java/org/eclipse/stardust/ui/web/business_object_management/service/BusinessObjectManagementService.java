@@ -630,6 +630,7 @@ public class BusinessObjectManagementService {
 		System.out.println("Primary Key: " + primaryKey);
 		System.out.println(jsonObject);
 		System.out.println(jsonObjectToMap(jsonObject));
+		System.out.println(mapToJsonObject(jsonObjectToMap(jsonObject)));
 
 		return jsonObject;
 	}
@@ -740,5 +741,67 @@ public class BusinessObjectManagementService {
 		}
 
 		return list;
+	}
+
+	/**
+	 * 
+	 * @param object
+	 * @return
+	 */
+	private JsonElement objectToJsonElement(Object object) {
+		if (object instanceof Map) {
+			return mapToJsonObject((Map) object);
+		} else if (object instanceof List) {
+			return listToJsonArray((List) object);
+		} else {
+			return objectToJsonPrimitive(object);
+		}
+	}
+
+	/**
+	 * 
+	 * @param map
+	 * @return
+	 */
+	private JsonObject mapToJsonObject(Map map) {
+		JsonObject jsonObject = new JsonObject();
+
+		for (Object key : map.keySet()) {
+			jsonObject.add(key.toString(), objectToJsonElement(map.get(key)));
+		}
+
+		return jsonObject;
+	}
+
+	/**
+	 * 
+	 * @param list
+	 * @return
+	 */
+	private JsonArray listToJsonArray(List list) {
+		JsonArray jsonArray = new JsonArray();
+
+		for (Object object : list) {
+			jsonArray.add(objectToJsonElement(object));
+		}
+
+		return jsonArray;
+	}
+
+	/**
+	 * 
+	 * @param object
+	 * @return
+	 */
+	private JsonPrimitive objectToJsonPrimitive(Object object) {
+		if (object instanceof Boolean) {
+			return new JsonPrimitive((Boolean) object);
+		} else if (object instanceof Number) {
+			return new JsonPrimitive((Number) object);
+		} else if (object instanceof String) {
+			return new JsonPrimitive((String) object);
+		}
+
+		throw new IllegalArgumentException("Unknown primitive object type");
 	}
 }
