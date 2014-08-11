@@ -329,8 +329,8 @@ div#loginBox .buttonContainer input{
 
 .topMenuIframeBar .menuItm:hover{
 	text-decoration:none;
-	background:  #999999;
-	border-radius:5px;
+	background:  #A69A88;
+	border-radius:3px;
 	padding:none;
 }
 
@@ -4996,17 +4996,17 @@ Disabled classes for the calendar controls
     color: #428F99;
 }
 .iceRowSelSelectedMouseOver {
-    background: #FFA326;
+    background: #EEE2CF !important;
 }
-.iceRowSelSelectedMouseOver  .iceOutTxt {
-    color: white;
+
+iceRowSelSelectedMouseOver .iceOutTxt{
+	color: #708090;
 }
 .iceRowSelMouseOver {
-    color: white;
-    x-background: #4591A1;
+    color: #708090;
 }
 .iceRowSelMouseOver .iceOutTxt {
-    color: white;
+    color: #708090 !important;
 }
 
 /*
@@ -7049,6 +7049,19 @@ input.secondary{
 }
 /**************************SG OVERRIDES*************************************/
 /***************************************************************************/
+
+/*override flyout panel vertical tab*/
+.sg-sidebar-toggle{
+	background-color:#A69A88;
+}
+
+.sg-sidebar-content-well-container{
+	border:none;
+	box-shadow: 3px 0px 5px #ddd;
+}
+
+
+
 /*over-ride padding and margins for our portal panel container*/
 .sg-sidebar-content-well{
 	padding-left:0px !important;
@@ -7098,6 +7111,11 @@ i.viewIconBase.bell{
 .sg-tabs-bar{
 	background:#5f5c53 url('./images/sungard.png')!important;
 	background-repeat:repeat-x !important;
+}
+
+.sg-sidebar-title{
+	background: #A69A88;
+	color: #FFF;
 }
 
 /********************************************************************/
@@ -7494,12 +7512,12 @@ x-img[src *='disk_multiple.png']:hover{
 
 .jstree-closed > ins {
 	background-position: 0 -3px !important;
-	background-image: url(./images/flat-icons/panelHeader-triggerCollapse_16x22.png) !important;
+	background-image: url(./images/flat-icons/panelHeader-triggerExpand_16x22.png) !important;
 }
 
 .jstree-open > ins {
 	background-position: 0 -3px !important;
-	background-image: url(./images/flat-icons/panelHeader-triggerExpand_16x22.png) !important;
+	background-image: url(./images/flat-icons/panelHeader-triggerCollapse_16x22.png) !important;
 }
 
 .jstree a{
@@ -12561,10 +12579,33 @@ div[id*='perspectiveMenuPopup:']{
 
 
 /*IFRAME POPUP DIALOG (JS WIDGET/TEMPLATE CONTENT)*/
+/*************************************************/
 .iPopupDialogTitleBar{
-	background: red !important;
+	background: #FFF !important;
 	border-top-left-radius: 3px;
 	border-top-right-radius: 3px;
+}
+
+.iPopupDialogCloseControl {
+	background: url('./images/flat-icons/dialog-windowbttn-close.png') no-repeat scroll 0 50% transparent !important;
+	border: medium none !important;
+	cursor: pointer;
+	float: right;
+	padding: 5px 10px;
+}
+
+.iPopupDialogControlsArea{
+	width: 100%;
+	height: 45px;
+	background: #fff;
+	border-radius: 0 0 3px 3px;
+	border-top: thin solid #CCC;
+}
+
+.iPopupDialogContentText{
+	font-family: Lato, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	color: #708090;
 }
 
 .iPopupDialogTitleText{
@@ -12578,6 +12619,38 @@ div[id*='perspectiveMenuPopup:']{
 	padding-top: 8px !important;
 	padding-bottom: 8px !important;
 }
+
+.iPopupDialogControlButton{
+	border-radius: 3px;
+}
+
+#acceptButton.iPopupDialogControlButton{
+	background: #24415E !important;
+	color: white;
+	border-color: #21659d;
+}
+
+#cancelButton.iPopupDialogControlButton{
+	background: #FFF !important;
+	color: #333;
+	border-color: #ccc;
+}
+
+/**OUTLINE FRAME OVERRIDES**/
+.topMenuIframeBar .menuItm a {
+	color: #666;
+}
+
+.topMenu{
+	border-bottom:solid 1px #ddd;
+	border-top: solid 1px #958977;
+	background: #fff;
+}
+
+.topMenuIframeBar{
+	background: #FFF;
+}
+
 
 /*remove outline (blue border on focus) from the following items*/
 a,input,tr,select{

@@ -1,4 +1,66 @@
 /* Login Page */
-body  {
-	background: #FFFFFF;
+
+div#loginBox{
+	border:solid 1px #ccc !important;
+	box-shadow: 3px 3px 20px #ddd;
+	border-radius: 3px;
+}
+
+
+div#loginBox .logo {
+	background: #FFF;
+	height: 40px;
+	border-top-left-radius: 3px;
+	border-top-right-radius: 3px;
+}
+
+div#loginBox .logo:before {
+	content: 'LOGIN';
+	line-height: 2.5em;
+	font-size: 1.5em;
+	margin: 1em;
+	font-family: Lato, Arial, Helvetica, sans-serif;
+	font-weight: 400 !important;
+	color: #A69A88 !important;
+}
+
+div#loginBox .buttonContainer input{
+	border-radius: 3px;
+	background: #24415E;
+	color: white;
+	border-color: #21659d;
+}
+
+div#loginBox .loginContent input{
+	border-radius: 3px;
+	border:solid 1px #ddd;
+	color: #333333;
+	outline-style:none;
+}
+
+
+div#loginBox .buttonContainer{
+	xbackground: linear-gradient(to right, #ffffff 0%,#d4d2ee 100%);
+	background:#FFF;
+	border-bottom-left-radius: 3px;
+	border-bottom-right-radius: 3px;
+}
+
+div#loginBox .portalTitle {
+	font-size: 14px !important;
+	font-family: Lato, Arial, Helvetica, sans-serif;
+	font-weight: 500 !important;
+	color: #5C6E87 !important;
+}
+
+.action-link, .action-link .iceOutTxt, .action-link .iceOutLbl{
+	color: #2B2865;
+	font-weight: normal;
+	text-decoration: none;
+}
+
+.label-form{
+	color: #5C6E87 !important;
+	font-weight: 600 !important;
+	font-family: Lato, Arial, Helvetica, sans-serif !important;
 }
