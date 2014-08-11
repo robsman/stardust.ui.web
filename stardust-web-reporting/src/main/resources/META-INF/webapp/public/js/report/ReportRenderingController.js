@@ -732,17 +732,17 @@ define(
                 var deferred = jQuery.Deferred();
 
                 if(this.reportData){
-                    deferred.resolve(this.reportData);
+                   return deferred.resolve(this.reportData);
+                }else{
+                	var self = this;
+                    self.reportingService.retrieveData(report, parameters)
+                    .done(
+                          function(data) {
+                            deferred.resolve(data);
+                          }).fail(function(data) {
+                       deferred.reject(data);
+                    });	
                 }
-                var self = this;
-                self.reportingService.retrieveData(report, parameters)
-                .done(
-                      function(data) {
-                        deferred.resolve(data);
-                      }).fail(function(data) {
-                   deferred.reject(data);
-                });
-                
                 return deferred.promise();
                 
              };
