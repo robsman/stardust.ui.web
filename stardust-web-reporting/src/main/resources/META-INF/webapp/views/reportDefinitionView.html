@@ -575,17 +575,19 @@ table.formTable td {
 												<div class="heading">{{getI18N('reporting.definitionView.cursor.title')}}</div>
 												<table cellpadding="0" cellspacing="0" class="formTable">
 													<tr>
-														<td><input id="auto-reporting-layoutTab-showCursor" type="checkbox"
-															ng-model="report.layout.chart.options.cursor.show" /></td>
-														<td><label>{{getI18N('reporting.definitionView.showCursor.label')}}</label></td>
-													</tr>
-													<tr>
 														<td><input id="auto-reporting-layoutTab-showTooltip" type="checkbox"
 															ng-model="report.layout.chart.options.cursor.showTooltip" /></td>
 														<td><label>{{getI18N('reporting.definitionView.showTooltip.label')}}</label></td>
 													</tr>
 													<tr>
-														<td><input id="auto-reporting-layoutTab-zoom" type="checkbox"
+														<td><input id="auto-reporting-layoutTab-showCursor"
+																type="checkbox"
+																ng-change="report.layout.chart.options.cursor.zoom = (report.layout.chart.options.cursor.show == false) ? false : report.layout.chart.options.cursor.zoom"
+																ng-model="report.layout.chart.options.cursor.show" /></td>
+														<td><label>{{getI18N('reporting.definitionView.showCursor.label')}}</label></td>
+													</tr>
+													<tr>
+														<td><input id="auto-reporting-layoutTab-zoom" type="checkbox" ng-disabled="report.layout.chart.options.cursor.show == false"
 															ng-model="report.layout.chart.options.cursor.zoom" /></td>
 														<td><label>{{getI18N('reporting.definitionView.zoom.label')}}</label></td>
 													</tr>
