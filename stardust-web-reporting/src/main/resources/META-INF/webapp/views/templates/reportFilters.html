@@ -69,11 +69,11 @@
 								<table>
 									<tr>
 										<td><label>{{reportFilterController.getI18N('reporting.definitionView.from.label')}}</label></td>
-										<td><input id="valueFrom{{$index}}" type="number" ng-model="x.value.From"></td>
+										<td><input id="valueFromInt{{$index}}" type="number" ng-model="x.value.From"></td>
 									</tr>
 									<tr>
 										<td><label>{{reportFilterController.getI18N('reporting.definitionView.to.label')}}</label></td>
-										<td><input id="valueTo{{$index}}" type="number" ng-model="x.value.To"></td>
+										<td><input id="valueToInt{{$index}}" type="number" ng-model="x.value.To"></td>
 									</tr>
 
 								</table>
@@ -93,12 +93,12 @@
 						<table cellpadding="0" cellspacing="0" class="layoutTable">
 							<tr>
 								<td><label>{{reportFilterController.getI18N('reporting.definitionView.from.label')}}</label></td>
-								<td><input id="valueFrom{{$index}}" type="text" ng-model="x.value.from" sd-datetime /></td>
+								<td><input id="valueFromTs{{$index}}" type="text" ng-model="x.value.from" sd-datetime /></td>
 								<td rowspan="2" ng-include="'templates/parameterControl.html'"></td>
 							</tr>
 							<tr>
 								<td><label>{{reportFilterController.getI18N('reporting.definitionView.to.label')}}</label></td>
-								<td><input id="valueTo{{$index}}" type="text" ng-model="x.value.to" sd-datetime /></td>
+								<td><input id="valueToTs{{$index}}" type="text" ng-model="x.value.to" sd-datetime /></td>
 							</tr>
 						</table>
 
@@ -112,7 +112,7 @@
 						<table cellpadding="0" cellspacing="0" class="formTable">
 							<tr>
 								<td><label>{{reportFilterController.getI18N('reporting.definitionView.from.label')}}</label></td>
-								<td><input id="valueFrom{{$index}}" type="text" ng-model="x.value.from" sd-datetime /></td>
+								<td><input id="valueFromTsFt{{$index}}" type="text" ng-model="x.value.from" sd-datetime /></td>
 								<td rowspan="2" ng-include="'templates/parameterControl.html'"></td>
 							</tr>
 							<tr>
