@@ -284,9 +284,6 @@ define(
 				 */
 				BusinessObjectManagementViewController.prototype.cleanUpAngularFields = function(
 						instance) {
-					console.log("Instance");
-					console.log(instance);
-
 					if (!instance
 							|| (typeof instance !== 'object' && !jQuery
 									.isArray(instance))) {
@@ -294,13 +291,8 @@ define(
 					}
 
 					for ( var key in instance) {
-						console.log(key);
-						console.log(instance[key]);
-
 						if (key.indexOf("$") == 0) {
 							delete instance[key];
-
-							console.log("Delete");
 
 							continue;
 						}
