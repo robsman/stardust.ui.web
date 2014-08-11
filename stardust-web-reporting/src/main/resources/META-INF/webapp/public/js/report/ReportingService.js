@@ -626,6 +626,7 @@ define(
 									.ajax(
 											{
 												type : "GET",
+												async: false,
 												beforeSend : function(request) {
 													request
 															.setRequestHeader(
@@ -679,6 +680,7 @@ define(
 							.ajax(
 									{
 										type : "GET",
+										async: false,
 										beforeSend : function(request) {
 											request
 													.setRequestHeader(
@@ -721,6 +723,7 @@ define(
 							.ajax(
 									{
 										type : "GET",
+										async: false,
 										beforeSend : function(request) {
 											request
 													.setRequestHeader(
@@ -785,6 +788,7 @@ define(
 							.ajax(
 									{
 										type : "GET",
+										async: false,
 										beforeSend : function(request) {
 											request
 													.setRequestHeader(
@@ -841,6 +845,7 @@ define(
 										.ajax(
 												{
 													type : "POST",
+													async: false,
 													beforeSend : function(request) {
 														request
 																.setRequestHeader(
@@ -889,6 +894,7 @@ define(
 							.ajax(
 									{
 										type : "GET",
+										async: false,
 										beforeSend : function(request) {
 											request
 													.setRequestHeader(
@@ -1056,6 +1062,7 @@ define(
 							.ajax(
 									{
 										type : "PUT",
+										async: false,
 										beforeSend : function(request) {
 											request
 													.setRequestHeader(
@@ -1095,6 +1102,7 @@ define(
 							.ajax(
 									{
 										type : "PUT",
+										async: false,
 										beforeSend : function(request) {
 											request
 													.setRequestHeader(
@@ -1140,6 +1148,7 @@ define(
 							.ajax(
 									{
 										type : "PUT",
+										async: false,
 										beforeSend : function(request) {
 											request
 													.setRequestHeader(
@@ -1173,6 +1182,7 @@ define(
 							.ajax(
 									{
 										type : "DELETE",
+										async: false,
 										beforeSend : function(request) {
 											request
 													.setRequestHeader(
@@ -1202,6 +1212,7 @@ define(
 							.ajax(
 									{
 										type : "PUT",
+										async: false,
 										beforeSend : function(request) {
 											request
 													.setRequestHeader(
@@ -1235,6 +1246,7 @@ define(
 							.ajax(
 									{
 										type : "GET",
+										async: false,
 										beforeSend : function(request) {
 											request
 													.setRequestHeader(
@@ -1271,6 +1283,7 @@ define(
 
 					jQuery.ajax({
 						type : "GET",
+						async: false,
 						beforeSend : function(request) {
 							// request
 							// .setRequestHeader(
@@ -1314,6 +1327,7 @@ define(
 							.ajax(
 									{
 										type : "PUT",
+										async: false,
 										beforeSend : function(request) {
 											request
 													.setRequestHeader(
@@ -1350,6 +1364,7 @@ define(
 							.ajax(
 									{
 										type : "DELETE",
+										async: false,
 										beforeSend : function(request) {
 											request
 													.setRequestHeader(
@@ -1584,6 +1599,7 @@ define(
                      .ajax(
                            {
                               type : "GET",
+                              async: false,
                               beforeSend : function(request) {
                                  request
                                        .setRequestHeader(
@@ -1955,6 +1971,7 @@ define(
                      .ajax(
                            {
                               type : "GET",
+                              async: false,
                               beforeSend : function(request) {
                                  request
                                        .setRequestHeader(
@@ -1986,6 +2003,7 @@ define(
                      .ajax(
                            {
                               type : "GET",
+                              async: false,
                               beforeSend : function(request) {
                                  request
                                        .setRequestHeader(

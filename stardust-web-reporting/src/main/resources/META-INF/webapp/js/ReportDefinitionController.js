@@ -465,6 +465,7 @@ define(
 										jQuery("#reportDefinitionView").css("visibility", "visible");
 								});
 							console.debug('refreshModelData preferencedata success.............');
+							self.dataAvailable = true;
 						}).fail(function () {
 							console.debug('refreshModelData preferencedata falied.............');
 					});
@@ -758,44 +759,53 @@ define(
 				 * 
 				 */
 				ReportDefinitionController.prototype.getAvailableCumulantsEnum = function() {
-					var cumulants = this.reportingService.metadata.cumulants;
-					var enumerators = [];
-					for ( var n in cumulants ) {
-						var add = true; 
-						if (this.report.layout.table && this.report.layout.table.selectedCumulants) {
-							this.report.layout.table.selectedCumulants
-									.forEach(function(cumulantId) {
-										if (cumulants[n].id == cumulantId) {
-											add = false;
-										}
-									});
+					if (this.dataAvailable && this.report.layout) {
+						var cumulants = this.reportingService.metadata.cumulants;
+						var enumerators = [];
+						for ( var n in cumulants ) {
+							var add = true; 
+							if (this.report.layout.table && this.report.layout.table.selectedCumulants) {
+								this.report.layout.table.selectedCumulants
+										.forEach(function(cumulantId) {
+											if (cumulants[n].id == cumulantId) {
+												add = false;
+											}
+										});
+							}
+							if(add){
+								enumerators.push(cumulants[n]);	
+							}
 						}
-						if(add){
-							enumerators.push(cumulants[n]);	
-						}
+						return enumerators;
+					} else {
+						return null;
 					}
-					return enumerators;
+						
 				};
 				
 				ReportDefinitionController.prototype.getSelectedCumulantsEnum = function() {
-					var enumerators = [];
-					if (!this.report.layout.table || !this.report.layout.table.selectedCumulants){
+					if (this.dataAvailable && this.report.layout) {
+						var enumerators = [];
+						if (!this.report.layout.table || !this.report.layout.table.selectedCumulants){
+							return enumerators;
+						}	
+						var cumulants = this.report.layout.table.selectedCumulants;
+						var self = this;
+						cumulants.forEach(function(cumulantId){
+							enumerators.push(self.reportingService.metadata.cumulants[cumulantId]);
+						});
+						
 						return enumerators;
-					}	
-					var cumulants = this.report.layout.table.selectedCumulants;
-					var self = this;
-					cumulants.forEach(function(cumulantId){
-						enumerators.push(self.reportingService.metadata.cumulants[cumulantId]);
-					});
-					
-					return enumerators;
+					} else {
+						return null;
+					}
 				};
 				
 				/**
 				 * 
 				 */
 				ReportDefinitionController.prototype.getFact = function() {
-					return this.getPrimaryObject().facts[this.report.dataSet.fact];
+					return (this.dataAvailable && this.getPrimaryObject()) ? this.getPrimaryObject().facts[this.report.dataSet.fact] : null;
 				};
 
 				/**
@@ -916,8 +926,10 @@ define(
 						this.populateFactProcessDataSelect();
 					}
 					if(this.report.layout.chart){
-						this.report.layout.chart.options.axes.yaxis.label = this
-						.getFact().name;	
+						if (this.getFact()) {
+							this.report.layout.chart.options.axes.yaxis.label = this
+							.getFact().name;	
+						}
 					}
 				};
 
@@ -1130,9 +1142,12 @@ define(
 				 * 
 				 */
 				ReportDefinitionController.prototype.getChartType = function() {
-					if(this.report.layout.chart){
-						return this.reportingService.metadata.chartTypes[this.report.layout.chart.type];	
+					if (this.dataAvailable && this.report.layout) {
+						if(this.report.layout.chart){
+							return this.reportingService.metadata.chartTypes[this.report.layout.chart.type];	
+						}
 					}
+					return null;
 				};
 				
 				/**
@@ -1710,7 +1725,11 @@ define(
                * This function will return true if argument is of duration Type
                */
              ReportDefinitionController.prototype.isDuration = function(element) {
-                return (element.type.id === this.reportingService.metadata.durationType.id)? true : false;
+            	 if (this.dataAvailable && element) {
+            		 return (element.type.id === this.reportingService.metadata.durationType.id)? true : false;
+            	 } else {
+            		 return false;
+            	 }
              };
              
              /**
