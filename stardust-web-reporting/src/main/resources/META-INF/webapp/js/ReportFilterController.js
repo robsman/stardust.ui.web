@@ -499,12 +499,11 @@ define(
 				/**
 				 * 
 				 */
-				ReportFilterController.prototype.getCriticalityForName = function(
-						name) {
+				ReportFilterController.prototype.getCriticalityForName = function(id) {
 					var criticality;
 					this.reportingService.preferenceData.criticality
 							.forEach(function(item) {
-								if (item.name == name) {
+								if (item.id == id) {
 									criticality = item;
 								}
 							});

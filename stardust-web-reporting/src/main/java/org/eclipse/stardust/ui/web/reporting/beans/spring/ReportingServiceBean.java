@@ -62,6 +62,7 @@ import org.eclipse.stardust.ui.web.common.spi.user.UserProvider;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.html5.rest.RestControllerUtils;
 import org.eclipse.stardust.ui.web.reporting.beans.spring.portal.SearchHandlerChain;
+import org.eclipse.stardust.ui.web.reporting.common.portal.criticality.Criticality;
 import org.eclipse.stardust.ui.web.reporting.scheduling.SchedulingFactory;
 import org.eclipse.stardust.ui.web.reporting.scheduling.SchedulingRecurrence;
 import org.eclipse.stardust.ui.web.reporting.ui.UiHelper;
@@ -292,20 +293,25 @@ public class ReportingServiceBean
     */
    public JsonObject getPreferenceData()
    {
+      // criticality
       List<CriticalityCategory> criticalityPrefs = CriticalityConfigurationUtil.getCriticalityCategoriesList();
+      
+      List<Criticality> criticalities = new ArrayList<Criticality>();
+      
+      int index = 1;
+      for (CriticalityCategory criticalityCategory : criticalityPrefs)
+      {
+         criticalities.add(new Criticality(criticalityCategory, index++));
+      }
 
       JsonObject preferencesJson = new JsonObject();
-
-      // criticality
-      ArrayList<CriticalityCategory> criticalityList = new ArrayList<CriticalityCategory>();
-      criticalityList.addAll(criticalityPrefs);
 
       // temporary commented - uncomment it when CRNT-33822 is resolved
       /*CriticalityCategory cat = CriticalityConfigurationUtil.getUndefinedCriticalityCategory();
       cat.setName("Undefined"); //TODO I18n
       criticalityList.add(cat);*/
       
-      preferencesJson.add("criticality", gson.toJsonTree(criticalityList));
+      preferencesJson.add("criticality", gson.toJsonTree(criticalities));
 
       //Favorite Reports
       ArrayList<String> favoriteReportList = new ArrayList<String>();
