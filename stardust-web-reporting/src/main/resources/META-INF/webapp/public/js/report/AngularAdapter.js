@@ -82,9 +82,11 @@ if (!window.bpm.portal.AngularAdapter) {
 
 			// Is this correct?
 
-			this.__defineGetter__('angularApp', function() {
-				return this.angularModule;
-			});
+			if(this.__defineGetter__){
+				this.__defineGetter__('angularApp', function() {
+					return this.angularModule;
+				});	
+			}
 		};
 
 		/**
