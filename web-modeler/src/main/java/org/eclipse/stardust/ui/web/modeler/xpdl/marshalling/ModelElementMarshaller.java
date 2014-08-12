@@ -590,10 +590,20 @@ public class ModelElementMarshaller implements ModelMarshaller
                         StructuredDataConstants.TYPE_DECLARATION_ATT);
                   if (!StringUtils.isEmpty(typeDeclarationId))
                   {
-                     TypeDeclarationType typeDeclaration = model.getTypeDeclarations().getTypeDeclaration(
-                           typeDeclarationId);
-
-                     String fullId = getModelBuilderFacade().createFullId(model, typeDeclaration);
+                     TypeDeclarationType typeDeclaration = null;
+                     if (typeDeclarationId.startsWith("typeDeclaration:{"))
+                     {
+                        typeDeclaration = getModelBuilderFacade().findTypeDeclaration(
+                              typeDeclarationId);
+                        model = ModelUtils.findContainingModel(typeDeclaration);
+                     }
+                     else
+                     {
+                        typeDeclaration = model.getTypeDeclarations().getTypeDeclaration(
+                              typeDeclarationId);
+                     }
+                     String fullId = getModelBuilderFacade().createFullId(model,
+                           typeDeclaration);
                      return fullId;
                   }
                }
