@@ -1325,10 +1325,9 @@ define(
 							CKEDITOR.instances["documentTemplateEditor"]
 									.setData(CKEDITOR.instances["documentTemplateEditor"]
 											.getData()
-											+ '<sd-report-iframe path="'
+											+ '<sd-report-frame path="'
 											+ parent.iDnD.getTransferObject().path + '"'
-											+ " parameters=></sd-report-iframe>"
-											+ "<!-- Syntax for passing Parameters is {{'&Param1Name='+record.param1Name+'&param2Name='+record.param2Name}} -->");
+											+ " parameters=></sd-report-frame>");
 						}
 					}
 
