@@ -535,19 +535,7 @@ table.formTable td {
 								</tr>
 							</table>
 							<div ng-show="report.layout.type == 'table'">
-								<table cellpadding="0" cellspacing="0" class="formTable" style="margin-top: 10px; margin-bottom: 10px; margin-left: 13px;">
-									<tr>
-										<td><input type="checkbox"
-											ng-model="report.layout.table.options.showSearchInput" /></td>
-										<td><label>{{getI18N('reporting.definitionView.showSearchInput.label')}}</label></td>
-									</tr>
-									<tr>
-										<td><input type="checkbox"
-											ng-model="report.layout.table.options.showVisibleRowCountSelector" />
-										</td>
-										<td><label>{{getI18N('reporting.definitionView.showRowCountSelector.label')}}</label></td>
-									</tr>
-								</table>
+								<div cellpadding="0" cellspacing="0" class="formTable" style="margin-top: 10px; margin-bottom: 10px; margin-left: 13px;" ng-include="'templates/dataTableOptions.html'"></div>
 							</div>
 							<div ng-show="report.layout.type == 'simpleReport'">
 								<table cellpadding="0" cellspacing="0" class="formTable">
@@ -914,6 +902,7 @@ table.formTable td {
 										<td><label>{{getI18N('reporting.definitionView.layout.table.displayTotals')}}</label></td>
                                     </tr>
 								</table>
+								<div style="margin-top: 10px;" ng-include="'templates/dataTableOptions.html'"></div>
 								
 							</div> <!-- layout subtype == table ends here -->	
 							<div>

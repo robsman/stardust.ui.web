@@ -672,8 +672,9 @@ define(
 								},
 								table : {
 									options : {
+									   showExportButtons : true,	
 									   showSearchInput : true,
-							         showVisibleRowCountSelector : true  
+							           showVisibleRowCountSelector : true  
 									}
 								},
 								document : {}
@@ -2157,6 +2158,9 @@ define(
          * 
          */
         ReportDefinitionController.prototype.initializeDataTableOptions = function() {
+        	(this.report.layout.table.options.showExportButtons) ? jQuery('.DTTT_container').css({display:'block'}) :
+                jQuery('.DTTT_container').css({display:'none'});
+        	
            (this.report.layout.table.options.showSearchInput) ? jQuery('.dataTables_filter').css({display:'block'}) :
               jQuery('.dataTables_filter').css({display:'none'});
            
@@ -2164,7 +2168,7 @@ define(
               jQuery('.dataTables_length').css({display:'none'});
            
            
-           (this.report.layout.table.options.showSearchInput ||
+           (this.report.layout.table.options.showExportButtons || this.report.layout.table.options.showSearchInput ||
                     this.report.layout.table.options.showVisibleRowCountSelector) ? jQuery('div .heading').css({display:'block'}) :
                        jQuery('div .heading').css({display:'none'});
            
