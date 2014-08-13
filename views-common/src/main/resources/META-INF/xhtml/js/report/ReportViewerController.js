@@ -266,6 +266,12 @@ define(
 					self.reportParameterController.baseUrl = "bpm-reporting";
 					
 					var qualifiedParameters = jQuery.url(window.location.search).param("qualifiedParameters");
+					
+					if (qualifiedParameters == "true") {
+						qualifiedParameters = true;
+					} else {
+						qualifiedParameters = false;
+					}
 									
 					if(this.isEmbedded()){
 						for (var param in this.parameters) {
