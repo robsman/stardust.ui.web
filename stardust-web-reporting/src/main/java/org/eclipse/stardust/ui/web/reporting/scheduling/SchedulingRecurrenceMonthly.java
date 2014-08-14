@@ -40,7 +40,7 @@ public class SchedulingRecurrenceMonthly extends SchedulingRecurrence
 
          cronExpr.append(getStartTime() + "?" + SchedulingUtils.BLANK_SPACE
                + (getStartDate().getMonth() + 1) + "/" + recurrenceMonthIntervalCount
-               + SchedulingUtils.BLANK_SPACE + byDay + "#" + dayIndex
+               + SchedulingUtils.BLANK_SPACE + byDay + getXDayOfMonthOrYear(dayIndex)
                + SchedulingUtils.BLANK_SPACE + "*");
       }
 

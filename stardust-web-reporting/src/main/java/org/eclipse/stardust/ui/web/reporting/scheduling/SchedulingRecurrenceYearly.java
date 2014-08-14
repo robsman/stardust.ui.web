@@ -38,7 +38,7 @@ public class SchedulingRecurrenceYearly extends SchedulingRecurrence
          String byDay = SchedulingUtils.getDayNameFromIndex(onTheXDayName);
 
          cronExpr.append(getStartTime() + "?" + SchedulingUtils.BLANK_SPACE + onTheMonth
-               + SchedulingUtils.BLANK_SPACE + byDay + "#" + onTheXDay
+               + SchedulingUtils.BLANK_SPACE + byDay + getXDayOfMonthOrYear(onTheXDay)
                + SchedulingUtils.BLANK_SPACE
                + SchedulingUtils.convertDate(getStartDate(), "yyyy") + "/"
                + recurrenceYearIntervalCount);

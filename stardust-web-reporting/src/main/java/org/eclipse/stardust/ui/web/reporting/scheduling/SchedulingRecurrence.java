@@ -71,6 +71,16 @@ public abstract class SchedulingRecurrence
    {
       return startTime;
    }
+   
+   public String getXDayOfMonthOrYear(int dayIndex) 
+   {
+	   String xDayOfMonthOrYear =  "#" + dayIndex;
+       if (dayIndex == 5) {
+      	 //To handle special case of Last day of every month/year
+		 xDayOfMonthOrYear = "L";
+	   }
+       return xDayOfMonthOrYear;
+   }
 
    public abstract String generateSchedule(JsonObject json);
 
