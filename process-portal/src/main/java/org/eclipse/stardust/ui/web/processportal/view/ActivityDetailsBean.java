@@ -1197,6 +1197,8 @@ public class ActivityDetailsBean extends UIComponentBean
                ActivityDetailsBean.this.interaction = null;
                skipViewEvents = true;
                PortalApplication.getInstance().closeView(thisView, false);
+               releaseInteraction();
+               
                // When view close is auto-operation, sync view is required to update focus view
                PortalApplication.getInstance().addEventScript("parent.BridgeUtils.View.syncActiveView();");
                skipViewEvents = false;
@@ -1238,6 +1240,7 @@ public class ActivityDetailsBean extends UIComponentBean
                {
                   skipViewEvents = true;
                   PortalApplication.getInstance().closeView(thisView, true);
+                  releaseInteraction();
                   skipViewEvents = false;
                }
             }
@@ -1271,6 +1274,7 @@ public class ActivityDetailsBean extends UIComponentBean
                {
                   skipViewEvents = true;
                   PortalApplication.getInstance().closeView(thisView, true);
+                  releaseInteraction();
                   skipViewEvents = false;
                }
             }
@@ -1387,6 +1391,8 @@ public class ActivityDetailsBean extends UIComponentBean
                   skipViewEvents = true;
                   // TODO move to controller?
                   PortalApplication.getInstance().closeView(thisView, true);
+                  releaseInteraction();
+
                   // When view close is auto-operation, sync view is required to update focus view
                   PortalApplication.getInstance().addEventScript("parent.BridgeUtils.View.syncActiveView();");
                   skipViewEvents = false;
@@ -1479,6 +1485,7 @@ public class ActivityDetailsBean extends UIComponentBean
          skipViewEvents = true;
          // TODO move to controller?
          PortalApplication.getInstance().closeView(thisView, true);
+         releaseInteraction();
          PortalApplication.getInstance().addEventScript("parent.BridgeUtils.View.syncActiveView();");
          skipViewEvents = false;
       }
@@ -1849,7 +1856,7 @@ public class ActivityDetailsBean extends UIComponentBean
       {
          // There are various scenarios in which this is may have been done
          // Activity is completed, so make final attempt so that if it's there is will be unregistered! 
-         interactionController.unregisterInteraction(ai);
+         releaseInteraction();
 
          this.interaction = null;
          ActivityInstance nextActivityObject = null;
@@ -3160,6 +3167,7 @@ public class ActivityDetailsBean extends UIComponentBean
             {
                skipViewEvents = true;
                PortalApplication.getInstance().closeView(thisView, true);
+               releaseInteraction();
                skipViewEvents = false;
             }
          }
@@ -3184,6 +3192,7 @@ public class ActivityDetailsBean extends UIComponentBean
             {
                skipViewEvents = true;
                PortalApplication.getInstance().closeView(thisView, true);
+               releaseInteraction();
                skipViewEvents = false;
             }
          }
@@ -3354,6 +3363,21 @@ public class ActivityDetailsBean extends UIComponentBean
       }
       
       return params;
+   }
+
+   /**
+    * 
+    */
+   private void releaseInteraction()
+   {
+      if (null != activityInstance)
+      {
+         IActivityInteractionController interactionController = getInteractionController(activityInstance.getActivity());
+         if (null != interactionController)
+         {
+            interactionController.unregisterInteraction(activityInstance);
+         }
+      }
    }
 
    public void toggleAssemblyLinePushService()
