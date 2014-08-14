@@ -96,6 +96,7 @@ define(
 					this.bccInput = m_utils.jQuerySelect("#mailIntegrationOverlay #bccInput");
 					this.identifierInSubjectInput = m_utils.jQuerySelect("#mailIntegrationOverlay #identifierInSubjectInput");
 					this.mailTemplateEditor = m_utils.jQuerySelect("#mailIntegrationOverlay #mailTemplateEditor").get(0);
+               this.transactedRouteInput = m_utils.jQuerySelect("#mailIntegrationOverlay #transactedRouteInput");
 					var rdmNo = Math.floor((Math.random()*100000) + 1);
 					this.mailTemplateEditor.id = "mailTemplateEditor" + rdmNo;
 					this.responseTypeSelect = m_utils.jQuerySelect("#responseTab #responseTypeSelect");
@@ -245,7 +246,17 @@ define(
                });
                
 					var self = this;
-
+               
+               this.transactedRouteInput.change(function() {
+                   if (!self.view.validate()) {
+                      return;
+                   }
+                   self.view.submitModelElementAttributeChange(
+                         "carnot:engine:camel::transactedRoute",
+                         self.transactedRouteInput.prop('checked'));
+                   self.submitChanges();
+                });
+               
 					this.serverInput.change(function() {
 						self.submitChanges();
 					});
@@ -358,6 +369,10 @@ define(
 							&& this.getModelElement().isReadonly()) {
 						CKEDITOR.instances[this.mailTemplateEditor.id].config.readOnly = true;
 					}
+               
+               if(this.getApplication().attributes["carnot:engine:camel::transactedRoute"]==null||this.getApplication().attributes["carnot:engine:camel::transactedRoute"]===undefined){
+                   this.view.submitModelElementAttributeChange("carnot:engine:camel::transactedRoute", false);
+                }
 				};
 
 				MailIntegrationOverlay.prototype.populateResponseOptionsTypeSelect = function() {
@@ -752,6 +767,9 @@ define(
 
 					this.passwordInput
 							.val(this.getApplication().attributes["stardust:emailOverlay::pwd"]);
+
+               this.transactedRouteInput.prop("checked",
+                       this.getApplication().attributes["carnot:engine:camel::transactedRoute"]);
 				};
 
 				/**
@@ -1049,7 +1067,6 @@ define(
 								},
 								attributes : {
 									"carnot:engine:camel::applicationIntegrationOverlay" : "mailIntegrationOverlay",
-                           "carnot:engine:camel::transactedRoute" : "false",
 									"carnot:engine:camel::camelContextId" : "defaultCamelContext",
 									"carnot:engine:camel::invocationPattern" : invocationPatternChanges,
 									"carnot:engine:camel::invocationType" : invocationTypeChanges,
