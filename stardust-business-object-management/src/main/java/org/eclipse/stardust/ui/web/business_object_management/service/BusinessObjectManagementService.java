@@ -24,6 +24,7 @@ import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.engine.api.dto.BusinessObjectDetails;
 import org.eclipse.stardust.engine.api.model.Data;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.model.Reference;
@@ -41,10 +42,10 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 //import org.eclipse.stardust.ui.web.viewscommon.utils.XPathCacheManager;
 
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
+
+
+
+import com.google.gson.*;
 
 public class BusinessObjectManagementService {
     private static final Logger trace = LogManager
@@ -579,45 +580,7 @@ public class BusinessObjectManagementService {
     }
 
     private JsonElement toJson(Value value) {
-        Serializable object = value.getValue();
-        if (object instanceof Map) {
-            return toMapValueJson((Map<?, ?>) object);
-        }
-        return new JsonObject();
-    }
-
-    private JsonElement toMapValueJson(Map<?, ?> map) {
-        JsonObject json = new JsonObject();
-        for (Map.Entry<?, ?> entry : map.entrySet()) {
-            String key = entry.getKey().toString();
-            Object value = entry.getValue();
-            if (value instanceof Map) {
-                json.add(key, toMapValueJson((Map<?, ?>) value));
-            } else if (value instanceof List) {
-                json.add(key, toListValueJson((List<?>) value));
-            } else if (value != null) {
-                json.addProperty(key, value.toString());
-            } else {
-                json.add(key, null);
-            }
-        }
-        return json;
-    }
-
-    private JsonArray toListValueJson(List<?> values) {
-        JsonArray json = new JsonArray();
-        for (Object value : values) {
-            if (value instanceof Map) {
-                json.add(toMapValueJson((Map<?, ?>) value));
-            } else if (value instanceof List) {
-                json.add(toListValueJson((List<?>) value));
-            } else if (value != null) {
-                json.add(new JsonPrimitive(value.toString()));
-            } else {
-                json.add(null);
-            }
-        }
-        return json;
+        return value == null ? null : objectToJsonElement(value.getValue());
     }
 
     private JsonObject getMemberInstance(String id, String firstName,
@@ -649,14 +612,17 @@ public class BusinessObjectManagementService {
     */
     public JsonObject createBusinessObjectInstance(String modelOid,
             String businessObjectId, String primaryKey, JsonObject jsonObject) {
-        System.out.println("Model OID: " + modelOid);
+        /*System.out.println("Model OID: " + modelOid);
         System.out.println("Business Object ID: " + businessObjectId);
         System.out.println("Primary Key: " + primaryKey);
         System.out.println(jsonObject);
         System.out.println(jsonObjectToMap(jsonObject));
-        System.out.println(mapToJsonObject(jsonObjectToMap(jsonObject)));
+        System.out.println(mapToJsonObject(jsonObjectToMap(jsonObject)));*/
 
-        return jsonObject;
+        BusinessObject boi = getWorkflowService().createBusinessObjectInstance(Long.parseLong(modelOid),
+                businessObjectId, new BusinessObjectDetails.ValueDetails(-1,
+                        (Serializable) jsonElementToObject(jsonObject)));
+        return (JsonObject) toJson(getFirstValue(boi));
     }
 
     /**
@@ -669,13 +635,25 @@ public class BusinessObjectManagementService {
     */
     public JsonObject updateBusinessObjectInstance(String modelOid,
             String businessObjectId, String primaryKey, JsonObject jsonObject) {
-        System.out.println("Model OID: " + modelOid);
+        /*System.out.println("Model OID: " + modelOid);
         System.out.println("Business Object ID: " + businessObjectId);
         System.out.println("Primary Key: " + primaryKey);
         System.out.println(jsonObject);
-        System.out.println(jsonObjectToMap(jsonObject));
+        System.out.println(jsonObjectToMap(jsonObject));*/
 
-        return jsonObject;
+        BusinessObject boi = getWorkflowService().createBusinessObjectInstance(Long.parseLong(modelOid),
+                        businessObjectId, new BusinessObjectDetails.ValueDetails(-1,
+                                (Serializable) jsonElementToObject(jsonObject)));
+        return (JsonObject) toJson(getFirstValue(boi));
+    }
+
+    private Value getFirstValue(BusinessObject boi) {
+        Value value = null;
+        List<Value> values = boi.getValues();
+        if (values != null && !values.isEmpty()) {
+            value = values.get(0);
+        }
+        return value;
     }
 
     /**
