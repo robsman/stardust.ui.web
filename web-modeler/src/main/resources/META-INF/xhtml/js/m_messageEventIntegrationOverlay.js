@@ -71,11 +71,6 @@ define(
                                     m_i18nUtils
                                              .getProperty("modeler.element.properties.messageEvent.selector"));
                   m_utils
-                           .jQuerySelect("label[for='transacted']")
-                           .text(
-                                    m_i18nUtils
-                                             .getProperty("modeler.element.properties.messageEvent.transacted"));
-                  m_utils
                            .jQuerySelect("label[for='useSplitting']")
                            .text(
                                     m_i18nUtils
@@ -331,7 +326,7 @@ define(
 
                   this.clientIdInput = this.mapInputId("clientIdInput");
                   this.selectorInput = this.mapInputId("selectorInput");
-                  this.transactedInput = this.mapInputId("transactedInput");
+                  this.transactedRouteInput = this.mapInputId("transactedRouteInput");
                   this.preserveQoSInput = this.mapInputId("preserveQoSInput");
                   this.jmsComponentIdInput = this.mapInputId("jmsComponentIdInput");
 
@@ -368,6 +363,19 @@ define(
                   this.streamingLabel.css("display", "none");
                   this.groupingLabel.css("display", "none");
                   this.parallelProcessingLabel.css("display", "none");
+                  this.transactedRouteInput.change({
+                      overlay : this
+                   }, function(event) {
+                      var overlay = event.data.overlay;
+                      overlay.submitChanges({
+                         modelElement : {
+                            attributes : {
+                               "carnot:engine:camel::transactedRoute" : overlay.transactedRouteInput
+                                              .prop("checked")
+                            }
+                         }
+                      });
+                   });
 
                   this.registerForRouteChanges(this.useSplitting);
                   this.registerForRouteChanges(this.stopOnException);
@@ -382,7 +390,6 @@ define(
                   this.registerForRouteChanges(this.nameInput);
                   this.registerForRouteChanges(this.clientIdInput);
                   this.registerForRouteChanges(this.selectorInput);
-                  this.registerForRouteChanges(this.transactedInput);
                   this.registerForRouteChanges(this.preserveQoSInput);
                   this.registerForRouteChanges(this.jmsComponentIdInput);
 
@@ -423,12 +430,6 @@ define(
                      separator = "&amp;";
                   }
 
-                  if (this.transactedInput.prop("checked") == true)
-                  {
-                     uri += separator + "transacted=";
-                     separator = "&amp;";
-                     uri += this.transactedInput.prop("checked");
-                  }
                   if (this.preserveQoSInput.prop("checked") == true)
                   {
                      uri += separator + "preserveMessageQos=";
@@ -608,6 +609,17 @@ define(
                {
                   this.hideConverterOptions(this);
                   this.producerInboundConversion.prop('disabled', true);
+                  
+                  if(this.page.getEvent().attributes["carnot:engine:camel::transactedRoute"]==null || this.page.getEvent().attributes["carnot:engine:camel::transactedRoute"]===undefined){
+                      this.submitChanges({
+                         modelElement : {
+                            attributes : {
+                               "carnot:engine:camel::transactedRoute" : true
+                            }
+                         }
+                      });
+                   }
+                  this.transactedRouteInput.prop("checked",this.page.getEvent().attributes["carnot:engine:camel::transactedRoute"]);
 
                   if (this.page.getEvent().attributes["carnot:engine:camel::producerBpmTypeConverter"] != null
                            && this.page.getEvent().attributes["carnot:engine:camel::producerBpmTypeConverter"] !== undefined
@@ -804,10 +816,6 @@ define(
                            else if (name == "selector")
                            {
                               this.selectorInput.val(decodeURIComponent(value));
-                           }
-                           else if (name == "transacted")
-                           {
-                              this.transactedInput.prop("checked", value == "true");
                            }
                            else if (name == "preserveMessageQos")
                            {
