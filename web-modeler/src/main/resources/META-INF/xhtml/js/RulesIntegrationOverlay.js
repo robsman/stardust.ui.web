@@ -43,6 +43,7 @@ define(
 					this.typeDeclarationsTextarea = m_utils
 							.jQuerySelect("#rulesIntegrationOverlay #typeDeclarationsTextarea");
 					
+		            this.transactedRouteInput = m_utils.jQuerySelect("#rulesIntegrationOverlay #transactedRouteInput");
 					this.editorAnchor = m_utils.jQuerySelect("#ruleSetEditorDiv").get(0);
 					this.editorAnchor.id = "ruleSetEditorDiv" + Math.floor((Math.random()*100000) + 1);
 					this.ruleSetEditor = m_codeEditorAce.getDrlEditor(this.editorAnchor.id);
@@ -96,6 +97,20 @@ define(
 								supportsDataTypeSelection : true,
 								supportsDocumentTypes : false
 							});
+					
+					this.transactedRouteInput.change(function() {
+		                   if (!self.view.validate()) {
+		                      return;
+		                   }
+		                   self.view.submitModelElementAttributeChange(
+		                         "carnot:engine:camel::transactedRoute",
+		                         self.transactedRouteInput.prop('checked'));
+		                   self.submitChanges();
+		                });
+						if(this.getApplication().attributes["carnot:engine:camel::transactedRoute"]==null||this.getApplication().attributes["carnot:engine:camel::transactedRoute"]===undefined){
+		                   this.view.submitModelElementAttributeChange("carnot:engine:camel::transactedRoute", false);
+		                }
+
 				};
 
 				/**
@@ -323,6 +338,7 @@ define(
 							.setValue(
 									this.getApplication().attributes["stardust:rulesOverlay::ruleSetDrl"]);
 					this.drlTextarea.val(this.createDrl());
+		            this.transactedRouteInput.prop("checked", this.getApplication().attributes["carnot:engine:camel::transactedRoute"]);	      
 				};
 
 				/**
