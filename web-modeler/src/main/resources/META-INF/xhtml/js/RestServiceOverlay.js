@@ -48,6 +48,7 @@ define(
                this.requestTypeSelect = m_utils.jQuerySelect("#restServiceOverlay #requestTypeSelect");
                this.responseTypeSelect = m_utils.jQuerySelect("#restServiceOverlay #responseTypeSelect");
                this.crossDomainInput = m_utils.jQuerySelect("#restServiceOverlay #crossDomainInput");
+               this.transactedRouteInput = m_utils.jQuerySelect("#restServiceOverlay #transactedRouteInput");
                this.resetButton = m_utils.jQuerySelect("#testTab #resetButton");
                this.runButton = m_utils.jQuerySelect("#testTab #runButton");
                this.inputDataTextarea = m_utils.jQuerySelect("#testTab #inputDataTextarea");
@@ -206,6 +207,20 @@ define(
                this.customSecurityTokenUsingCVInput.change(function() {
                   self.submitChanges();
                });
+               
+               if(this.getApplication().attributes["carnot:engine:camel::transactedRoute"]==null||this.getApplication().attributes["carnot:engine:camel::transactedRoute"]===undefined){
+                   this.view.submitModelElementAttributeChange("carnot:engine:camel::transactedRoute", false);
+                }
+               
+               this.transactedRouteInput.change(function() {
+                   if (!self.view.validate()) {
+                      return;
+                   }
+                   self.view.submitModelElementAttributeChange(
+                         "carnot:engine:camel::transactedRoute",
+                         self.transactedRouteInput.prop('checked'));
+                   self.submitChanges();
+                });
                
                this.runButton
                      .click(
@@ -953,7 +968,7 @@ define(
                this.customSecurityTokenKeyInput.val(this.getApplication().attributes["stardust:restServiceOverlay::customSecurityTokenKey"]);
                this.customSecurityTokenUsingCVInput.prop("checked", this.getApplication().attributes["stardust:restServiceOverlay::customSecurityTokenCV"]);
                this.customSecurityTokenValueInput.val(this.convertConfigVariableToPassword(this.getApplication().attributes["stardust:restServiceOverlay::customSecurityTokenValue"]));
-               
+               this.transactedRouteInput.prop("checked", this.getApplication().attributes["carnot:engine:camel::transactedRoute"]);
                
             };
 
@@ -967,13 +982,13 @@ define(
                         attributes : {
                            "carnot:engine:camel::applicationIntegrationOverlay" : "restServiceOverlay",
                            "carnot:engine:camel::camelContextId" : "defaultCamelContext",
-                           "carnot:engine:camel::transactedRoute" : "false",
                            "carnot:engine:camel::routeEntries" : this.getRoute(),
                            "stardust:restServiceOverlay::uri" : this.uriInput.val(),
                            "stardust:restServiceOverlay::command" : this.commandSelect.val(),
                            "stardust:restServiceOverlay::requestType" : this.requestTypeSelect.val(),
                            "stardust:restServiceOverlay::responseType" : this.responseTypeSelect.val(),
                            "stardust:restServiceOverlay::crossDomain" : this.crossDomainInput.prop("checked"),
+                           "carnot:engine:camel::transactedRoute" : this.transactedRouteInput.prop("checked"),
                            "stardust:restServiceOverlay::securityMode" : this.securityModeSelect.val(),
                            "stardust:restServiceOverlay::httpBasicAuthUser" : this.httpBasicAuthUserInput.val(),
                            "stardust:restServiceOverlay::httpBasicAuthPwd" : this.getHttpBasicAuthRawPwd(),
@@ -1007,7 +1022,6 @@ define(
                         attributes : {
                            "carnot:engine:camel::applicationIntegrationOverlay" : "restServiceOverlay",
                            "carnot:engine:camel::camelContextId" : "defaultCamelContext",
-                           "carnot:engine:camel::transactedRoute" : "false",
                            "carnot:engine:camel::routeEntries" : this.getRoute(),
                            "stardust:restServiceOverlay::uri" : this.uriInput.val(),
                            "stardust:restServiceOverlay::command" : this.commandSelect.val(),
