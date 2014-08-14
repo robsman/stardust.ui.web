@@ -808,7 +808,10 @@ define(
 			        console.log(data);
 			
 			        var html = "<html ng-app='STARTDUST_REPORTING'><head>"
-			          	// TODO Read local
+			        	+ "<link rel='stylesheet' type='text/css' href='"
+			        	+ self.reportingService.getRootUrl()
+			          	 + "/plugins/bpm-reporting/public/js/libs/ckeditor/contents.css'/>"
+			          	 // TODO Read local
 			          	 + "<scr"
 			          	 + "ipt"
 			          	 + " src='"

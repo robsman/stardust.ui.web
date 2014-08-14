@@ -108,7 +108,7 @@ function($compile) {
 
             // defaults
             var iFrameAttributes = {
-                style: "border: none; width: 50%; height: 125%;",
+                style: "border: none; width: 100%; height: 100%;",
                 allowtransparency: "true",
                 frameborder: "0",
                 sandbox: "allow-same-origin allow-forms allow-scripts",

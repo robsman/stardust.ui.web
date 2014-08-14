@@ -171,6 +171,8 @@ define(
 					document.body.style.cursor = "wait";
 
 					CKEDITOR.replace("documentTemplateEditor", {
+						height : 450,
+						extraPlugins : 'table,image,specialchar',
 						allowedContent : true,
 						enterMode : CKEDITOR.ENTER_BR,
 						autoParagraph : false,
@@ -1318,18 +1320,34 @@ define(
 
 					parent.iDnD.dragMode = false;
 
-					if (parent.iDnD.getTransferObject()) {
-						console.log("Object dropped at");
-						console.log(parent.iDnD.getTransferObject());
+					if (!parent.iDnD.getTransferObject()){
+						parent.iDnD.hideIframe();
+						return;
+					}
+					
+					//simple
+					var iframeTag = "<iframe allowtransparency='true' frameborder='0' "
+							+ "sandbox='allow-same-origin allow-forms allow-scripts' "
+							+ "scrolling='auto' style='border: none; width: 100%; height: 150%;' "
+							+ "src='"
+							+ "../../.."
+							+ "/plugins/views-common/views/report/reportViewer.html?viewMode=embedded&qualifiedParameters=false&path="
+							+ parent.iDnD.getTransferObject().path
+							+ "'></iframe>";
 
-						if (this.report.layout.type == "document") {
-							CKEDITOR.instances["documentTemplateEditor"]
-									.setData(CKEDITOR.instances["documentTemplateEditor"]
-											.getData()
-											+ '<sd-report-frame path="'
-											+ parent.iDnD.getTransferObject().path + '"'
-											+ " parameters=></sd-report-frame>");
-						}
+					//angularized
+					/*iframeTag = '<sd-report-frame path="'
+						+ parent.iDnD.getTransferObject().path + '"'
+						+ " parameters=></sd-report-frame>";*/
+					
+					console.log("Object dropped at");
+					console.log(parent.iDnD.getTransferObject());
+
+					if (this.report.layout.type == "document") {
+						CKEDITOR.instances["documentTemplateEditor"]
+								.setData(CKEDITOR.instances["documentTemplateEditor"]
+										.getData()
+										+ iframeTag);
 					}
 
 					parent.iDnD.hideIframe();
