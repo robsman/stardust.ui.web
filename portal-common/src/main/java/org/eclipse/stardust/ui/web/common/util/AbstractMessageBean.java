@@ -24,7 +24,7 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.Set;
 
-import javax.faces.context.FacesContext;
+import org.eclipse.stardust.ui.web.html5.ManagedBeanUtils;
 
 /**
  * @author Subodh.Godbole
@@ -152,8 +152,7 @@ public abstract class AbstractMessageBean implements Map<String, String>, Serial
     */
    private void initBundle()
    {
-      bundle = ResourceBundle.getBundle(bundleName, FacesContext.getCurrentInstance().getExternalContext()
-            .getRequestLocale());
+      bundle = ResourceBundle.getBundle(bundleName, ManagedBeanUtils.getLocale());
    }
 
    /**
