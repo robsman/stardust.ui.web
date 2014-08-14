@@ -60,6 +60,7 @@ define(
 
                this.sqlQueryHeading = m_utils
                      .jQuerySelect("#sqlIntegrationOverlay #sqlQueryHeading");
+               this.transactedRouteInput = m_utils.jQuerySelect("#sqlIntegrationOverlay #transactedRouteInput");
                this.inputBodyAccessPointInput = m_utils
                      .jQuerySelect("#parametersTab #inputBodyAccessPointInput");
                this.outputBodyAccessPointInput = m_utils
@@ -578,7 +579,15 @@ define(
                      }
                   }
                });
-
+               this.transactedRouteInput.change(function() {
+                   if (!self.view.validate()) {
+                      return;
+                   }
+                   self.view.submitModelElementAttributeChange(
+                         "carnot:engine:camel::transactedRoute",
+                         self.transactedRouteInput.prop('checked'));
+                   self.submitChanges();
+                });
                this.update();
             };
 
@@ -738,6 +747,7 @@ define(
                   this.dataBaseNameInput
                         .val(this.getApplication().attributes["stardust:sqlScriptingOverlay::dbname"]);
                }
+               
 
                this.hostInput
                      .val(this.getApplication().attributes["stardust:sqlScriptingOverlay::hostname"]);
@@ -759,6 +769,11 @@ define(
                this.initializeParameterDefinitionsTable();
                this.parameterDefinitionsPanel
                      .selectCurrentParameterDefinition();
+               if(this.getApplication().attributes["carnot:engine:camel::transactedRoute"]==null||this.getApplication().attributes["carnot:engine:camel::transactedRoute"]===undefined){
+                   this.view.submitModelElementAttributeChange("carnot:engine:camel::transactedRoute", true);
+                }
+               this.transactedRouteInput.prop("checked",
+                       this.getApplication().attributes["carnot:engine:camel::transactedRoute"]); 
             };
 
             SqlIntegrationOverlay.prototype.initializeParameterDefinitionsTable = function() {
