@@ -558,7 +558,25 @@ define(
 							});
 				}
 			}
-
+			
+			var setupTreeFilter=function(){
+				var treeRef,
+					filterBox;
+				
+				console.log("Setup --> treeFilter");
+				
+				treeRef = jQuery(displayScope + "#outline");
+				inputFilter=jQuery(displayScope + "#processTreeFilter");
+				
+				inputFilter.on("keypress",function(e){
+					console.log(e);
+			          var currentChar=String.fromCharCode(e.which);
+			          treeRef.jstree('clear_search');
+			          treeRef.jstree('close_all');
+			          treeRef.jstree('search',inputFilter.val() + currentChar);
+			        });
+			}
+			
 			var reloadOutlineTree = function(saveFirst) {
 				if (true == saveFirst) {
 					saveAllModels();
@@ -571,10 +589,10 @@ define(
 
 				m_utils.jQuerySelect(displayScope + "#outline").empty();
 				readAllModels(true);
-				setupJsTree();
-				//jQuery(displayScope + "#outline").jstree("create");
+				setupJsTree();	
+				setupTreeFilter();
 			};
-
+			
 			/**
 			 * This function will not reload the models in model management strategy
 			 */
@@ -587,6 +605,7 @@ define(
 				m_utils.jQuerySelect(displayScope + "#outline").empty();
 				readAllModels(true, true);
 				setupJsTree();
+				setupTreeFilter();
 				// jQuery(displayScope + "#outline").jstree("create");
 			};
 			
@@ -730,7 +749,7 @@ define(
 							},
 							"plugins" : [ "themes", "html_data",
 									"crrm", "contextmenu", "types",
-									"ui" ],
+									"ui","search" ],
 							contextmenu : {
 								"items" : function(node) {
 									if ('model' == node.attr('rel')
@@ -2639,6 +2658,7 @@ define(
 				readAllModels();
 
 				setupJsTree();
+				setupTreeFilter();
 
 				var handleToolbarEvents = function(event, data) {
 					if ("createModel" == data.id) {
