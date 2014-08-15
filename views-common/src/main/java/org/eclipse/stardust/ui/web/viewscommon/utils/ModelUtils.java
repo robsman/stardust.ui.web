@@ -312,7 +312,7 @@ public class ModelUtils
    }
 
    /**
-    * 
+    *
     * @param dataMapping
     * @return
     */
@@ -354,7 +354,7 @@ public class ModelUtils
       }
       return XPathUtils.getXPaths(refModel, typeDeclarationId, dataMapping.getDataPath());
    }
-   
+
    public static DocumentType getDocumentTypeFromData(Model model, Data data)
    {
       DocumentType result = null;
@@ -396,33 +396,25 @@ public class ModelUtils
     */
    public static Set<TypedXPath> getXPaths(Model model, Activity activity, AccessPoint ap)
    {
-      Reference ref = activity.getReference();
       Model refModel = model;
 
       String typeDeclarationId = (String) ap.getAttribute(StructuredDataConstants.TYPE_DECLARATION_ATT);
-      if (ref == null)
+
+      if (!StringUtils.isEmpty(typeDeclarationId) && typeDeclarationId.indexOf("typeDeclaration:") == 0)
       {
-         if (!StringUtils.isEmpty(typeDeclarationId) && typeDeclarationId.indexOf("typeDeclaration") == 0)
+         // For data created in current model, Structured type in different model
+         try
          {
-            // For data created in current model, Structured type in different model
-            try
-            {
-               String parts[] = typeDeclarationId.split("\\{")[1].split("\\}");
-               typeDeclarationId = parts[1];
-               Model newRefModel = getModel(model.getResolvedModelOid(parts[0]));
-               refModel = newRefModel != null ? newRefModel : refModel;
-            }
-            catch (Exception e)
-            {
-               trace.error("Error occured in Type declaration parsing", e);
-            }
+            String parts[] = typeDeclarationId.split("\\{")[1].split("\\}");
+            typeDeclarationId = parts[1];
+            Model newRefModel = getModel(model.getResolvedModelOid(parts[0]));
+            refModel = newRefModel != null ? newRefModel : refModel;
+         }
+         catch (Exception e)
+         {
+            trace.error("Error occured in Type declaration parsing", e);
          }
       }
-      else
-      {
-        refModel = getModel(ref.getModelOid());
-      }
-
       return XPathUtils.getXPaths(refModel, typeDeclarationId);
    }
 
