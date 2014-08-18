@@ -29,6 +29,8 @@ define(
 				this.id = null;
 				this.errorMessagesList = m_utils.jQuerySelect("#errorMessagesList");
 				this.errorMessages = [];
+				this.warningMessagesList = m_utils.jQuerySelect("#warningMessagesList");
+				this.warningMessages = [];
 
 				View.prototype.clearErrorMessages = function() {
 					m_dialog.makeInvisible(this.errorMessagesList);
@@ -49,5 +51,26 @@ define(
 						}
 					}
 				};
+				
+				View.prototype.clearWarningMessages = function() {
+				   m_utils.debug("Clear warning messages");
+               m_dialog.makeInvisible(this.warningMessagesList);
+               this.warningMessages = [];
+               this.warningMessagesList.empty();
+            };
+
+            /**
+             *
+             */
+            View.prototype.showWarningMessages = function() {
+               if (this.warningMessages.length != 0) {
+                  m_dialog.makeVisible(this.warningMessagesList);
+
+                  for ( var n in this.warningMessages) {
+                     this.warningMessagesList.append("<li>"
+                           + this.warningMessages[n] + "</li>");
+                  }
+               }
+            };
 			}
 		});

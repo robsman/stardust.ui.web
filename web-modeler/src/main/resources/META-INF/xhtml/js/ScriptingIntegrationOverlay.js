@@ -634,21 +634,22 @@ define(
              * 
              */
             ScriptingIntegrationOverlay.prototype.validate = function() {
-               var valid = true;
                this.view.clearErrorMessages();
-               m_utils.jQuerySelect("#codeEditorElmt").removeClass("error")
+               m_utils.jQuerySelect("#codeEditorElmt").removeClass("error");
+               this.view.warningMessages = [];
+               this.view.clearWarningMessages();
                if(m_utils.isEmptyString(this.codeEditor.getEditor().getSession().getValue())){
                   if (this.languageSelect.val() === "JavaScript") {
-                     this.view.errorMessages.push("No JavaScript expression provided.");
+                     this.view.warningMessages.push("No JavaScript expression provided.");
                   }else if(this.languageSelect.val() === "Groovy"){
-                     this.view.errorMessages.push("No Groovy script provided.");   
+                     this.view.warningMessages.push("No Groovy script provided.");   
                   }else{
-                     this.view.errorMessages.push("No Python script provided.");
+                     this.view.warningMessages.push("No Python script provided.");
                   }
                   m_utils.jQuerySelect("#codeEditorElmt").addClass("error");
-                  valid=false;
+                  this.view.showWarningMessages();
                }
-               return valid;
+               return true;
             };
          }
       });
