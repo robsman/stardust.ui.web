@@ -23,62 +23,17 @@ define(
 				 */
 				BusinessObjectManagementPanelController.prototype.initialize = function(
 						rootController) {
-					console.log("Initialize Search");
-
 					this.rootController = rootController;
 					this.businessObjectFilter = {};
 					this.selectedBusinessObjectInstances = [];
-
-					var deferred = jQuery.Deferred();
-					var self = this;
-
-					BusinessObjectManagementService
-							.instance()
-							.getBusinessObjects()
-							.done(
-									function(businessObjectModels) {
-										self.businessObjectModels = businessObjectModels;
-
-										console.log(self.businessObjectModels);
-
-										self.refreshBusinessObjects();
-
-										deferred.resolve();
-									}).fail(function() {
-								deferred.reject();
-							});
-
-					return deferred.promise();
 				};
 
 				/**
 				 * 
 				 */
-				BusinessObjectManagementPanelController.prototype.refreshBusinessObjects = function() {
-					this.businessObjects = [];
-
-					for (var n = 0; n < this.businessObjectModels.length; ++n) {
-						for (var m = 0; m < this.businessObjectModels[n].businessObjects.length; ++m) {
-							if (!this.businessObjectModels[n].businessObjects[m].types) {
-								this.businessObjectModels[n].businessObjects[m].types = {};
-							}
-
-							this.businessObjects
-									.push({
-										label : this.businessObjectModels[n].name
-												+ "/"
-												+ this.businessObjectModels[n].businessObjects[m].name,
-										model : this.businessObjectModels[n],
-										businessObject : this.businessObjectModels[n].businessObjects[m]
-									});
-						}
-					}
-				};
-
-				/**
-				 * 
-				 */
-				BusinessObjectManagementPanelController.prototype.onBusinessObjectChanged = function() {
+				BusinessObjectManagementPanelController.prototype.changeBusinessObject = function(
+						businessObject) {
+					this.businessObject = businessObject;
 					this.businessObjectInstances = [];
 					this.keyFields = [];
 					this.topLevelFields = [];
@@ -89,35 +44,42 @@ define(
 
 					// Create labels for all used types
 
-					for ( var type in this.businessObject.businessObject.types) {
-						for (var n = 0; n < this.businessObject.businessObject.types[type].fields.length; ++n) {
-							this.businessObject.businessObject.types[type].fields[n].label = this
-									.createLabel(this.businessObject.businessObject.types[type].fields[n].name);
+					if (this.businessObject.types) {
+						for ( var type in this.businessObject.types) {
+							for (var n = 0; n < this.businessObject.types[type].fields.length; ++n) {
+								this.businessObject.types[type].fields[n].label = this
+										.createLabel(this.businessObject.types[type].fields[n].name);
+							}
 						}
 					}
 
-					for (var n = 0; n < this.businessObject.businessObject.fields.length; ++n) {
+					for (var n = 0; n < this.businessObject.fields.length; ++n) {
 						// TODO Retrieve label from annotations
 
-						this.businessObject.businessObject.fields[n].label = this
-								.createLabel(this.businessObject.businessObject.fields[n].name);
+						this.businessObject.fields[n].label = this
+								.createLabel(this.businessObject.fields[n].name);
 
-						if (this.businessObject.businessObject.types[this.businessObject.businessObject.fields[n].type]) {
+						if (!this.businessObject.types) {
+							this.businessObject.types = {};
+						}
+
+						if (this.businessObject.types[this.businessObject.fields[n].type]) {
 							continue;
 						}
 
-						if (this.businessObject.businessObject.fields[n].primaryKey) {
-							this.primaryKeyField = this.businessObject.businessObject.fields[n];
-						} else if (this.businessObject.businessObject.fields[n].key) {
-							this.keyFields
-									.push(this.businessObject.businessObject.fields[n]);
+						if (this.businessObject.fields[n].primaryKey) {
+							this.primaryKeyField = this.businessObject.fields[n];
+						} else if (this.businessObject.fields[n].key) {
+							this.keyFields.push(this.businessObject.fields[n]);
 						}
 
-						this.topLevelFields
-								.push(this.businessObject.businessObject.fields[n]);
+						this.topLevelFields.push(this.businessObject.fields[n]);
 					}
 				};
 
+				/**
+				 * 
+				 */
 				BusinessObjectManagementPanelController.prototype.createLabel = function(
 						str) {
 					return str
@@ -139,12 +101,13 @@ define(
 
 					BusinessObjectManagementService
 							.instance()
-							.getBusinessObjectInstances(
-									this.businessObject.model.oid,
-									this.businessObject.businessObject.id,
+							.getBusinessObjectInstances(this.businessObject,
 									this.primaryKeyField, this.keyFields)
 							.done(
 									function(businessObjectInstances) {
+										console.log("Result");
+										console.log(businessObjectInstances);
+
 										self.businessObjectInstances = businessObjectInstances;
 
 										self.rootController.safeApply();

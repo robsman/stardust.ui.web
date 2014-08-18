@@ -1,16 +1,5 @@
 <div class="section" style="margin-bottom: 10px; padding: 10px;">
-	<table class="formTable">
-		<tr>
-			<td><label>Business Object</label></td>
-			<td><select
-				ng-model="businessObjectManagementPanelController.businessObject"
-				ng-options="businessObject as businessObject.label for businessObject in businessObjectManagementPanelController.businessObjects"
-				ng-change="businessObjectManagementPanelController.onBusinessObjectChanged()"><option
-						value="">Select ...</select></td>
-		</tr>
-	</table>
-	<div
-		ng-show="businessObjectManagementPanelController.businessObject != null">
+	<div>
 		<table class="formTable">
 			<tr>
 				<td><label>{{businessObjectManagementPanelController.primaryKeyField.label}}</label>

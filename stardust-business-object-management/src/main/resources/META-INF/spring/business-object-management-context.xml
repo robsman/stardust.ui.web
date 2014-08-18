@@ -10,11 +10,23 @@
 		http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/portal/common/uiDefinition.xsd">
 
 	<context:annotation-config />
-	<context:component-scan base-package="org.eclipse.stardust.ui.web.business_object_management" />
+	<context:component-scan
+		base-package="org.eclipse.stardust.ui.web.business_object_management" />
+
+	<bean name="businessObjectManagementMessages"
+		class="org.eclipse.stardust.ui.web.business_object_management.portal.messages.Messages"
+		scope="session">
+	</bean>
+
 
 	<bean id="businessObjectManagementService"
-		class="org.eclipse.stardust.ui.web.business_object_management.service.BusinessObjectManagementService" scope="session">
-		<aop:scoped-proxy/>
+		class="org.eclipse.stardust.ui.web.business_object_management.service.BusinessObjectManagementService"
+		scope="session">
+		<aop:scoped-proxy />
+	</bean>
+
+	<bean id="businessObjectManagementView"
+		class="org.eclipse.stardust.ui.web.business_object_management.portal.BusinessObjectManagementView">
 	</bean>
 
 </beans>

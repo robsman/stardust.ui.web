@@ -11,7 +11,7 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
                        http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
 
-	<jaxrs:server id="businessObjectManagement" address="/business-object-management">
+	<jaxrs:server id="businessObjectManagementServer" address="/business-object-management">
 		<jaxrs:serviceBeans>
 			<ref bean="businessObjectManagementResource" />
 		</jaxrs:serviceBeans>

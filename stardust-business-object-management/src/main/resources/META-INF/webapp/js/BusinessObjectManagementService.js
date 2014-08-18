@@ -57,8 +57,38 @@ define(
 				/**
 				 * 
 				 */
+				BusinessObjectManagementService.prototype.getBusinessObject = function(
+						modelOid, businessObjectId) {
+					var deferred = jQuery.Deferred();
+					var rootUrl = location.href.substring(0, location.href
+							.indexOf("/plugins"));
+					var self = this;
+
+					jQuery
+							.ajax(
+									{
+										url : rootUrl
+												+ "/services/rest/business-object-management/businessObject/"
+												+ modelOid + "/"
+												+ businessObjectId + ".json",
+										type : "GET",
+										contentType : "application/json"
+									}).done(function(result) {
+								console.log(result);
+
+								deferred.resolve(result);
+							}).fail(function(data) {
+								deferred.reject(data);
+							});
+
+					return deferred.promise();
+				};
+
+				/**
+				 * 
+				 */
 				BusinessObjectManagementService.prototype.getBusinessObjectInstances = function(
-						modelOid, businessObjectId, primaryKeyField, keyFields) {
+						businessObject, primaryKeyField, keyFields) {
 					var queryString = "?";
 
 					if (primaryKeyField && primaryKeyField.filterValue) {
@@ -75,7 +105,6 @@ define(
 								queryString += "=";
 								queryString += keyFields[n].filterValue;
 								queryString += "&";
-
 							}
 						}
 					}
@@ -87,25 +116,20 @@ define(
 					var rootUrl = location.href.substring(0, location.href
 							.indexOf("/plugins"));
 					var self = this;
+					var url = rootUrl
+							+ "/services/rest/business-object-management/businessObject/"
+							+ businessObject.modelOid + "/" + businessObject.id
+							+ "/instance.json";
 
-					jQuery
-							.ajax(
-									{
-										url : rootUrl
-												+ "/services/rest/business-object-management/businessObject/"
-												+ modelOid + "/"
-												+ businessObjectId
-												+ "/instance.json",
-										type : "GET",
-										contentType : "application/json"
-									})
-							.done(
-									function(result) {
-										deferred
-												.resolve(result.businessObjectInstances);
-									}).fail(function(data) {
-								deferred.reject(data);
-							});
+					jQuery.ajax({
+						url : url,
+						type : "GET",
+						contentType : "application/json"
+					}).done(function(result) {
+						deferred.resolve(result.businessObjectInstances);
+					}).fail(function(data) {
+						deferred.reject(data);
+					});
 
 					return deferred.promise();
 				};
@@ -158,12 +182,6 @@ define(
 				BusinessObjectManagementService.prototype.updateBusinessObjectInstance = function(
 						modelOid, businessObjectId, primaryKey,
 						businessObjectInstance) {
-					console.log("Model OID: " + modelOid);
-					console.log("Business Object ID: " + businessObjectId);
-					console.log("Primary Key: " + primaryKey);
-					console.log("Business Object Instance:");
-					console.log(businessObjectInstance);
-
 					var deferred = jQuery.Deferred();
 					var rootUrl = location.href.substring(0, location.href
 							.indexOf("/plugins"));
@@ -188,6 +206,33 @@ define(
 										deferred
 												.resolve(result.businessObjectInstances);
 									}).fail(function(data) {
+								deferred.reject(data);
+							});
+
+					return deferred.promise();
+				};
+
+				/**
+				 * 
+				 */
+				BusinessObjectManagementService.prototype.getProcessInstances = function(
+						businessObjectInstance) {
+					var deferred = jQuery.Deferred();
+					var rootUrl = location.href.substring(0, location.href
+							.indexOf("/plugins"));
+					var self = this;
+
+					jQuery
+							.ajax(
+									{
+										url : rootUrl
+												+ "/services/rest/business-object-management/businessObject/testModelOid1/testBusinessObjectId1/4711/"
+												+ "processInstances.json",
+										type : "GET",
+										contentType : "application/json"
+									}).done(function(result) {
+								deferred.resolve(result);
+							}).fail(function(data) {
 								deferred.reject(data);
 							});
 

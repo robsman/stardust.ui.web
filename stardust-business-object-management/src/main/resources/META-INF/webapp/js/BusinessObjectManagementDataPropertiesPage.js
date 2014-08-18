@@ -16,7 +16,7 @@ define([
     // Inheritance
 
     var propertiesPage = m_propertiesPage.createPropertiesPage(newPropertiesPanel,
-        "BusinessObjectManagementDataPropertiesPage", "Checklist Management");
+        "BusinessObjectManagementDataPropertiesPage", "Business Object Management");
 
     m_utils.inheritFields(this, propertiesPage);
     m_utils.inheritMethods(BusinessObjectManagementDataPropertiesPage.prototype, propertiesPage);

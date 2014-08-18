@@ -3,11 +3,13 @@
 		<td ng-repeat="column in formColumns">
 			<table class="formTable">
 				<tr ng-repeat="field in getPrimitiveFields(type)"
-					ng-if="$index >= column.min && $index <= column.max">
-					<td><label style="margin-left: 5px;">{{field.label}}</label></td>
-					<td><input ng-show="field.type == 'string'" type="text"
-						style="width: 200px;" ng-model="instance[field.id]"></input> <input
-						ng-show="field.type == 'boolean'" type="checkbox"
+					ng-if="$index >= column.min && $index <= column.max && field.ui.StringInputPreferences_stringInputType != 'TEXTAREA'">
+					<td><label style="margin-left: 5px;">{{field.ui.InputPreferences_label
+							|| field.label}}</label></td>
+					<td><input
+						ng-show="field.type == 'string' && field.ui.StringInputPreferences_stringInputType != 'TEXTAREA'"
+						type="text" style="width: 200px;" ng-model="instance[field.id]"></input>
+						<input ng-show="field.type == 'boolean'" type="checkbox"
 						ng-model="instance[field.id]"></input> <input
 						ng-show="field.type == 'integer'" type="number"
 						style="width: 100px; text-align: right;"
@@ -21,6 +23,16 @@
 				</tr>
 			</table>
 		</td>
+	</tr>
+</table>
+<table class="formTable" ng-repeat="field in getPrimitiveFields(type)"
+	ng-show="field.type == 'string' && field.ui.StringInputPreferences_stringInputType == 'TEXTAREA'">
+	<tr>
+		<td><label style="margin-left: 5px;">{{field.ui.InputPreferences_label
+				|| field.label}}</label></td>
+	</tr>
+	<tr>
+		<td><textarea rows="5" cols="20"></textarea></td>
 	</tr>
 </table>
 <table>

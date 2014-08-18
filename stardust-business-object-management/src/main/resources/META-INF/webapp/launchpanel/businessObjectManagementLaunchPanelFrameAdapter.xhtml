@@ -1,0 +1,34 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+<body>
+	<ice:panelGrid columns="1" style="margin-top: 10px;">
+		<div id="businessObjectManagementLaunchPanelAnchor"
+			style="width: 100%; height: 100%;"></div>
+		<ice:panelGroup style="display: none;">
+			<ice:commandLink id="view_management_link"
+				action="#{ippPortalApp.openView}" visible="false">
+				<f:param name="viewId" value="REPLACEME" />
+				<f:param name="viewIdentity" value="REPLACEME" />
+				<f:param name="viewParams" value="REPLACEME" />
+				<ice:outputText value="REPLACEME" styleClass="action-link"
+					escape="false" />
+			</ice:commandLink>
+			<ice:commandLink id="view_updater_link"
+				action="#{jsfViewUpdaterBean.updateView}" visible="false">
+				<f:param name="viewId" value="REPLACEME" />
+				<f:param name="viewIdentity" value="REPLACEME" />
+				<f:param name="viewParams" value="REPLACEME" />
+				<ice:outputText value="Update view &amp;raquo;"
+					styleClass="action-link" escape="false" />
+			</ice:commandLink>
+		</ice:panelGroup>
+		<ice:panelGroup styleClass="clearing" />
+	</ice:panelGrid>
+</body>
+</html>

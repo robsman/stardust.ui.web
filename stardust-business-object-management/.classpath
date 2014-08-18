@@ -36,5 +36,10 @@
 	<classpathentry kind="var" path="STARDUST_PORTAL_LIBS/lib/icepdf-core-5.0.0.jar"/>
 	<classpathentry kind="lib" path="/server/lib/carnot-engine.jar"/>
 	<classpathentry kind="var" path="STARDUST_PORTAL_LIBS/lib/jsr311-api-1.1.1.jar"/>
+	<classpathentry kind="var" path="STARDUST_PORTAL_LIBS/lib/jsf-facelets.jar"/>
+	<classpathentry kind="var" path="STARDUST_PORTAL_LIBS/lib/icefaces-facelets.jar"/>
+	<classpathentry kind="var" path="STARDUST_PORTAL_LIBS/lib/myfaces-api.jar"/>
+	<classpathentry kind="var" path="STARDUST_SPRING_LIBS/lib/spring-context.jar"/>
+	<classpathentry kind="var" path="STARDUST_PORTAL_LIBS/lib/icefaces.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

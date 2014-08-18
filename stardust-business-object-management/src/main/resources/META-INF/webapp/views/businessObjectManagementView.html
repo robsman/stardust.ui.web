@@ -5,7 +5,8 @@
 	rel='stylesheet' type='text/css'>
 <link href="../css/font-awesome-4.1.0/css/font-awesome.css"
 	rel="stylesheet">
-<link href='../css/stardust-modern.css' rel='stylesheet' />
+<link href='../../checklist-management/css/stardust-modern.css'
+	rel='stylesheet' />
 <link href='../css/thirdparty/jquery/jquery-ui-1.10.2.custom.min.css'
 	rel='stylesheet' />
 <script data-main="../js/BusinessObjectManagementViewMain"
@@ -27,8 +28,11 @@ ul.errorMessagesPanel {
 }
 </style>
 </head>
-<body>
-	<div ng-controller="businessObjectManagementViewController">
+<body ng-controller="businessObjectManagementViewController">
+	<div class="splash" ng-cloak>
+		<span id="loadingMsg">Loading...</span>
+	</div>
+	<div ng-cloak>
 		<table cellspacing="0" cellpadding="0" class="layoutTable">
 			<tr valign="center">
 				<td><a href="#" class="iconLink"
@@ -37,62 +41,92 @@ ul.errorMessagesPanel {
 					ng-click="searchCollapsed = false" ng-show="searchCollapsed"><i
 						class="fa fa-chevron-down"></i></a></td>
 				<td style="padding-left: 5px !important;"><h2
-						style="margin-bottom: 0px;">Business Object Selection and
+						style="margin-bottom: 0px;">{{businessObjectManagementPanelController.businessObject.name}}
 						Search</h2></td>
 			</tr>
 		</table>
 		<div ng-hide="searchCollapsed"
 			ng-include="'../businessObjectSearchPanel.html'"></div>
-		<div id="businessObjectTabs" class="minimalTabs"
+		<table cellspacing="0" cellpadding="0" class="layoutTable"
 			style="margin-top: 10px;"
+			ng-show="currentBusinessObjectInstance != null">
+			<tr valign="center">
+				<td><a href="#" class="iconLink"
+					ng-click="versionPanelExpanded = true"
+					ng-hide="versionPanelExpanded"><i class="fa fa-chevron-down"></i></a><a
+					href="#" class="iconLink" ng-click="versionPanelExpanded = false"
+					ng-show="versionPanelExpanded"><i class="fa fa-chevron-up"></i></a></td>
+				<td style="padding-left: 5px !important;"><h2
+						style="margin-bottom: 0px;">Other Versions of this
+						{{businessObjectManagementPanelController.businessObject.name}}</h2></td>
+			</tr>
+		</table>
+		<div
 			ng-show="businessObjectManagementPanelController.businessObject != null">
-			<ul id="businessObjectTabsList">
-				<li><a href="#businessObjectTab"><span class="tabLabel">{{businessObjectManagementPanelController.businessObject.businessObject.name}}
-							Data</span></a></li>
-				<li ng-show="currentBusinessObjectInstance != null"><a
-					href="#processesTab"><span class="tabLabel">Processes
-							with
-							{{businessObjectManagementPanelController.businessObject.businessObject.name}}</span></a></li>
-			</ul>
-			<div id="businessObjectTab">
-				<table style="width: 100%;">
-					<tr>
-						<td align="right"><input type="button" value="Save"
-							ng-click="saveBusinessObjectInstance()"
-							ng-show="currentBusinessObjectInstance != null"></input><input
-							type="button" value="Create"
-							ng-click="createBusinessObjectInstance()"
-							style="margin-left: 10px;"></input><input type="button"
-							value="Clear" ng-show="currentBusinessObjectInstance != null"
-							ng-click="clearBusinessObjectInstance()"
-							style="margin-left: 10px;"></input></td>
-					</tr>
-					<tr ng-show="currentBusinessObjectInstance == null">
-						<td><em>No
-								{{businessObjectManagementPanelController.businessObject.businessObject.name}}
-								selected.</em></td>
-					</tr>
-					<tr ng-show="currentBusinessObjectInstance != null">
-						<td>
-							<table>
-								<tr>
-									<td>
-										<ul class="errorMessagesPanel" ng-show="messages.length > 0">
-											<li ng-repeat="message in messages">{{message}}</li>
-										</ul>
-									</td>
-								</tr>
-							</table>
-							<div ng-repeat="instance in [currentBusinessObjectInstance]">
-								<div ng-repeat="type in [getBusinessObject()]">
-									<div ng-include="'./objectPanel.html'"></div>
-								</div>
-							</div>
-						</td>
-					</tr>
-				</table>
+			<div
+				ng-show="versionPanelExpanded  && currentBusinessObjectInstance != null">
+				<p>The selected
+					{{businessObjectManagementPanelController.businessObject.name}} is
+					also used in the following Process Instances.</p>
+				<div class="dataTableFrame"
+					style="margin-top: 20px; margin-bottom: 20px;">
+					<table cellpadding="0" cellspacing="0" class="dataTable"
+						style="width: 100%;">
+						<thead>
+							<tr>
+								<th>Process Name</th>
+								<th>Process OID</th>
+								<th>Start Time</th>
+								<th>Descriptors</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr sd-table-data="processInstance in processInstances">
+								<td>{{processInstance.name}}</td>
+								<td>{{processInstance.oid}}</td>
+								<td>{{processInstance.startTime}}</td>
+								<td></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
 			</div>
-			<div id="processesTab"></div>
+			<table style="width: 100%;">
+				<tr>
+					<td align="right"><input type="button" value="Save"
+						ng-click="saveBusinessObjectInstance()"
+						ng-show="currentBusinessObjectInstance != null"></input><input
+						type="button" value="Create"
+						ng-click="createBusinessObjectInstance()"
+						style="margin-left: 10px;"></input><input type="button"
+						value="Clear" ng-show="currentBusinessObjectInstance != null"
+						ng-click="clearBusinessObjectInstance()"
+						style="margin-left: 10px;"></input></td>
+				</tr>
+				<tr ng-show="currentBusinessObjectInstance == null">
+					<td><em>No
+							{{businessObjectManagementPanelController.businessObject.name}}
+							selected.</em></td>
+				</tr>
+				<tr ng-show="currentBusinessObjectInstance != null">
+					<td>
+						<table>
+							<tr>
+								<td>
+									<ul class="errorMessagesPanel" ng-show="messages.length > 0">
+										<li ng-repeat="message in messages">{{message}}</li>
+									</ul>
+								</td>
+							</tr>
+						</table>
+						<div ng-repeat="instance in [currentBusinessObjectInstance]">
+							<div ng-repeat="type in [getBusinessObject()]">
+								<div ng-include="'./objectPanel.html'"></div>
+							</div>
+						</div>
+					</td>
+				</tr>
+			</table>
 		</div>
 	</div>
 </body>

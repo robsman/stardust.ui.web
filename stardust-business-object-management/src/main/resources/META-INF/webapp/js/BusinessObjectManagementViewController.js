@@ -25,6 +25,10 @@ define(
 				 * 
 				 */
 				BusinessObjectManagementViewController.prototype.initialize = function() {
+					this.parameters = Utils.getQueryParameters();
+					console.log("Parameters");
+					console.log(this.parameters);
+
 					this.formColumns = [ {
 						min : 0,
 						max : 3
@@ -41,38 +45,60 @@ define(
 						min : 16,
 						max : 19
 					} ]; // TODO
-					// Calculate
 
 					this.messages = [];
 					this.businessObjectManagementPanelController = BusinessObjectManagementPanelController
 							.create();
 
+					this.businessObjectManagementPanelController
+							.initialize(this);
+
 					var self = this;
 
-					this.businessObjectManagementPanelController.initialize(
-							this).done(function() {
-						self.safeApply();
-						jQuery("#businessObjectTabs").tabs();
-					});
+					BusinessObjectManagementService
+							.instance()
+							.getBusinessObject(this.parameters.modelOid,
+									this.parameters.businessObjectId)
+							.done(
+									function(businessObject) {
+										self.businessObject = businessObject;
+
+										// Enhance BO with modelOid
+
+										self.businessObject.modelOid = self.parameters.modelOid;
+
+										self.businessObjectManagementPanelController
+												.changeBusinessObject(self.businessObject);
+									}).fail(function() {
+							});
+
 				};
 
 				/**
 				 * 
 				 */
 				BusinessObjectManagementViewController.prototype.onBusinessObjectInstanceSelectionChange = function() {
-					console.log("===> Event fired");
-					console
-							.log(this.businessObjectManagementPanelController.selectedBusinessObjectInstances);
-
 					this.currentBusinessObjectInstance = this.businessObjectManagementPanelController.selectedBusinessObjectInstances[0];
-
-					this.createMissingComplexFieldInstances(
-							this.currentBusinessObjectInstance, this
-									.getBusinessObject());
-
 					this.messages = [];
 
-					this.safeApply();
+					var self = this;
+
+					BusinessObjectManagementService
+							.instance()
+							.getProcessInstances(
+									this.currentBusinessObjectInstance)
+							.done(
+									function(processInstances) {
+										self.processInstances = processInstances;
+										self
+												.createMissingComplexFieldInstances(
+														self.currentBusinessObjectInstance,
+														self
+																.getBusinessObject());
+
+										self.safeApply();
+									}).fail(function() {
+							});
 				};
 
 				/**
@@ -114,15 +140,19 @@ define(
 						BusinessObjectManagementService
 								.instance()
 								.createBusinessObjectInstance(
-										this.businessObjectManagementPanelController.businessObject.model.oid,
-										this.businessObjectManagementPanelController.businessObject.businessObject.id,
+										this.businessObjectManagementPanelController.modelOid,
+										this.businessObjectManagementPanelController.businessObjectId,
 										this.currentBusinessObjectInstance[this.businessObjectManagementPanelController.primaryKeyField.id],
 										this.currentBusinessObjectInstance)
-								.done(function() {
-									self.safeApply();
-								}).fail();
+								.done(
+										function() {
+											self.currentBusinessObjectInstance = null;
+											self.newBusinessObjectInstance = null;
+											self.searchCollapsed = false;
+											self.businessObjectManagementPanelController
+													.filterBusinessObjectInstances();
+										}).fail();
 
-						this.newBusinessObjectInstance = null;
 					} else {
 						this
 								.cleanUpAngularFields(this.currentBusinessObjectInstance);
@@ -130,13 +160,17 @@ define(
 						BusinessObjectManagementService
 								.instance()
 								.updateBusinessObjectInstance(
-										this.businessObjectManagementPanelController.businessObject.model.oid,
-										this.businessObjectManagementPanelController.businessObject.businessObject.id,
+										this.businessObjectManagementPanelController.modelOid,
+										this.businessObjectManagementPanelController.businessObjectId,
 										this.currentBusinessObjectInstance[this.businessObjectManagementPanelController.primaryKeyField.id],
 										this.currentBusinessObjectInstance)
-								.done(function() {
-									self.safeApply();
-								}).fail();
+								.done(
+										function() {
+											self.currentBusinessObjectInstance = null;
+											self.searchCollapsed = false;
+											self.businessObjectManagementPanelController
+													.filterBusinessObjectInstances();
+										}).fail();
 					}
 				};
 
@@ -161,11 +195,7 @@ define(
 				 * 
 				 */
 				BusinessObjectManagementViewController.prototype.getBusinessObject = function() {
-					if (this.businessObjectManagementPanelController.businessObject) {
-						return this.businessObjectManagementPanelController.businessObject.businessObject;
-					}
-
-					return null;
+					return this.businessObjectManagementPanelController.businessObject;
 				};
 
 				/**
@@ -215,7 +245,8 @@ define(
 						// Skip complex fields
 
 						if (type.fields[n].list
-								|| this.getBusinessObject().types[type.fields[n].type]) {
+								|| (this.getBusinessObject().types && this
+										.getBusinessObject().types[type.fields[n].type])) {
 							continue;
 						}
 
@@ -240,7 +271,8 @@ define(
 						// Skip primitive fields
 
 						if (!type.fields[n].list
-								&& !this.getBusinessObject().types[type.fields[n].type]) {
+								&& (!this.getBusinessObject().types || !this
+										.getBusinessObject().types[type.fields[n].type])) {
 							continue;
 						}
 
