@@ -562,19 +562,27 @@ define(
 			var setupTreeFilter=function(){
 				var treeRef,
 					filterBox;
-				
-				console.log("Setup --> treeFilter");
-				
+
 				treeRef = jQuery(displayScope + "#outline");
 				inputFilter=jQuery(displayScope + "#processTreeFilter");
 				
-				inputFilter.on("keypress",function(e){
-					console.log(e);
-			          var currentChar=String.fromCharCode(e.which);
+				inputFilter.on("keyup",function(e){
+			          var currentChar=String.fromCharCode(e.which),
+			          	  searchStr=inputFilter.val();
+			          
+			          
 			          treeRef.jstree('clear_search');
 			          treeRef.jstree('close_all');
-			          treeRef.jstree('search',inputFilter.val() + currentChar);
+			          treeRef.jstree('search',searchStr);
+			          
+			          jQuery(displayScope + "#outline > ul > li").css("display","block");
+			          if(searchStr.length > 0){
+			        	  jQuery(displayScope + "#outline > ul > li.jstree-closed").css("display","none");
+			          }
+			          
 			        });
+				
+				
 			}
 			
 			var reloadOutlineTree = function(saveFirst) {
