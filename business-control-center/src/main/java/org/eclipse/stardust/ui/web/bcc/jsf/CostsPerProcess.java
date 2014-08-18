@@ -14,10 +14,10 @@ import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.dto.ProcessDefinitionDetails;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
+import org.eclipse.stardust.engine.core.query.statistics.api.DateRange;
 import org.eclipse.stardust.engine.core.query.statistics.api.UserWorktimeStatistics.Contribution;
+import org.eclipse.stardust.engine.core.query.statistics.api.UserWorktimeStatistics.ContributionInInterval;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ModelElementLocalizerKey;
-
 
 public class CostsPerProcess
 {
@@ -88,69 +88,73 @@ public class CostsPerProcess
    {
       if(con != null)
       {
-         if(con.contributionToday.nPis > 0 && con.contributionToday.cost > 0)
+         ContributionInInterval ciiToday = con.getOrCreateContributionInInterval(DateRange.TODAY);
+         ContributionInInterval ciiLastWeek = con.getOrCreateContributionInInterval(DateRange.LAST_WEEK);
+         ContributionInInterval ciiLastMonth = con.getOrCreateContributionInInterval(DateRange.LAST_MONTH);
+       
+         if((ciiToday.getnPis() > 0) && ciiToday.getCost() > 0)
          {
-            totalCountPIToday += con.contributionToday.nPis;
-            costsToday += con.contributionToday.cost;
-            if(con.contributionToday.criticalByExecutionCost.getRedInstancesCount() > 0)
+            totalCountPIToday += ciiToday.getnPis();
+            costsToday += ciiToday.getCost();
+            if(ciiToday.getCriticalByExecutionCost().getRedInstancesCount() > 0)
             {
                thresholdStateToday = EXCEEDED_THRESHOLD_STATE;
             }
             else if(thresholdStateToday != EXCEEDED_THRESHOLD_STATE &&
-                  con.contributionToday.criticalByExecutionCost.getYellowInstancesCount() > 0)
+                  ciiToday.getCriticalByExecutionCost().getYellowInstancesCount() > 0)
             {
                thresholdStateToday = CRITICAL_THRESHOLD_STATE;
             }
          }
          else
          {
-            if(con.contributionToday.nPis > 0 && con.contributionToday.cost < 0)
+            if(ciiToday.getnPis() > 0 && ciiToday.getCost() < 0)
             {
-               trace.error("Invalid costs of today: " + con.contributionToday.cost + 
+               trace.error("Invalid costs of today: " + ciiToday.getCost() + 
                      " by process with id: " + processDefinition.getId());
             }
          }
-         if(con.contributionLastWeek.nPis > 0 && con.contributionLastWeek.cost > 0)
+         if(ciiLastWeek.getnPis() > 0 && ciiLastWeek.getCost() > 0)
          {
-            totalCountPILastWeek  += con.contributionLastWeek.nPis;
-            costsLastWeek += con.contributionLastWeek.cost;
-            if(con.contributionLastWeek.criticalByExecutionCost.getRedInstancesCount() > 0)
+            totalCountPILastWeek  += ciiLastWeek.getnPis();
+            costsLastWeek += ciiLastWeek.getCost();
+            if(ciiLastWeek.getCriticalByExecutionCost().getRedInstancesCount() > 0)
             {
                thresholdStateLastWeek = EXCEEDED_THRESHOLD_STATE;
             }
             else if(thresholdStateLastWeek != EXCEEDED_THRESHOLD_STATE &&
-                  con.contributionLastWeek.criticalByExecutionCost.getYellowInstancesCount() > 0)
+                  ciiLastWeek.getCriticalByExecutionCost().getYellowInstancesCount() > 0)
             {
                thresholdStateLastWeek = CRITICAL_THRESHOLD_STATE;
             }
          }
          else
          {
-            if(con.contributionLastWeek.nPis > 0 && con.contributionLastWeek.cost < 0)
+            if(ciiLastWeek.getnPis() > 0 && ciiLastWeek.getCost() < 0)
             {
-               trace.error("Invalid costs of last week: " + con.contributionLastWeek.cost  + 
+               trace.error("Invalid costs of last week: " + ciiLastWeek.getCost()  + 
                      " by process with id: " + processDefinition.getId());
             }
          }
-         if(con.contributionLastMonth.nPis > 0 && con.contributionLastMonth.cost > 0)
+         if(ciiLastMonth.getnPis() > 0 && ciiLastMonth.getCost() > 0)
          {
-            totalCountPILastMonth += con.contributionLastMonth.nPis;
-            costsLastMonth += con.contributionLastMonth.cost;
-            if(con.contributionLastMonth.criticalByExecutionCost.getRedInstancesCount() > 0)
+            totalCountPILastMonth += ciiLastMonth.getnPis();
+            costsLastMonth += ciiLastMonth.getCost();
+            if(ciiLastMonth.getCriticalByExecutionCost().getRedInstancesCount() > 0)
             {
                thresholdStateLastMonth = EXCEEDED_THRESHOLD_STATE;
             }
             else if(thresholdStateLastMonth != EXCEEDED_THRESHOLD_STATE &&
-                  con.contributionLastMonth.criticalByExecutionCost.getYellowInstancesCount() > 0)
+                  ciiLastMonth.getCriticalByExecutionCost().getYellowInstancesCount() > 0)
             {
                thresholdStateLastMonth = CRITICAL_THRESHOLD_STATE;
             }
          }
          else
          {
-            if(con.contributionLastMonth.nPis > 0 && con.contributionLastMonth.cost < 0)
+            if(ciiLastMonth.getnPis() > 0 && ciiLastMonth.getCost() < 0)
             {
-               trace.error("Invalid costs of last month: " + con.contributionLastMonth.cost + 
+               trace.error("Invalid costs of last month: " + ciiLastMonth.getCost() + 
                      " by process with id: " + processDefinition.getId());
             }
          }
@@ -171,4 +175,5 @@ public class CostsPerProcess
    {
       return thresholdStateLastMonth;
    }
+   
 }

@@ -14,7 +14,9 @@ import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.dto.ProcessDefinitionDetails;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
+import org.eclipse.stardust.engine.core.query.statistics.api.DateRange;
 import org.eclipse.stardust.engine.core.query.statistics.api.UserWorktimeStatistics.Contribution;
+import org.eclipse.stardust.engine.core.query.statistics.api.UserWorktimeStatistics.ContributionInInterval;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 
@@ -98,71 +100,75 @@ public class ProcessingTimePerProcess
    {
       if(con != null)
       {
-         if(con.contributionToday.nPis > 0 && con.contributionToday.timeSpent.getTime() > 0)
+         ContributionInInterval ciiToday = con.getOrCreateContributionInInterval(DateRange.TODAY);
+         ContributionInInterval ciiLastWeek = con.getOrCreateContributionInInterval(DateRange.LAST_WEEK);
+         ContributionInInterval ciiLastMonth = con.getOrCreateContributionInInterval(DateRange.LAST_MONTH);
+         
+         if(ciiToday.getnPis() > 0 && ciiToday.getTimeSpent().getTime() > 0)
          {
-            totalPICountToday += con.contributionToday.nPis;
-            timeToday += con.contributionToday.timeSpent.getTime();
-            if(con.contributionToday.criticalByProcessingTime.getRedInstancesCount() > 0)
+            totalPICountToday += ciiToday.getnPis();
+            timeToday += ciiToday.getTimeSpent().getTime();
+            if(ciiToday.getCriticalByProcessingTime().getRedInstancesCount() > 0)
             {
                thresholdStateToday = EXCEEDED_THRESHOLD_STATE;
             }
             else if(thresholdStateToday != EXCEEDED_THRESHOLD_STATE &&
-                  con.contributionToday.criticalByProcessingTime.getYellowInstancesCount() > 0)
+                  ciiToday.getCriticalByProcessingTime().getYellowInstancesCount() > 0)
             {
                thresholdStateToday = CRITICAL_THRESHOLD_STATE;
             }
          }
          else
          {
-            if(con.contributionToday.nPis > 0 && con.contributionToday.timeSpent.getTime() < 0)
+            if(ciiToday.getnPis() > 0 && ciiToday.getTimeSpent().getTime() < 0)
             {
-               trace.error("Invalid time of today: " + con.contributionToday.timeSpent.getTime() + 
+               trace.error("Invalid time of today: " + ciiToday.getTimeSpent().getTime() + 
                      " by process with id: " + processDefinition.getId());
             }
          }
 
-         if(con.contributionLastWeek.nPis > 0 && con.contributionLastWeek.timeSpent.getTime() > 0)
+         if(ciiLastWeek.getnPis() > 0 && ciiLastWeek.getTimeSpent().getTime() > 0)
          {
-            totalPICountLastWeek += con.contributionLastWeek.nPis;
-            timeLastWeek += con.contributionLastWeek.timeSpent.getTime();
-            if(con.contributionLastWeek.criticalByProcessingTime.getRedInstancesCount() > 0)
+            totalPICountLastWeek += ciiLastWeek.getnPis();
+            timeLastWeek += ciiLastWeek.getTimeSpent().getTime();
+            if(ciiLastWeek.getCriticalByProcessingTime().getRedInstancesCount() > 0)
             {
                thresholdStateLastWeek = EXCEEDED_THRESHOLD_STATE;
             }
             else if(thresholdStateLastWeek != EXCEEDED_THRESHOLD_STATE &&
-                  con.contributionLastWeek.criticalByProcessingTime.getYellowInstancesCount() > 0)
+                  ciiLastWeek.getCriticalByProcessingTime().getYellowInstancesCount() > 0)
             {
                thresholdStateLastWeek = CRITICAL_THRESHOLD_STATE;
             }
          }
          else
          {
-            if(con.contributionLastWeek.nPis > 0 && con.contributionLastWeek.timeSpent.getTime() < 0)
+            if(ciiLastWeek.getnPis() > 0 && ciiLastWeek.getTimeSpent().getTime() < 0)
             {
-               trace.error("Invalid time of last week: " + con.contributionLastWeek.timeSpent.getTime() + 
+               trace.error("Invalid time of last week: " + ciiLastWeek.getTimeSpent().getTime() + 
                      " by process with id: " + processDefinition.getId());
             }
          }
          
-         if(con.contributionLastMonth.nPis > 0 && con.contributionLastMonth.timeSpent.getTime() > 0)
+         if(ciiLastMonth.getnPis() > 0 && ciiLastMonth.getTimeSpent().getTime() > 0)
          {
-            totalPICountLastMonth += con.contributionLastMonth.nPis;
-            timeLastMonth += con.contributionLastMonth.timeSpent.getTime();
-            if(con.contributionLastMonth.criticalByProcessingTime.getRedInstancesCount() > 0)
+            totalPICountLastMonth += ciiLastMonth.getnPis();
+            timeLastMonth += ciiLastMonth.getTimeSpent().getTime();
+            if(ciiLastMonth.getCriticalByProcessingTime().getRedInstancesCount() > 0)
             {
                thresholdStateLastMonth = EXCEEDED_THRESHOLD_STATE;
             }
             else if(thresholdStateLastMonth != EXCEEDED_THRESHOLD_STATE &&
-                  con.contributionLastMonth.criticalByProcessingTime.getYellowInstancesCount() > 0)
+                  ciiLastMonth.getCriticalByProcessingTime().getYellowInstancesCount() > 0)
             {
                thresholdStateLastMonth = CRITICAL_THRESHOLD_STATE;
             }
          }
          else
          {
-            if(con.contributionLastMonth.nPis > 0 && con.contributionLastMonth.timeSpent.getTime() < 0)
+            if(ciiLastMonth.getnPis() > 0 && ciiLastMonth.getTimeSpent().getTime() < 0)
             {
-               trace.error("Invalid time of last month: " + con.contributionLastMonth.timeSpent.getTime() + 
+               trace.error("Invalid time of last month: " + ciiLastMonth.getTimeSpent().getTime() + 
                      " by process with id: " + processDefinition.getId());
             }
          }

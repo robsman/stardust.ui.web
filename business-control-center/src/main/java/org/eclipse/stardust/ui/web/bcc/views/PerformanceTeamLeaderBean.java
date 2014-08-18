@@ -36,6 +36,7 @@ import org.eclipse.stardust.engine.api.query.Users;
 import org.eclipse.stardust.engine.api.runtime.DeployedModel;
 import org.eclipse.stardust.engine.api.runtime.Grant;
 import org.eclipse.stardust.engine.api.runtime.User;
+import org.eclipse.stardust.engine.core.query.statistics.api.DateRange;
 import org.eclipse.stardust.engine.core.query.statistics.api.UserPerformanceStatistics;
 import org.eclipse.stardust.engine.core.query.statistics.api.UserPerformanceStatistics.Contribution;
 import org.eclipse.stardust.engine.core.query.statistics.api.UserPerformanceStatistics.PerformanceStatistics;
@@ -430,9 +431,9 @@ public class PerformanceTeamLeaderBean extends UIComponentBean implements Resour
                for (int i = 0; i < contributions.size(); ++i)
                {
                   Contribution con = (Contribution) contributions.get(i);
-                  pStat.countToday += con.performanceToday.nAisCompleted;
-                  pStat.countWeek += con.performanceThisWeek.nAisCompleted;
-                  pStat.countMonth += con.performanceThisMonth.nAisCompleted;
+                  pStat.countToday += con.getPerformanceInInterval(DateRange.TODAY).getnAisCompleted();
+                  pStat.countWeek += con.getPerformanceInInterval(DateRange.THIS_WEEK).getnAisCompleted();
+                  pStat.countMonth += con.getPerformanceInInterval(DateRange.THIS_MONTH).getnAisCompleted();
                }
 
             }            

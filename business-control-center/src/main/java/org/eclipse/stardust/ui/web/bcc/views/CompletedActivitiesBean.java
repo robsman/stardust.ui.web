@@ -24,6 +24,7 @@ import org.eclipse.stardust.engine.api.query.Query;
 import org.eclipse.stardust.engine.api.query.UserDetailsPolicy;
 import org.eclipse.stardust.engine.api.query.UserQuery;
 import org.eclipse.stardust.engine.api.query.Users;
+import org.eclipse.stardust.engine.core.query.statistics.api.DateRange;
 import org.eclipse.stardust.engine.core.query.statistics.api.UserPerformanceStatistics;
 import org.eclipse.stardust.engine.core.query.statistics.api.UserPerformanceStatisticsQuery;
 import org.eclipse.stardust.engine.core.query.statistics.api.UserPerformanceStatistics.Contribution;
@@ -148,9 +149,9 @@ public class CompletedActivitiesBean extends UIComponentBean implements Resource
                   {
                      roleItem = (RoleItem) iter.next();
                      con = pStatistics.findContribution(roleItem.getRole());
-                     nAisCompletedToday += con.performanceToday.nAisCompleted;
-                     nAisCompletedWeek += con.performanceThisWeek.nAisCompleted;
-                     nAisCompletedMonth += con.performanceThisMonth.nAisCompleted;
+                     nAisCompletedToday += con.getOrCreatePerformanceInInterval(DateRange.TODAY).getnAisCompleted();
+                     nAisCompletedWeek += con.getOrCreatePerformanceInInterval(DateRange.THIS_WEEK).getnAisCompleted();
+                     nAisCompletedMonth += con.getOrCreatePerformanceInInterval(DateRange.THIS_MONTH).getnAisCompleted();
                   }
 
                }
