@@ -14,15 +14,16 @@
  * @author
  */
 define(
-         [ "bpm-modeler/js/m_utils","bpm-modeler/js/m_urlUtils", "bpm-modeler/js/m_i18nUtils",
-                  "bpm-modeler/js/m_constants", "bpm-modeler/js/m_commandsController",
-                  "bpm-modeler/js/m_command", "bpm-modeler/js/m_model",
-                  "bpm-modeler/js/m_accessPoint", "bpm-modeler/js/m_typeDeclaration",
+         [ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_urlUtils",
+                  "bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_constants",
+                  "bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_command",
+                  "bpm-modeler/js/m_model", "bpm-modeler/js/m_accessPoint",
+                  "bpm-modeler/js/m_typeDeclaration",
                   "bpm-modeler/js/m_parameterDefinitionsPanel",
                   "bpm-modeler/js/m_codeEditorAce" ],
-         function(m_utils, m_urlUtils, m_i18nUtils, m_constants, m_commandsController, m_command,
-                  m_model, m_accessPoint, m_typeDeclaration, m_parameterDefinitionsPanel,
-                  m_codeEditorAce)
+         function(m_utils, m_urlUtils, m_i18nUtils, m_constants, m_commandsController,
+                  m_command, m_model, m_accessPoint, m_typeDeclaration,
+                  m_parameterDefinitionsPanel, m_codeEditorAce)
          {
             return {
                create : function(view)
@@ -68,34 +69,45 @@ define(
                                     + m_i18nUtils
                                              .getProperty("modeler.model.applicationOverlay.templating.templateLocationInput.classPath.label")
                                     + "</option>");
-                  this.classPathLocationInput=m_utils.jQuerySelect("#templatingIntegrationOverlay #configurationTab #classPathLocationInput");
-                  this.templateLocationInput.change(
-                           {
-                              panel : this
-                           },
-                           function(event)
-                           {
-                  
-                     if (event.data.panel.templateLocationInput.val() == "textBox")
-                     {
-                        event.data.panel.textAreaConfigurationDiv.show();
-                        event.data.panel.classpathFileConfigurationDiv.hide();
+                  this.classPathLocationInput = m_utils
+                           .jQuerySelect("#templatingIntegrationOverlay #configurationTab #classPathLocationInput");
+                  this.templateLocationInput
+                           .change(
+                                    {
+                                       panel : this
+                                    },
+                                    function(event)
+                                    {
 
-                     }
-                     else if (event.data.panel.templateLocationInput.val() == "classpath")
-                     {
-                        event.data.panel.textAreaConfigurationDiv.hide();
-                        event.data.panel.classpathFileConfigurationDiv.show();
-                     }
-                     else
-                     {
-                        event.data.panel.textAreaConfigurationDiv.hide();
-                        event.data.panel.classpathFileConfigurationDiv.hide();
-                     }
-                     event.data.panel.view.submitModelElementAttributeChange(
-                              "stardust:templatingIntegrationOverlay::templateLocation",
-                              event.data.panel.templateLocationInput.val());
-                  });
+                                       if (event.data.panel.templateLocationInput.val() == "textBox")
+                                       {
+                                          event.data.panel.textAreaConfigurationDiv
+                                                   .show();
+                                          event.data.panel.classpathFileConfigurationDiv
+                                                   .hide();
+
+                                       }
+                                       else if (event.data.panel.templateLocationInput
+                                                .val() == "classpath")
+                                       {
+                                          event.data.panel.textAreaConfigurationDiv
+                                                   .hide();
+                                          event.data.panel.classpathFileConfigurationDiv
+                                                   .show();
+                                       }
+                                       else
+                                       {
+                                          event.data.panel.textAreaConfigurationDiv
+                                                   .hide();
+                                          event.data.panel.classpathFileConfigurationDiv
+                                                   .hide();
+                                       }
+                                       event.data.panel.view
+                                                .submitModelElementAttributeChange(
+                                                         "stardust:templatingIntegrationOverlay::templateLocation",
+                                                         event.data.panel.templateLocationInput
+                                                                  .val());
+                                    });
                   this.editorAnchor = m_utils.jQuerySelect("#codeEditorDiv").get(0);
                   this.editorAnchor.id = "codeEditorDiv"
                            + Math.floor((Math.random() * 100000) + 1);
@@ -120,62 +132,83 @@ define(
                      supportsOtherData : false,
                      hideEnumerations : true
                   });
-                  
-                  this.parameterDefinitionDirectionSelect = m_utils.jQuerySelect("#parametersTab #parameterDefinitionDirectionSelect");
+
+                  this.parameterDefinitionDirectionSelect = m_utils
+                           .jQuerySelect("#parametersTab #parameterDefinitionDirectionSelect");
                   this.parameterDefinitionDirectionSelect.empty();
-                  this.parameterDefinitionDirectionSelect.append("<option value=\"IN\">" + m_i18nUtils.getProperty("modeler.element.properties.commonProperties.in") + "</option>");
-                  this.parameterDefinitionDirectionSelect.append("<option value=\"OUT\">" + m_i18nUtils.getProperty("modeler.element.properties.commonProperties.out") + "</option>");
-                  this.parameterDefinitionDirectionSelect.append("<option value=\"INOUT\">" + m_i18nUtils.getProperty("modeler.element.properties.commonProperties.inout") + "</option>");
-                  
-                  this.outputBodyAccessPointInput = m_utils.jQuerySelect("#parametersTab #outputBodyAccessPointInput");
-                  this.deleteParameterDefinitionButton = m_utils.jQuerySelect("#parametersTab #deleteParameterDefinitionButton");
+                  this.parameterDefinitionDirectionSelect
+                           .append("<option value=\"IN\">"
+                                    + m_i18nUtils
+                                             .getProperty("modeler.element.properties.commonProperties.in")
+                                    + "</option>");
+                  this.parameterDefinitionDirectionSelect
+                           .append("<option value=\"OUT\">"
+                                    + m_i18nUtils
+                                             .getProperty("modeler.element.properties.commonProperties.out")
+                                    + "</option>");
+                  this.parameterDefinitionDirectionSelect
+                           .append("<option value=\"INOUT\">"
+                                    + m_i18nUtils
+                                             .getProperty("modeler.element.properties.commonProperties.inout")
+                                    + "</option>");
+
+                  this.outputBodyAccessPointInput = m_utils
+                           .jQuerySelect("#parametersTab #outputBodyAccessPointInput");
+                  this.deleteParameterDefinitionButton = m_utils
+                           .jQuerySelect("#parametersTab #deleteParameterDefinitionButton");
                   this.deleteParameterDefinitionButton.attr("src", m_urlUtils
                            .getContextName()
                            + "/plugins/bpm-modeler/images/icons/delete.png");
-                  
-                  this.deleteParameterDefinitionButton.click({
-                     panel : this
-                  }, function(event) {
-                     event.data.panel.parameterDefinitionsPanel.deleteParameterDefinition();
-                        if(event.data.panel.getApplication().attributes["carnot:engine:camel::outBodyAccessPoint"]!=null && event.data.panel.getApplication().attributes["carnot:engine:camel::outBodyAccessPoint"]==event.data.panel.parameterDefinitionsPanel.currentParameterDefinition.id)
-                        {
-                        event.data.panel.view
-                        .submitModelElementAttributeChange(
-                              "carnot:engine:camel::outBodyAccessPoint",
-                              null);
-                        }
-                  });
+
+                  this.deleteParameterDefinitionButton
+                           .click(
+                                    {
+                                       panel : this
+                                    },
+                                    function(event)
+                                    {
+                                       event.data.panel.parameterDefinitionsPanel
+                                                .deleteParameterDefinition();
+                                       if (event.data.panel.getApplication().attributes["carnot:engine:camel::outBodyAccessPoint"] != null)
+                                       {
+                                          if (event.data.panel.getApplication().attributes["carnot:engine:camel::outBodyAccessPoint"] == event.data.panel.parameterDefinitionsPanel.currentParameterDefinition.id)
+                                          {
+                                             event.data.panel.view
+                                                      .submitModelElementAttributeChange(
+                                                               "carnot:engine:camel::outBodyAccessPoint",
+                                                               null);
+                                          }
+                                          else
+                                          {
+                                             event.data.panel.outputBodyAccessPointInput
+                                                      .val(event.data.panel
+                                                               .getApplication().attributes["carnot:engine:camel::outBodyAccessPoint"]);
+                                          }
+                                       }
+
+                                    });
                   this.outputBodyAccessPointInput
-                  .change(function() {
-                     if (!self.view.validate()) {
+                           .change(function()
+                           {
+                              if (!self.view.validate())
+                              {
+                                 self.outputBodyAccessPointInput
+                                          .val(self.getApplication().attributes["carnot:engine:camel::outBodyAccessPoint"])
+                                 return;
+                              }
+                              self.submitChanges();
+                           });
+                  this.classPathLocationInput.change({
+                     panel : this
+                  }, function(event)
+                  {
+                     if (!event.data.panel.validate())
+                     {
                         return;
                      }
-
-                     if (self.outputBodyAccessPointInput.val() == m_constants.TO_BE_DEFINED) {
-                        self.view
-                              .submitModelElementAttributeChange(
-                                    "carnot:engine:camel::outBodyAccessPoint",
-                                    null);
-                     } else {
-                        self.view
-                              .submitModelElementAttributeChange(
-                                    "carnot:engine:camel::outBodyAccessPoint",
-                                    self.outputBodyAccessPointInput
-                                          .val());
-                     }
+                     event.data.panel.submitChanges();
                   });
-                  this.classPathLocationInput
-                  .change(
-                        {
-                           panel : this
-                        },
-                        function(event) {
-                           if (!event.data.panel.validate()) {
-                              return;
-                           }
-                           event.data.panel.submitChanges();
-                        });
-                  
+
                   this.update();
                };
                /**
@@ -216,25 +249,25 @@ define(
                         primitiveDataType : "String",
                         direction : "OUT",
                         attributes : {
-                          // "stardust:predefined" : true
-                           "carnot:engine:data:bidirectional": true,
-                           "carnot:engine:path:separator": "/"
+                           // "stardust:predefined" : true
+                           "carnot:engine:data:bidirectional" : true,
+                           "carnot:engine:path:separator" : "/"
                         }
                      });
-                     
-                     
-                     this.submitChanges({
-                        contexts : {
-                           application : {
-                              accessPoints : defaultAccessPoints
-                              }
-                           },
+
+                     this
+                              .submitChanges({
+                                 contexts : {
+                                    application : {
+                                       accessPoints : defaultAccessPoints
+                                    }
+                                 },
                                  attributes : {
                                     "carnot:engine:camel::camelContextId" : "defaultCamelContext",
                                     "carnot:engine:camel::invocationPattern" : "sendReceive",
                                     "carnot:engine:camel::invocationType" : "synchronous",
                                     "carnot:engine:camel::applicationIntegrationOverlay" : "templatingIntegrationOverlay",
-                                    "carnot:engine:camel::outBodyAccessPoint":"returnValue"
+                                    "carnot:engine:camel::outBodyAccessPoint" : "returnValue"
                                  }
                               });
                   }
@@ -245,31 +278,31 @@ define(
                TemplatingIntegrationOverlay.prototype.update = function()
                {
                   this.parameterDefinitionsPanel.setScopeModel(this.getScopeModel());
-                  this.parameterDefinitionsPanel.setParameterDefinitions(this.getApplication().contexts.application.accessPoints);
+                  this.parameterDefinitionsPanel.setParameterDefinitions(this
+                           .getApplication().contexts.application.accessPoints);
                   this.outputBodyAccessPointInput.empty();
                   this.outputBodyAccessPointInput.append("<option value='"
-                        + m_constants.TO_BE_DEFINED + "' selected>"
-                        + m_i18nUtils.getProperty("None") // TODO I18N
-                        + "</option>");
+                           + m_constants.TO_BE_DEFINED + "' selected>"
+                           + m_i18nUtils.getProperty("None") // TODO I18N
+                           + "</option>");
 
-                  
-                  
-                  for ( var n = 0; n < this.getApplication().contexts.application.accessPoints.length; ++n) 
+                  for (var n = 0; n < this.getApplication().contexts.application.accessPoints.length; ++n)
                   {
                      var accessPoint = this.getApplication().contexts.application.accessPoints[n];
 
-                     if (accessPoint.direction != m_constants.OUT_ACCESS_POINT) {
+                     if (accessPoint.direction != m_constants.OUT_ACCESS_POINT
+                              && accessPoint.direction != m_constants.IN_OUT_ACCESS_POINT)
+                     {
                         continue;
                      }
 
-                     this.outputBodyAccessPointInput
-                           .append("<option value='" + accessPoint.id
-                                 + "'>" + accessPoint.name + "</option>");
+                     this.outputBodyAccessPointInput.append("<option value='"
+                              + accessPoint.id + "'>" + accessPoint.name + "</option>");
                   }
-                  
+
                   this.outputBodyAccessPointInput
-                  .val(this.getApplication().attributes["carnot:engine:camel::outBodyAccessPoint"]);
-                  
+                           .val(this.getApplication().attributes["carnot:engine:camel::outBodyAccessPoint"]);
+
                   if (this.getApplication().attributes["stardust:templatingIntegrationOverlay::templateLocation"] == null)
                   {
                      // show TextBox view as default
@@ -284,24 +317,26 @@ define(
                      {
                         this.textAreaConfigurationDiv.show();
                         this.classpathFileConfigurationDiv.hide();
-                        var templateContent=this.getApplication().attributes["stardust:templatingIntegrationOverlay::templateContent"];
-                        if(templateContent!=null){
-                           this.codeEditor.getEditor().getSession().setValue(templateContent);
+                        var templateContent = this.getApplication().attributes["stardust:templatingIntegrationOverlay::templateContent"];
+                        if (templateContent != null)
+                        {
+                           this.codeEditor.getEditor().getSession().setValue(
+                                    templateContent);
                         }
-                        
+
                      }
                      else if (templateLocationValue == "classpath")
                      {
                         this.textAreaConfigurationDiv.hide();
                         this.classpathFileConfigurationDiv.show();
-                        this.classPathLocationInput.val(this.getApplication().attributes["stardust:templatingIntegrationOverlay::fileLocation"]);
+                        this.classPathLocationInput
+                                 .val(this.getApplication().attributes["stardust:templatingIntegrationOverlay::fileLocation"]);
                      }
                      else
                      {
                         // handle in document
                      }
                   }
-
                };
                /**
                 * returns camel route definition
@@ -309,33 +344,37 @@ define(
                TemplatingIntegrationOverlay.prototype.getRoute = function()
                {
                   var route = "";
-                  var templateLocation=this.templateLocationInput.val();
-                  if(templateLocation=="textBox"){
+                  var templateLocation = this.templateLocationInput.val();
+                  if (templateLocation == "textBox")
+                  {
                      route += "<process ref=\"customVelocityContextAppender\"/>";
                      route += "<setHeader headerName=\"CamelVelocityTemplate\">\n";
                      route += "   <constant>\n";
-                     route+="<![CDATA[";
-                     route+="#parse(\"commons.vm\")"; 
-                     route+="#getInputs()";
-                     var templateContent = this.codeEditor.getEditor().getSession().getValue();
-                     route+=templateContent;
-                     route += "#setOutputs()";
-                     route+="]]>\n";
+                     route += "<![CDATA[";
+                     route += "#parse(\"commons.vm\")\n";
+                     route += "#getInputs()\n";
+                     var templateContent = this.codeEditor.getEditor().getSession()
+                              .getValue();
+                     route += templateContent;
+                     route += "#setOutputs()\n";
+                     route += "]]>\n";
                      route += "   </constant>\n";
                      route += "</setHeader>\n";
                      route += "<to uri=\"velocity:dummy\" />";
-                     
-                  }else if(templateLocation=="classpath"){
+                  }
+                  else if (templateLocation == "classpath")
+                  {
                      route += "<process ref=\"customVelocityContextAppender\"/>";
                      route += "<setHeader headerName=\"CamelVelocityResourceUri\">\n";
-                     route += "   <constant>"+this.classPathLocationInput.val()+"</constant>\n";
+                     route += "   <constant>" + this.classPathLocationInput.val()
+                              + "</constant>\n";
                      route += "</setHeader>\n";
                      route += "<to uri=\"velocity:dummy?encoding=UTF-8\" />";
-                  }else{
-                     
+                  }
+                  else
+                  {
                   }
                   m_utils.debug(route);
-                  
                   return route;
                };
                /**
@@ -343,24 +382,35 @@ define(
                 */
                TemplatingIntegrationOverlay.prototype.submitChanges = function(changes)
                {
-                  if(changes){
+                  if (changes)
+                  {
+                     this.view.submitChanges(changes);
+                  }
+                  else
+                  {
                      this.view
-                     .submitChanges(changes);
-                  }else{
-                  this.view
-                           .submitChanges({
-                              attributes : {
-                                 "carnot:engine:camel::applicationIntegrationOverlay" : "templatingIntegrationOverlay",
-                                 "carnot:engine:camel::camelContextId" : "defaultCamelContext",
-                                 "carnot:engine:camel::invocationPattern" : "sendReceive",
-                                 "carnot:engine:camel::invocationType" : "synchronous",
-                                 "carnot:engine:camel::transactedRoute":"false",
-                                 "stardust:templatingIntegrationOverlay::templateLocation" : this.templateLocationInput.val(),
-                                 "stardust:templatingIntegrationOverlay::templateContent" : (this.templateLocationInput.val()=="textBox")?this.codeEditor.getEditor().getSession().getValue():null,
-                                 "stardust:templatingIntegrationOverlay::fileLocation":(this.templateLocationInput.val()=="classpath")?this.classPathLocationInput.val():null,
-                                 "carnot:engine:camel::routeEntries" : this.getRoute()
-                              }
-                           });
+                              .submitChanges({
+                                 attributes : {
+                                    "carnot:engine:camel::applicationIntegrationOverlay" : "templatingIntegrationOverlay",
+                                    "carnot:engine:camel::camelContextId" : "defaultCamelContext",
+                                    "carnot:engine:camel::invocationPattern" : "sendReceive",
+                                    "carnot:engine:camel::invocationType" : "synchronous",
+                                    "carnot:engine:camel::transactedRoute" : "false",
+                                    "carnot:engine:camel::outBodyAccessPoint" : (this.outputBodyAccessPointInput
+                                             .val() == m_constants.TO_BE_DEFINED) ? null
+                                             : this.outputBodyAccessPointInput.val(),
+                                    "stardust:templatingIntegrationOverlay::templateLocation" : this.templateLocationInput
+                                             .val(),
+                                    "stardust:templatingIntegrationOverlay::templateContent" : (this.templateLocationInput
+                                             .val() == "textBox") ? this.codeEditor
+                                             .getEditor().getSession().getValue() : null,
+                                    "stardust:templatingIntegrationOverlay::fileLocation" : (this.templateLocationInput
+                                             .val() == "classpath") ? this.classPathLocationInput
+                                             .val()
+                                             : null,
+                                    "carnot:engine:camel::routeEntries" : this.getRoute()
+                                 }
+                              });
                   }
                };
                /**
@@ -382,7 +432,42 @@ define(
                 */
                TemplatingIntegrationOverlay.prototype.validate = function()
                {
-                  return true;
+                  var valid = true;
+                  var outAccessPointList = [];
+                  var accessPoints = this.getApplication().contexts.application.accessPoints;
+                  var outBodyAccessPointId = this.outputBodyAccessPointInput.val();
+                  var outAccessPoint;
+                  if (accessPoints.length > 0)
+                  {
+                     for (var n = 0; n < accessPoints.length; ++n)
+                     {
+                        var accessPoint = accessPoints[n];
+                        if (accessPoint.direction == m_constants.OUT_ACCESS_POINT
+                                 || accessPoint.direction == m_constants.IN_OUT_ACCESS_POINT)
+                        {
+                           outAccessPointList.push(accessPoint);
+                        }
+                        if (outBodyAccessPointId == accessPoint.id)
+                        {
+                           outAccessPoint = accessPoint;
+                        }
+                     }
+                  }
+                  if (outAccessPoint)
+                  {
+                     if (outAccessPoint.dataType == "primitive"
+                              && outAccessPoint.primitiveDataType == "String")
+                     {
+
+                     }
+                     else
+                     {
+                        this.view.errorMessages.push("The Out AccessPoint "
+                                 + outAccessPoint.name + " should be of String Type");
+                        valid = false;
+                     }
+                  }
+                  return valid;
                };
             }
          });
