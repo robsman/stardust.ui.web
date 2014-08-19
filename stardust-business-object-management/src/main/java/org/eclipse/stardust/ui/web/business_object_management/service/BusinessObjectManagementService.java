@@ -165,6 +165,7 @@ public class BusinessObjectManagementService {
 		JsonObject modelJson = new JsonObject();
 
 		modelJson.addProperty("oid", 1);
+		modelJson.addProperty("id", "GeneralClaimProcessing");
 		modelJson.addProperty("name", "General Claim Processing");
 		modelJson.add("businessObjects", businessObjectsJson);
 
@@ -177,6 +178,7 @@ public class BusinessObjectManagementService {
 		modelJson = new JsonObject();
 
 		modelJson.addProperty("oid", 2);
+		modelJson.addProperty("id", "DailyFundProcessing");
 		modelJson.addProperty("name", "Daily Fund Processing");
 		modelJson.add("businessObjects", businessObjectsJson);
 
