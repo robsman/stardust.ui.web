@@ -24,23 +24,23 @@ import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.engine.api.dto.BusinessObjectDetails;
 import org.eclipse.stardust.engine.api.model.Data;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.model.Reference;
 import org.eclipse.stardust.engine.api.model.TypeDeclaration;
-import org.eclipse.stardust.engine.api.query.BusinessObjectQuery;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
-import org.eclipse.stardust.engine.api.runtime.BusinessObject.Definition;
-import org.eclipse.stardust.engine.api.runtime.BusinessObject.Value;
 import org.eclipse.stardust.engine.api.runtime.*;
 import org.eclipse.stardust.engine.core.runtime.beans.BigData;
 import org.eclipse.stardust.engine.core.struct.*;
 import org.eclipse.stardust.engine.core.struct.XPathAnnotations.XPathAnnotation;
 import org.eclipse.stardust.ui.web.business_object_management.rest.JsonMarshaller;
+import org.eclipse.stardust.ui.web.business_object_management.service.BusinessObject.Definition;
+import org.eclipse.stardust.ui.web.business_object_management.service.BusinessObject.Value;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 //import org.eclipse.stardust.ui.web.viewscommon.utils.XPathCacheManager;
+
+
 
 
 

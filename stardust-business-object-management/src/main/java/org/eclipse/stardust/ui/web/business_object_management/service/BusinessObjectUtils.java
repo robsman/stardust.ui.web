@@ -16,39 +16,41 @@ import java.sql.Clob;
 import java.sql.ResultSet;
 import java.util.*;
 
+import javax.xml.namespace.QName;
+
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.Functor;
+import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.TransformingIterator;
 import org.eclipse.stardust.common.error.ErrorCase;
 import org.eclipse.stardust.common.error.InvalidArgumentException;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.common.error.PublicException;
-import org.eclipse.stardust.engine.api.dto.BusinessObjectDetails;
 import org.eclipse.stardust.engine.api.model.IData;
 import org.eclipse.stardust.engine.api.model.IModel;
+import org.eclipse.stardust.engine.api.model.PluggableType;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.query.*;
 import org.eclipse.stardust.engine.api.query.SqlBuilder.ParsedQuery;
-import org.eclipse.stardust.engine.api.runtime.*;
-import org.eclipse.stardust.engine.api.runtime.BusinessObject.Definition;
-import org.eclipse.stardust.engine.api.runtime.BusinessObject.Value;
+import org.eclipse.stardust.engine.api.runtime.BpmRuntimeError;
 import org.eclipse.stardust.engine.core.persistence.*;
 import org.eclipse.stardust.engine.core.persistence.jdbc.QueryUtils;
 import org.eclipse.stardust.engine.core.persistence.jdbc.Session;
 import org.eclipse.stardust.engine.core.persistence.jdbc.SessionFactory;
 import org.eclipse.stardust.engine.core.runtime.audittrail.management.ProcessInstanceUtils;
 import org.eclipse.stardust.engine.core.runtime.beans.*;
-import org.eclipse.stardust.engine.core.struct.DataXPathMap;
-import org.eclipse.stardust.engine.core.struct.IXPathMap;
-import org.eclipse.stardust.engine.core.struct.StructuredDataConverter;
-import org.eclipse.stardust.engine.core.struct.StructuredDataXPathUtils;
+import org.eclipse.stardust.engine.core.struct.*;
 import org.eclipse.stardust.engine.core.struct.beans.StructuredDataBean;
 import org.eclipse.stardust.engine.core.struct.beans.StructuredDataValueBean;
 import org.eclipse.stardust.engine.core.struct.sxml.Document;
 import org.eclipse.stardust.engine.core.struct.sxml.DocumentBuilder;
+import org.eclipse.stardust.ui.web.business_object_management.service.BusinessObject.Definition;
+import org.eclipse.stardust.ui.web.business_object_management.service.BusinessObject.Value;
 
 public class BusinessObjectUtils
 {
+   private static final String BUSINESS_OBJECT_ATT = PredefinedConstants.MODEL_SCOPE + "BusinessObject";
+
    public static BusinessObjects getBusinessObjects(BusinessObjectQuery query)
    {
       final ModelManager modelManager = ModelManagerFactory.getCurrent();
@@ -85,7 +87,7 @@ public class BusinessObjectUtils
             List<Definition> items = null;
             if (withDescription)
             {
-               BusinessObject bo = source.getBusinessObject();
+               BusinessObject bo = getBusinessObject(source);
                if (!withValues)
                {
                   return bo;
@@ -460,5 +462,65 @@ public class BusinessObjectUtils
             target.add((DataFilter) part);
          }
       }
+   }
+
+   public static BusinessObject getBusinessObject(IData source)
+   {
+    BusinessObject businessObject = source.getRuntimeAttribute(BUSINESS_OBJECT_ATT);
+      if (businessObject == null && hasBusinessObject(source))
+      {
+         synchronized (source)
+         {
+            businessObject = source.getRuntimeAttribute(BUSINESS_OBJECT_ATT);
+            if (businessObject == null)
+            {
+               businessObject = createBusinessObject(source);
+               source.setRuntimeAttribute(BUSINESS_OBJECT_ATT, businessObject);
+            }
+         }
+      }
+      return businessObject;
+   }
+
+   private static BusinessObject createBusinessObject(IData source)
+   {
+      List<Definition> items = null;
+      IXPathMap map = DataXPathMap.getXPathMap(source);
+      TypedXPath root = map.getRootXPath();
+      if (root != null)
+      {
+         items = createDescriptions(source, root.getChildXPaths(), true);
+      }
+      return new BusinessObjectDetails(source.getModel().getModelOID(), source.getId(), source.getName(), items, null);
+   }
+
+   private static List<Definition> createDescriptions(IData source, List<TypedXPath> xPaths, boolean top)
+   {
+      List<Definition> items = CollectionUtils.newList(xPaths.size());
+      for (TypedXPath xPath : xPaths)
+      {
+         boolean primaryKey = top ? xPath.getId().equals(source.getAttribute(PredefinedConstants.PRIMARY_KEY_ATT)) : false;
+         items.add(new BusinessObjectDetails.DefinitionDetails(xPath.getId(), xPath.getType(),
+               StringUtils.isEmpty(xPath.getXsdTypeName()) ? null
+                     : StringUtils.isEmpty(xPath.getXsdTypeNs())
+                           ? new QName(xPath.getXsdTypeName())
+                           : new QName(xPath.getXsdTypeNs(), xPath.getXsdTypeName()),
+               xPath.isList(),
+               xPath.getAnnotations().isIndexed(), primaryKey ,
+               xPath.getType() == BigData.NULL ? createDescriptions(source, xPath.getChildXPaths(), false) : null));
+      }
+      return items;
+   }
+
+   public static boolean hasBusinessObject(IData data)
+   {
+      if (data == null)
+      {
+         return false;
+      }
+      PluggableType type = data.getType();
+      return type != null
+            && PredefinedConstants.STRUCTURED_DATA.equals(type.getId())
+            && data.getAttribute(PredefinedConstants.PRIMARY_KEY_ATT) != null;
    }
 }
