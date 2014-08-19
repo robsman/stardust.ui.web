@@ -269,6 +269,7 @@ define(
                   this.directoryNameInput = this.mapInputId("directoryNameInput");
                   this.fileNameInput = this.mapInputId("fileNameInput");
                   this.recursiveInput = this.mapInputId("recursiveInput");
+                  this.transactedRouteInput = this.mapInputId("transactedRouteInput");
                   this.initialIntervalInput = this.mapInputId("initialIntervalInput");
                   this.initialIntervalUnitSelect = this
                            .mapInputId("initialIntervalUnitSelect");
@@ -305,7 +306,19 @@ define(
                   }
 
                   this.parameterDefinitionNameInput = jQuery("#parametersTab #parameterDefinitionNameInput");
-
+                  this.transactedRouteInput.change({
+                      overlay : this
+                   }, function(event) {
+                      var overlay = event.data.overlay;
+                      overlay.submitChanges({
+                         modelElement : {
+                            attributes : {
+                               "carnot:engine:camel::transactedRoute" : overlay.transactedRouteInput
+                                              .prop("checked")
+                            }
+                         }
+                      });
+                   });
                   this.outputBodyAccessPointInput
                            .change(
                                     {
@@ -718,7 +731,16 @@ define(
                      this.outputBodyAccessPointInput.append("<option value='"
                               + accessPoint.id + "'>" + accessPoint.name + "</option>");
                   }
-
+                  if(this.page.getEvent().attributes["carnot:engine:camel::transactedRoute"]==null || this.page.getEvent().attributes["carnot:engine:camel::transactedRoute"]===undefined){
+                      this.submitChanges({
+                         modelElement : {
+                            attributes : {
+                               "carnot:engine:camel::transactedRoute" : true
+                            }
+                         }
+                      });
+                   }
+                  this.transactedRouteInput.prop("checked",this.page.getEvent().attributes["carnot:engine:camel::transactedRoute"]);
                   var route = this.page.propertiesPanel.element.modelElement.attributes["carnot:engine:camel::camelRouteExt"];
 
                   if (route == null)
