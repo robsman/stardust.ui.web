@@ -150,6 +150,7 @@ define(
 				      					
 					this.expressionEditor.loadLanguageTools();
 					this.expressionEditor.setSessionData("$keywordList",["test", "air", "word"]);
+					this.expressionEditor.setValue("");
 					this.expressionEditor.disable();
 					
 					$(this.expressionEditor).on("moduleLoaded",function(event,module){
