@@ -105,7 +105,7 @@ define(
                    */
 
                   this.configurationSpan = this.mapInputId("configuration");
-
+                  this.transactedRouteInput = this.mapInputId("transactedRouteInput");
                   this.configurationSpan
                            .text(m_i18nUtils
                                     .getProperty("modeler.element.properties.event.configuration"));
@@ -150,7 +150,19 @@ define(
                         }
                      });
                   });
-
+                  this.transactedRouteInput.change({
+                      overlay : this
+                   }, function(event) {
+                      var overlay = event.data.overlay;
+                      overlay.submitChanges({
+                         modelElement : {
+                            attributes : {
+                               "carnot:engine:camel::transactedRoute" : overlay.transactedRouteInput
+                                              .prop("checked")
+                            }
+                         }
+                      });
+                   });
                   this.producerBpmTypeConverter
                            .change(
                                     {
@@ -533,6 +545,16 @@ define(
                      this.outputBodyAccessPointInput.append("<option value='"
                               + accessPoint.id + "'>" + accessPoint.name + "</option>");
                   }
+                  if(this.page.getEvent().attributes["carnot:engine:camel::transactedRoute"]==null || this.page.getEvent().attributes["carnot:engine:camel::transactedRoute"]===undefined){
+                      this.submitChanges({
+                         modelElement : {
+                            attributes : {
+                               "carnot:engine:camel::transactedRoute" : true
+                            }
+                         }
+                      });
+                   }
+                  this.transactedRouteInput.prop("checked",this.page.getEvent().attributes["carnot:engine:camel::transactedRoute"]);
 
                   var route = this.page.propertiesPanel.element.modelElement.attributes["carnot:engine:camel::camelRouteExt"];
 
