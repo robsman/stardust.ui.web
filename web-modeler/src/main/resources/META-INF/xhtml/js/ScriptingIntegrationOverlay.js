@@ -51,6 +51,7 @@ define(
 
                this.scriptCodeHeading = m_utils.jQuerySelect("#scriptingIntegrationOverlay #scriptCodeHeading");
                this.languageSelect = m_utils.jQuerySelect("#scriptingIntegrationOverlay #languageSelect");
+               this.transactedRouteInput = m_utils.jQuerySelect("#scriptingIntegrationOverlay #transactedRouteInput");
                this.editorAnchor = m_utils.jQuerySelect("#codeEditorDiv").get(0);
                this.editorAnchor.id = "codeEditorDiv" + Math.floor((Math.random()*100000) + 1);
                
@@ -208,6 +209,15 @@ define(
                         .createParameterObjectString(
                               m_constants.IN_ACCESS_POINT, true));
                });
+               this.transactedRouteInput.change(function() {
+                   if (!self.view.validate()) {
+                      return;
+                   }
+                   self.view.submitModelElementAttributeChange(
+                         "carnot:engine:camel::transactedRoute",
+                         self.transactedRouteInput.prop('checked'));
+                   self.submitChanges();
+                });
             this.update();
             };
 
@@ -373,7 +383,6 @@ define(
                      .submitChanges({
                         attributes : {
                            "carnot:engine:camel::camelContextId" : "defaultCamelContext",
-                           "carnot:engine:camel::transactedRoute" : "false",
                            "carnot:engine:camel::invocationPattern" : "sendReceive",
                            "carnot:engine:camel::invocationType" : "synchronous",
                            "carnot:engine:camel::applicationIntegrationOverlay" : "scriptingIntegrationOverlay"
@@ -406,7 +415,11 @@ define(
                      this.codeEditor.setSessionData("$keywordList",completerStrings);
                   }
                }        
-               
+               if(this.getApplication().attributes["carnot:engine:camel::transactedRoute"]==null||this.getApplication().attributes["carnot:engine:camel::transactedRoute"]===undefined){
+                   this.view.submitModelElementAttributeChange("carnot:engine:camel::transactedRoute", false);
+                }
+               this.transactedRouteInput.prop("checked",
+                       this.getApplication().attributes["carnot:engine:camel::transactedRoute"]);
             };
 
             /**
@@ -566,7 +579,6 @@ define(
                            "carnot:engine:camel::camelContextId" : "defaultCamelContext",
                            "carnot:engine:camel::invocationPattern" : "sendReceive",
                            "carnot:engine:camel::invocationType" : "synchronous",
-                           "carnot:engine:camel::transactedRoute" : "false",
                            "carnot:engine:camel::routeEntries" : this
                                  .getRoute(),
                            "stardust:scriptingOverlay::language" : this.languageSelect
@@ -594,7 +606,6 @@ define(
                         attributes : {
                            "carnot:engine:camel::applicationIntegrationOverlay" : "scriptingIntegrationOverlay",
                            "carnot:engine:camel::camelContextId" : "defaultCamelContext",
-                           "carnot:engine:camel::transactedRoute" : "false",
                            "carnot:engine:camel::routeEntries" : this
                                  .getRoute(),
                            "stardust:scriptingOverlay::scriptCode" : this.codeEditor
