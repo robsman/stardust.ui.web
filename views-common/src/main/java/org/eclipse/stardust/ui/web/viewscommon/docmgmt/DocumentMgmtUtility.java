@@ -22,7 +22,6 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -33,8 +32,6 @@ import java.util.zip.ZipOutputStream;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
-
-import com.icesoft.faces.component.inputfile.FileInfo;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.Direction;
@@ -79,6 +76,8 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.JCRDocument;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.JCRVersionTracker;
 import org.eclipse.stardust.ui.web.viewscommon.views.documentsearch.DocumentSearchProvider;
+
+import com.icesoft.faces.component.inputfile.FileInfo;
 
 
 
@@ -519,10 +518,20 @@ public class DocumentMgmtUtility
       if (supportsProcessAttachments)
       {
          WorkflowService ws = ServiceFactoryUtils.getWorkflowService();
-         Object o = ws.getInDataPath(processInstance.getOID(), DmsConstants.PATH_ID_ATTACHMENTS);
+         
+         Model model = ModelCache.findModelCache().getModel(processInstance.getModelOID());
+         ProcessDefinition pd = model.getProcessDefinition(processInstance.getProcessID());
+         String dataId = pd.getDataPath(DmsConstants.PATH_ID_ATTACHMENTS).getData();
 
-         DataDetails data = (DataDetails) ModelCache.findModelCache().getModel(processInstance.getModelOID()).getData(
-               DmsConstants.PATH_ID_ATTACHMENTS);
+         if (StringUtils.isEmpty(dataId))
+         {
+            dataId = DmsConstants.PATH_ID_ATTACHMENTS;
+         }
+
+         DataDetails data = (DataDetails) model.getData(dataId);
+         
+         Object o = ws.getInDataPath(processInstance.getOID(), DmsConstants.PATH_ID_ATTACHMENTS);
+         
          if (DmsConstants.DATA_TYPE_DMS_DOCUMENT_LIST.equals(data.getTypeId()))
          {
             processAttachments = (List<Document>) o;
