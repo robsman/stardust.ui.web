@@ -756,3 +756,7 @@ table.dataTable .group {
 	padding-right: 8px;
 	white-space: nowrap;
 }
+
+.jqplot-title {
+    top: -5px !important;
+}

@@ -638,6 +638,7 @@ define(
 										},
 										axes : {
 											xaxis : {
+												min : 0,
 												tickOptions : {
 													mark : "outside",
 													markSize : 4,
@@ -650,6 +651,7 @@ define(
 											},
 											x2axis : {},
 											yaxis : {
+												min : 0,
 												tickOptions : {
 													mark : "outside",
 													markSize : 4,

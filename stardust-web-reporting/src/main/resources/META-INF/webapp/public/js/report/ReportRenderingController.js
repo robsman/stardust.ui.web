@@ -138,6 +138,7 @@ define(
 					var chartOptions = {
 						series : [],
 						seriesDefaults : {
+							label : this.report.layout.chart.options.title,
 							lineWidth : 1.5,
 							markerOptions : {
 								style : "filledCircle"
@@ -185,6 +186,8 @@ define(
 					if (this.report.layout.chart.options.axes.xaxis.showTicks) {
 						chartOptions.axes.xaxis.label = this.report.layout.chart.options.axes.xaxis.label;
 					}
+					chartOptions.axes.xaxis.min = this.report.layout.chart.options.axes.xaxis.min;
+					chartOptions.axes.xaxis.max = this.report.layout.chart.options.axes.xaxis.max;
 					chartOptions.axes.xaxis.tickOptions = this.report.layout.chart.options.axes.xaxis.tickOptions;
 					chartOptions.axes.xaxis.tickOptions.showMark = this.report.layout.chart.options.axes.xaxis.showTickMarks;
 					chartOptions.axes.xaxis.showTickMarks = this.report.layout.chart.options.axes.xaxis.showTickMarks;
@@ -193,6 +196,8 @@ define(
 					if (this.report.layout.chart.options.axes.yaxis.showTicks) {
 						chartOptions.axes.yaxis.label = this.report.layout.chart.options.axes.yaxis.label;
 					}
+					chartOptions.axes.yaxis.min = this.report.layout.chart.options.axes.yaxis.min;
+					chartOptions.axes.yaxis.max = this.report.layout.chart.options.axes.yaxis.max;
 					chartOptions.axes.yaxis.tickOptions = this.report.layout.chart.options.axes.yaxis.tickOptions;
 					chartOptions.axes.yaxis.tickOptions.showMark = this.report.layout.chart.options.axes.yaxis.showTickMarks;
 					chartOptions.axes.yaxis.showTickMarks = this.report.layout.chart.options.axes.yaxis.showTickMarks;
