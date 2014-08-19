@@ -44,6 +44,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 
 
 
+
 import com.google.gson.*;
 
 public class BusinessObjectManagementService {
@@ -480,7 +481,8 @@ public class BusinessObjectManagementService {
                 BusinessObjectQuery.Option.WITH_DESCRIPTION));
 
         Map<Long, JsonObject> modelsMap = CollectionUtils.newMap();
-        BusinessObjects bos = getQueryService().getBusinessObjects(query);
+        BusinessObjects bos = (BusinessObjects) getWorkflowService().execute(
+                BusinessObjectsCommandFactory.find(query));
 
         for (BusinessObject bo : bos) {
             JsonArray businessObjectsJson = null;
@@ -738,7 +740,8 @@ public class BusinessObjectManagementService {
             BusinessObjectQuery query) {
         query.setPolicy(new BusinessObjectQuery.Policy(
                 BusinessObjectQuery.Option.WITH_VALUES));
-        BusinessObjects bos = getQueryService().getBusinessObjects(query);
+        BusinessObjects bos = (BusinessObjects) getWorkflowService().execute(
+                BusinessObjectsCommandFactory.find(query));
 
         for (BusinessObject bo : bos) {
             List<Value> values = bo.getValues();

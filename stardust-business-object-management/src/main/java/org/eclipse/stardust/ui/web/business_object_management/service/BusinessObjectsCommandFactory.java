@@ -13,10 +13,10 @@ package org.eclipse.stardust.ui.web.business_object_management.service;
 
 import java.io.Serializable;
 
+import org.eclipse.stardust.engine.api.query.BusinessObjectQuery;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.engine.api.runtime.BusinessObject.Value;
 import org.eclipse.stardust.engine.core.runtime.command.ServiceCommand;
-import org.eclipse.stardust.engine.core.runtime.utils.BusinessObjectUtils;
 
 public final class BusinessObjectsCommandFactory {
 
@@ -55,6 +55,27 @@ public final class BusinessObjectsCommandFactory {
             }
             return null;
         }
+    }
+
+    private static class QueryCommand implements ServiceCommand {
+
+        private static final long serialVersionUID = 1L;
+
+        private BusinessObjectQuery query;
+
+        private QueryCommand(BusinessObjectQuery query) {
+            this.query = query;
+        }
+
+        @Override
+        public Serializable execute(ServiceFactory sf) {
+            return BusinessObjectUtils.getBusinessObjects(query);
+        }
+
+    }
+
+    public static ServiceCommand find(BusinessObjectQuery query) {
+        return new QueryCommand(query);
     }
 
     public static ServiceCommand create(long modelOid,
