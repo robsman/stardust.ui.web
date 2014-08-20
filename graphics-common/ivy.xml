@@ -64,8 +64,13 @@
       <dependency org="org.apache.cxf" name="cxf-rt-frontend-jaxrs" rev="${cxf-rt-frontend-jaxrs.version}" conf="ipp-graphics-common-runtime->default">
          <exclude org="org.apache.cxf" module="cxf-api" />
          <exclude org="org.apache.cxf" module="cxf-rt-core" />
+         <exclude org="org.apache.cxf" module="cxf-rt-transports-http" />
          <exclude org="org.apache.geronimo.specs" module="geronimo-javamail_1.4_spec" />
          <exclude org="javax.ws.rs" module="jsr311-api" />
+      </dependency>
+      <dependency org="org.apache.cxf" name="cxf-rt-transports-http" rev="${cxf-rt-transports-http.version}" conf="ipp-graphics-common-runtime->default">
+         <exclude org="org.apache.cxf" module="cxf-api" />
+         <exclude org="org.apache.cxf" module="cxf-rt-core" />
       </dependency>
       
       <!-- ipp-graphics-common-provided -->
