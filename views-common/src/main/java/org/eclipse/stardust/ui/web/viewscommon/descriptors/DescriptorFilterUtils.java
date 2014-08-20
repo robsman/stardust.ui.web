@@ -524,7 +524,7 @@ public class DescriptorFilterUtils
                {
                   if (null != mapping && CommonDescriptorUtils.isEnumerationType(mapping))
                   {
-                     dataFilter = DataFilter.isEqual(dataId, "", filterValueStr);
+                     dataFilter = DataFilter.isEqual(dataId, dataPath.getAccessPath(), filterValueStr);
                   }
                   else
                   {
