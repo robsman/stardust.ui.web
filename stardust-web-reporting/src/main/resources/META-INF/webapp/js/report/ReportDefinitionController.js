@@ -13,10 +13,10 @@
  * @author Yogesh.Manware
  * 
  */
-define([ "bpm-reporting/public/js/report/I18NUtils",
-		"bpm-reporting/public/js/report/AngularAdapter",
-		"bpm-reporting/public/js/report/ReportingService",
-		"bpm-reporting/public/js/report/ReportRenderingController" ],
+define([ "bpm-reporting/js/report/I18NUtils",
+		"bpm-reporting/js/report/AngularAdapter",
+		"bpm-reporting/js/report/ReportingService",
+		"bpm-reporting/js/report/ReportRenderingController" ],
 		function(I18NUtils, AngularAdapter, ReportingService,
 				ReportRenderingController) {
 			var angularCompile;

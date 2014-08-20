@@ -82,11 +82,9 @@ if (!window.bpm.portal.AngularAdapter) {
 
 			// Is this correct?
 
-			if(this.__defineGetter__){
-				this.__defineGetter__('angularApp', function() {
-					return this.angularModule;
-				});	
-			}
+			this.__defineGetter__('angularApp', function() {
+				return this.angularModule;
+			});
 		};
 
 		/**
@@ -136,7 +134,7 @@ if (!window.bpm.portal.AngularAdapter) {
 			console.debug("Format constraints initialized");
 
 			var self = this;
-			
+
 			/**
 			 *  tableArray - 2D array containing complete data of table column header + rows + footer
 				tableParameters.addLastRowAsFooter - if set true, will add last Row of above table as Footer. 
@@ -216,6 +214,7 @@ if (!window.bpm.portal.AngularAdapter) {
 								            var url = URL.createObjectURL(blob);
 								            link.setAttribute("href", url);
 								            link.setAttribute("download", fileName);
+								            link.style = "visibility:hidden";
 								        }
 								
 								        if (navigator.msSaveBlob) { // IE 10+
@@ -264,6 +263,7 @@ if (!window.bpm.portal.AngularAdapter) {
 								            var url = URL.createObjectURL(blob);
 								            link.setAttribute("href", url);
 								            link.setAttribute("download", fileName);
+								            link.style = "visibility:hidden";
 								        }
 								
 								        if (navigator.msSaveBlob) { // IE 10+
@@ -286,7 +286,7 @@ if (!window.bpm.portal.AngularAdapter) {
 							    }
 			                }
 
-						    scope.tableOptions = tableOptions;
+						    scope.$parent.tableOptions = tableOptions;
 			                //set table options - end
 						    
 						    //prepare table
@@ -365,9 +365,14 @@ if (!window.bpm.portal.AngularAdapter) {
 			
 			                //append our view to the element of the directive.
 			                divElem.html(el);
-			               
-			                compiled(scope);
-			                scope.rows  = tableArray;
+			
+			                compiled(divElem.scope());
+			
+			                //put all data in parents scope for jquery data table usage
+			                scope.$parent.rows = tableArray;
+			
+			                scope.$parent.$apply();
+			
 			            });
 			        }
 			    };
@@ -908,27 +913,23 @@ if (!window.bpm.portal.AngularAdapter) {
 
 						var baseUrl = window.location.href.substring(0, location.href.indexOf("/plugins"));
 						var url = baseUrl
-								+ "/plugins/bpm-reporting/public/js/libs/jquery/plugins/jquery-ui-timepicker/jquery-ui-timepicker-addon.min.js";
+								+ "/plugins/bpm-reporting/js/libs/jquery/plugins/jquery-ui-timepicker/jquery-ui-timepicker-addon.min.js";
 						
 						jQuery.get(url)
 					    .done(function() { 
 					    	require(
 									[url],
 									function(datetime) {
-										try {
-											element.datetimepicker({
-												inline : true,
-												timeFormat : timeFormat,
-												dateFormat : dateFormat,
-												onSelect : function(date) {
-													scope.$apply(function () {
-													   controller.$setViewValue(date);
-													});
-												}
-											});	
-										} catch (e) {
-											// TODO: handle exception
-										}
+										element.datetimepicker({
+											inline : true,
+											timeFormat : timeFormat,
+											dateFormat : dateFormat,
+											onSelect : function(date) {
+												scope.$apply(function () {
+												   controller.$setViewValue(date);
+												});
+											}
+										});		
 									}); 
 					    }).fail(function() { 
 					    	element.datepicker({

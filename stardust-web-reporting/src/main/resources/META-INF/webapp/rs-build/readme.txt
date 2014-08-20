@@ -1,4 +1,4 @@
-pre-requisiteinstall nodeJs
+pre-requisite: install nodeJs
 place rs-build folder in parallel with js folder (js contains libs and report folders)
 -------------
 ReportDefinitionController.js
@@ -6,7 +6,7 @@ ReportingService.js
 ReportRenderingController.js
 
 Replace all imports from report folder js
-bpm-reporting/public/js -> ..
+bpm-reporting/js -> ..
 
 I18NUtils.js
 remove references of InfinityBPMI18N and remove initI18N() call
@@ -14,7 +14,7 @@ remove references of InfinityBPMI18N and remove initI18N() call
 
 ReportViewMain.js
 remove require.config block
-Change paths  bpm-reporting/public/js -> ..
+Change paths  bpm-reporting/js -> ..
 remove references of 
 jquery.url
 jquery.base64

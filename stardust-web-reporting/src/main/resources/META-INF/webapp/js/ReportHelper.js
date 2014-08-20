@@ -15,7 +15,7 @@
  * 
  */
 define(
-		[ "bpm-reporting/public/js/report/I18NUtils" ],
+		[ "bpm-reporting/js/report/I18NUtils" ],
 		function(I18NUtils) {
 			return {
 				create : function(reportingService) {

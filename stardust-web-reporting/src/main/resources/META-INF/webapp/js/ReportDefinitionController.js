@@ -15,9 +15,9 @@
  * 
  */
 define(
-		[ "bpm-reporting/public/js/report/I18NUtils", "bpm-reporting/public/js/report/AngularAdapter",
-				"bpm-reporting/public/js/report/ReportingService",
-				"bpm-reporting/public/js/report/ReportRenderingController",
+		[ "bpm-reporting/js/report/I18NUtils", "bpm-reporting/js/report/AngularAdapter",
+				"bpm-reporting/js/report/ReportingService",
+				"bpm-reporting/js/report/ReportRenderingController",
 				"bpm-reporting/js/SchedulingController",
 				"bpm-reporting/js/ReportFilterController",
 				"bpm-reporting/js/ReportHelper",
@@ -1254,7 +1254,7 @@ define(
                for ( var parameter in this.parameters)
                {
             	   var dimension = this.getDimension(this.parameters[parameter].dimension);
-                  if (dimension.type.id == this.reportingService.metadata.timestampType.id)
+                  if (dimension && dimension.type.id == this.reportingService.metadata.timestampType.id)
                   {
                 	  parametersOfTypeTimestamp[dimension.id + ".from"] = dimension.id + " (" + this.getI18N("reporting.definitionView.from.label") + ")"; 
                 	  parametersOfTypeTimestamp[dimension.id + ".to"] = dimension.id + " (" + this.getI18N("reporting.definitionView.to.label") + ")";

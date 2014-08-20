@@ -9,7 +9,7 @@
 							<tr>
 								<td valign="top"><a id="filter{{$index}}" href=""
 									ng-click="reportFilterController.deleteFilter(x)"><img
-										ng-src="{{reportFilterController.baseUrl}}/public/css/images/delete.png"
+										ng-src="{{reportFilterController.baseUrl}}/css/images/delete.png"
 										title="{{reportFilterController.reportFilterController.getI18N('reporting.definitionView.additionalFiltering.removeFilter')}}" />
 								</a></td>
 							</tr>
@@ -150,7 +150,7 @@
 							<td valign="top"><a id="pfa{{$index}}" href=""
 								ng-click="reportFilterController.toggleFilter(x, 'process_filter_auxiliary')"
 								ng-class="{true:'disabled', false:'enabled'}[x.metadata.process_filter_auxiliary]">
-									<img ng-src="{{reportFilterController.baseUrl}}/public/css/images/process_auxiliary.png"
+									<img ng-src="{{reportFilterController.baseUrl}}/css/images/process_auxiliary.png"
 									title="{{reportFilterController.getI18N('reporting.definitionView.process.filter.auxiliary.' + x.metadata.process_filter_auxiliary)}}" />
 							</a></td>
 						</tr>
@@ -173,19 +173,19 @@
 							<td valign="top"><a id="afni{{$index}}" href=""
 								ng-click="reportFilterController.toggleFilter(x, 'activity_filter_nonInteractive')"
 								ng-class="{true:'disabled', false:'enabled'}[x.metadata.activity_filter_nonInteractive]">
-									<img ng-src="{{reportFilterController.baseUrl}}/public/css/images/activity_application.png"
+									<img ng-src="{{reportFilterController.baseUrl}}/css/images/activity_application.png"
 									title="{{reportFilterController.getI18N('reporting.definitionView.activity.filter.nonInteractive.' + x.metadata.activity_filter_nonInteractive)}}" />
 							</a></td>
 							<td valign="top"><a id="afi{{$index}}" href=""
 								ng-click="reportFilterController.toggleFilter(x, 'activity_filter_interactive')"
 								ng-class="{true:'disabled', false:'enabled'}[x.metadata.activity_filter_interactive]">
-									<img ng-src="{{reportFilterController.baseUrl}}/public/css/images/activity_manual.png"
+									<img ng-src="{{reportFilterController.baseUrl}}/css/images/activity_manual.png"
 									title="{{reportFilterController.getI18N('reporting.definitionView.activity.filter.interactive.' + x.metadata.activity_filter_interactive)}}" />
 							</a></td>
 							<td valign="top"><a id="afa{{$index}}" href=""
 								ng-click="reportFilterController.toggleFilter(x, 'activity_filter_auxiliary')"
 								ng-class="{true:'disabled', false:'enabled'}[x.metadata.activity_filter_auxiliary]">
-									<img ng-src="{{reportFilterController.baseUrl}}/public/css/images/activity_auxiliary.png"
+									<img ng-src="{{reportFilterController.baseUrl}}/css/images/activity_auxiliary.png"
 									title="{{reportFilterController.getI18N('reporting.definitionView.activity.filter.auxiliary.' + x.metadata.activity_filter_auxiliary)}}" />
 							</a></td>
 						</tr>
@@ -244,7 +244,7 @@
 							<tr>
 								<td valign="top"><a id="auto-reporting-dataSetTab-addFilter" href=""
 									ng-click="reportFilterController.addFilter()"><img
-										ng-src="{{reportFilterController.baseUrl}}/public/css/images/add.png"
+										ng-src="{{reportFilterController.baseUrl}}/css/images/add.png"
 										title="{{reportFilterController.getI18N('reporting.definitionView.additionalFiltering.addFilter')}}" />
 								</a></td>
 							</tr>

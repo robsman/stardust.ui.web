@@ -2,7 +2,7 @@
  * Copyright (c) 2013 SunGard CSA LLC. All rights reserved.
  ****************************************************************************************/
 
-define([ "bpm-reporting/public/js/report/I18NUtils", "bpm-reporting/js/utils" ], function(I18NUtils,
+define([ "bpm-reporting/js/report/I18NUtils", "bpm-reporting/js/utils" ], function(I18NUtils,
          utils)
 {
    return {

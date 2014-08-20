@@ -5,23 +5,23 @@
 <title>Process Reporting</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <meta name="keywords" content="">
-<link href="../public/css/thirdparty/jquery/jquery-ui-1.10.2.custom.css"
+<link href="../css/thirdparty/jquery/jquery-ui-1.10.2.custom.css"
 	rel="stylesheet" type="text/css" />
 <link rel="stylesheet" type="text/css"
-   href="../public/css/thirdparty/jqplot/jquery.jqplot.css" />
-<link href="../public/css/thirdparty/jquery.dataTables.css"
+   href="../css/thirdparty/jqplot/jquery.jqplot.css" />
+<link href="../css/thirdparty/jquery.dataTables.css"
    rel="stylesheet" type="text/css" />
-<link href="../public/css/bpm-reporting.css" rel="stylesheet" type="text/css">
+<link href="../css/bpm-reporting.css" rel="stylesheet" type="text/css">
 <!-- <link rel="stylesheet" type="text/css"
-	href="../public/css/thirdparty/datatables/datatables.css" /> -->
+	href="../css/thirdparty/datatables/datatables.css" /> -->
 <link rel="stylesheet" type="text/css"
-	href="../public/css/thirdparty/datatables/extras/TableTools/TableTools.css" />
+	href="../css/thirdparty/datatables/extras/TableTools/TableTools.css" />
 <link rel="stylesheet" type="text/css"
-	href="../public/css/thirdparty/datatables/extras/TableTools/TableTools_JUI.css" />
+	href="../css/thirdparty/datatables/extras/TableTools/TableTools_JUI.css" />
 <link rel="stylesheet" type="text/css"
-	href="../public/css/bpm-reporting-table.css" />
+	href="../css/bpm-reporting-table.css" />
 <link rel="stylesheet" type="text/css" 
-	href="../public/css/bpm-reporting.custom.jquery.ui.css" />
+	href="../css/bpm-reporting.custom.jquery.ui.css" />
 <style type="text/css">
 table.formTable td {
 	padding: 3px;
@@ -30,7 +30,7 @@ table.formTable td {
 <script type="text/javascript" src="../js/commonRequire.js"></script>
 <script type="text/javascript"
 	data-main="../js/ReportDefinitionViewMain"
-	src="../public/js/libs/require/2.0.5/require.js"></script>
+	src="../js/libs/require/2.0.5/require.js"></script>
 </head>
 <body>
 	<div ng-include="'templates/reportToolbar.html'"></div>
@@ -43,37 +43,37 @@ table.formTable td {
 						<ul id="propertiesTabsList">
 							<li><a href="#dataSourcesTab"><table>
 										<tr>
-											<td><img src="../public/css/images/database.png"></img>
+											<td><img src="../css/images/database.png"></img>
 											<td><span class="tabLabel" id="dataSet">{{getI18N('reporting.definitionView.dataSourcesTab.title')}}</span></td>
 										</tr>
 									</table></a></li>
 							<li><a href="#dataSetTab"><table>
 										<tr>
-											<td><img src="../public/css/images/table.png"></img>
+											<td><img src="../css/images/table.png"></img>
 											<td><span class="tabLabel" id="dataSet">{{getI18N('reporting.definitionView.dataSetTab.title')}}</span></td>
 										</tr>
 									</table></a></li>
 							<li><a href="#layoutTab"><table>
 										<tr>
-											<td><img src="../public/css/images/layout.png"></img>
+											<td><img src="../css/images/layout.png"></img>
 											<td><span class="tabLabel" id="layout">{{getI18N('reporting.definitionView.layoutTab.title')}}</span></td>
 										</tr>
 									</table></a></li>
 							<li><a href="#previewTab"><table>
 										<tr>
-											<td><img src="../public/css/images/chart-bar.png"></img>
+											<td><img src="../css/images/chart-bar.png"></img>
 											<td><span class="tabLabel" id="preview">{{getI18N('reporting.definitionView.previewTab.title')}}</span></td>
 										</tr>
 									</table></a></li>
 							<li><a href="#definitionTab"><table>
 										<tr>
-											<td><img src="../public/css/images/drive.png"></img>
+											<td><img src="../css/images/drive.png"></img>
 											<td><span class="tabLabel" id="definition">{{getI18N('reporting.definitionView.reportDefinitionTab.title')}}</span></td>
 										</tr>
 									</table></a></li>
 							<li><a href="#schedulingTab"><table>
 										<tr>
-											<td><img src="../public/css/images/date.png"></img>
+											<td><img src="../css/images/date.png"></img>
 											<td><span class="tabLabel" id="scheduling">{{getI18N('reporting.definitionView.schedulingTab.title')}}</span></td>
 										</tr>
 									</table></a></li>
@@ -92,7 +92,7 @@ table.formTable td {
 									<table cellpadding="0" cellspacing="0" class="layoutTable">
 										<tr>
 											<td style="padding-right: 5px;"><img
-												src="../public/css/images/arrow-down.png" /></td>
+												src="../css/images/arrow-down.png" /></td>
 											<td><span class="heading">{{getI18N('reporting.definitionView.externalData.title')}}</span></td>
 										</tr>
 									</table>
@@ -101,7 +101,7 @@ table.formTable td {
 									<table cellpadding="0" cellspacing="0" class="layoutTable">
 										<tr>
 											<td style="padding-right: 5px;"><img
-												src="../public/css/images/arrow-right.png" /></td>
+												src="../css/images/arrow-right.png" /></td>
 											<td><span class="heading">{{getI18N('reporting.definitionView.externalData.title')}}</span></td>
 										</tr>
 									</table>
@@ -142,7 +142,7 @@ table.formTable td {
 												style="width: 450px;" /></td>
 											<td colspan="2"><a style="font-size: 9px;"
 												ng-click="evaluateExternalTestdata(report.dataSet.externalJoins[0])"
-												class="smallLink"><img src="../public/css/images/database_go.png"></a></td>
+												class="smallLink"><img src="../css/images/database_go.png"></a></td>
 										</tr>
 									</table>
                            <br/>
@@ -163,7 +163,7 @@ table.formTable td {
 												ng-repeat="field in report.dataSet.externalJoins[0].fields">
 												<td><a href=""
 													ng-click="deleteExternalJoinField(field)"><img
-														src="../public/css/images/delete.png" /> </a></td>
+														src="../css/images/delete.png" /> </a></td>
 												<td><input type="text" ng-model="field.id" /></td>
 												<td><input type="text" ng-model="field.useAs" /></td>
 												<td><input type="text" ng-model="field.name" /></td>
@@ -175,7 +175,7 @@ table.formTable td {
 											</tr>
 											<tr>
 												<td><a href="" ng-click="addExternalJoinField()"><img
-														src="../public/css/images/add.png" /> </a></td>
+														src="../css/images/add.png" /> </a></td>
 												<td></td>
 												<td></td>
 												<td></td>
@@ -192,7 +192,7 @@ table.formTable td {
 									<table cellpadding="0" cellspacing="0" class="layoutTable">
 										<tr>
 											<td style="padding-right: 5px;"><img
-												src="../public/css/images/arrow-down.png" /></td>
+												src="../css/images/arrow-down.png" /></td>
 											<td><span class="heading">{{getI18N('reporting.definitionView.computedColumns.title')}}</span></td>
 										</tr>
 									</table>
@@ -201,7 +201,7 @@ table.formTable td {
 									<table cellpadding="0" cellspacing="0" class="layoutTable">
 										<tr>
 											<td style="padding-right: 5px;"><img
-												src="../public/css/images/arrow-right.png" /></td>
+												src="../css/images/arrow-right.png" /></td>
 											<td><span class="heading">{{getI18N('reporting.definitionView.computedColumns.title')}}</span></td>
 										</tr>
 									</table>
@@ -226,7 +226,7 @@ table.formTable td {
 														class="{{$parent.getComputedColumnStyleClass(column)}}">
 														<td><a href=""
 															ng-click="$parent.deleteComputedColumn(column)"><img
-																src="../public/css/images/delete.png" /> </a></td>
+																src="../css/images/delete.png" /> </a></td>
 														<td><input type="text" ng-model="column.id"
 															ng-click="$parent.selectComputedColumn(column)" /></td>
 														<td><input type="text" ng-model="column.name"
@@ -238,7 +238,7 @@ table.formTable td {
 													</tr>
 													<tr>
 														<td><a href="" ng-click="addComputedColumn()"><img
-																src="../public/css/images/add.png" /> </a></td>
+																src="../css/images/add.png" /> </a></td>
 														<td></td>
 														<td></td>
 														<td></td>
@@ -476,10 +476,10 @@ table.formTable td {
 										<td valign="top"><a href=""
 											ng-click="firstDimensionEnumerationParameter = false"
 											ng-show="firstDimensionEnumerationParameter"><img
-												src="../public/css/images/parameter.png" title="Parameter" /> <a
+												src="../css/images/parameter.png" title="Parameter" /> <a
 												href="" ng-click="firstDimensionEnumerationParameter = true"
 												ng-show="!firstDimensionEnumerationParameter"><img
-													src="../public/css/images/no-parameter.png" title="No Parameter" />
+													src="../css/images/no-parameter.png" title="No Parameter" />
 											</a> </a></td>
 									</tr>
 								</table>

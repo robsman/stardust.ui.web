@@ -13,7 +13,7 @@
  * @author Yogesh.Manware
  * 
  */
-define([ "bpm-reporting/public/js/report/I18NUtils" ], function(I18NUtils) {
+define([ "bpm-reporting/js/report/I18NUtils" ], function(I18NUtils) {
 	return {
 		create : function() {
 

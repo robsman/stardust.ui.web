@@ -10,7 +10,7 @@ require(
 				"canvasAxisLabelRenderer", "canvasAxisTickRenderer",
 				"categoryAxisRenderer", "dateAxisRenderer", "highlighter",
 				"ohlcRenderer", "pieRenderer", "enhancedLegendRenderer", "pointLabels",
-				"bpm-reporting/public/js/report/ReportRenderingController", "bpm-reporting/public/js/report/ReportingService",
+				"bpm-reporting/js/report/ReportRenderingController", "bpm-reporting/js/report/ReportingService",
 				"dataTables", "TableTools" ],
 		function(require, jquery, jqueryUrl, jqueryUi, json, angularjs,
 				jqueryBase62, jqueryJqPlot, barRenderer, bubbleRenderer,

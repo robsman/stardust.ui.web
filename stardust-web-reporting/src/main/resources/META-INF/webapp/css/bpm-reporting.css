@@ -740,7 +740,7 @@ table.dataTable .group {
 
 /*portal style */
 .breadCrumbsToolbarWrapper {
-	background:url(../../public/images/toolbar-BG-border-bottom.png) center repeat-x;
+	background:url(../../images/toolbar-BG-border-bottom.png) center repeat-x;
 	width: 100%;
 	border-spacing: 2px;
 }
@@ -751,7 +751,7 @@ table.dataTable .group {
 }
 
 .toolbarGroupRight {
-	background: url(../../public/images/toolbar-separator.png) left no-repeat;
+	background: url(../../images/toolbar-separator.png) left no-repeat;
 	padding-left: 8px;
 	padding-right: 8px;
 	white-space: nowrap;
