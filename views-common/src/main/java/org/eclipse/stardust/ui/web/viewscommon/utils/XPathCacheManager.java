@@ -50,7 +50,7 @@ public class XPathCacheManager
    private Map<TypeDeclarationCacheKey, IXPathMap> typeXPathMapCache = new ConcurrentHashMap<TypeDeclarationCacheKey, IXPathMap>();
    
    // Key = model OID + element OID of the Data
-   private Map<Long, IXPathMap> dataXPathMapCache = new ConcurrentHashMap<Long, IXPathMap>();
+   private Map<DataCacheKey, IXPathMap> dataXPathMapCache = new ConcurrentHashMap<DataCacheKey, IXPathMap>();
 
    /**
     * 
@@ -115,7 +115,7 @@ public class XPathCacheManager
       }
       
       // Caching Mechanism
-      Long dataCachKey = getDataCacheKey(refModel, data);
+      DataCacheKey dataCachKey = getDataCacheKey(refModel, data);
       IXPathMap xPathMap = dataXPathMapCache.get(dataCachKey);
       if (null == xPathMap)
       {
@@ -163,10 +163,9 @@ public class XPathCacheManager
     * @param data
     * @return
     */
-   private Long getDataCacheKey(Model model, Data data)
+   private DataCacheKey getDataCacheKey(Model model, Data data)
    {
-      long key = model.getModelOID() << 32 + data.getElementOID();
-      return key;
+      return new DataCacheKey(model.getModelOID(), data.getElementOID());
    }
 
    /**
@@ -250,7 +249,7 @@ public class XPathCacheManager
       if (trace.isDebugEnabled())
       {
          trace.debug("Data Cache Keys =");
-         Iterator<Long> it1 = dataXPathMapCache.keySet().iterator();
+         Iterator<DataCacheKey> it1 = dataXPathMapCache.keySet().iterator();
          while (it1.hasNext())
          {
             trace.debug("\t[DataCache]:" + it1.next());
@@ -338,5 +337,53 @@ public class XPathCacheManager
       {
          return modelOID;
       }
+   }
+   
+   /**
+    * 
+    * @author Sidharth.Singh
+    */
+   private static class DataCacheKey
+   {
+      private int modelOID;
+      private int elementOID;
+
+      public DataCacheKey(int modelOID, int elementOID)
+      {
+         super();
+         this.modelOID = modelOID;
+         this.elementOID = elementOID;
+      }
+
+      @Override
+      public int hashCode()
+      {
+         return 961 + 31 * modelOID + elementOID;
+      }
+
+      @Override
+      public boolean equals(Object obj)
+      {
+         return this == obj || obj instanceof DataCacheKey
+               && modelOID == ((DataCacheKey) obj).modelOID
+               && elementOID == ((DataCacheKey) obj).elementOID;
+      }
+
+      @Override
+      public String toString()
+      {
+         return modelOID + ":" + elementOID;
+      }
+
+      public int getModelOID()
+      {
+         return modelOID;
+      }
+
+      public int getElementOID()
+      {
+         return elementOID;
+      }
+      
    }
 }
