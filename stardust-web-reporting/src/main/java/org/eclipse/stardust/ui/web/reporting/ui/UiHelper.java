@@ -1,7 +1,13 @@
 package org.eclipse.stardust.ui.web.reporting.ui;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Enumeration;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import org.eclipse.stardust.common.Money;
 import org.eclipse.stardust.engine.core.pojo.data.Type;
@@ -13,7 +19,7 @@ import org.eclipse.stardust.engine.core.pojo.data.Type;
 public class UiHelper
 {
 
-   //private static final Logger trace = LogManager.getLogger(UiHelper.class);
+   // private static final Logger trace = LogManager.getLogger(UiHelper.class);
 
    /**
     * @param value
@@ -102,4 +108,28 @@ public class UiHelper
       return Type.String;
    }
 
+   /**
+    * This is an utility method to generate properties file as an java script object. Is used for building self-contained report
+    * @param args
+    */
+   public static void main(String[] args)
+   {
+      Locale locale = new Locale("en", "US");
+      ResourceBundle labels = ResourceBundle.getBundle("bpm-reporting-client-messages_en", locale);
+      
+      Enumeration<String> labelKeys = labels.getKeys();
+      
+      StringBuffer sb = new StringBuffer();
+      
+      while (labelKeys.hasMoreElements())
+      {
+         String lk = (String) labelKeys.nextElement();
+         sb.append("\"").append(lk).append("\":");
+         sb.append("\"").append(labels.getString(lk)).append("\",");
+      }
+      
+      String flatString = sb.toString().substring(0, sb.length()-1);
+      
+      System.out.println("{" + flatString + "}");
+   }
 }

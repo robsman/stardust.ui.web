@@ -118,52 +118,6 @@ define(
 
 					if (this.report.layout.type == 'table') {
 						this.createTable();
-					} else if (this.report.layout.type == 'document') {
-						self.getReportData(self.report, self.parameters)
-								.done(
-										function(data) {
-											console.log("Data for Document");
-											console.log(data);
-											
-											var html = "<html ng-app><head>"
-													// TODO Read local
-													+ "<scr" + "ipt" + "src='"
-													+ self.reportingService
-															.getRootUrl()
-													+ "/plugins/bpm-reporting/js/libs/angular/angular-1.2.11.js'>"
-													+ "</scr" + "ipt>"
-													+ "<scr" + "ipt>"
-													+ "function Controller($scope) {$scope.seriesGroup = "
-													+ (data.seriesGroup ? JSON
-															.stringify(data.seriesGroup)
-															: "null")
-													+ ";"
-													+ "$scope.recordSet = "
-													+ (data.recordSet ? JSON
-															.stringify(data.recordSet)
-															: "null")
-													+ ";"
-													+ "$scope.groupIds = "
-													+ JSON
-															.stringify(data.groupIds)
-													+ ";}"
-													+ "</scri" + "pt></head><body><div ng-controller='Controller'>"
-													+ self.report.layout.document.markup
-													+ "</div></body></html>";
-
-											console.log(html);
-
-											var documentFrame = document
-													.getElementById('documentFrame');
-											var frameDocument = documentFrame.contentDocument
-													|| documentFrame.contentWindow.document;
-
-											frameDocument.write(html);
-											frameDocument.close();
-											deferred.resolve();
-										}).fail(function() {
-									deferred.reject();
-								});
 					} else {
 						this.createChart().done(function(){
 							deferred.resolve();
@@ -184,6 +138,11 @@ define(
 					var chartOptions = {
 						series : [],
 						seriesDefaults : {
+							label : this.report.layout.chart.options.title,
+							lineWidth : 1.5,
+							markerOptions : {
+								style : "filledCircle"
+							},
 							pointLabels : {},
 							trendline : {
 								color : '#666666',
@@ -211,12 +170,12 @@ define(
 						legend : {
 							show: true,
 							    renderer: $.jqplot.EnhancedLegendRenderer,
-			                location: 'ne',
+			                location: 'e',
 			                placement: 'outside',
 			                fontSize: '11px'
 						},
 						highlighter : {},
-						cursor : {},
+						cursor : {show : true},
 						zoom : {},
 						seriesColors: [ "#4bb2c5", "#c5b47f", "#EAA228", "#579575", "#839557", "#958c12",
 						                 "#953579", "#4b5de4", "#d8b83f", "#ff5800", "#0085cc"]
@@ -224,10 +183,26 @@ define(
 
 					// Copy configuration from Report Definition
 
-					chartOptions.axes.xaxis.label = this.report.layout.chart.options.axes.xaxis.label;
+					if (this.report.layout.chart.options.axes.xaxis.showTicks) {
+						chartOptions.axes.xaxis.label = this.report.layout.chart.options.axes.xaxis.label;
+					}
+					chartOptions.axes.xaxis.min = this.report.layout.chart.options.axes.xaxis.min;
+					chartOptions.axes.xaxis.max = this.report.layout.chart.options.axes.xaxis.max;
 					chartOptions.axes.xaxis.tickOptions = this.report.layout.chart.options.axes.xaxis.tickOptions;
-					chartOptions.axes.yaxis.label = this.report.layout.chart.options.axes.yaxis.label;
+					chartOptions.axes.xaxis.tickOptions.showMark = this.report.layout.chart.options.axes.xaxis.showTickMarks;
+					chartOptions.axes.xaxis.showTickMarks = this.report.layout.chart.options.axes.xaxis.showTickMarks;
+					chartOptions.axes.xaxis.showTicks = this.report.layout.chart.options.axes.xaxis.showTicks;
+					
+					if (this.report.layout.chart.options.axes.yaxis.showTicks) {
+						chartOptions.axes.yaxis.label = this.report.layout.chart.options.axes.yaxis.label;
+					}
+					chartOptions.axes.yaxis.min = this.report.layout.chart.options.axes.yaxis.min;
+					chartOptions.axes.yaxis.max = this.report.layout.chart.options.axes.yaxis.max;
 					chartOptions.axes.yaxis.tickOptions = this.report.layout.chart.options.axes.yaxis.tickOptions;
+					chartOptions.axes.yaxis.tickOptions.showMark = this.report.layout.chart.options.axes.yaxis.showTickMarks;
+					chartOptions.axes.yaxis.showTickMarks = this.report.layout.chart.options.axes.yaxis.showTickMarks;
+					chartOptions.axes.yaxis.showTicks = this.report.layout.chart.options.axes.yaxis.showTicks;
+					
 					chartOptions.legend.show = this.report.layout.chart.options.legend.show;
 					chartOptions.legend.location = this.report.layout.chart.options.legend.location;
 					chartOptions.highlighter.show = this.report.layout.chart.options.highlighter.show;
@@ -238,12 +213,14 @@ define(
 					chartOptions.seriesDefaults.shadow = this.report.layout.chart.options.seriesDefaults.shadow;
 					chartOptions.seriesDefaults.pointLabels.show = this.report.layout.chart.options.seriesDefaults.pointLabels.show;
 					chartOptions.seriesDefaults.trendline.show = this.report.layout.chart.options.seriesDefaults.trendline.show;
-					chartOptions.seriesDefaults.trendline.show = this.report.layout.chart.options.seriesDefaults.trendline.show;
 					chartOptions.seriesDefaults.rendererOptions = {
 						animation : {
 							speed : 2500
 						}
 					};
+					chartOptions.animate = this.report.layout.chart.options.animate;
+					chartOptions.animateReplot = this.report.layout.chart.options.animateReplot;
+
 					//For Legend Positioning.
 					if (this.report.dataSet.type === 'seriesGroup'
 			         && this.report.layout.subType === this.reportingService.metadata.layoutSubTypes.chart.id
@@ -253,14 +230,21 @@ define(
 					   var southSide = [ "s" ];
       			   var eastSide = [ "ne", "e", "se" ];
       			   var westSide = [ "w", "nw", "sw" ];
-      			   var dataLength = (this.report.dataSet.groupBy != null && 
-      			       this.report.dataSet.groupBy != 'None') ? data.seriesGroup.length 
-      			                : data.seriesGroup[0].length
+      			   
+      			   var dataLength = data.seriesGroup.length;
+      			   
       			   //TODO Donut chart might need more processing.
       			   if (this.report.layout.chart.type === this.reportingService.metadata.chartTypes.donutChart.id)
                   {
       			      dataLength = data.seriesGroup[0].length; 
                   }
+      			   
+      			   if (dataLength > 12)
+                  {
+      			      jQuery("#dataSetExceedWarning").text(this.getI18N('reporting.definitionView.preview.dataSetExceed.message'));
+      			      jQuery("#dataSetExceedWarning").show();
+                  }
+      
       			/*   if (northSide.indexOf(this.report.layout.chart.options.legend.location) != -1)
                   {
       			      chartOptions.legend.rendererOptions = {
@@ -753,17 +737,17 @@ define(
                 var deferred = jQuery.Deferred();
 
                 if(this.reportData){
-                    deferred.resolve(this.reportData);
+                   return deferred.resolve(this.reportData);
+                }else{
+                	var self = this;
+                    self.reportingService.retrieveData(report, parameters)
+                    .done(
+                          function(data) {
+                            deferred.resolve(data);
+                          }).fail(function(data) {
+                       deferred.reject(data);
+                    });	
                 }
-                var self = this;
-                self.reportingService.retrieveData(report, parameters)
-                .done(
-                      function(data) {
-                        deferred.resolve(data);
-                      }).fail(function(data) {
-                   deferred.reject(data);
-                });
-                
                 return deferred.promise();
                 
              };
@@ -773,6 +757,8 @@ define(
              * 
              */
             ReportRenderingController.prototype.refreshPreview = function(scopeController, report, parameters) {
+               jQuery("#dataSetExceedWarning").empty();
+               jQuery("#dataSetExceedWarning").hide();
 				var deferred = jQuery.Deferred();
             	
             	if (report) {
@@ -784,7 +770,9 @@ define(
             	}
             	
 				var self = this;
-				if(this.report.dataSet.type === 'seriesGroup' && this.report.layout.subType == this.reportingService.metadata.layoutSubTypes.table.id){
+				if (this.report.layout.type == 'document') {
+					this.renderCompositeReport();
+				}else if(this.report.dataSet.type === 'seriesGroup' && this.report.layout.subType == this.reportingService.metadata.layoutSubTypes.table.id){
 						this.getReportData(self.report, self.parameters).done(
 								function(data) {
 									self.refreshSeriesTable(data, scopeController);
@@ -810,6 +798,73 @@ define(
 				return deferred.promise();
 			};
 
+			/**
+			 * 
+			 */
+			ReportRenderingController.prototype.renderCompositeReport = function() {
+				var deferred = jQuery.Deferred();
+			    var self = this;
+			    
+			    var isSeriesGroup = self.report.dataSet.type === 'seriesGroup';
+			    
+			    self.getReportData(self.report, self.parameters)
+			        .done(function(data) {
+			        console.log("Data for Document");
+			        console.log(data);
+			
+			        var html = "<html ng-app='STARTDUST_REPORTING'><head>"
+			        	+ "<link rel='stylesheet' type='text/css' href='"
+			        	+ self.reportingService.getRootUrl()
+			          	 + "/plugins/bpm-reporting/js/libs/ckeditor/contents.css'/>"
+			          	 // TODO Read local
+			          	 + "<scr"
+			          	 + "ipt"
+			          	 + " src='"
+			          	 + self.reportingService
+			          	.getRootUrl()
+			          	 + "/plugins/bpm-reporting/js/libs/angular/angular-1.2.11.js'>"
+			          	 + "</scr"
+			          	 + "ipt>"
+			          	 + "<scr"
+			          	 + "ipt"
+			          	 + " src='"
+			          	 + self.reportingService
+			          	.getRootUrl()
+			          	 + "/plugins/bpm-reporting/js/report/programmaticAccessHelper.js'>"
+			          	 + "</scr"
+			          	 + "ipt>"
+			          	 + "<scr"
+			          	 + "ipt>"
+			          	 + "var __reportData="
+			          	 + (data ? JSON.stringify(data)
+			          		 : "null")
+			          	 + ";"
+			          	 + "var __isSeriesGroup="
+			          	 + isSeriesGroup
+			          	 + ";"
+			          	 + "</scri"
+			          	 + "pt></head><body><div ng-controller='Controller'>"
+			          	 + self.report.layout.document.markup
+			          	+ "</div></body></html>";
+			        
+			        console.log(html);
+			
+			        var documentFrame = document.getElementById('documentFrame');
+			        var frameDocument = documentFrame.contentDocument || documentFrame.contentWindow.document;
+			
+			        frameDocument.write(html);
+			        frameDocument.close();
+			        deferred.resolve();
+			    }).fail(function() {
+			        deferred.reject();
+			    });
+			    
+			    return deferred.promise();
+			};
+			
+			
+			
+			
 			ReportRenderingController.prototype.getCumulantsTableConfig = function(){
 		    	  if(this.report.dataSet.fact == this.reportingService.metadata.objects.processInstance.facts.count.id){
 		    		  return this.countTableConfig;

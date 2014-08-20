@@ -12,7 +12,7 @@ I18NUtils.js
 remove references of InfinityBPMI18N and remove initI18N() call
 (internationalization is not supported)
 
-ReportViewMain.js
+ReportViewMain.js (also refer ReportDefinitionViewMain.js in there are any new additions)
 remove require.config block
 Change paths  bpm-reporting/js -> ..
 remove references of 
@@ -21,6 +21,7 @@ jquery.base64
 TableTools (included in reportTemplate.html)
 ckeditor
 ace
+Note: this file contains all js which are required to render the report
 
 r.js build
 Open Command Prompt
@@ -35,7 +36,7 @@ accordingly modify style.css
 
 -------------
 properties file is prepared manually
-var message_bundle = *****
-utility can be prepared but it is anyways temporary solution
+var message_bundle = {*****};
+Use UiHelper.java-> main method to create this string.
 
 That's it!

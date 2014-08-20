@@ -97,37 +97,37 @@ define(
 				this.metadata.chartTypes = {
 					xyPlot : {
 						id : "xyPlot",
-						name : "XY Plot",
+						name : this.getI18N("reporting.definitionView.layout.subType.xyPlot.label"),
 						hasDefaultSeries : true,
 						hasAxes : true
 					},
 					candlestickChart : {
 						id : "candlestickChart",
-						name : "Candlestick",
+						name : this.getI18N("reporting.definitionView.layout.subType.candlestickChart.label"),
 						hasDefaultSeries : true,
 						hasAxes : true
 					},
 					pieChart : {
 						id : "pieChart",
-						name : "Pie Chart",
+						name : this.getI18N("reporting.definitionView.layout.subType.pieChart.label"),
 						hasDefaultSeries : false,
 						hasAxes : false
 					},
 					barChart : {
 						id : "barChart",
-						name : "Bar Chart",
+						name : this.getI18N("reporting.definitionView.layout.subType.barChart.label"),
 						hasDefaultSeries : true,
 						hasAxes : true
 					},
 					bubbleChart : {
 						id : "bubbleChart",
-						name : "Bubble Chart",
+						name : this.getI18N("reporting.definitionView.layout.subType.bubbleChart.label"),
 						hasDefaultSeries : false,
 						hasAxes : true
 					},
 					donutChart : {
 						id : "donutChart",
-						name : "Donut Chart", //TODO: I18n
+						name : this.getI18N("reporting.definitionView.layout.subType.donutChart.label"),
 						hasDefaultSeries : false,
 						hasAxes : true
 					}
@@ -135,42 +135,42 @@ define(
 
 				this.metadata.stringType = {
 					id : "stringType",
-					name : "String"
+					name : this.getI18N("reporting.definitionView.metadata.stringType.label"),
+					operators : ["E", "NE", "I", "NI", "L"],
 				};
 				this.metadata.integerType = {
 					id : "integerType",
-					name : "Integer",
+					name : this.getI18N("reporting.definitionView.metadata.integerType.label"),
 					operators : ["E", "LE", "GE", "NE", "I", "NI"]
 				};
 				this.metadata.decimalType = {
 					id : "decimalType",
-					name : "Decimal"
+					name : this.getI18N("reporting.definitionView.metadata.decimalType.label"),
+					operators : ["E", "LE", "GE", "NE", "I", "NI"]
 				};
-				
 				this.metadata.booleanType = {
-						id : "booleanType",
-						name : "Boolean"
+					id : "booleanType",
+					name : this.getI18N("reporting.definitionView.metadata.booleanType.label")
 				};
 				this.metadata.countType = {
 					id : "countType",
-					name : "Count"
+					name : this.getI18N("reporting.definitionView.metadata.countType.label")
 				};
 				this.metadata.timestampType = {
 					id : "timestampType",
-					name : "Timestamp"
+					name : this.getI18N("reporting.definitionView.metadata.timestampType.label")
 				};
 				this.metadata.durationType = {
 					id : "durationType",
-					name : "Duration"
+					name : this.getI18N("reporting.definitionView.metadata.durationType.label")
 				};
 				this.metadata.enumerationType = {
 					id : "enumerationType",
-					name : "Enumeration"
+					name : this.getI18N("reporting.definitionView.metadata.enumerationType.label")
 				};
-
 				this.metadata.autocompleteType = {
-						id : "autocompleteType",
-						name : "Autocomplete"
+					id : "autocompleteType",
+					name : this.getI18N("reporting.definitionView.metadata.autocompleteType.label")
 				};
 				
 				this.metadata.objects = {
@@ -221,11 +221,16 @@ define(
                         name : this.getI18N("reporting.definitionView.rootProcessInstanceDuration"),
                         type : this.metadata.durationType
                      },
-							processOID : {
+					processOID : {
                         id : "processOID",
                         name : this.getI18N("reporting.definitionView.additionalFiltering.processOID"),
                         type : this.metadata.integerType
                      },
+                     /*processID : {
+                        id : "processID",
+                        name : this.getI18N("reporting.definitionView.additionalFiltering.processID"),
+                        type : this.metadata.integerType
+                     },*/
 							processName : {
 								id : "processName",
 								name : this.getI18N("reporting.definitionView.additionalFiltering.processName"),
@@ -324,11 +329,21 @@ define(
                         name : this.getI18N("reporting.definitionView.additionalFiltering.processOID"),
                         type : this.metadata.integerType
                      },
+                     /*processID : {
+                        id : "processID",
+                        name : this.getI18N("reporting.definitionView.additionalFiltering.processID"),
+                        type : this.metadata.integerType
+                     },*/
                      activityOID : {
                         id : "activityOID",
                         name : this.getI18N("reporting.definitionView.additionalFiltering.activityOID"),
                         type : this.metadata.integerType
                      },
+                     /*activityID : {
+                        id : "activityID",
+                        name : this.getI18N("reporting.definitionView.additionalFiltering.activityID"),
+                        type : this.metadata.integerType
+                     },*/                     
 							activityName : {
 								id : "activityName",
 								name : this.getI18N("reporting.definitionView.additionalFiltering.activityName"),
@@ -421,10 +436,6 @@ define(
 							id : "Alive",
 							name : this.getI18N("reporting.definitionView.additionalFiltering.activityState.alive")
 						},
-						application : {
-							id : "Application",
-							name : this.getI18N("reporting.definitionView.additionalFiltering.activityState.application")
-						},
 						suspended : {
 							id : "Suspended",
 							name : this.getI18N("reporting.definitionView.additionalFiltering.activityState.suspended")
@@ -448,11 +459,7 @@ define(
 						interrupted : {
 							id : "Interrupted",
 							name : this.getI18N("reporting.definitionView.additionalFiltering.activityState.interrupted")
-						},
-						created : {
-							id : "Created",
-							name : this.getI18N("reporting.definitionView.additionalFiltering.activityState.created")
-						}
+						}						
 					},
 					priorityLevel : {
 						low : {
@@ -619,6 +626,7 @@ define(
 									.ajax(
 											{
 												type : "GET",
+												async: false,
 												beforeSend : function(request) {
 													request
 															.setRequestHeader(
@@ -672,6 +680,7 @@ define(
 							.ajax(
 									{
 										type : "GET",
+										async: false,
 										beforeSend : function(request) {
 											request
 													.setRequestHeader(
@@ -714,6 +723,7 @@ define(
 							.ajax(
 									{
 										type : "GET",
+										async: false,
 										beforeSend : function(request) {
 											request
 													.setRequestHeader(
@@ -778,6 +788,7 @@ define(
 							.ajax(
 									{
 										type : "GET",
+										async: false,
 										beforeSend : function(request) {
 											request
 													.setRequestHeader(
@@ -806,7 +817,7 @@ define(
 					
 					var deferred = jQuery.Deferred();
 					if(! (typeof report_data === 'undefined')){//email based report viewer
-						deferred.resolve(report_data);
+						deferred.resolve(angular.copy(report_data));
 					}else{
 						if (this.mode === "test") {
 							if (this.metadata.objects[report.data.primaryObject].id === "processInstance") {
@@ -819,7 +830,7 @@ define(
 								deferred.resolve(this.retrieveRoleData(report));
 							}
 						} else {
-							if(report.layout.table.preview && report.layout.type == "simpleReport"){
+							if(report.layout.table && report.layout.table.preview && report.layout.type == "simpleReport"){
 									deferred.resolve(this.getTestSimpleReportData(report));
 							}else{
 								var self = this;
@@ -834,6 +845,7 @@ define(
 										.ajax(
 												{
 													type : "POST",
+													async: false,
 													beforeSend : function(request) {
 														request
 																.setRequestHeader(
@@ -882,6 +894,7 @@ define(
 							.ajax(
 									{
 										type : "GET",
+										async: false,
 										beforeSend : function(request) {
 											request
 													.setRequestHeader(
@@ -1049,6 +1062,7 @@ define(
 							.ajax(
 									{
 										type : "PUT",
+										async: false,
 										beforeSend : function(request) {
 											request
 													.setRequestHeader(
@@ -1088,6 +1102,7 @@ define(
 							.ajax(
 									{
 										type : "PUT",
+										async: false,
 										beforeSend : function(request) {
 											request
 													.setRequestHeader(
@@ -1133,6 +1148,7 @@ define(
 							.ajax(
 									{
 										type : "PUT",
+										async: false,
 										beforeSend : function(request) {
 											request
 													.setRequestHeader(
@@ -1166,6 +1182,7 @@ define(
 							.ajax(
 									{
 										type : "DELETE",
+										async: false,
 										beforeSend : function(request) {
 											request
 													.setRequestHeader(
@@ -1195,6 +1212,7 @@ define(
 							.ajax(
 									{
 										type : "PUT",
+										async: false,
 										beforeSend : function(request) {
 											request
 													.setRequestHeader(
@@ -1228,6 +1246,7 @@ define(
 							.ajax(
 									{
 										type : "GET",
+										async: false,
 										beforeSend : function(request) {
 											request
 													.setRequestHeader(
@@ -1264,6 +1283,7 @@ define(
 
 					jQuery.ajax({
 						type : "GET",
+						async: false,
 						beforeSend : function(request) {
 							// request
 							// .setRequestHeader(
@@ -1307,6 +1327,7 @@ define(
 							.ajax(
 									{
 										type : "PUT",
+										async: false,
 										beforeSend : function(request) {
 											request
 													.setRequestHeader(
@@ -1343,6 +1364,7 @@ define(
 							.ajax(
 									{
 										type : "DELETE",
+										async: false,
 										beforeSend : function(request) {
 											request
 													.setRequestHeader(
@@ -1577,6 +1599,7 @@ define(
                      .ajax(
                            {
                               type : "GET",
+                              async: false,
                               beforeSend : function(request) {
                                  request
                                        .setRequestHeader(
@@ -1948,6 +1971,7 @@ define(
                      .ajax(
                            {
                               type : "GET",
+                              async: false,
                               beforeSend : function(request) {
                                  request
                                        .setRequestHeader(
@@ -1979,6 +2003,7 @@ define(
                      .ajax(
                            {
                               type : "GET",
+                              async: false,
                               beforeSend : function(request) {
                                  request
                                        .setRequestHeader(
@@ -2000,7 +2025,7 @@ define(
             *
             */
             ReportingService.prototype.isValidReportName = function(reportName) {
-              var VALID_FILENAME_PATTERN = /[\\\\/:*?\"<>|\\[\\]]*/
+              var VALID_FILENAME_PATTERN = /[\\\\/:*?\"<>|\\[\\]]*/;
               return (! reportName.trim().match(VALID_FILENAME_PATTERN)) ? true : false;
            };
             
@@ -2030,22 +2055,23 @@ define(
 						parametersString += parameters[itemInd].dimension + "=";
 						//here uiValue is the actual value that needs to be sent to server
 						if(parameters[itemInd].uiValue){
-							parametersString += JSON.stringify(parameters[itemInd].uiValue); 		
+							//uiValue is array of strings
+							parametersString += getFlatStringFromValue(parameters[itemInd].uiValue); 		
 						}else{
 							//TODO: remove this when filter and parameter format is same for DATE
 							//special parameter, in case of date, there are multiple fields so change the format here
 							if(parameters[itemInd].value.from){
 								var pValue = ["from", "to", "duration", "durationUnit"];
 								var actualValue = parameters[itemInd].value; //complex object startDate = {from : "", to : ""};
-								var formattedValue = []; 
+								var formattedValue = ""; 
 								for (var int = 0; int < pValue.length; int++) {
 									if(actualValue[pValue[int]]){
-										formattedValue.push(actualValue[pValue[int]]);	
+										formattedValue += actualValue[pValue[int]] + ",";	
 									}
 								}
-								parametersString += JSON.stringify(formattedValue);
+								parametersString += formattedValue.slice(0,-1);
 							}else{
-								parametersString += JSON.stringify(parameters[itemInd].value);	
+								parametersString += getFlatStringFromValue(parameters[itemInd].value);
 							}
 						}
 						parametersString += "&";
@@ -2053,6 +2079,29 @@ define(
 				}
 				parametersString = parametersString.slice(0, -1);
 				return parametersString; 
+			}
+			
+			/**
+			 * 
+			 */
+			function getFlatStringFromValue(value){
+				var flatString = "";
+				if(isArray(value)){
+					for(var i = 0; i < value.length; i++){
+						flatString += value[i] + ",";
+					}	
+					flatString = flatString.slice(0, -1);
+				}else{
+					flatString = value;
+				}
+				return flatString;
+			}
+			
+			/**
+			 * returns true if the object is of type Array
+			 */
+			function isArray(obj) {
+				return Object.prototype.toString.call(obj) === '[object Array]';
 			}
 			
 			/**

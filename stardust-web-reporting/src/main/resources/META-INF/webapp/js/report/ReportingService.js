@@ -150,27 +150,27 @@ define(
 				};
 				this.metadata.booleanType = {
 					id : "booleanType",
-					name : this.getI18N("reporting.definitionView.metadata.booleanType.label"),
+					name : this.getI18N("reporting.definitionView.metadata.booleanType.label")
 				};
 				this.metadata.countType = {
 					id : "countType",
-					name : this.getI18N("reporting.definitionView.metadata.countType.label"),
+					name : this.getI18N("reporting.definitionView.metadata.countType.label")
 				};
 				this.metadata.timestampType = {
 					id : "timestampType",
-					name : this.getI18N("reporting.definitionView.metadata.timestampType.label"),
+					name : this.getI18N("reporting.definitionView.metadata.timestampType.label")
 				};
 				this.metadata.durationType = {
 					id : "durationType",
-					name : this.getI18N("reporting.definitionView.metadata.durationType.label"),
+					name : this.getI18N("reporting.definitionView.metadata.durationType.label")
 				};
 				this.metadata.enumerationType = {
 					id : "enumerationType",
-					name : this.getI18N("reporting.definitionView.metadata.enumerationType.label"),
+					name : this.getI18N("reporting.definitionView.metadata.enumerationType.label")
 				};
 				this.metadata.autocompleteType = {
 					id : "autocompleteType",
-					name : this.getI18N("reporting.definitionView.metadata.autocompleteType.label"),
+					name : this.getI18N("reporting.definitionView.metadata.autocompleteType.label")
 				};
 				
 				this.metadata.objects = {
@@ -2025,7 +2025,7 @@ define(
             *
             */
             ReportingService.prototype.isValidReportName = function(reportName) {
-              var VALID_FILENAME_PATTERN = /[\\\\/:*?\"<>|\\[\\]]*/
+              var VALID_FILENAME_PATTERN = /[\\\\/:*?\"<>|\\[\\]]*/;
               return (! reportName.trim().match(VALID_FILENAME_PATTERN)) ? true : false;
            };
             
