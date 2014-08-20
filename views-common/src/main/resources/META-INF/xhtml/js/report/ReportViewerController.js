@@ -14,10 +14,10 @@
  * 
  */
 define(
-		[ "bpm-reporting/public/js/report/I18NUtils",
-				"bpm-reporting/public/js/report/AngularAdapter",
-				"bpm-reporting/public/js/report/ReportingService",
-				"bpm-reporting/public/js/report/ReportRenderingController",
+		[ "bpm-reporting/js/report/I18NUtils",
+				"bpm-reporting/js/report/AngularAdapter",
+				"bpm-reporting/js/report/ReportingService",
+				"bpm-reporting/js/report/ReportRenderingController",
 				"bpm-reporting/js/ReportFilterController",
 				"bpm-reporting/js/ReportHelper" ],
 		function(I18NUtils, AngularAdapter, ReportingService,
