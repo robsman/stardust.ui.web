@@ -118,6 +118,28 @@ public class DocumentTriageResource
 
    @POST
    @Produces(MediaType.APPLICATION_JSON)
+   @Path("documents/{documentId}/reorder")
+   public Response reorderDocument(@PathParam("documentId")
+   String documentId, String postedData)
+   {
+      try
+      {
+         JsonObject json = jsonIo.readJsonObject(postedData);
+
+         return Response.ok(
+               getDocumentTriageService().reorderDocument(documentId, json).toString(),
+               MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
+
+         return Response.serverError().build();
+      }
+   }
+
+   @POST
+   @Produces(MediaType.APPLICATION_JSON)
    @Path("processes/{processInstanceOid: \\d+}/documents/{documentId}/split")
    public Response splitDocument(@PathParam("processInstanceOid")
    long processInstanceOid, @PathParam("documentId")

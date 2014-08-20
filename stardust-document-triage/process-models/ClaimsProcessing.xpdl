@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Package xmlns:carnot="http://www.carnot.ag/xpdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.wfmc.org/2008/XPDL2.1" xsi:schemaLocation="http://www.wfmc.org/2008/XPDL2.1 http://www.wfmc.org/standards/docs/bpmnxpdl_31.xsd" Id="ClaimsProcessing" Name="Claims Processing">
+<?xml version="1.0" encoding="UTF-8"?><Package xmlns:carnot="http://www.carnot.ag/xpdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.wfmc.org/2008/XPDL2.1" xsi:schemaLocation="http://www.wfmc.org/2008/XPDL2.1 http://www.wfmc.org/standards/docs/bpmnxpdl_31.xsd" Id="ClaimsProcessing" Name="Claims Processing">
    <PackageHeader>
       <XPDLVersion>2.1</XPDLVersion>
       <Vendor>Eclipse.org, Eclipse Process Manager</Vendor>
@@ -10,9 +9,9 @@
       <Version>1</Version>
    </RedefinableHeader>
    <ConformanceClass GraphConformance="NON_BLOCKED"/>
-   <xpdl:Script xmlns:xpdl="http://www.wfmc.org/2008/XPDL2.1" xmlns="http://www.carnot.ag/workflowmodel/3.1" Type="text/ecmascript"/>
-   <xpdl:TypeDeclarations xmlns:xpdl="http://www.wfmc.org/2008/XPDL2.1" xmlns="http://www.carnot.ag/workflowmodel/3.1">
-      <xpdl:TypeDeclaration Id="Claim" Name="Claim">
+   <xpdl:Script xmlns:xpdl="http://www.wfmc.org/2008/XPDL2.1" xmlns="http://www.carnot.ag/workflowmodel/3.1" xmlns:x1="http://www.wfmc.org/2002/XPDL1.0" Type="text/ecmascript"/>
+   <xpdl:TypeDeclarations xmlns:xpdl="http://www.wfmc.org/2008/XPDL2.1" xmlns:x1="http://www.wfmc.org/2002/XPDL1.0">
+      <xpdl:TypeDeclaration xmlns="http://www.carnot.ag/workflowmodel/3.1" Id="Claim" Name="Claim">
          <xpdl:ExtendedAttributes>
             <xpdl:ExtendedAttribute Name="carnot:engine:visibility" Value="Public"/>
          </xpdl:ExtendedAttributes>
@@ -29,7 +28,7 @@
             </xsd:schema>
          </xpdl:SchemaType>
       </xpdl:TypeDeclaration>
-      <xpdl:TypeDeclaration Id="Member" Name="Member">
+      <xpdl:TypeDeclaration xmlns="http://www.carnot.ag/workflowmodel/3.1" Id="Member" Name="Member">
          <xpdl:ExtendedAttributes>
             <xpdl:ExtendedAttribute Name="carnot:engine:visibility" Value="Public"/>
          </xpdl:ExtendedAttributes>
@@ -47,7 +46,7 @@
             </xsd:schema>
          </xpdl:SchemaType>
       </xpdl:TypeDeclaration>
-      <xpdl:TypeDeclaration Id="DisabilityCertificate" Name="Disability Certificate">
+      <xpdl:TypeDeclaration xmlns="http://www.carnot.ag/workflowmodel/3.1" Id="DisabilityCertificate" Name="Disability Certificate">
          <xpdl:ExtendedAttributes>
             <xpdl:ExtendedAttribute Name="carnot:engine:visibility" Value="Public"/>
          </xpdl:ExtendedAttributes>
@@ -60,7 +59,7 @@
             </xsd:schema>
          </xpdl:SchemaType>
       </xpdl:TypeDeclaration>
-      <xpdl:TypeDeclaration Id="PaySlip" Name="Pay Slip">
+      <xpdl:TypeDeclaration xmlns="http://www.carnot.ag/workflowmodel/3.1" Id="PaySlip" Name="Pay Slip">
          <xpdl:ExtendedAttributes>
             <xpdl:ExtendedAttribute Name="carnot:engine:visibility" Value="Public"/>
          </xpdl:ExtendedAttributes>
@@ -74,6 +73,7 @@
          </xpdl:SchemaType>
       </xpdl:TypeDeclaration>
    </xpdl:TypeDeclarations>
+   <carnot:qualityControl xmlns="http://www.carnot.ag/workflowmodel/3.1" xmlns:x1="http://www.wfmc.org/2002/XPDL1.0" xmlns:xpdl="http://www.wfmc.org/2008/XPDL2.1"/>
    <Participants>
       <Participant Id="Administrator" Name="Administrator">
          <ParticipantType Type="ROLE"/>
@@ -131,8 +131,8 @@
                      <carnot:ApplicationContext Oid="68" Type="externalWebApp">
                         <carnot:AccessPoints/>
                         <carnot:Attributes>
-                           <carnot:Attribute Name="carnot:engine:ui:externalWebApp:uri" Value="/server/plugins/document-triage/documentAssignmentPanel.html"/>
-                           <carnot:Attribute Name="messageTransformation:TransformationProperty" Value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;ASCII&quot;?&gt;&#10;&lt;mapping:TransformationProperty xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xmlns:mapping=&quot;java://org.eclipse.stardust.engine.extensions.transformation.model&quot; xsi:schemaLocation=&quot;java://org.eclipse.stardust.engine.extensions.transformation.model java://org.eclipse.stardust.engine.extensions.transformation.model.mapping.MappingPackage&quot;/&gt;&#10;"/>
+                           <carnot:Attribute Name="carnot:engine:ui:externalWebApp:uri" Value="${serverBaseUrl:String}/plugins/document-triage/documentAssignmentPanel.html"/>
+                           <carnot:Attribute Name="messageTransformation:TransformationProperty" Value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;ASCII&quot;?&gt;&#13;&#10;&lt;mapping:TransformationProperty xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xmlns:mapping=&quot;java://org.eclipse.stardust.engine.extensions.transformation.model&quot; xsi:schemaLocation=&quot;java://org.eclipse.stardust.engine.extensions.transformation.model java://org.eclipse.stardust.engine.extensions.transformation.model.mapping.MappingPackage&quot;/&gt;&#13;&#10;"/>
                         </carnot:Attributes>
                      </carnot:ApplicationContext>
                   </carnot:ApplicationContexts>
@@ -617,11 +617,11 @@
                   </ExtendedAttribute>
                </ExtendedAttributes>
             </Activity>
-            <Activity Id="ReceiveDisabilityCertificate" Name="Receive Disability Certificate">
+            <Activity Id="DocumentRendezvous_DisabilityCertificate" Name="Document Rendezvous - Disability Certificate">
                <Implementation>
                   <No/>
                </Implementation>
-               <Performer>DocumentRendezvous</Performer>
+               <Performer/>
                <StartMode>
                   <Automatic/>
                </StartMode>
@@ -630,18 +630,21 @@
                </FinishMode>
                <ExtendedAttributes>
                   <ExtendedAttribute Name="CarnotExt">
-                     <carnot:Activity Oid="91" Implementation="Manual" IsAbortableByPerformer="false" IsHibernatedOnCreation="false">
+                     <carnot:Activity Oid="91" IsHibernatedOnCreation="true">
                         <carnot:EventHandlers/>
                         <carnot:QualityCodes/>
                         <carnot:DataFlows>
-                           <carnot:DataFlow Oid="111" Id="DisabilityCertificate" Name="DisabilityCertificate" Direction="OUT" Context="default">
+                           <carnot:DataFlow Oid="243" Id="DisabilityCertificate" Name="DisabilityCertificate" Direction="OUT" Context="default">
                               <carnot:DataRef Id="DisabilityCertificate"/>
-                              <carnot:AccessPointRef/>
+                              <carnot:AccessPointRef Id="DisabilityCertificate"/>
+                           </carnot:DataFlow>
+                           <carnot:DataFlow Oid="245" Id="DisabilityCertificate" Name="DisabilityCertificate" Direction="IN" Context="default">
+                              <carnot:DataRef Id="DisabilityCertificate"/>
+                              <carnot:AccessPointRef Id="DisabilityCertificate"/>
                            </carnot:DataFlow>
                         </carnot:DataFlows>
                         <carnot:Attributes>
                            <carnot:Attribute Name="carnot:pwh:includeTime" Value="true" Type="boolean"/>
-                           <carnot:Attribute Name="carnot:engine:relocate:source" Value="false" Type="boolean"/>
                            <carnot:Attribute Name="carnot:pwh:targetProcessingTime" Value="000:00:000:00:00:00"/>
                            <carnot:Attribute Name="carnot:pwh:targetExecutionTime" Value="000:00:000:00:00:00"/>
                            <carnot:Attribute Name="carnot:pwh:targetIdleTime" Value="000:00:000:00:00:00"/>
@@ -656,11 +659,11 @@
                   </ExtendedAttribute>
                </ExtendedAttributes>
             </Activity>
-            <Activity Id="ReceivePaySlip" Name="Receive Pay Slip">
+            <Activity Id="DocumentRendezvous_PaySlip" Name="Document Rendezvous - Pay Slip">
                <Implementation>
                   <No/>
                </Implementation>
-               <Performer>DocumentRendezvous</Performer>
+               <Performer/>
                <StartMode>
                   <Automatic/>
                </StartMode>
@@ -669,17 +672,30 @@
                </FinishMode>
                <ExtendedAttributes>
                   <ExtendedAttribute Name="CarnotExt">
-                     <carnot:Activity Oid="93" Implementation="Manual">
+                     <carnot:Activity Oid="93" IsHibernatedOnCreation="true">
                         <carnot:EventHandlers/>
                         <carnot:QualityCodes/>
                         <carnot:DataFlows>
-                           <carnot:DataFlow Oid="115" Id="Document1" Name="Document1" Direction="OUT" Context="default">
+                           <carnot:DataFlow Oid="239" Id="PaySlip" Name="PaySlip" Direction="OUT" Context="default">
                               <carnot:DataRef Id="PaySlip"/>
-                              <carnot:AccessPointRef/>
+                              <carnot:AccessPointRef Id="PaySlip"/>
+                           </carnot:DataFlow>
+                           <carnot:DataFlow Oid="242" Id="PaySlip" Name="PaySlip" Direction="IN" Context="default">
+                              <carnot:DataRef Id="PaySlip"/>
+                              <carnot:AccessPointRef Id="PaySlip"/>
                            </carnot:DataFlow>
                         </carnot:DataFlows>
                         <carnot:Attributes>
                            <carnot:Attribute Name="carnot:pwh:includeTime" Value="true" Type="boolean"/>
+                           <carnot:Attribute Name="carnot:pwh:targetProcessingTime" Value="000:00:000:00:00:00"/>
+                           <carnot:Attribute Name="carnot:pwh:targetExecutionTime" Value="000:00:000:00:00:00"/>
+                           <carnot:Attribute Name="carnot:pwh:targetIdleTime" Value="000:00:000:00:00:00"/>
+                           <carnot:Attribute Name="carnot:pwh:targetWaitingTime" Value="000:00:000:00:00:00"/>
+                           <carnot:Attribute Name="authorization:activity.delegateToOther" Value="__carnot_internal_all_permissions__"/>
+                           <carnot:Attribute Name="authorization:activity.delegateToDepartment[0]" Value="Administrator"/>
+                           <carnot:Attribute Name="authorization:activity.manageEventHandlers" Value="__carnot_internal_all_permissions__"/>
+                           <carnot:Attribute Name="authorization:activity.readActivityInstanceData" Value="__carnot_internal_all_permissions__"/>
+                           <carnot:Attribute Name="authorization:activity.abortActivityInstances" Value="__carnot_internal_owner_permission__"/>
                         </carnot:Attributes>
                      </carnot:Activity>
                   </ExtendedAttribute>
@@ -724,7 +740,7 @@
                   </ExtendedAttribute>
                </ExtendedAttributes>
             </Transition>
-            <Transition Id="Transition2" Name="Transition 2" From="Gateway1" To="ReceivePaySlip">
+            <Transition Id="Transition2" Name="Transition 2" From="Gateway1" To="DocumentRendezvous_PaySlip">
                <Condition Type="CONDITION">true</Condition>
                <ExtendedAttributes>
                   <ExtendedAttribute Name="CarnotExt">
@@ -732,7 +748,7 @@
                   </ExtendedAttribute>
                </ExtendedAttributes>
             </Transition>
-            <Transition Id="Transition3" Name="Transition 3" From="Gateway1" To="ReceiveDisabilityCertificate">
+            <Transition Id="Transition3" Name="Transition 3" From="Gateway1" To="DocumentRendezvous_DisabilityCertificate">
                <Condition Type="CONDITION">true</Condition>
                <ExtendedAttributes>
                   <ExtendedAttribute Name="CarnotExt">
@@ -740,7 +756,7 @@
                   </ExtendedAttribute>
                </ExtendedAttributes>
             </Transition>
-            <Transition Id="Transition4" Name="Transition 4" From="ReceiveDisabilityCertificate" To="Gateway2">
+            <Transition Id="Transition4" Name="Transition 4" From="DocumentRendezvous_DisabilityCertificate" To="Gateway2">
                <Condition Type="CONDITION">true</Condition>
                <ExtendedAttributes>
                   <ExtendedAttribute Name="CarnotExt">
@@ -748,7 +764,7 @@
                   </ExtendedAttribute>
                </ExtendedAttributes>
             </Transition>
-            <Transition Id="Transition5" Name="Transition 5" From="ReceivePaySlip" To="Gateway2">
+            <Transition Id="Transition5" Name="Transition 5" From="DocumentRendezvous_PaySlip" To="Gateway2">
                <Condition Type="CONDITION">true</Condition>
                <ExtendedAttributes>
                   <ExtendedAttribute Name="CarnotExt">
@@ -770,32 +786,38 @@
                      </carnot:Trigger>
                   </carnot:Triggers>
                   <carnot:DataPaths>
-                     <carnot:DataPath Oid="128" Id="PROCESS_ATTACHMENTS" Name="Process Attachments" Direction="IN">
+                     <carnot:DataPath Oid="219" Id="PROCESS_ATTACHMENTS" Name="Process Attachments" Direction="IN" IsDescriptor="false" IsKey="false">
                         <carnot:DataRef Id="PROCESS_ATTACHMENTS"/>
                      </carnot:DataPath>
-                     <carnot:DataPath Oid="129" Id="PROCESS_ATTACHMENTS" Name="Process Attachments" Direction="OUT">
+                     <carnot:DataPath Oid="220" Id="PROCESS_ATTACHMENTS" Name="Process Attachments" Direction="OUT" IsDescriptor="false" IsKey="false">
                         <carnot:DataRef Id="PROCESS_ATTACHMENTS"/>
                      </carnot:DataPath>
-                     <carnot:DataPath Oid="130" Id="MemberID" Name="Member ID" Direction="IN" IsDescriptor="true" IsKey="true">
+                     <carnot:DataPath Oid="221" Id="MemberID" Name="Member ID" Direction="IN" IsDescriptor="true" IsKey="true">
                         <carnot:DataRef Id="Member" Expression="id"/>
                      </carnot:DataPath>
-                     <carnot:DataPath Oid="131" Id="FirstName" Name="First Name " Direction="IN" IsDescriptor="true">
+                     <carnot:DataPath Oid="222" Id="FirstName" Name="First Name " Direction="IN" IsDescriptor="true" IsKey="false">
                         <carnot:DataRef Id="Member" Expression="firstName"/>
                      </carnot:DataPath>
-                     <carnot:DataPath Oid="132" Id="LastName" Name="Last Name" Direction="IN" IsDescriptor="true">
+                     <carnot:DataPath Oid="223" Id="LastName" Name="Last Name" Direction="IN" IsDescriptor="true" IsKey="false">
                         <carnot:DataRef Id="Member" Expression="lastName"/>
                      </carnot:DataPath>
-                     <carnot:DataPath Oid="133" Id="DateofBirth" Name="Date of Birth" Direction="IN" IsDescriptor="true">
+                     <carnot:DataPath Oid="224" Id="DateofBirth" Name="Date of Birth" Direction="IN" IsDescriptor="true" IsKey="false">
                         <carnot:DataRef Id="Member" Expression="dateOfBirth"/>
                      </carnot:DataPath>
-                     <carnot:DataPath Oid="134" Id="ClaimID" Name="Claim ID" Direction="IN" IsDescriptor="true">
-                        <carnot:DataRef Id="Claim" Expression="id"/>
-                     </carnot:DataPath>
-                     <carnot:DataPath Oid="135" Id="DisabilityCertificate" Name="Disability Certificate" Direction="OUT" IsDescriptor="false">
+                     <carnot:DataPath Oid="225" Id="DisabilityCertificate" Name="Disability Certificate" Direction="OUT" IsDescriptor="false" IsKey="false">
                         <carnot:DataRef Id="DisabilityCertificate" Expression=""/>
                      </carnot:DataPath>
-                     <carnot:DataPath Oid="136" Id="PaySlip" Name="Pay Slip" Direction="OUT" IsDescriptor="false">
+                     <carnot:DataPath Oid="226" Id="ClaimID" Name="Claim ID" Direction="IN" IsDescriptor="true" IsKey="false">
+                        <carnot:DataRef Id="Claim" Expression="id"/>
+                     </carnot:DataPath>
+                     <carnot:DataPath Oid="227" Id="DisabilityCertificate" Name="Disability Certificate" Direction="IN" IsDescriptor="false" IsKey="false">
+                        <carnot:DataRef Id="DisabilityCertificate"/>
+                     </carnot:DataPath>
+                     <carnot:DataPath Oid="228" Id="PaySlip" Name="Pay Slip" Direction="OUT" IsDescriptor="false" IsKey="false">
                         <carnot:DataRef Id="PaySlip" Expression=""/>
+                     </carnot:DataPath>
+                     <carnot:DataPath Oid="229" Id="PaySlip" Name="Pay Slip" Direction="IN" IsDescriptor="false" IsKey="false">
+                        <carnot:DataRef Id="PaySlip"/>
                      </carnot:DataPath>
                   </carnot:DataPaths>
                   <carnot:EventHandlers/>
@@ -831,8 +853,8 @@
                                  </carnot:Symbol>
                                  <carnot:Symbol Kind="LANE" Oid="79" Id="Lane2" Name="Lane 2" X="375" Y="9" Width="335" Height="900" ParticipantReference="DocumentRendezvous" ParentLane="60">
                                     <carnot:Symbols>
-                                       <carnot:Symbol Kind="ACTIVITY" Oid="92" X="10" Y="360" Width="160" Height="50" ModelElement="ReceiveDisabilityCertificate"/>
-                                       <carnot:Symbol Kind="ACTIVITY" Oid="94" X="160" Y="440" Width="161" Height="51" ModelElement="ReceivePaySlip"/>
+                                       <carnot:Symbol Kind="ACTIVITY" Oid="92" X="-40" Y="360" Width="261" Height="51" ModelElement="DocumentRendezvous_DisabilityCertificate"/>
+                                       <carnot:Symbol Kind="ACTIVITY" Oid="94" X="160" Y="440" Width="161" Height="51" ModelElement="DocumentRendezvous_PaySlip"/>
                                        <carnot:Symbol Kind="DATA" Oid="110" X="45" Y="474" Width="130" Height="60" ModelElement="DisabilityCertificate"/>
                                        <carnot:Symbol Kind="DATA" Oid="114" X="240" Y="559" Width="80" Height="60" ModelElement="PaySlip"/>
                                     </carnot:Symbols>
@@ -849,10 +871,10 @@
                                  <carnot:Connection Kind="TRANSITION" Oid="104" ModelElement="Transition4" SourceSymbol="92" TargetSymbol="101" SourceAnchor="bottom" TargetAnchor="top"/>
                                  <carnot:Connection Kind="TRANSITION" Oid="106" ModelElement="Transition5" SourceSymbol="94" TargetSymbol="101" SourceAnchor="bottom" TargetAnchor="center"/>
                                  <carnot:Connection Kind="TRANSITION" Oid="108" SourceSymbol="100" TargetSymbol="107" SourceAnchor="center" TargetAnchor="center"/>
-                                 <carnot:Connection Kind="DATA_FLOW" Oid="112" SourceSymbol="110" TargetSymbol="92"/>
-                                 <carnot:Connection Kind="DATA_FLOW" Oid="116" SourceSymbol="114" TargetSymbol="94"/>
                                  <carnot:Connection Kind="DATA_FLOW" Oid="122" SourceSymbol="118" TargetSymbol="83"/>
                                  <carnot:Connection Kind="DATA_FLOW" Oid="124" SourceSymbol="120" TargetSymbol="83"/>
+                                 <carnot:Connection Kind="DATA_FLOW" Oid="240" SourceSymbol="114" TargetSymbol="94"/>
+                                 <carnot:Connection Kind="DATA_FLOW" Oid="244" SourceSymbol="110" TargetSymbol="92"/>
                               </carnot:Connections>
                            </carnot:Symbol>
                         </carnot:Symbols>
@@ -866,7 +888,7 @@
    </WorkflowProcesses>
    <ExtendedAttributes>
       <ExtendedAttribute Name="CarnotExt">
-         <carnot:Package Oid="0" CarnotVersion="1.1.2" ModelOid="0">
+         <carnot:Package Oid="0" CarnotVersion="7.3.0" ModelOid="0">
             <carnot:MetaTypes>
                <carnot:DataTypes>
                   <carnot:DataType Oid="2" Id="primitive" Name="Primitive Data" IsPredefined="true">
@@ -1164,7 +1186,151 @@
             <carnot:Views/>
             <carnot:Attributes>
                <carnot:Attribute Name="carnot:engine:revision" Value="0" Type="int"/>
-               <carnot:Attribute Name="ipp:criticalityFormula" Value="if(activityInstance.getActivity().getTargetExecutionTime() == 0)&#10;{&#10;  T = ${TDefault};&#10;}&#10;else&#10;{&#10;  T = activityInstance.getActivity().getTargetExecutionTime();&#10;}&#10;if(PROCESS_PRIORITY == -1)&#10;{&#10;  Cp = ${CLow};&#10;  Mp = ${MLow};&#10;}&#10;if(PROCESS_PRIORITY == 0)&#10;{&#10;   Cp = ${CMed};&#10;   Mp = ${MMed};&#10;}&#10;if(PROCESS_PRIORITY == 1)&#10;{&#10;   Cp = ${CHigh};&#10;   Mp = ${MHigh};&#10;}&#10;t = activityInstance.getAge() / 1000;&#10;&#10;Cp + (1- Cp) * t/(Mp * T);&#10;" Type="String"/>
+               <carnot:Attribute Name="ipp:criticalityFormula" Value="if(activityInstance.getActivity().getTargetExecutionTime() == 0)&#10;{&#10;  T = ${TDefault};&#10;}&#10;else&#10;{&#10;  T = activityInstance.getActivity().getTargetExecutionTime();&#10;}&#10;if(PROCESS_PRIORITY == -1)&#10;{&#10;  Cp = ${CLow};&#10;  Mp = ${MLow};&#10;}&#10;if(PROCESS_PRIORITY == 0)&#10;{&#10;   Cp = ${CMed};&#10;   Mp = ${MMed};&#10;}&#10;if(PROCESS_PRIORITY == 1)&#10;{&#10;   Cp = ${CHigh};&#10;   Mp = ${MHigh};&#10;}&#10;t = activityInstance.getAge() / 1000;&#10;&#10;Cp + (1- Cp) * t/(Mp * T);" Type="String"/>
+               <carnot:Attribute Name="carnot:simulation:configuration:nextSimulationConfigurationId" Value="1"/>
+               <carnot:Attribute Name="project-planning:effortParameter[0]:scope" Value="org.eclipse.stardust.model.xpdl.carnot.ModelType"/>
+               <carnot:Attribute Name="project-planning:effortParameter[0]:filter">
+                  <carnot:Value/>
+               </carnot:Attribute>
+               <carnot:Attribute Name="project-planning:effortParameter[0]:type" Value="org.eclipse.stardust.modeling.project.effort.EffortByKeyParameter"/>
+               <carnot:Attribute Name="project-planning:effortParameter[0]:name" Value="Application Server"/>
+               <carnot:Attribute Name="project-planning:effortParameter[0]:initializers" Value="BEA WebLogic=1.0;1.0;1.0;1.0;1.0,IBM WebSphere=1.0;1.0;1.0;1.0;1.0,JBOSS=1.0;1.0;1.0;1.0;1.0,SAP NetWeaver=1.0;1.0;1.0;1.0;1.0"/>
+               <carnot:Attribute Name="project-planning:effortParameter[1]:scope" Value="org.eclipse.stardust.model.xpdl.carnot.ModelType"/>
+               <carnot:Attribute Name="project-planning:effortParameter[1]:filter">
+                  <carnot:Value/>
+               </carnot:Attribute>
+               <carnot:Attribute Name="project-planning:effortParameter[1]:type" Value="org.eclipse.stardust.modeling.project.effort.EffortByKeyParameter"/>
+               <carnot:Attribute Name="project-planning:effortParameter[1]:name" Value="DBMS"/>
+               <carnot:Attribute Name="project-planning:effortParameter[1]:initializers" Value="Oracle=1.0;1.0;1.0;1.0;1.0,SQL Server=1.0;1.0;1.0;1.0;1.0,MySQL=1.0;1.0;1.0;1.0;1.0"/>
+               <carnot:Attribute Name="project-planning:effortParameter[2]:scope" Value="org.eclipse.stardust.model.xpdl.carnot.ModelType"/>
+               <carnot:Attribute Name="project-planning:effortParameter[2]:filter">
+                  <carnot:Value/>
+               </carnot:Attribute>
+               <carnot:Attribute Name="project-planning:effortParameter[2]:type" Value="org.eclipse.stardust.modeling.project.effort.EffortByKeyParameter"/>
+               <carnot:Attribute Name="project-planning:effortParameter[2]:name" Value="Directory Service"/>
+               <carnot:Attribute Name="project-planning:effortParameter[2]:initializers" Value="LDAP=1.0;1.0;1.0;1.0;1.0,Active Directory=1.0;1.0;1.0;1.0;1.0"/>
+               <carnot:Attribute Name="project-planning:effortParameter[3]:scope" Value="org.eclipse.stardust.model.xpdl.carnot.ModelType"/>
+               <carnot:Attribute Name="project-planning:effortParameter[3]:filter">
+                  <carnot:Value/>
+               </carnot:Attribute>
+               <carnot:Attribute Name="project-planning:effortParameter[3]:type" Value="org.eclipse.stardust.modeling.project.effort.EffortByKeyParameter"/>
+               <carnot:Attribute Name="project-planning:effortParameter[3]:name" Value="Portal Technology"/>
+               <carnot:Attribute Name="project-planning:effortParameter[3]:initializers" Value="SWT=1.0;1.0;1.0;1.0;1.0,Swing=1.0;1.0;1.0;1.0;1.0,JSF=1.0;1.0;1.0;1.0;1.0,JSP=1.0;1.0;1.0;1.0;1.0,.NET=1.0;1.0;1.0;1.0;1.0,Other=1.0;1.0;1.0;1.0;1.0"/>
+               <carnot:Attribute Name="project-planning:effortParameter[4]:scope" Value="org.eclipse.stardust.model.xpdl.carnot.ModelType"/>
+               <carnot:Attribute Name="project-planning:effortParameter[4]:filter">
+                  <carnot:Value/>
+               </carnot:Attribute>
+               <carnot:Attribute Name="project-planning:effortParameter[4]:type" Value="org.eclipse.stardust.modeling.project.effort.EffortByQuantityParameter"/>
+               <carnot:Attribute Name="project-planning:effortParameter[4]:name" Value="Number of High-Complexity Reports"/>
+               <carnot:Attribute Name="project-planning:effortParameter[4]:initializers" Value="1.0;1.0;1.0;1.0;1.0"/>
+               <carnot:Attribute Name="project-planning:effortParameter[5]:scope" Value="org.eclipse.stardust.model.xpdl.carnot.ModelType"/>
+               <carnot:Attribute Name="project-planning:effortParameter[5]:filter">
+                  <carnot:Value/>
+               </carnot:Attribute>
+               <carnot:Attribute Name="project-planning:effortParameter[5]:type" Value="org.eclipse.stardust.modeling.project.effort.EffortByQuantityParameter"/>
+               <carnot:Attribute Name="project-planning:effortParameter[5]:name" Value="Number of Medium-Complexity Reports"/>
+               <carnot:Attribute Name="project-planning:effortParameter[5]:initializers" Value="1.0;1.0;1.0;1.0;1.0"/>
+               <carnot:Attribute Name="project-planning:effortParameter[6]:scope" Value="org.eclipse.stardust.model.xpdl.carnot.ModelType"/>
+               <carnot:Attribute Name="project-planning:effortParameter[6]:filter">
+                  <carnot:Value/>
+               </carnot:Attribute>
+               <carnot:Attribute Name="project-planning:effortParameter[6]:type" Value="org.eclipse.stardust.modeling.project.effort.EffortByQuantityParameter"/>
+               <carnot:Attribute Name="project-planning:effortParameter[6]:name" Value="Number of Low-Complexity Reports"/>
+               <carnot:Attribute Name="project-planning:effortParameter[6]:initializers" Value="1.0;1.0;1.0;1.0;1.0"/>
+               <carnot:Attribute Name="project-planning:effortParameter[7]:scope" Value="org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType"/>
+               <carnot:Attribute Name="project-planning:effortParameter[7]:filter">
+                  <carnot:Value/>
+               </carnot:Attribute>
+               <carnot:Attribute Name="project-planning:effortParameter[7]:type" Value="org.eclipse.stardust.modeling.project.effort.EffortByKeyParameter"/>
+               <carnot:Attribute Name="project-planning:effortParameter[7]:name" Value="Remaining Modeling Complexity"/>
+               <carnot:Attribute Name="project-planning:effortParameter[7]:initializers" Value="Well-defined=1.0;1.0;1.0;1.0;1.0,Complex=1.0;1.0;1.0;1.0;1.0,Medium=1.0;1.0;1.0;1.0;1.0,Simple=1.0;1.0;1.0;1.0;1.0"/>
+               <carnot:Attribute Name="project-planning:effortParameter[8]:scope" Value="org.eclipse.stardust.model.xpdl.carnot.ActivityType"/>
+               <carnot:Attribute Name="project-planning:effortParameter[8]:filter">
+                  <carnot:Value/>
+               </carnot:Attribute>
+               <carnot:Attribute Name="project-planning:effortParameter[8]:type" Value="org.eclipse.stardust.modeling.project.effort.EffortByKeyParameter"/>
+               <carnot:Attribute Name="project-planning:effortParameter[8]:name" Value="Subprocess Refinement Required"/>
+               <carnot:Attribute Name="project-planning:effortParameter[8]:initializers" Value="No Refinement Required=0.0;0.0;0.0;0.0;0.0,High-complexity Subprocess Refinement=3.0;3.0;3.0;3.0;3.0,Medium-complexity Subprocess Refinement=2.0;2.0;2.0;2.0;2.0,Low-complexity Subprocess Refinement=1.0;1.0;1.0;1.0;1.0"/>
+               <carnot:Attribute Name="project-planning:effortParameter[9]:scope" Value="org.eclipse.stardust.model.xpdl.carnot.TransitionType"/>
+               <carnot:Attribute Name="project-planning:effortParameter[9]:filter">
+                  <carnot:Value/>
+               </carnot:Attribute>
+               <carnot:Attribute Name="project-planning:effortParameter[9]:type" Value="org.eclipse.stardust.modeling.project.effort.EffortByKeyParameter"/>
+               <carnot:Attribute Name="project-planning:effortParameter[9]:name" Value="Transition Type"/>
+               <carnot:Attribute Name="project-planning:effortParameter[9]:initializers" Value="Expression on Process Data=1.0;1.0;1.0;1.0;1.0,Complex/Auxiliary logic required=1.0;1.0;1.0;1.0;1.0"/>
+               <carnot:Attribute Name="project-planning:effortParameter[10]:scope" Value="org.eclipse.stardust.model.xpdl.carnot.TransitionType"/>
+               <carnot:Attribute Name="project-planning:effortParameter[10]:filter">
+                  <carnot:Value/>
+               </carnot:Attribute>
+               <carnot:Attribute Name="project-planning:effortParameter[10]:type" Value="org.eclipse.stardust.modeling.project.effort.EffortByKeyParameter"/>
+               <carnot:Attribute Name="project-planning:effortParameter[10]:name" Value="Transition Complexity"/>
+               <carnot:Attribute Name="project-planning:effortParameter[10]:initializers" Value="High=1.0;1.0;1.0;1.0;1.0,Medium=1.0;1.0;1.0;1.0;1.0,Low=1.0;1.0;1.0;1.0;1.0"/>
+               <carnot:Attribute Name="project-planning:effortParameter[11]:scope" Value="org.eclipse.stardust.model.xpdl.carnot.DataType"/>
+               <carnot:Attribute Name="project-planning:effortParameter[11]:filter">
+                  <carnot:Value/>
+               </carnot:Attribute>
+               <carnot:Attribute Name="project-planning:effortParameter[11]:type" Value="org.eclipse.stardust.modeling.project.effort.EffortByKeyParameter"/>
+               <carnot:Attribute Name="project-planning:effortParameter[11]:name" Value="Data Technology"/>
+               <carnot:Attribute Name="project-planning:effortParameter[11]:initializers" Value="Primitive Data=1.0;1.0;1.0;1.0;1.0,Serializable Data=1.0;1.0;1.0;1.0;1.0,Entity Bean=1.0;1.0;1.0;1.0;1.0,XML Document=1.0;1.0;1.0;1.0;1.0,Document=1.0;1.0;1.0;1.0;1.0,Document List=1.0;1.0;1.0;1.0;1.0,Folder=1.0;1.0;1.0;1.0;1.0,Folder List=1.0;1.0;1.0;1.0;1.0,Structured Data=1.0;1.0;1.0;1.0;1.0,New Development=1.0;1.0;1.0;1.0;1.0"/>
+               <carnot:Attribute Name="project-planning:effortParameter[12]:scope" Value="org.eclipse.stardust.model.xpdl.carnot.DataType"/>
+               <carnot:Attribute Name="project-planning:effortParameter[12]:filter">
+                  <carnot:Value/>
+               </carnot:Attribute>
+               <carnot:Attribute Name="project-planning:effortParameter[12]:type" Value="org.eclipse.stardust.modeling.project.effort.EffortByKeyParameter"/>
+               <carnot:Attribute Name="project-planning:effortParameter[12]:name" Value="Data Development"/>
+               <carnot:Attribute Name="project-planning:effortParameter[12]:initializers" Value="Link to existing DBMS=1.0;1.0;1.0;1.0;1.0,Link to other data=1.0;1.0;1.0;1.0;1.0,New data model=1.0;1.0;1.0;1.0;1.0"/>
+               <carnot:Attribute Name="project-planning:effortParameter[13]:scope" Value="org.eclipse.stardust.model.xpdl.carnot.RoleType"/>
+               <carnot:Attribute Name="project-planning:effortParameter[13]:filter">
+                  <carnot:Value/>
+               </carnot:Attribute>
+               <carnot:Attribute Name="project-planning:effortParameter[13]:type" Value="org.eclipse.stardust.modeling.project.effort.EffortByKeyParameter"/>
+               <carnot:Attribute Name="project-planning:effortParameter[13]:name" Value="Role Complexity"/>
+               <carnot:Attribute Name="project-planning:effortParameter[13]:initializers" Value="ToDo=1.0;1.0;1.0;1.0;1.0"/>
+               <carnot:Attribute Name="project-planning:effortParameter[14]:scope" Value="org.eclipse.stardust.model.xpdl.carnot.OrganizationType"/>
+               <carnot:Attribute Name="project-planning:effortParameter[14]:filter">
+                  <carnot:Value/>
+               </carnot:Attribute>
+               <carnot:Attribute Name="project-planning:effortParameter[14]:type" Value="org.eclipse.stardust.modeling.project.effort.EffortByKeyParameter"/>
+               <carnot:Attribute Name="project-planning:effortParameter[14]:name" Value="Organization Complexity"/>
+               <carnot:Attribute Name="project-planning:effortParameter[14]:initializers" Value="ToDo=1.0;1.0;1.0;1.0;1.0"/>
+               <carnot:Attribute Name="project-planning:effortParameter[15]:scope" Value="org.eclipse.stardust.model.xpdl.carnot.ConditionalPerformerType"/>
+               <carnot:Attribute Name="project-planning:effortParameter[15]:filter">
+                  <carnot:Value/>
+               </carnot:Attribute>
+               <carnot:Attribute Name="project-planning:effortParameter[15]:type" Value="org.eclipse.stardust.modeling.project.effort.EffortByKeyParameter"/>
+               <carnot:Attribute Name="project-planning:effortParameter[15]:name" Value="Performer Complexity"/>
+               <carnot:Attribute Name="project-planning:effortParameter[15]:initializers" Value="ToDo=1.0;1.0;1.0;1.0;1.0"/>
+               <carnot:Attribute Name="project-planning:effortParameter[16]:scope" Value="org.eclipse.stardust.model.xpdl.carnot.ApplicationType"/>
+               <carnot:Attribute Name="project-planning:effortParameter[16]:filter" Value="Interactive"/>
+               <carnot:Attribute Name="project-planning:effortParameter[16]:type" Value="org.eclipse.stardust.modeling.project.effort.EffortByKeyParameter"/>
+               <carnot:Attribute Name="project-planning:effortParameter[16]:name" Value="Implementation"/>
+               <carnot:Attribute Name="project-planning:effortParameter[16]:initializers" Value="ToDo=1.0;1.0;1.0;1.0;1.0"/>
+               <carnot:Attribute Name="project-planning:effortParameter[17]:scope" Value="org.eclipse.stardust.model.xpdl.carnot.ApplicationType"/>
+               <carnot:Attribute Name="project-planning:effortParameter[17]:filter" Value="Interactive"/>
+               <carnot:Attribute Name="project-planning:effortParameter[17]:type" Value="org.eclipse.stardust.modeling.project.effort.EffortByKeyParameter"/>
+               <carnot:Attribute Name="project-planning:effortParameter[17]:name" Value="Complexity"/>
+               <carnot:Attribute Name="project-planning:effortParameter[17]:initializers" Value="High=1.0;1.0;1.0;1.0;1.0,Medium=1.0;1.0;1.0;1.0;1.0,Low=1.0;1.0;1.0;1.0;1.0"/>
+               <carnot:Attribute Name="project-planning:effortParameter[18]:scope" Value="org.eclipse.stardust.model.xpdl.carnot.ApplicationType"/>
+               <carnot:Attribute Name="project-planning:effortParameter[18]:filter" Value="Service"/>
+               <carnot:Attribute Name="project-planning:effortParameter[18]:type" Value="org.eclipse.stardust.modeling.project.effort.EffortByKeyParameter"/>
+               <carnot:Attribute Name="project-planning:effortParameter[18]:name" Value="Technology"/>
+               <carnot:Attribute Name="project-planning:effortParameter[18]:initializers" Value="ToDo=1.0;1.0;1.0;1.0;1.0,New Development=1.0;1.0;1.0;1.0;1.0"/>
+               <carnot:Attribute Name="project-planning:effortParameter[19]:scope" Value="org.eclipse.stardust.model.xpdl.carnot.ApplicationType"/>
+               <carnot:Attribute Name="project-planning:effortParameter[19]:filter" Value="Service"/>
+               <carnot:Attribute Name="project-planning:effortParameter[19]:type" Value="org.eclipse.stardust.modeling.project.effort.EffortByKeyParameter"/>
+               <carnot:Attribute Name="project-planning:effortParameter[19]:name" Value="Quality available documentation"/>
+               <carnot:Attribute Name="project-planning:effortParameter[19]:initializers" Value="High=1.0;1.0;1.0;1.0;1.0,Medium=1.0;1.0;1.0;1.0;1.0,Low=1.0;1.0;1.0;1.0;1.0"/>
+               <carnot:Attribute Name="project-planning:effortParameter[20]:scope" Value="org.eclipse.stardust.model.xpdl.carnot.ApplicationType"/>
+               <carnot:Attribute Name="project-planning:effortParameter[20]:filter" Value="Service"/>
+               <carnot:Attribute Name="project-planning:effortParameter[20]:type" Value="org.eclipse.stardust.modeling.project.effort.EffortByKeyParameter"/>
+               <carnot:Attribute Name="project-planning:effortParameter[20]:name" Value="Technology"/>
+               <carnot:Attribute Name="project-planning:effortParameter[20]:initializers" Value="ToDo=1.0;1.0;1.0;1.0;1.0,New Development=1.0;1.0;1.0;1.0;1.0"/>
+               <carnot:Attribute Name="project-planning:effortParameter[21]:scope" Value="org.eclipse.stardust.model.xpdl.carnot.ApplicationType"/>
+               <carnot:Attribute Name="project-planning:effortParameter[21]:filter" Value="Service"/>
+               <carnot:Attribute Name="project-planning:effortParameter[21]:type" Value="org.eclipse.stardust.modeling.project.effort.EffortByKeyParameter"/>
+               <carnot:Attribute Name="project-planning:effortParameter[21]:name" Value="Complexity"/>
+               <carnot:Attribute Name="project-planning:effortParameter[21]:initializers" Value="High=1.0;1.0;1.0;1.0;1.0,Medium=1.0;1.0;1.0;1.0;1.0,Low=1.0;1.0;1.0;1.0;1.0"/>
+               <carnot:Attribute Name="ipp:model:modified" Value="Wed Jul 16 15:09:50 CDT 2014"/>
                <carnot:Attribute Name="ipp:variables[0]:name" Value="TDefault" Type="String"/>
                <carnot:Attribute Name="ipp:variables[0]:defaultValue" Value="86400" Type="String"/>
                <carnot:Attribute Name="ipp:variables[0]:description" Value="Target execution time" Type="String"/>
@@ -1186,6 +1352,8 @@
                <carnot:Attribute Name="ipp:variables[6]:name" Value="MHigh" Type="String"/>
                <carnot:Attribute Name="ipp:variables[6]:defaultValue" Value="10" Type="String"/>
                <carnot:Attribute Name="ipp:variables[6]:description" Value="Multiple of target execution time (High)" Type="String"/>
+               <carnot:Attribute Name="ipp:variables[7]:name" Value="serverBaseUrl:String" Type="String"/>
+               <carnot:Attribute Name="ipp:variables[7]:defaultValue" Value="http://localhost:8080/pepper-test" Type="String"/>
             </carnot:Attributes>
          </carnot:Package>
       </ExtendedAttribute>

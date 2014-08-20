@@ -29,7 +29,6 @@ require([ "require", "jquery", "jquery-ui", "angularjs", "jquery.dataTables",
 			function() {
 				
 				var module;
-				debugger;
 				ngDialog.init(angularjs,window);
 				triageDirectives.init(angularjs,jquery,window);
 				module = angularjs.module("documentAssignmentPanelApplication", ["ngDialog","triageDirectives"]);

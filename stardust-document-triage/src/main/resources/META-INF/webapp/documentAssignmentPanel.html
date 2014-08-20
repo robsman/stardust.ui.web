@@ -10,6 +10,9 @@
 		<link href='./css/thirdparty/ngDialog/ngDialog-theme-default.css'
 			  rel='stylesheet' 
 			  type='text/css'>
+		<link href='./css/thirdparty/ngDialog/ngdialog-theme-popup.css'
+			  rel='stylesheet' 
+			  type='text/css'>
 		<link href="./css/font-awesome-4.1.0/css/font-awesome.css"
 			  rel="stylesheet">
 		<link href='./css/stardust-modern.css' 
@@ -22,17 +25,25 @@
 		<script data-main="./js/DocumentAssignmentPanelMain"
 			    src="./js/libs/require/2.0.5/require-min.js"></script>
 	</head>
-<body>
+<body style="overflow:hidden;">
 	<div id="docRendevous"
 		 ng-controller="documentAssignmentPanelController">
 		<table class="layoutTable" style="width: 100%; height: 100%">
 			<tr valign="top">
-				<td>
+				<td style="padding-right:1em !important;">
 					<table class="layoutTable" style="width: 100%;">
 						<tr>
 							<td>
-								<div
-									ng-include="'../business-object-management/businessObjectSearchPanel.html'"></div>
+								<div style="position:relative;">
+									<i ng-init="hideBO=true" 
+												   ng-click="hideBO=!hideBO"
+												   ng-class="{'fa-caret-down':hideBO,'fa-caret-right':!hideBO}" 
+												   class="fa expando">
+									</i>		
+									<div ng-show="hideBO" 
+									     ng-include="'../business-object-management/businessObjectSearchPanel.html'">
+									</div>
+								</div>
 							</td>
 						</tr>
 						<tr id="pageViewPanel" valign="top">
@@ -43,11 +54,14 @@
 											<div ng-include="'pageViewPanel.html'"></div>
 										</td>
 										<td style="width: 50%; padding-left: 10px !important;">
+											<div style="position:relative;"
+												 ng-stretch-v
+											     data-watch="#pageViewPanel,#sectionHeadStartable">
 											<div>
 												<span class="sectionTitle">
 												Pending Processes and Activities 
 												</span> 
-												<i ng-init="hidePending=false" 
+												<i ng-init="hidePending=true" 
 												   ng-click="hidePending=!hidePending"
 												   ng-class="{'fa-caret-down':hidePending,'fa-caret-right':!hidePending}" 
 												   class="fa expando"></i>
@@ -56,6 +70,7 @@
 												</label>
 											</div>
 											<div class="treeContainer section"
+												 ng-class="{'full':hideStarting,'half':!hideStarting}"
 											     id="pendingTreeContainer"
 											     ng-show="hidePending">
 												<table cellpadding="0" cellspacing="0"
@@ -79,6 +94,8 @@
 																style="margin-left: 10px;">
 
 																<i class="fa"
+																	title="{{treeItem.specificDocument.document.uuid}}"
+																	ng-mouseover="openDocumentInfoPopup('body',treeItem.specificDocument.document.uuid,$event,'pending')"
 																	ng-class="{'fa-file':treeItem.specificDocument.document,'fa-file-o':!treeItem.specificDocument.document}">
 																</i>
 															</div>
@@ -88,7 +105,8 @@
 															</div>
 															<div ng-show="treeItem.processAttachment"
 																style="margin-left: 20px;">
-																<i class="fa fa-file"></i>
+																<i ng-mouseover="openDocumentInfoPopup('body',treeItem.processAttachment.uuid,$event,'pending')" 
+																   class="fa fa-file"></i>
 															</div>
 														</td>
 														<td><div ng-show="treeItem.pendingProcess">
@@ -102,10 +120,12 @@
 																ng-show="treeItem.pendingProcess.descriptors.length > 0">
 																<span
 																	ng-repeat="item in treeItem.pendingProcess.descriptors">
-																	<span ng-show="item.value != null && item.value.length">{{item.name}}:
-																		{{item.value}}</span><span
-																	ng-hide="$last || item.value == null || !item.value.length">,
-																</span>
+																	<span ng-show="item.value != null && item.value.length">
+																	{{item.name}}:{{item.value}}
+																	</span>
+																	<span ng-hide="!$last || item.value == null || !item.value.length">
+																		,
+																	</span>
 																</span>
 															</div>
 															<div ng-show="treeItem.pendingActivityInstance">{{treeItem.pendingActivityInstance.activity.name}}
@@ -113,7 +133,7 @@
 															<div ng-show="treeItem.specificDocument"
 																 data-proc-id="{{treeItem.pendingProcessOID}}"
 																 data-specDoc-id="{{treeItem.specificDocument.id}}"
-																 data-attach-id="{{treeItem.specificDocument.scannedDocument.uuid}}"
+																 data-attach-id="{{treeItem.specificDocument.document.uuid}}"
 																 ng-class="{'data-specAttch-pend':treeItem.specificDocument}">
 																{{treeItem.specificDocument.name}}
 															</div>
@@ -137,15 +157,18 @@
 													</tr>
 												</table>
 											</div>
-											<span id="sectionHeadStartable" style="display:inline" class="sectionTitle">Startable Processes</span>
+											<span id="sectionHeadStartable" 
+											      style="display:inline" 
+											      class="sectionTitle">Startable Processes</span>
 											<i ng-init="hideStarting=false" 
 												   ng-click="hideStarting=!hideStarting"
 												   ng-class="{'fa-caret-down':!hideStarting,'fa-caret-right':hideStarting}" 
 												   class="fa expando">
 											</i>
 											<div class="treeContainer section"
-												 ng-stretch-v 
-												 data-watch="#pendingTreeContainer,#pageViewPanel,#sectionHeadStartable"
+												 id="startingTreeContainer"
+												 ng-class="{'full':!hidePending,'half':hidePending}"
+												 ng-drag-scroll
 											     ng-show="!hideStarting">
 												<table cellpadding="0" cellspacing="0"
 													class="pendingProcessesTree">
@@ -161,6 +184,7 @@
 																<i ng-hide="treeItem.specificDocument.scannedDocument"
 																	class="fa fa-file-o"></i> <i
 																	ng-show="treeItem.specificDocument.scannedDocument"
+																	ng-mouseover="openDocumentInfoPopup('body',treeItem.specificDocument.scannedDocument.uuid,$event,'startable')"
 																	class="fa fa-file"></i>
 															</div>
 															<div ng-show="treeItem.processAttachments.length >=0"
@@ -188,7 +212,7 @@
 															     data-proc-id="{{treeItem.processDetails.id}}"
 															     data-attach-id="{{treeItem.processAttachment.uuid}}"
 															     ng-show="treeItem.processAttachment">
-																<i class="fa fa-file"></i>
+																<i class="fa fa-file" ng-mouseover="openDocumentInfoPopup('body',treeItem.processAttachment.uuid,$event,'startable')"></i>
 																&nbsp;{{treeItem.processAttachment.name}} 
 																<select ng-model="selectedDocType" 
 																        ng-change="setStagedDocType(treeItem,selectedDocType)">
@@ -203,6 +227,7 @@
 													</tr>
 												</table>
 											</div>
+											</div><!-- wrapping div end -->
 										</td>
 									</tr>
 								</table>
@@ -210,7 +235,7 @@
 						</tr>
 					</table>
 				</td>
-				<td style="width: 160px;">
+				<td style="width: 180px;">
 					<table ng-if="false" class="toolbar" style="width: 100%;">
 						<tr>
 							<td><table class="formTable">

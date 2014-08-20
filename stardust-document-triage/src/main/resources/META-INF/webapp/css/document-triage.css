@@ -6,7 +6,8 @@
 .imageStack{
   position:relative;
   display:inline-block;
-  margin:5px;
+  margin:5px 10px;
+  min-height:103px;
 }
 
 .imageStack > img{
@@ -84,12 +85,31 @@
 	margin-bottom: 10px;
 }
 
+
+
+#pendingTreeContainer.treeContainer.full{
+	height : 85%;
+}
+
+#startingTreeContainer.treeContainer.full{
+	height : 90%;
+}
+
+#pendingTreeContainer.treeContainer.half{
+	height : 40%;
+}
+
+#startingTreeContainer.treeContainer.half{
+	height : 40%;
+}
+
+
 i.expando {
 	float: right;
 	margin-right: 1em;
 	color: #A69A88;
 	font-size: 1.5em;
-	cursor: pointer;
+	cursor: pointer !important;
 }
 
 .scannedDocument td {
@@ -163,20 +183,22 @@ i.expando {
 	text-align:center;
 	position:relative;
 	float: right;
-	margin-right: 10px;
+	margin-right: 5px;
+	
 }
 
 .verticalMenu2 > i,
 .menu-icon{
 	display:block;
 	color:#A69A88;
-	cursor:pointer;
+	cursor:pointer !important;
 	font-size:1.4em;
+	margin-top: 5px;
 }
 
-.menu-icon{
-	display:inline;
-	margin-left:1em;
+.page-instance{
+	width:70%;
+	margin-top:1em;
 }
 
 .pageNumber{
@@ -308,17 +330,16 @@ i.expando {
 
 .reorderTarget{
 	border:solid 1px transparent;
-	border-bottom: dotted 1px #AAA;
 }
 	
 .dragover{
-	border:dotted 1px #AAA;
+	border-bottom:solid 1px #AAA;
 	border-radius:3px;
 	padding:1em;
 }
 
 .document-name{
-  	max-width: 250px;
+  	max-width: 150px;
   	white-space: nowrap;
   	overflow: hidden;
   	text-overflow: ellipsis;
@@ -326,4 +347,20 @@ i.expando {
 
 span.document-name{
   	display:inline-block;
+}
+
+.go{
+	color: green  !important;
+}
+
+.caution{
+	color : #ffb404 !important;
+}
+
+.stop{
+	color:red  !important;
+}
+
+.disabled{
+	opacity:0.4;
 }

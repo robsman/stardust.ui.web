@@ -24,10 +24,7 @@ import org.eclipse.stardust.common.Direction;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetails;
-import org.eclipse.stardust.engine.api.model.ApplicationContext;
-import org.eclipse.stardust.engine.api.model.DataMapping;
-import org.eclipse.stardust.engine.api.model.DataPath;
-import org.eclipse.stardust.engine.api.model.ProcessDefinition;
+import org.eclipse.stardust.engine.api.model.*;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.DeployedModelQuery;
 import org.eclipse.stardust.engine.api.query.DescriptorPolicy;
@@ -35,10 +32,15 @@ import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
 import org.eclipse.stardust.engine.api.runtime.*;
 import org.eclipse.stardust.engine.core.runtime.beans.DocumentTypeUtils;
 import org.eclipse.stardust.engine.extensions.dms.data.DocumentType;
+import org.eclipse.stardust.engine.extensions.dms.data.annotations.printdocument.DocumentAnnotations;
+import org.eclipse.stardust.engine.extensions.dms.data.annotations.printdocument.PrintDocumentAnnotations;
+import org.eclipse.stardust.engine.extensions.dms.data.annotations.printdocument.PrintDocumentAnnotationsImpl;
 import org.eclipse.stardust.ui.web.documenttriage.rest.JsonMarshaller;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
+
+import com.infinity.bpm.CompleteAiServiceCommand;
 
 public class DocumentTriageService
 {
@@ -146,7 +148,7 @@ public class DocumentTriageService
     */
    public JsonObject getPendingProcesses(JsonObject json)
    {
-      ActivityInstanceQuery activityInstanceQuery = ActivityInstanceQuery.findAlive();
+      ActivityInstanceQuery activityInstanceQuery = ActivityInstanceQuery.findPending();
 
       JsonObject resultJson = new JsonObject();
       JsonArray processInstancesJson = new JsonArray();
@@ -158,13 +160,11 @@ public class DocumentTriageService
       for (ActivityInstance activityInstance : getQueryService().getAllActivityInstances(
             activityInstanceQuery))
       {
-         if (activityInstance.getParticipantPerformerID() == null
-               || !activityInstance.getParticipantPerformerID().equals(
-                     "DocumentRendezvous"))
+         if (!activityInstance.getActivity().getId().startsWith("DocumentRendezvous"))
          {
             continue;
          }
-
+         
          JsonObject processInstanceJson = processInstancesMap.get(activityInstance
                .getProcessInstanceOID());
          JsonArray pendingActivityInstances = null;
@@ -250,8 +250,9 @@ public class DocumentTriageService
          }
          if (doc != null)
          {
-            JsonObject existingDocument = new JsonObject();
-            existingDocument.addProperty("uuid", doc.getId());
+//            JsonObject existingDocument = new JsonObject();
+//            existingDocument.addProperty("uuid", doc.getId());
+            JsonObject existingDocument = marshalDocument(doc);
             specificDocument.getAsJsonObject().add("document", existingDocument);
          }
       }
@@ -411,21 +412,27 @@ public class DocumentTriageService
 
       // TODO: Code assumes that there is always exactly one Document OUT data
       // mapping
-      String APPLICATION_CONTEXT_DEFAULT = "default";
+      String APPLICATION_CONTEXT_ENGINE = "engine";
 
       // Get Data Id for the (Document Rendezvous) OUT Data Mapping
-      ApplicationContext defaultContext = activityInstance.getActivity()
-            .getApplicationContext(APPLICATION_CONTEXT_DEFAULT);
-      DataMapping outDataMapping = (DataMapping) defaultContext.getAllOutDataMappings()
+      ApplicationContext engineContext = activityInstance.getActivity()
+            .getApplicationContext(APPLICATION_CONTEXT_ENGINE);
+      
+      /*List<AccessPoint> accessPoints = engineContext.getAllAccessPoints();
+      
+      DataMapping outDataMapping = (DataMapping) engineContext.getAllOutDataMappings()
             .get(0);
       String dataMappingId = outDataMapping.getId();
 
       Map<String, Object> outData = new HashMap<String, Object>();
-      outData.put(dataMappingId, (Object) sourceDocument);
+      outData.put(dataMappingId, (Object) sourceDocument);*/
+      
+      /*getWorkflowService().activateAndComplete(activityInstance.getOID(),
+            APPLICATION_CONTEXT_DEFAULT, outData);*/
 
-      getWorkflowService().activateAndComplete(activityInstance.getOID(),
-            APPLICATION_CONTEXT_DEFAULT, outData);
-
+      CompleteAiServiceCommand serviceCommand = new CompleteAiServiceCommand(activityInstance.getOID(), null, null);
+      getWorkflowService().execute(serviceCommand);
+      
       return getPendingProcesses(null);
    }
 
@@ -605,7 +612,7 @@ public class DocumentTriageService
             .getAsJsonArray();
       addProcessAttachments(pi.getOID(), processAttachments);
 
-      return parameters;
+      return loadProcessInstance(pi.getOID());
    }
 
    private void addProcessAttachments(long processInstanceOid,
@@ -644,6 +651,18 @@ public class DocumentTriageService
       String contentType = document.getContentType();
       byte[] data = documentManagementService.retrieveDocumentContent(documentId);
 
+      List<Integer> pageSequence = new ArrayList<Integer>();
+      DocumentAnnotations documentAnnotations = document.getDocumentAnnotations();
+      if (null != documentAnnotations)
+      {
+         pageSequence = ((PrintDocumentAnnotations) document.getDocumentAnnotations()).getPageSequence();
+         if (pageSequence.size() > 0)
+         {
+            trace.debug("Virtual page order: " + pageSequence);
+            pageNumber = pageSequence.get(pageNumber) - 1;
+         }
+      }
+      
       String MIMETYPE_PDF = "application/pdf", MIMETYPE_TIFF = "image/tiff";
       if (MIMETYPE_PDF.equalsIgnoreCase(contentType))
       {
@@ -704,6 +723,52 @@ public class DocumentTriageService
       Document createdDocument = addProcessAttachment(processInstanceOid, fileName, image);
 
       return marshalDocument(createdDocument);
+   }
+
+   public JsonObject reorderDocument(String documentId, JsonObject postedData)
+   {
+      List<Integer> newPageSequence = new ArrayList<Integer>();
+
+      JsonArray pages = postedData.get("pages").getAsJsonArray();
+      for (JsonElement jsonElement : pages)
+      {
+         newPageSequence.add(jsonElement.getAsInt());
+      }
+
+      Document document = getDocumentManagementService().getDocument(documentId);
+
+      DocumentAnnotations documentAnnotations = document.getDocumentAnnotations();
+      if (documentAnnotations != null)
+      {
+         List<Integer> currentPageSequence = ((PrintDocumentAnnotations) document
+               .getDocumentAnnotations()).getPageSequence();
+         if (currentPageSequence.size() > 0)
+         {
+            List<Integer> temp = new ArrayList<Integer>();
+            temp.addAll(newPageSequence);
+            newPageSequence.clear();
+            
+            for (Integer pageNum : temp)
+            {
+               newPageSequence.add(currentPageSequence.get(pageNum - 1));
+            }
+         }
+      }
+      else
+      {
+         document
+         .setDocumentAnnotations((DocumentAnnotations) new PrintDocumentAnnotationsImpl());
+      }
+
+      trace.debug("Virtual page order: " + newPageSequence);
+      ((PrintDocumentAnnotations) document.getDocumentAnnotations())
+            .setPageSequence(newPageSequence);
+
+      byte[] data = documentManagementService.retrieveDocumentContent(documentId);
+      Document updatedDocument = getDocumentManagementService().updateDocument(document,
+            data, "", false, "", null, false);
+
+      return marshalDocument(updatedDocument);
    }
 
    /**
@@ -966,5 +1031,4 @@ public class DocumentTriageService
 
       return updatedDocument;
    }
-
 }

@@ -1,15 +1,17 @@
 <table class="toolbar" style="width: 100%;">
 	<tr>
-		<td><table class="formTable">
+		<td><table ng-show="pageModel.document.name" class="formTable">
 				<tr>
 					<td>
 						<a href="#" 
+						   ng-class="{'disabled':pageModel.selectedPage.number ==1}"
 						   ng-click="setPageAbsolute(1)">
 							<i class="fa fa-backward"></i>
 						</a>
 					</td>
 					<td>
 						<a href="#" 
+						   ng-class="{'disabled':pageModel.selectedPage.number ==1}"
 						   ng-click="setPageRelative(-1)">
 							<i class="fa fa-step-backward"></i>
 						</a>
@@ -19,12 +21,14 @@
 					</td>
 					<td>
 						<a href="#" 
+						   ng-class="{'disabled':pageModel.selectedPage.number == pageModel.totalPages}"
 						   ng-click="setPageRelative(+1)">
 							<i class="fa fa-step-forward"></i>
 						</a>
 					</td>
 					<td>
 						<a href="#" 
+						   ng-class="{'disabled':pageModel.selectedPage.number == pageModel.totalPages}"
 						   ng-click="setPageAbsolute(pageModel.totalPages)">
 							<i class="fa fa-forward"></i>
 						</a>
@@ -46,7 +50,9 @@
 					<td><a href="#" class="iconLink" ng-click="invertPage()"><i
 							class="fa fa-star-half-o"></i></a></td>
 					<td>
-						<a href="#" ng-click="selectDocumentRelative(pageModel.document.uuid,-1)">
+						<a href="#" 
+						   ng-class="{'disabled' : pageModel.selectedDocumentIndex == 0}"
+						   ng-click="selectDocumentRelative(pageModel.document.uuid,-1,$event)">
 							<i class="fa fa-step-backward"></i>
 						</a>
 					</td>
@@ -54,7 +60,9 @@
 						<span class="document-name">{{pageModel.document.name}}</span>
 					</td>
 					<td>
-						<a href="#" ng-click="selectDocumentRelative(pageModel.document.uuid,+1)">
+						<a href="#" 
+						   ng-class="{'disabled' : pageModel.selectedDocumentIndex == scannedDocuments.length-1}"
+						   ng-click="selectDocumentRelative(pageModel.document.uuid,+1,$event)">
 							<i class="fa fa-step-forward"></i>
 						</a>
 					</td>
@@ -68,6 +76,9 @@
      id="pageViewDivision" 
      class="section"
 	style="min-height: 330px; overflow: auto; margin-top: 10px; margin-bottom: 10px; max-width: 800px;">
-	<img id="pageImage" ng-src="{{pageModel.selectedPage.url}}{{pageModel.selectedPage.number-1}}"
-		ng-show="pageModel.selectedPage != null && pageModel.selectedPage.number" />
+	<img id="pageImage" 
+		 ng-on-load="zoomInPage(eventData)"
+		 src="#"
+	     ng-src="{{getSelectedPageUrl()}}"
+		 ng-show="pageModel.selectedPage != null && pageModel.selectedPage.number" />
 </div>

@@ -6,9 +6,12 @@ define(
 		[
 				"document-triage/js/Utils",
 				"business-object-management/js/BusinessObjectManagementPanelController",
-				"document-triage/js/DocumentAssignmentService" ],
-		function(Utils, BusinessObjectManagementPanelController,
-				DocumentAssignmentService) {
+				"document-triage/js/DocumentAssignmentService",
+				"document-triage/js/base64" ],
+		function(Utils, 
+				BusinessObjectManagementPanelController,
+				DocumentAssignmentService,
+				base64) {
 			return {
 				create : function() {
 					var controller = new DocumentAssignmentPanelController();
@@ -28,12 +31,20 @@ define(
 					this.initializePageRendering();
 					this.businessObjectManagementPanelController = BusinessObjectManagementPanelController
 							.create();
-
+					
+					/*collection to keep track of which documents have been consumed 
+					 *in either tree (pending/startable)*/
+					this.sessionLog ={ 
+							documents:{}
+					};
+					
 					var self = this;
+					
 					DocumentAssignmentService.instance()
 					.getActivity(self.activityInstanceOid)
 					.then(function(data){
 						self.processoid = data.processInstanceOid;
+
 					});
 					
 					DocumentAssignmentService.instance().getDocumentTypes()
@@ -114,6 +125,178 @@ define(
 					
 					return deferred.promise();
 
+				}
+				
+				/* Given a document uuid this function will search pending processes until it finds its
+				 * match and return the relevant information. This function should always be called
+				 * when lookign up a document from the pending process tree as pending processes can
+				 * have documents associated with them which are not represented in our scanned documents
+				 * collection. This is in contrast to startable processes whose documents will always be staged
+				 * from our scanned documents.
+				 */
+				DocumentAssignmentPanelController.prototype.getPendingDocument = function(uuid){
+					var tempProc,
+						tempDoc,
+						i,j,
+						isFound=false;
+					
+					for(i=0;i < this.pendingProcesses.length && !isFound;i++){
+						
+						tempProc=this.pendingProcesses[i];
+						
+						for(j=0;j<tempProc.processAttachments.length;j++){
+							tempDoc = tempProc.processAttachments[j];
+							if(tempDoc && tempDoc.uuid==uuid){
+								isFound =true;
+								break;
+							}
+						}
+						
+						for(j=0;j<tempProc.specificDocuments.length && !isFound;j++){
+							tempDoc = tempProc.specificDocuments[j].document;
+							if(tempDoc && tempDoc.uuid==uuid){
+								isFound =true;
+								break;
+							}
+						}
+					}
+					return tempDoc;
+				}
+				
+				/*Maintains a log of documents and a reference count regarding how many instances of 
+				 *that document appear in each process or model (in the case of staged documents)
+				 *Valid operations:
+				 *INSERT: insert or update a document with a process reference, existing = increment ref count
+				 *DELETE: decrement the process count for a document, if count reaches 0 then delete property
+				 *CONVERT_MODEL: Insert new process for a document, set its ref count to the convertID count
+				 *				 and then delete the convertId process proeprty from the document. This is designed
+				 *				 specifically to handle the conversion of a startable model to that of a true process.
+				 *SET: set a fixed value to a documents reference count
+				 *
+				 *Arguments:
+				 *	op: operation to perform [INSERT,DELETE,CONVERT_MODEL]
+				 *  docuuid : uuid of the scanned document
+				 *  hashID  : either the processOID for pending or the modelID for startable
+				 *  convertID: ID to move the hashIDs value to
+				 *  val: Only valid for a SET operation, value to set the reference count to
+				 **/
+				DocumentAssignmentPanelController.prototype.updateSessionLog = function(op,docuuid,hashID,convertId,val){
+					
+					var docEntry = this.sessionLog.documents[docuuid],
+						procEntry,
+						tempEntry;
+					
+					if(!docEntry){
+						this.sessionLog.documents[docuuid]={'processes' : {}};
+						docEntry=this.sessionLog.documents[docuuid];
+					}
+					
+					procEntry=docEntry.processes[hashID];
+					
+					if(!procEntry){
+						docEntry.processes[hashID]=0;
+					}
+					
+					if(op=="INSERT"){
+						docEntry.processes[hashID]=docEntry.processes[hashID]+1;
+					}
+					else if(op=="SET"){
+						val = parseInt(val);
+						docEntry.processes[hashID]=docEntry.processes[hashID]=val;
+					}
+					else if (op == "CONVERT_MODEL"){
+						docEntry.processes[convertId]=docEntry.processes[hashID];
+						delete docEntry.processes[hashID];
+					}
+					else if(op == "DELETE"){
+						docEntry.processes[hashID]=docEntry.processes[hashID]-1;
+						if(docEntry.processes[hashID]<1){
+							delete docEntry.processes[hashID];
+						}
+					}
+				};
+				
+				
+				/*For a given document uuid, check our session log for references and return a sum*/
+				DocumentAssignmentPanelController.prototype.getReferenceCount = function(docuuid){
+					var docEntry = this.sessionLog.documents[docuuid],
+						key,
+						counter=0;
+					
+					if(!docEntry){
+						return -1;
+					}
+					
+					for(key in docEntry.processes){
+						if(docEntry.processes.hasOwnProperty(key)){
+							counter = counter + docEntry.processes[key];
+						}
+					}
+					
+					return counter;
+					
+				}
+				
+				/*Scrape the pending process tree for existing documents. This must be called any time the 
+				 *pending process tree is refreshed in order to keep the respective reference counts of the documents,
+				 *as associated with the pending processes, in sync. This will account for documents already associated
+				 *with an existing process and keep those values from accumulating inaccurately in the sessionLog.
+				 *
+				 *Arguments
+				 *------------------
+				 *	tree: item from our pendingProcessTree array
+				 **/
+				DocumentAssignmentPanelController.prototype.scrapePendingForDocuments = function(tree){
+					var i,j,
+						treeObj,
+						specDoc,
+						procAttch,
+						localLog={},
+						llProcId,
+						llDocId;
+					
+					for(i=0;i< tree.length;i++){
+						
+						treeObj=tree[i];
+						
+						if(treeObj.pendingProcess){
+							
+							/*create local log entry to keep sum of all occurences per document
+							 *this will be used to adjust reference counts in our sessionLog */
+							localLog[treeObj.pendingProcess.oid]={documents:{}};
+							
+							/*scrape specific documents*/
+							if(treeObj.pendingProcess.specificDocuments){
+								for(j=0;j<treeObj.pendingProcess.specificDocuments.length;j++){
+									specDoc=treeObj.pendingProcess.specificDocuments[j];
+									if(specDoc.document){
+										if(!localLog[treeObj.pendingProcess.oid].documents[specDoc.document.uuid]){
+											localLog[treeObj.pendingProcess.oid].documents[specDoc.document.uuid]=0;
+										}
+										localLog[treeObj.pendingProcess.oid].documents[specDoc.document.uuid]+=1;
+									}
+								}
+							}
+							
+							/*scrape process attachments*/
+							if(treeObj.pendingProcess.processAttachments){
+								for(j=0;j<treeObj.pendingProcess.processAttachments.length;j++){
+									procAttch=treeObj.pendingProcess.processAttachments[j];
+									if(!localLog[treeObj.pendingProcess.oid].documents[procAttch.uuid]){
+										localLog[treeObj.pendingProcess.oid].documents[procAttch.uuid]=0;
+									}
+									localLog[treeObj.pendingProcess.oid].documents[procAttch.uuid]+=1;
+								}
+							}
+						}/*Outer For Loop done, localLog complete*/
+						
+						/*No set our local log values on their respective documents in the sessionLog*/
+						for(llProcId in localLog){
+							for(llDocId in localLog[llProcId].documents){
+								this.updateSessionLog("SET",llDocId,llProcId,"",localLog[llProcId].documents[llDocId]);
+							}
+						}
+					}
 				}
 				
 				DocumentAssignmentPanelController.prototype.refreshScannedDocuments = function(id){
@@ -226,17 +409,17 @@ define(
 					
 				};
 				
-				/**
-				 * 
-				 */
+				
+		
 				DocumentAssignmentPanelController.prototype.initializeBaseState = function() {
+					
 					this.pageModel = {};
 					this.uiModel = {};
-					
 					this.pageModel.currentDocument = "";
 					this.pageModel.pageIndex = {};
 					this.pageModel.selectedPage={};
 					this.uiModel.showChildren = false;
+					this.uiModel.docPanelRefreshStamp = new Date().getTime();
 					
 					
 					this.startableProcesses=[];
@@ -300,7 +483,9 @@ define(
 							.substring(this.queryParameters["ippInteractionUri"]
 									.indexOf(pattern)
 									+ pattern.length);
-					var decodedId = atob(encodedId || '');
+					
+					var b64 = base64.get();
+					var decodedId = b64.decode(encodedId + '0'|| '');
 					var partsMatcher = new RegExp('^(\\d+)\\|(\\d+)$');
 					var decodedParts = partsMatcher.exec(decodedId);
 					this.activityInstanceOid = decodedParts[1];
@@ -336,14 +521,16 @@ define(
 				};
 				
 				DocumentAssignmentPanelController.prototype.setPageRelative = function(offset){
-					debugger;
-					this.currentPage = this.currentPage + offset;
-					this.pageModel.selectedPage.number = this.currentPage;
+					var calculatedPos = this.pageModel.selectedPage.number + offset;
+					if(calculatedPos >0 && calculatedPos <= this.pageModel.totalPages){
+						this.pageModel.selectedPage.number = calculatedPos;
+					}
 				}
 				
 				DocumentAssignmentPanelController.prototype.setPageAbsolute = function(index){
-					this.currentPage = index;
-					this.pageModel.selectedPage.number = this.currentPage;
+					if(index > 0 && index <= this.pageModel.totalPages){
+						this.pageModel.selectedPage.number = index;
+					}
 				}
 				/**
 				 * 
@@ -356,10 +543,9 @@ define(
 							this.scannedDocuments[n].pages.push({
 								number : m + 1
 							});
-						}
+						}						
 					}
-					
-					
+
 				};
 
 				/**
@@ -380,23 +566,31 @@ define(
 							    .droppable({
 							    	hoverClass : "highlighted",
 							    	drop : function(event, ui){
-							    			alert("dropped");
 							    		var ed=jQuery.data(ui.draggable[0],"dragData"),
-							    			workService =DocumentAssignmentService.instance();
+							    			workService = DocumentAssignmentService.instance();
+							    		
+							    		if(!ed){return;}
+							    		
 							    		switch(ed.sourceType){
 								    		case "proccessAttachment_startable":	    			
 								    			self.removeProcessAttachmentStartable(ed.process,ed.attachment);
+								    			self.updateSessionLog("DELETE",ed.attachment.uuid,ed.process.id);
 								    			self.refreshStartableProcessesTree();
 								    			break;
 								    		case "specificDocument_startable":
 								    			self.removeSpecificDocumentStartable(ed.process,ed.attachment,ed.specificDocumentId);
+								    			self.updateSessionLog("DELETE",ed.attachment.uuid,ed.process.id);
 								    			self.refreshStartableProcessesTree();
 								    			break;
 								    		case "specificDocument_pending":
 								    			workService.deleteAttachment(ed.process.oid,ed.specificDocumentId,"")
 								    			.done(function(pendingProcesses){
 								    				self.pendingProcesses = pendingProcesses.processInstances;
+								    				self.updateSessionLog("DELETE",ed.attachment.uuid,ed.process.oid);
 									    			self.refreshPendingProcessesTree();
+									    			window.setTimeout(function() {
+														self.bindDragAndDrop();
+													}, 1000);
 								    			})
 								    			.fail(function(){
 								    				//stubbed
@@ -405,11 +599,11 @@ define(
 								    		case "pageReorder":
 								    			/* Do nothing, this should be handled by the reorder target div.*/
 								    			break;
-								    		case "proccessAttachment_pending":
+								    		case "proccessAttachment_pending":			    			
 								    			workService.deleteAttachment(ed.process.oid,"PROCESS_ATTACHMENTS",ed.attachment.uuid)
 								    			.done(function(pendingProcesses){
 								    				self.pendingProcesses = pendingProcesses.processInstances;
-								    				//self.removeProcessAttachmentPending(ed.process,ed.attachment);
+								    				self.updateSessionLog("DELETE",ed.attachment.uuid,ed.process.oid);
 									    			self.refreshPendingProcessesTree();
 								    			}).fail(function(){
 								    				//stubbed
@@ -417,7 +611,7 @@ define(
 								    			break;
 							    		}
 							    		
-							    		self.safeApply();
+							    		//self.safeApply();
 							    		window.setTimeout(function() {
 											self.bindDragAndDrop();
 										}, 1000);
@@ -435,6 +629,7 @@ define(
 
 										var scannedDocument = jQuery.data(event.currentTarget,"scannedDocument"),
 										    pageNumbers=[],
+										    pageString = "",
 										    key;
 										
 										for (var key in self.pageModel.pageIndex) {
@@ -444,9 +639,12 @@ define(
 										  }
 										}
 										
+										if(pageNumbers.length > 0){
+											pageString= " Pages: (" + pageNumbers.toString() + ")";
+										}
 										
 										return jQuery("<div class='ui-widget-header dragHelper'><i class='fa fa-files-o' style='font-size: 14px;'></i> "
-												+ scannedDocument.name + " (Pages:" + pageNumbers.toString() + ")"
+												+ scannedDocument.name + pageString 
 												+ "</div>");
 									},
 									drag : function(event) {
@@ -472,6 +670,7 @@ define(
 								var docUUID,
 									scannedDocument = {};
 								    pageNumbers=[],
+								    pageString = "",
 								    key;
 								
 								docUUID = $(that).attr("data-doc-uuid");
@@ -484,6 +683,10 @@ define(
 								  }
 								}
 								
+								if(pageNumbers.length > 0){
+									pageString= " Pages: (" + pageNumbers.toString() + ")";
+								}
+								
 								$(that).data({
 									ui : {},
 									scannedDocument : angular.copy(scannedDocument),
@@ -492,7 +695,7 @@ define(
 								});
 								
 								return jQuery("<div class='ui-widget-header dragHelper'><i class='fa fa-files-o' style='font-size: 14px;'></i> "
-										+ scannedDocument.name + " (Pages-img:" + pageNumbers.toString() + ")"
+										+ scannedDocument.name + pageString
 										+ "</div>");
 							},
 							drag : function(event) {
@@ -509,22 +712,46 @@ define(
 								hoverClass : "dragover",
 						    	drop : function(event, ui){
 						    		var ed, /*eventData*/
-						    			doc; /*scanned document associated with drag*/
+						    			doc, /*scanned document associated with drag*/
+						    			insertAt,
+						    			reorderedPages=[];
+
 						    		ed=jQuery.data(ui.draggable[0]);
 						    		if(ed.dragData && ed.dragData.sourceType=="pageReorder"){
 							    		doc=ed.scannedDocument;
-							    		DocumentAssignmentService.instance().reorderDocument(doc.uuid,ed.pages)
-							    		.then(function(data){
-							    			/*
-							    			return DocumentAssignmentService.instance()
-							    					.refreshScannedDocuments(self.processoid);
-							    			*/
+							    		insertAt =event.target.attributes['data-page-number'].value;
+							    		
+							    		/*Build array of pages, 1 based*/
+							    		for(var i=0;i<ed.scannedDocument.pages.length;i++){
+							    			reorderedPages.push(i+1 +"");
+							    		}
+							    		
+							    		/*Remove pages that we will be reshuffling so as to avoid dupes*/
+							    		reorderedPages=reorderedPages.filter(function(v){
+						    			  return ed.pages.indexOf(v) < 0; 
+						    			});
+							    		
+							    		/*Now move our pages to their target position*/
+							    		reorderedPages
+							    		.splice
+							    		.apply(reorderedPages, [reorderedPages.indexOf(insertAt)+1, 0]
+							    		.concat(ed.pages));
+
+							    		DocumentAssignmentService.instance().reorderDocument(doc.uuid,reorderedPages)
+							    		.then(function(result){
+							    			//stubbed	
 							    		})
 							    		.fail(function(){
 							    			
 							    		})
 							    		.always(function(){
-							    			
+							    			ed.$scope.$parent.document.urlFragStamp = new Date().getTime();
+							    			self.refreshPagesList();
+							    			jQuery("*").css("cursor","default");
+							    			self.safeApply();
+								    		window.setTimeout(function() {
+												self.bindDragAndDrop();
+											}, 1000);
 							    		});
 							    		
 						    		}
@@ -550,6 +777,9 @@ define(
 												var scannedDocument = jQuery.data(ui.draggable[0],"scannedDocument")
 												    pendingActivityInstance = jQuery.data(this,"pendingActivityInstance"),
 												    pages=self.getSelectedPageNums();
+												
+												
+												if(!scannedDocument){return;}
 												
 												/*Adjust for Zero based page indexing*/
 												pages =	pages.map(function(num){return num -1;});
@@ -582,7 +812,7 @@ define(
 														self.refreshPagesList();
 														self.pageModel.pageIndex={};
 														self.refreshPendingProcessesTree();
-														self.safeApply();
+														//self.safeApply();
 														window.setTimeout(function() {
 															self.bindDragAndDrop();
 														},1000);
@@ -595,7 +825,8 @@ define(
 														self.pageModel.pageIndex={};
 														self.pendingProcesses = pendingProcesses;
 														self.refreshPendingProcessesTree();
-														self.safeApply();
+														jQuery("*").css("cursor","default");
+														//self.safeApply();
 														window.setTimeout(function() {
 															self.bindDragAndDrop();
 														},1000);
@@ -625,6 +856,8 @@ define(
 													processOID = jQuery.data(this, "processOID"),
 													pages=self.getSelectedPageNums();
 												
+												if(!scannedDocument){return;}
+												
 												/*Adjust for Zero based page indexing*/
 												pages =	pages.map(function(num){return num -1;});
 												
@@ -637,46 +870,30 @@ define(
 													})
 													.then(function(result){
 														
-														/*swap our scannedDocument for the new document generated on the server.*/
 														scannedDocument=result; 
-														
-														/*Now pull all our associated documents from the server*/
-														DocumentAssignmentService.instance()
-														.getScannedDocuments(self.activityInstanceOid)
-														.done(function(scannedDocuments) {
-															
-															/*Refresh scanned documents view*/
-															self.scannedDocuments = scannedDocuments;
-															self.refreshPagesList();
-															self.pageModel.pageIndex={};
-															
-															/*Now attach our new document to the process*/
-															DocumentAssignmentService.instance()
-															.addProcessDocument(processOID,scannedDocument,specificDocument.id)
-															.done(function(pendingProcesses) {
-																
-																/*Refresh data and views*/
-																self.pendingProcesses = pendingProcesses;
-																self.refreshPendingProcessesTree();
-																self.safeApply();
-																jQuery("*").css("cursor","default");
-																window.setTimeout(function() {
-																	self.bindDragAndDrop();
-																},1000);
-																	
-															})
-															.fail(function() {
-																jQuery("*").css("cursor","default");
-															});
-															
-															
-															self.safeApply();
-															window.setTimeout(function() {
-																self.bindDragAndDrop();
-															}, 1000);
-														});
+														self.pushRawDocumentToScanned(result);												
+														self.refreshPagesList();
+														self.pageModel.pageIndex={};
+														return DocumentAssignmentService.instance()
+														.addProcessDocument(processOID,scannedDocument,specificDocument.id);
+
 													})
-													.fail(function(){});
+													.then(function(pendingProcesses){
+														self.updateSessionLog("INSERT",scannedDocument.uuid,processOID);
+														self.pendingProcesses = pendingProcesses;
+														self.refreshPendingProcessesTree();
+													})
+													.fail(function(){
+														//TODO:ZZM Error handling
+													})
+													.always(function(){
+														jQuery("*").css("cursor","default");
+														self.safeApply();
+														jQuery("*").css("cursor","default");
+														window.setTimeout(function() {
+															self.bindDragAndDrop();
+														}, 1000);
+													});
 													
 												}
 												else{
@@ -685,8 +902,9 @@ define(
 													.done(function(pendingProcesses) {
 														self.pageModel.pageIndex={};
 														self.pendingProcesses = pendingProcesses;
+														self.updateSessionLog("INSERT",scannedDocument.uuid,processOID)
 														self.refreshPendingProcessesTree();
-														self.safeApply();
+														//self.safeApply();
 														jQuery("*").css("cursor","default");
 														window.setTimeout(
 															function() {
@@ -722,6 +940,8 @@ define(
 													processOID = jQuery.data(this, "processOID"),
 													pages=self.getSelectedPageNums();
 												
+												if(!scannedDocument){return;}
+												
 												/*Adjust for Zero based page indexing*/
 												pages =	pages.map(function(num){return num -1;});
 												
@@ -734,46 +954,26 @@ define(
 														.splitDocument(self.processoid,scannedDocument.uuid,pages);
 													})
 													.then(function(result){
-														/*swap our scannedDocument for the new document generated on the server.*/
 														scannedDocument=result; 
+														self.pushRawDocumentToScanned(result);
+														self.pageModel.pageIndex={};
 														
-														/*Now pull all our associated documents from the server*/
-														DocumentAssignmentService.instance()
-														.getScannedDocuments(self.activityInstanceOid)
-														.done(function(scannedDocuments) {
-															
-															/*Refresh scanned documents view*/
-															self.scannedDocuments = scannedDocuments;
-															self.refreshPagesList();
-															self.pageModel.pageIndex={};
-															
-															/*Now attach our new document to the process*/
-															DocumentAssignmentService.instance()
-															.addProcessDocument(processOID,scannedDocument,"PROCESS_ATTACHMENTS")
-															.done(function(pendingProcesses) {
-																
-																	/*Refresh data and views*/
-																	self.pendingProcesses = pendingProcesses;
-																	self.refreshPendingProcessesTree();
-																	self.safeApply();
-																	jQuery("*").css("cursor","default");
-																	window.setTimeout(function() {
-																		self.bindDragAndDrop();
-																	},1000);
-																	
-															})
-															.fail(function() {
-																jQuery("*").css("cursor","default");
-															});
-															
-															
-															self.safeApply();
-															window.setTimeout(function() {
-																self.bindDragAndDrop();
-															}, 1000);
-														});
+														return DocumentAssignmentService.instance()
+														.addProcessDocument(processOID,scannedDocument,"PROCESS_ATTACHMENTS");
 													})
-													.fail(function(){});
+													.then(function(pendingProcesses){
+														self.updateSessionLog("INSERT",scannedDocument.uuid,processOID);
+														self.pendingProcesses = pendingProcesses;
+														self.refreshPendingProcessesTree();
+													})
+													.fail(function(){})
+													.always(function(){
+														self.refreshPagesList();
+														jQuery("*").css("cursor","default");
+														window.setTimeout(function() {
+															self.bindDragAndDrop();
+														}, 1000);
+													});
 												}
 												/*Pages are empty so we are dragging an entire existing document*/
 												else{
@@ -781,9 +981,10 @@ define(
 													.addProcessDocument(processOID,scannedDocument,"PROCESS_ATTACHMENTS")
 													.done(function(pendingProcesses) {
 															self.pageModel.pageIndex={};
+															self.updateSessionLog("INSERT",scannedDocument.uuid,processOID);
 															self.pendingProcesses = pendingProcesses;
 															self.refreshPendingProcessesTree();
-															self.safeApply();
+															//self.safeApply();
 															jQuery("*").css("cursor","default");
 															window.setTimeout(function() {
 																self.bindDragAndDrop();
@@ -819,9 +1020,11 @@ define(
 											    specificDocument = jQuery.data(this, "specificDocument"),
 											    pages=self.getSelectedPageNums();
 											
+											if(!scannedDocument){return;}
+											
 											/*Adjust for Zero based page indexing*/
 											pages =	pages.map(function(num){return num -1;});
-											
+
 											if(pages.length>0){
 												
 												self.openSplitDialog(scannedDocument,pages)
@@ -830,14 +1033,9 @@ define(
 													.splitDocument(self.processoid,scannedDocument.uuid,pages);
 												})
 												.then(function(result){
-													/*swap our scannedDocument for the new document generated on the server.*/
 													scannedDocument=result; 
-													/*Now pull all our associated documents from the server*/
-													return DocumentAssignmentService.instance()
-													.getScannedDocuments(self.activityInstanceOid);
-												})
-												.then(function(scannedDocuments){
-													self.scannedDocuments = scannedDocuments;
+													self.updateSessionLog("INSERT",scannedDocument.uuid,processDetails.id);
+													self.pushRawDocumentToScanned(result);
 													specificDocument.scannedDocument=scannedDocument;
 												})
 												.fail(function(){
@@ -847,16 +1045,19 @@ define(
 													self.refreshStartableProcessesTree();
 													self.refreshPagesList();
 													self.pageModel.pageIndex={};
-													self.safeApply();
+													//self.safeApply();
 													window.setTimeout(function() {
 														self.bindDragAndDrop();
 													}, 1000);
 												});
-											}else{
+												
+											}
+											else{
 												self.pageModel.pageIndex={};
 												specificDocument.scannedDocument = scannedDocument;
+												self.updateSessionLog("INSERT",scannedDocument.uuid,processDetails.id);
 												self.refreshStartableProcessesTree();
-												self.safeApply();
+												//self.safeApply();
 												window.setTimeout(function() {
 													self.bindDragAndDrop();
 												}, 1000);
@@ -884,6 +1085,8 @@ define(
 											    processAttachments = jQuery.data(this,"processAttachments");
 												pages=self.getSelectedPageNums();
 											
+											if(!scannedDocument){return;}
+												
 											/*Adjust for Zero based page indexing*/
 											pages =	pages.map(function(num){return num -1;});
 												
@@ -897,12 +1100,9 @@ define(
 												})
 												.then(function(result){
 													scannedDocument=result; 
+													self.updateSessionLog("INSERT",scannedDocument.uuid,processDetails.id);
 													processAttachments.push(scannedDocument);
-													return DocumentAssignmentService.instance()
-													.getScannedDocuments(self.activityInstanceOid);
-												})
-												.then(function(scannedDocuments){
-													self.scannedDocuments = scannedDocuments;
+													self.pushRawDocumentToScanned(result);
 												})
 												.fail(function(){
 													//TODO:Error handling
@@ -911,7 +1111,7 @@ define(
 													self.refreshStartableProcessesTree();
 													self.refreshPagesList();
 													self.pageModel.pageIndex={};
-													self.safeApply();
+													//self.safeApply();
 													window.setTimeout(function() {
 														self.bindDragAndDrop();
 													}, 1000);
@@ -921,8 +1121,9 @@ define(
 											else{
 												self.pageModel.pageIndex={};
 												processAttachments.push(scannedDocument);
+												self.updateSessionLog("INSERT",scannedDocument.uuid,processDetails.id);
 												self.refreshStartableProcessesTree();
-												self.safeApply();
+												//self.safeApply();
 												window.setTimeout(function() {
 													self.bindDragAndDrop();
 												}, 1000);
@@ -935,11 +1136,97 @@ define(
 					}
 				};
 				
+				DocumentAssignmentPanelController.prototype.pushRawDocumentToScanned = function(doc){
+					doc.pageCount = doc.numPages;
+					doc.url=DocumentAssignmentService.instance().getBaseDocumentURL(doc.uuid);
+					doc.pages=[];
+					for(var i=0;i<doc.numPages;i++){
+						doc.pages.push(i+1);
+					}
+					this.scannedDocuments.push(doc);			
+				}
+				
+				DocumentAssignmentPanelController.prototype.openDocumentInfoPopup = function(elem,docuuid,e,loc){
+					var dialogScope = this.$new(true), /*Create new isolate*/
+						document;
+					
+					if(!docuuid || docuuid===""){
+						return;
+					}
+					
+					/*Fish in our local caches for our document of interest*/
+					if(loc=="startable"){
+						document= this.getScannedDocument(docuuid);
+					}else if(loc=="pending"){
+						document = this.getPendingDocument(docuuid);
+					}
+					
+					dialogScope.document=document;
+					this.ngDialog.open({
+					    template: './templates/documentInfoPopover.html',
+					    className: 'ngdialog-theme-popup',
+					    appendTo: elem,
+					    align: "left",
+			            position: [e.clientX,e.clientY],
+			            scope: dialogScope
+					});
+					
+				}
+				
+				DocumentAssignmentPanelController.prototype.openDocumentRefPopup = function(elem,docuuid,e){
+					
+					var dialogScope = this.$new(true); /*Create new isolate*/
+					dialogScope.processList = this.getAssociatedProcesses(docuuid);
+					
+					this.ngDialog.open({
+					    template: './templates/associatedProcsPopover.html',
+					    className: 'ngdialog-theme-popup',
+					    appendTo: elem,
+					    align: "right",
+			            position: [e.clientX,e.clientY],
+			            scope: dialogScope
+					});
+				}
+				
+				/**
+				 * Given a document UUID return all proceeses associated with that document
+				 * from our session log.
+				 */
+				DocumentAssignmentPanelController.prototype.getAssociatedProcesses = function(docuuid){
+					
+					var docEntry = this.sessionLog.documents[docuuid],
+						procId,
+						pattern=/\{[A-z0-9]*\}/,
+						tempProc,
+						results=[],
+						i;
+
+					if(docEntry && docEntry.processes){
+						for(var procId in docEntry.processes){
+							if(pattern.test(procId)){
+								procId = procId.replace(pattern,"");
+								results.push(procId);
+							}
+							else{
+								for(i=0;i<this.pendingProcesses.length;i++){
+									tempProc=this.pendingProcesses[i];
+									if(tempProc.oid==procId){
+										results.push(tempProc)
+									}
+								}
+							}
+						}
+					}
+					debugger;
+					return results;
+					
+				}
+				
 				DocumentAssignmentPanelController.prototype.setStagedDocType = function(treeItem,docTypeId){
-					var i=0,
+					var i,
 						docType;
 					
-					for(;i<this.documentTypes.length;i++){
+					for(i=0;i<this.documentTypes.length;i++){
 						if(this.documentTypes[i].documentTypeId==docTypeId){
 							docType=this.documentTypes[i];
 							docTypeFound=true;
@@ -967,7 +1254,8 @@ define(
 					this.pageModel.selectedPage = page;
 					this.pageModel.totalPages = document.pages.length;
 					this.pageModel.document = document;
-
+					this.pageModel.selectedDocumentIndex = this.getDocumentIndex(document.uuid);
+					
 					if(e){
 						if (e.ctrlKey) {
 							if (this.pageModel.pageIndex
@@ -983,15 +1271,33 @@ define(
 							this.pageModel.pageIndex[page.number] = url;
 						}
 					}
-					console.log(this.pageModel.pageIndex);
 					this.pageModel.selectedPage.url = url;
+					jQuery("#pageImage").css("width","100%");
 				};
+				
+				/**
+				 * Given a document uuid lookup the location within the colelction of scanned documents.
+				 * Returns -1 if not found otherwise returns 0 based index.
+				 */
+				DocumentAssignmentPanelController.prototype.getDocumentIndex = function(uuid){
+					
+					var currentIndex=-1,
+					    located=false;
+					for(i=0;i < this.scannedDocuments.length && !located;i++){
+						if(this.scannedDocuments[i].uuid==uuid){
+							currentIndex=i;
+							located=true;
+						}
+					}
+					return currentIndex;
+					
+				}
 				
 				/**
 				 * Given the uuid of the currently selected document this will imitate selecting the next or 
 				 * previous document (+- some offset) from the scanned document division, minus meaningful events.
 				 */
-				DocumentAssignmentPanelController.prototype.selectDocumentRelative = function(uuid,offset){
+				DocumentAssignmentPanelController.prototype.selectDocumentRelative = function(uuid,offset,e){
 					
 					var document,
 						i,
@@ -999,19 +1305,19 @@ define(
 						offsetIndex,
 						located=false;
 					
-					/*locate indexed position of our current document*/
-					for(i=0;i < this.scannedDocuments.length && !located;i++){
-						if(this.scannedDocuments[i].uuid==uuid){
-							currentIndex=i;
-							offsetIndex = currentIndex + offset;
-							located=true;
-						}
+					currentIndex = this.getDocumentIndex(uuid);
+					
+					if(currentIndex >=0){
+						located =true;
+						offsetIndex = currentIndex + offset;
 					}
-					debugger;
+					
+					
 					/*if we located the current document and our calculated offset is in range*/
 					if(located && (offsetIndex >= 0 && offsetIndex < this.scannedDocuments.length)){
 						document = this.scannedDocuments[offsetIndex];
-						this.selectPage(document.pages[0],document.url,{},document);
+						this.selectPage(document.pages[0],document.url,e,document);
+						this.pageModel.selectedDocumentIndex = offsetIndex;
 						this.safeApply();
 					}
 				}
@@ -1033,13 +1339,15 @@ define(
 
 				DocumentAssignmentPanelController.prototype.startProcess = function(
 						treeItem, busObj) {
-					debugger;
-					var that = this, data = {
-						processDefinitionId : treeItem.startableProcess.id,
-						businessObject : busObj,
-						specificDocuments : [],
-						processAttachments : treeItem.startableProcess.processAttachments
-					}, i;
+					
+					var that = this, 
+					    data = {
+							processDefinitionId : treeItem.startableProcess.id,
+							businessObject : busObj,
+							specificDocuments : [],
+							processAttachments : treeItem.startableProcess.processAttachments
+						}, 
+						i;
 
 					for (i = 0; i < treeItem.startableProcess.specificDocuments.length; i++) {
 						if (treeItem.startableProcess.specificDocuments[i].scannedDocument) {
@@ -1051,25 +1359,30 @@ define(
 						}
 					}
 
-					DocumentAssignmentService.instance().startProcess(data)
-							.done(
-								function(result) {
-									that.openStartProcessDialog(
-											result.scannedDocument,
-											result.startableProcess);
-								})
-							.then(function(){
-								DocumentAssignmentService
-								.instance()
-								.getStartableProcesses()
-								.done(function(startableProcesses){
-									/*TODO:ZZM This is fragile and will break eventually, needs refactoring to avoid $parent references*/
-									that.$parent.startableProcesses = startableProcesses;
-									that.$parent.refreshStartableProcessesTree();
-									that.safeApply();
-								});
+					DocumentAssignmentService.instance()
+						.startProcess(data)
+						.then(
+							function(result) {
+								//TODO:ZZM - Convert model entry to process entry in session log
+								that.openStartProcessDialog(result.scannedDocument,result.startableProcess);
 							})
-							.fail();
+						.then(function(){
+							return DocumentAssignmentService.instance()
+							.getStartableProcesses();
+						})
+						.then(function(startableProcesses){
+							that.$parent.startableProcesses = startableProcesses;
+						})
+						.fail(function(err){
+							console.log(err);
+						})
+						.always(function(){
+							that.$parent.refreshStartableProcessesTree();
+							//that.safeApply();
+							window.setTimeout(function() {
+								that.bindDragAndDrop();
+							}, 1000);
+						});
 				};
 
 				/**
@@ -1085,9 +1398,14 @@ define(
 				/**
 				 * 
 				 */
-				DocumentAssignmentPanelController.prototype.zoomInPage = function() {
-					this.zoomFactor += 10;
-
+				DocumentAssignmentPanelController.prototype.zoomInPage = function(e) {
+					if(e){
+						this.zoomFactor=100;
+						//this.safeApply();
+					}
+					else{
+						this.zoomFactor += 10;
+					}
 					jQuery("#pageImage").css("width", this.zoomFactor + "%");
 				};
 
@@ -1146,7 +1464,9 @@ define(
 				 * 
 				 */
 				DocumentAssignmentPanelController.prototype.refreshPendingProcessesTree = function() {
-					var that=this;
+					var that=this,
+						scrollTop = jQuery("#pendingTreeContainer").scrollTop();
+					
 					this.pendingProcessesTree = [];
 
 					for (var n = 0; n < this.pendingProcesses.length; ++n) {
@@ -1190,9 +1510,13 @@ define(
 									});
 						}
 					}
+					/*Keep reference count in sync*/
+					this.scrapePendingForDocuments(this.pendingProcessesTree);
 					
-					this.safeApply();
-					
+					/*Let Angular update DOM so we can apply our draggable and droppable behaivor to dynamice elements*/
+
+					this.safeApply();			
+
 					/*DOM 'tree' is rebuilt so query for rows and bind draggable behaivor*/
 					var procAttachStartable=jQuery(".data-procAttch-pend").each(function(i,ele){
 						var $ele,
@@ -1206,7 +1530,7 @@ define(
 						procId = $ele.attr("data-proc-id");
 						attchId = $ele.attr("data-attach-id");
 
-						doc=that.getScannedDocument(attchId);
+						doc=that.getPendingDocument(attchId) || {name:'not supported'};
 						proc = that.getPendingProcess(procId);
 						eventData={
 								sourceType:"proccessAttachment_pending",
@@ -1217,6 +1541,7 @@ define(
 						jQuery(ele).draggable({
 							distance : 20,
 							opacity : 0.7,
+							scroll : true,
 							cursor : "move",
 							cursorAt : {
 								top : 0,
@@ -1249,7 +1574,12 @@ define(
 						attchId = $ele.attr("data-attach-id");
 						specDocId = $ele.attr("data-specdoc-id")
 						
-						doc=that.getScannedDocument(attchId);
+						/*If no attachment then bail*/
+						if(attchId==""){
+							return;
+						}
+						
+						doc=that.getPendingDocument(attchId)|| {name:'not supported'};
 						proc = that.getPendingProcess(procId);
 						
 						eventData={
@@ -1263,15 +1593,19 @@ define(
 							distance : 20,
 							opacity : 0.7,
 							cursor : "move",
+							scroll : true,
 							cursorAt : {
 								top : 0,
 								left : 0
 							},
 							helper : function(event, ui) {
-								return jQuery("<div class='ui-widget-header dragHelper'><i class='fa fa-files-o' style='font-size: 14px;z-index:9999;'></i> "
-										+ "TODO.todo"
+
+								return jQuery("<div style='white-space: nowrap;width:200px;text-overflow:ellipsis;overflow: hidden;' class='ui-widget-header dragHelper'><i class='fa fa-files-o' style='font-size: 14px;'></i> "
+										+ doc.name
 										+ "</div>");
+								
 							},
+							appendTo: "body",
 							drag : function(event) {
 							},
 							stop : function(event) {
@@ -1279,16 +1613,34 @@ define(
 						}).data("dragData",eventData);
 						
 					});
+					
+					window.setTimeout(function() {
+						jQuery("#pendingTreeContainer").scrollTop(scrollTop);
+					}, 50);
+					
 				};
 				
 				
 				DocumentAssignmentPanelController.prototype.getScannedDocument=function(Id){
-					var i=0;
+					var i=0,result={};
 					for(;i<this.scannedDocuments.length;i++){
 						if(this.scannedDocuments[i].uuid==Id){
-							return this.scannedDocuments[i];
+							result= this.scannedDocuments[i];
+							break;
 						}
 					}
+					return result;
+				}
+				
+				DocumentAssignmentPanelController.prototype.getSelectedPageUrl=function(){
+					var url="#"			
+					if(this.pageModel.selectedPage != null && this.pageModel.selectedPage.number){
+						url = this.pageModel.selectedPage.url + 
+						      (this.pageModel.selectedPage.number-1)+
+						      '?' + this.pageModel.document.urlFragStamp || 0;
+					}
+					console.log(url);
+					return url;
 				}
 				
 				DocumentAssignmentPanelController.prototype.getPendingProcess=function(Id){
@@ -1343,6 +1695,7 @@ define(
 								});
 
 						for (m = 0; m < this.startableProcesses[n].processAttachments.length; ++m) {
+							debugger;
 							this.startableProcessesTree
 									.push({
 										processDetails : this.startableProcesses[n],
@@ -1369,6 +1722,11 @@ define(
 						attchId = $ele.attr("data-attach-id");
 						specDocId = $ele.attr("data-specdoc-id")
 						
+						/*If no attachment then bail*/
+						if(attchId==""){
+							return;
+						}
+						
 						doc=that.getScannedDocument(attchId);
 						proc = that.getStartableProcess(procId);
 						
@@ -1388,7 +1746,7 @@ define(
 								left : 0
 							},
 							helper : function(event, ui) {
-								return jQuery("<div class='ui-widget-header dragHelper'><i class='fa fa-files-o' style='font-size: 14px;'></i> "
+								return jQuery("<div style='white-space: nowrap;width:200px;text-overflow:ellipsis;overflow: hidden;' class='ui-widget-header dragHelper'><i class='fa fa-files-o' style='font-size: 14px;'></i> "
 										+ doc.name
 										+ "</div>");
 							},
@@ -1496,12 +1854,42 @@ define(
 								jQuery("*").css("cursor", "default");
 							});
 				};
+				
+				/*Reverse pages in a document*/
+				DocumentAssignmentPanelController.prototype.reversePages = function(document){
+					var pages=[],
+						that=this,
+						i;
 
+					for(i=document.pages.length;i>0;i--){
+						pages.push(i);
+					}
+					
+					DocumentAssignmentService.instance()
+					.reorderDocument(document.uuid,pages)
+		    		.then(function(result){
+		    			console.log("Reverse Pages Success");
+		    			console.log(result);
+		    		})
+		    		.fail(function(){
+		    			//ZZM:TODO: handle error
+		    		})
+		    		.always(function(){
+		    			document.urlFragStamp = new Date().getTime();
+		    			that.refreshPagesList();
+		    			that.safeApply();
+			    		window.setTimeout(function() {
+							that.bindDragAndDrop();
+						}, 1000);
+		    		});
+					
+				}
+				
 				/**
 				 * 
 				 */
 				DocumentAssignmentPanelController.prototype.openStartProcessDialog = function(
-						scannedDocument, startableProcess, specificDocument) {
+					scannedDocument, startableProcess, specificDocument) {
 					this.startProcessDialog.scannedDocument = scannedDocument;
 					this.startProcessDialog.startableProcess = startableProcess;
 					this.startProcessDialog.specificDocument = specificDocument;
@@ -1510,7 +1898,13 @@ define(
 					this.startProcessDialog.dialog("option", "modal", true);
 					this.startProcessDialog.dialog("open");
 				};
+				
+				
+				DocumentAssignmentPanelController.prototype.getTimeStamp = function(){
+					return new Date().getTime();
+				}
 
+				
 				/**
 				 * 
 				 */

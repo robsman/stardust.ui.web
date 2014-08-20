@@ -7,7 +7,6 @@ define(
 		function(Utils) {
 			return {
 				instance : function() {
-
 					if (!document.documentAssignmentService) {
 						document.documentAssignmentService = new DocumentAssignmentService();
 					}
@@ -51,11 +50,7 @@ define(
 						urlFrag,
 						self = this;
 				
-					urlFrag= "documents/" + uuid + "/reorder";
-					
-					
-					deferred.resolve(); //TODO: remove once endpoint is present.
-					return deferred.promise();//TODO: move below ajax once rest endpoint is present.
+					urlFrag= "documents/" + uuid + "/reorder";			
 					
 					jQuery.ajax({
 						url : rootUrl + "/services/rest/document-triage/" + urlFrag,
@@ -68,7 +63,7 @@ define(
 						deferred.reject(data);
 					});
 		
-					
+					return deferred.promise();
 					
 				};
 				
@@ -192,6 +187,15 @@ define(
 							});
 
 					return deferred.promise();
+				};
+				
+				DocumentAssignmentService.prototype.getBaseDocumentURL = function(docuuid){
+					var rootUrl = location.href.substring(0, location.href
+							.indexOf("/plugins"));
+					return  rootUrl
+							+ "/services/rest/document-triage/documents/"
+							+ docuuid
+							+ "/";
 				};
 				
 				DocumentAssignmentService.prototype.setDocumentType = function(docType,proc){

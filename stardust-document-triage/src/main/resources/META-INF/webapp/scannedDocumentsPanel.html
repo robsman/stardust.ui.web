@@ -1,26 +1,35 @@
 <table cellpadding="0" cellspacing="0" style="width: 100%;">
 	<tr ng-repeat="document in scannedDocuments"
-		ng-init="document.showChildren=false,documentIndex=$index""
+		ng-init="document.showChildren=false;document.urlFragStamp=getTimeStamp()"
 		id="scannedDocumentDivision{{$index}}" class="scannedDocument">
 		<td>
 			<div ng-show="!document.showChildren" class="formTable">
 
-				<div style="height: {{100+ 3*clamp(document.pages.length, 0, 10)}}"
-					class="imageStack"
-					ng-mousedown="resetPageModel()"
-					ng-click="selectPage(document.pages[0],document.url,$event,document)">
-					<img ng-src="{{document.url}}0" style="height: 100px;"
-						title="Page {{(clamp(document.pages.length,0,10))-$index}} of {{document.pages.length}}"
-						ng-repeat="page in document.pages | limitTo: 10" />
+				<div style="height: {{100+ 3*clamp(document.pages.length, 0, 5)}}px;"
+					 class="imageStack"
+					 ng-mousedown="resetPageModel()"
+					 ng-click="selectPage(document.pages[0],document.url,$event,document)">
+					<img ng-src="{{document.url}}0#{{uiModel.docPanelRefreshStamp}}" style="height: 100px;"
+						title="Page {{(clamp(document.pages.length,0,5))-$index}} of {{document.pages.length}}"
+						ng-repeat="page in document.pages | limitTo: 5" />
 				</div>
 
 
-				<div class="verticalMenu2">
-					<i class="fa fa-warning"></i> <i title="Reverse Pages"
-						class="fa fa-arrows-h"></i> <i class="fa"
+				<div class="verticalMenu2"
+				     id="vm{{$id}}">
+					<i class="fa fa-check go"
+					   ng-mouseover="openDocumentRefPopup('body',document.uuid,$event)"
+					   ng-show="getReferenceCount(document.uuid)>0">
+					</i> 
+					<i class="fa"
 						title="Expand/Collapse Pages" ng-show="document.pages.length>0"
-						ng-class="{'fa-caret-down':document.showChildren,'fa-caret-up':!document.showChildren}"
-						ng-click="document.showChildren=!document.showChildren;resetPageModel()"> </i>
+						ng-class="{'fa-caret-down':document.showChildren,'fa-caret-right':!document.showChildren}"
+						ng-click="document.showChildren=!document.showChildren;resetPageModel()">
+					</i>
+					<i class="fa fa-sort-numeric-desc"
+					   ng-click="reversePages(document)"
+					   title="Reverse Page Order">
+					</i>
 				</div>
 				
 				<div class="documentInfo">
@@ -28,10 +37,10 @@
 				</div>
 				
 			</div>
-			<div class="documentHeader" ng-show="document.showChildren">
-				{{document.name}} <i title="Collapse"
-					ng-click="document.showChildren=false;resetPageModel()"
-					class="fa fa-caret-up menu-icon"></i>
+			<div class="documentHeader reorderTarget" 
+			     data-page-number="0"
+			     ng-show="document.showChildren">
+				{{document.name}} 
 			</div>
 			<div ng-show="document.showChildren"
 			     data-doc-url="{{document.url}}"
@@ -43,11 +52,24 @@
 					<tr>
 						<td style="text-align:center;">
 							<a style="display: inline;"
-							   ng-click="selectPage(page,document.url,$event,document)">
-								<img style="margin-top:1em;" ng-src="{{document.url + $index}}" width="80%" />
+							   ng-click="selectPage(page,document.url ,$event,document)">
+								<img ng-if="document.showChildren"
+									 class="page-instance" 
+									 ng-src="{{document.url + $index}}?{{document.urlFragStamp}}" />
 							</a>
-							<div class="reorderTarget">
-								{{page.number}}<i class="fa fa-warning menu-icon"></i>
+							<div class="verticalMenu2">
+								<i title="Collapse"
+								   ng-click="document.showChildren=false;resetPageModel()"
+								   class="fa fa-caret-down menu-icon">
+								</i>
+								<i ng-if="$index==0"
+								   class="fa fa-sort-numeric-desc"
+								   ng-click="reversePages(document)"
+								   title="Reverse Page Order">
+								</i>
+							</div>
+							<div data-page-number="{{page.number}}" class="reorderTarget">
+								{{page.number}}
 							</div>
 						</td>
 					</tr>
