@@ -53,6 +53,7 @@ public class TypedDocumentUserObject extends RepositoryResourceUserObject
    private boolean readACL = false;
    private ToolTip documentToolTip;
    private boolean supportsToolTip = false;
+   private Boolean detachable;
 
    /**
     * custom constructor initialing document user object
@@ -169,6 +170,21 @@ public class TypedDocumentUserObject extends RepositoryResourceUserObject
       }
    }
 
+   @Override
+   public void detachResource() {
+      typedDocument.setDocument(null);
+      try
+      {
+         TypedDocumentsUtil.updateTypedDocument(typedDocument);
+         initialize();
+      }
+      catch (Exception e)
+      {
+         ExceptionHandler.handleException(e);
+      }
+      
+   };
+   
    @Override
    public void renameStart()
    {
@@ -351,6 +367,16 @@ public class TypedDocumentUserObject extends RepositoryResourceUserObject
       return this.sendFileAllowed;
    }
 
+   @Override
+   public boolean isDetachable()
+   {
+      if (detachable == null)
+      {
+         detachable = (null != typedDocument.getProcessInstance())? true : false;
+      }
+      return detachable;
+   }
+   
    /*
     * (non-Javadoc)
     *
