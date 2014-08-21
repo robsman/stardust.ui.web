@@ -121,6 +121,16 @@
 									standAlone="false" />
 								<f:attribute name="userObject" value="#{item.userObject}" />
 							</ice:menuItem>
+							
+							<ice:menuItem id="detachable"
+								icon="/plugins/views-common/images/icons/page_detach-silk.png"
+								value="#{genericRepositoryTreeViewBean.messages['treeMenuItem.detach']}"
+								actionListener="#{genericRepositoryTreeViewBean.confirmDetachResource}"								
+								rendered="#{item.userObject.leafNode and item.userObject.detachable}">
+								<pc:automationTag value="auto-COM-RepoTree-MenuDlg-DetFile"
+									standAlone="false" />
+								<f:attribute name="userObject" value="#{item.userObject}" />
+							</ice:menuItem>
 
 								<ice:menuItem id="deleteFolder"
 									icon="/plugins/views-common/images/icons/folder_delete.png"

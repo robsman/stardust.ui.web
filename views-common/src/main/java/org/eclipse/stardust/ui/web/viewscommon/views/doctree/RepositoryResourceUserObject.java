@@ -378,7 +378,17 @@ public abstract class RepositoryResourceUserObject extends IceUserObject
    {
       this.isWriteSupported = isWriteSupported;
    }
-
+   
+   public boolean isDetachable()
+   {
+      return false;
+   }
+   
+   public void detachResource()
+   {
+      throw new UnsupportedOperationException();
+   }
+   
    /**
     * Rename the resource
     * 

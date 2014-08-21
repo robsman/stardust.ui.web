@@ -52,6 +52,7 @@ public class RepositoryDocumentUserObject extends RepositoryResourceUserObject
    private boolean sendFileAllowed = false;
    private MessagesViewsCommonBean propsBean;
    private ToolTip documentToolTip;
+   private Boolean detachable;
 
    /**
     * custom constructor initialing document user object
@@ -134,8 +135,6 @@ public class RepositoryDocumentUserObject extends RepositoryResourceUserObject
       }
    }
 
-
-
    @Override
    public void deleteResource()
    {
@@ -158,6 +157,24 @@ public class RepositoryDocumentUserObject extends RepositoryResourceUserObject
       }
    }
 
+   @Override
+   public void detachResource()
+   {
+      try
+      {
+         ProcessInstance processInstance = getProcessInstance();
+         if (null != processInstance)
+         {
+            DMSHelper.detachProcessAttachment(processInstance, getDocument());
+         }
+         this.wrapper.removeFromParent();
+      }
+      catch (Exception e)
+      {
+         ExceptionHandler.handleException(e, propsBean.getString("views.genericRepositoryView.processAttachmntDltErr"));
+      }
+   };
+   
    @Override
    public void refresh()
    {
@@ -361,6 +378,16 @@ public class RepositoryDocumentUserObject extends RepositoryResourceUserObject
       return this.sendFileAllowed;
    }
 
+   @Override
+   public boolean isDetachable()
+   {
+      if (detachable == null)
+      {
+         detachable = getProcessInstance() != null ? true : false;
+      }
+      return detachable;
+   }
+   
    @Override
    public void drop(DefaultMutableTreeNode valueNode)
    {}

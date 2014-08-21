@@ -344,6 +344,30 @@ public class DMSHelper
    }
 
    /**
+    * @param processInstance
+    * @param documentToBeDetached
+    * @return
+    */
+   public static boolean detachProcessAttachment(ProcessInstance processInstance, Document documentToBeDetached)
+   {
+      List<Document> processAttachments = DMSHelper.fetchProcessAttachments(processInstance);
+      int index = getDocumentIndex(processAttachments, documentToBeDetached);
+
+      if (index > -1)
+      {
+         processAttachments.remove(index);
+         DMSHelper.saveProcessAttachments(processInstance, processAttachments);
+
+         IppEventController.getInstance().notifyEvent(
+               new DocumentEvent(DocumentEvent.EventType.DELETED, DocumentEvent.EventMode.PROCESS_ATTACHMENTS,
+                     processInstance.getOID(), documentToBeDetached, processAttachments));
+
+         return true;
+      }
+      return false;
+   }
+   
+   /**
     * updates the process attachment into provided process instance
     * @param processInstance
     * @param documentToBeUpdated

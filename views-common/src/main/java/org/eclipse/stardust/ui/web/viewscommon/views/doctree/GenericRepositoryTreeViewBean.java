@@ -85,6 +85,7 @@ public class GenericRepositoryTreeViewBean extends UIComponentBean implements Vi
    private boolean registred;
    boolean skipDocumentEvents = false;
    RepositoryResourceUserObject deleteUserObject;
+   RepositoryResourceUserObject detachUserObject;
    RepositoryNodeUserObject repositoryUserObject;
    private String repositoryId;
    private List<ProcessInstance> processInstances;
@@ -567,8 +568,24 @@ public class GenericRepositoryTreeViewBean extends UIComponentBean implements Vi
       genericRepoConfirmationDialog.openPopup();
 	}
 
+	
+	public void confirmDetachResource(ActionEvent event) 
+    {
+      detachUserObject = (RepositoryResourceUserObject) event.getComponent().getAttributes().get("userObject");
+      MessagesViewsCommonBean propsBean = MessagesViewsCommonBean.getInstance();
+      genericRepoConfirmationDialog = new ConfirmationDialog(DialogContentType.NONE, DialogActionType.YES_NO, null, DialogStyle.COMPACT, this);
+      genericRepoConfirmationDialog.setTitle(propsBean.getString("common.confirmDetach.title"));
+      genericRepoConfirmationDialog.setMessage(propsBean.getString("common.confirmDetach.message.label"));
+      genericRepoConfirmationDialog.openPopup();
+    }
+	
    public void confirmYes()
    {
+      if (detachUserObject != null)
+      {
+         detachUserObject.detachResource();
+         detachUserObject = null;
+      }
       if (deleteUserObject != null)
       {
          deleteUserObject.deleteResource();
@@ -594,6 +611,7 @@ public class GenericRepositoryTreeViewBean extends UIComponentBean implements Vi
 		deleteUserObject = null;
 		repositoryUserObject = null;
 		repositoryId = null;
+		detachUserObject = null;
 	}
 	
    public void confirmUnbindRepository(ActionEvent event)
