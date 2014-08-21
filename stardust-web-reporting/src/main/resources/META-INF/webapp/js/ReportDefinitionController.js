@@ -394,7 +394,7 @@ define(
 								// cleaner
 								// initialization
 								// function
-
+								self.dataAvailable = true;
 								self
 								.changePrimaryObject(true);
 								self.changeFact();
@@ -468,7 +468,6 @@ define(
 										jQuery("#reportDefinitionView").css("visibility", "visible");
 								});
 							console.debug('refreshModelData preferencedata success.............');
-							self.dataAvailable = true;
 						}).fail(function () {
 							console.debug('refreshModelData preferencedata falied.............');
 					});
