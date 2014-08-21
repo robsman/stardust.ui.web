@@ -31,6 +31,7 @@ import org.eclipse.stardust.engine.api.model.IModel;
 import org.eclipse.stardust.engine.api.model.PluggableType;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.query.*;
+import org.eclipse.stardust.engine.api.query.ProcessInstanceQueryEvaluator.ParsedQueryProcessor;
 import org.eclipse.stardust.engine.api.query.SqlBuilder.ParsedQuery;
 import org.eclipse.stardust.engine.api.runtime.BpmRuntimeError;
 import org.eclipse.stardust.engine.core.persistence.*;
@@ -527,11 +528,7 @@ public class BusinessObjectUtils
                 && data.getAttribute(PredefinedConstants.PRIMARY_KEY_ATT) != null;
     }
 
-    public static void registerBusinessObjectsListener() {
-        ProcessInstanceBean.dataValueChangeListener = new BusinessObjectsListener();
-    }
-
-    private static class BusinessObjectsListener implements DataValueChangeListener {
+    public static class BusinessObjectsListener implements DataValueChangeListener {
 
         @Override
         public void onDataValueChanged(IDataValue dv) {
@@ -557,6 +554,29 @@ public class BusinessObjectUtils
                 // (fh) do nothing
             }
         }
+    }
+
+    public static class BusinessObjectProcessQueryProcessor implements ParsedQueryProcessor {
+
+      @Override
+      public ParsedQuery processQuery(ParsedQuery parsedQuery)
+      {
+         // (fh) add clause to exclude business objects synthetic process instances.
+         PredicateTerm predicateTerm = parsedQuery.getPredicateTerm();
+         if (predicateTerm == null)
+         {
+            predicateTerm = Predicates.notEqual(ProcessInstanceBean.FR__PROCESS_DEFINITION, -1);
+         }
+         else
+         {
+            predicateTerm = Predicates.andTerm(
+                  Predicates.notEqual(ProcessInstanceBean.FR__PROCESS_DEFINITION, -1), predicateTerm);
+         }
+
+         return new ParsedQuery(parsedQuery.getSelectExtension(), predicateTerm, parsedQuery.getPredicateJoins(),
+               parsedQuery.getOrderCriteria(), parsedQuery.getOrderByJoins(), parsedQuery.getFetchPredicate(),
+               parsedQuery.useDistinct(), parsedQuery.getSelectAlias());
+      }
     }
 
     public static Value wrapValue(final Serializable value) {

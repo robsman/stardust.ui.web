@@ -79,9 +79,6 @@ public class BusinessObjectManagementService {
     *
     */
     public BusinessObjectManagementService() {
-        super();
-
-        BusinessObjectUtils.registerBusinessObjectsListener();
 
         new JsonMarshaller(); // TODO What is this
 
