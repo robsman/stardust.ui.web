@@ -704,6 +704,8 @@ public class RepositoryUtility
             }
             if(null !=  searchNode)
             {
+               // set the current node to identified path
+               node = searchNode;
                break;
             }
          }
