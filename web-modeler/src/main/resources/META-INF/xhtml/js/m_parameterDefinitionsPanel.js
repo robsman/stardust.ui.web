@@ -19,9 +19,11 @@ define(
 				"bpm-modeler/js/m_extensionManager", "bpm-modeler/js/m_model",
 				"bpm-modeler/js/m_typeDeclaration", "bpm-modeler/js/m_dialog",
 				"bpm-modeler/js/m_dataTypeSelector",
-				"bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_user" ],
+				"bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_user",
+				"bpm-modeler/js/m_parsingUtils"],
 		function(m_utils, m_urlUtils, m_constants, m_extensionManager, m_model,
-				m_typeDeclaration, m_dialog, m_dataTypeSelector, m_i18nUtils, m_user) {
+				m_typeDeclaration, m_dialog, m_dataTypeSelector, m_i18nUtils, 
+				m_user,m_parsingUtils) {
 			return {
 				create : function(options) {
 					var panel = new ParameterDefinitionsPanel();
@@ -42,10 +44,10 @@ define(
 				/**
 				 *
 				 */
-				ParameterDefinitionsPanel.prototype.initialize = function(
-						options) {
+				ParameterDefinitionsPanel.prototype.initialize = function(options) {
+					var that=this;
 					this.options = options;
-
+					
 					if (this.options.scope == null) {
 						this.options.scope = "";
 						this.dataTypeSelectorScope = "parameterDefinitionTypeSelector";
@@ -154,12 +156,32 @@ define(
 					}
 
 					if (this.options.supportsDataMappings) {
+						
 						this.parameterDefinitionDataSelect = m_utils.jQuerySelect(this.options.scope
 								+ " #parameterDefinitionDataSelect");
 
 						if (this.options.supportsDataPathes) {
 							this.parameterDefinitionPathInput = m_utils.jQuerySelect(this.options.scope
 									+ " #parameterDefinitionPathInput");
+							
+							/*Setup autocomplete for data paths*/
+							m_utils.jQuerySelect(this.parameterDefinitionPathInput)
+							.autocomplete({
+								minLength: 0,
+							    minChars: 0,
+							    autoFill: true,
+							    mustMatch: true,
+							    matchContains: false
+							})
+							.on("focus",function(){
+								/*Force the dropdown menu to display all items on focus*/
+								m_utils.jQuerySelect(this).autocomplete("search","");
+							})
+							.on("autocompletechange",function(event,ui){
+								that.currentParameterDefinition.dataPath = that.parameterDefinitionPathInput.val();
+								that.currentFocusInput = null;
+								that.submitChanges();
+							});
 						}
 					} else {
 						m_utils.jQuerySelect(this.options.scope
@@ -311,6 +333,7 @@ define(
 										},
 										function(event) {
 											if (event.data.panel.currentParameterDefinition != null) {
+												
 												if (event.data.panel.parameterDefinitionDataSelect
 														.val() == m_constants.TO_BE_DEFINED) {
 													event.data.panel.currentParameterDefinition.dataFullId = null;
@@ -318,10 +341,8 @@ define(
 													event.data.panel.currentParameterDefinition.dataFullId = event.data.panel.parameterDefinitionDataSelect
 															.val();
 												}
-
-												// Switch back to standard focus
-												// handling
-
+												event.data.panel.setAutoCompleteMatches(event.data.panel.currentParameterDefinition); 
+												
 												event.data.panel.currentFocusInput = null;
 
 												event.data.panel
@@ -339,7 +360,6 @@ define(
 												if (event.data.panel.currentParameterDefinition != null) {
 													event.data.panel.currentParameterDefinition.dataPath = event.data.panel.parameterDefinitionPathInput
 															.val();
-
 													// Switch back to standard
 													// focus handling
 
@@ -382,7 +402,56 @@ define(
 					this.selectCurrentParameterDefinition();
 					this.populateParameterDefinitionFields();
 				};
+				
+				
+				/**
+				 *Given a parameter definition parse out all the string fragments from
+				 *its corresponding typeDeclaration and set those fragments as auto-complete
+				 *matches for the panels parameterDefinitionPathInput DOM object. 
+				 *Leverages jqueryUI auto-complete.
+				 */
+				ParameterDefinitionsPanel.prototype.setAutoCompleteMatches = function(paramDef,delim){
+					var matches=[],    /*matches for the autocomplete option*/
+					    typeDecl,      /*typeDecl returned by matching the schemaName*/
+					    isDelimDefault,/*track whether our delim has the default value*/
+					    tempStr,       /*temp match string before we parse the schemaName from it*/
+					    i;			   /*iterator*/
+					
+					isDelimDefault =(delim)?false:true;
+					delim=delim || ".";
+					
+					matches=m_parsingUtils.parseParamDefToStringFrags(paramDef) || [];
 
+					/*Replacing '.' delimiter from the parse function and stripping the rootName*/
+					for(i=0;i<matches.length;i++){
+						if(isDelimDefault){
+							tempStr=matches[i].replace(/\./g,delim);
+						}
+						matches[i]=tempStr.slice(tempStr.indexOf(delim)+1);
+					}
+					
+					/*Set Autocomplete source to our new match function*/
+					m_utils.jQuerySelect(this.parameterDefinitionPathInput)
+					.autocomplete("option","source",function(req,res){
+						var match=req.term,
+							filtered=[],
+							temp;
+
+						for(var j=0; j< matches.length; j++){
+							temp=matches[j];
+							if(temp.indexOf(match)==0 ){
+								if(temp.indexOf(delim,match.length)==-1){
+									if(temp.lastIndexOf(delim)>0){
+										temp=temp.slice(temp.lastIndexOf(delim)+1);
+									}
+									filtered.push({label:temp,value:matches[j]});
+								}
+							}
+						}
+						res(filtered);
+					});
+				}
+				
 				/**
 				 */
 				ParameterDefinitionsPanel.prototype.selectCurrentParameterDefinition = function() {
@@ -678,9 +747,8 @@ define(
 
 											event.data.panel.currentParameterDefinition = event.data.panel.parameterDefinitions[index];
 											event.data.panel.selectedRowIndex = index;
-
-											event.data.panel
-													.populateParameterDefinitionFields();
+											event.data.panel.setAutoCompleteMatches(event.data.panel.currentParameterDefinition);
+											event.data.panel.populateParameterDefinitionFields();
 										});
 					}
 
