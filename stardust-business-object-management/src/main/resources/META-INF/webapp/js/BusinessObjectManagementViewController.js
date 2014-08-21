@@ -29,23 +29,7 @@ define(
 					console.log("Parameters");
 					console.log(this.parameters);
 
-					this.formColumns = [ {
-						min : 0,
-						max : 3
-					}, {
-						min : 4,
-						max : 7
-					}, {
-						min : 8,
-						max : 11
-					}, {
-						min : 12,
-						max : 15
-					}, {
-						min : 16,
-						max : 19
-					} ]; // TODO
-
+					this.formColumns = [];
 					this.messages = [];
 					this.businessObjectManagementPanelController = BusinessObjectManagementPanelController
 							.create();
@@ -69,9 +53,23 @@ define(
 
 										self.businessObjectManagementPanelController
 												.changeBusinessObject(self.businessObject);
+
+										self.formColumns = [];
+										var primitiveFields = self
+												.getPrimitiveFields(self.businessObject);
+										console.log("Fields: "
+												+ primitiveFields);
+										var fieldsPerColumn = Math
+												.ceil(primitiveFields.length / 3);
+
+										for (var n = 0; n < primitiveFields.length; n += fieldsPerColumn) {
+											self.formColumns.push({
+												min : n,
+												max : n + fieldsPerColumn - 1
+											});
+										}
 									}).fail(function() {
 							});
-
 				};
 
 				/**
@@ -90,6 +88,8 @@ define(
 							.done(
 									function(processInstances) {
 										self.processInstances = processInstances;
+										self.versionPanelExpanded = true;
+
 										self
 												.createMissingComplexFieldInstances(
 														self.currentBusinessObjectInstance,
@@ -201,43 +201,11 @@ define(
 				/**
 				 * 
 				 */
-				BusinessObjectManagementViewController.prototype.getPrimitiveFieldColumns = function(
-						type) {
-					var fieldColumns = [ [] ];
-
-					if (!type || !this.getBusinessObject()) {
-						return fieldColumns;
-					}
-
-					for (var n = 0; n < type.fields.length; ++n) {
-						// Skip non primitive fields
-
-						if (type.fields[n].list
-								|| this.getBusinessObject().types[type.fields[n].type]) {
-							continue;
-						}
-
-						// TODO Make 5 configurable
-
-						if (fieldColumns[fieldColumns.length - 1].length == 5) {
-							fieldColumns.push([]);
-						}
-
-						fieldColumns[fieldColumns.length - 1]
-								.push(type.fields[n]);
-					}
-
-					return fieldColumns;
-				};
-
-				/**
-				 * 
-				 */
 				BusinessObjectManagementViewController.prototype.getPrimitiveFields = function(
 						type) {
 					var fields = [];
 
-					if (!type || !this.getBusinessObject()) {
+					if (!type || !this.businessObject) {
 						return fields;
 					}
 
@@ -245,8 +213,7 @@ define(
 						// Skip complex fields
 
 						if (type.fields[n].list
-								|| (this.getBusinessObject().types && this
-										.getBusinessObject().types[type.fields[n].type])) {
+								|| (this.businessObject.types && this.businessObject.types[type.fields[n].type])) {
 							continue;
 						}
 

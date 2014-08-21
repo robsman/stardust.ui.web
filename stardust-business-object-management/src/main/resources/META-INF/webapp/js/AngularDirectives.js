@@ -363,20 +363,27 @@ define(
 
 																							// Create
 																							// Datatables
-																							
-																							// TODO Issues with nested repeats etc.
 
-//																							try {
-//																								table
-//																										.dataTable({
-//																											aoColumnDefs : aoColumnDefs
-//																										});
-//																							} catch (x) {
-//																								console
-//																										.log("Cannot create data table");
-//																								console
-//																										.log(x);
-//																							}
+																							// TODO
+																							// Issues
+																							// with
+																							// nested
+																							// repeats
+																							// etc.
+
+																							try {
+																								table
+																										.dataTable(/*
+																													 * {
+																													 * aoColumnDefs :
+																													 * aoColumnDefs }
+																													 */);
+																							} catch (x) {
+																								console
+																										.log("Cannot create data table");
+																								console
+																										.log(x);
+																							}
 
 																							document.body.style.cursor = "default";
 																						},
@@ -466,10 +473,10 @@ define(
 																.substring(attributes.sdDialog
 																		.lastIndexOf(".") + 1)] = dialog;
 													}
-													
-													console.log("=============> Scope");
+
 													console
-															.log(scope);
+															.log("=============> Scope");
+													console.log(scope);
 												}
 											};
 										}
