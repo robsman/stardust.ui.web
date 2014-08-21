@@ -78,6 +78,8 @@ public class BusinessObjectManagementService {
     public BusinessObjectManagementService() {
         super();
 
+        BusinessObjectUtils.registerBusinessObjectsListener();
+
         new JsonMarshaller(); // TODO What is this
 
         if (mode == MOCK_MODE) {
