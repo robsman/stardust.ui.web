@@ -13,10 +13,9 @@ package org.eclipse.stardust.ui.web.business_object_management.service;
 
 import java.io.Serializable;
 
-import org.eclipse.stardust.engine.api.query.BusinessObjectQuery;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
-import org.eclipse.stardust.engine.api.runtime.BusinessObject.Value;
 import org.eclipse.stardust.engine.core.runtime.command.ServiceCommand;
+import org.eclipse.stardust.ui.web.business_object_management.service.BusinessObject.Value;
 
 public final class BusinessObjectsCommandFactory {
 

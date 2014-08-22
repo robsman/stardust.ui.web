@@ -11,11 +11,17 @@
 
 package org.eclipse.stardust.ui.web.business_object_management.service;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.LineNumberInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.Set;
 
 import javax.annotation.Resource;
@@ -24,24 +30,21 @@ import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.engine.api.dto.BusinessObjectDetails;
 import org.eclipse.stardust.engine.api.model.Data;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.model.Reference;
 import org.eclipse.stardust.engine.api.model.TypeDeclaration;
-import org.eclipse.stardust.engine.api.query.BusinessObjectQuery;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
-import org.eclipse.stardust.engine.api.runtime.BusinessObject.Definition;
-import org.eclipse.stardust.engine.api.runtime.BusinessObject.Value;
 import org.eclipse.stardust.engine.api.runtime.*;
 import org.eclipse.stardust.engine.core.runtime.beans.BigData;
 import org.eclipse.stardust.engine.core.struct.*;
 import org.eclipse.stardust.engine.core.struct.XPathAnnotations.XPathAnnotation;
 import org.eclipse.stardust.ui.web.business_object_management.rest.JsonMarshaller;
+import org.eclipse.stardust.ui.web.business_object_management.service.BusinessObject.Definition;
+import org.eclipse.stardust.ui.web.business_object_management.service.BusinessObject.Value;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 //import org.eclipse.stardust.ui.web.viewscommon.utils.XPathCacheManager;
-
 
 
 
@@ -76,7 +79,6 @@ public class BusinessObjectManagementService {
     *
     */
     public BusinessObjectManagementService() {
-        super();
 
         new JsonMarshaller(); // TODO What is this
 
@@ -174,41 +176,48 @@ public class BusinessObjectManagementService {
 
         testModelsJson.add(modelJson);
 
-        businessObjectsJson = new JsonArray();
-
-        businessObjectsJson.add(getFundTestJson());
-
-        modelJson = new JsonObject();
-
-        modelJson.addProperty("oid", 2);
-        modelJson.addProperty("id", "DailyFundProcessing");
-        modelJson.addProperty("name", "Daily Fund Processing");
-        modelJson.add("businessObjects", businessObjectsJson);
-
-        testModelsJson.add(modelJson);
-
-        members = new HashMap<String, JsonObject>();
-
-        members.put(
-                "4711",
-                getMemberInstance("4711", "Haile", "Selassie", "1", "Scheme-1",
-                        "SA"));
-        members.put(
-                "0815",
-                getMemberInstance("0815", "Jan", "Smuts", "2", "Scheme-2", "SA"));
+        // Fake funds until CRUD is implemented
 
         funds = new HashMap<String, JsonObject>();
 
-        funds.put("Europe Top 100",
-                getFundInstance("Europe Top 100", "Europe Top 100", "Mixed"));
-        funds.put(
-                "Asia Fixed Income 200",
-                getFundInstance("Asia Fixed Income 200",
-                        "Asia Fixed Income 200", "Fixed Income"));
-        funds.put(
-                "Africa Sub-Saharan Real Estate",
-                getFundInstance("Africa Sub-Saharan Real Estate",
-                        "Africa Sub-Saharan Real Estate", "Private Equity"));
+        BufferedReader x = new BufferedReader(new InputStreamReader(
+                BusinessObjectManagementService.class
+                        .getResourceAsStream("/fund-data.csv")));
+
+        String line = null;
+        String[] fields = null;
+        int n = 0;
+
+        try {
+            while ((line = x.readLine()) != null) {
+                if (n == 0) {
+                    fields = line.split(",");
+
+                    ++n;
+
+                    continue;
+                } else if (n > 10) {
+                    // Only 10 for now
+
+                    break;
+                }
+
+                String[] fieldValues = line.split(",");
+
+                JsonObject fundJson = new JsonObject();
+
+                for (int m = 0; m < fieldValues.length; ++m) {
+                    fundJson.addProperty(fields[m], fieldValues[m]);
+                }
+
+                funds.put(fieldValues[0], fundJson);
+
+                ++n;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     /**
@@ -346,26 +355,6 @@ public class BusinessObjectManagementService {
                 false));
 
         return memberJson;
-    }
-
-    /**
-    *
-    * @return
-    */
-    private JsonObject getFundTestJson() {
-        JsonArray fundFieldsJson = new JsonArray();
-
-        fundFieldsJson.add(toTestField("id", "Id", "string", true, true));
-        fundFieldsJson.add(toTestField("name", "Name", "string", true, false));
-        fundFieldsJson.add(toTestField("type", "Type", "string", true, false));
-
-        JsonObject fundJson = new JsonObject();
-
-        fundJson.addProperty("id", "Fund");
-        fundJson.addProperty("name", "Fund");
-        fundJson.add("fields", fundFieldsJson);
-
-        return fundJson;
     }
 
     /**
@@ -707,18 +696,15 @@ public class BusinessObjectManagementService {
 
         resultJson.add("businessObjectInstances", businessObjectInstances);
 
-        if (mode == MOCK_MODE) {
-            // TODO More generic
+        // TODO More generic
 
-            Map<String, JsonObject> map = null;
-
-            if (businessObjectId.equals("Member")) {
-                map = members;
-            } else {
-                map = funds;
+        if (businessObjectId.equals("Member") && mode == MOCK_MODE) {
+            for (JsonObject businessObjectInstance : members.values()) {
+                businessObjectInstances.add(businessObjectInstance);
             }
-
-            for (JsonObject businessObjectInstance : map.values()) {
+        } // Remove once CRUD is implemented
+        else if (businessObjectId.equals("Fund") && mode == MOCK_MODE) {
+            for (JsonObject businessObjectInstance : funds.values()) {
                 businessObjectInstances.add(businessObjectInstance);
             }
         } else {
@@ -786,22 +772,6 @@ public class BusinessObjectManagementService {
 
     /**
     *
-    * @param id
-    * @param name
-    * @return
-    */
-    private JsonObject getFundInstance(String id, String name, String type) {
-        JsonObject fund = new JsonObject();
-
-        fund.addProperty("id", id);
-        fund.addProperty("name", name);
-        fund.addProperty("type", type);
-
-        return fund;
-    }
-
-    /**
-    *
     * @param modelOid
     * @param businessObjectId
     * @param primaryKey
@@ -819,13 +789,14 @@ public class BusinessObjectManagementService {
 
             return jsonObject;
         } else {
-            BusinessObject boi = (BusinessObject) getWorkflowService().execute(
-                    BusinessObjectsCommandFactory.create(
-                            Long.parseLong(modelOid),
-                            businessObjectId,
-                            new BusinessObjectDetails.ValueDetails(
-                                    -1,
-                                    (Serializable) jsonElementToObject(jsonObject))));
+            BusinessObject boi = (BusinessObject) getWorkflowService()
+                    .execute(
+                            BusinessObjectsCommandFactory.create(
+                                    Long.parseLong(modelOid),
+                                    businessObjectId,
+                                    new BusinessObjectDetails.ValueDetails(
+                                            -1,
+                                            (Serializable) jsonElementToObject(jsonObject))));
             return (JsonObject) toJson(getFirstValue(boi));
         }
     }
@@ -849,13 +820,14 @@ public class BusinessObjectManagementService {
 
             return jsonObject;
         } else {
-            BusinessObject boi = (BusinessObject) getWorkflowService().execute(
-                    BusinessObjectsCommandFactory.update(
-                            Long.parseLong(modelOid),
-                            businessObjectId,
-                            new BusinessObjectDetails.ValueDetails(
-                                    -1,
-                                    (Serializable) jsonElementToObject(jsonObject))));
+            BusinessObject boi = (BusinessObject) getWorkflowService()
+                    .execute(
+                            BusinessObjectsCommandFactory.update(
+                                    Long.parseLong(modelOid),
+                                    businessObjectId,
+                                    new BusinessObjectDetails.ValueDetails(
+                                            -1,
+                                            (Serializable) jsonElementToObject(jsonObject))));
             return (JsonObject) toJson(getFirstValue(boi));
         }
     }
@@ -883,6 +855,8 @@ public class BusinessObjectManagementService {
     */
     public JsonArray getBusinessObjectProcessInstances(String modelOid,
             String businessObjectId, String primaryKey) {
+        // TODO This has to be a query on the BOI!
+
         ProcessInstanceQuery query = ProcessInstanceQuery.findAll();
         JsonArray resultJson = new JsonArray();
 
