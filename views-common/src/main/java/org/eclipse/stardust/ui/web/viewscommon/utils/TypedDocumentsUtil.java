@@ -163,10 +163,20 @@ public class TypedDocumentsUtil
     * 
     * @param typedDocoumet
     */
+
    public static void updateTypedDocument(TypedDocument typedDocument)
    {
+      updateTypedDocument(typedDocument, false);
+   }
+
+   /**
+    * @param typedDocument
+    * @param deleted
+    */
+   public static void updateTypedDocument(TypedDocument typedDocument, boolean deleted)
+   {
       updateTypedDocument(typedDocument.getProcessInstance().getOID(), typedDocument.getDataPath().getId(),
-            typedDocument.getDataDetails().getId(), typedDocument.getDocument());
+            typedDocument.getDataDetails().getId(), typedDocument.getDocument(), deleted);
    }
    
    /**
@@ -175,17 +185,22 @@ public class TypedDocumentsUtil
     * @param dataId
     * @param document
     */
-   public static void updateTypedDocument(long processInstanceOID, String dataPathId, String dataId, Document document)
+   public static void updateTypedDocument(long processInstanceOID, String dataPathId, String dataId, Document document,
+         boolean deleted)
    {
       try
       {
-         // CRNT-21235 - following code is kept for backward compatibility 
+         // CRNT-21235 - following code is kept for backward compatibility
          if (null != document)
          {
             document.getProperties().remove(CommonProperties.DESCRIPTION);
             document.getProperties().remove(CommonProperties.COMMENTS);
          }
-         ServiceFactoryUtils.getWorkflowService().setOutDataPath(processInstanceOID, dataPathId, document);
+         if (!deleted)
+         {
+            ServiceFactoryUtils.getWorkflowService().setOutDataPath(processInstanceOID, dataPathId, document);
+         }
+
          // update activity panel
          IppEventController.getInstance().notifyEvent(
                new DocumentEvent(DocumentEvent.EventType.EDITED, processInstanceOID, dataId, document));

@@ -159,9 +159,10 @@ public class TypedDocumentUserObject extends RepositoryResourceUserObject
       typedDocument.setDocument(null);
       try
       {
-         TypedDocumentsUtil.updateTypedDocument(typedDocument);
          // delete resource from repository
          getDMS().removeDocument(getDocument().getId());
+
+         TypedDocumentsUtil.updateTypedDocument(typedDocument, true);
          initialize();
       }
       catch (Exception e)

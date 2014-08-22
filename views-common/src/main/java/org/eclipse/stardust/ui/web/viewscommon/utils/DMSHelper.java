@@ -322,25 +322,14 @@ public class DMSHelper
     * 
     * @param processInstance
     * @param documentToBeDeltd
-    * @return
     */
-   public static boolean deleteProcessAttachment(ProcessInstance processInstance, Document documentToBeDeltd)
+   public static void deleteProcessAttachment(ProcessInstance processInstance, Document documentToBeDeltd)
    {
-      List<Document> processAttachments = DMSHelper.fetchProcessAttachments(processInstance);
-      int index = getDocumentIndex(processAttachments, documentToBeDeltd);
+      List<Document> processAttachments = fetchProcessAttachments(processInstance);
+      IppEventController.getInstance().notifyEvent(
+            new DocumentEvent(DocumentEvent.EventType.DELETED, DocumentEvent.EventMode.PROCESS_ATTACHMENTS,
+                  processInstance.getOID(), documentToBeDeltd, processAttachments));
 
-      if (index > -1)
-      {
-         processAttachments.remove(index);
-         DMSHelper.saveProcessAttachments(processInstance, processAttachments);
-         
-         IppEventController.getInstance().notifyEvent(
-               new DocumentEvent(DocumentEvent.EventType.DELETED, DocumentEvent.EventMode.PROCESS_ATTACHMENTS,
-                     processInstance.getOID(), documentToBeDeltd, processAttachments));
-
-         return true;
-      }
-      return false;
    }
 
    /**
@@ -375,7 +364,7 @@ public class DMSHelper
     */
    public static boolean updateProcessAttachment(ProcessInstance processInstance, Document documentToBeUpdated)
    {
-      List<Document> processAttachments = DMSHelper.fetchProcessAttachments(processInstance);
+      List<Document> processAttachments = fetchProcessAttachments(processInstance);
       int index = getDocumentIndex(processAttachments, documentToBeUpdated);
 
       if (index > -1)
@@ -384,14 +373,26 @@ public class DMSHelper
          processAttachments.add(index, documentToBeUpdated);
          DMSHelper.saveProcessAttachments(processInstance, processAttachments);
 
-         IppEventController.getInstance().notifyEvent(
-               new DocumentEvent(DocumentEvent.EventType.EDITED, DocumentEvent.EventMode.PROCESS_ATTACHMENTS,
-                     processInstance.getOID(), documentToBeUpdated, processAttachments));
+         publishProcessAttachmentUpdatedEvent(processInstance, processAttachments, documentToBeUpdated);
 
          return true;
       }
       return false;
    }
+   
+   /**
+    * @param processInstance
+    * @param processAttachments
+    * @param documentToBeUpdated
+    */
+   public static void publishProcessAttachmentUpdatedEvent(ProcessInstance processInstance,
+         List<Document> processAttachments, Document documentToBeUpdated)
+   {
+      IppEventController.getInstance().notifyEvent(
+            new DocumentEvent(DocumentEvent.EventType.EDITED, DocumentEvent.EventMode.PROCESS_ATTACHMENTS,
+                  processInstance.getOID(), documentToBeUpdated, processAttachments));
+   }
+   
    
    /**
     * @return

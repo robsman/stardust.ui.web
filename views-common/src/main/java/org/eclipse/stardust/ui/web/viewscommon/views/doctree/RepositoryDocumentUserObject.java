@@ -140,14 +140,14 @@ public class RepositoryDocumentUserObject extends RepositoryResourceUserObject
    {
       try
       {
-         // delete resource from process instance if applicable
+         // delete resource from repository
+         getDMS().removeDocument(getDocument().getId());
+
          ProcessInstance processInstance = getProcessInstance();
          if (null != processInstance)
          {
             DMSHelper.deleteProcessAttachment(processInstance, getDocument());
          }
-         // delete resource from repository
-         getDMS().removeDocument(getDocument().getId());
          this.wrapper.removeFromParent();
       }
       catch (Exception e)
@@ -253,8 +253,13 @@ public class RepositoryDocumentUserObject extends RepositoryResourceUserObject
       {
          document.setName(this.getName());
          document = getDMS().updateDocument(document, true, "", null, false);
-         updateprocessInstance(document);
          this.setText(this.getName());
+         
+         //publish event
+         ProcessInstance processInstance = getProcessInstance();
+         if (null != processInstance){
+            DMSHelper.publishProcessAttachmentUpdatedEvent(processInstance, DMSHelper.fetchProcessAttachments(processInstance), document);   
+         }
       }
       catch(Exception e)
       {
