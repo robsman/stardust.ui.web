@@ -556,7 +556,8 @@ table.formTable td {
 											<div>
 												<div class="heading">{{getI18N('reporting.definitionView.cursor.title')}}</div>
 												<table cellpadding="0" cellspacing="0" class="formTable">
-													<tr>
+													<tr ng-show="report.layout.chart.type && report.layout.chart.type != reportingService.metadata.chartTypes.pieChart.id 
+						 						&& report.layout.chart.type != reportingService.metadata.chartTypes.donutChart.id">
 														<td><input id="auto-reporting-layoutTab-showTooltip" type="checkbox"
 															ng-model="report.layout.chart.options.cursor.showTooltip" /></td>
 														<td><label>{{getI18N('reporting.definitionView.showTooltip.label')}}</label></td>
@@ -568,7 +569,8 @@ table.formTable td {
 																ng-model="report.layout.chart.options.cursor.show" /></td>
 														<td><label>{{getI18N('reporting.definitionView.showCursor.label')}}</label></td>
 													</tr>
-													<tr>
+													<tr ng-show="report.layout.chart.type && report.layout.chart.type != reportingService.metadata.chartTypes.pieChart.id 
+						 						&& report.layout.chart.type != reportingService.metadata.chartTypes.donutChart.id">
 														<td><input id="auto-reporting-layoutTab-zoom" type="checkbox" ng-disabled="report.layout.chart.options.cursor.show == false"
 															ng-model="report.layout.chart.options.cursor.zoom" /></td>
 														<td><label>{{getI18N('reporting.definitionView.zoom.label')}}</label></td>
@@ -616,7 +618,8 @@ table.formTable td {
 												</table>
 											</div>
 										</td>
-										<td valign="top">
+										<td ng-show="report.layout.chart.type && report.layout.chart.type != reportingService.metadata.chartTypes.pieChart.id 
+						 						&& report.layout.chart.type != reportingService.metadata.chartTypes.donutChart.id" valign="top">
 											<div style="margin-left: 10px;">
 												<div class="heading">{{getI18N('reporting.definitionView.animation.title')}}</div>
 												<table cellpadding="0" cellspacing="0" class="formTable">
