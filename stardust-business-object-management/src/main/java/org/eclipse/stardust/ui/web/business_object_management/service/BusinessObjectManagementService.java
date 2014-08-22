@@ -13,16 +13,9 @@ package org.eclipse.stardust.ui.web.business_object_management.service;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.LineNumberInputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.util.*;
 
 import javax.annotation.Resource;
 
@@ -34,6 +27,7 @@ import org.eclipse.stardust.engine.api.model.Data;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.model.Reference;
 import org.eclipse.stardust.engine.api.model.TypeDeclaration;
+import org.eclipse.stardust.engine.api.query.DataFilter;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
 import org.eclipse.stardust.engine.api.runtime.*;
 import org.eclipse.stardust.engine.core.runtime.beans.BigData;
@@ -48,7 +42,10 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 
 
 
-import com.google.gson.*;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 public class BusinessObjectManagementService {
     private static final Logger trace = LogManager
@@ -855,9 +852,16 @@ public class BusinessObjectManagementService {
     */
     public JsonArray getBusinessObjectProcessInstances(String modelOid,
             String businessObjectId, String primaryKey) {
-        // TODO This has to be a query on the BOI!
+
+    	// This is not making any NPE check
+        ModelCache modelCache = ModelCache.findModelCache();
+        DeployedModel model = modelCache.getModel(Long.parseLong(modelOid));
+        Data data = model.getData(businessObjectId);
+        String pk = (String) data.getAttribute(PredefinedConstants.PRIMARY_KEY_ATT);
 
         ProcessInstanceQuery query = ProcessInstanceQuery.findAll();
+        query.where(DataFilter.isEqual(businessObjectId, pk, primaryKey));
+
         JsonArray resultJson = new JsonArray();
 
         for (ProcessInstance processInstance : getQueryService()
@@ -978,7 +982,7 @@ public class BusinessObjectManagementService {
     * @param list
     * @return
     */
-    private JsonArray listToJsonArray(List list) {
+    private JsonArray listToJsonArray(List<?> list) {
         JsonArray jsonArray = new JsonArray();
 
         for (Object object : list) {
