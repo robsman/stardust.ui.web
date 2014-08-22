@@ -669,8 +669,7 @@ define(
 										},
 										highlighter : {},
 										cursor : {
-											show : true,
-											showTooltip : true
+											show : true
 										},
 										zoom : {}
 									}

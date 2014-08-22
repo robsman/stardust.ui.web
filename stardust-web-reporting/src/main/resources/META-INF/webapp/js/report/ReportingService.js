@@ -129,7 +129,7 @@ define(
 						id : "donutChart",
 						name : this.getI18N("reporting.definitionView.layout.subType.donutChart.label"),
 						hasDefaultSeries : false,
-						hasAxes : false
+						hasAxes : true
 					}
 				};
 
