@@ -18,13 +18,13 @@ import javax.annotation.Resource;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 import org.eclipse.stardust.common.Direction;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetails;
-import org.eclipse.stardust.engine.api.model.*;
+import org.eclipse.stardust.engine.api.model.DataPath;
+import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.DeployedModelQuery;
 import org.eclipse.stardust.engine.api.query.DescriptorPolicy;
@@ -39,8 +39,6 @@ import org.eclipse.stardust.ui.web.documenttriage.rest.JsonMarshaller;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
-
-import com.infinity.bpm.CompleteAiServiceCommand;
 
 public class DocumentTriageService
 {
@@ -410,29 +408,10 @@ public class DocumentTriageService
       Document sourceDocument = getDocumentManagementService().getDocument(
             json.get("document").getAsJsonObject().get("uuid").getAsString());
 
-      // TODO: Code assumes that there is always exactly one Document OUT data
-      // mapping
-      String APPLICATION_CONTEXT_ENGINE = "engine";
-
-      // Get Data Id for the (Document Rendezvous) OUT Data Mapping
-      ApplicationContext engineContext = activityInstance.getActivity()
-            .getApplicationContext(APPLICATION_CONTEXT_ENGINE);
-      
-      /*List<AccessPoint> accessPoints = engineContext.getAllAccessPoints();
-      
-      DataMapping outDataMapping = (DataMapping) engineContext.getAllOutDataMappings()
-            .get(0);
-      String dataMappingId = outDataMapping.getId();
-
-      Map<String, Object> outData = new HashMap<String, Object>();
-      outData.put(dataMappingId, (Object) sourceDocument);*/
-      
-      /*getWorkflowService().activateAndComplete(activityInstance.getOID(),
-            APPLICATION_CONTEXT_DEFAULT, outData);*/
-
-      CompleteAiServiceCommand serviceCommand = new CompleteAiServiceCommand(activityInstance.getOID(), null, null);
+      PerformDocumentRendezvousCommand serviceCommand = new PerformDocumentRendezvousCommand(
+            activityInstance.getOID(), sourceDocument);
       getWorkflowService().execute(serviceCommand);
-      
+
       return getPendingProcesses(null);
    }
 
