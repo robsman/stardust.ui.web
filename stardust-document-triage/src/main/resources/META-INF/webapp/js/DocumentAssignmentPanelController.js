@@ -485,7 +485,8 @@ define(
 									+ pattern.length);
 					
 					var b64 = base64.get();
-					var decodedId = b64.decode(encodedId + '0'|| '');
+					encodedId = (encodedId.length % 3 == 0)? encodedId : encodedId + "===".slice(encodedId.length % 3);
+					var decodedId = b64.decode(encodedId || '');
 					var partsMatcher = new RegExp('^(\\d+)\\|(\\d+)$');
 					var decodedParts = partsMatcher.exec(decodedId);
 					this.activityInstanceOid = decodedParts[1];

@@ -177,6 +177,5 @@ define([],function(){
 	    }
 	    return x.join('');
 	};
-	debugger;
 	return {get : function(){return base64;}};
 });
