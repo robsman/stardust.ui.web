@@ -58,12 +58,20 @@ define(["bpm-modeler/js/m_model"],function(m_model){
 		  "parseTypeToStringFrags" : parseTypeToStringFrags,
 		  "parseJSObjToStringFrags" :parseJSObjToStringFrags,
 		  "parseParamDefToStringFrags":function(paramDef){
-				var typeDecl;
-				var data;
+				var typeDecl,
+				    data,
+				    lookupData;
+				
 				if(paramDef.dataType==="primitive"){
 					data= [paramDef.id];
 				}else{
 					typeDecl=m_model.findTypeDeclaration(paramDef.structuredDataTypeFullId || paramDef.dataFullId);
+					if(!typeDecl){
+						/*check if data is defined on an external reference as any local reference should
+						 *resolve successfully via the findTypeDeclaration call*/
+						lookupData=m_model.findData(paramDef.structuredDataTypeFullId || paramDef.dataFullId);
+						typeDecl=m_model.findTypeDeclaration(lookupData.dataFullId);
+					}
 					if(typeDecl){
 						data=parseTypeToStringFrags(typeDecl,paramDef.id);
 					}

@@ -225,7 +225,7 @@ define(
 									},
 									function(event) {
 										var that=event.data.panel, /*for when 'this' just isn't good enough*/
-											baseName,			   /*Name we wil lgenerate a newID from*/
+											baseName,			   /*Name we will generate a newID from*/
 											generatedID,		   /*our ID generated from a custom function*/	
 											fx;					   /*our custom ID generation function*/
 										
