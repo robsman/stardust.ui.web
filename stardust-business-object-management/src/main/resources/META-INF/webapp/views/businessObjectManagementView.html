@@ -100,8 +100,9 @@ ul.errorMessagesPanel {
 						ng-show="currentBusinessObjectInstance != null"></input><input
 						type="button" value="Create"
 						ng-click="createBusinessObjectInstance()"
+						ng-show="newBusinessObjectInstance == null"
 						style="margin-left: 10px;"></input><input type="button"
-						value="Clear" ng-show="currentBusinessObjectInstance != null"
+						value="Close" ng-show="currentBusinessObjectInstance != null"
 						ng-click="clearBusinessObjectInstance()"
 						style="margin-left: 10px;"></input></td>
 				</tr>

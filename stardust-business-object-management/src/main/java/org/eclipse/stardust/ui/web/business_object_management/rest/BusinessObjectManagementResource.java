@@ -1,5 +1,13 @@
 package org.eclipse.stardust.ui.web.business_object_management.rest;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.HashMap;
+
+import javax.activation.DataHandler;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -11,8 +19,11 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
+import org.apache.cxf.jaxrs.ext.multipart.Attachment;
+import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.business_object_management.service.BusinessObjectManagementService;
@@ -65,14 +76,12 @@ public class BusinessObjectManagementResource {
 
 	@GET
 	@Path("/businessObject/{modelOid}/{businessObjectId}.json")
-	public Response getBusinessObject(
-			@PathParam("modelOid") String modelOid,
+	public Response getBusinessObject(@PathParam("modelOid") String modelOid,
 			@PathParam("businessObjectId") String businessObjectId) {
 		try {
 			return Response.ok(
-					getBusinessObjectManagementService()
-							.getBusinessObject(modelOid,
-									businessObjectId).toString(),
+					getBusinessObjectManagementService().getBusinessObject(
+							modelOid, businessObjectId).toString(),
 					MediaType.APPLICATION_JSON).build();
 		} catch (Exception e) {
 			trace.error(e, e);
@@ -113,8 +122,8 @@ public class BusinessObjectManagementResource {
 			return Response.ok(
 					getBusinessObjectManagementService()
 							.createBusinessObjectInstance(modelOid,
-									businessObjectId, primaryKey, json).toString(),
-					MediaType.APPLICATION_JSON).build();
+									businessObjectId, primaryKey, json)
+							.toString(), MediaType.APPLICATION_JSON).build();
 		} catch (Exception e) {
 			trace.error(e, e);
 
@@ -136,8 +145,8 @@ public class BusinessObjectManagementResource {
 			return Response.ok(
 					getBusinessObjectManagementService()
 							.updateBusinessObjectInstance(modelOid,
-									businessObjectId, primaryKey, json).toString(),
-					MediaType.APPLICATION_JSON).build();
+									businessObjectId, primaryKey, json)
+							.toString(), MediaType.APPLICATION_JSON).build();
 		} catch (Exception e) {
 			trace.error(e, e);
 
@@ -162,5 +171,91 @@ public class BusinessObjectManagementResource {
 
 			return Response.serverError().build();
 		}
+	}
+
+	@POST
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/businessObject/{modelOid}/{businessObjectId}.form-data")
+	public Response upload(MultipartBody body,
+			@PathParam("modelOid") String modelOid,
+			@PathParam("businessObjectId") String businessObjectId) {
+
+		JsonObject businessObjectJson = getBusinessObjectManagementService()
+				.getBusinessObject("" + modelOid, businessObjectId);
+		JsonObject primaryKeyField = getPrimaryKeyField(businessObjectJson);
+
+		try {
+			Attachment attachment = body.getAttachment("file");
+			DataHandler dataHandler = attachment.getDataHandler();
+			InputStream inputStream = dataHandler.getInputStream();
+			BufferedReader x = new BufferedReader(new InputStreamReader(
+					inputStream));
+
+			String line = null;
+			String[] fields = null;
+			int n = 0;
+
+			while ((line = x.readLine()) != null) {
+				if (n == 0) {
+					fields = line.split(",");
+
+					++n;
+
+					continue;
+				} else if (n > 10) {
+					// Only 10 for now
+
+					break;
+				}
+
+				String[] fieldValues = line.split(",");
+
+				JsonObject businessObjectInstanceJson = new JsonObject();
+
+				for (int m = 0; m < fieldValues.length; ++m) {
+					businessObjectInstanceJson.addProperty(fields[m], fieldValues[m]);
+				}
+
+				System.out.println("Primary Key");
+				System.out.println(primaryKeyField);
+				System.out.println(businessObjectInstanceJson);
+				
+				getBusinessObjectManagementService()
+						.createBusinessObjectInstance(
+								modelOid,
+								businessObjectId,
+								businessObjectInstanceJson
+										.get(primaryKeyField.get("id")
+												.getAsString()).getAsString(),
+								businessObjectInstanceJson);
+
+				++n;
+			}
+
+			return Response.ok("{}", MediaType.APPLICATION_JSON).build();
+		} catch (Exception e) {
+			trace.error(e, e);
+
+			return Response.serverError().build();
+		}
+	}
+
+	/**
+	 * 
+	 * @param businessObjectJson
+	 * @return
+	 */
+	private JsonObject getPrimaryKeyField(JsonObject businessObjectJson) {
+		for (int n = 0; n < businessObjectJson.get("fields").getAsJsonArray()
+				.size(); ++n) {
+			if (businessObjectJson.get("fields").getAsJsonArray().get(n)
+					.getAsJsonObject().get("primaryKey").getAsBoolean()) {
+				return businessObjectJson.get("fields").getAsJsonArray().get(n)
+						.getAsJsonObject();
+			}
+		}
+
+		throw new IllegalArgumentException("Primary key field not found.");
 	}
 }

@@ -1,5 +1,14 @@
 <div class="section" style="margin-bottom: 10px; padding: 10px;">
 	<div>
+		<table class="toolbar" style="width: 100%;">
+			<tr>
+				<td><a href="#" class="iconLink menuBarLink" title="Refresh"><i
+						class="fa fa-refresh" ng-click="refresh()"></i></a><a href="#"
+					class="iconLink menuBarLink" title="Import from CSV"
+					style="margin-left: 5px;"><i class="fa fa-upload"
+						ng-click="businessObjectManagementPanelController.openImportCSVDialog()"></i></a></td>
+			</tr>
+		</table>
 		<table class="formTable">
 			<tr>
 				<td><label>{{businessObjectManagementPanelController.primaryKeyField.label}}</label>
@@ -12,16 +21,6 @@
 					type="text" style="width: 100px; margin-left: 5px;"
 					ng-model="field.filterValue"
 					ng-blur="businessObjectManagementPanelController.filterBusinessObjectInstances()"></input></td>
-			</tr>
-		</table>
-		<table class="toolbar" style="width: 100%;">
-			<tr>
-				<td><a href="#" class="iconLink menuBarLink" title="Refresh"><i
-						class="fa fa-refresh" ng-click="refresh()"></i></a><a href="#"
-					class="iconLink menuBarLink" title="Toggle Selection"><i
-						class="fa fa-check-circle-o" ng-click="toggleSelection()"></i></a><a
-					href="#" class="iconLink menuBarLink" title="Select all"><i
-						class="fa fa-table" ng-click="configureTable()"></i></a></td>
 			</tr>
 		</table>
 		<div class="dataTableFrame"
@@ -48,4 +47,64 @@
 			</table>
 		</div>
 	</div>
+</div>
+<div sd-dialog="businessObjectManagementPanelController.importCSVDialog"
+	style="width: 200px;">
+	<div class="errorMessagesPanel"
+		ng-show="businessObjectManagementPanelController.importCSVDialog.errors.length > 0">
+		<ul>
+			<li
+				ng-repeat="error in businessObjectManagementPanelController.importCSVDialog.errors"><span
+				class="errorMessage">{{error.message}}</span></li>
+		</ul>
+	</div>
+	<table cellpadding="0" cellspacing="0"
+		style="width: 100%; margin-top: 10px;">
+		<tr>
+			<td>The CSV File needs to contain:
+				<ul>
+					<li>a header row with the IDs of all top level fields of the
+						{{businessObjectManagementPanelController.businessObject.name}}
+						and</li>
+					<li>rows with values for all
+						{{businessObjectManagementPanelController.businessObject.name}}s
+						to be loaded.</li>
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<table class="formTable">
+					<tr>
+						<td><label>File</label></td>
+						<td><input id="csvFile" type="file"
+							onchange="angular.element(this).scope().businessObjectManagementPanelController.onCSVFileSelect()"></input></td>
+						<td><input id="uploadButton" type="button" class="button"
+							ng-click="businessObjectManagementPanelController.uploadCSVFile()"
+							value="Upload" /></td>
+					</tr>
+					<tr>
+						<td colspan="3"><div
+								ng-show="businessObjectManagementPanelController.importCSVDialog.progressVisible">
+								<div class="percent">{{businessObjectManagementPanelController.importCSVDialog.progress}}%</div>
+								<div class="progress-bar">
+									<div class="uploaded"
+										ng-style="{'width': businessObjectManagementPanelController.importCSVDialog.progress + '%'}"></div>
+								</div>
+							</div></td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+		<tr>
+			<td align="center">
+				<table cellpadding="0" cellspacing="0">
+					<tr>
+						<td><input type="button" value="Close"
+							ng-click="businessObjectManagementPanelController.closeImportCSVDialog()" /></td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
 </div>

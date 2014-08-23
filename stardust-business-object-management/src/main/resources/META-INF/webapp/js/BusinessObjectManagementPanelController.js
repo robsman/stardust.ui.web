@@ -23,6 +23,9 @@ define(
 				 */
 				BusinessObjectManagementPanelController.prototype.initialize = function(
 						rootController) {
+					this.importCSVDialog = {
+						errors : []
+					};
 					this.rootController = rootController;
 					this.businessObjectFilter = {};
 					this.selectedBusinessObjectInstances = [];
@@ -112,6 +115,162 @@ define(
 
 										self.rootController.safeApply();
 									}).fail();
+				};
+
+				/**
+				 * 
+				 */
+				BusinessObjectManagementPanelController.prototype.openImportCSVDialog = function() {
+					console.log("Dialog");
+					console.log(this.importCSVDialog);
+
+					this.importCSVDialog.dialog("open");
+				};
+
+				/**
+				 * 
+				 */
+				BusinessObjectManagementPanelController.prototype.openImportCSVDialog = function() {
+					jQuery("#uploadButton").prop('disabled', true);
+
+					this.importCSVDialog.dialog("option", "modal", true);
+					this.importCSVDialog.dialog("open");
+					this.importCSVDialog.errors = [];
+				};
+
+				/**
+				 * 
+				 */
+				BusinessObjectManagementPanelController.prototype.closeImportCSVDialog = function() {
+					this.importCSVDialog.dialog("close");
+				};
+
+				/**
+				 * 
+				 */
+				BusinessObjectManagementPanelController.prototype.onCSVFileSelect = function() {
+					this.importCSVDialog.progressVisible = false;
+					this.importCSVDialog.errors = [];
+
+					this.rootController.safeApply();
+
+					var file = document.getElementById('csvFile').files[0];
+
+					if (!file) {
+						jQuery("#uploadButton").prop('disabled', true);
+					} else {
+						jQuery("#uploadButton").prop('disabled', false);
+					}
+				}
+				/**
+				 * 
+				 */
+				BusinessObjectManagementPanelController.prototype.uploadCSVFile = function() {
+					var formData = new FormData();
+					var file = document.getElementById('csvFile').files[0];
+
+					formData.append("file", file);
+
+					var client = new XMLHttpRequest();
+					var self = this;
+
+					client.addEventListener("progress", function(event) {
+						self.uploadProgress(event);
+					}, false);
+					client.addEventListener("load", function(event) {
+						self.uploadComplete(event);
+					}, false);
+					client.addEventListener("error", function(event) {
+						self.uploadFailed(event);
+					}, false);
+					client.addEventListener("abort", function(event) {
+						self.uploadCanceled(event);
+					}, false);
+
+					client
+							.open(
+									"POST",
+									this.getRootUrl()
+											+ "/services/rest/business-object-management/businessObject/"
+											+ self.businessObject.modelOid
+											+ "/" + self.businessObject.id
+											+ ".form-data");
+
+					client.setRequestHeader("Content-Type",
+							"multipart/form-data");
+
+					this.importCSVDialog.progressVisible = true;
+
+					try {
+						var response = client.send(formData);
+
+						if (!response) {
+							throw "Upload failed.";
+						}
+					} catch (x) {
+						this.importCSVDialog.progressVisible = false;
+						this.importCSVDialog.errors.push({
+							message : "Upload failed."
+						});
+
+						this.rootController.safeApply();
+					}
+				};
+
+				/**
+				 * 
+				 */
+				BusinessObjectManagementPanelController.prototype.uploadProgress = function(
+						event) {
+					if (event.lengthComputable) {
+						this.importCSVDialog.progress = Math.round(event.loaded
+								* 100 / event.total)
+					} else {
+						this.importCSVDialog.progress = '?';
+					}
+
+					this.rootController.safeApply();
+				};
+
+				/**
+				 * 
+				 */
+				BusinessObjectManagementPanelController.prototype.uploadComplete = function(
+						event) {
+					// TODO Load new BOIs
+				};
+
+				/**
+				 * 
+				 */
+				BusinessObjectManagementPanelController.prototype.uploadFailed = function(
+						event) {
+					this.importCSVDialog.progressVisible = false;
+					this.importCSVDialog.errors.push({
+						message : "Upload failed."
+					});
+
+					this.rootController.safeApply();
+				};
+
+				/**
+				 * 
+				 */
+				BusinessObjectManagementPanelController.prototype.uploadCanceled = function(
+						event) {
+					this.importCSVDialog.errors.push({
+						message : "Upload cancelled."
+					});
+
+					this.rootController.safeApply();
+				};
+
+				/**
+				 * 
+				 */
+				BusinessObjectManagementPanelController.prototype.getRootUrl = function() {
+					return location.href.substring(0, location.href
+							.indexOf("/plugins"));
 				};
 			}
 		});
