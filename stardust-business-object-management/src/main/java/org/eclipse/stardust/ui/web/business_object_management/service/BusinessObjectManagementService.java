@@ -583,9 +583,9 @@ public class BusinessObjectManagementService {
 		json.addProperty("name", xPath.getId()); // TODO fetch from annotations
 		String key = StringUtils.isEmpty(xPath.getXsdTypeNs()) ? "anonymous"
 				+ (types.entrySet().size() + 1)
-				: xPath.getType() != BigData.NULL ? xPath.getXsdTypeName()
-						: "{" + xPath.getXsdTypeNs() + "}"
-								+ xPath.getXsdTypeName();
+				: xPath.getType() == BigData.NULL || xPath.isEnumeration()
+						? "{" + xPath.getXsdTypeNs() + "}" + xPath.getXsdTypeName()
+						: xPath.getXsdTypeName();
 		json.addProperty("type", key);
 		if (xPath.isList()) {
 			json.addProperty("list", true);
@@ -632,7 +632,7 @@ public class BusinessObjectManagementService {
 		if (xPaths != null) {
 			for (TypedXPath xPath : xPaths) {
 				fields.add(toJson(xPath, types, pkAttribute));
-				if (xPath.getType() == BigData.NULL) {
+				if (xPath.getType() == BigData.NULL || xPath.isEnumeration()) {
 					String key = StringUtils.isEmpty(xPath.getXsdTypeNs()) ? "anonymous"
 							+ (types.entrySet().size() + 1)
 							: StringUtils.isEmpty(xPath.getXsdTypeNs()) ? xPath
@@ -641,10 +641,13 @@ public class BusinessObjectManagementService {
 									+ xPath.getXsdTypeName();
 					if (!types.has(key)) {
 						JsonObject type = new JsonObject();
-						List<TypedXPath> childXPaths = xPath.getChildXPaths();
-						if (childXPaths != null && !childXPaths.isEmpty()) {
-							addStructuralInformation(type, childXPaths, types,
-									null);
+						if (xPath.isEnumeration()) {
+							type.add("values", listToJsonArray(xPath.getEnumerationValues()));
+						} else {
+							List<TypedXPath> childXPaths = xPath.getChildXPaths();
+							if (childXPaths != null && !childXPaths.isEmpty()) {
+								addStructuralInformation(type, childXPaths, types, null);
+							}
 						}
 						types.add(key, type);
 					}
