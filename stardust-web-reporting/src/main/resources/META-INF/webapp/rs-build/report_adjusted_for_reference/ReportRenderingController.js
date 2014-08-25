@@ -206,6 +206,7 @@ define(
 					chartOptions.legend.show = this.report.layout.chart.options.legend.show;
 					chartOptions.legend.location = this.report.layout.chart.options.legend.location;
 					chartOptions.highlighter.show = this.report.layout.chart.options.highlighter.show;
+					chartOptions.cursor.showTooltip = this.report.layout.chart.options.cursor.showTooltip
 					chartOptions.cursor.show = this.report.layout.chart.options.cursor.show;
 					chartOptions.cursor.zoom = this.report.layout.chart.options.cursor.zoom;
 					chartOptions.seriesDefaults.showMarker = this.report.layout.chart.options.seriesDefaults.showMarker;
@@ -322,8 +323,10 @@ define(
 							bubbleGradients : true
 						};
 					}else if (this.report.layout.chart.type === this.reportingService.metadata.chartTypes.donutChart.id) {
+					   chartOptions.highlighter.show = false;
 						chartOptions.seriesDefaults.renderer = jQuery.jqplot.DonutRenderer;
 						chartOptions.seriesDefaults.rendererOptions = {
+						     highlightMouseOver : this.report.layout.chart.options.highlighter.show,
 					        // Donut's can be cut into slices like pies.
 					        sliceMargin: 3,
 					        // Pies and donuts can start at any arbitrary angle.
@@ -342,8 +345,10 @@ define(
 			                },
 						};
 					} else if(this.report.layout.chart.type === this.reportingService.metadata.chartTypes.pieChart.id) {
+					   chartOptions.highlighter.show = false;
 						chartOptions.seriesDefaults.renderer = jQuery.jqplot.PieRenderer;
 						chartOptions.seriesDefaults.rendererOptions = {
+						   highlightMouseOver : this.report.layout.chart.options.highlighter.show,
 							fill : false,
 							showDataLabels : true,
 							sliceMargin : 4,
