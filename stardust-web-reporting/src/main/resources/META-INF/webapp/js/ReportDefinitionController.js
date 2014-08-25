@@ -2258,6 +2258,18 @@ define(
           return isValid;
         };
 
+        /**
+         * Manages layout Cursor settings
+         */
+        ReportDefinitionController.prototype.updateCursorSettings = function() {
+           this.report.layout.chart.options.cursor.zoom = (this.report.layout.chart.options.cursor.show == false) ? false : 
+              this.report.layout.chart.options.cursor.zoom;
+           
+           this.report.layout.chart.options.cursor.showTooltip = (this.report.layout.chart.options.cursor.show == false) ? false : 
+              this.report.layout.chart.options.cursor.showTooltip;
+              
+        };
+        
 		}
 
 		function replaceSpecialChars(id){
