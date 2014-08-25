@@ -124,7 +124,7 @@ define(
 				m_utils.jQuerySelect("#refreshValidationLbl")
 						.text(
 								m_i18nUtils
-										.getProperty("modeler.propertyView.modelView.problems.noEntries"));
+										.getProperty("modeler.propertyView.modelView.problems.default"));
 
 			}
 			/**
@@ -351,11 +351,13 @@ define(
 											
 											if(json.length==0){
 												m_utils.jQuerySelect("#refreshValidationLbl")
-												.removeClass("invisible");
+												.text(
+														m_i18nUtils
+																.getProperty("modeler.propertyView.modelView.problems.noEntries"));
 											}
 											else{
 												m_utils.jQuerySelect("#refreshValidationLbl")
-												.addClass("invisible");
+												.text("");
 											}
 											
 											for ( var n = 0; n < json.length; ++n) {
