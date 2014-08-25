@@ -119,7 +119,12 @@ define(
 				m_utils.jQuerySelect("label[for='validFromDate']")
 						.text(
 								m_i18nUtils
-										.getProperty("modeler.propertyView.modelView.validFrom"));				
+										.getProperty("modeler.propertyView.modelView.validFrom"));		
+				
+				m_utils.jQuerySelect("#refreshValidationLbl")
+						.text(
+								m_i18nUtils
+										.getProperty("modeler.propertyView.modelView.problems.noEntries"));
 
 			}
 			/**
@@ -343,6 +348,16 @@ define(
 									},
 									{
 										"success" : function(json) {
+											
+											if(json.length==0){
+												m_utils.jQuerySelect("#refreshValidationLbl")
+												.removeClass("invisible");
+											}
+											else{
+												m_utils.jQuerySelect("#refreshValidationLbl")
+												.addClass("invisible");
+											}
+											
 											for ( var n = 0; n < json.length; ++n) {
 												var content = "<tr>";
 
