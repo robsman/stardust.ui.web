@@ -180,7 +180,7 @@ define(
 					var dimensions = this.reportingService.getCumulatedDimensions(this.report);
 
 					for (var i = dimensions.length - 1; i >= 0; i--) {
-						if (this.reportingService.metadata.durationType.id == dimensions[i].type.id) {
+						if ((this.reportingService.metadata.durationType.id == dimensions[i].type.id) || dimensions[i].notSupportedAsFilter) {
 							dimensions.splice(i, 1);
 						}
 					}

@@ -204,7 +204,8 @@ define(
 							rootProcessInstanceStartTimestamp : {
                         id : "rootProcessInstanceStartTimestamp",
                         name : this.getI18N("reporting.definitionView.additionalFiltering.rootProcessInstanceStartTimestamp"),
-                        type : this.metadata.timestampType
+                        type : this.metadata.timestampType,
+                        notSupportedAsFilter : true
                      },
 							terminationTimestamp : {
 								id : "terminationTimestamp",
@@ -241,7 +242,8 @@ define(
 								id : "startingUserName",
 								name : this.getI18N("reporting.definitionView.additionalFiltering.startingUserName"),
 								type : this.metadata.autocompleteType,
-								service : "userService" //TODO rest end point
+								service : "userService", //TODO rest end point
+								notSupportedAsFilter : true	
 							},
 							state : {
 								id : "state",
@@ -301,7 +303,8 @@ define(
                      rootProcessInstanceStartTimestamp : {
                         id : "rootProcessInstanceStartTimestamp",
                         name : this.getI18N("reporting.definitionView.additionalFiltering.rootProcessInstanceStartTimestamp"),
-                        type : this.metadata.timestampType
+                        type : this.metadata.timestampType,
+                        notSupportedAsFilter : true
                      },
                      activityInstanceDuration : {
                         id : "activityInstanceDuration",
@@ -354,19 +357,22 @@ define(
 								id : "processName",
 								name : this.getI18N("reporting.definitionView.additionalFiltering.processName"),
 								type : this.metadata.enumerationType,
-								enumerationType : "modelData:processDefinitions:name"
+								enumerationType : "modelData:processDefinitions:name",
+								notSupportedAsFilter : true
 							},
 							userPerformerName : {
 								id : "userPerformerName",
 								name : this.getI18N("reporting.definitionView.additionalFiltering.userPerformer"),
 								type : this.metadata.autocompleteType,
-								service : "userService"
+								service : "userService",
+								notSupportedAsFilter : true
 							},
 							participantPerformerName : {
 								id : "participantPerformerName",
 								name : this.getI18N("reporting.definitionView.additionalFiltering.performer"),
 								type : this.metadata.enumerationType,
-								enumerationType : "modelData:participants:name"
+								enumerationType : "modelData:participants:name",
+								notSupportedAsFilter : true
 							},
 							state : {
 								id : "state",
