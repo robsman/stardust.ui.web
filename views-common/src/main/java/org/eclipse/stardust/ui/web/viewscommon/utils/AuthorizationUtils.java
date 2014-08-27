@@ -90,6 +90,14 @@ public class AuthorizationUtils
    {
       return getIppUser().hasPermission(ExecutionPermission.Id.manageAuthorization);
    }
+   
+   /**
+    * @return
+    */
+   public static boolean canManageDeputies()
+   {
+      return getIppUser().hasPermission(ExecutionPermission.Id.manageDeputies);
+   }
 
    /**
     * @return
