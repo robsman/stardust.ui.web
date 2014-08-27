@@ -7,14 +7,14 @@
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 
 	<ice:panelGrid columns="1">
-		<ice:commandLink action="#{deputyTeamMemberBean.addMyTeamMemberDeputy}"
-			disabled="#{not deputyTeamMemberBean.teamMemberSelected}">
+		<ice:commandLink action="#{deputyTeamMemberBean.addUserDeputy}"
+			disabled="#{not deputyTeamMemberBean.userSelected}">
 			<pc:automationTag
 				value="auto-BCC-DeputyMgmt-MyDeputiesTbl-ToolbarAddTeamMemberDeputy" standAlone="false" />
 			<h:graphicImage style="border: none;"
 				value="/plugins/views-common/images/icons/user_add.png"
 				title="#{deputyTeamMemberBean.messages['addDeputy.title']}"
-				styleClass="#{deputyTeamMemberBean.teamMemberSelected ? '' : 'iceCmdBtn-dis'}" />
+				styleClass="#{deputyTeamMemberBean.userSelected ? '' : 'iceCmdBtn-dis'}" />
 		</ice:commandLink>
 	</ice:panelGrid>
 

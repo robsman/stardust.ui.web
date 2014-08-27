@@ -7,13 +7,13 @@
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 
 	<ice:panelGrid columns="1">
-		<ice:commandLink action="#{deputyTeamMemberBean.toggleMyTeamMembers}">
+		<ice:commandLink action="#{deputyTeamMemberBean.toggleShowAllUsers}">
 			<pc:automationTag
 				value="auto-BCC-DeputyMgmt-MyTeamMembersTbl-ToolbarToggleMyTeamMembers" standAlone="false" />
 			<h:graphicImage style="border: none;"
 				value="/plugins/views-common/images/icons/user-silhouette.png"
 				title="#{deputyTeamMemberBean.messages['myTeamMembers.toggle']}"
-				styleClass="#{deputyTeamMemberBean.showAllTeamMembers ? '' : 'iceCmdBtn-dis'}" />
+				styleClass="#{deputyTeamMemberBean.showAllUsers ? '' : 'iceCmdBtn-dis'}" />
 		</ice:commandLink>
 	</ice:panelGrid>
 

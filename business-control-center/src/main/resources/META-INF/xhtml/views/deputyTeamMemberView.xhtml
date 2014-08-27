@@ -20,7 +20,7 @@
 				resizable="false" sortSupported="true"
 				title="#{deputyTeamMemberBean.messages['myTeamMembers.title']}"
 				bean="#{deputyTeamMemberBean}"
-				table="#{deputyTeamMemberBean.myTeamMembersTable}"
+				table="#{deputyTeamMemberBean.usersTable}"
 				toolbarUrl="/plugins/business-control-center/views/deputyManagementViewMyTeamMembersTableToolbar.xhtml" />
 		</ice:panelGroup>
 
@@ -31,7 +31,7 @@
 			<pc:genericDataTable exportExcel="false" exportCsv="false"
 				resizable="false" sortSupported="true"
 				bean="#{deputyTeamMemberBean}"
-				table="#{deputyTeamMemberBean.myTeamMemberDeputiesTable}"
+				table="#{deputyTeamMemberBean.userDeputiesTable}"
 				toolbarUrl="/plugins/business-control-center/views/deputyManagementViewTeamMembersDeputiesTableToolbar.xhtml" />
 		</ice:panelGroup>
 

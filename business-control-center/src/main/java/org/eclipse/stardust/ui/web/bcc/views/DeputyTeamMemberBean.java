@@ -39,6 +39,7 @@ import org.eclipse.stardust.ui.web.viewscommon.common.deputy.DeputyTableEntry;
 import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ParametricCallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
+import org.eclipse.stardust.ui.web.viewscommon.utils.AuthorizationUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 
@@ -50,30 +51,24 @@ public class DeputyTeamMemberBean extends UIComponentBean implements ViewEventHa
     */
    private static final long serialVersionUID = 1L;
 
-   private boolean teamLead;
-
    private User currentUser;
 
-   private WorkflowFacade facade;
+   private SortableTable<DeputyTableEntry> usersTable;
 
-   private SortableTable<DeputyTableEntry> myTeamMembersTable;
+   private SortableTable<DeputyTableEntry> userDeputiesTable;
 
-   private SortableTable<DeputyTableEntry> myTeamMemberDeputiesTable;
+   private DeputyTableEntry selectedUser;
 
-   private DeputyTableEntry selectedTeamMember;
+   private List<DeputyTableEntry> usersList;
 
-   private List<DeputyTableEntry> myTeamMemberList;
+   private boolean showAllUsers = true;
 
-   private boolean showAllTeamMembers = true;
-
-   private Map<String, List<DeputyTableEntry>> deputiesTeamMemberCache;
+   private Map<String, List<DeputyTableEntry>> deputiesUserCache;
 
    public DeputyTeamMemberBean()
    {
       super("deputyTeamMemberView");
       currentUser = ServiceFactoryUtils.getServiceFactory().getUserService().getUser();
-      facade = WorkflowFacade.getWorkflowFacade();
-      teamLead = facade.isTeamLead();
 
       initialize();
       load(true);
@@ -85,8 +80,6 @@ public class DeputyTeamMemberBean extends UIComponentBean implements ViewEventHa
       {
       case CREATED:
          currentUser = ServiceFactoryUtils.getServiceFactory().getUserService().getUser();
-         facade = WorkflowFacade.getWorkflowFacade();
-         teamLead = facade.isTeamLead();
 
          initialize();
          load(true);
@@ -96,33 +89,33 @@ public class DeputyTeamMemberBean extends UIComponentBean implements ViewEventHa
    }
 
    /**
-    * @param resetMyTeamsTable
+    * @param resetUsersTable
     */
-   private void load(boolean resetMyTeamsTable)
+   private void load(boolean resetUsersTable)
    {
-      deputiesTeamMemberCache = new HashMap<String, List<DeputyTableEntry>>();
+      deputiesUserCache = new HashMap<String, List<DeputyTableEntry>>();
 
-      loadMyTeamMembersTable();
+      loadUsersTable();
 
-      if (resetMyTeamsTable)
+      if (resetUsersTable)
       {
-         selectedTeamMember = null;
-         loadMyTeamMemberDeputiesTable();
+         selectedUser = null;
+         loadUserDeputiesTable();
       }
    }
 
    @Override
    public void initialize()
    {
-      initializeMyTeamMembersTable();
-      initializeMyTeamMemberDeputiesTable();
+      initializeUsersTable();
+      initializeUserDeputiesTable();
 
    }
 
    /**
     *
     */
-   private void initializeMyTeamMembersTable()
+   private void initializeUsersTable()
    {
       ColumnPreference deputyCol = new ColumnPreference("TeamMember", "userDisplayName",
             getMessages().getString("teamMember"),
@@ -141,17 +134,17 @@ public class DeputyTeamMemberBean extends UIComponentBean implements ViewEventHa
             UserPreferencesEntries.M_BCC,
             UserPreferencesEntries.V_DEPUTY_TEAM_MEMBER_VIEW);
 
-      myTeamMembersTable = new SortableTable<DeputyTableEntry>(deputyColumnModel, null,
+      usersTable = new SortableTable<DeputyTableEntry>(deputyColumnModel, null,
             new SortableTableComparator<DeputyTableEntry>("userDisplayName", true));
-      myTeamMembersTable.setRowSelector(new DataTableRowSelector("selected",
+      usersTable.setRowSelector(new DataTableRowSelector("selected",
             new TeamMemberRowEventListener(), false));
-      myTeamMembersTable.initialize();
+      usersTable.initialize();
    }
 
    /**
     *
     */
-   private void initializeMyTeamMemberDeputiesTable()
+   private void initializeUserDeputiesTable()
    {
       MessagesViewsCommonBean propsBean = MessagesViewsCommonBean.getInstance();
       ColumnPreference deputyCol = new ColumnPreference("Deputy", "userDisplayName",
@@ -178,38 +171,40 @@ public class DeputyTeamMemberBean extends UIComponentBean implements ViewEventHa
             UserPreferencesEntries.M_BCC,
             UserPreferencesEntries.V_DEPUTY_TEAM_MEMBER_VIEW);
 
-      myTeamMemberDeputiesTable = new SortableTable<DeputyTableEntry>(deputyColumnModel,
+      userDeputiesTable = new SortableTable<DeputyTableEntry>(deputyColumnModel,
             null, new SortableTableComparator<DeputyTableEntry>("userDisplayName", true));
-      myTeamMemberDeputiesTable.initialize();
+      userDeputiesTable.initialize();
    }
 
    /**
     *
     */
-   private void loadMyTeamMembersTable()
+   private void loadUsersTable()
    {
-      myTeamMemberList = new ArrayList<DeputyTableEntry>();
-
-      UserQuery userQuery = facade.getTeamQuery(false, true);
-      userQuery.setPolicy(new UserDetailsPolicy(UserDetailsLevel.Full));
-      userQuery.orderBy(UserQuery.LAST_NAME)
-            .and(UserQuery.FIRST_NAME)
-            .and(UserQuery.ACCOUNT);
-
-      UserService userService = ServiceFactoryUtils.getUserService();
-
-      Users memberUsers = ServiceFactoryUtils.getQueryService().getAllUsers(userQuery);
-      for (User memberUser : memberUsers)
+      usersList = new ArrayList<DeputyTableEntry>();
+      UserQuery query = null;
+      if(AuthorizationUtils.canManageDeputies())
       {
-         if ( !memberUser.getAccount().equals(currentUser.getAccount())) // Skip the
-                                                                         // Current User
+         query = UserQuery.findActive();
+         query.setPolicy(new UserDetailsPolicy(UserDetailsLevel.Full));
+         query.orderBy(UserQuery.LAST_NAME)
+               .and(UserQuery.FIRST_NAME)
+               .and(UserQuery.ACCOUNT);
+         UserService userService = ServiceFactoryUtils.getUserService();
+         
+         Users memberUsers = ServiceFactoryUtils.getQueryService().getAllUsers(query);
+         for (User memberUser : memberUsers)
          {
-            myTeamMemberList.add(new DeputyTableEntry(memberUser,
-                  CollectionUtils.isNotEmpty(fetchDeputies(userService, memberUser))));
+            if ( !memberUser.getAccount().equals(currentUser.getAccount())) // Skip the
+                                                                            // Current User
+            {
+               usersList.add(new DeputyTableEntry(memberUser,
+                     CollectionUtils.isNotEmpty(fetchDeputies(userService, memberUser))));
+            }
          }
       }
 
-      myTeamMembersTable.setList(myTeamMemberList);
+      usersTable.setList(usersList);
    }
 
    /**
@@ -230,7 +225,7 @@ public class DeputyTeamMemberBean extends UIComponentBean implements ViewEventHa
     */
    private List<DeputyTableEntry> fetchDeputies(UserService userService, User user)
    {
-      if ( !deputiesTeamMemberCache.containsKey(user.getAccount()))
+      if ( !deputiesUserCache.containsKey(user.getAccount()))
       {
          User deputyUser;
          List<DeputyTableEntry> deputyList = new ArrayList<DeputyTableEntry>();
@@ -243,35 +238,35 @@ public class DeputyTeamMemberBean extends UIComponentBean implements ViewEventHa
                   deputy.getUntilDate(), deputy.getParticipints()));
          }
 
-         deputiesTeamMemberCache.put(user.getAccount(), deputyList);
+         deputiesUserCache.put(user.getAccount(), deputyList);
       }
-      return deputiesTeamMemberCache.get(user.getAccount());
+      return deputiesUserCache.get(user.getAccount());
    }
 
    /**
     * @param
     */
-   private void loadMyTeamMemberDeputiesTable()
+   private void loadUserDeputiesTable()
    {
-      if (null != selectedTeamMember)
+      if (null != selectedUser)
       {
-         loadDeputiesTable(myTeamMemberDeputiesTable, selectedTeamMember.getUser());
+         loadDeputiesTable(userDeputiesTable, selectedUser.getUser());
       }
       else
       {
-         myTeamMemberDeputiesTable.setList(null);
+         userDeputiesTable.setList(null);
       }
    }
 
    /**
     *
     */
-   public void addMyTeamMemberDeputy()
+   public void addUserDeputy()
    {
       try
       {
          CreateOrModifyDeputyPopupBean.getInstance().openPopup(null,
-               selectedTeamMember.getUser(), new DeputyCallbackHandler());
+               selectedUser.getUser(), new DeputyCallbackHandler());
       }
       catch (Exception e)
       {
@@ -282,13 +277,13 @@ public class DeputyTeamMemberBean extends UIComponentBean implements ViewEventHa
    /**
     * @param event
     */
-   public void editMyTeamMemberDeputy(ActionEvent event)
+   public void editUserDeputy(ActionEvent event)
    {
       try
       {
          DeputyTableEntry deputyTableEntry = (DeputyTableEntry) event.getComponent().getAttributes().get("deputy");
          CreateOrModifyDeputyPopupBean.getInstance().openPopup(deputyTableEntry.getClone(),
-               selectedTeamMember.getUser(), new DeputyCallbackHandler());
+               selectedUser.getUser(), new DeputyCallbackHandler());
       }
       catch (Exception e)
       {
@@ -299,15 +294,15 @@ public class DeputyTeamMemberBean extends UIComponentBean implements ViewEventHa
    /**
     * @param event
     */
-   public void removeMyTeamMemberDeputy(ActionEvent event)
+   public void removeUserDeputy(ActionEvent event)
    {
       try
       {
          DeputyTableEntry deputyTableEntry = (DeputyTableEntry) event.getComponent().getAttributes().get("deputy");
-         ServiceFactoryUtils.getUserService().removeDeputy(selectedTeamMember.getUser(), deputyTableEntry.getUser());
+         ServiceFactoryUtils.getUserService().removeDeputy(selectedUser.getUser(), deputyTableEntry.getUser());
 
-         myTeamMemberDeputiesTable.getList().remove(deputyTableEntry);
-         selectedTeamMember.setHasDeputies(myTeamMemberDeputiesTable.getList().size() > 0);
+         userDeputiesTable.getList().remove(deputyTableEntry);
+         selectedUser.setHasDeputies(userDeputiesTable.getList().size() > 0);
       }
       catch (Exception e)
       {
@@ -331,8 +326,8 @@ public class DeputyTeamMemberBean extends UIComponentBean implements ViewEventHa
        */
       public void handleEvent(EventType eventType)
       {
-         selectedTeamMember.setHasDeputies(true);
-         SortableTable<DeputyTableEntry> deputyTable = myTeamMemberDeputiesTable;
+         selectedUser.setHasDeputies(true);
+         SortableTable<DeputyTableEntry> deputyTable = userDeputiesTable;
          List<DeputyTableEntry> list = deputyTable.getList();
 
          DeputyTableEntry deputyTableEntry = ((DeputyTableEntry) getParameters().get(
@@ -356,31 +351,31 @@ public class DeputyTeamMemberBean extends UIComponentBean implements ViewEventHa
    /**
     *
     */
-   public void toggleMyTeamMembers()
+   public void toggleShowAllUsers()
    {
       try
       {
-         showAllTeamMembers = !showAllTeamMembers;
+         showAllUsers = !showAllUsers;
 
-         if (showAllTeamMembers)
+         if (showAllUsers)
          {
-            myTeamMembersTable.setList(myTeamMemberList);
+            usersTable.setList(usersList);
          }
          else
          {
             List<DeputyTableEntry> list = new ArrayList<DeputyTableEntry>();
-            for (DeputyTableEntry entry : myTeamMemberList)
+            for (DeputyTableEntry entry : usersList)
             {
                if (entry.isHasDeputies())
                {
                   list.add(entry);
                }
             }
-            myTeamMembersTable.setList(list);
+            usersTable.setList(list);
          }
 
-         selectedTeamMember = null;
-         loadMyTeamMemberDeputiesTable();
+         selectedUser = null;
+         loadUserDeputiesTable();
       }
       catch (Exception e)
       {
@@ -388,29 +383,24 @@ public class DeputyTeamMemberBean extends UIComponentBean implements ViewEventHa
       }
    }
 
-   public boolean isTeamMemberSelected()
+   public boolean isUserSelected()
    {
-      return null != selectedTeamMember;
+      return null != selectedUser;
    }
 
-   public SortableTable<DeputyTableEntry> getMyTeamMembersTable()
+   public SortableTable<DeputyTableEntry> getUsersTable()
    {
-      return myTeamMembersTable;
+      return usersTable;
    }
 
-   public SortableTable<DeputyTableEntry> getMyTeamMemberDeputiesTable()
+   public SortableTable<DeputyTableEntry> getUserDeputiesTable()
    {
-      return myTeamMemberDeputiesTable;
+      return userDeputiesTable;
    }
 
-   public boolean isTeamLead()
+   public boolean isShowAllUsers()
    {
-      return teamLead;
-   }
-
-   public boolean isShowAllTeamMembers()
-   {
-      return showAllTeamMembers;
+      return showAllUsers;
    }
 
    /**
@@ -437,8 +427,8 @@ public class DeputyTeamMemberBean extends UIComponentBean implements ViewEventHa
        */
       public void rowSelected(RowSelectorEvent event)
       {
-         selectedTeamMember = myTeamMembersTable.getList().get(event.getRow());
-         loadMyTeamMemberDeputiesTable();
+         selectedUser = usersTable.getList().get(event.getRow());
+         loadUserDeputiesTable();
       }
    }
 

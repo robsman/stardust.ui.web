@@ -46,7 +46,7 @@
 
 		<ice:panelGroup rendered="#{col.columnName == 'TeamMemberDeputiesActions'}">
 			<ice:panelGrid columns="4" style="float: right;">
-				<ice:commandLink actionListener="#{bean.editMyTeamMemberDeputy}">
+				<ice:commandLink actionListener="#{bean.editUserDeputy}">
 					<pc:automationTag value="auto-BCC-DeputyMgmt-MyDeputiesTbl-ActionsEditDeputy" standAlone="false" />
 					<ice:graphicImage
 						value="/plugins/views-common/images/icons/pencil.png"
@@ -54,7 +54,7 @@
 						styleClass="portal-std-icon" />
 					<f:attribute name="deputy" value="#{row}" />
 				</ice:commandLink>
-				<ice:commandLink actionListener="#{bean.removeMyTeamMemberDeputy}">
+				<ice:commandLink actionListener="#{bean.removeUserDeputy}">
 					<pc:automationTag value="auto-BCC-DeputyMgmt-MyDeputiesTbl-ActionsRemoveDeputy" standAlone="false" />
 					<ice:graphicImage
 						value="/plugins/views-common/images/icons/delete.png"
