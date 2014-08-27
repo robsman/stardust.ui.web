@@ -568,26 +568,17 @@ define(
                         supportsOtherData : false,
                         hideEnumerations:true
                      });
-
-               // Predefined access points
-
-               this.view.submitChanges({
-                  contexts : {
-                     application : {
-                        accessPoints : this
-                              .createIntrinsicAccessPoints()
-                     }
-                  }
-               });
+               
                this.transactedRouteInput.change(function() {
-                   if (!self.view.validate()) {
-                      return;
-                   }
-                   self.view.submitModelElementAttributeChange(
-                         "carnot:engine:camel::transactedRoute",
-                         self.transactedRouteInput.prop('checked'));
-                   self.submitChanges();
-                });
+                  if (!self.view.validate()) {
+                     return;
+                  }
+                  self.view.submitModelElementAttributeChange(
+                        "carnot:engine:camel::transactedRoute",
+                        self.transactedRouteInput.prop('checked'));
+                  self.submitChanges();
+               });
+               
                this.update();
             };
 
@@ -769,11 +760,12 @@ define(
                this.initializeParameterDefinitionsTable();
                this.parameterDefinitionsPanel
                      .selectCurrentParameterDefinition();
+               
                if(this.getApplication().attributes["carnot:engine:camel::transactedRoute"]==null||this.getApplication().attributes["carnot:engine:camel::transactedRoute"]===undefined){
-                   this.view.submitModelElementAttributeChange("carnot:engine:camel::transactedRoute", true);
-                }
-               this.transactedRouteInput.prop("checked",
-                       this.getApplication().attributes["carnot:engine:camel::transactedRoute"]); 
+                  this.view.submitModelElementAttributeChange("carnot:engine:camel::transactedRoute", true);
+               }
+              this.transactedRouteInput.prop("checked",
+                      this.getApplication().attributes["carnot:engine:camel::transactedRoute"]); 
             };
 
             SqlIntegrationOverlay.prototype.initializeParameterDefinitionsTable = function() {
