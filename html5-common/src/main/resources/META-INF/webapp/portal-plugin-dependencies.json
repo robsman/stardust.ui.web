@@ -1,0 +1,13 @@
+{
+	/* Plugin Dependencies */
+	"portal-plugins" : [],
+
+	/* 3rd party libs */
+	"libs" : [],
+
+	/* Local scripts */
+	"scripts" : [],
+
+	/* Styles */
+	"styles" : []
+}
