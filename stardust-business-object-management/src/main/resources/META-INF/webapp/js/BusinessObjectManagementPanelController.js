@@ -49,7 +49,8 @@ define(
 
 					if (this.businessObject.types) {
 						for ( var type in this.businessObject.types) {
-							for (var n = 0; n < this.businessObject.types[type].fields.length; ++n) {
+							for (var n = 0; this.businessObject.types[type].fields
+									&& n < this.businessObject.types[type].fields.length; ++n) {
 								this.businessObject.types[type].fields[n].label = this
 										.createLabel(this.businessObject.types[type].fields[n].name);
 							}

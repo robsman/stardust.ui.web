@@ -6,20 +6,28 @@
 					ng-if="$index >= column.min && $index <= column.max && field.ui.StringInputPreferences_stringInputType != 'TEXTAREA'">
 					<td><label style="margin-left: 5px;">{{field.ui.InputPreferences_label
 							|| field.label}}</label></td>
-					<td><input
-						ng-show="field.type == 'string' && field.ui.StringInputPreferences_stringInputType != 'TEXTAREA'"
-						type="text" style="width: 200px;" ng-model="instance[field.id]"></input>
-						<input ng-show="field.type == 'boolean'" type="checkbox"
-						ng-model="instance[field.id]"></input> <input
-						ng-show="field.type == 'integer'" type="number"
-						style="width: 100px; text-align: right;"
-						ng-model="instance[field.id]"></input> <input
-						ng-show="field.type == 'decimal'" type="text"
-						style="width: 100px; text-align: right;"
-						ng-model="instance[field.id]"></input> <input
-						ng-show="field.type == 'date'" type="date"
-						style="width: 100px; text-align: right;"
-						ng-model="instance[field.id]"></input></td>
+					<td><div
+							ng-show="getBusinessObject().types[field.type].values">
+							<select ng-model="instance[field.id]"
+								ng-options="value as value for value in getBusinessObject().types[field.type].values"><option
+									value="">Please select ...</option></select>
+						</div>
+						<div ng-hide="getBusinessObject().types[field.type].values">
+							<input
+								ng-show="field.type == 'string' && field.ui.StringInputPreferences_stringInputType != 'TEXTAREA'"
+								type="text" style="width: 200px;" ng-model="instance[field.id]"></input>
+							<input ng-show="field.type == 'boolean'" type="checkbox"
+								ng-model="instance[field.id]"></input> <input
+								ng-show="field.type == 'integer'" type="number"
+								style="width: 100px; text-align: right;"
+								ng-model="instance[field.id]"></input> <input
+								ng-show="field.type == 'decimal'" type="text"
+								style="width: 100px; text-align: right;"
+								ng-model="instance[field.id]"></input> <input
+								ng-show="field.type == 'date'" type="date"
+								style="width: 100px; text-align: right;"
+								ng-model="instance[field.id]"></input>
+						</div></td>
 				</tr>
 			</table>
 		</td>

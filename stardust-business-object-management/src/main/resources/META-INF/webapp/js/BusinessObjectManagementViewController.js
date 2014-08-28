@@ -209,11 +209,12 @@ define(
 						return fields;
 					}
 
-					for (var n = 0; n < type.fields.length; ++n) {
+					for (var n = 0; type.fields && n < type.fields.length; ++n) {
 						// Skip complex fields
 
 						if (type.fields[n].list
-								|| (this.businessObject.types && this.businessObject.types[type.fields[n].type])) {
+								|| (this.businessObject.types
+										&& this.businessObject.types[type.fields[n].type] && !this.businessObject.types[type.fields[n].type].values)) {
 							continue;
 						}
 
@@ -234,12 +235,13 @@ define(
 						return fields;
 					}
 
-					for (var n = 0; n < type.fields.length; ++n) {
+					for (var n = 0; type.fields && n < type.fields.length; ++n) {
 						// Skip primitive fields
 
 						if (!type.fields[n].list
-								&& (!this.getBusinessObject().types || !this
-										.getBusinessObject().types[type.fields[n].type])) {
+								&& (!this.getBusinessObject().types
+										|| !this.getBusinessObject().types[type.fields[n].type] || this
+										.getBusinessObject().types[type.fields[n].type].values)) {
 							continue;
 						}
 
