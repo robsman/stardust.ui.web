@@ -16,7 +16,7 @@
 
 	<ice:panelGroup style="margin: 0px; padding: 0px;">
 
-		<ice:panelGroup rendered="#{col.columnName == 'Deputy' or col.columnName == 'User' or col.columnName == 'TeamMember'}">
+		<ice:panelGroup rendered="#{col.columnName == 'Deputy' or col.columnName == 'User' or col.columnName == 'Participant'}">
 			<ice:panelGrid columns="2">
 				<ice:graphicImage value="#{row.avatarImageURI}" width="24px" height="24px" />
 				<ice:outputText value="#{row.userDisplayName}" />

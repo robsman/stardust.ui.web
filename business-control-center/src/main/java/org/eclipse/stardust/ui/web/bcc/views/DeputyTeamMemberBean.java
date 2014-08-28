@@ -117,7 +117,7 @@ public class DeputyTeamMemberBean extends UIComponentBean implements ViewEventHa
     */
    private void initializeUsersTable()
    {
-      ColumnPreference deputyCol = new ColumnPreference("TeamMember", "userDisplayName",
+      ColumnPreference deputyCol = new ColumnPreference("Participant", "userDisplayName",
             getMessages().getString("teamMember"),
             ResourcePaths.V_deputyManagementViewColumns, true, true);
 
@@ -183,25 +183,24 @@ public class DeputyTeamMemberBean extends UIComponentBean implements ViewEventHa
    {
       usersList = new ArrayList<DeputyTableEntry>();
       UserQuery query = null;
-      if(AuthorizationUtils.canManageDeputies())
+      UserService userService = ServiceFactoryUtils.getUserService();
+      if (AuthorizationUtils.canManageDeputies())
       {
          query = UserQuery.findActive();
          query.setPolicy(new UserDetailsPolicy(UserDetailsLevel.Full));
-         query.orderBy(UserQuery.LAST_NAME)
-               .and(UserQuery.FIRST_NAME)
-               .and(UserQuery.ACCOUNT);
-         UserService userService = ServiceFactoryUtils.getUserService();
-         
+         query.orderBy(UserQuery.LAST_NAME).and(UserQuery.FIRST_NAME).and(UserQuery.ACCOUNT);
+
          Users memberUsers = ServiceFactoryUtils.getQueryService().getAllUsers(query);
          for (User memberUser : memberUsers)
          {
-            if ( !memberUser.getAccount().equals(currentUser.getAccount())) // Skip the
-                                                                            // Current User
-            {
-               usersList.add(new DeputyTableEntry(memberUser,
-                     CollectionUtils.isNotEmpty(fetchDeputies(userService, memberUser))));
-            }
+            usersList.add(new DeputyTableEntry(memberUser, CollectionUtils.isNotEmpty(fetchDeputies(userService,
+                  memberUser))));
          }
+      }
+      else
+      {
+         usersList.add(new DeputyTableEntry(currentUser, CollectionUtils.isNotEmpty(fetchDeputies(userService,
+               currentUser))));
       }
 
       usersTable.setList(usersList);
