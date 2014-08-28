@@ -77,6 +77,7 @@ public class AuthorizationManagerBean extends PopupUIComponentBean
    private static final String GLOBAL_EXTNS = "globalExtensions";
    
    private static final ModelParticipantComparator MODEL_PARTICIPANT_COMPARATOR = new ModelParticipantComparator();
+   private static final TreeNodeComparator TREE_NODE_COMPARATOR = new TreeNodeComparator();
    private final AdministrationService administrationService;
    private DefaultTreeModel permissionTreeModel;
    private final ParticipantHelper participantHelper;
@@ -948,17 +949,22 @@ public class AuthorizationManagerBean extends PopupUIComponentBean
       try
       {
          List<String> permissionIds = new ArrayList<String>(permissions.getGeneralPermission().getAllPermissionIds());
-
-         Collections.sort(permissionIds); // sort in natural order
-
+         List<DefaultMutableTreeNode> childNodes = CollectionUtils.newArrayList();
          for (String permissionId : permissionIds)
          {
-            // Add Permission Node
-
-            DefaultMutableTreeNode treeNode = addPermissionNode(generalPermTreeNode, permissionId,
+            // Create Permission Node
+            DefaultMutableTreeNode treeNode = addPermissionNode(null, permissionId,
                   (getMessages().getString(PERMISSION_KEY + permissionId)));
-
+            
             updateParticipantNodes(treeNode);
+            childNodes.add(treeNode);
+         }
+         //Sort all permission nodes
+         Collections.sort(childNodes, TREE_NODE_COMPARATOR);
+         //Add permissions to General Permission's ROOT node
+         for (DefaultMutableTreeNode node : childNodes)
+         {
+            generalPermTreeNode.add(node);
          }
       }
       catch (Exception exception)
@@ -1228,3 +1234,20 @@ class ModelParticipantComparator implements Comparator<ModelParticipantInfo>
       return part1.getName().compareTo(part2.getName());
    }
 }
+
+/**
+ * Sort Tree Nodes based on display title
+ * 
+ * @author Sidharth.Singh
+ * 
+ */
+class TreeNodeComparator implements Comparator<DefaultMutableTreeNode>
+{
+
+   @Override
+   public int compare(DefaultMutableTreeNode node1, DefaultMutableTreeNode node2)
+   {
+      return ((IceUserObject) node1.getUserObject()).getText().compareTo(
+            ((IceUserObject) node2.getUserObject()).getText());
+   }
+} 
