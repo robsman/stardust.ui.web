@@ -509,6 +509,21 @@ public class FacesUtils implements Constants
    {
       if (component instanceof EditableValueHolder)
       {
+         try
+         {
+            /* The reflection code below caters to all subclasses of javax.faces.componentUIInput
+             * that have the isDisabled method. */
+            Object ret = ReflectionUtils.invokeMethod(component, "isDisabled");
+            if ((Boolean) ret)
+            {
+               return;
+            }
+         }
+         catch (Exception e)
+         {
+            // Do nothing. Carry on with the regular flow.
+         }
+         
          EditableValueHolder editableValueHolder = (EditableValueHolder) component;
          editableValueHolder.setSubmittedValue(null);
          editableValueHolder.setValue(null);
