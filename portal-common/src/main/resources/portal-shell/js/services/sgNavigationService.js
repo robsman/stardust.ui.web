@@ -1,9 +1,8 @@
 /*
  * 
  */
-define(['portal-shell/js/shell'], function (shell) {
 	'use strict';
-	shell.services.provider('sgNavigationService', function () {
+angular.module('shell.services').provider('sgNavigationService', function () {
 		var self = this;
 		
 		// Reference to angular's $routeProvider. This is set from Shell.js
@@ -178,5 +177,4 @@ define(['portal-shell/js/shell'], function (shell) {
 
 			return service;
 		}];
-	});
 });

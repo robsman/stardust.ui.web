@@ -1,10 +1,9 @@
 /*
  * 
  */
-define(['portal-shell/js/shell'], function (shell) {
 	'use strict';
 	
-	shell.module.controller('sg.shell.Controller',
+angular.module('shell').controller('sg.shell.Controller',
 			['$scope', '$resource', '$q', '$window', '$document', '$timeout', '$compile', '$controller', 'sgConfigService', 'sgNavigationService', 'sgViewPanelService', 'sgPubSubService', 'sgSidebarStateService',
 			function ($scope, $resource, $q, $window, $document, $timeout, $compile, $controller, sgConfigService, sgNavigationService, sgViewPanelService, sgPubSubService, sgSidebarStateService) {
 
@@ -288,5 +287,4 @@ define(['portal-shell/js/shell'], function (shell) {
 		            resizeTimeoutId = $timeout(calculateShellSizes, 300);
 		        });
 				// ****************** Window Resizing - END ******************
-		}]);
-});
+	}]);

@@ -8,12 +8,11 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=10,chrome=1">
 
-    <base id="baseTag" href="/">
     <script>
-    // This ensures the base URL of the application is set to the current URL.
-    // This enables us to automatically adapt to the location the application is put in.
-    // Put inline here to ensure that all future requests the browser does on this page is made with the correct base.
-    document.getElementById('baseTag').href = location.href;
+	    // This ensures the base URL of the application is set to the current URL.
+	    // This enables us to automatically adapt to the location the application is put in.
+	    // Put inline here to ensure that all future requests the browser does on this page is made with the correct base.
+	    document.write('<base href="' + location.href + '" />');
     </script>
 
     <title ng-bind-template="{{config.windowTitle}}"></title>
@@ -22,6 +21,10 @@
     <style>[ng\:cloak], [ng-cloak], .ng-cloak { display: none; }</style>
 
     <link rel="stylesheet" href="portal-shell/themes/default/styles.css"></link>
+
+    <!-- Dependency Styles from Portal Plugins -->
+    <!-- DEPENDENCY_STYLES_TO_BE_INJECTED -->
+
     <link ng-repeat="css in theme.styleSheets" rel="stylesheet" ng-href="{{css}}"></link>
 
     <script ng-repeat="js in theme.scripts" type="text/javascript" ng-src="{{js}}"></script>
@@ -189,7 +192,55 @@
 		</footer>
 	</div>
 
-    <script src="portal-shell/js/stardust.js?version=${buildNumber}"></script>
-    <script data-main="main.js?version=${buildNumber}" src="portal-shell/js/libs/require/2.0.5/require.min.js"></script>
+	<!-- Framework Dependencies -->
+	<script src="portal-shell/js/libs/jquery/1.9.1/jquery.min.js"></script>
+	<script src="portal-shell/js/libs/angular/1.1.5/angular.min.js"></script>
+	<script src="portal-shell/js/libs/angular/1.1.5/angular-resource.min.js"></script>
+
+	<!-- Framework now does not depend on requriejs, but this is kept for backward compatibility for now -->
+	<script src="portal-shell/js/libs/require/2.0.5/require.min.js"></script>
+
+	<!-- Framework -->
+	<script src="portal-shell/js/stardust.js?version=${buildNumber}"></script>
+	<script src="portal-shell/js/shell.js"></script>
+	<script src="portal-shell/js/controllers/shellController.js"></script>
+	<script src="portal-shell/js/services/sgConfigService.js"></script>
+	<script src="portal-shell/js/services/sgNavigationService.js"></script>
+	<script src="portal-shell/js/services/sgViewPanelService.js"></script>
+	<script src="portal-shell/js/services/sgViewPanelService.js"></script>
+	<script src="portal-shell/js/services/sgPubSubService.js"></script>
+	<script src="portal-shell/js/services/sgSidebarStateService.js"></script>
+	<script src="portal-shell/js/directives/sgContentFrame.js"></script>
+
+	<script src="plugins/common/html5/portalApplication.js"></script>
+
+	<!-- Dependency Scripts from Portal Plugins -->
+	<!-- DEPENDENCY_SCRIPTS_TO_BE_INJECTED -->
+
+	<script>
+		var startApp = function () {
+			var modules = portalApplication.getModules();
+			log("Initializing with Angular modules - " + modules);
+
+			stardust.initParams({
+				appStage: stardust.utils.getRequestParam('appStage') || 'P',
+				configEndpoint: 'services/rest/common/html5/api/config?random=' + Math.floor(Math.random()*10000)+1,
+				baseElement: document,
+				modules: modules
+			});
+
+			stardust.start();
+
+			function log(msg) {
+				if(console && console.info) {
+					console.info(msg);
+				}
+			}
+		}
+		
+		startApp();
+		
+		startApp = undefined;
+	</script>
 </body>
 </html>
