@@ -1,6 +1,6 @@
 {
-	"portal-plugins" : ["common"],
-	
+	"portal-plugins" : [],
+
 	"libs" : [],
 
 	"scripts" : [],
