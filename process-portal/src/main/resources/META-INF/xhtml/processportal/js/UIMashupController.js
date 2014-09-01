@@ -36,7 +36,7 @@ if (!window.bpm.portal.UIMashupController) {
 		UIMashupController.prototype.init = function(i18nProvider) {
 			// Delete mobile markup if desktop and vice versa
 			//  as having both at the same time causes issues.
-			if (isMobile) {
+			if (window['isMobile'] && isMobile) {
 				jQuery(".hideIfMobile").remove();
 			} else {
 				jQuery(".hideIfDesktop").remove();
