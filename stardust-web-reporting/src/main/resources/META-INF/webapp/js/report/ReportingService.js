@@ -11,6 +11,13 @@ define(
 						window.top.reportingService = new ReportingService();
 					}
 
+				try {
+						window.top.reportingService.getRootUrl();
+					} catch (e) {
+						console.log("memory where reportingService was stored washed away, creating new instance!");
+						window.top.reportingService = new ReportingService();
+					}
+					
 					return window.top.reportingService;
 				}
 			};
