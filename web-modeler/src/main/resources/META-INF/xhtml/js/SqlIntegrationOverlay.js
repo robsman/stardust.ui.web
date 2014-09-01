@@ -578,7 +578,15 @@ define(
                         self.transactedRouteInput.prop('checked'));
                   self.submitChanges();
                });
-               
+               this.transactedRouteInput.change(function() {
+                   if (!self.view.validate()) {
+                      return;
+                   }
+                   self.view.submitModelElementAttributeChange(
+                         "carnot:engine:camel::transactedRoute",
+                         self.transactedRouteInput.prop('checked'));
+                   self.submitChanges();
+                });
                this.update();
             };
 
@@ -740,17 +748,11 @@ define(
                }
                
 
-               this.hostInput
-                     .val(this.getApplication().attributes["stardust:sqlScriptingOverlay::hostname"]);
-               this.portInput
-                     .val(this.getApplication().attributes["stardust:sqlScriptingOverlay::port"]);
-               this.dataBaseNameInput
-                     .val(this.getApplication().attributes["stardust:sqlScriptingOverlay::dbname"]);
-               this.userNameInput
-                     .val(this.getApplication().attributes["stardust:sqlScriptingOverlay::username"]);
-
-               this.passwordInput
-                     .val(this.getApplication().attributes["stardust:sqlScriptingOverlay::password"]);
+               this.hostInput.val(this.getApplication().attributes["stardust:sqlScriptingOverlay::hostname"]);
+               this.portInput.val(this.getApplication().attributes["stardust:sqlScriptingOverlay::port"]);
+               this.dataBaseNameInput.val(this.getApplication().attributes["stardust:sqlScriptingOverlay::dbname"]);
+               this.userNameInput.val(this.getApplication().attributes["stardust:sqlScriptingOverlay::username"]);
+               this.passwordInput.val(this.getApplication().attributes["stardust:sqlScriptingOverlay::password"]);
                this.useCVforPassowrdInput
                      .prop(
                            "checked",
@@ -760,7 +762,6 @@ define(
                this.initializeParameterDefinitionsTable();
                this.parameterDefinitionsPanel
                      .selectCurrentParameterDefinition();
-               
                if(this.getApplication().attributes["carnot:engine:camel::transactedRoute"]==null||this.getApplication().attributes["carnot:engine:camel::transactedRoute"]===undefined){
                   this.view.submitModelElementAttributeChange("carnot:engine:camel::transactedRoute", true);
                }

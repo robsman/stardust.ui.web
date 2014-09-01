@@ -468,6 +468,7 @@ define(
 										jQuery("#reportDefinitionView").css("visibility", "visible");
 								});
 							console.debug('refreshModelData preferencedata success.............');
+							self.dataAvailable = true;
 						}).fail(function () {
 							console.debug('refreshModelData preferencedata falied.............');
 					});
