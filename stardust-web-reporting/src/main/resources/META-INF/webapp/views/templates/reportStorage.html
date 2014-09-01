@@ -47,7 +47,7 @@
 					<td><input id="auto-reporting-storageTab-RDRole" type="radio" ng-model="report.storage.location"
 						value="participantFolder" /></td>
 					<td>{{getI18N('reporting.definitionView.organizationRoleReportTemplate.label')}}</td>
-					<td><select ng-model="report.storage.participant"
+					<td><select id="auto-reporting-storageTab-RDtoRoleOrg" ng-model="report.storage.participant"
 						ng-change="report.storage.location = 'participantFolder'"
 						ng-options="key as value for (key, value) in modelParticipants">
 					</select></td>

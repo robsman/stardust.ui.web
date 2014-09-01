@@ -34,7 +34,7 @@
 								<td style="padding:5px 0px 5px 0px"><label>{{getI18N('reporting.storage.name.label')}}</label></td>
 							</tr>
 							<tr>
-								<td><input type="text" ng-model="reportMetada.name"
+								<td><input id="auto-reporting-popup-RIName" type="text" ng-model="reportMetada.name"
 									style="width: 250px;"></input></td>
 							</tr>
 						</table>
@@ -44,20 +44,20 @@
 					<td valign="top" style="padding-top:5px"><label>{{getI18N('reporting.storage.location.label')}}</label>
 						<table>
 							<tr>
-								<td><input type="radio" ng-model="reportMetada.location"
+								<td><input id="auto-reporting-popup-RILocPer" type="radio" ng-model="reportMetada.location"
 									value="personalFolder" /></td>
 								<td colspan="2">{{getI18N('reporting.storage.personal.label')}}</td>
 							</tr>
 							<tr>
-								<td><input type="radio" ng-model="reportMetada.location"
+								<td><input id="auto-reporting-popup-RILocPub" type="radio" ng-model="reportMetada.location"
 									value="publicFolder" /></td>
 								<td colspan="2">{{getI18N('reporting.storage.global.label')}}</td>
 							</tr>
 							<tr>
-								<td><input type="radio" ng-model="reportMetada.location"
+								<td><input id="auto-reporting-popup-RILocRoleOrg" type="radio" ng-model="reportMetada.location"
 									value="participantFolder" /></td>
 								<td>{{getI18N('reporting.storage.participant.label')}}</td>
-								<td><select ng-model="reportMetada.participant"
+								<td><select id="auto-reporting-popup-RItoRoleOrg" ng-model="reportMetada.participant"
 									ng-change="reportMetada.location = 'participantFolder'"
 									ng-options="key as value for (key, value) in modelParticipants"><option></option>
 								</select></td>

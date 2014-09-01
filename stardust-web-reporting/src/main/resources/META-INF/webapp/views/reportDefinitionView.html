@@ -218,20 +218,20 @@ table.formTable td {
 												<tbody>
 													<tr ng-repeat="column in report.dataSet.computedColumns"
 														class="{{$parent.getComputedColumnStyleClass(column)}}">
-														<td><a href=""
+														<td><a id="auto-reporting-dataSourceTab-CompColDelete{{$index}}" href=""
 															ng-click="$parent.deleteComputedColumn(column)"><img
 																src="../css/images/delete.png" /> </a></td>
-														<td><input type="text" ng-model="column.id"
+														<td><input id="auto-reporting-dataSourceTab-CompColId{{$index}}" type="text" ng-model="column.id"
 															ng-click="$parent.selectComputedColumn(column)" /></td>
-														<td><input type="text" ng-model="column.name"
+														<td><input id="auto-reporting-dataSourceTab-CompColName{{$index}}" type="text" ng-model="column.name"
 															ng-click="$parent.selectComputedColumn(column)" /></td>
-														<td><select ng-model="column.type"
+														<td><select id="auto-reporting-dataSourceTab-CompColType{{$index}}" ng-model="column.type"
 															ng-change ="$parent.selectComputedColumn(column)"
 															ng-options="type.id as type.name for type in reportingService.getPrimitiveTypes() "><option
 																	value="" ng-hide="column.type">{{getI18N('reporting.definitionView.pleaseSelect.label')}}</option></select></td>
 													</tr>
 													<tr>
-														<td><a href="" ng-click="addComputedColumn()"><img
+														<td><a id="auto-reporting-dataSourceTab-CompColAdd" href="" ng-click="addComputedColumn()"><img
 																src="../css/images/add.png" /> </a></td>
 														<td></td>
 														<td></td>
