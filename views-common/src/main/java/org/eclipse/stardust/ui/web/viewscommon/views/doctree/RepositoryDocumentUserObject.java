@@ -388,7 +388,8 @@ public class RepositoryDocumentUserObject extends RepositoryResourceUserObject
    {
       if (detachable == null)
       {
-         detachable = getProcessInstance() != null ? true : false;
+         DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) this.wrapper.getParent();
+         detachable = RepositoryUtility.isProcessAttachmentFolderNode((RepositoryResourceUserObject) parentNode.getUserObject());
       }
       return detachable;
    }
@@ -429,8 +430,12 @@ public class RepositoryDocumentUserObject extends RepositoryResourceUserObject
       {
          return ((ProcessAttachmentUserObject) parentNode.getUserObject()).getProcessInstance();
       }
-      else
-         return null;
+      else if (parentNode.getUserObject() instanceof RepositoryFolderProxyUserObject)
+      {
+         return ((RepositoryFolderProxyUserObject) parentNode.getUserObject()).getProcessInstance();
+      }
+      
+      return null;
    }
 
    private static DocumentManagementService getDMS()
