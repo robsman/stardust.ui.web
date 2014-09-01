@@ -102,6 +102,10 @@
             </exclusion>
             <exclusion>
                <groupId>org.apache.cxf</groupId>
+               <artifactId>cxf-rt-transports-http</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>org.apache.cxf</groupId>
                <artifactId>cxf-rt-core</artifactId>
             </exclusion>
             <exclusion>
@@ -111,6 +115,21 @@
             <exclusion>
                <groupId>javax.ws.rs</groupId>
                <artifactId>jsr311-api</artifactId>
+            </exclusion>
+         </exclusions>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.cxf</groupId>
+         <artifactId>cxf-rt-transports-http</artifactId>
+         <scope>runtime</scope>
+         <exclusions>
+            <exclusion>
+               <groupId>org.apache.cxf</groupId>
+               <artifactId>cxf-api</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>org.apache.cxf</groupId>
+               <artifactId>cxf-rt-core</artifactId>
             </exclusion>
          </exclusions>
       </dependency>

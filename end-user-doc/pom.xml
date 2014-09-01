@@ -153,6 +153,7 @@
                         </fileset>
                      </copy>
                      <!-- copy files and replace references to other plugins with links to relative path inside jar files according to folder level -->
+                     <!-- (intermediate solution required as End User doc from Portal does not know the Eclipse variable!) -->
                      <!-- level 1 -->
                      <copy todir="${build.src.portaldoc}" overwrite="true">
                         <fileset dir="${enduser.doc.path}/html/handbooks">
@@ -194,6 +195,21 @@
                                <replaceregex pattern="PLUGINS_ROOT/@doc-plugin@.misc/html/portal/" replace="../../../../misc/"/>
                                <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.analyst/html/handbooks/" replace="../../../../bpm/"/>
                                <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.analyst/html/toc.html" replace="../../../../toc.html"/>
+                            </tokenfilter>
+                        </filterchain>
+                     </copy>
+
+                     <!-- level 4 -->
+                     <copy todir="${build.src.portaldoc}" overwrite="true">
+                        <fileset dir="${enduser.doc.path}/html/handbooks">
+                           <include name="*/*/*/*/*.html"/>
+                           <include name="*/*/*/*/*.htm"/>
+                        </fileset>
+                        <filterchain>
+                            <tokenfilter>
+                               <replaceregex pattern="PLUGINS_ROOT/@doc-plugin@.misc/html/portal/" replace="../../../../../misc/"/>
+                               <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.analyst/html/handbooks/" replace="../../../../../bpm/"/>
+                               <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.analyst/html/toc.html" replace="../../../../../toc.html"/>
                             </tokenfilter>
                         </filterchain>
                      </copy>
