@@ -466,6 +466,11 @@ public class ColumnPreference implements Serializable
       return columnTitle;
    }
 
+   public void setColumnTitle(String columnTitle)
+   {
+      this.columnTitle = columnTitle;
+   }
+
    public ColumnDataType getColumnDataType()
    {
       return columnDataType;

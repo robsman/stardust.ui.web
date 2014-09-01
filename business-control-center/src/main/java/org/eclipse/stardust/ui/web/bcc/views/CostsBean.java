@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.faces.event.ValueChangeEvent;
@@ -26,11 +27,16 @@ import org.eclipse.stardust.engine.api.model.ModelParticipantInfo;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.query.UserDetailsPolicy;
 import org.eclipse.stardust.engine.api.query.UserQuery;
+import org.eclipse.stardust.engine.core.query.statistics.api.CalendarUnit;
 import org.eclipse.stardust.engine.core.query.statistics.api.CriticalCostPerExecutionPolicy;
+import org.eclipse.stardust.engine.core.query.statistics.api.DateRange;
+import org.eclipse.stardust.engine.core.query.statistics.api.Duration;
+import org.eclipse.stardust.engine.core.query.statistics.api.RelativePastDateRange;
+import org.eclipse.stardust.engine.core.query.statistics.api.StatisticsDateRangePolicy;
 import org.eclipse.stardust.engine.core.query.statistics.api.UserWorktimeStatistics;
-import org.eclipse.stardust.engine.core.query.statistics.api.UserWorktimeStatisticsQuery;
 import org.eclipse.stardust.engine.core.query.statistics.api.UserWorktimeStatistics.Contribution;
 import org.eclipse.stardust.engine.core.query.statistics.api.UserWorktimeStatistics.WorktimeStatistics;
+import org.eclipse.stardust.engine.core.query.statistics.api.UserWorktimeStatisticsQuery;
 import org.eclipse.stardust.ui.web.bcc.ResourcePaths;
 import org.eclipse.stardust.ui.web.bcc.WorkflowFacade;
 import org.eclipse.stardust.ui.web.bcc.common.configuration.UserPreferencesEntries;
@@ -39,34 +45,54 @@ import org.eclipse.stardust.ui.web.bcc.jsf.CostsPerProcess;
 import org.eclipse.stardust.ui.web.bcc.jsf.RoleItem;
 import org.eclipse.stardust.ui.web.bcc.messsages.MessagesBCCBean;
 import org.eclipse.stardust.ui.web.common.UIComponentBean;
+import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
-import org.eclipse.stardust.ui.web.common.column.DefaultColumnModel;
-import org.eclipse.stardust.ui.web.common.column.IColumnModel;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnAlignment;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
+import org.eclipse.stardust.ui.web.common.columnSelector.TableColumnSelectorPopup;
+import org.eclipse.stardust.ui.web.common.column.DefaultColumnModel;
+import org.eclipse.stardust.ui.web.common.column.IColumnModel;
+import org.eclipse.stardust.ui.web.common.configuration.UserPreferencesHelper;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
-import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent.ViewEventType;
+import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
+import org.eclipse.stardust.ui.web.common.filter.ITableDataFilterListener;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterPopup;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterSearch;
+import org.eclipse.stardust.ui.web.common.filter.TableDataFilters;
+import org.eclipse.stardust.ui.web.common.spi.preference.PreferenceScope;
 import org.eclipse.stardust.ui.web.common.table.DataTable;
 import org.eclipse.stardust.ui.web.common.table.SortableTable;
 import org.eclipse.stardust.ui.web.common.table.SortableTableComparator;
+import org.eclipse.stardust.ui.web.common.util.CollectionUtils;
+import org.eclipse.stardust.ui.web.common.util.GsonUtils;
+import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
+import org.eclipse.stardust.ui.web.common.util.StringUtils;
+import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 
+import com.google.gson.JsonObject;
 
 
 /**
  * @author Giridhara.G
  * @version
  */
-public class CostsBean extends UIComponentBean implements ResourcePaths,ViewEventHandler
+public class CostsBean extends UIComponentBean implements ResourcePaths,ViewEventHandler,ITableDataFilterListener
 {
    private static final long serialVersionUID = 1L;
    
    protected final static String MODEL_PARTICIPANT = "carnotBcCosts/selectedModelParticipant";
+   
+   private final static String CUSTOM_COL_PREFIX = "customColumns.";
+   private final static String CUSTOM_COL_COST_SUFFIX = "Costs";
+   private final static String CUSTOM_COL_STATUS_SUFFIX = "Status";
+   private final static int DAY_TYPE = 1;
+   private final static int WEEK_TYPE = 2;
+   private final static int MONTH_TYPE = 3;
    
    private final static int MAX_FRACTION_DIGITS = 2;
 
@@ -84,7 +110,19 @@ public class CostsBean extends UIComponentBean implements ResourcePaths,ViewEven
 
    private String selectedComponent;
    
-
+   private List<ColumnPreference> selFixedCols;
+   
+   private List<ColumnPreference> userSelectableCols;
+   
+   private List<ColumnPreference> partitionSelectableCols;
+   
+   private Map<String, Object> columnDefinitionMap;
+   
+   private Map<String, DateRange> customColumnDateRange;
+   
+   private UserPreferencesHelper userPrefsHelper;
+   
+   private int index;
    /**
     * Constructor CostsBean
     */
@@ -95,8 +133,9 @@ public class CostsBean extends UIComponentBean implements ResourcePaths,ViewEven
    
    private void createTable(){
       
-      List<ColumnPreference> cols = new ArrayList<ColumnPreference>();
-
+      List<ColumnPreference> fixedCols = new ArrayList<ColumnPreference>();
+      List<ColumnPreference> selCols = new ArrayList<ColumnPreference>();
+      
       ColumnPreference colProcessDefinition = new ColumnPreference("ProcessDefinition",
             "processDefinition", ColumnDataType.STRING, propsBean
                   .getString("views.resourcePerformance.column.processDefinition"),
@@ -147,18 +186,286 @@ public class CostsBean extends UIComponentBean implements ResourcePaths,ViewEven
       colLastMonthGrp.addChildren(colMonthCost);
       colLastMonthGrp.addChildren(colLastMonthStatus);
 
-      cols.add(colProcessDefinition);
-      cols.add(colTodayCostGrp);
-      cols.add(colLastWeekGrp);
-      cols.add(colLastMonthGrp);
-
-      IColumnModel bccPerformanceColumnModel = new DefaultColumnModel(cols, null, null,
+      fixedCols.add(colProcessDefinition);
+      selFixedCols.add(colTodayCostGrp);
+      selFixedCols.add(colLastWeekGrp);
+      selFixedCols.add(colLastMonthGrp);
+      
+      List<String> custPartitionReadOnlyCols = CollectionUtils.newArrayList();      
+      userSelectableCols = createColumns(PreferenceScope.USER, custPartitionReadOnlyCols);
+      
+      UserPreferencesHelper prefsHelper = UserPreferencesHelper.getInstance(UserPreferencesEntries.M_BCC, PreferenceScope.USER);
+      List<String> viewColumns = prefsHelper.getSelectedColumns(UserPreferencesEntries.V_COST_AND_CONTROLLING);
+      for (String cols : viewColumns)
+      {
+         if (!cols.equals(colTodayCostGrp.getColumnName()) && !cols.equals(colLastMonthGrp.getColumnName())
+               && !cols.equals(colLastWeekGrp.getColumnName()))
+         {
+            //Custom Columns available in PARTITION, should be visible as read-only to others 
+            if (!columnDefinitionMap.containsKey(cols))
+            {
+               custPartitionReadOnlyCols.add(cols);
+            }
+         }
+      } 
+      partitionSelectableCols = createColumns(PreferenceScope.PARTITION, custPartitionReadOnlyCols);
+      
+      selCols = userSelectableCols;
+   
+      IColumnModel bccPerformanceColumnModel = new CostColumnModel(selCols, fixedCols, null,
             UserPreferencesEntries.M_BCC, UserPreferencesEntries.V_COST_AND_CONTROLLING);
+      this.setCustomColumnFilters(bccPerformanceColumnModel, columnDefinitionMap,null);
+      TableColumnSelectorPopup colSelecpopup = new TableColumnSelectorPopup(bccPerformanceColumnModel);
+      costTable = new SortableTable<CostTableEntry>(colSelecpopup, null, new SortableTableComparator<CostTableEntry>(
+            "processDefinition", true));
+   }
 
-      costTable = new SortableTable<CostTableEntry>(bccPerformanceColumnModel, null,
-            new SortableTableComparator<CostTableEntry>("processDefinition", true));
+   private List<ColumnPreference> createColumns(PreferenceScope prefScope, List<String> customReadOnlyCols)
+   {
+      UserPreferencesHelper prefHelper = UserPreferencesHelper.getInstance(
+            UserPreferencesEntries.M_BCC, prefScope);
+      
+      List<String> viewColumns = prefHelper.getSelectedColumns(UserPreferencesEntries.V_COST_AND_CONTROLLING);
+      List<String> allCols = getAllColumnPreference(prefHelper);
+      List<ColumnPreference> selectableCols = CollectionUtils.newArrayList();
+      for (ColumnPreference column : selFixedCols)
+      {
+         if(viewColumns.contains(column.getColumnName()))
+         {
+            column.setVisible(true);
+         }
+         else
+         {
+            column.setVisible(false);
+         }
+         selectableCols.add(column);
+      }
+      if(!CollectionUtils.isEmpty(allCols))
+      {
+         for (String col : allCols)
+         {
+            if (col.contains("#{"))
+            {
+               String[] columnDef = col.split("#");
+               JsonObject columnDefinition = GsonUtils.readJsonObject(columnDef[1]);
+               columnDefinition.addProperty("readOnly", false);
+               ColumnPreference customColumn = createColumn(columnDefinition);
+               if(!viewColumns.contains(customColumn.getColumnName()))
+               {
+                  customColumn.setVisible(false);
+               }
+               Long userOID = columnDefinition.get("userOID").getAsLong();
+               if (userOID != SessionContext.findSessionContext().getUser().getOID())
+               {
+                  columnDefinition.addProperty("readOnly", true);
+               }
+               else
+               {
+                  columnDefinition.addProperty("readOnly", false);
+               }
+               if(customReadOnlyCols.contains(columnDef[0]))
+               {
+                  // Custom columns available in Partition, are shown in User Column
+                  // Selector as READ-ONLY
+                  userSelectableCols.add(customColumn);
+               }
+               selectableCols.add(customColumn);
+            }
+         }   
+      }
+      
+      return selectableCols;
+   }
+   public void addColumn()
+   {
+      JsonObject columnDefinition = null;
+      List<ColumnPreference> selCols = costTable.getColumnModel().getSelectableColumns();
+      if (index == 0)
+      {
+         index++;
+      }
+      String columnTitle = propsBean.get("views.costs.column.customColumn.label") + index;
+      long userOrPartitionOID = costTable.getColumnSelectorPopup().getSelectedPreferenceScope() == PreferenceScope.USER
+            ? SessionContext.findSessionContext().getUser().getOID()
+            : SessionContext.findSessionContext().getUser().getPartitionOID();
+      String columnId = propsBean.get("views.costs.column.customColumn.name") + userOrPartitionOID + index++ ;
+      
+      columnDefinition = updateCustomColumnJson(columnId, columnTitle, 0, DAY_TYPE, 0,
+            DAY_TYPE, columnDefinition);
+      columnDefinition.addProperty("userOID", SessionContext.findSessionContext().getUser().getOID());
+      columnDefinition.addProperty("readOnly", false);
+      ColumnPreference customColumn = createColumn(columnDefinition);
+      selCols.add(customColumn);
+      if(costTable.getColumnSelectorPopup().getSelectedPreferenceScope() == PreferenceScope.USER)
+      {
+         userSelectableCols =  selCols;
+      }
+      else
+      {
+         partitionSelectableCols =  selCols;
+      }
+      IColumnModel model = costTable.getColumnModel();
+      model.setSelectableColumns(selCols);
+
+      TableColumnSelectorPopup columnSelectorPopup = costTable.getColumnSelectorPopup() != null ? costTable
+            .getColumnSelectorPopup() : new TableColumnSelectorPopup(model);
+      
+      List<String> allColumns = getAllColumnPreference();
+      if(CollectionUtils.isEmpty(allColumns))
+      {
+         allColumns = CollectionUtils.newArrayList();
+      }
+      allColumns.add(columnId + "#" + columnDefinition.toString());
+      userPrefsHelper.setString(UserPreferencesEntries.V_COST_AND_CONTROLLING,
+            UserPreferencesEntries.V_COST_AND_CONTROLLING_AllCOLUMNS, allColumns);
+      
+      model.saveSelectableColumns(columnSelectorPopup.getSelectedPreferenceScope());
+      
+      TableDataFilterPopup filterPopup = this.setCustomColumnFilters(model, columnDefinitionMap, columnId);
+      model.setDefaultSelectableColumns(selCols);
+      initialize();
+      filterPopup.openPopup();
+      PortalApplication.getInstance().addEventScript("parent.BridgeUtils.View.syncActiveView;");
+
    }
    
+   private ColumnPreference createColumn(JsonObject columnDefinition)
+   {
+      ColumnPreference customColumn = null;
+      String columnId = GsonUtils.extractString(columnDefinition, "columnId");
+      String columnTitle = GsonUtils.extractString(columnDefinition, "columnTitle");
+      customColumn = new ColumnPreference(columnId, CUSTOM_COL_PREFIX + columnId,
+            ColumnDataType.STRING, columnTitle, true, false);
+      customColumn.setColumnAlignment(ColumnAlignment.RIGHT);
+      
+      /*ColumnPreference colCost = new ColumnPreference(CUSTOM_COL_PREFIX + columnId + CUSTOM_COL_COST_SUFFIX,
+            CUSTOM_COL_PREFIX + columnId + CUSTOM_COL_COST_SUFFIX, ColumnDataType.STRING, this.getMessages()
+                  .getString("column.cost"));*/
+      ColumnPreference colCost = new ColumnPreference(CUSTOM_COL_PREFIX + columnId + CUSTOM_COL_COST_SUFFIX,
+            CUSTOM_COL_PREFIX + columnId + CUSTOM_COL_COST_SUFFIX,
+            this.getMessages().getString("column.cost"), V_costControllingColumns, true, true);
+      colCost.setColumnAlignment(ColumnAlignment.RIGHT);
+
+      ColumnPreference colStatus = new ColumnPreference(CUSTOM_COL_PREFIX + columnId + CUSTOM_COL_STATUS_SUFFIX,
+            CUSTOM_COL_PREFIX + columnId + CUSTOM_COL_STATUS_SUFFIX,
+            this.getMessages().getString("column.status"), V_costControllingColumns, true, false);
+      colStatus.setColumnAlignment(ColumnAlignment.CENTER);
+
+      customColumn.addChildren(colCost);
+      customColumn.addChildren(colStatus);
+      
+      columnDefinitionMap.put(columnId, columnDefinition);
+      index = Integer.valueOf(columnId.substring(columnId.length()-1))+1;
+      
+      updateCustomColumnDateRange(columnDefinition);
+      
+      return customColumn;
+   }
+
+   /**
+    * 
+    * @param columnId
+    * @param columnTitle
+    * @param startNumOfDay
+    * @param startDateType
+    * @param durationNumOfDays
+    * @param durationDateType
+    * @param columnDefinition
+    * @return
+    */
+   private JsonObject updateCustomColumnJson(String columnId, String columnTitle, Integer startNumOfDay,
+         Integer startDateType, Integer durationNumOfDays, Integer durationDateType, JsonObject columnDefinition)
+   {
+      if (null == columnDefinition)
+      {
+         columnDefinition = new JsonObject();
+      }
+      if (null != columnId)
+      {
+         columnDefinition.addProperty("columnId", columnId);
+      }
+      columnDefinition.addProperty("columnTitle", columnTitle);
+      columnDefinition.addProperty("startNumOfDays", startNumOfDay);
+      columnDefinition.addProperty("startDateType", startDateType);
+      columnDefinition.addProperty("durationNumOfDays", durationNumOfDays);
+      columnDefinition.addProperty("durationDateType", durationDateType);
+      updateCustomColumnDateRange(columnDefinition);
+      return columnDefinition;
+   }
+   
+   private void updateCustomColumnDateRange(JsonObject columnDefinition)
+   {
+      String columnId = columnDefinition.get("columnId").getAsString();
+      Integer startNumOfDay = columnDefinition.get("startNumOfDays").getAsInt();
+      Integer startDateType = columnDefinition.get("startDateType").getAsInt();
+      Integer durationNumOfDays = columnDefinition.get("durationNumOfDays").getAsInt();
+      Integer durationDateType = columnDefinition.get("durationDateType").getAsInt();
+      
+      CalendarUnit startDtType = getDateType(startDateType);
+      CalendarUnit endDtType = getDateType(durationDateType);
+      Duration startDuration = getDuration(startDtType, startNumOfDay);
+      Duration endDuration = getDuration(endDtType, durationNumOfDays);
+      DateRange range = new RelativePastDateRange(startDuration, startDtType, endDuration, endDtType);
+      // Store the date range required for UserStatisticsQuery and calcuations at
+      // CostPerProcess
+      customColumnDateRange.put(columnId, range);
+   }
+   
+   public TableDataFilterPopup setCustomColumnFilters(IColumnModel columnModel, Map<String, Object> customColumns, String currentColumn)
+   {
+      TableDataFilterPopup dataFilterPopup = null;
+      for (ColumnPreference colPref : columnModel.getSelectableColumns())
+      {
+         if (colPref.getColumnProperty().startsWith(CUSTOM_COL_PREFIX))
+         {
+            String property = colPref.getColumnProperty();
+            if (property.indexOf(CUSTOM_COL_PREFIX) != -1)
+            {
+               String columnId = property.substring(property.indexOf(".") + 1);
+               if(customColumns.get(columnId)!=null)
+               {
+                  if(currentColumn == null || (!StringUtils.isEmpty(currentColumn) && currentColumn.equals(currentColumn)))
+                  {
+                     Boolean readOnly =  ((JsonObject)customColumns.get(columnId)).get("readOnly").getAsBoolean();
+                     if(!readOnly)
+                     {
+                        CostTableDataFilter filter = new CostTableDataFilter("", "", "", false);
+                        filter.updateFilterFields(customColumns.get(columnId));
+                        dataFilterPopup = new TableDataFilterPopup(propsBean.get("views.costs.column.customColumn.editLabel"),
+                              new TableDataFilters(filter), this);
+                        dataFilterPopup.setResetTitle(MessagePropertiesBean.getInstance().get("common.filterPopup.delete"));
+                        colPref.setColumnDataFilterPopup(dataFilterPopup);   
+                     }
+                  }
+               }
+            }
+         }
+      }
+      return dataFilterPopup;
+      
+   }
+
+   private List<String> getAllColumnPreference()
+   {
+      TableColumnSelectorPopup columnSelPopup= costTable!= null ? costTable.getColumnSelectorPopup() : null;
+      if (UserUtils.isUserAdmin(SessionContext.findSessionContext().getUser()))
+      {
+         PreferenceScope currentPrefScope = columnSelPopup != null ? columnSelPopup.getSelectedPreferenceScope() : PreferenceScope.USER;
+         userPrefsHelper = UserPreferencesHelper.getInstance(UserPreferencesEntries.M_BCC, currentPrefScope);
+      }
+      else
+      {
+         userPrefsHelper = UserPreferencesHelper.getInstance(UserPreferencesEntries.M_BCC,
+               PreferenceScope.USER);
+      }
+     return getAllColumnPreference(userPrefsHelper);
+   }
+   
+   private List<String> getAllColumnPreference(UserPreferencesHelper userPreferenceHelper)
+   {
+      return userPreferenceHelper.getString(UserPreferencesEntries.V_COST_AND_CONTROLLING,
+            UserPreferencesEntries.V_COST_AND_CONTROLLING_AllCOLUMNS);
+   }
    
    /**
     * Call back method to handle view event
@@ -170,7 +477,14 @@ public class CostsBean extends UIComponentBean implements ResourcePaths,ViewEven
     	 selectedComponent=null;
          propsBean = MessagesBCCBean.getInstance();
          currencyCode = this.getMessages().getString("currencyCode");
+         columnDefinitionMap = CollectionUtils.newHashMap();
+         customColumnDateRange = CollectionUtils.newHashMap();
+         selFixedCols = CollectionUtils.newArrayList();
+         userSelectableCols = CollectionUtils.newArrayList();
+         partitionSelectableCols = CollectionUtils.newArrayList();
+         selFixedCols = CollectionUtils.newArrayList();
          initAllParticipants();
+         costTable = null;
          createTable();
          initialize();
       }
@@ -275,14 +589,7 @@ public class CostsBean extends UIComponentBean implements ResourcePaths,ViewEven
     */
    public List<CostTableEntry> getCost()
    {
-      WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
-      UserWorktimeStatisticsQuery wsQuery = UserWorktimeStatisticsQuery.forAllUsers();
-      wsQuery.setPolicy(CriticalCostPerExecutionPolicy.criticalityByCost(
-            BusinessControlCenterConstants.getInstanceCostThreshold(
-                  BusinessControlCenterConstants.YELLOW_THRESHOLD, 1.0f),
-            BusinessControlCenterConstants.getInstanceCostThreshold(
-                  BusinessControlCenterConstants.RED_THRESHOLD, 1.0f)));
-      UserWorktimeStatistics stat = (UserWorktimeStatistics) facade.getAllUsers(wsQuery);
+      UserWorktimeStatistics stat = getWorktimeStatistics();
       UserQuery query = UserQuery.findActive();
       query.setPolicy(new UserDetailsPolicy(UserDetailsLevel.Core));
       List<CostsPerProcess> tableData = new ArrayList<CostsPerProcess>();
@@ -291,7 +598,7 @@ public class CostsBean extends UIComponentBean implements ResourcePaths,ViewEven
       while (pIter.hasNext())
       {
          ProcessDefinition pd = (ProcessDefinition) pIter.next();
-         tableData.add(new CostsPerProcess(pd));
+         tableData.add(new CostsPerProcess(pd, columnDefinitionMap));
       }
       CostsPerProcess cpp = null;    
       if (stat != null && selectedModelParticipant != null)
@@ -308,7 +615,7 @@ public class CostsBean extends UIComponentBean implements ResourcePaths,ViewEven
                   cpp = (CostsPerProcess) pIter.next();
                   Contribution con = wStat.findContribution(cpp.getProcessDefinition()
                         .getQualifiedId(), selectedModelParticipant);
-                  cpp.addContribution(con);
+                  cpp.addContribution(con, customColumnDateRange);
                }
             }
          }
@@ -326,7 +633,7 @@ public class CostsBean extends UIComponentBean implements ResourcePaths,ViewEven
                   numberFormat.format(costsPerProcess.getAverageCostsToday()), numberFormat.format(costsPerProcess
                         .getAverageCostsLastWeek()), numberFormat.format(costsPerProcess.getAverageCostsLastMonth()),
                   costsPerProcess.getTodayState(), costsPerProcess.getLastWeekState(), costsPerProcess
-                        .getLastMonthState(), currencyCode));
+                        .getLastMonthState(), currencyCode, costsPerProcess.getCustomColumns()));
 
          }
 
@@ -334,7 +641,190 @@ public class CostsBean extends UIComponentBean implements ResourcePaths,ViewEven
 
       return costData;
    }
+   
+   public UserWorktimeStatistics getWorktimeStatistics()
+   {
+      WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
+      UserWorktimeStatisticsQuery wsQuery = UserWorktimeStatisticsQuery.forAllUsers();
+      wsQuery
+            .setPolicy(CriticalCostPerExecutionPolicy.criticalityByCost(BusinessControlCenterConstants
+                  .getInstanceCostThreshold(BusinessControlCenterConstants.YELLOW_THRESHOLD, 1.0f),
+                  BusinessControlCenterConstants.getInstanceCostThreshold(BusinessControlCenterConstants.RED_THRESHOLD,
+                        1.0f)));
+      List<DateRange> dateRange = CollectionUtils.newArrayList();
+      dateRange.add(DateRange.TODAY);
+      dateRange.add(DateRange.LAST_WEEK);
+      dateRange.add(DateRange.LAST_MONTH);
+      for(Map.Entry<String, DateRange> custCols : customColumnDateRange.entrySet())
+      {
+         String key = custCols.getKey();
+         DateRange range = custCols.getValue();
+         dateRange.add(range);
+      }
+      if(!dateRange.isEmpty())
+      {
+         wsQuery.setPolicy(new StatisticsDateRangePolicy(dateRange));   
+      }
+      UserWorktimeStatistics stat = (UserWorktimeStatistics) facade.getAllUsers(wsQuery);
+      return stat;
+ }
+   
+   public void applyFilter(TableDataFilters tableDataFilters)
+   {
+      CostTableDataFilter filter = (CostTableDataFilter) tableDataFilters.getList().get(0);
+      if (filter == null || filter.getColumnId() == null)
+      {
+         return;
+      }
+      String columnId = filter.getColumnId();
+      String columnTitle = filter.getColumnTitle();
+      String startDateNumDays = filter.getStartDateNumDays();
+      Integer startDateType = Integer.valueOf(filter.getStartDateType());
+      String durationNumDays = filter.getDurationNumDays();
+      Integer durationType = Integer.valueOf(filter.getDurationType());
+      // Update Column JSON with new values from filterPopup
+      JsonObject columnDefinition = (JsonObject) columnDefinitionMap.get(filter.getColumnId());
+      columnDefinition = updateCustomColumnJson(columnId, columnTitle, Integer.valueOf(startDateNumDays),
+            startDateType, Integer.valueOf(durationNumDays), durationType, columnDefinition);
+      
+      List<String> allColumns = getAllColumnPreference();
+      if(CollectionUtils.isEmpty(allColumns) && columnDefinitionMap.get(filter.getColumnId()) !=null)
+      {
+         allColumns = new ArrayList<String>();
+         String newValue = filter.getColumnId() + "#" + columnDefinition;
+         allColumns.add(newValue);
+      }
+      else
+      {
+         Iterator<String> colIterator = allColumns.iterator();
+         
+         while (colIterator.hasNext())
+         {
+            String cols = colIterator.next();
+            //Update the custom column preference with new JSON
+            if (cols.startsWith(columnId))
+            {
+               String newValue = columnId + "#" + columnDefinition;
+               allColumns.set(allColumns.indexOf(cols), newValue);
+               columnDefinitionMap.put(columnId, columnDefinition);
+               break;
+            }
+         }
+      }
+      
+      // save 'allColumns' preferenceStore
+      userPrefsHelper.setString(UserPreferencesEntries.V_COST_AND_CONTROLLING,
+            UserPreferencesEntries.V_COST_AND_CONTROLLING_AllCOLUMNS, allColumns);
+      // Update the column Title
+      List<ColumnPreference> selCols = costTable.getColumnModel().getSelectableColumns();
+      Iterator<ColumnPreference> iCol = selCols.iterator();
+      while (iCol.hasNext())
+      {
+         ColumnPreference col = iCol.next();
+         if (col.getColumnName().equals(columnId))
+         {
+            col.setColumnTitle(columnTitle);
+            break;
+         }
+      }
+      if(costTable.getColumnSelectorPopup().getSelectedPreferenceScope() == PreferenceScope.USER)
+      {
+         userSelectableCols = selCols;
+      }
+      else
+      {
+         partitionSelectableCols = selCols;
+      }
+      initialize();
+      PortalApplication.getInstance().addEventScript("parent.BridgeUtils.View.syncActiveView;");
+   }
+   
+   public void deleteFilter(CostTableDataFilter costDataFilter)
+   {
+      List<String> allColumns = getAllColumnPreference();
+      Iterator<String> colIterator = allColumns.iterator();
+      String columnId = costDataFilter.getColumnId();
+      while (colIterator.hasNext())
+      {
+         String cols = colIterator.next();
+         if (cols.startsWith(columnId))
+         {
+            allColumns.remove(allColumns.indexOf(cols));
+            break;
+         }
+      }
+      userPrefsHelper.setString(UserPreferencesEntries.V_COST_AND_CONTROLLING,
+            UserPreferencesEntries.V_COST_AND_CONTROLLING_AllCOLUMNS, allColumns);
+      
+      List<ColumnPreference> selCols = costTable.getColumnModel().getSelectableColumns();
+      Iterator<ColumnPreference> iCol = selCols.iterator();
 
+      while (iCol.hasNext())
+      {
+         ColumnPreference col = iCol.next();
+         if (col.getColumnName().equals(columnId))
+         {
+            selCols.remove(col);
+            break;
+         }
+      }
+      if(costTable.getColumnSelectorPopup().getSelectedPreferenceScope() == PreferenceScope.USER)
+      {
+         userSelectableCols = selCols;
+      }
+      else
+      {
+         partitionSelectableCols = selCols;
+      }
+      columnDefinitionMap.remove(columnId);
+      customColumnDateRange.remove(columnId);
+      costTable.getColumnModel().setDefaultSelectableColumns(selCols);
+      costTable.getColumnModel().saveSelectableColumns(costTable.getColumnSelectorPopup().getSelectedPreferenceScope());
+      costTable.initialize();
+      PortalApplication.getInstance().addEventScript("parent.BridgeUtils.View.syncActiveView;");
+   }
+
+
+   private CalendarUnit getDateType(Integer dateType)
+   {
+      if (dateType == DAY_TYPE)
+      {
+         return CalendarUnit.DAY;
+      }
+      else if (dateType == WEEK_TYPE)
+      {
+         return CalendarUnit.WEEK;
+      }
+      else if (dateType == MONTH_TYPE)
+      {
+         return CalendarUnit.MONTH;
+      }
+      else
+      {
+         return CalendarUnit.YEAR;
+      }
+   }
+
+   private Duration getDuration(CalendarUnit dateType, int day)
+   {
+      if (dateType.equals(CalendarUnit.DAY))
+      {
+         return Duration.days(day);
+      }
+      else if (dateType.equals(CalendarUnit.WEEK))
+      {
+         return Duration.weeks(day);
+      }
+      else if (dateType.equals(CalendarUnit.MONTH))
+      {
+         return Duration.months(day);
+      }
+      else
+      {
+         return Duration.years(day);
+      }
+   }
+ 
    public void setSelectedModelParticipant(ModelParticipantInfo selectedModelParticipant)
    {
       this.selectedModelParticipant = selectedModelParticipant;
@@ -380,4 +870,59 @@ public class CostsBean extends UIComponentBean implements ResourcePaths,ViewEven
    {
       this.roleSelectItem = roleSelectItem;
    }
+
+   class CostColumnModel extends DefaultColumnModel
+   {
+
+      private static final long serialVersionUID = 3257355871815472018L;
+      
+      /**
+       * @param columns
+       * @param fixedBeforeColumns
+       * @param fixedAfterColumns
+       * @param moduleId
+       * @param viewId
+       */
+      public CostColumnModel(List<ColumnPreference> columns,
+            List<ColumnPreference> fixedBeforeColumns,
+            List<ColumnPreference> fixedAfterColumns, String moduleId, String viewId)
+      {
+         super(columns, fixedBeforeColumns, fixedAfterColumns, moduleId, viewId, null);
+      }
+      
+      @Override
+      public List<ColumnPreference> getSelectableColumnsForPreferenceScope(PreferenceScope prefScope)
+      {
+         List<ColumnPreference> selectableCols = CollectionUtils.newArrayList();
+         UserPreferencesHelper prefHelper = UserPreferencesHelper.getInstance(
+               UserPreferencesEntries.M_BCC, prefScope);
+         List<String> viewColumns = prefHelper.getSelectedColumns(UserPreferencesEntries.V_COST_AND_CONTROLLING);
+         for (ColumnPreference column : prefScope == PreferenceScope.USER ? userSelectableCols : partitionSelectableCols)
+         {
+            if(viewColumns.contains(column.getColumnName()))
+            {
+               column.setVisible(true);
+            }
+            else
+            {
+               column.setVisible(false);
+            }
+         }
+         if(prefScope == PreferenceScope.USER)
+         {
+            selectableCols = userSelectableCols;
+         }
+         else
+         {
+            selectableCols = partitionSelectableCols;            
+         }
+         setDefaultSelectableColumns(selectableCols);
+         setCustomColumnFilters(this, columnDefinitionMap,null);
+         return selectableCols;
+      }
+   }
+   
+   
 }
+
+

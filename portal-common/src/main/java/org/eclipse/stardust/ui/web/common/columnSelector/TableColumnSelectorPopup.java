@@ -95,22 +95,10 @@ public class TableColumnSelectorPopup extends PopupDialog
    @Override
    public void apply()
    {
-      ColumnPreference columnPreference;
-      List<ColumnPreference> finalCols = new ArrayList<ColumnPreference>();
-      for (ColumnPreference cp : columns)
-      {
-         columnPreference = columnModel.getColumn(cp.getColumnName());
-         columnPreference.setVisible(cp.getVisible());
-         columnPreference.setNewlyVisible(isColumnNewlyVisible(cp));
-         finalCols.add(columnPreference);
-      }
-      columnModel.setSelectableColumns(finalCols);
-      columnModel.setLock(lock);
-
       setVisible(false);
-
+      
       prefScopesHelper.setSelectedPreferenceScope(selectedPreferenceScope);
-      columnModel.saveSelectableColumns(prefScopesHelper.getSelectedPreferenceScope());
+      columnModel.saveSelectableColumns(prefScopesHelper.getSelectedPreferenceScope(),columns);
    }
 
    @Override

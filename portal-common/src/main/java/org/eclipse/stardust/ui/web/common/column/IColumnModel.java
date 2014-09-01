@@ -49,6 +49,7 @@ public interface IColumnModel extends Serializable
     * Saves the user selection
     */
    void saveSelectableColumns(PreferenceScope prefScope);
+   void saveSelectableColumns(PreferenceScope prefScope, List<ColumnPreference> cols);
    void resetSelectableColumns(PreferenceScope prefScope);
    List<ColumnPreference> getSelectableColumnsForPreferenceScope(PreferenceScope prefScope);
    

@@ -1,0 +1,54 @@
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<!-- ***** Documentation *****
+	# Attributes ('*' indicates mandatory attributes)
+		filter* - Filter Object
+	 -->
+
+	<ice:panelGrid columns="2">
+		<ice:outputText value="#{messages_bcc['views.costs.column.customColumn.columnName']}" />
+		<ice:inputText value="#{filter.columnTitle}" partialSubmit="true" />
+		<ice:outputText value="#{messages_bcc['views.costs.column.customColumn.startDate']}" />
+		<ice:panelGroup>
+			<ice:selectOneMenu partialSubmit="true" onclick="Event.stop(event);"
+				value="#{filter.startDateNumDays}"
+				>
+				<f:selectItems value="#{filter.daysCount}" />
+			</ice:selectOneMenu>
+			<ice:selectOneMenu partialSubmit="true"
+				valueChangeListener="#{filter.updateAvailableDays}"
+				onclick="Event.stop(event);"
+				value="#{filter.startDateType}" style="width:80px;">
+				<f:selectItems value="#{filter.durationItems}" />
+				<f:attribute name="dateType"
+					value="#{filter.startDateType}" />
+				<f:attribute name="columnName" value="startDate" />
+			</ice:selectOneMenu>
+		</ice:panelGroup>
+
+		<ice:outputText value="#{messages_bcc['views.costs.column.customColumn.duration']}"/>
+		<ice:panelGroup>
+			<ice:selectOneMenu partialSubmit="true" onclick="Event.stop(event);"
+				value="#{filter.durationNumDays}"
+				>
+				<f:selectItems value="#{filter.durationCount}" />
+			</ice:selectOneMenu>
+			<ice:selectOneMenu partialSubmit="true"
+				valueChangeListener="#{filter.updateAvailableDays}"
+				onclick="Event.stop(event);"
+				value="#{filter.durationType}" style="width:80px;">
+				<f:selectItems value="#{filter.durationItems}" />
+				<f:attribute name="dateType"
+					value="#{filter.durationType}" />
+				<f:attribute name="columnName" value="duration" />
+			</ice:selectOneMenu>
+		</ice:panelGroup>
+
+	</ice:panelGrid>
+
+</f:view>

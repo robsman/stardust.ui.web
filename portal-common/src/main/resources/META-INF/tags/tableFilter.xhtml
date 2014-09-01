@@ -42,7 +42,7 @@
 	   				action="#{filterPopup.resetAndApply}" disabled="#{disabled}">
 	   				<pc:automationTag value="auto-DT-ColFilterReset" standAlone="false" />
 		   			<ice:graphicImage value="/plugins/common/images/icons/filter-reset.png"
-		   				title="#{common_msgPropsBean['common.filterPopup.resetFilter.tooltip']}"
+		   				title="#{filterPopup.resetTitle}"
 						style="vertical-align:top; border:none;"
 						styleClass="#{disabled ? 'iceCmdBtn-dis' : ''}" />
 				</ice:commandLink>
@@ -78,7 +78,7 @@
 				</ice:panelGroup>
 				<ice:panelGroup rendered="#{filterPopup.dataFilters.filtersSet}">
 					<ice:commandButton image="/plugins/common/images/icons/close-panel.gif" action="#{filterPopup.resetAndApply}"
-						title="#{common_msgPropsBean['common.filterPopup.resetAllFilters']}" />
+						title="#{filterPopup.resetTitle}" />
 				</ice:panelGroup>
 			</c:if>
 		</ice:panelGrid>
@@ -151,10 +151,10 @@
 							<ice:commandButton value="#{common_msgPropsBean['common.filterPopup.applyFilter']}"
 								action="#{filterPopup.apply}" styleClass="button" />
 							<ice:commandButton rendered="#{filterPopup.displayDataFilters.count > 1}"
-								value="#{common_msgPropsBean['common.filterPopup.resetFilter']}"
+								value="#{filterPopup.resetTitle}"
 								action="#{filterPopup.reset}" styleClass="button secondary" />
 							<ice:commandButton rendered="#{filterPopup.displayDataFilters.count == 1}"
-								value="#{common_msgPropsBean['common.filterPopup.resetFilter']}"
+								value="#{filterPopup.resetTitle}"
 								action="#{filterPopup.resetAndApply}" immediate="true" styleClass="button secondary" />
 						</ice:panelGroup>
 					</f:facet>

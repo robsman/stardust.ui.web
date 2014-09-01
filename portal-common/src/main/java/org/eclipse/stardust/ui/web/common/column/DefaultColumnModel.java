@@ -179,13 +179,21 @@ public class DefaultColumnModel extends ColumnModel
       setSelectableColumns(columns);
       orgColumns = getClone(getSelectableColumns());
    }
-
+   
    /* (non-Javadoc)
     * @see org.eclipse.stardust.ui.web.common.column.IColumnModel#saveSelectableColumns()
     */
    public void saveSelectableColumns(PreferenceScope prefScope)
    {
-      ArrayList<String> colsToBeSaved = getColsToBeSaved();
+      saveSelectableColumns(prefScope, getSelectableColumns());
+   }
+
+   /* (non-Javadoc)
+    * @see org.eclipse.stardust.ui.web.common.column.IColumnModel#saveSelectableColumns()
+    */
+   public void saveSelectableColumns(PreferenceScope prefScope, List<ColumnPreference> cols)
+   {
+      ArrayList<String> colsToBeSaved = getColsToBeSaved(cols);
       this.preferenceScope = prefScope;
       if (null == columnPreferenceHandler)
       {
@@ -204,12 +212,12 @@ public class DefaultColumnModel extends ColumnModel
       // Notify
       //notifyListeners();
    }
-
-   public ArrayList<String> getColsToBeSaved()
+   
+   public ArrayList<String> getColsToBeSaved(List<ColumnPreference> cols)
    {
       ArrayList<String> colsToBeSaved = new ArrayList<String>();
 
-      for (ColumnPreference columnPreference : super.getSelectableColumns())
+      for (ColumnPreference columnPreference : cols)
       {
          if (columnPreference.isVisible())
          {

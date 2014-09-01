@@ -10,8 +10,11 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.bcc.views;
 
+import java.util.Map;
+
 import org.eclipse.stardust.ui.web.bcc.messsages.MessagesBCCBean;
 import org.eclipse.stardust.ui.web.common.table.DefaultRowModel;
+import org.eclipse.stardust.ui.web.common.util.CollectionUtils;
 
 
 /**
@@ -20,6 +23,8 @@ import org.eclipse.stardust.ui.web.common.table.DefaultRowModel;
  */
 public class CostTableEntry extends DefaultRowModel
 {
+   private final static String CUSTOM_COL_STATUS_SUFFIX = "Status";
+   
    private String processDefinition;
 
    private String todayCosts;
@@ -33,6 +38,8 @@ public class CostTableEntry extends DefaultRowModel
    private int lastWeekState;
 
    private int lastMonthState;
+   
+   private Map<String, Object> customColumns = CollectionUtils.newHashMap();
 
    /**
     * @param processDefinition
@@ -45,7 +52,7 @@ public class CostTableEntry extends DefaultRowModel
     */
    public CostTableEntry(String processDefinition, String todayCosts,
          String lastWeekCosts, String lastMonthCosts, int todayState, int lastWeekState,
-         int lastMonthState, String currencyCode)
+         int lastMonthState, String currencyCode, Map<String, Object> customColumns)
    {
       super();
       this.processDefinition = processDefinition;
@@ -55,6 +62,28 @@ public class CostTableEntry extends DefaultRowModel
       this.todayState = todayState;
       this.lastWeekState = lastWeekState;
       this.lastMonthState = lastMonthState;
+      if(!CollectionUtils.isEmpty(customColumns))
+      {
+         this.customColumns = CollectionUtils.newHashMap();
+         for(Map.Entry<String, Object> cols : customColumns.entrySet())
+         {
+            String key = cols.getKey();
+            Object val = null;
+            if(key.contains(CUSTOM_COL_STATUS_SUFFIX))
+            {
+               val = cols.getValue();
+            }
+            else
+            {
+               val = cols.getValue().toString() + " "+ currencyCode;   
+            }
+            this.customColumns.put(key, val);
+         }         
+      }
+      else
+      {
+         this.customColumns = CollectionUtils.newHashMap();
+      }
    }
 
    public String getTodayStatusLabel()
@@ -159,4 +188,15 @@ public class CostTableEntry extends DefaultRowModel
    {
       this.lastMonthState = lastMonthState;
    }
+
+   public Map<String, Object> getCustomColumns()
+   {
+      return customColumns;
+   }
+
+   public void setCustomColumns(Map<String, Object> customColumns)
+   {
+      this.customColumns = customColumns;
+   }
+   
 }

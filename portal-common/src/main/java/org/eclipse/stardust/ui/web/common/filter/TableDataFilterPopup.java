@@ -37,6 +37,8 @@ public class TableDataFilterPopup extends PopupDialog
    private TableDataFilters displayDataFilters;
    
    private ArrayList<String> validationMessags;
+   
+   private String resetTitle;
 
    /**
     * @param title
@@ -187,5 +189,19 @@ public class TableDataFilterPopup extends PopupDialog
    public ArrayList<String> getValidationMessags()
    {
       return validationMessags; 
+   }
+   
+   public String getResetTitle()
+   {
+      if(StringUtils.isEmpty(resetTitle))
+      {
+         resetTitle = MessagePropertiesBean.getInstance().getString("common.filterPopup.resetFilter");
+      }
+      return resetTitle;
+   }
+
+   public void setResetTitle(String resetTitle)
+   {
+      this.resetTitle = resetTitle;
    }
 }

@@ -10,6 +10,9 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.bcc.jsf;
 
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.dto.ProcessDefinitionDetails;
@@ -17,11 +20,15 @@ import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.core.query.statistics.api.DateRange;
 import org.eclipse.stardust.engine.core.query.statistics.api.UserWorktimeStatistics.Contribution;
 import org.eclipse.stardust.engine.core.query.statistics.api.UserWorktimeStatistics.ContributionInInterval;
+import org.eclipse.stardust.ui.web.common.util.CollectionUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 
 public class CostsPerProcess
 {
    protected final static Logger trace = LogManager.getLogger(CostsPerProcess.class);
+   
+   private final static String CUSTOM_COL_COST_SUFFIX = "Costs";
+   private final static String CUSTOM_COL_STATUS_SUFFIX = "Status";
    
    private ProcessDefinition processDefinition;
    
@@ -37,12 +44,16 @@ public class CostsPerProcess
    private int thresholdStateLastWeek;
    private int thresholdStateLastMonth;
    
+   private Map<String, Object> customColumns;
+   // Map for keeping track of totalPICount to fetch average Count
+   private Map<String, Object> customColumnPisCount;
+   
    public final static int UNDEFINED_THRESHOLD_STATE = -1;
    public final static int EXCEEDED_THRESHOLD_STATE = 1;
    public final static int CRITICAL_THRESHOLD_STATE = 2;
    public final static int NORMAL_THRESHOLD_STATE = 3;
 
-   public CostsPerProcess(ProcessDefinition pd)
+   public CostsPerProcess(ProcessDefinition pd, Map<String, Object> columnDefinitionMap)
    {
       this.processDefinition = pd;
       totalCountPIToday = 0l;
@@ -54,6 +65,19 @@ public class CostsPerProcess
       thresholdStateToday = NORMAL_THRESHOLD_STATE;
       thresholdStateLastWeek = NORMAL_THRESHOLD_STATE;
       thresholdStateLastMonth = NORMAL_THRESHOLD_STATE;
+      if(!CollectionUtils.isEmpty(columnDefinitionMap))
+      {
+         customColumns = CollectionUtils.newHashMap();
+         customColumnPisCount = CollectionUtils.newHashMap();
+         for(Entry<String, Object> colDef:columnDefinitionMap.entrySet())
+         {
+            String key = colDef.getKey();
+            
+            customColumns.put(key+CUSTOM_COL_COST_SUFFIX, 0f);
+            customColumnPisCount.put(key+CUSTOM_COL_COST_SUFFIX, 0l);
+            customColumns.put(key+CUSTOM_COL_STATUS_SUFFIX, NORMAL_THRESHOLD_STATE);
+         }   
+      }
    }
    
    public ProcessDefinition getProcessDefinition()
@@ -84,7 +108,7 @@ public class CostsPerProcess
       return totalCountPIToday > 0 ? (costsToday / totalCountPIToday) : 0;
    }
    
-   public void addContribution(Contribution con)
+   public void addContribution(Contribution con, Map<String, DateRange> customColDateRange)
    {
       if(con != null)
       {
@@ -158,6 +182,47 @@ public class CostsPerProcess
                      " by process with id: " + processDefinition.getId());
             }
          }
+         
+         for(Map.Entry<String, DateRange> custCols : customColDateRange.entrySet())
+         {
+            String key = custCols.getKey();
+            DateRange dateRange = custCols.getValue();
+            ContributionInInterval ciiCustomCol = con.getOrCreateContributionInInterval(dateRange);
+            
+            if((ciiCustomCol.getnPis() > 0) && ciiCustomCol.getCost() > 0)
+            {
+               try{
+                  Long nPisCount = (Long) customColumnPisCount.get(key+CUSTOM_COL_COST_SUFFIX);
+                  double costValue = Double.valueOf(customColumns.get(key+CUSTOM_COL_COST_SUFFIX).toString());
+                  Integer thresholdValue = (Integer) customColumns.get(key+CUSTOM_COL_STATUS_SUFFIX);
+                  nPisCount += ciiCustomCol.getnPis();
+                  costValue += ciiCustomCol.getCost();
+                  if(ciiCustomCol.getCriticalByExecutionCost().getRedInstancesCount() > 0)
+                  {
+                     thresholdValue = EXCEEDED_THRESHOLD_STATE;
+                  }
+                  else if(thresholdStateToday != EXCEEDED_THRESHOLD_STATE &&
+                        ciiToday.getCriticalByExecutionCost().getYellowInstancesCount() > 0)
+                  {
+                     thresholdValue = CRITICAL_THRESHOLD_STATE;
+                  }
+                  if (nPisCount > 0)
+                  {
+                     costValue = (costValue / nPisCount);
+                  }
+                  customColumns.put(key+CUSTOM_COL_COST_SUFFIX, costValue);
+                  customColumns.put(key+CUSTOM_COL_STATUS_SUFFIX, thresholdValue);
+                  customColumnPisCount.put(key+CUSTOM_COL_COST_SUFFIX, nPisCount);
+               }catch (Exception e) {
+                     e.printStackTrace();
+               }
+               
+            }
+            else
+            {
+               customColumns.put(key+CUSTOM_COL_COST_SUFFIX, 0);
+            }
+         } 
       }
    }
    
@@ -174,6 +239,11 @@ public class CostsPerProcess
    public int getLastMonthState()
    {
       return thresholdStateLastMonth;
+   }
+
+   public Map<String, Object> getCustomColumns()
+   {
+      return customColumns;
    }
    
 }

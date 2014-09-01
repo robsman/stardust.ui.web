@@ -19,7 +19,9 @@
         </ice:panelGrid>
         
         <pc:automationTag value="auto-BCC-CostCtrl-CostTbl"/>
-        <pc:genericDataTable exportExcel="true" bean="#{costsBean}" id="costsandControllingList"
-            table="#{costsBean.costTable}" sortSupported="true" />
-    </ice:panelGroup>
+		<pc:genericDataTable exportExcel="true" bean="#{costsBean}"
+			id="costsandControllingList" table="#{costsBean.costTable}"
+			sortSupported="true"
+			toolbarUrl="/plugins/business-control-center/views/costsControllingTableToolbar.xhtml" />
+	</ice:panelGroup>
 </f:view>
