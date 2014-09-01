@@ -111,8 +111,8 @@ define(
 					this.newBusinessObjectInstance = this.currentBusinessObjectInstance;
 
 					this.createMissingComplexFieldInstances(
-							this.currentBusinessObjectInstance, this
-									.getBusinessObject());
+							this.currentBusinessObjectInstance,
+							this.businessObject);
 					this.searchCollapsed = true;
 				};
 
@@ -140,8 +140,8 @@ define(
 						BusinessObjectManagementService
 								.instance()
 								.createBusinessObjectInstance(
-										this.businessObjectManagementPanelController.modelOid,
-										this.businessObjectManagementPanelController.businessObjectId,
+										this.businessObject.modelOid,
+										this.businessObject.id,
 										this.currentBusinessObjectInstance[this.businessObjectManagementPanelController.primaryKeyField.id],
 										this.currentBusinessObjectInstance)
 								.done(
@@ -256,8 +256,14 @@ define(
 				 */
 				BusinessObjectManagementViewController.prototype.createMissingComplexFieldInstances = function(
 						instance, type) {
+					// Nothing to be done for Enumerations
+					
+					if (!type.fields) {
+						return;
+					}
+
 					for (var n = 0; n < type.fields.length; ++n) {
-						var fieldType = this.getBusinessObject().types[type.fields[n].type];
+						var fieldType = this.businessObject.types[type.fields[n].type];
 
 						// Skip primitive fields
 

@@ -962,7 +962,9 @@ public class BusinessObjectManagementService {
 	 * @return
 	 */
 	private JsonPrimitive objectToJsonPrimitive(Object object) {
-		if (object instanceof Boolean) {
+		if (object == null) {
+			return null;
+		} else if (object instanceof Boolean) {
 			return new JsonPrimitive((Boolean) object);
 		} else if (object instanceof Number) {
 			return new JsonPrimitive((Number) object);
@@ -970,6 +972,7 @@ public class BusinessObjectManagementService {
 			return new JsonPrimitive((String) object);
 		}
 
-		throw new IllegalArgumentException("Unknown primitive object type");
+		throw new IllegalArgumentException("Unknown primitive object type \""
+				+ object.getClass() + "\"");
 	}
 }
