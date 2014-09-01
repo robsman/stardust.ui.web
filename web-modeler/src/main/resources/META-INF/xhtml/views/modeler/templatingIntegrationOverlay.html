@@ -18,23 +18,41 @@
    <div id="templatingIntegrationOverlay">
       <div id="configurationTab">
          <table cellpadding="0" cellspacing="0" style="width: 900px;">
-            <!--  class="layoutTable" style="width: 285px;" -->
             <tr>
-               <td width="150px;"><label for="templateLocationInput">Template Location:</label></td>
-               <td><select id="templateLocationInput"></select></td>
+               <td width="150px;"><label for="locationInput">Location:</label></td>
+               <td><select id="locationInput"></select></td>
             </tr>
-         </table>
+               <tr>
+               <td width="150px;"><label for="formatInput">Format:</label></td>
+               <td><select id="formatInput"></select></td>
+            </tr>
+            <tr id="templateRow">
+               <td width="150px;"><label for="templateInput">Template:</label></td>
+               <td><input id="templateInput" type="text" style="width: 300px;"/></td>
+            </tr>
+            <tr id="outputNameRow">
+               <td width="150px;"><label for="outputNameInput">Output Name:</label></td>
+               <td><input id="outputNameInput" type="text" style="width: 300px;"/></td>
+            </tr>
+             <tr id="convertToPdfRow">
+               <td width="150px;"></td>
+               <td><input id="convertToPdfInput" type="checkbox">Convert To PDF</input></td>
+            </tr>
+            </table>
+         
          <div id="textAreaConfiguration">
             <div id="codeEditorDiv" class="codeEditorDivClass" />
          </div>
-         <div id="classpathFileConfiguration">
+        <!--  <div id="classpathFileConfiguration">
             <table cellpadding="0">
                <tr>
-                  <td width="150px;"><label for="classPathLocationInput">File Location: </label></td>
-                  <td><input id="classPathLocationInput" type="text" style="width:300px;"></input></td>
+                  <td width="150px;"><label for="classPathLocationInput">File
+                        Location: </label></td>
+                  <td><input id="classPathLocationInput" type="text"
+                     style="width: 300px;"></input></td>
                </tr>
             </table>
-         </div>
+         </div> -->
       </div>
       <div id="parametersTab">
          <table cellpadding="0" cellspacing="0" class="layoutTable">
@@ -129,6 +147,11 @@
                               Structure</label></td>
                         <td><select id="structuredDataTypeSelect" size="1"></select>
                         </td>
+                     </tr>
+                     <tr id="documentTypeRow">
+                        <td><label for="documentTypeSelect">Document Type</label></td>
+                        <td><select id="documentTypeSelect" size="1">
+                        </select></td>
                      </tr>
                   </table>
                </td>
