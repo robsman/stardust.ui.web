@@ -111,8 +111,8 @@ define(
 					this.newBusinessObjectInstance = this.currentBusinessObjectInstance;
 
 					this.createMissingComplexFieldInstances(
-							this.currentBusinessObjectInstance, this
-									.getBusinessObject());
+							this.currentBusinessObjectInstance,
+							this.businessObject);
 					this.searchCollapsed = true;
 				};
 
@@ -140,8 +140,8 @@ define(
 						BusinessObjectManagementService
 								.instance()
 								.createBusinessObjectInstance(
-										this.businessObjectManagementPanelController.modelOid,
-										this.businessObjectManagementPanelController.businessObjectId,
+										this.businessObject.modelOid,
+										this.businessObject.id,
 										this.currentBusinessObjectInstance[this.businessObjectManagementPanelController.primaryKeyField.id],
 										this.currentBusinessObjectInstance)
 								.done(
@@ -209,11 +209,12 @@ define(
 						return fields;
 					}
 
-					for (var n = 0; n < type.fields.length; ++n) {
+					for (var n = 0; type.fields && n < type.fields.length; ++n) {
 						// Skip complex fields
 
 						if (type.fields[n].list
-								|| (this.businessObject.types && this.businessObject.types[type.fields[n].type])) {
+								|| (this.businessObject.types
+										&& this.businessObject.types[type.fields[n].type] && !this.businessObject.types[type.fields[n].type].values)) {
 							continue;
 						}
 
@@ -234,12 +235,13 @@ define(
 						return fields;
 					}
 
-					for (var n = 0; n < type.fields.length; ++n) {
+					for (var n = 0; type.fields && n < type.fields.length; ++n) {
 						// Skip primitive fields
 
 						if (!type.fields[n].list
-								&& (!this.getBusinessObject().types || !this
-										.getBusinessObject().types[type.fields[n].type])) {
+								&& (!this.getBusinessObject().types
+										|| !this.getBusinessObject().types[type.fields[n].type] || this
+										.getBusinessObject().types[type.fields[n].type].values)) {
 							continue;
 						}
 
@@ -254,8 +256,14 @@ define(
 				 */
 				BusinessObjectManagementViewController.prototype.createMissingComplexFieldInstances = function(
 						instance, type) {
+					// Nothing to be done for Enumerations
+					
+					if (!type.fields) {
+						return;
+					}
+
 					for (var n = 0; n < type.fields.length; ++n) {
-						var fieldType = this.getBusinessObject().types[type.fields[n].type];
+						var fieldType = this.businessObject.types[type.fields[n].type];
 
 						// Skip primitive fields
 
