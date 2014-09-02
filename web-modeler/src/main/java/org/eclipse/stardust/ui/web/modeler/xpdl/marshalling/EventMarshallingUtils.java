@@ -12,6 +12,8 @@ import java.util.UUID;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.core.extensions.actions.abort.AbortActivityEventAction;
 import org.eclipse.stardust.engine.core.extensions.actions.complete.CompleteActivityEventAction;
+import org.eclipse.stardust.engine.core.extensions.actions.excludeuser.ExcludeUserAction;
+import org.eclipse.stardust.engine.core.extensions.conditions.assignment.AssignmentCondition;
 import org.eclipse.stardust.engine.core.extensions.conditions.exception.ExceptionCondition;
 import org.eclipse.stardust.engine.core.extensions.conditions.exception.ExceptionConditionAccessPointProvider;
 import org.eclipse.stardust.engine.core.extensions.conditions.exception.ExceptionConditionValidator;
@@ -56,7 +58,7 @@ public class EventMarshallingUtils
    public static void unTagAsIntermediateEventHost(ActivityType activity)
    {
       AttributeUtil.clearExcept(activity, new String[]{TAG_INTERMEDIATE_EVENT_HOST});
-      activity.setHibernateOnCreation(false);      
+      activity.setHibernateOnCreation(false);
    }
 
    /**
@@ -254,7 +256,7 @@ public class EventMarshallingUtils
       {
          return null;
       }
-      
+
       for (EventActionType action : eventHandler.getEventAction())
       {
          EventActionTypeType type = action.getType();
@@ -295,7 +297,7 @@ public class EventMarshallingUtils
       }
       return null;
    }
-   
+
    private static EventConditionTypeType injectPredefinedConditionType(ModelType model, String conditionTypeId)
    {
       EventConditionTypeType conditionType = null;
@@ -319,6 +321,13 @@ public class EventMarshallingUtils
             {"carnot:engine:validator", ExceptionConditionValidator.class.getName()}
          });
       }
+      else if (PredefinedConstants.ACTIVITY_ON_ASSIGNMENT_CONDITION.equals(conditionTypeId))
+      {
+         conditionType = newConditionType(conditionTypeId, "On Assignment", false, true,
+            ImplementationType.ENGINE_LITERAL, new String[][] {
+            {"carnot:engine:condition", AssignmentCondition.class.getName()},
+         });
+      }
       model.getEventConditionType().add(conditionType);
       return conditionType;
    }
@@ -338,6 +347,13 @@ public class EventMarshallingUtils
          actionType = newActionType(actionTypeId, "Complete Activity", false, true,
             "timer, exception", "bind", new String[][] {
             {"carnot:engine:action", CompleteActivityEventAction.class.getName()}
+         });
+      }
+      else if (PredefinedConstants.EXCLUDE_USER_ACTION.equals(actionTypeId))
+      {
+         actionType = newActionType(actionTypeId, "Exclude User", false, true,
+               "onAssignment", "bind", new String[][] {
+            {"carnot:engine:action", ExcludeUserAction.class.getName()}
          });
       }
       model.getEventActionType().add(actionType);
@@ -412,10 +428,10 @@ public class EventMarshallingUtils
          eventHandler = newEventHandler(conditionType);
          // (fh) enable automatic binding by default on all PULL events.
          eventHandler.setAutoBind(ImplementationType.PULL_LITERAL == conditionType.getImplementation());
-         
+
          bindEvent(eventHandler, eventSymbol);
          hostActivity.getEventHandler().add(eventHandler);
-   
+
          hostingConfig.addProperty(PRP_EVENT_HANDLER_ID, eventHandler.getId());
       }
       return eventHandler;
@@ -426,12 +442,12 @@ public class EventMarshallingUtils
    {
       ModelElementUnmarshaller.updateIdentifiableElement(eventHandler, eventJson);
       ModelElementUnmarshaller.storeDescription(eventHandler, eventJson);
-      
+
       if (eventJson.has(ModelerConstants.LOG_HANDLER_PROPERTY))
       {
          eventHandler.setLogHandler(extractBoolean(eventJson, ModelerConstants.LOG_HANDLER_PROPERTY));
       }
-      
+
       if (eventJson.has(ModelerConstants.INTERRUPTING_PROPERTY))
       {
          // no bind or unbind actions supported.
@@ -444,7 +460,7 @@ public class EventMarshallingUtils
          if (interrupting == null || interrupting) // null means default value which is "true"
          {
             eventType = "Interrupting";
-            
+
             // there should be exactly one abort action with scope sub hierarchy
             EventActionType action = setEventAction(eventHandler,
                   PredefinedConstants.ABORT_ACTIVITY_ACTION,
@@ -468,7 +484,7 @@ public class EventMarshallingUtils
             else
             {
                eventType = "Non-interrupting";
-               
+
                // non-interrupting boundary events have no actions.
                eventHandler.getEventAction().clear();
             }
@@ -476,14 +492,14 @@ public class EventMarshallingUtils
 
          AttributeUtil.setAttribute(eventHandler, "carnot:engine:event:boundaryEventType", eventType);
       }
-   
+
       hostingConfig.addProperty(PRP_EVENT_HANDLER_ID, eventHandler.getId());
    }
 
-   private static EventActionType setEventAction(EventHandlerType eventHandler, String typeId, String defaultName)
+   public static EventActionType setEventAction(EventHandlerType eventHandler, String typeId, String defaultName)
    {
       EventActionType action = null;
-      
+
       for (Iterator<EventActionType> i = eventHandler.getEventAction().iterator(); i.hasNext();)
       {
          EventActionType a = i.next();
@@ -496,7 +512,7 @@ public class EventMarshallingUtils
             action = a;
          }
       }
-      
+
       if (action == null)
       {
          EventActionTypeType actionType = decodeEventActionType(typeId, findContainingModel(eventHandler));
@@ -519,4 +535,78 @@ public class EventMarshallingUtils
       processDefinition.getActivity().add(hostActivity);
       return hostActivity;
    }
+
+   public static void createExcludeUserAction(ActivityType activity, JsonObject activityJson)
+   {
+      JsonObject euJson = activityJson.getAsJsonObject(ModelerConstants.EU_EXCLUDE_USER);
+
+      String dataFullID =  euJson.get(ModelerConstants.EU_EXCLUDE_PERFORMER_DATA).getAsString();
+
+      String dataID = dataFullID;
+
+      if (dataFullID.split(":").length > 1)
+      {
+         dataFullID = dataFullID.split(":")[1];
+      }
+
+      String dataPath = null;
+
+      if (euJson.has(ModelerConstants.EU_EXCLUDE_PERFORMER_DATA_PATH)
+            && !euJson.get(ModelerConstants.EU_EXCLUDE_PERFORMER_DATA_PATH).isJsonNull())
+      {
+         dataPath = euJson.get(ModelerConstants.EU_EXCLUDE_PERFORMER_DATA_PATH).getAsString();
+      }
+      ModelType model = ModelUtils.findContainingModel(activity);
+      EventConditionTypeType conditionType = EventMarshallingUtils.decodeEventHandlerType(PredefinedConstants.ACTIVITY_ON_ASSIGNMENT_CONDITION, model);
+
+      EventHandlerType eventHandler = EventMarshallingUtils.findExcludeUserEventHandler(activity);
+
+      if (eventHandler == null)
+      {
+         eventHandler = EventMarshallingUtils.newEventHandler(conditionType);
+      }
+
+      activity.getEventHandler().add(eventHandler);
+      EventActionType action = EventMarshallingUtils.setEventAction(eventHandler,PredefinedConstants.EXCLUDE_USER_ACTION, PredefinedConstants.EXCLUDE_USER_ACTION);
+      AttributeUtil.setAttribute(action, PredefinedConstants.EXCLUDED_PERFORMER_DATA, dataID);
+      AttributeUtil.setAttribute(action, PredefinedConstants.EXCLUDED_PERFORMER_DATAPATH, dataPath);
+      eventHandler.setType(conditionType);
+      eventHandler.setId(ModelerConstants.EU_EXCLUDE_USER_INTERNAL);
+      eventHandler.setName("Exclude User");
+   }
+
+   public static void removeExcludeUserAction(ActivityType activity)
+   {
+      EventHandlerType tobeRemoved = null;
+      for (Iterator<EventHandlerType> i = activity.getEventHandler().iterator(); i
+            .hasNext();)
+      {
+         EventHandlerType eventHandler = i.next();
+         if (eventHandler.getType().getId().equals(PredefinedConstants.ACTIVITY_ON_ASSIGNMENT_CONDITION) && eventHandler.getId().equals(ModelerConstants.EU_EXCLUDE_USER_INTERNAL))
+         {
+            tobeRemoved = eventHandler;
+         }
+      }
+      if (tobeRemoved != null)
+      {
+         activity.getEventHandler().remove(tobeRemoved);
+      }
+   }
+
+   public static EventHandlerType findExcludeUserEventHandler(ActivityType activity)
+   {
+      for (Iterator<EventHandlerType> i = activity.getEventHandler().iterator(); i
+            .hasNext();)
+      {
+         EventHandlerType eventHandler = i.next();
+         if (eventHandler.getType().getId()
+               .equals(PredefinedConstants.ACTIVITY_ON_ASSIGNMENT_CONDITION)
+               && eventHandler.getId().equals(ModelerConstants.EU_EXCLUDE_USER_INTERNAL))
+         {
+            return eventHandler;
+         }
+      }
+      return null;
+   }
+
 }
