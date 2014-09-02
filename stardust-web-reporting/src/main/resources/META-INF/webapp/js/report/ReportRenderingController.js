@@ -382,10 +382,20 @@ define(
 				/**
 				 * perform ui controlled I18n
 				 */
-				ReportRenderingController.prototype.performUII18n = function(inData, report){
+				ReportRenderingController.prototype.performUII18n = function(inData, report, scopeController, dimensionAsRow){
+					
+					var tableOptions = {
+							aoColumnDefs : []
+						};
+					if(scopeController){
+						scopeController.tableOptions = tableOptions;	
+					}
+					
 					var primaryObject = this.reportingService.metadata.objects[report.dataSet.primaryObject];
+					//format groupby
 					var dimension = primaryObject.dimensions[report.dataSet.groupBy];
 					
+					var self = this;
 					//if groupby is empty or none
 					if(!dimension){
 						Object.keys(inData).forEach(function(key) {
@@ -406,19 +416,67 @@ define(
 						if(!enums){
 							return;
 						}
+						var displayValueMapping = {};
 						Object.keys(inData).forEach(function(key) {
+							if (dimension.id == self.reportingService.metadata.objects.activityInstance.dimensions.criticality.id) {
+								var critName = self.getCriticalityName(key,enums).name;
+								 displayValueMapping[critName] = key;
+								 inData[critName] = inData[key];
+								 delete inData[key];	 
+							}else{
 							for ( var item in enums)
 	                          {
-	                             if (enums[item].id == key)
-	                             {
-	                            	 if(enums[item].name != key){
-	                            		 inData[enums[item].name] = inData[key];
-		                                 delete inData[key];	 
-		                                 break;
-	                            	 }
+	                             if (enums[item].id == key) {
+									if (enums[item].order) {
+										displayValueMapping[enums[item].name] = enums[item].order;
+									} else {
+										displayValueMapping[enums[item].name] = key;
+									}
+									if (enums[item].name != key) {
+										inData[enums[item].name] = inData[key];
+										delete inData[key];
+									}
+									break;
 	                             }
+								}
 	                          }
 						});
+						if(dimension.customSort && !dimensionAsRow){
+							tableOptions.aoColumnDefs.push(getColumnDef(0, displayValueMapping));	
+						}
+					}
+					//format first dimensions
+					dimension = primaryObject.dimensions[self.report.dataSet.firstDimension];
+					if (dimension && dimension.enumerationType) {
+						var qualifier = dimension.enumerationType.split(":");
+ 				        var enums = self.reportingService.getEnumerators2(qualifier[0], qualifier[1]);
+ 				        var displayValueMapping = {};
+					    Object
+							.keys(inData)
+							.forEach(
+									function(key) {
+										for (var i = 0; i < inData[key].length; i++) {
+											if (dimension.id == self.reportingService.metadata.objects.activityInstance.dimensions.criticality.id) {
+												var critName = self.getCriticalityName(key,enums).name;
+												displayValueMapping[critName] = inData[key][i][0];
+												inData[key][i][0] = critName;
+											} else {
+												for (var j = 0; j < enums.length; j++) {
+													if (enums[j].id == inData[key][i][0]) {
+														if(enums[j].order){
+															displayValueMapping[enums[j].name] = enums[j].order;	
+														}else{
+															displayValueMapping[enums[j].name] = inData[key][i][0];
+														}
+														inData[key][i][0] = enums[j].name;
+													}
+												}
+											}
+										}
+									});
+					    if(dimension.customSort && dimensionAsRow){
+							tableOptions.aoColumnDefs.push(getColumnDef(0, displayValueMapping));	
+						}
 					}
 				};
 				
@@ -882,8 +940,6 @@ define(
 			 * 
 			 */
 			ReportRenderingController.prototype.refreshSeriesTable = function(data, scopeController) {
-			    //apply ui terminologies
-			    this.performUII18n(data, this.report);
 			
 			    self = this;
 			    var inData = data;
@@ -892,13 +948,15 @@ define(
 			    var cumulantsAsRow = true;
 			    var dimensionAsRow = true;
 			
-			    if (self.report.layout.table.dimensionDisplay != self.reportingService.metadata.cumulantsDisplay.rows.id) {
+			    if (self.report.layout.table.dimensionDisplay == self.reportingService.metadata.cumulantsDisplay.columns.id) {
 			        dimensionAsRow = false;
 			    }
 			
 			    if (self.report.layout.table.cumulantsDisplay != self.reportingService.metadata.cumulantsDisplay.rows.id) {
 			        cumulantsAsRow = false;
 			    }
+			    //apply ui terminologies
+			    this.performUII18n(data, this.report, scopeController, dimensionAsRow);
 			    var fact_count = (this.report.dataSet.fact == this.reportingService.metadata.objects.processInstance.facts.count.id);
 			
 			    var tableDrawMode = 1; // 2, 3, 4, 5, 6 based on Dimensions as columns/Rows AND/OR Cumulants as columns/Rows
@@ -918,6 +976,14 @@ define(
 			
 			    var addTotalRow = false;
 			
+			    var dimensionDateFormat = this.getDateFormatForDimension();
+			    if(dimensionDateFormat){
+			    	if(dimensionAsRow){
+				    	tableParameters.colFilters = {0: this.reportingService.metadata.timestampType.id + ":'" + dimensionDateFormat + "'"};
+				    }else{
+				    	tableParameters.rowFilters = {0: this.reportingService.metadata.timestampType.id + ":'" + dimensionDateFormat + "'"};
+				    }	
+			    }
 			    if (fact_count) {
 			        if (dimensionAsRow) {
 			            tableDrawMode = 1;
@@ -1091,7 +1157,7 @@ define(
 			
 			            for (var j = 0; j < inData[seriesName].length; j++) {
 			                if (!rowHeaderAdded) {
-			                   inData[seriesName][j][0] = this.formatDate(inData[seriesName][j][0], self.reportingService.serverDateFormat, self.reportingService.clientDateFormat);
+			                   inData[seriesName][j][0] =  inData[seriesName][j][0];
 			                    baseTable.push(inData[seriesName][j]);
 			                } else {
 			                    baseTable[baseTableIndex + j] = baseTable[baseTableIndex + j].concat(inData[seriesName][j].slice(1));
@@ -1111,7 +1177,6 @@ define(
 			        }
 			    }
 			
-			    tableArray = baseTable;
 			
 			    //set the data in parent scope
 			    scopeController.tableParameters = tableParameters;
@@ -1121,6 +1186,27 @@ define(
          /**
           * 
           */
+         ReportRenderingController.prototype.getDateFormatForDimension = function() {
+        	if (this.getFirstDimension().type != this.reportingService.metadata.timestampType){
+        	 return null;
+        	} 
+			if (this.report.dataSet.firstDimensionCumulationIntervalUnit == 's') {
+				return this.reportingService.formats.seconds;
+			} else if (this.report.dataSet.firstDimensionCumulationIntervalUnit == 'm') {
+				return this.reportingService.formats.minutes;
+			} else if (this.report.dataSet.firstDimensionCumulationIntervalUnit == 'h') {
+				return this.reportingService.formats.hours;
+			} else if (this.report.dataSet.firstDimensionCumulationIntervalUnit == 'd'
+					|| this.report.dataSet.firstDimensionCumulationIntervalUnit == 'w') {
+				return this.reportingService.formats.date;
+			} else if (this.report.dataSet.firstDimensionCumulationIntervalUnit == 'M') {
+				return this.reportingService.formats.months;
+			}
+			return null;
+		};
+         /**
+			 * 
+			 */
 		ReportRenderingController.prototype.refreshRecordSet = function(scopeController) {
 			   var columns = this.reportingService.getColumnDimensions(this.report);
 		
@@ -1132,8 +1218,7 @@ define(
                if (this.report.dataSet.groupBy != null && this.report.dataSet.groupBy != 'None') {
                   var aggregations = this.reportingService.metadata.recordSetAggregationFunctions;
                   for ( var n in aggregations ) {
-                     if (this.report.dataSet.columns[x].metaData.aggregationFunction === aggregations[n].id)
-                     {
+			         if (this.report.dataSet.columns[x].metaData.aggregationFunction === aggregations[n].id) {
                         columnDisplayName += " (" + aggregations[n].name + ")";
                         break;
                      }
@@ -1163,7 +1248,7 @@ define(
         	   this.getReportData(this.report, this.parameters).done(
      		function(data) {
      			// Format data before displaying the Results
-     		   scopeController.rows = self.formatPreviewData(data.rows);
+     		   scopeController.rows = self.formatPreviewData(data.rows, scopeController);
      		   
      		   scopeController.tableArray = [headers];
      		   for ( var rowIndex in data.rows)
@@ -1182,10 +1267,20 @@ define(
 /**
  * 
  */
-ReportRenderingController.prototype.formatPreviewData = function(data) {
+ReportRenderingController.prototype.formatPreviewData = function(data, scopeController) {
    var self = this;
+   //add filter - for date formatting
+	//add filters to table parameters
+   var filters = {};
+   scopeController.tableParameters = {};
+   scopeController.tableParameters.colFilters = filters;
+   var tableOptions = {
+			aoColumnDefs : []
+		};
+   scopeController.tableOptions = tableOptions;
       
    var selectedColumns =  this.reportingService.getColumnDimensions(this.report);
+   var displayValueMapping = {};
    
    for ( var selColumn in selectedColumns)
    {
@@ -1203,11 +1298,13 @@ ReportRenderingController.prototype.formatPreviewData = function(data) {
             {
                if (enumItems[item].id == record[selColumn])
                {
+            	  displayValueMapping[enumItems[item].name] = record[selColumn];
                   record[selColumn] = enumItems[item].name;
                   break;
                }
             }
          }
+         tableOptions.aoColumnDefs.push(getColumnDef(selColumn, displayValueMapping));
       } else if (selectedColumns[selColumn].id == this.
                reportingService.metadata.objects.processInstance.dimensions.state.id) {
       // Formatting Process State to display string states as Alive, completed etc 
@@ -1219,9 +1316,11 @@ ReportRenderingController.prototype.formatPreviewData = function(data) {
          {
             var record = data[row];
             if(!record[selColumn]){
+            	//displayValueMapping[enumItems[record[selColumn]].name] = record[selColumn];
           	  record[selColumn] = enumItems[record[selColumn]].name;  
             }
          }
+         //tableOptions.aoColumnDefs.push(getColumnDef(selColumn, displayValueMapping));
       } else if (selectedColumns[selColumn].id == this.
                reportingService.metadata.objects.activityInstance.dimensions.criticality.id) {
          //Formatting Criticality data to display string values
@@ -1233,37 +1332,20 @@ ReportRenderingController.prototype.formatPreviewData = function(data) {
          {
             var record = data[row];
             var criticality = this.getCriticalityName(record[selColumn], enumItems);
+            displayValueMapping[criticality.name] = record[selColumn];
             record[selColumn] = criticality.name;  
          }
          
-      } else if(selectedColumns[selColumn].type.id == this.
-               reportingService.metadata.timestampType.id) {
-         for ( var row in data)
-         {
-            var record = data[row];
-            if (record[selColumn])
-            {
-               var dateStr = record[selColumn]
-               var datePart = "";
-               var timePart = "";
+         tableOptions.aoColumnDefs.push(getColumnDef(selColumn, displayValueMapping));
          
-               var dateParts  = dateStr.split(" ");
-               if (dateParts.length == 1) {
-                  datePart = dateParts;
-               } else if (dateParts.length >= 2) {
-                  var timeParts = dateParts[1].split(":"); // Get 2 Parts, and stripoff seconds part
-                  datePart = dateParts[0];
-                  timePart = timeParts[0] + ":" + timeParts[1];
             }
                
-               record[selColumn] = this.formatDate(datePart, self.reportingService.serverDateFormat, self.reportingService.clientDateFormat);
+       if (selectedColumns[selColumn].type.id == this.reportingService.metadata.timestampType.id) {
+		    filters[selColumn] = this.reportingService.metadata.timestampType.id + ":'" + this.reportingService.formats.minutes + "'";
                
-               record[selColumn] = record[selColumn] + " " + timePart;
-               console.log("Final Date:" + record[selColumn]);
          }
-      }
    }
-   }
+		
    
    var a = [];
    
@@ -1450,4 +1532,21 @@ ReportRenderingController.prototype.formatPreviewData = function(data) {
 	            }
 	            return id;
 			}		
+			function getColumnDef(selColumn, displayValueMapping){
+		         return {
+				        "aTargets": [parseInt(selColumn)],
+				        "mDataProp": (function(displayValueMapping) { return function(source, type, val) {
+				            if (type === 'set') {
+				                source[0] = val;
+				                // Store the computed display for speed
+				                source.date_rendered = val;
+				                return;
+				            } else if (type === 'display' || type == 'filter') {
+				                return source.date_rendered;
+				            }
+				            // 'sort' and 'type' both just use the raw data
+				            return displayValueMapping[source[0]];
+				        };})(displayValueMapping)
+				    };
+			};
 		});

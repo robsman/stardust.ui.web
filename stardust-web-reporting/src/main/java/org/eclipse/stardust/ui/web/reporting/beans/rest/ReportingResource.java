@@ -1,5 +1,7 @@
 package org.eclipse.stardust.ui.web.reporting.beans.rest;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Enumeration;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -490,9 +492,11 @@ public class ReportingResource
    {
       ResourceBundle rb = ResourceBundle.getBundle("portal-common-messages", request.getLocale());
       JsonObject dates = new JsonObject();
-      dates.add("dateFormat", new JsonPrimitive(getStringFromResourceBundle(rb, "portalFramework.formats.defaultDateFormat")));
-      dates.add("dateTimeFormat", new JsonPrimitive(getStringFromResourceBundle(rb, "portalFramework.formats.defaultDateTimeFormat")));
-      dates.add("timeFormat", new JsonPrimitive(getStringFromResourceBundle(rb, "portalFramework.formats.defaultTimeFormat")));
+      dates.add("date", new JsonPrimitive(getStringFromResourceBundle(rb, "portalFramework.formats.defaultDateFormat")));
+      dates.add("minutes", new JsonPrimitive(getStringFromResourceBundle(rb, "portalFramework.formats.defaultDateTimeFormat")));
+      dates.add("seconds", new JsonPrimitive(getStringFromResourceBundle(rb, "portalFramework.formats.date.seconds")));
+      dates.add("hours", new JsonPrimitive(getStringFromResourceBundle(rb, "portalFramework.formats.date.hours")));
+      dates.add("months", new JsonPrimitive(getStringFromResourceBundle(rb, "portalFramework.formats.date.months")));
 
       return Response.ok(dates.toString(), MediaType.APPLICATION_JSON_TYPE).build();
    }
@@ -534,5 +538,20 @@ public class ReportingResource
          return Response.serverError().build();
       }
    }
-
+   
+   
+   /**
+    * @param args
+    * @throws ParseException
+    */
+   public static void main(String[] args) throws ParseException
+   {
+      // String datestr = "2014/08/22 +0000";
+      // String datestr= "2014/08/21 10:41:10 +0000";
+       String datestr= "2014/08/25 13:24:00";
+      // SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/WW Z");
+       // SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss Z");
+       SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yy hh:mm:ss");
+      System.out.println("GOTCHA" + formatter.parse(datestr));
+   }
 }

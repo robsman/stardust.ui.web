@@ -138,6 +138,35 @@ if (!window.bpm.portal.AngularAdapter) {
 			var self = this;
 			
 			/**
+			 * Noticed that Angular 'date' filter does not work for our date formats 
+			 */
+			this.angularModule.filter('timestampType',
+					function($filter) {
+						return function(input, format) {
+							if (input == null) {
+								return "";
+							}
+							try {
+								
+								//TODO: needs review - remove utc format if hours:minutes not available
+								if(input.indexOf('+') != -1 && input.indexOf(':') == -1){
+									//remove utc part
+									var i = input.indexOf("+");
+									input = input.substring(input, i-1);
+								}
+								
+								var d = new Date(input);
+								if(isFinite(d)){
+									var _date = $filter('date')(new Date(input), format);
+									return _date;	
+								}
+							} catch (e) {
+								// not a date attribute
+							}
+							return input;
+						};
+					});
+			/**
 			 *  tableArray - 2D array containing complete data of table column header + rows + footer
 				tableParameters.addLastRowAsFooter - if set true, will add last Row of above table as Footer. 
 				tableParameters.numberOfColHeaders - Number of rows to be used as column headers
@@ -145,6 +174,8 @@ if (!window.bpm.portal.AngularAdapter) {
 				tableParameters.groupByIndex - column index to which grouping will be applied
 				tableParameters.csv - export table data as csv - file name, by default enabled, false to disable
 				tableParameters.excel - export table data as excel - file name, by default enabled, false to disable
+				tableParameters.colFilters - (columnIndex, filter) - it is used to format the column data e.g. date format
+				tableParameters.rowFilters - (rowIndex, filter) - it is used to format the row data e.g. processstarttime selected as dimension
 				tableOptions - jquery data table options (future) 
 				callbackhandler - jquery data table callback handlers (future)
 			 */
@@ -176,7 +207,10 @@ if (!window.bpm.portal.AngularAdapter) {
 			                //set table options - start
 				        	scope.baseTableClone = angular.copy(scope.tableArray);
 				        	
-			                var tableOptions = {};
+			                var tableOptions = scope.tableOptions;
+			                if(!tableOptions){
+			                	tableOptions = {};
+			                }
 			                
 						    tableOptions.sDom =  'T<"clear ">lfrtip';
 						    
@@ -319,7 +353,11 @@ if (!window.bpm.portal.AngularAdapter) {
 			                            colSpan++;
 			                            continue;
 			                        }
+			                        if( tableParameters.rowFilters && tableParameters.rowFilters[i] ){
+			                        	headers += "<th colspan=" + colSpan + ">{{'" + columns[x - 1] + "'| " + tableParameters.rowFilters[i] + "}}</th>";	
+			                        }else{
 			                        headers += "<th colspan=" + colSpan + ">" + columns[x - 1] + "</th>";
+			                        }
 			                        colSpan = 1;
 			                    }
 			                    ROW_TEMPLATE_COPY = ROW_TEMPLATE_COPY.replace("_ROW_", headers);
@@ -332,9 +370,17 @@ if (!window.bpm.portal.AngularAdapter) {
 			                columns = tableArray[0];
 			                for (x in columns) {
 			                    if (x == tableParameters.rowHeaderIndex) {
+			                        if (tableParameters.colFilters && tableParameters.colFilters[x]) {
+			                        	cols += "<td style=\"font-weight:bold; font-size:small\">{{row[" + x + "]|" + tableParameters.colFilters[x] + "}}</td>"; 
+			                        } else {
 			                        cols += "<td style=\"font-weight:bold; font-size:small\">{{row[" + x + "]}}</td>";
+			                        }
 			                    } else {
+			                        if (tableParameters.colFilters && tableParameters.colFilters[x]) {
+			                            cols += "<td style=\"text-align:center\">{{row[" + x + "]|" + tableParameters.colFilters[x] + "}}</td>";
+			                        } else {
 			                        cols += "<td style=\"text-align:center\">{{row[" + x + "]}}</td>";
+			                        }
 			                    }
 			                }
 			
@@ -389,12 +435,6 @@ if (!window.bpm.portal.AngularAdapter) {
 					compile : function (element, attrs,
 						linker) {
 
-						var tableOptions = {aoColumnDefs: [{
-								sDefaultContent : "-",
-								sClass : "",
-								aTargets : ["_all"]
-							}],
-							"aLengthMenu": [[5, 10, 25, 50, 100, 200, -1], [5, 10, 25, 50, 100, 200, "All"]]};
 
 						return {
 							post : function (scope, element,
@@ -479,9 +519,7 @@ if (!window.bpm.portal.AngularAdapter) {
 								var table = jQuery(parent
 										.parent());
 
-								//if group table rows
-								if (scope.tableParameters && scope.tableParameters.groupByIndex != undefined) {
-								    var groupIndex = scope.tableParameters.groupByIndex;
+								var tableOptions = scope.tableOptions;
 								    if (!tableOptions) {
 								        tableOptions = {
 								            aoColumnDefs: []
@@ -491,7 +529,16 @@ if (!window.bpm.portal.AngularAdapter) {
 								    if (!tableOptions.aoColumnDefs) {
 								        tableOptions.aoColumnDefs = [];
 								    }
+							    tableOptions.aoColumnDefs.push({
+									sDefaultContent : "-",
+									sClass : "",
+									aTargets : ["_all"]
+								});
+							    tableOptions.aLengthMenu = [[5, 10, 25, 50, 100, 200, -1], [5, 10, 25, 50, 100, 200, "All"]];
 								
+								//if group table rows
+								if (scope.tableParameters && scope.tableParameters.groupByIndex != undefined) {
+								    var groupIndex = scope.tableParameters.groupByIndex;
 								    tableOptions.aoColumnDefs.push({
 								        bVisible: false,
 								        aTargets: [groupIndex]
