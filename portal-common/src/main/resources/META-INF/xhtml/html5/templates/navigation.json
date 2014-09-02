@@ -14,7 +14,7 @@
                             "id": "configurationTreeView",
                             "icon": "viewIconBase tabIcon-generic",
                             "module": "bpm-ui",
-                            "partial": "bpm-ui/partials/externalPage.html",
+                            "partial": "plugins/common/html5/partials/externalPage.html",
                             "controller": "bpm-ui.ExternalPageCtrl",
                             "target": "tab",
                             "externalURL": "FULL_PATH/plugins/common/portalSingleViewMain.iface?singleViewId=*::configurationTreeView"
@@ -39,7 +39,7 @@
                            "iconBase": "viewIconBase :icon",
                            "icon": "viewIconBase tabIcon-generic",
                            "module": "bpm-ui",
-                           "partial": "bpm-ui/partials/externalPage.html",
+                           "partial": "plugins/common/html5/partials/externalPage.html",
                            "controller": "bpm-ui.ExternalPageCtrl",
                            "target": "tab",
                            "externalURL": ":url"
@@ -81,7 +81,7 @@
             "id": "sidebarLaunchPanels",
             "module": "bpm-ui",
             "controller": "bpm-ui.SidebarCtrl",
-            "partial": "bpm-ui/partials/sidebarLaunchPanels.html"
+            "partial": "plugins/common/html5/partials/sidebarLaunchPanels.html"
         }
     ]
 }

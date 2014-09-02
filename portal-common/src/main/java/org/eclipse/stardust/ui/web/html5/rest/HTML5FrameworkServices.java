@@ -78,7 +78,7 @@ public class HTML5FrameworkServices
    {
       trace.debug("Retrieving config");
 
-      String contents = getCodeResource("bpm-ui/templates/config.json");
+      String contents = getCodeResource("META-INF/xhtml/html5/templates/config.json");
       contents = StringUtils.replace(contents, "CONTEXT_ROOT", getDeploymentBaseURL(uriInfo, true));
       contents = StringUtils.replace(contents, "RANDOM_VALUE", getRandomValue());
 
@@ -113,7 +113,7 @@ public class HTML5FrameworkServices
 
       themesCurrent(null, null);
       
-      String contents = getCodeResource("bpm-ui/templates/navigation.json");
+      String contents = getCodeResource("META-INF/xhtml/html5/templates/navigation.json");
       contents = StringUtils.replace(contents, "FULL_PATH", getDeploymentBaseURL(uriInfo, false));
       contents = StringUtils.replace(contents, "LOGGED_IN_USER_LABEL",
             RestControllerUtils.resolveSpringBean(UserProvider.class, servletContext).getUser().getDisplayName());
@@ -205,7 +205,7 @@ public class HTML5FrameworkServices
    @Path("themes/current")
    public Response themesCurrent(@QueryParam("context") String context, @QueryParam("appStage") String appStage)
    {
-      String contents = getCodeResource("bpm-ui/templates/currentTheme.json");
+      String contents = getCodeResource("META-INF/xhtml/html5/templates/currentTheme.json");
 
       String stylesJson = "";
       ThemeProvider themeProvider = RestControllerUtils.resolveSpringBean(ThemeProvider.class, servletContext);
