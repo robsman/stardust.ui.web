@@ -19,7 +19,6 @@ import javax.faces.model.SelectItem;
 import org.eclipse.stardust.ui.web.bcc.ResourcePaths;
 import org.eclipse.stardust.ui.web.bcc.messsages.MessagesBCCBean;
 import org.eclipse.stardust.ui.web.common.filter.ITableDataFilter;
-import org.eclipse.stardust.ui.web.common.filter.ITableDataFilterListener;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterCustom;
 import org.eclipse.stardust.ui.web.common.util.CollectionUtils;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
@@ -28,8 +27,13 @@ import org.eclipse.stardust.ui.web.common.util.StringUtils;
 
 import com.google.gson.JsonObject;
 
-public class CostTableDataFilter extends TableDataFilterCustom
+public class ResourcePerformanceDataFilter extends TableDataFilterCustom
 {
+   /**
+    * 
+    */
+   private static final long serialVersionUID = -1714567775118629405L;
+
    private String columnTitle;
    private String columnId;
    private String startDateNumDays;
@@ -40,15 +44,14 @@ public class CostTableDataFilter extends TableDataFilterCustom
    private List<SelectItem> daysCount;
    private List<SelectItem> durationCount;
    private List<SelectItem> durationItems;
-   private ITableDataFilterListener listener;
    private Map<Integer, List<SelectItem>> dayTypeMapping;
 
-   public CostTableDataFilter()
+   public ResourcePerformanceDataFilter()
    {
       this("", "", "", true);
    }
 
-   public CostTableDataFilter(String name, String property, String title, boolean visible)
+   public ResourcePerformanceDataFilter(String name, String property, String title, boolean visible)
    {
       super(name, property, title, visible, ResourcePaths.V_COST_CUSTOM_COLUMN_FILTER);
    }
@@ -89,7 +92,7 @@ public class CostTableDataFilter extends TableDataFilterCustom
       }
       else
       {
-         Integer dateType =  (Integer) event.getComponent().getAttributes().get("dateType");
+         Integer dateType = (Integer) event.getComponent().getAttributes().get("dateType");
          String columnName = (String) event.getComponent().getAttributes().get("columnName");
          if ("startDate".equals(columnName))
          {
@@ -115,12 +118,13 @@ public class CostTableDataFilter extends TableDataFilterCustom
 
    public void resetFilter()
    {
-      CostsBean costBean = (CostsBean) FacesUtils.getBeanFromContext("costsBean");
-      costBean.deleteFilter(this);
+      ResourcePerformanceBean resPerformanceBean = (ResourcePerformanceBean) FacesUtils.getBeanFromContext("resourcePerformance");
+      resPerformanceBean.deleteFilter(this);
       columnId = null;
       columnTitle = null;
+
    }
-   
+
    public String getFilterSummaryTitle()
    {
       return MessagesBCCBean.getInstance().get("views.costs.column.customColumn.filter.Label");
@@ -128,13 +132,12 @@ public class CostTableDataFilter extends TableDataFilterCustom
 
    public boolean contains(Object compareValue)
    {
-      // TODO Auto-generated method stub
       return true;
    }
 
    public ITableDataFilter getClone()
    {
-      CostTableDataFilter cFilter = this;
+      ResourcePerformanceDataFilter cFilter = this;
 
       return cFilter;
    }
@@ -145,7 +148,6 @@ public class CostTableDataFilter extends TableDataFilterCustom
       {
          setColumnTitle(((CostTableDataFilter) dataFilterToCopy).getColumnTitle());
       }
-
    }
 
    public String getColumnTitle()
@@ -188,16 +190,6 @@ public class CostTableDataFilter extends TableDataFilterCustom
       this.startDateType = startDateType;
    }
 
-   public Integer getDurationType()
-   {
-      return durationType;
-   }
-
-   public void setDurationType(Integer durationType)
-   {
-      this.durationType = durationType;
-   }
-
    public String getDurationNumDays()
    {
       return durationNumDays;
@@ -208,14 +200,19 @@ public class CostTableDataFilter extends TableDataFilterCustom
       this.durationNumDays = durationNumDays;
    }
 
+   public Integer getDurationType()
+   {
+      return durationType;
+   }
+
+   public void setDurationType(Integer durationType)
+   {
+      this.durationType = durationType;
+   }
+
    public List<SelectItem> getDaysCount()
    {
       return daysCount;
-   }
-
-   public void setDaysCount(List<SelectItem> daysCount)
-   {
-      this.daysCount = daysCount;
    }
 
    public List<SelectItem> getDurationCount()
@@ -233,26 +230,8 @@ public class CostTableDataFilter extends TableDataFilterCustom
       return durationItems;
    }
 
-   public void setDurationItems(List<SelectItem> durationItems)
-   {
-      this.durationItems = durationItems;
-   }
-
    public Map<Integer, List<SelectItem>> getDayTypeMapping()
    {
       return dayTypeMapping;
    }
-
-   public ITableDataFilterListener getListener()
-   {
-      return listener;
-   }
-
-   public void setListener(ITableDataFilterListener listener)
-   {
-      this.listener = listener;
-   }
-   
-   
-
 }

@@ -19,7 +19,7 @@ public interface UserPreferencesEntries
    public static final String V_PRIORITY_VIEW = "priorityView";
    public static final String V_COMPLETED_ACTIVITY = "CompletedActivity";
    public static final String V_COST_AND_CONTROLLING = "CostsandControlling";
-   public static final String V_COST_AND_CONTROLLING_AllCOLUMNS = "allColumns";
+   public static final String V_CUSTOM_AllCOLUMNS = "allColumns";
    public static final String V_GNATT_CHART = "ganttChart";
    public static final String V_LOGIN_TIME = "LoginTime";
    public static final String V_PENDING_ACTIVITIES = "pendingActivities";

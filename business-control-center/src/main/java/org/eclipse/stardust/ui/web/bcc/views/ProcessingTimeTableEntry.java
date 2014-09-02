@@ -10,8 +10,12 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.bcc.views;
 
+import java.util.Map;
+
 import org.eclipse.stardust.ui.web.bcc.messsages.MessagesBCCBean;
 import org.eclipse.stardust.ui.web.common.table.DefaultRowModel;
+import org.eclipse.stardust.ui.web.common.util.CollectionUtils;
+import org.eclipse.stardust.ui.web.common.util.DateUtils;
 
 
 /**
@@ -29,6 +33,7 @@ public class ProcessingTimeTableEntry extends DefaultRowModel
    private int todatState;
    private int lastWeekState;
    private int lastMonthState;
+   private Map<String, Object> customColumns = CollectionUtils.newHashMap();
    
    
    /**
@@ -42,7 +47,7 @@ public class ProcessingTimeTableEntry extends DefaultRowModel
     */
    public ProcessingTimeTableEntry(String processDefinitionId, String averageTimeToday,
          String averageTimeLastWeek, String averageTimeLastMonth, int todatState,
-         int lastWeekState, int lastMonthState)
+         int lastWeekState, int lastMonthState, Map<String, Object> customColumns)
    {
       super();
       this.processDefinitionId = processDefinitionId;
@@ -52,6 +57,29 @@ public class ProcessingTimeTableEntry extends DefaultRowModel
       this.todatState = todatState;
       this.lastWeekState = lastWeekState;
       this.lastMonthState = lastMonthState;
+      if (!CollectionUtils.isEmpty(customColumns))
+      {
+         this.customColumns = CollectionUtils.newHashMap();
+         for (Map.Entry<String, Object> cols : customColumns.entrySet())
+         {
+            String key = cols.getKey();
+            Object val = null;
+            if (key.contains(CustomColumnUtils.CUSTOM_COL_TIME_SUFFIX))
+            {
+               double value = (Double) cols.getValue();
+               val = DateUtils.formatDurationInHumanReadableFormat((long) value);
+            }
+            else
+            {
+               val = cols.getValue();
+            }
+            this.customColumns.put(key, val);
+         }
+      }
+      else
+      {
+         this.customColumns = CollectionUtils.newHashMap();
+      }
    }
 
    public String getTodayStatusLabel()
@@ -155,6 +183,16 @@ public class ProcessingTimeTableEntry extends DefaultRowModel
    public void setLastMonthState(int lastMonthState)
    {
       this.lastMonthState = lastMonthState;
+   }
+
+   public Map<String, Object> getCustomColumns()
+   {
+      return customColumns;
+   }
+
+   public void setCustomColumns(Map<String, Object> customColumns)
+   {
+      this.customColumns = customColumns;
    }
 
 }

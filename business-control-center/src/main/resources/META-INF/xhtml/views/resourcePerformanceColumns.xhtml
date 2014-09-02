@@ -22,5 +22,14 @@
                  <ui:param name="thresholdState" value="#{row.lastMonthState}"/>
              </ui:include>
 		</ice:panelGroup>
+		<ice:panelGroup rendered="#{fn:contains(col.columnName, 'Time')}">
+			<ice:outputText value="#{rowObject[property]}" />
+		</ice:panelGroup>
+
+		<ice:panelGroup rendered="#{fn:contains(col.columnName, property)}">
+			<ui:include src="thresholdState.xhtml">
+				<ui:param name="thresholdState" value="#{rowObject[property]}" />
+			</ui:include>
+		</ice:panelGroup> 
 	</ice:panelGroup>
 </f:view>

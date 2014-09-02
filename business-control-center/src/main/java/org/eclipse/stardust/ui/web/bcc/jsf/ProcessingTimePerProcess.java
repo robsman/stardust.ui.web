@@ -10,6 +10,9 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.bcc.jsf;
 
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.dto.ProcessDefinitionDetails;
@@ -17,6 +20,8 @@ import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.core.query.statistics.api.DateRange;
 import org.eclipse.stardust.engine.core.query.statistics.api.UserWorktimeStatistics.Contribution;
 import org.eclipse.stardust.engine.core.query.statistics.api.UserWorktimeStatistics.ContributionInInterval;
+import org.eclipse.stardust.ui.web.bcc.views.CustomColumnUtils;
+import org.eclipse.stardust.ui.web.common.util.CollectionUtils;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 
@@ -25,7 +30,9 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 public class ProcessingTimePerProcess
 {
    protected final static Logger trace = LogManager.getLogger(ProcessingTimePerProcess.class);
-         
+   public final static String CUSTOM_COL_TIME_SUFFIX = "averageTime";
+   private final static String CUSTOM_COL_STATUS_SUFFIX = "Status";
+   
    private ProcessDefinition processDefinition;
    
    private double timeToday;
@@ -39,13 +46,15 @@ public class ProcessingTimePerProcess
    private int thresholdStateToday;
    private int thresholdStateLastWeek;
    private int thresholdStateLastMonth;
+   private Map<String, Object> customColumns;
+   private Map<String, Object> customColumnPisCount;
    
    public final static int UNDEFINED_THRESHOLD_STATE = -1;
    public final static int EXCEEDED_THRESHOLD_STATE = 1;
    public final static int CRITICAL_THRESHOLD_STATE = 2;
    public final static int NORMAL_THRESHOLD_STATE = 3;
 
-   public ProcessingTimePerProcess(ProcessDefinition pd)
+   public ProcessingTimePerProcess(ProcessDefinition pd, Map<String, Object> columnDefinitionMap)
    {
       this.processDefinition = pd;
       totalPICountToday = 0l;
@@ -57,6 +66,19 @@ public class ProcessingTimePerProcess
       thresholdStateToday = NORMAL_THRESHOLD_STATE;
       thresholdStateLastWeek = NORMAL_THRESHOLD_STATE;
       thresholdStateLastMonth = NORMAL_THRESHOLD_STATE;
+      if(!CollectionUtils.isEmpty(columnDefinitionMap))
+      {
+         customColumns = CollectionUtils.newHashMap();
+         customColumnPisCount = CollectionUtils.newHashMap();
+         for(Entry<String, Object> colDef:columnDefinitionMap.entrySet())
+         {
+            String key = colDef.getKey();
+            
+            customColumns.put(key+CUSTOM_COL_TIME_SUFFIX, 0.0d);
+            customColumnPisCount.put(key+CUSTOM_COL_TIME_SUFFIX, 0l);
+            customColumns.put(key+CUSTOM_COL_STATUS_SUFFIX, NORMAL_THRESHOLD_STATE);
+         }   
+      }
    }
    
    public ProcessDefinition getProcessDefinition()
@@ -96,7 +118,7 @@ public class ProcessingTimePerProcess
 	   return DateUtils.formatDurationInHumanReadableFormat((long) timeToday);
 	}
    
-   public void addContribution(Contribution con)
+   public void addContribution(Contribution con, Map<String, DateRange> customColDateRange)
    {
       if(con != null)
       {
@@ -172,6 +194,35 @@ public class ProcessingTimePerProcess
                      " by process with id: " + processDefinition.getId());
             }
          }
+         
+         for (Map.Entry<String, DateRange> custCols : customColDateRange.entrySet())
+         {
+            String key = custCols.getKey();
+            DateRange dateRange = custCols.getValue();
+            ContributionInInterval ciiCustomCol = con.getOrCreateContributionInInterval(dateRange);
+
+            if ((ciiCustomCol.getnPis() > 0) && ciiCustomCol.getTimeSpent().getTime() > 0)
+            {
+               Long nPisCount = (Long) customColumnPisCount.get(key + CustomColumnUtils.CUSTOM_COL_TIME_SUFFIX);
+               double timeValue = Double.valueOf(customColumns.get(key + CustomColumnUtils.CUSTOM_COL_TIME_SUFFIX)
+                     .toString());
+               Integer thresholdValue = (Integer) customColumns.get(key + CUSTOM_COL_STATUS_SUFFIX);
+               nPisCount += ciiCustomCol.getnPis();
+               timeValue += ciiCustomCol.getTimeSpent().getTime();
+               if (ciiCustomCol.getCriticalByExecutionCost().getRedInstancesCount() > 0)
+               {
+                  thresholdValue = EXCEEDED_THRESHOLD_STATE;
+               }
+               else if (thresholdStateToday != EXCEEDED_THRESHOLD_STATE
+                     && ciiToday.getCriticalByExecutionCost().getYellowInstancesCount() > 0)
+               {
+                  thresholdValue = CRITICAL_THRESHOLD_STATE;
+               }
+               customColumns.put(key + CustomColumnUtils.CUSTOM_COL_TIME_SUFFIX, timeValue);
+               customColumns.put(key + CUSTOM_COL_STATUS_SUFFIX, thresholdValue);
+               customColumnPisCount.put(key + CustomColumnUtils.CUSTOM_COL_TIME_SUFFIX, nPisCount);
+            }
+         }
       }
    }
    
@@ -188,5 +239,25 @@ public class ProcessingTimePerProcess
    public int getLastMonthState()
    {
       return thresholdStateLastMonth;
+   }
+
+   public Map<String, Object> getCustomColumns()
+   {
+      return customColumns;
+   }
+
+   public void setCustomColumns(Map<String, Object> customColumns)
+   {
+      this.customColumns = customColumns;
+   }
+
+   public Map<String, Object> getCustomColumnPisCount()
+   {
+      return customColumnPisCount;
+   }
+
+   public void setCustomColumnPisCount(Map<String, Object> customColumnPisCount)
+   {
+      this.customColumnPisCount = customColumnPisCount;
    }
 }
