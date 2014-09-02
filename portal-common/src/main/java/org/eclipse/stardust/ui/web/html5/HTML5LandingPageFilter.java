@@ -89,10 +89,6 @@ public class HTML5LandingPageFilter implements Filter
                if (trace.isDebugEnabled())
                {
                   trace.debug("Dependency Scripts to Inject: " + allScripts);
-               }
-
-               if (trace.isDebugEnabled())
-               {
                   trace.debug("Dependency Styles to Inject: " + allStyles);
                }
 

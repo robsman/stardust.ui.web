@@ -40,7 +40,7 @@ public class PluginUtils
     * @param fetchContents
     * @return
     */
-   public static List<ResourceInfo> findResourcesByPlugin(ResourcePatternResolver resolver, String pattern, boolean fetchContents)
+   public static List<ResourceInfo> findPluginResources(ResourcePatternResolver resolver, String pattern, boolean fetchContents)
    {
       List<ResourceInfo> allResources = newArrayList();
 
@@ -50,9 +50,9 @@ public class PluginUtils
 
          for (Pair<String, String> plugin : allPlugins)
          {
-            String webContentBaseUri = plugin.getSecond();
+            String pluginBaseUri = plugin.getSecond();
 
-            String locationPattern = webContentBaseUri + pattern;
+            String locationPattern = pluginBaseUri + pattern;
             
             Resource[] matchedResources;
             try
@@ -65,20 +65,20 @@ public class PluginUtils
                matchedResources = new Resource[0];
             }
 
+            ResourceInfo rInfo;
             for (Resource resource : matchedResources)
             {
                if (resource.exists())
                {
                   try
                   {
-                     ResourceInfo rInfo;
                      if (fetchContents)
                      {
-                        rInfo = new ResourceInfo(plugin.getFirst(), webContentBaseUri, resource, readResource(resource));
+                        rInfo = new ResourceInfo(plugin.getFirst(), pluginBaseUri, resource, readResource(resource));
                      }
                      else
                      {
-                        rInfo = new ResourceInfo(plugin.getFirst(), webContentBaseUri, resource);
+                        rInfo = new ResourceInfo(plugin.getFirst(), pluginBaseUri, resource);
                      }
                      allResources.add(rInfo);
                   }
@@ -145,7 +145,7 @@ public class PluginUtils
     * @return
     */
    @SuppressWarnings({"rawtypes", "unchecked"})
-   private static List<Pair<String, String>> getAllPlugins(ResourcePatternResolver resolver)
+   public static List<Pair<String, String>> getAllPlugins(ResourcePatternResolver resolver)
    {
       List<Pair<String, String>> allPlugins = newArrayList();
 
@@ -155,20 +155,23 @@ public class PluginUtils
          for (Resource resource : resources)
          {
             String pluginId = resource.getFilename().substring(0, resource.getFilename().lastIndexOf("."));
-            trace.debug("Inspecting portal plugin '" + pluginId + "' (" + resource.getURI() + ")");
+            if (trace.isDebugEnabled())
+            {
+               trace.debug("Inspecting portal plugin '" + pluginId + "' (" + resource.getURI() + ")");
+            }
 
             InputStream isPluginDescriptor = resource.getInputStream();
             try
             {
                String firstLine = new BufferedReader(new InputStreamReader(isPluginDescriptor)).readLine();
-               Resource webContentReader = resource.createRelative("../").createRelative(firstLine);
-               String webContentBaseUri = webContentReader.getURI().toString();
-               if ( !webContentBaseUri.endsWith("/"))
+               Resource pluginBaseUriReader = resource.createRelative("../").createRelative(firstLine);
+               String pluginBaseUri = pluginBaseUriReader.getURI().toString();
+               if ( !pluginBaseUri.endsWith("/"))
                {
-                  webContentBaseUri += "/";
+                  pluginBaseUri += "/";
                }
 
-               allPlugins.add(new Pair(pluginId, webContentBaseUri));
+               allPlugins.add(new Pair(pluginId, pluginBaseUri));
             }
             finally
             {

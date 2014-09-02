@@ -23,7 +23,7 @@ public class ResourceInfo
    private static final String WEB_PREFIX = "plugins/";
 
    private String pluginId;
-   private String webContentBaseUri;
+   private String pluginBaseUri;
 
    private Resource resource;
    private String resourceBaseUri;
@@ -32,18 +32,18 @@ public class ResourceInfo
 
    /**
     * @param pluginId
-    * @param webContentBaseUri
+    * @param pluginBaseUri
     * @param resource
     * @param contents
     */
-   public ResourceInfo(String pluginId, String webContentBaseUri, Resource resource, String contents) throws IOException
+   public ResourceInfo(String pluginId, String pluginBaseUri, Resource resource, String contents) throws IOException
    {
       this.pluginId = pluginId;
-      this.webContentBaseUri = webContentBaseUri;
+      this.pluginBaseUri = pluginBaseUri;
       this.resource = resource;
       this.resourceContents = contents;
       this.resourceBaseUri = resource.createRelative("").getURI().toString();
-      this.resourceBaseWebUri = WEB_PREFIX + pluginId + "/" + resourceBaseUri.substring(webContentBaseUri.length());
+      this.resourceBaseWebUri = WEB_PREFIX + pluginId + "/" + resourceBaseUri.substring(pluginBaseUri.length());
    }
    
    /**
@@ -60,7 +60,10 @@ public class ResourceInfo
    public String toString()
    {
       StringBuffer sb = new StringBuffer();
-      sb.append(pluginId).append(webContentBaseUri).append(resourceBaseUri).append(resourceBaseWebUri);
+      sb.append("pluginId:").append(pluginId)
+            .append(", pluginBaseUri:").append(pluginBaseUri)
+            .append(", resourceBaseUri:").append(resourceBaseUri)
+            .append(", resourceBaseWebUri:").append(resourceBaseWebUri);
       return sb.toString();
    }
 
@@ -69,9 +72,9 @@ public class ResourceInfo
       return pluginId;
    }
 
-   public String getWebContentBaseUri()
+   public String getPluginBaseUri()
    {
-      return webContentBaseUri;
+      return pluginBaseUri;
    }
 
    public Resource getResource()
