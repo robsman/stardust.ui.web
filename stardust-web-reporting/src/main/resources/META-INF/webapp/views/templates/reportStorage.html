@@ -28,26 +28,30 @@
 		</td>
 	</tr>
 	<tr>
-		<td valign="top" ng-show="report.storage.state == 'created'">
+		<td valign="top">
 			<div ng-show="report.storage.state == 'created'">
 				<p>{{getI18N('reporting.definitionView.forOnDemand.text')}}</p>
 			</div>
+         <div ng-show="report.storage.state == 'saved'">
++            <label>{{getI18N('reporting.storage.location.label')}}</label>
++        </div>
 			<table>
 				<tr>
 					<td><input id="auto-reporting-storageTab-RDPersonal" type="radio" ng-model="report.storage.location"
-						value="personalFolder" /></td>
+						value="personalFolder" ng-disabled="report.storage.state == 'saved'" /></td>
 					<td colspan="2">{{getI18N('reporting.definitionView.personalReportTemplate.label')}}</td>
 				</tr>
 				<tr>
 					<td><input id="auto-reporting-storageTab-RDGlobal" type="radio" ng-model="report.storage.location"
-						value="publicFolder" /></td>
+						value="publicFolder" ng-disabled="report.storage.state == 'saved'" /></td>
 					<td colspan="2">{{getI18N('reporting.definitionView.globalReportTemplate.label')}}</td>
 				</tr>
 				<tr>
 					<td><input id="auto-reporting-storageTab-RDRole" type="radio" ng-model="report.storage.location"
-						value="participantFolder" /></td>
+						value="participantFolder" ng-disabled="report.storage.state == 'saved'" /></td>
 					<td>{{getI18N('reporting.definitionView.organizationRoleReportTemplate.label')}}</td>
-					<td><select id="auto-reporting-storageTab-RDtoRoleOrg" ng-model="report.storage.participant"
+					<td><select id="auto-reporting-storageTab-RDtoRoleOrg" ng-model="report.storage.participant" 
+                  ng-disabled="report.storage.state == 'saved'"
 						ng-change="report.storage.location = 'participantFolder'"
 						ng-options="key as value for (key, value) in modelParticipants">
 					</select></td>
