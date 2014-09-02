@@ -339,7 +339,7 @@ public class RepositoryFolderUserObject extends RepositoryResourceUserObject
       {
          if(StringUtils.isNotEmpty(getFolder().getName()))
          {
-            label = I18nFolderUtils.getLabel(getFolder().getName());   
+            label = I18nFolderUtils.getLabel(getFolder().getPath(), getFolder().getName());  
          }
          else
          {

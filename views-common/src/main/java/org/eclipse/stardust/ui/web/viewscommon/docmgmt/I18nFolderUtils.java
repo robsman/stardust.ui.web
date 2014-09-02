@@ -225,4 +225,68 @@ public class I18nFolderUtils
          }
       }
    }
+   
+   /**
+    * @param path
+    * @return
+    */
+   public static String getLabel(String path, String folderName)
+   {
+      String i18nFolderName = "";
+      I18nFolderUtils i18nFolderUtils = I18nFolderUtils.getInstance();
+
+      if (path.contains("/") || path.contains("\\")) // make sure it is not virtual folder
+      {
+         for (SystemFolder systemFolder : i18nFolderUtils.systemFolders)
+         {
+            if (path.matches(systemFolder.getPath()))
+            {
+               i18nFolderName = systemFolder.getI18Name();
+               break;
+            }
+         }
+         if (org.eclipse.stardust.common.StringUtils.isEmpty(i18nFolderName))
+         {
+            if (path.contains("/"))
+            {
+               // For CMIS repository, path and folderName[label] are different
+               // We can directly use the folderName as label
+               i18nFolderName = folderName;
+            }
+            else
+            {
+               i18nFolderName = StringUtils.substringAfterLast(path, "\\");
+            }
+            for (SystemFolder systemFolder : i18nFolderUtils.systemFolders_virtual)
+            {
+               if (i18nFolderName.matches(systemFolder.getPath()))
+               {
+                  i18nFolderName = systemFolder.getI18Name();
+                  break;
+               }
+            }
+         }
+      }
+      else
+      // virtual folder
+      {
+         for (SystemFolder systemFolder : i18nFolderUtils.systemFolders_virtual)
+         {
+            if (path.equalsIgnoreCase(systemFolder.getPath()))
+            {
+               i18nFolderName = systemFolder.getI18Name();
+               break;
+            }
+         }
+         if (org.eclipse.stardust.common.StringUtils.isEmpty(i18nFolderName))
+         {
+            // For CMIS repository, path and folderName[label] are different
+            // We can directly use the folderName as label
+            i18nFolderName = folderName;
+         }
+      }
+
+      return i18nFolderName;
+   }
+
 }
