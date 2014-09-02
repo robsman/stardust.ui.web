@@ -134,7 +134,14 @@ public class EventHistoryItem extends AbstractProcessHistoryTableEntry
             EventActionDetails ead = (EventActionDetails) obj;
             if (!"CompleteActivity".equalsIgnoreCase(ead.getId()))
             {
-               actionstr += msb.getString("processHistory.activityTable.eventExecution."+ ead.getId()) + ", ";
+               if ("AbortActivity".equalsIgnoreCase(ead.getId()))
+               {
+                  actionstr += msb.getString("processHistory.activityTable.eventExecution." + ead.getId()) + ", ";
+               }
+               else
+               {
+                  actionstr += I18nUtils.getLabel(ead, ead.getName()) + ", ";
+               }
             }
          }
          if (StringUtils.isNotEmpty(actionstr))
