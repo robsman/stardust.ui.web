@@ -64,6 +64,7 @@ import org.eclipse.stardust.model.xpdl.carnot.DescriptionType;
 import org.eclipse.stardust.model.xpdl.carnot.DiagramType;
 import org.eclipse.stardust.model.xpdl.carnot.DirectionType;
 import org.eclipse.stardust.model.xpdl.carnot.EndEventSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.EventActionType;
 import org.eclipse.stardust.model.xpdl.carnot.EventHandlerType;
 import org.eclipse.stardust.model.xpdl.carnot.GatewaySymbol;
 import org.eclipse.stardust.model.xpdl.carnot.IExtensibleElement;
@@ -1170,6 +1171,20 @@ public class ModelElementMarshaller implements ModelMarshaller
             qcJson.add(ModelerConstants.QC_VALID_CODES, validCodesJson);
             activityJson.add(ModelerConstants.QUALITYCONTROL, qcJson);
          }
+      }
+
+      EventHandlerType eventHandler = EventMarshallingUtils
+            .findExcludeUserEventHandler(activity);
+      if (eventHandler != null)
+      {
+         JsonObject euJson = new JsonObject();
+         EventActionType action = eventHandler.getEventAction().get(0);
+         euJson.addProperty(ModelerConstants.EU_EXCLUDE_PERFORMER_DATA, AttributeUtil
+               .getAttributeValue(action, PredefinedConstants.EXCLUDED_PERFORMER_DATA));
+         euJson.addProperty(ModelerConstants.EU_EXCLUDE_PERFORMER_DATA_PATH,
+               AttributeUtil.getAttributeValue(action,
+                     PredefinedConstants.EXCLUDED_PERFORMER_DATAPATH));
+         activityJson.add(ModelerConstants.EU_EXCLUDE_USER, euJson);
       }
 
       return activityJson;

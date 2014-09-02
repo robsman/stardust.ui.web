@@ -358,6 +358,20 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       storeAttributes(activity, activityJson);
       storeDescription(activity, activityJson);
 
+      if (activityJson.has(ModelerConstants.EU_EXCLUDE_USER))
+      {
+
+         if (activityJson.get(ModelerConstants.EU_EXCLUDE_USER).isJsonNull())
+         {
+            EventMarshallingUtils.removeExcludeUserAction(activity);
+         }
+         else
+         {
+            EventMarshallingUtils.createExcludeUserAction(activity, activityJson);
+         }
+      }
+
+
       if (activityJson.has(ModelerConstants.QUALITYCONTROL))
       {
          JsonObject qcJson = activityJson
@@ -544,6 +558,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
          }
       }
    }
+
 
    private void updateLoop(ActivityType activity, JsonElement loopJson)
    {
