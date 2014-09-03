@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:ippui="http://infinity.com/bpm/portal/common/uiDefinition"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/portal/common/uiDefinition.xsd">
+
+	<ippui:perspectiveExtension
+		targetPerspective="*" id="ippHtml5ProcessPortalPerspective" messageBundles="views-common-messages">
+
+		<ippui:viewsExtension>
+			<ippui:view name="worklistViewHtml5" include="/plugins/html5-process-portal/partials/views/worklistView.html" />
+		</ippui:viewsExtension>
+
+	</ippui:perspectiveExtension>
+</beans>

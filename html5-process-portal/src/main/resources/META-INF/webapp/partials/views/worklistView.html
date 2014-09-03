@@ -1,0 +1,13 @@
+<div ng-controller="WorklistViewCtrl">
+	HTML Based Worklist View
+	<table border="1">
+		<th>Activity OID</th>
+		<th>Activity Name</th>
+		<th>Process Name</th>
+		<tr ng-repeat="entry in worklist.tableData track by $index">
+			<td><a href="" ng-click="worklist.activate(entry)">{{entry.oid}}</a></td>
+			<td>{{entry.name}}</td>
+			<td>{{entry.processName}}</td>
+		</tr>
+	</table>
+</div>
