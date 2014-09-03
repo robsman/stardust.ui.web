@@ -111,17 +111,32 @@ public class PluginUtils
 
       try
       {
+         if (!webUriBase.endsWith("/"))
+         {
+            webUriBase += "/";
+         }
+         
+         if (!baseUri.endsWith("/"))
+         {
+            baseUri += "/";
+         }
+
          String webUriPrefix = "plugins/" + pluginId + "/" + webUriBase;
          String locationPattern = baseUri + pattern;
          
          Resource[] matchedResources;
          try
          {
+            if (trace.isDebugEnabled())
+            {
+               trace.debug("Location pattern to search for plugins: " + locationPattern);
+            }
             matchedResources = resolver.getResources(locationPattern);
          }
-         catch (Exception e)
+         // JBoss is throwing an IOException instead of FileNotFoundException if a file cannot be found
+         catch (IOException ioe)
          {
-            // Failed, possibly no match found. Ignore
+            // Failed, possibly no match found. Ignore.
             matchedResources = new Resource[0];
          }
 
