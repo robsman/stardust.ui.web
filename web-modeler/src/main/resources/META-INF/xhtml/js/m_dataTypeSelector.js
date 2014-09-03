@@ -190,7 +190,10 @@ define(
 					var dataTypes = [];
 					dataTypes.push({type: "primitive", name:  m_i18nUtils.getProperty("modeler.element.properties.commonProperties.primitive")});
 					dataTypes.push({type: "struct", name:  m_i18nUtils.getProperty("modeler.element.properties.commonProperties.structureData")});
-					dataTypes.push({type: "dmsDocument", name:  m_i18nUtils.getProperty("modeler.element.properties.commonProperties.document")});
+					
+					if (this.supportsDocumentTypes) {
+					   dataTypes.push({type: "dmsDocument", name:  m_i18nUtils.getProperty("modeler.element.properties.commonProperties.document")});
+					}
 					
 					var self = this;
 					this.dataTypeSelect.empty();					
