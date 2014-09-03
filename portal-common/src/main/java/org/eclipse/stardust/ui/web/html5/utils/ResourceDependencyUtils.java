@@ -21,7 +21,6 @@ import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.CollectionUtils;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
-import org.eclipse.stardust.ui.web.html5.rest.HTML5FrameworkServices;
 import org.eclipse.stardust.ui.web.plugin.utils.PluginUtils;
 import org.eclipse.stardust.ui.web.plugin.utils.ResourceInfo;
 import org.springframework.core.io.Resource;
@@ -33,7 +32,7 @@ import org.springframework.core.io.support.ResourcePatternResolver;
  */
 public class ResourceDependencyUtils
 {
-   private static final Logger trace = LogManager.getLogger(HTML5FrameworkServices.class);
+   private static final Logger trace = LogManager.getLogger(ResourceDependencyUtils.class);
    
    private static final String PLUGIN_DEPENDENCY_DESCRIPTOR = "**/portal-plugin-dependencies.json";
    private static final String PLUGIN_DEPENDENCY_PLUGINS = "portal-plugins";
