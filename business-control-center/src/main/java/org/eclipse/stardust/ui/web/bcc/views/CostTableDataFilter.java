@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.bcc.views;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -19,9 +20,9 @@ import javax.faces.model.SelectItem;
 import org.eclipse.stardust.ui.web.bcc.ResourcePaths;
 import org.eclipse.stardust.ui.web.bcc.messsages.MessagesBCCBean;
 import org.eclipse.stardust.ui.web.common.filter.ITableDataFilter;
-import org.eclipse.stardust.ui.web.common.filter.ITableDataFilterListener;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterCustom;
 import org.eclipse.stardust.ui.web.common.util.CollectionUtils;
+import org.eclipse.stardust.ui.web.common.util.DateUtils;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
@@ -36,11 +37,13 @@ public class CostTableDataFilter extends TableDataFilterCustom
    private Integer startDateType;
    private String durationNumDays;
    private Integer durationType;
-
+   private Date startDate;
+   private Date endDate;
+   private boolean showDatePicker = false;
+   
    private List<SelectItem> daysCount;
    private List<SelectItem> durationCount;
    private List<SelectItem> durationItems;
-   private ITableDataFilterListener listener;
    private Map<Integer, List<SelectItem>> dayTypeMapping;
 
    public CostTableDataFilter()
@@ -72,8 +75,26 @@ public class CostTableDataFilter extends TableDataFilterCustom
       this.startDateType = GsonUtils.extractInt(jsonObject, "startDateType");
       this.durationNumDays = GsonUtils.extractInt(jsonObject, "durationNumOfDays").toString();
       this.durationType = GsonUtils.extractInt(jsonObject, "durationDateType");
+      if(jsonObject.has("showDatePicker"))
+      {
+         this.showDatePicker = GsonUtils.extractBoolean(jsonObject, "showDatePicker");
+         this.startDate = DateUtils.parseDateTime(GsonUtils.extractString(jsonObject, "startDate"));
+         this.endDate = DateUtils.parseDateTime(GsonUtils.extractString(jsonObject, "endDate"));
+      }
    }
 
+   public void toggleDatePicker()
+   {
+      if(showDatePicker)
+      {
+         showDatePicker = false;
+      }
+      else
+      {
+         showDatePicker = true;
+      }
+   }
+   
    /**
     * 
     * @param event
@@ -103,6 +124,7 @@ public class CostTableDataFilter extends TableDataFilterCustom
       }
    }
 
+   
    public boolean isFilterSet()
    {
       if (StringUtils.isEmpty(columnId) && StringUtils.isEmpty(columnId))
@@ -119,11 +141,13 @@ public class CostTableDataFilter extends TableDataFilterCustom
       costBean.deleteFilter(this);
       columnId = null;
       columnTitle = null;
+      startDate = null;
+      endDate = null;
    }
    
    public String getFilterSummaryTitle()
    {
-      return MessagesBCCBean.getInstance().get("views.costs.column.customColumn.filter.Label");
+      return MessagesBCCBean.getInstance().get("views.customColumn.filter.Label");
    }
 
    public boolean contains(Object compareValue)
@@ -148,6 +172,38 @@ public class CostTableDataFilter extends TableDataFilterCustom
 
    }
 
+   public String getValidationMessage()
+   {
+      String validationMessage = "";
+      Object startVal = getStartDate();
+      Object endVal = getEndDate();
+      if (StringUtils.isEmpty(columnTitle))
+      {
+         validationMessage = MessagesBCCBean.getInstance().getString("views.customColumn.columnName.error");
+      }
+      else if (showDatePicker)
+      {
+         if (startVal == null || endVal == null)
+         {
+            validationMessage = MessagesBCCBean.getInstance().getString("views.customColumn.dates.mandatory.error");
+         }
+         else
+         {
+            Date startDate = (Date) startVal;
+            Date endDate = (Date) endVal;
+            if (startDate.after(new Date()))
+            {
+               validationMessage = MessagesBCCBean.getInstance().getString("views.customColumn.startDate.error");
+            }
+            else if (startDate.after(endDate))
+            {
+               validationMessage = MessagesBCCBean.getInstance().getString("views.customColumn.dateBetween.error");
+            }
+         }
+      }
+      return validationMessage;
+   }
+   
    public String getColumnTitle()
    {
       return columnTitle;
@@ -243,16 +299,34 @@ public class CostTableDataFilter extends TableDataFilterCustom
       return dayTypeMapping;
    }
 
-   public ITableDataFilterListener getListener()
+   public Date getStartDate()
    {
-      return listener;
+      return startDate;
    }
 
-   public void setListener(ITableDataFilterListener listener)
+   public void setStartDate(Date startDate)
    {
-      this.listener = listener;
+      this.startDate = startDate;
    }
-   
-   
+
+   public Date getEndDate()
+   {
+      return endDate;
+   }
+
+   public void setEndDate(Date endDate)
+   {
+      this.endDate = endDate;
+   }
+
+   public boolean isShowDatePicker()
+   {
+      return showDatePicker;
+   }
+
+   public void setShowDatePicker(boolean showDatePicker)
+   {
+      this.showDatePicker = showDatePicker;
+   }
 
 }

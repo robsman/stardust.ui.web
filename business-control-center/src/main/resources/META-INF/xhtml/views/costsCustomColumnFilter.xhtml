@@ -9,46 +9,86 @@
 	# Attributes ('*' indicates mandatory attributes)
 		filter* - Filter Object
 	 -->
-
 	<ice:panelGrid columns="2">
-		<ice:outputText value="#{messages_bcc['views.costs.column.customColumn.columnName']}" />
+		<ice:outputText
+			value="#{messages_bcc['views.customColumn.columnName']}"
+			style="min-width:75px;" />
 		<ice:inputText value="#{filter.columnTitle}" partialSubmit="true" />
-		<ice:outputText value="#{messages_bcc['views.costs.column.customColumn.startDate']}" />
+	</ice:panelGrid>
+	<ice:panelGrid columns="2" rendered="#{!filter.showDatePicker}">
+		<ice:outputText
+			value="#{messages_bcc['views.customColumn.startDate']}"
+			style="min-width:75px;" />
 		<ice:panelGroup>
 			<ice:selectOneMenu partialSubmit="true" onclick="Event.stop(event);"
-				value="#{filter.startDateNumDays}"
-				>
+				value="#{filter.startDateNumDays}">
 				<f:selectItems value="#{filter.daysCount}" />
 			</ice:selectOneMenu>
 			<ice:selectOneMenu partialSubmit="true"
 				valueChangeListener="#{filter.updateAvailableDays}"
-				onclick="Event.stop(event);"
-				value="#{filter.startDateType}" style="width:80px;">
+				onclick="Event.stop(event);" value="#{filter.startDateType}"
+				style="width:80px;">
 				<f:selectItems value="#{filter.durationItems}" />
-				<f:attribute name="dateType"
-					value="#{filter.startDateType}" />
+				<f:attribute name="dateType" value="#{filter.startDateType}" />
 				<f:attribute name="columnName" value="startDate" />
 			</ice:selectOneMenu>
 		</ice:panelGroup>
 
-		<ice:outputText value="#{messages_bcc['views.costs.column.customColumn.duration']}"/>
+		<ice:outputText value="#{messages_bcc['views.customColumn.duration']}"
+			style="min-width:75px;" />
 		<ice:panelGroup>
 			<ice:selectOneMenu partialSubmit="true" onclick="Event.stop(event);"
-				value="#{filter.durationNumDays}"
-				>
+				value="#{filter.durationNumDays}">
 				<f:selectItems value="#{filter.durationCount}" />
 			</ice:selectOneMenu>
 			<ice:selectOneMenu partialSubmit="true"
 				valueChangeListener="#{filter.updateAvailableDays}"
-				onclick="Event.stop(event);"
-				value="#{filter.durationType}" style="width:80px;">
+				onclick="Event.stop(event);" value="#{filter.durationType}"
+				style="width:80px;">
 				<f:selectItems value="#{filter.durationItems}" />
-				<f:attribute name="dateType"
-					value="#{filter.durationType}" />
+				<f:attribute name="dateType" value="#{filter.durationType}" />
 				<f:attribute name="columnName" value="duration" />
 			</ice:selectOneMenu>
 		</ice:panelGroup>
-
 	</ice:panelGrid>
+	<ice:panelGrid columns="3" rendered="#{filter.showDatePicker}">
+		<ice:outputText
+			value="#{messages_bcc['views.customColumn.startDate']}"
+			style="min-width:75px;" />
+		<ice:panelGrid columns="2">
+			<ice:selectInputDate renderAsPopup="true" id="startDate"
+				value="#{filter.startDate}">
+				<f:converter converterId="customDateTimeConverter" />
+			</ice:selectInputDate>
+			<ice:message for="startDate" styleClass="iceMsgImage"
+				showSummary="false" showDetail="false" />
+		</ice:panelGrid>
+		<ice:message for="startDate" styleClass="iceMsgInline" />
+
+		<ice:outputText value="#{messages_bcc['views.customColumn.endDate']}"
+			style="min-width:75px;" />
+		<ice:panelGrid columns="2">
+			<ice:selectInputDate renderAsPopup="true" id="endDate"
+				value="#{filter.endDate}">
+				<f:converter converterId="customDateTimeConverter" />
+			</ice:selectInputDate>
+			<ice:message for="endDate" styleClass="iceMsgImage"
+				showSummary="false" showDetail="false" />
+		</ice:panelGrid>
+		<ice:message for="endDate" styleClass="iceMsgInline" />
+	</ice:panelGrid>
+
+	<ice:panelGrid columns="2">
+		<ice:commandLink style="margin-left:70px"
+			action="#{filter.toggleDatePicker}">
+			<ice:outputText value="#{messages_bcc['views.customColumnFilter.switchToDatePicker']} &amp;raquo;"
+				styleClass="action-link" escape="false"
+				rendered="#{!filter.showDatePicker}" />
+			<ice:outputText value="#{messages_bcc['views.customColumnFilter.switchToDateRange']} &amp;raquo;"
+				styleClass="action-link" escape="false"
+				rendered="#{filter.showDatePicker}" />
+		</ice:commandLink>
+	</ice:panelGrid>
+	<!-- </ice:panelGrid> -->
 
 </f:view>

@@ -14,6 +14,7 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -286,11 +287,11 @@ public class CostsBean extends UIComponentBean implements ResourcePaths,ViewEven
       {
          index++;
       }
-      String columnTitle = propsBean.get("views.costs.column.customColumn.label") + index;
+      String columnTitle = propsBean.get("views.customColumn.label") + index;
       long userOrPartitionOID = costTable.getColumnSelectorPopup().getSelectedPreferenceScope() == PreferenceScope.USER
             ? SessionContext.findSessionContext().getUser().getOID()
             : SessionContext.findSessionContext().getUser().getPartitionOID();
-      String columnId = propsBean.get("views.costs.column.customColumn.name") + userOrPartitionOID + index++ ;
+      String columnId = propsBean.get("views.customColumn.property") + userOrPartitionOID + index++ ;
       // Creates JSON object storing columnDefinition with values(columnId,columnName,duration..)
       columnDefinition = CustomColumnUtils.updateCustomColumnJson(columnId, columnTitle, 0, CustomColumnUtils.DAY_TYPE, 0,
             CustomColumnUtils.DAY_TYPE, columnDefinition, customColumnDateRange);
@@ -399,7 +400,7 @@ public class CostsBean extends UIComponentBean implements ResourcePaths,ViewEven
                      {
                         CostTableDataFilter filter = new CostTableDataFilter("", "", "", false);
                         filter.updateFilterFields(customColumns.get(columnId));
-                        dataFilterPopup = new TableDataFilterPopup(propsBean.get("views.costs.column.customColumn.editLabel"),
+                        dataFilterPopup = new TableDataFilterPopup(propsBean.get("views.customColumn.editLabel"),
                               new TableDataFilters(filter), this);
                         dataFilterPopup.setResetTitle(MessagePropertiesBean.getInstance().get("common.filterPopup.delete"));
                         colPref.setColumnDataFilterPopup(dataFilterPopup);   
@@ -656,16 +657,25 @@ public class CostsBean extends UIComponentBean implements ResourcePaths,ViewEven
       {
          return;
       }
-      String columnId = filter.getColumnId();
-      String columnTitle = filter.getColumnTitle();
-      String startDateNumDays = filter.getStartDateNumDays();
-      Integer startDateType = Integer.valueOf(filter.getStartDateType());
-      String durationNumDays = filter.getDurationNumDays();
-      Integer durationType = Integer.valueOf(filter.getDurationType());
       // Update Column JSON with new values from filterPopup
       JsonObject columnDefinition = (JsonObject) columnDefinitionMap.get(filter.getColumnId());
-      columnDefinition = CustomColumnUtils.updateCustomColumnJson(columnId, columnTitle, Integer.valueOf(startDateNumDays),
-            startDateType, Integer.valueOf(durationNumDays), durationType, columnDefinition, customColumnDateRange);
+      String columnId = filter.getColumnId();
+      String columnTitle = filter.getColumnTitle(); 
+      if(filter.isShowDatePicker())
+      {
+         Date startDate = filter.getStartDate();
+         Date endDate = filter.getEndDate();
+         columnDefinition = CustomColumnUtils.updateCustomColumnJson(columnId, columnTitle, startDate, endDate, columnDefinition, customColumnDateRange);
+      }
+      else
+      {
+         String startDateNumDays = filter.getStartDateNumDays();
+         Integer startDateType = Integer.valueOf(filter.getStartDateType());
+         String durationNumDays = filter.getDurationNumDays();
+         Integer durationType = Integer.valueOf(filter.getDurationType());
+         columnDefinition = CustomColumnUtils.updateCustomColumnJson(columnId, columnTitle, Integer.valueOf(startDateNumDays),
+               startDateType, Integer.valueOf(durationNumDays), durationType, columnDefinition, customColumnDateRange);
+      }
       
       List<String> allColumns = getCustomColumnPreference();
       if(CollectionUtils.isEmpty(allColumns) && columnDefinitionMap.get(filter.getColumnId()) !=null)

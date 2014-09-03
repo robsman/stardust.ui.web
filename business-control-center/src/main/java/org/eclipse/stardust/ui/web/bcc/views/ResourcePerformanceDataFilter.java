@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.bcc.views;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +22,7 @@ import org.eclipse.stardust.ui.web.bcc.messsages.MessagesBCCBean;
 import org.eclipse.stardust.ui.web.common.filter.ITableDataFilter;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterCustom;
 import org.eclipse.stardust.ui.web.common.util.CollectionUtils;
+import org.eclipse.stardust.ui.web.common.util.DateUtils;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
@@ -40,7 +42,10 @@ public class ResourcePerformanceDataFilter extends TableDataFilterCustom
    private Integer startDateType;
    private String durationNumDays;
    private Integer durationType;
-
+   private Date startDate;
+   private Date endDate;
+   private boolean showDatePicker = false;
+   
    private List<SelectItem> daysCount;
    private List<SelectItem> durationCount;
    private List<SelectItem> durationItems;
@@ -75,6 +80,12 @@ public class ResourcePerformanceDataFilter extends TableDataFilterCustom
       this.startDateType = GsonUtils.extractInt(jsonObject, "startDateType");
       this.durationNumDays = GsonUtils.extractInt(jsonObject, "durationNumOfDays").toString();
       this.durationType = GsonUtils.extractInt(jsonObject, "durationDateType");
+      if(jsonObject.has("showDatePicker"))
+      {
+         this.showDatePicker = GsonUtils.extractBoolean(jsonObject, "showDatePicker");
+         this.startDate = DateUtils.parseDateTime(GsonUtils.extractString(jsonObject, "startDate"));
+         this.endDate = DateUtils.parseDateTime(GsonUtils.extractString(jsonObject, "endDate"));
+      }
    }
 
    /**
@@ -105,6 +116,18 @@ public class ResourcePerformanceDataFilter extends TableDataFilterCustom
 
       }
    }
+   
+   public void toggleDatePicker()
+   {
+      if(showDatePicker)
+      {
+         showDatePicker = false;
+      }
+      else
+      {
+         showDatePicker = true;
+      }
+   }
 
    public boolean isFilterSet()
    {
@@ -127,7 +150,7 @@ public class ResourcePerformanceDataFilter extends TableDataFilterCustom
 
    public String getFilterSummaryTitle()
    {
-      return MessagesBCCBean.getInstance().get("views.costs.column.customColumn.filter.Label");
+      return MessagesBCCBean.getInstance().get("views.customColumn.filter.Label");
    }
 
    public boolean contains(Object compareValue)
@@ -148,6 +171,38 @@ public class ResourcePerformanceDataFilter extends TableDataFilterCustom
       {
          setColumnTitle(((CostTableDataFilter) dataFilterToCopy).getColumnTitle());
       }
+   }
+   
+   public String getValidationMessage()
+   {
+      String validationMessage = "";
+      Object startVal = getStartDate();
+      Object endVal = getEndDate();
+      if (StringUtils.isEmpty(columnTitle))
+      {
+         validationMessage = MessagesBCCBean.getInstance().getString("views.customColumn.columnName.error");
+      }
+      else if (showDatePicker)
+      {
+         if (startVal == null || endVal == null)
+         {
+            validationMessage = MessagesBCCBean.getInstance().getString("views.customColumn.dates.mandatory.error");
+         }
+         else
+         {
+            Date startDate = (Date) startVal;
+            Date endDate = (Date) endVal;
+            if (startDate.after(new Date()))
+            {
+               validationMessage = MessagesBCCBean.getInstance().getString("views.customColumn.startDate.error");
+            }
+            else if (startDate.after(endDate))
+            {
+               validationMessage = MessagesBCCBean.getInstance().getString("views.customColumn.dateBetween.error");
+            }
+         }
+      }
+      return validationMessage;
    }
 
    public String getColumnTitle()
@@ -234,4 +289,35 @@ public class ResourcePerformanceDataFilter extends TableDataFilterCustom
    {
       return dayTypeMapping;
    }
+
+   public Date getStartDate()
+   {
+      return startDate;
+   }
+
+   public void setStartDate(Date startDate)
+   {
+      this.startDate = startDate;
+   }
+
+   public boolean isShowDatePicker()
+   {
+      return showDatePicker;
+   }
+
+   public void setShowDatePicker(boolean showDatePicker)
+   {
+      this.showDatePicker = showDatePicker;
+   }
+
+   public Date getEndDate()
+   {
+      return endDate;
+   }
+
+   public void setEndDate(Date endDate)
+   {
+      this.endDate = endDate;
+   }
+   
 }
