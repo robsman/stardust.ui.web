@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
@@ -81,6 +82,10 @@ public class TestModelManagementStrategy extends
                     modelMgr.load(URI.createURI(documentName), new ByteArrayInputStream(readModelContext(modelDocument)));
                     ModelType model = modelMgr.getModel();
                     models.add(new ModelDescriptor(model.getId(), documentName, model, model));
+
+                    // assign a transient UUID to the model
+                    uuidMapper().map(model);
+
                     break;
                 }
                 catch (IOException e)
@@ -93,6 +98,11 @@ public class TestModelManagementStrategy extends
 
 		return models;
 	}
+
+	@Override
+   public String getUniqueModelId(EObject model) {
+      return uuidMapper().getUUID(model);
+   }
 
 	/**
 	 *

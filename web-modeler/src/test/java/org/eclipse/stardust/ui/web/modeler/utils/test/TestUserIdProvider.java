@@ -10,6 +10,8 @@ public class TestUserIdProvider implements UserIdProvider
 
    private final String displayName;
 
+   private UserIdProvider override;
+
    public static final TestUserIdProvider testUser(String userId)
    {
       return testUser(userId, null);
@@ -31,39 +33,48 @@ public class TestUserIdProvider implements UserIdProvider
       this.displayName = displayName;
    }
 
+   public void setOverride(UserIdProvider override)
+   {
+      this.override = override;
+   }
+
    @Override
    public String getCurrentUserId()
    {
-      return userId;
+      return (null != override) ? override.getCurrentUserId() : userId;
    }
 
    @Override
    public String getLoginName()
    {
-      return userId;
+      return (null != override) ? override.getLoginName() : userId;
    }
 
    @Override
    public String getFirstName()
    {
-      return "";
+      return (null != override) ? override.getFirstName() : "";
    }
 
    @Override
    public String getLastName()
    {
-      return isEmpty(displayName) ? userId : displayName;
+      return (null != override) ? override.getLastName() : isEmpty(displayName)
+            ? userId
+            : displayName;
    }
 
    @Override
    public String getCurrentUserDisplayName()
    {
-      return isEmpty(displayName) ? userId : displayName;
+      return (null != override)
+            ? override.getCurrentUserDisplayName()
+            : isEmpty(displayName) ? userId : displayName;
    }
 
    @Override
    public boolean isAdministrator()
    {
-      return "admin".equals(userId);
+      return (null != override) ? override.isAdministrator() : "admin".equals(userId);
    }
 }

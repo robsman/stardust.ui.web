@@ -256,7 +256,7 @@ public final class ModelingSession
    public LockInfo getEditLockInfo(EObject model)
    {
       String modelId = modelRepository().getModelBinding(model).getModelId(model);
-      return modelLockManager.getEditLockInfo(modelId);
+      return modelLockManager.getEditLockInfo(this, modelId);
    }
 
    public void addStateListener(SessionStateListener listener)

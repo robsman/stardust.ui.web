@@ -52,6 +52,8 @@ public class DefaultModelManagementStrategy extends
 
    private final ServiceFactoryLocator serviceFactoryLocator;
 
+   private String partitionId;
+
    private final DmsPersistenceUtils persistenceUtils = new DmsPersistenceUtils()
    {
       @Override
@@ -154,6 +156,14 @@ public class DefaultModelManagementStrategy extends
           }
        }
        return null;
+    }
+
+    @Override
+    public String getUniqueModelId(EObject model) {
+        ModelType xpdlModel = this.getXpdlModel(model);
+
+        // concatenate partition ID and model file path into stable unique ID
+        return "{" + getPartitionId() + "}" + getModelFilePath(xpdlModel);
     }
 
     private ModelType loadModel(Document modelDocument) throws IOException {
@@ -312,6 +322,20 @@ public class DefaultModelManagementStrategy extends
    {
       String modelUUID = uuidMapper().getUUID(model);
       return MODELS_DIR + modelFileNameMap.get(modelUUID);
+   }
+
+   /**
+    * Provides the current IPP session's partition ID.
+    */
+   private String getPartitionId()
+   {
+      if (null == partitionId)
+      {
+         this.partitionId = getServiceFactory().getUserService().getUser()
+               .getPartitionId();
+      }
+
+      return partitionId;
    }
 
 	/**

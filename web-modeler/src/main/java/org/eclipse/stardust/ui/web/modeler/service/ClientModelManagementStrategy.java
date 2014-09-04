@@ -196,6 +196,20 @@ public class ClientModelManagementStrategy extends AbstractModelManagementStrate
    {
    }
 
+   @Override
+   public String getUniqueModelId(EObject model)
+   {
+      for (ModelDescriptor descriptor : loadedModels)
+      {
+         if (descriptor.nativeModel == model)
+         {
+            return descriptor.fileName;
+         }
+      }
+
+      return null;
+   }
+
    /**
     *
     * @param model

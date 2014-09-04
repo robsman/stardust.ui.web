@@ -3,10 +3,10 @@ package org.eclipse.stardust.ui.web.modeler.edit;
 import static com.google.common.io.ByteStreams.toByteArray;
 import static com.google.common.io.Closeables.closeQuietly;
 import static java.util.Arrays.asList;
-import static org.eclipse.stardust.ui.web.modeler.utils.test.TestUserIdProvider.testUser;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.junit.Assert.assertThat;
@@ -18,6 +18,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.eclipse.emf.ecore.EObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
@@ -37,9 +38,9 @@ import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserService;
+import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
-import org.eclipse.stardust.ui.web.modeler.model.conversion.BeanInvocationExecutor;
 import org.eclipse.stardust.ui.web.modeler.model.conversion.RequestExecutor;
 import org.eclipse.stardust.ui.web.modeler.rest.RestFacadeInvocationExecutor;
 import org.eclipse.stardust.ui.web.modeler.service.DefaultModelManagementStrategy;
@@ -50,6 +51,7 @@ import org.eclipse.stardust.ui.web.modeler.service.rest.ModelerResource;
 import org.eclipse.stardust.ui.web.modeler.service.rest.ModelerSessionRestController;
 import org.eclipse.stardust.ui.web.modeler.utils.test.ChangeApiDriver;
 import org.eclipse.stardust.ui.web.modeler.utils.test.MockServiceFactoryLocator;
+import org.eclipse.stardust.ui.web.modeler.utils.test.TestUserIdProvider;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"../web-modeler-test-context.xml"})
@@ -61,7 +63,22 @@ public class TestModelEditLocking
    private static final String OTHER_MODEL_ID = "OffsettingP1";
 
    @Resource
+   private TestUserIdProvider testUserIdProvider;
+
+   @Resource(name = "otherRegularTestUserIdProvider")
+   private TestUserIdProvider otherRegularTestUser;
+
+   @Resource(name = "adminTestUserIdProvider")
+   private TestUserIdProvider adminTestUser;
+
+   @Resource(name = "partition2TestUserIdProvider")
+   private TestUserIdProvider partition2TestUser;
+
+   @Resource(name = "sflPartition1")
    MockServiceFactoryLocator mockServiceFactoryLocator;
+
+   @Resource(name = "sflPartition2")
+   MockServiceFactoryLocator sflPartition2;
 
    @Resource
    JsonMarshaller jsonIo;
@@ -90,6 +107,13 @@ public class TestModelEditLocking
 
    private ModelingSession otherSession;
 
+   private ModelingSession adminSession;
+
+   @Resource(name = "partition2ModelManagementStrategy")
+   private ModelManagementStrategy partition2ModelManagementStrategy;
+
+   private ModelingSession partition2Session;
+
    @Before
    public void initServiceFactory()
    {
@@ -102,19 +126,27 @@ public class TestModelEditLocking
             modelerSessionRestController);
       this.changeApiDriver = new ChangeApiDriver(requestExecutor, jsonIo);
 
+      initializeServiceFactory(mockServiceFactoryLocator, "partition1");
+      initializeServiceFactory(sflPartition2, "partition2");
+   }
+
+   private void initializeServiceFactory(MockServiceFactoryLocator mockServiceFactoryLocator,
+         String partitionId)
+   {
       mockServiceFactoryLocator.init();
 
       User mockUser = Mockito.mock(User.class);
       Mockito.when(mockUser.getAccount()).thenReturn("motu");
+      Mockito.when(mockUser.getPartitionId()).thenReturn(partitionId);
 
       UserService userService = mockServiceFactoryLocator.get().getUserService();
       Mockito.when(userService.getUser()).thenReturn(mockUser);
 
-      Document xpdlModel = Mockito.mock(Document.class);
+      final Document xpdlModel = Mockito.mock(Document.class);
       Mockito.when(xpdlModel.getId()).thenReturn(OTHER_MODEL_ID);
       Mockito.when(xpdlModel.getName()).thenReturn("OffsettingP1.xpdl");
 
-      Document xpdlReferenceModel = Mockito.mock(Document.class);
+      final Document xpdlReferenceModel = Mockito.mock(Document.class);
       Mockito.when(xpdlReferenceModel.getId()).thenReturn(MODEL_ID);
       Mockito.when(xpdlReferenceModel.getName()).thenReturn("ModelConversionReferenceModel.xpdl");
 
@@ -133,7 +165,7 @@ public class TestModelEditLocking
                public byte[] answer(InvocationOnMock invocation) throws Throwable
                {
                   InputStream isModel = getClass().getResourceAsStream(
-                        "../service/rest/OffsettingP1.xpdl");
+                        "../service/rest/" + xpdlModel.getName());
                   try
                   {
                      return toByteArray(isModel);
@@ -151,7 +183,7 @@ public class TestModelEditLocking
                public byte[] answer(InvocationOnMock invocation) throws Throwable
                {
                   InputStream isModel = getClass().getResourceAsStream(
-                        "../service/rest/ModelConversionReferenceModel.xpdl");
+                        "../service/rest/" + xpdlReferenceModel.getName());
                   try
                   {
                      return toByteArray(isModel);
@@ -174,6 +206,8 @@ public class TestModelEditLocking
    @After
    public void cleanup()
    {
+      destroyPartition2Session();
+
       destroyOtherSession();
       destroyMySession();
    }
@@ -181,8 +215,52 @@ public class TestModelEditLocking
    private void createOtherSession()
    {
       assertThat(otherSession, is(nullValue()));
-      this.otherSession = modelingSessionManager.getOrCreateSession(testUser("not-" + mySession.getOwnerId(), "Other User"));
-      assertThat(otherSession, is(not(nullValue())));
+
+      testUserIdProvider.setOverride(otherRegularTestUser);
+      try
+      {
+         this.otherSession = modelingSessionManager.getOrCreateSession(otherRegularTestUser);
+         assertThat(otherSession, is(not(nullValue())));
+      }
+      finally
+      {
+         testUserIdProvider.setOverride(null);
+      }
+   }
+
+   private void createAdminSession()
+   {
+      assertThat(adminSession, is(nullValue()));
+
+      testUserIdProvider.setOverride(adminTestUser);
+      try
+      {
+         this.adminSession = modelingSessionManager.getOrCreateSession(adminTestUser);
+         assertThat(adminSession, is(not(nullValue())));
+      }
+      finally
+      {
+         testUserIdProvider.setOverride(null);
+      }
+   }
+
+   private void createPartition2Session()
+   {
+      assertThat(partition2Session, is(nullValue()));
+
+      testUserIdProvider.setOverride(partition2TestUser);
+      try
+      {
+         this.partition2Session = modelingSessionManager
+               .getOrCreateSession(partition2TestUser);
+         assertThat(partition2Session, is(not(nullValue())));
+
+         partition2Session.setModelManagementStrategy(partition2ModelManagementStrategy);
+      }
+      finally
+      {
+         testUserIdProvider.setOverride(null);
+      }
    }
 
    private void destroyMySession()
@@ -195,10 +273,25 @@ public class TestModelEditLocking
    {
       if (null != otherSession)
       {
-         assertThat(modelingSessionManager.getCurrentSession("not-" + mySession.getOwnerId()), is(otherSession));
+         assertThat(modelingSessionManager.getCurrentSession(otherRegularTestUser
+               .getLoginName()), is(otherSession));
          modelingSessionManager.destroySession(otherSession.getOwnerId());
          this.otherSession = null;
-         assertThat(modelingSessionManager.getCurrentSession("not-" + mySession.getOwnerId()), is(nullValue()));
+         assertThat(modelingSessionManager.getCurrentSession(otherRegularTestUser
+               .getLoginName()), is(nullValue()));
+      }
+   }
+
+   private void destroyPartition2Session()
+   {
+      if (null != partition2Session)
+      {
+         assertThat(modelingSessionManager.getCurrentSession(partition2TestUser
+               .getLoginName()), is(partition2Session));
+         modelingSessionManager.destroySession(partition2Session.getOwnerId());
+         this.partition2Session = null;
+         assertThat(modelingSessionManager.getCurrentSession(partition2TestUser
+               .getLoginName()), is(nullValue()));
       }
    }
 
@@ -231,6 +324,60 @@ public class TestModelEditLocking
       changeApiDriver.updateModelElement(OTHER_MODEL_ID, changeJson);
 
       assertModelIsLockedByMe(MODEL_ID, OTHER_MODEL_ID);
+   }
+
+   @Test
+   public void testModelGetsLockedWithPartitionScope() throws Exception
+   {
+      assertModelIsNotLocked(MODEL_ID, OTHER_MODEL_ID);
+
+      testModelGetsLockedUponChange();
+
+      assertModelIsLockedByMe(MODEL_ID);
+      assertModelIsNotLocked(OTHER_MODEL_ID);
+
+      createPartition2Session();
+
+      assertThat(modelLockManager.isLockedByMe(partition2Session, MODEL_ID), is(false));
+      assertThat(modelLockManager.isLockedByOther(partition2Session, MODEL_ID), is(false));
+
+      // load and lock model (already locked in partition1) also in partition2
+      EObject p2Model = partition2Session.modelRepository().findModel(MODEL_ID);
+      assertThat(partition2Session.getEditSession(p2Model), is(notNullValue()));
+
+      assertThat(modelLockManager.isLockedByMe(partition2Session, MODEL_ID), is(true));
+      assertThat(modelLockManager.isLockedByOther(partition2Session, MODEL_ID), is(false));
+      assertThat(modelLockManager.isLockedByMe(partition2Session, OTHER_MODEL_ID), is(false));
+      assertThat(modelLockManager.isLockedByOther(partition2Session, OTHER_MODEL_ID), is(false));
+
+      assertThat(partition2Session.canSaveModel(MODEL_ID), is(true));
+
+      // load and lock other model (not locked in partition 1) in partition2
+      EObject p2OtherModel = partition2Session.modelRepository().findModel(OTHER_MODEL_ID);
+      assertThat(partition2Session.getEditSession(p2OtherModel), is(notNullValue()));
+
+      assertThat(modelLockManager.isLockedByMe(partition2Session, MODEL_ID), is(true));
+      assertThat(modelLockManager.isLockedByOther(partition2Session, MODEL_ID), is(false));
+      assertThat(modelLockManager.isLockedByMe(partition2Session, OTHER_MODEL_ID), is(true));
+      assertThat(modelLockManager.isLockedByOther(partition2Session, OTHER_MODEL_ID), is(false));
+
+      assertThat(partition2Session.canSaveModel(MODEL_ID), is(true));
+      assertThat(partition2Session.canSaveModel(OTHER_MODEL_ID), is(true));
+
+      // break partition2's edit lock for model
+      assertThat(partition2Session.breakEditLock(p2Model), is(true));
+
+      assertThat(modelLockManager.isLockedByMe(partition2Session, MODEL_ID), is(false));
+      assertThat(modelLockManager.isLockedByOther(partition2Session, MODEL_ID), is(false));
+      assertThat(modelLockManager.isLockedByMe(partition2Session, OTHER_MODEL_ID), is(true));
+      assertThat(modelLockManager.isLockedByOther(partition2Session, OTHER_MODEL_ID), is(false));
+
+      assertThat(partition2Session.canSaveModel(MODEL_ID), is(false));
+      assertThat(partition2Session.canSaveModel(OTHER_MODEL_ID), is(true));
+
+      // ensure partition1 sessions remained unaffected
+      assertModelIsLockedByMe(MODEL_ID);
+      assertModelIsNotLocked(OTHER_MODEL_ID);
    }
 
    @Test
@@ -400,8 +547,7 @@ public class TestModelEditLocking
       assertModelIsNotLocked(OTHER_MODEL_ID);
 
       // forcibly break model lock
-      ModelingSession adminSession = modelingSessionManager
-            .getOrCreateSession(testUser("admin"));
+      createAdminSession();
       adminSession.setSessionAttribute(ModelingSession.SUPERUSER, true);
       modelLockManager.breakEditLock(adminSession, MODEL_ID);
 
@@ -652,16 +798,20 @@ public class TestModelEditLocking
    {
       for (String modelId : modelIds)
       {
-         assertThat("Model must not have an edit lock", modelLockManager.getEditLockInfo(modelId), is(nullValue()));
-
          if (null != mySession)
          {
+            assertThat("Model must not have an edit lock",
+                  modelLockManager.getEditLockInfo(mySession, modelId), is(nullValue()));
+
             assertThat(modelLockManager.isLockedByMe(mySession, modelId), is(false));
             assertThat(modelLockManager.isLockedByOther(mySession, modelId), is(false));
          }
 
          if (null != otherSession)
          {
+            assertThat("Model must not have an edit lock",
+                  modelLockManager.getEditLockInfo(otherSession, modelId), is(nullValue()));
+
             assertThat(modelLockManager.isLockedByMe(otherSession, modelId), is(false));
             assertThat(modelLockManager.isLockedByOther(otherSession, modelId), is(false));
          }
@@ -678,9 +828,11 @@ public class TestModelEditLocking
    {
       for (String modelId : modelIds)
       {
-         assertThat(modelLockManager.getEditLockInfo(modelId), is(not(nullValue())));
-
          assertThat(mySession, is(not(nullValue())));
+
+         assertThat(modelLockManager.getEditLockInfo(mySession, modelId),
+               is(not(nullValue())));
+
          assertThat(modelLockManager.isLockedByMe(mySession, modelId), is(true));
          assertThat(modelLockManager.isLockedByOther(mySession, modelId), is(false));
 
@@ -701,9 +853,11 @@ public class TestModelEditLocking
    {
       for (String modelId : modelIds)
       {
-         assertThat(modelLockManager.getEditLockInfo(modelId), is(not(nullValue())));
-
          assertThat(otherSession, is(not(nullValue())));
+
+         assertThat(modelLockManager.getEditLockInfo(otherSession, modelId),
+               is(not(nullValue())));
+
          assertThat(modelLockManager.isLockedByMe(otherSession, modelId), is(true));
          assertThat(modelLockManager.isLockedByOther(otherSession, modelId), is(false));
 

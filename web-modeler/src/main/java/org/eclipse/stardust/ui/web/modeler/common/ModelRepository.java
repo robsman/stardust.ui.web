@@ -66,6 +66,11 @@ public class ModelRepository
       };
    }
 
+   public String getUniqueModelId(EObject model)
+   {
+      return session.modelManagementStrategy().getUniqueModelId(model);
+   }
+
    public String getModelId(EObject model)
    {
       return getModelBinding(model).getModelId(model);

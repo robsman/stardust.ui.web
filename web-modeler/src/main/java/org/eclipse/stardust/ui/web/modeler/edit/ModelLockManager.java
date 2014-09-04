@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 
+import org.eclipse.emf.ecore.EObject;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -17,28 +18,36 @@ public class ModelLockManager
 
    public boolean isLockedByMe(ModelingSession session, String modelId)
    {
-      LockInfo lockInfo = lockRepository.get(modelId);
+      String uniqueModelId = toUniqueModelId(session, modelId);
+
+      LockInfo lockInfo = lockRepository.get(uniqueModelId);
       return (null != lockInfo) && lockInfo.isLockedBySession(session);
    }
 
    public boolean isLockedByOther(ModelingSession session, String modelId)
    {
-      LockInfo lockInfo = lockRepository.get(modelId);
+      String uniqueModelId = toUniqueModelId(session, modelId);
+
+      LockInfo lockInfo = lockRepository.get(uniqueModelId);
       return (null != lockInfo) && !lockInfo.isLockedBySession(session);
    }
 
-   public LockInfo getEditLockInfo(String modelId)
+   public LockInfo getEditLockInfo(ModelingSession session, String modelId)
    {
-      return lockRepository.get(modelId);
+      String uniqueModelId = toUniqueModelId(session, modelId);
+
+      return lockRepository.get(uniqueModelId);
    }
 
    public boolean lockForEditing(ModelingSession session, String modelId)
    {
       if ( !isLockedByMe(session, modelId))
       {
-         if ( !lockRepository.containsKey(modelId))
+         String uniqueModelId = toUniqueModelId(session, modelId);
+
+         if ( !lockRepository.containsKey(uniqueModelId))
          {
-            lockRepository.putIfAbsent(modelId, new LockInfo(modelId, session));
+            lockRepository.putIfAbsent(uniqueModelId, new LockInfo(modelId, session));
          }
       }
       return isLockedByMe(session, modelId);
@@ -46,10 +55,12 @@ public class ModelLockManager
 
    public boolean releaseLock(ModelingSession session, String modelId)
    {
-      LockInfo lockInfo = getEditLockInfo(modelId);
+      LockInfo lockInfo = getEditLockInfo(session, modelId);
       if ((null != lockInfo) && lockInfo.isLockedBySession(session))
       {
-         return lockRepository.remove(modelId, lockInfo);
+         String uniqueModelId = toUniqueModelId(session, modelId);
+
+         return lockRepository.remove(uniqueModelId, lockInfo);
       }
       else
       {
@@ -72,12 +83,20 @@ public class ModelLockManager
 
    public boolean breakEditLock(ModelingSession session, String modelId)
    {
-      LockInfo lockInfo = lockRepository.get(modelId);
+      String uniqueModelId = toUniqueModelId(session, modelId);
+
+      LockInfo lockInfo = lockRepository.get(uniqueModelId);
       if ((null != lockInfo) && lockInfo.canBreakEditLock(session))
       {
-         return lockRepository.remove(modelId, lockInfo);
+         return lockRepository.remove(uniqueModelId, lockInfo);
       }
 
       return false;
+   }
+
+   private static String toUniqueModelId(ModelingSession session, String modelId)
+   {
+      EObject model = session.modelRepository().findModel(modelId);
+      return session.modelRepository().getUniqueModelId(model);
    }
 }
