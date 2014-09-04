@@ -33,7 +33,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.ProcessDefinitionDTO;
  * @version $Revision: $
  */
 @Component
-@Path("/portal/process-definitions")
+@Path("/process-definitions")
 public class ProcessDefinitionResource
 {
    private static final Logger trace = LogManager

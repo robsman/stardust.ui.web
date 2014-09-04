@@ -28,7 +28,7 @@ import org.eclipse.stardust.ui.web.rest.service.ProcessInstanceService;
  * @version $Revision: $
  */
 @Component
-@Path("/portal/process-instances")
+@Path("/process-instances")
 public class ProcessInstanceResource
 {
    private static final Logger trace = LogManager

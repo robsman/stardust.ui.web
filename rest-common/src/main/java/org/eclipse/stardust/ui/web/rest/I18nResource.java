@@ -35,7 +35,7 @@ import org.eclipse.stardust.ui.web.rest.common.LanguageUtil;
  * @version $Revision: $
  */
 @Component
-@Path("/portal/i18n")
+@Path("/i18n")
 public class I18nResource
 {
    @Context

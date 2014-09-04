@@ -11,7 +11,7 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
                        http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
 
-	<jaxrs:server id="restCommon" address="/web-portal">
+	<jaxrs:server id="rest-common" address="/portal">
 		<jaxrs:serviceBeans>
          <bean class="org.eclipse.stardust.ui.web.rest.ActivityInstanceResource" />
          <bean class="org.eclipse.stardust.ui.web.rest.DocumentResource" />

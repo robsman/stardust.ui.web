@@ -25,7 +25,7 @@ public class ActivityInstanceDTOBuilder
 
       if (ai != null)
       {
-
+         aiDTO.setOid(ai.getOID());
       }
 
       return aiDTO;

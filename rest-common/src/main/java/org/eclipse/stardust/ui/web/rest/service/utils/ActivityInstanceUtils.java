@@ -37,8 +37,8 @@ public class ActivityInstanceUtils
    @Resource
    private ServiceFactoryUtils serviceFactoryUtils;
 
-   @Resource
-   private ProcessInstanceUtils processInstanceUtils;
+   /*@Resource
+   private ProcessInstanceUtils processInstanceUtils;*/
 
    @Resource
    private DocumentUtils documentUtils;
@@ -75,8 +75,8 @@ public class ActivityInstanceUtils
 
       if (ai != null)
       {
-         processAttachments = processInstanceUtils.getProcessAttachments(ai
-               .getProcessInstanceOID());
+         /*processAttachments = processInstanceUtils.getProcessAttachments(ai
+               .getProcessInstanceOID());*/
       }
 
       return processAttachments;

@@ -34,7 +34,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
  * @version $Revision: $
  */
 @Component
-@Path("/portal/activity-instances")
+@Path("/activity-instances")
 public class ActivityInstanceResource
 {
    private static final Logger trace = LogManager

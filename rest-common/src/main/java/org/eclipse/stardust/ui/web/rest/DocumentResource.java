@@ -35,7 +35,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.DocumentTypeDTO;
  * @version $Revision: $
  */
 @Component
-@Path("/portal/documents")
+@Path("/documents")
 public class DocumentResource
 {
    private static final Logger trace = LogManager
