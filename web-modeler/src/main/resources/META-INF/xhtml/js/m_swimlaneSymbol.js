@@ -160,9 +160,12 @@ define(
 					// Create event symbols
 
 					for ( var n in this.eventSymbols) {
-						m_eventSymbol.createEventSymbolFromJson(this.diagram,
-								this, this.eventSymbols[n]);
-						this.eventSymbols[n].updateServerSideCoordinates();
+						//TODO: review later - On Assignment events are defined precisely in BPMN2 yet
+						if(this.eventSymbols[n].modelElement.eventClass != "onAssignment"){
+							m_eventSymbol.createEventSymbolFromJson(this.diagram,
+									this, this.eventSymbols[n]);
+							this.eventSymbols[n].updateServerSideCoordinates();	
+						}
 					}
 
 					// Create data symbols

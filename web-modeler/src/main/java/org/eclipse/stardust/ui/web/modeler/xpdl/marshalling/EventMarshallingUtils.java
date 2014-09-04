@@ -26,6 +26,7 @@ import org.eclipse.stardust.model.xpdl.carnot.*;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.model.xpdl.util.NameIdUtils;
+import org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
 
 import com.google.gson.JsonObject;
@@ -548,14 +549,14 @@ public class EventMarshallingUtils
       {
          dataFullID = dataFullID.split(":")[1];
       }
-
-      String dataPath = null;
-
-      if (euJson.has(ModelerConstants.EU_EXCLUDE_PERFORMER_DATA_PATH)
-            && !euJson.get(ModelerConstants.EU_EXCLUDE_PERFORMER_DATA_PATH).isJsonNull())
+      
+      String dataPath = GsonUtils.extractAsString(euJson, ModelerConstants.EU_EXCLUDE_PERFORMER_DATA_PATH);
+      
+      if (dataPath != null)
       {
          dataPath = euJson.get(ModelerConstants.EU_EXCLUDE_PERFORMER_DATA_PATH).getAsString();
       }
+      
       ModelType model = ModelUtils.findContainingModel(activity);
       EventConditionTypeType conditionType = EventMarshallingUtils.decodeEventHandlerType(PredefinedConstants.ACTIVITY_ON_ASSIGNMENT_CONDITION, model);
 

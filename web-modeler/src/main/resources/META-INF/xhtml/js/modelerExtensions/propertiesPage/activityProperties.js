@@ -15,14 +15,16 @@ define([ 'bpm-modeler/js/m_constants',
 		'bpm-modeler/js/m_activityProcessingPropertiesPage',
 		'bpm-modeler/js/m_activityControllingPropertiesPage',
 		'bpm-modeler/js/m_activityQualityControlPropertiesPage',
-		'bpm-modeler/js/m_activityDisplayPropertiesPage' ],
+		'bpm-modeler/js/m_activityDisplayPropertiesPage',
+		'bpm-modeler/js/m_onAssignmentPropertiesPage'],
 		function(m_constants, m_activityBasicPropertiesPage,
 				m_activityImplementationPropertiesPage,
 				m_modelElementCommentsPropertiesPage,
 				m_activityProcessingPropertiesPage,
 				m_activityControllingPropertiesPage,
 				m_activityQualityControlPropertiesPage,
-				m_activityDisplayPropertiesPage) {
+				m_activityDisplayPropertiesPage,
+				m_onAssignmentPropertiesPage) {
 			return {
 				propertiesPage : [ {
 					panelId : "activityPropertiesPanel",
@@ -41,7 +43,7 @@ define([ 'bpm-modeler/js/m_constants',
 					pageHtmlUrl : "plugins/bpm-modeler/views/modeler/modelElementCommentsPropertiesPage.html",
 					provider : m_modelElementCommentsPropertiesPage,
 					visibility : "always"
-				}, {
+				},{
 					panelId : "activityPropertiesPanel",
 					id : "processingPropertiesPage",
 					provider : m_activityProcessingPropertiesPage,
@@ -62,6 +64,11 @@ define([ 'bpm-modeler/js/m_constants',
 					id : "displayPropertiesPage",
 					provider : m_activityDisplayPropertiesPage,
 					visibility : "always"
-				}, ]
+				}, {
+					panelId : "activityPropertiesPanel",
+					id : "onAssignmentPropertiesPage",
+					provider : m_onAssignmentPropertiesPage,
+					visibility : "always"
+				}]
 			};
 		});

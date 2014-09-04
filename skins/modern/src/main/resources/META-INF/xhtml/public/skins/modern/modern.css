@@ -7712,6 +7712,16 @@ img[src *='activity-subprocess.png']{
      opacity: 0.7;
 }
 
+img[src *='assignment.png']{
+     background-image:url('./images/flat-icons/assignment.png');
+     width:16px;
+     background-size: 16px 16px;
+     padding: 16px 0 0 0 !important;
+     height:0px;
+     background-repeat: no-repeat !important;
+     opacity: 0.7;
+}
+
 img[src *='activity.png'],
 input[src *='activity.png']{
      background-image:url('./images/flat-icons/activity.png');
