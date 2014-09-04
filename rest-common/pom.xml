@@ -1,0 +1,115 @@
+<!--
+    Copyright (c) 2011, 2013 SunGard CSA LLC and others.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+
+    Contributors:
+       SunGard CSA LLC - initial API and implementation and/or initial documentation
+ -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+   <parent>
+      <groupId>com.infinity.bpm</groupId>
+      <artifactId>product-parent</artifactId>
+      <version>9.9.9-SNAPSHOT</version>
+      <relativePath>../../../sungard/product/product-parent/pom.xml</relativePath>
+   </parent>
+
+	<groupId>org.eclipse.stardust.ui.web</groupId>
+	<artifactId>rest-common</artifactId>
+   <version>0.0.1-SNAPSHOT</version>
+
+	<packaging>jar</packaging>
+
+   <properties>
+      <ipp.version>8.0.0-RC6-SNAPSHOT</ipp.version>
+   </properties>
+
+	<dependencies>
+
+      <dependency>
+         <groupId>org.eclipse.stardust.engine</groupId>
+         <artifactId>carnot-engine</artifactId>
+         <version>${ipp.version}</version>
+         <scope>compile</scope>
+      </dependency>
+
+      <dependency>
+         <groupId>org.eclipse.stardust.engine</groupId>
+         <artifactId>spring-module</artifactId>
+         <version>${ipp.version}</version>
+         <type>pom</type>
+         <scope>compile</scope>
+      </dependency>
+
+      <dependency>
+         <groupId>org.eclipse.stardust.ui.web</groupId>
+         <artifactId>ipp-portal-api</artifactId>
+         <version>${ipp.version}</version>
+         <scope>compile</scope>
+      </dependency>
+
+      <dependency>
+         <groupId>org.eclipse.stardust.ui.web</groupId>
+         <artifactId>ipp-portal-common</artifactId>
+         <version>${ipp.version}</version>
+         <scope>compile</scope>
+      </dependency>
+
+      <dependency>
+         <groupId>org.eclipse.stardust.ui.web</groupId>
+         <artifactId>ipp-workflow-perspective</artifactId>
+         <version>${ipp.version}</version>
+         <scope>compile</scope>
+      </dependency>
+
+      <dependency>
+         <groupId>org.eclipse.stardust.ui.web</groupId>
+         <artifactId>ipp-views-common</artifactId>
+         <version>${ipp.version}</version>
+         <scope>compile</scope>
+      </dependency>
+
+      <dependency>
+      	<groupId>javax.ws.rs</groupId>
+      	<artifactId>jsr311-api</artifactId>
+      	<type>jar</type>
+      	<scope>compile</scope>
+      </dependency>
+      
+      <dependency>
+         <groupId>javax.servlet</groupId>
+         <artifactId>servlet-api</artifactId>
+         <scope>provided</scope>
+      </dependency>
+      
+	</dependencies>
+
+
+   <build>
+      <plugins>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>2.3.2</version>
+            <configuration>
+               <encoding>UTF-8</encoding>
+               <source>1.6</source>
+               <target>1.6</target>
+            </configuration>
+         </plugin>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-resources-plugin</artifactId>
+            <version>2.4.3</version>
+            <configuration>
+               <encoding>UTF-8</encoding>
+            </configuration>
+         </plugin>
+      </plugins>
+   </build>
+</project>
