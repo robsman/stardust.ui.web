@@ -45,6 +45,7 @@ public class ActivityDefinitionWithPrio implements PriorityOverviewEntry, Serial
    private Priorities criticalPriorities;
 
    private int thresholdState;
+   private long interruptedCount;
    
    private IActivitySearchHandler searchHandler;
 
@@ -82,6 +83,7 @@ public class ActivityDefinitionWithPrio implements PriorityOverviewEntry, Serial
                ProcessInstancePriority.NORMAL));
          criticalPriorities.setLowPriority(as.getCriticalInstancesCount(
                ProcessInstancePriority.LOW));
+         interruptedCount = as.getInterruptedInstancesCount();
       }
       thresholdState = BusinessControlCenterConstants
          .getThresholdProvider().getActivityThreshold(this);
@@ -177,6 +179,18 @@ public class ActivityDefinitionWithPrio implements PriorityOverviewEntry, Serial
       return critical != null ? critical.booleanValue() : false;
    }
    
+   private boolean showInterruptedAI()
+   {
+      Map param = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+      Object obj = param.get("showInterruptedAI");
+      Boolean showInterrupted = null;
+      if(obj != null)
+      {
+         showInterrupted = new Boolean(obj.toString());
+      }
+      return showInterrupted != null ? showInterrupted.booleanValue() : false;
+   }
+   
    public void doPriorityAction(ActionEvent event)
    {
       Integer priority = getSelectedPriority();
@@ -189,6 +203,18 @@ public class ActivityDefinitionWithPrio implements PriorityOverviewEntry, Serial
             {
                oids = priority == null ? as.getTotalCriticalInstances() : 
                   as.getCriticalInstances(priority.intValue());
+            }
+            else
+            {
+               oids = Collections.EMPTY_SET;
+            }
+         }
+         else if (showInterruptedAI())
+         {
+            if (as != null)
+            {
+               oids = as.getInterruptedInstances();
+
             }
             else
             {
@@ -208,5 +234,10 @@ public class ActivityDefinitionWithPrio implements PriorityOverviewEntry, Serial
    public String getType()
    {
       return null;
+   }
+
+   public long getInterruptedCount()
+   {
+      return interruptedCount;
    }
 }

@@ -22,6 +22,8 @@ public interface PriorityOverviewEntry
 
    int getThresholdState();
    
+   long getInterruptedCount();
+   
    Priorities getPriorities();
    Priorities getCriticalPriorities();
    

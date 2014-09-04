@@ -231,6 +231,11 @@ public class PriorityOverviewUserObject extends NodeUserObject
    {
       prioOverviewEntry.doPriorityAction(event);
    }
+   
+   public long getInterruptedCount()
+   {
+      return prioOverviewEntry.getInterruptedCount();
+   }
 
    @Override
    public boolean isFilterOut(TableDataFilters dataFilters)

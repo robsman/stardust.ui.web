@@ -375,7 +375,7 @@ public class BusinessProcessManagerBean extends UIViewComponentBean
                   "priorityTable.column.name"), new TableDataFilterPopup(
                   new TableDataFilterSearch()));
       fixedCols.add(nameCol);
-
+      
       List<ColumnPreference> selectableColumns = new ArrayList<ColumnPreference>();
       ColumnPreference statusCol = new ColumnPreference("Status", "", this.getMessages()
             .getString("priorityTable.column.status"), V_processOverviewViewColumns,
@@ -383,6 +383,12 @@ public class BusinessProcessManagerBean extends UIViewComponentBean
       statusCol.setColumnAlignment(ColumnAlignment.CENTER);
       selectableColumns.add(statusCol);
 
+      ColumnPreference colInterupted = new ColumnPreference("Interrupted", "", this.getMessages()
+            .getString("priorityTable.column.interrupted"), V_processOverviewViewColumns,
+            true, false);
+      colInterupted.setColumnAlignment(ColumnAlignment.CENTER);
+      selectableColumns.add(colInterupted);
+      
       ColumnPreference colHighPrio = new ColumnPreference("HighPriority", this
             .getMessages().getString("priorityTable.column.highPrio"));
       ColumnPreference hTotalCountCol = new ColumnPreference("highPriority", "", this

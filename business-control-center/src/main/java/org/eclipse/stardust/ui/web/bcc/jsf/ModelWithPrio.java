@@ -48,6 +48,7 @@ public class ModelWithPrio implements PriorityOverviewEntry, Serializable
    
    String modelName;
    String description;
+   private long interruptedCount;
    
    boolean filterAuxiliaryProcesses = true;
    public ModelWithPrio()
@@ -81,6 +82,7 @@ public class ModelWithPrio implements PriorityOverviewEntry, Serializable
                   pd.getCriticalPriorities().getNormalPriority());
             criticalPriorities.setLowPriority(criticalPriorities.getLowPriority() +
                   pd.getCriticalPriorities().getLowPriority());
+            interruptedCount += pd.getInterruptedCount();
          }
       }
       Model model = ModelCache.findModelCache().getModel(modelOID);
@@ -148,7 +150,12 @@ public class ModelWithPrio implements PriorityOverviewEntry, Serializable
    {
       return IThresholdProvider.UNDEFINED_THRESHOLD_STATE;
    }
-
+   
+   public long getInterruptedCount()
+   {
+     return interruptedCount;
+   }
+   
    private Integer getSelectedPriority()
    {
       Map param = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
@@ -180,6 +187,18 @@ public class ModelWithPrio implements PriorityOverviewEntry, Serializable
       return critical != null ? critical.booleanValue() : false;
    }
    
+   private boolean showInterruptedAI()
+   {
+      Map param = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+      Object obj = param.get("showInterruptedAI");
+      Boolean showInterrupted = null;
+      if(obj != null)
+      {
+         showInterrupted = new Boolean(obj.toString());
+      }
+      return showInterrupted != null ? showInterrupted.booleanValue() : false;
+   }
+   
    public void doPriorityAction(ActionEvent event)
    {
       Integer priority = getSelectedPriority();
@@ -190,7 +209,7 @@ public class ModelWithPrio implements PriorityOverviewEntry, Serializable
          BusinessProcessManagerBean businessProcessManagerBean = (BusinessProcessManagerBean) ManagedBeanUtils
                .getManagedBean(BusinessProcessManagerBean.BEAN_ID);
 
-         if (isCriticalPriority())
+         if (isCriticalPriority() || showInterruptedAI())
          {
             oids = new HashSet<Long>();
             if (null != allChildProcesses)
@@ -203,8 +222,15 @@ public class ModelWithPrio implements PriorityOverviewEntry, Serializable
                      IProcessStatistics ps = pd.getProcessStatistics();
                      if (ps != null)
                      {
-                        oids.addAll(priority == null ? ps.getTotalCriticalInstances() : ps
-                              .getCriticalInstances(priority.intValue()));
+                        if(isCriticalPriority())
+                        {
+                           oids.addAll(priority == null ? ps.getTotalCriticalInstances() : ps
+                                 .getCriticalInstances(priority.intValue()));   
+                        }
+                        else
+                        {
+                           oids.addAll(ps.getInterruptedInstances());
+                        }
                      }
                   }
                }

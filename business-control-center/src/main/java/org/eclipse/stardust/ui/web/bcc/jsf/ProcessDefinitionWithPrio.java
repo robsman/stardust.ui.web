@@ -49,6 +49,7 @@ public class ProcessDefinitionWithPrio implements PriorityOverviewEntry, Seriali
    private String processType;
    
    private int thresholdState;
+   private long interruptedCount;
 
    private boolean filterAuxiliaryActivities;
 
@@ -93,6 +94,7 @@ public class ProcessDefinitionWithPrio implements PriorityOverviewEntry, Seriali
                ProcessInstancePriority.NORMAL));
          criticalPriorities.setLowPriority(ps.getCriticalInstancesCount(
                ProcessInstancePriority.LOW));
+         interruptedCount = ps.getInterruptedInstancesCount();
       }
       thresholdState = BusinessControlCenterConstants
          .getThresholdProvider().getProcessThreshold(this);
@@ -192,6 +194,11 @@ public class ProcessDefinitionWithPrio implements PriorityOverviewEntry, Seriali
       return thresholdState;
    }
    
+   public long getInterruptedCount()
+   {
+      return interruptedCount;
+   }
+
    protected IProcessStatistics getProcessStatistics()
    {
       return ps;
@@ -228,6 +235,18 @@ public class ProcessDefinitionWithPrio implements PriorityOverviewEntry, Seriali
       return critical != null ? critical.booleanValue() : false;
    }
    
+   private boolean showInterruptedAI()
+   {
+      Map param = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+      Object obj = param.get("showInterruptedAI");
+      Boolean showInterrupted = null;
+      if(obj != null)
+      {
+         showInterrupted = new Boolean(obj.toString());
+      }
+      return showInterrupted != null ? showInterrupted.booleanValue() : false;
+   }
+   
    public void doPriorityAction(ActionEvent event)
    {
       Integer priority = getSelectedPriority();
@@ -244,6 +263,18 @@ public class ProcessDefinitionWithPrio implements PriorityOverviewEntry, Seriali
             {
                oids = priority == null ? ps.getTotalCriticalInstances() :
                   ps.getCriticalInstances(priority.intValue());               
+            }
+            else
+            {
+               oids = Collections.EMPTY_SET;
+            }
+         }
+         else if (showInterruptedAI())
+         {
+            if (ps != null)
+            {
+               oids = ps.getInterruptedInstances();
+
             }
             else
             {
