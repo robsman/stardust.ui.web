@@ -117,7 +117,7 @@ public class ModelChangeCommandHandler implements ModelCommandsHandler
       mapper.map(admin);
 
       if (request.has("createBusinessDate")) {
-         DataType businessDate = facade.createPrimitiveData(model, "BUSINESS_DATE", "Business Date",
+         DataType businessDate = facade.createPrimitiveData(model, "BusinessDate", "Business Date",
                ModelerConstants.DATE_PRIMITIVE_DATA_TYPE);
       }
 
