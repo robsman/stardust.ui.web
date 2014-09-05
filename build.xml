@@ -112,6 +112,9 @@
       <invoke-subproject subproject="stardust-web-reporting" />
    </target> 
 
+   <target name="stardust-web-camel" depends="init">
+	  <invoke-subproject subproject="stardust-web-camel" />
+   </target> 
    <target name="stardust-rules-manager" depends="init">
       <invoke-subproject subproject="rules-manager" />
    </target>
