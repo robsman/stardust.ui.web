@@ -189,8 +189,58 @@ define(
 
 				getUniqueElementNameId : function(array, name) {
 					return getUniqueElementNameId(array, name);
-				}
+				},
+				generateID : generateID
 			};
+			
+		/**
+		 * copied from Rules Manager - m_utilities - with minor changes
+		 */	
+		function generateID(baseName, coExistantObjs, prop, self, returnOnDuplicate){
+				if(!baseName){
+					return "";
+				}
+				var key,				/*key in a for-in construct*/
+					temp,				/*temp obj we pull from our coexisters*/
+					tempHash={},		/*Hash map we will check against*/
+					tempSuffix,			/*Sufffix extracted from our baseName*/
+					patt=/_[0-9]+\b/;	/*suffix matcher*/
+				
+				/*Remove spaces and special characters*/
+				baseName=baseName.replace(/[^a-zA-Z0-9_.]+/g,"");
+				
+				/*Build a hash of our existing IDs*/
+				for(key in coExistantObjs){
+					if(coExistantObjs.hasOwnProperty(key)){
+						temp=coExistantObjs[key];
+						/*Avoid checking self against self*/
+						if(temp && temp!=self){
+							tempHash[temp[prop || "id"].toLowerCase()]={};
+						}
+					}
+				}
+				/*Now check our hash for our baseName, adding an incremental suffix
+				 *to our baseName until no hash is found*/
+				while(true){
+					if(!tempHash.hasOwnProperty(baseName.toLowerCase())){
+							break;
+						}else if(returnOnDuplicate){
+							return "duplicate";
+					}
+					if(patt.test(baseName)){
+						tempSuffix=patt.exec(baseName)[0]; /*extract suffix*/
+						baseName=baseName.replace(patt,""); /*remove from baseName*/
+						tempSuffix =(1*tempSuffix.replace("_",""))+1; /*generate new suffix*/
+					}
+					else{
+						tempSuffix=1;
+					}
+					baseName =baseName + "_" + tempSuffix;
+					
+					
+				}
+				return baseName;
+			}			
 			
       function markControlReadonly(control, readonly) {
         if (readonly == undefined || readonly == true) {

@@ -2100,32 +2100,36 @@ define(
 			 *
 			 */
 			function createModel() {
-				var modelName = m_i18nUtils
-						.getProperty("modeler.outline.newModel.namePrefix");
-				var count = 0;
-				var name = modelName + " " + (++count);
-
-				// Check if model name exists already.
-				while (modelNameExists(name)) {
-					name = modelName + " " + (++count);
+				if (parent.iPopupDialog) {
+					parent.iPopupDialog
+							.openPopup({
+								attributes : {
+									width : "400px",
+									height : "250px",
+									src : m_urlUtils.getPlugsInRoot()
+											+ "bpm-modeler/popups/modelPopupDialog.html"
+								},
+								payload : {
+									acceptFunction : createModel2,
+									i18n: m_i18nUtils,
+									models: m_model.getModels(),
+									m_utils: m_utils  
+								}
+							});
 				}
-
+			}
+			
+			/**
+			 * 
+			 */
+			function createModel2(modelInfo) {
 				m_commandsController.submitCommand(m_command
 						.createCreateModelCommand({
-							"name" : name,
+							"name" : modelInfo.modelName,
+							"id" : modelInfo.modelId,
 							"modelFormat" : "xpdl"
 						}));
 				isElementCreatedViaOutline = true;
-			};
-
-			function modelNameExists(name) {
-				for (m in m_model.getModels()) {
-					if (m_model.getModels()[m].name == name) {
-						return true;
-					}
-				}
-
-				return false;
 			};
 
 			/**
@@ -2895,7 +2899,7 @@ define(
 						// getting out or rename mode if the view takes
 						// a little longer to open - observed specifically on
 						// first node creation after login,
-						if (!openView) {
+						if (!openView && element.type != 'model') {
 							window.setTimeout(function() {
 								m_utils.jQuerySelect(displayScope + "#outline").jstree(
 										"rename", "#" + element.uuid)
