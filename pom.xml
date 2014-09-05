@@ -32,6 +32,7 @@
       <module>web-portal</module>
       <module>mobile-workflow</module>
       <module>skins/modern</module>
+      <module>stardust-web-camel</module>
    </modules>
 
    <build>
