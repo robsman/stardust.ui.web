@@ -36,10 +36,6 @@
          conf="stardust-portal-rest-common-compile->spring-module-compile" />
       <dependency org="org.eclipse.stardust.ui.web" name="ipp-portal-common" rev="${ipp.version.full}"
          conf="stardust-portal-rest-common-compile->ipp-portal-common-compile" />
-      <dependency org="org.eclipse.stardust.ui.web" name="ipp-portal-api" rev="${ipp.version.full}" 
-         conf="stardust-portal-rest-common-compile->ipp-portal-api-compile" />
-      <dependency org="org.eclipse.stardust.ui.web" name="ipp-process-portal" rev="${ipp.version.full}" 
-         conf="stardust-portal-rest-common-compile->ipp-workflow-perspective-compile" />
       <dependency org="org.eclipse.stardust.ui.web" name="ipp-views-common" rev="${ipp.version.full}" 
          conf="stardust-portal-rest-common-compile->ipp-views-common-compile" />
       
