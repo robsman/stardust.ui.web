@@ -169,7 +169,7 @@
       stardust-common-introspection, stardust-common-introspection-xsd, stardust-ui-form, stardust-ui-form-jsf,
       views-common, graphics-common, process-portal, business-control-center, admin-portal,
       mobile-workflow, end-user-doc, stardust-web-reporting, stardust-rules-manager, 
-      portal-persistence-jpa, stardust-modern-skin, html5-common, html5-process-portal, rest-common">
+      portal-persistence-jpa, stardust-modern-skin, html5-common, html5-process-portal, rest-common, stardust-web-camel">
    </target>
 
    <!-- - - - - - - - -  -->
