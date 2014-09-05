@@ -98,6 +98,50 @@ define(
 					this.parameterDefinitionNameInput = m_utils.jQuerySelect(this.options.scope
 							+ " #parameterDefinitionNameInput");
 					
+					m_utils.jQuerySelect(this.options.scope
+	                     + " #paramDef").text(
+	                              m_i18nUtils.getProperty("modeler.element.properties.commonProperties.parameterDefinitions"));
+										
+					m_utils.jQuerySelect(this.options.scope
+                        + " #parameterDefinitionsHeading").text(
+                                 m_i18nUtils.getProperty("modeler.element.properties.commonProperties.parameterDefinitions"));
+					
+					m_utils.jQuerySelect(this.options.scope
+                        + " #deleteParameterDefinitionButton").attr('title',
+                                 m_i18nUtils.getProperty("modeler.element.properties.commonProperties.delete"));
+					
+					m_utils.jQuerySelect(this.options.scope
+                        + " #addParameterDefinitionButton").attr('title',
+                                 m_i18nUtils.getProperty("modeler.element.properties.commonProperties.add"));
+										
+					m_utils.jQuerySelect(this.options.scope
+                        + "label[for='parameterDefinitionNameInput']").text(
+                                 m_i18nUtils.getProperty("modeler.element.properties.commonProperties.name"));
+					
+					m_utils.jQuerySelect(this.options.scope
+	                     + "label[for='parameterDefinitionDirectionSelect']").text(
+	                              m_i18nUtils.getProperty("modeler.element.properties.commonProperties.direction"));
+					
+					m_utils.jQuerySelect(this.options.scope
+                        + "label[for='dataTypeSelect']").text(
+                                 m_i18nUtils.getProperty("modeler.element.properties.commonProperties.dataType"));
+					
+					m_utils.jQuerySelect(this.options.scope
+                        + "label[for='primitiveDataTypeSelect']").text(
+                                 m_i18nUtils.getProperty("modeler.element.properties.commonProperties.primitiveType"));
+					
+					m_utils.jQuerySelect(this.options.scope
+                        + "label[for='structuredDataTypeSelect']").text(
+                                 m_i18nUtils.getProperty("modeler.element.properties.commonProperties.dataStructure"));
+					
+					m_utils.jQuerySelect(this.options.scope
+                        + "label[for='documentTypeSelect']").text(
+                                 m_i18nUtils.getProperty("modeler.model.propertyView.createPrimitiveData.dataTypeProperties.documentType"));
+					
+					m_utils.jQuerySelect(this.options.scope
+                        + "label[for='parameterDefinitionDataSelect']").text(
+                                 m_i18nUtils.getProperty("modeler.element.properties.commonProperties.data"));
+					
 					this.parameterDefinitionDirectionSelect = m_utils.jQuerySelect(this.options.scope
 							+ " #parameterDefinitionDirectionSelect");
 					this.parameterDefinitionDirectionSelect.empty();

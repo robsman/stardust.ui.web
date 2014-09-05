@@ -1057,13 +1057,13 @@ define(
 									+ "bpm-modeler/popups/confirmationPopupDialogContent.html"
 						},
 						payload : {
-							title : "Confirm",
-							message : "Are you sure you want to delete "
-									+ name
-									+ "?<BR>This change cannot be undone.<BR><BR>Continue?",
-							acceptButtonText : "Yes",
-							cancelButtonText : "Cancel",
-							acceptFunction : callback
+						   title : m_i18nUtils.getProperty("rules.messages.confirm"),
+						   message : m_i18nUtils.getProperty(
+						            "rules.messages.confirm.deleteElement")
+						            .replace("{0}", name),
+						   acceptButtonText : m_i18nUtils.getProperty("rules.messages.confirm.yes"),
+						   cancelButtonText : m_i18nUtils.getProperty("rules.messages.confirm.cancel"),
+						   acceptFunction : callback
 						}
 					};
 
@@ -1213,20 +1213,24 @@ define(
 						if(nextCmd){
 							uiElements.redoChange.removeClass("toolDisabled");
 							title=nextCmd.description;
-							uiElements.redoChange.attr("title","Redo: " + title);
+							uiElements.redoChange.attr("title", m_i18nUtils.getProperty(
+							   "rules.outline.toolbar.tooltip.afterChange.redo") + ": " + title);
 						}
 						else{
 							uiElements.redoChange.addClass("toolDisabled");
-							uiElements.redoChange.attr("title","Redo");
+							uiElements.redoChange.attr("title", m_i18nUtils.getProperty(
+							   "rules.outline.toolbar.tooltip.afterChange.redo"));
 						}
 						if(prevCmd){
 							uiElements.undoChange.removeClass("toolDisabled");
 							title=prevCmd.description;
-							uiElements.undoChange.attr("title","Undo: " + title);
+							uiElements.undoChange.attr("title", m_i18nUtils.getProperty(
+							   "rules.outline.toolbar.tooltip.afterChange.undo") + ": " + title);
 						}
 						else{
 							uiElements.undoChange.addClass("toolDisabled");
-							uiElements.undoChange.attr("title","Undo");
+							uiElements.undoChange.attr("title", m_i18nUtils.getProperty(
+							   "rules.outline.toolbar.tooltip.afterChange.undo"));
 						}
 					});
 					
