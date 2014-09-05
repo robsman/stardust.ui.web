@@ -13,7 +13,7 @@
 		<ice:outputText
 			value="#{messages_bcc['views.customColumn.columnName']}"
 			style="min-width:75px;" />
-		<ice:inputText value="#{filter.columnTitle}" partialSubmit="true" />
+		<ice:inputText value="#{filter.columnTitle}" partialSubmit="true" style="width : #{!filter.showDatePicker ? '105px' : '146px'}" />
 	</ice:panelGrid>
 	<ice:panelGrid columns="2" rendered="#{!filter.showDatePicker}">
 		<ice:outputText
@@ -26,8 +26,7 @@
 			</ice:selectOneMenu>
 			<ice:selectOneMenu partialSubmit="true"
 				valueChangeListener="#{filter.updateAvailableDays}"
-				onclick="Event.stop(event);" value="#{filter.startDateType}"
-				style="width:80px;">
+				onclick="Event.stop(event);" value="#{filter.startDateType}">
 				<f:selectItems value="#{filter.durationItems}" />
 				<f:attribute name="dateType" value="#{filter.startDateType}" />
 				<f:attribute name="columnName" value="startDate" />
@@ -43,8 +42,7 @@
 			</ice:selectOneMenu>
 			<ice:selectOneMenu partialSubmit="true"
 				valueChangeListener="#{filter.updateAvailableDays}"
-				onclick="Event.stop(event);" value="#{filter.durationType}"
-				style="width:80px;">
+				onclick="Event.stop(event);" value="#{filter.durationType}">
 				<f:selectItems value="#{filter.durationItems}" />
 				<f:attribute name="dateType" value="#{filter.durationType}" />
 				<f:attribute name="columnName" value="duration" />

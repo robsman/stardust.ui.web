@@ -380,7 +380,7 @@ public class ResourcePerformanceBean extends UIComponentBean implements Resource
                String columnId = property.substring(property.indexOf(".") + 1);
                if(customColumns.get(columnId)!=null)
                {
-                  if(currentColumn == null || (!StringUtils.isEmpty(currentColumn) && currentColumn.equals(currentColumn)))
+                  if(currentColumn == null || (!StringUtils.isEmpty(currentColumn) && columnId.equals(currentColumn)))
                   {
                      Boolean readOnly =  ((JsonObject)customColumns.get(columnId)).get("readOnly").getAsBoolean();
                      if(!readOnly)

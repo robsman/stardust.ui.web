@@ -186,6 +186,7 @@ public class CostsPerProcess
          for(Map.Entry<String, DateRange> custCols : customColDateRange.entrySet())
          {
             String key = custCols.getKey();
+            double costValue = 0;
             DateRange dateRange = custCols.getValue();
             ContributionInInterval ciiCustomCol = con.getOrCreateContributionInInterval(dateRange);
             
@@ -193,7 +194,7 @@ public class CostsPerProcess
             {
                try{
                   Long nPisCount = (Long) customColumnPisCount.get(key+CUSTOM_COL_COST_SUFFIX);
-                  double costValue = Double.valueOf(customColumns.get(key+CUSTOM_COL_COST_SUFFIX).toString());
+                  costValue = Double.valueOf(customColumns.get(key+CUSTOM_COL_COST_SUFFIX).toString());
                   Integer thresholdValue = (Integer) customColumns.get(key+CUSTOM_COL_STATUS_SUFFIX);
                   nPisCount += ciiCustomCol.getnPis();
                   costValue += ciiCustomCol.getCost();
@@ -209,18 +210,20 @@ public class CostsPerProcess
                   if (nPisCount > 0)
                   {
                      costValue = (costValue / nPisCount);
+                     
                   }
                   customColumns.put(key+CUSTOM_COL_COST_SUFFIX, costValue);
                   customColumns.put(key+CUSTOM_COL_STATUS_SUFFIX, thresholdValue);
                   customColumnPisCount.put(key+CUSTOM_COL_COST_SUFFIX, nPisCount);
                }catch (Exception e) {
-                     e.printStackTrace();
+                    trace.error("Error occured in custom column cost calcuation ",e);
                }
                
             }
             else
             {
-               customColumns.put(key+CUSTOM_COL_COST_SUFFIX, 0);
+               trace.error("Invalid costs of Custom month: " + costValue + 
+                     " by process with id: " + processDefinition.getId());
             }
          } 
       }

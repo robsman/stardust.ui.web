@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.bcc.views;
 
+import java.text.DecimalFormat;
 import java.util.Map;
 
 import org.eclipse.stardust.ui.web.bcc.messsages.MessagesBCCBean;
@@ -75,7 +76,8 @@ public class CostTableEntry extends DefaultRowModel
             }
             else
             {
-               val = cols.getValue().toString() + " "+ currencyCode;   
+               DecimalFormat fmt = new DecimalFormat("##.##");
+               val = fmt.format(cols.getValue()) + " "+ currencyCode;   
             }
             this.customColumns.put(key, val);
          }         
