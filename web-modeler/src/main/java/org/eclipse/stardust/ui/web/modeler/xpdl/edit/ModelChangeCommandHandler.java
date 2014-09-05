@@ -95,7 +95,8 @@ public class ModelChangeCommandHandler implements ModelCommandsHandler
    {
       ModelBuilderFacade facade = new ModelBuilderFacade(modelService.getModelManagementStrategy());
       String modelName = request.get(ModelerConstants.NAME_PROPERTY).getAsString();
-      ModelType model = facade.createModel(null, modelName);
+      String id = request.get(ModelerConstants.ID_PROPERTY).getAsString();
+      ModelType model = facade.createModel(id, modelName);
       modelService.getModelBuilderFacade().setModified(model, model.getCreated());
       EObjectUUIDMapper mapper = modelService.uuidMapper();
       mapper.map(model);
