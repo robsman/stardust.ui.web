@@ -170,10 +170,9 @@ public class ModelChangeCommandHandler implements ModelCommandsHandler
       {
          ModelManagementStrategy modelMgtStrategy = modelService
                .getModelManagementStrategy();
-         modelMgtStrategy.deleteModel(model);
-
          changes.removed.add(modelService.currentSession().xpdlMarshaller()
                .toModelJson(model));
+         modelMgtStrategy.deleteModel(model);
       }
       return changes;
    }
