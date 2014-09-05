@@ -496,9 +496,9 @@ define(
 						}
 
 						if (index > 0) {
-                	  if (parameterDefinition.dataType != "dmsDocument") {
-                		  parameterObjectString += ", ";
-                	  }
+                    if (parameterDefinition.dataType != "dmsDocument") {
+                       parameterObjectString += ", ";
+                    }
                   }
 
 						++index;
@@ -546,33 +546,33 @@ define(
 						var optionMarkup = "<hr><p>Select one of the following options:</p><ul>";
 
 						for ( var i = 0; i < typeDeclaration.getFacets().length; ++i) {
-					if ((typeDeclaration.getFacets()[i].classifier != "maxLength") && (typeDeclaration.getFacets()[i].classifier != "minLength")){
-						 var option = typeDeclaration.getFacets()[i];
+               if ((typeDeclaration.getFacets()[i].classifier != "maxLength") && (typeDeclaration.getFacets()[i].classifier != "minLength")){
+                   var option = typeDeclaration.getFacets()[i];
 
-						 var hashCodeJS = "(";
-						 hashCodeJS += "processInstanceOid + '|' + ";
-						 hashCodeJS += "activityInstanceOid + '|' + ";
-						 hashCodeJS += "partition + '|false|";
-						 hashCodeJS += option.name;
-						 hashCodeJS += "').hashCode()";
+                   var hashCodeJS = "(";
+                   hashCodeJS += "processInstanceOid + '|' + ";
+                   hashCodeJS += "activityInstanceOid + '|' + ";
+                   hashCodeJS += "partition + '|false|";
+                   hashCodeJS += option.name;
+                   hashCodeJS += "').hashCode()";
 
-						 optionMarkup += "<li><a href=&quot;";
-						 optionMarkup += this.responseHttpUrlInput.val();
-						 optionMarkup += "/mail-confirmation";
-						 optionMarkup += "?activityInstanceOID=' + activityInstanceOid + '";
-						 optionMarkup += "&amp;processInstanceOID=' + processInstanceOid + '";
-						 optionMarkup += "&amp;partition=' + partition + '";
-						 optionMarkup += "&amp;investigate=false";
-						 optionMarkup += "&amp;outputValue=";
-						 optionMarkup += option.name;
-						 optionMarkup += "&amp;hashCode=' + ";
-						 optionMarkup += hashCodeJS;
-						 optionMarkup += "+ '";
-						 optionMarkup += "&quot;>";
-						 optionMarkup += option.name;
-						 optionMarkup += "</a></li>";
-					  }
-				  }
+                   optionMarkup += "<li><a href=&quot;";
+                   optionMarkup += this.responseHttpUrlInput.val();
+                   optionMarkup += "/mail-confirmation";
+                   optionMarkup += "?activityInstanceOID=' + activityInstanceOid + '";
+                   optionMarkup += "&amp;processInstanceOID=' + processInstanceOid + '";
+                   optionMarkup += "&amp;partition=' + partition + '";
+                   optionMarkup += "&amp;investigate=false";
+                   optionMarkup += "&amp;outputValue=";
+                   optionMarkup += option.name;
+                   optionMarkup += "&amp;hashCode=' + ";
+                   optionMarkup += hashCodeJS;
+                   optionMarkup += "+ '";
+                   optionMarkup += "&quot;>";
+                   optionMarkup += option.name;
+                   optionMarkup += "</a></li>";
+                 }
+              }
 
 						optionMarkup += "</ul>";
 
@@ -610,16 +610,16 @@ define(
 
 					this
 							.setResponseType(this.getApplication().attributes["stardust:emailOverlay::responseType"]);
-
-					var accessPoints = this.createIntrinsicAccessPoints();
-					this.submitParameterDefinitionsChanges(accessPoints);
+               if(this.getApplication().contexts.application.accessPoints.length==0){
+                  var accessPoints = this.createIntrinsicAccessPoints();
+                  this.submitParameterDefinitionsChanges(accessPoints);
+               }
 				};
 
 				MailIntegrationOverlay.prototype.createIntrinsicAccessPoints = function() {
 
 					var accessPoints = {};
-					var defaultAccessPoints = [];
-
+               var defaultAccessPoints =[];
 					for ( var n = 0; n < this.getApplication().contexts.application.accessPoints.length; ++n) {
 						var parameterDefinition = this.getApplication().contexts.application.accessPoints[n];
 
@@ -706,7 +706,20 @@ define(
 							}
 						});
 					}
-
+               
+               if (!accessPoints["mailContentAP"]) {
+                  defaultAccessPoints.push({
+                     id : "mailContentAP",
+                     name : "Mail Content",
+                     dataType : "primitive",
+                     primitiveDataType : "String",
+                     direction : "IN",
+                     attributes : {
+                        "stardust:predefined" : true
+                     }
+                  });
+               }
+              
 					return defaultAccessPoints;
 				}
 
@@ -769,7 +782,7 @@ define(
 							.val(this.getApplication().attributes["stardust:emailOverlay::pwd"]);
 
                this.transactedRouteInput.prop("checked",
-                       this.getApplication().attributes["carnot:engine:camel::transactedRoute"]);
+                    this.getApplication().attributes["carnot:engine:camel::transactedRoute"]);
 				};
 
 				/**
@@ -844,7 +857,6 @@ define(
 						route += "	</when>\n";
 						route += "</choice>\n";
 					}
-
 					// java script endpoint that process e-mail template with
 					// possible response links.
 					route += "<setHeader headerName=\"CamelLanguageScript\">\n";
@@ -936,20 +948,9 @@ define(
                       route += "}\n";
                  includeAttachmentBean=true; 
                   }
-
-                  /*} else {
-							route += "      var " + accessPoint.id
-									+ " =  eval('(' + request.headers.get('"
-									+ accessPoint.id + "')+ ')');\n";
-                  }*/
 						}
-
 					route += "\n";
-
-               
-					var markup = CKEDITOR.instances[this.mailTemplateEditor.id]
-							.getData();
-
+               var markup = CKEDITOR.instances[this.mailTemplateEditor.id].getData();
 					if (this.responseTypeSelect.val() != "none") {
 						markup += this.createResponseOptionString();
 					}
@@ -957,12 +958,16 @@ define(
                markup=markup.replace(new RegExp("(&amp;)", 'g'), "&");
                markup=markup.replace(new RegExp("(&quot;)", 'g'), "\"");
                route+="<![CDATA[";
+               route += "if(mailContentAP){\n";
+               route += "      response = String(mailContentAP);";
+               route += "\n}else{\n";
 					route += "      response = '"
 							+ markup.replace(new RegExp("\n", 'g'), " ")
                            .replace(new RegExp("toDate", 'g'), "formatDate")
                            .replace(new RegExp("{{", 'g'), "' + ")
 									.replace(new RegExp("}}", 'g'), " + '")
 							+ "';\n";
+               route+="}";
                route+="]]>";
 					route += "      setOutHeader('response', response);\n";
 
@@ -1053,20 +1058,18 @@ define(
 						responseOptionsTypeChanges = this.responseOptionsTypeSelect
 								.val();
 					}
-
-					var accessPointsChanges = this
-							.createIntrinsicAccessPoints();
-
+               var accessPointsChanges =this.getApplication().contexts.application.accessPoints;
+               if(this.getApplication().contexts.application.accessPoints.length==0){
+                  accessPointsChanges = this.createIntrinsicAccessPoints();
+                  this.submitParameterDefinitionsChanges(accessPointsChanges);
+               }
+                  
 					this.view
 							.submitChanges({
 								type : applicationTypeChanges,
-								contexts : {
-									application : {
-										accessPoints : accessPointsChanges
-									}
-								},
-								attributes : {
+                         attributes : {
 									"carnot:engine:camel::applicationIntegrationOverlay" : "mailIntegrationOverlay",
+                           "carnot:engine:camel::transactedRoute" : "false",
 									"carnot:engine:camel::camelContextId" : "defaultCamelContext",
 									"carnot:engine:camel::invocationPattern" : invocationPatternChanges,
 									"carnot:engine:camel::invocationType" : invocationTypeChanges,
