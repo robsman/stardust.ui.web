@@ -13,7 +13,7 @@
 		beanNames="integrationManagementRestlet" />
 
 	<bean id="integrationManagementRestlet"
-		class="com.infinity.integration.camel.rest.ws.IntegrationManagementRestlet"
+		class="org.eclipse.stardust.ui.web.integration.camel.rest.ws.IntegrationManagementRestlet"
 		scope="prototype">
 		<property name="integrationManagement" ref="integrationManagementImpl" />
 	</bean>
