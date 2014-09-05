@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                       http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd
+                       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+                       http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.2.xsd">
+
+
+	<jaxrs:server id="integration-management-service" address="/integration-management"
+		beanNames="integrationManagementRestlet" />
+
+	<bean id="integrationManagementRestlet"
+		class="com.infinity.integration.camel.rest.ws.IntegrationManagementRestlet"
+		scope="prototype">
+		<property name="integrationManagement" ref="integrationManagementImpl" />
+	</bean>
+
+	<bean id="integrationManagementImpl"
+		class="org.eclipse.stardust.engine.extensions.camel.integration.management.IntegrationManagementImpl">
+	</bean>
+
+</beans>
