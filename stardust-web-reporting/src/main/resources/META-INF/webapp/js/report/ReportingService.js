@@ -304,10 +304,11 @@ define(
 								name : this.getI18N("reporting.definitionView.additionalFiltering.activityStartTimestamp"),
 								type : this.metadata.timestampType
 							},
-							processInstanceStartTimestamp : {
+					 processInstanceStartTimestamp : {
                         id : "processInstanceStartTimestamp",
                         name : this.getI18N("reporting.definitionView.additionalFiltering.processInstanceStartTimestamp"),
-                        type : this.metadata.timestampType
+                        type : this.metadata.timestampType,
+                        notSupportedAsFilter : true
                      },
                      rootProcessInstanceStartTimestamp : {
                         id : "rootProcessInstanceStartTimestamp",
