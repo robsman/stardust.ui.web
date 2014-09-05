@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivy-module version="2.0"
+   xmlns:m="http://ant.apache.org/ivy/maven"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
+
+   <info organisation="org.eclipse.stardust.ui.web" module="stardust-html5-common"
+      revision="${ipp.version.full}" />
+
+   <configurations>
+      <conf name="stardust-html5-common-compile" description="HTML5 Common - Compile Scope" />
+      <conf name="stardust-html5-common-runtime" extends="stardust-html5-common-compile" description="HTML5 Common - Runtime Scope" />
+
+      <!-- compound configurations which encapsulates the above mentioned configs -->
+      <conf name="compile" visibility="private" extends="stardust-html5-common-compile" />
+      <conf name="runtime" visibility="private" extends="stardust-html5-common-runtime" />
+      <conf name="all" visibility="private" extends="compile, runtime" />
+      
+      <conf name="pom" description="HTML Common POMs" />
+   </configurations>
+
+   <publications>
+      <artifact name="stardust-html5-common" type="jar" conf="stardust-html5-common-compile,stardust-html5-common-runtime" />
+      <artifact name="stardust-html5-common" type="pom" conf="pom" ext="pom" />
+   </publications>
+
+   <dependencies>
+   </dependencies>
+</ivy-module>

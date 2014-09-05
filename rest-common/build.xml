@@ -24,7 +24,7 @@
    <property name="project.etc" value="${project.dir}/etc" />
    <property file="${project.etc}/private.properties"/>
    
-   <property name="artifactId" value="rest-common" />
+   <property name="artifactId" value="stardust-portal-rest-common" />
 
    <import file="../../build.tools/commons-build.xml" />
 
@@ -112,10 +112,28 @@
             <include name="**/*.*" />
          </fileset>
       </copy>
+      
+      <!-- Copy NL property file for locale "en" to NL property with no locale. -->
+      <copy todir="${build.classes}" overwrite="true">
+         <fileset dir="${resources.src}">
+            <include name="**/*_en.properties" />
+         </fileset>
+         <filtermapper>
+           <replacestring from="_en.properties" to=".properties"/>
+         </filtermapper>
+      </copy>
+      <copy todir="${build.src}" overwrite="true">
+         <fileset dir="${resources.src}">
+            <include name="**/*_en.properties" />
+         </fileset>
+         <filtermapper>
+           <replacestring from="_en.properties" to=".properties"/>
+         </filtermapper>
+      </copy>
    </target>
 
    <target name="jar" depends="compile, copyDatFiles">
-      <ipp:jar jarfile="${rest.common.jar}" implementationTitle="Infinity Process Engine - Rest Common">
+      <ipp:jar jarfile="${rest.common.jar}" implementationTitle="Infinity Process Engine - REST Common">
          <fileset dir="${build.classes}">
             <include name="**/*.*" />
          </fileset>
@@ -124,7 +142,7 @@
 
    <target name="jar.src" depends="compile">
       <delete file="${rest.common.src.jar}" />
-      <ipp:jar jarfile="${rest.common.src.jar}" implementationTitle="Infinity Process Engine - Rest Common Sources">
+      <ipp:jar jarfile="${rest.common.src.jar}" implementationTitle="Infinity Process Engine - REST Common Sources">
          <fileset dir="${build.src}">
             <include name="**/*.*" />
          </fileset>
@@ -178,6 +196,7 @@
             <include name="**/*_de.properties"/>
             <include name="**/*_en.properties"/>
             <include name="**/*_zh_CN.properties"/>
+            <include name="**/*_zh_TW.properties"/>
          </fileset>
       </copy>
    </target>

@@ -120,6 +120,18 @@
       <invoke-subproject subproject="skins/modern" />
    </target>
 
+   <target name="html5-common" depends="init">
+      <invoke-subproject subproject="html5-common" />
+   </target>
+
+   <target name="html5-process-portal" depends="init">
+      <invoke-subproject subproject="html5-process-portal" />
+   </target>
+
+   <target name="rest-common" depends="init">
+      <invoke-subproject subproject="rest-common" />
+   </target>
+
    <target name="end-user-doc" depends="init">
       <invoke-subproject subproject="end-user-doc">
          <additional-properties>
@@ -154,7 +166,7 @@
       stardust-common-introspection, stardust-common-introspection-xsd, stardust-ui-form, stardust-ui-form-jsf,
       views-common, graphics-common, process-portal, business-control-center, admin-portal,
       mobile-workflow, end-user-doc, stardust-web-reporting, stardust-rules-manager, 
-      portal-persistence-jpa, stardust-modern-skin">
+      portal-persistence-jpa, stardust-modern-skin, html5-common, html5-process-portal, rest-common">
    </target>
 
    <!-- - - - - - - - -  -->
