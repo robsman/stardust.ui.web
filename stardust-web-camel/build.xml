@@ -23,7 +23,7 @@
    <property name="resources.src" value="${project.dir}/src/main/resources" />
    
    <property name="project.etc" value="${project.dir}/etc" />
-   <property file="${project.etc}/private.properties"/>   
+   <property file="${project.etc}/private.properties"/>
 
    <!-- if portal.wst.plugin.dir was set via external property -->
    <available file="${portal.wst.plugin.dir}" property="portal.wst.plugin.dir.present" type="dir"/>
@@ -57,10 +57,10 @@
       <property name="build.lib" value="${build.dir}/lib" />
       <property name="build.src" value="${build.dir}/src" />
 
-      <property name="reporting.jarfile" value="${artifactId}.jar" />
-      <property name="reporting.jar" value="${build.lib}/${reporting.jarfile}" />
-      <property name="reporting.src-jarfile" value="${artifactId}-sources.jar" />
-      <property name="reporting.src-jar" value="${build.lib}/${reporting.src-jarfile}" />
+      <property name="web-camel.jarfile" value="${artifactId}.jar" />
+      <property name="web-camel.jar" value="${build.lib}/${web-camel.jarfile}" />
+      <property name="web-camel.src-jarfile" value="${artifactId}-sources.jar" />
+      <property name="web-camel.src-jar" value="${build.lib}/${web-camel.src-jarfile}" />
    </target>
 
    <target name="initBuildDirectories" depends="initBuild">
@@ -118,7 +118,7 @@
    </target>
 
    <target name="jar" depends="compile, copyDatFiles">
-      <ipp:jar jarfile="${reporting.jar}" implementationTitle="Infinity Process Engine - Reporting">
+      <ipp:jar jarfile="${web-camel.jar}" implementationTitle="Infinity Process Engine - Camel Web">
          <fileset dir="${build.classes}" id="fileset.carnot.base.jar">
             <include name="**/*.*" />
          </fileset>
@@ -126,8 +126,8 @@
    </target>
 
    <target name="jar.src" depends="compile">
-      <delete file="${reporting.src-jar}" />
-      <ipp:jar jarfile="${reporting.src-jar}" implementationTitle="Infinity Process Engine - Reporting Sources">
+      <delete file="${web-camel.src-jar}" />
+      <ipp:jar jarfile="${web-camel.src-jar}" implementationTitle="Infinity Process Engine - Camel Web Sources">
          <fileset dir="${build.src}">
             <include name="**/*.*" />
          </fileset>
@@ -150,7 +150,7 @@
    <target name="copyToPortalWstPlugin" depends="initBuildDirectories, initPortalWstPluginDir" if="portal.wst.plugin.dir.present">
       <copy todir="${portal.wst.plugin.dir}/lib">
          <fileset dir="${build.lib}">
-            <include name="${reporting.jarfile}" />
+            <include name="${web-camel.jarfile}" />
          </fileset>
       </copy>
    </target>
@@ -164,7 +164,7 @@
       description="installs the artifacts into a local Maven repository">
 
       <ipp:init-mvn localMavenRepository="${maven.localRepository}" />
-      <ipp:mvn-install file="${reporting.jar}" 
+      <ipp:mvn-install file="${web-camel.jar}" 
          pomFile="${build.lib}/${artifactId}.pom" />
    </target>
    
@@ -172,7 +172,7 @@
      description="publish artifacts into a remote Maven repository">
 
       <ipp:init-mvn />
-      <ipp:mvn-deploy file="${reporting.jar}" 
+      <ipp:mvn-deploy file="${web-camel.jar}" 
          pomFile="${build.lib}/${artifactId}.pom" />
    </target>
    

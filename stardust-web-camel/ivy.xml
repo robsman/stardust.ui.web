@@ -20,7 +20,7 @@
       <conf name="stardust-web-camel-compile" description="Web Camel - Compile Scope" />
       <conf name="stardust-web-camel-runtime" extends="stardust-web-camel-compile" description="Web Camel - Runtime Scope" />
       
-      <conf name=" stardust-web-camel-sources" description="Web Camel - Sources" />
+      <conf name="stardust-web-camel-sources" description="Web Camel - Sources" />
       
       <conf name="test" visibility="private" description="Test dependencies" />
       
