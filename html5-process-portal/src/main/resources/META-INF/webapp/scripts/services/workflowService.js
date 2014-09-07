@@ -24,10 +24,22 @@ angular.module('workflow-ui.services').provider('workflowService', function () {
 		/*
 		 * 
 		 */
-		service.activate = function(oid) {
+		service.getWorklist = function(query) {
 			var deferred = jQuery.Deferred();
 
-			console.log("ACTIVATING ACTIVITY: " + oid);
+			console.log("getting worklist for:");
+			console.log(query);
+
+			// TODO: Use Angular $resource and call real rest end point
+			jQuery.ajax({
+				url: "plugins/html5-process-portal/jsons/worklist.json?" + JSON.stringify(query),
+				type: "GET",
+		        contentType: "application/json"
+			}).done(function(result) {
+				deferred.resolve(result);
+			}).fail(function(data) {
+				deferred.reject(data);
+		    });
 
 			return deferred.promise();
 		};

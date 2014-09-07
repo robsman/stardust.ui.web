@@ -1,13 +1,45 @@
-<div ng-controller="WorklistViewCtrl">
-	HTML Based Worklist View
-	<table border="1">
-		<th>Activity OID</th>
-		<th>Activity Name</th>
-		<th>Process Name</th>
-		<tr ng-repeat="entry in worklist.tableData track by $index">
-			<td><a href="" ng-click="worklist.activate(entry)">{{entry.oid}}</a></td>
-			<td>{{entry.name}}</td>
-			<td>{{entry.processName}}</td>
-		</tr>
-	</table>
+<div class="view-panel" ng-controller="sdWorklistViewCtrl">
+	<div sd-include="'plugins/html5-process-portal/partials/views/worklistViewToolbar.html'"></div>
+	<div class="view-panel-content">		
+		<table style="width: 100%;">
+			<thead>
+				<tr>
+					<th>Activity</th>
+					<th>Activity OID</th>
+					<th>Process</th>
+					<th>Start Time</th>
+					<th>Last Modified</th>
+					<th>Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr valign="center" sd-table-data="workItem in worklist.workItems track by $index"
+					sd-table-selection="worklist.selectedWorkItems">
+					<td>
+						<a href="#" ng-click="activateWorkItem(workItem)" title="{{workItem.activity.description}}">
+							{{workItem.activity.name}}
+						</a>
+					</td>
+					<td align="middle">{{workItem.oid}}</td>
+					<td>{{workItem.processDefinition.name}}</td>
+					<td align="right">{{workItem.start | sdDateTimeFilter}}</td>
+					<td align="right">{{workItem.lastModification | sdDateTimeFilter}}</td>
+					<td align="right" style="padding-left: 0px;">
+						<a href="#" ng-click="openNotes(workItem)" title="Open Notes" class="iconLink view-tool-link">
+							<i class="fa fa-comment-o"></i>
+						</a>
+						<a href="#" ng-click="openProcessHistory(workItem)" title="Process History" class="iconLink view-tool-link">
+							<i class="fa fa-tasks"></i>
+						</a>
+						<a href="#" ng-click="complete(workItem)" title="Complete" class="iconLink view-tool-link">
+							<i class="fa fa-share"></i>
+						</a>
+						<a href="#" ng-click="openDelegateDialog(workItem)" title="Delegate" class="iconLink view-tool-link">
+							<i class="fa fa-user"></i>
+						</a>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
 </div>

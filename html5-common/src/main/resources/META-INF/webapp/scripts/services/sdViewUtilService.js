@@ -8,14 +8,13 @@
  * documentation
  ******************************************************************************/
 
-/**
- * This services makes available the requireJS modules in Angular context
- * 
+/*
  * @author Subodh.Godbole
  */
+
 'use strict';
 
-angular.module('bpm-ui.services').provider('sgViewParamService', function () {
+angular.module('bpm-common.services').provider('sdViewUtilService', function () {
 	var self = this;
 	
 	self.$get = ['$rootScope', function ($rootScope) {
@@ -25,15 +24,47 @@ angular.module('bpm-ui.services').provider('sgViewParamService', function () {
 		/*
 		 * 
 		 */
-		service.getParams = function(scope) {
+		service.getViewParams = function(scope) {
 			return scope.panel.params.custom;
 		};
 
 		/*
 		 * 
 		 */
-		service.getParam = function(scope, param) {
+		service.getViewParam = function(scope, param) {
 			return scope.panel.params.custom[param];
+		};
+
+		/*
+		 *
+		 */
+		service.openView = function(viewId, viewKey, params, nested) {
+			var message = {
+				"type": "OpenView",
+				"data": {
+					"viewId": viewId,
+					"viewKey": viewKey,
+					"params": params,
+					"nested" : (nested != undefined && nested === true) ? true : false
+				}
+			};
+
+			window.postMessage(JSON.stringify(message), "*");
+		};
+
+		/*
+		 *
+		 */
+		service.changePerspective = function(perspectiveId, params) {
+			var message = {
+				"type": "ChangePerspective",
+				"data": {
+					"perspectiveId": perspectiveId,
+					"params": params
+				}
+			};
+
+			window.postMessage(JSON.stringify(message), "*");
 		};
 
 		return service;

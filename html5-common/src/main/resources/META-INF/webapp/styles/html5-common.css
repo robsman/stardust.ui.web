@@ -1,0 +1,38 @@
+.view-panel {
+	margin: 8px;
+}
+
+.view-panel-toolbar {
+}
+
+.view-panel-content {
+	margin-top: 5px;
+}
+
+.view-toolbar-item {
+	padding-left: 10px;
+}
+
+.view-tool-link {
+	margin-right: 5px;
+}
+
+.selectedRow td {
+	background-color: #E8E6FC;
+}
+
+.tbl-col {
+	padding: 2px 5px 2px 5px;
+	border: 1px solid #CCCCCC;
+}
+
+.tbl-col {
+	padding: 2px 5px 2px 5px;
+	border: 1px solid #CCCCCC;
+}
+
+.tbl-hdr-col {
+	padding: 2px 5px 2px 5px;
+	border: 1px solid #CCCCCC;
+	background-color: #EEEEEE;
+}

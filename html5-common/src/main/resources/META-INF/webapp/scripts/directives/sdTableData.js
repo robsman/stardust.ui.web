@@ -98,8 +98,7 @@ angular.module('bpm-common').directive('sdTableData', function() {
 							rowScope.$odd = !(rowScope.$even = (n & 1) === 0);
 
 							linker(rowScope, function(clone) {
-								parent.append(clone); // Add
-								// to DOM
+								parent.append(clone); // Add to DOM
 								jQuery(clone).prop("id", "sdTableRowIndex" + n);
 
 								block = {};
@@ -169,6 +168,9 @@ angular.module('bpm-common').directive('sdTableData', function() {
 //								console.log("Cannot create data table");
 //								console.log(x);
 //							}
+
+							table.find("thead tr th").addClass("tbl-hdr-col");
+							table.find("tbody tr td").addClass("tbl-col");
 
 							document.body.style.cursor = "default";
 						}, 1000);

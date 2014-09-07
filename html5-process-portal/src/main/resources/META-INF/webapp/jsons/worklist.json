@@ -1,0 +1,187 @@
+[
+    {
+        "oid": 2,
+        "start": 1407153528716,
+        "lastModification": 1407221905640,
+        "state": 1,
+        "userPerformer": {
+            "account": "motu",
+            "name": "Master",
+            "email": "robert.sauer@sungard.com"
+        },
+        "activity": {
+            "id": "CreateDoc",
+            "name": "Create Doc",
+            "description": null,
+            "type": "Manual",
+            "defaultPerformer": {
+                "id": "Administrator",
+                "name": "Administrator",
+                "description": "In charge of all workflow administration activities."
+            }
+        },
+        "processInstance": {
+            "oid": 2,
+            "notes": []
+        },
+        "processDefinition": {
+            "id": "D02Document(Multiple)",
+            "name": "D02 Document (Multiple)"
+        },
+        "descriptors": []
+    },
+    {
+        "oid": 22,
+        "start": 1408008898731,
+        "lastModification": 1409479984323,
+        "state": 5,
+        "userPerformer": {
+            "account": "motu",
+            "name": "Master",
+            "email": "robert.sauer@sungard.com"
+        },
+        "activity": {
+            "id": "LaunchExtWebApp",
+            "name": "Launch Ext Web App",
+            "description": null,
+            "type": "Application",
+            "defaultPerformer": {
+                "id": "Administrator",
+                "name": "Administrator",
+                "description": "In charge of all workflow administration activities."
+            }
+        },
+        "processInstance": {
+            "oid": 11,
+            "notes": []
+        },
+        "processDefinition": {
+            "id": "F01IFrame",
+            "name": "F01 IFrame"
+        },
+        "descriptors": []
+    },
+    {
+        "oid": 1,
+        "start": 1407153417488,
+        "lastModification": 1407221910987,
+        "state": 5,
+        "activity": {
+            "id": "Primitive1_1WRITE",
+            "name": "Primitive 1-1 WRITE",
+            "description": null,
+            "type": "Manual",
+            "defaultPerformer": {
+                "id": "Administrator",
+                "name": "Administrator",
+                "description": "In charge of all workflow administration activities."
+            }
+        },
+        "processInstance": {
+            "oid": 1,
+            "notes": [
+                {
+                    "context": "PI",
+                    "text": "123",
+                    "time": 1407217138226,
+                    "user": "Master"
+                },
+                {
+                    "context": "PI",
+                    "text": "456",
+                    "time": 1407217171616,
+                    "user": "Master"
+                },
+                {
+                    "context": "PI",
+                    "text": "789",
+                    "time": 1407217181588,
+                    "user": "Master"
+                }
+            ]
+        },
+        "processDefinition": {
+            "id": "A01Primitives1_1",
+            "name": "A01 Primitives 1-1"
+        },
+        "descriptors": []
+    },
+    {
+        "oid": 3,
+        "start": 1407153531914,
+        "lastModification": 1407221895375,
+        "state": 5,
+        "activity": {
+            "id": "MixedWRITE",
+            "name": "Mixed WRITE",
+            "description": null,
+            "type": "Manual",
+            "defaultPerformer": {
+                "id": "Administrator",
+                "name": "Administrator",
+                "description": "In charge of all workflow administration activities."
+            }
+        },
+        "processInstance": {
+            "oid": 3,
+            "notes": []
+        },
+        "processDefinition": {
+            "id": "E01MixedTypes",
+            "name": "E01 Mixed Types"
+        },
+        "descriptors": []
+    },
+    {
+        "oid": 13,
+        "start": 1408006129474,
+        "lastModification": 1408006173959,
+        "state": 5,
+        "activity": {
+            "id": "ManualActivity1",
+            "name": "Manual Activity 1",
+            "description": null,
+            "type": "Manual",
+            "defaultPerformer": {
+                "id": "Administrator",
+                "name": "Administrator",
+                "description": "In charge of all workflow administration activities."
+            }
+        },
+        "processInstance": {
+            "oid": 7,
+            "notes": []
+        },
+        "processDefinition": {
+            "id": "F01IFrame",
+            "name": "F01 IFrame"
+        },
+        "descriptors": []
+    },
+    {
+        "oid": 24,
+        "start": 1408010542256,
+        "lastModification": 1409564676642,
+        "state": 5,
+        "activity": {
+            "id": "Checkdata",
+            "name": "Check data",
+            "description": null,
+            "type": "Manual",
+            "defaultPerformer": {
+                "id": "Administrator",
+                "name": "Administrator",
+                "description": "In charge of all workflow administration activities."
+            }
+        },
+        "processInstance": {
+            "oid": 12,
+            "notes": []
+        },
+        "processDefinition": {
+            "id": "DimensionsProcess",
+            "name": "DimensionsProcess"
+        },
+        "descriptors": []
+    }
+]
