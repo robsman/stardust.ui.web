@@ -419,10 +419,10 @@ define(
 						var displayValueMapping = {};
 						Object.keys(inData).forEach(function(key) {
 							if (dimension.id == self.reportingService.metadata.objects.activityInstance.dimensions.criticality.id) {
-								var critName = self.getCriticalityName(key,enums).name;
-								 displayValueMapping[critName] = key;
-								 inData[critName] = inData[key];
-								 delete inData[key];	 
+								var critName = self.getCriticalityName(key,enums);
+								displayValueMapping[critName] = key;
+								inData[critName] = inData[key];
+								delete inData[key];	
 							}else{
 							for ( var item in enums)
 	                          {
@@ -457,9 +457,9 @@ define(
 									function(key) {
 										for (var i = 0; i < inData[key].length; i++) {
 											if (dimension.id == self.reportingService.metadata.objects.activityInstance.dimensions.criticality.id) {
-												var critName = self.getCriticalityName(key,enums).name;
+												var critName = self.getCriticalityName(key,enums);
 												displayValueMapping[critName] = inData[key][i][0];
-												inData[key][i][0] = critName;
+												inData[key][i][0] = critName;	
 											} else {
 												for (var j = 0; j < enums.length; j++) {
 													if (enums[j].id == inData[key][i][0]) {
@@ -1332,8 +1332,8 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
          {
             var record = data[row];
             var criticality = this.getCriticalityName(record[selColumn], enumItems);
-            displayValueMapping[criticality.name] = record[selColumn];
-            record[selColumn] = criticality.name;  
+           	displayValueMapping[criticality] = record[selColumn];
+           	record[selColumn] = criticality;	
          }
          
          tableOptions.aoColumnDefs.push(getColumnDef(selColumn, displayValueMapping));
@@ -1463,21 +1463,22 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
 				 * 
 				 */
 				ReportRenderingController.prototype.getCriticalityName = function(criticalityRating, enumItems)
-				{
-				   criticalityRating *= 1000;
-				   var self = this;//enumItems.forEach(function(item)
-				   for ( var i = 0; i < enumItems.length; i++)
-				   {
-				      if (criticalityRating > enumItems[i].rangeFrom && criticalityRating <= enumItems[i].rangeTo)
-                  {
-                     return enumItems[i];
-                  }
-				   }
+ 				{
+					criticalityRating *= 1000;
+					var self = this;// enumItems.forEach(function(item)
+					for (var i = 0; i < enumItems.length; i++) {
+						if (criticalityRating >= enumItems[i].rangeFrom
+								&& criticalityRating <= enumItems[i].rangeTo) {
+							return enumItems[i].name;
+						}
+					}
+					
+					return criticalityRating;
 				};
 				
             /*
-             * 
-             */
+			 * 
+			 */
             ReportRenderingController.prototype.formatDate = function(value, fromFormat, toFormat) {
                if (value != undefined && value != null && value != "") {
                   try {
