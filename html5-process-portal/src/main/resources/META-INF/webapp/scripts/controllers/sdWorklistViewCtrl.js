@@ -14,7 +14,7 @@
 
 'use strict';
 
-angular.module('workflow-ui').controller('sdWorklistViewCtrl', ['$scope', 'sdViewUtilService', 'workflowService', function($scope, sdViewUtilService, workflowService) {
+angular.module('workflow-ui').controller('sdWorklistViewCtrl', ['$scope', 'sdViewUtilService', 'sdWorkflowService', function($scope, sdViewUtilService, sdWorkflowService) {
 	var viewParams = sdViewUtilService.getViewParams($scope);
 
 	var query = {
@@ -28,7 +28,7 @@ angular.module('workflow-ui').controller('sdWorklistViewCtrl', ['$scope', 'sdVie
 	 * 
 	 */
 	$scope.refresh = function() {
-		workflowService.getWorklist(query).done(function(data) {
+		sdWorkflowService.getWorklist(query).done(function(data) {
 			$scope.worklist.workItems = data;
 			$scope.$apply();
 		});

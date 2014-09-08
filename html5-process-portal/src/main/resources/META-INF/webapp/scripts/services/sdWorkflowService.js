@@ -14,7 +14,7 @@
 
 'use strict';
 
-angular.module('workflow-ui.services').provider('workflowService', function () {
+angular.module('workflow-ui.services').provider('sdWorkflowService', function () {
 	var self = this;
 	
 	self.$get = ['$rootScope', function ($rootScope) {
