@@ -1,8 +1,12 @@
+/* ********** View ********** */
 .view-panel {
 	margin: 8px;
 }
 
 .view-panel-toolbar {
+	border-bottom: 1px solid #CCCCCC;
+	margin-bottom: 10px;
+	padding-bottom: 2px;
 }
 
 .view-panel-content {
@@ -17,13 +21,10 @@
 	margin-right: 5px;
 }
 
+/* ********** Data Table ********** */
+
 .selectedRow td {
 	background-color: #E8E6FC;
-}
-
-.tbl-col {
-	padding: 2px 5px 2px 5px;
-	border: 1px solid #CCCCCC;
 }
 
 .tbl-col {
@@ -35,4 +36,16 @@
 	padding: 2px 5px 2px 5px;
 	border: 1px solid #CCCCCC;
 	background-color: #EEEEEE;
+}
+
+.tbl-toolbar {
+	margin-bottom: 5px;
+}
+
+.tbl-toolbar-item {
+	padding-right: 5px;
+}
+
+.tbl-tool-link {
+	margin-right: 5px;
 }

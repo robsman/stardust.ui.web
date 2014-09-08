@@ -31,12 +31,14 @@ angular.module('workflow-ui.services').provider('workflowService', function () {
 			console.log(query);
 
 			// TODO: Use Angular $resource and call real rest end point
+			
+			// plugins/html5-process-portal/jsons/worklist.json
 			jQuery.ajax({
-				url: "plugins/html5-process-portal/jsons/worklist.json?" + JSON.stringify(query),
+				url: "services/rest/checklist-management/worklist.json?" + JSON.stringify(query),
 				type: "GET",
 		        contentType: "application/json"
 			}).done(function(result) {
-				deferred.resolve(result);
+				deferred.resolve(result.workItems);
 			}).fail(function(data) {
 				deferred.reject(data);
 		    });
