@@ -140,7 +140,7 @@ if (!window.bpm.portal.AngularAdapter) {
 			/**
 			 * Noticed that Angular 'date' filter does not work for our date formats 
 			 */
-			this.angularModule.filter('timestampType',
+			this.angularModule.filter('timestampType', ['$filter', 
 					function($filter) {
 						return function(input, format) {
 							if (input == null) {
@@ -165,7 +165,7 @@ if (!window.bpm.portal.AngularAdapter) {
 							}
 							return input;
 						};
-					});
+					}]);
 			/**
 			 *  tableArray - 2D array containing complete data of table column header + rows + footer
 				tableParameters.addLastRowAsFooter - if set true, will add last Row of above table as Footer. 
