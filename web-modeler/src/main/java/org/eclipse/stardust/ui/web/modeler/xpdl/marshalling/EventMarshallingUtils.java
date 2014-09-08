@@ -9,6 +9,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.core.extensions.actions.abort.AbortActivityEventAction;
 import org.eclipse.stardust.engine.core.extensions.actions.complete.CompleteActivityEventAction;
@@ -17,19 +20,35 @@ import org.eclipse.stardust.engine.core.extensions.conditions.assignment.Assignm
 import org.eclipse.stardust.engine.core.extensions.conditions.exception.ExceptionCondition;
 import org.eclipse.stardust.engine.core.extensions.conditions.exception.ExceptionConditionAccessPointProvider;
 import org.eclipse.stardust.engine.core.extensions.conditions.exception.ExceptionConditionValidator;
-import org.eclipse.stardust.engine.core.extensions.conditions.timer.*;
+import org.eclipse.stardust.engine.core.extensions.conditions.timer.TimeStampBinder;
+import org.eclipse.stardust.engine.core.extensions.conditions.timer.TimeStampCondition;
+import org.eclipse.stardust.engine.core.extensions.conditions.timer.TimeStampEmitter;
+import org.eclipse.stardust.engine.core.extensions.conditions.timer.TimerAccessPointProvider;
+import org.eclipse.stardust.engine.core.extensions.conditions.timer.TimerValidator;
 import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
 import org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder;
 import org.eclipse.stardust.model.xpdl.builder.model.BpmPackageBuilder;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
-import org.eclipse.stardust.model.xpdl.carnot.*;
+import org.eclipse.stardust.model.xpdl.carnot.AbstractEventSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
+import org.eclipse.stardust.model.xpdl.carnot.AttributeType;
+import org.eclipse.stardust.model.xpdl.carnot.DiagramType;
+import org.eclipse.stardust.model.xpdl.carnot.EndEventSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.EventActionType;
+import org.eclipse.stardust.model.xpdl.carnot.EventActionTypeType;
+import org.eclipse.stardust.model.xpdl.carnot.EventConditionTypeType;
+import org.eclipse.stardust.model.xpdl.carnot.EventHandlerType;
+import org.eclipse.stardust.model.xpdl.carnot.IAttributeCategory;
+import org.eclipse.stardust.model.xpdl.carnot.IExtensibleElement;
+import org.eclipse.stardust.model.xpdl.carnot.ImplementationType;
+import org.eclipse.stardust.model.xpdl.carnot.IntermediateEventSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.ModelType;
+import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.model.xpdl.util.NameIdUtils;
 import org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
-
-import com.google.gson.JsonObject;
 
 public class EventMarshallingUtils
 {
@@ -549,14 +568,14 @@ public class EventMarshallingUtils
       {
          dataFullID = dataFullID.split(":")[1];
       }
-      
+
       String dataPath = GsonUtils.extractAsString(euJson, ModelerConstants.EU_EXCLUDE_PERFORMER_DATA_PATH);
-      
+
       if (dataPath != null)
       {
          dataPath = euJson.get(ModelerConstants.EU_EXCLUDE_PERFORMER_DATA_PATH).getAsString();
       }
-      
+
       ModelType model = ModelUtils.findContainingModel(activity);
       EventConditionTypeType conditionType = EventMarshallingUtils.decodeEventHandlerType(PredefinedConstants.ACTIVITY_ON_ASSIGNMENT_CONDITION, model);
 
@@ -609,5 +628,52 @@ public class EventMarshallingUtils
       }
       return null;
    }
+
+   public static JsonObject getOnAssignmentHandlers(ActivityType activity)
+   {
+      JsonObject oaJson = new JsonObject();
+      JsonArray eventHandlersJson = new JsonArray();
+      for (Iterator<EventHandlerType> i = activity.getEventHandler().iterator(); i
+            .hasNext();)
+      {
+         EventHandlerType eventHandler = i.next();
+         if (eventHandler.getType().getId()
+               .equals(PredefinedConstants.ACTIVITY_ON_ASSIGNMENT_CONDITION))
+         {
+            JsonObject eventHandlerJson = new JsonObject();
+            JsonArray eventActionsJson = new JsonArray();
+            for (Iterator<EventActionType> j = eventHandler.getEventAction().iterator(); j
+                  .hasNext();)
+            {
+               EventActionType eventActionType = j.next();
+               if (eventActionType.getType().getId().equals("excludeUser"))
+               {
+                  JsonObject eventActionJson = new JsonObject();
+                  eventActionJson.addProperty("id", eventActionType.getId());
+                  eventActionJson.addProperty("name", eventActionType.getName());
+                  eventActionJson.addProperty(ModelerConstants.EU_EXCLUDE_PERFORMER_DATA,
+                        AttributeUtil.getAttributeValue(eventActionType,
+                              PredefinedConstants.EXCLUDED_PERFORMER_DATA));
+                  eventActionJson.addProperty(
+                        ModelerConstants.EU_EXCLUDE_PERFORMER_DATA_PATH, AttributeUtil
+                              .getAttributeValue(eventActionType,
+                                    PredefinedConstants.EXCLUDED_PERFORMER_DATAPATH));
+                  eventActionsJson.add(eventActionJson);
+               }
+            }
+            eventHandlerJson.addProperty("id", eventHandler.getId());
+            eventHandlerJson.addProperty("name", eventHandler.getName());
+            eventHandlerJson.addProperty("consumeOnMatch",
+                  eventHandler.isConsumeOnMatch());
+            eventHandlerJson.addProperty("logHandler", eventHandler.isLogHandler());
+            eventHandlerJson.add("eventAction", eventActionsJson);
+            eventHandlersJson.add(eventHandlerJson);
+         }
+         oaJson.add("eventHandler", eventHandlersJson);
+
+      }
+      return oaJson;
+   }
+
 
 }
