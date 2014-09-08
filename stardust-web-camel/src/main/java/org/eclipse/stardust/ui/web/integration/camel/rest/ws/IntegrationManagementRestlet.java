@@ -29,7 +29,7 @@ public class IntegrationManagementRestlet {
 	}
 
 	@GET
-	@Path("/routes/{contextId}")
+	@Path("context/{contextId}/routes")
 	@Produces(MediaType.APPLICATION_JSON)
 	public String allRoutesListService(@PathParam("contextId") String contextId) {
 		return integrationManagement.allRoutesList(contextId);
