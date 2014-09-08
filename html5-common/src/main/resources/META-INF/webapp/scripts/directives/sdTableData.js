@@ -108,6 +108,9 @@ angular.module('bpm-common').directive('sdTableData', function() {
 							});
 						}
 
+						table.find("thead tr th").addClass("tbl-hdr-col");
+						table.find("tbody tr td").addClass("tbl-col");
+
 						document.body.style.cursor = "wait";
 
 						// There might be a way to synchronize against Angular JS operations; using timeout meanwhile
@@ -168,9 +171,6 @@ angular.module('bpm-common').directive('sdTableData', function() {
 //								console.log("Cannot create data table");
 //								console.log(x);
 //							}
-
-							table.find("thead tr th").addClass("tbl-hdr-col");
-							table.find("tbody tr td").addClass("tbl-col");
 
 							document.body.style.cursor = "default";
 						}, 1000);
