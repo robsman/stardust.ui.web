@@ -203,8 +203,8 @@ public class BusinessObjectManagementResource {
 					++n;
 
 					continue;
-				} else if (n > 10) {
-					// Only 10 for now
+				} else if (n > 100) {
+					// Only 100 for now
 
 					break;
 				}
@@ -213,22 +213,32 @@ public class BusinessObjectManagementResource {
 
 				JsonObject businessObjectInstanceJson = new JsonObject();
 
-				for (int m = 0; m < fieldValues.length; ++m) {
-					businessObjectInstanceJson.addProperty(fields[m], fieldValues[m]);
+				// TODO Only 22 fields for testing
+
+				for (int m = 0; m < fieldValues.length && m < 19; ++m) {
+					// Strip whitespaces from field identifiers
+
+					businessObjectInstanceJson.addProperty(
+							fields[m].replaceAll("\\s+", ""), fieldValues[m]);
 				}
 
 				System.out.println("Primary Key");
 				System.out.println(primaryKeyField);
 				System.out.println(businessObjectInstanceJson);
-				
-				getBusinessObjectManagementService()
-						.createBusinessObjectInstance(
-								modelOid,
-								businessObjectId,
-								businessObjectInstanceJson
-										.get(primaryKeyField.get("id")
-												.getAsString()).getAsString(),
-								businessObjectInstanceJson);
+
+				try {
+					getBusinessObjectManagementService()
+							.createBusinessObjectInstance(
+									modelOid,
+									businessObjectId,
+									businessObjectInstanceJson.get(
+											primaryKeyField.get("id")
+													.getAsString())
+											.getAsString(),
+									businessObjectInstanceJson);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 
 				++n;
 			}
