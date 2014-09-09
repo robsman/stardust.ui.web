@@ -6,6 +6,5 @@
         "plugins/common/css/common-html5-fw-bridge.css" PLUGIN_VIEW_ICON_STYLE_SHEETS PORAL_SKIN_STYLE_SHEETS
     ],
     "scripts": [
-    	"plugins/common/js/BridgeUtils.js"
     ]
 }
