@@ -6,7 +6,9 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -29,9 +31,6 @@ import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
-import org.springframework.context.ApplicationContext;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.ui.web.common.Constants;
 import org.eclipse.stardust.ui.web.common.IPerspectiveDefinition;
@@ -50,7 +49,11 @@ import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.common.util.UserUtils;
 import org.eclipse.stardust.ui.web.plugin.support.ServiceLoaderUtils;
 import org.eclipse.stardust.ui.web.plugin.support.resources.PluginResourceUtils;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import com.google.gson.JsonObject;
 
 /**
  * TODO: Load info dynamically. Using local server side architecture
@@ -70,7 +73,36 @@ public class HTML5FrameworkServices
    private ServletContext servletContext;
 
    private ApplicationContext appContext;
-   
+
+   /**
+    * Ignore requestLocale and use the locale set at the time of login
+    * 
+    * @param requestLocale
+    * @return
+    */
+   public static String getLocaleCode(String requestLocale, ServletContext servletContext)
+   {
+      String localeCode = "en";
+
+      try
+      {
+         MessagePropertiesBean messageBean = (MessagePropertiesBean) RestControllerUtils.resolveSpringBean(
+               MessagePropertiesBean.class, servletContext);
+
+         localeCode = messageBean.getLocaleObject().getLanguage();
+         if (StringUtils.isNotEmpty(messageBean.getLocaleObject().getCountry()))
+         {
+            localeCode += ("_" + messageBean.getLocaleObject().getCountry());
+         }
+      }
+      catch (Exception e)
+      {
+         trace.error("Unexpected error in getting local", e);
+      }
+
+      return localeCode;
+   }
+
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("config")
@@ -87,11 +119,16 @@ public class HTML5FrameworkServices
 
       String headerKey = servletContext.getInitParameter(Constants.LOGIN_HEADING);
       String bundleBasName = servletContext.getInitParameter(Constants.COMMON_MESSAGE_BUNDLE);
-      Locale loc = new Locale(locale);
-      contents = StringUtils
-            .replace(contents, "PORTAL_TITLE", FacesUtils.getPortalTitle(headerKey, bundleBasName, loc));
+      
+      // TODO: Parameterise this into context parameter
+      contents = StringUtils.replace(contents, "DEFAULT_LOCALE", "en");
+
+      contents = StringUtils.replace(contents, "PORTAL_TITLE",
+            FacesUtils.getPortalTitle(headerKey, bundleBasName, messageBean.getLocaleObject()));
+
       contents = StringUtils.replace(contents, "SIDEBAR_LABEL",
             messageBean.getString("portalFramework.config.SIDEBAR_LABEL"));
+      
       String commonMenuConfigStr = (String) RestControllerUtils.resolveSpringBean("commonMenuConfig", servletContext);
       if (StringUtils.isNotEmpty(commonMenuConfigStr))
       {
@@ -156,47 +193,48 @@ public class HTML5FrameworkServices
    @Produces(MediaType.APPLICATION_JSON)
    @Path("messages/{locale}")
    public Response messages(@PathParam("locale") String locale)
-   {
+   { 
+      String localeCode = getLocaleCode(locale, servletContext);
+
+      JsonObject messages = new JsonObject();
+      messages.add(localeCode, new JsonObject());
+
+      JsonObject translation = new JsonObject();
+      messages.getAsJsonObject(localeCode).add("translation", translation);
+
+      String key, value, component;
+      int index;
+
       MessagePropertiesBean messageBean = (MessagePropertiesBean) RestControllerUtils.resolveSpringBean(
             MessagePropertiesBean.class, servletContext);
 
-      ResourceBundle bundle = ResourceBundle.getBundle("html5-framework-messages", messageBean.getLocaleObject());
+      Map<String, String> bundleValues = loadBundle("html5-framework-messages", messageBean.getLocaleObject());
+      bundleValues.putAll(getPluginMessages());
 
-      String value;
-      int index;
-      String component;
-      Map<String, Map<String, String>> messagesJson = new HashMap<String, Map<String,String>>();
-      for (String key : Collections.list(bundle.getKeys()))
+      for (Entry<String, String> entry : bundleValues.entrySet())
       {
-         index = key.indexOf(".");
+         index = entry.getKey().indexOf(".");
          if (index > 0)
          {
-            value = bundle.getString(key);
+            key = entry.getKey();
+            value = entry.getValue();
+
             component = key.substring(0, index);
             key = key.substring(index + 1);
+            key = key.replace(".", "-"); // "." is special char in HTML5 Framework
             
-            if(!messagesJson.containsKey(component))
+            if(null == translation.get(component))
             {
-               messagesJson.put(component, new HashMap<String, String>());  
+               translation.add(component, new JsonObject());  
             }
-            messagesJson.get(component).put(key, value);
+            translation.getAsJsonObject(component).addProperty(key, value);
+         }
+         else
+         {
+            translation.addProperty(entry.getKey(), entry.getValue());
          }
       }
 
-      StringBuffer messages = new StringBuffer("{\"en").append("\": {\"translation\": {");
-      for (Entry<String, Map<String, String>> cEntry : messagesJson.entrySet())
-      {
-         messages.append("\"").append(cEntry.getKey()).append("\":{");
-         for (Entry<String, String> entry : cEntry.getValue().entrySet())
-         {
-            messages.append("\"").append(entry.getKey()).append("\":").append("\"").append(entry.getValue()).append("\"").append(",");
-         }
-         messages.deleteCharAt(messages.length()-1);
-         messages.append("},");
-      }
-      messages.deleteCharAt(messages.length()-1);
-      messages.append("}}}");
-      
       return Response.ok(messages.toString()).build();
    }
 
@@ -518,7 +556,54 @@ public class HTML5FrameworkServices
       }
       return null;
    }
-   
+
+   /**
+    * @return
+    */
+   private Map<String, String> getPluginMessages()
+   {
+      Set<String> bundles = new HashSet<String>();
+      Map<String, String> values = new LinkedHashMap<String, String>();
+
+      MessagePropertiesBean messageBean = (MessagePropertiesBean) RestControllerUtils.resolveSpringBean(
+            MessagePropertiesBean.class, servletContext);
+
+      List<IPerspectiveDefinition> perspectiveDefs = getAllPerspectives();
+      for (IPerspectiveDefinition perspectiveDef : perspectiveDefs)
+      {
+         bundles.addAll(perspectiveDef.getMessageBundlesSet());
+      }
+
+      trace.info("Loading Plugin Bundles: " + bundles);
+      for (String bundle : bundles)
+      {
+         values.putAll(loadBundle(bundle, messageBean.getLocaleObject()));
+      }
+
+      return values;
+   }
+
+   /**
+    * @param baseName
+    * @param locale
+    * @return
+    */
+   private Map<String, String> loadBundle(String baseName, Locale locale)
+   {
+      Map<String, String> values = new LinkedHashMap<String, String>();
+
+      if (null != baseName)
+      {
+         ResourceBundle bundle = ResourceBundle.getBundle(baseName, locale);
+         for (String key : Collections.list(bundle.getKeys()))
+         {
+            values.put(key, bundle.getString(key));
+         }
+      }
+
+      return values;
+   }
+
    /**
     * @return
     */

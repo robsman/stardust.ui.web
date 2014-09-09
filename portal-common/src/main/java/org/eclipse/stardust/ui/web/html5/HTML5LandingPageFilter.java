@@ -10,6 +10,7 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -64,9 +65,13 @@ public class HTML5LandingPageFilter implements Filter
          // This is required in HTTP header for IE9
          response.setHeader("X-UA-Compatible", "IE=10,chrome=1");
          
-         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(request.getSession()
+         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(request.getSession(false)
                .getServletContext());
 
+         // At the movement, this is the way HTML5 Framework understands the current locale!
+         response.addCookie(new Cookie("i18next", HTML5FrameworkServices.getLocaleCode(null, request.getSession(false)
+               .getServletContext())));
+         
          try
          {
             // At the movement, landing page does not belong to 'plugins'

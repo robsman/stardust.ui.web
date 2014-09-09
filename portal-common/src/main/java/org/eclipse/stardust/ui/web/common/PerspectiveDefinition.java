@@ -15,6 +15,7 @@ import static org.eclipse.stardust.ui.web.common.PerspectiveUtils.mergeExtension
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -35,7 +36,11 @@ public class PerspectiveDefinition implements IPerspectiveDefinition, Serializab
 
    private String name;
 
+   private String messageBundles;
+
    private MessageSource messages;
+
+   private Set<String> messageBundlesSet;
    
    private String requiredRoles;
    
@@ -85,6 +90,36 @@ public class PerspectiveDefinition implements IPerspectiveDefinition, Serializab
    public void setName(String name)
    {
       this.name = name;
+   }
+
+   public void setMessageBundles(String messageBundles)
+   {
+      this.messageBundles = messageBundles;
+   }
+   
+   public Set<String> getMessageBundlesSet()
+   {
+      if (null == messageBundlesSet)
+      {
+         this.messageBundlesSet = new HashSet<String>();
+   
+         // TODO: For now it's assumed there is only one bundle name in messageBundles
+         if (StringUtils.isNotEmpty(messageBundles))
+         {
+            this.messageBundlesSet.add(messageBundles);
+         }
+
+         for (PerspectiveExtension extension : extensions.values())
+         {
+            // TODO: For now it's assumed there is only one bundle name in messageBundles
+            if (StringUtils.isNotEmpty(extension.getMessageBundles()))
+            {
+               this.messageBundlesSet.add(extension.getMessageBundles());
+            }
+         }
+      }
+
+      return messageBundlesSet;
    }
 
    public MessageSource getMessages()

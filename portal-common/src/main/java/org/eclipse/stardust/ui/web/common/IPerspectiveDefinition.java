@@ -27,6 +27,8 @@ public interface IPerspectiveDefinition extends Serializable
 
    public void setMessages(MessageSource messages);
    
+   public Set<String> getMessageBundlesSet();
+   
    public String getRequiredRoles();
    
    public void setRequiredRoles(String requiredRoles);

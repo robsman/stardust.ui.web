@@ -35,6 +35,8 @@ public class PerspectiveExtension implements Serializable, MessageSourceProvider
    
    private Set<String> targetPerspectiveSet;
 
+   private String messageBundles;
+
    private MessageSource messages;
    
    private String requiredRoles;
@@ -88,7 +90,17 @@ public class PerspectiveExtension implements Serializable, MessageSourceProvider
       String key = EXT + getName() + LABEL;
       return (getMessages() != null) ? getMessages().getMessage(key, null) : getName();
    }
-   
+
+   public String getMessageBundles()
+   {
+      return messageBundles;
+   }
+
+   public void setMessageBundles(String messageBundles)
+   {
+      this.messageBundles = messageBundles;
+   }
+
    public MessageSource getMessages()
    {
       return messages;

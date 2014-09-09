@@ -60,6 +60,7 @@ public class UiDefinitionParserUtils
 
       if (element.hasAttribute(A_MESSAGE_BUNDLES))
       {
+         pd.addPropertyValue(A_MESSAGE_BUNDLES, element.getAttribute(A_MESSAGE_BUNDLES));
          pd.addPropertyValue(A_MESSAGES, parseMessageSource(element));
       }
       
@@ -104,6 +105,7 @@ public class UiDefinitionParserUtils
       
       if (element.hasAttribute(A_MESSAGE_BUNDLES))
       {
+         pd.addPropertyValue(A_MESSAGE_BUNDLES, element.getAttribute(A_MESSAGE_BUNDLES));
          pd.addPropertyValue(A_MESSAGES, parseMessageSource(element));
       }
       
