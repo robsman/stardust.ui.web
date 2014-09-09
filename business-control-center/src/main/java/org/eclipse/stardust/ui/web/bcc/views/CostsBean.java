@@ -122,8 +122,8 @@ public class CostsBean extends UIComponentBean implements ResourcePaths,ViewEven
       super(V_costsView);
    }
    
-   private void createTable(){
-      
+   private void createTable()
+   {
       List<ColumnPreference> fixedCols = new ArrayList<ColumnPreference>();
       List<ColumnPreference> selCols = new ArrayList<ColumnPreference>();
       
@@ -188,18 +188,22 @@ public class CostsBean extends UIComponentBean implements ResourcePaths,ViewEven
       List<String> custPartitionReadOnlyCols = CollectionUtils.newArrayList(); 
       UserPreferencesHelper prefsHelper = UserPreferencesHelper.getInstance(UserPreferencesEntries.M_BCC, PreferenceScope.USER);
       List<String> viewColumns = prefsHelper.getSelectedColumns(UserPreferencesEntries.V_COST_AND_CONTROLLING);
-      for (String cols : viewColumns)
+      
+      if(!CollectionUtils.isEmpty(viewColumns))
       {
-         if (!cols.equals(colTodayCostGrp.getColumnName()) && !cols.equals(colLastMonthGrp.getColumnName())
-               && !cols.equals(colLastWeekGrp.getColumnName()))
+         for (String cols : viewColumns)
          {
-            //Custom Columns available in PARTITION, should be visible as read-only to others 
-            if (!columnDefinitionMap.containsKey(cols))
+            if (!cols.equals(colTodayCostGrp.getColumnName()) && !cols.equals(colLastMonthGrp.getColumnName())
+               && !cols.equals(colLastWeekGrp.getColumnName()))
             {
-               custPartitionReadOnlyCols.add(cols);
+               //Custom Columns available in PARTITION, should be visible as read-only to others 
+               if (!columnDefinitionMap.containsKey(cols))
+               {
+                  custPartitionReadOnlyCols.add(cols);
+               }   
             }
-         }
-      } 
+         } 
+      }
       partitionSelectableCols = addCustomColsFromPreference(PreferenceScope.PARTITION, custPartitionReadOnlyCols);
       
       selCols = userSelectableCols;
@@ -227,17 +231,24 @@ public class CostsBean extends UIComponentBean implements ResourcePaths,ViewEven
       List<String> viewColumns = prefHelper.getSelectedColumns(UserPreferencesEntries.V_COST_AND_CONTROLLING);
       List<String> allCols = getCustomColumnPreference(prefHelper);
       List<ColumnPreference> selectableCols = CollectionUtils.newArrayList();
-      for (ColumnPreference column : selFixedCols)
+      if (CollectionUtils.isEmpty(viewColumns))
       {
-         if(viewColumns.contains(column.getColumnName()))
+         selectableCols.addAll(selFixedCols);
+      }
+      else
+      {
+         for (ColumnPreference column : selFixedCols)
          {
-            column.setVisible(true);
+            if (viewColumns.contains(column.getColumnName()))
+            {
+               column.setVisible(true);
+            }
+            else
+            {
+               column.setVisible(false);
+            }
+            selectableCols.add(column);
          }
-         else
-         {
-            column.setVisible(false);
-         }
-         selectableCols.add(column);
       }
       if(!CollectionUtils.isEmpty(allCols))
       {
@@ -249,7 +260,7 @@ public class CostsBean extends UIComponentBean implements ResourcePaths,ViewEven
                JsonObject columnDefinition = GsonUtils.readJsonObject(columnDef[1]);
                columnDefinition.addProperty("readOnly", false);
                ColumnPreference customColumn = createColumnPreferenceFromJSON(columnDefinition);
-               if(!viewColumns.contains(customColumn.getColumnName()))
+               if(!CollectionUtils.isEmpty(viewColumns) && !viewColumns.contains(customColumn.getColumnName()))
                {
                   customColumn.setVisible(false);
                }
@@ -846,15 +857,20 @@ public class CostsBean extends UIComponentBean implements ResourcePaths,ViewEven
          UserPreferencesHelper prefHelper = UserPreferencesHelper.getInstance(
                UserPreferencesEntries.M_BCC, prefScope);
          List<String> viewColumns = prefHelper.getSelectedColumns(UserPreferencesEntries.V_COST_AND_CONTROLLING);
-         for (ColumnPreference column : prefScope == PreferenceScope.USER ? userSelectableCols : partitionSelectableCols)
+         if (!CollectionUtils.isEmpty(viewColumns))
          {
-            if(viewColumns.contains(column.getColumnName()))
+            for (ColumnPreference column : prefScope == PreferenceScope.USER
+                  ? userSelectableCols
+                  : partitionSelectableCols)
             {
-               column.setVisible(true);
-            }
-            else
-            {
-               column.setVisible(false);
+               if (viewColumns.contains(column.getColumnName()))
+               {
+                  column.setVisible(true);
+               }
+               else
+               {
+                  column.setVisible(false);
+               }
             }
          }
          if(prefScope == PreferenceScope.USER)
