@@ -11,6 +11,13 @@ define(
 						window.top.reportingService = new ReportingService();
 					}
 
+				try {
+						window.top.reportingService.getRootUrl();
+					} catch (e) {
+						console.log("memory where reportingService was stored washed away, creating new instance!");
+						window.top.reportingService = new ReportingService();
+					}
+					
 					return window.top.reportingService;
 				}
 			};
@@ -204,7 +211,8 @@ define(
 							rootProcessInstanceStartTimestamp : {
                         id : "rootProcessInstanceStartTimestamp",
                         name : this.getI18N("reporting.definitionView.additionalFiltering.rootProcessInstanceStartTimestamp"),
-                        type : this.metadata.timestampType
+                        type : this.metadata.timestampType,
+                        notSupportedAsFilter : true
                      },
 							terminationTimestamp : {
 								id : "terminationTimestamp",
@@ -241,13 +249,15 @@ define(
 								id : "startingUserName",
 								name : this.getI18N("reporting.definitionView.additionalFiltering.startingUserName"),
 								type : this.metadata.autocompleteType,
-								service : "userService" //TODO rest end point
+						service : "userService", //TODO rest end point
+						notSupportedAsFilter : true	
 							},
 							state : {
 								id : "state",
 								name : this.getI18N("reporting.definitionView.additionalFiltering.processState"),
 								type : this.metadata.enumerationType,
-								enumerationType : "staticData:processStates:name"
+						enumerationType : "staticData:processStates:name",
+						customSort : true
 							},
 							priority : {
 								id : "priority",
@@ -255,7 +265,8 @@ define(
 								type : this.metadata.enumerationType,
 								display : "singleSelect",
 								enumerationType : "staticData:priorityLevel:name",
-								operators : ["E", "LE", "GE", "NE"]
+						operators : ["E", "LE", "GE", "NE"],
+						customSort : true
 							}
 						}
 					},
@@ -296,12 +307,14 @@ define(
 							processInstanceStartTimestamp : {
                         id : "processInstanceStartTimestamp",
                         name : this.getI18N("reporting.definitionView.additionalFiltering.processInstanceStartTimestamp"),
-                        type : this.metadata.timestampType
+                        type : this.metadata.timestampType,
+                        notSupportedAsFilter : true
                      },
                      rootProcessInstanceStartTimestamp : {
                         id : "rootProcessInstanceStartTimestamp",
                         name : this.getI18N("reporting.definitionView.additionalFiltering.rootProcessInstanceStartTimestamp"),
-                        type : this.metadata.timestampType
+                        type : this.metadata.timestampType,
+                        notSupportedAsFilter : true
                      },
                      activityInstanceDuration : {
                         id : "activityInstanceDuration",
@@ -354,19 +367,22 @@ define(
 								id : "processName",
 								name : this.getI18N("reporting.definitionView.additionalFiltering.processName"),
 								type : this.metadata.enumerationType,
-								enumerationType : "modelData:processDefinitions:name"
+								enumerationType : "modelData:processDefinitions:name",
+								notSupportedAsFilter : true
 							},
 							userPerformerName : {
 								id : "userPerformerName",
 								name : this.getI18N("reporting.definitionView.additionalFiltering.userPerformer"),
 								type : this.metadata.autocompleteType,
-								service : "userService"
+								service : "userService",
+								notSupportedAsFilter : true
 							},
 							participantPerformerName : {
 								id : "participantPerformerName",
 								name : this.getI18N("reporting.definitionView.additionalFiltering.performer"),
 								type : this.metadata.enumerationType,
-								enumerationType : "modelData:participants:name"
+								enumerationType : "modelData:participants:name",
+								notSupportedAsFilter : true
 							},
 							state : {
 								id : "state",
@@ -380,7 +396,8 @@ define(
 								type : this.metadata.enumerationType,
 								display : "singleSelect",
 								enumerationType : "preferenceData:criticality:label",
-								operators : ["E", "LE", "GE", "NE"]
+								operators : ["E", "LE", "GE", "NE"],
+								customSort : true
 							}
 						}
 					}/*,
@@ -417,18 +434,22 @@ define(
 						alive : {
 							id : "Alive", 
 							name : this.getI18N("reporting.definitionView.additionalFiltering.processState.alive"),
+							order : 1
 						},
 						aborted : {
 							id : "Aborted",
-							name : this.getI18N("reporting.definitionView.additionalFiltering.processState.aborted")
-						},
-						completed : {
-							id : "Completed",
-							name : this.getI18N("reporting.definitionView.additionalFiltering.processState.completed")
+							name : this.getI18N("reporting.definitionView.additionalFiltering.processState.aborted"),
+							order : 2
 						},
 						interrupted : {
 							id : "Interrupted",
-							name : this.getI18N("reporting.definitionView.additionalFiltering.processState.interrupted")
+							name : this.getI18N("reporting.definitionView.additionalFiltering.processState.interrupted"),
+							order : 3
+						},
+						completed : {
+							id : "Completed",
+							name : this.getI18N("reporting.definitionView.additionalFiltering.processState.completed"),
+							order : 4
 						}
 					},
 					activityStates : {
@@ -508,8 +529,15 @@ define(
 
 				this.loadedReportDefinitions = {};
 				
-				this.clientDateFormat = "mm/dd/yy";
+				this.clientDateFormat = 'yyyy-MM-dd hh:mm a';
 				
+				this.formats = {
+						date : "MM/dd/yy",
+						minutes : "MM/dd/yy hh:mm a",
+						seconds : "MM/dd/yy hh:mm:ss a",
+						hours : "MM/dd/yy hh a",
+						months : "MM/yy"
+				};
 				this.serverDateFormat = "yy/mm/dd";
 
 				/**
@@ -1983,9 +2011,8 @@ define(
                                     + "/services/rest/bpm-reporting/dateFormats",
                               contentType : "application/json"
                            }).done(function(data) {
-                              /*self.clientDateFormat = data.dateFormat;
-                              self.serverDateFormat = data.serverDateFormat;*/
-                              deferred.resolve(data);
+                        	  self.formats = data;
+                              deferred.resolve();
                      }).fail(function() {
                         deferred.reject();
                      });

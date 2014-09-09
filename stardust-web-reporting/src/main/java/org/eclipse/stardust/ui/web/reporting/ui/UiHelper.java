@@ -1,8 +1,5 @@
 package org.eclipse.stardust.ui.web.reporting.ui;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
