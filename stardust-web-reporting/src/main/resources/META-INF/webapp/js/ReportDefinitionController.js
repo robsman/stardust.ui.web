@@ -257,7 +257,7 @@ define(
 								.changePrimaryObject(false);
 
 								self.populateAutoCompleteKeywordList();
-
+								
 								self.updateView();
 							});
 
@@ -603,11 +603,11 @@ define(
 								} ],
 								computedColumns : [],
 								columns : [],
-								filters : [],
 								factDurationUnit : "d",
 								firstDimensionCumulationIntervalCount : 1,
 								firstDimensionCumulationIntervalUnit : "d",
-								firstDimensionDurationUnit: "s"
+								firstDimensionDurationUnit: "s",
+								filters: getDefaultFilterFor("processInstanceStartTimestamp")
 							},
 							parameters : {},
 							layout : {
@@ -869,7 +869,6 @@ define(
 							.val(this.report.dataSet.primaryObject);
 
 					if (!initialize) {
-						this.report.dataSet.filters = [];
 						this.reportFilterController.filterSelected = [];
 						this.resetReportDefinitionProperties();
 					}
@@ -1781,7 +1780,6 @@ define(
                this.report.dataSet.computedColumns = [];
                this.expressionEditor.setValue("");
                this.report.dataSet.columns = [];
-               this.report.dataSet.filters = [];
                this.report.dataSet.factDurationUnit = "d";
                this.report.dataSet.firstDimensionCumulationIntervalCount = 1;
                this.report.dataSet.firstDimensionCumulationIntervalUnit = "d";
@@ -1789,6 +1787,14 @@ define(
                
                this.setDefaultFirstDimension();
                this.setDefaultFact();
+           
+               //set default filter
+               var self = this;
+               if (self.report.dataSet.primaryObject == self.reportingService.metadata.objects.processInstance.id) {
+				    self.report.dataSet.filters = getDefaultFilterFor(self.reportingService.metadata.objects.processInstance.dimensions.processInstanceStartTimestamp.id);
+				} else {
+					self.report.dataSet.filters = getDefaultFilterFor(self.reportingService.metadata.objects.activityInstance.dimensions.startTimestamp.id);
+				}
                
                this.resetFilters();
                this.resetParamFilters();
@@ -2298,4 +2304,30 @@ define(
          }
          return columnId;
       }
+
+      /**
+       * This method provides defualt start time stamp filter for process and activity instances query
+       */
+      function getDefaultFilterFor(dimension) {
+	  		//prepare default start date
+	  		var curDt = new Date();
+	  		var strDt = curDt.getFullYear() + "/" + (curDt.getMonth() + 1) + "/" + curDt.getDate() + " 12:00:00:000";
+	  		
+			var filters = new Array();
+			filters.push({
+				"value" : {
+					"from" : strDt,
+					"duration" : -1,
+					"durationUnit" : "M"
+				},
+				"dimension" : dimension,
+				"metadata" : {
+					"fromTo" : false
+				},
+				"operator" : "E"
+			} );	
+			return filters;
+      }
+      
+      
 		});
