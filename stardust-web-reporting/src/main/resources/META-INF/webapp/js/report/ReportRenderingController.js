@@ -457,7 +457,7 @@ define(
 									function(key) {
 										for (var i = 0; i < inData[key].length; i++) {
 											if (dimension.id == self.reportingService.metadata.objects.activityInstance.dimensions.criticality.id) {
-												var critName = self.getCriticalityName(key,enums);
+												var critName = self.getCriticalityName(inData[key][i][0],enums);
 												displayValueMapping[critName] = inData[key][i][0];
 												inData[key][i][0] = critName;	
 											} else {

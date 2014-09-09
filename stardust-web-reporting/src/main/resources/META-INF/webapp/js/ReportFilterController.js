@@ -176,11 +176,11 @@ define(
 				 * Adding order parameter to dimension object used in Filtering
 				 * for displaying it on UI in specific order
 				 */
-				ReportFilterController.prototype.getDimensions = function() {
+				ReportFilterController.prototype.getDimensions = function(donotFilter) {
 					var dimensions = this.reportingService.getCumulatedDimensions(this.report);
 
 					for (var i = dimensions.length - 1; i >= 0; i--) {
-						if ((this.reportingService.metadata.durationType.id == dimensions[i].type.id) || dimensions[i].notSupportedAsFilter) {
+						if ((this.reportingService.metadata.durationType.id == dimensions[i].type.id) || (!donotFilter && dimensions[i].notSupportedAsFilter)) {
 							dimensions.splice(i, 1);
 						}
 					}
@@ -587,7 +587,7 @@ define(
 				 * 
 				 */
 				ReportFilterController.prototype.getDimension = function(id) {
-					var dimensions = this.getDimensions();
+					var dimensions = this.getDimensions(true);
 					for(var i = 0; i < dimensions.length; i++){
 						if(id == dimensions[i].id){
 							return dimensions[i]
@@ -606,7 +606,7 @@ define(
              * 
              */
             ReportFilterController.prototype.isCompColNumeric = function(id) {
-               var dimensions = this.getDimensions();
+               var dimensions = this.getDimensions(true);
                for(var i = 0; i < dimensions.length; i++){
                   if(id == dimensions[i].id){
                      var dimension = dimensions[i];
