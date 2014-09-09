@@ -18,6 +18,14 @@
                  <ui:param name="thresholdState" value="#{row.thresholdState}"/>
              </ui:include>
 		</ice:panelGroup>
+		<ice:panelGroup rendered="#{col.columnName == 'Interrupted'}">
+			<ice:commandLink value="#{row.interruptedCount}"
+				actionListener="#{row.doPriorityAction}"
+				disabled="#{(row.interruptedCount eq 0) ? true : false}"
+				title="#{(row.interruptedCount eq 0) ? null: row.title}" rendered="#{row.interruptedCount ne -1}">
+				<f:param name="showInterruptedAI" value="#{true}" />
+			</ice:commandLink>
+		</ice:panelGroup>
 		<ice:panelGroup rendered="#{col.columnName == 'highPriority'}">
 			<ice:commandLink value="#{row.highPriority}"
 				actionListener="#{row.doPriorityAction}"
