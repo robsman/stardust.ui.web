@@ -802,8 +802,11 @@ define(
 						route += "	<when>\n";
 						route += "		<simple>$simple{in.header.subject} == null</simple>\n";
 						route += "		<setHeader headerName=\"subject\">\n";
-						route += "  		<constant>" + this.subjectInput.val()
-								+ "</constant>\n";
+                  var subjectContent=this.subjectInput.val();
+                  route += "        <constant>'" + subjectContent.replace(new RegExp("\n", 'g'), " ")
+                  .replace(new RegExp("toDate", 'g'), "formatDate")
+                  .replace(new RegExp("{{", 'g'), "' + ")
+                  .replace(new RegExp("}}", 'g'), " + '") + "'</constant>\n";
 						route += "		</setHeader>\n";
 						route += "	</when>\n";
 						route += "</choice>\n";
@@ -917,11 +920,8 @@ define(
                      
                      
 							route += "var " + accessPoint.id + ";\n";
-							route += "if(request.headers.get('"
-									+ accessPoint.id + "') != null){\n";
-							route += accessPoint.id
-									+ " =  request.headers.get('"
-									+ accessPoint.id + "');\n";
+                     route += "if(request.headers.get('"+ accessPoint.id + "')!=null){\n";
+                     route += accessPoint.id + " =  request.headers.get('" + accessPoint.id + "');\n";
 							route += "}\n";
 
 						} else if (accessPoint.dataType == "struct") {
@@ -958,6 +958,7 @@ define(
                markup=markup.replace(new RegExp("(&amp;)", 'g'), "&");
                markup=markup.replace(new RegExp("(&quot;)", 'g'), "\"");
                route+="<![CDATA[";
+               route +="var subject= eval('(' + subject+ ')');\n";
                route += "if(mailContentAP){\n";
                route += "      response = String(mailContentAP);";
                route += "\n}else{\n";
@@ -969,13 +970,13 @@ define(
 							+ "';\n";
                route+="}";
                route+="]]>";
-					route += "      setOutHeader('response', response);\n";
+               route += "\n      setOutHeader('response', response);\n";
 
 					if (this.identifierInSubjectInput.val() != null
 							&& this.identifierInSubjectInput.prop("checked")) {
 						route += " 	setOutHeader('subject', '#ID:' + (partition + '|' + processInstanceOid + '|' + activityInstanceOid).hashCode() + '# - ' + subject);\n";
 					} else {
-						route += "      if (to){\n";
+                  route += "      if (subject){\n";
 						route += "  		setOutHeader('subject', subject);\n";
 						route += "      }\n";
 					}
