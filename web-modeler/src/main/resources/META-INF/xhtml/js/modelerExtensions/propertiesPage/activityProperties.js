@@ -68,7 +68,7 @@ define([ 'bpm-modeler/js/m_constants',
 					panelId : "activityPropertiesPanel",
 					id : "onAssignmentPropertiesPage",
 					provider : m_onAssignmentPropertiesPage,
-					visibility : "always"
+					visibility : "preview"
 				}]
 			};
 		});
