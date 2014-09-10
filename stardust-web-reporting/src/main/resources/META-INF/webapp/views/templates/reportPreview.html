@@ -20,27 +20,43 @@
 			</div>
 		</div>
 	</div>
-	<div
-		ng-show="report.layout.type == 'table' || report.layout.subType == reportingService.metadata.layoutSubTypes.table.id">
-		<div class="heading">{{report.layout.title}}</div>
-		
-		<div class="dataTableFrame">
+	<div ng-show="renderingController.hideReportPreview">
+		<table cellpadding="0" cellspacing="0" class="formTable">
+			<tr ng-show="!renderingController.renderingFailed">
+				<td><lable>
+					{{getI18N('reporting.definitionView.retrieving')}} {{renderingController.showReportPreview}}</label></td>
+			</tr>
+			<tr ng-show="renderingController.renderingFailed">
+				<td><label style="color:red">
+					{{renderingController.renderingFailed}} </label></td>
+			</tr>
+		</table>
+	</div>
+	<div ng-show="!renderingController.hideReportPreview">
+		<div
+			ng-show="report.layout.type == 'table' || report.layout.subType == reportingService.metadata.layoutSubTypes.table.id">
+			<div class="heading">{{report.layout.title}}</div>
+			
+			<div class="dataTableFrame">
 				<div class="dynamicTable"></div>
-				<sd-data-table table-array="tableArray" table-options="tableOptions" table-parameters="tableParameters" callback-handler=""> </sd-data-table>
+					<sd-data-table table-array="tableArray" table-options="tableOptions" table-parameters="tableParameters" callback-handler=""> </sd-data-table>
+			</div>
+		</div>
+		<div
+			ng-show="report.dataSet.type == 'seriesGroup' && report.layout.subType == reportingService.metadata.layoutSubTypes.chart.id">
+			<div class="heading">{{report.layout.title}}</div>
+			<div style="border: 1px solid #aaaaaa; padding: 10px;">
+				<div id="chartView" style="height: 400px; width: 800px;"></div>
+			</div>
+		</div>
+		<div ng-show="report.layout.type == 'document'">
+			<div class="heading">{{getI18N('reporting.definitionView.composite.title')}}</div>
+			<iframe id="documentFrame" allowtransparency="true" frameborder="0"
+				sandbox="allow-same-origin allow-forms allow-scripts"
+				scrolling="auto"
+				style="border: 1px solid #dddddd; width: 100%; height: 100%;"></iframe>
 		</div>
 	</div>
-	<div
-		ng-show="report.dataSet.type == 'seriesGroup' && report.layout.subType == reportingService.metadata.layoutSubTypes.chart.id">
-		<div class="heading">{{report.layout.title}}</div>
-		<div style="border: 1px solid #aaaaaa; padding: 10px;">
-			<div id="chartView" style="height: 400px; width: 800px;"></div>
-		</div>
-	</div>
-	<div ng-show="report.layout.type == 'document'">
-		<div class="heading">{{getI18N('reporting.definitionView.composite.title')}}</div>
-		<iframe id="documentFrame" allowtransparency="true" frameborder="0"
-			sandbox="allow-same-origin allow-forms allow-scripts"
-			scrolling="auto"
-			style="border: 1px solid #dddddd; width: 100%; height: 100%;"></iframe>
-	</div>
+	
+	
 </div>
