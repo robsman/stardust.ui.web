@@ -637,7 +637,7 @@ public class CostsBean extends UIComponentBean implements ResourcePaths,ViewEven
    public UserWorktimeStatistics getWorktimeStatistics()
    {
       WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
-      UserWorktimeStatisticsQuery wsQuery = UserWorktimeStatisticsQuery.forAllUsers();
+      UserWorktimeStatisticsQuery wsQuery = UserWorktimeStatisticsQuery.forAllUsersWithoutWaitTime();
       wsQuery
             .setPolicy(CriticalCostPerExecutionPolicy.criticalityByCost(BusinessControlCenterConstants
                   .getInstanceCostThreshold(BusinessControlCenterConstants.YELLOW_THRESHOLD, 1.0f),
