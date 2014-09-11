@@ -32,6 +32,15 @@ Note: committing the working set - report_adjusted_for_reference dir
 inlined css 
 check reportDefinitionView.html file for all css imports
 accordingly modify style.css
+
+the required images needs to be encoded in 64 bit format - you may following url copy css content.
+http://www.askapache.com/online-tools/base64-image-converter/
+Because we are replacing the images in Portal using stardust-modern.css, we cannot modify .css files.
+Separate copies having 64 bit encoding for required images are created in this folder.
+css/database.css
+css/bpm-reporting.css 
+Merge these css files before you generate updated css
+
 #node r.js -o build-css.js
 
 -------------
