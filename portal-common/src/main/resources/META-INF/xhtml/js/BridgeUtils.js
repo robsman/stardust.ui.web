@@ -420,18 +420,23 @@ if (!window["BridgeUtils"].View) {
 				BridgeUtils.log("BridgeUtils.View Initializing");
 	
 				var sgPubSubService;
+				var timeoutSrv;
 				BridgeUtils.runInAngularContext(function($scope) {
 					sgPubSubService = $scope.$root.sgPubSubService;
-	
-					$scope.$root.$on('$destroy', function() {
-						BridgeUtils.View.destroy();
-			        });
-					
-					BridgeUtils.setTimeoutService($scope.$root.$timeout);
+					timeoutSrv = $scope.$root.$timeout;
+
+					// Do only once
+					if (hiddenCounter == undefined) {
+						$scope.$root.$on('$destroy', function() {
+							BridgeUtils.View.destroy();
+						});
+					}
 				});
 	
-				if(sgPubSubService) {
+				if(sgPubSubService && timeoutSrv) {
 					initialized = true;
+
+					BridgeUtils.setTimeoutService(timeoutSrv);
 
 					BridgeUtils.log("Subscribing to View Events");
 					unsubscribers.push(sgPubSubService.subscribe('sgActiveViewPanelChanged', viewChanged));
@@ -449,7 +454,7 @@ if (!window["BridgeUtils"].View) {
 			
 			if (!initialized){
 				if (hiddenCounter == undefined) {
-					hiddenCounter = 10; // Max tries
+					hiddenCounter = 50; // Max tries
 				}
 
 				if (hiddenCounter > 0) {
