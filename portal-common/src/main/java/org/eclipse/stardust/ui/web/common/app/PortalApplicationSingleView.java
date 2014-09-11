@@ -46,7 +46,7 @@ public class PortalApplicationSingleView implements Serializable, InitializingBe
    public void afterPropertiesSet() throws Exception
    {
       FacesContext facesContext = FacesContext.getCurrentInstance();
-      UIViewRoot viewRoot = facesContext.getViewRoot();
+      UIViewRoot viewRoot = facesContext.getViewRoot(); 
 
       HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
       String singleViewId = request.getParameter("singleViewId");
@@ -90,6 +90,24 @@ public class PortalApplicationSingleView implements Serializable, InitializingBe
       }
    }
 
+   /**
+    * 
+    * @return
+    */
+   public static String getSingleViewParams()
+   {
+      String url = null;
+      FacesContext facesContext = FacesContext.getCurrentInstance();
+      UIViewRoot viewRoot = facesContext.getViewRoot();
+      String singleViewId = (String) viewRoot.getValueBinding("singleViewId").getValue(facesContext);
+      String singleViewKey = (String) viewRoot.getValueBinding("singleViewKey").getValue(facesContext);
+      if (StringUtils.isNotEmpty(singleViewId))
+      {
+         url = "?singleViewId=" + singleViewId + "&singleViewKey=" + singleViewKey;
+      }
+      return url;
+   }
+   
    /**
     * @param singleViewId
     * @param singleViewKey

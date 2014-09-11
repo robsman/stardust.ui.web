@@ -59,6 +59,7 @@ import org.eclipse.stardust.ui.web.common.table.DataTable;
 import org.eclipse.stardust.ui.web.common.table.SortableTable;
 import org.eclipse.stardust.ui.web.common.table.SortableTableComparator;
 import org.eclipse.stardust.ui.web.common.util.CollectionUtils;
+import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
@@ -330,7 +331,7 @@ public class ResourcePerformanceBean extends UIComponentBean implements Resource
       model.setDefaultSelectableColumns(selCols);
       update();
       filterPopup.openPopup();
-      PortalApplication.getInstance().addEventScript("parent.BridgeUtils.View.syncActiveView;");
+      FacesUtils.refreshPage();
    }
    
    /**
@@ -497,8 +498,7 @@ public class ResourcePerformanceBean extends UIComponentBean implements Resource
          partitionSelectableCols = selCols;
       }
       update();
-      PortalApplication.getInstance().addEventScript("parent.BridgeUtils.View.syncActiveView;");
-      
+      FacesUtils.refreshPage();
    }
    
    /**
@@ -548,7 +548,7 @@ public class ResourcePerformanceBean extends UIComponentBean implements Resource
       statisticsTable.getColumnModel().setDefaultSelectableColumns(selCols);
       statisticsTable.getColumnModel().saveSelectableColumns(statisticsTable.getColumnSelectorPopup().getSelectedPreferenceScope());
       statisticsTable.initialize();
-      PortalApplication.getInstance().addEventScript("parent.BridgeUtils.View.syncActiveView;");
+      FacesUtils.refreshPage();
    }
    
    /**

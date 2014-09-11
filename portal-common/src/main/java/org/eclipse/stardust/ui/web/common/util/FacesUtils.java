@@ -40,6 +40,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.stardust.ui.web.common.ToolbarSection;
+import org.eclipse.stardust.ui.web.common.app.PortalApplicationSingleView;
 import org.eclipse.stardust.ui.web.common.app.View;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
@@ -442,7 +443,12 @@ public class FacesUtils implements Constants
       try
       {
          String requestURI = ((HttpServletRequest) externalContext.getRequest()).getRequestURI();
-         if (requestURI.endsWith("portalMain.iface"))
+         if (requestURI.endsWith("portalSingleViewMain.iface"))
+         {
+            String url = "portalSingleViewMain.iface" + PortalApplicationSingleView.getSingleViewParams();
+            externalContext.redirect(url);
+         }
+         else if (requestURI.endsWith("portalMain.iface"))
          {
             externalContext.redirect("portalMain.iface");
          }
