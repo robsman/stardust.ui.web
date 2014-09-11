@@ -90,6 +90,7 @@ public class ActivityInstanceWithPrioTableEntry extends DefaultRowModel
 
       processId = I18nUtils.getProcessName(ProcessDefinitionUtils.getProcessDefinition(aiWithPrio.getActivityInstance()
             .getModelOID(), aiWithPrio.getProcessId()));
+      
 
       delegable = ActivityInstanceUtils.isDelegable(aiWithPrio.getActivityInstance());
       activatable = ActivityInstanceUtils.isActivatable(aiWithPrio.getActivityInstance());
@@ -100,6 +101,7 @@ public class ActivityInstanceWithPrioTableEntry extends DefaultRowModel
       abortActivity =!caseInstance && ActivityInstanceUtils.isAbortable(aiWithPrio.getActivityInstance());
     }
 
+   
    /**
     * @param aiWithPrio
     * @param getDescriptors
@@ -324,6 +326,11 @@ public class ActivityInstanceWithPrioTableEntry extends DefaultRowModel
    public CriticalityCategory getCriticality()
    {
       return criticality;
+   }
+   
+   public Date getResubmissionTime()
+   {
+      return aiWithPrio.getResubmissionTime();
    }
 
    public boolean isCaseInstance()

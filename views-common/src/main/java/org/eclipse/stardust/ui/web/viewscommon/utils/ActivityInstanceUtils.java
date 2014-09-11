@@ -14,6 +14,8 @@ import static org.eclipse.stardust.common.StringUtils.isEmpty;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +49,7 @@ import org.eclipse.stardust.engine.api.runtime.UserInfo;
 import org.eclipse.stardust.engine.api.runtime.WorkflowService;
 import org.eclipse.stardust.engine.core.model.utils.ActivityReportUtils;
 import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
+import org.eclipse.stardust.engine.core.runtime.beans.ActivityInstanceProperty;
 import org.eclipse.stardust.ui.event.ActivityEvent;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.configuration.UserPreferencesHelper;
@@ -59,6 +62,8 @@ import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferen
 import org.eclipse.stardust.ui.web.viewscommon.common.spi.IActivityInteractionController;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.DelegationBean;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
+import org.eclipse.stardust.engine.api.runtime.EventHandlerBinding;
+import org.eclipse.stardust.engine.core.runtime.beans.ActivityInstanceProperty;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 
 
@@ -325,6 +330,30 @@ public class ActivityInstanceUtils
       return performerName;
    }
 
+   public static Date getResubmissionDate(ActivityInstance ai)
+   {
+      try
+      {
+         WorkflowService workflowService = ServiceFactoryUtils.getWorkflowService();
+         // call getActivityInstanceHandler with the OID of the ActivityInstance and the
+         // handler name 'Resubmission'
+         EventHandlerBinding binding = workflowService.getActivityInstanceEventHandler(ai.getOID(), "Resubmission");
+
+         // Target timestamp is available as ActivityInstanceProperty
+         ActivityInstanceProperty targetTimeProperty = (ActivityInstanceProperty) binding
+               .getAttribute(PredefinedConstants.TARGET_TIMESTAMP_ATT);
+
+         Calendar dateTime = Calendar.getInstance();
+         dateTime.setTimeInMillis(targetTimeProperty.getLongValue());
+         return dateTime.getTime();
+      }
+      catch (Exception e) {
+         trace.error("Resubmission Date not available for : " + ai != null ? ai.getOID() : "");
+      }
+      
+      return null;
+   }
+   
    /**
     * 
     * @param ais

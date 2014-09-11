@@ -57,6 +57,8 @@ public class ActivityInstanceWithPrio implements Serializable
 
    private int noteCount;
    private boolean modifyProcessInstance;
+   
+   private Date resubmissionTime;
 
    /**
     * @param activityInstance
@@ -257,4 +259,15 @@ public class ActivityInstanceWithPrio implements Serializable
    {
       return modifyProcessInstance;
    }
+
+   public Date getResubmissionTime()
+   {
+      return resubmissionTime;
+   }
+
+   public void setResubmissionTime(Date resubmissionTime)
+   {
+      this.resubmissionTime = resubmissionTime;
+   }
+   
 }

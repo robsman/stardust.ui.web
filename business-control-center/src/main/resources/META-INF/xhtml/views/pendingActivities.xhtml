@@ -5,12 +5,27 @@
 	xmlns:c="http://java.sun.com/jstl/core"
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
-	
+
 	<ice:panelGroup style="vertical-align: top; width:100%">
-		<pc:automationTag value="auto-BCC-PendAct-PendActTbl"/>
-		<pc:genericDataTable
-				bean="#{openActivitiesBean}" id="ctxOpenActivitiesList" title="#{openActivitiesBean.messages['title']}"
-				table="#{openActivitiesBean.pendingActTable}" sortSupported="true" />
-		</ice:panelGroup>	
+		<pc:automationTag value="auto-BCC-PendAct-PendActTbl" />
+		<pc:genericDataTable bean="#{openActivitiesBean}"
+			id="ctxOpenActivitiesList"
+			title="#{openActivitiesBean.messages['title']}"
+			table="#{openActivitiesBean.pendingActTable}" sortSupported="true" />
+		<ice:panelGroup styleClass="clearing" />
+		<ice:panelGroup styleClass="clearing" />
+		<ice:panelGroup styleClass="clearing" />
+	</ice:panelGroup>
 	
-</f:view>	
+	<ice:panelGroup>
+		<c:if test="#{openActivitiesBean.activityTableVisible}">
+			<ui:include src="/plugins/views-common/activityTableHelper/activityTableHelper.xhtml">
+				<ui:param name="title" value="#{openActivitiesBean.messages['selectedActivitiesTable.title']}"/>
+				<ui:param name="id" value="activityList"/>
+				<ui:param name="bean" value="#{openActivitiesBean.activityTableHelper}"/>
+			</ui:include>
+		</c:if>
+		<ice:panelGroup styleClass="clearing" />
+	</ice:panelGroup>
+
+</f:view>

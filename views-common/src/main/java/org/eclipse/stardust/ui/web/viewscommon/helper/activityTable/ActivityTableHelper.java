@@ -144,6 +144,8 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
    private boolean hasJoinProcessPermission;
    
    private boolean hasSwitchProcessPermission;
+   
+   private boolean showResubmissionTime = false;
 
    public ActivityTableHelper()
    {
@@ -432,13 +434,20 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
                   ResourcePaths.V_ACTIVITY_TABLE_COLUMNS, true, false);
       descriptorsCol.setNoWrap(true);
 
+      ColumnPreference resubmissionTimeCol = new ColumnPreference("Resubmission Time", "resubmissionTime",
+            ColumnDataType.DATE, propsBean
+                  .getString("views.activityTable.processTable.column.resubmissionTime"),
+            new TableDataFilterPopup(new TableDataFilterDate(DataType.DATE)), true,
+            true);
+      resubmissionTimeCol.setNoWrap(true);
+      
       ColumnPreference startTimeCol = new ColumnPreference("StartTime", "startTime",
             ColumnDataType.DATE, propsBean
                   .getString("views.activityTable.processTable.column.startTime"),
             new TableDataFilterPopup(new TableDataFilterDate(DataType.DATE)), true,
             true);
       startTimeCol.setNoWrap(true);
-
+      
       ColumnPreference lastModifiedCol = new ColumnPreference(
             "EndTime",
             "lastModified",
@@ -514,6 +523,10 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
       activityCols.add(prioCol);
       activityCols.add(criticalityCol);
       activityCols.add(descriptorsCol);
+      if(showResubmissionTime)
+      {
+         activityCols.add(resubmissionTimeCol);
+      }
       activityCols.add(startTimeCol);
       activityCols.add(lastModifiedCol);
       activityCols.add(durationCol);
@@ -642,6 +655,16 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
    public void setStrandedActivityView(boolean strandedActivityView)
    {
       this.strandedActivityView = strandedActivityView;
+   }
+   
+   public boolean isShowResubmissionTime()
+   {
+      return showResubmissionTime;
+   }
+
+   public void setShowResubmissionTime(boolean showResubmissionTime)
+   {
+      this.showResubmissionTime = showResubmissionTime;
    }
 
    /**
@@ -1331,7 +1354,7 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
          {
             ActivityInstance ai = (ActivityInstance) resultRow;
             ProcessInstance processInstance = null;
-
+            
             if (CollectionUtils.isNotEmpty(processInstanceMap))
             {
                processInstance = processInstanceMap.get(ai.getProcessInstanceOID());
@@ -1340,7 +1363,11 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
             row = null != processInstance
                   ? new ActivityInstanceWithPrio(ai, processInstance)
                   : new ActivityInstanceWithPrio(ai);
-
+            if (showResubmissionTime)
+            {
+               Date resubmissionTime = ActivityInstanceUtils.getResubmissionDate(ai);
+               row.setResubmissionTime(resubmissionTime);
+            }
          }
 
          return new ActivityInstanceWithPrioTableEntry(row, true);
