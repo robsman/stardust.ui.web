@@ -1273,14 +1273,14 @@ define(
      		function(data) {
      			// Format data before displaying the Results
      		   scopeController.rows = self.formatPreviewData(data.rows, scopeController);
-     		   var tableArray = [headers];
+     		   var baseTable = [headers];
      		   for ( var rowIndex in data.rows)
      		   {
-     			  tableArray.push(data.rows[rowIndex]);
+     			  baseTable.push(data.rows[rowIndex]);
      		   }
 			    //show preview
 			    self.hideReportPreview = false;
-			    scopeController.tableArray = tableArray;
+			    scopeController.tableArray = baseTable;
      		   
      			scopeController.updateView();
      			

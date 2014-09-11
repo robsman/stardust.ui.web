@@ -170,13 +170,13 @@ if (!window.bpm.portal.AngularAdapter) {
 			 *  tableArray - 2D array containing complete data of table column header + rows + footer
 				tableParameters.addLastRowAsFooter - if set true, will add last Row of above table as Footer. 
 				tableParameters.numberOfColHeaders - Number of rows to be used as column headers
-				tableParameters.rowHeaderIndex - column index to be used as row headers (mostly first of second column of the table)
+				tableParameters.rowHeaderIndex - column index to be used as row headers (mostly first or second column of the table)
 				tableParameters.groupByIndex - column index to which grouping will be applied
 				tableParameters.csv - export table data as csv - file name, by default enabled, false to disable
 				tableParameters.excel - export table data as excel - file name, by default enabled, false to disable
 				tableParameters.colFilters - (columnIndex, filter) - it is used to format the column data e.g. date format
 				tableParameters.rowFilters - (rowIndex, filter) - it is used to format the row data e.g. processstarttime selected as dimension
-				tableOptions - jquery data table options (future) 
+				tableOptions - jquery data table options
 				callbackhandler - jquery data table callback handlers (future)
 			 */
 			
@@ -380,8 +380,8 @@ if (!window.bpm.portal.AngularAdapter) {
 			                            cols += "<td style=\"text-align:center\">{{row[" + x + "]|" + tableParameters.colFilters[x] + "}}</td>";
 			                        } else {
 			                        cols += "<td style=\"text-align:center\">{{row[" + x + "]}}</td>";
+			                        }
 			                    }
-			                }
 			                }
 			
 			                TEMPLATE_COPY = TEMPLATE_COPY.replace("_COLUMNS_", cols);

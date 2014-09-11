@@ -111,7 +111,7 @@ define(
 				/**
 				 * 
 				 */
-				ReportRenderingController.prototype.renderReport = function(report) {
+				ReportRenderingController.prototype.renderReport = function(report, scopeController) {
 					this.initialize(report);
 					var deferred = jQuery.Deferred();
 					var self = this;
@@ -119,7 +119,7 @@ define(
 					if (this.report.layout.type == 'table') {
 						this.createTable();
 					} else {
-						this.createChart().done(function(){
+						this.createChart(scopeController).done(function(){
 							deferred.resolve();
 						}).fail(function(){
 							deferred.reject();
@@ -307,14 +307,9 @@ define(
 							fillToZero : true
 						};
 
-						if (this.getFirstDimension().type == this.reportingService.metadata.timestampType) {
-							chartOptions.axes.xaxis.renderer = jQuery.jqplot.DateAxisRenderer;
-						} else {
-							chartOptions.axes.xaxis.renderer = jQuery.jqplot.CategoryAxisRenderer;
-						}
-
+						chartOptions.axes.xaxis.renderer = jQuery.jqplot.CategoryAxisRenderer;
 						chartOptions.axes.xaxis.tickRenderer = jQuery.jqplot.CanvasAxisTickRenderer;
-                  chartOptions.axes.yaxis.tickRenderer = jQuery.jqplot.CanvasAxisTickRenderer;
+                  		chartOptions.axes.yaxis.tickRenderer = jQuery.jqplot.CanvasAxisTickRenderer;
 						
 						chartOptions.axes.yaxis.pad = 1.05;
 					} else if (this.report.layout.chart.type === this.reportingService.metadata.chartTypes.bubbleChart.id) {
@@ -457,7 +452,7 @@ define(
 									function(key) {
 										for (var i = 0; i < inData[key].length; i++) {
 											if (dimension.id == self.reportingService.metadata.objects.activityInstance.dimensions.criticality.id) {
-												var critName = self.getCriticalityName(key,enums);
+												var critName = self.getCriticalityName(inData[key][i][0],enums);
 												displayValueMapping[critName] = inData[key][i][0];
 												inData[key][i][0] = critName;	
 											} else {
@@ -483,14 +478,11 @@ define(
 				/**
 				 * 
 				 */
-				ReportRenderingController.prototype.createChart = function() {
+				ReportRenderingController.prototype.createChart = function(scopeController) {
 					var localDeferred = jQuery.Deferred();
-					
 					
 					var deferred = this.getReportData(this.report, this.parameters);
 					var self = this;
-
-					document.body.style.cursor = "wait";
 
 					deferred
 							.done(
@@ -609,11 +601,13 @@ define(
 																				"<p>Empty data set retrieved.</p>");
 
 															}
-															document.body.style.cursor = "default";
+
 														}, 1000);
 										localDeferred.resolve();
+										self.hideReportPreview = false;
 									}).fail(function() {
-								document.body.style.cursor = "default";
+								self.renderingFailed = self.getI18N("reporting.definitionView.retrievalFailed");
+								scopeController.updateView();
 								localDeferred.reject();
 							});
 					
@@ -754,11 +748,9 @@ define(
 																			} ]
 																}
 															});
-
-											document.body.style.cursor = "default";
 										}
 									}).fail(function() {
-								document.body.style.cursor = "default";
+
 							});
 				};
 
@@ -799,6 +791,8 @@ define(
             ReportRenderingController.prototype.getReportData = function(report, parameters) {
                 var deferred = jQuery.Deferred();
 
+                document.body.style.cursor = "wait";
+                
                 if(this.reportData){
                    return deferred.resolve(this.reportData);
                 }else{
@@ -806,8 +800,10 @@ define(
                     self.reportingService.retrieveData(report, parameters)
                     .done(
                           function(data) {
+                        	document.body.style.cursor = "default";
                             deferred.resolve(data);
                           }).fail(function(data) {
+                       document.body.style.cursor = "default"; 	  
                        deferred.reject(data);
                     });	
                 }
@@ -822,7 +818,10 @@ define(
             ReportRenderingController.prototype.refreshPreview = function(scopeController, report, parameters) {
                jQuery("#dataSetExceedWarning").empty();
                jQuery("#dataSetExceedWarning").hide();
-				var deferred = jQuery.Deferred();
+               
+   				var self = this;
+				
+   				var deferred = jQuery.Deferred();
             	
             	if (report) {
 					this.report = report;
@@ -832,31 +831,45 @@ define(
             		this.parameters = parameters;	
             	}
             	
-				var self = this;
-				if (this.report.layout.type == 'document') {
-					this.renderCompositeReport();
-				}else if(this.report.dataSet.type === 'seriesGroup' && this.report.layout.subType == this.reportingService.metadata.layoutSubTypes.table.id){
-						this.getReportData(self.report, self.parameters).done(
-								function(data) {
-									self.refreshSeriesTable(data, scopeController);
-									deferred.resolve();
-								}).fail(function(err) {
-							console.log("Failed getting Preview Date: showing dummy data" + err);
-							deferred.reject();
-						});	
-						
-				}else if (this.report.dataSet.type === 'seriesGroup'
-					&& this.report.layout.subType == this.reportingService.metadata.layoutSubTypes.chart.id) {
+            	//timeout is added so that the tab change before following code gets executed
+            	this.hideReportPreview = true;
+				this.renderingFailed = null;
+				document.body.style.cursor = "wait";
+				scopeController.updateView();
+            	
+				
+				
+					setTimeout(
+							function() {
+								if (self.report.layout.type == 'document') {
+									self.renderCompositeReport(scopeController);
+								}else if(self.report.dataSet.type === 'seriesGroup' && self.report.layout.subType == self.reportingService.metadata.layoutSubTypes.table.id){
+										self.getReportData(self.report, self.parameters).done(
+												function(data) {
+													self.refreshSeriesTable(data, scopeController);
+													deferred.resolve();
+												}).fail(function(err) {
+											self.renderingFailed = self.getI18N("reporting.definitionView.retrievalFailed");		
+											console.log("Failed getting Preview Date: showing dummy data" + err);
+											deferred.reject();
+										});	
+										
+								}else if (self.report.dataSet.type === 'seriesGroup'
+									&& self.report.layout.subType == self.reportingService.metadata.layoutSubTypes.chart.id) {
 
-					this.renderReport(self.report)
-							.done(function() {
-								deferred.resolve();
-							}).fail(function() {
-								deferred.reject();
-							});
-				} else {
-					this.refreshRecordSet(scopeController);
-				}
+									self.renderReport(self.report, scopeController)
+											.done(function() {
+												deferred.resolve();
+											}).fail(function() {
+												deferred.reject();
+											});
+								} else {
+									self.refreshRecordSet(scopeController);
+								}			
+							}, 500);	
+				
+				
+				
 				
 				return deferred.promise();
 			};
@@ -864,7 +877,7 @@ define(
 			/**
 			 * 
 			 */
-			ReportRenderingController.prototype.renderCompositeReport = function() {
+			ReportRenderingController.prototype.renderCompositeReport = function(scopeController) {
 				var deferred = jQuery.Deferred();
 			    var self = this;
 			    
@@ -874,6 +887,11 @@ define(
 			        .done(function(data) {
 			        console.log("Data for Document");
 			        console.log(data);
+			        
+				    //show preview
+				    self.hideReportPreview = false;
+				    scopeController.updateView();
+
 			
 			        var html = "<html ng-app='STARTDUST_REPORTING'><head>"
 			        	+ "<link rel='stylesheet' type='text/css' href='"
@@ -917,8 +935,11 @@ define(
 			
 			        frameDocument.write(html);
 			        frameDocument.close();
+				    
 			        deferred.resolve();
 			    }).fail(function() {
+			    	self.renderingFailed = self.getI18N("reporting.definitionView.retrievalFailed");
+			    	scopeController.updateView();
 			        deferred.reject();
 			    });
 			    
@@ -1177,10 +1198,13 @@ define(
 			        }
 			    }
 			
-			
+			    //show preview
+			    this.hideReportPreview = false;
+			    
 			    //set the data in parent scope
 			    scopeController.tableParameters = tableParameters;
 			    scopeController.tableArray = baseTable;
+			    
          };
 		
          /**
@@ -1249,17 +1273,21 @@ define(
      		function(data) {
      			// Format data before displaying the Results
      		   scopeController.rows = self.formatPreviewData(data.rows, scopeController);
-     		   
-     		   scopeController.tableArray = [headers];
+     		   var baseTable = [headers];
      		   for ( var rowIndex in data.rows)
-            {
-     		      scopeController.tableArray.push(data.rows[rowIndex]);
-            }
+     		   {
+     			  baseTable.push(data.rows[rowIndex]);
+     		   }
+			    //show preview
+			    self.hideReportPreview = false;
+			    scopeController.tableArray = baseTable;
      		   
      			scopeController.updateView();
+     			
      		}).fail(function(err) {
+     			self.renderingFailed = self.getI18N("reporting.definitionView.retrievalFailed");
+     			scopeController.updateView();
      			console.log("Failed getting Preview Date: " + err);
-     			scopeController.rows = [];
      		});   
          };
 		

@@ -239,36 +239,36 @@ define(
                         name : this.getI18N("reporting.definitionView.additionalFiltering.processID"),
                         type : this.metadata.integerType
                      },*/
-							processName : {
-								id : "processName",
-								name : this.getI18N("reporting.definitionView.additionalFiltering.processName"),
-								type : this.metadata.enumerationType,
-								enumerationType : "modelData:processDefinitions:name"
-							},
-							startingUserName : {
-								id : "startingUserName",
-								name : this.getI18N("reporting.definitionView.additionalFiltering.startingUserName"),
-								type : this.metadata.autocompleteType,
+					processName : {
+						id : "processName",
+						name : this.getI18N("reporting.definitionView.additionalFiltering.processName"),
+						type : this.metadata.enumerationType,
+						enumerationType : "modelData:processDefinitions:name"
+					},
+					startingUserName : {
+						id : "startingUserName",
+						name : this.getI18N("reporting.definitionView.additionalFiltering.startingUserName"),
+						type : this.metadata.autocompleteType,
 						service : "userService", //TODO rest end point
 						notSupportedAsFilter : true	
-							},
-							state : {
-								id : "state",
-								name : this.getI18N("reporting.definitionView.additionalFiltering.processState"),
-								type : this.metadata.enumerationType,
+					},
+					state : {
+						id : "state",
+						name : this.getI18N("reporting.definitionView.additionalFiltering.processState"),
+						type : this.metadata.enumerationType,
 						enumerationType : "staticData:processStates:name",
 						customSort : true
-							},
-							priority : {
-								id : "priority",
-								name : this.getI18N("reporting.definitionView.additionalFiltering.priority"),
-								type : this.metadata.enumerationType,
-								display : "singleSelect",
-								enumerationType : "staticData:priorityLevel:name",
+					},
+					priority : {
+						id : "priority",
+						name : this.getI18N("reporting.definitionView.additionalFiltering.priority"),
+						type : this.metadata.enumerationType,
+						display : "singleSelect",
+						enumerationType : "staticData:priorityLevel:name",
 						operators : ["E", "LE", "GE", "NE"],
 						customSort : true
-							}
-						}
+					}
+					}
 					},
 					activityInstance : {
 						id : "activityInstance",
@@ -304,7 +304,7 @@ define(
 								name : this.getI18N("reporting.definitionView.additionalFiltering.activityStartTimestamp"),
 								type : this.metadata.timestampType
 							},
-							processInstanceStartTimestamp : {
+					 processInstanceStartTimestamp : {
                         id : "processInstanceStartTimestamp",
                         name : this.getI18N("reporting.definitionView.additionalFiltering.processInstanceStartTimestamp"),
                         type : this.metadata.timestampType,
