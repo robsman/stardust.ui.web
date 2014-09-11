@@ -12,8 +12,9 @@
 		</ice:panelGroup>
 
 		<ice:panelGroup rendered="#{fn:contains(col.columnName, 'today')}">
+			<ice:outputText value ="#{rowObject[property]}" rendered="#{rowObject[property] eq 0}"/>
 			<ice:commandLink value="#{rowObject[property]}"
-				disabled="#{(rowObject[property] eq 0) ? true : false}"
+				rendered="#{rowObject[property] ne 0}"
 				title="#{(rowObject[property] eq 0) ? null: messages_bcc['views.pendingActivities.selectedActivitiesTable.title']}"
 				actionListener="#{rowObject.doPriorityAction}">
 				<f:param name="timeFrame" value="0" />
@@ -21,8 +22,9 @@
 		</ice:panelGroup>
 
 		<ice:panelGroup rendered="#{fn:contains(col.columnName, 'yesterday')}">
+			<ice:outputText value ="#{rowObject[property]}" rendered="#{rowObject[property] eq 0}"/>
 			<ice:commandLink value="#{rowObject[property]}"
-				disabled="#{(rowObject[property] eq 0) ? true : false}"
+				rendered="#{rowObject[property] ne 0}"
 				title="#{(rowObject[property] eq 0) ? null: messages_bcc['views.pendingActivities.selectedActivitiesTable.title']}"
 				actionListener="#{rowObject.doPriorityAction}">
 				<f:param name="timeFrame" value="-1" />
@@ -31,8 +33,9 @@
 
 		<ice:panelGroup
 			rendered="#{fn:contains(col.columnName, 'hibernated')}">
+			<ice:outputText value ="#{rowObject[property]}" rendered="#{rowObject[property] eq 0}"/>
 			<ice:commandLink value="#{rowObject[property]}"
-				disabled="#{(rowObject[property] eq 0) ? true : false}"
+				rendered="#{rowObject[property] ne 0}"
 				title="#{(rowObject[property] eq 0) ? null: messages_bcc['views.pendingActivities.selectedActivitiesTable.title']}"
 				actionListener="#{rowObject.doPriorityAction}">
 				<f:param name="hibernate" value="true" />

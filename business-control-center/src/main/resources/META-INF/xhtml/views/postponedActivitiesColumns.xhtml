@@ -21,17 +21,19 @@
 			</ice:commandLink>
 		</ice:panelGroup>
 		<ice:panelGroup rendered="#{fn:contains(col.columnName, 'Total Count')}" >
+			<ice:outputText value ="#{rowObject[property]}" rendered="#{rowObject[property] eq 0}"/>
 			<ice:commandLink value="#{rowObject[property]}"
+				rendered="#{rowObject[property] ne 0}"
 				actionListener="#{rowObject.doPriorityAction}"
-				disabled="#{(rowObject[property] eq 0) ? true : false}"
 				title="#{(rowObject[property] eq 0) ? null: messages_bcc['views.postponedActivities.selectedActivitiesTable.title']}">
 				<f:param name="totalCountCol" value="true" />
 			</ice:commandLink>
 		</ice:panelGroup>
 		<ice:panelGroup rendered="#{fn:contains(col.columnName, 'DurationExceed')}" >
+			<ice:outputText value ="#{rowObject[property]}" rendered="#{rowObject[property] eq 0}"/>
 			<ice:commandLink value="#{rowObject[property]}"
+				rendered="#{rowObject[property] ne 0}"
 				actionListener="#{rowObject.doPriorityAction}"
-				disabled="#{(rowObject[property] eq 0) ? true : false}"
 				title="#{(rowObject[property] eq 0) ? null: messages_bcc['views.postponedActivities.selectedActivitiesTable.title']}">
 				<f:param name="totalCountCol" value="false" />
 			</ice:commandLink>

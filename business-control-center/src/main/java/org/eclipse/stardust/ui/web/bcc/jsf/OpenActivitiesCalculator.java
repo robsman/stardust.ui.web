@@ -162,13 +162,13 @@ public class OpenActivitiesCalculator
          pendingAiOids.addAll(activities.normalPriority.pendingCriticalAiInstances);
          pendingAiOids.addAll(activities.highPriority.pendingCriticalAiInstances);
          
-         hiberanteAis += activities.lowPriority.hibernatedAis;
-         hiberanteAis += activities.normalPriority.hibernatedAis;
-         hiberanteAis += activities.highPriority.hibernatedAis;
-         
-         hibernateAiOids.addAll(activities.lowPriority.hibernatedAiInstances);
-         hibernateAiOids.addAll(activities.normalPriority.hibernatedAiInstances);
-         hibernateAiOids.addAll(activities.highPriority.hibernatedAiInstances);
+         hiberanteAis += activities.lowPriority.hibernatedCriticalAis;
+         hiberanteAis += activities.normalPriority.hibernatedCriticalAis;
+         hiberanteAis += activities.highPriority.hibernatedCriticalAis;
+
+         hibernateAiOids.addAll(activities.lowPriority.hibernatedCriticalAiInstances);
+         hibernateAiOids.addAll(activities.normalPriority.hibernatedCriticalAiInstances);
+         hibernateAiOids.addAll(activities.highPriority.hibernatedCriticalAiInstances);
          
          int historyDays = openActivitiesStatistics.getNumberOfDaysHistory();
          
