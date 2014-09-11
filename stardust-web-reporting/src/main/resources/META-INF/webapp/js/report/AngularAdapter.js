@@ -148,11 +148,10 @@ if (!window.bpm.portal.AngularAdapter) {
 							}
 							try {
 								
-								//TODO: needs review - remove utc format if hours:minutes not available
-								if(input.indexOf('+') != -1 && input.indexOf(':') == -1){
-									//remove utc part
-									var i = input.indexOf("+");
-									input = input.substring(input, i-1);
+								var matches = input.match(/\:/g);
+								if(matches.length > 2){
+									var lastIndex = input.lastIndexOf(":");
+									input = input.substring(0, lastIndex);
 								}
 								
 								var d = new Date(input);
