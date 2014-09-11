@@ -289,8 +289,7 @@ public class ResourcePerformanceBean extends UIComponentBean implements Resource
       long userOrPartitionOID = statisticsTable.getColumnSelectorPopup().getSelectedPreferenceScope() == PreferenceScope.USER
             ? SessionContext.findSessionContext().getUser().getOID()
             : SessionContext.findSessionContext().getUser().getPartitionOID();
-      String columnId = MessagesBCCBean.getInstance().get("views.customColumn.property") + userOrPartitionOID
-            + index++;
+      String columnId = MessagesBCCBean.getInstance().get("views.customColumn.property") + index++;
       // Creates JSON object storing columnDefinition with values(columnId,columnName,duration..)
       columnDefinition = CustomColumnUtils.updateCustomColumnJson(columnId, columnTitle, 0, CustomColumnUtils.DAY_TYPE, 0, CustomColumnUtils.DAY_TYPE, columnDefinition,
             customColumnDateRange);
@@ -371,7 +370,13 @@ public class ResourcePerformanceBean extends UIComponentBean implements Resource
       customColumn.addChildren(colStatus);
 
       columnDefinitionMap.put(columnId, columnDefinition);
-      index = Integer.valueOf(columnId.substring(columnId.length() - 1)) + 1;
+
+      int numOccurance = columnId.length() - columnId.replaceAll("^[^\\d]*", "").length();
+      int newIndex = Integer.valueOf(columnId.substring(numOccurance)) + 1;
+      if(newIndex > index)
+      {
+         index = newIndex;
+      }
 
       CustomColumnUtils.updateCustomColumnDateRange(columnDefinition, customColumnDateRange);
 

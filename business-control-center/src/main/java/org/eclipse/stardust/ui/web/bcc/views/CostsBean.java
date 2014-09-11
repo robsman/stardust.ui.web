@@ -299,10 +299,7 @@ public class CostsBean extends UIComponentBean implements ResourcePaths,ViewEven
          index++;
       }
       String columnTitle = propsBean.get("views.customColumn.label") + index;
-      long userOrPartitionOID = costTable.getColumnSelectorPopup().getSelectedPreferenceScope() == PreferenceScope.USER
-            ? SessionContext.findSessionContext().getUser().getOID()
-            : SessionContext.findSessionContext().getUser().getPartitionOID();
-      String columnId = propsBean.get("views.customColumn.property") + userOrPartitionOID + index++ ;
+      String columnId = propsBean.get("views.customColumn.property") + index++ ;
       // Creates JSON object storing columnDefinition with values(columnId,columnName,duration..)
       columnDefinition = CustomColumnUtils.updateCustomColumnJson(columnId, columnTitle, 0, CustomColumnUtils.DAY_TYPE, 0,
             CustomColumnUtils.DAY_TYPE, columnDefinition, customColumnDateRange);
@@ -376,7 +373,14 @@ public class CostsBean extends UIComponentBean implements ResourcePaths,ViewEven
       customColumn.addChildren(colStatus);
 
       columnDefinitionMap.put(columnId, columnDefinition);
-      index = Integer.valueOf(columnId.substring(columnId.length() - 1)) + 1;
+      
+      int numOccurance = columnId.length() - columnId.replaceAll("^[^\\d]*", "").length();
+      int newIndex = Integer.valueOf(columnId.substring(numOccurance)) + 1;
+      // Save the next column index required when AddNewColumn is called
+      if (newIndex > index)
+      {
+         index = newIndex;
+      }
 
       CustomColumnUtils.updateCustomColumnDateRange(columnDefinition, customColumnDateRange);
 
