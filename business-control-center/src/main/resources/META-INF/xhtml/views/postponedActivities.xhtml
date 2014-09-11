@@ -6,9 +6,24 @@
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 	
+	<ice:panelGroup>
 	<pc:automationTag value="auto-BCC-PostponedAct-PostponedActTbl"/>
 	<pc:genericDataTable
 			bean="#{postponedActivities}" id="postponedActivitiesList" title="#{postponedActivities.messages['title']}"
 			table="#{postponedActivities.postponedActTable}" sortSupported="true"/>
+	<ice:panelGroup styleClass="clearing" />
+	<ice:panelGroup styleClass="clearing" />
+	<ice:panelGroup styleClass="clearing" />
+	</ice:panelGroup>	
+	<ice:panelGroup>
+		<c:if test="#{postponedActivities.activityTableVisible}">
+			<ui:include src="/plugins/views-common/activityTableHelper/activityTableHelper.xhtml">
+				<ui:param name="title" value="#{postponedActivities.messages['selectedActivitiesTable.title']}"/>
+				<ui:param name="id" value="activityList"/>
+				<ui:param name="bean" value="#{postponedActivities.activityTableHelper}"/>
+			</ui:include>
+		</c:if>
+		<ice:panelGroup styleClass="clearing" />
+	</ice:panelGroup>
 	
 </f:view>

@@ -30,8 +30,9 @@ import org.eclipse.stardust.engine.api.runtime.ProcessInstancePriority;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.core.query.statistics.api.CriticalExecutionTimePolicy;
 import org.eclipse.stardust.engine.core.query.statistics.api.PostponedActivitiesStatistics;
-import org.eclipse.stardust.engine.core.query.statistics.api.PostponedActivitiesStatisticsQuery;
 import org.eclipse.stardust.engine.core.query.statistics.api.PostponedActivitiesStatistics.PostponedActivities;
+import org.eclipse.stardust.engine.core.query.statistics.api.PostponedActivitiesStatisticsQuery;
+import org.eclipse.stardust.ui.web.bcc.ActivitySearchHandler;
 import org.eclipse.stardust.ui.web.bcc.ResourcePaths;
 import org.eclipse.stardust.ui.web.bcc.WorkflowFacade;
 import org.eclipse.stardust.ui.web.bcc.common.configuration.UserPreferencesEntries;
@@ -41,32 +42,37 @@ import org.eclipse.stardust.ui.web.bcc.jsf.UserItem;
 import org.eclipse.stardust.ui.web.bcc.messsages.MessagesBCCBean;
 import org.eclipse.stardust.ui.web.common.UIComponentBean;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
-import org.eclipse.stardust.ui.web.common.column.DefaultColumnModel;
-import org.eclipse.stardust.ui.web.common.column.IColumnModel;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnAlignment;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
+import org.eclipse.stardust.ui.web.common.column.DefaultColumnModel;
+import org.eclipse.stardust.ui.web.common.column.IColumnModel;
 import org.eclipse.stardust.ui.web.common.columnSelector.TableColumnSelectorPopup;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
-import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent.ViewEventType;
+import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterPopup;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterSearch;
 import org.eclipse.stardust.ui.web.common.table.SortableTable;
 import org.eclipse.stardust.ui.web.common.table.SortableTableComparator;
-import org.eclipse.stardust.ui.web.viewscommon.common.Constants;
+import org.eclipse.stardust.ui.web.common.util.CollectionUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
+import org.eclipse.stardust.ui.web.viewscommon.common.Constants;
 import org.eclipse.stardust.ui.web.viewscommon.common.ModelHelper;
+import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
+import org.eclipse.stardust.ui.web.viewscommon.helper.activityTable.ActivityTableHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 
 
 
-public class PostponedActivitiesBean extends UIComponentBean implements ResourcePaths,ViewEventHandler
+public class PostponedActivitiesBean extends UIComponentBean implements ResourcePaths,ViewEventHandler,ICallbackHandler
 {
    private static final long serialVersionUID = 1L;
    
    private final static String QUERY_EXTENDER = "carnotBcPostponedActivities/queryExtender";
 
    private static final int COLUMN_SIZE = 5;
+   
+   public static final String BEAN_ID ="postponedActivities";
 
    private MessagesBCCBean propsBean;
 
@@ -84,7 +90,9 @@ public class PostponedActivitiesBean extends UIComponentBean implements Resource
 
    private List<PostponedActivitiesTableEntry> postponedActList;
    
-
+   private ActivityTableHelper activityTableHelper;
+   private boolean activityTableVisible;
+   private ActivitySearchHandler handler = null;
    /**
     * 
     */
@@ -101,11 +109,11 @@ public class PostponedActivitiesBean extends UIComponentBean implements Resource
          sessionCtx = SessionContext.findSessionContext();
          queryExtender = getQueryExtender();
          facade = WorkflowFacade.getWorkflowFacade();
-
          propsBean = MessagesBCCBean.getInstance();
-
+         initializeActivityTable();
          initialize();
-
+         activityTableVisible = false;
+         
       }
    }
    
@@ -115,6 +123,10 @@ public class PostponedActivitiesBean extends UIComponentBean implements Resource
    public void update()
    {
       initialize();
+      if(activityTableVisible)
+      {
+         activityTableHelper.getActivityTable().refresh(true);
+      }
    }
 
    @Override
@@ -152,13 +164,14 @@ public class PostponedActivitiesBean extends UIComponentBean implements Resource
       }
 
       long totalCount, exceededDurationCount;
+      Set<Long> allActivityOids = CollectionUtils.newHashSet();
+      Set<Long> exceededActivityOids = CollectionUtils.newHashSet();
       String avgDuration;
       postponedActList = new ArrayList<PostponedActivitiesTableEntry>();
       List<ParticipantsTableEntry> pte;
 
       Users users = facade.getAllUsers((UserQuery) query);
       List<UserItem> userItems = facade.getAllUsersAsUserItems(users);
-      
       for (UserItem userItem : userItems)
       {
          user = userItem.getUser();
@@ -173,7 +186,7 @@ public class PostponedActivitiesBean extends UIComponentBean implements Resource
                pActivities = postponedActivities;
             }
          }
-
+         
          pte = new ArrayList<ParticipantsTableEntry>();
          if (pActivities != null)
          {
@@ -187,12 +200,13 @@ public class PostponedActivitiesBean extends UIComponentBean implements Resource
                      totalCount = calc.getTotalCount(mp);
                      avgDuration = calc.getAvgDuration(mp);
                      exceededDurationCount = calc.getExceededDurationCount(mp);
-
-                     pte.add(new ParticipantsTableEntry(mp, totalCount, avgDuration, exceededDurationCount));
+                     allActivityOids = calc.getAllActivityOIDs(mp);
+                     exceededActivityOids = calc.getExceededActivityOIDs(mp);
+                     pte.add(new ParticipantsTableEntry(mp, totalCount, avgDuration, exceededDurationCount, allActivityOids, exceededActivityOids));
                   }
                   else
                   {
-                     pte.add(new ParticipantsTableEntry(mp, 0, null, 0));
+                     pte.add(new ParticipantsTableEntry(mp, 0, null, 0, null, null));
                   }
                }
             }
@@ -204,7 +218,9 @@ public class PostponedActivitiesBean extends UIComponentBean implements Resource
                totalCount = 0;
                avgDuration = "";
                exceededDurationCount = 0;
-               pte.add(new ParticipantsTableEntry(mp, totalCount, avgDuration, exceededDurationCount));
+               allActivityOids = CollectionUtils.newHashSet();
+               exceededActivityOids = CollectionUtils.newHashSet();
+               pte.add(new ParticipantsTableEntry(mp, totalCount, avgDuration, exceededDurationCount, allActivityOids, exceededActivityOids));
             }
 
          }
@@ -238,9 +254,10 @@ public class PostponedActivitiesBean extends UIComponentBean implements Resource
             visible = i >= COLUMN_SIZE ? false : true;
             participantCol.setVisible(visible);
 
-            ColumnPreference totalCountCol = new ColumnPreference("Total Count" + i,
-                  "participantList[" + i + "].totalCount", ColumnDataType.NUMBER, this
-                        .getMessages().getString("column.totalCount"));
+            ColumnPreference totalCountCol = new ColumnPreference("Total Count" + i, "participantList[" + i
+                  + "].totalCount", this.getMessages().getString("column.totalCount"), V_postponedActivitiesColumns,
+                  null, true, true);
+
             totalCountCol.setColumnAlignment(ColumnAlignment.CENTER);
             participantCol.addChildren(totalCountCol);
 
@@ -251,10 +268,9 @@ public class PostponedActivitiesBean extends UIComponentBean implements Resource
             durationCol.setNoWrap(true);
             participantCol.addChildren(durationCol);
 
-            ColumnPreference durationExceedCol = new ColumnPreference("DurationExceed"
-                  + i, "participantList[" + i + "].exceededDurationCount",
-                  ColumnDataType.NUMBER, propsBean
-                        .getString("views.postponedActivities.column.durationExceed"));
+            ColumnPreference durationExceedCol = new ColumnPreference("DurationExceed" + i, "participantList[" + i
+                  + "].exceededDurationCount", propsBean.getString("views.postponedActivities.column.durationExceed"), V_postponedActivitiesColumns,
+                  null, true, true);
             durationExceedCol.setColumnAlignment(ColumnAlignment.CENTER);
             participantCol.addChildren(durationExceedCol);
             selectableCols.add(participantCol);
@@ -272,6 +288,39 @@ public class PostponedActivitiesBean extends UIComponentBean implements Resource
       postponedActTable.initialize();
    }
 
+   /**
+    * Initializes Activity table columns
+    */
+   private void initializeActivityTable()
+   {
+      activityTableHelper = new ActivityTableHelper();
+      activityTableHelper.setShowResubmissionTime(true);
+      handler = new ActivitySearchHandler();
+      if (activityTableHelper != null)
+      {
+         activityTableHelper.initActivityTable();
+         activityTableHelper.setCallbackHandler(this);
+         activityTableHelper.setStrandedActivityView(false);
+         activityTableHelper.getActivityTable().initialize();
+         activityTableHelper.getActivityTable().setISearchHandler(handler);
+      }
+   }
+   
+   public void handleEvent(EventType eventType)
+   {
+      if (eventType == EventType.APPLY)
+      {
+         initialize();
+      }
+   }
+   
+   public void fetchActivityAndRefresh(Set<Long> oids)
+   {
+      activityTableVisible = true;
+      handler.setOids(oids);
+      activityTableHelper.getActivityTable().refresh(true);
+   }
+   
    /**
     * Returns query which gives users with their statistics
     * 
@@ -319,4 +368,25 @@ public class PostponedActivitiesBean extends UIComponentBean implements Resource
    {
       return postponedActTable;
    }
+
+   public ActivityTableHelper getActivityTableHelper()
+   {
+      return activityTableHelper;
+   }
+
+   public void setActivityTableHelper(ActivityTableHelper activityTableHelper)
+   {
+      this.activityTableHelper = activityTableHelper;
+   }
+
+   public boolean isActivityTableVisible()
+   {
+      return activityTableVisible;
+   }
+
+   public void setActivityTableVisible(boolean activityTableVisible)
+   {
+      this.activityTableVisible = activityTableVisible;
+   }
+
 }

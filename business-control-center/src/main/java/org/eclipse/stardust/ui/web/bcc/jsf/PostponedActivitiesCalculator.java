@@ -12,9 +12,11 @@ package org.eclipse.stardust.ui.web.bcc.jsf;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.stardust.common.CompareHelper;
 import org.eclipse.stardust.engine.api.model.ModelParticipantInfo;
@@ -37,22 +39,34 @@ public class PostponedActivitiesCalculator
       private long totalCount;
       private long exceededCount;
       private long duration;
-      
+      private Set<Long> allActivityOid;
+      private Set<Long> exceededActivityOid;
       private final long currentDate;
       
       public ModelParticipantCalculation(long runtimeOid)
       {
          this.runtimeOid = runtimeOid;
          currentDate = new Date().getTime();
+         allActivityOid = new HashSet<Long>();
+         exceededActivityOid = new HashSet<Long>();
       }
       
-      private void addDuration(List details)
+      private void addDurationAndOID(List details, boolean critical)
       {
          Iterator dIter = details.iterator();
          while (dIter.hasNext())
          {
             PostponedActivityDetails detail = (PostponedActivityDetails) dIter.next();
-            duration += (currentDate - detail.aiStart.getTime());
+            if(!critical)
+            {
+               duration += (currentDate - detail.aiStart.getTime());
+               allActivityOid.add(detail.aiOid);   
+            }
+            else
+            {
+               exceededActivityOid.add(detail.aiOid);
+            }
+            
          }
       }
       
@@ -63,19 +77,36 @@ public class PostponedActivitiesCalculator
             int count = contrib.highPriorityCritical.size() +
                contrib.normalPriorityCritical.size() +
                contrib.lowPriorityCritical.size();
+            if(count > 0)
+            {
+               addDurationAndOID(contrib.highPriorityCritical, true);
+               addDurationAndOID(contrib.normalPriorityCritical, true);
+               addDurationAndOID(contrib.lowPriorityCritical, true);
+            }
             exceededCount += count;
             
             count = contrib.highPriority.size() +
                contrib.normalPriority.size() + contrib.lowPriority.size();
             if(count > 0)
             {
-               addDuration(contrib.highPriority);
-               addDuration(contrib.normalPriority);
-               addDuration(contrib.lowPriority);
+               addDurationAndOID(contrib.highPriority, false);
+               addDurationAndOID(contrib.normalPriority, false);
+               addDurationAndOID(contrib.lowPriority, false);
             }
             totalCount += count;
          }
       }
+
+      public Set<Long> getExceededActivityOid()
+      {
+         return exceededActivityOid;
+      }
+
+      public Set<Long> getAllActivityOid()
+      {
+         return allActivityOid;
+      }
+      
    }
    
    public PostponedActivitiesCalculator(PostponedActivities pActivities)
@@ -136,6 +167,18 @@ public class PostponedActivitiesCalculator
    {
       ModelParticipantCalculation mCalc = getCalculation(modelParticipantInfo);
       return mCalc != null ? new Long(mCalc.exceededCount) : null;
+   }
+   
+   public Set<Long> getAllActivityOIDs(ModelParticipantInfo modelParticipantInfo)
+   {
+      ModelParticipantCalculation mCalc = getCalculation(modelParticipantInfo);
+      return mCalc != null ? mCalc.getAllActivityOid(): null;
+   }
+   
+   public Set<Long> getExceededActivityOIDs(ModelParticipantInfo modelParticipantInfo)
+   {
+      ModelParticipantCalculation mCalc = getCalculation(modelParticipantInfo);
+      return mCalc != null ? mCalc.getExceededActivityOid() : null;
    }
 
 }

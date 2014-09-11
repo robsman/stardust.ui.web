@@ -10,8 +10,16 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.bcc.views;
 
+import java.util.Map;
+import java.util.Set;
+
+import javax.faces.context.FacesContext;
+import javax.faces.event.ActionEvent;
+
 import org.eclipse.stardust.engine.api.model.ModelParticipantInfo;
 import org.eclipse.stardust.ui.web.common.table.DefaultRowModel;
+import org.eclipse.stardust.ui.web.common.util.StringUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ManagedBeanUtils;
 
 
 /**
@@ -26,6 +34,8 @@ public class ParticipantsTableEntry extends DefaultRowModel
    private long totalCount;
    private String avgDuration;
    private long exceededDurationCount;
+   private Set<Long> allActivityOIDs;
+   private Set<Long> exceededActivityOIDs;
    
    /**
     * @param participantId
@@ -34,13 +44,32 @@ public class ParticipantsTableEntry extends DefaultRowModel
     * @param exceededDurationCount
     */
    public ParticipantsTableEntry(ModelParticipantInfo modelParticipantInfo, long totalCount,
-         String avgDuration, long exceededDurationCount)
+         String avgDuration, long exceededDurationCount, Set<Long> allActivityOIDs, Set<Long> exceededActivityOIDs)
    {
       super();
       this.modelParticipantInfo = modelParticipantInfo;
       this.totalCount = totalCount;
       this.avgDuration = avgDuration;
       this.exceededDurationCount = exceededDurationCount;
+      this.allActivityOIDs = allActivityOIDs;
+      this.exceededActivityOIDs = exceededActivityOIDs;
+   }
+   
+   public void doPriorityAction(ActionEvent event)
+   {
+      Map param = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+      Object showtotalCountAI = param.get("totalCountCol");
+      Set<Long> oids = null;
+      if (showtotalCountAI != null && StringUtils.isNotEmpty(showtotalCountAI.toString()))
+      {
+         oids = allActivityOIDs;
+      }
+      else
+      {
+         oids = exceededActivityOIDs;
+      }
+      PostponedActivitiesBean postponedActivityBean = (PostponedActivitiesBean) ManagedBeanUtils.getManagedBean(PostponedActivitiesBean.BEAN_ID);
+      postponedActivityBean.fetchActivityAndRefresh(oids);
    }
    
    /**
@@ -82,5 +111,15 @@ public class ParticipantsTableEntry extends DefaultRowModel
    {
       this.exceededDurationCount = exceededDurationCount;
    }
-  
+
+   public Set<Long> getActivityOIDs()
+   {
+      return allActivityOIDs;
+   }
+
+   public void setActivityOIDs(Set<Long> activityOIDs)
+   {
+      this.allActivityOIDs = activityOIDs;
+   }
+   
 }
