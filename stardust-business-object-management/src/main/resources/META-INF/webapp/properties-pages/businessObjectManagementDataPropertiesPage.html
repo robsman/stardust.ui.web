@@ -10,22 +10,21 @@
 <title>Business Object Management</title>
 </head>
 <body>
-	{{$scope}}
-	<br></br>{{$parent}}
-	<br></br>{{$root}}
-	<br></br>{{propertiesPanel}}
-	<br></br>{{propertiesPanel.element}}
-	<br></br>{{propertiesPanel.element.id}}
 	<p>Selecting a Primary Key Field will enable this Data to be used
 		as a Business Object.</p>
 	<table>
 		<tr>
 			<td><label>Primary Key Field</label></td>
 			<td><select id="primaryKeyFieldSelect"><option>UUID</option>
-					<option>Name</option>
-					<option>Type</option></select></td>
+					<option>AccountNumber</option>
+					<option>AccountName</option></select></td>
 		</tr>
-
+		<tr>
+			<td><label>Label Field</label></td>
+			<td><select id="primaryKeyFieldSelect"><option>UUID</option>
+					<option>AccountNumber</option>
+					<option>AccountName</option></select></td>
+		</tr>
 	</table>
 </body>
 </html>
