@@ -307,14 +307,9 @@ define(
 							fillToZero : true
 						};
 
-						if (this.getFirstDimension().type == this.reportingService.metadata.timestampType) {
-							chartOptions.axes.xaxis.renderer = jQuery.jqplot.DateAxisRenderer;
-						} else {
-							chartOptions.axes.xaxis.renderer = jQuery.jqplot.CategoryAxisRenderer;
-						}
-
+						chartOptions.axes.xaxis.renderer = jQuery.jqplot.CategoryAxisRenderer;
 						chartOptions.axes.xaxis.tickRenderer = jQuery.jqplot.CanvasAxisTickRenderer;
-                  chartOptions.axes.yaxis.tickRenderer = jQuery.jqplot.CanvasAxisTickRenderer;
+                  		chartOptions.axes.yaxis.tickRenderer = jQuery.jqplot.CanvasAxisTickRenderer;
 						
 						chartOptions.axes.yaxis.pad = 1.05;
 					} else if (this.report.layout.chart.type === this.reportingService.metadata.chartTypes.bubbleChart.id) {
