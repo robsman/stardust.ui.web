@@ -30,6 +30,9 @@ public class ProcessingTimeTableEntry extends DefaultRowModel
    private String averageTimeToday;
    private String averageTimeLastWeek;
    private String averageTimeLastMonth;
+   private String averageWaitingTimeToday;
+   private String averageWaitingTimeLastWeek;
+   private String averageWaitingTimeLastMonth;
    private int todatState;
    private int lastWeekState;
    private int lastMonthState;
@@ -45,15 +48,19 @@ public class ProcessingTimeTableEntry extends DefaultRowModel
     * @param lastWeekState
     * @param lastMonthState
     */
-   public ProcessingTimeTableEntry(String processDefinitionId, String averageTimeToday,
-         String averageTimeLastWeek, String averageTimeLastMonth, int todatState,
-         int lastWeekState, int lastMonthState, Map<String, Object> customColumns)
+   public ProcessingTimeTableEntry(String processDefinitionId, String averageTimeToday, String averageTimeLastWeek,
+         String averageTimeLastMonth, String averageWaitingTimeToday, String averageWaitingTimeLastWeek,
+         String averageWaitingTimeLastMonth, int todatState, int lastWeekState, int lastMonthState,
+         Map<String, Object> customColumns)
    {
       super();
       this.processDefinitionId = processDefinitionId;
       this.averageTimeToday = averageTimeToday;
       this.averageTimeLastWeek = averageTimeLastWeek;
       this.averageTimeLastMonth = averageTimeLastMonth;
+      this.averageWaitingTimeToday = averageWaitingTimeToday;
+      this.averageWaitingTimeLastWeek = averageWaitingTimeLastWeek;
+      this.averageWaitingTimeLastMonth = averageWaitingTimeLastMonth;
       this.todatState = todatState;
       this.lastWeekState = lastWeekState;
       this.lastMonthState = lastMonthState;
@@ -64,7 +71,8 @@ public class ProcessingTimeTableEntry extends DefaultRowModel
          {
             String key = cols.getKey();
             Object val = null;
-            if (key.contains(CustomColumnUtils.CUSTOM_COL_TIME_SUFFIX))
+            if (key.contains(CustomColumnUtils.CUSTOM_COL_TIME_SUFFIX)
+                  || key.contains(CustomColumnUtils.CUSTOM_COL_WAIT_TIME_SUFFIX))
             {
                double value = (Double) cols.getValue();
                val = DateUtils.formatDurationInHumanReadableFormat((long) value);
@@ -133,6 +141,21 @@ public class ProcessingTimeTableEntry extends DefaultRowModel
    public String getAverageTimeLastMonth()
    {
       return averageTimeLastMonth;
+   }
+
+   public String getAverageWaitingTimeToday()
+   {
+      return averageWaitingTimeToday;
+   }
+
+   public String getAverageWaitingTimeLastWeek()
+   {
+      return averageWaitingTimeLastWeek;
+   }
+
+   public String getAverageWaitingTimeLastMonth()
+   {
+      return averageWaitingTimeLastMonth;
    }
 
    public int getTodatState()

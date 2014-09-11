@@ -33,6 +33,7 @@ public class CustomColumnUtils
    private static final String USER_INFO_DATE_FORMAT = "MM/dd/yy hh:mm a";
    public final static String CUSTOM_COL_PREFIX = "customColumns.";
    public final static String CUSTOM_COL_COST_SUFFIX = "Costs";
+   public final static String CUSTOM_COL_WAIT_TIME_SUFFIX = "averageWaitTime";
    public final static String CUSTOM_COL_TIME_SUFFIX = "averageTime";
    public final static String CUSTOM_COL_STATUS_SUFFIX = "Status";
    public final static int DAY_TYPE = 1;

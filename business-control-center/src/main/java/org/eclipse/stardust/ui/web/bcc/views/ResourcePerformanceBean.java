@@ -112,18 +112,25 @@ public class ResourcePerformanceBean extends UIComponentBean implements Resource
       fixedCols.add(pDefinitionCol);
 
       ColumnPreference colToday = new ColumnPreference("Today", this.getMessages().getString("column.today"));
+      ColumnPreference todayWaitingTimeCol = new ColumnPreference("TodayWaitingTime", "averageWaitingTimeToday", ColumnDataType.STRING, this
+            .getMessages().getString("column.waitingTime"), null, true, false);
+      todayWaitingTimeCol.setColumnAlignment(ColumnAlignment.CENTER);
       ColumnPreference todayTimeCol = new ColumnPreference("TodayTime", "averageTimeToday", ColumnDataType.STRING, this
             .getMessages().getString("column.processingTime"), null, true, false);
       todayTimeCol.setColumnAlignment(ColumnAlignment.CENTER);
       ColumnPreference todayStatusCol = new ColumnPreference("TodayStatus", "todayStatusLabel", this.getMessages()
             .getString("column.status"), V_resourcePerformanceColumns, true, false);
       todayStatusCol.setColumnAlignment(ColumnAlignment.CENTER);
-
+      
+      colToday.addChildren(todayWaitingTimeCol);
       colToday.addChildren(todayTimeCol);
       colToday.addChildren(todayStatusCol);
       selFixedCols.add(colToday);
 
       ColumnPreference colWeek = new ColumnPreference("Week", this.getMessages().getString("column.lastWeek"));
+      ColumnPreference weekWaitingTimeCol = new ColumnPreference("WeekWaitingTime", "averageWaitingTimeLastWeek", ColumnDataType.STRING, this
+            .getMessages().getString("column.waitingTime"), null, true, false);
+      weekWaitingTimeCol.setColumnAlignment(ColumnAlignment.CENTER);
       ColumnPreference weekTimeCol = new ColumnPreference("WeekTime", "averageTimeLastWeek", ColumnDataType.STRING,
             this.getMessages().getString("column.processingTime"), null, true, false);
       weekTimeCol.setColumnAlignment(ColumnAlignment.CENTER);
@@ -131,11 +138,14 @@ public class ResourcePerformanceBean extends UIComponentBean implements Resource
             .getString("column.status"), V_resourcePerformanceColumns, true, false);
       weekStatusCol.setColumnAlignment(ColumnAlignment.CENTER);
 
+      colWeek.addChildren(weekWaitingTimeCol);
       colWeek.addChildren(weekTimeCol);
       colWeek.addChildren(weekStatusCol);
       selFixedCols.add(colWeek);
 
       ColumnPreference colMonth = new ColumnPreference("Month", this.getMessages().getString("column.lastMonth"));
+      ColumnPreference monthWaitingTimeCol = new ColumnPreference("MonthWaitingTime", "averageWaitingTimeLastMonth", ColumnDataType.STRING, this
+            .getMessages().getString("column.waitingTime"), null, true, false);
       ColumnPreference monthTimeCol = new ColumnPreference("MonthTime", "averageTimeLastMonth", ColumnDataType.STRING,
             this.getMessages().getString("column.processingTime"), null, true, false);
       monthTimeCol.setColumnAlignment(ColumnAlignment.CENTER);
@@ -143,6 +153,7 @@ public class ResourcePerformanceBean extends UIComponentBean implements Resource
             .getString("column.status"), V_resourcePerformanceColumns, true, false);
       monthStatusCol.setColumnAlignment(ColumnAlignment.CENTER);
 
+      colMonth.addChildren(monthWaitingTimeCol);
       colMonth.addChildren(monthTimeCol);
       colMonth.addChildren(monthStatusCol);
 
@@ -206,7 +217,7 @@ public class ResourcePerformanceBean extends UIComponentBean implements Resource
       List<String> viewColumns = prefHelper.getSelectedColumns(UserPreferencesEntries.V_RESOURCE_PERFORMANCE);
       List<String> allCols = getCustomColumnsPreference(prefHelper);
       List<ColumnPreference> selectableCols = CollectionUtils.newArrayList();
-      if(CollectionUtils.isEmpty(viewColumns))
+      if (CollectionUtils.isEmpty(viewColumns))
       {
          selectableCols.addAll(selFixedCols);
       }
@@ -320,7 +331,6 @@ public class ResourcePerformanceBean extends UIComponentBean implements Resource
       update();
       filterPopup.openPopup();
       PortalApplication.getInstance().addEventScript("parent.BridgeUtils.View.syncActiveView;");
-
    }
    
    /**
@@ -336,11 +346,17 @@ public class ResourcePerformanceBean extends UIComponentBean implements Resource
       customColumn = new ColumnPreference(columnId, CUSTOM_COL_PREFIX + columnId, ColumnDataType.STRING, columnTitle,
             true, false);
       customColumn.setColumnAlignment(ColumnAlignment.RIGHT);
-
+         
+      ColumnPreference colWaitTime = new ColumnPreference(CUSTOM_COL_PREFIX + columnId
+            + CustomColumnUtils.CUSTOM_COL_WAIT_TIME_SUFFIX, CUSTOM_COL_PREFIX + columnId
+            + CustomColumnUtils.CUSTOM_COL_WAIT_TIME_SUFFIX, this.getMessages().getString("column.waitingTime"),
+            V_resourcePerformanceColumns, true, false);
+      colWaitTime.setColumnAlignment(ColumnAlignment.RIGHT);
+      
       ColumnPreference colTime = new ColumnPreference(CUSTOM_COL_PREFIX + columnId
             + CustomColumnUtils.CUSTOM_COL_TIME_SUFFIX, CUSTOM_COL_PREFIX + columnId
             + CustomColumnUtils.CUSTOM_COL_TIME_SUFFIX, this.getMessages().getString("column.processingTime"),
-            V_resourcePerformanceColumns, true, true);
+            V_resourcePerformanceColumns, true, false);
       colTime.setColumnAlignment(ColumnAlignment.RIGHT);
 
       ColumnPreference colStatus = new ColumnPreference(CUSTOM_COL_PREFIX + columnId
@@ -349,6 +365,7 @@ public class ResourcePerformanceBean extends UIComponentBean implements Resource
             V_resourcePerformanceColumns, true, false);
       colStatus.setColumnAlignment(ColumnAlignment.CENTER);
 
+      customColumn.addChildren(colWaitTime);
       customColumn.addChildren(colTime);
       customColumn.addChildren(colStatus);
 
@@ -640,7 +657,6 @@ public class ResourcePerformanceBean extends UIComponentBean implements Resource
       dateRange.add(DateRange.LAST_MONTH);
       for (Map.Entry<String, DateRange> custCols : customColumnDateRange.entrySet())
       {
-         String key = custCols.getKey();
          DateRange range = custCols.getValue();
          dateRange.add(range);
       }
@@ -694,8 +710,9 @@ public class ResourcePerformanceBean extends UIComponentBean implements Resource
       for (ProcessingTimePerProcess cpp : tableData)
       {
          userStatistics.add(new ProcessingTimeTableEntry(I18nUtils.getProcessName(cpp.getProcessDefinition()), cpp
-               .getAverageTimeToday(), cpp.getAverageTimeLastWeek(), cpp.getAverageTimeLastMonth(),
-               cpp.getTodayState(), cpp.getLastMonthState(), cpp.getLastMonthState(), cpp.getCustomColumns()));
+               .getAverageTimeToday(), cpp.getAverageTimeLastWeek(), cpp.getAverageTimeLastMonth(), cpp
+               .getAverageWaitingTimeToday(), cpp.getAverageTimeLastWeek(), cpp.getAverageWaitingTimeLastMonth(), cpp
+               .getTodayState(), cpp.getLastMonthState(), cpp.getLastMonthState(), cpp.getCustomColumns()));
 
       }
 

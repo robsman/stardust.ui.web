@@ -30,10 +30,12 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 public class ProcessingTimePerProcess
 {
    protected final static Logger trace = LogManager.getLogger(ProcessingTimePerProcess.class);
-   public final static String CUSTOM_COL_TIME_SUFFIX = "averageTime";
-   private final static String CUSTOM_COL_STATUS_SUFFIX = "Status";
    
    private ProcessDefinition processDefinition;
+   
+   private double waitingTimeToday;
+   private double waitingTimeLastWeek;
+   private double waitingTimeLastMonth;
    
    private double timeToday;
    private double timeLastWeek;
@@ -63,6 +65,9 @@ public class ProcessingTimePerProcess
       timeToday = 0f;
       timeLastWeek = 0f;
       timeLastMonth = 0f;
+      waitingTimeToday = 0f;
+      waitingTimeLastWeek = 0f;
+      waitingTimeLastMonth = 0f;
       thresholdStateToday = NORMAL_THRESHOLD_STATE;
       thresholdStateLastWeek = NORMAL_THRESHOLD_STATE;
       thresholdStateLastMonth = NORMAL_THRESHOLD_STATE;
@@ -74,9 +79,11 @@ public class ProcessingTimePerProcess
          {
             String key = colDef.getKey();
             
-            customColumns.put(key+CUSTOM_COL_TIME_SUFFIX, 0.0d);
-            customColumnPisCount.put(key+CUSTOM_COL_TIME_SUFFIX, 0l);
-            customColumns.put(key+CUSTOM_COL_STATUS_SUFFIX, NORMAL_THRESHOLD_STATE);
+            customColumns.put(key+CustomColumnUtils.CUSTOM_COL_TIME_SUFFIX, 0.0d);
+            customColumns.put(key+CustomColumnUtils.CUSTOM_COL_WAIT_TIME_SUFFIX, 0.0d);
+            customColumns.put(key+CustomColumnUtils.CUSTOM_COL_STATUS_SUFFIX, NORMAL_THRESHOLD_STATE);
+            // Keey PI count in a map , required for calculation
+            customColumnPisCount.put(key+CustomColumnUtils.CUSTOM_COL_TIME_SUFFIX, 0l);
          }   
       }
    }
@@ -102,6 +109,14 @@ public class ProcessingTimePerProcess
 		return DateUtils.formatDurationInHumanReadableFormat((long) timeLastMonth);
    }
 
+   public String getAverageTimeToday()
+   {
+//      return totalPICountToday > 0 ? DateUtils
+//              .formatDurationInHumanReadableFormat((long) timeToday
+//                      / totalPICountToday) : "-";
+       return DateUtils.formatDurationInHumanReadableFormat((long) timeToday);
+    }
+   
    public String getAverageTimeLastWeek()
    {
 //        return totalPICountLastWeek > 0 ? DateUtils
@@ -110,14 +125,21 @@ public class ProcessingTimePerProcess
 	   return DateUtils.formatDurationInHumanReadableFormat((long) timeLastWeek);
    }
 
-   public String getAverageTimeToday()
+   public String getAverageWaitingTimeToday()
    {
-//		return totalPICountToday > 0 ? DateUtils
-//				.formatDurationInHumanReadableFormat((long) timeToday
-//						/ totalPICountToday) : "-";
-	   return DateUtils.formatDurationInHumanReadableFormat((long) timeToday);
+	   return DateUtils.formatDurationInHumanReadableFormat((long) waitingTimeToday);
 	}
    
+   public String getAverageWaitingTimeLastMonth()
+   {
+        return DateUtils.formatDurationInHumanReadableFormat((long) waitingTimeLastMonth);
+   }
+
+   public String getAverageWaitingTimeLastWeek()
+   {
+       return DateUtils.formatDurationInHumanReadableFormat((long) waitingTimeLastWeek);
+   }
+
    public void addContribution(Contribution con, Map<String, DateRange> customColDateRange)
    {
       if(con != null)
@@ -138,6 +160,15 @@ public class ProcessingTimePerProcess
                   ciiToday.getCriticalByProcessingTime().getYellowInstancesCount() > 0)
             {
                thresholdStateToday = CRITICAL_THRESHOLD_STATE;
+            }
+            if(ciiToday.getTimeWaiting().getTime() > 0)
+            {
+               waitingTimeToday +=ciiToday.getTimeWaiting().getTime();
+            }
+            else
+            {
+                  trace.error("Invalid wait time of today: " + ciiToday.getTimeWaiting().getTime() + 
+                        " by process with id: " + processDefinition.getId());
             }
          }
          else
@@ -162,6 +193,15 @@ public class ProcessingTimePerProcess
             {
                thresholdStateLastWeek = CRITICAL_THRESHOLD_STATE;
             }
+            if(ciiLastWeek.getTimeWaiting().getTime() > 0)
+            {
+               waitingTimeLastWeek +=ciiLastWeek.getTimeWaiting().getTime();
+            }
+            else
+            {
+                  trace.error("Invalid wait time of last week: " + ciiLastWeek.getTimeWaiting().getTime() + 
+                        " by process with id: " + processDefinition.getId());
+            }
          }
          else
          {
@@ -185,6 +225,15 @@ public class ProcessingTimePerProcess
             {
                thresholdStateLastMonth = CRITICAL_THRESHOLD_STATE;
             }
+            if(ciiLastMonth.getTimeWaiting().getTime() > 0)
+            {
+               waitingTimeLastMonth +=ciiLastMonth.getTimeWaiting().getTime();
+            }
+            else
+            {
+                  trace.error("Invalid wait time of last month: " + ciiLastMonth.getTimeWaiting().getTime() + 
+                        " by process with id: " + processDefinition.getId());
+            }
          }
          else
          {
@@ -206,9 +255,12 @@ public class ProcessingTimePerProcess
                Long nPisCount = (Long) customColumnPisCount.get(key + CustomColumnUtils.CUSTOM_COL_TIME_SUFFIX);
                double timeValue = Double.valueOf(customColumns.get(key + CustomColumnUtils.CUSTOM_COL_TIME_SUFFIX)
                      .toString());
-               Integer thresholdValue = (Integer) customColumns.get(key + CUSTOM_COL_STATUS_SUFFIX);
+               double waitTime = Double.valueOf(customColumns.get(key + CustomColumnUtils.CUSTOM_COL_WAIT_TIME_SUFFIX)
+                     .toString());
+               Integer thresholdValue = (Integer) customColumns.get(key + CustomColumnUtils.CUSTOM_COL_STATUS_SUFFIX);
                nPisCount += ciiCustomCol.getnPis();
                timeValue += ciiCustomCol.getTimeSpent().getTime();
+               waitTime += ciiCustomCol.getTimeWaiting().getTime();
                if (ciiCustomCol.getCriticalByExecutionCost().getRedInstancesCount() > 0)
                {
                   thresholdValue = EXCEEDED_THRESHOLD_STATE;
@@ -218,8 +270,11 @@ public class ProcessingTimePerProcess
                {
                   thresholdValue = CRITICAL_THRESHOLD_STATE;
                }
+               
                customColumns.put(key + CustomColumnUtils.CUSTOM_COL_TIME_SUFFIX, timeValue);
-               customColumns.put(key + CUSTOM_COL_STATUS_SUFFIX, thresholdValue);
+               customColumns.put(key + CustomColumnUtils.CUSTOM_COL_WAIT_TIME_SUFFIX, waitTime);
+               customColumns.put(key + CustomColumnUtils.CUSTOM_COL_STATUS_SUFFIX, thresholdValue);
+               
                customColumnPisCount.put(key + CustomColumnUtils.CUSTOM_COL_TIME_SUFFIX, nPisCount);
             }
          }
