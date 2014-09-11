@@ -1,10 +1,10 @@
 /**
  *  
  */
-define(['angular', 'jQuery', 'angular-resources'], function () {
+define(['angular', 'jQuery', 'angular-resources', 'angular-route'], function () {
 	var shellRMod = {};
 
-	var shellAMod = angular.module('shell', ['shell.services', 'ngResource', 'shell.init']);
+	var shellAMod = angular.module('shell', ['shell.services', 'ngResource', 'ngRoute', 'shell.init']);
 	shellRMod.module = shellAMod;
 
 	var shellServicesAMod = angular.module('shell.services', []);

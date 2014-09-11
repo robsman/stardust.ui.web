@@ -28,6 +28,8 @@ define(['portal-shell/js/shell'], function (shell) {
 				var deferred = $q.defer();
 				$scope.config = sgConfigService;
 				$scope.config.then(function (cfg){
+					$scope.sidebarWidth = cfg.sidebar.width + "px";
+
 					fetchTheme(cfg.endpoints.theme + "/current").then(function(theme){
 						$scope.theme = {};
 						$scope.theme.scripts = theme.scripts;
@@ -194,6 +196,18 @@ define(['portal-shell/js/shell'], function (shell) {
 				};
 				
 				$scope.sidebar = sgSidebarStateService.sidebar;
+
+				/*
+				 * 
+				 */
+				$scope.getSidebarMargin = function() {
+					if ($scope.sidebar && $scope.sidebar.pinned) {
+						return $scope.sidebarWidth;
+					} else {
+						return "0px;"
+					}
+				}
+
 				// ****************** Sidebar - END ******************
 
 				// ****************** Utility Bar - START ******************

@@ -142,7 +142,7 @@
 					</div>
 				</div>
 				<div class="sidebar-content" sg-stretch-to-bottom ng-class="{'display-none': !sidebar.pinned}"
-					ng-style="{'width': config.sidebar.width + 'px'}">
+					ng-style="{'width': sidebarWidth}">
 					<div class="sidebar-title-wrapper">
 						<span class="sidebar-title">{{config.sidebar.title}}</span>
 						<div ng-if="sidebar.pinned" class="sg-sidebar-pin" ng-click="unpinSidebar()">
@@ -159,8 +159,8 @@
 					<div class="sidebar-separator"></div>
 				</div>
 			</div>
-			
-			<div ng-class="{'view-panels-no-sidebar': !sidebar.pinned}" ng-style="sidebar.pinned ? {'margin-left': config.sidebar.width + 'px'} : ''">
+
+			<div ng-class="{'view-panels-no-sidebar': !sidebar.pinned}" ng-style="{'margin-left': getSidebarMargin()}">
 				<div class="view-panels">
 					<div ng-repeat="panel in panels">
 						<div ng-if="viewPanelCheck(panel)" ng-controller="viewPanelCtrl"

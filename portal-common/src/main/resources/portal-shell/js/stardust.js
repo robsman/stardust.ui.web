@@ -35,8 +35,9 @@
 
     var paths = {
 		'jQuery' : '/portal-shell/js/libs/jquery/1.9.1/jquery',
-		'angular' : '/portal-shell/js/libs/angular/1.1.5/angular',
-		'angular-resources' : '/portal-shell/js/libs/angular/1.1.5/angular-resource'
+		'angular' : '/portal-shell/js/libs/angular/1.2.11/angular',
+		'angular-resources' : '/portal-shell/js/libs/angular/1.2.11/angular-resource',
+		'angular-route' : '/portal-shell/js/libs/angular/1.2.11/angular-route'
     };
 
     var shim = {
@@ -51,6 +52,9 @@
             exports: 'underscore'
         },
         'angular-resources': {
+            deps: ['angular']
+        },
+        'angular-route': {
             deps: ['angular']
         }
     };

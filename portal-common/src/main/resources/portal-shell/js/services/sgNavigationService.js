@@ -38,7 +38,7 @@ define(['portal-shell/js/shell'], function (shell) {
 			 * 
 			 */
 			function normalizeLabel(label) {
-				return label.toLowerCase().replace(/ /g, '-');
+				return label ? label.toLowerCase().replace(/ /g, '-') : "";
 			}
 
 			/*
