@@ -666,7 +666,7 @@ define(
                            "carnot:engine:camel::invocationType" : "synchronous",
                            "carnot:engine:camel::applicationIntegrationOverlay" : "sqlIntegrationOverlay"
                         }
-                     });
+                     }, true);
 
             };
 
@@ -1268,7 +1268,6 @@ define(
              * 
              */
             SqlIntegrationOverlay.prototype.validate = function() {
-//               this.view.clearErrorMessages();
                var valid = true;
                
                if(m_utils.isEmptyString(this.codeEditor.getEditor().getSession().getValue())){
