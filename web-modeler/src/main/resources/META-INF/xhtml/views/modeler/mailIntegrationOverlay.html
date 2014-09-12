@@ -17,13 +17,12 @@
 		<table cellpadding="0" cellspacing="0" class="layoutTable"
 			style="width: 100%; margin-top: 10px;">
 			<tr>
-			<td>
-			<label id="defaultValueHintLabel"></label>
-			</td>
+				<td><label id="defaultValueHintLabel"></label></td>
 			</tr>
 			<tr>
 				<td>
-					<table cellpadding="0" cellspacing="0" class="layoutTable" style="margin-top: 10px;">
+					<table cellpadding="0" cellspacing="0" class="layoutTable"
+						style="margin-top: 10px;">
 						<tr>
 							<td valign="top">
 								<table cellpadding="0" cellspacing="0" class="fieldSetTable">
@@ -32,31 +31,30 @@
 										<td><select id="protocolSelect"><option
 													value="smtp"></option>
 												<option value="smtps"></option>
-										</select>
-										</td>
+										</select></td>
 									</tr>
 									<tr>
 										<td><label for="serverInput"></label></td>
-										<td><input id="serverInput" type="text"></input>
-										</td>
+										<td><input id="serverInput" type="text"></input></td>
 									</tr>
 									<tr>
 										<td><label for="mailFormatSelect"></label></td>
 										<td><select id="mailFormatSelect"><option
 													value="text/plain"></option>
 												<option value="text/html"></option>
-										</select>
-										</td>
+										</select></td>
 									</tr>
 									<tr>
 										<td><label for="userInput"></label></td>
-										<td><input id="userInput" type="text"></input>
-										</td>
+										<td><input id="userInput" type="text"></input></td>
 									</tr>
 									<tr>
 										<td><label for="passwordInput"></label></td>
-										<td><input id="passwordInput" type="password"></input>
-										</td>
+										<td><input id="passwordInput" type="password"></input></td>
+									</tr>
+									<tr>
+										<td><input id="transactedRouteInput" type="checkbox"></input></td>
+										<td><label for="transactedRouteInput">Transacted</label></td>
 									</tr>
 								</table>
 							</td>
@@ -66,8 +64,7 @@
 									<tr>
 										<td><label for="subjectInput"></label></td>
 										<td><input id="subjectInput" type="text"
-											style="width: 250px;"></input>
-										</td>
+											style="width: 250px;"></input></td>
 									</tr>
 									<tr>
 										<td><input id="identifierInSubjectInput" type="checkbox"></input>
@@ -76,19 +73,23 @@
 									</tr>
 									<tr>
 										<td><label for="fromInput"></label></td>
-										<td><input id="fromInput" type="text"></input>
-										</td>
+										<td><input id="fromInput" type="text"></input></td>
 									</tr>
 									<tr>
 										<td><label for="toInput"></label></td>
-										<td><input id="toInput" type="text"></input>
-										</td>
+										<td><input id="toInput" type="text"></input></td>
 									</tr>
-									
 									<tr>
-										<td><input id="transactedRouteInput" type="checkbox"></input></td>
-               							<td><label for="transactedRouteInput">Transacted</label></td>         							
+										<td><input id="storeEmailInput" type="checkbox"></input></td>
+										<td><label for="storeEmailInput">Attach E-Mail to
+												process</label></td>
            							</tr>
+									<tr>
+										<td><input id="storeAttachmentsInput" type="checkbox"></input></td>
+										<td><label for="storeAttachmentsInput">Store
+												E-Mail attachments</label></td>
+									</tr>
+
 								</table>
 							</td>
 							<td valign="top">
@@ -96,13 +97,11 @@
 									style="margin-left: 10px;">
 									<tr>
 										<td><label for="ccInput"></label></td>
-										<td><input id="ccInput" type="text"></input>
-										</td>
+										<td><input id="ccInput" type="text"></input></td>
 									</tr>
 									<tr>
 										<td><label for="bccInput"></label></td>
-										<td><input id="bccInput" type="text"></input>
-										</td>
+										<td><input id="bccInput" type="text"></input></td>
 									</tr>
 									<!--
 									<tr>
@@ -120,7 +119,8 @@
 								</table>
 							</td>
 						</tr>
-					</table></td>
+					</table>
+				</td>
 			</tr>
 			<tr>
 				<td>
@@ -129,10 +129,42 @@
 				</td>
 			</tr>
 			<tr>
-				<td><textarea id="mailTemplateEditor" style="height: 400px;" />
+				<td>
+					<table cellpadding="0" cellspacing="0" class="fieldSetTable">
+						<tr>
+							<td><label for="templateSourceSelect"></label></td>
+							<td><select id="templateSourceSelect">
+									<option value="embedded"></option>
+									<option value="repository"></option>
+									<option value="classpath"></option>
+							</select></td>
+						</tr>
+						<tr id="externalTemplateSource">
+							<td><label for="templatePathInput">Template Path</label></td>
+							<td><input id="templatePathInput" type="text"></input></td>
+						</tr>
+					</table>
 				</td>
 			</tr>
+
+			<tr></tr>
+
+			<tr>
+				<td>
+					<div id="embeddedTemplateSource" style="margin-top: 10px;">
+						<table cellpadding="0" cellspacing="0" class="fieldSetTable"
+							style="height: 600px; width: 900px;">
+							<tr>
+								<td><textarea id="mailTemplateEditor"
+										style="height: 600px; width: 900px;" /></td>
+							</tr>
 		</table>
+					</div>
+				</td>
+			</tr>
+
+		</table>
+
 		<div id="responseTab">
 			<table cellpadding="0" cellspacing="0" class="layoutTable">
 				<tr>
@@ -142,13 +174,12 @@
 								<td>
 									<table cellpadding="0" cellspacing="0" class="fieldSetTable">
 										<tr>
-											<td><label for="responseTypeSelect">Response Type</label></td>
-											<td>
-												<select id="responseTypeSelect">
+											<td><label for="responseTypeSelect">Response
+													Type</label></td>
+											<td><select id="responseTypeSelect">
 														<option value="none"></option>
 														<option value="http"></option>
-												</select>
-											</td>
+											</select></td>
 										</tr>
 									</table>
 								</td>
@@ -158,13 +189,12 @@
 									<div id="httpResponseDiv" style="margin-top: 10px;">
 										<table cellpadding="0" cellspacing="0" class="fieldSetTable">
 											<tr>
-												<td>
-													<label id="responseOptionsTypeHintLabel"></label>
-												</td>
+												<td><label id="responseOptionsTypeHintLabel"></label></td>
 											</tr>
 											<tr>
 												<td>
-													<table cellpadding="0" cellspacing="0" class="fieldSetTable">
+													<table cellpadding="0" cellspacing="0"
+														class="fieldSetTable">
 														<tr>
 															<td><label for="responseOptionsTypeSelect"></label></td>
 															<td><select id="responseOptionsTypeSelect" size="1"></select></td>
@@ -173,16 +203,16 @@
 												</td>
 											</tr>
 											<tr>
-												<td>
-													<label id="responseHttpUrlIHintLabel"></label>
-												</td>
+												<td><label id="responseHttpUrlIHintLabel"></label></td>
 											</tr>
 											<tr>
 												<td>
-													<table cellpadding="0" cellspacing="0" class="fieldSetTable">
+													<table cellpadding="0" cellspacing="0"
+														class="fieldSetTable">
 														<tr>
 															<td><label for="responseHttpUrlInput"></label></td>
-															<td><input id="responseHttpUrlInput" type="text" style="width: 457px;"></input></td>
+															<td><input id="responseHttpUrlInput" type="text"
+																style="width: 457px;"></input></td>
 														</tr>
 													</table>
 												</td>
@@ -228,9 +258,9 @@
 											<table>
 												<tr>
 													<td><input id="deleteParameterDefinitionButton"
-														type="image" src="plugins/bpm-modeler/images/icons/delete.png"
-														title="Delete" alt="Delete" class="toolbarButton" />
-													</td>
+														type="image"
+														src="plugins/bpm-modeler/images/icons/delete.png"
+														title="Delete" alt="Delete" class="toolbarButton" /></td>
 												</tr>
 											</table>
 										</div></td>
@@ -246,7 +276,8 @@
 									</td>
 								</tr>
 							</table>
-						</div></td>
+						</div>
+					</td>
 				</tr>
 				<tr>
 					<td>
@@ -254,9 +285,8 @@
 							style="margin-top: 10px;">
 							<tr>
 								<td><input id="addParameterDefinitionButton" type="image"
-									src="plugins/bpm-modeler/images/icons/add.png" title="Add" alt="Add"
-									class="toolbarButton" />
-								</td>
+									src="plugins/bpm-modeler/images/icons/add.png" title="Add"
+									alt="Add" class="toolbarButton" /></td>
 								<td></td>
 							</tr>
 							<tr>
@@ -267,20 +297,17 @@
 							</tr>
 							<tr>
 								<td><label for="parameterDefinitionDirectionSelect"
-									id="direction">Direction</label>
-								</td>
+									id="direction">Direction</label></td>
 								<td><select id="parameterDefinitionDirectionSelect">
 										<option value="IN">In</option>
 										<option id="parameterDefinitionDirectionOutOption" value="OUT">Out</option>
-								</select>
-								</td>
+								</select></td>
 							</tr>
 							<tr>
 								<td><label for="dataTypeSelect" id="dataType">Data
 										Type</label></td>
 								<td><select id="dataTypeSelect" size="1">
-								</select>
-								</td>
+								</select></td>
 							</tr>
 							<tr id="primitiveDataTypeRow">
 								<td><label for="primitiveDataTypeSelect" id="primitiveType">Primitive
@@ -290,20 +317,71 @@
 							</tr>
 							<tr id="structuredDataTypeRow">
 								<td><label for="structuredDataTypeSelect">Data
-										Structure</label>
-								</td>
+										Structure</label></td>
 								<td><select id="structuredDataTypeSelect" size="1">
-								</select>
-								</td>
+								</select></td>
 							</tr>
 							<tr id="documentTypeRow">
-								<td><label for="documentTypeSelect">Document Type</label>
-								</td>
+								<td><label for="documentTypeSelect">Document Type</label></td>
 								<td><select id="documentTypeSelect" size="1">
-								</select>
+								</select></td>
+							</tr>
+						</table>
 								</td>
 							</tr>
-						</table></td>
+			</table>
+		</div>
+		<div id="attachmentsTab">
+			<table cellpadding="0" cellspacing="0" class="layoutTable">
+				<tr>
+					<td>
+						<table cellpadding="0" cellspacing="0" class="fieldSetTable">
+							<tr>
+								<td>
+									<div id="templateConfigurationListDiv" style="margin-top: 10px;">
+										<table cellpadding="0" cellspacing="0" class="fieldSetTable">
+											<tr>
+												<td align="left"><div class="heading"
+														style="margin-top: 10px;" id="templateConfigurations">Template Configurations</div></td>
+				</tr>
+											<tr>
+												<td>
+													<table cellpadding="0" cellspacing="0" class="layoutTable">
+														<tr>
+															<td><div class="toolBar">
+																	<input id="addTemplateConfigurationButton" type="image"
+																		src="plugins/bpm-modeler/images/icons/add.png"
+																		title="Add" alt="Add" class="toolbarButton" />
+																</div></td>
+														</tr>
+														<tr>
+															<td>
+																<div class="dataTable">
+																	<table id="templateConfigurationsTable" class="treeTable"
+																		style="width: 750px;">
+																		<thead>
+																			<tr>
+																				<th style="width: 20px;" id="delete"></th>
+																				<th style="width: 150px;" id="tName">Name</th>
+																				<th style="width: 150px;" id="tSource">Source</th>
+																				<th style="width: 150px;" id="tPath">Path</th>
+																				<th style="width: 150px;" id="tFormat">Format</th>
+																			</tr>
+																		</thead>
+																		<tbody />
+			</table>
+		</div>
+															</td>
+														</tr>
+													</table>
+												</td>
+											</tr>
+										</table>
+									</div>
+								</td>
+							</tr>
+						</table>
+					</td>
 				</tr>
 			</table>
 		</div>
@@ -318,8 +396,7 @@
 										<table cellpadding="0" cellspacing="5" class="layoutTable">
 											<tr>
 												<td><input id="resetButton" type="image"
-													src="plugins/bpm-modeler/images/icons/broom.png" />
-												</td>
+													src="plugins/bpm-modeler/images/icons/broom.png" /></td>
 												<td><input id="runButton" type="image"
 													src="plugins/bpm-modeler/images/icons/action_go.gif" /></td>
 											</tr>
@@ -340,7 +417,8 @@
 																	cols="80" class="code" style="width: 400px;"></textarea>
 															</td>
 														</tr>
-													</table></td>
+													</table>
+												</td>
 												<td>
 													<table cellpadding="0" cellspacing="5" class="layoutTable"
 														style="margin-left: 10px;">
@@ -352,7 +430,8 @@
 																	style="width: 600px; height: 300px; border: 1px solid grey; padding: 10px;" />
 															</td>
 														</tr>
-													</table></td>
+													</table>
+												</td>
 											</tr>
 										</table>
 									</td>
