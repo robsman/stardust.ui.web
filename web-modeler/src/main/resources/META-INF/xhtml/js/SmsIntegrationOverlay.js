@@ -331,8 +331,6 @@ define(
                   .val(this.getApplication().attributes["stardust:smsIntegrationOverlay::sourceaddress"]);
                   this.destinationAddressInput
                   .val(this.getApplication().attributes["stardust:smsIntegrationOverlay::destinationaddress"]);
-                  this.inputBodyAccessPointInput
-                  .val(this.getApplication().attributes["stardust:smsIntegrationOverlay::usessl"]);
                };
                /**
                 * returns camel route definition
