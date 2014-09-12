@@ -331,6 +331,10 @@ define(
                   .val(this.getApplication().attributes["stardust:smsIntegrationOverlay::sourceaddress"]);
                   this.destinationAddressInput
                   .val(this.getApplication().attributes["stardust:smsIntegrationOverlay::destinationaddress"]);
+              this.useSSLInput
+              .prop(
+                           "checked",
+                           this.getApplication().attributes["stardust:smsIntegrationOverlay::usessl"]);
                };
                /**
                 * returns camel route definition
@@ -516,7 +520,7 @@ define(
                                  .prop("checked") ? "${"+this.passowrdInput.val()+":Password}" : null,
                                  "stardust:smsIntegrationOverlay::sourceaddress":this.sourceAddressInput.val(),
                                  "stardust:smsIntegrationOverlay::destinationaddress":this.destinationAddressInput.val(),
-                                 "stardust:smsOverlay::usessl":this.useSSLInput
+                                 "stardust:smsIntegrationOverlay::usessl":this.useSSLInput
                                  .prop("checked") ? this.useSSLInput
                                           .prop("checked") : null,
                                  "carnot:engine:camel::routeEntries" : this.getRoute()
