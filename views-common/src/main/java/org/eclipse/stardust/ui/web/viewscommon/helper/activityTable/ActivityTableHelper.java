@@ -435,10 +435,8 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
       descriptorsCol.setNoWrap(true);
 
       ColumnPreference resubmissionTimeCol = new ColumnPreference("Resubmission Time", "resubmissionTime",
-            ColumnDataType.DATE, propsBean
-                  .getString("views.activityTable.processTable.column.resubmissionTime"),
-            new TableDataFilterPopup(new TableDataFilterDate(DataType.DATE)), true,
-            true);
+            ColumnDataType.DATE, propsBean.getString("views.activityTable.processTable.column.resubmissionTime"), null,
+            true, false);
       resubmissionTimeCol.setNoWrap(true);
       
       ColumnPreference startTimeCol = new ColumnPreference("StartTime", "startTime",
