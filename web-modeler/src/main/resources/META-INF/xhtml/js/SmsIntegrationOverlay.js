@@ -70,6 +70,7 @@ define(
                   this.destinationAddressInput = m_utils.jQuerySelect("#dataSourceTab #destinationAddressInput");
                   this.useSSLInput = m_utils.jQuerySelect("#dataSourceTab #useSSLInput");
                   this.inputBodyAccessPointInput = m_utils.jQuerySelect("#parametersTab #inputBodyAccessPointInput");
+              		this.camelConfigurationTab = $('a[href="#configurationTab"]');
                   
                   this.editorAnchor = m_utils.jQuerySelect("#codeEditorDiv").get(0);
                   this.editorAnchor.id = "codeEditorDiv"
@@ -79,6 +80,12 @@ define(
                   this.codeEditor.loadLanguageTools();
 
                   var self = this;
+              		
+              		this.camelConfigurationTab.click(function(e)
+                  	{
+                    		self.codeEditor.getEditor().getSession().setValue(self.codeEditor.getEditor().getSession().getValue());
+                  	});
+              
                   this.inputBodyAccessPointInput
                            .change(function()
                            {
