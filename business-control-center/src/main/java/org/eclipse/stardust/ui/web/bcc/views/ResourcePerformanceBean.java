@@ -39,7 +39,6 @@ import org.eclipse.stardust.ui.web.bcc.jsf.ProcessingTimePerProcess;
 import org.eclipse.stardust.ui.web.bcc.jsf.RoleItem;
 import org.eclipse.stardust.ui.web.bcc.messsages.MessagesBCCBean;
 import org.eclipse.stardust.ui.web.common.UIComponentBean;
-import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnAlignment;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
@@ -286,12 +285,9 @@ public class ResourcePerformanceBean extends UIComponentBean implements Resource
          index++;
       }
       String columnTitle = MessagesBCCBean.getInstance().get("views.customColumn.label") + index;
-      long userOrPartitionOID = statisticsTable.getColumnSelectorPopup().getSelectedPreferenceScope() == PreferenceScope.USER
-            ? SessionContext.findSessionContext().getUser().getOID()
-            : SessionContext.findSessionContext().getUser().getPartitionOID();
       String columnId = MessagesBCCBean.getInstance().get("views.customColumn.property") + index++;
       // Creates JSON object storing columnDefinition with values(columnId,columnName,duration..)
-      columnDefinition = CustomColumnUtils.updateCustomColumnJson(columnId, columnTitle, 0, CustomColumnUtils.DAY_TYPE, 0, CustomColumnUtils.DAY_TYPE, columnDefinition,
+      columnDefinition = CustomColumnUtils.updateCustomColumnJson(columnId, columnTitle, 0, CustomColumnUtils.DAY_TYPE, 1, CustomColumnUtils.DAY_TYPE, columnDefinition,
             customColumnDateRange);
       columnDefinition.addProperty("userOID", SessionContext.findSessionContext().getUser().getOID());
       columnDefinition.addProperty("readOnly", false);

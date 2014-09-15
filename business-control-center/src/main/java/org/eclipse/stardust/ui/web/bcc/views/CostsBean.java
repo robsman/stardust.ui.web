@@ -301,7 +301,7 @@ public class CostsBean extends UIComponentBean implements ResourcePaths,ViewEven
       String columnTitle = propsBean.get("views.customColumn.label") + index;
       String columnId = propsBean.get("views.customColumn.property") + index++ ;
       // Creates JSON object storing columnDefinition with values(columnId,columnName,duration..)
-      columnDefinition = CustomColumnUtils.updateCustomColumnJson(columnId, columnTitle, 0, CustomColumnUtils.DAY_TYPE, 0,
+      columnDefinition = CustomColumnUtils.updateCustomColumnJson(columnId, columnTitle, 0, CustomColumnUtils.DAY_TYPE, 1,
             CustomColumnUtils.DAY_TYPE, columnDefinition, customColumnDateRange);
       columnDefinition.addProperty("userOID", SessionContext.findSessionContext().getUser().getOID());
       columnDefinition.addProperty("readOnly", false); //for user created column readOnly false
