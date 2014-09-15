@@ -325,18 +325,18 @@ define(
 						this.image.show();
 					} else if (this.modelElement.eventClass == m_constants.MESSAGE_EVENT_CLASS) {
 						if (this.modelElement.throwing) {
-							this.image.attr("src", this.messageCatchingUrl);
+							this.image.attr("src", this.messageThrowingUrl);
 							this.image.show();
 						} else {
-							this.image.attr("src", this.messageThrowingUrl);
+							this.image.attr("src", this.messageCatchingUrl);
 							this.image.show();
 						}
 					} else if (this.modelElement.eventClass == m_constants.ERROR_EVENT_CLASS) {
 						if (this.modelElement.throwing) {
-							this.image.attr("src", this.errorCatchingUrl);
+							this.image.attr("src", this.errorThrowingUrl);
 							this.image.show();
 						} else {
-							this.image.attr("src", this.errorThrowingUrl);
+							this.image.attr("src", this.errorCatchingUrl);
 							this.image.show();
 						}
 					} else {
