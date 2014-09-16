@@ -814,10 +814,8 @@ define(
 
 					this
 							.setResponseType(this.getApplication().attributes["stardust:emailOverlay::responseType"]);
-               if(this.getApplication().contexts.application.accessPoints.length==0){
                   var accessPoints = this.createIntrinsicAccessPoints();
                   this.submitParameterDefinitionsChanges(accessPoints);
-               }
 				};
 
 				MailIntegrationOverlay.prototype.createIntrinsicAccessPoints = function() {
@@ -1296,13 +1294,13 @@ define(
 								.val();
 					}
                var accessPointsChanges =this.getApplication().contexts.application.accessPoints;
-               if(this.getApplication().contexts.application.accessPoints.length==0){
+					
 						accessPointsChanges = this
 								.createIntrinsicAccessPoints();
 						this
 								.submitParameterDefinitionsChanges(accessPointsChanges);
-               }
-                  
+					
+
 					this.view
 							.submitChanges({
 								type : applicationTypeChanges,
