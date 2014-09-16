@@ -499,15 +499,19 @@ define(
 
 					this.runButton
 							.click(function() {
-								var output = "var input = ";
+			               		var output = "var input = ";
 
 								output += self.inputDataTextarea.val();
-
-								var markup = CKEDITOR.instances[self.mailTemplateEditor.id]
-										.getData();
-
-								if (self.responseTypeSelect != "none") {
-									markup += self.createResponseOptionString();
+								var inputDataTextareaObj = eval("(function(){return " + self.inputDataTextarea.val()+ ";})()");
+								var markup;
+								if ((inputDataTextareaObj.mailContentAP != undefined) && (inputDataTextareaObj.mailContentAP != null) && (inputDataTextareaObj.mailContentAP != "")){
+									markup="{{mailContentAP}}";
+								}else{
+									markup = CKEDITOR.instances[self.mailTemplateEditor.id]
+											.getData();
+									if (self.responseTypeSelect != "none") {
+										markup += self.createResponseOptionString();
+									}
 								}
 
 								output += "; \""
