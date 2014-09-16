@@ -1013,7 +1013,11 @@ define(
 
 					// convert possible SDT defined as IN mapping to Java native
 					// object.
-               var route = "<to uri=\"ipp:data:toNativeObject\"/>\n";
+				   var route ="";
+				   if(this.templateConfigurations &&this.templateConfigurations.length>0){
+                  route += "<to uri=\"bean:documentHandler?method=processTemplateConfigurations\"/>\n";
+               }
+					route += "<to uri=\"ipp:data:toNativeObject\"/>\n";
 
 					// if runtime doesn't provide a certain header, set the
 					// default specified in UI
@@ -1131,6 +1135,8 @@ define(
 					route += "var partition = request.headers.get('ippPartition');\n";
 					route += "var investigate = false;\n";
                route += "var attachments = {};\n";
+					route += "exchange.out.attachments=request.attachments;\n";
+
                var includeAttachmentBean=false;
 					for (var n = 0; n < this.getApplication().contexts.application.accessPoints.length; ++n) {
 
@@ -1350,7 +1356,9 @@ define(
 									"stardust:emailOverlay::templatePath" : this.templatePathInput
 											.val(),
 									"stardust:emailOverlay::mailTemplate" : CKEDITOR.instances[this.mailTemplateEditor.id]
-											.getData()
+											.getData(),
+									"stardust:emailOverlay::templateConfigurations": JSON
+                                                .stringify(this.templateConfigurations)
 								}
 							});
 
@@ -1396,12 +1404,7 @@ define(
 												});
 
 										// submit changes
-										event.data.page
-												.submitSingleAttributeChange(
-														"stardust:emailOverlay::templateConfigurations",
-														JSON
-																.stringify(event.data.page.templateConfigurations));
-
+										event.data.page.submitChanges();
 										event.data.page
 												.refreshTemplateConfigurationsTable();
 
@@ -1444,14 +1447,8 @@ define(
 											event.data.page.templateConfigurations = newTemplateConfigurations;
 
 											// submit changes
-											event.data.page
-													.submitSingleAttributeChange(
-															"stardust:emailOverlay::templateConfigurations",
-															JSON
-																	.stringify(newTemplateConfigurations));
-
-											event.data.page
-													.refreshTemplateConfigurationsTable();
+											event.data.page.submitChanges();
+											event.data.page.refreshTemplateConfigurationsTable();
 										});
 
 						cell.append(button);
@@ -1481,12 +1478,7 @@ define(
 											}
 
 											// submit changes
-											event.data.page
-													.submitSingleAttributeChange(
-															"stardust:emailOverlay::templateConfigurations",
-															JSON
-																	.stringify(event.data.page.templateConfigurations));
-
+											event.data.page.submitChanges();
 											event.data.page
 													.refreshTemplateConfigurationsTable();
 										});
@@ -1540,12 +1532,7 @@ define(
 											}
 
 											// submit changes
-											event.data.page
-													.submitSingleAttributeChange(
-															"stardust:emailOverlay::templateConfigurations",
-															JSON
-																	.stringify(event.data.page.templateConfigurations));
-
+											event.data.page.submitChanges();
 											event.data.page
 													.refreshTemplateConfigurationsTable();
 										});
@@ -1579,12 +1566,7 @@ define(
 											}
 
 											// submit changes
-											event.data.page
-													.submitSingleAttributeChange(
-															"stardust:emailOverlay::templateConfigurations",
-															JSON
-																	.stringify(event.data.page.templateConfigurations));
-
+											event.data.page.submitChanges();
 											event.data.page
 													.refreshTemplateConfigurationsTable();
 										});
@@ -1634,12 +1616,7 @@ define(
 											}
 
 											// submit changes
-											event.data.page
-													.submitSingleAttributeChange(
-															"stardust:emailOverlay::templateConfigurations",
-															JSON
-																	.stringify(event.data.page.templateConfigurations));
-
+											event.data.page.submitChanges();
 											event.data.page
 													.refreshTemplateConfigurationsTable();
 										});
