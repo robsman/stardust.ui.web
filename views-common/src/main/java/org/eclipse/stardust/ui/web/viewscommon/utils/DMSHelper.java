@@ -345,6 +345,13 @@ public class DMSHelper
       if (index > -1)
       {
          processAttachments.remove(index);
+         
+         // the workaround: use null instead of empty list
+         if(processAttachments.isEmpty())
+         {
+            processAttachments = null;
+         }
+
          DMSHelper.saveProcessAttachments(processInstance, processAttachments);
 
          IppEventController.getInstance().notifyEvent(
