@@ -1268,9 +1268,44 @@ define(
           */
          ReportRenderingController.prototype.refreshPreviewData = function(scopeController, headers) {
             var self = this;	
+            var pos = 0;
+            var element = {};
+            
+            // Filter out Group by column from selected columns in JSON before invoking 
+            // the API
+            if (self.report.dataSet.columns) {
+               for ( var i = this.report.dataSet.columns.length - 1; i >= 0; i--) {
+                  if (self.report.dataSet.groupBy && self.report.dataSet.groupBy != 'None') {
+                     if (self.report.dataSet.groupBy === self.report.dataSet.columns[i].id) {
+                        self.pos = i;
+                        self.element = self.report.dataSet.columns.splice(i, 1);
+                        break;
+                     }
+                  }
+               }
+            }
+            
             
         	   this.getReportData(this.report, this.parameters).done(
      		function(data) {
+     		   if (self.report.dataSet.groupBy && self.report.dataSet.groupBy != 'None') {
+        		   // Add previously filtered out Group by column to selected columns in JSON
+     		      if (self.element) {
+        		      self.report.dataSet.columns.splice(self.pos, 0, self.element[0]);
+        		      self.element = null;
+   
+        		      // API doesn't support re-ordering of groupBy column, so re-ordering it 
+        		      // as per position in selected columns
+        		      for ( var rowIndex in data.rows) {
+        		         var row = data.rows[rowIndex];
+        		         row.splice(self.pos + 1, 0, row[0]);
+        		         row.splice(0, 1);
+        		      }
+   
+        		   } else {
+        		      headers.splice(0, 0, self.getDimension(self.report.dataSet.groupBy).name);
+        		   }
+        		}
      			// Format data before displaying the Results
      		   scopeController.rows = self.formatPreviewData(data.rows, scopeController);
      		   var baseTable = [headers];
@@ -1309,6 +1344,20 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
       
    var selectedColumns =  this.reportingService.getColumnDimensions(this.report);
    var displayValueMapping = {};
+   
+   if (self.report.dataSet.groupBy && self.report.dataSet.groupBy != 'None') {
+      // Showing the group by column as first column in Reports 
+      var found  = false;
+      for ( var selColumn in selectedColumns) {
+         if (selectedColumns[selColumn].id == self.report.dataSet.groupBy) {
+            found = true;
+            break;
+         }
+      }
+      if (!found) {
+         selectedColumns.splice(0, 0, self.getDimension(self.report.dataSet.groupBy));
+      }
+   }
    
    for ( var selColumn in selectedColumns)
    {
