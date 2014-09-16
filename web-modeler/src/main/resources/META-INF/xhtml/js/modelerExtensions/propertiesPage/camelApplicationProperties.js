@@ -10,8 +10,9 @@
 
 define(
 		[ 'bpm-modeler/js/m_modelElementCommentsPropertiesPage',
-				"bpm-modeler/js/m_i18nUtils" ],
-		function(m_modelElementCommentsPropertiesPage, m_i18nUtils) {
+		  'bpm-modeler/js/m_camelApplicationAttachmentsPropertiesPage',
+		  "bpm-modeler/js/m_i18nUtils" ],
+		function(m_modelElementCommentsPropertiesPage, m_camelApplicationAttachmentsPropertiesPage, m_i18nUtils) {
 			return {
 				propertiesPage : [ {
 					panelId : "camelApplicationView",
@@ -22,6 +23,14 @@ define(
 					pageName : m_i18nUtils
 							.getProperty("modeler.element.properties.commonProperties.comments"),
 					pageIconUrl : "plugins/bpm-modeler/images/icons/comments.png"
+				}, {
+					panelId : "camelApplicationView",
+					id : "camelApplicationAttachmentsPropertiesPage",
+					pageHtmlUrl : "plugins/bpm-modeler/views/modeler/camelApplicationAttachmentsPropertiesPage.html",
+					provider : m_camelApplicationAttachmentsPropertiesPage,
+					visibility : "always",
+					pageName : m_i18nUtils.getProperty("modeler.model.applicationOverlay.email.attachments.title"),
+					pageIconUrl : "plugins/bpm-modeler/images/icons/data-folder.png"
 				} ]
 			};
 		});
