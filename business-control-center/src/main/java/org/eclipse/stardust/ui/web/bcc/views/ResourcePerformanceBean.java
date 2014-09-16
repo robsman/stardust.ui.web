@@ -196,7 +196,8 @@ public class ResourcePerformanceBean extends UIComponentBean implements Resource
       statisticsTable = new SortableTable<ProcessingTimeTableEntry>(colSelecpopup, null,
             new SortableTableComparator<ProcessingTimeTableEntry>("processDefinitionId", true));
       // Add filter for all custom columns
-      this.setCustomColumnFilters(bccPerformanceColumnModel, columnDefinitionMap, null);
+      this.setCustomColumnFilters(userSelectableCols, columnDefinitionMap, null);
+      this.setCustomColumnFilters(partitionSelectableCols, columnDefinitionMap, null);
       userStatistics = createUserStatistics();
       statisticsTable.setList(userStatistics);
       statisticsTable.initialize();
@@ -253,14 +254,14 @@ public class ResourcePerformanceBean extends UIComponentBean implements Resource
                {
                   customColumn.setVisible(false);
                }
-               Long userOID = columnDefinition.get("userOID").getAsLong();
-               if (userOID != SessionContext.findSessionContext().getUser().getOID())
+               String userQualifierId = GsonUtils.extractString(columnDefinition, "userQualifierId");
+               if (SessionContext.findSessionContext().getUser().getQualifiedId().equals(userQualifierId))
                {
-                  columnDefinition.addProperty("readOnly", true);
+                  columnDefinition.addProperty("readOnly", false);
                }
                else
                {
-                  columnDefinition.addProperty("readOnly", false);
+                  columnDefinition.addProperty("readOnly", true);
                }
                if (customReadOnlyCols != null && customReadOnlyCols.contains(columnDef[0]))
                {
@@ -289,7 +290,7 @@ public class ResourcePerformanceBean extends UIComponentBean implements Resource
       // Creates JSON object storing columnDefinition with values(columnId,columnName,duration..)
       columnDefinition = CustomColumnUtils.updateCustomColumnJson(columnId, columnTitle, 0, CustomColumnUtils.DAY_TYPE, 1, CustomColumnUtils.DAY_TYPE, columnDefinition,
             customColumnDateRange);
-      columnDefinition.addProperty("userOID", SessionContext.findSessionContext().getUser().getOID());
+      columnDefinition.addProperty("userQualifierId", SessionContext.findSessionContext().getUser().getQualifiedId());
       columnDefinition.addProperty("readOnly", false);
       // Create column preference using json
       ColumnPreference customColumn = createColumnPreferenceFromJSON(columnDefinition);
@@ -322,7 +323,7 @@ public class ResourcePerformanceBean extends UIComponentBean implements Resource
       // Save selectable columns with columnId added to fixed columns
       model.saveSelectableColumns(columnSelectorPopup.getSelectedPreferenceScope());
       
-      TableDataFilterPopup filterPopup = this.setCustomColumnFilters(model, columnDefinitionMap, columnId);
+      TableDataFilterPopup filterPopup = this.setCustomColumnFilters(model.getSelectableColumns(), columnDefinitionMap, columnId);
       model.setDefaultSelectableColumns(selCols);
       update();
       filterPopup.openPopup();
@@ -386,10 +387,10 @@ public class ResourcePerformanceBean extends UIComponentBean implements Resource
     * @param currentColumn
     * @return
     */
-   public TableDataFilterPopup setCustomColumnFilters(IColumnModel columnModel, Map<String, Object> customColumns, String currentColumn)
+   public TableDataFilterPopup setCustomColumnFilters(List<ColumnPreference> columns, Map<String, Object> customColumns, String currentColumn)
    {
       TableDataFilterPopup dataFilterPopup = null;
-      for (ColumnPreference colPref : columnModel.getSelectableColumns())
+      for (ColumnPreference colPref : columns)
       {
          if (colPref.getColumnProperty().startsWith(CUSTOM_COL_PREFIX))
          {
@@ -409,7 +410,12 @@ public class ResourcePerformanceBean extends UIComponentBean implements Resource
                         dataFilterPopup = new TableDataFilterPopup(MessagesBCCBean.getInstance().get("views.customColumn.editLabel"),
                               new TableDataFilters(filter), this);
                         dataFilterPopup.setResetTitle(MessagePropertiesBean.getInstance().get("common.filterPopup.delete"));
-                        colPref.setColumnDataFilterPopup(dataFilterPopup);   
+                        colPref.setColumnDataFilterPopup(dataFilterPopup);
+                        if(!StringUtils.isEmpty(currentColumn))
+                        {
+                           // return if filter only needed for newly created column
+                           break;
+                        }
                      }
                   }
                }
@@ -656,10 +662,25 @@ public class ResourcePerformanceBean extends UIComponentBean implements Resource
       dateRange.add(DateRange.TODAY);
       dateRange.add(DateRange.LAST_WEEK);
       dateRange.add(DateRange.LAST_MONTH);
-      for (Map.Entry<String, DateRange> custCols : customColumnDateRange.entrySet())
+      
+      if(!CollectionUtils.isEmpty(customColumnDateRange))
       {
-         DateRange range = custCols.getValue();
-         dateRange.add(range);
+         for (ColumnPreference colPref : statisticsTable.getColumnModel().getSelectableColumns())
+         {
+            if (colPref.getColumnProperty().startsWith(CustomColumnUtils.CUSTOM_COL_PREFIX))
+            {
+               String property = colPref.getColumnProperty();
+               if (property.indexOf(CustomColumnUtils.CUSTOM_COL_PREFIX) != -1)
+               {
+                  String columnId = property.substring(property.indexOf(".") + 1);
+                  DateRange range = customColumnDateRange.get(columnId);
+                  if(null != range)
+                  {
+                     dateRange.add(range);
+                  }
+               }
+            }
+         }   
       }
       if (!dateRange.isEmpty())
       {
@@ -870,7 +891,6 @@ public class ResourcePerformanceBean extends UIComponentBean implements Resource
             selectableCols = partitionSelectableCols;            
          }
          setDefaultSelectableColumns(selectableCols);
-         setCustomColumnFilters(this, columnDefinitionMap,null);
          return selectableCols;
       }
    }

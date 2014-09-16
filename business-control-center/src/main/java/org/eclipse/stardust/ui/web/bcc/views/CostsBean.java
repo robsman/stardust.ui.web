@@ -210,7 +210,9 @@ public class CostsBean extends UIComponentBean implements ResourcePaths,ViewEven
    
       IColumnModel bccPerformanceColumnModel = new CostColumnModel(selCols, fixedCols, null,
             UserPreferencesEntries.M_BCC, UserPreferencesEntries.V_COST_AND_CONTROLLING);
-      this.setCustomColumnFilters(bccPerformanceColumnModel, columnDefinitionMap,null);
+      // Create Column Filters for all Custom Columns
+      this.setCustomColumnFilters(userSelectableCols, columnDefinitionMap,null);
+      this.setCustomColumnFilters(partitionSelectableCols, columnDefinitionMap,null);
       TableColumnSelectorPopup colSelecpopup = new TableColumnSelectorPopup(bccPerformanceColumnModel);
       costTable = new SortableTable<CostTableEntry>(colSelecpopup, null, new SortableTableComparator<CostTableEntry>(
             "processDefinition", true));
@@ -264,14 +266,14 @@ public class CostsBean extends UIComponentBean implements ResourcePaths,ViewEven
                {
                   customColumn.setVisible(false);
                }
-               Long userOID = columnDefinition.get("userOID").getAsLong();
-               if (userOID != SessionContext.findSessionContext().getUser().getOID())
+               String userQualifierId = GsonUtils.extractString(columnDefinition, "userQualifierId");
+               if (SessionContext.findSessionContext().getUser().getQualifiedId().equals(userQualifierId))
                {
-                  columnDefinition.addProperty("readOnly", true);
+                  columnDefinition.addProperty("readOnly", false);
                }
                else
                {
-                  columnDefinition.addProperty("readOnly", false);
+                  columnDefinition.addProperty("readOnly", true);
                }
                if(!CollectionUtils.isEmpty(customReadOnlyCols) && customReadOnlyCols.contains(columnDef[0]))
                {
@@ -303,7 +305,7 @@ public class CostsBean extends UIComponentBean implements ResourcePaths,ViewEven
       // Creates JSON object storing columnDefinition with values(columnId,columnName,duration..)
       columnDefinition = CustomColumnUtils.updateCustomColumnJson(columnId, columnTitle, 0, CustomColumnUtils.DAY_TYPE, 1,
             CustomColumnUtils.DAY_TYPE, columnDefinition, customColumnDateRange);
-      columnDefinition.addProperty("userOID", SessionContext.findSessionContext().getUser().getOID());
+      columnDefinition.addProperty("userQualifierId", SessionContext.findSessionContext().getUser().getQualifiedId());
       columnDefinition.addProperty("readOnly", false); //for user created column readOnly false
       
       ColumnPreference customColumn = createColumnPreferenceFromJSON(columnDefinition);
@@ -335,12 +337,11 @@ public class CostsBean extends UIComponentBean implements ResourcePaths,ViewEven
             UserPreferencesEntries.V_CUSTOM_AllCOLUMNS, allColumns);
       model.saveSelectableColumns(columnSelectorPopup.getSelectedPreferenceScope());
       
-      TableDataFilterPopup filterPopup = this.setCustomColumnFilters(model, columnDefinitionMap, columnId);
+      TableDataFilterPopup filterPopup = this.setCustomColumnFilters(model.getSelectableColumns(), columnDefinitionMap, columnId);
       model.setDefaultSelectableColumns(selCols);
       initialize();
       filterPopup.openPopup();
       PortalApplication.getInstance().addEventScript("parent.BridgeUtils.View.syncActiveView;");
-
    }
    
    /**
@@ -390,15 +391,15 @@ public class CostsBean extends UIComponentBean implements ResourcePaths,ViewEven
    /**
     * Create Filter PopUp for custom columns
     * 
-    * @param columnModel
+    * @param columns
     * @param customColumns
     * @param currentColumn
     * @return
     */
-   private TableDataFilterPopup setCustomColumnFilters(IColumnModel columnModel, Map<String, Object> customColumns, String currentColumn)
+   private TableDataFilterPopup setCustomColumnFilters(List<ColumnPreference> columns, Map<String, Object> customColumns, String currentColumn)
    {
       TableDataFilterPopup dataFilterPopup = null;
-      for (ColumnPreference colPref : columnModel.getSelectableColumns())
+      for (ColumnPreference colPref : columns)
       {
          if (colPref.getColumnProperty().startsWith(CustomColumnUtils.CUSTOM_COL_PREFIX))
          {
@@ -408,6 +409,7 @@ public class CostsBean extends UIComponentBean implements ResourcePaths,ViewEven
                String columnId = property.substring(property.indexOf(".") + 1);
                if(customColumns.get(columnId)!=null)
                {
+                  // if currentColumn = null, means create for all columns
                   if(currentColumn == null || (!StringUtils.isEmpty(currentColumn) && columnId.equals(currentColumn)))
                   {
                      Boolean readOnly =  ((JsonObject)customColumns.get(columnId)).get("readOnly").getAsBoolean();
@@ -419,6 +421,11 @@ public class CostsBean extends UIComponentBean implements ResourcePaths,ViewEven
                               new TableDataFilters(filter), this);
                         dataFilterPopup.setResetTitle(MessagePropertiesBean.getInstance().get("common.filterPopup.delete"));
                         colPref.setColumnDataFilterPopup(dataFilterPopup);   
+                        if(!StringUtils.isEmpty(currentColumn))
+                        {
+                           // return if filter only needed for newly created column
+                           break;
+                        }
                      }
                   }
                }
@@ -651,12 +658,27 @@ public class CostsBean extends UIComponentBean implements ResourcePaths,ViewEven
       dateRange.add(DateRange.TODAY);
       dateRange.add(DateRange.LAST_WEEK);
       dateRange.add(DateRange.LAST_MONTH);
-      for(Map.Entry<String, DateRange> custCols : customColumnDateRange.entrySet())
+      
+      if(!CollectionUtils.isEmpty(customColumnDateRange))
       {
-         String key = custCols.getKey();
-         DateRange range = custCols.getValue();
-         dateRange.add(range);
+         for (ColumnPreference colPref : costTable.getColumnModel().getSelectableColumns())
+         {
+            if (colPref.getColumnProperty().startsWith(CustomColumnUtils.CUSTOM_COL_PREFIX))
+            {
+               String property = colPref.getColumnProperty();
+               if (property.indexOf(CustomColumnUtils.CUSTOM_COL_PREFIX) != -1)
+               {
+                  String columnId = property.substring(property.indexOf(".") + 1);
+                  DateRange range = customColumnDateRange.get(columnId);
+                  if(null != range)
+                  {
+                     dateRange.add(range);
+                  }
+               }
+            }
+         }   
       }
+      
       if(!dateRange.isEmpty())
       {
          wsQuery.setPolicy(new StatisticsDateRangePolicy(dateRange));   
@@ -886,7 +908,6 @@ public class CostsBean extends UIComponentBean implements ResourcePaths,ViewEven
             selectableCols = partitionSelectableCols;            
          }
          setDefaultSelectableColumns(selectableCols);
-         setCustomColumnFilters(this, columnDefinitionMap,null);
          return selectableCols;
       }
    }
