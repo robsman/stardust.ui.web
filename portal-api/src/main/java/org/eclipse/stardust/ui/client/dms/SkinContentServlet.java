@@ -45,6 +45,7 @@ import org.eclipse.stardust.engine.core.runtime.beans.ForkingServiceFactory;
 import org.eclipse.stardust.engine.core.runtime.beans.interceptors.PropertyLayerProviderInterceptor;
 import org.eclipse.stardust.engine.core.runtime.beans.removethis.SecurityProperties;
 import org.eclipse.stardust.engine.core.runtime.removethis.EngineProperties;
+import org.eclipse.stardust.engine.core.spi.dms.RepositoryIdUtils;
 import org.eclipse.stardust.engine.core.spi.jca.IJcaResourceProvider;
 import org.eclipse.stardust.vfs.IFile;
 import org.eclipse.stardust.vfs.IFolder;
@@ -119,7 +120,7 @@ public class SkinContentServlet extends AbstractVfsContentServlet
                      parameters.set(SecurityProperties.CURRENT_PARTITION,
                            AuditTrailPartitionBean.findById(request.partitionId));
 
-                     String skinFolder = getDefaultSkinId(rtEnv);
+                     String skinFolder = RepositoryIdUtils.stripRepositoryId(getDefaultSkinId(rtEnv));
 
                      if (StringUtils.isNotEmpty(skinFolder))
                      {
