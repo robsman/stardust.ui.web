@@ -110,10 +110,10 @@ define(
                            .jQuerySelect("#mailIntegrationOverlay #bccInput");
                   this.identifierInSubjectInput = m_utils
                            .jQuerySelect("#mailIntegrationOverlay #identifierInSubjectInput");
-                  this.storeEmailInput = m_utils
-                           .jQuerySelect("#mailIntegrationOverlay #storeEmailInput");
-                  this.storeAttachmentsInput = m_utils
-                           .jQuerySelect("#mailIntegrationOverlay #storeAttachmentsInput");
+//                  this.storeEmailInput = m_utils
+//                           .jQuerySelect("#mailIntegrationOverlay #storeEmailInput");
+//                  this.storeAttachmentsInput = m_utils
+//                           .jQuerySelect("#mailIntegrationOverlay #storeAttachmentsInput");
                   this.transactedRouteInput = m_utils
                            .jQuerySelect("#mailIntegrationOverlay #transactedRouteInput");
                   this.templateSourceSelect = m_utils
@@ -249,16 +249,16 @@ define(
                            .text(
                                     m_i18nUtils
                                              .getProperty("modeler.model.applicationOverlay.email.bccInput.label"));
-                  m_utils
-                           .jQuerySelect("label[for='storeEmailInput']")
-                           .text(
-                                    m_i18nUtils
-                                             .getProperty("modeler.model.applicationOverlay.email.storeEmailInput.label"));
-                  m_utils
-                           .jQuerySelect("label[for='storeAttachmentsInput']")
-                           .text(
-                                    m_i18nUtils
-                                             .getProperty("modeler.model.applicationOverlay.email.storeAttachmentsInput.label"));
+//                  m_utils
+//                           .jQuerySelect("label[for='storeEmailInput']")
+//                           .text(
+//                                    m_i18nUtils
+//                                             .getProperty("modeler.model.applicationOverlay.email.storeEmailInput.label"));
+//                  m_utils
+//                           .jQuerySelect("label[for='storeAttachmentsInput']")
+//                           .text(
+//                                    m_i18nUtils
+//                                             .getProperty("modeler.model.applicationOverlay.email.storeAttachmentsInput.label"));
                   m_utils
                            .jQuerySelect("label[for='identifierInSubjectInput']")
                            .text(
@@ -366,14 +366,14 @@ define(
                   {
                      self.submitChanges();
                   });
-                  this.storeAttachmentsInput.change(function()
-                  {
-                     self.submitChanges();
-                  });
-                  this.storeEmailInput.change(function()
-                  {
-                     self.submitChanges();
-                  });
+//                  this.storeAttachmentsInput.change(function()
+//                  {
+//                     self.submitChanges();
+//                  });
+//                  this.storeEmailInput.change(function()
+//                  {
+//                     self.submitChanges();
+//                  });
                   this.templateSourceSelect.change(function()
                   {
                      self.setTemplateSource(self.templateSourceSelect.val());
@@ -852,14 +852,14 @@ define(
                            .val(this.getApplication().attributes["stardust:emailOverlay::cc"]);
                   this.bccInput
                            .val(this.getApplication().attributes["stardust:emailOverlay::bcc"]);
-                  this.storeEmailInput
-                           .prop(
-                                    "checked",
-                                    this.getApplication().attributes["stardust:emailOverlay::storeEmail"]);
-                  this.storeAttachmentsInput
-                           .prop(
-                                    "checked",
-                                    this.getApplication().attributes["stardust:emailOverlay::storeAttachments"]);
+//                  this.storeEmailInput
+//                           .prop(
+//                                    "checked",
+//                                    this.getApplication().attributes["stardust:emailOverlay::storeEmail"]);
+//                  this.storeAttachmentsInput
+//                           .prop(
+//                                    "checked",
+//                                    this.getApplication().attributes["stardust:emailOverlay::storeAttachments"]);
                   CKEDITOR.instances[this.mailTemplateEditor.id]
                            .setData(this.getApplication().attributes["stardust:emailOverlay::mailTemplate"]);
                   this
@@ -1175,10 +1175,10 @@ define(
                                  "stardust:emailOverlay::to" : this.toInput.val(),
                                  "stardust:emailOverlay::cc" : this.ccInput.val(),
                                  "stardust:emailOverlay::bcc" : this.bccInput.val(),
-                                 "stardust:emailOverlay::storeEmail" : this.storeEmailInput
-                                          .prop("checked"),
-                                 "stardust:emailOverlay::storeAttachments" : this.storeAttachmentsInput
-                                          .prop("checked"),
+//                                 "stardust:emailOverlay::storeEmail" : this.storeEmailInput
+//                                          .prop("checked"),
+//                                 "stardust:emailOverlay::storeAttachments" : this.storeAttachmentsInput
+//                                          .prop("checked"),
                                  "stardust:emailOverlay::templateSource" : this.templateSourceSelect
                                           .val(),
                                  "stardust:emailOverlay::templatePath" : this.templatePathInput
