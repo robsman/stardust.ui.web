@@ -368,34 +368,26 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
    {
       if ((ClosePanelScenario.COMPLETE == scenario) || (ClosePanelScenario.SUSPEND_AND_SAVE == scenario))
       {
-         ApplicationContext context = ai.getActivity().getApplicationContext(EXT_WEB_APP_CONTEXT_ID);
-         Boolean embedded = (Boolean) context.getAttribute("carnot:engine:ui:externalWebApp:embedded");
+         trace.info("Triggering asynchronous close of activity panel ...");
 
-         if (null != embedded && embedded)
+         FacesContext facesContext = FacesContext.getCurrentInstance();
+         InteractionRegistry registry = (InteractionRegistry) ManagedBeanUtils.getManagedBean(facesContext,
+               InteractionRegistry.BEAN_ID);
+
+         Interaction interaction = registry.getInteraction(Interaction.getInteractionId(ai));
+         if ((null != interaction) && (Interaction.Status.Complete == interaction.getStatus()))
          {
-            trace.info("Triggering asynchronous close of activity panel ...");
-
-            FacesContext facesContext = FacesContext.getCurrentInstance();
-            InteractionRegistry registry = (InteractionRegistry) ManagedBeanUtils.getManagedBean(facesContext,
-                  InteractionRegistry.BEAN_ID);
-
-            Interaction interaction = registry.getInteraction(Interaction.getInteractionId(ai));
-            if ((null != interaction) && (Interaction.Status.Complete == interaction.getStatus()))
-            {
-               // out data mapping was already performed
-               // validate data?
-               return true;
-      }
-
-            JavascriptContext.addJavascriptCall(facesContext,
-                  "parent.InfinityBpm.ProcessPortal.sendCloseCommandToExternalWebApp('" + getContentFrameId(ai) + "', '"
-                        + scenario.getId() + "', true);");
-
-            // close panel asynchronously after iFrame page responds via JavaScript
-            return false;
+            // out data mapping was already performed
+            // validate data?
+            return true;
          }
 
-      return true;
+         JavascriptContext.addJavascriptCall(facesContext,
+               "parent.InfinityBpm.ProcessPortal.sendCloseCommandToExternalWebApp('" + getContentFrameId(ai) + "', '"
+                     + scenario.getId() + "', true);");
+
+         // close panel asynchronously after iFrame page responds via JavaScript
+         return false;
    }
       else
       {

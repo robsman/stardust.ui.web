@@ -15,49 +15,60 @@ if (!window["InfinityBpm.ProcessPortal"]) {
 		 */
 		function sendIppAiClosePanelCommand(contentId, commandId, fallback) {
 	    	BridgeUtils.FrameManager.doWithContentFrame(contentId, function(contentFrame) {
-	    		var wndEmbeddedWebApp = contentFrame.contentWindow;
-		        if (wndEmbeddedWebApp) {
-		        	if (wndEmbeddedWebApp.performIppAiClosePanelCommand) {
-		        		// function is present, so proceed synchronously
-		        		invokeIppAiClosePanelCommand(wndEmbeddedWebApp, commandId);
-		        	} else if ( !wndEmbeddedWebApp.document || ('loading' == wndEmbeddedWebApp.document.readyState)) {
-		        		// if function is not present, this typically means the iFrame content is currently being loaded, ..
-		        		try {
-		        			// ... so proceed asynchronously
-		        			debug("Asynchronously sending close command: " + commandId);
-		        			contentFrame.onload = function(event) {
-		        				// unregister self to fire event only once
-		        				debug("Loaded external Web App: " + event);
-		        				event.target.onload = undefined;
-				                var wndEmbeddedWebApp = event.target.contentWindow;
-				                if (wndEmbeddedWebApp.performIppAiClosePanelCommand) {
-				                	invokeIppAiClosePanelCommand(wndEmbeddedWebApp, commandId);
-				                } else {
-				                	if (fallback) {
-				                		window.setTimeout(function() {
-				                			confirmCloseCommandFromExternalWebApp(commandId);
-				                		});
-				                	} else {
-				                		alert("Did not find performIppAiClosePanelCommand() method in embedded AI panel's iFrame.");
-				                	}
-				                }
-		        			};
-		        			return;
-		        		} catch (e) {
-		        			alert('Failed registering <onload> handler: ' + e.message);
-		        		}
-		        	} else {
-		        		if (fallback) {
-	                		window.setTimeout(function() {
-	                			confirmCloseCommandFromExternalWebApp(commandId);
-	                		});
-	                	} else {
-	                		alert("Did not find performIppAiClosePanelCommand() method in embedded AI panel's iFrame.");
-	                	}
-		        	}
-		        } else {
-		        	alert('Failed resolving content window of external Web App iFrame.');
-		        }
+	    		try {
+		    		var wndEmbeddedWebApp = contentFrame.contentWindow;
+			        if (wndEmbeddedWebApp) {
+			        	if (wndEmbeddedWebApp.performIppAiClosePanelCommand) {
+			        		// function is present, so proceed synchronously
+			        		invokeIppAiClosePanelCommand(wndEmbeddedWebApp, commandId);
+			        	} else if ( !wndEmbeddedWebApp.document || ('loading' == wndEmbeddedWebApp.document.readyState)) {
+			        		// if function is not present, this typically means the iFrame content is currently being loaded, ..
+			        		try {
+			        			// ... so proceed asynchronously
+			        			debug("Asynchronously sending close command: " + commandId);
+			        			contentFrame.onload = function(event) {
+			        				// unregister self to fire event only once
+			        				debug("Loaded external Web App: " + event);
+			        				event.target.onload = undefined;
+					                var wndEmbeddedWebApp = event.target.contentWindow;
+					                if (wndEmbeddedWebApp.performIppAiClosePanelCommand) {
+					                	invokeIppAiClosePanelCommand(wndEmbeddedWebApp, commandId);
+					                } else {
+					                	if (fallback) {
+					                		window.setTimeout(function() {
+					                			confirmCloseCommandFromExternalWebApp(commandId);
+					                		});
+					                	} else {
+					                		alert("Did not find performIppAiClosePanelCommand() method in embedded AI panel's iFrame.");
+					                	}
+					                }
+			        			};
+			        			return;
+			        		} catch (e) {
+			        			alert('Failed registering <onload> handler: ' + e.message);
+			        		}
+			        	} else {
+			        		if (fallback) {
+		                		window.setTimeout(function() {
+		                			confirmCloseCommandFromExternalWebApp(commandId);
+		                		});
+		                	} else {
+		                		alert("Did not find performIppAiClosePanelCommand() method in embedded AI panel's iFrame.");
+		                	}
+			        	}
+			        } else {
+			        	alert('Failed resolving content window of external Web App iFrame.');
+			        }
+	    		}catch (e) {
+	    			debug("Error in accessing contentFrame: " +  contentId + ", may be cross domain scenario");
+	    			if (fallback) {
+                		window.setTimeout(function() {
+                			confirmCloseCommandFromExternalWebApp(commandId);
+                		});
+                	} else {
+                		alert("Did not find performIppAiClosePanelCommand() method in embedded AI panel's iFrame.");
+                	}
+				}
 	    	});
 	    }
 
