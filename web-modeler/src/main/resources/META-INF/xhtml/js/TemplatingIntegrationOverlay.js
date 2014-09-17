@@ -20,10 +20,11 @@ define(
                   "bpm-modeler/js/m_model", "bpm-modeler/js/m_accessPoint",
                   "bpm-modeler/js/m_typeDeclaration",
                   "bpm-modeler/js/m_parameterDefinitionsPanel",
-                  "bpm-modeler/js/m_codeEditorAce" ],
+                  "bpm-modeler/js/m_codeEditorAce",
+                  "bpm-modeler/js/m_routeDefinitionUtils" ],
          function(m_utils, m_urlUtils, m_i18nUtils, m_constants, m_commandsController,
                   m_command, m_model, m_accessPoint, m_typeDeclaration,
-                  m_parameterDefinitionsPanel, m_codeEditorAce)
+                  m_parameterDefinitionsPanel, m_codeEditorAce, m_routeDefinitionUtils)
          {
             return {
                create : function(view)
@@ -171,15 +172,13 @@ define(
                   this.deleteParameterDefinitionButton.attr("src", m_urlUtils
                            .getContextName()
                            + "/plugins/bpm-modeler/images/icons/delete.png");
-                  this.deleteParameterDefinitionButton
-                           .click(
-                                    {
-                                       panel : this
-                                    },
-                                    function(event)
-                                    {
-                                       event.data.panel.parameterDefinitionsPanel.deleteParameterDefinition();
-                                    });
+                  this.deleteParameterDefinitionButton.click({
+                     panel : this
+                  }, function(event)
+                  {
+                     event.data.panel.parameterDefinitionsPanel
+                              .deleteParameterDefinition();
+                  });
 
                   this.outputAccessPointInput
                            .change(
@@ -192,7 +191,8 @@ define(
                                        if (self.outputAccessPointInput.val() == m_constants.TO_BE_DEFINED)
                                        {
                                           // set output AP type to default(String)
-                                          var defaultAccessPoints= event.data.panel.createOrReplaceOutAccessPoint();
+                                          var defaultAccessPoints = event.data.panel
+                                                   .createOrReplaceOutAccessPoint();
                                           event.data.panel
                                                    .submitParameterDefinitionsChanges(defaultAccessPoints);
                                        }
@@ -232,14 +232,17 @@ define(
                   this.update();
                };
 
-               TemplatingIntegrationOverlay.prototype.showHideOutAccessPointRow = function(convertToPdfInput, formatInput){
-                     if (convertToPdfInput
-                              || formatInput == "docx")
-                     {
-                        this.outputAccessPointRow.show();
-                     }else{
-                        this.outputAccessPointRow.hide();
-                     }
+               TemplatingIntegrationOverlay.prototype.showHideOutAccessPointRow = function(
+                        convertToPdfInput, formatInput)
+               {
+                  if (convertToPdfInput || formatInput == "docx")
+                  {
+                     this.outputAccessPointRow.show();
+                  }
+                  else
+                  {
+                     this.outputAccessPointRow.hide();
+                  }
                }
 
                /**
@@ -297,30 +300,30 @@ define(
 
                TemplatingIntegrationOverlay.prototype.populateFormatInputField = function()
                {
-               this.formatInput.empty();
-               this.formatInput
-                        .append("<option value=\"text\">"
-                                 + m_i18nUtils
-                                          .getProperty("modeler.model.applicationOverlay.templating.formatInput.text.label")
-                                 + "</option>");
-               this.formatInput
-                        .append("<option value=\"html\">"
-                                 + m_i18nUtils
-                                          .getProperty("modeler.model.applicationOverlay.templating.formatInput.html.label")
-                                 + "</option>");
-               this.formatInput
-                        .append("<option value=\"xml\">"
-                                 + m_i18nUtils
-                                          .getProperty("modeler.model.applicationOverlay.templating.formatInput.xml.label")
-                                 + "</option>");
-               if (this.locationInput.val() != "embedded")
-               {
+                  this.formatInput.empty();
                   this.formatInput
-                           .append("<option value=\"docx\">"
+                           .append("<option value=\"text\">"
                                     + m_i18nUtils
-                                             .getProperty("modeler.model.applicationOverlay.templating.formatInput.docx.label")
+                                             .getProperty("modeler.model.applicationOverlay.templating.formatInput.text.label")
                                     + "</option>");
-               }
+                  this.formatInput
+                           .append("<option value=\"html\">"
+                                    + m_i18nUtils
+                                             .getProperty("modeler.model.applicationOverlay.templating.formatInput.html.label")
+                                    + "</option>");
+                  this.formatInput
+                           .append("<option value=\"xml\">"
+                                    + m_i18nUtils
+                                             .getProperty("modeler.model.applicationOverlay.templating.formatInput.xml.label")
+                                    + "</option>");
+                  if (this.locationInput.val() != "embedded")
+                  {
+                     this.formatInput
+                              .append("<option value=\"docx\">"
+                                       + m_i18nUtils
+                                                .getProperty("modeler.model.applicationOverlay.templating.formatInput.docx.label")
+                                       + "</option>");
+                  }
                }
                /**
                 *
@@ -352,7 +355,7 @@ define(
                {
                   if (this.view.getApplication().contexts.application.accessPoints.length == 0)
                   {
-                     var defaultAccessPoints= this.createOrReplaceOutAccessPoint();
+                     var defaultAccessPoints = this.createOrReplaceOutAccessPoint();
                      this.view
                               .submitChanges(
                                        {
@@ -371,13 +374,15 @@ define(
                   }
                };
 
-               TemplatingIntegrationOverlay.prototype.createOrReplaceOutAccessPoint = function(){
+               TemplatingIntegrationOverlay.prototype.createOrReplaceOutAccessPoint = function()
+               {
                   var accessPoints = this.getApplication().contexts.application.accessPoints;
-                  var outAccessPoint=this.findAccessPoint(accessPoints,"output");
-                  var accessPointList=[];
+                  var outAccessPoint = this.findAccessPoint(accessPoints, "output");
+                  var accessPointList = [];
 
-                  if(outAccessPoint){
-                     accessPointList=this.filterAccessPoint(accessPoints,"output");
+                  if (outAccessPoint)
+                  {
+                     accessPointList = this.filterAccessPoint(accessPoints, "output");
                   }
                   accessPointList.push({
                      id : "output",
@@ -390,7 +395,6 @@ define(
                      }
                   });
 
-
                   return accessPointList;
                }
 
@@ -400,22 +404,29 @@ define(
                TemplatingIntegrationOverlay.prototype.update = function()
                {
                   this.parameterDefinitionsPanel.setScopeModel(this.getScopeModel());
-                  this.parameterDefinitionsPanel.setParameterDefinitions(this.getApplication().contexts.application.accessPoints);
+                  this.parameterDefinitionsPanel.setParameterDefinitions(this
+                           .getApplication().contexts.application.accessPoints);
 
-                  //intiailize dropdown list with typeDeclarations
+                  // intiailize dropdown list with typeDeclarations
                   this.outputAccessPointInput.empty();
-                  this.outputAccessPointInput.append("<option value='" + m_constants.TO_BE_DEFINED + "'>"+ m_i18nUtils.getProperty("None") + "</option>");
+                  this.outputAccessPointInput.append("<option value='"
+                           + m_constants.TO_BE_DEFINED + "'>"
+                           + m_i18nUtils.getProperty("None") + "</option>");
                   var typeDeclarations = this.getScopeModel().typeDeclarations;
                   for ( var i in typeDeclarations)
                   {
                      var typeDeclaration = typeDeclarations[i];
-                     this.outputAccessPointInput.append("<option value='"+ typeDeclaration.getFullId() + "'>" + typeDeclaration.name+ "</option>");
+                     this.outputAccessPointInput.append("<option value='"
+                              + typeDeclaration.getFullId() + "'>" + typeDeclaration.name
+                              + "</option>");
                   }
-                  //////////////////////////////////////////////////////////////
+                  // ////////////////////////////////////////////////////////////
 
                   this.populateFormatInputField();
-                  if (this.getApplication().attributes["stardust:templatingIntegrationOverlay::location"]){
-                     this.locationInput.val(this.getApplication().attributes["stardust:templatingIntegrationOverlay::location"]);
+                  if (this.getApplication().attributes["stardust:templatingIntegrationOverlay::location"])
+                  {
+                     this.locationInput
+                              .val(this.getApplication().attributes["stardust:templatingIntegrationOverlay::location"]);
 
                   }
                   if (this.getApplication().attributes["stardust:templatingIntegrationOverlay::format"])
@@ -446,16 +457,15 @@ define(
 
                   var accessPoints = this.getApplication().contexts.application.accessPoints;
 
-               /*   if(!this.getApplication().attributes["stardust:templatingIntegrationOverlay::convertToPdf"]){
-                     this.outputAccessPointRow.hide();
-                     var outputAccessPoint = this.findAccessPoint(accessPoints,"output");
-                     if(outputAccessPoint && (outputAccessPoint.dataType!="primitive" && outputAccessPoint.primitiveDataType!="String")){
-                     var filteredAccessPoints = this.createOrReplaceOutAccessPoint();
-                     this.submitParameterDefinitionsChanges(filteredAccessPoints);
-                     }
-                  }*/
-
-
+                  /*
+                   * if(!this.getApplication().attributes["stardust:templatingIntegrationOverlay::convertToPdf"]){
+                   * this.outputAccessPointRow.hide(); var outputAccessPoint =
+                   * this.findAccessPoint(accessPoints,"output"); if(outputAccessPoint &&
+                   * (outputAccessPoint.dataType!="primitive" &&
+                   * outputAccessPoint.primitiveDataType!="String")){ var
+                   * filteredAccessPoints = this.createOrReplaceOutAccessPoint();
+                   * this.submitParameterDefinitionsChanges(filteredAccessPoints); } }
+                   */
 
                   if (accessPoints.length > 0)
                   {
@@ -467,57 +477,58 @@ define(
                                     .val(outputAccessPoint.structuredDataTypeFullId);
                      }
                   }
-                  //update the view
+                  // update the view
                   this.updateView(this.locationInput.val());
                };
 
                /**
-               *
-               */
-              TemplatingIntegrationOverlay.prototype.updateView = function(location)
-              {
-                 this.textAreaConfigurationDiv.hide();
-                 this.outputAccessPointRow.show();
-                 //this.outputAccessPointRow.hide();
-                 this.outputNameRow.hide();
-                 if (location == "embedded")
-                 {
-                    this.textAreaConfigurationDiv.show();
-                    this.templateRow.hide();
-                 }
-                 if (location == "classpath" || location == "repository")
-                 {
-                    this.templateRow.show();
-                 }
-                 if (location == "data")
-                 {
-                    this.templateRow.hide();
-                    this.outputNameRow.hide();
-                 }
-                 if (this.convertToPdfInput.prop("checked")
-                          || this.formatInput.val() == "docx"){
-                    this.outputNameRow.show();
-                  //  this.outputAccessPointRow.show();
-                 }
-                 var accessPoints = this.getApplication().contexts.application.accessPoints;
-                 if (accessPoints.length > 0)
-                 {
-                    var outputAccessPoint = this.findAccessPoint(accessPoints, "output");
-                    if (outputAccessPoint)
-                    {
-                       if (outputAccessPoint.dataType == "dmsDocument")
-                          this.outputNameRow.show();
-                    }
-                 }
-              };
+                *
+                */
+               TemplatingIntegrationOverlay.prototype.updateView = function(location)
+               {
+                  this.textAreaConfigurationDiv.hide();
+                  this.outputAccessPointRow.show();
+                  // this.outputAccessPointRow.hide();
+                  this.outputNameRow.hide();
+                  if (location == "embedded")
+                  {
+                     this.textAreaConfigurationDiv.show();
+                     this.templateRow.hide();
+                  }
+                  if (location == "classpath" || location == "repository")
+                  {
+                     this.templateRow.show();
+                  }
+                  if (location == "data")
+                  {
+                     this.templateRow.hide();
+                     this.outputNameRow.hide();
+                  }
+                  if (this.convertToPdfInput.prop("checked")
+                           || this.formatInput.val() == "docx")
+                  {
+                     this.outputNameRow.show();
+                     // this.outputAccessPointRow.show();
+                  }
+                  var accessPoints = this.getApplication().contexts.application.accessPoints;
+                  if (accessPoints.length > 0)
+                  {
+                     var outputAccessPoint = this.findAccessPoint(accessPoints, "output");
+                     if (outputAccessPoint)
+                     {
+                        if (outputAccessPoint.dataType == "dmsDocument")
+                           this.outputNameRow.show();
+                     }
+                  }
+               };
                /**
                 * returns camel route definition
                 */
                TemplatingIntegrationOverlay.prototype.getRoute = function()
                {
-                  var route = "";
+
                   var accessPoints = this.getApplication().contexts.application.accessPoints;
-                  var includeDocumentPostProcessor = false;
+                  // var includeDocumentPostProcessor = false;
                   var outAccessPoint;
                   if (accessPoints.length > 0)
                   {
@@ -528,170 +539,83 @@ define(
                                  || accessPoint.direction == m_constants.IN_OUT_ACCESS_POINT)
                         {
                            outAccessPoint = accessPoint;
-                           includeDocumentPostProcessor = true;
+                           break;
                         }
                      }
                   }
-                  var templateLocation = this.locationInput.val();
+                  var route = m_routeDefinitionUtils.createTemplatingHandlerRouteDefinition(
+                           this.formatInput.val(), this.locationInput.val(),
+                           this.codeEditor.getEditor().getSession().getValue(),
+                           this.templateInput.val(), this.outputNameInput.val(),
+                           this.convertToPdfInput.prop("checked"));
                   if (this.formatInput.val() != "docx")
                   {
-                     route += "<process ref=\"customVelocityContextAppender\"/>";
-
-                     if (templateLocation == "embedded")
-                     {
-                        route += "<setHeader headerName=\"CamelVelocityTemplate\">\n";
-                        route += "   <constant>\n";
-                        route += "<![CDATA[";
-                        route += "#parse(\"commons.vm\")\n";
-                        route += "#getInputs()\n";
-                        route += this.codeEditor.getEditor().getSession().getValue();
-                        route += "\n";
-                        route += "#setOutputs()\n";
-                        route += "]]>\n";
-                        route += "   </constant>\n";
-                        route += "</setHeader>\n";
-                     }
-                     else if (templateLocation == "classpath")
-                     {
-                        route += "<setHeader headerName=\"CamelVelocityResourceUri\">\n";
-                        route += "   <constant>" + this.templateInput.val()
-                                 + "</constant>\n";
-                        route += "</setHeader>\n";
-                     }
-                     else if (templateLocation == "repository"
-                              || templateLocation == "data")
-                     {
-                        if (templateLocation == "repository")
-                        {
-                           route += "<setHeader headerName=\"ippDmsTargetPath\">\n";
-                           route += "   <constant>" + this.templateInput.val()
-                                    + "</constant>\n";
-                           route += "</setHeader>\n";
-                        }
-                        route += "<to uri=\"bean:documentHandler?method=retrieveContent\"/>";
-                        route += "<setHeader headerName=\"CamelVelocityTemplate\">\n";
-                        route += "   <simple>$simple{header.ippDmsDocumentContent}</simple>\n";
-                        route += "</setHeader>\n";
-                     }
-                     var uri = "templating:" + templateLocation + "?format="
-                              + this.formatInput.val();
-                     if (this.templateInput.val() != null && this.templateInput.val() != "")
-                        uri += "&amp;template=" + this.templateInput.val()
-                     if (this.outputNameInput.val() != null && this.outputNameInput.val() != "")
-                        uri += "&amp;outputName=" + this.outputNameInput.val();
-                     if (this.convertToPdfInput.prop("checked"))
-                     {
-                        uri += "&amp;convertToPdf="
-                                 + this.convertToPdfInput.prop("checked");
-                     }
-                     route += "<to uri=\"" + uri + "\" />";
-
-                     if (this.convertToPdfInput.prop("checked"))
-                     {
-                        route += "<to uri=\"bean:pdfConverterProcessor?method=process\"/>";
-                     }
                      if (outAccessPoint.dataType == "dmsDocument")
                      {
                         route += "<setHeader headerName=\"ippDmsDocumentName\">\n";
                         route += "   <simple>$simple{header.CamelTemplatingOutputName}</simple>\n";
                         route += "</setHeader>\n";
-
                         route += "<to uri=\"bean:documentHandler?method=toDocument\"/>";
                         route += "<setHeader headerName=\"output\">\n";
                         route += "<simple>$simple{body}</simple>\n";
                         route += "</setHeader>\n";
-                     }else{
+                     }
+                     else
+                     {
                         route += "<setHeader headerName=\"output\">\n";
                         route += "<simple>$simple{body}</simple>\n";
                         route += "</setHeader>\n";
                      }
-
-                  }
-                  else
-                  {
-                     route += "<process ref=\"customVelocityContextAppender\"/>";
-                     if (templateLocation == "repository" || templateLocation == "data")
-                     {
-                        route += "<process ref=\"customVelocityContextAppender\"/>";
-                        route += "<setHeader headerName=\"ippDmsTargetPath\">\n";
-                        route += "   <constant>" + this.templateInput.val()
-                                 + "</constant>\n";
-                        route += "</setHeader>\n";
-                        route += "<to uri=\"bean:documentHandler?method=retrieveContent\"/>";
-                        route += "<setHeader headerName=\"CamelTemplatingTemplateContent\">\n";
-                        route += "   <simple>$simple{header.ippDmsDocumentContent}</simple>\n";
-                        route += "</setHeader>\n";
-                     }
-                     var uri = "templating:" + templateLocation + "?";
-                     uri += "format=" + this.formatInput.val();
-
-                     if (this.templateInput.val() != null && this.templateInput.val() != "")
-                        uri += "&amp;template=" + this.templateInput.val()
-                     if (this.outputNameInput.val() != null && this.outputNameInput.val() != "")
-                        uri += "&amp;outputName=" + this.outputNameInput.val();
-                     if (this.convertToPdfInput.prop("checked"))
-                     {
-                        uri += "&amp;convertToPdf="
-                                 + this.convertToPdfInput.prop("checked");
-                     }
-                     route += "<to uri=\"" + uri + "\" />";
-                     route += "<setHeader headerName=\"ippDmsDocumentName\">\n";
-                     route += "   <simple>$simple{header.CamelTemplatingOutputName}</simple>\n";
-                     route += "</setHeader>\n";
-
-                     route += "<to uri=\"bean:documentHandler?method=toDocument\"/>";
-                     route += "<setHeader headerName=\"output\">\n";
-                     route += "<simple>$simple{body}</simple>\n";
-                     route += "</setHeader>\n";
                   }
                   m_utils.debug(route);
-
                   return route;
                };
                /**
                 *
                 */
-               TemplatingIntegrationOverlay.prototype.submitChanges = function(skipValidation)
+               TemplatingIntegrationOverlay.prototype.submitChanges = function(
+                        skipValidation)
                {
-                  if (!skipValidation&& !this.view.validate())
+                  if (!skipValidation && !this.view.validate())
                   {
                      this.updateView(this.locationInput.val());
                      return;
                   }
-                 /* if (changes)
-                  {
-                     this.view.submitChanges(changes);
-                  }
                   else
-                  {*/
-              else{
+                  {
                      this.view
-                              .submitChanges({
-                                 attributes : {
-                                    "carnot:engine:camel::applicationIntegrationOverlay" : "templatingIntegrationOverlay",
-                                    "carnot:engine:camel::camelContextId" : "defaultCamelContext",
-                                    "carnot:engine:camel::invocationPattern" : "sendReceive",
-                                    "carnot:engine:camel::invocationType" : "synchronous",
-                                    "carnot:engine:camel::transactedRoute" : "false",
-                                    "stardust:templatingIntegrationOverlay::location" : this.locationInput
-                                             .val(),
-                                    "stardust:templatingIntegrationOverlay::format" : this.formatInput
-                                             .val(),
-                                    "stardust:templatingIntegrationOverlay::content" : (this.locationInput
-                                             .val() == "embedded") ? this.codeEditor
-                                             .getEditor().getSession().getValue() : null,
-                                    "stardust:templatingIntegrationOverlay::template" : (this.templateInput
-                                             .val() != "") ? this.templateInput.val()
-                                             : null,
-                                    "stardust:templatingIntegrationOverlay::outputName" : (this.outputNameInput
-                                             .val() != "") ? this.outputNameInput.val()
-                                             : null,
-                                    "stardust:templatingIntegrationOverlay::convertToPdf" : this.convertToPdfInput
-                                             .prop("checked") ? this.convertToPdfInput
-                                             .prop("checked") : null,
-                                    "carnot:engine:camel::routeEntries" : this.getRoute()
-                                 }
-                              },skipValidation);
+                              .submitChanges(
+                                       {
+                                          attributes : {
+                                             "carnot:engine:camel::applicationIntegrationOverlay" : "templatingIntegrationOverlay",
+                                             "carnot:engine:camel::camelContextId" : "defaultCamelContext",
+                                             "carnot:engine:camel::invocationPattern" : "sendReceive",
+                                             "carnot:engine:camel::invocationType" : "synchronous",
+                                             "carnot:engine:camel::transactedRoute" : "false",
+                                             "stardust:templatingIntegrationOverlay::location" : this.locationInput
+                                                      .val(),
+                                             "stardust:templatingIntegrationOverlay::format" : this.formatInput
+                                                      .val(),
+                                             "stardust:templatingIntegrationOverlay::content" : (this.locationInput
+                                                      .val() == "embedded") ? this.codeEditor
+                                                      .getEditor().getSession()
+                                                      .getValue()
+                                                      : null,
+                                             "stardust:templatingIntegrationOverlay::template" : (this.templateInput
+                                                      .val() != "") ? this.templateInput
+                                                      .val() : null,
+                                             "stardust:templatingIntegrationOverlay::outputName" : (this.outputNameInput
+                                                      .val() != "") ? this.outputNameInput
+                                                      .val()
+                                                      : null,
+                                             "stardust:templatingIntegrationOverlay::convertToPdf" : this.convertToPdfInput
+                                                      .prop("checked") ? this.convertToPdfInput
+                                                      .prop("checked")
+                                                      : null,
+                                             "carnot:engine:camel::routeEntries" : this
+                                                      .getRoute()
+                                          }
+                                       }, skipValidation);
                   }
                };
                /**
@@ -706,7 +630,7 @@ define(
                            accessPoints : parameterDefinitionsChanges
                         }
                      }
-                  },true);
+                  }, true);
                }
                /**
                 *
@@ -714,60 +638,46 @@ define(
                TemplatingIntegrationOverlay.prototype.validate = function()
                {
                   var valid = true;
-                          var outAccessPointList = [];
-                          var accessPoints = this.getApplication().contexts.application.accessPoints;
-
-                          var outAccessPoint;
-
-                          if (accessPoints.length > 0)
-                          {
-                             outAccessPoint=this.findAccessPoint(accessPoints,"output");
-
-
-                          if(!outAccessPoint){
-                             this.view.errorMessages.push("Please select one Out Access Point.");
-                             valid = false;
-                          }else{
-                             if(this.convertToPdfInput.prop("checked")){
-                                if(outAccessPoint.dataType!="dmsDocument"){
-                                   this.view.errorMessages.push("Out Access Point "+outAccessPoint.name+" should be of document Type.");
-                                   valid = false;
-                                }
-                                if(m_utils.isEmptyString(this.outputNameInput.val())){
-                                   this.view.errorMessages.push("Output Name cannot be empty.");
-                                   valid = false;
-                                }
-                             }
-                             if(this.formatInput.val()!="docx"){
-                               if(this.locationInput.val()=="embedded"){
-                                     if(m_utils.isEmptyString(this.codeEditor.getEditor().getSession().getValue())){
-                                        this.view.errorMessages.push("Template content cannot be empty");
-                                        valid = false;
-                                     }
-                               }else if(this.locationInput.val()=="classpath" || this.locationInput.val()=="repository"){
-                                     if(m_utils.isEmptyString(this.templateInput.val())){
-                                     this.view.errorMessages.push("Template field cannot be empty.");
-                                     valid = true;
-                                  }
-                                }
-                             }else {
-                                if(outAccessPoint.dataType!="dmsDocument"){
-                                   this.view.errorMessages.push("The Out AccessPoint should be of document Type.");
-                                   valid = false;
-                                }
-                             }
-
-
-                          }
-
-                          if(outAccessPoint.dataType!="dmsDocument" && !(outAccessPoint.dataType=="primitive" && outAccessPoint.primitiveDataType=="String") ){
-                             this.view.errorMessages.push("Out AccessPoint "+outAccessPoint.name +" is not valid.");
-                             valid = false;
-                          }
-
-                          }
+                  /*
+                   * var outAccessPointList = []; var accessPoints =
+                   * this.getApplication().contexts.application.accessPoints;
+                   *
+                   * var outAccessPoint;
+                   *
+                   * if (accessPoints.length > 0) {
+                   * outAccessPoint=this.findAccessPoint(accessPoints,"output");
+                   *
+                   *
+                   * if(!outAccessPoint){ this.view.errorMessages.push("Please select one
+                   * Out Access Point."); valid = false; }else{
+                   * if(this.convertToPdfInput.prop("checked")){
+                   * if(outAccessPoint.dataType!="dmsDocument"){
+                   * this.view.errorMessages.push("Out Access Point
+                   * "+outAccessPoint.name+" should be of document Type."); valid = false; }
+                   * if(m_utils.isEmptyString(this.outputNameInput.val())){
+                   * this.view.errorMessages.push("Output Name cannot be empty."); valid =
+                   * false; } } if(this.formatInput.val()!="docx"){
+                   * if(this.locationInput.val()=="embedded"){
+                   * if(m_utils.isEmptyString(this.codeEditor.getEditor().getSession().getValue())){
+                   * this.view.errorMessages.push("Template content cannot be empty");
+                   * valid = false; } }else if(this.locationInput.val()=="classpath" ||
+                   * this.locationInput.val()=="repository"){
+                   * if(m_utils.isEmptyString(this.templateInput.val())){
+                   * this.view.errorMessages.push("Template field cannot be empty.");
+                   * valid = true; } } }else { if(outAccessPoint.dataType!="dmsDocument"){
+                   * this.view.errorMessages.push("The Out AccessPoint should be of
+                   * document Type."); valid = false; } }
+                   *
+                   *  }
+                   *
+                   * if(outAccessPoint.dataType!="dmsDocument" &&
+                   * !(outAccessPoint.dataType=="primitive" &&
+                   * outAccessPoint.primitiveDataType=="String") ){
+                   * this.view.errorMessages.push("Out AccessPoint "+outAccessPoint.name +"
+                   * is not valid."); valid = false; }
+                   *  }
+                   */
                   return valid;
-
                };
             }
          });
