@@ -42,6 +42,7 @@ import org.eclipse.stardust.ui.web.processportal.interaction.iframe.ManualActivi
 import org.eclipse.stardust.ui.web.processportal.interaction.iframe.ManualActivityDocumentController.DOCUMENT;
 import org.eclipse.stardust.ui.web.processportal.view.manual.ModelUtils;
 import org.eclipse.stardust.ui.web.processportal.view.manual.RawDocument;
+import org.eclipse.stardust.engine.core.struct.sxml.Text;
 
 /**
  * @author Subodh.Godbole
@@ -259,11 +260,21 @@ public class InteractionDataUtils
 
       Node[] nodes = converter.toDom(data, "", true);
       Assert.condition(nodes.length == 1);
-      document = new Document((Element) nodes[0]);
 
-      boolean namespaceAware = StructuredDataXPathUtils.isNamespaceAware(document);
+      Object returnValue = null;
+      
+      if (nodes[0] instanceof Element)
+      {
+         document = new Document((Element) nodes[0]);
+         boolean namespaceAware = StructuredDataXPathUtils.isNamespaceAware(document);
 
-      Object returnValue = converter.toCollection(document.getRootElement(), outPath, namespaceAware);
+         returnValue = converter.toCollection(document.getRootElement(), outPath, namespaceAware);
+      }
+      else if (nodes[0] instanceof Text)
+      {
+         // Structure as Enum
+         returnValue = data;
+      }
 
       if (trace.isDebugEnabled())
       {
