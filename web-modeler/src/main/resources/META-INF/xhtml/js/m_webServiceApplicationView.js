@@ -434,8 +434,15 @@ define(
 							.val(this.getDisplayName(this.application.attributes["carnot:engine:wsServiceName"]));
 					this.portSelect
 							.val(this.getDisplayName(this.application.attributes["carnot:engine:wsPortName"]));
-					this.operationSelect
-							.val(this.application.attributes["carnot:engine:wsOperationName"]);
+					
+					var operationIn = this.application.attributes["carnot:engine:wsOperationInputName"];
+					var operationOut = this.application.attributes["carnot:engine:wsOperationOutputName"];
+					var operationName = this.application.attributes["carnot:engine:wsOperationName"];
+					if(operationIn && operationOut){
+						operationName = operationName + '(' + operationIn + ',' + operationOut + ')'
+					}
+					
+					this.operationSelect.val(operationName);
 
 					if (this.serviceSelect.val()
 							&& this.serviceSelect.val().indexOf(
