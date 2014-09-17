@@ -128,14 +128,14 @@ define(
 				/**
 				 * Puts extension data onto scope also adds onload handlers for processing 
 				 */
-				handleAngularizedExtensions : function($scope, extensions, self, callbacks) {
-					if (!$scope[self.id + "Onload"]) {
+				handleAngularizedExtensions : function($scope, extensions, mainId, callbacks) {
+					if (!$scope[mainId + "Onload"]) {
 						var loadedCount = 0;
-						m_utils.debug("Defining onload function: " + self.id + "Onload");
+						m_utils.debug("Defining onload function: " + mainId + "Onload");
 						
 						// Onload Handler
-						$scope[self.id + "Onload"] = function(extension) {
-							m_utils.debug("Loading extension: " + extension.id + ", for: " + self.id);
+						$scope[mainId + "Onload"] = function(extension) {
+							m_utils.debug("Loading extension: " + extension.id + ", for: " + mainId);
 							loadedCount++;
 
 							if (callbacks.onload) {
@@ -146,8 +146,8 @@ define(
 						};
 
 						// Onfail Handler
-						$scope[self.id + "Onfail"] = function(extension) {
-							m_utils.debug("Failed to load extension: " + extension.id + ", for: " + self.id);
+						$scope[mainId + "Onfail"] = function(extension) {
+							m_utils.debug("Failed to load extension: " + extension.id + ", for: " + mainId);
 							loadedCount++;
 							if (callbacks.onfail) {
 								callbacks.onfail(extension);
@@ -157,7 +157,7 @@ define(
 						
 						function checkDone() {
 							if (loadedCount == extensions.length) {
-								m_utils.debug("All extensions loaded for: " + self.id);
+								m_utils.debug("All extensions loaded for: " + mainId);
 								if(callbacks.done) {
 									callbacks.done();
 								}
@@ -166,10 +166,10 @@ define(
 					}
 
 					// Define data on scope
-					if (!$scope[self.id]) {
-						$scope[self.id] = {};
+					if (!$scope[mainId]) {
+						$scope[mainId] = {};
 					}
-					$scope[self.id].extensions = extensions;
+					$scope[mainId].extensions = extensions;
 				}
 			};
 

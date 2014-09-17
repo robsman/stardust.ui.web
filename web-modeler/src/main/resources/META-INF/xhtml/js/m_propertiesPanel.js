@@ -269,7 +269,7 @@ define(
 						var self = this;
 						var loadedCount = 0;
 						m_angularContextUtils.runInActiveViewContext(function($scope){
-							m_extensionManager.handleAngularizedExtensions($scope, dynamicExtensions, self, {
+							m_extensionManager.handleAngularizedExtensions($scope, dynamicExtensions, self.id, {
 								onload: function(extension) {
 									var page = extension.provider.create(self, extension.id, extension.title);
 									page.hide();

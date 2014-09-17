@@ -215,7 +215,7 @@ define(
 							var self = this;
 							var loadedCount = 0;
 							m_angularContextUtils.runInActiveViewContext(function($scope){
-								m_extensionManager.handleAngularizedExtensions($scope, self.dynamicExtensions, self, {
+								m_extensionManager.handleAngularizedExtensions($scope, self.dynamicExtensions, self.id, {
 									onload: function(extension) {
 										var page = extension.provider.create(self, extension.id);
 										self.propertiesPages.push(page);
