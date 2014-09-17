@@ -67,11 +67,11 @@ public class HTML5LandingPageFilter implements Filter
          
          ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(request.getSession(false)
                .getServletContext());
-
-         // At the movement, this is the way HTML5 Framework understands the current locale!
+         
+         // At the movement, cookie overrides the config value, so set the cookie too!
          response.addCookie(new Cookie("i18next", HTML5FrameworkServices.getLocaleCode(null, request.getSession(false)
                .getServletContext())));
-         
+
          try
          {
             // At the movement, landing page does not belong to 'plugins'

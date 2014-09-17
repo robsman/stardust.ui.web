@@ -121,7 +121,7 @@ public class HTML5FrameworkServices
       String bundleBasName = servletContext.getInitParameter(Constants.COMMON_MESSAGE_BUNDLE);
       
       // TODO: Parameterise this into context parameter
-      contents = StringUtils.replace(contents, "DEFAULT_LOCALE", "en");
+      contents = StringUtils.replace(contents, "PORTAL_LOCALE", getLocaleCode(locale, servletContext));
 
       contents = StringUtils.replace(contents, "PORTAL_TITLE",
             FacesUtils.getPortalTitle(headerKey, bundleBasName, messageBean.getLocaleObject()));
