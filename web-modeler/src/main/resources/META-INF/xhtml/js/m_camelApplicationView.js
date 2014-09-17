@@ -14,10 +14,10 @@ define(
 				"bpm-modeler/js/m_session",
 				"bpm-modeler/js/m_commandsController",
 				"bpm-modeler/js/m_dialog", "bpm-modeler/js/m_modelElementView",
-				"bpm-modeler/js/m_model", "bpm-modeler/js/m_i18nUtils" ],
+				"bpm-modeler/js/m_model", "bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_angularContextUtils" ],
 		function(m_utils, m_constants, m_extensionManager, m_session,
 				m_commandsController, m_dialog, m_modelElementView, m_model,
-				m_i18nUtils) {
+				m_i18nUtils, m_angularContextUtils) {
 			return {
 				initialize : function(fullId) {
 					m_utils.initializeWaitCursor(m_utils.jQuerySelect("html"));
@@ -226,38 +226,54 @@ define(
 
 					var self = this;
 
-					jQuery.ajax({
-						type : 'GET',
-						url : extension.pageHtmlUrl,
-						async : false
-					}).done(
-							function(data) {
-								self.overlayAnchor.append(data);
-
-								self.overlayController = extension.provider
-										.create(self);
-
-								// Make sure that initial information for the
-								// overlay is written to the server
-								// TODO Ideally, this would only be invoked on
-								// creation, but currently, the overlay code is
-								// not bound at creation time, just the overlay
-								// ID
-								// is written. Hence, we are invoking per View
-								// initialization
-
-								self.overlayController.activate();
-
-								deferred.resolve();
-							}).fail(function(data) {
-						self.overlayAnchor.append(data);
-
-						deferred.reject();
-					});
+					if (extension.pageHtmlPartials) {
+						m_angularContextUtils.runInActiveViewContext(function($scope){
+							var mainId = self.id + "Overlay";
+							m_extensionManager.handleAngularizedExtensions($scope, [extension], mainId, {
+								onload: function(ext) {
+								},
+								done: function() {
+								},
+								onfail: function(extension) {
+								}
+							});
+						});
+					}
+					
+					if (extension.pageHtmlUrl) {
+						jQuery.ajax({
+							type : 'GET',
+							url : extension.pageHtmlUrl,
+							async : false
+						}).done(
+								function(data) {
+									self.overlayAnchor.append(data);
+	
+									self.overlayController = extension.provider
+											.create(self);
+	
+									// Make sure that initial information for the
+									// overlay is written to the server
+									// TODO Ideally, this would only be invoked on
+									// creation, but currently, the overlay code is
+									// not bound at creation time, just the overlay
+									// ID
+									// is written. Hence, we are invoking per View
+									// initialization
+	
+									self.overlayController.activate();
+	
+									deferred.resolve();
+								}).fail(function(data) {
+							self.overlayAnchor.append(data);
+	
+							deferred.reject();
+						});
+					}
 
 					return deferred.promise();
 				};
-
+				
 				/**
 				 * 
 				 */

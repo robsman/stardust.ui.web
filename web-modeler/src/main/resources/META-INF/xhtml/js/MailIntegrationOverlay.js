@@ -1,254 +1,259 @@
 define(
-         [ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_i18nUtils",
-                  "bpm-modeler/js/m_constants", "bpm-modeler/js/m_urlUtils",
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_i18nUtils",
+				"bpm-modeler/js/m_constants", "bpm-modeler/js/m_urlUtils",
                   "bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_command",
                   "bpm-modeler/js/m_model", "bpm-modeler/js/m_accessPoint",
-                  "bpm-modeler/js/m_typeDeclaration",
-                  "bpm-modeler/js/m_parameterDefinitionsPanel",
+				"bpm-modeler/js/m_typeDeclaration",
+				"bpm-modeler/js/m_parameterDefinitionsPanel",
                   "bpm-modeler/js/m_codeEditorAce", "bpm-modeler/js/m_modelElementUtils" ],
          function(m_utils, m_i18nUtils, m_constants, m_urlUtils, m_commandsController,
                   m_command, m_model, m_accessPoint, m_typeDeclaration,
                   m_parameterDefinitionsPanel, m_codeEditorAce, m_modelElementUtils)
          {
-            return {
+			return {
                create : function(view)
                {
-                  var overlay = new MailIntegrationOverlay();
-                  overlay.initialize(view);
-                  return overlay;
-               }
-            };
+					var overlay = new MailIntegrationOverlay();
+					overlay.initialize(view);
+
+					// Expose so that it will be available on $scope
+					// It will cause circular reference! but at the movement use this approach 
+					view.MailIntegrationOverlay = overlay;
+
+					return overlay;
+				}
+			};
 
             function MailIntegrationOverlay()
             {
-               // Toolbar groups configuration.
+				// Toolbar groups configuration.
                MailIntegrationOverlay.prototype.getToolbarConfiguration = function(view)
-               {
+							{
                   return [ {
-                     name : 'clipboard',
-                     groups : [ 'clipboard', 'undo' ]
+								name : 'clipboard',
+								groups : [ 'clipboard', 'undo' ]
                   }, {
-                     name : 'editing',
-                     groups : [ 'find', 'selection', 'spellchecker' ]
+								name : 'editing',
+								groups : [ 'find', 'selection', 'spellchecker' ]
                   }, {
-                     name : 'links'
+								name : 'links'
                   }, {
-                     name : 'insert'
+								name : 'insert'
                   }, {
-                     name : 'forms'
+								name : 'forms'
                   }, {
-                     name : 'tools'
+								name : 'tools'
                   }, {
-                     name : 'document',
-                     groups : [ 'mode', 'document', 'doctools' ]
+								name : 'document',
+								groups : [ 'mode', 'document', 'doctools' ]
                   }, {
-                     name : 'others'
+								name : 'others'
                   }, '/', {
-                     name : 'basicstyles',
-                     groups : [ 'basicstyles', 'cleanup' ]
+								name : 'basicstyles',
+								groups : [ 'basicstyles', 'cleanup' ]
                   }, {
-                     name : 'paragraph',
+								name : 'paragraph',
                      groups : [ 'list', 'indent', 'blocks', 'align', 'bidi' ]
-                  }, {
-                     name : 'styles'
-                  }, {
-                     name : 'colors'
-                  } ];
-               }
+							}, {
+								name : 'styles'
+							}, {
+								name : 'colors'
+							} ];
+				}
 
                MailIntegrationOverlay.prototype.initialize = function(view)
                {
 
-                  this.view = view;
-                  this.view
-                           .insertPropertiesTab(
-                                    "mailIntegrationOverlay",
-                                    "parameters",
-                                    m_i18nUtils
-                                             .getProperty("modeler.model.applicationOverlay.email.parameters.title"),
-                                    "plugins/bpm-modeler/images/icons/database_link.png");
-                  this.view
-                           .insertPropertiesTab(
-                                    "mailIntegrationOverlay",
-                                    "attachments",
-                                    m_i18nUtils
-                                             .getProperty("modeler.model.applicationOverlay.email.attachments.title"),
-                                    "plugins/bpm-modeler/images/icons/data-folder.png");
-                  this.view
-                           .insertPropertiesTab(
-                                    "mailIntegrationOverlay",
-                                    "response",
-                                    m_i18nUtils
-                                             .getProperty("modeler.model.applicationOverlay.email.response.title"),
-                                    "plugins/bpm-modeler/images/icons/email.png");
-                  this.view
-                           .insertPropertiesTab(
-                                    "mailIntegrationOverlay",
-                                    "test",
-                                    m_i18nUtils
-                                             .getProperty("modeler.model.applicationOverlay.email.test.title"),
-                                    "plugins/bpm-modeler/images/icons/application-run.png");
-                  this.scriptCodeHeading = m_utils
-                           .jQuerySelect("#mailIntegrationOverlay #scriptCodeHeading");
-                  this.serverInput = m_utils
-                           .jQuerySelect("#mailIntegrationOverlay #serverInput");
-                  this.userInput = m_utils
-                           .jQuerySelect("#mailIntegrationOverlay #userInput");
-                  this.passwordInput = m_utils
-                           .jQuerySelect("#mailIntegrationOverlay #passwordInput");
-                  this.mailFormatSelect = m_utils
-                           .jQuerySelect("#mailIntegrationOverlay #mailFormatSelect");
-                  this.protocolSelect = m_utils
-                           .jQuerySelect("#mailIntegrationOverlay #protocolSelect");
-                  this.subjectInput = m_utils
-                           .jQuerySelect("#mailIntegrationOverlay #subjectInput");
+					this.view = view;
+					this.view
+							.insertPropertiesTab(
+									"mailIntegrationOverlay",
+									"parameters",
+									m_i18nUtils
+											.getProperty("modeler.model.applicationOverlay.email.parameters.title"),
+									"plugins/bpm-modeler/images/icons/database_link.png");
+					this.view
+							.insertPropertiesTab(
+									"mailIntegrationOverlay",
+									"attachments",
+									m_i18nUtils
+											.getProperty("modeler.model.applicationOverlay.email.attachments.title"),
+									"plugins/bpm-modeler/images/icons/data-folder.png");
+					this.view
+							.insertPropertiesTab(
+									"mailIntegrationOverlay",
+									"response",
+									m_i18nUtils
+											.getProperty("modeler.model.applicationOverlay.email.response.title"),
+									"plugins/bpm-modeler/images/icons/email.png");
+					this.view
+							.insertPropertiesTab(
+									"mailIntegrationOverlay",
+									"test",
+									m_i18nUtils
+											.getProperty("modeler.model.applicationOverlay.email.test.title"),
+									"plugins/bpm-modeler/images/icons/application-run.png");
+					this.scriptCodeHeading = m_utils
+							.jQuerySelect("#mailIntegrationOverlay #scriptCodeHeading");
+					this.serverInput = m_utils
+							.jQuerySelect("#mailIntegrationOverlay #serverInput");
+					this.userInput = m_utils
+							.jQuerySelect("#mailIntegrationOverlay #userInput");
+					this.passwordInput = m_utils
+							.jQuerySelect("#mailIntegrationOverlay #passwordInput");
+					this.mailFormatSelect = m_utils
+							.jQuerySelect("#mailIntegrationOverlay #mailFormatSelect");
+					this.protocolSelect = m_utils
+							.jQuerySelect("#mailIntegrationOverlay #protocolSelect");
+					this.subjectInput = m_utils
+							.jQuerySelect("#mailIntegrationOverlay #subjectInput");
                   this.toInput = m_utils.jQuerySelect("#mailIntegrationOverlay #toInput");
-                  this.fromInput = m_utils
-                           .jQuerySelect("#mailIntegrationOverlay #fromInput");
+					this.fromInput = m_utils
+							.jQuerySelect("#mailIntegrationOverlay #fromInput");
                   this.ccInput = m_utils.jQuerySelect("#mailIntegrationOverlay #ccInput");
-                  this.bccInput = m_utils
-                           .jQuerySelect("#mailIntegrationOverlay #bccInput");
-                  this.identifierInSubjectInput = m_utils
-                           .jQuerySelect("#mailIntegrationOverlay #identifierInSubjectInput");
+					this.bccInput = m_utils
+							.jQuerySelect("#mailIntegrationOverlay #bccInput");
+					this.identifierInSubjectInput = m_utils
+							.jQuerySelect("#mailIntegrationOverlay #identifierInSubjectInput");
 //                  this.storeEmailInput = m_utils
 //                           .jQuerySelect("#mailIntegrationOverlay #storeEmailInput");
 //                  this.storeAttachmentsInput = m_utils
 //                           .jQuerySelect("#mailIntegrationOverlay #storeAttachmentsInput");
-                  this.transactedRouteInput = m_utils
-                           .jQuerySelect("#mailIntegrationOverlay #transactedRouteInput");
-                  this.templateSourceSelect = m_utils
-                           .jQuerySelect("#mailIntegrationOverlay #templateSourceSelect");
-                  this.templatePathInput = m_utils
-                           .jQuerySelect("#mailIntegrationOverlay #templatePathInput");
-                  this.mailTemplateEditor = m_utils.jQuerySelect(
+					this.transactedRouteInput = m_utils
+							.jQuerySelect("#mailIntegrationOverlay #transactedRouteInput");
+					this.templateSourceSelect = m_utils
+							.jQuerySelect("#mailIntegrationOverlay #templateSourceSelect");
+					this.templatePathInput = m_utils
+							.jQuerySelect("#mailIntegrationOverlay #templatePathInput");
+					this.mailTemplateEditor = m_utils.jQuerySelect(
                            "#mailIntegrationOverlay #mailTemplateEditor").get(0);
-                  var rdmNo = Math.floor((Math.random() * 100000) + 1);
-                  this.mailTemplateEditor.id = "mailTemplateEditor" + rdmNo;
-                  var templateConfigurationsJson = this.getApplication().attributes["stardust:emailOverlay::templateConfigurations"];
+					var rdmNo = Math.floor((Math.random() * 100000) + 1);
+					this.mailTemplateEditor.id = "mailTemplateEditor" + rdmNo;
+					var templateConfigurationsJson = this.getApplication().attributes["stardust:emailOverlay::templateConfigurations"];
                   if (!templateConfigurationsJson)
                   {
-                     templateConfigurationsJson = "[]";
-                  }
+						templateConfigurationsJson = "[]";
+					}
                   this.templateConfigurations = JSON.parse(templateConfigurationsJson);
-                  this.initializeTemplateConfigurationsTable();
-                  this.responseTypeSelect = m_utils
-                           .jQuerySelect("#responseTab #responseTypeSelect");
-                  this.responseOptionsTypeSelect = m_utils
-                           .jQuerySelect("#responseTab #responseOptionsTypeSelect");
-                  this.responseHttpUrlInput = m_utils
-                           .jQuerySelect("#responseTab #responseHttpUrlInput");
-                  CKEDITOR.replace(this.mailTemplateEditor.id, {
-                     toolbarGroups : this.getToolbarConfiguration()
-                  });
+					this.initializeTemplateConfigurationsTable();
+					this.responseTypeSelect = m_utils
+							.jQuerySelect("#responseTab #responseTypeSelect");
+					this.responseOptionsTypeSelect = m_utils
+							.jQuerySelect("#responseTab #responseOptionsTypeSelect");
+					this.responseHttpUrlInput = m_utils
+							.jQuerySelect("#responseTab #responseHttpUrlInput");
+					CKEDITOR.replace(this.mailTemplateEditor.id, {
+						toolbarGroups : this.getToolbarConfiguration()
+					});
                   this.resetButton = m_utils.jQuerySelect("#testTab #resetButton");
                   this.runButton = m_utils.jQuerySelect("#testTab #runButton");
-                  this.inputDataTextarea = m_utils
-                           .jQuerySelect("#testTab #inputDataTextarea");
-                  this.outputDataTextarea = m_utils
-                           .jQuerySelect("#testTab #outputDataTextarea");
-                  this.inputBodyAccessPointInput = m_utils
-                           .jQuerySelect("#parametersTab #inputBodyAccessPointInput");
-                  this.outputBodyAccessPointInput = m_utils
-                           .jQuerySelect("#parametersTab #outputBodyAccessPointInput");
-                  this.scriptCodeHeading.empty();
-                  this.scriptCodeHeading
-                           .append(m_i18nUtils
-                                    .getProperty("modeler.model.applicationOverlay.email.template.heading"));
-                  this.resetButton
-                           .prop(
-                                    "title",
-                                    m_i18nUtils
-                                             .getProperty("modeler.model.applicationOverlay.email.test.resetButton.title"));
-                  this.runButton
-                           .prop(
-                                    "title",
-                                    m_i18nUtils
-                                             .getProperty("modeler.model.applicationOverlay.email.test.runButton.title"));
-                  m_utils
-                           .jQuerySelect("label[for='inputDataTextArea']")
-                           .text(
-                                    m_i18nUtils
-                                             .getProperty("modeler.model.applicationOverlay.email.test.inputDataTextArea.label"));
-                  m_utils
-                           .jQuerySelect("label[for='outputDataTextarea']")
-                           .text(
-                                    m_i18nUtils
-                                             .getProperty("modeler.model.applicationOverlay.email.test.outputDataTextArea.label"));
-                  m_utils
-                           .jQuerySelect("#defaultValueHintLabel")
-                           .text(
-                                    m_i18nUtils
-                                             .getProperty("modeler.model.applicationOverlay.email.defaultValueHint.label"));
-                  m_utils
-                           .jQuerySelect("label[for='serverInput']")
-                           .text(
-                                    m_i18nUtils
-                                             .getProperty("modeler.model.applicationOverlay.email.serverInput.label"));
-                  m_utils
-                           .jQuerySelect("label[for='userInput']")
-                           .text(
-                                    m_i18nUtils
-                                             .getProperty("modeler.model.applicationOverlay.email.userInput.label"));
-                  m_utils
-                           .jQuerySelect("label[for='passwordInput']")
-                           .text(
-                                    m_i18nUtils
-                                             .getProperty("modeler.model.applicationOverlay.email.passwordInput.label"));
-                  m_utils
-                           .jQuerySelect("label[for='mailFormatSelect']")
-                           .text(
-                                    m_i18nUtils
-                                             .getProperty("modeler.model.applicationOverlay.email.mailFormatSelect.label"));
-                  m_utils
+					this.inputDataTextarea = m_utils
+							.jQuerySelect("#testTab #inputDataTextarea");
+					this.outputDataTextarea = m_utils
+							.jQuerySelect("#testTab #outputDataTextarea");
+					this.inputBodyAccessPointInput = m_utils
+							.jQuerySelect("#parametersTab #inputBodyAccessPointInput");
+					this.outputBodyAccessPointInput = m_utils
+							.jQuerySelect("#parametersTab #outputBodyAccessPointInput");
+					this.scriptCodeHeading.empty();
+					this.scriptCodeHeading
+							.append(m_i18nUtils
+									.getProperty("modeler.model.applicationOverlay.email.template.heading"));
+					this.resetButton
+							.prop(
+									"title",
+									m_i18nUtils
+											.getProperty("modeler.model.applicationOverlay.email.test.resetButton.title"));
+					this.runButton
+							.prop(
+									"title",
+									m_i18nUtils
+											.getProperty("modeler.model.applicationOverlay.email.test.runButton.title"));
+					m_utils
+							.jQuerySelect("label[for='inputDataTextArea']")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.model.applicationOverlay.email.test.inputDataTextArea.label"));
+					m_utils
+							.jQuerySelect("label[for='outputDataTextarea']")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.model.applicationOverlay.email.test.outputDataTextArea.label"));
+					m_utils
+							.jQuerySelect("#defaultValueHintLabel")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.model.applicationOverlay.email.defaultValueHint.label"));
+					m_utils
+							.jQuerySelect("label[for='serverInput']")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.model.applicationOverlay.email.serverInput.label"));
+					m_utils
+							.jQuerySelect("label[for='userInput']")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.model.applicationOverlay.email.userInput.label"));
+					m_utils
+							.jQuerySelect("label[for='passwordInput']")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.model.applicationOverlay.email.passwordInput.label"));
+					m_utils
+							.jQuerySelect("label[for='mailFormatSelect']")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.model.applicationOverlay.email.mailFormatSelect.label"));
+					m_utils
                            .jQuerySelect("#mailFormatSelect option[value='text/plain']")
-                           .text(
-                                    m_i18nUtils
-                                             .getProperty("modeler.model.applicationOverlay.email.mailFormatSelect.text.label"));
-                  m_utils
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.model.applicationOverlay.email.mailFormatSelect.text.label"));
+					m_utils
                            .jQuerySelect("#mailFormatSelect option[value='text/html']")
-                           .text(
-                                    m_i18nUtils
-                                             .getProperty("modeler.model.applicationOverlay.email.mailFormatSelect.html.label"));
-                  m_utils
-                           .jQuerySelect("label[for='protocolSelect']")
-                           .text(
-                                    m_i18nUtils
-                                             .getProperty("modeler.model.applicationOverlay.email.protocolSelect.label"));
-                  m_utils
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.model.applicationOverlay.email.mailFormatSelect.html.label"));
+					m_utils
+							.jQuerySelect("label[for='protocolSelect']")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.model.applicationOverlay.email.protocolSelect.label"));
+					m_utils
                            .jQuerySelect("#protocolSelect option[value='smtp']")
-                           .text(
-                                    m_i18nUtils
-                                             .getProperty("modeler.model.applicationOverlay.email.protocolSelect.smtp.label"));
-                  m_utils
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.model.applicationOverlay.email.protocolSelect.smtp.label"));
+					m_utils
                            .jQuerySelect("#protocolSelect option[value='smtps']")
-                           .text(
-                                    m_i18nUtils
-                                             .getProperty("modeler.model.applicationOverlay.email.protocolSelect.smtps.label"));
-                  m_utils
-                           .jQuerySelect("label[for='subjectInput']")
-                           .text(
-                                    m_i18nUtils
-                                             .getProperty("modeler.model.applicationOverlay.email.subjectInput.label"));
-                  m_utils
-                           .jQuerySelect("label[for='toInput']")
-                           .text(
-                                    m_i18nUtils
-                                             .getProperty("modeler.model.applicationOverlay.email.toInput.label"));
-                  m_utils
-                           .jQuerySelect("label[for='fromInput']")
-                           .text(
-                                    m_i18nUtils
-                                             .getProperty("modeler.model.applicationOverlay.email.fromInput.label"));
-                  m_utils
-                           .jQuerySelect("label[for='ccInput']")
-                           .text(
-                                    m_i18nUtils
-                                             .getProperty("modeler.model.applicationOverlay.email.ccInput.label"));
-                  m_utils
-                           .jQuerySelect("label[for='bccInput']")
-                           .text(
-                                    m_i18nUtils
-                                             .getProperty("modeler.model.applicationOverlay.email.bccInput.label"));
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.model.applicationOverlay.email.protocolSelect.smtps.label"));
+					m_utils
+							.jQuerySelect("label[for='subjectInput']")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.model.applicationOverlay.email.subjectInput.label"));
+					m_utils
+							.jQuerySelect("label[for='toInput']")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.model.applicationOverlay.email.toInput.label"));
+					m_utils
+							.jQuerySelect("label[for='fromInput']")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.model.applicationOverlay.email.fromInput.label"));
+					m_utils
+							.jQuerySelect("label[for='ccInput']")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.model.applicationOverlay.email.ccInput.label"));
+					m_utils
+							.jQuerySelect("label[for='bccInput']")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.model.applicationOverlay.email.bccInput.label"));
 //                  m_utils
 //                           .jQuerySelect("label[for='storeEmailInput']")
 //                           .text(
@@ -259,113 +264,113 @@ define(
 //                           .text(
 //                                    m_i18nUtils
 //                                             .getProperty("modeler.model.applicationOverlay.email.storeAttachmentsInput.label"));
-                  m_utils
+					m_utils
                            .jQuerySelect("label[for='identifierInSubjectInput']")
-                           .text(
-                                    m_i18nUtils
-                                             .getProperty("modeler.model.applicationOverlay.email.identifierInSubjectInput.label"));
-                  m_utils
-                           .jQuerySelect("label[for='templateSourceSelect']")
-                           .text(
-                                    m_i18nUtils
-                                             .getProperty("modeler.model.applicationOverlay.email.templateSourceSelect.label"));
-                  m_utils
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.model.applicationOverlay.email.identifierInSubjectInput.label"));
+					m_utils
+							.jQuerySelect("label[for='templateSourceSelect']")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.model.applicationOverlay.email.templateSourceSelect.label"));
+					m_utils
                            .jQuerySelect("#templateSourceSelect option[value='embedded']")
-                           .text(
-                                    m_i18nUtils
-                                             .getProperty("modeler.model.applicationOverlay.email.templateSourceSelect.embedded.label"));
-                  m_utils
-                           .jQuerySelect(
-                                    "#templateSourceSelect option[value='repository']")
-                           .text(
-                                    m_i18nUtils
-                                             .getProperty("modeler.model.applicationOverlay.email.templateSourceSelect.repository.label"));
-                  m_utils
-                           .jQuerySelect(
-                                    "#templateSourceSelect option[value='classpath']")
-                           .text(
-                                    m_i18nUtils
-                                             .getProperty("modeler.model.applicationOverlay.email.templateSourceSelect.classpath.label"));
-                  m_utils
-                           .jQuerySelect("#mailTemplateHeading")
-                           .text(
-                                    m_i18nUtils
-                                             .getProperty("modeler.model.applicationOverlay.email.template.heading"));
-                  m_utils
-                           .jQuerySelect("label[for='responseTypeSelect']")
-                           .text(
-                                    m_i18nUtils
-                                             .getProperty("modeler.model.applicationOverlay.email.responseTypeSelect.label"));
-                  m_utils
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.model.applicationOverlay.email.templateSourceSelect.embedded.label"));
+					m_utils
+							.jQuerySelect(
+									"#templateSourceSelect option[value='repository']")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.model.applicationOverlay.email.templateSourceSelect.repository.label"));
+					m_utils
+							.jQuerySelect(
+									"#templateSourceSelect option[value='classpath']")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.model.applicationOverlay.email.templateSourceSelect.classpath.label"));
+					m_utils
+							.jQuerySelect("#mailTemplateHeading")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.model.applicationOverlay.email.template.heading"));
+					m_utils
+							.jQuerySelect("label[for='responseTypeSelect']")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.model.applicationOverlay.email.responseTypeSelect.label"));
+					m_utils
                            .jQuerySelect("#responseTypeSelect option[value='none']")
-                           .text(
-                                    m_i18nUtils
-                                             .getProperty("modeler.model.applicationOverlay.email.responseTypeSelect.none.label"));
-                  m_utils
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.model.applicationOverlay.email.responseTypeSelect.none.label"));
+					m_utils
                            .jQuerySelect("#responseTypeSelect option[value='http']")
-                           .text(
-                                    m_i18nUtils
-                                             .getProperty("modeler.model.applicationOverlay.email.responseTypeSelect.http.label"));
-                  m_utils
-                           .jQuerySelect("#responseOptionsTypeHintLabel")
-                           .text(
-                                    m_i18nUtils
-                                             .getProperty("modeler.model.applicationOverlay.email.responseTypeSelect.http.typeHint.label"));
-                  m_utils
-                           .jQuerySelect("#responseHttpUrlIHintLabel")
-                           .text(
-                                    m_i18nUtils
-                                             .getProperty("modeler.model.applicationOverlay.email.responseTypeSelect.http.urlHint.label"));
-                  this.deleteParameterDefinitionButton = m_utils
-                           .jQuerySelect("#parametersTab #deleteParameterDefinitionButton");
-                  this.deleteParameterDefinitionButton.attr("src", m_urlUtils
-                           .getContextName()
-                           + "/plugins/bpm-modeler/images/icons/delete.png");
-                  this.deleteParameterDefinitionButton
-                           .click(
-                                    {
-                                       panel : this
-                                    },
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.model.applicationOverlay.email.responseTypeSelect.http.label"));
+					m_utils
+							.jQuerySelect("#responseOptionsTypeHintLabel")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.model.applicationOverlay.email.responseTypeSelect.http.typeHint.label"));
+					m_utils
+							.jQuerySelect("#responseHttpUrlIHintLabel")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.model.applicationOverlay.email.responseTypeSelect.http.urlHint.label"));
+					this.deleteParameterDefinitionButton = m_utils
+							.jQuerySelect("#parametersTab #deleteParameterDefinitionButton");
+					this.deleteParameterDefinitionButton.attr("src", m_urlUtils
+							.getContextName()
+							+ "/plugins/bpm-modeler/images/icons/delete.png");
+					this.deleteParameterDefinitionButton
+							.click(
+									{
+										panel : this
+									},
                                     function(event)
                                     {
-                                       event.data.panel.parameterDefinitionsPanel
-                                                .deleteParameterDefinition();
-                                       event.data.panel.getApplication().contexts.application.accessPoints = event.data.panel.parameterDefinitionsPanel.parameterDefinitions
-                                       event.data.panel.submitChanges();
-                                    });
-                  var self = this;
+										event.data.panel.parameterDefinitionsPanel
+												.deleteParameterDefinition();
+										event.data.panel.getApplication().contexts.application.accessPoints = event.data.panel.parameterDefinitionsPanel.parameterDefinitions
+										event.data.panel.submitChanges();
+									});
+					var self = this;
                   this.transactedRouteInput.change(function()
                   {
-                     self.submitChanges();
-                  });
+						self.submitChanges();
+					});
                   this.serverInput.change(function()
                   {
-                     self.submitChanges();
-                  });
+						self.submitChanges();
+					});
                   this.userInput.change(function()
                   {
-                     self.submitChanges();
-                  });
+						self.submitChanges();
+					});
                   this.passwordInput.change(function()
                   {
-                     self.submitChanges();
-                  });
+						self.submitChanges();
+					});
                   this.mailFormatSelect.change(function()
                   {
-                     self.submitChanges();
-                  });
+						self.submitChanges();
+					});
                   this.protocolSelect.change(function()
                   {
-                     self.submitChanges();
-                  });
+						self.submitChanges();
+					});
                   this.subjectInput.change(function()
                   {
-                     self.submitChanges();
-                  });
+						self.submitChanges();
+					});
                   this.identifierInSubjectInput.change(function()
                   {
-                     self.submitChanges();
-                  });
+						self.submitChanges();
+					});
 //                  this.storeAttachmentsInput.change(function()
 //                  {
 //                     self.submitChanges();
@@ -377,56 +382,56 @@ define(
                   this.templateSourceSelect.change(function()
                   {
                      self.setTemplateSource(self.templateSourceSelect.val());
-                     self.submitChanges();
-                  });
+						self.submitChanges();
+					});
                   this.fromInput.change(function()
                   {
-                     self.submitChanges();
-                  });
+						self.submitChanges();
+					});
                   this.toInput.change(function()
                   {
-                     self.submitChanges();
-                  });
+								self.submitChanges();
+							});
                   this.ccInput.change(function()
                   {
-                     self.submitChanges();
-                  });
+						self.submitChanges();
+					});
                   this.bccInput.change(function()
                   {
-                     self.submitChanges();
-                  });
+						self.submitChanges();
+					});
                   this.responseOptionsTypeSelect.change(function()
                   {
-                     self.submitChanges();
-                  });
+						self.submitChanges();
+					});
                   this.responseTypeSelect.change(function()
                   {
-                     self.setResponseType(self.responseTypeSelect.val());
-                     self.submitChanges();
-                  });
+						self.setResponseType(self.responseTypeSelect.val());
+						self.submitChanges();
+					});
                   this.responseHttpUrlInput.change(function()
                   {
-                     self.submitChanges();
-                  });
+						self.submitChanges();
+					});
                   CKEDITOR.instances[this.mailTemplateEditor.id].on('blur', function(e)
                   {
-                     self.submitChanges();
-                  });
+								self.submitChanges();
+							});
                   this.parameterDefinitionsPanel = m_parameterDefinitionsPanel.create({
-                     scope : "parametersTab",
-                     submitHandler : this,
-                     supportsOrdering : false,
-                     supportsDataMappings : false,
-                     supportsDescriptors : false,
-                     supportsDataTypeSelection : true,
-                     supportsDocumentTypes : true
-                  });
-                  this.populateResponseOptionsTypeSelect();
-                  this.runButton
+								scope : "parametersTab",
+								submitHandler : this,
+								supportsOrdering : false,
+								supportsDataMappings : false,
+								supportsDescriptors : false,
+								supportsDataTypeSelection : true,
+								supportsDocumentTypes : true
+							});
+					this.populateResponseOptionsTypeSelect();
+					this.runButton
                            .click(function()
                            {
-                              var output = "var input = ";
-                              output += self.inputDataTextarea.val();
+								var output = "var input = ";
+								output += self.inputDataTextarea.val();
                               var inputDataTextareaObj = eval("(function(){return "
                                        + self.inputDataTextarea.val() + ";})()");
                               var markup;
@@ -439,419 +444,419 @@ define(
                               else
                               {
                                  markup = CKEDITOR.instances[self.mailTemplateEditor.id]
-                                          .getData();
+										.getData();
                                  if (self.responseTypeSelect != "none")
                                  {
-                                    markup += self.createResponseOptionString();
-                                 }
+									markup += self.createResponseOptionString();
+								}
                               }
-                              output += "; \""
+								output += "; \""
                                        + markup.replace(new RegExp("\"", 'g'), "'")
                                                 .replace(new RegExp("\n", 'g'), " ")
-                                                .replace(new RegExp("{{", 'g'),
-                                                         "\" + input.").replace(
+												.replace(new RegExp("{{", 'g'),
+														"\" + input.").replace(
                                                          new RegExp("}}", 'g'), " + \"")
                                        + "\"";
-                              self.outputDataTextarea.empty();
-                              self.outputDataTextarea.append(eval(output));
-                           });
+								self.outputDataTextarea.empty();
+								self.outputDataTextarea.append(eval(output));
+							});
                   this.resetButton.click(function()
                   {
-                     self.inputDataTextarea.empty();
-                     self.outputDataTextarea.empty();
+						self.inputDataTextarea.empty();
+						self.outputDataTextarea.empty();
                      self.inputDataTextarea.append(self.createParameterObjectString(
-                              m_constants.IN_ACCESS_POINT, true));
-                  });
+										m_constants.IN_ACCESS_POINT, true));
+					});
                   if (this.getModelElement() && this.getModelElement().isReadonly())
                   {
-                     CKEDITOR.instances[this.mailTemplateEditor.id].config.readOnly = true;
-                  }
-               };
+						CKEDITOR.instances[this.mailTemplateEditor.id].config.readOnly = true;
+					}
+				};
                MailIntegrationOverlay.prototype.populateResponseOptionsTypeSelect = function()
                {
-                  this.responseOptionsTypeSelect.empty();
-                  this.responseOptionsTypeSelect.append("<option value='"
+					this.responseOptionsTypeSelect.empty();
+					this.responseOptionsTypeSelect.append("<option value='"
                            + m_constants.TO_BE_DEFINED + "'>"
                            + m_i18nUtils.getProperty("modeler.general.toBeDefined")
-                           + "</option>");
+							+ "</option>");
                   if (this.getScopeModel())
                   {
                      this.responseOptionsTypeSelect.append("<optgroup label='"
                               + m_i18nUtils.getProperty("modeler.general.thisModel")
-                              + "'>");
+										+ "'>");
                      for ( var i in this.getScopeModel().typeDeclarations)
                      {
                         if (!this.getScopeModel().typeDeclarations[i].isSequence())
                         {
                            this.responseOptionsTypeSelect.append("<option value='"
-                                    + this.getScopeModel().typeDeclarations[i]
+												+ this.getScopeModel().typeDeclarations[i]
                                              .getFullId() + "'>"
-                                    + this.getScopeModel().typeDeclarations[i].name
-                                    + "</option>");
-                        }
-                     }
+												+ this.getScopeModel().typeDeclarations[i].name
+												+ "</option>");
+							}
+						}
                      this.responseOptionsTypeSelect.append("</optgroup><optgroup label='"
                               + m_i18nUtils.getProperty("modeler.general.otherModels")
-                              + "'>");
+										+ "'>");
                      for ( var n in m_model.getModels())
                      {
-                        if (this.getScopeModel()
+							if (this.getScopeModel()
                                  && m_model.getModels()[n] == this.getScopeModel())
                         {
-                           continue;
-                        }
+								continue;
+							}
                         for ( var m in m_model.getModels()[n].typeDeclarations)
                         {
                            if (m_modelElementUtils.hasPublicVisibility(m_model
                                     .getModels()[n].typeDeclarations[m]))
                            {
-                              if (!m_model.getModels()[n].typeDeclarations[m]
+									if (!m_model.getModels()[n].typeDeclarations[m]
                                        .isSequence())
                               {
-                                 this.responseOptionsTypeSelect
-                                          .append("<option value='"
-                                                   + m_model.getModels()[n].typeDeclarations[m]
-                                                            .getFullId()
-                                                   + "'>"
-                                                   + m_model.getModels()[n].name
-                                                   + "/"
-                                                   + m_model.getModels()[n].typeDeclarations[m].name
-                                                   + "</option>");
-                              }
-                           }
-                        }
-                     }
-                     this.responseOptionsTypeSelect.append("</optgroup>");
-                  }
-               };
+										this.responseOptionsTypeSelect
+												.append("<option value='"
+														+ m_model.getModels()[n].typeDeclarations[m]
+																.getFullId()
+														+ "'>"
+														+ m_model.getModels()[n].name
+														+ "/"
+														+ m_model.getModels()[n].typeDeclarations[m].name
+														+ "</option>");
+									}
+								}
+							}
+						}
+						this.responseOptionsTypeSelect.append("</optgroup>");
+					}
+				};
                MailIntegrationOverlay.prototype.setResponseType = function(responseType)
                {
                   if (!responseType)
                   {
-                     responseType = "none";
-                  }
-                  this.responseTypeSelect.val(responseType);
-                  m_utils.jQuerySelect("#emailResponseDiv").hide();
-                  m_utils.jQuerySelect("#httpResponseDiv").hide();
+						responseType = "none";
+					}
+					this.responseTypeSelect.val(responseType);
+					m_utils.jQuerySelect("#emailResponseDiv").hide();
+					m_utils.jQuerySelect("#httpResponseDiv").hide();
                   m_utils.jQuerySelect("#parameterDefinitionDirectionOutOption").hide();
                   if (responseType === "http")
                   {
-                     m_utils.jQuerySelect("#httpResponseDiv").show();
+						m_utils.jQuerySelect("#httpResponseDiv").show();
                   }
                   else if (responseType === "eMail")
                   {
-                     m_utils.jQuerySelect("#emailResponseDiv").show();
-                  }
-               };
-               MailIntegrationOverlay.prototype.setTemplateSource = function(
+						m_utils.jQuerySelect("#emailResponseDiv").show();
+					}
+				};
+				MailIntegrationOverlay.prototype.setTemplateSource = function(
                         templateSource)
                {
                   if (!templateSource)
                   {
-                     templateSource = "embedded";
-                  }
-                  this.templateSourceSelect.val(templateSource);
-                  m_utils.jQuerySelect("#embeddedTemplateSource").hide();
-                  m_utils.jQuerySelect("#externalTemplateSource").hide();
+						templateSource = "embedded";
+					}
+					this.templateSourceSelect.val(templateSource);
+					m_utils.jQuerySelect("#embeddedTemplateSource").hide();
+					m_utils.jQuerySelect("#externalTemplateSource").hide();
                   if (templateSource === "embedded")
                   {
-                     m_utils.jQuerySelect("#embeddedTemplateSource").show();
-                     this.templatePathInput.val("");
+						m_utils.jQuerySelect("#embeddedTemplateSource").show();
+						this.templatePathInput.val("");
                   }
                   else
                   {
-                     m_utils.jQuerySelect("#externalTemplateSource").show();
+						m_utils.jQuerySelect("#externalTemplateSource").show();
                      CKEDITOR.instances[this.mailTemplateEditor.id].setData("");
-                  }
-               };
-               MailIntegrationOverlay.prototype.submitSingleAttributeChange = function(
+					}
+				};
+				MailIntegrationOverlay.prototype.submitSingleAttributeChange = function(
                         attribute, value)
                {
                   if (this.getModelElement().attributes[attribute] != value)
                   {
-                     var modelElement = {
-                        attributes : {}
-                     };
-                     modelElement.attributes[attribute] = value;
-                     this.view.submitChanges(modelElement, true);
-                  }
-               };
-               /**
-                *
-                */
-               MailIntegrationOverlay.prototype.createParameterObjectString = function(
+						var modelElement = {
+							attributes : {}
+						};
+						modelElement.attributes[attribute] = value;
+						this.view.submitChanges(modelElement, true);
+					}
+				};
+				/**
+				 * 
+				 */
+				MailIntegrationOverlay.prototype.createParameterObjectString = function(
                         direction, initializePrimitives)
                {
-                  var otherDirection;
+					var otherDirection;
                   if (direction === m_constants.IN_ACCESS_POINT)
                   {
-                     otherDirection = m_constants.OUT_ACCESS_POINT;
+						otherDirection = m_constants.OUT_ACCESS_POINT;
                   }
                   else
                   {
-                     otherDirection = m_constants.IN_ACCESS_POINT;
-                  }
-                  var parameterObjectString = "{";
-                  var index = 0;
+						otherDirection = m_constants.IN_ACCESS_POINT;
+					}
+					var parameterObjectString = "{";
+					var index = 0;
                   for (var n = 0; n < this.getApplication().contexts.application.accessPoints.length; ++n)
                   {
-                     var parameterDefinition = this.getApplication().contexts.application.accessPoints[n];
+						var parameterDefinition = this.getApplication().contexts.application.accessPoints[n];
                      if (parameterDefinition.direction == otherDirection)
                      {
-                        continue;
-                     }
+							continue;
+						}
                      if (index > 0)
                      {
                         if (parameterDefinition.dataType != "dmsDocument")
                         {
-                           parameterObjectString += ", ";
-                        }
-                     }
-                     ++index;
+								parameterObjectString += ", ";
+							}
+						}
+						++index;
                      if (parameterDefinition.dataType == "primitive")
                      {
                         if (initializePrimitives)
                         {
-                           parameterObjectString += parameterDefinition.id;
+								parameterObjectString += parameterDefinition.id;
                            if (parameterDefinition.primitiveDataType === "String")
                            {
-                              parameterObjectString += ": \"\"";
+									parameterObjectString += ": \"\"";
                            }
                            else if (parameterDefinition.primitiveDataType === "Boolean")
                            {
-                              parameterObjectString += ": false";
+									parameterObjectString += ": false";
                            }
                            else
                            {
-                              parameterObjectString += ": 0";
-                           }
-                        }
+									parameterObjectString += ": 0";
+								}
+							}
                      }
                      else if (parameterDefinition.dataType == "struct")
                      {
-                        var typeDeclaration = m_model
-                                 .findTypeDeclaration(parameterDefinition.structuredDataTypeFullId);
-                        parameterObjectString += parameterDefinition.id;
-                        parameterObjectString += ": ";
+							var typeDeclaration = m_model
+									.findTypeDeclaration(parameterDefinition.structuredDataTypeFullId);
+							parameterObjectString += parameterDefinition.id;
+							parameterObjectString += ": ";
                         parameterObjectString += JSON.stringify(typeDeclaration
                                  .createInstance(), null, 3);
-                     }
-                  }
-                  parameterObjectString += "}";
-                  return parameterObjectString;
-               };
-               /**
-                *
-                */
+						}
+					}
+					parameterObjectString += "}";
+					return parameterObjectString;
+				};
+				/**
+				 * 
+				 */
                MailIntegrationOverlay.prototype.createResponseOptionString = function()
                {
-                  if (this.responseOptionsTypeSelect.val() != null
+					if (this.responseOptionsTypeSelect.val() != null
                            && this.responseOptionsTypeSelect.val() != m_constants.TO_BE_DEFINED)
                   {
-                     var typeDeclaration = m_model
+						var typeDeclaration = m_model
                               .findTypeDeclaration(this.responseOptionsTypeSelect.val());
-                     var optionMarkup = "<hr><p>Select one of the following options:</p><ul>";
+						var optionMarkup = "<hr><p>Select one of the following options:</p><ul>";
                      for (var i = 0; i < typeDeclaration.getFacets().length; ++i)
                      {
-                        if ((typeDeclaration.getFacets()[i].classifier != "maxLength")
+							if ((typeDeclaration.getFacets()[i].classifier != "maxLength")
                                  && (typeDeclaration.getFacets()[i].classifier != "minLength"))
                         {
-                           var option = typeDeclaration.getFacets()[i];
-                           var hashCodeJS = "(";
-                           hashCodeJS += "processInstanceOid + '|' + ";
-                           hashCodeJS += "activityInstanceOid + '|' + ";
-                           hashCodeJS += "partition + '|false|";
-                           hashCodeJS += option.name;
-                           hashCodeJS += "').hashCode()";
-                           optionMarkup += "<li><a href=&quot;";
-                           optionMarkup += this.responseHttpUrlInput.val();
-                           optionMarkup += "/mail-confirmation";
-                           optionMarkup += "?activityInstanceOID=' + activityInstanceOid + '";
-                           optionMarkup += "&amp;processInstanceOID=' + processInstanceOid + '";
-                           optionMarkup += "&amp;partition=' + partition + '";
-                           optionMarkup += "&amp;investigate=false";
-                           optionMarkup += "&amp;outputValue=";
-                           optionMarkup += option.name;
-                           optionMarkup += "&amp;hashCode=' + ";
-                           optionMarkup += hashCodeJS;
-                           optionMarkup += "+ '";
-                           optionMarkup += "&quot;>";
-                           optionMarkup += option.name;
-                           optionMarkup += "</a></li>";
-                        }
-                     }
-                     optionMarkup += "</ul>";
-                     return optionMarkup;
-                  }
-                  return "";
-               };
-               /**
-                *
-                */
+								var option = typeDeclaration.getFacets()[i];
+								var hashCodeJS = "(";
+								hashCodeJS += "processInstanceOid + '|' + ";
+								hashCodeJS += "activityInstanceOid + '|' + ";
+								hashCodeJS += "partition + '|false|";
+								hashCodeJS += option.name;
+								hashCodeJS += "').hashCode()";
+								optionMarkup += "<li><a href=&quot;";
+								optionMarkup += this.responseHttpUrlInput.val();
+								optionMarkup += "/mail-confirmation";
+								optionMarkup += "?activityInstanceOID=' + activityInstanceOid + '";
+								optionMarkup += "&amp;processInstanceOID=' + processInstanceOid + '";
+								optionMarkup += "&amp;partition=' + partition + '";
+								optionMarkup += "&amp;investigate=false";
+								optionMarkup += "&amp;outputValue=";
+								optionMarkup += option.name;
+								optionMarkup += "&amp;hashCode=' + ";
+								optionMarkup += hashCodeJS;
+								optionMarkup += "+ '";
+								optionMarkup += "&quot;>";
+								optionMarkup += option.name;
+								optionMarkup += "</a></li>";
+							}
+						}
+						optionMarkup += "</ul>";
+						return optionMarkup;
+					}
+					return "";
+				};
+				/**
+				 * 
+				 */
                MailIntegrationOverlay.prototype.getModelElement = function()
                {
-                  return this.view.getModelElement();
-               };
-               /**
-                *
-                */
+					return this.view.getModelElement();
+				};
+				/**
+				 * 
+				 */
                MailIntegrationOverlay.prototype.getApplication = function()
                {
-                  return this.view.application;
-               };
-               /**
-                *
-                */
+					return this.view.application;
+				};
+				/**
+				 * 
+				 */
                MailIntegrationOverlay.prototype.getScopeModel = function()
                {
-                  return this.view.getModelElement().model;
-               };
-               /**
-                *
-                */
+					return this.view.getModelElement().model;
+				};
+				/**
+				 * 
+				 */
                MailIntegrationOverlay.prototype.activate = function()
                {
-                  this
-                           .setResponseType(this.getApplication().attributes["stardust:emailOverlay::responseType"]);
-                  var accessPoints = this.createIntrinsicAccessPoints();
-                  this.submitParameterDefinitionsChanges(accessPoints);
-               };
+					this
+							.setResponseType(this.getApplication().attributes["stardust:emailOverlay::responseType"]);
+						var accessPoints = this.createIntrinsicAccessPoints();
+						this.submitParameterDefinitionsChanges(accessPoints);
+				};
                MailIntegrationOverlay.prototype.createIntrinsicAccessPoints = function()
                {
-                  var accessPoints = {};
-                  var defaultAccessPoints = [];
+					var accessPoints = {};
+					var defaultAccessPoints = [];
                   for (var n = 0; n < this.getApplication().contexts.application.accessPoints.length; ++n)
                   {
-                     var parameterDefinition = this.getApplication().contexts.application.accessPoints[n];
+						var parameterDefinition = this.getApplication().contexts.application.accessPoints[n];
                      if (parameterDefinition.direction == m_constants.IN_ACCESS_POINT)
                      {
-                        accessPoints[parameterDefinition.id] = parameterDefinition;
-                        defaultAccessPoints.push(parameterDefinition);
-                     }
-                  }
+							accessPoints[parameterDefinition.id] = parameterDefinition;
+							defaultAccessPoints.push(parameterDefinition);
+						}
+					}
                   if (this.responseTypeSelect.val() != "none")
                   {
-                     defaultAccessPoints.push({
-                        id : "returnValue",
-                        name : "returnValue",
-                        dataType : "primitive",
-                        primitiveDataType : "String",
-                        direction : "OUT",
-                        attributes : {
-                           "stardust:predefined" : true
-                        }
-                     });
-                  }
+						defaultAccessPoints.push({
+							id : "returnValue",
+							name : "returnValue",
+							dataType : "primitive",
+							primitiveDataType : "String",
+							direction : "OUT",
+							attributes : {
+								"stardust:predefined" : true
+							}
+						});
+					}
                   if (!accessPoints["to"])
                   {
-                     defaultAccessPoints.push({
-                        id : "to",
-                        name : "to",
-                        dataType : "primitive",
-                        primitiveDataType : "String",
-                        direction : "IN",
-                        attributes : {
-                           "stardust:predefined" : true
-                        }
-                     });
-                  }
+						defaultAccessPoints.push({
+							id : "to",
+							name : "to",
+							dataType : "primitive",
+							primitiveDataType : "String",
+							direction : "IN",
+							attributes : {
+								"stardust:predefined" : true
+							}
+						});
+					}
                   if (!accessPoints["from"])
                   {
-                     defaultAccessPoints.push({
-                        id : "from",
-                        name : "from",
-                        dataType : "primitive",
-                        primitiveDataType : "String",
-                        direction : "IN",
-                        attributes : {
-                           "stardust:predefined" : true
-                        }
-                     });
-                  }
+						defaultAccessPoints.push({
+							id : "from",
+							name : "from",
+							dataType : "primitive",
+							primitiveDataType : "String",
+							direction : "IN",
+							attributes : {
+								"stardust:predefined" : true
+							}
+						});
+					}
                   if (!accessPoints["cc"])
                   {
-                     defaultAccessPoints.push({
-                        id : "cc",
-                        name : "cc",
-                        dataType : "primitive",
-                        primitiveDataType : "String",
-                        direction : "IN",
-                        attributes : {
-                           "stardust:predefined" : true
-                        }
-                     });
-                  }
+						defaultAccessPoints.push({
+							id : "cc",
+							name : "cc",
+							dataType : "primitive",
+							primitiveDataType : "String",
+							direction : "IN",
+							attributes : {
+								"stardust:predefined" : true
+							}
+						});
+					}
                   if (!accessPoints["bcc"])
                   {
-                     defaultAccessPoints.push({
-                        id : "bcc",
-                        name : "bcc",
-                        dataType : "primitive",
-                        primitiveDataType : "String",
-                        direction : "IN",
-                        attributes : {
-                           "stardust:predefined" : true
-                        }
-                     });
-                  }
+						defaultAccessPoints.push({
+							id : "bcc",
+							name : "bcc",
+							dataType : "primitive",
+							primitiveDataType : "String",
+							direction : "IN",
+							attributes : {
+								"stardust:predefined" : true
+							}
+						});
+					}
                   if (!accessPoints["subject"])
                   {
-                     defaultAccessPoints.push({
-                        id : "subject",
-                        name : "subject",
-                        dataType : "primitive",
-                        primitiveDataType : "String",
-                        direction : "IN",
-                        attributes : {
-                           "stardust:predefined" : true
-                        }
-                     });
-                  }
+						defaultAccessPoints.push({
+							id : "subject",
+							name : "subject",
+							dataType : "primitive",
+							primitiveDataType : "String",
+							direction : "IN",
+							attributes : {
+								"stardust:predefined" : true
+							}
+						});
+					}
                   if (!accessPoints["mailContentAP"])
                   {
-                     defaultAccessPoints.push({
-                        id : "mailContentAP",
-                        name : "Mail Content",
-                        dataType : "primitive",
-                        primitiveDataType : "String",
-                        direction : "IN",
-                        attributes : {
-                           "stardust:predefined" : true
-                        }
-                     });
-                  }
-                  return defaultAccessPoints;
-               }
-               /**
-                *
-                */
+						defaultAccessPoints.push({
+							id : "mailContentAP",
+							name : "Mail Content",
+							dataType : "primitive",
+							primitiveDataType : "String",
+							direction : "IN",
+							attributes : {
+								"stardust:predefined" : true
+							}
+						});
+					}
+					return defaultAccessPoints;
+				}
+				/**
+				 * 
+				 */
                MailIntegrationOverlay.prototype.update = function()
                {
                   this.parameterDefinitionsPanel.setScopeModel(this.getScopeModel());
                   this.parameterDefinitionsPanel.setParameterDefinitions(this
                            .getApplication().contexts.application.accessPoints);
-                  this
-                           .setResponseType(this.getApplication().attributes["stardust:emailOverlay::responseType"]);
-                  this.serverInput
-                           .val(this.getApplication().attributes["stardust:emailOverlay::server"]);
-                  this.mailFormatSelect
-                           .val(this.getApplication().attributes["stardust:emailOverlay::mailFormat"]);
-                  this.protocolSelect
-                           .val(this.getApplication().attributes["stardust:emailOverlay::protocol"]);
-                  this.subjectInput
-                           .val(this.getApplication().attributes["stardust:emailOverlay::subject"]);
-                  this.identifierInSubjectInput
-                           .prop(
-                                    "checked",
-                                    this.getApplication().attributes["stardust:emailOverlay::includeUniqueIdentifierInSubject"]);
-                  this.toInput
-                           .val(this.getApplication().attributes["stardust:emailOverlay::to"]);
-                  this.fromInput
-                           .val(this.getApplication().attributes["stardust:emailOverlay::from"]);
-                  this.ccInput
-                           .val(this.getApplication().attributes["stardust:emailOverlay::cc"]);
-                  this.bccInput
-                           .val(this.getApplication().attributes["stardust:emailOverlay::bcc"]);
+					this
+							.setResponseType(this.getApplication().attributes["stardust:emailOverlay::responseType"]);
+					this.serverInput
+							.val(this.getApplication().attributes["stardust:emailOverlay::server"]);
+					this.mailFormatSelect
+							.val(this.getApplication().attributes["stardust:emailOverlay::mailFormat"]);
+					this.protocolSelect
+							.val(this.getApplication().attributes["stardust:emailOverlay::protocol"]);
+					this.subjectInput
+							.val(this.getApplication().attributes["stardust:emailOverlay::subject"]);
+					this.identifierInSubjectInput
+							.prop(
+									"checked",
+									this.getApplication().attributes["stardust:emailOverlay::includeUniqueIdentifierInSubject"]);
+					this.toInput
+							.val(this.getApplication().attributes["stardust:emailOverlay::to"]);
+					this.fromInput
+							.val(this.getApplication().attributes["stardust:emailOverlay::from"]);
+					this.ccInput
+							.val(this.getApplication().attributes["stardust:emailOverlay::cc"]);
+					this.bccInput
+							.val(this.getApplication().attributes["stardust:emailOverlay::bcc"]);
 //                  this.storeEmailInput
 //                           .prop(
 //                                    "checked",
@@ -860,28 +865,28 @@ define(
 //                           .prop(
 //                                    "checked",
 //                                    this.getApplication().attributes["stardust:emailOverlay::storeAttachments"]);
-                  CKEDITOR.instances[this.mailTemplateEditor.id]
-                           .setData(this.getApplication().attributes["stardust:emailOverlay::mailTemplate"]);
-                  this
-                           .setTemplateSource(this.getApplication().attributes["stardust:emailOverlay::templateSource"]);
-                  this.templatePathInput
-                           .val(this.getApplication().attributes["stardust:emailOverlay::templatePath"]);
-                  this.responseOptionsTypeSelect
-                           .val(this.getApplication().attributes["stardust:emailOverlay::responseOptionType"]);
-                  this.responseHttpUrlInput
-                           .val(this.getApplication().attributes["stardust:emailOverlay::responseHttpUrl"]);
-                  this.userInput
-                           .val(this.getApplication().attributes["stardust:emailOverlay::user"]);
-                  this.passwordInput
-                           .val(this.getApplication().attributes["stardust:emailOverlay::pwd"]);
-                  this.transactedRouteInput
-                           .prop(
-                                    "checked",
-                                    this.getApplication().attributes["carnot:engine:camel::transactedRoute"]);
-               };
-               /**
-                *
-                */
+					CKEDITOR.instances[this.mailTemplateEditor.id]
+							.setData(this.getApplication().attributes["stardust:emailOverlay::mailTemplate"]);
+					this
+							.setTemplateSource(this.getApplication().attributes["stardust:emailOverlay::templateSource"]);
+					this.templatePathInput
+							.val(this.getApplication().attributes["stardust:emailOverlay::templatePath"]);
+					this.responseOptionsTypeSelect
+							.val(this.getApplication().attributes["stardust:emailOverlay::responseOptionType"]);
+					this.responseHttpUrlInput
+							.val(this.getApplication().attributes["stardust:emailOverlay::responseHttpUrl"]);
+					this.userInput
+							.val(this.getApplication().attributes["stardust:emailOverlay::user"]);
+					this.passwordInput
+							.val(this.getApplication().attributes["stardust:emailOverlay::pwd"]);
+					this.transactedRouteInput
+							.prop(
+									"checked",
+									this.getApplication().attributes["carnot:engine:camel::transactedRoute"]);
+				};
+				/**
+				 * 
+				 */
                MailIntegrationOverlay.prototype.getRoute = function()
                {
                   var route = "";
@@ -893,284 +898,284 @@ define(
                   route += "<to uri=\"ipp:data:toNativeObject\"/>\n";
                   if (this.subjectInput.val())
                   {
-                     route += "<choice>\n";
-                     route += "  <when>\n";
-                     route += "     <simple>$simple{in.header.subject} == null</simple>\n";
-                     route += "     <setHeader headerName=\"subject\">\n";
-                     var subjectContent = this.subjectInput.val();
-                     route += "        <constant>'"
+						route += "<choice>\n";
+						route += "  <when>\n";
+						route += "     <simple>$simple{in.header.subject} == null</simple>\n";
+						route += "     <setHeader headerName=\"subject\">\n";
+						var subjectContent = this.subjectInput.val();
+						route += "        <constant>'"
                               + subjectContent.replace(new RegExp("\n", 'g'), " ")
                                        .replace(new RegExp("toDate", 'g'), "formatDate")
                                        .replace(new RegExp("{{", 'g'), "' + ").replace(
-                                                new RegExp("}}", 'g'), " + '")
-                              + "'</constant>\n";
-                     route += "     </setHeader>\n";
-                     route += "  </when>\n";
-                     route += "</choice>\n";
-                  }
+										new RegExp("}}", 'g'), " + '")
+								+ "'</constant>\n";
+						route += "     </setHeader>\n";
+						route += "  </when>\n";
+						route += "</choice>\n";
+					}
                   if (this.fromInput.val())
                   {
-                     route += "<choice>\n";
-                     route += "  <when>\n";
-                     route += "     <simple>$simple{in.header.from} == null</simple>\n";
-                     route += "     <setHeader headerName=\"from\">\n";
-                     route += "        <constant>" + this.fromInput.val()
-                              + "</constant>\n";
-                     route += "     </setHeader>\n";
-                     route += "  </when>\n";
-                     route += "</choice>\n";
-                  }
+						route += "<choice>\n";
+						route += "  <when>\n";
+						route += "     <simple>$simple{in.header.from} == null</simple>\n";
+						route += "     <setHeader headerName=\"from\">\n";
+						route += "        <constant>" + this.fromInput.val()
+								+ "</constant>\n";
+						route += "     </setHeader>\n";
+						route += "  </when>\n";
+						route += "</choice>\n";
+					}
                   if (this.toInput.val())
                   {
-                     route += "<choice>\n";
-                     route += "  <when>\n";
-                     route += "     <simple>$simple{in.header.to} == null</simple>\n";
-                     route += "     <setHeader headerName=\"to\">\n";
+						route += "<choice>\n";
+						route += "  <when>\n";
+						route += "     <simple>$simple{in.header.to} == null</simple>\n";
+						route += "     <setHeader headerName=\"to\">\n";
                      route += "        <constant>" + this.toInput.val() + "</constant>\n";
-                     route += "     </setHeader>\n";
-                     route += "  </when>\n";
-                     route += "</choice>\n";
-                  }
+						route += "     </setHeader>\n";
+						route += "  </when>\n";
+						route += "</choice>\n";
+					}
                   if (this.ccInput.val())
                   {
-                     route += "<choice>\n";
-                     route += "  <when>\n";
-                     route += "     <simple>$simple{in.header.cc} == null</simple>\n";
-                     route += "     <setHeader headerName=\"cc\">\n";
+						route += "<choice>\n";
+						route += "  <when>\n";
+						route += "     <simple>$simple{in.header.cc} == null</simple>\n";
+						route += "     <setHeader headerName=\"cc\">\n";
                      route += "        <constant>" + this.ccInput.val() + "</constant>\n";
-                     route += "     </setHeader>\n";
-                     route += "  </when>\n";
-                     route += "</choice>\n";
-                  }
+						route += "     </setHeader>\n";
+						route += "  </when>\n";
+						route += "</choice>\n";
+					}
                   if (this.bccInput.val())
                   {
-                     route += "<choice>\n";
-                     route += "  <when>\n";
-                     route += "     <simple>$simple{in.header.bcc} == null</simple>\n";
-                     route += "     <setHeader headerName=\"bcc\">\n";
-                     route += "        <constant>" + this.bccInput.val()
-                              + "</constant>\n";
-                     route += "     </setHeader>\n";
-                     route += "  </when>\n";
-                     route += "</choice>\n";
-                  }
-                  route += "<setHeader headerName=\"CamelLanguageScript\">\n";
-                  route += "   <constant>\n";
-                  route += "function setOutHeader(key, output){\nexchange.out.headers.put(key,output);}\n";
-                  route += "function formatDate(format,value){\n  return new java.text.SimpleDateFormat(format).format(value);}\n";
-                  route += "function isArray(obj) {\n\tif (Array.isArray) {\n\t\treturn Array.isArray(obj);\n\t} else {\n\treturn Object.prototype.toString.call(obj) === '[object Array]';\n\t}\n}\n";
-                  route += "function visitMembers(obj, callback) {\n\tvar i = 0, length = obj.length;\n\tif (isArray(obj)) {\n\t\t";
-                  route += "for(; i &lt; length; i++) {\n\t\tobj[i]= callback(i, obj[i]);\n\t\t}\n";
-                  route += "} else {\n\t\tfor (i in obj) {\n\t\tobj[i]=  callback(i, obj[i]);}\n\t}\n\treturn obj;\n}\n";
-                  route += "function recursiveFunction(key, val) {\n";
-                  route += "\tif (val instanceof Object || isArray(val)) {\n";
-                  route += "\t\treturn visitMembers(val, recursiveFunction);\n";
-                  route += "\t} else {\n";
-                  route += "\t\treturn actualFunction(val, typeof val);\n";
-                  route += "\t}\n";
-                  route += "}\n";
-                  route += "function actualFunction(value, type) {\n";
-                  route += "\tvar dataAsLong;\n";
-                  route += "\tif (type === 'string') {\n";
-                  route += "\t\tdataAsLong =new RegExp(/\\/Date\\((-?\\d*)\\)\\//).exec(value);\n";
-                  route += "\tif (dataAsLong) {\n";
-                  route += "\t\treturn new java.util.Date(+dataAsLong[1]);\n";
-                  route += "\t}\n";
-                  route += "}\n";
-                  route += "return value;\n";
-                  route += "}\n";
-                  route += "     String.prototype.hashCode = function() {";
-                  route += "        var hash = 0;\n";
-                  route += "        if (this == 0) return hash;\n";
-                  route += "        for (var i = 0; i &lt; this.length; i++) {\n";
-                  route += "           var character = this.charCodeAt(i);\n";
-                  route += "           hash = ((hash&lt;&lt;5)-hash)+character;\n";
-                  route += "           hash = hash &amp; hash;\n";
-                  route += "        }\n";
-                  route += "        return hash;\n";
-                  route += "     }\n";
-                  route += "var processInstanceOid = request.headers.get('ippProcessInstanceOid');\n";
-                  route += "var activityInstanceOid = request.headers.get('ippActivityInstanceOid');\n";
-                  route += "var partition = request.headers.get('ippPartition');\n";
-                  route += "var investigate = false;\n";
-                  route += "var attachments = {};\n";
+						route += "<choice>\n";
+						route += "  <when>\n";
+						route += "     <simple>$simple{in.header.bcc} == null</simple>\n";
+						route += "     <setHeader headerName=\"bcc\">\n";
+						route += "        <constant>" + this.bccInput.val()
+								+ "</constant>\n";
+						route += "     </setHeader>\n";
+						route += "  </when>\n";
+						route += "</choice>\n";
+					}
+					route += "<setHeader headerName=\"CamelLanguageScript\">\n";
+					route += "   <constant>\n";
+					route += "function setOutHeader(key, output){\nexchange.out.headers.put(key,output);}\n";
+					route += "function formatDate(format,value){\n  return new java.text.SimpleDateFormat(format).format(value);}\n";
+					route += "function isArray(obj) {\n\tif (Array.isArray) {\n\t\treturn Array.isArray(obj);\n\t} else {\n\treturn Object.prototype.toString.call(obj) === '[object Array]';\n\t}\n}\n";
+					route += "function visitMembers(obj, callback) {\n\tvar i = 0, length = obj.length;\n\tif (isArray(obj)) {\n\t\t";
+					route += "for(; i &lt; length; i++) {\n\t\tobj[i]= callback(i, obj[i]);\n\t\t}\n";
+					route += "} else {\n\t\tfor (i in obj) {\n\t\tobj[i]=  callback(i, obj[i]);}\n\t}\n\treturn obj;\n}\n";
+					route += "function recursiveFunction(key, val) {\n";
+					route += "\tif (val instanceof Object || isArray(val)) {\n";
+					route += "\t\treturn visitMembers(val, recursiveFunction);\n";
+					route += "\t} else {\n";
+					route += "\t\treturn actualFunction(val, typeof val);\n";
+					route += "\t}\n";
+					route += "}\n";
+					route += "function actualFunction(value, type) {\n";
+					route += "\tvar dataAsLong;\n";
+					route += "\tif (type === 'string') {\n";
+					route += "\t\tdataAsLong =new RegExp(/\\/Date\\((-?\\d*)\\)\\//).exec(value);\n";
+					route += "\tif (dataAsLong) {\n";
+					route += "\t\treturn new java.util.Date(+dataAsLong[1]);\n";
+					route += "\t}\n";
+					route += "}\n";
+					route += "return value;\n";
+					route += "}\n";
+					route += "     String.prototype.hashCode = function() {";
+					route += "        var hash = 0;\n";
+					route += "        if (this == 0) return hash;\n";
+					route += "        for (var i = 0; i &lt; this.length; i++) {\n";
+					route += "           var character = this.charCodeAt(i);\n";
+					route += "           hash = ((hash&lt;&lt;5)-hash)+character;\n";
+					route += "           hash = hash &amp; hash;\n";
+					route += "        }\n";
+					route += "        return hash;\n";
+					route += "     }\n";
+					route += "var processInstanceOid = request.headers.get('ippProcessInstanceOid');\n";
+					route += "var activityInstanceOid = request.headers.get('ippActivityInstanceOid');\n";
+					route += "var partition = request.headers.get('ippPartition');\n";
+					route += "var investigate = false;\n";
+					route += "var attachments = {};\n";
                   route += "exchange.out.attachments=request.attachments;\n";
-                  var includeAttachmentBean = false;
+					var includeAttachmentBean = false;
                   for (var n = 0; n < this.getApplication().contexts.application.accessPoints.length; ++n)
                   {
-                     var accessPoint = this.getApplication().contexts.application.accessPoints[n];
+						var accessPoint = this.getApplication().contexts.application.accessPoints[n];
                      if (accessPoint.direction == m_constants.OUT_ACCESS_POINT)
                      {
-                        continue;
-                     }
+							continue;
+						}
                      if (accessPoint.dataType == "primitive")
                      {
-                        route += "var " + accessPoint.id + ";\n";
+							route += "var " + accessPoint.id + ";\n";
                         route += "if(request.headers.get('" + accessPoint.id
                                  + "')!=null){\n";
                         route += accessPoint.id + " =  request.headers.get('"
-                                 + accessPoint.id + "');\n";
-                        route += "}\n";
+									+ accessPoint.id + "');\n";
+							route += "}\n";
                      }
                      else if (accessPoint.dataType == "struct")
                      {
-                        route += "var " + accessPoint.id + ";\n";
+							route += "var " + accessPoint.id + ";\n";
                         route += "if(request.headers.get('" + accessPoint.id
                                  + "')!=null){\n";
                         route += accessPoint.id + " =  eval('(' + request.headers.get('"
-                                 + accessPoint.id + "')+ ')');\n";
+									+ accessPoint.id + "')+ ')');\n";
                         route += accessPoint.id + "=visitMembers(" + accessPoint.id
-                                 + ", recursiveFunction);\n";
-                        route += "}\n";
+									+ ", recursiveFunction);\n";
+							route += "}\n";
                      }
                      else if (accessPoint.dataType == "dmsDocument")
                      {
-                        route += "var " + accessPoint.id + ";\n";
+							route += "var " + accessPoint.id + ";\n";
                         route += "if(request.headers.get('" + accessPoint.id
                                  + "')!=null){\n";
                         route += accessPoint.id + " =  request.headers.get('"
-                                 + accessPoint.id + "');\n";
-                        route += "attachments[" + accessPoint.id + "]"
+									+ accessPoint.id + "');\n";
+							route += "attachments[" + accessPoint.id + "]"
                                  + " =  request.headers.get('" + accessPoint.id + "');\n";
-                        route += "}\n";
-                        includeAttachmentBean = true;
-                     }
-                  }
-                  route += "\n";
+							route += "}\n";
+							includeAttachmentBean = true;
+						}
+					}
+					route += "\n";
                   var markup = CKEDITOR.instances[this.mailTemplateEditor.id].getData();
                   if (this.responseTypeSelect.val() != "none")
                   {
-                     markup += this.createResponseOptionString();
-                  }
-                  markup = markup.replace(new RegExp("(&#39;)", 'g'), "\\'");
-                  markup = markup.replace(new RegExp("(&amp;)", 'g'), "&");
-                  markup = markup.replace(new RegExp("(&quot;)", 'g'), "\"");
-                  route += "<![CDATA[";
-                  route += "var subject= eval('(' + subject+ ')');\n";
-                  route += "if(mailContentAP){\n";
-                  route += "      response = String(mailContentAP);";
-                  route += "\n}else{\n";
-                  route += "      response = '"
+						markup += this.createResponseOptionString();
+					}
+					markup = markup.replace(new RegExp("(&#39;)", 'g'), "\\'");
+					markup = markup.replace(new RegExp("(&amp;)", 'g'), "&");
+					markup = markup.replace(new RegExp("(&quot;)", 'g'), "\"");
+					route += "<![CDATA[";
+					route += "var subject= eval('(' + subject+ ')');\n";
+					route += "if(mailContentAP){\n";
+					route += "      response = String(mailContentAP);";
+					route += "\n}else{\n";
+					route += "      response = '"
                            + markup.replace(new RegExp("\n", 'g'), " ").replace(
                                     new RegExp("toDate", 'g'), "formatDate").replace(
                                     new RegExp("{{", 'g'), "' + ").replace(
                                     new RegExp("}}", 'g'), " + '") + "';\n";
-                  route += "}";
-                  route += "]]>";
-                  route += "\n      setOutHeader('response', response);\n";
-                  if (this.identifierInSubjectInput.val() != null
+					route += "}";
+					route += "]]>";
+					route += "\n      setOutHeader('response', response);\n";
+					if (this.identifierInSubjectInput.val() != null
                            && this.identifierInSubjectInput.prop("checked"))
                   {
-                     route += "  setOutHeader('subject', '#ID:' + (partition + '|' + processInstanceOid + '|' + activityInstanceOid).hashCode() + '# - ' + subject);\n";
+						route += "  setOutHeader('subject', '#ID:' + (partition + '|' + processInstanceOid + '|' + activityInstanceOid).hashCode() + '# - ' + subject);\n";
                   }
                   else
                   {
-                     route += "      if (subject){\n";
-                     route += "        setOutHeader('subject', subject);\n";
-                     route += "      }\n";
-                  }
-                  route += "      if (to){\n";
-                  route += "        setOutHeader('to', to);\n";
-                  route += "      }\n";
-                  route += "      if (from){\n";
-                  route += "        setOutHeader('from', from);\n";
-                  route += "      }\n";
-                  route += "      if (cc){\n";
-                  route += "        setOutHeader('cc', cc);\n";
-                  route += "      }\n";
-                  route += "      if (bcc){\n";
-                  route += "        setOutHeader('bcc', bcc);\n";
-                  route += "      }\n";
-                  route += "      for (var doc in attachments){\n";
-                  route += "        setOutHeader(doc, attachments[doc]);\n";
-                  route += "      }\n";
-                  route += "   </constant>\n";
-                  route += "</setHeader>\n";
-                  // execute java sript
-                  route += "<to uri=\"language:javascript\"/>\n";
-                  // set content type
-                  route += "<setHeader headerName=\"contentType\">\n";
-                  route += "   <constant>" + this.mailFormatSelect.val()
-                           + "</constant>\n";
-                  route += "</setHeader>";
-                  // set processed response to body
-                  route += "<setBody>\n";
-                  route += "   <simple>$simple{in.header.response}</simple>\n";
-                  route += "</setBody>\n";
-                  // add attachment document
-                  if (includeAttachmentBean)
-                     route += "<to uri=\"bean:documentHandler?method=toAttachment\"/>\n";
-                  // execute smpt endpoint
-                  route += "<to uri=\"" + this.protocolSelect.val() + "://"
-                           + this.serverInput.val()
-                  if (!m_utils.isEmptyString(this.userInput.val())
+						route += "      if (subject){\n";
+						route += "        setOutHeader('subject', subject);\n";
+						route += "      }\n";
+					}
+					route += "      if (to){\n";
+					route += "        setOutHeader('to', to);\n";
+					route += "      }\n";
+					route += "      if (from){\n";
+					route += "        setOutHeader('from', from);\n";
+					route += "      }\n";
+					route += "      if (cc){\n";
+					route += "        setOutHeader('cc', cc);\n";
+					route += "      }\n";
+					route += "      if (bcc){\n";
+					route += "        setOutHeader('bcc', bcc);\n";
+					route += "      }\n";
+					route += "      for (var doc in attachments){\n";
+					route += "        setOutHeader(doc, attachments[doc]);\n";
+					route += "      }\n";
+					route += "   </constant>\n";
+					route += "</setHeader>\n";
+					// execute java sript
+					route += "<to uri=\"language:javascript\"/>\n";
+					// set content type
+					route += "<setHeader headerName=\"contentType\">\n";
+					route += "   <constant>" + this.mailFormatSelect.val()
+							+ "</constant>\n";
+					route += "</setHeader>";
+					// set processed response to body
+					route += "<setBody>\n";
+					route += "   <simple>$simple{in.header.response}</simple>\n";
+					route += "</setBody>\n";
+					// add attachment document
+					if (includeAttachmentBean)
+						route += "<to uri=\"bean:documentHandler?method=toAttachment\"/>\n";
+					// execute smpt endpoint
+					route += "<to uri=\"" + this.protocolSelect.val() + "://"
+							+ this.serverInput.val()
+					if (!m_utils.isEmptyString(this.userInput.val())
                            && !m_utils.isEmptyString(this.passwordInput.val()))
                   {
-                     route += "?username=" + this.userInput.val()
-                     route += "&amp;password=" + this.passwordInput.val();
+						route += "?username=" + this.userInput.val()
+						route += "&amp;password=" + this.passwordInput.val();
                   }
                   else if (!m_utils.isEmptyString(this.userInput.val()))
                   {
-                     route += "?username=" + this.userInput.val()
-                  }
-                  route += "\"/>";
-                  m_utils.debug(route);
-                  return route;
-               };
+						route += "?username=" + this.userInput.val()
+					}
+					route += "\"/>";
+					m_utils.debug(route);
+					return route;
+				};
                MailIntegrationOverlay.prototype.submitChanges = function()
                {
-                  var applicationTypeChanges = null;
-                  var invocationPatternChanges = null;
-                  var invocationTypeChanges = null;
-                  var responseTypeChanges = null;
-                  var responseHttpUrlChanges = null;
-                  var responseOptionsTypeChanges = null;
+					var applicationTypeChanges = null;
+					var invocationPatternChanges = null;
+					var invocationTypeChanges = null;
+					var responseTypeChanges = null;
+					var responseHttpUrlChanges = null;
+					var responseOptionsTypeChanges = null;
                   if (this.responseTypeSelect.val() === "none")
                   {
-                     applicationTypeChanges = "camelSpringProducerApplication";
-                     invocationPatternChanges = "send";
-                     invocationTypeChanges = "synchronous";
+						applicationTypeChanges = "camelSpringProducerApplication";
+						invocationPatternChanges = "send";
+						invocationTypeChanges = "synchronous";
                   }
                   else
                   {
-                     applicationTypeChanges = "camelConsumerApplication";
-                     invocationPatternChanges = "sendReceive";
-                     invocationTypeChanges = "asynchronous";
-                     responseTypeChanges = this.responseTypeSelect.val();
+						applicationTypeChanges = "camelConsumerApplication";
+						invocationPatternChanges = "sendReceive";
+						invocationTypeChanges = "asynchronous";
+						responseTypeChanges = this.responseTypeSelect.val();
                      responseHttpUrlChanges = this.responseHttpUrlInput.val();
                      responseOptionsTypeChanges = this.responseOptionsTypeSelect.val();
-                  }
-                  var accessPointsChanges = this.getApplication().contexts.application.accessPoints;
+					}
+					var accessPointsChanges = this.getApplication().contexts.application.accessPoints;
                   accessPointsChanges = this.createIntrinsicAccessPoints();
                   this.submitParameterDefinitionsChanges(accessPointsChanges);
-                  this.view
-                           .submitChanges({
-                              type : applicationTypeChanges,
-                              attributes : {
-                                 "carnot:engine:camel::applicationIntegrationOverlay" : "mailIntegrationOverlay",
-                                 "carnot:engine:camel::transactedRoute" : this.transactedRouteInput
-                                          .prop("checked"),
-                                 "carnot:engine:camel::camelContextId" : "defaultCamelContext",
-                                 "carnot:engine:camel::invocationPattern" : invocationPatternChanges,
-                                 "carnot:engine:camel::invocationType" : invocationTypeChanges,
+					this.view
+							.submitChanges({
+								type : applicationTypeChanges,
+								attributes : {
+									"carnot:engine:camel::applicationIntegrationOverlay" : "mailIntegrationOverlay",
+									"carnot:engine:camel::transactedRoute" : this.transactedRouteInput
+											.prop("checked"),
+									"carnot:engine:camel::camelContextId" : "defaultCamelContext",
+									"carnot:engine:camel::invocationPattern" : invocationPatternChanges,
+									"carnot:engine:camel::invocationType" : invocationTypeChanges,
                                  "carnot:engine:camel::routeEntries" : this.getRoute(),
-                                 "carnot:engine:camel::consumerRoute" : "",
-                                 "carnot:engine:camel::includeAttributesAsHeaders" : "false",
-                                 "carnot:engine:camel::processContextHeaders" : "true",
-                                 "stardust:emailOverlay::responseType" : responseTypeChanges,
-                                 "stardust:emailOverlay::responseOptionType" : responseOptionsTypeChanges,
-                                 "stardust:emailOverlay::responseHttpUrl" : responseHttpUrlChanges,
+									"carnot:engine:camel::consumerRoute" : "",
+									"carnot:engine:camel::includeAttributesAsHeaders" : "false",
+									"carnot:engine:camel::processContextHeaders" : "true",
+									"stardust:emailOverlay::responseType" : responseTypeChanges,
+									"stardust:emailOverlay::responseOptionType" : responseOptionsTypeChanges,
+									"stardust:emailOverlay::responseHttpUrl" : responseHttpUrlChanges,
                                  "stardust:emailOverlay::server" : this.serverInput.val(),
                                  "stardust:emailOverlay::user" : this.userInput.val(),
                                  "stardust:emailOverlay::pwd" : this.passwordInput.val(),
-                                 "stardust:emailOverlay::mailFormat" : this.mailFormatSelect
-                                          .val(),
-                                 "stardust:emailOverlay::protocol" : this.protocolSelect
-                                          .val(),
-                                 "stardust:emailOverlay::subject" : this.subjectInput
-                                          .val(),
-                                 "stardust:emailOverlay::includeUniqueIdentifierInSubject" : this.identifierInSubjectInput
-                                          .prop("checked"),
+									"stardust:emailOverlay::mailFormat" : this.mailFormatSelect
+											.val(),
+									"stardust:emailOverlay::protocol" : this.protocolSelect
+											.val(),
+									"stardust:emailOverlay::subject" : this.subjectInput
+											.val(),
+									"stardust:emailOverlay::includeUniqueIdentifierInSubject" : this.identifierInSubjectInput
+											.prop("checked"),
                                  "stardust:emailOverlay::from" : this.fromInput.val(),
                                  "stardust:emailOverlay::to" : this.toInput.val(),
                                  "stardust:emailOverlay::cc" : this.ccInput.val(),
@@ -1179,268 +1184,325 @@ define(
 //                                          .prop("checked"),
 //                                 "stardust:emailOverlay::storeAttachments" : this.storeAttachmentsInput
 //                                          .prop("checked"),
-                                 "stardust:emailOverlay::templateSource" : this.templateSourceSelect
-                                          .val(),
-                                 "stardust:emailOverlay::templatePath" : this.templatePathInput
-                                          .val(),
-                                 "stardust:emailOverlay::mailTemplate" : CKEDITOR.instances[this.mailTemplateEditor.id]
+									"stardust:emailOverlay::templateSource" : this.templateSourceSelect
+											.val(),
+									"stardust:emailOverlay::templatePath" : this.templatePathInput
+											.val(),
+									"stardust:emailOverlay::mailTemplate" : CKEDITOR.instances[this.mailTemplateEditor.id]
                                           .getData(),
                                  "stardust:emailOverlay::templateConfigurations" : JSON
                                           .stringify(this.templateConfigurations)
-                              }
-                           });
-               };
-               MailIntegrationOverlay.prototype.submitParameterDefinitionsChanges = function(
+								}
+							});
+				};
+				MailIntegrationOverlay.prototype.submitParameterDefinitionsChanges = function(
                         parameterDefinitionsChanges)
                {
-                  var applicationTypeChanges = null;
+					var applicationTypeChanges = null;
                   if (this.responseTypeSelect.val() === "none")
                   {
-                     applicationTypeChanges = "camelSpringProducerApplication";
+						applicationTypeChanges = "camelSpringProducerApplication";
                   }
                   else
                   {
-                     applicationTypeChanges = "camelConsumerApplication";
-                  }
-                  this.view.submitChanges({
-                     type : applicationTypeChanges,
-                     contexts : {
-                        application : {
-                           accessPoints : parameterDefinitionsChanges
-                        }
-                     }
-                  }, true);
-               };
+						applicationTypeChanges = "camelConsumerApplication";
+					}
+					this.view.submitChanges({
+						type : applicationTypeChanges,
+						contexts : {
+							application : {
+								accessPoints : parameterDefinitionsChanges
+							}
+						}
+					}, true);
+				};
                MailIntegrationOverlay.prototype.initializeTemplateConfigurationsTable = function()
                {
-                  m_utils
-                           .jQuerySelect(
-                                    "#attachmentsTab #addTemplateConfigurationButton")
-                           .click(
-                                    {
-                                       page : this,
-                                    },
+					m_utils
+							.jQuerySelect(
+									"#attachmentsTab #addTemplateConfigurationButton")
+							.click(
+									{
+										page : this,
+									},
                                     function(event)
                                     {
-                                       event.data.page.templateConfigurations
-                                                .push({
-                                                   "tName" : "New"
-                                                            + (event.data.page.templateConfigurations.length + 1),
-                                                   "tPath" : "New"
-                                                            + (event.data.page.templateConfigurations.length + 1)
-                                                });
-                                       // submit changes
+										event.data.page.templateConfigurations
+												.push({
+													"tName" : "New"
+															+ (event.data.page.templateConfigurations.length + 1),
+													"tPath" : "New"
+															+ (event.data.page.templateConfigurations.length + 1)
+												});
+										// submit changes
                                        event.data.page.submitChanges();
-                                       event.data.page
-                                                .refreshTemplateConfigurationsTable();
-                                    });
-                  this.refreshTemplateConfigurationsTable();
-               };
+										event.data.page
+												.refreshTemplateConfigurationsTable();
+									});
+					this.refreshTemplateConfigurationsTable();
+				};
                MailIntegrationOverlay.prototype.refreshTemplateConfigurationsTable = function()
                {
                   m_utils.jQuerySelect("table#templateConfigurationsTable tbody").empty();
                   for (var n = 0; n < this.templateConfigurations.length; ++n)
                   {
-                     var row = m_utils.jQuerySelect("<tr></tr>");
-                     var cell = m_utils.jQuerySelect("<td></td>");
-                     row.append(cell);
-                     var button = m_utils
-                              .jQuerySelect("<input type='image' title='Delete' alt='Delete' class='toolbarButton' src='plugins/bpm-modeler/images/icons/delete.png'/>");
-                     button
-                              .click(
-                                       {
-                                          page : this,
-                                          tName : this.templateConfigurations[n].tName
-                                       },
+						var row = m_utils.jQuerySelect("<tr></tr>");
+						var cell = m_utils.jQuerySelect("<td></td>");
+						row.append(cell);
+						var button = m_utils
+								.jQuerySelect("<input type='image' title='Delete' alt='Delete' class='toolbarButton' src='plugins/bpm-modeler/images/icons/delete.png'/>");
+						button
+								.click(
+										{
+											page : this,
+											tName : this.templateConfigurations[n].tName
+										},
                                        function(event)
                                        {
-                                          newTemplateConfigurations = [];
+											newTemplateConfigurations = [];
 
                                           for (var h = 0; h < event.data.page.templateConfigurations.length; ++h)
                                           {
                                              if (event.data.tName !== event.data.page.templateConfigurations[h].tName)
                                              {
-                                                newTemplateConfigurations
-                                                         .push(event.data.page.templateConfigurations[h]);
-                                             }
-                                          }
-                                          event.data.page.templateConfigurations = newTemplateConfigurations;
+													newTemplateConfigurations
+															.push(event.data.page.templateConfigurations[h]);
+												}
+											}
+											event.data.page.templateConfigurations = newTemplateConfigurations;
                                           event.data.page.submitChanges();
-                                          event.data.page
-                                                   .refreshTemplateConfigurationsTable();
-                                       });
-                     cell.append(button);
-                     cell = m_utils.jQuerySelect("<td></td>");
-                     tNameInput = m_utils
-                              .jQuerySelect("<input type='text' class='cellEditor' value='"
-                                       + this.templateConfigurations[n].tName
-                                       + "'></input>");
-                     tNameInput
-                              .change(
-                                       {
-                                          page : this,
-                                          tName : this.templateConfigurations[n].tName
-                                       },
+											event.data.page
+													.refreshTemplateConfigurationsTable();
+										});
+						cell.append(button);
+						cell = m_utils.jQuerySelect("<td></td>");
+						tNameInput = m_utils
+								.jQuerySelect("<input type='text' class='cellEditor' value='"
+										+ this.templateConfigurations[n].tName
+										+ "'></input>");
+						tNameInput
+								.change(
+										{
+											page : this,
+											tName : this.templateConfigurations[n].tName
+										},
                                        function(event)
                                        {
-                                          var oldValue = event.data.tName;
-                                          var newValue = event.target.value;
+											var oldValue = event.data.tName;
+											var newValue = event.target.value;
                                           for (var h = 0; h < event.data.page.templateConfigurations.length; ++h)
                                           {
                                              if (event.data.page.templateConfigurations[h].tName === oldValue)
                                              {
-                                                event.data.page.templateConfigurations[h].tName = newValue;
-                                             }
-                                          }
+													event.data.page.templateConfigurations[h].tName = newValue;
+												}
+											}
                                           event.data.page.submitChanges();
-                                          event.data.page
-                                                   .refreshTemplateConfigurationsTable();
-                                       });
-                     cell.append(tNameInput);
-                     row.append(cell);
-                     cell = m_utils.jQuerySelect("<td></td>");
-                     var repositoryOption = "<option value='repository' ";
-                     if (this.templateConfigurations[n].tSource
+											event.data.page
+													.refreshTemplateConfigurationsTable();
+										});
+						cell.append(tNameInput);
+						row.append(cell);
+						cell = m_utils.jQuerySelect("<td></td>");
+						var repositoryOption = "<option value='repository' ";
+						if (this.templateConfigurations[n].tSource
                               && this.templateConfigurations[n].tSource === 'repository')
                      {
-                        repositoryOption = repositoryOption
-                                 + " selected>Document Repository</option>";
+							repositoryOption = repositoryOption
+									+ "selected>Document Repository</option>";
                      }
                      else
                      {
-                        repositoryOption = repositoryOption
-                                 + ">Document Repository</option>";
-                     }
-                     var classpathOption = "<option value='classpath' ";
-                     if (this.templateConfigurations[n].tSource
+							repositoryOption = repositoryOption
+									+ ">Document Repository</option>";
+						}
+						var classpathOption = "<option value='classpath' ";
+						if (this.templateConfigurations[n].tSource
                               && this.templateConfigurations[n].tSource === 'classpath')
                      {
                         classpathOption = classpathOption + "selected>Classpath</option>";
-                     }
+						}
                      else
                      {
                         classpathOption = classpathOption + ">Classpath</option>";
                      }
                      tSourceInput = m_utils.jQuerySelect("<select class='cellEditor'>"
                               + repositoryOption + classpathOption + "</select>");
-                     tSourceInput
-                              .change(
-                                       {
-                                          page : this,
-                                          tSource : this.templateConfigurations[n].tSource,
-                                          tName : this.templateConfigurations[n].tName
-                                       },
+						tSourceInput
+								.change(
+										{
+											page : this,
+											tSource : this.templateConfigurations[n].tSource,
+											tName : this.templateConfigurations[n].tName
+										},
                                        function(event)
                                        {
-                                          var oldValue = event.data.tName;
-                                          var newValue = event.target.value;
+											var oldValue = event.data.tName;
+											var newValue = event.target.value;
                                           for (var h = 0; h < event.data.page.templateConfigurations.length; ++h)
                                           {
                                              if (event.data.page.templateConfigurations[h].tName === oldValue)
                                              {
-                                                event.data.page.templateConfigurations[h].tSource = newValue;
-                                             }
-                                          }
+													event.data.page.templateConfigurations[h].tSource = newValue;
+												}
+											}
                                           event.data.page.submitChanges();
-                                          event.data.page
-                                                   .refreshTemplateConfigurationsTable();
-                                       });
-                     cell.append(tSourceInput);
-                     row.append(cell);
-                     cell = m_utils.jQuerySelect("<td></td>");
-                     tPathInput = m_utils
-                              .jQuerySelect("<input type='text' class='cellEditor' value='"
-                                       + this.templateConfigurations[n].tPath
-                                       + "'></input>");
-                     tPathInput
-                              .change(
-                                       {
-                                          page : this,
-                                          tPath : this.templateConfigurations[n].tPath,
-                                          tName : this.templateConfigurations[n].tName
-                                       },
+											event.data.page
+													.refreshTemplateConfigurationsTable();
+										});
+						cell.append(tSourceInput);
+						row.append(cell);
+						cell = m_utils.jQuerySelect("<td></td>");
+						tPathInput = m_utils
+								.jQuerySelect("<input type='text' class='cellEditor' value='"
+										+ this.templateConfigurations[n].tPath
+										+ "'></input>");
+						tPathInput
+								.change(
+										{
+											page : this,
+											tPath : this.templateConfigurations[n].tPath,
+											tName : this.templateConfigurations[n].tName
+										},
                                        function(event)
                                        {
-                                          var oldValue = event.data.tName;
-                                          var newValue = event.target.value;
+											var oldValue = event.data.tName;
+											var newValue = event.target.value;
                                           for (var h = 0; h < event.data.page.templateConfigurations.length; ++h)
                                           {
                                              if (event.data.page.templateConfigurations[h].tName === oldValue)
                                              {
-                                                event.data.page.templateConfigurations[h].tPath = newValue;
-                                             }
-                                          }
+													event.data.page.templateConfigurations[h].tPath = newValue;
+												}
+											}
                                           event.data.page.submitChanges();
-                                          event.data.page
-                                                   .refreshTemplateConfigurationsTable();
-                                       });
-                     cell.append(tPathInput);
-                     row.append(cell);
-                     cell = m_utils.jQuerySelect("<td></td>");
-                     var plainOption = "<option value='plain' ";
-                     if (this.templateConfigurations[n].tFormat
+											event.data.page
+													.refreshTemplateConfigurationsTable();
+										});
+						cell.append(tPathInput);
+						row.append(cell);
+						cell = m_utils.jQuerySelect("<td></td>");
+						var plainOption = "<option value='plain' ";
+						if (this.templateConfigurations[n].tFormat
                               && this.templateConfigurations[n].tFormat === 'plain')
                      {
                         plainOption = plainOption + "selected>Plain</option>";
                      }
                      else
                      {
-                        plainOption = plainOption + ">Plain</option>";
-                     }
-                     var pdfOption = "<option value='pdf' ";
-                     if (this.templateConfigurations[n].tFormat
+							plainOption = plainOption + ">Plain</option>";
+						}
+						var pdfOption = "<option value='pdf' ";
+						if (this.templateConfigurations[n].tFormat
                               && this.templateConfigurations[n].tFormat === 'pdf')
                      {
-                        pdfOption = pdfOption + "selected>PDF</option>";
+							pdfOption = pdfOption + "selected>PDF</option>";
                      }
                      else
                      {
-                        pdfOption = pdfOption + ">PDF</option>";
-                     }
+							pdfOption = pdfOption + ">PDF</option>";
+						}
                      tFormatInput = m_utils.jQuerySelect("<select class='cellEditor'>"
-                              + plainOption + pdfOption + "</select>");
-                     tFormatInput
-                              .change(
-                                       {
-                                          page : this,
-                                          tFormat : this.templateConfigurations[n].tFormat,
-                                          tName : this.templateConfigurations[n].tName
-                                       },
+										+ plainOption + pdfOption + "</select>");
+						tFormatInput
+								.change(
+										{
+											page : this,
+											tFormat : this.templateConfigurations[n].tFormat,
+											tName : this.templateConfigurations[n].tName
+										},
                                        function(event)
                                        {
-                                          var oldValue = event.data.tName;
-                                          var newValue = event.target.value;
+											var oldValue = event.data.tName;
+											var newValue = event.target.value;
                                           for (var h = 0; h < event.data.page.templateConfigurations.length; ++h)
                                           {
                                              if (event.data.page.templateConfigurations[h].tName === oldValue)
                                              {
-                                                event.data.page.templateConfigurations[h].tFormat = newValue;
-                                             }
-                                          }
+													event.data.page.templateConfigurations[h].tFormat = newValue;
+												}
+											}
                                           event.data.page.submitChanges();
-                                          event.data.page
-                                                   .refreshTemplateConfigurationsTable();
-                                       });
-                     cell.append(tFormatInput);
-                     row.append(cell);
+											event.data.page
+													.refreshTemplateConfigurationsTable();
+										});
+						cell.append(tFormatInput);
+						row.append(cell);
                      m_utils.jQuerySelect("table#templateConfigurationsTable tbody")
-                              .append(row);
-                  }
-               };
+								.append(row);
+					}
+				};
                MailIntegrationOverlay.prototype.validate = function()
                {
-                  var valid = true;
-                  this.serverInput.removeClass("error");
-                  this.userInput.removeClass("error");
-                  this.passwordInput.removeClass("error");
+					var valid = true;
+					this.serverInput.removeClass("error");
+					this.userInput.removeClass("error");
+					this.passwordInput.removeClass("error");
                   if (m_utils.isEmptyString(this.serverInput.val()))
                   {
                      this.view.errorMessages.push("Mail server must be defined."); // TODO
-                                                                                    // I18N
-                     this.serverInput.addClass("error");
-                     valid = false;
-                  }
-                  return valid;
-               };
+						// I18N
+						this.serverInput.addClass("error");
+						valid = false;
+					}
+					return valid;
+				};
+
+				this.sourceOptions = [
+      				{value: "repository", title: "Document Repository"},
+      			  	{value: "classpath", title: "Classpath"}
+      			];
+
+      			this.formatOptions = [
+      				{value: "plain", title: "Plain"},
+      			  	{value: "pdf", title: "PDF"}
+      			];
+
+      			this.i18nValues = initI18nLabels();
+
+      			/**
+      			 * 
+      			 */
+      			MailIntegrationOverlay.prototype.addConfiguration = function() {
+      				this.templateConfigurations.push({
+      					"tName" : "New" + (this.templateConfigurations.length + 1),
+      					"tPath" : "New" + (this.templateConfigurations.length + 1),
+      					"tSource" : "repository",
+      					"tFormat" : "plain"
+      				});
+
+      				this.submitSingleAttributeChange("stardust:emailOverlay::templateConfigurations",
+      						angular.toJson(this.templateConfigurations));
+      			};
+
+      			/**
+      			 * 
+      			 */
+      			MailIntegrationOverlay.prototype.deleteConfiguration = function(index) {
+      				this.templateConfigurations.splice(index, 1);
+
+      				this.submitSingleAttributeChange("stardust:emailOverlay::templateConfigurations",
+      						angular.toJson(this.templateConfigurations));
+      			};
+
+      			/**
+      			 * 
+      			 */
+      			MailIntegrationOverlay.prototype.i18nLabels = function(key) {
+      				return this.i18nValues[key];
+      			};
+
+      			/*
+      			 * 
+      			 */
+      			function initI18nLabels() {
+      				var labels = {};
+      				labels['templateConfigurations.title'] = 
+      					m_i18nUtils.getProperty("modeler.model.applicationOverlay.email.attachments.templateConfigurations.title");
+      			
+      				// TODO: Add more labels
+
+      				return labels;
+      			}
             }
-         });
+		});

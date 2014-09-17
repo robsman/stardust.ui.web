@@ -1,0 +1,45 @@
+<div>
+	<div class="heading" style="margin-top: 10px;">
+		{{elementView.MailIntegrationOverlay.i18nLabels('templateConfigurations.title')}}
+	</div>
+	
+	<div class="toolBar">
+		<input type="image" src="plugins/bpm-modeler/images/icons/add.png" class="toolbarButton"
+			title="Add"
+			alt="Add"
+			ng-click="elementView.MailIntegrationOverlay.addConfiguration()" />
+	</div>
+	<table style="width: 100%;">
+		<thead>
+			<tr>
+				<th style="border: 1px solid lightgray;"></th>
+				<th style="border: 1px solid lightgray;">Name</th>
+				<th style="border: 1px solid lightgray;">Source</th>
+				<th style="border: 1px solid lightgray;">Path</th>
+				<th style="border: 1px solid lightgray;">Format</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="templateConf in elementView.MailIntegrationOverlay.templateConfigurations">
+				<td style="border: 1px solid lightgray;">
+					<input type="image" src="plugins/bpm-modeler/images/icons/delete.png"
+						ng-click="elementView.MailIntegrationOverlay.deleteConfiguration($index)" />
+				</td>
+				<td style="border: 1px solid lightgray;">
+					<input type="text" ng-model="templateConf.tName"/>
+				</td>
+				<td style="border: 1px solid lightgray;">
+					<select ng-model="templateConf.tSource"
+						ng-options="srcOpt.value as srcOpt.title for srcOpt in elementView.MailIntegrationOverlay.sourceOptions" />
+				</td>
+				<td style="border: 1px solid lightgray;">
+					<input type="text" ng-model="templateConf.tPath"/>
+				</td>
+				<td style="border: 1px solid lightgray;">
+					<select ng-model="templateConf.tFormat"
+						ng-options="formatOpt.value as formatOpt.title for formatOpt in elementView.MailIntegrationOverlay.formatOptions" />
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>

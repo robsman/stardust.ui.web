@@ -25,13 +25,14 @@ define(
             "bpm-modeler/js/m_emailEventIntegrationOverlay",
             "bpm-modeler/js/m_messageEventIntegrationOverlay",
             "bpm-modeler/js/m_scanEventIntegrationOverlay",
-            "bpm-modeler/js/m_genericCamelRouteEventIntegrationOverlay" ],
+            "bpm-modeler/js/m_genericCamelRouteEventIntegrationOverlay",
+            "bpm-modeler/js/m_i18nUtils"],
       function(GenericEndpointOverlay, MailIntegrationOverlay, RestServiceOverlay,  ScriptingIntegrationOverlay,SqlIntegrationOverlay,StoredProcedureIntegrationOverlay,TemplatingIntegrationOverlay,SmsIntegrationOverlay, m_manualTriggerIntegrationOverlay,
             m_timerEventIntegrationOverlay,  m_intermediateTimerEventIntegrationOverlay, m_intermediateErrorEventIntegrationOverlay,
             m_fileEventIntegrationOverlay, m_emailEventIntegrationOverlay,
             m_messageEventIntegrationOverlay,
             m_scanEventIntegrationOverlay,
-            m_genericCamelRouteEventIntegrationOverlay) {
+            m_genericCamelRouteEventIntegrationOverlay, m_i18nUtils) {
          return {
             applicationIntegrationOverlay : [ {
                id : "genericEndpointOverlay",
@@ -42,6 +43,12 @@ define(
                id : "mailIntegrationOverlay",
                name : "E-Mail Send/Receive",
                pageHtmlUrl : "plugins/bpm-modeler/views/modeler/mailIntegrationOverlay.html",
+               pageHtmlPartials : [ {
+	        	   id : "mailIntegrationOverlayAttachments",
+	        	   pageHtmlUrl: "plugins/bpm-modeler/views/modeler/mailIntegrationOverlayAttachments.html",
+	        	   pageName : m_i18nUtils.getProperty("modeler.model.applicationOverlay.email.attachments.title"),
+	        	   pageIconUrl : "plugins/bpm-modeler/images/icons/data-folder.png"
+               }],
                provider : MailIntegrationOverlay
             }, {
                id : "restServiceOverlay",
