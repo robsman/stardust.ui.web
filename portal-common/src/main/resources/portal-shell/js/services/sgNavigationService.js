@@ -37,7 +37,7 @@ angular.module('shell.services').provider('sgNavigationService', function () {
 			 * 
 			 */
 			function normalizeLabel(label) {
-				return label ? label.toLowerCase().replace(/ /g, '-') : "";
+			return label ? label.toLowerCase().replace(/ /g, '-') : "";
 			}
 
 			/*

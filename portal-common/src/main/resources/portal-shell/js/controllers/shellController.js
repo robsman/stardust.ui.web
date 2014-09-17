@@ -27,7 +27,7 @@ angular.module('shell').controller('sg.shell.Controller',
 				var deferred = $q.defer();
 				$scope.config = sgConfigService;
 				$scope.config.then(function (cfg){
-					$scope.sidebarWidth = cfg.sidebar.width + "px";
+				$scope.sidebarWidth = cfg.sidebar.width + "px";
 
 					fetchTheme(cfg.endpoints.theme + "/current").then(function(theme){
 						$scope.theme = {};

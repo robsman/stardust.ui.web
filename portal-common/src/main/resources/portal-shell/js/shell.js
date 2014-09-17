@@ -1,7 +1,7 @@
 /**
  *  
  */
-	var shellAMod = angular.module('shell', ['shell.services', 'ngResource', 'ngRoute', 'shell.init']);
+var shellAMod = angular.module('shell', ['shell.services', 'ngResource', 'ngRoute', 'shell.init']);
 
 	var shellServicesAMod = angular.module('shell.services', []);
 
