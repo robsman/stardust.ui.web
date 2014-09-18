@@ -42,6 +42,14 @@ define(
                   return createRouteForXDocReportTemplates(format, location,
                            embeddedTemplateContent, templatePath, generateFileOutputName,
                            convertToPdf);
+               },
+               findAccessPoint : function(accessPoints, accessPointId)
+               {
+                  return findAccessPoint(accessPoints, accessPointId);
+               },
+               filterAccessPoint : function(accessPoints, accessPointId)
+               {
+                  return filterAccessPoint(accessPoints, accessPointId);
                }
             };
 
@@ -216,5 +224,38 @@ define(
                routeDefinition += "<simple>$simple{body}</simple>\n";
                routeDefinition += "</setHeader>\n";
                return routeDefinition;
+            }
+
+            function findAccessPoint(
+                     accessPoints, accessPointId)
+            {
+               var accessPopint = null;
+               for (var n = 0; n < accessPoints.length; n++)
+               {
+                  var ap = accessPoints[n];
+                  if (ap.id == accessPointId)
+                  {
+                     accessPopint = ap;
+                     break;
+                  }
+               }
+               return accessPopint;
+            }
+            /**
+             * exclude accessPointId from the accessPoints List
+             */
+            function filterAccessPoint(
+                     accessPoints, accessPointId)
+            {
+               var filteredAccessPoints = [];
+               for (var n = 0; n < accessPoints.length; n++)
+               {
+                  var ap = accessPoints[n];
+                  if (ap.id != accessPointId)
+                  {
+                     filteredAccessPoints.push(ap);
+                  }
+               }
+               return filteredAccessPoints;
             }
          });
