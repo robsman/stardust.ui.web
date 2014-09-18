@@ -17,16 +17,13 @@ define(
                {
                   var overlay = new MailIntegrationOverlay();
                   overlay.initialize(view);
-
                   // Expose so that it will be available on $scope
                   // It will cause circular reference! but at the movement use this
                   // approach
                   view.MailIntegrationOverlay = overlay;
-
                   return overlay;
                }
             };
-
             function MailIntegrationOverlay()
             {
                // Toolbar groups configuration.
@@ -63,10 +60,8 @@ define(
                      name : 'colors'
                   } ];
                }
-
                MailIntegrationOverlay.prototype.initialize = function(view)
                {
-
                   this.view = view;
                   this.view
                            .insertPropertiesTab(
@@ -111,10 +106,10 @@ define(
                            .jQuerySelect("#mailIntegrationOverlay #bccInput");
                   this.identifierInSubjectInput = m_utils
                            .jQuerySelect("#mailIntegrationOverlay #identifierInSubjectInput");
-                  // this.storeEmailInput = m_utils
-                  // .jQuerySelect("#mailIntegrationOverlay #storeEmailInput");
-                  // this.storeAttachmentsInput = m_utils
-                  // .jQuerySelect("#mailIntegrationOverlay #storeAttachmentsInput");
+//                  this.storeEmailInput = m_utils
+//                           .jQuerySelect("#mailIntegrationOverlay #storeEmailInput");
+                  this.storeAttachmentsInput = m_utils
+                           .jQuerySelect("#mailIntegrationOverlay #storeAttachmentsInput");
                   this.transactedRouteInput = m_utils
                            .jQuerySelect("#mailIntegrationOverlay #transactedRouteInput");
                   this.templateSourceSelect = m_utils
@@ -125,8 +120,6 @@ define(
                            "#mailIntegrationOverlay #mailTemplateEditor").get(0);
                   var rdmNo = Math.floor((Math.random() * 100000) + 1);
                   this.mailTemplateEditor.id = "mailTemplateEditor" + rdmNo;
-
-                  // this.initializeTemplateConfigurationsTable();
                   this.responseTypeSelect = m_utils
                            .jQuerySelect("#responseTab #responseTypeSelect");
                   this.responseOptionsTypeSelect = m_utils
@@ -245,16 +238,16 @@ define(
                            .text(
                                     m_i18nUtils
                                              .getProperty("modeler.model.applicationOverlay.email.bccInput.label"));
-                  // m_utils
-                  // .jQuerySelect("label[for='storeEmailInput']")
-                  // .text(
-                  // m_i18nUtils
-                  // .getProperty("modeler.model.applicationOverlay.email.storeEmailInput.label"));
-                  // m_utils
-                  // .jQuerySelect("label[for='storeAttachmentsInput']")
-                  // .text(
-                  // m_i18nUtils
-                  // .getProperty("modeler.model.applicationOverlay.email.storeAttachmentsInput.label"));
+//                  m_utils
+//                           .jQuerySelect("label[for='storeEmailInput']")
+//                           .text(
+//                                    m_i18nUtils
+//                                             .getProperty("modeler.model.applicationOverlay.email.storeEmailInput.label"));
+                  m_utils
+                           .jQuerySelect("label[for='storeAttachmentsInput']")
+                           .text(
+                                    m_i18nUtils
+                                             .getProperty("modeler.model.applicationOverlay.email.storeAttachmentsInput.label"));
                   m_utils
                            .jQuerySelect("label[for='identifierInSubjectInput']")
                            .text(
@@ -367,14 +360,14 @@ define(
                   {
                      self.submitChanges();
                   });
-                  // this.storeAttachmentsInput.change(function()
-                  // {
-                  // self.submitChanges();
-                  // });
-                  // this.storeEmailInput.change(function()
-                  // {
-                  // self.submitChanges();
-                  // });
+                  this.storeAttachmentsInput.change(function()
+                  {
+                     self.submitChanges();
+                  });
+//                  this.storeEmailInput.change(function()
+//                  {
+//                     self.submitChanges();
+//                  });
                   this.templateSourceSelect
                            .change(function()
                            {
@@ -396,7 +389,6 @@ define(
                                        attributes : {
                                           "stardust:predefined" : true
                                        }
-
                                     });
                                     self.submitParameterDefinitionsChanges(accessPoints);
                                  }
@@ -411,9 +403,7 @@ define(
                                  self
                                           .submitParameterDefinitionsChanges(filteredAccessPoints);
                               }
-
                            });
-
                   this.templatePathInput.change(function()
                   {
                      self.submitChanges();
@@ -616,21 +606,8 @@ define(
                      this.setResponseType("none");
                      m_utils.jQuerySelect("#externalTemplateSource").show();
                      CKEDITOR.instances[this.mailTemplateEditor.id].setData("");
-
                   }
                };
-               // MailIntegrationOverlay.prototype.submitSingleAttributeChange = function(
-               // attribute, value)
-               // {
-               // if (this.getModelElement().attributes[attribute] != value)
-               // {
-               // var modelElement = {
-               // attributes : {}
-               // };
-               // modelElement.attributes[attribute] = value;
-               // this.view.submitChanges(modelElement, true);
-               // }
-               // };
                /**
                 *
                 */
@@ -768,8 +745,8 @@ define(
                {
                   this
                            .setResponseType(this.getApplication().attributes["stardust:emailOverlay::responseType"]);
-                     var accessPoints = this.createIntrinsicAccessPoints();
-                     this.submitParameterDefinitionsChanges(accessPoints);
+                  var accessPoints = this.createIntrinsicAccessPoints();
+                  this.submitParameterDefinitionsChanges(accessPoints);
                };
                MailIntegrationOverlay.prototype.createIntrinsicAccessPoints = function()
                {
@@ -862,19 +839,6 @@ define(
                         }
                      });
                   }
-                  // if (!accessPoints["mailContentAP"])
-                  // {
-                  // defaultAccessPoints.push({
-                  // id : "mailContentAP",
-                  // name : "Mail Content",
-                  // dataType : "primitive",
-                  // primitiveDataType : "String",
-                  // direction : "IN",
-                  // attributes : {
-                  // "stardust:predefined" : true
-                  // }
-                  // });
-                  // }
                   return defaultAccessPoints;
                }
                /**
@@ -907,14 +871,14 @@ define(
                            .val(this.getApplication().attributes["stardust:emailOverlay::cc"]);
                   this.bccInput
                            .val(this.getApplication().attributes["stardust:emailOverlay::bcc"]);
-                  // this.storeEmailInput
-                  // .prop(
-                  // "checked",
-                  // this.getApplication().attributes["stardust:emailOverlay::storeEmail"]);
-                  // this.storeAttachmentsInput
-                  // .prop(
-                  // "checked",
-                  // this.getApplication().attributes["stardust:emailOverlay::storeAttachments"]);
+//                  this.storeEmailInput
+//                           .prop(
+//                                    "checked",
+//                                    this.getApplication().attributes["stardust:emailOverlay::storeEmail"]);
+                  this.storeAttachmentsInput
+                           .prop(
+                                    "checked",
+                                    this.getApplication().attributes["stardust:emailOverlay::storeAttachments"]);
                   CKEDITOR.instances[this.mailTemplateEditor.id]
                            .setData(this.getApplication().attributes["stardust:emailOverlay::mailTemplate"]);
                   this
@@ -933,7 +897,6 @@ define(
                            .prop(
                                     "checked",
                                     this.getApplication().attributes["carnot:engine:camel::transactedRoute"]);
-
                   var templateConfigurationsJson = this.getApplication().attributes["stardust:emailOverlay::templateConfigurations"];
                   if (!templateConfigurationsJson)
                   {
@@ -941,7 +904,6 @@ define(
                   }
                   this.templateConfigurations = JSON.parse(templateConfigurationsJson);
                };
-
                MailIntegrationOverlay.prototype.createRouteDefinitionForEmbeddedOrDataMode = function()
                {
                   var route = "";
@@ -963,7 +925,6 @@ define(
                      route += "  </when>\n";
                      route += "</choice>\n";
                   }
-
                   route += "<setHeader headerName=\"CamelLanguageScript\">\n";
                   route += "   <constant>\n";
                   route += "function setOutHeader(key, output){\nexchange.out.headers.put(key,output);}\n";
@@ -1057,7 +1018,6 @@ define(
                   markup = markup.replace(new RegExp("(&quot;)", 'g'), "\"");
                   route += "<![CDATA[";
                   route += "var subject= eval('(' + subject+ ')');\n";
-
                   if (this.templateSourceSelect.val() == "data")
                   {
                      route += "if(mailContentAP){\n";
@@ -1066,13 +1026,11 @@ define(
                   }
                   else
                   {// embedded
-                     // "else{\n";
                      route += "      response = '"
                               + markup.replace(new RegExp("\n", 'g'), " ").replace(
                                        new RegExp("toDate", 'g'), "formatDate").replace(
                                        new RegExp("{{", 'g'), "' + ").replace(
                                        new RegExp("}}", 'g'), " + '") + "';\n";
-                     // route += "}";
                   }
                   route += "]]>";
                   route += "\n      setOutHeader('response', response);\n";
@@ -1114,8 +1072,6 @@ define(
                }
                MailIntegrationOverlay.prototype.createRouteDefinitionForClassPathOrRepositoryMode = function()
                {
-                  // format, location,embeddedTemplateContent, templatePath,
-                  // generateFileOutputName,convertToPdf
                   var routeDefinition = m_routeDefinitionUtils
                            .createTemplatingHandlerRouteDefinition("text",
                                     this.templateSourceSelect.val(), null,
@@ -1138,7 +1094,6 @@ define(
                         break;
                      }
                   }
-
                   if (this.templateConfigurations
                            && this.templateConfigurations.length > 0)
                   {
@@ -1190,7 +1145,6 @@ define(
                      route += "  </when>\n";
                      route += "</choice>\n";
                   }
-
                   if (this.templateSourceSelect.val() == "embedded"
                            || this.templateSourceSelect.val() == "data")
                   {
@@ -1212,7 +1166,6 @@ define(
                      //
                      route += this.createRouteDefinitionForClassPathOrRepositoryMode();
                   }
-
                   // set content type
                   route += "<setHeader headerName=\"contentType\">\n";
                   route += "   <constant>" + this.mailFormatSelect.val()
@@ -1235,6 +1188,9 @@ define(
                      route += "?username=" + this.userInput.val()
                   }
                   route += "\"/>";
+                  if(this.storeAttachmentsInput.prop("checked")){
+                     route += "<to uri=\"bean:documentHandler?method=storeExchangeAttachments\"/>\n";
+                  }
                   m_utils.debug(route);
                   return route;
                };
@@ -1305,12 +1261,10 @@ define(
                                                    .val(),
                                           "stardust:emailOverlay::bcc" : this.bccInput
                                                    .val(),
-                                          // "stardust:emailOverlay::storeEmail" :
-                                          // this.storeEmailInput
-                                          // .prop("checked"),
-                                          // "stardust:emailOverlay::storeAttachments" :
-                                          // this.storeAttachmentsInput
-                                          // .prop("checked"),
+//                                          "stardust:emailOverlay::storeEmail" : this.storeEmailInput
+//                                                   .prop("checked"),
+                                          "stardust:emailOverlay::storeAttachments" : this.storeAttachmentsInput
+                                                   .prop("checked"),
                                           "stardust:emailOverlay::templateSource" : this.templateSourceSelect
                                                    .val(),
                                           "stardust:emailOverlay::templatePath" : this.templatePathInput
@@ -1319,7 +1273,6 @@ define(
                                                    .getData(),
                                           "stardust:emailOverlay::templateConfigurations" : angular
                                                    .toJson(this.templateConfigurations)
-                                       //JSON.stringify(this.templateConfigurations)
                                        }
                                     }, skipValidation);
                };
@@ -1370,10 +1323,8 @@ define(
                         valid = false;
                      }
                   }
-
                   return valid;
                };
-
                this.sourceOptions = [ {
                   value : "repository",
                   title : "Document Repository"
@@ -1381,7 +1332,6 @@ define(
                   value : "classpath",
                   title : "Classpath"
                } ];
-
                this.formatOptions = [ {
                   value : "plain",
                   title : "Plain"
@@ -1389,9 +1339,7 @@ define(
                   value : "pdf",
                   title : "PDF"
                } ];
-
                this.i18nValues = initI18nLabels();
-
                /**
                 *
                 */
@@ -1403,24 +1351,16 @@ define(
                      "tSource" : "repository",
                      "tFormat" : "plain"
                   });
-
-                  //      				this.submitSingleAttributeChange("stardust:emailOverlay::templateConfigurations",
-                  //      						angular.toJson(this.templateConfigurations));
                   this.submitChanges();
                };
-
                /**
                 *
                 */
                MailIntegrationOverlay.prototype.deleteConfiguration = function(index)
                {
                   this.templateConfigurations.splice(index, 1);
-
-                  //      				this.submitSingleAttributeChange("stardust:emailOverlay::templateConfigurations",
-                  //      						angular.toJson(this.templateConfigurations));
                   this.submitChanges();
                };
-
                /**
                 *
                 */
@@ -1428,8 +1368,7 @@ define(
                {
                   return this.i18nValues[key];
                };
-
-               /*
+               /**
                 *
                 */
                function initI18nLabels()
@@ -1437,9 +1376,6 @@ define(
                   var labels = {};
                   labels['templateConfigurations.title'] = m_i18nUtils
                            .getProperty("modeler.model.applicationOverlay.email.attachments.templateConfigurations.title");
-
-                  // TODO: Add more labels
-
                   return labels;
                }
             }
