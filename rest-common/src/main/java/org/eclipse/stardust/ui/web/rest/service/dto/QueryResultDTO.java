@@ -8,35 +8,16 @@
  * Contributors:
  *    Anoop.Nair (SunGard CSA LLC) - initial API and implementation and/or initial documentation
  *******************************************************************************/
-package org.eclipse.stardust.ui.web.rest.service.dto.builder;
+package org.eclipse.stardust.ui.web.rest.service.dto;
 
-import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
-import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceDTO;
+import java.util.List;
 
 /**
- * @author Anoop.Nair
+ * @author Subodh.Godbole
  * @version $Revision: $
  */
-public class ActivityInstanceDTOBuilder
+public class QueryResultDTO extends AbstractDTO
 {
-   public static ActivityInstanceDTO build(ActivityInstance ai)
-   {
-      ActivityInstanceDTO aiDTO = new ActivityInstanceDTO();
-
-      if (ai != null)
-      {
-         aiDTO.setOid(ai.getOID());
-      }
-
-      return aiDTO;
-   }
-
-   /**
-    * Prevent instantiation
-    */
-   private ActivityInstanceDTOBuilder()
-   {
-
-   }
-
+   public long totalCount;
+   public List<?> list;
 }

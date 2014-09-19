@@ -19,6 +19,7 @@
          <bean class="org.eclipse.stardust.ui.web.rest.I18nResource" />
          <bean class="org.eclipse.stardust.ui.web.rest.ProcessDefinitionResource" />
          <bean class="org.eclipse.stardust.ui.web.rest.ProcessInstanceResource" />
+         <bean class="org.eclipse.stardust.ui.web.rest.WorklistResource" />
 		</jaxrs:serviceBeans>
 	</jaxrs:server>
 

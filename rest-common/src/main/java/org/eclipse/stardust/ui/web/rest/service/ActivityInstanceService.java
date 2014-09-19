@@ -21,7 +21,7 @@ import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.builder.ActivityInstanceDTOBuilder;
+import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DocumentDTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.utils.ActivityInstanceUtils;
 
@@ -42,10 +42,8 @@ public class ActivityInstanceService
     */
    public ActivityInstanceDTO getActivityInstance(long activityInstanceOid)
    {
-      ActivityInstance ai = activityInstanceUtils
-            .getActivityInstance(activityInstanceOid);
-
-      return ActivityInstanceDTOBuilder.build(ai);
+      ActivityInstance ai = activityInstanceUtils.getActivityInstance(activityInstanceOid);
+      return DTOBuilder.build(ai, ActivityInstanceDTO.class);
    }
 
    /**

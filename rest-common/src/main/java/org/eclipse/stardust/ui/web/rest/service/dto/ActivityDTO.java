@@ -10,37 +10,30 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service.dto;
 
+import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOAttribute;
+import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOClass;
+
+
 /**
  * @author Anoop.Nair
+ * @author Subodh.Godbole
  * @version $Revision: $
  */
-public class ActivityDTO
+@DTOClass
+public class ActivityDTO extends AbstractDTO
 {
-   private String name;
+   @DTOAttribute("id")
+   public String id;
 
-   /**
-    * 
-    */
-   public ActivityDTO()
-   {
+   @DTOAttribute("name")
+   public String name;
 
-   }
+   @DTOAttribute("description")
+   public String description;
 
-   /**
-    * @return the name
-    */
-   public String getName()
-   {
-      return name;
-   }
+   @DTOAttribute("implementationType.id")
+   public String implementationTypeId;
 
-   /**
-    * @param name
-    *           the name to set
-    */
-   public void setName(String name)
-   {
-      this.name = name;
-   }
-
+   @DTOAttribute("implementationType.name")
+   public String implementationTypeName;
 }

@@ -10,75 +10,31 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service.dto;
 
+import java.util.Date;
+
+import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOAttribute;
+import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOClass;
+
+
 /**
  * @author Anoop.Nair
  * @version $Revision: $
  */
-public class ActivityInstanceDTO
+@DTOClass
+public class ActivityInstanceDTO extends AbstractDTO
 {
-   private long oid;
+   @DTOAttribute("OID")
+   public long oid;
 
-   private String start;
+   @DTOAttribute("startTime")
+   public Date start;
 
-   private ActivityDTO activity;
+   @DTOAttribute("lastModificationTime")
+   public Date lastModification;
 
-   /**
-    * 
-    */
-   public ActivityInstanceDTO()
-   {
+   @DTOAttribute("activity")
+   public ActivityDTO activity;
 
-   }
-
-   /**
-    * @return the oid
-    */
-   public long getOid()
-   {
-      return oid;
-   }
-
-   /**
-    * @param oid
-    *           the oid to set
-    */
-   public void setOid(long oid)
-   {
-      this.oid = oid;
-   }
-
-   /**
-    * @return the start
-    */
-   public String getStart()
-   {
-      return start;
-   }
-
-   /**
-    * @param start
-    *           the start to set
-    */
-   public void setStart(String start)
-   {
-      this.start = start;
-   }
-
-   /**
-    * @return the activity
-    */
-   public ActivityDTO getActivity()
-   {
-      return activity;
-   }
-
-   /**
-    * @param activity
-    *           the activity to set
-    */
-   public void setActivity(ActivityDTO activity)
-   {
-      this.activity = activity;
-   }
-
+   @DTOAttribute("processInstance.processName")
+   public String processName;
 }
