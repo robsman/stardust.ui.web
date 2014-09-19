@@ -106,8 +106,8 @@ define(
                            .jQuerySelect("#mailIntegrationOverlay #bccInput");
                   this.identifierInSubjectInput = m_utils
                            .jQuerySelect("#mailIntegrationOverlay #identifierInSubjectInput");
-//                  this.storeEmailInput = m_utils
-//                           .jQuerySelect("#mailIntegrationOverlay #storeEmailInput");
+                  this.storeEmailInput = m_utils
+                           .jQuerySelect("#mailIntegrationOverlay #storeEmailInput");
                   this.storeAttachmentsInput = m_utils
                            .jQuerySelect("#mailIntegrationOverlay #storeAttachmentsInput");
                   this.transactedRouteInput = m_utils
@@ -238,11 +238,11 @@ define(
                            .text(
                                     m_i18nUtils
                                              .getProperty("modeler.model.applicationOverlay.email.bccInput.label"));
-//                  m_utils
-//                           .jQuerySelect("label[for='storeEmailInput']")
-//                           .text(
-//                                    m_i18nUtils
-//                                             .getProperty("modeler.model.applicationOverlay.email.storeEmailInput.label"));
+                  m_utils
+                           .jQuerySelect("label[for='storeEmailInput']")
+                           .text(
+                                    m_i18nUtils
+                                             .getProperty("modeler.model.applicationOverlay.email.storeEmailInput.label"));
                   m_utils
                            .jQuerySelect("label[for='storeAttachmentsInput']")
                            .text(
@@ -364,10 +364,10 @@ define(
                   {
                      self.submitChanges();
                   });
-//                  this.storeEmailInput.change(function()
-//                  {
-//                     self.submitChanges();
-//                  });
+                  this.storeEmailInput.change(function()
+                  {
+                     self.submitChanges();
+                  });
                   this.templateSourceSelect
                            .change(function()
                            {
@@ -871,10 +871,10 @@ define(
                            .val(this.getApplication().attributes["stardust:emailOverlay::cc"]);
                   this.bccInput
                            .val(this.getApplication().attributes["stardust:emailOverlay::bcc"]);
-//                  this.storeEmailInput
-//                           .prop(
-//                                    "checked",
-//                                    this.getApplication().attributes["stardust:emailOverlay::storeEmail"]);
+                  this.storeEmailInput
+                           .prop(
+                                    "checked",
+                                    this.getApplication().attributes["stardust:emailOverlay::storeEmail"]);
                   this.storeAttachmentsInput
                            .prop(
                                     "checked",
@@ -1191,6 +1191,14 @@ define(
                   if(this.storeAttachmentsInput.prop("checked")){
                      route += "<to uri=\"bean:documentHandler?method=storeExchangeAttachments\"/>\n";
                   }
+                  if(this.storeEmailInput.prop("checked")){
+                     route += "<convertBodyTo type=\"javax.mail.internet.MimeMessage\"/>\n";
+                     route += "<setHeader headerName=\"ippDmsDocumentName\">\n";
+                     route += "   <simple>$simple{header.subject}.eml</simple>\n";
+                     route += "</setHeader>\n";
+                     route += "<to uri=\"bean:documentHandler?method=toDocument\"/>";
+                  }
+
                   m_utils.debug(route);
                   return route;
                };
@@ -1261,8 +1269,8 @@ define(
                                                    .val(),
                                           "stardust:emailOverlay::bcc" : this.bccInput
                                                    .val(),
-//                                          "stardust:emailOverlay::storeEmail" : this.storeEmailInput
-//                                                   .prop("checked"),
+                                          "stardust:emailOverlay::storeEmail" : this.storeEmailInput
+                                                   .prop("checked"),
                                           "stardust:emailOverlay::storeAttachments" : this.storeAttachmentsInput
                                                    .prop("checked"),
                                           "stardust:emailOverlay::templateSource" : this.templateSourceSelect
