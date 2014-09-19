@@ -29,7 +29,8 @@ angular.module('workflow-ui').controller('sdWorklistViewCtrl', ['$scope', 'sdVie
 	 */
 	$scope.refresh = function() {
 		sdWorkflowService.getWorklist(query).done(function(data) {
-			$scope.worklist.workItems = data;
+			$scope.worklist.workItems = data.list;
+			$scope.worklist.totalCount = data.totalCount;
 			$scope.$apply();
 		});
 	};

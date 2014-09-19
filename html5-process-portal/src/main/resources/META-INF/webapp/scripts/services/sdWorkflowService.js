@@ -41,7 +41,7 @@ angular.module('workflow-ui.services').provider('sdWorkflowService', function ()
 				type: "GET",
 		        contentType: "application/json"
 			}).done(function(result) {
-				deferred.resolve(result.list);
+				deferred.resolve(result);
 			}).fail(function(data) {
 				deferred.reject(data);
 		    });
