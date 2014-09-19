@@ -30,15 +30,18 @@ angular.module('workflow-ui.services').provider('sdWorkflowService', function ()
 			console.log("getting worklist for:");
 			console.log(query);
 
-			// TODO: Use Angular $resource and call real rest end point
+			var restUrl = "services/rest/portal/worklist/";
+			if (query.participantQId) {
+			   restUrl += "participant/" + query.participantQId;
+			}
 			
-			// plugins/html5-process-portal/jsons/worklist.json
+			// TODO: Use Angular $resource
 			jQuery.ajax({
-				url: "services/rest/checklist-management/worklist.json?" + JSON.stringify(query),
+			  	url: restUrl,
 				type: "GET",
 		        contentType: "application/json"
 			}).done(function(result) {
-				deferred.resolve(result.workItems);
+				deferred.resolve(result.list);
 			}).fail(function(data) {
 				deferred.reject(data);
 		    });
