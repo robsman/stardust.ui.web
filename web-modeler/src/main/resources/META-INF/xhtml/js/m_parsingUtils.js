@@ -67,8 +67,7 @@ define(["bpm-modeler/js/m_model"],function(m_model){
 				}else{
 					typeDecl=m_model.findTypeDeclaration(paramDef.structuredDataTypeFullId || paramDef.dataFullId);
 					if(!typeDecl){
-						/*check if data is defined on an external reference as any local reference should
-						 *resolve successfully via the findTypeDeclaration call*/
+						/*Couldn't find typeDecl in our default model, lets try harder!*/
 						lookupData=m_model.findData(paramDef.structuredDataTypeFullId || paramDef.dataFullId);
 						typeDecl=m_model.findTypeDeclaration(lookupData.structuredDataTypeFullId);
 					}
