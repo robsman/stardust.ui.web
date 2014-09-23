@@ -64,7 +64,6 @@ public class FileUploadRestlet
    @POST
    @Path("upload")
    @Consumes(MediaType.MULTIPART_FORM_DATA)
-   @Produces(MediaType.APPLICATION_JSON)
    public Response uploadFile(List<Attachment> attachments, @Context HttpServletRequest request)
    {
       JsonObject response = null;
@@ -122,7 +121,7 @@ public class FileUploadRestlet
 
       if (response != null)
       {
-         return Response.ok(response.toString(), MediaType.APPLICATION_JSON_TYPE).build();
+         return Response.ok(response.toString()).build();
       }
       else
       {

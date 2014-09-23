@@ -28,6 +28,8 @@ define(
 			 */
 			function ReportingService() {
 				
+				jQuery.ajaxSetup({ cache: false });  
+				
 				ReportingService.prototype.getI18N = function(key) {
 					return I18NUtils.getProperty(key);
 				};

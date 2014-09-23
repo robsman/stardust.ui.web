@@ -57,7 +57,7 @@ define(function() {
 				details.fileDescription = jQuery("#fileDescription").val();
 				details.versionComment = jQuery("#versionComment").val();
 				details.openDocument = jQuery("#openDocument").prop("checked");
-				details.fileDetails = JSON.parse(fileDetails);
+				details.fileDetails = fileDetails;
 				payloadObj.acceptFunction(details);
 				closePopup();
 			});
@@ -109,7 +109,7 @@ define(function() {
 
 				},
 				complete : function(response) {
-					fileDetails = jQuery(response.responseText).text();
+					fileDetails = JSON.parse(response.responseText);
 					if(fileDetails){
 						jQuery("#confirmationMessage").html(
 								"<span>" + messageBundle.getProperty("confirmationMsg")
