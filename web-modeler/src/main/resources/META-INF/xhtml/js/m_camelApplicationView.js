@@ -263,28 +263,49 @@ define(
 					   confLink[0].parentNode.removeChild(confLink[0]);
 					}
 
-               if (success) {
-                  deferred.resolve();
-               
-                  self.overlayController = extension.provider.create(self);
-               
-                  // Make sure that initial information for the
-                  // overlay is written to the server
-                  // TODO Ideally, this would only be invoked on
-                  // creation, but currently, the overlay code is
-                  // not bound at creation time, just the overlay
-                  // ID
-                  // is written. Hence, we are invoking per View
-                  // initialization
-               
-                  self.overlayController.activate();
-               } else {
-                  deferred.reject();
-               }
+					if (success) {
+						deferred.resolve();
+
+						self.overlayController = extension.provider.create(self);
+
+						// Make sure that initial information for the
+						// overlay is written to the server
+						// TODO Ideally, this would only be invoked on
+						// creation, but currently, the overlay code is
+						// not bound at creation time, just the overlay
+						// ID
+						// is written. Hence, we are invoking per View
+						// initialization
+
+						self.overlayController.activate();
+
+						self.setOverlayControllerForAngular();
+					} else {
+						deferred.reject();
+					}
 
 					return deferred.promise();
 				};
-				
+
+				/**
+				 * 
+				 */
+				CamelApplicationView.prototype.setOverlayControllerForAngular = function() {
+					var self = this;
+					m_angularContextUtils.runInActiveViewContext(function($scope) {
+						$scope.overlayController = self.overlayController;
+					});
+				};
+
+				/**
+				 * 
+				 */
+				CamelApplicationView.prototype.updateOverlayControllerForAngular = function() {
+					m_angularContextUtils.runInActiveViewContext(function($scope) {
+						// NOP
+					});
+				};
+
 				/**
 				 * 
 				 */

@@ -17,10 +17,6 @@ define(
                {
                   var overlay = new MailIntegrationOverlay();
                   overlay.initialize(view);
-                  // Expose so that it will be available on $scope
-                  // It will cause circular reference! but at the movement use this
-                  // approach
-                  view.MailIntegrationOverlay = overlay;
                   return overlay;
                }
             };
