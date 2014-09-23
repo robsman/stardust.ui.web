@@ -43,7 +43,7 @@ define(
                id : "mailIntegrationOverlay",
                name : "E-Mail Send/Receive",
                pageHtmlUrl : "plugins/bpm-modeler/views/modeler/mailIntegrationOverlay.html",
-               pageHtmlPartials : [ {
+               propertyPages : [ {
 	        	   id : "mailIntegrationOverlayAttachments",
 	        	   pageHtmlUrl: "plugins/bpm-modeler/views/modeler/mailIntegrationOverlayAttachments.html",
 	        	   pageName : m_i18nUtils.getProperty("modeler.model.applicationOverlay.email.attachments.title"),
