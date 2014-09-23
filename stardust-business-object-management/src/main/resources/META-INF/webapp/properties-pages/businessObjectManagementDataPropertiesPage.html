@@ -14,6 +14,21 @@
 		as a Business Object.</p>
 	<table>
 		<tr>
+			<td><label>Data ID</label></td>
+			<td>{{elementView.data.id}}</td>
+		</tr>
+		<tr>
+			<td><label>PropertiesPage ID</label></td>
+			<td>{{elementView.propertiesPages[1].id}}</td>
+		</tr>
+		<tr>
+			<td><label>Properties Page Test Method</label></td>
+			<td><input type="button"
+				ng-click="elementView.propertiesPages[1].testMe()" value="Test"></input></td>
+		</tr>
+	</table>
+	<table>
+		<tr>
 			<td><label>Primary Key Field</label></td>
 			<td><select id="primaryKeyFieldSelect"><option>UUID</option>
 					<option>AccountNumber</option>
