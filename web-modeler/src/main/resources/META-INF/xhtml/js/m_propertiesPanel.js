@@ -274,8 +274,8 @@ define(
 									var page = extension.provider.create(self, extension.id, extension.title);
 									page.hide();
 									page.profiles = extension.profiles;
-									
 									dynamicPropertiesPages.push({extension: extension, page: page});
+									page.setForAngular();
 								},
 								done: function() {
 									// Once all propertiesPages are loaded build the properties page list

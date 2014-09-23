@@ -219,6 +219,7 @@ define(
 									onload: function(extension) {
 										var page = extension.provider.create(self, extension.id);
 										self.propertiesPages.push(page);
+										page.setForAngular();
 									},
 									done: function() {
 										// This needs to run out of angular context, hence use  window.setTimeout

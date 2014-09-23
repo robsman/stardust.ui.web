@@ -16,9 +16,9 @@ define(
 				"bpm-modeler/js/m_command",
 				"bpm-modeler/js/m_commandsController",
 				"bpm-modeler/js/m_dialog", "bpm-modeler/js/m_model",
-				"bpm-modeler/js/m_i18nUtils" ],
+				"bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_angularContextUtils" ],
 		function(m_utils, m_constants, m_command, m_commandsController,
-				m_dialog, m_model, m_i18nUtils) {
+				m_dialog, m_model, m_i18nUtils, m_angularContextUtils) {
 
 			return {
 				createPropertiesPage : function(propertiesPanel, id, titel,
@@ -284,6 +284,26 @@ define(
 					}
 
 					return true;
+				};
+
+				/*
+				 * 
+				 */
+				PropertiesPage.prototype.setForAngular = function() {
+					var self = this;
+					m_angularContextUtils.runInAngularContext(function($scope){
+						$scope.page = self;
+					}, m_utils.jQuerySelect("#" + self.id).get(0));
+				};
+
+				/*
+				 * 
+				 */
+				PropertiesPage.prototype.updateForAngular = function() {
+					var self = this;
+					m_angularContextUtils.runInAngularContext(function($scope){
+						// NOP
+					}, m_utils.jQuerySelect("#" + self.id).get(0));
 				};
 			}
 		});
