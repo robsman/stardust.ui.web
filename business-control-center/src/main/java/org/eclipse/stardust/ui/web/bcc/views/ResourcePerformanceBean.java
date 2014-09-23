@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,7 @@ import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 
 import org.eclipse.stardust.engine.api.model.ModelParticipantInfo;
+import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.core.query.statistics.api.CriticalProcessingTimePolicy;
 import org.eclipse.stardust.engine.core.query.statistics.api.DateRange;
@@ -703,11 +705,19 @@ public class ResourcePerformanceBean extends UIComponentBean implements Resource
       List<ProcessingTimePerProcess> tableData = new ArrayList<ProcessingTimePerProcess>();
       Iterator<ProcessDefinition> pIter = ProcessDefinitionUtils.getAllBusinessRelevantProcesses().iterator();
       ProcessingTimePerProcess ptp = null;
+      Set participants = new HashSet();
+      participants.add(selectedModelParticipant.getId());
+      ProcessDefinition caseProcess = ProcessDefinitionUtils.getProcessDefinition(PredefinedConstants.CASE_PROCESS_ID);
       while (pIter.hasNext())
       {
          ProcessDefinition pd = pIter.next();
-         ptp = new ProcessingTimePerProcess(pd, columnDefinitionMap);
-         tableData.add(ptp);
+         // Filter the PDs based on ROLE, Case Process wil be always visible
+         if (ProcessDefinitionUtils.hasProcessPerformingActivity(pd, participants)
+               || (pd.getQualifiedId().equals(caseProcess.getQualifiedId())))
+         {
+            ptp = new ProcessingTimePerProcess(pd, columnDefinitionMap);
+            tableData.add(ptp);
+         }
       }
 
       if (stat != null && selectedModelParticipant != null)

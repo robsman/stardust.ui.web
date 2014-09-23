@@ -217,8 +217,8 @@ public class ProcessDefinitionUtils
    {
       return getAllProcessDefinitions(true, true, true);
    }
-
    
+
    /**
     * @param activeModel
     * @param filterAuxiliaryProcesses
@@ -355,7 +355,7 @@ public class ProcessDefinitionUtils
     * @param participants
     * @return
     */
-   private static boolean hasProcessPerformingActivity(ProcessDefinition pd, Set participants)
+   public static boolean hasProcessPerformingActivity(ProcessDefinition pd, Set participants)
    {
       Iterator<Activity> aIter = pd.getAllActivities().iterator();
       while (aIter.hasNext())

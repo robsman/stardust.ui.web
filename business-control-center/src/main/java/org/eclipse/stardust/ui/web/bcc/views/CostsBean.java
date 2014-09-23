@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ import javax.faces.model.SelectItem;
 
 import org.eclipse.stardust.engine.api.dto.UserDetailsLevel;
 import org.eclipse.stardust.engine.api.model.ModelParticipantInfo;
+import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.query.UserDetailsPolicy;
 import org.eclipse.stardust.engine.api.query.UserQuery;
@@ -592,16 +594,27 @@ public class CostsBean extends UIComponentBean implements ResourcePaths,ViewEven
     */
    public List<CostTableEntry> getCost()
    {
+      Set participants = new HashSet();
       UserWorktimeStatistics stat = getWorktimeStatistics();
       UserQuery query = UserQuery.findActive();
       query.setPolicy(new UserDetailsPolicy(UserDetailsLevel.Core));
       List<CostsPerProcess> tableData = new ArrayList<CostsPerProcess>();
       Iterator pIter = ProcessDefinitionUtils.getAllBusinessRelevantProcesses().iterator();
-
+      ProcessDefinition caseProcess = ProcessDefinitionUtils.getProcessDefinition(PredefinedConstants.CASE_PROCESS_ID);
+      if(selectedModelParticipant!=null)
+      {
+         participants.add(selectedModelParticipant.getId());   
+      }
+      
       while (pIter.hasNext())
       {
          ProcessDefinition pd = (ProcessDefinition) pIter.next();
-         tableData.add(new CostsPerProcess(pd, columnDefinitionMap));
+         // Filter the PDs based on ROLE, Case Process wil be always visible
+         if (ProcessDefinitionUtils.hasProcessPerformingActivity(pd, participants)
+               || (pd.getQualifiedId().equals(caseProcess.getQualifiedId())))
+         {
+            tableData.add(new CostsPerProcess(pd, columnDefinitionMap));   
+         }
       }
       CostsPerProcess cpp = null;    
       if (stat != null && selectedModelParticipant != null)
