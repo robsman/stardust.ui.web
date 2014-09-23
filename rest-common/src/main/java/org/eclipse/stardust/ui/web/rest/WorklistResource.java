@@ -43,11 +43,33 @@ public class WorklistResource
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/participant/{participantQId}")
-   public Response getWorklist(@PathParam("participantQId") String participantQId)
+   public Response getWorklistForParticipant(@PathParam("participantQId") String participantQId)
    {
       try
       {
-         QueryResultDTO resultDTO = getWorklistService().getWorklist(participantQId);
+         QueryResultDTO resultDTO = getWorklistService().getWorklistForParticipant(participantQId);
+
+         return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
+      }
+      catch (ObjectNotFoundException onfe)
+      {
+         return Response.status(Status.NOT_FOUND).build();
+      }
+      catch (Exception e)   
+      {
+         trace.error("", e);
+         return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+      }
+   }
+
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/user/{userId}")
+   public Response getWorklistForUser(@PathParam("userId") String userId)
+   {
+      try
+      {
+         QueryResultDTO resultDTO = getWorklistService().getWorklistForUser(userId);
 
          return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
       }

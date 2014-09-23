@@ -32,7 +32,9 @@ angular.module('workflow-ui.services').provider('sdWorkflowService', function ()
 
 			var restUrl = "services/rest/portal/worklist/";
 			if (query.participantQId) {
-			   restUrl += "participant/" + query.participantQId;
+				restUrl += "participant/" + query.participantQId;
+			} else if (query.userId) {
+				restUrl += "user/" + query.userId;
 			}
 			
 			// TODO: Use Angular $resource

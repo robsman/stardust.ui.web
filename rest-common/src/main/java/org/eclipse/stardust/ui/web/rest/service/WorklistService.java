@@ -35,13 +35,31 @@ public class WorklistService
    private WorklistUtils worklistUtils;
 
    /**
-    * @param aprticipantQId
+    * @param participantQId
     * @return
     */
-   public QueryResultDTO getWorklist(String participantQId)
+   public QueryResultDTO getWorklistForParticipant(String participantQId)
    {
-      QueryResult<?> queryResult = worklistUtils.getWorklist(participantQId);
-      
+      QueryResult<?> queryResult = worklistUtils.getWorklistForParticipant(participantQId);
+      return buildWorklistResult(queryResult);
+   }
+
+   /**
+    * @param userId
+    * @return
+    */
+   public QueryResultDTO getWorklistForUser(String userId)
+   {
+      QueryResult<?> queryResult = worklistUtils.getWorklistForUser(userId);
+      return buildWorklistResult(queryResult);
+   }
+
+   /**
+    * @param queryResult
+    * @return
+    */
+   private QueryResultDTO buildWorklistResult(QueryResult<?> queryResult)
+   {
       List<ActivityInstanceDTO> list = new ArrayList<ActivityInstanceDTO>();
       for (Object object : queryResult)
       {

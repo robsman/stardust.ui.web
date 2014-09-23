@@ -11,17 +11,19 @@
 package org.eclipse.stardust.ui.web.rest.service.utils;
 
 import java.util.Iterator;
+import java.util.List;
 
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Component;
 
+import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.engine.api.model.Participant;
 import org.eclipse.stardust.engine.api.model.ParticipantInfo;
-import org.eclipse.stardust.engine.api.query.HistoricalStatesPolicy;
-import org.eclipse.stardust.engine.api.query.QueryResult;
-import org.eclipse.stardust.engine.api.query.Worklist;
-import org.eclipse.stardust.engine.api.query.WorklistQuery;
+import org.eclipse.stardust.engine.api.query.*;
+import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
+import org.eclipse.stardust.engine.api.runtime.Grant;
+import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 
 /**
@@ -38,7 +40,7 @@ public class WorklistUtils
     * @param participantQId
     * @return
     */
-   public QueryResult<?> getWorklist(String participantQId)
+   public QueryResult<?> getWorklistForParticipant(String participantQId)
    {
       Participant participant = serviceFactoryUtils.getQueryService().getParticipant(participantQId);
       if (null != participant)
@@ -52,6 +54,44 @@ public class WorklistUtils
          return queryResult;
       }
       return null;
+   }
+
+   /**
+    * @param userId
+    * @return
+    */
+   public QueryResult<?> getWorklistForUser(String userId)
+   {
+      User user = serviceFactoryUtils.getUserService().getUser(userId);
+
+      if(null != user)
+      {
+         // TODO: User WorklistQuery?
+         ActivityInstanceQuery query = ActivityInstanceQuery.findInState(new ActivityInstanceState[] {
+               ActivityInstanceState.Application, ActivityInstanceState.Suspended});
+         // TODO - this is used to enhance performace but has a bug 
+         // query.setPolicy(EvaluateByWorkitemsPolicy.WORKITEMS);
+
+         FilterOrTerm or = query.getFilter().addOrTerm();
+         or.add(PerformingParticipantFilter.ANY_FOR_USER).add(new PerformingUserFilter(user.getOID()));
+         
+         // Remove role activities
+         FilterAndNotTerm not = query.getFilter().addAndNotTerm();
+         List<Grant> allGrants = user.getAllGrants();
+         for (Grant grant : allGrants)
+         {
+            not.add(PerformingParticipantFilter.forParticipant(serviceFactoryUtils.getQueryService().getParticipant(
+                  grant.getId())));
+         }         
+
+         ActivityInstances activityInstances = serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
+
+         return activityInstances;
+      }
+      else
+      {
+         throw new ObjectNotFoundException("UserId not found");
+      }
    }
 
    /**

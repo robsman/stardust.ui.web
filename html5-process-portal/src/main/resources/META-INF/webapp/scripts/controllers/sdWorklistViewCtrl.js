@@ -17,10 +17,14 @@
 angular.module('workflow-ui').controller('sdWorklistViewCtrl', ['$scope', 'sdViewUtilService', 'sdWorkflowService', function($scope, sdViewUtilService, sdWorkflowService) {
 	var viewParams = sdViewUtilService.getViewParams($scope);
 
-	var query = {
-		participantQId : viewParams.participantQId
-	};
+	var query = {};
 	
+	if (viewParams.participantQId) {
+	   query.participantQId = viewParams.participantQId;
+	} else if (viewParams.userId) {
+	   query.userId = viewParams.userId;
+	}
+
 	$scope.worklist = {};
 	$scope.worklist.selectedWorkItems = [];
 
