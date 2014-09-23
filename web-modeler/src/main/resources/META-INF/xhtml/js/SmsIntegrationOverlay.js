@@ -446,7 +446,7 @@ define(
                   route += "</setBody>\n";
                   
                   //route +="<to uri=\"smpp://"+this.userNameInput.val()+"@"+this.hostNameInput.val()+":"+this.portInput.val()+"?password="+this.passowrdInput.val()+"&amp;CamelSmppDestAddr="+this.destinationAddressInput.val()+"&amp;CamelSmppSourceAddr="+this.sourceAddressInput.val()+"\"/>"
-                  route +="<to uri=\"smpp://"+this.userNameInput.val()+"@"+this.hostNameInput.val()+":"+this.portInput.val()+"?password=";
+                  route +="<to uri=\"smpp://"+this.userNameInput.val()+"@"+this.hostNameInput.val()+":"+this.portInput.val()+"?lazySessionCreation=true&amp;password=";
                   
                   if(this.useCVforPassowrdInput.prop("checked"))
                   {
