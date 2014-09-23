@@ -289,20 +289,12 @@ define(
 				/*
 				 * 
 				 */
-				PropertiesPage.prototype.setForAngular = function() {
+				PropertiesPage.prototype.safeApply = function(force) {
 					var self = this;
 					m_angularContextUtils.runInAngularContext(function($scope){
-						$scope.page = self;
-					}, m_utils.jQuerySelect("#" + self.id).get(0));
-				};
-
-				/*
-				 * 
-				 */
-				PropertiesPage.prototype.updateForAngular = function() {
-					var self = this;
-					m_angularContextUtils.runInAngularContext(function($scope){
-						// NOP
+						if (force) {
+							$scope.page = self;
+						}
 					}, m_utils.jQuerySelect("#" + self.id).get(0));
 				};
 			}
