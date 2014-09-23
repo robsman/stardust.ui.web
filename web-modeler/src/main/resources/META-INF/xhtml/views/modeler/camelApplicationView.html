@@ -107,7 +107,7 @@
 							<li><a href="#configurationTab"><img
 									src="plugins/bpm-modeler/images/icons/application_edit.png"></img><span class="tabLabel"
 									id="camelConfiguration">Configuration</span> </a></li>
-							<li ng-repeat="overlayPartial in camelApplicationViewOverlay.extensions[0].pageHtmlPartials">
+							<li ng-repeat="overlayPartial in camelApplicationViewOverlay.extensions[0].propertyPages">
 								<a href="#{{overlayPartial.id}}">
 									<img ng-src="{{overlayPartial.pageIconUrl}}"></img>
 									<span class="tabLabel">{{overlayPartial.pageName}}</span>
@@ -122,7 +122,7 @@
 								</tr>
 							</table>
 						</div>
-						<div ng-repeat="overlayPartial in camelApplicationViewOverlay.extensions[0].pageHtmlPartials" id="{{overlayPartial.id}}">
+						<div ng-repeat="overlayPartial in camelApplicationViewOverlay.extensions[0].propertyPages" id="{{overlayPartial.id}}">
 							<sd-include src="overlayPartial.pageHtmlUrl"
 								onload="camelApplicationViewOverlayOnload(overlayPartial)" onfail="camelApplicationViewOverlayOnfail(overlayPartial)" />
 						</div>

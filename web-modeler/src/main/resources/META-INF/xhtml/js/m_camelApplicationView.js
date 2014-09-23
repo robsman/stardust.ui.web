@@ -226,7 +226,7 @@ define(
 
 					var self = this;
 
-					if (extension.pageHtmlPartials) {
+					if (extension.propertyPages) {
 						m_angularContextUtils.runInActiveViewContext(function($scope){
 							var mainId = self.id + "Overlay";
 							m_extensionManager.handleAngularizedExtensions($scope, [extension], mainId, {
@@ -240,36 +240,47 @@ define(
 						});
 					}
 					
+					var success = true;
 					if (extension.pageHtmlUrl) {
+					   success = false;
 						jQuery.ajax({
 							type : 'GET',
 							url : extension.pageHtmlUrl,
 							async : false
-						}).done(
-								function(data) {
-									self.overlayAnchor.append(data);
-	
-									self.overlayController = extension.provider
-											.create(self);
-	
-									// Make sure that initial information for the
-									// overlay is written to the server
-									// TODO Ideally, this would only be invoked on
-									// creation, but currently, the overlay code is
-									// not bound at creation time, just the overlay
-									// ID
-									// is written. Hence, we are invoking per View
-									// initialization
-	
-									self.overlayController.activate();
-	
-									deferred.resolve();
-								}).fail(function(data) {
+						}).done(function(data) {
+						   self.overlayAnchor.append(data);
+						   success = true;
+						}).fail(function(data) {
 							self.overlayAnchor.append(data);
-	
-							deferred.reject();
 						});
+					} else {
+					   // Remove default configuration Tab!
+					   var confTab = m_utils.jQuerySelect("#propertiesTabs #configurationTab");
+					   confTab[0].parentNode.removeChild(confTab[0]);
+					   
+					   var ul = m_utils.jQuerySelect("#propertiesTabs #propertiesTabsList");
+					   var confLink = ul.children().first();
+					   confLink[0].parentNode.removeChild(confLink[0]);
 					}
+
+               if (success) {
+                  deferred.resolve();
+               
+                  self.overlayController = extension.provider.create(self);
+               
+                  // Make sure that initial information for the
+                  // overlay is written to the server
+                  // TODO Ideally, this would only be invoked on
+                  // creation, but currently, the overlay code is
+                  // not bound at creation time, just the overlay
+                  // ID
+                  // is written. Hence, we are invoking per View
+                  // initialization
+               
+                  self.overlayController.activate();
+               } else {
+                  deferred.reject();
+               }
 
 					return deferred.promise();
 				};
