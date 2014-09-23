@@ -46,7 +46,10 @@ define(
 
       DomTreeBuilder.prototype.buildNode = function(nodeConfig, parentNode) {
         var node = jQuery("<li>");
-        node.attr(nodeConfig.attr);
+        
+        if(nodeConfig){
+        	node.attr(nodeConfig.attr);
+        }
 
         jQuery("<a href='#'>" + nodeConfig.data + "</a>").appendTo(node);
 
@@ -76,6 +79,7 @@ define(
 
       OutlineUiModelBuilder.prototype.buildModelNode = function(parent) {
         // alias to be used from jQuery.each callbacks
+
         var self = this;
         	modelTreeType="model",
         	isLocked=this.model.isReadonly(),
@@ -316,8 +320,14 @@ define(
 
         jQuery.each(m_utils.convertToSortedArray(m_model.getModels(), "name", true),
             function(index, model) {
-              newOutlineTreeDomBuilder(model).buildModelNode(outlineRoot);
-              refreshModelStatus(model);
+        	  try{
+	              newOutlineTreeDomBuilder(model).buildModelNode(outlineRoot);
+	              refreshModelStatus(model);
+        	  }
+        	  catch(err){
+        		  //Place errored node in tree
+        		  newOutlineTreeDomBuilder(model).buildErroredModelNode(outlineRoot);
+        	  }
             });
 
         // Errored models

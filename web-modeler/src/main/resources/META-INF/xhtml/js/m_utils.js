@@ -540,16 +540,22 @@ define(
 				var ascendingFactor = ascending ? 1 : -1;
 
 				sortedObjects.sort(function(left, right) {
-					var leftValue = left[field].toLowerCase();
-					var rightValue = right[field].toLowerCase();
-
-					if (leftValue < rightValue) {
-						return -1 * ascendingFactor;
+					
+					var leftValue,
+						rightValue;
+					
+					if(left[field] && right[field]){
+					
+						leftValue=left[field].toLowerCase();
+						rightValue=right[field].toLowerCase();
+	
+						if (leftValue < rightValue) {
+							return -1 * ascendingFactor;
+						}
+						if (leftValue > rightValue) {
+							return 1 * ascendingFactor;
+						}
 					}
-					if (leftValue > rightValue) {
-						return 1 * ascendingFactor;
-					}
-
 					return 0;
 				});
 
