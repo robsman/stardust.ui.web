@@ -279,7 +279,7 @@ define(
 
 						self.overlayController.activate();
 
-						self.setOverlayControllerForAngular();
+						self.safeApply(true);
 					} else {
 						deferred.reject();
 					}
@@ -290,19 +290,12 @@ define(
 				/**
 				 * 
 				 */
-				CamelApplicationView.prototype.setOverlayControllerForAngular = function() {
+				CamelApplicationView.prototype.safeApply = function(force) {
 					var self = this;
 					m_angularContextUtils.runInActiveViewContext(function($scope) {
-						$scope.overlayController = self.overlayController;
-					});
-				};
-
-				/**
-				 * 
-				 */
-				CamelApplicationView.prototype.updateOverlayControllerForAngular = function() {
-					m_angularContextUtils.runInActiveViewContext(function($scope) {
-						// NOP
+						if (force) {
+							$scope.overlayPanel = self.overlayController;
+						}
 					});
 				};
 

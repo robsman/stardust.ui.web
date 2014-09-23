@@ -1,13 +1,13 @@
 <div>
 	<div class="heading" style="margin-top: 10px;">
-		{{overlayController.i18nLabels('templateConfigurations.title')}}
+		{{overlayPanel.i18nLabels('templateConfigurations.title')}}
 	</div>
 	
 	<div class="toolBar">
 		<input type="image" src="plugins/bpm-modeler/images/icons/add.png" class="toolbarButton"
 			title="Add"
 			alt="Add"
-			ng-click="overlayController.addConfiguration()" />
+			ng-click="overlayPanel.addConfiguration()" />
 	</div>
 	<table style="width: 100%;">
 		<thead>
@@ -20,24 +20,24 @@
 			</tr>
 		</thead>
 		<tbody>
-			<tr ng-repeat="templateConf in overlayController.templateConfigurations">
+			<tr ng-repeat="templateConf in overlayPanel.templateConfigurations">
 				<td style="border: 1px solid lightgray;">
 					<input type="image" src="plugins/bpm-modeler/images/icons/delete.png"
-						ng-click="overlayController.deleteConfiguration($index)" />
+						ng-click="overlayPanel.deleteConfiguration($index)" />
 				</td>
 				<td style="border: 1px solid lightgray;">
 					<input type="text" ng-model="templateConf.tName"/>
 				</td>
 				<td style="border: 1px solid lightgray;">
 					<select ng-model="templateConf.tSource"
-						ng-options="srcOpt.value as srcOpt.title for srcOpt in overlayController.sourceOptions" />
+						ng-options="srcOpt.value as srcOpt.title for srcOpt in overlayPanel.sourceOptions" />
 				</td>
 				<td style="border: 1px solid lightgray;">
 					<input type="text" ng-model="templateConf.tPath"/>
 				</td>
 				<td style="border: 1px solid lightgray;">
 					<select ng-model="templateConf.tFormat"
-						ng-options="formatOpt.value as formatOpt.title for formatOpt in overlayController.formatOptions" />
+						ng-options="formatOpt.value as formatOpt.title for formatOpt in overlayPanel.formatOptions" />
 				</td>
 			</tr>
 		</tbody>
