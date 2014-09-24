@@ -792,4 +792,7 @@ textarea:focus {
     position: fixed;
     box-shadow: 2px 3px 5px rgba(0,0,0,.2);
 }
+.app {
+	overflow-y: hidden !important;
+}
 @import ('/plugins/modern/public/skins/modern/modern.css')
