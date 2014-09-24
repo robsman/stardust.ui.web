@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service.utils;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +19,7 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Component;
 
 import org.eclipse.stardust.common.CollectionUtils;
+import org.eclipse.stardust.common.reflect.Reflect;
 import org.eclipse.stardust.engine.api.model.ApplicationContext;
 import org.eclipse.stardust.engine.api.model.DataMapping;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
@@ -25,15 +27,21 @@ import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.ActivityInstances;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.Document;
+import org.eclipse.stardust.engine.api.runtime.QueryService;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.util.ReflectionUtils;
 
 /**
  * @author Anoop.Nair
+ * @author Subodh.Godbole
  * @version $Revision: $
  */
 @Component
 public class ActivityInstanceUtils
 {
-
+   private static final Logger trace = LogManager.getLogger(ActivityInstanceUtils.class);
+   
    @Resource
    private ServiceFactoryUtils serviceFactoryUtils;
 
@@ -61,6 +69,46 @@ public class ActivityInstanceUtils
       }
 
       return ai;
+   }
+
+   /**
+    * @param ai
+    * @param context
+    * @return
+    */
+   public String getAllDataMappingsAsJson(ActivityInstance ai, String context)
+   {
+      // TODO: Add process-portal dependency. Till then use reflection!
+      try
+      {
+         Object manualActivityUi = Reflect.createInstance("org.eclipse.stardust.ui.web.processportal.view.manual.ManualActivityUi", 
+               new Class<?>[]{ActivityInstance.class, ApplicationContext.class, QueryService.class}, 
+               new Object[]{ai, ai.getActivity().getApplicationContext(context), serviceFactoryUtils.getQueryService()});
+         
+         Object manualActivityPath = ReflectionUtils.invokeGetterMethod(manualActivityUi, "manualActivityPath");    
+         Object json = ReflectionUtils.invokeMethod(manualActivityPath, "toJsonString");
+         
+         return json.toString();
+      }
+      catch (Exception e)
+      {
+         trace.error("Error in processing data mappings", e);
+      }    
+
+      return "";
+   }
+
+
+   /**
+    * @param ai
+    * @param context
+    * @return
+    */
+   public Map<String, Serializable> getAllInDataValues(ActivityInstance ai, String context)
+   {
+      Map<String, Serializable> dataValues = serviceFactoryUtils.getWorkflowService().getInDataValues(ai.getOID(),
+            null, null);
+      return dataValues;
    }
 
    /**

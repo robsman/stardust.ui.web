@@ -10,7 +10,9 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest;
 
+import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -31,6 +33,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
 
 /**
  * @author Anoop.Nair
+ * @author Subodh.Godbole
  * @version $Revision: $
  */
 @Component
@@ -60,6 +63,47 @@ public class ActivityInstanceResource
          String json = gson.toJson(aiDTO);
 
          return Response.ok(json.toString(), MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
+
+         return Response.serverError().build();
+      }
+   }
+
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/{oid: \\d+}/dataMappings.json")
+   public Response getAllDataMappings(@PathParam("oid") long oid)
+   {
+      try
+      {
+         String jsonOutput = getActivityInstanceService().getAllDataMappingsAsJson(oid, "default");
+
+         return Response.ok(jsonOutput.toString(), MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
+
+         return Response.serverError().build();
+      }
+   }
+
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/{oid: \\d+}/inDataValues.json")
+   public Response getAllInDataValues(@PathParam("oid") long oid)
+   {
+      try
+      {
+         Map<String, Serializable> values = getActivityInstanceService().getAllInDataValues(oid, "default");
+
+         Gson gson = new Gson();
+         String jsonOutput = gson.toJson(values);
+
+         return Response.ok(jsonOutput.toString(), MediaType.APPLICATION_JSON).build();
       }
       catch (Exception e)
       {

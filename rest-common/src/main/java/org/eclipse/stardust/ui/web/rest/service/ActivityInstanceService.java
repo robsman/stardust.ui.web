@@ -10,7 +10,9 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service;
 
+import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -27,6 +29,7 @@ import org.eclipse.stardust.ui.web.rest.service.utils.ActivityInstanceUtils;
 
 /**
  * @author Anoop.Nair
+ * @author Subodh.Godbole
  * @version $Revision: $
  */
 @Component
@@ -44,6 +47,29 @@ public class ActivityInstanceService
    {
       ActivityInstance ai = activityInstanceUtils.getActivityInstance(activityInstanceOid);
       return DTOBuilder.build(ai, ActivityInstanceDTO.class);
+   }
+
+   /**
+    * @param oid
+    * @return
+    */
+   public String getAllDataMappingsAsJson(long oid, String context)
+   {
+      ActivityInstance ai = activityInstanceUtils.getActivityInstance(oid);
+      String json = activityInstanceUtils.getAllDataMappingsAsJson(ai, context);
+      return json;
+   }
+
+   /**
+    * @param oid
+    * @return
+    */
+   public Map<String, Serializable> getAllInDataValues(long oid, String context)
+   {
+      ActivityInstance ai = activityInstanceUtils.getActivityInstance(oid);
+      Map<String, Serializable> values = activityInstanceUtils.getAllInDataValues(ai, context);
+      
+      return values;
    }
 
    /**
