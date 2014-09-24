@@ -70,7 +70,7 @@ define(["bpm-modeler/js/m_model"],function(m_model){
 						/*check if data is defined on an external reference as any local reference should
 						 *resolve successfully via the findTypeDeclaration call*/
 						lookupData=m_model.findData(paramDef.structuredDataTypeFullId || paramDef.dataFullId);
-						typeDecl=m_model.findTypeDeclaration(lookupData.dataFullId);
+						typeDecl=m_model.findTypeDeclaration(lookupData.structuredDataTypeFullId);
 					}
 					if(typeDecl){
 						data=parseTypeToStringFrags(typeDecl,paramDef.id);
