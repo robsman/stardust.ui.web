@@ -44,12 +44,13 @@ public class ProcessingTimePerProcess
    private long totalPICountToday;
    private long totalPICountLastWeek;
    private long totalPICountLastMonth;
-   
+   private long totalWaitingPICountToday;
+   private long totalWaitingPICountLastWeek;
+   private long totalWaitingPICountLastMonth;
    private int thresholdStateToday;
    private int thresholdStateLastWeek;
    private int thresholdStateLastMonth;
    private Map<String, Object> customColumns;
-   private Map<String, Object> customColumnPisCount;
    
    public final static int UNDEFINED_THRESHOLD_STATE = -1;
    public final static int EXCEEDED_THRESHOLD_STATE = 1;
@@ -74,7 +75,6 @@ public class ProcessingTimePerProcess
       if(!CollectionUtils.isEmpty(columnDefinitionMap))
       {
          customColumns = CollectionUtils.newHashMap();
-         customColumnPisCount = CollectionUtils.newHashMap();
          for(Entry<String, Object> colDef:columnDefinitionMap.entrySet())
          {
             String key = colDef.getKey();
@@ -82,8 +82,6 @@ public class ProcessingTimePerProcess
             customColumns.put(key+CustomColumnUtils.CUSTOM_COL_TIME_SUFFIX, 0.0d);
             customColumns.put(key+CustomColumnUtils.CUSTOM_COL_WAIT_TIME_SUFFIX, 0.0d);
             customColumns.put(key+CustomColumnUtils.CUSTOM_COL_STATUS_SUFFIX, NORMAL_THRESHOLD_STATE);
-            // Keey PI count in a map , required for calculation
-            customColumnPisCount.put(key+CustomColumnUtils.CUSTOM_COL_TIME_SUFFIX, 0l);
          }   
       }
    }
@@ -151,7 +149,9 @@ public class ProcessingTimePerProcess
          if(ciiToday.getnPis() > 0 && ciiToday.getTimeSpent().getTime() > 0)
          {
             totalPICountToday += ciiToday.getnPis();
-            timeToday += ciiToday.getTimeSpent().getTime();
+            timeToday = ciiToday.getTimeSpent().getTime();
+            timeToday = timeToday/totalPICountToday;
+            totalWaitingPICountToday += ciiToday.getnPisWaiting();
             if(ciiToday.getCriticalByProcessingTime().getRedInstancesCount() > 0)
             {
                thresholdStateToday = EXCEEDED_THRESHOLD_STATE;
@@ -161,9 +161,9 @@ public class ProcessingTimePerProcess
             {
                thresholdStateToday = CRITICAL_THRESHOLD_STATE;
             }
-            if(ciiToday.getTimeWaiting().getTime() > 0)
+            if(ciiToday.getTimeWaiting().getTime() > 0 && totalWaitingPICountToday > 0)
             {
-               waitingTimeToday +=ciiToday.getTimeWaiting().getTime();
+               waitingTimeToday = ciiToday.getTimeWaiting().getTime()/totalWaitingPICountToday;
             }
             else
             {
@@ -183,7 +183,10 @@ public class ProcessingTimePerProcess
          if(ciiLastWeek.getnPis() > 0 && ciiLastWeek.getTimeSpent().getTime() > 0)
          {
             totalPICountLastWeek += ciiLastWeek.getnPis();
-            timeLastWeek += ciiLastWeek.getTimeSpent().getTime();
+            timeLastWeek = ciiLastWeek.getTimeSpent().getTime();
+            totalWaitingPICountLastWeek += ciiLastWeek.getnPisWaiting();
+            
+            timeLastWeek = timeLastWeek/totalPICountLastWeek;
             if(ciiLastWeek.getCriticalByProcessingTime().getRedInstancesCount() > 0)
             {
                thresholdStateLastWeek = EXCEEDED_THRESHOLD_STATE;
@@ -193,9 +196,9 @@ public class ProcessingTimePerProcess
             {
                thresholdStateLastWeek = CRITICAL_THRESHOLD_STATE;
             }
-            if(ciiLastWeek.getTimeWaiting().getTime() > 0)
+            if(ciiLastWeek.getTimeWaiting().getTime() > 0 && totalWaitingPICountLastWeek > 0)
             {
-               waitingTimeLastWeek +=ciiLastWeek.getTimeWaiting().getTime();
+               waitingTimeLastWeek = ciiLastWeek.getTimeWaiting().getTime() / totalWaitingPICountLastWeek;
             }
             else
             {
@@ -215,7 +218,9 @@ public class ProcessingTimePerProcess
          if(ciiLastMonth.getnPis() > 0 && ciiLastMonth.getTimeSpent().getTime() > 0)
          {
             totalPICountLastMonth += ciiLastMonth.getnPis();
-            timeLastMonth += ciiLastMonth.getTimeSpent().getTime();
+            timeLastMonth = ciiLastMonth.getTimeSpent().getTime();
+            timeLastMonth = timeLastMonth/ totalPICountLastMonth;
+            totalWaitingPICountLastMonth += ciiLastMonth.getnPisWaiting();
             if(ciiLastMonth.getCriticalByProcessingTime().getRedInstancesCount() > 0)
             {
                thresholdStateLastMonth = EXCEEDED_THRESHOLD_STATE;
@@ -225,9 +230,9 @@ public class ProcessingTimePerProcess
             {
                thresholdStateLastMonth = CRITICAL_THRESHOLD_STATE;
             }
-            if(ciiLastMonth.getTimeWaiting().getTime() > 0)
+            if (ciiLastMonth.getTimeWaiting().getTime() > 0 && totalWaitingPICountLastMonth > 0)
             {
-               waitingTimeLastMonth +=ciiLastMonth.getTimeWaiting().getTime();
+               waitingTimeLastMonth = ciiLastMonth.getTimeWaiting().getTime() / totalWaitingPICountLastMonth;
             }
             else
             {
@@ -252,15 +257,15 @@ public class ProcessingTimePerProcess
 
             if ((ciiCustomCol.getnPis() > 0) && ciiCustomCol.getTimeSpent().getTime() > 0)
             {
-               Long nPisCount = (Long) customColumnPisCount.get(key + CustomColumnUtils.CUSTOM_COL_TIME_SUFFIX);
                double timeValue = Double.valueOf(customColumns.get(key + CustomColumnUtils.CUSTOM_COL_TIME_SUFFIX)
                      .toString());
                double waitTime = Double.valueOf(customColumns.get(key + CustomColumnUtils.CUSTOM_COL_WAIT_TIME_SUFFIX)
                      .toString());
                Integer thresholdValue = (Integer) customColumns.get(key + CustomColumnUtils.CUSTOM_COL_STATUS_SUFFIX);
-               nPisCount += ciiCustomCol.getnPis();
-               timeValue += ciiCustomCol.getTimeSpent().getTime();
-               waitTime += ciiCustomCol.getTimeWaiting().getTime();
+               long nPisCount = ciiCustomCol.getnPis();
+               long nPisWaitingCount = ciiCustomCol.getnPisWaiting();
+               timeValue = ciiCustomCol.getTimeSpent().getTime();
+               waitTime = ciiCustomCol.getTimeWaiting().getTime();
                if (ciiCustomCol.getCriticalByExecutionCost().getRedInstancesCount() > 0)
                {
                   thresholdValue = EXCEEDED_THRESHOLD_STATE;
@@ -270,12 +275,17 @@ public class ProcessingTimePerProcess
                {
                   thresholdValue = CRITICAL_THRESHOLD_STATE;
                }
-               
+               if(nPisCount > 0)
+               {
+                  timeValue = timeValue/nPisCount;
+               }
+               if(nPisWaitingCount > 0)
+               {
+                  waitTime = waitTime/nPisWaitingCount;
+               }
                customColumns.put(key + CustomColumnUtils.CUSTOM_COL_TIME_SUFFIX, timeValue);
                customColumns.put(key + CustomColumnUtils.CUSTOM_COL_WAIT_TIME_SUFFIX, waitTime);
                customColumns.put(key + CustomColumnUtils.CUSTOM_COL_STATUS_SUFFIX, thresholdValue);
-               
-               customColumnPisCount.put(key + CustomColumnUtils.CUSTOM_COL_TIME_SUFFIX, nPisCount);
             }
          }
       }
@@ -306,13 +316,4 @@ public class ProcessingTimePerProcess
       this.customColumns = customColumns;
    }
 
-   public Map<String, Object> getCustomColumnPisCount()
-   {
-      return customColumnPisCount;
-   }
-
-   public void setCustomColumnPisCount(Map<String, Object> customColumnPisCount)
-   {
-      this.customColumnPisCount = customColumnPisCount;
-   }
 }
