@@ -53,10 +53,11 @@ public class DTOBuilder
          {
             if (field.isAnnotationPresent(DTOAttribute.class))
             {
+               DTOAttribute annotation = field.getAnnotation(DTOAttribute.class);
+               String fieldName = annotation.value();
+
                try
                {
-                  DTOAttribute annotation = field.getAnnotation(DTOAttribute.class);
-                  String fieldName = annotation.value();
                   Object value = getFieldValue(fromInstance, fieldName);
                   
                   Class<?> fieldClass = field.getType();
@@ -70,7 +71,7 @@ public class DTOBuilder
                }
                catch (Exception e)
                {
-                  e.printStackTrace();
+                  trace.error("Error in retriving field: " + fieldName, e);
                }
             }
          }
