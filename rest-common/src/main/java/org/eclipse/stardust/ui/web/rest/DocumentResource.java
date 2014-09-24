@@ -26,6 +26,8 @@ import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.rest.exception.PortalErrorClass;
+import org.eclipse.stardust.ui.web.rest.exception.PortalException;
 import org.eclipse.stardust.ui.web.rest.service.DocumentService;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentTypeDTO;
@@ -81,7 +83,7 @@ public class DocumentResource
    @Produces(MediaType.APPLICATION_JSON)
    @Path("{documentId}/document-type")
    public Response getDocumentType(@PathParam("documentId")
-   String documentId)
+   String documentId) throws PortalException
    {
       try
       {
@@ -95,9 +97,7 @@ public class DocumentResource
       }
       catch (Exception e)
       {
-         trace.error(e, e);
-
-         return Response.serverError().build();
+         throw new PortalException(PortalErrorClass.DOCUMENT_NOT_FOUND, e);
       }
    }
 
