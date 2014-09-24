@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-    Copyright (c) 2011 SunGard CSA LLC and others.
+    Copyright (c) 2011, 2014 SunGard CSA LLC and others.
     All rights reserved. This program and the accompanying materials
     are made available under the terms of the Eclipse Public License v1.0
     which accompanies this distribution, and is available at
@@ -63,8 +63,6 @@
 
       <dependency org="javax.servlet" name="servlet-api" rev="${servlet-api.version}"
          conf="stardust-web-reporting-provided->default"/>
-      <dependency org="com.sun.facelets" name="jsf-facelets" rev="${jsf-facelets.version}"
-         conf="stardust-web-reporting-compile->default"/>
       <dependency org="org.icefaces" name="icefaces" rev="${icefaces.version}"
          conf="stardust-web-reporting-compile->default">
          <exclude org="javax.faces" module="jsf-api" />
