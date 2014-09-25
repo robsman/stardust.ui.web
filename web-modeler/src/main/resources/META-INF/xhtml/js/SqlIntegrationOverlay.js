@@ -132,8 +132,9 @@ define(
                this.connectionTypeSelect.empty();
                this.connectionTypeSelect
                      .append("<option value='direct' selected>Direct</option>");
-               /*this.connectionTypeSelect
-                     .append("<option value='jndi'>JNDI</option>");*/
+               /*
+                * this.connectionTypeSelect .append("<option value='jndi'>JNDI</option>");
+                */
 
                this.directConfigTab = m_utils
                      .jQuerySelect("#dataSourceTab #directConfigTab");
@@ -319,6 +320,7 @@ define(
                this.codeEditor.getEditor().on('blur', function(e) {
                   self.submitChanges();
                });
+               
                this.inputBodyAccessPointInput
                      .change(
                            {
@@ -328,19 +330,24 @@ define(
                         if (!event.data.panel.view.validate()) {
                            return;
                         }
+                        var oldInBodyAccess;
+                        // reset the value of carnot:engine:camel::inBodyAccessPoint EA
+                        if(self.getApplication().attributes["carnot:engine:camel::inBodyAccessPoint"]){
+                           oldInBodyAccess=self.getApplication().attributes["carnot:engine:camel::inBodyAccessPoint"];
+                           self.view
+                           .submitModelElementAttributeChange(
+                                 "carnot:engine:camel::inBodyAccessPoint",
+                                 null);
+                        }
 
                         if (self.inputBodyAccessPointInput.val() == m_constants.TO_BE_DEFINED) {
-
-                           var filteredAccessPoints = [];
-                           var index = 0;
-                           for (var n = 0; n < self.getApplication().contexts.application.accessPoints.length; n++) {
-                              var parameterDefinition = self
-                                    .getApplication().contexts.application.accessPoints[n];
-
-                              if ((parameterDefinition.direction == m_constants.OUT_ACCESS_POINT)
-                                    || (parameterDefinition.direction == m_constants.IN_ACCESS_POINT && parameterDefinition.id == "CamelSqlQuery")) {
-                                 filteredAccessPoints[index] = parameterDefinition;
-                                 index++;
+                           var inAccessPoints = [];
+                           var accessPoints = self.getApplication().contexts.application.accessPoints;
+                           for (var n = 0; n < accessPoints.length; n++) {
+                              var parameterDefinition = accessPoints[n];
+                              if (parameterDefinition.id != oldInBodyAccess) {
+                                 inAccessPoints
+                                 .push(parameterDefinition);
                               }
                            }
 
@@ -348,30 +355,33 @@ define(
                                  .submitChanges({
                                     contexts : {
                                        application : {
-                                          accessPoints : filteredAccessPoints
+                                    accessPoints : inAccessPoints
                                        }
-
+                              },
+                              attributes : {
+                                 "carnot:engine:camel::inBodyAccessPoint":null
                                     }
                                  });
-                           self.view
-                                 .submitModelElementAttributeChange(
-                                       "carnot:engine:camel::inBodyAccessPoint",
-                                       null);
+                        }else{
+                        
+                           var accessPoints = self.getApplication().contexts.application.accessPoints;
+                           
+                           // Get All IN/Out access points
+                           var outAccessPoints = []; 
+                           var inAccessPoints = [];
+                           var index = 0;
+                           for (var n = 0; n < accessPoints.length; n++) {
+                              var parameterDefinition = accessPoints[n];
+                              if (parameterDefinition.direction == m_constants.OUT_ACCESS_POINT) {
+                                 outAccessPoints
+                                 .push(parameterDefinition);
 
                         } else {
-                           var accessPoints = {};
-                           var defaultAccessPoints = [];
-                           for (var n = 0; n < self.getApplication().contexts.application.accessPoints.length; ++n) {
-                              var parameterDefinition = self
-                                    .getApplication().contexts.application.accessPoints[n];
-
-                              if (parameterDefinition.direction == m_constants.IN_ACCESS_POINT) {
-                                 accessPoints[parameterDefinition.id] = parameterDefinition;
-                                 defaultAccessPoints
+                                 inAccessPoints
                                        .push(parameterDefinition);
                               }
                            }
-                           var inAccessPoint = self.getApplication().contexts.application.accessPoints;
+                           
                            var structuredData;
                            for ( var i in self.getScopeModel().typeDeclarations) {
                               if (self.getScopeModel().typeDeclarations[i]
@@ -385,11 +395,20 @@ define(
                                  }
                               }
                            }
+                           // filter IN/accesspoint
+                           var filteredAccessPoints = [];
+                           for (var n = 0; n < inAccessPoints.length; n++) {
+                              var parameterDefinition = inAccessPoints[n];
+                              if(oldInBodyAccess !=parameterDefinition.id)
+                                 {
+                                 filteredAccessPoints.push(parameterDefinition);
+                                 }
+                           }
                            if (structuredData) {
 
                               var alreadyExists = false;
-                              for (var n = 0; n < inAccessPoint.length; ++n) {
-                                 var param = inAccessPoint[n];
+                              for (var n = 0; n < filteredAccessPoints.length; ++n) {
+                                 var param = filteredAccessPoints[n];
                                  if (param.direction == "IN"
                                        && param.id == structuredData.id
                                              .toLowerCase()) {
@@ -397,16 +416,15 @@ define(
                                     continue;
                                  }
                               }
-                              if (!inAccessPoint[structuredData.id
+                              if (!filteredAccessPoints[structuredData.id
                                     .toLowerCase()]
                                     && !alreadyExists) {
 
-                                 inAccessPoint
+                                 filteredAccessPoints
                                        .push({
                                           id : structuredData.id
                                                 .toLowerCase(),
-                                          name : structuredData.name
-                                                .toLowerCase(),
+                                          name : structuredData.name,
                                           dataType : "struct",
                                           direction : "IN",
                                           structuredDataTypeFullId : structuredData
@@ -417,23 +435,29 @@ define(
                                           }
                                        });
                               }
+                              
+                              var inOutAccessPoints = filteredAccessPoints;
+                              for (var n = 0; n < outAccessPoints.length; n++) {
+                                 var parameterDefinition = outAccessPoints[n];
+                                 inOutAccessPoints.push(outAccessPoints[n]);
+                              }
+                              
                               self.view
                                     .submitChanges({
                                        contexts : {
                                           application : {
-                                             accessPoints : inAccessPoint
+                                             accessPoints : inOutAccessPoints
                                           }
+                                       },
+                                       attributes : {
+                                          "carnot:engine:camel::inBodyAccessPoint":
+                                          structuredData.id.toLowerCase()
                                        }
                                     });
-
-                              self.view
-                                    .submitModelElementAttributeChange(
-                                          "carnot:engine:camel::inBodyAccessPoint",
-                                          structuredData.id
-                                                .toLowerCase());
                            }
                         }
                      });
+               
                this.outputBodyAccessPointInput
                      .change(
                            {
@@ -444,82 +468,92 @@ define(
                            return;
                         }
 
-                        if (self.outputBodyAccessPointInput.val() == m_constants.TO_BE_DEFINED) {
-                           self.view
-                                 .submitModelElementAttributeChange(
-                                       "carnot:engine:camel::outBodyAccessPoint",
-                                       null);
-                           var accessPoints = [];
-                           var index = 0;
-                           for (var n = 0; n < self.getApplication().contexts.application.accessPoints.length; ++n) {
-                              var parameterDefinition = self
-                                    .getApplication().contexts.application.accessPoints[n];
+                        var oldOutBodyAccess;
+                        // reset the value of carnot:engine:camel::outBodyAccessPoint EA
+                        if(self.getApplication().attributes["carnot:engine:camel::outBodyAccessPoint"]){
+                           oldOutBodyAccess=self.getApplication().attributes["carnot:engine:camel::outBodyAccessPoint"];
+                           self.view.submitModelElementAttributeChange("carnot:engine:camel::outBodyAccessPoint",null);
+                        }
 
-                              if ((parameterDefinition.direction == m_constants.IN_ACCESS_POINT)
-                                    || (parameterDefinition.direction == m_constants.OUT_ACCESS_POINT && (parameterDefinition.id == "CamelSqlUpdateCount" || parameterDefinition.id == "CamelSqlRowCount"))) {
-                                 accessPoints[index] = parameterDefinition;
-                                 index++;
+                        var accessPoints = self.getApplication().contexts.application.accessPoints;
+                        
+                        // Get All IN/Out access points
+                        var outAccessPoints = []; 
+                        var inAccessPoints = [];
+                        var index = 0;
+                        for (var n = 0; n < accessPoints.length; n++) {
+                           var parameterDefinition = accessPoints[n];
+                           if (parameterDefinition.direction == m_constants.OUT_ACCESS_POINT){
+                              if(parameterDefinition.id !=oldOutBodyAccess )
+                              outAccessPoints.push(parameterDefinition);
+                           } else{
+                              inAccessPoints.push(parameterDefinition);
 
                               }
                            }
-
-                           self.view.submitChanges({
+                        if (self.outputBodyAccessPointInput.val() == m_constants.TO_BE_DEFINED) {
+                           // loop throw all accesspoints and exclude the one that is
+                           // inlcuded in EA carnot:engine:camel::outBodyAccessPoint
+                           var filteredAccessPoints = [];
+                           for (var n = 0; n < accessPoints.length; n++) {
+                              var parameterDefinition = accessPoints[n];
+                              if ((parameterDefinition.dataType=="struct" && ((parameterDefinition.id !=oldOutBodyAccess)&&(parameterDefinition.id.toLowerCase() !=oldOutBodyAccess.toLowerCase()) ))
+                                       ||(parameterDefinition.id != oldOutBodyAccess && parameterDefinition.dataType!="struct")) {
+                                 filteredAccessPoints.push(parameterDefinition);
+                              }
+                           }
+                           self.view
+                           .submitChanges({
                               contexts : {
                                  application : {
-                                    accessPoints : accessPoints
+                                    accessPoints : filteredAccessPoints
                                  }
+                              },
+                              attributes : {
+                                 "carnot:engine:camel::outBodyAccessPoint":null
                               }
                            });
 
                         } else {
-
-                           var accessPoints = {};
-                           var defaultAccessPoints = [];
-                           for (var n = 0; n < self.getApplication().contexts.application.accessPoints.length; ++n) {
-                              var parameterDefinition = self
-                                    .getApplication().contexts.application.accessPoints[n];
-
-                              if (parameterDefinition.direction == m_constants.OUT_ACCESS_POINT) {
-                                 accessPoints[parameterDefinition.id] = parameterDefinition;
-                                 defaultAccessPoints
-                                       .push(parameterDefinition);
-                              }
-                           }
-                           var outAccessPoint = self.getApplication().contexts.application.accessPoints;
                            var structuredData;
                            var isStructuredData = false;
 
                            for ( var i in self.getScopeModel().dataItems) {
                            
-                              if (self.getScopeModel().dataItems[i].dataType=="struct" &&self.getScopeModel().dataItems[i].structuredDataTypeFullId+":"+self.getScopeModel().dataItems[i].id == self.outputBodyAccessPointInput
+                              if (self.getScopeModel().dataItems[i].dataType=="struct"
+                                 && self.getScopeModel().dataItems[i].id == self.outputBodyAccessPointInput
                                     .val()) {
-                                 structuredData = self
-                                       .getScopeModel().dataItems[i];
+                                 structuredData = self.getScopeModel().dataItems[i];
                                  isStructuredData = true;
                                  break;
                               }else if (self.getScopeModel().dataItems[i].dataType=="primitive" && self.getScopeModel().dataItems[i].id == self.outputBodyAccessPointInput
                                     .val()){
-                              structuredData = self
-                                       .getScopeModel().dataItems[i];
+                                 structuredData = self.getScopeModel().dataItems[i];
                                  isStructuredData = false; 
                               }
 
                            }
 
+                           var inOutAccessPoints = inAccessPoints;
+                           for (var n = 0; n < outAccessPoints.length; n++) {
+                              var parameterDefinition = outAccessPoints[n];
+                              inOutAccessPoints.push(outAccessPoints[n]);
+                           }
+                           
                            if (structuredData && structuredData.dataType=="struct") {
 
                               var alreadyExists = false;
-                              for (var n = 0; n < outAccessPoint.length; ++n) {
-                                 var param = outAccessPoint[n];
-                                 if (param.id==structuredData.id) {
+                              for (var n = 0; n < inOutAccessPoints.length; ++n) {
+                                 var param = inOutAccessPoints[n];
+                                 if ((param.id==structuredData.id)||(param.id.toLowerCase()==structuredData.id.toLowerCase())) {
                                     alreadyExists = true;
                                     continue;
                                  }
                               }
-                              if (!outAccessPoint[structuredData.id]
+                              if (!inOutAccessPoints[structuredData.id]
                                     && !alreadyExists) {
                                  if (structuredData.dataType=="struct") {
-                                    outAccessPoint
+                                    inOutAccessPoints
                                           .push({
                                              id :  structuredData.id,
                                              name : structuredData.name,
@@ -538,17 +572,15 @@ define(
                                     .submitChanges({
                                        contexts : {
                                           application : {
-                                             accessPoints : outAccessPoint
+                                             accessPoints : inOutAccessPoints
                                           }
+                                       },
+                                       attributes : {
+                                          "carnot:engine:camel::outBodyAccessPoint":structuredData.id
                                        }
                                     });
-
-                              self.view
-                                    .submitModelElementAttributeChange(
-                                          "carnot:engine:camel::outBodyAccessPoint",
-                                           structuredData.structuredDataTypeFullId+":"+structuredData.id);
                            }else if (structuredData && structuredData.dataType=="primitive") {
-                                    outAccessPoint
+                              inOutAccessPoints
                                           .push({
                                              id : structuredData.id
                                                    ,
@@ -565,16 +597,18 @@ define(
                                     .submitChanges({
                                        contexts : {
                                           application : {
-                                             accessPoints : outAccessPoint
+                                             accessPoints : inOutAccessPoints
                                           }
+                                       },
+                                       attributes : {
+                                          "carnot:engine:camel::outBodyAccessPoint":
+                                          structuredData.id
                                        }
                                     });   
-                                 self.view
-                                    .submitModelElementAttributeChange(
-                                          "carnot:engine:camel::outBodyAccessPoint",
-                                           structuredData.id);
+
                                  }
                         }
+                     
                      });
 
                this.parameterDefinitionsPanel = m_parameterDefinitionsPanel
@@ -658,8 +692,15 @@ define(
              * 
              */
             SqlIntegrationOverlay.prototype.activate = function() {
+               if(this.view.getApplication().contexts.application.accessPoints.length==0){
                this.view
                      .submitChanges({
+                        contexts : {
+                           application : {
+                              accessPoints : this
+                                    .createIntrinsicAccessPoints()
+                           }
+                        },
                         attributes : {
                            "carnot:engine:camel::camelContextId" : "defaultCamelContext",
                            "carnot:engine:camel::invocationPattern" : "sendReceive",
@@ -667,17 +708,15 @@ define(
                            "carnot:engine:camel::applicationIntegrationOverlay" : "sqlIntegrationOverlay"
                         }
                      }, true);
-
+               }
             };
 
             /**
              * 
              */
             SqlIntegrationOverlay.prototype.update = function() {
-               this.parameterDefinitionsPanel.setScopeModel(this
-                     .getScopeModel());
-               this.parameterDefinitionsPanel
-                     .setParameterDefinitions(this.getApplication().contexts.application.accessPoints);
+               this.parameterDefinitionsPanel.setScopeModel(this.getScopeModel());
+               this.parameterDefinitionsPanel.setParameterDefinitions(this.getApplication().contexts.application.accessPoints);
 
                this.inputBodyAccessPointInput.empty();
                this.inputBodyAccessPointInput.append("<option value='"
@@ -685,51 +724,32 @@ define(
                      + m_i18nUtils.getProperty("None") // TODO I18N
                      + "</option>");
 
+               this.inputBodyAccessPointInput = this.populateDataStructuresSelectInput(this.inputBodyAccessPointInput, this.getScopeModel(), true, "IN");
+               this.inputBodyAccessPointInput.val(this.getApplication().attributes["carnot:engine:camel::inBodyAccessPoint"]);
+               
                this.outputBodyAccessPointInput.empty();
                this.outputBodyAccessPointInput.append("<option value='"
                      + m_constants.TO_BE_DEFINED + "' selected>"
                      + m_i18nUtils.getProperty("None") // TODO I18N
                      + "</option>");
+               this.outputBodyAccessPointInput = this.populateDataStructuresSelectInput(this.outputBodyAccessPointInput, this.getScopeModel(), true, "OUT");
+               this.outputBodyAccessPointInput.val(this.getApplication().attributes["carnot:engine:camel::outBodyAccessPoint"]);
 
-               this.inputBodyAccessPointInput = this
-                     .populateDataStructuresSelectInput(
-                           this.inputBodyAccessPointInput, this
-                                 .getScopeModel(), true, "IN");
-               this.outputBodyAccessPointInput = this
-                     .populateDataStructuresSelectInput(
-                           this.outputBodyAccessPointInput, this
-                                 .getScopeModel(), true, "OUT");
-
-               this.inputBodyAccessPointInput
-                     .val(this.getApplication().attributes["carnot:engine:camel::inBodyAccessPoint"]);
-
-               this.outputBodyAccessPointInput
-                     .val(this.getApplication().attributes["carnot:engine:camel::outBodyAccessPoint"]);
 
                if (this.getApplication().attributes["stardust:sqlScriptingOverlay::outputType"] != null)
-                  this.expectedResultSetInput
-                        .val(this.getApplication().attributes["stardust:sqlScriptingOverlay::outputType"]);
+                  this.expectedResultSetInput.val(this.getApplication().attributes["stardust:sqlScriptingOverlay::outputType"]);
                else
-                  this.expectedResultSetInput
-                        .val(m_constants.TO_BE_DEFINED);
+                  this.expectedResultSetInput.val(m_constants.TO_BE_DEFINED);
 
-               this.codeEditor
-                     .getEditor()
-                     .getSession()
-                     .setValue(
-                           this.getApplication().attributes["stardust:sqlScriptingOverlay::sqlQuery"]);
+               this.codeEditor.getEditor().getSession().setValue(this.getApplication().attributes["stardust:sqlScriptingOverlay::sqlQuery"]);
+
                // Initialize the UI to show only primitives IN only
-               this.parameterDefinitionDirectionSelect = m_utils
-                     .jQuerySelect("#parametersTab #parameterDefinitionDirectionSelect");
+               this.parameterDefinitionDirectionSelect = m_utils.jQuerySelect("#parametersTab #parameterDefinitionDirectionSelect");
                this.parameterDefinitionDirectionSelect.empty();
-               var direction = m_i18nUtils
-                     .getProperty("modeler.element.properties.commonProperties.in");
-               this.parameterDefinitionDirectionSelect
-                     .append("<option value=\"IN\">" + direction
-                           + "</option>");
+               var direction = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.in");
+               this.parameterDefinitionDirectionSelect.append("<option value=\"IN\">" + direction+ "</option>");
 
-               this.dataTypeSelect = m_utils
-                     .jQuerySelect("#parametersTab #dataTypeSelect");
+               this.dataTypeSelect = m_utils.jQuerySelect("#parametersTab #dataTypeSelect");
                this.dataTypeSelect.empty();
                this.dataTypeSelect
                      .append("<option value='primitive' selected>"
@@ -737,17 +757,13 @@ define(
                                  .getProperty("modeler.element.properties.commonProperties.primitive")
                            + "</option>");
 
-               this.connectionTypeSelect
-                     .val(this.getApplication().attributes["stardust:sqlScriptingOverlay::connectionType"]);
-               this.databaseTypeSelect
-                     .val(this.getApplication().attributes["stardust:sqlScriptingOverlay::databasetype"]);
+               this.connectionTypeSelect.val(this.getApplication().attributes["stardust:sqlScriptingOverlay::connectionType"]);
+               this.databaseTypeSelect.val(this.getApplication().attributes["stardust:sqlScriptingOverlay::databasetype"]);
 
                if (this.getApplication().attributes["stardust:sqlScriptingOverlay::databasetype"] == "others") {
                  
-                  this.urlInput
-                        .val(this.getApplication().attributes["stardust:sqlScriptingOverlay::url"]);
-                  this.driverInput
-                        .val(this.getApplication().attributes["stardust:sqlScriptingOverlay::driverClassName"]);
+                  this.urlInput.val(this.getApplication().attributes["stardust:sqlScriptingOverlay::url"]);
+                  this.driverInput.val(this.getApplication().attributes["stardust:sqlScriptingOverlay::driverClassName"]);
                   this.showHideCommonDbConfig(true);
                   this.showHideOthersDbConfig(false);
 
@@ -755,12 +771,9 @@ define(
                   this.showHideCommonDbConfig(false);
                   this.showHideOthersDbConfig(true);
 
-                  this.hostInput
-                        .val(this.getApplication().attributes["stardust:sqlScriptingOverlay::hostname"]);
-                  this.portInput
-                        .val(this.getApplication().attributes["stardust:sqlScriptingOverlay::port"]);
-                  this.dataBaseNameInput
-                        .val(this.getApplication().attributes["stardust:sqlScriptingOverlay::dbname"]);
+                  this.hostInput.val(this.getApplication().attributes["stardust:sqlScriptingOverlay::hostname"]);
+                  this.portInput.val(this.getApplication().attributes["stardust:sqlScriptingOverlay::port"]);
+                  this.dataBaseNameInput.val(this.getApplication().attributes["stardust:sqlScriptingOverlay::dbname"]);
                }
                
 
@@ -794,7 +807,7 @@ define(
                         ||parameterDefinition.id === this.inputBodyAccessPointInput.val().toLowerCase()
                         || parameterDefinition.id === this.outputBodyAccessPointInput.val()
                         || parameterDefinition.id === this.outputBodyAccessPointInput.val()
-                        || parameterDefinition.structuredDataTypeFullId+":"+parameterDefinition.id === this.outputBodyAccessPointInput.val()
+                           ||parameterDefinition.id == this.outputBodyAccessPointInput.val()
                         || this.outputBodyAccessPointInput.val().indexOf(parameterDefinition.name)!=-1
                         || this.inputBodyAccessPointInput.val().indexOf(parameterDefinition.name)!=-1) {
 
@@ -843,7 +856,6 @@ define(
                               content += m_model
                                     .stripElementId(parameterDefinition.structuredDataTypeFullId); // TODO
                            }
-                           // Format
                         }
 
                         content += "</td>";
@@ -930,13 +942,6 @@ define(
                      addCamelSqlRowCountVar = false;
                      continue;
                   }
-                  /*
-                   * if (parameterDefinition.direction ==
-                   * m_constants.IN_ACCESS_POINT) {
-                   * accessPoints[parameterDefinition.id] =
-                   * parameterDefinition;
-                   * defaultAccessPoints.push(parameterDefinition); }
-                   */
                }
 
                if (!accessPoints["CamelSqlQuery"] && addCamelSqlQueryVar) {
@@ -984,7 +989,6 @@ define(
             SqlIntegrationOverlay.prototype.populateDataStructuresSelectInput = function(
                   structuredDataTypeSelect, scopeModel,
                   restrictToCurrentModel, direction) {
-               // var structuredDataTypeSelect;
                structuredDataTypeSelect.empty();
                structuredDataTypeSelect.append("<option value='"
                      + m_constants.TO_BE_DEFINED
@@ -1015,7 +1019,7 @@ define(
                         if(scopeModel.dataItems[i].dataType=="struct"){
                         structuredDataTypeSelect
                               .append("<option value='"
-                                    + scopeModel.dataItems[i].structuredDataTypeFullId+":"+scopeModel.dataItems[i].id
+                                      + scopeModel.dataItems[i].id
                                            + "'>"
                                     + scopeModel.dataItems[i].name
                                     + "</option>");
@@ -1059,7 +1063,6 @@ define(
                } else if (this.databaseTypeSelect.val() == "others") {
                   driverClassName =this.driverInput.val();
                   url =this.urlInput.val(); 
-                     //this.getApplication().attributes["stardust:sqlScriptingOverlay::url"];
                }
 
                beanDefinition += "<bean id=\""
@@ -1097,8 +1100,6 @@ define(
                var sqlQuery = this.codeEditor.getEditor().getSession()
                      .getValue();
                var dataSourceName = "";
-               /* var dataSourceName = this.dataSourceNameInput.val(); */
-
                if (sqlQuery != null && sqlQuery != "") {
 
                   sqlQuery = m_utils
@@ -1133,29 +1134,6 @@ define(
                         + this.getDataSourceName()
                         + "&alwaysPopulateStatement=true&prepareStatementStrategy=#sqlPrepareStatementStrategy\" />";
 
-               var outBodyAccessPoint = this.getApplication().attributes["carnot:engine:camel::outBodyAccessPoint"];
-               if (this.getApplication().contexts.application.accessPoints.length > 0) {
-                  for (i = 0; i < this.getApplication().contexts.application.accessPoints.length; i++) {
-                     var accessPoint = this.getApplication().contexts.application.accessPoints[i];
-                     if (accessPoint.direction == "OUT"
-                           && outBodyAccessPoint != null
-                           && outBodyAccessPoint != ""
-                           &&((accessPoint.dataType=="primitive"&& outBodyAccessPoint == accessPoint.name)
-                           ||
-                           (accessPoint.dataType=="struct" && outBodyAccessPoint == accessPoint.structuredDataTypeFullId+":"+accessPoint.id))) {
-                        route += "<setHeader headerName=\""
-                              + accessPoint.id + "\">";
-                        route += "<simple>$simple{body}</simple>"
-                        route += "</setHeader>";
-                     } else if (accessPoint.direction == "OUT") {
-                        /*
-                         * route += "<setHeader headerName=\"" +
-                         * accessPoint.id + "\">"; route += "<simple>$simple{header."+accessPoint.id+"}</simple>"
-                         * route += "</setHeader>";
-                         */
-                     }
-                  }
-               }
                route += "<to uri=\"bean:bpmTypeConverter?method=fromList\"/>"
 
                m_utils.debug(route);
@@ -1269,7 +1247,6 @@ define(
              */
             SqlIntegrationOverlay.prototype.validate = function() {
                var valid = true;
-               
                if(m_utils.isEmptyString(this.codeEditor.getEditor().getSession().getValue())){
                    this.view.errorMessages .push("No SQL Query provided."); 
                    valid = false;
@@ -1277,25 +1254,18 @@ define(
 
                if(this.connectionTypeSelect.val()=="direct" && (this.databaseTypeSelect.val()!="others" && this.databaseTypeSelect.val()!=m_constants.TO_BE_DEFINED) ){
                   //when using direct connection verify host,port,databasename
-                                                                 
                   this.showHideCommonDbConfig();
                   this.showHideOthersDbConfig(true);
-                                                                 
                   this.hostInput.removeClass("error");
                   this.portInput.removeClass("error");
                   this.dataBaseNameInput.removeClass("error");
-                 
                   if(m_utils.isEmptyString(this.hostInput.val()) ){
                       this.view.errorMessages .push("No Data Source Host provided."); 
                       this.hostInput.addClass("error"); 
                       valid = false;
                   }
-                  
                  var numRegexp=new RegExp("[^0-9]");
-                 if( numRegexp.test(this.portInput.val()) || 
-					(m_utils.isEmptyString(this.portInput.val())) || 
-					(Number(this.portInput.val() ) < 1  ||  Number(this.portInput.val()) > 65535) 
-				) {
+                 if( numRegexp.test(this.portInput.val()) ||(m_utils.isEmptyString(this.portInput.val())) ||(Number(this.portInput.val() ) < 1  ||  Number(this.portInput.val()) > 65535)) {
                       this.view.errorMessages .push("Port number should be from 1-65535.");
                       this.portInput.addClass("error"); 
                       valid = false;
@@ -1306,20 +1276,17 @@ define(
                       valid = false;
                   }
                }
-                                                  
     		if(this.connectionTypeSelect.val()=="direct" && (this.databaseTypeSelect.val() =="others") ){
                      // when using others connection verify url/driver
                      this.showHideCommonDbConfig(true);
                      this.showHideOthersDbConfig();
                      this.urlInput.removeClass("error");
                      this.driverInput.removeClass("error");
-                      
                if(m_utils.isEmptyString(this.urlInput.val()) ){
                       this.view.errorMessages .push("No URL provided.");
                       this.urlInput.addClass("error"); 
                       valid = false;
                   }
-                                                  
                 if(m_utils.isEmptyString(this.driverInput.val()) ){
                       this.view.errorMessages .push("No Driver provided.");
                       this.driverInput.addClass("error"); 

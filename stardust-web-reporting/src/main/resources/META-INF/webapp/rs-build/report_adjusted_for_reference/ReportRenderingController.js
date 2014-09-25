@@ -896,14 +896,14 @@ define(
 			        var html = "<html ng-app='STARTDUST_REPORTING'><head>"
 			        	+ "<link rel='stylesheet' type='text/css' href='"
 			        	+ self.reportingService.getRootUrl()
-			          	 + "/plugins/bpm-reporting/public/js/libs/ckeditor/contents.css'/>"
+			          	 + "/plugins/bpm-reporting/js/libs/ckeditor/contents.css'/>"
 			          	 // TODO Read local
 			          	 + "<scr"
 			          	 + "ipt"
 			          	 + " src='"
 			          	 + self.reportingService
 			          	.getRootUrl()
-			          	 + "/plugins/bpm-reporting/public/js/libs/angular/angular-1.2.11.js'>"
+			          	 + "/plugins/bpm-reporting/js/libs/angular/angular-1.2.11.js'>"
 			          	 + "</scr"
 			          	 + "ipt>"
 			          	 + "<scr"
@@ -911,7 +911,7 @@ define(
 			          	 + " src='"
 			          	 + self.reportingService
 			          	.getRootUrl()
-			          	 + "/plugins/bpm-reporting/public/js/report/programmaticAccessHelper.js'>"
+			          	 + "/plugins/bpm-reporting/js/report/programmaticAccessHelper.js'>"
 			          	 + "</scr"
 			          	 + "ipt>"
 			          	 + "<scr"

@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?><!--
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
     Copyright (c) 2011 SunGard CSA LLC and others.
     All rights reserved. This program and the accompanying materials
     are made available under the terms of the Eclipse Public License v1.0
@@ -13,7 +14,12 @@
       xmlns:aop="http://www.springframework.org/schema/aop"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:ippui="http://infinity.com/bpm/ui/common/uiDefinition"
-   xsi:schemaLocation="  http://www.springframework.org/schema/beans   http://www.springframework.org/schema/beans/spring-beans-3.0.xsd  http://www.springframework.org/schema/aop   http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
+   xsi:schemaLocation="
+  http://www.springframework.org/schema/beans 
+  http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+  http://www.springframework.org/schema/aop 
+  http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
+
    <bean name="ippPortalApiPhaseListener" class="org.eclipse.stardust.ui.web.common.app.api.PortalApiPhaseListener" />
 
    <bean class="org.springframework.beans.factory.config.CustomScopeConfigurer">
@@ -39,7 +45,8 @@
    <bean name="ippPortalUi" class="org.eclipse.stardust.ui.web.common.app.PortalUiController"
       scope="session">
       <property name="userProvider" ref="userProvider"/>
-      <property name="commonMenuProvider" ref="commonMenuProvider"/>   </bean>
+      <property name="commonMenuProvider" ref="commonMenuProvider"/>
+   </bean>
       
    <bean name="ippPortalApp" class="org.eclipse.stardust.ui.web.common.app.PortalApplication"
       scope="session">
@@ -48,15 +55,35 @@
       <property name="portalApplicationEventScript" ref="ippPortalAppEventScript"/>
       <property name="runtimeEnvironmentInfoProvider" ref="runtimeEnvironmentInfoProvider"/>
    </bean>
-   <!-- Beans for Single HTML5 FW Usage - START -->   <bean name="ippPortalAppSingleView" class="org.eclipse.stardust.ui.web.common.app.PortalApplicationSingleView"	   scope="request">	   <property name="singleViewEventScript" ref="ippPortalAppSingleViewEventScript" />   </bean>   <bean name="ippSingleViewLaunchPanels" class="org.eclipse.stardust.ui.web.common.app.SingleViewLaunchPanels"	   scope="session">	   <property name="singleViewEventScript" ref="ippPortalAppSingleViewEventScript" />   </bean>   <bean name="ippPortalAppSingleViewEventScript" class="org.eclipse.stardust.ui.web.common.app.PortalApplicationSingleViewEventScript"	   scope="request">   </bean>   <!-- Beans for Single HTML5 FW Usage - END -->
+
+   <!-- Beans for Single HTML5 FW Usage - START -->
+   <bean name="ippPortalAppSingleView" class="org.eclipse.stardust.ui.web.common.app.PortalApplicationSingleView"
+	   scope="request">
+	   <property name="singleViewEventScript" ref="ippPortalAppSingleViewEventScript" />
+   </bean>
+
+   <bean name="ippSingleViewLaunchPanels" class="org.eclipse.stardust.ui.web.common.app.SingleViewLaunchPanels"
+	   scope="session">
+	   <property name="singleViewEventScript" ref="ippPortalAppSingleViewEventScript" />
+   </bean>
+
+   <bean name="ippPortalAppSingleViewEventScript" class="org.eclipse.stardust.ui.web.common.app.PortalApplicationSingleViewEventScript"
+	   scope="request">
+   </bean>
+   <!-- Beans for Single HTML5 FW Usage - END -->
+
    <bean name="ippPortalAppEventScript" class="org.eclipse.stardust.ui.web.common.app.PortalApplicationEventScript"
       scope="session">
    </bean>
 
    <bean name="ippPortalParameters" class="org.eclipse.stardust.ui.web.common.app.PortalParameters"
-      scope="singleton">   </bean>
-   
-   <bean name="ippInternalErrorHandler" class="org.eclipse.stardust.ui.web.common.app.InternalErrorHandler"      scope="session">   </bean>   
+      scope="singleton">
+   </bean>
+
+   <bean name="ippInternalErrorHandler" class="org.eclipse.stardust.ui.web.common.app.InternalErrorHandler"
+      scope="session">
+   </bean>
+   
    <bean name="ippPortalConfig" class="org.eclipse.stardust.ui.web.common.views.PortalConfiguration"
       scope="session">
    </bean>
@@ -91,5 +118,12 @@
 		<property name="navigationProvider" ref="navigationProvider" />
 		<property name="preferenceProvider" ref="preferenceProvider"/>
 	</bean>
-   <bean name="timerManager" class="org.eclipse.stardust.ui.web.common.timer.TimerManager"      scope="session" />          <bean name="common_msgPropsBean"		class="org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean"		scope="session" />  
+
+   <bean name="timerManager" class="org.eclipse.stardust.ui.web.common.timer.TimerManager"
+      scope="session" />
+      
+    <bean name="common_msgPropsBean"
+		class="org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean"
+		scope="session" />  
+
 </beans>
