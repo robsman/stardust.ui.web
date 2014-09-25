@@ -3,10 +3,10 @@
    <modelVersion>4.0.0</modelVersion>
 
    <groupId>org.eclipse.stardust.ui.web</groupId>
-   <artifactId>stardust-web-camel</artifactId>
+   <artifactId>stardust-html5-common</artifactId>
    <packaging>jar</packaging>
 
-   <name>Camel Web</name>
+   <name>HTML5 Common</name>
 
    <parent>
       <groupId>org.eclipse.stardust</groupId>
@@ -15,16 +15,6 @@
       <relativePath>../../product/product-parent/pom.xml</relativePath>
    </parent>
 
-   <dependencies>
-      <dependency>
-         <groupId>org.eclipse.stardust.engine</groupId>
-         <artifactId>stardust-engine-camel</artifactId>
-         <version>${project.version}</version>
-      </dependency>
-      <dependency>
-         <groupId>org.eclipse.stardust.ui.web</groupId>
-         <artifactId>ipp-portal-common</artifactId>
-         <version>${project.version}</version>
-      </dependency>
-   </dependencies>
+   <dependencies />
+
 </project>

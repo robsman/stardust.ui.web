@@ -32,6 +32,9 @@
       <module>web-portal</module>
       <module>mobile-workflow</module>
       <module>skins/modern</module>
+      <module>html5-common</module>
+      <module>html5-process-portal</module>
+      <module>rest-common</module>
       <module>stardust-web-camel</module>
    </modules>
 
