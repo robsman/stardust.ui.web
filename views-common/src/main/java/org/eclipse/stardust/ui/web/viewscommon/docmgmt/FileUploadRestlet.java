@@ -27,7 +27,6 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -81,7 +80,14 @@ public class FileUploadRestlet
                   .resolveSpringBean("fileStorage", servletContext);
 
             // file path
-            String filePath = fileStorage.getStoragePath(servletContext) + fileInfo.name;
+            String fileName = fileInfo.name;
+            
+            if(fileName.lastIndexOf("\\") > 0 ){
+               fileName = fileName.substring(fileName.lastIndexOf("\\") + 1, fileName.length()); 
+            }
+                
+            
+            String filePath = fileStorage.getStoragePath(servletContext) + fileName;
             File uploadedFile = new File(filePath);
 
             OutputStream outputStream = new FileOutputStream(uploadedFile);
