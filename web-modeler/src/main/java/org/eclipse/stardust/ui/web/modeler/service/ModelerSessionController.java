@@ -408,9 +408,10 @@ public class ModelerSessionController
             }
          }
 
+         ChangeJto changeJto = null;
          if (commandId.startsWith("model."))
          {
-            return applyGlobalChange(editingSession, commandId, model, commandJto);
+            changeJto = applyGlobalChange(editingSession, commandId, model, commandJto);
          }
          else
          {
@@ -419,15 +420,26 @@ public class ModelerSessionController
             {
                throw new BadRequestException("Unknown model: " + modelId);
             }
-
-            return applyModelElementChange(editingSession, commandId, model, commandJto);
+            changeJto = applyModelElementChange(editingSession, commandId, model, commandJto);
          }
+
+         //TODO: Enhance MMS / Service
+         if (currentSession().modelManagementStrategy() instanceof RecordingModelManagementStrategy)
+         {
+            RecordingModelManagementStrategy recording = (RecordingModelManagementStrategy) this
+                  .currentSession().modelManagementStrategy();
+            recording.handleRecording(commandJto, changeJto);
+         }
+
+         return changeJto;
       }
       catch (MissingWritePermissionException mwpe)
       {
          throw new ConflictingRequestException("Missing write permission: " + mwpe.getMessage());
       }
    }
+
+
 
    /**
     * @param editingSession TODO

@@ -14,6 +14,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -122,6 +123,7 @@ import org.eclipse.stardust.ui.web.modeler.edit.jto.CommandJto;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
 import org.eclipse.stardust.ui.web.modeler.marshaling.ModelMarshaller;
 import org.eclipse.stardust.ui.web.modeler.service.ModelerSessionController;
+import org.eclipse.stardust.ui.web.modeler.service.RecordingModelManagementStrategy;
 import org.eclipse.stardust.ui.web.modeler.service.XsdSchemaUtils;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelFormat;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelingSessionScoped;
@@ -3257,60 +3259,71 @@ public class ModelElementMarshaller implements ModelMarshaller
     */
    public JsonObject toModelOnlyJson(ModelType model)
    {
-         JsonObject modelJson = new JsonObject();
+      JsonObject modelJson = new JsonObject();
 
-	      JsonObject lockInfoJson = new JsonObject();
-         LockInfo lockInfo = modelingSession.getEditLockInfo(model);
-	      if (null != lockInfo)
-         {
-            lockInfoJson.addProperty("lockStatus", lockInfo
-                  .isLockedBySession(modelingSession) ? "lockedByMe" : "lockedByOther");
-            // TODO provide full name of the "other"
-            lockInfoJson.addProperty("ownerId", lockInfo.ownerId);
-            lockInfoJson.addProperty("ownerName", lockInfo.ownerName);
-            lockInfoJson.addProperty("canBreakEditLock",
-                  lockInfo.canBreakEditLock(modelingSession));
-         }
-	      modelJson.add("editLock", lockInfoJson);
+      JsonObject lockInfoJson = new JsonObject();
+      LockInfo lockInfo = modelingSession.getEditLockInfo(model);
+      if (null != lockInfo)
+      {
+         lockInfoJson.addProperty("lockStatus", lockInfo
+               .isLockedBySession(modelingSession) ? "lockedByMe" : "lockedByOther");
+         // TODO provide full name of the "other"
+         lockInfoJson.addProperty("ownerId", lockInfo.ownerId);
+         lockInfoJson.addProperty("ownerName", lockInfo.ownerName);
+         lockInfoJson.addProperty("canBreakEditLock",
+               lockInfo.canBreakEditLock(modelingSession));
+      }
+      modelJson.add("editLock", lockInfoJson);
 
-         modelJson.addProperty(ModelerConstants.ID_PROPERTY, model.getId());
-         modelJson.addProperty(ModelerConstants.NAME_PROPERTY, model.getName());
-         modelJson.addProperty(ModelerConstants.UUID_PROPERTY,
-               eObjectUUIDMapper().getUUID(model));
-         modelJson.addProperty(ModelerConstants.FILE_NAME,
-               getModelBuilderFacade().getModelManagementStrategy().getModelFileName(model));
-         modelJson.addProperty(ModelerConstants.FILE_PATH,
-               getModelBuilderFacade().getModelManagementStrategy().getModelFilePath(model));
-         modelJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.MODEL_KEY);
-         modelJson.addProperty(ModelerConstants.DATE_OF_CREATION,
-               getModelBuilderFacade().convertDate(model.getCreated()));
+      modelJson.addProperty(ModelerConstants.ID_PROPERTY, model.getId());
+      modelJson.addProperty(ModelerConstants.NAME_PROPERTY, model.getName());
+      modelJson.addProperty(ModelerConstants.UUID_PROPERTY,
+            eObjectUUIDMapper().getUUID(model));
+      modelJson.addProperty(ModelerConstants.FILE_NAME, getModelBuilderFacade()
+            .getModelManagementStrategy().getModelFileName(model));
+      modelJson.addProperty(ModelerConstants.FILE_PATH, getModelBuilderFacade()
+            .getModelManagementStrategy().getModelFilePath(model));
+      modelJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.MODEL_KEY);
+
+      //TODO:Use a TimestampProvider here
+      if (getModelBuilderFacade().getModelManagementStrategy() instanceof RecordingModelManagementStrategy)
+      {
+         modelJson.addProperty(ModelerConstants.DATE_OF_CREATION, "0");
+         modelJson.addProperty(ModelerConstants.DATE_OF_MODIFICATION, "0");
+      }
+      else
+      {
+         modelJson.addProperty(ModelerConstants.DATE_OF_CREATION, getModelBuilderFacade()
+               .convertDate(model.getCreated()));
          modelJson.addProperty(ModelerConstants.DATE_OF_MODIFICATION,
                getModelBuilderFacade().getModified(model));
 
-         // Model description
-         if (null != model.getDescription() && model.getDescription().getMixed().size() > 0)
-         {
-            modelJson.addProperty(ModelerConstants.DESCRIPTION_PROPERTY,
-                  (String) model.getDescription().getMixed().get(0).getValue());
-         }
-         else
-         {
-            modelJson.addProperty(ModelerConstants.DESCRIPTION_PROPERTY, "");
-         }
+      }
 
-         loadAttributes(model, modelJson);
+      // Model description
+      if (null != model.getDescription() && model.getDescription().getMixed().size() > 0)
+      {
+         modelJson.addProperty(ModelerConstants.DESCRIPTION_PROPERTY, (String) model
+               .getDescription().getMixed().get(0).getValue());
+      }
+      else
+      {
+         modelJson.addProperty(ModelerConstants.DESCRIPTION_PROPERTY, "");
+      }
 
-	      if ((model.getDescription() != null) && !isEmpty(model.getDescription().getMixed()))
-         {
-            modelJson.addProperty(ModelerConstants.DESCRIPTION_PROPERTY,
-                  (String) model.getDescription().getMixed().get(0).getValue());
-         }
-         else
-         {
-            modelJson.addProperty(ModelerConstants.DESCRIPTION_PROPERTY, (String) null);
-         }
+      loadAttributes(model, modelJson);
 
-         return modelJson;
+      if ((model.getDescription() != null) && !isEmpty(model.getDescription().getMixed()))
+      {
+         modelJson.addProperty(ModelerConstants.DESCRIPTION_PROPERTY, (String) model
+               .getDescription().getMixed().get(0).getValue());
+      }
+      else
+      {
+         modelJson.addProperty(ModelerConstants.DESCRIPTION_PROPERTY, (String) null);
+      }
+
+      return modelJson;
    }
 
    /**

@@ -40,15 +40,15 @@ public class DefaultModelManagementStrategy extends
 
 	public static final String MODELS_DIR = "/process-models/";
 
-   private ServiceFactory serviceFactory;
-	private DocumentManagementService documentManagementService;
+	private ServiceFactory serviceFactory;
+	protected DocumentManagementService documentManagementService;
 
 	/**
 	 *
 	 */
 	private Map<String, String> modelFileNameMap = new HashMap<String, String>();
 
-   private final ModelPersistenceService persistenceService;
+   protected final ModelPersistenceService persistenceService;
 
    private final ServiceFactoryLocator serviceFactoryLocator;
 
@@ -342,7 +342,7 @@ public class DefaultModelManagementStrategy extends
 	 *
 	 * @return
 	 */
-	private DocumentManagementService getDocumentManagementService() {
+	protected DocumentManagementService getDocumentManagementService() {
 		if (documentManagementService == null) {
 			documentManagementService = getServiceFactory()
 					.getDocumentManagementService();
@@ -351,7 +351,7 @@ public class DefaultModelManagementStrategy extends
 		return documentManagementService;
 	}
 
-	private ServiceFactory getServiceFactory() {
+	protected ServiceFactory getServiceFactory() {
 		// TODO Replace
 
 		if (serviceFactory == null) {
