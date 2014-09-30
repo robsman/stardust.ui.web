@@ -245,7 +245,7 @@ define(
 						id : "processName",
 						name : this.getI18N("reporting.definitionView.additionalFiltering.processName"),
 						type : this.metadata.enumerationType,
-						enumerationType : "modelData:processDefinitions:name"
+						enumerationType : "modelData:processDefinitions"
 					},
 					startingUserName : {
 						id : "startingUserName",
@@ -258,7 +258,7 @@ define(
 						id : "state",
 						name : this.getI18N("reporting.definitionView.additionalFiltering.processState"),
 						type : this.metadata.enumerationType,
-						enumerationType : "staticData:processStates:name",
+						enumerationType : "staticData:processStates",
 						customSort : true
 					},
 					priority : {
@@ -266,7 +266,7 @@ define(
 						name : this.getI18N("reporting.definitionView.additionalFiltering.priority"),
 						type : this.metadata.enumerationType,
 						display : "singleSelect",
-						enumerationType : "staticData:priorityLevel:name",
+						enumerationType : "staticData:priorityLevel",
 						operators : ["E", "LE", "GE", "NE"],
 						customSort : true
 					}
@@ -363,13 +363,13 @@ define(
 								id : "activityName",
 								name : this.getI18N("reporting.definitionView.additionalFiltering.activityName"),
 								type : this.metadata.enumerationType,
-								enumerationType : "modelData:processDefinitions:name"
+								enumerationType : "modelData:processDefinitions"
 							},
 							processName : {
 								id : "processName",
 								name : this.getI18N("reporting.definitionView.additionalFiltering.processName"),
 								type : this.metadata.enumerationType,
-								enumerationType : "modelData:processDefinitions:name",
+								enumerationType : "modelData:processDefinitions",
 								notSupportedAsFilter : true
 							},
 							userPerformerName : {
@@ -383,21 +383,21 @@ define(
 								id : "participantPerformerName",
 								name : this.getI18N("reporting.definitionView.additionalFiltering.performer"),
 								type : this.metadata.enumerationType,
-								enumerationType : "modelData:participants:name",
+								enumerationType : "modelData:participants",
 								notSupportedAsFilter : true
 							},
 							state : {
 								id : "state",
 								name : this.getI18N("reporting.definitionView.additionalFiltering.activityState"),
 								type : this.metadata.enumerationType,
-								enumerationType : "staticData:activityStates:name"
+								enumerationType : "staticData:activityStates"
 							},
 							criticality : {
 								id : "criticality",
 								name : this.getI18N("reporting.definitionView.additionalFiltering.criticality"),
 								type : this.metadata.enumerationType,
 								display : "singleSelect",
-								enumerationType : "preferenceData:criticality:label",
+								enumerationType : "preferenceData:criticality",
 								operators : ["E", "LE", "GE", "NE"],
 								customSort : true
 							}
@@ -561,44 +561,35 @@ define(
 				/**
 				 * 
 				 */
-				ReportingService.prototype.getEnumeratorsForDimension = function(
-						primaryObject, dimension) {
-					if (this.getDimension(primaryObject, dimension).enumerationType) {
-						var qualifier = this.getDimension(primaryObject,
-								dimension).enumerationType.split(":");
-
-						return this.getEnumerators(qualifier[0], qualifier[1],
-								qualifier[2]);
-					}
-
-					return [];
-				};
-
-				/**
-				 * 
-				 */
-				ReportingService.prototype.getEnumerators = function(type,
-						scope, property) {
+				ReportingService.prototype.getEnumerators = function(path) {
+					
+					var q = path.split(":"); //qualifiers
+					
 					var enumerators = [];
-
-					for ( var n in this[type][scope]) {
-						enumerators.push(this[type][scope][n][property]);
+					
+					if(q.length == 1) {
+						for ( var n in this[q[0]]) {
+							enumerators.push(this[q[0]][n]);
+						}	
+					}else if(q.length == 2) {
+						for ( var n in this[q[0]][q[1]]) {
+							enumerators.push(this[q[0]][q[1]][n]);
+						}	
+					}else if(q.length == 3) {
+						for ( var n in this[q[0]][q[1]][q[2]]) {
+							enumerators.push(this[q[0]][q[1]][q[2]][n]);
+						}	
+					}else if(q.length == 4) {
+						for ( var n in this[q[0]][q[1]][q[2]][q[3]]) {
+							enumerators.push(this[q[0]][q[1]][q[2]][q[3]][n]);
+						}	
+					}else {
+						console.error("qualifier not supported yet: " + path);
 					}
-
+					
 					return enumerators;
 				};
 
-				ReportingService.prototype.getEnumerators2 = function(type,
-						scope) {
-					var enumerators = [];
-
-					for ( var n in this[type][scope]) {
-						enumerators.push(this[type][scope][n]);
-					}	
-
-					return enumerators;
-				};
-				
 				/**
 				 * 
 				 */
@@ -802,6 +793,11 @@ define(
 									type : type,
 									metadata : descriptor.metadata
 								};
+								
+								//if the descriptor is of type enumeration
+								if(descriptor.enumList){
+									object.dimensions[descriptor.id].enumerationType = "modelData:descriptors:" + descriptorId + ":enumList";
+								}
 							}
 						}
 					}

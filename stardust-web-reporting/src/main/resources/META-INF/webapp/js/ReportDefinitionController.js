@@ -943,11 +943,6 @@ define(
 					console.log("First Dimension");
 					console.log(this.getFirstDimension());
 
-					if (this.getFirstDimension().type == this.reportingService.metadata.enumerationType) {
-						this.firstDimensionEnumerators = this
-								.getEnumerators(this.getFirstDimension());
-					}
-
 					this.populateChartTypes();
 					if(this.report.layout.chart){
 						this.report.layout.chart.options.axes.xaxis.label = this
@@ -975,20 +970,6 @@ define(
 					return [ "Nase", "Wurst", "Propase" ];
 				};
 
-				/**
-				 * 
-				 */
-				ReportDefinitionController.prototype.getEnumerators = function(
-						dimension) {
-					if (!dimension || !dimension.enumerationType) {
-						return null;
-					}
-
-					var qualifier = dimension.enumerationType.split(":");
-
-					return this.reportingService.getEnumerators(qualifier[0],
-							qualifier[1], qualifier[2]);
-				};
 
 				/**
 				 * Returns a consolidated list of possible dimensions excluding

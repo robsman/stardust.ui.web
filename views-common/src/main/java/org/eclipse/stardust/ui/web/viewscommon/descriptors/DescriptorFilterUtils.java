@@ -11,11 +11,14 @@
 package org.eclipse.stardust.ui.web.viewscommon.descriptors;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
+import javax.faces.model.SelectItem;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
@@ -173,6 +176,7 @@ public class DescriptorFilterUtils
                         // it is a list of primitives or a single primitive
                         dataPathMD.filterable = true;
                         dataPathMD.sortable = !typedXPath.isList();
+                        dataPathMD.typedXPath = typedXPath;
                      }
                   }
                }
@@ -889,6 +893,8 @@ public class DescriptorFilterUtils
 
    public static class DataPathMetadata
    {
+      public TypedXPath typedXPath;
+
       private boolean sortable;
 
       private boolean filterable;
@@ -926,6 +932,33 @@ public class DescriptorFilterUtils
       public boolean isStructured()
       {
          return structured;
+      }
+      
+      public boolean isEnum()
+      {
+         if (typedXPath != null)
+         {
+            return typedXPath.isEnumeration();
+         }
+         return false;
+      }
+
+      /**
+       * @return
+       */
+      public List<String> getEnumValues()
+      {
+         List<String> enumList = null;
+         if (isEnum())
+         {
+            return typedXPath.getEnumerationValues();
+         }
+         return enumList;
+      }
+
+      public TypedXPath getTypedXPath()
+      {
+         return typedXPath;
       }
    }
 
