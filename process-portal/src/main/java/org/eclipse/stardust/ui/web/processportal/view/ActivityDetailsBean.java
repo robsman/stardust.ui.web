@@ -1053,7 +1053,10 @@ public class ActivityDetailsBean extends UIComponentBean
       {
          if (event.getType().equals(ActivityEvent.ACTIVATED))
          {
-            update(false);
+            if (loadSuccessful)
+            {
+               update(false);
+            }
          }
          else if (event.getType().equals(ActivityEvent.COMPLETED)
                || event.getType().equals(ActivityEvent.SUSPENDED)
