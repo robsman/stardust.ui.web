@@ -10,32 +10,11 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service.dto;
 
-import java.util.Date;
-
-import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOAttribute;
-import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOClass;
-
-
 /**
- * @author Anoop.Nair
  * @author Subodh.Godbole
  * @version $Revision: $
  */
-@DTOClass
-public class ActivityInstanceDTO extends AbstractDTO
+public class TrivialActivityInstanceDTO extends ActivityInstanceDTO
 {
-   @DTOAttribute("OID")
-   public long oid;
-
-   @DTOAttribute("startTime")
-   public Date start;
-
-   @DTOAttribute("lastModificationTime")
-   public Date lastModification;
-
-   @DTOAttribute("activity")
-   public ActivityDTO activity;
-
-   @DTOAttribute("processInstance")
-   public ProcessInstanceDTO processInstance;
+   public Boolean trivial;
 }

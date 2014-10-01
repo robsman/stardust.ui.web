@@ -14,10 +14,12 @@
 
 'use strict';
 
-angular.module('workflow-ui.services').provider('sdWorkflowService', function () {
+angular.module('workflow-ui.services').provider('sdWorklistService', function () {
 	var self = this;
 	
 	self.$get = ['$rootScope', function ($rootScope) {
+
+		var REST_BASE_URL = "services/rest/portal/worklist/";
 
 		var service = {};
 
@@ -30,7 +32,7 @@ angular.module('workflow-ui.services').provider('sdWorkflowService', function ()
 			console.log("getting worklist for:");
 			console.log(query);
 
-			var restUrl = "services/rest/portal/worklist/";
+			var restUrl = REST_BASE_URL;
 			if (query.participantQId) {
 				restUrl += "participant/" + query.participantQId;
 			} else if (query.userId) {

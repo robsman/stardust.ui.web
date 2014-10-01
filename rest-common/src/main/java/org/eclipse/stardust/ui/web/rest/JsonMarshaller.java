@@ -68,6 +68,28 @@ public class JsonMarshaller
       }
    }
 
+   public JsonArray readJsonArray(String jsonText) throws javax.ws.rs.WebApplicationException
+   {
+      try
+      {
+         JsonElement parsedJson = jsonParser.parse(jsonText);
+         if ((null != parsedJson) && parsedJson.isJsonArray())
+         {
+            return parsedJson.getAsJsonArray();
+         }
+         else
+         {
+            trace.warn("Expected a JSON array, but received something else.");
+            throw new WebApplicationException(Status.BAD_REQUEST);
+         }
+      }
+      catch (JsonParseException jpe)
+      {
+         trace.warn("Expected a JSON array, but received no valid JSON at all.", jpe);
+         throw new WebApplicationException(jpe, Status.BAD_REQUEST);
+      }
+   }
+
    public String writeJsonObject(JsonObject json)
    {
       return gson.toJson(json);
