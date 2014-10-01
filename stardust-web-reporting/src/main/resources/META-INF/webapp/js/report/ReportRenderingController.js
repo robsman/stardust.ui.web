@@ -300,6 +300,25 @@ define(
 						
 					} else if (this.report.layout.chart.type === this.reportingService.metadata.chartTypes.barChart.id) {
 						chartOptions.seriesDefaults.renderer = $.jqplot.BarRenderer;
+						chartOptions.stackSeries = (this.report.layout.chart.options.stackSeries && 
+						         (this.report.dataSet.groupBy != null && this.report.dataSet.groupBy != 'None'));
+						if (chartOptions.stackSeries)
+						{
+						   var x_axis = [];
+						   for ( var i = 0; i < data.seriesGroup.length; ++i) {
+						      var tempData = [];
+						      for ( var j = 0; j < data.seriesGroup[i].length; ++j) {
+						         if (i == 0) {
+						            x_axis.push(data.seriesGroup[i][j][0]);
+						         }
+						         tempData.push(data.seriesGroup[i][j][1]);
+						         if (j == data.seriesGroup[i].length -1 ) {
+						            data.seriesGroup[i] = tempData;
+						         }
+						      }
+						   }
+						   chartOptions.axes.xaxis.ticks = x_axis;
+						}
 						chartOptions.seriesDefaults.rendererOptions = {
 							animation : {
 								speed : 2500

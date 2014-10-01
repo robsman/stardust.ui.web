@@ -631,6 +631,19 @@ table.formTable td {
 												</table>
 											</div>
 										</td>
+                              <td ng-show="report.layout.chart.type && report.layout.chart.type === reportingService.metadata.chartTypes.barChart.id" 
+                                             valign="top">
+                                 <div style="margin-left: 20px;">
+                                    <div class="heading">{{getI18N('reporting.definitionView.series.title')}}</div>
+                                    <table cellpadding="0" cellspacing="0" class="formTable">
+                                       <tr>
+                                          <td><input id="auto-reporting-layoutTab-stockSeries" type="checkbox"
+                                             ng-model="report.layout.chart.options.stackSeries" /></td>
+                                          <td><label>{{getI18N('reporting.definitionView.stockSeries.label')}}</label></td>
+                                       </tr>
+                                    </table>
+                                 </div>
+                              </td>
 									</tr>
 									<tr>
 										<td valign="top">
