@@ -7,7 +7,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/portal/common/uiDefinition.xsd">
 
 	<ippui:perspectiveExtension
-		targetPerspective="*" id="ippHtml5ProcessPortalPerspective" messageBundles="views-common-messages">
+		targetPerspective="*" id="ippHtml5ProcessPortalPerspective" messageBundles="html5-process-portal">
 
 		<ippui:viewsExtension>
 			<ippui:view name="worklistViewHtml5" include="/plugins/html5-process-portal/partials/views/worklistView.html" />

@@ -4,7 +4,7 @@
 	
 	<!-- View Content -->
 	<div class="view-panel-content">
-		<h4>{{i18n('views.worklistPanel-labelTitle')}}</h4>
+		<h4>{{i18n('html5-process-portal.views-worklistViewHtml5-labelTitle')}}</h4>
 
 		<!-- Table Toolbar -->	
 		<div class="tbl-toolbar">
@@ -25,7 +25,12 @@
 							<i class="fa fa-file-text-o"></i>
 						</a>
 					</td>
-				</tr>
+					<td class="tbl-toolbar-item">
+					   <a href="#" ng-click="completeAll()" title="Complete All" class="view-tool-link">
+					      <i class="fa fa-share"></i>
+					   </a>
+					</td>
+            </tr>
 			</table>
 		</div>
 		
@@ -42,6 +47,7 @@
 					<th>Process</th>
 					<th>Start Time</th>
 					<th>Last Modified</th>
+					<th>Data</th>
 					<th>Actions</th>
 				</tr>
 			</thead>
@@ -57,6 +63,29 @@
 					<td>{{workItem.processName}}</td>
 					<td align="right">{{workItem.start | sdDateTimeFilter}}</td>
 					<td align="right">{{workItem.lastModification | sdDateTimeFilter}}</td>
+					<td>
+                  <table ng-hide="!worklist.trivialManualActivities[workItem.oid]">
+                     <tbody>
+                        <tr ng-repeat="mapping in worklist.trivialManualActivities[workItem.oid].dataMappings">
+                           <td>{{mapping.name}}</td>
+                           <td>
+                              <select ng-show="mapping.isEnum"
+                                 ng-model="worklist.trivialManualActivities[workItem.oid].inOutData[mapping.id]"
+                                 ng-init="worklist.trivialManualActivities[workItem.oid].inOutData[mapping.id] = worklist.trivialManualActivities[workItem.oid].inOutData[mapping.id] || mapping.enumValues[0]"
+                                 ng-options="enumVal for enumVal in mapping.enumValues" />
+
+	                           <input type="text"
+	                              ng-show="mapping.typeName == 'java.lang.String'"
+	                              ng-model="worklist.trivialManualActivities[workItem.oid].inOutData[mapping.id]" />
+	
+	                           <input type="checkbox"
+	                              ng-show="mapping.typeName == 'java.lang.Boolean'"
+	                              ng-model="worklist.trivialManualActivities[workItem.oid].inOutData[mapping.id]" />
+                           </td>
+                        </tr>
+                     </tbody>
+                  </table>
+					</td>
 					<td align="right" style="padding-left: 0px;">
 						<a href="#" ng-click="openNotes(workItem)" title="Open Notes" class="view-tool-link">
 							<i class="fa fa-comment-o"></i>
