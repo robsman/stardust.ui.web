@@ -83,11 +83,6 @@
          <scope>provided</scope>
       </dependency>
       <dependency>
-         <groupId>com.sun.facelets</groupId>
-         <artifactId>jsf-facelets</artifactId>
-         <scope>compile</scope>
-      </dependency>
-      <dependency>
          <groupId>org.icefaces</groupId>
          <artifactId>icefaces</artifactId>
          <scope>compile</scope>
