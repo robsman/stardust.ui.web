@@ -10,32 +10,16 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service.dto;
 
-import java.util.Date;
-
-import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOAttribute;
-import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOClass;
-
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 
 /**
- * @author Anoop.Nair
  * @author Subodh.Godbole
  * @version $Revision: $
  */
-@DTOClass
-public class ActivityInstanceDTO extends AbstractDTO
+public class TrivialManualActivityDTO
 {
-   @DTOAttribute("OID")
-   public long oid;
-
-   @DTOAttribute("startTime")
-   public Date start;
-
-   @DTOAttribute("lastModificationTime")
-   public Date lastModification;
-
-   @DTOAttribute("activity")
-   public ActivityDTO activity;
-
-   @DTOAttribute("processInstance.processName")
-   public String processName;
+   public List<PathDTO> dataMappings;
+   public Map<String, Serializable> inOutData;
 }

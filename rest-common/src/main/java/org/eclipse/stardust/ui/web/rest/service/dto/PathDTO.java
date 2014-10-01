@@ -10,9 +10,9 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service.dto;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.Map;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -21,50 +21,27 @@ import com.google.gson.reflect.TypeToken;
  * @author Subodh.Godbole
  * @version $Revision: $
  */
-public abstract class AbstractDTO
+public class PathDTO /*extends AbstractDTO*/
 {
-   /**
-    * @return
-    */
-   public String toJson()
-   {
-      Gson gson = new Gson();
-      return gson.toJson(this);
-   }
+   public String id;
+   public String name;
+   public String fullXPath;
+   public Boolean readonly;
+   public String typeName;
+   public Boolean isPrimitive;
+   public Boolean isList;
+   public Boolean isEnum;
+   public String[] enumValues;
+   public Map<String, String> properties;
 
    /**
     * @param json
     * @return
     */
-   public static <T> T toObject(String json, Class<T> clazz)
+   public static List<PathDTO> toList(String json)
    {
       Gson gson = new Gson();
-      return gson.fromJson(json, clazz);
-   }
-
-   @Override
-   public String toString()
-   {
-      StringBuilder sb = new StringBuilder();
-      try
-      {
-         for (Field field : this.getClass().getDeclaredFields())
-         {
-            if (field.isAccessible())
-            {
-               if (sb.toString().length() > 0)
-               {
-                  sb.append(",");
-               }
-               sb.append(field.getName()).append(":").append(field.get(this));
-            }
-         }
-      }
-      catch (Exception e)
-      {
-         // Ignore!
-      }
-      
-      return sb.toString();
+      Type listType = new TypeToken<List<PathDTO>>(){}.getType();
+      return gson.fromJson(json, listType);
    }
 }

@@ -11,6 +11,7 @@
 package org.eclipse.stardust.ui.web.rest.service;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,9 +21,7 @@ import org.springframework.stereotype.Component;
 
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.Document;
-import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.*;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DocumentDTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.utils.ActivityInstanceUtils;
@@ -35,7 +34,6 @@ import org.eclipse.stardust.ui.web.rest.service.utils.ActivityInstanceUtils;
 @Component
 public class ActivityInstanceService
 {
-
    @Resource
    private ActivityInstanceUtils activityInstanceUtils;
 
@@ -70,6 +68,39 @@ public class ActivityInstanceService
       Map<String, Serializable> values = activityInstanceUtils.getAllInDataValues(ai, context);
       
       return values;
+   }
+
+   /**
+    * @param userId
+    * @return
+    */
+   public Map<String, TrivialManualActivityDTO> getTrivialManualActivitiesDetails(List<Long> oids, String context)
+   {
+      Map<String, TrivialManualActivityDTO> dto = activityInstanceUtils
+            .getTrivialManualActivitiesDetails(oids, context);
+      return dto;
+   }
+
+   /**
+    * @param activities
+    * @param context
+    * @return
+    */
+   public Map<Long, String> completeAll(List<ActivityInstanceOutDataDTO> activities, String context)
+   {
+      Map<Long, String> result = new HashMap<Long, String>();
+      for (ActivityInstanceOutDataDTO aiDto : activities)
+      {
+         try
+         {
+            activityInstanceUtils.complete(aiDto.oid, context, aiDto.outData);
+         }
+         catch (Exception e)
+         {
+            result.put(aiDto.oid, e.getMessage());
+         }
+      }
+      return result;
    }
 
    /**
