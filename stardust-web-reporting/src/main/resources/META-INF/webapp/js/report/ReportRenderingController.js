@@ -400,6 +400,10 @@ define(
 					var tableOptions = {
 							aoColumnDefs : []
 						};
+					
+					tableOptions.bPaginate = this.report.layout.table.options.showVisibleRowCountSelector;
+					tableOptions.bFilter = this.report.layout.table.options.showSearchInput;
+					
 					if(scopeController){
 						scopeController.tableOptions = tableOptions;	
 					}
@@ -1012,6 +1016,8 @@ define(
 			    }
 			    tableParameters.csv = fileName;
 			    tableParameters.excel = fileName;
+			    
+			    this.initializeDataTableTableToolsOptions(this.report.layout.table.options.showExportButtons, tableParameters);
 			
 			    var addTotalRow = false;
 			
@@ -1358,6 +1364,13 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
    var tableOptions = {
 			aoColumnDefs : []
 		};
+   
+   this.initializeDataTableTableToolsOptions(this.report.layout.table.options.showExportButtons, 
+               scopeController.tableParameters);
+      
+   tableOptions.bPaginate = this.report.layout.table.options.showVisibleRowCountSelector;
+   tableOptions.bFilter = this.report.layout.table.options.showSearchInput;
+   
    scopeController.tableOptions = tableOptions;
       
    var selectedColumns =  this.reportingService.getColumnDimensions(this.report);
@@ -1581,9 +1594,22 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
                      value = jQuery.datepicker.formatDate(toFormat, date);
                   } catch(e) {
                      console.log(e);
-		}
+                  }
                }
                return value;
+            };
+            
+            /**
+             * 
+             */
+            ReportRenderingController.prototype.initializeDataTableTableToolsOptions = function(showExportButtons, tableParamaters) {
+               if (!showExportButtons) {
+                  tableParamaters.csv = false;
+                  tableParamaters.excel = false;
+               }
+               (this.report.layout.table.options.showExportButtons || this.report.layout.table.options.showSearchInput ||
+                        this.report.layout.table.options.showVisibleRowCountSelector) ? jQuery('div .heading').css({display:'block'}) :
+                           jQuery('div .heading').css({display:'none'});
             };
 		}
 			

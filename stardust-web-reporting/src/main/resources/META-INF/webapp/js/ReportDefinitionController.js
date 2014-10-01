@@ -371,12 +371,6 @@ define(
 													//self.resetParamFilters();
 													self.updateView();			
 												});
-
-										if(self.report.layout.table){
-											setTimeout(function () {
-												   self.initializeDataTableOptions();
-													}, 500);
-										}	
 									}
 									if (ui.newPanel.selector === "#schedulingTab") {
 										self.resetParamFilters();
@@ -2158,27 +2152,6 @@ define(
                  return dimensions[index];
               }
            }
-        };
-        
-        /**
-         * 
-         */
-        ReportDefinitionController.prototype.initializeDataTableOptions = function() {
-        	(this.report.layout.table.options.showExportButtons) ? jQuery('.DTTT_container').css({display:'block'}) :
-                jQuery('.DTTT_container').css({display:'none'});
-        	
-           (this.report.layout.table.options.showSearchInput) ? jQuery('.dataTables_filter').css({display:'block'}) :
-              jQuery('.dataTables_filter').css({display:'none'});
-           
-           (this.report.layout.table.options.showVisibleRowCountSelector) ? jQuery('.dataTables_length').css({display:'block'}) :
-              jQuery('.dataTables_length').css({display:'none'});
-           
-           
-           (this.report.layout.table.options.showExportButtons || this.report.layout.table.options.showSearchInput ||
-                    this.report.layout.table.options.showVisibleRowCountSelector) ? jQuery('div .heading').css({display:'block'}) :
-                       jQuery('div .heading').css({display:'none'});
-           
-           this.updateView();
         };
         
         /**
