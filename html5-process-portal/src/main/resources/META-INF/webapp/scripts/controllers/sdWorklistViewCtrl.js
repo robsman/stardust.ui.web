@@ -18,6 +18,18 @@ angular.module('workflow-ui').controller('sdWorklistViewCtrl',
 		['$scope', 'sdViewUtilService', 'sdWorklistService', 'sdActivityInstanceService', 
 		 function($scope, sdViewUtilService, sdWorklistService, sdActivityInstanceService) {
 
+	// Register for View Events
+	sdViewUtilService.registerForViewEvents($scope, handleViewEvents);
+
+	/*
+	 * 
+	 */
+	function handleViewEvents(event) {
+		if (event.type == "ACTIVATED") {
+			$scope.refresh();
+		}
+	};
+
 	var viewParams = sdViewUtilService.getViewParams($scope);
 
 	var query = {};
@@ -30,7 +42,7 @@ angular.module('workflow-ui').controller('sdWorklistViewCtrl',
 
 	$scope.worklist = {};
 	$scope.worklist.selectedWorkItems = [];
-
+	
 	/*
 	 * 
 	 */

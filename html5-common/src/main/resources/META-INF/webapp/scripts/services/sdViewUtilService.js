@@ -17,9 +17,38 @@
 angular.module('bpm-common.services').provider('sdViewUtilService', function () {
 	var self = this;
 	
-	self.$get = ['$rootScope', function ($rootScope) {
+	self.$get = ['$rootScope', 'sgViewPanelService', 'sgPubSubService', function ($rootScope, sgViewPanelService, sgPubSubService) {
+
+		sgPubSubService.subscribe('sgActiveViewPanelChanged', viewChanged);
+
+		var viewHandlers = {};
+
+		/*
+		 * 
+		 */
+		function viewChanged(data) {
+			var currentViewPath = data.currentNavItem.path;
+			var beforeViewPath = data.before ? data.before.path : null;
+
+			if (currentViewPath !== beforeViewPath) {
+				if (beforeViewPath && viewHandlers[beforeViewPath]) {
+					viewHandlers[beforeViewPath]({type : "DEACTIVATED"});
+				}
+
+				if (viewHandlers[currentViewPath]) {
+					viewHandlers[currentViewPath]({type : "ACTIVATED"});
+				}
+			}
+		}
 
 		var service = {};
+
+		/*
+		 * 
+		 */
+		service.getView = function(scope) {
+			return scope.panel;
+		};
 
 		/*
 		 * 
@@ -65,6 +94,23 @@ angular.module('bpm-common.services').provider('sdViewUtilService', function () 
 			};
 
 			window.postMessage(JSON.stringify(message), "*");
+		};
+
+		/*
+		 *
+		 */
+		service.registerForViewEvents = function(scope, handlerFunc) {
+			if (angular.isFunction(handlerFunc)) {
+				var path = scope.panel.path;
+
+				viewHandlers[path] = handlerFunc;
+
+				scope.$on("$destroy", function() {
+					if (viewHandlers[path]) {
+						delete viewHandlers[path];
+					}
+				});
+			}
 		};
 
 		return service;
