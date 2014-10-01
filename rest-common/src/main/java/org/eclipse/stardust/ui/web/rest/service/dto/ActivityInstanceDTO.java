@@ -36,6 +36,6 @@ public class ActivityInstanceDTO extends AbstractDTO
    @DTOAttribute("activity")
    public ActivityDTO activity;
 
-   @DTOAttribute("processInstance.processName")
-   public String processName;
+   @DTOAttribute("processInstance")
+   public ProcessInstanceDTO processInstance;
 }

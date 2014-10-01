@@ -71,7 +71,7 @@ angular.module('workflow-ui').controller('sdWorklistViewCtrl',
 	 */
 	$scope.openNotes = function(workItem) {
 		sdViewUtilService.openView("notesPanel", "oid=" + workItem.processInstance.oid, 
-				{"oid": "" + workItem.oid}, true);
+				{"oid": "" + workItem.processInstance.oid}, true);
 	};
 
 	/*
