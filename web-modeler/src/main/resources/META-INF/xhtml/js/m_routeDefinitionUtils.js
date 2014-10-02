@@ -196,10 +196,13 @@ define(
                routeDefinition += "<process ref=\"customVelocityContextAppender\"/>\n";
                if (location == "repository" || location == "data")
                {
-                  routeDefinition += "<setHeader headerName=\"ippDmsTargetPath\">\n";
-                  routeDefinition += "   <constant>templates/" + templatePath
-                  routeDefinition += "</constant>\n";
-                  routeDefinition += "</setHeader>\n";
+                  if (location == "repository")
+                  {
+                     routeDefinition += "<setHeader headerName=\"ippDmsTargetPath\">\n";
+                     routeDefinition += "   <constant>templates/" + templatePath
+                     routeDefinition += "</constant>\n";
+                     routeDefinition += "</setHeader>\n";
+                  }
                   routeDefinition += "<to uri=\"bean:documentHandler?method=retrieveContent\"/>\n";
                   routeDefinition += "<setHeader headerName=\"CamelTemplatingTemplateContent\">\n";
                   routeDefinition += "   <simple>$simple{header.ippDmsDocumentContent}</simple>\n";

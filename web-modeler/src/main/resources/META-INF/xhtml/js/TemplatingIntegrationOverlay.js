@@ -195,6 +195,8 @@ define(
                                                    .createOrReplaceOutAccessPoint();
                                           event.data.panel
                                                    .submitParameterDefinitionsChanges(defaultAccessPoints);
+                                          event.data.panel.view.submitModelElementAttributeChange("stardust:templatingIntegrationOverlay::outputName", null);
+                                          event.data.panel.view.submitModelElementAttributeChange("stardust:templatingIntegrationOverlay::template",null);
                                        }
                                        else
                                        {
@@ -224,10 +226,10 @@ define(
                                                                   .getFullId())
                                              }
                                           };
-                                       }
-                                       filteredAccessPoints.push(outputAccessPoint);
-                                       event.data.panel
-                                                .submitParameterDefinitionsChanges(filteredAccessPoints);
+                                          filteredAccessPoints.push(outputAccessPoint);
+                                          event.data.panel
+                                                   .submitParameterDefinitionsChanges(filteredAccessPoints);
+                                     }
                                     });
                   this.update();
                };
