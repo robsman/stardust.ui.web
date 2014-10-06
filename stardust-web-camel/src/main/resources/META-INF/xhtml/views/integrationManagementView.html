@@ -1,22 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link
-	href='http://fonts.googleapis.com/css?family=Lato:400,700,300italic,400italic'
-	rel='stylesheet' type='text/css'>
+
 <meta charset="utf-8">
 <title>Integration Management View</title>
-<link
-	href="plugins/stardust-web-camel/css/font-awesome-4.1.0/css/font-awesome.css"
-	rel="stylesheet">
-<link
-	href="plugins/stardust-web-camel/css/thirdparty/jquery/jquery-ui-1.10.2.custom.css"
-	rel="stylesheet" type="text/css" />
-<link
-	href="plugins/stardust-web-camel/css/thirdparty/datatables/jquery.dataTables.css"
-	rel="stylesheet" type="text/css" />
-<link href="plugins/stardust-web-camel/css/stardust-modern.css"
-	rel="stylesheet" type="text/css"></link>
+
 <style>
 table.descriptorTable td {
 	border: none !important;
@@ -57,7 +45,7 @@ table.notes .timestampSpan {
 		<div
 			style="margin-left: 10px; margin-right: 10px; margin-bottom: 10px;"
 			ng-cloak>
-			<h1>INTEGRATION MANAGEMENT</h1>
+			<h2>INTEGRATION MANAGEMENT</h2>
 			Search : <input type="text" ng-model="searchKeywordInCamelContext" ng-change="changeSearchValue(searchKeywordInCamelContext)" >
 			<br />
 			<table class="toolbar" style="width: 100%;">
@@ -119,7 +107,7 @@ table.notes .timestampSpan {
 						ng-click="setTab(3)">Consumer Trigger</a></li>
 				</ul>
 				<div ng-show="isSet(1)">
-					<h1>PRODUCER APPLICATION ROUTES</h1>
+					<h3>Producer Application Routes</h3>
 				Search : <input type="text" ng-model="searchKeywordInProducerApplication" ng-change="changeProducerApplicationSearchValue(searchKeywordInProducerApplication)" >
 				
 					<table class="toolbar" style="width: 100%;">
@@ -134,28 +122,27 @@ table.notes .timestampSpan {
 					<table style="width: 100%;">
 						<thead>
 							<tr>
-								<th>Route Id</th>
-								<th>Status</th>
+								<th align="left">Route Id</th>
 								<th>Exchanges Completed</th>
 								<th>Exchanges Failed</th>
 								<th>Reset Timestamp</th>
 								<th>Min Processing Time</th>
 								<th>Max Processing Time</th>
 								<th>Total Processing Time</th>
+								<th>Status</th>
 								<th>Action</th>
 						</thead>
 						<tbody>
 							<tr align="center"
 								ng-repeat="x in filtredProducerRoute | limitTo: itemsPerPage">
-
-								<td>{{ x.id }}</td>
-								<td>{{ x.status }}</td>
+								<td align="left">{{ x.id }}</td>
 								<td>{{ x.exchangesCompleted }}</td>
 								<td>{{ x.exchangesFailed }}</td>
 								<td>{{ x.resetTimestamp | date:'yyyy-MM-dd HH:mm:ss' }}</td>
 								<td>{{ x.minProcessingTime }}</td>
 								<td>{{ x.maxProcessingTime }}</td>
 								<td>{{ x.totalProcessingTime }}</td>
+								<td>{{ x.status }}</td>
 								<td><a href="#" ng-click="startOrStopRoute(x.id,x.status)"
 									class="expandCollapseLink" title="start"
 									ng-hide="x.status === 'Started'"><img
@@ -186,7 +173,7 @@ table.notes .timestampSpan {
 					</table>
 				</div>
 				<div ng-show="isSet(2)">
-					<h1>CONSUMER APPLICATION ROUTES</h1>
+					<h3>Consumer Application Routes</h3>
 					Search : <input type="text" ng-model="searchKeywordInConsumerApplication" ng-change="changeConsumerApplicationSearchValue(searchKeywordInConsumerApplication)" >
 					
 					<table class="toolbar" style="width: 100%;">
@@ -201,28 +188,28 @@ table.notes .timestampSpan {
 					<table style="width: 100%;">
 						<thead>
 							<tr>
-								<th>Route Id</th>
-								<th>Status</th>
+								<th align="left">Route Id</th>
 								<th>Exchanges Completed</th>
 								<th>Exchanges Failed</th>
 								<th>Reset Timestamp</th>
 								<th>Min Processing Time</th>
 								<th>Max Processing Time</th>
 								<th>Total Processing Time</th>
+								<th>Status</th>
 								<th>Action</th>
 						</thead>
 						<tbody>
 							<tr align="center"
 								ng-repeat="x in filtredConsumerApplicationRoute | limitTo: itemsPerPage">
 
-								<td>{{ x.id }}</td>
-								<td>{{ x.status }}</td>
+								<td align="left">{{ x.id }}</td>
 								<td>{{ x.exchangesCompleted }}</td>
 								<td>{{ x.exchangesFailed }}</td>
 								<td>{{ x.resetTimestamp | date:'yyyy-MM-dd HH:mm:ss' }}</td>
 								<td>{{ x.minProcessingTime }}</td>
 								<td>{{ x.maxProcessingTime }}</td>
 								<td>{{ x.totalProcessingTime }}</td>
+								<td>{{ x.status }}</td>
 								<td><a href="#" ng-click="startOrStopRoute(x.id,x.status)"
 									class="expandCollapseLink" title="start"
 									ng-hide="x.status === 'Started'"><img
@@ -255,7 +242,7 @@ table.notes .timestampSpan {
 					</table>
 				</div>
 				<div ng-show="isSet(3)">
-					<h1>CONSUMER TRIGGER ROUTES</h1>
+					<h3>Consumer Trigger Routes</h3>
 					Search : <input type="text" ng-model="searchKeywordInConsumerTrigger" ng-change="changeConsumerTriggerSearchValue(searchKeywordInConsumerTrigger)" >
 					<table class="toolbar" style="width: 100%;">
 						<tr>
@@ -269,27 +256,27 @@ table.notes .timestampSpan {
 					<table style="width: 100%;">
 						<thead>
 							<tr>
-								<th>Route Id</th>
-								<th>Status</th>
+								<th align="left">Route Id</th>
 								<th>Exchanges Completed</th>
 								<th>Exchanges Failed</th>
 								<th>Reset Timestamp</th>
 								<th>Min Processing Time</th>
 								<th>Max Processing Time</th>
 								<th>Total Processing Time</th>
+								<th>Status</th>
 								<th>Action</th>
 						</thead>
 						<tbody>
 							<tr align="center"
 								ng-repeat="x in filtredConsumerTriggerRoute | limitTo: itemsPerPage">
-								<td>{{ x.id }}</td>
-								<td>{{ x.status }}</td>
+								<td align="left"> {{ x.id }}</td>
 								<td>{{ x.exchangesCompleted }}</td>
 								<td>{{ x.exchangesFailed }}</td>
 								<td>{{ x.resetTimestamp | date:'yyyy-MM-dd HH:mm:ss' }}</td>
 								<td>{{ x.minProcessingTime }}</td>
 								<td>{{ x.maxProcessingTime }}</td>
 								<td>{{ x.totalProcessingTime }}</td>
+								<td>{{ x.status }}</td>
 								<td><a href="#" ng-click="startOrStopRoute(x.id,x.status)"
 									class="expandCollapseLink" title="start"
 									ng-hide="x.status === 'Started'"><img
@@ -325,7 +312,7 @@ table.notes .timestampSpan {
 		</div>
 	</div>
 
-	<script src="plugins/stardust-web-camel/js/angular/1.2.25/angular.js"></script>
+	<script src="plugins/stardust-web-camel/js/libs/angular/angular-1.0.2.js"></script>
 
 	<script src="plugins/stardust-web-camel/js/integration-management.js"></script>
 
