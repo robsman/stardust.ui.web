@@ -427,7 +427,7 @@ define(
 			
 						//model data must be added from server side
 						if(qualifier[0] != 'modelData' || this.reportingService.modelData){
-							enums = this.reportingService.getEnumerators(qualifier[0], qualifier[1]);	
+							enums = this.reportingService.getEnumerators(dimension.enumerationType);	
 						}
 						
 						if(!enums){
@@ -465,8 +465,7 @@ define(
 					//format first dimensions
 					dimension = primaryObject.dimensions[self.report.dataSet.firstDimension];
 					if (dimension && dimension.enumerationType) {
-						var qualifier = dimension.enumerationType.split(":");
- 				        var enums = self.reportingService.getEnumerators(qualifier[0], qualifier[1]);
+ 				        var enums = self.reportingService.getEnumerators(dimension.enumerationType);
  				        var displayValueMapping = {};
 					    Object
 							.keys(inData)
@@ -546,8 +545,7 @@ define(
 										
 										if (self.report.dataSet.firstDimension === self.reportingService.metadata.objects.processInstance.dimensions.priority.id)
 										{
-										   var qualifier = [ "staticData", "priorityLevel" ];
-										   var enumItems = self.reportingService.getEnumerators(qualifier[0], qualifier[1]);
+										   var enumItems = self.reportingService.getEnumerators(self.reportingService.metadata.objects.processInstance.dimensions.priority.enumerationType);
 
 										   data.seriesGroup.forEach(function(group)
 										   {
@@ -1395,9 +1393,8 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
       if (selectedColumns[selColumn].id == this.
                reportingService.metadata.objects.processInstance.dimensions.priority.id)
       {// Formatting Priority to display priority levels as Low, medium etc
-         var qualifier = ["staticData", "priorityLevel"];
-         
-         var enumItems = this.reportingService.getEnumerators(qualifier[0], qualifier[1]);
+         var enumItems = this.reportingService.getEnumerators(this.
+                 reportingService.metadata.objects.processInstance.dimensions.priority.enumerationType);
            
          for ( var row in data)
          {
@@ -1416,9 +1413,8 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
       } else if (selectedColumns[selColumn].id == this.
                reportingService.metadata.objects.processInstance.dimensions.state.id) {
       // Formatting Process State to display string states as Alive, completed etc 
-         var qualifier = ["staticData", "processStates"];
-         
-         var enumItems = this.reportingService.getEnumerators(qualifier[0], qualifier[1]);
+         var enumItems = this.reportingService.getEnumerators(this.
+                 reportingService.metadata.objects.processInstance.dimensions.state.enumerationType);
            
          for ( var row in data)
          {
@@ -1432,9 +1428,8 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
       } else if (selectedColumns[selColumn].id == this.
                reportingService.metadata.objects.activityInstance.dimensions.criticality.id) {
          //Formatting Criticality data to display string values
-         var qualifier = ["preferenceData", "criticality"];
-         
-         var enumItems = this.reportingService.getEnumerators(qualifier[0], qualifier[1]);
+         var enumItems = this.reportingService.getEnumerators(this.
+                 reportingService.metadata.objects.activityInstance.dimensions.criticality.enumerationType);
          
          for ( var row in data)
          {
