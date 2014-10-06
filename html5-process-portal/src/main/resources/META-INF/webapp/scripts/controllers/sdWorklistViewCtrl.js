@@ -20,13 +20,15 @@ angular.module('workflow-ui').controller('sdWorklistViewCtrl',
 
 	// Register for View Events
 	sdViewUtilService.registerForViewEvents($scope, handleViewEvents);
-
+	
 	/*
 	 * 
 	 */
 	function handleViewEvents(event) {
 		if (event.type == "ACTIVATED") {
 			$scope.refresh();
+		} else if (event.type == "DEACTIVATED") {
+			
 		}
 	};
 
