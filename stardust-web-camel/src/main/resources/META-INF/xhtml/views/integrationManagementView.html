@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link
+	href='http://fonts.googleapis.com/css?family=Lato:400,700,300italic,400italic'
+	rel='stylesheet' type='text/css'>
+<meta charset="utf-8">
+<title>Integration Management View</title>
+<link
+	href="plugins/stardust-web-camel/css/font-awesome-4.1.0/css/font-awesome.css"
+	rel="stylesheet">
+<link
+	href="plugins/stardust-web-camel/css/thirdparty/jquery/jquery-ui-1.10.2.custom.css"
+	rel="stylesheet" type="text/css" />
+<link
+	href="plugins/stardust-web-camel/css/thirdparty/datatables/jquery.dataTables.css"
+	rel="stylesheet" type="text/css" />
+<link href="plugins/stardust-web-camel/css/stardust-modern.css"
+	rel="stylesheet" type="text/css"></link>
+<style>
+table.descriptorTable td {
+	border: none !important;
+	background-color: transparent; ! important;
+	padding: 0px !important;
+	margin: 0px !important;
+	font-size: 10px;
+}
+
+.menuBarLink {
+	margin-right: 5px;
+}
+
+table.notes {
+	font-size: 10px;
+}
+
+table.notes .userSpan {
+	color: #906C37;
+}
+
+table.notes .timestampSpan {
+	color: #A69A88;
+}
+
+
+.selected {
+  background-color: yellow;
+}
+
+
+</style>
+</head>
+<body>
+
+	<div ng-app="integrationManagementModule"
+		ng-controller="integrationManagementController">
+		<div
+			style="margin-left: 10px; margin-right: 10px; margin-bottom: 10px;"
+			ng-cloak>
+			<h1>INTEGRATION MANAGEMENT</h1>
+			Search : <input type="text" ng-model="searchKeywordInCamelContext" ng-change="changeSearchValue(searchKeywordInCamelContext)" >
+			<br />
+			<table class="toolbar" style="width: 100%;">
+				<tr>
+					<td><a href="#" class="iconLink menuBarLink" title="Refresh"><i
+							class="fa fa-refresh" ng-click="refresh()"></i> </a></td>
+				</tr>
+			</table>
+
+			<table style="width: 100%;">
+				<thead>
+					<tr>
+						<th align="left">Context Id</th>
+						<th>Started</th>
+						<th>Uptime</th>
+						<th>Version</th>
+				</thead>
+
+				<tbody>
+					<tr align="center"
+						ng-repeat="camelContext in filtredCamelContexts  | limitTo: itemsPerPage" 
+						ng-click="setSelected(camelContext.contextId)" 
+						ng-class="{selected : camelContext.contextId === idSelectedCamelContext}">
+						<td align="left">{{ camelContext.contextId }}</td>
+						<td>{{ camelContext.started }}</td>
+						<td>{{ camelContext.uptime }}</td>
+						<td>{{ camelContext.version }}</td>
+					</tr>
+				</tbody>
+				<tfoot>
+					<td colspan="3">
+						<div class="pagination">
+							<ul>
+								<li ng-class="prevPageDisabled()"><a href
+									ng-click="prevPage()">« Prev</a></li>
+								<li ng-repeat="n in range()"
+									ng-class="{active: n == currentPage}" ng-click="setPage(n)">
+									<a href="#">{{n+1}}</a></li>
+								<li ng-class="nextPageDisabled()"><a href
+									ng-click="nextPage()">Next »</a></li>
+							</ul>
+						</div></td>
+				</tfoot>
+			</table>
+		</div>
+
+		<!-- details of selected camel context -->
+		<div
+			style="margin-left: 10px; margin-right: 10px; margin-bottom: 10px;"
+			ng-cloak ng-show="showRoutesTable">
+			<hr>
+			<section class="tab">
+				<ul class="nav nav-pills">
+					<li ng-class="{ active: isSet(1) }"><a href
+						ng-click="setTab(1)">Producer Application</a></li>
+					<li ng-class="{ active: isSet(2) }"><a href
+						ng-click="setTab(2)">Consumer Application</a></li>
+					<li ng-class="{ active: isSet(3) }"><a href
+						ng-click="setTab(3)">Consumer Trigger</a></li>
+				</ul>
+				<div ng-show="isSet(1)">
+					<h1>PRODUCER APPLICATION ROUTES</h1>
+				Search : <input type="text" ng-model="searchKeywordInProducerApplication" ng-change="changeProducerApplicationSearchValue(searchKeywordInProducerApplication)" >
+				
+					<table class="toolbar" style="width: 100%;">
+						<tr>
+							<td><a href="#" class="iconLink menuBarLink" title="Refresh"><i
+									class="fa fa-refresh" ng-click="refreshApplicationProducers()"></i>
+							</a>
+							</td>
+						</tr>
+					</table>
+
+					<table style="width: 100%;">
+						<thead>
+							<tr>
+								<th>Route Id</th>
+								<th>Status</th>
+								<th>Exchanges Completed</th>
+								<th>Exchanges Failed</th>
+								<th>Reset Timestamp</th>
+								<th>Min Processing Time</th>
+								<th>Max Processing Time</th>
+								<th>Total Processing Time</th>
+								<th>Action</th>
+						</thead>
+						<tbody>
+							<tr align="center"
+								ng-repeat="x in filtredProducerRoute | limitTo: itemsPerPage">
+
+								<td>{{ x.id }}</td>
+								<td>{{ x.status }}</td>
+								<td>{{ x.exchangesCompleted }}</td>
+								<td>{{ x.exchangesFailed }}</td>
+								<td>{{ x.resetTimestamp | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+								<td>{{ x.minProcessingTime }}</td>
+								<td>{{ x.maxProcessingTime }}</td>
+								<td>{{ x.totalProcessingTime }}</td>
+								<td><a href="#" ng-click="startOrStopRoute(x.id,x.status)"
+									class="expandCollapseLink" title="start"
+									ng-hide="x.status === 'Started'"><img
+										ng-src="plugins/stardust-web-camel/css/images/control_play.png" />
+								</a> <a href="#" ng-click="startOrStopRoute(x.id,x.status)"
+									class="expandCollapseLink" title="stop"
+									ng-show="x.status === 'Started'"><img
+										ng-src="plugins/stardust-web-camel/css/images/control_stop.png" />
+								</a>
+								</td>
+							</tr>
+						</tbody>
+						<tfoot>
+							<td colspan="3">
+								<div class="pagination">
+									<ul>
+										<li ng-class="prevPageDisabledProducerRoute()"><a href
+											ng-click="prevPageProducerRoute()">« Prev</a></li>
+										<li ng-repeat="n in rangeProducerRoute()"
+											ng-class="{active: n == currentPageProducerRoute}"
+											ng-click="setPageProducerRoute(n)"><a href="#">{{n+1}}</a>
+										</li>
+										<li ng-class="nextPageDisabledProducerRoute()"><a href
+											ng-click="nextPageProducerRoute()">Next »</a></li>
+									</ul>
+								</div></td>
+						</tfoot>
+					</table>
+				</div>
+				<div ng-show="isSet(2)">
+					<h1>CONSUMER APPLICATION ROUTES</h1>
+					Search : <input type="text" ng-model="searchKeywordInConsumerApplication" ng-change="changeConsumerApplicationSearchValue(searchKeywordInConsumerApplication)" >
+					
+					<table class="toolbar" style="width: 100%;">
+						<tr>
+							<td><a href="#" class="iconLink menuBarLink" title="Refresh"><i
+									class="fa fa-refresh" ng-click="refreshApplicationConsumers()"></i>
+							</a>
+							</td>
+						</tr>
+					</table>
+
+					<table style="width: 100%;">
+						<thead>
+							<tr>
+								<th>Route Id</th>
+								<th>Status</th>
+								<th>Exchanges Completed</th>
+								<th>Exchanges Failed</th>
+								<th>Reset Timestamp</th>
+								<th>Min Processing Time</th>
+								<th>Max Processing Time</th>
+								<th>Total Processing Time</th>
+								<th>Action</th>
+						</thead>
+						<tbody>
+							<tr align="center"
+								ng-repeat="x in filtredConsumerApplicationRoute | limitTo: itemsPerPage">
+
+								<td>{{ x.id }}</td>
+								<td>{{ x.status }}</td>
+								<td>{{ x.exchangesCompleted }}</td>
+								<td>{{ x.exchangesFailed }}</td>
+								<td>{{ x.resetTimestamp | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+								<td>{{ x.minProcessingTime }}</td>
+								<td>{{ x.maxProcessingTime }}</td>
+								<td>{{ x.totalProcessingTime }}</td>
+								<td><a href="#" ng-click="startOrStopRoute(x.id,x.status)"
+									class="expandCollapseLink" title="start"
+									ng-hide="x.status === 'Started'"><img
+										ng-src="plugins/stardust-web-camel/css/images/control_play.png" />
+								</a> <a href="#" ng-click="startOrStopRoute(x.id,x.status)"
+									class="expandCollapseLink" title="stop"
+									ng-show="x.status === 'Started'"><img
+										ng-src="plugins/stardust-web-camel/css/images/control_stop.png" />
+								</a>
+								</td>
+							</tr>
+						</tbody>
+						<tfoot>
+							<td colspan="3">
+								<div class="pagination">
+									<ul>
+										<li ng-class="prevPageDisabledConsumerApplicationRoute()">
+											<a href ng-click="prevPageConsumerApplicationRoute()">«
+												Prev</a></li>
+										<li ng-repeat="n in rangeConsumerApplicationRoute()"
+											ng-class="{active: n == currentPageConsumerApplicationRoute}"
+											ng-click="setPageConsumerApplicationRoute(n)"><a
+											href="#">{{n+1}}</a></li>
+										<li ng-class="nextPageDisabledConsumerApplicationRoute()">
+											<a href ng-click="nextPageConsumerApplicationRoute()">Next
+												»</a></li>
+									</ul>
+								</div></td>
+						</tfoot>
+					</table>
+				</div>
+				<div ng-show="isSet(3)">
+					<h1>CONSUMER TRIGGER ROUTES</h1>
+					Search : <input type="text" ng-model="searchKeywordInConsumerTrigger" ng-change="changeConsumerTriggerSearchValue(searchKeywordInConsumerTrigger)" >
+					<table class="toolbar" style="width: 100%;">
+						<tr>
+							<td><a href="#" class="iconLink menuBarLink" title="Refresh"><i
+									class="fa fa-refresh" ng-click="refreshTriggerConsumers()"></i>
+							</a>
+							</td>
+						</tr>
+					</table>
+
+					<table style="width: 100%;">
+						<thead>
+							<tr>
+								<th>Route Id</th>
+								<th>Status</th>
+								<th>Exchanges Completed</th>
+								<th>Exchanges Failed</th>
+								<th>Reset Timestamp</th>
+								<th>Min Processing Time</th>
+								<th>Max Processing Time</th>
+								<th>Total Processing Time</th>
+								<th>Action</th>
+						</thead>
+						<tbody>
+							<tr align="center"
+								ng-repeat="x in filtredConsumerTriggerRoute | limitTo: itemsPerPage">
+								<td>{{ x.id }}</td>
+								<td>{{ x.status }}</td>
+								<td>{{ x.exchangesCompleted }}</td>
+								<td>{{ x.exchangesFailed }}</td>
+								<td>{{ x.resetTimestamp | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+								<td>{{ x.minProcessingTime }}</td>
+								<td>{{ x.maxProcessingTime }}</td>
+								<td>{{ x.totalProcessingTime }}</td>
+								<td><a href="#" ng-click="startOrStopRoute(x.id,x.status)"
+									class="expandCollapseLink" title="start"
+									ng-hide="x.status === 'Started'"><img
+										ng-src="plugins/stardust-web-camel/css/images/control_play.png" />
+								</a> <a href="#" ng-click="startOrStopRoute(x.id,x.status)"
+									class="expandCollapseLink" title="stop"
+									ng-show="x.status === 'Started'"><img
+										ng-src="plugins/stardust-web-camel/css/images/control_stop.png" />
+								</a>
+								</td>
+							</tr>
+						</tbody>
+
+						<tfoot>
+							<td colspan="3">
+								<div class="pagination">
+									<ul>
+										<li ng-class="prevPageDisabledConsumerTriggerRoute()"><a
+											href ng-click="prevPageConsumerTriggerRoute()">« Prev</a></li>
+										<li ng-repeat="n in rangeConsumerTriggerRoute()"
+											ng-class="{active: n == currentPageConsumerTriggerRoute}"
+											ng-click="setPageConsumerTriggerRoute(n)"><a href="#">{{n+1}}</a>
+										</li>
+										<li ng-class="nextPageDisabledConsumerTriggerRoute()"><a
+											href ng-click="nextPageConsumerTriggerRoute()">Next »</a></li>
+									</ul>
+								</div></td>
+						</tfoot>
+					</table>
+
+				</div>
+			</section>
+		</div>
+	</div>
+
+	<script src="plugins/stardust-web-camel/js/angular/1.2.25/angular.js"></script>
+
+	<script src="plugins/stardust-web-camel/js/integration-management.js"></script>
+
+</body>
+</html>
+
+
