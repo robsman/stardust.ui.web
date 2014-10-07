@@ -35,9 +35,9 @@
 		this.worklist = {};
 		this.worklist.selectedWorkItems = [];
 
-		this.sdViewUtilService = sdViewUtilService;
-		this.sdWorklistService = sdWorklistService;
-		this.sdActivityInstanceService = sdActivityInstanceService;
+		this.$sdViewUtilService = sdViewUtilService;
+		this.$sdWorklistService = sdWorklistService;
+		this.$sdActivityInstanceService = sdActivityInstanceService;
 
 		// Expose required info on 'scope'
 		sdUtilService.extend($scope, this);
@@ -71,7 +71,7 @@
 
 		this.worklist.selectedWorkItems = [];
 
-		this.sdWorklistService.getWorklist(this.query).done(function(data) {
+		this.$sdWorklistService.getWorklist(this.query).done(function(data) {
 			self.worklist.workItems = data.list;
 			self.worklist.totalCount = data.totalCount;
 			
@@ -82,7 +82,7 @@
 				}
 			});
 
-			self.sdActivityInstanceService.getTrivialManualActivitiesDetails(oids).done(function(data) {
+			self.$sdActivityInstanceService.getTrivialManualActivitiesDetails(oids).done(function(data) {
 				self.worklist.trivialManualActivities = data;
 				self.$safeApply();
 			});
@@ -93,14 +93,14 @@
 	 * 
 	 */
 	WorklistViewCtrl.prototype.activateWorkItem = function(workItem) {
-		this.sdViewUtilService.openView("activityPanel", "OID=" + workItem.oid, {"oid" : "" + workItem.oid});
+		this.$sdViewUtilService.openView("activityPanel", "OID=" + workItem.oid, {"oid" : "" + workItem.oid});
 	};
 
 	/*
 	 * 
 	 */
 	WorklistViewCtrl.prototype.openNotes = function(workItem) {
-		this.sdViewUtilService.openView("notesPanel", "oid=" + workItem.processInstance.oid, 
+		this.$sdViewUtilService.openView("notesPanel", "oid=" + workItem.processInstance.oid, 
 				{"oid": "" + workItem.processInstance.oid}, true);
 	};
 
@@ -108,7 +108,7 @@
 	 * 
 	 */
 	WorklistViewCtrl.prototype.openProcessHistory = function(workItem) {
-		this.sdViewUtilService.openView("processInstanceDetailsView", 
+		this.$sdViewUtilService.openView("processInstanceDetailsView", 
 				"processInstanceOID=" + workItem.processInstance.oid, 
 				{
 					"oid": "" + workItem.oid,
@@ -125,7 +125,7 @@
 
 		var outData = self.worklist.trivialManualActivities[workItem.oid].inOutData;
 		var activityData = {oid: workItem.oid, outData: outData};
-		this.sdActivityInstanceService.completeAll([activityData]).done(function(data) {
+		this.$sdActivityInstanceService.completeAll([activityData]).done(function(data) {
 			self.refresh();
 		});
 	};
@@ -143,7 +143,7 @@
 				activitiesData.push({oid: workItem.oid, outData: outData});
 			});
 			
-			this.sdActivityInstanceService.completeAll(activitiesData).done(function(data) {
+			this.$sdActivityInstanceService.completeAll(activitiesData).done(function(data) {
 				self.refresh();
 			});
 		}

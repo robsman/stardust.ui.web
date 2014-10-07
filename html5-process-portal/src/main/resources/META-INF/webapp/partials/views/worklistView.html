@@ -26,7 +26,7 @@
 						</a>
 					</td>
 					<td class="tbl-toolbar-item">
-					   <a href="#" ng-click="completeAll()" title="Complete All" class="view-tool-link">
+					   <a href="#" ng-click="$completeAll()" title="Complete All" class="view-tool-link">
 					      <i class="fa fa-share"></i>
 					   </a>
 					</td>
@@ -55,7 +55,7 @@
 				<tr valign="center" sd-table-data="workItem in worklist.workItems track by $index"
 					sd-table-selection="worklist.selectedWorkItems">
 					<td>
-						<a href="#" ng-click="activateWorkItem(workItem)" title="{{workItem.activity.description}}">
+						<a href="#" ng-click="$activateWorkItem(workItem)" title="{{workItem.activity.description}}">
 							{{workItem.activity.name}}
 						</a>
 					</td>
@@ -87,16 +87,16 @@
                   </table>
 					</td>
 					<td align="right" style="padding-left: 0px;">
-						<a href="#" ng-click="openNotes(workItem)" title="Open Notes" class="view-tool-link">
+						<a href="#" ng-click="$openNotes(workItem)" title="Open Notes" class="view-tool-link">
 							<i class="fa fa-comment-o"></i>
 						</a>
-						<a href="#" ng-click="openProcessHistory(workItem)" title="Process History" class="view-tool-link">
+						<a href="#" ng-click="$openProcessHistory(workItem)" title="Process History" class="view-tool-link">
 							<i class="fa fa-tasks"></i>
 						</a>
-						<a href="#" ng-click="complete(workItem)" title="Complete" class="view-tool-link">
+						<a href="#" ng-click="$complete(workItem)" title="Complete" class="view-tool-link">
 							<i class="fa fa-share"></i>
 						</a>
-						<a href="#" ng-click="openDelegateDialog(workItem)" title="Delegate" class="view-tool-link">
+						<a href="#" ng-click="$openDelegateDialog(workItem)" title="Delegate" class="view-tool-link">
 							<i class="fa fa-user"></i>
 						</a>
 					</td>
