@@ -162,10 +162,14 @@ define(
 																		}
 
 																		if (table.fnDestroy != null) {
-																			table
-																					.fnDestroy();
-																			console
-																					.log("Destroyed");
+																			try {
+																				table
+																						.fnDestroy();
+																				console
+																						.log("Destroyed");
+																			} catch (x) {
+
+																			}
 																		}
 
 																		var i, block, childScope;
