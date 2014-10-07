@@ -385,7 +385,7 @@ function integrationManagementController($scope, $http) {
 	$scope.updatePaginationProducerRoutes = function(searchKeywordInProducerApplication) {
 		$scope.filtredProducerRoute = [];
 		for ( var i = 0; i < $scope.applicationProducers.length; i++) {
-			if (($scope.applicationProducers[i].id.indexOf(searchKeywordInProducerApplication) > -1) || ($scope.applicationProducers[i].status.indexOf(searchKeywordInProducerApplication) > -1)) {
+			if (($scope.applicationProducers[i].id.indexOf(searchKeywordInProducerApplication) > -1) || ($scope.applicationProducers[i].status.indexOf(searchKeywordInProducerApplication) > -1) || ($scope.applicationProducers[i].description.indexOf(searchKeywordInProducerApplication) > -1)) {
 				$scope.filtredProducerRoute.push($scope.applicationProducers[i]);
 			}
 		}
@@ -396,7 +396,7 @@ function integrationManagementController($scope, $http) {
 		$scope.filtredProducerRoute = [];
 		$scope.searchKeywordInProducerApplication = searchKeywordInProducerApplication;
 		for ( var i = 0; i < $scope.applicationProducers.length; i++) {
-			if (($scope.applicationProducers[i].id.indexOf(searchKeywordInProducerApplication) > -1) || ($scope.applicationProducers[i].status.indexOf(searchKeywordInProducerApplication) > -1)) {
+			if (($scope.applicationProducers[i].id.indexOf(searchKeywordInProducerApplication) > -1) || ($scope.applicationProducers[i].status.indexOf(searchKeywordInProducerApplication) > -1) || ($scope.applicationProducers[i].description.indexOf(searchKeywordInProducerApplication) > -1)) {
 				$scope.filtredProducerRoute.push($scope.applicationProducers[i]);
 			}
 		}
@@ -477,7 +477,7 @@ function integrationManagementController($scope, $http) {
 	$scope.updatePaginationApplicationConsumerRoutes = function(searchKeywordInConsumerApplication) {
 		$scope.filtredConsumerApplicationRoute = [];
 		for ( var i = 0; i < $scope.applicationConsumers.length; i++) {
-			if (($scope.applicationConsumers[i].id.indexOf(searchKeywordInConsumerApplication) > -1) || ($scope.applicationConsumers[i].status.indexOf(searchKeywordInConsumerApplication) > -1)) {
+			if (($scope.applicationConsumers[i].id.indexOf(searchKeywordInConsumerApplication) > -1) || ($scope.applicationConsumers[i].status.indexOf(searchKeywordInConsumerApplication) > -1) || ($scope.applicationConsumers[i].description.indexOf(searchKeywordInConsumerApplication) > -1)) {
 				$scope.filtredConsumerApplicationRoute.push($scope.applicationConsumers[i]);
 			}
 		}
@@ -488,7 +488,7 @@ function integrationManagementController($scope, $http) {
 		$scope.filtredConsumerApplicationRoute = [];
 		$scope.searchKeywordInConsumerApplication = searchKeywordInConsumerApplication;
 		for ( var i = 0; i < $scope.applicationConsumers.length; i++) {
-			if (($scope.applicationConsumers[i].id.indexOf(searchKeywordInConsumerApplication) > -1) || ($scope.applicationConsumers[i].status.indexOf(searchKeywordInConsumerApplication) > -1)) {
+			if (($scope.applicationConsumers[i].id.indexOf(searchKeywordInConsumerApplication) > -1) || ($scope.applicationConsumers[i].status.indexOf(searchKeywordInConsumerApplication) > -1) || ($scope.applicationConsumers[i].description.indexOf(searchKeywordInConsumerApplication) > -1)) {
 				$scope.filtredConsumerApplicationRoute.push($scope.applicationConsumers[i]);
 			}
 		}
@@ -501,7 +501,7 @@ function integrationManagementController($scope, $http) {
 
 
 	//*****************************************//
-	// 	 pagination for consumer trigger   //
+	// 	   pagination for consumer trigger     //
 	//*****************************************//
 	$scope.rangeConsumerTriggerRoute = function() {
 		var rangeSize = 3;
@@ -569,7 +569,7 @@ function integrationManagementController($scope, $http) {
 		$scope.filtredConsumerTriggerRoute = [];
 		
 		for ( var i = 0; i < $scope.triggerConsumers.length; i++) {
-			if (($scope.triggerConsumers[i].id.indexOf(searchKeywordInConsumerTrigger) > -1) || ($scope.triggerConsumers[i].status.indexOf(searchKeywordInConsumerTrigger) > -1)) {
+			if (($scope.triggerConsumers[i].id.indexOf(searchKeywordInConsumerTrigger) > -1) || ($scope.triggerConsumers[i].status.indexOf(searchKeywordInConsumerTrigger) > -1) || ($scope.triggerConsumers[i].description.indexOf(searchKeywordInConsumerTrigger) > -1)) {
 				$scope.filtredConsumerTriggerRoute.push($scope.triggerConsumers[i]);
 			}
 		}
@@ -580,7 +580,7 @@ function integrationManagementController($scope, $http) {
 		$scope.filtredConsumerTriggerRoute = [];
 		$scope.searchKeywordInConsumerTrigger = searchKeywordInConsumerTrigger;
 		for ( var i = 0; i < $scope.triggerConsumers.length; i++) {
-			if (($scope.triggerConsumers[i].id.indexOf(searchKeywordInConsumerTrigger) > -1) || ($scope.triggerConsumers[i].status.indexOf(searchKeywordInConsumerTrigger) > -1)) {
+			if (($scope.triggerConsumers[i].id.indexOf(searchKeywordInConsumerTrigger) > -1) || ($scope.triggerConsumers[i].status.indexOf(searchKeywordInConsumerTrigger) > -1) || ($scope.triggerConsumers[i].description.indexOf(searchKeywordInConsumerTrigger) > -1)) {
 				$scope.filtredConsumerTriggerRoute.push($scope.triggerConsumers[i]);
 			}
 		}
@@ -591,7 +591,7 @@ function integrationManagementController($scope, $http) {
 		$scope.rangeConsumerTriggerRoute();
 	}
 
-	// row selection code::
+	// row selection code
 	$scope.idSelectedCamelContext = null;
 	$scope.setSelected = function(idSelectedCamelContext) {
 		$scope.idSelectedCamelContext = idSelectedCamelContext;
