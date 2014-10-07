@@ -706,7 +706,10 @@ public class ResourcePerformanceBean extends UIComponentBean implements Resource
       Iterator<ProcessDefinition> pIter = ProcessDefinitionUtils.getAllBusinessRelevantProcesses().iterator();
       ProcessingTimePerProcess ptp = null;
       Set participants = new HashSet();
-      participants.add(selectedModelParticipant.getId());
+      if(selectedModelParticipant != null)
+      {
+         participants.add(selectedModelParticipant.getId());   
+      }
       ProcessDefinition caseProcess = ProcessDefinitionUtils.getProcessDefinition(PredefinedConstants.CASE_PROCESS_ID);
       while (pIter.hasNext())
       {
