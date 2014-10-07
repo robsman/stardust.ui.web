@@ -1,6 +1,6 @@
 angular.module('bpm-common.directives')
-  .directive('sdHttpLoader', ['$rootScope','$parse','$timeout',
-    function ($rootScope, $parse, $timeout) {
+  .directive('sdHttpLoader', ['$parse','$timeout','$injector','eventBus',
+    function ($parse, $timeout,$injector,eventBus) {
       return {
         scope: {
           methods: '@',
@@ -9,11 +9,12 @@ angular.module('bpm-common.directives')
           ttl: '@'
         },
         template: '<div class="http-loader__wrapper" ' +
-                  'ng-include="template" ' +
                   'ng-show="showLoader">'+
+                  'Loading...' +
                   '</div>',
         link: function ($scope) {
           
+          $scope.methods = $scope.methods || 'GET,PUT,POST,DELETE';
           var methods =  $scope.methods.split(',')
                          .map(function(v){
                             return v.toUpperCase();
@@ -31,9 +32,9 @@ angular.module('bpm-common.directives')
 
           var toggleLoader = function (event, method) {
             if (methods.indexOf(method.toUpperCase()) !== -1) {
-              showLoader = (event.name === 'loaderShow');
+              showLoader = (event.name === 'http.request');
             } else if (methods.length === 0) {
-              showLoader = (event.name === 'loaderShow');
+              showLoader = (event.name === 'http.request');
             }
             
             if (ttl <= 0 || (!timeoutId && !showLoader)) {
@@ -51,66 +52,13 @@ angular.module('bpm-common.directives')
               timeoutId = undefined;
             }, ttl);
           };
-
-          $rootScope.$on("loaderShow", toggleLoader);
-          $rootScope.$on("loaderHide", toggleLoader);
+          eventBus.onMsg("http.request",function(e,m){
+        	  toggleLoader(e,m);
+        	  console.log("directive received event..");
+          },$scope);
+          eventBus.onMsg("http.response",toggleLoader,$scope);
+          eventBus.onMsg("http.error",toggleLoader,$scope);
         }
       };
     }
-  ])
-  .provider('httpInterceptor', function () {
-    var domains = [];
-
-    this.whitelist = function (domain) {
-      domains.push(domain);
-    };
-
-    this.$get = ['$q','$rootScope',function ($q, $rootScope) {
-        var numLoadings = 0;
-        
-        var onWhitelist = function (url) {
-          var re;
-          for (var i = domains.length; i--;) {
-            re = new RegExp(domains[i]);
-            if(re.test(url)){
-              return true;
-            }
-          }
-          return false;
-        };
-        
-        var checkAndHide = function (config) {
-          if (onWhitelist(config.url) &&
-            (--numLoadings) === 0) {
-            $rootScope.$emit('loaderHide', config.method);
-          }
-        };
-
-        return {
-
-          request: function (config) {
-            if (onWhitelist(config.url)) {
-              numLoadings++;
-              $rootScope.$emit('loaderShow', config.method);
-            }
-            return config || $q.when(config);
-          },
-
-          response: function (response) {
-            checkAndHide(response.config);
-
-            return response || $q.when(response);
-          },
-
-          responseError: function (response) {
-            checkAndHide(response.config);
-
-            return $q.reject(response);
-          }
-        };
-      }
-    ];
-  })
-  .config(['$httpProvider', function ($httpProvider) {
-    $httpProvider.interceptors.push('httpInterceptor');
-  }]);
+  ]);
