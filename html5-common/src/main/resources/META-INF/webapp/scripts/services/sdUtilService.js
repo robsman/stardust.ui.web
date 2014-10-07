@@ -12,45 +12,50 @@
  * @author Subodh.Godbole
  */
 
-'use strict';
+(function(){
+	'use strict';
 
-angular.module('bpm-common.services').provider('sdUtilService', function () {
-	var self = this;
-	
-	self.$get = ['$rootScope', function ($rootScope) {
+	/*
+	 * 
+	 */
+	function UtilService($rootScope) {
+		this.$rootScope = $rootScope;
+	}
 
-		var service = {};
+	/*
+	 * Copies properties (attributes and functions) which does not start with $
+	 * Properties starting with $ are considered as private and hence skipped
+	 */
+	UtilService.prototype.extend = function(childObject, parentObject, addFuncProxies) {
+		var proxies = addFuncProxies ? addFuncProxies : true;
 
-		/*
-		 * Copies properties (attributes and functions) which does not start with $
-		 * Properties starting with $ are considered as private and hence skipped
-		 */
-		service.extend = function(childObject, parentObject, addFuncProxies) {
-			var proxies = addFuncProxies ? addFuncProxies : true;
+		for (var member in parentObject) {
+			if (member.indexOf("$") != 0) {
+				childObject[member] = parentObject[member];
 
-			for (var member in parentObject) {
-				if (member.indexOf("$") != 0) {
-					childObject[member] = parentObject[member];
-
-					if(proxies && angular.isFunction(childObject[member])){
-						childObject["$" + member] = createProxyFunc(parentObject, member);
-					}
+				if(proxies && angular.isFunction(childObject[member])){
+					childObject["$" + member] = createProxyFunc(parentObject, member);
 				}
 			}
-		};
-
-		/*
-		 * 
-		 */
-		function createProxyFunc(obj, member) {
-			function proxyFunc() {
-				var args = Array.prototype.slice.call(arguments, 0);
-				obj[member].apply(obj, args);
-			};
-			
-			return proxyFunc;
 		}
+	};
 
-		return service;
-	}];
-});
+	/*
+	 * 
+	 */
+	function createProxyFunc(obj, member) {
+		function proxyFunc() {
+			var args = Array.prototype.slice.call(arguments, 0);
+			obj[member].apply(obj, args);
+		};
+		
+		return proxyFunc;
+	}
+
+	angular.module('bpm-common.services').provider('sdUtilService', function () {
+		this.$get = ['$rootScope', function ($rootScope) {
+			var service = new UtilService($rootScope);
+			return service;
+		}];
+	});
+})();
