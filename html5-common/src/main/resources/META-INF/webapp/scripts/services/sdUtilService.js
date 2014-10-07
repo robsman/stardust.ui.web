@@ -23,7 +23,7 @@ angular.module('bpm-common.services').provider('sdUtilService', function () {
 
 		/*
 		 * Copies properties (attributes and functions) which does not start with $
-		 * Properties starting with $ are considered as provide to parentObject and hence skipped
+		 * Properties starting with $ are considered as private and hence skipped
 		 */
 		service.extend = function(childObject, parentObject, addProxies) {
 			var proxies = addProxies ? addProxies : true;
