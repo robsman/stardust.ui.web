@@ -22,25 +22,12 @@
 		// Register for View Events
 		sdViewUtilService.registerForViewEvents($scope, this.$handleViewEvents, this);
 
-		var viewParams = sdViewUtilService.getViewParams($scope);
-
-		this.query = {};
-		if (viewParams.participantQId) {
-		   this.query.participantQId = viewParams.participantQId;
-		} else if (viewParams.userId) {
-		   this.query.userId = viewParams.userId;
-		}
-
-		/* Add required info on 'this' */
-		this.worklist = {};
-		this.worklist.selectedWorkItems = [];
-
+		// Preserve to use later in life-cycle
 		this.$sdViewUtilService = sdViewUtilService;
 		this.$sdWorklistService = sdWorklistService;
 		this.$sdActivityInstanceService = sdActivityInstanceService;
 
-		// Expose required info on 'scope'
-		sdUtilService.extend($scope, this);
+		this.$initialize(sdViewUtilService.getViewParams($scope));
 
 		/*
 		 * This needs to be defined here as it requires access to $scope
@@ -49,8 +36,28 @@
 			$scope.$apply();
 		};
 
-		this.refresh();
+		// At last, expose required info on 'scope'
+		sdUtilService.extend($scope, this);
 	}
+
+	/*
+	 * 
+	 */
+	WorklistViewCtrl.prototype.$initialize = function(viewParams) {
+		// Initialize params
+		this.query = {};
+		if (viewParams.participantQId) {
+		   this.query.participantQId = viewParams.participantQId;
+		} else if (viewParams.userId) {
+		   this.query.userId = viewParams.userId;
+		}
+
+		this.worklist = {};
+		this.worklist.selectedWorkItems = [];
+
+		// Update
+		this.refresh();
+	};
 
 	/*
 	 * 
