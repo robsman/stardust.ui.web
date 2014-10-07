@@ -39,8 +39,7 @@ table.notes .timestampSpan {
 </style>
 </head>
 <body>
-
-	<div ng-app="integrationManagementModule"
+	<div ng-app=""
 		ng-controller="integrationManagementController">
 		<div
 			style="margin-left: 10px; margin-right: 10px; margin-bottom: 10px;"
@@ -54,41 +53,49 @@ table.notes .timestampSpan {
 							class="fa fa-refresh" ng-click="refresh()"></i> </a></td>
 				</tr>
 			</table>
-
-			<table style="width: 100%;">
-				<thead>
-					<tr>
-						<th align="left">Context Id</th>
-						<th>Started</th>
-						<th>Uptime</th>
-						<th>Version</th>
-				</thead>
-
-				<tbody>
-					<tr align="center"
-						ng-repeat="camelContext in filtredCamelContexts  | limitTo: itemsPerPage" 
-						ng-click="setSelected(camelContext.contextId)" 
-						ng-class="{selected : camelContext.contextId === idSelectedCamelContext}">
-						<td align="left">{{ camelContext.contextId }}</td>
-						<td>{{ camelContext.started }}</td>
-						<td>{{ camelContext.uptime }}</td>
-						<td>{{ camelContext.version }}</td>
+			<table style="width: 100%;" border="0">
+				<tr>
+					<td >
+						<table style="width: 100%;" >
+							<thead >
+								<tr border="1">
+									<th align="left">Context Id</th>
+									<th>Started</th>
+									<th>Uptime</th>
+									<th>Version</th>
+								</tr>
+							</thead>
+			
+							<tbody >
+								<tr align="center"
+									ng-repeat="camelContext in filtredCamelContexts  | limitTo: itemsPerPage" 
+									ng-click="setSelected(camelContext.contextId)" 
+									ng-class="{selected : camelContext.contextId === idSelectedCamelContext}"
+									border="1">
+									<td align="left">{{ camelContext.contextId }}</td>
+									<td>{{ camelContext.started }}</td>
+									<td>{{ camelContext.uptime }}</td>
+									<td>{{ camelContext.version }}</td>
+								</tr>
+							</tbody>
+						</table>
+					</td>
 					</tr>
-				</tbody>
-				<tfoot>
-					<td colspan="3">
-						<div class="pagination">
-							<ul>
-								<li ng-class="prevPageDisabled()"><a href
-									ng-click="prevPage()">« Prev</a></li>
-								<li ng-repeat="n in range()"
-									ng-class="{active: n == currentPage}" ng-click="setPage(n)">
-									<a href="#">{{n+1}}</a></li>
-								<li ng-class="nextPageDisabled()"><a href
-									ng-click="nextPage()">Next »</a></li>
-							</ul>
-						</div></td>
-				</tfoot>
+					<tr align="center">
+						<td align="center">
+							<div class="pagination">
+								<ul>
+									<li ng-class="prevPageDisabled()"><a href
+										ng-click="prevPage()">« Prev</a></li>
+									<li ng-repeat="n in range()"
+										ng-class="{active: n == currentPage}" ng-click="setPage(n)">
+										<a href="#">{{n+1}}</a></li>
+									<li ng-class="nextPageDisabled()"><a href
+										ng-click="nextPage()">Next »</a></li>
+								</ul>
+							</div>
+						</td>
+					</tr>
 			</table>
 		</div>
 
@@ -118,58 +125,70 @@ table.notes .timestampSpan {
 							</td>
 						</tr>
 					</table>
+					<table style="width: 100%;" border="0">
+						<tr>
+						<td >
+							<table style="width: 100%;" border="1">
+								<thead >
+									<tr border="1">
+										<th align="left">Route Id</th>
+										<th align="left">Description</th>
+										<th>Exchanges Completed</th>
+										<th>Exchanges Failed</th>
+										<th>Reset Timestamp</th>
+										<th>Min Processing Time</th>
+										<th>Max Processing Time</th>
+										<th>Total Processing Time</th>
+										<th>Status</th>
+										<th>Action</th>
+									</tr>
+								</thead>
+								<tbody >
+									<tr align="center"
+										ng-repeat="x in filtredProducerRoute | limitTo: itemsPerPage"
+										border="1">
+										<td align="left">{{ x.id }}</td>
+										<td align="left" width="250 px">{{ x.description }}</td>
+										<td>{{ x.exchangesCompleted }}</td>
+										<td>{{ x.exchangesFailed }}</td>
+										<td>{{ x.resetTimestamp | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+										<td>{{ x.minProcessingTime }}</td>
+										<td>{{ x.maxProcessingTime }}</td>
+										<td>{{ x.totalProcessingTime }}</td>
+										<td>{{ x.status }}</td>
+										<td><a href="#" ng-click="startOrStopRoute(x.id,x.status)"
+											class="expandCollapseLink" title="start"
+											ng-hide="x.status === 'Started'"><img
+												ng-src="plugins/stardust-web-camel/css/images/control_play.png" />
+										</a> <a href="#" ng-click="startOrStopRoute(x.id,x.status)"
+											class="expandCollapseLink" title="stop"
+											ng-show="x.status === 'Started'"><img
+												ng-src="plugins/stardust-web-camel/css/images/control_stop.png" />
+										</a>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							</td>
+						</tr>
+						
+						<tr align="center">
+						<td align="center">
+							<div class="pagination">
+								<ul>
+									<li ng-class="prevPageDisabledProducerRoute()"><a href
+										ng-click="prevPageProducerRoute()">« Prev</a></li>
+									<li ng-repeat="n in rangeProducerRoute()"
+										ng-class="{active: n == currentPageProducerRoute}"
+										ng-click="setPageProducerRoute(n)"><a href="#">{{n+1}}</a>
+									</li>
+									<li ng-class="nextPageDisabledProducerRoute()"><a href
+										ng-click="nextPageProducerRoute()">Next »</a></li>
+								</ul>
+							</div>
+						</td>
+						</tr>
 
-					<table style="width: 100%;">
-						<thead>
-							<tr>
-								<th align="left">Route Id</th>
-								<th>Exchanges Completed</th>
-								<th>Exchanges Failed</th>
-								<th>Reset Timestamp</th>
-								<th>Min Processing Time</th>
-								<th>Max Processing Time</th>
-								<th>Total Processing Time</th>
-								<th>Status</th>
-								<th>Action</th>
-						</thead>
-						<tbody>
-							<tr align="center"
-								ng-repeat="x in filtredProducerRoute | limitTo: itemsPerPage">
-								<td align="left">{{ x.id }}</td>
-								<td>{{ x.exchangesCompleted }}</td>
-								<td>{{ x.exchangesFailed }}</td>
-								<td>{{ x.resetTimestamp | date:'yyyy-MM-dd HH:mm:ss' }}</td>
-								<td>{{ x.minProcessingTime }}</td>
-								<td>{{ x.maxProcessingTime }}</td>
-								<td>{{ x.totalProcessingTime }}</td>
-								<td>{{ x.status }}</td>
-								<td><a href="#" ng-click="startOrStopRoute(x.id,x.status)"
-									class="expandCollapseLink" title="start"
-									ng-hide="x.status === 'Started'"><img
-										ng-src="plugins/stardust-web-camel/css/images/control_play.png" />
-								</a> <a href="#" ng-click="startOrStopRoute(x.id,x.status)"
-									class="expandCollapseLink" title="stop"
-									ng-show="x.status === 'Started'"><img
-										ng-src="plugins/stardust-web-camel/css/images/control_stop.png" />
-								</a>
-								</td>
-							</tr>
-						</tbody>
-						<tfoot>
-							<td colspan="3">
-								<div class="pagination">
-									<ul>
-										<li ng-class="prevPageDisabledProducerRoute()"><a href
-											ng-click="prevPageProducerRoute()">« Prev</a></li>
-										<li ng-repeat="n in rangeProducerRoute()"
-											ng-class="{active: n == currentPageProducerRoute}"
-											ng-click="setPageProducerRoute(n)"><a href="#">{{n+1}}</a>
-										</li>
-										<li ng-class="nextPageDisabledProducerRoute()"><a href
-											ng-click="nextPageProducerRoute()">Next »</a></li>
-									</ul>
-								</div></td>
-						</tfoot>
 					</table>
 				</div>
 				<div ng-show="isSet(2)">
@@ -184,61 +203,70 @@ table.notes .timestampSpan {
 							</td>
 						</tr>
 					</table>
-
-					<table style="width: 100%;">
-						<thead>
-							<tr>
-								<th align="left">Route Id</th>
-								<th>Exchanges Completed</th>
-								<th>Exchanges Failed</th>
-								<th>Reset Timestamp</th>
-								<th>Min Processing Time</th>
-								<th>Max Processing Time</th>
-								<th>Total Processing Time</th>
-								<th>Status</th>
-								<th>Action</th>
-						</thead>
-						<tbody>
-							<tr align="center"
-								ng-repeat="x in filtredConsumerApplicationRoute | limitTo: itemsPerPage">
-
-								<td align="left">{{ x.id }}</td>
-								<td>{{ x.exchangesCompleted }}</td>
-								<td>{{ x.exchangesFailed }}</td>
-								<td>{{ x.resetTimestamp | date:'yyyy-MM-dd HH:mm:ss' }}</td>
-								<td>{{ x.minProcessingTime }}</td>
-								<td>{{ x.maxProcessingTime }}</td>
-								<td>{{ x.totalProcessingTime }}</td>
-								<td>{{ x.status }}</td>
-								<td><a href="#" ng-click="startOrStopRoute(x.id,x.status)"
-									class="expandCollapseLink" title="start"
-									ng-hide="x.status === 'Started'"><img
-										ng-src="plugins/stardust-web-camel/css/images/control_play.png" />
-								</a> <a href="#" ng-click="startOrStopRoute(x.id,x.status)"
-									class="expandCollapseLink" title="stop"
-									ng-show="x.status === 'Started'"><img
-										ng-src="plugins/stardust-web-camel/css/images/control_stop.png" />
-								</a>
-								</td>
-							</tr>
-						</tbody>
-						<tfoot>
-							<td colspan="3">
-								<div class="pagination">
-									<ul>
-										<li ng-class="prevPageDisabledConsumerApplicationRoute()">
-											<a href ng-click="prevPageConsumerApplicationRoute()">«
-												Prev</a></li>
-										<li ng-repeat="n in rangeConsumerApplicationRoute()"
-											ng-class="{active: n == currentPageConsumerApplicationRoute}"
-											ng-click="setPageConsumerApplicationRoute(n)"><a
-											href="#">{{n+1}}</a></li>
-										<li ng-class="nextPageDisabledConsumerApplicationRoute()">
-											<a href ng-click="nextPageConsumerApplicationRoute()">Next
-												»</a></li>
-									</ul>
-								</div></td>
-						</tfoot>
+					<table style="width: 100%;" border="0">
+						<tr>
+						<td >
+							<table style="width: 100%;" border="1">
+								<thead >
+									<tr  border="1">
+										<th align="left">Route Id</th>
+										<th align="left">Description</th>
+										<th>Exchanges Completed</th>
+										<th>Exchanges Failed</th>
+										<th>Reset Timestamp</th>
+										<th>Min Processing Time</th>
+										<th>Max Processing Time</th>
+										<th>Total Processing Time</th>
+										<th>Status</th>
+										<th>Action</th>
+									</tr>
+								</thead>
+								<tbody >
+									<tr align="center"
+										ng-repeat="x in filtredConsumerApplicationRoute | limitTo: itemsPerPage"
+										border="1">
+										<td align="left">{{ x.id }}</td>
+										<td align="left" width="250 px">{{ x.description }}</td>
+										<td>{{ x.exchangesCompleted }}</td>
+										<td>{{ x.exchangesFailed }}</td>
+										<td>{{ x.resetTimestamp | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+										<td>{{ x.minProcessingTime }}</td>
+										<td>{{ x.maxProcessingTime }}</td>
+										<td>{{ x.totalProcessingTime }}</td>
+										<td>{{ x.status }}</td>
+										<td><a href="#" ng-click="startOrStopRoute(x.id,x.status)"
+											class="expandCollapseLink" title="start"
+											ng-hide="x.status === 'Started'"><img
+												ng-src="plugins/stardust-web-camel/css/images/control_play.png" />
+										</a> <a href="#" ng-click="startOrStopRoute(x.id,x.status)"
+											class="expandCollapseLink" title="stop"
+											ng-show="x.status === 'Started'"><img
+												ng-src="plugins/stardust-web-camel/css/images/control_stop.png" />
+										</a>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							</td>
+						</tr>
+						<tr align="center">
+						<td align="center">
+							<div class="pagination">
+								<ul>
+									<li ng-class="prevPageDisabledConsumerApplicationRoute()">
+										<a href ng-click="prevPageConsumerApplicationRoute()">«
+											Prev</a></li>
+									<li ng-repeat="n in rangeConsumerApplicationRoute()"
+										ng-class="{active: n == currentPageConsumerApplicationRoute}"
+										ng-click="setPageConsumerApplicationRoute(n)"><a
+										href="#">{{n+1}}</a></li>
+									<li ng-class="nextPageDisabledConsumerApplicationRoute()">
+										<a href ng-click="nextPageConsumerApplicationRoute()">Next
+											»</a></li>
+								</ul>
+							</div>
+							</td>
+						</tr>		
 					</table>
 				</div>
 				<div ng-show="isSet(3)">
@@ -252,59 +280,68 @@ table.notes .timestampSpan {
 							</td>
 						</tr>
 					</table>
-
-					<table style="width: 100%;">
-						<thead>
-							<tr>
-								<th align="left">Route Id</th>
-								<th>Exchanges Completed</th>
-								<th>Exchanges Failed</th>
-								<th>Reset Timestamp</th>
-								<th>Min Processing Time</th>
-								<th>Max Processing Time</th>
-								<th>Total Processing Time</th>
-								<th>Status</th>
-								<th>Action</th>
-						</thead>
-						<tbody>
-							<tr align="center"
-								ng-repeat="x in filtredConsumerTriggerRoute | limitTo: itemsPerPage">
-								<td align="left"> {{ x.id }}</td>
-								<td>{{ x.exchangesCompleted }}</td>
-								<td>{{ x.exchangesFailed }}</td>
-								<td>{{ x.resetTimestamp | date:'yyyy-MM-dd HH:mm:ss' }}</td>
-								<td>{{ x.minProcessingTime }}</td>
-								<td>{{ x.maxProcessingTime }}</td>
-								<td>{{ x.totalProcessingTime }}</td>
-								<td>{{ x.status }}</td>
-								<td><a href="#" ng-click="startOrStopRoute(x.id,x.status)"
-									class="expandCollapseLink" title="start"
-									ng-hide="x.status === 'Started'"><img
-										ng-src="plugins/stardust-web-camel/css/images/control_play.png" />
-								</a> <a href="#" ng-click="startOrStopRoute(x.id,x.status)"
-									class="expandCollapseLink" title="stop"
-									ng-show="x.status === 'Started'"><img
-										ng-src="plugins/stardust-web-camel/css/images/control_stop.png" />
-								</a>
-								</td>
-							</tr>
-						</tbody>
-
-						<tfoot>
-							<td colspan="3">
-								<div class="pagination">
-									<ul>
-										<li ng-class="prevPageDisabledConsumerTriggerRoute()"><a
-											href ng-click="prevPageConsumerTriggerRoute()">« Prev</a></li>
-										<li ng-repeat="n in rangeConsumerTriggerRoute()"
-											ng-class="{active: n == currentPageConsumerTriggerRoute}"
-											ng-click="setPageConsumerTriggerRoute(n)"><a href="#">{{n+1}}</a>
-										</li>
-										<li ng-class="nextPageDisabledConsumerTriggerRoute()"><a
-											href ng-click="nextPageConsumerTriggerRoute()">Next »</a></li>
-									</ul>
-								</div></td>
-						</tfoot>
+					<table style="width: 100%;" border="0">
+						<tr>
+						<td>
+							<table style="width: 100%;" border="1">
+								<thead >
+									<tr border="1">
+										<th align="left">Route Id</th>
+										<th align="left">Description</th>
+										<th>Exchanges Completed</th>
+										<th>Exchanges Failed</th>
+										<th>Reset Timestamp</th>
+										<th>Min Processing Time</th>
+										<th>Max Processing Time</th>
+										<th>Total Processing Time</th>
+										<th>Status</th>
+										<th>Action</th>
+									</tr>
+								</thead>
+								<tbody  >
+									<tr align="center"
+										ng-repeat="x in filtredConsumerTriggerRoute | limitTo: itemsPerPage"
+										border="1">
+										<td align="left">{{ x.id }}</td>
+										<td align="left" width="250 px">{{ x.description }}</td>
+										<td>{{ x.exchangesCompleted }}</td>
+										<td>{{ x.exchangesFailed }}</td>
+										<td>{{ x.resetTimestamp | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+										<td>{{ x.minProcessingTime }}</td>
+										<td>{{ x.maxProcessingTime }}</td>
+										<td>{{ x.totalProcessingTime }}</td>
+										<td>{{ x.status }}</td>
+										<td><a href="#" ng-click="startOrStopRoute(x.id,x.status)"
+											class="expandCollapseLink" title="start"
+											ng-hide="x.status === 'Started'"><img
+												ng-src="plugins/stardust-web-camel/css/images/control_play.png" />
+										</a> <a href="#" ng-click="startOrStopRoute(x.id,x.status)"
+											class="expandCollapseLink" title="stop"
+											ng-show="x.status === 'Started'"><img
+												ng-src="plugins/stardust-web-camel/css/images/control_stop.png" />
+										</a>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							</td>
+						</tr>
+						<tr align="center">
+						<td align="center">
+							<div class="pagination">
+								<ul>
+									<li ng-class="prevPageDisabledConsumerTriggerRoute()"><a
+										href ng-click="prevPageConsumerTriggerRoute()">« Prev</a></li>
+									<li ng-repeat="n in rangeConsumerTriggerRoute()"
+										ng-class="{active: n == currentPageConsumerTriggerRoute}"
+										ng-click="setPageConsumerTriggerRoute(n)"><a href="#">{{n+1}}</a>
+									</li>
+									<li ng-class="nextPageDisabledConsumerTriggerRoute()"><a
+										href ng-click="nextPageConsumerTriggerRoute()">Next »</a></li>
+								</ul>
+							</div>
+							</td>
+						</tr>
 					</table>
 
 				</div>
