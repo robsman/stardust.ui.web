@@ -32,11 +32,30 @@ angular.module('bpm-common.services').provider('sdViewUtilService', function () 
 
 			if (currentViewPath !== beforeViewPath) {
 				if (beforeViewPath && viewHandlers[beforeViewPath]) {
-					viewHandlers[beforeViewPath]({type : "DEACTIVATED"});
+					callHandlerFunction(viewHandlers[beforeViewPath], "DEACTIVATED");
 				}
 
 				if (viewHandlers[currentViewPath]) {
-					viewHandlers[currentViewPath]({type : "ACTIVATED"});
+					callHandlerFunction(viewHandlers[currentViewPath], "ACTIVATED");
+				}
+			}
+		}
+
+		/*
+		 * 
+		 */
+		function callHandlerFunction(handler, type) {
+			try {
+				if (handler.func) {
+					if (handler.owner) {
+						handler.func.call(handler.owner, {type : type});
+					} else {
+						handler.func({type : type});
+					}
+				}
+			} catch (e) {
+				if(console) {
+					console.log(e);
 				}
 			}
 		}
@@ -99,17 +118,21 @@ angular.module('bpm-common.services').provider('sdViewUtilService', function () 
 		/*
 		 *
 		 */
-		service.registerForViewEvents = function(scope, handlerFunc) {
+		service.registerForViewEvents = function(scope, handlerFunc, ownerObject) {
 			if (angular.isFunction(handlerFunc)) {
 				var path = scope.panel.path;
 
-				viewHandlers[path] = handlerFunc;
+				viewHandlers[path] = {};
+				viewHandlers[path].func = handlerFunc;
+				viewHandlers[path].owner = ownerObject;
 
 				scope.$on("$destroy", function() {
 					if (viewHandlers[path]) {
 						delete viewHandlers[path];
 					}
 				});
+			} else {
+				throw "Handler should be a function.";
 			}
 		};
 

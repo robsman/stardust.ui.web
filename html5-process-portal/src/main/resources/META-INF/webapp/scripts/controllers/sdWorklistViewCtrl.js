@@ -12,87 +12,103 @@
  * @author Subodh.Godbole
  */
 
-'use strict';
+(function() {
+	'use strict';
 
-angular.module('workflow-ui').controller('sdWorklistViewCtrl', 
-		['$scope', 'sdViewUtilService', 'sdWorklistService', 'sdActivityInstanceService', 
-		 function($scope, sdViewUtilService, sdWorklistService, sdActivityInstanceService) {
-
-	// Register for View Events
-	sdViewUtilService.registerForViewEvents($scope, handleViewEvents);
-	
 	/*
 	 * 
 	 */
-	function handleViewEvents(event) {
+	function WorklistViewCtrl($scope, sdUtilService, sdViewUtilService, sdWorklistService, sdActivityInstanceService) {
+		// Register for View Events
+		sdViewUtilService.registerForViewEvents($scope, this.$handleViewEvents, this);
+
+		var viewParams = sdViewUtilService.getViewParams($scope);
+
+		this.query = {};
+		if (viewParams.participantQId) {
+		   this.query.participantQId = viewParams.participantQId;
+		} else if (viewParams.userId) {
+		   this.query.userId = viewParams.userId;
+		}
+
+		/* Add required info on 'this' */
+		this.worklist = {};
+		this.worklist.selectedWorkItems = [];
+
+		this.sdViewUtilService = sdViewUtilService;
+		this.sdWorklistService = sdWorklistService;
+		this.sdActivityInstanceService = sdActivityInstanceService;
+
+		// Expose required info on 'scope'
+		sdUtilService.extend($scope, this);
+
+		/*
+		 * This needs to be defined here as it requires access to $scope
+		 */
+		WorklistViewCtrl.prototype.$safeApply = function() {
+			$scope.$apply();
+		};
+
+		this.refresh();
+	}
+
+	/*
+	 * 
+	 */
+	WorklistViewCtrl.prototype.$handleViewEvents = function(event) {
 		if (event.type == "ACTIVATED") {
-			$scope.refresh();
+			this.refresh();
 		} else if (event.type == "DEACTIVATED") {
 			
 		}
 	};
 
-	var viewParams = sdViewUtilService.getViewParams($scope);
-
-	var query = {};
-	
-	if (viewParams.participantQId) {
-	   query.participantQId = viewParams.participantQId;
-	} else if (viewParams.userId) {
-	   query.userId = viewParams.userId;
-	}
-
-	$scope.worklist = {};
-	$scope.worklist.selectedWorkItems = [];
-	
 	/*
 	 * 
 	 */
-	$scope.refresh = function() {
-		$scope.worklist.selectedWorkItems = [];
+	WorklistViewCtrl.prototype.refresh = function() {
+		var self = this;
 
-		sdWorklistService.getWorklist(query).done(function(data) {
-			$scope.worklist.workItems = data.list;
-			$scope.worklist.totalCount = data.totalCount;
+		this.worklist.selectedWorkItems = [];
+
+		this.sdWorklistService.getWorklist(this.query).done(function(data) {
+			self.worklist.workItems = data.list;
+			self.worklist.totalCount = data.totalCount;
 			
 			var oids = [];
-			angular.forEach($scope.worklist.workItems, function(workItem, index){
+			angular.forEach(self.worklist.workItems, function(workItem, index){
 				if (workItem.trivial == undefined || workItem.trivial) {
 					oids.push(workItem.oid);
 				}
 			});
 
-			sdActivityInstanceService.getTrivialManualActivitiesDetails(oids).done(function(data) {
-				console.log("Trivial Data =");
-				console.log(data);
-				$scope.worklist.trivialManualActivities = data;
-				$scope.$apply();
+			self.sdActivityInstanceService.getTrivialManualActivitiesDetails(oids).done(function(data) {
+				self.worklist.trivialManualActivities = data;
+				self.$safeApply();
 			});
 		});
 	};
-	
-	$scope.refresh();
 
 	/*
 	 * 
 	 */
-	$scope.activateWorkItem = function(workItem) {
-		sdViewUtilService.openView("activityPanel", "OID=" + workItem.oid, {"oid" : "" + workItem.oid});
+	WorklistViewCtrl.prototype.activateWorkItem = function(workItem) {
+		this.sdViewUtilService.openView("activityPanel", "OID=" + workItem.oid, {"oid" : "" + workItem.oid});
 	};
 
 	/*
 	 * 
 	 */
-	$scope.openNotes = function(workItem) {
-		sdViewUtilService.openView("notesPanel", "oid=" + workItem.processInstance.oid, 
+	WorklistViewCtrl.prototype.openNotes = function(workItem) {
+		this.sdViewUtilService.openView("notesPanel", "oid=" + workItem.processInstance.oid, 
 				{"oid": "" + workItem.processInstance.oid}, true);
 	};
 
 	/*
 	 * 
 	 */
-	$scope.openProcessHistory = function(workItem) {
-		sdViewUtilService.openView("processInstanceDetailsView", 
+	WorklistViewCtrl.prototype.openProcessHistory = function(workItem) {
+		this.sdViewUtilService.openView("processInstanceDetailsView", 
 				"processInstanceOID=" + workItem.processInstance.oid, 
 				{
 					"oid": "" + workItem.oid,
@@ -104,29 +120,31 @@ angular.module('workflow-ui').controller('sdWorklistViewCtrl',
 	/*
 	 * 
 	 */
-	$scope.complete = function(workItem) {
-		var outData = $scope.worklist.trivialManualActivities[workItem.oid].inOutData;
+	WorklistViewCtrl.prototype.complete = function(workItem) {
+		var self = this;
+
+		var outData = self.worklist.trivialManualActivities[workItem.oid].inOutData;
 		var activityData = {oid: workItem.oid, outData: outData};
-		sdActivityInstanceService.completeAll([activityData]).done(function(data) {
-			$scope.refresh();
+		this.sdActivityInstanceService.completeAll([activityData]).done(function(data) {
+			self.refresh();
 		});
 	};
 
 	/*
 	 * 
 	 */
-	$scope.completeAll = function() {
-		console.log($scope.worklist.selectedWorkItems);
-		if ($scope.worklist.selectedWorkItems.length > 0) {
+	WorklistViewCtrl.prototype.completeAll = function() {
+		var self = this;
 
+		if (this.worklist.selectedWorkItems.length > 0) {
 			var activitiesData = [];
-			angular.forEach($scope.worklist.selectedWorkItems, function(workItem, index){
-				var outData = $scope.worklist.trivialManualActivities[workItem.oid].inOutData;
+			angular.forEach(this.worklist.selectedWorkItems, function(workItem, index){
+				var outData = self.worklist.trivialManualActivities[workItem.oid].inOutData;
 				activitiesData.push({oid: workItem.oid, outData: outData});
 			});
 			
-			sdActivityInstanceService.completeAll(activitiesData).done(function(data) {
-				$scope.refresh();
+			this.sdActivityInstanceService.completeAll(activitiesData).done(function(data) {
+				self.refresh();
 			});
 		}
 	};
@@ -134,6 +152,11 @@ angular.module('workflow-ui').controller('sdWorklistViewCtrl',
 	/*
 	 * 
 	 */
-	$scope.openDelegateDialog = function(workItem) {
+	WorklistViewCtrl.prototype.openDelegateDialog = function(workItem) {
+		
 	};
-}]);
+
+	angular.module('workflow-ui').controller('sdWorklistViewCtrl', 
+			['$scope', 'sdUtilService', 'sdViewUtilService', 'sdWorklistService', 'sdActivityInstanceService', 
+			 WorklistViewCtrl]);
+})();
