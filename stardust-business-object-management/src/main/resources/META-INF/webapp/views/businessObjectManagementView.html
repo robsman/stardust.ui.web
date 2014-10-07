@@ -66,10 +66,11 @@ ul.errorMessagesPanel {
 		<div
 			ng-show="businessObjectManagementPanelController.businessObject != null">
 			<div
-				ng-show="versionPanelExpanded  && currentBusinessObjectInstance != null">
+				ng-show="versionPanelExpanded  && currentBusinessObjectInstance != null"
+				style="margin-bottom: 10px;">
 				<p>The selected
 					{{businessObjectManagementPanelController.businessObject.name}} is
-					also used in the following Process Instances.</p>
+					also processed in the following Process Instances:</p>
 				<div class="dataTableFrame"
 					style="margin-top: 20px; margin-bottom: 20px;">
 					<table cellpadding="0" cellspacing="0" class="dataTable"
@@ -95,6 +96,10 @@ ul.errorMessagesPanel {
 			</div>
 			<table style="width: 100%;">
 				<tr>
+					<td>
+						<h2>{{businessObjectManagementPanelController.businessObject.name}}
+							{{currentBusinessObjectInstance[businessObjectManagementPanelController.businessObject.primaryKeyField.id]}}</h2>
+					</td>
 					<td align="right"><input type="button" value="Save"
 						ng-click="saveBusinessObjectInstance()"
 						ng-show="currentBusinessObjectInstance != null"></input><input
@@ -107,12 +112,12 @@ ul.errorMessagesPanel {
 						style="margin-left: 10px;"></input></td>
 				</tr>
 				<tr ng-show="currentBusinessObjectInstance == null">
-					<td><em>No
+					<td colspan="2"><em>No
 							{{businessObjectManagementPanelController.businessObject.name}}
 							selected.</em></td>
 				</tr>
 				<tr ng-show="currentBusinessObjectInstance != null">
-					<td>
+					<td colspan="2">
 						<table>
 							<tr>
 								<td>

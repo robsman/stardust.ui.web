@@ -38,63 +38,10 @@ define(
 						businessObject) {
 					this.businessObject = businessObject;
 					this.businessObjectInstances = [];
-					this.keyFields = [];
-					this.topLevelFields = [];
 
 					if (!this.businessObject) {
 						return;
 					}
-
-					// Create labels for all used types
-
-					if (this.businessObject.types) {
-						for ( var type in this.businessObject.types) {
-							for (var n = 0; this.businessObject.types[type].fields
-									&& n < this.businessObject.types[type].fields.length; ++n) {
-								this.businessObject.types[type].fields[n].label = this
-										.createLabel(this.businessObject.types[type].fields[n].name);
-							}
-						}
-					}
-
-					for (var n = 0; n < this.businessObject.fields.length; ++n) {
-						// TODO Retrieve label from annotations
-
-						this.businessObject.fields[n].label = this
-								.createLabel(this.businessObject.fields[n].name);
-
-						if (!this.businessObject.types) {
-							this.businessObject.types = {};
-						}
-
-						if (this.businessObject.types[this.businessObject.fields[n].type]) {
-							continue;
-						}
-
-						if (this.businessObject.fields[n].primaryKey) {
-							this.primaryKeyField = this.businessObject.fields[n];
-						} else if (this.businessObject.fields[n].key) {
-							this.keyFields.push(this.businessObject.fields[n]);
-						}
-
-						this.topLevelFields.push(this.businessObject.fields[n]);
-					}
-				};
-
-				/**
-				 * 
-				 */
-				BusinessObjectManagementPanelController.prototype.createLabel = function(
-						str) {
-					return str
-					// insert a space between lower & upper
-					.replace(/([a-z])([A-Z])/g, '$1 $2')
-					// space before last upper in a sequence followed by lower
-					.replace(/\b([A-Z]+)([A-Z])([a-z])/, '$1 $2$3')
-					// uppercase the first character
-					.replace(/^./, function(str) {
-						return str.toUpperCase();
-					})
 				};
 
 				/**
@@ -105,8 +52,7 @@ define(
 
 					BusinessObjectManagementService
 							.instance()
-							.getBusinessObjectInstances(this.businessObject,
-									this.primaryKeyField, this.keyFields)
+							.getBusinessObjectInstances(this.businessObject)
 							.done(
 									function(businessObjectInstances) {
 										console.log("Result");

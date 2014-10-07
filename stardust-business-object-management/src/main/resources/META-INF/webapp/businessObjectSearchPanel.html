@@ -11,12 +11,12 @@
 		</table>
 		<table class="formTable">
 			<tr>
-				<td><label>{{businessObjectManagementPanelController.primaryKeyField.label}}</label>
+				<td><label>{{businessObjectManagementPanelController.businessObject.primaryKeyField.label}}</label>
 					<input type="text" style="width: 100px; margin-left: 5px;"
-					ng-model="businessObjectManagementPanelController.primaryKeyField.filterValue"
+					ng-model="businessObjectManagementPanelController.businessObject.primaryKeyField.filterValue"
 					ng-blur="businessObjectManagementPanelController.filterBusinessObjectInstances()"></input></td>
 				<td
-					ng-repeat="field in businessObjectManagementPanelController.keyFields"><label
+					ng-repeat="field in businessObjectManagementPanelController.businessObject.keyFields"><label
 					style="margin-left: 5px;">{{field.label}}</label> <input
 					type="text" style="width: 100px; margin-left: 5px;"
 					ng-model="field.filterValue"
@@ -29,9 +29,9 @@
 				style="width: 100%;">
 				<thead>
 					<tr>
-						<th>{{businessObjectManagementPanelController.primaryKeyField.label}}</th>
+						<th>{{businessObjectManagementPanelController.businessObject.primaryKeyField.label}}</th>
 						<th
-							ng-repeat="field in businessObjectManagementPanelController.keyFields">{{field.label}}</th>
+							ng-repeat="field in businessObjectManagementPanelController.businessObject.keyFields">{{field.label}}</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -39,9 +39,9 @@
 						sd-table-data="businessObjectInstance in businessObjectManagementPanelController.businessObjectInstances"
 						sd-table-selection="businessObjectManagementPanelController.selectedBusinessObjectInstances"
 						sd-table-selection-changed="businessObjectManagementPanelController.rootController.onBusinessObjectInstanceSelectionChange()">
-						<td>{{businessObjectInstance[businessObjectManagementPanelController.primaryKeyField.id]}}</td>
+						<td>{{businessObjectInstance[businessObjectManagementPanelController.businessObject.primaryKeyField.id]}}</td>
 						<td
-							ng-repeat="field in businessObjectManagementPanelController.keyFields">{{businessObjectInstance[field.id]}}</td>
+							ng-repeat="field in businessObjectManagementPanelController.businessObject.keyFields">{{businessObjectInstance[field.id]}}</td>
 					</tr>
 				</tbody>
 			</table>

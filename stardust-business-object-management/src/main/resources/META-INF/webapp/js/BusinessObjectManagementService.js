@@ -73,11 +73,60 @@ define(
 												+ businessObjectId + ".json",
 										type : "GET",
 										contentType : "application/json"
-									}).done(function(result) {
-								console.log(result);
+									})
+							.done(
+									function(businessObject) {
+										console.log(businessObject);
 
-								deferred.resolve(result);
-							}).fail(function(data) {
+										// Calculate primary key field,
+										// keyFields and topLevelFields
+										// TODO Do on server?
+
+										businessObject.keyFields = [];
+										businessObject.topLevelFields = [];
+
+										// Create labels for all used types
+
+										if (businessObject.types) {
+											for ( var type in businessObject.types) {
+												for (var n = 0; businessObject.types[type].fields
+														&& n < businessObject.types[type].fields.length; ++n) {
+													businessObject.types[type].fields[n].label = self
+															.createLabel(businessObject.types[type].fields[n].name);
+												}
+											}
+										}
+
+										for (var n = 0; n < businessObject.fields.length; ++n) {
+											// TODO Retrieve labels from
+											// annotations
+
+											businessObject.fields[n].label = self
+													.createLabel(businessObject.fields[n].name);
+
+											if (!businessObject.types) {
+												businessObject.types = {};
+											}
+
+											if (businessObject.types[businessObject.fields[n].type]) {
+												continue;
+											}
+
+											if (businessObject.fields[n].primaryKey) {
+												businessObject.primaryKeyField = businessObject.fields[n];
+											} else if (businessObject.fields[n].key) {
+												businessObject.keyFields
+														.push(businessObject.fields[n]);
+											}
+
+											businessObject.topLevelFields
+													.push(businessObject.fields[n]);
+										}
+
+										console.log(businessObject);
+
+										deferred.resolve(businessObject);
+									}).fail(function(data) {
 								deferred.reject(data);
 							});
 
@@ -87,23 +136,40 @@ define(
 				/**
 				 * 
 				 */
+				BusinessObjectManagementService.prototype.createLabel = function(
+						str) {
+					return str
+					// Insert a space between lower & upper
+					.replace(/([a-z])([A-Z])/g, '$1 $2')
+					// Space before last upper in a sequence followed by lower
+					.replace(/\b([A-Z]+)([A-Z])([a-z])/, '$1 $2$3')
+					// Uppercase the first character
+					.replace(/^./, function(str) {
+						return str.toUpperCase();
+					})
+				};
+
+				/**
+				 * 
+				 */
 				BusinessObjectManagementService.prototype.getBusinessObjectInstances = function(
-						businessObject, primaryKeyField, keyFields) {
+						businessObject) {
 					var queryString = "?";
 
-					if (primaryKeyField && primaryKeyField.filterValue) {
-						queryString += primaryKeyField.id;
+					if (businessObject.primaryKeyField
+							&& businessObject.primaryKeyField.filterValue) {
+						queryString += businessObject.primaryKeyField.id;
 						queryString += "=";
-						queryString += primaryKeyField.filterValue;
+						queryString += businessObject.primaryKeyField.filterValue;
 						queryString += "&";
 					}
 
-					if (keyFields) {
-						for (var n = 0; n < keyFields.length; ++n) {
-							if (keyFields[n].filterValue) {
-								queryString += keyFields[n].id;
+					if (businessObject.keyFields) {
+						for (var n = 0; n < businessObject.keyFields.length; ++n) {
+							if (businessObject.keyFields[n].filterValue) {
+								queryString += businessObject.keyFields[n].id;
 								queryString += "=";
-								queryString += keyFields[n].filterValue;
+								queryString += businessObject.keyFields[n].filterValue;
 								queryString += "&";
 							}
 						}
@@ -216,25 +282,32 @@ define(
 				 * 
 				 */
 				BusinessObjectManagementService.prototype.getProcessInstances = function(
-						businessObjectInstance) {
+						businessObject, businessObjectInstance) {
 					var deferred = jQuery.Deferred();
 					var rootUrl = location.href.substring(0, location.href
 							.indexOf("/plugins"));
 					var self = this;
+					var url = rootUrl
+							+ "/services/rest/business-object-management/businessObject/"
+							+ businessObject.modelOid
+							+ "/"
+							+ businessObject.id
+							+ "/"
+							+ businessObjectInstance[businessObject.primaryKeyField.id]
+							+ "/" + "processInstances.json";
 
-					jQuery
-							.ajax(
-									{
-										url : rootUrl
-												+ "/services/rest/business-object-management/businessObject/testModelOid1/testBusinessObjectId1/4711/"
-												+ "processInstances.json",
-										type : "GET",
-										contentType : "application/json"
-									}).done(function(result) {
-								deferred.resolve(result);
-							}).fail(function(data) {
-								deferred.reject(data);
-							});
+					console.log("URL");
+					console.log(url);
+
+					jQuery.ajax({
+						url : url,
+						type : "GET",
+						contentType : "application/json"
+					}).done(function(result) {
+						deferred.resolve(result);
+					}).fail(function(data) {
+						deferred.reject(data);
+					});
 
 					return deferred.promise();
 				};

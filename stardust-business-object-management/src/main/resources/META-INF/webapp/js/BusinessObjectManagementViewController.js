@@ -81,15 +81,19 @@ define(
 
 					var self = this;
 
+					// Retrieve Process Instances the BOI is used in
+					
 					BusinessObjectManagementService
 							.instance()
-							.getProcessInstances(
+							.getProcessInstances(this.businessObject,
 									this.currentBusinessObjectInstance)
 							.done(
 									function(processInstances) {
 										self.processInstances = processInstances;
 										self.versionPanelExpanded = true;
 
+										// Prepare BOI for display 
+										
 										self
 												.createMissingComplexFieldInstances(
 														self.currentBusinessObjectInstance,
