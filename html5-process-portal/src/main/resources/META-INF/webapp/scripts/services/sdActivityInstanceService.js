@@ -11,22 +11,19 @@
 /*
  * @author Subodh.Godbole
  */
+(function(){
+	'use strict';
 
-'use strict';
-
-angular.module('workflow-ui.services').provider('sdActivityInstanceService', function () {
-	var self = this;
-	
-	self.$get = ['$rootScope', function ($rootScope) {
-
+	/*
+	 * 
+	 */
+	function ActivityInstanceService($rootScope) {
 		var REST_BASE_URL = "services/rest/portal/activity-instances/";
-
-		var service = {};
 
 		/*
 		 * 
 		 */
-		service.getDataMappings = function(oids) {
+		ActivityInstanceService.prototype.getDataMappings = function(oids) {
 			console.log("Getting Data Mappings for: ");
 			console.log(oids);
 			return ajax(REST_BASE_URL, "dataMappings", oids);
@@ -35,7 +32,7 @@ angular.module('workflow-ui.services').provider('sdActivityInstanceService', fun
 		/*
 		 * 
 		 */
-		service.getInData = function(oids) {
+		ActivityInstanceService.prototype.getInData = function(oids) {
 			console.log("Getting In Data for: ");
 			console.log(oids);
 			return ajax(REST_BASE_URL, "inData", oids);
@@ -44,7 +41,7 @@ angular.module('workflow-ui.services').provider('sdActivityInstanceService', fun
 		/*
 		 * 
 		 */
-		service.getTrivialManualActivitiesDetails = function(oids) {
+		ActivityInstanceService.prototype.getTrivialManualActivitiesDetails = function(oids) {
 			console.log("Getting Trivial Manual Activities Details for: ");
 			console.log(oids);
 			return ajax(REST_BASE_URL, "trivialManualActivitiesDetails", oids);
@@ -53,7 +50,7 @@ angular.module('workflow-ui.services').provider('sdActivityInstanceService', fun
 		/*
 		 * 
 		 */
-		service.completeAll = function(activities) {
+		ActivityInstanceService.prototype.completeAll = function(activities) {
 			console.log("Completing Activities: ");
 			console.log(activities);
 			return ajax(REST_BASE_URL, "completeAll", activities);
@@ -90,7 +87,12 @@ angular.module('workflow-ui.services').provider('sdActivityInstanceService', fun
 
 			return deferred.promise();
 		};
-
-		return service;
-	}];
-});
+	};
+	
+	angular.module('workflow-ui.services').provider('sdActivityInstanceService', function () {
+		this.$get = ['$rootScope', function ($rootScope) {
+			var service = new ActivityInstanceService($rootScope);
+			return service;
+		}];
+	});
+})();

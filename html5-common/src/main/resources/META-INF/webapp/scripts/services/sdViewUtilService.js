@@ -11,35 +11,114 @@
 /*
  * @author Subodh.Godbole
  */
+(function(){
+	'use strict';
 
-'use strict';
+	/*
+	 * 
+	 */
+	function ViewUtilService($rootScope, sgViewPanelService, sgPubSubService) {
 
-angular.module('bpm-common.services').provider('sdViewUtilService', function () {
-	var self = this;
-	
-	self.$get = ['$rootScope', 'sgViewPanelService', 'sgPubSubService', function ($rootScope, sgViewPanelService, sgPubSubService) {
+		this.viewHandlers = {};
 
-		sgPubSubService.subscribe('sgActiveViewPanelChanged', viewChanged);
-
-		var viewHandlers = {};
+		var self = this;
+		sgPubSubService.subscribe('sgActiveViewPanelChanged', function(){
+			var args = Array.prototype.slice.call(arguments, 0);
+			self.viewChanged.apply(self, args);
+		});
 
 		/*
 		 * 
 		 */
-		function viewChanged(data) {
+		ViewUtilService.prototype.viewChanged = function(data) {
 			var currentViewPath = data.currentNavItem.path;
 			var beforeViewPath = data.before ? data.before.path : null;
 
 			if (currentViewPath !== beforeViewPath) {
-				if (beforeViewPath && viewHandlers[beforeViewPath]) {
-					callHandlerFunction(viewHandlers[beforeViewPath], "DEACTIVATED");
+				if (beforeViewPath && this.viewHandlers[beforeViewPath]) {
+					callHandlerFunction(this.viewHandlers[beforeViewPath], "DEACTIVATED");
 				}
 
-				if (viewHandlers[currentViewPath]) {
-					callHandlerFunction(viewHandlers[currentViewPath], "ACTIVATED");
+				if (this.viewHandlers[currentViewPath]) {
+					callHandlerFunction(this.viewHandlers[currentViewPath], "ACTIVATED");
 				}
 			}
 		}
+
+		/*
+		 * 
+		 */
+		ViewUtilService.prototype.getView = function(scope) {
+			return scope.panel;
+		};
+
+		/*
+		 * 
+		 */
+		ViewUtilService.prototype.getViewParams = function(scope) {
+			return scope.panel.params.custom;
+		};
+
+		/*
+		 * 
+		 */
+		ViewUtilService.prototype.getViewParam = function(scope, param) {
+			return scope.panel.params.custom[param];
+		};
+
+		/*
+		 *
+		 */
+		ViewUtilService.prototype.openView = function(viewId, viewKey, params, nested) {
+			var message = {
+				"type": "OpenView",
+				"data": {
+					"viewId": viewId,
+					"viewKey": viewKey,
+					"params": params,
+					"nested" : (nested != undefined && nested === true) ? true : false
+				}
+			};
+
+			window.postMessage(JSON.stringify(message), "*");
+		};
+
+		/*
+		 *
+		 */
+		ViewUtilService.prototype.changePerspective = function(perspectiveId, params) {
+			var message = {
+				"type": "ChangePerspective",
+				"data": {
+					"perspectiveId": perspectiveId,
+					"params": params
+				}
+			};
+
+			window.postMessage(JSON.stringify(message), "*");
+		};
+
+		/*
+		 *
+		 */
+		ViewUtilService.prototype.registerForViewEvents = function(scope, handlerFunc, ownerObject) {
+			if (angular.isFunction(handlerFunc)) {
+				var path = scope.panel.path;
+
+				this.viewHandlers[path] = {};
+				this.viewHandlers[path].func = handlerFunc;
+				this.viewHandlers[path].owner = ownerObject;
+
+				scope.$on("$destroy", function() {
+					if (this.viewHandlers[path]) {
+						delete this.viewHandlers[path];
+					}
+				});
+			} else {
+				throw "Handler should be a function.";
+			}
+		};
+
 
 		/*
 		 * 
@@ -59,83 +138,12 @@ angular.module('bpm-common.services').provider('sdViewUtilService', function () 
 				}
 			}
 		}
+	};
 
-		var service = {};
-
-		/*
-		 * 
-		 */
-		service.getView = function(scope) {
-			return scope.panel;
-		};
-
-		/*
-		 * 
-		 */
-		service.getViewParams = function(scope) {
-			return scope.panel.params.custom;
-		};
-
-		/*
-		 * 
-		 */
-		service.getViewParam = function(scope, param) {
-			return scope.panel.params.custom[param];
-		};
-
-		/*
-		 *
-		 */
-		service.openView = function(viewId, viewKey, params, nested) {
-			var message = {
-				"type": "OpenView",
-				"data": {
-					"viewId": viewId,
-					"viewKey": viewKey,
-					"params": params,
-					"nested" : (nested != undefined && nested === true) ? true : false
-				}
-			};
-
-			window.postMessage(JSON.stringify(message), "*");
-		};
-
-		/*
-		 *
-		 */
-		service.changePerspective = function(perspectiveId, params) {
-			var message = {
-				"type": "ChangePerspective",
-				"data": {
-					"perspectiveId": perspectiveId,
-					"params": params
-				}
-			};
-
-			window.postMessage(JSON.stringify(message), "*");
-		};
-
-		/*
-		 *
-		 */
-		service.registerForViewEvents = function(scope, handlerFunc, ownerObject) {
-			if (angular.isFunction(handlerFunc)) {
-				var path = scope.panel.path;
-
-				viewHandlers[path] = {};
-				viewHandlers[path].func = handlerFunc;
-				viewHandlers[path].owner = ownerObject;
-
-				scope.$on("$destroy", function() {
-					if (viewHandlers[path]) {
-						delete viewHandlers[path];
-					}
-				});
-			} else {
-				throw "Handler should be a function.";
-			}
-		};
-
-		return service;
-	}];
-});
+	angular.module('bpm-common.services').provider('sdViewUtilService', function () {
+		this.$get = ['$rootScope', 'sgViewPanelService', 'sgPubSubService', function ($rootScope, sgViewPanelService, sgPubSubService) {
+			var service = new ViewUtilService($rootScope, sgViewPanelService, sgPubSubService);
+			return service;
+		}];
+	});
+})();

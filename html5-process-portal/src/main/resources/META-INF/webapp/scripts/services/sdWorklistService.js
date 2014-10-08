@@ -12,21 +12,19 @@
  * @author Subodh.Godbole
  */
 
-'use strict';
+(function(){
+	'use strict';
 
-angular.module('workflow-ui.services').provider('sdWorklistService', function () {
-	var self = this;
-	
-	self.$get = ['$rootScope', function ($rootScope) {
-
+	/*
+	 * 
+	 */
+	function WorklistService($rootScope) {
 		var REST_BASE_URL = "services/rest/portal/worklist/";
-
-		var service = {};
 
 		/*
 		 * 
 		 */
-		service.getWorklist = function(query) {
+		WorklistService.prototype.getWorklist = function(query) {
 			var deferred = jQuery.Deferred();
 
 			console.log("getting worklist for:");
@@ -51,8 +49,13 @@ angular.module('workflow-ui.services').provider('sdWorklistService', function ()
 		    });
 
 			return deferred.promise();
-		};
+		};		
+	};
 
-		return service;
-	}];
-});
+	angular.module('workflow-ui.services').provider('sdWorklistService', function () {
+		this.$get = ['$rootScope', function ($rootScope) {
+			var service = new WorklistService($rootScope);
+			return service;
+		}];
+	});
+})();
