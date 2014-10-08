@@ -1,0 +1,71 @@
+<div class="view-panel" 
+	 ng-controller="sdParticipantManagementViewController as pmCtrl" 
+	 data-ng-init="pmCtrl.init()">
+	 
+	<div sd-http-loader methods="GET,POST">Loading!</div>
+	<div sd-js-error >Error:</div>
+	
+	<!-- View Toolbar -->
+	<div sd-include="'plugins/html5-admin-portal/partials/views/participantManagementViewToolbar.html'"></div>
+	
+	<!-- View Content -->
+	<div class="view-panel-content">
+		<h4>{{i18n('views.worklistPanel-labelTitle')}}</h4>
+
+		<!-- Table Toolbar -->	
+		<div class="tbl-toolbar">
+			<table cellpadding="0" cellspacing="0">
+				<tr>
+					<td class="tbl-toolbar-item">
+						<a href="#" ng-click="" title="Select Columns" class="tbl-tool-link">
+							<i class="fa fa-table"></i>
+						</a>
+					</td>
+					<td class="tbl-toolbar-item">
+						<a href="#" ng-click="" title="Export Excel" class="tbl-tool-link">
+							<i class="fa fa-file-excel-o"></i>
+						</a>
+					</td>
+					<td class="tbl-toolbar-item">
+						<a href="#" ng-click="" title="Export CSV" class="tbl-tool-link">
+							<i class="fa fa-file-text-o"></i>
+						</a>
+					</td>
+				</tr>
+			</table>
+		</div>
+		
+		<button ng-click="pmCtrl.generateError()">Generate JS Error</button>
+		<button ng-click="pmCtrl.getPeople()">HTTP Request</button>
+		<button sd-info-dialog sd-on-open="pmCtrl.onOpen(res)">Open Info Dialog</button>
+		<button sd-confirm-dialog>Open Confirmation Dialog</button>
+		<h3 ng-if="pmCtrl.people.length >0"></h3>
+		{{pmCtrl.people | json}}
+		<h3>All Users</h3>
+		<!-- Table -->
+		<table style="width: 100%;">
+			<thead>
+				<tr>
+					<th>Name</th>
+					<th>OID</th>
+					<th>Account</th>
+					<th>Realm</th>
+					<th>Valid From</th>
+					<th>Valid To</th>
+					<th>Email</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="user in pmCtrl.data.users">
+					<td>{{user.name..last + ', ' + user.name.first + ' (' + user.account + ')' }}</td>
+					<td>{{user.oid}}</td>
+					<td>{{user.account}}</td>
+					<td>{{user.realm || 'Carnot'}}</td>
+					<td>{{user.validFrom}}</td>
+					<td>{{user.validTo}}</td>
+					<td>{{user.email}}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
