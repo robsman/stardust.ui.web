@@ -123,18 +123,25 @@ public class XpdlBinding extends ModelBinding<ModelType>
 
       trace.debug("Validating model " + modelId);
 
-      VariableContextHelper instance = VariableContextHelper.getInstance();
-      instance.clear();
-      instance.storeVariables(model, false);
+      Issue[] issues;
 
-      ValidatorRegistry.setFilters(new HashMap<String, String>());
-      ValidatorRegistry.setValidationExtensionRegistry(ValidationExtensionRegistry.getInstance());
-      ValidationService validationService = ValidationService.getInstance();
+      VariableContextHelper instance = VariableContextHelper.createThreadLocalInstance();
+      try
+      {
+         instance.storeVariables(model, false);
+
+         ValidatorRegistry.setFilters(new HashMap<String, String>());
+         ValidatorRegistry.setValidationExtensionRegistry(ValidationExtensionRegistry.getInstance());
+         ValidationService validationService = ValidationService.getInstance();
+
+         issues = validationService.validateModel(model);
+      }
+      finally
+      {
+         VariableContextHelper.removeThreadLocalInstance();
+      }
 
       JsonArray issuesJson = new JsonArray();
-
-      Issue[] issues = validationService.validateModel(model);
-
       for (int i = 0; i < issues.length; i++ )
       {
          Issue issue = issues[i];
