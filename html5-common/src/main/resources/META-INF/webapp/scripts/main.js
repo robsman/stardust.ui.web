@@ -8,4 +8,4 @@ angular.module('bpm-common', ['bpm-common.services', 'bpm-common.directives', 'n
 }]);
 
 // Register top level module to Framework
-portalApplication.addModule('bpm-common');
+portalApplication.registerModule('bpm-common');

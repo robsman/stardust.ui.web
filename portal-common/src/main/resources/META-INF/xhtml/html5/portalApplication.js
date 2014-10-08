@@ -15,7 +15,7 @@ function PortalApplication() {
 	/*
 	 * 
 	 */
-	function addModule(module) {
+	function registerModule(module) {
 		log("Adding Angular Module - " + module, "i");
 		angularModules.push(module);
 	};
@@ -49,7 +49,7 @@ function PortalApplication() {
 	}
 
 	return {
-		addModule : addModule,
+		registerModule : registerModule,
 		getModules : getModules
 	}
 }
