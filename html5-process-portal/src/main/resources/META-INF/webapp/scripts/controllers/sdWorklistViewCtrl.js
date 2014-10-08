@@ -33,7 +33,9 @@
 		 * This needs to be defined here as it requires access to $scope
 		 */
 		WorklistViewCtrl.prototype.$safeApply = function() {
-			$scope.$apply();
+			if ($scope.$root.$$phase !== '$apply' || $scope.$root.$$phase !== '$digest') {
+				$scope.$apply();
+			}
 		};
 
 		// At last, expose required info on 'scope'
