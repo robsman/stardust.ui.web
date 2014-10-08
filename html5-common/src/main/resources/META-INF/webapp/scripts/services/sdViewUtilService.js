@@ -109,9 +109,10 @@
 				this.viewHandlers[path].func = handlerFunc;
 				this.viewHandlers[path].owner = ownerObject;
 
+				var self = this;
 				scope.$on("$destroy", function() {
-					if (this.viewHandlers[path]) {
-						delete this.viewHandlers[path];
+					if (self.viewHandlers[path]) {
+						delete self.viewHandlers[path];
 					}
 				});
 			} else {

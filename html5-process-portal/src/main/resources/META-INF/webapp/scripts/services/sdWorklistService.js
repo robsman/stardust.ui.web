@@ -27,7 +27,7 @@
 		WorklistService.prototype.getWorklist = function(query) {
 			var deferred = jQuery.Deferred();
 
-			console.log("getting worklist for:");
+			console.log("Getting worklist for:");
 			console.log(query);
 
 			var restUrl = REST_BASE_URL;
@@ -36,7 +36,16 @@
 			} else if (query.userId) {
 				restUrl += "user/" + query.userId;
 			}
-			
+
+			return ajax(restUrl);
+		};
+
+		/*
+		 * 
+		 */
+		function ajax(restUrl) {
+			var deferred = jQuery.Deferred();
+
 			// TODO: Use Angular $resource
 			jQuery.ajax({
 			  	url: restUrl,
@@ -49,7 +58,7 @@
 		    });
 
 			return deferred.promise();
-		};		
+		};
 	};
 
 	angular.module('workflow-ui.services').provider('sdWorklistService', function () {
