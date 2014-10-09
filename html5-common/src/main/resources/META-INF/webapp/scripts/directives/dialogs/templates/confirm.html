@@ -1,13 +1,11 @@
 <p class="confirmation-header">
 	<i class="fa fa-2x fa-exclamation-circle caution"></i>
-	<span>Confirmation Dialog</span>
+	<span>{{title}}</span>
 <p>
 
 <div class="confirmation-contents">
-	<i ng-class="{'fa-file-pdf-o !important' : document.contentType=='application/pdf'}" 
-	   class="fa fa-file-image-o">
-	</i>
-	<span class="header">TODO: Confirmation Dialog Template</span>
+	<div ng-include="userTemplate">
+	</div>
 </div>
 
 <div class="confirmation-buttonpane">

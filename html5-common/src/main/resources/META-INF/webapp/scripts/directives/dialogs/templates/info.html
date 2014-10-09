@@ -2,11 +2,12 @@
 
 	<p class="confirmation-header">
 	    <i class="fa fa-2x fa-info-circle"></i>
-	    <span>Information Dialog</span>
+	    <span>{{title}}</span>
     <p>
     
-    <div class="confirmation-contents">
-	    <span class="header">Info Header</span>
-    </div>
+<div class="confirmation-contents">
+	<div ng-include="userTemplate">
+	</div>
+</div>
     
 </div>
