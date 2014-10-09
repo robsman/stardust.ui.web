@@ -19,7 +19,7 @@
 	 */
 	function ViewUtilService($rootScope, sgViewPanelService, sgPubSubService) {
 
-		this.viewHandlers = {};
+		var viewHandlers = {};
 
 		var self = this;
 		sgPubSubService.subscribe('sgActiveViewPanelChanged', function(){
@@ -35,12 +35,12 @@
 			var beforeViewPath = data.before ? data.before.path : null;
 
 			if (currentViewPath !== beforeViewPath) {
-				if (beforeViewPath && this.viewHandlers[beforeViewPath]) {
-					callHandlerFunction(this.viewHandlers[beforeViewPath], "DEACTIVATED");
+				if (beforeViewPath && viewHandlers[beforeViewPath]) {
+					callHandlerFunction(viewHandlers[beforeViewPath], "DEACTIVATED");
 				}
 
-				if (this.viewHandlers[currentViewPath]) {
-					callHandlerFunction(this.viewHandlers[currentViewPath], "ACTIVATED");
+				if (viewHandlers[currentViewPath]) {
+					callHandlerFunction(viewHandlers[currentViewPath], "ACTIVATED");
 				}
 			}
 		}
@@ -105,14 +105,14 @@
 			if (angular.isFunction(handlerFunc)) {
 				var path = scope.panel.path;
 
-				this.viewHandlers[path] = {};
-				this.viewHandlers[path].func = handlerFunc;
-				this.viewHandlers[path].owner = ownerObject;
+				viewHandlers[path] = {};
+				viewHandlers[path].func = handlerFunc;
+				viewHandlers[path].owner = ownerObject;
 
 				var self = this;
 				scope.$on("$destroy", function() {
-					if (self.viewHandlers[path]) {
-						delete self.viewHandlers[path];
+					if (viewHandlers[path]) {
+						delete viewHandlers[path];
 					}
 				});
 			} else {
