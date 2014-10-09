@@ -4,7 +4,7 @@
 				'jquery' : 'jquery/jquery-1.7.2.min',
 				'jquery-ui' : 'jquery/plugins/jquery-ui-1.10.2.custom.min',
 				'json' :  'json/json2',
-				'angularjs' : 'angular/angular-1.2.11.min',
+				'angularjs' : '../../../portal-shell/js/libs/angular/1.2.11/angular.min',
 				'jquery.jqplot' :  'jqplot/jquery.jqplot.min' ,
 				'barRenderer' :  'jqplot/plugins/jqplot.barRenderer.min' ,
 				'bubbleRenderer' :  'jqplot/plugins/jqplot.bubbleRenderer.min' ,

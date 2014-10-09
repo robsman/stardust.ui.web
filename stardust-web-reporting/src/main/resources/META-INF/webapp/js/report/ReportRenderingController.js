@@ -903,7 +903,7 @@ define(
 			          	 + " src='"
 			          	 + self.reportingService
 			          	.getRootUrl()
-			          	 + "/plugins/bpm-reporting/js/libs/angular/angular-1.2.11.js'>"
+			          	 + "/portal-shell/js/libs/angular/1.2.11/angular.js'>"
 			          	 + "</scr"
 			          	 + "ipt>"
 			          	 + "<scr"
