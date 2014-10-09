@@ -1,4 +1,4 @@
-<div class="view-panel" ng-controller="sdWorklistViewCtrl">
+<div class="view-panel" ng-controller="sdWorklistViewCtrl as worklistViewCtrl">
 	<!-- View Toolbar -->
 	<div sd-include="'plugins/html5-process-portal/partials/views/worklistViewToolbar.html'"></div>
 	
@@ -26,7 +26,7 @@
 						</a>
 					</td>
 					<td class="tbl-toolbar-item">
-					   <a href="#" ng-click="$completeAll()" title="Complete All" class="view-tool-link">
+					   <a href="#" ng-click="worklistViewCtrl.completeAll()" title="Complete All" class="view-tool-link">
 					      <i class="fa fa-share"></i>
 					   </a>
 					</td>
@@ -35,7 +35,7 @@
 		</div>
 		
 		<div class="">
-		 Total: {{worklist.totalCount}}
+		 Total: {{worklistViewCtrl.worklist.totalCount}}
 		</div>
 
 		<!-- Table -->
@@ -52,10 +52,10 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr valign="center" sd-table-data="workItem in worklist.workItems track by $index"
-					sd-table-selection="worklist.selectedWorkItems">
+				<tr valign="center" sd-table-data="workItem in worklistViewCtrl.worklist.workItems track by $index"
+					sd-table-selection="worklistViewCtrl.worklist.selectedWorkItems">
 					<td>
-						<a href="#" ng-click="$activateWorkItem(workItem)" title="{{workItem.activity.description}}">
+						<a href="#" ng-click="worklistViewCtrl.activateWorkItem(workItem)" title="{{workItem.activity.description}}">
 							{{workItem.activity.name}}
 						</a>
 					</td>
@@ -64,39 +64,39 @@
 					<td align="right">{{workItem.start | sdDateTimeFilter}}</td>
 					<td align="right">{{workItem.lastModification | sdDateTimeFilter}}</td>
 					<td>
-                  <table ng-hide="!worklist.trivialManualActivities[workItem.oid]">
+                  <table ng-hide="!worklistViewCtrl.worklist.trivialManualActivities[workItem.oid]">
                      <tbody>
-                        <tr ng-repeat="mapping in worklist.trivialManualActivities[workItem.oid].dataMappings">
+                        <tr ng-repeat="mapping in worklistViewCtrl.worklist.trivialManualActivities[workItem.oid].dataMappings">
                            <td>{{mapping.name}}</td>
                            <td>
                               <select ng-show="mapping.isEnum"
-                                 ng-model="worklist.trivialManualActivities[workItem.oid].inOutData[mapping.id]"
-                                 ng-init="worklist.trivialManualActivities[workItem.oid].inOutData[mapping.id] = worklist.trivialManualActivities[workItem.oid].inOutData[mapping.id] || mapping.enumValues[0]"
+                                 ng-model="worklistViewCtrl.worklist.trivialManualActivities[workItem.oid].inOutData[mapping.id]"
+                                 ng-init="worklistViewCtrl.worklist.trivialManualActivities[workItem.oid].inOutData[mapping.id] = worklistViewCtrl.worklist.trivialManualActivities[workItem.oid].inOutData[mapping.id] || mapping.enumValues[0]"
                                  ng-options="enumVal for enumVal in mapping.enumValues" />
 
 	                           <input type="text"
 	                              ng-show="mapping.typeName == 'java.lang.String'"
-	                              ng-model="worklist.trivialManualActivities[workItem.oid].inOutData[mapping.id]" />
+	                              ng-model="worklistViewCtrl.worklist.trivialManualActivities[workItem.oid].inOutData[mapping.id]" />
 	
 	                           <input type="checkbox"
 	                              ng-show="mapping.typeName == 'java.lang.Boolean'"
-	                              ng-model="worklist.trivialManualActivities[workItem.oid].inOutData[mapping.id]" />
+	                              ng-model="worklistViewCtrl.worklist.trivialManualActivities[workItem.oid].inOutData[mapping.id]" />
                            </td>
                         </tr>
                      </tbody>
                   </table>
 					</td>
 					<td align="right" style="padding-left: 0px;">
-						<a href="#" ng-click="$openNotes(workItem)" title="Open Notes" class="view-tool-link">
+						<a href="#" ng-click="worklistViewCtrl.openNotes(workItem)" title="Open Notes" class="view-tool-link">
 							<i class="fa fa-comment-o"></i>
 						</a>
-						<a href="#" ng-click="$openProcessHistory(workItem)" title="Process History" class="view-tool-link">
+						<a href="#" ng-click="worklistViewCtrl.openProcessHistory(workItem)" title="Process History" class="view-tool-link">
 							<i class="fa fa-tasks"></i>
 						</a>
-						<a href="#" ng-click="$complete(workItem)" title="Complete" class="view-tool-link">
+						<a href="#" ng-click="worklistViewCtrl.complete(workItem)" title="Complete" class="view-tool-link">
 							<i class="fa fa-share"></i>
 						</a>
-						<a href="#" ng-click="$openDelegateDialog(workItem)" title="Delegate" class="view-tool-link">
+						<a href="#" ng-click="worklistViewCtrl.openDelegateDialog(workItem)" title="Delegate" class="view-tool-link">
 							<i class="fa fa-user"></i>
 						</a>
 					</td>
