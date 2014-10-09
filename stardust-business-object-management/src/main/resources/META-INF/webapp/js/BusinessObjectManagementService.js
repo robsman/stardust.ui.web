@@ -185,7 +185,7 @@ define(
 					var url = rootUrl
 							+ "/services/rest/business-object-management/businessObject/"
 							+ businessObject.modelOid + "/" + businessObject.id
-							+ "/instance.json";
+							+ "/instance.json" + queryString;
 
 					jQuery.ajax({
 						url : url,

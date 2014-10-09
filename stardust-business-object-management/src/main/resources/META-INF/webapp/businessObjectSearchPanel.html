@@ -1,51 +1,52 @@
-<div class="section" style="margin-bottom: 10px; padding: 10px;">
-	<div>
-		<table class="toolbar" style="width: 100%;">
-			<tr>
-				<td><a href="#" class="iconLink menuBarLink" title="Refresh"><i
-						class="fa fa-refresh" ng-click="refresh()"></i></a><a href="#"
-					class="iconLink menuBarLink" title="Import from CSV"
-					style="margin-left: 5px;"><i class="fa fa-upload"
-						ng-click="businessObjectManagementPanelController.openImportCSVDialog()"></i></a></td>
-			</tr>
+<div>
+	<table class="toolbar" style="width: 100%;">
+		<tr>
+			<td><a href="#" class="iconLink menuBarLink" title="Refresh"><i
+					class="fa fa-refresh"
+					ng-click="businessObjectManagementPanelController.filterBusinessObjectInstances()"></i></a><a
+				href="#" class="iconLink menuBarLink" title="Import from CSV"
+				style="margin-left: 5px;"><i class="fa fa-upload"
+					ng-click="businessObjectManagementPanelController.openImportCSVDialog()"></i></a></td>
+		</tr>
+	</table>
+	<table class="formTable">
+		<tr>
+			<td><label>{{businessObjectManagementPanelController.businessObject.primaryKeyField.label}}</label>
+				<input type="text" style="width: 100px; margin-left: 5px;"
+				ng-model="businessObjectManagementPanelController.businessObject.primaryKeyField.filterValue"
+				ng-blur="businessObjectManagementPanelController.filterBusinessObjectInstances()"></input></td>
+			<td
+				ng-repeat="field in businessObjectManagementPanelController.businessObject.keyFields"><label
+				style="margin-left: 5px;">{{field.label}}</label> <input type="text"
+				style="width: 100px; margin-left: 5px;" ng-model="field.filterValue"
+				ng-blur="businessObjectManagementPanelController.filterBusinessObjectInstances()"></input></td>
+			<td><a href="#" class="iconLink menuBarLink" title="Refresh"><i
+					class="fa fa-eraser"
+					ng-click="businessObjectManagementPanelController.clearFilters()"></i></a></td>
+		</tr>
+	</table>
+	<div class="dataTableFrame"
+		style="margin-top: 20px; margin-bottom: 20px;">
+		<table cellpadding="0" cellspacing="0" class="dataTable"
+			style="width: 100%;">
+			<thead>
+				<tr>
+					<th>{{businessObjectManagementPanelController.businessObject.primaryKeyField.label}}</th>
+					<th
+						ng-repeat="field in businessObjectManagementPanelController.businessObject.keyFields">{{field.label}}</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr
+					sd-table-data="businessObjectInstance in businessObjectManagementPanelController.businessObjectInstances"
+					sd-table-selection="businessObjectManagementPanelController.selectedBusinessObjectInstances"
+					sd-table-selection-changed="businessObjectManagementPanelController.rootController.onBusinessObjectInstanceSelectionChange()">
+					<td>{{businessObjectInstance[businessObjectManagementPanelController.businessObject.primaryKeyField.id]}}</td>
+					<td
+						ng-repeat="field in businessObjectManagementPanelController.businessObject.keyFields">{{businessObjectInstance[field.id]}}</td>
+				</tr>
+			</tbody>
 		</table>
-		<table class="formTable">
-			<tr>
-				<td><label>{{businessObjectManagementPanelController.businessObject.primaryKeyField.label}}</label>
-					<input type="text" style="width: 100px; margin-left: 5px;"
-					ng-model="businessObjectManagementPanelController.businessObject.primaryKeyField.filterValue"
-					ng-blur="businessObjectManagementPanelController.filterBusinessObjectInstances()"></input></td>
-				<td
-					ng-repeat="field in businessObjectManagementPanelController.businessObject.keyFields"><label
-					style="margin-left: 5px;">{{field.label}}</label> <input
-					type="text" style="width: 100px; margin-left: 5px;"
-					ng-model="field.filterValue"
-					ng-blur="businessObjectManagementPanelController.filterBusinessObjectInstances()"></input></td>
-			</tr>
-		</table>
-		<div class="dataTableFrame"
-			style="margin-top: 20px; margin-bottom: 20px;">
-			<table cellpadding="0" cellspacing="0" class="dataTable"
-				style="width: 100%;">
-				<thead>
-					<tr>
-						<th>{{businessObjectManagementPanelController.businessObject.primaryKeyField.label}}</th>
-						<th
-							ng-repeat="field in businessObjectManagementPanelController.businessObject.keyFields">{{field.label}}</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr
-						sd-table-data="businessObjectInstance in businessObjectManagementPanelController.businessObjectInstances"
-						sd-table-selection="businessObjectManagementPanelController.selectedBusinessObjectInstances"
-						sd-table-selection-changed="businessObjectManagementPanelController.rootController.onBusinessObjectInstanceSelectionChange()">
-						<td>{{businessObjectInstance[businessObjectManagementPanelController.businessObject.primaryKeyField.id]}}</td>
-						<td
-							ng-repeat="field in businessObjectManagementPanelController.businessObject.keyFields">{{businessObjectInstance[field.id]}}</td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
 	</div>
 </div>
 <div sd-dialog="businessObjectManagementPanelController.importCSVDialog"
@@ -107,4 +108,3 @@
 			</td>
 		</tr>
 	</table>
-</div>

@@ -47,6 +47,19 @@ define(
 				/**
 				 * 
 				 */
+				BusinessObjectManagementPanelController.prototype.clearFilters = function() {
+					this.businessObject.primaryKeyField.filterValue = null;
+
+					for (var n = 0; n < this.businessObject.keyFields.length; ++n) {
+						this.businessObject.keyFields[n].filterValue = null;
+					}
+
+					this.filterBusinessObjectInstances();
+				};
+
+				/**
+				 * 
+				 */
 				BusinessObjectManagementPanelController.prototype.filterBusinessObjectInstances = function() {
 					var self = this;
 

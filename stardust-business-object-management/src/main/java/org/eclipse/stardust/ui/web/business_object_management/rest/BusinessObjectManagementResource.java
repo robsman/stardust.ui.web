@@ -99,7 +99,7 @@ public class BusinessObjectManagementResource {
 			return Response.ok(
 					getBusinessObjectManagementService()
 							.getBusinessObjectInstances(modelOid,
-									businessObjectId).toString(),
+									businessObjectId, httpRequest.getQueryString()).toString(),
 					MediaType.APPLICATION_JSON).build();
 		} catch (Exception e) {
 			trace.error(e, e);

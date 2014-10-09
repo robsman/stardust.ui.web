@@ -35,7 +35,8 @@ ul.errorMessagesPanel {
 		<span id="loadingMsg">Loading...</span>
 	</div>
 	<div ng-cloak>
-		<table cellspacing="0" cellpadding="0" class="layoutTable">
+		<table cellspacing="0" cellpadding="0" class="layoutTable"
+			style="margin-bottom: 10px;">
 			<tr valign="center">
 				<td><a href="#" class="iconLink"
 					ng-click="searchCollapsed = true" ng-hide="searchCollapsed"><i
@@ -49,22 +50,22 @@ ul.errorMessagesPanel {
 		</table>
 		<div ng-hide="searchCollapsed"
 			ng-include="'../businessObjectSearchPanel.html'"></div>
-		<table cellspacing="0" cellpadding="0" class="layoutTable"
-			style="margin-top: 10px;"
-			ng-show="currentBusinessObjectInstance != null">
-			<tr valign="center">
-				<td><a href="#" class="iconLink"
-					ng-click="versionPanelExpanded = true"
-					ng-hide="versionPanelExpanded"><i class="fa fa-chevron-down"></i></a><a
-					href="#" class="iconLink" ng-click="versionPanelExpanded = false"
-					ng-show="versionPanelExpanded"><i class="fa fa-chevron-up"></i></a></td>
-				<td style="padding-left: 5px !important;"><h2
-						style="margin-bottom: 0px;">Other Versions of this
-						{{businessObjectManagementPanelController.businessObject.name}}</h2></td>
-			</tr>
-		</table>
 		<div
-			ng-show="businessObjectManagementPanelController.businessObject != null">
+			ng-show="businessObjectManagementPanelController.businessObject != null && processInstances.length > 0">
+			<table cellspacing="0" cellpadding="0" class="layoutTable"
+				style="margin-top: 10px;"
+				ng-show="currentBusinessObjectInstance != null">
+				<tr valign="center">
+					<td><a href="#" class="iconLink"
+						ng-click="versionPanelExpanded = true"
+						ng-hide="versionPanelExpanded"><i class="fa fa-chevron-down"></i></a><a
+						href="#" class="iconLink" ng-click="versionPanelExpanded = false"
+						ng-show="versionPanelExpanded"><i class="fa fa-chevron-up"></i></a></td>
+					<td style="padding-left: 5px !important;"><h2
+							style="margin-bottom: 0px;">Other Versions of this
+							{{businessObjectManagementPanelController.businessObject.name}}</h2></td>
+				</tr>
+			</table>
 			<div
 				ng-show="versionPanelExpanded  && currentBusinessObjectInstance != null"
 				style="margin-bottom: 10px;">
@@ -94,48 +95,48 @@ ul.errorMessagesPanel {
 					</table>
 				</div>
 			</div>
-			<table style="width: 100%;">
-				<tr>
-					<td>
-						<h2>{{businessObjectManagementPanelController.businessObject.name}}
-							{{currentBusinessObjectInstance[businessObjectManagementPanelController.businessObject.primaryKeyField.id]}}</h2>
-					</td>
-					<td align="right"><input type="button" value="Save"
-						ng-click="saveBusinessObjectInstance()"
-						ng-show="currentBusinessObjectInstance != null"></input><input
-						type="button" value="Create"
-						ng-click="createBusinessObjectInstance()"
-						ng-show="newBusinessObjectInstance == null"
-						style="margin-left: 10px;"></input><input type="button"
-						value="Close" ng-show="currentBusinessObjectInstance != null"
-						ng-click="clearBusinessObjectInstance()"
-						style="margin-left: 10px;"></input></td>
-				</tr>
-				<tr ng-show="currentBusinessObjectInstance == null">
-					<td colspan="2"><em>No
-							{{businessObjectManagementPanelController.businessObject.name}}
-							selected.</em></td>
-				</tr>
-				<tr ng-show="currentBusinessObjectInstance != null">
-					<td colspan="2">
-						<table>
-							<tr>
-								<td>
-									<ul class="errorMessagesPanel" ng-show="messages.length > 0">
-										<li ng-repeat="message in messages">{{message}}</li>
-									</ul>
-								</td>
-							</tr>
-						</table>
-						<div ng-repeat="instance in [currentBusinessObjectInstance]">
-							<div ng-repeat="type in [getBusinessObject()]">
-								<div ng-include="'./objectPanel.html'"></div>
-							</div>
-						</div>
-					</td>
-				</tr>
-			</table>
 		</div>
+		<table style="width: 100%;">
+			<tr>
+				<td>
+					<h2>{{businessObjectManagementPanelController.businessObject.name}}
+						{{currentBusinessObjectInstance[businessObjectManagementPanelController.businessObject.primaryKeyField.id]}}</h2>
+				</td>
+				<td align="right"><input type="button" value="Save"
+					ng-click="saveBusinessObjectInstance()"
+					ng-show="currentBusinessObjectInstance != null"></input><input
+					type="button" value="Create"
+					ng-click="createBusinessObjectInstance()"
+					ng-show="newBusinessObjectInstance == null"
+					style="margin-left: 10px;"></input><input type="button"
+					value="Close" ng-show="currentBusinessObjectInstance != null"
+					ng-click="clearBusinessObjectInstance()" style="margin-left: 10px;"></input></td>
+			</tr>
+			<tr ng-show="currentBusinessObjectInstance == null">
+				<td colspan="2"><em>No
+						{{businessObjectManagementPanelController.businessObject.name}}
+						selected.</em></td>
+			</tr>
+			<tr ng-show="currentBusinessObjectInstance != null">
+				<td colspan="2">
+					<table>
+						<tr>
+							<td>
+								<ul class="errorMessagesPanel" ng-show="messages.length > 0">
+									<li ng-repeat="message in messages">{{message}}</li>
+								</ul>
+							</td>
+						</tr>
+					</table>
+					<div ng-repeat="instance in [currentBusinessObjectInstance]">
+						<div ng-repeat="type in [getBusinessObject()]">
+							<div ng-include="'./objectPanel.html'"></div>
+						</div>
+					</div>
+				</td>
+			</tr>
+		</table>
+	</div>
 	</div>
 </body>
 </html>
