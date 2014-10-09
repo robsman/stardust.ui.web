@@ -18,7 +18,7 @@ if (!window.bpm.portal.viewsCommonRequire) {
 			'jquery-mobile' : [
 					"mobile-workflow/public/js/libs/jquery/plugins/jquery.mobile-1.4.0",
 					"//code.jquery.com/mobile/1.4.0/jquery.mobile-1.4.0" ],
-			'angularjs' : [ 'views-common/js/libs/angular/angular-1.0.2',
+			'angularjs' : [ '../portal-shell/js/libs/angular/1.2.11/angular',
 					'//ajax.googleapis.com/ajax/libs/angularjs/1.0.2/angular.min' ],
 			'json' : [ 'views-common/js/libs/json/json2',
 					'//cdnjs.cloudflare.com/ajax/libs/json2/20110223/json2' ],
