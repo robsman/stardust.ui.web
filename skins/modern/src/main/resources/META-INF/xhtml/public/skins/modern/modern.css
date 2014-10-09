@@ -12666,3 +12666,60 @@ div[id*='perspectiveMenuPopup:']{
 a,input,tr,select{
 	outline:none !important;
 }
+
+/**Process & Go editor**/
+a, .listItem {
+	color: #708090;
+	font-family: Lato, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+}
+
+img[src *='delete.png'].nodeMenuIcon {
+     background-image:url('./images/flat-icons/delete.png');
+     width:12px;
+     background-size: 12px 12px;
+     padding: 12px 0 0 0 !important;
+     height:0px;
+     background-repeat: no-repeat !important;
+     opacity: 0.7;
+}
+
+img[src *='cog_add.png'].nodeMenuIcon {
+     background-image:url('./images/flat-icons/cog_add.png');
+     width:12px;
+     background-size: 12px 12px;
+     padding: 12px 0 0 0 !important;
+     height:0px;
+     background-repeat: no-repeat !important;
+     opacity: 0.7;
+}
+
+img[src *='page_white_put.png'].nodeMenuIcon {
+     background-image:url('./images/flat-icons/page_white_put.png') !important;
+     width:12px;
+     background-size: 12px 12px;
+     padding: 12px 0 0 0 !important;
+     height:0px;
+     background-repeat: no-repeat !important;
+     opacity: 0.7;
+}
+
+img[src *='world_go.png'].nodeMenuIcon {
+     background-image:url('./images/flat-icons/world_go.png');
+     width:12px;
+     background-size: 12px 12px;
+     padding: 12px 0 0 0 !important;
+     height:0px;
+     background-repeat: no-repeat !important;
+     opacity: 0.7;
+}
+
+img[src *='rename.png'].nodeMenuIcon {
+     background-image:url('./images/flat-icons/rename.png');
+     width:12px;
+     background-size: 12px 12px;
+     padding: 12px 0 0 0 !important;
+     height:0px;
+     background-repeat: no-repeat !important;
+     opacity: 0.7;
+}
