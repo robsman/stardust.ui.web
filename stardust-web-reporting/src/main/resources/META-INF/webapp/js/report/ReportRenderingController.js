@@ -286,6 +286,11 @@ define(
 						chartOptions.axes.xaxis.tickRenderer = jQuery.jqplot.CanvasAxisTickRenderer;
 						chartOptions.axes.yaxis.tickRenderer = jQuery.jqplot.CanvasAxisTickRenderer;
 						
+						chartOptions.highlighter = {
+						   show: this.report.layout.chart.options.highlighter.show,
+						   tooltipContentEditor: tooltipContentEditor
+						};
+						
 					} else if (this.report.layout.chart.type === this.reportingService.metadata.chartTypes.candlestickChart.id) {
 						if (this.getFirstDimension().type == this.reportingService.metadata.timestampType) {
 							chartOptions.axes.xaxis.renderer = jQuery.jqplot.DateAxisRenderer;
@@ -297,6 +302,13 @@ define(
 						})
 						chartOptions.axes.xaxis.tickRenderer = jQuery.jqplot.CanvasAxisTickRenderer;
                   chartOptions.axes.yaxis.tickRenderer = jQuery.jqplot.CanvasAxisTickRenderer;
+                  
+                  chartOptions.seriesDefaults.pointLabels.hideZeros = true;
+                  
+                  chartOptions.highlighter = {
+                     show: this.report.layout.chart.options.highlighter.show,
+                     tooltipContentEditor: tooltipContentEditor
+                  };
 						
 					} else if (this.report.layout.chart.type === this.reportingService.metadata.chartTypes.barChart.id) {
 						chartOptions.seriesDefaults.renderer = $.jqplot.BarRenderer;
@@ -319,11 +331,16 @@ define(
 						   }
 						   chartOptions.axes.xaxis.ticks = x_axis;
 						}
+						chartOptions.seriesDefaults.pointLabels.hideZeros = true;
 						chartOptions.seriesDefaults.rendererOptions = {
 							animation : {
 								speed : 2500
 							},
-							fillToZero : true
+							fillToZero : true,
+							highlighter: {
+							   show: this.report.layout.chart.options.highlighter.show,
+							   tooltipContentEditor: tooltipContentEditor
+							}
 						};
 
 						if (this.getFirstDimension().type == this.reportingService.metadata.timestampType) {
@@ -341,7 +358,6 @@ define(
 							bubbleGradients : true
 						};
 					}else if (this.report.layout.chart.type === this.reportingService.metadata.chartTypes.donutChart.id) {
-					   chartOptions.highlighter.show = false;
 						chartOptions.seriesDefaults.renderer = jQuery.jqplot.DonutRenderer;
 						chartOptions.seriesDefaults.rendererOptions = {
 						     highlightMouseOver : this.report.layout.chart.options.highlighter.show,
@@ -354,16 +370,12 @@ define(
 					        // You can show the data 'value' or data 'label' instead.
 					        series: [{label: 'A1'},{label: 'A2'}],
 					        highlighter: {
-					            show: true,
-					            showLabel: true,
-					            formatString: '%s - %d. X, %d Y'
-					        },
-					        pointLabels: {
-			                    show: true
-			                },
+					            show: this.report.layout.chart.options.highlighter.show,
+					            tooltipContentEditor: tooltipContentEditor,
+					            useAxesFormatters: false
+					        }
 						};
 					} else if(this.report.layout.chart.type === this.reportingService.metadata.chartTypes.pieChart.id) {
-					   chartOptions.highlighter.show = false;
 						chartOptions.seriesDefaults.renderer = jQuery.jqplot.PieRenderer;
 						chartOptions.seriesDefaults.rendererOptions = {
 						   highlightMouseOver : this.report.layout.chart.options.highlighter.show,
@@ -372,6 +384,22 @@ define(
 							sliceMargin : 4,
 							lineWidth : 5
 						};
+						
+						chartOptions.highlighter = {
+		                     show: this.report.layout.chart.options.highlighter.show,
+		                     tooltipContentEditor: tooltipContentEditor,
+		                     useAxesFormatters: false
+		            };
+					}
+					
+					function tooltipContentEditor(str, seriesIndex, pointIndex, plot) {
+					   // display series_label, x-axis_tick, y-axis value
+					   if (plot.stackSeries)
+					      return plot.series[seriesIndex]["label"] + ", " + plot.options.axes.xaxis.ticks[pointIndex] + 
+					      " : " + plot.data[seriesIndex][pointIndex];
+					   else
+					      return plot.series[seriesIndex]["label"] + ", " + plot.data[seriesIndex][pointIndex][0] +
+					      " : " + plot.data[seriesIndex][pointIndex][1];
 					}
 
 					// Label series
