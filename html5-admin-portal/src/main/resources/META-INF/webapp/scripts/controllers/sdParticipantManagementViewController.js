@@ -31,6 +31,10 @@
 		_ngDialog=ngDialog;
 	}
 	
+	/**
+	 * Initialization routine for the controller
+	 * @this {controller}
+	 */
 	controller.prototype.init = function(){
 		var that = this;
 		this.data={};
@@ -46,8 +50,31 @@
         });
 	};
 	
-	controller.prototype.onOpen = function(p){
-		alert(p);
+	/**
+	 * Call back function for our info dialogs
+	 * @this {controller}
+	 * @param {Object} res - promise returned from sd-dialog
+	 */
+	controller.prototype.onInfoOpen = function(res){
+		var promise = res.promise;
+		promise.then(function(){
+			console.log("Dialog closed...");
+		});
+	};
+	
+	/**
+	 * Call back function for our confirm dialogs
+	 * @this {controller}
+	 * @param {Object} res - promise returned from sd-dialog
+	 */
+	controller.prototype.onConfirmOpen = function(res){
+		var promise = res.promise;
+		promise.then(function(data){
+			console.log("dialog state: confirmed");
+		})
+		.catch(function(){
+			console.log("dialog state: rejected");
+		});
 	};
 	
 	controller.prototype.getPeople = function(){

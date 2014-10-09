@@ -37,10 +37,23 @@
 		
 		<button ng-click="pmCtrl.generateError()">Generate JS Error</button>
 		<button ng-click="pmCtrl.getPeople()">HTTP Request</button>
-		<button sd-info-dialog sd-on-open="pmCtrl.onOpen(res)">Open Info Dialog</button>
-		<button sd-confirm-dialog>Open Confirmation Dialog</button>
-		<h3 ng-if="pmCtrl.people.length >0"></h3>
+		<button sd-dialog
+				sd-dialog-type="info" 
+				sd-title="Testing Info Dialog"
+				sd-on-open="pmCtrl.onInfoOpen(res)">
+				Open Info Dialog
+		</button>
+		<button sd-dialog 
+				sd-dialog-type="confirm"
+				sd-title="Testing Confirmation Dialog"
+				sd-on-open="pmCtrl.onConfirmOpen(res)"
+				sd-dialog-scope="this"
+				sd-template="plugins/html5-admin-portal/partials/views/confirm.html">
+				Open Confirmation Dialog1
+		</button>
+		<h3 ng-if="pmCtrl.people">People</h3>
 		{{pmCtrl.people | json}}
+		<br>
 		<h3>All Users</h3>
 		<!-- Table -->
 		<table style="width: 100%;">
@@ -57,7 +70,7 @@
 			</thead>
 			<tbody>
 				<tr ng-repeat="user in pmCtrl.data.users">
-					<td>{{user.name..last + ', ' + user.name.first + ' (' + user.account + ')' }}</td>
+					<td>{{user.name.last + ', ' + user.name.first + ' (' + user.account + ')' }}</td>
 					<td>{{user.oid}}</td>
 					<td>{{user.account}}</td>
 					<td>{{user.realm || 'Carnot'}}</td>
