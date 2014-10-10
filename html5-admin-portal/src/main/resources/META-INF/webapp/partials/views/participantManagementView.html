@@ -38,7 +38,10 @@
 		<button ng-click="pmCtrl.generateError()">Generate JS Error</button>
 		<button ng-click="pmCtrl.getPeople()">HTTP Request</button>
 		<button sd-dialog
+				sd-show-overlay="false"
 				sd-dialog-type="info" 
+				sd-position="popover"
+				sd-is-moveable="true"
 				sd-title="Testing Info Dialog"
 				sd-on-open="pmCtrl.onInfoOpen(res)">
 				Open Info Dialog
