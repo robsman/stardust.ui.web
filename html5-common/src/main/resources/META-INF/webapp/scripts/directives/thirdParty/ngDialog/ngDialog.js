@@ -134,7 +134,10 @@ module.provider('ngDialog', function () {
 				 */
 				open: function (opts,bypassResolve) {
 					var self = this,
-					    options = angular.copy(defaults);
+					    options = angular.copy(defaults),
+					    contentClasses=['ngdialog-content'],
+					    sHtml='',
+					    overlayClasses=[];
 					
 					bypassResolve = bypassResolve || false;
 					
@@ -165,8 +168,25 @@ module.provider('ngDialog', function () {
 							template += '<div class="ngdialog-close"></div>';
 						}
 
+						if(options.showOverlay === true){
+							overlayClasses.push('ngdialog-overlay');
+							sHtml='<div class="' + overlayClasses.join(' ') + '"></div>';
+						}
+						else{
+							contentClasses.push('no-overlay');
+						}
+						
 						self.$result = $dialog = $el('<div id="ngdialog' + globalID + '" class="ngdialog"></div>');
-						$dialog.html('<div class="ngdialog-overlay"></div><div class="ngdialog-content">' + template + '</div>');
+						
+						if(options.isMoveable === true){
+							$dialog.attr('sd-moveable','true');
+						}
+						
+						
+						$dialog.html( sHtml +
+								     '<div  class="'+ contentClasses.join(' ') + '">' + 
+								     template + 
+								     '</div>');
 
 						if (options.controller && angular.isString(options.controller)) {
 							$dialog.attr('ng-controller', options.controller);
@@ -215,7 +235,7 @@ module.provider('ngDialog', function () {
 							 *      align:'left|top|right'
 							 *      position: [x,y] --as coordinate
 							 */
-							 if (options.position && angular.isArray(options.position)) {
+							 if (options.isCentered !== true && angular.isArray(options.position)) {
 				                  var myBounds= $dialog[0].getBoundingClientRect(),
 				                      posX = options.position[0],
 				                      posY = options.position[1],

@@ -13,14 +13,24 @@ angular.module('bpm-common.directives')
 		
 		link: function (scope, elem, attrs) {
 			elem.on('click', function (e) {
-				
-				//INFO||CONFIRM
+
 				var dialogType = (attrs.sdDialogType || 'INFO').toUpperCase(),
 					templateUrlBase = "plugins/html5-common/scripts/directives/dialogs/templates/",
 					templateUrl,
 					invokeOpenConfirm=false,
 					ngDialogScope,
-					options;
+					options,
+					className = 'ngdialog-theme-default',
+					isPopover;
+				
+				if(attrs.sdPosition && angular.isString(attrs.sdPosition)){
+					attrs.sdPosition=attrs.sdPosition.toUpperCase();
+				}
+				
+				if(attrs.sdPosition === 'POPOVER'){
+					isPopover = true;
+					className = 'ngdialog-theme-popup';
+				}
 
 				e.preventDefault();
 				
@@ -39,13 +49,17 @@ angular.module('bpm-common.directives')
 				ngDialogScope = angular.isDefined(scope.ngDialogScope) ? scope.ngDialogScope : 'noScope';
 				options = { template: templateUrlBase + templatePage,
 							userTemplate : scope.userTemplate,
-							className: "ngdialog-theme-default",
+							className: className,
 							controller: attrs.ngDialogController,
-							title: attrs.sdTitle,
+							data: attrs.ngDialogData,
 							scope: ngDialogScope ,
 							onOpen: scope.ngOnOpen,
-							data: attrs.ngDialogData,
+							position: [e.clientX,e.clientY],
+							isCentered : isPopover ? false : true,
+							isMoveable : (isPopover && attrs.sdIsMoveable === 'true') ? true : false,
+							showOverlay: attrs.sdShowOverlay === 'false' ? false : true,
 							showClose: attrs.ngDialogShowClose === 'false' ? false : true,
+							title: attrs.sdTitle,
 							closeByDocument: attrs.ngDialogCloseByDocument === 'false' ? false : true,
 							closeByEscape: attrs.ngDialogCloseByEscape === 'false' ? false : true };
 				
