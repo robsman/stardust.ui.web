@@ -76,61 +76,69 @@ define(
 									})
 							.done(
 									function(businessObject) {
-										console.log(businessObject);
-
-										// Calculate primary key field,
-										// keyFields and topLevelFields
-										// TODO Do on server?
-
-										businessObject.keyFields = [];
-										businessObject.topLevelFields = [];
-
-										// Create labels for all used types
-
-										if (businessObject.types) {
-											for ( var type in businessObject.types) {
-												for (var n = 0; businessObject.types[type].fields
-														&& n < businessObject.types[type].fields.length; ++n) {
-													businessObject.types[type].fields[n].label = self
-															.createLabel(businessObject.types[type].fields[n].name);
-												}
-											}
-										}
-
-										for (var n = 0; n < businessObject.fields.length; ++n) {
-											// TODO Retrieve labels from
-											// annotations
-
-											businessObject.fields[n].label = self
-													.createLabel(businessObject.fields[n].name);
-
-											if (!businessObject.types) {
-												businessObject.types = {};
-											}
-
-											if (businessObject.types[businessObject.fields[n].type]) {
-												continue;
-											}
-
-											if (businessObject.fields[n].primaryKey) {
-												businessObject.primaryKeyField = businessObject.fields[n];
-											} else if (businessObject.fields[n].key) {
-												businessObject.keyFields
-														.push(businessObject.fields[n]);
-											}
-
-											businessObject.topLevelFields
-													.push(businessObject.fields[n]);
-										}
-
-										console.log(businessObject);
-
+										self
+												.calculateBusinessObjectFields(businessObject);
 										deferred.resolve(businessObject);
 									}).fail(function(data) {
 								deferred.reject(data);
 							});
 
 					return deferred.promise();
+				};
+
+				/**
+				 * 
+				 */
+				BusinessObjectManagementService.prototype.calculateBusinessObjectFields = function(
+						businessObject) {
+					console.log(businessObject);
+
+					// Calculate primary key field,
+					// keyFields and topLevelFields
+					// TODO Do on server?
+
+					businessObject.keyFields = [];
+					businessObject.topLevelFields = [];
+
+					// Create labels for all used types
+
+					if (businessObject.types) {
+						for ( var type in businessObject.types) {
+							for (var n = 0; businessObject.types[type].fields
+									&& n < businessObject.types[type].fields.length; ++n) {
+								businessObject.types[type].fields[n].label = this
+										.createLabel(businessObject.types[type].fields[n].name);
+							}
+						}
+					}
+
+					for (var n = 0; n < businessObject.fields.length; ++n) {
+						// TODO Retrieve labels from
+						// annotations
+
+						businessObject.fields[n].label = this
+								.createLabel(businessObject.fields[n].name);
+
+						if (!businessObject.types) {
+							businessObject.types = {};
+						}
+
+						if (businessObject.types[businessObject.fields[n].type]) {
+							continue;
+						}
+
+						if (businessObject.fields[n].primaryKey) {
+							businessObject.primaryKeyField = businessObject.fields[n];
+						} else if (businessObject.fields[n].key) {
+							businessObject.keyFields
+									.push(businessObject.fields[n]);
+						}
+
+						businessObject.topLevelFields
+								.push(businessObject.fields[n]);
+					}
+
+					console.log(businessObject);
 				};
 
 				/**

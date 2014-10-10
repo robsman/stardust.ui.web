@@ -41,35 +41,97 @@ define(
 
 					BusinessObjectManagementService
 							.instance()
-							.getBusinessObject(this.parameters.modelOid,
-									this.parameters.businessObjectId)
+							.getBusinessObjects()
 							.done(
-									function(businessObject) {
-										self.businessObject = businessObject;
+									function(businessObjectModels) {
+										self.businessObjectModels = businessObjectModels;
 
-										// Enhance BO with modelOid
+										self.refreshBusinessObjects();
 
-										self.businessObject.modelOid = self.parameters.modelOid;
+										// TODO This code will go
 
-										self.businessObjectManagementPanelController
-												.changeBusinessObject(self.businessObject);
+										if (self.parameters.modelOid
+												&& self.parameters.businessObjectId) {
+											BusinessObjectManagementService
+													.instance()
+													.getBusinessObject(
+															self.parameters.modelOid,
+															self.parameters.businessObjectId)
+													.done(
+															function(
+																	businessObject) {
+																self.businessObject = businessObject;
 
-										self.formColumns = [];
-										var primitiveFields = self
-												.getPrimitiveFields(self.businessObject);
-										console.log("Fields: "
-												+ primitiveFields);
-										var fieldsPerColumn = Math
-												.ceil(primitiveFields.length / 3);
+																self
+																		.initializeForm();
 
-										for (var n = 0; n < primitiveFields.length; n += fieldsPerColumn) {
-											self.formColumns.push({
-												min : n,
-												max : n + fieldsPerColumn - 1
-											});
+																self
+																		.safeApply();
+															}).fail(function() {
+													});
+										} else {
+											self.safeApply();
 										}
 									}).fail(function() {
 							});
+
+				};
+
+				/**
+				 * 
+				 */
+				BusinessObjectManagementViewController.prototype.refreshBusinessObjects = function() {
+					this.businessObjects = [];
+
+					for (var n = 0; n < this.businessObjectModels.length; ++n) {
+						for (var m = 0; m < this.businessObjectModels[n].businessObjects.length; ++m) {
+							if (!this.businessObjectModels[n].businessObjects[m].types) {
+								this.businessObjectModels[n].businessObjects[m].types = {};
+							}
+
+							this.businessObjectModels[n].businessObjects[m].modelOid = this.businessObjectModels[n].oid;
+							this.businessObjectModels[n].businessObjects[m].label = this.businessObjectModels[n].name
+									+ "/"
+									+ this.businessObjectModels[n].businessObjects[m].name;
+							this.businessObjects
+									.push(this.businessObjectModels[n].businessObjects[m]);
+						}
+					}
+				};
+
+				/**
+				 * 
+				 */
+				BusinessObjectManagementViewController.prototype.changeBusinessObject = function() {
+					BusinessObjectManagementService.instance()
+							.calculateBusinessObjectFields(this.businessObject);
+					this.initializeForm();
+				};
+
+				/**
+				 * 
+				 */
+				BusinessObjectManagementViewController.prototype.initializeForm = function() {
+					// Enhance BO with
+					// modelOid
+					// TODO Needed?
+
+					this.businessObject.modelOid = this.parameters.modelOid;
+
+					this.businessObjectManagementPanelController
+							.changeBusinessObject(this.businessObject);
+
+					this.formColumns = [];
+					var primitiveFields = this
+							.getPrimitiveFields(this.businessObject);
+					var fieldsPerColumn = Math.ceil(primitiveFields.length / 3);
+
+					for (var n = 0; n < primitiveFields.length; n += fieldsPerColumn) {
+						this.formColumns.push({
+							min : n,
+							max : n + fieldsPerColumn - 1
+						});
+					}
 				};
 
 				/**
@@ -82,7 +144,7 @@ define(
 					var self = this;
 
 					// Retrieve Process Instances the BOI is used in
-					
+
 					BusinessObjectManagementService
 							.instance()
 							.getProcessInstances(this.businessObject,
@@ -92,8 +154,8 @@ define(
 										self.processInstances = processInstances;
 										self.versionPanelExpanded = true;
 
-										// Prepare BOI for display 
-										
+										// Prepare BOI for display
+
 										self
 												.createMissingComplexFieldInstances(
 														self.currentBusinessObjectInstance,
@@ -261,7 +323,7 @@ define(
 				BusinessObjectManagementViewController.prototype.createMissingComplexFieldInstances = function(
 						instance, type) {
 					// Nothing to be done for Enumerations
-					
+
 					if (!type.fields) {
 						return;
 					}
