@@ -12,7 +12,7 @@ define(
 					provider : BusinessObjectManagementDataPropertiesPage,
 					pageHtmlUrl : m_urlUtils.getContextName()
 							+ "/plugins/business-object-management/properties-pages/businessObjectManagementDataPropertiesPage.html",
-					pageName : "BusinessObject Management",
+					pageName : "Business Object Management",
 					pageIconUrl : "plugins/business-object-management/css/images/business-object.png",
 					visibility : "always"
 				} ]

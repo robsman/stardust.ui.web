@@ -430,6 +430,254 @@ define(
 									};
 								});
 
+				/**
+				 * Problems:
+				 * 
+				 * A timeout had to be introduced to wait for Angular to
+				 * complete DOM operations.
+				 */
+				module
+						.directive(
+								'sdTable',
+								function() {
+									return {
+										restrict : "A",
+										compile : function(element, attrs,
+												linker) {
+											return {
+												post : function(scope, element,
+														attributes, controller) {
+													// Parse expression
+
+													var expression = attrs.ngRepeat;
+													var match = expression
+															.match(/^\s*(.+)\s+in\s+(.*?)\s*(\s+track\s+by\s+(.+)\s*)?$/), trackByExp, trackByExpGetter, trackByIdExpFn, trackByIdArrayFn, trackByIdObjFn, lhs, rhs, valueIdentifier, keyIdentifier/*
+																																																													 * ,
+																																																													 * hashFnLocals = {
+																																																													 * $id :
+																																																													 * hashKey }
+																																																													 */;
+
+													if (!match) {
+														throw "Expected expression in form of '_item_ in _collection_[ track by _id_]' but got '{0}'.";
+													}
+
+													lhs = match[1];
+													rhs = match[2];
+													trackByExp = match[4];
+
+													if (trackByExp) {
+														trackByExpGetter = 0/*
+																			 * scope
+																			 * .$parse(trackByExp)
+																			 */;
+														trackByIdExpFn = function(
+																key, value,
+																index) {
+															// assign key,
+															// value, and $index
+															// to the locals so
+															// that they can be
+															// used in hash
+															// functions
+															if (keyIdentifier)
+																hashFnLocals[keyIdentifier] = key;
+															hashFnLocals[valueIdentifier] = value;
+															hashFnLocals.$index = index;
+															return trackByExpGetter(
+																	$scope,
+																	hashFnLocals);
+														};
+													} else {
+														trackByIdArrayFn = function(
+																key, value) {
+															return hashKey(value);
+														};
+														trackByIdObjFn = function(
+																key) {
+															return key;
+														};
+													}
+
+													match = lhs
+															.match(/^(?:([\$\w]+)|\(([\$\w]+)\s*,\s*([\$\w]+)\))$/);
+
+													if (!match) {
+														throw ngRepeatMinErr(
+																'iidexp',
+																"'_item_' in '_item_ in _collection_' should be an identifier or '(_key_, _value_)' expression, but got '{0}'.",
+																lhs);
+													}
+
+													valueIdentifier = match[3]
+															|| match[1];
+													keyIdentifier = match[2];
+
+													var elements = [];
+													var parent = element
+															.parent();
+													var table = jQuery(parent
+															.parent());
+
+													scope
+															.$watch(
+																	rhs,
+																	function(
+																			value) {
+																		if (value == null
+																				|| value.length == 0) {
+																			return;
+																		}
+
+																		// There
+																		// might
+																		// be a
+																		// way
+																		// to
+																		// synchronize
+																		// against
+																		// Angular
+																		// JS
+																		// operations;
+																		// using
+																		// timeout
+																		// meanwhile
+
+																		window
+																				.setTimeout(
+																						function() {
+																							if (attributes.sdTableSelection) {
+																								// Unbind
+																								// events
+
+																								table
+																										.find(
+																												"tbody tr")
+																										.unbind(
+																												"click");
+
+																								// Bind
+																								// click
+																								// events
+
+																								table
+																										.find(
+																												"tbody tr")
+																										.click(
+																												function(
+																														event) {
+																													var selection = scope
+																															.$eval(attributes.sdTableSelection);
+																													var index = jQuery(
+																															this)
+																															.index();
+
+																													console
+																															.log("Click =====> "
+																																	+ index);
+
+																													if (event.ctrlKey) {
+																														var indexInSelection;
+
+																														if ((indexInSelection = jQuery
+																																.inArray(
+																																		value[index],
+																																		selection)) > -1) {
+																															selection
+																																	.splice(
+																																			indexInSelection,
+																																			1);
+																														} else {
+																															selection
+																																	.push(value[index]);
+																														}
+
+																														jQuery(
+																																this)
+																																.toggleClass(
+																																		"selectedRow");
+																													} else {
+																														table
+																																.find(
+																																		"tbody tr")
+																																.removeClass(
+																																		"selectedRow");
+																														jQuery(
+																																this)
+																																.addClass(
+																																		"selectedRow");
+
+																														selection.length = 0;
+																														selection
+																																.push(value[index]);
+																													}
+
+																													scope
+																															.$apply();
+
+																													// TODO
+																													// Need
+																													// to
+																													// synchronize
+																													// with
+																													// apply?
+
+																													if (attributes.sdTableSelectionChanged) {
+																														scope
+																																.$apply(attributes.sdTableSelectionChanged);
+																													}
+																												});
+																							}
+
+																							// Initialize
+																							// selection
+
+																							markSelectedRows(
+																									table,
+																									scope
+																											.$eval(rhs),
+																									scope
+																											.$eval(attributes.sdTableSelection));
+
+																						},
+																						1000);
+																	});
+
+													scope
+															.$watch(
+																	attributes.sdTableSelection,
+																	function(
+																			value) {
+																		markSelectedRows(
+																				table,
+																				scope
+																						.$eval(rhs),
+																				value);
+																	});
+												}
+											};
+										}
+									};
+								});
+
+				/**
+				 * 
+				 */
+				function markSelectedRows(table, objects, selectedObjects) {
+					table.find("tbody tr").removeClass("selectedRow");
+
+					if (objects) {
+						for (var n = 0; n < objects.length; ++n) {
+							for (var m = 0; m < selectedObjects.length; ++m) {
+								if (objects[n] == selectedObjects[m]) {
+									jQuery(table.find("tbody tr")[n]).addClass(
+											"selectedRow");
+								}
+							}
+						}
+					}
+				}
+
 				module
 						.directive(
 								'sdDialog',

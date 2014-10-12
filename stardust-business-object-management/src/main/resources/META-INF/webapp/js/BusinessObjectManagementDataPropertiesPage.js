@@ -1,9 +1,10 @@
 define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
 				"bpm-modeler/js/m_commandsController",
-				"bpm-modeler/js/m_command", "bpm-modeler/js/m_propertiesPage" ],
+				"bpm-modeler/js/m_command", "bpm-modeler/js/m_propertiesPage",
+				"bpm-modeler/js/m_model" ],
 		function(m_utils, m_constants, m_commandsController, m_command,
-				m_propertiesPage) {
+				m_propertiesPage, m_model) {
 			return {
 				create : function(propertiesPanel) {
 					return new BusinessObjectManagementDataPropertiesPage(
@@ -17,7 +18,7 @@ define(
 
 				var propertiesPage = m_propertiesPage.createPropertiesPage(
 						newPropertiesPanel,
-						"BusinessObjectManagementDataPropertiesPage",
+						"businessObjectManagementDataPropertiesPage",
 						"Business Object Management");
 
 				m_utils.inheritFields(this, propertiesPage);
@@ -25,13 +26,29 @@ define(
 						BusinessObjectManagementDataPropertiesPage.prototype,
 						propertiesPage);
 
-				this.templates = [];
+				// TODO Hack to bind propertiesPanel; introduces a circular reference
+				// which prohibits printing
+
+				this.propertiesPanel.propertiesPage = this;
 
 				/**
 				 * 
 				 */
 				BusinessObjectManagementDataPropertiesPage.prototype.setElement = function() {
-					console.log(this);
+					var typeDeclaration = m_model
+							.findTypeDeclaration(this.propertiesPanel.data.structuredDataTypeFullId);
+					this.propertiesPanel.propertiesPage.typeDeclaration = typeDeclaration;
+
+					var fields = typeDeclaration.typeDeclaration.schema.elements[0].body[0].body;
+
+					this.propertiesPanel.propertiesPage.topLevelFields = [];
+
+					for (var n = 0; n < fields.length; ++n) {
+						if (!fields[n].appinfo) {
+							this.propertiesPanel.propertiesPage.topLevelFields
+									.push(fields[n]);
+						}
+					}
 				};
 
 				/**
@@ -44,30 +61,8 @@ define(
 				/**
 				 * 
 				 */
-				BusinessObjectManagementDataPropertiesPage.prototype.testMe = function() {
-					console.log("Test Me!");
-				};
-
-				/**
-				 * 
-				 */
 				BusinessObjectManagementDataPropertiesPage.prototype.validate = function() {
 					return true;
-				};
-
-				/**
-				 * 
-				 */
-				BusinessObjectManagementDataPropertiesPage.prototype.addTemplate = function() {
-					this.templates.push({});
-				};
-
-				/**
-				 * 
-				 */
-				BusinessObjectManagementDataPropertiesPage.prototype.removeTemplate = function(
-						index) {
-					this.templates.splice(index, 1);
 				};
 			}
 		});

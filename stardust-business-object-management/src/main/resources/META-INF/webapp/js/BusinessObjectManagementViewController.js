@@ -26,11 +26,9 @@ define(
 				 */
 				BusinessObjectManagementViewController.prototype.initialize = function() {
 					this.parameters = Utils.getQueryParameters();
-					console.log("Parameters");
-					console.log(this.parameters);
-
 					this.formColumns = [];
 					this.messages = [];
+
 					this.businessObjectManagementPanelController = BusinessObjectManagementPanelController
 							.create();
 
@@ -74,7 +72,6 @@ define(
 										}
 									}).fail(function() {
 							});
-
 				};
 
 				/**
