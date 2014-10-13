@@ -49,6 +49,20 @@ public class IntegrationManagementRestlet {
 		integrationManagement.stopCamelContext(contextId);
 	}
 
+	@GET
+	@Path("context/{contextId}/startAllRoutes")
+	@Produces(MediaType.TEXT_PLAIN)
+	public void startAllRoutesService(@PathParam("contextId") String contextId) {
+		integrationManagement.startAllRoutes(contextId);
+	}
+	
+	@GET
+	@Path("context/{contextId}/stopAllRoutes")
+	@Produces(MediaType.TEXT_PLAIN)
+	public void stopAllRoutesService(@PathParam("contextId") String contextId) {
+		integrationManagement.stopAllRoutes(contextId);
+	}
+
 	
 	@GET
 	@Path("context/{contextId}/routes/producers")
