@@ -10,17 +10,27 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.plugin.support.resources;
 
+import static java.util.Collections.unmodifiableList;
+import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
-import org.eclipse.stardust.common.utils.io.CloseableUtil;
+import org.eclipse.stardust.common.config.Parameters;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
+import org.eclipse.stardust.ui.web.plugin.utils.PluginUtils;
+import org.eclipse.stardust.ui.web.plugin.utils.PluginUtils.PluginDescriptor;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternResolver;
 
@@ -41,6 +51,8 @@ public class PluginResourceUtils
 
    public static final String SLASH = "/";
    
+   private static final Map<ResourcePatternResolver, ConcurrentMap<String, List<String>>> resourceResolutionCache = new WeakHashMap<ResourcePatternResolver, ConcurrentMap<String, List<String>>>();
+
    public static boolean isPluginPath(String path)
    {
       return (null != path) && path.startsWith(PATH_PLUGINS);
@@ -166,49 +178,22 @@ public class PluginResourceUtils
       
       try
       {
-         Resource[] pluginFiles;
-         try
-         {
-            pluginFiles = resolver.getResources("classpath*:/META-INF/*.portal-plugin");
-         }
-         catch (Exception e)
-         {
-            log.debug("exception occurred while searching resources with classpath*:/META-INF/*.portal-plugin");
-            pluginFiles = resolver.getResources("classpath*:/**/*.portal-plugin");
-         }
-
+         // TODO restrict to only plugin JARs, not any JAR having a matching package structure (classpath*: vs pluginDescriptor.baseUri)
          Set<String> resourcePathRoots = new HashSet<String>();
-
-         for (Resource resource : pluginFiles)
+         for (PluginDescriptor pluginDescriptor : PluginUtils.getAllPlugins(resolver))
          {
-            String pluginId = resource.getFilename().substring(0, resource.getFilename().lastIndexOf("."));
-            log.debug("Inspecting portal plugin '" + pluginId + "' (" + resource.getURI()
-                  + ") for modeler extensions ...");
-
-            InputStream isPluginDescriptor = resource.getInputStream();
-
-            try
-            {
-               String firstLine = new BufferedReader(new InputStreamReader(isPluginDescriptor)).readLine();
-               resourcePathRoots.add(firstLine);
-               log.debug("resorucePath for Plugin '" + pluginId + " -> " + firstLine);
-            }
-            finally
-            {
-               CloseableUtil.closeQuietly(isPluginDescriptor);
-            }
+            resourcePathRoots.add(pluginDescriptor.resourcesRoot);
          }
 
          for (String resourcePathRoot : resourcePathRoots)
          {
             try
             {
-               Resource[] resources = resolver.getResources("classpath*:" + resourcePathRoot + resourcePath);
-
-               for (Resource resource2 : resources)
+               List<Resource> resources = resolveResources(resolver, "classpath*:" + resourcePathRoot + resourcePath);
+               for (Resource resource : resources)
                {
-                  log.debug("found resoruce -> " + resource2.getFilename());
-                  allFiles.add(resource2.getFilename());
+                  log.debug("found resoruce -> " + resource.getFilename());
+                  allFiles.add(resource.getFilename());
                }
             }
             catch (Exception e)
@@ -218,12 +203,83 @@ public class PluginResourceUtils
             }
          }
       }
-      catch (IOException e)
+      catch (Exception e)
       {
          log.debug("Exception occurred while finding files." + resourcePath);
       }
 
       return allFiles;
+   }
+
+   /**
+    * Resolves resources matching a given pattern against the deployment.
+    * <p>
+    * Applies a resolution cache (by default, can be disabled globally).
+    *
+    * @param resolver
+    *           the Spring resource pattern resolver to be used
+    * @param locationPattern
+    *           the resource pattern
+    * @return a list of resources matching teh given pattern
+    * @throws IOException
+    */
+   public static List<Resource> resolveResources(ResourcePatternResolver resolver,
+         String locationPattern) throws IOException
+   {
+      ConcurrentMap<String, List<String>> resolutionCache = null;
+
+      if (Parameters.instance().getBoolean("Carnot.Client.Caching.PluginResourceResolution.Enabled", true))
+      {
+         synchronized (resourceResolutionCache)
+         {
+            resolutionCache = resourceResolutionCache.get(resolver);
+            if (null == resolutionCache)
+            {
+               resolutionCache = new ConcurrentHashMap<String, List<String>>();
+               resourceResolutionCache.put(resolver, resolutionCache);
+            }
+         }
+
+         // try to take advantage of a previously succeeded resolution ...
+         List<String> resolvedResources = resolutionCache.get(locationPattern);
+         if (null != resolvedResources)
+         {
+            // cache hit, yay!
+            List<Resource> resources = newArrayList(resolvedResources.size());
+            for (String resourceUri : resolvedResources)
+            {
+               // translate cached URI to resource (avoiding life-cycle problems when caching
+               // resources directly)
+               resources.add(resolver.getResource(resourceUri));
+            }
+
+            return resources;
+         }
+      }
+
+      // try to resolve pattern against deployment ...
+      List<Resource> resources = newArrayList();
+      List<String> resourceUris = newArrayList();
+      for (Resource resource : resolver.getResources(locationPattern))
+      {
+         if (log.isDebugEnabled())
+         {
+            log.debug("Found resource -> " + resource.getFilename());
+         }
+
+         resources.add(resource);
+
+         // avoiding life-cycle problems with Resource by caching only resource URIs
+         // and re-materializing resources upon resolution request
+         resourceUris.add(resource.getURI().toString());
+      }
+
+      if (null != resolutionCache)
+      {
+         // cache URIs of resolved resources to avoid further pattern matching
+         resolutionCache.putIfAbsent(locationPattern, unmodifiableList(resourceUris));
+      }
+      return resources;
    }
 
    private PluginResourceUtils()
