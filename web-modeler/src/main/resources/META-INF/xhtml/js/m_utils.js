@@ -540,8 +540,8 @@ define(
 				var ascendingFactor = ascending ? 1 : -1;
 
 				sortedObjects.sort(function(left, right) {
-					var leftValue = left[field].toLowerCase();
-					var rightValue = right[field].toLowerCase();
+					var leftValue = (left[field] || '').toLowerCase();
+					var rightValue = (right[field] || '').toLowerCase();
 
 					if (leftValue < rightValue) {
 						return -1 * ascendingFactor;
