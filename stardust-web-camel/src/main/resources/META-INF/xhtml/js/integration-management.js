@@ -119,6 +119,43 @@ function integrationManagementController($scope, $http) {
 	};
 	$scope.refreshTriggerConsumers();
 
+
+	// Start and stop common for all types of routes
+	$scope.startAllRoutes = function(id) {
+		var rootUrl = location.href.substring(0, location.href
+				.indexOf("/main.html"));
+		$http
+			.get(
+					rootUrl
+							+ "/services/rest/integration-management/context/"
+							+ id + "/startAllRoutes").success(
+					function(response) {
+						$scope.names = response;
+						$scope.refreshApplicationProducers();
+						$scope.refreshApplicationConsumers();
+						$scope.refreshTriggerConsumers();
+					});
+
+	}
+	
+	// Start and stop common for all types of routes
+	$scope.stopAllRoutes = function(id) {
+		var rootUrl = location.href.substring(0, location.href
+				.indexOf("/main.html"));
+		$http
+			.get(
+					rootUrl
+							+ "/services/rest/integration-management/context/"
+							+ id + "/stopAllRoutes").success(
+					function(response) {
+						$scope.names = response;
+						$scope.refreshApplicationProducers();
+						$scope.refreshApplicationConsumers();
+						$scope.refreshTriggerConsumers();
+					});
+	}
+	
+	
 	// Start and stop common for all types of routes
 	$scope.startOrStopRoute = function(id, status) {
 		if ($scope.cametContextId != "") {
