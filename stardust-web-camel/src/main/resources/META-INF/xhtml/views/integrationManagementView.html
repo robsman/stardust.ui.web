@@ -56,26 +56,37 @@ table.notes .timestampSpan {
 			<table style="width: 100%;" border="0">
 				<tr>
 					<td >
-						<table style="width: 100%;" >
+						<table style="width: 100%;"  border="1">
 							<thead >
-								<tr border="1">
+								<tr>
 									<th align="left">Context Id</th>
-									<th>Started</th>
+									<th>Status</th>
 									<th>Uptime</th>
 									<th>Version</th>
+									<th>Actions</th>
 								</tr>
 							</thead>
 			
 							<tbody >
 								<tr align="center"
 									ng-repeat="camelContext in filtredCamelContexts  | limitTo: itemsPerPage" 
-									ng-click="setSelected(camelContext.contextId)" 
-									ng-class="{selected : camelContext.contextId === idSelectedCamelContext}"
-									border="1">
-									<td align="left">{{ camelContext.contextId }}</td>
-									<td>{{ camelContext.started }}</td>
-									<td>{{ camelContext.uptime }}</td>
-									<td>{{ camelContext.version }}</td>
+									
+									ng-class="{selected : camelContext.contextId === idSelectedCamelContext}">
+									<td align="left" ng-click="setSelected(camelContext.contextId)" >{{ camelContext.contextId }}</td>
+									<td ng-click="setSelected(camelContext.contextId)" >{{ camelContext.status }}</td>
+									<td ng-click="setSelected(camelContext.contextId)" >{{ camelContext.uptime }}</td>
+									<td ng-click="setSelected(camelContext.contextId)" >{{ camelContext.version }}</td>
+									<td>
+										<a href="#" ng-click="startAllRoutes(camelContext.contextId)"
+											class="expandCollapseLink" title="Start All Routes">
+											<img
+												ng-src="plugins/stardust-web-camel/css/images/control_play.png" />
+										</a> <a href="#" ng-click="stopAllRoutes(camelContext.contextId)"
+											class="expandCollapseLink" title="Stop All Routes">
+											<img
+												ng-src="plugins/stardust-web-camel/css/images/control_stop.png" />
+										</a>
+									</td>
 								</tr>
 							</tbody>
 						</table>
@@ -157,11 +168,11 @@ table.notes .timestampSpan {
 										<td>{{ x.totalProcessingTime }}</td>
 										<td>{{ x.status }}</td>
 										<td><a href="#" ng-click="startOrStopRoute(x.id,x.status)"
-											class="expandCollapseLink" title="start"
+											class="expandCollapseLink" title="Start"
 											ng-hide="x.status === 'Started'"><img
 												ng-src="plugins/stardust-web-camel/css/images/control_play.png" />
 										</a> <a href="#" ng-click="startOrStopRoute(x.id,x.status)"
-											class="expandCollapseLink" title="stop"
+											class="expandCollapseLink" title="Stop"
 											ng-show="x.status === 'Started'"><img
 												ng-src="plugins/stardust-web-camel/css/images/control_stop.png" />
 										</a>
@@ -218,7 +229,7 @@ table.notes .timestampSpan {
 										<th>Max Processing Time</th>
 										<th>Total Processing Time</th>
 										<th>Status</th>
-										<th>Action</th>
+										<th>Actions</th>
 									</tr>
 								</thead>
 								<tbody >
@@ -235,14 +246,15 @@ table.notes .timestampSpan {
 										<td>{{ x.totalProcessingTime }}</td>
 										<td>{{ x.status }}</td>
 										<td><a href="#" ng-click="startOrStopRoute(x.id,x.status)"
-											class="expandCollapseLink" title="start"
+											class="expandCollapseLink" title="Start"
 											ng-hide="x.status === 'Started'"><img
 												ng-src="plugins/stardust-web-camel/css/images/control_play.png" />
-										</a> <a href="#" ng-click="startOrStopRoute(x.id,x.status)"
-											class="expandCollapseLink" title="stop"
-											ng-show="x.status === 'Started'"><img
+											</a>
+											<a href="#" ng-click="startOrStopRoute(x.id,x.status)"
+												class="expandCollapseLink" title="Stop"
+												ng-show="x.status === 'Started'"><img
 												ng-src="plugins/stardust-web-camel/css/images/control_stop.png" />
-										</a>
+										    </a>
 										</td>
 									</tr>
 								</tbody>
@@ -312,11 +324,11 @@ table.notes .timestampSpan {
 										<td>{{ x.totalProcessingTime }}</td>
 										<td>{{ x.status }}</td>
 										<td><a href="#" ng-click="startOrStopRoute(x.id,x.status)"
-											class="expandCollapseLink" title="start"
+											class="expandCollapseLink" title="Start"
 											ng-hide="x.status === 'Started'"><img
 												ng-src="plugins/stardust-web-camel/css/images/control_play.png" />
 										</a> <a href="#" ng-click="startOrStopRoute(x.id,x.status)"
-											class="expandCollapseLink" title="stop"
+											class="expandCollapseLink" title="Stop"
 											ng-show="x.status === 'Started'"><img
 												ng-src="plugins/stardust-web-camel/css/images/control_stop.png" />
 										</a>
