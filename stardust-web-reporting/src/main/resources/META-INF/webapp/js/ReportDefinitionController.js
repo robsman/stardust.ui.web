@@ -415,7 +415,9 @@ define(
 
 								self.runInAngularContext(function (scope) {
 									scope.$watch("report.scheduling", function (newValue, oldValue) {
-										self.getNextExecutionDate();
+									   if (angular.equals(newValue.delivery, oldValue.delivery)) {
+									      self.getNextExecutionDate();                                 
+                              } 
 									}, true);
 								});
 			
