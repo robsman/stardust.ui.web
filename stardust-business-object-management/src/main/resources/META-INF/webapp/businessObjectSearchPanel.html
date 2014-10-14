@@ -12,12 +12,12 @@
 	<table class="formTable">
 		<tr>
 			<td><label>{{businessObjectManagementPanelController.businessObject.primaryKeyField.label}}</label>
-				<input type="text" style="width: 100px; margin-left: 5px;"
+				<input type="number" style="width: 100px; margin-left: 5px;"
 				ng-model="businessObjectManagementPanelController.businessObject.primaryKeyField.filterValue"
 				ng-blur="businessObjectManagementPanelController.filterBusinessObjectInstances()"></input></td>
 			<td
 				ng-repeat="field in businessObjectManagementPanelController.businessObject.keyFields"><label
-				style="margin-left: 5px;">{{field.label}}</label> <input type="text"
+				style="margin-left: 5px;">{{field.label}}</label><input type="text"
 				style="width: 100px; margin-left: 5px;" ng-model="field.filterValue"
 				ng-blur="businessObjectManagementPanelController.filterBusinessObjectInstances()"></input></td>
 			<td><a href="#" class="iconLink menuBarLink" title="Refresh"><i

@@ -26,10 +26,12 @@ define(
 						BusinessObjectManagementDataPropertiesPage.prototype,
 						propertiesPage);
 
-				// TODO Hack to bind propertiesPanel; introduces a circular reference
+				// TODO Hack to bind propertiesPanel; introduces a circular
+				// reference
 				// which prohibits printing
 
 				this.propertiesPanel.propertiesPage = this;
+				this.relationships = [ {} ];
 
 				/**
 				 * 
@@ -63,6 +65,19 @@ define(
 				 */
 				BusinessObjectManagementDataPropertiesPage.prototype.validate = function() {
 					return true;
+				};
+
+				/**
+				 * 
+				 */
+				BusinessObjectManagementDataPropertiesPage.prototype.removeRelationship = function() {
+				};
+
+				/**
+				 * 
+				 */
+				BusinessObjectManagementDataPropertiesPage.prototype.addRelationship = function() {
+					this.relationships.push({});
 				};
 			}
 		});

@@ -7,6 +7,13 @@
 	xmlns:ice="http://www.icesoft.com/icefaces/component"
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 <head>
+<link
+	href='http://fonts.googleapis.com/css?family=Lato:400,700,300italic,400italic'
+	rel='stylesheet' type='text/css' />
+<link href="../css/font-awesome-4.1.0/css/font-awesome.css"
+	rel="stylesheet"></link>
+<link href="../../checklist-management/css/stardust-modern.css"
+	rel="stylesheet" type="text/css"></link>
 <title>Business Object Management</title>
 </head>
 <body>
@@ -21,6 +28,38 @@
 				ng-change="elementView.propertiesPage.propertiesPanel.submitModelElementAttributeChange('carnot:engine:primaryKey', elementView.propertiesPage.primaryKeyFieldName)"><option
 						value="">Please select ...</option></select></td>
 		</tr>
+	</table>
+	<h2>Object Relationships</h2>
+	<table>
+		<thead>
+			<tr>
+				<th></th>
+				<th>Name</th>
+				<th>Cardinality</th>
+				<th>Name</th>
+				<th>Reference</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="relationship in relationships">
+				<td><a href="#" class="iconLink"
+					ng-click="elementView.propertiesPage.removeRelationship()"><i
+						class="fa fa-minus"></i></a></td>
+				<td><input></input></td>
+				<td><select><option>1:1</option>
+						<option>1:N</option>
+						<option>N:M</option></select></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td><a href="#" class="iconLink"
+					ng-click="elementView.propertiesPage.addRelationship()"><i
+						class="fa fa-plus"></i></a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+		</tbody>
 	</table>
 </body>
 </html>
