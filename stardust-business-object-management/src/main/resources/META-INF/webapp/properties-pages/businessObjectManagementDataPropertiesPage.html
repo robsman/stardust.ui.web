@@ -10,56 +10,88 @@
 <link
 	href='http://fonts.googleapis.com/css?family=Lato:400,700,300italic,400italic'
 	rel='stylesheet' type='text/css' />
-<link href="../css/font-awesome-4.1.0/css/font-awesome.css"
+<link
+	href="../../business-object-management/css/font-awesome-4.1.0/css/font-awesome.css"
 	rel="stylesheet"></link>
-<link href="../../checklist-management/css/stardust-modern.css"
+<link href="../../simple-modeler/css/stardust-modern.css"
 	rel="stylesheet" type="text/css"></link>
 <title>Business Object Management</title>
 </head>
 <body>
-	<p>Selecting a Primary Key Field will enable this Data to be used
-		as a Business Object.</p>
-	<table>
-		<tr>
-			<td><label>Primary Key Field</label></td>
-			<td><select
-				ng-model="elementView.propertiesPage.propertiesPanel.data.attributes['carnot:engine:primaryKey']"
-				ng-options="field.name as field.name for field in elementView.propertiesPage.topLevelFields"
-				ng-change="elementView.propertiesPage.propertiesPanel.submitModelElementAttributeChange('carnot:engine:primaryKey', elementView.propertiesPage.primaryKeyFieldName)"><option
-						value="">Please select ...</option></select></td>
-		</tr>
-	</table>
-	<h2>Object Relationships</h2>
-	<table>
-		<thead>
+	<div class="propertiesPage">
+		<table>
 			<tr>
-				<th></th>
-				<th>Name</th>
-				<th>Cardinality</th>
-				<th>Name</th>
-				<th>Reference</th>
+				<td><label>Primary Key Field
+						{{elementView.propertiesPage.propertiesPanel.data.attributes['carnot:engine:primaryKey']}}</label></td>
+				<td><select
+					ng-model="elementView.propertiesPage.propertiesPanel.data.attributes['carnot:engine:primaryKey']"
+					ng-options="field.name as field.name for field in elementView.propertiesPage.topLevelFields"
+					ng-change="elementView.propertiesPage.updatePrimaryKey('carnot:engine:primaryKey', elementView.propertiesPage.propertiesPanel.data.attributes['carnot:engine:primaryKey'])"><option
+							value="">Please select ...</option></select></td>
+				<td><p style="margin-left: 5px;">Selecting a Primary Key
+						Field will enable this Data to be used as a Business Object.</p></td>
 			</tr>
-		</thead>
-		<tbody>
-			<tr ng-repeat="relationship in relationships">
-				<td><a href="#" class="iconLink"
-					ng-click="elementView.propertiesPage.removeRelationship()"><i
-						class="fa fa-minus"></i></a></td>
-				<td><input></input></td>
-				<td><select><option>1:1</option>
-						<option>1:N</option>
-						<option>N:M</option></select></td>
-				<td></td>
-			</tr>
-			<tr>
-				<td><a href="#" class="iconLink"
-					ng-click="elementView.propertiesPage.addRelationship()"><i
-						class="fa fa-plus"></i></a></td>
-				<td></td>
-				<td></td>
-				<td></td>
-			</tr>
-		</tbody>
-	</table>
+		</table>
+		<div class="heading">Object Relationships</div>
+		<table class="dataTable">
+			<thead>
+				<tr>
+					<th></th>
+					<th>Other Business Object</th>
+					<th>Other Role</th>
+					<th>Other Cardinality</th>
+					<th>Reference to Other Object</th>
+					<th>This Role</th>
+					<th>Other Cardinality</th>
+					<th>Reference to this Object</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr
+					ng-repeat="relationship in elementView.propertiesPage.relationships">
+					<td><a href="#" class="iconLink"
+						ng-click="elementView.propertiesPage.removeRelationship($index)">-<i
+							class="fa fa-minus"></i></a></td>
+					<td><select ng-model="relationship.otherBusinessObjectFullId"
+						ng-options="businessObject.fullId as businessObject.label for businessObject in elementView.propertiesPage.otherBusinessObjects"
+						ng-change="elementView.propertiesPage.submitRelationshipChanges(relationship)"><option
+								value="">Please select ...</option></select></td>
+					<td><input ng-model="relationship.otherRole"
+						ng-blur="elementView.propertiesPage.submitRelationshipChanges(relationship)"></input></td>
+					<td><select ng-model="relationship.otherCardinality"
+						ng-change="elementView.propertiesPage.submitRelationshipChanges(relationship)">
+							<option value="TO_ONE">To One</option>
+							<option value="TO_MANY">To Many</option>
+					</select></td>
+					<td><select ng-model="relationship.foreignKeyField"
+						ng-options="field.name as field.name for field in elementView.propertiesPage.topLevelFields"
+						ng-change="elementView.propertiesPage.submitRelationshipChanges(relationship)"><option
+								value="">Please select ...</option></select></td>
+					<td><input ng-model="relationship.thisRole"
+						ng-blur="elementView.propertiesPage.submitRelationshipChanges(relationship)"></input></td>
+					<td><select ng-model="relationship.thisCardinality"
+						ng-change="elementView.propertiesPage.submitRelationshipChanges(relationship)">
+							<option value="TO_ONE">To One</option>
+							<option value="TO_MANY">To Many</option>
+					</select></td>
+					<td><select ng-model="relationship.foreignKeyField"
+						ng-options="field.name as field.name for field in elementView.propertiesPage.topLevelFields"
+						ng-change="elementView.propertiesPage.submitRelationshipChanges(relationship)"><option
+								value="">Please select ...</option></select></td>
+				</tr>
+				<tr>
+					<td><a href="#" class="iconLink"
+						ng-click="elementView.propertiesPage.addRelationship()">+<i
+							class="fa fa-plus"></i></a></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
 </body>
 </html>

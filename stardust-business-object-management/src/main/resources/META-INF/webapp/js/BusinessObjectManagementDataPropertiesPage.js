@@ -31,7 +31,7 @@ define(
 				// which prohibits printing
 
 				this.propertiesPanel.propertiesPage = this;
-				this.relationships = [ {} ];
+				this.relationships = [];
 
 				/**
 				 * 
@@ -51,6 +51,30 @@ define(
 									.push(fields[n]);
 						}
 					}
+
+					this.otherBusinessObjects = [];
+
+					for ( var n in m_model.getModels()) {
+						var model = m_model.getModels()[n];
+
+						for ( var m in model.dataItems) {
+							var data = model.dataItems[m];
+
+							if (data.dataType != "struct"
+							/*
+							 * || !data.attributes["carnot:engine:primaryKey"]
+							 */) {
+								continue;
+							}
+
+							data.label = data.name + "/" + model.name;
+
+							this.otherBusinessObjects.push(data);
+						}
+					}
+
+					console.log("Other Business Object =====>");
+					console.log(this.otherBusinessObjects);
 				};
 
 				/**
@@ -63,6 +87,17 @@ define(
 				/**
 				 * 
 				 */
+				BusinessObjectManagementDataPropertiesPage.prototype.updatePrimaryKey = function(
+						key, value) {
+					console.log("Update PK: " + key, value);
+
+					this.propertiesPanel.submitModelElementAttributeChange(key,
+							value);
+				};
+
+				/**
+				 * 
+				 */
 				BusinessObjectManagementDataPropertiesPage.prototype.validate = function() {
 					return true;
 				};
@@ -70,14 +105,43 @@ define(
 				/**
 				 * 
 				 */
-				BusinessObjectManagementDataPropertiesPage.prototype.removeRelationship = function() {
+				BusinessObjectManagementDataPropertiesPage.prototype.removeRelationship = function(
+						index) {
+					this.relationships.splice(index, 1);
+
+					this.submitRelationshipsChanges();
 				};
 
 				/**
 				 * 
 				 */
 				BusinessObjectManagementDataPropertiesPage.prototype.addRelationship = function() {
-					this.relationships.push({});
+					this.relationships.push({
+						otherCardinality : "TO_ONE",
+						thisCardinality : "TO_ONE"
+					});
+
+					this.submitRelationshipsChanges();
+				};
+
+				/**
+				 * 
+				 */
+				BusinessObjectManagementDataPropertiesPage.prototype.submitRelationshipChanges = function(
+						relationship) {
+					this.submitRelationshipsChanges();
+				};
+
+				/**
+				 * 
+				 */
+				BusinessObjectManagementDataPropertiesPage.prototype.submitRelationshipsChanges = function() {
+					console.log("Relationships");
+					console.log(JSON.stringify(this.relationships));
+
+					// this.propertiesPanel.submitModelElementAttributeChange(
+					// 'carnot:engine:businessObjectRelationships', JSON
+					// .stringify(this.relationships));
 				};
 			}
 		});
