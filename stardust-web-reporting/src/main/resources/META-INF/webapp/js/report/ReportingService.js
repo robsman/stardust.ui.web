@@ -433,20 +433,25 @@ define(
 
 				this.staticData = {
 					processStates : {
+						active : {
+							id : "Active", 
+							name : this.getI18N("reporting.definitionView.additionalFiltering.processState.active"),
+							order : 1
+						},
 						aborted : {
 							id : "Aborted",
 							name : this.getI18N("reporting.definitionView.additionalFiltering.processState.aborted"),
-							order : 1
+							order : 2
 						},
 						interrupted : {
 							id : "Interrupted",
 							name : this.getI18N("reporting.definitionView.additionalFiltering.processState.interrupted"),
-							order : 2
+							order : 3
 						},
 						completed : {
 							id : "Completed",
 							name : this.getI18N("reporting.definitionView.additionalFiltering.processState.completed"),
-							order : 3
+							order : 4
 						}
 					},
 					activityStates : {
