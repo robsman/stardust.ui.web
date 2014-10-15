@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 SunGard CSA LLC and others.
+ * Copyright (c) 2011, 2014 SunGard CSA LLC and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -42,16 +42,18 @@ import org.springframework.core.io.support.ResourcePatternResolver;
 public class PluginResourceUtils
 {
    private static final Logger log = LogManager.getLogger(PluginResourceUtils.class);
-   
+
    public static final String PATH_PLUGINS = "/plugins/";
-   
+
    public static final String PATH_META_INF = "META-INF/";
 
    public static final String EXT_PORTAL_PLUGIN = ".portal-plugin";
 
    public static final String SLASH = "/";
-   
+
    private static final Map<ResourcePatternResolver, ConcurrentMap<String, List<String>>> resourceResolutionCache = new WeakHashMap<ResourcePatternResolver, ConcurrentMap<String, List<String>>>();
+
+   private static final Map<ResourcePatternResolver, ConcurrentMap<String, List<Resource>>> resolvedResourcesCache = new WeakHashMap<ResourcePatternResolver, ConcurrentMap<String, List<Resource>>>();
 
    public static boolean isPluginPath(String path)
    {
@@ -61,7 +63,7 @@ public class PluginResourceUtils
    public static String getPluginId(String path)
    {
       String pluginId = null;
-      
+
       if (isPluginPath(path))
       {
          String uri = path.substring(PATH_PLUGINS.length());
@@ -72,14 +74,14 @@ public class PluginResourceUtils
             pluginId = uri.substring(0, idx);
          }
       }
-      
+
       return pluginId;
    }
-   
+
    public static String getFile(String path)
    {
       String file = "";
-      
+
       if (isPluginPath(path))
       {
          String uri = path.substring(PATH_PLUGINS.length());
@@ -90,10 +92,10 @@ public class PluginResourceUtils
             file = uri.substring(idx);
          }
       }
-      
+
       return file;
    }
-   
+
    public static String findPluginUrlPrefix(String pluginId)
    {
       ClassLoader cl = Thread.currentThread().getContextClassLoader();
@@ -160,12 +162,12 @@ public class PluginResourceUtils
             log.warn("Failed reading plugin descriptor " + pdName, ioe);
          }
       }
-  
+
       return prefix;
    }
-   
+
    /**
-    * 
+    *
     * @param resolver
     * @param resourcePath
     * @return
@@ -175,7 +177,7 @@ public class PluginResourceUtils
          throws IOException
    {
       Set<String> allFiles = new HashSet<String>();
-      
+
       try
       {
          // TODO restrict to only plugin JARs, not any JAR having a matching package structure (classpath*: vs pluginDescriptor.baseUri)
@@ -227,9 +229,29 @@ public class PluginResourceUtils
          String locationPattern) throws IOException
    {
       ConcurrentMap<String, List<String>> resolutionCache = null;
+      ConcurrentMap<String, List<Resource>> resourcesCache = null;
 
       if (Parameters.instance().getBoolean("Carnot.Client.Caching.PluginResourceResolution.Enabled", true))
       {
+         if (Parameters.instance().getBoolean("Carnot.Client.Caching.PluginResourceResolution.CacheResources", false))
+         {
+            synchronized (resolvedResourcesCache)
+            {
+               resourcesCache = resolvedResourcesCache.get(resolver);
+               if (null == resourcesCache)
+               {
+                  resourcesCache = new ConcurrentHashMap<String, List<Resource>>();
+                  resolvedResourcesCache.put(resolver, resourcesCache);
+               }
+            }
+
+            List<Resource> resolvedResources = resourcesCache.get(locationPattern);
+            if (null != resolvedResources)
+            {
+               return resolvedResources;
+            }
+         }
+
          synchronized (resourceResolutionCache)
          {
             resolutionCache = resourceResolutionCache.get(resolver);
@@ -274,6 +296,10 @@ public class PluginResourceUtils
          resourceUris.add(resource.getURI().toString());
       }
 
+      if (null != resourcesCache)
+      {
+         resourcesCache.putIfAbsent(locationPattern, unmodifiableList(resources));
+      }
       if (null != resolutionCache)
       {
          // cache URIs of resolved resources to avoid further pattern matching
