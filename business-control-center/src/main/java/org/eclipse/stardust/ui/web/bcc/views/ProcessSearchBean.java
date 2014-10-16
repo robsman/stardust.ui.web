@@ -706,6 +706,11 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
     */
    private void filterProcessDefinitionList()
    {
+      if (caseProcessDefinition == null)
+      {
+         return;
+      }
+      
       if (selectedHierarchy.equals(HIERARCHY_PROCESS)
             || selectedHierarchy.equals(HIERARCHY_ROOT_PROCESS))
       {
@@ -1090,7 +1095,11 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
 
       ProcessDefinition caseProcessDefinition = ProcessDefinitionUtils
             .getProcessDefinition(PredefinedConstants.CASE_PROCESS_ID);
-      caseDataPath = caseProcessDefinition.getAllDataPaths();
+      
+      if (caseProcessDefinition != null)
+      {
+         caseDataPath = caseProcessDefinition.getAllDataPaths();
+      }
       
       AuditTrailProcessInstanceInfo auditTrailProcessInstance = (AuditTrailProcessInstanceInfo) FacesUtils
             .getBeanFromContext("auditTrailProcessInstanceInfo");
