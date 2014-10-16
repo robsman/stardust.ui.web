@@ -400,6 +400,14 @@ define(
 								enumerationType : "preferenceData:criticality",
 								operators : ["E", "LE", "GE", "NE"],
 								customSort : true
+							},
+							activityType : {
+							   id : "activityType",
+							   name : this.getI18N("reporting.definitionView.additionalFiltering.activityType"),
+							   type : this.metadata.enumerationType,
+							   display : "singleSelect",
+							   operators : ["E"],
+							   enumerationType : "staticData:activityTypes"
 							}
 						}
 					}/*,
@@ -497,6 +505,16 @@ define(
 							id : "1",
 							name : this.getI18N("reporting.definitionView.additionalFiltering.priority.high")
 						}
+					},
+					activityTypes : {
+					   interactive : {
+					      id : "Interactive",
+					      name : this.getI18N("reporting.definitionView.additionalFiltering.activityType.interactive")
+					   },
+					   nonInteractive : {
+					      id : "NonInteractive",
+					      name : this.getI18N("reporting.definitionView.additionalFiltering.activityType.nonInteractive")
+					   }                 
 					}
 				};
 

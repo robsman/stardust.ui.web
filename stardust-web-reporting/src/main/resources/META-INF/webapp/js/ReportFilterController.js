@@ -183,7 +183,9 @@ define(
 					var dimensions = this.reportingService.getCumulatedDimensions(this.report);
 
 					for (var i = dimensions.length - 1; i >= 0; i--) {
-						if ((this.reportingService.metadata.durationType.id == dimensions[i].type.id) || (!donotFilter && dimensions[i].notSupportedAsFilter)) {
+						if ((this.reportingService.metadata.durationType.id == dimensions[i].type.id) || (!donotFilter && dimensions[i].notSupportedAsFilter) ||
+						         this.reportingService.metadata.objects.activityInstance.dimensions.activityType.id == dimensions[i].id) {
+						   //As activityType is non-Filterable so removing it from Filter List.
 							dimensions.splice(i, 1);
 						}
 					}
