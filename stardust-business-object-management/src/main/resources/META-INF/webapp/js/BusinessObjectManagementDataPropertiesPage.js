@@ -32,26 +32,14 @@ define(
 
 				this.propertiesPanel.propertiesPage = this;
 				this.relationships = [];
+				this.otherBusinessObjectTopLevelFields = {};
 
 				/**
 				 * 
 				 */
 				BusinessObjectManagementDataPropertiesPage.prototype.setElement = function() {
-					var typeDeclaration = m_model
-							.findTypeDeclaration(this.propertiesPanel.data.structuredDataTypeFullId);
-					this.propertiesPanel.propertiesPage.typeDeclaration = typeDeclaration;
-
-					var fields = typeDeclaration.typeDeclaration.schema.elements[0].body[0].body;
-
-					this.propertiesPanel.propertiesPage.topLevelFields = [];
-
-					for (var n = 0; n < fields.length; ++n) {
-						if (!fields[n].appinfo) {
-							this.propertiesPanel.propertiesPage.topLevelFields
-									.push(fields[n]);
-						}
-					}
-
+					this.propertiesPanel.propertiesPage.topLevelFields = this
+							.getTopLevelFieldsForBusinessObject(this.propertiesPanel.data);
 					this.otherBusinessObjects = [];
 
 					for ( var n in m_model.getModels()) {
@@ -67,7 +55,7 @@ define(
 								continue;
 							}
 
-							data.label = data.name + "/" + model.name;
+							data.label = model.name + "/" + data.name;
 
 							this.otherBusinessObjects.push(data);
 						}
@@ -75,6 +63,25 @@ define(
 
 					console.log("Other Business Object =====>");
 					console.log(this.otherBusinessObjects);
+				};
+
+				/**
+				 * 
+				 */
+				BusinessObjectManagementDataPropertiesPage.prototype.getTopLevelFieldsForBusinessObject = function(
+						businessObject) {
+					var topLevelFields = [];
+					var typeDeclaration = m_model
+							.findTypeDeclaration(businessObject.structuredDataTypeFullId);
+					var fields = typeDeclaration.typeDeclaration.schema.elements[0].body[0].body;
+
+					for (var n = 0; n < fields.length; ++n) {
+						if (!fields[n].appinfo) {
+							topLevelFields.push(fields[n]);
+						}
+					}
+
+					return topLevelFields;
 				};
 
 				/**
@@ -100,6 +107,24 @@ define(
 				 */
 				BusinessObjectManagementDataPropertiesPage.prototype.validate = function() {
 					return true;
+				};
+
+				/**
+				 * Lazy loading.
+				 */
+				BusinessObjectManagementDataPropertiesPage.prototype.changeOtherBusinessObject = function(
+						relationship) {
+					console.log("Change Business Object =====>");
+					console.log(relationship);
+
+					if (!this.otherBusinessObjectTopLevelFields[relationship.otherBusinessObject
+							.getFullId()]) {
+						this.otherBusinessObjectTopLevelFields[relationship.otherBusinessObject
+								.getFullId()] = this
+								.getTopLevelFieldsForBusinessObject(relationship.otherBusinessObject);
+					}
+
+					// this.submitRelationshipChanges(relationship);
 				};
 
 				/**

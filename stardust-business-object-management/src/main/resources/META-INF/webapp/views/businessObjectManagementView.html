@@ -143,11 +143,42 @@ ul.errorMessagesPanel {
 							<div ng-repeat="type in [getBusinessObject()]">
 								<div ng-include="'./objectPanel.html'"></div>
 							</div>
+							<h3>Related Objects</h3>
+							<table style="margin-bottom: 10px;">
+								<tr>
+									<td><a ng-click="openRelationshipDialog()"
+										class="commandLink">Fund Groups &raquo;</a></td>
+								</tr>
+							</table>
 						</div>
 					</td>
 				</tr>
 			</table>
 		</div>
+	</div>
+	<div sd-dialog="relationshipDialog" style="width: 200px;">
+		<div class="errorMessagesPanel"
+			ng-show="relationshipDialog.errors.length > 0">
+			<ul>
+				<li ng-repeat="error in relationshipDialog.errors"><span
+					class="errorMessage">{{error.message}}</span></li>
+			</ul>
+		</div>
+		<div ng-include="'../relationshipPanel.html'"></div>
+		<table>
+			<tr>
+				<td align="center">
+					<table cellpadding="0" cellspacing="0">
+						<tr>
+							<td><input type="button" value="Save"
+								ng-click="saveRelationshipChanges()" /></td>
+							<td><input type="button" value="Cancel"
+								ng-click="closeRelationshipDialog()" /></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
 	</div>
 </body>
 </html>

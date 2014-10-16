@@ -26,6 +26,7 @@ define(
 				 */
 				BusinessObjectManagementViewController.prototype.initialize = function() {
 					this.parameters = Utils.getQueryParameters();
+					this.relationshipDialog = {};
 					this.formColumns = [];
 					this.messages = [];
 
@@ -369,6 +370,21 @@ define(
 
 						this.cleanUpAngularFields(instance[key]);
 					}
+				};
+
+				/**
+				 * 
+				 */
+				BusinessObjectManagementViewController.prototype.openRelationshipDialog = function() {
+					this.relationshipDialog.dialog("open");
+					this.relationshipDialog.errors = [];
+				};
+
+				/**
+				 * 
+				 */
+				BusinessObjectManagementViewController.prototype.closeRelationshipDialog = function() {
+					this.relationshipDialog.dialog("close");
 				};
 
 				/**

@@ -52,9 +52,9 @@
 					<td><a href="#" class="iconLink"
 						ng-click="elementView.propertiesPage.removeRelationship($index)">-<i
 							class="fa fa-minus"></i></a></td>
-					<td><select ng-model="relationship.otherBusinessObjectFullId"
-						ng-options="businessObject.fullId as businessObject.label for businessObject in elementView.propertiesPage.otherBusinessObjects"
-						ng-change="elementView.propertiesPage.submitRelationshipChanges(relationship)"><option
+					<td><select ng-model="relationship.otherBusinessObject"
+						ng-options="businessObject as businessObject.label for businessObject in elementView.propertiesPage.otherBusinessObjects"
+						ng-change="elementView.propertiesPage.changeOtherBusinessObject(relationship)"><option
 								value="">Please select ...</option></select></td>
 					<td><input ng-model="relationship.otherRole"
 						ng-blur="elementView.propertiesPage.submitRelationshipChanges(relationship)"></input></td>
@@ -64,7 +64,7 @@
 							<option value="TO_MANY">To Many</option>
 					</select></td>
 					<td><select ng-model="relationship.foreignKeyField"
-						ng-options="field.name as field.name for field in elementView.propertiesPage.topLevelFields"
+						ng-options="field.name as field.name for field in elementView.propertiesPage.otherBusinessObjectTopLevelFields[relationship.otherBusinessObject.getFullId()]"
 						ng-change="elementView.propertiesPage.submitRelationshipChanges(relationship)"><option
 								value="">Please select ...</option></select></td>
 					<td><input ng-model="relationship.thisRole"
