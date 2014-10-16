@@ -21,8 +21,7 @@
 	<div class="propertiesPage">
 		<table>
 			<tr>
-				<td><label>Primary Key Field
-						{{elementView.propertiesPage.propertiesPanel.data.attributes['carnot:engine:primaryKey']}}</label></td>
+				<td><label>Primary Key Field</label></td>
 				<td><select
 					ng-model="elementView.propertiesPage.propertiesPanel.data.attributes['carnot:engine:primaryKey']"
 					ng-options="field.name as field.name for field in elementView.propertiesPage.topLevelFields"
@@ -42,7 +41,7 @@
 					<th>Other Cardinality</th>
 					<th>Reference to Other Object</th>
 					<th>This Role</th>
-					<th>Other Cardinality</th>
+					<th>This Cardinality</th>
 					<th>Reference to this Object</th>
 				</tr>
 			</thead>
@@ -64,7 +63,7 @@
 							<option value="TO_MANY">To Many</option>
 					</select></td>
 					<td><select ng-model="relationship.foreignKeyField"
-						ng-options="field.name as field.name for field in elementView.propertiesPage.otherBusinessObjectTopLevelFields[relationship.otherBusinessObject.getFullId()]"
+						ng-options="field.name as field.name for field in elementView.propertiesPage.topLevelFields"
 						ng-change="elementView.propertiesPage.submitRelationshipChanges(relationship)"><option
 								value="">Please select ...</option></select></td>
 					<td><input ng-model="relationship.thisRole"
@@ -75,7 +74,7 @@
 							<option value="TO_MANY">To Many</option>
 					</select></td>
 					<td><select ng-model="relationship.foreignKeyField"
-						ng-options="field.name as field.name for field in elementView.propertiesPage.topLevelFields"
+						ng-options="field.name as field.name for field in elementView.propertiesPage.otherBusinessObjectTopLevelFields[relationship.otherBusinessObject.getFullId()]"
 						ng-change="elementView.propertiesPage.submitRelationshipChanges(relationship)"><option
 								value="">Please select ...</option></select></td>
 				</tr>

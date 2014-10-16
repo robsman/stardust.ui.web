@@ -164,8 +164,11 @@ ul.errorMessagesPanel {
 					class="errorMessage">{{error.message}}</span></li>
 			</ul>
 		</div>
-		<div ng-include="'../relationshipPanel.html'"></div>
-		<table>
+		<div
+			ng-repeat="businessObjectManagementPanelController in [relationshipPanelController]">
+			<div ng-include="'../businessObjectSearchPanel.html'"></div>
+		</div>
+		<table style="width: 100%;">
 			<tr>
 				<td align="center">
 					<table cellpadding="0" cellspacing="0">
@@ -173,7 +176,7 @@ ul.errorMessagesPanel {
 							<td><input type="button" value="Save"
 								ng-click="saveRelationshipChanges()" /></td>
 							<td><input type="button" value="Cancel"
-								ng-click="closeRelationshipDialog()" /></td>
+								ng-click="closeRelationshipDialog()" style="margin-left: 5px;" /></td>
 						</tr>
 					</table>
 				</td>

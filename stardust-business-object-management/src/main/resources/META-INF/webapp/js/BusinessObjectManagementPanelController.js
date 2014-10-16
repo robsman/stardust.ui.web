@@ -47,6 +47,22 @@ define(
 				/**
 				 * 
 				 */
+				BusinessObjectManagementPanelController.prototype.setRootBusinessObjectInstance = function(
+						rootBusinessObjectInstance) {
+					this.rootBusinessObjectInstance = rootBusinessObjectInstance;
+				};
+
+				/**
+				 * 
+				 */
+				BusinessObjectManagementPanelController.prototype.setRelationship = function(
+						relationship) {
+					this.relationship = relationship;
+				};
+
+				/**
+				 * 
+				 */
 				BusinessObjectManagementPanelController.prototype.clearFilters = function() {
 					this.businessObject.primaryKeyField.filterValue = null;
 

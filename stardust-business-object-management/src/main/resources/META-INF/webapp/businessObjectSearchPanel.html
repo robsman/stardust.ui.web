@@ -1,11 +1,22 @@
 <div>
+	<div ng-show="businessObjectManagementPanelController.relationship">
+		<h2>{{businessObjectManagementPanelController.relationship.otherRole}}
+			of
+			{{businessObjectManagementPanelController.rootController.businessObject.name}}
+			{{businessObjectManagementPanelController.rootBusinessObjectInstance[businessObjectManagementPanelController.rootController.businessObject.primaryKeyField.id]}}</h2>
+		<p>Select associated
+			{{businessObjectManagementPanelController.relationship.otherRole}}
+			below:</p>
+	</div>
 	<table class="toolbar" style="width: 100%;">
 		<tr>
 			<td><a href="#" class="iconLink menuBarLink" title="Refresh"><i
 					class="fa fa-refresh"
 					ng-click="businessObjectManagementPanelController.filterBusinessObjectInstances()"></i></a><a
 				href="#" class="iconLink menuBarLink" title="Import from CSV"
-				style="margin-left: 5px;"><i class="fa fa-upload"
+				style="margin-left: 5px;"
+				ng-hide="businessObjectManagementPanelController.relationship"><i
+					class="fa fa-upload"
 					ng-click="businessObjectManagementPanelController.openImportCSVDialog()"></i></a></td>
 		</tr>
 	</table>

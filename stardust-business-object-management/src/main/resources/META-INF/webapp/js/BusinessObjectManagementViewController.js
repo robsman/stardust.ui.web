@@ -36,6 +36,11 @@ define(
 					this.businessObjectManagementPanelController
 							.initialize(this);
 
+					this.relationshipPanelController = BusinessObjectManagementPanelController
+							.create();
+
+					this.relationshipPanelController.initialize(this);
+
 					var self = this;
 
 					BusinessObjectManagementService
@@ -376,6 +381,27 @@ define(
 				 * 
 				 */
 				BusinessObjectManagementViewController.prototype.openRelationshipDialog = function() {
+					var self = this;
+
+					BusinessObjectManagementService
+							.instance()
+							.getBusinessObject(this.parameters.modelOid,
+									"FundGroup")
+							.done(
+									function(businessObject) {
+										self.relationshipPanelController
+												.changeBusinessObject(businessObject);
+										self.relationshipPanelController
+												.setRootBusinessObjectInstance(self.currentBusinessObjectInstance);
+										self.relationshipPanelController
+												.setRelationship({
+													otherRole : "Fund Groups"
+												});
+
+										self.safeApply();
+									}).fail(function() {
+							});
+
 					this.relationshipDialog.dialog("open");
 					this.relationshipDialog.errors = [];
 				};
