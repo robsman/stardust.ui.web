@@ -455,6 +455,10 @@ define(
 						}
 					},
 					activityStates : {
+						application : {
+							id : "Application",
+							name : this.getI18N("reporting.definitionView.additionalFiltering.activityState.application")
+						},
 						suspended : {
 							id : "Suspended",
 							name : this.getI18N("reporting.definitionView.additionalFiltering.activityState.suspended")
