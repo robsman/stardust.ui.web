@@ -35,6 +35,44 @@ function integrationManagementController($scope, $http) {
 	$scope.searchKeywordInConsumerTrigger = "";
 	$scope.filtredTriggerConsumersListForPagination = [];
 	
+
+	$scope.showRouteDeatilsTable = false;
+	$scope.selectedConsumerAppliocationRoute = null;
+	$scope.showDetailsConsumerApplicationRoute = false;
+	$scope.selectedConsumerAppliocationRouteId ="";
+	
+	
+	/// selected Consumer Trigger Route 
+	$scope.selectedConsumerTriggerRoute = "";
+	$scope.selectedConsumerTriggerRouteId ="";
+	$scope.showDetailsConsumerTriggerRoute = false;
+	
+	/// selected Producer Route 
+	$scope.selectedProducerRoute = "";
+	$scope.selectedProducerRouteId ="";
+	$scope.showDetailsProducerRoute = false;	
+	
+	
+	
+	$scope.cleanSelectedRoutesDetails = function() {
+		// clean Consumer Trigger Routes details table
+		$scope.selectedConsumerAppliocationRoute ="";
+		$scope.selectedConsumerAppliocationRouteId ="";
+		$scope.showDetailsConsumerApplicationRoute = false;
+		// end clean Consumer Trigger Routes details table
+		
+		// clean Consumer Trigger Routes details table
+		$scope.selectedConsumerTriggerRoute = "";
+		$scope.selectedConsumerTriggerRouteId ="";
+		$scope.showDetailsConsumerTriggerRoute = false;
+		// end clean Consumer Trigger Routes details table
+		
+		// clean Producer Routes details table
+		$scope.selectedProducerRoute = "";
+		$scope.selectedProducerRouteId ="";
+		$scope.showDetailsProducerRoute = false;
+		// end clean Producer Routes details table
+	}
 	$scope.refresh = function() {
 		var rootUrl = location.href.substring(0, location.href
 				.indexOf("/main.html"));
@@ -47,8 +85,7 @@ function integrationManagementController($scope, $http) {
 		$scope.currentPage = 0;
 		$scope.startItem = 0;
 		$scope.searchKeywordInCamelContext = "";
-		
-
+		$scope.cleanSelectedRoutesDetails();
 	};
 
 	$scope.refresh();
@@ -634,7 +671,43 @@ function integrationManagementController($scope, $http) {
 		$scope.idSelectedCamelContext = idSelectedCamelContext;
 		console.log(idSelectedCamelContext);
 		$scope.showRoutesDetails(idSelectedCamelContext);
+		$scope.cleanSelectedRoutesDetails();
 	}
 	
+	$scope.showConsumerApplicationRouteDetails = function(selectedCamelRoute) {
+		if (($scope.showDetailsConsumerApplicationRoute == true ) && ($scope.selectedConsumerAppliocationRoute===selectedCamelRoute)){
+			$scope.selectedConsumerAppliocationRoute ="";
+			$scope.selectedConsumerAppliocationRouteId ="";
+			$scope.showDetailsConsumerApplicationRoute = false;
+		}else {
+		$scope.selectedConsumerAppliocationRoute = selectedCamelRoute;
+		$scope.selectedConsumerAppliocationRouteId =selectedCamelRoute.id;
+		$scope.showDetailsConsumerApplicationRoute = true;
+		}
+	}
+	
+	$scope.showConsumerTriggerRouteDetails = function(selectedCamelRoute) {
+		if (($scope.showDetailsConsumerTriggerRoute == true ) && ($scope.selectedConsumerTriggerRoute===selectedCamelRoute)){
+			$scope.selectedConsumerTriggerRoute = "";
+			$scope.selectedConsumerTriggerRouteId = "";
+			$scope.showDetailsConsumerTriggerRoute = false;
+		}else {
+			$scope.selectedConsumerTriggerRoute = selectedCamelRoute;
+			$scope.selectedConsumerTriggerRouteId =selectedCamelRoute.id;
+			$scope.showDetailsConsumerTriggerRoute = true;
+		}
+	}
+	
+	$scope.showProducerRouteDetails = function(selectedCamelRoute) {
+		if (($scope.showDetailsProducerRoute == true ) && ($scope.selectedProducerRoute===selectedCamelRoute)){
+			$scope.selectedProducerRoute = "";
+			$scope.selectedProducerRouteId ="";
+			$scope.showDetailsProducerRoute = false;
+		}else {
+			$scope.selectedProducerRoute = selectedCamelRoute;
+			$scope.selectedProducerRouteId =selectedCamelRoute.id;
+			$scope.showDetailsProducerRoute = true;
+		}
+	}	
 	
 }
