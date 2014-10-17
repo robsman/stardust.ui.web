@@ -479,6 +479,12 @@ public class BusinessObjectManagementService {
 			json.add("types", types);
 		}
 
+		// Add relationship property
+		// TODO Convert to JSON
+		
+		json.addProperty("relationships", (String) data
+				.getAttribute("carnot:engine:businessObjectRelationships"));
+
 		return json;
 	}
 
@@ -689,9 +695,11 @@ public class BusinessObjectManagementService {
 
 				String[] expression = terms[n].split("=");
 
-				System.out.println("Expression: " + expression[0] + " " + expression[1]);
-				
-				//query.where(DataFilter.isEqual(businessObjectId, expression[0], expression[1]));
+				System.out.println("Expression: " + expression[0] + " "
+						+ expression[1]);
+
+				// query.where(DataFilter.isEqual(businessObjectId,
+				// expression[0], expression[1]));
 			}
 
 			addInstancesFromQuery(businessObjectInstances, query);

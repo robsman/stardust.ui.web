@@ -164,9 +164,9 @@ define(
 					console.log("Relationships");
 					console.log(JSON.stringify(this.relationships));
 
-					// this.propertiesPanel.submitModelElementAttributeChange(
-					// 'carnot:engine:businessObjectRelationships', JSON
-					// .stringify(this.relationships));
+					 this.propertiesPanel.submitModelElementAttributeChange(
+							'carnot:engine:businessObjectRelationships', JSON
+									.stringify(this.relationships));
 				};
 			}
 		});
