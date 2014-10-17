@@ -24,7 +24,12 @@ angular.module('bpm-common.services')
         var checkAndHide = function (config,eventName) {
           if (onWhitelist(config.url) &&
             (--numLoadings) === 0) {
-            eventBus.emitMsg(eventName, config.method);
+        	if(eventName==='http.error'){
+        		eventBus.emitMsg(eventName, config);
+        	}
+        	else{
+        		eventBus.emitMsg(eventName, config.method);
+        	}
           }
         };
 
@@ -43,11 +48,6 @@ angular.module('bpm-common.services')
           },
 
           responseError: function (response,x) {
-        	  /*
-            eventBus.emitMsg('httpError', {
-              'config' : response.config,
-              'status' : response.status
-            });*/
             checkAndHide(response.config,'http.error');
             return $q.reject(response);
           }

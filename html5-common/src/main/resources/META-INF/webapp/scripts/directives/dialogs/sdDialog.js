@@ -8,12 +8,19 @@ angular.module('bpm-common.directives')
 		scope : {
 			ngDialogScope : '=sdDialogScope',
 			ngOnOpen : '&sdOnOpen',
-			userTemplate : '@sdTemplate'
+			userTemplate : '@sdTemplate',
+			showDialog : '=sdShowDialog'
 		},
 		
 		link: function (scope, elem, attrs) {
-			elem.on('click', function (e) {
-
+			
+			attrs.sdTriggerOn = attrs.sdTriggerOn || 'click';
+			
+			if( angular.isDefined(attrs.sdShowDialog)){
+				attrs.sdTriggerOn='SCOPE';
+			};
+			
+			var showDialog = function(e){
 				var dialogType = (attrs.sdDialogType || 'INFO').toUpperCase(),
 					templateUrlBase = "plugins/html5-common/scripts/directives/dialogs/templates/",
 					templateUrl,
@@ -31,12 +38,20 @@ angular.module('bpm-common.directives')
 					isPopover = true;
 					className = 'ngdialog-theme-popup';
 				}
-
-				e.preventDefault();
+				
+				if(e && e.preventDefault){
+					e.preventDefault();
+				}
+				else{
+					e={clientX:0,clientY:0 };
+				}
 				
 				switch(dialogType){
 					case "INFO":
 						templatePage="info.html";
+						break;
+					case "ALERT":
+						templatePage="alert.html";
 						break;
 					case "CONFIRM":
 						templatePage="confirm.html";
@@ -56,7 +71,7 @@ angular.module('bpm-common.directives')
 							onOpen: scope.ngOnOpen,
 							position: [e.clientX,e.clientY],
 							isCentered : isPopover ? false : true,
-							isMoveable : (isPopover && attrs.sdIsMoveable === 'true') ? true : false,
+							isMoveable : (attrs.sdIsMoveable === 'true') ? true : false,
 							showOverlay: attrs.sdShowOverlay === 'false' ? false : true,
 							showClose: attrs.ngDialogShowClose === 'false' ? false : true,
 							title: attrs.sdTitle,
@@ -72,7 +87,19 @@ angular.module('bpm-common.directives')
 					ngDialog.open(options);
 				}
 				
-			});
+			};
+			
+			if(attrs.sdTriggerOn==="SCOPE"){
+				scope.$watch("showDialog",function(v){
+					if(v === true){
+						showDialog();
+						scope.showDialog=false;
+					}
+				});
+			}
+			else{
+				elem.on(attrs.sdTriggerOn, showDialog);
+			}
 		}
 	};
 	

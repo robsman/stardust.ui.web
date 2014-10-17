@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2011 SunGard CSA LLC and others. All rights reserved. This
+ * program and the accompanying materials are made available under the terms of
+ * the Eclipse Public License v1.0 which accompanies this distribution, and is
+ * available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
+ * documentation
+ ******************************************************************************/
+
 angular.module('bpm-common.directives')
   .directive('sdHttpLoader', ['$parse','$timeout','$injector','eventBus',
     function ($parse, $timeout,$injector,eventBus) {
@@ -8,11 +18,11 @@ angular.module('bpm-common.directives')
           title: '@',
           ttl: '@'
         },
-        template: '<div class="http-loader__wrapper" ' +
+        template: '<div class="loading" ' +
                   'ng-show="showLoader">'+
-                  'Loading...' +
+                  '<div class="loading-inner"></div>' +
                   '</div>',
-        link: function ($scope) {
+        link: function ($scope,elem,attrs) {
           
           $scope.methods = $scope.methods || 'GET,PUT,POST,DELETE';
           var methods =  $scope.methods.split(',')
@@ -52,10 +62,12 @@ angular.module('bpm-common.directives')
               timeoutId = undefined;
             }, ttl);
           };
+          
           eventBus.onMsg("http.request",function(e,m){
         	  toggleLoader(e,m);
         	  console.log("directive received event..");
           },$scope);
+          
           eventBus.onMsg("http.response",toggleLoader,$scope);
           eventBus.onMsg("http.error",toggleLoader,$scope);
         }
