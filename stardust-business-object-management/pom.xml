@@ -8,18 +8,15 @@
    <parent>
       <groupId>com.infinity.bpm</groupId>
       <artifactId>product-parent</artifactId>
-      <version>9.9.9-SNAPSHOT</version>
-      <relativePath>../../../branches/b_dev_8_1_x/sungard/product/product-parent/pom.xml</relativePath>
+      <version>8.1.1-RC3-SNAPSHOT</version>
    </parent>
 
    <groupId>org.eclipse.stardust.ui.web</groupId>
    <artifactId>stardust-business-object-management</artifactId>
-   <version>0.0.1-SNAPSHOT</version>
 
    <packaging>jar</packaging>
 
    <properties>
-      <ipp.version>8.1.1-M3-SNAPSHOT</ipp.version>
       <maven.test.skip>true</maven.test.skip>
    </properties>
 
@@ -34,20 +31,20 @@
       <dependency>
          <groupId>org.eclipse.stardust.engine</groupId>
          <artifactId>engine-module</artifactId>
-         <version>${ipp.version}</version>
+         <version>${project.version}</version>
          <type>pom</type>
       </dependency>
 
       <dependency>
          <groupId>org.eclipse.stardust.ui.web</groupId>
          <artifactId>ipp-portal-common</artifactId>
-         <version>${ipp.version}</version>
+         <version>${project.version}</version>
       </dependency>
 
       <dependency>
          <groupId>org.eclipse.stardust.ui.web</groupId>
          <artifactId>ipp-views-common</artifactId>
-         <version>${ipp.version}</version>
+         <version>${project.version}</version>
       </dependency>
 
       <dependency>
