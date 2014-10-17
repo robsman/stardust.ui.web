@@ -29,6 +29,11 @@
 		_$q=$q;
 		_eventBus=eventBus;
 		_ngDialog=ngDialog;
+		
+		this.data={};
+		this.message = "Hello World";
+		this.testShow = false;
+		
 	}
 	
 	/**
@@ -37,7 +42,6 @@
 	 */
 	controller.prototype.init = function(){
 		var that = this;
-		this.data={};
 		
 		_$q.all([_sdUserService.getUsers(),
 		         _sdUserService.getParticipants()])
@@ -82,6 +86,8 @@
 		_sdUserService.getPeople()
 		.then(function(data){
 			that.people = data;
+			that.message = "Retrieved Data";
+			that.testShow=true;
 		});
 	};
 	

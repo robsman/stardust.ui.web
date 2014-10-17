@@ -1,8 +1,14 @@
+<link rel="stylesheet" href="plugins/html5-common/styles/html5-common.css"/>
+
 <div class="view-panel" 
 	 ng-controller="sdParticipantManagementViewController as pmCtrl" 
 	 data-ng-init="pmCtrl.init()">
 	 
-	<div sd-http-loader methods="GET,POST">Loading!</div>
+	<div sd-http-loader 
+	     style="top:0;position:absolute;width:100%;left:0px;" 
+	     methods="GET,POST">
+	</div>
+	
 	<div sd-js-error >Error:</div>
 	
 	<!-- View Toolbar -->
@@ -11,7 +17,7 @@
 	<!-- View Content -->
 	<div class="view-panel-content">
 		<h4>{{i18n('views.worklistPanel-labelTitle')}}</h4>
-
+		message:{{pmCtrl.message}}
 		<!-- Table Toolbar -->	
 		<div class="tbl-toolbar">
 			<table cellpadding="0" cellspacing="0">
@@ -40,7 +46,7 @@
 		<button sd-dialog
 				sd-show-overlay="false"
 				sd-dialog-type="info" 
-				sd-position="popover"
+				ng-dialog-close-previous
 				sd-is-moveable="true"
 				sd-title="Testing Info Dialog"
 				sd-on-open="pmCtrl.onInfoOpen(res)">
@@ -54,6 +60,22 @@
 				sd-template="plugins/html5-admin-portal/partials/views/confirm.html">
 				Open Confirmation Dialog1
 		</button>
+		
+		<button ng-click="pmCtrl.testShow=!pmCtrl.testShow">testShow={{pmCtrl.testShow}}
+		</button>
+		<div style="position:relative;">
+			<button sd-moveable>move me</button>
+		</div>
+		<button sd-dialog 
+				sd-show-dialog="pmCtrl.testShow"
+				sd-title="Testing Alert Dialog"
+				sd-is-moveable="true"
+				sd-show-overlay="false"
+				sd-dialog-type="alert"
+				sd-template="Some message!{{pmCtrl.testShow}} {{pmCtrl.message}}">
+				Open Dialog on Scope {{testShow}}
+		</button>
+		
 		<h3 ng-if="pmCtrl.people">People</h3>
 		{{pmCtrl.people | json}}
 		<br>
