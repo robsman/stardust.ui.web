@@ -1,0 +1,53 @@
+@import url(http://fonts.googleapis.com/css?family=Lato:300,400,700);
+
+.sd-ac-container{
+  width:400px;
+  border:solid 1px #ddd;
+  padding:2px;
+}
+
+.sd-ac-container div[name='sd-ac-tag']{
+  display:inline-table;
+  font-size: 0.8em;
+  font-family: Lato;
+  padding: 0px 4px 0px 4px;
+  border:solid 1px #ccd5e4;
+  background-color:#eff2f7;
+  border-radius: 4px;
+  cursor:pointer;
+  margin-left:2px;
+  margin-top:2px;
+  margin-bottom:2px;
+}
+
+.sd-ac-container div[name='sd-ac-tag']:after{
+  content:'x';
+  font-size:0.9em;
+  position:relative;
+  top:-1px;
+}
+
+.sd-ac-container div[name='sd-ac-selectList']{
+  position:absolute;
+  border:solid 1px #AAA;
+  background-color:#fff;
+  border-radius:5px;
+  padding:0px;
+  -moz-box-shadow: 2px 3px 4px 0px #E2E2E2;
+  -webkit-box-shadow: 2px 3px 4px 0px #E2E2E2;
+  box-shadow: 2px 3px 4px 0px #E2E2E2;
+  width:inherit;
+}
+
+.sd-ac-container [name='sd-ac-selectList'] div{
+  cursor:pointer;
+  font-family:Lato;
+  font-size:0.8em;
+  padding:2px;
+  background-color:#fff;
+}
+
+.sd-ac-item-isActive{
+  background-color:#3B5998 !important;
+  color:#fff;
+}
