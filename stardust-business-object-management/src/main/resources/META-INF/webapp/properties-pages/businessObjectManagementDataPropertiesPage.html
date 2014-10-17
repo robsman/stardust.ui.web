@@ -62,7 +62,8 @@
 							<option value="TO_ONE">To One</option>
 							<option value="TO_MANY">To Many</option>
 					</select></td>
-					<td><select ng-model="relationship.foreignKeyField"
+					<td>{{relationship.otherForeignKeyField}}<select
+						ng-model="relationship.foreignKeyField"
 						ng-options="field.name as field.name for field in elementView.propertiesPage.topLevelFields"
 						ng-change="elementView.propertiesPage.submitRelationshipChanges(relationship)"><option
 								value="">Please select ...</option></select></td>
@@ -73,7 +74,7 @@
 							<option value="TO_ONE">To One</option>
 							<option value="TO_MANY">To Many</option>
 					</select></td>
-					<td><select ng-model="relationship.foreignKeyField"
+					<td><select ng-model="relationship.thisForeignKeyField"
 						ng-options="field.name as field.name for field in elementView.propertiesPage.otherBusinessObjectTopLevelFields[relationship.otherBusinessObject.getFullId()]"
 						ng-change="elementView.propertiesPage.submitRelationshipChanges(relationship)"><option
 								value="">Please select ...</option></select></td>

@@ -61,6 +61,7 @@ public class BusinessObjectManagementService {
 			.getLogger(BusinessObjectManagementService.class);
 	@Resource
 	private SessionContext sessionContext;
+	private final JsonMarshaller jsonIo = new JsonMarshaller();
 
 	// @Resource(name = XPathCacheManager.BEAN_ID)
 	// private XPathCacheManager xPathCacheManager;
@@ -481,9 +482,17 @@ public class BusinessObjectManagementService {
 
 		// Add relationship property
 		// TODO Convert to JSON
-		
-		json.addProperty("relationships", (String) data
-				.getAttribute("carnot:engine:businessObjectRelationships"));
+
+		String relationshipString = (String) data
+				.getAttribute("carnot:engine:businessObjectRelationships");
+
+		if (relationshipString != null) {
+			JsonObject wrapperJson = jsonIo.readJsonObject("{relationships: "
+					+ relationshipString + "}");
+
+			json.add("relationships", wrapperJson.get("relationships")
+					.getAsJsonArray());
+		}
 
 		return json;
 	}

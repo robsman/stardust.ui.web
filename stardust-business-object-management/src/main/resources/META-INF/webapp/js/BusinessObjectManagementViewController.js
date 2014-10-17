@@ -106,6 +106,9 @@ define(
 				 * 
 				 */
 				BusinessObjectManagementViewController.prototype.changeBusinessObject = function() {
+					console.log("Business Object");
+					console.log(this.businessObject);
+
 					BusinessObjectManagementService.instance()
 							.calculateBusinessObjectFields(this.businessObject);
 					this.initializeForm();
@@ -380,7 +383,8 @@ define(
 				/**
 				 * 
 				 */
-				BusinessObjectManagementViewController.prototype.openRelationshipDialog = function() {
+				BusinessObjectManagementViewController.prototype.openRelationshipDialog = function(
+						relationship) {
 					var self = this;
 
 					BusinessObjectManagementService
@@ -394,9 +398,7 @@ define(
 										self.relationshipPanelController
 												.setRootBusinessObjectInstance(self.currentBusinessObjectInstance);
 										self.relationshipPanelController
-												.setRelationship({
-													otherRole : "Fund Groups"
-												});
+												.setRelationship(relationship);
 
 										self.safeApply();
 									}).fail(function() {

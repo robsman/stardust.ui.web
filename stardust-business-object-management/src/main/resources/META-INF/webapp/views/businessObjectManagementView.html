@@ -145,9 +145,9 @@ ul.errorMessagesPanel {
 							</div>
 							<h3>Related Objects</h3>
 							<table style="margin-bottom: 10px;">
-								<tr>
-									<td><a ng-click="openRelationshipDialog()"
-										class="commandLink">Fund Groups &raquo;</a></td>
+								<tr ng-repeat="relationship in getBusinessObject().relationships">
+									<td><a ng-click="openRelationshipDialog(relationship)"
+										class="commandLink">{{relationship}} &raquo;</a></td>
 								</tr>
 							</table>
 						</div>

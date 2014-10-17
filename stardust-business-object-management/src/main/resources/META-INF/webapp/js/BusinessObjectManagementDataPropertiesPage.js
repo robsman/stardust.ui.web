@@ -41,6 +41,7 @@ define(
 					this.propertiesPanel.propertiesPage.topLevelFields = this
 							.getTopLevelFieldsForBusinessObject(this.propertiesPanel.data);
 					this.otherBusinessObjects = [];
+					this.otherBusinessObjectsMap = {};
 
 					for ( var n in m_model.getModels()) {
 						var model = m_model.getModels()[n];
@@ -58,11 +59,41 @@ define(
 							data.label = model.name + "/" + data.name;
 
 							this.otherBusinessObjects.push(data);
+							this.otherBusinessObjectsMap[model.id + "/"
+									+ data.id] = data;
 						}
 					}
 
 					console.log("Other Business Object =====>");
 					console.log(this.otherBusinessObjects);
+					console.log(this.otherBusinessObjectsMap);
+
+					// Initialize relationships
+
+					if (this.propertiesPanel.data.attributes["carnot:engine:businessObjectRelationships"]) {
+						console
+								.log(this.propertiesPanel.data.attributes["carnot:engine:businessObjectRelationships"]);
+
+						this.relationships = JSON
+								.parse(this.propertiesPanel.data.attributes["carnot:engine:businessObjectRelationships"])
+
+						for (var n = 0; n < this.relationships.length; ++n) {
+							this.relationships[n] = {
+								otherBusinessObject : this.relationships[n].otherBusinessObject ? this.otherBusinessObjectsMap[this.relationships[n].otherBusinessObject.modelId
+										+ "/"
+										+ this.relationships[n].otherBusinessObject.id]
+										: null,
+								otherRole : this.relationships[n].otherRole,
+								otherCardinality : this.relationships[n].otherCardinality,
+								otherForeignKeyField : this.relationships[n].otherForeignKeyField,
+								thisRole : this.relationships[n].thisRole,
+								thisCardinality : this.relationships[n].thisCardinality,
+								thisKeyField : this.relationships[n].thisKeyField
+							};
+						}
+
+						console.log(this.relationships);
+					}
 				};
 
 				/**
@@ -124,7 +155,7 @@ define(
 								.getTopLevelFieldsForBusinessObject(relationship.otherBusinessObject);
 					}
 
-					// this.submitRelationshipChanges(relationship);
+					this.submitRelationshipChanges(relationship);
 				};
 
 				/**
@@ -161,12 +192,30 @@ define(
 				 * 
 				 */
 				BusinessObjectManagementDataPropertiesPage.prototype.submitRelationshipsChanges = function() {
-					console.log("Relationships");
-					console.log(JSON.stringify(this.relationships));
+					var transfer = [];
 
-					 this.propertiesPanel.submitModelElementAttributeChange(
+					for (var n = 0; n < this.relationships.length; ++n) {
+						transfer
+								.push({
+									otherBusinessObject : {
+										id : this.relationships[n].otherBusinessObject.id,
+										modelId : this.relationships[n].otherBusinessObject.model.id
+									},
+									otherRole : this.relationships[n].otherRole,
+									otherCardinality : this.relationships[n].otherCardinality,
+									otherForeignKeyField : this.relationships[n].otherForeignKeyField,
+									thisRole : this.relationships[n].thisRole,
+									thisCardinality : this.relationships[n].thisCardinality,
+									thisKeyField : this.relationships[n].thisKeyField
+								});
+					}
+
+					console.log("Transfer");
+					console.log(transfer);
+
+					this.propertiesPanel.submitModelElementAttributeChange(
 							'carnot:engine:businessObjectRelationships', JSON
-									.stringify(this.relationships));
+									.stringify(transfer));
 				};
 			}
 		});
