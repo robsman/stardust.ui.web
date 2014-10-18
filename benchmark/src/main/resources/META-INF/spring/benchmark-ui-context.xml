@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:ippui="http://infinity.com/bpm/portal/common/uiDefinition"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/portal/common/uiDefinition.xsd">
+
+	<ippui:perspective id="benchmark"
+		messageBundles="benchmark-messages" controller="benchmarkPerspective">
+		<ippui:preferences>
+			<ippui:preferencePage name="helpDocumentation"
+				include="/plugins/doc/portal/execution-clients/benchmark.html" />
+		</ippui:preferences>
+		<ippui:launchPanel name="benchmarkLaunchPanel"
+			include="/plugins/benchmark/launchpanel/benchmarkLaunchPanelFrameAdapter.xhtml" />
+		<ippui:view name="benchmarkView"
+			include="/plugins/benchmark/views/benchmarkViewFrameAdapter.xhtml"
+			controller="benchmarkView" />
+	</ippui:perspective>
+</beans>

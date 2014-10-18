@@ -1,0 +1,187 @@
+<html>
+<head>
+<link
+	href='http://fonts.googleapis.com/css?family=Lato:400,700,300italic,400italic'
+	rel='stylesheet' type='text/css'>
+<link href="../../simple-modeler/css/font-awesome-4.1.0/css/font-awesome.css"
+	rel="stylesheet">
+<link href='../../simple-modeler/css/stardust-modern.css'
+	rel='stylesheet' />
+<link href="../../simple-modeler/css/thirdparty/datatables/jquery.dataTables.css"
+	rel="stylesheet" type="text/css" />
+<link href='../../simple-modeler/css/thirdparty/jquery/jquery-ui-1.10.2.custom.min.css'
+	rel='stylesheet' />
+<script data-main="../js/BenchmarkViewMain"
+	src="../../simple-modeler/js/libs/require/2.0.5/require-min.js"></script>
+<style>
+ul.errorMessagesPanel {
+	margin-left: 0px;
+	background: #ffcc33;
+	padding: 5px;
+	border: 1px solid #b25900;
+}
+
+.errorMessagesPanel li {
+	color: #b25900;
+}
+
+.dataTable input {
+	border: none !important;
+}
+</style>
+</head>
+<body ng-controller="benchmarkViewController">
+	<div class="splash" ng-cloak>
+		<span id="loadingMsg">Loading...</span>
+	</div>
+	<div ng-cloak>
+		<table class="formTable" style="margin-bottom: 10px;">
+			<tr>
+				<td><label>Business Object</label></td>
+				<td><select ng-model="businessObject"
+					ng-options="businessObject as businessObject.label for businessObject in businessObjects"
+					ng-change="changeBusinessObject()"><option value="">Please
+							select ...</option></select></td>
+			</tr>
+		</table>
+		<div ng-show="businessObject">
+			<table cellspacing="0" cellpadding="0" class="layoutTable"
+				style="margin-bottom: 10px;">
+				<tr valign="center">
+					<td><a href="#" class="iconLink"
+						ng-click="searchCollapsed = true" ng-hide="searchCollapsed"><i
+							class="fa fa-chevron-up"></i></a><a href="#" class="iconLink"
+						ng-click="searchCollapsed = false" ng-show="searchCollapsed"><i
+							class="fa fa-chevron-down"></i></a></td>
+					<td style="padding-left: 5px !important;"><h2
+							style="margin-bottom: 0px;">{{benchmarkPanelController.businessObject.name}}
+							Search</h2></td>
+				</tr>
+			</table>
+			<div ng-hide="searchCollapsed"
+				ng-include="'../businessObjectSearchPanel.html'"></div>
+			<div
+				ng-show="benchmarkPanelController.businessObject != null && processInstances.length > 0">
+				<table cellspacing="0" cellpadding="0" class="layoutTable"
+					style="margin-top: 10px;"
+					ng-show="currentBusinessObjectInstance != null">
+					<tr valign="center">
+						<td><a href="#" class="iconLink"
+							ng-click="versionPanelExpanded = true"
+							ng-hide="versionPanelExpanded"><i class="fa fa-chevron-down"></i></a><a
+							href="#" class="iconLink" ng-click="versionPanelExpanded = false"
+							ng-show="versionPanelExpanded"><i class="fa fa-chevron-up"></i></a></td>
+						<td style="padding-left: 5px !important;"><h2
+								style="margin-bottom: 0px;">Other Versions of this
+								{{benchmarkPanelController.businessObject.name}}</h2></td>
+					</tr>
+				</table>
+				<div
+					ng-show="versionPanelExpanded  && currentBusinessObjectInstance != null"
+					style="margin-bottom: 10px;">
+					<p>The selected
+						{{benchmarkPanelController.businessObject.name}} is
+						also processed in the following Process Instances:</p>
+					<div class="dataTableFrame"
+						style="margin-top: 20px; margin-bottom: 20px;">
+						<table cellpadding="0" cellspacing="0" class="dataTable"
+							style="width: 100%;">
+							<thead>
+								<tr>
+									<th>Process Name</th>
+									<th>Process OID</th>
+									<th>Start Time</th>
+									<th>Descriptors</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr sd-table-data="processInstance in processInstances">
+									<td>{{processInstance.name}}</td>
+									<td>{{processInstance.oid}}</td>
+									<td>{{processInstance.startTime}}</td>
+									<td></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+			<table style="width: 100%;">
+				<tr>
+					<td>
+						<h2>{{benchmarkPanelController.businessObject.name}}
+							{{currentBusinessObjectInstance[benchmarkPanelController.businessObject.primaryKeyField.id]}}</h2>
+					</td>
+					<td align="right"><input type="button" value="Save"
+						ng-click="saveBusinessObjectInstance()"
+						ng-show="currentBusinessObjectInstance != null"></input><input
+						type="button" value="Create"
+						ng-click="createBusinessObjectInstance()"
+						ng-show="newBusinessObjectInstance == null"
+						style="margin-left: 10px;"></input><input type="button"
+						value="Close" ng-show="currentBusinessObjectInstance != null"
+						ng-click="clearBusinessObjectInstance()"
+						style="margin-left: 10px;"></input></td>
+				</tr>
+				<tr ng-show="currentBusinessObjectInstance == null">
+					<td colspan="2"><em>No
+							{{benchmarkPanelController.businessObject.name}}
+							selected.</em></td>
+				</tr>
+				<tr ng-show="currentBusinessObjectInstance != null">
+					<td colspan="2">
+						<table>
+							<tr>
+								<td>
+									<ul class="errorMessagesPanel" ng-show="messages.length > 0">
+										<li ng-repeat="message in messages">{{message}}</li>
+									</ul>
+								</td>
+							</tr>
+						</table>
+						<div ng-repeat="instance in [currentBusinessObjectInstance]">
+							<div ng-repeat="type in [getBusinessObject()]">
+								<div ng-include="'./objectPanel.html'"></div>
+							</div>
+							<h3>Related Objects</h3>
+							<table style="margin-bottom: 10px;">
+								<tr ng-repeat="relationship in getBusinessObject().relationships">
+									<td><a ng-click="openRelationshipDialog(relationship)"
+										class="commandLink">{{relationship}} &raquo;</a></td>
+								</tr>
+							</table>
+						</div>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<div sd-dialog="relationshipDialog" style="width: 200px;">
+		<div class="errorMessagesPanel"
+			ng-show="relationshipDialog.errors.length > 0">
+			<ul>
+				<li ng-repeat="error in relationshipDialog.errors"><span
+					class="errorMessage">{{error.message}}</span></li>
+			</ul>
+		</div>
+		<div
+			ng-repeat="benchmarkPanelController in [relationshipPanelController]">
+			<div ng-include="'../businessObjectSearchPanel.html'"></div>
+		</div>
+		<table style="width: 100%;">
+			<tr>
+				<td align="center">
+					<table cellpadding="0" cellspacing="0">
+						<tr>
+							<td><input type="button" value="Save"
+								ng-click="saveRelationshipChanges()" /></td>
+							<td><input type="button" value="Cancel"
+								ng-click="closeRelationshipDialog()" style="margin-left: 5px;" /></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+	</div>
+</body>
+</html>

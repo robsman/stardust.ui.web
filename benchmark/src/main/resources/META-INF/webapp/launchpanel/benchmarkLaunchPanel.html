@@ -1,0 +1,41 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<link href="../../simple-modeler/css/thirdparty/jquery/jquery-ui-1.10.2.custom.min.css"
+	rel="stylesheet" type="text/css"></link>
+<link href="../../simple-modeler/css/font-awesome-4.1.0/css/font-awesome.css"
+	rel="stylesheet"></link>
+<link href="../../simple-modeler/css/stardust-modern.css"
+	rel="stylesheet" type="text/css"></link>
+<script type="text/javascript"
+	data-main="../js/BenchmarkLaunchPanelMain"
+	src="../js/libs/require/2.0.5/require-min.js"></script>
+<style>
+.linkBox {
+	text-decoration: none;
+}
+
+.listItem {
+	padding: 5px;
+	color: #655A6B;
+}
+
+.listItem:HOVER {
+	background-color: #E8E6FC;
+}
+</style>
+</head>
+<body>
+	<div class="splash" ng-cloak>
+		<span id="loadingMsg">Loading...</span>
+	</div>
+	<div ng-cloak>
+		<div ng-controller="benchmarkLaunchPanelController"
+			class="launchPanel">
+			<h2 class="launchPanelHeader">My Benchmarks</h2>
+			<a href="#" class="linkBox" ng-click="openBenchmarkView()">Open
+				Benchmark View &raquo; </a>
+		</div>
+</body>
+</html>
