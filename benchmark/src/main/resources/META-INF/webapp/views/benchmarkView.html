@@ -56,7 +56,7 @@ ul.errorMessagesPanel {
 		<table class="formTable">
 			<tr>
 				<td><label>Name</label></td>
-				<td><input style="width: 250px;"></input></td>
+				<td><input style="width: 250px;" ng-model="benchmark.name" ng-blur="submitChanges()"></input></td>
 			</tr>
 		</table>
 		<table class="formTable">
@@ -64,7 +64,7 @@ ul.errorMessagesPanel {
 				<td><label>Description</label></td>
 			</tr>
 			<tr>
-				<td><textarea style="width: 400px;"></textarea></td>
+				<td><textarea style="width: 400px;" ng-model="benchmark.description" ng-blur="submitChanges()"></textarea></td>
 			</tr>
 		</table>
 		<table class="benchmarkTable" style="margin-top: 10px;">
@@ -116,19 +116,21 @@ ul.errorMessagesPanel {
 					<div ng-show="row.type == 'PROCESS' || row.type == 'ACTIVITY'">
 						<table class="formTable">
 							<tr>
-								<td><select ng-model="row.conditions[$index].type"><option
+								<td><select ng-model="row.conditions[$index].type" ng-change="submitChanges()"><option
 											value="">No Benchmark</option>
 										<option value="DURATION">Duration Condition</option>
-										<option value="COMPLETION_TIME">Completion Time</option>
+										<option value="PROJECTED_COMPLETION_TIME">Current Time + Estimated Duration - Active Time</option>
+										<option value="ACTUAL_COMPLETION_TIME">Actual Completion Time</option>
 										<option value="USER_DEFINED">User Defined Condition</option></select></td>
 							</tr>
 						</table>
 						<table class="formTable"
-							ng-show="row.conditions[$index].type == 'COMPLETION_TIME'">
+							ng-show="row.conditions[$index].type == 'PROJECTED_COMPLETION_TIME' || row.conditions[$index].type == 'ACTUAL_COMPLETION_TIME'">
 							<tr>
 								<td><select
 									ng-model="row.conditions[$index].completionTimeOperator"><option
-											value="">not later then</option>
+											value="">not later then</option><option
+											value="">later then</option>
 								</select></td>
 							</tr>
 							<tr>

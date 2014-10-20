@@ -29,4 +29,8 @@
 		class="org.eclipse.stardust.ui.web.benchmark.portal.BenchmarkView">
 	</bean>
 
+	<bean id="trafficLightView"
+		class="org.eclipse.stardust.ui.web.benchmark.portal.TrafficLightView">
+	</bean>
+
 </beans>

@@ -38,13 +38,19 @@ define(
 					return this;
 				};
 
-
 				/**
 				 * 
 				 */
 				BenchmarkLaunchPanelController.prototype.openBenchmarkView = function() {
-						this.openView("benchmarkView",
-								"benchmarkName=Criticality", window.btoa("benchmarkName=Criticality"));
+					this.openView("benchmarkView", "benchmarkName=Criticality",
+							window.btoa("benchmarkName=Criticality"));
+				};
+
+				/**
+				 * 
+				 */
+				BenchmarkLaunchPanelController.prototype.openTrafficLightView = function() {
+					this.openView("trafficLightView", "", window.btoa(""));
 				};
 
 				/**
