@@ -1,0 +1,23 @@
+<div class="dataTableFrame" style="margin-bottom: 10px;">
+	<table cellpadding="0" cellspacing="0" class="dataTable"
+		style="width: 100%;">
+		<thead>
+			<tr>
+				<th>#</th>
+				<th>Name</th>
+				<th>Start Time</th>
+				<th>Details</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr sd-table-data="processInstance in processInstances"
+				sd-table-selection="selectedProcessInstances"
+				sd-table-selection-changed="onProcessInstancesChange()">
+				<td>{{processInstance.name}}</td>
+				<td>{{processInstance.oid}}</td>
+				<td>{{processInstance.startTime}}</td>
+				<td></td>
+			</tr>
+		</tbody>
+	</table>
+</div>

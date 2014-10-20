@@ -14,18 +14,6 @@
 	data-main="../js/BenchmarkLaunchPanelMain"
 	src="../js/libs/require/2.0.5/require-min.js"></script>
 <style>
-.linkBox {
-	text-decoration: none;
-}
-
-.listItem {
-	padding: 5px;
-	color: #655A6B;
-}
-
-.listItem:HOVER {
-	background-color: #E8E6FC;
-}
 </style>
 </head>
 <body>
@@ -35,12 +23,15 @@
 	<div ng-cloak>
 		<div ng-controller="benchmarkLaunchPanelController"
 			class="launchPanel">
-			<h2 class="launchPanelHeader">My Benchmarks</h2>
+			<h2 class="launchPanelHeader">My Benchmark Definitions</h2>
 			<table>
 				<tr>
 					<td><a href="#" class="linkBox" ng-click="openBenchmarkView()">Open
 							Benchmark View &raquo; </a></td>
 				</tr>
+			</table>
+			<h2 class="launchPanelHeader">My Status Views</h2>
+			<table>
 				<tr>
 					<td><a href="#" class="linkBox"
 						ng-click="openTrafficLightView()">Open Traffic Light View
@@ -48,8 +39,8 @@
 				</tr>
 				<tr>
 					<td><a href="#" class="linkBox"
-						ng-click="openGanttChartView()">Open Gantt Chart View
-							&raquo; </a></td>
+						ng-click="openGanttChartView()">Open Gantt Chart View &raquo;
+					</a></td>
 				</tr>
 			</table>
 		</div>

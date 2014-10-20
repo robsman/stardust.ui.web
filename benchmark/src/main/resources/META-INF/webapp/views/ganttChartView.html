@@ -6,11 +6,14 @@
 	href='http://fonts.googleapis.com/css?family=Lato:400,700,300italic,400italic'
 	rel='stylesheet' type='text/css'>
 <title>Gantt Chart View</title>
-<link href="../../simple-modeler/css/font-awesome-4.1.0/css/font-awesome.css"
+<link
+	href="../../simple-modeler/css/font-awesome-4.1.0/css/font-awesome.css"
 	rel="stylesheet">
-<link href="../../simple-modeler/css/thirdparty/jquery/jquery-ui-1.10.2.custom.css"
+<link
+	href="../../simple-modeler/css/thirdparty/jquery/jquery-ui-1.10.2.custom.css"
 	rel="stylesheet" type="text/css" />
-<link href="../../simple-modeler/css/stardust-modern.css" rel="stylesheet" type="text/css"></link>
+<link href="../../simple-modeler/css/stardust-modern.css"
+	rel="stylesheet" type="text/css"></link>
 <style>
 #statusTable {
 	position: relative;
@@ -138,88 +141,64 @@ div.delayedState {
 </style>
 <script src="../js/libs/require/2.0.5/require-min.js"></script>
 <script type="text/javascript">
-  require.config({
-    baseUrl: "../../",
-    paths: {
-      'jquery': [
-        'simple-modeler/js/libs/jquery/jquery-1.11.1.min'
-      ],
-      'jquery-ui': [
-        'simple-modeler/js/libs/jquery/plugins/jquery-ui-1.10.2.custom.min'
-      ],
-      'json': [
-        'simple-modeler/js/libs/json/json2'
-      ],
-      'angularjs': [
-        'simple-modeler/js/libs/angular/angular-1.0.2'
-      ],
-      'jquery.base64': [
-        'simple-modeler/js/libs/jquery/plugins/jquery.base64', ''
-      ],
-      'jstree': [
-        'simple-modeler/js/libs/jstree/jstree.min'
-      ],
-      moments: [
-        'business-calendar/js/libs/moments/moments-with-langs.min'
-      ],
-      fullcalendar: [
-        'business-calendar/js/libs/fullcalendar/fullcalendar'
-      ],
+	require
+			.config({
+				baseUrl : "../../",
+				paths : {
+					'jquery' : [ 'simple-modeler/js/libs/jquery/jquery-1.11.1.min' ],
+					'jquery-ui' : [ 'simple-modeler/js/libs/jquery/plugins/jquery-ui-1.10.2.custom.min' ],
+					'json' : [ 'simple-modeler/js/libs/json/json2' ],
+					'angularjs' : [ 'simple-modeler/js/libs/angular/angular-1.0.2' ],
+					'jquery.base64' : [
+							'simple-modeler/js/libs/jquery/plugins/jquery.base64',
+							'' ],
+					'jstree' : [ 'simple-modeler/js/libs/jstree/jstree.min' ],
+					moments : [ 'business-calendar/js/libs/moments/moments-with-langs.min' ],
+					fullcalendar : [ 'business-calendar/js/libs/fullcalendar/fullcalendar' ],
 
-      'i18n': 'common/InfinityBPMI18N'
-    },
-    shim: {
-      'jquery-ui': [
-        'jquery'
-      ],
-      'angularjs': {
-        require: "jquery",
-        exports: "angular"
-      },
-      'i18n': {
-        exports: "InfinityBPMI18N"
-      },
-      'jquery.base64': [
-        'jquery'
-      ],
-      'jstree': [
-        'jquery'
-      ],
-      fullcalendar: [
-        "jquery-ui", "moments"
-      ]
-    }
-  });
+					'i18n' : 'common/InfinityBPMI18N'
+				},
+				shim : {
+					'jquery-ui' : [ 'jquery' ],
+					'angularjs' : {
+						require : "jquery",
+						exports : "angular"
+					},
+					'i18n' : {
+						exports : "InfinityBPMI18N"
+					},
+					'jquery.base64' : [ 'jquery' ],
+					'jstree' : [ 'jquery' ],
+					fullcalendar : [ "jquery-ui", "moments" ]
+				}
+			});
 
-  require([
-    "require",
-    "jquery",
-    "jquery-ui",
-    "json",
-    "angularjs",
-    "moments",
-    "fullcalendar",
-    "simple-modeler/js/Utils",
-    "simple-modeler/js/AngularDirectives",
-    "benchmark/js/GanttChartViewController"
-  ], function(require, jquery, jqueryUi, json, angularjs, moments, fullcalendar, Utils, AngularDirectives,
-      GanttChartViewController) {
-    jQuery(document).ready(function() {
-      var module = angularjs.module("ganttChartViewApplication", []);
+	require([ "require", "jquery", "jquery-ui", "json", "angularjs", "moments",
+			"fullcalendar", "simple-modeler/js/Utils",
+			"simple-modeler/js/AngularDirectives",
+			"benchmark/js/GanttChartViewController" ], function(require,
+			jquery, jqueryUi, json, angularjs, moments, fullcalendar, Utils,
+			AngularDirectives, GanttChartViewController) {
+		jQuery(document).ready(
+				function() {
+					var module = angularjs.module("ganttChartViewApplication",
+							[]);
 
-      module.controller('ganttChartViewController', function($scope) {
-        Utils.inheritMethods($scope, GanttChartViewController.create());
+					module.controller('ganttChartViewController', function(
+							$scope) {
+						Utils.inheritMethods($scope, GanttChartViewController
+								.create());
 
-        $scope.initialize();
-      });
+						$scope.initialize();
+					});
 
-      AngularDirectives.initialize(module);
+					AngularDirectives.initialize(module);
 
-      angular.bootstrap(document, [
-        "ganttChartViewApplication"
-      ]);
-    });
-  });
+					angular
+							.bootstrap(document,
+									[ "ganttChartViewApplication" ]);
+				});
+	});
 </script>
 </head>
 <body ng-controller="ganttChartViewController">
@@ -305,30 +284,9 @@ div.delayedState {
 			</table>
 		</div>
 		<div ng-hide="!checklists || checklists.length < 2">
-			<h2>Processes/Activities</h2>
-			<div class="dataTableFrame" style="margin-bottom: 10px;">
-				<table cellpadding="0" cellspacing="0" class="dataTable"
-					style="width: 100%;">
-					<thead>
-						<tr>
-							<th>#</th>
-							<th>Name</th>
-							<th>Start Time</th>
-							<th>Details</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr sd-table-data="processInstance in checklists"
-							sd-table-selection="selectedProcessInstances"
-							sd-table-selection-changed="onProcessInstancesChange()">
-							<td>{{processInstance.name}}</td>
-							<td>{{processInstance.oid}}</td>
-							<td>{{processInstance.startTime}}</td>
-							<td></td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
+			<h2>Processes</h2>
+			<div ng-include="'../processListPanel.html'"
+				ng-repeat="processInstances in [checklists]"></div>
 		</div>
 		<div
 			ng-show="checklists.length == 1 || selectedProcessInstances.length == 1">
@@ -352,7 +310,7 @@ div.delayedState {
 					ng-show="!activityInstance.superActivityInstanceOid || expandedActivityInstances['' + activityInstance.superActivityInstanceOid]"
 					class="{{activityInstance.activity.type}}">
 					<td class="nameCell"
-						style="padding-left: {{15* activityInstance.depth}};"><a href=""
+						style="padding-left: {{15* activityInstance.depth"><a href=""
 						class="iconLink handleLink"
 						ng-show="isExpandable(activityInstance)"
 						ng-click="expandActivityInstance(activityInstance)"><i
