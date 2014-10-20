@@ -71,7 +71,7 @@ public class BusinessObjectQueryEvaluator extends ModelAwareQueryPredicate<IData
          @Override
          public Object visit(AbstractDataFilter filter, Object context)
          {
-            return null;
+            return (context instanceof IData) && ((IData) context).getId().equals(filter.getDataID());
          }
       };
    }
