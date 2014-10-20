@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<link
+	href='http://fonts.googleapis.com/css?family=Lato:400,700,300italic,400italic'
+	rel='stylesheet' type='text/css'>
+<title>Gantt Chart View</title>
+<link href="../../simple-modeler/css/font-awesome-4.1.0/css/font-awesome.css"
+	rel="stylesheet">
+<link href="../../simple-modeler/css/thirdparty/jquery/jquery-ui-1.10.2.custom.css"
+	rel="stylesheet" type="text/css" />
+<link href="../../simple-modeler/css/stardust-modern.css" rel="stylesheet" type="text/css"></link>
+<style>
+#statusTable {
+	position: relative;
+	left: 0px;
+	top: 0px;
+	border-collapse: collapse;
+	width: 100%;
+}
+
+#statusTable th {
+	border: #708090 1px solid;
+	color: #708090;
+	padding: 3px;
+}
+
+#statusTable td {
+	border: #708090 1px solid;
+	color: 24415E;
+	padding: 3px;
+}
+
+#ganttChartTable {
+	position: relative;
+	border: none;
+	left: 0px;
+	top: 0px;
+	border-collapse: collapse;
+	width: 100%;
+}
+
+#ganttChartTable td {
+	border-top: #708090 1px solid;
+	border-bottom: #708090 1px solid;
+}
+
+/* provide some minimal visual accomodation for IE8 and below */
+#ganttChartTable tr {
+	background: white;
+	min-height: 30px;
+}
+
+.nameCell {
+	padding: 2px;
+	font-size: 10px;
+}
+
+.descriptorCell {
+	padding: 2px;
+	font-size: 10px;
+}
+
+.userCell {
+	padding: 10px;
+}
+
+.userCell table {
+	font-size: 9px;
+}
+
+.controlCell {
+	padding: 2px;
+	border-right: #708090 1px solid;
+}
+
+.barCell {
+	width: 50%;
+}
+
+.barDivision {
+	position: relative;
+	border: none;
+	height: 5px;
+}
+
+i.normalState {
+	color: #A6C9B2;
+}
+
+i.atRiskState {
+	color: #FFE89A;
+}
+
+i.delayedState {
+	color: #CA3013;
+}
+
+div.normalState {
+	background-color: #A6C9B2;
+}
+
+div.atRiskState {
+	background-color: #FFE89A;
+}
+
+div.delayedState {
+	background-color: #CA3013;
+}
+
+#currentTimeDivision {
+	position: absolute;
+	border: none;
+	border-left: 1px dashed grey;
+	z-index: 999;
+}
+
+.tickTable {
+	position: absolute;
+}
+
+.tickTable td {
+	font-size: 10px !important;
+	color: #AAAAAA !important;
+}
+
+.tickTable td.tickCell {
+	border-right: 1px solid #AAAAAA !important;
+	height: 7px;
+}
+
+.handleLink {
+	font-size: 11px;
+	margin-left: 5px;
+	margin-right: 3px;
+}
+</style>
+<script src="../js/libs/require/2.0.5/require-min.js"></script>
+<script type="text/javascript">
+  require.config({
+    baseUrl: "../../",
+    paths: {
+      'jquery': [
+        'simple-modeler/js/libs/jquery/jquery-1.11.1.min'
+      ],
+      'jquery-ui': [
+        'simple-modeler/js/libs/jquery/plugins/jquery-ui-1.10.2.custom.min'
+      ],
+      'json': [
+        'simple-modeler/js/libs/json/json2'
+      ],
+      'angularjs': [
+        'simple-modeler/js/libs/angular/angular-1.0.2'
+      ],
+      'jquery.base64': [
+        'simple-modeler/js/libs/jquery/plugins/jquery.base64', ''
+      ],
+      'jstree': [
+        'simple-modeler/js/libs/jstree/jstree.min'
+      ],
+      moments: [
+        'business-calendar/js/libs/moments/moments-with-langs.min'
+      ],
+      fullcalendar: [
+        'business-calendar/js/libs/fullcalendar/fullcalendar'
+      ],
+
+      'i18n': 'common/InfinityBPMI18N'
+    },
+    shim: {
+      'jquery-ui': [
+        'jquery'
+      ],
+      'angularjs': {
+        require: "jquery",
+        exports: "angular"
+      },
+      'i18n': {
+        exports: "InfinityBPMI18N"
+      },
+      'jquery.base64': [
+        'jquery'
+      ],
+      'jstree': [
+        'jquery'
+      ],
+      fullcalendar: [
+        "jquery-ui", "moments"
+      ]
+    }
+  });
+
+  require([
+    "require",
+    "jquery",
+    "jquery-ui",
+    "json",
+    "angularjs",
+    "moments",
+    "fullcalendar",
+    "simple-modeler/js/Utils",
+    "simple-modeler/js/AngularDirectives",
+    "benchmark/js/GanttChartViewController"
+  ], function(require, jquery, jqueryUi, json, angularjs, moments, fullcalendar, Utils, AngularDirectives,
+      GanttChartViewController) {
+    jQuery(document).ready(function() {
+      var module = angularjs.module("ganttChartViewApplication", []);
+
+      module.controller('ganttChartViewController', function($scope) {
+        Utils.inheritMethods($scope, GanttChartViewController.create());
+
+        $scope.initialize();
+      });
+
+      AngularDirectives.initialize(module);
+
+      angular.bootstrap(document, [
+        "ganttChartViewApplication"
+      ]);
+    });
+  });
+</script>
+</head>
+<body ng-controller="ganttChartViewController">
+	<div class="splash" ng-cloak>
+		<span id="loadingMsg">Loading...</span>
+	</div>
+	<div style="margin: 10px;" ng-cloak>
+		<h1 ng-show="checklist">Process Status and Progress -
+			{{checklist.rootProcessInstance.processDefinition.name}}</h1>
+		<h1 ng-hide="checklist">Process Status and Progress</h1>
+		<table style="margin-top: 10px; margin-bottom: 10px;">
+			<tr>
+				<td><label>Benchmark</label></td>
+				<td><select ng-model="benchmark"
+					ng-options="benchmark as benchmark.name for benchmark in benchmarks"
+					ng-change="checklists = null">
+				</select></td>
+				<td ng-show="!checklist"><label>Process Type</label></td>
+				<td ng-show="!checklist"><select ng-model="checklistTypes"><option>All</option>
+						<option value="">Daily Fund Processing Europe</option>
+				</select></td>
+				<td ng-show="!checklist"><label>Business Date</label></td>
+				<td ng-show="!checklist"><input type="date"></input></td>
+				<td ng-show="!checklist"><label>Business Object</label></td>
+				<td ng-show="!checklist"><select ng-model="businessObject"
+					ng-options="businessObject as businessObject.label for businessObject in businessObjects"
+					ng-change="onBusinessObjectChange()"><option value="">All</option></select></td>
+			</tr>
+		</table>
+		<div ng-show="businessObject">
+			<table cellspacing="0" cellpadding="0" class="layoutTable">
+				<tr valign="center">
+					<td><a href="#" class="iconLink"
+						ng-click="searchCollapsed = true" ng-hide="searchCollapsed"><i
+							class="fa fa-chevron-up"></i></a><a href="#" class="iconLink"
+						ng-click="searchCollapsed = false" ng-show="searchCollapsed"><i
+							class="fa fa-chevron-down"></i></a></td>
+					<td style="padding-left: 5px !important;"><h2
+							style="margin-bottom: 0px;">{{businessObject.name}}
+							Selection</h2></td>
+				</tr>
+			</table>
+			<div ng-hide="searchCollapsed"
+				ng-include="'../../business-object-management/businessObjectSearchPanel.html'"></div>
+		</div>
+		<div ng-show="statusCumulants.length > 0">
+			<h2>
+				Status Overview<span ng-show="businessObjectInstance"> -
+					{{businessObject.name}}
+					{{businessObjectInstance[businessObject.primaryKeyField.id]}}</span>
+			</h2>
+			<table id="statusTable" cellpadding="0" cellspacing="0">
+				<thead>
+					<tr>
+						<th>Process/Activity</th>
+						<th ng-repeat="zone in benchmark.zones"
+							style="color: {{zone.color"><i class="fa fa-circle"></i>
+							{{zone.name}}</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="cumulant in statusCumulants"
+						ng-show="!cumulant.superCumulant || expandedCumulantsInStatusTable[cumulant.superCumulant]">
+						<td class="handleCell" style="padding-left: {{15* cumulant.depth"><a
+							class="iconLink handleLink"
+							ng-show="isExpandableInStatusTable(cumulant)"
+							ng-click="expandInStatusTable(cumulant)"><i
+								class="fa fa-plus-square-o"></i></a><a href=""
+							ng-show="isCollapsableInStatusTable(cumulant)"
+							ng-click="collapseInStatusTable(cumulant)"
+							class="iconLink handleLink"><i class="fa fa-minus-square-o"></i></a>
+							<span
+							ng-hide="isExpandableInStatusTable(cumulant) || isCollapsableInStatusTable(cumulant)"
+							style="margin-right: 15px;"></span> <i class="fa fa-gears"
+							ng-show="cumulant.type == 'Process'"></i>{{cumulant.name}}</td>
+						<td ng-repeat="zone in benchmark.zones" class="rightAligned"><a
+							ng-show="cumulant.zones[$index] > 0"
+							ng-click="$parent.$parent.loadProcessInstances(cumulant, $index)"
+							style="color: {{zone.color">{{cumulant.zones[$index]}}</a><span
+							ng-show="cumulant.zones[$index] == 0">0</span></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div ng-hide="!checklists || checklists.length < 2">
+			<h2>Processes/Activities</h2>
+			<div class="dataTableFrame" style="margin-bottom: 10px;">
+				<table cellpadding="0" cellspacing="0" class="dataTable"
+					style="width: 100%;">
+					<thead>
+						<tr>
+							<th>#</th>
+							<th>Name</th>
+							<th>Start Time</th>
+							<th>Details</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr sd-table-data="processInstance in checklists"
+							sd-table-selection="selectedProcessInstances"
+							sd-table-selection-changed="onProcessInstancesChange()">
+							<td>{{processInstance.name}}</td>
+							<td>{{processInstance.oid}}</td>
+							<td>{{processInstance.startTime}}</td>
+							<td></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<div
+			ng-show="checklists.length == 1 || selectedProcessInstances.length == 1">
+			<h2>
+				Progress <span ng-show="cumulant">{{cumulant.name}}
+					{{selectedProcessInstances[0].oid}}
+					({{benchmark.zones[zone].name}})</span>
+			</h2>
+			<table id="ganttChartTable" cellpadding="0" cellspacing="0"">
+				<tr>
+					<td colspan="3"><select ng-model="timeUnit"
+						ng-change="refreshTimeAxis()"><option value="h">Hours</option>
+							<option value="d">Days</option>
+							<option value="w">Weeks</option>
+							<option value="M">Months</option></select></td>
+					<td><div id="timeAxisDivision"
+							style="height: 20px; width: 100%;"></div></td>
+				</tr>
+				<tr valign="center"
+					ng-repeat="activityInstance in flatActivityInstanceList"
+					ng-show="!activityInstance.superActivityInstanceOid || expandedActivityInstances['' + activityInstance.superActivityInstanceOid]"
+					class="{{activityInstance.activity.type}}">
+					<td class="nameCell"
+						style="padding-left: {{15* activityInstance.depth}};"><a href=""
+						class="iconLink handleLink"
+						ng-show="isExpandable(activityInstance)"
+						ng-click="expandActivityInstance(activityInstance)"><i
+							class="fa fa-plus-square-o"></i></a><a href=""
+						ng-show="isCollapsable(activityInstance)"
+						ng-click="collapseActivityInstance(activityInstance)"
+						class="iconLink handleLink"><i class="fa fa-minus-square-o"></i></a>
+						<span
+						ng-hide="isExpandable(activityInstance) || isCollapsable(activityInstance)"
+						style="margin-right: 15px;"></span> <i class="fa fa-gears"
+						ng-show="activityInstance.activity.type == 'Subprocess'"></i><i
+						class="fa fa-gear"
+						ng-show="activityInstance.activity.type == 'Application' && !activityInstance.activity.defaultPerformer"></i>
+						<i class="fa fa-check-square-o"
+						ng-show="activityInstance.activity.type == 'Application' && activityInstance.activity.defaultPerformer"></i>
+						{{activityInstance.activity.name}}</td>
+					<td class="descriptorCell" ng-show="businessObject != '__All'">
+						{{getDescriptorValue(activityInstance, businessObject)}}</td>
+					<td class="userCell">
+						<table cellpadding="0" cellspacing="0" class="layoutTable">
+							<tr>
+								<td colspan="5"
+									ng-show="activityInstance.performer || activityInstance.performedBy"><span
+									ng-show="activityInstance.performer">{{activityInstance.userPerformer.name}}</span><span
+									ng-show="activityInstance.performedBy">{{activityInstance.performedBy.name}}</span>
+								</td>
+							</tr>
+							<tr>
+								<td ng-show="activityInstance.start == null"><label>Not
+										yet started.</label></td>
+								<td ng-show="activityInstance.start != null">
+									{{formatTimeStamp(activityInstance.start)}}&nbsp;&mdash;&nbsp;</td>
+								<td
+									ng-show="activityInstance.state != 2 && activityInstance.state != 4">
+									Now</td>
+								<td
+									ng-show="activityInstance.state == 2 || activityInstance.state == 4">
+									{{formatTimeStamp(activityInstance.lastModification)}}</td>
+							</tr>
+						</table>
+					</td>
+					<td class="controlCell" align="center"><a href="#"
+						title="Work on Action Item"
+						ng-show="activityInstance.state != 2 && activityInstance.state != 4 && activityInstance.state < 6 && activityInstance.subProcessInstance == null"
+						ng-click="activateActivityInstance(activityInstance)"><i
+							class="fa fa-rocket iconLink"></i></a></td>
+					<td class="barCell"><div id="{{activityInstance.oid}}"
+							class="{{calculateDelayState(activityInstance)}} barDivision"
+							style="visibility: hidden;"
+							ng-click="drillDown(activityInstance)"></div></td>
+				</tr>
+			</table>
+			<div id="currentTimeDivision" style="visibility: hidden;"></div>
+		</div>
+	</div>
+</body>
+</html>

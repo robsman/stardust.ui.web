@@ -6,8 +6,8 @@
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
 http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/portal/common/uiDefinition.xsd">
 
-	<ippui:perspective id="benchmark"
-		messageBundles="benchmark-messages" controller="benchmarkPerspective">
+	<ippui:perspective id="benchmark" messageBundles="benchmark-messages"
+		controller="benchmarkPerspective">
 		<ippui:preferences>
 			<ippui:preferencePage name="helpDocumentation"
 				include="/plugins/doc/portal/execution-clients/benchmark.html" />
@@ -19,6 +19,9 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 			controller="benchmarkView" />
 		<ippui:view name="trafficLightView"
 			include="/plugins/benchmark/views/trafficLightViewFrameAdapter.xhtml"
+			controller="trafficLightView" />
+		<ippui:view name="ganttChartView"
+			include="/plugins/benchmark/views/ganttChartViewFrameAdapter.xhtml"
 			controller="trafficLightView" />
 	</ippui:perspective>
 </beans>

@@ -2,9 +2,11 @@
           "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<link href="../../simple-modeler/css/thirdparty/jquery/jquery-ui-1.10.2.custom.min.css"
+<link
+	href="../../simple-modeler/css/thirdparty/jquery/jquery-ui-1.10.2.custom.min.css"
 	rel="stylesheet" type="text/css"></link>
-<link href="../../simple-modeler/css/font-awesome-4.1.0/css/font-awesome.css"
+<link
+	href="../../simple-modeler/css/font-awesome-4.1.0/css/font-awesome.css"
 	rel="stylesheet"></link>
 <link href="../../simple-modeler/css/stardust-modern.css"
 	rel="stylesheet" type="text/css"></link>
@@ -34,10 +36,22 @@
 		<div ng-controller="benchmarkLaunchPanelController"
 			class="launchPanel">
 			<h2 class="launchPanelHeader">My Benchmarks</h2>
-			<a href="#" class="linkBox" ng-click="openBenchmarkView()">Open
-				Benchmark View &raquo; </a>
-			<a href="#" class="linkBox" ng-click="openTrafficLightView()">Open
-				Traffic Light View &raquo; </a>
+			<table>
+				<tr>
+					<td><a href="#" class="linkBox" ng-click="openBenchmarkView()">Open
+							Benchmark View &raquo; </a></td>
+				</tr>
+				<tr>
+					<td><a href="#" class="linkBox"
+						ng-click="openTrafficLightView()">Open Traffic Light View
+							&raquo; </a></td>
+				</tr>
+				<tr>
+					<td><a href="#" class="linkBox"
+						ng-click="openGanttChartView()">Open Gantt Chart View
+							&raquo; </a></td>
+				</tr>
+			</table>
 		</div>
 </body>
 </html>

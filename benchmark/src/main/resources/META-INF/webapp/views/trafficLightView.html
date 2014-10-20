@@ -1,0 +1,114 @@
+<html>
+<head>
+<link
+	href='http://fonts.googleapis.com/css?family=Lato:400,700,300italic,400italic'
+	rel='stylesheet' type='text/css'>
+<link
+	href="../../simple-modeler/css/font-awesome-4.1.0/css/font-awesome.css"
+	rel="stylesheet">
+<link href='../../simple-modeler/css/stardust-modern.css'
+	rel='stylesheet' />
+<link
+	href="../../simple-modeler/css/thirdparty/datatables/jquery.dataTables.css"
+	rel="stylesheet" type="text/css" />
+<link
+	href='../../simple-modeler/css/thirdparty/jquery/jquery-ui-1.10.2.custom.min.css'
+	rel='stylesheet' />
+<script data-main="../js/TrafficLightViewMain"
+	src="../../simple-modeler/js/libs/require/2.0.5/require-min.js"></script>
+<style>
+ul.errorMessagesPanel {
+	margin-left: 0px;
+	background: #ffcc33;
+	padding: 5px;
+	border: 1px solid #b25900;
+}
+
+.errorMessagesPanel li {
+	color: #b25900;
+}
+
+.trafficLightTable {
+	border-collapse: collapse;
+	border: 1px solid #DDDDDD;
+}
+
+.trafficLightTableCell {
+	border: 1px solid #DDDDDD;
+	padding: 5px;
+}
+
+.dataTable input {
+	border: none !important;
+}
+
+.conditionCell {
+	background-color: #E8E6FC;
+}
+</style>
+</head>
+<body ng-controller="trafficLightViewController">
+	<div class="splash" ng-cloak>
+		<span id="loadingMsg">Loading...</span>
+	</div>
+	<div ng-cloak>
+		<h1>Traffic Lights</h1>
+		<a href="#" class="iconLink" ng-click="openTrafficLightSelectionDialog()"><i
+			class="fa fa-plus-circle"></i></a>
+		<div ng-repeat="benchmark in benchmarks">
+			<h2>{{benchmark.name}}</h2>
+			<table class="trafficLightTable">
+				<tr>
+					<td class="trafficLightTableCell"></td>
+					<td class="trafficLightTableCell"></td>
+					<td class="trafficLightTableCell"
+						ng-repeat="category in benchmark.categories"><span
+						style="color: {{category.color}};"><i class="fa fa-circle"></i>
+							{{category.name}}</span></td>
+				</tr>
+				<tr ng-repeat="trafficLight in benchmark.trafficLights">
+					<td class="trafficLightTableCell"><a href=""
+						ng-click="removeTrafficLight(benchmark, $index)" class="iconLink"><i
+							class="fa fa-minus-circle"></i></a></td>
+					<td class="trafficLightTableCell"><i class="fa fa-globe"
+						ng-show="trafficLight.type == 'MODEL'"></i><i class="fa fa-gears"
+						ng-show="trafficLight.type == 'PROCESS'"></i><i class="fa fa-gear"
+						ng-show="trafficLight.type == 'ACTIVITY'"></i>{{trafficLight.name}}</td>
+					<td ng-repeat="category in benchmark.categories"
+						class="trafficLightTableCell"><a>147</a></td>
+				</tr>
+				<tr>
+					<td class="trafficLightTableCell"><a href=""
+						ng-click="openTrafficLightSelectionDialog()" class="iconLink"><i
+							class="fa fa-plus-circle"></i></a></td>
+					<td colspan="{{benchmark.categories.length + 1}}"
+						class="trafficLightTableCell"></td>
+				</tr>
+			</table>
+		</div>
+		<div sd-dialog="trafficLightSelectionDialog" style="width: 200px;">
+			<div class="errorMessagesPanel"
+				ng-show="relationshipDialog.errors.length > 0">
+				<ul>
+					<li ng-repeat="error in relationshipDialog.errors"><span
+						class="errorMessage">{{error.message}}</span></li>
+				</ul>
+			</div>
+			<table style="width: 100%;">
+				<tr>
+					<td align="center">
+						<table cellpadding="0" cellspacing="0">
+							<tr>
+								<td><input type="button" value="Add"
+									ng-click="addTrafficLight()" /></td>
+								<td><input type="button" value="Cancel"
+									ng-click="closeTrafficLightSelectionDialog()" style="margin-left: 5px;" /></td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</body>
+</html>

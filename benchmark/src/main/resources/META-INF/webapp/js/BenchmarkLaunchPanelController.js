@@ -54,6 +54,13 @@ define(
 				};
 
 				/**
+				 * 
+				 */
+				BenchmarkLaunchPanelController.prototype.openGanttChartView = function() {
+					this.openView("ganttChartView", "", window.btoa(""));
+				};
+
+				/**
 				 * TODO - re-use a Util from web-modeler
 				 */
 				BenchmarkLaunchPanelController.prototype.openView = function(

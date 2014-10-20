@@ -33,4 +33,8 @@
 		class="org.eclipse.stardust.ui.web.benchmark.portal.TrafficLightView">
 	</bean>
 
+	<bean id="ganttChartView"
+		class="org.eclipse.stardust.ui.web.benchmark.portal.GanttChartView">
+	</bean>
+
 </beans>
