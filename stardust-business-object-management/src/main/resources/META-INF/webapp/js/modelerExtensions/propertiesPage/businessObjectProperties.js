@@ -5,16 +5,17 @@ define(
 		function(BusinessObjectManagementDataPropertiesPage, m_urlUtils) {
 			return {
 				propertiesPage : [
-
-				{
-					panelId : "dataView",
-					id : "businessObjectManagementDataPropertiesPage",
-					provider : BusinessObjectManagementDataPropertiesPage,
-					pageHtmlUrl : m_urlUtils.getContextName()
-							+ "/plugins/business-object-management/properties-pages/businessObjectManagementDataPropertiesPage.html",
-					pageName : "Business Object Management",
-					pageIconUrl : "plugins/business-object-management/css/images/business-object.png",
-					visibility : "always"
-				} ]
+//
+//				{
+//					panelId : "dataView",
+//					id : "businessObjectManagementDataPropertiesPage",
+//					provider : BusinessObjectManagementDataPropertiesPage,
+//					pageHtmlUrl : m_urlUtils.getContextName()
+//							+ "/plugins/business-object-management/properties-pages/businessObjectManagementDataPropertiesPage.html",
+//					pageName : "Business Object Management",
+//					pageIconUrl : "plugins/business-object-management/css/images/business-object.png",
+//					visibility : "always"
+//				} 
+				]
 			};
 		});
