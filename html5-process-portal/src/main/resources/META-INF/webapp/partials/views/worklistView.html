@@ -11,16 +11,20 @@
 			sda-page-size="5" sda-mode="">
 			
 			<sd-toolbar>
+				<script type="text/ng-template">
 					<a href="#" ng-click="worklistViewCtrl.completeAll()" title="Complete All" class="tbl-toolbar-item tbl-tool-link">
 					   <i class="fa fa-share"></i>
 					</a>
+				</script>
 			</sd-toolbar>
 			
 			<sd-column sda-field="name" sda-title="i18n('processportal.views-worklistPanel-column-overview')" sda-sortable="true">
 				<sd-column-template>
+					<script type="text/ng-template">
 						<a href="#" ng-click="worklistViewCtrl.activateWorkItem(rowData)">
 							{{rowData.activity.name}}
 						</a>
+					</script>
 				</sd-column-template>
 				<sd-column-filter></sd-column-filter>
 			</sd-column>
@@ -32,25 +36,25 @@
 
 			<sd-column sda-field="descriptors" sda-title="i18n('processportal.views-worklistPanel-column-descriptors')">
 				<sd-column-template>
+					<script type="text/ng-template">
 						<table>
 							<tr ng-repeat="desc in rowData.descriptors">
 								<td>{{desc.key}}</td>
 								<td>{{desc.value}}</td>
 							</tr>
 						</table>
+					</script>
 				</sd-column-template>
 				<sd-column-filter></sd-column-filter>
 			</sd-column>
 
 			<sd-column ng-repeat="descCol in worklistViewCtrl.descritorCols" 
 				sda-field="{{descCol.field}}" sda-title="'{{descCol.title}}'" sda-data-type="{{descCol.dataType}}" sda-sortable="{{descCol.sortable}}">
-				<sd-column-template>
-					{{rowData.oid}}
-				</sd-column-template>
 			</sd-column>
 
 			<sd-column sda-field="" sda-title="'Data'">
 				<sd-column-template>
+					<script type="text/ng-template">
 						<table ng-hide="!worklistViewCtrl.worklist.trivialManualActivities[rowData.oid]">
 							<tbody>
 						    	<tr ng-repeat="mapping in worklistViewCtrl.worklist.trivialManualActivities[rowData.oid].dataMappings">
@@ -72,12 +76,14 @@
 								</tr>
 							</tbody>
 						</table>
+					</script>
 				</sd-column-template>
 				<sd-column-filter></sd-column-filter>
 			</sd-column>
 
 			<sd-column sda-field="" sda-title="i18n('processportal.views-worklistPanel-column-actions')" sd-class="" sd-style="">
 				<sd-column-template>
+					<script type="text/ng-template">
 						<a href="#" ng-click="worklistViewCtrl.openNotes(rowData)" title="Open Notes" class="view-tool-link">
 							<i class="fa fa-comment-o"></i>
 						</a>
