@@ -24,6 +24,7 @@ import org.eclipse.stardust.engine.api.query.*;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
 import org.eclipse.stardust.engine.api.runtime.Grant;
 import org.eclipse.stardust.engine.api.runtime.User;
+import org.eclipse.stardust.ui.web.rest.Options;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 
 /**
@@ -40,14 +41,18 @@ public class WorklistUtils
     * @param participantQId
     * @return
     */
-   public QueryResult<?> getWorklistForParticipant(String participantQId)
+   public QueryResult<?> getWorklistForParticipant(String participantQId, Options options)
    {
       Participant participant = serviceFactoryUtils.getQueryService().getParticipant(participantQId);
       if (null != participant)
       {
          WorklistQuery query = org.eclipse.stardust.ui.web.viewscommon.utils.WorklistUtils.createWorklistQuery(participant);
          query.setPolicy(HistoricalStatesPolicy.WITH_LAST_USER_PERFORMER);
-   
+         query.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
+
+         SubsetPolicy subsetPolicy = new SubsetPolicy(options.pageSize, options.skip, true);
+         query.setPolicy(subsetPolicy);
+         
          Worklist worklist = serviceFactoryUtils.getWorkflowService().getWorklist((WorklistQuery) query);
          QueryResult<?> queryResult = extractParticipantWorklist(worklist, participant);
          
@@ -60,7 +65,7 @@ public class WorklistUtils
     * @param userId
     * @return
     */
-   public QueryResult<?> getWorklistForUser(String userId)
+   public QueryResult<?> getWorklistForUser(String userId, Options options)
    {
       User user = serviceFactoryUtils.getUserService().getUser(userId);
 
@@ -72,6 +77,9 @@ public class WorklistUtils
          // TODO - this is used to enhance performace but has a bug 
          // query.setPolicy(EvaluateByWorkitemsPolicy.WORKITEMS);
 
+         SubsetPolicy subsetPolicy = new SubsetPolicy(options.pageSize, options.skip, true);
+         query.setPolicy(subsetPolicy);
+         
          FilterOrTerm or = query.getFilter().addOrTerm();
          or.add(PerformingParticipantFilter.ANY_FOR_USER).add(new PerformingUserFilter(user.getOID()));
          

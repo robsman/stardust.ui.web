@@ -10,10 +10,11 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service.dto;
 
-import java.util.Date;
+import java.util.Map;
 
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOAttribute;
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOClass;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDescriptor;
 
 
 /**
@@ -27,15 +28,17 @@ public class ActivityInstanceDTO extends AbstractDTO
    @DTOAttribute("OID")
    public long oid;
 
-   @DTOAttribute("startTime")
-   public Date start;
+   @DTOAttribute("startTime.time")
+   public Long start;
 
-   @DTOAttribute("lastModificationTime")
-   public Date lastModification;
+   @DTOAttribute("lastModificationTime.time")
+   public Long lastModification;
 
    @DTOAttribute("activity")
    public ActivityDTO activity;
 
    @DTOAttribute("processInstance")
    public ProcessInstanceDTO processInstance;
+
+   public Map<String, ProcessDescriptor> descriptors;
 }

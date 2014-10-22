@@ -11,6 +11,7 @@
 package org.eclipse.stardust.ui.web.rest.service.utils;
 
 import java.io.Serializable;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -142,6 +143,18 @@ public class ActivityInstanceUtils
             {
                // Get Data Mappings
                List<PathDTO> dataMappings = PathDTO.toList(getAllDataMappingsAsJson(ai, context));
+
+               // Remove readonly mappings
+               Iterator<PathDTO> it = dataMappings.iterator();
+               while (it.hasNext())
+               {
+                  PathDTO pathDto = it.next();
+                  if (pathDto.readonly)
+                  {
+                     it.remove();
+                  }
+               }
+               
                cache.put(ai.getActivity().getId(), dataMappings);
             }
 

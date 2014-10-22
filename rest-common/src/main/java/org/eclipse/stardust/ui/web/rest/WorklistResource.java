@@ -10,10 +10,7 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -43,11 +40,15 @@ public class WorklistResource
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/participant/{participantQId}")
-   public Response getWorklistForParticipant(@PathParam("participantQId") String participantQId)
+   public Response getWorklistForParticipant(@PathParam("participantQId") String participantQId,
+         @QueryParam("skip") @DefaultValue("0") Integer skip)
    {
       try
       {
-         QueryResultDTO resultDTO = getWorklistService().getWorklistForParticipant(participantQId, "default");
+         int pageSize = 8; // TODO: Load from Configuration
+
+         Options options = new Options(pageSize, skip);
+         QueryResultDTO resultDTO = getWorklistService().getWorklistForParticipant(participantQId, "default", options);
 
          return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
       }
@@ -65,11 +66,14 @@ public class WorklistResource
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/user/{userId}")
-   public Response getWorklistForUser(@PathParam("userId") String userId)
+   public Response getWorklistForUser(@PathParam("userId") String userId,
+         @QueryParam("skip") @DefaultValue("0") Integer skip)
    {
       try
       {
-         QueryResultDTO resultDTO = getWorklistService().getWorklistForUser(userId, "default");
+         int pageSize = 8; // TODO: Load from Configuration         
+         Options options = new Options(pageSize, skip);
+         QueryResultDTO resultDTO = getWorklistService().getWorklistForUser(userId, "default", options);
 
          return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
       }
