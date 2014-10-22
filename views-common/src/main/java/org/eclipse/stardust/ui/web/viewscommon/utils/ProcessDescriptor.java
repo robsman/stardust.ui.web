@@ -15,13 +15,20 @@ import org.eclipse.stardust.ui.web.common.table.DefaultRowModel;
 public class ProcessDescriptor extends DefaultRowModel
 {
    private static final long serialVersionUID = 1L;
+   
+   String id; 
    String key;
    String value = null;
 
-   public ProcessDescriptor(String key, String value)
+   public ProcessDescriptor(String id, String key, String value)
    {
       this.key = key;
       this.value = value;
+   }
+
+   public String getId()
+   {
+      return key;
    }
 
    public String getKey()

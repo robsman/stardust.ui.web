@@ -153,7 +153,7 @@ public class CommonDescriptorUtils
          }
          else
          {
-            processDescriptor = new ProcessDescriptor(I18nUtils.getDataPathName(entry.getValue()),
+            processDescriptor = new ProcessDescriptor(entry.getKey(), I18nUtils.getDataPathName(entry.getValue()),
                   formatDescriptorValue(descriptors.get(entry.getKey()), entry.getValue().getAccessPath()));
             processDescriptors.add(processDescriptor);
          }
@@ -772,7 +772,7 @@ public class CommonDescriptorUtils
          {          
             // Read the DataPath Id key value from descriptorList 
             
-            processDescriptor = new ProcessDescriptor(I18nUtils.getDataPathName(dp), formatDescriptorValue(val, dp
+            processDescriptor = new ProcessDescriptor(dp.getId(), I18nUtils.getDataPathName(dp), formatDescriptorValue(val, dp
                   .getMappedType().toString()));
             processDescriptors.add(processDescriptor);
          }

@@ -34,8 +34,6 @@ public class MessagePropertiesBean extends AbstractMessageBean
     */
    public static MessagePropertiesBean getInstance()
    {
-      return (MessagePropertiesBean) FacesContext.getCurrentInstance().getApplication()
-            .getVariableResolver().resolveVariable(FacesContext.getCurrentInstance(),
-                  BEAN_NAME);
+      return (MessagePropertiesBean) FacesUtils.getBeanFromContext(FacesContext.getCurrentInstance(), BEAN_NAME);
    }
 }

@@ -118,7 +118,8 @@ public class DateUtils
     */
    public static String format(Date date, String format, TimeZone timeZone)
    {
-      Locale locale = FacesUtils.getLocaleFromRequest();
+      Locale locale = MessagePropertiesBean.getInstance().getLocaleObject();
+      
       SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format, locale);
 
       if (timeZone != null)
