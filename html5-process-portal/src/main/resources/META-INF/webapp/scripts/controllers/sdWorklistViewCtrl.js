@@ -18,7 +18,7 @@
 	var _sdViewUtilService;
 	var _sdWorklistService;
 	var _sdActivityInstanceService;
-
+	
 	/*
 	 * 
 	 */
@@ -31,8 +31,6 @@
 		_sdWorklistService = sdWorklistService;
 		_sdActivityInstanceService = sdActivityInstanceService;
 
-		this.initialize(sdViewUtilService.getViewParams($scope));
-
 		/*
 		 * This needs to be defined here as it requires access to $scope
 		 */
@@ -41,6 +39,17 @@
 				$scope.$apply();
 			}
 		};
+
+		this.initialize(sdViewUtilService.getViewParams($scope));
+		
+		var self = this;
+		// This is needed because $scope is not accessible later in instance methods!
+		$scope.$watch("worklistDataTable", function(newVal, oldVal) {
+			if (newVal != undefined && newVal != null && newVal != oldVal) {
+				self.dataTable = $scope.worklistDataTable;
+				// TODO: Can unregister here, to reduce the watchers!
+			}
+		});
 	}
 
 	/*
@@ -58,8 +67,7 @@
 		this.worklist = {};
 		this.worklist.selectedWorkItems = [];
 
-		// Update
-		this.refresh();
+		this.fetchDescriptorCols();
 	};
 
 	/*
@@ -77,16 +85,27 @@
 	 * 
 	 */
 	WorklistViewCtrl.prototype.refresh = function() {
+		this.dataTable.refresh(true);
+	};
+	
+	/*
+	 * 
+	 */
+	WorklistViewCtrl.prototype.fetchPage = function(options) {
 		var self = this;
+		var deferred = jQuery.Deferred();
+
+		var query = angular.extend({}, this.query);
+		query.options = options;
 
 		this.worklist.selectedWorkItems = [];
 
-		_sdWorklistService.getWorklist(this.query).done(function(data) {
-			self.worklist.workItems = data.list;
+		_sdWorklistService.getWorklist(query).done(function(data) {
+			self.worklist.list = data.list;
 			self.worklist.totalCount = data.totalCount;
 			
 			var oids = [];
-			angular.forEach(self.worklist.workItems, function(workItem, index){
+			angular.forEach(self.worklist.list, function(workItem, index){
 				if (workItem.trivial == undefined || workItem.trivial) {
 					oids.push(workItem.oid);
 				}
@@ -94,9 +113,39 @@
 
 			_sdActivityInstanceService.getTrivialManualActivitiesDetails(oids).done(function(data) {
 				self.worklist.trivialManualActivities = data;
+
+				deferred.resolve(self.worklist);
+
 				self.safeApply();
 			});
 		});
+
+		return deferred.promise();
+	};
+
+	/*
+	 * 
+	 */
+	WorklistViewCtrl.prototype.fetchDescriptorCols = function() {
+		var self = this;
+
+		// TO Get from REST, simulate for now
+		window.setTimeout(function(){
+			var descriptors = [];
+
+			self.descritorCols = [];
+			angular.forEach(descriptors, function(descriptor){
+				self.descritorCols.push({
+					field: "descriptors['" + descriptor.id + "'].value",
+					title: descriptor.title,
+					dataType: descriptor.type,
+					sortable: descriptor.sortable
+				});
+			});
+			
+			self.ready = true;
+			self.safeApply();
+		}, 500);
 	};
 
 	/*
@@ -167,6 +216,6 @@
 	};
 
 	angular.module('workflow-ui').controller('sdWorklistViewCtrl', 
-			['$scope', 'sdUtilService', 'sdViewUtilService', 'sdWorklistService', 'sdActivityInstanceService', 
+			['$scope', 'sdUtilService', 'sdViewUtilService', 'sdWorklistService', 'sdActivityInstanceService',
 			 WorklistViewCtrl]);
 })();

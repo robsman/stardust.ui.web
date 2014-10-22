@@ -51,6 +51,10 @@
 	margin-right: 5px;
 }
 
+.tbl-flt-title {
+   font-weight: normal;
+   margin-bottom: 10px;
+}
 /************** Behaviors *****************/
 
 .right {

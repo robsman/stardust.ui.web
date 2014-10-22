@@ -25,8 +25,6 @@
 		 * 
 		 */
 		WorklistService.prototype.getWorklist = function(query) {
-			var deferred = jQuery.Deferred();
-
 			console.log("Getting worklist for:");
 			console.log(query);
 
@@ -37,6 +35,15 @@
 				restUrl += "user/" + query.userId;
 			}
 
+			var options = "";
+			angular.forEach(query.options, function(value, key){
+				options += "&" + key + "=" + value;
+			});
+
+			if (options.length > 1) {
+				restUrl = restUrl + "?" + options.substr(1);
+			}
+			
 			return ajax(restUrl);
 		};
 
