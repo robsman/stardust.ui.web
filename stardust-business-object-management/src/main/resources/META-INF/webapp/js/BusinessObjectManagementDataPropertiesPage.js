@@ -102,16 +102,18 @@ define(
 				BusinessObjectManagementDataPropertiesPage.prototype.getTopLevelFieldsForBusinessObject = function(
 						businessObject) {
 					var topLevelFields = [];
-					var typeDeclaration = m_model
-							.findTypeDeclaration(businessObject.structuredDataTypeFullId);
-					var fields = typeDeclaration.typeDeclaration.schema.elements[0].body[0].body;
+					if (businessObject.structuredDataTypeFullId) {
+						var typeDeclaration = m_model
+								.findTypeDeclaration(businessObject.structuredDataTypeFullId);
+						var fields = typeDeclaration.typeDeclaration.schema.elements[0].body[0].body;
 
-					for (var n = 0; n < fields.length; ++n) {
-						if (!fields[n].appinfo) {
-							topLevelFields.push(fields[n]);
+						for (var n = 0; n < fields.length; ++n) {
+							if (!fields[n].appinfo) {
+								topLevelFields.push(fields[n]);
+							}
 						}
-					}
 
+					}
 					return topLevelFields;
 				};
 
@@ -128,9 +130,12 @@ define(
 				BusinessObjectManagementDataPropertiesPage.prototype.updatePrimaryKey = function(
 						key, value) {
 					console.log("Update PK: " + key, value);
+					var modelElement = {
+						attributes : {}
+					};
 
-					this.propertiesPanel.submitModelElementAttributeChange(key,
-							value);
+					modelElement.attributes[key] = value;
+					this.propertiesPanel.submitChanges(modelElement);
 				};
 
 				/**
