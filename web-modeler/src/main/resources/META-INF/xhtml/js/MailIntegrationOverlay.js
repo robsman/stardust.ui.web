@@ -1014,10 +1014,10 @@ define(
                   markup = markup.replace(new RegExp("(&quot;)", 'g'), "\"");
                   route += "<![CDATA[";
                   route += "var subject= eval('(' + subject+ ')');\n";
-				  route += "var to= eval('(' + to + ')');\n";
-				  route += "var from= eval('(' + from + ')');\n";
-				  route += "var cc= eval('(' + cc + ')');\n";
-				  route += "var bcc= eval('(' + bcc + ')');\n";
+                  route += "var to= eval('(' + to + ')');\n";
+                  route += "var from= eval('(' + from + ')');\n";
+                  route += "var cc= eval('(' + cc + ')');\n";
+                  route += "var bcc= eval('(' + bcc + ')');\n";
                   if (this.templateSourceSelect.val() == "data")
                   {
                      route += "if(mailContentAP){\n";
@@ -1101,16 +1101,16 @@ define(
                   }
                   if (this.fromInput.val())
                   {
-                	 var fromInputContent = "'"+this.fromInput.val()+"'";
+                     var fromInputContent = "'" + this.fromInput.val() + "'";
                      route += "<choice>\n";
                      route += "  <when>\n";
                      route += "     <simple>$simple{in.header.from} == null</simple>\n";
                      route += "     <setHeader headerName=\"from\">\n";
-                     route += "        <constant>" +
-											fromInputContent.replace(new RegExp("\n", 'g'), " ")
-    	                                					.replace(new RegExp("toDate", 'g'), "formatDate")
-                                       					  	.replace(new RegExp("{{", 'g'), "' + ")
-                                       					  	.replace(new RegExp("}}", 'g'), " + '")
+                     route += "        <constant>"
+                              + fromInputContent.replace(new RegExp("\n", 'g'), " ")
+                                       .replace(new RegExp("toDate", 'g'), "formatDate")
+                                       .replace(new RegExp("{{", 'g'), "' + ").replace(
+                                                new RegExp("}}", 'g'), " + '")
                               + "      </constant>\n";
                      route += "     </setHeader>\n";
                      route += "  </when>\n";
@@ -1118,51 +1118,51 @@ define(
                   }
                   if (this.toInput.val())
                   {
-					var toInputContent = "'"+this.toInput.val()+"'";
+                     var toInputContent = "'" + this.toInput.val() + "'";
                      route += "<choice>\n";
                      route += "  <when>\n";
                      route += "     <simple>$simple{in.header.to} == null</simple>\n";
                      route += "     <setHeader headerName=\"to\">\n";
                      route += "        <constant>"
-										 +  toInputContent.replace(new RegExp("\n", 'g'), " ")
-                                       					  .replace(new RegExp("toDate", 'g'), "formatDate")
-                                       					  .replace(new RegExp("{{", 'g'), "' + ")
-                                       					  .replace(new RegExp("}}", 'g'), " + '")
-										 + "</constant>\n";
+                              + toInputContent.replace(new RegExp("\n", 'g'), " ")
+                                       .replace(new RegExp("toDate", 'g'), "formatDate")
+                                       .replace(new RegExp("{{", 'g'), "' + ").replace(
+                                                new RegExp("}}", 'g'), " + '")
+                              + "</constant>\n";
                      route += "     </setHeader>\n";
                      route += "  </when>\n";
                      route += "</choice>\n";
                   }
                   if (this.ccInput.val())
                   {
-	     			 var ccInputContent = "'"+this.ccInput.val()+"'";
+                     var ccInputContent = "'" + this.ccInput.val() + "'";
                      route += "<choice>\n";
                      route += "  <when>\n";
                      route += "     <simple>$simple{in.header.cc} == null</simple>\n";
                      route += "     <setHeader headerName=\"cc\">\n";
                      route += "        <constant>"
-										  + toInputContent.replace(new RegExp("\n", 'g'), " ")
-                                       					  .replace(new RegExp("toDate", 'g'), "formatDate")
-                                       					  .replace(new RegExp("{{", 'g'), "' + ")
-                                       					  .replace(new RegExp("}}", 'g'), " + '")
-                     				+ "</constant>\n";
+                              + ccInputContent.replace(new RegExp("\n", 'g'), " ")
+                                       .replace(new RegExp("toDate", 'g'), "formatDate")
+                                       .replace(new RegExp("{{", 'g'), "' + ").replace(
+                                                new RegExp("}}", 'g'), " + '")
+                              + "</constant>\n";
                      route += "     </setHeader>\n";
                      route += "  </when>\n";
                      route += "</choice>\n";
                   }
                   if (this.bccInput.val())
                   {
-	     			 var bccInputContent = "'"+this.bccInput.val()+"'";
+                     var bccInputContent = "'" + this.bccInput.val() + "'";
                      route += "<choice>\n";
                      route += "  <when>\n";
                      route += "     <simple>$simple{in.header.bcc} == null</simple>\n";
                      route += "     <setHeader headerName=\"bcc\">\n";
                      route += "        <constant>"
-                     					+  bccInputContent.replace(new RegExp("\n", 'g'), " ")
-                                       					  .replace(new RegExp("toDate", 'g'), "formatDate")
-                                       					  .replace(new RegExp("{{", 'g'), "' + ")
-                                       					  .replace(new RegExp("}}", 'g'), " + '")
-                                    + "</constant>\n";
+                              + bccInputContent.replace(new RegExp("\n", 'g'), " ")
+                                       .replace(new RegExp("toDate", 'g'), "formatDate")
+                                       .replace(new RegExp("{{", 'g'), "' + ").replace(
+                                                new RegExp("}}", 'g'), " + '")
+                              + "</constant>\n";
                      route += "     </setHeader>\n";
                      route += "  </when>\n";
                      route += "</choice>\n";
