@@ -196,10 +196,10 @@ define(
 
 					this.messages = [];
 
-					if (this.currentBusinessObjectInstance[this.businessObjectManagementPanelController.primaryKeyField.id] == null
-							|| this.currentBusinessObjectInstance[this.businessObjectManagementPanelController.primaryKeyField.id].length == 0) {
+					if (this.currentBusinessObjectInstance[this.businessObjectManagementPanelController.businessObject.primaryKeyField.id] == null
+							|| this.currentBusinessObjectInstance[this.businessObjectManagementPanelController.businessObject.primaryKeyField.id].length == 0) {
 						this.messages = [ "Primary Key "
-								+ this.businessObjectManagementPanelController.primaryKeyField.name
+								+ this.businessObjectManagementPanelController.businessObject.primaryKeyField.name
 								+ " not set." ];
 
 						return;
@@ -214,7 +214,7 @@ define(
 								.createBusinessObjectInstance(
 										this.businessObject.modelOid,
 										this.businessObject.id,
-										this.currentBusinessObjectInstance[this.businessObjectManagementPanelController.primaryKeyField.id],
+										this.currentBusinessObjectInstance[this.businessObjectManagementPanelController.businessObject.primaryKeyField.id],
 										this.currentBusinessObjectInstance)
 								.done(
 										function() {
@@ -232,9 +232,9 @@ define(
 						BusinessObjectManagementService
 								.instance()
 								.updateBusinessObjectInstance(
-										this.businessObjectManagementPanelController.modelOid,
-										this.businessObjectManagementPanelController.businessObjectId,
-										this.currentBusinessObjectInstance[this.businessObjectManagementPanelController.primaryKeyField.id],
+										this.businessObjectManagementPanelController.businessObject.modelOid,
+										this.businessObjectManagementPanelController.businessObject.businessObjectId,
+										this.currentBusinessObjectInstance[this.businessObjectManagementPanelController.businessObject.primaryKeyField.id],
 										this.currentBusinessObjectInstance)
 								.done(
 										function() {
