@@ -1094,11 +1094,9 @@ define(
                         break;
                      }
                   }
-                  if (this.templateConfigurations
-                           && this.templateConfigurations.length > 0)
-                  {
-                     route += "<to uri=\"bean:documentHandler?method=processTemplateConfigurations\"/>\n";
-                  }
+                  
+                  route += "<to uri=\"bean:documentHandler?method=processTemplateConfigurations\"/>\n";
+                  
                   if (this.fromInput.val())
                   {
                      var fromInputContent = "'" + this.fromInput.val() + "'";
