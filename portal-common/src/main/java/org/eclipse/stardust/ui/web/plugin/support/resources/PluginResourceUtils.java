@@ -10,8 +10,11 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.plugin.support.resources;
 
-import static java.util.Collections.unmodifiableList;
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
+import static org.eclipse.stardust.common.CollectionUtils.isEmpty;
 import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
+import static org.eclipse.stardust.common.CollectionUtils.newConcurrentHashMap;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -23,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import org.eclipse.stardust.common.config.Parameters;
@@ -32,6 +34,7 @@ import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.plugin.utils.PluginUtils;
 import org.eclipse.stardust.ui.web.plugin.utils.PluginUtils.PluginDescriptor;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.VfsResource;
 import org.springframework.core.io.support.ResourcePatternResolver;
 
 
@@ -51,9 +54,7 @@ public class PluginResourceUtils
 
    public static final String SLASH = "/";
 
-   private static final Map<ResourcePatternResolver, ConcurrentMap<String, List<String>>> resourceResolutionCache = new WeakHashMap<ResourcePatternResolver, ConcurrentMap<String, List<String>>>();
-
-   private static final Map<ResourcePatternResolver, ConcurrentMap<String, List<Resource>>> resolvedResourcesCache = new WeakHashMap<ResourcePatternResolver, ConcurrentMap<String, List<Resource>>>();
+   private static final Map<ResourcePatternResolver, ConcurrentMap<String, Object>> resourceResolutionCache = new WeakHashMap<ResourcePatternResolver, ConcurrentMap<String, Object>>();
 
    public static boolean isPluginPath(String path)
    {
@@ -228,60 +229,54 @@ public class PluginResourceUtils
    public static List<Resource> resolveResources(ResourcePatternResolver resolver,
          String locationPattern) throws IOException
    {
-      ConcurrentMap<String, List<String>> resolutionCache = null;
-      ConcurrentMap<String, List<Resource>> resourcesCache = null;
+      ConcurrentMap<String, Object> resolutionCache = null;
 
       if (Parameters.instance().getBoolean("Carnot.Client.Caching.PluginResourceResolution.Enabled", true))
       {
-         if (Parameters.instance().getBoolean("Carnot.Client.Caching.PluginResourceResolution.CacheResources", false))
-         {
-            synchronized (resolvedResourcesCache)
-            {
-               resourcesCache = resolvedResourcesCache.get(resolver);
-               if (null == resourcesCache)
-               {
-                  resourcesCache = new ConcurrentHashMap<String, List<Resource>>();
-                  resolvedResourcesCache.put(resolver, resourcesCache);
-               }
-            }
-
-            List<Resource> resolvedResources = resourcesCache.get(locationPattern);
-            if (null != resolvedResources)
-            {
-               return resolvedResources;
-            }
-         }
-
          synchronized (resourceResolutionCache)
          {
             resolutionCache = resourceResolutionCache.get(resolver);
             if (null == resolutionCache)
             {
-               resolutionCache = new ConcurrentHashMap<String, List<String>>();
+               resolutionCache = newConcurrentHashMap();
                resourceResolutionCache.put(resolver, resolutionCache);
             }
          }
 
          // try to take advantage of a previously succeeded resolution ...
-         List<String> resolvedResources = resolutionCache.get(locationPattern);
-         if (null != resolvedResources)
+         Object resolvedResources = resolutionCache.get(locationPattern);
+         if (resolvedResources instanceof Resource[])
          {
             // cache hit, yay!
-            List<Resource> resources = newArrayList(resolvedResources.size());
-            for (String resourceUri : resolvedResources)
+            return asList((Resource[]) resolvedResources);
+         }
+         else if (resolvedResources instanceof String[])
+         {
+            // cache hit, yay!, but need to translate from URIs to actual resources
+            List<Resource> resources = emptyList();
+            String[] resourceUris = (String[]) resolvedResources;
+            if (!isEmpty(resourceUris))
             {
-               // translate cached URI to resource (avoiding life-cycle problems when caching
-               // resources directly)
-               resources.add(resolver.getResource(resourceUri));
+               resources = newArrayList(resourceUris.length);
+               for (String resourceUri : resourceUris)
+               {
+                  // translate cached URI to resource (avoiding life-cycle problems when
+                  // caching resources directly)
+                  resources.add(resolver.getResource(resourceUri));
+               }
             }
-
             return resources;
+         }
+         else if (null != resolvedResources)
+         {
+            log.error("Ignoring unexpected resource resolution cache entry for pattern " + locationPattern + ": "
+                  + resolvedResources.getClass());
          }
       }
 
       // try to resolve pattern against deployment ...
       List<Resource> resources = newArrayList();
-      List<String> resourceUris = newArrayList();
+      boolean foundJbossVfsResources = false;
       for (Resource resource : resolver.getResources(locationPattern))
       {
          if (log.isDebugEnabled())
@@ -291,19 +286,32 @@ public class PluginResourceUtils
 
          resources.add(resource);
 
-         // avoiding life-cycle problems with Resource by caching only resource URIs
-         // and re-materializing resources upon resolution request
-         resourceUris.add(resource.getURI().toString());
+         foundJbossVfsResources |= resource instanceof VfsResource;
       }
 
-      if (null != resourcesCache)
-      {
-         resourcesCache.putIfAbsent(locationPattern, unmodifiableList(resources));
-      }
       if (null != resolutionCache)
       {
-         // cache URIs of resolved resources to avoid further pattern matching
-         resolutionCache.putIfAbsent(locationPattern, unmodifiableList(resourceUris));
+         // by default, prefer to put resource URIs into the resolution cache, but for
+         // JBoss, URI to resource resolution did not seem to work properly, so VFS
+         // resources will preferably be cached directly
+         boolean cacheResourcesInsteadOfUris = Parameters.instance().getBoolean(
+               "Carnot.Client.Caching.PluginResourceResolution.CacheResources", foundJbossVfsResources);
+
+         if (cacheResourcesInsteadOfUris)
+         {
+            resolutionCache.putIfAbsent(locationPattern, resources.toArray(new Resource[resources.size()]));
+         }
+         else
+         {
+            List<String> resourceUris = newArrayList(resources.size());
+            for (Resource resource : resources)
+            {
+               // avoiding life-cycle problems with Resource by caching only resource URIs
+               // and re-materializing resources upon resolution request
+               resourceUris.add(resource.getURI().toString());
+            }
+            resolutionCache.putIfAbsent(locationPattern, resourceUris.toArray(new String[resourceUris.size()]));
+         }
       }
       return resources;
    }
