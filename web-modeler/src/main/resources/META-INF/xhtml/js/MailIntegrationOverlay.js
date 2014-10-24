@@ -1105,10 +1105,8 @@ define(
                      route += "     <simple>$simple{in.header.from} == null</simple>\n";
                      route += "     <setHeader headerName=\"from\">\n";
                      route += "        <constant>"
-                              + fromInputContent.replace(new RegExp("\n", 'g'), " ")
-                                       .replace(new RegExp("toDate", 'g'), "formatDate")
-                                       .replace(new RegExp("{{", 'g'), "' + ").replace(
-                                                new RegExp("}}", 'g'), " + '")
+                              + fromInputContent.replace(new RegExp("{{", 'g'), "' + ")
+                                       .replace(new RegExp("}}", 'g'), " + '")
                               + "      </constant>\n";
                      route += "     </setHeader>\n";
                      route += "  </when>\n";
@@ -1122,10 +1120,8 @@ define(
                      route += "     <simple>$simple{in.header.to} == null</simple>\n";
                      route += "     <setHeader headerName=\"to\">\n";
                      route += "        <constant>"
-                              + toInputContent.replace(new RegExp("\n", 'g'), " ")
-                                       .replace(new RegExp("toDate", 'g'), "formatDate")
-                                       .replace(new RegExp("{{", 'g'), "' + ").replace(
-                                                new RegExp("}}", 'g'), " + '")
+                              + toInputContent.replace(new RegExp("{{", 'g'), "' + ")
+                                       .replace(new RegExp("}}", 'g'), " + '")
                               + "</constant>\n";
                      route += "     </setHeader>\n";
                      route += "  </when>\n";
@@ -1139,10 +1135,8 @@ define(
                      route += "     <simple>$simple{in.header.cc} == null</simple>\n";
                      route += "     <setHeader headerName=\"cc\">\n";
                      route += "        <constant>"
-                              + ccInputContent.replace(new RegExp("\n", 'g'), " ")
-                                       .replace(new RegExp("toDate", 'g'), "formatDate")
-                                       .replace(new RegExp("{{", 'g'), "' + ").replace(
-                                                new RegExp("}}", 'g'), " + '")
+                              + ccInputContent.replace(new RegExp("{{", 'g'), "' + ")
+                                       .replace(new RegExp("}}", 'g'), " + '")
                               + "</constant>\n";
                      route += "     </setHeader>\n";
                      route += "  </when>\n";
@@ -1156,10 +1150,8 @@ define(
                      route += "     <simple>$simple{in.header.bcc} == null</simple>\n";
                      route += "     <setHeader headerName=\"bcc\">\n";
                      route += "        <constant>"
-                              + bccInputContent.replace(new RegExp("\n", 'g'), " ")
-                                       .replace(new RegExp("toDate", 'g'), "formatDate")
-                                       .replace(new RegExp("{{", 'g'), "' + ").replace(
-                                                new RegExp("}}", 'g'), " + '")
+                              + bccInputContent.replace(new RegExp("{{", 'g'), "' + ")
+                                       .replace(new RegExp("}}", 'g'), " + '")
                               + "</constant>\n";
                      route += "     </setHeader>\n";
                      route += "  </when>\n";
