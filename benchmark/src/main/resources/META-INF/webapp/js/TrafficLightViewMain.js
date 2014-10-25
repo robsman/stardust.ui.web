@@ -18,7 +18,7 @@ require
 		});
 
 require([ "require", "jquery", "jquery-ui", "jquery.dataTables", "angularjs",
-		"benchmark/js/Utils", "simple-modeler/js/AngularDirectives",
+		"benchmark/js/Utils", "business-object-management/js/AngularDirectives",
 		"benchmark/js/TrafficLightViewController" ], function(require, jquery,
 		jqueryUi, jqueryDataTables, angularjs, Utils, AngularDirectives,
 		TrafficLightViewController) {

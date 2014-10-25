@@ -10,13 +10,14 @@
 			</tr>
 		</thead>
 		<tbody>
-			<tr sd-table-data="processInstance in processInstances"
+			<tr ng-repeat="processInstance in processInstances"
 				sd-table-selection="selectedProcessInstances"
 				sd-table-selection-changed="onProcessInstancesChange()">
 				<td>{{processInstance.name}}</td>
 				<td>{{processInstance.oid}}</td>
 				<td>{{processInstance.startTime}}</td>
-				<td></td>
+				<td><a ng-click="openGanttChartView()"><i
+						class="fa fa-tasks"></i></a></td>
 			</tr>
 		</tbody>
 	</table>

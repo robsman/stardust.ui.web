@@ -35,6 +35,29 @@ define(
 					this.businessObjectManagementPanelController
 							.initialize(this);
 
+					this.banchmark = null;
+					this.models = [ {
+						id : "DailyFundsProcessing",
+						name : "Daily Funds Processing",
+						processes : [ {
+							id : "ProcessingEurope",
+							name : "Processing Europe",
+							activities : [ {
+								id : "RetrievePrices",
+								name : "Retrieve Prices"
+							}, {
+								id : "SweepAndTranslate",
+								name : "Sweep and Translate"
+							} ]
+						} ]
+					} ];
+
+					this.modelTree = [];
+
+					this.initializeModelTree();
+					this.expandedRows = {};
+					this.categories = [];
+
 					this.benchmarks = [ {
 						name : "Criticality",
 						categories : [ {
@@ -155,6 +178,89 @@ define(
 				/**
 				 * 
 				 */
+				TrafficLightViewController.prototype.initializeModelTree = function() {
+					for (var n = 0; n < this.models.length; ++n) {
+						var model = this.models[n];
+						var modelRow;
+
+						this.modelTree.push(modelRow = {
+							level : 0,
+							path : model.id,
+							type : "MODEL",
+							name : model.name
+						});
+
+						for (var m = 0; m < model.processes.length; ++m) {
+							var process = model.processes[m];
+							var processRow;
+
+							this.modelTree.push(processRow = {
+								level : 1,
+								path : model.id + "/" + process.id,
+								parent : modelRow,
+								type : "PROCESS",
+								name : process.name
+							});
+
+							for (var l = 0; l < process.activities.length; ++l) {
+								var activity = process.activities[l];
+
+								this.modelTree.push({
+									level : 2,
+									path : model.id + "/" + process.id + "/"
+											+ activity.id,
+									parent : processRow,
+									type : "ACTIVITY",
+									name : activity.name
+								});
+							}
+						}
+					}
+				};
+
+				/**
+				 * 
+				 */
+				TrafficLightViewController.prototype.expandRow = function(row) {
+					this.expandedRows[row.path] = row;
+				};
+
+				/**
+				 * 
+				 */
+				TrafficLightViewController.prototype.collapseRow = function(row) {
+					delete this.expandedRows[row.path];
+
+					// if (activityInstance.subProcessInstance) {
+					// for (var n = 0; n <
+					// activityInstance.subProcessInstance.activityInstances.length;
+					// ++n) {
+					// this
+					// .collapseActivityInstance(activityInstance.subProcessInstance.activityInstances[n]);
+					// }
+					// }
+				};
+
+				/**
+				 * 
+				 */
+				TrafficLightViewController.prototype.isExpandable = function(
+						row) {
+					return !this.expandedRows[row.path]
+							&& row.type != "ACTIVITY";
+				};
+
+				/**
+				 * 
+				 */
+				TrafficLightViewController.prototype.isCollapsable = function(
+						row) {
+					return this.expandedRows[row.path];
+				};
+
+				/**
+				 * 
+				 */
 				TrafficLightViewController.prototype.refreshBusinessObjects = function() {
 					this.businessObjects = [];
 
@@ -198,12 +304,45 @@ define(
 				/**
 				 * 
 				 */
-				TrafficLightViewController.prototype.loadProcessInstances = function() {
-					this.processInstances.push({
-						bla : ""
-					});
+				TrafficLightViewController.prototype.loadProcessInstances = function(
+						number) {
+					console.log("Load " + number);
+					
+					for (var n = 0; n < number; ++n) {
+						this.processInstances.push({
+							oid : n
+						});
+					}
 
 					this.processInstances = this.processInstances.slice(0);
+				};
+
+				/**
+				 * 
+				 */
+				TrafficLightViewController.prototype.onBusinessObjectChange = function() {
+					for (var n = 0; n < this.businessObject.fields.length; ++n) {
+						if (this.businessObject.fields[n].primaryKey) {
+							this.businessObject.primaryKeyField = this.businessObject.fields[n];
+
+							break;
+						}
+					}
+
+					var self = this;
+
+					BusinessObjectManagementService
+							.instance()
+							.getBusinessObjectInstances(this.businessObject)
+							.done(
+									function(businessObjectInstances) {
+										console.log("Result");
+										console.log(businessObjectInstances);
+
+										self.businessObjectInstances = businessObjectInstances;
+
+										self.safeApply();
+									}).fail();
 				};
 
 				/**
@@ -254,6 +393,49 @@ define(
 					this.trafficLightSelectionDialog.dialog("close");
 				};
 
+				/**
+				 * 
+				 */
+				TrafficLightViewController.prototype.openGanttChartView = function() {
+					this.openView("ganttChartView", "", window.btoa(""));
+				};
+
+				/**
+				 * TODO - re-use a Util from web-modeler
+				 */
+				TrafficLightViewController.prototype.openView = function(
+						viewId, viewParams, viewIdentity) {
+					var portalWinDoc = this.getOutlineWindowAndDocument();
+					var link = jQuery("a[id $= 'view_management_link']",
+							portalWinDoc.doc);
+					var linkId = link.attr('id');
+					var form = link.parents('form:first');
+					var formId = form.attr('id');
+
+					link = portalWinDoc.doc.getElementById(linkId);
+
+					var linkForm = portalWinDoc.win.formOf(link);
+
+					linkForm[formId + ':_idcl'].value = linkId;
+					linkForm['viewParams'].value = viewParams;
+					linkForm['viewId'].value = viewId;
+					linkForm['viewIdentity'].value = viewIdentity;
+
+					portalWinDoc.win.iceSubmit(linkForm, link);
+				};
+				
+				/*
+				 * 
+				 */
+				TrafficLightViewController.prototype.getOutlineWindowAndDocument = function() {
+					return {
+						win : parent.document
+								.getElementById("portalLaunchPanels").contentWindow,
+						doc : parent.document
+								.getElementById("portalLaunchPanels").contentDocument
+					};
+				};
+				
 				/**
 				 * 
 				 */

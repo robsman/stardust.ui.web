@@ -38,6 +38,10 @@ ul.errorMessagesPanel {
 	padding: 5px;
 }
 
+.trafficLightCumulantTableCell {
+	min-width: 200px;
+}
+
 .dataTable input {
 	border: none !important;
 }
@@ -53,6 +57,79 @@ ul.errorMessagesPanel {
 	</div>
 	<div ng-cloak>
 		<h1>Traffic Lights</h1>
+		<table class="formTable" style="margin-bottom: 10px;">
+			<tr>
+				<td><label>Benchmark</label></td>
+				<td><select ng-model="benchmark"
+					ng-options="benchmark as benchmark.name for benchmark in benchmarks"><option
+							value="">Custom Selection of Traffic Lights</option></select></td>
+				<td><label>Drilldown</label></td>
+				<td><select ng-model="drilldown"><option
+							value="">None</option><option
+							value="PROCESS">By Process/Activity</option><option
+							value="BUSINESS_OBJECT">By Business Object</option></select></td>
+				<td ng-show="drilldown == 'BUSINESS_OBJECT'"><label>Business Object</label></td>
+				<td ng-show="drilldown == 'BUSINESS_OBJECT'"><select ng-model="businessObject"
+					ng-options="businessObject as businessObject.label for businessObject in businessObjects"
+					ng-change="onBusinessObjectChange()"><option value="">All</option></select></td>
+			</tr>
+		</table>
+		<div ng-show="benchmark">
+			<table class="trafficLightTable">
+				<tr>
+					<td class="trafficLightTableCell">Categories</td>
+					<td class="trafficLightTableCell trafficLightCumulantTableCell"
+						ng-repeat="category in benchmark.categories">
+							{{category.name}}</td>
+				</tr>
+				<tr>
+					<td class="trafficLightTableCell">All</td>
+					<td valign="bottom" align="center" class="trafficLightTableCell"
+						ng-repeat="category in benchmark.categories">
+						<a href="" ng-click="loadProcessInstances(10 * ($index + 1))"><table>
+						<tr><td align="center"><span
+						style="color: {{category.color}}; font-size: {{10 * ($index + 1)}}px;"><i class="fa fa-circle"></i>
+							</span></td></tr>
+						<tr><td align="center">{{10 * ($index + 1)}}</td></tr>
+						</table></a>
+						</td>
+				</tr>
+				<tr ng-show="drilldown == 'PROCESS' && !trafficLight.parent || expandedRows[trafficLight.parent.path]" ng-repeat="trafficLight in modelTree">
+					<td class="trafficLightTableCell"
+					style="padding-left: {{15* trafficLight.level+ 5}}px;"><a href=""
+					class="iconLink" ng-show="isExpandable(trafficLight)"
+					ng-click="expandRow(trafficLight)"><i class="fa fa-plus-square-o"></i></a><a
+					href="" ng-show="isCollapsable(trafficLight)" ng-click="collapseRow(trafficLight)"
+					class="iconLink"><i class="fa fa-minus-square-o"></i></a><span
+					style="margin-left: 5px;"><i class="fa fa-globe"
+						ng-show="trafficLight.type == 'MODEL'"></i><i class="fa fa-gears"
+						ng-show="trafficLight.type == 'PROCESS'"></i><i class="fa fa-gear"
+						ng-show="trafficLight.type == 'ACTIVITY'"></i> {{trafficLight.name}}</span></td>
+					<td valign="bottom" align="center" class="trafficLightTableCell"
+						ng-repeat="category in benchmark.categories">
+						<a href="" ng-click="loadProcessInstances(10 * ($index + 1))"><table>
+						<tr><td align="center"><span
+						style="color: {{category.color}}; font-size: {{10 * ($index + 1)}}px;"><i class="fa fa-circle"></i>
+							</span></td></tr>
+						<tr><td align="center">{{10 * ($index + 1)}}</td></tr>
+						</table></a>
+						</td>
+				</tr>
+				<tr ng-show="drilldown == 'BUSINESS_OBJECT' && businessObject" ng-repeat="businessObjectInstance in businessObjectInstances">
+					<td class="trafficLightTableCell">{{businessObject.name}} {{businessObjectInstance[businessObject.primaryKeyField.id]}}</td>
+					<td valign="bottom" align="center" class="trafficLightTableCell"
+						ng-repeat="category in benchmark.categories">
+						<a href="" ng-click="loadProcessInstances(10 * ($index + 1))"><table>
+						<tr><td align="center"><span
+						style="color: {{category.color}}; font-size: {{10 * ($index + 1)}}px;"><i class="fa fa-circle"></i>
+							</span></td></tr>
+						<tr><td align="center">{{10 * ($index + 1)}}</td></tr>
+						</table></a>
+						</td>
+				</tr>
+			</table>
+		</div>
+		<div ng-hide="benchmark">
 		<table style="margin-top: 10px; margin-bottom: 10px;">
 			<tr>
 				<td><label>Business Date</label></td>
@@ -97,7 +174,7 @@ ul.errorMessagesPanel {
 					<td class="trafficLightTableCell"></td>
 					<td class="trafficLightTableCell"
 						ng-repeat="category in benchmark.categories"><span
-						style="color: {{category.color}};"><i class="fa fa-circle"></i>
+						style="color: {{category.color"><i class="fa fa-circle"></i>
 							{{category.name}}</span></td>
 				</tr>
 				<tr ng-repeat="trafficLight in benchmark.trafficLights">
@@ -109,7 +186,7 @@ ul.errorMessagesPanel {
 						ng-show="trafficLight.activity"><i class="fa fa-gear"></i>{{trafficLight.activity.name}}</span></td>
 					<td ng-repeat="category in benchmark.categories"
 						class="trafficLightTableCell"><a href=""
-						ng-click="loadProcessInstances()">{{$index}}</a></td>
+						ng-click="loadProcessInstances($index)">{{$index}}</a></td>
 				</tr>
 				<tr>
 					<td class="trafficLightTableCell"><a href=""
@@ -120,55 +197,55 @@ ul.errorMessagesPanel {
 				</tr>
 			</table>
 		</div>
+	</div>
 		<div ng-show="processInstances.length > 0">
 			<h2>Processes</h2>
 			<div ng-include="'../processListPanel.html'"
 				ng-repeat="processInstances in [processInstances]"></div>
 		</div>
-		<div sd-dialog="trafficLightSelectionDialog">
-			<div class="errorMessagesPanel"
-				ng-show="relationshipDialog.errors.length > 0">
-				<ul>
-					<li ng-repeat="error in relationshipDialog.errors"><span
-						class="errorMessage">{{error.message}}</span></li>
-				</ul>
-			</div>
-			<table class="formTable">
-				<tr>
-					<td><label>Benchmark</label></td>
-					<td><select ng-model="trafficLightSelectionDialog.benchmark"
-						ng-options="benchmark as benchmark.name for benchmark in benchmarks"
-						ng-change="onTrafficLightSelectionDialogBenchmarkSelectionChange()"><option
-								value="">Please select ...</option></select></td>
-				</tr>
-			</table>
-			<table class="formTable">
-				<tr>
-					<td><label>Traffic Light on Process/Activity</label></td>
-				</tr>
-				<tr>
-					<td><select size="5" style="min-width: 200px;"
-						ng-model="trafficLightSelectionDialog.trafficLight"
-						ng-options="trafficLight as trafficLight.path group by trafficLight.model.name for trafficLight in trafficLightSelectionDialog.trafficLights"></select></td>
-				</tr>
-			</table>
-			<table style="width: 100%;">
-				<tr>
-					<td align="center">
-						<table cellpadding="0" cellspacing="0">
-							<tr>
-								<td><input type="button" value="Add"
-									ng-click="addTrafficLight()"
-									ng-disabled="!trafficLightSelectionDialog.trafficLight" /></td>
-								<td><input type="button" value="Cancel"
-									ng-click="closeTrafficLightSelectionDialog()"
-									style="margin-left: 5px;" /></td>
-							</tr>
-						</table>
-					</td>
-				</tr>
-			</table>
+	<div sd-dialog="trafficLightSelectionDialog">
+		<div class="errorMessagesPanel"
+			ng-show="relationshipDialog.errors.length > 0">
+			<ul>
+				<li ng-repeat="error in relationshipDialog.errors"><span
+					class="errorMessage">{{error.message}}</span></li>
+			</ul>
 		</div>
+		<table class="formTable">
+			<tr>
+				<td><label>Benchmark</label></td>
+				<td><select ng-model="trafficLightSelectionDialog.benchmark"
+					ng-options="benchmark as benchmark.name for benchmark in benchmarks"
+					ng-change="onTrafficLightSelectionDialogBenchmarkSelectionChange()"><option
+							value="">Please select ...</option></select></td>
+			</tr>
+		</table>
+		<table class="formTable">
+			<tr>
+				<td><label>Traffic Light on Process/Activity</label></td>
+			</tr>
+			<tr>
+				<td><select size="5" style="min-width: 200px;"
+					ng-model="trafficLightSelectionDialog.trafficLight"
+					ng-options="trafficLight as trafficLight.path group by trafficLight.model.name for trafficLight in trafficLightSelectionDialog.trafficLights"></select></td>
+			</tr>
+		</table>
+		<table style="width: 100%;">
+			<tr>
+				<td align="center">
+					<table cellpadding="0" cellspacing="0">
+						<tr>
+							<td><input type="button" value="Add"
+								ng-click="addTrafficLight()"
+								ng-disabled="!trafficLightSelectionDialog.trafficLight" /></td>
+							<td><input type="button" value="Cancel"
+								ng-click="closeTrafficLightSelectionDialog()"
+								style="margin-left: 5px;" /></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
 	</div>
 </body>
 </html>
