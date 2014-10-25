@@ -4,7 +4,7 @@
 
 define(
 		[
-				"benchmark/js/Utils",
+				"simple-modeler/js/Utils",
 				"benchmark/js/BenchmarkService",
 				"business-object-management/js/BusinessObjectManagementService",
 				"business-object-management/js/BusinessObjectManagementPanelController",
@@ -304,17 +304,29 @@ define(
 				/**
 				 * 
 				 */
-				TrafficLightViewController.prototype.loadProcessInstances = function(
-						number) {
-					console.log("Load " + number);
-					
-					for (var n = 0; n < number; ++n) {
-						this.processInstances.push({
-							oid : n
-						});
-					}
+				TrafficLightViewController.prototype.loadProcessInstances = function() {
+					jQuery("body").css("cursor", "wait");
 
-					this.processInstances = this.processInstances.slice(0);
+					var self = this;
+
+					BenchmarkService.instance().getChecklists(
+							"",
+							this.businessObject == "__All" ? null
+									: this.businessObject,
+							this.businessObject == "__All" ? null
+									: this.businessObjectFilter).done(
+							function(processInstances) {
+								console.log("===> Process Instances");
+								console.log(processInstances);
+
+								self.processInstances = processInstances;
+
+								self.safeApply();
+
+								jQuery("body").css("cursor", "default");
+							}).fail(function() {
+						jQuery("body").css("cursor", "default");
+					});
 				};
 
 				/**
@@ -397,7 +409,8 @@ define(
 				 * 
 				 */
 				TrafficLightViewController.prototype.openGanttChartView = function() {
-					this.openView("ganttChartView", "", window.btoa(""));
+					this.openView("ganttChartView", "ganttChartView", window
+							.btoa("ganttChartView"));
 				};
 
 				/**
@@ -423,7 +436,7 @@ define(
 
 					portalWinDoc.win.iceSubmit(linkForm, link);
 				};
-				
+
 				/*
 				 * 
 				 */
@@ -435,7 +448,7 @@ define(
 								.getElementById("portalLaunchPanels").contentDocument
 					};
 				};
-				
+
 				/**
 				 * 
 				 */

@@ -50,14 +50,14 @@ define(
 				 * 
 				 */
 				BenchmarkLaunchPanelController.prototype.openTrafficLightView = function() {
-					this.openView("trafficLightView", "", window.btoa(""));
+					this.openView("trafficLightView", "trafficLightView", window.btoa("trafficLightView"));
 				};
 
 				/**
 				 * 
 				 */
 				BenchmarkLaunchPanelController.prototype.openGanttChartView = function() {
-					this.openView("ganttChartView", "", window.btoa(""));
+					this.openView("ganttChartView", "ganttChartView", window.btoa("ganttChartView"));
 				};
 
 				/**

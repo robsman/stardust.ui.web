@@ -144,8 +144,7 @@ define(
 				/**
 				 * 
 				 */
-				BenchmarkService.prototype.createLabel = function(
-						str) {
+				BenchmarkService.prototype.createLabel = function(str) {
 					return str
 					// Insert a space between lower & upper
 					.replace(/([a-z])([A-Z])/g, '$1 $2')
@@ -280,6 +279,45 @@ define(
 										deferred
 												.resolve(result.businessObjectInstances);
 									}).fail(function(data) {
+								deferred.reject(data);
+							});
+
+					return deferred.promise();
+				};
+
+				/**
+				 * Retrieves a checklist process instance
+				 */
+				BenchmarkService.prototype.getChecklists = function(processId,
+						businessObjectName, businessObjectValue) {
+					var deferred = jQuery.Deferred();
+					var rootUrl = location.href.substring(0, location.href
+							.indexOf("/plugins"));
+
+					var queryString = processId ? ("?processId=" + processId)
+							: "";
+
+					if (businessObjectName) {
+						queryString += "&businessObjectName="
+								+ businessObjectName;
+						queryString += "&businessObjectValue="
+								+ businessObjectValue;
+					}
+
+					console.log("Query-String");
+					console.log(queryString);
+
+					jQuery
+							.ajax(
+									{
+										url : rootUrl
+												+ "/services/rest/simple-modeler/checklist.json"
+												+ queryString,
+										type : "GET",
+										contentType : "application/json"
+									}).done(function(result) {
+								deferred.resolve(result.checklists);
+							}).fail(function(data) {
 								deferred.reject(data);
 							});
 
