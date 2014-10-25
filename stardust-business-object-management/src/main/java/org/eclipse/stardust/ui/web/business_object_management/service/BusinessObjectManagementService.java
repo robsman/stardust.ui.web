@@ -704,11 +704,11 @@ public class BusinessObjectManagementService {
 
 				String[] expression = terms[n].split("=");
 
-				System.out.println("Expression: " + expression[0] + " "
-						+ expression[1]);
+				// System.out.println("Expression: " + expression[0] + " "
+				// + expression[1]);
 
-				// query.where(DataFilter.isEqual(businessObjectId,
-				// expression[0], expression[1]));
+//				query.where(DataFilter.like(businessObjectId, expression[0],
+//						expression[1]));
 			}
 
 			addInstancesFromQuery(businessObjectInstances, query);
