@@ -27,6 +27,11 @@ define(
 				 * 
 				 */
 				TrafficLightViewController.prototype.initialize = function() {
+					this.queryParameters = Utils.getQueryParameters();
+
+					console.log("Query Parameters");
+					console.log(this.queryParameters);
+
 					this.messages = [];
 					this.trafficLightSelectionDialog = {};
 					this.businessObjectManagementPanelController = BusinessObjectManagementPanelController
@@ -52,23 +57,19 @@ define(
 						} ]
 					} ];
 
-					this.modelTree = [];
-
-					this.initializeModelTree();
-					this.expandedRows = {};
-					this.categories = [];
+					this.trafficLights = [];
 
 					this.benchmarks = [ {
 						name : "Criticality",
 						categories : [ {
 							name : "Normal",
-							color : "#FF0000"
+							color : "#00FF00"
 						}, {
 							name : "At Risk",
 							color : "#FFFB00"
 						}, {
 							name : "Critical",
-							color : "#00FF00"
+							color : "#FF0000"
 						} ],
 						trafficLights : [ {
 							process : {
@@ -156,7 +157,7 @@ define(
 					};
 					this.displayedTrafficLights[this.benchmarks[1].name][this.benchmarks[1].trafficLights[0].path] = this.benchmarks[1].trafficLights[1];
 
-					this.processInstances = [];
+					this.calculateCounts();
 
 					var self = this;
 
@@ -170,6 +171,45 @@ define(
 										console.log(self.businessObjectModels);
 
 										self.refreshBusinessObjects();
+
+										if (self.queryParameters.benchmark
+												&& self.queryParameters.drilldown) {
+											self.preconfigured = true;
+											self.drilldown = self.queryParameters.drilldown;
+
+											// Evaluate preconfiguration of the
+											// View
+
+											// TODO Incomplete/Hack
+
+											if (self.queryParameters.businessDate == "TODAY") {
+												self.businessDate = "30/04/1966";
+											}
+
+											for (var n = 0; n < self.benchmarks.length; ++n) {
+												if (self.benchmarks[n].name == self.queryParameters.benchmark) {
+													self.benchmark = self.benchmarks[n];
+
+													break;
+												}
+											}
+
+											if (self.queryParameters.drilldown == "BUSINESS_OBJECT") {
+												for (var n = 0; n < self.businessObjectModels.length; ++n) {
+													for (var m = 0; m < self.businessObjectModels[n].businessObjects.length; ++m) {
+														if (self.businessObjectModels[n].businessObjects[m].name == self.queryParameters.businessObject) {
+															self.businessObject = self.businessObjectModels[n].businessObjects[m];
+
+															self
+																	.onBusinessObjectChange();
+
+															break;
+														}
+													}
+												}
+											}
+										}
+
 										self.safeApply();
 									}).fail(function() {
 							});
@@ -178,12 +218,73 @@ define(
 				/**
 				 * 
 				 */
-				TrafficLightViewController.prototype.initializeModelTree = function() {
+				TrafficLightViewController.prototype.onDrillDownChange = function(
+						row) {
+					this.trafficLights = [];
+					this.expandedRows = {};
+
+					if (this.drilldown == 'PROCESS') {
+						this.initializeTrafficLightsFromModels();
+					} else if (this.drilldown == 'BUSINESS_OBJECT') {
+						// Wait for BO to be selected
+					}
+
+					this.calculateCounts();
+				};
+
+				/**
+				 * 
+				 */
+				TrafficLightViewController.prototype.calculateCounts = function() {
+					this.trafficLightCounts = {};
+
+					this.trafficLightCounts["/"] = {
+						categoryCounts : {}
+					};
+
+					var sumCount = 0;
+
+					if (this.benchmark) {
+						for (var m = 0; m < this.benchmark.categories.length; ++m) {
+							var count = Math.floor(Math.random() * (1500 + 1));
+
+							sumCount += count;
+
+							this.trafficLightCounts["/"].categoryCounts[this.benchmark.categories[m].name] = count;
+							this.trafficLightCounts["/"].sumCount = sumCount;
+						}
+
+						if (this.drilldown) {
+							for (var n = 0; n < this.trafficLights.length; ++n) {
+								this.trafficLightCounts[this.trafficLights[n].path] = {
+									categoryCounts : {}
+								};
+
+								var sumCount = 0;
+
+								for (var m = 0; m < this.benchmark.categories.length; ++m) {
+									var count = Math.floor(Math.random()
+											* (1500 + 1));
+
+									sumCount += count;
+
+									this.trafficLightCounts[this.trafficLights[n].path].categoryCounts[this.benchmark.categories[m].name] = count;
+									this.trafficLightCounts[this.trafficLights[n].path].sumCount = sumCount;
+								}
+							}
+						}
+					}
+				};
+
+				/**
+				 * 
+				 */
+				TrafficLightViewController.prototype.initializeTrafficLightsFromModels = function() {
 					for (var n = 0; n < this.models.length; ++n) {
 						var model = this.models[n];
 						var modelRow;
 
-						this.modelTree.push(modelRow = {
+						this.trafficLights.push(modelRow = {
 							level : 0,
 							path : model.id,
 							type : "MODEL",
@@ -194,7 +295,7 @@ define(
 							var process = model.processes[m];
 							var processRow;
 
-							this.modelTree.push(processRow = {
+							this.trafficLights.push(processRow = {
 								level : 1,
 								path : model.id + "/" + process.id,
 								parent : modelRow,
@@ -205,7 +306,7 @@ define(
 							for (var l = 0; l < process.activities.length; ++l) {
 								var activity = process.activities[l];
 
-								this.modelTree.push({
+								this.trafficLights.push({
 									level : 2,
 									path : model.id + "/" + process.id + "/"
 											+ activity.id,
@@ -215,6 +316,52 @@ define(
 								});
 							}
 						}
+					}
+				};
+
+				/**
+				 * 
+				 */
+				TrafficLightViewController.prototype.initializeTrafficLightsFromBusinessObjectInstances = function() {
+					console.log(this.businessObjectInstances);
+
+					var groups = {};
+
+					for (var n = 0; n < this.businessObjectInstances.length; ++n) {
+						var businessObjectInstance = this.businessObjectInstances[n];
+
+						if (!businessObjectInstance.FundGroup
+								|| businessObjectInstance.FundGroup == "") {
+							continue;
+						}
+
+						var groupRow = groups[businessObjectInstance.FundGroup];
+
+						if (!groupRow) {
+							this.trafficLights.push(groupRow = {
+								level : 0,
+								path : businessObjectInstance.FundGroup,
+								type : "Fund Group",
+								name : "Fund Group "
+										+ businessObjectInstance.FundGroup
+							});
+
+							groups[businessObjectInstance.FundGroup] = groupRow;
+						}
+
+						this.trafficLights
+								.push({
+									level : 1,
+									path : businessObjectInstance.FundGroup
+											+ "/"
+											+ this.businessObject.name
+											+ businessObjectInstance[this.businessObject.primaryKeyField.id],
+									type : this.businessObject.name,
+									name : this.businessObject.name
+											+ " "
+											+ businessObjectInstance[this.businessObject.primaryKeyField.id],
+									parent : groupRow
+								});
 					}
 				};
 
@@ -305,7 +452,12 @@ define(
 				 * 
 				 */
 				TrafficLightViewController.prototype.loadProcessInstances = function() {
+					console.log("===> Load Process Instances");
+
 					jQuery("body").css("cursor", "wait");
+
+					this.processInstances = [ {} ];
+					this.nase = new Date();
 
 					var self = this;
 
@@ -353,8 +505,52 @@ define(
 
 										self.businessObjectInstances = businessObjectInstances;
 
+										self.trafficLights = [];
+										self.expandedRows = {};
+
+										self
+												.initializeTrafficLightsFromBusinessObjectInstances();
+
+										self.calculateCounts();
+
 										self.safeApply();
 									}).fail();
+				};
+
+				/**
+				 * 
+				 */
+				TrafficLightViewController.prototype.getCount = function(
+						category, trafficLight) {
+					if (trafficLight) {
+						return this.trafficLightCounts[trafficLight.path].categoryCounts[category.name];
+					}
+
+					return this.trafficLightCounts["/"].categoryCounts[category.name];
+				};
+
+				/**
+				 * 
+				 */
+				TrafficLightViewController.prototype.getSumCount = function(
+						category, trafficLight) {
+					if (trafficLight) {
+						return this.trafficLightCounts[trafficLight.path].sumCount;
+					}
+
+					return this.trafficLightCounts["/"].sumCount;
+				};
+
+				/**
+				 * 
+				 */
+				TrafficLightViewController.prototype.getCountStyle = function(
+						category, trafficLight) {
+					return "color: "
+							+ category.color
+							+ "; font-size:"
+							+ (30 * this.getCount(category, trafficLight) / 1500)
+							+ "px;";
 				};
 
 				/**
@@ -408,9 +604,12 @@ define(
 				/**
 				 * 
 				 */
-				TrafficLightViewController.prototype.openGanttChartView = function() {
-					this.openView("ganttChartView", "ganttChartView", window
-							.btoa("ganttChartView"));
+				TrafficLightViewController.prototype.openGanttChartView = function(
+						activity) {
+					this.openView("ganttChartView",
+							"viewId=ganttChartView&oid=" + activity.oid, window
+									.btoa("viewId=ganttChartView&oid="
+											+ activity.oid));
 				};
 
 				/**

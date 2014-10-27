@@ -50,7 +50,14 @@ define(
 				 * 
 				 */
 				BenchmarkLaunchPanelController.prototype.openTrafficLightView = function() {
-					this.openView("trafficLightView", "trafficLightView", window.btoa("trafficLightView"));
+					this.openView("trafficLightView", "viewId=trafficLightView", window.btoa("trafficLightView"));
+				};
+
+				/**
+				 * 
+				 */
+				BenchmarkLaunchPanelController.prototype.openTrafficLightViewPreconfigured = function() {
+					this.openView("trafficLightView", "viewId=trafficLightView&businessDate=TODAY&benchmark=Criticality&drilldown=BUSINESS_OBJECT&businessObject=Fund", window.btoa("viewId=trafficLightView&businessDate=TODAY&benchmark=Criticality&drilldown=BUSINESS_OBJECT&businessObject=Fund"));
 				};
 
 				/**

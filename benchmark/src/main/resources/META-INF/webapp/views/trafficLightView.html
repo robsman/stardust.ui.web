@@ -63,190 +63,201 @@ ul.errorMessagesPanel {
 				<td><select ng-model="benchmark"
 					ng-options="benchmark as benchmark.name for benchmark in benchmarks"><option
 							value="">Custom Selection of Traffic Lights</option></select></td>
-				<td><label>Drilldown</label></td>
-				<td><select ng-model="drilldown"><option
-							value="">None</option><option
-							value="PROCESS">By Process/Activity</option><option
-							value="BUSINESS_OBJECT">By Business Object</option></select></td>
-				<td ng-show="drilldown == 'BUSINESS_OBJECT'"><label>Business Object</label></td>
-				<td ng-show="drilldown == 'BUSINESS_OBJECT'"><select ng-model="businessObject"
+				<td><label>Business Date</label></td>
+				<td><input type="date" ng-model="businessDate"></input></td>
+				<td ng-show="benchmark && !preconfigured"><label>Drill-down</label></td>
+				<td ng-show="benchmark && !preconfigured"><select ng-model="drilldown"
+					ng-change="onDrillDownChange()"><option value="">None</option>
+						<option value="PROCESS">By Process/Activity</option>
+						<option value="BUSINESS_OBJECT">By Business Object</option></select></td>
+				<td ng-show="benchmark  && !preconfigured && drilldown == 'BUSINESS_OBJECT'"><label>Business
+						Object</label></td>
+				<td ng-show="benchmark  && !preconfigured && drilldown == 'BUSINESS_OBJECT'"><select
+					ng-model="businessObject"
 					ng-options="businessObject as businessObject.label for businessObject in businessObjects"
-					ng-change="onBusinessObjectChange()"><option value="">All</option></select></td>
+					ng-change="onBusinessObjectChange()"><option value="">Please select ...</option></select></td>					
 			</tr>
 		</table>
 		<div ng-show="benchmark">
 			<table class="trafficLightTable">
-				<tr>
-					<td class="trafficLightTableCell">Categories</td>
-					<td class="trafficLightTableCell trafficLightCumulantTableCell"
-						ng-repeat="category in benchmark.categories">
-							{{category.name}}</td>
-				</tr>
-				<tr>
-					<td class="trafficLightTableCell">All</td>
-					<td valign="bottom" align="center" class="trafficLightTableCell"
-						ng-repeat="category in benchmark.categories">
-						<a href="" ng-click="loadProcessInstances(10 * ($index + 1))"><table>
-						<tr><td align="center"><span
-						style="color: {{category.color}}; font-size: {{10 * ($index + 1)}}px;"><i class="fa fa-circle"></i>
-							</span></td></tr>
-						<tr><td align="center">{{10 * ($index + 1)}}</td></tr>
-						</table></a>
-						</td>
-				</tr>
-				<tr ng-show="drilldown == 'PROCESS' && !trafficLight.parent || expandedRows[trafficLight.parent.path]" ng-repeat="trafficLight in modelTree">
-					<td class="trafficLightTableCell"
-					style="padding-left: {{15* trafficLight.level+ 5}}px;"><a href=""
-					class="iconLink" ng-show="isExpandable(trafficLight)"
-					ng-click="expandRow(trafficLight)"><i class="fa fa-plus-square-o"></i></a><a
-					href="" ng-show="isCollapsable(trafficLight)" ng-click="collapseRow(trafficLight)"
-					class="iconLink"><i class="fa fa-minus-square-o"></i></a><span
-					style="margin-left: 5px;"><i class="fa fa-globe"
-						ng-show="trafficLight.type == 'MODEL'"></i><i class="fa fa-gears"
-						ng-show="trafficLight.type == 'PROCESS'"></i><i class="fa fa-gear"
-						ng-show="trafficLight.type == 'ACTIVITY'"></i> {{trafficLight.name}}</span></td>
-					<td valign="bottom" align="center" class="trafficLightTableCell"
-						ng-repeat="category in benchmark.categories">
-						<a href="" ng-click="loadProcessInstances(10 * ($index + 1))"><table>
-						<tr><td align="center"><span
-						style="color: {{category.color}}; font-size: {{10 * ($index + 1)}}px;"><i class="fa fa-circle"></i>
-							</span></td></tr>
-						<tr><td align="center">{{10 * ($index + 1)}}</td></tr>
-						</table></a>
-						</td>
-				</tr>
-				<tr ng-show="drilldown == 'BUSINESS_OBJECT' && businessObject" ng-repeat="businessObjectInstance in businessObjectInstances">
-					<td class="trafficLightTableCell">{{businessObject.name}} {{businessObjectInstance[businessObject.primaryKeyField.id]}}</td>
-					<td valign="bottom" align="center" class="trafficLightTableCell"
-						ng-repeat="category in benchmark.categories">
-						<a href="" ng-click="loadProcessInstances(10 * ($index + 1))"><table>
-						<tr><td align="center"><span
-						style="color: {{category.color}}; font-size: {{10 * ($index + 1)}}px;"><i class="fa fa-circle"></i>
-							</span></td></tr>
-						<tr><td align="center">{{10 * ($index + 1)}}</td></tr>
-						</table></a>
-						</td>
-				</tr>
+				<thead>
+					<tr>
+						<th class="trafficLightTableCell"><span ng-show="drilldown == 'PROCESS'">Activities/</span><span ng-show="drilldown == 'BUSINESS_OBJECT' && businessObject">{{businessObject.name}}/</span>Categories</th>
+						<th class="trafficLightTableCell trafficLightCumulantTableCell"
+							ng-repeat="category in benchmark.categories">
+							{{category.name}}</th>
+							<th>Sum</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td class="trafficLightTableCell">Total</td>
+						<td valign="bottom" align="center" class="trafficLightTableCell"
+							ng-repeat="category in benchmark.categories"><a href=""
+							ng-click="$parent.loadProcessInstances()"><table cellpadding="0" cellspacing="0" class="layoutTable">
+									<tr>
+										<td align="center"><span style="{{getCountStyle(category)}}"><i
+												class="fa fa-circle"></i> </span></td>
+									</tr>
+									<tr>
+										<td align="center">{{getCount(category)}}</td>
+									</tr>
+								</table></a></td>
+								<td valign="bottom" class="trafficLightTableCell"><strong>{{getSumCount(category)}}</strong></td>
+					</tr>
+					<tr
+						ng-show="drilldown && (!trafficLight.parent || expandedRows[trafficLight.parent.path])"
+						ng-repeat="trafficLight in trafficLights">
+						<td class="trafficLightTableCell"
+							style="padding-left: {{15* trafficLight.level+ 5}}px;"><a href=""
+							class="iconLink" ng-show="isExpandable(trafficLight)"
+							ng-click="expandRow(trafficLight)"><i
+								class="fa fa-plus-square-o"></i></a><a href=""
+							ng-show="isCollapsable(trafficLight)"
+							ng-click="collapseRow(trafficLight)" class="iconLink"><i
+								class="fa fa-minus-square-o"></i></a><span style="margin-left: 5px;"><i
+								class="fa fa-globe" ng-show="trafficLight.type == 'MODEL'"></i><i
+								class="fa fa-gears" ng-show="trafficLight.type == 'PROCESS'"></i><i
+								class="fa fa-gear" ng-show="trafficLight.type == 'ACTIVITY'"></i>
+								{{trafficLight.name}}</span></td>
+						<td valign="bottom" align="center" class="trafficLightTableCell"
+							ng-repeat="category in benchmark.categories"><a href=""
+							ng-click="$parent.$parent.loadProcessInstances()"><table cellpadding="0" cellspacing="0" class="layoutTable">
+									<tr>
+										<td align="center"><span style="{{getCountStyle(category, trafficLight)}}"><i
+												class="fa fa-circle"></i> </span></td>
+									</tr>
+									<tr>
+										<td align="center">{{getCount(category, trafficLight)}}</td>
+									</tr>
+								</table></a></td>
+								<td valign="bottom" class="trafficLightTableCell"><strong>{{getSumCount(category, trafficLight)}}</strong></td>
+					</tr>
+				</tbody>
 			</table>
 		</div>
 		<div ng-hide="benchmark">
-		<table style="margin-top: 10px; margin-bottom: 10px;">
-			<tr>
-				<td><label>Business Date</label></td>
-				<td><input type="date"></input></td>
-				<td><label>Business Object</label></td>
-				<td><select ng-model="businessObject"
-					ng-options="businessObject as businessObject.label for businessObject in businessObjects"
-					ng-change="onBusinessObjectChange()"><option value="">All</option></select></td>
-			</tr>
-		</table>
-		<div ng-show="businessObject">
-			<table cellspacing="0" cellpadding="0" class="layoutTable">
-				<tr valign="center">
-					<td><a href="#" class="iconLink"
-						ng-click="searchCollapsed = true" ng-hide="searchCollapsed"><i
-							class="fa fa-chevron-up"></i></a><a href="#" class="iconLink"
-						ng-click="searchCollapsed = false" ng-show="searchCollapsed"><i
-							class="fa fa-chevron-down"></i></a></td>
-					<td style="padding-left: 5px !important;"><h2
-							style="margin-bottom: 0px;">{{businessObject.name}}
-							Selection</h2></td>
+			<table style="margin-top: 10px; margin-bottom: 10px;">
+				<tr>
+					<td><label>Business Date</label></td>
+					<td><input type="date"></input></td>
+					<td><label>Business Object</label></td>
+					<td><select ng-model="businessObject"
+						ng-options="businessObject as businessObject.label for businessObject in businessObjects"
+						ng-change="onBusinessObjectChange()"><option value="">All</option></select></td>
 				</tr>
 			</table>
-			<div ng-hide="searchCollapsed"
-				ng-include="'../../business-object-management/businessObjectSearchPanel.html'"></div>
-		</div>
-		<table class="toolbar" style="width: 100%;">
-			<tr>
-				<td><a href="#" class="iconLink menuBarLink" title="Refresh"><i
-						class="fa fa-refresh"
-						ng-click="businessObjectManagementPanelController.filterBusinessObjectInstances()"></i></a><a
-					href="#" class="iconLink" style="margin-left: 5px;"
-					ng-click="openTrafficLightSelectionDialog()"><i
-						class="fa fa-plus-circle"></i></a></td>
-			</tr>
-		</table>
-		<div ng-repeat="benchmark in displayedBenchmarks">
-			<h2>{{benchmark.name}} Benchmark</h2>
-			<table class="trafficLightTable">
+			<div ng-show="businessObject">
+				<table cellspacing="0" cellpadding="0" class="layoutTable">
+					<tr valign="center">
+						<td><a href="#" class="iconLink"
+							ng-click="searchCollapsed = true" ng-hide="searchCollapsed"><i
+								class="fa fa-chevron-up"></i></a><a href="#" class="iconLink"
+							ng-click="searchCollapsed = false" ng-show="searchCollapsed"><i
+								class="fa fa-chevron-down"></i></a></td>
+						<td style="padding-left: 5px !important;"><h2
+								style="margin-bottom: 0px;">{{businessObject.name}}
+								Selection</h2></td>
+					</tr>
+				</table>
+				<div ng-hide="searchCollapsed"
+					ng-include="'../../business-object-management/businessObjectSearchPanel.html'"></div>
+			</div>
+			<table class="toolbar" style="width: 100%;">
 				<tr>
-					<td class="trafficLightTableCell"></td>
-					<td class="trafficLightTableCell"></td>
-					<td class="trafficLightTableCell"
-						ng-repeat="category in benchmark.categories"><span
-						style="color: {{category.color"><i class="fa fa-circle"></i>
-							{{category.name}}</span></td>
-				</tr>
-				<tr ng-repeat="trafficLight in benchmark.trafficLights">
-					<td class="trafficLightTableCell"><a href=""
-						ng-click="removeTrafficLight(benchmark, $index)" class="iconLink"><i
-							class="fa fa-minus-circle"></i></a></td>
-					<td class="trafficLightTableCell"><span
-						ng-hide="trafficLight.activity"><i class="fa fa-gears"></i>{{trafficLight.process.name}}</span><span
-						ng-show="trafficLight.activity"><i class="fa fa-gear"></i>{{trafficLight.activity.name}}</span></td>
-					<td ng-repeat="category in benchmark.categories"
-						class="trafficLightTableCell"><a href=""
-						ng-click="loadProcessInstances($index)">{{$index}}</a></td>
-				</tr>
-				<tr>
-					<td class="trafficLightTableCell"><a href=""
-						ng-click="openTrafficLightSelectionDialog(benchmark)"
-						class="iconLink"><i class="fa fa-plus-circle"></i></a></td>
-					<td colspan="{{benchmark.categories.length + 1}}"
-						class="trafficLightTableCell"></td>
+					<td><a href="#" class="iconLink menuBarLink" title="Refresh"><i
+							class="fa fa-refresh"
+							ng-click="businessObjectManagementPanelController.filterBusinessObjectInstances()"></i></a><a
+						href="#" class="iconLink" style="margin-left: 5px;"
+						ng-click="openTrafficLightSelectionDialog()"><i
+							class="fa fa-plus-circle"></i></a></td>
 				</tr>
 			</table>
+			<div ng-repeat="benchmark in displayedBenchmarks">
+				<h2>{{benchmark.name}} Benchmark</h2>
+				<table class="trafficLightTable">
+					<thead>
+						<tr>
+							<th class="trafficLightTableCell"></th>
+							<th class="trafficLightTableCell"></th>
+							<th class="trafficLightTableCell"
+								ng-repeat="category in benchmark.categories"><span
+								style="color: {{category.color}};"><i class="fa fa-circle"></i>
+									{{category.name}}</span></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="trafficLight in benchmark.trafficLights">
+							<td class="trafficLightTableCell"><a href=""
+								ng-click="removeTrafficLight(benchmark, $index)"
+								class="iconLink"><i class="fa fa-minus-circle"></i></a></td>
+							<td class="trafficLightTableCell"><span
+								ng-hide="trafficLight.activity"><i class="fa fa-gears"></i>{{trafficLight.process.name}}</span><span
+								ng-show="trafficLight.activity"><i class="fa fa-gear"></i>{{trafficLight.activity.name}}</span></td>
+							<td ng-repeat="category in benchmark.categories"
+								class="trafficLightTableCell"><a href=""
+								ng-click="loadProcessInstances()">{{$index}}</a></td>
+						</tr>
+						<tr>
+							<td class="trafficLightTableCell"><a href=""
+								ng-click="openTrafficLightSelectionDialog(benchmark)"
+								class="iconLink"><i class="fa fa-plus-circle"></i></a></td>
+							<td colspan="{{benchmark.categories.length + 1}}"
+								class="trafficLightTableCell"></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
 		</div>
-	</div>
-	{{processInstances}}
 		<div ng-show="processInstances.length > 0">
-			<h2>Processes</h2>
+			<h2>Activities</h2>
 			<div ng-include="'../processListPanel.html'"
 				ng-repeat="processInstances in [processInstances]"></div>
 		</div>
-	<div sd-dialog="trafficLightSelectionDialog">
-		<div class="errorMessagesPanel"
-			ng-show="relationshipDialog.errors.length > 0">
-			<ul>
-				<li ng-repeat="error in relationshipDialog.errors"><span
-					class="errorMessage">{{error.message}}</span></li>
-			</ul>
+		<div sd-dialog="trafficLightSelectionDialog">
+			<div class="errorMessagesPanel"
+				ng-show="relationshipDialog.errors.length > 0">
+				<ul>
+					<li ng-repeat="error in relationshipDialog.errors"><span
+						class="errorMessage">{{error.message}}</span></li>
+				</ul>
+			</div>
+			<table class="formTable">
+				<tr>
+					<td><label>Benchmark</label></td>
+					<td><select ng-model="trafficLightSelectionDialog.benchmark"
+						ng-options="benchmark as benchmark.name for benchmark in benchmarks"
+						ng-change="onTrafficLightSelectionDialogBenchmarkSelectionChange()"><option
+								value="">Please select ...</option></select></td>
+				</tr>
+			</table>
+			<table class="formTable">
+				<tr>
+					<td><label>Traffic Light on Process/Activity</label></td>
+				</tr>
+				<tr>
+					<td><select size="5" style="min-width: 200px;"
+						ng-model="trafficLightSelectionDialog.trafficLight"
+						ng-options="trafficLight as trafficLight.path group by trafficLight.model.name for trafficLight in trafficLightSelectionDialog.trafficLights"></select></td>
+				</tr>
+			</table>
+			<table style="width: 100%;">
+				<tr>
+					<td align="center">
+						<table cellpadding="0" cellspacing="0">
+							<tr>
+								<td><input type="button" value="Add"
+									ng-click="addTrafficLight()"
+									ng-disabled="!trafficLightSelectionDialog.trafficLight" /></td>
+								<td><input type="button" value="Cancel"
+									ng-click="closeTrafficLightSelectionDialog()"
+									style="margin-left: 5px;" /></td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
 		</div>
-		<table class="formTable">
-			<tr>
-				<td><label>Benchmark</label></td>
-				<td><select ng-model="trafficLightSelectionDialog.benchmark"
-					ng-options="benchmark as benchmark.name for benchmark in benchmarks"
-					ng-change="onTrafficLightSelectionDialogBenchmarkSelectionChange()"><option
-							value="">Please select ...</option></select></td>
-			</tr>
-		</table>
-		<table class="formTable">
-			<tr>
-				<td><label>Traffic Light on Process/Activity</label></td>
-			</tr>
-			<tr>
-				<td><select size="5" style="min-width: 200px;"
-					ng-model="trafficLightSelectionDialog.trafficLight"
-					ng-options="trafficLight as trafficLight.path group by trafficLight.model.name for trafficLight in trafficLightSelectionDialog.trafficLights"></select></td>
-			</tr>
-		</table>
-		<table style="width: 100%;">
-			<tr>
-				<td align="center">
-					<table cellpadding="0" cellspacing="0">
-						<tr>
-							<td><input type="button" value="Add"
-								ng-click="addTrafficLight()"
-								ng-disabled="!trafficLightSelectionDialog.trafficLight" /></td>
-							<td><input type="button" value="Cancel"
-								ng-click="closeTrafficLightSelectionDialog()"
-								style="margin-left: 5px;" /></td>
-						</tr>
-					</table>
-				</td>
-			</tr>
-		</table>
 	</div>
 </body>
 </html>

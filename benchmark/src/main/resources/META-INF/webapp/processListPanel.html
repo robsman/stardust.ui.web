@@ -5,6 +5,7 @@
 			<tr>
 				<th>#</th>
 				<th>Name</th>
+				<th>Process</th>
 				<th>Start Time</th>
 				<th>Details</th>
 			</tr>
@@ -13,10 +14,11 @@
 			<tr ng-repeat="processInstance in processInstances"
 				sd-table-selection="selectedProcessInstances"
 				sd-table-selection-changed="onProcessInstancesChange()">
-				<td>{{processInstance.name}}</td>
-				<td>{{processInstance.oid}}</td>
-				<td>{{processInstance.startTime}}</td>
-				<td><a class="iconLink" ng-click="openGanttChartView()"><i
+				<td align="right">{{processInstance.oid}}</td>
+				<td>{{processInstance.activity.name}}</td>
+				<td>{{processInstance.processDefinition.name}}</td>
+				<td>{{processInstance.start}}</td>
+				<td align="right"><a class="iconLink" ng-click="openGanttChartView(processInstance)"><i
 						class="fa fa-tasks"></i></a></td>
 			</tr>
 		</tbody>
