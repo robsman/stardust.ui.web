@@ -286,6 +286,11 @@ define(
 						chartOptions.axes.xaxis.tickRenderer = jQuery.jqplot.CanvasAxisTickRenderer;
 						chartOptions.axes.yaxis.tickRenderer = jQuery.jqplot.CanvasAxisTickRenderer;
 						
+						chartOptions.highlighter = {
+						   show: this.report.layout.chart.options.highlighter.show,
+						   tooltipContentEditor: tooltipContentEditor
+						};
+						
 					} else if (this.report.layout.chart.type === this.reportingService.metadata.chartTypes.candlestickChart.id) {
 						if (this.getFirstDimension().type == this.reportingService.metadata.timestampType) {
 							chartOptions.axes.xaxis.renderer = jQuery.jqplot.DateAxisRenderer;
@@ -297,19 +302,76 @@ define(
 						})
 						chartOptions.axes.xaxis.tickRenderer = jQuery.jqplot.CanvasAxisTickRenderer;
                   chartOptions.axes.yaxis.tickRenderer = jQuery.jqplot.CanvasAxisTickRenderer;
+                  
+                  chartOptions.seriesDefaults.pointLabels.hideZeros = true;
+                  
+                  chartOptions.highlighter = {
+                     show: this.report.layout.chart.options.highlighter.show,
+                     tooltipContentEditor: tooltipContentEditor
+                  };
 						
 					} else if (this.report.layout.chart.type === this.reportingService.metadata.chartTypes.barChart.id) {
 						chartOptions.seriesDefaults.renderer = $.jqplot.BarRenderer;
+						chartOptions.stackSeries = (this.report.layout.chart.options.stackSeries && 
+						         (this.report.dataSet.groupBy != null && this.report.dataSet.groupBy != 'None'));
+						if (chartOptions.stackSeries)
+						{
+						   var x_axis = [];
+						   for ( var i = 0; i < data.seriesGroup.length; ++i) {
+						      var tempData = [];
+						      for ( var j = 0; j < data.seriesGroup[i].length; ++j) {
+						         if (i == 0) {
+						            x_axis.push(data.seriesGroup[i][j][0]);
+						         }
+						         tempData.push(data.seriesGroup[i][j][1]);
+						         if (j == data.seriesGroup[i].length -1 ) {
+						            data.seriesGroup[i] = tempData;
+						         }
+						      }
+						   }
+						   
+						   if (this.report.dataSet.firstDimension === this.reportingService.metadata.objects.activityInstance.dimensions.criticality.id)
+						   {
+						      var result = getUniqueElementsCount(x_axis);
+						      var intervals = result[1];
+						      x_axis = result[0];
+						      var max = [];
+						      for ( var i = 0; i < data.seriesGroup.length; i++)
+						      {
+						         for ( var j = 0; j < data.seriesGroup[i].length; j++)
+						         {
+						            max = [];
+						            for ( var k = 0; k < intervals.length; k++)
+						            {
+						               var tempArray = data.seriesGroup[i].splice(0, intervals[k]);
+						               max[k] = Math.max.apply(Math, tempArray);
+						            }
+						         }
+						         data.seriesGroup[i] = max;
+						      }
+						   }
+						   
+						   chartOptions.axes.xaxis.ticks = x_axis;
+						}
+						chartOptions.seriesDefaults.pointLabels.hideZeros = true;
 						chartOptions.seriesDefaults.rendererOptions = {
 							animation : {
 								speed : 2500
 							},
-							fillToZero : true
+							fillToZero : true,
+							highlighter: {
+							   show: this.report.layout.chart.options.highlighter.show,
+							   tooltipContentEditor: tooltipContentEditor
+							}
 						};
 
-						chartOptions.axes.xaxis.renderer = jQuery.jqplot.CategoryAxisRenderer;
-						chartOptions.axes.xaxis.tickRenderer = jQuery.jqplot.CanvasAxisTickRenderer;
-                  		chartOptions.axes.yaxis.tickRenderer = jQuery.jqplot.CanvasAxisTickRenderer;
+						if (this.getFirstDimension().type == this.reportingService.metadata.timestampType) {
+						   chartOptions.axes.xaxis.renderer = jQuery.jqplot.DateAxisRenderer;
+						   chartOptions.axes.xaxis.tickRenderer = jQuery.jqplot.AxisTickRenderer;
+						} else {
+						   chartOptions.axes.xaxis.renderer = jQuery.jqplot.CategoryAxisRenderer;
+						   chartOptions.axes.xaxis.tickRenderer = jQuery.jqplot.CanvasAxisTickRenderer;
+						}
 						
 						chartOptions.axes.yaxis.pad = 1.05;
 					} else if (this.report.layout.chart.type === this.reportingService.metadata.chartTypes.bubbleChart.id) {
@@ -318,7 +380,6 @@ define(
 							bubbleGradients : true
 						};
 					}else if (this.report.layout.chart.type === this.reportingService.metadata.chartTypes.donutChart.id) {
-					   chartOptions.highlighter.show = false;
 						chartOptions.seriesDefaults.renderer = jQuery.jqplot.DonutRenderer;
 						chartOptions.seriesDefaults.rendererOptions = {
 						     highlightMouseOver : this.report.layout.chart.options.highlighter.show,
@@ -331,16 +392,12 @@ define(
 					        // You can show the data 'value' or data 'label' instead.
 					        series: [{label: 'A1'},{label: 'A2'}],
 					        highlighter: {
-					            show: true,
-					            showLabel: true,
-					            formatString: '%s - %d. X, %d Y'
-					        },
-					        pointLabels: {
-			                    show: true
-			                },
+					            show: this.report.layout.chart.options.highlighter.show,
+					            tooltipContentEditor: tooltipContentEditor,
+					            useAxesFormatters: false
+					        }
 						};
 					} else if(this.report.layout.chart.type === this.reportingService.metadata.chartTypes.pieChart.id) {
-					   chartOptions.highlighter.show = false;
 						chartOptions.seriesDefaults.renderer = jQuery.jqplot.PieRenderer;
 						chartOptions.seriesDefaults.rendererOptions = {
 						   highlightMouseOver : this.report.layout.chart.options.highlighter.show,
@@ -349,6 +406,22 @@ define(
 							sliceMargin : 4,
 							lineWidth : 5
 						};
+						
+						chartOptions.highlighter = {
+		                     show: this.report.layout.chart.options.highlighter.show,
+		                     tooltipContentEditor: tooltipContentEditor,
+		                     useAxesFormatters: false
+		            };
+					}
+					
+					function tooltipContentEditor(str, seriesIndex, pointIndex, plot) {
+					   // display series_label, x-axis_tick, y-axis value
+					   if (plot.stackSeries)
+					      return plot.series[seriesIndex]["label"] + ", " + plot.options.axes.xaxis.ticks[pointIndex] + 
+					      " : " + plot.data[seriesIndex][pointIndex];
+					   else
+					      return plot.series[seriesIndex]["label"] + ", " + plot.data[seriesIndex][pointIndex][0] +
+					      " : " + plot.data[seriesIndex][pointIndex][1];
 					}
 
 					// Label series
@@ -382,6 +455,10 @@ define(
 					var tableOptions = {
 							aoColumnDefs : []
 						};
+					
+					tableOptions.bPaginate = this.report.layout.table.options.showVisibleRowCountSelector;
+					tableOptions.bFilter = this.report.layout.table.options.showSearchInput;
+					
 					if(scopeController){
 						scopeController.tableOptions = tableOptions;	
 					}
@@ -405,7 +482,7 @@ define(
 			
 						//model data must be added from server side
 						if(qualifier[0] != 'modelData' || this.reportingService.modelData){
-							enums = this.reportingService.getEnumerators2(qualifier[0], qualifier[1]);	
+							enums = this.reportingService.getEnumerators(dimension.enumerationType);	
 						}
 						
 						if(!enums){
@@ -443,8 +520,7 @@ define(
 					//format first dimensions
 					dimension = primaryObject.dimensions[self.report.dataSet.firstDimension];
 					if (dimension && dimension.enumerationType) {
-						var qualifier = dimension.enumerationType.split(":");
- 				        var enums = self.reportingService.getEnumerators2(qualifier[0], qualifier[1]);
+ 				        var enums = self.reportingService.getEnumerators(dimension.enumerationType);
  				        var displayValueMapping = {};
 					    Object
 							.keys(inData)
@@ -524,8 +600,7 @@ define(
 										
 										if (self.report.dataSet.firstDimension === self.reportingService.metadata.objects.processInstance.dimensions.priority.id)
 										{
-										   var qualifier = [ "staticData", "priorityLevel" ];
-										   var enumItems = self.reportingService.getEnumerators2(qualifier[0], qualifier[1]);
+										   var enumItems = self.reportingService.getEnumerators(self.reportingService.metadata.objects.processInstance.dimensions.priority.enumerationType);
 
 										   data.seriesGroup.forEach(function(group)
 										   {
@@ -994,6 +1069,8 @@ define(
 			    }
 			    tableParameters.csv = fileName;
 			    tableParameters.excel = fileName;
+			    
+			    this.initializeDataTableTableToolsOptions(this.report.layout.table.options.showExportButtons, tableParameters);
 			
 			    var addTotalRow = false;
 			
@@ -1268,9 +1345,44 @@ define(
           */
          ReportRenderingController.prototype.refreshPreviewData = function(scopeController, headers) {
             var self = this;	
+            var pos = 0;
+            var element = {};
+            
+            // Filter out Group by column from selected columns in JSON before invoking 
+            // the API
+            if (self.report.dataSet.columns) {
+               for ( var i = this.report.dataSet.columns.length - 1; i >= 0; i--) {
+                  if (self.report.dataSet.groupBy && self.report.dataSet.groupBy != 'None') {
+                     if (self.report.dataSet.groupBy === self.report.dataSet.columns[i].id) {
+                        self.pos = i;
+                        self.element = self.report.dataSet.columns.splice(i, 1);
+                        break;
+                     }
+                  }
+               }
+            }
+            
             
         	   this.getReportData(this.report, this.parameters).done(
      		function(data) {
+     		   if (self.report.dataSet.groupBy && self.report.dataSet.groupBy != 'None') {
+        		   // Add previously filtered out Group by column to selected columns in JSON
+     		      if (self.element) {
+        		      self.report.dataSet.columns.splice(self.pos, 0, self.element[0]);
+        		      self.element = null;
+   
+        		      // API doesn't support re-ordering of groupBy column, so re-ordering it 
+        		      // as per position in selected columns
+        		      for ( var rowIndex in data.rows) {
+        		         var row = data.rows[rowIndex];
+        		         row.splice(self.pos + 1, 0, row[0]);
+        		         row.splice(0, 1);
+        		      }
+   
+        		   } else {
+        		      headers.splice(0, 0, self.getDimension(self.report.dataSet.groupBy).name);
+        		   }
+        		}
      			// Format data before displaying the Results
      		   scopeController.rows = self.formatPreviewData(data.rows, scopeController);
      		   var baseTable = [headers];
@@ -1305,19 +1417,39 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
    var tableOptions = {
 			aoColumnDefs : []
 		};
+   
+   this.initializeDataTableTableToolsOptions(this.report.layout.table.options.showExportButtons, 
+               scopeController.tableParameters);
+      
+   tableOptions.bPaginate = this.report.layout.table.options.showVisibleRowCountSelector;
+   tableOptions.bFilter = this.report.layout.table.options.showSearchInput;
+   
    scopeController.tableOptions = tableOptions;
       
    var selectedColumns =  this.reportingService.getColumnDimensions(this.report);
    var displayValueMapping = {};
+   
+   if (self.report.dataSet.groupBy && self.report.dataSet.groupBy != 'None') {
+      // Showing the group by column as first column in Reports 
+      var found  = false;
+      for ( var selColumn in selectedColumns) {
+         if (selectedColumns[selColumn].id == self.report.dataSet.groupBy) {
+            found = true;
+            break;
+         }
+      }
+      if (!found) {
+         selectedColumns.splice(0, 0, self.getDimension(self.report.dataSet.groupBy));
+      }
+   }
    
    for ( var selColumn in selectedColumns)
    {
       if (selectedColumns[selColumn].id == this.
                reportingService.metadata.objects.processInstance.dimensions.priority.id)
       {// Formatting Priority to display priority levels as Low, medium etc
-         var qualifier = ["staticData", "priorityLevel"];
-         
-         var enumItems = this.reportingService.getEnumerators2(qualifier[0], qualifier[1]);
+         var enumItems = this.reportingService.getEnumerators(this.
+                 reportingService.metadata.objects.processInstance.dimensions.priority.enumerationType);
            
          for ( var row in data)
          {
@@ -1336,9 +1468,8 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
       } else if (selectedColumns[selColumn].id == this.
                reportingService.metadata.objects.processInstance.dimensions.state.id) {
       // Formatting Process State to display string states as Alive, completed etc 
-         var qualifier = ["staticData", "processStates"];
-         
-         var enumItems = this.reportingService.getEnumerators2(qualifier[0], qualifier[1]);
+         var enumItems = this.reportingService.getEnumerators(this.
+                 reportingService.metadata.objects.processInstance.dimensions.state.enumerationType);
            
          for ( var row in data)
          {
@@ -1352,9 +1483,8 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
       } else if (selectedColumns[selColumn].id == this.
                reportingService.metadata.objects.activityInstance.dimensions.criticality.id) {
          //Formatting Criticality data to display string values
-         var qualifier = ["preferenceData", "criticality"];
-         
-         var enumItems = this.reportingService.getEnumerators2(qualifier[0], qualifier[1]);
+         var enumItems = this.reportingService.getEnumerators(this.
+                 reportingService.metadata.objects.activityInstance.dimensions.criticality.enumerationType);
          
          for ( var row in data)
          {
@@ -1514,9 +1644,22 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
                      value = jQuery.datepicker.formatDate(toFormat, date);
                   } catch(e) {
                      console.log(e);
-		}
+                  }
                }
                return value;
+            };
+            
+            /**
+             * 
+             */
+            ReportRenderingController.prototype.initializeDataTableTableToolsOptions = function(showExportButtons, tableParamaters) {
+               if (!showExportButtons) {
+                  tableParamaters.csv = false;
+                  tableParamaters.excel = false;
+               }
+               (this.report.layout.table.options.showExportButtons || this.report.layout.table.options.showSearchInput ||
+                        this.report.layout.table.options.showVisibleRowCountSelector) ? jQuery('div .heading').css({display:'block'}) :
+                           jQuery('div .heading').css({display:'none'});
             };
 		}
 			
@@ -1577,5 +1720,31 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
 				            return displayValueMapping[source[0]];
 				        };})(displayValueMapping)
 				    };
-			};
+			}
+			
+			 /**
+			 * To get unique elements and their count.
+			 * @param array
+			 * @returns
+			 * e.g. var arr = [ "Low", "Low", "Low", "Low", "Low", "Low", "Low", "Low", "Medium","Medium", "Medium", "High" ];
+			 * Result: a = [Low,Medium,High], b = [8,3,1]
+			 */
+			function getUniqueElementsCount(arr) {
+             var a = [], b = [], prev;
+
+//           arr.sort(); Commneting the array sorting as it changes the order of elements in array. 
+             for ( var i = 0; i < arr.length; i++) {
+                if (arr[i] !== prev) {
+                   a.push(arr[i]);
+                   b.push(1);
+                }
+                else {
+                   b[b.length - 1]++;
+                }
+                prev = arr[i];
+             }
+
+             return [ a, b ];
+         }
+			
 		});
