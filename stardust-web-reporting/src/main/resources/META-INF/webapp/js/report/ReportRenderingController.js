@@ -329,6 +329,28 @@ define(
 						         }
 						      }
 						   }
+						   
+						   if (this.report.dataSet.firstDimension === this.reportingService.metadata.objects.activityInstance.dimensions.criticality.id)
+						   {
+						      var result = getUniqueElementsCount(x_axis);
+						      var intervals = result[1];
+						      x_axis = result[0];
+						      var max = [];
+						      for ( var i = 0; i < data.seriesGroup.length; i++)
+						      {
+						         for ( var j = 0; j < data.seriesGroup[i].length; j++)
+						         {
+						            max = [];
+						            for ( var k = 0; k < intervals.length; k++)
+						            {
+						               var tempArray = data.seriesGroup[i].splice(0, intervals[k]);
+						               max[k] = Math.max.apply(Math, tempArray);
+						            }
+						         }
+						         data.seriesGroup[i] = max;
+						      }
+						   }
+						   
 						   chartOptions.axes.xaxis.ticks = x_axis;
 						}
 						chartOptions.seriesDefaults.pointLabels.hideZeros = true;
@@ -1698,5 +1720,31 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
 				            return displayValueMapping[source[0]];
 				        };})(displayValueMapping)
 				    };
-			};
+			}
+			
+			 /**
+			 * To get unique elements and their count.
+			 * @param array
+			 * @returns
+			 * e.g. var arr = [ "Low", "Low", "Low", "Low", "Low", "Low", "Low", "Low", "Medium","Medium", "Medium", "High" ];
+			 * Result: a = [Low,Medium,High], b = [8,3,1]
+			 */
+			function getUniqueElementsCount(arr) {
+             var a = [], b = [], prev;
+
+//           arr.sort(); Commneting the array sorting as it changes the order of elements in array. 
+             for ( var i = 0; i < arr.length; i++) {
+                if (arr[i] !== prev) {
+                   a.push(arr[i]);
+                   b.push(1);
+                }
+                else {
+                   b[b.length - 1]++;
+                }
+                prev = arr[i];
+             }
+
+             return [ a, b ];
+         }
+			
 		});
