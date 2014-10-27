@@ -390,15 +390,17 @@ define(
 					BusinessObjectManagementService
 							.instance()
 							.getBusinessObject(this.parameters.modelOid,
-									"FundGroup")
+									"FundGroup") // Remove Hard-coding
 							.done(
 									function(businessObject) {
 										self.relationshipPanelController
 												.changeBusinessObject(businessObject);
 										self.relationshipPanelController
 												.setRootBusinessObjectInstance(self.currentBusinessObjectInstance);
+//										self.relationshipPanelController
+//												.setRelationship(relationship);
 										self.relationshipPanelController
-												.setRelationship(relationship);
+										.setRelationship({otherRole: "Fund Groups"});
 
 										self.safeApply();
 									}).fail(function() {
