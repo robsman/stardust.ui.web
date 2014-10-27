@@ -117,7 +117,7 @@
 
 				var content = col.find('sd-column-template');
 				if (content.length == undefined || content.length == 0) {
-					colDef.contents = getCellRenderContents(colDef);
+					colDef.contents = getDefaultContent(colDef);
 				} else {
 					colDef.contents = getTemplateContent(content);
 				}
@@ -131,19 +131,14 @@
 		/*
 		 * 
 		 */
-		function getTemplateContent(elm) {
-			var scriptTemplate = elm.find("script[type='text/ng-template']");
-			if (scriptTemplate.length != undefined && scriptTemplate.length != 0) {
-				return scriptTemplate.html();
-			} else {
-				return elm.html();
-			}
+		function getTemplateContent(templateElm) {
+			return templateElm.html();
 		}
 
 		/*
 		 * 
 		 */
-		function getCellRenderContents(colDef) {
+		function getDefaultContent(colDef) {
 			var contents = '{{rowData.' + colDef.field + '}}';
 
 			if (colDef.dataType === 'int') {

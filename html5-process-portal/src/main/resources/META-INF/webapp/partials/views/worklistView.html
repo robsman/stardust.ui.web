@@ -10,21 +10,17 @@
 		<div sd-data-table="worklistDataTable" sd-data="worklistViewCtrl.fetchPage(options)" sda-ready="worklistViewCtrl.ready"
 			sda-page-size="5" sda-mode="">
 			
-			<sd-toolbar>
-				<script type="text/ng-template">
-					<a href="#" ng-click="worklistViewCtrl.completeAll()" title="Complete All" class="tbl-toolbar-item tbl-tool-link">
-					   <i class="fa fa-share"></i>
-					</a>
-				</script>
+			<sd-toolbar ng-non-bindable>
+				<a href="#" ng-click="worklistViewCtrl.completeAll()" title="Complete All" class="tbl-toolbar-item tbl-tool-link">
+				   <i class="fa fa-share"></i>
+				</a>
 			</sd-toolbar>
 			
 			<sd-column sda-field="name" sda-title="i18n('processportal.views-worklistPanel-column-overview')" sda-sortable="true">
-				<sd-column-template>
-					<script type="text/ng-template">
-						<a href="#" ng-click="worklistViewCtrl.activateWorkItem(rowData)">
-							{{rowData.activity.name}}
-						</a>
-					</script>
+				<sd-column-template ng-non-bindable>
+					<a href="#" ng-click="worklistViewCtrl.activateWorkItem(rowData)">
+						{{rowData.activity.name}}
+					</a>
 				</sd-column-template>
 				<sd-column-filter></sd-column-filter>
 			</sd-column>
@@ -35,15 +31,13 @@
 			<sd-column sda-field="lastModification" sda-title="i18n('processportal.views-worklistPanel-column-lastmodification')" sda-data-type="dateTime" sda-sortable="true"></sd-column>
 
 			<sd-column sda-field="descriptors" sda-title="i18n('processportal.views-worklistPanel-column-descriptors')">
-				<sd-column-template>
-					<script type="text/ng-template">
-						<table>
-							<tr ng-repeat="desc in rowData.descriptors">
-								<td>{{desc.key}}</td>
-								<td>{{desc.value}}</td>
-							</tr>
-						</table>
-					</script>
+				<sd-column-template ng-non-bindable>
+					<table>
+						<tr ng-repeat="desc in rowData.descriptors">
+							<td>{{desc.key}}</td>
+							<td>{{desc.value}}</td>
+						</tr>
+					</table>
 				</sd-column-template>
 				<sd-column-filter></sd-column-filter>
 			</sd-column>
@@ -53,50 +47,46 @@
 			</sd-column>
 
 			<sd-column sda-field="" sda-title="'Data'">
-				<sd-column-template>
-					<script type="text/ng-template">
-						<table ng-hide="!worklistViewCtrl.worklist.trivialManualActivities[rowData.oid]">
-							<tbody>
-						    	<tr ng-repeat="mapping in worklistViewCtrl.worklist.trivialManualActivities[rowData.oid].dataMappings">
-						        	<td>{{mapping.name}}</td>
-						            <td>
-						            	<select ng-show="mapping.isEnum"
-						      		    	ng-model="worklistViewCtrl.worklist.trivialManualActivities[rowData.oid].inOutData[mapping.id]"
-						                    ng-init="worklistViewCtrl.worklist.trivialManualActivities[rowData.oid].inOutData[mapping.id] = worklistViewCtrl.worklist.trivialManualActivities[rowData.oid].inOutData[mapping.id] || mapping.enumValues[0]"
-						                    ng-options="enumVal for enumVal in mapping.enumValues">
-										</select>
-						                  
-										<input type="text"
-						                	ng-show="mapping.typeName == 'java.lang.String'"
-						                    ng-model="worklistViewCtrl.worklist.trivialManualActivities[rowData.oid].inOutData[mapping.id]" />
-						
-										<input type="checkbox" ng-show="mapping.typeName == 'java.lang.Boolean'"
-											ng-model="worklistViewCtrl.worklist.trivialManualActivities[rowData.oid].inOutData[mapping.id]" />
-									</td>
-								</tr>
-							</tbody>
-						</table>
-					</script>
+				<sd-column-template ng-non-bindable>
+					<table ng-hide="!worklistViewCtrl.worklist.trivialManualActivities[rowData.oid]">
+						<tbody>
+					    	<tr ng-repeat="mapping in worklistViewCtrl.worklist.trivialManualActivities[rowData.oid].dataMappings">
+					        	<td>{{mapping.name}}</td>
+					            <td>
+					            	<select ng-show="mapping.isEnum"
+					      		    	ng-model="worklistViewCtrl.worklist.trivialManualActivities[rowData.oid].inOutData[mapping.id]"
+					                    ng-init="worklistViewCtrl.worklist.trivialManualActivities[rowData.oid].inOutData[mapping.id] = worklistViewCtrl.worklist.trivialManualActivities[rowData.oid].inOutData[mapping.id] || mapping.enumValues[0]"
+					                    ng-options="enumVal for enumVal in mapping.enumValues">
+									</select>
+					                  
+									<input type="text"
+					                	ng-show="mapping.typeName == 'java.lang.String'"
+					                    ng-model="worklistViewCtrl.worklist.trivialManualActivities[rowData.oid].inOutData[mapping.id]" />
+					
+									<input type="checkbox" ng-show="mapping.typeName == 'java.lang.Boolean'"
+										ng-model="worklistViewCtrl.worklist.trivialManualActivities[rowData.oid].inOutData[mapping.id]" />
+								</td>
+							</tr>
+						</tbody>
+					</table>
 				</sd-column-template>
 				<sd-column-filter></sd-column-filter>
 			</sd-column>
 
 			<sd-column sda-field="" sda-title="i18n('processportal.views-worklistPanel-column-actions')" sd-class="" sd-style="">
-				<sd-column-template>
-					<script type="text/ng-template">
-						<a href="#" ng-click="worklistViewCtrl.openNotes(rowData)" title="Open Notes" class="view-tool-link">
-							<i class="fa fa-comment-o"></i>
-						</a>
-						<a href="#" ng-click="worklistViewCtrl.openProcessHistory(rowData)" title="Process History" class="view-tool-link">
-							<i class="fa fa-tasks"></i>
-						</a>
-						<a href="#" ng-click="worklistViewCtrl.complete(rowData)" title="Complete" class="view-tool-link">
-							<i class="fa fa-share"></i>
-						</a>
-						<a href="#" ng-click="worklistViewCtrl.openDelegateDialog(rowData)" title="Delegate" class="view-tool-link">
-							<i class="fa fa-user"></i>
-						</a>
-					</script>
+				<sd-column-template ng-non-bindable>
+					<a href="#" ng-click="worklistViewCtrl.openNotes(rowData)" title="Open Notes" class="view-tool-link">
+						<i class="fa fa-comment-o"></i>
+					</a>
+					<a href="#" ng-click="worklistViewCtrl.openProcessHistory(rowData)" title="Process History" class="view-tool-link">
+						<i class="fa fa-tasks"></i>
+					</a>
+					<a href="#" ng-click="worklistViewCtrl.complete(rowData)" title="Complete" class="view-tool-link">
+						<i class="fa fa-share"></i>
+					</a>
+					<a href="#" ng-click="worklistViewCtrl.openDelegateDialog(rowData)" title="Delegate" class="view-tool-link">
+						<i class="fa fa-user"></i>
+					</a>
 				</sd-column-template>
 			</sd-column>
 		</div>
