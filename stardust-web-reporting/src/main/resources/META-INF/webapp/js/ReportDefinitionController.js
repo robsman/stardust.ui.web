@@ -837,7 +837,8 @@ define(
 						this.report.layout.type = "processDiagram";
 					} else if (this.report.dataSet.type === 'seriesGroup') {
 						this.report.layout.type = "simpleReport";
-						this.report.layout.subType = this.metadata.layoutSubTypes.chart.id;
+						this.report.layout.subType = this.reportingService.metadata.layoutSubTypes.chart.id;
+						jQuery("#layoutSubTypeSelect").change();
 						this.report.dataSet.columns = [];
 					} else if (this.report.dataSet.type === 'recordSet') {
 						this.report.layout.type = "table";
@@ -848,7 +849,6 @@ define(
 				 * 
 				 */
 				ReportDefinitionController.prototype.layoutChanged = function() {
-					this.report.layout = {};
 					this.report.layout.type = 'document';
 					this.report.layout.subType = null;
 				};

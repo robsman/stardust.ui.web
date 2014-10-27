@@ -509,7 +509,8 @@ table.formTable td {
 								style="margin-bottom: 10px;">
 								<tr>
 									<td><input id="auto-reporting-layoutTab-simpleReport" ng-model="report.layout.type"
-										ng-show="report.dataSet.type == 'seriesGroup'" value="simpleReport"
+										ng-show="report.dataSet.type == 'seriesGroup'" value="simpleReport" 
+                                        ng-click="changeDataSetType()"
 										type="radio"></td>
 									<td><label ng-show="report.dataSet.type == 'seriesGroup'">{{getI18N('reporting.definitionView.simpletReport.label')}}</label></td>
 									
