@@ -19,11 +19,11 @@
 	var dataTablesDirective = ['$parse', '$compile', '$timeout', function($parse, $compile, $timeout) {
 		return {
 			restrict : 'AE', // TODO: Remove support for E and only support as A
+			require: ['sdData'],
 			transclude: true,
 			template : '<div ng-transclude></div>',
 			scope: {
-				sdData: '&' // TODO: Create separate directive for sdData, due to it's multi behaviour
-					// TODO: Accept more inputs...
+				// TODO: Accept more inputs...
 			},
 			compile: function(elem, attr, transclude) {
 				return {
@@ -42,6 +42,8 @@
 		// This is same as scope.$parent
 		var elemScope = element.scope();
 
+		var sdData = ctrl[0];
+		
 		var columns = [];
 		var toolbarHtml;
 
@@ -236,8 +238,9 @@
 		 * 
 		 */
 		function ajaxHandler(data, callback, settings) {
-			var dataResult = scope.sdData({options: {skip: data.start}});
-			dataResult.done(function(result) {
+			var params = {skip: data.start};
+			var dataResult = sdData.retrieveData(params);
+			dataResult.then(function(result) {
 				var ret = {
 						"draw" : data.draw,
 						"recordsTotal": result.totalCount,
@@ -246,9 +249,9 @@
 					};
 
 					callback(ret);
-			}).fail(function(data) {
+			}, function(error) {
 				// TODO: Notify Datatables
-		    });;
+		    });
 		}
 
 		/*
