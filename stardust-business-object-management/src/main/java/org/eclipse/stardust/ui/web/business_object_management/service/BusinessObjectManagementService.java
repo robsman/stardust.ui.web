@@ -807,11 +807,9 @@ public class BusinessObjectManagementService {
 	 */
 	public JsonObject updateBusinessObjectInstance(String modelOid,
 			String businessObjectId, String primaryKey, JsonObject jsonObject) {
-		if (mode == MOCK_MODE) {
-			if (businessObjectId.equals("Member")) {
+		if (mode == MOCK_MODE && businessObjectId.equals("Member")) {
 				members.put(jsonObject.get("id").getAsString(), jsonObject);
-			}
-
+ 
 			return jsonObject;
 		} else {
 			BusinessObject boi = (BusinessObject) getWorkflowService()

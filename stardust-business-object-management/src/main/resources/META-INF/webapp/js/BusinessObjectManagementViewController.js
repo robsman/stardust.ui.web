@@ -233,7 +233,7 @@ define(
 								.instance()
 								.updateBusinessObjectInstance(
 										this.businessObjectManagementPanelController.businessObject.modelOid,
-										this.businessObjectManagementPanelController.businessObject.businessObjectId,
+										this.businessObjectManagementPanelController.businessObject.id,
 										this.currentBusinessObjectInstance[this.businessObjectManagementPanelController.businessObject.primaryKeyField.id],
 										this.currentBusinessObjectInstance)
 								.done(
