@@ -41,12 +41,10 @@ public class WorklistResource
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/participant/{participantQId}")
    public Response getWorklistForParticipant(@PathParam("participantQId") String participantQId,
-         @QueryParam("skip") @DefaultValue("0") Integer skip)
+         @QueryParam("skip") @DefaultValue("0") Integer skip, @QueryParam("pageSize") @DefaultValue("8") Integer pageSize)
    {
       try
       {
-         int pageSize = 8; // TODO: Load from Configuration
-
          Options options = new Options(pageSize, skip);
          QueryResultDTO resultDTO = getWorklistService().getWorklistForParticipant(participantQId, "default", options);
 
@@ -67,11 +65,10 @@ public class WorklistResource
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/user/{userId}")
    public Response getWorklistForUser(@PathParam("userId") String userId,
-         @QueryParam("skip") @DefaultValue("0") Integer skip)
+         @QueryParam("skip") @DefaultValue("0") Integer skip, @QueryParam("pageSize") @DefaultValue("8") Integer pageSize)
    {
       try
       {
-         int pageSize = 8; // TODO: Load from Configuration         
          Options options = new Options(pageSize, skip);
          QueryResultDTO resultDTO = getWorklistService().getWorklistForUser(userId, "default", options);
 
