@@ -44,11 +44,13 @@
 
 			var dataGetter = $parse($attrs.sdData);
 
+			self.retrieveData = retrieveData;
+
 			/*
 			 * params: Different params passed, like sort, filters, etc...
 			 * Returns promise
 			 */
-			self.retrieveData = function(params) {
+			function retrieveData (params) {
 				var deferred = $q.defer();
 				
 				if(dataAsFunction) {
