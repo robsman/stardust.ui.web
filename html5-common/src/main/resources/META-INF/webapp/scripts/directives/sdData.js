@@ -37,20 +37,33 @@
 		 */
 		function DataController($attrs, $scope, $element) {
 			var self = this;
+			var dataAsFunction, currentScope, dataGetter;
 
-			// TODO: Support different modes to retrieve data
-			var dataAsFunction = $attrs.sdData.indexOf('(') != -1;
-			var currentScope = $scope;
+			initialize();
+			exposeAPIs();
 
-			var dataGetter = $parse($attrs.sdData);
+			/*
+			 * 
+			 */
+			function initialize() {
+				// TODO: Support different modes to retrieve data
+				dataAsFunction = $attrs.sdData.indexOf('(') != -1;
+				currentScope = $scope;
+				dataGetter = $parse($attrs.sdData);
+			}
 
-			self.retrieveData = retrieveData;
+			/*
+			 * 
+			 */
+			function exposeAPIs() {
+				self.retrieveData = retrieveData;
+			}
 
 			/*
 			 * params: Different params passed, like sort, filters, etc...
 			 * Returns promise
 			 */
-			function retrieveData (params) {
+			function retrieveData(params) {
 				var deferred = $q.defer();
 				
 				if(dataAsFunction) {

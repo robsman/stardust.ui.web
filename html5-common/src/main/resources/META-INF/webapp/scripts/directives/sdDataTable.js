@@ -41,30 +41,36 @@
 	function DataTableCompiler($parse, $compile, $timeout, scope, element, attr, ctrl) {
 		// This is same as scope.$parent
 		var elemScope = element.scope();
-
 		var sdData = ctrl[0];
-		
-		var columns = [];
-		var toolbarHtml;
 
-		var dtColumns = [];
-		var headerHtml = '';
+		var columns = [], toolbarHtml;
+		var dtColumns = [], headerHtml = '';
+		var theTable, theDataTable;
 
-		var theTable;
-		var theDataTable;
+		// Setup component instance
+		setup();
 
-		// TODO: Revisit 'ready' behaviour
-		if (attr.sdaReady) {
-			elemScope.$watch(attr.sdaReady, function(newVal, oldVal) {
-				if(newVal === true) {
-					// Initialize after current digest cycle
-					$timeout(initialize);
+		/*
+		 * 
+		 */
+		function setup() {
+			if (attr.sdaPageSize == undefined || attr.sdaPageSize == "") {
+				attr.sdaPageSize = 8;
+			}
 
-					// TODO: Can unregister here, to reduce the watchers!
-				}
-			});
-		} else {
-			initialize();
+			// TODO: Revisit 'ready' behaviour
+			if (attr.sdaReady) {
+				elemScope.$watch(attr.sdaReady, function(newVal, oldVal) {
+					if(newVal === true) {
+						// Initialize after current digest cycle
+						$timeout(initialize);
+
+						// TODO: Can unregister here, to reduce the watchers!
+					}
+				});
+			} else {
+				initialize();
+			}
 		}
 
 		/*
@@ -219,7 +225,7 @@
 			dtOptions.hasOverrideDom = true;
 			dtOptions.sDom = "itp";
 			dtOptions.sPaginationType = "full_numbers";
-			dtOptions.iDisplayLength = 8;
+			dtOptions.iDisplayLength = attr.sdaPageSize;
 
 			dtOptions.columns = dtColumns;
 
@@ -238,7 +244,8 @@
 		 * 
 		 */
 		function ajaxHandler(data, callback, settings) {
-			var params = {skip: data.start};
+			var params = {skip: data.start, pageSize: data.length};
+
 			var dataResult = sdData.retrieveData(params);
 			dataResult.then(function(result) {
 				var ret = {
