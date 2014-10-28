@@ -1,12 +1,13 @@
 package org.eclipse.stardust.ui.web.modeler.xpdl.edit.postprocessing;
 
+import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.ecore.EObject;
-import org.springframework.stereotype.Component;
-
+import org.eclipse.stardust.model.xpdl.builder.connectionhandler.EObjectProxyHandler;
 import org.eclipse.stardust.model.xpdl.builder.session.Modification;
 import org.eclipse.stardust.model.xpdl.carnot.CarnotWorkflowModelPackage;
 import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableElement;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.ChangePostprocessor;
+import org.springframework.stereotype.Component;
 
 @Component
 public class TouchReferrersUponIdentityChangePostprocessor implements ChangePostprocessor
@@ -16,7 +17,7 @@ public class TouchReferrersUponIdentityChangePostprocessor implements ChangePost
    @Override
    public int getInspectionPhase()
    {
-      return 100;
+      return 50;
    }
 
    @Override
@@ -31,6 +32,15 @@ public class TouchReferrersUponIdentityChangePostprocessor implements ChangePost
             for (EObject other : candidate.eCrossReferences())
             {
                change.markAlsoModified(other);
+            }
+
+            for (Adapter adapter : candidate.eAdapters())
+            {
+               if (adapter instanceof EObjectProxyHandler)
+               {
+                  EObject proxy = ((EObjectProxyHandler) adapter).getProxy();
+                  change.markAlsoModified(proxy);
+               }
             }
 
             // TODO find non-EMF references (e.g. from Stardust Attributes)
