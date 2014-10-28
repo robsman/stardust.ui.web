@@ -23,14 +23,14 @@ define(
 			 * 
 			 */
 			function DocumentAssignmentPanelController() {
-				/**
-				 * 
-				 */
+
+				
 				DocumentAssignmentPanelController.prototype.initialize = function() {
 					this.initializeBaseState();
 					this.initializePageRendering();
 					this.businessObjectManagementPanelController = BusinessObjectManagementPanelController
 							.create();
+					
 					
 					/*collection to keep track of which documents have been consumed 
 					 *in either tree (pending/startable)*/
@@ -38,6 +38,7 @@ define(
 							documents:{}
 					};
 					
+					this.ui ={showBO: true}; /*Helper object for ui state*/
 					var self = this;
 					
 					DocumentAssignmentService.instance()
@@ -73,6 +74,7 @@ define(
 
 															self
 																	.refreshStartableProcessesTree();
+															debugger;
 															self.businessObjectManagementPanelController
 																	.initialize(
 																			self)
@@ -97,7 +99,16 @@ define(
 														}).fail();
 									}).fail();
 				};
-
+				
+				/**
+				 * Our registered callback on the directive which will be invoked each time a 
+				 * business object instance is selected from the businessObjectSearch directive.
+				 * Receives the instance object from the dirtective.
+				 */
+				DocumentAssignmentPanelController.prototype.instanceSelected = function(instance){
+					this.onBusinessObjectInstanceSelectionChange(instance);
+				};
+				
 				/**
 				 * Opens a confirmation dialog for the case of a split document creation.
 				 * Returns a jQuery promise that is resolved or rejected based on the users

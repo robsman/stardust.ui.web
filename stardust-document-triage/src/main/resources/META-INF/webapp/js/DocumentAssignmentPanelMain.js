@@ -20,26 +20,38 @@ require
 			}
 		});
 
-require([ "require", "jquery", "jquery-ui", "angularjs", "jquery.dataTables",
-		"document-triage/js/Utils", "document-triage/js/AngularDirectives",
-		"document-triage/js/DocumentAssignmentPanelController","ngDialog","triageDirectives"], function(
+require([ "require", "jquery", "jquery-ui", 
+          "angularjs", "jquery.dataTables",
+          "document-triage/js/Utils", 
+          "document-triage/js/AngularDirectives",
+          "document-triage/js/DocumentAssignmentPanelController",
+          "ngDialog",
+          "triageDirectives",
+          "document-triage/js/sdBusinessObjectService"], function(
 		require, jquery, jqueryUi, angularjs, jqueryDataTables, Utils,
-		AngularDirectives, DocumentAssignmentPanelController,ngDialog,triageDirectives) {
+		AngularDirectives, DocumentAssignmentPanelController,ngDialog,triageDirectives,sdBusinessObjectService) {
 	jQuery(document).ready(
 			function() {
 				
 				var module;
-				ngDialog.init(angularjs,window);
-				triageDirectives.init(angularjs,jquery,window);
-				module = angularjs.module("documentAssignmentPanelApplication", ["ngDialog","triageDirectives"]);
 
+				ngDialog.init(angularjs,window);
+				
+				triageDirectives.init(angularjs,jquery,window);
+				
+				module = angularjs.module("documentAssignmentPanelApplication", ["ngDialog","triageDirectives"]);
+				
+				sdBusinessObjectService.init(angularjs,"documentAssignmentPanelApplication");
+				
 				module.controller('documentAssignmentPanelController',function($scope,ngDialog) {
 					$scope.ngDialog = ngDialog;	
+	
 					Utils.inheritMethods($scope,DocumentAssignmentPanelController.create());
 					$scope.initialize();
 				});
 				
 				AngularDirectives.initialize(module);
+				
 				angular.bootstrap(document,[ "documentAssignmentPanelApplication" ]);
 				
 			});
