@@ -10,14 +10,14 @@
 		<div sd-data-table="worklistDataTable" sd-data="worklistViewCtrl.fetchPage(params)" sda-ready="worklistViewCtrl.ready"
 			sda-page-size="5">
 			
-			<sd-toolbar ng-non-bindable>
+			<sd-toolbar>
 				<a href="#" ng-click="worklistViewCtrl.completeAll()" title="Complete All" class="tbl-toolbar-item tbl-tool-link">
 				   <i class="fa fa-share"></i>
 				</a>
 			</sd-toolbar>
 			
 			<sd-column sda-field="name" sda-title="i18n('processportal.views-worklistPanel-column-overview')" sda-sortable="true">
-				<sd-column-template ng-non-bindable>
+				<sd-column-template>
 					<a href="#" ng-click="worklistViewCtrl.activateWorkItem(rowData)">
 						{{rowData.activity.name}}
 					</a>
@@ -31,7 +31,7 @@
 			<sd-column sda-field="lastModification" sda-title="i18n('processportal.views-worklistPanel-column-lastmodification')" sda-data-type="dateTime" sda-sortable="true"></sd-column>
 
 			<sd-column sda-field="descriptors" sda-title="i18n('processportal.views-worklistPanel-column-descriptors')">
-				<sd-column-template ng-non-bindable>
+				<sd-column-template>
 					<table>
 						<tr ng-repeat="desc in rowData.descriptors">
 							<td>{{desc.key}}</td>
@@ -47,7 +47,7 @@
 			</sd-column>
 
 			<sd-column sda-field="" sda-title="'Data'">
-				<sd-column-template ng-non-bindable>
+				<sd-column-template>
 					<table ng-hide="!worklistViewCtrl.worklist.trivialManualActivities[rowData.oid]">
 						<tbody>
 					    	<tr ng-repeat="mapping in worklistViewCtrl.worklist.trivialManualActivities[rowData.oid].dataMappings">
@@ -74,7 +74,7 @@
 			</sd-column>
 
 			<sd-column sda-field="" sda-title="i18n('processportal.views-worklistPanel-column-actions')" sd-class="" sd-style="">
-				<sd-column-template ng-non-bindable>
+				<sd-column-template>
 					<a href="#" ng-click="worklistViewCtrl.openNotes(rowData)" title="Open Notes" class="view-tool-link">
 						<i class="fa fa-comment-o"></i>
 					</a>

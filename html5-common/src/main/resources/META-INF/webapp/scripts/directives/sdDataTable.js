@@ -20,12 +20,12 @@
 		return {
 			restrict : 'AE', // TODO: Remove support for E and only support as A
 			require: ['sdData'],
-			transclude: true,
-			template : '<div ng-transclude></div>',
 			scope: {
 				// TODO: Accept more inputs...
 			},
-			compile: function(elem, attr, transclude) {
+			compile: function(elem, attr, transclude) {				
+				processRawMarkup(elem);
+
 				return {
 					post : function(scope, element, attr, ctrl) {
 						var dataTableCompiler = new DataTableCompiler($parse, $compile, $timeout, scope, element, attr, ctrl);
@@ -34,6 +34,17 @@
 			}
 		};	
 	}];
+
+	/*
+	 * 
+	 */
+	function processRawMarkup(elem) {
+		var toolbar = elem.find('sd-toolbar');
+		toolbar.attr('ng-non-bindable', '');
+
+		var templates = elem.find('sd-column-template');
+		templates.attr('ng-non-bindable', '');
+	}
 
 	/*
 	 * 
@@ -211,7 +222,6 @@
 			var template = toolbarTemplate + tableTemplate;
 			element.html(template);
 
-			//theTable = angular.element(element.children()[0]);
 			theTable = element.find("table");
 			$compile(theTable)(elemScope);
 		}
