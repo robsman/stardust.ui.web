@@ -166,14 +166,28 @@ public class ExternalReferenceUtils
 
    private static void checkData(DataType data, ModelType refModel)
    {
-      if (data.getType().getId().equals("struct")) {
+      if (data.getType().getId().equals("struct"))
+      {
          ExternalReferenceType ref = data.getExternalReference();
          if (ref != null && ref.getUuid() != null)
          {
-            TypeDeclarationType declaration = findTypeDeclarationModelUUID(refModel, ref.getUuid());
-            if (declaration != null) {
-               if (!declaration.getId().equals(ref.getXref())) {
+            TypeDeclarationType declaration = findTypeDeclarationModelUUID(refModel,
+                  ref.getUuid());
+            if (declaration != null)
+            {
+               if (!declaration.getId().equals(ref.getXref()))
+               {
                   ref.setXref(declaration.getId());
+                  AttributeType uriAttribute = AttributeUtil.getAttribute(
+                        (IExtensibleElement) data, "carnot:connection:uri");
+                  if (uriAttribute != null)
+                  {
+                     String uri = uriAttribute.getAttributeValue();
+                     uri = uri.substring(0, uri.lastIndexOf("/")) + "/"
+                           + declaration.getId();
+                     AttributeUtil.setAttribute((IExtensibleElement) data,
+                           "carnot:connection:uri", uri);
+                  }
 
                }
             }
