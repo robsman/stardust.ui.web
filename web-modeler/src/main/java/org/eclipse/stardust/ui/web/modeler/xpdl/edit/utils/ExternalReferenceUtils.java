@@ -19,14 +19,17 @@ import org.eclipse.xsd.XSDImport;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
 import org.eclipse.stardust.model.xpdl.builder.utils.WebModelerConnectionManager;
+import org.eclipse.stardust.model.xpdl.carnot.ActivityImplementationType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
 import org.eclipse.stardust.model.xpdl.carnot.ApplicationType;
 import org.eclipse.stardust.model.xpdl.carnot.AttributeType;
 import org.eclipse.stardust.model.xpdl.carnot.DataType;
 import org.eclipse.stardust.model.xpdl.carnot.IExtensibleElement;
 import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableModelElement;
+import org.eclipse.stardust.model.xpdl.carnot.IModelParticipant;
 import org.eclipse.stardust.model.xpdl.carnot.IdRef;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
+import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.model.xpdl.util.IConnection;
@@ -160,8 +163,23 @@ public class ExternalReferenceUtils
             {
                checkData((DataType) ref, refModel);
             }
+            if (ref instanceof IModelParticipant)
+            {
+               checkParticipant((IModelParticipant) ref, refModel);
+            }
+            if (ref instanceof ActivityType)
+            {
+               checkActivity((ActivityType) ref, refModel);
+            }
          }
       }
+   }
+
+
+   private static boolean checkParticipant(IModelParticipant ref, ModelType refModel)
+   {
+
+      return false;
    }
 
    private static void checkData(DataType data, ModelType refModel)
@@ -188,57 +206,84 @@ public class ExternalReferenceUtils
                      AttributeUtil.setAttribute((IExtensibleElement) data,
                            "carnot:connection:uri", uri);
                   }
-
                }
             }
          }
       }
-
-      /*ApplicationType application = findDataByModelUUID(refModel,
-            uuidAttribute.getAttributeValue());
-      if (application != null)
-      {
-         IdRef externalReference = activity.getExternalRef();
-         if (!externalReference.getRef().equals(application.getId()))
-         {
-            externalReference.setRef(application.getId());
-            AttributeType uriAttribute = AttributeUtil.getAttribute(
-                  (IExtensibleElement) activity, "carnot:connection:uri");
-            if (uriAttribute != null)
-            {
-               String uri = uriAttribute.getAttributeValue();
-               uri = uri.substring(0, uri.lastIndexOf("/")) + "/" + application.getId();
-               AttributeUtil.setAttribute((IExtensibleElement) activity,
-                     "carnot:connection:uri", uri);
-            }
-         }
-
-      }*/
    }
 
    private static void checkActivity(ActivityType activity, ModelType refModel)
    {
+
+      if (activity.getImplementation().getLiteral()
+            .equals(ActivityImplementationType.SUBPROCESS_LITERAL.getLiteral()))
+      {
+         checkSubprocessActivity(activity, refModel);
+      }
+
+      if (activity.getImplementation().getLiteral()
+            .equals(ActivityImplementationType.APPLICATION_LITERAL.getLiteral()))
+      {
+         checkApplicationActivity(activity, refModel);
+      }
+
+   }
+
+   private static void checkSubprocessActivity(ActivityType activity, ModelType refModel)
+   {
       AttributeType uuidAttribute = AttributeUtil.getAttribute(
             (IIdentifiableModelElement) activity, "carnot:connection:uuid");
-      ApplicationType application = findApplicationByModelUUID(refModel,
-            uuidAttribute.getAttributeValue());
-      if (application != null)
+      if (uuidAttribute != null)
       {
-         IdRef externalReference = activity.getExternalRef();
-         if (!externalReference.getRef().equals(application.getId()))
+         ProcessDefinitionType process = findProcessByModelUUID(refModel,
+               uuidAttribute.getAttributeValue());
+         if (process != null)
          {
-            externalReference.setRef(application.getId());
-            AttributeType uriAttribute = AttributeUtil.getAttribute(
-                  (IExtensibleElement) activity, "carnot:connection:uri");
-            if (uriAttribute != null)
+            IdRef externalReference = activity.getExternalRef();
+            if (!externalReference.getRef().equals(process.getId()))
             {
-               String uri = uriAttribute.getAttributeValue();
-               uri = uri.substring(0, uri.lastIndexOf("/")) + "/" + application.getId();
-               AttributeUtil.setAttribute((IExtensibleElement) activity,
-                     "carnot:connection:uri", uri);
+               externalReference.setRef(process.getId());
+               AttributeType uriAttribute = AttributeUtil.getAttribute(
+                     (IExtensibleElement) activity, "carnot:connection:uri");
+               if (uriAttribute != null)
+               {
+                  String uri = uriAttribute.getAttributeValue();
+                  uri = uri.substring(0, uri.lastIndexOf("/")) + "/"
+                        + process.getId();
+                  AttributeUtil.setAttribute((IExtensibleElement) activity,
+                        "carnot:connection:uri", uri);
+               }
             }
          }
+      }
+   }
 
+   private static void checkApplicationActivity(ActivityType activity, ModelType refModel)
+   {
+      AttributeType uuidAttribute = AttributeUtil.getAttribute(
+            (IIdentifiableModelElement) activity, "carnot:connection:uuid");
+      if (uuidAttribute != null)
+      {
+         ApplicationType application = findApplicationByModelUUID(refModel,
+               uuidAttribute.getAttributeValue());
+         if (application != null)
+         {
+            IdRef externalReference = activity.getExternalRef();
+            if (!externalReference.getRef().equals(application.getId()))
+            {
+               externalReference.setRef(application.getId());
+               AttributeType uriAttribute = AttributeUtil.getAttribute(
+                     (IExtensibleElement) activity, "carnot:connection:uri");
+               if (uriAttribute != null)
+               {
+                  String uri = uriAttribute.getAttributeValue();
+                  uri = uri.substring(0, uri.lastIndexOf("/")) + "/"
+                        + application.getId();
+                  AttributeUtil.setAttribute((IExtensibleElement) activity,
+                        "carnot:connection:uri", uri);
+               }
+            }
+         }
       }
    }
 
@@ -256,6 +301,26 @@ public class ExternalReferenceUtils
             if (uuidAttribute.getAttributeValue().equals(uuid))
             {
                return application;
+            }
+         }
+      }
+      return null;
+   }
+
+   private static ProcessDefinitionType findProcessByModelUUID(ModelType refModel,
+         String uuid)
+   {
+      for (Iterator<ProcessDefinitionType> i = refModel.getProcessDefinition().iterator(); i
+            .hasNext();)
+      {
+         ProcessDefinitionType process = i.next();
+         AttributeType uuidAttribute = AttributeUtil.getAttribute(
+               (IIdentifiableModelElement) process, "carnot:model:uuid");
+         if (uuidAttribute != null)
+         {
+            if (uuidAttribute.getAttributeValue().equals(uuid))
+            {
+               return process;
             }
          }
       }

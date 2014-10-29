@@ -231,10 +231,11 @@ public class ModelService
          {
             try
             {
-               //TODO: Write lock to be created for model where reference have been fixed?
                if (model instanceof ModelType)
                {
-                  ExternalReferenceUtils.checkExternalReferences(models, (ModelType)model);
+                  ExternalReferenceUtils.checkExternalReferences(models,
+                        (ModelType) model);
+
                }
 
                JsonObject modelJson = modelRepository.getModelBinding(model)
