@@ -18,7 +18,7 @@
 	/*
 	 * 
 	 */
-	function WorklistService($rootScope) {
+	function WorklistService($rootScope, $resource) {
 		var REST_BASE_URL = "services/rest/portal/worklist/";
 
 		/*
@@ -28,13 +28,10 @@
 			console.log("Getting worklist for:");
 			console.log(query);
 
-			var restUrl = REST_BASE_URL;
-			if (query.participantQId) {
-				restUrl += "participant/" + query.participantQId;
-			} else if (query.userId) {
-				restUrl += "user/" + query.userId;
-			}
+			// Prepare URL
+			var restUrl = REST_BASE_URL + ":type/:id";
 
+			// Add Query String Params
 			var options = "";
 			angular.forEach(query.options, function(value, key){
 				options += "&" + key + "=" + value;
@@ -43,34 +40,24 @@
 			if (options.length > 1) {
 				restUrl = restUrl + "?" + options.substr(1);
 			}
-			
-			return ajax(restUrl);
-		};
 
-		/*
-		 * 
-		 */
-		function ajax(restUrl) {
-			var deferred = jQuery.Deferred();
+			// Prepare Query Params
+			var urlTemplateParams = {};
+			if (query.participantQId) {
+				urlTemplateParams.type = "participant";
+				urlTemplateParams.id = query.participantQId;
+			} else if (query.userId) {
+				urlTemplateParams.type = "user";
+				urlTemplateParams.id = query.userId;
+			}
 
-			// TODO: Use Angular $resource
-			jQuery.ajax({
-			  	url: restUrl,
-				type: "GET",
-		        contentType: "application/json"
-			}).done(function(result) {
-				deferred.resolve(result);
-			}).fail(function(data) {
-				deferred.reject(data);
-		    });
-
-			return deferred.promise();
+			return $resource(restUrl).get(urlTemplateParams).$promise;
 		};
 	};
 
 	angular.module('workflow-ui.services').provider('sdWorklistService', function () {
-		this.$get = ['$rootScope', function ($rootScope) {
-			var service = new WorklistService($rootScope);
+		this.$get = ['$rootScope', '$resource', function ($rootScope, $resource) {
+			var service = new WorklistService($rootScope, $resource);
 			return service;
 		}];
 	});

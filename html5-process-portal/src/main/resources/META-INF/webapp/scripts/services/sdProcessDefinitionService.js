@@ -18,7 +18,7 @@
 	/*
 	 * 
 	 */
-	function ProcessDefinitionService($rootScope) {
+	function ProcessDefinitionService($rootScope, $resource) {
 		var REST_BASE_URL = "services/rest/portal/process-definitions/";
 
 		/*
@@ -27,33 +27,13 @@
 		ProcessDefinitionService.prototype.getDescriptorColumns = function(onlyFilterable) {
 			var restUrl = REST_BASE_URL + "descriptor-columns";
 			restUrl += "?onlyFilterable=" + (onlyFilterable === true ? true : false);
-			return ajax(restUrl);
-		};
-
-		/*
-		 * 
-		 */
-		function ajax(restUrl) {
-			var deferred = jQuery.Deferred();
-
-			// TODO: Use Angular $resource
-			jQuery.ajax({
-			  	url: restUrl,
-				type: "GET",
-		        contentType: "application/json"
-			}).done(function(result) {
-				deferred.resolve(result);
-			}).fail(function(data) {
-				deferred.reject(data);
-		    });
-
-			return deferred.promise();
+			return $resource(restUrl).query().$promise;
 		};
 	};
 
 	angular.module('workflow-ui.services').provider('sdProcessDefinitionService', function () {
-		this.$get = ['$rootScope', function ($rootScope) {
-			var service = new ProcessDefinitionService($rootScope);
+		this.$get = ['$rootScope', '$resource', function ($rootScope, $resource) {
+			var service = new ProcessDefinitionService($rootScope, $resource);
 			return service;
 		}];
 	});

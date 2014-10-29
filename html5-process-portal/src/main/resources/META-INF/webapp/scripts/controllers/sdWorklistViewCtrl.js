@@ -100,7 +100,7 @@
 
 		this.worklist.selectedWorkItems = [];
 
-		_sdWorklistService.getWorklist(query).done(function(data) {
+		_sdWorklistService.getWorklist(query).then(function(data) {
 			self.worklist.list = data.list;
 			self.worklist.totalCount = data.totalCount;
 			
@@ -111,7 +111,7 @@
 				}
 			});
 
-			_sdActivityInstanceService.getTrivialManualActivitiesDetails(oids).done(function(data) {
+			_sdActivityInstanceService.getTrivialManualActivitiesDetails(oids).then(function(data) {
 				self.worklist.trivialManualActivities = data;
 
 				deferred.resolve(self.worklist);
@@ -181,7 +181,7 @@
 
 		var outData = self.worklist.trivialManualActivities[workItem.oid].inOutData;
 		var activityData = {oid: workItem.oid, outData: outData};
-		_sdActivityInstanceService.completeAll([activityData]).done(function(data) {
+		_sdActivityInstanceService.completeAll([activityData]).then(function(data) {
 			self.refresh();
 		});
 	};
@@ -199,7 +199,7 @@
 				activitiesData.push({oid: workItem.oid, outData: outData});
 			});
 			
-			_sdActivityInstanceService.completeAll(activitiesData).done(function(data) {
+			_sdActivityInstanceService.completeAll(activitiesData).then(function(data) {
 				self.refresh();
 			});
 		}

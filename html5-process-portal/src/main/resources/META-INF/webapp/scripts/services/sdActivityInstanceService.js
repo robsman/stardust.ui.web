@@ -17,7 +17,7 @@
 	/*
 	 * 
 	 */
-	function ActivityInstanceService($rootScope) {
+	function ActivityInstanceService($rootScope, $http) {
 		var REST_BASE_URL = "services/rest/portal/activity-instances/";
 
 		/*
@@ -73,25 +73,19 @@
 				type = "GET";
 			}
 			
-			// TODO: Use Angular $resource
-			jQuery.ajax({
-			  	url: restUrl,
-				type: type,
-		        contentType: "application/json",
-		        data : data
-			}).done(function(result) {
-				deferred.resolve(result);
-			}).fail(function(data) {
-				deferred.reject(data);
-		    });
-
-			return deferred.promise();
+			var httpResponse;
+			if(type == "GET") {
+				httpResponse = $http.get(restUrl);
+			} else {
+				httpResponse = $http.post(restUrl, data);
+			}
+			return httpResponse;
 		};
 	};
 	
 	angular.module('workflow-ui.services').provider('sdActivityInstanceService', function () {
-		this.$get = ['$rootScope', function ($rootScope) {
-			var service = new ActivityInstanceService($rootScope);
+		this.$get = ['$rootScope', '$http', function ($rootScope, $http) {
+			var service = new ActivityInstanceService($rootScope, $http);
 			return service;
 		}];
 	});
