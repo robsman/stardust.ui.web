@@ -17,7 +17,7 @@
 	/*
 	 * 
 	 */
-	function ActivityInstanceService($rootScope, $http) {
+	function ActivityInstanceService($rootScope, $http, $q) {
 		var REST_BASE_URL = "services/rest/portal/activity-instances/";
 
 		/*
@@ -60,7 +60,7 @@
 		 * 
 		 */
 		function ajax(restUrl, extension, value) {
-			var deferred = jQuery.Deferred();
+			var deferred = $q.defer();
 
 			var type;
 			var data;
@@ -79,13 +79,20 @@
 			} else {
 				httpResponse = $http.post(restUrl, data);
 			}
-			return httpResponse;
+
+			httpResponse.success(function(data){
+				deferred.resolve(data);
+			}).error(function(data) {
+				deferred.reject(data);
+			});
+			
+			return deferred.promise;
 		};
 	};
 	
 	angular.module('workflow-ui.services').provider('sdActivityInstanceService', function () {
-		this.$get = ['$rootScope', '$http', function ($rootScope, $http) {
-			var service = new ActivityInstanceService($rootScope, $http);
+		this.$get = ['$rootScope', '$http', '$q', function ($rootScope, $http, $q) {
+			var service = new ActivityInstanceService($rootScope, $http, $q);
 			return service;
 		}];
 	});
