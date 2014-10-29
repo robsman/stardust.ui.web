@@ -131,6 +131,8 @@
 				throw "Table Header and body columns are not matching";
 			}
 			
+			headCols.addClass('tbl-hdr-col');
+			
 			for(var i = 0; i < headCols.length; i++) {
 				var hCol = angular.element(headCols[i]);
 				var bCol = angular.element(bodyCols[i]);
@@ -273,7 +275,8 @@
 		 */
 		function createRowHandler(row, data, dataIndex) {
 			var row = angular.element(row);
-
+			row.find('> td').addClass('tbl-col');
+			
 			var rowScope = row.scope();
 			if (rowScope == undefined) {
 				rowScope = elemScope.$new();
