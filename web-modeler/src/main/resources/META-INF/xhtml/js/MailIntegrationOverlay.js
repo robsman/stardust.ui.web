@@ -436,6 +436,7 @@ define(
                   CKEDITOR.instances[this.mailTemplateEditor.id].on('blur', function(e)
                   {
                      self.submitChanges();
+                     event.data.panel.view.submitModelElementAttributeChange("stardust:emailOverlay::mailTemplate", CKEDITOR.instances[this.mailTemplateEditor.id].getData());
                   });
                   this.parameterDefinitionsPanel = m_parameterDefinitionsPanel.create({
                      scope : "parametersTab",
@@ -491,6 +492,7 @@ define(
                   {
                      CKEDITOR.instances[this.mailTemplateEditor.id].config.readOnly = true;
                   }
+                  CKEDITOR.instances[this.mailTemplateEditor.id].setData(this.getApplication().attributes["stardust:emailOverlay::mailTemplate"]);
                };
                MailIntegrationOverlay.prototype.populateResponseOptionsTypeSelect = function()
                {
@@ -875,8 +877,6 @@ define(
                            .prop(
                                     "checked",
                                     this.getApplication().attributes["stardust:emailOverlay::storeAttachments"]);
-                  CKEDITOR.instances[this.mailTemplateEditor.id]
-                           .setData(this.getApplication().attributes["stardust:emailOverlay::mailTemplate"]);
                   this
                            .setTemplateSource(this.getApplication().attributes["stardust:emailOverlay::templateSource"]);
                   this.templatePathInput
