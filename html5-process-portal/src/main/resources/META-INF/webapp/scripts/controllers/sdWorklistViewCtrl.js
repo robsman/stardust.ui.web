@@ -15,14 +15,13 @@
 (function() {
 	'use strict';
 
-	var _sdViewUtilService;
-	var _sdWorklistService;
-	var _sdActivityInstanceService;
+	var _sdViewUtilService, _sdWorklistService, _sdActivityInstanceService, _sdProcessDefinitionService;
 	
 	/*
 	 * 
 	 */
-	function WorklistViewCtrl($scope, sdUtilService, sdViewUtilService, sdWorklistService, sdActivityInstanceService) {
+	function WorklistViewCtrl($scope, sdUtilService, sdViewUtilService, sdWorklistService, sdActivityInstanceService,
+			sdProcessDefinitionService) {
 		// Register for View Events
 		sdViewUtilService.registerForViewEvents($scope, this.handleViewEvents, this);
 
@@ -30,6 +29,7 @@
 		_sdViewUtilService = sdViewUtilService;
 		_sdWorklistService = sdWorklistService;
 		_sdActivityInstanceService = sdActivityInstanceService;
+		_sdProcessDefinitionService = sdProcessDefinitionService;
 
 		/*
 		 * This needs to be defined here as it requires access to $scope
@@ -129,10 +129,7 @@
 	WorklistViewCtrl.prototype.fetchDescriptorCols = function() {
 		var self = this;
 
-		// TO Get from REST, simulate for now
-		window.setTimeout(function(){
-			var descriptors = [];
-
+		_sdProcessDefinitionService.getDescriptorColumns().then(function(descriptors) {
 			self.descritorCols = [];
 			angular.forEach(descriptors, function(descriptor){
 				self.descritorCols.push({
@@ -145,7 +142,7 @@
 			
 			self.ready = true;
 			self.safeApply();
-		}, 500);
+		});
 	};
 
 	/*
@@ -217,5 +214,5 @@
 
 	angular.module('workflow-ui').controller('sdWorklistViewCtrl', 
 			['$scope', 'sdUtilService', 'sdViewUtilService', 'sdWorklistService', 'sdActivityInstanceService',
-			 WorklistViewCtrl]);
+			 'sdProcessDefinitionService', WorklistViewCtrl]);
 })();

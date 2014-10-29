@@ -13,6 +13,7 @@ package org.eclipse.stardust.ui.web.rest.service.utils;
 import static java.util.Collections.emptyList;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -25,6 +26,7 @@ import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
+import org.eclipse.stardust.ui.web.viewscommon.utils.CommonDescriptorUtils;
 
 /**
  * @author Anoop.Nair
@@ -81,6 +83,15 @@ public class ProcessDefinitionUtils
       }
 
       return supportsProcessAttachments;
+   }
+
+   /**
+    * @param onlyFilterable
+    * @return
+    */
+   public Map<String, DataPath> getAllDescriptors(Boolean onlyFilterable)
+   {
+      return CommonDescriptorUtils.getAllDescriptors(onlyFilterable);
    }
 
 }

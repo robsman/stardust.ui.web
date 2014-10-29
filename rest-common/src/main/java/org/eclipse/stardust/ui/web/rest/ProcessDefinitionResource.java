@@ -12,24 +12,23 @@ package org.eclipse.stardust.ui.web.rest;
 
 import java.util.List;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.google.gson.Gson;
-
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.rest.service.ProcessDefinitionService;
+import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.DescriptorColumnDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessDefinitionDTO;
 
 /**
  * @author Anoop.Nair
+ * @author Subodh.Godbole
  * @version $Revision: $
  */
 @Component
@@ -57,10 +56,7 @@ public class ProcessDefinitionResource
          List<ProcessDefinitionDTO> startableProcesses = getProcessDefinitionService()
                .getStartableProcesses();
 
-         Gson gson = new Gson();
-         String jsonOutput = gson.toJson(startableProcesses);
-
-         return Response.ok(jsonOutput.toString(), MediaType.APPLICATION_JSON).build();
+         return Response.ok(AbstractDTO.toJson(startableProcesses), MediaType.APPLICATION_JSON).build();
       }
       catch (Exception e)
       {
@@ -70,6 +66,25 @@ public class ProcessDefinitionResource
       }
    }
 
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("descriptor-columns")
+   public Response getDescriptors(@QueryParam("onlyFilterable") @DefaultValue("false") Boolean onlyFilterable)
+   {
+      try
+      {
+         List<DescriptorColumnDTO> descriptors = getProcessDefinitionService().getDescriptorColumns(onlyFilterable);
+
+         return Response.ok(AbstractDTO.toJson(descriptors), MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
+
+         return Response.serverError().build();
+      }
+   }
+   
    /**
     * @return
     */

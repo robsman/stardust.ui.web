@@ -11,13 +11,17 @@
 package org.eclipse.stardust.ui.web.rest.service.dto.builder;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import org.springframework.util.StringUtils;
 
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.ReflectionUtils;
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOAttribute;
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOClass;
-import org.springframework.util.StringUtils;
 
 
 /**
@@ -50,7 +54,7 @@ public class DTOBuilder
          toInstance = toClass.newInstance();
 
          Class<?> iteratorClass = toClass;
-         while (iteratorClass.getSuperclass() != Object.class)
+         while (iteratorClass != Object.class)
          {
             for(Field field : iteratorClass.getDeclaredFields())
             {
@@ -58,6 +62,10 @@ public class DTOBuilder
                {
                   DTOAttribute annotation = field.getAnnotation(DTOAttribute.class);
                   String fieldName = annotation.value();
+                  if (StringUtils.isEmpty(fieldName))
+                  {
+                     fieldName = field.getName();
+                  }
    
                   try
                   {
@@ -88,6 +96,25 @@ public class DTOBuilder
       }
       
       return toInstance;
+   }
+
+   /**
+    * @param <DTO>
+    * @param <T>
+    * @param fromInstance
+    * @param toClass
+    * @return
+    */
+   public static <DTO, T> List<DTO> buildList(Collection<T> fromInstances, Class<DTO> toClass)
+   {
+      List<DTO> list = new ArrayList<DTO>();
+
+      for (T fromInstance : fromInstances)
+      {
+         list.add(build(fromInstance, toClass));
+      }
+
+      return list;
    }
 
    /**
@@ -126,7 +153,15 @@ public class DTOBuilder
 
       try
       {
-         value = ReflectionUtils.invokeGetterMethod(instance, fieldName);
+         if (fieldName.endsWith("()"))
+         {
+            fieldName = fieldName.substring(0, fieldName.length() - 2);
+            value = ReflectionUtils.invokeMethod(instance, fieldName);
+         }
+         else
+         {
+            value = ReflectionUtils.invokeGetterMethod(instance, fieldName);
+         }
       }
       catch (Exception e)
       {
