@@ -203,7 +203,7 @@
 			// Toolbar
 			var toolbar;
 			if (attr.sdaToolbar) {
-				toolbar = element.siblings('#' + attr.sdaToolbar);
+				toolbar = element.siblings("[sda-toolbar='" + attr.sdaToolbar + "']");
 				if (toolbar.length != undefined && toolbar.length != 0) {
 					toolbar.prepend(TOOLBAR_TEMPLATE);
 				}
