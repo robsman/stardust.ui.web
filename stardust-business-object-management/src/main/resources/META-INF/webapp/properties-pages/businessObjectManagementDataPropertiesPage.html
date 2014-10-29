@@ -107,6 +107,26 @@
 				</tr>
 			</tbody>
 		</table>
+		<div class="heading">Automatic Department Creation</div>
+		<table class="layoutTable">
+			<tr>
+				<td><p>Organizations for which departments with</p>
+					<ul>
+						<li>Name: <strong><em>&lt;Organization Name&gt;</em>&nbsp;{{elementView.propertiesPage.propertiesPanel.data.name}}&nbsp;<em>&lt;{{elementView.propertiesPage.propertiesPanel.data.name}} Name&gt;</em></strong> and
+						</li>
+						<li>ID: <strong><em>&lt;Organization
+									ID&gt;</em>{{elementView.propertiesPage.propertiesPanel.data.id}}<em>&lt;{{elementView.propertiesPage.propertiesPanel.data.name}} Primary Key&gt;</em></strong>.
+						</li>
+					</ul>
+					<p>are created automatically on
+						{{elementView.propertiesPage.propertiesPanel.data.name}} creation:</p><p>The {{elementView.propertiesPage.propertiesPanel.data.name}} Primary Key will becomes the Department Parameter.</p></td>
+				<td style="padding-left: 10px;"><select multiple="multiple" size="7"
+					ng-model="elementView.propertiesPage.managedOrganizations"
+					ng-options="organization.fullId as organization.label for organization in elementView.propertiesPage.organizations"
+					ng-change="elementView.propertiesPage.submitManagedOrganizationsChanges()">
+				</select></td>
+			</tr>
+		</table>
 	</div>
 </body>
 </html>

@@ -33,6 +33,7 @@ define(
 				this.propertiesPanel.propertiesPage = this;
 				this.relationships = [];
 				this.otherBusinessObjectTopLevelFields = {};
+				this.managedOrganizations = [];
 
 				/**
 				 * 
@@ -42,9 +43,12 @@ define(
 							.getTopLevelFieldsForBusinessObject(this.propertiesPanel.data);
 					this.otherBusinessObjects = [];
 					this.otherBusinessObjectsMap = {};
+					this.organizations = [];
 
 					for ( var n in m_model.getModels()) {
 						var model = m_model.getModels()[n];
+
+						console.log(model);
 
 						for ( var m in model.dataItems) {
 							var data = model.dataItems[m];
@@ -61,6 +65,19 @@ define(
 							this.otherBusinessObjects.push(data);
 							this.otherBusinessObjectsMap[model.id + "/"
 									+ data.id] = data;
+						}
+
+						for ( var l in model.participants) {
+							var participant = model.participants[l];
+
+							if (participant.type != "organizationParticipant") {
+								continue;
+							}
+
+							this.organizations.push({
+								label : model.name + "/" + participant.name,
+								fullId : participant.getFullId()
+							});
 						}
 					}
 
@@ -221,6 +238,18 @@ define(
 					this.propertiesPanel.submitModelElementAttributeChange(
 							'carnot:engine:businessObjectRelationships', JSON
 									.stringify(transfer));
+				};
+
+				/**
+				 * 
+				 */
+				BusinessObjectManagementDataPropertiesPage.prototype.submitManagedOrganizationsChanges = function() {
+					console.log("Transfer");
+					console.log(this.managedOrganizations);
+
+					this.propertiesPanel.submitModelElementAttributeChange(
+							'carnot:engine:managedOrganizations', JSON
+									.stringify(this.managedOrganizations));
 				};
 			}
 		});
