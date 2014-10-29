@@ -94,7 +94,7 @@ ul.errorMessagesPanel {
 						<td class="trafficLightTableCell">Total</td>
 						<td valign="bottom" align="center" class="trafficLightTableCell"
 							ng-repeat="category in benchmark.categories"><a href=""
-							ng-click="$parent.loadProcessInstances()"><table cellpadding="0" cellspacing="0" class="layoutTable">
+							ng-click="$parent.loadActivityInstances()"><table cellpadding="0" cellspacing="0" class="layoutTable">
 									<tr>
 										<td align="center"><span style="{{getCountStyle(category)}}"><i
 												class="fa fa-circle"></i> </span></td>
@@ -122,7 +122,7 @@ ul.errorMessagesPanel {
 								{{trafficLight.name}}</span></td>
 						<td valign="bottom" align="center" class="trafficLightTableCell"
 							ng-repeat="category in benchmark.categories"><a href=""
-							ng-click="$parent.$parent.loadProcessInstances()"><table cellpadding="0" cellspacing="0" class="layoutTable">
+							ng-click="$parent.$parent.loadActivityInstances()"><table cellpadding="0" cellspacing="0" class="layoutTable">
 									<tr>
 										<td align="center"><span style="{{getCountStyle(category, trafficLight)}}"><i
 												class="fa fa-circle"></i> </span></td>
@@ -196,7 +196,7 @@ ul.errorMessagesPanel {
 								ng-show="trafficLight.activity"><i class="fa fa-gear"></i>{{trafficLight.activity.name}}</span></td>
 							<td ng-repeat="category in benchmark.categories"
 								class="trafficLightTableCell"><a href=""
-								ng-click="loadProcessInstances()">{{$index}}</a></td>
+								ng-click="loadActivityInstances()">{{$index}}</a></td>
 						</tr>
 						<tr>
 							<td class="trafficLightTableCell"><a href=""
@@ -209,10 +209,10 @@ ul.errorMessagesPanel {
 				</table>
 			</div>
 		</div>
-		<div ng-show="processInstances.length > 0">
+		<div ng-show="activityInstances.length > 0">
 			<h2>Activities</h2>
-			<div ng-include="'../processListPanel.html'"
-				ng-repeat="processInstances in [processInstances]"></div>
+			<div ng-include="'../activityInstanceListPanel.html'"
+				ng-repeat="activityInstances in [activityInstances]"></div>
 		</div>
 		<div sd-dialog="trafficLightSelectionDialog">
 			<div class="errorMessagesPanel"

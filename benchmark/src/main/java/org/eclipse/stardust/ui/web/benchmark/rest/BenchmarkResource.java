@@ -4,6 +4,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -29,7 +30,7 @@ public class BenchmarkResource {
 	 * 
 	 * @return
 	 */
-	public BenchmarkService getbenchmarkService() {
+	public BenchmarkService getBenchmarkService() {
 		return benchmarkService;
 	}
 
@@ -37,17 +38,31 @@ public class BenchmarkResource {
 	 * 
 	 * @param benchmarkService
 	 */
-	public void setbenchmarkService(
+	public void setBenchmarkService(
 			BenchmarkService benchmarkService) {
 		this.benchmarkService = benchmarkService;
 	}
 
 	@GET
-	@Path("/businessObject.json")
-	public Response getBusinessObject() {
+	@Path("/activityInstances.json")
+	public Response getActivities() {
 		try {
 			return Response.ok(
-					getbenchmarkService().getBusinessObjects()
+					getBenchmarkService().getActivityInstances()
+							.toString(), MediaType.APPLICATION_JSON).build();
+		} catch (Exception e) {
+			trace.error(e, e);
+
+			return Response.serverError().build();
+		}
+	}
+
+	@GET
+	@Path("/processInstances/{oid}.json")
+	public Response getProcessInstance(@PathParam("oid") long oid) {
+		try {
+			return Response.ok(
+					getBenchmarkService().getProcessInstance(oid)
 							.toString(), MediaType.APPLICATION_JSON).build();
 		} catch (Exception e) {
 			trace.error(e, e);

@@ -29,7 +29,7 @@ define(
 				/**
 				 * 
 				 */
-				BenchmarkService.prototype.getBusinessObjects = function() {
+				BenchmarkService.prototype.getActivityInstances = function() {
 					var deferred = jQuery.Deferred();
 					var rootUrl = location.href.substring(0, location.href
 							.indexOf("/plugins"));
@@ -39,14 +39,43 @@ define(
 							.ajax(
 									{
 										url : rootUrl
-												+ "/services/rest/benchmark/businessObject.json",
+												+ "/services/rest/benchmark/activityInstances.json",
 										type : "GET",
 										contentType : "application/json"
 									}).done(function(result) {
-								console.log("=======> Models");
-								console.log(result.models);
+								console.log("=======> Activity");
+								console.log(result.activityInstances);
 
-								deferred.resolve(result.models);
+								deferred.resolve(result.activityInstances);
+							}).fail(function(data) {
+								deferred.reject(data);
+							});
+
+					return deferred.promise();
+				};
+
+				/**
+				 * 
+				 */
+				BenchmarkService.prototype.getProcessInstance = function(oid) {
+					var deferred = jQuery.Deferred();
+					var rootUrl = location.href.substring(0, location.href
+							.indexOf("/plugins"));
+					var self = this;
+
+					jQuery
+							.ajax(
+									{
+										url : rootUrl
+												+ "/services/rest/benchmark/processInstances/"
+												+ oid + ".json",
+										type : "GET",
+										contentType : "application/json"
+									}).done(function(result) {
+								console.log("=======> Process Instance");
+								console.log(result);
+
+								deferred.resolve(result);
 							}).fail(function(data) {
 								deferred.reject(data);
 							});

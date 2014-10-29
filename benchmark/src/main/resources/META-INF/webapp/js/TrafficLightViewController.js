@@ -451,9 +451,7 @@ define(
 				/**
 				 * 
 				 */
-				TrafficLightViewController.prototype.loadProcessInstances = function() {
-					console.log("===> Load Process Instances");
-
+				TrafficLightViewController.prototype.loadActivityInstances = function() {
 					jQuery("body").css("cursor", "wait");
 
 					this.processInstances = [ {} ];
@@ -461,17 +459,12 @@ define(
 
 					var self = this;
 
-					BenchmarkService.instance().getChecklists(
-							"",
-							this.businessObject == "__All" ? null
-									: this.businessObject,
-							this.businessObject == "__All" ? null
-									: this.businessObjectFilter).done(
-							function(processInstances) {
-								console.log("===> Process Instances");
-								console.log(processInstances);
+					BenchmarkService.instance().getActivityInstances().done(
+							function(activityInstances) {
+								console.log("===> Activity Instances");
+								console.log(activityInstances);
 
-								self.processInstances = processInstances;
+								self.activityInstances = activityInstances;
 
 								self.safeApply();
 
@@ -607,9 +600,9 @@ define(
 				TrafficLightViewController.prototype.openGanttChartView = function(
 						activity) {
 					this.openView("ganttChartView",
-							"viewId=ganttChartView&oid=" + activity.oid, window
+							"viewId=ganttChartView&oid=" + activity.rootProcessInstance.oid, window
 									.btoa("viewId=ganttChartView&oid="
-											+ activity.oid));
+											+ activity.rootProcessInstance.oid));
 				};
 
 				/**
@@ -661,6 +654,14 @@ define(
 					} else {
 						this.$apply(fn);
 					}
+				};
+				
+				/**
+				 * 
+				 */
+				TrafficLightViewController.prototype.formatTimeStamp = function(
+						timeStamp) {
+					return moment(timeStamp).format("M/D/YYYY h:mm a");
 				};
 			}
 		});

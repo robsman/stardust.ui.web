@@ -21,20 +21,6 @@ define(
 				 * 
 				 */
 				BenchmarkLaunchPanelController.prototype.initialize = function() {
-					var self = this;
-
-					BenchmarkService
-							.instance()
-							.getBusinessObjects()
-							.done(
-									function(businessObjectModels) {
-										self.businessObjectModels = businessObjectModels;
-
-										self.refreshBusinessObjects();
-										self.safeApply();
-									}).fail(function() {
-							});
-
 					return this;
 				};
 
@@ -64,7 +50,7 @@ define(
 				 * 
 				 */
 				BenchmarkLaunchPanelController.prototype.openGanttChartView = function() {
-					this.openView("ganttChartView", "ganttChartView", window.btoa("ganttChartView"));
+					this.openView("ganttChartView", "viewId=ganttChartView&oid=596", window.btoa("viewId=ganttChartView&oid=596"));
 				};
 
 				/**

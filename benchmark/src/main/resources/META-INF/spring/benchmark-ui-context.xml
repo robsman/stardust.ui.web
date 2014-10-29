@@ -22,6 +22,6 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 			controller="trafficLightView" />
 		<ippui:view name="ganttChartView"
 			include="/plugins/benchmark/views/ganttChartViewFrameAdapter.xhtml"
-			controller="trafficLightView" />
+			controller="ganttChartView" />
 	</ippui:perspective>
 </beans>
