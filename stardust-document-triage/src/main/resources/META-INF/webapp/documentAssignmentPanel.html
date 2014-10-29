@@ -21,9 +21,7 @@
 		      rel='stylesheet' />
 		<link href='./css/thirdparty/jquery/jquery-ui-1.10.2.custom.min.css'
 			  rel='stylesheet' />
-			  
-	    <script src="../html5-common/scripts/services/sdBusinessObjectService.js"></script>
-	    
+
 		<script data-main="./js/DocumentAssignmentPanelMain"
 			    src="./js/libs/require/2.0.5/require-min.js"></script>
 	</head>
@@ -191,8 +189,8 @@
 																{{treeItem.startableProcess.name}} <a href="#"
 																	ng-show="processCanStart(treeItem);"> <i
 																	title="Start Process"
-																	ng-click="startProcess(treeItem,selectedBusinessObjectInstances[0])"
-																	class="fa fa-rocket iconLink"> </i>
+																	ng-click="startProcess(treeItem,bom.selectedBusinessObjectInstances[0])"
+																	class="fa fa-rocket iconLink"> </i>l:{{bom.selectedBusinessObjectInstances.length}}
 																</a>
 															</div>
 															<div ng-show="treeItem.specificDocument"

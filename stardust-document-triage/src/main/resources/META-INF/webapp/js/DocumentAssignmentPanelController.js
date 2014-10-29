@@ -431,14 +431,11 @@ define(
 					this.pageModel.selectedPage={};
 					this.uiModel.showChildren = false;
 					this.uiModel.docPanelRefreshStamp = new Date().getTime();
-					
-					
 					this.startableProcesses=[];
-					
 					this.retrieveActivityInstanceFromUri();
 					this.startProcessDialog = {};
 					this.businessObjectFilter = {};
-					this.selectedBusinessObjectInstances = [];
+					this.bom ={selectedBusinessObjectInstances : []};
 					this.documentTypes = [ {
 						name : "None",
 						documentTypeId : "",
@@ -1813,11 +1810,13 @@ define(
 					
 				};
 				
-				DocumentAssignmentPanelController.prototype.processCanStart = function(
-						proc) {
-					var hasBusinessObject = false, hasProcessAttachment = false, hasSpecificDocument = false, i;
+				DocumentAssignmentPanelController.prototype.processCanStart = function(proc) {
+					var hasBusinessObject = false, 
+					    hasProcessAttachment = false, 
+					    hasSpecificDocument = false, 
+					    i;
 
-					hasBusinessObject = this.selectedBusinessObjectInstances.length > 0;
+					hasBusinessObject = this.bom.selectedBusinessObjectInstances.length > 0;
 					
 					if(proc.startableProcess){
 						hasProcessAttachment = proc.startableProcess.processAttachments.length > 0;
@@ -1843,7 +1842,7 @@ define(
 				/**
 				 * 
 				 */
-				DocumentAssignmentPanelController.prototype.onBusinessObjectInstanceSelectionChange = function() {
+				DocumentAssignmentPanelController.prototype.onBusinessObjectInstanceSelectionChange = function(instance) {
 					var self = this;
 
 					jQuery("*").css("cursor", "wait");
@@ -1853,7 +1852,7 @@ define(
 							.done(
 									function(pendingProcesses) {
 										self.pendingProcesses = pendingProcesses;
-										self.selectedBusinessObjectInstances = self.businessObjectManagementPanelController.selectedBusinessObjectInstances;
+										self.bom.selectedBusinessObjectInstances = (instance)?[instance]:[];
 										self.refreshPendingProcessesTree();
 										self.safeApply();
 

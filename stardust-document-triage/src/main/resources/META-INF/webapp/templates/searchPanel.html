@@ -20,6 +20,10 @@
 		margin: 0px;
 		border-bottom: 1px solid #708090;
 	}
+	
+	tr.isActive td{
+		background-color:#ddd !important; 
+	}
 
 	.dataTable-temp thead {
 		margin-top: 10px;
@@ -62,7 +66,7 @@
 <label>Business Object</label>
 
 <select ng-model="selectedModel" 
-        ng-change="setBusinessObj(selectedModel)">
+        ng-change="setBusinessObj(selectedModel);invokeCallback()">
   <optgroup ng-repeat="model in businessObjectModels" 
             label="{{model.name}}">
     <option value="{{bsnObj}}" 
@@ -102,7 +106,7 @@
 	 	   class="iconLink menuBarLink" 
 	 	   title="Refresh">
 	 	   <i class="fa fa-eraser"
-		       ng-click="resetFilters()">
+		       ng-click="resetFilters();invokeCallback()">
 		   </i>
 		</a>
 	 </div>
@@ -117,12 +121,12 @@
 			<tr>
 				<th ng-repeat="field in (selectedBusinessObj.fields | filter:{key:true} | orderBy:'primaryKey===false')"
 				    ng-if="isTypeSupported(field.type)"
-					ng-click="ui.predicate=field.name;ui.sortAsc=!ui.sortAsc;ui.activeRow=$index">
+					ng-click="ui.predicate=field.name;ui.sortAsc=!ui.sortAsc;ui.activeCol=$index">
 					{{field.name | uncamel}}
 					<i ng-if="field.primaryKey===true" 
 					   class="fa fa-key">
 					</i>
-					<i ng-show="ui.activeRow==$index"
+					<i ng-show="ui.activeCol==$index"
 					   ng-class="{'fa-caret-down' : ui.sortAsc,'fa-caret-up' : !ui.sortAsc}" 
 					   class="fa">
 					</i>
@@ -131,7 +135,8 @@
 		</thead>
 		<tbody>
 			<tr ng-repeat="instance in businessObjects | orderBy:ui.predicate:ui.sortAsc"
-			    ng-click="invokeCallback(instance)">
+				ng-class="{'isActive':ui.activeRow===$index}"
+			    ng-click="invokeCallback(instance);ui.activeRow=$index;">
 				<td ng-if="isTypeSupported(field.type)" 
 				    ng-repeat="field in (selectedBusinessObj.fields | filter:{key:true} | orderBy:'primaryKey===false')">
 					<span>{{instance[field.name]}}</span>
@@ -140,6 +145,7 @@
 			</tr>
 		</tbody>
 	</table>
+
 </div>
 
 </div>
