@@ -1,7 +1,8 @@
 /* ********** View ********** */
 .view-panel {
-	margin: 8px;
+	margin: 6px;
 	position: relative;
+	overflow: auto;
 }
 
 .view-panel-toolbar {
