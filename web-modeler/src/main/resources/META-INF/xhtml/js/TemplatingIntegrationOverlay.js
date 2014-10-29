@@ -129,14 +129,14 @@ define(
                      panel : this
                   }, function(event)
                   {
-                     event.data.panel.submitChanges(true);
+                     event.data.panel.submitChanges();
                   });
 
                   this.convertToPdfInput.change({
                      panel : this
                   }, function(event)
                   {
-                     event.data.panel.submitChanges(true);
+                     event.data.panel.submitChanges();
                   });
 
                   this.editorAnchor.id = "codeEditorDiv"
@@ -640,6 +640,10 @@ define(
                TemplatingIntegrationOverlay.prototype.validate = function()
                {
                   var valid = true;
+                  if(this.convertToPdfInput.prop("checked") && !this.endsWith(this.outputNameInput.val(),".pdf")){
+                     this.view.errorMessages.push("Output Name should end with .pdf");
+                     valid = false;
+                  }
                   /*
                    * var outAccessPointList = []; var accessPoints =
                    * this.getApplication().contexts.application.accessPoints;
