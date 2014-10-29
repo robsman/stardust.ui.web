@@ -43,12 +43,18 @@
 	margin-bottom: 5px;
 }
 
+.tbl-toolbar-section {
+	margin-right: 5px;
+	border-right: 1px dotted gray;
+	float: left;
+}
+
 .tbl-toolbar-item {
-	padding-right: 5px;
 }
 
 .tbl-tool-link {
 	margin-right: 5px;
+	cursor: pointer;
 }
 
 .tbl-flt-title {

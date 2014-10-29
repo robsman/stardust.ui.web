@@ -24,7 +24,7 @@
 				// TODO: Accept more inputs...
 			},
 			compile: function(elem, attr, transclude) {				
-				processRawMarkup(elem);
+				processRawMarkup(elem, attr);
 
 				return {
 					post : function(scope, element, attr, ctrl) {
@@ -35,15 +35,25 @@
 		};	
 	}];
 
+	var TOOLBAR_TEMPLATE =
+		'<div class="tbl-toolbar-section">\n' +
+			'<a href="#" ng-click="" title="{{i18n(\'portal-common-messages.common-filterPopup-selectColumnsLabel\')}}" class="tbl-toolbar-item tbl-tool-link">\n' +
+				'<i class="fa fa-table"></i>\n' +
+			'</a>\n' +
+			'<a href="#" ng-click="" title="{{i18n(\'portal-common-messages.common-genericDataTable-asExcel\')}}" class="tbl-toolbar-item tbl-tool-link">\n' +
+				'<i class="fa fa-file-excel-o"></i>\n' +
+			'</a>\n' +
+			'<a href="#" ng-click="" title="{{i18n(\'portal-common-messages.common-genericDataTable-asCSV\')}}" class="tbl-toolbar-item tbl-tool-link">\n' +
+				'<i class="fa fa-file-text-o"></i>\n' +
+			'</a>\n' +
+		'</div>\n';
 	/*
 	 * 
 	 */
-	function processRawMarkup(elem) {
-		var toolbar = elem.find('sd-toolbar');
-		toolbar.attr('ng-non-bindable', '');
-
-		var templates = elem.find('sd-column-template');
-		templates.attr('ng-non-bindable', '');
+	function processRawMarkup(elem, attr) {
+		// Add ng-non-bindable, so that the markup is not compiled
+		var bodyCols = elem.find('> tbody > tr > td');
+		bodyCols.attr('ng-non-bindable', '');
 	}
 
 	/*
@@ -54,9 +64,7 @@
 		var elemScope = element.scope();
 		var sdData = ctrl[0];
 
-		var columns = [], toolbarHtml;
-		var dtColumns = [], headerHtml = '';
-		var theTable, theDataTable;
+		var columns = [], dtColumns = [], theTable, theDataTable;
 
 		// Setup component instance
 		setup();
@@ -115,43 +123,36 @@
 		 * 
 		 */
 		function processMarkup() {
-			// Toolbar
-			var toolbar = element.find('sd-toolbar');
-			if (toolbar.length != undefined && toolbar.length != 0) {
-				toolbarHtml = getTemplateContent(toolbar);
-			}
-
 			// Columns
-			var cols = element.find('sd-column');
-			angular.forEach(cols, function(col) {
-				col = angular.element(col);
+			var headCols = element.find('> thead > tr > th');
+			var bodyCols = element.find('> tbody > tr > td');
 
+			if (headCols.length != bodyCols.length) {
+				throw "Table Header and body columns are not matching";
+			}
+			
+			for(var i = 0; i < headCols.length; i++) {
+				var hCol = angular.element(headCols[i]);
+				var bCol = angular.element(bodyCols[i]);
+				
 				var colDef = {
-					statik: true,
-					field: col.attr('sda-field'),
-					title: col.attr('sda-title'),
-					dataType: col.attr('sda-data-type'),
-					sortable: col.attr('sda-sortable')
+						field: hCol.attr('sda-field'),
+						dataType: hCol.attr('sda-data-type'),
+						sortable: hCol.attr('sda-sortable')
 				};
-
-				var content = col.find('sd-column-template');
-				if (content.length == undefined || content.length == 0) {
+				
+				colDef.contents = bCol.html();
+				colDef.contents = colDef.contents.trim();
+				if (colDef.contents == "") {
 					colDef.contents = getDefaultContent(colDef);
-				} else {
-					colDef.contents = getTemplateContent(content);
 				}
 
 				columns.push(colDef);
-			});
+			}
 
+			element.children('tbody').remove();
+			
 			// TODO: Provide API to rearrange the columns
-		}
-
-		/*
-		 * 
-		 */
-		function getTemplateContent(templateElm) {
-			return templateElm.html();
 		}
 
 		/*
@@ -178,9 +179,8 @@
 		 */
 		function buildDataTableInformation() {
 			angular.forEach(columns, function(col, i) {
-				headerHtml += '\n<th><div class="tbl-flt-title" ng-click="alert(\"TODO\")">No filter set</div><span>{{' + col.title + '}}</span></th>';
 				dtColumns.push({
-					"data": colRenderer(col)
+					data: colRenderer(col)
 				});
 			});
 
@@ -200,30 +200,27 @@
 		 * 
 		 */
 		function createDataTable() {
-			var toolbarTemplate =
-				'<a href="#" ng-click="" title="Select Columns" class="tbl-toolbar-item tbl-tool-link">' +
-					'<i class="fa fa-table"></i>' +
-				'</a>' +
-				'<a href="#" ng-click="" title="Export Excel" class="tbl-toolbar-item tbl-tool-link">' +
-					'<i class="fa fa-file-excel-o"></i>' +
-				'</a>' +
-				'<a href="#" ng-click="" title="Export CSV" class="tbl-toolbar-item tbl-tool-link">' +
-					'<i class="fa fa-file-text-o"></i>' +
-				'</a>';
+			// Toolbar
+			var toolbar;
+			if (attr.sdaToolbar) {
+				toolbar = element.siblings('#' + attr.sdaToolbar);
+				if (toolbar.length != undefined && toolbar.length != 0) {
+					toolbar.prepend(TOOLBAR_TEMPLATE);
+				}
+			} else {
+				var toolbarTemplate = '<div>' + TOOLBAR_TEMPLATE + '</div>';
+				jQuery(toolbarTemplate).insertBefore(element);
+				toolbar = element.prev();
+			}
 
-			toolbarTemplate = '<div>' + toolbarTemplate + toolbarHtml + '</div>';
+			toolbar = angular.element(toolbar);
+			toolbar.addClass('tbl-toolbar');
 
-			// Replace the contents
-			// TODO: Check if current element is <table> itself
-			// Not possible to edit the current elements tag name
-			var tableTemplate = '<table style="width: 100%"><thead><tr>HEADERS</tr></thead></table>';
-			tableTemplate = tableTemplate.replace('HEADERS', headerHtml);
+			// Compile the default toolbar, which was inserted
+			var defaultToolbar = toolbar.children().first();
+			$compile(defaultToolbar)(defaultToolbar.scope());
 
-			var template = toolbarTemplate + tableTemplate;
-			element.html(template);
-
-			theTable = element.find("table");
-			$compile(theTable)(elemScope);
+			theTable = element;
 		}
 
 		/*
