@@ -13,14 +13,10 @@ function integrationManagementController($scope, $http) {
 	$scope.filtredProducerRoute = [];
 
 	// variable for application consumers
-	$scope.currentPageConsumerApplicationRoute = 0;
-	$scope.startItemConsumerApplicationRoute = 0;
-	$scope.filtredConsumerApplicationRoute = [];
+	$scope.currentPageConsumerRoute = 0;
+	$scope.startItemConsumerRoute = 0;
+	$scope.filtredConsumerRoute = [];
 
-	// variable for trigger consumers
-	$scope.currentPageConsumerTriggerRoute = 0;
-	$scope.startItemConsumerTriggerRoute = 0;
-	$scope.filtredConsumerTriggerRoute = [];
 	// init search value
 	// camel context table variables
 	$scope.searchKeywordInCamelContext = "";
@@ -29,23 +25,13 @@ function integrationManagementController($scope, $http) {
 	$scope.searchKeywordInProducerApplication = "";
 	$scope.filtredApplicationProducersListForPagination = [];
 	// camel application consumer routes table variables
-	$scope.searchKeywordInConsumerApplication = "";
-	$scope.filtredApplicationConsumersListForPagination = [];
-	// camel trigger consumer routes table variables
-	$scope.searchKeywordInConsumerTrigger = "";
-	$scope.filtredTriggerConsumersListForPagination = [];
-	
+	$scope.searchKeywordInConsumer = "";
+	$scope.filtredConsumersListForPagination = [];
 
 	$scope.showRouteDeatilsTable = false;
-	$scope.selectedConsumerAppliocationRoute = null;
-	$scope.showDetailsConsumerApplicationRoute = false;
-	$scope.selectedConsumerAppliocationRouteId ="";
-	
-	
-	/// selected Consumer Trigger Route 
-	$scope.selectedConsumerTriggerRoute = "";
-	$scope.selectedConsumerTriggerRouteId ="";
-	$scope.showDetailsConsumerTriggerRoute = false;
+	$scope.selectedConsumerRoute = null;
+	$scope.showDetailsConsumerRoute = false;
+	$scope.selectedConsumerRouteId ="";
 	
 	/// selected Producer Route 
 	$scope.selectedProducerRoute = "";
@@ -55,18 +41,12 @@ function integrationManagementController($scope, $http) {
 	
 	
 	$scope.cleanSelectedRoutesDetails = function() {
-		// clean Consumer Trigger Routes details table
-		$scope.selectedConsumerAppliocationRoute ="";
-		$scope.selectedConsumerAppliocationRouteId ="";
-		$scope.showDetailsConsumerApplicationRoute = false;
-		// end clean Consumer Trigger Routes details table
-		
-		// clean Consumer Trigger Routes details table
-		$scope.selectedConsumerTriggerRoute = "";
-		$scope.selectedConsumerTriggerRouteId ="";
-		$scope.showDetailsConsumerTriggerRoute = false;
-		// end clean Consumer Trigger Routes details table
-		
+		// clean Consumer Routes details table
+		$scope.selectedConsumerRoute ="";
+		$scope.selectedConsumerRouteId ="";
+		$scope.showDetailsConsumerRoute = false;
+		// end clean Consumer Routes details table		
+	
 		// clean Producer Routes details table
 		$scope.selectedProducerRoute = "";
 		$scope.selectedProducerRouteId ="";
@@ -112,8 +92,8 @@ function integrationManagementController($scope, $http) {
 	};
 	$scope.refreshApplicationProducers();
 
-	// Application Consumer
-	$scope.refreshApplicationConsumers = function() {
+	// Consumer
+	$scope.refreshConsumers = function() {
 		if ($scope.cametContextId != "") {
 			var rootUrl = location.href.substring(0, location.href
 					.indexOf("/main.html"));
@@ -122,40 +102,18 @@ function integrationManagementController($scope, $http) {
 							rootUrl
 									+ "/services/rest/integration-management/context/"
 									+ $scope.cametContextId
-									+ "/routes/consumers/application")
+									+ "/routes/consumers")
 					.success(
 							function(response) {
-								$scope.applicationConsumers = response;
-								$scope.filtredConsumerApplicationRoute = response;
-								$scope.filtredApplicationConsumersListForPagination = response;
+								$scope.consumers = response;
+								$scope.filtredConsumerRoute = response;
+								$scope.filtredConsumersListForPagination = response;
 							});
-			$scope.currentPageConsumerApplicationRoute = 0;
-			$scope.searchKeywordInConsumerApplication = "";
+			$scope.currentPageConsumerRoute = 0;
+			$scope.searchKeywordInConsumer = "";
 		}
 	};
-	$scope.refreshApplicationConsumers();
-
-	// Trigger Consumer
-	$scope.refreshTriggerConsumers = function() {
-		if ($scope.cametContextId != "") {
-			var rootUrl = location.href.substring(0, location.href
-					.indexOf("/main.html"));
-			$http.get(
-					rootUrl + "/services/rest/integration-management/context/"
-							+ $scope.cametContextId
-							+ "/routes/consumers/trigger").success(
-					function(response) {
-						$scope.triggerConsumers = response;
-						$scope.filtredConsumerTriggerRoute = response;
-						$scope.filtredTriggerConsumersListForPagination = response;
-					});
-			$scope.currentPageConsumerTriggerRoute = 0;
-			$scope.searchKeywordInConsumerTrigger = "";
-
-		}
-	};
-	$scope.refreshTriggerConsumers();
-
+	$scope.refreshConsumers();
 
 	// Start and stop common for all types of routes
 	$scope.startAllRoutes = function(id) {
@@ -169,8 +127,7 @@ function integrationManagementController($scope, $http) {
 					function(response) {
 						$scope.names = response;
 						$scope.refreshApplicationProducers();
-						$scope.refreshApplicationConsumers();
-						$scope.refreshTriggerConsumers();
+						$scope.refreshConsumers();
 					});
 
 	}
@@ -187,8 +144,7 @@ function integrationManagementController($scope, $http) {
 					function(response) {
 						$scope.names = response;
 						$scope.refreshApplicationProducers();
-						$scope.refreshApplicationConsumers();
-						$scope.refreshTriggerConsumers();
+						$scope.refreshConsumers();
 					});
 	}
 	
@@ -225,12 +181,12 @@ function integrationManagementController($scope, $http) {
 					rootUrl
 							+ "/services/rest/integration-management/context/"
 							+ $scope.cametContextId
-							+ "/routes/consumers/application")
+							+ "/routes/consumers")
 			.success(
 					function(response) {
-						$scope.applicationConsumers = response;
-						$scope.updatePaginationApplicationConsumerRoutes($scope.searchKeywordInConsumerApplication);
-						$scope.filtredConsumerApplicationRoute = $scope.filtredApplicationConsumersListForPagination.slice(	$scope.startItemConsumerApplicationRoute );
+						$scope.consumers = response;
+						$scope.updatePaginationConsumerRoutes($scope.searchKeywordInConsumer);
+						$scope.filtredConsumerRoute = $scope.filtredConsumersListForPagination.slice(	$scope.startItemConsumerRoute );
 
 					});
 			
@@ -245,17 +201,7 @@ function integrationManagementController($scope, $http) {
 								$scope.filtredProducerRoute = $scope.filtredApplicationProducersListForPagination.slice($scope.startItemProducerRoute);
 								
 			});
-			
-			
-			$http.get(
-					rootUrl + "/services/rest/integration-management/context/"
-							+ $scope.cametContextId
-							+ "/routes/consumers/trigger").success(
-					function(response) {
-						$scope.triggerConsumers = response;
-						$scope.updatePaginationTriggerConsumerRoutes($scope.searchKeywordInConsumerTrigger);
-						$scope.filtredConsumerTriggerRoute = $scope.filtredTriggerConsumersListForPagination.slice($scope.startItemConsumerTriggerRoute);
-					});
+
 			$scope.updatePagination($scope.searchKeywordInCamelContext);
 			$scope.filtredCamelContexts = $scope.filtredCamelContextsListForPagination.slice($scope.startItem);
 		}
@@ -288,16 +234,13 @@ function integrationManagementController($scope, $http) {
 			// init all routes table index!
 			$scope.currentPageProducerRoute = 0;
 			$scope.startItemProducerRoute = 0;
-			$scope.currentPageConsumerTriggerRoute = 0;
-			$scope.startItemConsumerTriggerRoute = 0;
-			$scope.currentPageConsumerApplicationRoute = 0;
-			$scope.startItemConsumerApplicationRoute = 0;
+			$scope.currentPageConsumerRoute = 0;
+			$scope.startItemConsumerRoute = 0;
 			$scope.cametContextId = contextId; // for Selection Style
 			$scope.idSelectedCamelContext = contextId;
 			$scope.showRoutesTable = true;
 			$scope.refreshApplicationProducers();
-			$scope.refreshApplicationConsumers();
-			$scope.refreshTriggerConsumers();
+			$scope.refreshConsumers();
 			$scope.updatePagination($scope.searchKeywordInCamelContext);
 			$scope.filtredCamelContexts = $scope.filtredCamelContextsListForPagination.slice($scope.startItem);
 		}
@@ -366,7 +309,6 @@ function integrationManagementController($scope, $http) {
 	};
 
 	$scope.updatePagination = function(searchKeywordInCamelContext) {
-		//$scope.refresh();
 		$scope.filtredCamelContexts = [];
 		for ( var i = 0; i < $scope.camelContexts.length; i++) {
 			if ($scope.camelContexts[i].contextId
@@ -482,16 +424,16 @@ function integrationManagementController($scope, $http) {
 	}
 	
 	//*****************************************//
-	//   pagination for consumer application   //
+	//   pagination for consumer 			   //
 	//*****************************************//
-	$scope.rangeConsumerApplicationRoute = function() {
+	$scope.rangeConsumerRoute = function() {
 		var rangeSize = 3;
 		var ret = [];
 		var start;
 
-		start = $scope.currentPageConsumerApplicationRoute;
-		if (start > $scope.pageCountConsumerApplicationRoute() - rangeSize) {
-			start = $scope.pageCountConsumerApplicationRoute() - rangeSize + 1;
+		start = $scope.currentPageConsumerRoute;
+		if (start > $scope.pageCountConsumerRoute() - rangeSize) {
+			start = $scope.pageCountConsumerRoute() - rangeSize + 1;
 		}
 
 		for ( var i = start; i < start + rangeSize; i++) {
@@ -503,166 +445,74 @@ function integrationManagementController($scope, $http) {
 		return ret;
 	};
 
-	$scope.prevPageConsumerApplicationRoute = function() {
-		if ($scope.currentPageConsumerApplicationRoute > 0) {
-			$scope.currentPageConsumerApplicationRoute--;
-			$scope.startItemConsumerApplicationRoute = $scope.currentPageConsumerApplicationRoute
+	$scope.prevPageConsumerRoute = function() {
+		if ($scope.currentPageConsumerRoute > 0) {
+			$scope.currentPageConsumerRoute--;
+			$scope.startItemConsumerRoute = $scope.currentPageConsumerRoute
 					* $scope.itemsPerPage;
-			$scope.filtredConsumerApplicationRoute = $scope.filtredApplicationConsumersListForPagination
-					.slice($scope.startItemConsumerApplicationRoute);
+			$scope.filtredConsumerRoute = $scope.filtredConsumersListForPagination
+					.slice($scope.startItemConsumerRoute);
 		}
 	};
 
-	$scope.prevPageDisabledConsumerApplicationRoute = function() {
-		return $scope.currentPageConsumerApplicationRoute === 0 ? "disabled"
+	$scope.prevPageDisabledConsumerRoute = function() {
+		return $scope.currentPageConsumerRoute === 0 ? "disabled"
 				: "";
 	};
 
-	$scope.pageCountConsumerApplicationRoute = function() {
-		return Math.ceil($scope.filtredApplicationConsumersListForPagination.length
+	$scope.pageCountConsumerRoute = function() {
+		return Math.ceil($scope.filtredConsumersListForPagination.length
 				/ $scope.itemsPerPage) - 1;
 	};
 
-	$scope.nextPageConsumerApplicationRoute = function() {
-		if ($scope.currentPageConsumerApplicationRoute < $scope
-				.pageCountConsumerApplicationRoute()) {
-			$scope.currentPageConsumerApplicationRoute++;
-			$scope.startItemConsumerApplicationRoute = $scope.currentPageConsumerApplicationRoute
+	$scope.nextPageConsumerRoute = function() {
+		if ($scope.currentPageConsumerRoute < $scope
+				.pageCountConsumerRoute()) {
+			$scope.currentPageConsumerRoute++;
+			$scope.startItemConsumerRoute = $scope.currentPageConsumerRoute
 					* $scope.itemsPerPage;
-			$scope.filtredConsumerApplicationRoute = $scope.filtredApplicationConsumersListForPagination
-					.slice($scope.startItemConsumerApplicationRoute);
+			$scope.filtredConsumerRoute = $scope.filtredConsumersListForPagination
+					.slice($scope.startItemConsumerRoute);
 		}
 	};
 
-	$scope.nextPageDisabledConsumerApplicationRoute = function() {
-		return $scope.currentPageConsumerApplicationRoute === $scope
-				.pageCountConsumerApplicationRoute() ? "disabled" : "";
+	$scope.nextPageDisabledConsumerRoute = function() {
+		return $scope.currentPageConsumerRoute === $scope
+				.pageCountConsumerRoute() ? "disabled" : "";
 	};
 
-	$scope.setPageConsumerApplicationRoute = function(n) {
-		$scope.currentPageConsumerApplicationRoute = n;
-		$scope.startItemConsumerApplicationRoute = $scope.currentPageConsumerApplicationRoute
+	$scope.setPageConsumerRoute = function(n) {
+		$scope.currentPageConsumerRoute = n;
+		$scope.startItemConsumerRoute = $scope.currentPageConsumerRoute
 				* $scope.itemsPerPage;
-		$scope.filtredConsumerApplicationRoute = $scope.filtredApplicationConsumersListForPagination
-				.slice($scope.startItemConsumerApplicationRoute);
+		$scope.filtredConsumerRoute = $scope.filtredConsumersListForPagination
+				.slice($scope.startItemConsumerRoute);
 	};
 	
 	
-	$scope.updatePaginationApplicationConsumerRoutes = function(searchKeywordInConsumerApplication) {
-		$scope.filtredConsumerApplicationRoute = [];
-		for ( var i = 0; i < $scope.applicationConsumers.length; i++) {
-			if (($scope.applicationConsumers[i].id.indexOf(searchKeywordInConsumerApplication) > -1) || ($scope.applicationConsumers[i].status.indexOf(searchKeywordInConsumerApplication) > -1) || ($scope.applicationConsumers[i].description.indexOf(searchKeywordInConsumerApplication) > -1)) {
-				$scope.filtredConsumerApplicationRoute.push($scope.applicationConsumers[i]);
+	$scope.updatePaginationConsumerRoutes = function(searchKeywordInConsumer) {
+		$scope.filtredConsumerRoute = [];
+		for ( var i = 0; i < $scope.consumers.length; i++) {
+			if (($scope.consumers[i].id.indexOf(searchKeywordInConsumer) > -1) || ($scope.consumers[i].status.indexOf(searchKeywordInConsumer) > -1) || ($scope.consumers[i].description.indexOf(searchKeywordInConsumer) > -1)) {
+				$scope.filtredConsumerRoute.push($scope.consumers[i]);
 			}
 		}
-		$scope.filtredApplicationConsumersListForPagination = $scope.filtredConsumerApplicationRoute;
+		$scope.filtredConsumersListForPagination = $scope.filtredConsumerRoute;
 	}
 	
-	$scope.changeConsumerApplicationSearchValue = function(searchKeywordInConsumerApplication) {
-		$scope.filtredConsumerApplicationRoute = [];
-		$scope.searchKeywordInConsumerApplication = searchKeywordInConsumerApplication;
-		for ( var i = 0; i < $scope.applicationConsumers.length; i++) {
-			if (($scope.applicationConsumers[i].id.indexOf(searchKeywordInConsumerApplication) > -1) || ($scope.applicationConsumers[i].status.indexOf(searchKeywordInConsumerApplication) > -1) || ($scope.applicationConsumers[i].description.indexOf(searchKeywordInConsumerApplication) > -1)) {
-				$scope.filtredConsumerApplicationRoute.push($scope.applicationConsumers[i]);
+	$scope.changeConsumerSearchValue = function(searchKeywordInConsumer) {
+		$scope.filtredConsumerRoute = [];
+		$scope.searchKeywordInConsumer = searchKeywordInConsumer;
+		for ( var i = 0; i < $scope.consumers.length; i++) {
+			if (($scope.consumers[i].id.indexOf(searchKeywordInConsumer) > -1) || ($scope.consumers[i].status.indexOf(searchKeywordInConsumer) > -1) || ($scope.consumers[i].description.indexOf(searchKeywordInConsumer) > -1)) {
+				$scope.filtredConsumerRoute.push($scope.consumers[i]);
 			}
 		}
 
-		$scope.filtredApplicationConsumersListForPagination = $scope.filtredConsumerApplicationRoute;
-		$scope.currentPageConsumerApplicationRoute = 0;
-		$scope.startItemConsumerApplicationRoute = 0;
-		$scope.rangeConsumerApplicationRoute();
-	}
-
-
-	//*****************************************//
-	// 	   pagination for consumer trigger     //
-	//*****************************************//
-	$scope.rangeConsumerTriggerRoute = function() {
-		var rangeSize = 3;
-		var ret = [];
-		var start;
-
-		start = $scope.currentPageConsumerTriggerRoute;
-		if (start > $scope.pageCountConsumerTriggerRoute() - rangeSize) {
-			start = $scope.pageCountConsumerTriggerRoute() - rangeSize + 1;
-		}
-
-		for ( var i = start; i < start + rangeSize; i++) {
-			if (i >= 0) {
-				ret.push(i);
-			}
-		}
-
-		return ret;
-	};
-
-	$scope.prevPageConsumerTriggerRoute = function() {
-		if ($scope.currentPageConsumerTriggerRoute > 0) {
-			$scope.currentPageConsumerTriggerRoute--;
-			$scope.startItemConsumerTriggerRoute = $scope.currentPageConsumerTriggerRoute
-					* $scope.itemsPerPage;
-			$scope.filtredConsumerTriggerRoute = $scope.filtredTriggerConsumersListForPagination
-					.slice($scope.startItemConsumerTriggerRoute);
-		}
-	};
-
-	$scope.prevPageDisabledConsumerTriggerRoute = function() {
-		return $scope.currentPageConsumerTriggerRoute === 0 ? "disabled" : "";
-	};
-
-	$scope.pageCountConsumerTriggerRoute = function() {
-		return Math.ceil($scope.filtredTriggerConsumersListForPagination.length
-				/ $scope.itemsPerPage) - 1;
-	};
-
-	$scope.nextPageConsumerTriggerRoute = function() {
-		if ($scope.currentPageConsumerTriggerRoute < $scope
-				.pageCountConsumerTriggerRoute()) {
-			$scope.currentPageConsumerTriggerRoute++;
-			$scope.startItemConsumerTriggerRoute = $scope.currentPageConsumerTriggerRoute
-					* $scope.itemsPerPage;
-			$scope.filtredConsumerTriggerRoute = $scope.filtredTriggerConsumersListForPagination
-					.slice($scope.startItemConsumerTriggerRoute);
-		}
-	};
-
-	$scope.nextPageDisabledConsumerTriggerRoute = function() {
-		return $scope.currentPageConsumerTriggerRoute === $scope
-				.pageCountConsumerTriggerRoute() ? "disabled" : "";
-	};
-
-	$scope.setPageConsumerTriggerRoute = function(n) {
-		$scope.currentPageConsumerTriggerRoute = n;
-		$scope.startItemConsumerTriggerRoute = $scope.currentPageConsumerTriggerRoute
-				* $scope.itemsPerPage;
-		$scope.filtredConsumerTriggerRoute = $scope.filtredTriggerConsumersListForPagination
-				.slice($scope.startItemConsumerTriggerRoute);
-	};
-	
-	$scope.updatePaginationTriggerConsumerRoutes = function(searchKeywordInConsumerTrigger) {
-		$scope.filtredConsumerTriggerRoute = [];
-		
-		for ( var i = 0; i < $scope.triggerConsumers.length; i++) {
-			if (($scope.triggerConsumers[i].id.indexOf(searchKeywordInConsumerTrigger) > -1) || ($scope.triggerConsumers[i].status.indexOf(searchKeywordInConsumerTrigger) > -1) || ($scope.triggerConsumers[i].description.indexOf(searchKeywordInConsumerTrigger) > -1)) {
-				$scope.filtredConsumerTriggerRoute.push($scope.triggerConsumers[i]);
-			}
-		}
-		$scope.filtredTriggerConsumersListForPagination = $scope.filtredConsumerTriggerRoute;
-	}
-	
-	$scope.changeConsumerTriggerSearchValue = function(searchKeywordInConsumerTrigger) {
-		$scope.filtredConsumerTriggerRoute = [];
-		$scope.searchKeywordInConsumerTrigger = searchKeywordInConsumerTrigger;
-		for ( var i = 0; i < $scope.triggerConsumers.length; i++) {
-			if (($scope.triggerConsumers[i].id.indexOf(searchKeywordInConsumerTrigger) > -1) || ($scope.triggerConsumers[i].status.indexOf(searchKeywordInConsumerTrigger) > -1) || ($scope.triggerConsumers[i].description.indexOf(searchKeywordInConsumerTrigger) > -1)) {
-				$scope.filtredConsumerTriggerRoute.push($scope.triggerConsumers[i]);
-			}
-		}
-
-		$scope.filtredTriggerConsumersListForPagination = $scope.filtredConsumerTriggerRoute;
-		$scope.currentPageConsumerTriggerRoute = 0;
-		$scope.startItemConsumerTriggerRoute = 0;
-		$scope.rangeConsumerTriggerRoute();
+		$scope.filtredConsumersListForPagination = $scope.filtredConsumerRoute;
+		$scope.currentPageConsumerRoute = 0;
+		$scope.startItemConsumerRoute = 0;
+		$scope.rangeConsumerRoute();
 	}
 
 	// row selection code
@@ -674,30 +524,18 @@ function integrationManagementController($scope, $http) {
 		$scope.cleanSelectedRoutesDetails();
 	}
 	
-	$scope.showConsumerApplicationRouteDetails = function(selectedCamelRoute) {
-		if (($scope.showDetailsConsumerApplicationRoute == true ) && ($scope.selectedConsumerAppliocationRoute===selectedCamelRoute)){
-			$scope.selectedConsumerAppliocationRoute ="";
-			$scope.selectedConsumerAppliocationRouteId ="";
-			$scope.showDetailsConsumerApplicationRoute = false;
+	$scope.showConsumerRouteDetails = function(selectedCamelRoute) {
+		if (($scope.showDetailsConsumerRoute == true ) && ($scope.selectedConsumerRoute===selectedCamelRoute)){
+			$scope.selectedConsumerRoute ="";
+			$scope.selectedConsumerRouteId ="";
+			$scope.showDetailsConsumerRoute = false;
 		}else {
-		$scope.selectedConsumerAppliocationRoute = selectedCamelRoute;
-		$scope.selectedConsumerAppliocationRouteId =selectedCamelRoute.id;
-		$scope.showDetailsConsumerApplicationRoute = true;
+		$scope.selectedConsumerRoute = selectedCamelRoute;
+		$scope.selectedConsumerRouteId =selectedCamelRoute.id;
+		$scope.showDetailsConsumerRoute = true;
 		}
 	}
-	
-	$scope.showConsumerTriggerRouteDetails = function(selectedCamelRoute) {
-		if (($scope.showDetailsConsumerTriggerRoute == true ) && ($scope.selectedConsumerTriggerRoute===selectedCamelRoute)){
-			$scope.selectedConsumerTriggerRoute = "";
-			$scope.selectedConsumerTriggerRouteId = "";
-			$scope.showDetailsConsumerTriggerRoute = false;
-		}else {
-			$scope.selectedConsumerTriggerRoute = selectedCamelRoute;
-			$scope.selectedConsumerTriggerRouteId =selectedCamelRoute.id;
-			$scope.showDetailsConsumerTriggerRoute = true;
-		}
-	}
-	
+
 	$scope.showProducerRouteDetails = function(selectedCamelRoute) {
 		if (($scope.showDetailsProducerRoute == true ) && ($scope.selectedProducerRoute===selectedCamelRoute)){
 			$scope.selectedProducerRoute = "";
