@@ -118,14 +118,12 @@ table.notes .timestampSpan {
 			<section class="tab">
 				<ul class="nav nav-pills">
 					<li ng-class="{ active: isSet(1) }"><a href
-						ng-click="setTab(1)">Producer Application</a></li>
+						ng-click="setTab(1)">Producer</a></li>
 					<li ng-class="{ active: isSet(2) }"><a href
-						ng-click="setTab(2)">Consumer Application</a></li>
-					<li ng-class="{ active: isSet(3) }"><a href
-						ng-click="setTab(3)">Consumer Trigger</a></li>
+						ng-click="setTab(2)">Consumer</a></li>
 				</ul>
 				<div ng-show="isSet(1)">
-					<h3>Producer Application Routes</h3>
+					<h3>Producer Routes</h3>
 				Search : <input type="text" ng-model="searchKeywordInProducerApplication" ng-change="changeProducerApplicationSearchValue(searchKeywordInProducerApplication)" >
 			
 						<table class="toolbar" style="width: 100%;">
@@ -326,13 +324,13 @@ table.notes .timestampSpan {
 					</table>
 				</div>
 				<div ng-show="isSet(2)">
-					<h3>Consumer Application Routes</h3>
-					Search : <input type="text" ng-model="searchKeywordInConsumerApplication" ng-change="changeConsumerApplicationSearchValue(searchKeywordInConsumerApplication)" >
+					<h3>Consumer Routes</h3>
+					Search : <input type="text" ng-model="searchKeywordInConsumer" ng-change="changeConsumerSearchValue(searchKeywordInConsumer)" >
 					
 					<table class="toolbar" style="width: 100%;">
 						<tr>
 							<td><a href="#" class="iconLink menuBarLink" title="Refresh"><i
-									class="fa fa-refresh" ng-click="refreshApplicationConsumers()"></i>
+									class="fa fa-refresh" ng-click="refreshConsumers()"></i>
 							</a>
 							</td>
 						</tr>
@@ -356,8 +354,8 @@ table.notes .timestampSpan {
 								</thead>
 								<tbody >
 									<tr align="center"
-										ng-repeat="x in filtredConsumerApplicationRoute | limitTo: itemsPerPage"
-										border="1" ng-class="{selected : x.id === selectedConsumerAppliocationRouteId}">
+										ng-repeat="x in filtredConsumerRoute | limitTo: itemsPerPage"
+										border="1" ng-class="{selected : x.id === selectedConsumerRouteId}">
 										<td align="left">{{ x.id }}</td>
 										<td align="left" width="250 px">{{ x.description }}</td>
 										<td>{{ x.exchangesCompleted }}</td>
@@ -374,7 +372,7 @@ table.notes .timestampSpan {
 												ng-src="plugins/stardust-web-camel/css/images/control_stop.png" />
 										     </a>
 										     
-											<a href="#" ng-click="showConsumerApplicationRouteDetails(x)"
+											<a href="#" ng-click="showConsumerRouteDetails(x)"
 									       	   class="expandCollapseLink" title="Details'">
 											<img
 											   ng-src="plugins/stardust-web-camel/css/images/report_plus.png" />
@@ -389,15 +387,15 @@ table.notes .timestampSpan {
 						<td align="center">
 							<div class="pagination">
 								<ul>
-									<li ng-class="prevPageDisabledConsumerApplicationRoute()">
-										<a href ng-click="prevPageConsumerApplicationRoute()">«
+									<li ng-class="prevPageDisabledConsumerRoute()">
+										<a href ng-click="prevPageConsumerRoute()">«
 											Prev</a></li>
-									<li ng-repeat="n in rangeConsumerApplicationRoute()"
-										ng-class="{active: n == currentPageConsumerApplicationRoute}"
-										ng-click="setPageConsumerApplicationRoute(n)"><a
+									<li ng-repeat="n in rangeConsumerRoute()"
+										ng-class="{active: n == currentPageConsumerRoute}"
+										ng-click="setPageConsumerRoute(n)"><a
 										href="#">{{n+1}}</a></li>
-									<li ng-class="nextPageDisabledConsumerApplicationRoute()">
-										<a href ng-click="nextPageConsumerApplicationRoute()">Next
+									<li ng-class="nextPageDisabledConsumerRoute()">
+										<a href ng-click="nextPageConsumerRoute()">Next
 											»</a></li>
 								</ul>
 							</div>
@@ -409,7 +407,7 @@ table.notes .timestampSpan {
 				
 					<td width="45%" valign="top">
 					
-					<div style="margin-left: 10px; margin-right: 10px; margin-bottom: 10px;" ng-show="showDetailsConsumerApplicationRoute">
+					<div style="margin-left: 10px; margin-right: 10px; margin-bottom: 10px;" ng-show="showDetailsConsumerRoute">
 						<table style="width: 100%;" border="1">
 												<tbody>
 													<tr align="left">
@@ -418,102 +416,102 @@ table.notes .timestampSpan {
 
 													<tr align="left">
 														<th width="285">Route Id</th>
-														<td >{{selectedConsumerAppliocationRoute.id }}</td>
+														<td >{{selectedConsumerRoute.id }}</td>
 													</tr>
 
 													<tr align="left">
 														<th>Reset Timestamp</th>
-														<td >{{selectedConsumerAppliocationRoute.resetTimestamp | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+														<td >{{selectedConsumerRoute.resetTimestamp | date:'yyyy-MM-dd HH:mm:ss'}}</td>
 													</tr>
 
 													<tr align="left">
 														<th>Min Processing Time</th>
-														<td >{{selectedConsumerAppliocationRoute.minProcessingTime }}</td>
+														<td >{{selectedConsumerRoute.minProcessingTime }}</td>
 													</tr>
 
 													<tr align="left">
 														<th>Max Processing Time</th>
-														<td >{{selectedConsumerAppliocationRoute.maxProcessingTime }}</td>
+														<td >{{selectedConsumerRoute.maxProcessingTime }}</td>
 													</tr>
 
 													<tr align="left">
 														<th>Total Processing Time</th>
-														<td >{{selectedConsumerAppliocationRoute.totalProcessingTime }}</td>
+														<td >{{selectedConsumerRoute.totalProcessingTime }}</td>
 													</tr>
 													
 													<tr align="left">
 														<th>Self Processing Time</tdh>
-														<td > {{selectedConsumerAppliocationRoute.selfProcessingTime }}</td>
+														<td > {{selectedConsumerRoute.selfProcessingTime }}</td>
 													</tr>
 													
 													<tr align="left">
 													<th>Failures Handled</th>
-														<td >{{selectedConsumerAppliocationRoute.failuresHandled}} </td>
+														<td >{{selectedConsumerRoute.failuresHandled}} </td>
 													</tr>
 													
 													<tr align="left">
 														<th>Redeliveries</th>
-														<td > {{selectedConsumerAppliocationRoute.redeliveries }}</td>
+														<td > {{selectedConsumerRoute.redeliveries }}</td>
 													</tr>
 													
 													<tr align="left">
 														<th>External Redeliveries</th>
-														<td > {{selectedConsumerAppliocationRoute.externalRedeliveries }}</td>
+														<td > {{selectedConsumerRoute.externalRedeliveries }}</td>
 													</tr>
 													
 													<tr align="left">
 														<th>Last Processing Time</th>
-														<td >{{selectedConsumerAppliocationRoute.lastProcessingTime}}</td>
+														<td >{{selectedConsumerRoute.lastProcessingTime}}</td>
 													</tr>
 													
 													<tr align="left">
 														<th>Delta Processing Time</th>
-														<td > {{selectedConsumerAppliocationRoute.deltaProcessingTime }}</td>
+														<td > {{selectedConsumerRoute.deltaProcessingTime }}</td>
 													</tr>
 													
 													<tr align="left">
 														<th>Mean Processing Time</th>
-														<td >{{ selectedConsumerAppliocationRoute.meanProcessingTime }}</td>
+														<td >{{ selectedConsumerRoute.meanProcessingTime }}</td>
 													</tr>
 												
 													<tr align="left">
 														<th>First Exchange Completed Timestamp</th>
-														<td >{{ selectedConsumerAppliocationRoute.firstExchangeCompletedTimestamp| date:'yyyy-MM-dd HH:mm:ss'  }}</td>
+														<td >{{ selectedConsumerRoute.firstExchangeCompletedTimestamp| date:'yyyy-MM-dd HH:mm:ss'  }}</td>
 													</tr>
 												
 													<tr align="left">
 														<th>First Exchange Completed ExchangeId</th>
-														<td >{{ selectedConsumerAppliocationRoute.firstExchangeCompletedExchangeId }}</td>
+														<td >{{ selectedConsumerRoute.firstExchangeCompletedExchangeId }}</td>
 													</tr>
 													
 													<tr align="left">
 														<th>First Exchange Failure Timestamp</th>
-													<td >{{ selectedConsumerAppliocationRoute.firstExchangeFailureTimestamp | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+													<td >{{ selectedConsumerRoute.firstExchangeFailureTimestamp | date:'yyyy-MM-dd HH:mm:ss' }}</td>
 													</tr>
 													
 													<tr align="left">
 														<th>First Exchange Failure ExchangeId</th>
-													<td > {{selectedConsumerAppliocationRoute.firstExchangeFailureExchangeId  }} </td>
+													<td > {{selectedConsumerRoute.firstExchangeFailureExchangeId  }} </td>
 													</tr>
 																					
 												<tr align="left">
 														<th>Last Exchange Completed Timestamp</th>
-														<td > {{selectedConsumerAppliocationRoute.lastExchangeCompletedTimestamp | date:'yyyy-MM-dd HH:mm:ss' }} </td>
+														<td > {{selectedConsumerRoute.lastExchangeCompletedTimestamp | date:'yyyy-MM-dd HH:mm:ss' }} </td>
 													</tr>
 											
 												<tr align="left">
 													<th>Last Exchange Completed Exchange Id</th>
-													<td >{{ selectedConsumerAppliocationRoute.lastExchangeCompletedExchangeId }}</td>
+													<td >{{ selectedConsumerRoute.lastExchangeCompletedExchangeId }}</td>
 													</tr>
 												
 													<tr align="left">
 													<th>Last Exchange Failure Timestamp</th>
-														<td >{{ selectedConsumerAppliocationRoute.lastExchangeFailureTimestamp | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+														<td >{{ selectedConsumerRoute.lastExchangeFailureTimestamp | date:'yyyy-MM-dd HH:mm:ss' }}</td>
 													</tr>
 													
 													<tr align="left">
 														<th>Last Exchange Failure Exchange Id</th>
-														<td > {{selectedConsumerAppliocationRoute.lastExchangeFailureExchangeId }}</td>
+														<td > {{selectedConsumerRoute.lastExchangeFailureExchangeId }}</td>
 													</tr>
 												
 												</tbody>
@@ -523,205 +521,8 @@ table.notes .timestampSpan {
 								</tr>
 					</table>
 				</div>
-				<div ng-show="isSet(3)">
-					<h3>Consumer Trigger Routes</h3>
-					Search : <input type="text" ng-model="searchKeywordInConsumerTrigger" ng-change="changeConsumerTriggerSearchValue(searchKeywordInConsumerTrigger)" >
-					<table class="toolbar" style="width: 100%;">
-						<tr>
-							<td><a href="#" class="iconLink menuBarLink" title="Refresh"><i
-									class="fa fa-refresh" ng-click="refreshTriggerConsumers()"></i>
-							</a>
-							</td>
-						</tr>
-					</table>
-
-					<table style="width: 100%;" border="0" valign="top">
-					<tr valign="top">
-						<td width="55%">
-						<table style="width: 100%;" border="0">
-							<tr>
-							<td>
-								<table style="width: 100%;" border="1">
-									<thead >
-										<tr border="1">
-										<th align="left">Route Id</th>
-										<th align="left">Description</th>
-										<th>Exchanges Completed</th>
-										<th>Exchanges Failed</th>
-										<th>Status</th>
-										<th>Actions</th>
-									
-										</tr>
-									</thead>
-									<tbody  >
-										<tr align="center"
-											ng-repeat="x in filtredConsumerTriggerRoute | limitTo: itemsPerPage"
-											border="1" ng-class="{selected : x.id === selectedConsumerTriggerRouteId}">
-										<td align="left">{{ x.id }}</td>
-										<td align="left" width="250 px">{{ x.description }}</td>
-										<td>{{ x.exchangesCompleted }}</td>
-										<td>{{ x.exchangesFailed }}</td>
-										<td>{{ x.status }}</td>
-											<td><a href="#" ng-click="startOrStopRoute(x.id,x.status)"
-												class="expandCollapseLink" title="Start"
-												ng-hide="x.status === 'Started'"><img
-													ng-src="plugins/stardust-web-camel/css/images/control_play.png" />
-											</a> <a href="#" ng-click="startOrStopRoute(x.id,x.status)"
-												class="expandCollapseLink" title="Stop"
-												ng-show="x.status === 'Started'"><img
-													ng-src="plugins/stardust-web-camel/css/images/control_stop.png" />
-											</a>
-											<a href="#" ng-click="showConsumerTriggerRouteDetails(x)"
-									       	   class="expandCollapseLink" title="Details'">
-											<img
-											   ng-src="plugins/stardust-web-camel/css/images/report_plus.png" />
-											</a>
-											</td>
-										</tr>
-									</tbody>
-								</table>
-								</td>
-							</tr>
-							<tr align="center">
-							<td align="center">
-								<div class="pagination">
-									<ul>
-										<li ng-class="prevPageDisabledConsumerTriggerRoute()"><a
-											href ng-click="prevPageConsumerTriggerRoute()">« Prev</a></li>
-										<li ng-repeat="n in rangeConsumerTriggerRoute()"
-											ng-class="{active: n == currentPageConsumerTriggerRoute}"
-											ng-click="setPageConsumerTriggerRoute(n)"><a href="#">{{n+1}}</a>
-										</li>
-										<li ng-class="nextPageDisabledConsumerTriggerRoute()"><a
-											href ng-click="nextPageConsumerTriggerRoute()">Next »</a></li>
-									</ul>
-								</div>
-								</td>
-							</tr>
-						</table>
-						
-						</td>
-						
-
-				
-						<td width="45%" valign="top">
-						
-							<div style="margin-left: 10px; margin-right: 10px; margin-bottom: 10px;" ng-show="showDetailsConsumerTriggerRoute">
-									<table style="width: 100%;" border="1">
-												<tbody>
-													<tr align="left">
-														<td colspan=2><b>Route Details</b></td>
-													</tr>
-
-													<tr align="left">
-														<th width="285">Route Id</th>
-														<td >{{selectedConsumerTriggerRoute.id}}</td>
-													</tr>
-
-													<tr align="left">
-														<th>Reset Timestamp</th>
-														<td >{{selectedConsumerTriggerRoute.resetTimestamp | date:'yyyy-MM-dd HH:mm:ss'}}</td>
-													</tr>
-
-													<tr align="left">
-														<th>Min Processing Time</th>
-														<td >{{selectedConsumerTriggerRoute.minProcessingTime}}</td>
-													</tr>
-
-													<tr align="left">
-														<th>Max Processing Time</th>
-														<td >{{selectedConsumerTriggerRoute.maxProcessingTime}}</td>
-													</tr>
-
-													<tr align="left">
-														<th>Total Processing Time</th>
-														<td >{{selectedConsumerTriggerRoute.totalProcessingTime}}</td>
-													</tr>
-													
-													<tr align="left">
-														<th>Self Processing Time</tdh>
-														<td > {{selectedConsumerTriggerRoute.selfProcessingTime}}</td>
-													</tr>
-													
-													<tr align="left">
-													<th>Failures Handled</th>
-														<td >{{selectedConsumerTriggerRoute.failuresHandled}} </td>
-													</tr>
-													
-													<tr align="left">
-														<th>Redeliveries</th>
-														<td > {{selectedConsumerTriggerRoute.redeliveries}}</td>
-													</tr>
-													
-													<tr align="left">
-														<th>External Redeliveries</th>
-														<td > {{selectedConsumerTriggerRoute.externalRedeliveries}}</td>
-													</tr>
-													
-													<tr align="left">
-														<th>Last Processing Time</th>
-														<td >{{selectedConsumerTriggerRoute.lastProcessingTime}}</td>
-													</tr>
-													
-													<tr align="left">
-														<th>Delta Processing Time</th>
-														<td > {{selectedConsumerTriggerRoute.deltaProcessingTime }}</td>
-													</tr>
-													
-													<tr align="left">
-														<th>Mean Processing Time</th>
-														<td >{{ selectedConsumerTriggerRoute.meanProcessingTime }}</td>
-													</tr>
-												
-													<tr align="left">
-														<th>First Exchange Completed Timestamp</th>
-														<td >{{ selectedConsumerTriggerRoute.firstExchangeCompletedTimestamp| date:'yyyy-MM-dd HH:mm:ss'  }}</td>
-													</tr>
-												
-													<tr align="left">
-														<th>First Exchange Completed ExchangeId</th>
-														<td >{{ selectedConsumerTriggerRoute.firstExchangeCompletedExchangeId }}</td>
-													</tr>
-													
-													<tr align="left">
-														<th>First Exchange Failure Timestamp</th>
-														<td >{{ selectedConsumerTriggerRoute.firstExchangeFailureTimestamp | date:'yyyy-MM-dd HH:mm:ss' }}</td>
-													</tr>
-													
-													<tr align="left">
-														<th>First Exchange Failure ExchangeId</th>
-														<td > {{selectedConsumerTriggerRoute.firstExchangeFailureExchangeId  }} </td>
-													</tr>
-																					
-													<tr align="left">
-														<th>Last Exchange Completed Timestamp</th>
-														<td > {{selectedConsumerTriggerRoute.lastExchangeCompletedTimestamp | date:'yyyy-MM-dd HH:mm:ss' }} </td>
-													</tr>
-												
-													<tr align="left">
-														<th>Last Exchange Completed Exchange Id</th>
-														<td >{{ selectedConsumerTriggerRoute.lastExchangeCompletedExchangeId }}</td>
-													</tr>
-													
-													<tr align="left">
-														<th>Last Exchange Failure Timestamp</th>
-														<td >{{ selectedConsumerTriggerRoute.lastExchangeFailureTimestamp | date:'yyyy-MM-dd HH:mm:ss' }}</td>
-													</tr>
-														
-													<tr align="left">
-														<th>Last Exchange Failure Exchange Id</th>
-														<td > {{selectedConsumerTriggerRoute.lastExchangeFailureExchangeId }}</td>
-													</tr>
-												
-												</tbody>
-										</table>	
-									</div>
-								</td>
-							</tr>
-					</table>
-
-				</div>
 			</section>
+
 		</div>
 	</div>
 
