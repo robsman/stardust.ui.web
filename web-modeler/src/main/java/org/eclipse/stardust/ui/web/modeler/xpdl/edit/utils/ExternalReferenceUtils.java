@@ -18,7 +18,9 @@ import org.eclipse.xsd.XSDImport;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
+import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.builder.utils.WebModelerConnectionManager;
+import org.eclipse.stardust.model.xpdl.carnot.AccessPointType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityImplementationType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
 import org.eclipse.stardust.model.xpdl.carnot.ApplicationType;
@@ -34,11 +36,13 @@ import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.model.xpdl.util.IConnection;
 import org.eclipse.stardust.model.xpdl.util.IConnectionManager;
+import org.eclipse.stardust.model.xpdl.xpdl2.DataTypeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.ExtendedAttributeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.Extensible;
 import org.eclipse.stardust.model.xpdl.xpdl2.ExternalPackage;
 import org.eclipse.stardust.model.xpdl.xpdl2.ExternalPackages;
 import org.eclipse.stardust.model.xpdl.xpdl2.ExternalReferenceType;
+import org.eclipse.stardust.model.xpdl.xpdl2.FormalParameterType;
 import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.ExtendedAttributeUtil;
 import org.eclipse.stardust.modeling.repository.common.Connection;
@@ -61,6 +65,7 @@ public class ExternalReferenceUtils
          EObject modelElement = i.next();
          checkExtensible(connectionManager, connectionId, list, modelElement);
          // (fh) special case, imports in embedded schemas
+
          if (modelElement instanceof XSDImport)
          {
             String location = ((XSDImport) modelElement).getSchemaLocation();
@@ -85,6 +90,41 @@ public class ExternalReferenceUtils
                               modelElement, uri == null ? null : URI.createURI(uri));
                      }
                   }
+               }
+            }
+         }
+         if (modelElement instanceof DataTypeType)
+         {
+            DataTypeType dataTypeType = (DataTypeType) modelElement;
+            if (dataTypeType.getExternalReference() != null)
+            {
+               ExternalPackages packs = model.getExternalPackages();
+               if (packs != null)
+               {
+                  ExternalPackage pack = packs.getExternalPackage(dataTypeType.getExternalReference().getLocation());
+                  if (pack != null)
+                  {
+                     String uri = ExtendedAttributeUtil.getAttributeValue(pack,
+                           IConnectionManager.URI_ATTRIBUTE_NAME);
+                     checkConnectionUsed(connectionManager, list, connectionId,
+                           modelElement, uri == null ? null : URI.createURI(uri));
+                  }
+               }
+            }
+
+//TODO: Find out package by model provided in AP attribute
+         }
+         if (modelElement instanceof AccessPointType)
+         {
+            AccessPointType accessPoint = (AccessPointType) modelElement;
+            String declaredType = AttributeUtil.getAttributeValue(accessPoint,
+                  ModelerConstants.DATA_TYPE);
+            if (declaredType.indexOf("{") > 0)
+            {
+               String typeID = declaredType.substring(declaredType.indexOf("}") + 1);
+               if (!typeID.equals(ModelerConstants.TO_BE_DEFINED))
+               {
+                  list.add(accessPoint);
                }
             }
          }
@@ -163,23 +203,45 @@ public class ExternalReferenceUtils
             {
                checkData((DataType) ref, refModel);
             }
-            if (ref instanceof IModelParticipant)
-            {
-               checkParticipant((IModelParticipant) ref, refModel);
-            }
             if (ref instanceof ActivityType)
             {
                checkActivity((ActivityType) ref, refModel);
+            }
+            if (ref instanceof DataTypeType)
+            {
+               checkDataTypeType((DataTypeType) ref, refModel);
+            }
+            if (ref instanceof AccessPointType)
+            {
+               checkAccessPoint((AccessPointType) ref, refModel);
             }
          }
       }
    }
 
 
-   private static boolean checkParticipant(IModelParticipant ref, ModelType refModel)
+   private static void checkAccessPoint(AccessPointType ref, ModelType refModel)
    {
 
-      return false;
+
+   }
+
+   private static void checkDataTypeType(DataTypeType dataTypeType, ModelType refModel)
+   {
+      ExternalReferenceType ref = dataTypeType.getExternalReference();
+      if (ref != null && ref.getUuid() != null)
+      {
+         TypeDeclarationType declaration = findTypeDeclarationModelUUID(refModel,
+               ref.getUuid());
+         if (declaration != null)
+         {
+            if (!declaration.getId().equals(ref.getXref()))
+            {
+               ref.setXref(declaration.getId());
+            }
+         }
+      }
+
    }
 
    private static void checkData(DataType data, ModelType refModel)
