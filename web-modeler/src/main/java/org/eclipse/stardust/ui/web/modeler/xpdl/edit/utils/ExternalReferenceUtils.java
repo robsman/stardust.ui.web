@@ -349,18 +349,18 @@ public class ExternalReferenceUtils
       if (activity.getImplementation().getLiteral()
             .equals(ActivityImplementationType.SUBPROCESS_LITERAL.getLiteral()))
       {
-         checkSubprocessActivity(activity, refModel);
+         fixSubprocessActivity(activity, refModel);
       }
 
       if (activity.getImplementation().getLiteral()
             .equals(ActivityImplementationType.APPLICATION_LITERAL.getLiteral()))
       {
-         checkApplicationActivity(activity, refModel);
+         fixApplicationActivity(activity, refModel);
       }
 
    }
 
-   private static void checkSubprocessActivity(ActivityType activity, ModelType refModel)
+   private static void fixSubprocessActivity(ActivityType activity, ModelType refModel)
    {
       AttributeType uuidAttribute = AttributeUtil.getAttribute(
             (IIdentifiableModelElement) activity, "carnot:connection:uuid");
@@ -389,7 +389,7 @@ public class ExternalReferenceUtils
       }
    }
 
-   private static void checkApplicationActivity(ActivityType activity, ModelType refModel)
+   private static void fixApplicationActivity(ActivityType activity, ModelType refModel)
    {
       AttributeType uuidAttribute = AttributeUtil.getAttribute(
             (IIdentifiableModelElement) activity, "carnot:connection:uuid");
