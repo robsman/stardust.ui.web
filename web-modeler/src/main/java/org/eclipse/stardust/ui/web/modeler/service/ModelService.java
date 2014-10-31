@@ -233,7 +233,7 @@ public class ModelService
             {
                if (model instanceof ModelType)
                {
-                  ExternalReferenceUtils.checkExternalReferences(models,
+                  ExternalReferenceUtils.fixExternalReferences(models,
                         (ModelType) model);
 
                }

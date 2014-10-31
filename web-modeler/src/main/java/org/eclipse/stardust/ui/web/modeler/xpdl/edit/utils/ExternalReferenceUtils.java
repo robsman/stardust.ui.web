@@ -188,7 +188,7 @@ public class ExternalReferenceUtils
       }
    }
 
-   public static void checkExternalReferences(Map<String, ModelType> models,
+   public static void fixExternalReferences(Map<String, ModelType> models,
          ModelType model)
    {
       List<String> uris = ModelUtils.getURIsForExternalPackages(model);
@@ -206,30 +206,26 @@ public class ExternalReferenceUtils
             EObject ref = j.next();
             if (ref instanceof ActivityType)
             {
-               checkActivity((ActivityType) ref, refModel);
+               fixActivity((ActivityType) ref, refModel);
             }
             if (ref instanceof DataType)
             {
-               checkData((DataType) ref, refModel);
-            }
-            if (ref instanceof ActivityType)
-            {
-               checkActivity((ActivityType) ref, refModel);
+               fixData((DataType) ref, refModel);
             }
             if (ref instanceof DataTypeType)
             {
-               checkDataTypeType((DataTypeType) ref, refModel);
+               fixDataTypeType((DataTypeType) ref, refModel);
             }
             if (ref instanceof AccessPointType)
             {
-               checkAccessPoint((AccessPointType) ref, refModel);
+               fixAccessPoint((AccessPointType) ref, refModel);
             }
          }
       }
    }
 
 
-   private static void checkAccessPoint(AccessPointType accessPoint, ModelType refModel)
+   private static void fixAccessPoint(AccessPointType accessPoint, ModelType refModel)
    {
       String declaredType = AttributeUtil.getAttributeValue(accessPoint,
             ModelerConstants.DATA_TYPE);
@@ -256,7 +252,7 @@ public class ExternalReferenceUtils
       }
    }
 
-   private static void checkDataTypeType(DataTypeType dataTypeType, ModelType refModel)
+   private static void fixDataTypeType(DataTypeType dataTypeType, ModelType refModel)
    {
       ExternalReferenceType ref = dataTypeType.getExternalReference();
       if (ref != null && ref.getUuid() != null)
@@ -274,7 +270,7 @@ public class ExternalReferenceUtils
 
    }
 
-   private static void checkData(DataType data, ModelType refModel)
+   private static void fixData(DataType data, ModelType refModel)
    {
       if (data.getType() != null)
       {
@@ -343,7 +339,7 @@ public class ExternalReferenceUtils
        }
    }
 
-   private static void checkActivity(ActivityType activity, ModelType refModel)
+   private static void fixActivity(ActivityType activity, ModelType refModel)
    {
 
       if (activity.getImplementation().getLiteral()
