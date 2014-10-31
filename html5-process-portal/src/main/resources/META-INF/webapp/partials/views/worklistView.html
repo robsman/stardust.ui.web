@@ -25,21 +25,23 @@
 					<th sda-label="lastmodification" sda-sortable="true"></th>
 					<th sda-label="descriptors"></th>
 					<th ng-repeat="descCol in worklistViewCtrl.descritorCols" sda-sortable="{{descCol.sortable}}">
-						{{descCol.title}}
+						<span class="tbl-hdr-col-label">{{descCol.title}}</span>
 					</th>
-					<th>Data</th>
+					<th>
+						<span class="{{descCol.title}}">Data</span>
+					</th>
 					<th sda-label="actions"></th>
 				</tr>
 			</thead>
 			<tbody>
 				<tr>
-					<td sda-field="name">
+					<td>
 						<a href="#" ng-click="worklistViewCtrl.activateWorkItem(rowData)">
 							{{rowData.activity.name}}
 						</a>
 					</td>
 					<td sda-field="oid" sda-data-type="int"></td>
-					<td sda-field="processInstance.processName" ></td>
+					<td sda-field="processInstance.processName"></td>
 					<td sda-field="start" sda-data-type="dateTime"></td>
 					<td sda-field="lastModification" sda-data-type="dateTime"></td>
 					<td>
@@ -52,7 +54,8 @@
 						<div sd-editor-template></div>
 					</td>
 					<td ng-repeat="descCol in worklistViewCtrl.descritorCols"
-						sda-field="{{descCol.field}}" sda-data-type="{{descCol.dataType}}"></td>
+						sda-field="{{descCol.field}}" sda-data-type="{{descCol.dataType}}">
+					</td>
 					<td>
 						<table ng-hide="!worklistViewCtrl.worklist.trivialManualActivities[rowData.oid]">
 							<tbody>
