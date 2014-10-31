@@ -118,12 +118,12 @@ table.notes .timestampSpan {
 			<section class="tab">
 				<ul class="nav nav-pills">
 					<li ng-class="{ active: isSet(1) }"><a href
-						ng-click="setTab(1)">Producer</a></li>
+						ng-click="setTab(1)">Producer Routes</a></li>
 					<li ng-class="{ active: isSet(2) }"><a href
-						ng-click="setTab(2)">Consumer</a></li>
+						ng-click="setTab(2)">Consumer Routes</a></li>
 				</ul>
 				<div ng-show="isSet(1)">
-					<h3>Producer Routes</h3>
+
 				Search : <input type="text" ng-model="searchKeywordInProducerApplication" ng-change="changeProducerApplicationSearchValue(searchKeywordInProducerApplication)" >
 			
 						<table class="toolbar" style="width: 100%;">
@@ -324,7 +324,7 @@ table.notes .timestampSpan {
 					</table>
 				</div>
 				<div ng-show="isSet(2)">
-					<h3>Consumer Routes</h3>
+
 					Search : <input type="text" ng-model="searchKeywordInConsumer" ng-change="changeConsumerSearchValue(searchKeywordInConsumer)" >
 					
 					<table class="toolbar" style="width: 100%;">
@@ -373,7 +373,7 @@ table.notes .timestampSpan {
 										     </a>
 										     
 											<a href="#" ng-click="showConsumerRouteDetails(x)"
-									       	   class="expandCollapseLink" title="Details'">
+									       	   class="expandCollapseLink" title="Details">
 											<img
 											   ng-src="plugins/stardust-web-camel/css/images/report_plus.png" />
 											</a> 
