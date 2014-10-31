@@ -28,7 +28,6 @@ import org.eclipse.stardust.model.xpdl.carnot.AttributeType;
 import org.eclipse.stardust.model.xpdl.carnot.DataType;
 import org.eclipse.stardust.model.xpdl.carnot.IExtensibleElement;
 import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableModelElement;
-import org.eclipse.stardust.model.xpdl.carnot.IModelParticipant;
 import org.eclipse.stardust.model.xpdl.carnot.IdRef;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
@@ -42,7 +41,6 @@ import org.eclipse.stardust.model.xpdl.xpdl2.Extensible;
 import org.eclipse.stardust.model.xpdl.xpdl2.ExternalPackage;
 import org.eclipse.stardust.model.xpdl.xpdl2.ExternalPackages;
 import org.eclipse.stardust.model.xpdl.xpdl2.ExternalReferenceType;
-import org.eclipse.stardust.model.xpdl.xpdl2.FormalParameterType;
 import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.ExtendedAttributeUtil;
 import org.eclipse.stardust.modeling.repository.common.Connection;
@@ -111,20 +109,31 @@ public class ExternalReferenceUtils
                   }
                }
             }
-
-//TODO: Find out package by model provided in AP attribute
          }
          if (modelElement instanceof AccessPointType)
          {
             AccessPointType accessPoint = (AccessPointType) modelElement;
             String declaredType = AttributeUtil.getAttributeValue(accessPoint,
                   ModelerConstants.DATA_TYPE);
-            if (declaredType.indexOf("{") > 0)
+            if (declaredType != null && declaredType.indexOf("{") > 0)
             {
                String typeID = declaredType.substring(declaredType.indexOf("}") + 1);
+               String refModelID = declaredType.substring(declaredType.indexOf("{") + 1,
+                     declaredType.indexOf("}"));
                if (!typeID.equals(ModelerConstants.TO_BE_DEFINED))
                {
-                  list.add(accessPoint);
+                  ExternalPackages packs = model.getExternalPackages();
+                  if (packs != null)
+                  {
+                     ExternalPackage pack = packs.getExternalPackage(refModelID);
+                     if (pack != null)
+                     {
+                        String uri = ExtendedAttributeUtil.getAttributeValue(pack,
+                              IConnectionManager.URI_ATTRIBUTE_NAME);
+                        checkConnectionUsed(connectionManager, list, connectionId,
+                              modelElement, uri == null ? null : URI.createURI(uri));
+                     }
+                  }
                }
             }
          }
@@ -220,10 +229,31 @@ public class ExternalReferenceUtils
    }
 
 
-   private static void checkAccessPoint(AccessPointType ref, ModelType refModel)
+   private static void checkAccessPoint(AccessPointType accessPoint, ModelType refModel)
    {
-
-
+      String declaredType = AttributeUtil.getAttributeValue(accessPoint,
+            ModelerConstants.DATA_TYPE);
+      if (declaredType != null)
+      {
+         String typeID = declaredType.substring(declaredType.indexOf("}") + 1);
+         AttributeType uuidAttribute = AttributeUtil.getAttribute(accessPoint,
+               "carnot:connection:uuid");
+         if (uuidAttribute != null)
+         {
+            TypeDeclarationType declaration = findTypeDeclarationModelUUID(refModel,
+                  uuidAttribute.getAttributeValue());
+            if (declaration != null)
+            {
+               if (!declaration.getId().equals(typeID))
+               {
+                  declaredType = "typeDeclaration:{" + refModel.getId() + "}"
+                        + declaration.getId();
+                  AttributeUtil.setAttribute(accessPoint, ModelerConstants.DATA_TYPE,
+                        declaredType);
+               }
+            }
+         }
+      }
    }
 
    private static void checkDataTypeType(DataTypeType dataTypeType, ModelType refModel)
