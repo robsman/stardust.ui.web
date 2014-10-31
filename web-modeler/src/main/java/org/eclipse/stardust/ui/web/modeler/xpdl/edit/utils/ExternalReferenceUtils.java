@@ -220,10 +220,14 @@ public class ExternalReferenceUtils
             {
                fixAccessPoint((AccessPointType) ref, refModel);
             }
+            /*if (ref instanceof XSDImport)
+            {
+               fixXSDImport((XSDImport) ref, refModel);
+            }*/
+
          }
       }
    }
-
 
    private static void fixAccessPoint(AccessPointType accessPoint, ModelType refModel)
    {

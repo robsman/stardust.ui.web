@@ -3147,6 +3147,11 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
                continue;
             }
 
+            if (key.equals("carnot:connection:uuid"))
+            {
+               continue;
+            }
+
             JsonElement jsonValue = attributes.get(key);
 
             //Infer the ruleSetId into the "hidden" drools application
