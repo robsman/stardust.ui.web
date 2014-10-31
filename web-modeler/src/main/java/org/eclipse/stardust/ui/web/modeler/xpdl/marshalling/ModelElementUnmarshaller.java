@@ -34,14 +34,12 @@ import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
-import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.runtime.*;
 import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
-import org.eclipse.stardust.model.xpdl.builder.connectionhandler.EObjectProxyHandler;
 import org.eclipse.stardust.model.xpdl.builder.utils.LaneParticipantUtil;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
@@ -960,39 +958,8 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
          }
          else
          {
-            ModelType model = ModelUtils.findContainingModel(swimlaneSymbol);
-            String participantModelID = getModelBuilderFacade().getModelId(
-                  participantFullId);
-            ModelType participantModel = getModelBuilderFacade().findModel(
-                  participantModelID);
-            String participantId = getModelBuilderFacade().stripFullId(participantFullId);
-
-            IModelParticipant findParticipant = getModelBuilderFacade().findParticipant(
-                  participantModel, participantId);
-
-            if (!participantModelID.equals(model.getId()))
-            {
-               IModelParticipant localParticipant = null;
-               try
-               {
-                  localParticipant = getModelBuilderFacade().findParticipant(
-                        model, participantId);
-               }
-               catch (ObjectNotFoundException e)
-               {
-                  // Ignore
-               }
-               if (localParticipant == null)
-               {
-                  localParticipant = EObjectProxyHandler.importElement(model, findParticipant);
-               }
-               else
-               {
-                  // TODO: check...
-               }
-               findParticipant = localParticipant;
-            }
-            LaneParticipantUtil.setParticipant(swimlaneSymbol, findParticipant);
+            LaneParticipantUtil.setParticipant(swimlaneSymbol, getModelBuilderFacade().importParticipant(
+                  ModelUtils.findContainingModel(swimlaneSymbol), participantFullId));
          }
       }
 

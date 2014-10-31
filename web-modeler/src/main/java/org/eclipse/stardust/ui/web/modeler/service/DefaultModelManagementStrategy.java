@@ -67,7 +67,7 @@ public class DefaultModelManagementStrategy extends
    @Autowired
    public DefaultModelManagementStrategy(ModelPersistenceService persistenceService, ServiceFactoryLocator serviceFactoryLocator)
    {
-	   this.persistenceService = persistenceService;
+	  this.persistenceService = persistenceService;
       this.serviceFactoryLocator = serviceFactoryLocator;
    }
 
@@ -134,14 +134,6 @@ public class DefaultModelManagementStrategy extends
 
     private ModelDescriptor loadModel(Document modelDocument) throws IOException
     {
-/*
-       WebModelerModelManager modelMgr = new WebModelerModelManager(this);
-       modelMgr.load(URI.createURI(modelDocument.getName()), new ByteArrayInputStream(readModelContext(modelDocument)));
-       ModelType model = modelMgr.getModel();
-       loadEObjectUUIDMap(model);
-       System.err.println("Loaded '" + model.getId() + "' from document '" + modelDocument.getName() + "'.");
-       return model;
-*/
        ModelType internalModel = null;
        EObject model = null;
 
@@ -176,7 +168,7 @@ public class DefaultModelManagementStrategy extends
 
           ModelDescriptor desc = new ModelDescriptor(internalModel.getId(), modelDocument.getName(),
                 model, internalModel);
-          System.err.println("Loaded model '" + desc.id + "' from " + desc.fileName);
+          trace.debug("Loaded model '" + desc.id + "' from " + desc.fileName);
           registerModel(desc);
 
           return desc;

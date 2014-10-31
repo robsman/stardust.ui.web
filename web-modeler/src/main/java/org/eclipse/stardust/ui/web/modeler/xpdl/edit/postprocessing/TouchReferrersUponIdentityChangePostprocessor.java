@@ -1,11 +1,15 @@
 package org.eclipse.stardust.ui.web.modeler.xpdl.edit.postprocessing;
 
+import java.util.List;
+
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.stardust.model.xpdl.builder.connectionhandler.EObjectProxyHandler;
+import org.eclipse.stardust.model.xpdl.builder.connectionhandler.EObjectReference;
 import org.eclipse.stardust.model.xpdl.builder.session.Modification;
 import org.eclipse.stardust.model.xpdl.carnot.CarnotWorkflowModelPackage;
 import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableElement;
+import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableModelElement;
+import org.eclipse.stardust.model.xpdl.carnot.INodeSymbol;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.ChangePostprocessor;
 import org.springframework.stereotype.Component;
 
@@ -36,10 +40,18 @@ public class TouchReferrersUponIdentityChangePostprocessor implements ChangePost
 
             for (Adapter adapter : candidate.eAdapters())
             {
-               if (adapter instanceof EObjectProxyHandler)
+               if (adapter instanceof EObjectReference)
                {
-                  EObject proxy = ((EObjectProxyHandler) adapter).getProxy();
-                  change.markAlsoModified(proxy);
+                  EObject self = ((EObjectReference) adapter).getSelf();
+                  change.markAlsoModified(self);
+                  if (self instanceof IIdentifiableModelElement)
+                  {
+                     List<INodeSymbol> symbols = ((IIdentifiableModelElement) self).getSymbols();
+                     for (INodeSymbol symbol : symbols)
+                     {
+                        change.markAlsoModified(symbol);
+                     }
+                  }
                }
             }
 
