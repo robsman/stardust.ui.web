@@ -7,46 +7,41 @@
 		<h4>{{i18n('html5-process-portal.views-worklistViewHtml5-labelTitle')}}</h4>
 		<br/>
 
-		<div sda-toolbar="worklistDataTableToolbar">
+		<div sda-toolbar>
 			<a href="#" ng-click="worklistViewCtrl.completeAll()" title="Complete All" class="tbl-toolbar-item tbl-tool-link">
 			   <i class="fa fa-share"></i>
 			</a>
-		</div>		
+		</div>
 		<table sd-data-table="worklistDataTable" sd-data="worklistViewCtrl.fetchPage(params)" sda-ready="worklistViewCtrl.ready"
-			sda-page-size="5" sda-toolbar="worklistDataTableToolbar">
-			<thead>
+			sda-page-size="5">
+			<thead sda-i18n-scope="processportal.views-worklistPanel-column">
 				<tr>
-					<th sda-field="name" sda-sortable="true">
-						{{i18n('processportal.views-worklistPanel-column-overview')}}
+					<th sda-label="overview" sda-sortable="true">
 						<div sd-filter-template></div>
 					</th>
-					<th sda-field="oid" sda-data-type="int" sda-sortable="true">{{i18n('processportal.views-worklistPanel-column-oid')}}</th>
-					<th sda-field="processInstance.processName" sda-sortable="true">{{i18n('processportal.views-worklistPanel-processName')}}</th>
-					<th sda-field="start" sda-data-type="dateTime" sda-sortable="true">{{i18n('processportal.views-worklistPanel-column-started')}}</th>
-					<th sda-field="lastModification" sda-data-type="dateTime" sda-sortable="true">{{i18n('processportal.views-worklistPanel-column-lastmodification')}}</th>
-					<th sda-field="descriptors">
-						{{i18n('processportal.views-worklistPanel-column-descriptors')}}
-						<div sd-filter-template></div>
-					</th>
-					<th ng-repeat="descCol in worklistViewCtrl.descritorCols"
-						sda-field="{{descCol.field}}" sda-data-type="{{descCol.dataType}}" sda-sortable="{{descCol.sortable}}">
+					<th sda-label="oid" sda-sortable="true" sda-filterable="" sda-exportable=""></th>
+					<th sda-label="processName" sda-sortable="true"></th>
+					<th sda-label="started" sda-sortable="true"></th>
+					<th sda-label="lastmodification" sda-sortable="true"></th>
+					<th sda-label="descriptors"></th>
+					<th ng-repeat="descCol in worklistViewCtrl.descritorCols" sda-sortable="{{descCol.sortable}}">
 						{{descCol.title}}
 					</th>
-					<th sda-field="">Data</th>
-					<th sda-field="" sd-class="" sd-style="">{{i18n('processportal.views-worklistPanel-column-actions')}}</th>
+					<th>Data</th>
+					<th sda-label="actions"></th>
 				</tr>
 			</thead>
 			<tbody>
 				<tr>
-					<td>
+					<td sda-field="name">
 						<a href="#" ng-click="worklistViewCtrl.activateWorkItem(rowData)">
 							{{rowData.activity.name}}
 						</a>
 					</td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
+					<td sda-field="oid" sda-data-type="int"></td>
+					<td sda-field="processInstance.processName" ></td>
+					<td sda-field="start" sda-data-type="dateTime"></td>
+					<td sda-field="lastModification" sda-data-type="dateTime"></td>
 					<td>
 						<table>
 							<tr ng-repeat="desc in rowData.descriptors">
@@ -56,7 +51,8 @@
 						</table>
 						<div sd-editor-template></div>
 					</td>
-					<td ng-repeat="descCol in worklistViewCtrl.descritorCols"></td>
+					<td ng-repeat="descCol in worklistViewCtrl.descritorCols"
+						sda-field="{{descCol.field}}" sda-data-type="{{descCol.dataType}}"></td>
 					<td>
 						<table ng-hide="!worklistViewCtrl.worklist.trivialManualActivities[rowData.oid]">
 							<tbody>

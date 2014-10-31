@@ -123,7 +123,13 @@
 		 * 
 		 */
 		function processMarkup() {
-			// Columns
+			// Process Columns
+			var head = element.find('> thead');
+			var i18nScope = "";
+			if (head.attr('sda-i18n-scope') != undefined) {
+				i18nScope = head.attr('sda-i18n-scope');
+			}
+
 			var headCols = element.find('> thead > tr > th');
 			var bodyCols = element.find('> tbody > tr > td');
 
@@ -138,10 +144,18 @@
 				var bCol = angular.element(bodyCols[i]);
 				
 				var colDef = {
-						field: hCol.attr('sda-field'),
-						dataType: hCol.attr('sda-data-type'),
+						field: bCol.attr('sda-field'),
+						dataType: bCol.attr('sda-data-type'),
 						sortable: hCol.attr('sda-sortable')
 				};
+
+				if (hCol.attr('sda-label') != undefined) {
+					if (i18nScope != "") {
+						colDef.label = i18nScope + '-' + hCol.attr('sda-label');
+					} else {
+						colDef.label = hCol.attr('sda-label');
+					}
+				}
 				
 				colDef.contents = bCol.html();
 				colDef.contents = colDef.contents.trim();
@@ -203,12 +217,9 @@
 		 */
 		function createDataTable() {
 			// Toolbar
-			var toolbar;
-			if (attr.sdaToolbar) {
-				toolbar = element.siblings("[sda-toolbar='" + attr.sdaToolbar + "']");
-				if (toolbar.length != undefined && toolbar.length != 0) {
-					toolbar.prepend(TOOLBAR_TEMPLATE);
-				}
+			var toolbar = element.prev();
+			if (toolbar.attr('sda-toolbar') != undefined) {
+				toolbar.prepend(TOOLBAR_TEMPLATE);
 			} else {
 				var toolbarTemplate = '<div>' + TOOLBAR_TEMPLATE + '</div>';
 				jQuery(toolbarTemplate).insertBefore(element);
@@ -222,6 +233,20 @@
 			var defaultToolbar = toolbar.children().first();
 			$compile(defaultToolbar)(defaultToolbar.scope());
 
+			// Add Header Labels
+			var headCols = element.find('> thead > tr > th');
+			angular.forEach(columns, function(col, i) {
+				if (col.label != undefined) {
+					var columnHeader = '<span class="tbl-hdr-col-label">{{i18n("' + col.label + '")}}</span>';
+
+					var hCol = angular.element(headCols[i]);
+					hCol.prepend(columnHeader);
+					
+					var header = hCol.children().first();
+					$compile(header)(header.scope());
+				}
+			});
+			
 			theTable = element;
 		}
 

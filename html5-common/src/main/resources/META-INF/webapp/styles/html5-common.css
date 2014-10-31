@@ -38,6 +38,12 @@
 	padding: 2px 5px 2px 5px;
 	border: 1px solid #CCCCCC;
 	background-color: #EEEEEE;
+	cursor: pointer;
+	font-weight: normal;
+}
+
+.tbl-hdr-col-label {
+	font-weight: bold;
 }
 
 .tbl-toolbar {
