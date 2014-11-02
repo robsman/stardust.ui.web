@@ -47,9 +47,26 @@ define(
 				/**
 				 * 
 				 */
-				BusinessObjectManagementPanelController.prototype.setRootBusinessObjectInstance = function(
-						rootBusinessObjectInstance) {
+				BusinessObjectManagementPanelController.prototype.setRelationshipContext = function(
+						rootBusinessObjectInstance, relationship) {
 					this.rootBusinessObjectInstance = rootBusinessObjectInstance;
+					this.relationship = relationship;
+
+					var self = this;
+
+					BusinessObjectManagementService
+							.instance()
+							.getRelatedBusinessObjectInstances(
+									this.businessObject, this.rootBusinessObjectInstance, [])
+							.done(
+									function(businessObjectInstances) {
+										console.log("Result");
+										console.log(businessObjectInstances);
+
+										self.businessObjectInstances = businessObjectInstances;
+
+										self.rootController.safeApply();
+									}).fail();
 				};
 
 				/**

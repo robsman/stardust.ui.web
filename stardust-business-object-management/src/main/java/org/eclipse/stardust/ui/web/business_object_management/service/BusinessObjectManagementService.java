@@ -25,6 +25,7 @@ import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.Data;
+import org.eclipse.stardust.engine.api.model.Organization;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.model.Reference;
 import org.eclipse.stardust.engine.api.model.TypeDeclaration;
@@ -679,42 +680,30 @@ public class BusinessObjectManagementService {
 	 * @param queryString
 	 * @return
 	 */
-	public JsonObject getBusinessObjectInstances(String modelOid,
+	public JsonArray getBusinessObjectInstances(String modelOid,
 			String businessObjectId, String queryString) {
-		JsonObject resultJson = new JsonObject();
 		JsonArray businessObjectInstances = new JsonArray();
 
-		resultJson.add("businessObjectInstances", businessObjectInstances);
+		BusinessObjectQuery query = BusinessObjectQuery.findForBusinessObject(
+				Long.parseLong(modelOid), businessObjectId);
 
-		// TODO More generic
+		String[] terms = queryString.split("&");
 
-		if (businessObjectId.equals("Member") && mode == MOCK_MODE) {
-			for (JsonObject businessObjectInstance : members.values()) {
-				businessObjectInstances.add(businessObjectInstance);
-			}
-		} else {
-			BusinessObjectQuery query = BusinessObjectQuery
-					.findForBusinessObject(Long.parseLong(modelOid),
-							businessObjectId);
+		for (int n = 0; n < terms.length; ++n) {
+			System.out.println("Term: " + terms[n]);
 
-			String[] terms = queryString.split("&");
+			String[] expression = terms[n].split("=");
 
-			for (int n = 0; n < terms.length; ++n) {
-				System.out.println("Term: " + terms[n]);
+			// System.out.println("Expression: " + expression[0] + " "
+			// + expression[1]);
 
-				String[] expression = terms[n].split("=");
-
-				// System.out.println("Expression: " + expression[0] + " "
-				// + expression[1]);
-
-//				query.where(DataFilter.like(businessObjectId, expression[0],
-//						expression[1]));
-			}
-
-			addInstancesFromQuery(businessObjectInstances, query);
+			// query.where(DataFilter.like(businessObjectId, expression[0],
+			// expression[1]));
 		}
 
-		return resultJson;
+		addInstancesFromQuery(businessObjectInstances, query);
+
+		return businessObjectInstances;
 	}
 
 	/**
@@ -780,21 +769,70 @@ public class BusinessObjectManagementService {
 	 */
 	public JsonObject createBusinessObjectInstance(String modelOid,
 			String businessObjectId, String primaryKey, JsonObject jsonObject) {
-		if (mode == MOCK_MODE && businessObjectId.equals("Member")) {
-			members.put(jsonObject.get("id").getAsString(), jsonObject);
 
-			return jsonObject;
-		} else {
-			BusinessObject boi = (BusinessObject) getWorkflowService()
-					.execute(
-							BusinessObjectsCommandFactory.create(
-									Long.parseLong(modelOid),
-									businessObjectId,
-									new BusinessObjectDetails.ValueDetails(
-											-1,
-											(Serializable) jsonElementToObject(jsonObject))));
-			return (JsonObject) toJson(getFirstValue(boi));
+		BusinessObject boi = (BusinessObject) getWorkflowService()
+				.execute(
+						BusinessObjectsCommandFactory.create(
+								Long.parseLong(modelOid),
+								businessObjectId,
+								new BusinessObjectDetails.ValueDetails(
+										-1,
+										(Serializable) jsonElementToObject(jsonObject))));
+
+		// Check whether departments need to be created
+
+		// TODO Check whether this can be done more efficiently
+
+		ModelCache modelCache = ModelCache.findModelCache();
+		DeployedModel model = modelCache.getModel(Long.parseLong(modelOid));
+		Data data = model.getData(businessObjectId);
+		String managedOrganizationsString = (String) data
+				.getAttribute("carnot:engine:managedOrganizations");
+
+		System.out.println("Managed Organizations");
+		System.out.println(managedOrganizationsString);
+
+		if (managedOrganizationsString != null) {
+			JsonObject wrapperJson = jsonIo
+					.readJsonObject("{managedOrganizations: "
+							+ managedOrganizationsString + "}");
+			JsonArray managedOrganizationsJson = wrapperJson.get(
+					"managedOrganizations").getAsJsonArray();
+
+			System.out.println(managedOrganizationsJson);
+
+			for (int n = 0; n < managedOrganizationsJson.size(); ++n) {
+				String organizationFullId = managedOrganizationsJson.get(n)
+						.getAsString();
+
+				System.out.println(n + " " + organizationFullId);
+
+				String organizationId = organizationFullId.split(":")[1];
+
+				System.out.println(organizationId);
+
+				// TODO Data and Organizations may not be in the same model
+
+				createDepartment(Long.parseLong(modelOid), organizationId,
+						data, primaryKey, primaryKey);
+			}
 		}
+
+		return (JsonObject) toJson(getFirstValue(boi));
+	}
+
+	/**
+	 * 
+	 * @param json
+	 * @return
+	 */
+	public void createDepartment(long modelOid, String organizationId,
+			Data data, String id, String name) {
+		Organization organization = (Organization) getQueryService()
+				.getParticipant(modelOid, organizationId);
+		getAdministrationService().createDepartment(
+				organization.getId() + data.getId() + id,
+				data.getName() + " " + name, "", null, organization);
 	}
 
 	/**
@@ -808,8 +846,8 @@ public class BusinessObjectManagementService {
 	public JsonObject updateBusinessObjectInstance(String modelOid,
 			String businessObjectId, String primaryKey, JsonObject jsonObject) {
 		if (mode == MOCK_MODE && businessObjectId.equals("Member")) {
-				members.put(jsonObject.get("id").getAsString(), jsonObject);
- 
+			members.put(jsonObject.get("id").getAsString(), jsonObject);
+
 			return jsonObject;
 		} else {
 			BusinessObject boi = (BusinessObject) getWorkflowService()
@@ -876,6 +914,24 @@ public class BusinessObjectManagementService {
 		}
 
 		return resultJson;
+	}
+
+	/**
+	 * 
+	 * @param modelOid
+	 * @param businessObjectId
+	 * @param primaryKey
+	 * @param json
+	 * @return
+	 */
+	public JsonArray getRelatedBusinessObjectInstances(String modelOid,
+			String businessObjectId, String primaryKey, JsonObject json) {
+		JsonArray resultJson = new JsonArray();
+		JsonArray primaryKeysJson = json.get("primaryKeys").getAsJsonArray();
+
+		// TODO Populate "efficiently", fake for now
+
+		return getBusinessObjectInstances(modelOid, businessObjectId, "");
 	}
 
 	/**

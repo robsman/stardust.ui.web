@@ -200,7 +200,42 @@ define(
 						type : "GET",
 						contentType : "application/json"
 					}).done(function(result) {
-						deferred.resolve(result.businessObjectInstances);
+						deferred.resolve(result);
+					}).fail(function(data) {
+						deferred.reject(data);
+					});
+
+					return deferred.promise();
+				};
+
+				/**
+				 * 
+				 */
+				BusinessObjectManagementService.prototype.getRelatedBusinessObjectInstances = function(
+						businessObject, businessObjectInstance, primaryKeys) {
+					var deferred = jQuery.Deferred();
+					var rootUrl = location.href.substring(0, location.href
+							.indexOf("/plugins"));
+					var self = this;
+					var url = rootUrl
+							+ "/services/rest/business-object-management/businessObject/"
+							+ businessObject.modelOid
+							+ "/"
+							+ businessObject.id
+							+ "/"
+							+ businessObjectInstance[businessObject.primaryKeyField.id]
+							+ "/relatedInstances.json";
+
+					jQuery.ajax({
+						url : url,
+						type : "POST",
+						contentType : "application/json",
+						data : JSON.stringify({
+							primaryKeys : primaryKeys
+						})
+
+					}).done(function(result) {
+						deferred.resolve(result);
 					}).fail(function(data) {
 						deferred.reject(data);
 					});

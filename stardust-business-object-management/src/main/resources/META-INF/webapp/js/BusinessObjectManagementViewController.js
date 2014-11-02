@@ -383,24 +383,38 @@ define(
 				/**
 				 * 
 				 */
+				BusinessObjectManagementViewController.prototype.getAssociatedObjects = function(
+						businessObjectInstance, relationship) {
+					if (this.currentBusinessObjectInstance["FundGroupIds"]) {
+						return this.currentBusinessObjectInstance["FundGroupIds"].length;
+					}
+
+					return 0;
+				};
+
+				/**
+				 * 
+				 */
 				BusinessObjectManagementViewController.prototype.openRelationshipDialog = function(
 						relationship) {
 					var self = this;
 
+					console.log("Open with relationship");
+					console.log(relationship);
+
 					BusinessObjectManagementService
 							.instance()
-							.getBusinessObject(this.parameters.modelOid,
-									"FundGroup") // Remove Hard-coding
+							.getBusinessObject(this.parameters.modelOid, // TODO possibly not same model
+									relationship.otherBusinessObject.id)
+							// Remove Hard-coding
 							.done(
 									function(businessObject) {
 										self.relationshipPanelController
 												.changeBusinessObject(businessObject);
 										self.relationshipPanelController
-												.setRootBusinessObjectInstance(self.currentBusinessObjectInstance);
-//										self.relationshipPanelController
-//												.setRelationship(relationship);
-										self.relationshipPanelController
-										.setRelationship({otherRole: "Fund Groups"});
+												.setRelationshipContext(
+														self.currentBusinessObjectInstance,
+														relationship);
 
 										self.safeApply();
 									}).fail(function() {
@@ -408,6 +422,23 @@ define(
 
 					this.relationshipDialog.dialog("open");
 					this.relationshipDialog.errors = [];
+				};
+
+				/**
+				 * 
+				 */
+				BusinessObjectManagementViewController.prototype.saveRelationshipChanges = function() {
+					console.log("Save relationship changed");
+					console.log(this.relationshipPanelController);
+
+					this.relationshipPanelController.rootBusinessObjectInstance["FundGroupIds"] = [];
+
+					for (var n = 0; n < this.relationshipPanelController.selectedBusinessObjectInstances.length; ++n) {
+						this.relationshipPanelController.rootBusinessObjectInstance["FundGroupIds"]
+								.push(this.relationshipPanelController.selectedBusinessObjectInstances[n]["ID"]);
+					}
+
+					this.closeRelationshipDialog();
 				};
 
 				/**

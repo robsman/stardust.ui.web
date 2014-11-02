@@ -25,17 +25,17 @@
 				<td><select
 					ng-model="elementView.propertiesPage.propertiesPanel.data.attributes['carnot:engine:primaryKey']"
 					ng-options="field.name as field.name for field in elementView.propertiesPage.topLevelFields"
-					ng-change="elementView.propertiesPage.updatePrimaryKey('carnot:engine:primaryKey', elementView.propertiesPage.propertiesPanel.data.attributes['carnot:engine:primaryKey'])"><option
+					ng-change="elementView.propertiesPage.updateAttribute('carnot:engine:primaryKey', elementView.propertiesPage.propertiesPanel.data.attributes['carnot:engine:primaryKey'])"><option
 							value="">Please select ...</option></select></td>
 				<td><p style="margin-left: 5px;">Selecting a Primary Key
 						Field will enable this Data to be used as a Business Object.</p></td>
 			</tr>
 			<tr>
 				<td><label>Name Field</label></td>
-				<td><select
+				<td><select ng-disabled="!elementView.propertiesPage.propertiesPanel.data.attributes['carnot:engine:primaryKey']"
 					ng-model="elementView.propertiesPage.propertiesPanel.data.attributes['carnot:engine:nameExpression']"
 					ng-options="field.name as field.name for field in elementView.propertiesPage.topLevelFields"
-					ng-change="elementView.propertiesPage.updatePrimaryKey('carnot:engine:primaryKey', elementView.propertiesPage.propertiesPanel.data.attributes['carnot:engine:primaryKey'])"><option
+					ng-change="elementView.propertiesPage.updateAttribute('carnot:engine:nameExpression', elementView.propertiesPage.propertiesPanel.data.attributes['carnot:engine:nameExpression'])"><option
 							value="">Please select ...</option></select></td>
 				<td></td>
 			</tr>
@@ -46,7 +46,6 @@
 				<tr>
 					<th></th>
 					<th>Other Business Object</th>
-					<th>Relation Type</th>
 					<th>Other Role</th>
 					<th>Other Cardinality</th>
 					<th>Reference to Other Object</th>
@@ -58,18 +57,15 @@
 			<tbody>
 				<tr
 					ng-repeat="relationship in elementView.propertiesPage.relationships">
-					<td><a href="#" class="iconLink"
-						ng-click="elementView.propertiesPage.removeRelationship($index)">-<i
-							class="fa fa-minus"></i></a></td>
+					<td><input type="image"
+						src="/server/plugins/bpm-modeler/images/icons/delete.png"
+						title="Delete" alt="Delete" class="toolbarButton"
+						style="opacity: 1; cursor: auto;"
+						ng-click="elementView.propertiesPage.removeRelationship($index)"></input></td>
 					<td><select ng-model="relationship.otherBusinessObject"
 						ng-options="businessObject as businessObject.label for businessObject in elementView.propertiesPage.otherBusinessObjects"
 						ng-change="elementView.propertiesPage.changeOtherBusinessObject(relationship)"><option
 								value="">Please select ...</option></select></td>
-					<td><select ng-model="relationship.type"
-						ng-change="elementView.propertiesPage.submitRelationshipChanges(relationship)">
-							<option value="ASSOCIATION">Association</option>
-							<option value="AGGREGATION">Aggregation/Hierarchy</option>
-					</select></td>
 					<td><input ng-model="relationship.otherRole"
 						ng-blur="elementView.propertiesPage.submitRelationshipChanges(relationship)"></input></td>
 					<td><select ng-model="relationship.otherCardinality"
@@ -77,8 +73,8 @@
 							<option value="TO_ONE">To One</option>
 							<option value="TO_MANY">To Many</option>
 					</select></td>
-					<td>{{relationship.otherForeignKeyField}}<select
-						ng-model="relationship.foreignKeyField"
+					<td><select
+						ng-model="relationship.otherForeignKeyField"
 						ng-options="field.name as field.name for field in elementView.propertiesPage.topLevelFields"
 						ng-change="elementView.propertiesPage.submitRelationshipChanges(relationship)"><option
 								value="">Please select ...</option></select></td>
@@ -95,9 +91,10 @@
 								value="">Please select ...</option></select></td>
 				</tr>
 				<tr>
-					<td><a href="#" class="iconLink"
-						ng-click="elementView.propertiesPage.addRelationship()">+<i
-							class="fa fa-plus"></i></a></td>
+					<td><input type="image"
+						src="/server/plugins/bpm-modeler/images/icons/add.png" title="Add"
+						alt="Add" class="toolbarButton" style="opacity: 1; cursor: auto;"
+						ng-click="elementView.propertiesPage.addRelationship()"></input></td>
 					<td></td>
 					<td></td>
 					<td></td>
@@ -112,16 +109,19 @@
 			<tr>
 				<td><p>Organizations for which departments with</p>
 					<ul>
-						<li>Name: <strong><em>&lt;Organization Name&gt;</em>&nbsp;{{elementView.propertiesPage.propertiesPanel.data.name}}&nbsp;<em>&lt;{{elementView.propertiesPage.propertiesPanel.data.name}} Name&gt;</em></strong> and
+						<li>Name: <strong>{{elementView.propertiesPage.propertiesPanel.data.name}}&nbsp;<em>&lt;{{elementView.propertiesPage.propertiesPanel.data.name}}
+									Name&gt;</em></strong> and
 						</li>
-						<li>ID: <strong><em>&lt;Organization
-									ID&gt;</em>{{elementView.propertiesPage.propertiesPanel.data.id}}<em>&lt;{{elementView.propertiesPage.propertiesPanel.data.name}} Primary Key&gt;</em></strong>.
+						<li>ID: <strong><em>&lt;Organization ID&gt;</em>{{elementView.propertiesPage.propertiesPanel.data.id}}<em>&lt;{{elementView.propertiesPage.propertiesPanel.data.name}}
+									Primary Key&gt;</em></strong>.
 						</li>
 					</ul>
 					<p>are created automatically on
-						{{elementView.propertiesPage.propertiesPanel.data.name}} creation:</p><p>The {{elementView.propertiesPage.propertiesPanel.data.name}} Primary Key will becomes the Department Parameter.</p></td>
-				<td style="padding-left: 10px;"><select multiple="multiple" size="7"
-					ng-model="elementView.propertiesPage.managedOrganizations"
+						{{elementView.propertiesPage.propertiesPanel.data.name}} creation.</p>
+					<p>The {{elementView.propertiesPage.propertiesPanel.data.name}}
+						Primary Key will become the Department Parameter.</p></td>
+				<td style="padding-left: 10px;"><select multiple="multiple"
+					size="7" ng-model="elementView.propertiesPage.managedOrganizations"
 					ng-options="organization.fullId as organization.label for organization in elementView.propertiesPage.organizations"
 					ng-change="elementView.propertiesPage.submitManagedOrganizationsChanges()">
 				</select></td>

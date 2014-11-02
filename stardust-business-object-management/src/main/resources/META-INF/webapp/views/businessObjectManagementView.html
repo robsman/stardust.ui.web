@@ -143,11 +143,11 @@ ul.errorMessagesPanel {
 							<div ng-repeat="type in [getBusinessObject()]">
 								<div ng-include="'./objectPanel.html'"></div>
 							</div>
-							<h3>Related Objects</h3>
+							<h2>Related Objects</h2>
 							<table style="margin-bottom: 10px;">
 								<tr ng-repeat="relationship in getBusinessObject().relationships">
 									<td><a ng-click="openRelationshipDialog(relationship)"
-										class="commandLink">Fund Groups &raquo;</a></td>
+										class="commandLink">{{relationship.otherRole}} ({{getAssociatedObjects(currentBusinessObject, relationship)}}) &raquo;</a></td>
 								</tr>
 							</table>
 						</div>

@@ -154,6 +154,27 @@ public class BusinessObjectManagementResource {
 		}
 	}
 
+	@POST
+	@Path("/businessObject/{modelOid}/{businessObjectId}/{primaryKey}/relatedInstances.json")
+	public Response getRelatedBusinessObjectInstances(
+			@PathParam("modelOid") String modelOid,
+			@PathParam("businessObjectId") String businessObjectId,
+			@PathParam("primaryKey") String primaryKey, String postedData) {
+		try {
+			JsonObject json = jsonIo.readJsonObject(postedData);
+
+			return Response.ok(
+					getBusinessObjectManagementService()
+							.getRelatedBusinessObjectInstances(modelOid,
+									businessObjectId, primaryKey, json).toString(),
+					MediaType.APPLICATION_JSON).build();
+		} catch (Exception e) {
+			trace.error(e, e);
+
+			return Response.serverError().build();
+		}
+	}
+	
 	@GET
 	@Path("/businessObject/{modelOid}/{businessObjectId}/{primaryKey}/processInstances.json")
 	public Response getBusinessObjectProcessInstances(
@@ -221,10 +242,6 @@ public class BusinessObjectManagementResource {
 					businessObjectInstanceJson.addProperty(
 							fields[m].replaceAll("\\s+", ""), fieldValues[m]);
 				}
-
-				System.out.println("Primary Key");
-				System.out.println(primaryKeyField);
-				System.out.println(businessObjectInstanceJson);
 
 				try {
 					getBusinessObjectManagementService()
