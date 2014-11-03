@@ -128,8 +128,39 @@ define(
 							.changeBusinessObject(this.businessObject);
 
 					this.formColumns = [];
+					this.foreignKeyFields = {};
+
 					var primitiveFields = this
 							.getPrimitiveFields(this.businessObject);
+					var complexFields = this
+							.getComplexFields(this.businessObject);
+
+					for (var n = 0; n < primitiveFields.length; ++n) {
+						for (var m = 0; m < this.businessObject.relationships.length; ++m) {
+							if (this.businessObject.relationships[m].otherForeignKeyField == primitiveFields[n].id) {
+								this.foreignKeyFields[this.businessObject.relationships[m].otherForeignKeyField] = primitiveFields[n];
+
+								break;
+							}
+						}
+					}
+
+					for (var n = 0; n < complexFields.length; ++n) {
+						for (var m = 0; m < this.businessObject.relationships.length; ++m) {
+							// TODO
+
+							if (!this.businessObject.relationships[m].otherForeignKeyField) {
+								this.businessObject.relationships[m].otherForeignKeyField = "FundGroupIds";
+							}
+
+							if (this.businessObject.relationships[m].otherForeignKeyField == complexFields[n].id) {
+								this.foreignKeyFields[this.businessObject.relationships[m].otherForeignKeyField] = complexFields[n];
+
+								break;
+							}
+						}
+					}
+
 					var fieldsPerColumn = Math.ceil(primitiveFields.length / 3);
 
 					for (var n = 0; n < primitiveFields.length; n += fieldsPerColumn) {
@@ -271,7 +302,7 @@ define(
 				};
 
 				/**
-				 * 
+				 * Include arrays of Primitives.
 				 */
 				BusinessObjectManagementViewController.prototype.getPrimitiveFields = function(
 						type) {
@@ -385,8 +416,8 @@ define(
 				 */
 				BusinessObjectManagementViewController.prototype.getAssociatedObjects = function(
 						businessObjectInstance, relationship) {
-					if (this.currentBusinessObjectInstance["FundGroupIds"]) {
-						return this.currentBusinessObjectInstance["FundGroupIds"].length;
+					if (this.currentBusinessObjectInstance["FundGroupIds"/* this.relationship.otherForeignKeyField */]) {
+						return this.currentBusinessObjectInstance["FundGroupIds"/* this.relationship.otherForeignKeyField */].length;
 					}
 
 					return 0;
@@ -404,8 +435,12 @@ define(
 
 					BusinessObjectManagementService
 							.instance()
-							.getBusinessObject(this.parameters.modelOid, // TODO possibly not same model
-									relationship.otherBusinessObject.id)
+							.getBusinessObject(this.parameters.modelOid, // TODO
+							// possibly
+							// not
+							// same
+							// model
+							relationship.otherBusinessObject.id)
 							// Remove Hard-coding
 							.done(
 									function(businessObject) {

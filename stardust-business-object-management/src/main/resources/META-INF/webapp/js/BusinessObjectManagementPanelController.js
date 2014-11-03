@@ -57,7 +57,8 @@ define(
 					BusinessObjectManagementService
 							.instance()
 							.getRelatedBusinessObjectInstances(
-									this.businessObject, this.rootBusinessObjectInstance, [])
+									this.businessObject,
+									this.rootBusinessObjectInstance, [])
 							.done(
 									function(businessObjectInstances) {
 										console.log("Result");
@@ -65,9 +66,36 @@ define(
 
 										self.businessObjectInstances = businessObjectInstances;
 
+										self.selectAllInRelationship();
 										self.rootController.safeApply();
 									}).fail();
 				};
+
+				/**
+				 * 
+				 */
+				BusinessObjectManagementPanelController.prototype.selectAllInRelationship = function() {
+					var foreignKeys = this.rootBusinessObjectInstance["FundGroupIds"/* this.relationship.otherForeignKeyField */];
+
+					console.log("FK");
+					console.log(foreignKeys);
+					console.log(this.businessObject);
+
+					this.selectedBusinessObjectInstances = [];
+
+					if (foreignKeys && foreignKeys.length) {
+						for (var n = 0; n < this.businessObjectInstances.length; ++n) {
+							for (var m = 0; m < foreignKeys.length; ++m) {
+								if (foreignKeys[m] == this.businessObjectInstances[n][this.businessObject.primaryKeyField]) {
+									self.selectedBusinessObjectInstances
+											.push(this.businessObjectInstances[n]);
+
+									break;
+								}
+							}
+						}
+					}
+				}
 
 				/**
 				 * 
