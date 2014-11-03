@@ -190,6 +190,11 @@ define(
 				getUniqueElementNameId : function(array, name) {
 					return getUniqueElementNameId(array, name);
 				},
+				
+				getUpdatedUniqueElementNameId : function(array, name) {
+				   return getUpdatedUniqueElementNameId(array, name);
+				},
+				
 				generateID : generateID
 			};
 			
@@ -470,6 +475,29 @@ define(
 					}
 				}
 				return false;
+			}
+			
+			/**
+			 * @author Aditya.Gaikwad
+			 * This method accepts Element Array and proposed name for new
+			 * element. This function checks Default Label of a Diagram Element which is 
+			 * used only once should not contain "1". 
+			 */
+			function getUpdatedUniqueElementNameId(array, name) {
+			   var id = name.replace(/\s+/g, '');
+			   
+			   var elementNameId = {};
+			   var hasElement = true;
+               
+			   hasElement = hasElementWithName(array, name);
+			   hasElement = hasElement || hasElementWithId(array, id);
+			   if (hasElement) {
+			      return getUniqueElementNameId(array, name);
+			   } else {
+			      elementNameId.name = name;
+			      elementNameId.id = id;
+			      return elementNameId; 
+			   }
 			}
 
 			/**
