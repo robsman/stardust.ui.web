@@ -182,6 +182,26 @@ define(
 					name : this.getI18N("reporting.definitionView.metadata.autocompleteType.label")
 				};
 				
+				//common or mostly used types - to avoid duplication
+				this.metadata.commonTypes = {};
+				this.metadata.commonTypes.activityInstanceProcessingTime = {
+					id : "activityInstanceProcessingTime",
+					name : this.getI18N("reporting.definitionView.activityInstanceProcessingTime"),
+					type : this.metadata.durationType
+				};
+
+				this.metadata.commonTypes.processInstanceProcessingTime = {
+					id : "processInstanceProcessingTime",
+					name : this.getI18N("reporting.definitionView.processInstanceProcessingTime"),
+					type : this.metadata.durationType
+				}
+
+				this.metadata.commonTypes.rootProcessInstanceProcessingTime = {
+					id : "rootProcessInstanceProcessingTime",
+					name : this.getI18N("reporting.definitionView.rootProcessInstanceProcessingTime"),
+					type : this.metadata.durationType
+				}; 
+				
 				this.metadata.objects = {
 					processInstance : {
 						id : "processInstance",
@@ -202,9 +222,11 @@ define(
                         id : "rootProcessInstanceDuration",
                         name : this.getI18N("reporting.definitionView.rootProcessInstanceDuration"),
                         type : this.metadata.durationType
-                     }
-						},
-						dimensions : {
+                     },
+                     processInstanceProcessingTime : this.metadata.commonTypes.processInstanceProcessingTime,
+                     rootProcessInstanceProcessingTime : this.metadata.commonTypes.rootProcessInstanceProcessingTime
+					},
+					dimensions : {
 						   processInstanceStartTimestamp : {
 								id : "processInstanceStartTimestamp",
 								name : this.getI18N("reporting.definitionView.additionalFiltering.processInstanceStartTimestamp"),
@@ -231,6 +253,8 @@ define(
                         name : this.getI18N("reporting.definitionView.rootProcessInstanceDuration"),
                         type : this.metadata.durationType
                      },
+                     processInstanceProcessingTime : this.metadata.commonTypes.processInstanceProcessingTime,
+                     rootProcessInstanceProcessingTime : this.metadata.commonTypes.rootProcessInstanceProcessingTime,
 					processOID : {
                         id : "processOID",
                         name : this.getI18N("reporting.definitionView.additionalFiltering.processOID"),
@@ -289,6 +313,7 @@ define(
 								type : this.metadata.durationType,
 								cumulated : true
 							},
+							activityInstanceProcessingTime: this.metadata.commonTypes.activityInstanceProcessingTime, 
                      processInstanceDuration : {
                         id : "processInstanceDuration",
                         name : this.getI18N("reporting.definitionView.processInstanceDuration"),
@@ -298,7 +323,9 @@ define(
                         id : "rootProcessInstanceDuration",
                         name : this.getI18N("reporting.definitionView.rootProcessInstanceDuration"),
                         type : this.metadata.durationType
-                     }
+                     },
+                     processInstanceProcessingTime : this.metadata.commonTypes.processInstanceProcessingTime,
+                     rootProcessInstanceProcessingTime : this.metadata.commonTypes.rootProcessInstanceProcessingTime
 						},
 						dimensions : {
 							startTimestamp : {
@@ -324,6 +351,7 @@ define(
                         type : this.metadata.durationType,
                         cumulated : true
                      },
+                     activityInstanceProcessingTime: this.metadata.commonTypes.activityInstanceProcessingTime,
                      processInstanceDuration : {
                         id : "processInstanceDuration",
                         name : this.getI18N("reporting.definitionView.processInstanceDuration"),
@@ -334,7 +362,9 @@ define(
                         name : this.getI18N("reporting.definitionView.rootProcessInstanceDuration"),
                         type : this.metadata.durationType
                      },
-							lastModificationTimestamp : {
+                     processInstanceProcessingTime : this.metadata.commonTypes.processInstanceProcessingTime,
+                     rootProcessInstanceProcessingTime : this.metadata.commonTypes.rootProcessInstanceProcessingTime,
+					 lastModificationTimestamp : {
 								id : "lastModificationTimestamp",
 								name : this.getI18N("reporting.definitionView.additionalFiltering.timestamp.last"),
 								type : this.metadata.timestampType
@@ -2191,5 +2221,4 @@ define(
 			    }
 			    report.uiAdjustmentApplied = false;
 			};
-			
 		});

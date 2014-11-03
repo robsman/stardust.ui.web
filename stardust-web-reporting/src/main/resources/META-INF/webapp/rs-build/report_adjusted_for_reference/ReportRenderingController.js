@@ -1446,11 +1446,29 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
    for ( var selColumn in selectedColumns)
    {
       if (selectedColumns[selColumn].id == this.
-               reportingService.metadata.objects.processInstance.dimensions.priority.id)
-      {// Formatting Priority to display priority levels as Low, medium etc
+            reportingService.metadata.objects.activityInstance.dimensions.criticality.id) 
+      {
+            //Formatting Criticality data to display string values
+         if (this.report.dataSet.groupBy === this.
+                  reportingService.metadata.objects.activityInstance.dimensions.criticality.id) 
+         {
+            tableOptions.aoColumnDefs.push(getColumnDef(selColumn, displayValueMapping));
+         }
          var enumItems = this.reportingService.getEnumerators(this.
-                 reportingService.metadata.objects.processInstance.dimensions.priority.enumerationType);
-           
+                           reportingService.metadata.objects.activityInstance.dimensions.criticality.enumerationType);
+                
+         for ( var row in data) 
+         {
+            var record = data[row];
+            var criticality = this.getCriticalityName(record[selColumn], enumItems);
+            displayValueMapping[criticality] = record[selColumn];
+            record[selColumn] = criticality; 
+         }
+      } else if (selectedColumns[selColumn] && selectedColumns[selColumn].enumerationType) 
+      {
+         var enumItems = this.reportingService.getEnumerators(selectedColumns[selColumn].enumerationType);
+         var displayValueMapping = {};
+
          for ( var row in data)
          {
             var record = data[row];
@@ -1458,50 +1476,29 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
             {
                if (enumItems[item].id == record[selColumn])
                {
-            	  displayValueMapping[enumItems[item].name] = record[selColumn];
+                  if (enumItems[item].order)
+                  {
+                     displayValueMapping[enumItems[item].name] = enumItems[item].order;
+                  }
+                  else
+                  {
+                     displayValueMapping[enumItems[item].name] = record[selColumn];
+                  }
                   record[selColumn] = enumItems[item].name;
                   break;
                }
             }
          }
-         tableOptions.aoColumnDefs.push(getColumnDef(selColumn, displayValueMapping));
-      } else if (selectedColumns[selColumn].id == this.
-               reportingService.metadata.objects.processInstance.dimensions.state.id) {
-      // Formatting Process State to display string states as Alive, completed etc 
-         var enumItems = this.reportingService.getEnumerators(this.
-                 reportingService.metadata.objects.processInstance.dimensions.state.enumerationType);
-           
-         for ( var row in data)
+         if (selectedColumns[selColumn].customSort
+                        && this.report.dataSet.groupBy === selectedColumns[selColumn].id) 
          {
-            var record = data[row];
-            if(!record[selColumn]){
-            	//displayValueMapping[enumItems[record[selColumn]].name] = record[selColumn];
-          	  record[selColumn] = enumItems[record[selColumn]].name;  
-            }
+            tableOptions.aoColumnDefs.push(getColumnDef(selColumn, displayValueMapping));
          }
-         //tableOptions.aoColumnDefs.push(getColumnDef(selColumn, displayValueMapping));
-      } else if (selectedColumns[selColumn].id == this.
-               reportingService.metadata.objects.activityInstance.dimensions.criticality.id) {
-         //Formatting Criticality data to display string values
-         var enumItems = this.reportingService.getEnumerators(this.
-                 reportingService.metadata.objects.activityInstance.dimensions.criticality.enumerationType);
-         
-         for ( var row in data)
-         {
-            var record = data[row];
-            var criticality = this.getCriticalityName(record[selColumn], enumItems);
-           	displayValueMapping[criticality] = record[selColumn];
-           	record[selColumn] = criticality;	
-         }
-         
-         tableOptions.aoColumnDefs.push(getColumnDef(selColumn, displayValueMapping));
-         
-            }
                
-       if (selectedColumns[selColumn].type.id == this.reportingService.metadata.timestampType.id) {
-		    filters[selColumn] = this.reportingService.metadata.timestampType.id + ":'" + this.reportingService.formats.minutes + "'";
-               
-         }
+      } else if (selectedColumns[selColumn].type.id == this.reportingService.metadata.timestampType.id) 
+      {
+         filters[selColumn] = this.reportingService.metadata.timestampType.id + ":'" + this.reportingService.formats.minutes + "'";
+      }
       }
    
    
