@@ -18,11 +18,8 @@
 
 	var dataTablesDirective = ['$parse', '$compile', '$timeout', function($parse, $compile, $timeout) {
 		return {
-			restrict : 'AE', // TODO: Remove support for E and only support as A
+			restrict : 'A',
 			require: ['sdData'],
-			scope: {
-				// TODO: Accept more inputs...
-			},
 			compile: function(elem, attr, transclude) {				
 				processRawMarkup(elem, attr);
 
@@ -60,8 +57,7 @@
 	 * 
 	 */
 	function DataTableCompiler($parse, $compile, $timeout, scope, element, attr, ctrl) {
-		// This is same as scope.$parent
-		var elemScope = element.scope();
+		var elemScope = scope;
 		var sdData = ctrl[0];
 
 		var columns = [], dtColumns = [], theTable, theDataTable;
@@ -79,12 +75,11 @@
 
 			// TODO: Revisit 'ready' behaviour
 			if (attr.sdaReady) {
-				elemScope.$watch(attr.sdaReady, function(newVal, oldVal) {
+				var unregister = elemScope.$watch(attr.sdaReady, function(newVal, oldVal) {
 					if(newVal === true) {
 						// Initialize after current digest cycle
 						$timeout(initialize);
-
-						// TODO: Can unregister here, to reduce the watchers!
+						unregister();
 					}
 				});
 			} else {
@@ -321,6 +316,11 @@
 		 * 
 		 */
 		function drawCallbackHandler (oSettings) {
+			// Datatables is adding pixel width to table.
+			// TODO: Find better API
+			$timeout(function(){
+				element.width("100%");
+			}, 0, false);
 		}
 
 		/*
@@ -365,7 +365,7 @@
 		 * 
 		 */
 		function safeApply() {
-			if (elemScope.$root.$$phase !== '$apply' || elemScope.$root.$$phase !== '$digest') {
+			if (elemScope.$root.$$phase !== '$apply' && elemScope.$root.$$phase !== '$digest') {
 				elemScope.$apply();
 			}
 		}

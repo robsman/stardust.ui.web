@@ -25,6 +25,10 @@
 
 /* ********** Data Table ********** */
 
+.tbl-title {
+   font-weight: bold;
+}
+
 .selectedRow td {
 	background-color: #E8E6FC;
 }
