@@ -44,7 +44,8 @@
 	</tr>
 </table>
 <table>
-	<tr ng-repeat="field in getComplexFields(type)" ng-if="!foreignKeyFields[field.id]">
+	<tr ng-repeat="field in getComplexFields(type)"
+		ng-if="!foreignKeyFields[field.id]">
 		<td>
 			<h2>{{field.label}}</h2>
 			<div ng-hide="field.list"

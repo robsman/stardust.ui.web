@@ -135,32 +135,37 @@ define(
 					var complexFields = this
 							.getComplexFields(this.businessObject);
 
-					for (var n = 0; n < primitiveFields.length; ++n) {
-						for (var m = 0; m < this.businessObject.relationships.length; ++m) {
-							if (this.businessObject.relationships[m].otherForeignKeyField == primitiveFields[n].id) {
-								this.foreignKeyFields[this.businessObject.relationships[m].otherForeignKeyField] = primitiveFields[n];
+					if (this.businessObject.relationships) {
+						for (var n = 0; n < primitiveFields.length; ++n) {
+							for (var m = 0; m < this.businessObject.relationships.length; ++m) {
+								if (this.businessObject.relationships[m].otherForeignKeyField == primitiveFields[n].id) {
+									this.foreignKeyFields[this.businessObject.relationships[m].otherForeignKeyField] = primitiveFields[n];
 
-								break;
+									break;
+								}
 							}
 						}
-					}
 
-					for (var n = 0; n < complexFields.length; ++n) {
-						for (var m = 0; m < this.businessObject.relationships.length; ++m) {
-							// TODO
+						for (var n = 0; n < complexFields.length; ++n) {
+							for (var m = 0; m < this.businessObject.relationships.length; ++m) {
+								// TODO
 
-							if (!this.businessObject.relationships[m].otherForeignKeyField) {
-								this.businessObject.relationships[m].otherForeignKeyField = "FundGroupIds";
-							}
+								if (!this.businessObject.relationships[m].otherForeignKeyField) {
+									this.businessObject.relationships[m].otherForeignKeyField = "FundGroupIds";
+								}
 
-							if (this.businessObject.relationships[m].otherForeignKeyField == complexFields[n].id) {
-								this.foreignKeyFields[this.businessObject.relationships[m].otherForeignKeyField] = complexFields[n];
+								if (this.businessObject.relationships[m].otherForeignKeyField == complexFields[n].id) {
+									this.foreignKeyFields[this.businessObject.relationships[m].otherForeignKeyField] = complexFields[n];
 
-								break;
+									break;
+								}
 							}
 						}
-					}
 
+						console.log("Foreign Key Fields");
+						console.log(this.foreignKeyFields);
+					}
+					
 					var fieldsPerColumn = Math.ceil(primitiveFields.length / 3);
 
 					for (var n = 0; n < primitiveFields.length; n += fieldsPerColumn) {
@@ -466,11 +471,14 @@ define(
 					console.log("Save relationship changed");
 					console.log(this.relationshipPanelController);
 
-					this.relationshipPanelController.rootBusinessObjectInstance["FundGroupIds"] = [];
+					// TODO All code into Panel Controller
+					// TODO Update for all objects (Recursive Deferred Pattern)
+					
+					this.relationshipPanelController.rootBusinessObjectInstance[this.relationshipPanelController.otherForeignKeyField] = [];
 
 					for (var n = 0; n < this.relationshipPanelController.selectedBusinessObjectInstances.length; ++n) {
-						this.relationshipPanelController.rootBusinessObjectInstance["FundGroupIds"]
-								.push(this.relationshipPanelController.selectedBusinessObjectInstances[n]["ID"]);
+						this.relationshipPanelController.rootBusinessObjectInstance[this.relationshipPanelController.otherForeignKeyField]
+								.push(this.relationshipPanelController.selectedBusinessObjectInstances[n][this.relationshipPanelController.primaryKeyField.id]);
 					}
 
 					this.closeRelationshipDialog();

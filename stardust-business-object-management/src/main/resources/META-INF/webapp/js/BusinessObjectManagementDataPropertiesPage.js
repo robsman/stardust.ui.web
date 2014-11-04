@@ -118,15 +118,19 @@ define(
 				BusinessObjectManagementDataPropertiesPage.prototype.getTopLevelFieldsForBusinessObject = function(
 						businessObject) {
 					var topLevelFields = [];
+					
 					if (businessObject.structuredDataTypeFullId) {
 						var typeDeclaration = m_model
 								.findTypeDeclaration(businessObject.structuredDataTypeFullId);
 						var fields = typeDeclaration.typeDeclaration.schema.elements[0].body[0].body;
 
 						for (var n = 0; n < fields.length; ++n) {
-							if (!fields[n].appinfo) {
+							console.log("App Info");
+							console.log(fields[n].appinfo);
+							//if (!fields[n].appinfo) {
+							//storage.indexed: "false"
 								topLevelFields.push(fields[n]);
-							}
+							//}
 						}
 
 					}
@@ -319,7 +323,8 @@ define(
 						m_commandsController.submitCommand(m_command
 								.createUpdateModelElementCommand(
 										businessObject.model.id,
-										businessObject.oid, element));
+										businessObject.oid,
+										element.modelElement));
 					}
 				};
 
