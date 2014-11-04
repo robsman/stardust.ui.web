@@ -44,6 +44,9 @@
 		// Add ng-non-bindable, so that the markup is not compiled
 		var bodyCols = elem.find('> tbody > tr > td');
 		bodyCols.attr('ng-non-bindable', '');
+		
+		// Hide the element, till it's ready to be visible
+		elem.hide();
 	}
 
 	/*
@@ -322,6 +325,9 @@
 		 * 
 		 */
 		function drawCallbackHandler (oSettings) {
+			// Show the element, as it's ready to be visible
+			element.show();
+
 			// Datatables is adding pixel width to table.
 			// TODO: Find better API
 			$timeout(function(){

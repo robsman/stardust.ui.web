@@ -27,6 +27,7 @@
 
 .tbl-title {
    font-weight: bold;
+   margin-bottom: 8px;
 }
 
 .selectedRow td {
@@ -51,7 +52,6 @@
 }
 
 .tbl-toolbar {
-	margin-bottom: 5px;
 }
 
 .tbl-toolbar-section {
