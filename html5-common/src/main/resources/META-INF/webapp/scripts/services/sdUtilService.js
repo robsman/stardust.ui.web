@@ -20,6 +20,15 @@
 	 */
 	function UtilService($rootScope) {
 		/*
+		 * 
+		 */
+		UtilService.prototype.safeApply = function($scope) {
+			if ($scope.$root.$$phase !== '$apply' && $scope.$root.$$phase !== '$digest') {
+				$scope.$apply();
+			}
+		};
+
+		/*
 		 * Copies properties (attributes and functions) which does not start with $
 		 * Properties starting with $ are considered as private and hence skipped
 		 */

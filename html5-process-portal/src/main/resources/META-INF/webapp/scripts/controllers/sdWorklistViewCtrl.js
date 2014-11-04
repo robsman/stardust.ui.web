@@ -33,9 +33,7 @@
 		 * This needs to be defined here as it requires access to $scope
 		 */
 		WorklistViewCtrl.prototype.safeApply = function() {
-			if ($scope.$root.$$phase !== '$apply' && $scope.$root.$$phase !== '$digest') {
-				$scope.$apply();
-			}
+			sdUtilService.safeApply($scope);
 		};
 	}
 
@@ -46,7 +44,7 @@
 		if (event.type == "ACTIVATED") {
 			this.refresh();
 		} else if (event.type == "DEACTIVATED") {
-			
+			// TODO
 		}
 	};
 
@@ -54,8 +52,7 @@
 	 * 
 	 */
 	WorklistViewCtrl.prototype.initialize = function() {
-		// This will be set to underline data table automatically
-		this.dataTable = null;
+		this.dataTable = null; // This will be set to underline data table instance automatically
 	};
 
 	/*
@@ -64,7 +61,7 @@
 	WorklistViewCtrl.prototype.refresh = function() {
 		this.dataTable.refresh(true);
 	};
-
+	
 	angular.module('workflow-ui').controller('sdWorklistViewCtrl', 
 			['$scope', 'sdUtilService', 'sdViewUtilService', WorklistViewCtrl]);
 })();

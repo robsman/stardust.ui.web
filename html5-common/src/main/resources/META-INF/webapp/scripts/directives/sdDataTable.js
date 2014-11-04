@@ -16,7 +16,12 @@
 (function(){
 	'use strict';
 
-	var dataTablesDirective = ['$parse', '$compile', '$timeout', function($parse, $compile, $timeout) {
+	angular.module('bpm-common').directive('sdDataTable', ['$parse', '$compile', '$timeout', DataTableDirective]);
+
+	/*
+	 * 
+	 */
+	function DataTableDirective($parse, $compile, $timeout) {
 		return {
 			restrict : 'A',
 			require: ['sdData'],
@@ -30,20 +35,8 @@
 				};
 			}
 		};	
-	}];
+	}
 
-	var TOOLBAR_TEMPLATE =
-		'<div class="tbl-toolbar-section">\n' +
-			'<a href="#" ng-click="" title="{{i18n(\'portal-common-messages.common-filterPopup-selectColumnsLabel\')}}" class="tbl-toolbar-item tbl-tool-link">\n' +
-				'<i class="fa fa-table"></i>\n' +
-			'</a>\n' +
-			'<a href="#" ng-click="" title="{{i18n(\'portal-common-messages.common-genericDataTable-asExcel\')}}" class="tbl-toolbar-item tbl-tool-link">\n' +
-				'<i class="fa fa-file-excel-o"></i>\n' +
-			'</a>\n' +
-			'<a href="#" ng-click="" title="{{i18n(\'portal-common-messages.common-genericDataTable-asCSV\')}}" class="tbl-toolbar-item tbl-tool-link">\n' +
-				'<i class="fa fa-file-text-o"></i>\n' +
-			'</a>\n' +
-		'</div>\n';
 	/*
 	 * 
 	 */
@@ -57,6 +50,19 @@
 	 * 
 	 */
 	function DataTableCompiler($parse, $compile, $timeout, scope, element, attr, ctrl) {
+		var TOOLBAR_TEMPLATE =
+			'<div class="tbl-toolbar-section">\n' +
+				'<a href="#" ng-click="" title="{{i18n(\'portal-common-messages.common-filterPopup-selectColumnsLabel\')}}" class="tbl-toolbar-item tbl-tool-link">\n' +
+					'<i class="fa fa-table"></i>\n' +
+				'</a>\n' +
+				'<a href="#" ng-click="" title="{{i18n(\'portal-common-messages.common-genericDataTable-asExcel\')}}" class="tbl-toolbar-item tbl-tool-link">\n' +
+					'<i class="fa fa-file-excel-o"></i>\n' +
+				'</a>\n' +
+				'<a href="#" ng-click="" title="{{i18n(\'portal-common-messages.common-genericDataTable-asCSV\')}}" class="tbl-toolbar-item tbl-tool-link">\n' +
+					'<i class="fa fa-file-text-o"></i>\n' +
+				'</a>\n' +
+			'</div>\n';
+
 		var elemScope = scope;
 		var sdData = ctrl[0];
 
@@ -328,14 +334,20 @@
 		 */
 		function exposeAPIs() {
 			if (attr.sdDataTable != undefined && attr.sdDataTable != "") {
-				var userTable = $parse(attr.sdDataTable).assign;
-				if (userTable) {
-					userTable(elemScope, theDataTable);
+				var dataTableAssignable = $parse(attr.sdDataTable).assign;
+				if (dataTableAssignable) {
+					dataTableAssignable(elemScope, new DataTable());
 				}
 			}
 
-			theDataTable.refresh = refresh;
-			theDataTable.reInitialize = reInitialize;
+			/*
+			 * Public API
+			 */
+			function DataTable() {
+				this.instance = theDataTable;
+				this.refresh = refresh;
+				this.reInitialize = reInitialize;
+			}
 		}
 
 		/*
@@ -358,18 +370,6 @@
 			jQuery(oSettings.oInstance).trigger('page', oSettings);
 		    oSettings.oApi._fnCalculateEnd(oSettings);
 		    oSettings.oApi._fnDraw(oSettings);
-
-		}
-
-		/*
-		 * 
-		 */
-		function safeApply() {
-			if (elemScope.$root.$$phase !== '$apply' && elemScope.$root.$$phase !== '$digest') {
-				elemScope.$apply();
-			}
 		}
 	};
-
-	angular.module('bpm-common').directive('sdDataTable', dataTablesDirective);
 })();

@@ -22,6 +22,14 @@
 	 * 
 	 */
 	function WorklistDirective($parse, $q) {
+		var directiveDefObject = {
+			restrict : 'AE',
+			scope: true, // Creates a new sub scope
+			templateUrl: 'plugins/html5-process-portal/scripts/directives/partials/worklist.html',
+			controller: ['$attrs', '$scope', 'sdUtilService', 'sdViewUtilService', 'sdWorklistService', 
+			             'sdActivityInstanceService', 'sdProcessDefinitionService', WorklistCtrl]
+		};
+		
 		var _sdViewUtilService, _sdWorklistService, _sdActivityInstanceService, _sdProcessDefinitionService;
 
 		/*
@@ -38,46 +46,14 @@
 			_sdActivityInstanceService = sdActivityInstanceService;
 			_sdProcessDefinitionService = sdProcessDefinitionService;
 
+			this.initialize($attrs, scopeToUse);
+
 			/*
 			 * This needs to be defined here as it requires access to $scope
 			 */
 			WorklistCtrl.prototype.safeApply = function() {
-				if ($scope.$root.$$phase !== '$apply' && $scope.$root.$$phase !== '$digest') {
-					$scope.$apply();
-				} else {
-					window.setTimeout(function(){
-						$scope.$apply();
-					});
-				}
+				sdUtilService.safeApply($scope);
 			};
-
-			if (!$attrs.sdaQuery) {
-				throw 'Query attribute is not specified for worklist.';
-			}
-
-			// Process Attributes
-			var queryGetter = $parse($attrs.sdaQuery);
-			var query = queryGetter(scopeToUse);
-			if (query == undefined) {
-				throw 'Query evaluated to "nothing" for worklist';
-			}
-
-			var titleExpr = "";
-			if ($attrs.sdaTitle) {
-				titleExpr = $attrs.sdaTitle;
-			}
-			var titleGetter = $parse(titleExpr);
-			this.title = titleGetter(scopeToUse);
-
-			this.initialize(query);
-
-			this.tableHandleExpr = $attrs.sdWorklist;			
-			var unregister = scopeToUse.$watch(this.tableHandleExpr, function(newVal, oldVal) {
-				if (newVal != undefined && newVal != null && newVal != oldVal) {
-					self.dataTable = newVal;
-					unregister();
-				}
-			});
 
 			// Expose controller as a whole on to scope
 			$scope.worklistCtrl = this;
@@ -86,10 +62,43 @@
 		/*
 		 * 
 		 */
-		WorklistCtrl.prototype.initialize = function(query) {
-			this.query = query;
+		WorklistCtrl.prototype.initialize = function($attrs, scopeToUse) {
+			// Define data
 			this.worklist = {};
 			this.worklist.selectedWorkItems = [];
+			this.dataTable = null; // Handle to data table instance, to be set later
+
+			// Process Query
+			if (!$attrs.sdaQuery) {
+				throw 'Query attribute is not specified for worklist.';
+			}
+			var queryGetter = $parse($attrs.sdaQuery);
+			var query = queryGetter(scopeToUse);
+			if (query == undefined) {
+				throw 'Query evaluated to "nothing" for worklist.';
+			}
+			this.query = query;
+
+			// Process Title
+			var titleExpr = "";
+			if ($attrs.sdaTitle) {
+				titleExpr = $attrs.sdaTitle;
+			}
+			var titleGetter = $parse(titleExpr);
+			this.title = titleGetter(scopeToUse);
+
+			// Process TableHandle and then set data table instance
+			this.tableHandleExpr = $attrs.sdWorklist;
+			if (!this.tableHandleExpr) {
+				this.tableHandleExpr = "worklistCtrl.dataTable";
+			} else {
+				var unregister = scopeToUse.$watch(this.tableHandleExpr, function(newVal, oldVal) {
+					if (newVal != undefined && newVal != null && newVal != oldVal) {
+						self.dataTable = newVal;
+						unregister();
+					}
+				});
+			}
 
 			this.fetchDescriptorCols();
 		};
@@ -225,12 +234,6 @@
 			
 		};
 
-		return {
-			restrict : 'AE',
-			scope: true, // Creates a new sub scope
-			templateUrl: 'plugins/html5-process-portal/scripts/directives/partials/worklist.html',
-			controller: ['$attrs', '$scope', 'sdUtilService', 'sdViewUtilService', 'sdWorklistService', 
-			             'sdActivityInstanceService', 'sdProcessDefinitionService', WorklistCtrl]
-		};
+		return directiveDefObject;
 	}
 })();
