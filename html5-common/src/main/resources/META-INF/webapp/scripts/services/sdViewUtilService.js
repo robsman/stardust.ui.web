@@ -14,6 +14,13 @@
 (function(){
 	'use strict';
 
+	angular.module('bpm-common.services').provider('sdViewUtilService', function () {
+		this.$get = ['$rootScope', 'sgViewPanelService', 'sgPubSubService', function ($rootScope, sgViewPanelService, sgPubSubService) {
+			var service = new ViewUtilService($rootScope, sgViewPanelService, sgPubSubService);
+			return service;
+		}];
+	});
+
 	/*
 	 * 
 	 */
@@ -140,11 +147,4 @@
 			}
 		}
 	};
-
-	angular.module('bpm-common.services').provider('sdViewUtilService', function () {
-		this.$get = ['$rootScope', 'sgViewPanelService', 'sgPubSubService', function ($rootScope, sgViewPanelService, sgPubSubService) {
-			var service = new ViewUtilService($rootScope, sgViewPanelService, sgPubSubService);
-			return service;
-		}];
-	});
 })();

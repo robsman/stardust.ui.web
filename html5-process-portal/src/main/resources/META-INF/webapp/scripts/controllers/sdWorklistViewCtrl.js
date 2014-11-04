@@ -15,6 +15,9 @@
 (function() {
 	'use strict';
 
+	angular.module('workflow-ui').controller('sdWorklistViewCtrl', 
+			['$scope', 'sdUtilService', 'sdViewUtilService', WorklistViewCtrl]);
+
 	var _sdViewUtilService;
 	
 	/*
@@ -61,7 +64,4 @@
 	WorklistViewCtrl.prototype.refresh = function() {
 		this.dataTable.refresh(true);
 	};
-	
-	angular.module('workflow-ui').controller('sdWorklistViewCtrl', 
-			['$scope', 'sdUtilService', 'sdViewUtilService', WorklistViewCtrl]);
 })();

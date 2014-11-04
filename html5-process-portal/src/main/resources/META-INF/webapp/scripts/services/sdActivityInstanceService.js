@@ -14,6 +14,13 @@
 (function(){
 	'use strict';
 
+	angular.module('workflow-ui.services').provider('sdActivityInstanceService', function () {
+		this.$get = ['$rootScope', '$http', '$q', function ($rootScope, $http, $q) {
+			var service = new ActivityInstanceService($rootScope, $http, $q);
+			return service;
+		}];
+	});
+
 	/*
 	 * 
 	 */
@@ -89,11 +96,4 @@
 			return deferred.promise;
 		};
 	};
-	
-	angular.module('workflow-ui.services').provider('sdActivityInstanceService', function () {
-		this.$get = ['$rootScope', '$http', '$q', function ($rootScope, $http, $q) {
-			var service = new ActivityInstanceService($rootScope, $http, $q);
-			return service;
-		}];
-	});
 })();

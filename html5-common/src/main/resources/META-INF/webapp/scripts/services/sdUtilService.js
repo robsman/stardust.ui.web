@@ -15,6 +15,13 @@
 (function(){
 	'use strict';
 
+	angular.module('bpm-common.services').provider('sdUtilService', function () {
+		this.$get = ['$rootScope', function ($rootScope) {
+			var service = new UtilService($rootScope);
+			return service;
+		}];
+	});
+
 	/*
 	 * 
 	 */
@@ -59,11 +66,4 @@
 			return proxyFunc;
 		}
 	};
-
-	angular.module('bpm-common.services').provider('sdUtilService', function () {
-		this.$get = ['$rootScope', function ($rootScope) {
-			var service = new UtilService($rootScope);
-			return service;
-		}];
-	});
 })();

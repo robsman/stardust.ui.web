@@ -15,6 +15,13 @@
 (function(){
 	'use strict';
 
+	angular.module('workflow-ui.services').provider('sdWorklistService', function () {
+		this.$get = ['$rootScope', '$resource', function ($rootScope, $resource) {
+			var service = new WorklistService($rootScope, $resource);
+			return service;
+		}];
+	});
+
 	/*
 	 * 
 	 */
@@ -54,11 +61,4 @@
 			return $resource(restUrl).get(urlTemplateParams).$promise;
 		};
 	};
-
-	angular.module('workflow-ui.services').provider('sdWorklistService', function () {
-		this.$get = ['$rootScope', '$resource', function ($rootScope, $resource) {
-			var service = new WorklistService($rootScope, $resource);
-			return service;
-		}];
-	});
 })();

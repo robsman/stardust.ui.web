@@ -15,6 +15,13 @@
 (function(){
 	'use strict';
 
+	angular.module('workflow-ui.services').provider('sdProcessDefinitionService', function () {
+		this.$get = ['$rootScope', '$resource', function ($rootScope, $resource) {
+			var service = new ProcessDefinitionService($rootScope, $resource);
+			return service;
+		}];
+	});
+
 	/*
 	 * 
 	 */
@@ -30,11 +37,4 @@
 			return $resource(restUrl).query().$promise;
 		};
 	};
-
-	angular.module('workflow-ui.services').provider('sdProcessDefinitionService', function () {
-		this.$get = ['$rootScope', '$resource', function ($rootScope, $resource) {
-			var service = new ProcessDefinitionService($rootScope, $resource);
-			return service;
-		}];
-	});
 })();
