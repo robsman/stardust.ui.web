@@ -29,21 +29,21 @@ import org.eclipse.stardust.ui.web.common.log.Logger;
  */
 public class DateUtils
 {
-	
+
    private static final int SECS_IN_A_DAY = 86400;
    private static final int SECS_IN_AN_HOUR = 3600;
    private static final int SECS_IN_A_MINUTE = 60;
    private static final int MILLIS_TO_SECS_DIV_FACTOR = 1000;
    private static final String TIME_ZONE_PREFIX = "GMT";
    private static final Logger trace = LogManager.getLogger(DateUtils.class);
-   
-  
+
+
    public DateUtils()
    {
-      
+
    }
-  
-   
+
+
    /**
     * @return
     */
@@ -52,7 +52,7 @@ public class DateUtils
       return MessagePropertiesBean.getInstance().getString(
             "portalFramework.formats.defaultDateTimeFormat");
    }
-   
+
    /**
     * @return
     */
@@ -61,7 +61,7 @@ public class DateUtils
       return MessagePropertiesBean.getInstance().getString(
             "portalFramework.formats.defaultDateFormat");
    }
-   
+
    /**
     * @return
     */
@@ -70,7 +70,7 @@ public class DateUtils
       return MessagePropertiesBean.getInstance().getString(
             "portalFramework.formats.defaultTimeFormat");
    }
-   
+
    /**
     * @param date
     * @return
@@ -100,7 +100,7 @@ public class DateUtils
 
    /**
     * This method will also consider client time zone if available
-    * 
+    *
     * @param date
     * @param format
     * @return
@@ -109,7 +109,7 @@ public class DateUtils
    {
       return format(date, format, PortalApplication.getInstance().getTimeZone());
    }
-  
+
    /**
     * @param date
     * @param format
@@ -118,6 +118,11 @@ public class DateUtils
     */
    public static String format(Date date, String format, TimeZone timeZone)
    {
+      if (date == null)
+      {
+         return "";
+      }
+
       Locale locale = FacesUtils.getLocaleFromRequest();
       SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format, locale);
 
@@ -175,12 +180,12 @@ public class DateUtils
             // Ignore
          }
       }
-      
+
       return null;
    }
-   
+
    /**
-    * TODO: Can use tools like Pretty Time Instead if permissible 
+    * TODO: Can use tools like Pretty Time Instead if permissible
     * @param timeStamp
     * @return
     */
@@ -198,7 +203,7 @@ public class DateUtils
          str.append(msgProps.getString("portalFramework.humanDate.FUTURE"));
       }
       else
-      {   
+      {
          if(diffTime <= 10)
          {
             str.append(msgProps.getString("portalFramework.humanDate.SECONDS"));
@@ -239,21 +244,21 @@ public class DateUtils
          {
             str.append(((int)diffTime/(168*60*60)) + " " + msgProps.getString("portalFramework.humanDate.WEEKS"));
          }
-         
+
          str.append(" " + msgProps.getString("portalFramework.humanDate.AGO"));
       }
 
       str.append(str.length() > 0 ? "" : msgProps.getString("portalFramework.humanDate.NOW"));
-      
-      return str.toString(); 
+
+      return str.toString();
    }
    /**
     * Converts a <code>Date</code> object to GMT format and return time .
     *
-    * @param date   A <code>Date</code> object to be converted 
-    * @return A long representing the date after converting to GMT format. 
-    */     
-   
+    * @param date   A <code>Date</code> object to be converted
+    * @return A long representing the date after converting to GMT format.
+    */
+
    public static long convertToGmt( Date date )
    {
       TimeZone tz = TimeZone.getDefault();
@@ -274,10 +279,10 @@ public class DateUtils
 
       return ret.getTime();
    }
-   
+
    /**
     * Formats the duration in the "dd days hh hours mm minutes ss seconds" format
-    * 
+    *
     * @param durationInMillis
     * @return
     */
@@ -285,10 +290,10 @@ public class DateUtils
    {
       return formatDurationInHumanReadableFormat(durationInMillis, SECS_IN_A_DAY);
    }
-   
+
    /**
     * Formats the duration in the "dd days hh hours mm minutes ss seconds" format
-    * 
+    *
     * @param durationInMillis
     * @return
     */
@@ -303,10 +308,10 @@ public class DateUtils
       durationInSecs = durationInSecs % 3600;
       String mins = String.valueOf(numFormat.format(durationInSecs / SECS_IN_A_MINUTE));
       String secs = String.valueOf(numFormat.format(durationInSecs % SECS_IN_A_MINUTE));
-      
+
       return MessagePropertiesBean.getInstance().getParamString("portalFramework.humanReadable.duration", days, hrs, mins, secs);
    }
-   
+
    /**
     * Returns the Client's timeZone
     * @author Yogesh.Manware
@@ -346,16 +351,16 @@ public class DateUtils
 
 
    /**
-    * Date format pattern for bean 
+    * Date format pattern for bean
     * @return
     */
-   
+
    public String getDateFormatter()
    {
       return getDateFormat();
    }
    /**
-    * DateTime format pattern for bean 
+    * DateTime format pattern for bean
     * @return
     */
    public String getDateTimeFormatter()
