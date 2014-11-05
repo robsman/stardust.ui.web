@@ -46,9 +46,31 @@
 		bodyCols.attr('ng-non-bindable', '');
 		
 		// Hide the element, till it's ready to be visible
-		elem.hide();
+		showElement(elem, false);
 	}
 
+	/*
+	 * 
+	 */
+	function showElement(element, show) {
+		var toolbar = element.prev();
+		if (toolbar.attr('sda-toolbar') == undefined) {
+			toolbar = null;
+		}
+
+		if (show) {
+			element.show();
+			if (toolbar) {
+				toolbar.show();
+			}
+		} else {
+			element.hide();
+			if (toolbar) {
+				toolbar.hide();
+			}
+		}
+	}
+	
 	/*
 	 * 
 	 */
@@ -100,18 +122,25 @@
 		 * 
 		 */
 		function initialize() {
-			processMarkup();
-
-			cleanupAsDirective();
-			
-			buildDataTableInformation();
-
-			createDataTable();
-
-			// We just changed the markup, so can proceed further only after current digest cycle
-			$timeout(function() {
-				buildDataTable();
-			});
+			try {
+				validateMarkup();
+	
+				processMarkup();
+	
+				cleanupAsDirective();
+				
+				buildDataTableInformation();
+	
+				createDataTable();
+	
+				// We just changed the markup, so can proceed further only after current digest cycle
+				$timeout(function() {
+					buildDataTable();
+				});
+			} catch (e) {
+				var msg = 'sd-data-table is unable to process table. Reason: ' + e;
+				jQuery('<pre class="tbl-error">' + msg + '</pre>').insertAfter(element);
+			}
 		}
 
 		/*
@@ -126,6 +155,39 @@
 		/*
 		 * 
 		 */
+		function validateMarkup() {
+			// Check Tag Name <table>
+			var tagName = element.prop('tagName');
+			throwError(tagName != 'TABLE', 'Directive must be defined on &lt;table&gt; element, but its defined on ' + tagName + '.');
+
+			// Check <thead>
+			var head = element.find('> thead');
+			throwError(head.length != 1, '&lt;table&gt; must have at least and at most one &lt;thead&gt; defined.');
+
+			// Check header row
+			var headerRow = head.find('> tr');
+			throwError(headerRow.length != 1, '&lt;thead&gt; must have at leat and at most one &lt;tr&gt; defined.');
+
+			// Check <tbody>
+			var body = element.find('> tbody');
+			throwError(body.length != 1, '&lt;table&gt; must have at leat and at most one &lt;tbody&gt; defined.');
+
+			var bodyRow = body.find('> tr');
+			throwError(bodyRow.length != 1, '&lt;tbody&gt; must have at leat and at most one &lt;tr&gt; defined.');
+		}
+
+		/*
+		 * 
+		 */
+		function throwError(condition, msg) {
+			if (condition) {
+				throw msg;
+			}
+		}
+		
+		/*
+		 * 
+		 */
 		function processMarkup() {
 			// Process Columns
 			var head = element.find('> thead');
@@ -137,9 +199,7 @@
 			var headCols = element.find('> thead > tr > th');
 			var bodyCols = element.find('> tbody > tr > td');
 
-			if (headCols.length != bodyCols.length) {
-				throw "Table Header and body columns are not matching";
-			}
+			throwError(headCols.length != bodyCols.length, 'Number of columns in head and body are not matching.');
 			
 			headCols.addClass('tbl-hdr-col');
 			
@@ -326,7 +386,7 @@
 		 */
 		function drawCallbackHandler (oSettings) {
 			// Show the element, as it's ready to be visible
-			element.show();
+			showElement(element, true);
 
 			// Datatables is adding pixel width to table.
 			// TODO: Find better API
