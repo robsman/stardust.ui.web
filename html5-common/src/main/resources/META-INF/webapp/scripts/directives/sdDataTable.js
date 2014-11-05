@@ -47,27 +47,20 @@
 		
 		// Hide the element, till it's ready to be visible
 		showElement(elem, false);
+		var toolbar = elem.prev();
+		if (toolbar.attr('sda-toolbar') == undefined) {
+			showElement(toolbar, false);
+		}
 	}
 
 	/*
 	 * 
 	 */
 	function showElement(element, show) {
-		var toolbar = element.prev();
-		if (toolbar.attr('sda-toolbar') == undefined) {
-			toolbar = null;
-		}
-
 		if (show) {
 			element.show();
-			if (toolbar) {
-				toolbar.show();
-			}
 		} else {
 			element.hide();
-			if (toolbar) {
-				toolbar.hide();
-			}
 		}
 	}
 	
@@ -91,7 +84,7 @@
 		var elemScope = scope;
 		var sdData = ctrl[0];
 
-		var columns = [], dtColumns = [], theTable, theDataTable;
+		var columns = [], dtColumns = [], theTable, theDataTable, theToolbar;
 
 		// Setup component instance
 		setup();
@@ -281,20 +274,20 @@
 		 */
 		function createDataTable() {
 			// Toolbar
-			var toolbar = element.prev();
-			if (toolbar.attr('sda-toolbar') != undefined) {
-				toolbar.prepend(TOOLBAR_TEMPLATE);
+			theToolbar = element.prev();
+			if (theToolbar.attr('sda-toolbar') != undefined) {
+				theToolbar.prepend(TOOLBAR_TEMPLATE);
 			} else {
 				var toolbarTemplate = '<div>' + TOOLBAR_TEMPLATE + '</div>';
 				jQuery(toolbarTemplate).insertBefore(element);
-				toolbar = element.prev();
+				theToolbar = element.prev();
 			}
 
-			toolbar = angular.element(toolbar);
-			toolbar.addClass('tbl-toolbar');
+			theToolbar = angular.element(theToolbar);
+			theToolbar.addClass('tbl-toolbar');
 
 			// Compile the default toolbar, which was inserted
-			var defaultToolbar = toolbar.children().first();
+			var defaultToolbar = theToolbar.children().first();
 			$compile(defaultToolbar)(defaultToolbar.scope());
 
 			// Add Header Labels
@@ -387,6 +380,9 @@
 		function drawCallbackHandler (oSettings) {
 			// Show the element, as it's ready to be visible
 			showElement(element, true);
+			if (theToolbar) {
+				showElement(theToolbar, true);
+			}
 
 			// Datatables is adding pixel width to table.
 			// TODO: Find better API

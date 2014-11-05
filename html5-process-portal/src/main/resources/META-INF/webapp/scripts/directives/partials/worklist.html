@@ -1,7 +1,7 @@
 <div class="worklist-wrapper">
 	<div class="worklist-title tbl-title">{{worklistCtrl.title}}</div>
 	<div sda-toolbar>
-		<a href="#" ng-click="worklistCtrl.completeAll()" title="Complete All" class="tbl-toolbar-item tbl-tool-link">
+		<a sda-column="TRIVIAL_DATA" href="#" ng-click="worklistCtrl.completeAll()" title="Complete All" class="tbl-toolbar-item tbl-tool-link">
 		   <i class="fa fa-share"></i>
 		</a>
 	</div>
@@ -79,7 +79,7 @@
 					<a href="#" ng-click="worklistCtrl.openProcessHistory(rowData)" title="Process History" class="view-tool-link">
 						<i class="fa fa-tasks"></i>
 					</a>
-					<a href="#" ng-click="worklistCtrl.complete(rowData)" title="Complete" class="view-tool-link">
+					<a sda-column="TRIVIAL_DATA" href="#" ng-click="worklistCtrl.complete(rowData)" title="Complete" class="view-tool-link">
 						<i class="fa fa-share"></i>
 					</a>
 					<a href="#" ng-click="worklistCtrl.openDelegateDialog(rowData)" title="Delegate" class="view-tool-link">

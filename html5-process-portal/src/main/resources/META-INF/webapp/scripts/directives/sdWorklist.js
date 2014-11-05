@@ -47,6 +47,11 @@
 				var cols = elem.find('[sda-column="TRIVIAL_DATA"]');
 				cols.remove();
 			}
+			
+			// Toolbar
+			var toolbar = element.prev();
+			var items = toolbar.find('[sda-column="TRIVIAL_DATA"]');
+			items.remove();
 		}
 		
 		var _sdViewUtilService, _sdWorklistService, _sdActivityInstanceService, _sdProcessDefinitionService;
