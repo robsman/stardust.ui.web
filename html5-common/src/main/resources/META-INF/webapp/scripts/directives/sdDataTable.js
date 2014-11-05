@@ -48,7 +48,7 @@
 		// Hide the element, till it's ready to be visible
 		showElement(elem, false);
 		var toolbar = elem.prev();
-		if (toolbar.attr('sda-toolbar') == undefined) {
+		if (toolbar.attr('sda-toolbar') != undefined) {
 			showElement(toolbar, false);
 		}
 	}
