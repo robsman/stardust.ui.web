@@ -21,19 +21,19 @@ define(
             return {
                createTemplatingHandlerRouteDefinition : function(format, location,
                         embeddedTemplateContent, templatePath, generateFileOutputName,
-                        convertToPdf)
+                        convertToPdf, defaultInAp)
                {
                   return createTemplatingHandlerRouteDefinition(format, location,
                            embeddedTemplateContent, templatePath, generateFileOutputName,
-                           convertToPdf);
+                           convertToPdf,defaultInAp);
                },
                createRouteForVelocityTemplates : function(format, location,
                         embeddedTemplateContent, templatePath, generateFileOutputName,
-                        convertToPdf)
+                        convertToPdf,defaultInAp)
                {
                   return createRouteForVelocityTemplates(format, location,
                            embeddedTemplateContent, templatePath, generateFileOutputName,
-                           convertToPdf);
+                           convertToPdf,defaultInAp);
                },
                createRouteForXDocReportTemplates : function(format, location,
                         embeddedTemplateContent, templatePath, generateFileOutputName,
@@ -75,13 +75,13 @@ define(
              */
             function createTemplatingHandlerRouteDefinition(format, location,
                      embeddedTemplateContent, templatePath, generateFileOutputName,
-                     convertToPdf)
+                     convertToPdf,defaultInAp)
             {
                if (format != "docx")
                {
                   return createRouteForVelocityTemplates(format, location,
                            embeddedTemplateContent, templatePath, generateFileOutputName,
-                           convertToPdf);
+                           convertToPdf,defaultInAp);
                }
                else
                {
@@ -113,7 +113,7 @@ define(
              */
             function createRouteForVelocityTemplates(format, location,
                      embeddedTemplateContent, templatePath, generateFileOutputName,
-                     convertToPdf)
+                     convertToPdf,defaultInAp)
             {
                // create RouteDefinition that handle velocity templates
                var routeDefinition = "";
@@ -146,11 +146,19 @@ define(
                      routeDefinition += "   <constant>templates/" + templatePath;
                      routeDefinition += "</constant>\n";
                      routeDefinition += "</setHeader>\n";
+                  }else{
+
+                     if( defaultInAp!=null && defaultInAp.dataType=="primitive"){
+                        routeDefinition += "<setHeader headerName=\"CamelVelocityTemplate\">\n";
+                        routeDefinition += "   <simple>$simple{header.defaultInputAp}</simple>\n";
+                        routeDefinition += "</setHeader>\n";
+                     }else{
+                        routeDefinition += "<to uri=\"bean:documentHandler?method=retrieveContent\"/>";
+                        routeDefinition += "<setHeader headerName=\"CamelVelocityTemplate\">\n";
+                        routeDefinition += "   <simple>$simple{header.ippDmsDocumentContent}</simple>\n";
+                        routeDefinition += "</setHeader>\n";
+                     }
                   }
-                  routeDefinition += "<to uri=\"bean:documentHandler?method=retrieveContent\"/>";
-                  routeDefinition += "<setHeader headerName=\"CamelVelocityTemplate\">\n";
-                  routeDefinition += "   <simple>$simple{header.ippDmsDocumentContent}</simple>\n";
-                  routeDefinition += "</setHeader>\n";
                }
                var uri = "templating:" + location + "?format=" + format;
                if (templatePath != null && templatePath != "")
@@ -223,7 +231,7 @@ define(
                routeDefinition += "   <simple>$simple{header.CamelTemplatingOutputName}</simple>\n";
                routeDefinition += "</setHeader>\n";
                routeDefinition += "<to uri=\"bean:documentHandler?method=toDocument\"/>";
-               routeDefinition += "<setHeader headerName=\"output\">\n";
+               routeDefinition += "<setHeader headerName=\"defaultOutputAp\">\n";
                routeDefinition += "<simple>$simple{body}</simple>\n";
                routeDefinition += "</setHeader>\n";
                return routeDefinition;
