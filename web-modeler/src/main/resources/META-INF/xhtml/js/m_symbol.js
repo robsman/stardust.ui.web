@@ -1795,7 +1795,9 @@ define(
 
 					this.diagram.addToCurrentSelection(this);
 					this.hideFlyOutMenu();
-					this.showSelectFrame();
+					if(!this.isPoolSymbol()){
+						this.showSelectFrame();						
+					}
 
 					this.showPropertiesPanel();
 				};
