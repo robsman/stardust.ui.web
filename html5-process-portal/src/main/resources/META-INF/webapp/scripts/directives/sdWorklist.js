@@ -26,9 +26,28 @@
 			restrict : 'AE',
 			scope: true, // Creates a new sub scope
 			templateUrl: 'plugins/html5-process-portal/scripts/directives/partials/worklist.html',
+			compile: function(elem, attr, transclude) {
+				processRawMarkup(elem, attr);
+			},
 			controller: ['$attrs', '$scope', 'sdUtilService', 'sdViewUtilService', 'sdWorklistService', 
 			             'sdActivityInstanceService', 'sdProcessDefinitionService', WorklistCtrl]
 		};
+
+		/*
+		 * 
+		 */
+		function processRawMarkup(elem, attr) {
+			// Process Trivial Data Column
+			var showTrivialDataColumn = true; // Default
+			if (attr.sdaTrivialDataColumn && attr.sdaTrivialDataColumn === 'false') {
+				showTrivialDataColumn = false;
+			}
+			// If not required remove the column
+			if (!showTrivialDataColumn) {
+				var cols = elem.find('[sda-column="TRIVIAL_DATA"]');
+				cols.remove();
+			}
+		}
 		
 		var _sdViewUtilService, _sdWorklistService, _sdActivityInstanceService, _sdProcessDefinitionService;
 

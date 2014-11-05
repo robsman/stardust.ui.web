@@ -20,7 +20,7 @@
 				<th ng-repeat="descCol in worklistCtrl.descritorCols" sda-sortable="{{descCol.sortable}}">
 					<span class="tbl-hdr-col-label">{{descCol.title}}</span>
 				</th>
-				<th>
+				<th sda-column="TRIVIAL_DATA">
 					<span class="{{descCol.title}}">Data</span>
 				</th>
 				<th sda-label="actions"></th>
@@ -49,7 +49,7 @@
 				<td ng-repeat="descCol in worklistCtrl.descritorCols"
 					sda-field="{{descCol.field}}" sda-data-type="{{descCol.dataType}}">
 				</td>
-				<td>
+				<td sda-column="TRIVIAL_DATA">
 					<table ng-hide="!worklistCtrl.worklist.trivialManualActivities[rowData.oid]">
 						<tbody>
 					    	<tr ng-repeat="mapping in worklistCtrl.worklist.trivialManualActivities[rowData.oid].dataMappings">
