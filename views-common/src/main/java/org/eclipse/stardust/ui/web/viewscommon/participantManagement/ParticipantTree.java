@@ -375,7 +375,7 @@ public class ParticipantTree
 
       // Add all sub-Organizations
       @SuppressWarnings("unchecked")
-      List<Organization> subOrganizations = ((Organization) ParticipantUtils.getParticipant(qualifiedOrganizationInfo))
+      List<Organization> subOrganizations = ((Organization) ParticipantUtils.getParticipant(qualifiedOrganizationInfo, UserDetailsLevel.Full))
             .getAllSubOrganizations();
       for (Organization subOrganization : subOrganizations)
       {
@@ -503,7 +503,7 @@ public class ParticipantTree
    private void addSubOrganizations(DefaultMutableTreeNode node, QualifiedOrganizationInfo qualifiedOrganizationInfo)
    {
       Department department = getDepartment(qualifiedOrganizationInfo.getDepartment());
-      Organization organization = (Organization) ParticipantUtils.getParticipant(qualifiedOrganizationInfo);
+      Organization organization = (Organization) ParticipantUtils.getParticipant(qualifiedOrganizationInfo, UserDetailsLevel.Full);
 
       @SuppressWarnings("unchecked")
       List<Organization> subOrganizations = organization.getAllSubOrganizations();
@@ -520,7 +520,7 @@ public class ParticipantTree
    private void addSubRoles(DefaultMutableTreeNode node, QualifiedOrganizationInfo qualifiedOrganizationInfo)
    {
       Department department = getDepartment(qualifiedOrganizationInfo.getDepartment());
-      Organization organization = (Organization) ParticipantUtils.getParticipant(qualifiedOrganizationInfo);
+      Organization organization = (Organization) ParticipantUtils.getParticipant(qualifiedOrganizationInfo, UserDetailsLevel.Full);
 
       @SuppressWarnings("unchecked")
       List<Role> subRoles = organization.getAllSubRoles();
