@@ -106,57 +106,64 @@ public class GenericRepositoryTreeViewBean extends UIComponentBean implements Vi
    @Override
    public void initialize()
    {
-	  deleteUserObject=null;
-	  repositoryUserObject = null;
-	  repositoryId = null;
-      quickSearchApplicable = false;
-      if (RepositoryMode.DOCUMENT_REPO == this.repositoryMode)
+      try
       {
-         model = RepositoryUtility.createDocumentRepoModel();
-         quickSearchApplicable = true;
-      }
-      else if (RepositoryMode.MY_DOCUMENTS == this.repositoryMode)
-      {
-         model = RepositoryUtility.createMyDocumentsModel();
-      }
-      else if (RepositoryMode.PROCESS_DOCUMENTS == this.repositoryMode)
-      {
-         model = RepositoryUtility.createProcessDocumentsModel(this.processInstance);
+         deleteUserObject=null;
+         repositoryUserObject = null;
+         repositoryId = null;
+         quickSearchApplicable = false;
+         if (RepositoryMode.DOCUMENT_REPO == this.repositoryMode)
+         {
+            model = RepositoryUtility.createDocumentRepoModel();
+            quickSearchApplicable = true;
+         }
+         else if (RepositoryMode.MY_DOCUMENTS == this.repositoryMode)
+         {
+            model = RepositoryUtility.createMyDocumentsModel();
+         }
+         else if (RepositoryMode.PROCESS_DOCUMENTS == this.repositoryMode)
+         {
+            model = RepositoryUtility.createProcessDocumentsModel(this.processInstance);
 
-         if (null != ippEventController)
-         {
-            if (!registred)
+            if (null != ippEventController)
             {
-               eventHandler = new EventHandler();
-               ippEventController.registerObserver((NoteEventObserver)eventHandler);
-               ippEventController.registerObserver((DocumentEventObserver)eventHandler);
-               registred = true;
+               if (!registred)
+               {
+                  eventHandler = new EventHandler();
+                  ippEventController.registerObserver((NoteEventObserver)eventHandler);
+                  ippEventController.registerObserver((DocumentEventObserver)eventHandler);
+                  registred = true;
+               }
             }
          }
-      }
-      else if (RepositoryMode.CASE_DOCUMENTS == this.repositoryMode)
-      {
-         this.processInstances=ProcessInstanceUtils.findChildren(processInstance); 
-         model = RepositoryUtility.createCaseDocumentsModel(this.processInstances,this.processInstance);
-         if (null != ippEventController)
+         else if (RepositoryMode.CASE_DOCUMENTS == this.repositoryMode)
          {
-            if (!registred)
+            this.processInstances=ProcessInstanceUtils.findChildren(processInstance); 
+            model = RepositoryUtility.createCaseDocumentsModel(this.processInstances,this.processInstance);
+            if (null != ippEventController)
             {
-               eventHandler = new EventHandler();
-               ippEventController.registerObserver((NoteEventObserver)eventHandler);
-               ippEventController.registerObserver((DocumentEventObserver)eventHandler);
-               registred = true;
+               if (!registred)
+               {
+                  eventHandler = new EventHandler();
+                  ippEventController.registerObserver((NoteEventObserver)eventHandler);
+                  ippEventController.registerObserver((DocumentEventObserver)eventHandler);
+                  registred = true;
+               }
             }
          }
+         else if (RepositoryMode.RESOURCE_MANAGEMENT == this.repositoryMode)
+         {
+            model = RepositoryUtility.createResourceMgmtModel();
+            isBackupAllowed = true;
+         }
+         else if (RepositoryMode.MY_REPORTS == this.repositoryMode)
+         {
+           model = RepositoryUtility.createMyReportsModel();
+         } 
       }
-      else if (RepositoryMode.RESOURCE_MANAGEMENT == this.repositoryMode)
+      catch (Exception e)
       {
-         model = RepositoryUtility.createResourceMgmtModel();
-         isBackupAllowed = true;
-      }
-      else if (RepositoryMode.MY_REPORTS == this.repositoryMode)
-      {
-        model = RepositoryUtility.createMyReportsModel();
+         logger.error("Error Occurred while initializing the document repository tree......" , e);
       }
    }
 
