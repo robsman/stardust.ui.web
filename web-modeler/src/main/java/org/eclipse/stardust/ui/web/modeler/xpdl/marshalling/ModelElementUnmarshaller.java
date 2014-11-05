@@ -32,6 +32,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
+
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
@@ -50,6 +51,7 @@ import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.model.xpdl.carnot.util.StructuredTypeUtils;
 import org.eclipse.stardust.model.xpdl.util.IdFactory;
+import org.eclipse.stardust.model.xpdl.util.NameIdUtils;
 import org.eclipse.stardust.model.xpdl.xpdl2.*;
 import org.eclipse.stardust.model.xpdl.xpdl2.DataTypeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.LoopType;
@@ -67,6 +69,7 @@ import org.eclipse.stardust.ui.web.modeler.spi.ModelFormat;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelingSessionScoped;
 import org.eclipse.stardust.ui.web.modeler.xpdl.edit.utils.ModelElementEditingUtils;
 import org.eclipse.stardust.ui.web.modeler.xpdl.edit.utils.WebServiceApplicationUtils;
+
 import org.eclipse.xsd.XSDElementDeclaration;
 import org.eclipse.xsd.XSDSchema;
 import org.eclipse.xsd.XSDTypeDefinition;
@@ -2335,20 +2338,19 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
 
                   String id = null;
 
-
-
-                  if (predefined)
-                  {
-                     id = accessPointJson.get(ModelerConstants.ID_PROPERTY).getAsString();
-                  }
-
                   String name = accessPointJson.get(ModelerConstants.NAME_PROPERTY)
                         .getAsString();
                   String direction = accessPointJson.get(
                         ModelerConstants.DIRECTION_PROPERTY).getAsString();
 
-                  String oldID  = accessPointJson.get(ModelerConstants.ID_PROPERTY).getAsString();
-                  String newID  = accessPointJson.get(ModelerConstants.NAME_PROPERTY).getAsString();
+                  String oldID = accessPointJson.get(ModelerConstants.ID_PROPERTY).getAsString();
+                  String newID = NameIdUtils.createIdFromName(accessPointJson.get(ModelerConstants.NAME_PROPERTY).getAsString());
+
+                  if (predefined)
+                  {
+                     id = accessPointJson.get(ModelerConstants.ID_PROPERTY).getAsString();
+                     newID = id;
+                  }
 
                   logger.debug("Direction: " + direction);
 
