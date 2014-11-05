@@ -491,9 +491,19 @@ define(
             * and remove original))
             */
             Connection.prototype.setSecondAnchorPoint = function(
-                  anchorPoint, sync) {
+                  anchorPoint, sync, reRoutedConnectionModelElement) {
 
                this.setSecondAnchorPointNoComplete(anchorPoint);
+               
+               if(reRoutedConnectionModelElement){
+            	   this.modelElement.conditionExpression = reRoutedConnectionModelElement.conditionExpression;
+            	   this.modelElement.otherwise = reRoutedConnectionModelElement.otherwise;
+            	   this.modelElement.name = reRoutedConnectionModelElement.name;
+            	   this.modelElement.description = reRoutedConnectionModelElement.description;
+            	   this.modelElement.forkOnTraversal = reRoutedConnectionModelElement.forkOnTraversal;
+            	   this.modelElement.comments = reRoutedConnectionModelElement.comments;
+               }
+               
                var updateConnection = null;
 
                if (this.toAnchorPoint.symbol != null) {

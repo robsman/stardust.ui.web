@@ -2695,15 +2695,15 @@ define(
 								if (this.direction == m_constants.TO_ANCHOR_POINT) {
 									newConnection = this.symbol.diagram
 											.createConnection(fromAnchorPoint);
+
 									// Create the connection
-									newConnection.setSecondAnchorPoint(
-											anchorPoint, true);
+									newConnection.setSecondAnchorPoint(anchorPoint, true, this.dragConnection.modelElement);
+									
 								} else {
 									newConnection = this.symbol.diagram
 											.createConnection(anchorPoint);
 									// Create the connection
-									newConnection.setSecondAnchorPoint(
-											toAnchorPoint, true);
+									newConnection.setSecondAnchorPoint(toAnchorPoint, true, this.dragConnection.modelElement);
 								}
 
 								this.dragConnection = newConnection;
