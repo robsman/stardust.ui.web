@@ -92,7 +92,7 @@ public class DescriptorColumnUtils
          if(org.eclipse.stardust.engine.api.runtime.Document.class.equals(dataPath.getMappedType()) && contentUrl!=null)
          {
             ColumnPreference descriptorColumn = new ProcessDocumentColumnPreference(descriptorId ,
-                  "descriptorValues." + descriptorId + "",I18nUtils.getDataPathName(dataPath), contentUrl, false, true);
+                  "descriptorValues." + descriptorId + "",I18nUtils.getDataPathName(dataPath), contentUrl, false, false);
             descriptorColumn.setEscape(false);
             descriptorColumns.add(descriptorColumn);
          }
