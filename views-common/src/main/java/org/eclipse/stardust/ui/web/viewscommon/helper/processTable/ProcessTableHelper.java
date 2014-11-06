@@ -23,6 +23,7 @@ import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
 
 import org.eclipse.stardust.common.CollectionUtils;
+import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.error.AccessForbiddenException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
@@ -79,6 +80,8 @@ import org.eclipse.stardust.ui.web.viewscommon.dialogs.JoinProcessDialogBean;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.SpawnProcessDialogBean;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.SwitchProcessDialogBean;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler.EventType;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentInfo;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentViewUtil;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.user.UserAutocompleteTableDataFilter;
 import org.eclipse.stardust.ui.web.viewscommon.user.UserWrapper;
@@ -423,6 +426,23 @@ public class ProcessTableHelper implements IUserObjectBuilder<ProcessInstanceTab
    }
 
    /**
+    * 
+    * @param event
+    */
+   public void openDocument(ActionEvent event)
+   {
+      DocumentInfo docInfo = (DocumentInfo) event.getComponent().getAttributes().get("documentInfo");
+      ProcessInstance pi = (ProcessInstance) event.getComponent().getAttributes().get("processInstance");
+      if (StringUtils.isNotEmpty(docInfo.getId()))
+      {
+         Map<String, Object> params = CollectionUtils.newMap();
+         params.put("processInstance", pi);
+         params.put("documentName", docInfo.getName());
+         DocumentViewUtil.openJCRDocument(docInfo.getId(), params);
+      }
+   }
+   
+   /**
     * Saves process priorities
     * 
     * @param event
@@ -598,7 +618,7 @@ public class ProcessTableHelper implements IUserObjectBuilder<ProcessInstanceTab
       }
       
       // Adding Descriptor Columns
-      List<ColumnPreference> descriptorColumns = DescriptorColumnUtils.createDescriptorColumns(processTable, allDescriptors);
+      List<ColumnPreference> descriptorColumns = DescriptorColumnUtils.createDescriptorColumns(processTable, allDescriptors, ResourcePaths.V_DOCUMENT_DESC_COLUMNS);
       procCols.addAll(descriptorColumns);
 
       IColumnModel procInstanceColumnModel = new DefaultColumnModel(procCols, null, processFixedCols2, moduleId,

@@ -38,10 +38,12 @@ import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
+import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.WorkflowService;
 import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
 import org.eclipse.stardust.engine.core.struct.TypedXPath;
+import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
 import org.eclipse.stardust.ui.web.common.configuration.UserPreferencesHelper;
 import org.eclipse.stardust.ui.web.common.spi.preference.PreferenceScope;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
@@ -50,8 +52,11 @@ import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.ModelElementComparator;
 import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.viewscommon.common.constant.ProcessPortalConstants;
+import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils.DataPathMetadata;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentInfo;
+import org.eclipse.stardust.ui.web.viewscommon.views.doctree.TypedDocument;
 
 
 
@@ -118,6 +123,121 @@ public class CommonDescriptorUtils
       }
    }
    
+   public static String getDocumentIcon(String fileName, String contentType)
+   {
+      return "/plugins/views-common/images/icons/mime-types/"
+            + MimeTypesHelper.detectMimeType(fileName, contentType).getIconPath();
+   }
+   
+   /**
+    * 
+    * @param descriptorValues
+    * @param instance
+    */
+   public static void updateProcessDocumentDescriptors(Map<String, Object> descriptorValues, ProcessInstance instance,
+         ProcessDefinition processDefinition)
+   {
+      if(CollectionUtils.isEmpty(descriptorValues))
+      {
+         return;
+      }
+      Map<String, DataPathDetails> datapathMap = getDatapathMap(processDefinition);
+      Map<String, TypedDocument> typedDocumentsData = new HashMap<String, TypedDocument>();
+      Map<String, DataPath> outDataMappings = new HashMap<String, DataPath>();
+      Model model = ModelUtils.getModel(instance.getModelOID());
+      TypedDocument typedDocument;
+      String dataDetailsQId;
+
+      for (Entry<String, DataPathDetails> entry : datapathMap.entrySet())
+      {
+         DataPathDetails dataPathDetails = entry.getValue();
+         if (dataPathDetails.isDescriptor())
+         {
+            Object obj = descriptorValues.get(dataPathDetails.getId());
+            if (null != obj)
+            {
+               // Check for Process Attachments, and update descriptor List
+               if (dataPathDetails.getId().equals(DmsConstants.DATA_ID_ATTACHMENTS))
+               {
+                  List<Document> processAttachmentList = (List<Document>) obj;
+                  List<DocumentInfo> processAttachments = CollectionUtils.newArrayList();
+                  for (Document processAttachment : processAttachmentList)
+                  {
+                     processAttachments.add(new DocumentInfo(getDocumentIcon(processAttachment.getName(),
+                           processAttachment.getContentType()), processAttachment));
+                  }
+                  descriptorValues.put(dataPathDetails.getId(), processAttachments);
+               }
+               else
+               {
+                  DataDetails dataDetails = (DataDetails) model.getData(dataPathDetails.getData());
+                  // Check for Type Documents and create List
+                  if (DmsConstants.DATA_TYPE_DMS_DOCUMENT.equals(dataDetails.getTypeId()))
+                  {
+                     dataDetailsQId = dataDetails.getQualifiedId();
+                     Direction direction = dataPathDetails.getDirection();
+                     if (Direction.IN.equals(direction) && !typedDocumentsData.containsKey(dataDetailsQId))
+                     {
+                        try
+                        {
+                           typedDocument = new TypedDocument(instance, dataPathDetails, dataDetails, (Document) obj);
+                           if (outDataMappings.containsKey(dataDetailsQId))
+                           {
+                              typedDocument.setDataPath(outDataMappings.get(dataDetailsQId));
+                              typedDocument.setOutMappingExist(true);
+                           }
+                           typedDocumentsData.put(dataDetailsQId, typedDocument);
+                        }
+                        catch (Exception e)
+                        {
+                           trace.error(e);
+                        }
+                     }
+                     else if (Direction.OUT.equals(direction))
+                     {
+                        if (typedDocumentsData.containsKey(dataDetailsQId))
+                        {
+                           typedDocument = typedDocumentsData.get(dataDetailsQId);
+                           if (!typedDocument.isOutMappingExist())
+                           {
+                              typedDocument.setDataPath(dataPathDetails);
+                              typedDocument.setOutMappingExist(true);
+                           }
+                        }
+                        else
+                        {
+                           outDataMappings.put(dataDetailsQId, dataPathDetails);
+                        }
+                     }
+                  }
+               }
+            }
+         }
+      }
+      List<TypedDocument> typedDocumentList = new ArrayList<TypedDocument>(typedDocumentsData.values());
+      for (TypedDocument typedDoc : typedDocumentList)
+      {
+         String dataPathId = typedDoc.getDataPath().getId();
+         Object value = descriptorValues.get(dataPathId);
+         if (value == null)
+         {
+            continue;
+         }
+         Document document = typedDoc.getDocument();
+         String icon = null;
+         if (null != document)
+         {
+            icon = getDocumentIcon(document.getName(), document.getContentType());
+         }
+         else
+         {
+            icon = ResourcePaths.I_EMPTY_CORE_DOCUMENT;
+         }
+         DocumentInfo documentInfo = new DocumentInfo(icon, typedDoc);
+         descriptorValues.put(dataPathId, documentInfo);
+      }
+   }
+   
    /**
     * @param descriptors
     * @param processDefinition
@@ -153,9 +273,17 @@ public class CommonDescriptorUtils
          }
          else
          {
-            processDescriptor = new ProcessDescriptor(I18nUtils.getDataPathName(entry.getValue()),
-                  formatDescriptorValue(descriptors.get(entry.getKey()), entry.getValue().getAccessPath()));
-            processDescriptors.add(processDescriptor);
+            DataPathDetails dataPathDetails = entry.getValue();
+            Model model = ModelCache.findModelCache().getModel(dataPathDetails.getModelOID());
+            DataDetails dataDetails = (DataDetails) model.getData(dataPathDetails.getData());
+            // Filter Document Descriptors
+            if (!dataPathDetails.getId().equals(DmsConstants.DATA_ID_ATTACHMENTS)
+                  && (!DmsConstants.DATA_TYPE_DMS_DOCUMENT.equals(dataDetails.getTypeId())))
+            {
+               processDescriptor = new ProcessDescriptor(I18nUtils.getDataPathName(entry.getValue()),
+                     formatDescriptorValue(descriptors.get(entry.getKey()), entry.getValue().getAccessPath()));
+               processDescriptors.add(processDescriptor);
+            }
          }
       }
       return processDescriptors;

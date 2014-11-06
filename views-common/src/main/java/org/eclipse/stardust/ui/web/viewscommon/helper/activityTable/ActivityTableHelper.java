@@ -23,6 +23,7 @@ import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
 
 import org.eclipse.stardust.common.CollectionUtils;
+import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.Activity;
@@ -84,6 +85,8 @@ import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.JoinProcessDialogBean;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.PanelConfirmation;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.SwitchProcessDialogBean;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentInfo;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentViewUtil;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.user.ParticipantAutocompleteTableDataFilter;
 import org.eclipse.stardust.ui.web.viewscommon.user.ParticipantWrapper;
@@ -335,6 +338,23 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
    }
    
    /**
+    * 
+    * @param event
+    */
+   public void openDocument(ActionEvent event)
+   {
+      DocumentInfo docInfo = (DocumentInfo) event.getComponent().getAttributes().get("documentInfo");
+      ProcessInstance pi = (ProcessInstance) event.getComponent().getAttributes().get("processInstance");
+      if (StringUtils.isNotEmpty(docInfo.getId()))
+      {
+         Map<String, Object> params = CollectionUtils.newMap();
+         params.put("processInstance", pi);
+         params.put("documentName", docInfo.getName());
+         DocumentViewUtil.openJCRDocument(docInfo.getId(), params);
+      }
+   }
+   
+   /**
     * Delegates the selected activity to default performer
     * 
     * @param ae
@@ -536,7 +556,7 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
       activityCols.add(participantPerformerCol);
 
       // Adding Descriptor Columns
-      List<ColumnPreference> descriptorColumns = DescriptorColumnUtils.createDescriptorColumns(activityTable, allDescriptors);
+      List<ColumnPreference> descriptorColumns = DescriptorColumnUtils.createDescriptorColumns(activityTable, allDescriptors, ResourcePaths.V_DOCUMENT_DESC_COLUMNS);
       activityCols.addAll(descriptorColumns);
 
       IColumnModel activityColumnModel = new DefaultColumnModel(activityCols, null, activityFixedCols2, moduleId,

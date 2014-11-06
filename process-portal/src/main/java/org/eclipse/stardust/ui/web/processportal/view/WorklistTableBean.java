@@ -19,8 +19,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
@@ -66,10 +66,10 @@ import org.eclipse.stardust.ui.web.common.column.IColumnModel;
 import org.eclipse.stardust.ui.web.common.column.IColumnModelListener;
 import org.eclipse.stardust.ui.web.common.columnSelector.TableColumnSelectorPopup;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog;
-import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialogHandler;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogActionType;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogContentType;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogStyle;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialogHandler;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
 import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
 import org.eclipse.stardust.ui.web.common.filter.ITableDataFilter;
@@ -118,6 +118,8 @@ import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.GenericDescriptorFilterModel;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.AbortActivityBean;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentInfo;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentViewUtil;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ClientContextBean;
@@ -748,7 +750,7 @@ public class WorklistTableBean extends UIComponentBean
 
       //set descriptors list and map<dataId, dataPath>
       allDescriptors = CommonDescriptorUtils.getAllDescriptors(false);
-      List<ColumnPreference> descriptorColumns = DescriptorColumnUtils.createDescriptorColumns(worklistTable, allDescriptors);
+      List<ColumnPreference> descriptorColumns = DescriptorColumnUtils.createDescriptorColumns(worklistTable, allDescriptors, Resources.VIEW_WORKLIST_COLUMNS);
       standardColumns.addAll(descriptorColumns);
 
       IColumnModel worklistColumnModel = new DefaultColumnModel(standardColumns, fixedColumns1,
@@ -857,10 +859,21 @@ public class WorklistTableBean extends UIComponentBean
 
             model = modelCache.getModel(ai.getModelOID());
             processDefinition = model != null ? model.getProcessDefinition(ai.getProcessDefinitionId()) : null;
+            ProcessInstance pi = null;
+            if (null != processInstances)
+            {
+               pi = processInstances.get(ai.getProcessInstanceOID());
+            }
+            if (null == pi)
+            {
+               pi = ProcessInstanceUtils.getProcessInstance(ai);
+            }
             if (processDefinition != null)
             {
                ProcessInstanceDetails processInstanceDetails = (ProcessInstanceDetails) ai.getProcessInstance();
                descriptorValues = processInstanceDetails.getDescriptors();
+               // Update document Descriptors (Process Attachment and Type Documents) in Map
+               CommonDescriptorUtils.updateProcessDocumentDescriptors(descriptorValues, pi, processDefinition);
                if (processInstanceDetails.isCaseProcessInstance())
                {
                   processDescriptorsList = CommonDescriptorUtils.createCaseDescriptors(
@@ -873,15 +886,6 @@ public class WorklistTableBean extends UIComponentBean
                }
             }
 
-            ProcessInstance pi = null;
-            if (null != processInstances)
-            {
-               pi = processInstances.get(ai.getProcessInstanceOID());
-            }
-            if (null == pi)
-            {
-               pi = ProcessInstanceUtils.getProcessInstance(ai);
-            }
             
             List<Note> notes = ProcessInstanceUtils.getNotes(pi);
             int notesSize = null != notes ? ProcessInstanceUtils.getNotes(pi).size() : 0;
@@ -997,6 +1001,23 @@ public class WorklistTableBean extends UIComponentBean
       }
    }
 
+   /**
+    * 
+    * @param event
+    */
+   public void openDocument(ActionEvent event)
+   {
+      DocumentInfo docInfo = (DocumentInfo) event.getComponent().getAttributes().get("documentInfo");
+      ProcessInstance pi = (ProcessInstance) event.getComponent().getAttributes().get("processInstance");
+      if (StringUtils.isNotEmpty(docInfo.getId()))
+      {
+         Map<String, Object> params = CollectionUtils.newMap();
+         params.put("processInstance", pi);
+         params.put("documentName", docInfo.getName());
+         DocumentViewUtil.openJCRDocument(docInfo.getId(), params);
+      }
+   }
+   
    /**
     * 
     */

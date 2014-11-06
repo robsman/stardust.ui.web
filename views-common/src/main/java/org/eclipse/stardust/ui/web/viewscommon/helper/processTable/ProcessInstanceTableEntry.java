@@ -130,6 +130,8 @@ public class ProcessInstanceTableEntry extends DefaultRowModel
       this.createUser = startingUserLabel;
       this.descriptorValues = ((ProcessInstanceDetails) processInstance).getDescriptors();
       this.processDescriptorsList = getProcessDescriptor(processInstance, processDefinition);
+      // Update Document Descriptors for process
+      CommonDescriptorUtils.updateProcessDocumentDescriptors(descriptorValues, processInstance, processDefinition);
       
       this.endTime = processInstance.getTerminationTime();
       this.startingUser = startingUserLabel;
@@ -402,7 +404,7 @@ public class ProcessInstanceTableEntry extends DefaultRowModel
       if (processDefinition != null)
       {
          ProcessInstanceDetails processInstanceDetails = (ProcessInstanceDetails) processInstance;
-         Map<String, Object> descriptorValues = processInstanceDetails.getDescriptors();
+         Map<String, Object> descriptorValues = this.descriptorValues;
          
          if (processInstance.isCaseProcessInstance())
          {

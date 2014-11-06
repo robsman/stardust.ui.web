@@ -121,6 +121,8 @@ public class ActivityInstanceWithPrioTableEntry extends DefaultRowModel
             ProcessInstanceDetails processInstanceDetails = (ProcessInstanceDetails) aiWithPrio.getActivityInstance()
                   .getProcessInstance();
             descriptorValues = processInstanceDetails.getDescriptors();
+            // Update the document Descriptors(Process Attachment and Typed Document)
+            CommonDescriptorUtils.updateProcessDocumentDescriptors(descriptorValues, aiWithPrio.getActivityInstance().getProcessInstance(), processDefinition);
             if (caseInstance)
             {
                processDescriptorsList = CommonDescriptorUtils.createCaseDescriptors(

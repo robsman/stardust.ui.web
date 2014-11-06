@@ -1,0 +1,46 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGroup
+		rendered="#{fn:contains(col.columnName, 'PROCESS_ATTACHMENT')}">
+		<ice:panelSeries value="#{rowObject[property]}"
+			var="processAttachment">
+			<ice:commandLink styleClass="action-link"
+				actionListener="#{bean.openDocument}" immediate="true">
+				<pc:automationTag
+					value="auto-PP-ProcAttachDlg-ToolbarOpenNewDocument" />
+				<f:attribute name="documentInfo" value="#{processAttachment}" />
+				<f:attribute name="processInstance"
+					value="#{row.activityInstance.processInstance}" />
+				<ice:panelGrid columns="2">
+					<ice:graphicImage value="#{processAttachment.documentIcon}" />
+					<ice:outputText value="#{processAttachment.name}"
+						style="white-space: nowrap;" />
+				</ice:panelGrid>
+			</ice:commandLink>
+		</ice:panelSeries>
+	</ice:panelGroup>
+
+	<ice:panelGroup
+		rendered="#{pc:instanceOf(col, 'org.eclipse.stardust.ui.web.common.column.ProcessDocumentColumnPreference')}">
+		<ice:commandLink styleClass="action-link"
+			actionListener="#{bean.openDocument}" immediate="true"
+			rendered="#{rowObject[property] != null}">
+			<pc:automationTag
+				value="auto-PP-ProcAttachDlg-ToolbarOpenNewDocument" />
+			<f:attribute name="documentInfo" value="#{rowObject[property]}" />
+			<f:attribute name="processInstance"
+				value="#{row.activityInstance.processInstance}" />
+			<ice:panelGrid columns="2">
+				<ice:graphicImage value="#{rowObject[property].documentIcon}" />
+				<ice:outputText value="#{rowObject[property].name}"
+					style="white-space: nowrap;" />
+			</ice:panelGrid>
+		</ice:commandLink>
+	</ice:panelGroup>
+</f:view>

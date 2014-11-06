@@ -161,7 +161,7 @@ public class ProcessUIBuilder
       actionColPref.setExportable(false);
       fixedAfterColumns.add(actionColPref);
 
-      selectableCols.addAll(DescriptorColumnUtils.createDescriptorColumns());
+      selectableCols.addAll(DescriptorColumnUtils.createDescriptorColumns(ResourcePaths.VIEW_PROCESS_INSTANCE_HISTORY_COLUMNS));
 
       processTreeColumnModel = new DefaultColumnModel(selectableCols, fixedBeforeColumns, fixedAfterColumns,
             "views-common", "mytab.processInstanceHistory", columnModelListener);

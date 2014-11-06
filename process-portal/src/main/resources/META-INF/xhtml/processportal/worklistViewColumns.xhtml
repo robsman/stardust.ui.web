@@ -116,6 +116,43 @@
 		</ice:panelTooltip>
 	</ice:panelGroup>
 
+	<ice:panelGroup
+		rendered="#{fn:contains(col.columnName, 'PROCESS_ATTACHMENT')}">
+		<ice:panelSeries value="#{rowObject[property]}"
+			var="processAttachment">
+			<ice:commandLink styleClass="action-link"
+				actionListener="#{worklistTableBean.openDocument}" immediate="true">
+				<pc:automationTag
+					value="auto-PP-ProcAttachDlg-ToolbarOpenNewDocument" />
+				<f:attribute name="documentInfo" value="#{processAttachment}" />
+				<f:attribute name="processInstance"
+					value="#{row.activityInstance.processInstance}" />
+				<ice:panelGrid columns="2">
+					<ice:graphicImage value="#{processAttachment.documentIcon}" />
+					<ice:outputText value="#{processAttachment.name}"
+						style="white-space: nowrap;" />
+				</ice:panelGrid>
+			</ice:commandLink>
+		</ice:panelSeries>
+	</ice:panelGroup>
+
+	<ice:panelGroup
+		rendered="#{pc:instanceOf(col, 'org.eclipse.stardust.ui.web.common.column.ProcessDocumentColumnPreference')}">
+		<ice:commandLink styleClass="action-link"
+			actionListener="#{worklistTableBean.openDocument}" immediate="true" rendered="#{rowObject[property] != null}">
+			<pc:automationTag
+				value="auto-PP-ProcAttachDlg-ToolbarOpenNewDocument" />
+			<f:attribute name="documentInfo" value="#{rowObject[property]}" />
+			<f:attribute name="processInstance"
+				value="#{row.activityInstance.processInstance}" />
+			<ice:panelGrid columns="2">
+				 <ice:graphicImage value="#{rowObject[property].documentIcon}" />
+				<ice:outputText value="#{rowObject[property].name}"
+					style="white-space: nowrap;" />
+			</ice:panelGrid>
+		</ice:commandLink>
+	</ice:panelGroup>
+
 	<ice:panelGroup rendered="#{col.columnName == 'Actions'}">
 		<ice:panelGroup styleClass="table-actions-column" style="float:right" rendered="#{row.loaded}">
 			<ice:panelGrid columns="4" style="float: right;">

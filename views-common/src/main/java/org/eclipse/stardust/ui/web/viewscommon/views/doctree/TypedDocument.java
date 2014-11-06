@@ -45,6 +45,20 @@ public class TypedDocument
     * @param dataPath
     * @param dataDetails
     */
+   public TypedDocument(ProcessInstance processInstance, DataPath dataPath, DataDetails dataDetails, Document document)
+   {
+      this.processInstance = processInstance;
+      this.dataPath = dataPath;
+      this.dataDetails = dataDetails;
+      this.name = I18nUtils.getDataName(dataDetails);
+      this.document = document;
+   }
+   
+   /**
+    * @param processInstance
+    * @param dataPath
+    * @param dataDetails
+    */
    public TypedDocument(ProcessInstance processInstance, DataPath dataPath, DataDetails dataDetails)
    {
       this.processInstance = processInstance;
