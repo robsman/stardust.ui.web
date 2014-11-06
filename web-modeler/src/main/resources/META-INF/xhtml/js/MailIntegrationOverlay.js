@@ -6,11 +6,12 @@ define(
                   "bpm-modeler/js/m_typeDeclaration",
                   "bpm-modeler/js/m_parameterDefinitionsPanel",
                   "bpm-modeler/js/m_codeEditorAce", "bpm-modeler/js/m_modelElementUtils",
-                  "bpm-modeler/js/m_routeDefinitionUtils" ],
+                  "bpm-modeler/js/m_routeDefinitionUtils",
+                  "bpm-modeler/js/m_angularContextUtils"],
          function(m_utils, m_i18nUtils, m_constants, m_urlUtils, m_commandsController,
                   m_command, m_model, m_accessPoint, m_typeDeclaration,
                   m_parameterDefinitionsPanel, m_codeEditorAce, m_modelElementUtils,
-                  m_routeDefinitionUtils)
+                  m_routeDefinitionUtils, m_angularContextUtils)
          {
             return {
                create : function(view)
@@ -899,6 +900,37 @@ define(
                      templateConfigurationsJson = "[]";
                   }
                   this.templateConfigurations = JSON.parse(templateConfigurationsJson);
+                  this.typeDeclarationsTab = [];
+                  var typeDeclarations = this.getScopeModel().typeDeclarations;
+                  for ( var i in typeDeclarations)
+                  {
+                     this.typeDeclarationsTab.push(typeDeclarations[i]);
+                  }
+                  this.attachmentsTemplateSource = this.getApplication().attributes["stardust:emailOverlay::attachmentsTemplateSource"];
+                  this.attachmentsTemplateSourceType = this.getApplication().attributes["stardust:emailOverlay::attachmentsTemplateSourceType"];
+                  if(this.attachmentsTemplateSource == "data")
+                  {
+                     m_angularContextUtils.runInAngularContext(function($scope) {
+                        $scope.temSrcOptInit = $scope.overlayPanel.templateSourceOptions[1].value;
+                     }, m_utils.jQuerySelect("#attachmentsTemplateSourceSelect"));
+                     
+                     var typeDeclaration = this.attachmentsTemplateSourceType;
+                     m_angularContextUtils.runInAngularContext(function($scope) {
+                        $scope.typeDeclaration = typeDeclaration;
+                     }, m_utils.jQuerySelect("#attachmentsTemplateSourceTypeTab #attachmentsTemplateSourceTypeSelect"));
+                       
+                     m_utils.jQuerySelect("#attachmentsTemplateSourceTypeTab").show();
+                     m_utils.jQuerySelect("#templateConfigurationTab").hide();
+                  
+                  } else
+                  {
+                     m_angularContextUtils.runInAngularContext(function($scope) {
+                        $scope.temSrcOptInit = $scope.overlayPanel.templateSourceOptions[0].value;
+                     }, m_utils.jQuerySelect("#attachmentsTemplateSourceSelect"));
+                     
+                     m_utils.jQuerySelect("#attachmentsTemplateSourceTypeTab").hide();
+                     m_utils.jQuerySelect("#templateConfigurationTab").show();
+                  }
                };
                MailIntegrationOverlay.prototype.createRouteDefinitionForEmbeddedOrDataMode = function()
                {
@@ -1292,7 +1324,10 @@ define(
                                           "stardust:emailOverlay::mailTemplate" : CKEDITOR.instances[this.mailTemplateEditor.id]
                                                    .getData(),
                                           "stardust:emailOverlay::templateConfigurations" : angular
-                                                   .toJson(this.templateConfigurations)
+                                                   .toJson(this.templateConfigurations),
+                                          "stardust:emailOverlay::attachmentsTemplateSource" : this.attachmentsTemplateSource
+                                                   ,
+                                          "stardust:emailOverlay::attachmentsTemplateSourceType" : this.attachmentsTemplateSourceType
                                        }
                                     }, skipValidation);
                };
@@ -1359,6 +1394,13 @@ define(
                   value : "pdf",
                   title : "PDF"
                } ];
+               this.templateSourceOptions = [ {
+                  value : "embedded",
+                  title : "Embedded"
+               }, {
+                  value : "data",
+                  title : "Data"
+               } ];
                this.i18nValues = initI18nLabels();
                /**
                 *
@@ -1397,6 +1439,206 @@ define(
                   labels['templateConfigurations.title'] = m_i18nUtils
                            .getProperty("modeler.model.applicationOverlay.email.attachments.templateConfigurations.title");
                   return labels;
-               }
+               };
+               
+               MailIntegrationOverlay.prototype.addApTemplateConfiguration = function(typeDeclarationFullId)
+               {
+                  var accessPoints = this.getApplication().contexts.application.accessPoints;
+                  if(typeDeclarationFullId && typeDeclarationFullId != m_constants.TO_BE_DEFINED)
+                  {
+                     var requiredTemplatingType = this.getTemplateConfigurationType(typeDeclarationFullId);
+                     if(requiredTemplatingType && requiredTemplatingType != undefined)
+                     {
+                        var templateConfigurationAp = m_routeDefinitionUtils
+                        .findAccessPoint(accessPoints, "mailAttachmentsAP");
+                        
+                        if (!templateConfigurationAp)
+                        {
+                                 accessPoints.push({
+                                 id : "mailAttachmentsAP",
+                                 name : "Mail Attachments",
+                                 dataType : "struct",
+                                 direction : "IN",
+                                 structuredDataTypeFullId : requiredTemplatingType
+                                 .getFullId(),
+                                 attributes : {
+                                    "stardust:predefined" : true
+                                 }
+                              });
+                           this.submitParameterDefinitionsChanges(accessPoints);
+                           this.view.submitModelElementAttributeChange("stardust:emailOverlay::attachmentsTemplateSourceType", requiredTemplatingType
+                                    .getFullId());
+                           this.hideTemplateErroType();
+                        }
+                     } else
+                     {
+                        var filteredAccessPoints = m_routeDefinitionUtils.filterAccessPoint(accessPoints,
+                              "mailAttachmentsAP");
+                        this.submitParameterDefinitionsChanges(filteredAccessPoints);
+                        this.view.submitModelElementAttributeChange("stardust:emailOverlay::attachmentsTemplateSourceType", null);
+                        this.showTemplateErroType();
+                     }
+                     
+                  } else
+                  {
+                     var filteredAccessPoints = m_routeDefinitionUtils.filterAccessPoint(accessPoints,
+                              "mailAttachmentsAP");
+                     this.submitParameterDefinitionsChanges(filteredAccessPoints);
+                     this.view.submitModelElementAttributeChange("stardust:emailOverlay::attachmentsTemplateSourceType", null);
+                     this.showTemplateErroType();
+                  }
+              
+               };
+               
+               MailIntegrationOverlay.prototype.getTemplateConfigurationType = function(typeDeclarationFullId)
+               {
+                  var typeDeclaration = this.findTypeDeclaration(this.getScopeModel().typeDeclarations, typeDeclarationFullId);
+                  
+                  var elements = typeDeclaration.getElements();
+                  if(elements.length == 1)
+                  {
+                     var elt = elements[0];
+                     if(elt.type.indexOf(":") != -1)
+                     {
+                        var childType = elt.type.split(":")[1];
+                        var childTypeDeclaration = typeDeclaration.model.findTypeDeclarationBySchemaName(childType);
+                        if(childTypeDeclaration)
+                        {
+                           if(this.isTemplateConfigurationStructure(childTypeDeclaration))
+                           {
+                              return typeDeclaration;
+                           } 
+                        }
+                     }
+                  }
+               };
+               
+               MailIntegrationOverlay.prototype.findTypeDeclaration = function(
+                        typeDeclarations, fullDataId)
+               {
+                  var typeDeclaration = {};
+                  for ( var i in typeDeclarations)
+                  {
+                     var item = typeDeclarations[i];
+                     if (item.getFullId() == fullDataId)
+                     {
+                        typeDeclarations = item;
+                        break;
+                     }
+                  }
+                  return typeDeclarations;
+               };
+               
+               MailIntegrationOverlay.prototype.isTemplateConfigurationStructure = function(childTypeDeclaration)
+               {
+                  return this.checkTemplatingStructure(childTypeDeclaration
+                           .getElement("tName"), "tName")
+                           && this.checkTemplatingStructure(childTypeDeclaration
+                                    .getElement("tPath"), "tPath")
+                           && this.checkTemplatingStructure(childTypeDeclaration
+                                    .getElement("tFormat"), "tFormat")
+                           && this.checkTemplatingStructure(childTypeDeclaration
+                                    .getElement("tSource"), "tSource") ? true : false;
+               };
+               
+               
+               MailIntegrationOverlay.prototype.checkTemplatingStructure = function(element, name)
+               {
+                  return (element != undefined) && (element.name == name)
+                           && (element.classifier == "element")
+                           && (element.cardinality == "required")
+                           && (element.type == "xsd:string") ? true : false;
+               };
+               
+               MailIntegrationOverlay.prototype.updateTemplateConfTab = function(item)
+               {
+                  if(item == "data")
+                  {
+                     this.view.submitModelElementAttributeChange("stardust:emailOverlay::attachmentsTemplateSource", "data");
+                     m_utils.jQuerySelect("#attachmentsTemplateSourceTypeTab").show();
+                     m_utils.jQuerySelect("#templateConfigurationTab").hide();
+                     
+                  } else
+                  {
+                     var accessPoints = this.getApplication().contexts.application.accessPoints;
+                     var filteredAccessPoints = m_routeDefinitionUtils.filterAccessPoint(accessPoints,
+                           "mailAttachmentsAP");
+                     this.submitParameterDefinitionsChanges(filteredAccessPoints);
+                     this.view.submitModelElementAttributeChange("stardust:emailOverlay::attachmentsTemplateSource", "embedded");
+                     this.view.submitModelElementAttributeChange("stardust:emailOverlay::attachmentsTemplateSourceType", null);
+                     this.hideTemplateErroType();
+                     m_utils.jQuerySelect("#templateConfigurationTab").show();
+                     m_utils.jQuerySelect("#attachmentsTemplateSourceTypeTab").hide();
+                  }
+                 
+               };
+               
+               MailIntegrationOverlay.prototype.showTemplateErroType = function()
+               {
+                  var typeErrorMessages = m_utils
+                           .jQuerySelect("#typeErrorMessagesTab #typeErrorMessages");
+                  typeErrorMessages.empty();
+                  typeErrorMessages
+                           .append("<table cellpadding=\"0\" border=\"1\" cellspacing=\"0\" class=\"layoutTable\" style=\"width: 100%;color: #708090;background: #F2F2F2;\">"
+                                    + "<tr>"
+                                    + "<td style=\"font-weight: bold; color: #000000 \">"
+                                    + "Name"
+                                    + "</td>"
+                                    + "<td style=\"font-weight: bold; color: #000000 \">"
+                                    + "Type"
+                                    + "</td>"
+                                    + "<td style=\"font-weight: bold; color: #000000 \">"
+                                    + "Cardinality"
+                                    + "</td>"
+                                    + "</tr>"
+                                    + "<tr>"
+                                    + "<td>"
+                                    + "tName"
+                                    + "</td>"
+                                    + "<td>"
+                                    + "Text"
+                                    + "</td>"
+                                    + "<td>"
+                                    + "Exactly One"
+                                    + "</td>"
+                                    + "</tr>"
+                                    + "<tr>"
+                                    + "<td>"
+                                    + "tPath"
+                                    + "</td>"
+                                    + "<td>"
+                                    + "Text"
+                                    + "</td>"
+                                    + "<td>"
+                                    + "Exactly One"
+                                    + "</td>"
+                                    + "</tr>"
+                                    + "<tr>"
+                                    + "<td>"
+                                    + "tFormat"
+                                    + "</td>"
+                                    + "<td>"
+                                    + "Text"
+                                    + "</td>"
+                                    + "<td>"
+                                    + "Exactly One"
+                                    + "</td>"
+                                    + "</tr>"
+                                    + "<tr>"
+                                    + "<td>"
+                                    + "tSource"
+                                    + "</td>"
+                                    + "<td>"
+                                    + "Text"
+                                    + "</td>"
+                                    + "<td>"
+                                    + "Exactly One" + "</td>" + "</tr>" + "</table>");
+                  m_utils.jQuerySelect("#typeErrorMessagesTab").show();
+               };
+               
+               MailIntegrationOverlay.prototype.hideTemplateErroType = function()
+               {
+                  m_utils.jQuerySelect("#typeErrorMessagesTab").hide();
+               };
             }
          });
