@@ -67,27 +67,27 @@
 						ng-change="elementView.propertiesPage.changeOtherBusinessObject(relationship)"><option
 								value="">Please select ...</option></select></td>
 					<td><input ng-model="relationship.otherRole"
-						ng-blur="elementView.propertiesPage.submitRelationshipChanges(relationship)"></input></td>
+						ng-blur="elementView.propertiesPage.submitRelationshipChanges(relationship, $index)"></input></td>
 					<td><select ng-model="relationship.otherCardinality"
-						ng-change="elementView.propertiesPage.submitRelationshipChanges(relationship)">
+						ng-change="elementView.propertiesPage.submitRelationshipChanges(relationship, $index)">
 							<option value="TO_ONE">To One</option>
 							<option value="TO_MANY">To Many</option>
 					</select></td>
 					<td><select
 						ng-model="relationship.otherForeignKeyField"
 						ng-options="field.name as field.name for field in elementView.propertiesPage.topLevelFields"
-						ng-change="elementView.propertiesPage.submitRelationshipChanges(relationship)"><option
+						ng-change="elementView.propertiesPage.submitRelationshipChanges(relationship, $index)"><option
 								value="">Please select ...</option></select></td>
 					<td><input ng-model="relationship.thisRole"
-						ng-blur="elementView.propertiesPage.submitRelationshipChanges(relationship)"></input></td>
+						ng-blur="elementView.propertiesPage.submitRelationshipChanges(relationship, $index)"></input></td>
 					<td><select ng-model="relationship.thisCardinality"
-						ng-change="elementView.propertiesPage.submitRelationshipChanges(relationship)">
+						ng-change="elementView.propertiesPage.submitRelationshipChanges(relationship, $index)">
 							<option value="TO_ONE">To One</option>
 							<option value="TO_MANY">To Many</option>
 					</select></td>
 					<td><select ng-model="relationship.thisForeignKeyField"
 						ng-options="field.name as field.name for field in elementView.propertiesPage.otherBusinessObjectTopLevelFields[relationship.otherBusinessObject.getFullId()]"
-						ng-change="elementView.propertiesPage.submitRelationshipChanges(relationship)"><option
+						ng-change="elementView.propertiesPage.submitRelationshipChanges(relationship, $index)"><option
 								value="">Please select ...</option></select></td>
 				</tr>
 				<tr>

@@ -87,22 +87,28 @@ define(
 						this.relationships = JSON
 								.parse(this.propertiesPanel.data.attributes["carnot:engine:businessObjectRelationships"])
 
+						// Keep backup to identify other side in case of changes
+
+						this.relationshipsUnchanged = JSON
+								.parse(this.propertiesPanel.data.attributes["carnot:engine:businessObjectRelationships"])
+
 						for (var n = 0; n < this.relationships.length; ++n) {
+							var otherBusinessObject = this.relationships[n].otherBusinessObject ? this.otherBusinessObjectsMap[this.relationships[n].otherBusinessObject.modelId
+							                                                           										+ "/"
+							                                                        										+ this.relationships[n].otherBusinessObject.id]
+							                                                        										: null;
+							this
+									.loadOtherBusinessObjectTopLevelKeyFields(otherBusinessObject);
+
 							this.relationships[n] = {
-								otherBusinessObject : this.relationships[n].otherBusinessObject ? this.otherBusinessObjectsMap[this.relationships[n].otherBusinessObject.modelId
-										+ "/"
-										+ this.relationships[n].otherBusinessObject.id]
-										: null,
+								otherBusinessObject : otherBusinessObject,
 								otherRole : this.relationships[n].otherRole,
 								otherCardinality : this.relationships[n].otherCardinality,
 								otherForeignKeyField : this.relationships[n].otherForeignKeyField,
 								thisRole : this.relationships[n].thisRole,
 								thisCardinality : this.relationships[n].thisCardinality,
-								thisKeyField : this.relationships[n].thisKeyField
+								thisForeignKeyField : this.relationships[n].thisForeignKeyField
 							};
-
-							this
-									.loadOtherBusinessObjectTopLevelKeyFields(this.relationships[n]);
 						}
 
 						if (this.propertiesPanel.data.attributes["carnot:engine:managedOrganizations"]) {
@@ -118,7 +124,7 @@ define(
 				BusinessObjectManagementDataPropertiesPage.prototype.getTopLevelFieldsForBusinessObject = function(
 						businessObject) {
 					var topLevelFields = [];
-					
+
 					if (businessObject.structuredDataTypeFullId) {
 						var typeDeclaration = m_model
 								.findTypeDeclaration(businessObject.structuredDataTypeFullId);
@@ -127,10 +133,10 @@ define(
 						for (var n = 0; n < fields.length; ++n) {
 							console.log("App Info");
 							console.log(fields[n].appinfo);
-							//if (!fields[n].appinfo) {
-							//storage.indexed: "false"
-								topLevelFields.push(fields[n]);
-							//}
+							// if (!fields[n].appinfo) {
+							// storage.indexed: "false"
+							topLevelFields.push(fields[n]);
+							// }
 						}
 
 					}
@@ -169,14 +175,13 @@ define(
 				 * Lazy loading.
 				 */
 				BusinessObjectManagementDataPropertiesPage.prototype.loadOtherBusinessObjectTopLevelKeyFields = function(
-						relationship) {
-					if (!this.otherBusinessObjectTopLevelFields[relationship.otherBusinessObject
+						otherBusinessObject) {
+					if (!this.otherBusinessObjectTopLevelFields[otherBusinessObject
 							.getFullId()]) {
-						this.otherBusinessObjectTopLevelFields[relationship.otherBusinessObject
+						this.otherBusinessObjectTopLevelFields[otherBusinessObject
 								.getFullId()] = this
-								.getTopLevelFieldsForBusinessObject(relationship.otherBusinessObject);
+								.getTopLevelFieldsForBusinessObject(otherBusinessObject);
 					}
-
 				};
 
 				/**
@@ -184,7 +189,7 @@ define(
 				 */
 				BusinessObjectManagementDataPropertiesPage.prototype.changeOtherBusinessObject = function(
 						relationship) {
-					this.loadOtherBusinessObjectTopLevelKeyFields(relationship);
+					this.loadOtherBusinessObjectTopLevelKeyFields(relationship.otherBusinessObject);
 					this.submitRelationshipChanges(relationship);
 				};
 
@@ -194,6 +199,8 @@ define(
 				BusinessObjectManagementDataPropertiesPage.prototype.removeRelationship = function(
 						index) {
 					this.relationships.splice(index, 1);
+
+					// TODO Need more logic to remove inverse Relationship
 
 					this.submitRelationshipsChanges(this.propertiesPanel.data,
 							this.relationships);
@@ -216,10 +223,16 @@ define(
 				 * 
 				 */
 				BusinessObjectManagementDataPropertiesPage.prototype.submitRelationshipChanges = function(
-						relationship) {
+						relationship, index) {
+					var otherBusinessObjectUnchanged = this.relationshipsUnchanged[index].otherBusinessObject;
+					var thisRoleUnchanged = this.relationshipsUnchanged[index].thisRole;
+
 					// Only for non-recursive Relationships
 
-					if (relationship.otherBusinessObject.getFullId() != this.propertiesPanel.data
+					// TODO Ugly comparison, but probably the price
+					// of a semi-typed approach
+
+					if ((relationship.otherBusinessObject.modelId + ":" + relationship.otherBusinessObject.id) != this.propertiesPanel.data
 							.getFullId()) {
 						// Apply changes to other BO
 
@@ -231,10 +244,21 @@ define(
 									.parse(relationship.otherBusinessObject.attributes["carnot:engine:businessObjectRelationships"]);
 
 							for (var n = 0; n < otherRelationships.length; ++n) {
-								if (otherRelationships[n].otherBusinessObject
-										.getFullId() == this.propertiesPanel.data
-										.getFullId()) {
-									otherRelationShip = otherRelationships[n];
+								// TODO Ugly comparison, but probably the price
+								// of a semi-typed approach
+
+								var fullId = otherRelationships[n].otherBusinessObject.modelId
+										+ ":"
+										+ otherRelationships[n].otherBusinessObject.id;
+								console.log("Finding recursive relationship");
+								console.log(fullId);
+
+								// TODO Also filter by unchanged role
+
+								if ((fullId == this.propertiesPanel.data
+										.getFullId())
+										&& (otherRelationships.otherRole == thisRoleUnchanged)) {
+									otherRelationship = otherRelationships[n];
 
 									break;
 								}
@@ -243,13 +267,16 @@ define(
 							otherRelationships = [];
 						}
 
+						// Make sure that there is a inverse relationship
+
 						if (!otherRelationship) {
 							otherRelationship = {};
 
 							otherRelationships.push(otherRelationship);
 						}
 
-						otherRelationship.otherBusinessObject = this.propertiesPanel.data;
+						// Apply all (possible) changes
+
 						otherRelationship.otherRole = relationship.thisRole;
 						otherRelationship.otherForeignKeyField = relationship.thisForeignKeyField;
 						otherRelationship.otherCardinality = relationship.thisCardinality;
@@ -283,14 +310,14 @@ define(
 								.push({
 									otherBusinessObject : {
 										id : relationships[n].otherBusinessObject.id,
-										modelId : relationships[n].otherBusinessObject.model.id
+										modelId : relationships[n].otherBusinessObject.modelId
 									},
 									otherRole : relationships[n].otherRole,
 									otherCardinality : relationships[n].otherCardinality,
 									otherForeignKeyField : relationships[n].otherForeignKeyField,
 									thisRole : relationships[n].thisRole,
 									thisCardinality : relationships[n].thisCardinality,
-									thisKeyField : relationships[n].thisKeyField
+									thisForeignKeyField : relationships[n].thisForeignKeyField
 								});
 					}
 
@@ -315,7 +342,8 @@ define(
 							}
 						};
 
-						element.modelElement.attributes["carnot:engine:businessObjectRelationships"] = transfer;
+						element.modelElement.attributes["carnot:engine:businessObjectRelationships"] = JSON
+								.stringify(transfer);
 
 						m_utils.debug("Changes to be submitted for UUID "
 								+ businessObject.oid + ":");
