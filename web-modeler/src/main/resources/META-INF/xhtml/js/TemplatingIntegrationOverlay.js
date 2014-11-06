@@ -116,33 +116,32 @@ define(
                      if(event.data.panel.locationInput.val()!="data" && defaultInputAp!=null){
                         accessPointList=m_routeDefinitionUtils.filterAccessPoint(accessPointList, "defaultInputAp");
                         event.data.panel.submitParameterDefinitionsChanges(accessPointList);
-                     }else{
-
-                        if(defaultInputAp!=null){
-                           accessPointList=m_routeDefinitionUtils.filterAccessPoint(accessPointList, "defaultInputAp");
-                        }
-                        accessPointList.push({
-                           id : "defaultInputAp",
-                           name : "template",
-                           dataType : "primitive",
-                           primitiveDataType : "String",
-                           direction : "IN",
-                           attributes : {
-                              "stardust:predefined" : true
-                           }
-                        });
                      }
-                     event.data.panel.view.submitChanges({
-                        contexts : {
-                           application : {
-                              accessPoints : accessPointList
+                     if(event.data.panel.locationInput.val()=="data"){
+                           if(defaultInputAp!=null){
+                              accessPointList=m_routeDefinitionUtils.filterAccessPoint(accessPointList, "defaultInputAp");
                            }
-                        }
-                     }, true);
+                           accessPointList.push({
+                              id : "defaultInputAp",
+                              name : "template",
+                              dataType : "primitive",
+                              primitiveDataType : "String",
+                              direction : "IN",
+                              attributes : {
+                                 "stardust:predefined" : true
+                              }
+                           });
+
+                        event.data.panel.view.submitChanges({
+                           contexts : {
+                              application : {
+                                 accessPoints : accessPointList
+                              }
+                           }
+                        }, true);
+                     }
                      event.data.panel.parameterDefinitionsPanel.setParameterDefinitions(accessPointList);
-                     //event.data.panel.view.submitModelElementAttributeChange("stardust:templatingIntegrationOverlay::location",event.data.panel.locationInput.val());
                      event.data.panel.submitChanges(true)
-                    // event.data.panel.view.submitModelElementAttributeChange("carnot:engine:camel::routeEntries",event.data.panel.getRoute());
                      event.data.panel.updateView(event.data.panel.locationInput.val());
                   });
 
@@ -173,6 +172,7 @@ define(
                   }, function(event)
                   {
                      event.data.panel.submitChanges();
+                     event.data.panel.updateView(event.data.panel.locationInput.val());
                   });
 
                   this.editorAnchor.id = "codeEditorDiv"
@@ -605,7 +605,7 @@ define(
                            this.convertToPdfInput.prop("checked"),defaultInputAp);
                   if (this.formatInput.val() != "docx")
                   {
-                     if (outAccessPoint.dataType == "dmsDocument")
+                     if (outAccessPoint!=null && outAccessPoint.dataType == "dmsDocument")
                      {
                         route += "<setHeader headerName=\"ippDmsDocumentName\">\n";
                         route += "   <simple>$simple{header.CamelTemplatingOutputName}</simple>\n";
@@ -721,7 +721,7 @@ define(
                         valid = false;
                      }
                   }
-                  if(this.formatInput.val()=="docx" && this.templateInput.val().search(/.docx$/) == -1){
+                  if(this.formatInput.val()=="docx" && this.templateInput.val().search(/.docx$/) == -1 && this.locationInput.val() != "data"){
                      this.view.errorMessages.push("Template Name should end with .docx");
                      valid = false;
                   }

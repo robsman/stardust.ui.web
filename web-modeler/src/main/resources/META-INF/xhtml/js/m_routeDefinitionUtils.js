@@ -143,21 +143,19 @@ define(
                   if (location == "repository")
                   {
                      routeDefinition += "<setHeader headerName=\"ippDmsTargetPath\">\n";
-                     routeDefinition += "   <constant>templates/" + templatePath;
-                     routeDefinition += "</constant>\n";
+                     routeDefinition += "   <simple>templates/" + templatePath;
+                     routeDefinition += "</simple>\n";
+                     routeDefinition += "</setHeader>\n";
+                  }
+                  if( defaultInAp!=null && defaultInAp.dataType=="primitive"){
+                     routeDefinition += "<setHeader headerName=\"CamelVelocityTemplate\">\n";
+                     routeDefinition += "   <simple>$simple{header.defaultInputAp}</simple>\n";
                      routeDefinition += "</setHeader>\n";
                   }else{
-
-                     if( defaultInAp!=null && defaultInAp.dataType=="primitive"){
-                        routeDefinition += "<setHeader headerName=\"CamelVelocityTemplate\">\n";
-                        routeDefinition += "   <simple>$simple{header.defaultInputAp}</simple>\n";
-                        routeDefinition += "</setHeader>\n";
-                     }else{
-                        routeDefinition += "<to uri=\"bean:documentHandler?method=retrieveContent\"/>";
-                        routeDefinition += "<setHeader headerName=\"CamelVelocityTemplate\">\n";
-                        routeDefinition += "   <simple>$simple{header.ippDmsDocumentContent}</simple>\n";
-                        routeDefinition += "</setHeader>\n";
-                     }
+                     routeDefinition += "<to uri=\"bean:documentHandler?method=retrieveContent\"/>";
+                     routeDefinition += "<setHeader headerName=\"CamelVelocityTemplate\">\n";
+                     routeDefinition += "   <simple>$simple{header.ippDmsDocumentContent}</simple>\n";
+                     routeDefinition += "</setHeader>\n";
                   }
                }
                var uri = "templating:" + location + "?format=" + format;
