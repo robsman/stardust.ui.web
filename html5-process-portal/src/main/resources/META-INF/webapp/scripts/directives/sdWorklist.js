@@ -192,6 +192,17 @@
 		/*
 		 * 
 		 */
+		WorklistCompiler.prototype.stopEvent = function(event) {
+			if (event.stopPopogation) {
+				event.stopPopogation();
+			} else if (window.event){
+				window.event.cancelBubble = true;
+			}
+		};
+
+		/*
+		 * 
+		 */
 		WorklistCompiler.prototype.activateWorkItem = function(workItem) {
 			sdViewUtilService.openView("activityPanel", "OID=" + workItem.oid, {"oid" : "" + workItem.oid});
 		};

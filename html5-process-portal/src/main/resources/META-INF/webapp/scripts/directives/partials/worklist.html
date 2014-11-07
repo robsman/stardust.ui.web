@@ -20,16 +20,14 @@
 				<th ng-repeat="descCol in worklistCtrl.descritorCols" sda-sortable="{{descCol.sortable}}">
 					<span class="tbl-hdr-col-label">{{descCol.title}}</span>
 				</th>
-				<th sda-column="TRIVIAL_DATA">
-					<span class="{{descCol.title}}">Data</span>
-				</th>
+				<th sda-column="TRIVIAL_DATA" sda-label="data"></th>
 				<th sda-label="actions"></th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
 				<td>
-					<a href="#" ng-click="worklistCtrl.$activateWorkItem(rowData)">
+					<a href="#" ng-click="worklistCtrl.stopEvent($event); worklistCtrl.$activateWorkItem(rowData);">
 						{{rowData.activity.name}}
 					</a>
 				</td>
@@ -55,17 +53,18 @@
 					    	<tr ng-repeat="mapping in worklistCtrl.worklist.trivialManualActivities[rowData.oid].dataMappings">
 					        	<td>{{mapping.name}}</td>
 					            <td>
-					            	<select ng-show="mapping.isEnum"
+					            	<select ng-show="mapping.isEnum" ng-click="worklistCtrl.stopEvent($event)"
 					      		    	ng-model="worklistCtrl.worklist.trivialManualActivities[rowData.oid].inOutData[mapping.id]"
 					                    ng-init="worklistCtrl.worklist.trivialManualActivities[rowData.oid].inOutData[mapping.id] = worklistCtrl.worklist.trivialManualActivities[rowData.oid].inOutData[mapping.id] || mapping.enumValues[0]"
 					                    ng-options="enumVal for enumVal in mapping.enumValues">
 									</select>
 					                  
-									<input type="text"
+									<input type="text" ng-click="worklistCtrl.stopEvent($event)"
 					                	ng-show="mapping.typeName == 'java.lang.String'"
 					                    ng-model="worklistCtrl.worklist.trivialManualActivities[rowData.oid].inOutData[mapping.id]" />
 					
-									<input type="checkbox" ng-show="mapping.typeName == 'java.lang.Boolean'"
+									<input type="checkbox" ng-click="worklistCtrl.stopEvent($event)"
+										ng-show="mapping.typeName == 'java.lang.Boolean'"
 										ng-model="worklistCtrl.worklist.trivialManualActivities[rowData.oid].inOutData[mapping.id]" />
 								</td>
 							</tr>
@@ -73,18 +72,22 @@
 					</table>
 				</td>
 				<td>
-					<a href="#" ng-click="worklistCtrl.$openNotes(rowData)" title="Open Notes" class="view-tool-link">
+					<a href="#" ng-click="worklistCtrl.stopEvent($event); worklistCtrl.$openNotes(rowData);"
+						title="Open Notes" class="view-tool-link">
 						<i class="fa fa-comment-o"></i>
 					</a>
-					<a href="#" ng-click="worklistCtrl.$openProcessHistory(rowData)" title="Process History" class="view-tool-link">
+					<a href="#" ng-click="worklistCtrl.stopEvent($event); worklistCtrl.$openProcessHistory(rowData);"
+						title="Process History" class="view-tool-link">
 						<i class="fa fa-tasks"></i>
 					</a>
 					<a sda-column="TRIVIAL_DATA" href="#"
 						ng-disabled="!worklistCtrl.worklist.trivialManualActivities[rowData.oid]" 
-						ng-click="worklistCtrl.$complete(rowData)" title="Complete" class="view-tool-link">
+						ng-click="worklistCtrl.stopEvent($event); worklistCtrl.$complete(rowData);"
+						title="Complete" class="view-tool-link">
 						<i class="fa fa-share"></i>
 					</a>
-					<a href="#" ng-click="worklistCtrl.$openDelegateDialog(rowData)" title="Delegate" class="view-tool-link">
+					<a href="#" ng-click="worklistCtrl.stopEvent($event); worklistCtrl.$openDelegateDialog(rowData);"
+						title="Delegate" class="view-tool-link">
 						<i class="fa fa-user"></i>
 					</a>
 				</td>
