@@ -11,10 +11,8 @@
 package org.eclipse.stardust.ui.web.rest.service.utils;
 
 import java.io.Serializable;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.Map.Entry;
 
 import javax.annotation.Resource;
 
@@ -84,6 +82,11 @@ public class ActivityInstanceUtils
     */
    public List<ActivityInstance> getActivityInstances(List<Long> oids)
    {
+      if (oids.size() == 0)
+      {
+         return new ArrayList<ActivityInstance>();
+      }
+      
       ActivityInstanceQuery query = ActivityInstanceQuery.findAll();
       FilterOrTerm filterOrTerm = query.getFilter().addOrTerm();
       for (Long oid : oids)
@@ -162,7 +165,19 @@ public class ActivityInstanceUtils
             dto.dataMappings = cache.get(ai.getActivity().getId());
 
             // Get (IN_)OUT Data
-            dto.inOutData = getAllInDataValues(ai, context);
+            dto.inOutData = new LinkedHashMap<String, Serializable>();
+            Map<String, Serializable> dataValues = getAllInDataValues(ai, context);
+            for (Entry<String, Serializable> entry : dataValues.entrySet())
+            {
+               for (PathDTO pathDto : dto.dataMappings)
+               {
+                  if (entry.getKey().equals(pathDto.id))
+                  {
+                     dto.inOutData.put(entry.getKey(), entry.getValue());
+                     break;
+                  }
+               }
+            }
 
             ret.put(String.valueOf(ai.getOID()), dto);
          }

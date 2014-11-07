@@ -76,19 +76,23 @@ public class ActivityInstanceResource
    {
       try
       {
-         List<Long> oids = JsonDTO.getAsList(postedData, Long.class);
-
-         Map<String, TrivialManualActivityDTO> details = getActivityInstanceService()
-               .getTrivialManualActivitiesDetails(oids, "default");
-
-         // gson.toJson(details) is not working, inOutData is not Serialized. hence below workaround
-         // Workaround. Visit later TODO
          Map<String, Map<String, Object>> output = new LinkedHashMap<String, Map<String, Object>>();
-         for (Entry<String, TrivialManualActivityDTO> entry : details.entrySet())
+
+         List<Long> oids = JsonDTO.getAsList(postedData, Long.class);
+         
+         if (oids.size() > 0)
          {
-            output.put(entry.getKey(), new LinkedHashMap<String, Object>());
-            output.get(entry.getKey()).put("dataMappings", entry.getValue().dataMappings);
-            output.get(entry.getKey()).put("inOutData", entry.getValue().inOutData);
+            Map<String, TrivialManualActivityDTO> details = getActivityInstanceService()
+                  .getTrivialManualActivitiesDetails(oids, "default");
+
+            // gson.toJson(details) is not working, inOutData is not Serialized. hence below workaround
+            // Workaround. Visit later TODO
+            for (Entry<String, TrivialManualActivityDTO> entry : details.entrySet())
+            {
+               output.put(entry.getKey(), new LinkedHashMap<String, Object>());
+               output.get(entry.getKey()).put("dataMappings", entry.getValue().dataMappings);
+               output.get(entry.getKey()).put("inOutData", entry.getValue().inOutData);
+            }            
          }
 
          Gson gson = new Gson();
