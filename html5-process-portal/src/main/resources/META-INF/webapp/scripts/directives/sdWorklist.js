@@ -16,21 +16,29 @@
 (function(){
 	'use strict';
 
-	angular.module('bpm-common').directive('sdWorklist', ['$parse', '$q', WorklistDirective]);
+	angular.module('bpm-common').directive('sdWorklist', 
+			['$parse', 'sdUtilService', 'sdViewUtilService', 'sdWorklistService', 
+			 'sdActivityInstanceService', 'sdProcessDefinitionService', WorklistDirective]);
 
 	/*
 	 * 
 	 */
-	function WorklistDirective($parse, $q) {
+	function WorklistDirective($parse, sdUtilService, sdViewUtilService, sdWorklistService, 
+			sdActivityInstanceService, sdProcessDefinitionService) {
+
 		var directiveDefObject = {
 			restrict : 'AE',
 			scope: true, // Creates a new sub scope
 			templateUrl: 'plugins/html5-process-portal/scripts/directives/partials/worklist.html',
 			compile: function(elem, attr, transclude) {
 				processRawMarkup(elem, attr);
-			},
-			controller: ['$attrs', '$scope', 'sdUtilService', 'sdViewUtilService', 'sdWorklistService', 
-			             'sdActivityInstanceService', 'sdProcessDefinitionService', WorklistCtrl]
+
+				return {
+					post: function(scope, element, attr, ctrl) {
+						var worklistCompiler = new WorklistCompiler(scope, element, attr, ctrl);
+					}
+				};
+			}
 		};
 
 		/*
@@ -49,54 +57,45 @@
 			}
 			
 			// Toolbar
-			var toolbar = element.prev();
+			var toolbar = elem.prev();
 			var items = toolbar.find('[sda-column="TRIVIAL_DATA"]');
 			items.remove();
 		}
-		
-		var _sdViewUtilService, _sdWorklistService, _sdActivityInstanceService, _sdProcessDefinitionService;
 
 		/*
 		 * 
 		 */
-		function WorklistCtrl($attrs, $scope, sdUtilService, sdViewUtilService, sdWorklistService, 
-				sdActivityInstanceService, sdProcessDefinitionService) {
+		function WorklistCompiler(scope, element, attr, ctrl) {
 			var self = this;
-			var scopeToUse = $scope.$parent;
+			var scopeToUse = scope.$parent;
 
-			// Preserve to use later in life-cycle
-			_sdViewUtilService = sdViewUtilService;
-			_sdWorklistService = sdWorklistService;
-			_sdActivityInstanceService = sdActivityInstanceService;
-			_sdProcessDefinitionService = sdProcessDefinitionService;
-
-			this.initialize($attrs, scopeToUse);
+			this.initialize(attr, scopeToUse);
 
 			/*
-			 * This needs to be defined here as it requires access to $scope
+			 * This needs to be defined here as it requires access to scope
 			 */
-			WorklistCtrl.prototype.safeApply = function() {
-				sdUtilService.safeApply($scope);
+			WorklistCompiler.prototype.safeApply = function() {
+				sdUtilService.safeApply(scope);
 			};
 
 			// Expose controller as a whole on to scope
-			$scope.worklistCtrl = this;
+			scope.worklistCtrl = this;
+			sdUtilService.addFunctionProxies(scope.worklistCtrl);
 		}
 
 		/*
 		 * 
 		 */
-		WorklistCtrl.prototype.initialize = function($attrs, scopeToUse) {
+		WorklistCompiler.prototype.initialize = function(attr, scopeToUse) {
 			// Define data
 			this.worklist = {};
-			this.worklist.selectedWorkItems = [];
 			this.dataTable = null; // Handle to data table instance, to be set later
 
 			// Process Query
-			if (!$attrs.sdaQuery) {
+			if (!attr.sdaQuery) {
 				throw 'Query attribute is not specified for worklist.';
 			}
-			var queryGetter = $parse($attrs.sdaQuery);
+			var queryGetter = $parse(attr.sdaQuery);
 			var query = queryGetter(scopeToUse);
 			if (query == undefined) {
 				throw 'Query evaluated to "nothing" for worklist.';
@@ -105,24 +104,25 @@
 
 			// Process Title
 			var titleExpr = "";
-			if ($attrs.sdaTitle) {
-				titleExpr = $attrs.sdaTitle;
+			if (attr.sdaTitle) {
+				titleExpr = attr.sdaTitle;
 			}
 			var titleGetter = $parse(titleExpr);
 			this.title = titleGetter(scopeToUse);
 
 			// Process TableHandle and then set data table instance
-			this.tableHandleExpr = $attrs.sdWorklist;
+			this.tableHandleExpr = attr.sdWorklist;
 			if (!this.tableHandleExpr) {
-				this.tableHandleExpr = "worklistCtrl.dataTable";
-			} else {
-				var unregister = scopeToUse.$watch(this.tableHandleExpr, function(newVal, oldVal) {
-					if (newVal != undefined && newVal != null && newVal != oldVal) {
-						self.dataTable = newVal;
-						unregister();
-					}
-				});
+				this.tableHandleExpr = "WorklistCompiler.dataTable";
 			}
+
+			var self = this;
+			var unregister = scopeToUse.$watch(this.tableHandleExpr, function(newVal, oldVal) {
+				if (newVal != undefined && newVal != null && newVal != oldVal) {
+					self.dataTable = newVal;
+					unregister();
+				}
+			});
 
 			this.fetchDescriptorCols();
 		};
@@ -130,23 +130,21 @@
 		/*
 		 * 
 		 */
-		WorklistCtrl.prototype.refresh = function() {
+		WorklistCompiler.prototype.refresh = function() {
 			this.dataTable.refresh(true);
 		};
 		
 		/*
 		 * 
 		 */
-		WorklistCtrl.prototype.fetchPage = function(options) {
+		WorklistCompiler.prototype.fetchPage = function(options) {
 			var self = this;
 			var deferred = jQuery.Deferred();
 
 			var query = angular.extend({}, this.query);
 			query.options = options;
 
-			this.worklist.selectedWorkItems = [];
-
-			_sdWorklistService.getWorklist(query).then(function(data) {
+			sdWorklistService.getWorklist(query).then(function(data) {
 				self.worklist.list = data.list;
 				self.worklist.totalCount = data.totalCount;
 				
@@ -157,7 +155,7 @@
 					}
 				});
 
-				_sdActivityInstanceService.getTrivialManualActivitiesDetails(oids).then(function(data) {
+				sdActivityInstanceService.getTrivialManualActivitiesDetails(oids).then(function(data) {
 					self.worklist.trivialManualActivities = data;
 
 					deferred.resolve(self.worklist);
@@ -172,10 +170,10 @@
 		/*
 		 * 
 		 */
-		WorklistCtrl.prototype.fetchDescriptorCols = function() {
+		WorklistCompiler.prototype.fetchDescriptorCols = function() {
 			var self = this;
 
-			_sdProcessDefinitionService.getDescriptorColumns().then(function(descriptors) {
+			sdProcessDefinitionService.getDescriptorColumns().then(function(descriptors) {
 				self.descritorCols = [];
 				angular.forEach(descriptors, function(descriptor){
 					self.descritorCols.push({
@@ -194,23 +192,23 @@
 		/*
 		 * 
 		 */
-		WorklistCtrl.prototype.activateWorkItem = function(workItem) {
-			_sdViewUtilService.openView("activityPanel", "OID=" + workItem.oid, {"oid" : "" + workItem.oid});
+		WorklistCompiler.prototype.activateWorkItem = function(workItem) {
+			sdViewUtilService.openView("activityPanel", "OID=" + workItem.oid, {"oid" : "" + workItem.oid});
 		};
 
 		/*
 		 * 
 		 */
-		WorklistCtrl.prototype.openNotes = function(workItem) {
-			_sdViewUtilService.openView("notesPanel", "oid=" + workItem.processInstance.oid, 
+		WorklistCompiler.prototype.openNotes = function(workItem) {
+			sdViewUtilService.openView("notesPanel", "oid=" + workItem.processInstance.oid, 
 					{"oid": "" + workItem.processInstance.oid}, true);
 		};
 
 		/*
 		 * 
 		 */
-		WorklistCtrl.prototype.openProcessHistory = function(workItem) {
-			_sdViewUtilService.openView("processInstanceDetailsView", 
+		WorklistCompiler.prototype.openProcessHistory = function(workItem) {
+			sdViewUtilService.openView("processInstanceDetailsView", 
 					"processInstanceOID=" + workItem.processInstance.oid, 
 					{
 						"oid": "" + workItem.oid,
@@ -222,12 +220,12 @@
 		/*
 		 * 
 		 */
-		WorklistCtrl.prototype.complete = function(workItem) {
+		WorklistCompiler.prototype.complete = function(workItem) {
 			var self = this;
 
 			var outData = self.worklist.trivialManualActivities[workItem.oid].inOutData;
 			var activityData = {oid: workItem.oid, outData: outData};
-			_sdActivityInstanceService.completeAll([activityData]).then(function(data) {
+			sdActivityInstanceService.completeAll([activityData]).then(function(data) {
 				self.refresh();
 			});
 		};
@@ -235,26 +233,35 @@
 		/*
 		 * 
 		 */
-		WorklistCtrl.prototype.completeAll = function() {
+		WorklistCompiler.prototype.completeAll = function() {
 			var self = this;
 
-			if (this.worklist.selectedWorkItems.length > 0) {
+			// This will always be array as selection mode is 'multiple'
+			var selectedWorkItems = self.dataTable.getSelectedRows();
+			if (selectedWorkItems.length > 0) {
 				var activitiesData = [];
-				angular.forEach(this.worklist.selectedWorkItems, function(workItem, index){
-					var outData = self.worklist.trivialManualActivities[workItem.oid].inOutData;
-					activitiesData.push({oid: workItem.oid, outData: outData});
+				angular.forEach(selectedWorkItems, function(workItem, index){
+					var trivialActivityInfo = self.worklist.trivialManualActivities[workItem.oid];
+					if(trivialActivityInfo) {
+						var outData = trivialActivityInfo.inOutData;
+						activitiesData.push({oid: workItem.oid, outData: outData});
+					}
 				});
-				
-				_sdActivityInstanceService.completeAll(activitiesData).then(function(data) {
+
+				if (activitiesData.length > 0) {
+					sdActivityInstanceService.completeAll(activitiesData).then(function(data) {
+						self.refresh();
+					});
+				} else {
 					self.refresh();
-				});
+				}
 			}
 		};
 
 		/*
 		 * 
 		 */
-		WorklistCtrl.prototype.openDelegateDialog = function(workItem) {
+		WorklistCompiler.prototype.openDelegateDialog = function(workItem) {
 			
 		};
 

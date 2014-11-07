@@ -1,12 +1,12 @@
 <div class="worklist-wrapper">
 	<div class="worklist-title tbl-title">{{worklistCtrl.title}}</div>
 	<div sda-toolbar>
-		<a sda-column="TRIVIAL_DATA" href="#" ng-click="worklistCtrl.completeAll()" title="Complete All" class="tbl-toolbar-item tbl-tool-link">
+		<a sda-column="TRIVIAL_DATA" href="#" ng-click="worklistCtrl.$completeAll()" title="Complete All" class="tbl-toolbar-item tbl-tool-link">
 		   <i class="fa fa-share"></i>
 		</a>
 	</div>
 	<table sd-data-table="{{worklistCtrl.tableHandleExpr}}" sd-data="worklistCtrl.fetchPage(params)" sda-ready="worklistCtrl.ready"
-		sda-page-size="5">
+		sda-page-size="5" sda-selectable="multiple">
 		<thead sda-i18n-scope="processportal.views-worklistPanel-column">
 			<tr>
 				<th sda-label="overview" sda-sortable="true">
@@ -29,7 +29,7 @@
 		<tbody>
 			<tr>
 				<td>
-					<a href="#" ng-click="worklistCtrl.activateWorkItem(rowData)">
+					<a href="#" ng-click="worklistCtrl.$activateWorkItem(rowData)">
 						{{rowData.activity.name}}
 					</a>
 				</td>
@@ -73,16 +73,18 @@
 					</table>
 				</td>
 				<td>
-					<a href="#" ng-click="worklistCtrl.openNotes(rowData)" title="Open Notes" class="view-tool-link">
+					<a href="#" ng-click="worklistCtrl.$openNotes(rowData)" title="Open Notes" class="view-tool-link">
 						<i class="fa fa-comment-o"></i>
 					</a>
-					<a href="#" ng-click="worklistCtrl.openProcessHistory(rowData)" title="Process History" class="view-tool-link">
+					<a href="#" ng-click="worklistCtrl.$openProcessHistory(rowData)" title="Process History" class="view-tool-link">
 						<i class="fa fa-tasks"></i>
 					</a>
-					<a sda-column="TRIVIAL_DATA" href="#" ng-click="worklistCtrl.complete(rowData)" title="Complete" class="view-tool-link">
+					<a sda-column="TRIVIAL_DATA" href="#"
+						ng-disabled="!worklistCtrl.worklist.trivialManualActivities[rowData.oid]" 
+						ng-click="worklistCtrl.$complete(rowData)" title="Complete" class="view-tool-link">
 						<i class="fa fa-share"></i>
 					</a>
-					<a href="#" ng-click="worklistCtrl.openDelegateDialog(rowData)" title="Delegate" class="view-tool-link">
+					<a href="#" ng-click="worklistCtrl.$openDelegateDialog(rowData)" title="Delegate" class="view-tool-link">
 						<i class="fa fa-user"></i>
 					</a>
 				</td>

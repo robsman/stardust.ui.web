@@ -55,6 +55,19 @@
 		};
 
 		/*
+		 * Creates proxy function for each function which does not start with $
+		 * Proxy function is added by prefixing $ to the existing function
+		 * The proxy function helps is retaining 'this' context while calling function on scope from markup (ng-click)
+		 */
+		UtilService.prototype.addFunctionProxies = function(obj) {
+			for (var member in obj) {
+				if (member.indexOf("$") != 0 && angular.isFunction(obj[member])) {
+					obj["$" + member] = createProxyFunc(obj, member);
+				}
+			}
+		};
+
+		/*
 		 * 
 		 */
 		function createProxyFunc(obj, member) {

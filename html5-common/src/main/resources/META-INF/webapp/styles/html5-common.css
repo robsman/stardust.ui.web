@@ -72,6 +72,10 @@
 	cursor: pointer;
 }
 
+.tbl-row-selected {
+   background-color: #a9b7d1;
+}
+
 .tbl-flt-title {
    font-weight: normal;
    margin-bottom: 10px;
