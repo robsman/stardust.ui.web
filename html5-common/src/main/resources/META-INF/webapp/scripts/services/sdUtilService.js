@@ -70,6 +70,17 @@
 		/*
 		 * 
 		 */
+		UtilService.prototype.stopEvent = function(event) {
+			if (event.stopPopogation) {
+				event.stopPopogation();
+			} else if (window.event){
+				window.event.cancelBubble = true;
+			}
+		};
+
+		/*
+		 * 
+		 */
 		function createProxyFunc(obj, member) {
 			function proxyFunc() {
 				var args = Array.prototype.slice.call(arguments, 0);

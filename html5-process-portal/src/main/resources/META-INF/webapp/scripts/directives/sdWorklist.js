@@ -193,11 +193,7 @@
 		 * 
 		 */
 		WorklistCompiler.prototype.stopEvent = function(event) {
-			if (event.stopPopogation) {
-				event.stopPopogation();
-			} else if (window.event){
-				window.event.cancelBubble = true;
-			}
+			sdUtilService.stopEvent(event);
 		};
 
 		/*
