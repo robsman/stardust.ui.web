@@ -947,16 +947,11 @@ public class BusinessObjectManagementService {
 			}
 		}
 
-		System.out.println("Primary Key Field: " + primaryKeyFieldJson);
-
 		JsonArray tempJson = getBusinessObjectInstances(modelOid,
 				businessObjectId, "");
 
 		for (int n = 0; n < tempJson.size(); ++n) {
-			System.out.println("Object: " + tempJson.get(n));
-
 			for (int m = 0; m < primaryKeysJson.size(); ++m) {
-				System.out.println("Primary Key: " + primaryKeysJson.get(m));
 				if (tempJson.get(n).getAsJsonObject()
 						.get(primaryKeyFieldJson.get("name").getAsString())
 						.getAsString()
