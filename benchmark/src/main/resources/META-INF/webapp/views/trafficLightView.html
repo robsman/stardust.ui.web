@@ -33,7 +33,7 @@ ul.errorMessagesPanel {
 	border: 1px solid #DDDDDD;
 }
 
-.trafficLightTableCell {
+.trafficLightTable th, .trafficLightTable td {
 	border: 1px solid #DDDDDD;
 	padding: 5px;
 }
@@ -57,7 +57,7 @@ ul.errorMessagesPanel {
 	</div>
 	<div ng-cloak>
 		<h1>Traffic Lights</h1>
-		<table class="formTable" style="margin-bottom: 10px;">
+		<table class="formTable">
 			<tr>
 				<td><label>Benchmark</label></td>
 				<td><select ng-model="benchmark"
@@ -66,51 +66,53 @@ ul.errorMessagesPanel {
 				<td><label>Business Date</label></td>
 				<td><input type="date" ng-model="businessDate"></input></td>
 				<td ng-show="benchmark && !preconfigured"><label>Drill-down</label></td>
-				<td ng-show="benchmark && !preconfigured"><select ng-model="drilldown"
-					ng-change="onDrillDownChange()"><option value="">None</option>
+				<td ng-show="benchmark && !preconfigured"><select
+					ng-model="drilldown" ng-change="onDrillDownChange()"><option
+							value="">None</option>
 						<option value="PROCESS">By Process/Activity</option>
 						<option value="BUSINESS_OBJECT">By Business Object</option></select></td>
-				<td ng-show="benchmark  && !preconfigured && drilldown == 'BUSINESS_OBJECT'"><label>Business
+				<td
+					ng-show="benchmark  && !preconfigured && drilldown == 'BUSINESS_OBJECT'"><label>Business
 						Object</label></td>
-				<td ng-show="benchmark  && !preconfigured && drilldown == 'BUSINESS_OBJECT'"><select
+				<td
+					ng-show="benchmark  && !preconfigured && drilldown == 'BUSINESS_OBJECT'"><select
 					ng-model="businessObject"
 					ng-options="businessObject as businessObject.label for businessObject in businessObjects"
-					ng-change="onBusinessObjectChange()"><option value="">Please select ...</option></select></td>					
+					ng-change="onBusinessObjectChange()"><option value="">Please
+							select ...</option></select></td>
+			</tr>
+		</table>
+		<table class="formTable" style="margin-bottom: 10px;">
+			<tr>
+				<td><input type="checkbox" ng-model="showCompletedWork"></input></td>
+				<td><label>Show Completed Work</label></td>
+				<td><input type="checkbox" ng-model="showAbortedWork"></input></td>
+				<td><label>Show Aborted Work</label></td>
 			</tr>
 		</table>
 		<div ng-show="benchmark">
 			<table class="trafficLightTable">
 				<thead>
 					<tr>
-						<th class="trafficLightTableCell"><span ng-show="drilldown == 'PROCESS'">Activities/</span><span ng-show="drilldown == 'BUSINESS_OBJECT' && businessObject">{{businessObject.name}}/</span>Categories</th>
+						<th rowspan="2"><span ng-show="drilldown == 'PROCESS'">Activities/</span><span
+							ng-show="drilldown == 'BUSINESS_OBJECT' && businessObject">{{businessObject.name}}/</span>Categories</th>
+						<th colspan="{{benchmark.categories.length}}">Active</th>
+						<th rowspan="2" ng-show="showCompletedWork">Completed</th>
+						<th rowspan="2" ng-show="showAbortedWork">Aborted</th>
+						<th rowspan="2">Total</th>
+					</tr>
+					<tr>
 						<th class="trafficLightTableCell trafficLightCumulantTableCell"
 							ng-repeat="category in benchmark.categories">
 							{{category.name}}</th>
-							<th>Sum</th>
 					</tr>
 				</thead>
-				<tbody>
-					<tr>
-						<td class="trafficLightTableCell">Total</td>
-						<td valign="bottom" align="center" class="trafficLightTableCell"
-							ng-repeat="category in benchmark.categories"><a href=""
-							ng-click="$parent.loadActivityInstances()"><table cellpadding="0" cellspacing="0" class="layoutTable">
-									<tr>
-										<td align="center"><span style="{{getCountStyle(category)}}"><i
-												class="fa fa-circle"></i> </span></td>
-									</tr>
-									<tr>
-										<td align="center">{{getCount(category)}}</td>
-									</tr>
-								</table></a></td>
-								<td valign="bottom" class="trafficLightTableCell"><strong>{{getSumCount(category)}}</strong></td>
-					</tr>
+				<tbody>					
 					<tr
 						ng-show="drilldown && (!trafficLight.parent || expandedRows[trafficLight.parent.path])"
 						ng-repeat="trafficLight in trafficLights">
-						<td class="trafficLightTableCell"
-							style="padding-left: {{15* trafficLight.level+ 5}}px;"><a href=""
-							class="iconLink" ng-show="isExpandable(trafficLight)"
+						<td style="padding-left: {{15* trafficLight.level + 5}}px;"><a
+							href="" class="iconLink" ng-show="isExpandable(trafficLight)"
 							ng-click="expandRow(trafficLight)"><i
 								class="fa fa-plus-square-o"></i></a><a href=""
 							ng-show="isCollapsable(trafficLight)"
@@ -120,18 +122,51 @@ ul.errorMessagesPanel {
 								class="fa fa-gears" ng-show="trafficLight.type == 'PROCESS'"></i><i
 								class="fa fa-gear" ng-show="trafficLight.type == 'ACTIVITY'"></i>
 								{{trafficLight.name}}</span></td>
-						<td valign="bottom" align="center" class="trafficLightTableCell"
-							ng-repeat="category in benchmark.categories"><a href=""
-							ng-click="$parent.$parent.loadActivityInstances()"><table cellpadding="0" cellspacing="0" class="layoutTable">
+						<td valign="bottom" align="center"
+							ng-repeat="category in benchmark.categories"><a 
+							ng-click="$parent.$parent.selectedActivityInstances = getCategoryActivityInstances(trafficLight, category)"><table
+									cellpadding="0" cellspacing="0" class="layoutTable">
 									<tr>
-										<td align="center"><span style="{{getCountStyle(category, trafficLight)}}"><i
+										<td align="center"><span style="{{getCountStyle(getCategoryCount(trafficLight, category), getSumCount(trafficLight), category)}}"><i
+												class="fa fa-circle"></i></span></td>
+									</tr>
+									<tr>
+										<td align="center">{{getCategoryCount(trafficLight, category)}}</td>
+									</tr>
+								</table></a></td>
+						<td valign="bottom" align="center" ng-show="showCompletedWork"><a 
+							ng-click="$parent.selectedActivityInstances = getCompletedActivityInstances(trafficLight)"><table
+									cellpadding="0" cellspacing="0" class="layoutTable">
+									<tr>
+										<td align="center"><span style="{{getCountStyle(getCompletedCount(trafficLight), getSumCount(trafficLight))}}"><i
 												class="fa fa-circle"></i> </span></td>
 									</tr>
 									<tr>
-										<td align="center">{{getCount(category, trafficLight)}}</td>
+										<td align="center">{{getCompletedCount(trafficLight)}}</td>
 									</tr>
 								</table></a></td>
-								<td valign="bottom" class="trafficLightTableCell"><strong>{{getSumCount(category, trafficLight)}}</strong></td>
+						<td valign="bottom" align="center" ng-show="showAbortedWork"><a 
+							ng-click="$parent.selectedActivityInstances = getAbortedActivityInstances(trafficLight)"><table
+									cellpadding="0" cellspacing="0" class="layoutTable">
+									<tr>
+										<td align="center"><span style="{{getCountStyle(getAbortedCount(trafficLight), getSumCount(trafficLight))}}"><i
+												class="fa fa-circle"></i> </span></td>
+									</tr>
+									<tr>
+										<td align="center">{{getAbortedCount(trafficLight)}}</td>
+									</tr>
+								</table></a></td>
+						<td valign="bottom" align="center"><a href=""
+							ng-click="$parent.selectedActivityInstances = getSumActivityInstances(trafficLight)"><table
+									cellpadding="0" cellspacing="0" class="layoutTable">
+									<tr>
+										<td align="center"><span style="{{getCountStyle(getSumCount(trafficLight), getSumCount(trafficLight))}}"><i
+												class="fa fa-circle"></i> </span></td>
+									</tr>
+									<tr>
+										<td align="center">{{getSumCount(trafficLight)}}</td>
+									</tr>
+								</table></a></td>
 					</tr>
 				</tbody>
 			</table>
@@ -178,32 +213,29 @@ ul.errorMessagesPanel {
 				<table class="trafficLightTable">
 					<thead>
 						<tr>
-							<th class="trafficLightTableCell"></th>
-							<th class="trafficLightTableCell"></th>
-							<th class="trafficLightTableCell"
-								ng-repeat="category in benchmark.categories"><span
-								style="color: {{category.color}};"><i class="fa fa-circle"></i>
+							<th></th>
+							<th></th>
+							<th ng-repeat="category in benchmark.categories"><span
+								style="color: {{category.color"><i class="fa fa-circle"></i>
 									{{category.name}}</span></th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr ng-repeat="trafficLight in benchmark.trafficLights">
-							<td class="trafficLightTableCell"><a href=""
+							<td><a href=""
 								ng-click="removeTrafficLight(benchmark, $index)"
 								class="iconLink"><i class="fa fa-minus-circle"></i></a></td>
-							<td class="trafficLightTableCell"><span
-								ng-hide="trafficLight.activity"><i class="fa fa-gears"></i>{{trafficLight.process.name}}</span><span
+							<td><span ng-hide="trafficLight.activity"><i
+									class="fa fa-gears"></i>{{trafficLight.process.name}}</span><span
 								ng-show="trafficLight.activity"><i class="fa fa-gear"></i>{{trafficLight.activity.name}}</span></td>
-							<td ng-repeat="category in benchmark.categories"
-								class="trafficLightTableCell"><a href=""
-								ng-click="loadActivityInstances()">{{$index}}</a></td>
+							<td ng-repeat="category in benchmark.categories"><a
+								href="" ng-click="loadActivityInstances()">{{$index}}</a></td>
 						</tr>
 						<tr>
-							<td class="trafficLightTableCell"><a href=""
+							<td><a href=""
 								ng-click="openTrafficLightSelectionDialog(benchmark)"
 								class="iconLink"><i class="fa fa-plus-circle"></i></a></td>
-							<td colspan="{{benchmark.categories.length + 1}}"
-								class="trafficLightTableCell"></td>
+							<td colspan="{{benchmark.categories.length + 1}}"></td>
 						</tr>
 					</tbody>
 				</table>
@@ -212,7 +244,7 @@ ul.errorMessagesPanel {
 		<div ng-show="activityInstances.length > 0">
 			<h2>Activities</h2>
 			<div ng-include="'../activityInstanceListPanel.html'"
-				ng-repeat="activityInstances in [activityInstances]"></div>
+				ng-repeat="activityInstances in [selectedActivityInstances]"></div>
 		</div>
 		<div sd-dialog="trafficLightSelectionDialog">
 			<div class="errorMessagesPanel"

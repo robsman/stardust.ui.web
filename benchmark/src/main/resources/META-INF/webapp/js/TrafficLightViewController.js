@@ -40,7 +40,6 @@ define(
 					this.businessObjectManagementPanelController
 							.initialize(this);
 
-					this.banchmark = null;
 					this.models = [ {
 						id : "DailyFundsProcessing",
 						name : "Daily Funds Processing",
@@ -58,6 +57,7 @@ define(
 					} ];
 
 					this.trafficLights = [];
+					this.trafficLightsMap = {};
 
 					this.benchmarks = [ {
 						name : "Criticality",
@@ -127,6 +127,7 @@ define(
 							}
 						} ]
 					} ];
+					this.benchmark = this.benchmarks[0];
 
 					this.enhanceInformation();
 
@@ -156,8 +157,6 @@ define(
 						trafficLights : this.displayedBenchmarks[1].trafficLights
 					};
 					this.displayedTrafficLights[this.benchmarks[1].name][this.benchmarks[1].trafficLights[0].path] = this.benchmarks[1].trafficLights[1];
-
-					this.calculateCounts();
 
 					var self = this;
 
@@ -223,56 +222,56 @@ define(
 					this.trafficLights = [];
 					this.expandedRows = {};
 
+					var self = this;
+
 					if (this.drilldown == 'PROCESS') {
 						this.initializeTrafficLightsFromModels();
+						BenchmarkService.instance().getActivityInstances(
+								this.businessObject).done(
+								function(activityInstances) {
+									self.activityInstances = activityInstances;
+
+									self.calculateCounts();
+									self.safeApply();
+								}).fail(function() {
+							// TODO Error handling
+						});
 					} else if (this.drilldown == 'BUSINESS_OBJECT') {
 						// Wait for BO to be selected
 					}
-
-					this.calculateCounts();
 				};
 
 				/**
-				 * 
+				 * Should be executed on the server.
 				 */
 				TrafficLightViewController.prototype.calculateCounts = function() {
-					this.trafficLightCounts = {};
-
-					this.trafficLightCounts["/"] = {
-						categoryCounts : {}
-					};
-
-					var sumCount = 0;
-
-					if (this.benchmark) {
+					for (var n = 0; n < this.activityInstances.length; ++n) {
 						for (var m = 0; m < this.benchmark.categories.length; ++m) {
-							var count = Math.floor(Math.random() * (1500 + 1));
+							if (this.activityInstances[n].state != "Completed"
+									&& this.activityInstances[n].state != "Aborted") {
+								// TODO Filter by benchmark boundaries
 
-							sumCount += count;
-
-							this.trafficLightCounts["/"].categoryCounts[this.benchmark.categories[m].name] = count;
-							this.trafficLightCounts["/"].sumCount = sumCount;
-						}
-
-						if (this.drilldown) {
-							for (var n = 0; n < this.trafficLights.length; ++n) {
-								this.trafficLightCounts[this.trafficLights[n].path] = {
-									categoryCounts : {}
-								};
-
-								var sumCount = 0;
-
-								for (var m = 0; m < this.benchmark.categories.length; ++m) {
-									var count = Math.floor(Math.random()
-											* (1500 + 1));
-
-									sumCount += count;
-
-									this.trafficLightCounts[this.trafficLights[n].path].categoryCounts[this.benchmark.categories[m].name] = count;
-									this.trafficLightCounts[this.trafficLights[n].path].sumCount = sumCount;
+								if (!this.trafficLightsMap["/"].categories[this.benchmark.categories[m].name]) {
+									this.trafficLightsMap["/"].categories[this.benchmark.categories[m].name] = [];
 								}
+
+								this.trafficLightsMap["/"].categories[this.benchmark.categories[m].name]
+										.push(this.activityInstances[n]);
 							}
+
+							break;
 						}
+
+						if (this.activityInstances[n].state == "Completed") {
+							this.trafficLightsMap["/"].completed
+									.push(this.activityInstances[n]);
+						} else if (this.activityInstances[n].state == "Aborted") {
+							this.trafficLightsMap["/"].aborted
+									.push(this.activityInstances[n]);
+						}
+
+						this.trafficLightsMap["/"].sum
+								.push(this.activityInstances[n]);
 					}
 				};
 
@@ -280,40 +279,75 @@ define(
 				 * 
 				 */
 				TrafficLightViewController.prototype.initializeTrafficLightsFromModels = function() {
+					var rootRow;
+
+					this.trafficLights.push(rootRow = {
+						level : 0,
+						path : "/",
+						type : "ROOT",
+						name : "Total",
+						categories : {},
+						completed : [],
+						aborted : [],
+						sum : []
+					});
+
+					this.trafficLightsMap["/"] = rootRow;
+
 					for (var n = 0; n < this.models.length; ++n) {
 						var model = this.models[n];
 						var modelRow;
 
 						this.trafficLights.push(modelRow = {
-							level : 0,
-							path : model.id,
+							level : 1,
+							path : "/" + model.id,
 							type : "MODEL",
-							name : model.name
+							name : model.name,
+							parent : rootRow,
+							categories : {},
+							completed : [],
+							aborted : [],
+							sum : []
 						});
+
+						this.trafficLightsMap[modelRow.path] = modelRow;
 
 						for (var m = 0; m < model.processes.length; ++m) {
 							var process = model.processes[m];
 							var processRow;
 
 							this.trafficLights.push(processRow = {
-								level : 1,
-								path : model.id + "/" + process.id,
+								level : 2,
+								path : "/" + model.id + "/" + process.id,
 								parent : modelRow,
 								type : "PROCESS",
-								name : process.name
+								name : process.name,
+								categories : {},
+								completed : [],
+								aborted : [],
+								sum : []
 							});
+
+							this.trafficLightsMap[processRow.path] = processRow;
 
 							for (var l = 0; l < process.activities.length; ++l) {
 								var activity = process.activities[l];
+								var activityRow;
 
-								this.trafficLights.push({
-									level : 2,
-									path : model.id + "/" + process.id + "/"
-											+ activity.id,
+								this.trafficLights.push(activityRow = {
+									level : 3,
+									path : "/" + model.id + "/" + process.id
+											+ "/" + activity.id,
 									parent : processRow,
 									type : "ACTIVITY",
-									name : activity.name
+									name : activity.name,
+									categories : {},
+									completed : [],
+									aborted : [],
+									sum : []
 								});
+
+								this.trafficLightsMap[activityRow.path] = activityRow;
 							}
 						}
 					}
@@ -323,8 +357,20 @@ define(
 				 * 
 				 */
 				TrafficLightViewController.prototype.initializeTrafficLightsFromBusinessObjectInstances = function() {
-					console.log(this.businessObjectInstances);
+					var rootRow;
 
+					this.trafficLights.push(rootRow = {
+						level : 0,
+						path : "/",
+						type : "ROOT",
+						name : "Total",
+						categories : {},
+						completed : [],
+						aborted : [],
+						sum : []
+					});
+
+					this.trafficLightsMap[rootRow.path] = rootRow;
 					var groups = {};
 
 					for (var n = 0; n < this.businessObjectInstances.length; ++n) {
@@ -339,20 +385,30 @@ define(
 
 						if (!groupRow) {
 							this.trafficLights.push(groupRow = {
-								level : 0,
-								path : businessObjectInstance.FundGroup,
+								level : 1,
+								path : "/" + businessObjectInstance.FundGroup,
 								type : "Fund Group",
 								name : "Fund Group "
-										+ businessObjectInstance.FundGroup
+										+ businessObjectInstance.FundGroup,
+								parent : rootRow,
+								categories : {},
+								completed : [],
+								aborted : [],
+								sum : []
 							});
 
 							groups[businessObjectInstance.FundGroup] = groupRow;
+
+							this.trafficLightsMap[groupRow.path] = groupRow;
 						}
 
+						var objectRow;
+
 						this.trafficLights
-								.push({
-									level : 1,
-									path : businessObjectInstance.FundGroup
+								.push(objectRow = {
+									level : 2,
+									path : "/"
+											+ businessObjectInstance.FundGroup
 											+ "/"
 											+ this.businessObject.name
 											+ businessObjectInstance[this.businessObject.primaryKeyField.id],
@@ -360,8 +416,14 @@ define(
 									name : this.businessObject.name
 											+ " "
 											+ businessObjectInstance[this.businessObject.primaryKeyField.id],
-									parent : groupRow
+									parent : groupRow,
+									categories : {},
+									completed : [],
+									aborted : [],
+									sum : []
 								});
+
+						this.trafficLightsMap[objectRow.path] = objectRow;
 					}
 				};
 
@@ -451,32 +513,6 @@ define(
 				/**
 				 * 
 				 */
-				TrafficLightViewController.prototype.loadActivityInstances = function() {
-					jQuery("body").css("cursor", "wait");
-
-					this.processInstances = [ {} ];
-					this.nase = new Date();
-
-					var self = this;
-
-					BenchmarkService.instance().getActivityInstances().done(
-							function(activityInstances) {
-								console.log("===> Activity Instances");
-								console.log(activityInstances);
-
-								self.activityInstances = activityInstances;
-
-								self.safeApply();
-
-								jQuery("body").css("cursor", "default");
-							}).fail(function() {
-						jQuery("body").css("cursor", "default");
-					});
-				};
-
-				/**
-				 * 
-				 */
 				TrafficLightViewController.prototype.onBusinessObjectChange = function() {
 					for (var n = 0; n < this.businessObject.fields.length; ++n) {
 						if (this.businessObject.fields[n].primaryKey) {
@@ -504,46 +540,109 @@ define(
 										self
 												.initializeTrafficLightsFromBusinessObjectInstances();
 
-										self.calculateCounts();
+										BenchmarkService
+												.instance()
+												.getActivityInstances(
+														this.businessObject)
+												.done(
+														function(
+																activityInstances) {
+															self.activityInstances = activityInstances;
 
-										self.safeApply();
-									}).fail();
+															self
+																	.calculateCounts();
+															self.safeApply();
+														}).fail(function() {
+													// TODO Error handling
+												});
+									}).fail(function() {
+								// TODO Error handling
+							});
 				};
 
 				/**
 				 * 
 				 */
-				TrafficLightViewController.prototype.getCount = function(
-						category, trafficLight) {
-					if (trafficLight) {
-						return this.trafficLightCounts[trafficLight.path].categoryCounts[category.name];
-					}
+				TrafficLightViewController.prototype.getCategoryActivityInstances = function(
+						trafficLight, category) {
+					return this.trafficLightsMap[trafficLight.path].categories[category.name];
+				};
 
-					return this.trafficLightCounts["/"].categoryCounts[category.name];
+				/**
+				 * 
+				 */
+				TrafficLightViewController.prototype.getCategoryCount = function(
+						trafficLight, category) {
+					if (this.trafficLightsMap[trafficLight.path].categories[category.name]) {
+						return this.trafficLightsMap[trafficLight.path].categories[category.name].length;
+					} else {
+						return 0;
+					}
+				};
+
+				/**
+				 * 
+				 */
+				TrafficLightViewController.prototype.getCompletedActivityInstances = function(
+						trafficLight) {
+					return this.trafficLightsMap[trafficLight.path].completed;
+				};
+
+				/**
+				 * 
+				 */
+				TrafficLightViewController.prototype.getCompletedCount = function(
+						trafficLight) {
+					return this.trafficLightsMap[trafficLight.path].completed.length;
+				};
+
+				/**
+				 * 
+				 */
+				TrafficLightViewController.prototype.getAbortedActivityInstances = function(
+						trafficLight) {
+					return this.trafficLightsMap[trafficLight.path].aborted;
+				};
+
+				/**
+				 * 
+				 */
+				TrafficLightViewController.prototype.getAbortedCount = function(
+						trafficLight) {
+					return this.trafficLightsMap[trafficLight.path].aborted.length;
+				};
+
+				/**
+				 * 
+				 */
+				TrafficLightViewController.prototype.getSumActivityInstances = function(
+						trafficLight) {
+					return this.trafficLightsMap[trafficLight.path].sum;
 				};
 
 				/**
 				 * 
 				 */
 				TrafficLightViewController.prototype.getSumCount = function(
-						category, trafficLight) {
-					if (trafficLight) {
-						return this.trafficLightCounts[trafficLight.path].sumCount;
-					}
-
-					return this.trafficLightCounts["/"].sumCount;
+						trafficLight) {
+					return this.trafficLightsMap[trafficLight.path].sum.length;
 				};
 
 				/**
 				 * 
 				 */
 				TrafficLightViewController.prototype.getCountStyle = function(
-						category, trafficLight) {
-					return "color: "
-							+ category.color
-							+ "; font-size:"
-							+ (30 * this.getCount(category, trafficLight) / 1500)
-							+ "px;";
+						count, sumCount, category) {
+					
+					var size = count == 0 ? 0 : count / sumCount;
+					
+					if (category) {
+						return "color: " + category.color + "; font-size:"
+								+ Math.ceil(30 * size) + "px;";
+					} else {
+						return "color: #AAAAAA; font-size:"
+								+ Math.ceil(30 * size) + "px;";
+					}
 				};
 
 				/**
@@ -599,9 +698,11 @@ define(
 				 */
 				TrafficLightViewController.prototype.openGanttChartView = function(
 						activity) {
-					this.openView("ganttChartView",
-							"viewId=ganttChartView&oid=" + activity.rootProcessInstance.oid, window
-									.btoa("viewId=ganttChartView&oid="
+					this
+							.openView("ganttChartView",
+									"viewId=ganttChartView&oid="
+											+ activity.rootProcessInstance.oid,
+									window.btoa("viewId=ganttChartView&oid="
 											+ activity.rootProcessInstance.oid));
 				};
 
@@ -655,7 +756,7 @@ define(
 						this.$apply(fn);
 					}
 				};
-				
+
 				/**
 				 * 
 				 */

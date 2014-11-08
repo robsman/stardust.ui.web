@@ -4,10 +4,12 @@
 		<thead>
 			<tr>
 				<th>#</th>
-				<th>Name</th>
+				<th>Activity</th>
 				<th>Process</th>
+				<th>State</th>
+				<th>Performer</th>
 				<th>Start Time</th>
-				<th>Details</th>
+				<th>Actions</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -15,6 +17,8 @@
 				<td align="right">{{activityInstance.oid}}</td>
 				<td>{{activityInstance.activity.name}}</td>
 				<td>{{activityInstance.processInstance.processDefinition.name}}</td>
+				<td>{{activityInstance.state}}</td>
+				<td><span ng-show="activityInstance.performedBy">{{activityInstance.performedBy.name}}</span><span ng-show="activityInstance.userPerformer"><a href="email:{{activityInstance.userPerformer.eMail}}">{{activityInstance.userPerformer.firstName}} {{activityInstance.userPerformer.lastName}} ({{activityInstance.userPerformer.account}})</a></span><span ng-hide="activityInstance.userPerformer">{{activityInstance.participantPerformer.name}}</span></td>
 				<td>{{formatTimeStamp(activityInstance.start)}}</td>
 				<td align="right"><a class="iconLink" ng-click="openGanttChartView(activityInstance)"><i
 						class="fa fa-tasks"></i></a></td>

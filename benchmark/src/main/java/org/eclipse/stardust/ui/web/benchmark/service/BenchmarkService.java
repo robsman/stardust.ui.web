@@ -149,7 +149,7 @@ public class BenchmarkService {
 
 		resultJson.add("activityInstances", activityInstancesJson);
 
-		ActivityInstanceQuery query = ActivityInstanceQuery.findAlive();
+		ActivityInstanceQuery query = ActivityInstanceQuery.findAll();
 
 		for (ActivityInstance activityInstance : getQueryService()
 				.getAllActivityInstances(query)) {
@@ -197,14 +197,47 @@ public class BenchmarkService {
 			rootProcessInstanceJson.addProperty("oid", activityInstance
 					.getProcessInstance().getRootProcessInstanceOID());
 
-			activityInstanceJson.addProperty("oid", activityInstance
-					.getOID());
+			activityInstanceJson.addProperty("oid", activityInstance.getOID());
 			activityInstanceJson.addProperty("start", activityInstance
 					.getStartTime().getTime());
 			activityInstanceJson.addProperty("lastModification",
 					activityInstance.getLastModificationTime().getTime());
 			activityInstanceJson.addProperty("state", activityInstance
 					.getState().toString());
+			activityInstanceJson.addProperty("benchmark", "Criticality");
+			activityInstanceJson.addProperty("criticality",
+					activityInstance.getCriticality());
+
+			if (activityInstance.getPerformedBy() != null) {
+				JsonObject performedBy = new JsonObject();
+
+				activityInstanceJson.add("performedBy", performedBy);
+
+				performedBy.addProperty("name", activityInstance
+						.getPerformedBy().getName());
+			}
+
+			if (activityInstance.getParticipantPerformerID() != null) {
+				JsonObject participantPerformerJson = new JsonObject();				
+				
+				activityInstanceJson.add("participantPerformer", participantPerformerJson);
+				
+				participantPerformerJson.addProperty("id", activityInstance.getParticipantPerformerID());
+				participantPerformerJson.addProperty("name", activityInstance.getParticipantPerformerName());
+			}
+
+			if (activityInstance.getUserPerformer() != null) {
+				JsonObject userPerformer = new JsonObject();
+
+				activityInstanceJson.add("userPerformer", userPerformer);
+
+				userPerformer.addProperty("account", activityInstance
+						.getUserPerformer().getAccount());
+				userPerformer.addProperty("name", activityInstance
+						.getUserPerformer().getName());
+				userPerformer.addProperty("email", activityInstance
+						.getUserPerformer().getEMail());
+			}
 		}
 
 		return resultJson;
