@@ -165,7 +165,7 @@ define(
 						console.log("Foreign Key Fields");
 						console.log(this.foreignKeyFields);
 					}
-					
+
 					var fieldsPerColumn = Math.ceil(primitiveFields.length / 3);
 
 					for (var n = 0; n < primitiveFields.length; n += fieldsPerColumn) {
@@ -268,9 +268,7 @@ define(
 						BusinessObjectManagementService
 								.instance()
 								.updateBusinessObjectInstance(
-										this.businessObjectManagementPanelController.businessObject.modelOid,
-										this.businessObjectManagementPanelController.businessObject.id,
-										this.currentBusinessObjectInstance[this.businessObjectManagementPanelController.businessObject.primaryKeyField.id],
+										this.businessObjectManagementPanelController.businessObject,
 										this.currentBusinessObjectInstance)
 								.done(
 										function() {
@@ -421,8 +419,8 @@ define(
 				 */
 				BusinessObjectManagementViewController.prototype.getAssociatedObjects = function(
 						businessObjectInstance, relationship) {
-					if (this.currentBusinessObjectInstance["FundGroupIds"/* this.relationship.otherForeignKeyField */]) {
-						return this.currentBusinessObjectInstance["FundGroupIds"/* this.relationship.otherForeignKeyField */].length;
+					if (this.currentBusinessObjectInstance[this.relationship.otherForeignKeyField]) {
+						return this.currentBusinessObjectInstance[this.relationship.otherForeignKeyField].length;
 					}
 
 					return 0;
@@ -469,19 +467,110 @@ define(
 				 */
 				BusinessObjectManagementViewController.prototype.saveRelationshipChanges = function() {
 					console.log("Save relationship changed");
+					console.log(this);
 					console.log(this.relationshipPanelController);
 
+					// TODO Cleanup removed Relationships!!!
 					// TODO All code into Panel Controller
-					// TODO Update for all objects (Recursive Deferred Pattern)
-					
-					this.relationshipPanelController.rootBusinessObjectInstance[this.relationshipPanelController.otherForeignKeyField] = [];
+					// TODO Remove long dereferentiations by introducing a few
+					// local variables
+
+					this.relationshipPanelController.rootBusinessObjectInstance[this.relationshipPanelController.relationship.otherForeignKeyField] = [];
 
 					for (var n = 0; n < this.relationshipPanelController.selectedBusinessObjectInstances.length; ++n) {
-						this.relationshipPanelController.rootBusinessObjectInstance[this.relationshipPanelController.otherForeignKeyField]
-								.push(this.relationshipPanelController.selectedBusinessObjectInstances[n][this.relationshipPanelController.primaryKeyField.id]);
+						this.relationshipPanelController.rootBusinessObjectInstance[this.relationshipPanelController.relationship.otherForeignKeyField]
+								.push(this.relationshipPanelController.selectedBusinessObjectInstances[n][this.relationshipPanelController.businessObject.primaryKeyField.id]);
 					}
 
-					this.closeRelationshipDialog();
+					for (var n = 0; n < this.relationshipPanelController.selectedBusinessObjectInstances.length; ++n) {
+						var found = false;
+
+						if (this.relationshipPanelController.selectedBusinessObjectInstances[n][this.relationshipPanelController.relationship.thisForeignKeyField]) {
+							for (var m = 0; m < this.relationshipPanelController.selectedBusinessObjectInstances[n][this.relationshipPanelController.relationship.thisForeignKeyField].length; ++m) {
+								if (this.relationshipPanelController.rootBusinessObjectInstance[this.businessObjectManagementPanelController.businessObject.primaryKeyField] == this.relationshipPanelController.selectedBusinessObjectInstances[m][this.relationshipPanelController.relationship.thisForeignKeyField][m]) {
+									found = true;
+
+									break;
+								}
+							}
+
+							if (!found) {
+								this.relationshipPanelController.selectedBusinessObjectInstances[n][this.relationshipPanelController.relationship.thisForeignKeyField]
+										.push(this.relationshipPanelController.rootBusinessObjectInstance[this.businessObject.primaryKeyField.id]);
+							}
+						} else {
+							this.relationshipPanelController.selectedBusinessObjectInstances[n][this.relationshipPanelController.relationship.thisForeignKeyField] = [ this.relationshipPanelController.rootBusinessObjectInstance[this.businessObject.primaryKeyField.id] ];
+						}
+					}
+
+					console.log("Resulting object changes");
+					console
+							.log(this.relationshipPanelController.rootBusinessObjectInstance);
+					console
+							.log(this.relationshipPanelController.selectedBusinessObjectInstances);
+
+					// Write changes to the server
+
+					var self = this;
+
+					 BusinessObjectManagementService
+							.instance()
+							.updateBusinessObjectInstance(
+									this.businessObjectManagementPanelController.businessObject,
+									this.relationshipPanelController.rootBusinessObjectInstance)
+							.done(
+									function() {
+										self
+												.updateBusinessObjectInstancesRecursively(
+														0,
+														self.relationshipPanelController.selectedBusinessObjectInstances)
+												.done(
+														function() {
+															self
+																	.closeRelationshipDialog();
+														}).fail(function() {
+													// TODO Error message
+												});
+									}).fail(function() {
+								// TODO Error message
+							});
+				};
+
+				/**
+				 * 
+				 */
+				BusinessObjectManagementViewController.prototype.updateBusinessObjectInstancesRecursively = function(
+						index, businessObjectInstances) {
+					var deferred = jQuery.Deferred();
+					var self = this;
+
+					console.log("index = " + index);
+
+					if (index == businessObjectInstances.length) {
+						deferred.resolve();
+					} else {
+						BusinessObjectManagementService
+								.instance()
+								.updateBusinessObjectInstance(
+										this.relationshipPanelController.businessObject,
+										businessObjectInstances[index])
+								.done(
+										function() {
+											self
+													.updateBusinessObjectInstancesRecursively(
+															++index,
+															businessObjectInstances)
+													.done(function() {
+														deferred.resolve();
+													}).fail(function() {
+														deferred.reject();
+													});
+										}).fail(function() {
+									deferred.reject();
+								});
+					}
+
+					return deferred.promise();
 				};
 
 				/**

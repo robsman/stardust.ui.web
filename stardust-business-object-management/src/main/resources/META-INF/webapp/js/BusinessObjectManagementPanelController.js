@@ -58,7 +58,7 @@ define(
 							.instance()
 							.getRelatedBusinessObjectInstances(
 									this.businessObject,
-									this.rootBusinessObjectInstance, [])
+									this.rootBusinessObjectInstance, this.rootBusinessObjectInstance[this.relationship.otherForeignKeyField])
 							.done(
 									function(businessObjectInstances) {
 										console.log("Result");
@@ -72,10 +72,10 @@ define(
 				};
 
 				/**
-				 * 
+				 * This is required because selected objects go by identity.
 				 */
 				BusinessObjectManagementPanelController.prototype.selectAllInRelationship = function() {
-					var foreignKeys = this.rootBusinessObjectInstance["FundGroupIds"/* this.relationship.otherForeignKeyField */];
+					var foreignKeys = this.rootBusinessObjectInstance[this.relationship.otherForeignKeyField];
 
 					console.log("FK");
 					console.log(foreignKeys);

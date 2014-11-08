@@ -929,9 +929,44 @@ public class BusinessObjectManagementService {
 		JsonArray resultJson = new JsonArray();
 		JsonArray primaryKeysJson = json.get("primaryKeys").getAsJsonArray();
 
-		// TODO Populate "efficiently", fake for now
+		// TODO Populate "efficiently", fake for now - and an ugly one ...
 
-		return getBusinessObjectInstances(modelOid, businessObjectId, "");
+		JsonObject businessObjectJson = getBusinessObject(modelOid,
+				businessObjectId);
+		JsonArray fieldsJson = businessObjectJson.get("fields")
+				.getAsJsonArray();
+		JsonObject primaryKeyFieldJson = null;
+
+		for (int n = 0; n < fieldsJson.size(); ++n) {
+			if (fieldsJson.get(n).getAsJsonObject().has("primaryKey")
+					&& fieldsJson.get(n).getAsJsonObject().get("primaryKey")
+							.getAsBoolean()) {
+				primaryKeyFieldJson = fieldsJson.get(n).getAsJsonObject();
+
+				break;
+			}
+		}
+
+		System.out.println("Primary Key Field: " + primaryKeyFieldJson);
+
+		JsonArray tempJson = getBusinessObjectInstances(modelOid,
+				businessObjectId, "");
+
+		for (int n = 0; n < tempJson.size(); ++n) {
+			System.out.println("Object: " + tempJson.get(n));
+
+			for (int m = 0; m < primaryKeysJson.size(); ++m) {
+				System.out.println("Primary Key: " + primaryKeysJson.get(m));
+				if (tempJson.get(n).getAsJsonObject()
+						.get(primaryKeyFieldJson.get("name").getAsString())
+						.getAsString()
+						.equals(primaryKeysJson.get(m).getAsString())) {
+					resultJson.add(tempJson.get(n));
+				}
+			}
+		}
+
+		return resultJson;
 	}
 
 	/**
@@ -940,7 +975,9 @@ public class BusinessObjectManagementService {
 	 * @return
 	 */
 	private Object jsonElementToObject(JsonElement jsonElement) {
-		if (jsonElement.isJsonPrimitive()) {
+		if (jsonElement.isJsonNull()) {
+			return null;
+		} else if (jsonElement.isJsonPrimitive()) {
 			return jsonPrimitiveToObject(jsonElement.getAsJsonPrimitive());
 		} else if (jsonElement.isJsonArray()) {
 			return jsonArrayToList(jsonElement.getAsJsonArray());

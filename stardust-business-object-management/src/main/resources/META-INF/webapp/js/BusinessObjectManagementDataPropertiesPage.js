@@ -94,20 +94,30 @@ define(
 
 						for (var n = 0; n < this.relationships.length; ++n) {
 							var otherBusinessObject = this.relationships[n].otherBusinessObject ? this.otherBusinessObjectsMap[this.relationships[n].otherBusinessObject.modelId
-							                                                           										+ "/"
-							                                                        										+ this.relationships[n].otherBusinessObject.id]
-							                                                        										: null;
+									+ "/"
+									+ this.relationships[n].otherBusinessObject.id]
+									: null;
 							this
 									.loadOtherBusinessObjectTopLevelKeyFields(otherBusinessObject);
+
+							// Lookup field objects from names in Extended
+							// Attribute
+
+							var otherForeignKeyField = this
+									.findTopLevelFieldForBusinessObject(
+											this.propertiesPanel.data,
+											this.relationships[n].otherForeignKeyField);
+							var thisForeignKeyField = this
+									.findTopLevelFieldForBusinessObject(
+											otherBusinessObject,
+											this.relationships[n].thisForeignKeyField);
 
 							this.relationships[n] = {
 								otherBusinessObject : otherBusinessObject,
 								otherRole : this.relationships[n].otherRole,
-								otherCardinality : this.relationships[n].otherCardinality,
-								otherForeignKeyField : this.relationships[n].otherForeignKeyField,
+								otherForeignKeyField : otherForeignKeyField,
 								thisRole : this.relationships[n].thisRole,
-								thisCardinality : this.relationships[n].thisCardinality,
-								thisForeignKeyField : this.relationships[n].thisForeignKeyField
+								thisForeignKeyField : thisForeignKeyField
 							};
 						}
 
@@ -131,10 +141,15 @@ define(
 						var fields = typeDeclaration.typeDeclaration.schema.elements[0].body[0].body;
 
 						for (var n = 0; n < fields.length; ++n) {
-							console.log("App Info");
-							console.log(fields[n].appinfo);
+							console.log("Field");
+							console.log(fields[n]);
 							// if (!fields[n].appinfo) {
 							// storage.indexed: "false"
+
+							fields[n].cardinalityLabel = fields[n].name
+									+ " ("
+									+ (fields[n].cardinality == "many" ? "zero or more"
+											: "zero or one") + ")";
 							topLevelFields.push(fields[n]);
 							// }
 						}
@@ -142,6 +157,31 @@ define(
 					}
 
 					return topLevelFields;
+				};
+
+				/**
+				 * 
+				 */
+				BusinessObjectManagementDataPropertiesPage.prototype.findTopLevelFieldForBusinessObject = function(
+						businessObject, fieldName) {
+					var fields = null;
+
+					if (businessObject.getFullId() == this.propertiesPanel.data
+							.getFullId()) {
+						fields = this.propertiesPanel.propertiesPage.topLevelFields;
+					} else {
+						fields = this.otherBusinessObjectTopLevelFields[businessObject
+								.getFullId()];
+					}
+
+					for (var n = 0; n < fields.length; ++n) {
+						if (fields[n].name == fieldName) {
+							return fields[n];
+						}
+					}
+
+					throw "No field with name " + fieldName
+							+ " in Business Object.";
 				};
 
 				/**
@@ -189,7 +229,8 @@ define(
 				 */
 				BusinessObjectManagementDataPropertiesPage.prototype.changeOtherBusinessObject = function(
 						relationship) {
-					this.loadOtherBusinessObjectTopLevelKeyFields(relationship.otherBusinessObject);
+					this
+							.loadOtherBusinessObjectTopLevelKeyFields(relationship.otherBusinessObject);
 					this.submitRelationshipChanges(relationship);
 				};
 
@@ -224,6 +265,11 @@ define(
 				 */
 				BusinessObjectManagementDataPropertiesPage.prototype.submitRelationshipChanges = function(
 						relationship, index) {
+					// Submit changes for Relationships of this Business Object
+
+					this.submitRelationshipsChanges(this.propertiesPanel.data,
+							this.relationships);
+
 					var otherBusinessObjectUnchanged = this.relationshipsUnchanged[index].otherBusinessObject;
 					var thisRoleUnchanged = this.relationshipsUnchanged[index].thisRole;
 
@@ -243,6 +289,9 @@ define(
 							otherRelationships = JSON
 									.parse(relationship.otherBusinessObject.attributes["carnot:engine:businessObjectRelationships"]);
 
+							console.log("Found Relationships");
+							console.log(otherRelationships);
+
 							for (var n = 0; n < otherRelationships.length; ++n) {
 								// TODO Ugly comparison, but probably the price
 								// of a semi-typed approach
@@ -250,15 +299,14 @@ define(
 								var fullId = otherRelationships[n].otherBusinessObject.modelId
 										+ ":"
 										+ otherRelationships[n].otherBusinessObject.id;
-								console.log("Finding recursive relationship");
-								console.log(fullId);
-
-								// TODO Also filter by unchanged role
 
 								if ((fullId == this.propertiesPanel.data
 										.getFullId())
-										&& (otherRelationships.otherRole == thisRoleUnchanged)) {
+										&& (otherRelationships[n].otherRole == thisRoleUnchanged)) {
 									otherRelationship = otherRelationships[n];
+
+									console.log("Found mathing Relationship");
+									console.log(otherRelationship);
 
 									break;
 								}
@@ -275,23 +323,17 @@ define(
 							otherRelationships.push(otherRelationship);
 						}
 
-						// Apply all (possible) changes
+						// Apply all (possible) changes to the inverse of this
+						// relationship
 
 						otherRelationship.otherRole = relationship.thisRole;
 						otherRelationship.otherForeignKeyField = relationship.thisForeignKeyField;
-						otherRelationship.otherCardinality = relationship.thisCardinality;
 						otherRelationship.thisRole = relationship.otherRole;
 						otherRelationship.thisForeignKeyField = relationship.otherForeignKeyField;
-						otherRelationship.thisCardinality = relationship.otherCardinality;
-					}
 
-					this.submitRelationshipsChanges(this.propertiesPanel.data,
-							this.relationships);
+						// Submit the adjusted Relationships of the other
+						// Business Object
 
-					// Only for non-recursive Relationships
-
-					if (relationship.otherBusinessObject.getFullId() != this.propertiesPanel.data
-							.getFullId()) {
 						this.submitRelationshipsChanges(
 								relationship.otherBusinessObject,
 								otherRelationships);
@@ -303,6 +345,10 @@ define(
 				 */
 				BusinessObjectManagementDataPropertiesPage.prototype.submitRelationshipsChanges = function(
 						businessObject, relationships) {
+					console.log("submitRelationshipsChanges");
+					console.log(businessObject);
+					console.log(relationships);
+
 					var transfer = [];
 
 					for (var n = 0; n < relationships.length; ++n) {
@@ -313,11 +359,13 @@ define(
 										modelId : relationships[n].otherBusinessObject.modelId
 									},
 									otherRole : relationships[n].otherRole,
-									otherCardinality : relationships[n].otherCardinality,
-									otherForeignKeyField : relationships[n].otherForeignKeyField,
+									otherCardinality : relationships[n].otherForeignKeyField.cardinality == "many" ? "TO_MANY"
+											: "TO_ONE",
+									otherForeignKeyField : relationships[n].otherForeignKeyField.name,
 									thisRole : relationships[n].thisRole,
-									thisCardinality : relationships[n].thisCardinality,
-									thisForeignKeyField : relationships[n].thisForeignKeyField
+									thisCardinality : relationships[n].thisForeignKeyField.cardinality == "many" ? "TO_MANY"
+											: "TO_ONE",
+									thisForeignKeyField : relationships[n].thisForeignKeyField.name
 								});
 					}
 

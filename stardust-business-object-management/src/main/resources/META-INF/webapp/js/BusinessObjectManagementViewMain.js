@@ -15,24 +15,21 @@ require
 					exports : "angular"
 				},
 				'jquery.dataTables' : [ 'jquery' ],
-				'angular-datatables' : [ 'jquery', 'jquery.dataTables',
-						'angularjs' ],
 			}
 		});
 
 require(
 		[ "require", "jquery", "jquery-ui", "jquery.dataTables", "angularjs",
-				'angular-datatables', "business-object-management/js/Utils",
+				"business-object-management/js/Utils",
 				"business-object-management/js/AngularDirectives",
 				"business-object-management/js/BusinessObjectManagementViewController" ],
-		function(require, jquery, jqueryUi, jqueryDataTables, angularjs,
-				angularDatatables, Utils, AngularDirectives,
-				BusinessObjectManagementViewController) {
+		function(require, jquery, jqueryUi, jqueryDataTables, angularjs, Utils,
+				AngularDirectives, BusinessObjectManagementViewController) {
 			jQuery(document).ready(
 					function() {
 						var module = angularjs.module(
 								"businessObjectManagementViewApplication",
-								[ 'datatables' ]);
+								[]);
 
 						module.controller(
 								'businessObjectManagementViewController',

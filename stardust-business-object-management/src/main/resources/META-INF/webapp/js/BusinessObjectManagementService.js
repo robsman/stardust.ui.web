@@ -226,6 +226,9 @@ define(
 							+ businessObjectInstance[businessObject.primaryKeyField.id]
 							+ "/relatedInstances.json";
 
+					console.log("Primary Keys: ");
+					console.log(primaryKeys);
+					
 					jQuery.ajax({
 						url : url,
 						type : "POST",
@@ -235,6 +238,9 @@ define(
 						})
 
 					}).done(function(result) {
+						console.log("Related Business Objects");
+						console.log(result);
+
 						deferred.resolve(result);
 					}).fail(function(data) {
 						deferred.reject(data);
@@ -289,8 +295,10 @@ define(
 				 * 
 				 */
 				BusinessObjectManagementService.prototype.updateBusinessObjectInstance = function(
-						modelOid, businessObjectId, primaryKey,
-						businessObjectInstance) {
+						businessObject, businessObjectInstance) {
+					console.log(businessObject);
+					console.log(businessObjectInstance);
+
 					var deferred = jQuery.Deferred();
 					var rootUrl = location.href.substring(0, location.href
 							.indexOf("/plugins"));
@@ -301,14 +309,17 @@ define(
 									{
 										url : rootUrl
 												+ "/services/rest/business-object-management/businessObject/"
-												+ modelOid + "/"
-												+ businessObjectId
-												+ "/instance/" + primaryKey
+												+ businessObject.modelOid
+												+ "/"
+												+ businessObject.id
+												+ "/instance/"
+												+ businessObjectInstance[businessObject.primaryKeyField.id]
 												+ ".json",
 										type : "POST",
 										contentType : "application/json",
 										data : JSON
-												.stringify(businessObjectInstance)
+												.stringify(Utils
+														.stripAngularHashFields(businessObjectInstance))
 									})
 							.done(
 									function(result) {

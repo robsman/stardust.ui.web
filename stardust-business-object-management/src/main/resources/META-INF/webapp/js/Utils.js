@@ -16,7 +16,8 @@ define(
 				getQueryParameters : getQueryParameters,
 				installPostMessageListener : installPostMessageListener,
 				updatePageURL : updatePageURL,
-				composeUrl : composeUrl
+				composeUrl : composeUrl,
+				stripAngularHashFields : stripAngularHashFields
 			};
 
 			/**
@@ -55,15 +56,28 @@ define(
 			}
 
 			/**
+			 * TODO Recursive
+			 */
+			function stripAngularHashFields(object) {
+				for ( var member in object) {
+					if (member.indexOf("$$") == 0) {
+						delete object[member];
+					}
+				}
+
+				return object;
+			}
+
+			/**
 			 * 
 			 */
 			function formatDateTime(dateTime) {
 				if (!dateTime) {
 					return "-";
 				}
-				
+
 				dateTime = new Date(dateTime);
-				
+
 				return pad(dateTime.getUTCDate(), 2) + "."
 						+ pad(dateTime.getUTCMonth() + 1, 2) + "."
 						+ dateTime.getUTCFullYear() + " "

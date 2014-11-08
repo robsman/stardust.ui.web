@@ -32,7 +32,8 @@
 			</tr>
 			<tr>
 				<td><label>Name Field</label></td>
-				<td><select ng-disabled="!elementView.propertiesPage.propertiesPanel.data.attributes['carnot:engine:primaryKey']"
+				<td><select
+					ng-disabled="!elementView.propertiesPage.propertiesPanel.data.attributes['carnot:engine:primaryKey']"
 					ng-model="elementView.propertiesPage.propertiesPanel.data.attributes['carnot:engine:nameExpression']"
 					ng-options="field.name as field.name for field in elementView.propertiesPage.topLevelFields"
 					ng-change="elementView.propertiesPage.updateAttribute('carnot:engine:nameExpression', elementView.propertiesPage.propertiesPanel.data.attributes['carnot:engine:nameExpression'])"><option
@@ -47,10 +48,8 @@
 					<th></th>
 					<th>Other Business Object</th>
 					<th>Other Role</th>
-					<th>Other Cardinality</th>
 					<th>Reference to Other Object</th>
 					<th>This Role</th>
-					<th>This Cardinality</th>
 					<th>Reference to this Object</th>
 				</tr>
 			</thead>
@@ -68,25 +67,18 @@
 								value="">Please select ...</option></select></td>
 					<td><input ng-model="relationship.otherRole"
 						ng-blur="elementView.propertiesPage.submitRelationshipChanges(relationship, $index)"></input></td>
-					<td><select ng-model="relationship.otherCardinality"
-						ng-change="elementView.propertiesPage.submitRelationshipChanges(relationship, $index)">
-							<option value="TO_ONE">To One</option>
-							<option value="TO_MANY">To Many</option>
-					</select></td>
-					<td><select
-						ng-model="relationship.otherForeignKeyField"
-						ng-options="field.name as field.name for field in elementView.propertiesPage.topLevelFields"
+					</select>
+					</td>
+					<td><select ng-model="relationship.otherForeignKeyField"
+						ng-options="field as field.cardinalityLabel for field in elementView.propertiesPage.topLevelFields"
 						ng-change="elementView.propertiesPage.submitRelationshipChanges(relationship, $index)"><option
 								value="">Please select ...</option></select></td>
 					<td><input ng-model="relationship.thisRole"
 						ng-blur="elementView.propertiesPage.submitRelationshipChanges(relationship, $index)"></input></td>
-					<td><select ng-model="relationship.thisCardinality"
-						ng-change="elementView.propertiesPage.submitRelationshipChanges(relationship, $index)">
-							<option value="TO_ONE">To One</option>
-							<option value="TO_MANY">To Many</option>
-					</select></td>
+					</select>
+					</td>
 					<td><select ng-model="relationship.thisForeignKeyField"
-						ng-options="field.name as field.name for field in elementView.propertiesPage.otherBusinessObjectTopLevelFields[relationship.otherBusinessObject.getFullId()]"
+						ng-options="field as field.cardinalityLabel for field in elementView.propertiesPage.otherBusinessObjectTopLevelFields[relationship.otherBusinessObject.getFullId()]"
 						ng-change="elementView.propertiesPage.submitRelationshipChanges(relationship, $index)"><option
 								value="">Please select ...</option></select></td>
 				</tr>
