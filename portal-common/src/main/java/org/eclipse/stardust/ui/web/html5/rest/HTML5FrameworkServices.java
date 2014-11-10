@@ -594,17 +594,24 @@ public class HTML5FrameworkServices
 
       if (null != baseName)
       {
-         ResourceBundle bundle = ResourceBundle.getBundle(baseName, locale);
-         for (String key : Collections.list(bundle.getKeys()))
+         try
          {
-            if(prependBundleName)
+            ResourceBundle bundle = ResourceBundle.getBundle(baseName, locale);
+            for (String key : Collections.list(bundle.getKeys()))
             {
-               values.put(baseName + "." + key, bundle.getString(key));
+               if(prependBundleName)
+               {
+                  values.put(baseName + "." + key, bundle.getString(key));
+               }
+               else
+               {
+                  values.put(key, bundle.getString(key));
+               }
             }
-            else
-            {
-               values.put(key, bundle.getString(key));
-            }
+         }
+         catch (Exception e)
+         {
+            trace.warn(e.getMessage());
          }
       }
 

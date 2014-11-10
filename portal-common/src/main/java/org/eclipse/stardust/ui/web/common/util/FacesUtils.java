@@ -45,6 +45,7 @@ import org.eclipse.stardust.ui.web.common.app.View;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.Constants;
+import org.eclipse.stardust.ui.web.html5.ManagedBeanUtils;
 
 /**
  * Provides Utility methods that can be called from XHTMLs
@@ -224,7 +225,7 @@ public class FacesUtils implements Constants
     */
    public static Object getBeanFromContext(String beanName)
    {
-      return getBeanFromContext(FacesContext.getCurrentInstance(), beanName);
+      return ManagedBeanUtils.getManagedBean(beanName);
    }
    
    /**
@@ -234,8 +235,7 @@ public class FacesUtils implements Constants
     */
    public static Object getBeanFromContext(FacesContext context, String beanName)
    {
-      return context.getApplication().getVariableResolver().resolveVariable(
-            FacesContext.getCurrentInstance(), beanName);
+      return ManagedBeanUtils.getManagedBean(context, beanName);
    }
    
    /**

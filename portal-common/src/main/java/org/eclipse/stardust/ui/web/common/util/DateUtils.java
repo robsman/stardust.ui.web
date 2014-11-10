@@ -123,7 +123,7 @@ public class DateUtils
          return "";
       }
 
-      Locale locale = FacesUtils.getLocaleFromRequest();
+      Locale locale = MessagePropertiesBean.getInstance().getLocaleObject();
       SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format, locale);
 
       if (timeZone != null)
