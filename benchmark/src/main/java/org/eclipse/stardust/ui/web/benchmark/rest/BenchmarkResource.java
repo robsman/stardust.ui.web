@@ -38,9 +38,21 @@ public class BenchmarkResource {
 	 * 
 	 * @param benchmarkService
 	 */
-	public void setBenchmarkService(
-			BenchmarkService benchmarkService) {
+	public void setBenchmarkService(BenchmarkService benchmarkService) {
 		this.benchmarkService = benchmarkService;
+	}
+
+	@GET
+	@Path("/models.json")
+	public Response getModels() {
+		try {
+			return Response.ok(getBenchmarkService().getModels().toString(),
+					MediaType.APPLICATION_JSON).build();
+		} catch (Exception e) {
+			trace.error(e, e);
+
+			return Response.serverError().build();
+		}
 	}
 
 	@GET
@@ -48,8 +60,8 @@ public class BenchmarkResource {
 	public Response getActivities() {
 		try {
 			return Response.ok(
-					getBenchmarkService().getActivityInstances()
-							.toString(), MediaType.APPLICATION_JSON).build();
+					getBenchmarkService().getActivityInstances().toString(),
+					MediaType.APPLICATION_JSON).build();
 		} catch (Exception e) {
 			trace.error(e, e);
 
@@ -62,8 +74,8 @@ public class BenchmarkResource {
 	public Response getProcessInstance(@PathParam("oid") long oid) {
 		try {
 			return Response.ok(
-					getBenchmarkService().getProcessInstance(oid)
-							.toString(), MediaType.APPLICATION_JSON).build();
+					getBenchmarkService().getProcessInstance(oid).toString(),
+					MediaType.APPLICATION_JSON).build();
 		} catch (Exception e) {
 			trace.error(e, e);
 

@@ -40,22 +40,6 @@ define(
 					this.businessObjectManagementPanelController
 							.initialize(this);
 
-					this.models = [ {
-						id : "DailyFundsProcessing",
-						name : "Daily Funds Processing",
-						processes : [ {
-							id : "ProcessingEurope",
-							name : "Processing Europe",
-							activities : [ {
-								id : "RetrievePrices",
-								name : "Retrieve Prices"
-							}, {
-								id : "SweepAndTranslate",
-								name : "Sweep and Translate"
-							} ]
-						} ]
-					} ];
-
 					this.benchmarks = [ {
 						name : "Criticality",
 						categories : [ {
@@ -245,20 +229,38 @@ define(
 								}).fail(function() {
 									// TODO Error handling
 								});
-					} else if (this.drilldown == 'PROCESS') {
+					} else if (this.drilldown == "PROCESS") {
 						// TODO The following call may be executed entirely on
 						// the server
 
-						BenchmarkService.instance().getActivityInstances()
-								.done(function(activityInstances) {
-									self.activityInstances = activityInstances;
+						BenchmarkService
+								.instance()
+								.getModels()
+								.done(
+										function(models) {
+											self.models = models;
 
-									self.initializeTrafficLightsFromModels();
-									self.calculateCounts();
-									self.cumulateLeaveTrafficLights();
+											BenchmarkService
+													.instance()
+													.getActivityInstances()
+													.done(
+															function(
+																	activityInstances) {
+																self.activityInstances = activityInstances;
 
-									self.safeApply();
-								}).fail(function() {
+																self
+																		.initializeTrafficLightsFromModels();
+																self
+																		.calculateCounts();
+																self
+																		.cumulateLeaveTrafficLights();
+
+																self
+																		.safeApply();
+															}).fail(function() {
+														// TODO Error handling
+													});
+										}).fail(function() {
 									// TODO Error handling
 								});
 					} else if (this.drilldown == 'BUSINESS_OBJECT') {
@@ -271,41 +273,63 @@ define(
 				 */
 				TrafficLightViewController.prototype.calculateCounts = function() {
 					for (var n = 0; n < this.activityInstances.length; ++n) {
-						for (var l = 0; l < this.leafTrafficLights.length; ++l) {
-							var currentTrafficLight = this.leafTrafficLights[l];
+						var currentTrafficLight;
 
-							// TODO Filter whether AI belongs to this Leaf TLV
+						if (this.drilldown == "PROCESS") {
+							console.log(this.activityInstances[n]);
 
-							for (var m = 0; m < this.benchmark.categories.length; ++m) {
-								if (this.activityInstances[n].state == "Completed"
-										|| this.activityInstances[n].state == "Aborted") {
-									continue;
-								}
+							currentTrafficLight = this.leafTrafficLightsMap[this.activityInstances[n].activity.id]; // TODO
+							// Use
+							// ID
+							// path
+							// for
+							// uniqueness
+						} else {
+							// TODO Dummy
 
-								if (this.activityInstances[n].criticality * 1000 >= this.benchmark.categories[m].low
-										&& this.activityInstances[n].criticality * 1000 <= this.benchmark.categories[m].high) {
-									if (!currentTrafficLight.categories[this.benchmark.categories[m].name]) {
-										currentTrafficLight.categories[this.benchmark.categories[m].name] = [];
-									}
+							for (key in this.leafTrafficLightsMap) {
+								currentTrafficLight = this.leafTrafficLightsMap[key];
 
-									currentTrafficLight.categories[this.benchmark.categories[m].name]
-											.push(this.activityInstances[n]);
+								break;
+							}
+						}
 
-									break;
-								}
+						// Activity does not contribute to traffic light
+						
+						if (!currentTrafficLight) {
+							continue;
+						}
+						
+						// TODO Filter whether AI belongs to this Leaf TLV
+
+						for (var m = 0; m < this.benchmark.categories.length; ++m) {
+							if (this.activityInstances[n].state == "Completed"
+									|| this.activityInstances[n].state == "Aborted") {
+								continue;
 							}
 
-							if (this.activityInstances[n].state == "Completed") {
-								currentTrafficLight.completed
-										.push(this.activityInstances[n]);
-							} else if (this.activityInstances[n].state == "Aborted") {
-								currentTrafficLight.aborted
-										.push(this.activityInstances[n]);
-							}
+							if (this.activityInstances[n].criticality * 1000 >= this.benchmark.categories[m].low
+									&& this.activityInstances[n].criticality * 1000 <= this.benchmark.categories[m].high) {
+								if (!currentTrafficLight.categories[this.benchmark.categories[m].name]) {
+									currentTrafficLight.categories[this.benchmark.categories[m].name] = [];
+								}
 
-							currentTrafficLight.sum
+								currentTrafficLight.categories[this.benchmark.categories[m].name]
+										.push(this.activityInstances[n]);
+
+								break;
+							}
+						}
+
+						if (this.activityInstances[n].state == "Completed") {
+							currentTrafficLight.completed
+									.push(this.activityInstances[n]);
+						} else if (this.activityInstances[n].state == "Aborted") {
+							currentTrafficLight.aborted
 									.push(this.activityInstances[n]);
 						}
+
+						currentTrafficLight.sum.push(this.activityInstances[n]);
 					}
 				};
 
@@ -315,7 +339,7 @@ define(
 				TrafficLightViewController.prototype.initializeTrafficLightsNoDrilldown = function() {
 					this.trafficLights = [];
 					this.trafficLightsMap = {};
-					this.leafTrafficLights = [];
+					this.leafTrafficLightsMap = {};
 
 					var rootRow;
 
@@ -331,8 +355,7 @@ define(
 					});
 
 					this.trafficLightsMap["/"] = rootRow;
-
-					this.leafTrafficLights.push(rootRow);
+					this.leafTrafficLightsMap["/"] = rootRow;
 				};
 
 				/**
@@ -341,7 +364,7 @@ define(
 				TrafficLightViewController.prototype.initializeTrafficLightsFromModels = function() {
 					this.trafficLights = [];
 					this.trafficLightsMap = {};
-					this.leafTrafficLights = [];
+					this.leafTrafficLightsMap = {};
 
 					var rootRow;
 
@@ -376,8 +399,8 @@ define(
 
 						this.trafficLightsMap[modelRow.path] = modelRow;
 
-						for (var m = 0; m < model.processes.length; ++m) {
-							var process = model.processes[m];
+						for (var m = 0; m < model.processDefinitions.length; ++m) {
+							var process = model.processDefinitions[m];
 							var processRow;
 
 							this.trafficLights.push(processRow = {
@@ -412,8 +435,7 @@ define(
 								});
 
 								this.trafficLightsMap[activityRow.path] = activityRow;
-
-								this.leafTrafficLights.push(activityRow);
+								this.leafTrafficLightsMap[activity.id] = activityRow; // TODO Needs to be the full path
 							}
 						}
 					}
@@ -425,7 +447,7 @@ define(
 				TrafficLightViewController.prototype.initializeTrafficLightsFromBusinessObjectInstances = function() {
 					this.trafficLights = [];
 					this.trafficLightsMap = {};
-					this.leafTrafficLights = [];
+					this.leafTrafficLightsMap = {};
 
 					var rootRow;
 
@@ -475,9 +497,6 @@ define(
 						}
 					}
 
-					console.log("Group By Map");
-					console.log(this.groupByBusinessObjectInstancesRowMap);
-
 					for (var n = 0; n < this.businessObjectInstances.length; ++n) {
 						var businessObjectInstance = this.businessObjectInstances[n];
 
@@ -525,8 +544,7 @@ define(
 								});
 
 						this.trafficLightsMap[objectRow.path] = objectRow;
-
-						this.leafTrafficLights.push(objectRow);
+						this.leafTrafficLightsMap[businessObjectInstance[this.businessObject.primaryKeyField.id]] = objectRow;
 					}
 				};
 
@@ -534,8 +552,8 @@ define(
 				 * 
 				 */
 				TrafficLightViewController.prototype.cumulateLeaveTrafficLights = function() {
-					for (var n = 0; n < this.leafTrafficLights.length; ++n) {
-						var leafTrafficLight = this.leafTrafficLights[n];
+					for ( var n in this.leafTrafficLightsMap) {
+						var leafTrafficLight = this.leafTrafficLightsMap[n];
 						var currentTrafficLight = leafTrafficLight;
 
 						while (currentTrafficLight.parent) {

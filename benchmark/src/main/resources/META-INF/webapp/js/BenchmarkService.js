@@ -29,6 +29,31 @@ define(
 				/**
 				 * 
 				 */
+				BenchmarkService.prototype.getModels = function() {
+					var deferred = jQuery.Deferred();
+					var rootUrl = location.href.substring(0, location.href
+							.indexOf("/plugins"));
+					var self = this;
+
+					jQuery.ajax({
+						url : rootUrl + "/services/rest/benchmark/models.json",
+						type : "GET",
+						contentType : "application/json"
+					}).done(function(result) {
+						console.log("=======> Models");
+						console.log(result.models);
+
+						deferred.resolve(result.models);
+					}).fail(function(data) {
+						deferred.reject(data);
+					});
+
+					return deferred.promise();
+				};
+
+				/**
+				 * 
+				 */
 				BenchmarkService.prototype.getActivityInstances = function() {
 					var deferred = jQuery.Deferred();
 					var rootUrl = location.href.substring(0, location.href

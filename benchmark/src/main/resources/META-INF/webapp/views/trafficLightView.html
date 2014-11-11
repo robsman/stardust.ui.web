@@ -97,7 +97,7 @@ ul.errorMessagesPanel {
 				<td><label>Show Aborted Work</label></td>				
 			</tr>
 		</table>
-		<table class="formTable" style="margin-bottom: 10px;" ng-show="benchmark && !preconfigured">
+		<table class="formTable" ng-show="benchmark && !preconfigured">
 			<tr>
 				<td><label>Drill-down</label></td>
 				<td><select
@@ -124,6 +124,13 @@ ul.errorMessagesPanel {
 			</tr>
 		</table>
 		<div ng-show="benchmark">
+			<table class="formTable" style="margin-bottom: 10px;"
+				ng-show="benchmark && !preconfigured">
+				<tr>
+					<td><label><i class="fa fa-search"></i></label></td>
+					<td><input ng-model="filterString" ng-blur="filter()"></input></td>
+				</tr>
+			</table>
 			<table class="trafficLightTable">
 				<thead>
 					<tr>

@@ -12,19 +12,30 @@
 package org.eclipse.stardust.ui.web.benchmark.service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Resource;
 
+import org.eclipse.stardust.common.CollectionUtils;
+import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.dto.Note;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceAttributes;
+import org.eclipse.stardust.engine.api.model.Activity;
+import org.eclipse.stardust.engine.api.model.Data;
 import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.ImplementationType;
+import org.eclipse.stardust.engine.api.model.PredefinedConstants;
+import org.eclipse.stardust.engine.api.model.ProcessDefinition;
+import org.eclipse.stardust.engine.api.model.Reference;
+import org.eclipse.stardust.engine.api.model.TypeDeclaration;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.AdministrationService;
+import org.eclipse.stardust.engine.api.runtime.DeployedModel;
 import org.eclipse.stardust.engine.api.runtime.DmsUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
@@ -35,9 +46,13 @@ import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.engine.api.runtime.UserService;
 import org.eclipse.stardust.engine.api.runtime.WorkflowService;
+import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
+import org.eclipse.stardust.engine.core.struct.StructuredTypeRtUtils;
+import org.eclipse.stardust.engine.core.struct.TypedXPath;
 import org.eclipse.stardust.ui.web.benchmark.rest.JsonMarshaller;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -139,7 +154,78 @@ public class BenchmarkService {
 	}
 
 	/**
+	 * 
+	 * @return
+	 */
+	public JsonObject getModels() {
+		JsonObject resultJson = new JsonObject();
+		JsonArray modelsJson = new JsonArray();
+
+		resultJson.add("models", modelsJson);
+
+		ModelCache modelCache = ModelCache.findModelCache();
+
+		for (DeployedModel deployedModel : modelCache.getAllModels()) {
+			if (!PredefinedConstants.PREDEFINED_MODEL_ID.equals(deployedModel
+					.getId()) && deployedModel.isActive()) {
+
+				JsonObject modelJson = new JsonObject();
+
+				modelsJson.add(modelJson);
+
+				modelJson.addProperty("oid", deployedModel.getElementOID());
+				modelJson.addProperty("id", deployedModel.getId());
+				modelJson.addProperty("name", deployedModel.getName());
+				modelJson.addProperty("description",
+						deployedModel.getDescription());
+
+				JsonArray processDefinitionsJson = new JsonArray();
+
+				modelJson.add("processDefinitions", processDefinitionsJson);
+
+				for (ProcessDefinition processDefinition : (List<ProcessDefinition>) deployedModel
+						.getAllProcessDefinitions()) {
+					JsonObject processDefinitionJson = new JsonObject();
+
+					processDefinitionsJson.add(processDefinitionJson);
+
+					processDefinitionJson.addProperty("oid",
+							processDefinition.getElementOID());
+					processDefinitionJson.addProperty("id",
+							processDefinition.getId());
+					processDefinitionJson.addProperty("name",
+							processDefinition.getName());
+					processDefinitionJson.addProperty("description",
+							processDefinition.getDescription());
+
+					JsonArray activitiesJson = new JsonArray();
+
+					processDefinitionJson.add("activities", activitiesJson);
+
+					for (Activity activity : (List<Activity>) processDefinition
+							.getAllActivities()) {
+						JsonObject activityJson = new JsonObject();
+
+						activitiesJson.add(activityJson);
+
+						activityJson.addProperty("oid",
+								activity.getElementOID());
+						activityJson.addProperty("id", activity.getId());
+						activityJson.addProperty("name", activity.getName());
+						activityJson.addProperty("description",
+								activity.getDescription());
+					}
+				}
+			}
+		}
+
+		return resultJson;
+	}
+
+	/**
 	 * Returns worklist.
+	 * 
+	 * TODO Needs to become a central service.
 	 *
 	 * @return
 	 */
@@ -218,12 +304,15 @@ public class BenchmarkService {
 			}
 
 			if (activityInstance.getParticipantPerformerID() != null) {
-				JsonObject participantPerformerJson = new JsonObject();				
-				
-				activityInstanceJson.add("participantPerformer", participantPerformerJson);
-				
-				participantPerformerJson.addProperty("id", activityInstance.getParticipantPerformerID());
-				participantPerformerJson.addProperty("name", activityInstance.getParticipantPerformerName());
+				JsonObject participantPerformerJson = new JsonObject();
+
+				activityInstanceJson.add("participantPerformer",
+						participantPerformerJson);
+
+				participantPerformerJson.addProperty("id",
+						activityInstance.getParticipantPerformerID());
+				participantPerformerJson.addProperty("name",
+						activityInstance.getParticipantPerformerName());
 			}
 
 			if (activityInstance.getUserPerformer() != null) {
