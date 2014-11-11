@@ -750,7 +750,7 @@ public class WorklistTableBean extends UIComponentBean
 
       //set descriptors list and map<dataId, dataPath>
       allDescriptors = CommonDescriptorUtils.getAllDescriptors(false);
-      List<ColumnPreference> descriptorColumns = DescriptorColumnUtils.createDescriptorColumns(worklistTable, allDescriptors, Resources.VIEW_WORKLIST_COLUMNS);
+      List<ColumnPreference> descriptorColumns = DescriptorColumnUtils.createDescriptorColumns(worklistTable, allDescriptors, ResourcePaths.V_DOCUMENT_DESC_COLUMNS);
       standardColumns.addAll(descriptorColumns);
 
       IColumnModel worklistColumnModel = new DefaultColumnModel(standardColumns, fixedColumns1,
