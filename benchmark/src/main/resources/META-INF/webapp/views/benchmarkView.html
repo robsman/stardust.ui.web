@@ -103,7 +103,7 @@ ul.errorMessagesPanel {
 			<tr ng-repeat="row in modelTree"
 				ng-show="!row.parent || expandedRows[row.parent.path]">
 				<td class="benchmarkTableCell"
-					style="padding-left: {{15* row.level+ 5}}px;"><a href=""
+					style="padding-left: {{15* row.level+ 5"><a href=""
 					class="iconLink" ng-show="isExpandable(row)"
 					ng-click="expandRow(row)"><i class="fa fa-plus-square-o"></i></a><a
 					href="" ng-show="isCollapsable(row)" ng-click="collapseRow(row)"
@@ -112,14 +112,30 @@ ul.errorMessagesPanel {
 						ng-show="row.type == 'MODEL'"></i><i class="fa fa-gears"
 						ng-show="row.type == 'PROCESS'"></i><i class="fa fa-gear"
 						ng-show="row.type == 'ACTIVITY'"></i> {{row.name}}</span></td>
-				<td class="benchmarkTableCell"><a href="" ng-show="row.mode == 'BOOLEAN' || !row.mode"
+				<td class="benchmarkTableCell"><a href=""
+					ng-show="row.mode == 'BOOLEAN' || !row.mode"
 					ng-click="row.mode = 'NUMERIC'" class="iconLink"><i
 						class="fa fa-sort-numeric-desc"></i></a><a href=""
 					ng-show="row.mode == 'NUMERIC'" ng-click="row.mode = 'BOOLEAN'"
 					class="iconLink"><i class="fa fa-check-square"></i></a></td>
+				<td class="" style="vertical-align: top;"
+					ng-show="row.mode == 'NUMERIC'" colspan="{{categories.length}}">
+					<div ng-show="row.type == 'MODEL'"></div>
+					<div ng-show="row.type == 'PROCESS' || row.type == 'ACTIVITY'">
+						<table class="formTable" style="width: 100%;">
+							<tr>
+								<td><label>User Defined Condition</label></td>
+							</tr>
+							<tr>
+								<td><textarea style="width: 100%;"></textarea></td>
+							</tr>
+						</table>
+					</div>
+				</td>
 				<td
 					class="benchmarkTableCell {{getConditionCellClass(row.conditions[$index])}}"
-					style="vertical-align: top;" ng-repeat="category in categories">
+					style="vertical-align: top;" ng-show="row.mode == 'BOOLEAN'"
+					ng-repeat="category in categories">
 					<div ng-show="row.type == 'MODEL'"></div>
 					<div ng-show="row.type == 'PROCESS' || row.type == 'ACTIVITY'">
 						<table class="formTable">

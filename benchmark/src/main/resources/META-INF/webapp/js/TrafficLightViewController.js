@@ -130,6 +130,7 @@ define(
 							}
 						} ]
 					} ];
+
 					this.benchmark = this.benchmarks[0];
 
 					this.enhanceInformation();
@@ -210,6 +211,8 @@ define(
 													}
 												}
 											}
+										} else {
+											self.onDrillDownChange();
 										}
 
 										self.safeApply();
@@ -220,20 +223,34 @@ define(
 				/**
 				 * 
 				 */
-				TrafficLightViewController.prototype.onDrillDownChange = function(
-						row) {
+				TrafficLightViewController.prototype.onDrillDownChange = function() {
 					this.trafficLights = [];
 					this.expandedRows = {};
 
 					var self = this;
 
-					if (this.drilldown == 'PROCESS') {
+					if (!this.drilldown) {
 						// TODO The following call may be executed entirely on
 						// the server
 
-						BenchmarkService.instance().getActivityInstances(
-								this.businessObject).done(
-								function(activityInstances) {
+						BenchmarkService.instance().getActivityInstances()
+								.done(function(activityInstances) {
+									self.activityInstances = activityInstances;
+
+									self.initializeTrafficLightsNoDrilldown();
+									self.calculateCounts();
+									self.cumulateLeaveTrafficLights();
+
+									self.safeApply();
+								}).fail(function() {
+									// TODO Error handling
+								});
+					} else if (this.drilldown == 'PROCESS') {
+						// TODO The following call may be executed entirely on
+						// the server
+
+						BenchmarkService.instance().getActivityInstances()
+								.done(function(activityInstances) {
 									self.activityInstances = activityInstances;
 
 									self.initializeTrafficLightsFromModels();
@@ -242,8 +259,8 @@ define(
 
 									self.safeApply();
 								}).fail(function() {
-							// TODO Error handling
-						});
+									// TODO Error handling
+								});
 					} else if (this.drilldown == 'BUSINESS_OBJECT') {
 						// Wait for BO to be selected
 					}
@@ -290,6 +307,32 @@ define(
 									.push(this.activityInstances[n]);
 						}
 					}
+				};
+
+				/**
+				 * 
+				 */
+				TrafficLightViewController.prototype.initializeTrafficLightsNoDrilldown = function() {
+					this.trafficLights = [];
+					this.trafficLightsMap = {};
+					this.leafTrafficLights = [];
+
+					var rootRow;
+
+					this.trafficLights.push(rootRow = {
+						level : 0,
+						path : "/",
+						type : "ROOT",
+						name : "Total",
+						categories : {},
+						completed : [],
+						aborted : [],
+						sum : []
+					});
+
+					this.trafficLightsMap["/"] = rootRow;
+
+					this.leafTrafficLights.push(rootRow);
 				};
 
 				/**
@@ -398,42 +441,70 @@ define(
 					});
 
 					this.trafficLightsMap[rootRow.path] = rootRow;
-					var groups = {};
+
+					// Cache Group By Instances in map
+
+					this.groupByBusinessObjectInstancesRowMap = {};
+
+					if (this.groupByBusinessObjectInstances) {
+						for (var n = 0; n < this.groupByBusinessObjectInstances.length; ++n) {
+							var groupByBusinessObjectInstance = this.groupByBusinessObjectInstances[n];
+							var groupRow;
+
+							this.trafficLights
+									.push(groupRow = {
+										level : 1,
+										path : "/"
+												+ groupByBusinessObjectInstance[this.groupByBusinessObject.primaryKeyField.id],
+										type : this.groupByRelationship.otherBusinessObject.id,
+										name : this.groupByRelationship.otherRole
+												+ " "
+												+ groupByBusinessObjectInstance[this.groupByBusinessObject.primaryKeyField.id], // TODO
+										// Replace
+										// by
+										// name
+										parent : rootRow,
+										categories : {},
+										completed : [],
+										aborted : [],
+										sum : []
+									});
+
+							this.groupByBusinessObjectInstancesRowMap[groupByBusinessObjectInstance[this.groupByBusinessObject.primaryKeyField.id]] = groupRow;
+							this.trafficLightsMap[groupRow.path] = groupRow;
+						}
+					}
+
+					console.log("Group By Map");
+					console.log(this.groupByBusinessObjectInstancesRowMap);
 
 					for (var n = 0; n < this.businessObjectInstances.length; ++n) {
 						var businessObjectInstance = this.businessObjectInstances[n];
 
-						if (!businessObjectInstance.FundGroup
-								|| businessObjectInstance.FundGroup == "") {
-							continue;
-						}
+						var parentRow = rootRow;
+						var level = 1;
 
-						var groupRow = groups[businessObjectInstance.FundGroup];
-
-						if (!groupRow) {
-							this.trafficLights.push(groupRow = {
-								level : 1,
-								path : "/" + businessObjectInstance.FundGroup,
-								type : "Fund Group",
-								name : "Fund Group "
-										+ businessObjectInstance.FundGroup,
-								parent : rootRow,
-								categories : {},
-								completed : [],
-								aborted : [],
-								sum : []
-							});
-
-							groups[businessObjectInstance.FundGroup] = groupRow;
-
-							this.trafficLightsMap[groupRow.path] = groupRow;
+						if (this.groupByBusinessObjectInstances.length) {
+							if (businessObjectInstance[this.groupByRelationship.otherForeignKeyField]) {
+								if (this.groupByRelationship.otherCardinality == "TO_MANY") {
+									for (var l = 0; l < businessObjectInstance[this.groupByRelationship.otherForeignKeyField].length; ++l) {
+										if (parentRow = this.groupByBusinessObjectInstancesRowMap[businessObjectInstance[this.groupByRelationship.otherForeignKeyField][l]]) {
+											level = 2;
+											break;
+										}
+									}
+								} else {
+									parentRow = this.groupByBusinessObjectInstancesRowMap[businessObjectInstance[this.groupByRelationship.otherForeignKeyField]];
+									level = 2;
+								}
+							}
 						}
 
 						var objectRow;
 
 						this.trafficLights
 								.push(objectRow = {
-									level : 2,
+									level : level,
 									path : "/"
 											+ businessObjectInstance.FundGroup
 											+ "/"
@@ -442,8 +513,11 @@ define(
 									type : this.businessObject.name,
 									name : this.businessObject.name
 											+ " "
-											+ businessObjectInstance[this.businessObject.primaryKeyField.id],
-									parent : groupRow,
+											+ businessObjectInstance[this.businessObject.primaryKeyField.id], // TODO
+									// Replace
+									// by
+									// name
+									parent : parentRow,
 									categories : {},
 									completed : [],
 									aborted : [],
@@ -521,8 +595,15 @@ define(
 				 */
 				TrafficLightViewController.prototype.isExpandable = function(
 						row) {
-					return !this.expandedRows[row.path]
-							&& row.type != "ACTIVITY";
+					if (!this.drilldown) {
+						return false;
+					} else if (this.drilldown == "BUSINESS_OBJECT") {
+						return !this.expandedRows[row.path]
+								&& row.type != this.businessObject.name;
+					} else {
+						return !this.expandedRows[row.path]
+								&& row.type != "ACTIVITY";
+					}
 				};
 
 				/**
@@ -538,9 +619,17 @@ define(
 				 */
 				TrafficLightViewController.prototype.refreshBusinessObjects = function() {
 					this.businessObjects = [];
+					this.businessObjectsMap = {};
 
 					for (var n = 0; n < this.businessObjectModels.length; ++n) {
 						for (var m = 0; m < this.businessObjectModels[n].businessObjects.length; ++m) {
+							// Cache in a map to lookup business objects later
+							// for group by changes
+
+							this.businessObjectsMap[this.businessObjectModels[n].id
+									+ ":"
+									+ this.businessObjectModels[n].businessObjects[m].id] = this.businessObjectModels[n].businessObjects[m];
+
 							if (!this.businessObjectModels[n].businessObjects[m].types) {
 								this.businessObjectModels[n].businessObjects[m].types = {};
 							}
@@ -577,16 +666,29 @@ define(
 				};
 
 				/**
-				 * 
+				 * TODO Make part of BO Service
 				 */
-				TrafficLightViewController.prototype.onBusinessObjectChange = function() {
-					for (var n = 0; n < this.businessObject.fields.length; ++n) {
-						if (this.businessObject.fields[n].primaryKey) {
-							this.businessObject.primaryKeyField = this.businessObject.fields[n];
+				TrafficLightViewController.prototype.addPrimaryKeyField = function(
+						businessObject) {
+					for (var n = 0; n < businessObject.fields.length; ++n) {
+						if (businessObject.fields[n].primaryKey) {
+							businessObject.primaryKeyField = businessObject.fields[n];
 
 							break;
 						}
 					}
+				}
+
+				/**
+				 * 
+				 */
+				TrafficLightViewController.prototype.onBusinessObjectChange = function() {
+					this.groupByRelationship = null;
+					this.groupByBusinessObjectInstances = [];
+
+					// TODO Make part of BO Service
+
+					this.addPrimaryKeyField(this.businessObject);
 
 					var self = this;
 
@@ -608,8 +710,7 @@ define(
 
 										BenchmarkService
 												.instance()
-												.getActivityInstances(
-														this.businessObject)
+												.getActivityInstances()
 												.done(
 														function(
 																activityInstances) {
@@ -628,6 +729,69 @@ define(
 									}).fail(function() {
 								// TODO Error handling
 							});
+				};
+
+				/**
+				 * 
+				 */
+				TrafficLightViewController.prototype.onGroupByRelationshipChange = function() {
+					if (!this.groupByRelationship) {
+						this.groupByBusinessInstances = [];
+					} else {
+						var self = this;
+
+						this.groupByBusinessObject = this.businessObjectsMap[this.groupByRelationship.otherBusinessObject.modelId
+								+ ":"
+								+ this.groupByRelationship.otherBusinessObject.id];
+
+						// TODO Make part of BO Service
+
+						this.addPrimaryKeyField(this.groupByBusinessObject);
+
+						console.log("Group By Field");
+						console.log(this.groupByBusinessObject);
+
+						BusinessObjectManagementService
+								.instance()
+								.getBusinessObjectInstances(
+										this.groupByBusinessObject)
+								.done(
+										function(businessObjectInstances) {
+											console.log("Result");
+											console
+													.log(businessObjectInstances);
+
+											self.groupByBusinessObjectInstances = businessObjectInstances;
+
+											self.trafficLights = [];
+											self.expandedRows = {};
+
+											// TODO The following call may be
+											// executed entirely on the server
+
+											BenchmarkService
+													.instance()
+													.getActivityInstances()
+													.done(
+															function(
+																	activityInstances) {
+																self.activityInstances = activityInstances;
+
+																self
+																		.initializeTrafficLightsFromBusinessObjectInstances();
+																self
+																		.calculateCounts();
+																self
+																		.cumulateLeaveTrafficLights();
+																self
+																		.safeApply();
+															}).fail(function() {
+														// TODO Error handling
+													});
+										}).fail(function() {
+									// TODO Error handling
+								});
+					}
 				};
 
 				/**
@@ -703,16 +867,22 @@ define(
 				 */
 				TrafficLightViewController.prototype.getCountStyle = function(
 						count, sumCount, category) {
-
+					var style = "";
 					var size = count == 0 ? 0 : count / sumCount;
 
 					if (category) {
-						return "color: " + category.color + "; font-size:"
-								+ Math.ceil(30 * size) + "px;";
+						style += "color: " + category.color + ";";
 					} else {
-						return "color: #AAAAAA; font-size:"
-								+ Math.ceil(30 * size) + "px;";
+						style += "color: #AAAAAA;";
 					}
+
+					style += "font-size:" + Math.ceil(30 * size) + "px;";
+					style += "-webkit-animation: fadeIn 5s;";
+					style += "-moz-animation: fadeIn 5s;"
+					style += "-o-animation: fadeIn 5s;"
+					style += "animation: fadeIn 5s;"
+
+					return style;
 				};
 
 				/**

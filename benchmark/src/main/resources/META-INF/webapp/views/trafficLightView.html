@@ -33,9 +33,15 @@ ul.errorMessagesPanel {
 	border: 1px solid #DDDDDD;
 }
 
-.trafficLightTable th, .trafficLightTable td {
+.trafficLightTable th {
 	border: 1px solid #DDDDDD;
-	padding: 5px;
+	color: #888;
+	padding: 3px;
+}
+
+.trafficLightTable td {
+	border: 1px solid #DDDDDD;
+	padding: 3px;
 }
 
 .trafficLightCumulantTableCell {
@@ -48,6 +54,26 @@ ul.errorMessagesPanel {
 
 .conditionCell {
 	background-color: #E8E6FC;
+}
+
+/* Animations */
+
+@-webkit-keyframes fadeIn {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@-moz-keyframes fadeIn {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
+}
+@-o-keyframes fadeIn {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
+}
+@keyframes fadeIn {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
 }
 </style>
 </head>
@@ -65,29 +91,36 @@ ul.errorMessagesPanel {
 							value="">Custom Selection of Traffic Lights</option></select></td>
 				<td><label>Business Date</label></td>
 				<td><input type="date" ng-model="businessDate"></input></td>
-				<td ng-show="benchmark && !preconfigured"><label>Drill-down</label></td>
-				<td ng-show="benchmark && !preconfigured"><select
+				<td><input type="checkbox" ng-model="showCompletedWork"></input></td>
+				<td><label>Show Completed Work</label></td>
+				<td><input type="checkbox" ng-model="showAbortedWork"></input></td>
+				<td><label>Show Aborted Work</label></td>				
+			</tr>
+		</table>
+		<table class="formTable" style="margin-bottom: 10px;" ng-show="benchmark && !preconfigured">
+			<tr>
+				<td><label>Drill-down</label></td>
+				<td><select
 					ng-model="drilldown" ng-change="onDrillDownChange()"><option
 							value="">None</option>
 						<option value="PROCESS">By Process/Activity</option>
 						<option value="BUSINESS_OBJECT">By Business Object</option></select></td>
 				<td
-					ng-show="benchmark  && !preconfigured && drilldown == 'BUSINESS_OBJECT'"><label>Business
+					ng-show="drilldown == 'BUSINESS_OBJECT'"><label>Business
 						Object</label></td>
 				<td
-					ng-show="benchmark  && !preconfigured && drilldown == 'BUSINESS_OBJECT'"><select
+					ng-show="drilldown == 'BUSINESS_OBJECT'"><select
 					ng-model="businessObject"
 					ng-options="businessObject as businessObject.label for businessObject in businessObjects"
 					ng-change="onBusinessObjectChange()"><option value="">Please
 							select ...</option></select></td>
-			</tr>
-		</table>
-		<table class="formTable" style="margin-bottom: 10px;">
-			<tr>
-				<td><input type="checkbox" ng-model="showCompletedWork"></input></td>
-				<td><label>Show Completed Work</label></td>
-				<td><input type="checkbox" ng-model="showAbortedWork"></input></td>
-				<td><label>Show Aborted Work</label></td>
+				<td
+					ng-show="businessObject"><label>Group By</label></td>
+				<td
+					ng-show="businessObject"><select ng-model="groupByRelationship"
+					ng-options="relationship as relationship.otherRole for relationship in businessObject.relationships"
+					ng-change="onGroupByRelationshipChange()"><option value="">No
+							Grouping</option></select></td>
 			</tr>
 		</table>
 		<div ng-show="benchmark">
@@ -109,7 +142,7 @@ ul.errorMessagesPanel {
 				</thead>
 				<tbody>					
 					<tr
-						ng-show="drilldown && (!trafficLight.parent || expandedRows[trafficLight.parent.path])"
+						ng-show="!trafficLight.parent || expandedRows[trafficLight.parent.path]"
 						ng-repeat="trafficLight in trafficLights">
 						<td style="padding-left: {{15* trafficLight.level + 5}}px;"><a
 							href="" class="iconLink" ng-show="isExpandable(trafficLight)"

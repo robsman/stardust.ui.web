@@ -92,7 +92,8 @@ define(
 							level : 0,
 							path : model.id,
 							type : "MODEL",
-							name : model.name
+							name : model.name,
+							mode : "BOOLEAN"
 						});
 
 						for (var m = 0; m < model.processes.length; ++m) {
@@ -105,6 +106,7 @@ define(
 								parent : modelRow,
 								type : "PROCESS",
 								name : process.name,
+								mode : "BOOLEAN",
 								conditions : []
 							});
 
@@ -118,6 +120,7 @@ define(
 									parent : processRow,
 									type : "ACTIVITY",
 									name : activity.name,
+									mode : "BOOLEAN",
 									conditions : []
 								});
 							}
@@ -178,7 +181,7 @@ define(
 							this.modelTree[n].conditions.push({});
 						}
 					}
-					
+
 					this.submitChanges();
 				};
 
@@ -194,7 +197,7 @@ define(
 							this.modelTree[n].conditions.splice(index, 1);
 						}
 					}
-					
+
 					this.submitChanges();
 				};
 

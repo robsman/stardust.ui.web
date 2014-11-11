@@ -325,7 +325,7 @@ define(
 													.ceil((activityInstance.assumedEnd - activityInstance.assumedStart)
 															/ this.duration
 															* barCellWidth)
-										}, 2000);
+										}, 2000);						
 
 						// var barCompletionDivision = jQuery("<div
 						// class='pendingState atRiskState
