@@ -159,14 +159,22 @@ public class CommonDescriptorUtils
                // Check for Process Attachments, and update descriptor List
                if (dataPathDetails.getId().equals(DmsConstants.DATA_ID_ATTACHMENTS))
                {
-                  List<Document> processAttachmentList = (List<Document>) obj;
-                  List<DocumentInfo> processAttachments = CollectionUtils.newArrayList();
-                  for (Document processAttachment : processAttachmentList)
+                  List<DocumentInfo> documentList = CollectionUtils.newArrayList();
+                  List<Object> processAttachments = (List<Object>)obj;
+                  for (Object doc : processAttachments)
                   {
-                     processAttachments.add(new DocumentInfo(getDocumentIcon(processAttachment.getName(),
-                           processAttachment.getContentType()), processAttachment));
+                     if(doc instanceof DocumentInfo)
+                     {
+                        documentList.add((DocumentInfo) doc);
+                     }
+                     else
+                     {
+                        Document processAttachment = (Document) doc;
+                        documentList.add(new DocumentInfo(getDocumentIcon(processAttachment.getName(),
+                              processAttachment.getContentType()), processAttachment));   
+                     }
                   }
-                  descriptorValues.put(dataPathDetails.getId(), processAttachments);
+                  descriptorValues.put(dataPathDetails.getId(), documentList);
                }
                else
                {
