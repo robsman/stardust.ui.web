@@ -227,6 +227,7 @@ public class CommonDescriptorUtils
       {
          String dataPathId = typedDoc.getDataPath().getId();
          Object value = descriptorValues.get(dataPathId);
+         DocumentInfo documentInfo;
          if (value == null)
          {
             continue;
@@ -236,12 +237,13 @@ public class CommonDescriptorUtils
          if (null != document)
          {
             icon = getDocumentIcon(document.getName(), document.getContentType());
+            documentInfo = new DocumentInfo(icon, document);
          }
          else
          {
             icon = ResourcePaths.I_EMPTY_CORE_DOCUMENT;
+            documentInfo = new DocumentInfo(icon, typedDoc);
          }
-         DocumentInfo documentInfo = new DocumentInfo(icon, typedDoc);
          descriptorValues.put(dataPathId, documentInfo);
       }
    }
