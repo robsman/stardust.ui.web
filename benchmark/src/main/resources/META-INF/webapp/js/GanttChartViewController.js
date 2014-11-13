@@ -325,7 +325,25 @@ define(
 													.ceil((activityInstance.assumedEnd - activityInstance.assumedStart)
 															/ this.duration
 															* barCellWidth)
-										}, 2000);						
+										}, 2000);
+
+						var self = this;
+
+						barDivision.hover(function(event) {
+							console.log("Show tooltip");
+							console.log(event);
+							self.tooltipActivityInstance = activityInstance;
+
+							jQuery("#activityInstanceTooltip").css({
+								'top' : event.clientY,
+								'left' : event.clientX
+							});
+							jQuery("#activityInstanceTooltip").show();
+							self.safeApply();
+						}, function() {
+							console.log("Hide tooltip");
+							jQuery("#activityInstanceTooltip").hide();
+						})
 
 						// var barCompletionDivision = jQuery("<div
 						// class='pendingState atRiskState

@@ -35,7 +35,7 @@ ul.errorMessagesPanel {
 
 .benchmarkTableCell {
 	border: 1px solid #DDDDDD;
-	padding: 5px;
+	padding: 3px;
 }
 
 .dataTable input {
@@ -53,11 +53,18 @@ ul.errorMessagesPanel {
 	</div>
 	<div ng-cloak>
 		<h1>Benchmark Definition</h1>
+		<table class="toolbar" style="width: 100%;">
+			<tr>
+				<td align="right"><input type="button" value="Publish"></input></td>
+			</tr>
+		</table>
 		<table class="formTable">
 			<tr>
 				<td><label>Name</label></td>
 				<td><input style="width: 250px;" ng-model="benchmark.name"
 					ng-blur="submitChanges()"></input></td>
+				<td><label>Version</label></td>
+				<td><select ng-model="version"><option>10/14 (Draft)</option><option>8/22/2014 (Current)</option><option>7/10/2014</option></select></td>
 			</tr>
 		</table>
 		<table class="formTable">
@@ -69,10 +76,20 @@ ul.errorMessagesPanel {
 						ng-model="benchmark.description" ng-blur="submitChanges()"></textarea></td>
 			</tr>
 		</table>
+		<table class="formTable">
+			<tr>
+				<td><label><i class="fa fa-search"></i></label></td>
+				<td><input ng-model="filterString" ng-blur="filter()"></input></td>
+			</tr>
+		</table>
 		<table class="benchmarkTable" style="margin-top: 10px;">
 			<tr valign="center">
-				<td class="benchmarkTableCell">Categories</td>
-				<td class="benchmarkTableCell"></td>
+				<td rowspan="2" class="benchmarkTableCell">Processes/Activities</td>
+				<td rowspan="2" class="benchmarkTableCell">Settings</td>
+				<td rowspan="2" class="benchmarkTableCell"></td>
+				<td colspan="{{categories.length + 1}}" class="benchmarkTableCell">Categories</td>
+			</tr>
+			<tr valign="center">
 				<td class="benchmarkTableCell" ng-repeat="category in categories">
 					<table class="noneTable">
 						<tr>
@@ -103,7 +120,7 @@ ul.errorMessagesPanel {
 			<tr ng-repeat="row in modelTree"
 				ng-show="!row.parent || expandedRows[row.parent.path]">
 				<td class="benchmarkTableCell"
-					style="padding-left: {{15* row.level+ 5"><a href=""
+					style="padding-left: {{15* row.level+ 5}}px;"><a href=""
 					class="iconLink" ng-show="isExpandable(row)"
 					ng-click="expandRow(row)"><i class="fa fa-plus-square-o"></i></a><a
 					href="" ng-show="isCollapsable(row)" ng-click="collapseRow(row)"
@@ -112,81 +129,102 @@ ul.errorMessagesPanel {
 						ng-show="row.type == 'MODEL'"></i><i class="fa fa-gears"
 						ng-show="row.type == 'PROCESS'"></i><i class="fa fa-gear"
 						ng-show="row.type == 'ACTIVITY'"></i> {{row.name}}</span></td>
-				<td class="benchmarkTableCell"><a href=""
-					ng-show="row.mode == 'BOOLEAN' || !row.mode"
-					ng-click="row.mode = 'NUMERIC'" class="iconLink"><i
-						class="fa fa-sort-numeric-desc"></i></a><a href=""
-					ng-show="row.mode == 'NUMERIC'" ng-click="row.mode = 'BOOLEAN'"
-					class="iconLink"><i class="fa fa-check-square"></i></a></td>
-				<td class="" style="vertical-align: top;"
-					ng-show="row.mode == 'NUMERIC'" colspan="{{categories.length}}">
-					<div ng-show="row.type == 'MODEL'"></div>
-					<div ng-show="row.type == 'PROCESS' || row.type == 'ACTIVITY'">
-						<table class="formTable" style="width: 100%;">
-							<tr>
-								<td><label>User Defined Condition</label></td>
-							</tr>
-							<tr>
-								<td><textarea style="width: 100%;"></textarea></td>
-							</tr>
-						</table>
-					</div>
+				<td class="benchmarkTableCell">
+					<table class="formTable" style="margin-left: 10px;">
+						<tr>
+							<td><label>Expected Start Time</label></td>
+							<td colspan="2"><input type="time"></input></td>
+						</tr>
+						<tr>
+							<td><label>Expected Duration</label></td>
+							<td><input placeholder="None" class="rightAligned"
+								style="width: 50px;"></input></td>
+							<td><label>h</label></td>
+						</tr>
+						<tr>
+							<td><label>Latest Completion Time</label></td>
+							<td colspan="2"><input type="time"></input></td>
+						<tr>
+					</table>
 				</td>
-				<td
-					class="benchmarkTableCell {{getConditionCellClass(row.conditions[$index])}}"
-					style="vertical-align: top;" ng-show="row.mode == 'BOOLEAN'"
-					ng-repeat="category in categories">
-					<div ng-show="row.type == 'MODEL'"></div>
-					<div ng-show="row.type == 'PROCESS' || row.type == 'ACTIVITY'">
-						<table class="formTable">
-							<tr>
-								<td><select ng-model="row.conditions[$index].type"
-									ng-change="submitChanges()"><option value="">No
-											Benchmark</option>
-										<option value="DURATION">Duration Condition</option>
-										<option value="PROJECTED_COMPLETION_TIME">Current
-											Time + Estimated Duration - Active Time</option>
-										<option value="ACTUAL_COMPLETION_TIME">Actual
-											Completion Time</option>
-										<option value="USER_DEFINED">User Defined Condition</option></select></td>
-							</tr>
-						</table>
-						<table class="formTable"
-							ng-show="row.conditions[$index].type == 'PROJECTED_COMPLETION_TIME' || row.conditions[$index].type == 'ACTUAL_COMPLETION_TIME'">
-							<tr>
-								<td><select
-									ng-model="row.conditions[$index].completionTimeOperator"><option
-											value="">not later then</option>
-										<option value="">later then</option>
-								</select></td>
-							</tr>
-							<tr>
-								<td><select
-									ng-model="row.conditions[$index].completionTimeOperand"><option
-											value="">Business Date</option>
-								</select></td>
-							</tr>
-							<tr>
-								<td><select
-									ng-model="row.conditions[$index].completionTimeOperandDetails"><option
-											value="AT">at</option>
-										<option value="PLUS">0:00 plus</option>
-								</select></td>
-								<td
-									ng-show="row.conditions[$index].completionTimeOperandDetails == 'AT'"><input
-									type="time"></input> h</td>
-							</tr>
-						</table>
-						<table class="formTable"
-							ng-show="row.conditions[$index].type == 'USER_DEFINED'">
-							<tr>
-								<td><textarea></textarea></td>
-							</tr>
-						</table>
-					</div>
-				</td>
-				<td class="benchmarkTableCell"></td>
-			</tr>
+				<td class="benchmarkTableCell"><a href="" ng-show="row.mode == 'BOOLEAN' || !row.mode"
+								ng-click="row.mode = 'NUMERIC'" class="iconLink"><i
+								class="fa fa-sort-numeric-desc"></i></a>
+							<a href="" ng-show="row.mode == 'NUMERIC'"
+								ng-click="row.mode = 'BOOLEAN'" class="iconLink"><i
+								class="fa fa-check-square"></i></a>
+							</td>
+							<td class="" style="vertical-align: top;"
+								ng-show="row.mode == 'NUMERIC'" colspan="{{categories.length}}">
+								<div ng-show="row.type == 'MODEL'"></div>
+								<div ng-show="row.type == 'PROCESS' || row.type == 'ACTIVITY'">
+									<table class="formTable" style="width: 100%;">
+										<tr>
+											<td><label>User Defined Condition</label></td>
+										</tr>
+										<tr>
+											<td><textarea style="width: 100%;"></textarea></td>
+										</tr>
+									</table>
+								</div>
+							</td>
+							<td
+								class="benchmarkTableCell {{getConditionCellClass(row.conditions[$index])}}"
+								style="vertical-align: top;" ng-show="row.mode == 'BOOLEAN'"
+								ng-repeat="category in categories">
+								<div ng-show="row.type == 'MODEL'"></div>
+								<div ng-show="row.type == 'PROCESS' || row.type == 'ACTIVITY'">
+									<table class="formTable">
+										<tr>
+											<td><select ng-model="row.conditions[$index].type"
+												ng-change="submitChanges()"><option value="">No
+														Benchmark</option>
+													<option value="DURATION">Duration Condition</option>
+													<!-->option value="PROJECTED_COMPLETION_TIME">Current
+														Time + Estimated Duration - Active Time</option-->
+													<option value="ACTUAL_COMPLETION_TIME">Actual
+														Completion Time</option>
+													<option value="USER_DEFINED">User Defined
+														Condition</option></select></td>
+										</tr>
+									</table>
+									<table class="formTable"
+										ng-show="row.conditions[$index].type == 'PROJECTED_COMPLETION_TIME' || row.conditions[$index].type == 'ACTUAL_COMPLETION_TIME'">
+										<tr>
+											<td><select
+												ng-model="row.conditions[$index].completionTimeOperator"><option
+														value="">not later then</option>
+													<option value="">later then</option>
+											</select></td>
+										</tr>
+										<tr>
+											<td><select
+												ng-model="row.conditions[$index].completionTimeOperand"><option
+														value="">Business Date</option>
+											</select></td>
+										</tr>
+										<tr>
+											<td><select
+												ng-model="row.conditions[$index].completionTimeOperandDetails"><option
+														value="AT">at</option>
+													<option value="PLUS">0:00 plus</option>
+											</select></td>
+											<td
+												ng-show="row.conditions[$index].completionTimeOperandDetails == 'AT'"><input
+												type="time"></input> h</td>
+										</tr>
+									</table>
+									<table class="formTable"
+										ng-show="row.conditions[$index].type == 'USER_DEFINED'">
+										<tr>
+											<td><textarea></textarea></td>
+										</tr>
+									</table>
+								</div>
+							</td>
+							<td class="benchmarkTableCell"></td>
+						</tr>
+						
 		</table>
 	</div>
 </body>

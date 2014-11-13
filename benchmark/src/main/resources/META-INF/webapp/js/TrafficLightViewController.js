@@ -957,10 +957,10 @@ define(
 				TrafficLightViewController.prototype.openGanttChartView = function(
 						activity) {
 					this
-							.openView("ganttChartView",
-									"viewId=ganttChartView&oid="
+							.openView("ganttChartViewNew",
+									"viewId=ganttChartViewNew&oid="
 											+ activity.rootProcessInstance.oid,
-									window.btoa("viewId=ganttChartView&oid="
+									window.btoa("viewId=ganttChartViewNew&oid="
 											+ activity.rootProcessInstance.oid));
 				};
 

@@ -11,27 +11,23 @@
 
 package org.eclipse.stardust.ui.web.benchmark.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.annotation.Resource;
 
-import org.eclipse.stardust.common.CollectionUtils;
-import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.dto.Note;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceAttributes;
 import org.eclipse.stardust.engine.api.model.Activity;
-import org.eclipse.stardust.engine.api.model.Data;
 import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.ImplementationType;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
-import org.eclipse.stardust.engine.api.model.Reference;
-import org.eclipse.stardust.engine.api.model.TypeDeclaration;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
+import org.eclipse.stardust.engine.api.query.OrderCriteria;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.AdministrationService;
@@ -46,9 +42,6 @@ import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.engine.api.runtime.UserService;
 import org.eclipse.stardust.engine.api.runtime.WorkflowService;
-import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
-import org.eclipse.stardust.engine.core.struct.StructuredTypeRtUtils;
-import org.eclipse.stardust.engine.core.struct.TypedXPath;
 import org.eclipse.stardust.ui.web.benchmark.rest.JsonMarshaller;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
@@ -235,102 +228,109 @@ public class BenchmarkService {
 
 		resultJson.add("activityInstances", activityInstancesJson);
 
+		OrderCriteria ordering = new OrderCriteria();
+		ordering.and(ActivityInstanceQuery.PROCESS_INSTANCE_OID).and(
+				ActivityInstanceQuery.LAST_MODIFICATION_TIME);
+
 		ActivityInstanceQuery query = ActivityInstanceQuery.findAll();
+
+		query.orderBy(ordering);
+
+		ActivityInstance referenceActivityInstance = null;
+		ModelCache modelCache = ModelCache.findModelCache();
+		Map<String, Activity> activityMap = new HashMap<String, Activity>();
 
 		for (ActivityInstance activityInstance : getQueryService()
 				.getAllActivityInstances(query)) {
+			// Do not consider subprocesses
+
 			if (activityInstance.getActivity().getImplementationType()
 					.equals(ImplementationType.SubProcess)) {
 				continue;
 			}
 
-			JsonObject activityInstanceJson = new JsonObject();
+			// Add planned Activity Instances for previous Process Instance
 
-			activityInstancesJson.add(activityInstanceJson);
-
-			JsonObject activityJson = new JsonObject();
-
-			activityInstanceJson.add("activity", activityJson);
-
-			activityJson.addProperty("name", activityInstance.getActivity()
-					.getName());
-			activityJson.addProperty("id", activityInstance.getActivity()
-					.getId());
-
-			JsonObject processInstanceJson = new JsonObject();
-
-			activityInstanceJson.add("processInstance", processInstanceJson);
-
-			JsonObject processJson = new JsonObject();
-
-			processInstanceJson.add("processDefinition", processJson);
-
-			processJson.addProperty("id", activityInstance.getProcessInstance()
-					.getProcessID());
-			processJson.addProperty("name", activityInstance
-					.getProcessInstance().getProcessName());
-
-			processInstanceJson.addProperty("oid", activityInstance
-					.getProcessInstance().getOID());
-			processInstanceJson.addProperty("start", activityInstance
-					.getProcessInstance().getStartTime().getTime());
-
-			JsonObject rootProcessInstanceJson = new JsonObject();
-
-			activityInstanceJson.add("rootProcessInstance",
-					rootProcessInstanceJson);
-
-			rootProcessInstanceJson.addProperty("oid", activityInstance
-					.getProcessInstance().getRootProcessInstanceOID());
-
-			activityInstanceJson.addProperty("oid", activityInstance.getOID());
-			activityInstanceJson.addProperty("start", activityInstance
-					.getStartTime().getTime());
-			activityInstanceJson.addProperty("lastModification",
-					activityInstance.getLastModificationTime().getTime());
-			activityInstanceJson.addProperty("state", activityInstance
-					.getState().toString());
-			activityInstanceJson.addProperty("benchmark", "Criticality");
-			activityInstanceJson.addProperty("criticality",
-					activityInstance.getCriticality());
-
-			if (activityInstance.getPerformedBy() != null) {
-				JsonObject performedBy = new JsonObject();
-
-				activityInstanceJson.add("performedBy", performedBy);
-
-				performedBy.addProperty("name", activityInstance
-						.getPerformedBy().getName());
+			if (referenceActivityInstance != null
+					&& activityInstance.getProcessInstanceOID() != referenceActivityInstance
+							.getProcessInstanceOID()) {
+				addPlannedActivityInstances(modelCache,
+						referenceActivityInstance, activityMap,
+						activityInstancesJson);
 			}
 
-			if (activityInstance.getParticipantPerformerID() != null) {
-				JsonObject participantPerformerJson = new JsonObject();
+			activityMap.put(activityInstance.getActivity().getId(),
+					activityInstance.getActivity());
 
-				activityInstanceJson.add("participantPerformer",
-						participantPerformerJson);
+			referenceActivityInstance = activityInstance;
 
-				participantPerformerJson.addProperty("id",
-						activityInstance.getParticipantPerformerID());
-				participantPerformerJson.addProperty("name",
-						activityInstance.getParticipantPerformerName());
-			}
+			activityInstancesJson
+					.add(marshalActivityInstance(activityInstance));
+		}
 
-			if (activityInstance.getUserPerformer() != null) {
-				JsonObject userPerformer = new JsonObject();
+		// Add planned Activity Instances for previous Process Instance
 
-				activityInstanceJson.add("userPerformer", userPerformer);
-
-				userPerformer.addProperty("account", activityInstance
-						.getUserPerformer().getAccount());
-				userPerformer.addProperty("name", activityInstance
-						.getUserPerformer().getName());
-				userPerformer.addProperty("email", activityInstance
-						.getUserPerformer().getEMail());
-			}
+		if (referenceActivityInstance != null) {
+			addPlannedActivityInstances(modelCache, referenceActivityInstance,
+					activityMap, activityInstancesJson);
 		}
 
 		return resultJson;
 	}
+
+	/**
+	 * 
+	 * @param oid
+	 */
+	public void addPlannedActivityInstances(ModelCache modelCache,
+			ActivityInstance referenceActivityInstance,
+			Map<String, Activity> activityMap, JsonArray activityInstancesJson) {
+		DeployedModel model = modelCache.getModel(referenceActivityInstance
+				.getActivity().getModelOID());
+
+		System.out.println("Model found: " + model.getName());
+
+		ProcessDefinition processDefinition = model
+				.getProcessDefinition(referenceActivityInstance.getActivity()
+						.getProcessDefinitionId());
+
+		System.out.println("Process Definition Found"
+				+ processDefinition.getName());
+
+		for (Activity otherActivity : (List<Activity>) processDefinition
+				.getAllActivities()) {
+			if (!activityMap.containsKey(otherActivity.getId())) {
+				System.out.println("Adding instance for "
+						+ otherActivity.getName());
+
+				activityMap.put(otherActivity.getId(), otherActivity);
+
+				long startTime = 0;
+
+				if (referenceActivityInstance.getLastModificationTime() != null) {
+					startTime = referenceActivityInstance
+							.getLastModificationTime().getTime();
+				} else {
+					startTime = System.currentTimeMillis() + 1000 * 60 * 60; // TODO
+																				// Dummy
+																				// completion
+																				// time
+																				// for
+																				// active
+																				// Activity
+				}
+
+				activityInstancesJson.add(createPlannedActivityInstance(
+						referenceActivityInstance.getProcessInstance(),
+						otherActivity, startTime,
+						referenceActivityInstance.getCriticality()));
+
+				// TODO Need to traverse Transitions here
+			}
+		}
+
+		activityMap.clear();
+	};
 
 	/**
 	 * Returns worklist.
@@ -505,6 +505,11 @@ public class BenchmarkService {
 		}
 	}
 
+	/**
+	 * 
+	 * @param activityInstance
+	 * @return
+	 */
 	public JsonObject marshalActivityInstance(ActivityInstance activityInstance) {
 		JsonObject activityInstanceJson = new JsonObject();
 
@@ -517,8 +522,12 @@ public class BenchmarkService {
 					activityInstance.getLastModificationTime().getTime());
 		}
 
+		activityInstanceJson.addProperty("benchmark", "Criticality");
+		activityInstanceJson.addProperty("criticality",
+				activityInstance.getCriticality());
+
 		activityInstanceJson.addProperty("state", activityInstance.getState()
-				.getValue());
+				.getName());
 
 		if (activityInstance.getPerformedBy() != null) {
 			JsonObject performedBy = new JsonObject();
@@ -553,6 +562,30 @@ public class BenchmarkService {
 				.getDescription());
 		activityJson.addProperty("type", activityInstance.getActivity()
 				.getImplementationType().getId());
+
+		JsonObject processInstanceJson = new JsonObject();
+
+		activityInstanceJson.add("processInstance", processInstanceJson);
+
+		processInstanceJson.addProperty("oid", activityInstance
+				.getProcessInstance().getOID());
+
+		JsonObject processDefinitionJson = new JsonObject();
+
+		processInstanceJson.add("processDefinition", processDefinitionJson);
+
+		processDefinitionJson.addProperty("id", activityInstance
+				.getProcessInstance().getProcessID());
+		processDefinitionJson.addProperty("name", activityInstance
+				.getProcessInstance().getProcessName());
+
+		JsonObject rootProcessInstanceJson = new JsonObject();
+
+		activityInstanceJson
+				.add("rootProcessInstance", rootProcessInstanceJson);
+
+		rootProcessInstanceJson.addProperty("oid", activityInstance
+				.getProcessInstance().getRootProcessInstanceOID());
 
 		if (activityInstance.getActivity().getDefaultPerformer() != null) {
 			JsonObject defaultPerformer = new JsonObject();
@@ -600,6 +633,89 @@ public class BenchmarkService {
 					.getQualityAssuranceInfo().getMonitoredInstance()
 					.getPerformedBy().getName());
 		}
+
+		return activityInstanceJson;
+	}
+
+	/**
+	 * TODO Homogenize with marshalActivityInstance()
+	 * @param activity
+	 * @param startTime
+	 * @param criticality
+	 * @return
+	 */
+	public JsonObject createPlannedActivityInstance(ProcessInstance processInstance, Activity activity,
+			long startTime, double criticality) {
+		JsonObject activityInstanceJson = new JsonObject();
+
+		activityInstanceJson.addProperty("oid", 0); // TODO Is that OK?
+		activityInstanceJson.addProperty("start", startTime);
+
+		activityInstanceJson.addProperty("lastModification",
+				startTime + 1000 * 60 * 60);
+
+		activityInstanceJson.addProperty("benchmark", "Criticality");
+		activityInstanceJson.addProperty("criticality", criticality); // Inherit
+																		// from
+																		// previous
+																		// for
+																		// now
+
+		activityInstanceJson.addProperty("state", "Planned");
+
+		JsonObject activityJson = new JsonObject();
+
+		activityInstanceJson.add("activity", activityJson);
+
+		activityJson.addProperty("id", activity.getId());
+		activityJson.addProperty("name", activity.getName());
+		activityJson.addProperty("description", activity.getDescription());
+		activityJson.addProperty("type", activity.getImplementationType()
+				.getId());
+
+		if (activity.getDefaultPerformer() != null) {
+			JsonObject defaultPerformer = new JsonObject();
+
+			activityJson.add("defaultPerformer", defaultPerformer);
+
+			defaultPerformer.addProperty("id", activity.getDefaultPerformer()
+					.getId());
+			defaultPerformer.addProperty("name", activity.getDefaultPerformer()
+					.getName());
+			defaultPerformer.addProperty("description", activity
+					.getDefaultPerformer().getDescription());
+		}
+
+		if (activity.getApplication() != null) {
+			JsonObject applicationJson = new JsonObject();
+
+			activityJson.add("application", applicationJson);
+
+			applicationJson
+					.addProperty("id", activity.getApplication().getId());
+			applicationJson.addProperty("name", activity.getApplication()
+					.getName());
+		}
+		
+		JsonObject processInstanceJson = new JsonObject();
+	
+		activityInstanceJson.add("processInstance", processInstanceJson);
+
+		processInstanceJson.addProperty("oid", processInstance.getOID());
+
+		JsonObject processDefinitionJson = new JsonObject();
+
+		processInstanceJson.add("processDefinition", processDefinitionJson);
+
+		processDefinitionJson.addProperty("id", processInstance.getProcessID());
+		processDefinitionJson.addProperty("name", processInstance.getProcessName());
+
+		JsonObject rootProcessInstanceJson = new JsonObject();
+
+		activityInstanceJson
+				.add("rootProcessInstance", rootProcessInstanceJson);
+
+		rootProcessInstanceJson.addProperty("oid", processInstance.getRootProcessInstanceOID());
 
 		return activityInstanceJson;
 	}

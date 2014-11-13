@@ -35,49 +35,34 @@ define(
 						hue += 60;
 					}
 
-					console.log("Color Palette");
-					console.log(this.colorPalette);
+					this.categories = [];
 
 					var self = this;
 
-					this.models = [ {
-						id : "DailyFundsProcessing",
-						name : "Daily Funds Processing",
-						processes : [ {
-							id : "ProcessingEurope",
-							name : "Processing Europe",
-							activities : [ {
-								id : "RetrievePrices",
-								name : "Retrieve Prices"
-							}, {
-								id : "SweepAndTranslate",
-								name : "Sweep and Translate"
-							} ]
-						} ]
-					} ];
+					BenchmarkService.instance().getModels().done(
+							function(models) {
+								self.models = models;
+								self.modelTree = [];
 
-					this.modelTree = [];
+								self.initializeModelTree();
+								
+								self.expandedRows = {};
+								
+								// For testing
 
-					this.initializeModelTree();
-					this.expandedRows = {};
-					this.categories = [];
+								self.addCategory();
 
-					// For testing
-
-					this.addCategory();
-
-					this.categories[0] = {
-						name : "Normal",
-						color : this.colorPalette[0],
-						threshold : 999,
-						high : 300,
-						conditions : {}
-					};
-
-					// BenchmarkService.instance().getBusinessObjects().done(
-					// function(businessObjectModels) {
-					// }).fail(function() {
-					// });
+								self.categories[0] = {
+									name : "Normal",
+									color : self.colorPalette[0],
+									threshold : 999,
+									high : 300,
+									conditions : {}
+								};
+								
+								self.safeApply();
+							}).fail(function() {
+					});
 				};
 
 				/**
@@ -96,8 +81,8 @@ define(
 							mode : "BOOLEAN"
 						});
 
-						for (var m = 0; m < model.processes.length; ++m) {
-							var process = model.processes[m];
+						for (var m = 0; m < model.processDefinitions.length; ++m) {
+							var process = model.processDefinitions[m];
 							var processRow;
 
 							this.modelTree.push(processRow = {

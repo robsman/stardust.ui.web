@@ -14,9 +14,9 @@
 		</thead>
 		<tbody>
 			<tr ng-repeat="activityInstance in activityInstances">
-				<td align="right">{{activityInstance.oid}}</td>
+				<td align="right"><span ng-show="activityInstance.oid != 0">{{activityInstance.oid}}</span></td>
 				<td>{{activityInstance.activity.name}}</td>
-				<td>{{activityInstance.processInstance.processDefinition.name}}</td>
+				<td>{{activityInstance.processInstance.processDefinition.name}} (#{{activityInstance.processInstance.oid}})</td>
 				<td>{{activityInstance.state}}</td>
 				<td><span ng-show="activityInstance.performedBy">{{activityInstance.performedBy.name}}</span><span ng-show="activityInstance.userPerformer"><a href="email:{{activityInstance.userPerformer.eMail}}">{{activityInstance.userPerformer.firstName}} {{activityInstance.userPerformer.lastName}} ({{activityInstance.userPerformer.account}})</a></span><span ng-hide="activityInstance.userPerformer">{{activityInstance.participantPerformer.name}}</span></td>
 				<td>{{formatTimeStamp(activityInstance.start)}}</td>

@@ -5,23 +5,22 @@
 	xsi:schemaLocation="
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
 http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/portal/common/uiDefinition.xsd">
-
-	<ippui:perspective id="benchmark" messageBundles="benchmark-messages"
-		controller="benchmarkPerspective">
-		<ippui:preferences>
-			<ippui:preferencePage name="helpDocumentation"
-				include="/plugins/doc/portal/execution-clients/benchmark.html" />
-		</ippui:preferences>
-		<ippui:launchPanel name="benchmarkLaunchPanel"
-			include="/plugins/benchmark/launchpanel/benchmarkLaunchPanelFrameAdapter.xhtml" />
-		<ippui:view name="benchmarkView"
-			include="/plugins/benchmark/views/benchmarkViewFrameAdapter.xhtml"
-			controller="benchmarkView" />
-		<ippui:view name="trafficLightView"
-			include="/plugins/benchmark/views/trafficLightViewFrameAdapter.xhtml"
-			controller="trafficLightView" />
-		<ippui:view name="ganttChartView"
-			include="/plugins/benchmark/views/ganttChartViewFrameAdapter.xhtml"
-			controller="ganttChartView" />
-	</ippui:perspective>
+	<ippui:perspectiveExtension
+		targetPerspective="ippBccPerspective" id="benchmarkPerspective">
+		<ippui:launchpadExtension after="myReportsViewPanel">
+			<ippui:launchPanel name="benchmarkLaunchPanel"
+				include="/plugins/benchmark/launchpanel/benchmarkLaunchPanel.xhtml" />
+		</ippui:launchpadExtension>
+		<ippui:viewsExtension>
+			<ippui:view name="benchmarkView"
+				include="/plugins/benchmark/views/benchmarkViewFrameAdapter.xhtml"
+				controller="benchmarkView" />
+			<ippui:view name="trafficLightViewNew"
+				include="/plugins/benchmark/views/trafficLightViewFrameAdapter.xhtml"
+				controller="trafficLightViewNew" />
+			<ippui:view name="ganttChartViewNew"
+				include="/plugins/benchmark/views/ganttChartViewFrameAdapter.xhtml"
+				controller="ganttChartViewNew" />
+		</ippui:viewsExtension>
+	</ippui:perspectiveExtension>
 </beans>

@@ -142,24 +142,107 @@ table.delayedState, table.delayedState tr, table.delayedState td {
 	margin-right: 3px;
 }
 
+#activityInstanceTooltip {
+	border: 1px solid black;
+	padding: 10px;
+	background-color: white;
+	border: 1px solid #ccc;
+	box-shadow: 0 0 3px rgba(0, 0, 0, .3);
+	-webkit-box-shadow: 0 0 3px rgba(0, 0, 0, .3);
+	position: absolute;
+	top: 5px;
+	left: 50px;
+	display: none;
+	z-index: 999;
+}
+
+#activityInstanceTooltip .comments {
+	font-size: 9px;
+	color: #888888;
+}
 /* Animations */
-
-@-webkit-keyframes expand {
-  0%   { width: 0; }
-  100% { width: 100%; }
+@
+-webkit-keyframes expand { 0% {
+	width: 0;
 }
 
-@-moz-keyframes expand {
-  0%   { opacity: 0; }
-  100% { width: 100%; }
+100%
+{
+width
+
+
+
+
+:
+
+
+ 
+
+
+100%;
 }
-@-o-keyframes expand {
-  0%   { opacity: 0; }
-  100% { width: 100%; }
 }
-@keyframes expand {
-  0%   { opacity: 0; }
-  100% { width: 100%; }
+@
+-moz-keyframes expand { 0% {
+	opacity: 0;
+}
+
+100%
+{
+width
+
+
+
+
+:
+
+
+ 
+
+
+100%;
+}
+}
+@
+-o-keyframes expand { 0% {
+	opacity: 0;
+}
+
+100%
+{
+width
+
+
+
+
+:
+
+
+ 
+
+
+100%;
+}
+}
+@
+keyframes expand { 0% {
+	opacity: 0;
+}
+100%
+{
+width
+
+
+
+
+:
+
+
+ 
+
+
+100%;
+}
 }
 </style>
 <script src="../js/libs/require/2.0.5/require-min.js"></script>
@@ -235,7 +318,8 @@ table.delayedState, table.delayedState tr, table.delayedState td {
 		<table class="formTable" style="margin-bottom: 10px;">
 			<tr>
 				<td><label>Process</label></td>
-				<td>{{processInstance.processDefinition.name}} (#{{processInstance.oid}})</td>
+				<td>{{processInstance.processDefinition.name}}
+					(#{{processInstance.oid}})</td>
 			</tr>
 			<tr>
 				<td><label>Start</label></td>
@@ -270,7 +354,7 @@ table.delayedState, table.delayedState tr, table.delayedState td {
 				ng-show="!activityInstance.superActivityInstanceOid || expandedActivityInstances['' + activityInstance.superActivityInstanceOid]"
 				class="{{activityInstance.activity.type}}">
 				<td class="nameCell"
-					style="padding-left: {{15* activityInstance.depth}}px;"><a href=""
+					style="padding-left: {{15* activityInstance.depth"><a href=""
 					class="iconLink handleLink"
 					ng-show="isExpandable(activityInstance)"
 					ng-click="expandActivityInstance(activityInstance)"><i
@@ -318,8 +402,8 @@ table.delayedState, table.delayedState tr, table.delayedState td {
 					ng-click="activateActivityInstance(activityInstance)"><i
 						class="fa fa-rocket iconLink"></i></a></td>
 				<td class="barCell"><div id="{{activityInstance.oid}}"
-						class="barDivision"
-						style="visibility: hidden;" ng-click="drillDown(activityInstance)">
+						class="barDivision" style="visibility: hidden;"
+						ng-click="drillDown(activityInstance)">
 						<table class="{{calculateDelayState(activityInstance)}}"
 							style="width: 100%; height: 100%; -webkit-animation: expand 5s; -moz-animation: expand 5s; -o-animation: expand 5s; animation: expand 5s;">
 							<tr>
@@ -330,6 +414,21 @@ table.delayedState, table.delayedState tr, table.delayedState td {
 			</tr>
 		</table>
 		<div id="currentTimeDivision" style="visibility: hidden;"></div>
+	</div>
+	<div id="activityInstanceTooltip">
+		<table class="layoutTable">
+			<tr>
+				<td><div style="margin-bottom: 5px; color: #AFBCC8;">
+						<strong>{{tooltipActivityInstance.activity.name}}</strong>
+					</div></td>
+			</tr>
+			<tr>
+				<td>Bla</td>
+			</tr>
+			<tr>
+				<td>Blub</td>
+			</tr>
+		</table>
 	</div>
 </body>
 </html>

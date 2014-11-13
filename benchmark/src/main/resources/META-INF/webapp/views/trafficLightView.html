@@ -95,48 +95,41 @@ ul.errorMessagesPanel {
 				<td><label>Show Completed Work</label></td>
 				<td><input type="checkbox" ng-model="showAbortedWork"></input></td>
 				<td><label>Show Aborted Work</label></td>				
+				<td><input type="checkbox" ng-model="showPlannedWork"></input></td>
+				<td><label>Show Planned Work</label></td>				
 			</tr>
 		</table>
 		<table class="formTable" ng-show="benchmark && !preconfigured">
 			<tr>
 				<td><label>Drill-down</label></td>
-				<td><select
-					ng-model="drilldown" ng-change="onDrillDownChange()"><option
-							value="">None</option>
+				<td><select ng-model="drilldown"
+					ng-change="onDrillDownChange()"><option value="">None</option>
 						<option value="PROCESS">By Process/Activity</option>
 						<option value="BUSINESS_OBJECT">By Business Object</option></select></td>
-				<td
-					ng-show="drilldown == 'BUSINESS_OBJECT'"><label>Business
+				<td ng-show="drilldown == 'BUSINESS_OBJECT'"><label>Business
 						Object</label></td>
-				<td
-					ng-show="drilldown == 'BUSINESS_OBJECT'"><select
+				<td ng-show="drilldown == 'BUSINESS_OBJECT'"><select
 					ng-model="businessObject"
 					ng-options="businessObject as businessObject.label for businessObject in businessObjects"
 					ng-change="onBusinessObjectChange()"><option value="">Please
 							select ...</option></select></td>
-				<td
-					ng-show="businessObject"><label>Group By</label></td>
-				<td
-					ng-show="businessObject"><select ng-model="groupByRelationship"
+				<td ng-show="businessObject"><label>Group By</label></td>
+				<td ng-show="businessObject"><select
+					ng-model="groupByRelationship"
 					ng-options="relationship as relationship.otherRole for relationship in businessObject.relationships"
 					ng-change="onGroupByRelationshipChange()"><option value="">No
 							Grouping</option></select></td>
+				<td><label><i class="fa fa-search"></i></label></td>
+				<td><input ng-model="filterString" ng-blur="filter()"></input></td>
 			</tr>
 		</table>
 		<div ng-show="benchmark">
-			<table class="formTable" style="margin-bottom: 10px;"
-				ng-show="benchmark && !preconfigured">
-				<tr>
-					<td><label><i class="fa fa-search"></i></label></td>
-					<td><input ng-model="filterString" ng-blur="filter()"></input></td>
-				</tr>
-			</table>
 			<table class="trafficLightTable">
 				<thead>
 					<tr>
 						<th rowspan="2"><span ng-show="drilldown == 'PROCESS'">Activities/</span><span
 							ng-show="drilldown == 'BUSINESS_OBJECT' && businessObject">{{businessObject.name}}/</span>Categories</th>
-						<th colspan="{{benchmark.categories.length}}">Active</th>
+						<th colspan="{{benchmark.categories.length}}">Active<span ng-show="showPlannedWork">/Planned</span></th>
 						<th rowspan="2" ng-show="showCompletedWork">Completed</th>
 						<th rowspan="2" ng-show="showAbortedWork">Aborted</th>
 						<th rowspan="2">Total</th>

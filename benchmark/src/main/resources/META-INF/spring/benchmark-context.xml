@@ -29,11 +29,11 @@
 		class="org.eclipse.stardust.ui.web.benchmark.portal.BenchmarkView">
 	</bean>
 
-	<bean id="trafficLightView"
+	<bean id="trafficLightViewNew"
 		class="org.eclipse.stardust.ui.web.benchmark.portal.TrafficLightView">
 	</bean>
 
-	<bean id="ganttChartView"
+	<bean id="ganttChartViewNew"
 		class="org.eclipse.stardust.ui.web.benchmark.portal.GanttChartView">
 	</bean>
 
