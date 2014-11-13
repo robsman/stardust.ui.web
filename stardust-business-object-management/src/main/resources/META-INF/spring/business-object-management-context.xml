@@ -25,4 +25,8 @@
 		<aop:scoped-proxy />
 	</bean>
 
+	<bean id="businessObjectManagementView"
+		class="org.eclipse.stardust.ui.web.business_object_management.portal.BusinessObjectManagementView">
+	</bean>
+
 </beans>
