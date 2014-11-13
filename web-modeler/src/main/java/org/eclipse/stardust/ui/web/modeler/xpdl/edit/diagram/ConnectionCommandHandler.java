@@ -29,6 +29,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.util.FeatureMap;
+
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
@@ -70,16 +72,16 @@ public class ConnectionCommandHandler
 
          String sourceType = extractString(request, ModelerConstants.FROM_MODEL_ELEMENT_TYPE);
          String targetType = extractString(request, ModelerConstants.TO_MODEL_ELEMENT_TYPE);
-         
+
          if (ModelerConstants.ACTIVITY_KEY.equals(sourceType)
                || ModelerConstants.GATEWAY.equals(sourceType))
          {
             ActivitySymbolType fromActivitySymbol = ModelBuilderFacade.findActivitySymbol(
                   diagram, fromSymbolOid);
-            
+
             ActivitySymbolType toActivitySymbol = ModelBuilderFacade.findActivitySymbol(
                   diagram, toSymbolOid);
-            
+
 
             if (ModelerConstants.ACTIVITY_KEY.equals(targetType)
                   || ModelerConstants.GATEWAY.equals(targetType))
@@ -88,7 +90,7 @@ public class ConnectionCommandHandler
 
                TransitionType transition = createTransition(controlFlowJson, processDefinition,
                      fromActivitySymbol.getActivity(), toActivitySymbol.getActivity());
-               
+
                TransitionConnectionType transitionConnectionType = getModelBuilderFacade()
                      .createTransitionSymbol(
                            processDefinition,
@@ -99,7 +101,7 @@ public class ConnectionCommandHandler
                                  ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)),
                            mapAnchorOrientation(extractInt(request,
                                  ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
-               
+
                mapper.map(transitionConnectionType);
             }
             else if (ModelerConstants.EVENT_KEY.equals(targetType))
@@ -407,8 +409,12 @@ public class ConnectionCommandHandler
          ProcessDefinitionType processDefinition, AbstractEventSymbol sourceEventSymbol,
          ActivitySymbolType targetActivitySymbol, EObjectUUIDMapper mapper)
    {
-      TransitionType transition = null;
       ActivityType hostActivity = EventMarshallingUtils.resolveHostActivity(sourceEventSymbol);
+
+      JsonObject controlFlowJson = connectionJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
+
+      TransitionType transition = createTransition(controlFlowJson, processDefinition, hostActivity,
+            targetActivitySymbol.getActivity());
 
       if (hostActivity != null)
       {
@@ -425,16 +431,18 @@ public class ConnectionCommandHandler
                if (eventHandler != null)
                {
                   condition = "ON_BOUNDARY_EVENT(" + eventHandlerId + ")";
+                  transition.setCondition(ModelerConstants.CONDITION_KEY);
+
+                  if(transition.getExpression() == null)
+                  {
+                     XmlTextNode expression = CarnotWorkflowModelFactory.eINSTANCE.createXmlTextNode();
+                     transition.setExpression(expression);
+                  }
+                  FeatureMap mixedNode = transition.getExpression().getMixed();
+                  ModelUtils.setCDataString(mixedNode, condition, true);
                }
             }
          }
-
-         JsonObject controlFlowJson = connectionJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
-
-         transition = createTransition(controlFlowJson, processDefinition, hostActivity,
-               targetActivitySymbol.getActivity());
-
-         transition.setCondition(condition);
 
          mapper.map(transition);
       }
@@ -509,7 +517,7 @@ public class ConnectionCommandHandler
       if (null != targetHostActivity && null != sourceHostActivity)
       {
          JsonObject controlFlowJson = connectionJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
-         
+
          transition = createTransition(controlFlowJson, processDefinition, sourceHostActivity, targetHostActivity);
          mapper.map(transition);
 
@@ -555,7 +563,7 @@ public class ConnectionCommandHandler
 
       return transition;
    }
-   
+
    /**
     * @param element
     * @param json
@@ -573,8 +581,8 @@ public class ConnectionCommandHandler
          ModelBuilderFacade.setAttribute(element, "documentation:comments",
                jsonIo.writeJsonObject(holderJson));
       }
-   }  
-   
+   }
+
    /**
     *
     * @param orientation
@@ -615,5 +623,4 @@ public class ConnectionCommandHandler
    {
       return springContext.getBean(ModelService.class);
    }
-
 }
