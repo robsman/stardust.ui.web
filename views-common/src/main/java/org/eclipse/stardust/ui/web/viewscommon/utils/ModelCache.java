@@ -66,14 +66,6 @@ public class ModelCache implements Resetable, Serializable, ModelResolver
 
    private DeployedModel predefinedModel;
 
-   private ModelDetails.SchemaLocatorAdapter schemaLocator = new ModelDetails.SchemaLocatorAdapter(null)
-   {
-      protected Model getModel(long oid)
-      {
-         return ModelCache.this.getModel(oid);
-      }
-   };
-
    private ModelCache()
    {
       this.modelDescriptions = CollectionUtils.newList();
@@ -262,7 +254,13 @@ public class ModelCache implements Resetable, Serializable, ModelResolver
    {
       if (model instanceof ModelDetails)
       {
-         ((ModelDetails) model).setSchemaLocatorAdapter(schemaLocator);
+         ((ModelDetails) model).setSchemaLocatorAdapter(new ModelDetails.SchemaLocatorAdapter(model)
+         {
+            protected Model getModel(long oid)
+            {
+               return ModelCache.this.getModel(oid);
+            }
+         });
       }
    }
 
