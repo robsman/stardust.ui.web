@@ -5,17 +5,17 @@
 	xsi:schemaLocation="
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
 http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/portal/common/uiDefinition.xsd">
-
-	<ippui:perspective id="businessObjectManagement"
-		messageBundles="business-object-management-messages" controller="businessObjectManagementPerspective">
-		<ippui:preferences>
-			<ippui:preferencePage name="helpDocumentation"
-				include="/plugins/doc/portal/execution-clients/businessObjectManagement.html" />
-		</ippui:preferences>
-		<ippui:launchPanel name="businessObjectManagementLaunchPanel"
-			include="/plugins/business-object-management/launchpanel/businessObjectManagementLaunchPanelFrameAdapter.xhtml" />
-		<ippui:view name="businessObjectManagementView"
-			include="/plugins/business-object-management/views/businessObjectManagementViewFrameAdapter.xhtml"
-			controller="businessObjectManagementView" />
-	</ippui:perspective>
+	<ippui:perspectiveExtension messageBundles="business-object-management-messages"
+		targetPerspective="ippBccPerspective" id="businessObjectManagement">
+		<ippui:launchpadExtension after="myReportsViewPanel">
+			<ippui:launchPanel
+				include="/plugins/business-object-management/launchpanel/businessObjectManagementLaunchPanel.xhtml"
+				name="businessObjectManagementLaunchPanel" />
+		</ippui:launchpadExtension>
+		<ippui:viewsExtension>
+			<ippui:view
+				include="/plugins/business-object-management/views/businessObjectManagementViewFrameAdapter.xhtml"
+				name="businessObjectManagementView" controller="businessObjectManagementView" />
+		</ippui:viewsExtension>
+	</ippui:perspectiveExtension>
 </beans>
