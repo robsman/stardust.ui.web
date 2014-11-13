@@ -35,6 +35,7 @@ import org.eclipse.stardust.ui.web.common.table.DataTable;
 import org.eclipse.stardust.ui.web.common.table.DefaultRowModel;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.viewscommon.common.DateRange;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentInfo;
 import org.eclipse.stardust.ui.web.viewscommon.utils.CommonDescriptorUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
@@ -215,6 +216,52 @@ public class DescriptorColumnUtils
       return null;
    }
 
+   /**
+    * 
+    * @param colPref
+    * @param allDescriptors
+    * @param separator
+    * @return
+    */
+   public static Object exportDescriptorColumn(ColumnPreference colPref, Map<String, Object> allDescriptors, String separator)
+   {
+      String property = colPref.getColumnProperty();
+      if (property.indexOf("descriptorValues.") != -1)
+      {
+         String descriptorId = property.substring(property.indexOf(".") + 1);
+            
+         Object descriptorValue = allDescriptors.get(descriptorId);
+         if (null != descriptorValue)
+         {
+            if(property.endsWith("PROCESS_ATTACHMENTS"))
+            {
+               List<DocumentInfo>  docList = (List<DocumentInfo>) descriptorValue;
+               StringBuffer exportData = new StringBuffer("");
+               for(DocumentInfo doc : docList)
+               {
+                  exportData.append(doc.getName()).append(separator);
+               }
+               String data = exportData.toString();
+               if (data.length() > 0)
+               {
+                  data = data.substring(0, data.length() - separator.length());
+               }
+               return data;
+            }
+            if(descriptorValue instanceof DocumentInfo)
+            {
+               DocumentInfo document = (DocumentInfo) descriptorValue;
+               return document.getName();
+            }
+            else
+            {
+                  return descriptorValue.toString();
+            }   
+         }
+      }
+      return null;
+   }
+   
    /**
     * @param descriptors
     * @param separator

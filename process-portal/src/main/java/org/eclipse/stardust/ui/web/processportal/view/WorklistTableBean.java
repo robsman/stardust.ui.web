@@ -1518,6 +1518,10 @@ public class WorklistTableBean extends UIComponentBean
             return DescriptorColumnUtils.exportDescriptors(row.getProcessDescriptorsList(),
                   ExportType.EXCEL == exportType ? "\n" : ", ");
          }
+         else if (column.getColumnProperty().startsWith("descriptorValues."))
+         {
+            return DescriptorColumnUtils.exportDescriptorColumn(column, row.getDescriptorValues(), ExportType.EXCEL == exportType ? "\n" : ", ");
+         }
          else if (Constants.COL_CRITICALITY.equals(column.getColumnName()))
          {
             return CriticalityConfigurationUtil.getCriticalityDisplayLabel(row.getCriticalityValue(), row.getCriticality());

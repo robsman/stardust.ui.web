@@ -1112,6 +1112,10 @@ public class ProcessTableHelper implements IUserObjectBuilder<ProcessInstanceTab
             return DescriptorColumnUtils.exportDescriptors(row.getProcessDescriptorsList(),
                   ExportType.EXCEL == exportType ? "\n" : ", ");
          }
+         else if (column.getColumnProperty().startsWith("descriptorValues."))
+         {
+            return DescriptorColumnUtils.exportDescriptorColumn(column, row.getDescriptorValues(), ExportType.EXCEL == exportType ? "\n" : ", ");
+         }
          else
          {
             return value;

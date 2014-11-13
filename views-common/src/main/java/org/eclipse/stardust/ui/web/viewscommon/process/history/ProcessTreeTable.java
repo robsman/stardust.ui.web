@@ -252,6 +252,10 @@ public class ProcessTreeTable implements TreeTableBean
             return DescriptorColumnUtils.exportDescriptors(thisRow.getProcessDescriptorsList(),
                   ExportType.EXCEL == exportType ? "\n" : ", ");
          }
+         else if (column.getColumnProperty().startsWith("descriptorValues."))
+         {
+            return DescriptorColumnUtils.exportDescriptorColumn(column, thisRow.getDescriptorValues(), ExportType.EXCEL == exportType ? "\n" : ", ");
+         }
          else
          {
             return value;

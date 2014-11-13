@@ -1172,6 +1172,10 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
          {
             return CriticalityConfigurationUtil.getCriticalityDisplayLabel(row.getCriticalityValue(), row.getCriticality());
          }
+         else if (column.getColumnProperty().startsWith("descriptorValues."))
+         {
+            return DescriptorColumnUtils.exportDescriptorColumn(column, row.getDescriptorValues(), ExportType.EXCEL == exportType ? "\n" : ", ");
+         }
          else
          {
             return value;
