@@ -3,16 +3,16 @@
 <link
 	href='http://fonts.googleapis.com/css?family=Lato:400,700,300italic,400italic'
 	rel='stylesheet' type='text/css'>
-<link href="../css/font-awesome-4.1.0/css/font-awesome.css"
+<link href="plugins/business-object-management/css/font-awesome-4.1.0/css/font-awesome.css"
 	rel="stylesheet">
-<link href='../../simple-modeler/css/stardust-modern.css'
+<link href='plugins/simple-modeler/css/stardust-modern.css'
 	rel='stylesheet' />
-<link href="../css/thirdparty/datatables/jquery.dataTables.css"
+<link href="plugins/business-object-management/css/thirdparty/datatables/jquery.dataTables.css"
 	rel="stylesheet" type="text/css" />
-<link href='../css/thirdparty/jquery/jquery-ui-1.10.2.custom.min.css'
+<link href='plugins/business-object-management/css/thirdparty/jquery/jquery-ui-1.10.2.custom.min.css'
 	rel='stylesheet' />
-<script data-main="../js/BusinessObjectManagementViewMain"
-	src="../js/libs/require/2.0.5/require-min.js"></script>
+<script data-main="plugins/business-object-management/js/BusinessObjectManagementViewMain"
+	src="plugins/business-object-management/js/libs/require/2.0.5/require-min.js"></script>
 <style>
 ul.errorMessagesPanel {
 	margin-left: 0px;
@@ -59,7 +59,7 @@ ul.errorMessagesPanel {
 				</tr>
 			</table>
 			<div ng-hide="searchCollapsed"
-				ng-include="'../businessObjectSearchPanel.html'"></div>
+				ng-include="'plugins/business-object-management/businessObjectSearchPanel.html'"></div>
 			<div
 				ng-show="businessObjectManagementPanelController.businessObject != null && processInstances.length > 0">
 				<table cellspacing="0" cellpadding="0" class="layoutTable"
@@ -141,7 +141,7 @@ ul.errorMessagesPanel {
 						</table>
 						<div ng-repeat="instance in [currentBusinessObjectInstance]">
 							<div ng-repeat="type in [getBusinessObject()]">
-								<div ng-include="'./objectPanel.html'"></div>
+								<div ng-include="'plugins/business-object-management/views/objectPanel.html'"></div>
 							</div>
 							<div
 								ng-show="getBusinessObject().relationships && getBusinessObject().relationships.length">
@@ -172,7 +172,7 @@ ul.errorMessagesPanel {
 		</div>
 		<div
 			ng-repeat="businessObjectManagementPanelController in [relationshipPanelController]">
-			<div ng-include="'../businessObjectSearchPanel.html'"></div>
+			<div ng-include="'plugins/business-object-management/businessObjectSearchPanel.html'"></div>
 		</div>
 		<table style="width: 100%;">
 			<tr>

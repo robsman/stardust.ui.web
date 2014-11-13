@@ -14,8 +14,8 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 		</ippui:launchpadExtension>
 		<ippui:viewsExtension>
 			<ippui:view
-				include="/plugins/business-object-management/views/businessObjectManagementViewFrameAdapter.xhtml"
-				name="businessObjectManagementView" controller="businessObjectManagementView" />
+				include="/plugins/business-object-management/views/businessObjectManagementView.html"
+				name="businessObjectManagementView"/>
 		</ippui:viewsExtension>
 	</ippui:perspectiveExtension>
 </beans>

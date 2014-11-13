@@ -51,7 +51,7 @@
 			<div ng-hide="field.list"
 				ng-repeat="type in [getBusinessObject().types[field.type]]">
 				<div ng-repeat="instance in [instance[field.id]]">
-					<div ng-include="'./objectPanel.html'"></div>
+					<div ng-include="'plugins/business-object-management/views/objectPanel.html'"></div>
 				</div>
 			</div>
 			<div ng-show="field.list">

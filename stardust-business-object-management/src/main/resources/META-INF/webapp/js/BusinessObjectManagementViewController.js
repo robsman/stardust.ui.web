@@ -52,8 +52,8 @@ define(
 
 										self.refreshBusinessObjects();
 
-										// TODO This code will go
-
+										// URI Contract
+										
 										if (self.parameters.modelOid
 												&& self.parameters.businessObjectId) {
 											BusinessObjectManagementService
@@ -106,9 +106,6 @@ define(
 				 * 
 				 */
 				BusinessObjectManagementViewController.prototype.changeBusinessObject = function() {
-					console.log("Business Object");
-					console.log(this.businessObject);
-
 					BusinessObjectManagementService.instance()
 							.calculateBusinessObjectFields(this.businessObject);
 					this.initializeForm();
@@ -148,12 +145,6 @@ define(
 
 						for (var n = 0; n < complexFields.length; ++n) {
 							for (var m = 0; m < this.businessObject.relationships.length; ++m) {
-								// TODO
-
-								if (!this.businessObject.relationships[m].otherForeignKeyField) {
-									this.businessObject.relationships[m].otherForeignKeyField = "FundGroupIds";
-								}
-
 								if (this.businessObject.relationships[m].otherForeignKeyField == complexFields[n].id) {
 									this.foreignKeyFields[this.businessObject.relationships[m].otherForeignKeyField] = complexFields[n];
 
@@ -161,9 +152,6 @@ define(
 								}
 							}
 						}
-
-						console.log("Foreign Key Fields");
-						console.log(this.foreignKeyFields);
 					}
 
 					var fieldsPerColumn = Math.ceil(primitiveFields.length / 3);
@@ -213,7 +201,6 @@ define(
 				 * 
 				 */
 				BusinessObjectManagementViewController.prototype.createBusinessObjectInstance = function() {
-					console.log("Create BO");
 					this.messages = [];
 					this.currentBusinessObjectInstance = {};
 					this.newBusinessObjectInstance = this.currentBusinessObjectInstance;
@@ -432,10 +419,6 @@ define(
 				BusinessObjectManagementViewController.prototype.openRelationshipDialog = function(
 						relationship) {
 					var self = this;
-
-					console.log("Open with relationship");
-					console.log(relationship);
-
 					BusinessObjectManagementService
 							.instance()
 							.getBusinessObject(this.parameters.modelOid, // TODO
@@ -466,10 +449,6 @@ define(
 				 * 
 				 */
 				BusinessObjectManagementViewController.prototype.saveRelationshipChanges = function() {
-					console.log("Save relationship changed");
-					console.log(this);
-					console.log(this.relationshipPanelController);
-
 					// TODO Cleanup removed Relationships!!!
 					// TODO All code into Panel Controller
 					// TODO Remove long dereferentiations by introducing a few
@@ -502,12 +481,6 @@ define(
 							this.relationshipPanelController.selectedBusinessObjectInstances[n][this.relationshipPanelController.relationship.thisForeignKeyField] = [ this.relationshipPanelController.rootBusinessObjectInstance[this.businessObject.primaryKeyField.id] ];
 						}
 					}
-
-					console.log("Resulting object changes");
-					console
-							.log(this.relationshipPanelController.rootBusinessObjectInstance);
-					console
-							.log(this.relationshipPanelController.selectedBusinessObjectInstances);
 
 					// Write changes to the server
 
@@ -543,8 +516,6 @@ define(
 						index, businessObjectInstances) {
 					var deferred = jQuery.Deferred();
 					var self = this;
-
-					console.log("index = " + index);
 
 					if (index == businessObjectInstances.length) {
 						deferred.resolve();

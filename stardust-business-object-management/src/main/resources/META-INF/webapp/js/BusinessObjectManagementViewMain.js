@@ -1,6 +1,8 @@
+console.log("Before require");
+
 require
 		.config({
-			baseUrl : "../..",
+			baseUrl : "plugins/",
 			paths : {
 				'jquery' : [ 'business-object-management/js/libs/jquery/jquery-1.11.0.min' ],
 				'jquery-ui' : [ 'business-object-management/js/libs/jquery/plugins/jquery-ui-1.10.2.custom.min' ],
@@ -20,13 +22,15 @@ require
 
 require(
 		[ "require", "jquery", "jquery-ui", "jquery.dataTables", "angularjs",
-				"business-object-management/js/Utils",
-				"business-object-management/js/AngularDirectives",
-				"business-object-management/js/BusinessObjectManagementViewController" ],
+				"plugins/business-object-management/js/Utils",
+				"plugins/business-object-management/js/AngularDirectives",
+				"plugins/business-object-management/js/BusinessObjectManagementViewController" ],
 		function(require, jquery, jqueryUi, jqueryDataTables, angularjs, Utils,
 				AngularDirectives, BusinessObjectManagementViewController) {
 			jQuery(document).ready(
 					function() {
+						console.log("Document ready");
+
 						var module = angularjs.module(
 								"businessObjectManagementViewApplication",
 								[]);
