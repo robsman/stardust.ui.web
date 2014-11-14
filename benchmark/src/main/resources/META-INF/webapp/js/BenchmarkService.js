@@ -20,10 +20,109 @@ define(
 			 * 
 			 */
 			function BenchmarkService() {
+				this.benchmarks = [ {
+					name : "Criticality",
+					categories : [ {
+						name : "Normal",
+						color : "#00FF00",
+						low : 0,
+						high : 300
+					}, {
+						name : "At Risk",
+						color : "#FFFB00",
+						low : 301,
+						high : 500
+					}, {
+						name : "Critical",
+						color : "#FF0000",
+						low : 501,
+						high : 999
+					} ],
+					trafficLights : [ {
+						process : {
+							name : "Daily Fund Processing Europe"
+						},
+						model : {
+							name : "Daily Fund Processing"
+						}
+					}, {
+						process : {
+							name : "Daily Fund Processing Europe"
+						},
+						activity : {
+							name : "Sweep and Translate"
+						},
+						model : {
+							name : "Daily Fund Processing"
+						}
+					}, {
+						process : {
+							name : "Daily Fund Processing US"
+						},
+						model : {
+							name : "Daily Fund Processing"
+						}
+					} ]
+				}, {
+					name : "Standard Funds Processing",
+					categories : [ {
+						name : "Normal",
+						color : "#FF0000"
+					}, {
+						name : "At Risk",
+						color : "#00FFFF"
+					}, {
+						name : "Critical",
+						color : "#0000FF"
+					} ],
+					trafficLights : [ {
+						process : {
+							name : "Monthly Tax Report"
+						},
+						model : {
+							name : "Report Dissimination"
+						}
+					}, {
+						process : {
+							name : "Monthly Tax Report"
+						},
+						activity : {
+							name : "Retrieve Report Data"
+						},
+						model : {
+							name : "Report Dissimination"
+						}
+					} ]
+				} ];
+
 				/**
 				 * 
 				 */
 				BenchmarkService.prototype.initialize = function() {
+				};
+
+				/**
+				 * 
+				 */
+				BenchmarkService.prototype.getBenchmarks = function() {
+					var deferred = jQuery.Deferred();
+
+					deferred.resolve(this.benchmarks);
+
+					return deferred.promise();
+				};
+
+				/**
+				 * 
+				 */
+				BenchmarkService.prototype.getBenchmark = function(id) {
+					var deferred = jQuery.Deferred();
+
+					// TODO Dummy
+					
+					deferred.resolve(this.benchmarks[0]);
+
+					return deferred.promise();
 				};
 
 				/**

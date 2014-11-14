@@ -8,7 +8,7 @@
 	<ice:panelGroup>
 		<ui:include src="/plugins/common/templates/launchPanelTemplate.xhtml">
 			<ui:param name="bean" value="#{myDocumentsPanelBean}" />
-			<ui:param name="title" value="Benchmarks" />
+			<ui:param name="title" value="Monitoring" />
 			<ui:param name="collapsible" value="true" />
 			<ui:param name="showRefreshLink" value="false" />
 		</ui:include>
@@ -26,6 +26,7 @@
 		</ice:commandLink>
 		<ice:commandLink action="#{ippPortalApp.openView}">
 			<f:param name="viewId" value="ganttChartViewNew" />
+			<f:param name="viewParams" value="oid=1" />
 			<ice:outputText value="Gantt Chart View" styleClass="action-link"
 				escape="false" />
 		</ice:commandLink>

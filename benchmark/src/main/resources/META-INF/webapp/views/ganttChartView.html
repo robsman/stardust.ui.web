@@ -79,40 +79,27 @@
 }
 
 .barCell {
-	width: 50%;
+	width: 70%;
 }
 
 .barDivision {
 	position: relative;
 	border: none;
-	height: 7px;
+	height: 10px;
 }
 
-i.normalState {
-	color: #A6C9B2;
-}
-
-i.atRiskState {
-	color: #FFE89A;
-}
-
-i.delayedState {
-	color: #CA3013;
-}
-
-table.normalState, table.normalState tr, table.normalState td {
-	background-color: #A6C9B2 !important;
+.barDivision table {
 	border: none !important;
 }
 
-table.atRiskState, table.atRiskState tr, table.atRiskState td {
-	background-color: #FFE89A !important;
+.barDivision table tr {
 	border: none !important;
+	background: none !important;
 }
 
-table.delayedState, table.delayedState tr, table.delayedState td {
-	background-color: #CA3013 !important;
+.barDivision table td {
 	border: none !important;
+	background: none !important;
 }
 
 #currentTimeDivision {
@@ -127,12 +114,12 @@ table.delayedState, table.delayedState tr, table.delayedState td {
 }
 
 .tickTable td {
-	font-size: 10px !important;
-	color: #AAAAAA !important;
+	font-size: 8px !important;
+	color: #999999 !important;
 }
 
 .tickTable td.tickCell {
-	border-right: 1px solid #AAAAAA !important;
+	border-right: 1px solid #999999 !important;
 	height: 7px;
 }
 
@@ -173,10 +160,30 @@ width
 
 
 
+
+
+
+
+
+
+
+
+
+
 :
 
 
+
+
+
+
+
  
+
+
+
+
+
 
 
 100%;
@@ -194,10 +201,30 @@ width
 
 
 
+
+
+
+
+
+
+
+
+
+
 :
 
 
+
+
+
+
+
  
+
+
+
+
+
 
 
 100%;
@@ -215,10 +242,30 @@ width
 
 
 
+
+
+
+
+
+
+
+
+
+
 :
 
 
+
+
+
+
+
  
+
+
+
+
+
 
 
 100%;
@@ -235,10 +282,30 @@ width
 
 
 
+
+
+
+
+
+
+
+
+
+
 :
 
 
+
+
+
+
+
  
+
+
+
+
+
 
 
 100%;
@@ -341,13 +408,14 @@ width
 		</table>
 		<table id="ganttChartTable" cellpadding="0" cellspacing="0"">
 			<tr>
-				<td colspan="3"><select ng-model="timeUnit"
+				<td colspan="2"><select ng-model="timeUnit"
 					ng-change="refreshTimeAxis()"><option value="h">Hours</option>
 						<option value="d">Days</option>
 						<option value="w">Weeks</option>
 						<option value="M">Months</option></select></td>
 				<td><div id="timeAxisDivision"
-						style="height: 20px; width: 100%;"></div></td>
+						style="height: 19px; width: 100%; vertical-align: bottom;">
+					</div></td>
 			</tr>
 			<tr valign="center"
 				ng-repeat="activityInstance in flatActivityInstanceList"
@@ -371,9 +439,9 @@ width
 					<i class="fa fa-check-square-o"
 					ng-show="activityInstance.activity.type == 'Application' && activityInstance.activity.defaultPerformer"></i>
 					{{activityInstance.activity.name}}</td>
-				<td class="descriptorCell" ng-show="businessObject != '__All'">
+				<td ng-show="false" class="descriptorCell" ng-show="businessObject != '__All'">
 					{{getDescriptorValue(activityInstance, businessObject)}}</td>
-				<td class="userCell">
+				<td ng-show="false" class="userCell">
 					<table cellpadding="0" cellspacing="0" class="layoutTable">
 						<tr>
 							<td colspan="5"
@@ -398,10 +466,10 @@ width
 				</td>
 				<td class="controlCell" align="center"><a href="#"
 					title="Work on Action Item"
-					ng-show="activityInstance.state != 2 && activityInstance.state != 4 && activityInstance.state < 6 && activityInstance.subProcessInstance == null"
+					ng-show="activityInstance.state == 'Suspended' && activityInstance.subProcessInstance == null"
 					ng-click="activateActivityInstance(activityInstance)"><i
 						class="fa fa-rocket iconLink"></i></a></td>
-				<td class="barCell"><div id="{{activityInstance.oid}}"
+				<td class="barCell"><div id="{{activityInstance.activity.id}}"
 						class="barDivision" style="visibility: hidden;"
 						ng-click="drillDown(activityInstance)">
 						<table class="{{calculateDelayState(activityInstance)}}"
@@ -423,10 +491,23 @@ width
 					</div></td>
 			</tr>
 			<tr>
-				<td>Bla</td>
+				<td>{{tooltipActivityInstance.state}}</td>
+			</tr>
+		</table>
+		<table class="formTable">
+			<tr>
+				<td><label
+					ng-hide="tooltipActivityInstance.state == 'Planned'">Start</label><label
+					ng-show="tooltipActivityInstance.state == 'Planned'">Expected
+						Start</label></td>
+				<td>{{formatTimeStamp(tooltipActivityInstance.start)}}</td>
 			</tr>
 			<tr>
-				<td>Blub</td>
+				<td><label
+					ng-show="tooltipActivityInstance.state == 'Completed' || tooltipActivityInstance.state == 'Aborted'">End</label><label
+					ng-hide="tooltipActivityInstance.state == 'Completed' || tooltipActivityInstance.state == 'Aborted'">Expected
+						End</label></td>
+				<td>{{formatTimeStamp(tooltipActivityInstance.end)}}</td>
 			</tr>
 		</table>
 	</div>

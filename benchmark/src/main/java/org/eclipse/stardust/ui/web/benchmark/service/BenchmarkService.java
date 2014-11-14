@@ -30,6 +30,7 @@ import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.OrderCriteria;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
+import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
 import org.eclipse.stardust.engine.api.runtime.AdministrationService;
 import org.eclipse.stardust.engine.api.runtime.DeployedModel;
 import org.eclipse.stardust.engine.api.runtime.DmsUtils;
@@ -67,6 +68,7 @@ public class BenchmarkService {
 	private QueryService queryService;
 	private WorkflowService workflowService;
 	private AdministrationService administrationService;
+	private ModelCache modelCache;
 
 	// TODO Removed as soon as real implementation is complete
 
@@ -147,6 +149,18 @@ public class BenchmarkService {
 	}
 
 	/**
+	 *
+	 * @return
+	 */
+	private ModelCache getModelCache() {
+		if (modelCache == null) {
+			modelCache = ModelCache.findModelCache();
+		}
+
+		return modelCache;
+	}
+
+	/**
 	 * 
 	 * @return
 	 */
@@ -156,9 +170,7 @@ public class BenchmarkService {
 
 		resultJson.add("models", modelsJson);
 
-		ModelCache modelCache = ModelCache.findModelCache();
-
-		for (DeployedModel deployedModel : modelCache.getAllModels()) {
+		for (DeployedModel deployedModel : getModelCache().getAllModels()) {
 			if (!PredefinedConstants.PREDEFINED_MODEL_ID.equals(deployedModel
 					.getId()) && deployedModel.isActive()) {
 
@@ -237,7 +249,6 @@ public class BenchmarkService {
 		query.orderBy(ordering);
 
 		ActivityInstance referenceActivityInstance = null;
-		ModelCache modelCache = ModelCache.findModelCache();
 		Map<String, Activity> activityMap = new HashMap<String, Activity>();
 
 		for (ActivityInstance activityInstance : getQueryService()
@@ -254,9 +265,8 @@ public class BenchmarkService {
 			if (referenceActivityInstance != null
 					&& activityInstance.getProcessInstanceOID() != referenceActivityInstance
 							.getProcessInstanceOID()) {
-				addPlannedActivityInstances(modelCache,
-						referenceActivityInstance, activityMap,
-						activityInstancesJson);
+				addPlannedActivityInstances(referenceActivityInstance,
+						activityMap, activityInstancesJson);
 			}
 
 			activityMap.put(activityInstance.getActivity().getId(),
@@ -271,8 +281,8 @@ public class BenchmarkService {
 		// Add planned Activity Instances for previous Process Instance
 
 		if (referenceActivityInstance != null) {
-			addPlannedActivityInstances(modelCache, referenceActivityInstance,
-					activityMap, activityInstancesJson);
+			addPlannedActivityInstances(referenceActivityInstance, activityMap,
+					activityInstancesJson);
 		}
 
 		return resultJson;
@@ -282,50 +292,43 @@ public class BenchmarkService {
 	 * 
 	 * @param oid
 	 */
-	public void addPlannedActivityInstances(ModelCache modelCache,
+	public void addPlannedActivityInstances(
 			ActivityInstance referenceActivityInstance,
 			Map<String, Activity> activityMap, JsonArray activityInstancesJson) {
-		DeployedModel model = modelCache.getModel(referenceActivityInstance
-				.getActivity().getModelOID());
-
-		System.out.println("Model found: " + model.getName());
-
+		DeployedModel model = getModelCache().getModel(
+				referenceActivityInstance.getActivity().getModelOID());
 		ProcessDefinition processDefinition = model
 				.getProcessDefinition(referenceActivityInstance.getActivity()
 						.getProcessDefinitionId());
 
-		System.out.println("Process Definition Found"
-				+ processDefinition.getName());
+		// TODO Take from last Activity Instance
 
-		for (Activity otherActivity : (List<Activity>) processDefinition
+		long startTime = System.currentTimeMillis();
+
+		if (referenceActivityInstance.getState().equals(
+				ActivityInstanceState.Suspended)) {
+			startTime = System.currentTimeMillis() + 60 * 60 * 1000;
+		} else if (referenceActivityInstance.getState().equals(
+				ActivityInstanceState.Completed)) {
+			// TODO Possible?
+			
+			startTime = referenceActivityInstance.getLastModificationTime()
+					.getTime();
+		}
+
+		// TODO This loop mocks the traversal
+
+		for (Activity activity : (List<Activity>) processDefinition
 				.getAllActivities()) {
-			if (!activityMap.containsKey(otherActivity.getId())) {
-				System.out.println("Adding instance for "
-						+ otherActivity.getName());
-
-				activityMap.put(otherActivity.getId(), otherActivity);
-
-				long startTime = 0;
-
-				if (referenceActivityInstance.getLastModificationTime() != null) {
-					startTime = referenceActivityInstance
-							.getLastModificationTime().getTime();
-				} else {
-					startTime = System.currentTimeMillis() + 1000 * 60 * 60; // TODO
-																				// Dummy
-																				// completion
-																				// time
-																				// for
-																				// active
-																				// Activity
-				}
-
+			if (!activityMap.containsKey(activity.getId())) {
 				activityInstancesJson.add(createPlannedActivityInstance(
 						referenceActivityInstance.getProcessInstance(),
-						otherActivity, startTime,
+						activity, startTime,
 						referenceActivityInstance.getCriticality()));
 
-				// TODO Need to traverse Transitions here
+				startTime += 1000 * 60 * 60;
+
+				activityMap.put(activity.getId(), activity);
 			}
 		}
 
@@ -416,6 +419,9 @@ public class BenchmarkService {
 
 		processInstanceJson.add("activityInstances", activityInstancesJson);
 
+		ActivityInstance referenceActivityInstance = null;
+		Map<String, Activity> activityMap = new HashMap<String, Activity>();
+
 		for (ActivityInstance activityInstance : getQueryService()
 				.getAllActivityInstances(
 						ActivityInstanceQuery
@@ -425,6 +431,10 @@ public class BenchmarkService {
 					.getProcessInstance().getOID()) {
 				continue;
 			}
+
+			referenceActivityInstance = activityInstance;
+			activityMap.put(activityInstance.getActivity().getId(),
+					activityInstance.getActivity());
 
 			JsonObject activityInstanceJson = marshalActivityInstance(activityInstance);
 
@@ -448,6 +458,7 @@ public class BenchmarkService {
 							.getDescriptorValue(dataPath.getId()).toString());
 				}
 			}
+
 			// TODO Notes on activity level?
 
 			marshalNotes(activityInstance.getProcessInstance(),
@@ -471,6 +482,9 @@ public class BenchmarkService {
 				}
 			}
 		}
+
+		addPlannedActivityInstances(referenceActivityInstance, activityMap,
+				activityInstancesJson);
 
 		return processInstanceJson;
 	}
@@ -520,6 +534,28 @@ public class BenchmarkService {
 		if (activityInstance.getLastModificationTime() != null) {
 			activityInstanceJson.addProperty("lastModification",
 					activityInstance.getLastModificationTime().getTime());
+		}
+
+		if (activityInstance.getState().equals(ActivityInstanceState.Completed)
+				|| activityInstance.getState().equals(
+						ActivityInstanceState.Aborted)) {
+			activityInstanceJson.addProperty("end", activityInstance
+					.getLastModificationTime().getTime());
+		} else {
+			activityInstanceJson.addProperty("end",
+					System.currentTimeMillis() + 60 * 60 * 1000); // TODO Mock,
+																	// has to
+																	// come from
+																	// Benchmark
+																	// as
+																	// maximum
+																	// of
+																	// current
+																	// duration
+																	// and
+																	// expected
+																	// duration
+																	// + x
 		}
 
 		activityInstanceJson.addProperty("benchmark", "Criticality");
@@ -639,20 +675,21 @@ public class BenchmarkService {
 
 	/**
 	 * TODO Homogenize with marshalActivityInstance()
+	 * 
 	 * @param activity
 	 * @param startTime
 	 * @param criticality
 	 * @return
 	 */
-	public JsonObject createPlannedActivityInstance(ProcessInstance processInstance, Activity activity,
-			long startTime, double criticality) {
+	public JsonObject createPlannedActivityInstance(
+			ProcessInstance processInstance, Activity activity, long startTime,
+			double criticality) {
 		JsonObject activityInstanceJson = new JsonObject();
 
 		activityInstanceJson.addProperty("oid", 0); // TODO Is that OK?
 		activityInstanceJson.addProperty("start", startTime);
 
-		activityInstanceJson.addProperty("lastModification",
-				startTime + 1000 * 60 * 60);
+		activityInstanceJson.addProperty("end", startTime + 1000 * 60 * 60);
 
 		activityInstanceJson.addProperty("benchmark", "Criticality");
 		activityInstanceJson.addProperty("criticality", criticality); // Inherit
@@ -696,9 +733,9 @@ public class BenchmarkService {
 			applicationJson.addProperty("name", activity.getApplication()
 					.getName());
 		}
-		
+
 		JsonObject processInstanceJson = new JsonObject();
-	
+
 		activityInstanceJson.add("processInstance", processInstanceJson);
 
 		processInstanceJson.addProperty("oid", processInstance.getOID());
@@ -708,14 +745,16 @@ public class BenchmarkService {
 		processInstanceJson.add("processDefinition", processDefinitionJson);
 
 		processDefinitionJson.addProperty("id", processInstance.getProcessID());
-		processDefinitionJson.addProperty("name", processInstance.getProcessName());
+		processDefinitionJson.addProperty("name",
+				processInstance.getProcessName());
 
 		JsonObject rootProcessInstanceJson = new JsonObject();
 
 		activityInstanceJson
 				.add("rootProcessInstance", rootProcessInstanceJson);
 
-		rootProcessInstanceJson.addProperty("oid", processInstance.getRootProcessInstanceOID());
+		rootProcessInstanceJson.addProperty("oid",
+				processInstance.getRootProcessInstanceOID());
 
 		return activityInstanceJson;
 	}

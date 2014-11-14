@@ -40,167 +40,106 @@ define(
 					this.businessObjectManagementPanelController
 							.initialize(this);
 
-					this.benchmarks = [ {
-						name : "Criticality",
-						categories : [ {
-							name : "Normal",
-							color : "#00FF00",
-							low : 0,
-							high : 300,
-						}, {
-							name : "At Risk",
-							color : "#FFFB00",
-							low : 301,
-							high : 500
-						}, {
-							name : "Critical",
-							color : "#FF0000",
-							low : 501,
-							high : 999
-						} ],
-						trafficLights : [ {
-							process : {
-								name : "Daily Fund Processing Europe"
-							},
-							model : {
-								name : "Daily Fund Processing"
-							}
-						}, {
-							process : {
-								name : "Daily Fund Processing Europe"
-							},
-							activity : {
-								name : "Sweep and Translate"
-							},
-							model : {
-								name : "Daily Fund Processing"
-							}
-						}, {
-							process : {
-								name : "Daily Fund Processing US"
-							},
-							model : {
-								name : "Daily Fund Processing"
-							}
-						} ]
-					}, {
-						name : "Standard Funds Processing",
-						categories : [ {
-							name : "Normal",
-							color : "#FF0000"
-						}, {
-							name : "At Risk",
-							color : "#00FFFF"
-						}, {
-							name : "Critical",
-							color : "#0000FF"
-						} ],
-						trafficLights : [ {
-							process : {
-								name : "Monthly Tax Report"
-							},
-							model : {
-								name : "Report Dissimination"
-							}
-						}, {
-							process : {
-								name : "Monthly Tax Report"
-							},
-							activity : {
-								name : "Retrieve Report Data"
-							},
-							model : {
-								name : "Report Dissimination"
-							}
-						} ]
-					} ];
-
-					this.benchmark = this.benchmarks[0];
-
-					this.enhanceInformation();
-
 					// TODO For testing simulates already selected benchmarks
 
-					this.displayedBenchmarks = [
-							{
-								name : this.benchmarks[0].name,
-								categories : this.benchmarks[0].categories,
-								trafficLights : [
-										this.benchmarks[0].trafficLights[0],
-										this.benchmarks[0].trafficLights[1] ]
-							},
-							{
-								name : this.benchmarks[1].name,
-								categories : this.benchmarks[1].categories,
-								trafficLights : [ this.benchmarks[1].trafficLights[0] ]
-							} ];
-
-					this.displayedTrafficLights = {};
-					this.displayedTrafficLights[this.benchmarks[0].name] = {
-						trafficLights : this.displayedBenchmarks[0].trafficLights
-					};
-					this.displayedTrafficLights[this.benchmarks[0].name][this.benchmarks[0].trafficLights[0].path] = this.benchmarks[0].trafficLights[0];
-					this.displayedTrafficLights[this.benchmarks[0].name][this.benchmarks[0].trafficLights[1].path] = this.benchmarks[0].trafficLights[1];
-					this.displayedTrafficLights[this.benchmarks[1].name] = {
-						trafficLights : this.displayedBenchmarks[1].trafficLights
-					};
-					this.displayedTrafficLights[this.benchmarks[1].name][this.benchmarks[1].trafficLights[0].path] = this.benchmarks[1].trafficLights[1];
-
+					/*
+					 * this.displayedBenchmarks = [ { name :
+					 * this.benchmarks[0].name, categories :
+					 * this.benchmarks[0].categories, trafficLights : [
+					 * this.benchmarks[0].trafficLights[0],
+					 * this.benchmarks[0].trafficLights[1] ] }, { name :
+					 * this.benchmarks[1].name, categories :
+					 * this.benchmarks[1].categories, trafficLights : [
+					 * this.benchmarks[1].trafficLights[0] ] } ];
+					 * 
+					 * this.displayedTrafficLights = {};
+					 * this.displayedTrafficLights[this.benchmarks[0].name] = {
+					 * trafficLights : this.displayedBenchmarks[0].trafficLights };
+					 * this.displayedTrafficLights[this.benchmarks[0].name][this.benchmarks[0].trafficLights[0].path] =
+					 * this.benchmarks[0].trafficLights[0];
+					 * this.displayedTrafficLights[this.benchmarks[0].name][this.benchmarks[0].trafficLights[1].path] =
+					 * this.benchmarks[0].trafficLights[1];
+					 * this.displayedTrafficLights[this.benchmarks[1].name] = {
+					 * trafficLights : this.displayedBenchmarks[1].trafficLights };
+					 * this.displayedTrafficLights[this.benchmarks[1].name][this.benchmarks[1].trafficLights[0].path] =
+					 * this.benchmarks[1].trafficLights[1];
+					 */
+					
 					var self = this;
 
-					BusinessObjectManagementService
+					BenchmarkService
 							.instance()
-							.getBusinessObjects()
+							.getBenchmarks()
 							.done(
-									function(businessObjectModels) {
-										self.businessObjectModels = businessObjectModels;
+									function(benchmarks) {
+										self.benchmarks = benchmarks;
+										self.benchmark = self.benchmarks[0];
+										self.enhanceInformation();
 
-										console.log(self.businessObjectModels);
+										BusinessObjectManagementService
+												.instance()
+												.getBusinessObjects()
+												.done(
+														function(
+																businessObjectModels) {
+															self.businessObjectModels = businessObjectModels;
 
-										self.refreshBusinessObjects();
-
-										if (self.queryParameters.benchmark
-												&& self.queryParameters.drilldown) {
-											self.preconfigured = true;
-											self.drilldown = self.queryParameters.drilldown;
-
-											// Evaluate preconfiguration of the
-											// View
-
-											// TODO Incomplete/Hack
-
-											if (self.queryParameters.businessDate == "TODAY") {
-												self.businessDate = "30/04/1966";
-											}
-
-											for (var n = 0; n < self.benchmarks.length; ++n) {
-												if (self.benchmarks[n].name == self.queryParameters.benchmark) {
-													self.benchmark = self.benchmarks[n];
-
-													break;
-												}
-											}
-
-											if (self.queryParameters.drilldown == "BUSINESS_OBJECT") {
-												for (var n = 0; n < self.businessObjectModels.length; ++n) {
-													for (var m = 0; m < self.businessObjectModels[n].businessObjects.length; ++m) {
-														if (self.businessObjectModels[n].businessObjects[m].name == self.queryParameters.businessObject) {
-															self.businessObject = self.businessObjectModels[n].businessObjects[m];
+															console
+																	.log(self.businessObjectModels);
 
 															self
-																	.onBusinessObjectChange();
+																	.refreshBusinessObjects();
 
-															break;
-														}
-													}
-												}
-											}
-										} else {
-											self.onDrillDownChange();
-										}
+															if (self.queryParameters.benchmark
+																	&& self.queryParameters.drilldown) {
+																self.preconfigured = true;
+																self.drilldown = self.queryParameters.drilldown;
 
-										self.safeApply();
+																// Evaluate
+																// preconfiguration
+																// of the
+																// View
+
+																// TODO
+																// Incomplete/Hack
+
+																if (self.queryParameters.businessDate == "TODAY") {
+																	self.businessDate = "30/04/1966";
+																}
+
+																for (var n = 0; n < self.benchmarks.length; ++n) {
+																	if (self.benchmarks[n].name == self.queryParameters.benchmark) {
+																		self.benchmark = self.benchmarks[n];
+
+																		break;
+																	}
+																}
+
+																if (self.queryParameters.drilldown == "BUSINESS_OBJECT") {
+																	for (var n = 0; n < self.businessObjectModels.length; ++n) {
+																		for (var m = 0; m < self.businessObjectModels[n].businessObjects.length; ++m) {
+																			if (self.businessObjectModels[n].businessObjects[m].name == self.queryParameters.businessObject) {
+																				self.businessObject = self.businessObjectModels[n].businessObjects[m];
+
+																				self
+																						.onBusinessObjectChange();
+
+																				break;
+																			}
+																		}
+																	}
+																}
+															} else {
+																self
+																		.onDrillDownChange();
+															}
+
+															self.safeApply();
+														}).fail(function() {
+													// TODO Error message
+												});
 									}).fail(function() {
+								// TODO Error message
 							});
 				};
 
@@ -295,11 +234,11 @@ define(
 						}
 
 						// Activity does not contribute to traffic light
-						
+
 						if (!currentTrafficLight) {
 							continue;
 						}
-						
+
 						// TODO Filter whether AI belongs to this Leaf TLV
 
 						for (var m = 0; m < this.benchmark.categories.length; ++m) {
@@ -435,7 +374,13 @@ define(
 								});
 
 								this.trafficLightsMap[activityRow.path] = activityRow;
-								this.leafTrafficLightsMap[activity.id] = activityRow; // TODO Needs to be the full path
+								this.leafTrafficLightsMap[activity.id] = activityRow; // TODO
+								// Needs
+								// to
+								// be
+								// the
+								// full
+								// path
 							}
 						}
 					}
@@ -956,12 +901,9 @@ define(
 				 */
 				TrafficLightViewController.prototype.openGanttChartView = function(
 						activity) {
-					this
-							.openView("ganttChartViewNew",
-									"viewId=ganttChartViewNew&oid="
-											+ activity.rootProcessInstance.oid,
-									window.btoa("viewId=ganttChartViewNew&oid="
-											+ activity.rootProcessInstance.oid));
+					this.openView("ganttChartViewNew", "oid="
+							+ activity.rootProcessInstance.oid, window
+							.btoa("oid=" + activity.rootProcessInstance.oid));
 				};
 
 				/**
