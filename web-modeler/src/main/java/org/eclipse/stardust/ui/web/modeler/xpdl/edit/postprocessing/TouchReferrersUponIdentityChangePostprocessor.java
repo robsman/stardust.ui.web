@@ -10,6 +10,8 @@ import org.eclipse.stardust.model.xpdl.carnot.CarnotWorkflowModelPackage;
 import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableElement;
 import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.INodeSymbol;
+import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
+import org.eclipse.stardust.model.xpdl.xpdl2.XpdlPackage;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.ChangePostprocessor;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Component;
 public class TouchReferrersUponIdentityChangePostprocessor implements ChangePostprocessor
 {
    private static final CarnotWorkflowModelPackage PKG_XPDL = CarnotWorkflowModelPackage.eINSTANCE;
+   private static final XpdlPackage PKG_XPDL2 = XpdlPackage.eINSTANCE;
 
    @Override
    public int getInspectionPhase()
@@ -29,8 +32,8 @@ public class TouchReferrersUponIdentityChangePostprocessor implements ChangePost
    {
       for (EObject candidate : change.getModifiedElements())
       {
-         if ((candidate instanceof IIdentifiableElement)
-               && change.wasModified(candidate, PKG_XPDL.getIIdentifiableElement_Id()))
+         if ((candidate instanceof IIdentifiableElement) && change.wasModified(candidate, PKG_XPDL.getIIdentifiableElement_Id())
+               || (candidate instanceof TypeDeclarationType) && change.wasModified(candidate, PKG_XPDL2.getTypeDeclarationType_Id()))
          {
             // TODO find all references and flag them as modified
             for (EObject other : candidate.eCrossReferences())
