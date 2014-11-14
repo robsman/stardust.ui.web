@@ -409,12 +409,8 @@ public class ConnectionCommandHandler
          ProcessDefinitionType processDefinition, AbstractEventSymbol sourceEventSymbol,
          ActivitySymbolType targetActivitySymbol, EObjectUUIDMapper mapper)
    {
+      TransitionType transition = null;
       ActivityType hostActivity = EventMarshallingUtils.resolveHostActivity(sourceEventSymbol);
-
-      JsonObject controlFlowJson = connectionJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
-
-      TransitionType transition = createTransition(controlFlowJson, processDefinition, hostActivity,
-            targetActivitySymbol.getActivity());
 
       if (hostActivity != null)
       {
@@ -431,17 +427,24 @@ public class ConnectionCommandHandler
                if (eventHandler != null)
                {
                   condition = "ON_BOUNDARY_EVENT(" + eventHandlerId + ")";
-                  transition.setCondition(ModelerConstants.CONDITION_KEY);
-
-                  if(transition.getExpression() == null)
-                  {
-                     XmlTextNode expression = CarnotWorkflowModelFactory.eINSTANCE.createXmlTextNode();
-                     transition.setExpression(expression);
-                  }
-                  FeatureMap mixedNode = transition.getExpression().getMixed();
-                  ModelUtils.setCDataString(mixedNode, condition, true);
                }
             }
+         }
+
+         JsonObject controlFlowJson = connectionJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
+         transition = createTransition(controlFlowJson, processDefinition, hostActivity,
+               targetActivitySymbol.getActivity());
+
+         if(condition != null)
+         {
+            transition.setCondition(ModelerConstants.CONDITION_KEY);
+            if(transition.getExpression() == null)
+            {
+               XmlTextNode expression = CarnotWorkflowModelFactory.eINSTANCE.createXmlTextNode();
+               transition.setExpression(expression);
+            }
+            FeatureMap mixedNode = transition.getExpression().getMixed();
+            ModelUtils.setCDataString(mixedNode, condition, true);
          }
 
          mapper.map(transition);
