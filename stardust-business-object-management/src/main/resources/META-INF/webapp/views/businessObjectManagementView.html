@@ -128,7 +128,7 @@ ul.errorMessagesPanel {
 							{{businessObjectManagementPanelController.businessObject.name}}
 							selected.</em></td>
 				</tr>
-				<tr ng-show="currentBusinessObjectInstance != null">
+				<tr ng-if="currentBusinessObjectInstance != null">
 					<td colspan="2">
 						<table>
 							<tr>
@@ -144,7 +144,7 @@ ul.errorMessagesPanel {
 								<div ng-include="'./objectPanel.html'"></div>
 							</div>
 							<div
-								ng-show="getBusinessObject().relationships && getBusinessObject().relationships.length">
+								ng-if="getBusinessObject() && getBusinessObject().relationships && getBusinessObject().relationships.length">
 								<h2>Related Objects</h2>
 								<table style="margin-bottom: 10px;">
 									<tr

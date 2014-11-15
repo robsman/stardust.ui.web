@@ -185,6 +185,8 @@ define(
 
 					console.log("Filter String");
 					console.log(queryString);
+					console.log("Business Object");
+					console.log(businessObject);
 
 					var deferred = jQuery.Deferred();
 					var rootUrl = location.href.substring(0, location.href

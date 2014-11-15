@@ -107,23 +107,22 @@ define(
 				 */
 				BusinessObjectManagementViewController.prototype.changeBusinessObject = function() {
 					console.log("Business Object");
-					console.log(this.businessObject);
+					console.log(this.businessObject.modelOid);
 
 					BusinessObjectManagementService.instance()
 							.calculateBusinessObjectFields(this.businessObject);
+					console.log("Before form");
+					console.log(this.businessObject.modelOid);
 					this.initializeForm();
+
+					console.log("Changed Business Object");
+					console.log(this.businessObject.modelOid);
 				};
 
 				/**
 				 * 
 				 */
 				BusinessObjectManagementViewController.prototype.initializeForm = function() {
-					// Enhance BO with
-					// modelOid
-					// TODO Needed?
-
-					this.businessObject.modelOid = this.parameters.modelOid;
-
 					this.businessObjectManagementPanelController
 							.changeBusinessObject(this.businessObject);
 
