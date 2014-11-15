@@ -233,7 +233,8 @@ define(
 
 					for (var n = 0; n < this.flatActivityInstanceList.length; ++n) {
 						var activityInstance = this.flatActivityInstanceList[n];
-						var barDivision = jQuery("#" + activityInstance.activity.id);
+						var barDivision = jQuery("#"
+								+ activityInstance.activity.id);
 
 						barCell = jQuery(barDivision.parent());
 
@@ -293,7 +294,8 @@ define(
 
 						jQuery(barDivision.children("table")).css({
 							"opacity" : opacity,
-							"background-color" : color
+							"background-color" : color,
+							animation : "expand 5s"
 						});
 
 						var self = this;

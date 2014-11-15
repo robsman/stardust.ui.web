@@ -64,7 +64,7 @@ define(
 					 * this.displayedTrafficLights[this.benchmarks[1].name][this.benchmarks[1].trafficLights[0].path] =
 					 * this.benchmarks[1].trafficLights[1];
 					 */
-					
+
 					var self = this;
 
 					BenchmarkService
@@ -902,46 +902,28 @@ define(
 				TrafficLightViewController.prototype.openGanttChartView = function(
 						activity) {
 					this.openView("ganttChartViewNew", "oid="
-							+ activity.rootProcessInstance.oid, window
-							.btoa("oid=" + activity.rootProcessInstance.oid));
+							+ activity.rootProcessInstance.oid, {
+						oid : activity.rootProcessInstance.oid
+					});
 				};
 
 				/**
-				 * TODO - re-use a Util from web-modeler
-				 */
-				TrafficLightViewController.prototype.openView = function(
-						viewId, viewParams, viewIdentity) {
-					var portalWinDoc = this.getOutlineWindowAndDocument();
-					var link = jQuery("a[id $= 'view_management_link']",
-							portalWinDoc.doc);
-					var linkId = link.attr('id');
-					var form = link.parents('form:first');
-					var formId = form.attr('id');
-
-					link = portalWinDoc.doc.getElementById(linkId);
-
-					var linkForm = portalWinDoc.win.formOf(link);
-
-					linkForm[formId + ':_idcl'].value = linkId;
-					linkForm['viewParams'].value = viewParams;
-					linkForm['viewId'].value = viewId;
-					linkForm['viewIdentity'].value = viewIdentity;
-
-					portalWinDoc.win.iceSubmit(linkForm, link);
-				};
-
-				/*
 				 * 
 				 */
-				TrafficLightViewController.prototype.getOutlineWindowAndDocument = function() {
-					return {
-						win : parent.document
-								.getElementById("portalLaunchPanels").contentWindow,
-						doc : parent.document
-								.getElementById("portalLaunchPanels").contentDocument
+				TrafficLightViewController.prototype.openView = function(
+						viewId, viewIdentity, viewParams) {
+					var command = {
+						type : "OpenView",
+						data : {
+							viewId : viewId,
+							viewKey : viewIdentity,
+							params : viewParams
+						}
 					};
-				};
 
+					parent.postMessage(JSON.stringify(command), "*");
+				};
+				
 				/**
 				 * 
 				 */

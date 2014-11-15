@@ -148,166 +148,46 @@
 	color: #888888;
 }
 /* Animations */
-@
--webkit-keyframes expand { 0% {
+@-webkit-keyframes expand { 0% {
 	width: 0;
 }
 
 100%
 {
-width
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-:
-
-
-
-
-
-
-
- 
-
-
-
-
-
-
-
+width:
 100%;
 }
 }
-@
--moz-keyframes expand { 0% {
+@-moz-keyframes expand { 0% {
 	opacity: 0;
 }
 
 100%
 {
 width
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 :
-
-
-
-
-
-
-
- 
-
-
-
-
-
-
-
 100%;
 }
 }
-@
--o-keyframes expand { 0% {
+@-o-keyframes expand { 0% {
 	opacity: 0;
 }
 
 100%
 {
 width
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 :
-
-
-
-
-
-
-
- 
-
-
-
-
-
-
-
 100%;
 }
 }
-@
-keyframes expand { 0% {
-	opacity: 0;
-}
-100%
-{
+@keyframes expand { 
+	0% {
+		opacity: 0;
+	}
+	100%
+	{
 width
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 :
-
-
-
-
-
-
-
- 
-
-
-
-
-
-
-
 100%;
 }
 }
@@ -422,7 +302,7 @@ width
 				ng-show="!activityInstance.superActivityInstanceOid || expandedActivityInstances['' + activityInstance.superActivityInstanceOid]"
 				class="{{activityInstance.activity.type}}">
 				<td class="nameCell"
-					style="padding-left: {{15* activityInstance.depth"><a href=""
+					style="padding-left: {{15* activityInstance.depth}}px;"><a href=""
 					class="iconLink handleLink"
 					ng-show="isExpandable(activityInstance)"
 					ng-click="expandActivityInstance(activityInstance)"><i

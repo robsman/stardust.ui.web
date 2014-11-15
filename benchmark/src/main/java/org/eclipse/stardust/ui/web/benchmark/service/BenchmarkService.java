@@ -69,6 +69,7 @@ public class BenchmarkService {
 	private WorkflowService workflowService;
 	private AdministrationService administrationService;
 	private ModelCache modelCache;
+	private long temporaryOid = 0;
 
 	// TODO Removed as soon as real implementation is complete
 
@@ -76,6 +77,16 @@ public class BenchmarkService {
     *
     */
 	public BenchmarkService() {
+	}
+
+	/**
+	 *
+	 * @return
+	 */
+	private long getTemporaryOid() {
+		--temporaryOid;
+
+		return temporaryOid;
 	}
 
 	/**
@@ -265,7 +276,15 @@ public class BenchmarkService {
 			if (referenceActivityInstance != null
 					&& activityInstance.getProcessInstanceOID() != referenceActivityInstance
 							.getProcessInstanceOID()) {
-				addPlannedActivityInstances(referenceActivityInstance,
+				addPlannedActivityInstances(
+						getProcessDefinition(referenceActivityInstance
+								.getActivity().getModelOID(),
+								referenceActivityInstance
+										.getProcessDefinitionId()),
+						referenceActivityInstance.getProcessInstance(),
+						referenceActivityInstance.getProcessInstance()
+								.getRootProcessInstanceOID(),
+						getStartTimeForNextActivity(referenceActivityInstance),
 						activityMap, activityInstancesJson);
 			}
 
@@ -281,7 +300,15 @@ public class BenchmarkService {
 		// Add planned Activity Instances for previous Process Instance
 
 		if (referenceActivityInstance != null) {
-			addPlannedActivityInstances(referenceActivityInstance, activityMap,
+			addPlannedActivityInstances(
+					getProcessDefinition(referenceActivityInstance
+							.getActivity().getModelOID(),
+							referenceActivityInstance.getProcessDefinitionId()),
+					referenceActivityInstance.getProcessInstance(),
+					referenceActivityInstance.getProcessInstance()
+							.getRootProcessInstanceOID(),
+					getStartTimeForNextActivity(referenceActivityInstance),
+					activityMap,
 					activityInstancesJson);
 		}
 
@@ -292,47 +319,56 @@ public class BenchmarkService {
 	 * 
 	 * @param oid
 	 */
-	public void addPlannedActivityInstances(
-			ActivityInstance referenceActivityInstance,
-			Map<String, Activity> activityMap, JsonArray activityInstancesJson) {
-		DeployedModel model = getModelCache().getModel(
-				referenceActivityInstance.getActivity().getModelOID());
-		ProcessDefinition processDefinition = model
-				.getProcessDefinition(referenceActivityInstance.getActivity()
-						.getProcessDefinitionId());
+	public ProcessDefinition getProcessDefinition(long modelOid,
+			String processDefinitionId) {
+		DeployedModel model = getModelCache().getModel(modelOid);
+		return model.getProcessDefinition(processDefinitionId);
+	};
 
-		// TODO Take from last Activity Instance
-
-		long startTime = System.currentTimeMillis();
-
-		if (referenceActivityInstance.getState().equals(
-				ActivityInstanceState.Suspended)) {
-			startTime = System.currentTimeMillis() + 60 * 60 * 1000;
-		} else if (referenceActivityInstance.getState().equals(
+	/**
+	 * 
+	 * @param oid
+	 */
+	public long getStartTimeForNextActivity(ActivityInstance activityInstance) {
+		if (activityInstance.getState().equals(ActivityInstanceState.Suspended)) {
+			return System.currentTimeMillis() + 60 * 60 * 1000; // TODO Add 1h
+																// more as dummy
+		} else if (activityInstance.getState().equals(
 				ActivityInstanceState.Completed)) {
 			// TODO Possible?
-			
-			startTime = referenceActivityInstance.getLastModificationTime()
-					.getTime();
+
+			return activityInstance.getLastModificationTime().getTime();
+		} else {
+			return System.currentTimeMillis();
 		}
+	}
+
+	/**
+	 * 
+	 * @param oid
+	 */
+	public long addPlannedActivityInstances(
+			ProcessDefinition processDefinition,
+			ProcessInstance processInstance, long rootProcessInstanceOid,
+			long nextStartTime, 
+			Map<String, Activity> activityMap, JsonArray activityInstancesJson) {
 
 		// TODO This loop mocks the traversal
 
 		for (Activity activity : (List<Activity>) processDefinition
 				.getAllActivities()) {
 			if (!activityMap.containsKey(activity.getId())) {
-				activityInstancesJson.add(createPlannedActivityInstance(
-						referenceActivityInstance.getProcessInstance(),
-						activity, startTime,
-						referenceActivityInstance.getCriticality()));
-
-				startTime += 1000 * 60 * 60;
+				nextStartTime = createPlannedActivityInstance(activity,
+						processInstance, rootProcessInstanceOid, nextStartTime,
+						activityInstancesJson);
 
 				activityMap.put(activity.getId(), activity);
 			}
 		}
 
 		activityMap.clear();
+
+		return nextStartTime;
 	};
 
 	/**
@@ -483,7 +519,15 @@ public class BenchmarkService {
 			}
 		}
 
-		addPlannedActivityInstances(referenceActivityInstance, activityMap,
+		addPlannedActivityInstances(
+				getProcessDefinition(referenceActivityInstance.getActivity()
+						.getModelOID(),
+						referenceActivityInstance.getProcessDefinitionId()),
+				referenceActivityInstance.getProcessInstance(),
+				referenceActivityInstance.getProcessInstance()
+						.getRootProcessInstanceOID(),
+				getStartTimeForNextActivity(referenceActivityInstance),
+				activityMap,
 				activityInstancesJson);
 
 		return processInstanceJson;
@@ -560,7 +604,7 @@ public class BenchmarkService {
 
 		activityInstanceJson.addProperty("benchmark", "Criticality");
 		activityInstanceJson.addProperty("criticality",
-				activityInstance.getCriticality());
+				calculateCriticality(activityInstance));
 
 		activityInstanceJson.addProperty("state", activityInstance.getState()
 				.getName());
@@ -674,30 +718,64 @@ public class BenchmarkService {
 	}
 
 	/**
-	 * TODO Homogenize with marshalActivityInstance()
 	 * 
 	 * @param activity
-	 * @param startTime
+	 * @param processInstance
+	 *            Process Instance in which the Planned Activity instance is
+	 *            created
+	 * @param rootProcessInstanceOid
+	 *            OID of the Root Process Instance in which the Planned Activity
+	 *            instance is created
+	 * @param nextStartTime
 	 * @param criticality
+	 *            Temporary
 	 * @return
 	 */
-	public JsonObject createPlannedActivityInstance(
-			ProcessInstance processInstance, Activity activity, long startTime,
-			double criticality) {
+	public long createPlannedActivityInstance(Activity activity,
+			ProcessInstance processInstance, long rootProcessInstanceOid,
+			long nextStartTime,
+			JsonArray activityInstancesJson) {
 		JsonObject activityInstanceJson = new JsonObject();
 
-		activityInstanceJson.addProperty("oid", 0); // TODO Is that OK?
-		activityInstanceJson.addProperty("start", startTime);
+		activityInstanceJson.addProperty("oid", getTemporaryOid());
+		activityInstanceJson.addProperty("start", nextStartTime);
 
-		activityInstanceJson.addProperty("end", startTime + 1000 * 60 * 60);
+		if (activity.getImplementationType().equals(
+				ImplementationType.SubProcess)) {
+			JsonObject subProcessInstanceJson = new JsonObject();
+
+			subProcessInstanceJson.addProperty("oid", getTemporaryOid());
+
+			JsonObject processJson = new JsonObject();
+
+			ProcessDefinition processDefinition = getProcessDefinition(
+					processInstance.getModelOID(),
+					activity.getImplementationProcessDefinitionId());
+			subProcessInstanceJson.add("processDefinition", processJson);
+
+			processJson.addProperty("name", processDefinition.getName());
+			processJson.addProperty("id", processDefinition.getId());
+
+			JsonArray subActivityInstancesJson = new JsonArray();
+
+			subProcessInstanceJson.add("activityInstances",
+					subActivityInstancesJson);
+
+			nextStartTime = addPlannedActivityInstances(processDefinition,
+					null, getTemporaryOid(), nextStartTime, 
+					new HashMap<String, Activity>(), subActivityInstancesJson);
+
+			activityInstanceJson.add("subProcessInstance",
+					subProcessInstanceJson);
+		} else {
+			nextStartTime += 1000 * 60 * 60; // TODO Expected duration mocked by
+												// adding 1h
+		}
+
+		activityInstanceJson.addProperty("end", nextStartTime);
 
 		activityInstanceJson.addProperty("benchmark", "Criticality");
-		activityInstanceJson.addProperty("criticality", criticality); // Inherit
-																		// from
-																		// previous
-																		// for
-																		// now
-
+		activityInstanceJson.addProperty("criticality", calculateCriticality(null)); 
 		activityInstanceJson.addProperty("state", "Planned");
 
 		JsonObject activityJson = new JsonObject();
@@ -738,25 +816,39 @@ public class BenchmarkService {
 
 		activityInstanceJson.add("processInstance", processInstanceJson);
 
-		processInstanceJson.addProperty("oid", processInstance.getOID());
-
 		JsonObject processDefinitionJson = new JsonObject();
 
 		processInstanceJson.add("processDefinition", processDefinitionJson);
 
-		processDefinitionJson.addProperty("id", processInstance.getProcessID());
-		processDefinitionJson.addProperty("name",
-				processInstance.getProcessName());
+		if (processInstance != null) {
+			processInstanceJson.addProperty("oid", processInstance.getOID());
+			processDefinitionJson.addProperty("id",
+					processInstance.getProcessID());
+			processDefinitionJson.addProperty("name",
+					processInstance.getProcessName());
+		} else {
+			processInstanceJson.addProperty("oid", getTemporaryOid());
+			processDefinitionJson.addProperty("id",
+					activity.getProcessDefinitionId());
+			processDefinitionJson.addProperty("name",
+					activity.getProcessDefinitionId()); // TODO Why is the name
+														// not exposed?
+		}
 
 		JsonObject rootProcessInstanceJson = new JsonObject();
 
 		activityInstanceJson
 				.add("rootProcessInstance", rootProcessInstanceJson);
 
-		rootProcessInstanceJson.addProperty("oid",
-				processInstance.getRootProcessInstanceOID());
+		rootProcessInstanceJson.addProperty("oid", rootProcessInstanceOid);
 
-		return activityInstanceJson;
+		activityInstancesJson.add(activityInstanceJson);
+
+		return nextStartTime;
+	}
+
+	public double calculateCriticality(ActivityInstance activityInstance) {
+		return 100 + System.currentTimeMillis() % 3 * 300;
 	}
 
 	public Folder getOrCreateFolder(String path) {
