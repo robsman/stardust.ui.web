@@ -240,6 +240,7 @@ public class ActivityDetailsBean extends UIComponentBean
    private boolean qualityAssuranceActionInProgress;
    private QAAction qualityAssuranceAction;
    private boolean ownershipStatusOnSave;
+   private boolean suspendToParticipant = true;
    
    // Kind of constant, loaded from  properties
    // Temporary to support both modes for some time
@@ -1351,7 +1352,7 @@ public class ActivityDetailsBean extends UIComponentBean
 
    public void suspendAndSaveCurrentActivity()
    {
-      suspendAndSaveCurrentActivity(false, true, true);
+      suspendAndSaveCurrentActivity(false, true, suspendToParticipant);
    }
 
    public void suspendCurrentActivity(boolean keepOwnership, boolean closeView,
@@ -1980,7 +1981,8 @@ public class ActivityDetailsBean extends UIComponentBean
             // Preserved keepOwnership flag , as after setting
             // OutDataMapping,keepOwnership flag is lost
             ownershipStatusOnSave = true;
-            suspendAndSaveCurrentActivity(ownershipStatusOnSave, true, false);
+            suspendToParticipant = false;
+            suspendAndSaveCurrentActivity(ownershipStatusOnSave, true, suspendToParticipant);
 
             if(assemblyLineActivity && assemblyLinePushService)
             {
@@ -1999,8 +2001,8 @@ public class ActivityDetailsBean extends UIComponentBean
             break;
          case SAVE_TO_DEFAULT_PERFORMER:
             params = getPinViewStatusParam();
-
-            suspendAndSaveCurrentActivity(false, true, false);
+            suspendToParticipant = false;
+            suspendAndSaveCurrentActivity(false, true, suspendToParticipant);
 
             if(assemblyLineActivity && assemblyLinePushService)
             {
