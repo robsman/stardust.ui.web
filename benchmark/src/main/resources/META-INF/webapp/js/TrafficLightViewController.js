@@ -903,7 +903,7 @@ define(
 						activity) {
 					this.openView("ganttChartViewNew", "oid="
 							+ activity.rootProcessInstance.oid, {
-						oid : activity.rootProcessInstance.oid
+						oid : "" + activity.rootProcessInstance.oid
 					});
 				};
 
