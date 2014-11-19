@@ -283,7 +283,7 @@ public class CommonDescriptorUtils
             Model model = ModelCache.findModelCache().getModel(dataPathDetails.getModelOID());
             DataDetails dataDetails = (DataDetails) model.getData(dataPathDetails.getData());
             // Filter Document Descriptors
-            if (!dataPathDetails.getId().equals(DmsConstants.DATA_ID_ATTACHMENTS)
+            if (!DmsConstants.DATA_ID_ATTACHMENTS.equals(dataPathDetails.getData())
                   && (!DmsConstants.DATA_TYPE_DMS_DOCUMENT.equals(dataDetails.getTypeId())))
             {
                processDescriptor = new ProcessDescriptor(I18nUtils.getDataPathName(entry.getValue()),
