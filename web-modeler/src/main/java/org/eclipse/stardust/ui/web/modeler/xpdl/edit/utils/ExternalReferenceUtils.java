@@ -200,31 +200,33 @@ public class ExternalReferenceUtils
          Connection connection = (Connection) cm.findConnection(uri);
          List<EObject> references = getExternalReferences(model, (Connection) connection);
          ModelType modelType = ModelUtils.getReferencedModelByURI(model, uri);
-         ModelType refModel = models.get(modelType.getId());
-         for (Iterator<EObject> j = references.iterator(); j.hasNext();)
+         if(modelType != null)
          {
-            EObject ref = j.next();
-            if (ref instanceof ActivityType)
+            ModelType refModel = models.get(modelType.getId());
+            for (Iterator<EObject> j = references.iterator(); j.hasNext();)
             {
-               fixActivity((ActivityType) ref, refModel);
+               EObject ref = j.next();
+               if (ref instanceof ActivityType)
+               {
+                  fixActivity((ActivityType) ref, refModel);
+               }
+               if (ref instanceof DataType)
+               {
+                  fixData((DataType) ref, refModel);
+               }
+               if (ref instanceof DataTypeType)
+               {
+                  fixDataTypeType((DataTypeType) ref, refModel);
+               }
+               if (ref instanceof AccessPointType)
+               {
+                  fixAccessPoint((AccessPointType) ref, refModel);
+               }
+               /*if (ref instanceof XSDImport)
+               {
+                  fixXSDImport((XSDImport) ref, refModel);
+               }*/
             }
-            if (ref instanceof DataType)
-            {
-               fixData((DataType) ref, refModel);
-            }
-            if (ref instanceof DataTypeType)
-            {
-               fixDataTypeType((DataTypeType) ref, refModel);
-            }
-            if (ref instanceof AccessPointType)
-            {
-               fixAccessPoint((AccessPointType) ref, refModel);
-            }
-            /*if (ref instanceof XSDImport)
-            {
-               fixXSDImport((XSDImport) ref, refModel);
-            }*/
-
          }
       }
    }
