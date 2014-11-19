@@ -7,7 +7,7 @@
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 
 	<ice:panelGroup
-		rendered="#{fn:contains(col.columnName, 'PROCESS_ATTACHMENT')}">
+		rendered="#{pc:instanceOf(col, 'org.eclipse.stardust.ui.web.viewscommon.common.ProcessAttachmentColumnPreference')}">
 		<ice:panelSeries value="#{rowObject[property]}"
 			var="processAttachment">
 			<ice:commandLink styleClass="action-link"
@@ -27,7 +27,7 @@
 	</ice:panelGroup>
 
 	<ice:panelGroup
-		rendered="#{pc:instanceOf(col, 'org.eclipse.stardust.ui.web.common.column.ProcessDocumentColumnPreference')}">
+		rendered="#{pc:instanceOf(col, 'org.eclipse.stardust.ui.web.viewscommon.common.ProcessDocumentColumnPreference')}">
 		<ice:commandLink styleClass="action-link"
 			actionListener="#{bean.openDocument}" immediate="true"
 			rendered="#{rowObject[property] != null}">

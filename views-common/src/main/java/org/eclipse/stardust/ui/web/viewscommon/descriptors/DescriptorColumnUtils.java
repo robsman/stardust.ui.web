@@ -22,19 +22,20 @@ import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
 import org.eclipse.stardust.ui.web.common.column.IColumnModel;
-import org.eclipse.stardust.ui.web.common.column.ProcessDocumentColumnPreference;
 import org.eclipse.stardust.ui.web.common.filter.ITableDataFilter;
+import org.eclipse.stardust.ui.web.common.filter.ITableDataFilter.DataType;
 import org.eclipse.stardust.ui.web.common.filter.ITableDataFilterBetween;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterDate;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterNumber;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterOnOff;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterPopup;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterSearch;
-import org.eclipse.stardust.ui.web.common.filter.ITableDataFilter.DataType;
 import org.eclipse.stardust.ui.web.common.table.DataTable;
 import org.eclipse.stardust.ui.web.common.table.DefaultRowModel;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.viewscommon.common.DateRange;
+import org.eclipse.stardust.ui.web.viewscommon.common.ProcessAttachmentColumnPreference;
+import org.eclipse.stardust.ui.web.viewscommon.common.ProcessDocumentColumnPreference;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentInfo;
 import org.eclipse.stardust.ui.web.viewscommon.utils.CommonDescriptorUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
@@ -97,9 +98,9 @@ public class DescriptorColumnUtils
             descriptorColumn.setEscape(false);
             descriptorColumns.add(descriptorColumn);
          }
-         else if(dataPath.getId().equals(DmsConstants.DATA_ID_ATTACHMENTS) && contentUrl !=null)
+         else if(DmsConstants.DATA_ID_ATTACHMENTS.equals(dataPath.getData()) && contentUrl !=null)
          {
-            ColumnPreference descriptorColumn = new ColumnPreference(descriptorId,
+            ColumnPreference descriptorColumn = new ProcessAttachmentColumnPreference(descriptorId,
                   "descriptorValues." + descriptorId + "", I18nUtils.getDataPathName(dataPath), contentUrl, false, false);
             descriptorColumn.setEscape(false);
             descriptorColumns.add(descriptorColumn);
@@ -113,7 +114,6 @@ public class DescriptorColumnUtils
             descriptorColumn.setEscape(false);
             descriptorColumns.add(descriptorColumn);
          }
-        /* }*/
       }
       return descriptorColumns;
    }

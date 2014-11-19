@@ -153,11 +153,12 @@ public class CommonDescriptorUtils
          DataPathDetails dataPathDetails = entry.getValue();
          if (dataPathDetails.isDescriptor())
          {
-            Object obj = descriptorValues.get(dataPathDetails.getId());
+            Object obj = descriptorValues.get(entry.getKey());
             if (null != obj)
             {
+               DataDetails dataDetails = (DataDetails) model.getData(dataPathDetails.getData());
                // Check for Process Attachments, and update descriptor List
-               if (dataPathDetails.getId().equals(DmsConstants.DATA_ID_ATTACHMENTS))
+               if (DmsConstants.DATA_ID_ATTACHMENTS.equals(dataDetails.getId()))
                {
                   List<DocumentInfo> documentList = CollectionUtils.newArrayList();
                   List<Object> processAttachments = (List<Object>)obj;
@@ -174,48 +175,43 @@ public class CommonDescriptorUtils
                               processAttachment.getContentType()), processAttachment));   
                      }
                   }
-                  descriptorValues.put(dataPathDetails.getId(), documentList);
+                  descriptorValues.put(entry.getKey(), documentList);
                }
-               else
+               else if (DmsConstants.DATA_TYPE_DMS_DOCUMENT.equals(dataDetails.getTypeId()))
                {
-                  DataDetails dataDetails = (DataDetails) model.getData(dataPathDetails.getData());
-                  // Check for Type Documents and create List
-                  if (DmsConstants.DATA_TYPE_DMS_DOCUMENT.equals(dataDetails.getTypeId()))
+                  dataDetailsQId = dataDetails.getQualifiedId();
+                  Direction direction = dataPathDetails.getDirection();
+                  if (Direction.IN.equals(direction) && !typedDocumentsData.containsKey(dataDetailsQId))
                   {
-                     dataDetailsQId = dataDetails.getQualifiedId();
-                     Direction direction = dataPathDetails.getDirection();
-                     if (Direction.IN.equals(direction) && !typedDocumentsData.containsKey(dataDetailsQId))
+                     try
                      {
-                        try
+                        typedDocument = new TypedDocument(instance, dataPathDetails, dataDetails, (Document) obj);
+                        if (outDataMappings.containsKey(dataDetailsQId))
                         {
-                           typedDocument = new TypedDocument(instance, dataPathDetails, dataDetails, (Document) obj);
-                           if (outDataMappings.containsKey(dataDetailsQId))
-                           {
-                              typedDocument.setDataPath(outDataMappings.get(dataDetailsQId));
-                              typedDocument.setOutMappingExist(true);
-                           }
-                           typedDocumentsData.put(dataDetailsQId, typedDocument);
+                           typedDocument.setDataPath(outDataMappings.get(dataDetailsQId));
+                           typedDocument.setOutMappingExist(true);
                         }
-                        catch (Exception e)
+                        typedDocumentsData.put(dataDetailsQId, typedDocument);
+                     }
+                     catch (Exception e)
+                     {
+                        trace.error(e);
+                     }
+                  }
+                  else if (Direction.OUT.equals(direction))
+                  {
+                     if (typedDocumentsData.containsKey(dataDetailsQId))
+                     {
+                        typedDocument = typedDocumentsData.get(dataDetailsQId);
+                        if (!typedDocument.isOutMappingExist())
                         {
-                           trace.error(e);
+                           typedDocument.setDataPath(dataPathDetails);
+                           typedDocument.setOutMappingExist(true);
                         }
                      }
-                     else if (Direction.OUT.equals(direction))
+                     else
                      {
-                        if (typedDocumentsData.containsKey(dataDetailsQId))
-                        {
-                           typedDocument = typedDocumentsData.get(dataDetailsQId);
-                           if (!typedDocument.isOutMappingExist())
-                           {
-                              typedDocument.setDataPath(dataPathDetails);
-                              typedDocument.setOutMappingExist(true);
-                           }
-                        }
-                        else
-                        {
-                           outDataMappings.put(dataDetailsQId, dataPathDetails);
-                        }
+                        outDataMappings.put(dataDetailsQId, dataPathDetails);
                      }
                   }
                }
