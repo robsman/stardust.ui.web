@@ -32,6 +32,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.FeatureMap;
 
 import org.eclipse.stardust.common.CollectionUtils;
+import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
@@ -435,7 +436,7 @@ public class ConnectionCommandHandler
          transition = createTransition(controlFlowJson, processDefinition, hostActivity,
                targetActivitySymbol.getActivity());
 
-         if(condition != null)
+         if(!StringUtils.isEmpty(condition))
          {
             transition.setCondition(ModelerConstants.CONDITION_KEY);
             if(transition.getExpression() == null)
