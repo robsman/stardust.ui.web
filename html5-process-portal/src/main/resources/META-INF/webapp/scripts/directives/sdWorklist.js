@@ -67,9 +67,8 @@
 		 */
 		function WorklistCompiler(scope, element, attr, ctrl) {
 			var self = this;
-			var scopeToUse = scope.$parent;
 
-			this.initialize(attr, scopeToUse);
+			this.initialize(attr, scope);
 
 			/*
 			 * This needs to be defined here as it requires access to scope
@@ -86,7 +85,9 @@
 		/*
 		 * 
 		 */
-		WorklistCompiler.prototype.initialize = function(attr, scopeToUse) {
+		WorklistCompiler.prototype.initialize = function(attr, scope) {
+			var scopeToUse = scope.$parent;
+
 			// Define data
 			this.worklist = {};
 			this.dataTable = null; // Handle to data table instance, to be set later
@@ -111,18 +112,31 @@
 			this.title = titleGetter(scopeToUse);
 
 			// Process TableHandle and then set data table instance
-			this.tableHandleExpr = attr.sdWorklist;
-			if (!this.tableHandleExpr) {
-				this.tableHandleExpr = "WorklistCompiler.dataTable";
-			}
+			this.tableHandleExpr = 'worklistCtrl.dataTable';
 
 			var self = this;
-			var unregister = scopeToUse.$watch(this.tableHandleExpr, function(newVal, oldVal) {
+			var unregister = scope.$watch(this.tableHandleExpr, function(newVal, oldVal) {
 				if (newVal != undefined && newVal != null && newVal != oldVal) {
 					self.dataTable = newVal;
+					
+					if (attr.sdWorklist) {
+						var assignable = $parse(attr.sdWorklist).assign;
+						if (assignable) {
+							assignable(scopeToUse, self.dataTable);
+						}						
+					}
+
 					unregister();
 				}
 			});
+
+			if (attr.sdaInitialSelection) {
+				this.initialSelection = attr.sdaInitialSelection;
+			}
+
+			if (attr.sdaPageSize) {
+				this.sdaPageSize = attr.sdaPageSize;
+			}
 
 			this.fetchDescriptorCols();
 		};

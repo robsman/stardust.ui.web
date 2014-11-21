@@ -46,6 +46,8 @@
 		var bodyCols = elem.find('> tbody > tr > td');
 		bodyCols.attr('ng-non-bindable', '');
 		
+		elem.addClass('tbl');
+		
 		// Hide the element, till it's ready to be visible
 		showElement(elem, false);
 		var toolbar = elem.prev();
@@ -89,7 +91,9 @@
 
 		var columns = [], dtColumns = [], theTable, theDataTable, theToolbar;
 
-		var pageData, selectedRowsMap = {}, rowSelectionMode = false; // false, row, multiple
+		var selectedRowIndexes = {}, rowSelectionMode = false; // false, row, multiple
+		
+		var pageSize = 8;
 		
 		// Setup component instance
 		setup();
@@ -98,11 +102,6 @@
 		 * 
 		 */
 		function setup() {
-			if (attr.sdaPageSize == undefined || attr.sdaPageSize == "") {
-				attr.sdaPageSize = 8;
-			}
-
-			// TODO: Revisit 'ready' behaviour
 			if (attr.sdaReady) {
 				var unregister = elemScope.$watch(attr.sdaReady, function(newVal, oldVal) {
 					if(newVal === true) {
@@ -121,6 +120,8 @@
 		 */
 		function initialize() {
 			try {
+				processAttributes();
+
 				validateMarkup();
 	
 				processMarkup();
@@ -138,6 +139,15 @@
 			} catch (e) {
 				var msg = 'sd-data-table is unable to process table. Reason: ' + e;
 				jQuery('<pre class="tbl-error">' + msg + '</pre>').insertAfter(element);
+			}
+		}
+
+		/*
+		 * 
+		 */
+		function processAttributes() {
+			if (attr.sdaPageSize != '') {
+				pageSize = attr.sdaPageSize;
 			}
 		}
 
@@ -270,6 +280,8 @@
 					if (type === 'display') {
 						return col.contents;
 					}
+					
+					return "";
 				};
 			}
 		}
@@ -310,6 +322,7 @@
 			});
 			
 			theTable = element;
+			theTable.addClass('tbl');
 		}
 
 		/*
@@ -321,16 +334,29 @@
 			dtOptions.hasOverrideDom = true;
 			dtOptions.sDom = "itp";
 			dtOptions.sPaginationType = "full_numbers";
-			dtOptions.iDisplayLength = attr.sdaPageSize;
+			dtOptions.iDisplayLength = pageSize;
 
 			dtOptions.columns = dtColumns;
+			dtOptions.autoWidth = false;
 
 			dtOptions.processing = true;
-			dtOptions.serverSide = true;
-			dtOptions.ajax = ajaxHandler;
 
 			dtOptions.fnDrawCallback = drawCallbackHandler;
 			dtOptions.fnCreatedRow = createRowHandler;
+
+			if (attr.sdaMode == 'local') {
+				buildDataTableLocalMode(dtOptions);
+			} else {
+				buildDataTableRemoteMode(dtOptions);
+			}
+		}
+
+		/*
+		 * 
+		 */
+		function buildDataTableRemoteMode(dtOptions) {
+			dtOptions.serverSide = true;
+			dtOptions.ajax = ajaxHandler;
 
 			theDataTable = theTable.DataTable(dtOptions);
 			exposeAPIs();
@@ -339,13 +365,30 @@
 		/*
 		 * 
 		 */
+		function buildDataTableLocalMode(dtOptions) {
+			fetchData(undefined, function(result) {
+				dtOptions.data = result.list ? result.list : result;
+
+				if (attr.sdaNoPagination == '' || attr.sdaNoPagination == 'true') {
+					dtOptions.iDisplayLength = dtOptions.data.length;
+					dtOptions.sDom = "it";
+				} else {
+					// TODO: Undefine this for now! It causes wired issue with pagination
+					dtOptions.iDisplayLength = undefined;
+				}
+				
+				theDataTable = theTable.DataTable(dtOptions);
+				exposeAPIs();
+			});
+		}
+
+		/*
+		 * 
+		 */
 		function ajaxHandler(data, callback, settings) {
 			var params = {skip: data.start, pageSize: data.length};
 
-			var dataResult = sdData.retrieveData(params);
-			dataResult.then(function(result) {
-				pageData = result.list;
-
+			fetchData(params, function(result) {
 				var ret = {
 					"draw" : data.draw,
 					"recordsTotal": result.totalCount,
@@ -354,8 +397,22 @@
 				};
 
 				callback(ret);
+			});
+		}
+
+		/*
+		 * 
+		 */
+		function fetchData(params, successCallback, errorCallback) {
+			var dataResult = sdData.retrieveData(params);
+			dataResult.then(function(result) {
+				successCallback(result);
 			}, function(error) {
-				// TODO: Notify Datatables
+				if (errorCallback == undefined) {
+					// TODO
+				} else {
+					errorCallback(error);
+				}
 		    });
 		}
 
@@ -364,6 +421,8 @@
 		 */
 		function createRowHandler(row, data, dataIndex) {
 			var row = angular.element(row);
+			row.addClass('tbl-row');
+			
 			row.find('> td').addClass('tbl-col');
 			
 			var rowScope = row.scope();
@@ -385,21 +444,57 @@
 		 * 
 		 */
 		function drawCallbackHandler (oSettings) {
-			// Show the element, as it's ready to be visible
-			showElement(element, true);
-			if (theToolbar) {
-				showElement(theToolbar, true);
+			if(!initialized) {
+				// Show the element, as it's ready to be visible
+				showElement(element, true);
+				if (theToolbar) {
+					showElement(theToolbar, true);
+				}
+
+				enableRowSelection();
+
+				$timeout(function() {
+					doInitialSelection();
+				}, 0, false);
+
+				initialized = true;
+			} else {
+				unselectRows();
 			}
 
-			// Datatables is adding pixel width to table.
-			// TODO: Find better API
-			$timeout(function(){
-				element.width("100%");
-			}, 0, false);
+			sdUtilService.safeApply(elemScope);
+		}
 
-			if(!initialized) {
-				enableRowSelection();
-				initialized = true;
+		/*
+		 * 
+		 */
+		function getPageData(index) {
+			/*
+			var info = theDataTable.page.info();
+			var start = info.start;
+			var dataIndex = (attr.sdaMode == 'local') ? start + index : index;
+			*/
+
+			return theDataTable.data()[index];
+		}
+
+		/*
+		 * 
+		 */
+		function getPageDataCount(index) {
+			var info = theDataTable.page.info();
+			return info.end - info.start;
+		}
+
+		/*
+		 * 
+		 */
+		function doInitialSelection() {
+			if (attr.sdaInitialSelection != undefined && attr.sdaInitialSelection != '') {
+				var initSelectionGetter = $parse(attr.sdaInitialSelection);
+				var initSelection = initSelectionGetter(elemScope);
+
+				setRowSelection(initSelection);
 			}
 		}
 
@@ -418,43 +513,157 @@
 			}
 			
 			if (rowSelectionMode) {
-				theTable.find('> tbody').on('click', 'tr', rowSelectionEventHandler);
+				theTable.find('> tbody').on('click', '> tr', function() {
+					processRowSelection(this);
+					exposeSlection();
+				});
 			}
 		}
 
 		/*
 		 * 
 		 */
-		function rowSelectionEventHandler() {
-			var row = angular.element(this);
-			var rowScope = row.scope();
+		function setRowSelection(data) {
+			unselectRows();
 
-			if (rowSelectionMode == 'row') {
-				if (row.hasClass('tbl-row-selected')) {
-					row.removeClass('tbl-row-selected');
-					delete selectedRowsMap['Row' + rowScope.$index];
-				} else {
-					var prevSelRow = angular.element(theDataTable.find('> tr.selected'));
-					if (prevSelRow.length != 0){
-						prevSelRow.removeClass('tbl-row-selected');
-						delete selectedRowsMap['Row' + prevSelRow.scope().$index];
-					}
+			if (!angular.isArray(data)) {
+				data = [data];
+			}
 
-					row.addClass('tbl-row-selected');
-					selectedRowsMap['Row' + rowScope.$index] = pageData[rowScope.$index];
+			for(var i = 0; i < data.length; i++) {
+				var row = findRowByData(data[i]);
+				if (row) {
+					processRowSelection(row);
 				}
-			} else {
-				if (row.hasClass('tbl-row-selected')) {
-					delete selectedRowsMap['Row' + rowScope.$index];
-				} else {
-					selectedRowsMap['Row' + rowScope.$index] = pageData[rowScope.$index];
-				}
-				row.toggleClass('tbl-row-selected');
 			}
 
 			sdUtilService.safeApply(elemScope);
 		}
-		
+
+		/*
+		 * 
+		 */
+		function getRowSelection() {
+			if (rowSelectionMode) {
+				var selection = [];
+				angular.forEach(selectedRowIndexes, function(value, key) {
+					selection.push(getPageData(value));
+				});
+	
+				if (rowSelectionMode == 'row') {
+					if (selection.length == 0) {
+						selection = null;
+					} else {
+						selection = selection[0];
+					}
+				}
+				
+				return selection;
+			} else {
+				return null;
+			}
+		}
+
+		/*
+		 * 
+		 */
+		function findRowByData(rowData) {
+			var count = getPageDataCount();
+			if (count > 0) {
+				var rows = theTable.find('> tbody > tr');
+				for(var i = 0; i < count; i++) {
+					if (isObjectLike(getPageData(i), rowData)) {
+						return rows[i];
+					}
+				}
+			}
+
+			return null;
+		}
+
+		/*
+		 * 
+		 */
+		function isObjectLike(objBase, obj) {
+			for (var member in obj) {
+				if (obj[member] !== objBase[member]) {
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		/*
+		 * 
+		 */
+		function processRowSelection(row) {
+			row = angular.element(row);
+			var rowScope = row.scope();
+
+			if (rowSelectionMode == 'row') {
+				if (isRowSelected(row)) {
+					unselectRow(row, rowScope.$index);
+				} else {
+					var prevSelRow = getSelectedRow();
+					if (prevSelRow) {
+						prevSelRow = angular.element(prevSelRow);
+						unselectRow(prevSelRow, prevSelRow.scope().$index);
+					}
+
+					selectRow(row, rowScope.$index);
+				}
+			} else {
+				if (isRowSelected(row)) {
+					unselectRow(row, rowScope.$index);
+				} else {
+					selectRow(row, rowScope.$index);
+				}
+			}
+
+			sdUtilService.safeApply(elemScope.$parent);
+		}
+
+		/*
+		 * 
+		 */
+		function selectRow(row, index) {
+			row.addClass('tbl-row-selected');
+			selectedRowIndexes['Row' + index] = index;
+		}
+
+		/*
+		 * 
+		 */
+		function isRowSelected(row) {
+			return row.hasClass('tbl-row-selected');
+		}
+
+		/*
+		 * 
+		 */
+		function getSelectedRow() {
+			var selRow = theTable.find('> tbody > tr.tbl-row-selected');
+			return (selRow.length != 0) ? selRow : null;
+		}
+
+		/*
+		 * 
+		 */
+		function unselectRow(row, index) {
+			row.removeClass('tbl-row-selected');
+			delete selectedRowIndexes['Row' + index];
+		}
+
+		/*
+		 * 
+		 */
+		function unselectRows() {
+			var rows = theTable.find('> tbody > tr');
+			rows.removeClass('tbl-row-selected');
+			selectedRowIndexes = {};
+		}
+
 		/*
 		 * 
 		 */
@@ -477,8 +686,6 @@
 			 * 
 			 */
 			this.refresh = function (retainPageIndex) {
-				selectedRowsMap = {};
-
 				var oSettings = theDataTable.settings()[0];
 				jQuery(oSettings.oInstance).trigger('page', oSettings);
 			    oSettings.oApi._fnCalculateEnd(oSettings);
@@ -493,27 +700,18 @@
 			};
 
 			/*
+			 * For single select - rowData or null if none selected
+			 * For multiple select - rowData array or empty array if none selected 
+			 */
+			this.getSelection = function() {
+				return getRowSelection();
+			};
+
+			/*
 			 * 
 			 */
-			this.getSelectedRows = function() {
-				if (rowSelectionMode) {
-					var selection = [];
-					angular.forEach(selectedRowsMap, function(value) {
-						selection.push(value);
-					});
-	
-					if (rowSelectionMode == 'row') {
-						if (selection.length == 0) {
-							selection = null;
-						} else {
-							selection = selection[0];
-						}
-					}
-					
-					return selection;
-				} else {
-					return null;
-				}
+			this.setSelection = function(data) {
+				setRowSelection(data);
 			};
 		}
 	};

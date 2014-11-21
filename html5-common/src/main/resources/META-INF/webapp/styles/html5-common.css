@@ -25,6 +25,9 @@
 
 /* ********** Data Table ********** */
 
+.tbl {
+   width: 100%;
+}
 .tbl-error {
    color: red;
 }
@@ -32,10 +35,6 @@
 .tbl-title {
    font-weight: bold;
    margin-bottom: 8px;
-}
-
-.selectedRow td {
-	background-color: #E8E6FC;
 }
 
 .tbl-col {
@@ -79,6 +78,10 @@
 .tbl-flt-title {
    font-weight: normal;
    margin-bottom: 10px;
+}
+
+.dataTables_wrapper .dataTables_info {
+   float: none !important;
 }
 /************** Behaviors *****************/
 

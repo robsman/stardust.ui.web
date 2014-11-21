@@ -6,7 +6,8 @@
 		</a>
 	</div>
 	<table sd-data-table="{{worklistCtrl.tableHandleExpr}}" sd-data="worklistCtrl.fetchPage(params)" sda-ready="worklistCtrl.ready"
-		sda-page-size="5" sda-selectable="multiple">
+		sda-page-size="{{worklistCtrl.sdaPageSize}}" sda-mode="remote"
+		sda-selectable="multiple" sda-initial-selection="{{worklistCtrl.initialSelection}}">
 		<thead sda-i18n-scope="processportal.views-worklistPanel-column">
 			<tr>
 				<th sda-label="overview" sda-sortable="true">
@@ -58,11 +59,11 @@
 					                    ng-init="worklistCtrl.worklist.trivialManualActivities[rowData.oid].inOutData[mapping.id] = worklistCtrl.worklist.trivialManualActivities[rowData.oid].inOutData[mapping.id] || mapping.enumValues[0]"
 					                    ng-options="enumVal for enumVal in mapping.enumValues">
 									</select>
-					                  
+
 									<input type="text" ng-click="worklistCtrl.stopEvent($event)"
 					                	ng-show="mapping.typeName == 'java.lang.String'"
 					                    ng-model="worklistCtrl.worklist.trivialManualActivities[rowData.oid].inOutData[mapping.id]" />
-					
+
 									<input type="checkbox" ng-click="worklistCtrl.stopEvent($event)"
 										ng-show="mapping.typeName == 'java.lang.Boolean'"
 										ng-model="worklistCtrl.worklist.trivialManualActivities[rowData.oid].inOutData[mapping.id]" />
@@ -81,7 +82,7 @@
 						<i class="fa fa-tasks"></i>
 					</a>
 					<a sda-column="TRIVIAL_DATA" href="#"
-						ng-disabled="!worklistCtrl.worklist.trivialManualActivities[rowData.oid]" 
+						ng-disabled="!worklistCtrl.worklist.trivialManualActivities[rowData.oid]"
 						ng-click="worklistCtrl.stopEvent($event); worklistCtrl.$complete(rowData);"
 						title="Complete" class="view-tool-link">
 						<i class="fa fa-share"></i>
