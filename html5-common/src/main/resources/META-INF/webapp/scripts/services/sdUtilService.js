@@ -81,6 +81,46 @@
 		/*
 		 * 
 		 */
+		UtilService.prototype.getLogger = function(classType) {
+			return {
+				log: function() {
+					logIt(console.log, Array.prototype.slice.call(arguments, 0));
+				},
+				info: function() {
+					logIt(console.info, Array.prototype.slice.call(arguments, 0));
+				},
+				warn: function() {
+					logIt(console.warn, Array.prototype.slice.call(arguments, 0));
+				},
+				error: function() {
+					logIt(console.error, Array.prototype.slice.call(arguments, 0));
+				},
+				printStackTrace : function(msg) {
+					console.error(msg);
+
+					if (console.trace) {
+						console.trace();
+					} else {
+						console.warn('Could not log stack trace as browser does not support console.trace().');
+					}
+				}
+			};
+
+			/*
+			 * 
+			 */
+			function logIt(loggerFunc, args) {
+				args = [classType + ' =>'].concat(args);
+				if (!loggerFunc) {
+					loggerFunc = console.log;
+				}
+				loggerFunc.apply(console, args);
+			}
+		};
+
+		/*
+		 * 
+		 */
 		function createProxyFunc(obj, member) {
 			function proxyFunc() {
 				var args = Array.prototype.slice.call(arguments, 0);

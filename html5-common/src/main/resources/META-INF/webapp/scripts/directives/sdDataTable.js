@@ -19,10 +19,14 @@
 	angular.module('bpm-common').directive('sdDataTable', 
 			['$parse', '$compile', '$timeout', 'sdUtilService', DataTableDirective]);
 
+	var trace;
+
 	/*
 	 * 
 	 */
 	function DataTableDirective($parse, $compile, $timeout, sdUtilService) {
+		trace = sdUtilService.getLogger('bpm-common.sdDataTable');
+
 		return {
 			restrict : 'A',
 			require: ['sdData'],
@@ -671,7 +675,10 @@
 			if (attr.sdDataTable != undefined && attr.sdDataTable != "") {
 				var dataTableAssignable = $parse(attr.sdDataTable).assign;
 				if (dataTableAssignable) {
+					trace.info('Exposing API for: ' + attr.sdDataTable + ', on scope Id: ' + elemScope.$id + ', Scope:', elemScope);
 					dataTableAssignable(elemScope, new DataTable());
+				} else {
+					trace.error('Could not expose API for: ' + attr.sdDataTable + ', expression is not an assignable.');
 				}
 			}
 		}
