@@ -11,7 +11,8 @@
 		<ice:panelSeries value="#{rowObject[property]}"
 			var="processAttachment">
 			<ice:commandLink styleClass="action-link"
-				actionListener="#{bean.openDocument}" immediate="true">
+				actionListener="#{bean.openDocument}" immediate="true"
+				rendered="#{pc:instanceOf(processAttachment, 'org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentInfo')}">
 				<pc:automationTag
 					value="auto-PP-ProcAttachDlg-ToolbarOpenNewDocument" />
 				<f:attribute name="documentInfo" value="#{processAttachment}" />
@@ -23,6 +24,8 @@
 						style="white-space: nowrap;" />
 				</ice:panelGrid>
 			</ice:commandLink>
+			<ice:outputText value="#{processAttachment}"
+				rendered="#{!pc:instanceOf(processAttachment, 'org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentInfo')}" />
 		</ice:panelSeries>
 	</ice:panelGroup>
 

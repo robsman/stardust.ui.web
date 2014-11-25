@@ -173,7 +173,7 @@ public class CommonDescriptorUtils
                            {
                               documentList.add((DocumentInfo) doc);
                            }
-                           else
+                           else if(doc instanceof Document)
                            {
                               Document processAttachment = (Document) doc;
                               documentList.add(new DocumentInfo(getDocumentIcon(processAttachment.getName(),
@@ -195,13 +195,16 @@ public class CommonDescriptorUtils
                      {
                         try
                         {
-                           typedDocument = new TypedDocument(instance, dataPathDetails, dataDetails, (Document) obj);
-                           if (outDataMappings.containsKey(dataDetailsQId))
+                           if (obj instanceof Document)
                            {
-                              typedDocument.setDataPath(outDataMappings.get(dataDetailsQId));
-                              typedDocument.setOutMappingExist(true);
+                              typedDocument = new TypedDocument(instance, dataPathDetails, dataDetails, (Document) obj);
+                              if (outDataMappings.containsKey(dataDetailsQId))
+                              {
+                                 typedDocument.setDataPath(outDataMappings.get(dataDetailsQId));
+                                 typedDocument.setOutMappingExist(true);
+                              }
+                              typedDocumentsData.put(dataDetailsQId, typedDocument);
                            }
-                           typedDocumentsData.put(dataDetailsQId, typedDocument);
                         }
                         catch (Exception e)
                         {
