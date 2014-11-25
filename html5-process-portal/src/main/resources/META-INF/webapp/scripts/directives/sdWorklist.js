@@ -280,7 +280,7 @@
 			var self = this;
 
 			// This will always be array as selection mode is 'multiple'
-			var selectedWorkItems = self.dataTable.getSelectedRows();
+			var selectedWorkItems = self.dataTable.getSelection();
 			if (selectedWorkItems.length > 0) {
 				var activitiesData = [];
 				angular.forEach(selectedWorkItems, function(workItem, index){
