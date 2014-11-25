@@ -95,7 +95,7 @@
 
 		var columns = [], dtColumns = [], theTable, theDataTable, theToolbar;
 
-		var selectedRowIndexes = {}, rowSelectionMode = false; // false, row, multiple
+		var selectedRowIndexes = {}, rowSelectionMode = false, selectionBinding;
 		
 		var pageSize = 8;
 		
@@ -152,6 +152,19 @@
 		function processAttributes() {
 			if (attr.sdaPageSize != '') {
 				pageSize = attr.sdaPageSize;
+			}
+
+			if (attr.sdaSelection) {
+				selectionBinding = $parse(attr.sdaSelection);
+
+				elemScope.$watch(attr.sdaSelection, function(newVal, oldVal) {
+					if (initialized) {
+						var sel = getRowSelection();
+						if(!angular.equals(newVal, sel)) {
+							setRowSelection(newVal);
+						}
+					}
+				});
 			}
 		}
 
@@ -463,10 +476,18 @@
 
 				initialized = true;
 			} else {
-				unselectRows();
+				clearState();
 			}
 
 			sdUtilService.safeApply(elemScope);
+		}
+
+		/*
+		 * 
+		 */
+		function clearState() {
+			unselectRows();
+			processSelectionBinding();
 		}
 
 		/*
@@ -486,8 +507,11 @@
 		 * 
 		 */
 		function getPageDataCount(index) {
-			var info = theDataTable.page.info();
-			return info.end - info.start;
+			if (theDataTable) {
+				var info = theDataTable.page.info();
+				return info.end - info.start;
+			}
+			return 0;
 		}
 
 		/*
@@ -499,6 +523,11 @@
 				var initSelection = initSelectionGetter(elemScope);
 
 				setRowSelection(initSelection);
+			}
+
+			if (selectionBinding) {
+				var sel = selectionBinding(elemScope);
+				setRowSelection(sel);	
 			}
 		}
 
@@ -519,8 +548,23 @@
 			if (rowSelectionMode) {
 				theTable.find('> tbody').on('click', '> tr', function() {
 					processRowSelection(this);
-					exposeSlection();
+					processSelectionBinding();
 				});
+			}
+		}
+
+		/*
+		 * 
+		 */
+		function processSelectionBinding() {
+			if (selectionBinding && selectionBinding.assign) {
+				// Process once current processing is done
+				$timeout(function() {
+					var sel = getRowSelection();
+					selectionBinding.assign(elemScope, sel);
+
+					sdUtilService.safeApply(elemScope.$parent);
+				}, 0, false);
 			}
 		}
 
@@ -531,7 +575,7 @@
 			unselectRows();
 
 			if (!angular.isArray(data)) {
-				data = [data];
+				data = data ? [data] : [];
 			}
 
 			for(var i = 0; i < data.length; i++) {
@@ -541,7 +585,7 @@
 				}
 			}
 
-			sdUtilService.safeApply(elemScope);
+			processSelectionBinding();
 		}
 
 		/*
@@ -590,8 +634,10 @@
 		 */
 		function isObjectLike(objBase, obj) {
 			for (var member in obj) {
-				if (obj[member] !== objBase[member]) {
-					return false;
+				if (member.indexOf('$') != 0) {
+					if (obj[member] != objBase[member]) {
+						return false;
+					}
 				}
 			}
 
@@ -624,8 +670,6 @@
 					selectRow(row, rowScope.$index);
 				}
 			}
-
-			sdUtilService.safeApply(elemScope.$parent);
 		}
 
 		/*

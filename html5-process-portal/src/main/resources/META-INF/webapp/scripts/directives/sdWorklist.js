@@ -87,6 +87,7 @@
 		 */
 		WorklistCompiler.prototype.initialize = function(attr, scope) {
 			var scopeToUse = scope.$parent;
+			var self = this;
 
 			// Define data
 			this.worklist = {};
@@ -114,7 +115,6 @@
 			// Process TableHandle and then set data table instance
 			this.tableHandleExpr = 'worklistCtrl.dataTable';
 
-			var self = this;
 			var unregister = scope.$watch(this.tableHandleExpr, function(newVal, oldVal) {
 				if (newVal != undefined && newVal != null && newVal != oldVal) {
 					self.dataTable = newVal;
@@ -132,6 +132,28 @@
 
 			if (attr.sdaInitialSelection) {
 				this.initialSelection = attr.sdaInitialSelection;
+			}
+
+			if (attr.sdaSelection) {
+				var assignable = $parse(attr.sdaSelection).assign;
+				if (assignable) {
+					this.selection = null;
+					this.selectionExpr = 'worklistCtrl.selection';
+
+					// Update parent for change in sdDataTable
+					scope.$watch(this.selectionExpr, function(newVal, oldVal) {
+						if (newVal != undefined && newVal != null && newVal != oldVal) {
+							assignable(scopeToUse, self.selection);
+						}
+					});
+
+					// Update for sdDataTable for change in parent 
+					scopeToUse.$watch(attr.sdaSelection, function(newVal, oldVal) {
+						if (newVal != undefined && newVal != null && newVal != self.selection) {
+							self.selection = newVal;
+						}
+					});
+				}
 			}
 
 			if (attr.sdaPageSize) {
