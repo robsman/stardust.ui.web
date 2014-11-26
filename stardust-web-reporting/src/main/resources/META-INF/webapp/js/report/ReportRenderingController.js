@@ -86,7 +86,7 @@ define(
 				 * 
 				 */
 				ReportRenderingController.prototype.getFact = function() {
-					return this.getPrimaryObject().facts[this.report.dataSet.fact];
+					return this.reportingService.getCumulatedFacts(this.report)[this.report.dataSet.fact];
 				};
 
 				/**

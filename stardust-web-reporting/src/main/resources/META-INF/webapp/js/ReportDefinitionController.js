@@ -376,6 +376,12 @@ define(
 										self.resetParamFilters();
 										self.updateView();
 									}
+									
+									if (ui.newPanel.selector === "#dataSetTab") {
+										//refresh facts as they contain computed columns
+										self.populateFacts();
+										self.updateView();
+									}
 								}
 							});
 
@@ -805,7 +811,7 @@ define(
 				 * 
 				 */
 				ReportDefinitionController.prototype.getFact = function() {
-					return (this.dataAvailable && this.getPrimaryObject()) ? this.getPrimaryObject().facts[this.report.dataSet.fact] : null;
+					return (this.dataAvailable && this.getPrimaryObject()) ? this.reportingService.getCumulatedFacts(this.report)[this.report.dataSet.fact] : null;
 				};
 
 				/**
@@ -866,37 +872,7 @@ define(
 						this.resetReportDefinitionProperties();
 					}
 
-					this.factSelect.empty();
-
-					var stdQuantities = "<optgroup label=\"" + this.getI18N("reporting.definitionView.stdQuantities") + "\">";
-					
-					var group = "<optgroup label=\"" + this.getI18N("reporting.definitionView.numericDescriptors") + "\">";
-					var areDiscriptorsAvailable = false;
-					
-					for ( var n in this.getPrimaryObject().facts) {
-						var fact = this.getPrimaryObject().facts[n];
-
-						if (this.isNumeric(fact) || this.isCount(fact) || this.isDuration(fact))
-						{
-						   if(fact.metadata && fact.metadata.isDescriptor) 
-						   {
-						      group += "<option value='" + n + "'>" + fact.name + "</option>";
-						      areDiscriptorsAvailable = true;
-						   } else {
-							   stdQuantities += "<option value='" + n + "'>"  + fact.name + "</option>";
-						   }
-						}
-					}
-					
-					stdQuantities += "</optgroup>";
-					this.factSelect.append(stdQuantities);
-					
-					group += "</optgroup>";
-					
-					if (areDiscriptorsAvailable)
-					{
-					   this.factSelect.append(group);
-					}
+					this.populateFacts();
 					
 					this.populatelayoutSubTypes();
 					//this.populateChartTypes();
@@ -913,6 +889,58 @@ define(
 					this.updateView();
 				};
 
+				/**
+				 * 
+				 */
+				ReportDefinitionController.prototype.populateFacts = function() {
+					
+					this.factSelect.empty();
+
+					var stdQuantities = "<optgroup label=\"" + this.getI18N("reporting.definitionView.stdQuantities") + "\">";
+					
+					var group = "<optgroup label=\"" + this.getI18N("reporting.definitionView.numericDescriptors") + "\">";
+					
+					var computedColGroup = "<optgroup label=\"" + this.getI18N("reporting.definitionView.computedColumns") + "\">";
+					
+					var areDiscriptorsAvailable = false;
+					var areComputedColumnsAvailable = false;
+					
+					var cumulatedFacts = this.reportingService.getCumulatedFacts(this.report, true); 
+					
+					for ( var n in cumulatedFacts) {
+						var fact = cumulatedFacts[n];
+
+						if (this.isNumeric(fact) || this.isCount(fact) || this.isDuration(fact))
+						{
+						   if (fact.metadata && fact.metadata.isDescriptor) {
+							group += "<option value='" + fact.id + "'>" + fact.name + "</option>";
+							areDiscriptorsAvailable = true;
+						   } else if (fact.metadata && fact.metadata.isComputedType) {
+							computedColGroup += "<option value='" + fact.id + "'>" + fact.name + "</option>";
+							areComputedColumnsAvailable = true;
+						   } else {
+							stdQuantities += "<option value='" + fact.id + "'>" + fact.name + "</option>";
+						   }
+						}
+					}
+					
+					stdQuantities += "</optgroup>";
+					this.factSelect.append(stdQuantities);
+					
+					group += "</optgroup>";
+					computedColGroup += "</optgroup>";
+					
+					if (areDiscriptorsAvailable) {
+					   this.factSelect.append(group);
+					}
+					
+					if (areComputedColumnsAvailable) {
+						this.factSelect.append(computedColGroup);
+					}
+					
+					this.factSelect.val(this.report.dataSet.fact);
+				};
+				
 				/**
 				 * 
 				 */
