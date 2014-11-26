@@ -86,7 +86,7 @@ define(
 				 * 
 				 */
 				ReportRenderingController.prototype.getFact = function() {
-					return this.getPrimaryObject().facts[this.report.dataSet.fact];
+					return this.reportingService.getCumulatedFacts(this.report)[this.report.dataSet.fact];
 				};
 
 				/**
@@ -314,45 +314,7 @@ define(
 						chartOptions.seriesDefaults.renderer = $.jqplot.BarRenderer;
 						chartOptions.stackSeries = (this.report.layout.chart.options.stackSeries && 
 						         (this.report.dataSet.groupBy != null && this.report.dataSet.groupBy != 'None'));
-						if (chartOptions.stackSeries)
-						{
-						   var x_axis = [];
-						   for ( var i = 0; i < data.seriesGroup.length; ++i) {
-						      var tempData = [];
-						      for ( var j = 0; j < data.seriesGroup[i].length; ++j) {
-						         if (i == 0) {
-						            x_axis.push(data.seriesGroup[i][j][0]);
-						         }
-						         tempData.push(data.seriesGroup[i][j][1]);
-						         if (j == data.seriesGroup[i].length -1 ) {
-						            data.seriesGroup[i] = tempData;
-						         }
-						      }
-						   }
-						   
-						   if (this.report.dataSet.firstDimension === this.reportingService.metadata.objects.activityInstance.dimensions.criticality.id)
-						   {
-						      var result = getUniqueElementsCount(x_axis);
-						      var intervals = result[1];
-						      x_axis = result[0];
-						      var max = [];
-						      for ( var i = 0; i < data.seriesGroup.length; i++)
-						      {
-						         for ( var j = 0; j < data.seriesGroup[i].length; j++)
-						         {
-						            max = [];
-						            for ( var k = 0; k < intervals.length; k++)
-						            {
-						               var tempArray = data.seriesGroup[i].splice(0, intervals[k]);
-						               max[k] = Math.max.apply(Math, tempArray);
-						            }
-						         }
-						         data.seriesGroup[i] = max;
-						      }
-						   }
-						   
-						   chartOptions.axes.xaxis.ticks = x_axis;
-						}
+
 						chartOptions.seriesDefaults.pointLabels.hideZeros = true;
 						chartOptions.seriesDefaults.rendererOptions = {
 							animation : {
@@ -416,12 +378,50 @@ define(
 					
 					function tooltipContentEditor(str, seriesIndex, pointIndex, plot) {
 					   // display series_label, x-axis_tick, y-axis value
-					   if (plot.stackSeries)
+					   if (plot.stackSeries || plot.series[seriesIndex]._xaxis["label"] == "Criticality")
 					      return plot.series[seriesIndex]["label"] + ", " + plot.options.axes.xaxis.ticks[pointIndex] + 
 					      " : " + plot.data[seriesIndex][pointIndex];
 					   else
 					      return plot.series[seriesIndex]["label"] + ", " + plot.data[seriesIndex][pointIndex][0] +
 					      " : " + plot.data[seriesIndex][pointIndex][1];
+					}
+					
+					if (chartOptions.stackSeries ||
+					         this.getFirstDimension().id == this.reportingService.metadata.objects.activityInstance.dimensions.criticality.id) {
+					   var x_axis = [];
+					   for ( var i = 0; i < data.seriesGroup.length; ++i) {
+					      var tempData = [];
+					      for ( var j = 0; j < data.seriesGroup[i].length; ++j) {
+					         if (i == 0) {
+					            x_axis.push(data.seriesGroup[i][j][0]);
+					         }
+					         tempData.push(data.seriesGroup[i][j][1]);
+					         if (j == data.seriesGroup[i].length -1 ) {
+					            data.seriesGroup[i] = tempData;
+					         }
+					      }
+					   }
+                  
+					   
+					   var result = getUniqueElementsCount(x_axis);
+					   var intervals = result[1];
+					   x_axis = result[0];
+					   var max = [];
+					   for ( var i = 0; i < data.seriesGroup.length; i++)
+					   {
+					      for ( var j = 0; j < data.seriesGroup[i].length; j++)
+					      {
+					         max = [];
+					         for ( var k = 0; k < intervals.length; k++)
+					         {
+					            var tempArray = data.seriesGroup[i].splice(0, intervals[k]);
+					            max[k] = Math.max.apply(Math, tempArray);
+					         }
+					      }
+					      data.seriesGroup[i] = max;
+					   }
+                  
+					   chartOptions.axes.xaxis.ticks = x_axis;
 					}
 
 					// Label series
@@ -465,7 +465,7 @@ define(
 					
 					var primaryObject = this.reportingService.metadata.objects[report.dataSet.primaryObject];
 					//format groupby
-					var dimension = primaryObject.dimensions[report.dataSet.groupBy];
+					var dimension = this.getDimension(report.dataSet.groupBy);
 					
 					var self = this;
 					//if groupby is empty or none
@@ -518,7 +518,7 @@ define(
 					}
 					}
 					//format first dimensions
-					dimension = primaryObject.dimensions[self.report.dataSet.firstDimension];
+					dimension = this.getDimension(self.report.dataSet.firstDimension);
 					if (dimension && dimension.enumerationType) {
  				        var enums = self.reportingService.getEnumerators(dimension.enumerationType);
  				        var displayValueMapping = {};
@@ -1153,7 +1153,7 @@ define(
 			
 			        var dimensionName = "";
 			        var primaryObject = this.reportingService.metadata.objects[this.report.dataSet.primaryObject];
-			        var dimension = primaryObject.dimensions[this.report.dataSet.groupBy];
+			        var dimension = this.getDimension(this.report.dataSet.groupBy);
 			        if (dimension) {
 			            dimensionName = dimension.name;
 			        }

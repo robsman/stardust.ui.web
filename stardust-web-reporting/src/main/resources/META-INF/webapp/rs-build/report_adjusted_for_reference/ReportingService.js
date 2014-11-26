@@ -1597,6 +1597,52 @@ define(
 
 					return dimensions;
 				};
+				
+				
+				/**
+				 * Returns a consolidated list of possible Facts including computed columns
+				 * 
+				 */
+				ReportingService.prototype.getCumulatedFacts = function(report, asArray) {
+					var cumulatedFacts = {};
+					var cumulatedFactsArr = [];
+					var baseFacts = this.getPrimaryObject(report.dataSet.primaryObject).facts;
+					
+					for ( var i in baseFacts) {
+						cumulatedFacts[i] = baseFacts[i];
+						cumulatedFactsArr.push(baseFacts[i]);
+					}
+
+					// Computed columns
+					for ( var n in report.dataSet.computedColumns) {
+						var column = report.dataSet.computedColumns[n];
+						var type = this.metadata[column.type];
+
+						var columnWrapper = {
+							id : column.id,
+							name : column.name,
+							type : type,
+							metadata : {
+								isComputedType : true,
+								name : column.name,
+								type : type.id
+							}
+						};
+						cumulatedFacts[column.id] = columnWrapper;
+						cumulatedFactsArr.push(columnWrapper);
+					}
+
+					if (asArray) {
+						// sort data
+						cumulatedFactsArr.sort(function(object1, object2) {
+							return object1.name.localeCompare(object2.name);
+						});
+						return cumulatedFactsArr;
+					} else {
+						return cumulatedFacts;
+					}
+				};
+				
 
 				/**
 				 * 
