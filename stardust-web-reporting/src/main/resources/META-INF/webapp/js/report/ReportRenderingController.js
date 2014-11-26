@@ -465,7 +465,7 @@ define(
 					
 					var primaryObject = this.reportingService.metadata.objects[report.dataSet.primaryObject];
 					//format groupby
-					var dimension = primaryObject.dimensions[report.dataSet.groupBy];
+					var dimension = this.getDimension(report.dataSet.groupBy);
 					
 					var self = this;
 					//if groupby is empty or none
@@ -518,7 +518,7 @@ define(
 						}
 					}
 					//format first dimensions
-					dimension = primaryObject.dimensions[self.report.dataSet.firstDimension];
+					dimension = this.getDimension(self.report.dataSet.firstDimension);
 					if (dimension && dimension.enumerationType) {
  				        var enums = self.reportingService.getEnumerators(dimension.enumerationType);
  				        var displayValueMapping = {};
@@ -1153,7 +1153,7 @@ define(
 			
 			        var dimensionName = "";
 			        var primaryObject = this.reportingService.metadata.objects[this.report.dataSet.primaryObject];
-			        var dimension = primaryObject.dimensions[this.report.dataSet.groupBy];
+			        var dimension = this.getDimension(this.report.dataSet.groupBy);
 			        if (dimension) {
 			            dimensionName = dimension.name;
 			        }
