@@ -140,7 +140,8 @@ public class ActivityInstanceUtils
       {
          if (isTrivialManualActivity(ai))
          {
-            if (!cache.containsKey(ai.getActivity().getId()))
+            String cacheKey = ai.getModelOID() + "_" + ai.getActivity().getId();
+            if (!cache.containsKey(cacheKey))
             {
                // Get Data Mappings
                List<PathDTO> dataMappings = PathDTO.toList(getAllDataMappingsAsJson(ai, context));
@@ -150,17 +151,17 @@ public class ActivityInstanceUtils
                while (it.hasNext())
                {
                   PathDTO pathDto = it.next();
-                  if (pathDto.readonly)
+                  if (pathDto.readonly || !pathDto.isPrimitive)
                   {
                      it.remove();
                   }
                }
                
-               cache.put(ai.getActivity().getId(), dataMappings);
+               cache.put(cacheKey, dataMappings);
             }
 
             TrivialManualActivityDTO dto = new TrivialManualActivityDTO();
-            dto.dataMappings = cache.get(ai.getActivity().getId());
+            dto.dataMappings = cache.get(cacheKey);
 
             // Get (IN_)OUT Data
             dto.inOutData = new LinkedHashMap<String, Serializable>();
