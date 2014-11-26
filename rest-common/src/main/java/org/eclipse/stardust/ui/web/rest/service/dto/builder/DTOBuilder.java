@@ -132,6 +132,10 @@ public class DTOBuilder
          for (String part : parts)
          {
             obj = getPlainField(obj, part);
+            if (null == obj)
+            {
+               break;
+            }
          }
          return obj;
       }
@@ -167,17 +171,17 @@ public class DTOBuilder
       {
          trace.warn("Error in invoking getter method for, class: " + instance.getClass().getName() + ", field: "
                + fieldName);
-      }
 
-      if (null == value)
-      {
-         Class< ? > clazz = instance.getClass();
-         for (Field field : clazz.getDeclaredFields())
+         if (null != instance)
          {
-            if (field.getName().equals(fieldName))
+            Class< ? > clazz = instance.getClass();
+            for (Field field : clazz.getDeclaredFields())
             {
-               field.setAccessible(true);
-               return field.get(instance);
+               if (field.getName().equals(fieldName))
+               {
+                  field.setAccessible(true);
+                  return field.get(instance);
+               }
             }
          }
       }

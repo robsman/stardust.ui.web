@@ -56,7 +56,7 @@ public class WorklistService
    public QueryResultDTO getWorklistForParticipant(String participantQId, String context, Options options)
    {
       QueryResult<?> queryResult = worklistUtils.getWorklistForParticipant(participantQId, options);
-      return buildWorklistResult(queryResult, context);
+      return buildWorklistResult(queryResult);
    }
 
    /**
@@ -66,14 +66,14 @@ public class WorklistService
    public QueryResultDTO getWorklistForUser(String userId, String context, Options options)
    {
       QueryResult<?> queryResult = worklistUtils.getWorklistForUser(userId, options);
-      return buildWorklistResult(queryResult, context);
+      return buildWorklistResult(queryResult);
    }
 
    /**
     * @param queryResult
     * @return
     */
-   private QueryResultDTO buildWorklistResult(QueryResult<?> queryResult, String context)
+   private QueryResultDTO buildWorklistResult(QueryResult<?> queryResult)
    {
       List<ActivityInstanceDTO> list = new ArrayList<ActivityInstanceDTO>();
       for (Object object : queryResult)
@@ -83,14 +83,14 @@ public class WorklistService
             ActivityInstance ai = (ActivityInstance) object;
 
             ActivityInstanceDTO dto;
-            if (null == context)
+            if (!activityInstanceUtils.isTrivialManualActivity(ai))
             {
                dto = DTOBuilder.build(ai, ActivityInstanceDTO.class);
             }
             else
             {
                TrivialActivityInstanceDTO trivialDto = DTOBuilder.build(ai, TrivialActivityInstanceDTO.class);
-               trivialDto.trivial = activityInstanceUtils.isTrivialManualActivity(ai, context);
+               trivialDto.trivial = true;
                dto = trivialDto;
             }
 
@@ -116,7 +116,7 @@ public class WorklistService
             }
 
             if (!processDescriptorsList.isEmpty()) {
-               dto.descriptors = new LinkedHashMap();
+               dto.descriptors = new LinkedHashMap<String, ProcessDescriptor>();
                for (ProcessDescriptor processDescriptor : processDescriptorsList)
                {
                   dto.descriptors.put(processDescriptor.getId(), processDescriptor);

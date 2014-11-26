@@ -22,7 +22,6 @@ import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.reflect.Reflect;
 import org.eclipse.stardust.engine.api.model.ApplicationContext;
 import org.eclipse.stardust.engine.api.model.DataMapping;
-import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.ActivityInstances;
@@ -35,7 +34,6 @@ import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.ReflectionUtils;
 import org.eclipse.stardust.ui.web.rest.service.dto.PathDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.TrivialManualActivityDTO;
-import org.eclipse.stardust.ui.web.rest.service.helpers.ModelHelper;
 
 /**
  * @author Anoop.Nair
@@ -140,7 +138,7 @@ public class ActivityInstanceUtils
       List<ActivityInstance> ais = getActivityInstances(oids);
       for (ActivityInstance ai : ais)
       {
-         if (isTrivialManualActivity(ai, context))
+         if (isTrivialManualActivity(ai))
          {
             if (!cache.containsKey(ai.getActivity().getId()))
             {
@@ -195,31 +193,10 @@ public class ActivityInstanceUtils
     * @param context
     * @return
     */
-   public boolean isTrivialManualActivity(ActivityInstance ai, String context)
+   public boolean isTrivialManualActivity(ActivityInstance ai)
    {
-      Model model = modelUtils.getModel(ai.getModelOID());
-      ApplicationContext appContext = ai.getActivity().getApplicationContext(context);
-      List<?> mappings = appContext.getAllOutDataMappings();
-      if (mappings.size() > 0 && mappings.size() <= 2)
-      {
-         for (Object object : mappings)
-         {
-            DataMapping dataMapping = (DataMapping) object;
-            if (ModelHelper.isEnumerationType(model, dataMapping)
-                  || ModelHelper.isPrimitiveType(model, dataMapping))
-            {
-               // Okay!
-            }
-            else
-            {
-               return false;
-            }
-         }
-         
-         return true;
-      }
-      
-      return false;
+      Boolean trivialManualActivity = (Boolean)ai.getActivity().getAttribute("trivialManualActivity");
+      return (null != trivialManualActivity && trivialManualActivity == true);
    }
 
    /**
