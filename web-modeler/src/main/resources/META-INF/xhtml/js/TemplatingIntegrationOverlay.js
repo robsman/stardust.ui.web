@@ -158,7 +158,8 @@ define(
                      panel : this
                   }, function(event)
                   {
-                     event.data.panel.view.submitModelElementAttributeChange("stardust:templatingIntegrationOverlay::format",event.data.panel.formatInput.val());
+                    // event.data.panel.view.submitModelElementAttributeChange("stardust:templatingIntegrationOverlay::format",event.data.panel.formatInput.val());
+                     event.data.panel.submitChanges(true);
                      event.data.panel.updateView(event.data.panel.locationInput.val());
                   });
 
@@ -209,7 +210,7 @@ define(
                      supportsDataMappings : false,
                      supportsDescriptors : false,
                      supportsDataTypeSelection : true,
-                     supportsDocumentTypes : true,
+                     supportsDocumentTypes : false,
                      supportsOtherData : false,
                      hideEnumerations : true
                   });
@@ -640,8 +641,12 @@ define(
                         route += "<simple>$simple{body}</simple>\n";
                         route += "</setHeader>\n";
                      }
-                     else
+                     else if(outAccessPoint.dataType == "primitive" && outAccessPoint.primitiveDataType=="String")
                      {
+                        route += "<setHeader headerName=\"defaultOutputAp\">\n";
+                        route += "<simple>$simple{bodyAs(String)}</simple>\n";
+                        route += "</setHeader>\n";
+                     }else{
                         route += "<setHeader headerName=\"defaultOutputAp\">\n";
                         route += "<simple>$simple{body}</simple>\n";
                         route += "</setHeader>\n";

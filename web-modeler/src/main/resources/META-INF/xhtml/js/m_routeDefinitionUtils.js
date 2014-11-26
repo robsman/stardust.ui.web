@@ -120,40 +120,27 @@ define(
                routeDefinition += "<process ref=\"customVelocityContextAppender\"/>\n";
                if (location == "embedded")
                {
-                  routeDefinition += "<setHeader headerName=\"CamelVelocityTemplate\">\n";
+                  routeDefinition += "<setHeader headerName=\"CamelTemplatingTemplateContent\">\n";
                   routeDefinition += "   <constant>\n";
                   routeDefinition += "<![CDATA[";
-                  routeDefinition += "#parse(\"commons.vm\")\n";
-                  routeDefinition += "#getInputs()\n";
                   routeDefinition += embeddedTemplateContent;
-                  routeDefinition += "\n";
-                  routeDefinition += "#setOutputs()\n";
                   routeDefinition += "]]>\n";
                   routeDefinition += "   </constant>\n";
                   routeDefinition += "</setHeader>\n";
                }
                else if (location == "classpath")
                {
-                  routeDefinition += "<setHeader headerName=\"CamelVelocityResourceUri\">\n";
-                  routeDefinition += "   <constant>" + templatePath + "</constant>\n";
-                  routeDefinition += "</setHeader>\n";
+                  //Handle Classpath
                }
-               else if (location == "repository" || location == "data")
+               else if (location == "data")
                {
-                  if (location == "repository")
-                  {
-                     routeDefinition += "<setHeader headerName=\"ippDmsTargetPath\">\n";
-                     routeDefinition += "   <simple>templates/" + templatePath;
-                     routeDefinition += "</simple>\n";
-                     routeDefinition += "</setHeader>\n";
-                  }
                   if( defaultInAp!=null && defaultInAp.dataType=="primitive"){
-                     routeDefinition += "<setHeader headerName=\"CamelVelocityTemplate\">\n";
+                     routeDefinition += "<setHeader headerName=\"CamelTemplatingTemplateContent\">\n";
                      routeDefinition += "   <simple>$simple{header.defaultInputAp}</simple>\n";
                      routeDefinition += "</setHeader>\n";
                   }else{
                      routeDefinition += "<to uri=\"bean:documentHandler?method=retrieveContent\"/>";
-                     routeDefinition += "<setHeader headerName=\"CamelVelocityTemplate\">\n";
+                     routeDefinition += "<setHeader headerName=\"CamelTemplatingTemplateContent\">\n";
                      routeDefinition += "   <simple>$simple{header.ippDmsDocumentContent}</simple>\n";
                      routeDefinition += "</setHeader>\n";
                   }
@@ -168,10 +155,6 @@ define(
                   uri += "&amp;convertToPdf=" + convertToPdf;
                }
                routeDefinition += "<to uri=\"" + uri + "\" />\n";
-               if (convertToPdf)
-               {
-                  routeDefinition += "<to uri=\"bean:pdfConverterProcessor?method=process\"/>\n";
-               }
                return routeDefinition;
             }
             /**
@@ -200,15 +183,8 @@ define(
             {
                var routeDefinition = "";
                routeDefinition += "<process ref=\"customVelocityContextAppender\"/>\n";
-               if (location == "repository" || location == "data")
+               if (location == "data")
                {
-                  if (location == "repository")
-                  {
-                     routeDefinition += "<setHeader headerName=\"ippDmsTargetPath\">\n";
-                     routeDefinition += "   <constant>templates/" + templatePath
-                     routeDefinition += "</constant>\n";
-                     routeDefinition += "</setHeader>\n";
-                  }
                   routeDefinition += "<to uri=\"bean:documentHandler?method=retrieveContent\"/>\n";
                   routeDefinition += "<setHeader headerName=\"CamelTemplatingTemplateContent\">\n";
                   routeDefinition += "   <simple>$simple{header.ippDmsDocumentContent}</simple>\n";
