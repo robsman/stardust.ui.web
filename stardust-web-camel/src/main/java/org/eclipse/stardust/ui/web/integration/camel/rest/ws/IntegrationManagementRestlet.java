@@ -78,19 +78,11 @@ public class IntegrationManagementRestlet {
 		return integrationManagement.getConsumerRoutesList(contextId);
 	}
 	
-	
 	@GET
-	@Path("context/{contextId}/routes/consumers/trigger")
+	@Path("context/{contextId}/routes/others")
 	@Produces(MediaType.APPLICATION_JSON)
-	public String triggerConsumerRoutesListtService(@PathParam("contextId") String contextId) {
-		return integrationManagement.getTriggerConsumerRoutesList(contextId);
-	}
-	
-	@GET
-	@Path("context/{contextId}/routes/consumers/application")
-	@Produces(MediaType.APPLICATION_JSON)
-	public String applicationConsumerRoutesListService(@PathParam("contextId") String contextId) {
-		return integrationManagement.getApplicationConsumerRoutesList(contextId);
+	public String otherRoutesListService(@PathParam("contextId") String contextId) {
+		return integrationManagement.getOtherRoutesList(contextId);
 	}
 
 	@GET
