@@ -22,7 +22,6 @@ import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.Functor;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.TransformingIterator;
-import org.eclipse.stardust.common.error.ErrorCase;
 import org.eclipse.stardust.common.error.InvalidArgumentException;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.common.error.PublicException;
@@ -96,7 +95,8 @@ public class BusinessObjectUtils
                             }
                             items = bo.getItems();
                         }
-                        return new BusinessObjectDetails(source.getModel().getModelOID(), source.getId(), source.getName(), items, values == null ? null : values.get(source));
+                        return new BusinessObjectDetails(source.getModel().getId(), source.getId(), source.getName(),
+                        		items, values == null ? null : values.get(source));
                     }
                 };
 
@@ -302,15 +302,15 @@ public class BusinessObjectUtils
         throw new InvalidArgumentException(BpmRuntimeError.BPMRT_NULL_ARGUMENT.raise("primary key"));
     }
 
-    public static BusinessObject createInstance(long modelOid, String businessObjectId, Value initialValue)
+    public static BusinessObject createInstance(String modelId, String businessObjectId, Value initialValue)
             throws ObjectNotFoundException, InvalidArgumentException
     {
         if (initialValue == null)
         {
             throw new InvalidArgumentException(BpmRuntimeError.BPMRT_NULL_ARGUMENT.raise("initialValue"));
         }
-        lockData(modelOid, businessObjectId);
-        IData data = findDataForUpdate(modelOid, businessObjectId);
+        IData data = findDataForUpdate(modelId, businessObjectId);
+        lockData(data);
         IProcessInstance pi = findUnboundProcessInstance(data, getPK(data, initialValue));
         if (pi != null)
         {
@@ -318,68 +318,67 @@ public class BusinessObjectUtils
             throw new InvalidArgumentException(BpmRuntimeError.BPMRT_INVALID_VALUE.raise("initialValue"));
         }
         pi = ProcessInstanceBean.createUnboundInstance((IModel) data.getModel());
-        return updateBusinessObjectInstance(modelOid, businessObjectId, initialValue, data, pi);
+        return updateBusinessObjectInstance(pi, data, initialValue);
     }
 
-    private static void lockData(long modelOid, String businessObjectId) {
+    private static void lockData(IData data) {
         QueryDescriptor lockQuery = QueryDescriptor.from(AuditTrailDataBean.class)
-                .where(Predicates.isEqual(AuditTrailDataBean.FR__MODEL, modelOid))
-                .where(Predicates.isEqual(AuditTrailDataBean.FR__ID, businessObjectId));
+                .where(Predicates.isEqual(AuditTrailDataBean.FR__MODEL, data.getModel().getModelOID()))
+                .where(Predicates.isEqual(AuditTrailDataBean.FR__ID, data.getId()));
         AuditTrailDataBean atdb = (AuditTrailDataBean) SessionFactory.getSession(SessionFactory.AUDIT_TRAIL)
                 .findFirst(AuditTrailDataBean.class, lockQuery.getQueryExtension());
         atdb.lock();
     }
 
-    public static BusinessObject updateInstance(long modelOid, String businessObjectId, Value value)
+    public static BusinessObject updateInstance(String modelId, String businessObjectId, Value value)
             throws ObjectNotFoundException, InvalidArgumentException
     {
         if (value == null)
         {
             throw new InvalidArgumentException(BpmRuntimeError.BPMRT_NULL_ARGUMENT.raise("value"));
         }
-        IData data = findDataForUpdate(modelOid, businessObjectId);
+        IData data = findDataForUpdate(modelId, businessObjectId);
         IProcessInstance pi = findUnboundProcessInstance(data, getPK(data, value));
         if (pi == null)
         {
-            // TODO throw correct error case
-            throw new ObjectNotFoundException((ErrorCase) null);
+            throw new ObjectNotFoundException(
+                    BpmRuntimeError.ATDB_UNKNOWN_PROCESS_INSTANCE_OID.raise(0), 0);
         }
         pi.lock();
-        return updateBusinessObjectInstance(modelOid, businessObjectId, value, data, pi);
+        return updateBusinessObjectInstance(pi, data, value);
     }
 
-    public static void deleteInstance(long modelOid, String businessObjectId,
+    public static void deleteInstance(String modelId, String businessObjectId,
             Object pkValue)
     {
-        IData data = findDataForUpdate(modelOid, businessObjectId);
+        IData data = findDataForUpdate(modelId, businessObjectId);
         IProcessInstance pi = findUnboundProcessInstance(data, pkValue);
         if (pi == null)
         {
-            // TODO throw correct error case
-            throw new ObjectNotFoundException((ErrorCase) null);
+            throw new ObjectNotFoundException(
+                    BpmRuntimeError.ATDB_UNKNOWN_PROCESS_INSTANCE_OID.raise(0), 0);
         }
         pi.lock();
         ProcessInstanceUtils.deleteProcessInstances(Collections.singletonList(pi.getOID()),
                 (Session) SessionFactory.getSession(SessionFactory.AUDIT_TRAIL));
     }
 
-    private static BusinessObject updateBusinessObjectInstance(long modelOid,
-            String businessObjectId, Value newValue, IData data, IProcessInstance pi)
+    private static BusinessObject updateBusinessObjectInstance(IProcessInstance pi, IData data, Value newValue)
     {
         pi.setOutDataValue(data, null, newValue.getValue());
         Serializable dataValue = (Serializable) pi.getInDataValue(data, null);
         BusinessObjectDetails.Value value = new BusinessObjectDetails.ValueDetails(pi.getOID(), dataValue);
-        return new BusinessObjectDetails(modelOid, businessObjectId, data.getName(), null, Collections.singletonList(value));
+        return new BusinessObjectDetails(data.getModel().getId(), data.getId(), data.getName(), null, Collections.singletonList(value));
     }
 
-    private static IData findDataForUpdate(long modelOid, String businessObjectId)
+    private static IData findDataForUpdate(String modelId, String businessObjectId)
             throws ObjectNotFoundException, InvalidArgumentException
     {
         final ModelManager modelManager = ModelManagerFactory.getCurrent();
-        IModel model = modelManager.findModel(modelOid);
+        IModel model = modelManager.findActiveModel(modelId);
         if (model == null)
         {
-            throw new ObjectNotFoundException(BpmRuntimeError.MDL_UNKNOWN_MODEL_OID.raise(modelOid));
+            throw new ObjectNotFoundException(BpmRuntimeError.MDL_NO_ACTIVE_MODEL_WITH_ID.raise(modelId));
         }
         IData data = model.findData(businessObjectId);
         if (data == null)
@@ -494,7 +493,7 @@ public class BusinessObjectUtils
         {
             items = createDescriptions(source, root.getChildXPaths(), true);
         }
-        return new BusinessObjectDetails(source.getModel().getModelOID(), source.getId(), source.getName(), items, null);
+        return new BusinessObjectDetails(source.getModel().getId(), source.getId(), source.getName(), items, null);
     }
 
     private static List<Definition> createDescriptions(IData source, List<TypedXPath> xPaths, boolean top)
@@ -540,7 +539,7 @@ public class BusinessObjectUtils
                         Value value = wrapValue((Serializable) pi.getInDataValue(data, null));
                         IProcessInstance upi = findUnboundProcessInstance(data, getPK(data, value));
                         if (upi == null) {
-                            lockData(data.getModel().getModelOID(), data.getId());
+                            lockData(data);
                             System.err.println("Creating BO from regular PI data.");
                             upi = ProcessInstanceBean.createUnboundInstance((IModel) data.getModel());
                         } else {

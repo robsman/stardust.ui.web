@@ -82,6 +82,10 @@ public class BusinessObjectQueryEvaluator extends ModelAwareQueryPredicate<IData
       {
          return data.getId();
       }
+      if (BusinessObjectQuery.MODEL_ID_ATTRIBUTE.equals(attribute))
+      {
+         return data.getModel().getId();
+      }
       if (BusinessObjectQuery.PK_ATTRIBUTE.equals(attribute))
       {
          // (fh) Not filtered by pk.
@@ -118,7 +122,8 @@ public class BusinessObjectQueryEvaluator extends ModelAwareQueryPredicate<IData
       public Object visit(FilterTerm filter, Object context)
       {
          Object result = null;
-         List<FilterCriterion> parts = filter.getParts();
+         @SuppressWarnings("unchecked")
+		 List<FilterCriterion> parts = filter.getParts();
          for (FilterCriterion criterion : parts)
          {
             Object value = criterion.accept(this, context);

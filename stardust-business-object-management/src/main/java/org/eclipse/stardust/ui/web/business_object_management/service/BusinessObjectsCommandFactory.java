@@ -28,15 +28,15 @@ public final class BusinessObjectsCommandFactory {
         private static final long serialVersionUID = 1L;
 
         private Kind kind;
-        private long modelOid;
+        private String modelId;
         private String businessObjectId;
         private Value initialValue;
         private Object primaryKey;
 
-        private InstanceCommand(Kind kind, long modelOid,
+        private InstanceCommand(Kind kind, String modelId,
                 String businessObjectId, Value initialValue, Object primaryKey) {
             this.kind = kind;
-            this.modelOid = modelOid;
+            this.modelId = modelId;
             this.businessObjectId = businessObjectId;
             this.initialValue = initialValue;
             this.primaryKey = primaryKey;
@@ -46,11 +46,11 @@ public final class BusinessObjectsCommandFactory {
             switch (kind)
             {
             case CREATE:
-                return BusinessObjectUtils.createInstance(modelOid, businessObjectId, initialValue);
+                return BusinessObjectUtils.createInstance(modelId, businessObjectId, initialValue);
             case UPDATE:
-                return BusinessObjectUtils.updateInstance(modelOid, businessObjectId, initialValue);
+                return BusinessObjectUtils.updateInstance(modelId, businessObjectId, initialValue);
             case DELETE:
-                BusinessObjectUtils.deleteInstance(modelOid, businessObjectId, primaryKey);
+                BusinessObjectUtils.deleteInstance(modelId, businessObjectId, primaryKey);
             }
             return null;
         }
@@ -77,18 +77,18 @@ public final class BusinessObjectsCommandFactory {
         return new QueryCommand(query);
     }
 
-    public static ServiceCommand create(long modelOid,
+    public static ServiceCommand create(String modelId,
             String businessObjectId, Value initialValue) {
-        return new InstanceCommand(InstanceCommand.Kind.CREATE, modelOid, businessObjectId, initialValue, null);
+        return new InstanceCommand(InstanceCommand.Kind.CREATE, modelId, businessObjectId, initialValue, null);
     }
 
-    public static ServiceCommand update(long modelOid,
+    public static ServiceCommand update(String modelId,
             String businessObjectId, Value initialValue) {
-        return new InstanceCommand(InstanceCommand.Kind.UPDATE, modelOid, businessObjectId, initialValue, null);
+        return new InstanceCommand(InstanceCommand.Kind.UPDATE, modelId, businessObjectId, initialValue, null);
     }
 
-    public static ServiceCommand delete(long modelOid,
+    public static ServiceCommand delete(String modelId,
             String businessObjectId, Object primaryKey) {
-        return new InstanceCommand(InstanceCommand.Kind.DELETE, modelOid, businessObjectId, null, primaryKey);
+        return new InstanceCommand(InstanceCommand.Kind.DELETE, modelId, businessObjectId, null, primaryKey);
     }
 }

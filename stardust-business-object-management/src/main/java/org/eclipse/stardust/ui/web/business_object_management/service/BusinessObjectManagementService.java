@@ -12,45 +12,24 @@
 package org.eclipse.stardust.ui.web.business_object_management.service;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import javax.annotation.Resource;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.engine.api.model.Data;
-import org.eclipse.stardust.engine.api.model.Organization;
-import org.eclipse.stardust.engine.api.model.PredefinedConstants;
-import org.eclipse.stardust.engine.api.model.Reference;
-import org.eclipse.stardust.engine.api.model.TypeDeclaration;
+import org.eclipse.stardust.engine.api.model.*;
 import org.eclipse.stardust.engine.api.query.DataFilter;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
-import org.eclipse.stardust.engine.api.runtime.AdministrationService;
-import org.eclipse.stardust.engine.api.runtime.DeployedModel;
-import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
-import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
-import org.eclipse.stardust.engine.api.runtime.QueryService;
-import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
-import org.eclipse.stardust.engine.api.runtime.UserService;
-import org.eclipse.stardust.engine.api.runtime.WorkflowService;
+import org.eclipse.stardust.engine.api.runtime.*;
 import org.eclipse.stardust.engine.core.runtime.beans.BigData;
-import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
-import org.eclipse.stardust.engine.core.struct.StructuredTypeRtUtils;
-import org.eclipse.stardust.engine.core.struct.TypedXPath;
-import org.eclipse.stardust.engine.core.struct.XPathAnnotations;
+import org.eclipse.stardust.engine.core.struct.*;
 import org.eclipse.stardust.engine.core.struct.XPathAnnotations.XPathAnnotation;
 import org.eclipse.stardust.ui.web.business_object_management.rest.JsonMarshaller;
 import org.eclipse.stardust.ui.web.business_object_management.service.BusinessObject.Definition;
 import org.eclipse.stardust.ui.web.business_object_management.service.BusinessObject.Value;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
-//import org.eclipse.stardust.ui.web.viewscommon.utils.XPathCacheManager;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -58,8 +37,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
 public class BusinessObjectManagementService {
-	private static final Logger trace = LogManager
-			.getLogger(BusinessObjectManagementService.class);
+	//private static final Logger trace = LogManager
+	//		.getLogger(BusinessObjectManagementService.class);
+
 	@Resource
 	private SessionContext sessionContext;
 	private final JsonMarshaller jsonIo = new JsonMarshaller();
@@ -68,7 +48,7 @@ public class BusinessObjectManagementService {
 	// private XPathCacheManager xPathCacheManager;
 
 	private DocumentManagementService documentManagementService;
-	private UserService userService;
+	//private UserService userService;
 	private QueryService queryService;
 	private WorkflowService workflowService;
 	private AdministrationService administrationService;
@@ -119,13 +99,13 @@ public class BusinessObjectManagementService {
 	 *
 	 * @return
 	 */
-	private UserService getUserService() {
+	/*private UserService getUserService() {
 		if (userService == null) {
 			userService = getServiceFactory().getUserService();
 		}
 
 		return userService;
-	}
+	}*/
 
 	/**
 	 *
@@ -444,10 +424,10 @@ public class BusinessObjectManagementService {
 
 		for (BusinessObject bo : bos) {
 			JsonArray businessObjectsJson = null;
-			JsonObject modelJson = modelsMap.get(bo.getModelOid());
+			JsonObject modelJson = modelsMap.get(bo.getModelId());
 			if (modelJson == null) {
 				modelJson = new JsonObject();
-				modelJson.addProperty("oid", bo.getModelOid());
+				modelJson.addProperty("id", bo.getModelId());
 				businessObjectsJson = new JsonArray();
 				modelJson.add("businessObjects", businessObjectsJson);
 				modelsJson.add(modelJson);
@@ -680,14 +660,14 @@ public class BusinessObjectManagementService {
 	 * @param queryString
 	 * @return
 	 */
-	public JsonArray getBusinessObjectInstances(String modelOid,
+	public JsonArray getBusinessObjectInstances(String modelId,
 			String businessObjectId, String queryString) {
 		JsonArray businessObjectInstances = new JsonArray();
 
 		BusinessObjectQuery query = BusinessObjectQuery.findForBusinessObject(
-				Long.parseLong(modelOid), businessObjectId);
+				modelId, businessObjectId);
 
-		String[] terms = queryString.split("&");
+		/*String[] terms = queryString.split("&");
 
 		for (int n = 0; n < terms.length; ++n) {
 			System.out.println("Term: " + terms[n]);
@@ -699,7 +679,7 @@ public class BusinessObjectManagementService {
 
 			// query.where(DataFilter.like(businessObjectId, expression[0],
 			// expression[1]));
-		}
+		}*/
 
 		addInstancesFromQuery(businessObjectInstances, query);
 
@@ -737,17 +717,7 @@ public class BusinessObjectManagementService {
 		return value == null ? null : objectToJsonElement(value.getValue());
 	}
 
-	/**
-	 *
-	 * @param id
-	 * @param firstName
-	 * @param lastName
-	 * @param scheme
-	 * @param schemeName
-	 * @param nationalId
-	 * @return
-	 */
-	private JsonObject getMemberInstance(String id, String firstName,
+	/*private JsonObject getMemberInstance(String id, String firstName,
 			String lastName, String scheme, String schemeName, String nationalId) {
 		JsonObject member = new JsonObject();
 		member.addProperty("id", id);
@@ -757,7 +727,7 @@ public class BusinessObjectManagementService {
 		member.addProperty("schemeName", schemeName);
 		member.addProperty("nationalId", nationalId);
 		return member;
-	}
+	}*/
 
 	/**
 	 *
@@ -767,13 +737,13 @@ public class BusinessObjectManagementService {
 	 * @param json
 	 * @return
 	 */
-	public JsonObject createBusinessObjectInstance(String modelOid,
+	public JsonObject createBusinessObjectInstance(String modelId,
 			String businessObjectId, String primaryKey, JsonObject jsonObject) {
 
 		BusinessObject boi = (BusinessObject) getWorkflowService()
 				.execute(
 						BusinessObjectsCommandFactory.create(
-								Long.parseLong(modelOid),
+								modelId,
 								businessObjectId,
 								new BusinessObjectDetails.ValueDetails(
 										-1,
@@ -784,7 +754,7 @@ public class BusinessObjectManagementService {
 		// TODO Check whether this can be done more efficiently
 
 		ModelCache modelCache = ModelCache.findModelCache();
-		DeployedModel model = modelCache.getModel(Long.parseLong(modelOid));
+		DeployedModel model = modelCache.getActiveModel(modelId);
 		Data data = model.getData(businessObjectId);
 		String managedOrganizationsString = (String) data
 				.getAttribute("carnot:engine:managedOrganizations");
@@ -813,7 +783,7 @@ public class BusinessObjectManagementService {
 
 				// TODO Data and Organizations may not be in the same model
 
-				createDepartment(Long.parseLong(modelOid), organizationId,
+				createDepartment(model.getModelOID(), organizationId,
 						data, primaryKey, primaryKey);
 			}
 		}
@@ -822,11 +792,11 @@ public class BusinessObjectManagementService {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param json
 	 * @return
 	 */
-	public void createDepartment(long modelOid, String organizationId,
+	private void createDepartment(long modelOid, String organizationId,
 			Data data, String id, String name) {
 		Organization organization = (Organization) getQueryService()
 				.getParticipant(modelOid, organizationId);
@@ -843,7 +813,7 @@ public class BusinessObjectManagementService {
 	 * @param json
 	 * @return
 	 */
-	public JsonObject updateBusinessObjectInstance(String modelOid,
+	public JsonObject updateBusinessObjectInstance(String modelId,
 			String businessObjectId, String primaryKey, JsonObject jsonObject) {
 		if (mode == MOCK_MODE && businessObjectId.equals("Member")) {
 			members.put(jsonObject.get("id").getAsString(), jsonObject);
@@ -853,7 +823,7 @@ public class BusinessObjectManagementService {
 			BusinessObject boi = (BusinessObject) getWorkflowService()
 					.execute(
 							BusinessObjectsCommandFactory.update(
-									Long.parseLong(modelOid),
+									modelId,
 									businessObjectId,
 									new BusinessObjectDetails.ValueDetails(
 											-1,
@@ -917,7 +887,7 @@ public class BusinessObjectManagementService {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param modelOid
 	 * @param businessObjectId
 	 * @param primaryKey
@@ -986,8 +956,8 @@ public class BusinessObjectManagementService {
 	 * @param jsonObject
 	 * @return
 	 */
-	private Map jsonObjectToMap(JsonObject jsonObject) {
-		Map map = new HashMap();
+	private Map<String, Object> jsonObjectToMap(JsonObject jsonObject) {
+		Map<String, Object> map = new HashMap<String, Object>();
 
 		for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
 			map.put(entry.getKey(), jsonElementToObject(entry.getValue()));
@@ -1021,8 +991,8 @@ public class BusinessObjectManagementService {
 	 * @param jsonArray
 	 * @return
 	 */
-	private List jsonArrayToList(JsonArray jsonArray) {
-		List list = new ArrayList();
+	private List<Object> jsonArrayToList(JsonArray jsonArray) {
+		List<Object> list = new ArrayList<Object>();
 
 		for (int n = 0; n < jsonArray.size(); ++n) {
 			list.add(jsonElementToObject(jsonArray.get(n)));
@@ -1038,9 +1008,9 @@ public class BusinessObjectManagementService {
 	 */
 	private JsonElement objectToJsonElement(Object object) {
 		if (object instanceof Map) {
-			return mapToJsonObject((Map) object);
+			return mapToJsonObject((Map<?, ?>) object);
 		} else if (object instanceof List) {
-			return listToJsonArray((List) object);
+			return listToJsonArray((List<?>) object);
 		} else {
 			return objectToJsonPrimitive(object);
 		}
@@ -1051,7 +1021,7 @@ public class BusinessObjectManagementService {
 	 * @param map
 	 * @return
 	 */
-	private JsonObject mapToJsonObject(Map map) {
+	private JsonObject mapToJsonObject(Map<?, ?> map) {
 		JsonObject jsonObject = new JsonObject();
 
 		for (Object key : map.keySet()) {

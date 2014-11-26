@@ -20,15 +20,15 @@ public class BusinessObjectDetails implements BusinessObject
 {
    private static final long serialVersionUID = 1L;
 
-   private long modelOid;
+   private String modelId;
    private String id;
    private String name;
    private List<Definition> items;
    private List<Value> values;
 
-   public BusinessObjectDetails(long modelOid, String id, String name, List<Definition> items, List<Value> values)
+   public BusinessObjectDetails(String modelId, String id, String name, List<Definition> items, List<Value> values)
    {
-      this.modelOid = modelOid;
+      this.modelId = modelId;
       this.id = id;
       this.name = name;
       this.items = items;
@@ -36,9 +36,9 @@ public class BusinessObjectDetails implements BusinessObject
    }
 
    @Override
-   public long getModelOid()
+   public String getModelId()
    {
-      return modelOid;
+      return modelId;
    }
 
    @Override

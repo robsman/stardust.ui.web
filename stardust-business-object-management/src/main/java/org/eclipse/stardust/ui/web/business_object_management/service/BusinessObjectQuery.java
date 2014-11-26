@@ -11,7 +11,6 @@
 package org.eclipse.stardust.ui.web.business_object_management.service;
 
 import org.eclipse.stardust.engine.api.query.*;
-import org.eclipse.stardust.engine.core.runtime.beans.ModelAwareQueryPredicate;
 
 /**
  * Query container for building complex queries for data.
@@ -23,6 +22,7 @@ public class BusinessObjectQuery extends Query
 {
    private static final long serialVersionUID = 1L;
 
+   public static final String MODEL_ID_ATTRIBUTE = "modelId";
    public static final String ID_ATTRIBUTE = "businessObjectId";
    public static final String PK_ATTRIBUTE = "primaryKey";
 
@@ -72,15 +72,15 @@ public class BusinessObjectQuery extends Query
 
    /**
     * Attribute to filter for a specific model. <br>
-    * <b>Please Note: </b>Currently only supports one single Operator.isEqual(modelOid) term to
-    * filter for exactly one modelOid.
+    * <b>Please Note: </b>Currently only supports one single Operator.isEqual(modelId) term to
+    * filter for exactly one modelId.
     *
-    * @see {@link #findAllForModel(long)}
-    * @see {@link #findUsedInProcess(long, String)}
+    * @see {@link #findAllForModel(String)}
+    * @see {@link #findUsedInProcess(String, String)}
     *
     */
-   private static final FilterableAttribute MODEL_OID = new FilterableAttributeImpl(
-         BusinessObjectQuery.class, ModelAwareQueryPredicate.INTERNAL_MODEL_OID_ATTRIBUTE);
+   private static final FilterableAttribute MODEL_ID = new FilterableAttributeImpl(
+         BusinessObjectQuery.class, MODEL_ID_ATTRIBUTE);
 
    public static final FilterVerifier FILTER_VERIFYER = new FilterScopeVerifier(
          new WhitelistFilterVerifyer(new Class[] {
@@ -106,23 +106,23 @@ public class BusinessObjectQuery extends Query
       return new BusinessObjectQuery();
    }
 
-   public static BusinessObjectQuery findInModel(long modelOid)
+   public static BusinessObjectQuery findInModel(String modelId)
    {
       BusinessObjectQuery query = findAll();
-      query.where(MODEL_OID.isEqual(modelOid));
+      query.where(MODEL_ID.isEqual(modelId));
       return query;
    }
 
-   public static BusinessObjectQuery findForBusinessObject(long modelOid, String businessObjectId)
+   public static BusinessObjectQuery findForBusinessObject(String modelId, String businessObjectId)
    {
-      BusinessObjectQuery query = BusinessObjectQuery.findInModel(modelOid);
+      BusinessObjectQuery query = BusinessObjectQuery.findInModel(modelId);
       query.where(BUSINESS_OBJECT_ID.isEqual(businessObjectId));
       return query;
    }
 
-   public static BusinessObjectQuery findWithPrimaryKey(long modelOid, String businessObjectId, Object pk)
+   public static BusinessObjectQuery findWithPrimaryKey(String modelId, String businessObjectId, Object pk)
    {
-      BusinessObjectQuery query = BusinessObjectQuery.findInModel(modelOid);
+      BusinessObjectQuery query = BusinessObjectQuery.findInModel(modelId);
       query.where(BUSINESS_OBJECT_ID.isEqual(businessObjectId));
       query.where(pk instanceof Number
             ? PRIMARY_KEY.isEqual(((Number) pk).longValue())
