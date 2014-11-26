@@ -17,15 +17,15 @@
 	'use strict';
 
 	angular.module('bpm-common').directive('sdDataTable', 
-			['$parse', '$compile', '$timeout', 'sdUtilService', DataTableDirective]);
+			['$parse', '$compile', '$timeout', 'sdUtilService', 'sdLoggerService', DataTableDirective]);
 
 	var trace;
 
 	/*
 	 * 
 	 */
-	function DataTableDirective($parse, $compile, $timeout, sdUtilService) {
-		trace = sdUtilService.getLogger('bpm-common.sdDataTable');
+	function DataTableDirective($parse, $compile, $timeout, sdUtilService, sdLoggerService) {
+		trace = sdLoggerService.getLogger('bpm-common.sdDataTable');
 
 		return {
 			restrict : 'A',

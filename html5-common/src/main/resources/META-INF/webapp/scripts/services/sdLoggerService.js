@@ -1,0 +1,66 @@
+/*******************************************************************************
+ * Copyright (c) 2014 SunGard CSA LLC and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Anoop.Nair (SunGard CSA LLC) - initial API and implementation and/or initial documentation
+ *******************************************************************************/
+
+(function(){
+	'use strict';
+
+	angular.module('bpm-common.services').provider('sdLoggerService', function () {
+		this.$get = ['$rootScope', function ($rootScope) {
+			var service = new LoggerService($rootScope);
+			return service;
+		}];
+	});
+
+	/*
+	 * 
+	 */
+	function LoggerService($rootScope) {
+		/*
+		 * 
+		 */
+		LoggerService.prototype.getLogger = function(classType) {
+			return {
+				log: function() {
+					logIt(console.log, Array.prototype.slice.call(arguments, 0));
+				},
+				info: function() {
+					logIt(console.info, Array.prototype.slice.call(arguments, 0));
+				},
+				warn: function() {
+					logIt(console.warn, Array.prototype.slice.call(arguments, 0));
+				},
+				error: function() {
+					logIt(console.error, Array.prototype.slice.call(arguments, 0));
+				},
+				printStackTrace : function(msg) {
+					console.error(msg);
+
+					if (console.trace) {
+						console.trace();
+					} else {
+						console.warn('Could not log stack trace as browser does not support console.trace().');
+					}
+				}
+			};
+
+			/*
+			 * 
+			 */
+			function logIt(loggerFunc, args) {
+				args = [classType + ' =>'].concat(args);
+				if (!loggerFunc) {
+					loggerFunc = console.log;
+				}
+				loggerFunc.apply(console, args);
+			}
+		};
+	};
+})();
