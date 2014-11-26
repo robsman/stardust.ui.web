@@ -565,6 +565,8 @@
 
 					sdUtilService.safeApply(elemScope.$parent);
 				}, 0, false);
+			} else {
+				sdUtilService.safeApply(elemScope.$parent);
 			}
 		}
 
