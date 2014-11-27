@@ -116,16 +116,13 @@
 			this.tableHandleExpr = 'worklistCtrl.dataTable';
 
 			var unregister = scope.$watch(this.tableHandleExpr, function(newVal, oldVal) {
-				if (newVal != undefined && newVal != null && newVal != oldVal) {
-					self.dataTable = newVal;
-					
+				if (newVal != undefined && newVal != null && newVal != oldVal) {				
 					if (attr.sdWorklist) {
 						var assignable = $parse(attr.sdWorklist).assign;
 						if (assignable) {
 							assignable(scopeToUse, self.dataTable);
 						}						
 					}
-
 					unregister();
 				}
 			});
@@ -203,6 +200,13 @@
 			return deferred.promise();
 		};
 
+		/*
+		 * 
+		 */
+		WorklistCompiler.prototype.onSelect = function(data) {
+			// NOP
+		};
+		
 		/*
 		 * 
 		 */

@@ -95,7 +95,7 @@
 
 		var columns = [], dtColumns = [], theTable, theDataTable, theToolbar;
 
-		var selectedRowIndexes = {}, rowSelectionMode = false, selectionBinding;
+		var selectedRowIndexes = {}, rowSelectionMode = false, selectionBinding, onSelect = {};
 		
 		var pageSize = 8;
 		
@@ -154,17 +154,45 @@
 				pageSize = attr.sdaPageSize;
 			}
 
-			if (attr.sdaSelection) {
-				selectionBinding = $parse(attr.sdaSelection);
+			if (attr.sdaSelectable == undefined || attr.sdaSelectable == '') {
+				rowSelectionMode = false;
+			} else {
+				if (attr.sdaSelectable === 'row') {
+					rowSelectionMode = 'row';
+				} else {
+					rowSelectionMode = 'multiple';
+				}
 
-				elemScope.$watch(attr.sdaSelection, function(newVal, oldVal) {
-					if (initialized) {
-						var sel = getRowSelection();
-						if(!angular.equals(newVal, sel)) {
-							setRowSelection(newVal);
+				if (attr.sdaSelection) {
+					selectionBinding = $parse(attr.sdaSelection);
+
+					elemScope.$watch(attr.sdaSelection, function(newVal, oldVal) {
+						if (initialized) {
+							var sel = getRowSelection();
+							if(!angular.equals(newVal, sel)) {
+								setRowSelection(newVal);
+							}
 						}
+					});
+				}
+
+				if (attr.sdaOnSelect) {
+					onSelect.handler = $parse(attr.sdaOnSelect);
+					try {
+						var sdaOnSelect = attr.sdaOnSelect;
+						if (sdaOnSelect.indexOf('(') != -1) {
+							sdaOnSelect = sdaOnSelect.substring(sdaOnSelect.indexOf('(') + 1);
+							
+							var end = sdaOnSelect.indexOf(',') > 0 ? sdaOnSelect.indexOf(',') : sdaOnSelect.indexOf(')');
+							onSelect.param = sdaOnSelect.substring(0, end);
+						}
+					} catch (e) {						
 					}
-				});
+
+					if (!onSelect.param) {
+						trace.error('sda-on-select does not seems to be correcly used, it does not appear to be a function accepting parameter.');
+					}
+				}
 			}
 		}
 
@@ -535,16 +563,6 @@
 		 * 
 		 */
 		function enableRowSelection() {
-			if (attr.sdaSelectable == undefined || attr.sdaSelectable == '') {
-				rowSelectionMode = false;
-			} else {
-				if (attr.sdaSelectable === 'row') {
-					rowSelectionMode = 'row';
-				} else {
-					rowSelectionMode = 'multiple';
-				}
-			}
-			
 			if (rowSelectionMode) {
 				theTable.find('> tbody').on('click', '> tr', function() {
 					processRowSelection(this);
@@ -653,6 +671,8 @@
 			row = angular.element(row);
 			var rowScope = row.scope();
 
+			var currentRowData;
+
 			if (rowSelectionMode == 'row') {
 				if (isRowSelected(row)) {
 					unselectRow(row, rowScope.$index);
@@ -664,12 +684,42 @@
 					}
 
 					selectRow(row, rowScope.$index);
+					currentRowData = getPageData(rowScope.$index);
 				}
 			} else {
 				if (isRowSelected(row)) {
 					unselectRow(row, rowScope.$index);
 				} else {
 					selectRow(row, rowScope.$index);
+					currentRowData = getPageData(rowScope.$index);
+				}
+			}
+
+			fireOnSelectEvent(currentRowData);
+		}
+
+		/*
+		 * 
+		 */
+		function fireOnSelectEvent(rowData) {
+			if (onSelect.handler) {
+				try {
+					var obj = {
+						current: rowData,
+						all: getRowSelection()
+					};
+					
+					var transObj = {};
+					if (onSelect.param) {
+						transObj[onSelect.param] = obj;
+					} else {
+						transObj.data = obj;
+						trace.warning('sda-on-select is not properly configured, may not receive selection info.');
+					}
+
+					onSelect.handler(elemScope, transObj);
+				} catch(e) {
+					trace.error('Unable to fire on select event on data table', e);
 				}
 			}
 		}
