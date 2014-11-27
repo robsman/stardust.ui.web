@@ -253,7 +253,7 @@ if (!window.bpm.portal.AngularAdapter) {
 								
 								        if (navigator.msSaveBlob) { // IE 10+
 								            link.addEventListener("click", function(event) {
-								                var blob = new Blob([CSV], {
+								                var blob = new Blob([buffer], {
 								                    "type": "text/csv;charset=utf-8;"
 								                });
 								                navigator.msSaveBlob(blob, fileName);
@@ -301,7 +301,7 @@ if (!window.bpm.portal.AngularAdapter) {
 								
 								        if (navigator.msSaveBlob) { // IE 10+
 								            link.addEventListener("click", function(event) {
-								                var blob = new Blob([CSV], {
+								                var blob = new Blob([buffer], {
 								                    "type": "data:application/vnd.ms-excel"
 								                });
 								                navigator.msSaveBlob(blob, fileName);
