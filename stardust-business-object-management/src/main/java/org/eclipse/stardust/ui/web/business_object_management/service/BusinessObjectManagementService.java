@@ -390,7 +390,7 @@ public class BusinessObjectManagementService {
 								if (xPath.getXPath().isEmpty()) // root xpath
 								{
 									businessObjectsJson.add(toJson(data, xPath,
-											deployedModel.getModelOID()));
+											deployedModel.getId()));
 									break;
 								}
 							}
@@ -447,11 +447,11 @@ public class BusinessObjectManagementService {
 	 * @param modelOid
 	 * @return
 	 */
-	private JsonObject toJson(Data data, TypedXPath xPath, int modelOid) {
+	private JsonObject toJson(Data data, TypedXPath xPath, String modelId) {
 		String pkAttribute = (String) data
 				.getAttribute(PredefinedConstants.PRIMARY_KEY_ATT);
 		JsonObject json = new JsonObject();
-		json.addProperty("modelOid", modelOid);
+		json.addProperty("modelId", modelId);
 		json.addProperty("id", data.getId());
 		json.addProperty("name", data.getName());
 		JsonObject types = new JsonObject();
@@ -522,7 +522,6 @@ public class BusinessObjectManagementService {
 						}
 						types.add(key, type);
 					}
-
 				}
 			}
 		}
