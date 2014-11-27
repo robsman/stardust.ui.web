@@ -24,7 +24,7 @@ import org.eclipse.stardust.ui.web.viewscommon.views.doctree.GenericRepositoryTr
 
 /**
  * @author Yogesh.Manware
- * 
+ *
  */
 public class JCRVersionTracker implements IVersionTracker
 {
@@ -66,20 +66,33 @@ public class JCRVersionTracker implements IVersionTracker
                tempMap.put(document1.getDateLastModified(), document1);
             }
 
-            int version = LOWEST_VERSION;
-            Document tempDoc;
-
-            for (Date d : tempMap.keySet())
+            // if the list is not completely sortable by date use default ordering.
+            if (tempMap.size() < docVersionList.size())
             {
-               tempDoc = tempMap.get(d);
-               if (tempDoc.getRevisionId().equals(document.getRevisionId()))
+               // documents have same date or no date at all. No change in ordering.
+               int version = LOWEST_VERSION;
+               for (Document document : docVersionList)
                {
-                  this.currentVersionNo = version;
+                  versions.put(version, document);
+                  this.latestVersion = version;
+                  version = version + MIN_DIFF;
                }
-               versions.put(version, tempDoc);
-               this.latestVersion = version;
-               version = version + MIN_DIFF;
             }
+            else
+            {
+               // sort by modified date
+               int version = LOWEST_VERSION;
+               Document tempDoc;
+
+               for (Date d : tempMap.keySet())
+               {
+                  tempDoc = tempMap.get(d);
+                  versions.put(version, tempDoc);
+                  this.latestVersion = version;
+                  version = version + MIN_DIFF;
+               }
+            }
+            this.currentVersionNo = latestVersion;
          }
       }
       catch (Exception e)
@@ -128,7 +141,7 @@ public class JCRVersionTracker implements IVersionTracker
    {
       return versions;
    }
-   
+
    public JCRDocument getLatestVersion()
    {
       return new JCRDocument(versions.get(latestVersion), this);
