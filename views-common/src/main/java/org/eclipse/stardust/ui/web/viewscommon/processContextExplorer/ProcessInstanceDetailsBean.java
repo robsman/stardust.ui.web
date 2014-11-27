@@ -126,6 +126,8 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
    private boolean disableSpawnProcess = false;
    private View thisView;
    
+   private String startingUserLabel = null;
+
    /**
     * 
     */
@@ -494,7 +496,7 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
       trace.debug("<----------- Participant Panel Initialize");
       ParticipantsPanelBean participantPanel = ParticipantsPanelBean.getCurrent();
       
-      //If it is refresh then don't check current process
+      //If it is force refresh then don't check current process
       if (!forceRefresh && (participantPanel.getCurrentProcessInstance() != null && participantPanel.getCurrentProcessInstance().getOID() == ProcessHistoryTable.getCurrent().getSelectedRow().getProcessInstance().getOID()))
       {
          return;
@@ -921,9 +923,13 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
 
    public String getStartingUser()
    {
+      if (startingUserLabel == null)
+      {
          User startingUser = getProcessInstance().getStartingUser();
          UserUtils.loadDisplayPreferenceForUser(startingUser);
-      return UserUtils.getUserDisplayLabel(startingUser);
+         startingUserLabel = UserUtils.getUserDisplayLabel(startingUser);
+      }
+      return startingUserLabel;
    }
 
    /**
