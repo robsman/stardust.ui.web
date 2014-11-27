@@ -71,7 +71,7 @@ define(
                   this.useSSLInput = m_utils.jQuerySelect("#dataSourceTab #useSSLInput");
                   this.inputBodyAccessPointInput = m_utils.jQuerySelect("#parametersTab #inputBodyAccessPointInput");
               		this.camelConfigurationTab = $('a[href="#configurationTab"]');
-                  
+                  this.autoStartupInput = m_utils.jQuerySelect("#autoStartupInput");
                   this.editorAnchor = m_utils.jQuerySelect("#codeEditorDiv").get(0);
                   this.editorAnchor.id = "codeEditorDiv"
                            + Math.floor((Math.random() * 100000) + 1);
@@ -217,6 +217,16 @@ define(
                            event.data.panel.submitChanges();
                         });
                   
+                  this.autoStartupInput.change(function() {
+                     if (!self.view.validate()) {
+                        return;
+                     }
+                     self.view.submitModelElementAttributeChange(
+                           "carnot:engine:camel::autoStartup",
+                           self.autoStartupInput.prop('checked'));
+                     self.submitChanges();
+                  });
+                  
                   this.parameterDefinitionsPanel = m_parameterDefinitionsPanel.create({
                      scope : "parametersTab",
                      submitHandler : this,
@@ -230,6 +240,9 @@ define(
                   });
                   this.deleteParameterDefinitionButton = m_utils
                            .jQuerySelect("#propertiesTabs #parametersTab #deleteParameterDefinitionButton");
+                  if(this.getApplication().attributes["carnot:engine:camel::autoStartup"]==null||this.getApplication().attributes["carnot:engine:camel::autoStartup"]===undefined){
+                     this.view.submitModelElementAttributeChange("carnot:engine:camel::autoStartup", true);
+                   }
              //     this.update();
                };
                /**
@@ -342,6 +355,7 @@ define(
               .prop(
                            "checked",
                            this.getApplication().attributes["stardust:smsIntegrationOverlay::usessl"]);
+              this.autoStartupInput.prop("checked", this.getApplication().attributes["carnot:engine:camel::autoStartup"]);
                };
                /**
                 * returns camel route definition
@@ -524,6 +538,7 @@ define(
                                  "carnot:engine:camel::camelContextId" : "defaultCamelContext",
                                  "carnot:engine:camel::invocationPattern" : "sendReceive",
                                  "carnot:engine:camel::invocationType" : "synchronous",
+                                 "carnot:engine:camel::autoStartup" : this.autoStartupInput.prop("checked"),
                                  "carnot:engine:camel::inBodyAccessPoint" : (this.inputBodyAccessPointInput
                                           .val() != null && this.inputBodyAccessPointInput
                                           .val() != m_constants.TO_BE_DEFINED) ? this.inputBodyAccessPointInput

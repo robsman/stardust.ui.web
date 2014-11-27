@@ -71,6 +71,8 @@ define(
                            .jQuerySelect("#templatingIntegrationOverlay #configurationTab #convertToPdfRow");
                   this.convertToPdfInput = m_utils
                            .jQuerySelect("#templatingIntegrationOverlay #configurationTab #convertToPdfInput");
+                  this.autoStartupInput = m_utils
+                           .jQuerySelect("#templatingIntegrationOverlay #configurationTab #autoStartupInput");
                   this.deleteParameterDefinitionButton = m_utils
                            .jQuerySelect("#parametersTab #deleteParameterDefinitionButton");
                   this.outputAccessPointRow = m_utils
@@ -175,6 +177,13 @@ define(
                      event.data.panel.updateView(event.data.panel.locationInput.val());
                   });
 
+                  this.autoStartupInput.change({
+                     panel : this
+                  }, function(event)
+                  {
+                     event.data.panel.submitChanges();
+                  });
+                  
                   this.editorAnchor.id = "codeEditorDiv"
                            + Math.floor((Math.random() * 100000) + 1);
                   this.codeEditor = m_codeEditorAce
@@ -526,6 +535,14 @@ define(
                            .prop(
                                     "checked",
                                     this.getApplication().attributes["stardust:templatingIntegrationOverlay::convertToPdf"]);
+                  
+                  if(this.getApplication().attributes["carnot:engine:camel::autoStartup"]==null||this.getApplication().attributes["carnot:engine:camel::autoStartup"]===undefined){
+                     this.view.submitModelElementAttributeChange("carnot:engine:camel::autoStartup", true);
+                  }
+                  this.autoStartupInput
+                           .prop(
+                                    "checked",
+                                    this.getApplication().attributes["carnot:engine:camel::autoStartup"]);
 
                   var accessPoints = this.getApplication().contexts.application.accessPoints;
                   if (accessPoints.length > 0)
@@ -667,6 +684,7 @@ define(
                                                       .prop("checked") ? this.convertToPdfInput
                                                       .prop("checked")
                                                       : null,
+                                             "carnot:engine:camel::autoStartup" : this.autoStartupInput.prop("checked"),
                                              "carnot:engine:camel::routeEntries" : this
                                                       .getRoute()
                                           }

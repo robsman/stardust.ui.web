@@ -88,6 +88,7 @@ define(
                this.requestDataInput = m_utils.jQuerySelect("#genericEndpointOverlay #requestDataInput");
                this.responseDataInput = m_utils.jQuerySelect("#genericEndpointOverlay #responseDataInput");
                this.transactedRouteInput = m_utils.jQuerySelect("#genericEndpointOverlay #transactedRouteInput");
+               this.autoStartupInput = m_utils.jQuerySelect("#genericEndpointOverlay #autoStartupInput");
                this.inputBodyAccessPointInput = m_utils.jQuerySelect("#parametersTab #inputBodyAccessPointInput");
                this.outputBodyAccessPointInput = m_utils.jQuerySelect("#parametersTab #outputBodyAccessPointInput");
 
@@ -188,6 +189,15 @@ define(
                         self.transactedRouteInput.prop("checked"));
                });
                
+               this.autoStartupInput.change(function() {
+                  if (!self.view.validate()) {
+                     return;
+                  }
+                  self.view.submitModelElementAttributeChange(
+                        "carnot:engine:camel::autoStartup",
+                        self.autoStartupInput.prop("checked"));
+               });
+                              
                this.processContextHeadersInput.change(function() {
                   if (!self.view.validate()) {
                      return;
@@ -651,10 +661,17 @@ define(
                 if(this.getApplication().attributes["carnot:engine:camel::transactedRoute"]==null||this.getApplication().attributes["carnot:engine:camel::transactedRoute"]===undefined){
                      this.view.submitModelElementAttributeChange("carnot:engine:camel::transactedRoute", true);
                   }
-               
+                
+                if(this.getApplication().attributes["carnot:engine:camel::autoStartup"]==null||this.getApplication().attributes["carnot:engine:camel::autoStartup"]===undefined){
+                   this.view.submitModelElementAttributeChange("carnot:engine:camel::autoStartup", true);
+                  }
+                
                this.transactedRouteInput.prop("checked",
                         this.getApplication().attributes["carnot:engine:camel::transactedRoute"]);
                
+               this.autoStartupInput.prop("checked",
+                        this.getApplication().attributes["carnot:engine:camel::autoStartup"]);
+                              
                this.producerBpmTypeConverter.prop("checked",
                      this.getApplication().attributes["carnot:engine:camel::producerBpmTypeConverter"]);
                

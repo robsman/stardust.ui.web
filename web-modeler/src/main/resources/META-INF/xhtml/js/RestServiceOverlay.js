@@ -49,6 +49,7 @@ define(
                this.responseTypeSelect = m_utils.jQuerySelect("#restServiceOverlay #responseTypeSelect");
                this.crossDomainInput = m_utils.jQuerySelect("#restServiceOverlay #crossDomainInput");
                this.transactedRouteInput = m_utils.jQuerySelect("#restServiceOverlay #transactedRouteInput");
+               this.autoStartupInput = m_utils.jQuerySelect("#restServiceOverlay #autoStartupInput");
                this.resetButton = m_utils.jQuerySelect("#testTab #resetButton");
                this.runButton = m_utils.jQuerySelect("#testTab #runButton");
                this.inputDataTextarea = m_utils.jQuerySelect("#testTab #inputDataTextarea");
@@ -211,6 +212,9 @@ define(
                if(this.getApplication().attributes["carnot:engine:camel::transactedRoute"]==null||this.getApplication().attributes["carnot:engine:camel::transactedRoute"]===undefined){
                    this.view.submitModelElementAttributeChange("carnot:engine:camel::transactedRoute", false);
                 }
+               if(this.getApplication().attributes["carnot:engine:camel::autoStartup"]==null||this.getApplication().attributes["carnot:engine:camel::autoStartup"]===undefined){
+                  this.view.submitModelElementAttributeChange("carnot:engine:camel::autoStartup", true);
+                }
                
                this.transactedRouteInput.change(function() {
                    if (!self.view.validate()) {
@@ -221,6 +225,16 @@ define(
                          self.transactedRouteInput.prop('checked'));
                    self.submitChanges();
                 });
+               
+               this.autoStartupInput.change(function() {
+                  if (!self.view.validate()) {
+                     return;
+                  }
+                  self.view.submitModelElementAttributeChange(
+                        "carnot:engine:camel::autoStartup",
+                        self.autoStartupInput.prop('checked'));
+                  self.submitChanges();
+               });
                
                this.runButton
                      .click(
@@ -969,6 +983,7 @@ define(
                this.customSecurityTokenUsingCVInput.prop("checked", this.getApplication().attributes["stardust:restServiceOverlay::customSecurityTokenCV"]);
                this.customSecurityTokenValueInput.val(this.convertConfigVariableToPassword(this.getApplication().attributes["stardust:restServiceOverlay::customSecurityTokenValue"]));
                this.transactedRouteInput.prop("checked", this.getApplication().attributes["carnot:engine:camel::transactedRoute"]);
+               this.autoStartupInput.prop("checked", this.getApplication().attributes["carnot:engine:camel::autoStartup"]);
                
             };
 
@@ -989,6 +1004,7 @@ define(
                            "stardust:restServiceOverlay::responseType" : this.responseTypeSelect.val(),
                            "stardust:restServiceOverlay::crossDomain" : this.crossDomainInput.prop("checked"),
                            "carnot:engine:camel::transactedRoute" : this.transactedRouteInput.prop("checked"),
+                           "carnot:engine:camel::autoStartup" : this.autoStartupInput.prop("checked"),
                            "stardust:restServiceOverlay::securityMode" : this.securityModeSelect.val(),
                            "stardust:restServiceOverlay::httpBasicAuthUser" : this.httpBasicAuthUserInput.val(),
                            "stardust:restServiceOverlay::httpBasicAuthPwd" : this.getHttpBasicAuthRawPwd(),

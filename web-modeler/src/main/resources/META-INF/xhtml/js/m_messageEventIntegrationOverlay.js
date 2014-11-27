@@ -327,6 +327,7 @@ define(
                   this.clientIdInput = this.mapInputId("clientIdInput");
                   this.selectorInput = this.mapInputId("selectorInput");
                   this.transactedRouteInput = this.mapInputId("transactedRouteInput");
+                  this.autoStartupInput = this.mapInputId("autoStartupInput");
                   this.preserveQoSInput = this.mapInputId("preserveQoSInput");
                   this.jmsComponentIdInput = this.mapInputId("jmsComponentIdInput");
 
@@ -376,7 +377,20 @@ define(
                          }
                       });
                    });
-
+                  this.autoStartupInput.change({
+                     overlay : this
+                  }, function(event) {
+                     var overlay = event.data.overlay;
+                     overlay.submitChanges({
+                        modelElement : {
+                           attributes : {
+                              "carnot:engine:camel::autoStartup" : overlay.autoStartupInput
+                                             .prop("checked")
+                           }
+                        }
+                     });
+                  });
+                  
                   this.registerForRouteChanges(this.useSplitting);
                   this.registerForRouteChanges(this.stopOnException);
                   this.registerForRouteChanges(this.token);
@@ -619,8 +633,20 @@ define(
                          }
                       });
                    }
-                  this.transactedRouteInput.prop("checked",this.page.getEvent().attributes["carnot:engine:camel::transactedRoute"]);
+                  
+                  if(this.page.getEvent().attributes["carnot:engine:camel::autoStartup"]==null || this.page.getEvent().attributes["carnot:engine:camel::autoStartup"]===undefined){
+                     this.submitChanges({
+                        modelElement : {
+                           attributes : {
+                              "carnot:engine:camel::autoStartup" : true
+                           }
+                        }
+                     });
+                  }
 
+                  this.transactedRouteInput.prop("checked",this.page.getEvent().attributes["carnot:engine:camel::transactedRoute"]);
+                  this.autoStartupInput.prop("checked",this.page.getEvent().attributes["carnot:engine:camel::autoStartup"]);
+   
                   if (this.page.getEvent().attributes["carnot:engine:camel::producerBpmTypeConverter"] != null
                            && this.page.getEvent().attributes["carnot:engine:camel::producerBpmTypeConverter"] !== undefined
                            && this.page.getEvent().attributes["carnot:engine:camel::producerBpmTypeConverter"] == true)

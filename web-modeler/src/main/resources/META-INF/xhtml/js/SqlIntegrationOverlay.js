@@ -61,6 +61,7 @@ define(
                this.sqlQueryHeading = m_utils
                      .jQuerySelect("#sqlIntegrationOverlay #sqlQueryHeading");
                this.transactedRouteInput = m_utils.jQuerySelect("#sqlIntegrationOverlay #transactedRouteInput");
+               this.autoStartupInput = m_utils.jQuerySelect("#sqlIntegrationOverlay #autoStartupInput");
                this.inputBodyAccessPointInput = m_utils
                      .jQuerySelect("#parametersTab #inputBodyAccessPointInput");
                this.outputBodyAccessPointInput = m_utils
@@ -637,6 +638,20 @@ define(
                         self.transactedRouteInput.prop('checked'));
                   self.submitChanges();
                });
+               this.autoStartupInput.change(
+                        {
+                           panel : this
+                        },
+                        function(event) {
+                  if (!event.data.panel.view.validate()) {
+                     return;
+                  }
+                  self.view.submitModelElementAttributeChange(
+                        "carnot:engine:camel::autoStartup",
+                        self.autoStartupInput.prop('checked'));
+                  self.submitChanges();
+               });
+               
                this.update();
             };
 
@@ -792,10 +807,15 @@ define(
                this.parameterDefinitionsPanel
                      .selectCurrentParameterDefinition();
                if(this.getApplication().attributes["carnot:engine:camel::transactedRoute"]==null||this.getApplication().attributes["carnot:engine:camel::transactedRoute"]===undefined){
-                  this.view.submitModelElementAttributeChange("carnot:engine:camel::transactedRoute", true);
+                   this.view.submitModelElementAttributeChange("carnot:engine:camel::transactedRoute", true);
+                }
+               this.transactedRouteInput.prop("checked",
+                       this.getApplication().attributes["carnot:engine:camel::transactedRoute"]); 
+               if(this.getApplication().attributes["carnot:engine:camel::autoStartup"]==null||this.getApplication().attributes["carnot:engine:camel::autoStartup"]===undefined){
+                  this.view.submitModelElementAttributeChange("carnot:engine:camel::autoStartup", true);
                }
-              this.transactedRouteInput.prop("checked",
-                      this.getApplication().attributes["carnot:engine:camel::transactedRoute"]); 
+              this.autoStartupInput.prop("checked",
+                      this.getApplication().attributes["carnot:engine:camel::autoStartup"]); 
             };
 
             SqlIntegrationOverlay.prototype.initializeParameterDefinitionsTable = function() {

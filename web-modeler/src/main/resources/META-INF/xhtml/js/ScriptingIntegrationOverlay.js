@@ -52,6 +52,7 @@ define(
                this.scriptCodeHeading = m_utils.jQuerySelect("#scriptingIntegrationOverlay #scriptCodeHeading");
                this.languageSelect = m_utils.jQuerySelect("#scriptingIntegrationOverlay #languageSelect");
                this.transactedRouteInput = m_utils.jQuerySelect("#scriptingIntegrationOverlay #transactedRouteInput");
+               this.autoStartupInput = m_utils.jQuerySelect("#scriptingIntegrationOverlay #autoStartupInput");
                this.editorAnchor = m_utils.jQuerySelect("#codeEditorDiv").get(0);
                this.editorAnchor.id = "codeEditorDiv" + Math.floor((Math.random()*100000) + 1);
                
@@ -218,6 +219,16 @@ define(
                          self.transactedRouteInput.prop('checked'));
                    self.submitChanges();
                 });
+               this.autoStartupInput.change(function() {
+                   if (!self.view.validate()) {
+                      return;
+                   }
+                   self.view.submitModelElementAttributeChange(
+                         "carnot:engine:camel::autoStartup",
+                         self.autoStartupInput.prop('checked'));
+                   self.submitChanges();
+                });
+                
             this.update();
             };
 
@@ -420,6 +431,11 @@ define(
                 }
                this.transactedRouteInput.prop("checked",
                        this.getApplication().attributes["carnot:engine:camel::transactedRoute"]);
+               if(this.getApplication().attributes["carnot:engine:camel::autoStartup"]==null||this.getApplication().attributes["carnot:engine:camel::autoStartup"]===undefined){
+                   this.view.submitModelElementAttributeChange("carnot:engine:camel::autoStartup", true);
+                }
+               this.autoStartupInput.prop("checked",
+                       this.getApplication().attributes["carnot:engine:camel::autoStartup"]);
             };
 
             /**

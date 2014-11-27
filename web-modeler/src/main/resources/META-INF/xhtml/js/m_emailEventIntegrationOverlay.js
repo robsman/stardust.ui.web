@@ -106,6 +106,7 @@ define(
 
                   this.configurationSpan = this.mapInputId("configuration");
                   this.transactedRouteInput = this.mapInputId("transactedRouteInput");
+                  this.autoStartupInput = this.mapInputId("autoStartupInput");
                   this.configurationSpan
                            .text(m_i18nUtils
                                     .getProperty("modeler.element.properties.event.configuration"));
@@ -163,6 +164,21 @@ define(
                          }
                       });
                    });
+               this.autoStartupInput.change({
+                      overlay : this
+                   }, function(event) {
+                      var overlay = event.data.overlay;
+                      overlay.submitChanges({
+                         modelElement : {
+                            attributes : {
+                               "carnot:engine:camel::autoStartup" : overlay.autoStartupInput
+                                              .prop("checked")
+                            }
+                         }
+                      });
+                   });
+               
+               
                   this.producerBpmTypeConverter
                            .change(
                                     {
@@ -554,7 +570,17 @@ define(
                          }
                       });
                    }
+                  if(this.page.getEvent().attributes["carnot:engine:camel::autoStartup"]==null || this.page.getEvent().attributes["carnot:engine:camel::autoStartup"]===undefined){
+                     this.submitChanges({
+                        modelElement : {
+                           attributes : {
+                              "carnot:engine:camel::autoStartup" : true
+                           }
+                        }
+                     });
+                  }
                   this.transactedRouteInput.prop("checked",this.page.getEvent().attributes["carnot:engine:camel::transactedRoute"]);
+                  this.autoStartupInput.prop("checked",this.page.getEvent().attributes["carnot:engine:camel::autoStartup"]);
 
                   var route = this.page.propertiesPanel.element.modelElement.attributes["carnot:engine:camel::camelRouteExt"];
 

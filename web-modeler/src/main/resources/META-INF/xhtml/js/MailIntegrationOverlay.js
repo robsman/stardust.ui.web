@@ -109,6 +109,8 @@ define(
                            .jQuerySelect("#mailIntegrationOverlay #storeAttachmentsInput");
                   this.transactedRouteInput = m_utils
                            .jQuerySelect("#mailIntegrationOverlay #transactedRouteInput");
+                  this.autoStartupInput = m_utils
+                           .jQuerySelect("#mailIntegrationOverlay #autoStartupInput");
                   this.templateSourceSelect = m_utils
                            .jQuerySelect("#mailIntegrationOverlay #templateSourceSelect");
                   this.templatePathInput = m_utils
@@ -329,6 +331,10 @@ define(
                   {
                      self.submitChanges();
                   });
+                  this.autoStartupInput.change(function()
+                           {
+                              self.submitChanges();
+                           });
                   this.serverInput.change(function()
                   {
                      self.submitChanges();
@@ -494,6 +500,9 @@ define(
                      CKEDITOR.instances[this.mailTemplateEditor.id].config.readOnly = true;
                   }
                   CKEDITOR.instances[this.mailTemplateEditor.id].setData(this.getApplication().attributes["stardust:emailOverlay::mailTemplate"]);
+                  if(this.getApplication().attributes["carnot:engine:camel::autoStartup"]==null||this.getApplication().attributes["carnot:engine:camel::autoStartup"]===undefined){
+                     this.view.submitModelElementAttributeChange("carnot:engine:camel::autoStartup", true);
+                   }
                };
                MailIntegrationOverlay.prototype.populateResponseOptionsTypeSelect = function()
                {
@@ -894,6 +903,12 @@ define(
                            .prop(
                                     "checked",
                                     this.getApplication().attributes["carnot:engine:camel::transactedRoute"]);
+                  
+                  this.autoStartupInput
+                           .prop(
+                                    "checked",
+                                    this.getApplication().attributes["carnot:engine:camel::autoStartup"]);
+                  
                   var templateConfigurationsJson = this.getApplication().attributes["stardust:emailOverlay::templateConfigurations"];
                   if (!templateConfigurationsJson)
                   {
@@ -1279,6 +1294,8 @@ define(
                                        attributes : {
                                           "carnot:engine:camel::applicationIntegrationOverlay" : "mailIntegrationOverlay",
                                           "carnot:engine:camel::transactedRoute" : this.transactedRouteInput
+                                                   .prop("checked"),
+                                          "carnot:engine:camel::autoStartup" : this.autoStartupInput
                                                    .prop("checked"),
                                           "carnot:engine:camel::camelContextId" : "defaultCamelContext",
                                           "carnot:engine:camel::invocationPattern" : invocationPatternChanges,
