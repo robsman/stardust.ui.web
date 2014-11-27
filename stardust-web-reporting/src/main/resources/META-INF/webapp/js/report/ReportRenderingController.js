@@ -378,7 +378,7 @@ define(
 					
 					function tooltipContentEditor(str, seriesIndex, pointIndex, plot) {
 					   // display series_label, x-axis_tick, y-axis value
-					   if (plot.stackSeries || plot.series[seriesIndex]._xaxis["label"] == "Criticality")
+					   if (plot.stackSeries)
 					      return plot.series[seriesIndex]["label"] + ", " + plot.options.axes.xaxis.ticks[pointIndex] + 
 					      " : " + plot.data[seriesIndex][pointIndex];
 					   else
@@ -418,10 +418,17 @@ define(
 					            max[k] = Math.max.apply(Math, tempArray);
 					         }
 					      }
-					      data.seriesGroup[i] = max;
+					      if (chartOptions.stackSeries) {
+					         data.seriesGroup[i] = max;
+					      } else {
+					         for ( var z = 0; z < x_axis.length; z++) {
+					            data.seriesGroup[i][z] = [x_axis[z],max[z]];
+					         }
+					      }
 					   }
-                  
-					   chartOptions.axes.xaxis.ticks = x_axis;
+					   if (chartOptions.stackSeries) {
+					      chartOptions.axes.xaxis.ticks = x_axis;
+					   }
 					}
 
 					// Label series
