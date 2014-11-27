@@ -1013,7 +1013,7 @@ define(
                      m_utils.jQuerySelect("#attachmentsTemplateSourceTypeTab").show();
                      m_utils.jQuerySelect("#templateConfigurationTab").hide();
                   
-                  } else
+                  } else if(this.attachmentsTemplateSource == "embedded" || this.attachmentsTemplateSource == undefined)
                   {
                      m_angularContextUtils.runInAngularContext(function($scope) {
                         $scope.temSrcOptInit = $scope.overlayPanel.templateSourceOptions[0].value;
@@ -1021,6 +1021,15 @@ define(
                      
                      m_utils.jQuerySelect("#attachmentsTemplateSourceTypeTab").hide();
                      m_utils.jQuerySelect("#templateConfigurationTab").show();
+                     
+                  } else
+                  {
+                     m_angularContextUtils.runInAngularContext(function($scope) {
+                        $scope.temSrcOptInit = $scope.overlayPanel.templateSourceOptions[2].value;
+                     }, m_utils.jQuerySelect("#attachmentsTemplateSourceSelect"));
+                     
+                     m_utils.jQuerySelect("#attachmentsTemplateSourceTypeTab").hide();
+                     m_utils.jQuerySelect("#templateConfigurationTab").hide();
                   }
                   this.view.validate();
                };
@@ -1516,6 +1525,9 @@ define(
                }, {
                   value : "data",
                   title : "Data"
+               }, {
+                  value : "DOCUMENT_REQUEST",
+                  title : "Document Request"
                } ];
                this.i18nValues = initI18nLabels();
                /**
@@ -1672,23 +1684,60 @@ define(
                
                MailIntegrationOverlay.prototype.updateTemplateConfTab = function(item)
                {
+                  var accessPoints = this.getApplication().contexts.application.accessPoints;
                   if(item == "data")
                   {
+                     // filter Document Request AP
+                     var filteredAccessPoints = m_routeDefinitionUtils.filterAccessPoint(accessPoints,
+                           "DOCUMENT_REQUEST");
+                     this.submitParameterDefinitionsChanges(filteredAccessPoints);
                      this.view.submitModelElementAttributeChange("stardust:emailOverlay::attachmentsTemplateSource", "data");
                      m_utils.jQuerySelect("#attachmentsTemplateSourceTypeTab").show();
                      m_utils.jQuerySelect("#templateConfigurationTab").hide();
                      
-                  } else
+                  } else if(item == "embedded")
                   {
-                     var accessPoints = this.getApplication().contexts.application.accessPoints;
+                     // filter Mail Attachments AP
                      var filteredAccessPoints = m_routeDefinitionUtils.filterAccessPoint(accessPoints,
                            "mailAttachmentsAP");
+                     // filter Document Request AP
+                     filteredAccessPoints =  m_routeDefinitionUtils.filterAccessPoint(filteredAccessPoints,
+                           "DOCUMENT_REQUEST");
                      this.submitParameterDefinitionsChanges(filteredAccessPoints);
                      this.view.submitModelElementAttributeChange("stardust:emailOverlay::attachmentsTemplateSource", "embedded");
                      this.view.submitModelElementAttributeChange("stardust:emailOverlay::attachmentsTemplateSourceType", null);
                      this.hideTemplateErroType();
                      m_utils.jQuerySelect("#templateConfigurationTab").show();
                      m_utils.jQuerySelect("#attachmentsTemplateSourceTypeTab").hide();
+                     
+                  } else
+                  {
+                     // filter Mail Attachments AP
+                     var filteredAccessPoints = m_routeDefinitionUtils.filterAccessPoint(accessPoints,
+                           "mailAttachmentsAP");
+                     // add Document Request AP
+                     var documentRequestAp = m_routeDefinitionUtils.findAccessPoint(filteredAccessPoints, 
+                           "DOCUMENT_REQUEST");
+                     
+                     if (!documentRequestAp)
+                     {
+                        filteredAccessPoints.push({
+                              id : "DOCUMENT_REQUEST",
+                              name : "Document Request",
+                              dataType : "struct",
+                              direction : "IN",
+                              structuredDataTypeFullId : this.getScopeModel().id + ":" + "DOCUMENT_REQUEST",
+                              attributes : {
+                                 "stardust:predefined" : true
+                  }
+                           });
+                     }
+                     this.submitParameterDefinitionsChanges(filteredAccessPoints);
+                     this.view.submitModelElementAttributeChange("stardust:emailOverlay::attachmentsTemplateSource", "DOCUMENT_REQUEST");
+                     this.view.submitModelElementAttributeChange("stardust:emailOverlay::attachmentsTemplateSourceType", null);
+                     m_utils.jQuerySelect("#attachmentsTemplateSourceTypeTab").hide();
+                     m_utils.jQuerySelect("#templateConfigurationTab").hide();
+                 
                   }
                  
                };
