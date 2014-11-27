@@ -314,6 +314,69 @@ define(
                   this.deleteParameterDefinitionButton.attr("src", m_urlUtils
                            .getContextName()
                            + "/plugins/bpm-modeler/images/icons/delete.png");
+                  this.parameterDefinitionDirectionSelect = m_utils.jQuerySelect("#parametersTab #parameterDefinitionDirectionSelect");
+                  this.parameterDefinitionNameInput = m_utils.jQuerySelect("#parametersTab #parameterDefinitionNameInput");
+                  this.dataTypeSelect = m_utils.jQuerySelect("#parametersTab #dataTypeSelect");
+                  this.parameterDefinitionDirectionSelect
+                           .change(
+                                    {
+                                       panel : this
+                                    },
+                                    function(event) 
+                                    {
+                                       var ap = event.data.panel.parameterDefinitionsPanel.currentParameterDefinition;
+                                       if (event.data.panel.parameterDefinitionDirectionSelect.val() == m_constants.IN_ACCESS_POINT
+                                                && ap.dataType == m_constants.DOCUMENT_DATA_TYPE)
+                                       {
+                                          // add template conf
+                                          event.data.panel.addTemplateConfigurationForDocumentAp(ap);
+                                          
+                                       } else if (event.data.panel.parameterDefinitionDirectionSelect.val() == m_constants.OUT_ACCESS_POINT
+                                                      && ap.dataType == m_constants.DOCUMENT_DATA_TYPE)
+                                       {
+                                          // delete template conf
+                                          event.data.panel.deleteTemplateConfigurationForDocumentAp(ap);
+                                       }
+                                    });
+                  this.parameterDefinitionNameInput
+                           .change(
+                                    {
+                                       panel : this
+                                    },
+                                    function(event) 
+                                    {
+                                       var ap = event.data.panel.parameterDefinitionsPanel.currentParameterDefinition;
+                                       if (ap.direction == m_constants.IN_ACCESS_POINT
+                                                && ap.dataType == m_constants.DOCUMENT_DATA_TYPE)
+                                       {
+                                          // update element name in Template configuration
+                                          event.data.panel.updateTemplateConfigurationForDocumentAp(ap, 
+                                                   event.data.panel.parameterDefinitionNameInput.val());
+                                       }
+                                    });
+                  this.dataTypeSelect
+                           .change(
+                                    {
+                                       panel : this
+                                    },
+                                    function(event) 
+                                    {
+                                       var ap = event.data.panel.parameterDefinitionsPanel.currentParameterDefinition;
+                                       if (ap.direction == m_constants.IN_ACCESS_POINT)
+                                       {
+                                          if(event.data.panel.dataTypeSelect.val() == m_constants.DOCUMENT_DATA_TYPE)
+                                          {
+                                             // add template conf
+                                             event.data.panel.addTemplateConfigurationForDocumentAp(ap);
+                                             
+                                          } else if(ap.dataType == m_constants.DOCUMENT_DATA_TYPE)
+                                          {
+                                             // delete template conf
+                                             event.data.panel.deleteTemplateConfigurationForDocumentAp(ap);
+                                          }
+                                       }
+                                    });
+                  
                   this.deleteParameterDefinitionButton
                            .click(
                                     {
@@ -321,9 +384,16 @@ define(
                                     },
                                     function(event)
                                     {
+                                       var ap = event.data.panel.parameterDefinitionsPanel.currentParameterDefinition;
+                                       if (ap.direction == m_constants.IN_ACCESS_POINT
+                                                && ap.dataType == m_constants.DOCUMENT_DATA_TYPE)
+                                       {
+                                          // delete template conf
+                                          event.data.panel.deleteTemplateConfigurationForDocumentAp(ap);
+                                       }
                                        event.data.panel.parameterDefinitionsPanel
                                                 .deleteParameterDefinition();
-                                       event.data.panel.getApplication().contexts.application.accessPoints = event.data.panel.parameterDefinitionsPanel.parameterDefinitions
+                                       event.data.panel.getApplication().contexts.application.accessPoints = event.data.panel.parameterDefinitionsPanel.parameterDefinitions;
                                        event.data.panel.submitChanges();
                                     });
                   var self = this;
@@ -1429,6 +1499,9 @@ define(
                }, {
                   value : "classpath",
                   title : "Classpath"
+               } , {
+                  value : "data",
+                  title : "Data"
                } ];
                this.formatOptions = [ {
                   value : "plain",
@@ -1451,6 +1524,7 @@ define(
                MailIntegrationOverlay.prototype.addConfiguration = function()
                {
                   this.templateConfigurations.push({
+                     "tTemplate" : "true", 
                      "tName" : "New" + (this.templateConfigurations.length + 1),
                      "tPath" : "New" + (this.templateConfigurations.length + 1),
                      "tSource" : "repository",
@@ -1575,7 +1649,9 @@ define(
                MailIntegrationOverlay.prototype.isTemplateConfigurationStructure = function(childTypeDeclaration)
                {
                   return this.checkTemplatingStructure(childTypeDeclaration
-                           .getElement("tName"), "tName")
+                           .getElement("tTemplate"), "tTemplate")
+                           && this.checkTemplatingStructure(childTypeDeclaration
+                                    .getElement("tName"), "tName")
                            && this.checkTemplatingStructure(childTypeDeclaration
                                     .getElement("tPath"), "tPath")
                            && this.checkTemplatingStructure(childTypeDeclaration
@@ -1587,10 +1663,11 @@ define(
                
                MailIntegrationOverlay.prototype.checkTemplatingStructure = function(element, name)
                {
+                  var type = element.name == "tTemplate" ? "xsd:boolean" :"xsd:string";
                   return (element != undefined) && (element.name == name)
                            && (element.classifier == "element")
                            && (element.cardinality == "required")
-                           && (element.type == "xsd:string") ? true : false;
+                           && (element.type == type) ? true : false;
                };
                
                MailIntegrationOverlay.prototype.updateTemplateConfTab = function(item)
@@ -1632,6 +1709,17 @@ define(
                                     + "</td>"
                                     + "<td style=\"font-weight: bold; color: #000000 \">"
                                     + "Cardinality"
+                                    + "</td>"
+                                    + "</tr>"
+                                    + "<tr>"
+                                    + "<td>"
+                                    + "tTemplate"
+                                    + "</td>"
+                                    + "<td>"
+                                    + "Boolean"
+                                    + "</td>"
+                                    + "<td>"
+                                    + "Exactly One"
                                     + "</td>"
                                     + "</tr>"
                                     + "<tr>"
@@ -1682,6 +1770,82 @@ define(
                MailIntegrationOverlay.prototype.hideTemplateErroType = function()
                {
                   m_utils.jQuerySelect("#typeErrorMessagesTab").hide();
+               };
+               
+               MailIntegrationOverlay.prototype.addTemplateConfigurationForDocumentAp = function(accessPoint)
+               {
+                  this.templateConfigurations.push({
+                     "tTemplate" : false, 
+                     "tName" : accessPoint.name,
+                     "tPath" : "" ,
+                     "tSource" : "data",
+                     "tFormat" : "plain"
+                  });
+                  this.view.submitModelElementAttributeChange("stardust:emailOverlay::templateConfigurations", angular
+                           .toJson(this.templateConfigurations));
+               };
+               
+               MailIntegrationOverlay.prototype.deleteTemplateConfigurationForDocumentAp = function(accessPoint)
+               {
+                  var templateConf = this.templateConfigurations;
+                  for(var i in templateConf)
+                  {
+                     if (templateConf[i].tName == accessPoint.name)
+                     {
+                        this.templateConfigurations.splice(i, 1);
+                        this.view.submitModelElementAttributeChange("stardust:emailOverlay::templateConfigurations", angular
+                                 .toJson(this.templateConfigurations));
+                        break;
+                     }
+                  }
+               };
+               
+               MailIntegrationOverlay.prototype.updateTemplateConfigurationForDocumentAp = function(accessPoint, newName)
+               {
+                  // add Template configuration related to Document AP if not exist
+                  if(this.isAlreadyInTemplateConfiguration(accessPoint))
+                  {
+                     // update Template element Name
+                     for(var i in this.templateConfigurations)
+                     {
+                        if (this.templateConfigurations[i].tSource == "data" && this.templateConfigurations[i].tName == accessPoint.name)
+                        {
+                           this.templateConfigurations[i].tName = newName;
+                           this.view.submitModelElementAttributeChange("stardust:emailOverlay::templateConfigurations", angular
+                                             .toJson(this.templateConfigurations));
+                           break;
+                        }
+                     }
+                     
+                  } else
+                  {
+                     // add tempate conf
+                     accessPoint.name = newName;
+                     this.addTemplateConfigurationForDocumentAp(accessPoint);
+                  }
+               };
+               
+               MailIntegrationOverlay.prototype.isAlreadyInTemplateConfiguration = function(accessPoint)
+               {
+                  for(var i in this.templateConfigurations)
+                  {
+                     if(this.templateConfigurations[i].tName == accessPoint.name)
+                     {
+                        return true;
+                     }
+                  }
+                  return false;
+               };
+               
+               MailIntegrationOverlay.prototype.submitTemplateChanges = function(source, index)
+               {
+                  if(source == "data")
+                  {
+                     //TODO use new directive options-disabled  
+                     this.templateConfigurations[index].tSource="repository";
+                  }
+                  this.view.submitModelElementAttributeChange("stardust:emailOverlay::templateConfigurations", angular
+                           .toJson(this.templateConfigurations));
                };
             }
          });
