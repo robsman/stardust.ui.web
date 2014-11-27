@@ -25,6 +25,7 @@ import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.UIViewComponentBean;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentInfo;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentViewUtil;
+import org.eclipse.stardust.ui.web.viewscommon.participantspanel.ParticipantsPanelBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.AuthorizationUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
@@ -177,7 +178,7 @@ public class ProcessHistoryTable extends UIViewComponentBean
          ExceptionHandler.handleException(e);
       }
    }
-   
+
    /**
     * 
     * @param event
@@ -220,6 +221,28 @@ public class ProcessHistoryTable extends UIViewComponentBean
          activityTreeTable.setCurrentProcessInstance(selectedRow.getProcessInstance());
          activityTreeTable.renderTree();
       }
+
+      refreshParticipantsPanel();
+   }
+   
+   
+   /**
+    * Initialize ParticipantsPanel only if different process is selected
+    */
+   private void refreshParticipantsPanel()
+   {
+      ParticipantsPanelBean participantPanel = ParticipantsPanelBean.getCurrent();
+      if (participantPanel.getCurrentProcessInstance() != null
+            && participantPanel.getCurrentProcessInstance().getOID() == selectedRow.getProcessInstance().getOID())
+      {
+         return;
+      }
+
+      trace.debug("<----------- Refreshing Participant Panel");
+      participantPanel.initializePanel(selectedRow.getProcessInstance(), ProcessHistoryTable.getCurrent()
+            .getActivityTreeTable().getActivityTableRoot());
+
+      trace.debug("Refreshing Participant Panel ----------->");
    }
 
    /**
