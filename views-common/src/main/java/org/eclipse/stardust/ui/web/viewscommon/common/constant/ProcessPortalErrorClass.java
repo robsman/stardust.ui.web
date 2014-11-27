@@ -23,9 +23,9 @@ public class ProcessPortalErrorClass extends PortalErrorClass
    public final static PortalErrorClass UNABLE_TO_START_ACTIVITY = new ProcessPortalErrorClass("PP01004");
    public final static PortalErrorClass UNABLE_TO_COMPLETE_ACTIVITY = new ProcessPortalErrorClass("PP01005");
    public final static PortalErrorClass FAILED_INVOKING_COMPLETION_METHOD = new ProcessPortalErrorClass("PP01006");
-   public final static PortalErrorClass UNKNOWN_APP_CONTEXT_FOR_METHOD_INVOCATION = new ProcessPortalErrorClass(
-         "PP01007");
+   public final static PortalErrorClass UNKNOWN_APP_CONTEXT_FOR_METHOD_INVOCATION = new ProcessPortalErrorClass("PP01007");
    public final static PortalErrorClass FAILED_EVALUATING_OUT_DATA_MAPPING = new ProcessPortalErrorClass("PP01008");
+   public final static PortalErrorClass UNABLE_TO_DELETE_REFERENCED_MODEL = new ProcessPortalErrorClass("PP01009");
 
    protected ProcessPortalErrorClass(String id)
    {
@@ -45,7 +45,7 @@ public class ProcessPortalErrorClass extends PortalErrorClass
          return contents;
       }
 
-      static final Object[][] contents = 
+      static final Object[][] contents =
       {
          {"PP01000", BpmPortalErrorMessages.getString("PP01000")},
          {"PP01001", BpmPortalErrorMessages.getString("PP01001")},
@@ -56,6 +56,7 @@ public class ProcessPortalErrorClass extends PortalErrorClass
          {"PP01006", BpmPortalErrorMessages.getString("PP01006")},
          {"PP01007", BpmPortalErrorMessages.getString("PP01007")},
          {"PP01008", BpmPortalErrorMessages.getString("PP01008")},
+         {"PP01009", BpmPortalErrorMessages.getString("PP01009")},
       };
    }
 
