@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="utf-8">
+<title>Integration Management View</title>
+
+<style>
+table.descriptorTable td {
+	border: none !important;
+	background-color: transparent; ! important;
+	padding: 0px !important;
+	margin: 0px !important;
+	font-size: 10px;
+}
+
+.menuBarLink {
+	margin-right: 5px;
+}
+
+table.notes {
+	font-size: 10px;
+}
+
+table.notes .userSpan {
+	color: #906C37;
+}
+
+table.notes .timestampSpan {
+	color: #A69A88;
+}
+
+
+.selected {
+  background-color: yellow;
+}
+
+
+</style>
+</head>
+<body>
+	<div ng-app=""
+		ng-controller="integrationManagementController">
+		<div
+			style="margin-left: 10px; margin-right: 10px; margin-bottom: 10px;"
+			ng-cloak>
+			<h2>INTEGRATION MANAGEMENT</h2>
+			Search : <input type="text" ng-model="searchKeywordInCamelContext" ng-change="changeSearchValue(searchKeywordInCamelContext)" >
+			<br />
+			<table class="toolbar" style="width: 100%;">
+				<tr>
+					<td><a href="#" class="iconLink menuBarLink" title="Refresh"><i
+							class="fa fa-refresh" ng-click="refresh()"></i> </a></td>
+				</tr>
+			</table>
+			<table style="width: 100%;" border="0">
+				<tr>
+					<td >
+						<table style="width: 100%;"  border="1">
+							<thead >
+								<tr>
+									<th align="left">Context Id</th>
+									<th>Status</th>
+									<th>Uptime</th>
+									<th>Version</th>
+									<th>Actions</th>
+								</tr>
+							</thead>
+			
+							<tbody >
+								<tr align="center"
+									ng-repeat="camelContext in filtredCamelContexts  | limitTo: itemsPerPage" 
+									
+									ng-class="{selected : camelContext.contextId === idSelectedCamelContext}">
+									<td align="left" ng-click="setSelected(camelContext.contextId)" >{{ camelContext.contextId }}</td>
+									<td ng-click="setSelected(camelContext.contextId)" >{{ camelContext.status }}</td>
+									<td ng-click="setSelected(camelContext.contextId)" >{{ camelContext.uptime }}</td>
+									<td ng-click="setSelected(camelContext.contextId)" >{{ camelContext.version }}</td>
+									<td>
+										<a href="#" ng-click="startAllRoutes(camelContext.contextId)"
+											class="expandCollapseLink" title="Start All Routes">
+											<img
+												ng-src="plugins/stardust-web-camel/css/images/control_play.png" />
+										</a> <a href="#" ng-click="stopAllRoutes(camelContext.contextId)"
+											class="expandCollapseLink" title="Stop All Routes">
+											<img
+												ng-src="plugins/stardust-web-camel/css/images/control_stop.png" />
+										</a>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</td>
+					</tr>
+					<tr align="center">
+						<td align="center">
+							<div class="pagination">
+								<ul>
+									<li ng-class="prevPageDisabled()"><a href
+										ng-click="prevPage()">« Prev</a></li>
+									<li ng-repeat="n in range()"
+										ng-class="{active: n == currentPage}" ng-click="setPage(n)">
+										<a href="#">{{n+1}}</a></li>
+									<li ng-class="nextPageDisabled()"><a href
+										ng-click="nextPage()">Next »</a></li>
+								</ul>
+							</div>
+						</td>
+					</tr>
+			</table>
+		</div>
+
+		<!-- details of selected camel context -->
+		<div
+			style="margin-left: 10px; margin-right: 10px; margin-bottom: 10px;"
+			ng-cloak ng-show="showRoutesTable">
+			<hr>
+			<section class="tab">
+				<ul class="nav nav-pills">
+					<li ng-class="{ active: isSet(1) }"><a href
+						ng-click="setTab(1)">Producer Routes</a></li>
+					<li ng-class="{ active: isSet(2) }"><a href
+						ng-click="setTab(2)">Consumer Routes</a></li>
+				</ul>
+				<div ng-show="isSet(1)">
+
+				Search : <input type="text" ng-model="searchKeywordInProducerApplication" ng-change="changeProducerApplicationSearchValue(searchKeywordInProducerApplication)" >
+			
+						<table class="toolbar" style="width: 100%;">
+							<tr>
+								<td><a href="#" class="iconLink menuBarLink" title="Refresh"><i
+										class="fa fa-refresh" ng-click="refreshApplicationProducers()"></i>
+								</a>
+								</td>
+							</tr>
+						</table>
+					
+						<table style="width: 100%;" border="0" valign="top">
+						<tr valign="top">
+							<td width="55%">
+						<table style="width: 100%;" border="0">
+							<tr>
+							<td >
+								<table style="width: 100%;" border="1">
+									<thead >
+										<tr border="1">
+											<th align="left">Route Id</th>
+											<th align="left">Description</th>
+											<th>Exchanges Completed</th>
+											<th>Exchanges Failed</th>
+											<th>Status</th>
+											<th>Actions</th>
+										</tr>
+									</thead>
+									<tbody >
+										<tr align="center"
+											ng-repeat="x in filtredProducerRoute | limitTo: itemsPerPage"
+											border="1" ng-class="{selected : x.id === selectedProducerRouteId}">
+											<td align="left">{{ x.id }}</td>
+											<td align="left" width="250 px">{{ x.description }}</td>
+											<td>{{ x.exchangesCompleted }}</td>
+											<td>{{ x.exchangesFailed }}</td>
+											<td>{{ x.status }}</td>
+											<td><a href="#" ng-click="startOrStopRoute(x.id,x.status)"
+												class="expandCollapseLink" title="Start"
+												ng-hide="x.status === 'Started'"><img
+													ng-src="plugins/stardust-web-camel/css/images/control_play.png" />
+											</a> <a href="#" ng-click="startOrStopRoute(x.id,x.status)"
+												class="expandCollapseLink" title="Stop"
+												ng-show="x.status === 'Started'"><img
+													ng-src="plugins/stardust-web-camel/css/images/control_stop.png" />
+											</a>
+											<a href="#" ng-click="showProducerRouteDetails(x)"
+										       	   class="expandCollapseLink" title="Details">
+												<img
+												   ng-src="plugins/stardust-web-camel/css/images/report_plus.png" />
+											</a> 
+											</td>
+										</tr>
+									</tbody>
+								</table>
+								</td>
+							</tr>
+							
+							<tr align="center">
+							<td align="center">
+								<div class="pagination">
+									<ul>
+										<li ng-class="prevPageDisabledProducerRoute()"><a href
+											ng-click="prevPageProducerRoute()">« Prev</a></li>
+										<li ng-repeat="n in rangeProducerRoute()"
+											ng-class="{active: n == currentPageProducerRoute}"
+											ng-click="setPageProducerRoute(n)"><a href="#">{{n+1}}</a>
+										</li>
+										<li ng-class="nextPageDisabledProducerRoute()"><a href
+											ng-click="nextPageProducerRoute()">Next »</a></li>
+									</ul>
+								</div>
+							</td>
+							</tr>
+	
+						</table>
+						
+							</td>
+				
+					<td width="45%" valign="top">
+					
+					<div style="margin-left: 10px; margin-right: 10px; margin-bottom: 10px;" ng-show="showDetailsProducerRoute">
+						<table style="width: 100%;" border="1">
+												<tbody>
+													<tr align="left">
+														<td colspan=2><b>Route Details</b></td>
+													</tr>
+
+													<tr align="left">
+														<th width="285">Route Id</th>
+														<td >{{selectedProducerRoute.id}}</td>
+													</tr>
+
+													<tr align="left">
+														<th>Reset Timestamp</th>
+														<td >{{selectedProducerRoute.resetTimestamp | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+													</tr>
+
+													<tr align="left">
+														<th>Min Processing Time</th>
+														<td >{{selectedProducerRoute.minProcessingTime}}</td>
+													</tr>
+
+													<tr align="left">
+														<th>Max Processing Time</th>
+														<td >{{selectedProducerRoute.maxProcessingTime}}</td>
+													</tr>
+
+													<tr align="left">
+														<th>Total Processing Time</th>
+														<td >{{selectedProducerRoute.totalProcessingTime}}</td>
+													</tr>
+													
+													<tr align="left">
+														<th>Self Processing Time</tdh>
+														<td > {{selectedProducerRoute.selfProcessingTime }}</td>
+													</tr>
+													
+													<tr align="left">
+													<th>Failures Handled</th>
+														<td >{{selectedProducerRoute.failuresHandled}} </td>
+													</tr>
+													
+													<tr align="left">
+														<th>Redeliveries</th>
+														<td > {{selectedProducerRoute.redeliveries }}</td>
+													</tr>
+													
+													<tr align="left">
+														<th>External Redeliveries</th>
+														<td > {{selectedProducerRoute.externalRedeliveries }}</td>
+													</tr>
+													
+													<tr align="left">
+														<th>Last Processing Time</th>
+														<td >{{selectedProducerRoute.lastProcessingTime}}</td>
+													</tr>
+													
+													<tr align="left">
+														<th>Delta Processing Time</th>
+														<td > {{selectedProducerRoute.deltaProcessingTime }}</td>
+													</tr>
+													
+													<tr align="left">
+														<th>Mean Processing Time</th>
+														<td >{{selectedProducerRoute.meanProcessingTime }}</td>
+													</tr>
+												
+													<tr align="left">
+														<th>First Exchange Completed Timestamp</th>
+														<td >{{selectedProducerRoute.firstExchangeCompletedTimestamp| date:'yyyy-MM-dd HH:mm:ss'}}</td>
+													</tr>
+												
+													<tr align="left">
+														<th>First Exchange Completed ExchangeId</th>
+														<td >{{ selectedProducerRoute.firstExchangeCompletedExchangeId }}</td>
+													</tr>
+													
+													<tr align="left">
+														<th>First Exchange Failure Timestamp</th>
+													<td >{{ selectedProducerRoute.firstExchangeFailureTimestamp | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+													</tr>
+													
+													<tr align="left">
+														<th>First Exchange Failure ExchangeId</th>
+													<td > {{selectedProducerRoute.firstExchangeFailureExchangeId}} </td>
+													</tr>
+																					
+												<tr align="left">
+														<th>Last Exchange Completed Timestamp</th>
+														<td > {{selectedProducerRoute.lastExchangeCompletedTimestamp | date:'yyyy-MM-dd HH:mm:ss' }} </td>
+												</tr>
+											
+												<tr align="left">
+													<th>Last Exchange Completed Exchange Id</th>
+													<td >{{ selectedProducerRoute.lastExchangeCompletedExchangeId }}</td>
+													</tr>
+												
+													<tr align="left">
+													<th>Last Exchange Failure Timestamp</th>
+														<td >{{ selectedProducerRoute.lastExchangeFailureTimestamp | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+													</tr>
+													
+													<tr align="left">
+														<th>Last Exchange Failure Exchange Id</th>
+														<td >{{selectedProducerRoute.lastExchangeFailureExchangeId }}</td>
+													</tr>
+												
+												</tbody>
+							</table>	
+					</div>
+					
+		
+					
+					
+					</td>
+					</tr>
+					</table>
+				</div>
+				<div ng-show="isSet(2)">
+
+					Search : <input type="text" ng-model="searchKeywordInConsumer" ng-change="changeConsumerSearchValue(searchKeywordInConsumer)" >
+					
+					<table class="toolbar" style="width: 100%;">
+						<tr>
+							<td><a href="#" class="iconLink menuBarLink" title="Refresh"><i
+									class="fa fa-refresh" ng-click="refreshConsumers()"></i>
+							</a>
+							</td>
+						</tr>
+					</table>
+					<table style="width: 100%;" border="0" valign="top">
+					<tr valign="top">
+						<td width="55%">
+					<table style="width: 100%;" border="0">
+						<tr>
+						<td >
+							<table style="width: 100%;" border="1">
+								<thead >
+									<tr>
+										<th align="left">Route Id</th>
+										<th align="left">Description</th>
+										<th>Exchanges Completed</th>
+										<th>Exchanges Failed</th>
+										<th>Status</th>
+										<th>Actions</th>
+									</tr>
+								</thead>
+								<tbody >
+									<tr align="center"
+										ng-repeat="x in filtredConsumerRoute | limitTo: itemsPerPage"
+										border="1" ng-class="{selected : x.id === selectedConsumerRouteId}">
+										<td align="left">{{ x.id }}</td>
+										<td align="left" width="250 px">{{ x.description }}</td>
+										<td>{{ x.exchangesCompleted }}</td>
+										<td>{{ x.exchangesFailed }}</td>
+										<td>{{ x.status }}</td>
+										<td><a href="#" ng-click="startOrStopRoute(x.id,x.status)"
+												class="expandCollapseLink" title="Start"
+												ng-hide="x.status === 'Started'"><img
+												ng-src="plugins/stardust-web-camel/css/images/control_play.png" />
+											</a> 
+											<a href="#" ng-click="startOrStopRoute(x.id,x.status)"
+												class="expandCollapseLink" title="Stop"
+												ng-show="x.status === 'Started'"><img
+												ng-src="plugins/stardust-web-camel/css/images/control_stop.png" />
+										     </a>
+										     
+											<a href="#" ng-click="showConsumerRouteDetails(x)"
+									       	   class="expandCollapseLink" title="Details">
+											<img
+											   ng-src="plugins/stardust-web-camel/css/images/report_plus.png" />
+											</a> 
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							</td>
+						</tr>
+						<tr align="center">
+						<td align="center">
+							<div class="pagination">
+								<ul>
+									<li ng-class="prevPageDisabledConsumerRoute()">
+										<a href ng-click="prevPageConsumerRoute()">«
+											Prev</a></li>
+									<li ng-repeat="n in rangeConsumerRoute()"
+										ng-class="{active: n == currentPageConsumerRoute}"
+										ng-click="setPageConsumerRoute(n)"><a
+										href="#">{{n+1}}</a></li>
+									<li ng-class="nextPageDisabledConsumerRoute()">
+										<a href ng-click="nextPageConsumerRoute()">Next
+											»</a></li>
+								</ul>
+							</div>
+							</td>
+						</tr>		
+					</table>
+					
+					</td>
+				
+					<td width="45%" valign="top">
+					
+					<div style="margin-left: 10px; margin-right: 10px; margin-bottom: 10px;" ng-show="showDetailsConsumerRoute">
+						<table style="width: 100%;" border="1">
+												<tbody>
+													<tr align="left">
+														<td colspan=2><b>Route Details</b></td>
+													</tr>
+
+													<tr align="left">
+														<th width="285">Route Id</th>
+														<td >{{selectedConsumerRoute.id }}</td>
+													</tr>
+
+													<tr align="left">
+														<th>Reset Timestamp</th>
+														<td >{{selectedConsumerRoute.resetTimestamp | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+													</tr>
+
+													<tr align="left">
+														<th>Min Processing Time</th>
+														<td >{{selectedConsumerRoute.minProcessingTime }}</td>
+													</tr>
+
+													<tr align="left">
+														<th>Max Processing Time</th>
+														<td >{{selectedConsumerRoute.maxProcessingTime }}</td>
+													</tr>
+
+													<tr align="left">
+														<th>Total Processing Time</th>
+														<td >{{selectedConsumerRoute.totalProcessingTime }}</td>
+													</tr>
+													
+													<tr align="left">
+														<th>Self Processing Time</tdh>
+														<td > {{selectedConsumerRoute.selfProcessingTime }}</td>
+													</tr>
+													
+													<tr align="left">
+													<th>Failures Handled</th>
+														<td >{{selectedConsumerRoute.failuresHandled}} </td>
+													</tr>
+													
+													<tr align="left">
+														<th>Redeliveries</th>
+														<td > {{selectedConsumerRoute.redeliveries }}</td>
+													</tr>
+													
+													<tr align="left">
+														<th>External Redeliveries</th>
+														<td > {{selectedConsumerRoute.externalRedeliveries }}</td>
+													</tr>
+													
+													<tr align="left">
+														<th>Last Processing Time</th>
+														<td >{{selectedConsumerRoute.lastProcessingTime}}</td>
+													</tr>
+													
+													<tr align="left">
+														<th>Delta Processing Time</th>
+														<td > {{selectedConsumerRoute.deltaProcessingTime }}</td>
+													</tr>
+													
+													<tr align="left">
+														<th>Mean Processing Time</th>
+														<td >{{ selectedConsumerRoute.meanProcessingTime }}</td>
+													</tr>
+												
+													<tr align="left">
+														<th>First Exchange Completed Timestamp</th>
+														<td >{{ selectedConsumerRoute.firstExchangeCompletedTimestamp| date:'yyyy-MM-dd HH:mm:ss'  }}</td>
+													</tr>
+												
+													<tr align="left">
+														<th>First Exchange Completed ExchangeId</th>
+														<td >{{ selectedConsumerRoute.firstExchangeCompletedExchangeId }}</td>
+													</tr>
+													
+													<tr align="left">
+														<th>First Exchange Failure Timestamp</th>
+													<td >{{ selectedConsumerRoute.firstExchangeFailureTimestamp | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+													</tr>
+													
+													<tr align="left">
+														<th>First Exchange Failure ExchangeId</th>
+													<td > {{selectedConsumerRoute.firstExchangeFailureExchangeId  }} </td>
+													</tr>
+																					
+												<tr align="left">
+														<th>Last Exchange Completed Timestamp</th>
+														<td > {{selectedConsumerRoute.lastExchangeCompletedTimestamp | date:'yyyy-MM-dd HH:mm:ss' }} </td>
+													</tr>
+											
+												<tr align="left">
+													<th>Last Exchange Completed Exchange Id</th>
+													<td >{{ selectedConsumerRoute.lastExchangeCompletedExchangeId }}</td>
+													</tr>
+												
+													<tr align="left">
+													<th>Last Exchange Failure Timestamp</th>
+														<td >{{ selectedConsumerRoute.lastExchangeFailureTimestamp | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+													</tr>
+													
+													<tr align="left">
+														<th>Last Exchange Failure Exchange Id</th>
+														<td > {{selectedConsumerRoute.lastExchangeFailureExchangeId }}</td>
+													</tr>
+												
+												</tbody>
+											</table>	
+										</div>
+									</td>
+								</tr>
+					</table>
+				</div>
+			</section>
+
+		</div>
+	</div>
+
+
+	<script src="plugins/stardust-web-camel/js/integration-management.js"></script>
+
+</body>
+</html>
+
+

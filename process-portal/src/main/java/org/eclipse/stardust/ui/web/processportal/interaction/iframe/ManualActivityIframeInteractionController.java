@@ -22,8 +22,6 @@ import java.util.Map.Entry;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
-import com.icesoft.faces.context.effects.JavascriptContext;
-
 import org.eclipse.stardust.common.error.InvalidArgumentException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
@@ -62,6 +60,9 @@ public class ManualActivityIframeInteractionController implements IActivityInter
    private static final Logger trace = LogManager.getLogger(ManualActivityIframeInteractionController.class);
    
    public static final String PANEL_URI = "/plugins/processportal/manualActivityPanel.html";
+   
+   public static final String CHECKLIST_FACET = "checklist";
+   public static final String CHECKLIST_FACET_URI = "/plugins/simple-modeler/checklistPanel.html";
 
    /* (non-Javadoc)
     * @see org.eclipse.stardust.ui.web.viewscommon.common.spi.IActivityInteractionController#providePanelUri(org.eclipse.stardust.engine.api.runtime.ActivityInstance)
@@ -74,7 +75,14 @@ public class ManualActivityIframeInteractionController implements IActivityInter
       String contextUri = "/${request.contextPath}";
       contextUri = contextUri.replace("/${request.contextPath}", req.getContextPath());
       
-      contextUri = contextUri + PANEL_URI + "?interactionId=" + Interaction.getInteractionId(ai);
+      String panelUri = PANEL_URI;
+      String manualActivityFacet = (String) ai.getActivity().getAttribute("manualActivityFacet");
+      if(CHECKLIST_FACET.equals(manualActivityFacet))
+      {
+         panelUri = CHECKLIST_FACET_URI;
+      }
+
+      contextUri = contextUri + panelUri + "?interactionId=" + Interaction.getInteractionId(ai);
       
       return contextUri;
    }

@@ -159,7 +159,7 @@
 								style="height: 100px; width: 250px;"
 								ng-model="x.metadata.selectedProcesses"
 								ng-change="reportFilterController.selectedProcessChanged(x)"
-								ng-options="p.id as p.name for p in reportFilterController.getEnumerators2(reportFilterController.getDimension('processName'), x)"></select>
+								ng-options="p.id as p.name for p in reportFilterController.getEnumerators(reportFilterController.getDimension('processName'), x)"></select>
 							</td>
 						</tr>
 					</table>
@@ -196,7 +196,7 @@
 							<td valign="top"><select id="value{{$index}}" multiple="multiple"
 								style="height: 100px; width: 250px;" ng-model="x.value"
 								ng-change="reportFilterController.selectionChanged(reportFilterController.getDimension(x.dimension), x)"
-								ng-options="y.id as y.name for y in reportFilterController.getEnumerators2(reportFilterController.getDimension(x.dimension), x)"></select>
+								ng-options="y.id as y.name for y in reportFilterController.getEnumerators(reportFilterController.getDimension(x.dimension), x)"></select>
 							</td>
 							<td ng-include="'templates/parameterControl.html'"></td>
 						</tr>
@@ -208,7 +208,7 @@
 								ng-options="o.id as o.label for o in reportFilterController.getOperatorsEnum(reportFilterController.getDimension(x.dimension))"></td>
 							<td valign="top"><select id="value{{$index}}" ng-model="x.value"
 								ng-change="reportFilterController.selectionChanged(reportFilterController.getDimension(x.dimension), x)"
-								ng-options="y.id as y.name for y in reportFilterController.getEnumerators2(reportFilterController.getDimension(x.dimension), x)"></select>
+								ng-options="y.id as y.name for y in reportFilterController.getEnumerators(reportFilterController.getDimension(x.dimension), x)"></select>
 							</td>
 							<td ng-include="'templates/parameterControl.html'"></td>
 						</tr>

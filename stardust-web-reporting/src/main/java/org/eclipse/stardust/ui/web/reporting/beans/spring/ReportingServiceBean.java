@@ -75,6 +75,7 @@ import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.CommonDescriptorUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.XPathCacheManager;
@@ -241,6 +242,23 @@ public class ReportingServiceBean
                      metadataJson.addProperty("isStructuredType", metadata.isStructured());
                      metadataJson.addProperty("xPath", metadata.getxPath());
                      metadataJson.addProperty("javaType", dataPath.getMappedType().getName());
+                     
+                     if (metadata.isEnum())
+                     {
+                        descriptorJson.addProperty("type", "enumerationType");
+                        JsonObject enumValues = new JsonObject();
+                        for (String val : metadata.getEnumValues())
+                        {
+                           JsonObject enumVal = new JsonObject();
+                           enumVal.addProperty("id", val);
+                           enumVal.addProperty(
+                                 "name",
+                                 I18nUtils.getLabel(metadata.getTypedXPath(),
+                                       modelService.getModel(dataPath.getModelOID()), val));
+                           enumValues.add(val, enumVal);
+                        }
+                        descriptorJson.add("enumList", enumValues);
+                     }
 
                      descriptorJson.add("metadata", metadataJson);
 

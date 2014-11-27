@@ -8635,6 +8635,16 @@ img[src *='clock.png']{
      opacity: 0.7;
 }
 
+img[src *='clock.gif']{
+     background-image:url('./images/flat-icons/clock.png');
+     width:16px;
+     background-size: 16px 16px;
+     padding: 16px 0 0 0 !important;
+     height:0px;
+     background-repeat: no-repeat !important;
+     opacity: 0.7;
+}
+
 img[src *='clock_save.png']{
      background-image:url('./images/flat-icons/clock_save.png');
      width:16px;
@@ -10634,6 +10644,21 @@ input[src *='page_attach.png']{
      opacity: 0.7;
 }
 input[src *='page_attach.png']{
+	background-color: transparent !important;
+	border:none !important;
+}
+
+img[src *='page_detach.png'],
+input[src *='page_detach.png']{
+     background-image:url('./images/flat-icons/page_detach.png') !important;
+     width:16px;
+     background-size: 16px 16px;
+     padding: 16px 0 0 0 !important;
+     height:0px;
+     background-repeat: no-repeat !important;
+     opacity: 0.7;
+}
+input[src *='page_detach.png']{
 	background-color: transparent !important;
 	border:none !important;
 }

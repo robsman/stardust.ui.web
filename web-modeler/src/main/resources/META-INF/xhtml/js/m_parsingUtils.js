@@ -69,7 +69,9 @@ define(["bpm-modeler/js/m_model"],function(m_model){
 					if(!typeDecl){
 						/*Couldn't find typeDecl in our default model, lets try harder!*/
 						lookupData=m_model.findData(paramDef.structuredDataTypeFullId || paramDef.dataFullId);
-						typeDecl=m_model.findTypeDeclaration(lookupData.structuredDataTypeFullId);
+						if (lookupData.structuredDataTypeFullId) { //structuredDataTypeFullId does not exist for primitive types
+							typeDecl = m_model.findTypeDeclaration(lookupData.structuredDataTypeFullId);	
+						}
 					}
 					if(typeDecl){
 						data=parseTypeToStringFrags(typeDecl,paramDef.id);

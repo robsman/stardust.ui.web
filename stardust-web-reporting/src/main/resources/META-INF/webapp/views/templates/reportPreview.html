@@ -2,6 +2,20 @@
    <div id="dataSetExceedWarning" style="display: none">
       
    </div>
+	<div ng-show="renderingController.hideReportPreview">
+		<table cellpadding="0" cellspacing="0" class="formTable">
+			<tr ng-show="!renderingController.renderingFailed">
+				<td><img src="../css/images/clock.gif"></img> </td>
+				<td><lable>
+					{{getI18N('reporting.definitionView.retrieving')}}</label></td>
+			</tr>
+			<tr ng-show="renderingController.renderingFailed">
+				<td><img src="../css/images/error.png"></img>
+				<td><label>
+					{{renderingController.renderingFailed}} </label></td>
+			</tr>
+		</table>
+	</div>
 	<div
 		ng-show="report.dataSet.type != 'processHistory' && !isInstance() && !isEmbedded() && hasParameters()">
 		<div class="heading">{{getI18N('reporting.definitionView.parameters.title')}}</div>
@@ -19,18 +33,6 @@
 				</table>
 			</div>
 		</div>
-	</div>
-	<div ng-show="renderingController.hideReportPreview">
-		<table cellpadding="0" cellspacing="0" class="formTable">
-			<tr ng-show="!renderingController.renderingFailed">
-				<td><lable>
-					{{getI18N('reporting.definitionView.retrieving')}} {{renderingController.showReportPreview}}</label></td>
-			</tr>
-			<tr ng-show="renderingController.renderingFailed">
-				<td><label style="color:red">
-					{{renderingController.renderingFailed}} </label></td>
-			</tr>
-		</table>
 	</div>
 	<div ng-show="!renderingController.hideReportPreview">
 		<div

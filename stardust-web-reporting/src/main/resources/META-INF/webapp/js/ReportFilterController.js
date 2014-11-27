@@ -129,21 +129,24 @@ define(
 								.push(this.constants.ALL_PROCESSES.id);
 						this.filters[index].value = [ this.constants.ALL_ACTIVITIES.id ];
 					} else {
-						var dimenison = this
+						var dimension = this
 								.getDimension(this.filters[index].dimension);
 
-						if (dimenison && dimenison.metadata
-								&& (dimenison.metadata.isDescriptor || dimenison.metadata.isComputedType)) {
-							this.filters[index].metadata = dimenison.metadata;
+						if (dimension && dimension.metadata
+								&& (dimension.metadata.isDescriptor || dimension.metadata.isComputedType)) {
+							this.filters[index].metadata = dimension.metadata;
+							if (dimension.enumerationType) {
+								this.filters[index].operator = "I";
+							}
 						}
 
-						if (dimenison
-								&& (dimenison.type == this.reportingService.metadata.autocompleteType)) {
+						if (dimension
+								&& (dimension.type == this.reportingService.metadata.autocompleteType)) {
 							this.filters[index].value = [];
 						}
 
-						if (dimenison
-								&& (dimenison.type == this.reportingService.metadata.timestampType)) {
+						if (dimension
+								&& (dimension.type == this.reportingService.metadata.timestampType)) {
 							this.filters[index].value = {
 								from : "",
 								to : ""
@@ -154,8 +157,8 @@ define(
 							this.filters[index].metadata.fromTo = true;
 						}
 						
-						if (dimenison
-								&& (dimenison.type == this.reportingService.metadata.booleanType)) {
+						if (dimension
+								&& (dimension.type == this.reportingService.metadata.booleanType)) {
 							this.filters[index].value = false;
 						}
 					}
@@ -180,7 +183,9 @@ define(
 					var dimensions = this.reportingService.getCumulatedDimensions(this.report);
 
 					for (var i = dimensions.length - 1; i >= 0; i--) {
-						if ((this.reportingService.metadata.durationType.id == dimensions[i].type.id) || (!donotFilter && dimensions[i].notSupportedAsFilter)) {
+						if ((this.reportingService.metadata.durationType.id == dimensions[i].type.id) || (!donotFilter && dimensions[i].notSupportedAsFilter) ||
+						         this.reportingService.metadata.objects.activityInstance.dimensions.activityType.id == dimensions[i].id) {
+						   //As activityType is non-Filterable so removing it from Filter List.
 							dimensions.splice(i, 1);
 						}
 					}
@@ -362,16 +367,13 @@ define(
 				/**
 				 * 
 				 */
-				ReportFilterController.prototype.getEnumerators2 = function(
+				ReportFilterController.prototype.getEnumerators = function(
 						dimension, filter) {
 					if (!dimension || !dimension.enumerationType) {
 						return null;
 					}
 
-					var qualifier = dimension.enumerationType.split(":");
-
-					var enumItems = this.reportingService.getEnumerators2(
-							qualifier[0], qualifier[1]);
+					var enumItems = this.reportingService.getEnumerators(dimension.enumerationType);
 
 					var filteredEnumItems = enumItems;
 
@@ -443,28 +445,6 @@ define(
 								}
 							}
 
-						}
-
-						// persist all processes or all activities
-						var selectedAll = false;
-						for ( var valueInd in filter.value) {
-							if (filter.value[valueInd] == self.constants.ALL_PROCESSES.id
-									|| filter.value[valueInd] == self.constants.ALL_ACTIVITIES.id) {
-								selectedAll = true;
-							}
-						}
-
-						if (selectedAll) {
-							filter.uiValue = [];
-							for ( var itemInd in filteredEnumItems) {
-								var itemId = filteredEnumItems[itemInd].id;
-								if (itemId != self.constants.ALL_PROCESSES.id
-										&& itemId != self.constants.ALL_ACTIVITIES.id) {
-									filter.uiValue.push(itemId);
-								}
-							}
-						} else {
-							delete filter.uiValue;
 						}
 					}
 					return filteredEnumItems;

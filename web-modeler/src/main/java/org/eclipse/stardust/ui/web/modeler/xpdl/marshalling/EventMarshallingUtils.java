@@ -513,6 +513,28 @@ public class EventMarshallingUtils
          AttributeUtil.setAttribute(eventHandler, "carnot:engine:event:boundaryEventType", eventType);
       }
 
+      ModelType model = ModelUtils.findContainingModel(hostActivity);
+      if(model != null)
+      {
+         String supportedConditions = null;
+         for(EventConditionTypeType type : model.getEventConditionType())
+         {
+            if(supportedConditions == null)
+            {
+               supportedConditions = type.getId();
+            }
+            else
+            {
+               supportedConditions += ", ";
+               supportedConditions += type.getId();
+            }
+         }
+         for(EventActionTypeType type : model.getEventActionType())
+         {
+            type.setSupportedConditionTypes(supportedConditions);
+         }
+      }
+
       hostingConfig.addProperty(PRP_EVENT_HANDLER_ID, eventHandler.getId());
    }
 

@@ -497,7 +497,20 @@ public class RepositoryUtility
     */
    public static void refreshNode(DefaultMutableTreeNode node)
    {
-      if (node.getUserObject() instanceof RepositoryFolderProxyUserObject)
+      if(node.getUserObject() instanceof RepositoryVirtualUserObject)
+      {
+         // Virtual user Object can have child virtual user objects, so to refresh the child contents
+         Enumeration<DefaultMutableTreeNode> en = node.breadthFirstEnumeration();
+         while (en.hasMoreElements())
+         {
+            DefaultMutableTreeNode childNode = en.nextElement();
+            if (!(childNode.getUserObject() instanceof RepositoryVirtualUserObject))
+            {
+               refreshNode(childNode);
+            }
+         }
+      }
+      else if (node.getUserObject() instanceof RepositoryFolderProxyUserObject)
       {
          RepositoryFolderProxyUserObject folderProxyUserObject = (RepositoryFolderProxyUserObject) node.getUserObject();
          String resourceId = folderProxyUserObject.getResourceId();

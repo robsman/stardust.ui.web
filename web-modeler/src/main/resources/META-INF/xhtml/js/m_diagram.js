@@ -1989,8 +1989,8 @@ define(
 				 */
 				Diagram.prototype.showProcessPropertiesPanel = function() {
 					m_utils.markControlsReadonly('modelerPropertiesPanelWrapper', false);
-					this.processPropertiesPanel.setElement(this.process);
 					m_propertiesPanel.initializeProcessPropertiesPanel(this.processPropertiesPanel);
+					this.processPropertiesPanel.setElement(this.process);
 				};
 
 				/**

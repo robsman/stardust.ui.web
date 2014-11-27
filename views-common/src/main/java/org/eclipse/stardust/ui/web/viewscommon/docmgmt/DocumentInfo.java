@@ -8,7 +8,7 @@
  * Contributors:
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
-package org.eclipse.stardust.ui.web.processportal.view;
+package org.eclipse.stardust.ui.web.viewscommon.docmgmt;
 
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.TypedDocument;

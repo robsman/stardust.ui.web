@@ -218,9 +218,9 @@ define(
                                                       src : "../views-common/popups/fileUploadPopupDialogContent.html"
                                                    },
                                                    payload : {
-                                                      title : "Upload a Document", //i18n
-                                                      message : "Upload a Document", //i18n
-                                                      documentTypeName : "Reference",
+                                                      title : I18NUtils.getProperty('reporting.definitionView.contextmenu.fileUpload.dialog.title'),
+                                                      message : I18NUtils.getProperty('reporting.definitionView.contextmenu.fileUpload.dialog.title'),
+                                                      documentTypeName : I18NUtils.getProperty('reporting.definitionView.contextmenu.fileUpload.dialog.documentType'),
                                                       acceptFunction : function(fileUploadData)
                                                       {
                                                          scope.runInAngularContext(function(scope)

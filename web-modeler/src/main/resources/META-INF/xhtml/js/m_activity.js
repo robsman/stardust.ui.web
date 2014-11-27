@@ -37,7 +37,7 @@ define(
 				createActivityFromProcess : function(process, subprocess) {
 					var activity = new Activity();
 
-					var elementNameId = m_utils.getUniqueElementNameId(process.activities, subprocess.name);
+					var elementNameId = m_utils.getUpdatedUniqueElementNameId(process.activities, subprocess.name);
 
 					activity.initialize(elementNameId.name,
 							m_constants.SUBPROCESS_ACTIVITY_TYPE);
@@ -50,7 +50,7 @@ define(
 				createActivityFromApplication : function(process, application) {
 					var activity = new Activity();
 
-					var elementNameId = m_utils.getUniqueElementNameId(process.activities, application.name);
+					var elementNameId = m_utils.getUpdatedUniqueElementNameId(process.activities, application.name);
 
 					activity.initialize(elementNameId.name,
 							m_constants.TASK_ACTIVITY_TYPE);

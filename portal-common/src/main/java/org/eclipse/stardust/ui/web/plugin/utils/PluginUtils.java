@@ -10,7 +10,9 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.plugin.utils;
 
+import static java.util.Collections.emptyList;
 import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
+import static org.eclipse.stardust.ui.web.plugin.support.resources.PluginResourceUtils.resolveResources;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -18,8 +20,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
+import java.util.WeakHashMap;
 
-import org.eclipse.stardust.common.Pair;
+import org.eclipse.stardust.common.config.Parameters;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.common.utils.io.CloseableUtil;
@@ -34,6 +37,8 @@ public class PluginUtils
 {
    private static final Logger trace = LogManager.getLogger(PluginUtils.class);
    
+   private static WeakHashMap<ResourcePatternResolver, List<PluginDescriptor>> pluginResolutionCache = new WeakHashMap<ResourcePatternResolver, List<PluginDescriptor>>();
+
    /**
     * @param resolver
     * @param pattern
@@ -43,26 +48,25 @@ public class PluginUtils
    public static List<ResourceInfo> findPluginResources(ResourcePatternResolver resolver, String pattern, boolean fetchContents)
    {
       List<ResourceInfo> allResources = newArrayList();
-
       try
       {
-         List<Pair<String, String>> allPlugins = getAllPlugins(resolver);
+         List<PluginDescriptor> allPlugins = getAllPlugins(resolver);
 
-         for (Pair<String, String> plugin : allPlugins)
+         for (PluginDescriptor plugin : allPlugins)
          {
-            String pluginBaseUri = plugin.getSecond();
+            String pluginBaseUri = plugin.baseUri;
 
             String locationPattern = pluginBaseUri + pattern;
             
-            Resource[] matchedResources;
+            List<Resource> matchedResources;
             try
             {
-               matchedResources = resolver.getResources(locationPattern);
+               matchedResources = resolveResources(resolver, locationPattern);
             }
             catch (Exception e)
             {
                // Failed, possibly no match found. Ignore.
-               matchedResources = new Resource[0];
+               matchedResources = emptyList();
             }
 
             ResourceInfo rInfo;
@@ -74,11 +78,11 @@ public class PluginUtils
                   {
                      if (fetchContents)
                      {
-                        rInfo = new ResourceInfo(plugin.getFirst(), pluginBaseUri, resource, readResource(resource));
+                        rInfo = new ResourceInfo(plugin.id, pluginBaseUri, resource, readResource(resource));
                      }
                      else
                      {
-                        rInfo = new ResourceInfo(plugin.getFirst(), pluginBaseUri, resource);
+                        rInfo = new ResourceInfo(plugin.id, pluginBaseUri, resource);
                      }
                      allResources.add(rInfo);
                   }
@@ -124,20 +128,20 @@ public class PluginUtils
          String webUriPrefix = "plugins/" + pluginId + "/" + webUriBase;
          String locationPattern = baseUri + pattern;
          
-         Resource[] matchedResources;
+         List<Resource> matchedResources;
          try
          {
             if (trace.isDebugEnabled())
             {
                trace.debug("Location pattern to search for plugins: " + locationPattern);
             }
-            matchedResources = resolver.getResources(locationPattern);
+            matchedResources = resolveResources(resolver, locationPattern);
          }
          // JBoss is throwing an IOException instead of FileNotFoundException if a file cannot be found
          catch (IOException ioe)
          {
             // Failed, possibly no match found. Ignore.
-            matchedResources = new Resource[0];
+            matchedResources = emptyList();
          }
 
          for (Resource resource : matchedResources)
@@ -155,18 +159,53 @@ public class PluginUtils
       return allResources;
    }
 
+   public static class PluginDescriptor
+   {
+      public final String id;
+
+      public final String resourcesRoot;
+
+      public final String baseUri;
+
+      public PluginDescriptor(String id, String resourcesRoot, String baseUri)
+      {
+         super();
+         this.id = id;
+         this.resourcesRoot = resourcesRoot;
+         this.baseUri = baseUri;
+      }
+   }
+
    /**
     * @param resolver
     * @return
     */
-   @SuppressWarnings({"rawtypes", "unchecked"})
-   public static List<Pair<String, String>> getAllPlugins(ResourcePatternResolver resolver)
+   public static synchronized List<PluginDescriptor> getAllPlugins(ResourcePatternResolver resolver)
    {
-      List<Pair<String, String>> allPlugins = newArrayList();
+      List<PluginDescriptor> resolvedPlugins = pluginResolutionCache.get(resolver);
 
+      if (null != resolvedPlugins)
+      {
+         // cache hit, yay!
+         return resolvedPlugins;
+      }
+
+      // not yet cached, need to scan for *.portal-plugin files
+      resolvedPlugins = newArrayList();
       try
       {
-         Resource[] resources = resolver.getResources("classpath*:/META-INF/*.portal-plugin");
+         List<Resource> resources;
+         try
+         {
+            resources = resolveResources(resolver, "classpath*:/META-INF/*.portal-plugin");
+         }
+         catch (IOException ioe)
+         {
+            // JBoss is unable to find META-INF some times, workaround for the scenario
+            trace.debug("exception occurred while searching resources with classpath*:/META-INF/*.portal-plugin");
+            resources = resolveResources(resolver, "classpath*:/**/*.portal-plugin");
+         }
+
          for (Resource resource : resources)
          {
             String pluginId = resource.getFilename().substring(0, resource.getFilename().lastIndexOf("."));
@@ -178,20 +217,25 @@ public class PluginUtils
             InputStream isPluginDescriptor = resource.getInputStream();
             try
             {
-               String firstLine = new BufferedReader(new InputStreamReader(isPluginDescriptor)).readLine();
-               Resource pluginBaseUriReader = resource.createRelative("../").createRelative(firstLine);
+               String resourcesRoot = new BufferedReader(new InputStreamReader(isPluginDescriptor)).readLine();
+               Resource pluginBaseUriReader = resource.createRelative("../").createRelative(resourcesRoot);
                String pluginBaseUri = pluginBaseUriReader.getURI().toString();
                if ( !pluginBaseUri.endsWith("/"))
                {
                   pluginBaseUri += "/";
                }
 
-               allPlugins.add(new Pair(pluginId, pluginBaseUri));
+               resolvedPlugins.add(new PluginDescriptor(pluginId, resourcesRoot, pluginBaseUri));
             }
             finally
             {
                CloseableUtil.closeQuietly(isPluginDescriptor);
             }
+         }
+
+         if (Parameters.instance().getBoolean("Carnot.Client.Caching.PluginResolution.Enabled", true))
+         {
+            pluginResolutionCache.put(resolver, resolvedPlugins);
          }
       }
       catch (IOException e)
@@ -199,7 +243,7 @@ public class PluginUtils
          trace.error("Unable to process plugins", e);
       }
 
-      return allPlugins;
+      return resolvedPlugins;
    }
 
    /**

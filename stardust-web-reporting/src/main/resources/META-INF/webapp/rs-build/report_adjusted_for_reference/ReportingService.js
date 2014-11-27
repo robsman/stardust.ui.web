@@ -28,6 +28,8 @@ define(
 			 */
 			function ReportingService() {
 				
+				jQuery.ajaxSetup({ cache: false });  
+				
 				ReportingService.prototype.getI18N = function(key) {
 					return I18NUtils.getProperty(key);
 				};
@@ -180,6 +182,26 @@ define(
 					name : this.getI18N("reporting.definitionView.metadata.autocompleteType.label")
 				};
 				
+				//common or mostly used types - to avoid duplication
+				this.metadata.commonTypes = {};
+				this.metadata.commonTypes.activityInstanceProcessingTime = {
+					id : "activityInstanceProcessingTime",
+					name : this.getI18N("reporting.definitionView.activityInstanceProcessingTime"),
+					type : this.metadata.durationType
+				};
+
+				this.metadata.commonTypes.processInstanceProcessingTime = {
+					id : "processInstanceProcessingTime",
+					name : this.getI18N("reporting.definitionView.processInstanceProcessingTime"),
+					type : this.metadata.durationType
+				}
+
+				this.metadata.commonTypes.rootProcessInstanceProcessingTime = {
+					id : "rootProcessInstanceProcessingTime",
+					name : this.getI18N("reporting.definitionView.rootProcessInstanceProcessingTime"),
+					type : this.metadata.durationType
+				}; 
+				
 				this.metadata.objects = {
 					processInstance : {
 						id : "processInstance",
@@ -200,9 +222,11 @@ define(
                         id : "rootProcessInstanceDuration",
                         name : this.getI18N("reporting.definitionView.rootProcessInstanceDuration"),
                         type : this.metadata.durationType
-                     }
-						},
-						dimensions : {
+                     },
+                     processInstanceProcessingTime : this.metadata.commonTypes.processInstanceProcessingTime,
+                     rootProcessInstanceProcessingTime : this.metadata.commonTypes.rootProcessInstanceProcessingTime
+					},
+					dimensions : {
 						   processInstanceStartTimestamp : {
 								id : "processInstanceStartTimestamp",
 								name : this.getI18N("reporting.definitionView.additionalFiltering.processInstanceStartTimestamp"),
@@ -229,6 +253,8 @@ define(
                         name : this.getI18N("reporting.definitionView.rootProcessInstanceDuration"),
                         type : this.metadata.durationType
                      },
+                     processInstanceProcessingTime : this.metadata.commonTypes.processInstanceProcessingTime,
+                     rootProcessInstanceProcessingTime : this.metadata.commonTypes.rootProcessInstanceProcessingTime,
 					processOID : {
                         id : "processOID",
                         name : this.getI18N("reporting.definitionView.additionalFiltering.processOID"),
@@ -243,7 +269,7 @@ define(
 						id : "processName",
 						name : this.getI18N("reporting.definitionView.additionalFiltering.processName"),
 						type : this.metadata.enumerationType,
-						enumerationType : "modelData:processDefinitions:name"
+						enumerationType : "modelData:processDefinitions"
 					},
 					startingUserName : {
 						id : "startingUserName",
@@ -256,7 +282,7 @@ define(
 						id : "state",
 						name : this.getI18N("reporting.definitionView.additionalFiltering.processState"),
 						type : this.metadata.enumerationType,
-						enumerationType : "staticData:processStates:name",
+						enumerationType : "staticData:processStates",
 						customSort : true
 					},
 					priority : {
@@ -264,7 +290,7 @@ define(
 						name : this.getI18N("reporting.definitionView.additionalFiltering.priority"),
 						type : this.metadata.enumerationType,
 						display : "singleSelect",
-						enumerationType : "staticData:priorityLevel:name",
+						enumerationType : "staticData:priorityLevel",
 						operators : ["E", "LE", "GE", "NE"],
 						customSort : true
 					}
@@ -287,6 +313,7 @@ define(
 								type : this.metadata.durationType,
 								cumulated : true
 							},
+							activityInstanceProcessingTime: this.metadata.commonTypes.activityInstanceProcessingTime, 
                      processInstanceDuration : {
                         id : "processInstanceDuration",
                         name : this.getI18N("reporting.definitionView.processInstanceDuration"),
@@ -296,7 +323,9 @@ define(
                         id : "rootProcessInstanceDuration",
                         name : this.getI18N("reporting.definitionView.rootProcessInstanceDuration"),
                         type : this.metadata.durationType
-                     }
+                     },
+                     processInstanceProcessingTime : this.metadata.commonTypes.processInstanceProcessingTime,
+                     rootProcessInstanceProcessingTime : this.metadata.commonTypes.rootProcessInstanceProcessingTime
 						},
 						dimensions : {
 							startTimestamp : {
@@ -322,6 +351,7 @@ define(
                         type : this.metadata.durationType,
                         cumulated : true
                      },
+                     activityInstanceProcessingTime: this.metadata.commonTypes.activityInstanceProcessingTime,
                      processInstanceDuration : {
                         id : "processInstanceDuration",
                         name : this.getI18N("reporting.definitionView.processInstanceDuration"),
@@ -332,7 +362,9 @@ define(
                         name : this.getI18N("reporting.definitionView.rootProcessInstanceDuration"),
                         type : this.metadata.durationType
                      },
-							lastModificationTimestamp : {
+                     processInstanceProcessingTime : this.metadata.commonTypes.processInstanceProcessingTime,
+                     rootProcessInstanceProcessingTime : this.metadata.commonTypes.rootProcessInstanceProcessingTime,
+					 lastModificationTimestamp : {
 								id : "lastModificationTimestamp",
 								name : this.getI18N("reporting.definitionView.additionalFiltering.timestamp.last"),
 								type : this.metadata.timestampType
@@ -361,13 +393,13 @@ define(
 								id : "activityName",
 								name : this.getI18N("reporting.definitionView.additionalFiltering.activityName"),
 								type : this.metadata.enumerationType,
-								enumerationType : "modelData:processDefinitions:name"
+								enumerationType : "modelData:processDefinitions"
 							},
 							processName : {
 								id : "processName",
 								name : this.getI18N("reporting.definitionView.additionalFiltering.processName"),
 								type : this.metadata.enumerationType,
-								enumerationType : "modelData:processDefinitions:name",
+								enumerationType : "modelData:processDefinitions",
 								notSupportedAsFilter : true
 							},
 							userPerformerName : {
@@ -381,23 +413,31 @@ define(
 								id : "participantPerformerName",
 								name : this.getI18N("reporting.definitionView.additionalFiltering.performer"),
 								type : this.metadata.enumerationType,
-								enumerationType : "modelData:participants:name",
+								enumerationType : "modelData:participants",
 								notSupportedAsFilter : true
 							},
 							state : {
 								id : "state",
 								name : this.getI18N("reporting.definitionView.additionalFiltering.activityState"),
 								type : this.metadata.enumerationType,
-								enumerationType : "staticData:activityStates:name"
+								enumerationType : "staticData:activityStates"
 							},
 							criticality : {
 								id : "criticality",
 								name : this.getI18N("reporting.definitionView.additionalFiltering.criticality"),
 								type : this.metadata.enumerationType,
 								display : "singleSelect",
-								enumerationType : "preferenceData:criticality:label",
+								enumerationType : "preferenceData:criticality",
 								operators : ["E", "LE", "GE", "NE"],
 								customSort : true
+							},
+							activityType : {
+							   id : "activityType",
+							   name : this.getI18N("reporting.definitionView.additionalFiltering.activityType"),
+							   type : this.metadata.enumerationType,
+							   display : "singleSelect",
+							   operators : ["E"],
+							   enumerationType : "staticData:activityTypes"
 							}
 						}
 					}/*,
@@ -431,9 +471,9 @@ define(
 
 				this.staticData = {
 					processStates : {
-						alive : {
-							id : "Alive", 
-							name : this.getI18N("reporting.definitionView.additionalFiltering.processState.alive"),
+						active : {
+							id : "Active", 
+							name : this.getI18N("reporting.definitionView.additionalFiltering.processState.active"),
 							order : 1
 						},
 						aborted : {
@@ -453,9 +493,9 @@ define(
 						}
 					},
 					activityStates : {
-						alive : {
-							id : "Alive",
-							name : this.getI18N("reporting.definitionView.additionalFiltering.activityState.alive")
+						application : {
+							id : "Application",
+							name : this.getI18N("reporting.definitionView.additionalFiltering.activityState.application")
 						},
 						suspended : {
 							id : "Suspended",
@@ -495,6 +535,16 @@ define(
 							id : "1",
 							name : this.getI18N("reporting.definitionView.additionalFiltering.priority.high")
 						}
+					},
+					activityTypes : {
+					   interactive : {
+					      id : "Interactive",
+					      name : this.getI18N("reporting.definitionView.additionalFiltering.activityType.interactive")
+					   },
+					   nonInteractive : {
+					      id : "NonInteractive",
+					      name : this.getI18N("reporting.definitionView.additionalFiltering.activityType.nonInteractive")
+					   }                 
 					}
 				};
 
@@ -559,44 +609,35 @@ define(
 				/**
 				 * 
 				 */
-				ReportingService.prototype.getEnumeratorsForDimension = function(
-						primaryObject, dimension) {
-					if (this.getDimension(primaryObject, dimension).enumerationType) {
-						var qualifier = this.getDimension(primaryObject,
-								dimension).enumerationType.split(":");
-
-						return this.getEnumerators(qualifier[0], qualifier[1],
-								qualifier[2]);
-					}
-
-					return [];
-				};
-
-				/**
-				 * 
-				 */
-				ReportingService.prototype.getEnumerators = function(type,
-						scope, property) {
+				ReportingService.prototype.getEnumerators = function(path) {
+					
+					var q = path.split(":"); //qualifiers
+					
 					var enumerators = [];
-
-					for ( var n in this[type][scope]) {
-						enumerators.push(this[type][scope][n][property]);
+					
+					if(q.length == 1) {
+						for ( var n in this[q[0]]) {
+							enumerators.push(this[q[0]][n]);
+						}	
+					}else if(q.length == 2) {
+						for ( var n in this[q[0]][q[1]]) {
+							enumerators.push(this[q[0]][q[1]][n]);
+						}	
+					}else if(q.length == 3) {
+						for ( var n in this[q[0]][q[1]][q[2]]) {
+							enumerators.push(this[q[0]][q[1]][q[2]][n]);
+						}	
+					}else if(q.length == 4) {
+						for ( var n in this[q[0]][q[1]][q[2]][q[3]]) {
+							enumerators.push(this[q[0]][q[1]][q[2]][q[3]][n]);
+						}	
+					}else {
+						console.error("qualifier not supported yet: " + path);
 					}
-
+					
 					return enumerators;
 				};
 
-				ReportingService.prototype.getEnumerators2 = function(type,
-						scope) {
-					var enumerators = [];
-
-					for ( var n in this[type][scope]) {
-						enumerators.push(this[type][scope][n]);
-					}	
-
-					return enumerators;
-				};
-				
 				/**
 				 * 
 				 */
@@ -800,6 +841,11 @@ define(
 									type : type,
 									metadata : descriptor.metadata
 								};
+								
+								//if the descriptor is of type enumeration
+								if(descriptor.enumList){
+									object.dimensions[descriptor.id].enumerationType = "modelData:descriptors:" + descriptorId + ":enumList";
+								}
 							}
 						}
 					}
@@ -2175,5 +2221,4 @@ define(
 			    }
 			    report.uiAdjustmentApplied = false;
 			};
-			
 		});

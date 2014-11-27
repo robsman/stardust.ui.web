@@ -79,7 +79,7 @@ public class WorklistsTreeUserObject extends IceUserObject
          // Use Activity Instance Query for Unified worklist
          query = ParticipantWorklistCacheManager.getInstance().getActivityInstanceQuery(participantInfo, userParticipantId);
          FilterOrTerm or = query.getFilter().addOrTerm();
-         User user = (User) ParticipantUtils.getParticipant(participantInfo);
+         User user = (User) participant;
          or.add(new PerformingUserFilter(user.getOID()));
          Set<ParticipantInfo> partInfo = ParticipantWorklistCacheManager.getInstance().getWorklistParticipants()
                .get(participantInfo.getQualifiedId());

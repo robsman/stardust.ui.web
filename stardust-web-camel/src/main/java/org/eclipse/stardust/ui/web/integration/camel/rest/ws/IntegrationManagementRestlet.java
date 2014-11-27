@@ -34,6 +34,64 @@ public class IntegrationManagementRestlet {
 	public String allRoutesListService(@PathParam("contextId") String contextId) {
 		return integrationManagement.allRoutesList(contextId);
 	}
+	
+	@GET
+	@Path("context/{contextId}/start")
+	@Produces(MediaType.TEXT_PLAIN)
+	public void startCamelContextService(@PathParam("contextId") String contextId) {
+		integrationManagement.startCamelContext(contextId);
+	}
+	
+	@GET
+	@Path("context/{contextId}/stop")
+	@Produces(MediaType.TEXT_PLAIN)
+	public void stopCamelContext(@PathParam("contextId") String contextId) {
+		integrationManagement.stopCamelContext(contextId);
+	}
+
+	@GET
+	@Path("context/{contextId}/startAllRoutes")
+	@Produces(MediaType.TEXT_PLAIN)
+	public void startAllRoutesService(@PathParam("contextId") String contextId) {
+		integrationManagement.startAllRoutes(contextId);
+	}
+	
+	@GET
+	@Path("context/{contextId}/stopAllRoutes")
+	@Produces(MediaType.TEXT_PLAIN)
+	public void stopAllRoutesService(@PathParam("contextId") String contextId) {
+		integrationManagement.stopAllRoutes(contextId);
+	}
+
+	
+	@GET
+	@Path("context/{contextId}/routes/producers")
+	@Produces(MediaType.APPLICATION_JSON)
+	public String producerRoutesListService(@PathParam("contextId") String contextId) {
+		return integrationManagement.getProducerRoutesList(contextId);
+	}
+	
+	@GET
+	@Path("context/{contextId}/routes/consumers")
+	@Produces(MediaType.APPLICATION_JSON)
+	public String consumerRoutesListService(@PathParam("contextId") String contextId) {
+		return integrationManagement.getConsumerRoutesList(contextId);
+	}
+	
+	
+	@GET
+	@Path("context/{contextId}/routes/consumers/trigger")
+	@Produces(MediaType.APPLICATION_JSON)
+	public String triggerConsumerRoutesListtService(@PathParam("contextId") String contextId) {
+		return integrationManagement.getTriggerConsumerRoutesList(contextId);
+	}
+	
+	@GET
+	@Path("context/{contextId}/routes/consumers/application")
+	@Produces(MediaType.APPLICATION_JSON)
+	public String applicationConsumerRoutesListService(@PathParam("contextId") String contextId) {
+		return integrationManagement.getApplicationConsumerRoutesList(contextId);
+	}
 
 	@GET
 	@Path("/context/{contextId}/route/{routeId}/start")
