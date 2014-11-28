@@ -81,6 +81,32 @@
 		/*
 		 * 
 		 */
+		UtilService.prototype.parseFunction = function(funcAsStr) {
+			var ret = null;
+
+			try {
+				if (funcAsStr.indexOf('(') != -1) {
+					funcAsStr = funcAsStr.substring(funcAsStr.indexOf('(') + 1);
+					
+					if (funcAsStr.indexOf(')') != -1) {
+						var params = funcAsStr.substring(0, funcAsStr.indexOf(')'));
+						params = params.split(',');
+						for(var i = 0; i < params.length; i++) {
+							params[i] = params[i].trim();
+						}
+						ret = {};
+						ret.params = params;
+					}
+				}
+			} catch (e) {
+			}
+
+			return ret;
+		};
+
+		/*
+		 * 
+		 */
 		function createProxyFunc(obj, member) {
 			function proxyFunc() {
 				var args = Array.prototype.slice.call(arguments, 0);

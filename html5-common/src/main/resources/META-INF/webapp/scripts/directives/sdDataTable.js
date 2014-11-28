@@ -95,7 +95,9 @@
 
 		var columns = [], dtColumns = [], theTable, theDataTable, theToolbar;
 
-		var selectedRowIndexes = {}, rowSelectionMode = false, selectionBinding, onSelect = {};
+		var selectedRowIndexes = {}, rowSelectionMode = false, selectionBinding;
+		
+		var onSelect = {}, onPagination = {};
 		
 		var pageSize = 8;
 		
@@ -178,20 +180,24 @@
 
 				if (attr.sdaOnSelect) {
 					onSelect.handler = $parse(attr.sdaOnSelect);
-					try {
-						var sdaOnSelect = attr.sdaOnSelect;
-						if (sdaOnSelect.indexOf('(') != -1) {
-							sdaOnSelect = sdaOnSelect.substring(sdaOnSelect.indexOf('(') + 1);
-							
-							var end = sdaOnSelect.indexOf(',') > 0 ? sdaOnSelect.indexOf(',') : sdaOnSelect.indexOf(')');
-							onSelect.param = sdaOnSelect.substring(0, end);
-						}
-					} catch (e) {						
-					}
 
-					if (!onSelect.param) {
+					var onSelectFuncInfo = sdUtilService.parseFunction(attr.sdaOnSelect);
+					if (onSelectFuncInfo && onSelectFuncInfo.params && onSelectFuncInfo.params.length > 0) {
+						onSelect.param = onSelectFuncInfo.params[0];
+					} else {
 						trace.error('sda-on-select does not seems to be correcly used, it does not appear to be a function accepting parameter.');
 					}
+				}
+			}
+
+			if (attr.sdaOnPagination) {
+				onPagination.handler = $parse(attr.sdaOnPagination);
+
+				var onPaginationfuncInfo = sdUtilService.parseFunction(attr.sdaOnPagination);
+				if (onPaginationfuncInfo && onPaginationfuncInfo.params && onPaginationfuncInfo.params.length > 0) {
+					onPagination.param = onPaginationfuncInfo.params[0];
+				} else {
+					trace.error('sda-on-pagination does not seems to be correcly used, it does not appear to be a function accepting parameter.');
 				}
 			}
 		}
@@ -416,7 +422,7 @@
 
 				if (attr.sdaNoPagination == '' || attr.sdaNoPagination == 'true') {
 					dtOptions.iDisplayLength = dtOptions.data.length;
-					dtOptions.sDom = "it";
+					dtOptions.sDom = 't';
 				} else {
 					// TODO: Undefine this for now! It causes wired issue with pagination
 					dtOptions.iDisplayLength = undefined;
@@ -442,7 +448,38 @@
 				};
 
 				callback(ret);
+
+				// Invoke the event handler when processing is complete and data is displayed
+				$timeout(function() {
+					var paginationInfo = {
+						currentPage: Math.floor((data.start / data.length) + 1),
+						totalPages: Math.ceil(settings._iRecordsTotal / settings._iDisplayLength)
+					};
+					
+					fireDataTableEvent(onPagination, paginationInfo, 'onPagination');
+				}, 0, true);
 			});
+		}
+
+		/*
+		 * 
+		 */
+		function fireDataTableEvent(handleInfo, data, eventType) {
+			if (handleInfo.handler) {
+				try {
+					var transObj = {};
+					if (handleInfo.param) {
+						transObj[handleInfo.param] = data;
+					} else {
+						transObj.info = data;
+						trace.warning(eventType + ' event handler is not properly configured, may not receive event info.');
+					}
+
+					handleInfo.handler(elemScope, transObj);
+				} catch(e) {
+					trace.error('Error while firing ' + eventType + ' event on data table', e);
+				}
+			}
 		}
 
 		/*
@@ -700,28 +737,7 @@
 
 			selectionInfo.all = getRowSelection();
 
-			fireOnSelectEvent(selectionInfo);
-		}
-
-		/*
-		 * 
-		 */
-		function fireOnSelectEvent(selectionInfo) {
-			if (onSelect.handler) {
-				try {
-					var transObj = {};
-					if (onSelect.param) {
-						transObj[onSelect.param] = selectionInfo;
-					} else {
-						transObj.info = selectionInfo;
-						trace.warning('sda-on-select is not properly configured, may not receive selection info.');
-					}
-
-					onSelect.handler(elemScope, transObj);
-				} catch(e) {
-					trace.error('Unable to fire on select event on data table', e);
-				}
-			}
+			fireDataTableEvent(onSelect, selectionInfo, 'onSelect');
 		}
 
 		/*

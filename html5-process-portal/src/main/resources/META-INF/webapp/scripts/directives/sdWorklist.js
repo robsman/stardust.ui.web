@@ -206,6 +206,13 @@
 		WorklistCompiler.prototype.onSelect = function(info) {
 			// NOP
 		};
+
+		/*
+		 * 
+		 */
+		WorklistCompiler.prototype.onPagination = function(info) {
+			// NOP
+		};
 		
 		/*
 		 * 
