@@ -22,6 +22,7 @@ import org.springframework.context.ApplicationContext;
 
 import com.google.gson.JsonObject;
 
+import org.eclipse.stardust.common.error.PublicException;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
@@ -38,6 +39,8 @@ import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.ModelCommandsHandler;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelBinding;
+import org.eclipse.stardust.ui.web.modeler.xpdl.edit.utils.ExternalReferenceUtils;
+import org.eclipse.stardust.ui.web.viewscommon.common.constant.ProcessPortalErrorClass;
 
 /**
  * @author Shrikant.Gangal
@@ -167,6 +170,11 @@ public class ModelChangeCommandHandler implements ModelCommandsHandler
    {
       ModificationDescriptor changes = new ModificationDescriptor();
 
+      if(ExternalReferenceUtils.isModelReferenced(model, modelService.currentSession()))
+      {
+         throw new PublicException(ProcessPortalErrorClass.UNABLE_TO_DELETE_REFERENCED_MODEL);
+      }
+
       if (null != model)
       {
          ModelManagementStrategy modelMgtStrategy = modelService
@@ -178,4 +186,3 @@ public class ModelChangeCommandHandler implements ModelCommandsHandler
       return changes;
    }
 }
-
