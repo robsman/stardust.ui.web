@@ -784,6 +784,7 @@
 		 */
 		function DataTable() {
 			this.instance = theDataTable;
+			this.ready = true;
 
 			/*
 			 * 
