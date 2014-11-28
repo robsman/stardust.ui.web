@@ -450,14 +450,16 @@
 				callback(ret);
 
 				// Invoke the event handler when processing is complete and data is displayed
-				$timeout(function() {
-					var paginationInfo = {
-						currentPage: Math.floor((data.start / data.length) + 1),
-						totalPages: Math.ceil(settings._iRecordsTotal / settings._iDisplayLength)
-					};
-					
-					fireDataTableEvent(onPagination, paginationInfo, 'onPagination');
-				}, 0, true);
+				if (onPagination.handler) {
+					$timeout(function() {
+						var paginationInfo = {
+							currentPage: Math.floor((data.start / data.length) + 1),
+							totalPages: Math.ceil(settings._iRecordsTotal / settings._iDisplayLength)
+						};
+						
+						fireDataTableEvent(onPagination, paginationInfo, 'onPagination');
+					}, 0, true);
+				}
 			});
 		}
 
