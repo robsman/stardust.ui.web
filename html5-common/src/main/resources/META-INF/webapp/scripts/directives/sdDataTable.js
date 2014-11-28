@@ -671,11 +671,13 @@
 			row = angular.element(row);
 			var rowScope = row.scope();
 
-			var currentRowData;
+			var selectionInfo = {};
+			selectionInfo.current = getPageData(rowScope.$index);
 
 			if (rowSelectionMode == 'row') {
 				if (isRowSelected(row)) {
 					unselectRow(row, rowScope.$index);
+					selectionInfo.action = 'deselect';
 				} else {
 					var prevSelRow = getSelectedRow();
 					if (prevSelRow) {
@@ -684,36 +686,34 @@
 					}
 
 					selectRow(row, rowScope.$index);
-					currentRowData = getPageData(rowScope.$index);
+					selectionInfo.action = 'select';
 				}
 			} else {
 				if (isRowSelected(row)) {
 					unselectRow(row, rowScope.$index);
+					selectionInfo.action = 'deselect';
 				} else {
 					selectRow(row, rowScope.$index);
-					currentRowData = getPageData(rowScope.$index);
+					selectionInfo.action = 'select';
 				}
 			}
 
-			fireOnSelectEvent(currentRowData);
+			selectionInfo.all = getRowSelection();
+
+			fireOnSelectEvent(selectionInfo);
 		}
 
 		/*
 		 * 
 		 */
-		function fireOnSelectEvent(rowData) {
+		function fireOnSelectEvent(selectionInfo) {
 			if (onSelect.handler) {
 				try {
-					var obj = {
-						current: rowData,
-						all: getRowSelection()
-					};
-					
 					var transObj = {};
 					if (onSelect.param) {
-						transObj[onSelect.param] = obj;
+						transObj[onSelect.param] = selectionInfo;
 					} else {
-						transObj.data = obj;
+						transObj.info = selectionInfo;
 						trace.warning('sda-on-select is not properly configured, may not receive selection info.');
 					}
 

@@ -203,7 +203,7 @@
 		/*
 		 * 
 		 */
-		WorklistCompiler.prototype.onSelect = function(data) {
+		WorklistCompiler.prototype.onSelect = function(info) {
 			// NOP
 		};
 		
