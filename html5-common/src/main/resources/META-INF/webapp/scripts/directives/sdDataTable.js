@@ -30,6 +30,7 @@
 		return {
 			restrict : 'A',
 			require: ['sdData'],
+			scope: true,
 			compile: function(elem, attr, transclude) {				
 				processRawMarkup(elem, attr);
 
@@ -88,7 +89,8 @@
 				'</a>\n' +
 			'</div>\n';
 
-		var elemScope = scope;
+		var elemScope = scope.$parent;
+		var myScope = scope;
 		var sdData = ctrl[0];
 
 		var initialized;
@@ -534,7 +536,7 @@
 			
 			var rowScope = row.scope();
 			if (rowScope == undefined) {
-				rowScope = elemScope.$new();
+				rowScope = myScope.$new();
 			}
 
 			rowScope.rowData = data;
