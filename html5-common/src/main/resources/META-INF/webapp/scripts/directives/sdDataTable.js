@@ -410,7 +410,7 @@
 			dtOptions.ajax = ajaxHandler;
 
 			theDataTable = theTable.DataTable(dtOptions);
-			exposeAPIs();
+			buildDataTableCompleted();
 		}
 
 		/*
@@ -429,7 +429,7 @@
 				}
 				
 				theDataTable = theTable.DataTable(dtOptions);
-				exposeAPIs();
+				buildDataTableCompleted();
 			});
 		}
 
@@ -448,19 +448,42 @@
 				};
 
 				callback(ret);
-
-				// Invoke the event handler when processing is complete and data is displayed
-				if (onPagination.handler) {
-					$timeout(function() {
-						var paginationInfo = {
-							currentPage: Math.floor((data.start / data.length) + 1),
-							totalPages: Math.ceil(settings._iRecordsTotal / settings._iDisplayLength)
-						};
-						
-						fireDataTableEvent(onPagination, paginationInfo, 'onPagination');
-					}, 0, true);
-				}
 			});
+		}
+
+		/*
+		 * 
+		 */
+		function buildDataTableCompleted() {
+			// Initialization handler
+			if (attr.sdaMode == 'local') {
+				firePaginationEvent();
+			} else {
+				theDataTable.on('init.dt', function() {
+					firePaginationEvent();
+				});
+			}
+			
+			// Register for pagination events
+			theDataTable.on('page.dt', firePaginationEvent);
+
+			exposeAPIs();
+		}
+
+		/*
+		 * 
+		 */
+		function firePaginationEvent() {
+			// Invoke the event handler when processing is complete and data is displayed
+			$timeout(function() {
+				var info = theDataTable.page.info();
+				var paginationInfo = {
+					currentPage: info.page + 1,
+					totalPages: info.pages
+				};
+				
+				fireDataTableEvent(onPagination, paginationInfo, 'onPagination');
+			}, 0, true);
 		}
 
 		/*
