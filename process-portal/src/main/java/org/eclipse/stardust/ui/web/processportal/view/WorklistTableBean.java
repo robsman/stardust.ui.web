@@ -174,8 +174,6 @@ public class WorklistTableBean extends UIComponentBean
 
    private List<ColumnPreference> fixedColumns2 = CollectionUtils.newList();
 
-   private Map<Long, ProcessInstance> processInstances;
-   
    private boolean isActivated = false;
 
    private Query query;
@@ -859,21 +857,12 @@ public class WorklistTableBean extends UIComponentBean
 
             model = modelCache.getModel(ai.getModelOID());
             processDefinition = model != null ? model.getProcessDefinition(ai.getProcessDefinitionId()) : null;
-            ProcessInstance pi = null;
-            if (null != processInstances)
-            {
-               pi = processInstances.get(ai.getProcessInstanceOID());
-            }
-            if (null == pi)
-            {
-               pi = ProcessInstanceUtils.getProcessInstance(ai);
-            }
             if (processDefinition != null)
             {
                ProcessInstanceDetails processInstanceDetails = (ProcessInstanceDetails) ai.getProcessInstance();
                descriptorValues = processInstanceDetails.getDescriptors();
                // Update document Descriptors (Process Attachment and Type Documents) in Map
-               CommonDescriptorUtils.updateProcessDocumentDescriptors(descriptorValues, pi, processDefinition);
+               CommonDescriptorUtils.updateProcessDocumentDescriptors(descriptorValues, processInstanceDetails, processDefinition);
                if (processInstanceDetails.isCaseProcessInstance())
                {
                   processDescriptorsList = CommonDescriptorUtils.createCaseDescriptors(
@@ -886,16 +875,25 @@ public class WorklistTableBean extends UIComponentBean
                }
             }
 
-            
-            List<Note> notes = ProcessInstanceUtils.getNotes(pi);
-            int notesSize = null != notes ? ProcessInstanceUtils.getNotes(pi).size() : 0;
+            List<Note> notes = null;
+            if (ai.isScopeProcessInstanceNoteAvailable())
+            {
+               notes = ProcessInstanceUtils.getNotes(ai.getProcessInstance());
+               if (null == notes)
+               {
+                  // fall back
+                  ProcessInstance pi = ProcessInstanceUtils.getProcessInstance(ai.getProcessInstanceOID(), true);
+                  notes = ProcessInstanceUtils.getNotes(pi);
+               }
+            }
+            int notesSize = null != notes ? notes.size() : 0;
             defaultUserDisplayFormat = null == defaultUserDisplayFormat
                   ? UserUtils.getDefaultUserNameDisplayFormat()
                   : defaultUserDisplayFormat;
             
             worklistTableEntry = new WorklistTableEntry(I18nUtils.getActivityName(ai.getActivity()),
                   processDescriptorsList, ActivityInstanceUtils.isActivatable(ai),
-                  ActivityInstanceUtils.getLastPerformer(ai, defaultUserDisplayFormat), pi.getPriority(), ai.getStartTime(),
+                  ActivityInstanceUtils.getLastPerformer(ai, defaultUserDisplayFormat), ai.getProcessInstance().getPriority(), ai.getStartTime(),
                   ai.getLastModificationTime(), ai.getOID(), this.getDuration(ai), notesSize, descriptorValues,
                   ai.getProcessInstanceOID(), ai, currentPerformerOID, showResubmissionLink);
          }
@@ -1100,9 +1098,7 @@ public class WorklistTableBean extends UIComponentBean
       @Override
       public QueryResult<Object> performSearch(Query query)
       {
-         QueryResult queryResult = fetchQueryResult(query, participantInfo, userParticipantId);
-         processInstances = ProcessInstanceUtils.getProcessInstancesAsMap(queryResult, true);
-         return queryResult;
+         return fetchQueryResult(query, participantInfo, userParticipantId);
       }
    }
    
