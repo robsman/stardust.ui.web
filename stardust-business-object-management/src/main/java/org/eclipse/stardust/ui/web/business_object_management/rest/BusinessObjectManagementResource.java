@@ -91,14 +91,14 @@ public class BusinessObjectManagementResource {
 	}
 
 	@GET
-	@Path("/businessObject/{modelOid}/{businessObjectId}/instance.json")
+	@Path("/businessObject/{modelId}/{businessObjectId}/instance.json")
 	public Response getBusinessObjectInstances(
-			@PathParam("modelOid") String modelOid,
+			@PathParam("modelId") String modelId,
 			@PathParam("businessObjectId") String businessObjectId) {
 		try {
 			return Response.ok(
 					getBusinessObjectManagementService()
-							.getBusinessObjectInstances(modelOid,
+							.getBusinessObjectInstances(modelId,
 									businessObjectId, httpRequest.getQueryString()).toString(),
 					MediaType.APPLICATION_JSON).build();
 		} catch (Exception e) {
@@ -111,9 +111,9 @@ public class BusinessObjectManagementResource {
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/businessObject/{modelOid}/{businessObjectId}/instance/{primaryKey}.json")
+	@Path("/businessObject/{modelId}/{businessObjectId}/instance/{primaryKey}.json")
 	public Response createBusinessObjectInstance(
-			@PathParam("modelOid") String modelOid,
+			@PathParam("modelId") String modelId,
 			@PathParam("businessObjectId") String businessObjectId,
 			@PathParam("primaryKey") String primaryKey, String postedData) {
 		try {
@@ -121,7 +121,7 @@ public class BusinessObjectManagementResource {
 
 			return Response.ok(
 					getBusinessObjectManagementService()
-							.createBusinessObjectInstance(modelOid,
+							.createBusinessObjectInstance(modelId,
 									businessObjectId, primaryKey, json)
 							.toString(), MediaType.APPLICATION_JSON).build();
 		} catch (Exception e) {

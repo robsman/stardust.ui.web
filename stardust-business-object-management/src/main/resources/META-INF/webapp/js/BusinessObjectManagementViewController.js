@@ -247,7 +247,7 @@ define(
 						BusinessObjectManagementService
 								.instance()
 								.createBusinessObjectInstance(
-										this.businessObject.modelOid,
+										this.businessObject.modelId,
 										this.businessObject.id,
 										this.currentBusinessObjectInstance[this.businessObjectManagementPanelController.businessObject.primaryKeyField.id],
 										this.currentBusinessObjectInstance)

@@ -194,7 +194,7 @@ define(
 					var self = this;
 					var url = rootUrl
 							+ "/services/rest/business-object-management/businessObject/"
-							+ businessObject.modelOid + "/" + businessObject.id
+							+ businessObject.modelId + "/" + businessObject.id
 							+ "/instance.json" + queryString;
 
 					jQuery.ajax({
@@ -255,7 +255,7 @@ define(
 				 * 
 				 */
 				BusinessObjectManagementService.prototype.createBusinessObjectInstance = function(
-						modelOid, businessObjectId, primaryKey,
+						modelId, businessObjectId, primaryKey,
 						businessObjectInstance) {
 					console.log("Model OID: " + modelOid);
 					console.log("Business Object ID: " + businessObjectId);
@@ -273,7 +273,7 @@ define(
 									{
 										url : rootUrl
 												+ "/services/rest/business-object-management/businessObject/"
-												+ modelOid + "/"
+												+ modelId + "/"
 												+ businessObjectId
 												+ "/instance/" + primaryKey
 												+ ".json",
