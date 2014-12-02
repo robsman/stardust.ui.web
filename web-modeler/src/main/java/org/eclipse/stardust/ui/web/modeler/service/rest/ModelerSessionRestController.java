@@ -20,10 +20,6 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriInfo;
 
-import org.springframework.context.ApplicationContext;
-
-import com.google.gson.JsonObject;
-
 import org.eclipse.stardust.model.xpdl.builder.session.EditingSession;
 import org.eclipse.stardust.model.xpdl.builder.session.Modification;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
@@ -32,6 +28,7 @@ import org.eclipse.stardust.ui.web.modeler.common.BadRequestException;
 import org.eclipse.stardust.ui.web.modeler.common.ConflictingRequestException;
 import org.eclipse.stardust.ui.web.modeler.common.ItemNotFoundException;
 import org.eclipse.stardust.ui.web.modeler.common.ModelingSessionLocator;
+import org.eclipse.stardust.ui.web.modeler.common.exception.ModelerException;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
 import org.eclipse.stardust.ui.web.modeler.edit.jto.CommandJto;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
@@ -40,6 +37,9 @@ import org.eclipse.stardust.ui.web.modeler.service.ModelerSessionController.Chan
 import org.eclipse.stardust.ui.web.modeler.service.ModelerSessionController.ContentProvider;
 import org.eclipse.stardust.ui.web.modeler.service.ModelerSessionController.ModelFormat;
 import org.eclipse.stardust.ui.web.modeler.service.ModelerSessionController.ModelLockJto;
+import org.springframework.context.ApplicationContext;
+
+import com.google.gson.JsonObject;
 
 @Path("/modeler/{randomPostFix}/sessions")
 public class ModelerSessionRestController
@@ -236,6 +236,12 @@ public class ModelerSessionRestController
       catch (ItemNotFoundException infe)
       {
          return Response.status(Status.NOT_FOUND).entity(infe.getMessage()).build();
+      }
+      catch (ModelerException e)
+      {
+         //the exception can be validation exception or any other server side exception, it can be other than INTERNAL_SERVER_ERROR
+         return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).type(MediaType.APPLICATION_JSON)
+               .build();
       }
       catch (Exception e)
       {
