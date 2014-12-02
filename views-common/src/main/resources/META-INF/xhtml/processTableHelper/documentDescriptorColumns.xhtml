@@ -31,19 +31,24 @@
 
 	<ice:panelGroup
 		rendered="#{pc:instanceOf(col, 'org.eclipse.stardust.ui.web.viewscommon.common.ProcessDocumentColumnPreference')}">
-		<ice:commandLink styleClass="action-link"
-			actionListener="#{bean.openDocument}" immediate="true"
-			rendered="#{rowObject[property] != null}">
-			<pc:automationTag
-				value="auto-PP-ProcAttachDlg-ToolbarOpenNewDocument" />
-			<f:attribute name="documentInfo" value="#{rowObject[property]}" />
-			<f:attribute name="processInstance"
-				value="#{row.activityInstance.processInstance}" />
-			<ice:panelGrid columns="2">
-				<ice:graphicImage value="#{rowObject[property].documentIcon}" />
-				<ice:outputText value="#{rowObject[property].name}"
-					style="white-space: nowrap;" />
-			</ice:panelGrid>
-		</ice:commandLink>
+		<ice:panelSeries value="#{rowObject[property]}"
+			var="document">
+			<ice:commandLink styleClass="action-link"
+				actionListener="#{bean.openDocument}" immediate="true"
+				rendered="#{pc:instanceOf(document, 'org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentInfo')}">
+				<pc:automationTag
+					value="auto-PP-ProcAttachDlg-ToolbarOpenNewDocument" />
+				<f:attribute name="documentInfo" value="#{document}" />
+				<f:attribute name="processInstance"
+					value="#{row.activityInstance.processInstance}" />
+				<ice:panelGrid columns="2">
+					<ice:graphicImage value="#{document.documentIcon}" />
+					<ice:outputText value="#{document.name}"
+						style="white-space: nowrap;" />
+				</ice:panelGrid>
+			</ice:commandLink>
+			<ice:outputText value="#{document}"
+				rendered="#{!pc:instanceOf(document, 'org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentInfo')}" />
+		</ice:panelSeries>
 	</ice:panelGroup>
 </f:view>

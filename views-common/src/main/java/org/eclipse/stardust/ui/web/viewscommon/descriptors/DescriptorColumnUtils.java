@@ -12,12 +12,14 @@ package org.eclipse.stardust.ui.web.viewscommon.descriptors;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.stardust.engine.api.model.DataPath;
+import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
@@ -88,17 +90,16 @@ public class DescriptorColumnUtils
       {
          String descriptorId = descriptor.getKey();
          DataPath dataPath = descriptor.getValue();
-
          Class mappedType = dataPath.getMappedType();
          ColumnDataType columnType = determineColumnType(mappedType);
-         if(org.eclipse.stardust.engine.api.runtime.Document.class.equals(dataPath.getMappedType()) && contentUrl!=null)
+         if(contentUrl!=null && determineDocumentTypeColumn(mappedType))
          {
             ColumnPreference descriptorColumn = new ProcessDocumentColumnPreference(descriptorId ,
                   "descriptorValues." + descriptorId + "",I18nUtils.getDataPathName(dataPath), contentUrl, false, false);
             descriptorColumn.setEscape(false);
             descriptorColumns.add(descriptorColumn);
          }
-         else if(DmsConstants.DATA_ID_ATTACHMENTS.equals(dataPath.getData()) && contentUrl !=null)
+         else if(contentUrl !=null && DmsConstants.DATA_ID_ATTACHMENTS.equals(dataPath.getData()))
          {
             ColumnPreference descriptorColumn = new ProcessAttachmentColumnPreference(descriptorId,
                   "descriptorValues." + descriptorId + "", I18nUtils.getDataPathName(dataPath), contentUrl, false, false);
@@ -357,6 +358,25 @@ public class DescriptorColumnUtils
       }
    }
 
+   /**
+    * 
+    * @param mappedType
+    * @return
+    */
+   private static boolean determineDocumentTypeColumn(Class mappedType)
+   {
+      if (Document.class.equals(mappedType))
+      {
+         return true;
+      }
+      // To support List<Documents> apart from DocumentInfo
+      else if (Collection.class.isAssignableFrom(mappedType))
+      {
+         return true;
+      }
+      return false;
+   }
+   
    /**
     * @param mappedType
     * @return

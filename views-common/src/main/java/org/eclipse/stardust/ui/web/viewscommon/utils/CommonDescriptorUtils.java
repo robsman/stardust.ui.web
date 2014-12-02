@@ -161,32 +161,24 @@ public class CommonDescriptorUtils
                if (null != obj)
                {
                   DataDetails dataDetails = (DataDetails) model.getData(dataPathDetails.getData());
-                  // Check for Process Attachments, and update descriptor List
-                  if (null != dataDetails && DmsConstants.DATA_ID_ATTACHMENTS.equals(dataDetails.getId()))
+                  if (obj instanceof Collection< ? >)
                   {
                      List<DocumentInfo> documentList = CollectionUtils.newArrayList();
-                     if (obj instanceof Collection< ? >)
+                     List<Object> documents = (List<Object>) obj;
+                     for (Object doc : documents)
                      {
-                        List<Object> processAttachments = (List<Object>) obj;
-                        for (Object doc : processAttachments)
+                        if (doc instanceof DocumentInfo)
                         {
-                           if (doc instanceof DocumentInfo)
-                           {
-                              documentList.add((DocumentInfo) doc);
-                           }
-                           else if(doc instanceof Document)
-                           {
-                              Document processAttachment = (Document) doc;
-                              documentList.add(new DocumentInfo(getDocumentIcon(processAttachment.getName(),
-                                    processAttachment.getContentType()), processAttachment));
-                           }
+                           documentList.add((DocumentInfo) doc);
                         }
-                        descriptorValues.put(entry.getKey(), documentList);
+                        else if (doc instanceof Document)
+                        {
+                           Document processAttachment = (Document) doc;
+                           documentList.add(new DocumentInfo(getDocumentIcon(processAttachment.getName(),
+                                 processAttachment.getContentType()), processAttachment));
+                        }
                      }
-                     else
-                     {
-                        trace.error("Document type other than List for Process Attachment");
-                     }
+                     descriptorValues.put(entry.getKey(), documentList);
                   }
                   else if (null != dataDetails && DmsConstants.DATA_TYPE_DMS_DOCUMENT.equals(dataDetails.getTypeId()))
                   {
@@ -307,7 +299,8 @@ public class CommonDescriptorUtils
                Model model = ModelCache.findModelCache().getModel(dataPathDetails.getModelOID());
                DataDetails dataDetails = model != null ? (DataDetails) model.getData(dataPathDetails.getData()) : null;
                if ((DmsConstants.DATA_ID_ATTACHMENTS.equals(dataPathDetails.getData()))
-                     || (null != dataDetails && DmsConstants.DATA_TYPE_DMS_DOCUMENT.equals(dataDetails.getTypeId())))
+                     || (null != dataDetails && (DmsConstants.DATA_TYPE_DMS_DOCUMENT.equals(dataDetails.getTypeId()) || DmsConstants.DATA_TYPE_DMS_DOCUMENT_LIST
+                           .equals(dataDetails.getTypeId()))))
                {
                   continue;
                }
