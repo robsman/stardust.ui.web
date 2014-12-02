@@ -210,8 +210,7 @@ public class DocumentTriageService
 
       processInstanceQuery.where(ProcessInstanceQuery.OID.isEqual(oid));
       processInstanceQuery.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
-      ProcessInstance processInstance = (ProcessInstanceDetails) getQueryService()
-            .getAllProcessInstances(processInstanceQuery).get(0);
+      ProcessInstanceDetails processInstance = getQueryService().getAllProcessInstances(processInstanceQuery).get(0);
 
       JsonObject processInstanceJson = new JsonObject();
 
