@@ -43,6 +43,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.CommonDescriptorUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDescriptor;
+import org.springframework.util.CollectionUtils;
 
 
 
@@ -234,30 +235,35 @@ public class DescriptorColumnUtils
          Object descriptorValue = allDescriptors.get(descriptorId);
          if (null != descriptorValue)
          {
-            if(property.endsWith("PROCESS_ATTACHMENTS"))
+            if (descriptorValue instanceof Collection< ? >)
             {
-               List<DocumentInfo>  docList = (List<DocumentInfo>) descriptorValue;
-               StringBuffer exportData = new StringBuffer("");
-               for(DocumentInfo doc : docList)
+               List descVals = (List) descriptorValue;
+               if (!CollectionUtils.isEmpty(descVals) && descVals.get(0) instanceof DocumentInfo)
                {
-                  exportData.append(doc.getName()).append(separator);
+
+                  List<DocumentInfo> docList = (List<DocumentInfo>) descriptorValue;
+                  StringBuffer exportData = new StringBuffer("");
+                  for (DocumentInfo doc : docList)
+                  {
+                     exportData.append(doc.getName()).append(separator);
+                  }
+                  String data = exportData.toString();
+                  if (data.length() > 0)
+                  {
+                     data = data.substring(0, data.length() - separator.length());
+                  }
+                  return data;
                }
-               String data = exportData.toString();
-               if (data.length() > 0)
-               {
-                  data = data.substring(0, data.length() - separator.length());
-               }
-               return data;
             }
-            if(descriptorValue instanceof DocumentInfo)
+            if (descriptorValue instanceof DocumentInfo)
             {
                DocumentInfo document = (DocumentInfo) descriptorValue;
                return document.getName();
             }
             else
             {
-                  return descriptorValue.toString();
-            }   
+               return descriptorValue.toString();
+            }
          }
       }
       return null;
