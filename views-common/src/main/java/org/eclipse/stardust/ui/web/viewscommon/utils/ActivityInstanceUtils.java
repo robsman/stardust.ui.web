@@ -31,6 +31,7 @@ import org.eclipse.stardust.common.error.ConcurrencyException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.dto.HistoricalState;
+import org.eclipse.stardust.engine.api.dto.Note;
 import org.eclipse.stardust.engine.api.model.Activity;
 import org.eclipse.stardust.engine.api.model.ContextData;
 import org.eclipse.stardust.engine.api.model.ImplementationType;
@@ -900,5 +901,20 @@ public class ActivityInstanceUtils
    public static Map<String, String> getIconMap()
    {
       return iconMap;
+   }
+   
+   
+   /**
+    * @param ai
+    * @return
+    */
+   public static List<Note> getNotes(ActivityInstance ai)
+   {
+      List<Note> notes = new ArrayList<Note>();
+      if (ai.isScopeProcessInstanceNoteAvailable())
+      {
+         notes = ProcessInstanceUtils.getNotes2(ai.getProcessInstance());
+      }
+      return notes;
    }
 }

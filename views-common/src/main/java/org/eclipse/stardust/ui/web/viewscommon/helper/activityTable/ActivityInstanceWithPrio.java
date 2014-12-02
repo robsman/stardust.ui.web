@@ -62,17 +62,9 @@ public class ActivityInstanceWithPrio implements Serializable
 
    /**
     * @param activityInstance
-    */
-   public ActivityInstanceWithPrio(ActivityInstance activityInstance)
-   {
-      this(activityInstance, ProcessInstanceUtils.getProcessInstance(activityInstance.getProcessInstanceOID()));
-   }
-
-   /**
-    * @param activityInstance
     * @param pi
     */
-   public ActivityInstanceWithPrio(ActivityInstance activityInstance, ProcessInstance processInstance)
+   public ActivityInstanceWithPrio(ActivityInstance activityInstance)
    {
       this.activityInstance = activityInstance;
       if (activityInstance != null)
@@ -81,10 +73,11 @@ public class ActivityInstanceWithPrio implements Serializable
 
          try
          {
-            prioDb = prio = processInstance.getPriority();
+            prioDb = prio = activityInstance.getProcessInstance().getPriority();
 
-            noteCount = ProcessInstanceUtils.getNotes(processInstance).size();
-            modifyProcessInstance = AuthorizationUtils.hasPIModifyPermission(processInstance);
+            noteCount = ActivityInstanceUtils.getNotes(activityInstance).size();
+            
+            modifyProcessInstance = AuthorizationUtils.hasPIModifyPermission(activityInstance.getProcessInstance());
          }
          catch (Exception e)
          {

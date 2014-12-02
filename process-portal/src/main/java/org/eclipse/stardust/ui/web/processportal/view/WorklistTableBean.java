@@ -875,17 +875,7 @@ public class WorklistTableBean extends UIComponentBean
                }
             }
 
-            List<Note> notes = null;
-            if (ai.isScopeProcessInstanceNoteAvailable())
-            {
-               notes = ProcessInstanceUtils.getNotes(ai.getProcessInstance());
-               if (null == notes)
-               {
-                  // fall back
-                  ProcessInstance pi = ProcessInstanceUtils.getProcessInstance(ai.getProcessInstanceOID(), true);
-                  notes = ProcessInstanceUtils.getNotes(pi);
-               }
-            }
+            List<Note> notes = ActivityInstanceUtils.getNotes(ai);
             int notesSize = null != notes ? notes.size() : 0;
             defaultUserDisplayFormat = null == defaultUserDisplayFormat
                   ? UserUtils.getDefaultUserNameDisplayFormat()

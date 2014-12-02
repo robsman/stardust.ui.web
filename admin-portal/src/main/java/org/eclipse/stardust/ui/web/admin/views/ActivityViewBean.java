@@ -11,13 +11,12 @@
 package org.eclipse.stardust.ui.web.admin.views;
 
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.Query;
 import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
-import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
+
 import org.eclipse.stardust.ui.web.admin.AdminportalConstants;
 import org.eclipse.stardust.ui.web.admin.ResourcePaths;
 import org.eclipse.stardust.ui.web.admin.WorkflowFacade;
@@ -30,8 +29,6 @@ import org.eclipse.stardust.ui.web.viewscommon.common.UIViewComponentBean;
 import org.eclipse.stardust.ui.web.viewscommon.common.table.IppSearchHandler;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.helper.activityTable.ActivityTableHelper;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
-
 
 
 
@@ -48,8 +45,6 @@ public class ActivityViewBean extends UIViewComponentBean implements ICallbackHa
    private List<ActivityInstance> selectedActivities;
    
    private ActivityTableHelper activityHelper;
-   
-   Map<Long, ProcessInstance> processInstances;
    
    /**
     * 
@@ -186,8 +181,6 @@ public class ActivityViewBean extends UIViewComponentBean implements ICallbackHa
       public QueryResult<ActivityInstance> performSearch(Query query)
       {
          QueryResult<ActivityInstance> result = workflowFacade.getAllActivitiesEntries((ActivityInstanceQuery) query);
-         processInstances = ProcessInstanceUtils.getProcessInstancesAsMap(result, true);
-         activityHelper.setProcessInstanceMap(processInstances);
          return result;
       }
    }
