@@ -17,6 +17,7 @@ import java.util.List;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.common.config.Parameters;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.Activity;
@@ -34,6 +35,7 @@ import org.eclipse.stardust.engine.api.runtime.DeployedModelDescription;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserGroup;
 import org.eclipse.stardust.engine.api.runtime.UserGroupInfo;
+import org.eclipse.stardust.engine.api.runtime.UserInfo;
 import org.eclipse.stardust.engine.core.struct.TypedXPath;
 import org.eclipse.stardust.ui.web.viewscommon.common.Localizer;
 import org.eclipse.stardust.ui.web.viewscommon.common.LocalizerKey;
@@ -88,13 +90,13 @@ public class I18nUtils
     * @param user
     * @return
     */
-   public static String getUserLabelDefault(User user)
+   public static String getUserLabelDefault(UserInfo user)
    {
       String label = "";
       
-      if (null != user)
+      if (user instanceof User)
       {
-         label = UserUtils.formatUserName(user, (String) user.getProperty(USER_NAME_DISPLAY_FORMAT_PREF_ID));
+         label = UserUtils.formatUserName((User) user, (String) ((User) user).getProperty(USER_NAME_DISPLAY_FORMAT_PREF_ID));
       }
 
       if (StringUtils.isEmpty(label))
@@ -128,13 +130,17 @@ public class I18nUtils
     * @param defaultUserDisplayFormat
     * @return
     */
-   public static String getUserLabel(User user, String defaultUserDisplayFormat)
+   public static String getUserLabel(UserInfo user, String defaultUserDisplayFormat)
    {
       String label = "";
 
       if (null != user)
       {
-         String userDisplayFormat = (String) user.getProperty(USER_NAME_DISPLAY_FORMAT_PREF_ID);
+         String userDisplayFormat = null;
+         if ("PerUser".equals(Parameters.instance().getString("Carnot.Client.Ui.User.NamePattern", "Global")) && (user instanceof User))
+         {
+            userDisplayFormat = (String) ((User) user).getProperty(USER_NAME_DISPLAY_FORMAT_PREF_ID);
+         }
          if (StringUtils.isNotEmpty(userDisplayFormat))
          {
             label = MessageFormat.format(userDisplayFormat, user.getFirstName(), user.getLastName(), user.getAccount());

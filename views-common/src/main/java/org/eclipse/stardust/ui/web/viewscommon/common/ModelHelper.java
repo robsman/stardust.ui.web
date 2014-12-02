@@ -83,8 +83,7 @@ public class ModelHelper
       }
       else if (participantInfo instanceof DynamicParticipantInfo)
       {
-         participantlabel.setParticipantName(I18nUtils.getParticipantName(ParticipantUtils
-               .getParticipant(participantInfo)));
+         participantlabel.setParticipantName(ParticipantUtils.getParticipantName(participantInfo));
       }
 
       return participantlabel;

@@ -135,11 +135,8 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessWorklistCacheManager
 import org.eclipse.stardust.ui.web.viewscommon.utils.QueryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.SpecialWorklistCacheManager;
-import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
-
-
 
 /**
  * @author roland.stamm
@@ -203,9 +200,7 @@ public class WorklistTableBean extends UIComponentBean
    private ProcessDefinition processDefintion;
    
    private String preferenceId;
-   
-   private String defaultUserDisplayFormat = null;
-   
+
    private Boolean showAllWorklist = false;
    
    public WorklistTableBean()
@@ -877,13 +872,10 @@ public class WorklistTableBean extends UIComponentBean
 
             List<Note> notes = ActivityInstanceUtils.getNotes(ai);
             int notesSize = null != notes ? notes.size() : 0;
-            defaultUserDisplayFormat = null == defaultUserDisplayFormat
-                  ? UserUtils.getDefaultUserNameDisplayFormat()
-                  : defaultUserDisplayFormat;
-            
+
             worklistTableEntry = new WorklistTableEntry(I18nUtils.getActivityName(ai.getActivity()),
                   processDescriptorsList, ActivityInstanceUtils.isActivatable(ai),
-                  ActivityInstanceUtils.getLastPerformer(ai, defaultUserDisplayFormat), ai.getProcessInstance().getPriority(), ai.getStartTime(),
+                  ActivityInstanceUtils.getLastPerformer(ai), ai.getProcessInstance().getPriority(), ai.getStartTime(),
                   ai.getLastModificationTime(), ai.getOID(), this.getDuration(ai), notesSize, descriptorValues,
                   ai.getProcessInstanceOID(), ai, currentPerformerOID, showResubmissionLink);
          }
