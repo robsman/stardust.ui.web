@@ -311,7 +311,7 @@ define(
 									{
 										url : rootUrl
 												+ "/services/rest/business-object-management/businessObject/"
-												+ businessObject.modelOid
+												+ businessObject.modelId
 												+ "/"
 												+ businessObject.id
 												+ "/instance/"

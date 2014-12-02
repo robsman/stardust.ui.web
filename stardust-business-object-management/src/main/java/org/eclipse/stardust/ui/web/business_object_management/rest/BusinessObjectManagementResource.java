@@ -134,9 +134,9 @@ public class BusinessObjectManagementResource {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/businessObject/{modelOid}/{businessObjectId}/instance/{primaryKey}.json")
+	@Path("/businessObject/{modelId}/{businessObjectId}/instance/{primaryKey}.json")
 	public Response updateBusinessObjectInstance(
-			@PathParam("modelOid") String modelOid,
+			@PathParam("modelId") String modelId,
 			@PathParam("businessObjectId") String businessObjectId,
 			@PathParam("primaryKey") String primaryKey, String postedData) {
 		try {
@@ -144,7 +144,7 @@ public class BusinessObjectManagementResource {
 
 			return Response.ok(
 					getBusinessObjectManagementService()
-							.updateBusinessObjectInstance(modelOid,
+							.updateBusinessObjectInstance(modelId,
 									businessObjectId, primaryKey, json)
 							.toString(), MediaType.APPLICATION_JSON).build();
 		} catch (Exception e) {
