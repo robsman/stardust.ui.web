@@ -257,7 +257,7 @@ define(
 				BusinessObjectManagementService.prototype.createBusinessObjectInstance = function(
 						modelId, businessObjectId, primaryKey,
 						businessObjectInstance) {
-					console.log("Model OID: " + modelOid);
+					console.log("Model OID: " + modelId);
 					console.log("Business Object ID: " + businessObjectId);
 					console.log("Primary Key: " + primaryKey);
 					console.log("Business Object Instance:");
