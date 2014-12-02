@@ -493,7 +493,7 @@ define(
 									+ pattern.length);
 					
 					var b64 = base64.get();
-					encodedId = (encodedId.length % 3 == 0)? encodedId : encodedId + "===".slice(encodedId.length % 3);
+					encodedId = (encodedId.length % 4 == 0)? encodedId : encodedId + "====".slice(encodedId.length % 4);
 					var decodedId = b64.decode(encodedId || '');
 					var partsMatcher = new RegExp('^(\\d+)\\|(\\d+)$');
 					var decodedParts = partsMatcher.exec(decodedId);
