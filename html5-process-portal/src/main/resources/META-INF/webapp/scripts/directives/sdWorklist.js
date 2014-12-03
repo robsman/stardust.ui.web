@@ -277,11 +277,18 @@
 		WorklistCompiler.prototype.complete = function(workItem) {
 			var self = this;
 
-			var outData = self.worklist.trivialManualActivities[workItem.oid].inOutData;
-			var activityData = {oid: workItem.oid, outData: outData};
-			sdActivityInstanceService.completeAll([activityData]).then(function(data) {
-				self.refresh();
-			});
+			var trivialActivityInfo = self.worklist.trivialManualActivities[workItem.oid];
+			if (trivialActivityInfo) {
+				var outData = trivialActivityInfo.inOutData;
+				var activityData = {oid: workItem.oid, outData: outData};
+				sdActivityInstanceService.completeAll([activityData]).then(function(data) {
+					if (sdUtilService.isEmpty(data)) {
+						self.refresh();
+					} else {
+						showError('Failed in completing activity...', data); // TODO I18N
+					}
+				});
+			}
 		};
 
 		/*
@@ -304,6 +311,10 @@
 
 				if (activitiesData.length > 0) {
 					sdActivityInstanceService.completeAll(activitiesData).then(function(data) {
+						if (!sdUtilService.isEmpty(data)) {
+							showError('Failed in completing activities...', data); // TODO I18N
+						}
+						
 						self.refresh();
 					});
 				} else {
@@ -318,6 +329,28 @@
 		WorklistCompiler.prototype.openDelegateDialog = function(workItem) {
 			
 		};
+
+		/*
+		 * 
+		 */
+		function showError(title, error) {
+			var msg = title + '\n';
+			if (angular.isObject(error)) {
+				if (angular.isArray(error)) {
+					for (var key in error) {
+						msg += '\n' + error[key];
+					}
+				} else {
+					for (var key in error) {
+						msg += '\n' + key + ' : ' + error[key];
+					}
+				}
+			} else {
+				msg += error;
+			}
+
+			alert(msg); // TODO: Till we have reusable message dialog
+		}
 
 		return directiveDefObject;
 	}

@@ -107,6 +107,35 @@
 		/*
 		 * 
 		 */
+		UtilService.prototype.isEmpty = function(data) {
+			var empty = false;
+
+			switch(typeof data) {
+				case 'string':
+					if (data == '') {
+						empty = true;
+					}
+					break;
+				case 'object':
+					if (angular.isArray(data)) {
+						empty = data.length == 0;
+					} else {
+						var properties = 0;
+						for(var key in data) {
+							properties++;
+							break;
+						}
+						empty = properties == 0;
+					}
+					break;
+			}
+
+			return empty;
+		};
+
+		/*
+		 * 
+		 */
 		function createProxyFunc(obj, member) {
 			function proxyFunc() {
 				var args = Array.prototype.slice.call(arguments, 0);
