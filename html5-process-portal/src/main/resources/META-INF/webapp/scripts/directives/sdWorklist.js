@@ -17,13 +17,13 @@
 	'use strict';
 
 	angular.module('bpm-common').directive('sdWorklist', 
-			['$parse', 'sdUtilService', 'sdViewUtilService', 'sdWorklistService', 
+			['$parse', '$q', 'sdUtilService', 'sdViewUtilService', 'sdWorklistService', 
 			 'sdActivityInstanceService', 'sdProcessDefinitionService', WorklistDirective]);
 
 	/*
 	 * 
 	 */
-	function WorklistDirective($parse, sdUtilService, sdViewUtilService, sdWorklistService, 
+	function WorklistDirective($parse, $q, sdUtilService, sdViewUtilService, sdWorklistService, 
 			sdActivityInstanceService, sdProcessDefinitionService) {
 
 		var directiveDefObject = {
@@ -172,7 +172,7 @@
 		 */
 		WorklistCompiler.prototype.fetchPage = function(options) {
 			var self = this;
-			var deferred = jQuery.Deferred();
+			var deferred = $q.defer();
 
 			var query = angular.extend({}, this.query);
 			query.options = options;
@@ -197,7 +197,7 @@
 				});
 			});
 
-			return deferred.promise();
+			return deferred.promise;
 		};
 
 		/*
