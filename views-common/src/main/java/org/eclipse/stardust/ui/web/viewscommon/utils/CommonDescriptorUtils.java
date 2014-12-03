@@ -501,7 +501,9 @@ public class CommonDescriptorUtils
                   DataPath other = (DataPath) allDescriptors.get(path.getId());
                   if (null != other)
                   {
-                     if (comparator.compare(path, other) == 0)
+                     Data data1 = DescriptorFilterUtils.getData(path);
+                     Data data2 = DescriptorFilterUtils.getData(other);
+                     if (comparator.compare(data1, data2) == 0)
                      {
                         commonDescriptors.add(path.getId());
                      }

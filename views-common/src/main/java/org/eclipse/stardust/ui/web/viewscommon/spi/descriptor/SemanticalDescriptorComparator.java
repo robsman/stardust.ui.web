@@ -11,6 +11,8 @@
 package org.eclipse.stardust.ui.web.viewscommon.spi.descriptor;
 
 import org.eclipse.stardust.engine.api.model.DataPath;
+import org.eclipse.stardust.engine.api.model.ModelElement;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
 
 /**
  * 
@@ -25,7 +27,7 @@ public class SemanticalDescriptorComparator implements ISemanticalDescriptorComp
     * @param dataPath2
     * @return
     */
-   public int compare(DataPath dataPath1, DataPath dataPath2)
+   public int compare2(DataPath dataPath1, DataPath dataPath2)
    {
       if (null == dataPath1 || null == dataPath2)
       {
@@ -39,4 +41,24 @@ public class SemanticalDescriptorComparator implements ISemanticalDescriptorComp
 
       return -1;
    }
+
+   /* (non-Javadoc)
+    * @see org.eclipse.stardust.ui.web.viewscommon.spi.descriptor.ISemanticalDescriptorComparator#compare(org.eclipse.stardust.engine.api.model.ModelElement, org.eclipse.stardust.engine.api.model.ModelElement)
+    */
+   public int compare(ModelElement modelElement1, ModelElement modelElement2)
+   {
+      if (null == modelElement1 || null == modelElement2)
+      {
+         return -1;
+      }
+      int result = Integer.valueOf(modelElement1.getElementOID()).compareTo(modelElement2.getElementOID());
+      if (result == 0)
+      {
+         String modelId1 = ModelUtils.extractModelId(modelElement1.getQualifiedId());
+         String modelId2 = ModelUtils.extractModelId(modelElement2.getQualifiedId());
+         result = modelId1.compareTo(modelId2);
+      }
+      return result;
+   }
+
 }

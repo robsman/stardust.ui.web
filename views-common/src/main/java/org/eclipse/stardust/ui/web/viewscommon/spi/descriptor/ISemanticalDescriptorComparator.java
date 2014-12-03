@@ -11,6 +11,7 @@
 package org.eclipse.stardust.ui.web.viewscommon.spi.descriptor;
 
 import org.eclipse.stardust.engine.api.model.DataPath;
+import org.eclipse.stardust.engine.api.model.ModelElement;
 
 /**
  * @author Yogesh.Manware
@@ -23,5 +24,12 @@ public interface ISemanticalDescriptorComparator
     * @param dataPath2
     * @return
     */
-   int compare(DataPath dataPath1, DataPath dataPath2);
+   int compare2(DataPath dataPath1, DataPath dataPath2);
+
+   /**
+    * @param modelElement1
+    * @param modelElement2
+    * @return
+    */
+   int compare(ModelElement modelElement1, ModelElement modelElement2);
 }
