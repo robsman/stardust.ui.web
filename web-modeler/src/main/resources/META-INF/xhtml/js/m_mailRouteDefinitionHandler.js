@@ -21,100 +21,100 @@ define(
             return {
                createRouteForEmail : function(mailIntegrationOverlay)
                {
-                  return createRouteForEmail(mailIntegrationOverlay);
+                  var handler = new MailRouteDefinitionHandler();
+                  return handler.createRouteForEmail(mailIntegrationOverlay);
                }
             };
-
-            /**
-             * Generate route definition for email App
-             */
-            function createRouteForEmail(mailIntegrationOverlay)
-            {
-               var mailRouteDefinitionHandler = new MailRouteDefinitionHandler();
-               var route = "";
-               var includeAttachmentBean = mailRouteDefinitionHandler.includeAttachmentBean(mailIntegrationOverlay
-                        .getApplication().contexts.application.accessPoints);
-               
-               // process template configuration
-               route += "<to uri=\"bean:documentHandler?method=processTemplateConfigurations\"/>\n";
-               
-               if(mailIntegrationOverlay.templateSourceSelect.val() == "classpath"
-                  || mailIntegrationOverlay.templateSourceSelect.val() == "repository")
-               {
-                  route += mailRouteDefinitionHandler.createRouteForRepositoryOrClassPathContent(mailIntegrationOverlay, mailRouteDefinitionHandler);
-                  
-               } else
-               {
-                  route += mailRouteDefinitionHandler.createRouteForEmbeddedOrDataContent(mailIntegrationOverlay, mailRouteDefinitionHandler);
-               }
-               
-               // set content type
-               route += "<setHeader headerName=\"contentType\">\n";
-               route += "   <constant>" + mailIntegrationOverlay.mailFormatSelect.val()
-                        + "</constant>\n";
-               route += "</setHeader>\n";
-               
-               // add attachment document
-               if (includeAttachmentBean)
-                  route += "<to uri=\"bean:documentHandler?method=toAttachment\"/>\n";
-               
-               // execute smpt endpoint
-               route += "<to uri=\"" + mailIntegrationOverlay.protocolSelect.val() + "://"
-                        + mailIntegrationOverlay.serverInput.val();
-               if (!m_utils.isEmptyString(mailIntegrationOverlay.userInput.val())
-                        && !m_utils.isEmptyString(mailIntegrationOverlay.passwordInput.val()))
-               {
-                  route += "?username=" + mailIntegrationOverlay.userInput.val();
-                  route += "&amp;password=" + mailIntegrationOverlay.passwordInput.val();
-               }
-               else if (!m_utils.isEmptyString(mailIntegrationOverlay.userInput.val()))
-               {
-                  route += "?username=" + mailIntegrationOverlay.userInput.val();
-               }
-               route += "\"/>";
-               
-               // store attachments
-               if(mailIntegrationOverlay.storeAttachmentsInput.prop("checked")){
-                  route += "<to uri=\"bean:documentHandler?method=storeExchangeAttachments\"/>\n";
-               }
-               // store email content
-               if(mailIntegrationOverlay.storeEmailInput.prop("checked")){
-                  route += "<convertBodyTo type=\"javax.mail.internet.MimeMessage\"/>\n";
-                  route += "<setHeader headerName=\"ippDmsDocumentName\">\n";
-                  route += "   <simple>$simple{header.subject}.eml</simple>\n";
-                  route += "</setHeader>\n";
-                  route += "<to uri=\"bean:documentHandler?method=toDocument\"/>";
-               }
-               return route;
-            };
+            
             
             function MailRouteDefinitionHandler()
             {
                
-               // create route for Email Repository/ClassPath content 
-               MailRouteDefinitionHandler.prototype.createRouteForRepositoryOrClassPathContent = function(mailIntegrationOverlay, mailRouteDefinitionHandler)
+               /**
+                * Generate route definition for email App
+                */
+               MailRouteDefinitionHandler.prototype.createRouteForEmail = function(mailIntegrationOverlay)
+               {
+                  var route = "";
+                  var includeAttachmentBean = this.includeAttachmentBean(mailIntegrationOverlay
+                           .getApplication().contexts.application.accessPoints);
+                  
+                  // process template configuration
+                  route += "<to uri=\"bean:documentHandler?method=processTemplateConfigurations\"/>\n";
+                  
+                  if(mailIntegrationOverlay.templateSourceSelect.val() == "classpath"
+                     || mailIntegrationOverlay.templateSourceSelect.val() == "repository")
+                  {
+                     route += this.createRouteForRepositoryOrClassPathContent(mailIntegrationOverlay);
+                     
+                  } else
+                  {
+                     route += this.createRouteForEmbeddedOrDataContent(mailIntegrationOverlay);
+                  }
+                  
+                  // set content type
+                  route += "<setHeader headerName=\"contentType\">\n";
+                  route += "   <constant>" + mailIntegrationOverlay.mailFormatSelect.val()
+                           + "</constant>\n";
+                  route += "</setHeader>\n";
+                  
+                  // add attachment document
+                  if (includeAttachmentBean)
+                     route += "<to uri=\"bean:documentHandler?method=toAttachment\"/>\n";
+                  
+                  // execute smpt endpoint
+                  route += "<to uri=\"" + mailIntegrationOverlay.protocolSelect.val() + "://"
+                           + mailIntegrationOverlay.serverInput.val();
+                  if (!m_utils.isEmptyString(mailIntegrationOverlay.userInput.val())
+                           && !m_utils.isEmptyString(mailIntegrationOverlay.passwordInput.val()))
+                  {
+                     route += "?username=" + mailIntegrationOverlay.userInput.val();
+                     route += "&amp;password=" + mailIntegrationOverlay.passwordInput.val();
+                  }
+                  else if (!m_utils.isEmptyString(mailIntegrationOverlay.userInput.val()))
+                  {
+                     route += "?username=" + mailIntegrationOverlay.userInput.val();
+                  }
+                  route += "\"/>";
+                  
+                  // store attachments
+                  if(mailIntegrationOverlay.storeAttachmentsInput.prop("checked")){
+                     route += "<to uri=\"bean:documentHandler?method=storeExchangeAttachments\"/>\n";
+                  }
+                  // store email content
+                  if(mailIntegrationOverlay.storeEmailInput.prop("checked")){
+                     route += "<convertBodyTo type=\"javax.mail.internet.MimeMessage\"/>\n";
+                     route += "<setHeader headerName=\"ippDmsDocumentName\">\n";
+                     route += "   <simple>$simple{header.subject}.eml</simple>\n";
+                     route += "</setHeader>\n";
+                     route += "<to uri=\"bean:documentHandler?method=toDocument\"/>";
+                  }
+                  return route;
+               };
+               
+               MailRouteDefinitionHandler.prototype.createRouteForRepositoryOrClassPathContent = function(mailIntegrationOverlay)
                {
                   var route = "";
                   // set headers for email: from, to, cc, bcc, subject
                   if (mailIntegrationOverlay.fromInput.val())
                   {
-                     route += mailRouteDefinitionHandler.setHeaderInputForEmailRepositoryOrClassPathMode("from", mailIntegrationOverlay.fromInput.val());
+                     route += this.setHeaderInputForEmailRepositoryOrClassPathMode("from", mailIntegrationOverlay.fromInput.val());
                   }
                   if (mailIntegrationOverlay.toInput.val())
                   {
-                     route += mailRouteDefinitionHandler.setHeaderInputForEmailRepositoryOrClassPathMode("to", mailIntegrationOverlay.toInput.val());
+                     route += this.setHeaderInputForEmailRepositoryOrClassPathMode("to", mailIntegrationOverlay.toInput.val());
                   }
                   if (mailIntegrationOverlay.ccInput.val())
                   {
-                     route += mailRouteDefinitionHandler.setHeaderInputForEmailRepositoryOrClassPathMode("cc", mailIntegrationOverlay.ccInput.val());
+                     route += this.setHeaderInputForEmailRepositoryOrClassPathMode("cc", mailIntegrationOverlay.ccInput.val());
                   }
                   if (mailIntegrationOverlay.bccInput.val())
                   {
-                     route += mailRouteDefinitionHandler.setHeaderInputForEmailRepositoryOrClassPathMode("bcc", mailIntegrationOverlay.bccInput.val());
+                     route += this.setHeaderInputForEmailRepositoryOrClassPathMode("bcc", mailIntegrationOverlay.bccInput.val());
                   }
                   if(mailIntegrationOverlay.subjectInput.val())
                   {
-                     route += mailRouteDefinitionHandler.setHeaderInputForEmailRepositoryOrClassPathMode("subject", mailIntegrationOverlay.subjectInput.val());
+                     route += this.setHeaderInputForEmailRepositoryOrClassPathMode("subject", mailIntegrationOverlay.subjectInput.val());
                   }
                   
                    route += m_routeDefinitionUtils.createTemplatingHandlerRouteDefinition(
@@ -125,36 +125,36 @@ define(
                };
                
                // create route for Email Embedded/Data content 
-               MailRouteDefinitionHandler.prototype.createRouteForEmbeddedOrDataContent = function(mailIntegrationOverlay, mailRouteDefinitionHandler)
+               MailRouteDefinitionHandler.prototype.createRouteForEmbeddedOrDataContent = function(mailIntegrationOverlay)
                {
                   var route = "";
                   // set headers for email: from, to, cc, bcc, subject
                   if (mailIntegrationOverlay.fromInput.val())
                   {
-                     route += mailRouteDefinitionHandler.setHeaderInputForEmailEmbeddedOrDataMode("from", mailIntegrationOverlay.fromInput.val());
+                     route += this.setHeaderInputForEmailEmbeddedOrDataMode("from", mailIntegrationOverlay.fromInput.val());
                   }
                   if (mailIntegrationOverlay.toInput.val())
                   {
-                     route += mailRouteDefinitionHandler.setHeaderInputForEmailEmbeddedOrDataMode("to", mailIntegrationOverlay.toInput.val());
+                     route += this.setHeaderInputForEmailEmbeddedOrDataMode("to", mailIntegrationOverlay.toInput.val());
                   }
                   if (mailIntegrationOverlay.ccInput.val())
                   {
-                     route += mailRouteDefinitionHandler.setHeaderInputForEmailEmbeddedOrDataMode("cc", mailIntegrationOverlay.ccInput.val());
+                     route += this.setHeaderInputForEmailEmbeddedOrDataMode("cc", mailIntegrationOverlay.ccInput.val());
                   }
                   if (mailIntegrationOverlay.bccInput.val())
                   {
-                     route += mailRouteDefinitionHandler.setHeaderInputForEmailEmbeddedOrDataMode("bcc", mailIntegrationOverlay.bccInput.val());
+                     route += this.setHeaderInputForEmailEmbeddedOrDataMode("bcc", mailIntegrationOverlay.bccInput.val());
                   }
                   if(mailIntegrationOverlay.subjectInput.val())
                   {
-                     route += mailRouteDefinitionHandler.setHeaderInputForEmailEmbeddedOrDataMode("subject", mailIntegrationOverlay.subjectInput.val());
+                     route += this.setHeaderInputForEmailEmbeddedOrDataMode("subject", mailIntegrationOverlay.subjectInput.val());
                   }
                   
                   // convert to native object before JS execution
                   route += "<to uri=\"ipp:data:toNativeObject\"/>\n";
                 
                   // generate js route
-                  route += mailRouteDefinitionHandler.createJsRouteForEmail(mailIntegrationOverlay);
+                  route += this.createJsRouteForEmail(mailIntegrationOverlay);
                   
                   return route;
                };
