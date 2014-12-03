@@ -27,7 +27,6 @@ import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.core.interactions.Interaction;
 import org.eclipse.stardust.engine.core.interactions.InteractionRegistry;
 import org.eclipse.stardust.ui.web.common.app.PortalApplicationEventScript;
-import org.eclipse.stardust.ui.web.common.app.PortalApplicationSingleViewEventScript;
 import org.eclipse.stardust.ui.web.common.app.View;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
@@ -39,9 +38,6 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ManagedBeanUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.utils.SpiUtils;
 import org.eclipse.stardust.ui.web.processportal.view.ViewEventAwareInteractionController;
-
-import com.icesoft.faces.context.effects.JavascriptContext;
-
 
 
 /**
