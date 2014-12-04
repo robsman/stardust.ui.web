@@ -26,8 +26,7 @@ define(
 				"bpm-reporting/js/m_autoCompleters"],
 		function(I18NUtils, AngularAdapter, ReportingService,
 				ReportRenderingController, SchedulingController, ReportFilterController, ReportHelper,
-				utils, m_codeEditorAce, m_autoCompleters) {
-		      var angularAdapter = null; 
+				utils, m_codeEditorAce, m_autoCompleters) { 
 		      var angularCompile = null;
 			return {
 				create : function(angular, reportUID, name, path, isClone, options) {
@@ -1520,11 +1519,11 @@ define(
 							.push(this.selectedComputedColumn);
 				};
 
-				/**
-				 * 
-				 */
 				ReportDefinitionController.prototype.deleteComputedColumn = function(
 						column) {
+					
+					this.adjustReportDefinition(column);
+					
 					for ( var n = 0; n < this.report.dataSet.computedColumns.length; ++n) {
 						if (this.report.dataSet.computedColumns[n].$$hashKey === column.$$hashKey) {
 							this.report.dataSet.computedColumns.splice(n, 1);
@@ -1539,7 +1538,58 @@ define(
 						}
 					}
 				};
+				
+				/**
+				 * adjust report definition if computer column is being used elsewhere.
+				 */
+				ReportDefinitionController.prototype.adjustReportDefinition = function(
+						column) {
+					// check if the selected computed column is set as
+					// Fact
+					if (this.report.dataSet.fact == column.id) {
+						this.report.dataSet.fact = this.getPrimaryObject().facts.count.id;
+					}
 
+					// Dimension
+					if (this.report.dataSet.firstDimension == column.id) {
+						if (this.report.dataSet.primaryObject == this.reportingService.metadata.objects.processInstance.id) {
+							this.report.dataSet.firstDimension = this.reportingService.metadata.objects.processInstance.dimensions.priority.id;
+						} else {
+							this.report.dataSet.firstDimension = this.reportingService.metadata.objects.activityInstance.dimensions.activityInstanceDuration.id;
+						}
+					}
+
+					// Filter
+					if (this.report.dataSet.filters) {
+						var filters = this.report.dataSet.filters;
+						for (var int = 0; int < filters.length; int++) {
+							var filter = filters[int];
+							if (filter && filter.dimension == column.id) {
+								this.reportFilterController
+										.deleteFilter(filter);
+							}
+						}
+					}
+
+					// Group by
+					if (this.report.dataSet.groupBy == column.id) {
+						this.report.dataSet.groupBy = "None";
+						this.changeGroupBy();
+					}
+
+					// Column in Record set
+					if (this.report.dataSet.columns) {
+						var columns = this.report.dataSet.columns;
+						for (var int2 = 0; int2 < columns.length; int2++) {
+							var column2 = columns[int2];
+							if (column2.id == column.id) {
+								this.removeItem(columns, column.id);
+							}
+						}
+					}
+				};
+				
+				
 				/**
 				 * 
 				 */
