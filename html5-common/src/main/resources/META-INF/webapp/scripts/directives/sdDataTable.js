@@ -78,7 +78,8 @@
 	function DataTableCompiler($parse, $compile, $timeout, sdUtilService, scope, element, attr, ctrl) {
 		var TOOLBAR_TEMPLATE =
 			'<div class="tbl-toolbar-section">\n' +
-				'<a href="#" ng-click="" title="{{i18n(\'portal-common-messages.common-filterPopup-selectColumnsLabel\')}}" class="tbl-toolbar-item tbl-tool-link">\n' +
+				'<a href="#" ng-click="$dtApi.openColumnSelector()"' + 
+					' title="{{i18n(\'portal-common-messages.common-filterPopup-selectColumnsLabel\')}}" class="tbl-toolbar-item tbl-tool-link">\n' +
 					'<i class="fa fa-table"></i>\n' +
 				'</a>\n' +
 				'<a href="#" ng-click="" title="{{i18n(\'portal-common-messages.common-genericDataTable-asExcel\')}}" class="tbl-toolbar-item tbl-tool-link">\n' +
@@ -470,6 +471,7 @@
 			theDataTable.on('page.dt', firePaginationEvent);
 
 			exposeAPIs();
+			exposeScopeInfo();
 		}
 
 		/*
@@ -823,6 +825,14 @@
 		}
 
 		/*
+		 * 
+		 */
+		function exposeScopeInfo() {
+			// Need to add into parent scope as Toolbar belongs to parent scope 
+			elemScope.$dtApi= new ScopeAPI();
+		}
+
+		/*
 		 * Public API
 		 */
 		function DataTable() {
@@ -852,6 +862,18 @@
 			 */
 			this.setSelection = function(data) {
 				setRowSelection(data);
+			};
+		}
+
+		/*
+		 * Scope API
+		 */
+		function ScopeAPI() {
+			/*
+			 * 
+			 */
+			this.openColumnSelector = function() {
+				alert('Column Selector');
 			};
 		}
 	};
