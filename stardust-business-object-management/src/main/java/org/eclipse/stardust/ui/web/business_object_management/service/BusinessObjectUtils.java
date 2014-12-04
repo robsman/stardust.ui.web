@@ -69,42 +69,63 @@ public class BusinessObjectUtils
             return new BusinessObjects(query, Collections.<BusinessObject>emptyList());
         }
 
-        if (withValues && allData.size() > 1)
+        if (withValues && !isUniqueBusinessObject(allData))
         {
-            // TODO: check separately model and data
-            throw new InvalidArgumentException(BpmRuntimeError.BPMRT_INVALID_ARGUMENT.raise("query","Model or data not specified."));
+           throw new InvalidArgumentException(BpmRuntimeError.BPMRT_INVALID_ARGUMENT.raise("query","Business Object not uniquely specified."));
         }
 
         final Map<IData, List<BusinessObject.Value>> values = withValues
-                ? fetchValues(allData.iterator().next(), queryEvaluator.getPkValue(), query.getFilter()) : null;
-                if (values != null)
-                {
-                    allData = values.keySet();
-                }
+                ? fetchValues(allData, queryEvaluator.getPkValue(), query.getFilter()) : null;
+        if (values != null)
+        {
+           allData = values.keySet();
+        }
 
-                Functor<IData, BusinessObject> transformer = new Functor<IData, BusinessObject>() {
-                    public BusinessObject execute(IData source)
-                    {
-                        List<Definition> items = null;
-                        if (withDescription)
-                        {
-                            BusinessObject bo = getBusinessObject(source);
-                            if (!withValues)
-                            {
-                                return bo;
-                            }
-                            items = bo.getItems();
-                        }
-                        return new BusinessObjectDetails(source.getModel().getId(), source.getId(), source.getName(),
-                        		items, values == null ? null : values.get(source));
-                    }
-                };
+        Functor<IData, BusinessObject> transformer = new Functor<IData, BusinessObject>() {
+           public BusinessObject execute(IData source)
+           {
+               List<Definition> items = null;
+               if (withDescription)
+               {
+                   BusinessObject bo = getBusinessObject(source);
+                   if (!withValues)
+                   {
+                       return bo;
+                   }
+                   items = bo.getItems();
+               }
+               return new BusinessObjectDetails(source.getModel().getId(), source.getId(), source.getName(),
+                     items, values == null ? null : values.get(source));
+           }
+        };
 
-                return new BusinessObjects(query, CollectionUtils.newListFromIterator(
-                        new TransformingIterator<IData, BusinessObject>(allData.iterator(), transformer)));
+        return new BusinessObjects(query, CollectionUtils.newListFromIterator(
+               new TransformingIterator<IData, BusinessObject>(allData.iterator(), transformer)));
     }
 
-    private static Set<IData> collectData(final ModelManager modelManager, BusinessObjectQueryEvaluator queryEvaluator)
+    private static boolean isUniqueBusinessObject(Set<IData> allData)
+   {
+       String modelId = null;
+       String dataId = null;
+       for (IData data : allData)
+       {
+          if (modelId == null)
+          {
+             modelId = data.getModel().getId();
+          }
+          if (dataId == null)
+          {
+             dataId = data.getId();
+          }
+          else if (!dataId.equals(data.getId()) || !modelId.equals(data.getModel().getId()))
+          {
+             return false;
+          }
+       }
+      return true;
+   }
+
+   private static Set<IData> collectData(final ModelManager modelManager, BusinessObjectQueryEvaluator queryEvaluator)
     {
         Set<IData> allData = CollectionUtils.newSet();
 
@@ -142,7 +163,7 @@ public class BusinessObjectUtils
         }
     }
 
-    private static Map<IData, List<Value>> fetchValues(IData data, Object pkValue, FilterAndTerm term)
+    private static Map<IData, List<Value>> fetchValues(Set<IData> allData, Object pkValue, FilterAndTerm term)
     {
         ProcessInstanceQuery pi = ProcessInstanceQuery.findAll();
         copyDataFilters(term, pi.getFilter());
@@ -152,95 +173,96 @@ public class BusinessObjectUtils
 
         Map<IData, List<BusinessObject.Value>> values = CollectionUtils.newMap();
 
-        long modelOID = data.getModel().getModelOID();
-        long dataRtOID = ModelManagerFactory.getCurrent().getRuntimeOid(data);
-        String pk = data.getAttribute(PredefinedConstants.PRIMARY_KEY_ATT);
-        int typeClassification = LargeStringHolderBigDataHandler.classifyType(data, pk);
-
-        QueryDescriptor desc = QueryDescriptor
-                .from(ProcessInstanceBean.class)
-                .select(ProcessInstanceBean.FR__OID, ClobDataBean.FR__STRING_VALUE);
-        Join dvJoin = desc
-                .innerJoin(DataValueBean.class)
-                        .on(ProcessInstanceBean.FR__OID, DataValueBean.FIELD__PROCESS_INSTANCE);
-        desc
-                .innerJoin(ClobDataBean.class)
-                        .on(dvJoin.fieldRef(DataValueBean.FIELD__NUMBER_VALUE), ClobDataBean.FIELD__OID);
-        Join sdvJoin = desc
-                .innerJoin(StructuredDataValueBean.class)
-                        .on(ProcessInstanceBean.FR__OID, StructuredDataValueBean.FIELD__PROCESS_INSTANCE);
-        Join sdJoin = desc
-                .innerJoin(StructuredDataBean.class)
-                        .on(sdvJoin.fieldRef(StructuredDataValueBean.FIELD__XPATH), StructuredDataBean.FIELD__OID)
-                        .andOn(dvJoin.fieldRef(DataValueBean.FIELD__MODEL), StructuredDataBean.FIELD__MODEL)
-                        .andOn(dvJoin.fieldRef(DataValueBean.FIELD__DATA), StructuredDataBean.FIELD__DATA);
-
-        FieldRef pkValueField = null;
-        switch (typeClassification)
+        for (IData data : allData)
         {
-        case BigData.STRING_VALUE:
-            pkValueField = sdvJoin.fieldRef(StructuredDataValueBean.FIELD__STRING_VALUE);
-            break;
-        case BigData.NUMERIC_VALUE:
-            pkValueField = sdvJoin.fieldRef(StructuredDataValueBean.FIELD__NUMBER_VALUE);
-            break;
-        default:
-            // (fh) throw internal exception ?
-        }
+           long modelOID = data.getModel().getModelOID();
+           long dataRtOID = ModelManagerFactory.getCurrent().getRuntimeOid(data);
+           String pk = data.getAttribute(PredefinedConstants.PRIMARY_KEY_ATT);
+           int typeClassification = LargeStringHolderBigDataHandler.classifyType(data, pk);
 
-        List<PredicateTerm> predicates = CollectionUtils.newList();
-        predicates.add(Predicates.isEqual(ProcessInstanceBean.FR__PROCESS_DEFINITION, -1));
-        predicates.add(Predicates.isEqual(ProcessInstanceBean.FR__MODEL, modelOID));
-        predicates.add(Predicates.isEqual(dvJoin.fieldRef(DataValueBean.FIELD__DATA), dataRtOID));
-        predicates.add(Predicates.isEqual(sdJoin.fieldRef(StructuredDataBean.FIELD__XPATH), pk));
-        if (pkValue instanceof Number)
-        {
-            predicates.add(Predicates.isEqual(pkValueField, ((Number) pkValue).longValue()));
-        }
-        else if (pkValue != null)
-        {
-            predicates.add(Predicates.isEqual(pkValueField, pkValue.toString()));
-        }
-        if (parsedTerm != null)
-        {
-            predicates.add(parsedTerm);
-        }
+           QueryDescriptor desc = QueryDescriptor
+                   .from(ProcessInstanceBean.class)
+                   .select(ProcessInstanceBean.FR__OID, ClobDataBean.FR__STRING_VALUE);
+           Join dvJoin = desc
+                   .innerJoin(DataValueBean.class)
+                           .on(ProcessInstanceBean.FR__OID, DataValueBean.FIELD__PROCESS_INSTANCE);
+           desc
+                   .innerJoin(ClobDataBean.class)
+                           .on(dvJoin.fieldRef(DataValueBean.FIELD__NUMBER_VALUE), ClobDataBean.FIELD__OID);
+           Join sdvJoin = desc
+                   .innerJoin(StructuredDataValueBean.class)
+                           .on(ProcessInstanceBean.FR__OID, StructuredDataValueBean.FIELD__PROCESS_INSTANCE);
+           Join sdJoin = desc
+                   .innerJoin(StructuredDataBean.class)
+                           .on(sdvJoin.fieldRef(StructuredDataValueBean.FIELD__XPATH), StructuredDataBean.FIELD__OID)
+                           .andOn(dvJoin.fieldRef(DataValueBean.FIELD__MODEL), StructuredDataBean.FIELD__MODEL)
+                           .andOn(dvJoin.fieldRef(DataValueBean.FIELD__DATA), StructuredDataBean.FIELD__DATA);
 
-        desc.where(new AndTerm(predicates.toArray(new PredicateTerm[predicates.size()])));
+           FieldRef pkValueField = null;
+           switch (typeClassification)
+           {
+           case BigData.STRING_VALUE:
+               pkValueField = sdvJoin.fieldRef(StructuredDataValueBean.FIELD__STRING_VALUE);
+               break;
+           case BigData.NUMERIC_VALUE:
+               pkValueField = sdvJoin.fieldRef(StructuredDataValueBean.FIELD__NUMBER_VALUE);
+               break;
+           default:
+               // (fh) throw internal exception ?
+           }
 
-        Session session = (Session) SessionFactory.getSession(SessionFactory.AUDIT_TRAIL);
-        System.err.println(session.getDMLManager(desc.getType()).prepareSelectStatement(desc, true, null, true));
+           List<PredicateTerm> predicates = CollectionUtils.newList();
+           predicates.add(Predicates.isEqual(ProcessInstanceBean.FR__PROCESS_DEFINITION, -1));
+           predicates.add(Predicates.isEqual(ProcessInstanceBean.FR__MODEL, modelOID));
+           predicates.add(Predicates.isEqual(dvJoin.fieldRef(DataValueBean.FIELD__DATA), dataRtOID));
+           predicates.add(Predicates.isEqual(sdJoin.fieldRef(StructuredDataBean.FIELD__XPATH), pk));
+           if (pkValue instanceof Number)
+           {
+               predicates.add(Predicates.isEqual(pkValueField, ((Number) pkValue).longValue()));
+           }
+           else if (pkValue != null)
+           {
+               predicates.add(Predicates.isEqual(pkValueField, pkValue.toString()));
+           }
+           if (parsedTerm != null)
+           {
+               predicates.add(parsedTerm);
+           }
 
-        ResultSet resultSet = session.executeQuery(desc);
-        try
-        {
-            while (resultSet.next())
-            {
-                long piOid = resultSet.getLong(1);
-                Clob clob = resultSet.getClob(2);
+           desc.where(new AndTerm(predicates.toArray(new PredicateTerm[predicates.size()])));
 
-                Document document = DocumentBuilder.buildDocument(clob.getCharacterStream());
-                boolean namespaceAware = StructuredDataXPathUtils.isNamespaceAware(document);
-                final IXPathMap xPathMap = DataXPathMap.getXPathMap(data);
-                StructuredDataConverter converter = new StructuredDataConverter(xPathMap);
+           Session session = (Session) SessionFactory.getSession(SessionFactory.AUDIT_TRAIL);
+           ResultSet resultSet = session.executeQuery(desc);
+           try
+           {
+               while (resultSet.next())
+               {
+                   long piOid = resultSet.getLong(1);
+                   Clob clob = resultSet.getClob(2);
 
-                List<BusinessObject.Value> list = values.get(data);
-                if (list == null)
-                {
-                    list = CollectionUtils.newList();
-                    values.put(data, list);
-                }
-                Object value = converter.toCollection(document.getRootElement(), "", namespaceAware);
-                list.add(new BusinessObjectDetails.ValueDetails(piOid, (Serializable) value));
-            }
-        }
-        catch (Exception e)
-        {
-            throw new PublicException(e);
-        }
-        finally
-        {
-            QueryUtils.closeResultSet(resultSet);
+                   Document document = DocumentBuilder.buildDocument(clob.getCharacterStream());
+                   boolean namespaceAware = StructuredDataXPathUtils.isNamespaceAware(document);
+                   final IXPathMap xPathMap = DataXPathMap.getXPathMap(data);
+                   StructuredDataConverter converter = new StructuredDataConverter(xPathMap);
+
+                   List<BusinessObject.Value> list = values.get(data);
+                   if (list == null)
+                   {
+                       list = CollectionUtils.newList();
+                       values.put(data, list);
+                   }
+                   Object value = converter.toCollection(document.getRootElement(), "", namespaceAware);
+                   list.add(new BusinessObjectDetails.ValueDetails(piOid, (Serializable) value));
+               }
+           }
+           catch (Exception e)
+           {
+               throw new PublicException(e);
+           }
+           finally
+           {
+               QueryUtils.closeResultSet(resultSet);
+           }
         }
 
         return values;
