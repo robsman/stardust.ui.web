@@ -390,7 +390,15 @@
 			dtOptions.sDom = "itp";
 			dtOptions.sPaginationType = "full_numbers";
 			dtOptions.iDisplayLength = pageSize;
-
+			dtOptions.language = {
+				 "paginate": {
+					 "first": "<<",
+					 "previous": "<",
+					 "next": ">",
+					 "last": ">>"
+				 }
+			};
+			
 			dtOptions.columns = dtColumns;
 			dtOptions.autoWidth = false;
 
