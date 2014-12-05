@@ -210,7 +210,7 @@ public class DocumentTriageService
 
       processInstanceQuery.where(ProcessInstanceQuery.OID.isEqual(oid));
       processInstanceQuery.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
-      ProcessInstanceDetails processInstance = getQueryService().getAllProcessInstances(processInstanceQuery).get(0);
+      ProcessInstanceDetails processInstance = (ProcessInstanceDetails) getQueryService().getAllProcessInstances(processInstanceQuery).get(0);
 
       JsonObject processInstanceJson = new JsonObject();
 
@@ -291,7 +291,7 @@ public class DocumentTriageService
     * @param path
     * @return
     */
-   private JsonArray getProcessAttachments(ProcessInstance processInstance)
+   public JsonArray getProcessAttachments(ProcessInstance processInstance)
    {
       JsonArray attachmentsJson = new JsonArray();
       List<Document> documents = fetchProcessAttachments(processInstance);
