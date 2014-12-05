@@ -448,6 +448,12 @@ define(
 							// Remove Hard-coding
 							.done(
 									function(businessObject) {
+										// TODO : modelOid not fetched from
+										// server, need a way to set on
+										// businessObjects
+										if(!businessObject.modelOid){
+											businessObject.modelOid = modelOid;
+										}
 										self.relationshipPanelController
 												.changeBusinessObject(businessObject);
 										self.relationshipPanelController
