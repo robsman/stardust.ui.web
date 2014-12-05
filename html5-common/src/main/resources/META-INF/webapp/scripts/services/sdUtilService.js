@@ -136,6 +136,15 @@
 		/*
 		 * 
 		 */
+		UtilService.prototype.assert = function(condition, msg) {
+			if (!condition) {
+				throw msg;
+			}
+		};
+
+		/*
+		 * 
+		 */
 		function createProxyFunc(obj, member) {
 			function proxyFunc() {
 				var args = Array.prototype.slice.call(arguments, 0);

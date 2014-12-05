@@ -21,6 +21,8 @@
 
 	var trace;
 
+	var CLASS_ROW_SELECTED = "tbl-row-selected";
+
 	/*
 	 * 
 	 */
@@ -220,33 +222,24 @@
 		function validateMarkup() {
 			// Check Tag Name <table>
 			var tagName = element.prop('tagName');
-			throwError(tagName != 'TABLE', 'Directive must be defined on &lt;table&gt; element, but its defined on ' + tagName + '.');
+			sdUtilService.assert(tagName == 'TABLE', 'Directive must be defined on &lt;table&gt; element, but its defined on ' + tagName + '.');
 
 			// Check <thead>
 			var head = element.find('> thead');
-			throwError(head.length != 1, '&lt;table&gt; must have at least and at most one &lt;thead&gt; defined.');
+			sdUtilService.assert(head.length == 1, '&lt;table&gt; must have at least and at most one &lt;thead&gt; defined.');
 
 			// Check header row
 			var headerRow = head.find('> tr');
-			throwError(headerRow.length != 1, '&lt;thead&gt; must have at leat and at most one &lt;tr&gt; defined.');
+			sdUtilService.assert(headerRow.length == 1, '&lt;thead&gt; must have at leat and at most one &lt;tr&gt; defined.');
 
 			// Check <tbody>
 			var body = element.find('> tbody');
-			throwError(body.length != 1, '&lt;table&gt; must have at leat and at most one &lt;tbody&gt; defined.');
+			sdUtilService.assert(body.length == 1, '&lt;table&gt; must have at leat and at most one &lt;tbody&gt; defined.');
 
 			var bodyRow = body.find('> tr');
-			throwError(bodyRow.length != 1, '&lt;tbody&gt; must have at leat and at most one &lt;tr&gt; defined.');
+			sdUtilService.assert(bodyRow.length == 1, '&lt;tbody&gt; must have at leat and at most one &lt;tr&gt; defined.');
 		}
 
-		/*
-		 * 
-		 */
-		function throwError(condition, msg) {
-			if (condition) {
-				throw msg;
-			}
-		}
-		
 		/*
 		 * 
 		 */
@@ -261,7 +254,7 @@
 			var headCols = element.find('> thead > tr > th');
 			var bodyCols = element.find('> tbody > tr > td');
 
-			throwError(headCols.length != bodyCols.length, 'Number of columns in head and body are not matching.');
+			sdUtilService.assert(headCols.length == bodyCols.length, 'Number of columns in &lt;thead&gt; and &lt;tbody&gt; are not matching.');
 			
 			headCols.addClass('tbl-hdr-col');
 			
@@ -270,9 +263,9 @@
 				var bCol = angular.element(bodyCols[i]);
 				
 				var colDef = {
-						field: bCol.attr('sda-field'),
-						dataType: bCol.attr('sda-data-type'),
-						sortable: hCol.attr('sda-sortable')
+					field: bCol.attr('sda-field'),
+					dataType: bCol.attr('sda-data-type'),
+					sortable: hCol.attr('sda-sortable')
 				};
 
 				if (hCol.attr('sda-label') != undefined) {
@@ -287,6 +280,14 @@
 				colDef.contents = colDef.contents.trim();
 				if (colDef.contents == "") {
 					colDef.contents = getDefaultContent(colDef);
+				}
+
+				if (bCol.attr('style')) {
+					colDef.cellStyle = bCol.attr('style');
+				}
+
+				if (bCol.attr('class')) {
+					colDef.cellClass = bCol.attr('class');
 				}
 
 				columns.push(colDef);
@@ -534,8 +535,29 @@
 			var row = angular.element(row);
 			row.addClass('tbl-row');
 			
-			row.find('> td').addClass('tbl-col');
-			
+			var cells = row.find('> td');
+			cells.addClass('tbl-col');
+			angular.forEach(cells, function(cell, i) {
+				cell = angular.element(cell);
+
+				if (columns[i].cellClass && columns[i].cellClass != '') {
+					var value = cell.attr('class');
+					value = value ? (value.trim() + ' ') : '';
+					value += columns[i].cellClass;
+					cell.attr('class', value);
+				}
+
+				if (columns[i].cellStyle && columns[i].cellStyle != '') {
+					var value = cell.attr('style');
+					value = value ? (value.trim()) : '';
+					if (value.length > 1 && value.substr(value.length - 1) != ';') {
+						value += '; ';
+					}
+					value += columns[i].cellStyle;
+					cell.attr('style', value);
+				}
+			});
+
 			var rowScope = row.scope();
 			if (rowScope == undefined) {
 				rowScope = myScope.$new();
@@ -773,7 +795,7 @@
 		 * 
 		 */
 		function selectRow(row, index) {
-			row.addClass('tbl-row-selected');
+			row.addClass(CLASS_ROW_SELECTED);
 			selectedRowIndexes['Row' + index] = index;
 		}
 
@@ -781,14 +803,14 @@
 		 * 
 		 */
 		function isRowSelected(row) {
-			return row.hasClass('tbl-row-selected');
+			return row.hasClass(CLASS_ROW_SELECTED);
 		}
 
 		/*
 		 * 
 		 */
 		function getSelectedRow() {
-			var selRow = theTable.find('> tbody > tr.tbl-row-selected');
+			var selRow = theTable.find('> tbody > tr.' + CLASS_ROW_SELECTED);
 			return (selRow.length != 0) ? selRow : null;
 		}
 
@@ -796,7 +818,7 @@
 		 * 
 		 */
 		function unselectRow(row, index) {
-			row.removeClass('tbl-row-selected');
+			row.removeClass(CLASS_ROW_SELECTED);
 			delete selectedRowIndexes['Row' + index];
 		}
 
@@ -805,7 +827,7 @@
 		 */
 		function unselectRows() {
 			var rows = theTable.find('> tbody > tr');
-			rows.removeClass('tbl-row-selected');
+			rows.removeClass(CLASS_ROW_SELECTED);
 			selectedRowIndexes = {};
 		}
 

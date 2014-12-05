@@ -27,7 +27,9 @@
 
 .tbl {
    width: 100%;
+   color: #708090;
 }
+
 .tbl-error {
    color: red;
 }
@@ -39,13 +41,15 @@
 
 .tbl-col {
 	padding: 2px 5px 2px 5px;
-	border: 1px solid #CCCCCC;
 }
 
 .tbl-hdr-col {
+    text-align: center;
+    vertical-align: top;
 	padding: 2px 5px 2px 5px;
-	border: 1px solid #CCCCCC;
-	background-color: #EEEEEE;
+	border: none;
+	border-bottom: solid 1px #708090;
+	background: #FFFFFF;
 	cursor: pointer;
 	font-weight: normal;
 }
@@ -71,8 +75,28 @@
 	cursor: pointer;
 }
 
+.tbl-row {
+   border-bottom: solid 1px #ddd;
+}
+
+.tbl-row.odd {
+   background: #FFFFFF;
+}
+
+.tbl-row.even {
+   background: #F4F4F4;
+}
+
 .tbl-row-selected {
-   background-color: #a9b7d1;
+   background: #EEE2CF !important;
+}
+
+.tbl-row a {
+   color: #2B2865;
+}
+
+.tbl-row a:hover {
+   text-decoration: underline;
 }
 
 .tbl-flt-title {
@@ -83,6 +107,12 @@
 .dataTables_wrapper .dataTables_info {
    float: none !important;
 }
+
+.dataTables_info {
+   font-size: 9px;
+   color: #999999 !important
+}
+
 /************** Behaviors *****************/
 
 .right {

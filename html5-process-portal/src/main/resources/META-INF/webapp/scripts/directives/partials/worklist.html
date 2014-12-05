@@ -28,7 +28,7 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td>
+				<td style="white-space: nowrap;">
 					<a href="#" ng-click="worklistCtrl.stopEvent($event); worklistCtrl.$activateWorkItem(rowData);">
 						{{rowData.activity.name}}
 					</a>
@@ -40,14 +40,14 @@
 				<td>
 					<table>
 						<tr ng-repeat="desc in rowData.descriptors">
-							<td>{{desc.key}}</td>
-							<td>{{desc.value}}</td>
+							<td style="white-space: nowrap;">{{desc.key}}</td>
+							<td style="white-space: nowrap;">{{desc.value}}</td>
 						</tr>
 					</table>
 					<div sd-editor-template></div>
 				</td>
 				<td ng-repeat="descCol in worklistCtrl.descritorCols"
-					sda-field="{{descCol.field}}" sda-data-type="{{descCol.dataType}}">
+					sda-field="{{descCol.field}}" sda-data-type="{{descCol.dataType}}" style="white-space: nowrap;">
 				</td>
 				<td sda-column="TRIVIAL_DATA">
 					<table ng-hide="!worklistCtrl.worklist.trivialManualActivities[rowData.oid]">
@@ -73,7 +73,7 @@
 						</tbody>
 					</table>
 				</td>
-				<td>
+				<td style="white-space: nowrap;">
 					<a href="#" ng-click="worklistCtrl.stopEvent($event); worklistCtrl.$openNotes(rowData);"
 						title="Open Notes" class="view-tool-link">
 						<i class="fa fa-comment-o"></i>
