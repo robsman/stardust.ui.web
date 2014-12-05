@@ -27,7 +27,7 @@ define(
 		function(I18NUtils, AngularAdapter, ReportingService,
 				ReportRenderingController, SchedulingController, ReportFilterController, ReportHelper,
 				utils, m_codeEditorAce, m_autoCompleters) { 
-		      var angularCompile = null;
+		      var angularServices = null;
 			return {
 				create : function(angular, reportUID, name, path, isClone, options) {
 					var controller = new ReportDefinitionController();
@@ -46,9 +46,9 @@ define(
 					controller = angularAdapter
 							.mergeControllerWithScope(controller);
 					
-					angularCompile = angularAdapter.getCompiler();
+					angularServices = angularAdapter.getAngularServices();
 					
-					var renderingController = ReportRenderingController.create(angularCompile);
+					var renderingController = ReportRenderingController.create(angularServices);
 
 					controller.initialize(renderingController, reportUID, name, path, isClone);
 					

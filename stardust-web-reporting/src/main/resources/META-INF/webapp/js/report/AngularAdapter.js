@@ -28,7 +28,7 @@ if (!window.bpm.portal.AngularAdapter) {
 		/**
 		 * 
 		 */
-	   var angularCompile;
+	   var angularServices = {};
 		
 		//load directives here, directives file should have init method which initializes 
 	    //directive module and return module name so that dependency can be added to main module.
@@ -122,13 +122,9 @@ if (!window.bpm.portal.AngularAdapter) {
 			}
 		};
 		
-      /*
-       * 
-       */
-      AngularAdapter.prototype.getCompiler = function() {
-         return angularCompile;
+      AngularAdapter.prototype.getAngularServices = function() {
+          return angularServices;
       };
-
 		/**
 		 * 
 		 */
@@ -404,7 +400,7 @@ if (!window.bpm.portal.AngularAdapter) {
 			
 			                var el = angular.element(TEMPLATE_COPY);
 			
-			                var compiled = angularCompile(el);
+			                var compiled = angularServices.compile(el);
 			
 			                var divElem = elem;
 			
@@ -533,7 +529,7 @@ if (!window.bpm.portal.AngularAdapter) {
 									sClass : "",
 									aTargets : ["_all"]
 								});
-							    tableOptions.aLengthMenu = [[5, 10, 25, 50, 100, 200, -1], [5, 10, 25, 50, 100, 200, "All"]];
+							    tableOptions.aLengthMenu = [[5, 10, 25, 50, 100, 200, 250, -1], [5, 10, 25, 50, 100, 200, 250, "All"]];
 								
 								//if group table rows
 								if (scope.tableParameters && scope.tableParameters.groupByIndex != undefined) {
@@ -798,8 +794,9 @@ if (!window.bpm.portal.AngularAdapter) {
 				};
 			});
 			
-		   this.angularModule.controller("ReportDefinitionController", ['$compile', function($compile) {
-            angularCompile = $compile;
+		   this.angularModule.controller("ReportDefinitionController", ['$compile', '$filter', function($compile, $filter) {
+            angularServices.compile = $compile; 
+            angularServices.filter = $filter;
          }]);
 
 			this.angularModule
