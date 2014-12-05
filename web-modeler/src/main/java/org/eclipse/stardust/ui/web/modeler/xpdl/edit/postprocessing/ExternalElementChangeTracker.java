@@ -168,6 +168,14 @@ public class ExternalElementChangeTracker implements ChangePostprocessor
    {
       if (modelElement != null)
       {
+         if (modelElement instanceof IModelParticipant)
+         {
+            IModelParticipant participtant = (IModelParticipant) modelElement;
+            if (participtant.eIsProxy())
+            {
+               return true;
+            }
+         }
          if (modelElement instanceof DataType)
          {
             DataType dataType = (DataType) modelElement;
