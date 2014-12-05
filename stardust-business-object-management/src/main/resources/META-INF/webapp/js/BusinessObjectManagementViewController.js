@@ -431,13 +431,15 @@ define(
 				BusinessObjectManagementViewController.prototype.openRelationshipDialog = function(
 						relationship) {
 					var self = this;
-
+					//TODO : Does this.paramaters works when view opened from BCC perspective
+					var modelOid = this.parameters.modelOid ?  this.parameters.modelOid : this.businessObject.modelOid;
+					
 					console.log("Open with relationship");
 					console.log(relationship);
 
 					BusinessObjectManagementService
 							.instance()
-							.getBusinessObject(this.parameters.modelOid, // TODO
+							.getBusinessObject(modelOid, // TODO
 							// possibly
 							// not
 							// same

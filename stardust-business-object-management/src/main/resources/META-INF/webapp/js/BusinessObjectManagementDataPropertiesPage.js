@@ -270,8 +270,12 @@ define(
 					this.submitRelationshipsChanges(this.propertiesPanel.data,
 							this.relationships);
 
-					var otherBusinessObjectUnchanged = this.relationshipsUnchanged[index].otherBusinessObject;
-					var thisRoleUnchanged = this.relationshipsUnchanged[index].thisRole;
+					var thisRoleUnchanged = null;
+					if(this.relationshipsUnchanged[index]){
+						var otherBusinessObjectUnchanged = this.relationshipsUnchanged[index].otherBusinessObject;
+						thisRoleUnchanged = this.relationshipsUnchanged[index].thisRole;
+					}
+					 
 
 					// Only for non-recursive Relationships
 
@@ -319,7 +323,7 @@ define(
 
 						if (!otherRelationship) {
 							otherRelationship = {};
-
+							otherRelationship.otherBusinessObject = this.propertiesPanel.data;
 							otherRelationships.push(otherRelationship);
 						}
 
@@ -352,6 +356,9 @@ define(
 					var transfer = [];
 
 					for (var n = 0; n < relationships.length; ++n) {
+						if (!relationships[n].otherBusinessObject) {
+							return;
+						}
 						transfer
 								.push({
 									otherBusinessObject : {
