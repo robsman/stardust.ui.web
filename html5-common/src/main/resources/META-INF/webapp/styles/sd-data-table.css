@@ -60,6 +60,14 @@
    background: #F4F4F4;
 }
 
+.tbl-row.odd:hover {
+   background: #FFFFE0;
+}
+
+.tbl-row.even:hover {
+   background: #FFFFE0;
+}
+
 .tbl-row-selected {
    background: #EEE2CF !important;
 }
