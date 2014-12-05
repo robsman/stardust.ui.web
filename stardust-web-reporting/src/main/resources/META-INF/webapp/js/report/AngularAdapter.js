@@ -152,7 +152,7 @@ if (!window.bpm.portal.AngularAdapter) {
 								
 								var d = new Date(input);
 								if(isFinite(d)){
-									var _date = $filter('date')(new Date(input), format);
+									var _date = $filter('date')(d, format);
 									return _date;	
 								}
 							} catch (e) {
@@ -209,103 +209,95 @@ if (!window.bpm.portal.AngularAdapter) {
 			                
 						    tableOptions.sDom =  'T<"clear ">lfrtip';
 						    
-						    tableOptions.oTableTools = {}
+						    // cannot use following approach as it also needs to work in email based reports.
+						    // tableOptions.oTableTools = {"sSwfPath": "../swf/copy_csv_xls_pdf.swf"};
+
+						    tableOptions.oTableTools = {};
+						    
 						    tableOptions.oTableTools.aButtons =  [];
 						    
-						    if(tableParameters.csv != false){
-						    	
-						    	if(!tableParameters.csv){
+						    if (tableParameters.csv != false) {
+
+						    	if (!tableParameters.csv) {
 						    		tableParameters.csv = "data";
 						    	}
-						    	
+
 						    	tableOptions.oTableTools.aButtons.push({
-								    sExtends: "text",
-								    sButtonText: "CSV",
-								    fnClick: function(nButton, oConfig, oFlash) {
-								        var data = scope.baseTableClone;
-								        var csvData = new Array();
-								        data.forEach(function(item, index, array) {
-								            var cvsRow = "";
-								            item.forEach(function(item2) {
-								                cvsRow += '"' + item2 + '"' + ",";
-								            });
-								            csvData.push(cvsRow);
-								        });
-								
-								        var buffer = csvData.join("\n");
-								        var fileName = tableParameters.csv + ".csv";
-								
-								        var link = nButton;
-								
-								        if (link.download !== undefined) { // feature detection
-								            // Browsers that support HTML5 download attribute
-								            var blob = new Blob([buffer], {
-								                type: 'text/csv;charset=utf-8;'
-								            });
-								            var url = URL.createObjectURL(blob);
-								            link.setAttribute("href", url);
-								            link.setAttribute("download", fileName);
-								        }
-								
-								        if (navigator.msSaveBlob) { // IE 10+
-								            link.addEventListener("click", function(event) {
-								                var blob = new Blob([buffer], {
-								                    "type": "text/csv;charset=utf-8;"
-								                });
-								                navigator.msSaveBlob(blob, fileName);
-								            }, false);
-								        }
-								        nButton.style.setProperty('text-decoration', 'none');
-								    }
-								});
+						    		sExtends : "text",
+						    		sButtonText : "CSV",
+						    		fnInit : function (nButton, oConfig, oFlash) {
+						    			if (navigator.msSaveBlob) { // Only to handle Internet Explorer
+						    				var csvData = getCSVData(scope.baseTableClone);
+						    				var fileName = tableParameters.csv + ".csv";
+
+						    				nButton.addEventListener("click", function (event) {
+						    					var blob = new Blob([csvData], {
+						    							"type" : "text/csv;charset=utf-8;"
+						    						});
+						    					navigator.msSaveBlob(blob, fileName);
+						    				}, false);
+						    				nButton.style.setProperty('text-decoration', 'none');
+						    			}
+						    		},
+						    		fnClick : function (nButton, oConfig, oFlash) {
+						    			if (nButton.download !== undefined) { // feature detection
+						    				// Browsers that support HTML5 download attribute
+						    				var csvData = getCSVData(scope.baseTableClone);
+						    				var fileName = tableParameters.csv + ".csv";
+
+						    				var blob = new Blob([csvData], {
+						    						type : 'text/csv;charset=utf-8;'
+						    					});
+						    				var url = URL.createObjectURL(blob);
+						    				nButton.setAttribute("href", url);
+						    				nButton.setAttribute("download", fileName);
+						    				nButton.style.setProperty('text-decoration', 'none');
+						    			}
+						    		}
+						    	});
 						    }
-						    
-						    if(tableParameters.excel != false){
-						    	
-						    	if(!tableParameters.excel){
+
+						    if (tableParameters.excel != false) {
+
+						    	if (!tableParameters.excel) {
 						    		tableParameters.excel = "data";
 						    	}
-						    	
-							    tableOptions.oTableTools.aButtons.push({
-								    sExtends: "text",
-								    sButtonText: "Excel",
-								    fnClick: function(nButton, oConfig, oFlash) {
-								        // some data to export
-								        var data = scope.baseTableClone;
-								
-								        // prepare CSV data
-								        var csvData = new Array();
-								        data.forEach(function(item, index, array) {
-								    		 csvData.push(item.join("\t"));
-								    	 });
-								
-								        // download stuff
-								        var buffer = csvData.join("\n");
-								        var fileName = tableParameters.excel + ".xls";
-								
-								        var link = nButton;
-								
-								        if (link.download !== undefined) { // feature detection
-								            // Browsers that support HTML5 download attribute
-								            var blob = new Blob([buffer], {
-								                type: 'data:application/vnd.ms-excel'
-								            });
-								            var url = URL.createObjectURL(blob);
-								            link.setAttribute("href", url);
-								            link.setAttribute("download", fileName);
-								        }
-								
-								        if (navigator.msSaveBlob) { // IE 10+
-								            link.addEventListener("click", function(event) {
-								                var blob = new Blob([buffer], {
-								                    "type": "data:application/vnd.ms-excel"
-								                });
-								                navigator.msSaveBlob(blob, fileName);
-								            }, false);
-								        }
-								        nButton.style.setProperty('text-decoration', 'none');
-								    }
-								});
+
+						    	tableOptions.oTableTools.aButtons.push({
+						    		sExtends : "text",
+						    		sButtonText : "Excel",
+						    		fnInit : function (nButton, oConfig, oFlash) {
+						    			if (navigator.msSaveBlob) { // // Only to handle Internet Explorer
+						    				// download stuff
+						    				var xlsData = getXlsData(scope.baseTableClone);
+						    				var fileName = tableParameters.excel + ".xls";
+
+						    				nButton.addEventListener("click", function (event) {
+						    					var blob = new Blob([xlsData], {
+						    							"type" : "data:application/vnd.ms-excel"
+						    						});
+						    					navigator.msSaveBlob(blob, fileName);
+						    				}, false);
+						    				nButton.style.setProperty('text-decoration', 'none');
+						    			}
+						    		},
+						    		fnClick : function (nButton, oConfig, oFlash) {
+						    			if (nButton.download !== undefined) { // feature detection
+						    				// Browsers that support HTML5 download attribute
+						    				// download stuff
+						    				var xlsData = getXlsData(scope.baseTableClone);
+						    				var fileName = tableParameters.excel + ".xls";
+
+						    				var blob = new Blob([xlsData], {
+						    						type : 'data:application/vnd.ms-excel'
+						    					});
+						    				var url = URL.createObjectURL(blob);
+						    				nButton.setAttribute("href", url);
+						    				nButton.setAttribute("download", fileName);
+						    				nButton.style.setProperty('text-decoration', 'none');
+						    			}
+						    		}
+						    	});
 						    }
 						    
 						    if(scope.tableOptions){
@@ -1190,7 +1182,43 @@ if (!window.bpm.portal.AngularAdapter) {
 			});
 			/****Angular Ace Directive END *****/
 		};
+	};
+	
+	/**
+	 * 
+	 * @param data
+	 * @returns
+	 */
+	function getXlsData(data) {
+		// prepare CSV data
+		var xslData = new Array();
+		data.forEach(function(item, index, array) {
+			xslData.push(item.join("\t"));
+		});
+
+		// download stuff
+		return xslData.join("\n");
 	}
+
+	/**
+	 * 
+	 * @param data
+	 * @returns
+	 */
+	function getCSVData(data) {
+		var csvData = new Array();
+		data.forEach(function(item, index, array) {
+			var cvsRow = "";
+			item.forEach(function(item2) {
+				cvsRow += '"' + item2 + '"' + ",";
+			});
+			csvData.push(cvsRow);
+		});
+		return csvData.join("\n");
+	}
+	
+	
+	
 	function getTemplateCopy(template) {
         var v1 = jQuery.extend({}, template);
 
