@@ -22,7 +22,7 @@ define(
 				"bpm-reporting/js/ReportHelper" ],
 		function(I18NUtils, AngularAdapter, ReportingService,
 				ReportRenderingController, ReportFilterController, ReportHelper) {
-			var angularCompile;
+			var angularServices;
 			return {
 				create : function(angular, name, path, documentId, viewMode, options) {
 					var controller = new ReportViewerController();
@@ -41,11 +41,9 @@ define(
 
 					controller = angularAdapter
 							.mergeControllerWithScope(controller);
+					angularServices = angularAdapter.getAngularServices();
 
-					angularCompile = angularAdapter.getCompiler();
-
-					var renderingController = ReportRenderingController
-							.create(angularCompile);
+					var renderingController = ReportRenderingController.create(angularServices);
 
 					controller.initialize(renderingController, name, path,
 							viewMode);
