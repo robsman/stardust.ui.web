@@ -120,13 +120,13 @@
 								<td><input id="value{{$index}}" type="number" ng-model="x.value.duration"
 									style="width: 50px;" /> <select
 									ng-model="x.value.durationUnit">
-										<option value="s">Second(s)</option>
-										<option value="m">Minutes(s)</option>
-										<option value="h">Hour(s)</option>
-										<option value="d">Day(s)</option>
-										<option value="w">Week(s)</option>
-										<option value="M">Month(s)</option>
-										<option value="Y">Year(s)</option>
+										<option value="s">{{reportFilterController.getI18N('reporting.definitionView.seconds.label')}}</option>
+										<option value="m">{{reportFilterController.getI18N('reporting.definitionView.minutes.label')}}</option>
+										<option value="h">{{reportFilterController.getI18N('reporting.definitionView.hours.label')}}</option>
+										<option value="d">{{reportFilterController.getI18N('reporting.definitionView.days.label')}}</option>
+										<option value="w">{{reportFilterController.getI18N('reporting.definitionView.weeks.label')}}</option>
+										<option value="M">{{reportFilterController.getI18N('reporting.definitionView.months.label')}}</option>
+										<option value="Y">{{reportFilterController.getI18N('reporting.definitionView.years.label')}}</option>
 								</select></td>
 								<td></td>
 							</tr>
