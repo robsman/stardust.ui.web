@@ -327,6 +327,12 @@ define(
                                        event.data.panel.submitChanges();
                                     });
                   var self = this;
+                  this.parameterDefinitionNameInput = m_utils.jQuerySelect("#parametersTab #parameterDefinitionNameInput");
+				  
+				  this.parameterDefinitionNameInput.change(function()
+                  {
+                     self.submitChanges();
+                  });
                   this.transactedRouteInput.change(function()
                   {
                      self.submitChanges();
@@ -946,6 +952,7 @@ define(
                      m_utils.jQuerySelect("#attachmentsTemplateSourceTypeTab").hide();
                      m_utils.jQuerySelect("#templateConfigurationTab").show();
                   }
+                  this.view.validate();
                };
                MailIntegrationOverlay.prototype.createRouteDefinitionForEmbeddedOrDataMode = function()
                {
@@ -1367,7 +1374,7 @@ define(
                            accessPoints : parameterDefinitionsChanges
                         }
                      }
-                  }, true);
+                  }, false);
                };
                MailIntegrationOverlay.prototype.validate = function()
                {
@@ -1376,6 +1383,25 @@ define(
                   this.userInput.removeClass("error");
                   this.passwordInput.removeClass("error");
                   this.templatePathInput.removeClass("error");
+                  this.parameterDefinitionNameInput.removeClass("error");
+                  var parameterDefinitionNameInputWhithoutSpaces =  this.parameterDefinitionNameInput.val().replace(/ /g, "");
+                  if ((parameterDefinitionNameInputWhithoutSpaces ==  "exchange")|| (parameterDefinitionNameInputWhithoutSpaces ==  "headers")){
+                	  this.view.errorMessages.push(this.parameterDefinitionNameInput.val()+" cannot be used as an access point");
+                	  this.parameterDefinitionNameInput.addClass("error");
+                	  valid = false;
+                  }
+                  for (var n = 0; n < this.getApplication().contexts.application.accessPoints.length; n++)
+                  {
+                	  var ap = this.getApplication().contexts.application.accessPoints[n];
+                	  if ((ap.name.replace(/ /g, "") == "headers")||(ap.name.replace(/ /g, "") == "exchange"))
+                	  {
+						if(this.view.errorMessages.indexOf(ap.name.replace(/ /g, "")+" cannot be used as an access point")<0){
+							this.view.errorMessages.push(ap.name.replace(/ /g, "")+" cannot be used as an access point");
+						}
+						this.parameterDefinitionNameInput.addClass("error");
+						valid = false;
+                	  }	
+                  }
                   if (m_utils.isEmptyString(this.serverInput.val()))
                   {
                      this.view.errorMessages.push("Mail server must be defined."); // TODO

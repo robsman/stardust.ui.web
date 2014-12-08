@@ -80,7 +80,7 @@ define(
                   this.codeEditor.loadLanguageTools();
 
                   var self = this;
-              		
+                  this.parameterDefinitionNameInput = m_utils.jQuerySelect("#parametersTab #parameterDefinitionNameInput");
               		this.camelConfigurationTab.click(function(e)
                   	{
                     		self.codeEditor.getEditor().getSession().setValue(self.codeEditor.getEditor().getSession().getValue());
@@ -580,7 +580,28 @@ define(
                 */
                SmsIntegrationOverlay.prototype.validate = function()
                {
-                  return true;
+            	   var valid = true;
+            	   this.parameterDefinitionNameInput.removeClass("error"); 
+            	   var parameterDefinitionNameInputWhithoutSpaces =  this.parameterDefinitionNameInput.val().replace(/ /g, "");
+            	   if ((parameterDefinitionNameInputWhithoutSpaces ==  "exchange")|| (parameterDefinitionNameInputWhithoutSpaces ==  "headers")){
+            		   	this.view.errorMessages.push(this.parameterDefinitionNameInput.val()+" cannot be used as an access point");
+   						this.parameterDefinitionNameInput.addClass("error");
+   						valid = false;
+   					}
+   					
+   				  	for (var n = 0; n < this.getApplication().contexts.application.accessPoints.length; n++)
+                     {
+                        var ap = this.getApplication().contexts.application.accessPoints[n];
+                        if ((ap.name.replace(/ /g, "") == "headers")||(ap.name.replace(/ /g, "") == "exchange"))
+                        {
+                        	if(this.view.errorMessages.indexOf(ap.name.replace(/ /g, "")+" cannot be used as an access point")<0){
+   							this.view.errorMessages.push(ap.name.replace(/ /g, "")+" cannot be used as an access point");
+   						}
+   						this.parameterDefinitionNameInput.addClass("error");
+   						valid = false;
+                        }
+                     }
+                     return valid;
                };
             }
          });

@@ -143,10 +143,17 @@ define(
                         }, true);
                      }
                      event.data.panel.parameterDefinitionsPanel.setParameterDefinitions(accessPointList);
-                     event.data.panel.submitChanges(true)
+                     event.data.panel.submitChanges(false);
                      event.data.panel.updateView(event.data.panel.locationInput.val());
                   });
 
+                  this.parameterDefinitionNameInput = m_utils.jQuerySelect("#parametersTab #parameterDefinitionNameInput");
+                  this.parameterDefinitionNameInput.change({
+                      panel : this
+                   }, function(event)
+                   {
+                	   event.data.panel.submitChanges(false);
+                   });
                   this.formatInput.change({
                      panel : this
                   }, function(event)
@@ -159,21 +166,21 @@ define(
                      panel : this
                   }, function(event)
                   {
-                     event.data.panel.submitChanges(true);
+                     event.data.panel.submitChanges(false);
                   });
 
                   this.outputNameInput.change({
                      panel : this
                   }, function(event)
                   {
-                        event.data.panel.submitChanges();
+                        event.data.panel.submitChanges(false);
                   });
 
                   this.convertToPdfInput.change({
                      panel : this
                   }, function(event)
                   {
-                     event.data.panel.submitChanges();
+                     event.data.panel.submitChanges(false);
                      event.data.panel.updateView(event.data.panel.locationInput.val());
                   });
 
@@ -181,7 +188,7 @@ define(
                      panel : this
                   }, function(event)
                   {
-                     event.data.panel.submitChanges();
+                     event.data.panel.submitChanges(false);
                   });
                   
                   this.editorAnchor.id = "codeEditorDiv"
@@ -191,7 +198,7 @@ define(
                   this.codeEditor.loadLanguageTools();
                   this.codeEditor.getEditor().on('blur', function(e)
                   {
-                     self.submitChanges();
+                     self.submitChanges(false);
                   });
 
                   var self = this;
@@ -564,6 +571,7 @@ define(
                   }
                   // update the view
                   this.updateView(this.locationInput.val());
+                  this.view.validate();
                };
 
                /**
@@ -711,6 +719,27 @@ define(
                TemplatingIntegrationOverlay.prototype.validate = function()
                {
                   var valid = true;
+                  this.parameterDefinitionNameInput.removeClass("error"); //CRNT-34509
+  					var parameterDefinitionNameInputWhithoutSpaces =  this.parameterDefinitionNameInput.val().replace(/ /g, "");
+			
+  					if ((parameterDefinitionNameInputWhithoutSpaces ==  "exchange")|| (parameterDefinitionNameInputWhithoutSpaces ==  "headers")){
+  						this.view.errorMessages.push(this.parameterDefinitionNameInput.val()+" cannot be used as an access point");
+  						this.parameterDefinitionNameInput.addClass("error");
+  						valid = false;
+  					}
+  					
+  				  	for (var n = 0; n < this.getApplication().contexts.application.accessPoints.length; n++)
+                    {
+                       var ap = this.getApplication().contexts.application.accessPoints[n];
+                       if ((ap.name.replace(/ /g, "") == "headers")||(ap.name.replace(/ /g, "") == "exchange"))
+                       {
+                    	   if(this.view.errorMessages.indexOf(ap.name.replace(/ /g, "")+" cannot be used as an access point")<0){
+                    		   this.view.errorMessages.push(ap.name.replace(/ /g, "")+" cannot be used as an access point");
+                    	   }
+  						this.parameterDefinitionNameInput.addClass("error");
+  						valid = false;
+                       }
+                    }
                   if (this.locationInput.val() == "embedded")
                   {
                      if (m_utils.isEmptyString(this.codeEditor.getEditor().getSession()

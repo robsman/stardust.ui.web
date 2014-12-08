@@ -87,6 +87,7 @@ define(
                            .getProperty("modeler.model.applicationOverlay.scripting.code.heading"));
 
                var self = this;
+               this.parameterDefinitionNameInput = m_utils.jQuerySelect("#parametersTab #parameterDefinitionNameInput");
 
                m_utils.jQuerySelect("a[href='#configurationTab']").click(function() {
                   self.setGlobalVariables();
@@ -661,8 +662,30 @@ define(
              * 
              */
             ScriptingIntegrationOverlay.prototype.validate = function() {
+            	
+               var valid = true;
                this.view.clearErrorMessages();
                m_utils.jQuerySelect("#codeEditorElmt").removeClass("error");
+			   this.parameterDefinitionNameInput.removeClass("error");
+			   var parameterDefinitionNameInputWhithoutSpaces =  this.parameterDefinitionNameInput.val().replace(/ /g, "");
+			   if ((parameterDefinitionNameInputWhithoutSpaces ==  "exchange")|| (parameterDefinitionNameInputWhithoutSpaces ==  "headers")){
+				  this.view.errorMessages.push(this.parameterDefinitionNameInput.val()+" cannot be used as an access point");
+				  this.parameterDefinitionNameInput.addClass("error");
+				  valid = false;
+			   }
+			   for (var n = 0; n < this.getApplication().contexts.application.accessPoints.length; n++)
+			   {
+				  var ap = this.getApplication().contexts.application.accessPoints[n];
+				  if ((ap.name.replace(/ /g, "") == "headers")||(ap.name.replace(/ /g, "") == "exchange"))
+				  {
+					  if(this.view.errorMessages.indexOf(ap.name.replace(/ /g, "")+" cannot be used as an access point")<0){
+						  this.view.errorMessages.push(ap.name.replace(/ /g, "")+" cannot be used as an access point");
+					  }
+					this.parameterDefinitionNameInput.addClass("error");
+			 		valid = false;
+                   }
+               }
+             
                this.view.warningMessages = [];
                this.view.clearWarningMessages();
                if(m_utils.isEmptyString(this.codeEditor.getEditor().getSession().getValue())){
