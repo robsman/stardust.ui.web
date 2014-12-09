@@ -173,7 +173,7 @@ define(
 							show: true,
 							    renderer: $.jqplot.EnhancedLegendRenderer,
 			                location: 'e',
-			                placement: 'outside',
+			                placement: 'outsideGrid',
 			                fontSize: '11px'
 						},
 						highlighter : {},
@@ -270,29 +270,32 @@ define(
       			      jQuery("#dataSetExceedWarning").show();
                   }
       
-      			/*   if (northSide.indexOf(this.report.layout.chart.options.legend.location) != -1)
+      			   var defaultChartSize = 400;
+      			   var adjustedChartSize = 500;
+      			   jQuery('#chartView').css('height', defaultChartSize);
+      			   if (northSide.indexOf(this.report.layout.chart.options.legend.location) != -1)
                   {
       			      chartOptions.legend.rendererOptions = {
-                              numberRows : Math.ceil(data.seriesGroup.length / 16)
+                              numberRows : Math.ceil(data.seriesGroup.length / 14)
                            }
-                  } else */if (southSide.indexOf(this.report.layout.chart.options.legend.location) != -1)
+      			      jQuery('#chartView').css('height', adjustedChartSize);
+                  } else if (southSide.indexOf(this.report.layout.chart.options.legend.location) != -1)
                   {
-                     chartOptions.legend.marginTop = "65px";
                      chartOptions.legend.rendererOptions = {
                         numberRows : Math.ceil( dataLength/ 14)
                      }
+                     jQuery('#chartView').css('height', adjustedChartSize);
                   } else if (eastSide.indexOf(this.report.layout.chart.options.legend.location) != -1)
       			   {
       			      chartOptions.legend.rendererOptions = {
       			         numberColumns : Math.ceil(dataLength / 10)
       			      }
-      			   } /*else if (westSide.indexOf(this.report.layout.chart.options.legend.location) != -1)
+      			   } else if (westSide.indexOf(this.report.layout.chart.options.legend.location) != -1)
                   {
-      			      chartOptions.legend.marginRight = "96px";
                      chartOptions.legend.rendererOptions = {
                         numberColumns : Math.ceil(data.seriesGroup.length / 10)
                      }
-                  }  */
+                  }  
       			}
 
 					// TODO There is more
