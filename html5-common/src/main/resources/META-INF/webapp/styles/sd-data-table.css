@@ -14,6 +14,7 @@
 
 .tbl-col {
 	padding: 2px 5px 2px 5px;
+	text-align: left !important;
 }
 
 .tbl-hdr-col {
@@ -84,6 +85,35 @@
    font-weight: normal;
    margin-bottom: 10px;
 }
+
+/* ********** Table Column Selector ********** */
+
+.tbl-col-sel-row {
+   margin-right: 4px;
+   margin: 2px 0;
+   padding: 5px 10px 5px 5px;
+   border-bottom: solid 1px #DDD;
+   border-right: solid 1px #DDD;
+}
+
+.tbl-col-sel-list {
+   max-height: 400px;
+   margin-top: 10px;
+   overflow: auto;
+}
+
+.tbl-col-sel-input {
+   vertical-align: top;
+   width: 13px !important;
+   height: 13px !important;
+}
+
+.tbl-col-sel-label {
+   margin-left: 10px;
+   color: #333333;
+}
+
+/* ********** dataTables Overridden classes ********** */
 
 .dataTables_wrapper .dataTables_info {
    float: none !important;

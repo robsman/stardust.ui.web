@@ -23,6 +23,67 @@
 	margin-right: 5px;
 }
 
+/************** popup dialog *****************/
+
+.popup-dlg {
+   position: absolute;
+   z-index: 10;
+   padding: 10px;
+   border: 1px solid grey;
+   background: #FFFFFF;
+   min-width: 200px;
+   min-width: 300px;
+   overflow: auto;
+   box-shadow: 5px 5px 25px #888888; 
+}
+
+.popup-dlg-hdr {
+   border-bottom: 1px solid #CCCCCC;
+   padding: 5px;
+}
+
+.popup-dlg-hdr-txt {
+   color: #A69A88;
+   font-size: 15px;
+   font-weight: bold;
+}
+
+.popup-dlg-cls {
+   float: right;
+   border: 1px solid black;
+   margin: 5px 0px 0px 10px;
+   cursor: pointer;
+   width: 10px; /* TODO */
+   height: 10px; /* TODO */
+}
+
+.popup-dlg-cnt {
+   padding-top: 10px;
+}
+
+.popup-dlg-footer {
+   border-top: 1px solid #CCCCCC;
+   padding-top: 10px;
+   text-align: right;
+}
+
+.popup-dlg-footer .button {
+   margin-left: 5px;
+}
+
+.popup-dlg-footer .button .primary {
+   margin-right: 5px;
+   border-radius: 3px;
+   color: white;
+   background: #24415E;
+   border-color: #21659d;
+}
+
+.popup-dlg-footer .button .secondary {
+   background: #FFF !important;
+   color: #333 !important;
+}
+
 /************** Behaviors *****************/
 
 .right {

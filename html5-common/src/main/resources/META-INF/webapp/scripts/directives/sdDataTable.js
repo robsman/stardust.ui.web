@@ -80,7 +80,7 @@
 	function DataTableCompiler($parse, $compile, $timeout, sdUtilService, scope, element, attr, ctrl) {
 		var TOOLBAR_TEMPLATE =
 			'<div class="tbl-toolbar-section">\n' +
-				'<a href="#" ng-click="$dtApi.openColumnSelector()"' + 
+				'<a href="#" ng-click="$dtApi.toggleColumnSelector()"' + 
 					' title="{{i18n(\'portal-common-messages.common-filterPopup-selectColumnsLabel\')}}" class="tbl-toolbar-item tbl-tool-link">\n' +
 					'<i class="fa fa-table"></i>\n' +
 				'</a>\n' +
@@ -90,6 +90,25 @@
 				'<a href="#" ng-click="" title="{{i18n(\'portal-common-messages.common-genericDataTable-asCSV\')}}" class="tbl-toolbar-item tbl-tool-link">\n' +
 					'<i class="fa fa-file-text-o"></i>\n' +
 				'</a>\n' +
+				'<div ng-show="$dtApi.showSelectColumns" class="popup-dlg">\n' +
+					'<div class="popup-dlg-hdr">\n' +
+						'<span class="popup-dlg-hdr-txt">{{i18n("portal-common-messages.common-filterPopup-selectColumnsLabel")}}</span>\n' + 
+						'<span class="popup-dlg-cls" title="{{i18n(\'portal-common-messages.common-filterPopup-close\')}}" ng-click="$dtApi.toggleColumnSelector()"></span>\n' +
+					'</div>\n' +
+					'<div class="popup-dlg-cnt">\n' +
+						'<div class="tbl-col-sel-list">\n' +
+							'<div ng-repeat="col in $dtApi.columns" class="tbl-col-sel-row">\n' +
+								'<input type="checkbox" class="tbl-col-sel-input" ng-model="col.visible"></span>\n' +
+								'<span class="tbl-col-sel-label" ng-show="col.labelKey">{{i18n(col.labelKey)}}</span>\n' +
+								'<span class="tbl-col-sel-label" ng-show="!col.labelKey">{{col.label}}</span>\n' +
+							'</div>\n' +
+						'</div>\n' +
+					'</div>\n' +
+					'<div class="popup-dlg-footer">\n' +
+						'<input type="submit" class="button primary" value="{{i18n(\'portal-common-messages.common-apply\')}}" ng-click="$dtApi.applyColumnSelector()" />' +
+						'<input type="submit" class="button secondary" value="{{i18n(\'portal-common-messages.common-filterPopup-close\')}}" ng-click="$dtApi.toggleColumnSelector()" />' +
+					'</div>\n' +
+				'</div>\n' +
 			'</div>\n';
 
 		var elemScope = scope.$parent;
@@ -104,6 +123,8 @@
 		
 		var onSelect = {}, onPagination = {};
 		
+		var forceLocalRefresh = false;
+
 		var pageSize = 8;
 		
 		// Setup component instance
@@ -142,7 +163,7 @@
 				buildDataTableInformation();
 	
 				createDataTable();
-	
+				
 				// We just changed the markup, so can proceed further only after current digest cycle
 				$timeout(function() {
 					buildDataTable();
@@ -265,14 +286,23 @@
 				var colDef = {
 					field: bCol.attr('sda-field'),
 					dataType: bCol.attr('sda-data-type'),
-					sortable: hCol.attr('sda-sortable')
+					visible: hCol.attr('sda-visible') == undefined || hCol.attr('sda-visible') == 'true' ? true : false,
+					sortable: hCol.attr('sda-sortable'),
+					fixed: hCol.attr('sda-fixed') != undefined && hCol.attr('sda-fixed') == 'true' ? true : false
 				};
 
-				if (hCol.attr('sda-label') != undefined) {
+				if (hCol.attr('sda-label-key') != undefined) {
 					if (i18nScope != "") {
-						colDef.label = i18nScope + '-' + hCol.attr('sda-label');
+						colDef.labelKey = i18nScope + '-' + hCol.attr('sda-label-key');
 					} else {
+						colDef.labelKey = hCol.attr('sda-label-key');
+					}
+				} else {
+					if (hCol.attr('sda-label') != undefined) {
 						colDef.label = hCol.attr('sda-label');
+					} else {
+						// Some default value, label is now mandatory due to column selector.
+						colDef.label = 'Column ' + i;
 					}
 				}
 				
@@ -365,15 +395,14 @@
 			// Add Header Labels
 			var headCols = element.find('> thead > tr > th');
 			angular.forEach(columns, function(col, i) {
-				if (col.label != undefined) {
-					var columnHeader = '<span class="tbl-hdr-col-label">{{i18n("' + col.label + '")}}</span>';
+				var headerLabel = col.labelKey ? '{{i18n("' + col.labelKey + '")}}' : col.label;
+				var columnHeader = '<span class="tbl-hdr-col-label">' + headerLabel + '</span>';
 
-					var hCol = angular.element(headCols[i]);
-					hCol.prepend(columnHeader);
-					
-					var header = hCol.children().first();
-					$compile(header)(header.scope());
-				}
+				var hCol = angular.element(headCols[i]);
+				hCol.prepend(columnHeader);
+				
+				var header = hCol.children().first();
+				$compile(header)(header.scope());
 			});
 			
 			theTable = element;
@@ -449,18 +478,34 @@
 		 * 
 		 */
 		function ajaxHandler(data, callback, settings) {
-			var params = {skip: data.start, pageSize: data.length};
+			var ret = {
+				"draw" : data.draw,
+				"recordsTotal": 0,
+				"recordsFiltered": 0,
+				"data": null
+			};
 
-			fetchData(params, function(result) {
-				var ret = {
-					"draw" : data.draw,
-					"recordsTotal": result.totalCount,
-					"recordsFiltered": result.totalCount,
-					"data": result.list
-				};
+			if (forceLocalRefresh) {
+				forceLocalRefresh = false;
+
+				var info = theDataTable.page.info();
+
+				ret.recordsTotal = info.recordsTotal;
+				ret.recordsFiltered = info.recordsTotal;
+				ret.data = getPageData();
 
 				callback(ret);
-			});
+			} else {
+				var params = {skip: data.start, pageSize: data.length};
+
+				fetchData(params, function(result) {
+					ret.recordsTotal = result.totalCount;
+					ret.recordsFiltered = result.totalCount;
+					ret.data = result.list;
+
+					callback(ret);
+				});
+			}
 		}
 
 		/*
@@ -585,6 +630,14 @@
 		 * 
 		 */
 		function drawCallbackHandler (oSettings) {
+			// Table is not yet created, wait for it.
+			if (!theDataTable) {
+				$timeout(function() {
+					drawCallbackHandler (oSettings);
+				}, 0, false);
+				return;
+			}
+
 			if(!initialized) {
 				// Show the element, as it's ready to be visible
 				showElement(element, true);
@@ -602,10 +655,29 @@
 			} else {
 				clearState();
 			}
+		
+			showHideColumns(false);
 
 			sdUtilService.safeApply(elemScope);
 		}
 
+		/*
+		 * 
+		 */
+		function showHideColumns(updateUI) {
+			angular.forEach(columns, function(col, i) {
+				var tableCol = theDataTable.column(i);
+				if (tableCol.visible() != col.visible) {
+					tableCol.visible(col.visible);
+				}
+			});
+
+			if (updateUI) {
+				forceLocalRefresh = true;
+				theDataTable.draw(false);
+			}
+		}
+		
 		/*
 		 * 
 		 */
@@ -618,24 +690,25 @@
 		 * 
 		 */
 		function getPageData(index) {
-			/*
-			var info = theDataTable.page.info();
-			var start = info.start;
-			var dataIndex = (attr.sdaMode == 'local') ? start + index : index;
-			*/
+			var tableData = theDataTable.data();
 
-			return theDataTable.data()[index];
+			if (index == undefined || index == null) {
+				var data = [];
+				for (var i = 0; i < tableData.length; i++) {
+					data.push(tableData[i]);
+				}
+				return data;
+			} else {
+				return tableData[index];
+			}
 		}
 
 		/*
 		 * 
 		 */
 		function getPageDataCount(index) {
-			if (theDataTable) {
-				var info = theDataTable.page.info();
-				return info.end - info.start;
-			}
-			return 0;
+			var info = theDataTable.page.info();
+			return info.end - info.start;
 		}
 
 		/*
@@ -899,12 +972,36 @@
 		 * Scope API
 		 */
 		function ScopeAPI() {
+			var self = this;
+
+			init();
+
+			function init() {
+				var selectableCols = [];
+				angular.forEach(columns, function(col, i) {
+					if (!col.fixed) {
+						selectableCols.push(col);
+					}
+				});
+
+				self.columns = selectableCols;
+				self.showSelectColumns = false;
+			}
+			
 			/*
 			 * 
 			 */
-			this.openColumnSelector = function() {
-				alert('Column Selector');
-			};
+			this.toggleColumnSelector = function() {
+				self.showSelectColumns = !self.showSelectColumns;
+			}
+
+			/*
+			 * 
+			 */
+			this.applyColumnSelector = function() {
+				showHideColumns(true);
+				self.toggleColumnSelector();
+			}
 		}
 	};
 })();
