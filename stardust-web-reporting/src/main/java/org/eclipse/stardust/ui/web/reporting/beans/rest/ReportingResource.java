@@ -539,6 +539,33 @@ public class ReportingResource
       }
    }
    
+   @GET
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.TEXT_PLAIN)
+   @Path("executionDates")
+   public Response getNextExecutionDates(@QueryParam("schedulingJSON") 
+         String schedulingInfo, @QueryParam("startDate") String startDate,
+         @QueryParam("endDate") String endDate)
+   {
+      try
+      {
+          trace.debug("Save report definitions: " + prettyPrinter.toJson(schedulingInfo));
+
+         JsonObject json = jsonIo.readJsonObject(schedulingInfo);
+
+         return Response.ok(reportingService.getNextExecutionDates(json, startDate, 
+               endDate).toString(), MediaType.TEXT_PLAIN).build();
+
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
+
+         return Response.serverError().build();
+      }
+   }
+
+   
    
    /**
     * @param args

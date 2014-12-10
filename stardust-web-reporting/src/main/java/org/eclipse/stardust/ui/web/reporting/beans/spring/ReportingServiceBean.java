@@ -87,6 +87,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 
 /**
  *
@@ -1032,5 +1033,33 @@ public class ReportingServiceBean
          trace.error("Exception while Uploading Report Definition " + e, e);
       }
       return null;
+   }
+   
+   /**
+    * Calculates all execution dates appearing in between start date and end date
+    * 
+    * @param json - The json object representing the scheduling object
+    * @param startDate 
+    * @param endDate 
+    * @return - The next possible execution dates in json format
+    */
+   public JsonObject getNextExecutionDates(JsonObject json, String startDate, String endDate)
+   {
+      trace.info(json.toString());
+
+      SchedulingRecurrence sc = SchedulingFactory.getSchedular(json);
+
+      List<String> calculateSchedule = sc.calculateSchedule(json, startDate, endDate);
+      
+      JsonElement element = gson.toJsonTree(calculateSchedule, new TypeToken<ArrayList<String>>(){}.getType());
+
+      JsonArray jsonArray = element.getAsJsonArray();
+
+      JsonObject jsonObject = new JsonObject();
+      
+      jsonObject.add("executionDates", jsonArray);
+      
+      return jsonObject;
+
    }
 }
