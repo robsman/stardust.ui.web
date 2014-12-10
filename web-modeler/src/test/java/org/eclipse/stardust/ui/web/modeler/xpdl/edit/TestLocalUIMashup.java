@@ -28,7 +28,7 @@ public class TestLocalUIMashup extends TestGeneralModeling
 
       replay(requestStream);
 
-      ProcessDefinitionType process = GenericModelingAssertions.assertProcess(providerModel, "UIMashupProcess");
+      ProcessDefinitionType process = GenericModelingAssertions.assertProcess(providerModel, "UIMashupProcess", "UIMashupProcess");
       assertUIMashupProcess(process);
 
       //saveReplayModel("C:/development/");

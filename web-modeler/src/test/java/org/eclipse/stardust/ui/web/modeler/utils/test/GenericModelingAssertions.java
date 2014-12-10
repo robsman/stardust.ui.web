@@ -33,7 +33,7 @@ import org.eclipse.stardust.model.xpdl.xpdl2.util.ExtendedAttributeUtil;
 
 public class GenericModelingAssertions
 {
-   public static ProcessDefinitionType assertProcess(ModelType model, String processID)
+   public static ProcessDefinitionType assertProcess(ModelType model, String processID, String processName)
    {
       ProcessDefinitionType process = (ProcessDefinitionType) ModelUtils
             .findIdentifiableElement(model,
@@ -41,6 +41,7 @@ public class GenericModelingAssertions
                   processID);
       assertThat(process, is(not(nullValue())));
       assertThat(process.getName(), is(not(nullValue())));
+      assertThat(process.getName(), is(processName));
       return process;
    }
 
@@ -138,10 +139,10 @@ public class GenericModelingAssertions
       return accessPointFound;
    }
 
-   public static void assertProcessInterface(ModelType model, String interfaceID,
+   public static void assertProcessInterface(ModelType model, String interfaceID, String interfaceName,
          int paramCount)
    {
-      ProcessDefinitionType process = assertProcess(model, interfaceID);
+      ProcessDefinitionType process = assertProcess(model, interfaceID, interfaceName);
       FormalParametersType parametersType = process.getFormalParameters();
       assertThat(parametersType, is(not(nullValue())));
 

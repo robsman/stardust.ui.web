@@ -53,7 +53,7 @@ public class TestCrossModelSupport extends TestGeneralModeling
 
       replay(requestStream);
 
-      ProcessDefinitionType process = GenericModelingAssertions.assertProcess(consumerModel, "ConsumerProcess");
+      ProcessDefinitionType process = GenericModelingAssertions.assertProcess(consumerModel, "ConsumerProcess", "ConsumerProcess");
       assertReferencedPrimitiveData(consumerModel, providerModel, "ProvidedPrimitive", "ProvidedPrimitive", "String");
       assertReferencedTypeDeclaration(consumerModel, providerModel, "ProvidedTypeDeclaration", "ProvidedTypeDeclaration", "struct", "ProvidedTypeDeclaration", "cnx://file/typeDeclaration/ProvidedTypeDeclaration");
       assertReferencedDocumentData(consumerModel, providerModel, "ProvidedDocument", "ProvidedDocument", "ProvidedTypeDeclaration", "cnx://file/typeDeclaration/ProvidedTypeDeclaration");
@@ -81,7 +81,7 @@ public class TestCrossModelSupport extends TestGeneralModeling
       InputStreamReader requestStream = new InputStreamReader(requestInput);
       replay(requestStream);
 
-      ProcessDefinitionType process = GenericModelingAssertions.assertProcess(consumerModel, "ConsumerSubProcess");
+      ProcessDefinitionType process = GenericModelingAssertions.assertProcess(consumerModel, "ConsumerSubProcess", "ConsumerSubProcess");
       ActivityType activity = GenericModelingAssertions.assertActivity(process, "ConsumerUIMashup", "ConsumerUIMashup", ActivityImplementationType.APPLICATION_LITERAL);
       assertReferencedApplication(consumerModel, providerModel, process, activity, "ProvidedUIMashup", "cnx://file/application/ProvidedUIMashup");
       assertReferencedTypeDeclaration(consumerModel, providerModel, "ConsumerStructData", "ConsumerStructData", "struct", "ProvidedTypeDeclaration", "cnx://file/typeDeclaration/ProvidedTypeDeclaration");
@@ -113,7 +113,7 @@ public class TestCrossModelSupport extends TestGeneralModeling
       Map<String, ModelType> models = modelService.currentSession().modelManagementStrategy().getModels();
       ExternalReferenceUtils.fixExternalReferences(models, brokenModel);
 
-      ProcessDefinitionType process = GenericModelingAssertions.assertProcess(brokenModel, "ConsumerProcess");
+      ProcessDefinitionType process = GenericModelingAssertions.assertProcess(brokenModel, "ConsumerProcess", "ConsumerProcess");
       assertReferencedPrimitiveData(brokenModel, providerModel, "RenamedProvidedPrimitive", "RenamedProvidedPrimitive", "String");
       assertReferencedTypeDeclaration(brokenModel, providerModel, "ProvidedTypeDeclaration", "ProvidedTypeDeclaration", "struct", "RenamedProvidedTypeDeclaration", "cnx://file/typeDeclaration/RenamedProvidedTypeDeclaration");
       assertReferencedDocumentData(brokenModel, providerModel, "RenamedProvidedDocument", "RenamedProvidedDocument", "RenamedProvidedTypeDeclaration", "cnx://file/typeDeclaration/RenamedProvidedTypeDeclaration");
@@ -136,7 +136,7 @@ public class TestCrossModelSupport extends TestGeneralModeling
 
    public static void assertReferencedProcess(ModelType consumerModel, ModelType providerModel,  ProcessDefinitionType process, ActivityType activity, String refProcessID, String uri)
    {
-      ProcessDefinitionType refProcess = GenericModelingAssertions.assertProcess(providerModel, refProcessID);
+      ProcessDefinitionType refProcess = GenericModelingAssertions.assertProcess(providerModel, refProcessID, refProcessID);
       assertExternalReference(refProcess, providerModel, refProcessID, uri, activity);
    }
 
