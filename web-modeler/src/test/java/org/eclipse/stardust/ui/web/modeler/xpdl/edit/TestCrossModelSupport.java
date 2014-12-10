@@ -123,6 +123,8 @@ public class TestCrossModelSupport extends TestGeneralModeling
       assertReferencedProcess(brokenModel, providerModel, process, activity, "RenameProvidedProcess", "cnx://file/processDefinition/RenameProvidedProcess");
       assertReferencedRole(brokenModel, providerModel, "RenamedProvidedRole", "RenamedProvidedRole");
 
+      consumerModel = brokenModel;
+
       //saveReplayModel("C:/development/");
    }
 
