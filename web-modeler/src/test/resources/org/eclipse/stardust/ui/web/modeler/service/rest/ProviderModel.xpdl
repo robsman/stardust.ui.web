@@ -3,29 +3,15 @@
    <PackageHeader>
       <XPDLVersion>2.1</XPDLVersion>
       <Vendor>SunGard CSA LLC, IPP</Vendor>
-      <Created>Thu Nov 27 15:30:52 CET 2014</Created>
+      <Created>Tue Dec 02 15:35:18 CET 2014</Created>
    </PackageHeader>
    <RedefinableHeader PublicationStatus="UNDER_REVISION">
       <Author>Rainer.Pielmann</Author>
       <Version>1</Version>
    </RedefinableHeader>
    <ConformanceClass GraphConformance="NON_BLOCKED"/>
-   <xpdl:Script xmlns:xpdl="http://www.wfmc.org/2008/XPDL2.1" xmlns="http://www.carnot.ag/workflowmodel/3.1" xmlns:ext="http://www.carnot.ag/workflowmodel/3.1/xpdl/extensions" Type="text/ecmascript"/>
-   <TypeDeclarations>
-      <xpdl:TypeDeclaration xmlns:xpdl="http://www.wfmc.org/2008/XPDL2.1" xmlns="http://www.carnot.ag/workflowmodel/3.1" xmlns:ext="http://www.carnot.ag/workflowmodel/3.1/xpdl/extensions" Id="ProvidedTypeDeclaration" Name="ProvidedTypeDeclaration">
-         <xpdl:SchemaType>
-            <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:pro="http://www.infinity.com/bpm/model/ProviderModel/ProvidedTypeDeclaration" targetNamespace="http://www.infinity.com/bpm/model/ProviderModel/ProvidedTypeDeclaration">
-               <xsd:complexType name="ProvidedTypeDeclaration">
-                  <xsd:sequence>
-                     <xsd:element name="valueA" type="xsd:string"/>
-                     <xsd:element name="valueB" type="xsd:string"/>
-                  </xsd:sequence>
-               </xsd:complexType>
-               <xsd:element name="ProvidedTypeDeclaration" type="pro:ProvidedTypeDeclaration"/>
-            </xsd:schema>
-         </xpdl:SchemaType>
-      </xpdl:TypeDeclaration>
-   </TypeDeclarations>
+   <xpdl:Script xmlns:xpdl="http://www.wfmc.org/2008/XPDL2.1" xmlns="http://www.carnot.ag/workflowmodel/3.1" Type="text/ecmascript"/>
+   <TypeDeclarations/>
    <Participants>
       <Participant Id="Administrator" Name="Administrator">
          <ParticipantType Type="ROLE"/>
@@ -35,31 +21,8 @@
             </ExtendedAttribute>
          </ExtendedAttributes>
       </Participant>
-      <Participant Id="ProvidedRole" Name="ProvidedRole">
-         <ParticipantType Type="ROLE"/>
-         <ExtendedAttributes>
-            <ExtendedAttribute Name="CarnotExt">
-               <carnot:Role Oid="34"/>
-            </ExtendedAttribute>
-         </ExtendedAttributes>
-      </Participant>
    </Participants>
-   <Applications>
-      <Application Id="ProvidedApplication" Name="ProvidedApplication">
-         <FormalParameters/>
-         <ExtendedAttributes>
-            <ExtendedAttribute Name="CarnotExt">
-               <carnot:Application Oid="28" Type="messageTransformationBean">
-                  <carnot:ApplicationContexts/>
-                  <carnot:AccessPoints/>
-                  <carnot:Attributes>
-                     <carnot:Attribute Name="messageTransformation:TransformationProperty" Value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;ASCII&quot;?&gt;&#13;&#10;&lt;mapping:TransformationProperty xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xmlns:mapping=&quot;java://org.eclipse.stardust.engine.extensions.transformation.model&quot; xsi:schemaLocation=&quot;java://org.eclipse.stardust.engine.extensions.transformation.model java://org.eclipse.stardust.engine.extensions.transformation.model.mapping.MappingPackage&quot;/&gt;&#13;&#10;"/>
-                  </carnot:Attributes>
-               </carnot:Application>
-            </ExtendedAttribute>
-         </ExtendedAttributes>
-      </Application>
-   </Applications>
+   <Applications/>
    <DataFields>
       <DataField Id="PROCESS_ID" Name="Process OID" IsArray="FALSE">
          <DataType>
@@ -70,6 +33,7 @@
                <carnot:DataField Oid="20" Type="primitive" IsPredefined="true">
                   <carnot:Attributes>
                      <carnot:Attribute Name="carnot:engine:type" Value="int" Type="org.eclipse.stardust.engine.core.pojo.data.Type"/>
+                     <carnot:Attribute Name="carnot:model:uuid" Value="4af843c4-f4ce-4e11-9e94-00d95629458c"/>
                   </carnot:Attributes>
                </carnot:DataField>
             </ExtendedAttribute>
@@ -84,6 +48,7 @@
                <carnot:DataField Oid="21" Type="primitive" IsPredefined="true">
                   <carnot:Attributes>
                      <carnot:Attribute Name="carnot:engine:type" Value="int" Type="org.eclipse.stardust.engine.core.pojo.data.Type"/>
+                     <carnot:Attribute Name="carnot:model:uuid" Value="8ab94dbb-6440-4e0e-be3a-786111a84af4"/>
                   </carnot:Attributes>
                </carnot:DataField>
             </ExtendedAttribute>
@@ -98,6 +63,7 @@
                <carnot:DataField Oid="22" Type="primitive" IsPredefined="true">
                   <carnot:Attributes>
                      <carnot:Attribute Name="carnot:engine:type" Value="int" Type="org.eclipse.stardust.engine.core.pojo.data.Type"/>
+                     <carnot:Attribute Name="carnot:model:uuid" Value="c30395c9-f226-40f6-b9a7-8cf149369f1c"/>
                   </carnot:Attributes>
                </carnot:DataField>
             </ExtendedAttribute>
@@ -112,6 +78,7 @@
                <carnot:DataField Oid="23" Type="primitive" IsPredefined="true">
                   <carnot:Attributes>
                      <carnot:Attribute Name="carnot:engine:type" Value="String" Type="org.eclipse.stardust.engine.core.pojo.data.Type"/>
+                     <carnot:Attribute Name="carnot:model:uuid" Value="e3c26469-9408-4948-b777-3333aafea634"/>
                   </carnot:Attributes>
                </carnot:DataField>
             </ExtendedAttribute>
@@ -126,105 +93,14 @@
                <carnot:DataField Oid="24" Type="primitive" IsPredefined="true">
                   <carnot:Attributes>
                      <carnot:Attribute Name="carnot:engine:type" Value="Calendar" Type="org.eclipse.stardust.engine.core.pojo.data.Type"/>
-                  </carnot:Attributes>
-               </carnot:DataField>
-            </ExtendedAttribute>
-         </ExtendedAttributes>
-      </DataField>
-      <DataField Id="ProvidedPrimitive" Name="ProvidedPrimitive" IsArray="FALSE">
-         <DataType>
-            <BasicType Type="STRING"/>
-         </DataType>
-         <ExtendedAttributes>
-            <ExtendedAttribute Name="CarnotExt">
-               <carnot:DataField Oid="26" Type="primitive">
-                  <carnot:Attributes>
-                     <carnot:Attribute Name="carnot:engine:type" Value="String" Type="org.eclipse.stardust.engine.core.pojo.data.Type"/>
-                  </carnot:Attributes>
-               </carnot:DataField>
-            </ExtendedAttribute>
-         </ExtendedAttributes>
-      </DataField>
-      <DataField Id="ProvidedStructData" Name="ProvidedStructData" IsArray="FALSE">
-         <DataType>
-            <DeclaredType Id="ProvidedTypeDeclaration"/>
-         </DataType>
-         <ExtendedAttributes>
-            <ExtendedAttribute Name="CarnotExt">
-               <carnot:DataField Oid="33" Type="struct">
-                  <carnot:Attributes>
-                     <carnot:Attribute Name="carnot:engine:path:separator" Value="/"/>
-                     <carnot:Attribute Name="carnot:engine:data:bidirectional" Value="true" Type="boolean"/>
-                  </carnot:Attributes>
-               </carnot:DataField>
-            </ExtendedAttribute>
-         </ExtendedAttributes>
-      </DataField>
-      <DataField Id="ProvidedDocumentData" Name="ProvidedDocumentData" IsArray="FALSE">
-         <DataType>
-            <ExternalReference location="org.eclipse.stardust.engine.api.runtime.Document"/>
-         </DataType>
-         <ExtendedAttributes>
-            <ExtendedAttribute Name="CarnotExt">
-               <carnot:DataField Oid="35" Type="dmsDocument">
-                  <carnot:Attributes>
-                     <carnot:Attribute Name="carnot:engine:data:bidirectional" Value="true" Type="boolean"/>
-                     <carnot:Attribute Name="carnot:engine:className" Value="org.eclipse.stardust.engine.api.runtime.Document"/>
-                     <carnot:Attribute Name="carnot:engine:dms:resourceMetadataSchema" Value="ProvidedTypeDeclaration"/>
+                     <carnot:Attribute Name="carnot:model:uuid" Value="16efd182-33ec-4bc9-90ea-bc663a961b08"/>
                   </carnot:Attributes>
                </carnot:DataField>
             </ExtendedAttribute>
          </ExtendedAttributes>
       </DataField>
    </DataFields>
-   <WorkflowProcesses>
-      <WorkflowProcess Id="ProvidedProcess" Name="ProvidedProcess" AccessLevel="PRIVATE">
-         <ProcessHeader/>
-         <xpdl:FormalParameters xmlns:xpdl="http://www.wfmc.org/2008/XPDL2.1" xmlns="http://www.carnot.ag/workflowmodel/3.1" xmlns:ext="http://www.carnot.ag/workflowmodel/3.1/xpdl/extensions">
-            <xpdl:FormalParameter Id="Param1" Name="Param1">
-               <xpdl:DataType ext:carnotType="struct">
-                  <xpdl:DeclaredType Id="ProvidedTypeDeclaration"/>
-               </xpdl:DataType>
-            </xpdl:FormalParameter>
-            <xpdl:FormalParameter Id="Param2" Mode="OUT" Name="Param2">
-               <xpdl:DataType ext:carnotType="primitive">
-                  <xpdl:BasicType Type="STRING"/>
-               </xpdl:DataType>
-            </xpdl:FormalParameter>
-         </xpdl:FormalParameters>
-         <Activities/>
-         <Transitions/>
-         <ExtendedAttributes>
-            <ExtendedAttribute Name="CarnotExt">
-               <carnot:WorkflowProcess Oid="29">
-                  <carnot:Triggers/>
-                  <carnot:DataPaths/>
-                  <carnot:EventHandlers/>
-                  <carnot:Diagrams>
-                     <carnot:Diagram Oid="32" Name="Diagram 1" Orientation="Vertical" Mode="MODE_4_5_0">
-                        <carnot:Symbols>
-                           <carnot:Symbol Kind="POOL" Oid="31" Id="_default_pool__1" Name="Default Pool" X="0" Y="0" Width="409" Height="670" Orientation="Vertical">
-                              <carnot:Symbols>
-                                 <carnot:Symbol Kind="LANE" Oid="30" Id="DefaultLane" Name="Default Lane" X="12" Y="32" Width="375" Height="600" Orientation="Vertical" ParentLane="31">
-                                    <carnot:Symbols/>
-                                    <carnot:Connections/>
-                                 </carnot:Symbol>
-                              </carnot:Symbols>
-                              <carnot:Connections/>
-                           </carnot:Symbol>
-                        </carnot:Symbols>
-                        <carnot:Connections/>
-                     </carnot:Diagram>
-                  </carnot:Diagrams>
-                  <carnot:FormalParameterMappings xmlns="http://www.carnot.ag/workflowmodel/3.1" xmlns:ext="http://www.carnot.ag/workflowmodel/3.1/xpdl/extensions" xmlns:xpdl="http://www.wfmc.org/2008/XPDL2.1">
-                     <carnot:FormalParameterMapping Data="ProvidedStructData" FormalParameter="Param1"/>
-                     <carnot:FormalParameterMapping Data="ProvidedPrimitive" FormalParameter="Param2"/>
-                  </carnot:FormalParameterMappings>
-               </carnot:WorkflowProcess>
-            </ExtendedAttribute>
-         </ExtendedAttributes>
-      </WorkflowProcess>
-   </WorkflowProcesses>
+   <WorkflowProcesses/>
    <ExtendedAttributes>
       <ExtendedAttribute Name="CarnotExt">
          <carnot:Package Oid="0" CarnotVersion="8.2.0" ModelOid="0">
@@ -322,12 +198,6 @@
                         <carnot:Attribute Name="carnot:engine:validator" Value="org.eclipse.stardust.engine.extensions.jaxws.app.WebserviceApplicationValidator"/>
                      </carnot:Attributes>
                   </carnot:ApplicationType>
-                  <carnot:ApplicationType Oid="27" Id="messageTransformationBean" Name="Message Transformation Bean" IsPredefined="true">
-                     <carnot:Attributes>
-                        <carnot:Attribute Name="carnot:engine:applicationInstance" Value="org.eclipse.stardust.engine.extensions.transformation.runtime.transformation.MessageTransformationApplicationInstance"/>
-                        <carnot:Attribute Name="carnot:engine:validator" Value="org.eclipse.stardust.engine.extensions.transformation.runtime.transformation.MessageProcessingValidator"/>
-                     </carnot:Attributes>
-                  </carnot:ApplicationType>
                </carnot:ApplicationTypes>
                <carnot:ApplicationContextTypes>
                   <carnot:ApplicationContextType Oid="14" Id="default" Name="Default Context" IsPredefined="true" HasApplicationPath="false" HasMappingId="true"/>
@@ -351,7 +221,7 @@
             <carnot:Diagrams/>
             <carnot:Views/>
             <carnot:Attributes>
-               <carnot:Attribute Name="ipp:model:modified" Value="0"/>
+               <carnot:Attribute Name="ipp:model:modified" Value="Tue Dec 02 15:35:18 CET 2014"/>
             </carnot:Attributes>
          </carnot:Package>
       </ExtendedAttribute>

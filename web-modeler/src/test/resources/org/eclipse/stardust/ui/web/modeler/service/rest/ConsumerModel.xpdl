@@ -3,7 +3,7 @@
    <PackageHeader>
       <XPDLVersion>2.1</XPDLVersion>
       <Vendor>SunGard CSA LLC, IPP</Vendor>
-      <Created>Tue Sep 30 10:12:39 CEST 2014</Created>
+      <Created>Tue Dec 02 15:35:26 CET 2014</Created>
    </PackageHeader>
    <RedefinableHeader PublicationStatus="UNDER_REVISION">
       <Author>Rainer.Pielmann</Author>
@@ -33,6 +33,7 @@
                <carnot:DataField Oid="20" Type="primitive" IsPredefined="true">
                   <carnot:Attributes>
                      <carnot:Attribute Name="carnot:engine:type" Value="int" Type="org.eclipse.stardust.engine.core.pojo.data.Type"/>
+                     <carnot:Attribute Name="carnot:model:uuid" Value="2da7a500-e10f-4211-8975-c30c34aa835a"/>
                   </carnot:Attributes>
                </carnot:DataField>
             </ExtendedAttribute>
@@ -47,6 +48,7 @@
                <carnot:DataField Oid="21" Type="primitive" IsPredefined="true">
                   <carnot:Attributes>
                      <carnot:Attribute Name="carnot:engine:type" Value="int" Type="org.eclipse.stardust.engine.core.pojo.data.Type"/>
+                     <carnot:Attribute Name="carnot:model:uuid" Value="79a13eda-385d-4934-8e34-f2a32a8fcc37"/>
                   </carnot:Attributes>
                </carnot:DataField>
             </ExtendedAttribute>
@@ -61,6 +63,7 @@
                <carnot:DataField Oid="22" Type="primitive" IsPredefined="true">
                   <carnot:Attributes>
                      <carnot:Attribute Name="carnot:engine:type" Value="int" Type="org.eclipse.stardust.engine.core.pojo.data.Type"/>
+                     <carnot:Attribute Name="carnot:model:uuid" Value="fdf1227a-e815-4b34-940e-942d87dcccdc"/>
                   </carnot:Attributes>
                </carnot:DataField>
             </ExtendedAttribute>
@@ -75,6 +78,7 @@
                <carnot:DataField Oid="23" Type="primitive" IsPredefined="true">
                   <carnot:Attributes>
                      <carnot:Attribute Name="carnot:engine:type" Value="String" Type="org.eclipse.stardust.engine.core.pojo.data.Type"/>
+                     <carnot:Attribute Name="carnot:model:uuid" Value="1df92bff-065d-48b0-bb86-a0c47ee15224"/>
                   </carnot:Attributes>
                </carnot:DataField>
             </ExtendedAttribute>
@@ -89,6 +93,7 @@
                <carnot:DataField Oid="24" Type="primitive" IsPredefined="true">
                   <carnot:Attributes>
                      <carnot:Attribute Name="carnot:engine:type" Value="Calendar" Type="org.eclipse.stardust.engine.core.pojo.data.Type"/>
+                     <carnot:Attribute Name="carnot:model:uuid" Value="6c5ce0a1-0983-4da7-ace5-a1d7dcbdef11"/>
                   </carnot:Attributes>
                </carnot:DataField>
             </ExtendedAttribute>
@@ -98,7 +103,7 @@
    <WorkflowProcesses/>
    <ExtendedAttributes>
       <ExtendedAttribute Name="CarnotExt">
-         <carnot:Package Oid="0" CarnotVersion="8.1.0" ModelOid="0">
+         <carnot:Package Oid="0" CarnotVersion="8.2.0" ModelOid="0">
             <carnot:MetaTypes>
                <carnot:DataTypes>
                   <carnot:DataType Oid="1" Id="primitive" Name="Primitive Data" IsPredefined="true">
@@ -216,7 +221,7 @@
             <carnot:Diagrams/>
             <carnot:Views/>
             <carnot:Attributes>
-               <carnot:Attribute Name="ipp:model:modified" Value="Tue Sep 30 10:12:39 CEST 2014"/>
+               <carnot:Attribute Name="ipp:model:modified" Value="Tue Dec 02 15:35:26 CET 2014"/>
             </carnot:Attributes>
          </carnot:Package>
       </ExtendedAttribute>
