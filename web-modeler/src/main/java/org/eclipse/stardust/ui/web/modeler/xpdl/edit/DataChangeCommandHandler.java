@@ -275,7 +275,7 @@ public class DataChangeCommandHandler
     * @param model
     * @param request
     */
-   @OnCommand(commandId = "documenListtData.create")
+   @OnCommand(commandId = "documentListData.create")
    public void createDocumentListData(ModelType model, JsonObject request)
    {
       String name = extractString(request, ModelerConstants.NAME_PROPERTY);
