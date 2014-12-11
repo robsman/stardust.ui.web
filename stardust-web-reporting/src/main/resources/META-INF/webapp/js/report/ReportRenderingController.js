@@ -245,6 +245,15 @@ define(
 					};
 					chartOptions.animate = this.report.layout.chart.options.animate;
 					chartOptions.animateReplot = this.report.layout.chart.options.animateReplot;
+					
+					if (this.report.layout.chart.options.seriesDefaults.lineWidth) {
+					   chartOptions.seriesDefaults.lineWidth = this.report.layout.chart.options.seriesDefaults.lineWidth;
+					}
+					
+					if (this.report.layout.chart.options.seriesDefaults.color) {
+					   chartOptions.seriesDefaults.color = this.report.layout.chart.options.seriesDefaults.color;
+					}
+					
 
 					//For Legend Positioning.
 					if (this.report.dataSet.type === 'seriesGroup'
