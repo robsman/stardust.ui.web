@@ -275,6 +275,22 @@ public class DataChangeCommandHandler
     * @param model
     * @param request
     */
+   @OnCommand(commandId = "documenListtData.create")
+   public void createDocumentListData(ModelType model, JsonObject request)
+   {
+      String name = extractString(request, ModelerConstants.NAME_PROPERTY);
+
+      DataType data = getModelBuilderFacade().createDocumentListData(model, null, name, null);
+
+      // Map newly created data element to a UUID
+      EObjectUUIDMapper mapper = modelService().uuidMapper();
+      mapper.map(data);
+   }
+
+   /**
+    * @param model
+    * @param request
+    */
    @OnCommand(commandId = "data.delete")
    public void deletetData(ModelType model, JsonObject request)
    {
