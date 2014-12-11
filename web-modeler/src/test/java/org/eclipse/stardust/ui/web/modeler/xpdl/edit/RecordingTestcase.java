@@ -115,8 +115,10 @@ public class RecordingTestcase
       }
    }
 
-   protected String[] replay(InputStreamReader requestStream) throws IOException
+
+   protected String[] replay(InputStreamReader requestStream, String testScenarioName) throws IOException
    {
+      System.out.println("Replay Commands for '" + this.getClass().getSimpleName() + "." + testScenarioName + "'");
       String line;
       String responseString = null;
       String expectedResponse = null;
@@ -124,15 +126,15 @@ public class RecordingTestcase
       while ((line = requestReader.readLine()) != null)
       {
          String command = line.toString();
+         System.out.println(" COMMAND : " + command);
          CommandJto newJto = jsonIo.gson().fromJson(line.toString(), CommandJto.class);
          if (newJto != null)
          {
             newJto = jsonIo.gson().fromJson(command, CommandJto.class);
             Object o = changeApiDriver.performChange(newJto);
-            System.out.println(o);
          }
       }
-
+      System.out.println("Replay finished.");
       return new String[] {responseString, expectedResponse};
    }
 

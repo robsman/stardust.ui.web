@@ -14,12 +14,16 @@ import java.util.Map;
 
 import org.eclipse.stardust.model.xpdl.builder.connectionhandler.EObjectProxyHandler;
 import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelIoUtils;
+import org.eclipse.stardust.model.xpdl.carnot.AccessPointType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityImplementationType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
 import org.eclipse.stardust.model.xpdl.carnot.ApplicationType;
 import org.eclipse.stardust.model.xpdl.carnot.AttributeType;
 import org.eclipse.stardust.model.xpdl.carnot.CarnotWorkflowModelPackage;
+import org.eclipse.stardust.model.xpdl.carnot.ContextType;
 import org.eclipse.stardust.model.xpdl.carnot.DataType;
+import org.eclipse.stardust.model.xpdl.carnot.DirectionType;
+import org.eclipse.stardust.model.xpdl.carnot.IAccessPointOwner;
 import org.eclipse.stardust.model.xpdl.carnot.IExtensibleElement;
 import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableElement;
 import org.eclipse.stardust.model.xpdl.carnot.IdRef;
@@ -28,6 +32,7 @@ import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.model.xpdl.carnot.RoleType;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
+import org.eclipse.stardust.model.xpdl.xpdl2.ExtendedAttributeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.ExternalPackage;
 import org.eclipse.stardust.model.xpdl.xpdl2.ExternalReferenceType;
 import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
@@ -51,7 +56,7 @@ public class TestCrossModelSupport extends TestGeneralModeling
             "../../service/rest/requests/dragAndDropFromProviderToConsumer.txt");
       InputStreamReader requestStream = new InputStreamReader(requestInput);
 
-      replay(requestStream);
+      replay(requestStream, "testDragAndDropFromProviderToConsumer");
 
       ProcessDefinitionType process = GenericModelingAssertions.assertProcess(consumerModel, "ConsumerProcess", "ConsumerProcess");
       assertReferencedPrimitiveData(consumerModel, providerModel, "ProvidedPrimitive", "ProvidedPrimitive", "String");
@@ -63,7 +68,7 @@ public class TestCrossModelSupport extends TestGeneralModeling
       assertReferencedProcess(consumerModel, providerModel, process, activity, "ProvidedProcess", "cnx://file/processDefinition/ProvidedProcess");
       assertReferencedRole(consumerModel, providerModel, "ProvidedRole", "ProvidedRole");
 
-      // saveReplayModel("C:/development/");
+      //saveReplayModel("C:/development/");
    }
 
 
@@ -79,7 +84,7 @@ public class TestCrossModelSupport extends TestGeneralModeling
       InputStream requestInput = getClass().getResourceAsStream(
             "../../service/rest/requests/crossModelingByDropDown.txt");
       InputStreamReader requestStream = new InputStreamReader(requestInput);
-      replay(requestStream);
+      replay(requestStream, "testCrossModelingByDropDown");
 
       ProcessDefinitionType process = GenericModelingAssertions.assertProcess(consumerModel, "ConsumerSubProcess", "ConsumerSubProcess");
       ActivityType activity = GenericModelingAssertions.assertActivity(process, "ConsumerUIMashup", "ConsumerUIMashup", ActivityImplementationType.APPLICATION_LITERAL);
@@ -87,6 +92,33 @@ public class TestCrossModelSupport extends TestGeneralModeling
       assertReferencedTypeDeclaration(consumerModel, providerModel, "ConsumerStructData", "ConsumerStructData", "struct", "ProvidedTypeDeclaration", "cnx://file/typeDeclaration/ProvidedTypeDeclaration");
       assertReferencedTypeDeclaration(consumerModel, providerModel, "ConsumerDocData", "ConsumerDocData", "dmsDocument", "ProvidedTypeDeclaration", "cnx://file/typeDeclaration/ProvidedTypeDeclaration");
       GenericModelingAssertions.assertDocumentData(consumerModel, "ConsumerDocData", "ConsumerDocData", "ProviderModel{ProvidedTypeDeclaration}");
+
+      //saveReplayModel("C:/development/");
+
+   }
+
+   @Test
+   public void testCrossModelingUIMashupParameter() throws Exception
+   {
+      providerModel = modelService.findModel(PROVIDER_MODEL_ID);
+      consumerModel = modelService.findModel(CONSUMER_MODEL_ID);
+
+      testCrossModelingByDropDown();
+      initUUIDMap();
+
+      ApplicationType application = GenericModelingAssertions.assertApplication(consumerModel, "ConsumerUIMashup");
+      ContextType context = GenericModelingAssertions.assertApplicationContextType(application, "externalWebApp");
+
+      AccessPointType accessPoint = assertReferencedStructAccessPoint(providerModel, context, "StructPArameterINAndOUT", "Struct PArameter IN And OUT", DirectionType.IN_LITERAL, "typeDeclaration:{ProviderModel}ProvidedTypeDeclaration");
+      AttributeType attribute = AttributeUtil.getAttribute(accessPoint, "IS_INOUT_PARAM");
+      assertThat(attribute, is(not(nullValue())));
+      assertThat(attribute.getAttributeValue(), is("true"));
+
+      assertReferencedStructAccessPoint(providerModel, context, "StructPArameterINAndOUT", "Struct PArameter IN And OUT", DirectionType.OUT_LITERAL, "typeDeclaration:{ProviderModel}ProvidedTypeDeclaration");
+      attribute = AttributeUtil.getAttribute(accessPoint, "IS_INOUT_PARAM");
+      assertThat(attribute, is(not(nullValue())));
+      assertThat(attribute.getAttributeValue(), is("true"));
+
 
       //saveReplayModel("C:/development/");
 
@@ -106,7 +138,7 @@ public class TestCrossModelSupport extends TestGeneralModeling
       InputStream requestInput = getClass().getResourceAsStream(
             "../../service/rest/requests/crossModelingRename.txt");
       InputStreamReader requestStream = new InputStreamReader(requestInput);
-      replay(requestStream);
+      replay(requestStream, "testCrossModelingRename");
 
       ModelType brokenModel = XpdlModelIoUtils.loadModel(brokenModelXML, modelService.getModelManagementStrategy());
 
@@ -160,6 +192,24 @@ public class TestCrossModelSupport extends TestGeneralModeling
       DataType data = GenericModelingAssertions.assertDocumentData(consumerModel, dataID, dataName, assignedDeclaration);
       assertProxyReference(providerModel, data);
       return data;
+   }
+
+   public static AccessPointType assertReferencedStructAccessPoint(ModelType providerModel,
+         IAccessPointOwner accessPointOwner, String accessPointID,
+         String accessPointName, DirectionType direction, String type)
+   {
+      AccessPointType accessPoint = GenericModelingAssertions.assertAccessPoint(accessPointOwner, accessPointID, accessPointName, direction, "struct", type);
+      String refDecl = type.substring(type.indexOf("}") + 1);
+      AttributeType connectionUUIDAttribute = AttributeUtil.getAttribute(accessPoint, "carnot:connection:uuid");
+      assertThat(connectionUUIDAttribute, is(not(nullValue())));
+      String connectionUUID = connectionUUIDAttribute.getAttributeValue();
+      TypeDeclarationType declaration = GenericModelingAssertions.assertTypeDeclaration(providerModel, refDecl, refDecl);
+      assertThat(declaration, is(not(nullValue())));
+      ExtendedAttributeType modelUUIDAttribute = ExtendedAttributeUtil.getAttribute(declaration, "carnot:model:uuid");
+      assertThat(modelUUIDAttribute, is(not(nullValue())));
+      String modelUUID = modelUUIDAttribute.getValue();
+      assertThat(connectionUUID, is(modelUUID));
+      return accessPoint;
    }
 
    public static DataType assertReferencedTypeDeclaration(ModelType consumerModel, ModelType providerModel, String dataID, String dataName, String dataTypeType,

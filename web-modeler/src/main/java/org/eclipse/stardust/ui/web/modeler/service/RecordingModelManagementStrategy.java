@@ -74,7 +74,7 @@ public class RecordingModelManagementStrategy extends DefaultModelManagementStra
                counter++;
                UUID uuid = UUID.fromString("0-0-0-0-" + Long.toString(counter));
                uuidEObjectMap.put(uuid, obj);
-               System.out.println("UUID: " + uuid.toString() + " " + obj.toString());
+               //System.out.println("UUID: " + uuid.toString() + " " + obj.toString());
                return uuid.toString();
             }
 

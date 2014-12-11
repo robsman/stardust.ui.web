@@ -21,7 +21,7 @@ public class TestGeneralModeling extends RecordingTestcase
             "../../service/rest/requests/createBasicModelElementsInProvider.txt");
       InputStreamReader requestStream = new InputStreamReader(requestInput);
 
-      replay(requestStream);
+      replay(requestStream, "testBasicModelElementsInProvider");
 
       GenericModelingAssertions.assertPrimitiveData(providerModel, "ProvidedPrimitive", "ProvidedPrimitive", "String");
       GenericModelingAssertions.assertStructData(providerModel, "ProvidedStructData", "ProvidedStructData", "ProvidedTypeDeclaration");

@@ -16,6 +16,7 @@ import org.eclipse.stardust.model.xpdl.carnot.ApplicationType;
 import org.eclipse.stardust.model.xpdl.carnot.AttributeType;
 import org.eclipse.stardust.model.xpdl.carnot.CarnotWorkflowModelPackage;
 import org.eclipse.stardust.model.xpdl.carnot.ContextType;
+import org.eclipse.stardust.model.xpdl.carnot.DataMappingType;
 import org.eclipse.stardust.model.xpdl.carnot.DataType;
 import org.eclipse.stardust.model.xpdl.carnot.DirectionType;
 import org.eclipse.stardust.model.xpdl.carnot.IAccessPointOwner;
@@ -137,6 +138,24 @@ public class GenericModelingAssertions
       assertThat(attribute.getAttributeValue(), is(type));
 
       return accessPointFound;
+   }
+
+   public static void assertDataMapping(ActivityType activity, String dataMappingID,
+         String accssPointID, String context, DirectionType direction, DataType data)
+   {
+      DataMappingType dataMapping = (DataMappingType) ModelUtils.findIdentifiableElement(activity,
+            CarnotWorkflowModelPackage.eINSTANCE.getActivityType_DataMapping(), dataMappingID);
+      assertThat(dataMapping, is(not(nullValue())));
+      assertThat(dataMapping.getApplicationAccessPoint(), is(not(nullValue())));
+      assertThat(dataMapping.getApplicationAccessPoint(), is(accssPointID));
+      assertThat(dataMapping.getContext(), is(not(nullValue())));
+      assertThat(dataMapping.getContext(), is(context));
+      assertThat(dataMapping.getDirection(), is(not(nullValue())));
+      assertThat(dataMapping.getDirection(), is(direction));
+      assertThat(dataMapping.getData(), is(not(nullValue())));
+      assertThat(dataMapping.getData(), is(data));
+
+
    }
 
    public static void assertProcessInterface(ModelType model, String interfaceID, String interfaceName,
