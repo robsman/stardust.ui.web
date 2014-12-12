@@ -50,11 +50,8 @@
 
 .popup-dlg-cls {
    float: right;
-   border: 1px solid black;
    margin: 5px 0px 0px 10px;
    cursor: pointer;
-   width: 10px; /* TODO */
-   height: 10px; /* TODO */
 }
 
 .popup-dlg-cnt {

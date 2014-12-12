@@ -93,7 +93,7 @@
 				'<div ng-show="$dtApi.showSelectColumns" class="popup-dlg">\n' +
 					'<div class="popup-dlg-hdr">\n' +
 						'<span class="popup-dlg-hdr-txt">{{i18n("portal-common-messages.common-filterPopup-selectColumnsLabel")}}</span>\n' + 
-						'<span class="popup-dlg-cls" title="{{i18n(\'portal-common-messages.common-filterPopup-close\')}}" ng-click="$dtApi.toggleColumnSelector()"></span>\n' +
+						'<span class="popup-dlg-cls fa fa-lg fa-remove" title="{{i18n(\'portal-common-messages.common-filterPopup-close\')}}" ng-click="$dtApi.toggleColumnSelector()"></span>\n' +
 					'</div>\n' +
 					'<div class="popup-dlg-cnt">\n' +
 						'<div class="tbl-col-sel-list">\n' +
