@@ -155,6 +155,12 @@ public class TestCrossModelSupport extends TestGeneralModeling
       assertReferencedProcess(brokenModel, providerModel, process, activity, "RenameProvidedProcess", "cnx://file/processDefinition/RenameProvidedProcess");
       assertReferencedRole(brokenModel, providerModel, "RenamedProvidedRole", "RenamedProvidedRole");
 
+      ApplicationType application = GenericModelingAssertions.assertApplication(consumerModel, "ConsumerUIMashup");
+      ContextType context = GenericModelingAssertions.assertApplicationContextType(application, "externalWebApp");
+
+      assertReferencedStructAccessPoint(providerModel, context, "StructPArameterINAndOUT", "Struct PArameter IN And OUT", DirectionType.IN_LITERAL, "typeDeclaration:{ProviderModel}RenamedProvidedTypeDeclaration");
+      assertReferencedStructAccessPoint(providerModel, context, "StructPArameterINAndOUT", "Struct PArameter IN And OUT", DirectionType.OUT_LITERAL, "typeDeclaration:{ProviderModel}RenamedProvidedTypeDeclaration");
+
       consumerModel = brokenModel;
 
       //saveReplayModel("C:/development/");
