@@ -10,9 +10,9 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.spi.descriptor;
 
+import org.eclipse.stardust.engine.api.model.Data;
 import org.eclipse.stardust.engine.api.model.DataPath;
-import org.eclipse.stardust.engine.api.model.ModelElement;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
+import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils;
 
 /**
  * 
@@ -27,38 +27,37 @@ public class SemanticalDescriptorComparator implements ISemanticalDescriptorComp
     * @param dataPath2
     * @return
     */
-   public int compare2(DataPath dataPath1, DataPath dataPath2)
+   public int compare(DataPath dataPath1, DataPath dataPath2)
    {
+
+      int result = -1;
+
       if (null == dataPath1 || null == dataPath2)
       {
-         return -1;
+         return result;
       }
 
-      if (dataPath1.getId().equals(dataPath2.getId()) && dataPath1.getMappedType().equals(dataPath2.getMappedType()))
+      Data data1 = DescriptorFilterUtils.getData(dataPath1);
+      Data data2 = DescriptorFilterUtils.getData(dataPath2);
+
+      if (data1 == null || data2 == null)
       {
-         return 0;
+         return result;
       }
 
-      return -1;
-   }
-
-   /* (non-Javadoc)
-    * @see org.eclipse.stardust.ui.web.viewscommon.spi.descriptor.ISemanticalDescriptorComparator#compare(org.eclipse.stardust.engine.api.model.ModelElement, org.eclipse.stardust.engine.api.model.ModelElement)
-    */
-   public int compare(ModelElement modelElement1, ModelElement modelElement2)
-   {
-      if (null == modelElement1 || null == modelElement2)
+      // Identical Data path ID
+      // Identical fully qualified Data
+      // Identical data path i.e. access path
+      if (dataPath1.getId().equals(dataPath2.getId()))
       {
-         return -1;
-      }
-      int result = Integer.valueOf(modelElement1.getElementOID()).compareTo(modelElement2.getElementOID());
-      if (result == 0)
-      {
-         String modelId1 = ModelUtils.extractModelId(modelElement1.getQualifiedId());
-         String modelId2 = ModelUtils.extractModelId(modelElement2.getQualifiedId());
-         result = modelId1.compareTo(modelId2);
+         if (data1.getQualifiedId().equals(data2.getQualifiedId()))
+         {
+            if (dataPath1.getAccessPath().equals(dataPath2.getAccessPath()))
+            {
+               result = 0;
+            }
+         }
       }
       return result;
    }
-
 }
