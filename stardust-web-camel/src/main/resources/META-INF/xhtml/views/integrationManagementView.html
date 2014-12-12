@@ -49,8 +49,10 @@ table.notes .timestampSpan {
 			<br />
 			<table class="toolbar" style="width: 100%;">
 				<tr>
-					<td><a href="#" class="iconLink menuBarLink" title="Refresh"><i
-							class="fa fa-refresh" ng-click="refresh()"></i> </a></td>
+					<td><a href="#" ng-click="refresh()" class="expandCollapseLink" title="Refresh">
+							<img ng-src="plugins/stardust-web-camel/css/images/refresh.png" />
+						</a>		
+					</td>
 				</tr>
 			</table>
 			<table style="width: 100%;" border="0">
@@ -128,8 +130,8 @@ table.notes .timestampSpan {
 			
 						<table class="toolbar" style="width: 100%;">
 							<tr>
-								<td><a href="#" class="iconLink menuBarLink" title="Refresh"><i
-										class="fa fa-refresh" ng-click="refreshApplicationProducers()"></i>
+								<td><a href="#" ng-click="refreshApplicationProducers()" class="expandCollapseLink" title="Refresh">
+									<img ng-src="plugins/stardust-web-camel/css/images/refresh.png" />
 								</a>
 								</td>
 							</tr>
@@ -329,8 +331,8 @@ table.notes .timestampSpan {
 					
 					<table class="toolbar" style="width: 100%;">
 						<tr>
-							<td><a href="#" class="iconLink menuBarLink" title="Refresh"><i
-									class="fa fa-refresh" ng-click="refreshConsumers()"></i>
+							<td><a href="#" ng-click="refreshConsumers()" class="expandCollapseLink" title="Refresh">
+									<img ng-src="plugins/stardust-web-camel/css/images/refresh.png" />
 							</a>
 							</td>
 						</tr>
