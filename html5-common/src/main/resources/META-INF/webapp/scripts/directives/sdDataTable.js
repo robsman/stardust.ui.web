@@ -99,8 +99,8 @@
 						'<div class="tbl-col-sel-list">\n' +
 							'<div ng-repeat="col in $dtApi.columns" class="tbl-col-sel-row">\n' +
 								'<input type="checkbox" class="tbl-col-sel-input" ng-model="col.visible"></span>\n' +
-								'<span class="tbl-col-sel-label" ng-show="col.labelKey">{{i18n(col.labelKey)}}</span>\n' +
-								'<span class="tbl-col-sel-label" ng-show="!col.labelKey">{{col.label}}</span>\n' +
+								'<span class="tbl-col-sel-label" ng-if="col.labelKey">{{i18n(col.labelKey)}}</span>\n' +
+								'<span class="tbl-col-sel-label" ng-if="!col.labelKey">{{col.label}}</span>\n' +
 							'</div>\n' +
 						'</div>\n' +
 					'</div>\n' +
