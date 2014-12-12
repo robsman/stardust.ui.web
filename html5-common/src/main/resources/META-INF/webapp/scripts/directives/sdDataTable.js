@@ -21,7 +21,14 @@
 
 	var trace;
 
-	var CLASS_ROW_SELECTED = "tbl-row-selected";
+	var CLASSES = {
+		TABLE : 'tbl',
+		TH : 'tbl-hdr-col',
+		BODY_TR : 'tbl-row',
+		TD : 'tbl-col',
+		TOOLBAR	 : 'tbl-toolbar',
+		ROW_SELECTED : 'tbl-row-selected' 
+	};
 
 	/*
 	 * 
@@ -277,7 +284,7 @@
 
 			sdUtilService.assert(headCols.length == bodyCols.length, 'Number of columns in &lt;thead&gt; and &lt;tbody&gt; are not matching.');
 			
-			headCols.addClass('tbl-hdr-col');
+			headCols.addClass(CLASSES.TH);
 			
 			for(var i = 0; i < headCols.length; i++) {
 				var hCol = angular.element(headCols[i]);
@@ -386,7 +393,7 @@
 			}
 
 			theToolbar = angular.element(theToolbar);
-			theToolbar.addClass('tbl-toolbar');
+			theToolbar.addClass(CLASSES.TOOLBAR);
 
 			// Compile the default toolbar, which was inserted
 			var defaultToolbar = theToolbar.children().first();
@@ -586,10 +593,10 @@
 		 */
 		function createRowHandler(row, data, dataIndex) {
 			var row = angular.element(row);
-			row.addClass('tbl-row');
+			row.addClass(CLASSES.BODY_TR);
 			
 			var cells = row.find('> td');
-			cells.addClass('tbl-col');
+			cells.addClass(CLASSES.TD);
 			angular.forEach(cells, function(cell, i) {
 				cell = angular.element(cell);
 
@@ -876,7 +883,7 @@
 		 * 
 		 */
 		function selectRow(row, index) {
-			row.addClass(CLASS_ROW_SELECTED);
+			row.addClass(CLASSES.ROW_SELECTED);
 			selectedRowIndexes['Row' + index] = index;
 		}
 
@@ -884,14 +891,14 @@
 		 * 
 		 */
 		function isRowSelected(row) {
-			return row.hasClass(CLASS_ROW_SELECTED);
+			return row.hasClass(CLASSES.ROW_SELECTED);
 		}
 
 		/*
 		 * 
 		 */
 		function getSelectedRow() {
-			var selRow = theTable.find('> tbody > tr.' + CLASS_ROW_SELECTED);
+			var selRow = theTable.find('> tbody > tr.' + CLASSES.ROW_SELECTED);
 			return (selRow.length != 0) ? selRow : null;
 		}
 
@@ -899,7 +906,7 @@
 		 * 
 		 */
 		function unselectRow(row, index) {
-			row.removeClass(CLASS_ROW_SELECTED);
+			row.removeClass(CLASSES.ROW_SELECTED);
 			delete selectedRowIndexes['Row' + index];
 		}
 
@@ -908,7 +915,7 @@
 		 */
 		function unselectRows() {
 			var rows = theTable.find('> tbody > tr');
-			rows.removeClass(CLASS_ROW_SELECTED);
+			rows.removeClass(CLASSES.ROW_SELECTED);
 			selectedRowIndexes = {};
 		}
 
