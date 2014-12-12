@@ -716,7 +716,7 @@ define(
 																jQuery(
 																		"#chartView")
 																		.append(
-																				"<p>Empty data set retrieved.</p>");
+																				"<p>" + self.getI18N('reporting.definitionView.preview.emptyDataSet.message') + "</p>");
 
 															}
 
