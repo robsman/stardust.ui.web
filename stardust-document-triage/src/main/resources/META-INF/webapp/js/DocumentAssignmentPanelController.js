@@ -811,6 +811,11 @@ define(
 														return DocumentAssignmentService.instance()
 															.completeDocumentRendezvous(pendingActivityInstance,scannedDocument);
 													})
+													.then(function(){
+														debugger;
+														var bo =self.bom.selectedBusinessObjectInstances [0];
+														return DocumentAssignmentService.instance().getPendingProcesses(bo);
+													})
 													.then(function(pendingProcesses){
 														self.pendingProcesses = pendingProcesses;
 													})
@@ -830,6 +835,11 @@ define(
 												else{
 													DocumentAssignmentService.instance()
 													.completeDocumentRendezvous(pendingActivityInstance,scannedDocument)
+													.then(function(){
+														debugger;
+														var bo = self.bom.selectedBusinessObjectInstances [0];
+														return DocumentAssignmentService.instance().getPendingProcesses(bo);
+													})
 													.done(function(pendingProcesses) {
 														self.pageModel.pageIndex={};
 														self.pendingProcesses = pendingProcesses;
@@ -885,7 +895,10 @@ define(
 														self.pageModel.pageIndex={};
 														return DocumentAssignmentService.instance()
 														.addProcessDocument(processOID,scannedDocument,specificDocument.id);
-
+													})
+													.then(function(){
+                                          var bo =self.bom.selectedBusinessObjectInstances [0];
+														return DocumentAssignmentService.instance().getPendingProcesses(bo);
 													})
 													.then(function(pendingProcesses){
 														self.updateSessionLog("INSERT",scannedDocument.uuid,processOID);
@@ -908,6 +921,10 @@ define(
 												else{
 													DocumentAssignmentService.instance()
 													.addProcessDocument(processOID,scannedDocument,specificDocument.id)
+													.then(function(){
+                                          var bo =self.bom.selectedBusinessObjectInstances [0];
+														return DocumentAssignmentService.instance().getPendingProcesses(bo);
+													})
 													.done(function(pendingProcesses) {
 														self.pageModel.pageIndex={};
 														self.pendingProcesses = pendingProcesses;
@@ -970,6 +987,10 @@ define(
 														return DocumentAssignmentService.instance()
 														.addProcessDocument(processOID,scannedDocument,"PROCESS_ATTACHMENTS");
 													})
+													.then(function(){
+                                          var bo =self.bom.selectedBusinessObjectInstances [0];
+														return DocumentAssignmentService.instance().getPendingProcesses(bo);
+													})
 													.then(function(pendingProcesses){
 														self.updateSessionLog("INSERT",scannedDocument.uuid,processOID);
 														self.pendingProcesses = pendingProcesses;
@@ -988,6 +1009,10 @@ define(
 												else{
 													DocumentAssignmentService.instance()
 													.addProcessDocument(processOID,scannedDocument,"PROCESS_ATTACHMENTS")
+													.then(function(){
+                                          var bo =self.bom.selectedBusinessObjectInstances [0];
+														return DocumentAssignmentService.instance().getPendingProcesses(bo);
+													})
 													.done(function(pendingProcesses) {
 															self.pageModel.pageIndex={};
 															self.updateSessionLog("INSERT",scannedDocument.uuid,processOID);
