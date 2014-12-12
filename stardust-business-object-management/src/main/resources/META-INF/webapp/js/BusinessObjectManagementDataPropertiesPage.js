@@ -239,12 +239,42 @@ define(
 				 */
 				BusinessObjectManagementDataPropertiesPage.prototype.removeRelationship = function(
 						index) {
-					this.relationships.splice(index, 1);
-
+					var detachedRelationships = this.relationships.splice(index, 1);
+					
 					// TODO Need more logic to remove inverse Relationship
 
 					this.submitRelationshipsChanges(this.propertiesPanel.data,
 							this.relationships);
+					
+					var relationship = null;
+					if (detachedRelationships.length > 0) {
+						relationship = detachedRelationships[0];
+					}
+					if (relationship && relationship.otherBusinessObject.attributes["carnot:engine:businessObjectRelationships"]) {
+						// Read related businessObject
+						otherRelationships = JSON
+								.parse(relationship.otherBusinessObject.attributes["carnot:engine:businessObjectRelationships"]);
+
+						console.log("Found inverse Relationship to remove");
+						console.log(otherRelationships);
+
+						for (var n = 0; n < otherRelationships.length; ++n) {
+							// TODO Ugly comparison, but probably the price
+							// of a semi-typed approach
+
+							var fullId = otherRelationships[n].otherBusinessObject.modelId
+									+ ":"
+									+ otherRelationships[n].otherBusinessObject.id;
+
+							if ((fullId == this.propertiesPanel.data
+									.getFullId()) && (otherRelationships[n].otherRole == this.relationshipsUnchanged[n].thisRole)) {
+								var rem = otherRelationships.splice(n,1);
+								this.submitRelationshipsChanges(relationship.otherBusinessObject,
+										otherRelationships);
+								break;
+							}
+						}
+					}
 				};
 
 				/**
