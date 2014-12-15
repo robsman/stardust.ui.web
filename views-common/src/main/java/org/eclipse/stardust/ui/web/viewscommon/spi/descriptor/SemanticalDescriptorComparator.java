@@ -12,6 +12,7 @@ package org.eclipse.stardust.ui.web.viewscommon.spi.descriptor;
 
 import org.eclipse.stardust.engine.api.model.Data;
 import org.eclipse.stardust.engine.api.model.DataPath;
+import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils;
 
 /**
@@ -52,7 +53,12 @@ public class SemanticalDescriptorComparator implements ISemanticalDescriptorComp
       {
          if (data1.getQualifiedId().equals(data2.getQualifiedId()))
          {
-            if (dataPath1.getAccessPath().equals(dataPath2.getAccessPath()))
+            //primitives don't access paths!
+            if (StringUtils.isEmpty(dataPath1.getAccessPath()) && StringUtils.isEmpty(dataPath1.getAccessPath()))
+            {
+               result = 0;
+            }
+            if (dataPath1.getAccessPath() != null && dataPath1.getAccessPath().equals(dataPath2.getAccessPath()))
             {
                result = 0;
             }
