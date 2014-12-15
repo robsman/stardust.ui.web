@@ -1792,16 +1792,20 @@ define(
         };
       
       
-               /**
-                * This function will return true if argument is of Integer Type
-                */
-              ReportDefinitionController.prototype.isNumeric = function(element) {
-                 return (element.type.id === this.reportingService.metadata.integerType.id)? true : false;
-              };
+	       /**
+	        * This function will return true if argument is of Integer Type
+	        */
+	      ReportDefinitionController.prototype.isNumeric = function(element) {
+	    	  	if ((element.type.id === this.reportingService.metadata.integerType.id)
+						|| (element.type.id === this.reportingService.metadata.decimalType.id)) {
+					return true;
+				}
+				return false;
+	      };
               
               /**
                * This function will return true if argument is of duration Type
-               */
+				 */
              ReportDefinitionController.prototype.isDuration = function(element) {
             	 if (this.dataAvailable && element) {
             		 return (element.type.id === this.reportingService.metadata.durationType.id)? true : false;
