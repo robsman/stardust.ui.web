@@ -246,9 +246,13 @@ define(
 					this.submitRelationshipsChanges(this.propertiesPanel.data,
 							this.relationships);
 					
+					var roleUnchanged = null;
 					var relationship = null;
 					if (detachedRelationships.length > 0) {
 						relationship = detachedRelationships[0];
+					}
+					if(this.relationshipsUnchanged[index]){
+						roleUnchanged = this.relationshipsUnchanged[index].thisRole;	
 					}
 					if (relationship && relationship.otherBusinessObject.attributes["carnot:engine:businessObjectRelationships"]) {
 						// Read related businessObject
@@ -267,10 +271,24 @@ define(
 									+ otherRelationships[n].otherBusinessObject.id;
 
 							if ((fullId == this.propertiesPanel.data
-									.getFullId()) && (otherRelationships[n].otherRole == this.relationshipsUnchanged[n].thisRole)) {
+									.getFullId()) && (otherRelationships[n].otherRole == roleUnchanged)) {
 								var rem = otherRelationships.splice(n,1);
-								this.submitRelationshipsChanges(relationship.otherBusinessObject,
-										otherRelationships);
+								var otherBusinessObject = relationship.otherBusinessObject;
+								// Create change object and save 
+								var element = {
+										modelElement : {
+											attributes : {}
+										}
+									};
+
+								element.modelElement.attributes["carnot:engine:businessObjectRelationships"] = JSON
+											.stringify(otherRelationships);
+
+								m_commandsController.submitCommand(m_command
+										.createUpdateModelElementCommand(
+												otherBusinessObject.model.id,
+												otherBusinessObject.oid,
+												element.modelElement));
 								break;
 							}
 						}
