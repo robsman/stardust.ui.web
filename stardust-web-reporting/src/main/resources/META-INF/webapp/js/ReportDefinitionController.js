@@ -582,123 +582,128 @@ define(
 						// Initialize
 						// defaults
 
-						// TODO Get chart options from central place
-
-						self.report = {
-						   reportUID : reportUID,      
-							name : name,
-							description : "",
-							storage : {
-								location : "publicFolder",
-								state : "created"
-							},
-							dataSet : {
-								type : "seriesGroup",
-								primaryObject : "processInstance",
-								joinExternalData : false,
-								externalJoins : [ {
-									joinType : "outer",
-									restUri : "http://127.0.0.1:1337/",
-									fields : []
-								} ],
-								computedColumns : [],
-								columns : [],
-								factDurationUnit : "d",
-								firstDimensionCumulationIntervalCount : 1,
-								firstDimensionCumulationIntervalUnit : "d",
-								firstDimensionDurationUnit: "s",
-								filters: getDefaultFilterFor("processInstanceStartTimestamp")
-							},
-							parameters : {},
-							layout : {
-								type : "simpleReport",
-								chart : {
-									type : this.reportingService.metadata.chartTypes.xyPlot.id,
-									options : {
-										animate : true,
-										animateReplot : true,
-										series : {},
-										seriesDefaults : {
-											lineWidth : 1.5,
-											markerOptions : {
-												style : "filledCircle"
-											},
-											pointLabels : {},
-											trendline : {
-												color : '#666666',
-												label : '',
-												type : 'linear',
-												shadow : true,
+						//get user locale
+						
+						self.reportingService.getUserLanguage()
+						.done(function(userLanguage) {
+						   
+							// TODO Get chart options from central place
+							self.report = {
+							    userLanguage : userLanguage,
+							    reportUID : reportUID,      
+								name : name,
+								description : "",
+								storage : {
+									location : "publicFolder",
+									state : "created"
+								},
+								dataSet : {
+									type : "seriesGroup",
+									primaryObject : "processInstance",
+									joinExternalData : false,
+									externalJoins : [ {
+										joinType : "outer",
+										restUri : "http://127.0.0.1:1337/",
+										fields : []
+									} ],
+									computedColumns : [],
+									columns : [],
+									factDurationUnit : "d",
+									firstDimensionCumulationIntervalCount : 1,
+									firstDimensionCumulationIntervalUnit : "d",
+									firstDimensionDurationUnit: "s",
+									filters: getDefaultFilterFor("processInstanceStartTimestamp")
+								},
+								parameters : {},
+								layout : {
+									type : "simpleReport",
+									chart : {
+										type : self.reportingService.metadata.chartTypes.xyPlot.id,
+										options : {
+											animate : true,
+											animateReplot : true,
+											series : {},
+											seriesDefaults : {
 												lineWidth : 1.5,
-												shadowAngle : 45,
-												shadowOffset : 1.5,
-												shadowDepth : 3,
-												shadowAlpha : 0.07
-											},
-										},
-										axes : {
-											xaxis : {
-												tickOptions : {
-													mark : "outside",
-													markSize : 4,
-													angle : 0,
-													showMark : true,
-													showGridline : true
+												markerOptions : {
+													style : "filledCircle"
 												},
-												showTickMarks : true,
-												showTicks : true
-											},
-											x2axis : {},
-											yaxis : {
-												tickOptions : {
-													mark : "outside",
-													markSize : 4,
-													angle : 0,
-													showMark : true,
-													showGridline : true
+												pointLabels : {},
+												trendline : {
+													color : '#666666',
+													label : '',
+													type : 'linear',
+													shadow : true,
+													lineWidth : 1.5,
+													shadowAngle : 45,
+													shadowOffset : 1.5,
+													shadowDepth : 3,
+													shadowAlpha : 0.07
 												},
-												showTickMarks : true,
-												showTicks : true
 											},
-											y2axis : {}
-										},
-										legend : {
-											show: true,
-											location : "e"
-										},
-										highlighter : {},
-										cursor : {
-											show : true,
-											showTooltip : true
-										},
-										zoom : {}
-									}
+											axes : {
+												xaxis : {
+													tickOptions : {
+														mark : "outside",
+														markSize : 4,
+														angle : 0,
+														showMark : true,
+														showGridline : true
+													},
+													showTickMarks : true,
+													showTicks : true
+												},
+												x2axis : {},
+												yaxis : {
+													tickOptions : {
+														mark : "outside",
+														markSize : 4,
+														angle : 0,
+														showMark : true,
+														showGridline : true
+													},
+													showTickMarks : true,
+													showTicks : true
+												},
+												y2axis : {}
+											},
+											legend : {
+												show: true,
+												location : "e"
+											},
+											highlighter : {},
+											cursor : {
+												show : true,
+												showTooltip : true
+											},
+											zoom : {}
+										}
+									},
+									table : {
+										options : {
+										   showExportButtons : true,	
+										   showSearchInput : true,
+								           showVisibleRowCountSelector : true  
+										}
+									},
+									document : {}
 								},
-								table : {
-									options : {
-									   showExportButtons : true,	
-									   showSearchInput : true,
-							           showVisibleRowCountSelector : true  
-									}
-								},
-								document : {}
-							},
-							scheduling : self.schedulingController
-									.createDefaultSettings()
-						};
+								scheduling : self.schedulingController
+										.createDefaultSettings()
+							};
 
-						this.report.storage.participant = "Administrator";
-						
-						this.report.dataSet.fact = this.getPrimaryObject().facts.count.id;
-						this.setDefaultFirstDimension();
-						
-						this.initFilters();
-						
-						deferred.resolve();
+							self.report.storage.participant = "Administrator";
+							
+							self.report.dataSet.fact = self.getPrimaryObject().facts.count.id;
+							self.setDefaultFirstDimension();
+							
+							self.initFilters();
+							
+							deferred.resolve();
+						});
 					}
 
 					return deferred.promise();
-
 				};
 
 				/**

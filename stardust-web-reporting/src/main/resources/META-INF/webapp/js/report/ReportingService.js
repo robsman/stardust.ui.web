@@ -772,6 +772,33 @@ define(
 					return deferred.promise();
 				};
 				
+				ReportingService.prototype.getUserLanguage = function() {
+					var deferred = jQuery.Deferred();
+
+					var self = this;
+					jQuery
+							.ajax(
+									{
+										type : "GET",
+										async : false,
+										beforeSend : function(request) {
+											request
+													.setRequestHeader(
+															"Authentication",
+															self
+																	.getBasicAuthenticationHeader());
+										},
+										url : self.getRootUrl() + "/services/rest/bpm-reporting/language",
+										contentType : "application/json"
+									}).done(function(data) {
+								deferred.resolve(data);
+							}).fail(function() {
+								deferred.reject();
+							});
+
+					return deferred.promise();
+				};
+				
 				/**
 				 * 
 				 */
