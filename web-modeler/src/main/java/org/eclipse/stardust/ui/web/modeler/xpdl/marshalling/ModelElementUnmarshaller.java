@@ -2511,7 +2511,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
                DataMappingType dm = k.next();
                if (dm.getApplicationAccessPoint() != null && dm.getApplicationAccessPoint().equals(oldID))
                {
-                  if (activity.getApplication().getId().equals(application.getId()))
+                  if (activity.getApplication() != null && activity.getApplication().getId().equals(application.getId()))
                   {
                      dm.setApplicationAccessPoint(newID);
                   }
