@@ -314,8 +314,7 @@ define(
 
 						if (this.getFirstDimension().type == this.reportingService.metadata.timestampType) {
 							chartOptions.axes.xaxis.renderer = jQuery.jqplot.DateAxisRenderer;
-						} else if (this.getFirstDimension().type == this.reportingService.metadata.enumerationType ||
-						         this.getFirstDimension().type == this.reportingService.metadata.stringType) {
+						} else {
 							chartOptions.axes.xaxis.renderer = jQuery.jqplot.CategoryAxisRenderer;
 						}
 						
