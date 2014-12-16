@@ -77,6 +77,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.CommonDescriptorUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.XPathCacheManager;
 import org.springframework.context.annotation.Scope;
@@ -213,7 +214,7 @@ public class ReportingServiceBean
             JsonObject processJson = new JsonObject();
 
             processJson.addProperty("id", processDefinition.getQualifiedId());
-            processJson.addProperty("name", processDefinition.getName());
+            processJson.addProperty("name", I18nUtils.getProcessName(processDefinition)); // I18n
             processJson.addProperty("auxiliary", ProcessDefinitionUtils.isAuxiliaryProcess(processDefinition));
 
             processesJson.add(processDefinition.getId(), processJson);
@@ -233,7 +234,7 @@ public class ReportingServiceBean
 
                         descriptorJson.addProperty("id",
                               processDefinition.getQualifiedId() + ":" + dataPath.getQualifiedId());
-                     descriptorJson.addProperty("name", dataPath.getName());
+                     descriptorJson.addProperty("name", I18nUtils.getDataPathName(dataPath));
                      descriptorJson.addProperty("type", UiHelper.mapDesciptorType(dataPath.getMappedType()).getId());
 
                      // metadata for Engine
@@ -277,7 +278,7 @@ public class ReportingServiceBean
                JsonObject activityJsonObj = new JsonObject();
 
                activityJsonObj.addProperty("id", processDefinition.getQualifiedId() + ":" + activity.getQualifiedId());
-               activityJsonObj.addProperty("name", activity.getName());
+               activityJsonObj.addProperty("name", I18nUtils.getActivityName(activity));
                activityJsonObj.addProperty("auxiliary", ActivityInstanceUtils.isAuxiliaryActivity(activity));
                activityJsonObj.addProperty("interactive", activity.isInteractive());
                activities.add(activityJsonObj);
@@ -295,7 +296,8 @@ public class ReportingServiceBean
             JsonObject participantJson = new JsonObject();
 
             participantJson.addProperty("id", participant.getQualifiedId());
-            participantJson.addProperty("name", participant.getName());
+            participantJson.addProperty("name",
+                  I18nUtils.getParticipantName(ParticipantUtils.getParticipant(participant)));
 
             participantsJson.add(participant.getId(), participantJson);
          }
