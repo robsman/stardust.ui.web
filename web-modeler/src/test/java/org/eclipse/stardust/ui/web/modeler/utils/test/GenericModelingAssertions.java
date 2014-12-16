@@ -46,6 +46,23 @@ public class GenericModelingAssertions
       return process;
    }
 
+   public static ProcessDefinitionType assertSubProcess(ActivityType activity,
+         String subProcessID) {
+      assertThat(activity.getImplementation(), is(ActivityImplementationType.SUBPROCESS_LITERAL));
+      assertThat(activity.getSubProcessMode(), is(not(nullValue())));
+      AttributeType attribute = AttributeUtil.getAttribute(activity, "carnot:engine:subprocess:copyAllData");
+      assertThat(attribute, is(not(nullValue())));
+      ProcessDefinitionType subProcess = activity.getImplementationProcess();
+      assertThat(subProcess, is(not(nullValue())));
+      assertThat(subProcess.getId(), is(subProcessID));
+      ModelType subProcessModel = ModelUtils.findContainingModel(subProcess);
+      ModelType activityModel = ModelUtils.findContainingModel(activity);
+      assertThat(subProcessModel, is(not(nullValue())));
+      assertThat(activityModel, is(not(nullValue())));
+      assertThat(subProcessModel, is(activityModel));
+      return subProcess;
+   }
+
    public static ActivityType assertActivity(ProcessDefinitionType process,
          String activityID, String activityName, ActivityImplementationType implType)
    {
@@ -57,7 +74,6 @@ public class GenericModelingAssertions
       assertThat(activity.getName(), is(activityName));
       assertThat(activity.getImplementation(), is(not(nullValue())));
       assertThat(implType, is(activity.getImplementation()));
-
       return activity;
    }
 

@@ -13,6 +13,7 @@ import java.lang.reflect.Proxy;
 import java.util.Map;
 
 import org.eclipse.stardust.model.xpdl.builder.connectionhandler.EObjectProxyHandler;
+import org.eclipse.stardust.model.xpdl.builder.utils.ExternalReferenceUtils;
 import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelIoUtils;
 import org.eclipse.stardust.model.xpdl.carnot.AccessPointType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityImplementationType;
@@ -38,7 +39,6 @@ import org.eclipse.stardust.model.xpdl.xpdl2.ExternalReferenceType;
 import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.ExtendedAttributeUtil;
 import org.eclipse.stardust.ui.web.modeler.utils.test.GenericModelingAssertions;
-import org.eclipse.stardust.ui.web.modeler.xpdl.edit.utils.ExternalReferenceUtils;
 import org.junit.Test;
 
 public class TestCrossModelSupport extends TestGeneralModeling
@@ -94,6 +94,50 @@ public class TestCrossModelSupport extends TestGeneralModeling
       GenericModelingAssertions.assertDocumentData(consumerModel, "ConsumerDocData", "ConsumerDocData", "ProviderModel{ProvidedTypeDeclaration}");
 
       //saveReplayModel("C:/development/");
+
+   }
+
+   @Test
+   public void testSwitchSubprocessFromRemoteToLocal() throws Exception
+   {
+      providerModel = modelService.findModel(PROVIDER_MODEL_ID);
+      consumerModel = modelService.findModel(CONSUMER_MODEL_ID);
+
+      testCrossModelingByDropDown();
+      initUUIDMap();
+
+      InputStream requestInput = getClass().getResourceAsStream(
+            "../../service/rest/requests/switchSubprocessFromRemoteToLocal.txt");
+      InputStreamReader requestStream = new InputStreamReader(requestInput);
+      replay(requestStream, "testSwitchSubprocessFromRemoteToLocal");
+
+      ProcessDefinitionType process = GenericModelingAssertions.assertProcess(consumerModel, "ConsumerProcess", "ConsumerProcess");
+      ActivityType activity = GenericModelingAssertions.assertActivity(process, "ProvidedProcess", "ProvidedProcess", ActivityImplementationType.SUBPROCESS_LITERAL);
+      GenericModelingAssertions.assertSubProcess(activity, "ConsumerSubProcess");
+
+      //saveReplayModel("C:/development/");
+
+   }
+
+   @Test
+   public void testSwitchSubprocessFromLocalToRemote() throws Exception
+   {
+      providerModel = modelService.findModel(PROVIDER_MODEL_ID);
+      consumerModel = modelService.findModel(CONSUMER_MODEL_ID);
+
+      testCrossModelingByDropDown();
+      initUUIDMap();
+
+      InputStream requestInput = getClass().getResourceAsStream(
+            "../../service/rest/requests/switchSubprocessFromLocalToRemote.txt");
+      InputStreamReader requestStream = new InputStreamReader(requestInput);
+      replay(requestStream, "testSwitchSubprocessFromLocalToRemote");
+
+      ProcessDefinitionType process = GenericModelingAssertions.assertProcess(consumerModel, "ConsumerProcess", "ConsumerProcess");
+      ActivityType activity = GenericModelingAssertions.assertActivity(process, "ProvidedProcess", "ProvidedProcess", ActivityImplementationType.SUBPROCESS_LITERAL);
+      assertReferencedProcess(consumerModel, providerModel, process, activity, "ProvidedProcess", "cnx://file/processDefinition/ProvidedProcess");
+
+      // saveReplayModel("C:/development/");
 
    }
 
@@ -177,6 +221,8 @@ public class TestCrossModelSupport extends TestGeneralModeling
       ProcessDefinitionType refProcess = GenericModelingAssertions.assertProcess(providerModel, refProcessID, refProcessID);
       assertExternalReference(refProcess, providerModel, refProcessID, uri, activity);
    }
+
+
 
    public static void assertReferencedPrimitiveData(ModelType consumerModel, ModelType providerModel, String dataID, String dataName,
          String primitiveType)
