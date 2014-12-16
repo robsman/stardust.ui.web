@@ -674,6 +674,7 @@ define(
 											highlighter : {},
 											cursor : {
 												show : true,
+												followMouse : true,
 												showTooltip : true
 											},
 											zoom : {}

@@ -177,7 +177,7 @@ define(
 			                fontSize: '11px'
 						},
 						highlighter : {},
-						cursor : {show : true},
+						cursor : {show : true, followMouse : true},
 						zoom : {},
 						seriesColors: [ "#4bb2c5", "#c5b47f", "#EAA228", "#579575", "#839557", "#958c12",
 						                 "#953579", "#4b5de4", "#d8b83f", "#ff5800", "#0085cc"]
