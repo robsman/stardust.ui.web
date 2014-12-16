@@ -319,7 +319,7 @@ define(
 							this.relationships);
 
 					var thisRoleUnchanged = null;
-					if(this.relationshipsUnchanged[index]){
+					if(this.relationshipsUnchanged){
 						var otherBusinessObjectUnchanged = this.relationshipsUnchanged[index].otherBusinessObject;
 						thisRoleUnchanged = this.relationshipsUnchanged[index].thisRole;
 					}
