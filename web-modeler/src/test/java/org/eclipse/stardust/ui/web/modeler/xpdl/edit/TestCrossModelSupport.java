@@ -33,9 +33,12 @@ import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.model.xpdl.carnot.RoleType;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
+import org.eclipse.stardust.model.xpdl.xpdl2.DataTypeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.ExtendedAttributeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.ExternalPackage;
 import org.eclipse.stardust.model.xpdl.xpdl2.ExternalReferenceType;
+import org.eclipse.stardust.model.xpdl.xpdl2.FormalParameterType;
+import org.eclipse.stardust.model.xpdl.xpdl2.ModeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.ExtendedAttributeUtil;
 import org.eclipse.stardust.ui.web.modeler.utils.test.GenericModelingAssertions;
@@ -140,6 +143,31 @@ public class TestCrossModelSupport extends TestGeneralModeling
       // saveReplayModel("C:/development/");
 
    }
+
+   @Test
+   public void testProcessInterfaceUsesReferencedTypedeclarations() throws Exception
+   {
+      providerModel = modelService.findModel(PROVIDER_MODEL_ID);
+      consumerModel = modelService.findModel(CONSUMER_MODEL_ID);
+
+      testCrossModelingByDropDown();
+      initUUIDMap();
+
+      InputStream requestInput = getClass().getResourceAsStream(
+            "../../service/rest/requests/processInterfaceUsesReferencedTypedeclarations.txt");
+      InputStreamReader requestStream = new InputStreamReader(requestInput);
+      replay(requestStream, "processInterfaceUsesReferencedTypedeclarations");
+
+      ProcessDefinitionType process = GenericModelingAssertions.assertProcessInterface(consumerModel, "ConsumerSubProcess", "ConsumerSubProcess", 2);
+
+      assertReferencedDocumentFormalParameter(process, "InDocument", "In Document", ModeType.IN, providerModel, "ProvidedTypeDeclaration");
+      assertReferencedStructFormalParameter(process, "OutStruct", "Out Struct", ModeType.OUT, providerModel, "ProvidedTypeDeclaration");
+
+      //saveReplayModel("C:/development/");
+   }
+
+
+
 
    @Test
    public void testCrossModelingUIMashupParameter() throws Exception
@@ -263,6 +291,58 @@ public class TestCrossModelSupport extends TestGeneralModeling
       assertThat(connectionUUID, is(modelUUID));
       return accessPoint;
    }
+
+   public static DataTypeType assertReferencedDeclarationType(FormalParameterType parameter, String carnotTypeID, ModelType providerModel, String declarationID)
+   {
+      DataTypeType dataTypeType = parameter.getDataType();
+      assertThat(dataTypeType, is(not(nullValue())));
+      assertThat(dataTypeType.getCarnotType(), is(not(nullValue())));
+      assertThat(dataTypeType.getCarnotType(), is(carnotTypeID));
+
+      ExternalReferenceType externalReference = dataTypeType.getExternalReference();
+      assertThat(externalReference.getLocation(), is(not(nullValue())));
+      assertThat(externalReference.getLocation(), is(providerModel.getId()));
+      assertThat(externalReference.getXref(), is(not(nullValue())));
+      assertThat(externalReference.getXref(), is(declarationID));
+      assertThat(externalReference.getUuid(), is(not(nullValue())));
+
+      TypeDeclarationType typeDeclaration = GenericModelingAssertions.assertTypeDeclaration(providerModel, externalReference.getXref(), externalReference.getXref());
+      String modelUUID = ExtendedAttributeUtil.getAttributeValue(typeDeclaration.getExtendedAttributes(),  "carnot:model:uuid");
+      assertThat(externalReference.getUuid(), is(modelUUID));
+
+      return dataTypeType;
+   }
+
+   public static FormalParameterType assertReferencedDocumentFormalParameter(ProcessDefinitionType process, String parameterID, String parameterName, ModeType modeType, ModelType providerModel, String declarationID)
+   {
+      FormalParameterType parameter = GenericModelingAssertions.assertFormalParameter(process, parameterID, parameterName, modeType);
+      assertReferencedDeclarationType(parameter, "dmsDocument", providerModel, declarationID);
+      return parameter;
+   }
+
+   public static FormalParameterType assertReferencedStructFormalParameter(ProcessDefinitionType process, String parameterID, String parameterName, ModeType modeType, ModelType providerModel, String declarationID)
+   {
+      FormalParameterType parameter = GenericModelingAssertions.assertFormalParameter(process, parameterID, parameterName, modeType);
+      assertReferencedDeclarationType(parameter, "struct", providerModel, declarationID);
+      return parameter;
+   }
+
+   /*public static void assertReferencedDocumentFormalParameter(ProcessDefinitionType process, String parameterID, String parameterName, ModeType modeType, ModelType providerModel, String declarationID)
+   {
+      FormalParameterType parameter = GenericModelingAssertions.assertStructFormalParameter(process, parameterID, parameterName, modeType, declarationID);
+      ExternalReferenceType externalReference = parameter.getDataType().getExternalReference();
+      assertThat(externalReference, is(not(nullValue())));
+
+      assertThat(externalReference.getLocation(), is(not(nullValue())));
+      assertThat(externalReference.getLocation(), is(providerModel.getId()));
+      assertThat(externalReference.getXref(), is(not(nullValue())));
+      assertThat(externalReference.getXref(), is(declarationID));
+      assertThat(externalReference.getUuid(), is(not(nullValue())));
+
+      TypeDeclarationType typeDeclaration = GenericModelingAssertions.assertTypeDeclaration(providerModel, externalReference.getXref(), externalReference.getXref());
+      String modelUUID = ExtendedAttributeUtil.getAttributeValue(typeDeclaration.getExtendedAttributes(),  "carnot:model:uuid");
+      assertThat(externalReference.getUuid(), is(modelUUID));
+   }*/
 
    public static DataType assertReferencedTypeDeclaration(ModelType consumerModel, ModelType providerModel, String dataID, String dataName, String dataTypeType,
          String assignedDeclaration, String uri)

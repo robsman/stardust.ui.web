@@ -26,10 +26,15 @@ import org.eclipse.stardust.model.xpdl.carnot.RoleType;
 import org.eclipse.stardust.model.xpdl.carnot.extensions.FormalParameterMappingsType;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
+import org.eclipse.stardust.model.xpdl.xpdl2.BasicTypeType;
+import org.eclipse.stardust.model.xpdl.xpdl2.DataTypeType;
+import org.eclipse.stardust.model.xpdl.xpdl2.DeclaredTypeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.ExtendedAttributeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.FormalParameterType;
 import org.eclipse.stardust.model.xpdl.xpdl2.FormalParametersType;
+import org.eclipse.stardust.model.xpdl.xpdl2.ModeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
+import org.eclipse.stardust.model.xpdl.xpdl2.TypeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.ExtendedAttributeUtil;
 
 public class GenericModelingAssertions
@@ -170,11 +175,66 @@ public class GenericModelingAssertions
       assertThat(dataMapping.getDirection(), is(direction));
       assertThat(dataMapping.getData(), is(not(nullValue())));
       assertThat(dataMapping.getData(), is(data));
-
-
    }
 
-   public static void assertProcessInterface(ModelType model, String interfaceID, String interfaceName,
+   public static FormalParameterType assertFormalParameter(ProcessDefinitionType process, String parameterID, String parameterName, ModeType modeType)
+   {
+      assertThat(process.getFormalParameters(), is(not(nullValue())));
+      assertThat(process.getFormalParameterMappings(), is(not(nullValue())));
+      FormalParameterType parameter = process.getFormalParameters().getFormalParameter(parameterID);
+      assertThat(parameter, is(not(nullValue())));
+      assertThat(parameter.getMode(), is(not(nullValue())));
+      assertThat(parameter.getDataType(), is(not(nullValue())));
+      assertThat(parameter.getId(), is(not(nullValue())));
+      assertThat(parameter.getName(), is(not(nullValue())));
+      assertThat(parameter.getMode(), is(modeType));
+      assertThat(parameter.getName(), is(parameterName));
+      assertThat(parameter.getId(), is(parameterID));
+      return parameter;
+   }
+
+   public static FormalParameterType assertPrimitiveFormalParameter(ProcessDefinitionType process, String parameterID, String parameterName, ModeType modeType)
+   {
+      FormalParameterType parameter = assertFormalParameter(process, parameterID, parameterName, modeType);
+      DataTypeType dataTypeType = parameter.getDataType();
+      assertThat(dataTypeType, is(not(nullValue())));
+      assertThat(dataTypeType.getCarnotType(), is(not(nullValue())));
+      assertThat(dataTypeType.getCarnotType(), is("primitive"));
+      BasicTypeType basicTypeType = dataTypeType.getBasicType();
+      assertThat(basicTypeType, is(not(nullValue())));
+      assertThat(basicTypeType.getType(), is(not(nullValue())));
+      assertThat(basicTypeType.getType(), is(TypeType.STRING));
+      return parameter;
+   }
+
+   public static FormalParameterType assertStructFormalParameter(ProcessDefinitionType process, String parameterID, String parameterName, ModeType modeType, String declarationID)
+   {
+      FormalParameterType parameter = assertFormalParameter(process, parameterID, parameterName, modeType);
+      assertDeclarationType(parameter, "struct", declarationID);
+      return parameter;
+   }
+
+   public static FormalParameterType assertDocumentFormalParameter(ProcessDefinitionType process, String parameterID, String parameterName, ModeType modeType, String declarationID)
+   {
+      FormalParameterType parameter = assertFormalParameter(process, parameterID, parameterName, modeType);
+      assertDeclarationType(parameter, "dmsDocument", declarationID);
+      return parameter;
+   }
+
+   public static DataTypeType assertDeclarationType(FormalParameterType parameter, String carnotTypeID, String declarationID)
+   {
+      DataTypeType dataTypeType = parameter.getDataType();
+      assertThat(dataTypeType, is(not(nullValue())));
+      assertThat(dataTypeType.getCarnotType(), is(not(nullValue())));
+      DeclaredTypeType declaredTypeType = dataTypeType.getDeclaredType();
+      assertThat(declaredTypeType, is(not(nullValue())));
+      assertThat(declaredTypeType.getId(), is(not(nullValue())));
+      assertThat(declaredTypeType.getId(), is(declarationID));
+      assertThat(dataTypeType.getCarnotType(), is(carnotTypeID));
+      return dataTypeType;
+   }
+
+   public static ProcessDefinitionType assertProcessInterface(ModelType model, String interfaceID, String interfaceName,
          int paramCount)
    {
       ProcessDefinitionType process = assertProcess(model, interfaceID, interfaceName);
@@ -196,7 +256,7 @@ public class GenericModelingAssertions
             assertThat(mappingsType.getMappedData(formalParameter), is(not(nullValue())));
          }
       }
-
+      return process;
    }
 
    public static TypeDeclarationType assertTypeDeclaration(ModelType model, String declID, String declName)
