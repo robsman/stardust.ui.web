@@ -167,8 +167,6 @@ public class TestCrossModelSupport extends TestGeneralModeling
    }
 
 
-
-
    @Test
    public void testCrossModelingUIMashupParameter() throws Exception
    {
@@ -326,23 +324,6 @@ public class TestCrossModelSupport extends TestGeneralModeling
       assertReferencedDeclarationType(parameter, "struct", providerModel, declarationID);
       return parameter;
    }
-
-   /*public static void assertReferencedDocumentFormalParameter(ProcessDefinitionType process, String parameterID, String parameterName, ModeType modeType, ModelType providerModel, String declarationID)
-   {
-      FormalParameterType parameter = GenericModelingAssertions.assertStructFormalParameter(process, parameterID, parameterName, modeType, declarationID);
-      ExternalReferenceType externalReference = parameter.getDataType().getExternalReference();
-      assertThat(externalReference, is(not(nullValue())));
-
-      assertThat(externalReference.getLocation(), is(not(nullValue())));
-      assertThat(externalReference.getLocation(), is(providerModel.getId()));
-      assertThat(externalReference.getXref(), is(not(nullValue())));
-      assertThat(externalReference.getXref(), is(declarationID));
-      assertThat(externalReference.getUuid(), is(not(nullValue())));
-
-      TypeDeclarationType typeDeclaration = GenericModelingAssertions.assertTypeDeclaration(providerModel, externalReference.getXref(), externalReference.getXref());
-      String modelUUID = ExtendedAttributeUtil.getAttributeValue(typeDeclaration.getExtendedAttributes(),  "carnot:model:uuid");
-      assertThat(externalReference.getUuid(), is(modelUUID));
-   }*/
 
    public static DataType assertReferencedTypeDeclaration(ModelType consumerModel, ModelType providerModel, String dataID, String dataName, String dataTypeType,
          String assignedDeclaration, String uri)

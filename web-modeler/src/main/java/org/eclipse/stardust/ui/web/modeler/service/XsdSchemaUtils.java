@@ -28,6 +28,7 @@ import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
+import org.eclipse.stardust.model.xpdl.builder.utils.ExternalReferenceUtils;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
@@ -922,7 +923,7 @@ public final class XsdSchemaUtils
       ModelType ref = facade.findModel(namespace);
       if (ref != null)
       {
-         facade.updateReferences(model, ref);
+         ExternalReferenceUtils.updateReferences(model, ref);
       }
    }
 
