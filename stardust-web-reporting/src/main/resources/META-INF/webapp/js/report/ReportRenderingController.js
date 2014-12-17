@@ -421,8 +421,7 @@ define(
 					      " : " + plot.data[seriesIndex][pointIndex][1];
 					}
 					
-					if (chartOptions.stackSeries ||
-					         this.getFirstDimension().id == this.reportingService.metadata.objects.activityInstance.dimensions.criticality.id) {
+					if (chartOptions.stackSeries) {
 					   var x_axis = [];
 					   for ( var i = 0; i < data.seriesGroup.length; ++i) {
 					      var tempData = [];
@@ -532,12 +531,6 @@ define(
 						}
 						var displayValueMapping = {};
 						Object.keys(inData).forEach(function(key) {
-							if (dimension.id == self.reportingService.metadata.objects.activityInstance.dimensions.criticality.id) {
-								var critName = self.getCriticalityName(key,enums);
-								displayValueMapping[critName] = key;
-								inData[critName] = inData[key];
-								delete inData[key];	
-							}else{
 							for ( var item in enums)
 	                          {
 	                             if (enums[item].id == key) {
@@ -552,7 +545,6 @@ define(
 									}
 									break;
 	                             }
-								}
 	                          }
 						});
 						if(dimension.customSort && !dimensionAsRow){
@@ -569,20 +561,14 @@ define(
 							.forEach(
 									function(key) {
 										for (var i = 0; i < inData[key].length; i++) {
-											if (dimension.id == self.reportingService.metadata.objects.activityInstance.dimensions.criticality.id) {
-												var critName = self.getCriticalityName(inData[key][i][0],enums);
-												displayValueMapping[critName] = inData[key][i][0];
-												inData[key][i][0] = critName;	
-											} else {
-												for (var j = 0; j < enums.length; j++) {
-													if (enums[j].id == inData[key][i][0]) {
-														if(enums[j].order){
-															displayValueMapping[enums[j].name] = enums[j].order;	
-														}else{
-															displayValueMapping[enums[j].name] = inData[key][i][0];
-														}
-														inData[key][i][0] = enums[j].name;
+											for (var j = 0; j < enums.length; j++) {
+												if (enums[j].id == inData[key][i][0]) {
+													if(enums[j].order){
+														displayValueMapping[enums[j].name] = enums[j].order;	
+													}else{
+														displayValueMapping[enums[j].name] = inData[key][i][0];
 													}
+													inData[key][i][0] = enums[j].name;
 												}
 											}
 										}
@@ -1487,26 +1473,7 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
    
    for ( var selColumn in selectedColumns)
    {
-      if (selectedColumns[selColumn].id == this.
-            reportingService.metadata.objects.activityInstance.dimensions.criticality.id) 
-      {
-            //Formatting Criticality data to display string values
-         if (this.report.dataSet.groupBy === this.
-                  reportingService.metadata.objects.activityInstance.dimensions.criticality.id) 
-         {
-            tableOptions.aoColumnDefs.push(getColumnDef(selColumn, displayValueMapping));
-         }
-         var enumItems = this.reportingService.getEnumerators(this.
-                           reportingService.metadata.objects.activityInstance.dimensions.criticality.enumerationType);
-                
-         for ( var row in data) 
-         {
-            var record = data[row];
-            var criticality = this.getCriticalityName(record[selColumn], enumItems);
-            displayValueMapping[criticality] = record[selColumn];
-            record[selColumn] = criticality; 
-         }
-      } else if (selectedColumns[selColumn] && selectedColumns[selColumn].enumerationType) 
+	  if (selectedColumns[selColumn] && selectedColumns[selColumn].enumerationType) 
       {
          var enumItems = this.reportingService.getEnumerators(selectedColumns[selColumn].enumerationType);
          var displayValueMapping = {};
@@ -1654,24 +1621,7 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
 					};
 
 					return popupData;
-				};
-				
-				/**
-				 * 
-				 */
-				ReportRenderingController.prototype.getCriticalityName = function(criticalityRating, enumItems)
- 				{
-					criticalityRating *= 1000;
-					var self = this;// enumItems.forEach(function(item)
-					for (var i = 0; i < enumItems.length; i++) {
-						if (criticalityRating >= enumItems[i].rangeFrom
-								&& criticalityRating <= enumItems[i].rangeTo) {
-							return enumItems[i].name;
-						}
-					}
-					
-					return criticalityRating;
-				};
+			};
 				
             /*
 			 * 
