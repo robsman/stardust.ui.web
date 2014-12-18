@@ -49,14 +49,15 @@ import org.eclipse.stardust.ui.web.common.configuration.UserPreferencesHelper;
 import org.eclipse.stardust.ui.web.common.spi.preference.PreferenceScope;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
+import org.eclipse.stardust.ui.web.plugin.support.ServiceLoaderUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
-import org.eclipse.stardust.ui.web.viewscommon.common.ModelElementComparator;
 import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.viewscommon.common.constant.ProcessPortalConstants;
 import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils.DataPathMetadata;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentInfo;
+import org.eclipse.stardust.ui.web.viewscommon.spi.descriptor.ISemanticalDescriptorComparator;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.TypedDocument;
 
 
@@ -160,32 +161,24 @@ public class CommonDescriptorUtils
                if (null != obj)
                {
                   DataDetails dataDetails = (DataDetails) model.getData(dataPathDetails.getData());
-                  // Check for Process Attachments, and update descriptor List
-                  if (null != dataDetails && DmsConstants.DATA_ID_ATTACHMENTS.equals(dataDetails.getId()))
+                  if (obj instanceof Collection< ? >)
                   {
                      List<DocumentInfo> documentList = CollectionUtils.newArrayList();
-                     if (obj instanceof Collection< ? >)
+                     List<Object> documents = (List<Object>) obj;
+                     for (Object doc : documents)
                      {
-                        List<Object> processAttachments = (List<Object>) obj;
-                        for (Object doc : processAttachments)
+                        if (doc instanceof DocumentInfo)
                         {
-                           if (doc instanceof DocumentInfo)
-                           {
-                              documentList.add((DocumentInfo) doc);
-                           }
-                           else if(doc instanceof Document)
-                           {
-                              Document processAttachment = (Document) doc;
-                              documentList.add(new DocumentInfo(getDocumentIcon(processAttachment.getName(),
-                                    processAttachment.getContentType()), processAttachment));
-                           }
+                           documentList.add((DocumentInfo) doc);
                         }
-                        descriptorValues.put(entry.getKey(), documentList);
+                        else if (doc instanceof Document)
+                        {
+                           Document processAttachment = (Document) doc;
+                           documentList.add(new DocumentInfo(getDocumentIcon(processAttachment.getName(),
+                                 processAttachment.getContentType()), processAttachment));
+                        }
                      }
-                     else
-                     {
-                        trace.error("Document type other than List for Process Attachment");
-                     }
+                     descriptorValues.put(entry.getKey(), documentList);
                   }
                   else if (null != dataDetails && DmsConstants.DATA_TYPE_DMS_DOCUMENT.equals(dataDetails.getTypeId()))
                   {
@@ -306,7 +299,8 @@ public class CommonDescriptorUtils
                Model model = ModelCache.findModelCache().getModel(dataPathDetails.getModelOID());
                DataDetails dataDetails = model != null ? (DataDetails) model.getData(dataPathDetails.getData()) : null;
                if ((DmsConstants.DATA_ID_ATTACHMENTS.equals(dataPathDetails.getData()))
-                     || (null != dataDetails && DmsConstants.DATA_TYPE_DMS_DOCUMENT.equals(dataDetails.getTypeId())))
+                     || (null != dataDetails && (DmsConstants.DATA_TYPE_DMS_DOCUMENT.equals(dataDetails.getTypeId()) || DmsConstants.DATA_TYPE_DMS_DOCUMENT_LIST
+                           .equals(dataDetails.getTypeId()))))
                {
                   continue;
                }
@@ -482,7 +476,7 @@ public class CommonDescriptorUtils
    public static DataPath[] getCommonDescriptors(List<ProcessDefinition> processes, boolean onlyFilterable)
    {
       boolean firstProcess = true;
-      ModelElementComparator comparator = new ModelElementComparator();
+      ISemanticalDescriptorComparator comparator = getSemanticalDescriptorComparator();
       // We have to use this type of Map because of the predictable order of the keys
       Map<String, DataPath> allDescriptors = new LinkedHashMap<String, DataPath>();
       for (int i = 0; i < processes.size(); ++i)
@@ -507,9 +501,7 @@ public class CommonDescriptorUtils
                   DataPath other = (DataPath) allDescriptors.get(path.getId());
                   if (null != other)
                   {
-                     Data data1 = DescriptorFilterUtils.getData(path);
-                     Data data2 = DescriptorFilterUtils.getData(other);
-                     if (comparator.compare(data1, data2) == 0)
+                     if (comparator.compare(path, other) == 0)
                      {
                         commonDescriptors.add(path.getId());
                      }
@@ -526,6 +518,32 @@ public class CommonDescriptorUtils
       return descriptors;
    }
 
+   
+   /**
+    * @return SemanticalDescriptorComparator
+    */
+   public static ISemanticalDescriptorComparator getSemanticalDescriptorComparator()
+   {
+      Iterator<ISemanticalDescriptorComparator> serviceProviders = ServiceLoaderUtils
+            .searchProviders(ISemanticalDescriptorComparator.class);
+
+      ISemanticalDescriptorComparator semanticalDescriptorComparator = null;
+
+      if (null != serviceProviders)
+      {
+         while (serviceProviders.hasNext())
+         {
+            semanticalDescriptorComparator = serviceProviders.next();
+            if (null != semanticalDescriptorComparator)
+            {
+               return semanticalDescriptorComparator;
+            }
+         }
+      }
+      return null;
+   }
+   
+   
    /**
     * Evaluates if a data path is a structured data.
     * 

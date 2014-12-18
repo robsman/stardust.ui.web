@@ -45,6 +45,7 @@ import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserGroupInfo;
 import org.eclipse.stardust.engine.api.runtime.UserInfo;
+import org.eclipse.stardust.ui.web.viewscommon.common.ModelHelper;
 import org.eclipse.stardust.ui.web.viewscommon.common.constant.ProcessPortalConstants;
 import org.eclipse.stardust.ui.web.viewscommon.common.constant.TaskAssignmentConstants;
 
@@ -765,5 +766,29 @@ public class ParticipantUtils
 
       return modelParticipants;
    }
-   
+
+   public static String getParticipantName(ParticipantInfo participantInfo)
+   {
+      if (participantInfo instanceof DynamicParticipantInfo)
+      {
+         if (participantInfo instanceof UserInfo)
+         {
+            if ("PerUser".equals(Parameters.instance().getString("Carnot.Client.Ui.User.NamePattern", "Global")))
+            {
+               // optionally resolve
+               participantInfo = ParticipantUtils.getParticipant(participantInfo, UserDetailsLevel.WithProperties);
+            }
+
+            return I18nUtils.getUserLabel((UserInfo) participantInfo, UserUtils.getDefaultUserNameDisplayFormat());
+         }
+         else if (participantInfo instanceof UserGroupInfo)
+         {
+            return I18nUtils.getUserGroupLabel((UserGroupInfo) participantInfo);
+         }
+      }
+
+      // fallback
+      return ModelHelper.getParticipantName(participantInfo);
+   }
+
 }

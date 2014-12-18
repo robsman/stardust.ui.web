@@ -128,6 +128,7 @@ import org.eclipse.stardust.ui.web.modeler.service.XsdSchemaUtils;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelFormat;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelingSessionScoped;
 import org.eclipse.stardust.ui.web.modeler.xpdl.edit.utils.ClassesHelper;
+import org.eclipse.stardust.ui.web.modeler.xpdl.edit.utils.ExternalReferenceUtils;
 
 /**
  * IPP XPDL marshaller.
@@ -3284,6 +3285,8 @@ public class ModelElementMarshaller implements ModelMarshaller
                lockInfo.canBreakEditLock(modelingSession));
       }
       modelJson.add("editLock", lockInfoJson);
+
+         modelJson.addProperty(ModelerConstants.IS_REFERENCED_LITERAL, ExternalReferenceUtils.isModelReferenced(model, modelingSession));
 
       modelJson.addProperty(ModelerConstants.ID_PROPERTY, model.getId());
       modelJson.addProperty(ModelerConstants.NAME_PROPERTY, model.getName());

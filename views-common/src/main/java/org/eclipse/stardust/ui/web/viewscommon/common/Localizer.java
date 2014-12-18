@@ -20,19 +20,19 @@ import org.eclipse.stardust.common.log.Logger;
 public class Localizer
 {
    protected static final Logger trace = LogManager.getLogger(Localizer.class);
-   
+
    public static String getString(LocalizerKey key)
    {
       return getString(org.eclipse.stardust.ui.web.common.util.FacesUtils.getLocaleFromRequest(), key);
    }
-   
+
    public static String getString(Locale locale, LocalizerKey key)
    {
       String text = null;
       String basename = key != null ? key.getBundleName() : null;
       if(basename != null)
       {
-         ResourceBundle bundle = getMessageBundle(locale, basename);
+         PortalResourceBundle bundle = getMessageBundle(locale, basename);
          text = getMessageText(bundle, key.getKey(), key.isMandatory());
          if(text == null)
          {
@@ -45,11 +45,11 @@ public class Localizer
             }
          }
       }
-      
+
       return text;
    }
-   
-   private static String getMessageText(ResourceBundle bundle, String key, boolean traceAsError)
+
+   private static String getMessageText(PortalResourceBundle bundle, String key, boolean traceAsError)
    {
       String text = null;
       String failureMsg = null;
@@ -58,15 +58,11 @@ public class Localizer
          if(bundle != null)
          {
             text = bundle.getString(key);
+            if (text == null)
+            {
+               failureMsg = bundle.getErrorMsg(key);
+            }
          }
-      }
-      catch(MissingResourceException e)
-      {
-         failureMsg = "cannot find '" + key + "' in ResourceBundle";
-      }
-      catch(Exception e)
-      {
-         failureMsg = "error getting value of '" + key + "' in resource bundle '";
       }
       finally
       {
@@ -84,13 +80,13 @@ public class Localizer
       }
       return text;
    }
-   
+
    public static String getString(LocalizerKey key, String replacePattern, String replaceBy)
    {
       return getString(org.eclipse.stardust.ui.web.common.util.FacesUtils.getLocaleFromRequest(), key, replacePattern,
             replaceBy);
    }
-   
+
    public static String getString(Locale locale, LocalizerKey key, String replacePattern, String replaceBy)
    {
       String text = getString(key);
@@ -108,21 +104,14 @@ public class Localizer
       }
       return text;
    }
-  
-   private static ResourceBundle getMessageBundle(Locale locale, String basename)
+
+   private static PortalResourceBundle getMessageBundle(Locale locale, String basename)
    {
-      try
-      {
-         return ResourceBundle.getBundle(basename, locale,
-            getCurrentClassLoader());
-      }
-      catch(MissingResourceException e)
-      {
-         
-      }
-      return null;
+
+      return ResourceBundleCache.getBundle(basename, locale, getCurrentClassLoader());
+
    }
-   
+
    protected static ClassLoader getCurrentClassLoader()
    {
       ClassLoader loader = Thread.currentThread().getContextClassLoader();

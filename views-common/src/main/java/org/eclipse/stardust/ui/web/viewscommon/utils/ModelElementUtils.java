@@ -22,16 +22,19 @@ import org.eclipse.stardust.engine.api.dto.EventHandlerDetails;
 import org.eclipse.stardust.engine.api.model.*;
 import org.eclipse.stardust.engine.api.runtime.DeployedModelDescription;
 import org.eclipse.stardust.engine.core.compatibility.diagram.Diagram;
+import org.eclipse.stardust.ui.web.viewscommon.common.Localizer;
+import org.eclipse.stardust.ui.web.viewscommon.common.PortalResourceBundle;
+import org.eclipse.stardust.ui.web.viewscommon.common.ResourceBundleCache;
 
 
 public class ModelElementUtils
 {
    protected final static Logger trace = LogManager.getLogger(ModelElementUtils.class);
-   
-   // TODO redundant properties from ag.carnot.bpm.modeling.model.i18n.properties.PropertyModel 
+
+   // TODO redundant properties from ag.carnot.bpm.modeling.model.i18n.properties.PropertyModel
    private final static String DEFAULT_BUNDLE_PREFIX = "ag.carnot.";
    private final static String CARNOT_MODEL_RESOURCE_BUNDLE = "carnot:model:resourceBundle";
-   
+
    public static String getNLSPrefix(ModelElement modelElement)
    {
       if(modelElement instanceof Activity)
@@ -116,11 +119,11 @@ public class ModelElementUtils
             prefix.append(eventHandler.getActivityId()).append('.');
             prefix.append(modelElement.getId());
             return prefix.toString();
-         }         
+         }
       }
       return null;
    }
-   
+
    public static String getBundleName(ModelElement modelElement)
    {
       return getBundleName(modelElement.getModelOID());
@@ -139,11 +142,12 @@ public class ModelElementUtils
             if(StringUtils.isEmpty(baseName))
             {
                baseName = DEFAULT_BUNDLE_PREFIX + model.getId();
-               try
-               {
-                  ResourceBundle.getBundle(baseName, org.eclipse.stardust.ui.web.common.util.FacesUtils.getLocaleFromRequest());
-               }
-               catch(Exception e)
+
+               PortalResourceBundle bundle = ResourceBundleCache.getBundle(
+                     baseName,
+                     org.eclipse.stardust.ui.web.common.util.FacesUtils.getLocaleFromRequest(),
+                     getCurrentClassLoader());
+               if (bundle == null)
                {
                   baseName = null;
                   if (trace.isDebugEnabled())
@@ -151,6 +155,7 @@ public class ModelElementUtils
                      trace.debug("No resource bundle found for model with ID '"
                            + model.getId() + "'.");
                   }
+
                }
             }
          }
@@ -158,11 +163,23 @@ public class ModelElementUtils
       }
       catch(Exception e)
       {
-         
+
       }
       return null;
    }
-   
+
+   protected static ClassLoader getCurrentClassLoader()
+   {
+      ClassLoader loader = Thread.currentThread().getContextClassLoader();
+
+      if (null == loader)
+      {
+         loader = ModelElementUtils.class.getClassLoader();
+      }
+
+      return loader;
+   }
+
    /**
     * REST friendly method - No use of FacesContext or SessionContext
     * @param model
@@ -185,7 +202,7 @@ public class ModelElementUtils
       }
       catch(Exception e)
       {
-         
+
       }
       return null;
    }

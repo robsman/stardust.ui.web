@@ -13,7 +13,6 @@ package org.eclipse.stardust.ui.web.bcc.jsf;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.stardust.engine.api.model.Activity;
@@ -25,11 +24,9 @@ import org.eclipse.stardust.engine.api.query.FilterTerm;
 import org.eclipse.stardust.engine.api.query.Query;
 import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
-import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.ui.web.bcc.WorkflowFacade;
 import org.eclipse.stardust.ui.web.viewscommon.common.ISortHandler;
 import org.eclipse.stardust.ui.web.viewscommon.helper.activityTable.ActivityInstanceWithPrio;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 
 
 
@@ -88,13 +85,11 @@ public class ProcessActivitiesSearchHandler implements IActivitySearchHandler, I
          WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
          QueryResult<ActivityInstance> ais = facade.getAllActivityInstances((ActivityInstanceQuery)query);
          
-         Map<Long, ProcessInstance> processInstances = ProcessInstanceUtils.getProcessInstancesAsMap(ais, true);
-
          List /*<ActivitInstanceWithPrio>*/ aiList = new ArrayList(); 
          for (Iterator aiIter = ais.iterator(); aiIter.hasNext();)
          {
             ActivityInstance ai = (ActivityInstance) aiIter.next();
-            aiList.add(new ActivityInstanceWithPrio(ai, processInstances.get(ai.getProcessInstanceOID())));
+            aiList.add(new ActivityInstanceWithPrio(ai));
          }
          return new UserDefinedQueryResult(query, aiList, ais.hasMore(), new Long(ais.getTotalCount()));
       }

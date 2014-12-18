@@ -18,11 +18,13 @@ define(
 		[ "../report/AngularAdapter",
 				"../report/ReportingService", "../report/I18NUtils" ],
 		function(AngularAdapter, ReportingService, I18NUtils) {
-			var angularCompile = null;
+			
+			var angularServices = null;
+			
 			return {
-				create : function(angularCompile1) {
+				create : function(angularServices1) {
 					var controller = new ReportRenderingController();
-					angularCompile = angularCompile1;
+					angularServices = angularServices1;
 					return controller;
 				}
 			};
@@ -86,7 +88,7 @@ define(
 				 * 
 				 */
 				ReportRenderingController.prototype.getFact = function() {
-					return this.getPrimaryObject().facts[this.report.dataSet.fact];
+					return this.reportingService.getCumulatedFacts(this.report)[this.report.dataSet.fact];
 				};
 
 				/**
@@ -314,45 +316,7 @@ define(
 						chartOptions.seriesDefaults.renderer = $.jqplot.BarRenderer;
 						chartOptions.stackSeries = (this.report.layout.chart.options.stackSeries && 
 						         (this.report.dataSet.groupBy != null && this.report.dataSet.groupBy != 'None'));
-						if (chartOptions.stackSeries)
-						{
-						   var x_axis = [];
-						   for ( var i = 0; i < data.seriesGroup.length; ++i) {
-						      var tempData = [];
-						      for ( var j = 0; j < data.seriesGroup[i].length; ++j) {
-						         if (i == 0) {
-						            x_axis.push(data.seriesGroup[i][j][0]);
-						         }
-						         tempData.push(data.seriesGroup[i][j][1]);
-						         if (j == data.seriesGroup[i].length -1 ) {
-						            data.seriesGroup[i] = tempData;
-						         }
-						      }
-						   }
-						   
-						   if (this.report.dataSet.firstDimension === this.reportingService.metadata.objects.activityInstance.dimensions.criticality.id)
-						   {
-						      var result = getUniqueElementsCount(x_axis);
-						      var intervals = result[1];
-						      x_axis = result[0];
-						      var max = [];
-						      for ( var i = 0; i < data.seriesGroup.length; i++)
-						      {
-						         for ( var j = 0; j < data.seriesGroup[i].length; j++)
-						         {
-						            max = [];
-						            for ( var k = 0; k < intervals.length; k++)
-						            {
-						               var tempArray = data.seriesGroup[i].splice(0, intervals[k]);
-						               max[k] = Math.max.apply(Math, tempArray);
-						            }
-						         }
-						         data.seriesGroup[i] = max;
-						      }
-						   }
-						   
-						   chartOptions.axes.xaxis.ticks = x_axis;
-						}
+
 						chartOptions.seriesDefaults.pointLabels.hideZeros = true;
 						chartOptions.seriesDefaults.rendererOptions = {
 							animation : {
@@ -423,6 +387,51 @@ define(
 					      return plot.series[seriesIndex]["label"] + ", " + plot.data[seriesIndex][pointIndex][0] +
 					      " : " + plot.data[seriesIndex][pointIndex][1];
 					}
+					
+					if (chartOptions.stackSeries ||
+					         this.getFirstDimension().id == this.reportingService.metadata.objects.activityInstance.dimensions.criticality.id) {
+					   var x_axis = [];
+					   for ( var i = 0; i < data.seriesGroup.length; ++i) {
+					      var tempData = [];
+					      for ( var j = 0; j < data.seriesGroup[i].length; ++j) {
+					         if (i == 0) {
+					            x_axis.push(data.seriesGroup[i][j][0]);
+					         }
+					         tempData.push(data.seriesGroup[i][j][1]);
+					         if (j == data.seriesGroup[i].length -1 ) {
+					            data.seriesGroup[i] = tempData;
+					         }
+					      }
+					   }
+                  
+					   
+					   var result = getUniqueElementsCount(x_axis);
+					   var intervals = result[1];
+					   x_axis = result[0];
+					   var max = [];
+					   for ( var i = 0; i < data.seriesGroup.length; i++)
+					   {
+					      for ( var j = 0; j < data.seriesGroup[i].length; j++)
+					      {
+					         max = [];
+					         for ( var k = 0; k < intervals.length; k++)
+					         {
+					            var tempArray = data.seriesGroup[i].splice(0, intervals[k]);
+					            max[k] = Math.max.apply(Math, tempArray);
+					         }
+					      }
+					      if (chartOptions.stackSeries) {
+					         data.seriesGroup[i] = max;
+					      } else {
+					         for ( var z = 0; z < x_axis.length; z++) {
+					            data.seriesGroup[i][z] = [x_axis[z],max[z]];
+					         }
+					      }
+					   }
+					   if (chartOptions.stackSeries) {
+					      chartOptions.axes.xaxis.ticks = x_axis;
+					   }
+					}
 
 					// Label series
 					if (this.report.dataSet.groupBy) {
@@ -465,7 +474,7 @@ define(
 					
 					var primaryObject = this.reportingService.metadata.objects[report.dataSet.primaryObject];
 					//format groupby
-					var dimension = primaryObject.dimensions[report.dataSet.groupBy];
+					var dimension = this.getDimension(report.dataSet.groupBy);
 					
 					var self = this;
 					//if groupby is empty or none
@@ -518,7 +527,7 @@ define(
 					}
 					}
 					//format first dimensions
-					dimension = primaryObject.dimensions[self.report.dataSet.firstDimension];
+					dimension = this.getDimension(self.report.dataSet.firstDimension);
 					if (dimension && dimension.enumerationType) {
  				        var enums = self.reportingService.getEnumerators(dimension.enumerationType);
  				        var displayValueMapping = {};
@@ -1153,7 +1162,7 @@ define(
 			
 			        var dimensionName = "";
 			        var primaryObject = this.reportingService.metadata.objects[this.report.dataSet.primaryObject];
-			        var dimension = primaryObject.dimensions[this.report.dataSet.groupBy];
+			        var dimension = this.getDimension(this.report.dataSet.groupBy);
 			        if (dimension) {
 			            dimensionName = dimension.name;
 			        }
@@ -1497,7 +1506,7 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
                
       } else if (selectedColumns[selColumn].type.id == this.reportingService.metadata.timestampType.id) 
       {
-         filters[selColumn] = this.reportingService.metadata.timestampType.id + ":'" + this.reportingService.formats.minutes + "'";
+         tableOptions.aoColumnDefs.push(getColumnDefForDate(selColumn, this.reportingService.formats.minutes));
       }
       }
    
@@ -1700,23 +1709,67 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
 	              id = id.substr( lastIndex + 1, id.length );
 	            }
 	            return id;
-			}		
+			}
+			
+			/**
+			 * 
+			 */
+			function getColumnDefForDate(selColumn, dateFormat) {
+				return {
+					"aTargets" : [ parseInt(selColumn) ],
+					"mData" : (function(dateFormat) { return function(source, type, val) {
+
+						if (type === 'set') {
+							//backup original date value
+							source[0] = val;
+
+							//format date value
+							var dateVal = val;
+							var matches = dateVal.match(/\:/g);
+							// cannot handle millisecs at the moment
+							if (matches.length > 2) {
+								var lastIndex = dateVal.lastIndexOf(":");
+								dateVal = dateVal.substring(0, lastIndex);
+							}
+
+							//get the date object
+							var d = new Date(dateVal);
+							if (isFinite(d)) {
+								if (angularServices && angularServices.filter) {
+									dateVal = angularServices.filter('date')(d, dateFormat);
+								}
+							}
+
+							//store it for later usage
+							source.date_rendered = dateVal;
+							return;
+						} else if (type === 'display' || type == 'filter') {
+							return source.date_rendered;
+						}
+
+						// 'sort' and 'type' both just use the raw data
+						return source[0];
+			        };})(dateFormat) 
+				};
+			}
+			
+			/**
+			 * 
+			 */
 			function getColumnDef(selColumn, displayValueMapping){
-		         return {
-				        "aTargets": [parseInt(selColumn)],
-				        "mDataProp": (function(displayValueMapping) { return function(source, type, val) {
-				            if (type === 'set') {
-				                source[0] = val;
-				                // Store the computed display for speed
-				                source.date_rendered = val;
-				                return;
-				            } else if (type === 'display' || type == 'filter') {
-				                return source.date_rendered;
-				            }
-				            // 'sort' and 'type' both just use the raw data
-				            return displayValueMapping[source[0]];
-				        };})(displayValueMapping)
-				    };
+				return {
+			        "aTargets": [parseInt(selColumn)],
+			        "mData": (function(displayValueMapping) { return function(source, type, val) {
+			            if (type === 'set') {
+			                source[0] = val;
+			                return;
+			            } else if (type === 'display' || type == 'filter') {
+			                return source[0];
+			            }
+			            // 'sort' and 'type' both just use the raw data
+			            return displayValueMapping[source[0]];
+			        };})(displayValueMapping)
+			    };
 			}
 			
 			 /**
