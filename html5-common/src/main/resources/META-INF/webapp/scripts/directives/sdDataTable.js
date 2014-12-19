@@ -673,13 +673,14 @@
 				enableRowSelection();
 
 				$timeout(function() {
-					reorderColumns();
+					reorderColumns(null, null, false);
 					doInitialSelection();
 				}, 0, false);
 
 				initialized = true;
 			} else {
 				clearState();
+				showElement(theTable, true);
 			}
 		
 			sdUtilService.safeApply(elemScope);
@@ -716,7 +717,7 @@
 		/*
 		 * 
 		 */
-		function reorderColumns(pScope, preview) {
+		function reorderColumns(pScope, preview, skipVisibility) {
 			var columnDisplayOrderIndexes = [], columnDisplayOrderNames = [], columnDisplayOrderObjects = [];
 
 			var currentOrder = columnsByDisplayOrder;
@@ -798,6 +799,9 @@
 					}
 				});
 
+				if (!skipVisibility) {
+					showElement(theTable, false);
+				}
 				theDataTable.draw(false);
 			}
 		}
