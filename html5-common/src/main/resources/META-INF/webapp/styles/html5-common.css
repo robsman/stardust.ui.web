@@ -29,7 +29,10 @@
    position: absolute;
    z-index: 10;
    padding: 10px;
-   border: 1px solid grey;
+   border-top: 1px solid #CCCCCC;
+   border-left: 1px solid #CCCCCC;
+   border-bottom: 1px solid #999999;
+   border-right: 1px solid #999999;
    background: #FFFFFF;
    min-width: 200px;
    min-width: 300px;
@@ -79,6 +82,20 @@
 .popup-dlg-footer .button .secondary {
    background: #FFF !important;
    color: #333 !important;
+}
+
+/************** Input Components *****************/
+
+.inp-sel-one {
+   border-color: #AAAAAA;
+   margin: 2px;
+   width: auto;
+}
+
+.ui-section {
+   border-right: 1px dotted gray;
+   padding-right: 10px;
+   margin-right: 10px;
 }
 
 /************** Behaviors *****************/

@@ -8,7 +8,8 @@
 	<table sd-data-table="{{worklistCtrl.tableHandleExpr}}" sd-data="worklistCtrl.fetchPage(params)" sda-ready="worklistCtrl.ready"
 		sda-page-size="{{worklistCtrl.sdaPageSize}}" sda-mode="remote"
 		sda-selectable="multiple" sda-initial-selection="{{worklistCtrl.initialSelection}}" sda-selection="{{worklistCtrl.selectionExpr}}"
-		sda-on-select="worklistCtrl.onSelect(info)" sda-on-pagination="worklistCtrl.onPagination(info)">
+		sda-on-select="worklistCtrl.onSelect(info)" sda-on-pagination="worklistCtrl.onPagination(info)"
+		sda-column-selector="true" sda-preference-module="ipp-workflow-perspective" sda-preference-id="{{worklistCtrl.worklistPrefId}}">
 		<thead sda-i18n-scope="processportal.views-worklistPanel-column">
 			<tr>
 				<th sda-label-key="overview" sda-sortable="true">

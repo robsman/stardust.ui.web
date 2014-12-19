@@ -17,7 +17,7 @@
 	'use strict';
 
 	angular.module('bpm-common').directive('sdDataTable', 
-			['$parse', '$compile', '$timeout', 'sdUtilService', 'sdLoggerService', DataTableDirective]);
+			['$parse', '$compile', '$timeout', 'sdUtilService', 'sdLoggerService', 'sdPreferenceService', DataTableDirective]);
 
 	var trace;
 
@@ -33,7 +33,7 @@
 	/*
 	 * 
 	 */
-	function DataTableDirective($parse, $compile, $timeout, sdUtilService, sdLoggerService) {
+	function DataTableDirective($parse, $compile, $timeout, sdUtilService, sdLoggerService, sdPreferenceService) {
 		trace = sdLoggerService.getLogger('bpm-common.sdDataTable');
 
 		return {
@@ -45,7 +45,9 @@
 
 				return {
 					post : function(scope, element, attr, ctrl) {
-						var dataTableCompiler = new DataTableCompiler($parse, $compile, $timeout, sdUtilService, scope, element, attr, ctrl);
+						var dataTableCompiler = new DataTableCompiler(
+								$parse, $compile, $timeout, sdUtilService, sdPreferenceService, 
+								scope, element, attr, ctrl);
 					}
 				};
 			}
@@ -84,10 +86,11 @@
 	/*
 	 * 
 	 */
-	function DataTableCompiler($parse, $compile, $timeout, sdUtilService, scope, element, attr, ctrl) {
+	function DataTableCompiler($parse, $compile, $timeout, sdUtilService, sdPreferenceService, 
+			scope, element, attr, ctrl) {
 		var TOOLBAR_TEMPLATE =
 			'<div class="tbl-toolbar-section">\n' +
-				'<a href="#" ng-click="$dtApi.toggleColumnSelector()"' + 
+				'<a href="#" ng-show="$dtApi.enableSelectColumns" ng-click="$dtApi.toggleColumnSelector()"' + 
 					' title="{{i18n(\'portal-common-messages.common-filterPopup-selectColumnsLabel\')}}" class="tbl-toolbar-item tbl-tool-link">\n' +
 					'<i class="fa fa-table"></i>\n' +
 				'</a>\n' +
@@ -102,7 +105,18 @@
 						'<span class="popup-dlg-hdr-txt">{{i18n("portal-common-messages.common-filterPopup-selectColumnsLabel")}}</span>\n' + 
 						'<span class="popup-dlg-cls fa fa-lg fa-remove" title="{{i18n(\'portal-common-messages.common-filterPopup-close\')}}" ng-click="$dtApi.toggleColumnSelector()"></span>\n' +
 					'</div>\n' +
-					'<div class="popup-dlg-cnt">\n' +
+					'<div class="popup-dlg-cnt tbl-col-selector">\n' +
+						'<div>\n' +
+							'<span class="ui-section">\n' +
+								'<span class="label-form">{{i18n(\'portal-common-messages.common-preferenceScope-label\')}}</span>\n' +
+								'<select class="inp-sel-one" ng-model="$dtApi.applyTo" ng-change="$dtApi.applyToChanged()">\n' +
+									'<option value="USER">{{i18n(\'portal-common-messages.common-preferenceScope-options-user\')}}</option>\n' +
+									'<option value="PARTITION">{{i18n(\'portal-common-messages.common-preferenceScope-options-partition\')}}</option>\n' +
+								'</select>\n' +
+							'</span>\n' +
+							'<span class="ui-section fa fa-lg fa-lock"></span>\n' +
+							'<span class="ui-section fa fa-lg fa-rotate-right"></span>\n' +
+						'</div>\n' +
 						'<div class="tbl-col-sel-list">\n' +
 							'<div ng-repeat="col in $dtApi.columns" class="tbl-col-sel-row">\n' +
 								'<input type="checkbox" class="tbl-col-sel-input" ng-model="col.visible"></span>\n' +
@@ -123,15 +137,11 @@
 		var sdData = ctrl[0];
 
 		var initialized;
-
-		var columns = [], dtColumns = [], theTable, theDataTable, theToolbar;
-
+		var columns = [], dtColumns = [];
+		var theTable, theDataTable, theToolbar, theColReorder;
 		var selectedRowIndexes = {}, rowSelectionMode = false, selectionBinding;
-		
 		var onSelect = {}, onPagination = {};
-		
-		var forceLocalRefresh = false;
-
+		var enableColumnSelector, columnsByDisplayOrder, columnsInfoByDisplayOrder, devColumnOrderPref;
 		var pageSize = 8;
 		
 		// Setup component instance
@@ -233,6 +243,10 @@
 					trace.error('sda-on-pagination does not seems to be correcly used, it does not appear to be a function accepting parameter.');
 				}
 			}
+
+			if (attr.sdaColumnSelector && attr.sdaColumnSelector == 'true') {
+				enableColumnSelector = true;
+			}
 		}
 
 		/*
@@ -285,7 +299,10 @@
 			sdUtilService.assert(headCols.length == bodyCols.length, 'Number of columns in &lt;thead&gt; and &lt;tbody&gt; are not matching.');
 			
 			headCols.addClass(CLASSES.TH);
-			
+
+			columns = [];
+			devColumnOrderPref = [];
+			var columnsInfo = {};
 			for(var i = 0; i < headCols.length; i++) {
 				var hCol = angular.element(headCols[i]);
 				var bCol = angular.element(bodyCols[i]);
@@ -299,6 +316,7 @@
 				};
 
 				if (hCol.attr('sda-label-key') != undefined) {
+					colDef.name = hCol.attr('sda-label-key');
 					if (i18nScope != "") {
 						colDef.labelKey = i18nScope + '-' + hCol.attr('sda-label-key');
 					} else {
@@ -311,8 +329,9 @@
 						// Some default value, label is now mandatory due to column selector.
 						colDef.label = 'Column ' + i;
 					}
+					colDef.name = colDef.label;
 				}
-				
+
 				colDef.contents = bCol.html();
 				colDef.contents = colDef.contents.trim();
 				if (colDef.contents == "") {
@@ -328,11 +347,20 @@
 				}
 
 				columns.push(colDef);
+				if (colDef.visible) {
+					devColumnOrderPref.push(colDef.name);
+				}
+
+				columnsInfo[colDef.name] = {};
+				columnsInfo[colDef.name].column = colDef;
+				columnsInfo[colDef.name].index = columns.length - 1;
 			}
 
-			element.children('tbody').remove();
+			columnsByDisplayOrder = columns;
+			columnsInfoByDisplayOrder = columnsInfo;
 			
-			// TODO: Provide API to rearrange the columns
+
+			element.children('tbody').remove();
 		}
 
 		/*
@@ -492,27 +520,15 @@
 				"data": null
 			};
 
-			if (forceLocalRefresh) {
-				forceLocalRefresh = false;
+			var params = {skip: data.start, pageSize: data.length};
 
-				var info = theDataTable.page.info();
-
-				ret.recordsTotal = info.recordsTotal;
-				ret.recordsFiltered = info.recordsTotal;
-				ret.data = getPageData();
+			fetchData(params, function(result) {
+				ret.recordsTotal = result.totalCount;
+				ret.recordsFiltered = result.totalCount;
+				ret.data = result.list;
 
 				callback(ret);
-			} else {
-				var params = {skip: data.start, pageSize: data.length};
-
-				fetchData(params, function(result) {
-					ret.recordsTotal = result.totalCount;
-					ret.recordsFiltered = result.totalCount;
-					ret.data = result.list;
-
-					callback(ret);
-				});
-			}
+			});
 		}
 
 		/*
@@ -530,6 +546,8 @@
 			
 			// Register for pagination events
 			theDataTable.on('page.dt', firePaginationEvent);
+
+			theColReorder = new jQuery.fn.dataTable.ColReorder(theDataTable);
 
 			exposeAPIs();
 			exposeScopeInfo();
@@ -655,6 +673,7 @@
 				enableRowSelection();
 
 				$timeout(function() {
+					reorderColumns();
 					doInitialSelection();
 				}, 0, false);
 
@@ -663,28 +682,126 @@
 				clearState();
 			}
 		
-			showHideColumns(false);
-
 			sdUtilService.safeApply(elemScope);
 		}
 
 		/*
 		 * 
 		 */
-		function showHideColumns(updateUI) {
-			angular.forEach(columns, function(col, i) {
-				var tableCol = theDataTable.column(i);
-				if (tableCol.visible() != col.visible) {
-					tableCol.visible(col.visible);
+		function getColumnSelectionFromPreference(pScope) {
+			pScope = !pScope ? 'USER' : pScope;
+
+			var preferenceInstance = sdPreferenceService.getPreference(pScope, attr.sdaPreferenceModule);
+			var preferenceName = attr.sdaPreferenceModule + '.' + attr.sdaPreferenceId + '.selectedColumns';
+
+			var prefCols = preferenceInstance.getList(preferenceName);
+			if (!prefCols) {
+				prefCols = devColumnOrderPref;
+			}
+			return prefCols;
+		}
+
+		/*
+		 * 
+		 */
+		function setColumnSelectionFromPreference(pScope, list) {
+			pScope = !pScope ? 'USER' : pScope;
+
+			var preferenceInstance = sdPreferenceService.getPreference(pScope, attr.sdaPreferenceModule);
+			var preferenceName = attr.sdaPreferenceModule + '.' + attr.sdaPreferenceId + '.selectedColumns';
+
+			preferenceInstance.setList(preferenceName, list);
+		}
+
+		/*
+		 * 
+		 */
+		function reorderColumns(pScope, preview) {
+			var columnDisplayOrderIndexes = [], columnDisplayOrderNames = [], columnDisplayOrderObjects = [];
+
+			var currentOrder = columnsByDisplayOrder;
+
+			// Add fixed columns
+			var fixedAfter = [], flag = true;
+			angular.forEach(currentOrder, function(col, i) {
+				if (col.fixed) {
+					 if (flag) {
+						 columnDisplayOrderIndexes.push(i);
+						 columnDisplayOrderNames.push(col.name);
+						 columnDisplayOrderObjects.push(currentOrder[i]);
+						 col.visible = true;
+					 } else {
+						 fixedAfter.push(col.name);
+					 }
+				} else {
+					flag = false;
+				}
+			});
+			
+			// Add preference columns
+			var prefCols = getColumnSelectionFromPreference(pScope);
+			if (prefCols) {
+				angular.forEach(prefCols, function(colName, i) {
+					var colInfo = columnsInfoByDisplayOrder[colName];
+					if (colInfo != undefined && 
+							columnDisplayOrderNames.indexOf(colName) == -1 && fixedAfter.indexOf(colName) == -1) {
+						columnDisplayOrderIndexes.push(colInfo.index);
+						columnDisplayOrderNames.push(colName);
+						columnDisplayOrderObjects.push(colInfo.column);
+						colInfo.column.visible = true;
+					}
+				});
+			}
+
+			// Add remaining columns
+			angular.forEach(currentOrder, function(col, i) {
+				if (columnDisplayOrderNames.indexOf(col.name) == -1 && fixedAfter.indexOf(col.name) == -1) {
+					columnDisplayOrderIndexes.push(i);
+					columnDisplayOrderNames.push(col.name);
+					columnDisplayOrderObjects.push(col);
+					
+					if (prefCols) {
+						col.visible = false;
+					}
 				}
 			});
 
-			if (updateUI) {
-				forceLocalRefresh = true;
+			// Add fixed columns to display order
+			angular.forEach(fixedAfter, function(colName, i) {
+				var colInfo = columnsInfoByDisplayOrder[colName];
+				columnDisplayOrderIndexes.push(colInfo.index);
+				columnDisplayOrderNames.push(colName);
+				columnDisplayOrderObjects.push(colInfo.column);
+				colInfo.column.visible = true;
+			});
+
+			if (preview) {
+				return columnDisplayOrderObjects;
+			} else {
+				// ReOrder columns
+				theColReorder.fnOrder(columnDisplayOrderIndexes);
+
+				// Show Hide columns
+				angular.forEach(columnDisplayOrderObjects, function(col, i) {
+					var tableCol = theDataTable.column(i);
+					if (tableCol.visible() != col.visible) {
+						tableCol.visible(col.visible);
+					}
+				});
+
+				columnsByDisplayOrder = columnDisplayOrderObjects;
+				columnsInfoByDisplayOrder = {};
+				angular.forEach(columnsByDisplayOrder, function(col, index) {
+					columnsInfoByDisplayOrder[col.name] = {
+						index: index,
+						column: col
+					}
+				});
+
 				theDataTable.draw(false);
 			}
 		}
-		
+
 		/*
 		 * 
 		 */
@@ -984,15 +1101,10 @@
 			init();
 
 			function init() {
-				var selectableCols = [];
-				angular.forEach(columns, function(col, i) {
-					if (!col.fixed) {
-						selectableCols.push(col);
-					}
-				});
-
-				self.columns = selectableCols;
+				self.columns = [];
+				self.enableSelectColumns = enableColumnSelector;
 				self.showSelectColumns = false;
+				self.applyTo = 'USER';
 			}
 			
 			/*
@@ -1000,14 +1112,50 @@
 			 */
 			this.toggleColumnSelector = function() {
 				self.showSelectColumns = !self.showSelectColumns;
+				self.columns = getSelectableColumns(columnsByDisplayOrder);
 			}
 
 			/*
 			 * 
 			 */
 			this.applyColumnSelector = function() {
-				showHideColumns(true);
+				var selectedCols = [];
+				angular.forEach(self.columns, function(col, i) {
+					if (col.visible) {
+						selectedCols.push(col.name);
+					}
+				});
+				
+				setColumnSelectionFromPreference(self.applyTo, selectedCols);
+				reorderColumns(self.applyTo);
 				self.toggleColumnSelector();
+			}
+
+			/*
+			 * 
+			 */
+			this.applyToChanged = function() {
+				var newList = reorderColumns(self.applyTo, true);
+				self.columns = getSelectableColumns(newList);
+			}
+			
+			/*
+			 * 
+			 */
+			function getSelectableColumns(cols) {
+				var selectableCols = [];
+				angular.forEach(cols, function(col, i) {
+					if (!col.fixed) {
+						selectableCols.push({
+							name: col.name,
+							visible: col.visible,
+							labelKey: col.labelKey,
+							label: col.label
+						});
+					}
+				});
+
+				return selectableCols;
 			}
 		}
 	};
