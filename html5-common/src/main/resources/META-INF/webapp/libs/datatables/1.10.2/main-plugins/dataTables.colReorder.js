@@ -801,6 +801,7 @@ ColReorder.prototype = {
 		this._fnRegions();
 
 		/* Add event handlers to the document */
+		/* Comment this out as we do not need drag drop capabilities, untill it has APIs to disable at runtime
 		$(document)
 			.on( 'mousemove.ColReorder', function (e) {
 				that._fnMouseMove.call( that, e );
@@ -808,6 +809,7 @@ ColReorder.prototype = {
 			.on( 'mouseup.ColReorder', function (e) {
 				that._fnMouseUp.call( that, e );
 			} );
+		*/
 	},
 
 
@@ -1294,10 +1296,11 @@ return ColReorder;
 
 
 // Define as an AMD module if possible
-if ( typeof define === 'function' && define.amd ) {
+/* Comment out AMD module way, we need it to be available instantly
+ * if ( typeof define === 'function' && define.amd ) {
 	define( 'datatables-colreorder', ['jquery', 'datatables'], factory );
 }
-else if ( jQuery && !jQuery.fn.dataTable.ColReorder ) {
+else */ if ( jQuery && !jQuery.fn.dataTable.ColReorder ) {
 	// Otherwise simply initialise as normal, stopping multiple evaluation
 	factory( jQuery, jQuery.fn.dataTable );
 }
