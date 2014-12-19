@@ -2496,23 +2496,19 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
    private void fixReferencesToAccessPoint(String oldID, String newID,
          ApplicationType application)
    {
+      // TODO review if application.getExecutedActivities() would be equivalent to the full model scan below
       ModelType model = ModelUtils.findContainingModel(application);
-      for (Iterator<ProcessDefinitionType> i = model.getProcessDefinition().iterator(); i
-            .hasNext();)
+      for (ProcessDefinitionType processDefinition : model.getProcessDefinition())
       {
-         ProcessDefinitionType processDefinitonType = i.next();
-         for (Iterator<ActivityType> j = processDefinitonType.getActivity().iterator(); j
-               .hasNext();)
+         for (ActivityType activity : processDefinition.getActivity())
          {
-            ActivityType activity = j.next();
-            for (Iterator<DataMappingType> k = activity.getDataMapping().iterator(); k
-                  .hasNext();)
+            // check if activity is associated with target application
+            if ((null != activity.getApplication()) && activity.getApplication().getId().equals(application.getId()))
             {
-               DataMappingType dm = k.next();
+               for (DataMappingType dm : activity.getDataMapping())
+               {
                if (dm.getApplicationAccessPoint() != null && dm.getApplicationAccessPoint().equals(oldID))
                {
-                  if (activity.getApplication() != null && activity.getApplication().getId().equals(application.getId()))
-                  {
                      dm.setApplicationAccessPoint(newID);
                   }
                }
