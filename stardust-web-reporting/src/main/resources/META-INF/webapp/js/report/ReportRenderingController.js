@@ -1065,7 +1065,7 @@ define(
 			 */
 			ReportRenderingController.prototype.refreshSeriesTable = function(data, scopeController) {
 			
-			    self = this;
+			    var self = this;
 			    var inData = data;
 			
 			    //detect Table drawing mode

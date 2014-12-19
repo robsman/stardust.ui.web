@@ -381,7 +381,7 @@ define(
 
 					if (filter
 							&& (filter.dimension == "processName" || filter.dimension == "activityName")) {
-						self = this;
+						var self = this;
 						// processes
 						if ((dimension.id == "processName" || dimension.id == "activityName")) {
 							filteredEnumItems = [];
@@ -399,7 +399,7 @@ define(
 						// activities
 						if (dimension.id == "activityName") {
 							var selectedProcesses = [];
-							self = this;
+							var self = this;
 
 							if (!filter.metadata.selectedProcesses
 									|| filter.metadata.selectedProcesses.length < 1) {
