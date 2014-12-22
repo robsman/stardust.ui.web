@@ -718,6 +718,10 @@
 		 * 
 		 */
 		function reorderColumns(pScope, preview, skipVisibility) {
+			if (!enableColumnSelector) {
+				return;
+			}
+
 			var columnDisplayOrderIndexes = [], columnDisplayOrderNames = [], columnDisplayOrderObjects = [];
 
 			var currentOrder = columnsByDisplayOrder;
