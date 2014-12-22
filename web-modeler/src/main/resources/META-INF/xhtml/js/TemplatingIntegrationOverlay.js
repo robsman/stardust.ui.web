@@ -113,6 +113,7 @@ define(
                      panel : this
                   }, function(event)
                   {
+                     event.data.panel.view.clearErrorMessages();
                      var accessPointList=event.data.panel.getApplication().contexts.application.accessPoints;
                      var defaultInputAp=m_routeDefinitionUtils.findAccessPoint(accessPointList, "defaultInputAp");
                      if(event.data.panel.locationInput.val()!="data" && defaultInputAp!=null){
@@ -158,16 +159,18 @@ define(
                      panel : this
                   }, function(event)
                   {
-                    // event.data.panel.view.submitModelElementAttributeChange("stardust:templatingIntegrationOverlay::format",event.data.panel.formatInput.val());
+                     event.data.panel.view.clearErrorMessages();
                      event.data.panel.submitChanges(true);
                      event.data.panel.updateView(event.data.panel.locationInput.val());
+                     event.data.panel.view.validate();
                   });
 
                   this.templateInput.change({
                      panel : this
                   }, function(event)
                   {
-                     event.data.panel.submitChanges(false);
+                     event.data.panel.view.clearErrorMessages();
+                     event.data.panel.submitChanges();
                   });
 
                   this.outputNameInput.change({
@@ -240,6 +243,7 @@ define(
                                     },
                                     function(event)
                                     {
+                                       event.data.panel.view.clearErrorMessages();
                                        var accessPoints = self.getApplication().contexts.application.accessPoints;
                                        if (self.outputAccessPointInput.val() == m_constants.TO_BE_DEFINED)
                                        {
@@ -287,6 +291,7 @@ define(
                                           }, true);
                                           event.data.panel.parameterDefinitionsPanel.setParameterDefinitions(filteredAccessPoints)
                                           event.data.panel.view.submitModelElementAttributeChange("carnot:engine:camel::routeEntries",event.data.panel.getRoute());
+                                          event.data.panel.view.validate();
                                      }
                                     });
 
@@ -296,6 +301,7 @@ define(
                            },
                            function(event)
                            {//shown only when location==data
+                              event.data.panel.view.clearErrorMessages();
                               var accessPointList=event.data.panel.getApplication().contexts.application.accessPoints;
                               var defaultInputAp=m_routeDefinitionUtils.findAccessPoint(accessPointList, "defaultInputAp");
                               if (self.sourceTypeInput.val() == m_constants.TO_BE_DEFINED)
