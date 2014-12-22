@@ -71,6 +71,7 @@ import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityCat
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityConfigurationUtil;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils.DataPathMetadata;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.FileStorage;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.I18nFolderUtils;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.CommonDescriptorUtils;
@@ -633,7 +634,7 @@ public class ReportingServiceBean
 
                if (participant != null)
                {
-                  participantFolderJson = getReportDefinitions(findOrCreateFolder(participantSubFolder.getPath() + REPORT_DESIGN), participant.getName() + " Report Definitions"); //TODO: I18N
+                  participantFolderJson = getReportDefinitions(findOrCreateFolder(participantSubFolder.getPath() + REPORT_DESIGN), I18nUtils.getParticipantName(ParticipantUtils.getParticipant(participant)) + " Report Definitions");
                }
 
                if (participantFolderJson != null)
@@ -643,8 +644,8 @@ public class ReportingServiceBean
             }
          }
 
-         subFoldersJson.add(getReportDefinitions(publicFolder, "Public Report Definitions")); // I18N
-         subFoldersJson.add(getReportDefinitions(personalFolder, "Personal Report Definitions")); // I18N
+         subFoldersJson.add(getReportDefinitions(publicFolder, I18nFolderUtils.getLabel(I18nFolderUtils.MY_REPORT_DESIGNS_V)));
+         subFoldersJson.add(getReportDefinitions(personalFolder, I18nFolderUtils.getLabel(I18nFolderUtils.MY_SAVED_REPORTS_V)));
 
          return rootFolderJson;
       }
