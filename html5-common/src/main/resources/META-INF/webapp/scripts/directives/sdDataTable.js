@@ -118,7 +118,7 @@
 							'<span class="ui-section fa fa-lg fa-rotate-right"></span>\n' +
 						'</div>\n' +
 						'<div class="tbl-col-sel-list">\n' +
-							'<div ng-repeat="col in $dtApi.columns" class="tbl-col-sel-row">\n' +
+							'<div ng-repeat="col in $dtApi.columns" class="tbl-col-sel-row" ng-model="$index" sd-data-drag sd-data-drop on-drop="$dtApi.moveColumns($data, $index, $event)">\n' +
 								'<input type="checkbox" class="tbl-col-sel-input" ng-model="col.visible"></span>\n' +
 								'<span class="tbl-col-sel-label" ng-if="col.labelKey">{{i18n(col.labelKey)}}</span>\n' +
 								'<span class="tbl-col-sel-label" ng-if="!col.labelKey">{{col.label}}</span>\n' +
@@ -1146,7 +1146,21 @@
 				var newList = reorderColumns(self.applyTo, true);
 				self.columns = getSelectableColumns(newList);
 			}
-			
+
+			/*
+			 * 
+			 */
+			this.moveColumns = function(fromIndex, toIndex, event) {
+				fromIndex = parseInt(fromIndex);
+				toIndex = parseInt(toIndex);
+
+				if (fromIndex != toIndex) {
+					var dragItems = self.columns.splice(fromIndex, 1);
+					self.columns.splice(toIndex, 0, dragItems[0]);	
+					sdUtilService.safeApply(elemScope);
+				}
+			}
+
 			/*
 			 * 
 			 */

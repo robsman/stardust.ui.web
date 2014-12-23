@@ -94,6 +94,8 @@
    padding: 5px 10px 5px 5px;
    border-bottom: solid 1px #DDD;
    border-right: solid 1px #DDD;
+   background: url(../images/icons/colItemBox-grip.png) top right no-repeat #FFFFFF;
+   cursor: n-resize;
 }
 
 .tbl-col-sel-list {
