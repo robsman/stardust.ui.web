@@ -23,6 +23,7 @@ import org.eclipse.stardust.model.xpdl.carnot.IAccessPointOwner;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.model.xpdl.carnot.RoleType;
+import org.eclipse.stardust.model.xpdl.carnot.TransitionType;
 import org.eclipse.stardust.model.xpdl.carnot.extensions.FormalParameterMappingsType;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
@@ -337,6 +338,24 @@ public class GenericModelingAssertions
       assertThat(dataType.getName(), is(not(nullValue())));
       assertThat(dataType.getName(), is(dataName));
       return dataType;
+   }
+
+   public static void assertTransition(ActivityType fromActivity, ActivityType toActivity)
+   {
+      List<TransitionType> outTransitions = fromActivity.getOutTransitions();
+      List<TransitionType> inTransitions = toActivity.getInTransitions();
+      assertThat(outTransitions, is(not(nullValue())));
+      assertThat(inTransitions, is(not(nullValue())));
+      assertThat(outTransitions.size(), is(not(0)));
+      assertThat(inTransitions.size(), is(not(0)));
+      for (Iterator<TransitionType> i = outTransitions.iterator(); i.hasNext();)
+      {
+         TransitionType transition = i.next();
+         assertThat(transition.getCondition(), is(not(nullValue())));
+         assertThat(transition.getFrom(), is(fromActivity));
+         assertThat(transition.getTo(), is(toActivity));
+
+      }
    }
 
 

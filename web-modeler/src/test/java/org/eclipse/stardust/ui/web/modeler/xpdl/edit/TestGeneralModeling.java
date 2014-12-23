@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import org.eclipse.stardust.model.xpdl.carnot.ActivityImplementationType;
+import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.model.xpdl.xpdl2.ModeType;
 import org.eclipse.stardust.ui.web.modeler.utils.test.GenericModelingAssertions;
@@ -33,9 +34,31 @@ public class TestGeneralModeling extends RecordingTestcase
       GenericModelingAssertions.assertStructFormalParameter(process, "OutStruct", "OutStruct", ModeType.IN, "ProvidedTypeDeclaration");
       GenericModelingAssertions.assertRole(providerModel, "ProvidedRole", "ProvidedRole");
       GenericModelingAssertions.assertTypeDeclaration(providerModel, "ProvidedTypeDeclaration", "ProvidedTypeDeclaration");
-      GenericModelingAssertions.assertActivity(process, "Activity1",  "Activity 1", ActivityImplementationType.MANUAL_LITERAL);
-      GenericModelingAssertions.assertActivity(process, "Activity2",  "Activity 2", ActivityImplementationType.MANUAL_LITERAL);
+      ActivityType activity1 = GenericModelingAssertions.assertActivity(process, "Activity1",  "Activity 1", ActivityImplementationType.MANUAL_LITERAL);
+      ActivityType activity2 = GenericModelingAssertions.assertActivity(process, "Activity2",  "Activity 2", ActivityImplementationType.MANUAL_LITERAL);
       GenericModelingAssertions.assertRole(providerModel, "ProvidedRole", "ProvidedRole");
+
+
+      GenericModelingAssertions.assertTransition(activity1, activity2);
+      //saveReplayModel("C:/development/");
+
+   }
+
+   @Test
+   public void testDeleteConnections() throws Exception
+   {
+      providerModel = modelService.findModel(PROVIDER_MODEL_ID);
+      consumerModel = modelService.findModel(CONSUMER_MODEL_ID);
+
+      testBasicModelElementsInProvider();
+
+      initUUIDMap();
+
+      InputStream requestInput = getClass().getResourceAsStream(
+            "../../service/rest/requests/deleteConnections.txt");
+      InputStreamReader requestStream = new InputStreamReader(requestInput);
+
+      replay(requestStream, "testDeleteConnections");
 
       //saveReplayModel("C:/development/");
 
