@@ -14,7 +14,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -25,14 +24,6 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.InternalEObject;
-import org.eclipse.xsd.XSDSchema;
-import org.springframework.stereotype.Service;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
-
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.Period;
 import org.eclipse.stardust.common.StringUtils;
@@ -42,6 +33,7 @@ import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
+import org.eclipse.stardust.model.xpdl.builder.utils.ExternalReferenceUtils;
 import org.eclipse.stardust.model.xpdl.builder.utils.LaneParticipantUtil;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
@@ -128,7 +120,13 @@ import org.eclipse.stardust.ui.web.modeler.service.XsdSchemaUtils;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelFormat;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelingSessionScoped;
 import org.eclipse.stardust.ui.web.modeler.xpdl.edit.utils.ClassesHelper;
-import org.eclipse.stardust.ui.web.modeler.xpdl.edit.utils.ExternalReferenceUtils;
+import org.eclipse.xsd.XSDSchema;
+import org.springframework.stereotype.Service;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 /**
  * IPP XPDL marshaller.
@@ -451,37 +449,7 @@ public class ModelElementMarshaller implements ModelMarshaller
             {
                formalParameterJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
                      ModelerConstants.STRUCTURED_DATA_TYPE_KEY);
-   
-               ModelType typeModel = model;
-               XpdlTypeType xpdlType = dataType.getDataType();
-               String typeDeclarationId = null;
-               if (xpdlType instanceof DeclaredTypeType)
-               {
-                  typeDeclarationId = ((DeclaredTypeType) xpdlType).getId();
-               }
-               else if (xpdlType instanceof ExternalReferenceType)
-               {
-                  String modelId = ((ExternalReferenceType) xpdlType).getLocation();
-                  typeModel = getModelBuilderFacade().findModel(modelId);
-                  typeDeclarationId = ((ExternalReferenceType) xpdlType).getXref();
-               }
-   
-               if(typeModel != null)
-               {
-               TypeDeclarationType typeDeclaration = typeModel.getTypeDeclarations()
-                     .getTypeDeclaration(typeDeclarationId);
-   
-               String fullId = getModelBuilderFacade().createFullId(typeModel, typeDeclaration);
-   
-               formalParameterJson.addProperty(
-                     ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY, fullId);
-            }
-            }
-            else if (dataType.getCarnotType().equals(ModelerConstants.DOCUMENT_DATA_TYPE_KEY))
-            {
-               formalParameterJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
-                     ModelerConstants.DOCUMENT_DATA_TYPE_KEY);
-   
+
                ModelType typeModel = model;
                XpdlTypeType xpdlType = dataType.getDataType();
                String typeDeclarationId = null;
@@ -500,7 +468,37 @@ public class ModelElementMarshaller implements ModelMarshaller
                {
                TypeDeclarationType typeDeclaration = typeModel.getTypeDeclarations()
                      .getTypeDeclaration(typeDeclarationId);
-   
+
+               String fullId = getModelBuilderFacade().createFullId(typeModel, typeDeclaration);
+
+               formalParameterJson.addProperty(
+                     ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY, fullId);
+            }
+            }
+            else if (dataType.getCarnotType().equals(ModelerConstants.DOCUMENT_DATA_TYPE_KEY))
+            {
+               formalParameterJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
+                     ModelerConstants.DOCUMENT_DATA_TYPE_KEY);
+
+               ModelType typeModel = model;
+               XpdlTypeType xpdlType = dataType.getDataType();
+               String typeDeclarationId = null;
+               if (xpdlType instanceof DeclaredTypeType)
+               {
+                  typeDeclarationId = ((DeclaredTypeType) xpdlType).getId();
+               }
+               else if (xpdlType instanceof ExternalReferenceType)
+               {
+                  String modelId = ((ExternalReferenceType) xpdlType).getLocation();
+                  typeModel = getModelBuilderFacade().findModel(modelId);
+                  typeDeclarationId = ((ExternalReferenceType) xpdlType).getXref();
+               }
+
+               if(typeModel != null)
+               {
+               TypeDeclarationType typeDeclaration = typeModel.getTypeDeclarations()
+                     .getTypeDeclaration(typeDeclarationId);
+
                formalParameterJson.addProperty(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY,
                      getModelBuilderFacade().createFullId(typeModel, typeDeclaration));
             }
@@ -509,10 +507,10 @@ public class ModelElementMarshaller implements ModelMarshaller
             {
                formalParameterJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
                      ModelerConstants.PRIMITIVE_DATA_TYPE_KEY);
-   
+
                String type = getPrimitiveType(formalParameter, changeDescriptions, model);
                if (type != null)
-               {    
+               {
                    formalParameterJson.addProperty(ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY, type);
                }
             }
@@ -523,7 +521,7 @@ public class ModelElementMarshaller implements ModelMarshaller
             {
                formalParameterJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
                      ModelerConstants.PRIMITIVE_DATA_TYPE_KEY);
-               
+
                String type = getPrimitiveType(formalParameter, changeDescriptions, model);
                if (type != null)
                {
@@ -534,25 +532,25 @@ public class ModelElementMarshaller implements ModelMarshaller
             {
                formalParameterJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
                      ModelerConstants.STRUCTURED_DATA_TYPE_KEY);
-               
+
                String dataId = dataType.getDeclaredType().getId();
                if(StringUtils.isEmpty(dataId))
-               {                  
+               {
                   dataId = formalParameter.getId();
                }
-               DataType structuredData = ModelUtils.findElementById(model.getData(), dataId);                  
+               DataType structuredData = ModelUtils.findElementById(model.getData(), dataId);
                if(structuredData != null)
                {
                   String tdId = AttributeUtil.getAttributeValue(structuredData,
                         StructuredDataConstants.TYPE_DECLARATION_ATT);
-                  
-                  TypeDeclarationType typeDeclaration = model.getTypeDeclarations().getTypeDeclaration(tdId);   
-                  
+
+                  TypeDeclarationType typeDeclaration = model.getTypeDeclarations().getTypeDeclaration(tdId);
+
                   formalParameterJson.addProperty(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY,
                         getModelBuilderFacade().createFullId(model, typeDeclaration));
-               }               
-            }         
-         }         
+               }
+            }
+         }
 
          FormalParameterMappingsType mappingsType = getFormalParameterMappings(formalParameter);
          if (mappingsType != null)
@@ -571,7 +569,7 @@ public class ModelElementMarshaller implements ModelMarshaller
    }
 
    /**
-    * 
+    *
     * @param formalParameter
     * @param changeDescriptions
     * @param model
@@ -639,7 +637,7 @@ public class ModelElementMarshaller implements ModelMarshaller
       laneSymbolJson.addProperty(ModelerConstants.WIDTH_PROPERTY, laneSymbol.getWidth());
       laneSymbolJson.addProperty(ModelerConstants.HEIGHT_PROPERTY, laneSymbol.getHeight());
       laneSymbolJson.addProperty(ModelerConstants.TYPE_PROPERTY,
-            ModelerConstants.SWIMLANE_SYMBOL);      
+            ModelerConstants.SWIMLANE_SYMBOL);
       laneSymbolJson.addProperty(ModelerConstants.UUID_PROPERTY,
             eObjectUUIDMapper().getUUID(laneSymbol));
 
@@ -3286,7 +3284,10 @@ public class ModelElementMarshaller implements ModelMarshaller
       }
       modelJson.add("editLock", lockInfoJson);
 
-         modelJson.addProperty(ModelerConstants.IS_REFERENCED_LITERAL, ExternalReferenceUtils.isModelReferenced(model, modelingSession));
+      modelJson.addProperty(
+            ModelerConstants.IS_REFERENCED_LITERAL,
+            ExternalReferenceUtils.isModelReferenced(model, this.modelingSession
+                  .modelManagementStrategy().getModels().values()));
 
       modelJson.addProperty(ModelerConstants.ID_PROPERTY, model.getId());
       modelJson.addProperty(ModelerConstants.NAME_PROPERTY, model.getName());
@@ -3493,7 +3494,7 @@ public class ModelElementMarshaller implements ModelMarshaller
    private JsonArray toConfigVariableJson(ModelType model)
    {
       JsonArray variablesJson = new JsonArray();
-      
+
       VariableContext variableContext = new VariableContext();
 
       variableContext.initializeVariables(model);
@@ -3504,8 +3505,8 @@ public class ModelElementMarshaller implements ModelMarshaller
          JsonObject variableJson = new JsonObject();
 
          variablesJson.add(variableJson);
-         
-         String cleanName = getModelVariableName(modelVariable.getName());         
+
+         String cleanName = getModelVariableName(modelVariable.getName());
          variableJson.addProperty("type", VariableContextHelper.getType(cleanName));
          variableJson.addProperty("name", modelVariable.getName());
          variableJson.addProperty("defaultValue", modelVariable.getDefaultValue());
@@ -3580,7 +3581,7 @@ public class ModelElementMarshaller implements ModelMarshaller
             }
          }
       }
-      
+
       return variablesJson;
    }
 
@@ -4099,7 +4100,7 @@ public class ModelElementMarshaller implements ModelMarshaller
       }
       return primitiveType;
    }*/
-   
+
    /**
     * @param name
     * @return
@@ -4112,7 +4113,7 @@ public class ModelElementMarshaller implements ModelMarshaller
       }
       return name;
    }
-   
+
    /**
     * @param data
     * @param model

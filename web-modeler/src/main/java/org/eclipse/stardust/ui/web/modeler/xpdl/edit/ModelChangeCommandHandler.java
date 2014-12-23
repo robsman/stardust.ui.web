@@ -22,6 +22,7 @@ import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
+import org.eclipse.stardust.model.xpdl.builder.utils.ExternalReferenceUtils;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.DataType;
@@ -36,7 +37,6 @@ import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.ModelCommandsHandler;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelBinding;
-import org.eclipse.stardust.ui.web.modeler.xpdl.edit.utils.ExternalReferenceUtils;
 import org.springframework.context.ApplicationContext;
 
 import com.google.gson.JsonObject;
@@ -169,7 +169,8 @@ public class ModelChangeCommandHandler implements ModelCommandsHandler
    {
       ModificationDescriptor changes = new ModificationDescriptor();
 
-      if(ExternalReferenceUtils.isModelReferenced(model, modelService.currentSession()))
+      if (ExternalReferenceUtils.isModelReferenced(model, modelService.currentSession()
+            .modelManagementStrategy().getModels().values()))
       {
          throw new ModelerException(ModelerErrorClass.UNABLE_TO_DELETE_REFERENCED_MODEL);
       }
