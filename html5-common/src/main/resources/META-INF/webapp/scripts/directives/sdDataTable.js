@@ -90,7 +90,7 @@
 			scope, element, attr, ctrl) {
 		var TOOLBAR_TEMPLATE =
 			'<div class="tbl-toolbar-section">\n' +
-				'<a href="#" ng-show="$dtApi.enableSelectColumns" ng-click="$dtApi.toggleColumnSelector()"' + 
+				'<a href="#" ng-if="$dtApi.enableSelectColumns" ng-click="$dtApi.toggleColumnSelector()"' + 
 					' title="{{i18n(\'portal-common-messages.common-filterPopup-selectColumnsLabel\')}}" class="tbl-toolbar-item tbl-tool-link">\n' +
 					'<i class="fa fa-table"></i>\n' +
 				'</a>\n' +
@@ -100,7 +100,7 @@
 				'<a href="#" ng-click="" title="{{i18n(\'portal-common-messages.common-genericDataTable-asCSV\')}}" class="tbl-toolbar-item tbl-tool-link">\n' +
 					'<i class="fa fa-file-text-o"></i>\n' +
 				'</a>\n' +
-				'<div ng-show="$dtApi.showSelectColumns" class="popup-dlg">\n' +
+				'<div ng-if="$dtApi.showSelectColumns" class="popup-dlg">\n' +
 					'<div class="popup-dlg-hdr">\n' +
 						'<span class="popup-dlg-hdr-txt">{{i18n("portal-common-messages.common-filterPopup-selectColumnsLabel")}}</span>\n' + 
 						'<span class="popup-dlg-cls fa fa-lg fa-remove" title="{{i18n(\'portal-common-messages.common-filterPopup-close\')}}" ng-click="$dtApi.toggleColumnSelector()"></span>\n' +
