@@ -500,6 +500,11 @@ define(
 					tableOptions.bPaginate = this.report.layout.table.options.showVisibleRowCountSelector;
 					tableOptions.bFilter = this.report.layout.table.options.showSearchInput;
 					
+					if (this.report.layout.subType == this.reportingService.metadata.layoutSubTypes.table.id)
+					{
+					   this.getDataTableLanguageBundle(tableOptions);
+					}  
+					
 					if(scopeController){
 						scopeController.tableOptions = tableOptions;	
 					}
@@ -1452,6 +1457,8 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
    tableOptions.bPaginate = this.report.layout.table.options.showVisibleRowCountSelector;
    tableOptions.bFilter = this.report.layout.table.options.showSearchInput;
    
+   this.getDataTableLanguageBundle(tableOptions);
+   
    scopeController.tableOptions = tableOptions;
       
    var selectedColumns =  this.reportingService.getColumnDimensions(this.report);
@@ -1650,6 +1657,24 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
                         this.report.layout.table.options.showVisibleRowCountSelector) ? jQuery('div .heading').css({display:'block'}) :
                            jQuery('div .heading').css({display:'none'});
             };
+            
+            /**
+             * 
+             */
+            ReportRenderingController.prototype.getDataTableLanguageBundle = function(tableOptions) {
+               var self = this;
+               this.userLanguage = this.report.userLanguage;
+               this.reportingService.getUserLanguage().done(function(userLanguage) {
+                  self.userLanguage = userLanguage;
+               });
+               tableOptions.oLanguage = {
+                        "sUrl": self.reportingService.getRootUrl() 
+                        + "/plugins/bpm-reporting/js/libs/datatables/plug-ins/i18n/"
+                        + self.reportingService.getJQueryDataTableLangBundleName(self.userLanguage) 
+                        + ".js"
+                        
+               };
+            }  
 		}
 			
 			function transposeArray(aInput) {
