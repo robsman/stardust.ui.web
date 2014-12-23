@@ -14,7 +14,8 @@ angular.module('bpm-common.directives')
       elem.bind("dragover",function(e){
           if (e.preventDefault) {e.preventDefault();}
           if (e.stopPropagation) {e.stopPropagation();}
-          e.dataTransfer.dropEffect = 'move';
+          var dataTransfer = e.dataTransfer || e.originalEvent.dataTransfer;
+          dataTransfer.dropEffect = 'move';
           return false;
       });
       
@@ -24,7 +25,8 @@ angular.module('bpm-common.directives')
       
       elem.bind("drop",function(e){
         if (e.stopPropagation) {e.stopPropagation();}
-        var data = e.dataTransfer.getData("text/plain");
+        var dataTransfer = e.dataTransfer || e.originalEvent.dataTransfer;
+        var data = dataTransfer.getData("text/plain");
         var fn = $parse(attrs.onDrop);
         fn(scope, {$data: data, $event: e});
         console.log("Drop:" + data);
@@ -56,8 +58,9 @@ angular.module('bpm-common.directives')
 
       elem.bind("dragstart",function(e){
         var data =JSON.stringify(ngModelCtrl.$viewValue);
-        e.dataTransfer.setData("text/plain",data);
-        e.dataTransfer.effectAllowed="move";
+        var dataTransfer = e.dataTransfer || e.originalEvent.dataTransfer;
+        dataTransfer.setData("text/plain",data);
+        dataTransfer.effectAllowed="move";
         console.log("drag Start:" + data);
       });
       
