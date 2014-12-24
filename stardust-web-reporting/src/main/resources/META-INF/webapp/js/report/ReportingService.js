@@ -827,8 +827,8 @@ define(
 															self
 																	.getBasicAuthenticationHeader());
 										},
-										url : self.getRootUrl()
-												+ "/services/rest/bpm-reporting/search/"+ serviceName + "/" + searchValue,
+										url : encodeURI(self.getRootUrl()
+												+ "/services/rest/bpm-reporting/search/"+ serviceName + "/" + searchValue),
 										contentType : "application/json"
 									}).done(function(data) {
 								deferred.resolve(data);
@@ -954,8 +954,8 @@ define(
 																		self
 																				.getBasicAuthenticationHeader());
 													},
-													url : self.getRootUrl()
-															+ "/services/rest/bpm-reporting/report-data?" + parametersString,
+													url : encodeURI(self.getRootUrl()
+															+ "/services/rest/bpm-reporting/report-data?" + parametersString),
 													contentType : "application/json",
 													data : JSON.stringify(report)
 												}).done(function(data) {
@@ -1003,8 +1003,8 @@ define(
 															self
 																	.getBasicAuthenticationHeader());
 										},
-										url : self.getRootUrl()
-												+ "/services/rest/bpm-reporting/report-data?" + parametersString,
+										url : encodeURI(self.getRootUrl()
+												+ "/services/rest/bpm-reporting/report-data?" + parametersString),
 										contentType : "application/json",
 									}).done(function(data) {
 								deferred.resolve(data);
@@ -1355,7 +1355,7 @@ define(
 															self
 																	.getBasicAuthenticationHeader());
 										},
-										url : self.getRootUrl() + "/services/rest/bpm-reporting/report-definition" + path
+										url : encodeURI(self.getRootUrl() + "/services/rest/bpm-reporting/report-definition" + path)
 									}).done(function(response) {
 								if(response.definition){
 									applyUIAdjustment(response.definition);
@@ -1392,7 +1392,7 @@ define(
 							// self
 							// .getBasicAuthenticationHeader());
 						},
-						url : uri,
+						url : encodeURI(uri),
 						contentType : "application/json"
 					}).done(function(response) {
 						console.debug("Retrieved external data");
@@ -1423,7 +1423,7 @@ define(
 						path, name) {
 					var deferred = jQuery.Deferred();
 					var self = this;
-
+					
 					jQuery
 							.ajax(
 									{
@@ -1473,7 +1473,7 @@ define(
 															self
 																	.getBasicAuthenticationHeader());
 										},
-										url : self.getRootUrl() + "/services/rest/bpm-reporting/report-definition" + path
+										url : encodeURI(self.getRootUrl() + "/services/rest/bpm-reporting/report-definition" + path)
 									}).done(function() {
 								deferred.resolve();
 							}).fail(function() {

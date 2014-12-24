@@ -16,6 +16,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -48,6 +49,7 @@ import org.eclipse.stardust.engine.api.runtime.DmsUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentInfo;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
+import org.eclipse.stardust.engine.api.runtime.DocumentManagementServiceException;
 import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.engine.api.runtime.UserService;
@@ -472,8 +474,23 @@ public class ReportingServiceBean
 
       if (document != null)
       {
-         JsonObject reportDefinitionJson = jsonMarshaller.readJsonObject(new String(getDocumentManagementService().retrieveDocumentContent(
-               document.getId())));
+         String docStr = null;
+         try
+         {
+            docStr = new String(getDocumentManagementService().retrieveDocumentContent(document.getId()), "UTF-8");
+         }
+         catch (DocumentManagementServiceException e)
+         {
+            trace.error("Exception occurred while retrieving report definition: " + document.getName(), e);
+            return null;
+         }
+         catch (UnsupportedEncodingException e)
+         {
+            trace.error("Exception occurred while retrieving report definition: " + document.getName(), e);
+            return null;
+         }
+         
+         JsonObject reportDefinitionJson = jsonMarshaller.readJsonObject(docStr);
           
          //add report specific meta-data
          JsonObject metaDataObj = new JsonObject(); 
@@ -508,6 +525,7 @@ public class ReportingServiceBean
    {
       try
       {
+         //UTF-8 conversion not necessary as browsers default conversion to string is using UTF-8
          return getDocumentManagementService().retrieveDocumentContent(reportId);
       }
       catch (Exception e)
@@ -651,13 +669,8 @@ public class ReportingServiceBean
       }
       catch (Exception e)
       {
-         //TODO: remove later
-         e.printStackTrace();
-         trace.debug("Error Occurred while loading report definitions");
+         trace.error("Error Occurred while loading report definitions", e);
          return null;
-      }
-      finally
-      {
       }
    }
 
@@ -692,15 +705,25 @@ public class ReportingServiceBean
          JsonArray reportDefinitionsJson = new JsonArray();
          folderJson.add("reportDefinitions", reportDefinitionsJson);
 
-         @SuppressWarnings("unchecked")
          List<Document> candidateReportDefinitionsDocuments = folder.getDocuments();
 
          for (Document reportDefinitionDocument : candidateReportDefinitionsDocuments)
          {
             if (reportDefinitionDocument.getName().endsWith(REPORT_DEFINITION_EXT))
             {
-               String content = new String(getDocumentManagementService().retrieveDocumentContent(
-                     reportDefinitionDocument.getId()));
+               String content = null;
+               try
+               {
+                  content = new String(getDocumentManagementService().retrieveDocumentContent(reportDefinitionDocument.getId()), "UTF-8");
+               }
+               catch (DocumentManagementServiceException e)
+               {
+                  trace.error("Exception Occurred while retrieving report definition with Name" + reportDefinitionDocument.getName(), e);
+               }
+               catch (UnsupportedEncodingException e)
+               {
+                  trace.error("Exception Occurred while retrieving report definition with Name" + reportDefinitionDocument.getName(), e);
+               }
 
                JsonObject reportDefinitionJson = jsonMarshaller.readJsonObject(content);
 
@@ -727,30 +750,36 @@ public class ReportingServiceBean
       String path = folder.getPath() + "/" + name;
       
       Document reportDesignDocument = getDocumentManagementService().getDocument(path);
-
-      if (null == reportDesignDocument)
+      try
       {
-         DocumentInfo documentInfo = DmsUtils.createDocumentInfo(name);
 
-         documentInfo.setOwner(getServiceFactory().getWorkflowService().getUser().getAccount());
-         MimeTypesHelper mimeTypesHelper = (MimeTypesHelper) RestControllerUtils.resolveSpringBean(
-               "ippMimeTypesHelper", servletContext);
-         
-         documentInfo.setContentType(mimeTypesHelper.detectMimeTypeI(name, "").getType());
+         if (null == reportDesignDocument)
+         {
+            DocumentInfo documentInfo = DmsUtils.createDocumentInfo(name);
 
-         reportDesignDocument = getDocumentManagementService().createDocument(folder.getPath(), documentInfo,
-               reportContent.getBytes(), null);
+            documentInfo.setOwner(getServiceFactory().getWorkflowService().getUser().getAccount());
+            MimeTypesHelper mimeTypesHelper = (MimeTypesHelper) RestControllerUtils.resolveSpringBean(
+                  "ippMimeTypesHelper", servletContext);
 
-         // Create initial version
+            documentInfo.setContentType(mimeTypesHelper.detectMimeTypeI(name, "").getType());
 
-         // getDocumentManagementService().versionDocument(
-         // reportDesignDocument.getId(), null);
+            reportDesignDocument = getDocumentManagementService().createDocument(folder.getPath(), documentInfo,
+                  reportContent.getBytes("UTF-8"), null);
+         }
+         else
+         {
+            reportDesignDocument = getDocumentManagementService().updateDocument(reportDesignDocument,
+                  reportContent.getBytes("UTF-8"), null, false, null, null, false);
+         }
       }
-      else
+      catch (DocumentManagementServiceException e)
       {
-         reportDesignDocument = getDocumentManagementService().updateDocument(reportDesignDocument, reportContent.getBytes(), null, false,
-               null, false);
+         trace.error("Error Occurred while creating/updating document", e);
       }
+      catch (UnsupportedEncodingException e)
+      {
+         trace.error("Error Occurred while creating/updating document", e);
+      }     
       
       return reportDesignDocument;
    }
