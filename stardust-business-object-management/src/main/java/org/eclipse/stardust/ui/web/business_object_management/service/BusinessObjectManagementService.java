@@ -904,6 +904,7 @@ public class BusinessObjectManagementService {
 				businessObjectId);
 		JsonArray fieldsJson = businessObjectJson.get("fields")
 				.getAsJsonArray();
+		String modelId =  businessObjectJson.get("modelId").getAsString();
 		JsonObject primaryKeyFieldJson = null;
 
 		for (int n = 0; n < fieldsJson.size(); ++n) {
@@ -916,7 +917,7 @@ public class BusinessObjectManagementService {
 			}
 		}
 
-		JsonArray tempJson = getBusinessObjectInstances(modelOid,
+		JsonArray tempJson = getBusinessObjectInstances(modelId,
 				businessObjectId, "");
 
 		for (int n = 0; n < tempJson.size(); ++n) {
