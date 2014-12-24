@@ -566,16 +566,13 @@ define(
 	                        + "/plugins/bpm-reporting/popups/confirmationPopupDialogContent.html"
 	               },
 	               payload : {
-	                  title : "Confirm"/*m_i18nUtils
-	                        .getProperty("modeler.messages.confirm")*/,
+	                  title : I18NUtils.getProperty("reporting.messages.confirm"),
                      message : I18NUtils.getProperty(
                                  'reporting.messages.confirm.deleteElement').replace(
                                  "{0}", name),
 	                     
-	                  acceptButtonText : "Yes"/*m_i18nUtils
-	                        .getProperty("modeler.messages.confirm.yes")*/,
-	                  cancelButtonText : "Cancel"/*m_i18nUtils
-	                        .getProperty("modeler.messages.confirm.cancel")*/,
+	                  acceptButtonText : I18NUtils.getProperty("reporting.messages.confirm.yes"),
+	                  cancelButtonText : I18NUtils.getProperty("reporting.messages.confirm.cancel"),
 	                  acceptFunction : callback
 	               }
 	            };
