@@ -142,6 +142,7 @@
 		var selectedRowIndexes = {}, rowSelectionMode = false, selectionBinding;
 		var onSelect = {}, onPagination = {};
 		var enableColumnSelector, columnsByDisplayOrder, columnsInfoByDisplayOrder, devColumnOrderPref;
+		var localPrefStore = {};
 		var pageSize = 8;
 		
 		// Setup component instance
@@ -689,13 +690,26 @@
 		/*
 		 * 
 		 */
+		function supportsPreference() {
+			return attr.sdaPreferenceModule && attr.sdaPreferenceModule != '' && attr.sdaPreferenceId && attr.sdaPreferenceId != '';
+		}
+
+		/*
+		 * 
+		 */
 		function getColumnSelectionFromPreference(pScope) {
 			pScope = !pScope ? 'USER' : pScope;
 
-			var preferenceInstance = sdPreferenceService.getPreference(pScope, attr.sdaPreferenceModule);
-			var preferenceName = attr.sdaPreferenceModule + '.' + attr.sdaPreferenceId + '.selectedColumns';
+			var prefCols;
+			if (supportsPreference()) {
+				var preferenceInstance = sdPreferenceService.getPreference(pScope, attr.sdaPreferenceModule);
+				var preferenceName = attr.sdaPreferenceModule + '.' + attr.sdaPreferenceId + '.selectedColumns';
+	
+				prefCols = preferenceInstance.getList(preferenceName);
+			} else {
+				prefCols = localPrefStore[pScope];
+			}
 
-			var prefCols = preferenceInstance.getList(preferenceName);
 			if (!prefCols) {
 				prefCols = devColumnOrderPref;
 			}
@@ -706,12 +720,16 @@
 		 * 
 		 */
 		function setColumnSelectionFromPreference(pScope, list) {
-			pScope = !pScope ? 'USER' : pScope;
-
-			var preferenceInstance = sdPreferenceService.getPreference(pScope, attr.sdaPreferenceModule);
-			var preferenceName = attr.sdaPreferenceModule + '.' + attr.sdaPreferenceId + '.selectedColumns';
-
-			preferenceInstance.setList(preferenceName, list);
+			if (supportsPreference()) {
+				pScope = !pScope ? 'USER' : pScope;
+	
+				var preferenceInstance = sdPreferenceService.getPreference(pScope, attr.sdaPreferenceModule);
+				var preferenceName = attr.sdaPreferenceModule + '.' + attr.sdaPreferenceId + '.selectedColumns';
+	
+				preferenceInstance.setList(preferenceName, list);
+			} else {
+				localPrefStore[pScope] = list;
+			}
 		}
 
 		/*
