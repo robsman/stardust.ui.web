@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -472,25 +471,16 @@ public class HTML5FrameworkServices
     * 
     * @return
     */
-   private List<IPerspectiveDefinition> getAllPerspectives() {
-      Map<String, PerspectiveDefinition> systemPerspectives = getAppContext().getBeansOfType(PerspectiveDefinition.class);
+   private List<IPerspectiveDefinition> getAllPerspectives()
+   {
       List<IPerspectiveDefinition> allPerspectives = new ArrayList<IPerspectiveDefinition>();
-      Map<String, IPerspectiveDefinition> perspectives = new HashMap<String, IPerspectiveDefinition>();
-      for (String key : systemPerspectives.keySet())
+      PortalApplication portalApp = (PortalApplication) getAppContext().getBean("ippPortalApp");
+      if (null != portalApp)
       {
-         PerspectiveDefinition pd = systemPerspectives.get(key);
-         if (isAuthorized(pd))
-         {
-            perspectives.put(key, PerspectiveAuthorizationProxy.newInstance(pd,
-                  (PortalApplication) getAppContext().getBean("ippPortalApp")));            
-         }
+         Map<String, IPerspectiveDefinition> perspectives = portalApp.getPortalUiController().getPerspectives();
+         allPerspectives.addAll(perspectives.values());
       }
-      
-      for (IPerspectiveDefinition perspectiveDef : perspectives.values())
-      {
-         allPerspectives.add(perspectiveDef);
-      }
-      
+
       return allPerspectives;
    }
 

@@ -16,6 +16,7 @@ import static org.eclipse.stardust.ui.web.common.spring.UiDefinitionParserUtils.
 import static org.eclipse.stardust.ui.web.common.spring.UiDefinitionParserUtils.parsePerspectiveExtension;
 import static org.springframework.beans.factory.support.BeanDefinitionBuilder.rootBeanDefinition;
 
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.ManagedList;
@@ -34,7 +35,7 @@ public class PerspectiveExtensionBeanDefinitionParser extends AbstractBeanDefini
    protected AbstractBeanDefinition parseInternal(Element element, ParserContext pc)
    {
       BeanDefinitionBuilder factory = rootBeanDefinition(PerspectiveExtensionFactoryBean.class);
-
+      factory.setScope(BeanDefinition.SCOPE_PROTOTYPE);
       BeanDefinitionBuilder parent = parsePerspectiveExtension(element);
       factory.addPropertyValue(PRP_PARENT, parent.getBeanDefinition());
 
