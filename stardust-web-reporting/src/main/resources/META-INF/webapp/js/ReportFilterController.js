@@ -475,6 +475,7 @@ define(
 					if (dimension.id == "criticality") {
 						filter.metadata = this
 								.getCriticalityForName(filter.value);
+						filter.metadata.parameterizable = true;
 						filter.uiValue = [filter.metadata.rangeFrom/1000, filter.metadata.rangeTo/1000];
 					}
 				};
