@@ -581,7 +581,7 @@
 						transObj[handleInfo.param] = data;
 					} else {
 						transObj.info = data;
-						trace.warning(eventType + ' event handler is not properly configured, may not receive event info.');
+						trace.warn(eventType + ' event handler is not properly configured, may not receive event info.');
 					}
 
 					handleInfo.handler(elemScope, transObj);
