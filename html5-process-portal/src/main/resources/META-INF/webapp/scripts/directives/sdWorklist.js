@@ -157,7 +157,8 @@
 				this.sdaPageSize = attr.sdaPageSize;
 			}
 
-			this.worklistPrefId = 'worklist-participant-columns';
+			this.worklistPrefId = 'worklist-participant-columns' || 'worklist-process-columns'; //TODO
+			this.worklistPrefName = this.query.userId || this.query.participantQId; //TODO
 			
 			this.fetchDescriptorCols();
 		};

@@ -30,8 +30,8 @@
 		/*
 		 * 
 		 */
-		PreferenceService.prototype.getPreference = function(prefScope, module) {
-			var prefStorage = new PreferenceStorage(prefScope, module);
+		PreferenceService.prototype.getStore = function(prefScope, module, preferenceId) {
+			var prefStorage = new PreferenceStorage(prefScope, module, preferenceId);
 			return prefStorage;
 		};
 	};
@@ -43,23 +43,31 @@
 	/*
 	 * 
 	 */
-	function PreferenceStorage(scope, module) {
-		if (!inMemStore[scope]) {
+	function PreferenceStorage(scope, module, preferenceId) {
+		if (!inMemStore[scope] || !inMemStore[scope][module] || !inMemStore[scope][module][preferenceId]) {
 			inMemStore[scope] = {};
+			if (!inMemStore[scope][module]) {
+				inMemStore[scope][module] = {};
+				if (!inMemStore[scope][module][preferenceId]) {
+					inMemStore[scope][module][preferenceId] = {};
+				}				
+			}
 		}
 
+		var storeRef = inMemStore[scope][module][preferenceId];
+		
 		/*
 		 * 
 		 */
-		PreferenceStorage.prototype.getList = function(name) {
-			return inMemStore[scope].name;
+		PreferenceStorage.prototype.getValue = function(name) {
+			return storeRef[name];
 		};
 
 		/*
 		 * 
 		 */
-		PreferenceStorage.prototype.setList = function(name, list) {
-			inMemStore[scope].name = list;
+		PreferenceStorage.prototype.setValue = function(name, value) {
+			storeRef[name] = value;
 		};
 	}
 })();

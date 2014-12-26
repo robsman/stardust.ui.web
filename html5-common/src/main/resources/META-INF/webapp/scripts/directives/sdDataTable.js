@@ -710,7 +710,9 @@
 		 * 
 		 */
 		function supportsPreference() {
-			return attr.sdaPreferenceModule && attr.sdaPreferenceModule != '' && attr.sdaPreferenceId && attr.sdaPreferenceId != '';
+			return attr.sdaPreferenceModule && attr.sdaPreferenceModule != '' && 
+				attr.sdaPreferenceId && attr.sdaPreferenceId != '' &&
+				attr.sdaPreferenceName && attr.sdaPreferenceName != '';
 		}
 
 		/*
@@ -719,35 +721,30 @@
 		function getColumnSelectionFromPreference(pScope) {
 			pScope = !pScope ? 'USER' : pScope;
 
-			var prefCols;
+			var prefValue;
 			if (supportsPreference()) {
-				var preferenceInstance = sdPreferenceService.getPreference(pScope, attr.sdaPreferenceModule);
-				var preferenceName = attr.sdaPreferenceModule + '.' + attr.sdaPreferenceId + '.selectedColumns';
-	
-				prefCols = preferenceInstance.getList(preferenceName);
+				var preferenceInstance = sdPreferenceService.getStore(pScope, attr.sdaPreferenceModule, attr.sdaPreferenceId);
+				prefValue = preferenceInstance.getValue(attr.sdaPreferenceName);
 			} else {
-				prefCols = localPrefStore[pScope];
+				prefValue = localPrefStore[pScope];
 			}
 
-			if (!prefCols) {
-				prefCols = devColumnOrderPref;
+			if (!prefValue) {
+				prefValue = devColumnOrderPref;
 			}
-			return prefCols;
+			return prefValue;
 		}
 
 		/*
 		 * 
 		 */
-		function setColumnSelectionFromPreference(pScope, list) {
+		function setColumnSelectionFromPreference(pScope, value) {
+			pScope = !pScope ? 'USER' : pScope;
 			if (supportsPreference()) {
-				pScope = !pScope ? 'USER' : pScope;
-	
-				var preferenceInstance = sdPreferenceService.getPreference(pScope, attr.sdaPreferenceModule);
-				var preferenceName = attr.sdaPreferenceModule + '.' + attr.sdaPreferenceId + '.selectedColumns';
-	
-				preferenceInstance.setList(preferenceName, list);
+				var preferenceInstance = sdPreferenceService.getStore(pScope, attr.sdaPreferenceModule, attr.sdaPreferenceId);
+				preferenceInstance.setValue(attr.sdaPreferenceName, value);
 			} else {
-				localPrefStore[pScope] = list;
+				localPrefStore[pScope] = value;
 			}
 		}
 
