@@ -241,13 +241,6 @@
 		/*
 		 * 
 		 */
-		WorklistCompiler.prototype.stopEvent = function(event) {
-			sdUtilService.stopEvent(event);
-		};
-
-		/*
-		 * 
-		 */
 		WorklistCompiler.prototype.activateWorkItem = function(workItem) {
 			sdViewUtilService.openView("activityPanel", "OID=" + workItem.oid, {"oid" : "" + workItem.oid});
 		};
