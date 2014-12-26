@@ -215,7 +215,11 @@
 		WorklistCompiler.prototype.onPagination = function(info) {
 			// NOP
 		};
-		
+
+		WorklistCompiler.prototype.onColumnReorder = function(info) {
+			// NOP
+		};
+
 		/*
 		 * 
 		 */

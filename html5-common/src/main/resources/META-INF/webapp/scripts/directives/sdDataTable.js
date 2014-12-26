@@ -140,7 +140,7 @@
 		var columns = [], dtColumns = [];
 		var theTable, theDataTable, theToolbar, theColReorder;
 		var selectedRowIndexes = {}, rowSelectionMode = false, selectionBinding;
-		var onSelect = {}, onPagination = {};
+		var onSelect = {}, onPagination = {}, onColumnReorder = {};
 		var enableColumnSelector, columnsByDisplayOrder, columnsInfoByDisplayOrder, devColumnOrderPref;
 		var localPrefStore = {};
 		var pageSize = 8;
@@ -247,6 +247,17 @@
 
 			if (attr.sdaColumnSelector && attr.sdaColumnSelector == 'true') {
 				enableColumnSelector = true;
+
+				if (attr.sdaOnColumnReorder) {
+					onColumnReorder.handler = $parse(attr.sdaOnColumnReorder);
+
+					var onColumnReorderfuncInfo = sdUtilService.parseFunction(attr.sdaOnColumnReorder);
+					if (onColumnReorderfuncInfo && onColumnReorderfuncInfo.params && onColumnReorderfuncInfo.params.length > 0) {
+						onColumnReorder.param = onColumnReorderfuncInfo.params[0];
+					} else {
+						trace.error('sda-on-columns-reorder does not seems to be correcly used, it does not appear to be a function accepting parameter.');
+					}
+				}
 			}
 		}
 
@@ -548,7 +559,9 @@
 			// Register for pagination events
 			theDataTable.on('page.dt', firePaginationEvent);
 
-			theColReorder = new jQuery.fn.dataTable.ColReorder(theDataTable);
+			if (enableColumnSelector) {
+				theColReorder = new jQuery.fn.dataTable.ColReorder(theDataTable);
+			}
 
 			exposeAPIs();
 			exposeScopeInfo();
@@ -573,7 +586,7 @@
 		/*
 		 * 
 		 */
-		function fireDataTableEvent(handleInfo, data, eventType) {
+		function fireDataTableEvent(handleInfo, data, eventType, invokeAfterDigest) {
 			if (handleInfo.handler) {
 				try {
 					var transObj = {};
@@ -584,7 +597,13 @@
 						trace.warn(eventType + ' event handler is not properly configured, may not receive event info.');
 					}
 
-					handleInfo.handler(elemScope, transObj);
+					if (!invokeAfterDigest) {
+						handleInfo.handler(elemScope, transObj);
+					} else {
+						$timeout(function() {
+							handleInfo.handler(elemScope, transObj);
+						}, 0, true);
+					}
 				} catch(e) {
 					trace.error('Error while firing ' + eventType + ' event on data table', e);
 				}
@@ -743,6 +762,13 @@
 			var columnDisplayOrderIndexes = [], columnDisplayOrderNames = [], columnDisplayOrderObjects = [];
 
 			var currentOrder = columnsByDisplayOrder;
+			
+			var currentColumnOrder = [];
+			angular.forEach(currentOrder, function(col, i) {
+				if (!col.fixed && col.visible) {
+					currentColumnOrder.push(col.name);
+				}
+			});
 
 			// Add fixed columns
 			var fixedAfter = [], flag = true;
@@ -770,8 +796,17 @@
 							columnDisplayOrderNames.indexOf(colName) == -1 && fixedAfter.indexOf(colName) == -1) {
 						columnDisplayOrderIndexes.push(colInfo.index);
 						columnDisplayOrderNames.push(colName);
-						columnDisplayOrderObjects.push(colInfo.column);
-						colInfo.column.visible = true;
+						if (!preview) {					
+							columnDisplayOrderObjects.push(colInfo.column);
+							colInfo.column.visible = true;
+						} else {
+							columnDisplayOrderObjects.push({
+								name: colInfo.column.name,
+								visible: true,
+								labelKey: colInfo.column.labelKey,
+								label: colInfo.column.label
+							});
+						}
 					}
 				});
 			}
@@ -781,10 +816,19 @@
 				if (columnDisplayOrderNames.indexOf(col.name) == -1 && fixedAfter.indexOf(col.name) == -1) {
 					columnDisplayOrderIndexes.push(i);
 					columnDisplayOrderNames.push(col.name);
-					columnDisplayOrderObjects.push(col);
-					
-					if (prefCols) {
-						col.visible = false;
+
+					if (!preview) {
+						columnDisplayOrderObjects.push(col);
+						if (prefCols) {
+							col.visible = false;
+						}
+					} else {
+						columnDisplayOrderObjects.push({
+							name: col.name,
+							visible: prefCols ? false : col.visible,
+							labelKey: col.labelKey,
+							label: col.label
+						});
 					}
 				}
 			});
@@ -804,20 +848,25 @@
 				// ReOrder columns
 				theColReorder.fnOrder(columnDisplayOrderIndexes);
 
-				// Show Hide columns
-				angular.forEach(columnDisplayOrderObjects, function(col, i) {
+				// Build & preserve info for further use
+				columnsByDisplayOrder = columnDisplayOrderObjects;
+				columnsInfoByDisplayOrder = {};
+
+				var newColumnOrder = [];
+				angular.forEach(columnsByDisplayOrder, function(col, i) {
+					// Show / Hide columns based on new reorder
 					var tableCol = theDataTable.column(i);
 					if (tableCol.visible() != col.visible) {
 						tableCol.visible(col.visible);
 					}
-				});
-
-				columnsByDisplayOrder = columnDisplayOrderObjects;
-				columnsInfoByDisplayOrder = {};
-				angular.forEach(columnsByDisplayOrder, function(col, index) {
+					
 					columnsInfoByDisplayOrder[col.name] = {
-						index: index,
+						index: i,
 						column: col
+					}
+
+					if (!col.fixed && col.visible) {
+						newColumnOrder.push(col.name);
 					}
 				});
 
@@ -825,7 +874,22 @@
 					showElement(theTable, false);
 				}
 				theDataTable.draw(false);
+
+				// Fire Event
+				fireColumnReorderEvent(currentColumnOrder, newColumnOrder);
 			}
+		}
+
+		/*
+		 * 
+		 */
+		function fireColumnReorderEvent(previousOrder, newOrder) {
+			var columnReorderInfo = {
+				previous : previousOrder,
+				current : newOrder
+			};
+			
+			fireDataTableEvent(onColumnReorder, columnReorderInfo, 'onColumnReorder', true);
 		}
 
 		/*
