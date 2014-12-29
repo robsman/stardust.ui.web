@@ -54,7 +54,7 @@ public class SemanticalDescriptorComparator implements ISemanticalDescriptorComp
          if (data1.getQualifiedId().equals(data2.getQualifiedId()))
          {
             //primitives don't access paths!
-            if (StringUtils.isEmpty(dataPath1.getAccessPath()) && StringUtils.isEmpty(dataPath1.getAccessPath()))
+            if (StringUtils.isEmpty(dataPath1.getAccessPath()) && StringUtils.isEmpty(dataPath2.getAccessPath()))
             {
                result = 0;
             }
