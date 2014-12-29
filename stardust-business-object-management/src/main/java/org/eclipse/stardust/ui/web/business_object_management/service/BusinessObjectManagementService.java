@@ -28,6 +28,7 @@ import org.eclipse.stardust.engine.core.struct.XPathAnnotations.XPathAnnotation;
 import org.eclipse.stardust.ui.web.business_object_management.rest.JsonMarshaller;
 import org.eclipse.stardust.ui.web.business_object_management.service.BusinessObject.Definition;
 import org.eclipse.stardust.ui.web.business_object_management.service.BusinessObject.Value;
+import org.eclipse.stardust.ui.web.common.util.DateUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 
@@ -666,19 +667,17 @@ public class BusinessObjectManagementService {
 		BusinessObjectQuery query = BusinessObjectQuery.findForBusinessObject(
 				modelId, businessObjectId);
 
-		/*String[] terms = queryString.split("&");
+		String[] terms = queryString.split("&");
 
 		for (int n = 0; n < terms.length; ++n) {
-			System.out.println("Term: " + terms[n]);
 
 			String[] expression = terms[n].split("=");
-
-			// System.out.println("Expression: " + expression[0] + " "
-			// + expression[1]);
-
-			// query.where(DataFilter.like(businessObjectId, expression[0],
-			// expression[1]));
-		}*/
+			if(!CollectionUtils.isEmpty(expression) && !StringUtils.isEmpty(expression[0]))
+			{
+			   query.where(DataFilter.like(businessObjectId, expression[0],
+			         expression[1]));  
+			}
+		}
 
 		addInstancesFromQuery(businessObjectInstances, query);
 
@@ -1060,6 +1059,8 @@ public class BusinessObjectManagementService {
 			return new JsonPrimitive((Number) object);
 		} else if (object instanceof String) {
 			return new JsonPrimitive((String) object);
+		}else if (object instanceof Date) {
+		   return new JsonPrimitive(DateUtils.format((Date) object, "yyyy-MM-dd"));
 		}
 
 		throw new IllegalArgumentException("Unknown primitive object type \""
