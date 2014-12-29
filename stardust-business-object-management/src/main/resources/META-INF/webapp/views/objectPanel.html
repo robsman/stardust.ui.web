@@ -21,7 +21,7 @@
 								ng-show="field.type == 'integer'" type="number"
 								style="width: 100px; text-align: right;"
 								ng-model="instance[field.id]"></input> <input
-								ng-show="field.type == 'decimal'" type="text"
+								ng-show="field.type == 'decimal' || field.type == 'double'" type="text"
 								style="width: 100px; text-align: right;"
 								ng-model="instance[field.id]"></input> <input
 								ng-show="field.type == 'date'" type="date"

@@ -108,7 +108,9 @@ define(
 				BusinessObjectManagementViewController.prototype.changeBusinessObject = function() {
 					console.log("Business Object");
 					console.log(this.businessObject.modelOid);
-
+					// Clear old Business Object instance
+					this.clearBusinessObjectInstance();
+					
 					BusinessObjectManagementService.instance()
 							.calculateBusinessObjectFields(this.businessObject);
 					console.log("Before form");
