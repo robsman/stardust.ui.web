@@ -17,8 +17,8 @@
 	'use strict';
 
 	angular.module('bpm-common.services').provider('sdPreferenceService', function () {
-		this.$get = ['$rootScope', function ($rootScope) {
-			var service = new PreferenceService($rootScope);
+		this.$get = ['sdUtilService', function (sdUtilService) {
+			var service = new PreferenceService(sdUtilService);
 			return service;
 		}];
 	});
@@ -26,7 +26,7 @@
 	/*
 	 * 
 	 */
-	function PreferenceService($rootScope) {
+	function PreferenceService(sdUtilService) {
 		/*
 		 * 
 		 */
@@ -34,40 +34,63 @@
 			var prefStorage = new PreferenceStorage(prefScope, module, preferenceId);
 			return prefStorage;
 		};
-	};
-
-	// Implement in memory Store for now!
-	// TODO: Connect to REST
-	var inMemStore = {};
-
-	/*
-	 * 
-	 */
-	function PreferenceStorage(scope, module, preferenceId) {
-		if (!inMemStore[scope] || !inMemStore[scope][module] || !inMemStore[scope][module][preferenceId]) {
-			inMemStore[scope] = {};
-			if (!inMemStore[scope][module]) {
-				inMemStore[scope][module] = {};
-				if (!inMemStore[scope][module][preferenceId]) {
-					inMemStore[scope][module][preferenceId] = {};
-				}				
-			}
-		}
-
-		var storeRef = inMemStore[scope][module][preferenceId];
 		
 		/*
 		 * 
 		 */
-		PreferenceStorage.prototype.getValue = function(name) {
-			return storeRef[name];
-		};
+		function PreferenceStorage(scope, module, preferenceId) {
+			var url = "services/rest/portal/preference/:scope/:moduleId/:preferenceId";
+			url = url.replace(':scope', scope);
+			url = url.replace(':moduleId', module);
+			url = url.replace(':preferenceId', preferenceId);
+			
+			var store;
 
-		/*
-		 * 
-		 */
-		PreferenceStorage.prototype.setValue = function(name, value) {
-			storeRef[name] = value;
-		};
-	}
+			/*
+			 * 
+			 */
+			PreferenceStorage.prototype.getValue = function(name) {
+				if (store == undefined) {
+					this.fetch();
+				}
+				return store[name];
+			};
+
+			/*
+			 * 
+			 */
+			PreferenceStorage.prototype.setValue = function(name, value) {
+				if (store == undefined) {
+					this.fetch();
+				}
+
+				if (value != undefined && value != null) {
+					if (angular.isObject(value) || angular.isArray(value)) {
+						value = angular.toJson(value);
+					}
+					store[name] = value;
+				} else {
+					delete store[name];
+				}
+				
+			};
+
+			/*
+			 * 
+			 */
+			PreferenceStorage.prototype.fetch = function() {
+				store = sdUtilService.syncAjax(url);
+				if (!store) {
+					store = {};
+				}
+			};
+
+			/*
+			 * 
+			 */
+			PreferenceStorage.prototype.save = function() {
+				return sdUtilService.syncAjaxSubmit(url, store);
+			};
+		}
+	};
 })();

@@ -90,16 +90,16 @@
 			scope, element, attr, ctrl) {
 		var TOOLBAR_TEMPLATE =
 			'<div class="tbl-toolbar-section">\n' +
-				'<a href="#" ng-if="$dtApi.enableSelectColumns" ng-click="$dtApi.toggleColumnSelector()"' + 
+				'<button class="button-link" href="#" ng-if="$dtApi.enableSelectColumns" ng-click="$dtApi.toggleColumnSelector()"' + 
 					' title="{{i18n(\'portal-common-messages.common-filterPopup-selectColumnsLabel\')}}" class="tbl-toolbar-item tbl-tool-link">\n' +
 					'<i class="fa fa-table"></i>\n' +
-				'</a>\n' +
-				'<a href="#" ng-click="" title="{{i18n(\'portal-common-messages.common-genericDataTable-asExcel\')}}" class="tbl-toolbar-item tbl-tool-link">\n' +
+				'</button>\n' +
+				'<button class="button-link" href="#" ng-click="" title="{{i18n(\'portal-common-messages.common-genericDataTable-asExcel\')}}" class="tbl-toolbar-item tbl-tool-link">\n' +
 					'<i class="fa fa-file-excel-o"></i>\n' +
-				'</a>\n' +
-				'<a href="#" ng-click="" title="{{i18n(\'portal-common-messages.common-genericDataTable-asCSV\')}}" class="tbl-toolbar-item tbl-tool-link">\n' +
+				'</button>\n' +
+				'<button class="button-link" href="#" ng-click="" title="{{i18n(\'portal-common-messages.common-genericDataTable-asCSV\')}}" class="tbl-toolbar-item tbl-tool-link">\n' +
 					'<i class="fa fa-file-text-o"></i>\n' +
-				'</a>\n' +
+				'</button>\n' +
 				'<div ng-if="$dtApi.showSelectColumns" class="popup-dlg">\n' +
 					'<div class="popup-dlg-hdr">\n' +
 						'<span class="popup-dlg-hdr-txt">{{i18n("portal-common-messages.common-filterPopup-selectColumnsLabel")}}</span>\n' + 
@@ -114,8 +114,11 @@
 									'<option value="PARTITION">{{i18n(\'portal-common-messages.common-preferenceScope-options-partition\')}}</option>\n' +
 								'</select>\n' +
 							'</span>\n' +
-							'<span class="ui-section fa fa-lg fa-lock"></span>\n' +
-							'<span class="ui-section fa fa-lg fa-rotate-right"></span>\n' +
+							'<button class="button-link" ng-click="$dtApi.toggleColumnSelectorLock()" ng-disabled="$dtApi.isColumnSelectorLockDisabled()">\n' +
+								'<span class="fa fa-lg fa-lock" ng-show="$dtApi.lock"></span>\n' + 
+								'<span class="fa fa-lg fa-unlock" ng-show="!$dtApi.lock"></span>\n' +
+							'</button>\n' +
+							'<button class="fa fa-lg fa-rotate-right button-link" ng-click="$dtApi.resetColumnSelector()" style="cursor: pointer;"></button>\n' +
 						'</div>\n' +
 						'<div class="tbl-col-sel-list">\n' +
 							'<div ng-repeat="col in $dtApi.columns" class="tbl-col-sel-row" ng-model="$index" sd-data-drag sd-data-drop on-drop="$dtApi.moveColumns($data, $index, $event)">\n' +
@@ -142,7 +145,7 @@
 		var selectedRowIndexes = {}, rowSelectionMode = false, selectionBinding;
 		var onSelect = {}, onPagination = {}, onColumnReorder = {};
 		var enableColumnSelector, columnsByDisplayOrder, columnsInfoByDisplayOrder, devColumnOrderPref;
-		var localPrefStore = {};
+		var columnSelectorPreference, localPrefStore = {};
 		var pageSize = 8;
 		
 		// Setup component instance
@@ -725,13 +728,33 @@
 			if (supportsPreference()) {
 				var preferenceInstance = sdPreferenceService.getStore(pScope, attr.sdaPreferenceModule, attr.sdaPreferenceId);
 				prefValue = preferenceInstance.getValue(attr.sdaPreferenceName);
+				
+				if(prefValue) {
+					try {
+						prefValue = JSON.parse(prefValue);
+					} catch(e) {
+						// Backward compatibility
+						var prefColumns = prefValue.split('$#$');
+						prefValue = {
+							selectedColumns : prefColumns,
+							lock : false
+						};
+					}
+				}
 			} else {
 				prefValue = localPrefStore[pScope];
 			}
 
-			if (!prefValue) {
-				prefValue = devColumnOrderPref;
+			if (prefValue == undefined || prefValue == null) {
+				prefValue = {
+					selectedColumns : devColumnOrderPref,
+					lock : false
+				};
 			}
+			
+			
+			prefValue.scope = pScope;
+
 			return prefValue;
 		}
 
@@ -743,6 +766,7 @@
 			if (supportsPreference()) {
 				var preferenceInstance = sdPreferenceService.getStore(pScope, attr.sdaPreferenceModule, attr.sdaPreferenceId);
 				preferenceInstance.setValue(attr.sdaPreferenceName, value);
+				preferenceInstance.save();
 			} else {
 				localPrefStore[pScope] = value;
 			}
@@ -785,7 +809,9 @@
 			});
 			
 			// Add preference columns
-			var prefCols = getColumnSelectionFromPreference(pScope);
+			var columnSelectorPref = getColumnSelectionFromPreference(pScope);
+			
+			var prefCols = columnSelectorPref.selectedColumns;
 			if (prefCols) {
 				angular.forEach(prefCols, function(colName, i) {
 					var colInfo = columnsInfoByDisplayOrder[colName];
@@ -840,8 +866,13 @@
 			});
 
 			if (preview) {
-				return columnDisplayOrderObjects;
+				return {
+					lock: columnSelectorPref.lock,
+					columns: columnDisplayOrderObjects
+				}
 			} else {
+				columnSelectorPreference = columnSelectorPref;
+
 				// ReOrder columns
 				theColReorder.fnOrder(columnDisplayOrderIndexes);
 
@@ -1199,6 +1230,9 @@
 			 */
 			this.toggleColumnSelector = function() {
 				self.showSelectColumns = !self.showSelectColumns;
+
+				self.lock = columnSelectorPreference.lock;
+				self.applyTo = columnSelectorPreference.scope;
 				self.columns = getSelectableColumns(columnsByDisplayOrder);
 			}
 
@@ -1213,7 +1247,12 @@
 					}
 				});
 				
-				setColumnSelectionFromPreference(self.applyTo, selectedCols);
+				var prefValue = {
+					selectedColumns : selectedCols,
+					lock : self.lock
+				};
+
+				setColumnSelectionFromPreference(self.applyTo, prefValue);
 				reorderColumns(self.applyTo);
 				self.toggleColumnSelector();
 			}
@@ -1222,8 +1261,9 @@
 			 * 
 			 */
 			this.applyToChanged = function() {
-				var newList = reorderColumns(self.applyTo, true);
-				self.columns = getSelectableColumns(newList);
+				var reorderInfo = reorderColumns(self.applyTo, true);
+				self.columns = getSelectableColumns(reorderInfo.columns);
+				self.lock = reorderInfo.lock;
 			}
 
 			/*
@@ -1238,6 +1278,29 @@
 					self.columns.splice(toIndex, 0, dragItems[0]);	
 					sdUtilService.safeApply(elemScope);
 				}
+			}
+
+			/*
+			 * 
+			 */
+			this.toggleColumnSelectorLock = function() {
+				self.lock = !self.lock;				
+			}
+
+			/*
+			 * 
+			 */
+			this.isColumnSelectorLockDisabled = function() {
+				return self.applyTo == 'USER';
+			}
+
+			/*
+			 * 
+			 */
+			this.resetColumnSelector = function() {
+				setColumnSelectionFromPreference(self.applyTo, null);
+				reorderColumns(self.applyTo);
+				self.toggleColumnSelector();
 			}
 
 			/*

@@ -36,7 +36,7 @@
 }
 
 .tbl-toolbar-section {
-	margin-right: 5px;
+	padding-right: 3px;
 	border-right: 1px dotted gray;
 	float: left;
 }

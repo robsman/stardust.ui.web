@@ -1,9 +1,9 @@
 <div class="worklist-wrapper">
 	<div class="worklist-title tbl-title">{{worklistCtrl.title}}</div>
 	<div sda-toolbar>
-		<a sda-column="TRIVIAL_DATA" href="#" ng-click="worklistCtrl.$completeAll()" title="Complete All" class="tbl-toolbar-item tbl-tool-link">
+		<button class="button-link" sda-column="TRIVIAL_DATA" href="#" ng-click="worklistCtrl.$completeAll()" title="Complete All" class="tbl-toolbar-item tbl-tool-link">
 		   <i class="fa fa-share"></i>
-		</a>
+		</button>
 	</div>
 	<table sd-data-table="{{worklistCtrl.tableHandleExpr}}" sd-data="worklistCtrl.fetchPage(params)" sda-ready="worklistCtrl.ready"
 		sda-page-size="{{worklistCtrl.sdaPageSize}}" sda-mode="remote"

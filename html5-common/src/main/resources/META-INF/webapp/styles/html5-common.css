@@ -98,6 +98,15 @@
    margin-right: 10px;
 }
 
+.button-link {
+	background: none;
+	border: none;
+}
+
+.button-link[disabled='disabled'] {
+	cursor: default;	
+}
+
 /************** Behaviors *****************/
 
 .right {
