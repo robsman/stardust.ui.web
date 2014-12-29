@@ -21,6 +21,7 @@
          <bean class="org.eclipse.stardust.ui.web.rest.ProcessInstanceResource" />
          <bean class="org.eclipse.stardust.ui.web.rest.WorklistResource" />
          <bean class="org.eclipse.stardust.ui.web.rest.DaemonsResource" />
+         <bean class="org.eclipse.stardust.ui.web.rest.PreferenceResource" />
 		</jaxrs:serviceBeans>
 		<jaxrs:providers>
             <bean class="org.eclipse.stardust.ui.web.rest.exception.PortalExceptionMapper"/>

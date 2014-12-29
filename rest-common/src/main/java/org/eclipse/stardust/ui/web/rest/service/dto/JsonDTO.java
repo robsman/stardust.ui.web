@@ -11,11 +11,15 @@
 package org.eclipse.stardust.ui.web.rest.service.dto;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 import org.eclipse.stardust.ui.web.rest.JsonMarshaller;
 
@@ -86,6 +90,92 @@ public class JsonDTO
       else
       {
          throw new RuntimeException("Not supported");
+      }
+   }
+
+   /*
+    * 
+    */
+   public static Map<String, Object> getAsMap(String json)
+   {
+      return toObject(getJsonObject(json));
+   }
+   
+   /**
+    * @param elem
+    * @return
+    */
+   private static Map<String, Object> toObject(JsonObject elem)
+   {
+      Map<String, Object> data = new HashMap<String, Object>();
+      for (Entry<String, JsonElement> entry : elem.entrySet())
+      {
+         data.put(entry.getKey(), toObject(entry.getValue()));
+      }
+      
+      return data;
+   }
+
+   /**
+    * @param elem
+    * @return
+    */
+   private static List<Object> toObject(JsonArray elem)
+   {
+      List<Object> data = new ArrayList<Object>();
+      for (int i = 0; i < elem.size(); i++)
+      {
+         data.add(toObject(elem.get(i)));
+      }
+      
+      return data;
+   }
+
+   /**
+    * @param elem
+    * @return
+    */
+   private static Object toObject(JsonElement elem)
+   {
+      if(elem.isJsonArray())
+      {
+         return toObject((JsonArray)elem);
+      }
+      else if(elem.isJsonObject())
+      {
+         return toObject((JsonObject)elem);
+      }
+      else if(elem.isJsonPrimitive())
+      {
+         return toObject((JsonPrimitive)elem);
+      }
+      else
+      {
+         return null;
+      }
+   }
+
+   /**
+    * @param elem
+    * @return
+    */
+   public static Object toObject(JsonPrimitive elem)
+   {
+      if (elem.isNumber())
+      {
+         return elem.getAsNumber();
+      }
+      else if (elem.isString())
+      {
+         return elem.getAsString();
+      }
+      else if (elem.isBoolean())
+      {
+         return elem.getAsBoolean();
+      }
+      else
+      {
+         return null;
       }
    }
 }
