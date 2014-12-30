@@ -17,8 +17,8 @@
 	'use strict';
 
 	angular.module('bpm-common.services').provider('sdPreferenceService', function () {
-		this.$get = ['sdUtilService', function (sdUtilService) {
-			var service = new PreferenceService(sdUtilService);
+		this.$get = ['sdUtilService', 'sdLoggerService', function (sdUtilService, sdLoggerService) {
+			var service = new PreferenceService(sdUtilService, sdLoggerService);
 			return service;
 		}];
 	});
@@ -26,7 +26,9 @@
 	/*
 	 * 
 	 */
-	function PreferenceService(sdUtilService) {
+	function PreferenceService(sdUtilService, sdLoggerService) {
+		var trace = sdLoggerService.getLogger('bpm-common.sdPreferenceService');
+
 		/*
 		 * 
 		 */
@@ -57,7 +59,8 @@
 
 				var value = store[name];
 				if (userScope && value == undefined) {
-					 value = parentStore[name];
+					value = parentStore[name];
+					trace.log('Falling back to Partition Scope for: ' + name);
 				}
 
 				return value;
@@ -104,7 +107,11 @@
 			 * 
 			 */
 			PreferenceStorage.prototype.save = function() {
-				return sdUtilService.syncAjaxSubmit(url, store);
+				if (store != undefined) {
+					return sdUtilService.syncAjaxSubmit(url, store);
+				} else {
+					trace.error('Cannot save preferences, as its not yet fetched.');
+				}
 			};
 		}
 	};
