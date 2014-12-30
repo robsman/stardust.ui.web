@@ -43,8 +43,9 @@
 			url = url.replace(':scope', scope);
 			url = url.replace(':moduleId', module);
 			url = url.replace(':preferenceId', preferenceId);
-			
-			var store;
+
+			var userScope = scope.toUpperCase() == 'USER';
+			var store, parentStore;
 
 			/*
 			 * 
@@ -53,7 +54,13 @@
 				if (store == undefined) {
 					this.fetch();
 				}
-				return store[name];
+
+				var value = store[name];
+				if (userScope && value == undefined) {
+					 value = parentStore[name];
+				}
+
+				return value;
 			};
 
 			/*
@@ -72,16 +79,24 @@
 				} else {
 					delete store[name];
 				}
-				
 			};
 
 			/*
 			 * 
 			 */
 			PreferenceStorage.prototype.fetch = function() {
-				store = sdUtilService.syncAjax(url);
+				var prefData = sdUtilService.syncAjax(url);
+
+				store = prefData[scope.toUpperCase()];
 				if (!store) {
 					store = {};
+				}
+
+				if (userScope) {
+					parentStore = prefData['PARTITION'];
+					if (!parentStore) {
+						parentStore = {};
+					}
 				}
 			};
 

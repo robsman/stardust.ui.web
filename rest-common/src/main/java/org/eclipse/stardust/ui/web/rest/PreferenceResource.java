@@ -11,6 +11,7 @@
 package org.eclipse.stardust.ui.web.rest;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -21,6 +22,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
@@ -61,14 +63,26 @@ public class PreferenceResource
          
          AdministrationService adminService = serviceFactoryUtils.getAdministrationService();
 
+         Map<String, Map<String, Serializable>> allVals = new HashMap<String, Map<String,Serializable>>();
+
          Preferences preferences = adminService.getPreferences(pScope, moduleId, preferenceId);
-         
-         Map<String, Serializable> values = preferences.getPreferences();
+         allVals.put(pScope.toString(), preferences.getPreferences());
+
+         if (pScope == PreferenceScope.USER)
+         {
+            // Get for Partition Scope
+            pScope = PreferenceScope.PARTITION;
+
+            preferences = adminService.getPreferences(pScope, moduleId, preferenceId);
+            allVals.put(pScope.toString(), preferences.getPreferences());
+         }
+
          Gson gson = new Gson();
-         return Response.ok(gson.toJson(values), MediaType.APPLICATION_JSON).build();
+         return Response.ok(gson.toJson(allVals), MediaType.APPLICATION_JSON).build();
       }
 
-      return null;
+      trace.error("Scope should not be empty.");
+      return Response.status(Status.BAD_REQUEST).build();
    }
 
    @SuppressWarnings({"rawtypes", "unchecked"})
@@ -99,6 +113,7 @@ public class PreferenceResource
          return Response.ok(gson.toJson(""), MediaType.APPLICATION_JSON).build();
       }
 
-      return Response.ok("", MediaType.APPLICATION_JSON).build();
+      trace.error("Scope should not be empty.");
+      return Response.status(Status.BAD_REQUEST).build();
    }
 }
