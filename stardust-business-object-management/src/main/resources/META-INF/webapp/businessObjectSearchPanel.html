@@ -27,7 +27,7 @@
 				ng-model="businessObjectManagementPanelController.businessObject.primaryKeyField.filterValue"
 				ng-blur="businessObjectManagementPanelController.filterBusinessObjectInstances()"></input></td>
 			<td
-				ng-repeat="field in businessObjectManagementPanelController.businessObject.keyFields"><label
+				ng-repeat="field in businessObjectManagementPanelController.fetchKeyFields()"><label
 				style="margin-left: 5px;">{{field.label}}</label><input type="text"
 				style="width: 100px; margin-left: 5px;" ng-model="field.filterValue"
 				ng-blur="businessObjectManagementPanelController.filterBusinessObjectInstances()"></input></td>
@@ -44,7 +44,7 @@
 				<tr>
 					<th>{{businessObjectManagementPanelController.businessObject.primaryKeyField.label}}</th>
 					<th
-						ng-repeat="field in businessObjectManagementPanelController.businessObject.keyFields">{{field.label}}</th>
+						ng-repeat="field in businessObjectManagementPanelController.fetchKeyFields()">{{field.label}}</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -54,7 +54,7 @@
 					sd-table-selection-changed="businessObjectManagementPanelController.rootController.onBusinessObjectInstanceSelectionChange()">
 					<td>{{businessObjectInstance[businessObjectManagementPanelController.businessObject.primaryKeyField.id]}}</td>
 					<td
-						ng-repeat="field in businessObjectManagementPanelController.businessObject.keyFields">{{businessObjectInstance[field.id]}}</td>
+						ng-repeat="field in businessObjectManagementPanelController.fetchKeyFields()">{{businessObjectInstance[field.id]}}</td>
 				</tr>
 			</tbody>
 		</table>

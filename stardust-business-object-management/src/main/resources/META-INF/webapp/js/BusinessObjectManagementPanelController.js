@@ -117,6 +117,24 @@ define(
 
 					this.filterBusinessObjectInstances();
 				};
+				
+				/**
+				 * 
+				 */
+				BusinessObjectManagementPanelController.prototype.fetchKeyFields = function() {
+					var keyFields = [];
+
+					for (var n = 0; this.businessObject && n < this.businessObject.keyFields.length; n++) {
+						// Skip complex fields
+
+						if (this.businessObject.keyFields[n].list){
+							continue;
+						}
+
+						keyFields.push(this.businessObject.keyFields[n]);
+					}
+					return keyFields;
+				};
 
 				/**
 				 * 

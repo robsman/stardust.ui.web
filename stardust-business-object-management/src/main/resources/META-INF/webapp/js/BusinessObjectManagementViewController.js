@@ -306,6 +306,20 @@ define(
 				};
 
 				/**
+				 * 
+				 */
+				BusinessObjectManagementViewController.prototype.isNumberType = function(
+						type) {
+					if (type == "integer" || type == "int" || type == "short"
+							|| type == "long") {
+						return true;
+					} else {
+						return false;
+					}
+					
+				}
+				
+				/**
 				 * Include arrays of Primitives.
 				 */
 				BusinessObjectManagementViewController.prototype.getPrimitiveFields = function(
