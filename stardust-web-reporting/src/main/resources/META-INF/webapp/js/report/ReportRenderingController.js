@@ -902,6 +902,7 @@ define(
                 document.body.style.cursor = "wait";
                 
                 if(this.reportData){
+                	document.body.style.cursor = "default";
                    return deferred.resolve(this.reportData);
                 }else{
                 	var self = this;
@@ -944,8 +945,6 @@ define(
 				this.renderingFailed = null;
 				document.body.style.cursor = "wait";
 				scopeController.updateView();
-            	
-				
 				
 					setTimeout(
 							function() {
