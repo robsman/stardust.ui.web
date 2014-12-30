@@ -1235,7 +1235,7 @@ define(
                            self.report.metadata = report.metadata;
                            if (self.path == null)
                            {// Create Case
-                              window.parent.EventHub.events.publish("BPM-REPORTING-REPORT-UPDATED", 
+                              window.parent.EventHub.events.publish("BPM-REPORTING-REPORT-CREATED", 
                                        self.report.reportUID, self.report.name);
                            }
                            self.showFavoriteBtn = true;
