@@ -66,7 +66,29 @@ define(
 							name : this
 									.getI18N("reporting.definitionView.additionalFiltering.allactivities"),
 							order : 0
-						}
+						},
+						DURATION_UNITS : [{
+							id : "s",
+							name : this.getI18N('reporting.definitionView.seconds.label')
+						}, {
+							id : "m",
+							name : this.getI18N('reporting.definitionView.minutes.label')
+						}, {
+							id : "h",
+							name : this.getI18N('reporting.definitionView.hours.label')
+						}, {
+							id : "d",
+							name : this.getI18N('reporting.definitionView.days.label')
+						}, {
+							id : "w",
+							name : this.getI18N('reporting.definitionView.weeks.label')
+						}, {
+							id : "M",
+							name : this.getI18N('reporting.definitionView.months.label')
+						}, {
+							id : "Y",
+							name : this.getI18N('reporting.definitionView.years.label')
+						}]
 					};
 
 					this.reportingService = reportingService;
