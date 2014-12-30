@@ -1210,13 +1210,14 @@ define(
                      .renameReportDefinition(
                               self.path,
                               self.report.name).done(
-                                    function() {
+                                    function(updatedReportPath) {
+                                       self.path = updatedReportPath;
                                        self.reportingService.saveReportDefinition(self.report)
                                        .done(
                                              function(report) {
                                                 self.report.storage = report.storage;
                                                 window.parent.EventHub.events.publish("BPM-REPORTING-REPORT-UPDATED", 
-                                                         self.report.reportUID, self.report.name);
+                                                         self.report.reportUID, self.report.name, self.path);
                                                 self.updateView();
                                              });
                                              document.body.style.cursor = "default";

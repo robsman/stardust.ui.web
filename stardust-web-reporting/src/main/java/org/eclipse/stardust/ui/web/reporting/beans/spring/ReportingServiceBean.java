@@ -799,8 +799,14 @@ public class ReportingServiceBean
       documentInfo.setContentType(MimeTypesHelper.DEFAULT.getType());
 
       byte[] content = getDocumentManagementService().retrieveDocumentContent(path);
-
-      getDocumentManagementService().createDocument(folderPath, documentInfo, content, null);
+      
+      
+      JsonObject reportDefinitionJson = jsonMarshaller.readJsonObject(new String(content));
+      //update report definition name
+      reportDefinitionJson.addProperty("name", name);
+      byte[] updatedContent = jsonMarshaller.writeJsonObject(reportDefinitionJson).getBytes();
+       
+      getDocumentManagementService().createDocument(folderPath, documentInfo, updatedContent, null);
       getDocumentManagementService().removeDocument(reportDefinitionDocument.getId());
 
       return folderPath + "/" + name + REPORT_DEFINITION_EXT;
