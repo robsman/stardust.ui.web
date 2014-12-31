@@ -31,6 +31,9 @@
 				log: function() {
 					logIt(console.log, Array.prototype.slice.call(arguments, 0));
 				},
+				debug: function() {
+					logIt(console.log, Array.prototype.slice.call(arguments, 0));
+				},
 				info: function() {
 					logIt(console.info, Array.prototype.slice.call(arguments, 0));
 				},
@@ -41,12 +44,12 @@
 					logIt(console.error, Array.prototype.slice.call(arguments, 0));
 				},
 				printStackTrace : function(msg) {
-					console.error(msg);
+					logIt(console.error, msg);
 
 					if (console.trace) {
 						console.trace();
 					} else {
-						console.warn('Could not log stack trace as browser does not support console.trace().');
+						logIt(console.warn, 'Could not log stack trace as browser does not support console.trace().');
 					}
 				}
 			};
