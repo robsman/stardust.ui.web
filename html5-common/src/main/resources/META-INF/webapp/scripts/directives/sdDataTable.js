@@ -347,6 +347,10 @@
 					colDef.name = colDef.label;
 				}
 
+				if (hCol.attr('sda-name')) {
+					colDef.name = hCol.attr('sda-name');
+				}
+
 				colDef.contents = bCol.html();
 				colDef.contents = colDef.contents.trim();
 				if (colDef.contents == "") {

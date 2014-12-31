@@ -13,19 +13,19 @@
 		sda-on-column-reorder="worklistCtrl.onColumnReorder(info)">
 		<thead sda-i18n-scope="processportal.views-worklistPanel-column">
 			<tr>
-				<th sda-label-key="overview" sda-sortable="true">
+				<th sda-name="Overview" sda-label-key="overview" sda-sortable="true">
 					<div sd-filter-template></div>
 				</th>
-				<th sda-label-key="oid" sda-sortable="true" sda-filterable="" sda-exportable=""></th>
-				<th sda-label-key="processName" sda-visible="false" sda-sortable="true"></th>
-				<th sda-label-key="started" sda-sortable="true"></th>
-				<th sda-label-key="lastmodification" sda-sortable="true"></th>
-				<th sda-label-key="descriptors" sda-visible="false"></th>
+				<th sda-name="OID" sda-label-key="oid" sda-sortable="true" sda-filterable="" sda-exportable=""></th>
+				<th sda-name="ProcessDefinition" sda-label-key="processName" sda-visible="false" sda-sortable="true"></th>
+				<th sda-name="Started" sda-label-key="started" sda-sortable="true"></th>
+				<th sda-name="LastModified" sda-label-key="lastmodification" sda-sortable="true"></th>
+				<th sda-name="Descriptors" sda-label-key="descriptors" sda-visible="false"></th>
 				<th ng-repeat="descCol in worklistCtrl.descritorCols"
 					sda-label="{{descCol.title}}" sda-visible="false" sda-sortable="{{descCol.sortable}}">
 				</th>
-				<th sda-column="TRIVIAL_DATA" sda-label-key="data"></th>
-				<th sda-label-key="actions" sda-fixed="true"></th>
+				<th sda-name="Data" sda-column="TRIVIAL_DATA" sda-label-key="data"></th>
+				<th sda-name="Actions" sda-label-key="actions" sda-fixed="true"></th>
 			</tr>
 		</thead>
 		<tbody>
