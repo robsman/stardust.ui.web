@@ -57,9 +57,9 @@
 					this.fetch();
 				}
 
-				var value = store[name];
+				var value = store[this.marshalName(scope, name)];
 				if (userScope && value == undefined) {
-					value = parentStore[name];
+					value = parentStore[this.marshalName('PARTITION', name)];
 					trace.log('Falling back to Partition Scope for: ' + name);
 				}
 
@@ -78,9 +78,9 @@
 					if (angular.isObject(value) || angular.isArray(value)) {
 						value = angular.toJson(value);
 					}
-					store[name] = value;
+					store[this.marshalName(scope, name)] = value;
 				} else {
-					delete store[name];
+					delete store[this.marshalName(scope, name)];
 				}
 			};
 
@@ -112,6 +112,13 @@
 				} else {
 					trace.error('Cannot save preferences, as its not yet fetched.');
 				}
+			};
+
+			/*
+			 * 
+			 */
+			PreferenceStorage.prototype.marshalName = function(scope, name) {
+				return name;
 			};
 		}
 	};

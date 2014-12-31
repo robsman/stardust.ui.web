@@ -601,7 +601,7 @@
 					}
 
 					if (!invokeAfterDigest) {
-						handleInfo.handler(elemScope, transObj);
+						return handleInfo.handler(elemScope, transObj);
 					} else {
 						$timeout(function() {
 							handleInfo.handler(elemScope, transObj);
@@ -612,7 +612,7 @@
 				}
 			}
 		}
-
+		
 		/*
 		 * 
 		 */
@@ -712,22 +712,44 @@
 		/*
 		 * 
 		 */
-		function supportsPreference() {
-			return attr.sdaPreferenceModule && attr.sdaPreferenceModule != '' && 
-				attr.sdaPreferenceId && attr.sdaPreferenceId != '' &&
-				attr.sdaPreferenceName && attr.sdaPreferenceName != '';
+		function getPreferenceDelegate(pScope) {
+			var preferenceDelegate = {};
+
+			if (attr.sdaPreferenceDelegate) {
+				var funcInfo = sdUtilService.parseFunction(attr.sdaPreferenceDelegate);
+				if (funcInfo && funcInfo.params && funcInfo.params.length > 0) {
+					var preferenceDelagate = {
+						handler : $parse(attr.sdaPreferenceDelegate),
+						param : funcInfo.params[0]
+					}
+					var data = {
+						scope : pScope
+					}
+
+					preferenceDelegate.store = fireDataTableEvent(preferenceDelagate, data, 'PreferenceDelegate');					
+				} else {
+					sdUtilService.assert(false, 'sda-preference-delegate does not seems to be correcly used, it does not appear to be a function accepting parameter.');
+				}
+			} else if(attr.sdaPreferenceModule && attr.sdaPreferenceModule != '' && 
+					attr.sdaPreferenceId && attr.sdaPreferenceId != '' &&
+					attr.sdaPreferenceName && attr.sdaPreferenceName != '') {
+				preferenceDelegate.store = sdPreferenceService.getStore(pScope, attr.sdaPreferenceModule, attr.sdaPreferenceId);
+				preferenceDelegate.name = attr.sdaPreferenceName;
+			}
+
+			return preferenceDelegate;
 		}
 
 		/*
 		 * 
 		 */
 		function getColumnSelectionFromPreference(pScope) {
-			pScope = !pScope ? 'USER' : pScope;
-
 			var prefValue;
-			if (supportsPreference()) {
-				var preferenceInstance = sdPreferenceService.getStore(pScope, attr.sdaPreferenceModule, attr.sdaPreferenceId);
-				prefValue = preferenceInstance.getValue(attr.sdaPreferenceName);
+
+			pScope = !pScope ? 'USER' : pScope;
+			var preferenceDelegate = getPreferenceDelegate(pScope);
+			if (preferenceDelegate.store) {
+				prefValue = preferenceDelegate.store.getValue(preferenceDelegate.name);
 				
 				if(prefValue) {
 					try {
@@ -751,8 +773,7 @@
 					lock : false
 				};
 			}
-			
-			
+
 			prefValue.scope = pScope;
 
 			return prefValue;
@@ -763,10 +784,10 @@
 		 */
 		function setColumnSelectionFromPreference(pScope, value) {
 			pScope = !pScope ? 'USER' : pScope;
-			if (supportsPreference()) {
-				var preferenceInstance = sdPreferenceService.getStore(pScope, attr.sdaPreferenceModule, attr.sdaPreferenceId);
-				preferenceInstance.setValue(attr.sdaPreferenceName, value);
-				preferenceInstance.save();
+			var preferenceDelegate = getPreferenceDelegate(pScope);
+			if (preferenceDelegate.store) {
+				preferenceDelegate.store.setValue(preferenceDelegate.name, value);
+				preferenceDelegate.store.save();
 			} else {
 				localPrefStore[pScope] = value;
 			}

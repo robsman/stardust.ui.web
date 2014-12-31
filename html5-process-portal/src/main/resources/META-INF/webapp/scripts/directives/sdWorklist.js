@@ -17,13 +17,13 @@
 	'use strict';
 
 	angular.module('bpm-common').directive('sdWorklist', 
-			['$parse', '$q', 'sdUtilService', 'sdViewUtilService', 'sdWorklistService', 
+			['$parse', '$q', 'sdUtilService', 'sdViewUtilService', 'sdPreferenceService', 'sdWorklistService', 
 			 'sdActivityInstanceService', 'sdProcessDefinitionService', WorklistDirective]);
 
 	/*
 	 * 
 	 */
-	function WorklistDirective($parse, $q, sdUtilService, sdViewUtilService, sdWorklistService, 
+	function WorklistDirective($parse, $q, sdUtilService, sdViewUtilService, sdPreferenceService, sdWorklistService, 
 			sdActivityInstanceService, sdProcessDefinitionService) {
 
 		var directiveDefObject = {
@@ -157,9 +157,24 @@
 				this.sdaPageSize = attr.sdaPageSize;
 			}
 
+			this.worklistPrefModule = 'ipp-workflow-perspective';
 			this.worklistPrefId = 'worklist-participant-columns' || 'worklist-process-columns'; //TODO
 			this.worklistPrefName = this.query.userId || this.query.participantQId; //TODO
-			
+
+			this.preferenceDelegate = function(prefInfo) {
+				var preferenceStore = sdPreferenceService.getStore(prefInfo.scope, self.worklistPrefModule, self.worklistPrefId);
+
+				// Override
+				preferenceStore.marshalName = function(scope) {
+					if (scope == 'PARTITION') {
+						return 'Default';
+					}
+					return self.worklistPrefName;
+				}
+
+				return preferenceStore;
+			}
+
 			this.fetchDescriptorCols();
 		};
 
