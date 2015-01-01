@@ -73,11 +73,12 @@ define(
 							if (participant.type != "organizationParticipant") {
 								continue;
 							}
-
-							this.organizations.push({
-								label : model.name + "/" + participant.name,
-								fullId : participant.getFullId()
-							});
+							 if(participant.attributes["carnot:engine:bound"]){
+								 this.organizations.push({
+										label : model.name + "/" + participant.name,
+										fullId : participant.getFullId()
+									});	 
+							 }
 						}
 					}
 
