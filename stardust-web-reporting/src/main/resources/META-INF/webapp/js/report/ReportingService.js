@@ -581,13 +581,14 @@ define(
 				
 				this.clientDateFormat = 'yyyy-MM-dd hh:mm a';
 				
-				this.formats = {
-						date : "MM/dd/yy",
-						minutes : "MM/dd/yy hh:mm a",
-						seconds : "MM/dd/yy hh:mm:ss a",
-						hours : "MM/dd/yy hh a",
-						months : "MM/yy"
+				this.dateFormats = {
+						date : this.getI18N("dateFormats.defaultDateFormat"),
+						minutes : this.getI18N("dateFormats.defaultDateTimeFormat"),
+						seconds : this.getI18N("dateFormats.date.seconds"),
+						hours : this.getI18N("dateFormats.date.hours"),
+						months : this.getI18N("dateFormats.date.months")
 				};
+				
 				this.serverDateFormat = "yy/mm/dd";
 
 				/**
@@ -766,7 +767,6 @@ define(
 							}).fail(function() {
 								deferred.reject();
 							});
-						this.getDateFormats();
 					}
 
 					return deferred.promise();
@@ -2105,37 +2105,6 @@ define(
 					}
 					
 					return inData;
-            };
-            
-            /**
-             * 
-             */
-            ReportingService.prototype.getDateFormats = function() {
-               var deferred = jQuery.Deferred();
-               var self = this;
-
-               jQuery
-                     .ajax(
-                           {
-                              type : "GET",
-                              async: false,
-                              beforeSend : function(request) {
-                                 request
-                                       .setRequestHeader(
-                                             "Authentication",
-                                             self
-                                                   .getBasicAuthenticationHeader());
-                              },
-                              url : self.getRootUrl()
-                                    + "/services/rest/bpm-reporting/dateFormats",
-                              contentType : "application/json"
-                           }).done(function(data) {
-                        	  self.formats = data;
-                              deferred.resolve();
-                     }).fail(function() {
-                        deferred.reject();
-                     });
-               return deferred.promise();
             };
             
             /**

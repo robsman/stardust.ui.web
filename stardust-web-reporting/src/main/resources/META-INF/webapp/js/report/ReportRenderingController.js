@@ -1250,16 +1250,16 @@ define(
         	 return null;
         	} 
 			if (this.report.dataSet.firstDimensionCumulationIntervalUnit == 's') {
-				return this.reportingService.formats.seconds;
+				return this.reportingService.dateFormats.seconds;
 			} else if (this.report.dataSet.firstDimensionCumulationIntervalUnit == 'm') {
-				return this.reportingService.formats.minutes;
+				return this.reportingService.dateFormats.minutes;
 			} else if (this.report.dataSet.firstDimensionCumulationIntervalUnit == 'h') {
-				return this.reportingService.formats.hours;
+				return this.reportingService.dateFormats.hours;
 			} else if (this.report.dataSet.firstDimensionCumulationIntervalUnit == 'd'
 					|| this.report.dataSet.firstDimensionCumulationIntervalUnit == 'w') {
-				return this.reportingService.formats.date;
+				return this.reportingService.dateFormats.date;
 			} else if (this.report.dataSet.firstDimensionCumulationIntervalUnit == 'M') {
-				return this.reportingService.formats.months;
+				return this.reportingService.dateFormats.months;
 			}
 			return null;
 		};
@@ -1407,7 +1407,7 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
    {
 	  if (selectedColumns[selColumn].type.id == this.reportingService.metadata.timestampType.id) 
       {
-         tableOptions.aoColumnDefs.push(getColumnDefForDate(selColumn, this.reportingService.formats.minutes));
+         tableOptions.aoColumnDefs.push(getColumnDefForDate(selColumn, this.reportingService.dateFormats.minutes));
       }
    }
 		
