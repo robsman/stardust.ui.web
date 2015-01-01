@@ -1722,43 +1722,60 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
 			 * 
 			 */
 			function getColumnDefForDate(selColumn, dateFormat) {
+				var col = parseInt(selColumn);
 				return {
-					"aTargets" : [ parseInt(selColumn) ],
-					"mData" : (function(dateFormat) { return function(source, type, val) {
+					"aTargets" : [col],
+					"mData" : (function (dateFormat, col) {
+						return function (source, type, val) {
 
-						if (type === 'set') {
-							//backup original date value
-							source[0] = val;
+							if (type === 'set') {
+								//backup original date value
+								source[col] = val;
 
-							//format date value
-							var dateVal = val;
-							var matches = dateVal.match(/\:/g);
-							// cannot handle millisecs at the moment
-							if (matches.length > 2) {
-								var lastIndex = dateVal.lastIndexOf(":");
-								dateVal = dateVal.substring(0, lastIndex);
-							}
-
-							//get the date object
-							var d = new Date(dateVal);
-							if (isFinite(d)) {
-								if (angularServices && angularServices.filter) {
-									dateVal = angularServices.filter('date')(d, dateFormat);
+								if (!source.display) {
+									source.display = [];
 								}
+
+								try {
+									//format date value
+									var dateVal = val;
+
+									if (!val) {
+										source.display[col] = dateVal;
+										return;
+									}
+
+									var matches = dateVal.match(/\:/g);
+									// cannot handle millisecs at the moment
+									if (matches.length > 2) {
+										var lastIndex = dateVal.lastIndexOf(":");
+										dateVal = dateVal.substring(0, lastIndex);
+									}
+
+									//get the date object
+									var d = new Date(dateVal);
+									if (isFinite(d)) {
+										if (angularServices && angularServices.filter) {
+											dateVal = angularServices.filter('date')(d, dateFormat);
+										}
+									}
+								} catch (e) {
+									console.debug("Error occurred while formatting date");
+								}
+								finally {
+									source.display[col] = dateVal;
+									return;
+								}
+							} else if (type === 'display' || type == 'filter') {
+								return source.display[col];
 							}
 
-							//store it for later usage
-							source.date_rendered = dateVal;
-							return;
-						} else if (type === 'display' || type == 'filter') {
-							return source.date_rendered;
-						}
-
-						// 'sort' and 'type' both just use the raw data
-						return source[0];
-			        };})(dateFormat) 
+							// 'sort' and 'type' both just use the raw data
+							return source[col];
+						};
+					})(dateFormat, col)
 				};
-			}
+			};
 			
 			/**
 			 * 
