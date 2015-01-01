@@ -508,80 +508,6 @@ define(
 					if(scopeController){
 						scopeController.tableOptions = tableOptions;	
 					}
-					
-					var primaryObject = this.reportingService.metadata.objects[report.dataSet.primaryObject];
-					//format groupby
-					var dimension = this.getDimension(report.dataSet.groupBy);
-					
-					var self = this;
-					//if groupby is empty or none
-					if(!dimension){
-						Object.keys(inData).forEach(function(key) {
-							inData[primaryObject.name] = inData[key];
-	                        delete inData[key];	
-						});
-					}
-
-					if (dimension && dimension.enumerationType) {
-						var qualifier = dimension.enumerationType.split(":");
-						var enums = null;
-			
-						//model data must be added from server side
-						if(qualifier[0] != 'modelData' || this.reportingService.modelData){
-							enums = this.reportingService.getEnumerators(dimension.enumerationType);	
-						}
-						
-						if(!enums){
-							return;
-						}
-						var displayValueMapping = {};
-						Object.keys(inData).forEach(function(key) {
-							for ( var item in enums)
-	                          {
-	                             if (enums[item].id == key) {
-									if (enums[item].order) {
-										displayValueMapping[enums[item].name] = enums[item].order;
-									} else {
-										displayValueMapping[enums[item].name] = key;
-									}
-									if (enums[item].name != key) {
-										inData[enums[item].name] = inData[key];
-										delete inData[key];
-									}
-									break;
-	                             }
-	                          }
-						});
-						if(dimension.customSort && !dimensionAsRow){
-							tableOptions.aoColumnDefs.push(getColumnDef(0, displayValueMapping));	
-						}
-					}
-					//format first dimensions
-					dimension = this.getDimension(self.report.dataSet.firstDimension);
-					if (dimension && dimension.enumerationType) {
- 				        var enums = self.reportingService.getEnumerators(dimension.enumerationType);
- 				        var displayValueMapping = {};
-					    Object
-							.keys(inData)
-							.forEach(
-									function(key) {
-										for (var i = 0; i < inData[key].length; i++) {
-											for (var j = 0; j < enums.length; j++) {
-												if (enums[j].id == inData[key][i][0]) {
-													if(enums[j].order){
-														displayValueMapping[enums[j].name] = enums[j].order;	
-													}else{
-														displayValueMapping[enums[j].name] = inData[key][i][0];
-													}
-													inData[key][i][0] = enums[j].name;
-												}
-											}
-										}
-									});
-					    if(dimension.customSort && dimensionAsRow){
-							tableOptions.aoColumnDefs.push(getColumnDef(0, displayValueMapping));	
-						}
-					}
 				};
 				
 				/**
@@ -1479,38 +1405,7 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
    
    for ( var selColumn in selectedColumns)
    {
-	  if (selectedColumns[selColumn] && selectedColumns[selColumn].enumerationType) 
-      {
-         var enumItems = this.reportingService.getEnumerators(selectedColumns[selColumn].enumerationType);
-         var displayValueMapping = {};
-
-         for ( var row in data)
-         {
-            var record = data[row];
-            for ( var item in enumItems)
-            {
-               if (enumItems[item].id == record[selColumn])
-               {
-                  if (enumItems[item].order)
-                  {
-                     displayValueMapping[enumItems[item].name] = enumItems[item].order;
-                  }
-                  else
-                  {
-                     displayValueMapping[enumItems[item].name] = record[selColumn];
-                  }
-                  record[selColumn] = enumItems[item].name;
-                  break;
-               }
-            }
-         }
-         if (selectedColumns[selColumn].customSort
-                        && this.report.dataSet.groupBy === selectedColumns[selColumn].id) 
-         {
-            tableOptions.aoColumnDefs.push(getColumnDef(selColumn, displayValueMapping));
-         }
-               
-      } else if (selectedColumns[selColumn].type.id == this.reportingService.metadata.timestampType.id) 
+	  if (selectedColumns[selColumn].type.id == this.reportingService.metadata.timestampType.id) 
       {
          tableOptions.aoColumnDefs.push(getColumnDefForDate(selColumn, this.reportingService.formats.minutes));
       }
@@ -1776,25 +1671,6 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
 					})(dateFormat, col)
 				};
 			};
-			
-			/**
-			 * 
-			 */
-			function getColumnDef(selColumn, displayValueMapping){
-				return {
-			        "aTargets": [parseInt(selColumn)],
-			        "mData": (function(displayValueMapping) { return function(source, type, val) {
-			            if (type === 'set') {
-			                source[0] = val;
-			                return;
-			            } else if (type === 'display' || type == 'filter') {
-			                return source[0];
-			            }
-			            // 'sort' and 'type' both just use the raw data
-			            return displayValueMapping[source[0]];
-			        };})(displayValueMapping)
-			    };
-			}
 			
 			 /**
 			 * To get unique elements and their count.
