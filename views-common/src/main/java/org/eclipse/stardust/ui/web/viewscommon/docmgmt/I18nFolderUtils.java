@@ -41,6 +41,7 @@ public class I18nFolderUtils
    public static final String REPORTS = "reports";
    public static final String REPORT_MANAGER_REPORTS = "reportManagerReport";
    public static final String PRIVATE_REPORT_DEFINITIONS = "privateReportDefinitions";
+   public static final String PERSONAL_REPORT_DEFINITIONS = "personalReportDefinitions";
    public static final String PUBLIC_REPORT_DEFINITIONS = "publicReportDefinitions";
    public static final String PRIVATE_SAVED_REPORTS = "privateSavedReports";
    public static final String PUBLIC_SAVED_REPORTS = "publicSavedReports";
@@ -170,6 +171,7 @@ public class I18nFolderUtils
       systemFolders_virtual.add(new SystemFolder(REPORT_MANAGER_REPORTS, "views.genericRepositoryView.systemFolders.reportManagerReport.label"));
       
       systemFolders_virtual.add(new SystemFolder(PRIVATE_REPORT_DEFINITIONS, "views.genericRepositoryView.systemFolders.privateReportDefinitions.label"));
+      systemFolders_virtual.add(new SystemFolder(PERSONAL_REPORT_DEFINITIONS, "views.genericRepositoryView.systemFolders.personalReportDefinitions.label"));
       systemFolders_virtual.add(new SystemFolder(PUBLIC_REPORT_DEFINITIONS, "views.genericRepositoryView.systemFolders.publicReportDefinitions.label"));
       
       systemFolders_virtual.add(new SystemFolder(PRIVATE_SAVED_REPORTS, "views.genericRepositoryView.systemFolders.privateSavedReports.label"));

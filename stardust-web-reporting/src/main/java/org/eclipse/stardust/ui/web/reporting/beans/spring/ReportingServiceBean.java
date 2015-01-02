@@ -663,7 +663,7 @@ public class ReportingServiceBean
          }
 
          subFoldersJson.add(getReportDefinitions(publicFolder, I18nFolderUtils.getLabel(I18nFolderUtils.PUBLIC_REPORT_DEFINITIONS)));
-         subFoldersJson.add(getReportDefinitions(personalFolder, I18nFolderUtils.getLabel(I18nFolderUtils.PRIVATE_REPORT_DEFINITIONS)));
+         subFoldersJson.add(getReportDefinitions(personalFolder, I18nFolderUtils.getLabel(I18nFolderUtils.PERSONAL_REPORT_DEFINITIONS)));
 
          return rootFolderJson;
       }
