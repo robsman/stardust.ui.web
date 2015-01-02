@@ -41,28 +41,32 @@
 		 * 
 		 */
 		function PreferenceStorage(scope, module, preferenceId) {
-			var url = "services/rest/portal/preference/:scope/:moduleId/:preferenceId";
-			url = url.replace(':scope', scope);
-			url = url.replace(':moduleId', module);
-			url = url.replace(':preferenceId', preferenceId);
+			this.scope = scope;
+			this.module = module;
+			this.preferenceId = preferenceId;
 
-			var userScope = scope.toUpperCase() == 'USER';
-			var store, parentStore;
+			this.url = "services/rest/portal/preference/:scope/:moduleId/:preferenceId";
+			this.url = this.url.replace(':scope', this.scope);
+			this.url = this.url.replace(':moduleId', this.module);
+			this.url = this.url.replace(':preferenceId', this.preferenceId);
+			
+			this.userScope = this.scope.toUpperCase() == 'USER';
+			this.store = null;
+			this.parentStore = null;
 
 			/*
 			 * 
 			 */
 			PreferenceStorage.prototype.getValue = function(name) {
-				if (store == undefined) {
+				if (this.store == undefined) {
 					this.fetch();
 				}
 
-				var value = store[this.marshalName(scope, name)];
-				if (userScope && value == undefined) {
-					value = parentStore[this.marshalName('PARTITION', name)];
-					trace.log('Falling back to Partition Scope for: ' + name);
+				var value = this.store[this.marshalName(this.scope, name)];
+				if (this.userScope && value == undefined) {
+					value = this.parentStore[this.marshalName('PARTITION', name)];
+					trace.log('Falling back to Partition Scope for: ' + name, value);
 				}
-
 				return value;
 			};
 
@@ -70,7 +74,7 @@
 			 * 
 			 */
 			PreferenceStorage.prototype.setValue = function(name, value) {
-				if (store == undefined) {
+				if (this.store == undefined) {
 					this.fetch();
 				}
 
@@ -78,9 +82,9 @@
 					if (angular.isObject(value) || angular.isArray(value)) {
 						value = angular.toJson(value);
 					}
-					store[this.marshalName(scope, name)] = value;
+					this.store[this.marshalName(this.scope, name)] = value;
 				} else {
-					delete store[this.marshalName(scope, name)];
+					delete this.store[this.marshalName(this.scope, name)];
 				}
 			};
 
@@ -88,17 +92,17 @@
 			 * 
 			 */
 			PreferenceStorage.prototype.fetch = function() {
-				var prefData = sdUtilService.syncAjax(url);
+				var prefData = sdUtilService.syncAjax(this.url);
 
-				store = prefData[scope.toUpperCase()];
-				if (!store) {
-					store = {};
+				this.store = prefData[this.scope.toUpperCase()];
+				if (!this.store) {
+					this.store = {};
 				}
 
-				if (userScope) {
-					parentStore = prefData['PARTITION'];
-					if (!parentStore) {
-						parentStore = {};
+				if (this.userScope) {
+					this.parentStore = prefData['PARTITION'];
+					if (!this.parentStore) {
+						this.parentStore = {};
 					}
 				}
 			};
@@ -107,8 +111,8 @@
 			 * 
 			 */
 			PreferenceStorage.prototype.save = function() {
-				if (store != undefined) {
-					return sdUtilService.syncAjaxSubmit(url, store);
+				if (this.store != undefined) {
+					return sdUtilService.syncAjaxSubmit(this.url, this.store);
 				} else {
 					trace.error('Cannot save preferences, as its not yet fetched.');
 				}
