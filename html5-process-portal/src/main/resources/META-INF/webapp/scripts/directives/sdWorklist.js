@@ -157,6 +157,8 @@
 				this.sdaPageSize = attr.sdaPageSize;
 			}
 
+			this.columnSelector = 'admin'; //TODO
+
 			this.worklistPrefModule = 'ipp-workflow-perspective';
 			this.worklistPrefId = 'worklist-participant-columns' || 'worklist-process-columns'; //TODO
 			this.worklistPrefName = this.query.userId || this.query.participantQId; //TODO

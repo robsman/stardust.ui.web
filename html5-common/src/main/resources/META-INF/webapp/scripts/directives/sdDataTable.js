@@ -107,14 +107,14 @@
 					'</div>\n' +
 					'<div class="popup-dlg-cnt tbl-col-selector">\n' +
 						'<div>\n' +
-							'<span class="ui-section">\n' +
+							'<span class="ui-section" ng-if="$dtApi.columnSelectorAdmin">\n' +
 								'<span class="label-form">{{i18n(\'portal-common-messages.common-preferenceScope-label\')}}</span>\n' +
 								'<select class="inp-sel-one" ng-model="$dtApi.applyTo" ng-change="$dtApi.applyToChanged()">\n' +
 									'<option value="USER">{{i18n(\'portal-common-messages.common-preferenceScope-options-user\')}}</option>\n' +
 									'<option value="PARTITION">{{i18n(\'portal-common-messages.common-preferenceScope-options-partition\')}}</option>\n' +
 								'</select>\n' +
 							'</span>\n' +
-							'<button class="button-link" ng-click="$dtApi.toggleColumnSelectorLock()" ng-disabled="$dtApi.isColumnSelectorLockDisabled()">\n' +
+							'<button class="button-link" ng-if="$dtApi.columnSelectorAdmin" ng-click="$dtApi.toggleColumnSelectorLock()" ng-disabled="$dtApi.isColumnSelectorLockDisabled()">\n' +
 								'<span class="fa fa-lg fa-lock" ng-show="$dtApi.lock"></span>\n' + 
 								'<span class="fa fa-lg fa-unlock" ng-show="!$dtApi.lock"></span>\n' +
 							'</button>\n' +
@@ -144,7 +144,7 @@
 		var theTable, theDataTable, theToolbar, theColReorder;
 		var selectedRowIndexes = {}, rowSelectionMode = false, selectionBinding;
 		var onSelect = {}, onPagination = {}, onColumnReorder = {};
-		var enableColumnSelector, columnsByDisplayOrder, columnsInfoByDisplayOrder, devColumnOrderPref;
+		var enableColumnSelector, columnSelectorAdmin, columnsByDisplayOrder, columnsInfoByDisplayOrder, devColumnOrderPref;
 		var columnSelectorPreference, localPrefStore = {};
 		var pageSize = 8;
 		
@@ -248,8 +248,9 @@
 				}
 			}
 
-			if (attr.sdaColumnSelector && attr.sdaColumnSelector == 'true') {
+			if (attr.sdaColumnSelector && (attr.sdaColumnSelector == 'true' || attr.sdaColumnSelector == 'admin')) {
 				enableColumnSelector = true;
+				columnSelectorAdmin = attr.sdaColumnSelector == 'admin' ? true : false;
 
 				if (attr.sdaOnColumnReorder) {
 					onColumnReorder.handler = $parse(attr.sdaOnColumnReorder);
@@ -571,7 +572,6 @@
 			}
 
 			exposeAPIs();
-			exposeScopeInfo();
 		}
 
 		/*
@@ -702,6 +702,8 @@
 				$timeout(function() {
 					reorderColumns(null, null, false);
 					doInitialSelection();
+					
+					exposeScopeInfo();
 				}, 0, false);
 
 				initialized = true;
@@ -748,24 +750,21 @@
 		 * 
 		 */
 		function getColumnSelectionFromPreference(pScope) {
-			var prefValue;
+			var prefValue = undefined;
 
 			pScope = !pScope ? 'USER' : pScope;
 			var preferenceDelegate = getPreferenceDelegate(pScope);
 			if (preferenceDelegate.store) {
-				prefValue = preferenceDelegate.store.getValue(preferenceDelegate.name);
-				
-				if(prefValue) {
-					try {
-						prefValue = JSON.parse(prefValue);
-					} catch(e) {
-						// Backward compatibility
-						var prefColumns = prefValue.split('$#$');
-						prefValue = {
-							selectedColumns : prefColumns,
-							lock : false
-						};
+				if (pScope == 'USER' && !columnSelectorAdmin) {
+					var parentPrefValue = preferenceDelegate.store.getValue(preferenceDelegate.name, true);
+					parentPrefValue = marshalPreferenceValue(parentPrefValue);
+					if (parentPrefValue && parentPrefValue.lock) {
+						prefValue = parentPrefValue;
 					}
+				}
+				if (prefValue == undefined) {
+					prefValue = preferenceDelegate.store.getValue(preferenceDelegate.name);
+					prefValue = marshalPreferenceValue(prefValue);
 				}
 			} else {
 				prefValue = localPrefStore[pScope];
@@ -783,6 +782,25 @@
 			return prefValue;
 		}
 
+		/*
+		 * 
+		 */
+		function marshalPreferenceValue(prefValue) {
+			if(prefValue) {
+				try {
+					prefValue = JSON.parse(prefValue);
+				} catch(e) {
+					// Backward compatibility
+					var prefColumns = prefValue.split('$#$');
+					prefValue = {
+						selectedColumns : prefColumns,
+						lock : false
+					};
+				}
+			}
+			return prefValue;
+		}
+		
 		/*
 		 * 
 		 */
@@ -1245,7 +1263,8 @@
 
 			function init() {
 				self.columns = [];
-				self.enableSelectColumns = enableColumnSelector;
+				self.enableSelectColumns = enableColumnSelector && (columnSelectorAdmin || !columnSelectorPreference.lock);
+				self.columnSelectorAdmin = columnSelectorAdmin;
 				self.showSelectColumns = false;
 				self.applyTo = 'USER';
 			}

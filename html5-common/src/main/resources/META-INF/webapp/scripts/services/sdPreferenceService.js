@@ -57,15 +57,21 @@
 			/*
 			 * 
 			 */
-			PreferenceStorage.prototype.getValue = function(name) {
+			PreferenceStorage.prototype.getValue = function(name, fromParent) {
 				if (this.store == undefined) {
 					this.fetch();
 				}
 
-				var value = this.store[this.marshalName(this.scope, name)];
-				if (this.userScope && value == undefined) {
+				var value;
+				if (fromParent) {
 					value = this.parentStore[this.marshalName('PARTITION', name)];
-					trace.log('Falling back to Partition Scope for: ' + name, value);
+					trace.log('Returning Partition Scope value for: ' + name, value);
+				} else {
+					value = this.store[this.marshalName(this.scope, name)];
+					if (this.userScope && value == undefined) {
+						value = this.parentStore[this.marshalName('PARTITION', name)];
+						trace.log('Falling back to Partition Scope for: ' + name, value);
+					}
 				}
 				return value;
 			};

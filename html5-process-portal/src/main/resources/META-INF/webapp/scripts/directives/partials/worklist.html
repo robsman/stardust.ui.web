@@ -9,7 +9,7 @@
 		sda-page-size="{{worklistCtrl.sdaPageSize}}" sda-mode="remote"
 		sda-selectable="multiple" sda-initial-selection="{{worklistCtrl.initialSelection}}" sda-selection="{{worklistCtrl.selectionExpr}}"
 		sda-on-select="worklistCtrl.onSelect(info)" sda-on-pagination="worklistCtrl.onPagination(info)"
-		sda-column-selector="true" sda-preference-delegate="worklistCtrl.preferenceDelegate(prefInfo)"
+		sda-column-selector="{{worklistCtrl.columnSelector}}" sda-preference-delegate="worklistCtrl.preferenceDelegate(prefInfo)"
 		sda-on-column-reorder="worklistCtrl.onColumnReorder(info)">
 		<thead sda-i18n-scope="processportal.views-worklistPanel-column">
 			<tr>
