@@ -18,6 +18,8 @@ import javax.annotation.Resource;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.*;
 import org.eclipse.stardust.engine.api.query.DataFilter;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
@@ -38,8 +40,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
 public class BusinessObjectManagementService {
-	//private static final Logger trace = LogManager
-	//		.getLogger(BusinessObjectManagementService.class);
+	private static final Logger trace = LogManager
+			.getLogger(BusinessObjectManagementService.class);
 
 	@Resource
 	private SessionContext sessionContext;
@@ -757,8 +759,8 @@ public class BusinessObjectManagementService {
 		String managedOrganizationsString = (String) data
 				.getAttribute("carnot:engine:managedOrganizations");
 
-		System.out.println("Managed Organizations");
-		System.out.println(managedOrganizationsString);
+		trace.info("Managed Organizations");
+		trace.info(managedOrganizationsString);
 
 		if (managedOrganizationsString != null) {
 			JsonObject wrapperJson = jsonIo
@@ -767,17 +769,17 @@ public class BusinessObjectManagementService {
 			JsonArray managedOrganizationsJson = wrapperJson.get(
 					"managedOrganizations").getAsJsonArray();
 
-			System.out.println(managedOrganizationsJson);
+			trace.info(managedOrganizationsJson);
 
 			for (int n = 0; n < managedOrganizationsJson.size(); ++n) {
 				String organizationFullId = managedOrganizationsJson.get(n)
 						.getAsString();
 
-				System.out.println(n + " " + organizationFullId);
+				trace.info(n + " " + organizationFullId);
 
 				String organizationId = organizationFullId.split(":")[1];
 
-				System.out.println(organizationId);
+				trace.info(organizationId);
 
 				// TODO Data and Organizations may not be in the same model
 
