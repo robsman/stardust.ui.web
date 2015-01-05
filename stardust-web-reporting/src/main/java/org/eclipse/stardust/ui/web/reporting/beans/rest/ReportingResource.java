@@ -222,12 +222,20 @@ public class ReportingResource
 
             return Response.ok(updatedReportPath, MediaType.TEXT_PLAIN).build();
          }
-         else
+         else if (operation.equals("save"))
          {
             JsonObject reportJson = GsonUtils.extractObject(json, "report");
             return Response.ok(reportingService.saveReportDefinition(reportJson).toString(),
                   MediaType.APPLICATION_JSON).build();
          }
+         else if (operation.equals("renameAndSave"))
+         {
+            JsonObject reportJson = GsonUtils.extractObject(json, "report");
+            return Response.ok(reportingService.renameAndSaveReportDefinition(reportJson).toString(),
+                  MediaType.APPLICATION_JSON).build();
+            
+         }
+         return null;
       }
       catch (Exception e)
       {

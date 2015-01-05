@@ -160,10 +160,13 @@ define(
                   }
                });
 					
-					window.parent.EventHub.events.subscribe("BPM-REPORTING-REPORT-NAME-UPDATED", function(newName, newPath) {
-                  self.report.name = newName;
-                  self.report.storage.path = newPath; 
-                  self.updateView();
+					window.parent.EventHub.events.subscribe("BPM-REPORTING-REPORT-NAME-UPDATED", function(reportUID, newName, newPath) {
+					   if (self.report.reportUID == reportUID)
+					   {
+					      self.report.name = newName;
+					      self.report.storage.path = newPath; 
+					      self.updateView();   
+					   }
                }, false);
 					
 					var self = this;
@@ -1206,25 +1209,17 @@ define(
                   {
                      //report name has been changed
 	                  console.log("report name has been changed");
-	                  self.reportingService
-                     .renameReportDefinition(
-                              self.path,
-                              self.report.name).done(
-                                    function(updatedReportPath) {
-                                       self.path = updatedReportPath;
-                                       self.reportingService.saveReportDefinition(self.report)
-                                       .done(
-                                             function(report) {
-                                                self.report.storage = report.storage;
-                                                window.parent.EventHub.events.publish("BPM-REPORTING-REPORT-UPDATED", 
-                                                         self.report.reportUID, self.report.name, self.path);
-                                                self.updateView();
-                                             });
-                                             document.body.style.cursor = "default";
-                                       }).fail(
-                                          function() {
-                                             document.body.style.cursor = "default";
-                                       });
+	                  
+	                  self.reportingService.renameAndSaveReportDefinition(self.report)
+                     .done(
+                           function(report) {
+                              self.path = report.storage.path;
+                              self.report.storage = report.storage;
+                              window.parent.EventHub.events.publish("BPM-REPORTING-REPORT-UPDATED", 
+                                       self.report.reportUID, self.report.name, self.path);
+                              self.updateView();
+                           });
+	                  
 	                  return;
                   }
                } 
@@ -1236,7 +1231,7 @@ define(
                            if (self.path == null)
                            {// Create Case
                               window.parent.EventHub.events.publish("BPM-REPORTING-REPORT-CREATED", 
-                                       self.report.reportUID, self.report.name);
+                                       self.report.reportUID, self.report.name, self.path);
                            }
                            self.showFavoriteBtn = true;
                            self.updateView();

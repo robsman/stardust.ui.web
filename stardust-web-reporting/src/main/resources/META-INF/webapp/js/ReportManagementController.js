@@ -82,8 +82,9 @@ define(
 						self.loadReportDefinitionsFolderStructure();
 					});
 					
-					window.parent.EventHub.events.subscribe("BPM-REPORTING-REPORT-CREATED", function(event) {
-							self.loadReportDefinitionsFolderStructure();
+					window.parent.EventHub.events.subscribe("BPM-REPORTING-REPORT-CREATED", function(reportUID, newName, updatedReportPath) {
+					   self.updateViewInfo(reportUID, "name=" + newName + "&reportUID=" + reportUID);
+					   self.loadReportDefinitionsFolderStructure();
 					}, false);
 					window.parent.EventHub.events.subscribe("BPM-REPORTING-REPORT-UPDATED", function(reportUID, newName, updatedReportPath) {
 					   self.updateViewInfo(reportUID, "name=" + newName + "&reportUID=" + reportUID);
@@ -314,7 +315,7 @@ define(
    
    							               //Notify View about Rename
    							               window.parent.EventHub.events.publish("BPM-REPORTING-REPORT-NAME-UPDATED",
-   							                           newName, updatedReportPath);
+   							                        reportUID, newName, updatedReportPath);
    
    							               self.updateView();
    							               deferred.resolve();

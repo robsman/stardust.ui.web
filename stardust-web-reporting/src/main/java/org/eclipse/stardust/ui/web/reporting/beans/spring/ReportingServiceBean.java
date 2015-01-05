@@ -34,6 +34,7 @@ import javax.annotation.Resource;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
+
 import org.apache.commons.io.IOUtils;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
@@ -1098,6 +1099,26 @@ public class ReportingServiceBean
       jsonObject.add("executionDates", jsonArray);
       
       return jsonObject;
+
+   }
+   
+   /**
+    * Might be invoked for renaming and saving  Report Definition (whereby json
+    * contains a top-level element "report").
+    *
+    * @param json
+    */
+   public JsonObject renameAndSaveReportDefinition(JsonObject reportJson)
+   {
+      JsonObject storageJson = reportJson.get("storage").getAsJsonObject();
+
+      String updatedReportPath = renameReportDefinition(storageJson.get("path")
+            .getAsString(), reportJson.get("name").getAsString());
+
+      // Update report definition path
+      storageJson.addProperty("path", updatedReportPath);
+
+      return saveReportDefinition(reportJson);
 
    }
 }

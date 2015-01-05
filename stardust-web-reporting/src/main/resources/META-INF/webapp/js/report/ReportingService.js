@@ -2168,6 +2168,46 @@ define(
                return languageMap[LanguageKey];
             }
             
+            /**
+             * 
+             */
+            ReportingService.prototype.renameAndSaveReportDefinition = function(
+                  report) {
+               var deferred = jQuery.Deferred();
+               var self = this;
+
+               revertUIAdjustment(report);
+               
+               jQuery
+                     .ajax(
+                           {
+                              type : "PUT",
+                              async: false,
+                              beforeSend : function(request) {
+                                 request
+                                       .setRequestHeader(
+                                             "Authentication",
+                                             self
+                                                   .getBasicAuthenticationHeader());
+                              },
+                              url : self.getRootUrl()
+                                    + "/services/rest/bpm-reporting/report-definition",
+                              contentType : "application/json",
+                              data : JSON.stringify({
+                                 operation : "renameAndSave",
+                                 report : report
+                              })
+                           }).done(function(report) {
+                        applyUIAdjustment(report);    
+                        deferred.resolve(report);
+                     }).fail(function(response) {
+                        deferred.reject(response);
+                     });
+
+               applyUIAdjustment(report);
+               return deferred.promise();
+            };
+            
 			}
 			
 			/**
