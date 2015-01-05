@@ -1,54 +1,73 @@
-<!-- The file extension was changed from xhtml to html as it caused issues on JBoss environment when accessed from IE8. -->
-<html>
+<!doctype html>
+<html ng-app="confirmDialogApp">
 <head>
-<link type="text/css" rel="stylesheet" href="../../common/css/iPopupDialogStyle.css">
-</link>
+<script src="../js/libs/angular/angular-1.2.11.js"></script>
 <script>
-	function init()
-	{
-		document.getElementById('titleText').innerHTML = payloadObj.title;
-		document.getElementById('contentText').innerHTML = payloadObj.message;
-		if (payloadObj.cancelButtonText) {
-			document.getElementById('cancelButton').value = payloadObj.cancelButtonText;
-			document.getElementById('cancelButton').onclick = closePopup;
-		} else {
-			document.getElementById('cancelButton').style.visibility = 'hidden';
-		}
-		if (payloadObj.acceptButtonText) {
-			document.getElementById('acceptButton').value = payloadObj.acceptButtonText;
-			document.getElementById('acceptButton').onclick = function () {
-				payloadObj.acceptFunction();
-				closePopup();
-			}
-		} else {
-			document.getElementById('acceptButton').style.visibility = 'hidden';
-		}
-
-		document.getElementById('dialogCloseIcon').onclick = closePopup;
+	//default to English
+	var language = {
+		title : "Confirm",
+		message : "Are you sure you want perform selected Operation?",
+		ok : "Yes",
+		cancel : "Cancel",
+		close : "Close"
 	}
+	var app = angular.module('confirmDialogApp', []);
+
+	app.controller('confirmDialogController', [ '$scope', function($scope) {
+
+		//handle ok
+		$scope.ok = function() {
+			payloadObj.acceptFunction();
+			closePopup();
+		};
+
+		//handle cancel
+		$scope.cancel = function() {
+			closePopup();
+		};
+
+		$scope.language = angular.extend({}, language, payloadObj.language);
+
+	} ]);
+
+	//to handle line breaks
+	app.filter('trusted', [ '$sce', function($sce) {
+		return function(text) {
+			return $sce.trustAsHtml(text);
+		};
+	} ]);
 </script>
+<link type="text/css" rel="stylesheet" href="../../common/css/iPopupDialogStyle.css">
 </head>
-<body onload="init();" style="height: 100%; width: 100%; overflow: hidden; margin: 0px;">
+
+<body ng-controller="confirmDialogController"
+	style="height: 100%; width: 100%; overflow: hidden; margin: 0px;">
+
 	<div id="titleBar" class="iPopupDialogTitleBar">
-		<span id="titleText" class="iPopupDialogTitleText"></span>
-		<input id="dialogCloseIcon" type="button" title="Close" class="iPopupDialogCloseControl" />
+		<span id="titleText" class="iPopupDialogTitleText">{{language.title}}</span>
+		<input ng-click="cancel()" id="dialogCloseIcon" type="button"
+			title="{{language.close}}" class="iPopupDialogCloseControl" />
 	</div>
-	<div id="contentArea" class="iPopupDialogContentArea">
-		<div class="iPopupDialogSpacerDiv"></div>
-		<table border="0">
-			<tr>
-				<td class="iPopupDialogContentTabCol1">
-					<img src="../images/icons/dialog-icon-warning.jpg" />
-				</td>
-				<td class="iPopupDialogContentTabCol2">
-					<span id="contentText" class="iPopupDialogContentText"></span>
-				</td>
-			</tr>
-		</table>
-	</div>
-	<div id="controlsBar" class="iPopupDialogControlsArea">
-		<input id="acceptButton" type="button" value="OK" class="iPopupDialogControlButton" />
-		<input id="cancelButton" type="button" value="Cancel" class="iPopupDialogControlButton" />
-	</div>
+
+	<form name="confirmDialogForm">
+		<div id="contentArea" class="iPopupDialogContentArea">
+			<div class="iPopupDialogSpacerDiv"></div>
+			<table border="0">
+				<tr>
+					<td class="iPopupDialogContentTabCol1"><img
+						src="../images/icons/dialog-icon-warning.jpg" /></td>
+					<td class="iPopupDialogContentTabCol2"><span
+						ng-bind-html='language.message | trusted'
+						class="iPopupDialogContentText"></span></td>
+				</tr>
+			</table>
+		</div>
+		<div id="controlsBar" class="iPopupDialogControlsArea">
+			<input type="button" value={{language.ok}} ng-click="ok()"
+				class="iPopupDialogControlButton" /> <input type="button"
+				ng-click="cancel()" value="{{language.cancel}}"
+				class="iPopupDialogControlButton" />
+		</div>
+	</form>
 </body>
 </html>
