@@ -60,8 +60,8 @@ public class BusinessObjectManagementService {
 
 	private static final String MOCK_MODE = "MOCK_MODE";
 	private static final String PRODUCTION_MODE = "PRODUCTION_MODE";
-
-	private String mode = MOCK_MODE;
+   // Changed from MOCK to PROD for deployment, need to be parameterized
+	private String mode = PRODUCTION_MODE/*MOCK_MODE*/;
 	private JsonArray testModelsJson;
 	private Map<String, JsonObject> members;
 
@@ -1062,7 +1062,7 @@ public class BusinessObjectManagementService {
 		} else if (object instanceof String) {
 			return new JsonPrimitive((String) object);
 		}else if (object instanceof Date) {
-		   return new JsonPrimitive(DateUtils.format((Date) object, "yyyy-MM-dd"));
+		   return new JsonPrimitive(DateUtils.formatDate((Date) object));
 		}
 
 		throw new IllegalArgumentException("Unknown primitive object type \""
