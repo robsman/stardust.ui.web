@@ -40,6 +40,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
+import org.eclipse.stardust.ui.web.html5.ManagedBeanUtils;
 import org.eclipse.stardust.ui.web.html5.rest.RestControllerUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MIMEType;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
@@ -149,10 +150,7 @@ public class FileUploadRestlet
       {
          StringBuffer bundleData = new StringBuffer();
 
-         MessagePropertiesBean messageBean = (MessagePropertiesBean) RestControllerUtils.resolveSpringBean(
-               MessagePropertiesBean.class, servletContext);
-
-         ResourceBundle bundle = ResourceBundle.getBundle(BUNDLE_NAME, messageBean.getLocaleObject());
+         ResourceBundle bundle = ResourceBundle.getBundle(BUNDLE_NAME, ManagedBeanUtils.getLocale());
 
          String key;
          Enumeration<String> keys = bundle.getKeys();
