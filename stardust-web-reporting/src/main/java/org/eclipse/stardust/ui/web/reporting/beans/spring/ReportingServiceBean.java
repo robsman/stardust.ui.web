@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.StringTokenizer;
@@ -400,8 +401,9 @@ public class ReportingServiceBean
       {
          return LanguageUtil.getLocale(tok.nextToken());
       }
+
       trace.debug("could not find user language from httpRequest header");
-      return "en";
+      return Locale.getDefault().getLanguage();
    }
    
    
