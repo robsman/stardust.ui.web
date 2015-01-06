@@ -29,11 +29,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.StringTokenizer;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
-
 
 import org.apache.commons.io.IOUtils;
 import org.eclipse.stardust.common.StringUtils;
@@ -65,6 +65,7 @@ import org.eclipse.stardust.ui.web.common.spi.user.UserProvider;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.html5.rest.RestControllerUtils;
 import org.eclipse.stardust.ui.web.reporting.beans.spring.portal.SearchHandlerChain;
+import org.eclipse.stardust.ui.web.reporting.common.LanguageUtil;
 import org.eclipse.stardust.ui.web.reporting.common.portal.criticality.Criticality;
 import org.eclipse.stardust.ui.web.reporting.scheduling.SchedulingFactory;
 import org.eclipse.stardust.ui.web.reporting.scheduling.SchedulingRecurrence;
@@ -384,10 +385,25 @@ public class ReportingServiceBean
             reportParameters.add(rp);   
          }
       }
-
-      ReportRequest reportRequest = new ReportRequest(reportDefinition.getDataSet(), reportParameters);
+      ReportRequest reportRequest = new ReportRequest(reportDefinition.getDataSet(), reportParameters, getLanguage(httpRequest));
       return reportingService.getReport(reportRequest, ReportFormat.JSON);
    }
+
+   /**
+    * @param httpRequest
+    * @return
+    */
+   public String getLanguage(HttpServletRequest httpRequest)
+   {
+      StringTokenizer tok = new StringTokenizer(httpRequest.getHeader("Accept-language"), ",");
+      if (tok.hasMoreTokens())
+      {
+         return LanguageUtil.getLocale(tok.nextToken());
+      }
+      trace.debug("could not find user language from httpRequest header");
+      return "en";
+   }
+   
    
    /**
     * Might be invoked for saving of multiple Report Definitions or directly (whereby json

@@ -358,12 +358,7 @@ public class ReportingResource
    @Path("/language")
    public Response getLanguage()
    {
-      StringTokenizer tok = new StringTokenizer(httpRequest.getHeader("Accept-language"), ",");
-      if (tok.hasMoreTokens())
-      {
-         return Response.ok(LanguageUtil.getLocale(tok.nextToken()), MediaType.TEXT_PLAIN_TYPE).build();
-      }
-      return Response.ok("en", MediaType.TEXT_PLAIN_TYPE).build();
+      return Response.ok(reportingService.getLanguage(httpRequest), MediaType.TEXT_PLAIN_TYPE).build();
    }
 
    /**
