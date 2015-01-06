@@ -2155,20 +2155,6 @@ define(
             }
             
             /**
-             * Returns Display Language based on input parameter language code.
-             */
-            ReportingService.prototype.getJQueryDataTableLangBundleName = function(LanguageKey) {
-               var languageMap = new Object();
-                  languageMap["de"] = "German"
-                  languageMap["en"] = "English"
-                  languageMap["ja"] = "Japanese"   
-                  languageMap["zh_CN"] = "Chinese"
-                  languageMap["zh_TW"] = "Chinese-traditional"
-                  
-               return languageMap[LanguageKey];
-            }
-            
-            /**
              * 
              */
             ReportingService.prototype.renameAndSaveReportDefinition = function(

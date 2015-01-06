@@ -502,7 +502,7 @@ define(
 					
 					if (this.report.layout.subType == this.reportingService.metadata.layoutSubTypes.table.id)
 					{
-					   this.getDataTableLanguageBundle(tableOptions);
+					   this.setLanguage(tableOptions);
 					}  
 					
 					if(scopeController){
@@ -1382,7 +1382,7 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
    tableOptions.bPaginate = this.report.layout.table.options.showVisibleRowCountSelector;
    tableOptions.bFilter = this.report.layout.table.options.showSearchInput;
    
-   this.getDataTableLanguageBundle(tableOptions);
+   this.setLanguage(tableOptions);
    
    scopeController.tableOptions = tableOptions;
       
@@ -1555,7 +1555,7 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
             /**
              * 
              */
-            ReportRenderingController.prototype.getDataTableLanguageBundle = function (tableOptions) {
+            ReportRenderingController.prototype.setLanguage = function (tableOptions) {
             	tableOptions.oLanguage = {
             		"sProcessing" : this.getI18N('datatables.sProcessing'),
             		"sSearch" : this.getI18N('datatables.sSearch'),
