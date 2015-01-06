@@ -386,7 +386,16 @@ public class ReportingServiceBean
             reportParameters.add(rp);   
          }
       }
-      ReportRequest reportRequest = new ReportRequest(reportDefinition.getDataSet(), reportParameters, getLanguage(httpRequest));
+ 
+      String userLanguage = getLanguage(httpRequest);
+
+      if (userLanguage == null)
+      {
+         userLanguage = reportDefinition.getUserLanguage();
+      }
+      
+      ReportRequest reportRequest = new ReportRequest(reportDefinition.getDataSet(), reportParameters, userLanguage);
+      
       return reportingService.getReport(reportRequest, ReportFormat.JSON);
    }
 
@@ -401,9 +410,8 @@ public class ReportingServiceBean
       {
          return LanguageUtil.getLocale(tok.nextToken());
       }
-
       trace.debug("could not find user language from httpRequest header");
-      return Locale.getDefault().getLanguage();
+      return "";
    }
    
    
