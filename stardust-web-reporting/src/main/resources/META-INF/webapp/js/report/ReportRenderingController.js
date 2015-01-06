@@ -1555,21 +1555,31 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
             /**
              * 
              */
-            ReportRenderingController.prototype.getDataTableLanguageBundle = function(tableOptions) {
-               var self = this;
-               this.userLanguage = this.report.userLanguage;
-               this.reportingService.getUserLanguage().done(function(userLanguage) {
-                  self.userLanguage = userLanguage;
-               });
-               tableOptions.oLanguage = {
-                        "sUrl": self.reportingService.getRootUrl() 
-                        + "/plugins/bpm-reporting/js/libs/datatables/plug-ins/i18n/"
-                        + self.reportingService.getJQueryDataTableLangBundleName(self.userLanguage) 
-                        + ".js"
-                        
-               };
-            }  
-		}
+            ReportRenderingController.prototype.getDataTableLanguageBundle = function (tableOptions) {
+            	tableOptions.oLanguage = {
+            		"sProcessing" : this.getI18N('datatables.sProcessing'),
+            		"sSearch" : this.getI18N('datatables.sSearch'),
+            		"sLengthMenu" : this.getI18N('datatables.sLengthMenu'),
+            		"sInfo" : this.getI18N('datatables.sInfo'),
+            		"sInfoEmpty" : this.getI18N('datatables.sInfoEmpty'),
+            		"sInfoFiltered" : this.getI18N('datatables.sInfoFiltered'),
+            		"sInfoPostFix" : this.getI18N('datatables.sInfoPostFix'),
+            		"sLoadingRecords" : this.getI18N('datatables.sLoadingRecords'),
+            		"sZeroRecords" : this.getI18N('datatables.sZeroRecords'),
+            		"sEmptyTable" : this.getI18N('datatables.sEmptyTable'),
+            		"oPaginate" : {
+            			"sFirst" : this.getI18N('datatables.oPaginate.sFirst'),
+            			"sPrevious" : this.getI18N('datatables.oPaginate.sPrevious'),
+            			"sNext" : this.getI18N('datatables.oPaginate.sNext'),
+            			"sLast" : this.getI18N('datatables.oPaginate.sLast')
+            		},
+            		"oAria" : {
+            			"sSortAscending" : this.getI18N('datatables.oAria.sSortAscending'),
+            			"sSortDescending" : this.getI18N('datatables.oAria.sSortDescending')
+            		}
+            	};
+             };	
+           };
 			
 			function transposeArray(aInput) {
 			      return Object.keys(aInput[0]).map(
