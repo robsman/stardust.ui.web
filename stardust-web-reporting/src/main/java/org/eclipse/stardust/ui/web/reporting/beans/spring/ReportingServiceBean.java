@@ -811,24 +811,38 @@ public class ReportingServiceBean
    private String renameReportDefinitionDocument(String path, String name)
    {
       Document reportDefinitionDocument = getDocumentManagementService().getDocument(path);
+      reportDefinitionDocument.setName(name + REPORT_DEFINITION_EXT);
       String folderPath = path.substring(0, path.lastIndexOf('/'));
-      DocumentInfo documentInfo = DmsUtils.createDocumentInfo(name + REPORT_DEFINITION_EXT);
-
-      documentInfo.setOwner(getServiceFactory().getWorkflowService().getUser().getAccount());
-      documentInfo.setContentType(MimeTypesHelper.DEFAULT.getType());
-
       byte[] content = getDocumentManagementService().retrieveDocumentContent(path);
       
+      String updatedPath = folderPath + "/" + name + REPORT_DEFINITION_EXT;
       
       JsonObject reportDefinitionJson = jsonMarshaller.readJsonObject(new String(content));
       //update report definition name
       reportDefinitionJson.addProperty("name", name);
-      byte[] updatedContent = jsonMarshaller.writeJsonObject(reportDefinitionJson).getBytes();
        
-      getDocumentManagementService().createDocument(folderPath, documentInfo, updatedContent, null);
-      getDocumentManagementService().removeDocument(reportDefinitionDocument.getId());
+      JsonObject storageJson = reportDefinitionJson.get("storage").getAsJsonObject();
+      //update report definition path
+      storageJson.addProperty("path", updatedPath);
+      
+      String updatedContent = jsonMarshaller.writeJsonObject(reportDefinitionJson);
+      
+      try
+      {
+         reportDefinitionDocument = getDocumentManagementService().updateDocument(
+               reportDefinitionDocument, updatedContent.getBytes("UTF-8"), null, false,
+               null, null, false);
+      }
+      catch (DocumentManagementServiceException e)
+      {
+         e.printStackTrace();
+      }
+      catch (UnsupportedEncodingException e)
+      {
+         e.printStackTrace();
+      }
 
-      return folderPath + "/" + name + REPORT_DEFINITION_EXT;
+      return updatedPath;
    }
 
    /**
