@@ -212,20 +212,11 @@ public class ResourceDependencyUtils
          String baseUri = rInfo.getResource().createRelative(type).getURI().toString();
          String webUriBase = baseUri.substring(rInfo.getPluginBaseUri().length());
 
-         // Get Main Resources i.e. Resources at root level and not from sub folders
-         List<String> allResources = PluginUtils.findWebResources(resolver, rInfo.getPluginId(), webUriBase, baseUri, "*" + pattern);
-         
          // Get All Resources i.e. Resources including sub folders
-         List<String> mainResources = PluginUtils.findWebResources(resolver, rInfo.getPluginId(), webUriBase, baseUri, "**/" + pattern);
+         List<String> allResources = PluginUtils.findWebResources(resolver, rInfo.getPluginId(), webUriBase, baseUri, "**/" + pattern);
 
-         // Finally, club together, by maintaining main resources at top
-         for (String resource : mainResources)
-         {
-            if (!allResources.contains(resource))
-            {
-               allResources.add(resource);
-            }
-         }
+         // Sort
+         sortByFolderHierarchy(allResources);
          
          return allResources;
       }
@@ -298,5 +289,50 @@ public class ResourceDependencyUtils
    private static boolean isCdnUri(String uri)
    {
       return uri.startsWith("//") || uri.startsWith("http://") || uri.startsWith("https://");
+   }
+
+   /**
+    * @param list
+    */
+   private static void sortByFolderHierarchy(List<String> list)
+   {
+      Collections.sort(list, new Comparator<String>()
+      {
+         @Override
+         public int compare(String str1, String str2)
+         {
+            String[] folders1 = str1.substring(0, str1.lastIndexOf("/")).split("/");
+            String[] folders2 = str2.substring(0, str2.lastIndexOf("/")).split("/");
+
+            // Compare folders
+            int length = folders1.length < folders2.length ? folders1.length : folders2.length;
+            for (int i = 0; i < length; i++)
+            {
+               int comp = folders1[i].compareTo(folders2[i]);
+               if (comp != 0)
+               {
+                  return comp;
+               }
+            }
+
+            // Files are from same folder hierarchy, so compare remaining part
+            if (folders1.length == folders2.length)
+            {
+               // Compare file name without extension
+               String name1 = str1.substring(str1.lastIndexOf("/") + 1);
+               name1 = name1.substring(0, name1.lastIndexOf("."));
+
+               String name2 = str2.substring(str2.lastIndexOf("/") + 1);
+               name2 = name2.substring(0, name2.lastIndexOf("."));
+               
+               return name1.compareTo(name2);
+            }
+            else
+            {
+               // Files from sub folders appear later
+               return ((Integer)folders1.length).compareTo(folders2.length);
+            }
+         }
+      });
    }
 }
