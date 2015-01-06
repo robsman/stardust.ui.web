@@ -18,6 +18,8 @@ import javax.annotation.Resource;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.common.error.InvalidArgumentException;
+import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.*;
@@ -737,9 +739,9 @@ public class BusinessObjectManagementService {
 	 * @param json
 	 * @return
 	 */
-	public JsonObject createBusinessObjectInstance(String modelId,
-			String businessObjectId, String primaryKey, JsonObject jsonObject) {
-
+   public JsonObject createBusinessObjectInstance(String modelId, String businessObjectId, String primaryKey,
+         JsonObject jsonObject) throws ObjectNotFoundException, InvalidArgumentException
+   {
 		BusinessObject boi = (BusinessObject) getWorkflowService()
 				.execute(
 						BusinessObjectsCommandFactory.create(

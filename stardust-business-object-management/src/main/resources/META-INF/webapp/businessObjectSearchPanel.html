@@ -44,7 +44,9 @@
 				<tr>
 					<th>{{businessObjectManagementPanelController.businessObject.primaryKeyField.label}}</th>
 					<th
-						ng-repeat="field in businessObjectManagementPanelController.fetchKeyFields()">{{field.label}}</th>
+						ng-repeat="field in businessObjectManagementPanelController.businessObject.keyFields">
+						<span ng-hide="field.list">{{field.label}}</span> <!-- Using fetchKeyFields() breaks ng-repeat scope -->
+					</th>
 				</tr>
 			</thead>
 			<tbody>
