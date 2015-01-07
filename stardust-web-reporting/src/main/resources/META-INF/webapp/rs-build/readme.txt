@@ -26,8 +26,9 @@ Note: this file contains all js which are required to render the report
 r.js build
 Open Command Prompt
 Goto stardust-web-reporting\src\main\resources\META-INF\webapp\public\rs-build directory 
-#node r.js -o build.js optimize=none
-Note: committing the working set - report_adjusted_for_reference dir
+#node r.js -o build.js 
+optimize=none
+Note: committing the working set - report_adjusted_for_reference dir. You may compare this directory for any changes in case of trouble shooting.
 ------------
 inlined css 
 check reportDefinitionView.html file for all css imports

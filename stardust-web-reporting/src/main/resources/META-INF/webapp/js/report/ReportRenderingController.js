@@ -1563,7 +1563,6 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
             		"sInfo" : this.getI18N('datatables.sInfo'),
             		"sInfoEmpty" : this.getI18N('datatables.sInfoEmpty'),
             		"sInfoFiltered" : this.getI18N('datatables.sInfoFiltered'),
-            		"sInfoPostFix" : this.getI18N('datatables.sInfoPostFix'),
             		"sLoadingRecords" : this.getI18N('datatables.sLoadingRecords'),
             		"sZeroRecords" : this.getI18N('datatables.sZeroRecords'),
             		"sEmptyTable" : this.getI18N('datatables.sEmptyTable'),

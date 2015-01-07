@@ -581,13 +581,14 @@ define(
 				
 				this.clientDateFormat = 'yyyy-MM-dd hh:mm a';
 				
-				this.formats = {
-						date : "MM/dd/yy",
-						minutes : "MM/dd/yy hh:mm a",
-						seconds : "MM/dd/yy hh:mm:ss a",
-						hours : "MM/dd/yy hh a",
-						months : "MM/yy"
+				this.dateFormats = {
+						date : this.getI18N("dateFormats.defaultDateFormat"),
+						minutes : this.getI18N("dateFormats.defaultDateTimeFormat"),
+						seconds : this.getI18N("dateFormats.date.seconds"),
+						hours : this.getI18N("dateFormats.date.hours"),
+						months : this.getI18N("dateFormats.date.months")
 				};
+				
 				this.serverDateFormat = "yy/mm/dd";
 
 				/**
@@ -766,8 +767,34 @@ define(
 							}).fail(function() {
 								deferred.reject();
 							});
-						this.getDateFormats();
 					}
+
+					return deferred.promise();
+				};
+				
+				ReportingService.prototype.getUserLanguage = function() {
+					var deferred = jQuery.Deferred();
+
+					var self = this;
+					jQuery
+							.ajax(
+									{
+										type : "GET",
+										async : false,
+										beforeSend : function(request) {
+											request
+													.setRequestHeader(
+															"Authentication",
+															self
+																	.getBasicAuthenticationHeader());
+										},
+										url : self.getRootUrl() + "/services/rest/bpm-reporting/language",
+										contentType : "application/json"
+									}).done(function(data) {
+								deferred.resolve(data);
+							}).fail(function() {
+								deferred.reject();
+							});
 
 					return deferred.promise();
 				};
@@ -800,8 +827,8 @@ define(
 															self
 																	.getBasicAuthenticationHeader());
 										},
-										url : self.getRootUrl()
-												+ "/services/rest/bpm-reporting/search/"+ serviceName + "/" + searchValue,
+										url : encodeURI(self.getRootUrl()
+												+ "/services/rest/bpm-reporting/search/"+ serviceName + "/" + searchValue),
 										contentType : "application/json"
 									}).done(function(data) {
 								deferred.resolve(data);
@@ -927,8 +954,8 @@ define(
 																		self
 																				.getBasicAuthenticationHeader());
 													},
-													url : self.getRootUrl()
-															+ "/services/rest/bpm-reporting/report-data?" + parametersString,
+													url : encodeURI(self.getRootUrl()
+															+ "/services/rest/bpm-reporting/report-data?" + parametersString),
 													contentType : "application/json",
 													data : JSON.stringify(report)
 												}).done(function(data) {
@@ -976,8 +1003,8 @@ define(
 															self
 																	.getBasicAuthenticationHeader());
 										},
-										url : self.getRootUrl()
-												+ "/services/rest/bpm-reporting/report-data?" + parametersString,
+										url : encodeURI(self.getRootUrl()
+												+ "/services/rest/bpm-reporting/report-data?" + parametersString),
 										contentType : "application/json",
 									}).done(function(data) {
 								deferred.resolve(data);
@@ -1328,7 +1355,7 @@ define(
 															self
 																	.getBasicAuthenticationHeader());
 										},
-										url : self.getRootUrl() + "/services/rest/bpm-reporting/report-definition" + path
+										url : encodeURI(self.getRootUrl() + "/services/rest/bpm-reporting/report-definition" + path)
 									}).done(function(response) {
 								if(response.definition){
 									applyUIAdjustment(response.definition);
@@ -1365,7 +1392,7 @@ define(
 							// self
 							// .getBasicAuthenticationHeader());
 						},
-						url : uri,
+						url : encodeURI(uri),
 						contentType : "application/json"
 					}).done(function(response) {
 						console.debug("Retrieved external data");
@@ -1396,7 +1423,7 @@ define(
 						path, name) {
 					var deferred = jQuery.Deferred();
 					var self = this;
-
+					
 					jQuery
 							.ajax(
 									{
@@ -1446,7 +1473,7 @@ define(
 															self
 																	.getBasicAuthenticationHeader());
 										},
-										url : self.getRootUrl() + "/services/rest/bpm-reporting/report-definition" + path
+										url : encodeURI(self.getRootUrl() + "/services/rest/bpm-reporting/report-definition" + path)
 									}).done(function() {
 								deferred.resolve();
 							}).fail(function() {
@@ -2083,37 +2110,6 @@ define(
             /**
              * 
              */
-            ReportingService.prototype.getDateFormats = function() {
-               var deferred = jQuery.Deferred();
-               var self = this;
-
-               jQuery
-                     .ajax(
-                           {
-                              type : "GET",
-                              async: false,
-                              beforeSend : function(request) {
-                                 request
-                                       .setRequestHeader(
-                                             "Authentication",
-                                             self
-                                                   .getBasicAuthenticationHeader());
-                              },
-                              url : self.getRootUrl()
-                                    + "/services/rest/bpm-reporting/dateFormats",
-                              contentType : "application/json"
-                           }).done(function(data) {
-                        	  self.formats = data;
-                              deferred.resolve();
-                     }).fail(function() {
-                        deferred.reject();
-                     });
-               return deferred.promise();
-            };
-            
-            /**
-             * 
-             */
             ReportingService.prototype.uploadReport = function(uuid) {
                var deferred = jQuery.Deferred();
                var self = this;
@@ -2157,6 +2153,46 @@ define(
                };
                return reportName;
             }
+            
+            /**
+             * 
+             */
+            ReportingService.prototype.renameAndSaveReportDefinition = function(
+                  report) {
+               var deferred = jQuery.Deferred();
+               var self = this;
+
+               revertUIAdjustment(report);
+               
+               jQuery
+                     .ajax(
+                           {
+                              type : "PUT",
+                              async: false,
+                              beforeSend : function(request) {
+                                 request
+                                       .setRequestHeader(
+                                             "Authentication",
+                                             self
+                                                   .getBasicAuthenticationHeader());
+                              },
+                              url : self.getRootUrl()
+                                    + "/services/rest/bpm-reporting/report-definition",
+                              contentType : "application/json",
+                              data : JSON.stringify({
+                                 operation : "renameAndSave",
+                                 report : report
+                              })
+                           }).done(function(report) {
+                        applyUIAdjustment(report);    
+                        deferred.resolve(report);
+                     }).fail(function(response) {
+                        deferred.reject(response);
+                     });
+
+               applyUIAdjustment(report);
+               return deferred.promise();
+            };
             
 			}
 			
