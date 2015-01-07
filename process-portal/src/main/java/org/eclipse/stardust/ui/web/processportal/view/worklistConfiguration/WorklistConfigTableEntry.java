@@ -123,11 +123,8 @@ public class WorklistConfigTableEntry extends DefaultRowModel
          this.storedList = (ArrayList<String>) WorklistConfigurationUtil.DEFAULT_CONF
                .get(WorklistConfigurationUtil.SELECTED_COLS);
       }
-      String lock = (String) configuration.get(WorklistConfigurationUtil.LOCK);
-      if (Boolean.valueOf(lock))
-      {
-         this.lock = true;
-      }
+
+      this.lock = WorklistConfigurationUtil.getLockValue(configuration.get(WorklistConfigurationUtil.LOCK));
    }
 
    public void configureColumns()

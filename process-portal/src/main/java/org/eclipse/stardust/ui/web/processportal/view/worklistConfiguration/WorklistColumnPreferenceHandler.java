@@ -95,14 +95,7 @@ public class WorklistColumnPreferenceHandler implements IColumnPreferenceHandler
       if (null != configuration)
       {
          this.storedList = (List<String>) configuration.get(WorklistConfigurationUtil.SELECTED_COLS);
-
-         String lockStr = (String) configuration.get(WorklistConfigurationUtil.LOCK);
-         boolean lock = false;
-         if (Boolean.valueOf(lockStr))
-         {
-            lock = true;
-         }
-         this.lock = lock;
+         this.lock = WorklistConfigurationUtil.getLockValue(configuration.get(WorklistConfigurationUtil.LOCK));
       }
    }
 
