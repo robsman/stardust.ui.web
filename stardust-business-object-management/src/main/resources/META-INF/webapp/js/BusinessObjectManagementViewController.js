@@ -244,7 +244,8 @@ define(
 					if (this.newBusinessObjectInstance) {
 						this
 								.cleanUpAngularFields(this.newBusinessObjectInstance);
-
+						var primaryKeyField = this.businessObjectManagementPanelController.businessObject.primaryKeyField.id;
+						var primaryKeyFieldValue = this.currentBusinessObjectInstance[this.businessObjectManagementPanelController.businessObject.primaryKeyField.id];
 						BusinessObjectManagementService
 								.instance()
 								.createBusinessObjectInstance(
@@ -259,27 +260,48 @@ define(
 											self.searchCollapsed = false;
 											self.businessObjectManagementPanelController
 													.filterBusinessObjectInstances();
-										}).fail();
-
+										}).fail(function(data) {
+											if (parent.iPopupDialog) {
+												parent.iPopupDialog
+														.openPopup(Utils
+																.prepareConfirmDialogData(
+																		primaryKeyField
+																				+ " "
+																				+ primaryKeyFieldValue
+																				+ " already exists. <BR><BR>Do you want to edit it now?",
+																		function() {
+																			self
+																					.updateBusinessObjectInstance();
+																		}));
+											} else {
+												alert("Error saving Business Object Instance.");
+											}
+										})
 					} else {
 						this
 								.cleanUpAngularFields(this.currentBusinessObjectInstance);
-
-						BusinessObjectManagementService
-								.instance()
-								.updateBusinessObjectInstance(
-										this.businessObjectManagementPanelController.businessObject,
-										this.currentBusinessObjectInstance)
-								.done(
-										function() {
-											self.currentBusinessObjectInstance = null;
-											self.searchCollapsed = false;
-											self.businessObjectManagementPanelController
-													.filterBusinessObjectInstances();
-										}).fail();
+						this.updateBusinessObjectInstance();
 					}
 				};
-
+				
+				/**
+				 * 
+				 */
+				BusinessObjectManagementViewController.prototype.updateBusinessObjectInstance = function() {
+					var self = this;
+					BusinessObjectManagementService
+							.instance()
+							.updateBusinessObjectInstance(
+									this.businessObjectManagementPanelController.businessObject,
+									this.currentBusinessObjectInstance)
+							.done(
+									function() {
+										self.currentBusinessObjectInstance = null;
+										self.searchCollapsed = false;
+										self.businessObjectManagementPanelController
+												.filterBusinessObjectInstances();
+									}).fail();
+				};
 				/**
 				 * 
 				 */

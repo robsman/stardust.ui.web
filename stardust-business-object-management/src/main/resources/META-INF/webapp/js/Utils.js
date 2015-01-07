@@ -17,7 +17,9 @@ define(
 				installPostMessageListener : installPostMessageListener,
 				updatePageURL : updatePageURL,
 				composeUrl : composeUrl,
-				stripAngularHashFields : stripAngularHashFields
+				stripAngularHashFields : stripAngularHashFields,
+				getPlugsInRoot : getPlugsInRoot,
+				prepareConfirmDialogData : prepareConfirmDialogData
 			};
 
 			/**
@@ -109,6 +111,34 @@ define(
 				return Math.round(minutes - fraction);
 			}
 
+			 function prepareConfirmDialogData(msg, callback) {
+		            var popupData = {
+		               attributes : {
+		                  width : "400px",
+		                  height : "200px",
+		                  src : getPlugsInRoot()
+		                        + "business-object-management/templates/confirmationPopupDialogContent.html"
+		               },
+		               payload : {
+			               acceptFunction : callback,
+		            	   language: {
+		            		   	message: msg,
+		            		   	title: "Confirm",
+	                            ok: "Yes",
+	                            cancel: "Cancel",
+	                            close: "Close"
+		            	   }
+		               }
+		            };
+
+		            return popupData;
+		         };
+		         
+			function getPlugsInRoot(){
+				return location.href
+						.substring(0, location.href.indexOf("/plugins"))
+						+ "/plugins/";
+			}
 			/**
 			 * Applies the result of a promise to the done function, invokes
 			 * Angular apply safely on success; if the promise failed, the error
