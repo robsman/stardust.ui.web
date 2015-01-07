@@ -314,6 +314,7 @@ define(
 
 						if (this.getFirstDimension().type == this.reportingService.metadata.timestampType) {
 							chartOptions.axes.xaxis.renderer = jQuery.jqplot.DateAxisRenderer;
+							chartOptions.axes.xaxis.tickOptions.formatString = this.getDateFormatForDimension(true);
 						} else {
 							chartOptions.axes.xaxis.renderer = jQuery.jqplot.CategoryAxisRenderer;
 						}
@@ -329,6 +330,7 @@ define(
 					} else if (this.report.layout.chart.type === this.reportingService.metadata.chartTypes.candlestickChart.id) {
 						if (this.getFirstDimension().type == this.reportingService.metadata.timestampType) {
 							chartOptions.axes.xaxis.renderer = jQuery.jqplot.DateAxisRenderer;
+							chartOptions.axes.xaxis.tickOptions.formatString = this.getDateFormatForDimension(true);
 						} else {
 							chartOptions.axes.xaxis.renderer = jQuery.jqplot.CategoryAxisRenderer;
 						}
@@ -364,6 +366,7 @@ define(
 
 						if (this.getFirstDimension().type == this.reportingService.metadata.timestampType) {
 						   chartOptions.axes.xaxis.renderer = jQuery.jqplot.DateAxisRenderer;
+						   chartOptions.axes.xaxis.tickOptions.formatString = this.getDateFormatForDimension(true);
 						   chartOptions.axes.xaxis.tickRenderer = jQuery.jqplot.AxisTickRenderer;
 						} else {
 						   chartOptions.axes.xaxis.renderer = jQuery.jqplot.CategoryAxisRenderer;
@@ -1245,21 +1248,28 @@ define(
          /**
           * 
           */
-         ReportRenderingController.prototype.getDateFormatForDimension = function() {
+         ReportRenderingController.prototype.getDateFormatForDimension = function(jqPlotFormat) {
         	if (this.getFirstDimension().type != this.reportingService.metadata.timestampType){
         	 return null;
-        	} 
+        	}
+        	
+        	var dateFormatObj = this.reportingService.dateFormats;
+        	
+        	if(jqPlotFormat){
+        		dateFormatObj = this.reportingService.jqPlot.dateFormats;
+        	}
+        	
 			if (this.report.dataSet.firstDimensionCumulationIntervalUnit == 's') {
-				return this.reportingService.dateFormats.seconds;
+				return dateFormatObj.seconds;
 			} else if (this.report.dataSet.firstDimensionCumulationIntervalUnit == 'm') {
-				return this.reportingService.dateFormats.minutes;
+				return dateFormatObj.minutes;
 			} else if (this.report.dataSet.firstDimensionCumulationIntervalUnit == 'h') {
-				return this.reportingService.dateFormats.hours;
+				return dateFormatObj.hours;
 			} else if (this.report.dataSet.firstDimensionCumulationIntervalUnit == 'd'
 					|| this.report.dataSet.firstDimensionCumulationIntervalUnit == 'w') {
-				return this.reportingService.dateFormats.date;
+				return dateFormatObj.date;
 			} else if (this.report.dataSet.firstDimensionCumulationIntervalUnit == 'M') {
-				return this.reportingService.dateFormats.months;
+				return dateFormatObj.months;
 			}
 			return null;
 		};
