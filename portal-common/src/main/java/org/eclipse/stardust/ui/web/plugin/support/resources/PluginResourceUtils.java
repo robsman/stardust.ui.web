@@ -232,14 +232,21 @@ public class PluginResourceUtils
    public static List<Resource> resolveResources(ResourcePatternResolver resolver,
          String locationPattern) throws IOException
    {
-      List<Resource> resources;
+      List<Resource> resources = emptyList();
       try
       {
-         resources = resolveGlobalResources(resolver, locationPattern);
+         List<Resource> globalResources = resolveGlobalResources(resolver, locationPattern);
+         if ( !isEmpty(globalResources))
+         {
+            resources = newArrayList(globalResources);
+         }
       }
       catch (Exception e)
       {
-         log.warn("Failed resolving plugin resources.", e);
+         if (log.isDebugEnabled())
+         {
+            log.debug("Failed resolving plugin resources.", e);
+         }
          resources = emptyList();
       }
 
@@ -327,11 +334,12 @@ public class PluginResourceUtils
 
       if (null != resolutionCache)
       {
-         // by default, prefer to put resource URIs into the resolution cache, but for
-         // JBoss, URI to resource resolution did not seem to work properly, so VFS
-         // resources will preferably be cached directly
-         boolean cacheResourcesInsteadOfUris = Parameters.instance().getBoolean(
-               "Carnot.Client.Caching.PluginResourceResolution.CacheResources", foundJbossVfsResources);
+         // by default, prefer to put resources into the resolution cache
+         // for JBoss, URI to resource resolution did not seem to work properly, so VFS
+         // resources will always be cached directly
+         boolean cacheResourcesInsteadOfUris = foundJbossVfsResources
+               || Parameters.instance().getBoolean("Carnot.Client.Caching.PluginResourceResolution.CacheResources",
+                     true);
 
          if (cacheResourcesInsteadOfUris)
          {
