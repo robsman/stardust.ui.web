@@ -13,19 +13,19 @@
 		sda-on-column-reorder="worklistCtrl.onColumnReorder(info)">
 		<thead sda-i18n-scope="processportal.views-worklistPanel-column">
 			<tr>
-				<th sda-name="Overview" sda-label-key="overview" sda-sortable="true">
+				<th sda-name="overview" sda-sortable="true">
 					<div sd-filter-template></div>
 				</th>
-				<th sda-name="OID" sda-label-key="oid" sda-sortable="true" sda-filterable="" sda-exportable=""></th>
-				<th sda-name="ProcessDefinition" sda-label-key="processName" sda-visible="false" sda-sortable="true"></th>
-				<th sda-name="Started" sda-label-key="started" sda-sortable="true"></th>
-				<th sda-name="LastModified" sda-label-key="lastmodification" sda-sortable="true"></th>
-				<th sda-name="Descriptors" sda-label-key="descriptors" sda-visible="false"></th>
+				<th sda-name="oid" sda-sortable="true" sda-filterable="" sda-exportable=""></th>
+				<th sda-name="processDefinition" sda-label-key="processName" sda-visible="false" sda-sortable="true"></th>
+				<th sda-name="started" sda-sortable="true"></th>
+				<th sda-name="lastModified" sda-label-key="lastmodification" sda-sortable="true"></th>
+				<th sda-name="descriptors" sda-visible="false"></th>
 				<th ng-repeat="descCol in worklistCtrl.descritorCols"
-					sda-label="{{descCol.title}}" sda-visible="false" sda-sortable="{{descCol.sortable}}">
+					sda-name="{{descCol.id}}" sda-label="{{descCol.title}}" sda-visible="false" sda-sortable="{{descCol.sortable}}">
 				</th>
-				<th sda-name="Data" sda-column="TRIVIAL_DATA" sda-label-key="data"></th>
-				<th sda-name="Actions" sda-label-key="actions" sda-fixed="true"></th>
+				<th sda-name="data" sda-column="TRIVIAL_DATA"></th>
+				<th sda-name="actions" sda-fixed="true"></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -35,7 +35,7 @@
 						{{rowData.activity.name}}
 					</a>
 				</td>
-				<td sda-field="oid" sda-data-type="int" style="text-align: center;"></td>
+				<td sda-data-type="int" style="text-align: center;"></td>
 				<td sda-field="processInstance.processName"></td>
 				<td sda-field="start" sda-data-type="dateTime" style="text-align: center; white-space: nowrap;"></td>
 				<td sda-field="lastModification" sda-data-type="dateTime" style="text-align: center; white-space: nowrap;"></td>

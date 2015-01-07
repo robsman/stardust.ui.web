@@ -248,6 +248,7 @@
 				self.descritorCols = [];
 				angular.forEach(descriptors, function(descriptor){
 					self.descritorCols.push({
+						id: descriptor.id,
 						field: "descriptors['" + descriptor.id + "'].value",
 						title: descriptor.title,
 						dataType: descriptor.type,

@@ -324,6 +324,7 @@
 				var bCol = angular.element(bodyCols[i]);
 				
 				var colDef = {
+					name: hCol.attr('sda-name'),
 					field: bCol.attr('sda-field'),
 					dataType: bCol.attr('sda-data-type'),
 					visible: hCol.attr('sda-visible') == undefined || hCol.attr('sda-visible') == 'true' ? true : false,
@@ -331,25 +332,27 @@
 					fixed: hCol.attr('sda-fixed') != undefined && hCol.attr('sda-fixed') == 'true' ? true : false
 				};
 
-				if (hCol.attr('sda-label-key') != undefined) {
-					colDef.name = hCol.attr('sda-label-key');
-					if (i18nScope != "") {
-						colDef.labelKey = i18nScope + '-' + hCol.attr('sda-label-key');
-					} else {
-						colDef.labelKey = hCol.attr('sda-label-key');
-					}
-				} else {
-					if (hCol.attr('sda-label') != undefined) {
-						colDef.label = hCol.attr('sda-label');
-					} else {
-						// Some default value, label is now mandatory due to column selector.
-						colDef.label = 'Column ' + i;
-					}
-					colDef.name = colDef.label;
+				if (!colDef.name) {
+					trace.warn('Column ' + (i + 1) + ' is missing attribute sda-name');
+					colDef.name = 'column' + (i + 1); // Default
 				}
 
-				if (hCol.attr('sda-name')) {
-					colDef.name = hCol.attr('sda-name');
+				if (!colDef.field) {
+					colDef.field = colDef.name;
+				}
+				
+				if (hCol.attr('sda-label')) {
+					colDef.label = hCol.attr('sda-label');
+				} else {
+					if (hCol.attr('sda-label-key')) {
+						colDef.labelKey = hCol.attr('sda-label-key');
+					} else {
+						colDef.labelKey = colDef.name; // Default to name
+					}
+
+					if (i18nScope != '') {
+						colDef.labelKey = i18nScope + '-' + colDef.labelKey;
+					}
 				}
 
 				colDef.contents = bCol.html();
@@ -371,9 +374,10 @@
 					devColumnOrderPref.push(colDef.name);
 				}
 
-				columnsInfo[colDef.name] = {};
-				columnsInfo[colDef.name].column = colDef;
-				columnsInfo[colDef.name].index = columns.length - 1;
+				columnsInfo[colDef.name] = {
+					column : colDef,
+					index : columns.length - 1
+				};
 			}
 
 			columnsByDisplayOrder = columns;
@@ -857,7 +861,19 @@
 			var prefCols = columnSelectorPref.selectedColumns;
 			if (prefCols) {
 				angular.forEach(prefCols, function(colName, i) {
-					var colInfo = columnsInfoByDisplayOrder[colName];
+                    var colInfo = columnsInfoByDisplayOrder[colName];
+                    if (!colInfo) {
+                    	// Find column using case insensitive nature
+    					var colNameToFind = colName.toLowerCase();
+    					for (var name in columnsInfoByDisplayOrder) {
+    						if (name.toLowerCase() == colNameToFind) {
+    							colInfo = columnsInfoByDisplayOrder[name];
+    							colName = name;
+    							break;
+    						}
+    					}                    	
+                    }
+
 					if (colInfo != undefined && 
 							columnDisplayOrderNames.indexOf(colName) == -1 && fixedAfter.indexOf(colName) == -1) {
 						columnDisplayOrderIndexes.push(colInfo.index);
