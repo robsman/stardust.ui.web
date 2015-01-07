@@ -589,6 +589,15 @@ define(
 						months : this.getI18N("dateFormats.date.months")
 				};
 				
+				this.jqPlot = {};
+				this.jqPlot.dateFormats = {
+						date : this.getI18N("jqPlot.dateFormats.defaultDateFormat"),
+						minutes : this.getI18N("jqPlot.dateFormats.defaultDateTimeFormat"),
+						seconds : this.getI18N("jqPlot.dateFormats.date.seconds"),
+						hours : this.getI18N("jqPlot.dateFormats.date.hours"),
+						months : this.getI18N("jqPlot.dateFormats.date.months")
+				};
+				
 				this.serverDateFormat = "yy/mm/dd";
 
 				/**
