@@ -49,10 +49,15 @@ ul.errorMessagesPanel {
 				style="margin-bottom: 10px;">
 				<tr valign="center">
 					<td><a href="#" class="iconLink"
-						ng-click="searchCollapsed = true" ng-hide="searchCollapsed"><i
-							class="fa fa-chevron-up"></i></a><a href="#" class="iconLink"
-						ng-click="searchCollapsed = false" ng-show="searchCollapsed"><i
-							class="fa fa-chevron-down"></i></a></td>
+						ng-click="searchCollapsed = true"
+						ng-hide="searchCollapsed || searchPanelCollapsed"> <i
+							class="fa fa-chevron-up"></i>
+					</a> <a href="#" class="iconLink"
+						ng-click="searchCollapsed = false; searchPanelCollapsed = false"
+						ng-show="searchCollapsed || searchPanelCollapsed"> <i
+							class="fa fa-chevron-down"></i>
+					</a>
+					</td>
 					<td style="padding-left: 5px !important;"><h2
 							style="margin-bottom: 0px;">{{businessObjectManagementPanelController.businessObject.name}}
 							Search</h2></td>

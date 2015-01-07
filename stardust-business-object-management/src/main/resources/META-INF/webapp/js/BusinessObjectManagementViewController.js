@@ -183,9 +183,8 @@ define(
 				BusinessObjectManagementViewController.prototype.onBusinessObjectInstanceSelectionChange = function() {
 					this.currentBusinessObjectInstance = this.businessObjectManagementPanelController.selectedBusinessObjectInstances[0];
 					this.messages = [];
-
+					this.searchPanelCollapsed =  true;
 					var self = this;
-
 					// Retrieve Process Instances the BOI is used in
 
 					BusinessObjectManagementService
