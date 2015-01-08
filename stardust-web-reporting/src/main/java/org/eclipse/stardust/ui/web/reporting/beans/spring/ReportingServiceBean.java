@@ -394,7 +394,7 @@ public class ReportingServiceBean
          userLanguage = reportDefinition.getUserLanguage();
       }
       
-      ReportRequest reportRequest = new ReportRequest(reportDefinition, reportParameters);
+      ReportRequest reportRequest = new ReportRequest(reportDefinition, reportParameters, userLanguage);
       
       return reportingService.getReport(reportRequest, ReportFormat.JSON);
    }
