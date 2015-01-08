@@ -141,7 +141,7 @@
 
 		var initialized;
 		var columns = [], dtColumns = [];
-		var theTable, theDataTable, theToolbar, theColReorder;
+		var theTable, theTableId, theDataTable, theToolbar, theColReorder;
 		var selectedRowIndexes = {}, rowSelectionMode = false, selectionBinding;
 		var onSelect = {}, onPagination = {}, onColumnReorder = {};
 		var enableColumnSelector, columnSelectorAdmin, columnsByDisplayOrder, columnsInfoByDisplayOrder, devColumnOrderPref;
@@ -155,11 +155,17 @@
 		 * 
 		 */
 		function setup() {
+			// Assign Id
+			if (!element.attr('id')) {
+				element.attr('id', 'DT' + (Math.floor(Math.random() * 9000) + 1000));
+			}
+			theTableId = element.attr('id');
+
 			if (attr.sdaReady) {
-				trace.log('Table defines sda-ready attribute, so deferring initialization...');
+				trace.log(theTableId + ': Table defines sda-ready attribute, so deferring initialization...');
 				var unregister = elemScope.$watch(attr.sdaReady, function(newVal, oldVal) {
 					if(newVal === true) {
-						trace.log('sda-ready flag is triggered...');
+						trace.log(theTableId + ': sda-ready flag is triggered...');
 
 						// Initialize after current digest cycle
 						$timeout(initialize);
@@ -175,7 +181,7 @@
 		 * 
 		 */
 		function initialize() {
-			trace.log('Initializing Data Table...');
+			trace.log(theTableId + ': Initializing Data Table...');
 
 			try {
 				processAttributes();
@@ -195,7 +201,7 @@
 					try {
 						buildDataTable();
 					} catch (e) {
-						trace.error(e);
+						trace.error(theTableId, e);
 					}
 				});
 			} catch (e) {
@@ -208,7 +214,7 @@
 		 * 
 		 */
 		function processAttributes() {
-			trace.log('Processing table attributes...');
+			trace.log(theTableId + ': Processing table attributes...');
 
 			if (attr.sdaPageSize != '') {
 				pageSize = attr.sdaPageSize;
@@ -243,7 +249,7 @@
 					if (onSelectFuncInfo && onSelectFuncInfo.params && onSelectFuncInfo.params.length > 0) {
 						onSelect.param = onSelectFuncInfo.params[0];
 					} else {
-						trace.error('sda-on-select does not seems to be correcly used, it does not appear to be a function accepting parameter.');
+						trace.error(theTableId + ': sda-on-select does not seems to be correcly used, it does not appear to be a function accepting parameter.');
 					}
 				}
 			}
@@ -255,7 +261,7 @@
 				if (onPaginationfuncInfo && onPaginationfuncInfo.params && onPaginationfuncInfo.params.length > 0) {
 					onPagination.param = onPaginationfuncInfo.params[0];
 				} else {
-					trace.error('sda-on-pagination does not seems to be correcly used, it does not appear to be a function accepting parameter.');
+					trace.error(theTableId + ': sda-on-pagination does not seems to be correcly used, it does not appear to be a function accepting parameter.');
 				}
 			}
 
@@ -270,7 +276,7 @@
 					if (onColumnReorderfuncInfo && onColumnReorderfuncInfo.params && onColumnReorderfuncInfo.params.length > 0) {
 						onColumnReorder.param = onColumnReorderfuncInfo.params[0];
 					} else {
-						trace.error('sda-on-columns-reorder does not seems to be correcly used, it does not appear to be a function accepting parameter.');
+						trace.error(theTableId + ': sda-on-columns-reorder does not seems to be correcly used, it does not appear to be a function accepting parameter.');
 					}
 				}
 			}
@@ -289,7 +295,7 @@
 		 * 
 		 */
 		function validateMarkup() {
-			trace.log('Validating table markup...');
+			trace.log(theTableId + ': Validating table markup...');
 
 			// Check Tag Name <table>
 			var tagName = element.prop('tagName');
@@ -315,7 +321,7 @@
 		 * 
 		 */
 		function processMarkup() {
-			trace.log('Processing table markup...');
+			trace.log(theTableId + ': Processing table markup...');
 
 			// Process Columns
 			var head = element.find('> thead');
@@ -348,7 +354,7 @@
 				};
 
 				if (!colDef.name) {
-					trace.warn('Column ' + (i + 1) + ' is missing attribute sda-name');
+					trace.warn(theTableId + ': Column ' + (i + 1) + ' is missing attribute sda-name');
 					colDef.name = 'column' + (i + 1); // Default
 				}
 
@@ -425,7 +431,7 @@
 		 * 
 		 */
 		function buildDataTableInformation() {
-			trace.log('Building table information...');
+			trace.log(theTableId + ': Building table information...');
 
 			angular.forEach(columns, function(col, i) {
 				dtColumns.push({
@@ -451,7 +457,7 @@
 		 * 
 		 */
 		function createDataTable() {
-			trace.log('Creating table...');
+			trace.log(theTableId + ': Creating table...');
 
 			// Toolbar
 			theToolbar = element.prev();
@@ -525,7 +531,7 @@
 		 * 
 		 */
 		function buildDataTableRemoteMode(dtOptions) {
-			trace.log('Building table for remote mode...');
+			trace.log(theTableId + ': Building table for remote mode...');
 
 			dtOptions.serverSide = true;
 			dtOptions.ajax = ajaxHandler;
@@ -538,7 +544,7 @@
 		 * 
 		 */
 		function buildDataTableLocalMode(dtOptions) {
-			trace.log('Building table for local mode...');
+			trace.log(theTableId + ': Building table for local mode...');
 
 			fetchData(undefined, function(result) {
 				try {
@@ -558,7 +564,7 @@
 					theDataTable = theTable.DataTable(dtOptions);
 					buildDataTableCompleted();
 				} catch (e) {
-					trace.error(e);
+					trace.error(theTableId + ':', e);
 				}
 			});
 		}
@@ -591,7 +597,7 @@
 	
 					callback(ret);
 				} catch (e) {
-					trace.error(e);
+					trace.error(theTableId + ':', e);
 				}
 			});
 		}
@@ -646,7 +652,7 @@
 						transObj[handleInfo.param] = data;
 					} else {
 						transObj.info = data;
-						trace.warn(eventType + ' event handler is not properly configured, may not receive event info.');
+						trace.warn(theTableId + ': ' + eventType + ' event handler is not properly configured, may not receive event info.');
 					}
 
 					if (!invokeAfterDigest) {
@@ -657,7 +663,7 @@
 						}, 0, true);
 					}
 				} catch(e) {
-					trace.error('Error while firing ' + eventType + ' event on data table', e);
+					trace.error(theTableId + ': Error while firing ' + eventType + ' event on data table', e);
 				}
 			}
 		}
@@ -1261,10 +1267,10 @@
 			if (attr.sdDataTable != undefined && attr.sdDataTable != "") {
 				var dataTableAssignable = $parse(attr.sdDataTable).assign;
 				if (dataTableAssignable) {
-					trace.info('Exposing API for: ' + attr.sdDataTable + ', on scope Id: ' + elemScope.$id + ', Scope:', elemScope);
+					trace.info(theTableId + ': Exposing API for: ' + attr.sdDataTable + ', on scope Id: ' + elemScope.$id + ', Scope:', elemScope);
 					dataTableAssignable(elemScope, new DataTable());
 				} else {
-					trace.error('Could not expose API for: ' + attr.sdDataTable + ', expression is not an assignable.');
+					trace.error(theTableId + ': Could not expose API for: ' + attr.sdDataTable + ', expression is not an assignable.');
 				}
 			}
 		}
