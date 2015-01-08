@@ -379,7 +379,7 @@ table.formTable td {
 												<table cellpadding="0" cellspacing="0" class="formTable">
 													<tr>
 														<td><label>{{getI18N('reporting.definitionView.cumulationInterval.label')}}</label></td>
-														<td><input id="auto-reporting-dataSetTab-firstDimensionCumulationIntervalCount" type="number" style="width: 50px;"
+														<td><input ng-disabled="getFirstDimension().disableCumulationInterval" id="auto-reporting-dataSetTab-firstDimensionCumulationIntervalCount" type="number" style="width: 50px;"
 															ng-model="report.dataSet.firstDimensionCumulationIntervalCount"></input>
 														</td>
 														<td><select id="auto-reporting-dataSetTab-firstDimensionCumulationIntervalUnit" 
