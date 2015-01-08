@@ -156,8 +156,11 @@
 		 */
 		function setup() {
 			if (attr.sdaReady) {
+				trace.log('Table defines sda-ready attribute, so deferring initialization...');
 				var unregister = elemScope.$watch(attr.sdaReady, function(newVal, oldVal) {
 					if(newVal === true) {
+						trace.log('sda-ready flag is triggered...');
+
 						// Initialize after current digest cycle
 						$timeout(initialize);
 						unregister();
@@ -172,6 +175,8 @@
 		 * 
 		 */
 		function initialize() {
+			trace.log('Initializing Data Table...');
+
 			try {
 				processAttributes();
 
@@ -187,7 +192,11 @@
 				
 				// We just changed the markup, so can proceed further only after current digest cycle
 				$timeout(function() {
-					buildDataTable();
+					try {
+						buildDataTable();
+					} catch (e) {
+						trace.error(e);
+					}
 				});
 			} catch (e) {
 				var msg = 'sd-data-table is unable to process table. Reason: ' + e;
@@ -199,6 +208,8 @@
 		 * 
 		 */
 		function processAttributes() {
+			trace.log('Processing table attributes...');
+
 			if (attr.sdaPageSize != '') {
 				pageSize = attr.sdaPageSize;
 			}
@@ -278,6 +289,8 @@
 		 * 
 		 */
 		function validateMarkup() {
+			trace.log('Validating table markup...');
+
 			// Check Tag Name <table>
 			var tagName = element.prop('tagName');
 			sdUtilService.assert(tagName == 'TABLE', 'Directive must be defined on &lt;table&gt; element, but its defined on ' + tagName + '.');
@@ -302,6 +315,8 @@
 		 * 
 		 */
 		function processMarkup() {
+			trace.log('Processing table markup...');
+
 			// Process Columns
 			var head = element.find('> thead');
 			var i18nScope = "";
@@ -410,6 +425,8 @@
 		 * 
 		 */
 		function buildDataTableInformation() {
+			trace.log('Building table information...');
+
 			angular.forEach(columns, function(col, i) {
 				dtColumns.push({
 					data: colRenderer(col)
@@ -434,6 +451,8 @@
 		 * 
 		 */
 		function createDataTable() {
+			trace.log('Creating table...');
+
 			// Toolbar
 			theToolbar = element.prev();
 			if (theToolbar.attr('sda-toolbar') != undefined) {
@@ -506,6 +525,8 @@
 		 * 
 		 */
 		function buildDataTableRemoteMode(dtOptions) {
+			trace.log('Building table for remote mode...');
+
 			dtOptions.serverSide = true;
 			dtOptions.ajax = ajaxHandler;
 
@@ -517,19 +538,28 @@
 		 * 
 		 */
 		function buildDataTableLocalMode(dtOptions) {
-			fetchData(undefined, function(result) {
-				dtOptions.data = result.list ? result.list : result;
+			trace.log('Building table for local mode...');
 
-				if (attr.sdaNoPagination == '' || attr.sdaNoPagination == 'true') {
-					dtOptions.iDisplayLength = dtOptions.data.length;
-					dtOptions.sDom = 't';
-				} else {
-					// TODO: Undefine this for now! It causes wired issue with pagination
-					dtOptions.iDisplayLength = undefined;
+			fetchData(undefined, function(result) {
+				try {
+					dtOptions.data = result.list ? result.list : result;
+	
+					sdUtilService.assert(dtOptions.data && angular.isArray(dtOptions.data),
+							'sd-data did not return acceptable result: Missing "list" or its not an array');
+	
+					if (attr.sdaNoPagination == '' || attr.sdaNoPagination == 'true') {
+						dtOptions.iDisplayLength = dtOptions.data.length;
+						dtOptions.sDom = 't';
+					} else {
+						// TODO: Undefine this for now! It causes wired issue with pagination
+						dtOptions.iDisplayLength = undefined;
+					}
+					
+					theDataTable = theTable.DataTable(dtOptions);
+					buildDataTableCompleted();
+				} catch (e) {
+					trace.error(e);
 				}
-				
-				theDataTable = theTable.DataTable(dtOptions);
-				buildDataTableCompleted();
 			});
 		}
 
@@ -547,11 +577,22 @@
 			var params = {skip: data.start, pageSize: data.length};
 
 			fetchData(params, function(result) {
-				ret.recordsTotal = result.totalCount;
-				ret.recordsFiltered = result.totalCount;
-				ret.data = result.list;
-
-				callback(ret);
+				try {
+					sdUtilService.assert(result.totalCount,
+							'sd-data did not return acceptable result: Missing "totalCount"');
+					sdUtilService.assert(result.list && angular.isArray(result.list),
+							'sd-data did not return acceptable result: Missing "list" or its not an array');
+					sdUtilService.assert(result.list.length <= data.length,
+							'sd-data did not return acceptable result: Returned more records than expected (' + data.length + ')');
+	
+					ret.recordsTotal = result.totalCount;
+					ret.recordsFiltered = result.totalCount;
+					ret.data = result.list;
+	
+					callback(ret);
+				} catch (e) {
+					trace.error(e);
+				}
 			});
 		}
 
