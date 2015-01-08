@@ -189,6 +189,13 @@ define(
 					name : this.getI18N("reporting.definitionView.activityInstanceProcessingTime"),
 					type : this.metadata.durationType
 				};
+				this.metadata.commonTypes.activeTimestamp = {
+						id : "activeTimestamp",
+						name : this.getI18N("reporting.definitionView.activeInstancesOverTime"),
+						type : this.metadata.timestampType,
+						notSupportedAsFilter : true,
+						disableCumulationInterval : true
+				};
 
 				this.metadata.commonTypes.processInstanceProcessingTime = {
 					id : "processInstanceProcessingTime",
@@ -248,6 +255,7 @@ define(
                         name : this.getI18N("reporting.definitionView.processInstanceDuration"),
                         type : this.metadata.durationType
                      },
+                     activeTimestamp: this.metadata.commonTypes.activeTimestamp,
                      rootProcessInstanceDuration : {
                         id : "rootProcessInstanceDuration",
                         name : this.getI18N("reporting.definitionView.rootProcessInstanceDuration"),
@@ -351,6 +359,7 @@ define(
                         type : this.metadata.durationType,
                         cumulated : true
                      },
+                     activeTimestamp: this.metadata.commonTypes.activeTimestamp,
                      activityInstanceProcessingTime: this.metadata.commonTypes.activityInstanceProcessingTime,
                      processInstanceDuration : {
                         id : "processInstanceDuration",
