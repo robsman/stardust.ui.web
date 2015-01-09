@@ -127,8 +127,11 @@ define(
 				BusinessObjectManagementViewController.prototype.initializeForm = function() {
 					this.businessObjectManagementPanelController
 							.changeBusinessObject(this.businessObject);
-
-					this.formColumns = [];
+					// On business Object change, Table header[fields] were not
+					// rendered
+					if(!this.formColumns){
+						this.formColumns = [];	
+					}
 					this.foreignKeyFields = {};
 
 					var primitiveFields = this
@@ -310,6 +313,7 @@ define(
 					this.currentBusinessObjectInstance = null;
 					this.newBusinessObjectInstance = null;
 					this.searchCollapsed = false;
+					this.searchPanelCollapsed =  false;
 				};
 
 				/**
