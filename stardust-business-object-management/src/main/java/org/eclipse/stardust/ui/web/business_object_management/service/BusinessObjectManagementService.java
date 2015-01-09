@@ -1066,8 +1066,11 @@ public class BusinessObjectManagementService {
 		}else if (object instanceof Date) {
 		   return new JsonPrimitive(DateUtils.formatDate((Date) object));
 		}
+		else {
+			return new JsonPrimitive(object.toString());
+		}
 
-		throw new IllegalArgumentException("Unknown primitive object type \""
-				+ object.getClass() + "\"");
+		//throw new IllegalArgumentException("Unknown primitive object type \""
+		//		+ object.getClass() + "\"");
 	}
 }
