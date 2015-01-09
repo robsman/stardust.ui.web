@@ -201,7 +201,7 @@
 					try {
 						buildDataTable();
 					} catch (e) {
-						trace.error(theTableId, e);
+						trace.error(theTableId + ': Unexpected error occured while building table', e);
 					}
 				});
 			} catch (e) {
@@ -349,7 +349,7 @@
 					field: bCol.attr('sda-field'),
 					dataType: bCol.attr('sda-data-type'),
 					visible: hCol.attr('sda-visible') == undefined || hCol.attr('sda-visible') == 'true' ? true : false,
-					sortable: hCol.attr('sda-sortable'),
+					sortable: hCol.attr('sda-sortable') == 'true' ? true : false,
 					fixed: hCol.attr('sda-fixed') != undefined && hCol.attr('sda-fixed') == 'true' ? true : false
 				};
 
@@ -435,7 +435,8 @@
 
 			angular.forEach(columns, function(col, i) {
 				dtColumns.push({
-					data: colRenderer(col)
+					data: colRenderer(col),
+					sortable: col.sortable
 				});
 			});
 
@@ -490,7 +491,7 @@
 			});
 			
 			theTable = element;
-			theTable.addClass('tbl');
+			theTable.addClass('tbl');	
 		}
 
 		/*
@@ -516,6 +517,38 @@
 			dtOptions.autoWidth = false;
 
 			dtOptions.processing = true;
+
+			// TODO: Datatables does not support single column sorting yet. What it has is only multi column sort 
+			dtOptions.sort = attr.sdaSortable == 'true' || attr.sdaSortable == 'single' || attr.sdaSortable == 'multiple';
+			if (dtOptions.sort) {
+				var dtOrder = [];
+
+				if (attr.sdaSortBy != undefined && attr.sdaSortBy != '') {
+					var sortByGetter = $parse(attr.sdaSortBy);
+					if (sortByGetter) {
+						var orderBy = sortByGetter(elemScope);
+						if (orderBy) {
+							if (!angular.isArray(orderBy)) {
+								orderBy = [orderBy];
+							}
+	
+							for (var i in orderBy) {
+								var columnInfo = columnsInfoByDisplayOrder[orderBy[i].name];
+								if (columnInfo) {
+									dtOrder.push([columnInfo.index, orderBy[i].dir == 'asc' ? 'asc' : 'desc']);
+								}
+							}
+							
+						}
+					}
+				}
+
+				if (dtOrder.length == 0) {
+					dtOrder.push([0, 'asc']);
+				}
+
+				dtOptions.order = dtOrder;
+			}
 
 			dtOptions.fnDrawCallback = drawCallbackHandler;
 			dtOptions.fnCreatedRow = createRowHandler;
@@ -580,7 +613,14 @@
 				"data": null
 			};
 
-			var params = {skip: data.start, pageSize: data.length};
+			var params = {skip : data.start, pageSize : data.length};
+			if (data.order && data.order.length > 0) {
+				params.order = [];
+				for (var i in data.order) {
+					var column = columnsByDisplayOrder[data.order[i].column];
+					params.order.push({name: column.name, field: column.field, dir: data.order[i].dir});
+				}
+			}
 
 			fetchData(params, function(result) {
 				try {

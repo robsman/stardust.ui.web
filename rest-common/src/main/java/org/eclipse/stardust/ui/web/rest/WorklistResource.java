@@ -41,11 +41,12 @@ public class WorklistResource
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/participant/{participantQId}")
    public Response getWorklistForParticipant(@PathParam("participantQId") String participantQId,
-         @QueryParam("skip") @DefaultValue("0") Integer skip, @QueryParam("pageSize") @DefaultValue("8") Integer pageSize)
+         @QueryParam("skip") @DefaultValue("0") Integer skip, @QueryParam("pageSize") @DefaultValue("8") Integer pageSize,
+         @QueryParam("orderBy") @DefaultValue("oid") String orderBy, @QueryParam("orderByDir") @DefaultValue("asc") String orderByDir)
    {
       try
       {
-         Options options = new Options(pageSize, skip);
+         Options options = new Options(pageSize, skip, orderBy, "asc".equalsIgnoreCase(orderByDir));
          QueryResultDTO resultDTO = getWorklistService().getWorklistForParticipant(participantQId, "default", options);
 
          return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
@@ -65,11 +66,12 @@ public class WorklistResource
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/user/{userId}")
    public Response getWorklistForUser(@PathParam("userId") String userId,
-         @QueryParam("skip") @DefaultValue("0") Integer skip, @QueryParam("pageSize") @DefaultValue("8") Integer pageSize)
+         @QueryParam("skip") @DefaultValue("0") Integer skip, @QueryParam("pageSize") @DefaultValue("8") Integer pageSize,
+         @QueryParam("orderBy") @DefaultValue("oid") String orderBy, @QueryParam("orderByDir") @DefaultValue("asc") String orderByDir)
    {
       try
       {
-         Options options = new Options(pageSize, skip);
+         Options options = new Options(pageSize, skip, orderBy, "asc".equalsIgnoreCase(orderByDir));
          QueryResultDTO resultDTO = getWorklistService().getWorklistForUser(userId, "default", options);
 
          return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();

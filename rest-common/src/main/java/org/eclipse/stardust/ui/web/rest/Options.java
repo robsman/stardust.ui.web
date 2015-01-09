@@ -18,15 +18,19 @@ public class Options
 {
    public int pageSize;
    public int skip;
+   public String orderBy;
+   public boolean asc;
 
    /**
     * @param pageSize
     * @param skip
     */
-   public Options(int pageSize, int skip)
+   public Options(int pageSize, int skip, String orderBy, boolean asc)
    {
       super();
       this.pageSize = pageSize;
       this.skip = skip;
+      this.orderBy = orderBy;
+      this.asc = asc;
    }
 }

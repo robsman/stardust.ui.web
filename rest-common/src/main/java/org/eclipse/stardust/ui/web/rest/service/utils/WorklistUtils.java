@@ -15,17 +15,28 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import org.springframework.stereotype.Component;
-
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.engine.api.model.Participant;
 import org.eclipse.stardust.engine.api.model.ParticipantInfo;
-import org.eclipse.stardust.engine.api.query.*;
+import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
+import org.eclipse.stardust.engine.api.query.ActivityInstances;
+import org.eclipse.stardust.engine.api.query.DescriptorPolicy;
+import org.eclipse.stardust.engine.api.query.FilterAndNotTerm;
+import org.eclipse.stardust.engine.api.query.FilterOrTerm;
+import org.eclipse.stardust.engine.api.query.HistoricalStatesPolicy;
+import org.eclipse.stardust.engine.api.query.PerformingParticipantFilter;
+import org.eclipse.stardust.engine.api.query.PerformingUserFilter;
+import org.eclipse.stardust.engine.api.query.Query;
+import org.eclipse.stardust.engine.api.query.QueryResult;
+import org.eclipse.stardust.engine.api.query.SubsetPolicy;
+import org.eclipse.stardust.engine.api.query.Worklist;
+import org.eclipse.stardust.engine.api.query.WorklistQuery;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
 import org.eclipse.stardust.engine.api.runtime.Grant;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.rest.Options;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
+import org.springframework.stereotype.Component;
 
 /**
  * @author Subodh.Godbole
@@ -33,7 +44,12 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
  */
 @Component
 public class WorklistUtils
-{ 
+{
+   private static final String COL_ACTIVITY_NAME = "overview";
+   private static final String COL_ACTIVITY_INSTANCE_OID = "oid";
+   private static final String COL_START_TIME = "started";
+   private static final String COL_LAST_MODIFICATION_TIME = "lastModified";
+
    @Resource
    private ServiceFactoryUtils serviceFactoryUtils;
 
@@ -49,6 +65,8 @@ public class WorklistUtils
          WorklistQuery query = org.eclipse.stardust.ui.web.viewscommon.utils.WorklistUtils.createWorklistQuery(participant);
          query.setPolicy(HistoricalStatesPolicy.WITH_LAST_USER_PERFORMER);
          query.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
+         
+         addSortCriteria(query, options);
 
          SubsetPolicy subsetPolicy = new SubsetPolicy(options.pageSize, options.skip, true);
          query.setPolicy(subsetPolicy);
@@ -76,6 +94,8 @@ public class WorklistUtils
                ActivityInstanceState.Application, ActivityInstanceState.Suspended});
          // TODO - this is used to enhance performace but has a bug 
          // query.setPolicy(EvaluateByWorkitemsPolicy.WORKITEMS);
+
+         addSortCriteria(query, options);
 
          SubsetPolicy subsetPolicy = new SubsetPolicy(options.pageSize, options.skip, true);
          query.setPolicy(subsetPolicy);
@@ -157,5 +177,37 @@ public class WorklistUtils
       }
 
       return extractedWorklist;
+   }
+   
+   /**
+    * @param query
+    * @param options
+    */
+   private void addSortCriteria(Query query, Options options)
+   {
+      boolean worklistQuery = query instanceof WorklistQuery;
+
+      if (COL_ACTIVITY_NAME.equals(options.orderBy))
+      {
+         query.orderBy(ActivityInstanceQuery.ACTIVITY_NAME.ascendig(options.asc));
+      }
+      else if (COL_ACTIVITY_INSTANCE_OID.equals(options.orderBy))
+      {
+         query.orderBy(worklistQuery
+               ? WorklistQuery.ACTIVITY_INSTANCE_OID 
+               : ActivityInstanceQuery.OID, options.asc);
+      }
+      else if (COL_START_TIME.equals(options.orderBy))
+      {
+         query.orderBy(worklistQuery
+               ? WorklistQuery.START_TIME
+               : ActivityInstanceQuery.START_TIME, options.asc);
+      }
+      else if (COL_LAST_MODIFICATION_TIME.equals(options.orderBy))
+      {
+         query.orderBy(worklistQuery
+               ? WorklistQuery.LAST_MODIFICATION_TIME
+               : ActivityInstanceQuery.LAST_MODIFICATION_TIME, options.asc);
+      }
    }
 }

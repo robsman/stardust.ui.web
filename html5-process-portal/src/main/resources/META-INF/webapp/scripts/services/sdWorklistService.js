@@ -38,13 +38,22 @@
 			// Prepare URL
 			var restUrl = REST_BASE_URL + ":type/:id";
 
-			// Add Query String Params
+			// Add Query String Params. TODO: Can this be sent as stringified JSON?
 			var options = "";
-			angular.forEach(query.options, function(value, key){
-				options += "&" + key + "=" + value;
-			});
+			if (query.options.skip != undefined) {
+				options += "&skip=" + query.options.skip;
+			}
+			if (query.options.pageSize != undefined) {
+				options += "&pageSize=" + query.options.pageSize;
+			}
+			if (query.options.order != undefined) {
+				// Supports only single column sort
+				var index = query.options.order.length - 1;
+				options += "&orderBy=" + query.options.order[index].name;
+				options += "&orderByDir=" + query.options.order[index].dir;
+			}
 
-			if (options.length > 1) {
+			if (options.length > 0) {
 				restUrl = restUrl + "?" + options.substr(1);
 			}
 
