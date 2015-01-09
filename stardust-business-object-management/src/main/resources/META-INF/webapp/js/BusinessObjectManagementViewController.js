@@ -131,6 +131,8 @@ define(
 					// rendered
 					if(!this.formColumns){
 						this.formColumns = [];	
+					}else {
+						this.formColumns.length = 0;
 					}
 					this.foreignKeyFields = {};
 
