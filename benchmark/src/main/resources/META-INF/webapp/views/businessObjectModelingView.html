@@ -1,0 +1,235 @@
+<html>
+<head>
+<link
+	href='http://fonts.googleapis.com/css?family=Lato:400,700,300italic,400italic'
+	rel='stylesheet' type='text/css'>
+<link
+	href="../../simple-modeler/css/font-awesome-4.1.0/css/font-awesome.css"
+	rel="stylesheet">
+<link href='../../simple-modeler/css/stardust-modern.css'
+	rel='stylesheet' />
+<link
+	href="../../simple-modeler/css/thirdparty/datatables/jquery.dataTables.css"
+	rel="stylesheet" type="text/css" />
+<link
+	href='../../simple-modeler/css/thirdparty/jquery/jquery-ui-1.10.2.custom.min.css'
+	rel='stylesheet' />
+<script data-main="../js/BusinessObjectModelingViewMain"
+	src="../../simple-modeler/js/libs/require/2.0.5/require-min.js"></script>
+<style>
+.dataTable td {
+	padding: 5px !important;
+}
+
+.paletteEntry {
+	padding: 5px;
+	margin-bottom: 5px;
+}
+
+.primitivePaletteEntry {
+	background-color: #7B6BA6;
+}
+
+.structurePaletteEntry {
+	background-color: #8E63A1;
+}
+
+.paletteEntry td {
+	color: #FFFFFF;
+}
+
+.paletteEntry .title {
+	font-weight: bold;
+}
+
+.fieldEntry {
+	padding: 5px;
+	margin-bottom: 5px;
+}
+
+.primitiveFieldEntry {
+	border: 2px solid #7B6BA6;
+}
+
+.structureFieldEntry {
+	border: 2px solid #8E63A1;
+}
+
+.paletteEntry td {
+	color: #FFFFFF;
+}
+</style>
+</head>
+<body ng-controller="businessObjectModelingViewController"
+	style="padding: 10px;">
+	<div class="splash" ng-cloak>
+		<span id="loadingMsg">Loading...</span>
+	</div>
+	<div ng-cloak>
+		<h1>Business Object Modeling</h1>
+	</div>
+	<div id="businessObjectTabs" class="minimalTabs"
+		style="margin-top: 10px;">
+		<ul id="businessObjectTabsList">
+			<li><a href="#generalTab"><span class="tabLabel"
+					id="general">General</span></a></li>
+			<li><a href="#fieldsTab"><span class="tabLabel" id="fields">Fields</span></a></li>
+			<li><a href="#relationshipsTab"><span class="tabLabel"
+					id="relationships">Relationships</span></a></li>
+		</ul>
+		<div id="generalTab">
+			<table class="formTable">
+				<tr>
+					<td><label>Name</label></td>
+					<td><input style="width: 250px;"
+						ng-model="businessObject.name"></input></td>
+				</tr>
+			</table>
+			<table class="formTable">
+				<tr>
+					<td><label>Description</label></td>
+				</tr>
+				<tr>
+					<td><textarea style="width: 250px; height: 50px;"
+							ng-model="businessObject.description"></textarea></td>
+				</tr>
+			</table>
+		</div>
+		<div id="fieldsTab">
+			<table class="layoutTable">
+				<tr valign="top">
+					<td><table id="palette">
+							<tr>
+								<td><h2>Primitive Field Types</h2>
+									<div
+										style="height: 300px; width: 250px;; overflow: auto; border: 1px solid #BBBBBB;">
+										<div id="{{primitive.id}}"
+											class="paletteEntry primitivePaletteEntry"
+											ng-repeat="primitive in primitives">
+											<table class="layoutTable">
+												<tr>
+													<td><span class="title">{{primitive.name}}</span></td>
+												</tr>
+												<tr>
+													<td>{{primitive.description}}</td>
+												</tr>
+											</table>
+										</div>
+									</div></td>
+							</tr>
+							<tr>
+								<td><h2>Structured Field Types</h2>
+									<div
+										style="height: 300px; width: 250px;; overflow: auto; border: 1px solid #BBBBBB;">
+										<div id="{{structure.id}}"
+											class="paletteEntry structurePaletteEntry"
+											ng-repeat="structure in structures">
+											<table class="layoutTable">
+												<tr>
+													<td><span class="title">{{structure.name}}</span></td>
+												</tr>
+												<tr>
+													<td>{{structure.description}}</td>
+												</tr>
+											</table>
+										</div>
+									</div></td>
+							</tr>
+						</table></td>
+					<td><div style="margin-left: 10px;">
+							<h2>Object Fields</h2>
+							<div id="fieldList"
+								style="height: 600px; width: 800px;; overflow: auto; border: 1px solid #BBBBBB;">
+								<div id="{{field.name}}"
+									class="fieldEntry {{field.typeClass}}FieldEntry"
+									ng-repeat="field in fields">
+									<table class="formTable">
+										<tr>
+											<td style="width: 10%;"><a
+												ng-show="field.typeClass == 'structure' && !field._expanded"
+												ng-click="field._expanded = true"><i
+													class="fa fa-chevron-down"></i></a><a
+												ng-show="field.typeClass == 'structure' && field._expanded"
+												ng-click="field._expanded = false"><i
+													class="fa fa-chevron-up"></i></a></td>
+											<td style="width: 30%;"><input type="text"
+												style="width: 250px;" ng-model="field.name"></input></td>
+											<td style="width: 25%;">{{field.type}}</td>
+											<td style="width: 25%;"><select
+												ng-model="field.cardinality"
+												ng-options="cardinality.id as cardinality.label for cardinality in cardinalities"></select></td>
+											<td style="width: 10%;"><a
+												ng-click="removeField($index)"><i class="fa fa-times"></i></a></td>
+										</tr>
+									</table>
+									<div
+										ng-show="field.typeClass == 'structure' && field._expanded"
+										ng-repeat="field in [field]"
+										ng-include="'./structurePanel.html'"></div>
+								</div>
+							</div>
+						</div></td>
+				</tr>
+			</table>
+		</div>
+		<div id="relationshipsTab">
+			<table class="layoutTable">
+				<tr valign="top">
+					<td><table id="palette">
+							<tr>
+								<td><h2>Structured Field Types</h2>
+									<div
+										style="height: 300px; width: 250px;; overflow: auto; border: 1px solid #BBBBBB;">
+										<div id="{{structure.id}}"
+											class="paletteEntry structurePaletteEntry"
+											ng-repeat="structure in structures">
+											<table class="layoutTable">
+												<tr>
+													<td><span class="title">{{structure.name}}</span></td>
+												</tr>
+												<tr>
+													<td>{{structure.description}}</td>
+												</tr>
+											</table>
+										</div>
+									</div></td>
+							</tr>
+						</table></td>
+					<td><div style="margin-left: 10px;">
+							<h2>Object Relationships</h2>
+							<table id="relationshipList" class="dataTable"
+								style="width: 800px;">
+								<thead>
+									<tr>
+										<th>Other Object</th>
+										<th>Other Role</th>
+										<th>Other Cardinality</th>
+										<th>This Role</th>
+										<th>This Cardinality</th>
+										<th></th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr id="relationship{{$index}}"
+										ng-repeat="relationship in relationships">
+										<td>{{relationship.otherObject}}</td>
+										<td><input style="width: 200px;"
+											ng-model="relationship.otherRole"></input></td>
+										<td><select ng-model="relationship.otherCardinality"
+											ng-options="cardinality.id as cardinality.label for cardinality in cardinalities"></select></td>
+										<td><input style="width: 200px;"
+											ng-model="relationship.thisRole"></input></td>
+										<td><select ng-model="relationship.thisCardinality"
+											ng-options="cardinality.id as cardinality.label for cardinality in cardinalities"></select></td>
+										<td><a ng-click="removeRelationship($index)"><i
+												class="fa fa-times"></i></a></td>
+									</tr>
+								</tbody>
+							</table>
+						</div></td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</body>
+</html>

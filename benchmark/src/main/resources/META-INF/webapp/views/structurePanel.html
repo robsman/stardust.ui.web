@@ -1,0 +1,19 @@
+<div ng-repeat="subField in getStructure(field.type).fields">
+	<table class="formTable">
+		<tr>
+			<td style="width: 10%;"><a
+				ng-show="subField.typeClass == 'structure' && !subField._expanded"
+				ng-click="subField._expanded = true"><i
+					class="fa fa-chevron-down"></i></a><a
+				ng-show="subField.typeClass == 'structure' && subField._expanded"
+				ng-click="subField._expanded = false"><i
+					class="fa fa-chevron-down"></i></a></td>
+			<td style="width: 30%;">{{subField.name}}</td>
+			<td style="width: 25%;">{{subfield.type}}</td>
+			<td style="width: 25%;"></td>
+			<td style="width: 10%;"></td>
+		</tr>
+	</table>
+	<div ng-show="subField.typeClass == 'structure' && subField._expanded"
+		ng-repeat="field in [subField]" ng-include="'./structurePanel.html'"></div>
+</div>
