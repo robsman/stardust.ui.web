@@ -143,10 +143,11 @@
 		var columns = [], dtColumns = [];
 		var theTable, theTableId, theDataTable, theToolbar, theColReorder;
 		var selectedRowIndexes = {}, rowSelectionMode = false, selectionBinding;
-		var onSelect = {}, onPagination = {}, onColumnReorder = {};
+		var onSelect = {}, onPagination = {}, onColumnReorder = {}, onSorting = {};
 		var enableColumnSelector, columnSelectorAdmin, columnsByDisplayOrder, columnsInfoByDisplayOrder, devColumnOrderPref;
 		var columnSelectorPreference, localPrefStore = {};
 		var pageSize = 8;
+		var sortingMode, sortByGetter;
 		
 		// Setup component instance
 		setup();
@@ -277,6 +278,25 @@
 						onColumnReorder.param = onColumnReorderfuncInfo.params[0];
 					} else {
 						trace.error(theTableId + ': sda-on-columns-reorder does not seems to be correcly used, it does not appear to be a function accepting parameter.');
+					}
+				}
+			}
+
+			if (attr.sdaSortable == 'true' || attr.sdaSortable == 'single' || attr.sdaSortable == 'multiple') {
+				sortingMode = attr.sdaSortable;
+
+				if (attr.sdaSortBy != undefined && attr.sdaSortBy != '') {
+					sortByGetter = $parse(attr.sdaSortBy);
+				}
+
+				if (attr.sdaOnSorting) {
+					onSorting.handler = $parse(attr.sdaOnSorting);
+
+					var onSortingfuncInfo = sdUtilService.parseFunction(attr.sdaOnSorting);
+					if (onSortingfuncInfo && onSortingfuncInfo.params && onSortingfuncInfo.params.length > 0) {
+						onSorting.param = onSortingfuncInfo.params[0];
+					} else {
+						trace.error(theTableId + ': sda-on-sorting does not seems to be correcly used, it does not appear to be a function accepting parameter.');
 					}
 				}
 			}
@@ -518,27 +538,23 @@
 
 			dtOptions.processing = true;
 
-			// TODO: Datatables does not support single column sorting yet. What it has is only multi column sort 
-			dtOptions.sort = attr.sdaSortable == 'true' || attr.sdaSortable == 'single' || attr.sdaSortable == 'multiple';
+			// TODO: Datatables does not support single column sorting yet. What it has is only multi column sort
+			dtOptions.sort = sortingMode != undefined;
 			if (dtOptions.sort) {
 				var dtOrder = [];
 
-				if (attr.sdaSortBy != undefined && attr.sdaSortBy != '') {
-					var sortByGetter = $parse(attr.sdaSortBy);
-					if (sortByGetter) {
-						var orderBy = sortByGetter(elemScope);
-						if (orderBy) {
-							if (!angular.isArray(orderBy)) {
-								orderBy = [orderBy];
+				if (sortByGetter) {
+					var orderBy = sortByGetter(elemScope);
+					if (orderBy) {
+						if (!angular.isArray(orderBy)) {
+							orderBy = [orderBy];
+						}
+
+						for (var i in orderBy) {
+							var columnInfo = columnsInfoByDisplayOrder[orderBy[i].name];
+							if (columnInfo) {
+								dtOrder.push([columnInfo.index, orderBy[i].dir == 'asc' ? 'asc' : 'desc']);
 							}
-	
-							for (var i in orderBy) {
-								var columnInfo = columnsInfoByDisplayOrder[orderBy[i].name];
-								if (columnInfo) {
-									dtOrder.push([columnInfo.index, orderBy[i].dir == 'asc' ? 'asc' : 'desc']);
-								}
-							}
-							
 						}
 					}
 				}
@@ -658,6 +674,9 @@
 			// Register for pagination events
 			theDataTable.on('page.dt', firePaginationEvent);
 
+			// Register for sorting events
+			theDataTable.on('order.dt', processSortEvent);
+
 			if (enableColumnSelector) {
 				theColReorder = new jQuery.fn.dataTable.ColReorder(theDataTable);
 			}
@@ -678,6 +697,33 @@
 				};
 				
 				fireDataTableEvent(onPagination, paginationInfo, 'onPagination');
+			}, 0, true);
+		}
+
+		/*
+		 * 
+		 */
+		function processSortEvent() {
+			// Invoke the event handler when processing is complete and data is displayed
+			$timeout(function() {
+				var sortingInfo = [];
+
+				var order = theDataTable.order();
+				for (var i in order) {
+					var columnInfo = columnsByDisplayOrder[order[i][0]];
+					if (columnInfo) {
+						sortingInfo.push({
+							name : columnInfo.name,
+							dir : order[i][1] == 'asc' ? 'asc' : 'desc'
+						});
+					}
+				}
+
+				if (sortByGetter && sortByGetter.assign) {
+					sortByGetter.assign(elemScope, sortingInfo);
+				}
+
+				fireDataTableEvent(onSorting, sortingInfo, 'onSorting');
 			}, 0, true);
 		}
 

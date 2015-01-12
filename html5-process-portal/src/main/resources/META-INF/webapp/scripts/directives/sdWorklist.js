@@ -234,7 +234,17 @@
 			// NOP
 		};
 
+		/*
+		 * 
+		 */
 		WorklistCompiler.prototype.onColumnReorder = function(info) {
+			// NOP
+		};
+
+		/*
+		 * 
+		 */
+		WorklistCompiler.prototype.onSorting = function(info) {
 			// NOP
 		};
 
