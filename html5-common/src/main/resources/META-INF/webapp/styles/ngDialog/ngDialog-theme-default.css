@@ -89,6 +89,10 @@
   width: 450px;
 }
 
+.ngdialog-content.no-overlay {
+	box-shadow: 3px 3px 20px #AAA;
+}
+
 .ngdialog.ngdialog-theme-default .ngdialog-close {
   border-radius: 5px;
   cursor: pointer;
