@@ -6,11 +6,15 @@ import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.emf.ecore.EObject;
+
+import org.eclipse.stardust.common.CompareHelper;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.runtime.*;
@@ -21,6 +25,7 @@ import org.eclipse.stardust.model.xpdl.carnot.util.VariableContext;
 import org.eclipse.stardust.ui.web.modeler.common.ModelPersistenceService;
 import org.eclipse.stardust.ui.web.modeler.common.ServiceFactoryLocator;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelPersistenceHandler;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
@@ -73,10 +78,28 @@ public class DefaultModelManagementStrategy extends
 
    public List<ModelDescriptor> loadModels()
    {
+      List<Document> documents = newArrayList();
       List<ModelDescriptor> models = newArrayList();
 
       Folder modelsFolder = getDocumentManagementService().getFolder(MODELS_DIR);
       for (Document modelDocument : modelsFolder.getDocuments())
+      {
+         documents.add(modelDocument);
+      }
+
+      Collections.sort(documents,
+            new Comparator<Document>()
+            {
+               @Override
+               public int compare(Document o1, Document o2)
+               {
+                  int result = CompareHelper.compare(o1.getDateLastModified(),
+                        o2.getDateLastModified());
+                  return result;
+               }
+            });
+
+      for (Document modelDocument : documents)
       {
          try
          {
