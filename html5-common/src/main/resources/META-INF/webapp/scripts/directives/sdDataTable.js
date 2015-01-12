@@ -423,7 +423,6 @@
 
 			columnsByDisplayOrder = columns;
 			columnsInfoByDisplayOrder = columnsInfo;
-			
 
 			element.children('tbody').remove();
 		}
@@ -456,7 +455,8 @@
 			angular.forEach(columns, function(col, i) {
 				dtColumns.push({
 					data: colRenderer(col),
-					sortable: col.sortable
+					sortable: col.sortable,
+					type: attr.sdaMode == 'local' ? 'string' : undefined
 				});
 			});
 
@@ -465,11 +465,22 @@
 			 */
 			function colRenderer(col) {
 				return function(row, type, set) {
+					var ret;
+
 					if (type === 'display') {
-						return col.contents;
+						ret = col.contents;
+					} else {
+						// For 'local' mode return the actual value for types other than display
+						if (attr.sdaMode == 'local') {
+							ret = row[col.field];
+						}
 					}
-					
-					return "";
+
+					if (ret == undefined || ret == null) {
+						ret = "";
+					}
+
+					return ret;
 				};
 			}
 		}
