@@ -283,7 +283,7 @@
 			}
 
 			if (attr.sdaSortable == 'true' || attr.sdaSortable == 'single' || attr.sdaSortable == 'multiple') {
-				sortingMode = attr.sdaSortable;
+				sortingMode = attr.sdaSortable == 'multiple' ? 'multiple' : 'single';
 
 				if (attr.sdaSortBy != undefined && attr.sdaSortBy != '') {
 					sortByGetter = $parse(attr.sdaSortBy);
@@ -719,6 +719,10 @@
 					}
 				}
 
+				if (sortingMode == 'single' && sortingInfo.length > 0) {
+					sortingInfo = sortingInfo[sortingInfo.length - 1];
+				}
+				
 				if (sortByGetter && sortByGetter.assign) {
 					sortByGetter.assign(elemScope, sortingInfo);
 				}
