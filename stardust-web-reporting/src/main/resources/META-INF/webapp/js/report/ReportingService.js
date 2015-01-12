@@ -194,7 +194,7 @@ define(
 						id : "activeTimestamp",
 						name : this.getI18N("reporting.definitionView.activeInstancesOverTime"),
 						type : this.metadata.timestampType,
-						notSupportedAsFilter : true,
+						notSupportedAsColumn : true,
 						disableCumulationInterval : true
 				};
 

@@ -1872,7 +1872,10 @@ define(
                var enumerators = [];
                for ( var n in dimensions ) {
                   var add = true; 
-                  if (this.report.dataSet.columns) {
+                  
+                  if(dimensions[n].notSupportedAsColumn){
+                	  add = false;
+                  }else if (this.report.dataSet.columns) {
                      this.report.dataSet.columns
                            .forEach(function(column) {
                               if (self.report.dataSet.groupBy && self.report.dataSet.groupBy != 'None') 
