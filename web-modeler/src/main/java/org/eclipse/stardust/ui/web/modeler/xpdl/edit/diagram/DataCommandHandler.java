@@ -23,6 +23,7 @@ import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
+import org.eclipse.stardust.model.xpdl.builder.utils.XPDLFinderUtils;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.DataSymbolType;
@@ -107,7 +108,7 @@ public class DataCommandHandler
       ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(parentLaneSymbol);
       Long dataOID = extractLong(request, ModelerConstants.OID_PROPERTY);
 
-      DataSymbolType dataSymbol = getModelBuilderFacade().findDataSymbolRecursively(parentLaneSymbol, dataOID);
+      DataSymbolType dataSymbol = XPDLFinderUtils.findDataSymbolRecursively(parentLaneSymbol, dataOID);
       synchronized (model)
       {
          if(dataSymbol != null)

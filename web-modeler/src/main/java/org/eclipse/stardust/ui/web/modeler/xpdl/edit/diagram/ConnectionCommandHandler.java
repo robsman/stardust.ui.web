@@ -30,12 +30,12 @@ import com.google.gson.JsonObject;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.FeatureMap;
-
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
+import org.eclipse.stardust.model.xpdl.builder.utils.XPDLFinderUtils;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.*;
@@ -77,10 +77,10 @@ public class ConnectionCommandHandler
          if (ModelerConstants.ACTIVITY_KEY.equals(sourceType)
                || ModelerConstants.GATEWAY.equals(sourceType))
          {
-            ActivitySymbolType fromActivitySymbol = ModelBuilderFacade.findActivitySymbol(
+            ActivitySymbolType fromActivitySymbol = XPDLFinderUtils.findActivitySymbol(
                   diagram, fromSymbolOid);
 
-            ActivitySymbolType toActivitySymbol = ModelBuilderFacade.findActivitySymbol(
+            ActivitySymbolType toActivitySymbol = XPDLFinderUtils.findActivitySymbol(
                   diagram, toSymbolOid);
 
 
@@ -107,7 +107,7 @@ public class ConnectionCommandHandler
             }
             else if (ModelerConstants.EVENT_KEY.equals(targetType))
             {
-               StartEventSymbol startEventSymbol = ModelBuilderFacade.findStartEventSymbol(
+               StartEventSymbol startEventSymbol = XPDLFinderUtils.findStartEventSymbol(
                      diagram, toSymbolOid);
                if (null != startEventSymbol)
                {
@@ -118,11 +118,11 @@ public class ConnectionCommandHandler
                }
                else
                {
-                  AbstractEventSymbol toEventSymbol = ModelBuilderFacade.findEndEventSymbol(
+                  AbstractEventSymbol toEventSymbol = XPDLFinderUtils.findEndEventSymbol(
                         diagram, toSymbolOid);
                   if (null == toEventSymbol)
                   {
-                     toEventSymbol = ModelBuilderFacade.findIntermediateEventSymbol(
+                     toEventSymbol = XPDLFinderUtils.findIntermediateEventSymbol(
                            diagram, toSymbolOid);
                   }
                   createControlFlowConnection(request, processDefinition,
@@ -135,7 +135,7 @@ public class ConnectionCommandHandler
                DataMappingConnectionType dataConnectionType = getModelBuilderFacade().createDataFlowConnection(
                      processDefinition,
                      fromActivitySymbol,
-                     getModelBuilderFacade().findDataSymbol(diagram, toSymbolOid),
+                     XPDLFinderUtils.findDataSymbol(diagram, toSymbolOid),
                            hasNotJsonNull(request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY),
                                  ModelerConstants.INPUT_DATA_MAPPING_PROPERTY)
                            ? DirectionType.IN_LITERAL
@@ -158,20 +158,20 @@ public class ConnectionCommandHandler
          {
             if (ModelerConstants.ACTIVITY_KEY.equals(targetType))
             {
-               AbstractEventSymbol fromEventSymbol = ModelBuilderFacade.findStartEventSymbol(diagram, fromSymbolOid);
+               AbstractEventSymbol fromEventSymbol = XPDLFinderUtils.findStartEventSymbol(diagram, fromSymbolOid);
                if (null == fromEventSymbol)
                {
-                  fromEventSymbol = ModelBuilderFacade.findIntermediateEventSymbol(diagram, fromSymbolOid);
+                  fromEventSymbol = XPDLFinderUtils.findIntermediateEventSymbol(diagram, fromSymbolOid);
                }
                if (null != fromEventSymbol)
                {
                   createControlFlowConnection(request, processDefinition,
                         fromEventSymbol,
-                        ModelBuilderFacade.findActivitySymbol(diagram, toSymbolOid), mapper);
+                        XPDLFinderUtils.findActivitySymbol(diagram, toSymbolOid), mapper);
                }
                else
                {
-                  EndEventSymbol endEventSymbol = ModelBuilderFacade.findEndEventSymbol(
+                  EndEventSymbol endEventSymbol = XPDLFinderUtils.findEndEventSymbol(
                         diagram, fromSymbolOid);
                   if (null != endEventSymbol)
                   {
@@ -180,28 +180,28 @@ public class ConnectionCommandHandler
                      createControlFlowConnection(
                            request,
                            processDefinition,
-                           ModelBuilderFacade.findActivitySymbol(diagram,
+                           XPDLFinderUtils.findActivitySymbol(diagram,
                                  toSymbolOid), endEventSymbol, mapper);
                   }
                }
             }
             else if (ModelerConstants.EVENT_KEY.equals(targetType))
             {
-               AbstractEventSymbol fromEventSymbol = ModelBuilderFacade.findStartEventSymbol(
+               AbstractEventSymbol fromEventSymbol = XPDLFinderUtils.findStartEventSymbol(
                      diagram, fromSymbolOid);
 
-               AbstractEventSymbol toEventSymbol = ModelBuilderFacade.findIntermediateEventSymbol(
+               AbstractEventSymbol toEventSymbol = XPDLFinderUtils.findIntermediateEventSymbol(
                      diagram, toSymbolOid);
 
                if (null == fromEventSymbol)
                {
-                  fromEventSymbol = ModelBuilderFacade.findIntermediateEventSymbol(
+                  fromEventSymbol = XPDLFinderUtils.findIntermediateEventSymbol(
                         diagram, fromSymbolOid);
 
                   //Intermediate event can connect to End event directly
                   if (null == toEventSymbol && null != fromEventSymbol)
                   {
-                     toEventSymbol = ModelBuilderFacade.findEndEventSymbol(diagram,
+                     toEventSymbol = XPDLFinderUtils.findEndEventSymbol(diagram,
                            toSymbolOid);
                   }
                }
@@ -230,8 +230,8 @@ public class ConnectionCommandHandler
             {
                DataMappingConnectionType dataConnectionType = getModelBuilderFacade().createDataFlowConnection(
                      processDefinition,
-                     ModelBuilderFacade.findActivitySymbol(diagram, toSymbolOid),
-                     getModelBuilderFacade().findDataSymbol(diagram, fromSymbolOid),
+                     XPDLFinderUtils.findActivitySymbol(diagram, toSymbolOid),
+                     XPDLFinderUtils.findDataSymbol(diagram, fromSymbolOid),
                            hasNotJsonNull(request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY),
                                  ModelerConstants.INPUT_DATA_MAPPING_PROPERTY)
                            ? DirectionType.IN_LITERAL
@@ -301,31 +301,31 @@ public class ConnectionCommandHandler
 
       if (ModelerConstants.ACTIVITY_KEY.equals(typeInRequest))
       {
-         nodeSymbol = ModelBuilderFacade.findActivitySymbol(diagram, oidInRequest);
+         nodeSymbol = XPDLFinderUtils.findActivitySymbol(diagram, oidInRequest);
       }
       else if (ModelerConstants.GATEWAY.equals(typeInRequest))
       {
-         nodeSymbol = ModelBuilderFacade.findActivitySymbol(diagram, oidInRequest);
+         nodeSymbol = XPDLFinderUtils.findActivitySymbol(diagram, oidInRequest);
       }
       else if (ModelerConstants.EVENT_KEY.equals(typeInRequest))
       {
-         nodeSymbol = ModelBuilderFacade.findStartEventSymbol(diagram, oidInRequest);
+         nodeSymbol = XPDLFinderUtils.findStartEventSymbol(diagram, oidInRequest);
          if (null == nodeSymbol)
          {
-            nodeSymbol = ModelBuilderFacade.findEndEventSymbol(diagram, oidInRequest);
+            nodeSymbol = XPDLFinderUtils.findEndEventSymbol(diagram, oidInRequest);
          }
          if (null == nodeSymbol)
          {
-            nodeSymbol = ModelBuilderFacade.findIntermediateEventSymbol(diagram, oidInRequest);
+            nodeSymbol = XPDLFinderUtils.findIntermediateEventSymbol(diagram, oidInRequest);
          }
       }
       else if (ModelerConstants.DATA.equals(typeInRequest))
       {
-         nodeSymbol = getModelBuilderFacade().findDataSymbol(diagram, oidInRequest);
+         nodeSymbol = XPDLFinderUtils.findDataSymbol(diagram, oidInRequest);
       }
       else if (ModelerConstants.ANNOTATION_SYMBOL.equals(typeInRequest))
       {
-         nodeSymbol = getModelBuilderFacade().findAnnotationSymbol(diagram, oidInRequest);
+         nodeSymbol = XPDLFinderUtils.findAnnotationSymbol(diagram, oidInRequest);
       }
       return nodeSymbol;
    }
@@ -343,7 +343,7 @@ public class ConnectionCommandHandler
          PoolSymbol defaultPool = defaultDiagram.getPoolSymbols().get(0);
          try
          {
-            TransitionConnectionType transitionConnection = ModelBuilderFacade.findTransitionConnectionByModelOid(
+            TransitionConnectionType transitionConnection = XPDLFinderUtils.findTransitionConnectionByModelOid(
                   processDefinition, connectionOid);
 
             defaultPool
@@ -364,7 +364,7 @@ public class ConnectionCommandHandler
          {
             try
             {
-               DataMappingConnectionType dataMappingConnection = getModelBuilderFacade().findDataMappingConnectionByModelOid(
+               DataMappingConnectionType dataMappingConnection = XPDLFinderUtils.findDataMappingConnectionByModelOid(
                      processDefinition, connectionOid);
                List<DataMappingType> dataMapping = CollectionUtils.newArrayList();
                for (DataMappingType dataMappingType : dataMappingConnection.getActivitySymbol()

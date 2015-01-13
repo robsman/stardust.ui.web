@@ -11,6 +11,7 @@ import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
+import org.eclipse.stardust.model.xpdl.builder.utils.XPDLFinderUtils;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.builder.utils.NameIdUtilsExtension;
@@ -104,7 +105,7 @@ public class WizardsCommandHandler
                                                                     // TRANSIENT|DEFERRED|IMMEDIATE
       }
 
-      LaneSymbol parentLaneSymbol = getModelBuilderFacade().findLaneInProcess(
+      LaneSymbol parentLaneSymbol = XPDLFinderUtils.findLaneInProcess(
             processDefinition, ModelerConstants.DEF_LANE_ID);
 
       int yOffset = 50;
@@ -135,7 +136,7 @@ public class WizardsCommandHandler
 
       try
       {
-         data = getModelBuilderFacade().findData(model, dataId);
+         data = XPDLFinderUtils.findData(model, dataId);
       }
       catch (Exception x)
       {
@@ -268,7 +269,7 @@ public class WizardsCommandHandler
 
       try
       {
-         data = getModelBuilderFacade().findData(model, dataId);
+         data = XPDLFinderUtils.findData(model, dataId);
       }
       catch (Exception x)
       {
@@ -374,7 +375,7 @@ public class WizardsCommandHandler
          wrapperJson.addProperty(
                "participantFullId",
                getModelBuilderFacade().createFullId(model,
-                     getModelBuilderFacade().findParticipant(model, "Administrator")));
+                     XPDLFinderUtils.findParticipant(model, "Administrator")));
          wrapperJson.addProperty("dataInputActivityName", "Enter Data");
          wrapperJson.addProperty("subprocessActivityName", processDefinition.getName());
          wrapperJson.addProperty("dataOutputActivityName", "Retrieve Data");
@@ -398,7 +399,7 @@ public class WizardsCommandHandler
       ProcessDefinitionType processInterface = getModelBuilderFacade().findProcessDefinition(
             extractString(json, "processFullId"));
 
-      LaneSymbol parentLaneSymbol = getModelBuilderFacade().findLaneInProcess(
+      LaneSymbol parentLaneSymbol = XPDLFinderUtils.findLaneInProcess(
             processDefinition, ModelerConstants.DEF_LANE_ID);
 
       parentLaneSymbol.setParticipant(getModelBuilderFacade().findParticipant(
@@ -507,7 +508,7 @@ public class WizardsCommandHandler
 
                try
                {
-                  data = getModelBuilderFacade().findData(model, formalParameter.getId());
+                  data = XPDLFinderUtils.findData(model, formalParameter.getId());
                }
                catch (Exception x)
                {
@@ -595,7 +596,7 @@ public class WizardsCommandHandler
 
                try
                {
-                  data = getModelBuilderFacade().findData(model, formalParameter.getId());
+                  data = XPDLFinderUtils.findData(model, formalParameter.getId());
                }
                catch (Exception x)
                {

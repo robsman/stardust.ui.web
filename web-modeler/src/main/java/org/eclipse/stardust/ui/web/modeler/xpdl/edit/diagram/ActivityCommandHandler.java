@@ -17,6 +17,7 @@ import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractSt
 import javax.annotation.Resource;
 
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
+import org.eclipse.stardust.model.xpdl.builder.utils.XPDLFinderUtils;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.*;
@@ -26,7 +27,6 @@ import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 import org.eclipse.stardust.ui.web.modeler.xpdl.edit.utils.CommandHandlerUtils;
 import org.eclipse.stardust.ui.web.modeler.xpdl.edit.utils.ModelElementEditingUtils;
-
 import org.springframework.context.ApplicationContext;
 
 import com.google.gson.JsonObject;
@@ -108,7 +108,7 @@ public class ActivityCommandHandler
 
       String activityId = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY,
             ModelerConstants.ID_PROPERTY);
-      ActivityType activity = getModelBuilderFacade().findActivity(processDefinition,
+      ActivityType activity = XPDLFinderUtils.findActivity(processDefinition,
             activityId);
       ActivitySymbolType activitySymbol = activity.getActivitySymbols().get(0);
 

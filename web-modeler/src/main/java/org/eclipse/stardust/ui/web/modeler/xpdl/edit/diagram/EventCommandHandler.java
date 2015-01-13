@@ -25,6 +25,7 @@ import javax.annotation.Resource;
 
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
+import org.eclipse.stardust.model.xpdl.builder.utils.XPDLFinderUtils;
 import org.eclipse.stardust.model.xpdl.builder.utils.LaneParticipantUtil;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
@@ -36,7 +37,6 @@ import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 import org.eclipse.stardust.ui.web.modeler.xpdl.edit.utils.ModelElementEditingUtils;
 import org.eclipse.stardust.ui.web.modeler.xpdl.marshalling.EventMarshallingUtils;
-
 import org.springframework.context.ApplicationContext;
 
 import com.google.gson.JsonObject;
@@ -187,7 +187,7 @@ public class EventCommandHandler
       {
          if (ModelerConstants.START_EVENT.equals(eventType))
          {
-            StartEventSymbol startEventSymbol = ModelBuilderFacade.findStartEventSymbol(
+            StartEventSymbol startEventSymbol = XPDLFinderUtils.findStartEventSymbol(
                   parentLaneSymbol, eventOId);
 
             // Delete the associated trigger too, if it exists
@@ -207,7 +207,7 @@ public class EventCommandHandler
          }
          else if (ModelerConstants.INTERMEDIATE_EVENT.equals(eventType))
          {
-            IntermediateEventSymbol eventSymbol = ModelBuilderFacade.findIntermediateEventSymbol(
+            IntermediateEventSymbol eventSymbol = XPDLFinderUtils.findIntermediateEventSymbol(
                   parentLaneSymbol, eventOId);
             if (eventSymbol != null)
             {
@@ -285,7 +285,7 @@ public class EventCommandHandler
          }
          else
          {
-            EndEventSymbol endEventSymbol = ModelBuilderFacade.findEndEventSymbol(parentLaneSymbol,
+            EndEventSymbol endEventSymbol = XPDLFinderUtils.findEndEventSymbol(parentLaneSymbol,
                   eventOId);
             if (endEventSymbol != null)
             {

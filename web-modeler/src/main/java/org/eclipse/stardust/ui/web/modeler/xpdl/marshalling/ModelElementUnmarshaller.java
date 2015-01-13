@@ -32,7 +32,6 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
-
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
@@ -41,6 +40,7 @@ import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.runtime.*;
 import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
+import org.eclipse.stardust.model.xpdl.builder.utils.XPDLFinderUtils;
 import org.eclipse.stardust.model.xpdl.builder.utils.LaneParticipantUtil;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
@@ -69,7 +69,6 @@ import org.eclipse.stardust.ui.web.modeler.spi.ModelFormat;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelingSessionScoped;
 import org.eclipse.stardust.ui.web.modeler.xpdl.edit.utils.ModelElementEditingUtils;
 import org.eclipse.stardust.ui.web.modeler.xpdl.edit.utils.WebServiceApplicationUtils;
-
 import org.eclipse.xsd.XSDElementDeclaration;
 import org.eclipse.xsd.XSDSchema;
 import org.eclipse.xsd.XSDTypeDefinition;
@@ -1447,7 +1446,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(nodeSymbol);
       if ( !(nodeSymbol instanceof LaneSymbol) && parentID != null)
       {
-         newParentSymbol = getModelBuilderFacade().findLaneSymbolById(
+         newParentSymbol = XPDLFinderUtils.findLaneSymbolById(
                processDefinition, parentID);
       }
 
@@ -1463,7 +1462,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
 
          if (!(nodeSymbol instanceof LaneSymbol))
          {
-            newParentSymbol = getModelBuilderFacade().findLaneSymbolById(
+            newParentSymbol = XPDLFinderUtils.findLaneSymbolById(
                   processDefinition, parentID);
 
             if (null != newParentSymbol)
@@ -1696,13 +1695,13 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       }
       else if (symbolType.equals(ModelerConstants.EVENT_SYMBOL))
       {
-         StartEventSymbol startSymbol = ModelBuilderFacade.findStartEventSymbol(
+         StartEventSymbol startSymbol = XPDLFinderUtils.findStartEventSymbol(
                parentLane, nodeSymbol.getElementOid());
 
-         EndEventSymbol endEventSymbol = ModelBuilderFacade.findEndEventSymbol(
+         EndEventSymbol endEventSymbol = XPDLFinderUtils.findEndEventSymbol(
                parentLane, nodeSymbol.getElementOid());
 
-         IntermediateEventSymbol intermediateEventSymbol = ModelBuilderFacade.findIntermediateEventSymbol(
+         IntermediateEventSymbol intermediateEventSymbol = XPDLFinderUtils.findIntermediateEventSymbol(
                parentLane, nodeSymbol.getElementOid());
 
          if (null != startSymbol)
@@ -2086,7 +2085,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       {
          logger.debug("===> Implementation: "
                + triggerJson.get(ModelerConstants.IMPLEMENTATION_PROPERTY).getAsString());
-         trigger.setType(ModelBuilderFacade.findTriggerType(
+         trigger.setType(XPDLFinderUtils.findTriggerType(
                ModelUtils.findContainingModel(trigger),
                triggerJson.get(ModelerConstants.IMPLEMENTATION_PROPERTY).getAsString()));
          logger.debug("===> Implementation: " + trigger.getType());
@@ -2116,7 +2115,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
                .getAsString()
                .equals(ModelerConstants.NONE_EVENT_CLASS_KEY))
          {
-            trigger.setType(ModelBuilderFacade.findTriggerType(
+            trigger.setType(XPDLFinderUtils.findTriggerType(
                   ModelUtils.findContainingModel(trigger), "manual"));
          }
       }
@@ -2307,7 +2306,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
          if (!application.getType().getId().equals(typeJson.getAsString()))
          {
             ModelType modelType = ModelUtils.findContainingModel(application);
-            ApplicationTypeType type = getModelBuilderFacade()
+            ApplicationTypeType type = XPDLFinderUtils
                .findApplicationTypeType(modelType, typeJson.getAsString());
 
             if (type != null)
