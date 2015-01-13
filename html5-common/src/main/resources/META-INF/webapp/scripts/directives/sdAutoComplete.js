@@ -1,7 +1,6 @@
 angular.module('bpm-common.directives')
 
 .controller('autoCompleteController', ['$scope','$timeout', '$attrs',
-                                       
   function($scope,$timeout,$attrs){
         
     var tmrPromise;
@@ -50,7 +49,7 @@ angular.module('bpm-common.directives')
       newItem=fx({val : v});
     }
     else{
-      newItem[$attrs.sdTextProperty]=v;
+      newItem[$attrs.sdaTextProperty]=v;
     }
     return newItem;
   }
@@ -167,14 +166,42 @@ angular.module('bpm-common.directives')
 ])
 
 .directive("sdAutoComplete",function(){
+  
+  var tpl = '<div name="sd-ac-Container"\
+               ng-class="containerClass"\
+               ng-keyDown="keyMonitor($event)">\
+              <div name="sd-ac-tag"\
+                   ng-click="popData(item)"\
+                   ng-repeat="item in dataSelected track by $index"\
+                   ng-class="classWrapper(\'tagClass\',item)">\
+                   <i ng-class="classGeneratorTPC(item,$index)"></i>\
+                     {{item[textProperty] || item}}\
+              </div>\
+              <input ng-model="matchStr"\
+                     ng-keyUp="changeWrapper(matchStr)"\
+                     style="outline-width:0px;border:none;"\
+                     type="text" />\
+              <div  ng-show="dataList.length >0 && matchStr.length>0"\
+                    name="sd-ac-selectList"\
+                    style="z-index:9999"\
+                    ng-class="classWrapper(\'selectBoxClass\',{},-1)">\
+                  <div ng-click="pushData(item)"\
+                       ng-mouseover="ui.selectedIndex=$index"\
+                       ng-class="{ \'{{itemHotClass}}\' : ui.selectedIndex==$index}"\
+                       ng-repeat="item in dataList | orderBy:orderPredicate">\
+                       <i ng-class="classGeneratorIPC(item, $index)"></i>\
+                       {{item[textProperty]||item}}\
+                  </div>\
+              </div>\
+            </div>'
           
   var link = function(scope,elem,attrs){
-    
-    if(!attrs.sdCloseDelay){
-      attrs.sdCloseDelay=500;
+  
+    if(!attrs.sdaCloseDelay){
+      attrs.sdaCloseDelay=500;
     }
     
-    if(!attrs.sdSelectedMatches){
+    if(!attrs.sdaSelectedMatches){
       scope.dataSelected=[];
     }
     
@@ -198,27 +225,27 @@ angular.module('bpm-common.directives')
           
   return {
     "link" : link,
-    "templateUrl"  : "autoComplete/template/autoComplete.html",
+    "template"  : tpl,
     "controller"   : "autoCompleteController",
     "scope"        : { 
-        dataList           : "=sdMatches",
-        allowMultiple      : "=sdAllowMultiple",
-        textProperty       : "@sdTextProperty",
+        dataList           : "=sdaMatches",
+        allowMultiple      : "=sdaAllowMultiple",
+        textProperty       : "@sdaTextProperty",
         allowUserEntry     : "=sdAllowUserEntry",
-        userEntryDelimiter : "@sdUserEntryDelimiter",
-        userEntryFactory   : "&sdUserEntry",
-        itemPreClassFactory: "&sdItemPreClass",
-        containerClass     : "@sdContainerClass",
-        itemHotClass       : "@sdItemHotClass",
-        tagPreClassFactory : "&sdTagPreClass",
-        dataSelected       : "=sdSelectedMatches",
-        matchStr           : "=sdMatchStr",
-        changeHandler      : "&sdChange",
-        allowDuplicates    : "=sdAllowDuplicates",
-        removeOnSelect     : "=sdRemoveOnSelect",
-        orderPredicate     : "@sdOrderPredicate",
-        closeDelay         : "@sdCloseDelay",
-        keyDelay           : "@sdKeyDelay"
+        userEntryDelimiter : "@sdaUserEntryDelimiter",
+        userEntryFactory   : "&sdaUserEntry",
+        itemPreClassFactory: "&sdaItemPreClass",
+        containerClass     : "@sdaContainerClass",
+        itemHotClass       : "@sdaItemHotClass",
+        tagPreClassFactory : "&sdaTagPreClass",
+        dataSelected       : "=sdaSelectedMatches",
+        matchStr           : "=sdaMatchStr",
+        changeHandler      : "&sdaChange",
+        allowDuplicates    : "=sdaAllowDuplicates",
+        removeOnSelect     : "=sdaRemoveOnSelect",
+        orderPredicate     : "@sdaOrderPredicate",
+        closeDelay         : "@sdaCloseDelay",
+        keyDelay           : "@sdaKeyDelay"
       }
   }
   

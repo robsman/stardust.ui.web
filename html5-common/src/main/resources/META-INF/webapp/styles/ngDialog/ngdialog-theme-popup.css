@@ -58,7 +58,7 @@
 .ngdialog.ngdialog-theme-popup .ngdialog-content {
   -webkit-animation: ngdialog-fadein .25s;
   animation: ngdialog-fadein .25s;
-  background: #f0f0f0;
+  background: #fff;
   border-radius: 5px;
   color: #444;
   font-family: 'Helvetica',sans-serif;

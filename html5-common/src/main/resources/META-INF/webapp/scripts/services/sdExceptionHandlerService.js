@@ -7,7 +7,7 @@ angular.module('bpm-common.services')
       var eventBus = $injector.get('eventBus');
       rootScope = $injector.get('$rootScope');
       eventBus.emitMsg("js.error",exception.message,{emitXApp:true});
-      console.error(exception);
+      console.error(exception.stack);
       
     };
 });

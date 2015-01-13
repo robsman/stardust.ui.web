@@ -106,4 +106,16 @@
 			</tbody>
 		</table>
 	</div>
+	<div style="height:500px;">
+		<h2>Autocomplete</h2>
+		<div  sd-auto-complete
+            sda-matches="pmCtrl.matchData" 
+            sda-match-str="pmCtrl.matchVal" 
+            sda-change="pmCtrl.getMatches(pmCtrl.matchVal)" 
+            sda-text-property="name" 
+            sda-container-class="sd-ac-container" 
+            sda-item-hot-class="sd-ac-item-isActive" 
+            sda-selected-matches="pmCtrl.dataSelected">
+      </div>
+	</div>
 </div>

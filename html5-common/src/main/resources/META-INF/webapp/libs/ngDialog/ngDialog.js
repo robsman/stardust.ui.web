@@ -70,7 +70,7 @@ module.provider('ngDialog', function () {
 					}
 				},
 
-				closeDialog: function ($dialog) {
+				closeDialog: function ($dialog,bypassResolve) {
 					var id = $dialog.attr('id');
 					if (typeof window.Hammer !== 'undefined') {
 						window.Hammer($dialog[0]).off('tap', closeByDocumentHandler);
@@ -104,11 +104,13 @@ module.provider('ngDialog', function () {
 						}
 					}
 					if (defers[id]) {
+
 						defers[id].resolve({
 							id: id,
 							$dialog: $dialog,
 							remainingDialogs: dialogsCount
 						});
+
 						delete defers[id];
 					}
 					$rootScope.$broadcast('ngDialog.closed', $dialog);
@@ -130,10 +132,15 @@ module.provider('ngDialog', function () {
 				 *
 				 * @return {Object} dialog
 				 */
-				open: function (opts) {
-					var self = this;
-					var options = angular.copy(defaults);
-
+				open: function (opts,bypassResolve) {
+					var self = this,
+					    options = angular.copy(defaults),
+					    contentClasses=['ngdialog-content'],
+					    sHtml='',
+					    overlayClasses=[];
+					
+					bypassResolve = bypassResolve || false;
+					
 					opts = opts || {};
 					angular.extend(options, opts);
 
@@ -145,6 +152,7 @@ module.provider('ngDialog', function () {
 					defers[self.latestID] = defer = $q.defer();
 
 					var scope = angular.isObject(options.scope) ? options.scope.$new() : $rootScope.$new();
+					scope.__ngDialog={};
 					var $dialog, $dialogParent;
 
 					$q.when(loadTemplate(options.template)).then(function (template) {
@@ -160,8 +168,25 @@ module.provider('ngDialog', function () {
 							template += '<div class="ngdialog-close"></div>';
 						}
 
+						if(options.showOverlay === true){
+							overlayClasses.push('ngdialog-overlay');
+							sHtml='<div class="' + overlayClasses.join(' ') + '"></div>';
+						}
+						else{
+							contentClasses.push('no-overlay');
+						}
+						
 						self.$result = $dialog = $el('<div id="ngdialog' + globalID + '" class="ngdialog"></div>');
-						$dialog.html('<div class="ngdialog-overlay"></div><div class="ngdialog-content">' + template + '</div>');
+						
+						if(options.isMoveable === true){
+							$dialog.attr('sd-moveable','true');
+						}
+						
+						
+						$dialog.html( sHtml +
+								     '<div  class="'+ contentClasses.join(' ') + '">' + 
+								     template + 
+								     '</div>');
 
 						if (options.controller && angular.isString(options.controller)) {
 							$dialog.attr('ng-controller', options.controller);
@@ -174,7 +199,15 @@ module.provider('ngDialog', function () {
 						if (options.data && angular.isString(options.data)) {
 							scope.ngDialogData = options.data.replace(/^\s*/, '')[0] === '{' ? angular.fromJson(options.data) : options.data;
 						}
-
+						
+						if(options.userTemplate && angular.isString(options.userTemplate)){
+							scope.userTemplate = options.userTemplate;
+						}
+						
+						if(options.title && angular.isString(options.title)){
+							scope.title = options.title;
+						}
+						
 						if (options.appendTo && angular.isString(options.appendTo)) {
 							$dialogParent = angular.element(document.querySelector(options.appendTo));
 						} else {
@@ -202,7 +235,7 @@ module.provider('ngDialog', function () {
 							 *      align:'left|top|right'
 							 *      position: [x,y] --as coordinate
 							 */
-							 if (options.position && angular.isArray(options.position)) {
+							 if (options.isCentered !== true && angular.isArray(options.position)) {
 				                  var myBounds= $dialog[0].getBoundingClientRect(),
 				                      posX = options.position[0],
 				                      posY = options.position[1],
@@ -228,7 +261,12 @@ module.provider('ngDialog', function () {
 	  							$dialog.attr("style",style);
   							 } 
 							/*Position functionality end*/
-							
+							 
+							 /*ZZM: if callback function specified pass promise*/
+							 if(!bypassResolve && options.onOpen && angular.isFunction(options.onOpen)){
+								options.onOpen({'res' : {'promise' : defer.promise}});
+							 }
+							 
 							$rootScope.$broadcast('ngDialog.opened', $dialog);
 						});
 
@@ -260,7 +298,7 @@ module.provider('ngDialog', function () {
 						id: 'ngdialog' + globalID,
 						closePromise: defer.promise,
 						close: function() {
-							privateMethods.closeDialog($dialog);
+							privateMethods.closeDialog($dialog,true);
 						}
 					};
 
@@ -275,6 +313,8 @@ module.provider('ngDialog', function () {
 
 						return $templateCache.get(tmpl) || $http.get(tmpl, { cache: true });
 					}
+
+					return defer.promise;
 				},
 
 				/*
@@ -301,17 +341,22 @@ module.provider('ngDialog', function () {
 
 					options.scope = angular.isObject(options.scope) ? options.scope.$new() : $rootScope.$new();
 					options.scope.confirm = function (value) {
-						defer.resolve(value);
+						//ZZM: extend so we don't accidentally wipe the returned value on $destroy
+						//this will happen with values returned that are on our ngDialog scope.
+						defer.resolve(angular.extend({},value));
 						openResult.close();
 					};
 
-					var openResult = publicMethods.open(options);
+					var openResult = publicMethods.open(options,true);
 					openResult.closePromise.then(function () {
 						defer.reject();
 					});
-					if(options.onOpen){
+					
+					/*ZZM: if callback function specified pass promise*/
+					 if(options.onOpen && angular.isFunction(options.onOpen)){
 						options.onOpen({'res' : {'promise' : defer.promise}});
-					}
+					 }
+					
 					return defer.promise;
 				},
 
