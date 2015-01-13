@@ -578,6 +578,9 @@
 			}
 
 			dtOptions.fnDrawCallback = drawCallbackHandler;
+			dtOptions.fnPreDrawCallback = function() {
+				destroyRows();
+			}
 			dtOptions.fnCreatedRow = createRowHandler;
 
 			if (attr.sdaMode == 'local') {
@@ -818,6 +821,9 @@
 			var rowScope = row.scope();
 			if (rowScope == undefined) {
 				rowScope = myScope.$new();
+				rowScope.$on('$destroy', function() {
+					trace.log(theTableId + ': Row Scope ' + rowScope.$id + ' destroyed for parent ' + rowScope.$parent.$id);
+				});
 			}
 
 			rowScope.rowData = data;
@@ -1382,6 +1388,21 @@
 		function exposeScopeInfo() {
 			// Need to add into parent scope as Toolbar belongs to parent scope 
 			elemScope.$dtApi= new ScopeAPI();
+		}
+
+		/*
+		 * 
+		 */
+		function destroyRows() {
+			try {
+				var rows = theTable.find('> tbody > tr');
+				for (var i = 0; i < rows.length; i++) {
+					var row = angular.element(rows[i]);
+					row.scope().$destroy();
+				}
+			} catch (e) {
+				trace.error(theTableId + ': Error while destroying rows scopes', e);
+			}
 		}
 
 		/*
