@@ -58,12 +58,14 @@ define(
 						ALL_PROCESSES : {
 							id : "allProcesses",
 							name : this
-									.getI18N("reporting.definitionView.additionalFiltering.allprocesses")
+									.getI18N("reporting.definitionView.additionalFiltering.allprocesses"),
+									order : 0
 						},
 						ALL_ACTIVITIES : {
 							id : "allActivities",
 							name : this
-									.getI18N("reporting.definitionView.additionalFiltering.allactivities")
+									.getI18N("reporting.definitionView.additionalFiltering.allactivities"),
+							order : 0
 						}
 					};
 
