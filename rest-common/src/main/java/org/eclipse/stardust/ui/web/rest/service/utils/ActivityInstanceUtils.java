@@ -11,12 +11,15 @@
 package org.eclipse.stardust.ui.web.rest.service.utils;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.annotation.Resource;
-
-import org.springframework.stereotype.Component;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.reflect.Reflect;
@@ -27,13 +30,23 @@ import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.ActivityInstances;
 import org.eclipse.stardust.engine.api.query.FilterOrTerm;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
+import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.QueryService;
+import org.eclipse.stardust.engine.api.runtime.WorkflowService;
+import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
+import org.eclipse.stardust.ui.event.ActivityEvent;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.ReflectionUtils;
+import org.eclipse.stardust.ui.web.rest.service.dto.NotificationDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.PathDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.TrivialManualActivityDTO;
+import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ClientContextBean;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
+import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
+import org.springframework.stereotype.Component;
 
 /**
  * @author Anoop.Nair
@@ -44,6 +57,8 @@ import org.eclipse.stardust.ui.web.rest.service.dto.TrivialManualActivityDTO;
 public class ActivityInstanceUtils
 {
    private static final Logger trace = LogManager.getLogger(ActivityInstanceUtils.class);
+   
+   private static final String STATUS_PREFIX = "views.activityTable.statusFilter.";
    
    @Resource
    private ServiceFactoryUtils serviceFactoryUtils;
@@ -280,4 +295,117 @@ public class ActivityInstanceUtils
       return completedAi;
    }
 
+   /**
+    * @author Yogesh.Manware
+    * @param abortScope
+    * @param activitiesToBeAborted
+    * @return
+    */
+   public Map<String, List<NotificationDTO>> abortActivities(AbortScope abortScope, List<Long> activitiesToBeAborted)
+   {
+      List<NotificationDTO> successNotifications = new ArrayList<NotificationDTO>();
+      List<NotificationDTO> failureNotifications = new ArrayList<NotificationDTO>();
+      Map<String, List<NotificationDTO>> result = new HashMap<String, List<NotificationDTO>>();
+      result.put("success", successNotifications);
+      result.put("failure", failureNotifications);
+
+      if (CollectionUtils.isNotEmpty(activitiesToBeAborted))
+      {
+         WorkflowService workflowService = serviceFactoryUtils.getWorkflowService();
+         ActivityInstance activityInstance;
+         for (Long activityInstanceOid : activitiesToBeAborted)
+         {
+            if (null != activityInstanceOid)
+            {
+               activityInstance = this.getActivityInstance(activityInstanceOid.longValue());
+               if (!isDefaultCaseActivity(activityInstance))
+               {
+                  try
+                  {
+                     workflowService.abortActivityInstance(activityInstanceOid, abortScope);
+                     ClientContextBean.getCurrentInstance().getClientContext()
+                           .sendActivityEvent(ActivityEvent.aborted(activityInstance));
+                     successNotifications.add(new NotificationDTO(activityInstanceOid,
+                           getActivityLabel(activityInstance), getActivityStateLabel(activityInstance)));
+                  }
+                  catch (Exception e)
+                  {
+                     // It is very to rare that any exception would occur
+                     // here
+                     trace.error(e);
+                     failureNotifications.add(new NotificationDTO(activityInstanceOid,
+                           getActivityLabel(activityInstance), MessagesViewsCommonBean.getInstance().getParamString(
+                                 "views.common.activity.abortActivity.failureMsg2",
+                                 ExceptionHandler.getExceptionMessage(e))));
+                  }
+               }
+               else
+               {
+                  if (isDefaultCaseActivity(activityInstance))
+                  {
+                     failureNotifications.add(new NotificationDTO(activityInstanceOid,
+                           getActivityLabel(activityInstance), MessagesViewsCommonBean.getInstance().getString(
+                                 "views.switchProcessDialog.caseAbort.message")));
+                  }
+                  else if (ActivityInstanceState.Aborted.equals(activityInstance.getState())
+                        || ActivityInstanceState.Completed.equals(activityInstance.getState()))
+                  {
+                     failureNotifications.add(new NotificationDTO(activityInstanceOid,
+                           getActivityLabel(activityInstance), MessagesViewsCommonBean.getInstance().getParamString(
+                                 "views.common.activity.abortActivity.failureMsg3",
+                                 ActivityInstanceUtils.getActivityStateLabel(activityInstance))));
+                  }
+                  else
+                  {
+                     failureNotifications.add(new NotificationDTO(activityInstanceOid,
+                           getActivityLabel(activityInstance), MessagesViewsCommonBean.getInstance().getString(
+                                 "views.common.activity.abortActivity.failureMsg1")));
+                  }
+               }
+            }
+         }
+      }
+
+      return result;
+   }
+
+	/**
+	 * to check Activity of type is Default Case Activity
+	 * 
+	 * @param ai
+	 * @return
+	 */
+	public static boolean isDefaultCaseActivity(ActivityInstance ai) {
+		if (null != ai
+				&& PredefinedConstants.DEFAULT_CASE_ACTIVITY_ID.equals(ai
+						.getActivity().getId())) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * @param instance
+	 * @return localized activity name with OID appended
+	 */
+	public static String getActivityLabel(ActivityInstance instance) {
+		if (null != instance) {
+			StringBuilder processLabel = new StringBuilder(
+					I18nUtils.getActivityName(instance.getActivity()));
+			processLabel.append(" (").append("#").append(instance.getOID())
+					.append(")");
+			return processLabel.toString();
+		}
+		return "";
+	}
+
+	/**
+	 * @param ai
+	 * @return Localized activity state name
+	 */
+	public static String getActivityStateLabel(ActivityInstance ai) {
+		return MessagesViewsCommonBean.getInstance().getString(
+				STATUS_PREFIX + ai.getState().getName().toLowerCase());
+	}
+   
 }

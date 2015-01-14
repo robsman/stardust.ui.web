@@ -11,20 +11,30 @@
 package org.eclipse.stardust.ui.web.rest.service;
 
 import java.io.Serializable;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 
-import org.springframework.stereotype.Component;
-
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.Document;
-import org.eclipse.stardust.ui.web.rest.service.dto.*;
+import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
+import org.eclipse.stardust.ui.web.common.util.GsonUtils;
+import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceOutDataDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.NotificationDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.TrivialManualActivityDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DocumentDTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.utils.ActivityInstanceUtils;
+import org.springframework.stereotype.Component;
+
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 
 /**
  * @author Anoop.Nair
@@ -34,6 +44,7 @@ import org.eclipse.stardust.ui.web.rest.service.utils.ActivityInstanceUtils;
 @Component
 public class ActivityInstanceService
 {
+	
    @Resource
    private ActivityInstanceUtils activityInstanceUtils;
 
@@ -134,4 +145,37 @@ public class ActivityInstanceService
 
       return null;
    }
+
+   /**
+    * @author Yogesh.Manware
+    * @param request
+    * @return
+    */
+   public String abortActivities(String request)
+   {
+      JsonObject json = GsonUtils.readJsonObject(request);
+      String scope = GsonUtils.extractString(json, "scope");
+
+      Type listType = new TypeToken<List<Long>>(){}.getType();
+      
+      @SuppressWarnings("unchecked")
+      List<Long> activities = (List<Long>) GsonUtils.extractList(GsonUtils.extractJsonArray(json, "activities"),
+            listType);
+      Map<String, List<NotificationDTO>> result = new HashMap<String, List<NotificationDTO>>();
+
+      if ("activity".equalsIgnoreCase(scope))
+      {
+         result = activityInstanceUtils.abortActivities(AbortScope.SubHierarchy, activities);
+      }
+      else if ("rootProcess".equalsIgnoreCase(scope))
+      {
+         result = activityInstanceUtils.abortActivities(AbortScope.RootHierarchy, activities);
+      }
+      return GsonUtils.toJsonString(result);
+   }
+   
 }
+   
+   
+   
+
