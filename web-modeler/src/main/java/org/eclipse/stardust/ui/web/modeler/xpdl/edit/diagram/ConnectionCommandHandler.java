@@ -23,22 +23,35 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import org.springframework.context.ApplicationContext;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
-import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
-import org.eclipse.stardust.model.xpdl.builder.utils.XPDLFinderUtils;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
-import org.eclipse.stardust.model.xpdl.carnot.*;
+import org.eclipse.stardust.model.xpdl.builder.utils.XPDLFinderUtils;
+import org.eclipse.stardust.model.xpdl.carnot.AbstractEventSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
+import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
+import org.eclipse.stardust.model.xpdl.carnot.CarnotWorkflowModelFactory;
+import org.eclipse.stardust.model.xpdl.carnot.DataMappingConnectionType;
+import org.eclipse.stardust.model.xpdl.carnot.DataMappingType;
+import org.eclipse.stardust.model.xpdl.carnot.DiagramType;
+import org.eclipse.stardust.model.xpdl.carnot.DirectionType;
+import org.eclipse.stardust.model.xpdl.carnot.EndEventSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.EventHandlerType;
+import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableElement;
+import org.eclipse.stardust.model.xpdl.carnot.INodeSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.IntermediateEventSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.ModelType;
+import org.eclipse.stardust.model.xpdl.carnot.PoolSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
+import org.eclipse.stardust.model.xpdl.carnot.StartEventSymbol;
+import org.eclipse.stardust.model.xpdl.carnot.TransitionConnectionType;
+import org.eclipse.stardust.model.xpdl.carnot.TransitionType;
+import org.eclipse.stardust.model.xpdl.carnot.XmlTextNode;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
@@ -46,6 +59,10 @@ import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 import org.eclipse.stardust.ui.web.modeler.xpdl.edit.utils.CommandHandlerUtils;
 import org.eclipse.stardust.ui.web.modeler.xpdl.marshalling.EventMarshallingUtils;
+import org.springframework.context.ApplicationContext;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 /**
  * @author Sidharth.Singh
@@ -334,23 +351,24 @@ public class ConnectionCommandHandler
    public void deleteConnection(ModelType model, IIdentifiableElement targetElement,
          JsonObject request)
    {
-      ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(targetElement);
+      ProcessDefinitionType processDefinition = ModelUtils
+            .findContainingProcess(targetElement);
 
       Long connectionOid = extractLong(request, ModelerConstants.OID_PROPERTY);
       synchronized (model)
       {
          DiagramType defaultDiagram = processDefinition.getDiagram().get(0);
          PoolSymbol defaultPool = defaultDiagram.getPoolSymbols().get(0);
-         try
-         {
-            TransitionConnectionType transitionConnection = XPDLFinderUtils.findTransitionConnectionByModelOid(
-                  processDefinition, connectionOid);
 
-            defaultPool
-                  .getTransitionConnection()
+         TransitionConnectionType transitionConnection = XPDLFinderUtils
+               .findTransitionConnectionByModelOid(processDefinition, connectionOid);
+         if (transitionConnection != null)
+         {
+            defaultPool.getTransitionConnection().remove(transitionConnection);
+            transitionConnection.getSourceActivitySymbol().getOutTransitions()
                   .remove(transitionConnection);
-            transitionConnection.getSourceActivitySymbol().getOutTransitions().remove(transitionConnection);
-            transitionConnection.getTargetActivitySymbol().getInTransitions().remove(transitionConnection);
+            transitionConnection.getTargetActivitySymbol().getInTransitions()
+                  .remove(transitionConnection);
             if (transitionConnection.getTransition() != null)
             {
                TransitionType transitionType = transitionConnection.getTransition();
@@ -358,44 +376,29 @@ public class ConnectionCommandHandler
                transitionType.getFrom().getOutTransitions().remove(transitionType);
                transitionType.getTo().getInTransitions().remove(transitionType);
             }
-
          }
-         catch (ObjectNotFoundException x)
+         else
          {
-            try
+            DataMappingConnectionType dataMappingConnection = XPDLFinderUtils
+                  .findDataMappingConnectionByModelOid(processDefinition, connectionOid);
+            List<DataMappingType> dataMapping = CollectionUtils.newArrayList();
+            for (DataMappingType dataMappingType : dataMappingConnection
+                  .getActivitySymbol().getActivity().getDataMapping())
             {
-               DataMappingConnectionType dataMappingConnection = XPDLFinderUtils.findDataMappingConnectionByModelOid(
-                     processDefinition, connectionOid);
-               List<DataMappingType> dataMapping = CollectionUtils.newArrayList();
-               for (DataMappingType dataMappingType : dataMappingConnection.getActivitySymbol()
-                     .getActivity()
-                     .getDataMapping())
+               if (dataMappingType.getData().getId()
+                     .equals(dataMappingConnection.getDataSymbol().getData().getId()))
                {
-                  if (dataMappingType.getData()
-                        .getId()
-                        .equals(dataMappingConnection.getDataSymbol().getData().getId()))
-                  {
-                     dataMapping.add(dataMappingType);
-                  }
+                  dataMapping.add(dataMappingType);
                }
-               dataMappingConnection.getActivitySymbol()
-                     .getActivity()
-                     .getDataMapping()
-                     .removeAll(dataMapping);
-               dataMappingConnection.getDataSymbol()
-                     .getData()
-                     .getDataMappings()
-                     .removeAll(dataMapping);
-               defaultPool
-                     .getDataMappingConnection()
-                     .remove(dataMappingConnection);
             }
-            catch (Exception e)
-            {
-               // TODO: handle exception
-            }
+            dataMappingConnection.getActivitySymbol().getActivity().getDataMapping()
+                  .removeAll(dataMapping);
+            dataMappingConnection.getDataSymbol().getData().getDataMappings()
+                  .removeAll(dataMapping);
+            defaultPool.getDataMappingConnection().remove(dataMappingConnection);
          }
       }
+
    }
 
    /**

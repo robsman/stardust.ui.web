@@ -1952,22 +1952,16 @@ public class ModelElementMarshaller implements ModelMarshaller
       }
 
       String participantFullID = null;
-      try
+
+      if (model != null)
       {
-         if (model != null)
-         {
-            participantFullID = getModelBuilderFacade().createFullId(
-                  model,
-                  XPDLFinderUtils.findParticipant(
-                        model,
-                        getModelBuilderFacade().getAttributeValue(
-                              getModelBuilderFacade().getAttribute(event,
-                                    PredefinedConstants.MANUAL_TRIGGER_PARTICIPANT_ATT))));
-         }
-      }
-      catch (ObjectNotFoundException ex)
-      {
-         // No participant found - FULL ID stays null
+         participantFullID = getModelBuilderFacade().createFullId(
+               model,
+               XPDLFinderUtils.findParticipant(
+                     model,
+                     getModelBuilderFacade().getAttributeValue(
+                           getModelBuilderFacade().getAttribute(event,
+                                 PredefinedConstants.MANUAL_TRIGGER_PARTICIPANT_ATT))));
       }
 
       eventJson.addProperty(ModelerConstants.PARTICIPANT_FULL_ID, participantFullID);

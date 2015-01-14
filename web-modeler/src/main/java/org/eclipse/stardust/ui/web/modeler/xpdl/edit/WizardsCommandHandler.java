@@ -127,29 +127,20 @@ public class WizardsCommandHandler
 
       // Request data
 
-      String dataId = NameIdUtilsExtension.createIdFromName(extractString(json, "requestDataName"));
-
-      // TODO Weird programming because Model Builder Facade throws
-      // ObjectNotFoundException
+      String dataId = NameIdUtilsExtension.createIdFromName(extractString(json,
+            "requestDataName"));
 
       DataType data = null;
 
-      try
+      data = XPDLFinderUtils.findData(model, dataId);
+
+      if (data == null)
       {
-         data = XPDLFinderUtils.findData(model, dataId);
+         data = getModelBuilderFacade().createStructuredData(model, dataId,
+               extractString(json, "requestDataName"),
+               extractString(json, "requestDataTypeFullId"));
       }
-      catch (Exception x)
-      {
-      }
-      finally
-      {
-         if (data == null)
-         {
-            data = getModelBuilderFacade().createStructuredData(model, dataId,
-                  extractString(json, "requestDataName"),
-                  extractString(json, "requestDataTypeFullId"));
-         }
-      }
+
 
       getModelBuilderFacade().createStructuredParameter(processDefinition, data,
             NameIdUtilsExtension.createIdFromName(extractString(json, "requestDataName")),
@@ -260,28 +251,16 @@ public class WizardsCommandHandler
 
       // Create Response Data
 
-      dataId = NameIdUtilsExtension.createIdFromName(extractString(json, "responseDataName"));
+      dataId = NameIdUtilsExtension.createIdFromName(extractString(json,
+            "responseDataName"));
 
-      // TODO Weird programming because Model Builder Facade throws
-      // ObjectNotFoundException
+      data = XPDLFinderUtils.findData(model, dataId);
 
-      data = null;
-
-      try
+      if (data == null)
       {
-         data = XPDLFinderUtils.findData(model, dataId);
-      }
-      catch (Exception x)
-      {
-      }
-      finally
-      {
-         if (data == null)
-         {
-            data = getModelBuilderFacade().createStructuredData(model, dataId,
-                  extractString(json, "responseDataName"),
-                  extractString(json, "responseDataTypeFullId"));
-         }
+         data = getModelBuilderFacade().createStructuredData(model, dataId,
+               extractString(json, "responseDataName"),
+               extractString(json, "responseDataTypeFullId"));
       }
 
       getModelBuilderFacade().createStructuredParameter(processDefinition, data,
@@ -501,26 +480,15 @@ public class WizardsCommandHandler
                String structuredDataTypeFullId = getModelBuilderFacade().createFullId(
                      model, typeDeclaration);
 
-               // TODO Weird programming because Model Builder Facade throws
-               // ObjectNotFoundException
-
                DataType data = null;
 
-               try
+               data = XPDLFinderUtils.findData(model, formalParameter.getId());
+
+               if (data == null)
                {
-                  data = XPDLFinderUtils.findData(model, formalParameter.getId());
-               }
-               catch (Exception x)
-               {
-               }
-               finally
-               {
-                  if (data == null)
-                  {
-                     data = getModelBuilderFacade().createStructuredData(model,
-                           formalParameter.getId(), formalParameter.getName(),
-                           structuredDataTypeFullId);
-                  }
+                  data = getModelBuilderFacade().createStructuredData(model,
+                        formalParameter.getId(), formalParameter.getName(),
+                        structuredDataTypeFullId);
                }
 
                DataSymbolType dataSymbol = AbstractElementBuilder.F_CWM.createDataSymbolType();
@@ -589,27 +557,15 @@ public class WizardsCommandHandler
                String structuredDataTypeFullId = getModelBuilderFacade().createFullId(
                      model, typeDeclaration);
 
-               // TODO Weird programming because Model Builder Facade throws
-               // ObjectNotFoundException
-
                DataType data = null;
 
-               try
+               if (data == null)
                {
-                  data = XPDLFinderUtils.findData(model, formalParameter.getId());
+                  data = getModelBuilderFacade().createStructuredData(model,
+                        formalParameter.getId(), formalParameter.getName(),
+                        structuredDataTypeFullId);
                }
-               catch (Exception x)
-               {
-               }
-               finally
-               {
-                  if (data == null)
-                  {
-                     data = getModelBuilderFacade().createStructuredData(model,
-                           formalParameter.getId(), formalParameter.getName(),
-                           structuredDataTypeFullId);
-                  }
-               }
+
 
                DataSymbolType dataSymbol = AbstractElementBuilder.F_CWM.createDataSymbolType();
 

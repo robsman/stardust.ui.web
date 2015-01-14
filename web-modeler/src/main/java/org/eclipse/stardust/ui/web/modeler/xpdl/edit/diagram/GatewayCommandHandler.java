@@ -108,10 +108,6 @@ public class GatewayCommandHandler
       }
    }
 
-   private ModelBuilderFacade getModelBuilderFacade()
-   {
-      return CommandHandlerUtils.getModelBuilderFacade(springContext);
-   }
 
    private ModelService modelService()
    {
