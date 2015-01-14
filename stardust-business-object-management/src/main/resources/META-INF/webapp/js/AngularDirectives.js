@@ -156,10 +156,6 @@ define(
 																	rhs,
 																	function(
 																			value) {
-																		if (value == null
-																				|| value.length == 0) {
-																			return;
-																		}
 
 																		if (table.fnDestroy != null) {
 																			try {
@@ -202,7 +198,14 @@ define(
 
 																			elements = [];
 																		}
-
+																		
+																		// When no data found , table should not show Old records
+																		//TODO - review this part, moved after DOM refresh
+																		if (value == null
+																				|| value.length == 0) {
+																			return;
+																		}
+																		
 																		for (var n = 0; n < value.length; ++n) {
 																			var rowScope = scope
 																					.$new();
