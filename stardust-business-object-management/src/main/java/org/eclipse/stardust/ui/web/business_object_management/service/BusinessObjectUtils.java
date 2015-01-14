@@ -198,32 +198,37 @@ public class BusinessObjectUtils
                            .andOn(dvJoin.fieldRef(DataValueBean.FIELD__MODEL), StructuredDataBean.FIELD__MODEL)
                            .andOn(dvJoin.fieldRef(DataValueBean.FIELD__DATA), StructuredDataBean.FIELD__DATA);
 
-           FieldRef pkValueField = null;
-           switch (typeClassification)
-           {
-           case BigData.STRING_VALUE:
-               pkValueField = sdvJoin.fieldRef(StructuredDataValueBean.FIELD__STRING_VALUE);
-               break;
-           case BigData.NUMERIC_VALUE:
-               pkValueField = sdvJoin.fieldRef(StructuredDataValueBean.FIELD__NUMBER_VALUE);
-               break;
-           default:
-               // (fh) throw internal exception ?
-           }
-
            List<PredicateTerm> predicates = CollectionUtils.newList();
            predicates.add(Predicates.isEqual(ProcessInstanceBean.FR__PROCESS_DEFINITION, -1));
            predicates.add(Predicates.isEqual(ProcessInstanceBean.FR__MODEL, modelOID));
            predicates.add(Predicates.isEqual(dvJoin.fieldRef(DataValueBean.FIELD__DATA), dataRtOID));
-           predicates.add(Predicates.isEqual(sdJoin.fieldRef(StructuredDataBean.FIELD__XPATH), pk));
-           if (pkValue instanceof Number)
+           
+           if (pkValue != null || parsedTerm == null)
            {
-               predicates.add(Predicates.isEqual(pkValueField, ((Number) pkValue).longValue()));
+              FieldRef pkValueField = null;
+              switch (typeClassification)
+              {
+              case BigData.STRING_VALUE:
+                 pkValueField = sdvJoin.fieldRef(StructuredDataValueBean.FIELD__STRING_VALUE);
+                 break;
+              case BigData.NUMERIC_VALUE:
+                 pkValueField = sdvJoin.fieldRef(StructuredDataValueBean.FIELD__NUMBER_VALUE);
+                 break;
+              default:
+                 // (fh) throw internal exception ?
+              }
+
+              predicates.add(Predicates.isEqual(sdJoin.fieldRef(StructuredDataBean.FIELD__XPATH), pk));
+              if (pkValue instanceof Number)
+              {
+                 predicates.add(Predicates.isEqual(pkValueField, ((Number) pkValue).longValue()));
+              }
+              else if (pkValue != null)
+              {
+                 predicates.add(Predicates.isEqual(pkValueField, pkValue.toString()));
+              }
            }
-           else if (pkValue != null)
-           {
-               predicates.add(Predicates.isEqual(pkValueField, pkValue.toString()));
-           }
+
            if (parsedTerm != null)
            {
                predicates.add(parsedTerm);
