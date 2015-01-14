@@ -31,11 +31,36 @@
 					ng-blur="businessObjectManagementPanelController.filterBusinessObjectInstances()"></input>
 				</td>
 				<td
-					ng-repeat="field in businessObjectManagementPanelController.fetchKeyFields()"><label
-					style="margin-left: 5px;">{{field.label}}</label><input type="text"
+					ng-repeat="field in businessObjectManagementPanelController.fetchKeyFields()">
+					<label style="margin-left: 5px;">{{field.label}}</label> 
+					<input ng-show="field.type == 'string'" type="text"					
 					style="width: 100px; margin-left: 5px;"
 					ng-model="field.filterValue"
 					ng-blur="businessObjectManagementPanelController.filterBusinessObjectInstances()"></input>
+					<input ng-show="field.type == 'boolean'" type="checkbox"
+					ng-model="field.filterValue"
+					ng-click="businessObjectManagementPanelController.filterBusinessObjectInstances()"></input>
+					<input ng-show="isNumberType(field.type)" type="number"
+					style="width: 100px; margin-left: 5px;"
+					ng-model="field.filterValue"
+					ng-blur="businessObjectManagementPanelController.filterBusinessObjectInstances()"></input>
+					<input
+					ng-show="field.type == 'decimal' || field.type == 'double' || field.type == 'float'"
+					type="text" style="width: 100px; margin-left: 5px;"
+					ng-model="field.filterValue"
+					ng-blur="businessObjectManagementPanelController.filterBusinessObjectInstances()"></input>
+					<input ng-show="field.type == 'byte'" type="text"
+					style="width: 100px; margin-left: 5px;"
+					ng-model="field.filterValue"
+					ng-blur="businessObjectManagementPanelController.filterBusinessObjectInstances()"></input>
+					<input ng-show="field.type == 'date'" type="date"
+					style="width: 130px; margin-left: 5px;"
+					ng-model="field.filterValue"
+					ng-change="businessObjectManagementPanelController.filterBusinessObjectInstances()"></input>
+					<input ng-show="field.type == 'dateTime'" type="datetime-local"
+					style="width: 200px; margin-left: 5px;"
+					ng-model="field.filterValue"
+					ng-change="businessObjectManagementPanelController.filterBusinessObjectInstances()"></input>
 				</td>
 				<td><a href="#" class="iconLink menuBarLink" title="Refresh"><i
 						class="fa fa-eraser"
@@ -53,8 +78,7 @@
 				<tr>
 					<th>{{businessObjectManagementPanelController.businessObject.primaryKeyField.label}}</th>
 					<th
-						ng-repeat="field in businessObjectManagementPanelController.businessObject.keyFields">
-						<span ng-hide="field.list">{{field.label}}</span> <!-- Using fetchKeyFields() breaks ng-repeat scope -->
+						ng-repeat="field in businessObjectManagementPanelController.businessObject.keyFields" ng-if="!field.list">{{field.label}}
 					</th>
 				</tr>
 			</thead>
@@ -65,7 +89,9 @@
 					sd-table-selection-changed="businessObjectManagementPanelController.rootController.onBusinessObjectInstanceSelectionChange()">
 					<td>{{businessObjectInstance[businessObjectManagementPanelController.businessObject.primaryKeyField.id]}}</td>
 					<td
-						ng-repeat="field in businessObjectManagementPanelController.fetchKeyFields()">{{businessObjectInstance[field.id]}}</td>
+						ng-repeat="field in businessObjectManagementPanelController.fetchKeyFields()">
+						<span ng-hide="field.type == 'date'">{{businessObjectInstance[field.id]}}</span>
+						<span ng-show="field.type =='date'">{{businessObjectInstance[field.id] | date :'MM/dd/yyyy hh:mm:ss'}}</span></td>
 				</tr>
 			</tbody>
 		</table>

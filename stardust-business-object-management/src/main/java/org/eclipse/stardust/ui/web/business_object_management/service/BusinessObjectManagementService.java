@@ -899,7 +899,21 @@ public class BusinessObjectManagementService {
 	public JsonArray getRelatedBusinessObjectInstances(String modelOid,
 			String businessObjectId, String primaryKey, JsonObject json) {
 		JsonArray resultJson = new JsonArray();
-		JsonArray primaryKeysJson = json.get("primaryKeys").getAsJsonArray();
+		JsonArray primaryKeysJson = new JsonArray();
+		if(json.has("primaryKeys"))
+		{
+		   JsonElement object = json.get("primaryKeys");
+		   // When relationship is "Exactly One" type
+		   if(object.isJsonObject())
+		   {
+		      primaryKeysJson.add(object);   
+		   }
+		   else   
+		   {
+		      primaryKeysJson =  object.getAsJsonArray();
+		   }
+		   
+		}
 
 		// TODO Populate "efficiently", fake for now - and an ugly one ...
 
