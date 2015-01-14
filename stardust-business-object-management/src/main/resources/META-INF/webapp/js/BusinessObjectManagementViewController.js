@@ -188,7 +188,7 @@ define(
 				BusinessObjectManagementViewController.prototype.onBusinessObjectInstanceSelectionChange = function() {
 					this.currentBusinessObjectInstance = this.businessObjectManagementPanelController.selectedBusinessObjectInstances[0];
 					this.messages = [];
-					this.searchPanelCollapsed =  true;
+					this.businessObjectManagementPanelController.searchPanelCollapsed =  true;
 					var self = this;
 					// Retrieve Process Instances the BOI is used in
 
@@ -315,7 +315,7 @@ define(
 					this.currentBusinessObjectInstance = null;
 					this.newBusinessObjectInstance = null;
 					this.searchCollapsed = false;
-					this.searchPanelCollapsed =  false;
+					this.businessObjectManagementPanelController.searchPanelCollapsed =  false;
 				};
 
 				/**

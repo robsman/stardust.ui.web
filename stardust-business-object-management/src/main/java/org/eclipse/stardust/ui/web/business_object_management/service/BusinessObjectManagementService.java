@@ -881,8 +881,8 @@ public class BusinessObjectManagementService {
 					processInstance.getProcessID());
 			processInstanceJson.addProperty("name",
 					processInstance.getProcessName());
-			processInstanceJson.addProperty("startTime", processInstance
-					.getStartTime().getTime());
+            processInstanceJson.addProperty("startTime", 
+                  DateUtils.formatDateTime(processInstance.getStartTime()));
 		}
 
 		return resultJson;
