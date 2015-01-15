@@ -10,6 +10,7 @@ import org.springframework.context.ApplicationContext;
 
 import com.google.gson.JsonObject;
 
+import org.eclipse.stardust.model.xpdl.builder.utils.XPDLFinderUtils;
 import org.eclipse.stardust.model.xpdl.builder.utils.LaneParticipantUtil;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
@@ -44,7 +45,7 @@ public class MoveNodeSymbolHandler
       ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(nodeSymbol);
       if ( !(nodeSymbol instanceof LaneSymbol))
       {
-         newParentSymbol = getModelBuilderFacade().findLaneSymbolById(processDefinition,
+         newParentSymbol = XPDLFinderUtils.findLaneSymbolById(processDefinition,
                parentID);
 
          if (null != newParentSymbol)
@@ -94,7 +95,7 @@ public class MoveNodeSymbolHandler
             }
             else if (symbolType.equals(ModelerConstants.EVENT_SYMBOL))
             {
-               StartEventSymbol startSymbol = getModelBuilderFacade().findStartEventSymbol(
+               StartEventSymbol startSymbol = XPDLFinderUtils.findStartEventSymbol(
                      parentLane, nodeSymbol.getElementOid());
                if (null != startSymbol)
                {

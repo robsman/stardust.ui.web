@@ -19,6 +19,7 @@ import javax.annotation.Resource;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
+import org.eclipse.stardust.model.xpdl.builder.utils.XPDLFinderUtils;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.*;
@@ -29,7 +30,6 @@ import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelBinding;
 import org.eclipse.stardust.ui.web.modeler.xpdl.edit.utils.CommandHandlerUtils;
 import org.eclipse.stardust.ui.web.modeler.xpdl.edit.utils.ModelElementEditingUtils;
-
 import org.springframework.context.ApplicationContext;
 
 import com.google.gson.JsonObject;
@@ -57,7 +57,7 @@ public class GatewayCommandHandler
          {
             name = "gateway"; //$NON-NLS-1$
          }
-         
+
          ActivityType gateway = newRouteActivity(processDefinition) //
                .withIdAndName(null, name)
                .usingControlFlow(JoinSplitType.XOR_LITERAL, JoinSplitType.XOR_LITERAL).build();
@@ -94,7 +94,7 @@ public class GatewayCommandHandler
       ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(parentLaneSymbol);
 
       String gatewayId = extractString(request, ModelerConstants.MODEL_ELEMENT_PROPERTY, ModelerConstants.ID_PROPERTY);
-      ActivityType gateway = getModelBuilderFacade().findActivity(processDefinition, gatewayId);
+      ActivityType gateway = XPDLFinderUtils.findActivity(processDefinition, gatewayId);
       ActivitySymbolType gatewaySymbol = gateway.getActivitySymbols().get(0);
       synchronized (model)
       {
@@ -108,10 +108,6 @@ public class GatewayCommandHandler
       }
    }
 
-   private ModelBuilderFacade getModelBuilderFacade()
-   {
-      return CommandHandlerUtils.getModelBuilderFacade(springContext);
-   }
 
    private ModelService modelService()
    {

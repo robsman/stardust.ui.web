@@ -13,6 +13,7 @@ import org.springframework.context.ApplicationContext;
 import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
+import org.eclipse.stardust.model.xpdl.builder.utils.XPDLFinderUtils;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
@@ -58,7 +59,7 @@ public class StructuredTypeChangeCommandHandler
 		String structuredDataTypeId = extractString(request,
 				ModelerConstants.ID_PROPERTY);
 
-		TypeDeclarationType structuredDataType = getModelBuilderFacade()
+		TypeDeclarationType structuredDataType = XPDLFinderUtils
 				.findTypeDeclaration(model, structuredDataTypeId);
 		synchronized (model) {
 			model.getTypeDeclarations().getTypeDeclaration()

@@ -34,6 +34,7 @@ import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.utils.ExternalReferenceUtils;
+import org.eclipse.stardust.model.xpdl.builder.utils.XPDLFinderUtils;
 import org.eclipse.stardust.model.xpdl.builder.utils.LaneParticipantUtil;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
@@ -1439,7 +1440,7 @@ public class ModelElementMarshaller implements ModelMarshaller
                {
                   ModelBuilderFacade builder = getModelBuilderFacade();
                   ModelType model = builder.findModel(pack.getHref());
-                  return builder.findProcessDefinition(model, ref.getRef());
+                  return XPDLFinderUtils.findProcessDefinition(model, ref.getRef());
                }
             }
          }
@@ -1467,7 +1468,7 @@ public class ModelElementMarshaller implements ModelMarshaller
                   return null;
                }
 
-               return builder.findApplication(model, ref.getRef());
+               return XPDLFinderUtils.findApplication(model, ref.getRef());
             }
          }
       }
@@ -1951,22 +1952,16 @@ public class ModelElementMarshaller implements ModelMarshaller
       }
 
       String participantFullID = null;
-      try
+
+      if (model != null)
       {
-         if (model != null)
-         {
-            participantFullID = getModelBuilderFacade().createFullId(
-                  model,
-                  getModelBuilderFacade().findParticipant(
-                        model,
-                        getModelBuilderFacade().getAttributeValue(
-                              getModelBuilderFacade().getAttribute(event,
-                                    PredefinedConstants.MANUAL_TRIGGER_PARTICIPANT_ATT))));
-         }
-      }
-      catch (ObjectNotFoundException ex)
-      {
-         // No participant found - FULL ID stays null
+         participantFullID = getModelBuilderFacade().createFullId(
+               model,
+               XPDLFinderUtils.findParticipant(
+                     model,
+                     getModelBuilderFacade().getAttributeValue(
+                           getModelBuilderFacade().getAttribute(event,
+                                 PredefinedConstants.MANUAL_TRIGGER_PARTICIPANT_ATT))));
       }
 
       eventJson.addProperty(ModelerConstants.PARTICIPANT_FULL_ID, participantFullID);
@@ -3214,7 +3209,7 @@ public class ModelElementMarshaller implements ModelMarshaller
    @Override
    public String retrieveEmbeddedMarkup(EObject model, String applicationId)
    {
-      ApplicationType application = getModelBuilderFacade().findApplication(
+      ApplicationType application = XPDLFinderUtils.findApplication(
             (ModelType) model, applicationId);
 
       // TODO Improper coding - need better ways to find context

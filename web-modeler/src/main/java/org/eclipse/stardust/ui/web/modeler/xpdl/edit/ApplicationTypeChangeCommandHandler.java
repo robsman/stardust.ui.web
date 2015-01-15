@@ -9,6 +9,7 @@ import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractSt
 import javax.annotation.Resource;
 
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
+import org.eclipse.stardust.model.xpdl.builder.utils.XPDLFinderUtils;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.ApplicationType;
@@ -18,7 +19,6 @@ import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 import org.eclipse.stardust.ui.web.modeler.xpdl.edit.utils.CommandHandlerUtils;
 import org.eclipse.stardust.ui.web.modeler.xpdl.edit.utils.ModelElementEditingUtils;
-
 import org.springframework.context.ApplicationContext;
 
 import com.google.gson.JsonObject;
@@ -73,8 +73,8 @@ public class ApplicationTypeChangeCommandHandler
       mapper.map(applicationType);
 
       // Store attributes for type
-      // TODO Make general mechanism 
-      
+      // TODO Make general mechanism
+
       JsonObject attributes = request.getAsJsonObject(ModelerConstants.ATTRIBUTES_PROPERTY);
 
       if (attributes != null
@@ -87,7 +87,7 @@ public class ApplicationTypeChangeCommandHandler
                "carnot:engine:camel::applicationIntegrationOverlay",
                attributes.get("carnot:engine:camel::applicationIntegrationOverlay")
                      .getAsString());
-         
+
          // Flag for new implementation
          ModelBuilderFacade.setBooleanAttribute(
                applicationType,
@@ -117,7 +117,7 @@ public class ApplicationTypeChangeCommandHandler
    public void deleteApplication(ModelType model, JsonObject request)
    {
       String appId = extractString(request, ModelerConstants.ID_PROPERTY);
-      ApplicationType application = getModelBuilderFacade().findApplication(model, appId);
+      ApplicationType application = XPDLFinderUtils.findApplication(model, appId);
       if (application != null)
       {
          synchronized (model)
