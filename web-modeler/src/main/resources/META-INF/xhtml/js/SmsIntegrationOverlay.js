@@ -19,10 +19,13 @@ define(
                   "bpm-modeler/js/m_command", "bpm-modeler/js/m_model",
                   "bpm-modeler/js/m_accessPoint", "bpm-modeler/js/m_typeDeclaration",
                   "bpm-modeler/js/m_parameterDefinitionsPanel",
-                  "bpm-modeler/js/m_codeEditorAce" ],
+                  "bpm-modeler/js/m_codeEditorAce",
+                  "bpm-modeler/js/m_routeDefinitionUtils",
+				  "bpm-modeler/js/m_smsRouteDefinitionHandler"],
          function(m_utils, m_i18nUtils, m_constants, m_commandsController, m_command,
                   m_model, m_accessPoint, m_typeDeclaration, m_parameterDefinitionsPanel,
-                  m_codeEditorAce)
+                  m_codeEditorAce, m_routeDefinitionUtils,
+				  m_smsRouteDefinitionHandler)
          {
             return {
                create : function(view)
@@ -275,6 +278,8 @@ define(
                {
                   if (this.view.getApplication().contexts.application.accessPoints.length == 0)
                   {
+                     var accessPoints = this.createIntrinsicAccessPoints();
+                     this.submitParameterDefinitionsChanges(accessPoints);
                      this.view
                               .submitChanges({
                                  /*
@@ -290,6 +295,51 @@ define(
                               });
                   }
                };
+
+               SmsIntegrationOverlay.prototype.createIntrinsicAccessPoints = function()
+               {
+                  var accessPoints = {};
+                  var defaultAccessPoints = [];
+                  for (var n = 0; n < this.getApplication().contexts.application.accessPoints.length; ++n)
+                  {
+                     var parameterDefinition = this.getApplication().contexts.application.accessPoints[n];
+                     if (parameterDefinition.direction == m_constants.IN_ACCESS_POINT)
+                     {
+                        accessPoints[parameterDefinition.id] = parameterDefinition;
+                        defaultAccessPoints.push(parameterDefinition);
+                     }
+                  }
+                                   
+                  if (!accessPoints["CamelSmppSourceAddr"])
+                  {
+                     defaultAccessPoints.push({
+                        id : "CamelSmppSourceAddr",
+                        name : "Sender Address",
+                        dataType : "primitive",
+                        primitiveDataType : "String",
+                        direction : "IN",
+                        attributes : {
+                           "stardust:predefined" : true
+                        }
+                     });
+                  }
+				  
+				  if (!accessPoints["CamelSmppDestAddr"])
+                  {
+                     defaultAccessPoints.push({
+                        id : "CamelSmppDestAddr",
+                        name : "Address Range",
+                        dataType : "primitive",
+                        primitiveDataType : "String",
+                        direction : "IN",
+                        attributes : {
+                           "stardust:predefined" : true
+                        }
+                     });
+                  }
+
+                  return defaultAccessPoints;
+               }
                /**
                 * 
                 */
@@ -362,121 +412,11 @@ define(
                 */
                SmsIntegrationOverlay.prototype.getRoute = function()
                {
-                  var route = "<to uri=\"ipp:data:toNativeObject\"/>\n";
-                  route += "<setHeader headerName=\"CamelLanguageScript\">\n";
-                  route += "   <constant>\n";
-                  route += "function setOutHeader(key, output){\nexchange.out.headers.put(key,output);}\n";
-                  route += "function formatDate(format,value){\n  return new java.text.SimpleDateFormat(format).format(value);}\n";
-                  route += "function isArray(obj) {\n\tif (Array.isArray) {\n\t\treturn Array.isArray(obj);\n\t} else {\n\treturn Object.prototype.toString.call(obj) === '[object Array]';\n\t}\n}\n";
-                  
-                  route += "function visitMembers(obj, callback) {\n\tvar i = 0, length = obj.length;\n\tif (isArray(obj)) {\n\t\t";
-                  route += "for(; i &lt; length; i++) {\n\t\tobj[i]= callback(i, obj[i]);\n\t\t}\n";
-                  route += "} else {\n\t\tfor (i in obj) {\n\t\tobj[i]=  callback(i, obj[i]);}\n\t}\n\treturn obj;\n}\n";
-                  
-                  route += "function recursiveFunction(key, val) {\n";
-                  route += "\tif (val instanceof Object || isArray(val)) {\n";
-                  route += "\t\treturn visitMembers(val, recursiveFunction);\n";
-                  route += "\t} else {\n";
-                  route += "\t\treturn actualFunction(val, typeof val);\n";
-                  route += "\t}\n";
-                  route += "}\n";
-                  
-                  route += "function actualFunction(value, type) {\n";
-                  route += "\tvar dataAsLong;\n";
-                  route += "\tif (type === 'string') {\n";
-                  route += "\t\tdataAsLong =new RegExp(/\\/Date\\((-?\\d*)\\)\\//).exec(value);\n";
-                  route += "\tif (dataAsLong) {\n";
-                  route += "\t\treturn new java.util.Date(+dataAsLong[1]);\n";
-                  route += "\t}\n";
-                  route += "}\n";
-                  route += "return value;\n";
-                  route += "}\n";
-
-                  route += "     String.prototype.hashCode = function() {";
-                  route += "        var hash = 0;\n";
-                  route += "        if (this == 0) return hash;\n";
-                  route += "        for (var i = 0; i &lt; this.length; i++) {\n";
-                  route += "           var character = this.charCodeAt(i);\n";
-                  route += "           hash = ((hash&lt;&lt;5)-hash)+character;\n";
-                  route += "           hash = hash &amp; hash;\n";
-                  route += "        }\n";
-                  route += "        return hash;\n";
-                  route += "     }\n";
-                  for ( var n = 0; n < this.getApplication().contexts.application.accessPoints.length; ++n) {
-
-                     var accessPoint = this.getApplication().contexts.application.accessPoints[n];
-
-                     if (accessPoint.direction == m_constants.OUT_ACCESS_POINT) {
-                        continue;
-                     }
-
-                     if (accessPoint.dataType == "primitive") {
-                        
-                        
-                        route += "var " + accessPoint.id + ";\n";
-                        route += "if(request.headers.get('"
-                              + accessPoint.id + "')!=null){\n";
-                        route += accessPoint.id
-                              + " =  request.headers.get('"
-                              + accessPoint.id + "');\n";
-                        route += "}\n";
-
-                     } else if (accessPoint.dataType == "struct") {
-                        
-                        route += "var " + accessPoint.id + ";\n";
-                        route += "if(request.headers.get('"
-                              + accessPoint.id + "')!=null){\n";
-                        route += accessPoint.id
-                              + " =  eval('(' + request.headers.get('"
-                              + accessPoint.id + "')+ ')');\n";
-                        route +=  accessPoint.id+"=visitMembers("+accessPoint.id+", recursiveFunction);\n";
-                        route += "}\n";
-                        
-                     }
-                     }
-                  route += "\n";
-                  
-                  var messageContent = this.codeEditor.getEditor().getSession().getValue();
-                  if (messageContent != null && messageContent != "")
-                  {
-                     messageContent = m_utils.encodeXmlPredfinedCharacters(messageContent);
-                  }
-                  route+="<![CDATA[";
-                  route += "      response = '"
-                        + messageContent.replace(new RegExp("\n", 'g'), " ")
-                              .replace(new RegExp("toDate", 'g'), "formatDate")
-                              .replace(new RegExp("{{", 'g'), "' + ")
-                              .replace(new RegExp("}}", 'g'), " + '")
-                        + "';\n";
-                  route+="]]>";
-                  route += "      setOutHeader('response', response);\n";
-                  route += "   </constant>\n";
-                  route += "</setHeader>\n";
-
-                  // execute java sript
-                  route += "<to uri=\"language:javascript\"/>\n";
-                  route += "<setBody>\n";
-                  route += "   <simple>$simple{in.header.response}</simple>\n";
-                  route += "</setBody>\n";
-                  
-                  //route +="<to uri=\"smpp://"+this.userNameInput.val()+"@"+this.hostNameInput.val()+":"+this.portInput.val()+"?password="+this.passowrdInput.val()+"&amp;CamelSmppDestAddr="+this.destinationAddressInput.val()+"&amp;CamelSmppSourceAddr="+this.sourceAddressInput.val()+"\"/>"
-                  route +="<to uri=\"smpp://"+this.userNameInput.val()+"@"+this.hostNameInput.val()+":"+this.portInput.val()+"?lazySessionCreation=true&amp;password=";
-                  
-                  if(this.useCVforPassowrdInput.prop("checked"))
-                  {
-                     route += "${";
-                     route += this.passowrdInput.val();
-                     route += ":Password}";
-                  } else
-                  {
-                     route += this.passowrdInput.val();
-                  }
-                  route +="&amp;destAddr="+this.destinationAddressInput.val()+"&amp;sourceAddr="+this.sourceAddressInput.val()+"\"/>";
-      				m_utils.debug(route);
-                  //    route = route.replace(/&/g, "&amp;");
+			      var route = m_smsRouteDefinitionHandler.createRouteForSms(this);
+			      m_utils.debug(route);
                   return route;
                };
-
+               
                SmsIntegrationOverlay.prototype.populateDataStructuresSelectInput = function(
                         structuredDataTypeSelect, scopeModel, restrictToCurrentModel,
                         direction)
@@ -531,6 +471,9 @@ define(
                 */
                SmsIntegrationOverlay.prototype.submitChanges = function()
                {
+                  var accessPointsChanges = this.getApplication().contexts.application.accessPoints;
+                  accessPointsChanges = this.createIntrinsicAccessPoints();
+                  this.submitParameterDefinitionsChanges(accessPointsChanges);
                   this.view
                            .submitChanges({
                               attributes : {
