@@ -193,8 +193,6 @@ define(
 				 
                   header += "  </when>\n";
                   header += "</choice>\n";
-				  header += " <log message=\"header."+Headerkey +" ======= $simple{header."+Headerkey+"} \" />";
-				  header += " <log message=\"in.header."+Headerkey +" ======= $simple{in.header."+Headerkey+"} \" />";
                   return header;
                };
 			   
