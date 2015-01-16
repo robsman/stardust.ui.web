@@ -162,20 +162,37 @@ public class GenericModelingAssertions
       return accessPointFound;
    }
 
-   public static void assertDataMapping(ActivityType activity, String dataMappingID,
-         String accssPointID, String context, DirectionType direction, DataType data)
+   public static DataMappingType assertDataMapping(ActivityType activity, String dataMappingName, String dataMappingID,
+         String context, DirectionType direction, DataType data)
    {
-      DataMappingType dataMapping = (DataMappingType) ModelUtils.findIdentifiableElement(activity,
-            CarnotWorkflowModelPackage.eINSTANCE.getActivityType_DataMapping(), dataMappingID);
-      assertThat(dataMapping, is(not(nullValue())));
-      assertThat(dataMapping.getApplicationAccessPoint(), is(not(nullValue())));
-      assertThat(dataMapping.getApplicationAccessPoint(), is(accssPointID));
-      assertThat(dataMapping.getContext(), is(not(nullValue())));
-      assertThat(dataMapping.getContext(), is(context));
-      assertThat(dataMapping.getDirection(), is(not(nullValue())));
-      assertThat(dataMapping.getDirection(), is(direction));
-      assertThat(dataMapping.getData(), is(not(nullValue())));
-      assertThat(dataMapping.getData(), is(data));
+      DataMappingType dataMappingFound = null;
+      List<DataMappingType> dataMappings = activity.getDataMapping();
+      assertThat(dataMappings, is(not(nullValue())));
+      assertThat(dataMappings.size(), is(not(0)));
+      for (Iterator<DataMappingType> i = dataMappings.iterator(); i.hasNext();)
+      {
+         DataMappingType dataMapping = i.next();
+         assertThat(dataMapping.getId(), is(not(nullValue())));
+         assertThat(dataMapping.getName(), is(not(nullValue())));
+         assertThat(dataMapping.getContext(), is(not(nullValue())));
+         assertThat(dataMapping.getDirection(), is(not(nullValue())));
+
+         if (dataMapping.getId().equalsIgnoreCase(dataMappingID)
+               && dataMapping.getDirection().equals(direction))
+         {
+            dataMappingFound = dataMapping;
+         }
+
+      }
+      assertThat(dataMappingFound, is(not(nullValue())));
+      assertThat(dataMappingFound.getName(), is(dataMappingName));
+      assertThat(dataMappingFound.getId(), is(dataMappingID));
+      assertThat(dataMappingFound.getDirection(), is(direction));
+      assertThat(dataMappingFound.getContext(), is(context));
+      assertThat(dataMappingFound.getData(), is(not(nullValue())));
+
+
+      return dataMappingFound;
    }
 
    public static FormalParameterType assertFormalParameter(ProcessDefinitionType process, String parameterID, String parameterName, ModeType modeType)
