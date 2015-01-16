@@ -302,14 +302,12 @@ public class ActivityInstanceResource
 	 * @param postedData
 	 * @return
 	 */
-	@GET
+	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/abort")
    public Response abortActivities(String postedData)
    {
-	  //TODO: remove following line later
-      //postedData = "{scope: 'activity', activities : [100]}";
       try
       {
          return Response.ok(getActivityInstanceService().abortActivities(postedData), MediaType.APPLICATION_JSON)
