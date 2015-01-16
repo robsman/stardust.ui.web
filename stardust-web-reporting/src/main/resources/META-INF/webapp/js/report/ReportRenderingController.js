@@ -189,6 +189,11 @@ define(
 						chartOptions.axes.xaxis.label = this.report.layout.chart.options.axes.xaxis.label;
 					}
 					chartOptions.axes.xaxis.min = this.report.layout.chart.options.axes.xaxis.min;
+					if (!this.report.layout.chart.options.axes.xaxis.min && 
+							(this.getFirstDimension().type == this.reportingService.metadata.countType ||
+							this.getFirstDimension().type == this.reportingService.metadata.durationType)) {
+						chartOptions.axes.xaxis.min = 0;
+					}
 					chartOptions.axes.xaxis.max = this.report.layout.chart.options.axes.xaxis.max;
 					chartOptions.axes.xaxis.tickOptions = this.report.layout.chart.options.axes.xaxis.tickOptions;
 					chartOptions.axes.xaxis.tickOptions.showMark = this.report.layout.chart.options.axes.xaxis.showTickMarks;
@@ -199,6 +204,23 @@ define(
 						chartOptions.axes.yaxis.label = this.report.layout.chart.options.axes.yaxis.label;
 					}
 					chartOptions.axes.yaxis.min = this.report.layout.chart.options.axes.yaxis.min;
+					if (!this.report.layout.chart.options.axes.yaxis.min) {
+						var cumulatedFacts = this.reportingService.getCumulatedFacts(this.report, true);
+						for ( var n in cumulatedFacts) {
+							var fact = cumulatedFacts[n];
+							
+							if (this.report.dataSet.fact == fact.id)
+							{
+								if (fact.type.id == this.reportingService.metadata.countType.id || 
+										fact.type.id == this.reportingService.metadata.durationType.id) {
+									chartOptions.axes.yaxis.min = 0;
+								} else {
+									chartOptions.axes.yaxis.min = this.report.layout.chart.options.axes.yaxis.min;
+								}
+								break;
+							}
+						}
+					}
 					chartOptions.axes.yaxis.max = this.report.layout.chart.options.axes.yaxis.max;
 					chartOptions.axes.yaxis.tickOptions = this.report.layout.chart.options.axes.yaxis.tickOptions;
 					chartOptions.axes.yaxis.tickOptions.showMark = this.report.layout.chart.options.axes.yaxis.showTickMarks;
