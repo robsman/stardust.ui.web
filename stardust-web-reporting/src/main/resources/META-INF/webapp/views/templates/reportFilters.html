@@ -133,7 +133,8 @@
 					</div>
 				</div>
 				<div
-					ng-show="reportFilterController.getDimension(x.dimension).type == reportFilterController.getMetadata().enumerationType"
+					ng-show="reportFilterController.getDimension(x.dimension).type &&
+					reportFilterController.getDimension(x.dimension).type.id === reportFilterController.getMetadata().enumerationType.id"
 					style="height: auto;">
 					<table class="filterTable"
 						ng-show="x.dimension == 'processName' || x.dimension == 'activityName'">
