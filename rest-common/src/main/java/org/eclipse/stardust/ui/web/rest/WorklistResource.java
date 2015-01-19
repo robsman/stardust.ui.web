@@ -47,7 +47,7 @@ public class WorklistResource
    {
       try
       {
-         QueryResultDTO resultDTO = getWorklistService().getWorklistForParticipant(participantQId);
+         QueryResultDTO resultDTO = getWorklistService().getWorklistForParticipant(participantQId, "default");
 
          return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
       }
@@ -69,7 +69,7 @@ public class WorklistResource
    {
       try
       {
-         QueryResultDTO resultDTO = getWorklistService().getWorklistForUser(userId);
+         QueryResultDTO resultDTO = getWorklistService().getWorklistForUser(userId, "default");
 
          return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
       }

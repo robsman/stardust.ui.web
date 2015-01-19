@@ -27,7 +27,18 @@ define(
 
 			return {
 				initializePropertiesPanel : function(element, page) {
+					
+					//when user modifies any of the fields on property pages and immediately clicks on the symbol - blur event never gets invoked
+					//invoke blur event before refreshing the properties page
+					if(currentPropertiesPanel && currentPropertiesPanel.id == element.propertiesPanel.id){
+						m_utils.jQuerySelect("#" + currentPropertiesPanel.getActivePropertiesPage().id + " :input").blur();	
+					}
 
+					//if it is same element, don't refresh
+					if(currentPropertiesPanel && (element.uuid == currentPropertiesPanel.element.uuid)){
+						return;
+					}
+					
 					if (currentPropertiesPanel != null) {
 						currentPropertiesPanel.hide();
 						m_utils.markControlsReadonly('modelerPropertiesPanelWrapper', false);
@@ -309,6 +320,13 @@ define(
 					}
 				};
 
+				/**
+				 * 
+				 */
+				PropertiesPanel.prototype.getActivePropertiesPage = function() {
+					return this.propertiesPages[this.lastSelectedPageIndex];	
+				};
+				
 				/**
 				 *
 				 */

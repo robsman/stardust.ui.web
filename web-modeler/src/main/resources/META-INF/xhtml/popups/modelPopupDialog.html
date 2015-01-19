@@ -12,6 +12,7 @@
 
 				$scope.ok = function() {
 					if ($scope.modelIDDuplicate || !$scope.modelId || !$scope.modelName) {
+						$scope.showOnSubmitErrors = true;
 						return;
 					}
 
@@ -31,6 +32,7 @@
 					//prepare id
 					var id = payloadObj.m_utils.generateID(newVal, payloadObj.models, "id");
 					$scope.modelId = id;
+					$scope.showOnSubmitErrors = false;
 				});
 
 				$scope.$watch('modelId', function(newVal, oldVal, scope) {
@@ -41,6 +43,7 @@
 					if (id == "duplicate") {
 						$scope.modelIDDuplicate = true;
 					}
+					$scope.showOnSubmitErrors = false;
 				});
 
 			} ]);
@@ -61,26 +64,26 @@
 				ng-click="cancel()" />
 		</div>
 
-		<div id="contentArea" class="iPopupDialogContentArea">
+		<div id="contentArea" class="iPopupDialogContentArea" style="padding-bottom:10px">
 			<div class="iPopupDialogSpacerDiv"></div>
 			<table border="0">
 				<tr class="iPopupDialogContentText">
-					<td>{{i18n.getProperty("modeler.propertyView.modelView.name")}}</td>
+					<td>* {{i18n.getProperty("modeler.propertyView.modelView.name")}}</td>
 					<td><input ng-model="modelName" name="modelName" type="text"
 						required></input></td>
 					<td>
 						<div class="iPopupDialogError"
-							ng-show="modelPopupForm.modelName.$error.required">
+							ng-show="showOnSubmitErrors && modelPopupForm.modelName.$error.required">
 							{{i18n.getProperty("modeler.messages.modelPopup.name.required")}}</div>
 					</td>
 				</tr>
 				<tr class="iPopupDialogContentText">
-					<td>{{i18n.getProperty("modeler.propertyView.modelView.id")}}</td>
+					<td>* {{i18n.getProperty("modeler.propertyView.modelView.id")}}</td>
 					<td><input ng-model="modelId" name="modelId" type="text"
 						required></input></td>
 					<td>
 						<div class="iPopupDialogError"
-							ng-show="modelPopupForm.modelId.$error.required">
+							ng-show="showOnSubmitErrors && modelPopupForm.modelId.$error.required">
 							{{i18n.getProperty("modeler.messages.modelPopup.id.required")}}</div>
 						<div class="iPopupDialogError" ng-show="modelIDDuplicate">
 							{{i18n.getProperty("modeler.messages.modelPopup.id.unique")}}</div>

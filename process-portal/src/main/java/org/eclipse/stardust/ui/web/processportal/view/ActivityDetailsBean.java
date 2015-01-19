@@ -108,6 +108,7 @@ import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler.EventType;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.JoinProcessDialogBean;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.SwitchProcessDialogBean;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentInfo;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentViewUtil;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ParametricCallbackHandler;
@@ -239,6 +240,7 @@ public class ActivityDetailsBean extends UIComponentBean
    private boolean qualityAssuranceActionInProgress;
    private QAAction qualityAssuranceAction;
    private boolean ownershipStatusOnSave;
+   private boolean suspendToParticipant = true;
    
    // Kind of constant, loaded from  properties
    // Temporary to support both modes for some time
@@ -1053,7 +1055,10 @@ public class ActivityDetailsBean extends UIComponentBean
       {
          if (event.getType().equals(ActivityEvent.ACTIVATED))
          {
-            update(false);
+            if (loadSuccessful)
+            {
+               update(false);
+            }
          }
          else if (event.getType().equals(ActivityEvent.COMPLETED)
                || event.getType().equals(ActivityEvent.SUSPENDED)
@@ -1347,7 +1352,7 @@ public class ActivityDetailsBean extends UIComponentBean
 
    public void suspendAndSaveCurrentActivity()
    {
-      suspendAndSaveCurrentActivity(false, true, true);
+      suspendAndSaveCurrentActivity(false, true, suspendToParticipant);
    }
 
    public void suspendCurrentActivity(boolean keepOwnership, boolean closeView,
@@ -1976,7 +1981,8 @@ public class ActivityDetailsBean extends UIComponentBean
             // Preserved keepOwnership flag , as after setting
             // OutDataMapping,keepOwnership flag is lost
             ownershipStatusOnSave = true;
-            suspendAndSaveCurrentActivity(ownershipStatusOnSave, true, false);
+            suspendToParticipant = false;
+            suspendAndSaveCurrentActivity(ownershipStatusOnSave, true, suspendToParticipant);
 
             if(assemblyLineActivity && assemblyLinePushService)
             {
@@ -1995,8 +2001,8 @@ public class ActivityDetailsBean extends UIComponentBean
             break;
          case SAVE_TO_DEFAULT_PERFORMER:
             params = getPinViewStatusParam();
-
-            suspendAndSaveCurrentActivity(false, true, false);
+            suspendToParticipant = false;
+            suspendAndSaveCurrentActivity(false, true, suspendToParticipant);
 
             if(assemblyLineActivity && assemblyLinePushService)
             {

@@ -25,9 +25,14 @@ import javax.annotation.Resource;
 
 import org.springframework.context.ApplicationContext;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.util.FeatureMap;
+
 import org.eclipse.stardust.common.CollectionUtils;
+import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
@@ -68,28 +73,36 @@ public class ConnectionCommandHandler
 
          String sourceType = extractString(request, ModelerConstants.FROM_MODEL_ELEMENT_TYPE);
          String targetType = extractString(request, ModelerConstants.TO_MODEL_ELEMENT_TYPE);
+
          if (ModelerConstants.ACTIVITY_KEY.equals(sourceType)
                || ModelerConstants.GATEWAY.equals(sourceType))
          {
             ActivitySymbolType fromActivitySymbol = ModelBuilderFacade.findActivitySymbol(
                   diagram, fromSymbolOid);
 
+            ActivitySymbolType toActivitySymbol = ModelBuilderFacade.findActivitySymbol(
+                  diagram, toSymbolOid);
+
+
             if (ModelerConstants.ACTIVITY_KEY.equals(targetType)
                   || ModelerConstants.GATEWAY.equals(targetType))
             {
                JsonObject controlFlowJson = request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
 
-               TransitionConnectionType transitionConnectionType = getModelBuilderFacade().createControlFlowConnection(
-                     processDefinition, fromActivitySymbol,
-                     ModelBuilderFacade.findActivitySymbol(diagram, toSymbolOid),
-                     extractString(controlFlowJson, ModelerConstants.ID_PROPERTY),
-                     extractString(controlFlowJson, ModelerConstants.NAME_PROPERTY),
-                     extractString(controlFlowJson, ModelerConstants.DESCRIPTION_PROPERTY),
-                     hasNotJsonNull(controlFlowJson, ModelerConstants.OTHERWISE_PROPERTY)
-                        && extractBoolean(controlFlowJson, ModelerConstants.OTHERWISE_PROPERTY),
-                     "",
-                     mapAnchorOrientation(extractInt(request, ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)),
-                     mapAnchorOrientation(extractInt(request, ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
+               TransitionType transition = createTransition(controlFlowJson, processDefinition,
+                     fromActivitySymbol.getActivity(), toActivitySymbol.getActivity());
+
+               TransitionConnectionType transitionConnectionType = getModelBuilderFacade()
+                     .createTransitionSymbol(
+                           processDefinition,
+                           fromActivitySymbol,
+                           toActivitySymbol,
+                           transition,
+                           mapAnchorOrientation(extractInt(request,
+                                 ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)),
+                           mapAnchorOrientation(extractInt(request,
+                                 ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
+
                mapper.map(transitionConnectionType);
             }
             else if (ModelerConstants.EVENT_KEY.equals(targetType))
@@ -418,17 +431,23 @@ public class ConnectionCommandHandler
                }
             }
          }
-         transition = getModelBuilderFacade().createTransition(
-               processDefinition,
-               hostActivity,
-               targetActivitySymbol.getActivity(),
-               extractString(connectionJson, ModelerConstants.ID_PROPERTY),
-               extractString(connectionJson, ModelerConstants.NAME_PROPERTY),
-               extractString(connectionJson, ModelerConstants.DESCRIPTION_PROPERTY),
-               hasNotJsonNull(connectionJson, ModelerConstants.OTHERWISE_PROPERTY)
-                     && extractBoolean(connectionJson,
-                           ModelerConstants.OTHERWISE_PROPERTY),
-               condition);
+
+         JsonObject controlFlowJson = connectionJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
+         transition = createTransition(controlFlowJson, processDefinition, hostActivity,
+               targetActivitySymbol.getActivity());
+
+         if(!StringUtils.isEmpty(condition))
+         {
+            transition.setCondition(ModelerConstants.CONDITION_KEY);
+            if(transition.getExpression() == null)
+            {
+               XmlTextNode expression = CarnotWorkflowModelFactory.eINSTANCE.createXmlTextNode();
+               transition.setExpression(expression);
+            }
+            FeatureMap mixedNode = transition.getExpression().getMixed();
+            ModelUtils.setCDataString(mixedNode, condition, true);
+         }
+
          mapper.map(transition);
       }
 
@@ -463,16 +482,11 @@ public class ConnectionCommandHandler
 
       if (null != hostActivity)
       {
-         transition = getModelBuilderFacade().createTransition(
-               processDefinition,
-               sourceActivitySymbol.getActivity(),
-               hostActivity,
-               extractString(connectionJson, ModelerConstants.ID_PROPERTY),
-               extractString(connectionJson, ModelerConstants.NAME_PROPERTY),
-               extractString(connectionJson, ModelerConstants.DESCRIPTION_PROPERTY),
-               hasNotJsonNull(connectionJson, ModelerConstants.OTHERWISE_PROPERTY)
-                     && extractBoolean(connectionJson,
-                           ModelerConstants.OTHERWISE_PROPERTY), "");
+         JsonObject controlFlowJson = connectionJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
+
+         transition = createTransition(controlFlowJson, processDefinition, sourceActivitySymbol.getActivity(),
+               hostActivity);
+
          mapper.map(transition);
       }
 
@@ -506,16 +520,9 @@ public class ConnectionCommandHandler
 
       if (null != targetHostActivity && null != sourceHostActivity)
       {
-         transition = getModelBuilderFacade().createTransition(
-               processDefinition,
-               sourceHostActivity,
-               targetHostActivity,
-               extractString(connectionJson, ModelerConstants.ID_PROPERTY),
-               extractString(connectionJson, ModelerConstants.NAME_PROPERTY),
-               extractString(connectionJson, ModelerConstants.DESCRIPTION_PROPERTY),
-               hasNotJsonNull(connectionJson, ModelerConstants.OTHERWISE_PROPERTY)
-                     && extractBoolean(connectionJson,
-                           ModelerConstants.OTHERWISE_PROPERTY), "");
+         JsonObject controlFlowJson = connectionJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
+
+         transition = createTransition(controlFlowJson, processDefinition, sourceHostActivity, targetHostActivity);
          mapper.map(transition);
 
          TransitionConnectionType transitionConnectionType = getModelBuilderFacade().createTransitionSymbol(
@@ -528,6 +535,55 @@ public class ConnectionCommandHandler
                mapAnchorOrientation(extractInt(connectionJson,
                      ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
          mapper.map(transitionConnectionType);
+      }
+   }
+
+   /**
+    * @param controlFlowJson
+    * @param processDefinition
+    * @param sourceActivity
+    * @param targetActivity
+    * @return
+    */
+   private TransitionType createTransition(JsonObject controlFlowJson, ProcessDefinitionType processDefinition,
+         ActivityType sourceActivity, ActivityType targetActivity)
+   {
+      TransitionType transition = getModelBuilderFacade().createTransition(
+            processDefinition,
+            sourceActivity,
+            targetActivity,
+            extractString(controlFlowJson, ModelerConstants.ID_PROPERTY),
+            extractString(controlFlowJson, ModelerConstants.NAME_PROPERTY),
+            extractString(controlFlowJson, ModelerConstants.DESCRIPTION_PROPERTY),
+            hasNotJsonNull(controlFlowJson, ModelerConstants.OTHERWISE_PROPERTY)
+                  && extractBoolean(controlFlowJson, ModelerConstants.OTHERWISE_PROPERTY),
+            extractString(controlFlowJson, ModelerConstants.CONDITION_EXPRESSION_PROPERTY));
+
+      transition.setForkOnTraversal(hasNotJsonNull(controlFlowJson, ModelerConstants.FORK_ON_TRAVERSAL_PROPERTY)
+            && extractBoolean(controlFlowJson, ModelerConstants.FORK_ON_TRAVERSAL_PROPERTY));
+
+      // update comments
+      storeAttributes(transition, controlFlowJson);
+
+      return transition;
+   }
+
+   /**
+    * @param element
+    * @param json
+    */
+   private void storeAttributes(EObject element, JsonObject json)
+   {
+      // Extract JSON elements which are stored in Extended Attributes
+      if (json.has(ModelerConstants.COMMENTS_PROPERTY))
+      {
+         JsonArray commentsJson = json.getAsJsonArray(ModelerConstants.COMMENTS_PROPERTY);
+         JsonObject holderJson = new JsonObject();
+
+         holderJson.add(ModelerConstants.COMMENTS_PROPERTY, commentsJson);
+
+         ModelBuilderFacade.setAttribute(element, "documentation:comments",
+               jsonIo.writeJsonObject(holderJson));
       }
    }
 
@@ -571,5 +627,4 @@ public class ConnectionCommandHandler
    {
       return springContext.getBean(ModelService.class);
    }
-
 }

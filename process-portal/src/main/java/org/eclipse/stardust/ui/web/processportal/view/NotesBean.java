@@ -61,6 +61,7 @@ import org.eclipse.stardust.ui.web.viewscommon.common.event.NoteEvent;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MyPicturePreferenceUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 
@@ -140,6 +141,15 @@ public class NotesBean extends UIComponentBean implements IUserObjectBuilder<Not
       if (processInstance == null)
          return;
 
+      if (null == thisView.getViewParams().get("processName"))
+      {
+         thisView.getViewParams().put(
+               "processName",
+               I18nUtils.getProcessName(ProcessDefinitionUtils.getProcessDefinition(processInstance.getModelOID(),
+                     processInstance.getProcessID())));
+         thisView.resolveLabelAndDescription();
+      }
+      
       scopeProcessInstance = ProcessInstanceUtils.getProcessInstance(processInstance.getScopeProcessInstanceOID());
       String noteNumber = (String) getParamValue("noteNr");
       attributes = fetchAttributes(scopeProcessInstance);

@@ -45,6 +45,8 @@ public interface ResourcePaths
    static final String V_ACTIVITY_TABLE_COLUMNS = "/plugins/views-common/activityTableHelper/activityTableColumns.xhtml";
 
    static final String V_PROCESS_TABLE_COLUMNS = "/plugins/views-common/processTableHelper/processTableColumns.xhtml";
+   
+   static final String V_DOCUMENT_DESC_COLUMNS = "/plugins/views-common/processTableHelper/documentDescriptorColumns.xhtml";
 
    static final String I_FOLDER_CORRESPONDANCE = "/plugins/views-common/images/icons/folder_page.png";
 

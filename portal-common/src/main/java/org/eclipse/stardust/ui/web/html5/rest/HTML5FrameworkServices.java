@@ -208,7 +208,7 @@ public class HTML5FrameworkServices
       MessagePropertiesBean messageBean = (MessagePropertiesBean) RestControllerUtils.resolveSpringBean(
             MessagePropertiesBean.class, servletContext);
 
-      Map<String, String> bundleValues = loadBundle("html5-framework-messages", messageBean.getLocaleObject());
+      Map<String, String> bundleValues = loadBundle("html5-framework-messages", messageBean.getLocaleObject(), false);
       bundleValues.putAll(getPluginMessages());
 
       for (Entry<String, String> entry : bundleValues.entrySet())
@@ -577,7 +577,7 @@ public class HTML5FrameworkServices
       trace.info("Loading Plugin Bundles: " + bundles);
       for (String bundle : bundles)
       {
-         values.putAll(loadBundle(bundle, messageBean.getLocaleObject()));
+         values.putAll(loadBundle(bundle, messageBean.getLocaleObject(), true));
       }
 
       return values;
@@ -588,16 +588,30 @@ public class HTML5FrameworkServices
     * @param locale
     * @return
     */
-   private Map<String, String> loadBundle(String baseName, Locale locale)
+   private Map<String, String> loadBundle(String baseName, Locale locale, boolean prependBundleName)
    {
       Map<String, String> values = new LinkedHashMap<String, String>();
 
       if (null != baseName)
       {
-         ResourceBundle bundle = ResourceBundle.getBundle(baseName, locale);
-         for (String key : Collections.list(bundle.getKeys()))
+         try
          {
-            values.put(key, bundle.getString(key));
+            ResourceBundle bundle = ResourceBundle.getBundle(baseName, locale);
+            for (String key : Collections.list(bundle.getKeys()))
+            {
+               if(prependBundleName)
+               {
+                  values.put(baseName + "." + key, bundle.getString(key));
+               }
+               else
+               {
+                  values.put(key, bundle.getString(key));
+               }
+            }
+         }
+         catch (Exception e)
+         {
+            trace.warn(e.getMessage());
          }
       }
 

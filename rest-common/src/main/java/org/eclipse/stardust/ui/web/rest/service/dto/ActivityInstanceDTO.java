@@ -18,6 +18,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOClass;
 
 /**
  * @author Anoop.Nair
+ * @author Subodh.Godbole
  * @version $Revision: $
  */
 @DTOClass
@@ -35,6 +36,6 @@ public class ActivityInstanceDTO extends AbstractDTO
    @DTOAttribute("activity")
    public ActivityDTO activity;
 
-   @DTOAttribute("processInstance.processName")
-   public String processName;
+   @DTOAttribute("processInstance")
+   public ProcessInstanceDTO processInstance;
 }

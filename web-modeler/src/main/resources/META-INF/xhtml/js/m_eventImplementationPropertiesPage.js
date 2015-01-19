@@ -228,8 +228,9 @@ define(
 					}
 
 					this.eventIntegrationOverlaySelect.val(overlay);
-
-					m_dialog.makeVisible(this.overlays[overlay]);
+					if(overlay){
+						m_dialog.makeVisible(this.overlays[overlay]);						
+					}
 
 					if (this.overlayControllers[overlay]) {
 						this.overlayControllers[overlay].update();

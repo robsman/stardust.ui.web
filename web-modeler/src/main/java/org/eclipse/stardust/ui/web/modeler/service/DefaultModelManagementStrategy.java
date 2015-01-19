@@ -10,20 +10,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.runtime.*;
 import org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder;
 import org.eclipse.stardust.model.xpdl.builder.strategy.AbstractModelManagementStrategy;
-import org.eclipse.stardust.model.xpdl.builder.utils.WebModelerModelManager;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.util.VariableContext;
 import org.eclipse.stardust.ui.web.modeler.common.ModelPersistenceService;
 import org.eclipse.stardust.ui.web.modeler.common.ServiceFactoryLocator;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelPersistenceHandler;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
@@ -34,19 +31,17 @@ import org.springframework.http.MediaType;
  *
  */
 public class DefaultModelManagementStrategy extends
-		AbstractModelManagementStrategy {
+		AbstractModelManagementStrategy
+{
 
    private static final Logger trace = LogManager.getLogger(DefaultModelManagementStrategy.class);
 
-	public static final String MODELS_DIR = "/process-models/";
+   public static final String MODELS_DIR = "/process-models/";
 
    private ServiceFactory serviceFactory;
-	private DocumentManagementService documentManagementService;
+   private DocumentManagementService documentManagementService;
 
-	/**
-	 *
-	 */
-	private Map<String, String> modelFileNameMap = new HashMap<String, String>();
+   private Map<String, String> modelFileNameMap = new HashMap<String, String>();
 
    private final ModelPersistenceService persistenceService;
 
@@ -70,59 +65,30 @@ public class DefaultModelManagementStrategy extends
    };
 
    @Autowired
-	public DefaultModelManagementStrategy(ModelPersistenceService persistenceService, ServiceFactoryLocator serviceFactoryLocator)
+   public DefaultModelManagementStrategy(ModelPersistenceService persistenceService, ServiceFactoryLocator serviceFactoryLocator)
    {
-	   this.persistenceService = persistenceService;
+	  this.persistenceService = persistenceService;
       this.serviceFactoryLocator = serviceFactoryLocator;
    }
 
-   /**
-	 *
-	 */
    public List<ModelDescriptor> loadModels()
    {
       List<ModelDescriptor> models = newArrayList();
 
-      @SuppressWarnings("unchecked")
-      List<Document> candidateModelDocuments = getDocumentManagementService().getFolder(
-            MODELS_DIR).getDocuments();
-
-      for (Document modelDocument : candidateModelDocuments)
+      Folder modelsFolder = getDocumentManagementService().getFolder(MODELS_DIR);
+      for (Document modelDocument : modelsFolder.getDocuments())
       {
-         ModelType xpdlModel = null;
-         EObject model = null;
-
-         byte[] modelContent = readModelContext(modelDocument);
-         ByteArrayInputStream baos = new ByteArrayInputStream(modelContent);
-         ModelPersistenceHandler.ModelDescriptor<?> descriptor = persistenceService.loadModel(
-               modelDocument.getName(), baos);
-         if (null != descriptor)
+         try
          {
-            model = descriptor.model;
-            if (descriptor.model instanceof ModelType)
+            ModelDescriptor desc = loadModel(modelDocument);
+            if (desc != null)
             {
-               xpdlModel = (ModelType) descriptor.model;
-            }
-            else
-            {
-               // use just the most basic XPDL representation, rest will be handled
-               // directly from native format (e.g. BPMN2)
-               xpdlModel = BpmModelBuilder.newBpmModel()
-                     .withIdAndName(descriptor.id,
-                           !isEmpty(descriptor.name) ? descriptor.name : descriptor.id)
-                     .build();
+               models.add(desc);
             }
          }
-
-         if (null != xpdlModel)
+         catch (IOException ex)
          {
-            // TODO - This method needs to move to some place where it will be called only
-            // once for
-            loadEObjectUUIDMap(xpdlModel);
-            mapModelFileName(xpdlModel, modelDocument.getName());
-
-            models.add(new ModelDescriptor(xpdlModel.getId(), modelDocument.getName(),
-                  model, xpdlModel));
+            trace.warn("Unable to load model from '" + modelDocument.getName() + "'", ex);
          }
       }
 
@@ -132,11 +98,11 @@ public class DefaultModelManagementStrategy extends
     /**
      *
      */
-    public ModelType loadModel(String id) {
-
-       Folder folder = documentManagementService.getFolder(MODELS_DIR);
-       List<Document> candidateModelDocuments = folder.getDocuments();
-       for (Document modelDocument : candidateModelDocuments) {
+    public ModelType loadModel(String id)
+    {
+       Folder modelsFolder = getDocumentManagementService().getFolder(MODELS_DIR);
+       for (Document modelDocument : modelsFolder.getDocuments())
+       {
           String documentName = modelDocument.getName();
           if (documentName.endsWith(".xpdl"))
           {
@@ -144,9 +110,8 @@ public class DefaultModelManagementStrategy extends
              {
                 try
                 {
-                   ModelType model = loadModel(modelDocument);
-                   mapModelFileName(model, documentName);
-                   return model;
+                   ModelDescriptor desc = loadModel(modelDocument);
+                   return desc == null ? null : desc.xpdlModel;
                 }
                 catch (IOException ex)
                 {
@@ -159,31 +124,74 @@ public class DefaultModelManagementStrategy extends
     }
 
     @Override
-    public String getUniqueModelId(EObject model) {
-        ModelType xpdlModel = this.getXpdlModel(model);
+    public String getUniqueModelId(EObject model)
+    {
+        ModelType xpdlModel = getXpdlModel(model);
 
         // concatenate partition ID and model file path into stable unique ID
         return "{" + getPartitionId() + "}" + getModelFilePath(xpdlModel);
     }
 
-    private ModelType loadModel(Document modelDocument) throws IOException {
-        WebModelerModelManager modelMgr = new WebModelerModelManager(this);
-        modelMgr.load(URI.createURI(modelDocument.getName()), new ByteArrayInputStream(readModelContext(modelDocument)));
-        ModelType model = modelMgr.getModel();
-        loadEObjectUUIDMap(model);
-        return model;
+    private ModelDescriptor loadModel(Document modelDocument) throws IOException
+    {
+       ModelType internalModel = null;
+       EObject model = null;
+
+       byte[] modelContent = readModelContext(modelDocument);
+       ByteArrayInputStream baos = new ByteArrayInputStream(modelContent);
+       ModelPersistenceHandler.ModelDescriptor<?> descriptor = persistenceService.loadModel(
+             modelDocument.getName(), baos);
+       if (null != descriptor)
+       {
+          model = descriptor.model;
+          if (model instanceof ModelType)
+          {
+             internalModel = (ModelType) model;
+          }
+          else
+          {
+             // use just the most basic XPDL representation, rest will be handled
+             // directly from native format (e.g. BPMN2)
+             internalModel = BpmModelBuilder.newBpmModel()
+                   .withIdAndName(descriptor.id,
+                         !isEmpty(descriptor.name) ? descriptor.name : descriptor.id)
+                   .build();
+          }
+       }
+
+       if (internalModel != null)
+       {
+          // TODO - This method needs to move to some place where it will be called only
+          // once for
+          loadEObjectUUIDMap(internalModel);
+          mapModelFileName(internalModel, modelDocument.getName());
+
+          ModelDescriptor desc = new ModelDescriptor(internalModel.getId(), modelDocument.getName(),
+                model, internalModel);
+          trace.debug("Loaded model '" + desc.id + "' from " + desc.fileName);
+          registerModel(desc);
+
+          return desc;
+       }
+
+       return null;
     }
 
 	/**
 	 *
 	 */
-	public ModelType attachModel(String id) {
+	public ModelType attachModel(String id)
+	{
         try
         {
            Document document = getDocumentManagementService().getDocument(MODELS_DIR + id + ".xpdl");
-           ModelType model = loadModel(document);
-           getModels().put(id, model);
-           return model;
+           ModelDescriptor desc = loadModel(document);
+           if (desc != null)
+           {
+              getModels().put(id, desc.xpdlModel);
+              return desc.xpdlModel;
+           }
+           return null;
         }
         catch (IOException ex)
         {

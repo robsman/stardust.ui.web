@@ -463,6 +463,8 @@ public class ModelElementMarshaller implements ModelMarshaller
                   typeDeclarationId = ((ExternalReferenceType) xpdlType).getXref();
                }
    
+               if(typeModel != null)
+               {
                TypeDeclarationType typeDeclaration = typeModel.getTypeDeclarations()
                      .getTypeDeclaration(typeDeclarationId);
    
@@ -470,6 +472,7 @@ public class ModelElementMarshaller implements ModelMarshaller
    
                formalParameterJson.addProperty(
                      ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY, fullId);
+            }
             }
             else if (dataType.getCarnotType().equals(ModelerConstants.DOCUMENT_DATA_TYPE_KEY))
             {
@@ -490,12 +493,14 @@ public class ModelElementMarshaller implements ModelMarshaller
                   typeDeclarationId = ((ExternalReferenceType) xpdlType).getXref();
                }
 
-   
+               if(typeModel != null)
+               {
                TypeDeclarationType typeDeclaration = typeModel.getTypeDeclarations()
                      .getTypeDeclaration(typeDeclarationId);
    
                formalParameterJson.addProperty(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY,
                      getModelBuilderFacade().createFullId(typeModel, typeDeclaration));
+            }
             }
             else if (dataType.getCarnotType().equals(ModelerConstants.PRIMITIVE_DATA_TYPE_KEY))
             {
@@ -1456,6 +1461,11 @@ public class ModelElementMarshaller implements ModelMarshaller
             {
                ModelBuilderFacade builder = getModelBuilderFacade();
                ModelType model = builder.findModel(pack.getHref());
+               if(model == null)
+               {
+                  return null;
+               }
+
                return builder.findApplication(model, ref.getRef());
             }
          }
@@ -3370,7 +3380,8 @@ public class ModelElementMarshaller implements ModelMarshaller
       {
          // Role is not in an organisation hierarchy nor a team leader.
          if ( !hasParentParticipant(model, role)
-               && (null == getOrganizationForTeamLeader(role)))
+               && (null == getOrganizationForTeamLeader(role))
+               && exists(model, role))
          {
             participantsJson.add(role.getId(), toRoleJson(role));
          }
@@ -3434,6 +3445,24 @@ public class ModelElementMarshaller implements ModelMarshaller
       }
 
       return modelJson;
+   }
+
+   private boolean exists(ModelType model, IIdentifiableModelElement element)
+   {
+      if (getModelBuilderFacade().isExternalReference(element))
+      {
+         URI proxyUri = ((InternalEObject) element).eProxyURI();
+         ModelType referencedModel = ModelUtils.getModelByProxyURI(model, proxyUri);
+         if (referencedModel != null)
+         {
+            referencedModel = getModelBuilderFacade().findModel(referencedModel.getId());
+         }
+         if (referencedModel == null || ModelUtils.findElementById(referencedModel, element.eContainingFeature(), element.getId()) == null)
+         {
+            return false;
+         }
+      }
+      return true;
    }
 
    private boolean isExcluded(ApplicationTypeType type)

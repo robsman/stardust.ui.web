@@ -13,4 +13,4 @@ angular.module('workflow-ui.services', []);
 angular.module('workflow-ui', ['workflow-ui.services']);
 
 // Register top level module
-portalApplication.addModule('workflow-ui');
+portalApplication.registerModule('workflow-ui');

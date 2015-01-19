@@ -81,6 +81,9 @@ public class DataCommandHandler
             {
                data = getModelBuilderFacade().createPrimitiveData(model, dataID,
                      dataName, ModelerConstants.STRING_PRIMITIVE_DATA_TYPE);
+            }
+            if (mapper.getUUID(data) == null)
+            {
                mapper.map(data);
             }
          }

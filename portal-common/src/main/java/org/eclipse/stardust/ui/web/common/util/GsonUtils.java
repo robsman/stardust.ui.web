@@ -67,6 +67,32 @@ public class GsonUtils
     * @param jsonText
     * @return
     */
+   public static JsonObject readJsonArray(String jsonText)
+   {
+      try
+      {
+         JsonElement parsedJson = jsonParser.parse(jsonText);
+         if ((null != parsedJson) && parsedJson.isJsonObject())
+         {
+            return parsedJson.getAsJsonObject();
+         }
+         else
+         {
+            trace.warn("Expected a JSON object, but received something else.");
+            throw new IllegalArgumentException();
+         }
+      }
+      catch (JsonParseException jpe)
+      {
+         trace.warn("Expected a JSON object, but received no valid JSON at all.", jpe);
+         throw new IllegalArgumentException(jpe);
+      }
+   }
+
+   /**
+    * @param jsonText
+    * @return
+    */
    public static JsonElement readJsonElement(String jsonText)
    {
       try
@@ -123,12 +149,20 @@ public class GsonUtils
          {
             jsonElem = new JsonPrimitive((String)data);
          }
+         else if (data instanceof Number)
+         {
+            jsonElem = new JsonPrimitive((Number)data);
+         }
+         else if (data instanceof Boolean)
+         {
+            jsonElem = new JsonPrimitive((Boolean)data);
+         }
          else if (data instanceof Map)
          {
             JsonObject jsonObj = new JsonObject();
-            for (Entry<String, Object> entry : ((Map<String, Object>)data).entrySet())
+            for (Entry<Object, Object> entry : ((Map<Object, Object>)data).entrySet())
             {
-               jsonObj.add(entry.getKey(), readJsonObject(entry.getValue()));
+               jsonObj.add(entry.getKey().toString(), readJsonObject(entry.getValue()));
             }
             jsonElem = jsonObj;
          }

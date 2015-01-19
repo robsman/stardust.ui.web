@@ -159,10 +159,12 @@ public class ParticipantUtils
    }
 
    /**
+    * 
     * @param participantInfo
+    * @param userDetailsLevel
     * @return
     */
-   public static Participant getParticipant(ParticipantInfo participantInfo)
+   public static Participant getParticipant(ParticipantInfo participantInfo, UserDetailsLevel userDetailsLevel)
    {
       Participant participant = null;
       if (participantInfo == null)
@@ -201,7 +203,7 @@ public class ParticipantUtils
             break;
 
          case USER:
-            participant = UserUtils.getUser(participantInfo.getId(), UserDetailsLevel.Full);
+            participant = UserUtils.getUser(participantInfo.getId(), userDetailsLevel);
             break;
 
          case USERGROUP:
@@ -211,6 +213,17 @@ public class ParticipantUtils
       }
 
       return participant;
+   }
+   
+   /**
+    * By Default User with Core + PreferenceStore properties are fetch
+    * 
+    * @param participantInfo
+    * @return
+    */
+   public static Participant getParticipant(ParticipantInfo participantInfo)
+   {
+      return getParticipant(participantInfo, UserDetailsLevel.WithProperties);
    }
 
    /**

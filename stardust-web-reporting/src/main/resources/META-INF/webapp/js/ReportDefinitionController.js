@@ -371,12 +371,6 @@ define(
 													//self.resetParamFilters();
 													self.updateView();			
 												});
-
-										if(self.report.layout.table){
-											setTimeout(function () {
-												   self.initializeDataTableOptions();
-													}, 500);
-										}	
 									}
 									if (ui.newPanel.selector === "#schedulingTab") {
 										self.resetParamFilters();
@@ -421,7 +415,9 @@ define(
 
 								self.runInAngularContext(function (scope) {
 									scope.$watch("report.scheduling", function (newValue, oldValue) {
-										self.getNextExecutionDate();
+									   if (angular.equals(newValue.delivery, oldValue.delivery)) {
+									      self.getNextExecutionDate();                                 
+                              } 
 									}, true);
 								});
 			
@@ -841,7 +837,8 @@ define(
 						this.report.layout.type = "processDiagram";
 					} else if (this.report.dataSet.type === 'seriesGroup') {
 						this.report.layout.type = "simpleReport";
-						this.report.layout.subType = this.metadata.layoutSubTypes.chart.id;
+						this.report.layout.subType = this.reportingService.metadata.layoutSubTypes.chart.id;
+						jQuery("#layoutSubTypeSelect").change();
 						this.report.dataSet.columns = [];
 					} else if (this.report.dataSet.type === 'recordSet') {
 						this.report.layout.type = "table";
@@ -852,7 +849,6 @@ define(
 				 * 
 				 */
 				ReportDefinitionController.prototype.layoutChanged = function() {
-					this.report.layout = {};
 					this.report.layout.type = 'document';
 					this.report.layout.subType = null;
 				};
@@ -943,11 +939,6 @@ define(
 					console.log("First Dimension");
 					console.log(this.getFirstDimension());
 
-					if (this.getFirstDimension().type == this.reportingService.metadata.enumerationType) {
-						this.firstDimensionEnumerators = this
-								.getEnumerators(this.getFirstDimension());
-					}
-
 					this.populateChartTypes();
 					if(this.report.layout.chart){
 						this.report.layout.chart.options.axes.xaxis.label = this
@@ -975,20 +966,6 @@ define(
 					return [ "Nase", "Wurst", "Propase" ];
 				};
 
-				/**
-				 * 
-				 */
-				ReportDefinitionController.prototype.getEnumerators = function(
-						dimension) {
-					if (!dimension || !dimension.enumerationType) {
-						return null;
-					}
-
-					var qualifier = dimension.enumerationType.split(":");
-
-					return this.reportingService.getEnumerators(qualifier[0],
-							qualifier[1], qualifier[2]);
-				};
 
 				/**
 				 * Returns a consolidated list of possible dimensions excluding
@@ -2177,27 +2154,6 @@ define(
                  return dimensions[index];
               }
            }
-        };
-        
-        /**
-         * 
-         */
-        ReportDefinitionController.prototype.initializeDataTableOptions = function() {
-        	(this.report.layout.table.options.showExportButtons) ? jQuery('.DTTT_container').css({display:'block'}) :
-                jQuery('.DTTT_container').css({display:'none'});
-        	
-           (this.report.layout.table.options.showSearchInput) ? jQuery('.dataTables_filter').css({display:'block'}) :
-              jQuery('.dataTables_filter').css({display:'none'});
-           
-           (this.report.layout.table.options.showVisibleRowCountSelector) ? jQuery('.dataTables_length').css({display:'block'}) :
-              jQuery('.dataTables_length').css({display:'none'});
-           
-           
-           (this.report.layout.table.options.showExportButtons || this.report.layout.table.options.showSearchInput ||
-                    this.report.layout.table.options.showVisibleRowCountSelector) ? jQuery('div .heading').css({display:'block'}) :
-                       jQuery('div .heading').css({display:'none'});
-           
-           this.updateView();
         };
         
         /**

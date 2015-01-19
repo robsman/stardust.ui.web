@@ -49,31 +49,37 @@ public class DTOBuilder
       {
          toInstance = toClass.newInstance();
 
-         for(Field field : toClass.getDeclaredFields())
+         Class<?> iteratorClass = toClass;
+         while (iteratorClass.getSuperclass() != Object.class)
          {
-            if (field.isAnnotationPresent(DTOAttribute.class))
+            for(Field field : iteratorClass.getDeclaredFields())
             {
-               DTOAttribute annotation = field.getAnnotation(DTOAttribute.class);
-               String fieldName = annotation.value();
-
-               try
+               if (field.isAnnotationPresent(DTOAttribute.class))
                {
-                  Object value = getFieldValue(fromInstance, fieldName);
-                  
-                  Class<?> fieldClass = field.getType();
-                  if (null != value && fieldClass.isAnnotationPresent(DTOClass.class))
-                  {
-                     value = build(value, fieldClass);
-                  }
+                  DTOAttribute annotation = field.getAnnotation(DTOAttribute.class);
+                  String fieldName = annotation.value();
    
-                  field.setAccessible(true);
-                  field.set(toInstance, value);
-               }
-               catch (Exception e)
-               {
-                  trace.error("Error in retriving field: " + fieldName, e);
+                  try
+                  {
+                     Object value = getFieldValue(fromInstance, fieldName);
+                     
+                     Class<?> fieldClass = field.getType();
+                     if (null != value && fieldClass.isAnnotationPresent(DTOClass.class))
+                     {
+                        value = build(value, fieldClass);
+                     }
+      
+                     field.setAccessible(true);
+                     field.set(toInstance, value);
+                  }
+                  catch (Exception e)
+                  {
+                     trace.error("Error in retriving field: " + fieldName, e);
+                  }
                }
             }
+            
+            iteratorClass = iteratorClass.getSuperclass();
          }
       }
       catch (Exception e)

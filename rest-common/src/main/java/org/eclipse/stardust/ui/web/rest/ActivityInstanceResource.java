@@ -11,8 +11,10 @@
 package org.eclipse.stardust.ui.web.rest;
 
 import java.io.Serializable;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -26,10 +28,9 @@ import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.service.ActivityInstanceService;
-import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.*;
 
 /**
  * @author Anoop.Nair
@@ -40,8 +41,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
 @Path("/activity-instances")
 public class ActivityInstanceResource
 {
-   private static final Logger trace = LogManager
-         .getLogger(ActivityInstanceResource.class);
+   private static final Logger trace = LogManager.getLogger(ActivityInstanceResource.class);
 
    @Autowired
    private ActivityInstanceService activityInstanceService;
@@ -59,10 +59,42 @@ public class ActivityInstanceResource
          ActivityInstanceDTO aiDTO = getActivityInstanceService().getActivityInstance(
                activityInstanceOid);
 
-         Gson gson = new Gson();
-         String json = gson.toJson(aiDTO);
+         return Response.ok(aiDTO.toJson(), MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
 
-         return Response.ok(json.toString(), MediaType.APPLICATION_JSON).build();
+         return Response.serverError().build();
+      }
+   }
+
+   @POST
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/trivialManualActivitiesDetails")
+   public Response getTrivialManualActivitiesDetails(String postedData)
+   {
+      try
+      {
+         List<Long> oids = JsonDTO.getAsList(postedData, Long.class);
+
+         Map<String, TrivialManualActivityDTO> details = getActivityInstanceService()
+               .getTrivialManualActivitiesDetails(oids, "default");
+
+         // gson.toJson(details) is not working, inOutData is not Serialized. hence below workaround
+         // Workaround. Visit later TODO
+         Map<String, Map<String, Object>> output = new LinkedHashMap<String, Map<String, Object>>();
+         for (Entry<String, TrivialManualActivityDTO> entry : details.entrySet())
+         {
+            output.put(entry.getKey(), new LinkedHashMap<String, Object>());
+            output.get(entry.getKey()).put("dataMappings", entry.getValue().dataMappings);
+            output.get(entry.getKey()).put("inOutData", entry.getValue().inOutData);
+         }
+
+         Gson gson = new Gson();
+         String jsonText = gson.toJson(output);
+
+         return Response.ok(jsonText, MediaType.APPLICATION_JSON).build();
       }
       catch (Exception e)
       {
@@ -74,8 +106,8 @@ public class ActivityInstanceResource
 
    @GET
    @Produces(MediaType.APPLICATION_JSON)
-   @Path("/{oid: \\d+}/dataMappings.json")
-   public Response getAllDataMappings(@PathParam("oid") long oid)
+   @Path("/{oid: \\d+}/dataMappings")
+   public Response getDataMappings(@PathParam("oid") long oid)
    {
       try
       {
@@ -91,10 +123,44 @@ public class ActivityInstanceResource
       }
    }
 
+   @POST
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/dataMappings")
+   public Response getAllDataMappings(String postedData)
+   {
+      try
+      {
+         StringBuffer output = new StringBuffer();
+         
+         List<Long> oids = JsonDTO.getAsList(postedData, Long.class);
+         for (long oid : oids)
+         {
+            if (output.length() > 0)
+            {
+               output.append(",");
+            }
+            
+            output.append("\"").append(oid).append("\" : ")
+                  .append(getActivityInstanceService().getAllDataMappingsAsJson(oid, "default"));
+         }
+
+         output.insert(0, "{");
+         output.append("}");
+
+         return Response.ok(output.toString(), MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
+
+         return Response.serverError().build();
+      }
+   }
+
    @GET
    @Produces(MediaType.APPLICATION_JSON)
-   @Path("/{oid: \\d+}/inDataValues.json")
-   public Response getAllInDataValues(@PathParam("oid") long oid)
+   @Path("/{oid: \\d+}/inData")
+   public Response getInData(@PathParam("oid") long oid)
    {
       try
       {
@@ -104,6 +170,65 @@ public class ActivityInstanceResource
          String jsonOutput = gson.toJson(values);
 
          return Response.ok(jsonOutput.toString(), MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
+
+         return Response.serverError().build();
+      }
+   }
+
+   @POST
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/inData")
+   public Response getAllInData(String postedData)
+   {
+      try
+      {
+         Map<String, Map<String, Serializable>> output = new LinkedHashMap<String, Map<String, Serializable>>();
+
+         List<Long> oids = JsonDTO.getAsList(postedData, Long.class);
+         for (Long oid : oids)
+         {
+            Map<String, Serializable> values = getActivityInstanceService().getAllInDataValues(oid, "default");
+            if (null != values)
+            {
+               output.put(String.valueOf(oid), values);
+            }
+         }
+
+         /*
+         Gson gson = new Gson();
+         String jsonOutput = gson.toJson(output);
+         */
+         
+         String jsonOutput = GsonUtils.stringify(output);
+
+         return Response.ok(jsonOutput, MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
+
+         return Response.serverError().build();
+      }
+   }
+
+   @POST
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/completeAll")
+   public Response completeAll(String postedData)
+   {
+      try
+      {
+         List<ActivityInstanceOutDataDTO> activities = ActivityInstanceOutDataDTO.toList(postedData);
+
+         Map<Long, String> result = getActivityInstanceService().completeAll(activities, "default");
+
+         String jsonOutput = GsonUtils.stringify(result);
+
+         return Response.ok(jsonOutput, MediaType.APPLICATION_JSON).build();
       }
       catch (Exception e)
       {

@@ -21,7 +21,9 @@ import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.TrivialActivityInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
+import org.eclipse.stardust.ui.web.rest.service.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.WorklistUtils;
 
 /**
@@ -34,31 +36,34 @@ public class WorklistService
    @Resource
    private WorklistUtils worklistUtils;
 
+   @Resource
+   private ActivityInstanceUtils activityInstanceUtils;
+
    /**
     * @param participantQId
     * @return
     */
-   public QueryResultDTO getWorklistForParticipant(String participantQId)
+   public QueryResultDTO getWorklistForParticipant(String participantQId, String context)
    {
       QueryResult<?> queryResult = worklistUtils.getWorklistForParticipant(participantQId);
-      return buildWorklistResult(queryResult);
+      return buildWorklistResult(queryResult, context);
    }
 
    /**
     * @param userId
     * @return
     */
-   public QueryResultDTO getWorklistForUser(String userId)
+   public QueryResultDTO getWorklistForUser(String userId, String context)
    {
       QueryResult<?> queryResult = worklistUtils.getWorklistForUser(userId);
-      return buildWorklistResult(queryResult);
+      return buildWorklistResult(queryResult, context);
    }
 
    /**
     * @param queryResult
     * @return
     */
-   private QueryResultDTO buildWorklistResult(QueryResult<?> queryResult)
+   private QueryResultDTO buildWorklistResult(QueryResult<?> queryResult, String context)
    {
       List<ActivityInstanceDTO> list = new ArrayList<ActivityInstanceDTO>();
       for (Object object : queryResult)
@@ -66,7 +71,19 @@ public class WorklistService
          if (object instanceof ActivityInstance)
          {
             ActivityInstance ai = (ActivityInstance) object;
-            list.add(DTOBuilder.build(ai, ActivityInstanceDTO.class));
+
+            ActivityInstanceDTO dto;
+            if (null == context)
+            {
+               dto = DTOBuilder.build(ai, ActivityInstanceDTO.class);
+            }
+            else
+            {
+               TrivialActivityInstanceDTO trivialDto = DTOBuilder.build(ai, TrivialActivityInstanceDTO.class);
+               trivialDto.trivial = activityInstanceUtils.isTrivialManualActivity(ai, context);
+               dto = trivialDto;
+            }
+            list.add(dto);
          }
       }
 

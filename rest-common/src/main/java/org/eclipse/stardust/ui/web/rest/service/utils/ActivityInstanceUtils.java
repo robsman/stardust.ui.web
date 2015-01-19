@@ -11,6 +11,7 @@
 package org.eclipse.stardust.ui.web.rest.service.utils;
 
 import java.io.Serializable;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -22,15 +23,20 @@ import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.reflect.Reflect;
 import org.eclipse.stardust.engine.api.model.ApplicationContext;
 import org.eclipse.stardust.engine.api.model.DataMapping;
+import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.ActivityInstances;
+import org.eclipse.stardust.engine.api.query.FilterOrTerm;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.ReflectionUtils;
+import org.eclipse.stardust.ui.web.rest.service.dto.PathDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.TrivialManualActivityDTO;
+import org.eclipse.stardust.ui.web.rest.service.helpers.ModelHelper;
 
 /**
  * @author Anoop.Nair
@@ -45,8 +51,8 @@ public class ActivityInstanceUtils
    @Resource
    private ServiceFactoryUtils serviceFactoryUtils;
 
-   /*@Resource
-   private ProcessInstanceUtils processInstanceUtils;*/
+   @Resource
+   private ModelUtils modelUtils;
 
    @Resource
    private DocumentUtils documentUtils;
@@ -69,6 +75,24 @@ public class ActivityInstanceUtils
       }
 
       return ai;
+   }
+
+   /**
+    * @param oid
+    * @return
+    */
+   public List<ActivityInstance> getActivityInstances(List<Long> oids)
+   {
+      ActivityInstanceQuery query = ActivityInstanceQuery.findAll();
+      FilterOrTerm filterOrTerm = query.getFilter().addOrTerm();
+      for (Long oid : oids)
+      {
+         filterOrTerm.add(ActivityInstanceQuery.OID.isEqual(oid));
+      }
+
+      ActivityInstances ais = serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
+
+      return ais;
    }
 
    /**
@@ -98,6 +122,77 @@ public class ActivityInstanceUtils
       return "";
    }
 
+   /**
+    * @param oids
+    * @param context
+    * @return
+    */
+   public Map<String, TrivialManualActivityDTO> getTrivialManualActivitiesDetails(List<Long> oids, String context)
+   {
+      Map<String, TrivialManualActivityDTO> ret = new LinkedHashMap<String, TrivialManualActivityDTO>();
+
+      Map<String, List<PathDTO>> cache = new LinkedHashMap<String, List<PathDTO>>();
+      
+      List<ActivityInstance> ais = getActivityInstances(oids);
+      for (ActivityInstance ai : ais)
+      {
+         if (isTrivialManualActivity(ai, context))
+         {
+            if (!cache.containsKey(ai.getActivity().getId()))
+            {
+               // Get Data Mappings
+               List<PathDTO> dataMappings = PathDTO.toList(getAllDataMappingsAsJson(ai, context));
+               cache.put(ai.getActivity().getId(), dataMappings);
+            }
+
+            TrivialManualActivityDTO dto = new TrivialManualActivityDTO();
+            dto.dataMappings = cache.get(ai.getActivity().getId());
+
+            // Get (IN_)OUT Data
+            dto.inOutData = getAllInDataValues(ai, context);
+
+            ret.put(String.valueOf(ai.getOID()), dto);
+         }
+         else
+         {
+            trace.debug("Skipping Activity Instance.. Not trivial... OID: " + ai.getOID());
+         }
+      }
+
+      return ret;
+   }
+
+   /**
+    * @param ai
+    * @param context
+    * @return
+    */
+   public boolean isTrivialManualActivity(ActivityInstance ai, String context)
+   {
+      Model model = modelUtils.getModel(ai.getModelOID());
+      ApplicationContext appContext = ai.getActivity().getApplicationContext(context);
+      List<?> mappings = appContext.getAllOutDataMappings();
+      if (mappings.size() > 0 && mappings.size() <= 2)
+      {
+         for (Object object : mappings)
+         {
+            DataMapping dataMapping = (DataMapping) object;
+            if (ModelHelper.isEnumerationType(model, dataMapping)
+                  || ModelHelper.isPrimitiveType(model, dataMapping))
+            {
+               // Okay!
+            }
+            else
+            {
+               return false;
+            }
+         }
+         
+         return true;
+      }
+      
+      return false;
+   }
 
    /**
     * @param ai
@@ -106,9 +201,17 @@ public class ActivityInstanceUtils
     */
    public Map<String, Serializable> getAllInDataValues(ActivityInstance ai, String context)
    {
-      Map<String, Serializable> dataValues = serviceFactoryUtils.getWorkflowService().getInDataValues(ai.getOID(),
-            null, null);
-      return dataValues;
+      return serviceFactoryUtils.getWorkflowService().getInDataValues(ai.getOID(), context, null);
+   }
+
+   /**
+    * @param oid
+    * @param outData
+    * @return
+    */
+   public ActivityInstance complete(long oid, String context, Map<String, Serializable> outData)
+   {
+      return serviceFactoryUtils.getWorkflowService().activateAndComplete(oid, context, outData);
    }
 
    /**

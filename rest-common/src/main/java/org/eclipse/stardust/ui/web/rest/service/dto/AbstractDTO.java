@@ -11,8 +11,11 @@
 package org.eclipse.stardust.ui.web.rest.service.dto;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
+import java.util.List;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 /**
  * @author Subodh.Godbole
@@ -28,7 +31,17 @@ public abstract class AbstractDTO
       Gson gson = new Gson();
       return gson.toJson(this);
    }
-   
+
+   /**
+    * @param json
+    * @return
+    */
+   public static <T> T toObject(String json, Class<T> clazz)
+   {
+      Gson gson = new Gson();
+      return gson.fromJson(json, clazz);
+   }
+
    @Override
    public String toString()
    {

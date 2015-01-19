@@ -27,8 +27,6 @@ import org.eclipse.stardust.ui.web.modeler.service.XsdSchemaUtils;
 @Component
 public class StructuredTypeChangeTracker implements ChangePostprocessor
 {
-   private Modification modification;
-
    @Override
    public int getInspectionPhase()
    {
@@ -38,13 +36,12 @@ public class StructuredTypeChangeTracker implements ChangePostprocessor
    @Override
    public void inspectChange(Modification change)
    {
-      modification = change;
       for (EObject candidate : change.getModifiedElements())
       {
          if (candidate instanceof TypeDeclarationType
                && (((TypeDeclarationType) candidate).getDataType() instanceof SchemaTypeType))
          {
-            updateDerivedTypes((TypeDeclarationType) candidate);
+            updateDerivedTypes((TypeDeclarationType) candidate, change);
          }
          if (candidate instanceof ModelType)
          {
@@ -63,7 +60,7 @@ public class StructuredTypeChangeTracker implements ChangePostprocessor
       }
    }
 
-   private void updateDerivedTypes(TypeDeclarationType typeDeclaration)
+   private void updateDerivedTypes(TypeDeclarationType typeDeclaration, Modification modification)
    {
       EObject parent = typeDeclaration.eContainer();
       if (parent instanceof TypeDeclarationsType && typeDeclaration.getSchema() != null)

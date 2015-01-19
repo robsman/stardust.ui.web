@@ -11,11 +11,9 @@
 package org.eclipse.stardust.ui.web.viewscommon.common;
 
 import static java.util.Collections.emptyList;
+import static org.eclipse.stardust.ui.web.plugin.support.resources.PluginResourceUtils.resolveResources;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +24,8 @@ import javax.faces.context.FacesContext;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.common.utils.io.CloseableUtil;
+import org.eclipse.stardust.ui.web.plugin.utils.PluginUtils;
+import org.eclipse.stardust.ui.web.plugin.utils.PluginUtils.PluginDescriptor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -60,37 +59,19 @@ public class PortalPluginSkinResourceResolver
       });
       try
       {
-         Resource[] resources = null;
-         ApplicationContext context = null;
-         try
-         {
-            context = FacesContextUtils.getWebApplicationContext(FacesContext.getCurrentInstance());
-            resources = context.getResources("classpath*:META-INF/*.portal-plugin");
-         }
-         catch (Exception e)
-         {
-            // JBoss is unable to find META-INF some times, workaround for the scenario
-            resources = context.getResources("classpath*:/**/*.portal-plugin");
-         }
-         if(CollectionUtils.isEmpty(resources))
+         ApplicationContext context = FacesContextUtils.getWebApplicationContext(FacesContext.getCurrentInstance());
+         List<PluginDescriptor> resolvedPlugins = PluginUtils.getAllPlugins(context);
+         if(CollectionUtils.isEmpty(resolvedPlugins))
          {
             return allExtensions;
          }
-         for (Resource resource :resources)
+         for (PluginDescriptor plugin : resolvedPlugins)
          {
-            String pluginId = resource.getFilename().substring(0, resource.getFilename().lastIndexOf("."));
-            String webUriPrefix = pluginId + "/";
+            String webUriPrefix = plugin.id + "/";
 
-            InputStream isPluginDescriptor = resource.getInputStream();
             try
             {
-               String firstLine = new BufferedReader(new InputStreamReader(isPluginDescriptor)).readLine();
-               Resource webContentReader = resource.createRelative("../").createRelative(firstLine);
-               String webContentBaseUri = webContentReader.getURI().toString();
-               if (!webContentBaseUri.endsWith("/"))
-               {
-                  webContentBaseUri += "/";
-               }
+               String webContentBaseUri = plugin.baseUri;
 
                List<Resource> extensionResources;
                try
@@ -164,7 +145,6 @@ public class PortalPluginSkinResourceResolver
             }
             finally
             {
-               CloseableUtil.closeQuietly(isPluginDescriptor);
             }
          }
       }
@@ -187,19 +167,20 @@ public class PortalPluginSkinResourceResolver
    private static List<Resource> discoverSkinExtensions(ResourcePatternResolver resolver,
          String extensionBaseUri, String category, String fileName) throws IOException
    {
-      List<Resource> extensions = CollectionUtils.newArrayList();
-      Resource[] jsModules = null;
+      List<Resource> jsModules = null;
       if (null == fileName)
-         jsModules = resolver.getResources(extensionBaseUri + category.substring(category.indexOf("/") + 1)
-               + "/*/*.*");
-      else
-         jsModules = resolver.getResources(extensionBaseUri + category.substring(category.indexOf("/") + 1)
-               + "/**/" + fileName);
-      for (Resource jsModule : jsModules)
       {
-         extensions.add(jsModule);
+         jsModules = resolveResources(resolver,
+               extensionBaseUri + category.substring(category.indexOf("/") + 1)
+                     + "/*/*.*");
+      }
+      else
+      {
+         jsModules = resolveResources(resolver,
+               extensionBaseUri + category.substring(category.indexOf("/") + 1) + "/**/"
+                     + fileName);
       }
 
-      return extensions;
+      return jsModules;
    }
 }

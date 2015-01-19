@@ -12,31 +12,40 @@
  * @author Subodh.Godbole
  */
 
-'use strict';
+(function(){
+	'use strict';
 
-angular.module('workflow-ui.services').provider('sdWorkflowService', function () {
-	var self = this;
-	
-	self.$get = ['$rootScope', function ($rootScope) {
-
-		var service = {};
+	/*
+	 * 
+	 */
+	function WorklistService($rootScope) {
+		var REST_BASE_URL = "services/rest/portal/worklist/";
 
 		/*
 		 * 
 		 */
-		service.getWorklist = function(query) {
+		WorklistService.prototype.getWorklist = function(query) {
 			var deferred = jQuery.Deferred();
 
-			console.log("getting worklist for:");
+			console.log("Getting worklist for:");
 			console.log(query);
 
-			var restUrl = "services/rest/portal/worklist/";
+			var restUrl = REST_BASE_URL;
 			if (query.participantQId) {
 				restUrl += "participant/" + query.participantQId;
 			} else if (query.userId) {
 				restUrl += "user/" + query.userId;
 			}
-			
+
+			return ajax(restUrl);
+		};
+
+		/*
+		 * 
+		 */
+		function ajax(restUrl) {
+			var deferred = jQuery.Deferred();
+
 			// TODO: Use Angular $resource
 			jQuery.ajax({
 			  	url: restUrl,
@@ -50,7 +59,12 @@ angular.module('workflow-ui.services').provider('sdWorkflowService', function ()
 
 			return deferred.promise();
 		};
+	};
 
-		return service;
-	}];
-});
+	angular.module('workflow-ui.services').provider('sdWorklistService', function () {
+		this.$get = ['$rootScope', function ($rootScope) {
+			var service = new WorklistService($rootScope);
+			return service;
+		}];
+	});
+})();
