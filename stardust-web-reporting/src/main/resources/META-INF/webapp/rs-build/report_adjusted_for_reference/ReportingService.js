@@ -189,11 +189,12 @@ define(
 					name : this.getI18N("reporting.definitionView.activityInstanceProcessingTime"),
 					type : this.metadata.durationType
 				};
+				
 				this.metadata.commonTypes.activeTimestamp = {
 						id : "activeTimestamp",
 						name : this.getI18N("reporting.definitionView.activeInstancesOverTime"),
 						type : this.metadata.timestampType,
-						notSupportedAsFilter : true,
+						notSupportedAsColumn : true,
 						disableCumulationInterval : true
 				};
 
@@ -1601,16 +1602,29 @@ define(
 					// Joined external data
 					if (report.dataSet.joinExternalData && report.dataSet.externalJoins) {
 					    for (var l in report.dataSet.externalJoins) {
+
+					        // this should be read from rest service instead - but only once!
 					        var join = report.dataSet.externalJoins[l];
 
 					        for (var k in join.fields) {
 					            var field = join.fields[k];
 
-					            dimensions.push({
-					                id: field.name,
-					                name: field.name,
-					                type: this.metadata[field.type]
-					            });
+								// add static data
+								if(field.customStaticDataId) {
+									this.staticData[field.customStaticDataId] = field.customStaticData;
+								}
+
+								// copy all properties from external data
+								var externalDimension = {};
+								for(var prop in field) {
+									if(prop === 'type') {
+										externalDimension.type = this.metadata[field.type];
+									} else {
+										externalDimension[prop] = field[prop];
+									}
+								}
+
+								dimensions.push(externalDimension);
 					        }
 					    }
 					}
