@@ -519,25 +519,32 @@ define(
 					console.log("Save relationship changed");
 					console.log(this);
 					console.log(this.relationshipPanelController);
-
+					
+					var primaryKeyField = this.businessObjectManagementPanelController.businessObject.primaryKeyField;
+					var rootBusinesObjInstance = this.relationshipPanelController.rootBusinessObjectInstance;
+					var selectedBusinessObjInstances = this.relationshipPanelController.selectedBusinessObjectInstances;
+					var thisForeignKeyField = this.relationshipPanelController.relationship.thisForeignKeyField;
 					// TODO Cleanup removed Relationships!!!
 					// TODO All code into Panel Controller
-					// TODO Remove long dereferentiations by introducing a few
-					// local variables
-
-					this.relationshipPanelController.rootBusinessObjectInstance[this.relationshipPanelController.relationship.otherForeignKeyField] = [];
-
-					for (var n = 0; n < this.relationshipPanelController.selectedBusinessObjectInstances.length; ++n) {
-						this.relationshipPanelController.rootBusinessObjectInstance[this.relationshipPanelController.relationship.otherForeignKeyField]
-								.push(this.relationshipPanelController.selectedBusinessObjectInstances[n][this.relationshipPanelController.businessObject.primaryKeyField.id]);
+					
+					if(selectedBusinessObjInstances.length == 0){
+						return;
 					}
 
-					for (var n = 0; n < this.relationshipPanelController.selectedBusinessObjectInstances.length; ++n) {
+					rootBusinesObjInstance[this.relationshipPanelController.relationship.otherForeignKeyField] = [];
+
+					for (var n = 0; n < selectedBusinessObjInstances.length; ++n) {
+						var foreignKeyVal = selectedBusinessObjInstances[n][this.relationshipPanelController.businessObject.primaryKeyField.id];
+						rootBusinesObjInstance[this.relationshipPanelController.relationship.otherForeignKeyField]
+								.push(foreignKeyVal);
+					}
+
+					for (var n = 0; n < selectedBusinessObjInstances.length; ++n) {
 						var found = false;
 
-						if (this.relationshipPanelController.selectedBusinessObjectInstances[n][this.relationshipPanelController.relationship.thisForeignKeyField]) {
-							for (var m = 0; m < this.relationshipPanelController.selectedBusinessObjectInstances[n][this.relationshipPanelController.relationship.thisForeignKeyField].length; ++m) {
-								if (this.relationshipPanelController.rootBusinessObjectInstance[this.businessObjectManagementPanelController.businessObject.primaryKeyField] == this.relationshipPanelController.selectedBusinessObjectInstances[m][this.relationshipPanelController.relationship.thisForeignKeyField][m]) {
+						if (selectedBusinessObjInstances[n][thisForeignKeyField]) {
+							for (var m = 0; m < selectedBusinessObjInstances[n][thisForeignKeyField].length; ++m) {
+								if (rootBusinesObjInstance[primaryKeyField] == selectedBusinessObjInstances[m][thisForeignKeyField][m]) {
 									found = true;
 
 									break;
@@ -545,19 +552,26 @@ define(
 							}
 
 							if (!found) {
-								this.relationshipPanelController.selectedBusinessObjectInstances[n][this.relationshipPanelController.relationship.thisForeignKeyField]
-										.push(this.relationshipPanelController.rootBusinessObjectInstance[this.businessObject.primaryKeyField.id]);
+								// For 1*N relationship
+								if (jQuery
+										.isArray(selectedBusinessObjInstances[n][thisForeignKeyField])) {
+									selectedBusinessObjInstances[n][thisForeignKeyField]
+											.push(rootBusinesObjInstance[this.businessObject.primaryKeyField.id]);
+								} else {
+									// For exactly 1 type relationship
+									selectedBusinessObjInstances[n][thisForeignKeyField] = rootBusinesObjInstance[this.businessObject.primaryKeyField.id];
+								}
 							}
 						} else {
-							this.relationshipPanelController.selectedBusinessObjectInstances[n][this.relationshipPanelController.relationship.thisForeignKeyField] = [ this.relationshipPanelController.rootBusinessObjectInstance[this.businessObject.primaryKeyField.id] ];
+							selectedBusinessObjInstances[n][thisForeignKeyField] = [ rootBusinesObjInstance[this.businessObject.primaryKeyField.id] ];
 						}
 					}
 
 					console.log("Resulting object changes");
 					console
-							.log(this.relationshipPanelController.rootBusinessObjectInstance);
+							.log(rootBusinesObjInstance);
 					console
-							.log(this.relationshipPanelController.selectedBusinessObjectInstances);
+							.log(selectedBusinessObjInstances);
 
 					// Write changes to the server
 
@@ -567,13 +581,13 @@ define(
 							.instance()
 							.updateBusinessObjectInstance(
 									this.businessObjectManagementPanelController.businessObject,
-									this.relationshipPanelController.rootBusinessObjectInstance)
+									rootBusinesObjInstance)
 							.done(
 									function() {
 										self
 												.updateBusinessObjectInstancesRecursively(
 														0,
-														self.relationshipPanelController.selectedBusinessObjectInstances)
+														selectedBusinessObjInstances)
 												.done(
 														function() {
 															self
