@@ -78,6 +78,11 @@ function copyright()
 	document.write('<table class="header"><tr><td class="header" align="right">Copyright &#169; 2013 SunGard CSA LLC</td></tr></table>');
 }
 
+function writeContact() {
+	document.write('<br><h3>Contact Us</h3><p>Your opinions and recommendations are always welcome. Our technical documentation team relies heavily on your feedback. Feel free to contact us:');
+	document.write('&nbsp;&nbsp;<a href="mailto:IPP.Documentation@sungard.com">IPP.Documentation@sungard.com</a></p>');	
+}
+
 function line() {
 	document.write('<table class="header"><tr><td class="header">');
 	var top=0;
