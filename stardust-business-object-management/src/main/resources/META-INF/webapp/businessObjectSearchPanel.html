@@ -90,8 +90,10 @@
 					<td>{{businessObjectInstance[businessObjectManagementPanelController.businessObject.primaryKeyField.id]}}</td>
 					<td
 						ng-repeat="field in businessObjectManagementPanelController.fetchKeyFields()">
-						<span ng-hide="field.type == 'date'">{{businessObjectInstance[field.id]}}</span>
-						<span ng-show="field.type =='date'">{{businessObjectInstance[field.id] | date :'MM/dd/yyyy hh:mm:ss'}}</span></td>
+						<span ng-hide="field.type == 'date' || field.type == 'dateTime'">{{businessObjectInstance[field.id]}}</span>
+						<!-- Temporary fix for showing HTML5 date -->
+						<span ng-show="field.type =='date'">{{businessObjectInstance[field.id] | date :'MM/dd/yyyy'}}</span>
+						<span ng-show="field.type =='dateTime'">{{businessObjectInstance[field.id] | date :'MM/dd/yyyy hh:mm:ss'}}</span></td>
 				</tr>
 			</tbody>
 		</table>

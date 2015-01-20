@@ -44,7 +44,7 @@ import com.google.gson.JsonPrimitive;
 public class BusinessObjectManagementService {
 	private static final Logger trace = LogManager
 			.getLogger(BusinessObjectManagementService.class);
-
+	private static final String HTML_DATE_FORMAT = "yyyy-MM-dd";
 	@Resource
 	private SessionContext sessionContext;
 	private final JsonMarshaller jsonIo = new JsonMarshaller();
@@ -904,7 +904,7 @@ public class BusinessObjectManagementService {
 		{
 		   JsonElement object = json.get("primaryKeys");
 		   // When relationship is "Exactly One" type
-		   if(object.isJsonObject())
+		   if(object.isJsonObject() || object.isJsonPrimitive())
 		   {
 		      primaryKeysJson.add(object);   
 		   }
@@ -1078,7 +1078,7 @@ public class BusinessObjectManagementService {
 		} else if (object instanceof String) {
 			return new JsonPrimitive((String) object);
 		}else if (object instanceof Date) {
-		   return new JsonPrimitive(DateUtils.formatDate((Date) object));
+		   return new JsonPrimitive(DateUtils.format((Date) object, HTML_DATE_FORMAT));
 		}
 		else {
 			return new JsonPrimitive(object.toString());
