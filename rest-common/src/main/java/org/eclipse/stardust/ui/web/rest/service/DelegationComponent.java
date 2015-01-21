@@ -71,15 +71,15 @@ public class DelegationComponent
       IDepartmentProvider.Options departmentOptions = null;
 
       // check department search is required
-      if (ParticipantType.Department.equals(participantSReqDTO.getParticipantType())
-            || ParticipantType.All.equals(participantSReqDTO.getParticipantType()))
+      if (ParticipantType.Department.name().equalsIgnoreCase(participantSReqDTO.getParticipantType())
+            || ParticipantType.All.name().equalsIgnoreCase(participantSReqDTO.getParticipantType()))
       {
          departmentOptions = getDepartmentOptions(participantSReqDTO);
       }
 
       IDelegatesProvider.Options defaultDelOptions = null;
 
-      if (!ParticipantType.Department.equals(participantSReqDTO.getParticipantType()))
+      if (!ParticipantType.Department.name().equalsIgnoreCase(participantSReqDTO.getParticipantType()))
       {
          defaultDelOptions = getDelegateProviderOptions(participantSReqDTO);
       }
