@@ -140,7 +140,7 @@ define(
 					var chartOptions = {
 						series : [],
 						seriesDefaults : {
-							label : this.getPrimaryObject().name,
+							label : this.report.layout.chart.options.title,
 							lineWidth : 1.5,
 							markerOptions : {
 								style : "filledCircle"
@@ -159,7 +159,7 @@ define(
 							}
 						},
 						title: {
-					        text: this.getPrimaryObject().name,   // title for the plot,
+					        text: this.report.layout.chart.options.title,   // title for the plot,
 					        show: true,
 					        textAlign: "left"
 					    },
@@ -186,7 +186,7 @@ define(
 					// Copy configuration from Report Definition
 
 					if (this.report.layout.chart.options.axes.xaxis.showTicks) {
-						chartOptions.axes.xaxis.label = this.getFact().name;
+						chartOptions.axes.xaxis.label = this.report.layout.chart.options.axes.xaxis.label;
 					}
 					chartOptions.axes.xaxis.min = this.report.layout.chart.options.axes.xaxis.min;
 					if (!this.report.layout.chart.options.axes.xaxis.min && 
@@ -201,7 +201,7 @@ define(
 					chartOptions.axes.xaxis.showTicks = this.report.layout.chart.options.axes.xaxis.showTicks;
 					
 					if (this.report.layout.chart.options.axes.yaxis.showTicks) {
-						chartOptions.axes.yaxis.label = this.getFirstDimension().name;
+						chartOptions.axes.yaxis.label = this.report.layout.chart.options.axes.yaxis.label;
 					}
 					chartOptions.axes.yaxis.min = this.report.layout.chart.options.axes.yaxis.min;
 					if (!this.report.layout.chart.options.axes.yaxis.min) {

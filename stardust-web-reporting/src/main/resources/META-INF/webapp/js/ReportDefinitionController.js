@@ -889,6 +889,11 @@ define(
 					
 					this.populateCumulantsDisplay();
 					
+					if(this.report.layout.chart){
+						this.report.layout.chart.options.title = this
+						.getPrimaryObject().name;	
+					}
+
 					this.updateView();
 				};
 
@@ -955,6 +960,12 @@ define(
 					if (true) {
 						this.populateFactProcessDataSelect();
 					}
+					if(this.report.layout.chart){
+						if (this.getFact()) {
+							this.report.layout.chart.options.axes.yaxis.label = this
+							.getFact().name;	
+						}
+					}
 				};
 
 				/**
@@ -965,6 +976,11 @@ define(
 					console.log(this.getFirstDimension());
 
 					this.populateChartTypes();
+					if(this.report.layout.chart){
+						this.report.layout.chart.options.axes.xaxis.label = this
+						.getFirstDimension().name;	
+					}
+
 					this.report.dataSet.firstDimensionParameters = [];
 
 					this.updateView();
