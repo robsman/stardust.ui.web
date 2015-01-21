@@ -30,6 +30,8 @@ import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.TrivialManualActivityDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DocumentDTOBuilder;
+import org.eclipse.stardust.ui.web.rest.service.dto.request.ParticipantSearchRequestDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantSearchResponseDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ActivityInstanceUtils;
 import org.springframework.stereotype.Component;
 
@@ -48,6 +50,9 @@ public class ActivityInstanceService
    @Resource
    private ActivityInstanceUtils activityInstanceUtils;
 
+   @Resource
+   private DelegationComponent delegationService;
+   
    /**
     * @param activityInstanceOid
     * @return
@@ -174,6 +179,22 @@ public class ActivityInstanceService
       return GsonUtils.toJsonString(result);
    }
    
+   /**
+    * @author Yogesh.Manware
+    * @param request
+    * @return
+    */
+   public String searchParticipants(String request)
+   {
+      //convert request json to request object
+      ParticipantSearchRequestDTO delegationDTO = GsonUtils.fromJson(request, ParticipantSearchRequestDTO.class);
+
+      //search participant
+      List<ParticipantSearchResponseDTO> response = delegationService.getMatchingData(delegationDTO);
+
+      //convert response to json string
+      return GsonUtils.toJsonString(response);
+   }
 }
    
    

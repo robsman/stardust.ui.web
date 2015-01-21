@@ -292,6 +292,7 @@ public class GsonUtils
    }
    
 	/**
+	 * @author Yogesh.Manware
 	 * Return Java List from provided jsonArray
 	 * examples of ListType are 1. Type listType = new TypeToken<List<Long>>(){}.getType();
 	 * 2. Type listType = new TypeToken<List<Person>>(){}.getType(); //where Person is a custom object
@@ -305,6 +306,15 @@ public class GsonUtils
 				jsonArray.toString(), listType) : null;
 	}
 	
+    /**
+    * @param json
+    * @param classOfT
+    * @return
+    */
+   public static <T> T fromJson(String json, Class<T> classOfT)
+    {
+      return (null != json && classOfT != null) ? gson.fromJson(json, classOfT) : null;
+    }
 	
 	/**
 	 * @param obj

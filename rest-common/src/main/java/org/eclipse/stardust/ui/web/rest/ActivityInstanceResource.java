@@ -16,21 +16,32 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.ws.rs.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.service.ActivityInstanceService;
-import org.eclipse.stardust.ui.web.rest.service.dto.*;
+import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceOutDataDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.TrivialManualActivityDTO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 /**
  * @author Anoop.Nair
@@ -46,6 +57,9 @@ public class ActivityInstanceResource
    @Autowired
    private ActivityInstanceService activityInstanceService;
 
+   @Context
+   private HttpServletRequest httpRequest;
+   
    private final JsonMarshaller jsonIo = new JsonMarshaller();
 
    @GET
@@ -320,7 +334,52 @@ public class ActivityInstanceResource
          return Response.serverError().build();
       }
    }
-   
+
+    /**
+     * @author Yogesh.Manware
+     * @param postedData
+     * @return
+     */
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/searchParticipants")
+   public Response test(String postedData)
+   {
+      //postedData = "{searchText: '', activities=[8], participantType='All', limitedSearch=false, disableAdministrator=false, excludeUserType=false}";
+      //postedData = "{activities=[8], limitedSearch=false}";
+      try
+      {
+         return Response.ok(getActivityInstanceService().searchParticipants(postedData), MediaType.APPLICATION_JSON)
+               .build();
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
+
+         return Response.serverError().build();
+      }
+   }
+	
+   /**
+    * @param httpRequest
+    * @param paramName
+    * @param defaultValue
+    * @return
+    */
+   private String getParam(HttpServletRequest httpRequest, String paramName, String defaultValue)
+   {
+      Map<String, String[]> paramMap = httpRequest.getParameterMap();
+      if (paramMap != null && paramMap.get(paramName) != null && paramMap.get(paramName)[0] != null)
+      {
+         System.out.println(paramName + " : " + paramMap.get(paramName)[0]);
+         return paramMap.get(paramName)[0];
+      }
+
+      return defaultValue;
+   }    
+	
+	
    /**
     * @return the activityInstanceService
     */

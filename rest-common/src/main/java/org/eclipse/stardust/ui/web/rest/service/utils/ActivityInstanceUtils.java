@@ -297,8 +297,11 @@ public class ActivityInstanceUtils
 
    /**
     * @author Yogesh.Manware
+    * note: copied from AbortActivityBean#private boolean abortActivities(AbortScope abortScope)
+    * 
     * @param abortScope
     * @param activitiesToBeAborted
+    * 
     * @return
     */
    public Map<String, List<NotificationDTO>> abortActivities(AbortScope abortScope, List<Long> activitiesToBeAborted)
@@ -323,8 +326,11 @@ public class ActivityInstanceUtils
                   try
                   {
                      workflowService.abortActivityInstance(activityInstanceOid, abortScope);
+                     
+                     //publish event
                      ClientContextBean.getCurrentInstance().getClientContext()
                            .sendActivityEvent(ActivityEvent.aborted(activityInstance));
+                     
                      successNotifications.add(new NotificationDTO(activityInstanceOid,
                            getActivityLabel(activityInstance), getActivityStateLabel(activityInstance)));
                   }

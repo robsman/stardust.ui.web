@@ -23,6 +23,7 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.config.Parameters;
+import org.eclipse.stardust.engine.api.dto.DepartmentDetails;
 import org.eclipse.stardust.engine.api.dto.UserDetailsLevel;
 import org.eclipse.stardust.engine.api.model.DynamicParticipantInfo;
 import org.eclipse.stardust.engine.api.model.Model;
@@ -47,6 +48,7 @@ import org.eclipse.stardust.engine.api.runtime.UserGroupInfo;
 import org.eclipse.stardust.engine.api.runtime.UserInfo;
 import org.eclipse.stardust.ui.web.viewscommon.common.constant.ProcessPortalConstants;
 import org.eclipse.stardust.ui.web.viewscommon.common.constant.TaskAssignmentConstants;
+import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 
 
 
@@ -753,4 +755,89 @@ public class ParticipantUtils
       return modelParticipants;
    }
    
+   /**
+    * @param participant
+    * @return
+    */
+   public static long getParticipantOID(Participant participant)
+   {
+      if (participant != null)
+      {
+         if (participant instanceof User)
+         {
+            User u = (User) participant;
+            return u.getOID();
+         }
+         else if (participant instanceof Role)
+         {
+            return ((Role) participant).getElementOID();
+         }
+         else if (participant instanceof Organization)
+         {
+            return ((Organization) participant).getRuntimeElementOID();
+         }
+         else
+         {
+            return -1l;
+         }
+      }
+      return -1;
+   }
+
+   /**
+    * This is used specially in Delegation dialog 
+    * return participant Label
+    * 
+    * @param participant
+    * @return
+    */
+   public static String getParticipantLabel(Participant participant)
+   {
+      MessagesViewsCommonBean propsBean = MessagesViewsCommonBean.getInstance();
+      if (participant != null)
+      {
+         if (participant instanceof User)
+         {
+            User user = (User) participant;
+            return I18nUtils.getUserLabel(user);
+         }
+         if (participant instanceof Role)
+         {
+            return I18nUtils.getParticipantName(participant) + " ("
+                  + propsBean.getString("delegation.search.roleNamePostFix") + ")";
+         }
+         if (participant instanceof Organization)
+         {
+            return I18nUtils.getParticipantName(participant) + " ("
+                  + propsBean.getString("delegation.search.organizationNamePostFix") + ")";
+         }
+      }
+      return "";
+   }
+   
+   /**
+    * This is used specially in Delegation dialog 
+    * return department Label
+    * 
+    * @param department
+    * @return
+    */
+   public static String getDepartmentLabel(DepartmentInfo department)
+   {
+      StringBuilder departmentName = new StringBuilder().append(department.getName()).append(" (")
+            .append(MessagesViewsCommonBean.getInstance().getString("delegation.search.departmentNamePostFix"))
+            .append(")");
+
+      if (department instanceof DepartmentDetails)
+      {
+         DepartmentDetails deptDetail = (DepartmentDetails) department;
+         if (null != deptDetail.getOrganization() && deptDetail.getOrganization().isDepartmentScoped())
+         {
+            String orgName = I18nUtils.getParticipantName(deptDetail.getOrganization());
+            departmentName.insert(0, orgName + " - ");
+         }
+      }
+
+      return departmentName.toString();
+   }
 }
