@@ -33,11 +33,11 @@ public class ParticipantSearchRequestDTO
     * Any user being a member of the <code>ADMINISTRATOR</code> role plus an additional
     * qualifying role, too, should be included in the list of valid users, still.
     */
-   private boolean disableAdministrator;
+   private Boolean disableAdministrator = null;
 
    // User types will not be included in the search result
-   // selectedParticipantCase
-   private boolean excludeUserType;
+   // selectedParticipantCase / for worklist configuration, it is true
+   private boolean excludeUserType = false;
 
    private Long[] activities;
 
@@ -81,12 +81,7 @@ public class ParticipantSearchRequestDTO
       this.participantType = participantType;
    }
 
-   public boolean isDisableAdministrator()
-   {
-      return disableAdministrator;
-   }
-
-   public void setDisableAdministrator(boolean disableAdministrator)
+   public void setDisableAdministrator(Boolean disableAdministrator)
    {
       this.disableAdministrator = disableAdministrator;
    }
@@ -99,5 +94,10 @@ public class ParticipantSearchRequestDTO
    public void setExcludeUserType(boolean excludeUserType)
    {
       this.excludeUserType = excludeUserType;
+   }
+
+   public Boolean getDisableAdministrator()
+   {
+      return disableAdministrator;
    }
 }

@@ -31,7 +31,7 @@ import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
  * @author Anoop.Nair
  * @version $Revision: $
  */
-@Component
+@Component("ProcessInstanceUtilsREST")
 public class ProcessInstanceUtils
 {
 

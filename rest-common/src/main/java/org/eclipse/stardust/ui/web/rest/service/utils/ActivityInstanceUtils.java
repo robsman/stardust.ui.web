@@ -10,9 +10,10 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service.utils;
 
+import static org.eclipse.stardust.common.StringUtils.isEmpty;
+
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -39,13 +40,17 @@ import org.eclipse.stardust.ui.event.ActivityEvent;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.ReflectionUtils;
-import org.eclipse.stardust.ui.web.rest.service.dto.NotificationDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap;
+import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap.NotificationDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.PathDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.TrivialManualActivityDTO;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ClientContextBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantWorklistCacheManager;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessWorklistCacheManager;
+import org.eclipse.stardust.ui.web.viewscommon.utils.SpecialWorklistCacheManager;
 import org.springframework.stereotype.Component;
 
 /**
@@ -68,7 +73,7 @@ public class ActivityInstanceUtils
 
    @Resource
    private DocumentUtils documentUtils;
-
+   
    /**
     * @param oid
     * @return
@@ -304,13 +309,9 @@ public class ActivityInstanceUtils
     * 
     * @return
     */
-   public Map<String, List<NotificationDTO>> abortActivities(AbortScope abortScope, List<Long> activitiesToBeAborted)
+   public NotificationMap abortActivities(AbortScope abortScope, List<Long> activitiesToBeAborted)
    {
-      List<NotificationDTO> successNotifications = new ArrayList<NotificationDTO>();
-      List<NotificationDTO> failureNotifications = new ArrayList<NotificationDTO>();
-      Map<String, List<NotificationDTO>> result = new HashMap<String, List<NotificationDTO>>();
-      result.put("success", successNotifications);
-      result.put("failure", failureNotifications);
+      NotificationMap notificationMap = new NotificationMap();
 
       if (CollectionUtils.isNotEmpty(activitiesToBeAborted))
       {
@@ -331,7 +332,7 @@ public class ActivityInstanceUtils
                      ClientContextBean.getCurrentInstance().getClientContext()
                            .sendActivityEvent(ActivityEvent.aborted(activityInstance));
                      
-                     successNotifications.add(new NotificationDTO(activityInstanceOid,
+                     notificationMap.addSuccess(new NotificationDTO(activityInstanceOid,
                            getActivityLabel(activityInstance), getActivityStateLabel(activityInstance)));
                   }
                   catch (Exception e)
@@ -339,7 +340,7 @@ public class ActivityInstanceUtils
                      // It is very to rare that any exception would occur
                      // here
                      trace.error(e);
-                     failureNotifications.add(new NotificationDTO(activityInstanceOid,
+                     notificationMap.addFailure(new NotificationDTO(activityInstanceOid,
                            getActivityLabel(activityInstance), MessagesViewsCommonBean.getInstance().getParamString(
                                  "views.common.activity.abortActivity.failureMsg2",
                                  ExceptionHandler.getExceptionMessage(e))));
@@ -349,21 +350,21 @@ public class ActivityInstanceUtils
                {
                   if (isDefaultCaseActivity(activityInstance))
                   {
-                     failureNotifications.add(new NotificationDTO(activityInstanceOid,
+                     notificationMap.addFailure(new NotificationDTO(activityInstanceOid,
                            getActivityLabel(activityInstance), MessagesViewsCommonBean.getInstance().getString(
                                  "views.switchProcessDialog.caseAbort.message")));
                   }
                   else if (ActivityInstanceState.Aborted.equals(activityInstance.getState())
                         || ActivityInstanceState.Completed.equals(activityInstance.getState()))
                   {
-                     failureNotifications.add(new NotificationDTO(activityInstanceOid,
+                     notificationMap.addFailure(new NotificationDTO(activityInstanceOid,
                            getActivityLabel(activityInstance), MessagesViewsCommonBean.getInstance().getParamString(
                                  "views.common.activity.abortActivity.failureMsg3",
                                  ActivityInstanceUtils.getActivityStateLabel(activityInstance))));
                   }
                   else
                   {
-                     failureNotifications.add(new NotificationDTO(activityInstanceOid,
+                     notificationMap.addFailure(new NotificationDTO(activityInstanceOid,
                            getActivityLabel(activityInstance), MessagesViewsCommonBean.getInstance().getString(
                                  "views.common.activity.abortActivity.failureMsg1")));
                   }
@@ -372,7 +373,7 @@ public class ActivityInstanceUtils
          }
       }
 
-      return result;
+      return notificationMap;
    }
 
 	/**
@@ -390,17 +391,56 @@ public class ActivityInstanceUtils
 		return false;
 	}
 
+   /**
+    * @param ai
+    * @param context
+    * @param data
+    * @return
+    */
+   public ActivityInstance suspendToUserWorklist(ActivityInstance ai, String context, Map<String, ? > data)
+   {
+      ActivityInstance suspendedAi = null;
+
+      if (trace.isDebugEnabled())
+      {
+         trace.debug("Suspending Activity '" + ai.getActivity().getName() + "' to User Worklist, with out data = "
+               + data);
+      }
+
+      if (isEmpty(context))
+      {
+         suspendedAi = serviceFactoryUtils.getWorkflowService().suspendToUser(ai.getOID());
+      }
+      else
+      {
+         suspendedAi = serviceFactoryUtils.getWorkflowService().suspendToUser(ai.getOID(), context, data);
+      }
+
+      sendActivityEvent(ai, ActivityEvent.suspended(suspendedAi));
+      return suspendedAi;
+   }
+	
+   /**
+    * @param oldAi
+    * @param activityEvent
+    */
+   public void sendActivityEvent(ActivityInstance oldAi, ActivityEvent activityEvent)
+   {
+      ParticipantWorklistCacheManager.getInstance().handleActivityEvent(oldAi, activityEvent);
+      if (ProcessWorklistCacheManager.isInitialized())
+      {
+         ProcessWorklistCacheManager.getInstance().handleActivityEvent(oldAi, activityEvent);
+      }
+      SpecialWorklistCacheManager.getInstance().handleActivityEvent(oldAi, activityEvent);
+      ClientContextBean.getCurrentInstance().getClientContext().sendActivityEvent(activityEvent);
+   }
 	/**
 	 * @param instance
 	 * @return localized activity name with OID appended
 	 */
-	public static String getActivityLabel(ActivityInstance instance) {
+	public String getActivityLabel(ActivityInstance instance) {
 		if (null != instance) {
-			StringBuilder processLabel = new StringBuilder(
-					I18nUtils.getActivityName(instance.getActivity()));
-			processLabel.append(" (").append("#").append(instance.getOID())
-					.append(")");
-			return processLabel.toString();
+			return I18nUtils.getActivityName(instance.getActivity());
 		}
 		return "";
 	}
@@ -413,5 +453,28 @@ public class ActivityInstanceUtils
 		return MessagesViewsCommonBean.getInstance().getString(
 				STATUS_PREFIX + ai.getState().getName().toLowerCase());
 	}
+	
+   /**
+    * @param activities
+    * @return
+    */
+   public List<ActivityInstance> getActivityInstancesFor(Long[] activities)
+   {
+      List<ActivityInstance> activityInstances = new ArrayList<ActivityInstance>();
+
+      if (activities == null)
+      {
+         return activityInstances;
+      }
+      for (Long activityInstanceOid : activities)
+      {
+         ActivityInstance ai = getActivityInstance(activityInstanceOid.longValue());
+         if (ai != null)
+         {
+            activityInstances.add(ai);
+         }
+      }
+      return activityInstances;
+   }
    
 }

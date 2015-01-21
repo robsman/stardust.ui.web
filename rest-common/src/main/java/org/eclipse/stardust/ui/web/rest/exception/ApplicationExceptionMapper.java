@@ -19,23 +19,20 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
+import org.eclipse.stardust.common.error.ApplicationException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.ErrorMessageDTO;
-import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
 
 /**
- * 
  * @author Yogesh.Manware
- * 
- *         For new code from Portal Perspective user PortalException and relevant Mapper
- * 
+ *
  */
 @Provider
-public class PortalExceptionMapper implements ExceptionMapper<PortalException>
+public class ApplicationExceptionMapper implements ExceptionMapper<ApplicationException>
 {
-   private static final Logger trace = LogManager.getLogger(PortalExceptionMapper.class);
+   private static final Logger trace = LogManager.getLogger(ApplicationExceptionMapper.class);
 
    @Context
    private HttpServletRequest httpRequest;
@@ -44,7 +41,7 @@ public class PortalExceptionMapper implements ExceptionMapper<PortalException>
    ExceptionHelper exceptionHelper;
 
    @Override
-   public Response toResponse(PortalException exception)
+   public Response toResponse(ApplicationException exception)
    {
       trace.error(exception);
       ErrorMessageDTO errorMessage = exceptionHelper.getMessageFromProvider(exception, httpRequest.getLocale());

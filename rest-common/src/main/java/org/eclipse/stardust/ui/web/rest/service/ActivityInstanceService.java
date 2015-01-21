@@ -25,13 +25,11 @@ import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceOutDataDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.NotificationDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.TrivialManualActivityDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DocumentDTOBuilder;
-import org.eclipse.stardust.ui.web.rest.service.dto.request.ParticipantSearchRequestDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantSearchResponseDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ActivityInstanceUtils;
 import org.springframework.stereotype.Component;
 
@@ -46,13 +44,14 @@ import com.google.gson.reflect.TypeToken;
 @Component
 public class ActivityInstanceService
 {
-	
    @Resource
    private ActivityInstanceUtils activityInstanceUtils;
 
    @Resource
-   private DelegationComponent delegationService;
-   
+   private ParticipantSearchComponent participantSearchComponent;
+   @Resource
+   private DelegationComponent delegateComponent;
+
    /**
     * @param activityInstanceOid
     * @return
@@ -166,37 +165,22 @@ public class ActivityInstanceService
       @SuppressWarnings("unchecked")
       List<Long> activities = (List<Long>) GsonUtils.extractList(GsonUtils.extractJsonArray(json, "activities"),
             listType);
-      Map<String, List<NotificationDTO>> result = new HashMap<String, List<NotificationDTO>>();
+      NotificationMap notificationMap = new NotificationMap();
 
       if ("activity".equalsIgnoreCase(scope))
       {
-         result = activityInstanceUtils.abortActivities(AbortScope.SubHierarchy, activities);
+         notificationMap = activityInstanceUtils.abortActivities(AbortScope.SubHierarchy, activities);
       }
       else if ("rootProcess".equalsIgnoreCase(scope))
       {
-         result = activityInstanceUtils.abortActivities(AbortScope.RootHierarchy, activities);
+         notificationMap = activityInstanceUtils.abortActivities(AbortScope.RootHierarchy, activities);
       }
-      return GsonUtils.toJsonString(result);
-   }
-   
-   /**
-    * @author Yogesh.Manware
-    * @param request
-    * @return
-    */
-   public String searchParticipants(String request)
-   {
-      //convert request json to request object
-      ParticipantSearchRequestDTO delegationDTO = GsonUtils.fromJson(request, ParticipantSearchRequestDTO.class);
-
-      //search participant
-      List<ParticipantSearchResponseDTO> response = delegationService.getMatchingData(delegationDTO);
-
-      //convert response to json string
-      return GsonUtils.toJsonString(response);
+      return GsonUtils.toJsonHTMLSafeString(notificationMap);
    }
 }
-   
+
+
+
    
    
 

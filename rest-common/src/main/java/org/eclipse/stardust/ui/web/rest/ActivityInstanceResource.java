@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.annotation.Resource;
+import javax.faces.FacesException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -30,13 +32,17 @@ import javax.ws.rs.core.Response;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
+import org.eclipse.stardust.ui.web.rest.exception.PortalRestException;
 import org.eclipse.stardust.ui.web.rest.service.ActivityInstanceService;
+import org.eclipse.stardust.ui.web.rest.service.DelegationComponent;
+import org.eclipse.stardust.ui.web.rest.service.ParticipantSearchComponent;
 import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceOutDataDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.TrivialManualActivityDTO;
+import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -56,6 +62,12 @@ public class ActivityInstanceResource
 
    @Autowired
    private ActivityInstanceService activityInstanceService;
+   
+   @Resource
+   private ParticipantSearchComponent participantSearchComponent;
+
+   @Resource
+   private DelegationComponent delegationComponent;
 
    @Context
    private HttpServletRequest httpRequest;
@@ -322,17 +334,8 @@ public class ActivityInstanceResource
 	@Path("/abort")
    public Response abortActivities(String postedData)
    {
-      try
-      {
-         return Response.ok(getActivityInstanceService().abortActivities(postedData), MediaType.APPLICATION_JSON)
-               .build();
-      }
-      catch (Exception e)
-      {
-         trace.error(e, e);
-
-         return Response.serverError().build();
-      }
+      //postedData = "{scope: 'activity', activities : [11]}";
+      return Response.ok(getActivityInstanceService().abortActivities(postedData), MediaType.APPLICATION_JSON).build();
    }
 
     /**
@@ -344,24 +347,36 @@ public class ActivityInstanceResource
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/searchParticipants")
-   public Response test(String postedData)
+   public Response searchParticipant(String postedData)
    {
-      //postedData = "{searchText: '', activities=[8], participantType='All', limitedSearch=false, disableAdministrator=false, excludeUserType=false}";
-      //postedData = "{activities=[8], limitedSearch=false}";
-      try
-      {
-         return Response.ok(getActivityInstanceService().searchParticipants(postedData), MediaType.APPLICATION_JSON)
-               .build();
-      }
-      catch (Exception e)
-      {
-         trace.error(e, e);
-
-         return Response.serverError().build();
-      }
+      // postedData = "{searchText: '', activities=[8], participantType='All', limitedSearch=false, disableAdministrator=false, excludeUserType=false}";
+      // postedData = "{activities=[8], limitedSearch=false}";
+      return Response.ok(participantSearchComponent.searchParticipants(postedData), MediaType.APPLICATION_JSON).build();
    }
-	
-   /**
+    
+    /**
+     * @author Yogesh.Manware
+     * @param postedData
+     * @return
+    * @throws PortalRestException 
+    * @throws PortalException 
+    * @throws FacesException 
+     */
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/delegate")
+   public Response delegateActivity(String postedData) throws PortalRestException, PortalException
+   {
+      //postedData = "{activities:[12], participantType:'User', participant:1}"; 
+      //postedData = "{activities:[8], participantType:'User', participant:2, department:false, activityData: {'Country':{'id':'India', 'States':[{ id: 'dd', name:'nameo'}, { id: 'dd2', name:'nameo2'}] } } }"; 
+      //postedData = "{activities:[8], participant:{}, department:false, activityData: {Country:{id:'India',States:[{id:'MAH',cities:[{id:'Pn',Name:'Pune'},{id:'Pn2',Name:'Pune2'}]},{id:'Dl',cities:[{id:'DL1',Name:'Delhi'}]}]}} }";     
+      
+      return Response.ok(delegationComponent.delegate(postedData), MediaType.APPLICATION_JSON).build();
+   }
+    
+   /** 
+    * @author Yogesh.Manware
     * @param httpRequest
     * @param paramName
     * @param defaultValue

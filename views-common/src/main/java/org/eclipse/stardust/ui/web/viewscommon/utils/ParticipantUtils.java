@@ -214,6 +214,52 @@ public class ParticipantUtils
 
       return participant;
    }
+   
+   /**
+    *  Specially used in REST
+    * @param partcipantQID
+    * @param participantType
+    * @return
+    */
+   public static Participant getParticipant(String partcipantQID, ParticipantType participantType)
+   {
+      Participant participant = null;
+         switch (participantType)
+         {
+         case ORGANIZATION:
+         case ROLE:
+         case SCOPED_ORGANIZATION:
+         case SCOPED_ROLE:
+            String modelId = ModelUtils.extractModelId(partcipantQID);
+            String participantId = ModelUtils.extractModelId(partcipantQID);
+            if (null == modelId)
+            {
+               modelId = PredefinedConstants.PREDEFINED_MODEL_ID;
+            }
+            for (DeployedModel model : ModelUtils.getAllModelsActiveFirst())
+            {
+               if (model.getId().equals(modelId))
+               {
+                  participant = model.getParticipant(participantId);
+                  if (null != participant)
+                  {
+                     break;
+                  }
+               }
+            }
+            break;
+
+         case USER:
+            participant = UserUtils.getUser(Long.valueOf(partcipantQID), UserDetailsLevel.Full);
+            break;
+
+         case USERGROUP:
+            participant = ServiceFactoryUtils.getUserService().getUserGroup(partcipantQID);
+            break;
+         }
+
+         return participant;
+   }
 
    /**
     * @param modelParticipant

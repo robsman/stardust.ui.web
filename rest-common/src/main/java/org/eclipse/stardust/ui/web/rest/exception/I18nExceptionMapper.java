@@ -23,19 +23,16 @@ import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.ErrorMessageDTO;
-import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
+import org.eclipse.stardust.ui.web.viewscommon.common.exceptions.I18NException;
 
 /**
- * 
  * @author Yogesh.Manware
- * 
- *         For new code from Portal Perspective user PortalException and relevant Mapper
- * 
+ *
  */
 @Provider
-public class PortalExceptionMapper implements ExceptionMapper<PortalException>
+public class I18nExceptionMapper implements ExceptionMapper<I18NException>
 {
-   private static final Logger trace = LogManager.getLogger(PortalExceptionMapper.class);
+   private static final Logger trace = LogManager.getLogger(I18nExceptionMapper.class);
 
    @Context
    private HttpServletRequest httpRequest;
@@ -44,10 +41,10 @@ public class PortalExceptionMapper implements ExceptionMapper<PortalException>
    ExceptionHelper exceptionHelper;
 
    @Override
-   public Response toResponse(PortalException exception)
+   public Response toResponse(I18NException exception)
    {
       trace.error(exception);
-      ErrorMessageDTO errorMessage = exceptionHelper.getMessageFromProvider(exception, httpRequest.getLocale());
+      ErrorMessageDTO errorMessage = new ErrorMessageDTO(exception.getMessage());
       return Response.status(Status.INTERNAL_SERVER_ERROR).entity(GsonUtils.toJson(errorMessage)).build();
    }
 }

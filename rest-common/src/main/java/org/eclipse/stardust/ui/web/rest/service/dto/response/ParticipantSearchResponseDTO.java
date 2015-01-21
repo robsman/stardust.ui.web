@@ -15,7 +15,7 @@ import org.eclipse.stardust.engine.api.model.Participant;
 import org.eclipse.stardust.engine.api.model.Role;
 import org.eclipse.stardust.engine.api.runtime.DepartmentInfo;
 import org.eclipse.stardust.engine.api.runtime.User;
-import org.eclipse.stardust.ui.web.rest.service.DelegationComponent;
+import org.eclipse.stardust.ui.web.rest.service.ParticipantSearchComponent;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MyPicturePreferenceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 
@@ -57,7 +57,7 @@ public class ParticipantSearchResponseDTO
       this.id = department.getId();
       this.OID = department.getOID();
       this.name = ParticipantUtils.getDepartmentLabel(department);
-      this.type = DelegationComponent.ParticipantType.Department.name().toUpperCase();
+      this.type = ParticipantSearchComponent.PerformerTypeUI.Department.name().toUpperCase();
       this.icon = determineIconPath(null);
    }
 
