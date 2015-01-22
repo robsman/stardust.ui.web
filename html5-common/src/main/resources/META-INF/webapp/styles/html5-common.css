@@ -34,8 +34,6 @@
    border-bottom: 1px solid #999999;
    border-right: 1px solid #999999;
    background: #FFFFFF;
-   min-width: 200px;
-   min-width: 300px;
    overflow: auto;
    box-shadow: 5px 5px 25px #888888; 
 }
@@ -59,6 +57,7 @@
 
 .popup-dlg-cnt {
    padding-top: 10px;
+   padding-bottom: 10px;
 }
 
 .popup-dlg-footer {

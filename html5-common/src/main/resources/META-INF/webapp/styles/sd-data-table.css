@@ -46,6 +46,15 @@
 	font-weight: bold;
 }
 
+.tbl-col-flt {
+	margin-right: 5px;
+}
+
+.tbl-col-flt-dlg {
+	text-align: left;
+	cursor: default;
+}
+
 .tbl-toolbar {
 }
 

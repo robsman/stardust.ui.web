@@ -14,13 +14,11 @@
 		sda-sortable="true" sda-sort-by="{name : 'started', dir : 'desc'}" sda-on-sorting="worklistCtrl.onSorting(info)">
 		<thead sda-i18n-scope="processportal.views-worklistPanel-column">
 			<tr>
-				<th sda-name="overview" sda-sortable="true">
-					<div sd-filter-template></div>
-				</th>
-				<th sda-name="oid" sda-sortable="true" sda-filterable="" sda-exportable=""></th>
+				<th sda-name="overview" sda-sortable="true"></th>
+				<th sda-name="oid" sda-sortable="true" sda-filterable="true" sda-exportable=""></th>
 				<th sda-name="processDefinition" sda-label-key="processName" sda-visible="false"></th>
-				<th sda-name="started" sda-sortable="true"></th>
-				<th sda-name="lastModified" sda-label-key="lastmodification" sda-sortable="true"></th>
+				<th sda-name="started" sda-sortable="true" sda-filterable="true"></th>
+				<th sda-name="lastModified" sda-label-key="lastmodification" sda-sortable="true" sda-filterable="true"></th>
 				<th sda-name="descriptors" sda-visible="false"></th>
 				<th ng-repeat="descCol in worklistCtrl.descritorCols"
 					sda-name="{{descCol.id}}" sda-label="{{descCol.title}}" sda-visible="false" sda-sortable="{{descCol.sortable}}">

@@ -61,6 +61,15 @@
 		// Add ng-non-bindable, so that the markup is not compiled
 		var bodyCols = elem.find('> tbody > tr > td');
 		bodyCols.attr('ng-non-bindable', '');
+
+		var headCols = elem.find('> thead > tr > th');
+		angular.forEach(headCols, function(hCol) {
+			hCol = angular.element(hCol);
+			var filterTemplate = hCol.find('> [sd-filter-template]');
+			if (filterTemplate && filterTemplate.length > 0) {
+				hCol.attr('ng-non-bindable', '');
+			}
+		});
 		
 		elem.addClass('tbl');
 		
@@ -148,6 +157,7 @@
 		var columnSelectorPreference, localPrefStore = {};
 		var pageSize = 8;
 		var sortingMode, sortByGetter;
+		var columnFilters;
 		
 		// Setup component instance
 		setup();
@@ -370,6 +380,7 @@
 					dataType: bCol.attr('sda-data-type'),
 					visible: hCol.attr('sda-visible') == undefined || hCol.attr('sda-visible') == 'true' ? true : false,
 					sortable: hCol.attr('sda-sortable') == 'true' ? true : false,
+					filterable: hCol.attr('sda-filterable') == 'true' ? true : false,
 					fixed: hCol.attr('sda-fixed') != undefined && hCol.attr('sda-fixed') == 'true' ? true : false
 				};
 
@@ -395,7 +406,9 @@
 						colDef.labelKey = i18nScope + '-' + colDef.labelKey;
 					}
 				}
-
+				
+				colDef.titleExpr = colDef.labelKey ? '{{i18n("' + colDef.labelKey + '")}}' : colDef.label;
+				
 				colDef.contents = bCol.html();
 				colDef.contents = colDef.contents.trim();
 				if (colDef.contents == "") {
@@ -408,6 +421,34 @@
 
 				if (bCol.attr('class')) {
 					colDef.cellClass = bCol.attr('class');
+				}
+
+				colDef.filterMarkup = '';
+				var filterTemplate = hCol.find('> [sd-filter-template]');
+				if (filterTemplate && filterTemplate.length > 0) {
+					filterTemplate.remove();
+					colDef.filterable = true;
+				
+					var url = filterTemplate.attr('sd-filter-template');
+					if (url != undefined && url != null && url != '') {
+						colDef.filterMarkup = '<div ng-include="\'' + url + '\'"></div>';
+					} else {
+						colDef.filterMarkup = filterTemplate.html();
+					}
+				}
+
+				if (colDef.filterMarkup == '') {
+					switch (bCol.attr('sda-data-type')) {
+						case 'int': 
+						case 'integer':
+							colDef.filterMarkup = '<div sd-number-filter></div>';
+							break;
+						case 'date': 
+						case 'dateTime':
+						case 'time':
+							colDef.filterMarkup = '<div sd-date-filter></div>';
+							break;
+					}
 				}
 
 				columns.push(colDef);
@@ -508,21 +549,81 @@
 			var defaultToolbar = theToolbar.children().first();
 			$compile(defaultToolbar)(defaultToolbar.scope());
 
+			// Create space for column filters
+			columnFilters = {};
+			var theFilters = angular.element('<div></div>');
+			element.append(theFilters);
+
 			// Add Header Labels
 			var headCols = element.find('> thead > tr > th');
 			angular.forEach(columns, function(col, i) {
-				var headerLabel = col.labelKey ? '{{i18n("' + col.labelKey + '")}}' : col.label;
-				var columnHeader = '<span class="tbl-hdr-col-label">' + headerLabel + '</span>';
+				var filterMarkup = '', filterDialogMarkup = ''
+				if (col.filterable) {
+					var toggleFilter = '$dtApi.toggleColumnFilter(\'' + col.name + '\', $event)';
+					var filterVisible = '$dtApi.isColumnFilterVisible(\'' + col.name + '\')';
+					var applyFilter = '$dtApi.applyColumnFilter(\'' + col.name + '\')';
+					var stopEvent = 'bpmCommon.stopEvent($event);';
+					
+					filterMarkup =
+						'<button class="button-link" href="#" ng-click="' + stopEvent + toggleFilter + '" class="tbl-col-flt" flt-anchor="' + col.name + '">\n' +
+							'<i class="fa fa-filter"></i>\n' +
+						'</button>\n';
+					
+					filterDialogMarkup = 
+						'<div ng-show="' + filterVisible + '" class="popup-dlg tbl-col-flt-dlg" col="' + col.name + '">\n' +
+							'<div class="popup-dlg-hdr">\n' +
+								'<span class="popup-dlg-hdr-txt">' +
+									'{{i18n("portal-common-messages.common-filterPopup-dataFilterByLabel")}} ' + col.titleExpr + '</span>\n' + 
+								'<span class="popup-dlg-cls fa fa-lg fa-remove" title="{{i18n(\'portal-common-messages.common-filterPopup-close\')}}" ng-click="' + toggleFilter + '"></span>\n' +
+							'</div>\n' +
+							'<div class="popup-dlg-cnt tbl-col-flt-dlg-cnt">\n' +
+								col.filterMarkup +
+							'\n</div>\n' +
+							'<div class="popup-dlg-footer">\n' +
+								'<input type="submit" class="button primary" value="{{i18n(\'portal-common-messages.common-filterPopup-applyFilter\')}}" ng-click="' + applyFilter + '" />' +
+								'<input type="submit" class="button secondary" value="{{i18n(\'portal-common-messages.common-filterPopup-resetFilter\')}}" ng-click="' + toggleFilter + '" />' +
+							'</div>\n' +
+						'</div>\n';
+				}
+
+				var columnHeader = 
+					'<div>\n' + 
+						filterMarkup +
+						'<span class="tbl-hdr-col-label">' + col.titleExpr + '</span>\n'
+					'</div>';
 
 				var hCol = angular.element(headCols[i]);
 				hCol.prepend(columnHeader);
-				
+
 				var header = hCol.children().first();
 				$compile(header)(header.scope());
+
+				if (filterDialogMarkup.length > 0) {
+					// Setup Filter Dialog Element
+					var filterDialog = angular.element(filterDialogMarkup);
+					var filterScope = elemScope.$new();
+					$compile(filterDialog)(filterScope);
+					theFilters.append(filterDialog);
+
+					// Setup Filter Data
+					filterScope.rowData = {};
+					filterScope.rowData[col.name] = {};
+
+					filterScope.colData = {
+						name: col.name,
+						field: col.field,
+						titleExpr: col.titleExpr
+					}
+
+					columnFilters[col.name] = {
+						filter : filterDialog,
+						anchor : header.find('> [flt-anchor="' + col.name + '"]')
+					};
+				}
 			});
-			
+
 			theTable = element;
-			theTable.addClass('tbl');	
+			theTable.addClass('tbl');
 		}
 
 		/*
@@ -643,6 +744,7 @@
 				"data": null
 			};
 
+			// Sorting / Ordering Info
 			var params = {skip : data.start, pageSize : data.length};
 			if (data.order && data.order.length > 0) {
 				params.order = [];
@@ -652,6 +754,22 @@
 				}
 			}
 
+			// Filtering Info
+			params.filters = {};
+			for (var colName in columnFilters) {
+				var filterScope = columnFilters[colName].filter.scope();
+				if (filterScope.rowData != undefined && filterScope.rowData[colName] != undefined) {
+					var filterData = filterScope.rowData[colName];
+					if (jQuery.isPlainObject(filterData) && !jQuery.isEmptyObject(filterData)) {
+						params.filters[colName] = filterData;
+					}
+				}
+			}
+			if (jQuery.isEmptyObject(params.filters)) {
+				delete params.filters;	
+			}
+			
+			trace.log(theTableId + ': Fetch Data params:', params);
 			fetchData(params, function(result) {
 				try {
 					sdUtilService.assert(result.totalCount,
@@ -873,6 +991,16 @@
 			sdUtilService.safeApply(elemScope);
 		}
 
+		/*
+		 * 
+		 */
+		function refresh(retainPageIndex) {
+			var oSettings = theDataTable.settings()[0];
+			jQuery(oSettings.oInstance).trigger('page', oSettings);
+		    oSettings.oApi._fnCalculateEnd(oSettings);
+		    oSettings.oApi._fnDraw(oSettings);
+		}
+	    
 		/*
 		 * 
 		 */
@@ -1416,10 +1544,7 @@
 			 * 
 			 */
 			this.refresh = function (retainPageIndex) {
-				var oSettings = theDataTable.settings()[0];
-				jQuery(oSettings.oInstance).trigger('page', oSettings);
-			    oSettings.oApi._fnCalculateEnd(oSettings);
-			    oSettings.oApi._fnDraw(oSettings);
+				refresh(retainPageIndex);
 			};
 
 			/*
@@ -1452,6 +1577,8 @@
 				self.columnSelectorAdmin = columnSelectorAdmin;
 				self.showSelectColumns = false;
 				self.applyTo = 'USER';
+				
+				self.showColumnFilters = {};
 			}
 			
 			/*
@@ -1530,6 +1657,40 @@
 				setColumnSelectionFromPreference(self.applyTo, null);
 				reorderColumns(self.applyTo);
 				self.toggleColumnSelector();
+			}
+
+			/*
+			 * 
+			 */
+			this.toggleColumnFilter = function(colName, $event) {
+				for (var name in self.showColumnFilters) {
+					if (name != colName) {
+						self.showColumnFilters[name] = false;
+					}
+				}
+
+				self.showColumnFilters[colName] = !self.showColumnFilters[colName];
+
+				if (self.showColumnFilters[colName]) {
+					columnFilters[colName].filter.css('top', columnFilters[colName].anchor.position().top + 20);
+					columnFilters[colName].filter.css('left', columnFilters[colName].anchor.position().left + 5);
+				}
+			}
+
+			/*
+			 * 
+			 */
+			this.isColumnFilterVisible = function(colName) {
+				return self.showColumnFilters[colName];
+			}
+
+			/*
+			 * 
+			 */
+			this.applyColumnFilter = function(colName) {
+				alert('Applying Filters');
+				self.toggleColumnFilter(colName);
+				refresh();
 			}
 
 			/*
