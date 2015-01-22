@@ -4,9 +4,44 @@
 			of
 			{{businessObjectManagementPanelController.rootController.businessObject.name}}
 			{{businessObjectManagementPanelController.rootBusinessObjectInstance[businessObjectManagementPanelController.rootController.businessObject.primaryKeyField.id]}}</h2>
-		<p>Select associated
-			{{businessObjectManagementPanelController.relationship.otherRole}}
-			below:</p>
+
+		<div class="dataTableFrame"
+			style="margin-top: 20px; margin-bottom: 20px;">
+			<table cellpadding="0" cellspacing="0" datatable="ng"
+				class="dataTable" style="width: 100%;" id="relationShipTbl">
+				<thead>
+					<tr>
+						<th>{{businessObjectManagementPanelController.businessObject.primaryKeyField.label}}</th>
+						<th
+							ng-repeat="field in businessObjectManagementPanelController.fetchKeyFields()"
+							ng-if="!field.list">{{field.label}}</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr
+						sd-table-data="businessObjectInstance in businessObjectManagementPanelController.relatedBusinessObjectInstances"
+						sd-table-selection="businessObjectManagementPanelController.relatedBusinessObjInstancesToRemove">
+						<td>{{businessObjectInstance[businessObjectManagementPanelController.businessObject.primaryKeyField.id]}}</td>
+						<td
+							ng-repeat="field in businessObjectManagementPanelController.fetchKeyFields()">
+							<span ng-hide="field.type == 'date' || field.type == 'dateTime'">{{businessObjectInstance[field.id]}}</span>
+							<!-- Temporary fix for showing HTML5 date --> <span
+							ng-show="field.type =='date'">{{businessObjectInstance[field.id]
+								| date :'MM/dd/yyyy'}}</span> <span ng-show="field.type =='dateTime'">{{businessObjectInstance[field.id]
+								| date :'MM/dd/yyyy hh:mm:ss'}}</span>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			<div>
+				<input type="button" value="Delete"
+					style="float: right; margin-right: 3%;margin-top:1%;"
+					ng-click="businessObjectManagementPanelController.removeInstanceFromRelationship()"
+					ng-show="businessObjectManagementPanelController.businessObjectInstances.length > 0"></input>
+			</div>
+		</div>
+		<p>Search 
+			{{businessObjectManagementPanelController.relationship.otherRole}}</p>
 	</div>
 	<div ng-hide="businessObjectManagementPanelController.searchPanelCollapsed">
 		<table class="toolbar" style="width: 100%;">
@@ -32,8 +67,8 @@
 				</td>
 				<td
 					ng-repeat="field in businessObjectManagementPanelController.fetchKeyFields()">
-					<label style="margin-left: 5px;">{{field.label}}</label> 
-					<input ng-show="field.type == 'string'" type="text"					
+					<label style="margin-left: 5px;">{{field.label}}</label> <input
+					ng-show="field.type == 'string'" type="text"
 					style="width: 100px; margin-left: 5px;"
 					ng-model="field.filterValue"
 					ng-blur="businessObjectManagementPanelController.filterBusinessObjectInstances()"></input>
@@ -65,8 +100,7 @@
 				<td><a href="#" class="iconLink menuBarLink" title="Refresh"><i
 						class="fa fa-eraser"
 						ng-click="businessObjectManagementPanelController.clearFilters()"></i>
-				</a>
-				</td>
+				</a></td>
 			</tr>
 		</table>
 	</div>
@@ -78,8 +112,8 @@
 				<tr>
 					<th>{{businessObjectManagementPanelController.businessObject.primaryKeyField.label}}</th>
 					<th
-						ng-repeat="field in businessObjectManagementPanelController.businessObject.keyFields" ng-if="!field.list">{{field.label}}
-					</th>
+						ng-repeat="field in businessObjectManagementPanelController.businessObject.keyFields"
+						ng-if="!field.list">{{field.label}}</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -91,12 +125,16 @@
 					<td
 						ng-repeat="field in businessObjectManagementPanelController.fetchKeyFields()">
 						<span ng-hide="field.type == 'date' || field.type == 'dateTime'">{{businessObjectInstance[field.id]}}</span>
-						<!-- Temporary fix for showing HTML5 date -->
-						<span ng-show="field.type =='date'">{{businessObjectInstance[field.id] | date :'MM/dd/yyyy'}}</span>
-						<span ng-show="field.type =='dateTime'">{{businessObjectInstance[field.id] | date :'MM/dd/yyyy hh:mm:ss'}}</span></td>
+                        <!-- Temporary fix for showing HTML5 date -->
+                        <span ng-show="field.type =='date'">{{businessObjectInstance[field.id] | date :'MM/dd/yyyy'}}</span>
+                        <span ng-show="field.type =='dateTime'">{{businessObjectInstance[field.id] | date :'MM/dd/yyyy hh:mm:ss'}}</span></td>
+					</td>
 				</tr>
 			</tbody>
 		</table>
+		<input type="button" value="Add" style="float:right;margin-right:3%"
+			ng-click="businessObjectManagementPanelController.addInstanceToRelationship()"
+			ng-show="businessObjectManagementPanelController.relationship"></input>
 	</div>
 </div>
 <div sd-dialog="businessObjectManagementPanelController.importCSVDialog"

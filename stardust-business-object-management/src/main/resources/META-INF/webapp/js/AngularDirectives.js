@@ -150,9 +150,14 @@ define(
 															.parent();
 													var table = jQuery(parent
 															.parent());
-
+													// watchCollection Usage -
+													// At relationship panel,
+													// collection is modified at
+													// runtime,
+													// TODO - identify better
+													// way to update collection
 													scope
-															.$watch(
+															.$watchCollection(
 																	rhs,
 																	function(
 																			value) {

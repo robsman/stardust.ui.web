@@ -519,32 +519,37 @@ define(
 					console.log("Save relationship changed");
 					console.log(this);
 					console.log(this.relationshipPanelController);
+					this.relationshipDialog.errors = [];
 					
 					var primaryKeyField = this.businessObjectManagementPanelController.businessObject.primaryKeyField;
 					var rootBusinesObjInstance = this.relationshipPanelController.rootBusinessObjectInstance;
-					var selectedBusinessObjInstances = this.relationshipPanelController.selectedBusinessObjectInstances;
+					var relatedBusinessObjectInstances = this.relationshipPanelController.relatedBusinessObjectInstances;
 					var thisForeignKeyField = this.relationshipPanelController.relationship.thisForeignKeyField;
+					var cardinality = this.relationshipPanelController.relationship.otherCardinality;
 					// TODO Cleanup removed Relationships!!!
 					// TODO All code into Panel Controller
 					
-					if(selectedBusinessObjInstances.length == 0){
+					if("TO_ONE" ==  cardinality && relatedBusinessObjectInstances.length > 1){
+						this.relationshipDialog.errors.push({
+							message :"Multipe instances not supported for this relationship."
+						});
 						return;
 					}
-
+					
 					rootBusinesObjInstance[this.relationshipPanelController.relationship.otherForeignKeyField] = [];
 
-					for (var n = 0; n < selectedBusinessObjInstances.length; ++n) {
-						var foreignKeyVal = selectedBusinessObjInstances[n][this.relationshipPanelController.businessObject.primaryKeyField.id];
+					for (var n = 0; n < relatedBusinessObjectInstances.length; ++n) {
+						var foreignKeyVal = relatedBusinessObjectInstances[n][this.relationshipPanelController.businessObject.primaryKeyField.id];
 						rootBusinesObjInstance[this.relationshipPanelController.relationship.otherForeignKeyField]
 								.push(foreignKeyVal);
 					}
 
-					for (var n = 0; n < selectedBusinessObjInstances.length; ++n) {
+					for (var n = 0; n < relatedBusinessObjectInstances.length; ++n) {
 						var found = false;
 
-						if (selectedBusinessObjInstances[n][thisForeignKeyField]) {
-							for (var m = 0; m < selectedBusinessObjInstances[n][thisForeignKeyField].length; ++m) {
-								if (rootBusinesObjInstance[primaryKeyField] == selectedBusinessObjInstances[m][thisForeignKeyField][m]) {
+						if (relatedBusinessObjectInstances[n][thisForeignKeyField]) {
+							for (var m = 0; m < relatedBusinessObjectInstances[n][thisForeignKeyField].length; ++m) {
+								if (rootBusinesObjInstance[primaryKeyField] == relatedBusinessObjectInstances[m][thisForeignKeyField][m]) {
 									found = true;
 
 									break;
@@ -554,16 +559,16 @@ define(
 							if (!found) {
 								// For 1*N relationship
 								if (jQuery
-										.isArray(selectedBusinessObjInstances[n][thisForeignKeyField])) {
-									selectedBusinessObjInstances[n][thisForeignKeyField]
+										.isArray(relatedBusinessObjectInstances[n][thisForeignKeyField])) {
+									relatedBusinessObjectInstances[n][thisForeignKeyField]
 											.push(rootBusinesObjInstance[this.businessObject.primaryKeyField.id]);
 								} else {
 									// For exactly 1 type relationship
-									selectedBusinessObjInstances[n][thisForeignKeyField] = rootBusinesObjInstance[this.businessObject.primaryKeyField.id];
+									relatedBusinessObjectInstances[n][thisForeignKeyField] = rootBusinesObjInstance[this.businessObject.primaryKeyField.id];
 								}
 							}
 						} else {
-							selectedBusinessObjInstances[n][thisForeignKeyField] = [ rootBusinesObjInstance[this.businessObject.primaryKeyField.id] ];
+							relatedBusinessObjectInstances[n][thisForeignKeyField] = [ rootBusinesObjInstance[this.businessObject.primaryKeyField.id] ];
 						}
 					}
 
@@ -571,12 +576,12 @@ define(
 					console
 							.log(rootBusinesObjInstance);
 					console
-							.log(selectedBusinessObjInstances);
+							.log(relatedBusinessObjectInstances);
 
 					// Write changes to the server
 
 					var self = this;
-
+					
 					 BusinessObjectManagementService
 							.instance()
 							.updateBusinessObjectInstance(
@@ -587,7 +592,7 @@ define(
 										self
 												.updateBusinessObjectInstancesRecursively(
 														0,
-														selectedBusinessObjInstances)
+														relatedBusinessObjectInstances)
 												.done(
 														function() {
 															self

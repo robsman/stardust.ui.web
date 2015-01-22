@@ -211,7 +211,7 @@ define(
 				};
 
 				/**
-				 * 
+				 * TODO - Remove params and code no longer required
 				 */
 				BusinessObjectManagementService.prototype.getRelatedBusinessObjectInstances = function(
 						businessObject, businessObjectInstance, primaryKeys) {

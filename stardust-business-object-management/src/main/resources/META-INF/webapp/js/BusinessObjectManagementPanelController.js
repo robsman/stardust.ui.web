@@ -29,6 +29,8 @@ define(
 					this.rootController = rootController;
 					this.businessObjectFilter = {};
 					this.selectedBusinessObjectInstances = [];
+					this.relatedBusinessObjInstancesToRemove = [];
+					this.relatedBusinessObjectInstances = [];
 				};
 
 				/**
@@ -43,6 +45,33 @@ define(
 						return;
 					}
 				};
+				
+				/**
+				 * 
+				 */
+				BusinessObjectManagementPanelController.prototype.addInstanceToRelationship = function () {
+					var tempArray = [];
+					for(var n=0; n <  this.selectedBusinessObjectInstances.length; ++n){
+						if(jQuery.inArray(this.selectedBusinessObjectInstances[n], this.relatedBusinessObjectInstances) == -1){
+							tempArray.push(this.selectedBusinessObjectInstances[n]);
+						}
+					}
+					this.relatedBusinessObjectInstances = this.relatedBusinessObjectInstances.concat(tempArray);
+				};
+
+				/**
+				 * 
+				 */
+				BusinessObjectManagementPanelController.prototype.removeInstanceFromRelationship = function() {
+					for ( var n = 0; n < this.relatedBusinessObjInstancesToRemove.length; ++n) {
+						var idx = jQuery.inArray(
+								this.relatedBusinessObjInstancesToRemove[n],
+								this.relatedBusinessObjectInstances);
+						if (idx != -1) {
+							this.relatedBusinessObjectInstances.splice(idx, 1);
+						}
+					}
+				};
 
 				/**
 				 * 
@@ -51,7 +80,7 @@ define(
 						rootBusinessObjectInstance, relationship) {
 					this.rootBusinessObjectInstance = rootBusinessObjectInstance;
 					this.relationship = relationship;
-
+					this.relatedBusinessObjInstancesToRemove = [];
 					var self = this;
 
 					BusinessObjectManagementService
@@ -82,20 +111,20 @@ define(
 					console.log(this.businessObject);
 
 					this.selectedBusinessObjectInstances = [];
-
+					this.relatedBusinessObjectInstances = [];
+					// To keep track of old relationships, on table selection change
 					if (foreignKeys && foreignKeys.length) {
 						for (var n = 0; n < this.businessObjectInstances.length; ++n) {
 							for (var m = 0; m < foreignKeys.length; ++m) {
-								if (foreignKeys[m] == this.businessObjectInstances[n][this.businessObject.primaryKeyField]) {
-									self.selectedBusinessObjectInstances
-											.push(this.businessObjectInstances[n]);
-
+								if (foreignKeys[m] == this.businessObjectInstances[n][this.businessObject.primaryKeyField.id]) {
+									
+									this.relatedBusinessObjectInstances.push(this.businessObjectInstances[n]);
 									break;
 								}
 							}
 						}
 					}
-				}
+				};
 
 				/**
 				 * 

@@ -670,7 +670,6 @@ public class BusinessObjectManagementService {
 
 		BusinessObjectQuery query = BusinessObjectQuery.findForBusinessObject(
 				modelId, businessObjectId);
-
 		String[] terms = queryString.split("&");
 
 		for (int n = 0; n < terms.length; ++n) {
@@ -888,67 +887,25 @@ public class BusinessObjectManagementService {
 		return resultJson;
 	}
 
-	/**
-	 *
-	 * @param modelOid
-	 * @param businessObjectId
-	 * @param primaryKey
-	 * @param json
-	 * @return
-	 */
+   /**
+    * TODO - Remove unused params from API call
+    * 
+    * @param modelOid
+    * @param businessObjectId
+    * @param primaryKey
+    * @param json
+    * @return
+    */
 	public JsonArray getRelatedBusinessObjectInstances(String modelOid,
 			String businessObjectId, String primaryKey, JsonObject json) {
-		JsonArray resultJson = new JsonArray();
-		JsonArray primaryKeysJson = new JsonArray();
-		if(json.has("primaryKeys"))
-		{
-		   JsonElement object = json.get("primaryKeys");
-		   // When relationship is "Exactly One" type
-		   if(object.isJsonObject() || object.isJsonPrimitive())
-		   {
-		      primaryKeysJson.add(object);   
-		   }
-		   else   
-		   {
-		      primaryKeysJson =  object.getAsJsonArray();
-		   }
-		   
-		}
-
-		// TODO Populate "efficiently", fake for now - and an ugly one ...
 
 		JsonObject businessObjectJson = getBusinessObject(modelOid,
 				businessObjectId);
-		JsonArray fieldsJson = businessObjectJson.get("fields")
-				.getAsJsonArray();
+		
 		String modelId =  businessObjectJson.get("modelId").getAsString();
-		JsonObject primaryKeyFieldJson = null;
-
-		for (int n = 0; n < fieldsJson.size(); ++n) {
-			if (fieldsJson.get(n).getAsJsonObject().has("primaryKey")
-					&& fieldsJson.get(n).getAsJsonObject().get("primaryKey")
-							.getAsBoolean()) {
-				primaryKeyFieldJson = fieldsJson.get(n).getAsJsonObject();
-
-				break;
-			}
-		}
-
-		JsonArray tempJson = getBusinessObjectInstances(modelId,
+		
+		return getBusinessObjectInstances(modelId,
 				businessObjectId, "");
-
-		for (int n = 0; n < tempJson.size(); ++n) {
-			for (int m = 0; m < primaryKeysJson.size(); ++m) {
-				if (tempJson.get(n).getAsJsonObject()
-						.get(primaryKeyFieldJson.get("name").getAsString())
-						.getAsString()
-						.equals(primaryKeysJson.get(m).getAsString())) {
-					resultJson.add(tempJson.get(n));
-				}
-			}
-		}
-
-		return resultJson;
 	}
 
 	/**
