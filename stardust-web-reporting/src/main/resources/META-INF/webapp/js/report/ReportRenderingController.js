@@ -511,6 +511,20 @@ define(
 					if(scopeController){
 						scopeController.tableOptions = tableOptions;	
 					}
+					
+					var primaryObject = this.reportingService.metadata.objects[report.dataSet.primaryObject];
+					
+					//format groupby
+					var dimension = this.getDimension(report.dataSet.groupBy);
+					//if groupby is empty or none
+					if(!dimension){
+						Object.keys(inData).forEach(function(key) {
+							if("processInstance" == key || "activityInstance" == key){
+								inData[primaryObject.name] = inData[key]; //to I18n processInstance and activityInstance
+		                        delete inData[key];	
+							}
+						});
+					}
 				};
 				
 				/**
@@ -1122,7 +1136,7 @@ define(
 			        if (tableDrawMode == 3 || tableDrawMode == 4) {
 			            var baseTableIndex = 0;
 			            var h1 = [dimensionName]; // header line one
-			            var h2 = ["Cumulants"]; // header line two
+			            var h2 = [this.getI18N("reporting.definitionView.cumulants.title", "Cumulants")]; // header line two
 			
 			            baseTable.push(h1);
 			            baseTableIndex++;
@@ -1156,7 +1170,7 @@ define(
 			        } else if (tableDrawMode == 5 || tableDrawMode == 6) {
 			
 			            var baseTableIndex = 0;
-			            var h1 = ["Series"]; // header line one
+			            var h1 = [this.getI18N("reporting.definitionView.series.title", "Series")]; // header line one
 			            var h2 = [dimensionName]; // header line two
 			
 			            baseTable.push(h1);
@@ -1192,7 +1206,7 @@ define(
 			        }
 			
 			        if (addTotalRow) {
-			            var totalRow = ["Total"] // TODO: I18n
+			            var totalRow = [this.getI18N("reporting.definitionView.total.title", "Total")] // TODO: I18n
 			            totalRow = totalRow.concat(getTotalRow(baseTable, 2, 1));
 			            baseTable.push(totalRow);
 			        }
@@ -1202,7 +1216,7 @@ define(
 			        }
 			    } else { // fact is count
 			        var baseTableIndex = 0;
-			        var h1 = ["Series"]; // header line one
+			        var h1 = [this.getI18N("reporting.definitionView.series.title", "Series")]; // header line one
 			
 			        //for selected number of cumulants
 			
@@ -1226,7 +1240,7 @@ define(
 			        }
 			
 			        if (addTotalRow) {
-			            var totalRow = ["Total"] // TODO: I18n
+			            var totalRow = [this.getI18N("reporting.definitionView.total.title", "Total")] // TODO: I18n
 			            totalRow = totalRow.concat(getTotalRow(baseTable, 1, 1));
 			            baseTable.push(totalRow);
 			        }
@@ -1440,8 +1454,8 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
    return a;
 };
 
-		ReportRenderingController.prototype.getI18N = function(key) {
-			return I18NUtils.getProperty(key);
+		ReportRenderingController.prototype.getI18N = function(key, defaultValue) {
+			return I18NUtils.getProperty(key, defaultValue);
 		};
 		
 		//Report Instance
