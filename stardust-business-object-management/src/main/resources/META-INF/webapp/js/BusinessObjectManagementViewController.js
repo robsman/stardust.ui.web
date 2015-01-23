@@ -315,6 +315,7 @@ define(
 					this.currentBusinessObjectInstance = null;
 					this.newBusinessObjectInstance = null;
 					this.searchCollapsed = false;
+					this.closeRelationshipDialog();
 					this.businessObjectManagementPanelController.searchPanelCollapsed =  false;
 				};
 

@@ -54,9 +54,7 @@ define(
 							var data = model.dataItems[m];
 
 							if (data.dataType != "struct"
-							/*
-							 * || !data.attributes["carnot:engine:primaryKey"]
-							 */) {
+									|| !data.attributes["carnot:engine:primaryKey"]) {
 								continue;
 							}
 
@@ -77,9 +75,14 @@ define(
 								 this.organizations.push({
 										label : model.name + "/" + participant.name,
 										fullId : participant.getFullId()
-									});	 
+									});
 							 }
 						}
+					}
+					// populate the model for Automatic Department creation
+					if (this.propertiesPanel.data.attributes["carnot:engine:managedOrganizations"]) {
+						this.managedOrganizations = JSON
+								.parse(this.propertiesPanel.data.attributes["carnot:engine:managedOrganizations"]);
 					}
 
 					// Initialize relationships
@@ -120,11 +123,6 @@ define(
 								thisRole : this.relationships[n].thisRole,
 								thisForeignKeyField : thisForeignKeyField
 							};
-						}
-
-						if (this.propertiesPanel.data.attributes["carnot:engine:managedOrganizations"]) {
-							this.managedOrganizations = JSON
-									.parse(this.propertiesPanel.data.attributes["carnot:engine:managedOrganizations"]);
 						}
 					}
 				};

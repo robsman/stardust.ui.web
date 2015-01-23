@@ -33,6 +33,7 @@ import org.eclipse.stardust.ui.web.business_object_management.rest.JsonMarshalle
 import org.eclipse.stardust.ui.web.business_object_management.service.BusinessObject.Definition;
 import org.eclipse.stardust.ui.web.business_object_management.service.BusinessObject.Value;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
+import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 
@@ -752,13 +753,18 @@ public class BusinessObjectManagementService {
 		// Check whether departments need to be created
 
 		// TODO Check whether this can be done more efficiently
-
+		String nameExpression = null;
 		ModelCache modelCache = ModelCache.findModelCache();
 		DeployedModel model = modelCache.getActiveModel(modelId);
 		Data data = model.getData(businessObjectId);
 		String managedOrganizationsString = (String) data
 				.getAttribute("carnot:engine:managedOrganizations");
-
+        String nameAttribute = (String) data.getAttribute("carnot:engine:nameExpression");
+        
+        if (StringUtils.isNotEmpty(nameAttribute))
+        {
+           nameExpression = GsonUtils.extractString(jsonObject, nameAttribute);
+        }
 		trace.info("Managed Organizations");
 		trace.info(managedOrganizationsString);
 
@@ -778,13 +784,13 @@ public class BusinessObjectManagementService {
 				trace.info(n + " " + organizationFullId);
 
 				String organizationId = organizationFullId.split(":")[1];
-
+				
 				trace.info(organizationId);
 
 				// TODO Data and Organizations may not be in the same model
 
 				createDepartment(model.getModelOID(), organizationId,
-						data, primaryKey, primaryKey);
+						data, primaryKey, nameExpression);
 			}
 		}
 
