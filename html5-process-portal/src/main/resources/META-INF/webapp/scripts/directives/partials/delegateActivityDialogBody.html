@@ -1,0 +1,72 @@
+<div class="section">
+	<div id="errorMsgContainer">
+		<div sd-js-error class="msgError">
+			
+		</div>
+	</div>
+	
+	<div ng-show="delActivityDialogCtlr.searchParticipantSectionVisible">
+		<div style="float:right;"><a class="action-link " ng-click="delActivityDialogCtlr.showSelectParticipantSection()">{{i18n('views-common-messages.delegation-search-toggleLinkText')}} >></a></div>
+		<div style="clear:both;"><input ng-model="delActivityDialogCtlr.searchAllParticipant" type="checkbox" /> &nbsp; <span>{{i18n('views-common-messages.delegation-searchAllUserRoles')}}</span></div>
+		<br/>
+		<div class="sd-delegate-act-srch-participant-div">
+			<table style="width: 100%;">
+				<tr>
+					<td><div style="text-align: center;">{{i18n('views-common-messages.delegation-userOrRole')}}</div></td>
+					<td><div style="text-align: center;">{{i18n('views-common-messages.delegation-type')}}</div></td>
+				</tr>
+				<tr>
+					<td class="sd-participant-selector">
+				      <div sd-participant-selector 
+				      		sda-selected-matches="delActivityDialogCtlr.participantDataSelected"
+				      		sda-selector-type="participant" 
+				      		sda-allow-multiple="false"
+				      		sda-activities="activityList"
+				      		sda-show-all="delActivityDialogCtlr.searchAllParticipant"
+				      		sda-participant-type="delActivityDialogCtlr.participantType">
+				      </div>
+					</td>
+					<td>
+						<div style="text-align: center;">
+							<select ng-model="delActivityDialogCtlr.participantType" ng-options="type.name for type in delActivityDialogCtlr.participantTypes" style="width: 95px;">
+			  				</select>
+		  				</div>
+	  				</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	
+	<div ng-show="!delActivityDialogCtlr.searchParticipantSectionVisible">
+		<div style="float:right;"><a class="action-link" ng-click="delActivityDialogCtlr.showSearchParticipantSection()">{{i18n('views-common-messages.delegation-select-toggleLinkText')}} >></a></div>
+		<div style="clear:both;"><input type="checkbox" /> &nbsp; <span>{{i18n('views-common-messages.delegation-showAllUserRoles')}}</span></div>
+		<br/>
+		<div>
+			<table sd-data-table="delActivityDialogCtlr.participantDataTable" sd-data="delActivityDialogCtlr.fetchParticipants()" sda-mode="remote" sda-toolbar="false"
+			sda-selectable="multiple">
+			<thead sda-i18n-scope="processportal.views-worklistPanel-column">
+				<tr>
+					<th sda-name="{{i18n('views-common-messages.delegation-userOrRole')}}" sda-label="{{i18n('views-common-messages.delegation-userOrRole')}}" sda-sortable="true"></th>
+					<th sda-name="{{i18n('views-common-messages.delegation-type')}}" sda-label="{{i18n('views-common-messages.delegation-type')}}" sda-sortable="true"></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td sda-field="name"></td>
+					<td sda-field="type" style="text-align: center;"></td>
+				</tr>
+			</tbody>
+		</table>
+		</div>
+	</div>
+	<br/>
+</div>
+
+<div class="confirmation-buttonpane">
+	<div class="button-pane cf" >
+		<div class="right">
+		  	<button class="button" ng-click="delActivityDialogCtlr.confirm(this)">{{i18n('views-common-messages.delegation-applyButton-text')}}</button>
+		    <button class="button" ng-click="delActivityDialogCtlr.closeThisDialog(this)">{{i18n('views-common-messages.common-cancel')}}</button>
+		</div>
+    <div>
+</div>

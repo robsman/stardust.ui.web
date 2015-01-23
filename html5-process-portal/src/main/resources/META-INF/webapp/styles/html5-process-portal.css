@@ -1,4 +1,38 @@
-/* ********** Abort Activity Dialog ********** */
+.sd-participant-selector .sd-ac-container {
+  width:220px;
+}
+
+.sd-particpant-img-tag-user {
+	 background-image:url('../../views-common/images/icons/user.png');
+     width:16px;
+     background-size: 16px 16px;
+     padding: 16px 0 0 0 !important;
+     height:0px;
+     background-repeat: no-repeat !important;
+     opacity: 0.7;
+     display: block;
+     float: left;
+}
+
+.sd-particpant-img-tag-role {
+	 background-image:url('../../views-common/images/icons/role.png');
+     width:16px;
+     background-size: 16px 16px;
+     padding: 16px 0 0 0 !important;
+     height:0px;
+     background-repeat: no-repeat !important;
+     opacity: 0.7;
+     display: block;
+     float: left;
+}
+
+.sd-delegate-act-srch-participant-div {
+	border: 1px solid; 
+	border-color: #D9D9D9; 
+	width: 340px; 
+	overflow: auto; 
+	padding: 7px;
+}/* ********** Abort Activity Dialog ********** */
 .abort-activity-form-content{
 padding-top : 10px;
 }

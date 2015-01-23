@@ -54,6 +54,36 @@
 		ActivityInstanceService.prototype.completeAll = function(activities) {
 			return ajax(REST_BASE_URL, "completeAll", activities);
 		};
+		
+		/*
+		 * Get/Search participant
+		 */
+		ActivityInstanceService.prototype.getParticipants = function(query) {
+			console.log("Getting participants for:");
+			console.log(query);
+
+			return ajax(REST_BASE_URL, "searchParticipants", query);
+		};
+		
+		/*
+		 * Expected data in following format:
+		 * {
+		 *		activities : [OId1, OId2....],
+		 *		participant: {
+		 *			qualifiedId: string value,
+		 *			OID: long value
+		 *		},
+		 *		activityOutData : {
+		 *			param1 : { value },
+		 *			param2 : value, ...
+		 *		} //This is optional and only required when delegated from activity panel
+		 *	}
+		 */
+		ActivityInstanceService.prototype.delegateActivities = function(data) {
+			console.log("Delegating activities...");
+
+			return ajax(REST_BASE_URL, "delegateActivities", data);
+		};
 
 		/*
 		 * 

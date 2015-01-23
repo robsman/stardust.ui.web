@@ -359,7 +359,16 @@
 		 * 
 		 */
 		WorklistCompiler.prototype.openDelegateDialog = function(workItem) {
-			
+			this.showDelegateDialog = true;
+			if (angular.isDefined(workItem)) {
+				this.selectedActivity = [workItem];
+			} else {
+				var selectedWorkItems = this.dataTable.getSelection();
+				if (selectedWorkItems.length > 0) {
+					// TODO
+					this.selectedActivity = selectedWorkItems;
+				}
+			}
 		};
 		
 		/*
