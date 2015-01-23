@@ -28,11 +28,11 @@
 				'<table cellspacing="2" cellpadding="2" style="white-space: nowrap;">' +
 					'<tr>' +
 						'<td><label class="label-form">From:</label></td>' +
-						'<td><input type="number" ng-model="rowData[colData.name].from" /></td>' +
+						'<td><input type="number" ng-model="filterData.from" /></td>' +
 					'</tr>' +
 					'<tr>' +
 						'<td><label class="label-form">To:</label></td>' +
-						'<td><input type="number" ng-model="rowData[colData.name].to" /></td>' +
+						'<td><input type="number" ng-model="filterData.to" /></td>' +
 					'</tr>' +
 				'</table>'
 		};

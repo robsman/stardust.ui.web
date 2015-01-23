@@ -617,8 +617,7 @@
 					theFilters.append(filterDialog);
 
 					// Setup Filter Data
-					filterScope.rowData = {};
-					filterScope.rowData[col.name] = {};
+					filterScope.filterData = {};
 
 					filterScope.colData = {
 						name: col.name,
@@ -769,11 +768,8 @@
 			params.filters = {};
 			for (var colName in columnFilters) {
 				var filterScope = columnFilters[colName].filter.scope();
-				if (filterScope.rowData != undefined && filterScope.rowData[colName] != undefined) {
-					var filterData = filterScope.rowData[colName];
-					if (jQuery.isPlainObject(filterData) && !jQuery.isEmptyObject(filterData)) {
-						params.filters[colName] = filterData;
-					}
+				if (filterScope.filterData != undefined && !jQuery.isEmptyObject(filterScope.filterData)) {
+					params.filters[colName] = angular.copy(filterScope.filterData);
 				}
 			}
 			if (jQuery.isEmptyObject(params.filters)) {
@@ -1703,7 +1699,6 @@
 			 * 
 			 */
 			this.applyColumnFilter = function(colName) {
-				alert('Applying Filters');
 				self.toggleColumnFilter(colName);
 				refresh();
 			}
