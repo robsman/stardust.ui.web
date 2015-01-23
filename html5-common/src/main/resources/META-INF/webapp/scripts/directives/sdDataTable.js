@@ -191,6 +191,18 @@
 		/*
 		 * 
 		 */
+		function showErrorOnUI(e) {
+			trace.error(theTableId + ':', e);
+			trace.printStackTrace();
+
+			// TODO: i18n? Is it required? Because this mostly for development only
+			var msg = 'sd-data-table is unable to process table. Reason: ' + e;
+			jQuery('<pre class="tbl-error">' + msg + '</pre>').insertAfter(element);
+		}
+
+		/*
+		 * 
+		 */
 		function initialize() {
 			trace.log(theTableId + ': Initializing Data Table...');
 
@@ -212,12 +224,11 @@
 					try {
 						buildDataTable();
 					} catch (e) {
-						trace.error(theTableId + ': Unexpected error occured while building table', e);
+						showErrorOnUI(e);
 					}
 				});
 			} catch (e) {
-				var msg = 'sd-data-table is unable to process table. Reason: ' + e;
-				jQuery('<pre class="tbl-error">' + msg + '</pre>').insertAfter(element);
+				showErrorOnUI(e);
 			}
 		}
 
@@ -728,7 +739,7 @@
 					theDataTable = theTable.DataTable(dtOptions);
 					buildDataTableCompleted();
 				} catch (e) {
-					trace.error(theTableId + ':', e);
+					showErrorOnUI(e);
 				}
 			});
 		}
@@ -768,11 +779,12 @@
 			if (jQuery.isEmptyObject(params.filters)) {
 				delete params.filters;	
 			}
-			
-			trace.log(theTableId + ': Fetch Data params:', params);
+
 			fetchData(params, function(result) {
 				try {
-					sdUtilService.assert(result.totalCount,
+					sdUtilService.assert(jQuery.isPlainObject(result),
+							'sd-data did not return acceptable result: Return is not a plain object');
+					sdUtilService.assert(result.totalCount != undefined,
 							'sd-data did not return acceptable result: Missing "totalCount"');
 					sdUtilService.assert(result.list && angular.isArray(result.list),
 							'sd-data did not return acceptable result: Missing "list" or its not an array');
@@ -785,7 +797,7 @@
 	
 					callback(ret);
 				} catch (e) {
-					trace.error(theTableId + ':', e);
+					showErrorOnUI(e);
 				}
 			});
 		}
@@ -894,10 +906,13 @@
 		 * 
 		 */
 		function fetchData(params, successCallback, errorCallback) {
+			trace.log(theTableId + ': Calling sd-data with params:', params);
 			var dataResult = sdData.retrieveData(params);
 			dataResult.then(function(result) {
+				trace.log(theTableId + ': sd-data returned with:', result);
 				successCallback(result);
 			}, function(error) {
+				trace.log(theTableId + ': sd-data failed with:', error);
 				if (errorCallback == undefined) {
 					// TODO
 				} else {

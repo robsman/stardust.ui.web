@@ -44,7 +44,9 @@
 					logIt(console.error, Array.prototype.slice.call(arguments, 0));
 				},
 				printStackTrace : function(msg) {
-					logIt(console.error, msg);
+					if (msg != undefined) {
+						logIt(console.error, msg);
+					}
 
 					if (console.trace) {
 						console.trace();
