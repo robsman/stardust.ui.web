@@ -314,6 +314,7 @@ define(
 					this.messages = [];
 					this.currentBusinessObjectInstance = null;
 					this.newBusinessObjectInstance = null;
+					this.processInstances = null;
 					this.searchCollapsed = false;
 					this.closeRelationshipDialog();
 					this.businessObjectManagementPanelController.searchPanelCollapsed =  false;
