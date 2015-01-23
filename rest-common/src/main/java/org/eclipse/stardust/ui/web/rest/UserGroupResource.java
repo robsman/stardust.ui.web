@@ -23,7 +23,6 @@ import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.rest.service.UserGroupService;
 import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.TestDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.UserGroupDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
