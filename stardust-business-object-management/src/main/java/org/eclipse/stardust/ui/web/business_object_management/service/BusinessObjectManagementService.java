@@ -665,23 +665,22 @@ public class BusinessObjectManagementService {
 	 * @return
 	 */
 	public JsonArray getBusinessObjectInstances(String modelId,
-			String businessObjectId, String queryString) {
+			String businessObjectId, Map<String, String[]> queryParams) {
 		JsonArray businessObjectInstances = new JsonArray();
 
 		BusinessObjectQuery query = BusinessObjectQuery.findForBusinessObject(
 				modelId, businessObjectId);
-		String[] terms = queryString.split("&");
-
-		for (int n = 0; n < terms.length; ++n) {
-
-			String[] expression = terms[n].split("=");
-			if(!CollectionUtils.isEmpty(expression) && !StringUtils.isEmpty(expression[0]))
-			{
-			   query.where(DataFilter.like(businessObjectId, expression[0],
-			         expression[1]));  
-			}
+		
+		if(CollectionUtils.isNotEmpty(queryParams))
+		{
+		   for(Map.Entry<String, String[]> queryTerms : queryParams.entrySet())
+	        {
+	           String key = queryTerms.getKey();
+	           String val = queryTerms.getValue()[0];
+	           query.where(DataFilter.like(businessObjectId, key,
+	                 val));  
+	        }  
 		}
-
 		addInstancesFromQuery(businessObjectInstances, query);
 
 		return businessObjectInstances;
@@ -905,7 +904,7 @@ public class BusinessObjectManagementService {
 		String modelId =  businessObjectJson.get("modelId").getAsString();
 		
 		return getBusinessObjectInstances(modelId,
-				businessObjectId, "");
+				businessObjectId, null);
 	}
 
 	/**

@@ -5,7 +5,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.activation.DataHandler;
 import javax.servlet.ServletContext;
@@ -96,10 +99,11 @@ public class BusinessObjectManagementResource {
 			@PathParam("modelId") String modelId,
 			@PathParam("businessObjectId") String businessObjectId) {
 		try {
+		   Map<String, String[]> queryParams = httpRequest.getParameterMap();
 			return Response.ok(
 					getBusinessObjectManagementService()
 							.getBusinessObjectInstances(modelId,
-									businessObjectId, httpRequest.getQueryString()).toString(),
+									businessObjectId, queryParams).toString(),
 					MediaType.APPLICATION_JSON).build();
 		} catch (Exception e) {
 			trace.error(e, e);
