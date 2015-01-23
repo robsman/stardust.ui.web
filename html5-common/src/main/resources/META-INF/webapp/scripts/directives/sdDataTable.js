@@ -65,7 +65,7 @@
 		var headCols = elem.find('> thead > tr > th');
 		angular.forEach(headCols, function(hCol) {
 			hCol = angular.element(hCol);
-			var filterTemplate = hCol.find('> [sd-filter-template]');
+			var filterTemplate = hCol.find('> [sda-filter-template]');
 			if (filterTemplate && filterTemplate.length > 0) {
 				hCol.attr('ng-non-bindable', '');
 			}
@@ -435,12 +435,12 @@
 				}
 
 				colDef.filterMarkup = '';
-				var filterTemplate = hCol.find('> [sd-filter-template]');
+				var filterTemplate = hCol.find('> [sda-filter-template]');
 				if (filterTemplate && filterTemplate.length > 0) {
 					filterTemplate.remove();
 					colDef.filterable = true;
 				
-					var url = filterTemplate.attr('sd-filter-template');
+					var url = filterTemplate.attr('sda-filter-template');
 					if (url != undefined && url != null && url != '') {
 						colDef.filterMarkup = '<div ng-include="\'' + url + '\'"></div>';
 					} else {
