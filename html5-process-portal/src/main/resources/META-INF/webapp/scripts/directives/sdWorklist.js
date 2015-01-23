@@ -92,6 +92,10 @@
 			// Define data
 			this.worklist = {};
 			this.dataTable = null; // Handle to data table instance, to be set later
+			
+			//Abort Activity Data
+			this.showAbortActivityDialog = false;
+			this.activitiesToAbort = [];
 
 			// Process Query
 			if (!attr.sdaQuery) {
@@ -357,6 +361,46 @@
 		WorklistCompiler.prototype.openDelegateDialog = function(workItem) {
 			
 		};
+		
+		/*
+		 *
+		 */
+		WorklistCompiler.prototype.openAbortDialog = function(value) {
+			var self = this;
+			this.activitiesToAbort = [];
+
+			if (Array.isArray(value)) {
+
+				var selectedWorkItems = value;
+				if (selectedWorkItems.length < 1) {
+					console.log("No Rows selected");
+					return;
+				}
+				
+				angular.forEach(selectedWorkItems, function(workItem) {
+					self.activitiesToAbort.push(workItem.oid);
+				});
+
+			} else {
+				var workItem = value;
+				this.activitiesToAbort.push(workItem.oid);
+			}
+			
+			this.showAbortActivityDialog = true;
+
+		}
+			
+	
+		/*
+		 *
+		 */
+		 WorklistCompiler.prototype.abortCompleted = function(workItem) {
+			console.log("Action on complete of abort");
+			this.refresh();
+			BridgeUtils.View.syncLaunchPanels();
+			this.activitiesToAbort = [];
+
+	};
 
 		/*
 		 * 

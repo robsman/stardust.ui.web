@@ -1,0 +1,47 @@
+(function(){
+	'use strict';
+
+
+	angular.module('workflow-ui.services').provider('sdAbortActivityService',function(){
+		this.$get = ['$q', '$http', function ($q, $http) {
+			var service = new AbortActivityService($q, $http);
+			return service;
+		}];
+	});
+
+	/**
+	*
+	*/
+	function AbortActivityService($q, $http) {
+		var REST_URL = "services/rest/portal/activity-instances/abort";
+
+		
+		/**
+		*
+		*/
+		AbortActivityService.prototype.abortActivities = function(value) {
+			
+
+			var deferred = $q.defer();
+			var reuestObj = {
+				scope : value.scope,
+				activities : value.activities
+			};
+
+
+			var httpResponse = $http.post(REST_URL, reuestObj);
+
+			httpResponse.success(function(data){
+				deferred.resolve(data);
+			}).error(function(data) {
+				deferred.reject(data);
+			});
+
+			return 	deferred.promise;
+
+		};
+	};
+
+	
+
+})();

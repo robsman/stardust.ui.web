@@ -4,6 +4,9 @@
 		<button class="button-link" sda-column="TRIVIAL_DATA" href="#" ng-click="worklistCtrl.$completeAll()" title="Complete All" class="tbl-toolbar-item tbl-tool-link">
 		   <i class="fa fa-share"></i>
 		</button>
+		<button class="button-link" ng-disabled="worklistCtrl.dataTable.getSelection() < 1" href="#" ng-click="worklistCtrl.$openAbortDialog(worklistCtrl.dataTable.getSelection())" title="Abort Activity" class="tbl-toolbar-item tbl-tool-link">
+		   <i class="fa fa-remove"></i>
+		</button>
 	</div>
 	<table sd-data-table="{{worklistCtrl.tableHandleExpr}}" sd-data="worklistCtrl.fetchPage(params)" sda-ready="worklistCtrl.ready"
 		sda-page-size="{{worklistCtrl.sdaPageSize}}" sda-mode="remote"
@@ -93,8 +96,15 @@
 						title="Delegate" class="view-tool-link">
 						<i class="fa fa-user"></i>
 					</a>
+					<a href="#" ng-click="bpmCommon.stopEvent($event); worklistCtrl.$openAbortDialog(rowData);"
+						title="Abort" class="view-tool-link">
+						<i class="fa fa-remove"></i>
+					</a>
 				</td>
 			</tr>
 		</tbody>
 	</table>
+	
+	<!--Dialog for abort Activity  -->
+	<div sd-abort-activity-dialog sda-show-dialog="worklistCtrl.showAbortActivityDialog" sda-on-abort-complete="worklistCtrl.abortCompleted()" sda-activities-to-abort="worklistCtrl.activitiesToAbort" ></div>
 </div>
