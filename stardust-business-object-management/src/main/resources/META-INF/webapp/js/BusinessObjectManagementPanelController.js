@@ -31,6 +31,7 @@ define(
 					this.selectedBusinessObjectInstances = [];
 					this.relatedBusinessObjInstancesToRemove = [];
 					this.relatedBusinessObjectInstances = [];
+					this.keyFields=[];
 				};
 
 				/**
@@ -40,6 +41,8 @@ define(
 						businessObject) {
 					this.businessObject = businessObject;
 					this.businessObjectInstances = [];
+					this.keyFields.length=0;
+					this.keyFields = this.fetchKeyFields();
 
 					if (!this.businessObject) {
 						return;

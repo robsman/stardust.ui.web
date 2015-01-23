@@ -13,8 +13,7 @@
 					<tr>
 						<th>{{businessObjectManagementPanelController.businessObject.primaryKeyField.label}}</th>
 						<th
-							ng-repeat="field in businessObjectManagementPanelController.fetchKeyFields()"
-							ng-if="!field.list">{{field.label}}</th>
+							ng-repeat="field in businessObjectManagementPanelController.keyFields">{{field.label}}</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -23,7 +22,7 @@
 						sd-table-selection="businessObjectManagementPanelController.relatedBusinessObjInstancesToRemove">
 						<td>{{businessObjectInstance[businessObjectManagementPanelController.businessObject.primaryKeyField.id]}}</td>
 						<td
-							ng-repeat="field in businessObjectManagementPanelController.fetchKeyFields()">
+							ng-repeat="field in businessObjectManagementPanelController.businessObject.keyFields" ng-hide="field.list">
 							<span ng-hide="field.type == 'date' || field.type == 'dateTime'">{{businessObjectInstance[field.id]}}</span>
 							<!-- Temporary fix for showing HTML5 date --> <span
 							ng-show="field.type =='date'">{{businessObjectInstance[field.id]
@@ -66,7 +65,7 @@
 					ng-blur="businessObjectManagementPanelController.filterBusinessObjectInstances()"></input>
 				</td>
 				<td
-					ng-repeat="field in businessObjectManagementPanelController.fetchKeyFields()">
+					ng-repeat="field in businessObjectManagementPanelController.businessObject.keyFields" ng-hide="field.list">
 					<label style="margin-left: 5px;">{{field.label}}</label> <input
 					ng-show="field.type == 'string'" type="text"
 					style="width: 100px; margin-left: 5px;"
@@ -112,8 +111,7 @@
 				<tr>
 					<th>{{businessObjectManagementPanelController.businessObject.primaryKeyField.label}}</th>
 					<th
-						ng-repeat="field in businessObjectManagementPanelController.businessObject.keyFields"
-						ng-if="!field.list">{{field.label}}</th>
+						ng-repeat="field in businessObjectManagementPanelController.keyFields">{{field.label}}</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -123,7 +121,7 @@
 					sd-table-selection-changed="businessObjectManagementPanelController.rootController.onBusinessObjectInstanceSelectionChange()">
 					<td>{{businessObjectInstance[businessObjectManagementPanelController.businessObject.primaryKeyField.id]}}</td>
 					<td
-						ng-repeat="field in businessObjectManagementPanelController.fetchKeyFields()">
+						ng-repeat="field in businessObjectManagementPanelController.businessObject.keyFields" ng-hide="field.list">
 						<span ng-hide="field.type == 'date' || field.type == 'dateTime'">{{businessObjectInstance[field.id]}}</span>
                         <!-- Temporary fix for showing HTML5 date -->
                         <span ng-show="field.type =='date'">{{businessObjectInstance[field.id] | date :'MM/dd/yyyy'}}</span>
