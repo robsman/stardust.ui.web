@@ -108,10 +108,13 @@ public class RecordingTestcase
          eObjectUUIDMapper.map(i.next());
       }
 
-      eObjectUUIDMapper.map(consumerModel);
-      for (Iterator<EObject> i = consumerModel.eAllContents(); i.hasNext();)
+      if (includeConsumerModel())
       {
-         eObjectUUIDMapper.map(i.next());
+         eObjectUUIDMapper.map(consumerModel);
+         for (Iterator<EObject> i = consumerModel.eAllContents(); i.hasNext();)
+         {
+            eObjectUUIDMapper.map(i.next());
+         }
       }
    }
 

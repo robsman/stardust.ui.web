@@ -23,13 +23,19 @@ import org.eclipse.stardust.model.xpdl.carnot.IAccessPointOwner;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.model.xpdl.carnot.RoleType;
+import org.eclipse.stardust.model.xpdl.carnot.TransitionType;
 import org.eclipse.stardust.model.xpdl.carnot.extensions.FormalParameterMappingsType;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
+import org.eclipse.stardust.model.xpdl.xpdl2.BasicTypeType;
+import org.eclipse.stardust.model.xpdl.xpdl2.DataTypeType;
+import org.eclipse.stardust.model.xpdl.xpdl2.DeclaredTypeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.ExtendedAttributeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.FormalParameterType;
 import org.eclipse.stardust.model.xpdl.xpdl2.FormalParametersType;
+import org.eclipse.stardust.model.xpdl.xpdl2.ModeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
+import org.eclipse.stardust.model.xpdl.xpdl2.TypeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.ExtendedAttributeUtil;
 
 public class GenericModelingAssertions
@@ -156,25 +162,97 @@ public class GenericModelingAssertions
       return accessPointFound;
    }
 
-   public static void assertDataMapping(ActivityType activity, String dataMappingID,
-         String accssPointID, String context, DirectionType direction, DataType data)
+   public static DataMappingType assertDataMapping(ActivityType activity, String dataMappingName, String dataMappingID,
+         String context, DirectionType direction, DataType data)
    {
-      DataMappingType dataMapping = (DataMappingType) ModelUtils.findIdentifiableElement(activity,
-            CarnotWorkflowModelPackage.eINSTANCE.getActivityType_DataMapping(), dataMappingID);
-      assertThat(dataMapping, is(not(nullValue())));
-      assertThat(dataMapping.getApplicationAccessPoint(), is(not(nullValue())));
-      assertThat(dataMapping.getApplicationAccessPoint(), is(accssPointID));
-      assertThat(dataMapping.getContext(), is(not(nullValue())));
-      assertThat(dataMapping.getContext(), is(context));
-      assertThat(dataMapping.getDirection(), is(not(nullValue())));
-      assertThat(dataMapping.getDirection(), is(direction));
-      assertThat(dataMapping.getData(), is(not(nullValue())));
-      assertThat(dataMapping.getData(), is(data));
+      DataMappingType dataMappingFound = null;
+      List<DataMappingType> dataMappings = activity.getDataMapping();
+      assertThat(dataMappings, is(not(nullValue())));
+      assertThat(dataMappings.size(), is(not(0)));
+      for (Iterator<DataMappingType> i = dataMappings.iterator(); i.hasNext();)
+      {
+         DataMappingType dataMapping = i.next();
+         assertThat(dataMapping.getId(), is(not(nullValue())));
+         assertThat(dataMapping.getName(), is(not(nullValue())));
+         assertThat(dataMapping.getContext(), is(not(nullValue())));
+         assertThat(dataMapping.getDirection(), is(not(nullValue())));
+
+         if (dataMapping.getId().equalsIgnoreCase(dataMappingID)
+               && dataMapping.getDirection().equals(direction))
+         {
+            dataMappingFound = dataMapping;
+         }
+
+      }
+      assertThat(dataMappingFound, is(not(nullValue())));
+      assertThat(dataMappingFound.getName(), is(dataMappingName));
+      assertThat(dataMappingFound.getId(), is(dataMappingID));
+      assertThat(dataMappingFound.getDirection(), is(direction));
+      assertThat(dataMappingFound.getContext(), is(context));
+      assertThat(dataMappingFound.getData(), is(not(nullValue())));
 
 
+      return dataMappingFound;
    }
 
-   public static void assertProcessInterface(ModelType model, String interfaceID, String interfaceName,
+   public static FormalParameterType assertFormalParameter(ProcessDefinitionType process, String parameterID, String parameterName, ModeType modeType)
+   {
+      assertThat(process.getFormalParameters(), is(not(nullValue())));
+      assertThat(process.getFormalParameterMappings(), is(not(nullValue())));
+      FormalParameterType parameter = process.getFormalParameters().getFormalParameter(parameterID);
+      assertThat(parameter, is(not(nullValue())));
+      assertThat(parameter.getMode(), is(not(nullValue())));
+      assertThat(parameter.getDataType(), is(not(nullValue())));
+      assertThat(parameter.getId(), is(not(nullValue())));
+      assertThat(parameter.getName(), is(not(nullValue())));
+      assertThat(parameter.getMode(), is(modeType));
+      assertThat(parameter.getName(), is(parameterName));
+      assertThat(parameter.getId(), is(parameterID));
+      return parameter;
+   }
+
+   public static FormalParameterType assertPrimitiveFormalParameter(ProcessDefinitionType process, String parameterID, String parameterName, ModeType modeType)
+   {
+      FormalParameterType parameter = assertFormalParameter(process, parameterID, parameterName, modeType);
+      DataTypeType dataTypeType = parameter.getDataType();
+      assertThat(dataTypeType, is(not(nullValue())));
+      assertThat(dataTypeType.getCarnotType(), is(not(nullValue())));
+      assertThat(dataTypeType.getCarnotType(), is("primitive"));
+      BasicTypeType basicTypeType = dataTypeType.getBasicType();
+      assertThat(basicTypeType, is(not(nullValue())));
+      assertThat(basicTypeType.getType(), is(not(nullValue())));
+      assertThat(basicTypeType.getType(), is(TypeType.STRING));
+      return parameter;
+   }
+
+   public static FormalParameterType assertStructFormalParameter(ProcessDefinitionType process, String parameterID, String parameterName, ModeType modeType, String declarationID)
+   {
+      FormalParameterType parameter = assertFormalParameter(process, parameterID, parameterName, modeType);
+      assertDeclarationType(parameter, "struct", declarationID);
+      return parameter;
+   }
+
+   public static FormalParameterType assertDocumentFormalParameter(ProcessDefinitionType process, String parameterID, String parameterName, ModeType modeType, String declarationID)
+   {
+      FormalParameterType parameter = assertFormalParameter(process, parameterID, parameterName, modeType);
+      assertDeclarationType(parameter, "dmsDocument", declarationID);
+      return parameter;
+   }
+
+   public static DataTypeType assertDeclarationType(FormalParameterType parameter, String carnotTypeID, String declarationID)
+   {
+      DataTypeType dataTypeType = parameter.getDataType();
+      assertThat(dataTypeType, is(not(nullValue())));
+      assertThat(dataTypeType.getCarnotType(), is(not(nullValue())));
+      DeclaredTypeType declaredTypeType = dataTypeType.getDeclaredType();
+      assertThat(declaredTypeType, is(not(nullValue())));
+      assertThat(declaredTypeType.getId(), is(not(nullValue())));
+      assertThat(declaredTypeType.getId(), is(declarationID));
+      assertThat(dataTypeType.getCarnotType(), is(carnotTypeID));
+      return dataTypeType;
+   }
+
+   public static ProcessDefinitionType assertProcessInterface(ModelType model, String interfaceID, String interfaceName,
          int paramCount)
    {
       ProcessDefinitionType process = assertProcess(model, interfaceID, interfaceName);
@@ -196,7 +274,7 @@ public class GenericModelingAssertions
             assertThat(mappingsType.getMappedData(formalParameter), is(not(nullValue())));
          }
       }
-
+      return process;
    }
 
    public static TypeDeclarationType assertTypeDeclaration(ModelType model, String declID, String declName)
@@ -277,6 +355,24 @@ public class GenericModelingAssertions
       assertThat(dataType.getName(), is(not(nullValue())));
       assertThat(dataType.getName(), is(dataName));
       return dataType;
+   }
+
+   public static void assertTransition(ActivityType fromActivity, ActivityType toActivity)
+   {
+      List<TransitionType> outTransitions = fromActivity.getOutTransitions();
+      List<TransitionType> inTransitions = toActivity.getInTransitions();
+      assertThat(outTransitions, is(not(nullValue())));
+      assertThat(inTransitions, is(not(nullValue())));
+      assertThat(outTransitions.size(), is(not(0)));
+      assertThat(inTransitions.size(), is(not(0)));
+      for (Iterator<TransitionType> i = outTransitions.iterator(); i.hasNext();)
+      {
+         TransitionType transition = i.next();
+         assertThat(transition.getCondition(), is(not(nullValue())));
+         assertThat(transition.getFrom(), is(fromActivity));
+         assertThat(transition.getTo(), is(toActivity));
+
+      }
    }
 
 

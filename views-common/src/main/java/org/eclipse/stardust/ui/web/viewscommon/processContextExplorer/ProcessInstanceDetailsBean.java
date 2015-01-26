@@ -119,13 +119,14 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
    private boolean genericRepositoryTreeInitialized = false;
    private boolean genericRepositoryTreeExpanded = false;
    private boolean descriptorsPanelInitialized = false;
-   private boolean participantsPanelInitialized = false;
    private boolean linkedProcessPanelInitialized = false;
    private boolean hasSpawnProcessPermission;
    private boolean hasSwitchProcessPermission;
    private boolean hasJoinProcessPermission;
    private boolean disableSpawnProcess = false;
    private View thisView;
+   
+   private String startingUserLabel = null;
 
    /**
     * 
@@ -170,10 +171,7 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
          initializeLinkedProcessPanel();
       }
 
-      if (participantsPanelInitialized)
-      {
-         initializeParticipantsPanel();
-      }
+      initializeParticipantsPanel(true);
       
       setSupportsProcessAttachments(DMSHelper.existsProcessAttachmentsDataPath(processInstance));
       setAbortProcess(ProcessInstanceUtils.isAbortable(processInstance));
@@ -485,23 +483,35 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
    /**
     * load participant panel
     */
-   private void initializeParticipantsPanel()
+   private void initializeParticipantsPanel(boolean forceRefresh)
    {
-      trace.debug("-----------> Participant Panel Initialize");
-      if (!processHistoryTreeInitialized)
+      if (isParticipantsPanelExpanded())
       {
-         initializeProcessHistoryTree();
+         if (!processHistoryTreeInitialized)
+         {
+            initializeProcessHistoryTree();
+         }
       }
-      ParticipantsPanelBean participantsList = ParticipantsPanelBean.getCurrent();
-      participantsList.setCurrentProcessInstance(processInstance);
-      participantsList.setEmbedded(true);
-      participantsList.setShowTitle(false);
 
-      participantsList.setActivityTreeRoot(ProcessHistoryTable.getCurrent().getActivityTreeTable().getActivityTableRoot());
+      trace.debug("<----------- Participant Panel Initialize");
+      ParticipantsPanelBean participantPanel = ParticipantsPanelBean.getCurrent();
+      
+      //If it is force refresh then don't check current process
+      if (!forceRefresh && (participantPanel.getCurrentProcessInstance() != null && participantPanel.getCurrentProcessInstance().getOID() == ProcessHistoryTable.getCurrent().getSelectedRow().getProcessInstance().getOID()))
+      {
+         return;
+      }
+      
+      ProcessInstance pi = processInstance;
+      
+      if (ProcessHistoryTable.getCurrent().getSelectedRow() != null)
+      {
+         pi = ProcessHistoryTable.getCurrent().getSelectedRow().getProcessInstance();
+      }
+      
+      participantPanel.initializePanel(pi, ProcessHistoryTable.getCurrent().getActivityTreeTable().getActivityTableRoot());
 
-      participantsList.initialize();
-      participantsPanelInitialized = true;
-      trace.debug("-----------> Participant Panel Initialize");
+      trace.debug("Participant Panel Initialize ----------->");
    }
 
    /**
@@ -719,10 +729,9 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
    public void setParticipantsPanelExpanded(boolean participantsPanelExpanded)
    {
       this.participantsPanelExpanded = participantsPanelExpanded;
-      if (!participantsPanelInitialized)
-      {
-         initializeParticipantsPanel();
-      }
+      ParticipantsPanelBean participantPanel = ParticipantsPanelBean.getCurrent();
+      participantPanel.setExpanded(this.participantsPanelExpanded);
+      initializeParticipantsPanel(false);
    }
 
    public void handleEvent(EventType eventType)
@@ -914,9 +923,13 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
 
    public String getStartingUser()
    {
-      User startingUser = getProcessInstance().getStartingUser();
-      UserUtils.loadDisplayPreferenceForUser(startingUser);
-      return UserUtils.getUserDisplayLabel(startingUser);
+      if (startingUserLabel == null)
+      {
+         User startingUser = getProcessInstance().getStartingUser();
+         UserUtils.loadDisplayPreferenceForUser(startingUser);
+         startingUserLabel = UserUtils.getUserDisplayLabel(startingUser);
+      }
+      return startingUserLabel;
    }
 
    /**

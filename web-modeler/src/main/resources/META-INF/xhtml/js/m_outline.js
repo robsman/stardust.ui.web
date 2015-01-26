@@ -2875,10 +2875,12 @@ define(
 				}
 			};
 
+			
 			/**
 			 *
 			 */
 			function Outline() {
+				
 				/**
 				 *
 				 */
@@ -3146,7 +3148,26 @@ define(
               }
             });
           }
-        };
+          
+          //handle server side exceptions (validation etc)
+		  if (response.responseText && (response.responseText.indexOf("ModelerError.") > -1)) {
+			if (parent.iPopupDialog) {
+				parent.iPopupDialog
+					.openPopup({
+						attributes : {
+							width : "400px",
+							height : "200px",
+							src : m_urlUtils.getPlugsInRoot() + "bpm-modeler/popups/errorDialog.html"
+						},
+						payload : {
+							title : m_i18nUtils.getProperty("modeler.messages.error"),
+							message : m_i18nUtils.getProperty(response.responseText, response.responseText),
+							okButtonText : m_i18nUtils.getProperty("modeler.element.properties.commonProperties.ok")
+						}
+				});
+			}
+		  }
+       };
 
 				/**
 				 * TODO - temporary

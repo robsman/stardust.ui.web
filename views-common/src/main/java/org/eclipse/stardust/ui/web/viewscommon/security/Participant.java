@@ -82,8 +82,7 @@ public class Participant implements Comparable<Participant>
    {
       principal = new DmsPrincipal(userInfo, realmId);
       id = principal.getName();
-      User user = UserUtils.getUser(userInfo.getId());
-      name = I18nUtils.getUserLabel(user);
+      name = ParticipantUtils.getParticipantName(userInfo);
    }
 
    /**

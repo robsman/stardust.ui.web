@@ -159,7 +159,7 @@ define(
                         functionBody += "var output = "
                               + self.createParameterObjectString(
                                     m_constants.OUT_ACCESS_POINT,
-                                    false) + ";\n";
+                                    true) + ";\n";
 
                         var code = self.codeEditor.getEditor()
                               .getSession().getValue();
@@ -204,10 +204,9 @@ define(
                               .stringify(result));
                      });
                this.resetButton.click(function() {
-                  self.inputDataTextarea.empty();
-                  self.outputDataTextarea.empty();
-
-                  self.inputDataTextarea.append(self
+                  self.inputDataTextarea.val("");
+                  self.outputDataTextarea.val("");
+                  self.inputDataTextarea.val(self
                         .createParameterObjectString(
                               m_constants.IN_ACCESS_POINT, true));
                });

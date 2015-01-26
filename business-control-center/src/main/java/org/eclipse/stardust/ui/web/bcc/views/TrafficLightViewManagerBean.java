@@ -86,7 +86,6 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.DefaultColumnModelEventHand
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 
 
 
@@ -146,8 +145,6 @@ public class TrafficLightViewManagerBean extends UIComponentBean
    private String selectedProcessActivityId;
    
    private String selectedProcessActivityName;
-   
-   private Map<Long, ProcessInstance> processInstances;
    
    private boolean passedActivityTableInitialized = false;
    private boolean notPassedActivityTableInitialized = false;
@@ -1194,9 +1191,6 @@ public void init()
          try
          {
             QueryResult<ActivityInstance> result = facade.getAllActivityInstances((ActivityInstanceQuery) query);
-            processInstances = ProcessInstanceUtils.getProcessInstancesAsMap(result, true);
-            notPassedActivityHelper.setProcessInstanceMap(processInstances);
-            passedActivityHelper.setProcessInstanceMap(processInstances);
             return result;
          }
          catch (InvalidServiceException e)

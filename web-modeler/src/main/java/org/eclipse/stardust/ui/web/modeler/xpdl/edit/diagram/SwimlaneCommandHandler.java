@@ -19,6 +19,7 @@ import java.util.Iterator;
 import javax.annotation.Resource;
 
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
+import org.eclipse.stardust.model.xpdl.builder.utils.XPDLFinderUtils;
 import org.eclipse.stardust.model.xpdl.builder.utils.LaneParticipantUtil;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
@@ -29,7 +30,6 @@ import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 import org.eclipse.stardust.ui.web.modeler.xpdl.edit.utils.CommandHandlerUtils;
 import org.eclipse.stardust.ui.web.modeler.xpdl.edit.utils.ModelElementEditingUtils;
-
 import org.springframework.context.ApplicationContext;
 
 import com.google.gson.JsonObject;
@@ -69,7 +69,7 @@ public class SwimlaneCommandHandler
 
          EObjectUUIDMapper mapper = modelService().uuidMapper();
          mapper.map(lane);
-         
+
          PoolSymbol containingPool = parentSymbol;
 
          if (ModelerConstants.DIAGRAM_FLOW_ORIENTATION_VERTICAL.equals(orientation))
@@ -97,7 +97,7 @@ public class SwimlaneCommandHandler
       ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(parentSymbol);
 
       String laneId = extractString(request, ModelerConstants.ID_PROPERTY);
-      LaneSymbol lane = getModelBuilderFacade().findLaneInProcess(processDefinition, laneId);
+      LaneSymbol lane = XPDLFinderUtils.findLaneInProcess(processDefinition, laneId);
       LaneParticipantUtil.deleteLane(lane);
 
       synchronized (model)

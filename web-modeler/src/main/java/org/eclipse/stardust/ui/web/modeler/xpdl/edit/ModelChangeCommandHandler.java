@@ -18,14 +18,11 @@ import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractSt
 import javax.annotation.Resource;
 
 import org.eclipse.emf.ecore.EObject;
-import org.springframework.context.ApplicationContext;
-
-import com.google.gson.JsonObject;
-
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
+import org.eclipse.stardust.model.xpdl.builder.utils.ExternalReferenceUtils;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.DataType;
@@ -33,11 +30,16 @@ import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.RoleType;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.SchemaLocatorAdapter;
+import org.eclipse.stardust.ui.web.modeler.common.exception.ModelerErrorClass;
+import org.eclipse.stardust.ui.web.modeler.common.exception.ModelerException;
 import org.eclipse.stardust.ui.web.modeler.edit.model.ModelConversionService;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.ModelCommandsHandler;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelBinding;
+import org.springframework.context.ApplicationContext;
+
+import com.google.gson.JsonObject;
 
 /**
  * @author Shrikant.Gangal
@@ -167,6 +169,12 @@ public class ModelChangeCommandHandler implements ModelCommandsHandler
    {
       ModificationDescriptor changes = new ModificationDescriptor();
 
+      if (ExternalReferenceUtils.isModelReferenced(model, modelService.currentSession()
+            .modelManagementStrategy().getModels().values()))
+      {
+         throw new ModelerException(ModelerErrorClass.UNABLE_TO_DELETE_REFERENCED_MODEL);
+      }
+
       if (null != model)
       {
          ModelManagementStrategy modelMgtStrategy = modelService
@@ -178,4 +186,3 @@ public class ModelChangeCommandHandler implements ModelCommandsHandler
       return changes;
    }
 }
-

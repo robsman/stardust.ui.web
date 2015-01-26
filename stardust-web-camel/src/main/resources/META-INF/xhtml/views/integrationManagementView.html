@@ -123,6 +123,8 @@ table.notes .timestampSpan {
 						ng-click="setTab(1)">Producer Routes</a></li>
 					<li ng-class="{ active: isSet(2) }"><a href
 						ng-click="setTab(2)">Consumer Routes</a></li>
+					<li ng-class="{ active: isSet(3) }"><a href
+						ng-click="setTab(3)">Other Routes</a></li>
 				</ul>
 				<div ng-show="isSet(1)">
 
@@ -514,6 +516,205 @@ table.notes .timestampSpan {
 													<tr align="left">
 														<th>Last Exchange Failure Exchange Id</th>
 														<td > {{selectedConsumerRoute.lastExchangeFailureExchangeId }}</td>
+													</tr>
+												
+												</tbody>
+											</table>	
+										</div>
+									</td>
+								</tr>
+					</table>
+				</div>
+				
+				<div ng-show="isSet(3)">
+
+					Search : <input type="text" ng-model="searchKeywordInOther" ng-change="changeOtherSearchValue(searchKeywordInOther)" >
+					
+					<table class="toolbar" style="width: 100%;">
+						<tr>
+							<td><a href="#" ng-click="refreshOthers()" class="expandCollapseLink" title="Refresh">
+									<img ng-src="plugins/stardust-web-camel/css/images/refresh.png" />
+								</a>		
+							</td>
+						</tr>
+					</table>
+					<table style="width: 100%;" border="0" valign="top">
+					<tr valign="top">
+						<td width="55%">
+					<table style="width: 100%;" border="0">
+						<tr>
+						<td >
+							<table style="width: 100%;" border="1">
+								<thead >
+									<tr>
+										<th align="left">Route Id</th>
+										<th align="left">Description</th>
+										<th>Exchanges Completed</th>
+										<th>Exchanges Failed</th>
+										<th>Status</th>
+										<th>Actions</th>
+									</tr>
+								</thead>
+								<tbody >
+									<tr align="center"
+										ng-repeat="x in filtredOtherRoute | limitTo: itemsPerPage"
+										border="1" ng-class="{selected : x.id === selectedOtherRouteId}">
+										<td align="left">{{ x.id }}</td>
+										<td align="left" width="250 px">{{ x.description }}</td>
+										<td>{{ x.exchangesCompleted }}</td>
+										<td>{{ x.exchangesFailed }}</td>
+										<td>{{ x.status }}</td>
+										<td><a href="#" ng-click="startOrStopRoute(x.id,x.status)"
+												class="expandCollapseLink" title="Start"
+												ng-hide="x.status === 'Started'"><img
+												ng-src="plugins/stardust-web-camel/css/images/control_play.png" />
+											</a> 
+											<a href="#" ng-click="startOrStopRoute(x.id,x.status)"
+												class="expandCollapseLink" title="Stop"
+												ng-show="x.status === 'Started'"><img
+												ng-src="plugins/stardust-web-camel/css/images/control_stop.png" />
+										     </a>
+										     
+											<a href="#" ng-click="showOtherRouteDetails(x)"
+									       	   class="expandCollapseLink" title="Details">
+											<img
+											   ng-src="plugins/stardust-web-camel/css/images/report_plus.png" />
+											</a> 
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							</td>
+						</tr>
+						<tr align="center">
+						<td align="center">
+							<div class="pagination">
+								<ul>
+									<li ng-class="prevPageDisabledOtherRoute()">
+										<a href ng-click="prevPageOtherRoute()">«
+											Prev</a></li>
+									<li ng-repeat="n in rangeOtherRoute()"
+										ng-class="{active: n == currentPageOtherRoute}"
+										ng-click="setPageOtherRoute(n)"><a
+										href="#">{{n+1}}</a></li>
+									<li ng-class="nextPageDisabledOtherRoute()">
+										<a href ng-click="nextPageOtherRoute()">Next
+											»</a></li>
+								</ul>
+							</div>
+							</td>
+						</tr>		
+					</table>
+					
+					</td>
+				
+					<td width="45%" valign="top">
+					
+					<div style="margin-left: 10px; margin-right: 10px; margin-bottom: 10px;" ng-show="showDetailsOtherRoute">
+						<table style="width: 100%;" border="1">
+												<tbody>
+													<tr align="left">
+														<td colspan=2><b>Route Details</b></td>
+													</tr>
+
+													<tr align="left">
+														<th width="285">Route Id</th>
+														<td >{{selectedOtherRoute.id }}</td>
+													</tr>
+
+													<tr align="left">
+														<th>Reset Timestamp</th>
+														<td >{{selectedOtherRoute.resetTimestamp | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+													</tr>
+
+													<tr align="left">
+														<th>Min Processing Time</th>
+														<td >{{selectedOtherRoute.minProcessingTime }}</td>
+													</tr>
+
+													<tr align="left">
+														<th>Max Processing Time</th>
+														<td >{{selectedOtherRoute.maxProcessingTime }}</td>
+													</tr>
+
+													<tr align="left">
+														<th>Total Processing Time</th>
+														<td >{{selectedOtherRoute.totalProcessingTime }}</td>
+													</tr>
+													
+													<tr align="left">
+														<th>Self Processing Time</tdh>
+														<td > {{selectedOtherRoute.selfProcessingTime }}</td>
+													</tr>
+													
+													<tr align="left">
+													<th>Failures Handled</th>
+														<td >{{selectedOtherRoute.failuresHandled}} </td>
+													</tr>
+													
+													<tr align="left">
+														<th>Redeliveries</th>
+														<td > {{selectedOtherRoute.redeliveries }}</td>
+													</tr>
+													
+													<tr align="left">
+														<th>External Redeliveries</th>
+														<td > {{selectedOtherRoute.externalRedeliveries }}</td>
+													</tr>
+													
+													<tr align="left">
+														<th>Last Processing Time</th>
+														<td >{{selectedOtherRoute.lastProcessingTime}}</td>
+													</tr>
+													
+													<tr align="left">
+														<th>Delta Processing Time</th>
+														<td > {{selectedOtherRoute.deltaProcessingTime }}</td>
+													</tr>
+													
+													<tr align="left">
+														<th>Mean Processing Time</th>
+														<td >{{ selectedOtherRoute.meanProcessingTime }}</td>
+													</tr>
+												
+													<tr align="left">
+														<th>First Exchange Completed Timestamp</th>
+														<td >{{ selectedOtherRoute.firstExchangeCompletedTimestamp| date:'yyyy-MM-dd HH:mm:ss'  }}</td>
+													</tr>
+												
+													<tr align="left">
+														<th>First Exchange Completed ExchangeId</th>
+														<td >{{ selectedOtherRoute.firstExchangeCompletedExchangeId }}</td>
+													</tr>
+													
+													<tr align="left">
+														<th>First Exchange Failure Timestamp</th>
+													<td >{{ selectedOtherRoute.firstExchangeFailureTimestamp | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+													</tr>
+													
+													<tr align="left">
+														<th>First Exchange Failure ExchangeId</th>
+													<td > {{selectedOtherRoute.firstExchangeFailureExchangeId  }} </td>
+													</tr>
+																					
+												<tr align="left">
+														<th>Last Exchange Completed Timestamp</th>
+														<td > {{selectedOtherRoute.lastExchangeCompletedTimestamp | date:'yyyy-MM-dd HH:mm:ss' }} </td>
+													</tr>
+											
+												<tr align="left">
+													<th>Last Exchange Completed Exchange Id</th>
+													<td >{{ selectedOtherRoute.lastExchangeCompletedExchangeId }}</td>
+													</tr>
+												
+													<tr align="left">
+													<th>Last Exchange Failure Timestamp</th>
+														<td >{{ selectedOtherRoute.lastExchangeFailureTimestamp | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+													</tr>
+													
+													<tr align="left">
+														<th>Last Exchange Failure Exchange Id</th>
+														<td > {{selectedOtherRoute.lastExchangeFailureExchangeId }}</td>
 													</tr>
 												
 												</tbody>

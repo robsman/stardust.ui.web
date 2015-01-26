@@ -79,15 +79,30 @@ public class DefaultDelegatesProvider implements IDelegatesProvider, Serializabl
          // collect models
          Set<Integer> models = CollectionUtils.newSet();   
          
-         for (int i = 0; i < activityInstances.size(); ++i)
+          if (!options.isStrictSearch() && activityInstances.size() == 1)
          {
-            ActivityInstance ai = activityInstances.get(i);
-            if (!models.contains(new Integer(ai.getModelOID())))
+            ModelCache modelCache = ModelCache.findModelCache();
+            List<DeployedModel> allActiveModels = modelCache.getActiveModels();
+            for (DeployedModel deployedModel : allActiveModels)
             {
-               // collect all model oid's
-               models.add(new Integer(ai.getModelOID()));
+               if (!models.contains(new Integer(deployedModel.getModelOID())))
+               {
+                  models.add(new Integer(deployedModel.getModelOID()));
+               }
             }
          }
+         else
+         {
+            for (int i = 0; i < activityInstances.size(); ++i)
+            {
+               ActivityInstance ai = activityInstances.get(i);
+               if (!models.contains(new Integer(ai.getModelOID())))
+               {
+                  // collect all model oid's
+                  models.add(new Integer(ai.getModelOID()));
+               }
+            }
+         }         
         
 
          // user filter
@@ -196,7 +211,17 @@ public class DefaultDelegatesProvider implements IDelegatesProvider, Serializabl
             }
 
             // get all from model and select only the ones we have filtered
-            Collection<Participant> candidateParticipants = getCommonParticipantsFromModels(models);
+            // single activity or multiple activities
+            Collection<Participant> candidateParticipants = null;
+            if (activityInstances.size() > 1)
+            {
+               candidateParticipants = getCommonParticipantsFromModels(models);
+            }   
+            else
+            {
+               candidateParticipants = getAllParticipantsFromModels(models);
+            }
+   
             List<String> roleIds = CollectionUtils.newList();
             List<String> orgIds = CollectionUtils.newList();
             for (Iterator<Participant> i = candidateParticipants.iterator(); i.hasNext();)
@@ -458,6 +483,50 @@ public class DefaultDelegatesProvider implements IDelegatesProvider, Serializabl
       return result;
    }
 
+   
+  /**
+   * 
+   * @param models
+   * @return
+   */
+   private static Collection<Participant> getAllParticipantsFromModels(Set<Integer> models)
+   {
+      ModelCache modelCache = ModelCache.findModelCache();
+      List<Participant> result = CollectionUtils.newList();
+      Set<String> participants = CollectionUtils.newHashSet();
+      
+      if (modelCache != null && models != null)
+      {
+         for (DeployedModel model : modelCache.getAllModels())
+         {
+            if (PredefinedConstants.PREDEFINED_MODEL_ID.equals(model.getId()))
+            {
+               continue;
+            }
+
+            if (models.contains(new Integer(model.getModelOID())))
+            {
+               for (@SuppressWarnings("unchecked")
+               Iterator<Participant> pIter = model.getAllParticipants().iterator(); pIter.hasNext();)
+               {
+                  Participant participant = pIter.next();
+
+                  if (participant instanceof Role || participant instanceof Organization)
+                  {
+                     if (!participants.contains(participant.getId()))
+                     {
+                        participants.add(participant.getId());
+                        result.add(participant);
+                     }
+                  }
+               }
+            }
+         }
+      }
+
+      return result;
+   }
+   
    private void addParticipantToSearchResult(List<Participant> searchResult, String name,
          Collection<Participant> candidateParticipants)
    {
