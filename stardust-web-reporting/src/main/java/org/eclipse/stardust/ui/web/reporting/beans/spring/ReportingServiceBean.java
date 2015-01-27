@@ -288,7 +288,7 @@ public class ReportingServiceBean
 
          resultJson.add("participants", participantsJson);
 
-         List<QualifiedModelParticipantInfo> qParticipantInfoList = modelService.getAllModelParticipants(false);
+         List<QualifiedModelParticipantInfo> qParticipantInfoList = modelService.getAllModelParticipants(true);
          for (QualifiedModelParticipantInfo participant : qParticipantInfoList)
          {
             JsonObject participantJson = new JsonObject();
