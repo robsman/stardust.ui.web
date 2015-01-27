@@ -37,7 +37,7 @@ public class PluginUtils
 {
    private static final Logger trace = LogManager.getLogger(PluginUtils.class);
    
-   private static WeakHashMap<ResourcePatternResolver, List<PluginDescriptor>> pluginResolutionCache = new WeakHashMap<ResourcePatternResolver, List<PluginDescriptor>>();
+   private static WeakHashMap<Resource, PluginDescriptor> pluginResolutionCache = new WeakHashMap<Resource, PluginDescriptor>();
 
    /**
     * @param resolver
@@ -182,21 +182,13 @@ public class PluginUtils
     */
    public static synchronized List<PluginDescriptor> getAllPlugins(ResourcePatternResolver resolver)
    {
-      List<PluginDescriptor> resolvedPlugins = pluginResolutionCache.get(resolver);
-
-      if (null != resolvedPlugins)
-      {
-         // cache hit, yay!
-         return resolvedPlugins;
-      }
-
-      // not yet cached, need to scan for *.portal-plugin files
-      resolvedPlugins = newArrayList();
+      List<PluginDescriptor> resolvedPlugins = newArrayList();
       try
       {
          List<Resource> resources;
          try
          {
+            // scan for plugin descriptor files
             resources = resolveResources(resolver, "classpath*:/META-INF/*.portal-plugin");
          }
          catch (IOException ioe)
@@ -208,34 +200,44 @@ public class PluginUtils
 
          for (Resource resource : resources)
          {
-            String pluginId = resource.getFilename().substring(0, resource.getFilename().lastIndexOf("."));
-            if (trace.isDebugEnabled())
-            {
-               trace.debug("Inspecting portal plugin '" + pluginId + "' (" + resource.getURI() + ")");
-            }
+            PluginDescriptor pluginDescriptor = pluginResolutionCache.get(resource);
 
-            InputStream isPluginDescriptor = resource.getInputStream();
-            try
+            if (null == pluginDescriptor)
             {
-               String resourcesRoot = new BufferedReader(new InputStreamReader(isPluginDescriptor)).readLine();
-               Resource pluginBaseUriReader = resource.createRelative("../").createRelative(resourcesRoot);
-               String pluginBaseUri = pluginBaseUriReader.getURI().toString();
-               if ( !pluginBaseUri.endsWith("/"))
+               String pluginId = resource.getFilename().substring(0, resource.getFilename().lastIndexOf("."));
+               if (trace.isDebugEnabled())
                {
-                  pluginBaseUri += "/";
+                  trace.debug("Inspecting portal plugin '" + pluginId + "' (" + resource.getURI() + ")");
                }
 
-               resolvedPlugins.add(new PluginDescriptor(pluginId, resourcesRoot, pluginBaseUri));
-            }
-            finally
-            {
-               CloseableUtil.closeQuietly(isPluginDescriptor);
-            }
-         }
+               InputStream isPluginDescriptor = resource.getInputStream();
+               try
+               {
+                  String resourcesRoot = new BufferedReader(new InputStreamReader(isPluginDescriptor)).readLine();
+                  Resource pluginBaseUriReader = resource.createRelative("../").createRelative(resourcesRoot);
+                  String pluginBaseUri = pluginBaseUriReader.getURI().toString();
+                  if ( !pluginBaseUri.endsWith("/"))
+                  {
+                     pluginBaseUri += "/";
+                  }
 
-         if (Parameters.instance().getBoolean("Carnot.Client.Caching.PluginResolution.Enabled", true))
-         {
-            pluginResolutionCache.put(resolver, resolvedPlugins);
+                  pluginDescriptor = new PluginDescriptor(pluginId, resourcesRoot, pluginBaseUri);
+
+                  if (Parameters.instance().getBoolean("Carnot.Client.Caching.PluginResolution.Enabled", true))
+                  {
+                     pluginResolutionCache.put(resource, pluginDescriptor);
+                  }
+               }
+               finally
+               {
+                  CloseableUtil.closeQuietly(isPluginDescriptor);
+               }
+            }
+
+            if (null != pluginDescriptor)
+            {
+               resolvedPlugins.add(pluginDescriptor);
+            }
          }
       }
       catch (IOException e)

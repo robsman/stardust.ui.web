@@ -29,9 +29,11 @@ import org.eclipse.stardust.engine.api.model.ModelParticipant;
 import org.eclipse.stardust.engine.api.model.Participant;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
+import org.eclipse.stardust.engine.api.model.QualifiedModelParticipantInfo;
 import org.eclipse.stardust.engine.api.model.QualityAssuranceCode;
 import org.eclipse.stardust.engine.api.runtime.DeployedModel;
 import org.eclipse.stardust.engine.api.runtime.DeployedModelDescription;
+import org.eclipse.stardust.engine.api.runtime.Grant;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserGroup;
 import org.eclipse.stardust.engine.api.runtime.UserGroupInfo;
@@ -579,6 +581,23 @@ public class I18nUtils
          }
       }
       return false;
+   }
+   
+   public static String getGrantName(Grant grant)
+   {
+      List<QualifiedModelParticipantInfo> qParticipantInfoList = ParticipantUtils
+            .getAllModelParticipants(false);
+      String participantName = grant.getName();
+      for (QualifiedModelParticipantInfo participant : qParticipantInfoList)
+      {
+         if (participant.getQualifiedId().equals(grant.getQualifiedId()))
+         {
+            participantName = I18nUtils.getParticipantName(ParticipantUtils
+                  .getParticipant(participant));
+            break;
+         }
+      }
+      return participantName;
    }
    
    

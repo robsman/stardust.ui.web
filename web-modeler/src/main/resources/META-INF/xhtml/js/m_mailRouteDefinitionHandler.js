@@ -396,6 +396,9 @@ define(
                   route += "   <simple>$simple{in.header.response}</simple>\n";
                   route += "</setBody>\n";
                   
+                  // remove processed response from header. CRNT-35370
+                  route += "<removeHeaders pattern=\"response\"/>\n";
+                  
                   return route;
                };
                

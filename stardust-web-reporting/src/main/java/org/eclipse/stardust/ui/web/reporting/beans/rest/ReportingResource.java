@@ -222,12 +222,20 @@ public class ReportingResource
 
             return Response.ok(updatedReportPath, MediaType.TEXT_PLAIN).build();
          }
-         else
+         else if (operation.equals("save"))
          {
             JsonObject reportJson = GsonUtils.extractObject(json, "report");
             return Response.ok(reportingService.saveReportDefinition(reportJson).toString(),
                   MediaType.APPLICATION_JSON).build();
          }
+         else if (operation.equals("renameAndSave"))
+         {
+            JsonObject reportJson = GsonUtils.extractObject(json, "report");
+            return Response.ok(reportingService.renameAndSaveReportDefinition(reportJson).toString(),
+                  MediaType.APPLICATION_JSON).build();
+            
+         }
+         return null;
       }
       catch (Exception e)
       {
@@ -350,12 +358,7 @@ public class ReportingResource
    @Path("/language")
    public Response getLanguage()
    {
-      StringTokenizer tok = new StringTokenizer(httpRequest.getHeader("Accept-language"), ",");
-      if (tok.hasMoreTokens())
-      {
-         return Response.ok(LanguageUtil.getLocale(tok.nextToken()), MediaType.TEXT_PLAIN_TYPE).build();
-      }
-      return Response.ok("en", MediaType.TEXT_PLAIN_TYPE).build();
+      return Response.ok(reportingService.getLanguage(httpRequest), MediaType.TEXT_PLAIN_TYPE).build();
    }
 
    /**
@@ -485,40 +488,6 @@ public class ReportingResource
       return Response.serverError().build();
    }
    
-   @Produces(MediaType.APPLICATION_JSON)
-   @Path("dateFormats")
-   @GET
-   public Response dateFormats(@Context HttpServletRequest request)
-   {
-      ResourceBundle rb = ResourceBundle.getBundle("portal-common-messages", request.getLocale());
-      JsonObject dates = new JsonObject();
-      dates.add("date", new JsonPrimitive(getStringFromResourceBundle(rb, "portalFramework.formats.defaultDateFormat")));
-      dates.add("minutes", new JsonPrimitive(getStringFromResourceBundle(rb, "portalFramework.formats.defaultDateTimeFormat")));
-      dates.add("seconds", new JsonPrimitive(getStringFromResourceBundle(rb, "portalFramework.formats.date.seconds")));
-      dates.add("hours", new JsonPrimitive(getStringFromResourceBundle(rb, "portalFramework.formats.date.hours")));
-      dates.add("months", new JsonPrimitive(getStringFromResourceBundle(rb, "portalFramework.formats.date.months")));
-
-      return Response.ok(dates.toString(), MediaType.APPLICATION_JSON_TYPE).build();
-   }
-   
-   /**
-    * @param bundle
-    * @param data
-    * 
-    * TODO - this can move to some utility class
-    */
-   private String getStringFromResourceBundle(ResourceBundle bundle, String key)
-   {
-      try
-      {
-         return bundle.getString((String) key);
-      }
-      catch (Exception x)
-      {
-         return "%" + key + "%";
-      }
-   }
-   
    @GET
    @Consumes(MediaType.TEXT_PLAIN)
    @Produces(MediaType.TEXT_PLAIN)
@@ -539,19 +508,29 @@ public class ReportingResource
       }
    }
    
-   
-   /**
-    * @param args
-    * @throws ParseException
-    */
-   public static void main(String[] args) throws ParseException
+   @GET
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.TEXT_PLAIN)
+   @Path("executionDates")
+   public Response getNextExecutionDates(@QueryParam("schedulingJSON") 
+         String schedulingInfo, @QueryParam("startDate") String startDate,
+         @QueryParam("endDate") String endDate)
    {
-      // String datestr = "2014/08/22 +0000";
-      // String datestr= "2014/08/21 10:41:10 +0000";
-       String datestr= "2014/08/25 13:24:00";
-      // SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/WW Z");
-       // SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss Z");
-       SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yy hh:mm:ss");
-      System.out.println("GOTCHA" + formatter.parse(datestr));
+      try
+      {
+          trace.debug("Save report definitions: " + prettyPrinter.toJson(schedulingInfo));
+
+         JsonObject json = jsonIo.readJsonObject(schedulingInfo);
+
+         return Response.ok(reportingService.getNextExecutionDates(json, startDate, 
+               endDate).toString(), MediaType.TEXT_PLAIN).build();
+
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
+
+         return Response.serverError().build();
+      }
    }
 }

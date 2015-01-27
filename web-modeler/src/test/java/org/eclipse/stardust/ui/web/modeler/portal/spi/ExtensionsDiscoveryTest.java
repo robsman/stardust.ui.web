@@ -16,7 +16,10 @@ public class ExtensionsDiscoveryTest
       ResourcePatternResolver resolver = ResourcePatternUtils.getResourcePatternResolver(new DefaultResourceLoader(
             getClass().getClassLoader()));
 
-      System.out.println(ExtensionDiscoveryUtils.findExtensions(resolver, asList("viewManager", "diagramToolbar", "proeprtyPage")));
+      for (String category : asList("viewManager", "diagramToolbar", "propertiesPage"))
+      {
+         System.out.println(ExtensionDiscoveryUtils.findExtensions(resolver, category));
+      }
    }
 
 }

@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.stardust.common.log.LogManager;
@@ -167,7 +168,7 @@ public class SchedulingUtils
    
    public static Date getParsedDate(String startDateStr, String DateFormat)
    {
-      DateFormat df = new SimpleDateFormat(DateFormat);
+      DateFormat df = new SimpleDateFormat(DateFormat, Locale.US);
 
       Date date = null;
       try
@@ -185,7 +186,7 @@ public class SchedulingUtils
 
    public static String convertDate(Date date, String DateFormat)
    {
-      SimpleDateFormat sdf = new SimpleDateFormat(DateFormat);
+      SimpleDateFormat sdf = new SimpleDateFormat(DateFormat, Locale.US);
       String convertedDate = sdf.format(date);
       return convertedDate;
    }

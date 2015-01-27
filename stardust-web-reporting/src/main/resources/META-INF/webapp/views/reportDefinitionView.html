@@ -1,5 +1,4 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
 <html ng-controller="ReportDefinitionController">
 <head>
 <title>Process Reporting</title>
@@ -380,7 +379,7 @@ table.formTable td {
 												<table cellpadding="0" cellspacing="0" class="formTable">
 													<tr>
 														<td><label>{{getI18N('reporting.definitionView.cumulationInterval.label')}}</label></td>
-														<td><input id="auto-reporting-dataSetTab-firstDimensionCumulationIntervalCount" type="number" style="width: 50px;"
+														<td><input ng-disabled="getFirstDimension().disableCumulationInterval" id="auto-reporting-dataSetTab-firstDimensionCumulationIntervalCount" type="number" style="width: 50px;"
 															ng-model="report.dataSet.firstDimensionCumulationIntervalCount"></input>
 														</td>
 														<td><select id="auto-reporting-dataSetTab-firstDimensionCumulationIntervalUnit" 
@@ -400,8 +399,7 @@ table.formTable td {
 												ng-show="getFirstDimension().type == reportingService.metadata.integerType">
 												<table cellpadding="0" cellspacing="0" class="formTable">
 													<tr>
-														<td style="padding-left: 20px;"><label>Cumulation
-																Interval</label></td>
+														<td style="padding-left: 20px;"><label>{{getI18N('reporting.definitionView.cumulationInterval.label')}}</label></td>
 														<td><input id="auto-reporting-dataSetTab-firstDimensionCumulationIntervalWidthInt" type="number" style="width: 50px;"
 															ng-model="report.dataSet.firstDimensionCumulationIntervalWidth"></input>
 														</td>
@@ -1228,7 +1226,7 @@ table.formTable td {
 																			<tr>
 																				<td><input id="auto-reporting-schedulingTab-yearlyRecurrenceFirst" type="radio" value="weekday"
 																					ng-model="report.scheduling.yearlyRecurrenceOptions.yearlyRecurrence" /></td>
-																				<td><label>on</label></td>
+																				<td><label>{{getI18N('reporting.definitionView.on.label')}}</label></td>
 																				<td><table cellpadding="0" cellspacing="0">
 																						<tr>
 																							<td><select id="auto-reporting-schedulingTab-yearlyRecurrenceOnMonth"  

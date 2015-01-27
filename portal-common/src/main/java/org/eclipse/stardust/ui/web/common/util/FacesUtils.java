@@ -38,6 +38,7 @@ import javax.faces.lifecycle.LifecycleFactory;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.swing.plaf.basic.BasicMenuUI;
 
 import org.eclipse.stardust.ui.web.common.ToolbarSection;
 import org.eclipse.stardust.ui.web.common.app.PortalApplicationSingleView;
@@ -638,7 +639,7 @@ public class FacesUtils implements Constants
    
    public static Locale getLocaleFromRequest()
    {
-      return FacesContext.getCurrentInstance().getExternalContext().getRequestLocale();
+      return ManagedBeanUtils.getLocale();
    }
    
    /**

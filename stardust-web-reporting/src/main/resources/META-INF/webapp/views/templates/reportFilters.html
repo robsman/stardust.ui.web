@@ -118,16 +118,11 @@
 							<tr>
 								<td><label>{{reportFilterController.getI18N('reporting.definitionView.duration.label')}}</label></td>
 								<td><input id="value{{$index}}" type="number" ng-model="x.value.duration"
-									style="width: 50px;" /> <select
-									ng-model="x.value.durationUnit">
-										<option value="s">Second(s)</option>
-										<option value="m">Minutes(s)</option>
-										<option value="h">Hour(s)</option>
-										<option value="d">Day(s)</option>
-										<option value="w">Week(s)</option>
-										<option value="M">Month(s)</option>
-										<option value="Y">Year(s)</option>
-								</select></td>
+									style="width: 50px;" /> 
+									<select  ng-model="x.value.durationUnit" 
+									ng-options="d_unit.id as d_unit.name for d_unit in reportFilterController.constants.DURATION_UNITS">
+								</select>
+								 </td>
 								<td></td>
 							</tr>
 						</table>
@@ -138,7 +133,8 @@
 					</div>
 				</div>
 				<div
-					ng-show="reportFilterController.getDimension(x.dimension).type == reportFilterController.getMetadata().enumerationType"
+					ng-show="reportFilterController.getDimension(x.dimension).type &&
+					reportFilterController.getDimension(x.dimension).type.id === reportFilterController.getMetadata().enumerationType.id"
 					style="height: auto;">
 					<table class="filterTable"
 						ng-show="x.dimension == 'processName' || x.dimension == 'activityName'">

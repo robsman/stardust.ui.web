@@ -16,6 +16,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -26,8 +27,10 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.StringTokenizer;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletContext;
@@ -48,6 +51,7 @@ import org.eclipse.stardust.engine.api.runtime.DmsUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentInfo;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
+import org.eclipse.stardust.engine.api.runtime.DocumentManagementServiceException;
 import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.engine.api.runtime.UserService;
@@ -62,6 +66,7 @@ import org.eclipse.stardust.ui.web.common.spi.user.UserProvider;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.html5.rest.RestControllerUtils;
 import org.eclipse.stardust.ui.web.reporting.beans.spring.portal.SearchHandlerChain;
+import org.eclipse.stardust.ui.web.reporting.common.LanguageUtil;
 import org.eclipse.stardust.ui.web.reporting.common.portal.criticality.Criticality;
 import org.eclipse.stardust.ui.web.reporting.scheduling.SchedulingFactory;
 import org.eclipse.stardust.ui.web.reporting.scheduling.SchedulingRecurrence;
@@ -71,12 +76,14 @@ import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityCat
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityConfigurationUtil;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils.DataPathMetadata;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.FileStorage;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.I18nFolderUtils;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.CommonDescriptorUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.XPathCacheManager;
 import org.springframework.context.annotation.Scope;
@@ -87,6 +94,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 
 /**
  *
@@ -212,7 +220,7 @@ public class ReportingServiceBean
             JsonObject processJson = new JsonObject();
 
             processJson.addProperty("id", processDefinition.getQualifiedId());
-            processJson.addProperty("name", processDefinition.getName());
+            processJson.addProperty("name", I18nUtils.getProcessName(processDefinition)); // I18n
             processJson.addProperty("auxiliary", ProcessDefinitionUtils.isAuxiliaryProcess(processDefinition));
 
             processesJson.add(processDefinition.getId(), processJson);
@@ -232,7 +240,7 @@ public class ReportingServiceBean
 
                         descriptorJson.addProperty("id",
                               processDefinition.getQualifiedId() + ":" + dataPath.getQualifiedId());
-                     descriptorJson.addProperty("name", dataPath.getName());
+                     descriptorJson.addProperty("name", I18nUtils.getDataPathName(dataPath));
                      descriptorJson.addProperty("type", UiHelper.mapDesciptorType(dataPath.getMappedType()).getId());
 
                      // metadata for Engine
@@ -276,7 +284,7 @@ public class ReportingServiceBean
                JsonObject activityJsonObj = new JsonObject();
 
                activityJsonObj.addProperty("id", processDefinition.getQualifiedId() + ":" + activity.getQualifiedId());
-               activityJsonObj.addProperty("name", activity.getName());
+               activityJsonObj.addProperty("name", I18nUtils.getActivityName(activity));
                activityJsonObj.addProperty("auxiliary", ActivityInstanceUtils.isAuxiliaryActivity(activity));
                activityJsonObj.addProperty("interactive", activity.isInteractive());
                activities.add(activityJsonObj);
@@ -294,7 +302,8 @@ public class ReportingServiceBean
             JsonObject participantJson = new JsonObject();
 
             participantJson.addProperty("id", participant.getQualifiedId());
-            participantJson.addProperty("name", participant.getName());
+            participantJson.addProperty("name",
+                  I18nUtils.getParticipantName(ParticipantUtils.getParticipant(participant)));
 
             participantsJson.add(participant.getId(), participantJson);
          }
@@ -377,10 +386,34 @@ public class ReportingServiceBean
             reportParameters.add(rp);   
          }
       }
+ 
+      String userLanguage = getLanguage(httpRequest);
 
-      ReportRequest reportRequest = new ReportRequest(reportDefinition.getDataSet(), reportParameters);
+      if (userLanguage == null)
+      {
+         userLanguage = reportDefinition.getUserLanguage();
+      }
+      
+      ReportRequest reportRequest = new ReportRequest(reportDefinition, reportParameters, userLanguage);
+      
       return reportingService.getReport(reportRequest, ReportFormat.JSON);
    }
+
+   /**
+    * @param httpRequest
+    * @return
+    */
+   public String getLanguage(HttpServletRequest httpRequest)
+   {
+      StringTokenizer tok = new StringTokenizer(httpRequest.getHeader("Accept-language"), ",");
+      if (tok.hasMoreTokens())
+      {
+         return LanguageUtil.getLocale(tok.nextToken());
+      }
+      trace.debug("could not find user language from httpRequest header");
+      return "";
+   }
+   
    
    /**
     * Might be invoked for saving of multiple Report Definitions or directly (whereby json
@@ -468,8 +501,23 @@ public class ReportingServiceBean
 
       if (document != null)
       {
-         JsonObject reportDefinitionJson = jsonMarshaller.readJsonObject(new String(getDocumentManagementService().retrieveDocumentContent(
-               document.getId())));
+         String docStr = null;
+         try
+         {
+            docStr = new String(getDocumentManagementService().retrieveDocumentContent(document.getId()), "UTF-8");
+         }
+         catch (DocumentManagementServiceException e)
+         {
+            trace.error("Exception occurred while retrieving report definition: " + document.getName(), e);
+            return null;
+         }
+         catch (UnsupportedEncodingException e)
+         {
+            trace.error("Exception occurred while retrieving report definition: " + document.getName(), e);
+            return null;
+         }
+         
+         JsonObject reportDefinitionJson = jsonMarshaller.readJsonObject(docStr);
           
          //add report specific meta-data
          JsonObject metaDataObj = new JsonObject(); 
@@ -504,6 +552,7 @@ public class ReportingServiceBean
    {
       try
       {
+         //UTF-8 conversion not necessary as browsers default conversion to string is using UTF-8
          return getDocumentManagementService().retrieveDocumentContent(reportId);
       }
       catch (Exception e)
@@ -630,7 +679,7 @@ public class ReportingServiceBean
 
                if (participant != null)
                {
-                  participantFolderJson = getReportDefinitions(findOrCreateFolder(participantSubFolder.getPath() + REPORT_DESIGN), participant.getName() + " Report Definitions"); //TODO: I18N
+                  participantFolderJson = getReportDefinitions(findOrCreateFolder(participantSubFolder.getPath() + REPORT_DESIGN), I18nUtils.getParticipantName(ParticipantUtils.getParticipant(participant)) + " Report Definitions");
                }
 
                if (participantFolderJson != null)
@@ -640,20 +689,15 @@ public class ReportingServiceBean
             }
          }
 
-         subFoldersJson.add(getReportDefinitions(publicFolder, "Public Report Definitions")); // I18N
-         subFoldersJson.add(getReportDefinitions(personalFolder, "Personal Report Definitions")); // I18N
+         subFoldersJson.add(getReportDefinitions(publicFolder, I18nFolderUtils.getLabel(I18nFolderUtils.PUBLIC_REPORT_DEFINITIONS)));
+         subFoldersJson.add(getReportDefinitions(personalFolder, I18nFolderUtils.getLabel(I18nFolderUtils.PERSONAL_REPORT_DEFINITIONS)));
 
          return rootFolderJson;
       }
       catch (Exception e)
       {
-         //TODO: remove later
-         e.printStackTrace();
-         trace.debug("Error Occurred while loading report definitions");
+         trace.error("Error Occurred while loading report definitions", e);
          return null;
-      }
-      finally
-      {
       }
    }
 
@@ -688,15 +732,25 @@ public class ReportingServiceBean
          JsonArray reportDefinitionsJson = new JsonArray();
          folderJson.add("reportDefinitions", reportDefinitionsJson);
 
-         @SuppressWarnings("unchecked")
          List<Document> candidateReportDefinitionsDocuments = folder.getDocuments();
 
          for (Document reportDefinitionDocument : candidateReportDefinitionsDocuments)
          {
             if (reportDefinitionDocument.getName().endsWith(REPORT_DEFINITION_EXT))
             {
-               String content = new String(getDocumentManagementService().retrieveDocumentContent(
-                     reportDefinitionDocument.getId()));
+               String content = null;
+               try
+               {
+                  content = new String(getDocumentManagementService().retrieveDocumentContent(reportDefinitionDocument.getId()), "UTF-8");
+               }
+               catch (DocumentManagementServiceException e)
+               {
+                  trace.error("Exception Occurred while retrieving report definition with Name" + reportDefinitionDocument.getName(), e);
+               }
+               catch (UnsupportedEncodingException e)
+               {
+                  trace.error("Exception Occurred while retrieving report definition with Name" + reportDefinitionDocument.getName(), e);
+               }
 
                JsonObject reportDefinitionJson = jsonMarshaller.readJsonObject(content);
 
@@ -723,30 +777,36 @@ public class ReportingServiceBean
       String path = folder.getPath() + "/" + name;
       
       Document reportDesignDocument = getDocumentManagementService().getDocument(path);
-
-      if (null == reportDesignDocument)
+      try
       {
-         DocumentInfo documentInfo = DmsUtils.createDocumentInfo(name);
 
-         documentInfo.setOwner(getServiceFactory().getWorkflowService().getUser().getAccount());
-         MimeTypesHelper mimeTypesHelper = (MimeTypesHelper) RestControllerUtils.resolveSpringBean(
-               "ippMimeTypesHelper", servletContext);
-         
-         documentInfo.setContentType(mimeTypesHelper.detectMimeTypeI(name, "").getType());
+         if (null == reportDesignDocument)
+         {
+            DocumentInfo documentInfo = DmsUtils.createDocumentInfo(name);
 
-         reportDesignDocument = getDocumentManagementService().createDocument(folder.getPath(), documentInfo,
-               reportContent.getBytes(), null);
+            documentInfo.setOwner(getServiceFactory().getWorkflowService().getUser().getAccount());
+            MimeTypesHelper mimeTypesHelper = (MimeTypesHelper) RestControllerUtils.resolveSpringBean(
+                  "ippMimeTypesHelper", servletContext);
 
-         // Create initial version
+            documentInfo.setContentType(mimeTypesHelper.detectMimeTypeI(name, "").getType());
 
-         // getDocumentManagementService().versionDocument(
-         // reportDesignDocument.getId(), null);
+            reportDesignDocument = getDocumentManagementService().createDocument(folder.getPath(), documentInfo,
+                  reportContent.getBytes("UTF-8"), null);
+         }
+         else
+         {
+            reportDesignDocument = getDocumentManagementService().updateDocument(reportDesignDocument,
+                  reportContent.getBytes("UTF-8"), null, false, null, null, false);
+         }
       }
-      else
+      catch (DocumentManagementServiceException e)
       {
-         reportDesignDocument = getDocumentManagementService().updateDocument(reportDesignDocument, reportContent.getBytes(), null, false,
-               null, false);
+         trace.error("Error Occurred while creating/updating document", e);
       }
+      catch (UnsupportedEncodingException e)
+      {
+         trace.error("Error Occurred while creating/updating document", e);
+      }     
       
       return reportDesignDocument;
    }
@@ -759,18 +819,38 @@ public class ReportingServiceBean
    private String renameReportDefinitionDocument(String path, String name)
    {
       Document reportDefinitionDocument = getDocumentManagementService().getDocument(path);
+      reportDefinitionDocument.setName(name + REPORT_DEFINITION_EXT);
       String folderPath = path.substring(0, path.lastIndexOf('/'));
-      DocumentInfo documentInfo = DmsUtils.createDocumentInfo(name + REPORT_DEFINITION_EXT);
-
-      documentInfo.setOwner(getServiceFactory().getWorkflowService().getUser().getAccount());
-      documentInfo.setContentType(MimeTypesHelper.DEFAULT.getType());
-
       byte[] content = getDocumentManagementService().retrieveDocumentContent(path);
+      
+      String updatedPath = folderPath + "/" + name + REPORT_DEFINITION_EXT;
+      
+      JsonObject reportDefinitionJson = jsonMarshaller.readJsonObject(new String(content));
+      //update report definition name
+      reportDefinitionJson.addProperty("name", name);
+       
+      JsonObject storageJson = reportDefinitionJson.get("storage").getAsJsonObject();
+      //update report definition path
+      storageJson.addProperty("path", updatedPath);
+      
+      String updatedContent = jsonMarshaller.writeJsonObject(reportDefinitionJson);
+      
+      try
+      {
+         reportDefinitionDocument = getDocumentManagementService().updateDocument(
+               reportDefinitionDocument, updatedContent.getBytes("UTF-8"), null, false,
+               null, null, false);
+      }
+      catch (DocumentManagementServiceException e)
+      {
+         e.printStackTrace();
+      }
+      catch (UnsupportedEncodingException e)
+      {
+         e.printStackTrace();
+      }
 
-      getDocumentManagementService().createDocument(folderPath, documentInfo, content, null);
-      getDocumentManagementService().removeDocument(reportDefinitionDocument.getId());
-
-      return folderPath + "/" + name + REPORT_DEFINITION_EXT;
+      return updatedPath;
    }
 
    /**
@@ -1032,5 +1112,53 @@ public class ReportingServiceBean
          trace.error("Exception while Uploading Report Definition " + e, e);
       }
       return null;
+   }
+   
+   /**
+    * Calculates all execution dates appearing in between start date and end date
+    * 
+    * @param json - The json object representing the scheduling object
+    * @param startDate 
+    * @param endDate 
+    * @return - The next possible execution dates in json format
+    */
+   public JsonObject getNextExecutionDates(JsonObject json, String startDate, String endDate)
+   {
+      trace.info(json.toString());
+
+      SchedulingRecurrence sc = SchedulingFactory.getSchedular(json);
+
+      List<String> calculateSchedule = sc.calculateSchedule(json, startDate, endDate);
+      
+      JsonElement element = gson.toJsonTree(calculateSchedule, new TypeToken<ArrayList<String>>(){}.getType());
+
+      JsonArray jsonArray = element.getAsJsonArray();
+
+      JsonObject jsonObject = new JsonObject();
+      
+      jsonObject.add("executionDates", jsonArray);
+      
+      return jsonObject;
+
+   }
+   
+   /**
+    * Might be invoked for renaming and saving  Report Definition (whereby json
+    * contains a top-level element "report").
+    *
+    * @param json
+    */
+   public JsonObject renameAndSaveReportDefinition(JsonObject reportJson)
+   {
+      JsonObject storageJson = reportJson.get("storage").getAsJsonObject();
+
+      String updatedReportPath = renameReportDefinition(storageJson.get("path")
+            .getAsString(), reportJson.get("name").getAsString());
+
+      // Update report definition path
+      storageJson.addProperty("path", updatedReportPath);
+
+      return saveReportDefinition(reportJson);
+
    }
 }
