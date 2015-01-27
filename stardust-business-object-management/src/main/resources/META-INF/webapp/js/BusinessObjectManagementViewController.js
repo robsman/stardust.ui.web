@@ -189,6 +189,9 @@ define(
 					this.currentBusinessObjectInstance = this.businessObjectManagementPanelController.selectedBusinessObjectInstances[0];
 					this.messages = [];
 					this.businessObjectManagementPanelController.searchPanelCollapsed =  true;
+					if(this.businessObjectManagementPanelController.relationship){
+						return;
+					}					
 					var self = this;
 					// Retrieve Process Instances the BOI is used in
 
@@ -523,20 +526,24 @@ define(
 					console.log(this.relationshipPanelController);
 					this.relationshipDialog.errors = [];
 					
-					var primaryKeyField = this.businessObjectManagementPanelController.businessObject.primaryKeyField;
+					var primaryKeyField = this.businessObjectManagementPanelController.businessObject.primaryKeyField.id;
 					var rootBusinesObjInstance = this.relationshipPanelController.rootBusinessObjectInstance;
 					var relatedBusinessObjectInstances = this.relationshipPanelController.relatedBusinessObjectInstances;
 					var thisForeignKeyField = this.relationshipPanelController.relationship.thisForeignKeyField;
 					var cardinality = this.relationshipPanelController.relationship.otherCardinality;
-					// TODO Cleanup removed Relationships!!!
-					// TODO All code into Panel Controller
+					var detachedBusinessObjectInstaces = this.relationshipPanelController.relatedBusinessObjInstancesToRemove;
 					
-					if("TO_ONE" ==  cardinality && relatedBusinessObjectInstances.length > 1){
-						this.relationshipDialog.errors.push({
-							message :"Multipe instances not supported for this relationship."
-						});
+					if ("TO_ONE" == cardinality
+							&& relatedBusinessObjectInstances.length > 1) {
+						this.relationshipDialog.errors
+								.push({
+									message : "Multipe instances not supported for this relationship."
+								});
 						return;
 					}
+					
+					// TODO Cleanup removed Relationships!!!
+					// TODO All code into Panel Controller
 					
 					rootBusinesObjInstance[this.relationshipPanelController.relationship.otherForeignKeyField] = [];
 
@@ -579,7 +586,21 @@ define(
 							.log(rootBusinesObjInstance);
 					console
 							.log(relatedBusinessObjectInstances);
-
+					
+					for(var n=0; n < detachedBusinessObjectInstaces.length;++n){
+						 
+						var relationshipVal = detachedBusinessObjectInstaces[n][thisForeignKeyField];
+						if (relationshipVal) {
+							var idx = jQuery
+									.inArray(
+											rootBusinesObjInstance[this.businessObject.primaryKeyField.id],
+											relationshipVal);
+							if (idx != -1) {
+								relationshipVal.splice(idx, 1);
+								relatedBusinessObjectInstances.push(detachedBusinessObjectInstaces[n]);
+							}
+						}
+					}
 					// Write changes to the server
 
 					var self = this;

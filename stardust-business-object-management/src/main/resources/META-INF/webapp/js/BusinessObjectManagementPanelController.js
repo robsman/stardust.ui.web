@@ -29,7 +29,6 @@ define(
 					this.rootController = rootController;
 					this.businessObjectFilter = {};
 					this.selectedBusinessObjectInstances = [];
-					this.relatedBusinessObjInstancesToRemove = [];
 					this.relatedBusinessObjectInstances = [];
 					this.keyFields=[];
 				};
@@ -54,12 +53,26 @@ define(
 				 */
 				BusinessObjectManagementPanelController.prototype.addInstanceToRelationship = function () {
 					var tempArray = [];
-					for(var n=0; n <  this.selectedBusinessObjectInstances.length; ++n){
-						if(jQuery.inArray(this.selectedBusinessObjectInstances[n], this.relatedBusinessObjectInstances) == -1){
-							tempArray.push(this.selectedBusinessObjectInstances[n]);
+					var idx = 0;
+					for ( var n = 0; n < this.selectedBusinessObjectInstances.length; ++n) {
+						// Filter already saved BO instances
+						if (jQuery.inArray(
+								this.selectedBusinessObjectInstances[n],
+								this.relatedBusinessObjectInstances) == -1) {
+							tempArray
+									.push(this.selectedBusinessObjectInstances[n]);
+						}
+						// Remove from array of removable BO instances
+						idx = jQuery.inArray(
+								this.selectedBusinessObjectInstances[n],
+								this.relatedBusinessObjInstancesToRemove);
+						if (idx != -1) {
+							this.relatedBusinessObjInstancesToRemove.splice(
+									idx, 1);
 						}
 					}
-					this.relatedBusinessObjectInstances = this.relatedBusinessObjectInstances.concat(tempArray);
+					this.relatedBusinessObjectInstances = this.relatedBusinessObjectInstances
+							.concat(tempArray);
 				};
 
 				/**
@@ -83,7 +96,6 @@ define(
 						rootBusinessObjectInstance, relationship) {
 					this.rootBusinessObjectInstance = rootBusinessObjectInstance;
 					this.relationship = relationship;
-					this.relatedBusinessObjInstancesToRemove = [];
 					var self = this;
 
 					BusinessObjectManagementService
@@ -115,6 +127,7 @@ define(
 
 					this.selectedBusinessObjectInstances = [];
 					this.relatedBusinessObjectInstances = [];
+					this.relatedBusinessObjInstancesToRemove = [];
 					// To keep track of old relationships, on table selection change
 					if (foreignKeys && foreignKeys.length) {
 						for (var n = 0; n < this.businessObjectInstances.length; ++n) {
