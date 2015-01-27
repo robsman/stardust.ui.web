@@ -15,9 +15,12 @@ import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.engine.api.model.PredefinedConstants.ADMINISTRATOR_ROLE;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 
+import java.util.UUID;
+
 import javax.annotation.Resource;
 
 import org.eclipse.emf.ecore.EObject;
+
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
@@ -25,9 +28,7 @@ import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
 import org.eclipse.stardust.model.xpdl.builder.utils.ExternalReferenceUtils;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
-import org.eclipse.stardust.model.xpdl.carnot.DataType;
-import org.eclipse.stardust.model.xpdl.carnot.ModelType;
-import org.eclipse.stardust.model.xpdl.carnot.RoleType;
+import org.eclipse.stardust.model.xpdl.carnot.*;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.SchemaLocatorAdapter;
 import org.eclipse.stardust.ui.web.modeler.common.exception.ModelerErrorClass;
@@ -37,6 +38,7 @@ import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.ModelCommandsHandler;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelBinding;
+
 import org.springframework.context.ApplicationContext;
 
 import com.google.gson.JsonObject;
@@ -100,6 +102,11 @@ public class ModelChangeCommandHandler implements ModelCommandsHandler
       String id = null != request.get(ModelerConstants.ID_PROPERTY) ? request.get(
             ModelerConstants.ID_PROPERTY).getAsString() : null;
       ModelType model = facade.createModel(id, modelName);
+
+      //This is a unique model UUID used to identify references
+      String modelUUID = UUID.randomUUID().toString();
+      AttributeUtil.setAttribute(model, "carnot:model:uuid", modelUUID);
+
       modelService.getModelBuilderFacade().setModified(model, model.getCreated());
       EObjectUUIDMapper mapper = modelService.uuidMapper();
       mapper.map(model);
