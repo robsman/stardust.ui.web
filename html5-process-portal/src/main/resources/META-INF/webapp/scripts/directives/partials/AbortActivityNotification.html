@@ -3,21 +3,21 @@
 
 	<div ng-hide="abortActivityCtrl.notification.error">
 		<div ng-show="abortActivityCtrl.notification.result.success.length > 0">
-			<div class="font-bold section" style="width:180px;" ng-bind="abortActivityCtrl.i18n('views-common-messages.views-common-activity-abortActivity-success')"></div>
+			<div class="font-bold section abort-activity-notification-title"  ng-bind="abortActivityCtrl.i18n('views-common-messages.views-common-activity-abortActivity-success')"></div>
 			<ul style="list-style: none;">
 				<li ng-repeat="activity in abortActivityCtrl.notification.result.success">
 					<span ng-bind="activity.name"> </span>   
-					<span style="padding-left: 10px;"ng-bind="activity.message"> </span> 
+					<span class="abort-activity-message" ng-bind="activity.message"> </span> 
 				</li>
 			</ul>
 		</div>
 
 		<div ng-show="abortActivityCtrl.notification.result.failure.length > 0">
-			<div class="font-bold section " style="width:180px;" ng-bind="abortActivityCtrl.i18n('views-common-messages.views-common-activity-abortActivity-failure')"></div>
+			<div class="font-bold section abort-activity-notification-title" ng-bind="abortActivityCtrl.i18n('views-common-messages.views-common-activity-abortActivity-failure')"></div>
 			<ul style="list-style: none;">
 				<li ng-repeat="activity in abortActivityCtrl.notification.result.failure">
 					<span ng-bind="activity.name"> </span> 
-					<span style="padding-left: 10px;" ng-bind="activity.message"> </span> 
+					<span class="abort-activity-message" ng-bind="activity.message"> </span> 
 				</li>
 			</ul>
 		</div>
@@ -25,7 +25,7 @@
 
 
 	<div ng-show="abortActivityCtrl.notification.error">
-		<span >An error occured while aborting activities</span>
+		<span >An error occurred while aborting activities</span>
 	</div>
 
 </div>
