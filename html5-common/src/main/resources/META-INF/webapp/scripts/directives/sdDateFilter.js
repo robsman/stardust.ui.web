@@ -34,7 +34,22 @@
 						'<td><label class="label-form">To:</label></td>' +
 						'<td><input type="text" sd-date-picker ng-model="filterData.to" /></td>' +
 					'</tr>' +
-				'</table>'
+				'</table>',
+			link: function(scope, element, attr, ctrl) {
+				/*
+				 * 
+				 */
+				scope.handlers.applyFilter = function() {
+					scope.setFilterTitle(scope.filterData.from + ' - ' + scope.filterData.to);
+				};
+
+				/*
+				 * 
+				 */
+				scope.handlers.resetFilter = function() {
+					// NOP
+				};
+			}
 		};
 	}
 })();

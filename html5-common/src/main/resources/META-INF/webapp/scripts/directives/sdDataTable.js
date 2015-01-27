@@ -572,15 +572,24 @@
 				if (col.filterable) {
 					var toggleFilter = '$dtApi.toggleColumnFilter(\'' + col.name + '\')';
 					var resetFilter = '$dtApi.resetColumnFilter(\'' + col.name + '\')';
+					var resetFilterAndClose = '$dtApi.resetColumnFilter(\'' + col.name + '\', true)';
 					var filterVisible = '$dtApi.isColumnFilterVisible(\'' + col.name + '\')';
 					var applyFilter = '$dtApi.applyColumnFilter(\'' + col.name + '\')';
+					var filterSet = '$dtApi.isColumnFilterSet(\'' + col.name + '\')';
+					var filterTitle = '$dtApi.getColumnFilterTitle(\'' + col.name + '\')';
 					var stopEvent = 'bpmCommon.stopEvent($event);';
 					
 					filterMarkup =
-						'<button class="button-link" href="#" ng-click="' + stopEvent + toggleFilter + '" class="tbl-col-flt" flt-anchor="' + col.name + '">\n' +
+						'<button class="button-link" ng-show="!' + filterSet + '" ng-click="' + stopEvent + toggleFilter + '" class="tbl-col-flt" flt-anchor="' + col.name + '">\n' +
 							'<i class="fa fa-filter"></i>\n' +
-						'</button>\n';
-					
+						'</button>\n' +
+						'<button class="button-link" ng-show="' + filterSet + '" ng-click="' + stopEvent + resetFilter + '" class="tbl-col-flt" flt-anchor="' + col.name + '">\n' +
+							'<i class="fa fa-filter"></i>\n' +
+						'</button>\n' +
+						'<button class="button-link" ng-click="' + stopEvent + toggleFilter + '">\n' +
+							'<span class="tbl-col-flt-title" ng-if="!' + filterSet + '">{{i18n("portal-common-messages.common-filterPopup-filterNotSet")}}</span>' + 
+							'<span class="tbl-col-flt-title" ng-if="' + filterSet + '">{{' + filterTitle + '}}</span>' +
+						'</button>';
 					filterDialogMarkup = 
 						'<div ng-show="' + filterVisible + '" class="popup-dlg tbl-col-flt-dlg" col="' + col.name + '">\n' +
 							'<div class="popup-dlg-hdr">\n' +
@@ -595,7 +604,7 @@
 							'\n</div>\n' +
 							'<div class="popup-dlg-footer">\n' +
 								'<input type="submit" class="button primary" value="{{i18n(\'portal-common-messages.common-filterPopup-applyFilter\')}}" ng-click="' + applyFilter + '" />' +
-								'<input type="submit" class="button secondary" value="{{i18n(\'portal-common-messages.common-filterPopup-resetFilter\')}}" ng-click="' + resetFilter + '" />' +
+								'<input type="submit" class="button secondary" value="{{i18n(\'portal-common-messages.common-filterPopup-resetFilter\')}}" ng-click="' + resetFilterAndClose + '" />' +
 							'</div>\n' +
 						'</div>\n';
 				}
@@ -603,7 +612,7 @@
 				var columnHeader = 
 					'<div>\n' + 
 						filterMarkup +
-						'<span class="tbl-hdr-col-label">' + col.titleExpr + '</span>\n'
+						'<div class="tbl-hdr-col-label">' + col.titleExpr + '</div>\n'
 					'</div>';
 
 				var hCol = angular.element(headCols[i]);
@@ -620,12 +629,22 @@
 					theFilters.append(filterDialog);
 
 					// Setup Filter Data
-					filterScope.filterData = {};
+					filterScope.$$filterData = {};
 
 					filterScope.colData = {
 						name: col.name,
 						field: col.field,
 						titleExpr: col.titleExpr
+					}
+
+					// Wrapper for applyFilter and resetFilter callback functions
+					filterScope.handlers = {};
+
+					/*
+					 * 
+					 */
+					filterScope.setFilterTitle = function(title) {
+						filterScope.$$filterTitle = title;
 					}
 
 					columnFilters[col.name] = {
@@ -771,8 +790,8 @@
 			params.filters = {};
 			for (var colName in columnFilters) {
 				var filterScope = columnFilters[colName].filter.scope();
-				if (filterScope.filterData != undefined && !jQuery.isEmptyObject(filterScope.filterData)) {
-					params.filters[colName] = angular.copy(filterScope.filterData);
+				if (filterScope.$$filterData != undefined && !jQuery.isEmptyObject(filterScope.$$filterData)) {
+					params.filters[colName] = angular.copy(filterScope.$$filterData);
 				}
 			}
 			if (jQuery.isEmptyObject(params.filters)) {
@@ -1676,16 +1695,13 @@
 			/*
 			 * 
 			 */
-			this.toggleColumnFilter = function(colName, noCleanup) {
+			this.toggleColumnFilter = function(colName, copyDataBack) {
 				for (var name in self.showColumnFilters) {
 					if (name != colName && self.showColumnFilters[name]) {
 						self.showColumnFilters[name] = false;
 
 						var filterScope = columnFilters[name].filter.scope();
-						if (filterScope.$$filterData != undefined) {
-							filterScope.filterData = filterScope.$$filterData;
-							delete filterScope.$$filterData;
-						}
+						delete filterScope.filterData;
 					}
 				}
 
@@ -1696,13 +1712,13 @@
 					columnFilters[colName].filter.css('top', columnFilters[colName].anchor.position().top + 20);
 					columnFilters[colName].filter.css('left', columnFilters[colName].anchor.position().left + 5);
 
-					filterScope.$$filterData = angular.copy(filterScope.filterData);
+					filterScope.filterData = angular.copy(filterScope.$$filterData);
 				} else {
-					if (!noCleanup) {
-						filterScope.filterData = filterScope.$$filterData;
+					if (copyDataBack) {
+						filterScope.$$filterData = filterScope.filterData;
 					}
 
-					delete filterScope.$$filterData;
+					delete filterScope.filterData;
 				}
 			}
 
@@ -1717,6 +1733,10 @@
 			 * 
 			 */
 			this.applyColumnFilter = function(colName) {
+				var filterScope = columnFilters[colName].filter.scope();
+				if (filterScope.handlers.applyFilter) {
+					filterScope.handlers.applyFilter();
+				}
 				self.toggleColumnFilter(colName, true);
 				refresh();
 			}
@@ -1724,10 +1744,34 @@
 			/*
 			 * 
 			 */
-			this.resetColumnFilter = function(colName) {
-				self.toggleColumnFilter(colName);
+			this.resetColumnFilter = function(colName, closeDlg) {
 				var filterScope = columnFilters[colName].filter.scope();
-				filterScope.filterData = {};
+				if (filterScope.handlers.resetFilter) {
+					filterScope.handlers.resetFilter();
+				}
+
+				if (closeDlg) {
+					self.toggleColumnFilter(colName);
+				}
+
+				filterScope.$$filterData = {};
+				refresh();
+			}
+
+			/*
+			 * 
+			 */
+			this.isColumnFilterSet = function(colName) {
+				var filterScope = columnFilters[colName].filter.scope();
+				return !jQuery.isEmptyObject(filterScope.$$filterData);
+			}
+
+			/*
+			 * 
+			 */
+			this.getColumnFilterTitle = function(colName) {
+				var filterScope = columnFilters[colName].filter.scope();
+				return filterScope.$$filterTitle;
 			}
 
 			/*

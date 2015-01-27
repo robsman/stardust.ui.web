@@ -55,6 +55,11 @@
 	cursor: default;
 }
 
+.tbl-col-flt-title {
+	color: gray;
+	font-weight: normal;
+}
+
 .tbl-toolbar {
 }
 
