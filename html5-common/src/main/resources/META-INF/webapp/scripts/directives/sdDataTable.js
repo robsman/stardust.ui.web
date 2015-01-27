@@ -570,7 +570,8 @@
 			angular.forEach(columns, function(col, i) {
 				var filterMarkup = '', filterDialogMarkup = ''
 				if (col.filterable) {
-					var toggleFilter = '$dtApi.toggleColumnFilter(\'' + col.name + '\', $event)';
+					var toggleFilter = '$dtApi.toggleColumnFilter(\'' + col.name + '\')';
+					var resetFilter = '$dtApi.resetColumnFilter(\'' + col.name + '\')';
 					var filterVisible = '$dtApi.isColumnFilterVisible(\'' + col.name + '\')';
 					var applyFilter = '$dtApi.applyColumnFilter(\'' + col.name + '\')';
 					var stopEvent = 'bpmCommon.stopEvent($event);';
@@ -588,11 +589,13 @@
 								'<span class="popup-dlg-cls fa fa-lg fa-remove" title="{{i18n(\'portal-common-messages.common-filterPopup-close\')}}" ng-click="' + toggleFilter + '"></span>\n' +
 							'</div>\n' +
 							'<div class="popup-dlg-cnt tbl-col-flt-dlg-cnt">\n' +
-								col.filterMarkup +
+								'<div ng-if="' + filterVisible + '">\n' + 
+									col.filterMarkup +
+								'</div>\n' + 
 							'\n</div>\n' +
 							'<div class="popup-dlg-footer">\n' +
 								'<input type="submit" class="button primary" value="{{i18n(\'portal-common-messages.common-filterPopup-applyFilter\')}}" ng-click="' + applyFilter + '" />' +
-								'<input type="submit" class="button secondary" value="{{i18n(\'portal-common-messages.common-filterPopup-resetFilter\')}}" ng-click="' + toggleFilter + '" />' +
+								'<input type="submit" class="button secondary" value="{{i18n(\'portal-common-messages.common-filterPopup-resetFilter\')}}" ng-click="' + resetFilter + '" />' +
 							'</div>\n' +
 						'</div>\n';
 				}
@@ -1673,18 +1676,33 @@
 			/*
 			 * 
 			 */
-			this.toggleColumnFilter = function(colName, $event) {
+			this.toggleColumnFilter = function(colName, noCleanup) {
 				for (var name in self.showColumnFilters) {
-					if (name != colName) {
+					if (name != colName && self.showColumnFilters[name]) {
 						self.showColumnFilters[name] = false;
+
+						var filterScope = columnFilters[name].filter.scope();
+						if (filterScope.$$filterData != undefined) {
+							filterScope.filterData = filterScope.$$filterData;
+							delete filterScope.$$filterData;
+						}
 					}
 				}
 
 				self.showColumnFilters[colName] = !self.showColumnFilters[colName];
 
+				var filterScope = columnFilters[colName].filter.scope();
 				if (self.showColumnFilters[colName]) {
 					columnFilters[colName].filter.css('top', columnFilters[colName].anchor.position().top + 20);
 					columnFilters[colName].filter.css('left', columnFilters[colName].anchor.position().left + 5);
+
+					filterScope.$$filterData = angular.copy(filterScope.filterData);
+				} else {
+					if (!noCleanup) {
+						filterScope.filterData = filterScope.$$filterData;
+					}
+
+					delete filterScope.$$filterData;
 				}
 			}
 
@@ -1699,8 +1717,17 @@
 			 * 
 			 */
 			this.applyColumnFilter = function(colName) {
-				self.toggleColumnFilter(colName);
+				self.toggleColumnFilter(colName, true);
 				refresh();
+			}
+
+			/*
+			 * 
+			 */
+			this.resetColumnFilter = function(colName) {
+				self.toggleColumnFilter(colName);
+				var filterScope = columnFilters[colName].filter.scope();
+				filterScope.filterData = {};
 			}
 
 			/*
