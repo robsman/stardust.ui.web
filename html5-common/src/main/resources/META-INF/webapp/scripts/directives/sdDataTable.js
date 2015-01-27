@@ -239,7 +239,7 @@
 			trace.log(theTableId + ': Processing table attributes...');
 
 			if (attr.sdaPageSize != '') {
-				pageSize = attr.sdaPageSize;
+				pageSize = parseInt(attr.sdaPageSize);
 			}
 
 			if (attr.sdaSelectable == undefined || attr.sdaSelectable == '') {
