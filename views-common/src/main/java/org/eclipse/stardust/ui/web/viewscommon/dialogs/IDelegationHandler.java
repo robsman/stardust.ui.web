@@ -15,19 +15,17 @@ import java.util.List;
 import java.util.Map;
 
 import javax.faces.FacesException;
-
 import org.eclipse.stardust.engine.api.model.ParticipantInfo;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.Department;
-import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
 
 
 public interface IDelegationHandler extends Serializable
 {
 
    public List<ActivityInstance> delegateActivities(List<ActivityInstance> activities, Department toDepartment,
-         Map<String, Object> params) throws FacesException, PortalException;
+         Map<String, Object> params) throws FacesException;
 
    public List<ActivityInstance> delegateActivities(List<ActivityInstance> activities,
-         ParticipantInfo toParticipantInfo, Map<String, Object> params) throws FacesException, PortalException;
+         ParticipantInfo toParticipantInfo, Map<String, Object> params) throws FacesException;
 }
