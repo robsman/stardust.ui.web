@@ -4,11 +4,15 @@ padding-top : 10px;
 }
 
 .abort-activity-notification-title{
-width:180px;
+width:200px;
 }
 
 .abort-activity-message{
 padding-left: 10px;
+}
+
+.abort-activity-notification-list{
+list-style: none;
 }
 
 

@@ -15,21 +15,19 @@
 	function AbortActivityService($q, $http) {
 		var REST_URL = "services/rest/portal/activity-instances/abort";
 
-		
+
 		/**
 		*
 		*/
 		AbortActivityService.prototype.abortActivities = function(value) {
-			
 
 			var deferred = $q.defer();
-			var reuestObj = {
+			var requestObj = {
 				scope : value.scope,
 				activities : value.activities
 			};
 
-
-			var httpResponse = $http.post(REST_URL, reuestObj);
+			var httpResponse = $http.post(REST_URL, requestObj);
 
 			httpResponse.success(function(data){
 				deferred.resolve(data);
@@ -38,10 +36,7 @@
 			});
 
 			return 	deferred.promise;
-
 		};
 	};
-
-	
 
 })();

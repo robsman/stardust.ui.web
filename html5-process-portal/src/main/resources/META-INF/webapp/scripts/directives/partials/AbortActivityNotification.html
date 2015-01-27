@@ -4,20 +4,20 @@
 	<div ng-hide="abortActivityCtrl.notification.error">
 		<div ng-show="abortActivityCtrl.notification.result.success.length > 0">
 			<div class="font-bold section abort-activity-notification-title"  ng-bind="abortActivityCtrl.i18n('views-common-messages.views-common-activity-abortActivity-success')"></div>
-			<ul style="list-style: none;">
+			<ul class="abort-activity-notification-list">
 				<li ng-repeat="activity in abortActivityCtrl.notification.result.success">
-					<span ng-bind="activity.name"> </span>   
-					<span class="abort-activity-message" ng-bind="activity.message"> </span> 
+					<span ng-bind="activity.name"> </span>
+					<span class="abort-activity-message" ng-bind="activity.message"> </span>
 				</li>
 			</ul>
 		</div>
 
 		<div ng-show="abortActivityCtrl.notification.result.failure.length > 0">
 			<div class="font-bold section abort-activity-notification-title" ng-bind="abortActivityCtrl.i18n('views-common-messages.views-common-activity-abortActivity-failure')"></div>
-			<ul style="list-style: none;">
+			<ul class="abort-activity-notification-list">
 				<li ng-repeat="activity in abortActivityCtrl.notification.result.failure">
-					<span ng-bind="activity.name"> </span> 
-					<span class="abort-activity-message" ng-bind="activity.message"> </span> 
+					<span ng-bind="activity.name"> </span>
+					<span class="abort-activity-message" ng-bind="activity.message"> </span>
 				</li>
 			</ul>
 		</div>
@@ -35,5 +35,5 @@
 		<div class="right">
 			<button class="button" ng-click="closeThisDialog()">Close</button>
 		</div>
-		<div>
-		</div>
+	<div>
+</div>

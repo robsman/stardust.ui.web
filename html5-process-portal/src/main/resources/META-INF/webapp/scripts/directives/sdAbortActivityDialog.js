@@ -1,6 +1,6 @@
 (function(){
 	'use strict';
-	
+
 	angular.module('bpm-common').directive('sdAbortActivityDialog',['sdAbortActivityService','ngDialog',AbortActivity]);
 
 	/**
@@ -18,7 +18,7 @@
 			},
 			controller: ['$scope','sdAbortActivityService','ngDialog',AbortActivityController]
 		};
-	} 
+	}
 
 	/**
 	*
@@ -28,22 +28,22 @@
 		var self = this;
 
 		this.intialize($scope,sdAbortActivityService,ngDialog);
-		
+
 
 		AbortActivityController.prototype.abortCompleted = function (){
 			$scope.abortCompleted();
 		}
 
 		AbortActivityController.prototype.hideDialog = function (){
-			$scope.showDialog = false;			
+			$scope.showDialog = false;
 		}
 
 		AbortActivityController.prototype.openDialog = function (){
-			$scope.showDialog = true;			
+			$scope.showDialog = true;
 		}
-		
+
 		AbortActivityController.prototype.getActvities = function (){
-			this.abortActivity.activities = $scope.activitiesToAbort;		
+			this.abortActivity.activities = $scope.activitiesToAbort;
 		}
 
 		/**
@@ -74,7 +74,7 @@
 	*
 	*/
 	AbortActivityController.prototype.intialize = function ($scope, sdAbortActivityService, ngDialog){
-		
+
 		this.i18n = $scope.$parent.i18n;
 		this.sdAbortActivityService = sdAbortActivityService;
 
@@ -83,22 +83,22 @@
 			error : false
 		};
 
-		
+
 		this.abortActivity = {
 			scope : 'activity',
-			activities : []	
-		}		
+			activities : []
+		}
 	}
 
-	
-	
+
+
 	/**
 	*
 	*/
 	AbortActivityController.prototype.abortActivities = function (){
 		this.getActvities();
 		return this.sdAbortActivityService.abortActivities(this.abortActivity);
-	}	
+	}
 
 
 	/**
@@ -118,11 +118,11 @@
 
 		var self = this;
 		var promise = res.promise;
-		
+
 		this.resetValues();
-	
+
 		promise.then(function(data){
-			
+
 			self.abortActivities()
 				.then(function(data){
 						//success
@@ -135,9 +135,9 @@
 						self.notification.result = {};
 						self.notification.error= true;
 						self.showNotification();
-						console.log("Error in sdAbortActivityService");
+						console.log("Error in acquiring activities from Abort Activity Service");
 					});
-			
+
 		})
 		.catch(function(){
 			console.log("dialog state: rejected");
