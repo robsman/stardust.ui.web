@@ -134,15 +134,19 @@ define(
 				 * 
 				 */
 				BusinessObjectManagementDataPropertiesPage.prototype.getTopLevelFieldsForBusinessObject = function(
-						businessObject) {
+						businessObject, skipPrimaryKey) {
 					var topLevelFields = [];
 
 					if (businessObject.structuredDataTypeFullId) {
 						var typeDeclaration = m_model
 								.findTypeDeclaration(businessObject.structuredDataTypeFullId);
+						var primaryKeyField = skipPrimaryKey ? businessObject.attributes["carnot:engine:primaryKey"] : null;
 						var fields = typeDeclaration.typeDeclaration.schema.elements[0].body[0].body;
 
 						for (var n = 0; n < fields.length; ++n) {
+							if(primaryKeyField && primaryKeyField == fields[n].name){
+								continue;
+							}
 							console.log("Field");
 							console.log(fields[n]);
 							// if (!fields[n].appinfo) {
@@ -222,7 +226,7 @@ define(
 							.getFullId()]) {
 						this.otherBusinessObjectTopLevelFields[otherBusinessObject
 								.getFullId()] = this
-								.getTopLevelFieldsForBusinessObject(otherBusinessObject);
+								.getTopLevelFieldsForBusinessObject(otherBusinessObject, true);
 					}
 				};
 
