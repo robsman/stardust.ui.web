@@ -115,14 +115,14 @@
 				var activities = self.activities.map(function(val) {
 				    return val.oid;
 				});
-				return performFetch('getParticipants', self.matchVal, self.participantType.name, self.showAll, activities);
+				return performFetch('getParticipants', self.matchVal, self.participantType, self.showAll, activities);
 			};
 			
 			function fetchUsers(options) {
 				var activities = self.activities.map(function(val) {
 				    return val.oid;
 				});
-				return performFetch('getUsers', self.matchVal, self.participantType.name, self.showAll, activities);
+				return performFetch('getUsers', self.matchVal, self.participantType, self.showAll, activities);
 			};
 			
 			function performFetch(method, matchVal, participantType, showAll, activities) {
@@ -136,7 +136,10 @@
 						excludeUserType: false
 					};
 				
-				sdActivityInstanceService[method](searchParam).then(function(data) {
+				var query = {};
+				query.data = searchParam;
+				
+				sdActivityInstanceService[method](query).then(function(data) {
 					deferred.resolve(data);
 					self.safeApply();
 				}, function(result) {

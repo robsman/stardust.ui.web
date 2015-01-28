@@ -371,6 +371,10 @@
 			}
 		};
 		
+		WorklistCompiler.prototype.onDelegateConfirm = function() {
+			this.refresh();
+		};
+		
 		/*
 		 *
 		 */

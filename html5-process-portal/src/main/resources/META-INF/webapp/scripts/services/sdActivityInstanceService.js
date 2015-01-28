@@ -57,18 +57,23 @@
 		
 		/*
 		 * Get/Search participant
+		 * 
+		 * options = { options: an object with url params, data: query payload }
 		 */
 		ActivityInstanceService.prototype.getParticipants = function(query) {
 			console.log("Getting participants for:");
 			console.log(query);
-
-			return ajax(REST_BASE_URL, "searchParticipants", query);
+			
+			var restUrl = REST_BASE_URL;
+			
+			return ajax(restUrl, "searchParticipants", query.data);
 		};
 		
 		/*
 		 * Expected data in following format:
 		 * {
 		 *		activities : [OId1, OId2....],
+		 *		participantType:'User'
 		 *		participant: {
 		 *			qualifiedId: string value,
 		 *			OID: long value
@@ -82,7 +87,7 @@
 		ActivityInstanceService.prototype.delegateActivities = function(data) {
 			console.log("Delegating activities...");
 
-			return ajax(REST_BASE_URL, "delegateActivities", data);
+			return ajax(REST_BASE_URL, "delegate", data);
 		};
 
 		/*

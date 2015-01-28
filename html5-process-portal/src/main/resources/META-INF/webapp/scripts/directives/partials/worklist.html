@@ -108,7 +108,9 @@
 		</tbody>
 	</table>
 	
-	<span sd-delegate-activity-dialog sda-show-dialog="worklistCtrl.showDelegateDialog" sda-activity-list="worklistCtrl.selectedActivity"></span>
+	<span sd-delegate-activity-dialog sda-show-dialog="worklistCtrl.showDelegateDialog" sda-activity-list="worklistCtrl.selectedActivity"
+		sda-on-confirm="worklistCtrl.onDelegateConfirm()">
+	</span>
 	
 	<!--Dialog for abort Activity  -->
 	<div sd-abort-activity-dialog sda-show-dialog="worklistCtrl.showAbortActivityDialog" sda-on-abort-complete="worklistCtrl.abortCompleted()" sda-activities-to-abort="worklistCtrl.activitiesToAbort" ></div>

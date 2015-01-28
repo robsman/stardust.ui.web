@@ -32,7 +32,8 @@
 				restrict : 'AE',
 				scope: {  // Creates a new sub scope
 					showDelegateDialog: "=sdaShowDialog",
-					activityList: "=sdaActivityList"
+					activityList: "=sdaActivityList",
+					onConfirm: "&sdaOnConfirm"
 				},
 				transclude: true,
 				templateUrl: 'plugins/html5-process-portal/scripts/directives/partials/delegateActivityDialog.html',
@@ -52,31 +53,38 @@
 			 * Initialize the component
 			 */
 			function initialize() {
-				self.searchParticipantSectionVisible = false;
-				self.searchAllParticipant = false;
-				self.participantDataSelected=[];
 				self.fetchParticipants = fetchPage;
-				self.participants = [];
+				self.onConfirm = $scope.onConfirm;
+				self.onOpen = $scope.onOpen;
 				
-				self.participantDataTable = {};
 				if (!angular.isDefined($scope.i18n)) {
 					$scope.i18n = $scope.$parent.i18n;
 					self.i18n = $scope.i18n;
 				}
 				
+				if ($attrs.sdaPageSize) {
+					this.sdaPageSize = attr.sdaPageSize;
+				}
+				
 			    // Initialize scope values for participant type select box
-				// TODO Use the correct values once rest is available
 			    self.participantTypes = [
-			                     {name:'All', id: '-1'},
-			                     {name:'Users', id: '1'},
-			                     {name:'Roles', id: '2'},
-			                     {name:'Organisations', id: '3'},
-			                     {name:'Departments', id: '4'}
+			                     {name:self.i18n('views-common-messages.delegation-allTypes', 'All'), value: '-1'},
+			                     {name:self.i18n('views-common-messages.delegation-users', 'Users'), value: 'User'},
+			                     {name:self.i18n('views-common-messages.delegation-roles', 'Roles'), value: 'Role'},
+			                     {name:self.i18n('views-common-messages.delegation-orgs', 'Organizations'), value: 'Organization'},
+			                     {name:self.i18n('views-common-messages.delegation-departments', 'Departments'), value: 'Department'}
 			                   ];
-			    self.participantType = self.participantTypes[0];
+			    
+			    self.participantDataTable = {};
 			    
 			    $scope.$watch("activityList", function(activitiesVal) {
 			    	self.activities = activitiesVal;
+			    });
+			    
+			    $scope.$watch("delActivityDialogCtlr.searchAllParticipant", function(activitiesVal) {
+			    	if (angular.isDefined(self.participantDataTable) && angular.isDefined(self.participantDataTable.refresh)) {
+			    		self.participantDataTable.refresh();
+			    	}
 			    });
 			}
 			
@@ -92,34 +100,67 @@
 				self.searchParticipantSectionVisible = false;
 			}
 			
-			DelegateActivityDialogController.prototype.onOpen = function(result) {
-				// TODO
+			DelegateActivityDialogController.prototype.onOpenDialog = function(result) {
+				self.resetValues();
+				
+				if (angular.isDefined(self.onOpen)) {
+					self.onOpen();
+				}
 			}
 			
 			DelegateActivityDialogController.prototype.closeThisDialog = function(scope) {
 				scope.closeThisDialog();
 			}
 			
+			DelegateActivityDialogController.prototype.resetValues = function() {
+				self.searchParticipantSectionVisible = true;
+				self.searchAllParticipant = false;
+				self.participantDataSelected=[];
+				self.participants = {};
+				self.participantDataTable = {};
+				
+				self.participantType = self.participantTypes[0];
+			}
+			
 			DelegateActivityDialogController.prototype.confirm = function(scope) {
-				var participantData = [];
-				var participantType = "-1";
+				var participantData = undefined;
+				var selectedParticipant = {};
+				var participantType = undefined;
 				if (self.searchParticipantSectionVisible) {
 					// Use data from selector
-					participantData = self.participantDataSelected;
-					participantType = self.participantType;
+					if (self.participantDataSelected.length > 0) {
+						selectedParticipant = self.participantDataSelected[0];
+					}
 				} else {
-					participantData = self.participantDataTable.getSelection();
-					//TODO participation type
+					if (self.participantDataTable.getSelection().length > 0) {
+						selectedParticipant = self.participantDataTable.getSelection()[0];
+					}
 				}
 				
+				if (angular.isDefined(selectedParticipant)) {
+					participantData = selectedParticipant.OID;
+					participantType = selectedParticipant.type;
+				}
+				
+				var activitiesArr = [];
+				angular.forEach(self.activities, function(actvty) {
+					activitiesArr.push(actvty.oid);
+				});
+				
 				var delegateData = {
-						activities: self.activities,
+						activities: activitiesArr,
 						participant: participantData,
 						participantType: participantType
 				};
 				if (self.validate(delegateData)) {
 					performDelegate(delegateData).then(function(data) {
-						self.closeThisDialog();
+						BridgeUtils.View.syncLaunchPanels();
+						
+						if (angular.isDefined(self.onConfirm)) {
+							self.onConfirm();
+						}
+						
+						self.closeThisDialog(scope);
 					}, function(result) {
 						// Error occurred
 						self.showErrorMessage('save', 'An error occurred while performing delegation.');
@@ -132,7 +173,7 @@
 					self.showErrorMessage('general', 'An error occurred.');
 					return false;
 				}
-				if (delegateData.participant.length === 0) {
+				if (!angular.isDefined(delegateData.participant)) {
 					self.showErrorMessage('participant', 'Please select a participant.');
 					return false;
 				}
@@ -140,8 +181,7 @@
 					self.showErrorMessage('activities', 'Please select an activity.');
 					return false;
 				}
-				if (!angular.isDefined(delegateData.participantType) || !angular.isDefined(delegateData.participantType.id)
-						|| delegateData.participantType.id == -1) {
+				if (!angular.isDefined(delegateData.participantType) || delegateData.participantType == "-1") {
 					self.showErrorMessage('participantType', 'Please select a participant type.');
 					return false;
 				}
@@ -167,6 +207,10 @@
 			}
 			
 			function fetchPage(options) {
+				
+				var query = angular.extend({}, this.query);
+				query.options = options;
+				
 				var deferred = $q.defer();
 				self.participants = {};
 				
@@ -174,7 +218,7 @@
 				    return val.oid;
 				});
 
-				var query = {
+				query.data = {
 						searchText: '', // Fetch all
 						participantType: 'All',
 						limitedSearch: !self.searchAllParticipant,
