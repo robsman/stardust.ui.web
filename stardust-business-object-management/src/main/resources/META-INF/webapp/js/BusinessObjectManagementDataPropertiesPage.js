@@ -72,10 +72,13 @@ define(
 								continue;
 							}
 							 if(participant.attributes["carnot:engine:bound"]){
-								 this.organizations.push({
-										label : model.name + "/" + participant.name,
-										fullId : participant.getFullId()
-									});
+								 var dataId = participant.attributes["carnot:engine:dataId"];
+								 if(this.propertiesPanel.data.id == dataId){
+									 this.organizations.push({
+											label : model.name + "/" + participant.name,
+											fullId : participant.getFullId()
+										});	 
+								 }
 							 }
 						}
 					}
