@@ -111,6 +111,24 @@ public class BusinessObjectManagementResource {
 			return Response.serverError().build();
 		}
 	}
+	
+	@GET
+    @Path("/businessObject/{modelId}/{businessObjectId}/relationship.json")
+    public Response getBusinessObjectRelationships(
+            @PathParam("modelId") String modelId,
+            @PathParam("businessObjectId") String businessObjectId) {
+        try {
+            return Response.ok(
+                    getBusinessObjectManagementService()
+                            .getBusinessObjectRelationship(modelId,
+                                    businessObjectId).toString(),
+                    MediaType.APPLICATION_JSON).build();
+        } catch (Exception e) {
+            trace.error(e, e);
+
+            return Response.serverError().build();
+        }
+    }
 
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)

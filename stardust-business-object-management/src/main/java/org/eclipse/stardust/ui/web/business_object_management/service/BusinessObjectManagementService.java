@@ -480,7 +480,7 @@ public class BusinessObjectManagementService {
 			json.add("relationships", wrapperJson.get("relationships")
 					.getAsJsonArray());
 		}
-
+		
 		return json;
 	}
 
@@ -730,6 +730,37 @@ public class BusinessObjectManagementService {
 		return member;
 	}*/
 
+	/**
+	 * 
+	 */
+   public JsonArray getBusinessObjectRelationship(String modelId, String businessObjectId)
+   {
+      JsonArray resultJson = new JsonArray();
+      ModelCache modelCache = ModelCache.findModelCache();
+      DeployedModel model = modelCache.getActiveModel(modelId);
+      Data data = model.getData(businessObjectId);
+      String relationshipString = (String) data.getAttribute("carnot:engine:businessObjectRelationships");
+      if (relationshipString != null)
+      {
+         JsonObject wrapperJson = jsonIo.readJsonObject("{relationships: " + relationshipString + "}");
+         JsonArray relationships = wrapperJson.getAsJsonArray("relationships");
+         for (int i = 0; i < relationships.size(); i++)
+         {
+            JsonObject relationship = relationships.get(i).getAsJsonObject();
+            String otherRole = GsonUtils.extractString(relationship, "otherRole");
+            if (StringUtils.isNotEmpty(otherRole))
+            {
+               //TODO : I18n the string
+               String roleDescription = otherRole + " of " + data.getName();
+               JsonObject relationshipJson = new JsonObject();
+               relationshipJson.addProperty("relationshipDescription", roleDescription);
+               relationshipJson.add("relationship", relationship);
+               resultJson.add(relationshipJson);
+            }
+         }
+      }
+      return resultJson;
+   }
 	/**
 	 *
 	 * @param modelOid
