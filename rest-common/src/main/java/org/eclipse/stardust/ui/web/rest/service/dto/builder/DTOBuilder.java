@@ -76,9 +76,8 @@ public class DTOBuilder
                      {
                         value = build(value, fieldClass);
                      }
-      
-                     field.setAccessible(true);
-                     field.set(toInstance, value);
+
+                     setFieldValue(toInstance, field, value);
                   }
                   catch (Exception e)
                   {
@@ -187,5 +186,31 @@ public class DTOBuilder
       }
 
       return value;
+   }
+
+   /*
+    * TODO: Performance: Check availability of setter method first using simple if than relying on exception
+    */
+   private static void setFieldValue(Object instance, Field field, Object value) throws Exception 
+   {
+      try
+      {
+         // First try with setter method
+         String methodName = "set" + ReflectionUtils.toSentenseCase(field.getName());
+
+         Object[] params = new Object[1];
+         params[0] = value;
+   
+         ReflectionUtils.invokeMethod(instance, methodName, params);
+      }
+      catch(Exception e)
+      {
+         // Now try with direct field
+         if (!field.isAccessible())
+         {
+            field.setAccessible(true);
+         }
+         field.set(instance, value);
+      }
    }
 }
