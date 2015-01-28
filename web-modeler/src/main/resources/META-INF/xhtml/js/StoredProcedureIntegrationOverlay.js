@@ -57,7 +57,15 @@ define(
 							.insertPropertiesTab("storedProcedureIntegrationOverlay",
 									"dataSource", "Data Source",
 									"plugins/bpm-modeler/images/icons/database_link.png");
-
+					
+					this.simpleQueryDiv = m_utils
+					.jQuerySelect("#storedProcedureIntegrationOverlay #simpleQueryDiv");
+					this.customSqlQueryDiv = m_utils
+					.jQuerySelect("#storedProcedureIntegrationOverlay #customSqlQueryDiv");
+					this.customSqlQueryDiv.hide();
+					this.customSqlQueryCbx= m_utils
+					.jQuerySelect("#storedProcedureIntegrationOverlay #customSqlQueryCbx");
+					
 					this.sqlQueryHeading = m_utils
 							.jQuerySelect("#storedProcedureIntegrationOverlay #sqlQueryHeading");
 					this.inputBodyAccessPointInput = m_utils
@@ -95,6 +103,14 @@ define(
 							.jQuerySelect("#dataSourceTab #passwordInput");
 					this.useCVforPassowrdInput = m_utils
 							.jQuerySelect("#dataSourceTab #useCVforPassowrdInput");
+					
+					this.dbCatalogInput = m_utils
+					.jQuerySelect("#configurationTab #simpleQueryDiv #dbCatalogInput");
+					this.dbSchemaInput = m_utils
+					.jQuerySelect("#configurationTab #simpleQueryDiv #dbSchemaInput");
+					this.spNameInput = m_utils
+					.jQuerySelect("#configurationTab #simpleQueryDiv #spNameInput");
+					
 
 					this.connectionTypeSelect.empty();
 					this.connectionTypeSelect
@@ -166,13 +182,11 @@ define(
 						if (!event.data.panel.validate()) {
 							return;
 						}
-						event.data.panel.submitChanges({
-							modelElement : {
-								attributes : {
+						event.data.panel.view.submitChanges({
+							attributes : {
 									"stardust:sqlScriptingOverlay::url":
 										event.data.panel.urlInput.val()
 								}
-							}
 						});
 					
 					});
@@ -184,13 +198,11 @@ define(
 						if (!event.data.panel.validate()) {
 							return;
 						}
-						event.data.panel.submitChanges({
-							modelElement : {
-								attributes : {
+						event.data.panel.view.submitChanges({
+							attributes : {
 									"stardust:sqlScriptingOverlay::driverClassName":
 									event.data.panel.driverInput.val()
 								}
-							}
 						});
 					
 					});
@@ -202,13 +214,11 @@ define(
 						if (!event.data.panel.validate()) {
 							return;
 						}
-						event.data.panel.submitChanges({
-							modelElement : {
-								attributes : {
+						event.data.panel.view.submitChanges({
+							attributes : {
 									"stardust:sqlScriptingOverlay::hostname":
 									event.data.panel.hostInput.val()
 								}
-							}
 						});
 					
 					});
@@ -220,13 +230,11 @@ define(
 						if (!event.data.panel.validate()) {
 							return;
 						}
-						event.data.panel.submitChanges({
-							modelElement : {
-								attributes : {
+						event.data.panel.view.submitChanges({
+							attributes : {
 									"stardust:sqlScriptingOverlay::port":
 									event.data.panel.portInput.val()
 								}
-							}
 						});
 					
 					});
@@ -238,13 +246,11 @@ define(
 						if (!event.data.panel.validate()) {
 							return;
 						}
-						event.data.panel.submitChanges({
-							modelElement : {
-								attributes : {
+						event.data.panel.view.submitChanges({
+							attributes : {
 									"stardust:sqlScriptingOverlay::dbname":
 									event.data.panel.dataBaseNameInput.val()
 								}
-							}
 						});
 					
 					});
@@ -256,13 +262,11 @@ define(
 						if (!event.data.panel.validate()) {
 							return;
 						}
-						event.data.panel.submitChanges({
-							modelElement : {
-								attributes : {
+						event.data.panel.view.submitChanges({
+							attributes : {
 									"stardust:sqlScriptingOverlay::username":
 									event.data.panel.userNameInput.val()
 								}
-							}
 						});
 					
 					});
@@ -277,13 +281,11 @@ define(
 						if (!event.data.panel.validate()) {
 							return;
 						}
-						event.data.panel.submitChanges({
-							modelElement : {
-								attributes : {
+						event.data.panel.view.submitChanges({
+							attributes : {
 									"stardust:sqlScriptingOverlay::password":
 									event.data.panel.passwordInput.val()
 								}
-							}
 						});
 					
 					});
@@ -295,18 +297,93 @@ define(
 					},
 					function(event) {
 					//	self.submitChanges();
-						
-						event.data.panel.submitChanges({
-							modelElement : {
-								attributes : {
+						event.data.panel.view.submitChanges({
+							attributes : {
 									"stardust:sqlScriptingOverlay::useCVforPassowrd":
 									event.data.panel.useCVforPassowrdInput.prop("checked") ? event.data.panel.useCVforPassowrdInput.prop("checked"): null
-
 								}
-							}
 						});
 					});
-
+					
+					this.dbCatalogInput.change({
+						panel : this
+					},
+					function(event) {
+						if (!event.data.panel.validate()) {
+							return;
+						}
+						event.data.panel.view.submitChanges({
+							attributes : {
+									"stardust:sqlScriptingOverlay::catalogName":
+									event.data.panel.dbCatalogInput.val()
+								}
+						});
+					
+					});
+					this.dbSchemaInput.change({
+						panel : this
+					},
+					function(event) {
+						if (!event.data.panel.validate()) {
+							return;
+						}
+						event.data.panel.view.submitChanges({
+							attributes : {
+									"stardust:sqlScriptingOverlay::schemaName":
+									event.data.panel.dbSchemaInput.val()
+								}
+						});
+					
+					});
+					this.spNameInput.change({
+						panel : this
+					},
+					function(event) {
+						if (!event.data.panel.validate()) {
+							return;
+						}
+						event.data.panel.view.submitChanges({
+							attributes : {
+									"stardust:sqlScriptingOverlay::storedProcedureName":
+									event.data.panel.spNameInput.val()
+								}
+						});
+					
+					});
+					this.customSqlQueryCbx.change({
+						panel : this
+					},
+					function(event) {
+					//	self.submitChanges();
+						if(event.data.panel.customSqlQueryCbx.prop("checked")){
+							event.data.panel.simpleQueryDiv.hide();
+							event.data.panel.view.submitChanges({
+									attributes : {
+										"stardust:sqlScriptingOverlay::catalogName":null,
+										"stardust:sqlScriptingOverlay::schemaName":null,
+										"stardust:sqlScriptingOverlay::storedProcedureName":null,
+										"stardust:sqlScriptingOverlay::useCustomSqlQuery":event.data.panel.customSqlQueryCbx.prop("checked")
+									}
+							});
+							event.data.panel.customSqlQueryDiv.show();
+						}else{
+							event.data.panel.customSqlQueryDiv.hide();
+							event.data.panel.simpleQueryDiv.show();
+							event.data.panel.view.submitChanges({
+									attributes : {
+										"stardust:sqlScriptingOverlay::sqlQuery":null,
+										"stardust:sqlScriptingOverlay::useCustomSqlQuery": null
+									}
+							});
+							event.data.panel.codeEditor
+							.getEditor()
+							.getSession()
+							.setValue(null);
+						}
+						
+					});
+					
+					
 					var self = this;
 
 					this.codeEditor.getEditor().on('blur', function(e) {
@@ -346,8 +423,6 @@ define(
 											.submitModelElementAttributeChange(
 													"carnot:engine:camel::inBodyAccessPoint",
 													null);
-									// self.inputBodyAccessPointInput.val(
-									// m_constants.TO_BE_DEFINED);
 
 								} else {
 									var accessPoints = {};
@@ -408,10 +483,6 @@ define(
 														}
 													});
 										}
-										// if
-										// (!accessPoints[self.outputBodyAccessPointInput.val()])
-										// {
-
 										self.view
 												.submitChanges({
 													contexts : {
@@ -420,7 +491,6 @@ define(
 														}
 													}
 												});
-
 										self.view
 												.submitModelElementAttributeChange(
 														"carnot:engine:camel::inBodyAccessPoint",
@@ -521,9 +591,6 @@ define(
 														}
 													});
 										}
-										// if
-										// (!accessPoints[self.outputBodyAccessPointInput.val()])
-										// {
 
 										self.view
 												.submitChanges({
@@ -556,17 +623,6 @@ define(
 								supportsOtherData : false
 							});
 
-					
-					// Predefined access points
-
-				/*	this.view.submitChanges({
-						contexts : {
-							application : {
-								accessPoints : this
-										.createIntrinsicAccessPoints()
-							}
-						}
-					});*/
 					this.update();
 				};
 
@@ -675,29 +731,7 @@ define(
 							.getSession()
 							.setValue(
 									this.getApplication().attributes["stardust:sqlScriptingOverlay::sqlQuery"]);
-					/*
-					 * this.dataSourceNameInput
-					 * .val(this.getApplication().attributes["stardust:sqlOverlay::dataSourceId"]);
-					 */
-					// Initialize the UI to show only primitives IN only
-				/*	this.parameterDefinitionDirectionSelect = m_utils
-							.jQuerySelect("#parametersTab #parameterDefinitionDirectionSelect");
-					this.parameterDefinitionDirectionSelect.empty();
-					var direction = m_i18nUtils
-							.getProperty("modeler.element.properties.commonProperties.in");
-					this.parameterDefinitionDirectionSelect
-							.append("<option value=\"IN\">" + direction
-									+ "</option>");
-*/
-			/*		this.dataTypeSelect = m_utils
-							.jQuerySelect("#parametersTab #dataTypeSelect");
-					this.dataTypeSelect.empty();
-					this.dataTypeSelect
-							.append("<option value='primitive' selected>"
-									+ m_i18nUtils
-											.getProperty("modeler.element.properties.commonProperties.primitive")
-									+ "</option>");
-*/
+					
 					this.connectionTypeSelect
 							.val(this.getApplication().attributes["stardust:sqlScriptingOverlay::connectionType"]);
 					this.databaseTypeSelect
@@ -745,6 +779,28 @@ define(
 							.prop(
 									"checked",
 									this.getApplication().attributes["stardust:sqlScriptingOverlay::useCVforPassowrd"]);
+					
+					this.customSqlQueryCbx
+					.prop(
+							"checked",
+							this.getApplication().attributes["stardust:sqlScriptingOverlay::useCustomSqlQuery"]);
+					
+					
+					if(this.customSqlQueryCbx.prop("checked")){
+						this.simpleQueryDiv.hide();
+						this.customSqlQueryDiv.show();
+					}else{
+						this.customSqlQueryDiv.hide();
+						this.simpleQueryDiv.show();
+					}
+					
+					this.dbCatalogInput
+					.val(this.getApplication().attributes["stardust:sqlScriptingOverlay::catalogName"]);
+					this.dbSchemaInput
+					.val(this.getApplication().attributes["stardust:sqlScriptingOverlay::schemaName"]);
+					this.spNameInput
+					.val(this.getApplication().attributes["stardust:sqlScriptingOverlay::storedProcedureName"]);
+					
 					
 					this.parameterDefinitionsTableBody=this.parameterDefinitionsPanel.parameterDefinitionsTableBody;
 					this.initializeParameterDefinitionsTable();
@@ -1031,45 +1087,13 @@ define(
 					var sqlQuery = this.codeEditor.getEditor().getSession()
 							.getValue();
 					var dataSourceName = "";
-					/* var dataSourceName = this.dataSourceNameInput.val(); */
-
 					if (sqlQuery != null && sqlQuery != "") {
 
 						sqlQuery = sqlQuery.replace(/&/g, "&amp;");
 						sqlQuery = sqlQuery.replace(/</g, "&lt;");
 						sqlQuery = sqlQuery.replace(/>/g, "&gt;");
 					}
-/*
-					route += "<to uri=\"sql:"
-							+ sqlQuery
-							+ "?dataSource=#"
-							+ this.getDataSourceName()
-							+ "&alwaysPopulateStatement=true&prepareStatementStrategy=#sqlPrepareStatementStrategy\" />";
-*//*
-					var outBodyAccessPoint = this.getApplication().attributes["carnot:engine:camel::outBodyAccessPoint"];
-					if (this.getApplication().contexts.application.accessPoints.length > 0) {
-						for (i = 0; i < this.getApplication().contexts.application.accessPoints.length; i++) {
-							var accessPoint = this.getApplication().contexts.application.accessPoints[i];
-							if (accessPoint.direction == "OUT"
-									&& outBodyAccessPoint != null
-									&& outBodyAccessPoint != ""
-									&& outBodyAccessPoint == accessPoint.id) {
-								route += "<setHeader headerName=\""
-										+ accessPoint.id + "\">";
-								route += "<simple>$simple{body}</simple>"
-								route += "</setHeader>";
-							} else if (accessPoint.direction == "OUT") {*/
-								/*
-								 * route += "<setHeader headerName=\"" +
-								 * accessPoint.id + "\">"; route += "<simple>$simple{header."+accessPoint.id+"}</simple>"
-								 * route += "</setHeader>";
-								 */
-				/*			}
-						}
-					}*/
 					route += "<to uri=\"spComponent://service/spsystem/storedProcedureExecutor\" />";
-				//	route += "<to uri=\"bean:bpmTypeConverter?method=fromList\"/>";
-
 					m_utils.debug(route);
 					route = route.replace(/&/g, "&amp;");
 					return route;
@@ -1105,7 +1129,11 @@ define(
 				 * 
 				 */
 				StoredProcedureIntegrationOverlay.prototype.submitChanges = function(
-						) {
+						changes) {
+					if(changes){
+						this.view
+						.submitChanges(changes);
+					}else{
 					this.view
 							.submitChanges({
 								attributes : {
@@ -1138,13 +1166,18 @@ define(
 											: null,
 									"stardust:sqlScriptingOverlay::password" : this.convertPasswordToConfigVariable(this.passwordInput
 											.val()),
-
-								/*	"carnot:engine:camel::additionalSpringBeanDefinitions" : this
-											.populateDataSourceBeanDefinition(),*/
 									"carnot:engine:camel::routeEntries" : this
 											.getRoute(),
+									"stardust:sqlScriptingOverlay::catalogName" : this.dbCatalogInput.val(),
+									"stardust:sqlScriptingOverlay::schemaName" : this.dbSchemaInput.val(),
+									"stardust:sqlScriptingOverlay::storedProcedureName" : this.spNameInput.val(),
+									"stardust:sqlScriptingOverlay::useCustomSqlQuery" : this.customSqlQueryCbx
+											.prop("checked") ? this.customSqlQueryCbx
+											.prop("checked")
+											: null
 								}
 							});
+				}
 				};
 				/**
 				 * 
