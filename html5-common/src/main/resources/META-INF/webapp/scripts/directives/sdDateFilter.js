@@ -16,31 +16,64 @@
 (function(){
 	'use strict';
 
-	angular.module('bpm-common').directive('sdDateFilter', [DateFilterDirective]);
+	angular.module('bpm-common').directive('sdDateFilter', ['sdUtilService', DateFilterDirective]);
 
 	/*
 	 * 
 	 */
-	function DateFilterDirective() {
+	function DateFilterDirective(sdUtilService) {
 		return {
 			restrict: 'A',
 			template: 
-				'<table cellspacing="2" cellpadding="2" style="white-space: nowrap;">' +
-					'<tr>' +
-						'<td><label class="label-form">From:</label></td>' +
-						'<td><input type="text" sd-date-picker ng-model="filterData.from" /></td>' +
-					'</tr>' +
-					'<tr>' +
-						'<td><label class="label-form">To:</label></td>' +
-						'<td><input type="text" sd-date-picker ng-model="filterData.to" /></td>' +
-					'</tr>' +
-				'</table>',
+				'<form name="filterForm">' +
+					'<table cellspacing="2" cellpadding="2" style="white-space: nowrap;">' +
+						'<tr>' +
+							'<td><label class="label-form">{{i18n(\'portal-common-messages.common-filterPopup-betweenFilter-first\')}}</label></td>' +
+							'<td>' +
+								'<input type="text" sd-date-picker id="from" name="from" ng-model="filterData.from" ng-model-onblur />' +
+								'<div class="msg-error" ng-show="filterForm[\'from\'].$error.datePicker">{{i18n(\'html5-common.converter-number-error\')}}</div>' +
+							'</td>' +
+						'</tr>' +
+						'<tr>' +
+							'<td><label class="label-form">{{i18n(\'portal-common-messages.common-filterPopup-betweenFilter-last\')}}</label></td>' +
+							'<td>' +
+								'<input type="text" sd-date-picker id="to" name="to" ng-model="filterData.to" ng-model-onblur />' +
+								'<div class="msg-error" ng-show="filterForm[\'to\'].$error.datePicker">{{i18n(\'html5-common.converter-number-error\')}}</div>' +
+							'</td>' +
+						'</tr>' +
+					'</table>' +
+					'<div class="msg-error" ng-show="filterForm.$error.range">{{i18n(\'portal-common-messages.common-filterPopup-betweenFilter-message-rangeNotValid\')}}</div>' +
+				'</form>',
 			link: function(scope, element, attr, ctrl) {
 				/*
 				 * 
 				 */
 				scope.handlers.applyFilter = function() {
-					scope.setFilterTitle(scope.filterData.from + ' - ' + scope.filterData.to);
+					scope.filterForm.$error.range = false;
+
+					if (scope.filterForm.$valid) {
+						if (sdUtilService.isEmpty(scope.filterData.from) && sdUtilService.isEmpty(scope.filterData.to)) {
+							scope.filterForm.$error.range = true;
+						} else {
+							if (!sdUtilService.isEmpty(scope.filterData.from) && !sdUtilService.isEmpty(scope.filterData.to)) {
+								if (scope.filterData.from <= scope.filterData.to) {
+									scope.setFilterTitle(scope.filterData.from + ' - ' + scope.filterData.to);
+									return true;
+								} else {
+									scope.filterForm.$error.range = true;
+								}
+							} else {
+								if (!sdUtilService.isEmpty(scope.filterData.from)) {
+									scope.setFilterTitle('> ' + scope.filterData.from);
+								} else {
+									scope.setFilterTitle('< ' + scope.filterData.to);
+								}
+								return true;
+							}
+						}
+					}
+
+					return false;
 				};
 
 				/*

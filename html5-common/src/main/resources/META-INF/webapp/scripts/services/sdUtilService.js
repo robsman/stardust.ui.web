@@ -108,6 +108,10 @@
 		 * 
 		 */
 		UtilService.prototype.isEmpty = function(data) {
+			if (data == undefined || data == null) {
+				return true; 
+			}
+
 			var empty = false;
 
 			switch(typeof data) {

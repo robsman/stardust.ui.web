@@ -1,3 +1,9 @@
+/************** General *****************/
+.msg-error {
+	color: red;
+	padding-left: 2px;
+}
+
 /* ********** View ********** */
 .view-panel {
 	margin: 6px;

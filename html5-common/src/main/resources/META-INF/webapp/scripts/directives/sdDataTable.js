@@ -580,13 +580,14 @@
 					var stopEvent = 'bpmCommon.stopEvent($event);';
 					
 					filterMarkup =
-						'<button class="button-link" ng-show="!' + filterSet + '" ng-click="' + stopEvent + toggleFilter + '" class="tbl-col-flt" flt-anchor="' + col.name + '">\n' +
+						'<span flt-anchor="' + col.name + '"></span>' +
+						'<button class="button-link" ng-show="!' + filterSet + '" ng-click="' + stopEvent + toggleFilter + '" class="tbl-col-flt" title="{{i18n(\'portal-common-messages.common-filterPopup-showFilter-tooltip\')}}">\n' +
 							'<i class="fa fa-filter"></i>\n' +
 						'</button>\n' +
-						'<button class="button-link" ng-show="' + filterSet + '" ng-click="' + stopEvent + resetFilter + '" class="tbl-col-flt" flt-anchor="' + col.name + '">\n' +
+						'<button class="button-link" ng-show="' + filterSet + '" ng-click="' + stopEvent + resetFilter + '" class="tbl-col-flt" title="{{i18n(\'portal-common-messages.common-filterPopup-resetFilter-tooltip\')}}">\n' +
 							'<i class="fa fa-filter"></i>\n' +
 						'</button>\n' +
-						'<button class="button-link" ng-click="' + stopEvent + toggleFilter + '">\n' +
+						'<button class="button-link" ng-click="' + stopEvent + toggleFilter + '" title="{{i18n(\'portal-common-messages.common-filterPopup-showFilter-tooltip\')}}">\n' +
 							'<span class="tbl-col-flt-title" ng-if="!' + filterSet + '">{{i18n("portal-common-messages.common-filterPopup-filterNotSet")}}</span>' + 
 							'<span class="tbl-col-flt-title" ng-if="' + filterSet + '">{{' + filterTitle + '}}</span>' +
 						'</button>';
@@ -1710,7 +1711,7 @@
 				var filterScope = columnFilters[colName].filter.scope();
 				if (self.showColumnFilters[colName]) {
 					columnFilters[colName].filter.css('top', columnFilters[colName].anchor.position().top + 20);
-					columnFilters[colName].filter.css('left', columnFilters[colName].anchor.position().left + 5);
+					columnFilters[colName].filter.css('left', columnFilters[colName].anchor.position().left + 15);
 
 					filterScope.filterData = angular.copy(filterScope.$$filterData);
 				} else {
@@ -1735,7 +1736,10 @@
 			this.applyColumnFilter = function(colName) {
 				var filterScope = columnFilters[colName].filter.scope();
 				if (filterScope.handlers.applyFilter) {
-					filterScope.handlers.applyFilter();
+					var ret = filterScope.handlers.applyFilter();
+					if (!ret) {
+						return;
+					}
 				}
 				self.toggleColumnFilter(colName, true);
 				refresh();
