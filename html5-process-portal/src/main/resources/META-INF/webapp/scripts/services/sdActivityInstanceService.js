@@ -86,8 +86,27 @@
 		 */
 		ActivityInstanceService.prototype.delegateActivities = function(data) {
 			console.log("Delegating activities...");
+			
+			var participantType = data.participant.type;
+			var participantData = data.participant.OID;
+			switch(participantType) {
+				case 'USER':
+				case 'DEPARTMENT':
+					participantData = data.participant.OID;
+					break;
+				case 'ROLE':
+				case 'ORGANIZATION':
+					participantData = data.participant.id;
+					break;
+			}
 
-			return ajax(REST_BASE_URL, "delegate", data);
+			var delegateData = {
+					activities: data.activities,
+					participant: participantData,
+					participantType: participantType
+			};
+			
+			return ajax(REST_BASE_URL, "delegate", delegateData);
 		};
 
 		/*

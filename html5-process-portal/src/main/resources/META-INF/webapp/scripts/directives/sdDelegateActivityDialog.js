@@ -53,7 +53,6 @@
 			 * Initialize the component
 			 */
 			function initialize() {
-				self.fetchParticipants = fetchPage;
 				self.onConfirm = $scope.onConfirm;
 				self.onOpen = $scope.onOpen;
 				
@@ -76,6 +75,7 @@
 			                   ];
 			    
 			    self.participantDataTable = {};
+			    self.participants = {};
 			    
 			    $scope.$watch("activityList", function(activitiesVal) {
 			    	self.activities = activitiesVal;
@@ -86,107 +86,20 @@
 			    		self.participantDataTable.refresh();
 			    	}
 			    });
+			    
+			    self.fetchParticipants = fetchPage;
+			    self.showSearchParticipantSection = showSearchParticipantSection;
+			    self.showSelectParticipantSection = showSelectParticipantSection;
+			    self.onOpenDialog = onOpenDialog;
+			    self.closeThisDialog = closeThisDialog;
+			    self.resetValues = resetValues;
+			    self.confirm = confirm;
+			    self.validate = validate;
 			}
 			
 			DelegateActivityDialogController.prototype.safeApply = function() {
 				sdUtilService.safeApply($scope);
 			};
-			
-			DelegateActivityDialogController.prototype.showSearchParticipantSection = function() {
-				self.searchParticipantSectionVisible = true;
-			}
-			
-			DelegateActivityDialogController.prototype.showSelectParticipantSection = function() {
-				self.searchParticipantSectionVisible = false;
-			}
-			
-			DelegateActivityDialogController.prototype.onOpenDialog = function(result) {
-				self.resetValues();
-				
-				if (angular.isDefined(self.onOpen)) {
-					self.onOpen();
-				}
-			}
-			
-			DelegateActivityDialogController.prototype.closeThisDialog = function(scope) {
-				scope.closeThisDialog();
-			}
-			
-			DelegateActivityDialogController.prototype.resetValues = function() {
-				self.searchParticipantSectionVisible = true;
-				self.searchAllParticipant = false;
-				self.participantDataSelected=[];
-				self.participants = {};
-				self.participantDataTable = {};
-				
-				self.participantType = self.participantTypes[0];
-			}
-			
-			DelegateActivityDialogController.prototype.confirm = function(scope) {
-				var participantData = undefined;
-				var selectedParticipant = {};
-				var participantType = undefined;
-				if (self.searchParticipantSectionVisible) {
-					// Use data from selector
-					if (self.participantDataSelected.length > 0) {
-						selectedParticipant = self.participantDataSelected[0];
-					}
-				} else {
-					if (self.participantDataTable.getSelection().length > 0) {
-						selectedParticipant = self.participantDataTable.getSelection()[0];
-					}
-				}
-				
-				if (angular.isDefined(selectedParticipant)) {
-					participantData = selectedParticipant.OID;
-					participantType = selectedParticipant.type;
-				}
-				
-				var activitiesArr = [];
-				angular.forEach(self.activities, function(actvty) {
-					activitiesArr.push(actvty.oid);
-				});
-				
-				var delegateData = {
-						activities: activitiesArr,
-						participant: participantData,
-						participantType: participantType
-				};
-				if (self.validate(delegateData)) {
-					performDelegate(delegateData).then(function(data) {
-						BridgeUtils.View.syncLaunchPanels();
-						
-						if (angular.isDefined(self.onConfirm)) {
-							self.onConfirm();
-						}
-						
-						self.closeThisDialog(scope);
-					}, function(result) {
-						// Error occurred
-						self.showErrorMessage('save', 'An error occurred while performing delegation.');
-					});
-				}
-			}
-			
-			DelegateActivityDialogController.prototype.validate = function(delegateData) {
-				if (!delegateData) {
-					self.showErrorMessage('general', 'An error occurred.');
-					return false;
-				}
-				if (!angular.isDefined(delegateData.participant)) {
-					self.showErrorMessage('participant', 'Please select a participant.');
-					return false;
-				}
-				if (delegateData.activities.length === 0) {
-					self.showErrorMessage('activities', 'Please select an activity.');
-					return false;
-				}
-				if (!angular.isDefined(delegateData.participantType) || delegateData.participantType == "-1") {
-					self.showErrorMessage('participantType', 'Please select a participant type.');
-					return false;
-				}
-				return true;
-			}
 			
 			DelegateActivityDialogController.prototype.showErrorMessage = function(key, def) {
 				var msg = key;
@@ -204,6 +117,88 @@
 			DelegateActivityDialogController.prototype.resetErrorMessage = function() {
 				// TODO reset the error
 				eventBus.emitMsg("js.error", '');
+			}
+			
+			function showSearchParticipantSection() {
+				self.searchParticipantSectionVisible = true;
+			}
+			
+			function showSelectParticipantSection() {
+				self.searchParticipantSectionVisible = false;
+			}
+			
+			function onOpenDialog(result) {
+				self.resetValues();
+				
+				if (angular.isDefined(self.onOpen)) {
+					self.onOpen();
+				}
+			}
+			
+			function closeThisDialog(scope) {
+				scope.closeThisDialog();
+			}
+			
+			function resetValues() {
+				self.searchParticipantSectionVisible = true;
+				self.searchAllParticipant = false;
+				self.participantDataSelected=[];
+				
+				self.participantType = self.participantTypes[0];
+			}
+			
+			function confirm(scope) {
+				var selectedParticipant = {};
+				if (self.searchParticipantSectionVisible) {
+					// Use data from selector
+					if (self.participantDataSelected.length > 0) {
+						selectedParticipant = self.participantDataSelected[0];
+					}
+				} else {
+					if (angular.isDefined(self.participantDataTable.getSelection())) {
+						selectedParticipant = self.participantDataTable.getSelection();
+					}
+				}
+				
+				var activitiesArr = [];
+				angular.forEach(self.activities, function(actvty) {
+					activitiesArr.push(actvty.oid);
+				});
+				
+				var delegateData = {
+						activities: activitiesArr,
+						participant: selectedParticipant,
+				};
+				if (self.validate(delegateData)) {
+					performDelegate(delegateData).then(function(data) {
+						BridgeUtils.View.syncLaunchPanels();
+						
+						if (angular.isDefined(self.onConfirm)) {
+							self.onConfirm();
+						}
+						
+						self.closeThisDialog(scope);
+					}, function(result) {
+						// Error occurred
+						self.showErrorMessage('save', 'An error occurred while performing delegation.');
+					});
+				}
+			}
+			
+			function validate(delegateData) {
+				if (!delegateData) {
+					self.showErrorMessage('general', 'An error occurred.');
+					return false;
+				}
+				if (!angular.isDefined(delegateData.participant)) {
+					self.showErrorMessage('participant', 'Please select a participant.');
+					return false;
+				}
+				if (delegateData.activities.length === 0) {
+					self.showErrorMessage('activities', 'Please select an activity.');
+					return false;
+				}
+				return true;
 			}
 			
 			function fetchPage(options) {
