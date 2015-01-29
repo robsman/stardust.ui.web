@@ -4,6 +4,9 @@
 		<button class="button-link" sda-column="TRIVIAL_DATA" href="#" ng-click="worklistCtrl.$completeAll()" title="Complete All" class="tbl-toolbar-item tbl-tool-link">
 		   <i class="fa fa-share"></i>
 		</button>
+		<button class="button-link" ng-disabled="worklistCtrl.dataTable.getSelection() < 1" sda-column="TRIVIAL_DATA" href="#" ng-click="worklistCtrl.$openDelegateDialog();" title="Delegate" class="tbl-toolbar-item tbl-tool-link">
+		   <i class="fa fa-user"></i>
+		</button>
 		<button class="button-link" ng-disabled="worklistCtrl.dataTable.getSelection() < 1" href="#" ng-click="worklistCtrl.$openAbortDialog(worklistCtrl.dataTable.getSelection())" title="Abort Activity" class="tbl-toolbar-item tbl-tool-link">
 		   <i class="fa fa-remove"></i>
 		</button>
@@ -17,17 +20,39 @@
 		sda-sortable="true" sda-sort-by="{name : 'started', dir : 'desc'}" sda-on-sorting="worklistCtrl.onSorting(info)">
 		<thead sda-i18n-scope="processportal.views-worklistPanel-column">
 			<tr>
-				<th sda-name="overview" sda-sortable="true"></th>
+				<th sda-name="overview" sda-sortable="true">
+					<div sda-filter-template>
+	           <div sd-process-activity-filter sda-filter-type='activity' sda-processes='worklistCtrl.allAccessibleProcesses' sda-selected-values="filterData" sda-group-items ='false'>
+	           </div>
+    		  </div>
+				</th>
 				<th sda-name="oid" sda-sortable="true" sda-filterable="true" sda-exportable=""></th>
-				<th sda-name="criticality" sda-sortable="true"></th>
-				<th sda-name="priority" sda-sortable="true"></th>
+				<th sda-name="criticality" sda-sortable="true">
+					<div sda-filter-template>
+								<div sd-criticality-filter sda-selected-criticalities="filterData"> </div>
+						</div>
+					</th>
+				<th sda-name="priority" sda-sortable="true">
+					<div sda-filter-template>
+								<div sd-priority-filter sda-selected-priorities="filterData"> </div>
+						</div>
+				</th>
 				<th sda-name="descriptors" sda-visible="true"></th>
 				<th sda-name="started" sda-sortable="true" sda-filterable="true"></th>
 				<th sda-name="lastModified" sda-label-key="lastmodification" sda-sortable="true" sda-filterable="true"></th>
 				<th sda-name="duration" sda-sortable="false"></th>
-				<th sda-name="lastPerformer" sda-sortable="true"></th>
-				<th sda-name="processDefinition" sda-label-key="processName" sda-visible="false"></th>
-				<th sda-name="status" sda-sortable="false" sda-visible="false"></th>
+				<th sda-name="lastPerformer" sda-sortable="false"></th>
+				<th sda-name="processDefinition" sda-label-key="processName" sda-visible="false">
+					<div sda-filter-template>
+	           <div sd-process-activity-filter sda-filter-type='process' sda-processes='worklistCtrl.allAccessibleProcesses' sda-selected-values="filterData" sda-group-items ='false'>
+	           </div>
+    		  </div>
+				</th>
+				<th sda-name="status" sda-sortable="false" sda-visible="false">
+					<div sda-filter-template>
+								<div sd-status-filter sda-selected-statuses ="filterData" >
+					</div>
+				</th>
 				<th sda-name="assignedTo" sda-sortable="false" sda-visible="false"></th>
 				<th ng-repeat="descCol in worklistCtrl.descritorCols"
 					sda-name="{{descCol.id}}" sda-label="{{descCol.title}}" sda-visible="false" sda-sortable="{{descCol.sortable}}">
@@ -117,7 +142,11 @@
 			</tr>
 		</tbody>
 	</table>
-
+	
+	<span sd-delegate-activity-dialog sda-show-dialog="worklistCtrl.showDelegateDialog" sda-activity-list="worklistCtrl.selectedActivity"
+		sda-on-confirm="worklistCtrl.onDelegateConfirm()">
+	</span>
+	
 	<!--Dialog for abort Activity  -->
 	<div sd-abort-activity-dialog sda-show-dialog="worklistCtrl.showAbortActivityDialog" sda-on-abort-complete="worklistCtrl.abortCompleted()" sda-activities-to-abort="worklistCtrl.activitiesToAbort" ></div>
 </div>

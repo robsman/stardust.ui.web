@@ -43,7 +43,7 @@ public class CriticalityUtils {
 	 * @param criticalityConfiguration
 	 * @return CriticalityCategory
 	 */
-	private  CriticalityCategory getCriticalityCategory(int criticality,
+	public  CriticalityCategory getCriticalityCategory(int criticality,
 			List<CriticalityCategory> criticalityConfiguration) {
 		
 		for (CriticalityCategory cCat : criticalityConfiguration) {
@@ -65,15 +65,5 @@ public class CriticalityUtils {
 		return CriticalityConfigurationUtil.getPortalCriticality(engineCriticality);
 	}
 
-	/**
-	 * Returns the criticality label for a criticality value.
-	 * @param criticality
-	 * @param criticalityConfiguration
-	 * @return
-	 */
-	public String getCriticalityLabel(int criticality , List<CriticalityCategory> criticalityConfiguration) {
-		CriticalityCategory category = getCriticalityCategory(criticality, criticalityConfiguration);
-		return CriticalityConfigurationUtil.getCriticalityDisplayLabel(criticality, category);
-	}
 
 }

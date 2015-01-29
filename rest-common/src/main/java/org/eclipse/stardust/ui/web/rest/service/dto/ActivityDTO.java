@@ -24,7 +24,10 @@ public class ActivityDTO extends AbstractDTO
 {
    @DTOAttribute("id")
    public String id;
-
+   
+   @DTOAttribute("qualifiedId")
+   public String qualifiedId;
+   
    @DTOAttribute("name")
    public String name;
 
@@ -36,4 +39,6 @@ public class ActivityDTO extends AbstractDTO
 
    @DTOAttribute("implementationType.name")
    public String implementationTypeName;
+   
+   public Boolean auxillary;
 }

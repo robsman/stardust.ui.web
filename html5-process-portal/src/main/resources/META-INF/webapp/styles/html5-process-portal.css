@@ -107,3 +107,69 @@ list-style: none;
 .priority-flag{
   font-size: 18px;
 }
+/* ********** Process Activity Filter ********** */
+
+ .auxillaryGearDisabled{
+   color : gray;
+ }
+
+ .auxillary-gear{
+  font-size: 18px;
+
+ }
+
+/* ********** Priority and criticality Filter ********** */
+
+.priority-criticality-filter-ac-container{
+    width:200;
+    border:solid 1px #ddd;
+    padding:2px;
+}
+
+
+.priority-criticality-filter-ac-container div[name='sd-ac-tag']{
+    display:inline-table;
+    font-size: 12px;
+    font-family: Lato;
+    padding: 0px 4px 0px 4px;
+    border:solid 1px #ccd5e4;
+    background-color:#eff2f7;
+    border-radius: 4px;
+    cursor:pointer;
+    margin-left:2px;
+    margin-top:2px;
+    margin-bottom:2px;
+}
+
+
+.priority-criticality-filter-ac-container div[name='sd-ac-tag']:after{
+    content:'x';
+    font-size:0.9em;
+    position:relative;
+    top:-1px;
+}
+
+
+.priority-criticality-filter-ac-container div[name='sd-ac-selectList']{
+    position:absolute;
+    border:solid 1px #AAA;
+    background-color:#fff;
+    border-radius:5px;
+    padding:0px;
+    -moz-box-shadow: 2px 3px 4px 0px #E2E2E2;
+    -webkit-box-shadow: 2px 3px 4px 0px #E2E2E2;
+    box-shadow: 2px 3px 4px 0px #E2E2E2;
+    width:inherit;
+}
+
+
+.priority-criticality-filter-ac-container [name='sd-ac-selectList'] div{
+    cursor:pointer;
+    font-family:Lato;
+    font-size:0.8em;
+    padding:2px;
+    background-color:#fff;
+}
+.priority-criticality-filter-container{
+  width: 200px
+}

@@ -36,6 +36,7 @@ import org.eclipse.stardust.ui.web.rest.exception.PortalRestException;
 import org.eclipse.stardust.ui.web.rest.service.ActivityInstanceService;
 import org.eclipse.stardust.ui.web.rest.service.DelegationComponent;
 import org.eclipse.stardust.ui.web.rest.service.ParticipantSearchComponent;
+import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceOutDataDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
@@ -374,6 +375,26 @@ public class ActivityInstanceResource
       
       return Response.ok(delegationComponent.delegate(postedData), MediaType.APPLICATION_JSON).build();
    }
+    
+    
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/availableCriticalities")
+    public Response getAvailiableCriticalities()
+    {
+       try
+       {
+          
+          return Response.ok(AbstractDTO.toJson(getActivityInstanceService().getCriticalities()), MediaType.APPLICATION_JSON).build();
+       }
+       catch (Exception e)
+       {
+          trace.error(e, e);
+
+          return Response.serverError().build();
+       }
+    }
+	
     
    /** 
     * @author Yogesh.Manware

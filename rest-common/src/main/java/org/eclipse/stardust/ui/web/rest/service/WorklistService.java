@@ -85,7 +85,7 @@ public class WorklistService
    {
       List<ActivityInstanceDTO> list = new ArrayList<ActivityInstanceDTO>();
       
-      List<CriticalityCategory>  criticalityConfiguration = criticalityUtils.getCriticalityConfiguration();
+      List<CriticalityCategory>  criticalityConfigurations = criticalityUtils.getCriticalityConfiguration();
       
       for (Object object : queryResult)
       {
@@ -110,10 +110,11 @@ public class WorklistService
         	dto.status = ActivityInstanceUtils.getActivityStateLabel(ai);
             dto.assignedTo = getAssignedToLabel(ai);
            
-            CriticalityDTO criticalityDTO = new CriticalityDTO();
-            criticalityDTO.value = criticalityUtils.getPortalCriticalityValue(ai.getCriticality());
-            criticalityDTO.color = criticalityUtils.getCriticalityIconColor( criticalityDTO.value, criticalityConfiguration);
-            criticalityDTO.label = criticalityUtils.getCriticalityLabel(criticalityDTO.value, criticalityConfiguration);
+      
+            int criticalityValue = criticalityUtils.getPortalCriticalityValue(ai.getCriticality());
+            CriticalityCategory criticalCategory =  criticalityUtils.getCriticalityCategory(criticalityValue, criticalityConfigurations);
+            CriticalityDTO criticalityDTO = DTOBuilder.build(criticalCategory, CriticalityDTO.class);
+            criticalityDTO.value = criticalityValue;
             dto.criticality = criticalityDTO; 
             
             

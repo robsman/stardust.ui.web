@@ -35,70 +35,88 @@ import org.eclipse.stardust.ui.web.rest.service.dto.ProcessDefinitionDTO;
 @Path("/process-definitions")
 public class ProcessDefinitionResource
 {
-   private static final Logger trace = LogManager
-         .getLogger(ActivityInstanceResource.class);
+	private static final Logger trace = LogManager
+			.getLogger(ActivityInstanceResource.class);
 
-   @Autowired
-   private ProcessDefinitionService processDefinitionService;
+	@Autowired
+	private ProcessDefinitionService processDefinitionService;
 
-   // private final JsonMarshaller jsonIo = new JsonMarshaller();
+	// private final JsonMarshaller jsonIo = new JsonMarshaller();
 
-   /**
-    * @return
-    */
-   @GET
-   @Produces(MediaType.APPLICATION_JSON)
-   @Path("startable.json")
-   public Response getStartableProcesses()
-   {
-      try
-      {
-         List<ProcessDefinitionDTO> startableProcesses = getProcessDefinitionService()
-               .getStartableProcesses();
+	/**
+	 * @return
+	 */
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("startable.json")
+	public Response getStartableProcesses()
+	{
+		try
+		{
+			List<ProcessDefinitionDTO> startableProcesses = getProcessDefinitionService()
+					.getStartableProcesses();
 
-         return Response.ok(AbstractDTO.toJson(startableProcesses), MediaType.APPLICATION_JSON).build();
-      }
-      catch (Exception e)
-      {
-         trace.error(e, e);
+			return Response.ok(AbstractDTO.toJson(startableProcesses), MediaType.APPLICATION_JSON).build();
+		}
+		catch (Exception e)
+		{
+			trace.error(e, e);
 
-         return Response.serverError().build();
-      }
-   }
+			return Response.serverError().build();
+		}
+	}
 
-   @GET
-   @Produces(MediaType.APPLICATION_JSON)
-   @Path("descriptor-columns")
-   public Response getDescriptors(@QueryParam("onlyFilterable") @DefaultValue("false") Boolean onlyFilterable)
-   {
-      try
-      {
-         List<DescriptorColumnDTO> descriptors = getProcessDefinitionService().getDescriptorColumns(onlyFilterable);
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("descriptor-columns")
+	public Response getDescriptors(@QueryParam("onlyFilterable") @DefaultValue("false") Boolean onlyFilterable)
+	{
+		try
+		{
+			List<DescriptorColumnDTO> descriptors = getProcessDefinitionService().getDescriptorColumns(onlyFilterable);
 
-         return Response.ok(AbstractDTO.toJson(descriptors), MediaType.APPLICATION_JSON).build();
-      }
-      catch (Exception e)
-      {
-         trace.error(e, e);
+			return Response.ok(AbstractDTO.toJson(descriptors), MediaType.APPLICATION_JSON).build();
+		}
+		catch (Exception e)
+		{
+			trace.error(e, e);
 
-         return Response.serverError().build();
-      }
-   }
-   
-   /**
-    * @return
-    */
-   public ProcessDefinitionService getProcessDefinitionService()
-   {
-      return processDefinitionService;
-   }
+			return Response.serverError().build();
+		}
+	}
 
-   /**
-    * @param processDefinitionService
-    */
-   public void setProcessDefinitionService(
-         ProcessDefinitionService processDefinitionService)
-   {
-      this.processDefinitionService = processDefinitionService;
-   }
+
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("all-processes")
+	public Response getAllProcesses(@QueryParam("excludeActivities") @DefaultValue("false") Boolean excludeActivities)
+	{
+		try
+		{
+			return Response.ok(AbstractDTO.toJson(getProcessDefinitionService().getAllProcesses(excludeActivities)), MediaType.APPLICATION_JSON)
+					.build();
+		}
+		catch (Exception e)
+		{
+			trace.error(e, e);
+			return Response.serverError().build();
+		}
+
+	}
+	/**
+	 * @return
+	 */
+	public ProcessDefinitionService getProcessDefinitionService()
+	{
+		return processDefinitionService;
+	}
+
+	/**
+	 * @param processDefinitionService
+	 */
+	public void setProcessDefinitionService(
+			ProcessDefinitionService processDefinitionService)
+	{
+		this.processDefinitionService = processDefinitionService;
+	}
 }

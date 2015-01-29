@@ -97,6 +97,9 @@
 			this.showAbortActivityDialog = false;
 			this.activitiesToAbort = [];
 
+			//All processes with activities
+			this.allAccessibleProcesses = [];
+
 			// Process Query
 			if (!attr.sdaQuery) {
 				throw 'Query attribute is not specified for worklist.';
@@ -182,6 +185,7 @@
 			}
 
 			this.fetchDescriptorCols();
+			this.fetchAllProcesses();
 		};
 
 		/*
@@ -278,6 +282,17 @@
 		/*
 		 * 
 		 */
+		WorklistCompiler.prototype.fetchAllProcesses = function() {
+			var self = this;
+
+			sdProcessDefinitionService.getAllProcesses(false).then(function(processes) {
+				self.allAccessibleProcesses = processes;
+			});
+		};
+
+		/*
+		 *
+		 */
 		WorklistCompiler.prototype.activateWorkItem = function(workItem) {
 			sdViewUtilService.openView("activityPanel", "OID=" + workItem.oid, {"oid" : "" + workItem.oid});
 		};
@@ -371,10 +386,12 @@
 			}
 		};
 		
+
 		WorklistCompiler.prototype.onDelegateConfirm = function() {
 			this.refresh();
 		};
 		
+
 		/*
 		 *
 		 */
