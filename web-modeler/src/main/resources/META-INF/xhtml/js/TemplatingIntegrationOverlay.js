@@ -590,6 +590,7 @@ define(
                   this.textAreaConfigurationDiv.hide();
                   this.outputAccessPointRow.show();
                   this.outputNameRow.hide();
+                 
                   if (location == "embedded")
                   {
                      this.textAreaConfigurationDiv.show();
@@ -620,6 +621,7 @@ define(
                            this.outputNameRow.show();
                      }
                   }
+                  this.populateFormatInputField();
                };
                /**
                 * returns camel route definition
