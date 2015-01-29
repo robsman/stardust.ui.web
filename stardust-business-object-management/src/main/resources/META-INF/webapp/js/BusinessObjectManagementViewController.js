@@ -116,7 +116,8 @@ define(
 					console.log("Before form");
 					console.log(this.businessObject.modelOid);
 					this.initializeForm();
-
+					// Perform default search with no filter
+					this.businessObjectManagementPanelController.filterBusinessObjectInstances();
 					console.log("Changed Business Object");
 					console.log(this.businessObject.modelOid);
 				};
