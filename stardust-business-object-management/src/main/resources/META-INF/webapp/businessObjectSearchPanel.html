@@ -19,7 +19,7 @@
 				<tbody>
 					<tr
 						sd-table-data="businessObjectInstance in businessObjectManagementPanelController.relatedBusinessObjectInstances"
-						sd-table-selection="businessObjectManagementPanelController.relatedBusinessObjInstancesToRemove">
+						sd-table-selection="businessObjectManagementPanelController.selectedCurrentBusinessObjInstance">
 						<td>{{businessObjectInstance[businessObjectManagementPanelController.businessObject.primaryKeyField.id]}}</td>
 						<td
 							ng-repeat="field in businessObjectManagementPanelController.businessObject.keyFields" ng-hide="field.list">

@@ -547,7 +547,7 @@ define(
 					var relatedBusinessObjectInstances = this.relationshipPanelController.relatedBusinessObjectInstances;
 					var thisForeignKeyField = this.relationshipPanelController.relationship.thisForeignKeyField;
 					var cardinality = this.relationshipPanelController.relationship.otherCardinality;
-					var detachedBusinessObjectInstaces = this.relationshipPanelController.relatedBusinessObjInstancesToRemove;
+					var detachedBusinessObjectInstaces = this.relationshipPanelController.businessInstancesToRemove;
 					
 					if ("TO_ONE" == cardinality
 							&& relatedBusinessObjectInstances.length > 1) {

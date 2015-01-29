@@ -30,6 +30,7 @@ define(
 					this.businessObjectFilter = {};
 					this.selectedBusinessObjectInstances = [];
 					this.relatedBusinessObjectInstances = [];
+					this.businessInstancesToRemove = [];
 					this.keyFields=[];
 				};
 
@@ -65,9 +66,9 @@ define(
 						// Remove from array of removable BO instances
 						idx = jQuery.inArray(
 								this.selectedBusinessObjectInstances[n],
-								this.relatedBusinessObjInstancesToRemove);
+								this.businessInstancesToRemove);
 						if (idx != -1) {
-							this.relatedBusinessObjInstancesToRemove.splice(
+							this.businessInstancesToRemove.splice(
 									idx, 1);
 						}
 					}
@@ -79,11 +80,12 @@ define(
 				 * 
 				 */
 				BusinessObjectManagementPanelController.prototype.removeInstanceFromRelationship = function() {
-					for ( var n = 0; n < this.relatedBusinessObjInstancesToRemove.length; ++n) {
+					for ( var n = 0; n < this.selectedCurrentBusinessObjInstance.length; ++n) {
 						var idx = jQuery.inArray(
-								this.relatedBusinessObjInstancesToRemove[n],
+								this.selectedCurrentBusinessObjInstance[n],
 								this.relatedBusinessObjectInstances);
 						if (idx != -1) {
+							this.businessInstancesToRemove.push(this.relatedBusinessObjectInstances[idx]);
 							this.relatedBusinessObjectInstances.splice(idx, 1);
 						}
 					}
@@ -126,8 +128,9 @@ define(
 					console.log(this.businessObject);
 
 					this.selectedBusinessObjectInstances = [];
+					this.selectedCurrentBusinessObjInstance = [];
 					this.relatedBusinessObjectInstances = [];
-					this.relatedBusinessObjInstancesToRemove = [];
+					this.businessInstancesToRemove = [];
 					// To keep track of old relationships, on table selection change
 					if (foreignKeys && foreignKeys.length) {
 						for (var n = 0; n < this.businessObjectInstances.length; ++n) {
