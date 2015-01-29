@@ -11,6 +11,7 @@
 package org.eclipse.stardust.ui.web.rest;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,8 +30,13 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.engine.api.query.ProcessDefinitionQuery;
+import org.eclipse.stardust.engine.api.runtime.ProcessDefinitions;
+import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
+import org.eclipse.stardust.engine.api.runtime.SubprocessSpawnInfo;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.exception.PortalRestException;
 import org.eclipse.stardust.ui.web.rest.service.ActivityInstanceService;
@@ -42,8 +48,11 @@ import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceOutDataDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.SwitchProcessDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.TrivialManualActivityDTO;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -413,6 +422,107 @@ public class ActivityInstanceResource
        }
     }
 	
+    
+    /**
+     * @author Nikhil.Gahlot
+     * @param processInstanceOID
+     * @return
+     */
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/spawnableProcesses/{activityInstanceOid: \\d+}")
+   public Response spawnableProcesses(@PathParam("activityInstanceOid") long activityInstanceOid)
+   {
+    	try {
+	      ActivityInstanceDTO aiDTO = getActivityInstanceService().getActivityInstance(
+	                activityInstanceOid);
+	      if (aiDTO != null) {
+		      ProcessInstance rootProcessInstance = getProcessInstance(aiDTO.processInstance.oid);
+		      ProcessDefinitions pds = ServiceFactoryUtils.getQueryService().getProcessDefinitions(
+		    	            ProcessDefinitionQuery.findStartable(rootProcessInstance.getModelOID()));
+		      return Response.ok(GsonUtils.toJsonHTMLSafeString(pds), MediaType.APPLICATION_JSON).build();
+	      }
+	      return Response.ok("", MediaType.APPLICATION_JSON).build();
+    	} catch (Exception e) {
+			trace.error(e, e);
+	        return Response.serverError().build();
+		}
+   }
+    
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/spawnProcesses/{activityInstanceOid: \\d+}")
+   public Response spawnProcesses(@PathParam("activityInstanceOid") long activityInstanceOid, String processNamesData)
+   {
+    
+      try {
+		List<ProcessInstanceDTO> subprocessInstances = new ArrayList<ProcessInstanceDTO>();
+		  ActivityInstanceDTO aiDTO = getActivityInstanceService().getActivityInstance(
+		            activityInstanceOid);
+		  if (aiDTO != null) {
+			String[] processNames = GsonUtils.fromJson(processNamesData, String[].class);
+			if (CollectionUtils.isNotEmpty(processNames))
+		    {
+		       List<SubprocessSpawnInfo> infoList = CollectionUtils.newArrayList();
+		       for (String process : processNames)
+		       {
+		          SubprocessSpawnInfo info = new SubprocessSpawnInfo(process, true, null);
+		          infoList.add(info);
+		       }
+		       List<ProcessInstance> result = ServiceFactoryUtils.getWorkflowService().spawnSubprocessInstances(aiDTO.processInstance.oid,
+		    		   infoList);
+		       for (ProcessInstance pi : result) {
+		    	   ProcessInstanceDTO dto = new ProcessInstanceDTO();
+		    	   dto.processName = pi.getProcessName();
+		    	   dto.oid = pi.getOID();
+		    	   subprocessInstances.add(dto);
+		       }
+		    }
+		  }
+		  return Response.ok(GsonUtils.toJsonHTMLSafeString(subprocessInstances), MediaType.APPLICATION_JSON).build();
+		} catch (Exception e) {
+			trace.error(e, e);
+	        return Response.serverError().build();
+		}
+   }
+    
+    
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/switchProcess/{activityInstanceOid: \\d+}")
+   public Response switchProcess(@PathParam("activityInstanceOid") long activityInstanceOid, String processData)
+   {
+    
+      try {
+    	  List<ProcessInstanceDTO> subprocessInstances = new ArrayList<ProcessInstanceDTO>();
+		  ActivityInstanceDTO aiDTO = getActivityInstanceService().getActivityInstance(
+		            activityInstanceOid);
+		  if (aiDTO != null) {
+	    	  SwitchProcessDTO processDTO = GsonUtils.fromJson(processData, SwitchProcessDTO.class);
+			       
+		      ProcessInstance pi = ServiceFactoryUtils.getWorkflowService().spawnPeerProcessInstance(
+		    		  aiDTO.processInstance.oid, processDTO.processId, true, null, true, processDTO.linkComment);
+	    	   
+		      ProcessInstanceDTO dto = new ProcessInstanceDTO();
+	    	  dto.processName = pi.getProcessName();
+	    	  dto.oid = pi.getOID();
+		    	   
+	    	  subprocessInstances.add(dto);
+		  }
+		  return Response.ok(GsonUtils.toJsonHTMLSafeString(subprocessInstances), MediaType.APPLICATION_JSON).build();
+		} catch (Exception e) {
+			trace.error(e, e);
+	        return Response.serverError().build();
+		}
+   }
+    
+	private ProcessInstance getProcessInstance(long processInstanceOID)
+	{
+	    return ProcessInstanceUtils.getProcessInstance(Long.valueOf(processInstanceOID));
+	}
     
    /** 
     * @author Yogesh.Manware
