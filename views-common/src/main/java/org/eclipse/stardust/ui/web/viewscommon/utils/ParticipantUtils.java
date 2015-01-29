@@ -231,7 +231,12 @@ public class ParticipantUtils
          case SCOPED_ORGANIZATION:
          case SCOPED_ROLE:
             String modelId = ModelUtils.extractModelId(partcipantQID);
-            String participantId = ModelUtils.extractModelId(partcipantQID);
+            String participantId = ModelUtils.extractParticipantId(partcipantQID);
+            if (null == participantId)
+            {
+               participantId = partcipantQID;
+            }
+   
             if (null == modelId)
             {
                modelId = PredefinedConstants.PREDEFINED_MODEL_ID;
