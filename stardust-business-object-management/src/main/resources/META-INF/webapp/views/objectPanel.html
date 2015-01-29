@@ -15,24 +15,24 @@
 						<div ng-hide="getBusinessObject().types[field.type].values">
                             <input
 								ng-show="field.type == 'string' && field.ui.StringInputPreferences_stringInputType != 'TEXTAREA'"
-								type="text" style="width: 200px;" ng-model="instance[field.id]"></input>
+								type="text" style="width: 200px;" ng-model="instance[field.id]" ng-disabled="isPrimaryKeyUpdate(field)"></input>
 							<input ng-show="field.type == 'boolean'" type="checkbox"
 								ng-model="instance[field.id]"></input>
 							<input ng-show="isNumberType(field.type)" type="number"
 								style="width: 100px; text-align: right;"
-								ng-model="instance[field.id]"></input>
+								ng-model="instance[field.id]" ng-disabled="isPrimaryKeyUpdate(field)"></input>
 							<input ng-show="field.type == 'decimal' || field.type == 'double' || field.type == 'float'" type="text"
 								style="width: 100px; text-align: right;"
-								ng-model="instance[field.id]"></input>
+								ng-model="instance[field.id]" ng-disabled="isPrimaryKeyUpdate(field)"></input>
 							<input ng-show="field.type == 'byte'" type="text"
 								style="width: 100px; text-align: right;"
-								ng-model="instance[field.id]"></input>	
+								ng-model="instance[field.id]" ng-disabled="isPrimaryKeyUpdate(field)"></input>	
 						  <input ng-show="field.type == 'date'" type="date"
 								style="width: 130px; text-align: right;"
-								ng-model="instance[field.id]"></input> 
+								ng-model="instance[field.id]" ng-disabled="isPrimaryKeyUpdate(field)"></input> 
 							<input ng-show="field.type == 'dateTime'" type="datetime-local"
 								style="width: 210px; text-align: right;"
-								ng-model="instance[field.id]"></input> 	
+								ng-model="instance[field.id]" ng-disabled="isPrimaryKeyUpdate(field)"></input> 	
 						</div></td>
 				</tr>
 			</table>

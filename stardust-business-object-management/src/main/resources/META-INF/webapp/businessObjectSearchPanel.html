@@ -60,7 +60,15 @@
 		<table class="formTable">
 			<tr>
 				<td><label>{{businessObjectManagementPanelController.businessObject.primaryKeyField.label}}</label>
-					<input type="number" style="width: 100px; margin-left: 5px;"
+					<!-- Added support for numeric and String Primary Key field -->
+					<input type="string"
+					ng-hide="isNumberType(businessObjectManagementPanelController.businessObject.primaryKeyField.type)"
+					style="width: 100px; margin-left: 5px;"
+					ng-model="businessObjectManagementPanelController.businessObject.primaryKeyField.filterValue"
+					ng-blur="businessObjectManagementPanelController.filterBusinessObjectInstances()">
+					<input type="number"
+					ng-show="isNumberType(businessObjectManagementPanelController.businessObject.primaryKeyField.type)"
+					style="width: 100px; margin-left: 5px;"
 					ng-model="businessObjectManagementPanelController.businessObject.primaryKeyField.filterValue"
 					ng-blur="businessObjectManagementPanelController.filterBusinessObjectInstances()"></input>
 				</td>
@@ -96,7 +104,7 @@
 					ng-model="field.filterValue"
 					ng-change="businessObjectManagementPanelController.filterBusinessObjectInstances()"></input>
 				</td>
-				<td><a href="#" class="iconLink menuBarLink" title="Refresh"><i
+				<td><a href="#" class="iconLink menuBarLink" title="Reset"><i
 						class="fa fa-eraser"
 						ng-click="businessObjectManagementPanelController.clearFilters()"></i>
 				</a></td>

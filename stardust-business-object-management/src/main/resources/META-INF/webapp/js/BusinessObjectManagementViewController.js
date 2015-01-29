@@ -337,6 +337,21 @@ define(
 				BusinessObjectManagementViewController.prototype.getBusinessObject = function() {
 					return this.businessObjectManagementPanelController.businessObject;
 				};
+				
+				/**
+				 * Temp. fix to disable PK update, remove once server API for PK available
+				 */
+				BusinessObjectManagementViewController.prototype.isPrimaryKeyUpdate = function(
+						field) {
+					// Check if operation in UPDATE and field is primaryKey field.
+					if ((this.currentBusinessObjectInstance[field.id] && this.newBusinessObjectInstance == null)
+							&& field.id == this.getBusinessObject().primaryKeyField.id) {
+						return true;
+					} else {
+						return false;
+					}
+				}
+						
 
 				/**
 				 * 
