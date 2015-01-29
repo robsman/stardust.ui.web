@@ -4,9 +4,6 @@
 		<button class="button-link" sda-column="TRIVIAL_DATA" href="#" ng-click="worklistCtrl.$completeAll()" title="Complete All" class="tbl-toolbar-item tbl-tool-link">
 		   <i class="fa fa-share"></i>
 		</button>
-		<button class="button-link" ng-disabled="worklistCtrl.dataTable.getSelection() < 1" sda-column="TRIVIAL_DATA" href="#" ng-click="worklistCtrl.$openDelegateDialog();" title="Delegate" class="tbl-toolbar-item tbl-tool-link">
-		   <i class="fa fa-user"></i>
-		</button>
 		<button class="button-link" ng-disabled="worklistCtrl.dataTable.getSelection() < 1" href="#" ng-click="worklistCtrl.$openAbortDialog(worklistCtrl.dataTable.getSelection())" title="Abort Activity" class="tbl-toolbar-item tbl-tool-link">
 		   <i class="fa fa-remove"></i>
 		</button>
@@ -22,15 +19,22 @@
 			<tr>
 				<th sda-name="overview" sda-sortable="true"></th>
 				<th sda-name="oid" sda-sortable="true" sda-filterable="true" sda-exportable=""></th>
-				<th sda-name="processDefinition" sda-label-key="processName" sda-visible="false"></th>
+				<th sda-name="criticality" sda-sortable="true"></th>
+				<th sda-name="priority" sda-sortable="true"></th>
+				<th sda-name="descriptors" sda-visible="true"></th>
 				<th sda-name="started" sda-sortable="true" sda-filterable="true"></th>
 				<th sda-name="lastModified" sda-label-key="lastmodification" sda-sortable="true" sda-filterable="true"></th>
-				<th sda-name="descriptors" sda-visible="false"></th>
+				<th sda-name="duration" sda-sortable="false"></th>
+				<th sda-name="lastPerformer" sda-sortable="true"></th>
+				<th sda-name="processDefinition" sda-label-key="processName" sda-visible="false"></th>
+				<th sda-name="status" sda-sortable="false" sda-visible="false"></th>
+				<th sda-name="assignedTo" sda-sortable="false" sda-visible="false"></th>
 				<th ng-repeat="descCol in worklistCtrl.descritorCols"
 					sda-name="{{descCol.id}}" sda-label="{{descCol.title}}" sda-visible="false" sda-sortable="{{descCol.sortable}}">
 				</th>
-				<th sda-name="data" sda-column="TRIVIAL_DATA"></th>
+				<th sda-name="data" sda-column="TRIVIAL_DATA" sda-sortable="false"></th>
 				<th sda-name="actions" sda-fixed="true"></th>
+
 			</tr>
 		</thead>
 		<tbody>
@@ -41,9 +45,8 @@
 					</a>
 				</td>
 				<td sda-data-type="int" style="text-align: center;"></td>
-				<td sda-field="processInstance.processName"></td>
-				<td sda-field="start" sda-data-type="dateTime" style="text-align: center; white-space: nowrap;"></td>
-				<td sda-field="lastModification" sda-data-type="dateTime" style="text-align: center; white-space: nowrap;"></td>
+				<td><div sd-activity-criticality></div></td>
+				<td><div sd-process-priority></div></td>
 				<td>
 					<table>
 						<tr ng-repeat="desc in rowData.descriptors">
@@ -53,6 +56,13 @@
 					</table>
 					<div sd-editor-template></div>
 				</td>
+				<td sda-field="start" sda-data-type="dateTime" style="text-align: center; white-space: nowrap;"></td>
+				<td sda-field="lastModification" sda-data-type="dateTime" style="text-align: center; white-space: nowrap;"></td>
+				<td sda-field="duration"></td>
+				<td sda-field="lastPerformer" ></td>
+				<td sda-field="processInstance.processName"></td>
+				<td sda-field="status" ></td>
+				<td sda-field="assignedTo"></td>
 				<td ng-repeat="descCol in worklistCtrl.descritorCols"
 					sda-field="{{descCol.field}}" sda-data-type="{{descCol.dataType}}" style="white-space: nowrap;">
 				</td>
@@ -67,11 +77,11 @@
 					                    ng-init="worklistCtrl.worklist.trivialManualActivities[rowData.oid].inOutData[mapping.id] = worklistCtrl.worklist.trivialManualActivities[rowData.oid].inOutData[mapping.id] || mapping.enumValues[0]"
 					                    ng-options="enumVal for enumVal in mapping.enumValues">
 									</select>
-					                  
+
 									<input type="text" ng-click="bpmCommon.stopEvent($event)"
 					                	ng-show="mapping.typeName == 'java.lang.String'"
 					                    ng-model="worklistCtrl.worklist.trivialManualActivities[rowData.oid].inOutData[mapping.id]" />
-					
+
 									<input type="checkbox" ng-click="bpmCommon.stopEvent($event)"
 										ng-show="mapping.typeName == 'java.lang.Boolean'"
 										ng-model="worklistCtrl.worklist.trivialManualActivities[rowData.oid].inOutData[mapping.id]" />
@@ -90,7 +100,7 @@
 						<i class="fa fa-tasks"></i>
 					</a>
 					<a sda-column="TRIVIAL_DATA" href="#"
-						ng-disabled="!worklistCtrl.worklist.trivialManualActivities[rowData.oid]" 
+						ng-disabled="!worklistCtrl.worklist.trivialManualActivities[rowData.oid]"
 						ng-click="bpmCommon.stopEvent($event); worklistCtrl.$complete(rowData);"
 						title="Complete" class="view-tool-link">
 						<i class="fa fa-share"></i>
@@ -107,11 +117,7 @@
 			</tr>
 		</tbody>
 	</table>
-	
-	<span sd-delegate-activity-dialog sda-show-dialog="worklistCtrl.showDelegateDialog" sda-activity-list="worklistCtrl.selectedActivity"
-		sda-on-confirm="worklistCtrl.onDelegateConfirm()">
-	</span>
-	
+
 	<!--Dialog for abort Activity  -->
 	<div sd-abort-activity-dialog sda-show-dialog="worklistCtrl.showAbortActivityDialog" sda-on-abort-complete="worklistCtrl.abortCompleted()" sda-activities-to-abort="worklistCtrl.activitiesToAbort" ></div>
 </div>

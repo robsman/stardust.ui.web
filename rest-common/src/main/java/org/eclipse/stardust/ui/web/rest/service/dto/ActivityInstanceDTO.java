@@ -15,6 +15,7 @@ import java.util.Map;
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOAttribute;
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOClass;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDescriptor;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 
 
 /**
@@ -39,6 +40,25 @@ public class ActivityInstanceDTO extends AbstractDTO
 
    @DTOAttribute("processInstance")
    public ProcessInstanceDTO processInstance;
-
+   
+   public CriticalityDTO criticality;
+   
+   @DTOAttribute("processInstance.priority")
+   public String priority;
+   
+   public String duration;
+   
+   public String lastPerformer;
+   
+   @DTOAttribute("state.name")
+   public String status;
+   
+   public String assignedTo;
+   
    public Map<String, ProcessDescriptor> descriptors;
+   
+   public void setPriority(Integer priority) {
+	this.priority = ProcessInstanceUtils.getPriorityValue(priority);
+}
+   
 }

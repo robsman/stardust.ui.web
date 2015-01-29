@@ -49,5 +49,61 @@ padding-left: 10px;
 list-style: none;
 }
 
+/* ********** Activity Criticality flags ********** */
+.criticality-flag-RED{
+  color :#FC3838;
+}
 
+.criticality-flag-YELLOW{
+  color :#FFCC00;
+}
 
+.criticality-flag-BLUE{
+  color :#3D66E0;
+}
+
+.criticality-flag-GREEN{
+  .color:green;
+}
+
+.criticality-flag-PURPLE{
+  color:#C748F2;
+}
+
+.criticality-flag-ORANGE{
+  color:orange;
+}
+
+.criticality-flag-PINK{
+  color:pink;
+}
+
+.criticality-flag-WHITE-WARNING{
+  color:black;
+}
+
+.criticality-flag-WHITE{
+  color:black;
+}
+
+.criticality-flag{
+  font-size: 18px;
+}
+
+/* ********** Process Priority flags ********** */
+
+.priority-flag-high{
+  color :#FC3838;
+}
+
+.priority-flag-normal{
+  color :#FFCC00;
+}
+
+.priority-flag-low{
+  color :#3D66E0;
+}
+
+.priority-flag{
+  font-size: 18px;
+}
