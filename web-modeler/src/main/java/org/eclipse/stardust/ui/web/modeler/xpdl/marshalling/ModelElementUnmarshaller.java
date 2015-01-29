@@ -2984,6 +2984,15 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
     */
    private void updateModel(ModelType model, JsonObject modelJson)
    {
+      if (modelJson.has(ModelerConstants.ID_PROPERTY))
+      {
+         String id = modelJson.get(ModelerConstants.ID_PROPERTY).getAsString();
+         if (modelBuilderFacade.getModelManagementStrategy().getModels().containsKey(id))
+         {
+            throw new IllegalArgumentException("Model ID already exists.");
+         }
+      }
+
       updateIdentifiableElement(model, modelJson);
 
       mapDeclaredProperties(model, modelJson, propertiesMap.get(ModelType.class));

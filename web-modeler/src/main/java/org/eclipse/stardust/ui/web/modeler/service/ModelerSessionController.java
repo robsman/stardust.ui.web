@@ -526,10 +526,12 @@ public class ModelerSessionController
             commandId, changeDescriptors);
       if (null != change)
       {
-         postprocessChange(change);
-
          change.getMetadata().put("commandId", commandId);
          change.getMetadata().put("modelId", modelBinding.getModelId(model));
+
+         postprocessChange(change);
+
+
          if (null != commandJto.account)
          {
             change.getMetadata().put("account", commandJto.account);
