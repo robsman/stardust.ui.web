@@ -70,8 +70,7 @@
 					</select>
 					</td>
 					<td><select ng-model="relationship.otherForeignKeyField"
-						ng-options="field as field.cardinalityLabel for field in elementView.propertiesPage.topLevelFields
-						 | filter : {name : '!' + elementView.propertiesPage.propertiesPanel.data.attributes['carnot:engine:primaryKey']}"
+						ng-options="field as field.cardinalityLabel for field in elementView.propertiesPage.topLevelFields"
 						ng-change="elementView.propertiesPage.submitRelationshipChanges(relationship, $index)"><option
 								value="">Please select ...</option></select></td>
 					<td><input ng-model="relationship.thisRole"
