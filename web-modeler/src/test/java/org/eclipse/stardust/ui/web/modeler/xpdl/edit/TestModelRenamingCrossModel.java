@@ -41,8 +41,7 @@ public class TestModelRenamingCrossModel extends TestCrossModelSupport
       assertReferencedApplication(consumerModel, providerModel, process, activity, "ProvidedUIMashup", "cnx://file/application/ProvidedUIMashup");
       activity = GenericModelingAssertions.assertActivity(process, "ProvidedProcess", "ProvidedProcess", ActivityImplementationType.SUBPROCESS_LITERAL);
       assertReferencedProcess(consumerModel, providerModel, process, activity, "ProvidedProcess", "cnx://file/processDefinition/ProvidedProcess");
-      assertReferencedRole(consumerModel, providerModel, "ProvidedRole", "ProvidedRole");
-
+      GenericModelingAssertions.assertReferencedRole(consumerModel, providerModel, "ProvidedRole", "ProvidedRole");
    }
 
    @Test
