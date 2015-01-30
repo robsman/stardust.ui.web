@@ -134,7 +134,7 @@ public class RecordingTestcase
          if (newJto != null)
          {
             newJto = jsonIo.gson().fromJson(command, CommandJto.class);
-            Object o = changeApiDriver.performChange(newJto);
+            changeApiDriver.performChange(newJto);
          }
       }
       System.out.println("Replay finished.");
@@ -151,6 +151,7 @@ public class RecordingTestcase
                + ".xpdl");
          out.println(xmlString);
          out.flush();
+         out.close();
       }
       catch (FileNotFoundException e)
       {
@@ -167,6 +168,7 @@ public class RecordingTestcase
                   + ".xpdl");
             out.println(xmlString);
             out.flush();
+            out.close();
          }
          catch (FileNotFoundException e)
          {
