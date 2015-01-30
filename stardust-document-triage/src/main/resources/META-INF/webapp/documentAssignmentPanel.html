@@ -1,0 +1,277 @@
+<html>
+	<head>
+	
+		<link href='http://fonts.googleapis.com/css?family=Lato:400,700,300italic,400italic'
+			  rel='stylesheet' 
+			  type='text/css'>
+		<link href='./css/thirdparty/ngDialog/ngDialog.css'
+			  rel='stylesheet' 
+			  type='text/css'>
+		<link href='./css/thirdparty/ngDialog/ngDialog-theme-default.css'
+			  rel='stylesheet' 
+			  type='text/css'>
+		<link href='./css/thirdparty/ngDialog/ngdialog-theme-popup.css'
+			  rel='stylesheet' 
+			  type='text/css'>
+		<link href="./css/font-awesome-4.1.0/css/font-awesome.css"
+			  rel="stylesheet">
+		<link href='./css/stardust-modern.css' 
+		      rel='stylesheet' />
+		<link href='./css/document-triage.css' 
+		      rel='stylesheet' />
+		<link href='./css/thirdparty/jquery/jquery-ui-1.10.2.custom.min.css'
+			  rel='stylesheet' />
+
+		<script data-main="./js/DocumentAssignmentPanelMain"
+			    src="./js/libs/require/2.0.5/require-min.js"></script>
+	</head>
+<body style="overflow:hidden;" ng-cloak>
+	<div id="docRendevous"
+		 ng-controller="documentAssignmentPanelController">
+		<table class="layoutTable" style="width: 100%; height: 100%">
+			<tr valign="top">
+				<td style="padding-right:1em !important;">
+					<table class="layoutTable" style="width: 100%;">
+						<tr>
+							<td>
+								<div sd-business-obj 
+								     sda-on-select="instanceSelected(instance)">
+								</div>
+							</td>
+						</tr>
+						<tr id="pageViewPanel" valign="top">
+							<td>
+								<table style="width: 100%;">
+									<tr valign="top">
+										<td style="width: 50%;">
+											<div ng-include="'pageViewPanel.html'"></div>
+										</td>
+										<td style="width: 50%; padding-left: 10px !important;">
+											<div style="position:relative;"
+												 ng-stretch-v
+											     data-watch="#pageViewPanel,#sectionHeadStartable">
+											<div>
+												<span class="sectionTitle">
+												Pending Processes and Activities 
+												</span> 
+												<i ng-init="hidePending=true" 
+												   ng-click="hidePending=!hidePending"
+												   ng-class="{'fa-caret-down':hidePending,'fa-caret-right':!hidePending}" 
+												   class="fa expando"></i>
+												<label> 
+													<input type="checkbox" name="showCompleted" value="value" /> Show Completed
+												</label>
+											</div>
+											<div class="treeContainer section"
+												 ng-class="{'full':hideStarting,'half':!hideStarting}"
+											     id="pendingTreeContainer"
+											     ng-show="hidePending">
+												<table cellpadding="0" cellspacing="0"
+													class="pendingProcessesTree">
+													<tr ng-repeat="treeItem in pendingProcessesTree"
+														id="pendingProcessesTreeRow{{$index}}"
+														class="{{getTreeItemClass(treeItem)}}">
+														<td>
+															<div ng-show="treeItem.pendingProcess">
+																<i class="fa fa-gears"></i>
+															</div>
+															<div style="margin-left: 10px;"
+																ng-show="treeItem.pendingProcess.descriptors.length > 0">
+																<i class="fa fa-tag"></i>
+															</div>
+															<div ng-show="treeItem.pendingActivityInstance"
+																style="margin-left: 10px;">
+																<i class="fa fa-gear"></i>
+															</div>
+															<div ng-show="treeItem.specificDocument"
+																style="margin-left: 10px;">
+
+																<i class="fa"
+																	title="{{treeItem.specificDocument.document.uuid}}"
+																	ng-mouseover="openDocumentInfoPopup('body',treeItem.specificDocument.document.uuid,$event,'pending')"
+																	ng-class="{'fa-file':treeItem.specificDocument.document,'fa-file-o':!treeItem.specificDocument.document}">
+																</i>
+															</div>
+															<div ng-show="treeItem.processAttachments != null"
+																style="margin-left: 10px;">
+																<i class="fa fa-folder-o"></i>
+															</div>
+															<div ng-show="treeItem.processAttachment"
+																style="margin-left: 20px;">
+																<i ng-mouseover="openDocumentInfoPopup('body',treeItem.processAttachment.uuid,$event,'pending')" 
+																   class="fa fa-file"></i>
+															</div>
+														</td>
+														<td><div ng-show="treeItem.pendingProcess">
+																{{treeItem.pendingProcess.processDefinition.name}}
+																(#{{treeItem.pendingProcess.oid}}) &nbsp; <i
+																	ng-click="openProcessHistory(treeItem)"
+																	title="Process History"
+																	class="fa fa-info-circle iconLink"></i>
+															</div>
+															<div
+																ng-show="treeItem.pendingProcess.descriptors.length > 0">
+																<span
+																	ng-repeat="item in treeItem.pendingProcess.descriptors">
+																	<span ng-show="item.value != null && item.value.length">
+																	{{item.name}}:{{item.value}}
+																	</span>
+																	<span ng-hide="!$last || item.value == null || !item.value.length">
+																		,
+																	</span>
+																</span>
+															</div>
+															<div ng-show="treeItem.pendingActivityInstance">{{treeItem.pendingActivityInstance.activity.name}}
+																(#{{treeItem.pendingActivityInstance.oid}})</div>
+															<div ng-show="treeItem.specificDocument"
+																 data-proc-id="{{treeItem.pendingProcessOID}}"
+																 data-specDoc-id="{{treeItem.specificDocument.id}}"
+																 data-attach-id="{{treeItem.specificDocument.document.uuid}}"
+																 ng-class="{'data-specAttch-pend':treeItem.specificDocument}">
+																{{treeItem.specificDocument.name}}
+															</div>
+															<div ng-show="treeItem.processAttachments.length >=0">Process
+																Attachments</div>
+															<div  ng-show="treeItem.processAttachment"
+																  ng-class="{'data-procAttch-pend' : treeItem.processAttachment}" 
+															      data-proc-id="{{treeItem.pendingProcessOID}}"
+															      data-attach-id="{{treeItem.processAttachment.uuid}}">
+																{{treeItem.processAttachment.name}}
+																<select ng-select 
+																        ng-model="selectedDocType"
+																        ng-change="setDocumentType(selectedDocType,treeItem)">
+																	<option ng-repeat="item in documentTypes"
+																			value="{{item.documentTypeId}}"
+																			ng-selected="item.documentTypeId==treeItem.processAttachment.documentType.documentTypeId">
+																			{{item.name}}
+																	</option>
+																</select>
+															</div></td>
+													</tr>
+												</table>
+											</div>
+											<span id="sectionHeadStartable" 
+											      style="display:inline" 
+											      class="sectionTitle">Startable Processes</span>
+											<i ng-init="hideStarting=false" 
+												   ng-click="hideStarting=!hideStarting"
+												   ng-class="{'fa-caret-down':!hideStarting,'fa-caret-right':hideStarting}" 
+												   class="fa expando">
+											</i>
+											<div class="treeContainer section"
+												 id="startingTreeContainer"
+												 ng-class="{'full':!hidePending,'half':hidePending}"
+												 ng-drag-scroll
+											     ng-show="!hideStarting">
+												<table cellpadding="0" cellspacing="0"
+													class="pendingProcessesTree">
+													<tr ng-class="{treeBranch:treeItem.startableProcess}"
+														ng-repeat="treeItem in startableProcessesTree"
+														id="startableProcessesTreeRow{{$index}}"
+														class="{{getTreeItemClass(treeItem)}}">
+														<td><div ng-show="treeItem.startableProcess">
+																<i class="fa fa-gears"></i>
+															</div>
+															<div ng-show="treeItem.specificDocument"
+																style="margin-left: 10px;">
+																<i ng-hide="treeItem.specificDocument.scannedDocument"
+																	class="fa fa-file-o"></i> <i
+																	ng-show="treeItem.specificDocument.scannedDocument"
+																	ng-mouseover="openDocumentInfoPopup('body',treeItem.specificDocument.scannedDocument.uuid,$event,'startable')"
+																	class="fa fa-file"></i>
+															</div>
+															<div ng-show="treeItem.processAttachments.length >=0"
+																style="margin-left: 10px;">
+																<i class="fa fa-folder-o"></i>
+															</div></td>
+														<td>
+															<div ng-show="treeItem.startableProcess">
+																{{treeItem.startableProcess.name}} <a href="#"
+																	ng-show="processCanStart(treeItem);"> <i
+																	title="Start Process"
+																	ng-click="startProcess(treeItem,bom.selectedBusinessObjectInstances[0])"
+																	class="fa fa-rocket iconLink"> </i>
+																</a>
+															</div>
+															<div ng-show="treeItem.specificDocument"
+																 data-proc-id="{{treeItem.processDetails.id}}"
+																 data-specDoc-id="{{treeItem.specificDocument.id}}"
+																 data-attach-id="{{treeItem.specificDocument.scannedDocument.uuid}}"
+																 ng-class="{'data-specAttch-start':treeItem.specificDocument}">
+																{{treeItem.specificDocument.name}}</div>
+															<div ng-show="treeItem.processAttachments.length >=0">Process
+																Attachments</div>
+															<div ng-class="{'data-procAttch-start' : treeItem.processAttachment}" 
+															     data-proc-id="{{treeItem.processDetails.id}}"
+															     data-attach-id="{{treeItem.processAttachment.uuid}}"
+															     ng-show="treeItem.processAttachment">
+																<i class="fa fa-file" ng-mouseover="openDocumentInfoPopup('body',treeItem.processAttachment.uuid,$event,'startable')"></i>
+																&nbsp;{{treeItem.processAttachment.name}} 
+																<select ng-model="selectedDocType" 
+																        ng-change="setStagedDocType(treeItem,selectedDocType)">
+																	<option ng-selected="item.documentTypeId==treeItem.processAttachment.documentType.documentTypeId" 
+																	        value={{item.documentTypeId}}
+																	        ng-repeat="item in documentTypes">
+																		{{item.name}}
+																	</option>
+																</select>
+															</div>
+														</td>
+													</tr>
+												</table>
+											</div>
+											</div><!-- wrapping div end -->
+										</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+					</table>
+				</td>
+				<td style="width: 180px;">
+					<table ng-if="false" class="toolbar" style="width: 100%;">
+						<tr>
+							<td><table class="formTable">
+									<tr>
+										<td><a href="#" class="iconLink" ng-click="mode = 'cut'"
+											ng-show="mode == 'normal'"><i class="fa fa-cut"></i></a><a
+											href="#" class="iconLink" ng-click="mode = 'normal'"
+											ng-show="mode == 'cut'"><i class="fa fa-reply"></i></a></td>
+									</tr>
+								</table></td>
+						</tr>
+					</table>
+					<div class="section"
+						 ng-stretch-v
+						 style="width: 100%;overflow: auto;">
+						<div ng-include="'scannedDocumentsPanel.html'"></div>
+					</div>
+				</td>
+			</tr>
+		</table>
+		<div sd-dialog="startProcessDialog" style="visibility: hidden;">
+			<table cellpadding="0" cellspacing="0"
+				style="width: 100%; margin-top: 10px;">
+				<tr>
+					<td>The process <strong>{{startProcessDialog.startableProcess.name}}</strong>
+						was started with the selected document.
+					</td>
+				</tr>
+			</table>
+			<table cellpadding="0" cellspacing="0"
+				style="width: 100%; margin-top: 10px;">
+				<tr>
+					<td align="center">
+						<table cellpadding="0" cellspacing="0">
+							<tr>
+								<td><input type="button" class="button" value="Close"
+									ng-click="closeStartProcessDialog()" /></td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</body>
+</html>

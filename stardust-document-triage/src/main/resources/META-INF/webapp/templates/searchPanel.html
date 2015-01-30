@@ -1,0 +1,151 @@
+<!-- TODO: Remove CSS and use HTML5COMMON CSS -->
+<style>
+	.controlGroup{
+		margin:0.5em;
+	}
+	
+	.controlGroup > div {
+		display:inline-table;
+		margin: 1em 0;
+	}
+	
+	label {
+		padding: 0.5em;
+	}
+	
+	.dataTable-temp {
+		font-family: 'Lato', sans-serif;
+		color: #5A636C;
+		width: 100%;
+		margin: 0px;
+		border-bottom: 1px solid #708090;
+	}
+	
+	tr.isActive td{
+		background-color:#ddd !important; 
+	}
+
+	.dataTable-temp thead {
+		margin-top: 10px;
+		background-color: white;
+	}
+	
+	.dataTable-temp thead th {
+		border-bottom: 1px solid #708090;
+		font-size: 11px;
+		font-weight: bold;
+		color: #708090;
+		cursor:pointer;
+	}
+	
+	.dataTable-temp tbody td {
+		border-bottom: 1px solid red;
+	}
+	.dataTable-temp tbody{
+		cursor:pointer;
+	}
+	.dataTable-temp tbody tr:hover td{
+		background-color: #E8E6FC !important;
+	}
+	.dataTable-temp tbody tr td:last-child {
+		border-bottom: none;
+	}
+	
+	.dataTable-temp tbody tr:nth-child(odd) td {
+		background-color: #f9f9f9;
+	}
+	.header{
+		color: #A69A88;
+		font-size: 14px;
+		padding-left: 5px;
+		text-transform: uppercase;
+	}
+</style>
+
+<!-- Grouped Select Box -->
+<label>Business Object</label>
+
+<select ng-model="selectedModel" 
+        ng-change="setBusinessObj(selectedModel);invokeCallback()">
+  <optgroup ng-repeat="model in businessObjectModels" 
+            label="{{model.name}}">
+    <option value="{{bsnObj}}" 
+            ng-repeat="bsnObj in model.businessObjects">
+            {{bsnObj.name}}
+    </option>
+  </optgroup>
+</select>
+
+<div ng-show="selectedBusinessObj.name" class="controlGroup">
+	<i ng-click="ui.showBO=!ui.showBO"								   
+	   ng-class="{'fa-caret-down':ui.showBO,'fa-caret-right':!ui.showBO}" 
+	   class="fa fa-2x expando" style="float:left !important;">
+	</i>
+	<span ng-show="selectedBusinessObj.name" 
+	      class="header">{{selectedBusinessObj.name | uppercase}} SEARCH 
+	</span>
+</div>
+
+
+<!-- Filter Fields -->
+<div ng-show="ui.showBO">
+ <div class="controlGroup" 
+      ng-show="selectedBusinessObj.fields">
+
+	 <div ng-repeat="field in (selectedBusinessObj.fields | filter:{key:true} | orderBy:'primaryKey===false')"
+	 	  ng-if="isTypeSupported(field.type)">
+	 	<label>{{field.name | uncamel}}</label>
+	 	<input type="text" 
+	 		   ng-model="filter.fields[field.name]"
+	 	       ng-blur="findBusinessObjects()">
+	 	</input>
+	 </div>
+	 
+	 <div>
+	 	<a href="#" 
+	 	   class="iconLink menuBarLink" 
+	 	   title="Refresh">
+	 	   <i class="fa fa-eraser"
+		       ng-click="resetFilters();invokeCallback()">
+		   </i>
+		</a>
+	 </div>
+ </div>
+
+ <!-- Results-->
+ <div class="dataTableFrame"
+	  style="margin-top: 20px; margin-bottom: 20px;">
+	<table cellpadding="0" cellspacing="0"
+		class="dataTable-temp" style="width: 100%;">
+		<thead>
+			<tr>
+				<th ng-repeat="field in (selectedBusinessObj.fields | filter:{key:true} | orderBy:'primaryKey===false')"
+				    ng-if="isTypeSupported(field.type)"
+					ng-click="ui.predicate=field.name;ui.sortAsc=!ui.sortAsc;ui.activeCol=$index">
+					{{field.name | uncamel}}
+					<i ng-if="field.primaryKey===true" 
+					   class="fa fa-key">
+					</i>
+					<i ng-show="ui.activeCol==$index"
+					   ng-class="{'fa-caret-down' : ui.sortAsc,'fa-caret-up' : !ui.sortAsc}" 
+					   class="fa">
+					</i>
+				</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="instance in businessObjects | orderBy:ui.predicate:ui.sortAsc"
+				ng-class="{'isActive':ui.activeRow===$index}"
+			    ng-click="invokeCallback(instance);ui.activeRow=$index;">
+				<td ng-if="isTypeSupported(field.type)" 
+				    ng-repeat="field in (selectedBusinessObj.fields | filter:{key:true} | orderBy:'primaryKey===false')">
+					<span>{{instance[field.name]}}</span>
+				</td>
+				
+			</tr>
+		</tbody>
+	</table>
+
+</div>
+
+</div>

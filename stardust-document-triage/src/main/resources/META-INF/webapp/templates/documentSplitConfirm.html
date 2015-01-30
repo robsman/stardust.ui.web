@@ -1,0 +1,25 @@
+<div class="dialog-contents">
+
+	<p class="confirmation-header">
+	    <i class="fa fa-2x fa-exclamation-circle caution"></i>
+	    <span>Do you want to create a new document with these pages?</span>
+    <p>
+    
+    <div class="confirmation-contents">
+	    <i ng-class="{'fa-file-pdf-o !important' : document.contentType=='application/pdf'}" 
+	       class="fa fa-file-image-o">
+	    </i>
+	    <span class="header">{{document.name}}</span>
+	    <br/>
+	    <span>Pages {{pages}}</span>
+	    <br/>
+	    <input name="deletePages" id="deletePages_{{$id}}" type="checkbox"></input>
+	    <label for="deletePages">Delete Pages</label>
+    </div>
+    
+    <div class="confirmation-buttonpane">
+    	<button ng-click="confirm()">OK</button>
+	    <button ng-click="closeThisDialog()">Cancel</button>
+    </div>
+    
+</div>

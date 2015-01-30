@@ -1,0 +1,21 @@
+<div class="dialog-contents">
+
+	<p class="confirmation-header">
+	    <span>Associated Processes</span>
+    <p>
+
+    <div class="confirmation-contents">
+    
+		<span ng-repeat-start="proc in processList">
+			<span ng-if="proc.oid">
+				{{proc.processDefinition.name}} (#{{proc.oid}})
+			</span>
+			<span ng-if="!proc.oid">{{proc}}</span>
+		</span>
+		<br ng-repeat-end />
+		
+		<span ng-if="processList.length==0">None associated.</span>
+		
+    </div>
+    
+</div>
