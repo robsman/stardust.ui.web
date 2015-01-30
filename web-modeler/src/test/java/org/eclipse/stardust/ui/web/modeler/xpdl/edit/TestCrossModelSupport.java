@@ -1,7 +1,5 @@
 package org.eclipse.stardust.ui.web.modeler.xpdl.edit;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -9,10 +7,8 @@ import static org.junit.Assert.assertThat;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Proxy;
 import java.util.Map;
 
-import org.eclipse.stardust.model.xpdl.builder.connectionhandler.EObjectProxyHandler;
 import org.eclipse.stardust.model.xpdl.builder.utils.ExternalReferenceUtils;
 import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelIoUtils;
 import org.eclipse.stardust.model.xpdl.carnot.AccessPointType;
@@ -26,11 +22,9 @@ import org.eclipse.stardust.model.xpdl.carnot.DataType;
 import org.eclipse.stardust.model.xpdl.carnot.DirectionType;
 import org.eclipse.stardust.model.xpdl.carnot.IAccessPointOwner;
 import org.eclipse.stardust.model.xpdl.carnot.IExtensibleElement;
-import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableElement;
 import org.eclipse.stardust.model.xpdl.carnot.IdRef;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
-import org.eclipse.stardust.model.xpdl.carnot.RoleType;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.model.xpdl.xpdl2.DataTypeType;
@@ -69,7 +63,7 @@ public class TestCrossModelSupport extends TestGeneralModeling
       assertReferencedApplication(consumerModel, providerModel, process, activity, "ProvidedUIMashup", "cnx://file/application/ProvidedUIMashup");
       activity = GenericModelingAssertions.assertActivity(process, "ProvidedProcess", "ProvidedProcess", ActivityImplementationType.SUBPROCESS_LITERAL);
       assertReferencedProcess(consumerModel, providerModel, process, activity, "ProvidedProcess", "cnx://file/processDefinition/ProvidedProcess");
-      assertReferencedRole(consumerModel, providerModel, "ProvidedRole", "ProvidedRole");
+      GenericModelingAssertions.assertReferencedRole(consumerModel, providerModel, "ProvidedRole", "ProvidedRole");
 
       //saveReplayModel("C:/development/");
    }
@@ -223,7 +217,7 @@ public class TestCrossModelSupport extends TestGeneralModeling
       assertReferencedApplication(brokenModel, providerModel, process, activity, "RenamedProvidedUIMashup", "cnx://file/application/RenamedProvidedUIMashup");
       activity = GenericModelingAssertions.assertActivity(process, "ProvidedProcess", "ProvidedProcess", ActivityImplementationType.SUBPROCESS_LITERAL);
       assertReferencedProcess(brokenModel, providerModel, process, activity, "RenameProvidedProcess", "cnx://file/processDefinition/RenameProvidedProcess");
-      assertReferencedRole(brokenModel, providerModel, "RenamedProvidedRole", "RenamedProvidedRole");
+      GenericModelingAssertions.assertReferencedRole(brokenModel, providerModel, "RenamedProvidedRole", "RenamedProvidedRole");
 
       ApplicationType application = GenericModelingAssertions.assertApplication(consumerModel, "ConsumerUIMashup");
       ContextType context = GenericModelingAssertions.assertApplicationContextType(application, "externalWebApp");
@@ -255,20 +249,14 @@ public class TestCrossModelSupport extends TestGeneralModeling
    {
       DataType data = GenericModelingAssertions.assertPrimitiveData(consumerModel,
             dataID, dataName, primitiveType);
-      assertProxyReference(providerModel, data);
-   }
-
-   public static void assertReferencedRole(ModelType consumerModel, ModelType providerModel, String roleID, String roleName)
-   {
-      RoleType role = GenericModelingAssertions.assertRole(consumerModel, roleID, roleName);
-      assertProxyReference(providerModel, role);
+      GenericModelingAssertions.assertProxyReference(providerModel, data);
    }
 
    public static DataType assertReferencedDocumentData(ModelType consumerModel, ModelType providerModel, String dataID, String dataName,
          String assignedDeclaration, String uri)
    {
       DataType data = GenericModelingAssertions.assertDocumentData(consumerModel, dataID, dataName, assignedDeclaration);
-      assertProxyReference(providerModel, data);
+      GenericModelingAssertions.assertProxyReference(providerModel, data);
       return data;
    }
 
@@ -352,23 +340,6 @@ public class TestCrossModelSupport extends TestGeneralModeling
       assertThat(externalReference.getUuid(), is(modelUUID));
 
       return dataType;
-   }
-
-   public static void assertProxyReference(ModelType providerModel, IIdentifiableElement data)
-   {
-      assertThat(data.eIsProxy(), is(true));
-      assertThat(Proxy.getInvocationHandler(data), is(not(nullValue())));
-      assertThat(Proxy.getInvocationHandler(data), instanceOf(EObjectProxyHandler.class));
-      EObjectProxyHandler handler = (EObjectProxyHandler) Proxy
-            .getInvocationHandler(data);
-      assertThat(handler.getSelf(), is(not(nullValue())));
-      assertThat(handler.getSelf(), instanceOf(IIdentifiableElement.class));
-      assertThat(handler.getTarget(), is(not(nullValue())));
-      assertThat(handler.getTarget(), instanceOf(IIdentifiableElement.class));
-      IIdentifiableElement self = (IIdentifiableElement) handler.getSelf();
-      IIdentifiableElement target = (IIdentifiableElement) handler.getTarget();
-      assertThat((ModelType) target.eContainer(), is(equalTo(providerModel)));
-      assertThat(self.getId(), is(target.getId()));
    }
 
    public static String assertExternalReference(IExtensibleElement element, ModelType providerModel,

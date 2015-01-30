@@ -1,29 +1,14 @@
 package org.eclipse.stardust.ui.web.modeler.utils.test;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
+import java.lang.reflect.Proxy;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.stardust.model.xpdl.carnot.AccessPointType;
-import org.eclipse.stardust.model.xpdl.carnot.ActivityImplementationType;
-import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
-import org.eclipse.stardust.model.xpdl.carnot.ApplicationContextTypeType;
-import org.eclipse.stardust.model.xpdl.carnot.ApplicationType;
-import org.eclipse.stardust.model.xpdl.carnot.AttributeType;
-import org.eclipse.stardust.model.xpdl.carnot.CarnotWorkflowModelPackage;
-import org.eclipse.stardust.model.xpdl.carnot.ContextType;
-import org.eclipse.stardust.model.xpdl.carnot.DataMappingType;
-import org.eclipse.stardust.model.xpdl.carnot.DataType;
-import org.eclipse.stardust.model.xpdl.carnot.DirectionType;
-import org.eclipse.stardust.model.xpdl.carnot.IAccessPointOwner;
-import org.eclipse.stardust.model.xpdl.carnot.ModelType;
-import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
-import org.eclipse.stardust.model.xpdl.carnot.RoleType;
-import org.eclipse.stardust.model.xpdl.carnot.TransitionType;
+import org.eclipse.stardust.model.xpdl.builder.connectionhandler.EObjectProxyHandler;
+import org.eclipse.stardust.model.xpdl.carnot.*;
 import org.eclipse.stardust.model.xpdl.carnot.extensions.FormalParameterMappingsType;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
@@ -375,7 +360,28 @@ public class GenericModelingAssertions
       }
    }
 
+   public static void assertReferencedRole(ModelType consumerModel, ModelType providerModel, String roleID, String roleName)
+   {
+      RoleType role = GenericModelingAssertions.assertRole(consumerModel, roleID, roleName);
+      assertProxyReference(providerModel, role);
+   }
 
+   public static void assertProxyReference(ModelType providerModel, IIdentifiableElement data)
+   {
+      assertThat(data.eIsProxy(), is(true));
+      assertThat(Proxy.getInvocationHandler(data), is(not(nullValue())));
+      assertThat(Proxy.getInvocationHandler(data), instanceOf(EObjectProxyHandler.class));
+      EObjectProxyHandler handler = (EObjectProxyHandler) Proxy
+            .getInvocationHandler(data);
+      assertThat(handler.getSelf(), is(not(nullValue())));
+      assertThat(handler.getSelf(), instanceOf(IIdentifiableElement.class));
+      assertThat(handler.getTarget(), is(not(nullValue())));
+      assertThat(handler.getTarget(), instanceOf(IIdentifiableElement.class));
+      IIdentifiableElement self = (IIdentifiableElement) handler.getSelf();
+      IIdentifiableElement target = (IIdentifiableElement) handler.getTarget();
+      assertThat((ModelType) target.eContainer(), is(equalTo(providerModel)));
+      assertThat(self.getId(), is(target.getId()));
+   }
 
 
 
