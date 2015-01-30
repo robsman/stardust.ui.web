@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:ippui="http://infinity.com/bpm/portal/common/uiDefinition"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/portal/common/uiDefinition.xsd">
+	<ippui:perspectiveExtension messageBundles="business-object-management-messages"
+		targetPerspective="ippBccPerspective" id="businessObjectManagement">
+		<ippui:launchpadExtension after="favoriteManagementViews">
+			<ippui:launchPanel
+				include="/plugins/business-object-management/launchpanel/businessObjectManagementLaunchPanel.xhtml"
+				name="businessObjectManagementLaunchPanel" />
+		</ippui:launchpadExtension>
+		<ippui:viewsExtension>
+			<ippui:view
+				include="/plugins/business-object-management/views/businessObjectManagementViewFrameAdapter.xhtml"
+				name="businessObjectManagementView" controller="businessObjectManagementView" />
+		</ippui:viewsExtension>
+	</ippui:perspectiveExtension>
+</beans>

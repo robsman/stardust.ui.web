@@ -1,0 +1,106 @@
+<table>
+	<tr valign="top">
+		<td ng-repeat="column in formColumns">
+			<table class="formTable">
+				<tr ng-repeat="field in getPrimitiveFields(type)"
+					ng-if="$index >= column.min && $index <= column.max && field.ui.StringInputPreferences_stringInputType != 'TEXTAREA' && !foreignKeyFields[field.id]">
+					<td><label style="margin-left: 5px;">{{field.ui.InputPreferences_label
+							|| field.label}}</label></td>
+					<td><div
+							ng-show="getBusinessObject().types[field.type].values">
+							<select ng-model="instance[field.id]"
+								ng-options="value as value for value in getBusinessObject().types[field.type].values"><option
+									value="">Please select ...</option></select>
+						</div>
+						<div ng-hide="getBusinessObject().types[field.type].values">
+                            <input
+								ng-show="field.type == 'string' && field.ui.StringInputPreferences_stringInputType != 'TEXTAREA'"
+								type="text" style="width: 200px;" ng-model="instance[field.id]" ng-disabled="isPrimaryKeyUpdate(field)"></input>
+							<input ng-show="field.type == 'boolean'" type="checkbox"
+								ng-model="instance[field.id]"></input>
+							<input ng-show="isNumberType(field.type)" type="number"
+								style="width: 100px; text-align: right;"
+								ng-model="instance[field.id]" ng-disabled="isPrimaryKeyUpdate(field)"></input>
+							<input ng-show="field.type == 'decimal' || field.type == 'double' || field.type == 'float'" type="text"
+								style="width: 100px; text-align: right;"
+								ng-model="instance[field.id]" ng-disabled="isPrimaryKeyUpdate(field)"></input>
+							<input ng-show="field.type == 'byte'" type="text"
+								style="width: 100px; text-align: right;"
+								ng-model="instance[field.id]" ng-disabled="isPrimaryKeyUpdate(field)"></input>	
+						  <input ng-show="field.type == 'date'" type="date"
+								style="width: 130px; text-align: right;"
+								ng-model="instance[field.id]" ng-disabled="isPrimaryKeyUpdate(field)"></input> 
+							<input ng-show="field.type == 'dateTime'" type="datetime-local"
+								style="width: 210px; text-align: right;"
+								ng-model="instance[field.id]" ng-disabled="isPrimaryKeyUpdate(field)"></input> 	
+						</div></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+<table class="formTable" ng-repeat="field in getPrimitiveFields(type)"
+	ng-show="field.type == 'string' && field.ui.StringInputPreferences_stringInputType == 'TEXTAREA'">
+	<tr>
+		<td><label style="margin-left: 5px;">{{field.ui.InputPreferences_label
+				|| field.label}}</label></td>
+	</tr>
+	<tr>
+		<td><textarea rows="5" cols="20"></textarea></td>
+	</tr>
+</table>
+<table>
+	<tr ng-repeat="field in getComplexFields(type)"
+		ng-if="!foreignKeyFields[field.id]">
+		<td>
+			<h2>{{field.label}}</h2>
+			<div ng-hide="field.list"
+				ng-repeat="type in [getBusinessObject().types[field.type]]">
+				<div ng-repeat="instance in [instance[field.id]]">
+					<div ng-include="'./objectPanel.html'"></div>
+				</div>
+			</div>
+			<div ng-show="field.list">
+				<table cellpadding="0" cellspacing="0" class="dataTable"
+					style="width: 100%;"">
+					<thead>
+						<tr>
+							<th></th>
+							<th
+								ng-repeat="field in getPrimitiveFields(getBusinessObject().types[field.type])">{{field.label}}</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="row in instance[field.id]">
+							<td style="padding-right: 5px;"><a href="#" class="iconLink"
+								ng-click="instance[field.id].splice($index, 1)"><i
+									class="fa fa-minus-square"></i></a></td>
+							<td
+								ng-repeat="field in getPrimitiveFields(getBusinessObject().types[field.type])">
+								<input ng-show="field.type == 'string'" type="text"
+								style="width: 200px;" ng-model="row[field.id]"></input> <input
+								ng-show="field.type == 'boolean'" type="checkbox"
+								ng-model="row[field.id]"></input> <input
+								ng-show="field.type == 'integer'" type="number"
+								style="width: 100px; text-align: right;"
+								ng-model="row[field.id]"></input> <input
+								ng-show="field.type == 'decimal'" type="text"
+								style="width: 100px; text-align: right;"
+								ng-model="row[field.id]"></input> <input
+								ng-show="field.type == 'date'" type="date"
+								style="width: 100px; text-align: right;"
+								ng-model="row[field.id]"></input>
+							</td>
+						</tr>
+						<tr>
+							<td style="padding-right: 5px;"><a href="#" class="iconLink"
+								ng-click="instance[field.id].push({})"><i
+									class="fa fa-plus-square"></i></a></td>
+							<td><input type="text" style="visibility: hidden;"></input></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</td>
+	</tr>
+</table>

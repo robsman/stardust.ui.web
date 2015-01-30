@@ -1,0 +1,76 @@
+<table>
+	<tr valign="top">
+		<td ng-repeat="column in getPrimitiveFieldColumns(type)">
+			<table class="formTable">
+				<tr ng-repeat="field in column">
+					<td><label style="margin-left: 5px;">{{field.name}}</label></td>
+					<td><input ng-show="field.type == 'string'" type="text"
+						style="width: 200px;" ng-model="instance[field.id]"></input> <input
+						ng-show="field.type == 'boolean'" type="checkbox"
+						ng-model="instance[field.id]"></input> <input
+						ng-show="field.type == 'integer'" type="number"
+						style="width: 100px; text-align: right;"
+						ng-model="instance[field.id]"></input> <input
+						ng-show="field.type == 'decimal'" type="text"
+						style="width: 100px; text-align: right;"
+						ng-model="instance[field.id]"></input> <input
+						ng-show="field.type == 'date'" type="date"
+						style="width: 100px; text-align: right;"
+						ng-model="instance[field.id]"></input></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+<table>
+	<tr ng-repeat="field in getComplexFields(type)">
+		<td>
+			<h3>{{field.name}}</h3>
+			<div ng-show="field.cardinality == '0-1'"
+				ng-repeat="type in [getBusinessObject().types[field.type]]">
+				<div ng-repeat="instance in [instance[field.id]]">
+					<div ng-include="'./objectPanel.html'"></div>
+				</div>
+			</div>
+			<div ng-show="field.cardinality == '0-N'">
+				<table cellpadding="0" cellspacing="0" class="dataTable"
+					style="width: 100%;"">
+					<thead>
+						<tr>
+							<th></th>
+							<th
+								ng-repeat="field in getPrimitiveFields(getBusinessObject().types[field.type])">{{field.name}}</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="row in instance[field.id]">
+							<td><a href="#" class="iconLink"><i
+									class="fa fa-minus"></i></a></td>
+							<td
+								ng-repeat="field in getPrimitiveFields(getBusinessObject().types[field.type])">
+								<input ng-show="field.type == 'string'" type="text"
+								style="width: 200px;" ng-model="row[field.id]"></input> <input
+								ng-show="field.type == 'boolean'" type="checkbox"
+								ng-model="row[field.id]"></input> <input
+								ng-show="field.type == 'integer'" type="number"
+								style="width: 100px; text-align: right;"
+								ng-model="row[field.id]"></input> <input
+								ng-show="field.type == 'decimal'" type="text"
+								style="width: 100px; text-align: right;"
+								ng-model="row[field.id]"></input> <input
+								ng-show="field.type == 'date'" type="date"
+								style="width: 100px; text-align: right;"
+								ng-model="row[field.id]"></input>
+							</td>
+						</tr>
+						<tr>
+							<td><a href="#" class="iconLink"
+								ng-click="instance[field.id].push({})"><i class="fa fa-plus"></i></a></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</td>
+	</tr>
+</table>
+

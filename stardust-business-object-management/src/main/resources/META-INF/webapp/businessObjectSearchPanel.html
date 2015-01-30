@@ -1,0 +1,205 @@
+<div>
+	<div ng-show="businessObjectManagementPanelController.relationship">
+		<h2>{{businessObjectManagementPanelController.relationship.otherRole}}
+			of
+			{{businessObjectManagementPanelController.rootController.businessObject.name}}
+			{{businessObjectManagementPanelController.rootBusinessObjectInstance[businessObjectManagementPanelController.rootController.businessObject.primaryKeyField.id]}}</h2>
+
+		<div class="dataTableFrame"
+			style="margin-top: 20px; margin-bottom: 20px;">
+			<table cellpadding="0" cellspacing="0" datatable="ng"
+				class="dataTable" style="width: 100%;" id="relationShipTbl">
+				<thead>
+					<tr>
+						<th>{{businessObjectManagementPanelController.businessObject.primaryKeyField.label}}</th>
+						<th
+							ng-repeat="field in businessObjectManagementPanelController.keyFields">{{field.label}}</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr
+						sd-table-data="businessObjectInstance in businessObjectManagementPanelController.relatedBusinessObjectInstances"
+						sd-table-selection="businessObjectManagementPanelController.selectedCurrentBusinessObjInstance">
+						<td>{{businessObjectInstance[businessObjectManagementPanelController.businessObject.primaryKeyField.id]}}</td>
+						<td
+							ng-repeat="field in businessObjectManagementPanelController.businessObject.keyFields" ng-hide="field.list">
+							<span ng-hide="field.type == 'date' || field.type == 'dateTime'">{{businessObjectInstance[field.id]}}</span>
+							<!-- Temporary fix for showing HTML5 date --> <span
+							ng-show="field.type =='date'">{{businessObjectInstance[field.id]
+								| date :'MM/dd/yyyy'}}</span> <span ng-show="field.type =='dateTime'">{{businessObjectInstance[field.id]
+								| date :'MM/dd/yyyy hh:mm:ss'}}</span>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			<div>
+				<input type="button" value="Delete"
+					style="float: right; margin-right: 3%;margin-top:1%;"
+					ng-click="businessObjectManagementPanelController.removeInstanceFromRelationship()"
+					ng-show="businessObjectManagementPanelController.businessObjectInstances.length > 0"></input>
+			</div>
+		</div>
+		<p>Search 
+			{{businessObjectManagementPanelController.relationship.otherRole}}</p>
+	</div>
+	<div ng-hide="businessObjectManagementPanelController.searchPanelCollapsed">
+		<table class="toolbar" style="width: 100%;">
+			<tr>
+				<td><a href="#" class="iconLink menuBarLink" title="Refresh"><i
+						class="fa fa-refresh"
+						ng-click="businessObjectManagementPanelController.filterBusinessObjectInstances()"></i>
+				</a><a href="#" class="iconLink menuBarLink" title="Import from CSV"
+					style="margin-left: 5px;"
+					ng-hide="businessObjectManagementPanelController.relationship"><i
+						class="fa fa-upload"
+						ng-click="businessObjectManagementPanelController.openImportCSVDialog()"></i>
+				</a>
+				</td>
+			</tr>
+		</table>
+		<table class="formTable">
+			<tr>
+				<td><label>{{businessObjectManagementPanelController.businessObject.primaryKeyField.label}}</label>
+					<!-- Added support for numeric and String Primary Key field -->
+					<input type="string"
+					ng-hide="isNumberType(businessObjectManagementPanelController.businessObject.primaryKeyField.type)"
+					style="width: 100px; margin-left: 5px;"
+					ng-model="businessObjectManagementPanelController.businessObject.primaryKeyField.filterValue"
+					ng-blur="businessObjectManagementPanelController.filterBusinessObjectInstances()">
+					<input type="number"
+					ng-show="isNumberType(businessObjectManagementPanelController.businessObject.primaryKeyField.type)"
+					style="width: 100px; margin-left: 5px;"
+					ng-model="businessObjectManagementPanelController.businessObject.primaryKeyField.filterValue"
+					ng-blur="businessObjectManagementPanelController.filterBusinessObjectInstances()"></input>
+				</td>
+				<td
+					ng-repeat="field in businessObjectManagementPanelController.businessObject.keyFields" ng-hide="field.list">
+					<label style="margin-left: 5px;">{{field.label}}</label> <input
+					ng-show="field.type == 'string'" type="text"
+					style="width: 100px; margin-left: 5px;"
+					ng-model="field.filterValue"
+					ng-blur="businessObjectManagementPanelController.filterBusinessObjectInstances()"></input>
+					<input ng-show="field.type == 'boolean'" type="checkbox"
+					ng-model="field.filterValue"
+					ng-click="businessObjectManagementPanelController.filterBusinessObjectInstances()"></input>
+					<input ng-show="isNumberType(field.type)" type="number"
+					style="width: 100px; margin-left: 5px;"
+					ng-model="field.filterValue"
+					ng-blur="businessObjectManagementPanelController.filterBusinessObjectInstances()"></input>
+					<input
+					ng-show="field.type == 'decimal' || field.type == 'double' || field.type == 'float'"
+					type="text" style="width: 100px; margin-left: 5px;"
+					ng-model="field.filterValue"
+					ng-blur="businessObjectManagementPanelController.filterBusinessObjectInstances()"></input>
+					<input ng-show="field.type == 'byte'" type="text"
+					style="width: 100px; margin-left: 5px;"
+					ng-model="field.filterValue"
+					ng-blur="businessObjectManagementPanelController.filterBusinessObjectInstances()"></input>
+					<input ng-show="field.type == 'date'" type="date"
+					style="width: 130px; margin-left: 5px;"
+					ng-model="field.filterValue"
+					ng-change="businessObjectManagementPanelController.filterBusinessObjectInstances()"></input>
+					<input ng-show="field.type == 'dateTime'" type="datetime-local"
+					style="width: 200px; margin-left: 5px;"
+					ng-model="field.filterValue"
+					ng-change="businessObjectManagementPanelController.filterBusinessObjectInstances()"></input>
+				</td>
+				<td><a href="#" class="iconLink menuBarLink" title="Reset"><i
+						class="fa fa-eraser"
+						ng-click="businessObjectManagementPanelController.clearFilters()"></i>
+				</a></td>
+			</tr>
+		</table>
+	</div>
+	<div class="dataTableFrame"
+		style="margin-top: 20px; margin-bottom: 20px;">
+		<table cellpadding="0" cellspacing="0" datatable="ng"
+			class="dataTable" style="width: 100%;">
+			<thead>
+				<tr>
+					<th>{{businessObjectManagementPanelController.businessObject.primaryKeyField.label}}</th>
+					<th
+						ng-repeat="field in businessObjectManagementPanelController.keyFields">{{field.label}}</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr
+					sd-table-data="businessObjectInstance in businessObjectManagementPanelController.businessObjectInstances"
+					sd-table-selection="businessObjectManagementPanelController.selectedBusinessObjectInstances"
+					sd-table-selection-changed="businessObjectManagementPanelController.rootController.onBusinessObjectInstanceSelectionChange()">
+					<td>{{businessObjectInstance[businessObjectManagementPanelController.businessObject.primaryKeyField.id]}}</td>
+					<td
+						ng-repeat="field in businessObjectManagementPanelController.businessObject.keyFields" ng-hide="field.list">
+						<span ng-hide="field.type == 'date' || field.type == 'dateTime'">{{businessObjectInstance[field.id]}}</span>
+                        <!-- Temporary fix for showing HTML5 date -->
+                        <span ng-show="field.type =='date'">{{businessObjectInstance[field.id] | date :'MM/dd/yyyy'}}</span>
+                        <span ng-show="field.type =='dateTime'">{{businessObjectInstance[field.id] | date :'MM/dd/yyyy hh:mm:ss'}}</span></td>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<input type="button" value="Add" style="float:right;margin-right:3%"
+			ng-click="businessObjectManagementPanelController.addInstanceToRelationship()"
+			ng-show="businessObjectManagementPanelController.relationship"></input>
+	</div>
+</div>
+<div sd-dialog="businessObjectManagementPanelController.importCSVDialog"
+	style="width: 200px;">
+	<div class="errorMessagesPanel"
+		ng-show="businessObjectManagementPanelController.importCSVDialog.errors.length > 0">
+		<ul>
+			<li
+				ng-repeat="error in businessObjectManagementPanelController.importCSVDialog.errors"><span
+				class="errorMessage">{{error.message}}</span></li>
+		</ul>
+	</div>
+	<table cellpadding="0" cellspacing="0"
+		style="width: 100%; margin-top: 10px;">
+		<tr>
+			<td>The CSV File needs to contain:
+				<ul>
+					<li>a header row with the IDs of all top level fields of the
+						{{businessObjectManagementPanelController.businessObject.name}}
+						and</li>
+					<li>rows with values for all
+						{{businessObjectManagementPanelController.businessObject.name}}s
+						to be loaded.</li>
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<table class="formTable">
+					<tr>
+						<td><label>File</label></td>
+						<td><input id="csvFile" type="file"
+							onchange="angular.element(this).scope().businessObjectManagementPanelController.onCSVFileSelect()"></input></td>
+						<td><input id="uploadButton" type="button" class="button"
+							ng-click="businessObjectManagementPanelController.uploadCSVFile()"
+							value="Upload" /></td>
+					</tr>
+					<tr>
+						<td colspan="3"><div
+								ng-show="businessObjectManagementPanelController.importCSVDialog.progressVisible">
+								<div class="percent">{{businessObjectManagementPanelController.importCSVDialog.progress}}%</div>
+								<div class="progress-bar">
+									<div class="uploaded"
+										ng-style="{'width': businessObjectManagementPanelController.importCSVDialog.progress + '%'}"></div>
+								</div>
+							</div></td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+		<tr>
+			<td align="center">
+				<table cellpadding="0" cellspacing="0">
+					<tr>
+						<td><input type="button" value="Close"
+							ng-click="businessObjectManagementPanelController.closeImportCSVDialog()" /></td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+</div>

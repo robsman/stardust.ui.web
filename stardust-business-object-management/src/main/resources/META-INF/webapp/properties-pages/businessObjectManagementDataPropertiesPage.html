@@ -1,0 +1,124 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+<head>
+<link
+	href='http://fonts.googleapis.com/css?family=Lato:400,700,300italic,400italic'
+	rel='stylesheet' type='text/css' />
+<link
+	href="../../business-object-management/css/font-awesome-4.1.0/css/font-awesome.css"
+	rel="stylesheet"></link>
+<link href="../../simple-modeler/css/stardust-modern.css"
+	rel="stylesheet" type="text/css"></link>
+<title>Business Object Management</title>
+</head>
+<body>
+	<div class="propertiesPage">
+		<table>
+			<tr>
+				<td><label>Primary Key Field</label></td>
+				<td><select
+					ng-model="elementView.propertiesPage.propertiesPanel.data.attributes['carnot:engine:primaryKey']"
+					ng-options="field.name as field.name for field in elementView.propertiesPage.topLevelFields"
+					ng-change="elementView.propertiesPage.updateAttribute('carnot:engine:primaryKey', elementView.propertiesPage.propertiesPanel.data.attributes['carnot:engine:primaryKey'])"><option
+							value="">Please select ...</option></select></td>
+				<td><p style="margin-left: 5px;">Selecting a Primary Key
+						Field will enable this Data to be used as a Business Object.</p></td>
+			</tr>
+			<tr>
+				<td><label>Name Field</label></td>
+				<td><select
+					ng-disabled="!elementView.propertiesPage.propertiesPanel.data.attributes['carnot:engine:primaryKey']"
+					ng-model="elementView.propertiesPage.propertiesPanel.data.attributes['carnot:engine:nameExpression']"
+					ng-options="field.name as field.name for field in elementView.propertiesPage.topLevelFields"
+					ng-change="elementView.propertiesPage.updateAttribute('carnot:engine:nameExpression', elementView.propertiesPage.propertiesPanel.data.attributes['carnot:engine:nameExpression'])"><option
+							value="">Please select ...</option></select></td>
+				<td></td>
+			</tr>
+		</table>
+		<div class="heading">Object Relationships</div>
+		<table class="dataTable">
+			<thead>
+				<tr>
+					<th></th>
+					<th>Other Business Object</th>
+					<th>Other Role</th>
+					<th>Reference to Other Object</th>
+					<th>This Role</th>
+					<th>Reference to this Object</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr
+					ng-repeat="relationship in elementView.propertiesPage.relationships">
+					<td><input type="image"
+						src="plugins/bpm-modeler/images/icons/delete.png"
+						title="Delete" alt="Delete" class="toolbarButton"
+						style="opacity: 1; cursor: auto;"
+						ng-click="elementView.propertiesPage.removeRelationship($index)"></input></td>
+					<td><select ng-model="relationship.otherBusinessObject"
+						ng-options="businessObject as businessObject.label for businessObject in elementView.propertiesPage.otherBusinessObjects"
+						ng-change="elementView.propertiesPage.changeOtherBusinessObject(relationship)"><option
+								value="">Please select ...</option></select></td>
+					<td><input ng-model="relationship.otherRole"
+						ng-blur="elementView.propertiesPage.submitRelationshipChanges(relationship, $index)"></input></td>
+					</select>
+					</td>
+					<td><select ng-model="relationship.otherForeignKeyField"
+						ng-options="field as field.cardinalityLabel for field in elementView.propertiesPage.topLevelFields"
+						ng-change="elementView.propertiesPage.submitRelationshipChanges(relationship, $index)"><option
+								value="">Please select ...</option></select></td>
+					<td><input ng-model="relationship.thisRole"
+						ng-blur="elementView.propertiesPage.submitRelationshipChanges(relationship, $index)"></input></td>
+					</select>
+					</td>
+					<td><select ng-model="relationship.thisForeignKeyField"
+						ng-options="field as field.cardinalityLabel for field in elementView.propertiesPage.otherBusinessObjectTopLevelFields[relationship.otherBusinessObject.getFullId()]"
+						ng-change="elementView.propertiesPage.submitRelationshipChanges(relationship, $index)"><option
+								value="">Please select ...</option></select></td>
+				</tr>
+				<tr>
+					<td><input type="image"
+						src="plugins/bpm-modeler/images/icons/add.png" title="Add"
+						alt="Add" class="toolbarButton" style="opacity: 1; cursor: auto;"
+						ng-click="elementView.propertiesPage.addRelationship()"></input></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="heading">Automatic Department Creation</div>
+		<table class="layoutTable">
+			<tr>
+				<td><p>Organizations for which departments with</p>
+					<ul>
+						<li>Name: <strong>{{elementView.propertiesPage.propertiesPanel.data.name}}&nbsp;<em>&lt;{{elementView.propertiesPage.propertiesPanel.data.name}}
+									Name&gt;</em></strong> and
+						</li>
+						<li>ID: <strong><em>&lt;Organization ID&gt;</em>{{elementView.propertiesPage.propertiesPanel.data.id}}<em>&lt;{{elementView.propertiesPage.propertiesPanel.data.name}}
+									Primary Key&gt;</em></strong>.
+						</li>
+					</ul>
+					<p>are created automatically on
+						{{elementView.propertiesPage.propertiesPanel.data.name}} creation.</p>
+					<p>The {{elementView.propertiesPage.propertiesPanel.data.name}}
+						Primary Key will become the Department Parameter.</p></td>
+				<td style="padding-left: 10px;"><select multiple="multiple"
+					size="7" ng-model="elementView.propertiesPage.managedOrganizations"
+					ng-options="organization.fullId as organization.label for organization in elementView.propertiesPage.organizations"
+					ng-change="elementView.propertiesPage.submitManagedOrganizationsChanges()">
+				</select></td>
+			</tr>
+		</table>
+	</div>
+</body>
+</html>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<jardesc>
+    <jar path="stardust-business-object-management.jar"/>
+    <options buildIfNeeded="true" compress="true" descriptionLocation="/stardust-business-object-management/stardust-business-object-management.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="true" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
+    <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
+    <selectedProjects/>
+    <manifest generateManifest="true" manifestLocation="" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
+        <sealing sealJar="false">
+            <packagesToSeal/>
+            <packagesToUnSeal/>
+        </sealing>
+    </manifest>
+    <selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
+        <javaElement handleIdentifier="=stardust-business-object-management/src\/main\/resources"/>
+        <javaElement handleIdentifier="=stardust-business-object-management/src\/test\/java"/>
+        <folder path="/stardust-business-object-management/src"/>
+        <folder path="/stardust-business-object-management/target"/>
+        <javaElement handleIdentifier="=stardust-business-object-management/src\/main\/java"/>
+    </selectedElements>
+</jardesc>
