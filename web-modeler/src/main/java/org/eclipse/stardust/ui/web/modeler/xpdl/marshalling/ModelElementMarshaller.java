@@ -24,10 +24,10 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.InternalEObject;
+
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.Period;
 import org.eclipse.stardust.common.StringUtils;
-import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
@@ -94,20 +94,9 @@ import org.eclipse.stardust.model.xpdl.carnot.util.StructuredTypeUtils;
 import org.eclipse.stardust.model.xpdl.carnot.util.VariableContext;
 import org.eclipse.stardust.model.xpdl.carnot.util.VariableContextHelper;
 import org.eclipse.stardust.model.xpdl.util.IConnectionManager;
-import org.eclipse.stardust.model.xpdl.xpdl2.DataTypeType;
-import org.eclipse.stardust.model.xpdl.xpdl2.DeclaredTypeType;
-import org.eclipse.stardust.model.xpdl.xpdl2.ExternalPackage;
-import org.eclipse.stardust.model.xpdl.xpdl2.ExternalReferenceType;
-import org.eclipse.stardust.model.xpdl.xpdl2.FormalParameterType;
-import org.eclipse.stardust.model.xpdl.xpdl2.FormalParametersType;
-import org.eclipse.stardust.model.xpdl.xpdl2.LoopMultiInstanceType;
-import org.eclipse.stardust.model.xpdl.xpdl2.LoopType;
-import org.eclipse.stardust.model.xpdl.xpdl2.LoopTypeType;
-import org.eclipse.stardust.model.xpdl.xpdl2.MIOrderingType;
-import org.eclipse.stardust.model.xpdl.xpdl2.ModeType;
-import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
-import org.eclipse.stardust.model.xpdl.xpdl2.XpdlTypeType;
+import org.eclipse.stardust.model.xpdl.xpdl2.*;
 import org.eclipse.stardust.model.xpdl.xpdl2.extensions.LoopDataRefType;
+import org.eclipse.stardust.model.xpdl.xpdl2.util.XpdlUtil;
 import org.eclipse.stardust.modeling.repository.common.descriptors.EObjectDescriptor;
 import org.eclipse.stardust.ui.web.modeler.edit.LockInfo;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
@@ -121,6 +110,7 @@ import org.eclipse.stardust.ui.web.modeler.service.XsdSchemaUtils;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelFormat;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelingSessionScoped;
 import org.eclipse.stardust.ui.web.modeler.xpdl.edit.utils.ClassesHelper;
+
 import org.eclipse.xsd.XSDSchema;
 import org.springframework.stereotype.Service;
 
@@ -926,7 +916,6 @@ public class ModelElementMarshaller implements ModelMarshaller
 
       if (null != activity)
       {
-
          activityJson.addProperty(ModelerConstants.OID_PROPERTY, activity.getElementOid());
          activityJson.addProperty(ModelerConstants.ID_PROPERTY, activity.getId());
          activityJson.addProperty(ModelerConstants.NAME_PROPERTY, activity.getName());
@@ -1038,9 +1027,9 @@ public class ModelElementMarshaller implements ModelMarshaller
                      {
                         Integer val = Integer.valueOf(getModelBuilderFacade().getAttributeValue(batchSize));
                         loopJson.addProperty("batchSize", val);
+                     }
                   }
                }
-            }
             }
 
             activityJson.addProperty(
@@ -1272,7 +1261,20 @@ public class ModelElementMarshaller implements ModelMarshaller
       {
       case STANDARD:
          loopJson.addProperty("type", "standard");
-         // TODO (fh) other properties
+         LoopStandardType loopStandard = loop.getLoopStandard();
+         if(loopStandard != null)
+         {
+            String loopStandardCondition = XpdlUtil.getLoopStandardCondition(loopStandard);
+            if(!StringUtils.isEmpty(loopStandardCondition))
+            {
+               loopJson.addProperty("loopCondition", loopStandardCondition);
+            }
+            TestTimeType test = loopStandard.getTestTime();
+            if(test != null)
+            {
+               loopJson.addProperty("testTime", test.getValue() == 0 ? "before" : "after");
+            }
+         }
          break;
       case MULTI_INSTANCE:
          loopJson.addProperty("type", "multi");
