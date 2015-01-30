@@ -256,9 +256,9 @@ define(
                   route += "}\n";
                   route += "     String.prototype.hashCode = function() {";
                   route += "        var hash = 0;\n";
-                  route += "        if (MailIntegrationOverlay == 0) return hash;\n";
-                  route += "        for (var i = 0; i &lt; MailIntegrationOverlay.length; i++) {\n";
-                  route += "           var character = MailIntegrationOverlay.charCodeAt(i);\n";
+                  route += "        if (this == 0) return hash;\n";
+                  route += "        for (var i = 0; i &lt; this.length; i++) {\n";
+                  route += "           var character = this.charCodeAt(i);\n";
                   route += "           hash = ((hash&lt;&lt;5)-hash)+character;\n";
                   route += "           hash = hash &amp; hash;\n";
                   route += "        }\n";
