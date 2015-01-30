@@ -32,6 +32,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
+
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
@@ -69,6 +70,7 @@ import org.eclipse.stardust.ui.web.modeler.spi.ModelFormat;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelingSessionScoped;
 import org.eclipse.stardust.ui.web.modeler.xpdl.edit.utils.ModelElementEditingUtils;
 import org.eclipse.stardust.ui.web.modeler.xpdl.edit.utils.WebServiceApplicationUtils;
+
 import org.eclipse.xsd.XSDElementDeclaration;
 import org.eclipse.xsd.XSDSchema;
 import org.eclipse.xsd.XSDTypeDefinition;
@@ -477,9 +479,9 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
             .getAsJsonObject(ModelerConstants.QUALITYCONTROL);
       String fullParticipantID = qcJson.get(ModelerConstants.PARTICIPANT_FULL_ID)
             .getAsString();
-      IModelParticipant performer = getModelBuilderFacade().findParticipant(
-            fullParticipantID);
-      activity.setQualityControlPerformer(performer);
+
+      IModelParticipant importParticipant = getModelBuilderFacade().importParticipant(ModelUtils.findContainingModel(activity), fullParticipantID);
+      activity.setQualityControlPerformer(importParticipant);
 
       activity.getValidQualityCodes().clear();
 
@@ -579,6 +581,27 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
             if (loop == null)
             {
                activity.setLoop((LoopType) multiLoop.eContainer());
+            }
+         }
+         else if ("standard".equals(type))
+         {
+            LoopStandardType standardLoop = XpdlUtil.getOrCreateLoopStandard(loop);
+            if (loop == null)
+            {
+               activity.setLoop((LoopType) standardLoop.eContainer());
+               XpdlUtil.setLoopStandardCondition(standardLoop, GsonUtils.safeGetAsString(json, "loopCondition"));
+               String testTime = GsonUtils.safeGetAsString(json, "testTime"); // before / after
+               if(!StringUtils.isEmpty(testTime))
+               {
+                  if("before".equals(testTime))
+                  {
+                     standardLoop.setTestTime(TestTimeType.BEFORE);
+                  }
+                  else
+                  {
+                     standardLoop.setTestTime(TestTimeType.AFTER);
+                  }
+               }
             }
          }
       }
