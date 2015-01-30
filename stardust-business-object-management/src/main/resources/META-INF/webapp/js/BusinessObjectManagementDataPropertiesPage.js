@@ -325,7 +325,7 @@ define(
 							this.relationships);
 
 					var thisRoleUnchanged = null;
-					if(this.relationshipsUnchanged && this.relationshipsUnchanged.length > 0){
+					if(this.relationshipsUnchanged && this.relationshipsUnchanged[index]){
 						var otherBusinessObjectUnchanged = this.relationshipsUnchanged[index].otherBusinessObject;
 						thisRoleUnchanged = this.relationshipsUnchanged[index].thisRole;
 					}
@@ -410,9 +410,23 @@ define(
 					var transfer = [];
 
 					for (var n = 0; n < relationships.length; ++n) {
-						if (!relationships[n].otherBusinessObject) {
+						var otherForeignKey = relationships[n].otherForeignKeyField;
+						var thisForeignKey = relationships[n].thisForeignKeyField;
+						
+						if (!relationships[n].otherBusinessObject || !otherForeignKey || !thisForeignKey) {
 							return;
 						}
+						
+						var otherForeignKeyValue = (typeof otherForeignKey === 'string') ? otherForeignKey
+								: otherForeignKey.name;
+						var thisForeignKeyValue = (typeof thisForeignKey === 'string') ? thisForeignKey
+								: thisForeignKey.name;
+						var otherCardinality = otherForeignKey.cardinality ? (otherForeignKey.cardinality == "many" ? "TO_MANY"
+								: "TO_ONE")
+								: relationships[n].otherCardinality;
+						var thisCardinality = thisForeignKey.cardinality ? (thisForeignKey.cardinality == "many" ? "TO_MANY"
+								: "TO_ONE")
+								: relationships[n].thisCardinality;
 						transfer
 								.push({
 									otherBusinessObject : {
@@ -420,13 +434,11 @@ define(
 										modelId : relationships[n].otherBusinessObject.modelId
 									},
 									otherRole : relationships[n].otherRole,
-									otherCardinality : relationships[n].otherForeignKeyField.cardinality == "many" ? "TO_MANY"
-											: "TO_ONE",
-									otherForeignKeyField : relationships[n].otherForeignKeyField.name,
+									otherCardinality : otherCardinality,
+									otherForeignKeyField : otherForeignKeyValue,
 									thisRole : relationships[n].thisRole,
-									thisCardinality : relationships[n].thisForeignKeyField.cardinality == "many" ? "TO_MANY"
-											: "TO_ONE",
-									thisForeignKeyField : relationships[n].thisForeignKeyField.name
+									thisCardinality : thisCardinality,
+									thisForeignKeyField : thisForeignKeyValue
 								});
 					}
 
