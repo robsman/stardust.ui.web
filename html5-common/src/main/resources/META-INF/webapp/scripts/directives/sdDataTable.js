@@ -581,16 +581,17 @@
 					
 					filterMarkup =
 						'<span flt-anchor="' + col.name + '"></span>' +
-						'<button class="button-link" ng-show="!' + filterSet + '" ng-click="' + stopEvent + toggleFilter + '" class="tbl-col-flt" title="{{i18n(\'portal-common-messages.common-filterPopup-showFilter-tooltip\')}}">\n' +
+						'<button class="button-link tbl-col-flt" ng-show="!' + filterSet + '" ng-click="' + stopEvent + toggleFilter + '" title="{{i18n(\'portal-common-messages.common-filterPopup-showFilter-tooltip\')}}">\n' +
 							'<i class="fa fa-filter"></i>\n' +
 						'</button>\n' +
-						'<button class="button-link" ng-show="' + filterSet + '" ng-click="' + stopEvent + resetFilter + '" class="tbl-col-flt" title="{{i18n(\'portal-common-messages.common-filterPopup-resetFilter-tooltip\')}}">\n' +
+						'<button class="button-link tbl-col-flt-set" ng-show="' + filterSet + '" ng-click="' + stopEvent + resetFilter + '" title="{{i18n(\'portal-common-messages.common-filterPopup-resetFilter-tooltip\')}}">\n' +
 							'<i class="fa fa-filter"></i>\n' +
 						'</button>\n' +
 						'<button class="button-link" ng-click="' + stopEvent + toggleFilter + '" title="{{i18n(\'portal-common-messages.common-filterPopup-showFilter-tooltip\')}}">\n' +
 							'<span class="tbl-col-flt-title" ng-if="!' + filterSet + '">{{i18n("portal-common-messages.common-filterPopup-filterNotSet")}}</span>' + 
 							'<span class="tbl-col-flt-title" ng-if="' + filterSet + '">{{' + filterTitle + '}}</span>' +
 						'</button>';
+
 					filterDialogMarkup = 
 						'<div ng-show="' + filterVisible + '" class="popup-dlg tbl-col-flt-dlg" col="' + col.name + '">\n' +
 							'<div class="popup-dlg-hdr">\n' +
@@ -612,8 +613,8 @@
 
 				var columnHeader = 
 					'<div>\n' + 
-						filterMarkup +
-						'<div class="tbl-hdr-col-label">' + col.titleExpr + '</div>\n'
+						'<div class="tbl-col-flt-wrapper">' + filterMarkup + '</div>\n' +
+						'<div class="tbl-hdr-col-label">' + col.titleExpr + '</div>\n' +
 					'</div>';
 
 				var hCol = angular.element(headCols[i]);
@@ -650,7 +651,7 @@
 
 					columnFilters[col.name] = {
 						filter : filterDialog,
-						anchor : header.find('> [flt-anchor="' + col.name + '"]')
+						anchor : header.find('[flt-anchor="' + col.name + '"]')
 					};
 				}
 			});

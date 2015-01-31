@@ -19,8 +19,8 @@
 
 .tbl-hdr-col {
     text-align: center;
-    vertical-align: top;
-	padding: 2px 5px 2px 5px;
+    vertical-align: bottom;
+	padding: 2px 15px 2px 10px;
 	border: none;
 	border-bottom: solid 1px #708090;
 	background: #FFFFFF;
@@ -29,25 +29,37 @@
 
 .tbl-hdr-col.sorting {
 	cursor: pointer;
-	background: transparent url("../images/icons/arrows-ud-10X16.png") no-repeat scroll right center;
+	background: transparent url("../images/icons/arrows-ud-10X16.png") no-repeat scroll 100% 90%;
 }
 
 .tbl-hdr-col.sorting_asc {
 	cursor: pointer;
-	background: transparent url("../images/icons/arrows-ud-d10X16.png") no-repeat scroll right center;
+	background: transparent url("../images/icons/arrows-ud-d10X16.png") no-repeat scroll 100% 90%;
 }
 
 .tbl-hdr-col.sorting_desc {
 	cursor: pointer;
-	background: transparent url("../images/icons/arrows-ud-u10X16.png") no-repeat scroll right center;
+	background: transparent url("../images/icons/arrows-ud-u10X16.png") no-repeat scroll 100% 90%;
 }
 
 .tbl-hdr-col-label {
 	font-weight: bold;
+	white-space: normal;
+}
+
+.tbl-col-flt-wrapper {
+	white-space: nowrap;
+	text-align: left;
 }
 
 .tbl-col-flt {
 	margin-right: 5px;
+	color: gray;
+}
+
+.tbl-col-flt-set {
+	margin-right: 5px;
+	color: black;
 }
 
 .tbl-col-flt-dlg {
