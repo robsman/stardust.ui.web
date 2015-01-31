@@ -32,9 +32,6 @@
 		 * 
 		 */
 		WorklistService.prototype.getWorklist = function(query) {
-			console.log("Getting worklist for:");
-			console.log(query);
-
 			// Prepare URL
 			var restUrl = REST_BASE_URL + ":type/:id";
 

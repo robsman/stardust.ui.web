@@ -31,8 +31,6 @@
 		 * 
 		 */
 		ActivityInstanceService.prototype.getDataMappings = function(oids) {
-			console.log("Getting Data Mappings for: ");
-			console.log(oids);
 			return ajax(REST_BASE_URL, "dataMappings", oids);
 		};
 
@@ -40,8 +38,6 @@
 		 * 
 		 */
 		ActivityInstanceService.prototype.getInData = function(oids) {
-			console.log("Getting In Data for: ");
-			console.log(oids);
 			return ajax(REST_BASE_URL, "inData", oids);
 		};
 
@@ -49,8 +45,6 @@
 		 * 
 		 */
 		ActivityInstanceService.prototype.getTrivialManualActivitiesDetails = function(oids) {
-			console.log("Getting Trivial Manual Activities Details for: ");
-			console.log(oids);
 			return ajax(REST_BASE_URL, "trivialManualActivitiesDetails", oids);
 		};
 
@@ -58,8 +52,6 @@
 		 * 
 		 */
 		ActivityInstanceService.prototype.completeAll = function(activities) {
-			console.log("Completing Activities: ");
-			console.log(activities);
 			return ajax(REST_BASE_URL, "completeAll", activities);
 		};
 

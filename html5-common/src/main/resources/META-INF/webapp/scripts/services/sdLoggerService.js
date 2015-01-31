@@ -23,10 +23,14 @@
 	 * 
 	 */
 	function LoggerService($rootScope) {
+		var MAIN_MODULE = 'bpm-portal.'
+
 		/*
 		 * 
 		 */
-		LoggerService.prototype.getLogger = function(classType) {
+		LoggerService.prototype.getLogger = function(moduleName) {
+			var prefix = MAIN_MODULE + moduleName + ' =>';
+
 			return {
 				log: function() {
 					logIt(console.log, Array.prototype.slice.call(arguments, 0));
@@ -60,7 +64,7 @@
 			 * 
 			 */
 			function logIt(loggerFunc, args) {
-				args = [classType + ' =>'].concat(args);
+				args = [prefix].concat(args);
 				if (!loggerFunc) {
 					loggerFunc = console.log;
 				}
