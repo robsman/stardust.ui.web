@@ -30,7 +30,7 @@
 						'<tr>' +
 							'<td><label class="label-form">{{i18n(\'portal-common-messages.common-filterPopup-betweenFilter-first\')}}</label></td>' +
 							'<td>' +
-								'<input type="text" sd-date-picker change-year="true"' + 
+								'<input type="text" sd-date-picker sda-change-year="true" sda-milliseconds="true"' + 
 									' id="from" name="from" ng-model="filterData.from" ng-model-onblur />' +
 								'<div class="msg-error" ng-show="filterForm[\'from\'].$error.datePicker">{{i18n(\'html5-common.converter-number-error\')}}</div>' +
 							'</td>' +
@@ -38,7 +38,7 @@
 						'<tr>' +
 							'<td><label class="label-form">{{i18n(\'portal-common-messages.common-filterPopup-betweenFilter-last\')}}</label></td>' +
 							'<td>' +
-								'<input type="text" sd-date-picker change-year="true"' + 
+								'<input type="text" sd-date-picker sda-change-year="true" sda-milliseconds="true"' + 
 									' id="to" name="to" ng-model="filterData.to" ng-model-onblur />' +
 								'<div class="msg-error" ng-show="filterForm[\'to\'].$error.datePicker">{{i18n(\'html5-common.converter-number-error\')}}</div>' +
 							'</td>' +
@@ -59,16 +59,16 @@
 						} else {
 							if (!sdUtilService.isEmpty(scope.filterData.from) && !sdUtilService.isEmpty(scope.filterData.to)) {
 								if (scope.filterData.from <= scope.filterData.to) {
-									scope.setFilterTitle(scope.filterData.from + ' - ' + scope.filterData.to);
+									scope.setFilterTitle(formatDate(scope.filterData.from) + ' - ' + formatDate(scope.filterData.to));
 									return true;
 								} else {
 									scope.filterForm.$error.range = true;
 								}
 							} else {
 								if (!sdUtilService.isEmpty(scope.filterData.from)) {
-									scope.setFilterTitle('> ' + scope.filterData.from);
+									scope.setFilterTitle('> ' + formatDate(scope.filterData.from));
 								} else {
-									scope.setFilterTitle('< ' + scope.filterData.to);
+									scope.setFilterTitle('< ' + formatDate(scope.filterData.to));
 								}
 								return true;
 							}
@@ -84,6 +84,14 @@
 				scope.handlers.resetFilter = function() {
 					// NOP
 				};
+
+				/*
+				 * 
+				 */
+				function formatDate(mills) {
+					var date = new Date(mills);
+            		return jQuery.datepicker.formatDate('yy.mm.dd', date);
+				}
 			}
 		};
 	}
