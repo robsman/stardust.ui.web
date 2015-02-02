@@ -22,6 +22,8 @@
 	 * 
 	 */
 	function TextSearchFilterDirective(sdUtilService) {
+		var MAX_TITLE_LENGTH = 35;
+
 		return {
 			restrict: 'A',
 			template:
@@ -42,7 +44,12 @@
 				 */
 				scope.handlers.applyFilter = function() {
 					if (scope.filterForm.$valid) {
-						scope.setFilterTitle(scope.filterData.textSearch);
+						var title = scope.filterData.textSearch;
+						if (title.length > MAX_TITLE_LENGTH) {
+							title = title.substring(0, MAX_TITLE_LENGTH - 3);
+							title += '...';
+						}
+						scope.setFilterTitle(title);
 						return true;
 					}
 
