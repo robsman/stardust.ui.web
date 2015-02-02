@@ -23,34 +23,54 @@ angular.module('bpm-common.directives')
 	                       "Thursday,Friday,Saturday",
 	                daysMin = "Su,Mo,Tu,We,Th,Fr,Sa,Su",
 	                daysShort = "Sun,Mon,Tue,Wed,Thu,Fri,Sat",
-	                dateFormat = attrs.dateFormat || 'yy.mm.dd',
-	                firstDay = 1*(attrs.firstDay || 1),
-	                numberOfMonths = 1*(attrs.numberMonths || 1),
-	                changeMonth = (attrs.changeMonth === 'true')?true:false,
-	                changeYear = (attrs.changeYear === 'true')?true:false,
-	                showButtonPanel = (attrs.showButtons==='true')?true:false,
-	                showAnim = attrs.animationStyle || 'show',
-	                showWeek = (attrs.showWeek==='true')?true:false,
-	                minDate = attrs.minDate || "-10Y",
-	                maxDate = attrs.maxDate || "10Y",
-	                gotoCurrent = (attrs.gotoCurrent==="true")?true:false,
-	                showOn = attrs.showOn || 'both', //focus|button|both
-	                buttonImage = attrs.buttonImage || '',
-	                constrainInput = (attrs.constrainInput==="true")?true:false,
-	                defaultDate = attrs.defaultDate || 0,
-	                currentText = attrs.currentText || 'Today',
-	                closeText = attrs.closeText || 'Close',
-	                dayNames = (attrs.dayNames)?attrs.dayNames.split(","):days.split(","),
-	                dayNamesMin =(attrs.dayNamesMin)?attrs.dayNamesMin.split(","):daysMin.split(","),
-	                dayNamesShort =(attrs.dayNamesShort)?attrs.dayNamesShort.split(","):daysShort.split(","),
-	                monthNames = (attrs.monthNames)?attrs.monthNames.split(","):months.split(","),
-	                monthNamesShort = (attrs.monthNamesShort)?attrs.monthNamesShort.split(","):monthsShort.split(","),
-	                yearRange = attrs.yearRange || 'c-10:c+10',
-	                buttonImageOnly = (attrs.buttonImageOnly==='true')?true:false ,
-	                buttonText = attrs.buttonText || "Select Date";
-	            
+	                dateFormat = attrs.sdaDateFormat || 'yy.mm.dd',
+	                firstDay = 1*(attrs.sdaFirstDay || 1),
+	                numberOfMonths = 1*(attrs.sdaNumberMonths || 1),
+	                changeMonth = (attrs.sdaChangeMonth === 'true')?true:false,
+	                changeYear = (attrs.sdaChangeYear === 'true')?true:false,
+	                showButtonPanel = (attrs.sdaShowButtons==='true')?true:false,
+	                showAnim = attrs.sdaAnimationStyle || 'show',
+	                showWeek = (attrs.sdaShowWeek==='true')?true:false,
+	                minDate = attrs.sdaMinDate || "-10Y",
+	                maxDate = attrs.sdaMaxDate || "10Y",
+	                gotoCurrent = (attrs.sdaGotoCurrent==="true")?true:false,
+	                showOn = attrs.sdaShowOn || 'both', //focus|button|both
+	                buttonImage = attrs.sdaButtonImage || '',
+	                constrainInput = (attrs.sdaConstrainInput==="true")?true:false,
+	                defaultDate = attrs.sdaDefaultDate || 0,
+	                currentText = attrs.sdaCurrentText || 'Today',
+	                closeText = attrs.sdaCloseText || 'Close',
+	                dayNames = (attrs.sdaDayNames)?attrs.sdaDayNames.split(","):days.split(","),
+	                dayNamesMin =(attrs.sdaDayNamesMin)?attrs.sdaDayNamesMin.split(","):daysMin.split(","),
+	                dayNamesShort =(attrs.sdaDayNamesShort)?attrs.sdaDayNamesShort.split(","):daysShort.split(","),
+	                monthNames = (attrs.sdaMonthNames)?attrs.sdaMonthNames.split(","):months.split(","),
+	                monthNamesShort = (attrs.sdaMonthNamesShort)?attrs.sdaMonthNamesShort.split(","):monthsShort.split(","),
+	                yearRange = attrs.sdaYearRange || 'c-10:c+10',
+	                buttonImageOnly = (attrs.sdaButtonImageOnly==='true')?true:false ,
+	                buttonText = attrs.sdaButtonText || "Select Date",
+	                milliseconds = attrs.sdaMilliseconds === 'true' ? true : false;
+
+	            if (milliseconds) {
+		            ngModelCtrl.$parsers.push(function(value) {
+		            	if (value == undefined || value == null || value == '') {
+		            		return value;
+		            	}
+
+		            	var date = jQuery.datepicker.parseDate(dateFormat, value);
+                		return date.getTime();
+		            });
+	
+		            ngModelCtrl.$formatters.push(function(value) {
+		            	if (value == undefined || value == null || value == '') {
+		            		return value;
+		            	}
+
+		            	var date = new Date(value);
+                		return jQuery.datepicker.formatDate(dateFormat, date);
+		            });
+	            }
+
 	            $(element).datepicker({
-	              
 	                numberOfMonths : numberOfMonths,
 	                dateFormat: dateFormat,
 	                firstDay : firstDay,
@@ -76,11 +96,12 @@ angular.module('bpm-common.directives')
 	                monthNamesShort : monthNamesShort,
 	                
 	                onSelect: function(date) {
-	                    ngModelCtrl.$setViewValue(date);
+                		ngModelCtrl.$setViewValue(date);
 	                    ngModelCtrl.$render();
-	                    ngModelCtrl.$apply();
+	                    if (angular.isFunction(ngModelCtrl.$apply)) {
+	                    	ngModelCtrl.$apply();
+	                    }
 	                }
-	                
 	            });
 	        }
 	    };
