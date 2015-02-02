@@ -30,14 +30,16 @@
 						'<tr>' +
 							'<td><label class="label-form">{{i18n(\'portal-common-messages.common-filterPopup-betweenFilter-first\')}}</label></td>' +
 							'<td>' +
-								'<input type="text" sd-date-picker id="from" name="from" ng-model="filterData.from" ng-model-onblur />' +
+								'<input type="text" sd-date-picker change-year="true"' + 
+									' id="from" name="from" ng-model="filterData.from" ng-model-onblur />' +
 								'<div class="msg-error" ng-show="filterForm[\'from\'].$error.datePicker">{{i18n(\'html5-common.converter-number-error\')}}</div>' +
 							'</td>' +
 						'</tr>' +
 						'<tr>' +
 							'<td><label class="label-form">{{i18n(\'portal-common-messages.common-filterPopup-betweenFilter-last\')}}</label></td>' +
 							'<td>' +
-								'<input type="text" sd-date-picker id="to" name="to" ng-model="filterData.to" ng-model-onblur />' +
+								'<input type="text" sd-date-picker change-year="true"' + 
+									' id="to" name="to" ng-model="filterData.to" ng-model-onblur />' +
 								'<div class="msg-error" ng-show="filterForm[\'to\'].$error.datePicker">{{i18n(\'html5-common.converter-number-error\')}}</div>' +
 							'</td>' +
 						'</tr>' +
