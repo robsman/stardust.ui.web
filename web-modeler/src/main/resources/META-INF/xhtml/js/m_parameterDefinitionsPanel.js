@@ -766,13 +766,6 @@ define(
 							content += "</td>";
 						}
 
-						var newValue = m_i18nUtils
-								.getProperty("modeler.element.properties.commonProperties.inputText.new");
-						content = content.replace(">New", ">" + newValue);
-						newValue = m_i18nUtils
-								.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.element.selectType.string");
-						content = content.replace("String", newValue);
-
 						this.parameterDefinitionsTableBody.append(content);
 
 						m_utils.jQuerySelect(
