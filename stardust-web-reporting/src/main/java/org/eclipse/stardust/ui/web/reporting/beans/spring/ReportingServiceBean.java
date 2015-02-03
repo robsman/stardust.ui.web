@@ -27,7 +27,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.StringTokenizer;
@@ -222,8 +221,7 @@ public class ReportingServiceBean
             processJson.addProperty("id", processDefinition.getQualifiedId());
             processJson.addProperty("name", I18nUtils.getProcessName(processDefinition)); // I18n
             processJson.addProperty("auxiliary", ProcessDefinitionUtils.isAuxiliaryProcess(processDefinition));
-
-            processesJson.add(processDefinition.getId(), processJson);
+            processesJson.add(processDefinition.getQualifiedId(), processJson);
 
             Map<DataPath, DataPathMetadata> dataPaths = CommonDescriptorUtils.getAllDescriptorsWithMetadata(processDefinition, true); 
 
