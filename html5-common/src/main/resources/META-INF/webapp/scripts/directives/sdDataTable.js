@@ -566,10 +566,11 @@
 			element.append(theFilters);
 
 			// Add Header Labels
+			var filterable = sdUtilService.isEmpty(element.attr('sda-filterable')) || element.attr('sda-filterable') == 'true' ? true : false;
 			var headCols = element.find('> thead > tr > th');
 			angular.forEach(columns, function(col, i) {
 				var filterMarkup = '', filterDialogMarkup = ''
-				if (col.filterable) {
+				if (filterable && col.filterable) {
 					var toggleFilter = '$dtApi.toggleColumnFilter(\'' + col.name + '\')';
 					var resetFilter = '$dtApi.resetColumnFilter(\'' + col.name + '\')';
 					var resetFilterAndClose = '$dtApi.resetColumnFilter(\'' + col.name + '\', true)';
