@@ -3010,7 +3010,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       if (modelJson.has(ModelerConstants.ID_PROPERTY))
       {
          String id = modelJson.get(ModelerConstants.ID_PROPERTY).getAsString();
-         if (modelBuilderFacade.getModelManagementStrategy().getModels().containsKey(id))
+         if (getModelBuilderFacade().getModelManagementStrategy().getModels().containsKey(id))
          {
             throw new IllegalArgumentException("Model ID already exists.");
          }
