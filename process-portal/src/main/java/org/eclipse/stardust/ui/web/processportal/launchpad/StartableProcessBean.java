@@ -177,6 +177,10 @@ public class StartableProcessBean extends AbstractLaunchPanel implements Initial
     */
    private boolean isDepartmentScoped(ModelParticipant modelParticipant)
    {
+      if(null == modelParticipant)
+      {
+         return false;
+      }
       if (modelParticipant.definesDepartmentScope())
       {
          return true;
