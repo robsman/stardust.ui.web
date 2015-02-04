@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.exception;
 
-import org.eclipse.stardust.ui.web.common.util.AbstractMessageBean;
+import org.eclipse.stardust.ui.web.rest.exception.reserved.AbstractMessageBean;
 import org.springframework.stereotype.Component;
 
 /**
