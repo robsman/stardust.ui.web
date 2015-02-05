@@ -18,7 +18,7 @@
    angular.module('bpm-common').directive('sdActivityCriticality', ActivityCriticality);
 
    /*
-    * 
+    *
     */
 
    function ActivityCriticality()
@@ -41,7 +41,7 @@
       this.toolTip = {
          show : false
       };
-      this.i18n = $scope.$parent.i18n;
+      this.i18n = $scope.i18n;
       $scope.criticalityCtrl = this;
    }
 

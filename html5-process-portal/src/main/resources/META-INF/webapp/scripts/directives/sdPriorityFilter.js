@@ -36,7 +36,7 @@
 								displayText.push(value.label);
 						});
 						var title = displayText.join(',');
-						if (title.length > MAX_TITLE_LENGTH) 
+						if (title.length > MAX_TITLE_LENGTH)
 	               {
 	                  title = title.substring(0, MAX_TITLE_LENGTH - 3);
 	                  title += '...';
@@ -61,7 +61,7 @@
 		*/
 		PriorityFilterController.prototype.intialize = function($scope,sdPriorityService) {
 			var self = this;
-			this.i18n = $scope.$parent.i18n;
+			this.i18n = $scope.i18n;
 			$scope.filterData.priorityLike = $scope.filterData.priorityLike || [];
 			this.data = [];
 			this.matchVal="";

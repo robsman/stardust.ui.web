@@ -108,7 +108,6 @@ public class WorklistUtils
 		}
 
 		FilterAndTerm filter = query.getFilter().addAndTerm();
-		FilterOrTerm or = filter.addOrTerm();
 
 		boolean worklistQuery = query instanceof WorklistQuery;
 
@@ -166,7 +165,7 @@ public class WorklistUtils
 
 		// Status Filter
 		if (null != filterDTO.status) {
-
+	      FilterOrTerm or = filter.addOrTerm();
 			for (String status : filterDTO.status.like) {
 
 				Integer actState = Integer.parseInt(status);
@@ -184,7 +183,7 @@ public class WorklistUtils
 
 		// Priority Filter
 		if (null != filterDTO.priority) {
-
+	      FilterOrTerm or = filter.addOrTerm();
 			for (PrioirtyDTO priority : filterDTO.priority.priorityLike) {
 				or.or((worklistQuery ? WorklistQuery.PROCESS_INSTANCE_PRIORITY
 						: ActivityInstanceQuery.PROCESS_INSTANCE_PRIORITY)
@@ -194,7 +193,7 @@ public class WorklistUtils
 
 		// Criticality Filter
 		if (null != filterDTO.criticality) {
-
+         FilterOrTerm or = filter.addOrTerm();
 			for (CriticalityDTO criticality : filterDTO.criticality.criticalityLike) {
 					or.or((worklistQuery ? WorklistQuery.ACTIVITY_INSTANCE_CRITICALITY
 							: ActivityInstanceQuery.CRITICALITY).between(
@@ -205,7 +204,7 @@ public class WorklistUtils
 
 		// Activities Filter
 		if (null != filterDTO.overview) {
-
+         FilterOrTerm or = filter.addOrTerm();
 			if (!CollectionUtils.isEmpty(filterDTO.overview.activities)) {
 				for (String activity : filterDTO.overview.activities) {
 					if (!StringUtils.equals("-1", activity))
@@ -217,6 +216,7 @@ public class WorklistUtils
 		// Process Filter
 		if (null != filterDTO.processDefinition) {
 			for (String processQId : filterDTO.processDefinition.processes) {
+	         FilterOrTerm or = filter.addOrTerm();
 				if (!StringUtils.equals("-1", processQId))
 					or.add(new ProcessDefinitionFilter(processQId, false));
 			}

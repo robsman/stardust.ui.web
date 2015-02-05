@@ -18,7 +18,7 @@
    angular.module('bpm-common').directive('sdProcessPriority', ProcessPriority);
 
    /*
-    * 
+    *
     */
    function ProcessPriority()
    {
@@ -30,14 +30,14 @@
       };
    }
    /**
-    * 
+    *
     */
    function ProcessPriorityController($scope, element)
    {
       this.toolTip = {
          show : false
       };
-      this.i18n = $scope.$parent.i18n;
+      this.i18n = $scope.i18n;
       $scope.processPriorityCtrl = this;
    }
 })();
