@@ -22,8 +22,8 @@ public class TestCreateDescriptorAnnotation extends RecordingTestcase
 {
    private final static String STORAGE_SCOPE = "storage";
    private final static String UI_SCOPE = "ui";   
-   private final static String DESCRIPTOR_ANNOTATION = "createDescriptor";
-   private final static String DESCRIPTOR_LABEL_ANNOTATION = "createDescriptor_label";
+   private final static String DESCRIPTOR_ANNOTATION = "descriptor";
+   private final static String FIELDNAME_LABEL_ANNOTATION = "fieldname_label";
       
    @Test
    public void testCreateDescriptorAnnotation() throws Exception
@@ -82,7 +82,7 @@ public class TestCreateDescriptorAnnotation extends RecordingTestcase
                               for (int j = 0, numItems = list.getLength(); j < numItems; j++) 
                               {
                                  Node childNode = list.item(j);
-                                 if(childNode instanceof Element && childNode.getLocalName().equals(DESCRIPTOR_LABEL_ANNOTATION))
+                                 if(childNode instanceof Element && childNode.getLocalName().equals(FIELDNAME_LABEL_ANNOTATION))
                                  {
                                     annotationLabelValue = XPathAnnotations.getValue((Element) childNode);                                 
                                  }
