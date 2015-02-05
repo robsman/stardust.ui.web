@@ -56,9 +56,9 @@ public class DumpDependencies
       StringBuilder dependencies = new StringBuilder();
       dependencies.append("Jar Name");
       dependencies.append(SEPERATOR);
-      dependencies.append("Name");
+      dependencies.append("Resource Name");
       dependencies.append(SEPERATOR);
-      dependencies.append("Path");
+      dependencies.append("Resource Path");
       dependencies.append(NEWLINE);
 
       for (ResourceDependency resourceDependency : resourceDependencies)
@@ -78,13 +78,6 @@ public class DumpDependencies
       try
       {
          writer = new FileWriter(outputFileName);
-      }
-      catch (IOException e)
-      {
-         e.printStackTrace();
-      }
-      try
-      {
          writer.append(dependencies);
          writer.flush();
          writer.close();
