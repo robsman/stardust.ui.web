@@ -35,7 +35,16 @@ define(
 										.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.fieldProperties.storage.persistent"),
 								"type" : "boolean",
 								"defaultValue" : "true"
-							}, ]
+							},
+							{
+								"name" : "descriptor",
+								"label" : m_i18nUtils
+										.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.fieldProperties.storage.descriptor"),
+								"type" : "boolean",
+								"defaultValue" : "false",
+								"tooltip": m_i18nUtils
+										.getProperty("modeler.model.propertyView.structuredTypes.configurationProperties.fieldProperties.storage.descriptor.tooltip")
+							},]
 				},
 				"ui" : {
 					"label" : m_i18nUtils
@@ -323,8 +332,11 @@ define(
 
 									content = "<tr id=\"propertyRow-"
 											+ m
-											+ "\" class=\"child-of-categoryRow-"
-											+ n + "\">";
+											+ "\" class=\"child-of-categoryRow-" + n + "\"";
+									if (property.tooltip) {
+										content += " title='" + property.tooltip + "'";
+									}
+									content += ">";
 									content += "<td><span>";
 									content += property.label;
 									content += "</span></td>";
