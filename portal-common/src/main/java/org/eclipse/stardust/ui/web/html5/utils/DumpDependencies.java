@@ -12,11 +12,8 @@ package org.eclipse.stardust.ui.web.html5.utils;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.stardust.ui.web.html5.utils.ResourceDependency;
-import org.eclipse.stardust.ui.web.html5.utils.ResourceDependencyUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -56,27 +53,26 @@ public class DumpDependencies
 
       List<ResourceDependency> resourceDependencies = ResourceDependencyUtils.discoverDependencies(context);
 
-      ArrayList<String> allScripts = new ArrayList<String>();
-      ArrayList<String> allStyles = new ArrayList<String>();
-
-      for (ResourceDependency resourceDependency : resourceDependencies)
-      {
-         allScripts.addAll(resourceDependency.getLibs());
-         allStyles.addAll(resourceDependency.getStyles());
-      }
       StringBuilder dependencies = new StringBuilder();
-      dependencies.append("PluginId");
+      dependencies.append("Jar Name");
       dependencies.append(SEPERATOR);
       dependencies.append("Name");
       dependencies.append(SEPERATOR);
       dependencies.append("Path");
       dependencies.append(NEWLINE);
 
-      dependencies.append(getDependencies(allScripts));
+      for (ResourceDependency resourceDependency : resourceDependencies)
+      {
+         dependencies.append(getDependencies(resourceDependency.getLibs(), resourceDependency.getPluginLocation()));
+      }
 
       dependencies.append(NEWLINE);
 
-      dependencies.append(getDependencies(allStyles));
+      // Seperate for loops to club all libs and styles together
+      for (ResourceDependency resourceDependency : resourceDependencies)
+      {
+         dependencies.append(getDependencies(resourceDependency.getStyles(), resourceDependency.getPluginLocation()));
+      }
 
       FileWriter writer = null;
       try
@@ -99,14 +95,19 @@ public class DumpDependencies
       }
    }
 
-   private static String getDependencies(List<String> resourceDependencyEntries)
+   private static String getDependencies(List<String> resourceDependencyEntries, String jarLocation)
    {
       StringBuilder dependencies = new StringBuilder();
-      for (String reseDepEntry : resourceDependencyEntries)
+      for (int i = 0; i < resourceDependencyEntries.size(); i++)
       {
-         int pluginIdIndex = reseDepEntry.indexOf(DELIMITER, PLUGINS_PREFIX.length() + 1);
-         dependencies.append(reseDepEntry.substring(PLUGINS_PREFIX.length() + 1, pluginIdIndex));
+         String reseDepEntry = resourceDependencyEntries.get(i);
+
+         // For jarName
+         String jarName = jarLocation.substring(jarLocation.lastIndexOf(DELIMITER) + 1, jarLocation.length());
+         dependencies.append(jarName);
+
          dependencies.append(SEPERATOR);
+
          int lastIndexOf = reseDepEntry.lastIndexOf(DELIMITER);
          String path = reseDepEntry.substring(0, lastIndexOf);
          String name = reseDepEntry.substring(lastIndexOf + 1, reseDepEntry.length());
