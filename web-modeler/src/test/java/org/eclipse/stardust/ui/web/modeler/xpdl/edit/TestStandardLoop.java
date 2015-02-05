@@ -35,7 +35,7 @@ public class TestStandardLoop extends RecordingTestcase
 
       ProcessDefinitionType process = GenericModelingAssertions.assertProcess(providerModel, "Process1", "Process 1");
       ActivityType activity = GenericModelingAssertions.assertActivity(process, "UserTask1", "User Task 1", ActivityImplementationType.MANUAL_LITERAL);
-      assertStandardLoop(activity, "test condition", TestTimeType.BEFORE);
+      assertStandardLoop(activity, "test condition 77", TestTimeType.BEFORE);
 
       // saveReplayModel("C:/tmp");
    }
