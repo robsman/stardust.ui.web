@@ -19,7 +19,7 @@
 		/*
 		*/
 		function PriorityFilter(){
-
+	      var MAX_TITLE_LENGTH = 35;
 			return {
 				restrict : 'A',
 				templateUrl :'plugins/html5-process-portal/scripts/directives/partials/PriorityFilter.html',
@@ -35,8 +35,13 @@
 						angular.forEach(scope.filterData.priorityLike,function(value){
 								displayText.push(value.label);
 						});
-
-						scope.setFilterTitle( displayText.join(','));
+						var title = displayText.join(',');
+						if (title.length > MAX_TITLE_LENGTH) 
+	               {
+	                  title = title.substring(0, MAX_TITLE_LENGTH - 3);
+	                  title += '...';
+	               }
+						scope.setFilterTitle(title);
 						return true;
 					};
 				}

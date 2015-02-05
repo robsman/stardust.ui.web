@@ -27,10 +27,10 @@
 }
 
 .sd-delegate-act-srch-participant-div {
-	border: 1px solid; 
-	border-color: #D9D9D9; 
-	width: 340px; 
-	overflow: auto; 
+	border: 1px solid;
+	border-color: #D9D9D9;
+	width: 340px;
+	overflow: auto;
 	padding: 7px;
 }/* ********** Abort Activity Dialog ********** */
 .abort-activity-form-content{
@@ -51,19 +51,19 @@ list-style: none;
 
 /* ********** Activity Criticality flags ********** */
 .criticality-flag-RED{
-  color :#FC3838;
+  color :#F75339;
 }
 
 .criticality-flag-YELLOW{
-  color :#FFCC00;
+  color :#EDCB47;
 }
 
 .criticality-flag-BLUE{
-  color :#3D66E0;
+  color :#43B1FF;
 }
 
 .criticality-flag-GREEN{
-  .color:green;
+  color:#6CC14F;
 }
 
 .criticality-flag-PURPLE{
@@ -71,11 +71,11 @@ list-style: none;
 }
 
 .criticality-flag-ORANGE{
-  color:orange;
+  color:#FFAE3E;
 }
 
 .criticality-flag-PINK{
-  color:pink;
+  color:#FF59E5;
 }
 
 .criticality-flag-WHITE-WARNING{

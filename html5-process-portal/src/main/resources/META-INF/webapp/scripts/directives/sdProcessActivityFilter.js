@@ -18,10 +18,11 @@
    angular.module('bpm-common').directive('sdProcessActivityFilter', ActivityFilter);
 
    /*
-    * 
+    *
     */
    function ActivityFilter()
    {
+      var MAX_TITLE_LENGTH = 35;
 
       return {
          restrict : 'A',
@@ -35,10 +36,10 @@
             scope.handlers.applyFilter = function()
             {
                var displayText = [];
-               console.log(ctrl.idToName);
 
                if (ctrl.isActivityFilter())
                {
+                  if((scope.filterData.activities.length) < 1) return false;
 
                   angular.forEach(scope.filterData.activities, function(value)
                   {
@@ -47,13 +48,20 @@
                }
                else
                {
+                  if((scope.filterData.activities.processes) < 1) return false;
+
                   angular.forEach(scope.filterData.processes, function(value)
                   {
                      displayText.push(ctrl.idToName[value]);
                   });
                }
-
-               scope.setFilterTitle(displayText.join(','));
+               var title = displayText.join(',');
+               if (title.length > MAX_TITLE_LENGTH)
+               {
+                  title = title.substring(0, MAX_TITLE_LENGTH - 3);
+                  title += '...';
+               }
+               scope.setFilterTitle(title);
                return true;
             };
          }
@@ -86,7 +94,7 @@
    var FILTER_TYPE_ACTIVITY = "activity";
 
    /**
-    * 
+    *
     */
    var FilterController = function($scope, $attrs)
    {
@@ -133,7 +141,7 @@
    }
 
    /*
-    * 
+    *
     */
 
    FilterController.prototype.getActivitiesForSelectedProcesses = function($scope,
@@ -170,7 +178,7 @@
    }
 
    /*
-    * 
+    *
     */
    FilterController.prototype.intialize = function($scope)
    {
@@ -186,7 +194,7 @@
    }
 
    /**
-    * 
+    *
     */
    FilterController.prototype.createIdNamePairs = function($scope)
    {
@@ -204,7 +212,7 @@
    }
 
    /*
-    * 
+    *
     */
    FilterController.prototype.auxComparator = function(auxValue, showAux)
    {
@@ -219,7 +227,7 @@
    }
 
    /*
-    * 
+    *
     */
    FilterController.prototype.getAllActivities = function($scope)
    {

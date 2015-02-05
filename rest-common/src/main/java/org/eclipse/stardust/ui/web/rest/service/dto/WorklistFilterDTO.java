@@ -71,7 +71,7 @@ public class WorklistFilterDTO {
     */
    public static Map<String, Type> getCustomTokens() {
       Map<String, Type> customTokens = new HashMap<String, Type>();
-      customTokens.put("priorityEquals", new TypeToken<List<PrioirtyDTO>>() {
+      customTokens.put("priorityLike", new TypeToken<List<PrioirtyDTO>>() {
       }.getType());
       customTokens.put("criticalityLike",
             new TypeToken<List<CriticalityDTO>>() {
