@@ -22,40 +22,46 @@
 			<tr>
 				<th sda-name="overview" sda-sortable="true">
 					<div sda-filter-template>
-	           <div sd-process-activity-filter sda-filter-type='activity' sda-processes='worklistCtrl.allAccessibleProcesses' sda-selected-values="filterData" sda-group-items ='false'>
-	           </div>
-    		  </div>
+						<div sd-process-activity-filter type='activity'></div>
+					</div>
 				</th>
-				<th sda-name="oid" sda-sortable="true" sda-filterable="true" sda-exportable=""></th>
+				<th sda-name="oid" sda-sortable="true" sda-filterable="true"
+					sda-exportable=""></th>
 				<th sda-name="criticality" sda-sortable="true">
 					<div sda-filter-template>
-								<div sd-criticality-filter sda-selected-criticalities="filterData"> </div>
+						<div sd-criticality-filter sda-selected-criticalities="filterData">
 						</div>
-					</th>
+					</div>
+				</th>
 				<th sda-name="priority" sda-sortable="true">
 					<div sda-filter-template>
-								<div sd-priority-filter sda-selected-priorities="filterData"> </div>
-						</div>
+						<div sd-priority-filter></div>
+					</div>
 				</th>
 				<th sda-name="descriptors" sda-visible="true"></th>
 				<th sda-name="started" sda-sortable="true" sda-filterable="true"></th>
-				<th sda-name="lastModified" sda-label-key="lastmodification" sda-sortable="true" sda-filterable="true"></th>
+				<th sda-name="lastModified" sda-label-key="lastmodification"
+					sda-sortable="true" sda-filterable="true"></th>
 				<th sda-name="duration" sda-sortable="false"></th>
 				<th sda-name="lastPerformer" sda-sortable="false"></th>
-				<th sda-name="processDefinition" sda-label-key="processName" sda-visible="false">
+				<th sda-name="processDefinition" sda-label-key="processName"
+					sda-visible="false">
 					<div sda-filter-template>
-	           <div sd-process-activity-filter sda-filter-type='process' sda-processes='worklistCtrl.allAccessibleProcesses' sda-selected-values="filterData" sda-group-items ='false'>
-	           </div>
-    		  </div>
+						<div sd-process-activity-filter sda-filter-type='process'
+							sda-processes='worklistCtrl.allAccessibleProcesses'
+							sda-selected-values="filterData"></div>
+					</div>
 				</th>
 				<th sda-name="status" sda-sortable="false" sda-visible="false">
 					<div sda-filter-template>
-								<div sd-status-filter sda-selected-statuses ="filterData" >
-					</div>
+						<div sd-status-filter></div>
 				</th>
 				<th sda-name="assignedTo" sda-sortable="false" sda-visible="false"></th>
 				<th ng-repeat="descCol in worklistCtrl.descritorCols"
-					sda-name="{{descCol.id}}" sda-label="{{descCol.title}}" sda-visible="false" sda-sortable="{{descCol.sortable}}">
+					sda-name="{{descCol.id}}" sda-label="{{descCol.title}}"
+					sda-visible="false" sda-sortable="{{descCol.sortable}}">
+					<div sda-filter-template>
+						<div sd-text-search-filter></div>
 				</th>
 				<th sda-name="data" sda-column="TRIVIAL_DATA" sda-sortable="false"></th>
 				<th sda-name="actions" sda-fixed="true"></th>
@@ -86,7 +92,7 @@
 				<td sda-field="duration"></td>
 				<td sda-field="lastPerformer" ></td>
 				<td sda-field="processInstance.processName"></td>
-				<td sda-field="status" ></td>
+				<td sda-field="status.label" ></td>
 				<td sda-field="assignedTo"></td>
 				<td ng-repeat="descCol in worklistCtrl.descritorCols"
 					sda-field="{{descCol.field}}" sda-data-type="{{descCol.dataType}}" style="white-space: nowrap;">
@@ -142,11 +148,11 @@
 			</tr>
 		</tbody>
 	</table>
-	
+
 	<span sd-delegate-activity-dialog sda-show-dialog="worklistCtrl.showDelegateDialog" sda-activity-list="worklistCtrl.selectedActivity"
 		sda-on-confirm="worklistCtrl.onDelegateConfirm()">
 	</span>
-	
+
 	<!--Dialog for abort Activity  -->
 	<div sd-abort-activity-dialog sda-show-dialog="worklistCtrl.showAbortActivityDialog" sda-on-abort-complete="worklistCtrl.abortCompleted()" sda-activities-to-abort="worklistCtrl.activitiesToAbort" ></div>
 </div>

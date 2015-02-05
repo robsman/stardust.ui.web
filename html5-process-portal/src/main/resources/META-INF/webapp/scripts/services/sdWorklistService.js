@@ -49,6 +49,9 @@
 				options += "&orderBy=" + query.options.order[index].name;
 				options += "&orderByDir=" + query.options.order[index].dir;
 			}
+			if (query.options.filters != undefined) {
+				options += "&filterBy=" + JSON.stringify(query.options.filters);
+			}
 
 			if (options.length > 0) {
 				restUrl = restUrl + "?" + options.substr(1);

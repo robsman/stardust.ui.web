@@ -30,6 +30,7 @@ import org.eclipse.stardust.ui.web.rest.Options;
 import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.CriticalityDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.StatusDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.TrivialActivityInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.utils.ActivityInstanceUtils;
@@ -53,7 +54,7 @@ public class WorklistService
 
    @Resource
    private ActivityInstanceUtils activityInstanceUtils;
-   
+
    @Resource
    private CriticalityUtils criticalityUtils;
 
@@ -84,9 +85,9 @@ public class WorklistService
    private QueryResultDTO buildWorklistResult(QueryResult<?> queryResult)
    {
       List<ActivityInstanceDTO> list = new ArrayList<ActivityInstanceDTO>();
-      
+
       List<CriticalityCategory>  criticalityConfigurations = criticalityUtils.getCriticalityConfiguration();
-      
+
       for (Object object : queryResult)
       {
          if (object instanceof ActivityInstance)
@@ -104,20 +105,22 @@ public class WorklistService
                trivialDto.trivial = true;
                dto = trivialDto;
             }
-            
+
             dto.duration = ActivityInstanceUtils.getDuration(ai);
             dto.lastPerformer = getLastPerformer(ai, UserUtils.getDefaultUserNameDisplayFormat());
-        	dto.status = ActivityInstanceUtils.getActivityStateLabel(ai);
             dto.assignedTo = getAssignedToLabel(ai);
-           
-      
+
+            StatusDTO status = DTOBuilder.build(ai, StatusDTO.class);
+            status.label = ActivityInstanceUtils.getActivityStateLabel(ai);
+            dto.status = status;
+
             int criticalityValue = criticalityUtils.getPortalCriticalityValue(ai.getCriticality());
             CriticalityCategory criticalCategory =  criticalityUtils.getCriticalityCategory(criticalityValue, criticalityConfigurations);
             CriticalityDTO criticalityDTO = DTOBuilder.build(criticalCategory, CriticalityDTO.class);
             criticalityDTO.value = criticalityValue;
             dto.criticality = criticalityDTO; 
-            
-            
+
+
             List<ProcessDescriptor> processDescriptorsList = CollectionUtils.newList();
 
             ModelCache modelCache = ModelCache.findModelCache();
@@ -146,7 +149,7 @@ public class WorklistService
                   dto.descriptors.put(processDescriptor.getId(), processDescriptor);
                }
             }
-            
+
             list.add(dto);
          }
       }

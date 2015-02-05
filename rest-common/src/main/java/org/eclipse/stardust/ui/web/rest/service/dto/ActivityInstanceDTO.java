@@ -50,8 +50,7 @@ public class ActivityInstanceDTO extends AbstractDTO
    
    public String lastPerformer;
    
-   @DTOAttribute("state.name")
-   public String status;
+   public StatusDTO status;
    
    public String assignedTo;
    

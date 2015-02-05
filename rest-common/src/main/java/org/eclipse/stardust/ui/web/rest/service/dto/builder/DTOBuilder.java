@@ -11,15 +11,22 @@
 package org.eclipse.stardust.ui.web.rest.service.dto.builder;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.util.StringUtils;
 
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
+
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.common.util.ReflectionUtils;
+import org.eclipse.stardust.ui.web.rest.JsonMarshaller;
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOAttribute;
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOClass;
 
@@ -114,6 +121,67 @@ public class DTOBuilder
       }
 
       return list;
+   }
+   
+   public static <DTO, T> DTO buildFromJSON(String jsonString, Class<DTO> toClass,
+         Map<String, Type> customTokens) throws Exception
+   {
+      DTO toInstance = null;
+      toInstance = toClass.newInstance();
+      JsonMarshaller jsonIo = new JsonMarshaller();
+      JsonObject json = jsonIo.readJsonObject(jsonString);
+
+      for (Field field : toClass.getDeclaredFields())
+      {
+         if (null != json.get(field.getName()))
+         {
+            if (String.class.equals(field.getType()))
+            {
+               setFieldValue(toInstance, field, json.get(field.getName()).getAsString());
+            }
+            else if (int.class.equals(field.getType())
+                  || Integer.class.equals(field.getType()))
+            {
+               setFieldValue(toInstance, field, json.get(field.getName()).getAsInt());
+            }
+            else if (Long.class.equals(field.getType())
+                  || long.class.equals(field.getType()))
+            {
+               setFieldValue(toInstance, field, json.get(field.getName()).getAsLong());
+            }
+            else if (Float.class.equals(field.getType()))
+            {
+               setFieldValue(toInstance, field, json.get(field.getName()).getAsFloat());
+            }
+            else if (Boolean.class.equals(field.getType())
+                  || boolean.class.equals(field.getType()))
+            {
+               setFieldValue(toInstance, field, json.get(field.getName()).getAsBoolean());
+            }
+            else if (List.class.equals(field.getType()))
+            {
+               Type listType = new TypeToken<List<String>>()
+               {
+               }.getType();
+               if (customTokens.containsKey(field.getName()))
+               {
+                  listType = customTokens.get(field.getName());
+               }
+               setFieldValue(toInstance, field, GsonUtils.extractList(
+                     json.get(field.getName()).getAsJsonArray(), listType));
+            }
+            else
+            {
+               Class< ? > fieldClass = field.getType();
+               setFieldValue(
+                     toInstance,
+                     field,
+                     buildFromJSON(json.get(field.getName()).toString(), fieldClass,
+                           customTokens));
+            }
+         }
+      }
+      return toInstance;
    }
 
    /**

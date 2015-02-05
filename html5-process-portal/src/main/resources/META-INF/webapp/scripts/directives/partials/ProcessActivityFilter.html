@@ -8,18 +8,13 @@
  </div>
  <div>
 
-   <select ng-hide="{{sdaGroupItems =='true'}}" class="iceSelMnyMnu " name="processes" ng-model ="sdaSelectedValues.processes" multiple ng-options="process.id as process.name for process in filterCtrl.processes | filter:{'auxillary': filterCtrl.showAuxillaryProcess } : filterCtrl.auxComparator | orderBy:'name'" ng-change="filterCtrl.updateProcess()">
-
+   <select  class="iceSelMnyMnu " name="processes" ng-model ="filterData.processes" multiple ng-options="process.id as process.name for process in filterCtrl.processes | filter:{'auxillary': filterCtrl.showAuxillaryProcess } : filterCtrl.auxComparator | orderBy:'name'" ng-change="filterCtrl.updateProcess()"  ng-init="filterData.processes = filterData.processes || ['-1']">
    </select>
 
-   <select ng-show="{{sdaGroupItems =='true'}}" class="iceSelMnyMnu " name="processes" ng-model ="sdaSelectedValues.processes" multiple
-    ng-init="sdaSelectedValues.processes = sdaSelectedValues.processes || ['all']"
-   ng-options="process.id as process.name group by process.modelName for process in filterCtrl.processes | filter:{'auxillary': filterCtrl.showAuxillaryProcess } : filterCtrl.auxComparator | orderBy:'name'" ng-change="filterCtrl.updateProcess()">
-   </select>
  </div>
 
 
-<div ng-show="sdaFilterType ==='activity'">
+<div ng-show="filterCtrl.sdaFilterType ==='activity'">
 <br/>
 <label  margin-bottom: 0px; ng-bind="filterCtrl.i18n('admin-portal-messages.views-common-activities-label')"></label>
  <div>
@@ -28,21 +23,11 @@
   </button>
 </div>
 <div>
-  <select  ng-hide="{{sdaGroupItems =='true'}}" class="iceSelMnyMnu" name="activities" ng-model ="sdaSelectedValues.activities" multiple
-   ng-init="sdaSelectedValues.activities = sdaSelectedValues.activities || ['all']"
+  <select  class="iceSelMnyMnu" name="activities" ng-model ="filterData.activities" multiple
+   ng-init="filterData.activities = filterData.activities || ['-1']"
    ng-options="activity.qualifiedId as activity.name for activity in filterCtrl.activities |filter:{'auxillary': filterCtrl.showAuxillaryActivity } : filterCtrl.auxComparator ">
-  </select>
-   <select ng-show="{{sdaGroupItems =='true'}}" class="iceSelMnyMnu" name="activities" ng-model ="sdaSelectedValues.activities" multiple
-    ng-init="sdaSelectedValues.activities = sdaSelectedValues.activities || ['all']"
-    ng-options="activity.qualifiedId as activity.name group by activity.process for activity in filterCtrl.activities |filter:{'auxillary': filterCtrl.showAuxillaryActivity } : filterCtrl.auxComparator ">
   </select>
 </div>
 </div>
 
 <label ng-bind="filterCtrl.i18n('portal-common-messages.common-filterPopup-pickListFilter-pickMany-list-message')"></label>
-
-
-
-
-
-

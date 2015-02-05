@@ -1,176 +1,261 @@
-	(function(){
-		'use strict';
+/*******************************************************************************
+ * Copyright (c) 2014 SunGard CSA LLC and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Anoop.Nair (SunGard CSA LLC) - initial API and implementation and/or initial documentation
+ *******************************************************************************/
+/**
+ * @author Johnson.Quadras
+ */
+(function()
+{
+   'use strict';
 
-		angular.module('bpm-common').directive('sdProcessActivityFilter',ActivityFilter);
+   angular.module('bpm-common').directive('sdProcessActivityFilter', ActivityFilter);
 
-		/*
-		*
-		*/
+   /*
+    * 
+    */
+   function ActivityFilter()
+   {
 
-		function ActivityFilter(){
+      return {
+         restrict : 'A',
+         templateUrl : 'plugins/html5-process-portal/scripts/directives/partials/ProcessActivityFilter.html',
+         controller : [ '$scope', '$attrs', FilterController ],
+         link : function(scope, element, attr, ctrl)
+         {
 
-			return {
-				restrict : 'A',
-				templateUrl :'plugins/html5-process-portal/scripts/directives/partials/ProcessActivityFilter.html',
-				scope :{
-					sdaFilterType : '@',
-					sdaProcesses :'=',
-					sdaSelectedValues:'=',
-					sdaGroupItems:'@'
-				},
-				controller :['$scope',FilterController]
-			};
+            /*
+             */
+            scope.handlers.applyFilter = function()
+            {
+               var displayText = [];
+               console.log(ctrl.idToName);
 
-		}
+               if (ctrl.isActivityFilter())
+               {
 
-		var DEFAULT_ACTIVITY ={
-			"id":"all",
-			"qualifiedId":"all",
-			"name":"All Activites",
-			"description":"All Activites.",
-			"implementationTypeId":"Manual",
-			"implementationTypeName":"Manual",
-			"auxillary":false,
-			"process":"All processes"
-		};
+                  angular.forEach(scope.filterData.activities, function(value)
+                  {
+                     displayText.push(ctrl.idToName[value]);
+                  });
+               }
+               else
+               {
+                  angular.forEach(scope.filterData.processes, function(value)
+                  {
+                     displayText.push(ctrl.idToName[value]);
+                  });
+               }
 
+               scope.setFilterTitle(displayText.join(','));
+               return true;
+            };
+         }
+      };
+   }
+   ;
 
-		var DEFAULT_PROCESS = {
-			"id":"all",
-			"name":"All Processes",
-			"description":"All Processes",
-			"modelOid":-1,
-			"modelName":"PredefinedModel",
-			"auxillary":false,
-			"activities":[],
-			"model":""
-		};
+   var DEFAULT_ACTIVITY = {
+      "id" : "-1",
+      "qualifiedId" : "-1",
+      "name" : "All Activites",
+      "description" : "All Activites.",
+      "implementationTypeId" : "Manual",
+      "implementationTypeName" : "Manual",
+      "auxillary" : false,
+      "process" : "All processes"
+   };
 
-		var FILTER_TYPE_ACTIVITY = "activity";
+   var DEFAULT_PROCESS = {
+      "id" : "-1",
+      "name" : "All Processes",
+      "description" : "All Processes",
+      "modelOid" : -1,
+      "modelName" : "PredefinedModel",
+      "auxillary" : false,
+      "activities" : [],
+      "model" : ""
+   };
 
-		/**
-		*
-		*/
-		var FilterController = function($scope){
+   var FILTER_TYPE_ACTIVITY = "activity";
 
-			var self = this;
+   /**
+    * 
+    */
+   var FilterController = function($scope, $attrs)
+   {
 
-			this.intialize($scope);
+      var self = this;
 
-			this.loadAllActivities = function(){
-				this.getAllActivities($scope);
-			}
+      this.sdaFilterType = $attrs.type;
 
-			this.isActivityFilter = function(){
-				return $scope.sdaFilterType === FILTER_TYPE_ACTIVITY;
-			}
+      this.intialize($scope);
 
-			this.updateProcess = function(){
-				if(self.isActivityFilter()){
-					this.getActivitiesForSelectedProcesses($scope,$scope.sdaSelectedValues.processes);
-				}
-			}
+      this.loadAllActivities = function()
+      {
+         this.getAllActivities($scope);
+      }
 
-			this.loadValues = function(){
-				angular.forEach($scope.sdaProcesses,function(data){
-					self.processes.push(data);
-				});
+      this.isActivityFilter = function()
+      {
+         return self.sdaFilterType === FILTER_TYPE_ACTIVITY;
+      }
 
-				if(this.isActivityFilter()){
-					this.loadAllActivities();
-				}
-			}
+      this.updateProcess = function()
+      {
+         if (self.isActivityFilter())
+         {
+            this.getActivitiesForSelectedProcesses($scope, $scope.filterData.processes);
+         }
+      }
 
-			this.loadValues();
-			$scope.filterCtrl = this;
-		}
+      this.loadValues = function()
+      {
+         angular.forEach($scope.worklistCtrl.allAccessibleProcesses, function(data)
+         {
+            self.processes.push(data);
+         });
 
+         if (this.isActivityFilter())
+         {
+            this.loadAllActivities();
+         }
+      }
 
-		/*
-		*
-		*/
+      this.loadValues();
+      $scope.filterCtrl = this;
+   }
 
-		FilterController.prototype.getActivitiesForSelectedProcesses = function($scope,selectedProcesses){
-			var self = this;
-			self.activities = [DEFAULT_ACTIVITY];
+   /*
+    * 
+    */
 
-			if(selectedProcesses.indexOf('all') > -1 ){
+   FilterController.prototype.getActivitiesForSelectedProcesses = function($scope,
+            selectedProcesses)
+   {
+      var self = this;
+      self.activities = [ DEFAULT_ACTIVITY ];
 
-				self.loadAllActivities();
-			}else{
+      if (selectedProcesses.indexOf('-1') > -1)
+      {
 
-				angular.forEach(selectedProcesses,function(selectedProcess){
+         self.loadAllActivities();
+      }
+      else
+      {
 
-					angular.forEach( $scope.sdaProcesses,function(process){
-						if(process.id === selectedProcess){
-							var activities =  process.activities;
-							angular.forEach(activities,function(activity){
-								activity['process'] = process.name;
-								self.activities.push(activity);
-							})
-						}
-					});
-				});
-			}
-		}
+         angular.forEach(selectedProcesses, function(selectedProcess)
+         {
 
+            angular.forEach($scope.worklistCtrl.allAccessibleProcesses, function(process)
+            {
+               if (process.id === selectedProcess)
+               {
+                  var activities = process.activities;
+                  angular.forEach(activities, function(activity)
+                  {
+                     activity['process'] = process.name;
+                     self.activities.push(activity);
+                  })
+               }
+            });
+         });
+      }
+   }
 
-		/*
-		*
-		*/
-		FilterController.prototype.intialize = function($scope){
-			this.i18n = $scope.$parent.i18n;
-			this.showAuxillaryProcess = false;
-			this.showAuxillaryActivity = false;
+   /*
+    * 
+    */
+   FilterController.prototype.intialize = function($scope)
+   {
+      this.i18n = $scope.$parent.i18n;
+      this.showAuxillaryProcess = false;
+      this.showAuxillaryActivity = false;
 
-			this.processes = [DEFAULT_PROCESS];
-			this.activities = [DEFAULT_ACTIVITY];
-		}
+      this.processes = [ DEFAULT_PROCESS ];
+      this.activities = [ DEFAULT_ACTIVITY ];
 
-		/*
-		*
-		*/
-		FilterController.prototype.auxComparator = function(auxValue , showAux){
-			if ( showAux ) {
-				return true;
-			}else{
-				return !auxValue;
-			}
-		}
+      this.idToName = {};
+      this.createIdNamePairs($scope);
+   }
 
-		/*
-		*
-		*/
-		FilterController.prototype.getAllActivities = function($scope){
-			var self = this;
-			self.activities = [];
-			self.activities.push(DEFAULT_ACTIVITY);
+   /**
+    * 
+    */
+   FilterController.prototype.createIdNamePairs = function($scope)
+   {
+      var self = this;
+      self.idToName[DEFAULT_PROCESS.id] = DEFAULT_PROCESS.name;
+      self.idToName[DEFAULT_ACTIVITY.id] = DEFAULT_ACTIVITY.name;
+      angular.forEach($scope.worklistCtrl.allAccessibleProcesses, function(process)
+      {
+         self.idToName[process.id] = process.name;
+         angular.forEach(process.activities, function(activity)
+         {
+            self.idToName[activity.qualifiedId] = activity.name;
+         });
+      });
+   }
 
-			angular.forEach($scope.sdaProcesses, function(process) {
+   /*
+    * 
+    */
+   FilterController.prototype.auxComparator = function(auxValue, showAux)
+   {
+      if (showAux)
+      {
+         return true;
+      }
+      else
+      {
+         return !auxValue;
+      }
+   }
 
-				if( !angular.isUndefined(process.activities) ){
-					var activities = process.activities
-					angular.forEach(activities, function(activity) {
-						activity['process'] = process.name;
-						self.activities.push(activity);
-					});
-				}
-			});
-		}
+   /*
+    * 
+    */
+   FilterController.prototype.getAllActivities = function($scope)
+   {
+      var self = this;
+      self.activities = [];
+      self.activities.push(DEFAULT_ACTIVITY);
 
-		/*
-		*
-		*/
-		FilterController.prototype.showHideAuxillaryProcess = function(){
-			this.showAuxillaryProcess = !this.showAuxillaryProcess;
-		}
+      angular.forEach($scope.worklistCtrl.allAccessibleProcesses, function(process)
+      {
 
-		/*
-		*
-		*/
-		FilterController.prototype.showHideAuxillaryActivity = function(){
-			this.showAuxillaryActivity = !this.showAuxillaryActivity;
-		}
+         if (!angular.isUndefined(process.activities))
+         {
+            var activities = process.activities
+            angular.forEach(activities, function(activity)
+            {
+               activity['process'] = process.name;
+               self.activities.push(activity);
+            });
+         }
+      });
+   }
 
+   /*
+    *
+    */
+   FilterController.prototype.showHideAuxillaryProcess = function()
+   {
+      this.showAuxillaryProcess = !this.showAuxillaryProcess;
+   }
 
-	})();
+   /*
+    *
+    */
+   FilterController.prototype.showHideAuxillaryActivity = function()
+   {
+      this.showAuxillaryActivity = !this.showAuxillaryActivity;
+   }
+
+})();

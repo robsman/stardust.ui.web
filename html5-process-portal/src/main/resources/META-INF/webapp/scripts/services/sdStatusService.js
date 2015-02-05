@@ -1,63 +1,37 @@
+/*******************************************************************************
+ * Copyright (c) 2011 SunGard CSA LLC and others. All rights reserved. This
+ * program and the accompanying materials are made available under the terms of
+ * the Eclipse Public License v1.0 which accompanies this distribution, and is
+ * available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
+ * documentation
+ ******************************************************************************/
+/**
+ * @author Johnson.Quadras
+ */
 (function(){
-  'use strict';
+	'use strict';
 
+	/**
+	 * 
+	 */
+	angular.module('workflow-ui.services').provider('sdStatusService',function(){
+		this.$get = ['$q', '$resource', function ($q, $resource) {
+			var service = new StatusService($q, $resource);
+			return service;
+		}];
+	});
 
-  angular.module('workflow-ui.services').provider('sdStatusService',function(){
-    this.$get = ['$q', 'sgI18nService', function ($q, sgI18nService) {
-      var service = new StatusService($q, sgI18nService);
-      return service;
-    }];
-  });
-
-  /**
-  *
-  */
-  function StatusService($q, sgI18nService) {
-
-    this.statuses = [
-      {
-        "id" : "Aborted",
-        "name":sgI18nService.translate('views-common-messages.views-activityTable-statusFilter-aborted')
-      },
-      {
-        "id" : "Aborting",
-        "name":sgI18nService.translate('views-common-messages.views-activityTable-statusFilter-aborting')
-      },
-      {
-        "id" : "Application",
-        "name":sgI18nService.translate('views-common-messages.views-activityTable-statusFilter-application')
-      },
-      {
-        "id" : "Completed",
-        "name":sgI18nService.translate('views-common-messages.views-activityTable-statusFilter-completed')
-      },
-      {
-        "id" : "Created",
-        "name":sgI18nService.translate('views-common-messages.views-activityTable-statusFilter-created')
-      },
-      {
-        "id" : "Hibernated",
-        "name":sgI18nService.translate('views-common-messages.views-activityTable-statusFilter-hibernated')
-      },
-      {
-        "id" : "Interupted",
-        "name":sgI18nService.translate('views-common-messages.views-activityTable-statusFilter-interrupted')
-      },
-      {
-        "id" : "Suspended",
-        "name":sgI18nService.translate('views-common-messages.views-activityTable-statusFilter-suspended')
-      }
-
-      ];
-
-
-    StatusService.prototype.getAllStatuses = function() {
-      var deferred = $q.defer();
-      deferred.resolve(this.statuses);
-      return deferred.promise;
-    };
-
-  }
+	/**
+	 *
+	 */
+	function StatusService($q, $resource) {
+		var REST_URL = "services/rest/portal/activity-instances/allActivityStates";
+		StatusService.prototype.getAllActivityStates = function() {
+			return  $resource(REST_URL).query().$promise;
+		};
+	}
 
 })();
 

@@ -10,22 +10,29 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service.utils;
 
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.engine.api.model.Participant;
 import org.eclipse.stardust.engine.api.model.ParticipantInfo;
+import org.eclipse.stardust.engine.api.query.ActivityFilter;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.ActivityInstances;
+import org.eclipse.stardust.engine.api.query.ActivityStateFilter;
 import org.eclipse.stardust.engine.api.query.DescriptorPolicy;
 import org.eclipse.stardust.engine.api.query.FilterAndNotTerm;
+import org.eclipse.stardust.engine.api.query.FilterAndTerm;
 import org.eclipse.stardust.engine.api.query.FilterOrTerm;
 import org.eclipse.stardust.engine.api.query.HistoricalStatesPolicy;
 import org.eclipse.stardust.engine.api.query.PerformingParticipantFilter;
 import org.eclipse.stardust.engine.api.query.PerformingUserFilter;
+import org.eclipse.stardust.engine.api.query.ProcessDefinitionFilter;
 import org.eclipse.stardust.engine.api.query.Query;
 import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.query.SubsetPolicy;
@@ -35,11 +42,15 @@ import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
 import org.eclipse.stardust.engine.api.runtime.Grant;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.rest.Options;
+import org.eclipse.stardust.ui.web.rest.service.dto.CriticalityDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.WorklistFilterDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.PrioirtyDTO;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 import org.springframework.stereotype.Component;
 
 /**
  * @author Subodh.Godbole
+ * @author Johnson.Quadras
  * @version $Revision: $
  */
 @Component
@@ -53,6 +64,8 @@ public class WorklistUtils
    @Resource
    private ServiceFactoryUtils serviceFactoryUtils;
 
+   @Resource
+   private CriticalityUtils criticalityUtils;
    /**
     * @param participantQId
     * @return
@@ -67,6 +80,8 @@ public class WorklistUtils
          query.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
          
          addSortCriteria(query, options);
+         
+         addFilterCriteria(query, options);
 
          SubsetPolicy subsetPolicy = new SubsetPolicy(options.pageSize, options.skip, true);
          query.setPolicy(subsetPolicy);
@@ -78,8 +93,140 @@ public class WorklistUtils
       }
       return null;
    }
-
+   
    /**
+    * Adds filter criteria to the query
+    * @param query Query
+    * @param options Options
+    */
+	private void addFilterCriteria(Query query, Options options) {
+
+		WorklistFilterDTO filterDTO = options.filter;
+
+		if (filterDTO == null) {
+			return;
+		}
+
+		FilterAndTerm filter = query.getFilter().addAndTerm();
+		FilterOrTerm or = filter.addOrTerm();
+
+		boolean worklistQuery = query instanceof WorklistQuery;
+
+		// Activity ID
+		if (null != filterDTO.oid) {
+			if (null != filterDTO.oid.from) {
+				filter.and((worklistQuery ? WorklistQuery.ACTIVITY_INSTANCE_OID
+						: ActivityInstanceQuery.OID)
+						.greaterOrEqual(filterDTO.oid.from));
+			}
+			if (null != filterDTO.oid.to) {
+				filter.and((worklistQuery ? WorklistQuery.ACTIVITY_INSTANCE_OID
+						: ActivityInstanceQuery.OID)
+						.lessOrEqual(filterDTO.oid.to));
+			}
+		}
+
+		// Start Filter
+		if (null != filterDTO.started) {
+
+			if (filterDTO.started.from != null) {
+				Date fromDate = new Date(filterDTO.started.from);
+				filter.and((worklistQuery ? WorklistQuery.START_TIME
+						: ActivityInstanceQuery.START_TIME)
+						.greaterOrEqual(fromDate.getTime()));
+			}
+
+			if (filterDTO.started.to != null) {
+				Date toDate = new Date(filterDTO.started.to);
+				filter.and((worklistQuery ? WorklistQuery.START_TIME
+						: ActivityInstanceQuery.START_TIME).lessOrEqual(toDate
+						.getTime()));
+			}
+		}
+
+		// Modified Filter
+		if (null != filterDTO.lastModified) {
+
+			if (filterDTO.lastModified.from != null) {
+				Date fromDate = new Date(filterDTO.lastModified.from);
+
+				filter.and((worklistQuery ? WorklistQuery.LAST_MODIFICATION_TIME
+						: ActivityInstanceQuery.LAST_MODIFICATION_TIME)
+						.greaterOrEqual(fromDate.getTime()));
+			}
+
+			if (filterDTO.lastModified.to != null) {
+				Date toDate = new Date(filterDTO.lastModified.to);
+
+				filter.and((worklistQuery ? WorklistQuery.LAST_MODIFICATION_TIME
+						: ActivityInstanceQuery.LAST_MODIFICATION_TIME)
+						.lessOrEqual(toDate.getTime()));
+			}
+		}
+
+		// Status Filter
+		if (null != filterDTO.status) {
+
+			for (String status : filterDTO.status.like) {
+
+				Integer actState = Integer.parseInt(status);
+				
+				if (!worklistQuery) {
+					or.add(ActivityInstanceQuery.STATE.isEqual(Long
+							.parseLong(status.toString())));
+				} else if (worklistQuery) {
+					// Worklist Query uses ActivityStateFilter.
+					or.add(new ActivityStateFilter(ActivityInstanceState
+							.getState(actState)));
+				}
+			}
+		}
+
+		// Priority Filter
+		if (null != filterDTO.priority) {
+
+			for (PrioirtyDTO priority : filterDTO.priority.priorityLike) {
+				or.or((worklistQuery ? WorklistQuery.PROCESS_INSTANCE_PRIORITY
+						: ActivityInstanceQuery.PROCESS_INSTANCE_PRIORITY)
+						.isEqual(Integer.valueOf(priority.value)));
+			}
+		}
+
+		// Criticality Filter
+		if (null != filterDTO.criticality) {
+
+			for (CriticalityDTO criticality : filterDTO.criticality.criticalityLike) {
+					or.or((worklistQuery ? WorklistQuery.ACTIVITY_INSTANCE_CRITICALITY
+							: ActivityInstanceQuery.CRITICALITY).between(
+							criticality.rangeFrom, criticality.rangeTo));
+			}
+
+		}
+
+		// Activities Filter
+		if (null != filterDTO.overview) {
+
+			if (!CollectionUtils.isEmpty(filterDTO.overview.activities)) {
+				for (String activity : filterDTO.overview.activities) {
+					if (!StringUtils.equals("-1", activity))
+						or.add(ActivityFilter.forAnyProcess(activity));
+				}
+			}
+		}
+
+		// Process Filter
+		if (null != filterDTO.processDefinition) {
+			for (String processQId : filterDTO.processDefinition.processes) {
+				if (!StringUtils.equals("-1", processQId))
+					or.add(new ProcessDefinitionFilter(processQId, false));
+			}
+		}
+
+	}
+
+
+
+/**
     * @param userId
     * @return
     */
@@ -96,6 +243,8 @@ public class WorklistUtils
          // query.setPolicy(EvaluateByWorkitemsPolicy.WORKITEMS);
 
          addSortCriteria(query, options);
+         
+         addFilterCriteria(query, options);
 
          SubsetPolicy subsetPolicy = new SubsetPolicy(options.pageSize, options.skip, true);
          query.setPolicy(subsetPolicy);

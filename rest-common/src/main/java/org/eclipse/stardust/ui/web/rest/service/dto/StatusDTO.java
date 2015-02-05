@@ -14,29 +14,21 @@
 package org.eclipse.stardust.ui.web.rest.service.dto;
 
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOAttribute;
-import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityConfigurationUtil.ICON_COLOR;
 
-public class CriticalityDTO extends AbstractDTO {
-
-	public int value;
-
-	@DTOAttribute("iconColor")
-	public String color;
-
-	@DTOAttribute("label")
+public class StatusDTO extends AbstractDTO{
+	
+	@DTOAttribute(value = "state.value")
+	public Integer value;
+	
 	public String label;
-
-	@DTOAttribute("iconCount")
-	public int count;
 	
-	@DTOAttribute("rangeFrom")
-	public int rangeFrom;
+	public StatusDTO() {
+		// TODO Auto-generated constructor stub
+	}
 	
-	@DTOAttribute("rangeTo")
-	public int rangeTo;
-
-	public void setColor(ICON_COLOR iconColor) {
-		this.color = iconColor.toString();
+	public StatusDTO(Integer value, String label) {
+		this.value = value;
+		this.label = label;
 	}
 
 }

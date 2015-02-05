@@ -8,6 +8,9 @@
  * Contributors:
  *    Anoop.Nair (SunGard CSA LLC) - initial API and implementation and/or initial documentation
  *******************************************************************************/
+/**
+ * @author Johnson.Quadras
+ */
 package org.eclipse.stardust.ui.web.rest.service;
 
 import java.io.Serializable;
@@ -19,27 +22,23 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.springframework.stereotype.Component;
+
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
+
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
+import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
-import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceOutDataDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.CriticalityDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap;
-import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap.NotificationDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.TrivialManualActivityDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.*;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DocumentDTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.CriticalityUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityCategory;
-import org.springframework.stereotype.Component;
-
-import com.google.gson.JsonObject;
-import com.google.gson.reflect.TypeToken;
+import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 
 /**
  * @author Anoop.Nair
@@ -200,4 +199,39 @@ public class ActivityInstanceService
 		}
 		return criticalityCategories;
 	}
+
+	
+	/**
+	 * Returns all states
+	 * @return List
+	 */
+	public List<StatusDTO> getAllActivityStates() {
+	      MessagesViewsCommonBean propsBean = MessagesViewsCommonBean.getInstance();
+	      List<StatusDTO> allStatusList = new ArrayList<StatusDTO>();
+
+	      allStatusList.add(new StatusDTO(ActivityInstanceState.ABORTED, propsBean
+	            .getString("views.activityTable.statusFilter.aborted")));
+
+	      allStatusList.add(new StatusDTO(ActivityInstanceState.ABORTING, propsBean
+	            .getString("views.activityTable.statusFilter.aborting")));
+
+	      allStatusList.add(new StatusDTO(ActivityInstanceState.APPLICATION, propsBean
+	            .getString("views.activityTable.statusFilter.application")));
+
+	      allStatusList.add(new StatusDTO(ActivityInstanceState.COMPLETED, propsBean
+	            .getString("views.activityTable.statusFilter.completed")));
+
+	      allStatusList.add(new StatusDTO(ActivityInstanceState.CREATED, propsBean
+	            .getString("views.activityTable.statusFilter.created")));
+
+	      allStatusList.add(new StatusDTO(ActivityInstanceState.HIBERNATED, propsBean
+	            .getString("views.activityTable.statusFilter.hibernated")));
+
+	      allStatusList.add(new StatusDTO(ActivityInstanceState.INTERRUPTED, propsBean
+	            .getString("views.activityTable.statusFilter.interrupted")));
+
+	      allStatusList.add(new StatusDTO(ActivityInstanceState.SUSPENDED, propsBean
+	            .getString("views.activityTable.statusFilter.suspended")));
+	      return allStatusList;
+	   }
 }
