@@ -1,0 +1,51 @@
+<div class="sd-abort-popover-dlg">
+	<div class="section">
+		<div sd-js-error class="msgError">
+		</div>
+		
+		<div ng-show="abortPopoverController.showAbortAndStart" class="abort-start-section">
+			<table class="switch-form">
+				<tr>
+					<td><label class="label-form">{{i18n('views-common-messages.views-switchProcessDialog-selectProcess')}}</label></td>
+					<td>
+						<div>
+							<select ng-model="abortPopoverController.selectedProcess" ng-options="type.name for type in abortPopoverController.spawnableProcesses" >
+			 				</select>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td><label class="label-form">{{i18n('views-common-messages.views-switchProcessDialog-linkComment')}}</label></td>
+					<td>
+						<textarea ng-model="abortPopoverController.linkComment"></textarea>
+					</td>
+				</tr>
+			</table>
+			
+			<table class="switch-form-info">
+				<tr>
+					<td style="padding-right: 11px;">
+						<i class="fa fa-exclamation-circle fa-lg"></i>
+					</td>
+					<td>
+						<div ng-bind-html="abortPopoverController.switchProcessDialogMsg"></div>
+					</td>
+				</tr>
+			</table>
+		</div>
+		
+		<div ng-show="abortPopoverController.showAbortAndJoin">
+			To be implemented
+		</div>
+	
+	</div>
+	
+	<div class="confirmation-buttonpane">
+		<div class="button-pane cf" >
+			<div class="right">
+			  	<button class="button" ng-click="abortPopoverController.confirm(this)">{{i18n('views-common-messages.delegation-applyButton-text')}}</button>
+			    <button class="button" ng-click="abortPopoverController.closeThisDialog(this)">{{i18n('views-common-messages.common-cancel')}}</button>
+			</div>
+	    </div>
+	</div>
+</div>

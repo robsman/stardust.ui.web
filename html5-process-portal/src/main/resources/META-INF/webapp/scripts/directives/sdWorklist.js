@@ -391,7 +391,10 @@
 			this.refresh();
 		};
 		
-
+		WorklistCompiler.prototype.onAbortPopoverConfirm = function() {
+			this.refresh();
+		};
+		
 		/*
 		 *
 		 */

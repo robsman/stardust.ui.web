@@ -1,0 +1,82 @@
+<div class="sd-abort-popover-noti-dlg">
+	<div class="section">
+		<div id="infoSign" ng-show="abortPopoverController.switchCompleted">
+			<i style="color: grey;" class="fa fa-exclamation-circle fa-lg"></i>
+		</div>
+		<div id="infoSign" ng-show="!abortPopoverController.switchCompleted">
+			<i ng-show="abortPopoverController.abortNotification.length === abortPopoverController.activities.length" 
+				style="color: red;" class="fa fa-times-circle fa-lg"></i>
+			<i ng-show="abortPopoverController.abortNotification.length < abortPopoverController.activities.length" 
+				style="color: #D7AD01;" class="fa fa-exclamation-circle fa-lg"></i>
+		</div>
+		<div id="notificationBody" class="notification-body">
+			<div>
+				<div ng-show="abortPopoverController.switchCompleted">
+					<div class="panelHeaderTitle">
+						<span>{{i18n('views-common-messages.views-switchProcessDialog-operationSuccess')}}</span>
+					</div>
+					<table sd-data-table="abortPopoverController.abortNotificationDataTable" sd-data="abortPopoverController.abortNotification"
+						sda-no-pagination="true"
+						sda-mode="local">
+						<thead>
+							<tr>
+								<th ng-show="abortPopoverController.switchCompleted" sda-name="abortedProcess" sda-label="{{i18n('views-common-messages.views-switchProcessDialog-switchedProcess-column-abortedProcesses')}}" sda-sortable="false"></th>
+								<th ng-show="abortPopoverController.switchCompleted" sda-name="startedProcess" sda-label="{{i18n('views-common-messages.views-switchProcessDialog-switchedProcess-column-startedProcesses')}}" sda-sortable="false"></th>
+								<th sda-name="status" sda-label="{{i18n('views-common-messages.views-switchProcessDialog-switchedProcess-column-status')}}" sda-sortable="false"></th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>{{rowData.abortedProcess.processName}}</td>
+								
+								<td>{{rowData.startedProcess.processName}}</td>
+								
+								<td>{{rowData.statusMessage}}</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<div ng-show="!abortPopoverController.switchCompleted">
+					<div class="panelHeaderTitle">
+						<span ng-show="abortPopoverController.abortNotification.length > 0">{{i18n('views-common-messages.views-switchProcessDialog-cannotAbortMessage')}}</span>
+					</div>
+					<table sd-data-table="abortPopoverController.abortNotificationDataTable" sd-data="abortPopoverController.abortNotification"
+						sda-no-pagination="true"
+						sda-mode="local">
+						<thead>
+							<tr>
+								<th ng-show="!abortPopoverController.switchCompleted" sda-name="process" sda-label="{{i18n('views-common-messages.views-switchProcessDialog-notification-column-process')}}" sda-sortable="false"></th>
+								<th sda-name="status" sda-label="{{i18n('views-common-messages.views-switchProcessDialog-switchedProcess-column-status')}}" sda-sortable="false"></th>
+							</tr>
+						</thead>
+						<tbody ng-show="abortPopoverController.switchCompleted">
+							<tr>
+								<td>{{rowData.abortedProcess.processName}}</td>
+								
+								<td>{{rowData.statusMessage}}</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<p></p>
+			<div class="panelHeaderTitle">
+				<span id="cannotAbortAny" ng-show="!abortPopoverController.switchCompleted && abortPopoverController.abortNotification.length === abortPopoverController.activities.length">{{i18n('views-common-messages.common-confirmCannotContinue-message-label')}}</span>
+				<span id="contunueAbort" ng-show="!abortPopoverController.switchCompleted && abortPopoverController.abortNotification.length < abortPopoverController.activities.length">{{i18n('views-common-messages.views-common-continueQuestion-label')}}</span>
+				<span id="switchCompleted" ng-show="abortPopoverController.switchCompleted">{{i18n('views-common-messages.views-switchProcessDialog-viewSwitchedActivities')}}</span>
+			</div>
+		</div>
+			
+	</div>
+	<div class="confirmation-buttonpane">
+		<div class="button-pane cf" >
+			<div class="right" ng-show="!abortPopoverController.switchCompleted && abortPopoverController.abortNotification.length === abortPopoverController.activities.length">
+			    <button class="button" ng-click="abortPopoverController.closeNotification(this)">{{i18n('views-common-messages.common-close')}}</button>
+			</div>
+			<div class="right" ng-show="abortPopoverController.switchCompleted || abortPopoverController.abortNotification.length < abortPopoverController.activities.length">
+			  	<button class="button" ng-click="abortPopoverController.okNotification(this)">{{i18n('views-common-messages.common-yes')}}</button>
+			    <button class="button" ng-click="abortPopoverController.closeNotification(this)">{{i18n('views-common-messages.common-no')}}</button>
+			</div>
+	    </div>
+	</div>
+</div>

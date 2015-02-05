@@ -10,6 +10,11 @@
 		<button ng-disabled="worklistCtrl.dataTable.getSelection() < 1" ng-click="worklistCtrl.$openAbortDialog(worklistCtrl.dataTable.getSelection())" title="Abort Activity" class="button-link tbl-toolbar-item tbl-tool-link">
 		   <i class="fa fa-remove"></i>
 		</button>
+		<button href="#" class="button-link" sd-abort-popover ng-disabled="worklistCtrl.dataTable.getSelection() < 1" sda-activities="worklistCtrl.dataTable.getSelection()" sda-on-confirm="worklistCtrl.refresh()">
+			<i class="fa fa-caret-down"></i>
+		</button>
+		<!-- <div sd-abort-popover sda-show-popover="worklistCtrl.showAbortPopover">
+		</div> -->
 	</div>
 	<table sd-data-table="{{worklistCtrl.tableHandleExpr}}" sd-data="worklistCtrl.fetchPage(params)" sda-ready="worklistCtrl.ready"
 		sda-page-size="{{worklistCtrl.sdaPageSize}}" sda-mode="remote"

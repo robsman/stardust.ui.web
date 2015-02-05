@@ -26,6 +26,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -33,6 +34,7 @@ import javax.ws.rs.core.Response;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.query.ProcessDefinitionQuery;
 import org.eclipse.stardust.engine.api.runtime.ProcessDefinitions;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
@@ -48,9 +50,15 @@ import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceOutDataDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.SelectItemDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.SwitchNotificationDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.SwitchProcessDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.TrivialManualActivityDTO;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
+import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
+import org.eclipse.stardust.ui.web.viewscommon.utils.AuthorizationUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -431,19 +439,48 @@ public class ActivityInstanceResource
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/spawnableProcesses/{activityInstanceOid: \\d+}")
-   public Response spawnableProcesses(@PathParam("activityInstanceOid") long activityInstanceOid)
+    @Path("/spawnableProcesses")
+   public Response spawnableProcesses(String postedData, @QueryParam("type") String type)
    {
     	try {
-	      ActivityInstanceDTO aiDTO = getActivityInstanceService().getActivityInstance(
-	                activityInstanceOid);
-	      if (aiDTO != null) {
-		      ProcessInstance rootProcessInstance = getProcessInstance(aiDTO.processInstance.oid);
-		      ProcessDefinitions pds = ServiceFactoryUtils.getQueryService().getProcessDefinitions(
-		    	            ProcessDefinitionQuery.findStartable(rootProcessInstance.getModelOID()));
-		      return Response.ok(GsonUtils.toJsonHTMLSafeString(pds), MediaType.APPLICATION_JSON).build();
-	      }
-	      return Response.ok("", MediaType.APPLICATION_JSON).build();
+    		List<Long> processInstOIDs = JsonDTO.getAsList(postedData, Long.class);
+    		List<ProcessInstance> processInstances = new ArrayList<ProcessInstance>();
+    		for (Long processInstOID : processInstOIDs) {
+    			ProcessInstance processInstance = getProcessInstance(processInstOID);
+    			processInstances.add(processInstance);
+    		}
+    		
+    		if (CollectionUtils.isNotEmpty(processInstances)) {
+	    		ProcessDefinitions pds = ServiceFactoryUtils.getQueryService().getProcessDefinitions(
+		    	ProcessDefinitionQuery.findStartable(ProcessInstanceUtils.getProcessModelOID(processInstances)));
+	
+		        Object responseObj = pds;
+		        if ("select".equals(type)) {
+		    	    Map<String, ProcessDefinition> pdMap = CollectionUtils.newHashMap();
+	
+		            for (ProcessDefinition pd : pds)
+		            {
+		               pdMap.put(pd.getId(), pd);
+		            }
+	
+		            List<ProcessDefinition> filteredPds = new ArrayList<ProcessDefinition>(pdMap.values());
+		            ProcessDefinitionUtils.sort(filteredPds);
+	
+		            List<SelectItemDTO> items = new ArrayList<SelectItemDTO>();
+		            for (ProcessDefinition pd : pdMap.values())
+		            {
+		        	  SelectItemDTO selectItem = new SelectItemDTO();
+		        	  selectItem.label = I18nUtils.getProcessName(pd);
+		        	  selectItem.value = pd.getQualifiedId();
+		        	  items.add(selectItem);
+		            }
+		          
+		            responseObj = items;
+		        }
+	
+		        return Response.ok(GsonUtils.toJsonHTMLSafeString(responseObj), MediaType.APPLICATION_JSON).build();
+    		}
+    		return Response.ok("", MediaType.APPLICATION_JSON).build();
     	} catch (Exception e) {
 			trace.error(e, e);
 	        return Response.serverError().build();
@@ -453,8 +490,55 @@ public class ActivityInstanceResource
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/spawnProcesses/{activityInstanceOid: \\d+}")
-   public Response spawnProcesses(@PathParam("activityInstanceOid") long activityInstanceOid, String processNamesData)
+    @Path("/checkIfProcessesAbortable")
+   public Response checkIfProcessesAbortable(String postedData)
+   {
+    	try {
+	    	List<SwitchNotificationDTO> notAbortableProcesses = new ArrayList<SwitchNotificationDTO>();
+	    	List<Long> processInstOIDs = JsonDTO.getAsList(postedData, Long.class);
+	    	for (Long processInstOID : processInstOIDs) {
+	    		ProcessInstance processInstance = getProcessInstance(processInstOID);
+	    		processInstance = ProcessInstanceUtils.getRootProcessInstance(processInstance, true);
+	    		
+	    		ProcessInstanceDTO processInstanceDTO = new ProcessInstanceDTO();
+	    		processInstanceDTO.processName = ProcessInstanceUtils.getProcessLabel(processInstance);
+	    		processInstanceDTO.oid = processInstance.getOID();
+	    		
+	    		SwitchNotificationDTO switchNotificationDTO = null;
+	    		
+	    		MessagesViewsCommonBean propsBean = MessagesViewsCommonBean.getInstance();
+	            
+	    		if (!AuthorizationUtils.hasAbortPermission(processInstance)) {
+	    			switchNotificationDTO = new SwitchNotificationDTO();
+	    			switchNotificationDTO.statusMessage = propsBean.getString("common.authorization.msg");
+	    		} else if (!ProcessInstanceUtils.isAbortable(processInstance)) {
+	    			switchNotificationDTO = new SwitchNotificationDTO();
+	    			switchNotificationDTO.statusMessage = propsBean.getString("common.notifyProcessAlreadyAborted");
+	    		} else if(processInstance.isCaseProcessInstance()) {
+	    			switchNotificationDTO = new SwitchNotificationDTO();
+	    			switchNotificationDTO.statusMessage = propsBean.getString("views.switchProcessDialog.caseAbort.message");
+	    		}
+	    		
+	    		if (switchNotificationDTO != null) {
+	    			switchNotificationDTO.switched = false;
+		    		switchNotificationDTO.abortedProcess = processInstanceDTO;
+		    		
+	    			notAbortableProcesses.add(switchNotificationDTO);
+	    		}
+	    	}
+	    	
+	    	return Response.ok(GsonUtils.toJsonHTMLSafeString(notAbortableProcesses), MediaType.APPLICATION_JSON).build();
+    	} catch (Exception e) {
+			trace.error(e, e);
+	        return Response.serverError().build();
+		}
+   }
+    
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/{activityInstanceOid: \\d+}/spawnProcess")
+   public Response spawnProcess(@PathParam("activityInstanceOid") long activityInstanceOid, String processNamesData)
    {
     
       try {
@@ -492,27 +576,59 @@ public class ActivityInstanceResource
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/switchProcess/{activityInstanceOid: \\d+}")
-   public Response switchProcess(@PathParam("activityInstanceOid") long activityInstanceOid, String processData)
+    @Path("/switchProcess")
+   public Response switchProcess(String processData)
    {
-    
       try {
-    	  List<ProcessInstanceDTO> subprocessInstances = new ArrayList<ProcessInstanceDTO>();
-		  ActivityInstanceDTO aiDTO = getActivityInstanceService().getActivityInstance(
-		            activityInstanceOid);
-		  if (aiDTO != null) {
-	    	  SwitchProcessDTO processDTO = GsonUtils.fromJson(processData, SwitchProcessDTO.class);
-			       
-		      ProcessInstance pi = ServiceFactoryUtils.getWorkflowService().spawnPeerProcessInstance(
-		    		  aiDTO.processInstance.oid, processDTO.processId, true, null, true, processDTO.linkComment);
-	    	   
-		      ProcessInstanceDTO dto = new ProcessInstanceDTO();
-	    	  dto.processName = pi.getProcessName();
-	    	  dto.oid = pi.getOID();
-		    	   
-	    	  subprocessInstances.add(dto);
+    	  List<SwitchNotificationDTO> newProcessInstances = new ArrayList<SwitchNotificationDTO>();
+    	  SwitchProcessDTO processDTO = GsonUtils.fromJson(processData, SwitchProcessDTO.class);
+    	  List<Long> processInstOIDs = processDTO.processInstaceOIDs;
+    	  
+    	  MessagesViewsCommonBean propsBean = MessagesViewsCommonBean.getInstance();
+    	  
+    	  for (Long processInstOID : processInstOIDs) {
+    		  ProcessInstance srcProcessInstance = getProcessInstance(processInstOID);
+    		  
+    		  // First check the permission
+    		  if (!AuthorizationUtils.hasAbortPermission(srcProcessInstance) || !ProcessInstanceUtils.isAbortable(srcProcessInstance)
+    				  || srcProcessInstance.isCaseProcessInstance()) {
+    			  continue;
+	    	  }
+
+			  ProcessInstanceDTO source = new ProcessInstanceDTO();
+			  source.processName = ProcessInstanceUtils.getProcessLabel(srcProcessInstance);
+			  source.oid = srcProcessInstance.getOID();
+			  
+			  ProcessInstanceDTO target = null;
+			  
+			  SwitchNotificationDTO switchNotificationDTO = new SwitchNotificationDTO();
+			  switchNotificationDTO.abortedProcess = source;
+			  
+			  try {
+				  ProcessInstance pi = ServiceFactoryUtils.getWorkflowService().spawnPeerProcessInstance(
+						  processInstOID, processDTO.processId, true, null, true, processDTO.linkComment);
+				  
+				  
+				  if (pi != null) {
+					  target = new ProcessInstanceDTO();
+					  target.processName = ProcessInstanceUtils.getProcessLabel(pi);
+					  target.oid = pi.getOID();
+					  
+					  switchNotificationDTO.startedProcess = target;
+					  switchNotificationDTO.switched = true;
+					  switchNotificationDTO.statusMessage = propsBean.getString("common.success");
+				  }
+			  } catch (Exception e) {
+				  trace.error("Unable to abort the process with oid: " + processInstOID + " and target process id: " + processDTO.processId);
+				  trace.error(e, e);
+				  
+				  switchNotificationDTO.statusMessage = propsBean.getString("common.fail");
+			  }
+			
+        	  newProcessInstances.add(switchNotificationDTO);
 		  }
-		  return Response.ok(GsonUtils.toJsonHTMLSafeString(subprocessInstances), MediaType.APPLICATION_JSON).build();
+    	  
+		  return Response.ok(GsonUtils.toJsonHTMLSafeString(newProcessInstances), MediaType.APPLICATION_JSON).build();
 		} catch (Exception e) {
 			trace.error(e, e);
 	        return Response.serverError().build();

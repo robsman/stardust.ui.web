@@ -173,3 +173,25 @@ list-style: none;
 .priority-criticality-filter-container{
   width: 200px
 }
+
+.sd-abort-popover-box {
+	background-color: #EAEAEA;	
+}
+
+.sd-abort-popover-noti-dlg .notification-body {
+	padding: 0 25px 25px 25px;
+} 
+
+.sd-abort-popover-dlg .abort-start-section select {
+	width: 95px;
+}
+
+.sd-abort-popover-dlg .abort-start-section textarea {
+	width: 315px;
+	height: 60px;
+}
+
+.sd-abort-popover-dlg .abort-start-section .switch-form-info {
+	margin: 10px 0 10px 0;
+	font-size: .9em;
+}

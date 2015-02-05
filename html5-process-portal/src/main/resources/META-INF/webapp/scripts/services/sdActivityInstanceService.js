@@ -108,6 +108,51 @@
 			
 			return ajax(REST_BASE_URL, "delegate", delegateData);
 		};
+		
+		/*
+		 * Get Spawnable Processes
+		 * 
+		 * id activity id
+		 */
+		ActivityInstanceService.prototype.getSpawnableProcesses = function(activityProInstanceOids) {
+			console.log("Getting spawnable process for:");
+			console.log(activityProInstanceOids);
+			
+			var restUrl = REST_BASE_URL;
+			
+			return ajax(restUrl, "spawnableProcesses", activityProInstanceOids);
+		};
+		
+		/*
+		 *
+		 *	{
+		 *	  processId: string value,  // qualified id
+		 *	  linkComment: string value
+		 *	}
+		 * 
+		 */
+		ActivityInstanceService.prototype.switchProcess = function(payload) {
+			console.log("Aborting & spawning new process for:");
+			console.log(payload);
+			
+			var restUrl = REST_BASE_URL;
+			
+			return ajax(restUrl, "switchProcess", payload);
+		};
+		
+		/*
+		 * Check If Processes are Abortable
+		 * 
+		 * activityProInstanceOids : activity process instance id
+		 */
+		ActivityInstanceService.prototype.checkIfProcessesAbortable = function(activityProInstanceOids) {
+			console.log("Calling checkIfProcessesAbortable for:");
+			console.log(activityProInstanceOids);
+			
+			var restUrl = REST_BASE_URL;
+			
+			return ajax(restUrl, "checkIfProcessesAbortable", activityProInstanceOids);
+		};
 
 		/*
 		 * 

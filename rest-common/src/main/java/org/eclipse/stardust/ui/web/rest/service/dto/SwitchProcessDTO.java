@@ -1,5 +1,7 @@
 package org.eclipse.stardust.ui.web.rest.service.dto;
 
+import java.util.List;
+
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOAttribute;
 
 public class SwitchProcessDTO extends AbstractDTO {
@@ -9,4 +11,7 @@ public class SwitchProcessDTO extends AbstractDTO {
 	
 	@DTOAttribute("linkComment")
 	public String linkComment;
+	
+	@DTOAttribute("processInstaceOIDs")
+	public List<Long> processInstaceOIDs;
 }
