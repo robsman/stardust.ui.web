@@ -23,6 +23,7 @@ public class ResourceInfo
    private static final String WEB_PREFIX = "plugins/";
 
    private String pluginId;
+   private String pluginLocation;
    private String pluginBaseUri;
 
    private Resource resource;
@@ -32,13 +33,16 @@ public class ResourceInfo
 
    /**
     * @param pluginId
+    * @param pluginLocation
     * @param pluginBaseUri
     * @param resource
     * @param contents
     */
-   public ResourceInfo(String pluginId, String pluginBaseUri, Resource resource, String contents) throws IOException
+   public ResourceInfo(String pluginId, String pluginLocation, String pluginBaseUri, Resource resource, String contents)
+         throws IOException
    {
       this.pluginId = pluginId;
+      this.pluginLocation = pluginLocation;
       this.pluginBaseUri = pluginBaseUri;
       this.resource = resource;
       this.resourceContents = contents;
@@ -48,12 +52,14 @@ public class ResourceInfo
    
    /**
     * @param pluginId
+    * @param pluginLocation
     * @param webContentBaseUri
     * @param resource
     */
-   public ResourceInfo(String pluginId, String webContentBaseUri, Resource resource) throws IOException
+   public ResourceInfo(String pluginId, String pluginLocation, String webContentBaseUri, Resource resource)
+         throws IOException
    {
-      this(pluginId, webContentBaseUri, resource, null);
+      this(pluginId, pluginLocation, webContentBaseUri, resource, null);
    }
 
    @Override
@@ -70,6 +76,11 @@ public class ResourceInfo
    public String getPluginId()
    {
       return pluginId;
+   }
+
+   public String getPluginLocation()
+   {
+      return pluginLocation;
    }
 
    public String getPluginBaseUri()

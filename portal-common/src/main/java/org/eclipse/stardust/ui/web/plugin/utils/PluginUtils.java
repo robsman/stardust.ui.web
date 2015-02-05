@@ -78,11 +78,11 @@ public class PluginUtils
                   {
                      if (fetchContents)
                      {
-                        rInfo = new ResourceInfo(plugin.id, pluginBaseUri, resource, readResource(resource));
+                        rInfo = new ResourceInfo(plugin.id, plugin.location, pluginBaseUri, resource, readResource(resource));
                      }
                      else
                      {
-                        rInfo = new ResourceInfo(plugin.id, pluginBaseUri, resource);
+                        rInfo = new ResourceInfo(plugin.id, plugin.location, pluginBaseUri, resource);
                      }
                      allResources.add(rInfo);
                   }
@@ -163,14 +163,17 @@ public class PluginUtils
    {
       public final String id;
 
+      public final String location;
+
       public final String resourcesRoot;
 
       public final String baseUri;
 
-      public PluginDescriptor(String id, String resourcesRoot, String baseUri)
+      public PluginDescriptor(String id, String location, String resourcesRoot, String baseUri)
       {
          super();
          this.id = id;
+         this.location = location;
          this.resourcesRoot = resourcesRoot;
          this.baseUri = baseUri;
       }
@@ -205,9 +208,17 @@ public class PluginUtils
             if (null == pluginDescriptor)
             {
                String pluginId = resource.getFilename().substring(0, resource.getFilename().lastIndexOf("."));
+               
                if (trace.isDebugEnabled())
                {
                   trace.debug("Inspecting portal plugin '" + pluginId + "' (" + resource.getURI() + ")");
+               }
+
+               String resourceUri = resource.getURI().toString();
+               String pluginLocation = resourceUri.substring(0, resourceUri.lastIndexOf("/META-INF/"));
+               if (pluginLocation.endsWith("!"))
+               {
+                  pluginLocation = pluginLocation.substring(0, pluginLocation.length() - 1);
                }
 
                InputStream isPluginDescriptor = resource.getInputStream();
@@ -221,7 +232,7 @@ public class PluginUtils
                      pluginBaseUri += "/";
                   }
 
-                  pluginDescriptor = new PluginDescriptor(pluginId, resourcesRoot, pluginBaseUri);
+                  pluginDescriptor = new PluginDescriptor(pluginId, pluginLocation, resourcesRoot, pluginBaseUri);
 
                   if (Parameters.instance().getBoolean("Carnot.Client.Caching.PluginResolution.Enabled", true))
                   {
