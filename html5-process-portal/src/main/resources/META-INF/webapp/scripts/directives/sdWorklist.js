@@ -365,7 +365,7 @@
 						self.refresh();
 					});
 				} else {
-					self.refresh();
+					self.dataTable.setSelection([]);
 				}
 			}
 		};
