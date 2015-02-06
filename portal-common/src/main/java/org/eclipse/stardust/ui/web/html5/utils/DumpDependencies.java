@@ -29,20 +29,24 @@ public class DumpDependencies
    public static final String NEWLINE = "\n";
    public static final String PLUGINS_PREFIX = "plugins";
 
+   private StringBuilder dependencies = new StringBuilder();
+
    /**
     * @param args
-    *           csv filename If csv filename is not provided then csv with default
-    *           filename(DependencyList.csv) would be created
+    *           csv filename(optional)
     */
    public static void main(String[] args)
    {
+      DumpDependencies dumpDependencies = new DumpDependencies();
+      dumpDependencies.discover();
+      dumpDependencies.persist(args);
+   }
 
-      String outputFileName = "DependencyList.csv";
-      if (args != null && args.length == 1 && args[0] != "")
-      {
-         outputFileName = args[0];
-      }
-
+   /**
+    *  Scans the invoking JVM's classpath for dependencies
+    */
+   public void discover()
+   {
       /**
        * Empty configLocations specified so as all the deployed jars in classpath would be
        * scanned for dependencies.
@@ -53,7 +57,6 @@ public class DumpDependencies
 
       List<ResourceDependency> resourceDependencies = ResourceDependencyUtils.discoverDependencies(context);
 
-      StringBuilder dependencies = new StringBuilder();
       dependencies.append("Jar Name");
       dependencies.append(SEPERATOR);
       dependencies.append("Resource Name");
@@ -68,10 +71,25 @@ public class DumpDependencies
 
       dependencies.append(NEWLINE);
 
-      // Seperate for loops to club all libs and styles together
+      // Separate for loops to club all libs and styles together
       for (ResourceDependency resourceDependency : resourceDependencies)
       {
          dependencies.append(getDependencies(resourceDependency.getStyles(), resourceDependency.getPluginLocation()));
+      }
+
+   }
+
+   /**
+    * @param args
+    *           csv filename. If csv filename is not provided then csv with default
+    *           filename(DependencyList.csv) would be created
+    */
+   public void persist(String[] args)
+   {
+      String outputFileName = "DependencyList.csv";
+      if (args != null && args.length == 1 && args[0] != "")
+      {
+         outputFileName = args[0];
       }
 
       FileWriter writer = null;
@@ -88,7 +106,12 @@ public class DumpDependencies
       }
    }
 
-   private static String getDependencies(List<String> resourceDependencyEntries, String jarLocation)
+   /**
+    * @param resourceDependencyEntries
+    * @param jarLocation
+    * @return Formatted output string containing dependencies
+    */
+   private String getDependencies(List<String> resourceDependencyEntries, String jarLocation)
    {
       StringBuilder dependencies = new StringBuilder();
       for (int i = 0; i < resourceDependencyEntries.size(); i++)
@@ -101,9 +124,13 @@ public class DumpDependencies
 
          dependencies.append(SEPERATOR);
 
+         // For Resource Path
          int lastIndexOf = reseDepEntry.lastIndexOf(DELIMITER);
          String path = reseDepEntry.substring(0, lastIndexOf);
+
+         // For Resource Name
          String name = reseDepEntry.substring(lastIndexOf + 1, reseDepEntry.length());
+
          dependencies.append(name);
          dependencies.append(SEPERATOR);
          dependencies.append(path);
