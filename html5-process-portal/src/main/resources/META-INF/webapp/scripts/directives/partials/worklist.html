@@ -1,13 +1,13 @@
 <div class="worklist-wrapper">
 	<div class="worklist-title tbl-title">{{worklistCtrl.title}}</div>
 	<div sda-toolbar>
-		<button class="button-link" sda-column="TRIVIAL_DATA" href="#" ng-click="worklistCtrl.$completeAll()" title="Complete All" class="tbl-toolbar-item tbl-tool-link">
+		<button class="button-link" sda-column="TRIVIAL_DATA" ng-click="worklistCtrl.$completeAll()" title="Complete All" class="tbl-toolbar-item tbl-tool-link">
 		   <i class="fa fa-share"></i>
 		</button>
-		<button class="button-link" ng-disabled="worklistCtrl.dataTable.getSelection() < 1" sda-column="TRIVIAL_DATA" href="#" ng-click="worklistCtrl.$openDelegateDialog();" title="Delegate" class="tbl-toolbar-item tbl-tool-link">
+		<button class="button-link" ng-disabled="worklistCtrl.dataTable.getSelection() < 1" ng-click="worklistCtrl.$openDelegateDialog();" title="Delegate" class="tbl-toolbar-item tbl-tool-link">
 		   <i class="fa fa-user"></i>
 		</button>
-		<button class="button-link" ng-disabled="worklistCtrl.dataTable.getSelection() < 1" href="#" ng-click="worklistCtrl.$openAbortDialog(worklistCtrl.dataTable.getSelection())" title="Abort Activity" class="tbl-toolbar-item tbl-tool-link">
+		<button class="button-link" ng-disabled="worklistCtrl.dataTable.getSelection() < 1" ng-click="worklistCtrl.$openAbortDialog(worklistCtrl.dataTable.getSelection())" title="Abort Activity" class="tbl-toolbar-item tbl-tool-link">
 		   <i class="fa fa-remove"></i>
 		</button>
 	</div>
@@ -76,8 +76,8 @@
 					</a>
 				</td>
 				<td sda-data-type="int" style="text-align: center;"></td>
-				<td><div sd-activity-criticality></div></td>
-				<td><div sd-process-priority></div></td>
+				<td style="text-align: center;"><div sd-activity-criticality></div></td>
+				<td style="text-align: center;"><div sd-process-priority></div></td>
 				<td>
 					<table>
 						<tr ng-repeat="desc in rowData.descriptors">
@@ -122,28 +122,28 @@
 					</table>
 				</td>
 				<td style="white-space: nowrap; text-align: right;">
-					<a href="#" ng-click="bpmCommon.stopEvent($event); worklistCtrl.$openNotes(rowData);"
+					<button class="button-link" ng-click="bpmCommon.stopEvent($event); worklistCtrl.$openNotes(rowData);"
 						title="Open Notes" class="view-tool-link">
 						<i class="fa fa-comment-o"></i>
-					</a>
-					<a href="#" ng-click="bpmCommon.stopEvent($event); worklistCtrl.$openProcessHistory(rowData);"
+					</button>
+					<button class="button-link" ng-click="bpmCommon.stopEvent($event); worklistCtrl.$openProcessHistory(rowData);"
 						title="Process History" class="view-tool-link">
 						<i class="fa fa-tasks"></i>
-					</a>
-					<a sda-column="TRIVIAL_DATA" href="#"
+					</button>
+					<button class="button-link" sda-column="TRIVIAL_DATA"
 						ng-disabled="!worklistCtrl.worklist.trivialManualActivities[rowData.oid]"
 						ng-click="bpmCommon.stopEvent($event); worklistCtrl.$complete(rowData);"
 						title="Complete" class="view-tool-link">
 						<i class="fa fa-share"></i>
-					</a>
-					<a href="#" ng-click="bpmCommon.stopEvent($event); worklistCtrl.$openDelegateDialog(rowData);"
+					</button>
+					<button class="button-link" ng-click="bpmCommon.stopEvent($event); worklistCtrl.$openDelegateDialog(rowData);"
 						title="Delegate" class="view-tool-link">
 						<i class="fa fa-user"></i>
-					</a>
-					<a href="#" ng-click="bpmCommon.stopEvent($event); worklistCtrl.$openAbortDialog(rowData);"
+					</button>
+					<button class="button-link" ng-click="bpmCommon.stopEvent($event); worklistCtrl.$openAbortDialog(rowData);"
 						title="Abort" class="view-tool-link">
 						<i class="fa fa-remove"></i>
-					</a>
+					</button>
 				</td>
 			</tr>
 		</tbody>

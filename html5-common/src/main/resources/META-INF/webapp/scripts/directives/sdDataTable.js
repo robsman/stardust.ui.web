@@ -1031,10 +1031,7 @@
 		 * 
 		 */
 		function refresh(retainPageIndex) {
-			var oSettings = theDataTable.settings()[0];
-			jQuery(oSettings.oInstance).trigger('page', oSettings);
-		    oSettings.oApi._fnCalculateEnd(oSettings);
-		    oSettings.oApi._fnDraw(oSettings);
+			theDataTable.draw(!retainPageIndex);
 		}
 	    
 		/*
