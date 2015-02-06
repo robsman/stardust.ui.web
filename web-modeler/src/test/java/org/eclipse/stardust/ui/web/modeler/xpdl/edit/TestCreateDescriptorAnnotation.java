@@ -23,7 +23,7 @@ public class TestCreateDescriptorAnnotation extends RecordingTestcase
    private final static String STORAGE_SCOPE = "storage";
    private final static String UI_SCOPE = "ui";   
    private final static String DESCRIPTOR_ANNOTATION = "descriptor";
-   private final static String FIELDNAME_LABEL_ANNOTATION = "fieldname_label";
+   private final static String FIELDNAME_LABEL_ANNOTATION = "InputPreferences_label";
       
    @Test
    public void testCreateDescriptorAnnotation() throws Exception
