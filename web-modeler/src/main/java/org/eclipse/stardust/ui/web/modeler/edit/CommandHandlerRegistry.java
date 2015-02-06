@@ -15,6 +15,7 @@ import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.modeler.common.exception.ModelerException;
 
 public class CommandHandlerRegistry
 {
@@ -143,6 +144,11 @@ public class CommandHandlerRegistry
          }
          catch (InvocationTargetException ite)
          {
+            if (ite.getTargetException() instanceof ModelerException)
+            {
+               throw (ModelerException) ite.getTargetException();
+            }
+
             trace.error("Failed invoking handler for command '" + commandId + "'.",
                   ite.getTargetException());
 

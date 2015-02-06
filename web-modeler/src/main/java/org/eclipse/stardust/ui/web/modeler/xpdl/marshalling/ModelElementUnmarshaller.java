@@ -60,6 +60,8 @@ import org.eclipse.stardust.model.xpdl.xpdl2.extensions.ExtensionFactory;
 import org.eclipse.stardust.model.xpdl.xpdl2.extensions.LoopDataRefType;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.TypeDeclarationUtils;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.XpdlUtil;
+import org.eclipse.stardust.ui.web.modeler.common.exception.ModelerErrorClass;
+import org.eclipse.stardust.ui.web.modeler.common.exception.ModelerException;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
 import org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
@@ -3188,7 +3190,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
          String id = modelJson.get(ModelerConstants.ID_PROPERTY).getAsString();
          if (getModelBuilderFacade().getModelManagementStrategy().getModels().containsKey(id))
          {
-            throw new IllegalArgumentException("Model ID already exists.");
+            throw new ModelerException(ModelerErrorClass.MODEL_ID_ALREADY_EXISTS);
          }
       }
 
