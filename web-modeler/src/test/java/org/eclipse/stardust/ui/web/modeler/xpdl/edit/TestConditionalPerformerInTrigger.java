@@ -30,10 +30,10 @@ public class TestConditionalPerformerInTrigger extends RecordingTestcase
 
       replay(requestStream, "conditionalPerformerInTrigger");
 
-      ProcessDefinitionType process = GenericModelingAssertions.assertProcess(providerModel, "Process1", "Process 1");      
+      ProcessDefinitionType process = GenericModelingAssertions.assertProcess(providerModel, "Process1", "Process 1");
       assertTrigger(process);
 
-      saveReplayModel("C:/tmp");
+      //saveReplayModel("C:/tmp");
    }
 
    private void assertTrigger(ProcessDefinitionType process)
@@ -43,7 +43,7 @@ public class TestConditionalPerformerInTrigger extends RecordingTestcase
       TriggerType c3 = null;
       TriggerType r1 = null;
       TriggerType r2 = null;
-      TriggerType r3 = null;      
+      TriggerType r3 = null;
       for(TriggerType trigger : process.getTrigger())
       {
          if(trigger.getId().equals("ManualTrigger1"))
@@ -69,18 +69,18 @@ public class TestConditionalPerformerInTrigger extends RecordingTestcase
          if(trigger.getId().equals("ManualTrigger6"))
          {
             r3 = trigger;
-         }         
+         }
       }
       assertThat(c1, is(not(nullValue())));
-      assertThat(AttributeUtil.getAttribute(c1, PredefinedConstants.MANUAL_TRIGGER_PARTICIPANT_ATT), is(nullValue()));      
+      assertThat(AttributeUtil.getAttribute(c1, PredefinedConstants.MANUAL_TRIGGER_PARTICIPANT_ATT), is(nullValue()));
       assertThat(c2, is(not(nullValue())));
-      assertThat(AttributeUtil.getAttribute(c2, PredefinedConstants.MANUAL_TRIGGER_PARTICIPANT_ATT), is(nullValue()));      
+      assertThat(AttributeUtil.getAttribute(c2, PredefinedConstants.MANUAL_TRIGGER_PARTICIPANT_ATT), is(nullValue()));
       assertThat(c3, is(not(nullValue())));
-      assertThat(AttributeUtil.getAttribute(c3, PredefinedConstants.MANUAL_TRIGGER_PARTICIPANT_ATT), is(nullValue()));      
+      assertThat(AttributeUtil.getAttribute(c3, PredefinedConstants.MANUAL_TRIGGER_PARTICIPANT_ATT), is(nullValue()));
       assertThat(r1, is(not(nullValue())));
       assertThat(AttributeUtil.getAttribute(r1, PredefinedConstants.MANUAL_TRIGGER_PARTICIPANT_ATT), is(not(nullValue())));
       assertThat(r2, is(not(nullValue())));
-      assertThat(AttributeUtil.getAttribute(r2, PredefinedConstants.MANUAL_TRIGGER_PARTICIPANT_ATT), is(not(nullValue())));      
+      assertThat(AttributeUtil.getAttribute(r2, PredefinedConstants.MANUAL_TRIGGER_PARTICIPANT_ATT), is(not(nullValue())));
       assertThat(r3, is(not(nullValue())));
       assertThat(AttributeUtil.getAttribute(r3, PredefinedConstants.MANUAL_TRIGGER_PARTICIPANT_ATT), is(not(nullValue())));
    }

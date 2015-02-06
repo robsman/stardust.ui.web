@@ -154,7 +154,7 @@ public class TestDataMappings extends RecordingTestcase
       GenericModelingAssertions.assertDataMapping(activity, "PrimitiveData_2", "PrimitiveData_2", "engine", DirectionType.OUT_LITERAL, data, "activityInstance", null, null);
       GenericModelingAssertions.assertDataMapping(activity, "PrimitiveData_3", "PrimitiveData_3", "engine", DirectionType.OUT_LITERAL, data, "activityInstance", "getAttributes()", "charAt(int)");
 
-      saveReplayModel("C:/development/");
+      //saveReplayModel("C:/development/");
    }
 
 
