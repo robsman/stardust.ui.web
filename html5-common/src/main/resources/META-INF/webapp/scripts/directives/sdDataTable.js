@@ -67,7 +67,7 @@
 			hCol = angular.element(hCol);
 			var filterTemplate = hCol.find('> [sda-filter-template]');
 			if (filterTemplate && filterTemplate.length > 0) {
-				hCol.attr('ng-non-bindable', '');
+				filterTemplate.attr('ng-non-bindable', '');
 			}
 		});
 		

@@ -67,8 +67,10 @@
 							} else {
 								if (!sdUtilService.isEmpty(scope.filterData.from)) {
 									scope.setFilterTitle('> ' + formatDate(scope.filterData.from));
+									delete scope.filterData.to;
 								} else {
 									scope.setFilterTitle('< ' + formatDate(scope.filterData.to));
+									delete scope.filterData.from;
 								}
 								return true;
 							}
