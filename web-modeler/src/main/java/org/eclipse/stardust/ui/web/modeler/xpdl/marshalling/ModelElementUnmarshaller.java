@@ -37,7 +37,6 @@ import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.engine.api.model.IConditionalPerformer;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.runtime.*;
 import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
@@ -2170,7 +2169,11 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
                List<? extends IModelParticipant> localParticipants = performer instanceof OrganizationType ? model.getOrganization() : model.getRole();
                performer = ModelUtils.findIdentifiableElement(localParticipants, performer.getId());
             }
-            AttributeUtil.setReference(trigger, PredefinedConstants.PARTICIPANT_ATT, performer);
+            if((performer != null && !(performer instanceof ConditionalPerformerType))
+                  || performer == null)
+            {
+               AttributeUtil.setReference(trigger, PredefinedConstants.PARTICIPANT_ATT, performer);
+            }
          }
       }
 
