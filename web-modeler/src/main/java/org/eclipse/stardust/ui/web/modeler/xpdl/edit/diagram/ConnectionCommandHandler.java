@@ -79,6 +79,241 @@ public class ConnectionCommandHandler
    public void createConnection(ModelType model, IIdentifiableElement targetElement,
          JsonObject request)
    {
+      if ((hasNotJsonNull(request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY),
+            ModelerConstants.INPUT_DATA_MAPPING_PROPERTY)) || ((hasNotJsonNull(request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY),
+                  ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY)))) {
+
+         createOldStyleConnection(model, targetElement, request);
+         return;
+      }
+
+      ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(targetElement);
+      EObjectUUIDMapper mapper = modelService().uuidMapper();
+      synchronized (model)
+      {
+         DiagramType diagram = processDefinition.getDiagram().get(0);
+
+         long fromSymbolOid = extractLong(request, ModelerConstants.FROM_MODEL_ELEMENT_OID);
+         long toSymbolOid = extractLong(request, ModelerConstants.TO_MODEL_ELEMENT_OID);
+
+         String sourceType = extractString(request, ModelerConstants.FROM_MODEL_ELEMENT_TYPE);
+         String targetType = extractString(request, ModelerConstants.TO_MODEL_ELEMENT_TYPE);
+
+         if (ModelerConstants.ACTIVITY_KEY.equals(sourceType)
+               || ModelerConstants.GATEWAY.equals(sourceType))
+         {
+            ActivitySymbolType fromActivitySymbol = XPDLFinderUtils.findActivitySymbol(
+                  diagram, fromSymbolOid);
+
+            ActivitySymbolType toActivitySymbol = XPDLFinderUtils.findActivitySymbol(
+                  diagram, toSymbolOid);
+
+
+            if (ModelerConstants.ACTIVITY_KEY.equals(targetType)
+                  || ModelerConstants.GATEWAY.equals(targetType))
+            {
+               JsonObject controlFlowJson = request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
+
+               TransitionType transition = createTransition(controlFlowJson, processDefinition,
+                     fromActivitySymbol.getActivity(), toActivitySymbol.getActivity());
+
+               TransitionConnectionType transitionConnectionType = getModelBuilderFacade()
+                     .createTransitionSymbol(
+                           processDefinition,
+                           fromActivitySymbol,
+                           toActivitySymbol,
+                           transition,
+                           mapAnchorOrientation(extractInt(request,
+                                 ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)),
+                           mapAnchorOrientation(extractInt(request,
+                                 ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
+
+               mapper.map(transitionConnectionType);
+            }
+            else if (ModelerConstants.EVENT_KEY.equals(targetType))
+            {
+               StartEventSymbol startEventSymbol = XPDLFinderUtils.findStartEventSymbol(
+                     diagram, toSymbolOid);
+               if (null != startEventSymbol)
+               {
+                  // start events don't have incoming transitions, simply create an
+                  // outgoing one
+                  createControlFlowConnection(request, processDefinition,
+                        startEventSymbol, fromActivitySymbol, mapper);
+               }
+               else
+               {
+                  AbstractEventSymbol toEventSymbol = XPDLFinderUtils.findEndEventSymbol(
+                        diagram, toSymbolOid);
+                  if (null == toEventSymbol)
+                  {
+                     toEventSymbol = XPDLFinderUtils.findIntermediateEventSymbol(
+                           diagram, toSymbolOid);
+                  }
+                  createControlFlowConnection(request, processDefinition,
+                        fromActivitySymbol, toEventSymbol, mapper);
+
+               }
+            }
+            else if (ModelerConstants.DATA.equals(targetType))
+            {
+               JsonObject controlFlowJson = request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
+               JsonArray dataMappingsJson = controlFlowJson.getAsJsonArray(ModelerConstants.DATAMAPPINGS_PROPERTY);
+               String direction = dataMappingsJson.get(0).getAsJsonObject().get(ModelerConstants.DIRECTION_PROPERTY).getAsString();
+               DataMappingConnectionType dataConnectionType = getModelBuilderFacade().createDataFlowConnection(
+                     processDefinition,
+                     fromActivitySymbol,
+                     XPDLFinderUtils.findDataSymbol(diagram, toSymbolOid),
+                     direction.equals(ModelerConstants.DATAMAPPING_IN)
+                           ? DirectionType.IN_LITERAL
+                           : DirectionType.OUT_LITERAL,
+                           mapAnchorOrientation(extractInt(request,
+                                 ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)),
+                           mapAnchorOrientation(extractInt(request,
+                                 ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)),
+                           PredefinedConstants.DEFAULT_CONTEXT, null);
+               mapper.map(dataConnectionType);
+            }
+            else
+            {
+               throw new IllegalArgumentException("Unknown target symbol type "
+                     + targetType
+                     + " for connection.");
+            }
+         }
+         else if (ModelerConstants.EVENT_KEY.equals(sourceType))
+         {
+            if (ModelerConstants.ACTIVITY_KEY.equals(targetType))
+            {
+               AbstractEventSymbol fromEventSymbol = XPDLFinderUtils.findStartEventSymbol(diagram, fromSymbolOid);
+               if (null == fromEventSymbol)
+               {
+                  fromEventSymbol = XPDLFinderUtils.findIntermediateEventSymbol(diagram, fromSymbolOid);
+               }
+               if (null != fromEventSymbol)
+               {
+                  createControlFlowConnection(request, processDefinition,
+                        fromEventSymbol,
+                        XPDLFinderUtils.findActivitySymbol(diagram, toSymbolOid), mapper);
+               }
+               else
+               {
+                  EndEventSymbol endEventSymbol = XPDLFinderUtils.findEndEventSymbol(
+                        diagram, fromSymbolOid);
+                  if (null != endEventSymbol)
+                  {
+                     // end events don't have outgoing transitions, simply create an
+                     // incoming one
+                     createControlFlowConnection(
+                           request,
+                           processDefinition,
+                           XPDLFinderUtils.findActivitySymbol(diagram,
+                                 toSymbolOid), endEventSymbol, mapper);
+                  }
+               }
+            }
+            else if (ModelerConstants.EVENT_KEY.equals(targetType))
+            {
+               AbstractEventSymbol fromEventSymbol = XPDLFinderUtils.findStartEventSymbol(
+                     diagram, fromSymbolOid);
+
+               AbstractEventSymbol toEventSymbol = XPDLFinderUtils.findIntermediateEventSymbol(
+                     diagram, toSymbolOid);
+
+               if (null == fromEventSymbol)
+               {
+                  fromEventSymbol = XPDLFinderUtils.findIntermediateEventSymbol(
+                        diagram, fromSymbolOid);
+
+                  //Intermediate event can connect to End event directly
+                  if (null == toEventSymbol && null != fromEventSymbol)
+                  {
+                     toEventSymbol = XPDLFinderUtils.findEndEventSymbol(diagram,
+                           toSymbolOid);
+                  }
+               }
+
+               if (null != fromEventSymbol && null != toEventSymbol)
+               {
+                  createControlFlowConnection(request, processDefinition,
+                        fromEventSymbol, toEventSymbol, mapper);
+               }
+               else
+               {
+                  throw new IllegalArgumentException("invalid source and/or target symbol type. "
+                        + "target type: " + targetType + " source type: " + sourceType);
+               }
+            }
+            else
+            {
+               throw new IllegalArgumentException("Unknown target symbol type "
+                     + targetType
+                     + " for connection.");
+            }
+         }
+         else if (ModelerConstants.DATA.equals(sourceType))
+         {
+            if (ModelerConstants.ACTIVITY_KEY.equals(targetType))
+            {
+               JsonObject controlFlowJson = request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
+               JsonArray dataMappingsJson = controlFlowJson.getAsJsonArray(ModelerConstants.DATAMAPPINGS_PROPERTY);
+               String direction = dataMappingsJson.get(0).getAsJsonObject().get(ModelerConstants.DIRECTION_PROPERTY).getAsString();
+               DataMappingConnectionType dataConnectionType = getModelBuilderFacade().createDataFlowConnection(
+                     processDefinition,
+                     XPDLFinderUtils.findActivitySymbol(diagram, toSymbolOid),
+                     XPDLFinderUtils.findDataSymbol(diagram, fromSymbolOid),
+                           direction.equals(ModelerConstants.DATAMAPPING_IN)
+                           ? DirectionType.IN_LITERAL
+                           : DirectionType.OUT_LITERAL,
+                           mapAnchorOrientation(extractInt(request,
+                                 ModelerConstants.FROM_ANCHOR_POINT_ORIENTATION_PROPERTY)),
+                           mapAnchorOrientation(extractInt(request,
+                                 ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)),
+                           PredefinedConstants.DEFAULT_CONTEXT, null);
+
+               mapper.map(dataConnectionType);
+            }
+            else
+            {
+               throw new IllegalArgumentException("Unknown target symbol type "
+                     + targetType
+                     + " for connection.");
+            }
+         }
+         else if (ModelerConstants.ANNOTATION_SYMBOL.equals(targetType)
+               || ModelerConstants.ANNOTATION_SYMBOL.equals(sourceType))
+         {
+            String typeInRequest = sourceType;
+            Long oid = fromSymbolOid;
+
+            INodeSymbol sourceSymbol = getNodeSymbol(request, diagram, typeInRequest, oid);
+
+            typeInRequest = targetType;
+            oid = toSymbolOid;
+
+            INodeSymbol targetSymbol = getNodeSymbol(request, diagram, typeInRequest, oid);
+
+            if (null != sourceSymbol && null != targetSymbol)
+            {
+               // TODO: Association is not supported in 7.1 so commented the code
+               // createAssociation(request, processDefinition, sourceSymbol,
+               // targetSymbol,
+               // maxOid);
+            }
+         }
+         else
+         {
+            throw new IllegalArgumentException("Unsupported source symbol type "
+                  + sourceType
+                  + " for connection.");
+         }
+      }
+   }
+
+
+   public void createOldStyleConnection(ModelType model, IIdentifiableElement targetElement,
+         JsonObject request)
+   {
       ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(targetElement);
       EObjectUUIDMapper mapper = modelService().uuidMapper();
       synchronized (model)

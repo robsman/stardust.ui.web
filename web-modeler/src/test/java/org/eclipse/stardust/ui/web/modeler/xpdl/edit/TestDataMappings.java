@@ -27,6 +27,8 @@ public class TestDataMappings extends RecordingTestcase
 
       replay(requestStream, "testUIMashUpDatamappings");
 
+      //saveReplayModel("C:/development/");
+
       ProcessDefinitionType process = GenericModelingAssertions.assertProcess(providerModel, "DatamappingProcess","Datamapping Process");
       ActivityType activity = assertUIMashupProcess(process);
 
@@ -48,7 +50,7 @@ public class TestDataMappings extends RecordingTestcase
       assertApplicationDataMapping(activity, "OutStructType", "OutStructType", "StructParameterOUT", "externalWebApp", DirectionType.OUT_LITERAL, data);
 
 
-      //saveReplayModel("C:/development/");
+
    }
 
    @Test
@@ -75,7 +77,7 @@ public class TestDataMappings extends RecordingTestcase
       DataMappingType dataMapping = assertApplicationDataMapping(activity, "InPrimitiveTypeLong", "InPrimitiveTypeLong", "PrimitiveParameterIN", "externalWebApp", DirectionType.IN_LITERAL, data);
 
       data = GenericModelingAssertions.assertPrimitiveData(providerModel, "OutPrimitiveTypeText", "OutPrimitiveTypeText", "String");
-      dataMapping = GenericModelingAssertions.assertDataMapping(activity, "OutPrimitiveTypeText", "OutPrimitiveTypeText", "default", DirectionType.IN_LITERAL, data);
+      dataMapping = GenericModelingAssertions.assertDataMapping(activity, "OutPrimitiveTypeText", "OutPrimitiveTypeText", "default", DirectionType.IN_LITERAL, data, null, null, null);
       assertThat(dataMapping.getApplicationAccessPoint(), is(nullValue()));
 
       assertApplicationDataMapping(activity, "OutPrimitiveTypeText", "OutPrimitiveTypeText", "PrimitiveParameterOUT", "externalWebApp", DirectionType.OUT_LITERAL, data);
@@ -83,7 +85,7 @@ public class TestDataMappings extends RecordingTestcase
       data = GenericModelingAssertions.assertStructData(providerModel, "InStructType", "InStructType", "InStructType");
       assertApplicationDataMapping(activity, "InStructType", "InStructType", "StructParameterIN", "externalWebApp", DirectionType.IN_LITERAL, data);
 
-      dataMapping = GenericModelingAssertions.assertDataMapping(activity, "InStructType", "InStructType", "default", DirectionType.OUT_LITERAL, data);
+      dataMapping = GenericModelingAssertions.assertDataMapping(activity, "InStructType", "InStructType", "default", DirectionType.OUT_LITERAL, data, null, null, null);
       assertThat(dataMapping.getApplicationAccessPoint(), is(nullValue()));
 
       data = GenericModelingAssertions.assertStructData(providerModel, "OutStructType", "OutStructType", "OutStructType");
@@ -107,6 +109,8 @@ public class TestDataMappings extends RecordingTestcase
 
       replay(requestStream, "changeDataMappingsGeneral");
 
+      //saveReplayModel("C:/development/");
+
       ProcessDefinitionType process = GenericModelingAssertions.assertProcess(providerModel, "DatamappingProcess","Datamapping Process");
       ActivityType activity = assertUIMashupProcess(process);
 
@@ -128,7 +132,29 @@ public class TestDataMappings extends RecordingTestcase
       data = GenericModelingAssertions.assertStructData(providerModel, "OutStructType", "OutStructType", "OutStructType");
       assertApplicationDataMapping(activity, "OutStructType", "OutStructType", "StructParameterIN", "externalWebApp", DirectionType.IN_LITERAL, data);
 
-      //saveReplayModel("C:/development/");
+
+   }
+
+   @Test
+   public void testMultipleDatamappings() throws Exception
+   {
+      providerModel = modelService.findModel(PROVIDER_MODEL_ID);
+
+      InputStream requestInput = getClass().getResourceAsStream(
+            "../../service/rest/requests/createMultipleDataMappings.txt");
+      InputStreamReader requestStream = new InputStreamReader(requestInput);
+
+      replay(requestStream, "testMultipleDatamappings");
+
+      DataType data = GenericModelingAssertions.assertPrimitiveData(providerModel, "PrimitiveData", "Primitive Data", "String");
+      ProcessDefinitionType process = GenericModelingAssertions.assertProcess(providerModel, "ProviderProcess", "Provider Process");
+      ActivityType activity = GenericModelingAssertions.assertActivity(process, "Activity1", "Activity 1", ActivityImplementationType.MANUAL_LITERAL);
+      GenericModelingAssertions.assertDataMapping(activity, "PrimitiveData", "PrimitiveData", "engine", DirectionType.OUT_LITERAL, data, "activityInstance", null, null);
+      GenericModelingAssertions.assertDataMapping(activity, "PrimitiveData", "PrimitiveData", "default", DirectionType.IN_LITERAL, data, null, null, null);
+      GenericModelingAssertions.assertDataMapping(activity, "PrimitiveData_2", "PrimitiveData_2", "engine", DirectionType.OUT_LITERAL, data, "activityInstance", null, null);
+      GenericModelingAssertions.assertDataMapping(activity, "PrimitiveData_3", "PrimitiveData_3", "engine", DirectionType.OUT_LITERAL, data, "activityInstance", "getAttributes()", "charAt(int)");
+
+      saveReplayModel("C:/development/");
    }
 
 
@@ -148,7 +174,7 @@ public class TestDataMappings extends RecordingTestcase
    private DataMappingType assertApplicationDataMapping(ActivityType activity, String dataMappingID, String dataMappingName,
          String accessPointID, String context, DirectionType direction, DataType data)
    {
-      DataMappingType dataMapping = GenericModelingAssertions.assertDataMapping(activity, dataMappingID, dataMappingName, context, direction, data);
+      DataMappingType dataMapping = GenericModelingAssertions.assertDataMapping(activity, dataMappingID, dataMappingName, context, direction, data, accessPointID, null, null);
       assertThat(dataMapping.getApplicationAccessPoint(), is(not(nullValue())));
       assertThat(dataMapping.getApplicationAccessPoint(), is(accessPointID));
       return dataMapping;

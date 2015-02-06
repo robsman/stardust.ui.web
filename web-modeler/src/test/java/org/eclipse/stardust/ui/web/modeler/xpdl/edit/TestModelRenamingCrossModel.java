@@ -16,7 +16,7 @@ import org.eclipse.stardust.ui.web.modeler.utils.test.GenericModelingAssertions;
 
 public class TestModelRenamingCrossModel extends TestCrossModelSupport
 {
-   @Test
+   /*@Test
    public void testChangeModelIDAfterDragAndDrop() throws Exception
    {
       providerModel = modelService.findModel(PROVIDER_MODEL_ID);
@@ -122,7 +122,7 @@ public class TestModelRenamingCrossModel extends TestCrossModelSupport
 
       //saveReplayModel("C:/development/");
 
-   }
+   }*/
 
 
 

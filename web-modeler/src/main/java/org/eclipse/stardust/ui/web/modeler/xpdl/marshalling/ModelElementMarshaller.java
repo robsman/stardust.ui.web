@@ -2752,24 +2752,19 @@ public class ModelElementMarshaller implements ModelMarshaller
       {
          ActivityType activity = dataMappingConnection.getActivitySymbol().getActivity();
 
+         createOldStyleDatamappingJson(dataFlowJson, data, activity); //To be Removed for RC1
+
          // Find all data mappings between the data and the activity connected by the
          // connection
+
+         JsonArray dataMappingsJson = new JsonArray();
+         dataFlowJson.add(ModelerConstants.DATAMAPPINGS_PROPERTY, dataMappingsJson);
 
          for (DataMappingType dataMapping : activity.getDataMapping())
          {
             if (dataMapping.getData().getId().equals(data.getId()))
             {
-               if (hasNotJsonNull(dataFlowJson, ModelerConstants.ID_PROPERTY))
-               {
-                  if ( !dataFlowJson.get(ModelerConstants.ID_PROPERTY)
-                        .getAsString()
-                        .equals(dataMapping.getId()))
-                  {
-                     // TODO Other data mapping
-                     continue;
-                  }
-               }
-               else
+               if (!hasNotJsonNull(dataFlowJson, ModelerConstants.ID_PROPERTY))
                {
                   // Set ID etc. for first data mapping between activity and data found
 
@@ -2783,16 +2778,7 @@ public class ModelElementMarshaller implements ModelMarshaller
                         dataMapping.getElementOid());
                }
 
-               if (dataMapping.getDirection().equals(DirectionType.IN_LITERAL))
-               {
-                  dataFlowJson.add(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY,
-                        toDataMappingJson(dataMapping));
-               }
-               else
-               {
-                  dataFlowJson.add(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY,
-                        toDataMappingJson(dataMapping));
-               }
+               dataMappingsJson.add(toDataMappingJson(dataMapping));
             }
          }
 
@@ -2838,6 +2824,50 @@ public class ModelElementMarshaller implements ModelMarshaller
       return connectionJson;
    }
 
+   public void createOldStyleDatamappingJson(JsonObject dataFlowJson, DataType data,
+         ActivityType activity)
+   {
+      for (DataMappingType dataMapping : activity.getDataMapping())
+      {
+         if (dataMapping.getData().getId().equals(data.getId()))
+         {
+            if (hasNotJsonNull(dataFlowJson, ModelerConstants.ID_PROPERTY))
+            {
+               if ( !dataFlowJson.get(ModelerConstants.ID_PROPERTY)
+                     .getAsString()
+                     .equals(dataMapping.getId()))
+               {
+                  // TODO Other data mapping
+                  continue;
+               }
+            }
+            else
+            {
+               // Set ID etc. for first data mapping between activity and data found
+
+               dataFlowJson.addProperty(ModelerConstants.TYPE_PROPERTY,
+                     ModelerConstants.DATA_FLOW_LITERAL);
+               dataFlowJson.addProperty(ModelerConstants.ID_PROPERTY,
+                     dataMapping.getId());
+               dataFlowJson.addProperty(ModelerConstants.NAME_PROPERTY,
+                     dataMapping.getName());
+               dataFlowJson.addProperty(ModelerConstants.OID_PROPERTY,
+                     dataMapping.getElementOid());
+            }
+
+            if (dataMapping.getDirection().equals(DirectionType.IN_LITERAL))
+            {
+               dataFlowJson.add(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY,
+                     toOldStyleDataMappingJson(dataMapping));
+            }
+            else
+            {
+               dataFlowJson.add(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY,
+                     toOldStyleDataMappingJson(dataMapping));
+            }
+         }
+      }
+   }
    /**
     *
     * @param transitionConnection
@@ -3234,6 +3264,29 @@ public class ModelElementMarshaller implements ModelMarshaller
     * @param dataMapping
     * @return
     */
+   public JsonObject toOldStyleDataMappingJson(DataMappingType dataMapping)
+   {
+      JsonObject dataMappingJson = new JsonObject();
+
+      if (dataMapping.getApplicationAccessPoint() != null)
+      {
+         dataMappingJson.addProperty(ModelerConstants.ACCESS_POINT_ID_PROPERTY,
+               dataMapping.getApplicationAccessPoint());
+         dataMappingJson.addProperty(ModelerConstants.ACCESS_POINT_CONTEXT_PROPERTY,
+               dataMapping.getContext());
+         if (dataMapping.getApplicationPath() != null)
+         {
+            dataMappingJson.addProperty(ModelerConstants.ACCESS_POINT_PATH_PROPERTY,
+                  dataMapping.getApplicationPath());
+         }
+      }
+
+      dataMappingJson.addProperty(ModelerConstants.DATA_PATH_PROPERTY,
+            dataMapping.getDataPath());
+
+      return dataMappingJson;
+   }
+
    public JsonObject toDataMappingJson(DataMappingType dataMapping)
    {
       JsonObject dataMappingJson = new JsonObject();
@@ -3251,6 +3304,9 @@ public class ModelElementMarshaller implements ModelMarshaller
          }
       }
 
+      dataMappingJson.addProperty(ModelerConstants.ID_PROPERTY, dataMapping.getId());
+      dataMappingJson.addProperty(ModelerConstants.NAME_PROPERTY, dataMapping.getName());
+      dataMappingJson.addProperty(ModelerConstants.DIRECTION_PROPERTY, dataMapping.getDirection().getLiteral());
       dataMappingJson.addProperty(ModelerConstants.DATA_PATH_PROPERTY,
             dataMapping.getDataPath());
 

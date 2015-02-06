@@ -598,11 +598,11 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
                {
                   standardLoop.setTestTime(TestTimeType.AFTER);
                }
-            }           
+            }
             if (loop == null)
             {
                activity.setLoop((LoopType) standardLoop.eContainer());
-            }            
+            }
          }
       }
    }
@@ -709,7 +709,92 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
                ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
       }
 
-      // Mapping should be updated,if JSON contains mapping element
+
+      if (dataFlowJson.has(ModelerConstants.DATAMAPPINGS_PROPERTY))
+      {
+         // Collect all data mappings between the activity and the data
+
+         List<DataMappingType> dataMappings = new ArrayList<DataMappingType>();
+
+         for (DataMappingType dataMapping : dataFlowConnection.getActivitySymbol()
+               .getActivity().getDataMapping())
+         {
+            if (dataMapping.getData().getId()
+                  .equals(dataFlowConnection.getDataSymbol().getData().getId()))
+            {
+               dataMappings.add(dataMapping);
+            }
+         }
+
+         // Delete all data mappings between the activity and the data
+
+         for (DataMappingType dataMapping : dataMappings)
+         {
+            dataFlowConnection.getActivitySymbol().getActivity().getDataMapping()
+                  .remove(dataMapping);
+            dataFlowConnection.getDataSymbol().getData().getDataMappings()
+                  .remove(dataMapping);
+         }
+
+         JsonArray dataMappingsJson = dataFlowJson.getAsJsonArray(ModelerConstants.DATAMAPPINGS_PROPERTY);
+         List<DataMappingType> newDataMappings = new ArrayList<DataMappingType>();
+         for (Iterator<JsonElement> i = dataMappingsJson.iterator(); i.hasNext();)
+         {
+            JsonObject dataMappingJson = i.next().getAsJsonObject();
+            String direction = dataMappingJson.get(ModelerConstants.DIRECTION_PROPERTY).getAsString();
+            DirectionType directionType = direction.equals(ModelerConstants.DATAMAPPING_IN) ? DirectionType.IN_LITERAL : DirectionType.OUT_LITERAL;
+            DataMappingType dataMapping = createDataMapping(dataFlowConnection.getActivitySymbol().getActivity(),
+                  dataFlowConnection.getDataSymbol().getData(), dataMappingJson,
+                  directionType, dataMappingJson.getAsJsonObject());
+            newDataMappings.add(dataMapping);
+            mergeInOutDataMappings(newDataMappings);
+         }
+       }
+
+
+
+
+      updateOldStyleDataFlowConnection(dataFlowConnection, dataFlowJson);
+
+
+   }
+
+   private void mergeInOutDataMappings(List<DataMappingType> dataMappings)
+   {
+      // Post Process Datamappings
+      List<DataMappingType> duplicates = new ArrayList<DataMappingType>();
+      for (Iterator<DataMappingType> i = dataMappings.iterator(); i.hasNext();)
+      {
+         boolean matched = false;
+         DataMappingType apt1 = (DataMappingType) i.next();
+         if (!duplicates.contains(apt1))
+         {
+            for (Iterator<DataMappingType> j = dataMappings.iterator(); j.hasNext();)
+            {
+               DataMappingType apt2 = (DataMappingType) j.next();
+               if (!apt1.equals(apt2) && !apt1.getDirection().equals(apt2.getDirection())
+                     && apt1.getName().equals(apt2.getName()))
+               {
+                  if (matched)
+                  {
+                     duplicates.add(apt2);
+                  }
+                  else
+                  {
+                     matched = true;
+                     apt2.setId(apt1.getId());
+                  }
+               }
+            }
+         }
+      }
+   }
+
+
+
+   public void updateOldStyleDataFlowConnection(DataMappingConnectionType dataFlowConnection,
+         JsonObject dataFlowJson)
+   {
       if (dataFlowJson.has(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY)
             || dataFlowJson.has(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY))
       {
@@ -766,7 +851,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
          {
             if (inJson != null)
             {
-               createDataMapping(dataFlowConnection.getActivitySymbol().getActivity(),
+               createOldStyleDataMapping(dataFlowConnection.getActivitySymbol().getActivity(),
                      dataFlowConnection.getDataSymbol().getData(), dataFlowJson,
                      DirectionType.IN_LITERAL, inJson);
             }
@@ -774,7 +859,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
             // Create output mapping
             if (outJson != null)
             {
-               createDataMapping(dataFlowConnection.getActivitySymbol().getActivity(),
+               createOldStyleDataMapping(dataFlowConnection.getActivitySymbol().getActivity(),
                      dataFlowConnection.getDataSymbol().getData(), dataFlowJson,
                      DirectionType.OUT_LITERAL, outJson);
             }
@@ -784,7 +869,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
          {
             if (inJson != null)
             {
-               createDataMapping(dataFlowConnection.getActivitySymbol().getActivity(),
+               createOldStyleDataMapping(dataFlowConnection.getActivitySymbol().getActivity(),
                      dataFlowConnection.getDataSymbol().getData(), dataFlowJson,
                      DirectionType.IN_LITERAL, inJson);
             }
@@ -792,7 +877,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
             // Create output mapping
             if (outJson != null)
             {
-               createDataMapping(dataFlowConnection.getActivitySymbol().getActivity(),
+               createOldStyleDataMapping(dataFlowConnection.getActivitySymbol().getActivity(),
                      dataFlowConnection.getDataSymbol().getData(), dataFlowJson,
                      DirectionType.OUT_LITERAL, inJson);
             }
@@ -802,7 +887,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
          {
             if (inJson != null)
             {
-               createDataMapping(dataFlowConnection.getActivitySymbol().getActivity(),
+               createOldStyleDataMapping(dataFlowConnection.getActivitySymbol().getActivity(),
                      dataFlowConnection.getDataSymbol().getData(), dataFlowJson,
                      DirectionType.IN_LITERAL, outJson);
             }
@@ -810,7 +895,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
             // Create output mapping
             if (outJson != null)
             {
-               createDataMapping(dataFlowConnection.getActivitySymbol().getActivity(),
+               createOldStyleDataMapping(dataFlowConnection.getActivitySymbol().getActivity(),
                      dataFlowConnection.getDataSymbol().getData(), dataFlowJson,
                      DirectionType.OUT_LITERAL, outJson);
             }
@@ -818,23 +903,6 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
 
       }
 
-      // Following condition is added to handle the scenario where only name property is
-      // modified
-      if (dataFlowJson.has(ModelerConstants.NAME_PROPERTY))
-      {
-         for (DataMappingType dataMapping : dataFlowConnection.getActivitySymbol()
-               .getActivity().getDataMapping())
-         {
-            if (dataMapping.getData().getId()
-                  .equals(dataFlowConnection.getDataSymbol().getData().getId()))
-            {
-               dataMapping.setName(extractAsString(dataFlowJson,
-                     ModelerConstants.NAME_PROPERTY));
-               dataMapping.setId(extractAsString(dataFlowJson,
-                     ModelerConstants.NAME_PROPERTY));
-            }
-         }
-      }
    }
 
    private boolean hasAccessPoints(ActivityType activity, DirectionType direction)
@@ -897,6 +965,111 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
     * @return
     */
    private DataMappingType createDataMapping(ActivityType activity, DataType data,
+         JsonObject dataFlowJson, DirectionType direction, JsonObject dataMappingJson)
+   {
+      DataMappingType dataMapping = AbstractElementBuilder.F_CWM.createDataMappingType();
+
+      if (hasNotJsonNull(dataMappingJson, ModelerConstants.ID_PROPERTY))
+      {
+         dataMapping.setId(dataMappingJson.get(ModelerConstants.ID_PROPERTY)
+               .getAsString());
+      }
+      else
+      {
+         if (hasNotJsonNull(dataFlowJson, ModelerConstants.ID_PROPERTY))
+         {
+            dataMapping.setId(dataFlowJson.get(ModelerConstants.ID_PROPERTY)
+                  .getAsString());
+         }
+         else
+         {
+            dataMapping.setId(data.getId());
+         }
+      }
+
+      if (hasNotJsonNull(dataMappingJson, ModelerConstants.NAME_PROPERTY))
+      {
+         dataMapping.setName(dataMappingJson.get(ModelerConstants.NAME_PROPERTY)
+               .getAsString());
+         String id = NameIdUtilsExtension.createIdFromName(activity, dataMapping);
+         dataMapping.setId(id);
+      }
+      else
+      {
+         if (hasNotJsonNull(dataFlowJson, ModelerConstants.NAME_PROPERTY))
+         {
+            dataMapping.setName(dataFlowJson.get(ModelerConstants.NAME_PROPERTY)
+                  .getAsString());
+         }
+         dataMapping.setName(data.getName());
+      }
+
+      dataMapping.setDirection(direction);
+
+      if (hasNotJsonNull(dataMappingJson, ModelerConstants.ACCESS_POINT_ID_PROPERTY))
+      {
+
+         dataMapping.setApplicationAccessPoint(dataMappingJson.get(
+               ModelerConstants.ACCESS_POINT_ID_PROPERTY).getAsString());
+         {
+            dataMapping.setContext(dataMappingJson.get(
+                  ModelerConstants.ACCESS_POINT_CONTEXT_PROPERTY).getAsString());
+         }
+      }
+      if (dataMappingJson.has(ModelerConstants.ACCESS_POINT_PATH_PROPERTY))
+      {
+         if (dataMappingJson.get(ModelerConstants.ACCESS_POINT_PATH_PROPERTY)
+               .isJsonNull())
+         {
+            dataMapping.setApplicationPath(null);
+         }
+         else
+         {
+            dataMapping.setApplicationPath(dataMappingJson.get(
+                  ModelerConstants.ACCESS_POINT_PATH_PROPERTY).getAsString());
+         }
+      }
+
+      if (StringUtils.isEmpty(dataMapping.getContext()))
+      {
+         dataMapping.setContext(getModelBuilderFacade().getDefaultContext(activity,
+               direction));
+      }
+
+      if (hasNotJsonNull(dataMappingJson, ModelerConstants.DATA_PATH_PROPERTY))
+      {
+         dataMapping.setDataPath(dataMappingJson.get(ModelerConstants.DATA_PATH_PROPERTY)
+               .getAsString());
+      }
+
+      dataMapping.setData(data);
+      activity.getDataMapping().add(dataMapping);
+      data.getDataMappings().add(dataMapping);
+
+      return dataMapping;
+   }
+
+   private List<DataMappingType> getDataMappings(ActivityType activity,
+         DirectionType direction)
+   {
+      if (direction == null)
+      {
+         return activity.getDataMapping();
+      }
+      List<DataMappingType> dataMappings = new ArrayList<DataMappingType>();
+      for (Iterator<DataMappingType> i = activity.getDataMapping().iterator(); i
+            .hasNext();)
+      {
+         DataMappingType dataMapping = i.next();
+         if (dataMapping.getDirection().equals(direction))
+         {
+            dataMappings.add(dataMapping);
+         }
+      }
+      return dataMappings;
+   }
+
+   private DataMappingType createOldStyleDataMapping(ActivityType activity, DataType data,
          JsonObject dataFlowJson, DirectionType direction, JsonObject dataMappingJson)
    {
       DataMappingType dataMapping = AbstractElementBuilder.F_CWM.createDataMappingType();
@@ -964,7 +1137,6 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
 
       return dataMapping;
    }
-
 
    /**
     *

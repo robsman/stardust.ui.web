@@ -148,7 +148,7 @@ public class GenericModelingAssertions
    }
 
    public static DataMappingType assertDataMapping(ActivityType activity, String dataMappingName, String dataMappingID,
-         String context, DirectionType direction, DataType data)
+         String context, DirectionType direction, DataType data, String accessPoint, String accessPointPath, String dataPath)
    {
       DataMappingType dataMappingFound = null;
       List<DataMappingType> dataMappings = activity.getDataMapping();
@@ -175,7 +175,9 @@ public class GenericModelingAssertions
       assertThat(dataMappingFound.getDirection(), is(direction));
       assertThat(dataMappingFound.getContext(), is(context));
       assertThat(dataMappingFound.getData(), is(not(nullValue())));
-
+      assertThat(dataMappingFound.getApplicationAccessPoint(), is(accessPoint));
+      assertThat(dataMappingFound.getApplicationPath(), is(accessPointPath));
+      assertThat(dataMappingFound.getDataPath(), is(dataPath));
 
       return dataMappingFound;
    }
