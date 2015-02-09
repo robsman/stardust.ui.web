@@ -50,7 +50,7 @@ public class DaemonsResource
    {
       try
       {
-         List<Daemon> daemons = serviceFactoryUtils.getAdministrationService().getAllDaemons(false);
+         List<Daemon> daemons = serviceFactoryUtils.getAdministrationService().getAllDaemons(true);
          List<DaemonDTO> daemonsDto = DTOBuilder.buildList(daemons, DaemonDTO.class);
          return Response.ok(AbstractDTO.toJson(daemonsDto), MediaType.APPLICATION_JSON).build();
       }
