@@ -50,7 +50,7 @@ public class DaemonsResource
    {
       try
       {
-         List<Daemon> daemons = serviceFactoryUtils.getAdministrationService().getAllDaemons(true);
+         List<Daemon> daemons = serviceFactoryUtils.getAdministrationService().getAllDaemons(false);
          List<DaemonDTO> daemonsDto = DTOBuilder.buildList(daemons, DaemonDTO.class);
          return Response.ok(AbstractDTO.toJson(daemonsDto), MediaType.APPLICATION_JSON).build();
       }
@@ -71,7 +71,7 @@ public class DaemonsResource
       {
          Daemon startedDaemon = serviceFactoryUtils.getAdministrationService().startDaemon(daemonType, true);
          DaemonDTO daemonDTO = DTOBuilder.build(startedDaemon, DaemonDTO.class);
-         return Response.ok(daemonDTO.toJson(), MediaType.APPLICATION_JSON).build();
+         return Response.status(202).entity(daemonDTO.toJson()).build();
       }
       catch (Exception e)
       {
@@ -82,7 +82,7 @@ public class DaemonsResource
       }
 
    }
-   
+
    @PUT
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/{daemonType}/stop")
@@ -92,7 +92,7 @@ public class DaemonsResource
       {
          Daemon stoppedDaemon = serviceFactoryUtils.getAdministrationService().stopDaemon(daemonType, true);
          DaemonDTO daemonDTO = DTOBuilder.build(stoppedDaemon, DaemonDTO.class);
-         return Response.ok(daemonDTO.toJson(), MediaType.APPLICATION_JSON).build();
+         return Response.status(202).entity(daemonDTO.toJson()).build();
       }
       catch (Exception e)
       {
