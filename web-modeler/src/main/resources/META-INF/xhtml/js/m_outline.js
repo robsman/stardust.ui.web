@@ -3145,7 +3145,7 @@ define(
           }
           
           //handle server side exceptions (validation etc)
-		  if (response.responseText && (response.responseText.indexOf("ModelerError.") > -1)) {
+		  if (response.responseText && (response.responseText.indexOf("ModelerError.") > -1) && command.commandId == "model.delete") {
 			if (parent.iPopupDialog) {
 				parent.iPopupDialog
 					.openPopup({
