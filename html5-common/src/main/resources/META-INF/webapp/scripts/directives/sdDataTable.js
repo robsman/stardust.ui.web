@@ -103,10 +103,12 @@
 					' title="{{i18n(\'portal-common-messages.common-filterPopup-selectColumnsLabel\')}}" class="tbl-toolbar-item tbl-tool-link">\n' +
 					'<i class="fa fa-table"></i>\n' +
 				'</button>\n' +
-				'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-click="" title="{{i18n(\'portal-common-messages.common-genericDataTable-asExcel\')}}" class="tbl-toolbar-item tbl-tool-link">\n' +
+				'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if="$dtApi.enableExportExcel" ng-click=""' +
+					' title="{{i18n(\'portal-common-messages.common-genericDataTable-asExcel\')}}" class="tbl-toolbar-item tbl-tool-link">\n' +
 					'<i class="fa fa-file-excel-o"></i>\n' +
 				'</button>\n' +
-				'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-click="" title="{{i18n(\'portal-common-messages.common-genericDataTable-asCSV\')}}" class="tbl-toolbar-item tbl-tool-link">\n' +
+				'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if="$dtApi.enableExportCSV" ng-click=""' +
+					' title="{{i18n(\'portal-common-messages.common-genericDataTable-asCSV\')}}" class="tbl-toolbar-item tbl-tool-link">\n' +
 					'<i class="fa fa-file-text-o"></i>\n' +
 				'</button>\n' +
 				'<div ng-if="$dtApi.showSelectColumns" class="popup-dlg">\n' +
@@ -158,7 +160,8 @@
 		var pageSize = 8;
 		var sortingMode, sortByGetter;
 		var columnFilters;
-		
+		var enableExports = {};
+
 		// Setup component instance
 		setup();
 
@@ -318,6 +321,17 @@
 						onSorting.param = onSortingfuncInfo.params[0];
 					} else {
 						trace.error(theTableId + ': sda-on-sorting does not seems to be correcly used, it does not appear to be a function accepting parameter.');
+					}
+				}
+			}
+
+			if (attr.sdaExports != undefined && attr.sdaExports != '') {
+				var exports = attr.sdaExports.split(',');
+				for (var i in exports) {
+					if (exports[i].toLowerCase() == 'excel') {
+						enableExports.EXCEL = true;
+					} else if (exports[i].toLowerCase() == 'csv') {
+						enableExports.CSV = true;
 					}
 				}
 			}
@@ -1610,7 +1624,9 @@
 				self.columnSelectorAdmin = columnSelectorAdmin;
 				self.showSelectColumns = false;
 				self.applyTo = 'USER';
-				
+				self.enableExportExcel = enableExports.EXCEL;
+				self.enableExportCSV = enableExports.CSV;
+
 				self.showColumnFilters = {};
 			}
 			
