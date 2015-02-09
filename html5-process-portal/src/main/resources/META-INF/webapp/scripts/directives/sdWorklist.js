@@ -17,14 +17,16 @@
 	'use strict';
 
 	angular.module('bpm-common').directive('sdWorklist', 
-			['$parse', '$q', 'sdUtilService', 'sdViewUtilService', 'sdPreferenceService', 'sdWorklistService', 
+			['$parse', '$q', 'sdUtilService', 'sdViewUtilService', 'sdLoggerService', 'sdPreferenceService', 'sdWorklistService', 
 			 'sdActivityInstanceService', 'sdProcessDefinitionService', WorklistDirective]);
 
 	/*
 	 * 
 	 */
-	function WorklistDirective($parse, $q, sdUtilService, sdViewUtilService, sdPreferenceService, sdWorklistService, 
+	function WorklistDirective($parse, $q, sdUtilService, sdViewUtilService, sdLoggerService, sdPreferenceService, sdWorklistService, 
 			sdActivityInstanceService, sdProcessDefinitionService) {
+		
+		var trace = sdLoggerService.getLogger('bpm-common.sdWorklist');
 
 		var directiveDefObject = {
 			restrict : 'AE',
@@ -386,11 +388,16 @@
 			}
 		};
 		
-
+		/*
+		 * 
+		 */
 		WorklistCompiler.prototype.onDelegateConfirm = function() {
 			this.refresh();
 		};
-		
+
+		/*
+		 * 
+		 */
 		WorklistCompiler.prototype.onAbortPopoverConfirm = function() {
 			this.refresh();
 		};
@@ -403,37 +410,32 @@
 			this.activitiesToAbort = [];
 
 			if (Array.isArray(value)) {
-
 				var selectedWorkItems = value;
 				if (selectedWorkItems.length < 1) {
-					console.log("No Rows selected");
+					trace.log("No Rows selected");
 					return;
 				}
 				
 				angular.forEach(selectedWorkItems, function(workItem) {
 					self.activitiesToAbort.push(workItem.oid);
 				});
-
 			} else {
 				var workItem = value;
 				this.activitiesToAbort.push(workItem.oid);
 			}
 			
 			this.showAbortActivityDialog = true;
-
 		}
-			
 	
 		/*
 		 *
 		 */
 		 WorklistCompiler.prototype.abortCompleted = function(workItem) {
-			console.log("Action on complete of abort");
+			 trace.log("Action on complete of abort");
 			this.refresh();
 			BridgeUtils.View.syncLaunchPanels();
 			this.activitiesToAbort = [];
-
-	};
+		};
 
 		/*
 		 * 
