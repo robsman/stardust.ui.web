@@ -385,6 +385,11 @@ define(
 													event.data.panel.currentParameterDefinition.dataFullId = event.data.panel.parameterDefinitionDataSelect
 															.val();
 												}
+												
+												//reset data path
+												event.data.panel.currentParameterDefinition.dataPath = ""; 
+												event.data.panel.parameterDefinitionPathInput.val("");
+												
 												event.data.panel.setAutoCompleteMatches(event.data.panel.currentParameterDefinition); 
 												
 												event.data.panel.currentFocusInput = null;
@@ -939,10 +944,11 @@ define(
 							this.populateDataItemsList();
 
 							if (this.options.supportsDataPathes) {
-								this.parameterDefinitionPathInput
-										.removeAttr("disabled");
-								this.parameterDefinitionPathInput
-										.val(this.currentParameterDefinition.dataPath);
+								
+								if(!this.isCurrentSelectionEnum()){
+									this.parameterDefinitionPathInput.removeAttr("disabled");
+									this.parameterDefinitionPathInput.val(this.currentParameterDefinition.dataPath);
+								}
 							}
 						}
 
@@ -975,13 +981,13 @@ define(
 							if (this.options.supportsDataMappings) {
 								this.parameterDefinitionDataSelect
 										.removeAttr("disabled");
-								if (this.options.supportsDataPathes) {
+								if (this.options.supportsDataPathes && !this.isCurrentSelectionEnum()) {
 									this.parameterDefinitionPathInput
 											.removeAttr("disabled");
 								}
 							}
 						}
-
+						
 						this.deleteParameterDefinitionButton.removeAttr("disabled");
 
 						if (this.currentFocusInput) {
@@ -998,8 +1004,47 @@ define(
 								this.dataTypeSelectorScope, this.scopeModel
 										.isReadonly());
 					}
+					
+					//disable data path input for ENUM
+					if(this.isCurrentSelectionEnum()){
+						this.parameterDefinitionPathInput.attr(
+								"disabled", true);
+					}
 				};
 
+
+				/**
+				 * 
+				 */
+				ParameterDefinitionsPanel.prototype.isCurrentSelectionEnum = function() {
+					try {
+						var sel_data = m_model.findData(this.currentParameterDefinition.dataFullId)
+						if (sel_data.structuredDataTypeFullId && this.isEnumTypeDeclaration(sel_data.structuredDataTypeFullId)) {
+							return true;
+						}
+					} catch (e) {
+						//nothing
+					}
+					return false;
+				}
+				
+				/**
+				 * 
+				 */
+				ParameterDefinitionsPanel.prototype.isEnumTypeDeclaration = function(
+						fullId) {
+					try {
+						var typeDeclaration = m_model.findModel(m_model
+								.stripModelId(fullId)).typeDeclarations[m_model
+								.stripElementId(fullId)];
+						return typeDeclaration ? typeDeclaration
+								.isEnumeration() : false;
+					} catch (e) {
+						return false;
+					}
+
+				};
+				
 				/**
 				 *
 				 */
