@@ -14,13 +14,14 @@ import java.util.List;
 
 import javax.annotation.Resource;
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.springframework.stereotype.Component;
-
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.runtime.Daemon;
@@ -49,7 +50,7 @@ public class DaemonsResource
    {
       try
       {
-         List<Daemon> daemons = serviceFactoryUtils.getAdministrationService().getAllDaemons(false);
+         List<Daemon> daemons = serviceFactoryUtils.getAdministrationService().getAllDaemons(true);
          List<DaemonDTO> daemonsDto = DTOBuilder.buildList(daemons, DaemonDTO.class);
          return Response.ok(AbstractDTO.toJson(daemonsDto), MediaType.APPLICATION_JSON).build();
       }
@@ -59,5 +60,47 @@ public class DaemonsResource
 
          return Response.serverError().build();
       }
+   }
+
+   @PUT
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/{daemonType}/start")
+   public Response startDaemon(@PathParam("daemonType") String daemonType)
+   {
+      try
+      {
+         Daemon startedDaemon = serviceFactoryUtils.getAdministrationService().startDaemon(daemonType, true);
+         DaemonDTO daemonDTO = DTOBuilder.build(startedDaemon, DaemonDTO.class);
+         return Response.ok(daemonDTO.toJson(), MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
+
+         return Response.serverError().build();
+
+      }
+
+   }
+   
+   @PUT
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/{daemonType}/stop")
+   public Response stopDaemon(@PathParam("daemonType") String daemonType)
+   {
+      try
+      {
+         Daemon stoppedDaemon = serviceFactoryUtils.getAdministrationService().stopDaemon(daemonType, true);
+         DaemonDTO daemonDTO = DTOBuilder.build(stoppedDaemon, DaemonDTO.class);
+         return Response.ok(daemonDTO.toJson(), MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
+
+         return Response.serverError().build();
+
+      }
+
    }
 }

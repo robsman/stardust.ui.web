@@ -18,7 +18,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOClass;
  * @version $Revision: $
  */
 @DTOClass
-public class DaemonDTO
+public class DaemonDTO extends AbstractDTO
 {
    @DTOAttribute("type")
    public String type;

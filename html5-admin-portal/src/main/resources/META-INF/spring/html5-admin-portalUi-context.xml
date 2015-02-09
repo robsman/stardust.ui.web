@@ -12,6 +12,10 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 		<ippui:viewsExtension>
 			<ippui:view name="participantManagementViewHtml5" include="/plugins/html5-admin-portal/partials/views/participantManagementView.html" />
 		</ippui:viewsExtension>
+		
+		<ippui:viewsExtension>
+			<ippui:view name="daemonViewHtml5" include="/plugins/html5-admin-portal/partials/views/daemonView.html" />
+		</ippui:viewsExtension>
 
 	</ippui:perspectiveExtension>
 </beans>
