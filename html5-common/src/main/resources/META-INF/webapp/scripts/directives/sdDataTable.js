@@ -99,14 +99,14 @@
 			scope, element, attr, ctrl) {
 		var TOOLBAR_TEMPLATE =
 			'<div class="tbl-toolbar-section">\n' +
-				'<button class="button-link" href="#" ng-if="$dtApi.enableSelectColumns" ng-click="$dtApi.toggleColumnSelector()"' + 
+				'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if="$dtApi.enableSelectColumns" ng-click="$dtApi.toggleColumnSelector()"' + 
 					' title="{{i18n(\'portal-common-messages.common-filterPopup-selectColumnsLabel\')}}" class="tbl-toolbar-item tbl-tool-link">\n' +
 					'<i class="fa fa-table"></i>\n' +
 				'</button>\n' +
-				'<button class="button-link" href="#" ng-click="" title="{{i18n(\'portal-common-messages.common-genericDataTable-asExcel\')}}" class="tbl-toolbar-item tbl-tool-link">\n' +
+				'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-click="" title="{{i18n(\'portal-common-messages.common-genericDataTable-asExcel\')}}" class="tbl-toolbar-item tbl-tool-link">\n' +
 					'<i class="fa fa-file-excel-o"></i>\n' +
 				'</button>\n' +
-				'<button class="button-link" href="#" ng-click="" title="{{i18n(\'portal-common-messages.common-genericDataTable-asCSV\')}}" class="tbl-toolbar-item tbl-tool-link">\n' +
+				'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-click="" title="{{i18n(\'portal-common-messages.common-genericDataTable-asCSV\')}}" class="tbl-toolbar-item tbl-tool-link">\n' +
 					'<i class="fa fa-file-text-o"></i>\n' +
 				'</button>\n' +
 				'<div ng-if="$dtApi.showSelectColumns" class="popup-dlg">\n' +
