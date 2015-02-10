@@ -75,7 +75,7 @@
 		*
 		*/
 		PriorityFilterController.prototype.tagPreMapper=function (item,index){
-			var tagClass="fa fa-flag priority-flag-"+item.name;
+			var tagClass="glyphicon glyphicon-flag priority-flag-"+item.name;
 			return tagClass;
 		};
 

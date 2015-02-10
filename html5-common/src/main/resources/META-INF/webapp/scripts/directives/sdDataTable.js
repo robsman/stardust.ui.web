@@ -101,20 +101,20 @@
 			'<div class="tbl-toolbar-section">\n' +
 				'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if="$dtApi.enableSelectColumns" ng-click="$dtApi.toggleColumnSelector()"' + 
 					' title="{{i18n(\'portal-common-messages.common-filterPopup-selectColumnsLabel\')}}" class="tbl-toolbar-item tbl-tool-link">\n' +
-					'<i class="fa fa-table"></i>\n' +
+					'<i class="glyphicon glyphicon-th"></i>\n' +
 				'</button>\n' +
 				'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if="$dtApi.enableExportExcel" ng-click=""' +
 					' title="{{i18n(\'portal-common-messages.common-genericDataTable-asExcel\')}}" class="tbl-toolbar-item tbl-tool-link">\n' +
-					'<i class="fa fa-file-excel-o"></i>\n' +
+					'<i class="glyphicon glyphicon-export"></i>\n' +
 				'</button>\n' +
 				'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if="$dtApi.enableExportCSV" ng-click=""' +
 					' title="{{i18n(\'portal-common-messages.common-genericDataTable-asCSV\')}}" class="tbl-toolbar-item tbl-tool-link">\n' +
-					'<i class="fa fa-file-text-o"></i>\n' +
+					'<i class="glyphicon glyphicon-export"></i>\n' +
 				'</button>\n' +
 				'<div ng-if="$dtApi.showSelectColumns" class="popup-dlg">\n' +
 					'<div class="popup-dlg-hdr">\n' +
 						'<span class="popup-dlg-hdr-txt">{{i18n("portal-common-messages.common-filterPopup-selectColumnsLabel")}}</span>\n' + 
-						'<span class="popup-dlg-cls fa fa-lg fa-remove" title="{{i18n(\'portal-common-messages.common-filterPopup-close\')}}" ng-click="$dtApi.toggleColumnSelector()"></span>\n' +
+						'<span class="popup-dlg-cls glyphicon glyphicon-remove" title="{{i18n(\'portal-common-messages.common-filterPopup-close\')}}" ng-click="$dtApi.toggleColumnSelector()"></span>\n' +
 					'</div>\n' +
 					'<div class="popup-dlg-cnt tbl-col-selector">\n' +
 						'<div>\n' +
@@ -126,10 +126,10 @@
 								'</select>\n' +
 							'</span>\n' +
 							'<button class="button-link" ng-if="$dtApi.columnSelectorAdmin" ng-click="$dtApi.toggleColumnSelectorLock()" ng-disabled="$dtApi.isColumnSelectorLockDisabled()">\n' +
-								'<span class="fa fa-lg fa-lock" ng-show="$dtApi.lock"></span>\n' + 
-								'<span class="fa fa-lg fa-unlock" ng-show="!$dtApi.lock"></span>\n' +
+								'<span class="glyphicon glyphicon-ban-circle" ng-show="$dtApi.lock"></span>\n' + 
+								'<span class="glyphicon glyphicon-ok-circle" ng-show="!$dtApi.lock"></span>\n' +
 							'</button>\n' +
-							'<button class="fa fa-lg fa-rotate-right button-link" ng-click="$dtApi.resetColumnSelector()" style="cursor: pointer;"></button>\n' +
+							'<button class="glyphicon glyphicon-repeat button-link" ng-click="$dtApi.resetColumnSelector()" style="cursor: pointer;"></button>\n' +
 						'</div>\n' +
 						'<div class="tbl-col-sel-list">\n' +
 							'<div ng-repeat="col in $dtApi.columns" class="tbl-col-sel-row" ng-model="$index" sd-data-drag sd-data-drop on-drop="$dtApi.moveColumns($data, $index, $event)">\n' +
@@ -597,10 +597,10 @@
 					filterMarkup =
 						'<span flt-anchor="' + col.name + '"></span>' +
 						'<button class="button-link tbl-col-flt" ng-show="!' + filterSet + '" ng-click="' + stopEvent + toggleFilter + '" title="{{i18n(\'portal-common-messages.common-filterPopup-showFilter-tooltip\')}}">\n' +
-							'<i class="fa fa-filter"></i>\n' +
+							'<i class="glyphicon glyphicon-filter"></i>\n' +
 						'</button>\n' +
 						'<button class="button-link tbl-col-flt-set" ng-show="' + filterSet + '" ng-click="' + stopEvent + resetFilter + '" title="{{i18n(\'portal-common-messages.common-filterPopup-resetFilter-tooltip\')}}">\n' +
-							'<i class="fa fa-filter"></i>\n' +
+							'<i class="glyphicon glyphicon-filter"></i>\n' +
 						'</button>\n' +
 						'<button class="button-link" ng-click="' + stopEvent + toggleFilter + '" title="{{i18n(\'portal-common-messages.common-filterPopup-showFilter-tooltip\')}}">\n' +
 							'<span class="tbl-col-flt-title" ng-if="!' + filterSet + '">{{i18n("portal-common-messages.common-filterPopup-filterNotSet")}}</span>' + 
@@ -612,7 +612,7 @@
 							'<div class="popup-dlg-hdr">\n' +
 								'<span class="popup-dlg-hdr-txt">' +
 									'{{i18n("portal-common-messages.common-filterPopup-dataFilterByLabel")}} ' + col.titleExpr + '</span>\n' + 
-								'<span class="popup-dlg-cls fa fa-lg fa-remove" title="{{i18n(\'portal-common-messages.common-filterPopup-close\')}}" ng-click="' + toggleFilter + '"></span>\n' +
+								'<span class="popup-dlg-cls glyphicon glyphicon-remove" title="{{i18n(\'portal-common-messages.common-filterPopup-close\')}}" ng-click="' + toggleFilter + '"></span>\n' +
 							'</div>\n' +
 							'<div class="popup-dlg-cnt tbl-col-flt-dlg-cnt">\n' +
 								'<div ng-if="' + filterVisible + '">\n' + 

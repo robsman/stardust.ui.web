@@ -3,12 +3,12 @@
 	ng-mouseenter="criticalityCtrl.toolTip.show = true"
 	ng-mouseleave="criticalityCtrl.toolTip.show = false">
 	 <i ng-show="rowData.criticality.color != 'WHITE' && rowData.criticality.color!='WHITE_WARNING'"
-	class="fa fa-flag criticality-flag"
+	class="glyphicon glyphicon-flag criticality-flag"
 	ng-class="'criticality-flag-'+rowData.criticality.color"></i> 
 	<i ng-show="rowData.criticality.color == 'WHITE'"
-	class="fa fa-flag-o criticality-flag criticality-flag-WHITE"></i> 
+	class="glyphicon glyphicon-flag criticality-flag criticality-flag-WHITE"></i> 
 	<i ng-show="rowData.criticality.color == 'WHITE_WARNING'"
-	class="fa criticality-flag criticality-flag-WHITE-WARNING  fa-exclamation-triangle"></i>
+	class="glyphicon glyphicon-alert criticality-flag criticality-flag-WHITE-WARNING"></i>
 
 </span>
 <div class="popup-dlg" style="color: black"

@@ -48,7 +48,7 @@
 						ng-click="bpmCommon.stopEvent($event); ctrl.toggleDaemonAction(rowData);"
 						ng-attr-title="{{rowData.running ? i18n('admin-portal-messages.views-daemons-stopDaemon') : i18n('admin-portal-messages.views-daemons-startDaemon')}}"
 						class="view-tool-link"> <i
-							ng-class="rowData.running ? 'fa fa-dot-circle-o' : 'fa fa-play-circle-o'"></i>
+							ng-class="rowData.running ? 'glyphicon glyphicon-ban-circle' : 'glyphicon glyphicon-play-circle'"></i>
 					</a></td>
 				</tr>
 			</tbody>
