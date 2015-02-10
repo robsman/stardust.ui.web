@@ -2,10 +2,10 @@ require
 		.config({
 			baseUrl : "../..",
 			paths : {
-				'jquery' : [ 'simple-modeler/js/libs/jquery/jquery-1.11.1.min' ],
-				'jquery-ui' : [ 'simple-modeler/js/libs/jquery/plugins/jquery-ui-1.10.2.custom.min' ],
-				'jquery.dataTables' : [ "simple-modeler/js/libs/jquery/plugins/jquery.dataTables-1.9.4.min" ],
-				'angularjs' : [ 'simple-modeler/js/libs/angular/angular-1.0.2' ],
+				'jquery' : [ 'benchmark/js/libs/jquery/jquery-1.11.1.min' ],
+				'jquery-ui' : [ 'benchmark/js/libs/jquery/plugins/jquery-ui-1.10.2.custom.min' ],
+				'jquery.dataTables' : [ "benchmark/js/libs/jquery/plugins/jquery.dataTables-1.9.4.min" ],
+				'angularjs' : [ 'benchmark/js/libs/angular/angular-1.0.2' ],
 				moments : [ 'business-calendar/js/libs/moments/moments-with-langs.min' ],
 				fullcalendar : [ 'business-calendar/js/libs/fullcalendar/fullcalendar' ],
 			},

@@ -3,10 +3,8 @@
  ******************************************************************************/
 
 define(
-		[ "simple-modeler/js/Utils",
-				"simple-modeler/js/SimpleModelDefinitionService",
-				"benchmark/js/BenchmarkService" ],
-		function(Utils, ChecklistDefinitionService, BenchmarkService) {
+		[ "benchmark/js/Utils", "benchmark/js/BenchmarkService" ],
+		function(Utils, BenchmarkService) {
 			return {
 				create : function() {
 					var controller = new GanttChartViewController();

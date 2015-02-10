@@ -7,12 +7,12 @@
 	rel='stylesheet' type='text/css'>
 <title>Gantt Chart View</title>
 <link
-	href="../../simple-modeler/css/font-awesome-4.1.0/css/font-awesome.css"
+	href="../css/font-awesome-4.1.0/css/font-awesome.css"
 	rel="stylesheet">
 <link
-	href="../../simple-modeler/css/thirdparty/jquery/jquery-ui-1.10.2.custom.css"
+	href="../css/thirdparty/jquery/jquery-ui-1.10.2.custom.css"
 	rel="stylesheet" type="text/css" />
-<link href="../../simple-modeler/css/stardust-modern.css"
+<link href="../css/stardust-modern.css"
 	rel="stylesheet" type="text/css"></link>
 <style>
 #statusTable {
@@ -198,14 +198,14 @@ width
 			.config({
 				baseUrl : "../../",
 				paths : {
-					'jquery' : [ 'simple-modeler/js/libs/jquery/jquery-1.11.1.min' ],
-					'jquery-ui' : [ 'simple-modeler/js/libs/jquery/plugins/jquery-ui-1.10.2.custom.min' ],
-					'json' : [ 'simple-modeler/js/libs/json/json2' ],
-					'angularjs' : [ 'simple-modeler/js/libs/angular/angular-1.0.2' ],
+					'jquery' : [ 'benchmark/js/libs/jquery/jquery-1.11.1.min' ],
+					'jquery-ui' : [ 'benchmark/js/libs/jquery/plugins/jquery-ui-1.10.2.custom.min' ],
+					'json' : [ 'benchmark/js/libs/json/json2' ],
+					'angularjs' : [ 'benchmark/js/libs/angular/angular-1.0.2' ],
 					'jquery.base64' : [
-							'simple-modeler/js/libs/jquery/plugins/jquery.base64',
+							'benchmark/js/libs/jquery/plugins/jquery.base64',
 							'' ],
-					'jstree' : [ 'simple-modeler/js/libs/jstree/jstree.min' ],
+					'jstree' : [ 'benchmark/js/libs/jstree/jstree.min' ],
 					moments : [ 'business-calendar/js/libs/moments/moments-with-langs.min' ],
 					fullcalendar : [ 'business-calendar/js/libs/fullcalendar/fullcalendar' ],
 
@@ -227,8 +227,8 @@ width
 			});
 
 	require([ "require", "jquery", "jquery-ui", "json", "angularjs", "moments",
-			"fullcalendar", "simple-modeler/js/Utils",
-			"simple-modeler/js/AngularDirectives",
+			"fullcalendar", "benchmark/js/Utils",
+			"benchmark/js/AngularDirectives",
 			"benchmark/js/GanttChartViewController" ], function(require,
 			jquery, jqueryUi, json, angularjs, moments, fullcalendar, Utils,
 			AngularDirectives, GanttChartViewController) {

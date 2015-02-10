@@ -4,7 +4,7 @@
 
 define(
 		[
-				"simple-modeler/js/Utils",
+				"benchmark/js/Utils",
 				"benchmark/js/BenchmarkService",
 				"business-object-management/js/BusinessObjectManagementService",
 				"business-object-management/js/BusinessObjectManagementPanelController",
