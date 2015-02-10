@@ -115,7 +115,6 @@ list-style: none;
 
  .auxillary-gear{
   font-size: 18px;
-
  }
 
 /* ********** Priority and criticality Filter ********** */
@@ -173,6 +172,15 @@ list-style: none;
 .priority-criticality-filter-container{
   width: 200px
 }
+/* ********** Worklist tooltip ********** */
+.worklist-tooltip-label{
+	font-weight: bold;
+}
+.worklist-tooltip{
+	background-color: #FFEDF0;
+}
+
+
 
 .sd-abort-popover-box {
 	background-color: #EAEAEA;	

@@ -24,22 +24,36 @@
       var MAX_TITLE_LENGTH = 35;
       return {
          restrict : 'A',
-         templateUrl : 'plugins/html5-process-portal/scripts/directives/partials/CriticalityFilter.html',
+         template : "<div class=\"priority-criticality-filter-container\"> "
+                  + "<label ng-bind=\"criticalityCtrl.i18n('views-common-messages.views-activityTable-criticalityFilter-autoComplete-title')\"><\/label> "
+                  + "<div sd-auto-complete  "
+                  + "sda-item-pre-class=\"criticalityCtrl.tagPreMapper(item,index)\"  "
+                  + "sda-tag-pre-class=\"criticalityCtrl.tagPreMapper(item,index)\"  "
+                  + "sda-matches=\"criticalityCtrl.data\"  "
+                  + "sda-match-str=\"criticalityCtrl.matchVal\"  "
+                  + "sda-change=\"criticalityCtrl.getCriticalities(criticalityCtrl.matchVal)\"  "
+                  + "sda-text-property=\"label\" "
+                  + "sda-container-class=\"priority-criticality-filter-ac-container\" "
+                  + "sda-item-hot-class=\"sd-ac-item-isActive\" "
+                  + "sda-selected-matches=\"criticalityCtrl.like\"><\/div><\/div> ",
          controller : [ '$scope', 'sdCriticalityService', CriticalityFilterController ],
          link : function(scope, element, attr, ctrl)
          {
+
             /*
              */
             scope.handlers.applyFilter = function()
             {
-               if (scope.filterData.criticalityLike.length < 1)
-               {
-                  return false;
-               }
+               scope.filterData.rangeLike = [];
                var displayText = [];
-               angular.forEach(scope.filterData.criticalityLike, function(value)
+               angular.forEach(ctrl.like, function(value)
                {
                   displayText.push(value.label);
+                  scope.filterData.rangeLike.push({
+                     'from' : value.rangeFrom,
+                     'to' : value.rangeTo,
+                     'label' : value.label
+                  });
                })
                var title = displayText.join(',');
                if (title.length > MAX_TITLE_LENGTH) 
@@ -66,12 +80,21 @@
 
       this.loadAvailableCriticalities = function()
       {
-         sdCriticalityService.getAllCriticalities().then(function(criticalities)
+         sdCriticalityService.getAllCriticalities().then(
+                  function(criticalities)
          {
             self.availableCriticalities = criticalities;
-         });
-      }
 
+                     var criticalityValues = [];
+
+                     angular.forEach($scope.filterData.rangeLike, function(criticality)
+                     {
+                        criticalityValues.push(criticality.label)
+         });
+                     self.like = self.getCriticalityByValue(self.availableCriticalities,
+                              criticalityValues);
+                  });
+      }
       this.loadAvailableCriticalities();
       $scope.criticalityCtrl = this;
    };
@@ -82,10 +105,11 @@
    CriticalityFilterController.prototype.intialize = function($scope)
    {
 
-      $scope.filterData.criticalityLike = $scope.filterData.criticalityLike || [];
       this.data = [];
       this.availableCriticalities = [];
       this.matchVal = "";
+      this.like = this.like || [];
+      $scope.filterData.rangeLike = $scope.filterData.rangeLike || [];
       $scope.criticalityCtrl = this;
    };
    /*
@@ -114,6 +138,23 @@
       });
 
       this.data = results;
+   };
+
+   /**
+    * 
+    */
+   CriticalityFilterController.prototype.getCriticalityByValue = function(
+            allCriticalities, criticalityValues)
+   {
+      var criticalityObjs = [];
+      angular.forEach(allCriticalities, function(criticality)
+      {
+         if (criticalityValues.indexOf(criticality.label) > -1)
+         {
+            criticalityObjs.push(criticality);
+         }
+      });
+      return criticalityObjs;
    };
 
 })();

@@ -1,12 +1,12 @@
-/*******************************************************************************
- * Copyright (c) 2011 SunGard CSA LLC and others. All rights reserved. This
- * program and the accompanying materials are made available under the terms of
- * the Eclipse Public License v1.0 which accompanies this distribution, and is
- * available at http://www.eclipse.org/legal/epl-v10.html
- *
+/*****************************************************************************************
+ * Copyright (c) 2011 SunGard CSA LLC and others. All rights reserved. This program and
+ * the accompanying materials are made available under the terms of the Eclipse Public
+ * License v1.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
- ******************************************************************************/
+ ****************************************************************************************/
 
 /*
  * @author Johnson.Quadras
@@ -17,13 +17,21 @@
 	angular.module('bpm-common').directive('sdAbortActivityDialog',['sdAbortActivityService','ngDialog',AbortActivity]);
 
 	/**
-	*
-	*/
+    * 
+    */
 	function AbortActivity(sdAbortActivityService){
 
 		return {
 			restrict: 'A',
-			templateUrl: 'plugins/html5-process-portal/scripts/directives/partials/AbortActivity.html',
+			template: " <div  sd-dialog  "+
+			"sd-show-overlay=\"true\" "+
+			"sd-show-dialog=\"showDialog\" "+
+			"sd-dialog-type=\"confirm\"  "+
+			"sd-title=\"{{abortActivityCtrl.i18n('views-common-messages.views-common-activity-abortActivity-label')}}\" "+
+			"sd-dialog-scope=\"this\" "+
+			"sd-on-open=\"abortActivityCtrl.onConfirm(res)\" "+
+			"sd-template=\"plugins\/html5-process-portal\/scripts\/directives\/partials\/abortActivityDialogBody.html\"> "+
+			"<\/div>  ",
 			scope :{
 				activitiesToAbort : '=sdaActivitiesToAbort',
 				showDialog : '=sdaShowDialog',
@@ -34,8 +42,8 @@
 	}
 
 	/**
-	*
-	*/
+    * 
+    */
 	var AbortActivityController = function($scope, sdAbortActivityService,ngDialog){
 
 		var self = this;
@@ -60,13 +68,13 @@
 		}
 
 		/**
-		*
-		*/
+       * 
+       */
 		AbortActivityController.prototype.showNotification = function (){
 
 			var options = {
 				template: 'plugins/html5-common/scripts/directives/dialogs/templates/info.html',
-				userTemplate : 'plugins/html5-process-portal/scripts/directives/partials/AbortActivityNotification.html',
+				userTemplate : 'plugins/html5-process-portal/scripts/directives/partials/abortActivityNotification.html',
 				controller: this,
 				scope: $scope ,
 				showOverlay:  true,
@@ -76,16 +84,12 @@
 			ngDialog.openConfirm(options);
 		}
 
-
-
-
 		$scope.abortActivityCtrl = this;
-
 	}
 
 	/**
-	*
-	*/
+    * 
+    */
 	AbortActivityController.prototype.intialize = function ($scope, sdAbortActivityService, ngDialog){
 
 		this.i18n = $scope.$parent.i18n;
@@ -106,8 +110,8 @@
 
 
 	/**
-	*
-	*/
+    * 
+    */
 	AbortActivityController.prototype.abortActivities = function (){
 		this.getActvities();
 		return this.sdAbortActivityService.abortActivities(this.abortActivity);
@@ -115,8 +119,8 @@
 
 
 	/**
-	*
-	*/
+    * 
+    */
 	AbortActivityController.prototype.resetValues = function (){
 		this.abortActivity.scope ='activity';
 		this.notification.result = {};
@@ -125,8 +129,8 @@
 	}
 
 	/**
-	*
-	*/
+    * 
+    */
 	AbortActivityController.prototype.onConfirm = function (res){
 
 		var self = this;
@@ -138,13 +142,13 @@
 
 			self.abortActivities()
 				.then(function(data){
-						//success
+						// success
 						self.showNotification();
 						self.abortCompleted();
 						self.notification.result = data;
 
 					},function(data){
-						//Failure
+						// Failure
 						self.notification.result = {};
 						self.notification.error= true;
 						self.showNotification();

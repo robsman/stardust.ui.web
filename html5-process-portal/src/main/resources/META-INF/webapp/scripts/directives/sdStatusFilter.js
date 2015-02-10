@@ -1,13 +1,12 @@
-/*******************************************************************************
- * Copyright (c) 2014 SunGard CSA LLC and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
+/*****************************************************************************************
+ * Copyright (c) 2014 SunGard CSA LLC and others. All rights reserved. This program and
+ * the accompanying materials are made available under the terms of the Eclipse Public
+ * License v1.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributors:
- *    Anoop.Nair (SunGard CSA LLC) - initial API and implementation and/or initial documentation
- *******************************************************************************/
+ * 
+ * Contributors: Anoop.Nair (SunGard CSA LLC) - initial API and implementation and/or
+ * initial documentation
+ ****************************************************************************************/
 (function()
 {
    'use strict';
@@ -22,17 +21,14 @@
    {
       return {
          restrict : 'A',
-         templateUrl : 'plugins/html5-process-portal/scripts/directives/partials/StatusFilter.html',
+         template : '<select class="iceSelMnyMnu " name="statuses" ng-model="filterData.like" multiple '
+                  + 'ng-options="status.value as status.label for status in statusFilterCtrl.statuses | orderBy:\'label\'"><\/select>'
+                  + '<label ng-bind="statusFilterCtrl.i18n(\'portal-common-messages.common-filterPopup-pickListFilter-pickMany-list-message\')"><\/label>',
          controller : [ '$scope', 'sdStatusService', StatusFilterController ],
          link : function(scope, element, attr, ctrl)
          {
             scope.handlers.applyFilter = function()
             {
-
-               if (scope.filterData.like.length < 1)
-               {
-                  return false;
-               }
                scope.setFilterTitle(ctrl.getDisplayText(scope.filterData.like));
                return true;
             };
@@ -55,11 +51,8 @@
    {
 
       var self = this;
-
       this.intiliaze($scope, sdStatusService);
-
       $scope.statusFilterCtrl = this;
-
    }
 
    StatusFilterController.prototype.intiliaze = function($scope, sdStatusService)

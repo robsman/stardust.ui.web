@@ -34,9 +34,12 @@ public class WorklistFilterDTO {
 
    public EqualsDTO status;
 
-   public PriorityLikeDTO priority;
+   public EqualsDTO priority;
 
-   public CriticalityLikeDTO criticality;
+   public RangesDTO criticality;
+
+   public Map<String, DescriptorFilterDTO> descriptorFilterMap;
+
 
    public static class ProcessActivityDTO {
       public List<String> processes;
@@ -48,6 +51,9 @@ public class WorklistFilterDTO {
       public Long to;
    }
 
+   public static class RangesDTO {
+      public List<RangeDTO> rangeLike;
+   }
    public static class EqualsDTO {
       public List<String> like;
    }
@@ -64,6 +70,18 @@ public class WorklistFilterDTO {
       public String textSearch;
    }
 
+   public static class DescriptorFilterDTO{
+      public String type;
+      public Object value;
+      public DescriptorFilterDTO(String type, Object value)
+      {
+         super();
+         this.type = type;
+         this.value = value;
+      }
+
+   }
+
    /**
     * Tokens for converting custom object in JSON array to DTO
     * 
@@ -71,10 +89,8 @@ public class WorklistFilterDTO {
     */
    public static Map<String, Type> getCustomTokens() {
       Map<String, Type> customTokens = new HashMap<String, Type>();
-      customTokens.put("priorityLike", new TypeToken<List<PrioirtyDTO>>() {
-      }.getType());
-      customTokens.put("criticalityLike",
-            new TypeToken<List<CriticalityDTO>>() {
+      customTokens.put("rangeLike",
+            new TypeToken<List<RangeDTO>>() {
       }.getType());
       return customTokens;
    }

@@ -18,7 +18,7 @@
    angular.module('bpm-common').directive('sdActivityCriticality', ActivityCriticality);
 
    /*
-    *
+    * 
     */
 
    function ActivityCriticality()
@@ -26,7 +26,22 @@
 
       return {
          restrict : 'A',
-         templateUrl : 'plugins/html5-process-portal/scripts/directives/partials/ActivityCriticality.html',
+         template : "<span data-ng-repeat=\"t in criticalityCtrl.getTimes(rowData.criticality.count) track by $index\" "
+                  + "ng-mouseenter=\"criticalityCtrl.toolTip.show = true\" "
+                  + "ng-mouseleave=\"criticalityCtrl.toolTip.show = false\"> "
+                  + "<i ng-show=\"rowData.criticality.color != 'WHITE' && rowData.criticality.color!='WHITE_WARNING'\" "
+                  + "class=\"fa fa-flag criticality-flag\" "
+                  + "ng-class=\"'criticality-flag-'+rowData.criticality.color\"><\/i>  "
+                  + "<i ng-show=\"rowData.criticality.color == 'WHITE'\" "
+                  + "class=\"fa fa-flag-o criticality-flag criticality-flag-WHITE\"><\/i>  "
+                  + "<i ng-show=\"rowData.criticality.color == 'WHITE_WARNING'\" "
+                  + "class=\"fa criticality-flag criticality-flag-WHITE-WARNING  fa-exclamation-triangle\"><\/i><\/span> "
+                  + "<div class=\"popup-dlg worklist-tooltip\" style=\"color: black\" "
+                  + "ng-show=\"criticalityCtrl.toolTip.show\"> "
+                  + "<span class=\"worklist-tooltip-label\" ng-bind=\"criticalityCtrl.i18n('views-common-messages.processHistory-activityTable-criticalityTooltip-criticality')\"><\/span> "
+                  + ": <span ng-bind=\"rowData.criticality.label\"><\/span><br> <span class=\"worklist-tooltip-label\""
+                  + "ng-bind=\"criticalityCtrl.i18n('views-common-messages.processHistory-activityTable-criticalityTooltip-value')\"><\/span> "
+                  + ": <span ng-bind=\"rowData.criticality.value\"><\/div> ",
          controller : CriticalityController
       };
 

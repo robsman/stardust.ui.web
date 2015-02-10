@@ -272,7 +272,8 @@
 						field: "descriptors['" + descriptor.id + "'].value",
 						title: descriptor.title,
 						dataType: descriptor.type,
-						sortable: descriptor.sortable
+						sortable: descriptor.sortable,
+						filterable : descriptor.filterable
 					});
 				});
 				

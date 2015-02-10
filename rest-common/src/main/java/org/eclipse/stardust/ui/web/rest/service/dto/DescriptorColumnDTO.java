@@ -31,4 +31,18 @@ public class DescriptorColumnDTO extends AbstractDTO
 
    @DTOAttribute("sortable")
    public Boolean sortable;
+
+   public Boolean filterable;
+
+   public DescriptorColumnDTO(String id, String title, String type, Boolean sortable,
+         Boolean filterable)
+   {
+      super();
+      this.id = id;
+      this.title = title;
+      this.type = type;
+      this.sortable = sortable;
+      this.filterable = filterable;
+   }
+
 }

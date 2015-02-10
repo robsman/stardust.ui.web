@@ -10,43 +10,36 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service.utils;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Component;
+
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
+import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.Participant;
 import org.eclipse.stardust.engine.api.model.ParticipantInfo;
-import org.eclipse.stardust.engine.api.query.ActivityFilter;
-import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
-import org.eclipse.stardust.engine.api.query.ActivityInstances;
-import org.eclipse.stardust.engine.api.query.ActivityStateFilter;
-import org.eclipse.stardust.engine.api.query.DescriptorPolicy;
-import org.eclipse.stardust.engine.api.query.FilterAndNotTerm;
-import org.eclipse.stardust.engine.api.query.FilterAndTerm;
-import org.eclipse.stardust.engine.api.query.FilterOrTerm;
-import org.eclipse.stardust.engine.api.query.HistoricalStatesPolicy;
-import org.eclipse.stardust.engine.api.query.PerformingParticipantFilter;
-import org.eclipse.stardust.engine.api.query.PerformingUserFilter;
-import org.eclipse.stardust.engine.api.query.ProcessDefinitionFilter;
-import org.eclipse.stardust.engine.api.query.Query;
-import org.eclipse.stardust.engine.api.query.QueryResult;
-import org.eclipse.stardust.engine.api.query.SubsetPolicy;
-import org.eclipse.stardust.engine.api.query.Worklist;
-import org.eclipse.stardust.engine.api.query.WorklistQuery;
+import org.eclipse.stardust.engine.api.query.*;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
 import org.eclipse.stardust.engine.api.runtime.Grant;
 import org.eclipse.stardust.engine.api.runtime.User;
+import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
 import org.eclipse.stardust.ui.web.rest.Options;
-import org.eclipse.stardust.ui.web.rest.service.dto.CriticalityDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.WorklistFilterDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.PrioirtyDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.WorklistFilterDTO.DescriptorFilterDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.WorklistFilterDTO.RangeDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.WorklistFilterDTO.TextSearchDTO;
+import org.eclipse.stardust.ui.web.viewscommon.common.DateRange;
+import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils;
+import org.eclipse.stardust.ui.web.viewscommon.descriptors.GenericDescriptorFilterModel;
+import org.eclipse.stardust.ui.web.viewscommon.descriptors.NumberRange;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
-import org.springframework.stereotype.Component;
 
 /**
  * @author Subodh.Godbole
@@ -65,7 +58,9 @@ public class WorklistUtils
    private ServiceFactoryUtils serviceFactoryUtils;
 
    @Resource
-   private CriticalityUtils criticalityUtils;
+   private ProcessDefinitionUtils processDefUtils;
+   
+   private double PORTAL_CRITICALITY_MUL_FACTOR = 1000;
    /**
     * @param participantQId
     * @return
@@ -184,44 +179,114 @@ public class WorklistUtils
 		// Priority Filter
 		if (null != filterDTO.priority) {
 	      FilterOrTerm or = filter.addOrTerm();
-			for (PrioirtyDTO priority : filterDTO.priority.priorityLike) {
+			for (String priority : filterDTO.priority.like) {
 				or.or((worklistQuery ? WorklistQuery.PROCESS_INSTANCE_PRIORITY
 						: ActivityInstanceQuery.PROCESS_INSTANCE_PRIORITY)
-						.isEqual(Integer.valueOf(priority.value)));
+						.isEqual(Integer.valueOf(priority)));
 			}
 		}
+		
 
 		// Criticality Filter
 		if (null != filterDTO.criticality) {
          FilterOrTerm or = filter.addOrTerm();
-			for (CriticalityDTO criticality : filterDTO.criticality.criticalityLike) {
+			for (RangeDTO criticality : filterDTO.criticality.rangeLike) {
 					or.or((worklistQuery ? WorklistQuery.ACTIVITY_INSTANCE_CRITICALITY
 							: ActivityInstanceQuery.CRITICALITY).between(
-							criticality.rangeFrom, criticality.rangeTo));
+							(criticality.from /PORTAL_CRITICALITY_MUL_FACTOR),criticality.to/PORTAL_CRITICALITY_MUL_FACTOR));
 			}
 
 		}
+		
 
 		// Activities Filter
 		if (null != filterDTO.overview) {
-         FilterOrTerm or = filter.addOrTerm();
-			if (!CollectionUtils.isEmpty(filterDTO.overview.activities)) {
-				for (String activity : filterDTO.overview.activities) {
-					if (!StringUtils.equals("-1", activity))
-						or.add(ActivityFilter.forAnyProcess(activity));
-				}
-			}
+		
+		   if (!CollectionUtils.isEmpty(filterDTO.overview.activities)) {
+		      FilterOrTerm or = filter.addOrTerm();
+		      if(filterDTO.overview.activities.contains("-1")) {
+		      }else{
+		         for (String activity : filterDTO.overview.activities) {
+		            
+		            or.add(ActivityFilter.forAnyProcess(activity));
+		         }
+		      }
+		   }
+		   
+		   if (!CollectionUtils.isEmpty(filterDTO.overview.processes)) {
+		      FilterOrTerm or = filter.addOrTerm();
+		      if( !filterDTO.overview.processes.contains("-1")){
+	            for (String processQId : filterDTO.overview.processes) {
+	               
+	               or.add(new ProcessDefinitionFilter(processQId, false));
+	            }
+	         }
+         }
 		}
 
 		// Process Filter
 		if (null != filterDTO.processDefinition) {
-			for (String processQId : filterDTO.processDefinition.processes) {
-	         FilterOrTerm or = filter.addOrTerm();
-				if (!StringUtils.equals("-1", processQId))
-					or.add(new ProcessDefinitionFilter(processQId, false));
-			}
+		   FilterOrTerm or = filter.addOrTerm();
+		   if( !filterDTO.processDefinition.processes.contains("-1")){
+		      for (String processQId : filterDTO.processDefinition.processes) {
+		         
+		         or.add(new ProcessDefinitionFilter(processQId, false));
+		      }
+		   }
 		}
+		
+		addDescriptorFilters(query, filterDTO);
 
+	}
+	
+	
+	private void addDescriptorFilters(Query query , WorklistFilterDTO worklistDTO){
+	   
+	   Map<String, DescriptorFilterDTO> descFilterMap = worklistDTO.descriptorFilterMap;
+	   
+	   if( null != descFilterMap){
+	      query.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
+	      Map<String, DataPath> descriptors = processDefUtils.getAllDescriptors(true);
+	      GenericDescriptorFilterModel filterModel = GenericDescriptorFilterModel.create(descriptors.values());
+         filterModel.setFilterEnabled(true);
+         
+         
+         for (java.util.Map.Entry<String, DescriptorFilterDTO> descriptor : descFilterMap.entrySet())
+         {
+            Object value = null;
+            // Boolean type desc
+            if (descriptor.getValue().type.equals(ColumnDataType.BOOLEAN.toString()))
+            {
+               value = descriptor.getValue().value;
+            }
+            // String type desc
+            else  if (descriptor.getValue().type.equals(ColumnDataType.STRING.toString()))
+            {
+               value = ((TextSearchDTO)descriptor.getValue().value).textSearch;
+            }
+            // Number type desc
+            else  if (descriptor.getValue().type.equals(ColumnDataType.NUMBER.toString()))
+            {
+                  Number from =  ((RangeDTO)descriptor.getValue().value).from ;
+                  Number to =  ((RangeDTO)descriptor.getValue().value).to ;
+                  value = new NumberRange(from, to);
+            }
+            // Date type desc
+            else  if (descriptor.getValue().type.equals(ColumnDataType.DATE.toString()))
+            {  
+               Long from =  ((RangeDTO)descriptor.getValue().value).from ;
+               Long to =  ((RangeDTO)descriptor.getValue().value).to ;
+               value=  new DateRange(new Date(from), new Date(to));
+            }
+            
+            filterModel.setFilterValue(descriptor.getKey(),(Serializable) value);
+         }
+         
+         DescriptorFilterUtils.applyFilters(query, filterModel);
+	   }else{
+	      query.setPolicy(DescriptorPolicy.NO_DESCRIPTORS);
+	   }
+	  
 	}
 
 

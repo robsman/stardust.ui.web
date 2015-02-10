@@ -14,25 +14,29 @@ import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtil
 import static org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils.getAllAccessibleProcessDefinitionsfromAllVersions;
 import static org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils.isAuxiliaryProcess;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.annotation.Resource;
+
+import org.springframework.stereotype.Component;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.model.Activity;
 import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
-import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
+import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
 import org.eclipse.stardust.ui.web.rest.service.dto.ActivityDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DescriptorColumnDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessDefinitionDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
+import org.eclipse.stardust.ui.web.rest.service.utils.DescriptorColumnUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.ModelUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.ProcessDefinitionUtils;
-import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorColumnUtils;
+import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
-import org.springframework.stereotype.Component;
 /**
  * @author Anoop.Nair
  * @author Johnson.Quadras
@@ -47,6 +51,7 @@ public class ProcessDefinitionService
 	
 	@Resource
 	private ModelUtils modelUtils;
+	
 
 	/**
 	 * @return
@@ -68,10 +73,43 @@ public class ProcessDefinitionService
 	public List<DescriptorColumnDTO> getDescriptorColumns(Boolean onlyFilterable)
 	{
 		Map<String, DataPath> descriptors = processDefinitionUtils.getAllDescriptors(onlyFilterable);
-		List<ColumnPreference> descriptorCols = DescriptorColumnUtils.createDescriptorColumns(null, descriptors);
-
-		return DTOBuilder.buildList(descriptorCols, DescriptorColumnDTO.class);
+		List<DescriptorColumnDTO> descriptorCols = createDescriptorColumns( descriptors);
+		return descriptorCols;
 	}
+	
+	 
+	  /**
+	    * creates filterable columns on the provided table
+	    * @param table
+	    * @param allDescriptors
+	    * @return
+	    */
+	   private static List<DescriptorColumnDTO> createDescriptorColumns( Map<String, DataPath> allDescriptors)
+	   {
+	      
+	      List<DescriptorColumnDTO> descriptorColumns = new ArrayList<DescriptorColumnDTO>();
+	
+	      for (Entry<String, DataPath> descriptor : allDescriptors.entrySet())
+	      {
+	         String descriptorId = descriptor.getKey();
+	         DataPath dataPath = descriptor.getValue();
+	
+	         Class<?> mappedType = dataPath.getMappedType();
+	         
+	         ColumnDataType columnType = DescriptorColumnUtils.determineColumnType(mappedType);
+	         
+	         // double and float are not sortable
+	         boolean sortable = DescriptorFilterUtils.isDataSortable(dataPath);
+	         boolean filterable = DescriptorFilterUtils.isDataFilterable(dataPath);
+	         
+	         DescriptorColumnDTO descriptorColumn = new DescriptorColumnDTO("descriptorValues." +descriptorId,I18nUtils.getDataPathName(dataPath),columnType.toString(),sortable,filterable);
+	         descriptorColumns.add(descriptorColumn);
+	      }
+	      return descriptorColumns;
+	     
+	   }
+	   
+	  
 
 
 	/**

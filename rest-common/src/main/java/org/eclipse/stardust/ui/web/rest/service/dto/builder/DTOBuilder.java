@@ -33,6 +33,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOClass;
 
 /**
  * @author Subodh.Godbole
+ * @author Johnson.Quadras
  *
  */
 public class DTOBuilder
@@ -123,13 +124,35 @@ public class DTOBuilder
       return list;
    }
    
+  /**
+   * Builds a DTO from a JSON String
+   * @param jsonString
+   * @param toClass
+   * @param customTokens
+   * @return
+   * @throws Exception
+   */
    public static <DTO, T> DTO buildFromJSON(String jsonString, Class<DTO> toClass,
+         Map<String, Type> customTokens) throws Exception
+   {
+      JsonMarshaller jsonIo = new JsonMarshaller();
+      JsonObject json = jsonIo.readJsonObject(jsonString);
+      return buildFromJSON(json, toClass, customTokens);
+   }
+   /**
+    * Builds a DTO from a JSON
+    * @param json
+    * @param toClass
+    * @param customTokens
+    * @return
+    * @throws Exception
+    */
+   
+   public static <DTO, T> DTO buildFromJSON(JsonObject json, Class<DTO> toClass,
          Map<String, Type> customTokens) throws Exception
    {
       DTO toInstance = null;
       toInstance = toClass.newInstance();
-      JsonMarshaller jsonIo = new JsonMarshaller();
-      JsonObject json = jsonIo.readJsonObject(jsonString);
 
       for (Field field : toClass.getDeclaredFields())
       {
