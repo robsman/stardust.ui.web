@@ -18,24 +18,25 @@
    angular.module('bpm-common').directive('sdProcessPriority', ProcessPriority);
 
    /*
-    * 
+    *
     */
    function ProcessPriority()
    {
       return {
          restrict : 'A',
-         template : "<i class=\"fa fa-flag priority-flag\" "
-                  + "ng-class=\"'priority-flag-'+rowData.priority\" "
-                  + "ng-mouseenter=\"processPriorityCtrl.toolTip.show = true\" "
-                  + "ng-mouseleave=\"processPriorityCtrl.toolTip.show = false\"><\/i>"
-                  + "<div class=\"popup-dlg worklist-tooltip\" style=\"color: black\" ng-show=\"processPriorityCtrl.toolTip.show\">"
-                  + "<span class=\"worklist-tooltip-label\" ng-bind=\"processPriorityCtrl.i18n('views-common-messages.views-activityTable-priorityFilter-table-priorityColumn-name')\"><\/span> "
-                  + ": <span ng-bind=\"processPriorityCtrl.i18n('views-common-messages.common-priorities-'+rowData.priority)\"><\/span><\/div>",
+         template : "<i class=\"fa fa-flag priority-flag\" "+
+                      "ng-class=\"'priority-flag-'+rowData.priority\" "+
+                      "ng-mouseenter=\'processPriorityCtrl.toolTip.show = true\'"+
+                      " ng-mouseleave=\'processPriorityCtrl.toolTip.show = false\'><\/i>"+
+                      "<div class=\"popup-dlg worklist-tooltip\" style=\"color: black\" ng-show=\"processPriorityCtrl.toolTip.show\">"+
+                         "<span class=\"worklist-tooltip-label\" ng-bind=\"processPriorityCtrl.i18n('views-common-messages.views-activityTable-priorityFilter-table-priorityColumn-name')\"><\/span> "+
+                         ": <span ng-bind=\"processPriorityCtrl.i18n('views-common-messages.common-priorities-'+rowData.priority)\"><\/span>" +
+                       "<\/div>",
          controller : [ '$scope', ProcessPriorityController ]
       };
    }
    /**
-    * 
+    *
     */
    function ProcessPriorityController($scope, element)
    {

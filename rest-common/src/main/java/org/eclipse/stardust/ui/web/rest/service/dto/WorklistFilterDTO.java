@@ -57,6 +57,10 @@ public class WorklistFilterDTO {
    public static class EqualsDTO {
       public List<String> like;
    }
+   
+   public static class BooleanDTO {
+      public boolean equals;
+   }
 
    public static class PriorityLikeDTO {
       public List<PrioirtyDTO> priorityLike;

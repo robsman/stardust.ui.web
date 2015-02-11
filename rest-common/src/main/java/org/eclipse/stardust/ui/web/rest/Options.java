@@ -19,22 +19,25 @@ import org.eclipse.stardust.ui.web.rest.service.dto.WorklistFilterDTO;
 public class Options
 {
    public int pageSize;
-   public int skip;
+   public int skip ;
    public String orderBy;
-   public boolean asc;
+   public boolean asc = true;
    public WorklistFilterDTO filter;
-
+  
+   
+   public Options(){
+      
+   }
    /**
     * @param pageSize
     * @param skip
     */
-   public Options(int pageSize, int skip, String orderBy, boolean asc , WorklistFilterDTO filter)
+   public Options(int pageSize, int skip, String orderBy, boolean asc )
    {
       super();
       this.pageSize = pageSize;
       this.skip = skip;
       this.orderBy = orderBy;
       this.asc = asc;
-      this.filter = filter;
    }
 }

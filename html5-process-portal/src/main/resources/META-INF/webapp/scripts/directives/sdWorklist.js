@@ -340,6 +340,29 @@
 				});
 			}
 		};
+		
+		/**
+		 * 
+		 */
+		 WorklistCompiler.prototype.containsAllTrivialManualActivities = function() {
+	         var self = this;
+	         var selectedWorkItems = self.dataTable.getSelection();
+	         if(selectedWorkItems.length < 1){
+	            return false;
+	         }
+	         var activitiesData = [];
+	         angular.forEach(selectedWorkItems,function(workItem){
+	            var trivialActivityInfo = self.worklist.trivialManualActivities[workItem.oid];
+	            if(trivialActivityInfo){
+	               activitiesData.push(workItem.oid);
+	            }
+	         });
+	         
+	         if(selectedWorkItems.length == activitiesData.length){
+	            return true;
+	         }
+	         return false;
+	      };
 
 		/*
 		 * 

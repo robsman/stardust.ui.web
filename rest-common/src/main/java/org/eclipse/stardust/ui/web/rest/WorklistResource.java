@@ -38,7 +38,6 @@ import org.eclipse.stardust.ui.web.rest.service.dto.WorklistFilterDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.WorklistFilterDTO.DescriptorFilterDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 
-
 /**
  * @author Subodh.Godbole
  * @author Johnson.Quadras
@@ -52,21 +51,30 @@ public class WorklistResource
 
    @Autowired
    private WorklistService worklistService;
-   
+
    @Autowired
    ProcessDefinitionService processDefService;
 
-   @GET
+   @POST
    @Produces(MediaType.APPLICATION_JSON)
+   @Consumes(MediaType.APPLICATION_JSON)
    @Path("/participant/{participantQId}")
-   public Response getWorklistForParticipant(@PathParam("participantQId") String participantQId,
-         @QueryParam("skip") @DefaultValue("0") Integer skip, @QueryParam("pageSize") @DefaultValue("8") Integer pageSize, @QueryParam("filterBy") String filters,
-         @QueryParam("orderBy") @DefaultValue("oid") String orderBy, @QueryParam("orderByDir") @DefaultValue("asc") String orderByDir)
+   public Response getWorklistForParticipant1(
+         @PathParam("participantQId") String participantQId,
+         @QueryParam("skip") @DefaultValue("0") Integer skip,
+         @QueryParam("pageSize") @DefaultValue("8") Integer pageSize,
+         @QueryParam("filterBy") String filters,
+         @QueryParam("orderBy") @DefaultValue("oid") String orderBy,
+         @QueryParam("orderByDir") @DefaultValue("asc") String orderByDir, String postData)
    {
       try
       {
-         Options options = new Options(pageSize, skip, orderBy, "asc".equalsIgnoreCase(orderByDir),getFilters(filters));
-         QueryResultDTO resultDTO = getWorklistService().getWorklistForParticipant(participantQId, "default", options);
+         Options options = new Options(pageSize, skip, orderBy,
+               "asc".equalsIgnoreCase(orderByDir));
+         populatePostData(options, postData);
+
+         QueryResultDTO resultDTO = getWorklistService().getWorklistForParticipant(
+               participantQId, "default", options);
 
          return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
       }
@@ -74,32 +82,38 @@ public class WorklistResource
       {
          return Response.status(Status.NOT_FOUND).build();
       }
-      catch (Exception e)   
+      catch (Exception e)
       {
          trace.error("", e);
          return Response.status(Status.INTERNAL_SERVER_ERROR).build();
       }
    }
 
-   @GET
+   @POST
    @Produces(MediaType.APPLICATION_JSON)
+   @Consumes(MediaType.APPLICATION_JSON)
    @Path("/user/{userId}")
    public Response getWorklistForUser(@PathParam("userId") String userId,
-         @QueryParam("skip") @DefaultValue("0") Integer skip, @QueryParam("pageSize") @DefaultValue("8") Integer pageSize, @QueryParam("filterBy") String filters,
-         @QueryParam("orderBy") @DefaultValue("oid") String orderBy, @QueryParam("orderByDir") @DefaultValue("asc") String orderByDir)
+         @QueryParam("skip") @DefaultValue("0") Integer skip,
+         @QueryParam("pageSize") @DefaultValue("8") Integer pageSize,
+         @QueryParam("filterBy") String filters,
+         @QueryParam("orderBy") @DefaultValue("oid") String orderBy,
+         @QueryParam("orderByDir") @DefaultValue("asc") String orderByDir, String postData)
    {
       try
       {
-         Options options = new Options(pageSize, skip, orderBy, "asc".equalsIgnoreCase(orderByDir) , getFilters(filters));
-         QueryResultDTO resultDTO = getWorklistService().getWorklistForUser(userId, "default", options);
-
+         Options options = new Options(pageSize, skip, orderBy,
+               "asc".equalsIgnoreCase(orderByDir));
+         populatePostData(options, postData);
+         QueryResultDTO resultDTO = getWorklistService().getWorklistForUser(userId,
+               "default", options);
          return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
       }
       catch (ObjectNotFoundException onfe)
       {
          return Response.status(Status.NOT_FOUND).build();
       }
-      catch (Exception e)   
+      catch (Exception e)
       {
          trace.error("", e);
          return Response.status(Status.INTERNAL_SERVER_ERROR).build();
@@ -116,25 +130,45 @@ public class WorklistResource
       this.worklistService = worklistService;
    }
 
-   private WorklistFilterDTO getFilters(String jsonFilterString){
+   private WorklistFilterDTO getFilters(String jsonFilterString)
+   {
       WorklistFilterDTO worklistFilter = null;
-      if(StringUtils.isNotEmpty(jsonFilterString)){
-         try {
+      if (StringUtils.isNotEmpty(jsonFilterString))
+      {
+         try
+         {
             JsonMarshaller jsonIo = new JsonMarshaller();
             JsonObject json = jsonIo.readJsonObject(jsonFilterString);
-            worklistFilter =  DTOBuilder.buildFromJSON(json, WorklistFilterDTO.class,WorklistFilterDTO.getCustomTokens());
-            if(StringUtils.contains(jsonFilterString, "descriptorValues")){
-               populateDescriptorFilters(worklistFilter , json);
+            worklistFilter = DTOBuilder.buildFromJSON(json, WorklistFilterDTO.class,
+                  WorklistFilterDTO.getCustomTokens());
+            if (StringUtils.contains(jsonFilterString, "descriptorValues"))
+            {
+               populateDescriptorFilters(worklistFilter, json);
             }
-         } catch (Exception e) {
+         }
+         catch (Exception e)
+         {
             trace.error("Error in Deserializing filter JSON", e);
          }
       }
-    
+
       return worklistFilter;
    }
-   
-   
+
+   private Options populatePostData(Options options, String postData)
+   {
+      JsonMarshaller jsonIo = new JsonMarshaller();
+      JsonObject postJSON = jsonIo.readJsonObject(postData);
+
+      // For filter
+      JsonObject filters = postJSON.getAsJsonObject("filters");
+      if (null != filters)
+      {
+         options.filter = getFilters(filters.toString());
+      }
+      return options;
+   }
+
    private void populateDescriptorFilters(WorklistFilterDTO worklistFilter,
          JsonObject descriptorColumnsFilterJson)
    {
@@ -142,32 +176,41 @@ public class WorklistResource
       List<DescriptorColumnDTO> descriptorColumns = processDefService
             .getDescriptorColumns(true);
       Map<String, DescriptorFilterDTO> descriptorColumnMap = new HashMap<String, DescriptorFilterDTO>();
-      
+
       for (DescriptorColumnDTO descriptorColumnDTO : descriptorColumns)
       {
          Object filterDTO = null;
          if (null != descriptorColumnsFilterJson.get(descriptorColumnDTO.id))
          {
-            //String TYPE
+            // String TYPE
             if (ColumnDataType.STRING.toString().equals(descriptorColumnDTO.type))
             {
-               
-                filterDTO = new Gson().fromJson(
+
+               filterDTO = new Gson().fromJson(
                      descriptorColumnsFilterJson.get(descriptorColumnDTO.id),
                      WorklistFilterDTO.TextSearchDTO.class);
-               
-            }else if (ColumnDataType.DATE.toString().equals(descriptorColumnDTO.type) || ColumnDataType.NUMBER.toString().equals(descriptorColumnDTO.type))
+
+            }
+            else if (ColumnDataType.DATE.toString().equals(descriptorColumnDTO.type)
+                  || ColumnDataType.NUMBER.toString().equals(descriptorColumnDTO.type))
             {
-               
+
                filterDTO = new Gson().fromJson(
                      descriptorColumnsFilterJson.get(descriptorColumnDTO.id),
                      WorklistFilterDTO.RangeDTO.class);
             }
-            descriptorColumnMap.put(descriptorColumnDTO.id, new DescriptorFilterDTO(descriptorColumnDTO.type, filterDTO));
+            else if (ColumnDataType.BOOLEAN.toString().equals(descriptorColumnDTO.type))
+            {
+               filterDTO = new Gson().fromJson(
+                     descriptorColumnsFilterJson.get(descriptorColumnDTO.id),
+                     WorklistFilterDTO.BooleanDTO.class);
+            }
+            descriptorColumnMap.put(descriptorColumnDTO.id, new DescriptorFilterDTO(
+                  descriptorColumnDTO.type, filterDTO));
          }
       }
-      
+
       worklistFilter.descriptorFilterMap = descriptorColumnMap;
    }
-   
+
 }

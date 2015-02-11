@@ -24,22 +24,23 @@
       var MAX_TITLE_LENGTH = 35;
       return {
          restrict : 'A',
-         template : "<div class=\"priority-criticality-filter-container\"> "
-                  + "<label ng-bind=\"criticalityCtrl.i18n('views-common-messages.views-activityTable-criticalityFilter-autoComplete-title')\"><\/label> "
-                  + "<div sd-auto-complete  "
-                  + "sda-item-pre-class=\"criticalityCtrl.tagPreMapper(item,index)\"  "
-                  + "sda-tag-pre-class=\"criticalityCtrl.tagPreMapper(item,index)\"  "
-                  + "sda-matches=\"criticalityCtrl.data\"  "
-                  + "sda-match-str=\"criticalityCtrl.matchVal\"  "
-                  + "sda-change=\"criticalityCtrl.getCriticalities(criticalityCtrl.matchVal)\"  "
-                  + "sda-text-property=\"label\" "
-                  + "sda-container-class=\"priority-criticality-filter-ac-container\" "
-                  + "sda-item-hot-class=\"sd-ac-item-isActive\" "
-                  + "sda-selected-matches=\"criticalityCtrl.like\"><\/div><\/div> ",
+         template : "<div class=\"priority-criticality-filter-container\"> "+
+                         "<label ng-bind=\"criticalityCtrl.i18n('views-common-messages.views-activityTable-criticalityFilter-autoComplete-title')\"><\/label> "+
+                         "<div sd-auto-complete  "+
+                            "sda-item-pre-class=\"criticalityCtrl.tagPreMapper(item,index)\"  "+
+                            "sda-tag-pre-class=\"criticalityCtrl.tagPreMapper(item,index)\"  "+
+                            "sda-matches=\"criticalityCtrl.data\"  "+
+                            "sda-match-str=\"criticalityCtrl.matchVal\"  "+
+                            "sda-change=\"criticalityCtrl.getCriticalities(criticalityCtrl.matchVal)\"  "+
+                            "sda-text-property=\"label\" "+
+                            "sda-container-class=\"priority-criticality-filter-ac-container\" "+
+                            "sda-item-hot-class=\"sd-ac-item-isActive\" "+
+                            "sda-selected-matches=\"criticalityCtrl.like\">" +
+                         "<\/div>" +
+                   "<\/div> ",
          controller : [ '$scope', 'sdCriticalityService', CriticalityFilterController ],
          link : function(scope, element, attr, ctrl)
          {
-
             /*
              */
             scope.handlers.applyFilter = function()
