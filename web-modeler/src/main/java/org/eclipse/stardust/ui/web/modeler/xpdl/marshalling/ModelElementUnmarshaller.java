@@ -2202,6 +2202,22 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
             hostingConfig.remove(ModelerConstants.EVENT_CLASS_PROPERTY);
             hostingConfig.remove(ModelerConstants.THROWING_PROPERTY);
             hostingConfig.remove(ModelerConstants.INTERRUPTING_PROPERTY);
+
+
+            if (eventHandler != null) {
+               if (eventJson.has(ModelerConstants.SD_SET_DATA_ACTION))
+               {
+                  if (eventJson.get(ModelerConstants.SD_SET_DATA_ACTION).isJsonNull())
+                  {
+                     EventMarshallingUtils.removeSetDataAction(eventHandler);
+                  }
+                  else
+                  {
+                     EventMarshallingUtils.createSetDataAction(eventHandler, eventJson);
+                  }
+               }
+            }
+
          }
          else
          {
