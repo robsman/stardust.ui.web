@@ -14,7 +14,7 @@ define([ 'bpm-modeler/js/m_constants',
 		'bpm-modeler/js/m_modelElementCommentsPropertiesPage',
 		'bpm-modeler/js/m_activityProcessingPropertiesPage',
 		'bpm-modeler/js/m_activityControllingPropertiesPage',
-		'bpm-modeler/js/m_activityQualityControlPropertiesPage',
+		'bpm-modeler/js/QualityControlActivityPropertiesPage',
 		'bpm-modeler/js/m_activityDisplayPropertiesPage',
 		'bpm-modeler/js/m_onAssignmentPropertiesPage'],
 		function(m_constants, m_activityBasicPropertiesPage,
@@ -22,7 +22,7 @@ define([ 'bpm-modeler/js/m_constants',
 				m_modelElementCommentsPropertiesPage,
 				m_activityProcessingPropertiesPage,
 				m_activityControllingPropertiesPage,
-				m_activityQualityControlPropertiesPage,
+				QualityControlActivityPropertiesPage,
 				m_activityDisplayPropertiesPage,
 				m_onAssignmentPropertiesPage) {
 			return {
@@ -56,9 +56,10 @@ define([ 'bpm-modeler/js/m_constants',
 					visibility : "always"
 				}, {
 					panelId : "activityPropertiesPanel",
-					id : "qualityControlPropertiesPage",
-					provider : m_activityQualityControlPropertiesPage,
-					visibility : "preview"
+					id : "qualityControlActivityPropertiesPage",
+					pageHtmlUrl : "plugins/bpm-modeler/views/modeler/qualityControlActivityPropertiesPage.html",
+					provider : QualityControlActivityPropertiesPage,
+					visibility : "always"
 				}, {
 					panelId : "activityPropertiesPanel",
 					id : "displayPropertiesPage",

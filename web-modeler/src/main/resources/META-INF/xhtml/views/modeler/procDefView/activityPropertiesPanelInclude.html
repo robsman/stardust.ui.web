@@ -274,20 +274,6 @@
 					</tr>
 				</table>
 			</div>
-			<div id="qualityControlPropertiesPage"
-				class="propertiesPage">
-				<div class="heading">Quality Assurance</div>
-				<table>
-					<tr>
-						<td><label for="qualityControlProbabilityInput">Quality
-								Assurance Probability</label>
-						</td>
-						<td><input id="qualityControlProbabilityInput"
-							type="text" /></td>
-						<td>%</td>
-					</tr>
-				</table>
-			</div>
 			<div ng-repeat="ext in activityPropertiesPanel.extensions" id="{{ext.id}}" class="propertiesPage">
 				<sd-include src="ext.pageHtmlUrl"
 					onload="activityPropertiesPanelOnload(ext)" onfail="activityPropertiesPanelOnfail(ext)" />

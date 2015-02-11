@@ -30,7 +30,7 @@ define([ "require", "bpm-modeler/js/m_extensionManager", "bpm-modeler/js/m_logge
 		"bpm-modeler/js/m_processProcessAttachmentsPropertiesPage",
 		"bpm-modeler/js/m_activityBasicPropertiesPage", "bpm-modeler/js/m_activityProcessingPropertiesPage",
 		"bpm-modeler/js/m_activityControllingPropertiesPage",
-		"bpm-modeler/js/m_activityQualityControlPropertiesPage", "bpm-modeler/js/m_activityServiceParametersPropertiesPage", "bpm-modeler/js/m_eventBasicPropertiesPage",
+		"bpm-modeler/js/m_activityServiceParametersPropertiesPage", "bpm-modeler/js/m_eventBasicPropertiesPage",
 		"bpm-modeler/js/m_gatewayBasicPropertiesPage", "bpm-modeler/js/m_swimlaneBasicPropertiesPage",
 		"bpm-modeler/js/m_dataBasicPropertiesPage", , "bpm-modeler/js/m_annotationBasicPropertiesPage", "bpm-modeler/js/m_controlFlowBasicPropertiesPage",
 		"bpm-modeler/js/m_controlFlowTransactionPropertiesPage",
