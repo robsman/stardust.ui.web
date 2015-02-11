@@ -385,6 +385,16 @@ public class GenericModelingAssertions
       assertThat(self.getId(), is(target.getId()));
    }
 
+   public static AttributeType assertAttribute(IExtensibleElement element, String key,
+         String value)
+   {
+      AttributeType attribute = AttributeUtil.getAttribute(element, key);
+      assertThat(attribute, is(not(nullValue())));
+      assertThat(attribute.getValue(), is(not(nullValue())));
+      assertThat(attribute.getValue(), is(value));
+      return attribute;
+   }
+
 
 
 }

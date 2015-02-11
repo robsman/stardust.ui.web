@@ -1051,26 +1051,6 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       return dataMapping;
    }
 
-   private List<DataMappingType> getDataMappings(ActivityType activity,
-         DirectionType direction)
-   {
-      if (direction == null)
-      {
-         return activity.getDataMapping();
-      }
-      List<DataMappingType> dataMappings = new ArrayList<DataMappingType>();
-      for (Iterator<DataMappingType> i = activity.getDataMapping().iterator(); i
-            .hasNext();)
-      {
-         DataMappingType dataMapping = i.next();
-         if (dataMapping.getDirection().equals(direction))
-         {
-            dataMappings.add(dataMapping);
-         }
-      }
-      return dataMappings;
-   }
-
    private DataMappingType createOldStyleDataMapping(ActivityType activity, DataType data,
          JsonObject dataFlowJson, DirectionType direction, JsonObject dataMappingJson)
    {

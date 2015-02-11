@@ -1866,11 +1866,11 @@ public class ModelElementMarshaller implements ModelMarshaller
       {
          JsonObject setDataJson = new JsonObject();
 
-         setDataJson.addProperty(ModelerConstants.SD_SET_DATA_ACTION_DATA_ID, AttributeUtil
-               .getAttributeValue(setDataAction,
+         setDataJson.addProperty(ModelerConstants.SD_SET_DATA_ACTION_DATA_ID,
+               AttributeUtil.getAttributeValue(setDataAction,
                      PredefinedConstants.SET_DATA_ACTION_DATA_ID_ATT));
-         setDataJson.addProperty(ModelerConstants.SD_SET_DATA_ACTION_DATA_PATH, AttributeUtil
-               .getAttributeValue(setDataAction,
+         setDataJson.addProperty(ModelerConstants.SD_SET_DATA_ACTION_DATA_PATH,
+               AttributeUtil.getAttributeValue(setDataAction,
                      PredefinedConstants.SET_DATA_ACTION_DATA_PATH_ATT));
          eventJson.add(ModelerConstants.SD_SET_DATA_ACTION, setDataJson);
       }
@@ -4109,20 +4109,6 @@ public class ModelElementMarshaller implements ModelMarshaller
          jsonObj.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY, fullID);
       }
    }
-
-/*   private String createEnumTypeForPrimitive(String primitiveType, JsonObject jsonObj)
-   {
-      if (jsonObj.has(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY))
-      {
-         String dataType = jsonObj.get(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY).getAsString();
-         if (null != dataType)
-         {
-            String enumPrimitiveType = primitiveType + "-" + dataType;
-            return enumPrimitiveType;
-         }
-      }
-      return primitiveType;
-   }*/
 
    /**
     * @param name

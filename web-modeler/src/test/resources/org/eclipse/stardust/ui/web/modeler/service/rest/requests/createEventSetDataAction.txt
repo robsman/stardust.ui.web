@@ -1,3 +1,2 @@
 {"commandId":"modelElement.update","modelId":"ProviderModel","account":"motu","changeDescriptions":[{"oid":"34","changes":{"modelElement":{"setDataAction":{"dataId":"MyStruct","dataPath":"MyDataPath"}}}}]}
-{"commandId":"modelElement.update","modelId":"ProviderModel","account":"motu","changeDescriptions":[{"oid":"34","changes":{"modelElement":{"setDataAction":null}}}]}
 
