@@ -1197,6 +1197,11 @@ define(
                         valid = false;
                      }
                   }
+                  if(this.identifierInSubjectInput.prop("checked") && this.storeEmailInput.prop("checked")){
+                     this.view.errorMessages.push("You cannot Attach E-Mail to process when Include Unique Identifier is checked."); 
+                     this.storeEmailInput.addClass("error");
+                     valid = false;
+                  }
                   return valid;
                };
                this.sourceOptions = [ {
