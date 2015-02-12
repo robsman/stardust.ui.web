@@ -23,7 +23,7 @@ define(
 								newPropertiesPanel,
 								"qualityControlActivityPropertiesPage",
 								getI18NProperty("modeler.activity.propertyPages.qualityControl.title"),
-								"plugins/simple-modeler/css/images/eye.png");
+								"plugins/bpm-modeler/images/icons/quality-assurance.png");
 
 				m_utils.inheritFields(this, propertiesPage);
 				m_utils.inheritMethods(
