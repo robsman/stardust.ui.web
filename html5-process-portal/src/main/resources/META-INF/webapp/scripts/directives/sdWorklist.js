@@ -346,7 +346,14 @@
 		 */
 		 WorklistCompiler.prototype.containsAllTrivialManualActivities = function() {
 	         var self = this;
-	         var selectedWorkItems = self.dataTable.getSelection();
+	         var selectedWorkItems = [];
+
+	         var dataTable = self.dataTable;
+
+	         if(dataTable != null){
+	         	selectedWorkItems = dataTable.getSelection();
+	         }
+
 	         if(selectedWorkItems.length < 1){
 	            return false;
 	         }
@@ -450,7 +457,7 @@
 			
 			this.showAbortActivityDialog = true;
 		}
-	
+
 		/*
 		 *
 		 */

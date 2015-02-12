@@ -40,24 +40,30 @@ public class ActivityInstanceDTO extends AbstractDTO
 
    @DTOAttribute("processInstance")
    public ProcessInstanceDTO processInstance;
-   
+
    public CriticalityDTO criticality;
-   
+
    @DTOAttribute("processInstance.priority")
    public String priority;
-   
+
    public String duration;
-   
+
    public String lastPerformer;
-   
+
    public StatusDTO status;
-   
+
    public String assignedTo;
    
+   public boolean defaultCaseActivity;
+   
+   public boolean abortActivity;
+   
+   public boolean delegable;
+
    public Map<String, ProcessDescriptor> descriptors;
-   
+
    public void setPriority(Integer priority) {
-	this.priority = ProcessInstanceUtils.getPriorityValue(priority);
-}
-   
+      this.priority = ProcessInstanceUtils.getPriorityValue(priority);
+   }
+
 }

@@ -12,6 +12,8 @@ package org.eclipse.stardust.ui.web.rest.service;
 
 import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.getAssignedToLabel;
 import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.getLastPerformer;
+import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.isAbortable;
+import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.isDelegable;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -119,7 +121,13 @@ public class WorklistService
             CriticalityDTO criticalityDTO = DTOBuilder.build(criticalCategory, CriticalityDTO.class);
             criticalityDTO.value = criticalityValue;
             dto.criticality = criticalityDTO; 
-
+            
+            dto.defaultCaseActivity= ActivityInstanceUtils.isDefaultCaseActivity(ai);
+            if ( !dto.defaultCaseActivity )
+            {
+               dto.abortActivity = isAbortable(ai);
+               dto.delegable = isDelegable(ai);
+            }
 
             List<ProcessDescriptor> processDescriptorsList = CollectionUtils.newList();
 
