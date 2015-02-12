@@ -2,7 +2,7 @@
 	<div class="worklist-title tbl-title">{{worklistCtrl.title}}</div>
 	<div sda-toolbar>
 		<div class="tbl-toolbar-section">
-			<button sda-column="TRIVIAL_DATA" ng-disabled="!worklistCtrl.containsAllTrivialManualActivities()" ng-click="worklistCtrl.$completeAll()" title="{{i18n('html5-common.worklisttoolbar-complete-all')}}" class="button-link tbl-toolbar-item tbl-tool-link">
+			<button sda-column="TRIVIAL_DATA" ng-disabled="!worklistCtrl.containsAllTrivialManualActivities()" ng-click="worklistCtrl.$completeAll()" title="{{i18n('processportal.views-worklistPanel-tooltip-completeAll')}}" class="button-link tbl-toolbar-item tbl-tool-link">
 			   <i class="glyphicon glyphicon-share-alt"></i>
 			</button>
 			<button ng-disabled="worklistCtrl.dataTable.getSelection() < 1" href="#" ng-click="worklistCtrl.$openDelegateDialog();" title="{{i18n('processportal.toolbars-worklistView-tooltip-delegate')}}" class="button-link tbl-toolbar-item tbl-tool-link" >

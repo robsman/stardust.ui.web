@@ -130,6 +130,11 @@ public class WorklistResource
       this.worklistService = worklistService;
    }
 
+   /**
+    * Get the filters from the JSON string
+    * @param jsonFilterString
+    * @return
+    */
    private WorklistFilterDTO getFilters(String jsonFilterString)
    {
       WorklistFilterDTO worklistFilter = null;
@@ -154,7 +159,13 @@ public class WorklistResource
 
       return worklistFilter;
    }
-
+   
+   /**
+    * Populate the options with the post data.
+    * @param options
+    * @param postData
+    * @return
+    */
    private Options populatePostData(Options options, String postData)
    {
       JsonMarshaller jsonIo = new JsonMarshaller();
@@ -168,7 +179,12 @@ public class WorklistResource
       }
       return options;
    }
-
+   
+   /**
+    * Populates the descriptor filter values.
+    * @param worklistFilter
+    * @param descriptorColumnsFilterJson
+    */
    private void populateDescriptorFilters(WorklistFilterDTO worklistFilter,
          JsonObject descriptorColumnsFilterJson)
    {
@@ -185,7 +201,6 @@ public class WorklistResource
             // String TYPE
             if (ColumnDataType.STRING.toString().equals(descriptorColumnDTO.type))
             {
-
                filterDTO = new Gson().fromJson(
                      descriptorColumnsFilterJson.get(descriptorColumnDTO.id),
                      WorklistFilterDTO.TextSearchDTO.class);
@@ -194,7 +209,6 @@ public class WorklistResource
             else if (ColumnDataType.DATE.toString().equals(descriptorColumnDTO.type)
                   || ColumnDataType.NUMBER.toString().equals(descriptorColumnDTO.type))
             {
-
                filterDTO = new Gson().fromJson(
                      descriptorColumnsFilterJson.get(descriptorColumnDTO.id),
                      WorklistFilterDTO.RangeDTO.class);

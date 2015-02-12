@@ -32,7 +32,8 @@ import org.eclipse.stardust.engine.api.runtime.Grant;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
 import org.eclipse.stardust.ui.web.rest.Options;
-import org.eclipse.stardust.ui.web.rest.service.dto.WorklistFilterDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.*;
+import org.eclipse.stardust.ui.web.rest.service.dto.WorklistFilterDTO.BooleanDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.WorklistFilterDTO.DescriptorFilterDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.WorklistFilterDTO.RangeDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.WorklistFilterDTO.TextSearchDTO;
@@ -290,6 +291,11 @@ public class WorklistUtils
 
    }
 
+   /**
+    * Add filter on descriptor columns .
+    * @param query
+    * @param worklistDTO
+    */
    private void addDescriptorFilters(Query query, WorklistFilterDTO worklistDTO)
    {
 
@@ -313,7 +319,7 @@ public class WorklistUtils
             // Boolean type desc
             if (descriptor.getValue().type.equals(ColumnDataType.BOOLEAN.toString()))
             {
-               value = descriptor.getValue().value;
+               value = ((BooleanDTO)descriptor.getValue().value).equals;
             }
             // String type desc
             else if (descriptor.getValue().type.equals(ColumnDataType.STRING.toString()))
