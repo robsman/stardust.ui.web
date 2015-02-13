@@ -87,7 +87,8 @@ public class ExternalElementChangeTracker implements ChangePostprocessor
             if (symbols.size() == 0)
             {
                model.getData().remove(dataType);
-               change.markAlsoModified(dataType);
+               change.markAlsoModified(model);
+               change.markAlsoRemoved(dataType, true);
             }
          }
       }
@@ -147,6 +148,7 @@ public class ExternalElementChangeTracker implements ChangePostprocessor
                               && element instanceof DataType)
                         {
                            model.getData().remove(element);
+                           change.markAlsoRemoved(element);
                            modified = true;
                         }
                         else if (candidate instanceof DataType
