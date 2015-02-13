@@ -1,0 +1,37 @@
+<div class="confirmation-contents section">
+	<div ng-hide="abortActivityCtrl.notification.error">
+		<div
+			ng-show="abortActivityCtrl.notification.result.success.length > 0">
+			<div class="font-bold section abort-activity-notification-title"
+				ng-bind="abortActivityCtrl.i18n('views-common-messages.views-common-activity-abortActivity-success')"></div>
+			<ul class="abort-activity-notification-list">
+				<li
+					ng-repeat="activity in abortActivityCtrl.notification.result.success">
+					<span ng-bind="activity.name"> </span> <span
+					class="abort-activity-message" ng-bind="activity.message"> </span>
+				</li>
+			</ul>
+		</div>
+		<div
+			ng-show="abortActivityCtrl.notification.result.failure.length > 0">
+			<div class="font-bold section abort-activity-notification-title"
+				ng-bind="abortActivityCtrl.i18n('views-common-messages.views-common-activity-abortActivity-failure')"></div>
+			<ul class="abort-activity-notification-list">
+				<li
+					ng-repeat="activity in abortActivityCtrl.notification.result.failure">
+					<span ng-bind="activity.name"> </span> <span
+					class="abort-activity-message" ng-bind="activity.message"> </span>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<div ng-show="abortActivityCtrl.notification.error">
+		<span>An error occurred while aborting activities</span>
+	</div>
+</div>
+<div class="confirmation-buttonpane">
+	<div class="button-pane cf">
+		<div class="right">
+			<button class="button" ng-click="closeThisDialog()">Close</button>
+		</div>
+		<div></div>
