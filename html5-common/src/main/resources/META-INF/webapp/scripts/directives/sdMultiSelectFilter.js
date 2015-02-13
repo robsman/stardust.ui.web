@@ -11,20 +11,20 @@
 {
    'use strict';
 
-   angular.module('bpm-common').directive('sdStatusFilter',
-            [ 'sdStatusService', StatusFilter ]);
+   angular.module('bpm-common').directive('sdMultiSelectFilter',
+            [ '$parse', MultiSelectFilter ]);
 
    /*
     * 
     */
-   function StatusFilter()
+   function MultiSelectFilter()
    {
       return {
          restrict : 'A',
-         template : '<select class="iceSelMnyMnu " name="statuses" ng-model="filterData.like" multiple '
-                  + 'ng-options="status.value as status.label for status in statusFilterCtrl.statuses | orderBy:\'label\'"><\/select>'
-                  + '<label ng-bind="statusFilterCtrl.i18n(\'portal-common-messages.common-filterPopup-pickListFilter-pickMany-list-message\')"><\/label>',
-         controller : [ '$scope', 'sdStatusService', StatusFilterController ],
+         template : '<select style="height: 75px; min-width: 200px; max-width: 350px;" name="options" ng-model="filterData.like" multiple '
+                  + 'ng-options="option.value as option.label for option in filterCtrl.options | orderBy:\'label\'"><\/select>'
+                  + '<label ng-bind="i18n(\'portal-common-messages.common-filterPopup-pickListFilter-pickMany-list-message\')"><\/label>',
+         controller : [ '$scope','$attrs','$parse', FilterController ],
          link : function(scope, element, attr, ctrl)
          {
             scope.handlers.applyFilter = function()
@@ -47,36 +47,24 @@
    /*
     * 
     */
-   function StatusFilterController($scope, sdStatusService)
+   function FilterController($scope,$attrs,$parse)
    {
-
-      var self = this;
-      this.intiliaze($scope, sdStatusService);
-      $scope.statusFilterCtrl = this;
+      var optionsBinding = $parse($attrs.sdaOptions);
+      this.options = optionsBinding($scope);
+      $scope.filterCtrl = this;
    }
 
-   StatusFilterController.prototype.intiliaze = function($scope, sdStatusService)
-   {
-      var self = this;
-      this.i18n = $scope.$parent.i18n;
-      this.statuses = [];
-      sdStatusService.getAllActivityStates().then(function(value)
-      {
-         self.statuses = value;
-      });
-   };
-
-   StatusFilterController.prototype.getDisplayText = function(values)
+   FilterController.prototype.getDisplayText = function(values)
    {
       var filtered = [];
       var self = this;
       angular.forEach(values, function(value)
       {
-         for ( var key in self.statuses)
+         for ( var key in self.options)
          {
-            if (self.statuses[key].value === value)
+            if (self.options[key].value === value)
             {
-               filtered.push(self.statuses[key].label);
+               filtered.push(self.options[key].label);
             }
          }
       });

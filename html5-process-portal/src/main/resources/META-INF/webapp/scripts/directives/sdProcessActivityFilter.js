@@ -16,7 +16,7 @@
    'use strict';
 
    angular.module('bpm-common').directive('sdProcessActivityFilter',
-      [ '$filter', ActivityFilter ]);
+      [ '$filter','$parse', ActivityFilter ]);
 
    /*
     *
@@ -28,7 +28,7 @@
       return {
          restrict : 'A',
          templateUrl : 'plugins/html5-process-portal/scripts/directives/partials/ProcessActivityFilter.html',
-         controller : [ '$scope', '$attrs', '$filter', FilterController ],
+         controller : [ '$scope', '$attrs', '$filter','$parse', FilterController ],
          link : function(scope, element, attr, ctrl)
          {
 
@@ -47,7 +47,7 @@
                }
                else
                {
-                  if ((scope.filterData.activities.processes) < 1)
+                  if ((scope.filterData.processes) < 1)
                      return false;
 
                   angular.forEach(scope.filterData.processes, function(value)
@@ -98,34 +98,39 @@
    /**
     *
     */
-    var FilterController = function($scope, $attrs, $filter)
+    var FilterController = function($scope, $attrs, $filter,$parse)
     {
 
       var self = this;
 
-      this.sdaFilterType = $attrs.type;
+      this.filterType = $attrs.sdaFilterType;
+      
+      var allProcessBinding  = $parse($attrs.sdaProcesses);
+      
+      this.allAccessibleProcesses = allProcessBinding($scope);
+      console.log(JSON.stringify(this.allAccessibleProcesses));
 
       this.loadAllActivities = function()
       {
-         this.getAllActivities($scope, $filter);
+         this.getAllActivities($filter);
       }
 
       this.isActivityFilter = function()
       {
-         return self.sdaFilterType === FILTER_TYPE_ACTIVITY;
+         return self.filterType == FILTER_TYPE_ACTIVITY;
       }
 
       this.updateProcess = function()
       {
          if (self.isActivityFilter())
          {
-            this.getActivitiesForSelectedProcesses($scope, $filter, $scope.filterData.processes);
+            this.getActivitiesForSelectedProcesses($filter, $scope.filterData.processes);
          }
       }
 
       this.loadValues = function()
       {
-         angular.forEach($scope.worklistCtrl.allAccessibleProcesses, function(data)
+         angular.forEach(self.allAccessibleProcesses, function(data)
          {
 
             var found = $filter('filter')(self.processes, {
@@ -152,7 +157,7 @@
     *
     */
 
-    FilterController.prototype.getActivitiesForSelectedProcesses = function($scope,$filter,selectedProcesses)
+    FilterController.prototype.getActivitiesForSelectedProcesses = function($filter,selectedProcesses)
     {
       var self = this;
       self.activities = [ DEFAULT_ACTIVITY ];
@@ -168,7 +173,7 @@
          angular.forEach(selectedProcesses, function(selectedProcess)
          {
 
-            angular.forEach($scope.worklistCtrl.allAccessibleProcesses, function(process)
+            angular.forEach(self.allAccessibleProcesses, function(process)
             {
                if (process.id === selectedProcess)
                {
@@ -221,12 +226,12 @@
    /**
     *
     */
-    FilterController.prototype.createIdNamePairs = function($scope)
+    FilterController.prototype.createIdNamePairs = function()
     {
       var self = this;
       self.idToName[DEFAULT_PROCESS.id] = DEFAULT_PROCESS.name;
       self.idToName[DEFAULT_ACTIVITY.id] = DEFAULT_ACTIVITY.name;
-      angular.forEach($scope.worklistCtrl.allAccessibleProcesses, function(process)
+      angular.forEach(self.allAccessibleProcesses, function(process)
       {
          self.idToName[process.id] = process.name;
          angular.forEach(process.activities, function(activity)
@@ -254,19 +259,18 @@
    /*
     *
     */
-    FilterController.prototype.getAllActivities = function($scope, $filter)
+    FilterController.prototype.getAllActivities = function($filter)
     {
       var self = this;
       self.activities = [];
       self.activities.push(DEFAULT_ACTIVITY);
 
-      angular.forEach($scope.worklistCtrl.allAccessibleProcesses, function(process)
+      angular.forEach(self.allAccessibleProcesses, function(process)
       {
 
          if (!angular.isUndefined(process.activities))
          {
-            var activities = process.activities
-            angular.forEach(activities, function(activity)
+            angular.forEach(process.activities, function(activity)
             {
                var found = $filter('filter')(self.activities, {
                   name : activity.name

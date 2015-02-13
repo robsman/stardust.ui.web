@@ -18,13 +18,13 @@
 
 	angular.module('bpm-common').directive('sdWorklist', 
 			['$parse', '$q', 'sdUtilService', 'sdViewUtilService', 'sdLoggerService', 'sdPreferenceService', 'sdWorklistService', 
-			 'sdActivityInstanceService', 'sdProcessDefinitionService', WorklistDirective]);
+			 'sdActivityInstanceService', 'sdProcessDefinitionService', 'sdCriticalityService', 'sdStatusService', WorklistDirective]);
 
 	/*
 	 * 
 	 */
 	function WorklistDirective($parse, $q, sdUtilService, sdViewUtilService, sdLoggerService, sdPreferenceService, sdWorklistService, 
-			sdActivityInstanceService, sdProcessDefinitionService) {
+			sdActivityInstanceService, sdProcessDefinitionService, sdCriticalityService, sdStatusService) {
 		
 		var trace = sdLoggerService.getLogger('bpm-common.sdWorklist');
 
@@ -101,6 +101,8 @@
 
 			//All processes with activities
 			this.allAccessibleProcesses = [];
+			this.allAvailableCriticalities = [];
+			this.availableStates = [];
 
 			// Process Query
 			if (!attr.sdaQuery) {
@@ -188,6 +190,8 @@
 
 			this.fetchDescriptorCols();
 			this.fetchAllProcesses();
+			this.fetchAllAvailableCriticalities();
+			this.fetchAvailableStates();
 		};
 
 		/*
@@ -296,6 +300,33 @@
 		/*
 		 *
 		 */
+      WorklistCompiler.prototype.fetchAllAvailableCriticalities = function()
+      {
+         var self = this;
+         sdCriticalityService.getAllCriticalities().then(function(criticalities)
+         {
+            self.allAvailableCriticalities = criticalities;
+         });
+      };
+      
+      /*
+       * 
+       */
+
+      WorklistCompiler.prototype.fetchAvailableStates = function()
+      {
+         var self = this;
+         sdStatusService.getAllActivityStates().then(function(value)
+         {
+            self.availableStates = value;
+         });
+      };
+      
+    
+
+		/*
+       * 
+       */
 		WorklistCompiler.prototype.activateWorkItem = function(workItem) {
 			sdViewUtilService.openView("activityPanel", "OID=" + workItem.oid, {"oid" : "" + workItem.oid});
 		};

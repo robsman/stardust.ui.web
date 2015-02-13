@@ -30,14 +30,14 @@
 			<tr>
 				<th sda-name="overview" sda-sortable="true">
 					<div sda-filter-template>
-						<div sd-process-activity-filter type='activity'></div>
+						<div sd-process-activity-filter sda-filter-type='activity' sda-processes="worklistCtrl.allAccessibleProcesses"></div>
 					</div>
 				</th>
 				<th sda-name="oid" sda-sortable="true" sda-filterable="true"
 					sda-exportable=""></th>
 				<th sda-name="criticality" sda-sortable="true">
 					<div sda-filter-template>
-						<div sd-criticality-filter sda-selected-criticalities="filterData"></div>
+						<div sd-criticality-filter sda-criticalities="worklistCtrl.allAvailableCriticalities"></div>
 					</div>
 				</th>
 				<th sda-name="priority" sda-sortable="true">
@@ -54,12 +54,13 @@
 				<th sda-name="processDefinition" sda-label-key="processName"
 					sda-visible="false" sda-sortable="false">
 					<div sda-filter-template>
-						<div sd-process-activity-filter sda-filter-type='process'></div>
+						<div sd-process-activity-filter sda-filter-type='process' sda-processes="worklistCtrl.allAccessibleProcesses"></div>
 					</div>
 				</th>
 				<th sda-name="status" sda-sortable="false" sda-visible="false">
 					<div sda-filter-template>
-						<div sd-status-filter></div>
+						<div sd-multi-select-filter sda-options="worklistCtrl.availableStates"></div>
+					</div>
 					</div>
 				</th>
 				<th sda-name="assignedTo" sda-sortable="false" sda-visible="false"></th>

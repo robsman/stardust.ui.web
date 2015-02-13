@@ -15,7 +15,7 @@
    'use strict';
 
    angular.module('bpm-common').directive('sdCriticalityFilter',
-            [ 'sdCriticalityService', CriticalityFilter ]);
+            [ '$parse', CriticalityFilter ]);
 
    /*
     */
@@ -38,7 +38,7 @@
                             "sda-selected-matches=\"criticalityCtrl.like\">" +
                          "<\/div>" +
                    "<\/div> ",
-         controller : [ '$scope', 'sdCriticalityService', CriticalityFilterController ],
+         controller : [ '$scope','$attrs','$parse', CriticalityFilterController ],
          link : function(scope, element, attr, ctrl)
          {
             /*
@@ -73,18 +73,14 @@
    /*
     * 
     */
-   var CriticalityFilterController = function($scope, sdCriticalityService)
+   var CriticalityFilterController = function($scope, $attrs, $parse)
    {
       var self = this;
       this.i18n = $scope.$parent.i18n;
-      this.intialize($scope);
+      this.intialize($scope, $attrs, $parse);
 
       this.loadAvailableCriticalities = function()
       {
-         sdCriticalityService.getAllCriticalities().then(
-                  function(criticalities)
-         {
-            self.availableCriticalities = criticalities;
 
                      var criticalityValues = [];
 
@@ -94,7 +90,6 @@
          });
                      self.like = self.getCriticalityByValue(self.availableCriticalities,
                               criticalityValues);
-                  });
       }
       this.loadAvailableCriticalities();
       $scope.criticalityCtrl = this;
@@ -103,15 +98,19 @@
    /*
     * 
     */
-   CriticalityFilterController.prototype.intialize = function($scope)
+   CriticalityFilterController.prototype.intialize = function($scope,$attrs,$parse)
    {
 
       this.data = [];
-      this.availableCriticalities = [];
       this.matchVal = "";
       this.like = this.like || [];
       $scope.filterData.rangeLike = $scope.filterData.rangeLike || [];
+      var allCriticalitiesBinding  = $parse($attrs.sdaCriticalities);
+      this.availableCriticalities = allCriticalitiesBinding($scope);
       $scope.criticalityCtrl = this;
+     
+      
+      
    };
    /*
     * 
