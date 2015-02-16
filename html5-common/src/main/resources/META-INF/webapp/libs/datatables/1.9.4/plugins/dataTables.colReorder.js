@@ -1102,10 +1102,11 @@ return ColReorder;
 
 
 //Define as an AMD module if possible
+/* Remove consideration of module loading
 if ( typeof define === 'function' && define.amd ) {
 	define( 'datatables-colreorder', ['jquery', 'datatables'], factory );
 }
-else if ( jQuery && !jQuery.fn.dataTable.ColReorder ) {
+else */ if ( jQuery && !jQuery.fn.dataTable.ColReorder ) {
 	// Otherwise simply initialise as normal, stopping multiple evaluation
 	factory( jQuery, jQuery.fn.dataTable );
 }
