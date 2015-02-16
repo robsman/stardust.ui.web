@@ -879,7 +879,7 @@
 
 			if (enableColumnSelector) {
 				try {
-					theColReorder = new jQuery.fn.dataTable.ColReorder(theDataTable);
+					theColReorder = new jQuery.fn.dataTable.ColReorder(theDataTable, {bNoDragDrop: true});
 				} catch (e) {
 					trace.error(theTableId + ': Error occurred while enabling ColReorder, so disabling column selector', e);
 					enableColumnSelector = false;

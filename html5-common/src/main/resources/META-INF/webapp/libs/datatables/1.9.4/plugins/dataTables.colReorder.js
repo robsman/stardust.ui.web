@@ -541,15 +541,19 @@ ColReorder.prototype = {
 		}
 		
 		/* Add event handlers for the drag and drop, and also mark the original column order */
-		for ( i=0, iLen=this.s.dt.aoColumns.length ; i<iLen ; i++ )
-		{
-			if ( i > this.s.fixed-1 )
+		if (this.s.init.bNoDragDrop != undefined && this.s.init.bNoDragDrop == true) {
+			// Disable drag drop feature
+		} else {
+			for ( i=0, iLen=this.s.dt.aoColumns.length ; i<iLen ; i++ )
 			{
-				this._fnMouseListener( i, this.s.dt.aoColumns[i].nTh );
+				if ( i > this.s.fixed-1 )
+				{
+					this._fnMouseListener( i, this.s.dt.aoColumns[i].nTh );
+				}
+				
+				/* Mark the original column order for later reference */
+				this.s.dt.aoColumns[i]._ColReorder_iOrigCol = i;
 			}
-			
-			/* Mark the original column order for later reference */
-			this.s.dt.aoColumns[i]._ColReorder_iOrigCol = i;
 		}
 
 		/* State saving */
