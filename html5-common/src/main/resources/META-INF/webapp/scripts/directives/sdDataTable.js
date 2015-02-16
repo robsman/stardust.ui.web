@@ -496,6 +496,19 @@
 		/*
 		 * 
 		 */
+		function getVisibleColumnsByDisplayOrder() {
+			var visibleCols = [];
+			angular.forEach(columnsByDisplayOrder, function(col, i) {
+				if (col.visible) {
+					visibleCols.push(col);
+				}
+			});
+			return visibleCols;
+		}
+		
+		/*
+		 * 
+		 */
 		function getDefaultContent(colDef) {
 			var contents = '{{rowData.' + colDef.field + '}}';
 
@@ -520,9 +533,10 @@
 
 			angular.forEach(columns, function(col, i) {
 				dtColumns.push({
-					data: colRenderer(col),
-					sortable: col.sortable,
-					type: attr.sdaMode == 'local' ? 'string' : undefined
+					sName: col.name,
+					mData: colRenderer(col),
+					bSortable: col.sortable,
+					sType: attr.sdaMode == 'local' ? 'string' : undefined
 				});
 			});
 
@@ -681,27 +695,26 @@
 		function buildDataTable() {
 			var dtOptions = {};
 
-			dtOptions.hasOverrideDom = true;
-			dtOptions.sDom = "itp";
+			dtOptions.sDom = 'irtp';
 			dtOptions.sPaginationType = "full_numbers";
 			dtOptions.iDisplayLength = pageSize;
-			dtOptions.language = {
-				 "paginate": {
-					 "first": "<<",
-					 "previous": "<",
-					 "next": ">",
-					 "last": ">>"
+			dtOptions.oLanguage = {
+				 "oPaginate": {
+					 "sFirst": "<<",
+					 "sPrevious": "<",
+					 "sNext": ">",
+					 "sLast": ">>"
 				 }
 			};
 			
-			dtOptions.columns = dtColumns;
-			dtOptions.autoWidth = false;
+			dtOptions.aoColumns = dtColumns;
+			dtOptions.bAutoWidth = false;
 
-			dtOptions.processing = true;
+			dtOptions.bProcessing = true;
 
 			// TODO: Datatables does not support single column sorting yet. What it has is only multi column sort
-			dtOptions.sort = sortingMode != undefined;
-			if (dtOptions.sort) {
+			dtOptions.bSort = sortingMode != undefined;
+			if (dtOptions.bSort) {
 				var dtOrder = [];
 
 				if (sortByGetter) {
@@ -724,7 +737,7 @@
 					dtOrder.push([0, 'asc']);
 				}
 
-				dtOptions.order = dtOrder;
+				dtOptions.aaSorting = dtOrder;
 			}
 
 			dtOptions.fnDrawCallback = drawCallbackHandler;
@@ -744,10 +757,11 @@
 		 * 
 		 */
 		function buildDataTableRemoteMode(dtOptions) {
-			trace.log(theTableId + ': Building table for remote mode...');
+			dtOptions.bServerSide = true;
+			dtOptions.sAjaxSource = "dummy.html";
+			dtOptions.fnServerData = ajaxHandler;
 
-			dtOptions.serverSide = true;
-			dtOptions.ajax = ajaxHandler;
+			trace.log(theTableId + ': Building table for remote mode... with options: ', dtOptions);
 
 			theDataTable = theTable.DataTable(dtOptions);
 			buildDataTableCompleted();
@@ -757,13 +771,13 @@
 		 * 
 		 */
 		function buildDataTableLocalMode(dtOptions) {
-			trace.log(theTableId + ': Building table for local mode...');
+			trace.log(theTableId + ': Building table for local mode... with options: ', dtOptions);
 
 			fetchData(undefined, function(result) {
 				try {
-					dtOptions.data = result.list ? result.list : result;
+					dtOptions.aaData = result.list ? result.list : result;
 	
-					sdUtilService.assert(dtOptions.data && angular.isArray(dtOptions.data),
+					sdUtilService.assert(dtOptions.aaData && angular.isArray(dtOptions.aaData),
 							'sd-data did not return acceptable result: Missing "list" or its not an array');
 	
 					if (attr.sdaNoPagination == '' || attr.sdaNoPagination == 'true') {
@@ -785,21 +799,28 @@
 		/*
 		 * 
 		 */
-		function ajaxHandler(data, callback, settings) {
+		function ajaxHandler(source, data, callback, settings) {
+			trace.log(theTableId + ': Callback received for fetching server data, with data:', data);
+			var dataMap = {};
+			for (var i = 0; i < data.length; i++) {
+				dataMap[data[i].name] = data[i].value;
+			}
+
 			var ret = {
-				"draw" : data.draw,
-				"recordsTotal": 0,
-				"recordsFiltered": 0,
-				"data": null
+				"sEcho" : dataMap['sEcho']
 			};
 
+			var params = {skip : dataMap['iDisplayStart'], pageSize : dataMap['iDisplayLength']};
+
 			// Sorting / Ordering Info
-			var params = {skip : data.start, pageSize : data.length};
-			if (data.order && data.order.length > 0) {
+			if (dataMap['iSortingCols'] > 0) {
 				params.order = [];
-				for (var i in data.order) {
-					var column = columnsByDisplayOrder[data.order[i].column];
-					params.order.push({name: column.name, field: column.field, dir: data.order[i].dir});
+				for (var i = 0; i < dataMap['iSortingCols']; i++) {
+					var colIndex = dataMap['iSortCol_' + i];
+					var colDir = dataMap['sSortDir_' + i];
+					
+					var column = columnsByDisplayOrder[colIndex];
+					params.order.push({name: column.name, field: column.field, dir: colDir});
 				}
 			}
 
@@ -826,9 +847,9 @@
 					sdUtilService.assert(result.list.length <= data.length,
 							'sd-data did not return acceptable result: Returned more records than expected (' + data.length + ')');
 	
-					ret.recordsTotal = result.totalCount;
-					ret.recordsFiltered = result.totalCount;
-					ret.data = result.list;
+					ret.iTotalRecords = result.totalCount;
+					ret.iTotalDisplayRecords = result.totalCount;
+					ret.aaData = result.list;
 	
 					callback(ret);
 				} catch (e) {
@@ -854,10 +875,15 @@
 			theDataTable.on('page.dt', firePaginationEvent);
 
 			// Register for sorting events
-			theDataTable.on('order.dt', processSortEvent);
+			theDataTable.on('sort.dt', processSortEvent);
 
 			if (enableColumnSelector) {
-				theColReorder = new jQuery.fn.dataTable.ColReorder(theDataTable);
+				try {
+					theColReorder = new jQuery.fn.dataTable.ColReorder(theDataTable);
+				} catch (e) {
+					trace.error(theTableId + ': Error occurred while enabling ColReorder, so disabling column selector', e);
+					enableColumnSelector = false;
+				}
 			}
 
 			exposeAPIs();
@@ -869,10 +895,10 @@
 		function firePaginationEvent() {
 			// Invoke the event handler when processing is complete and data is displayed
 			$timeout(function() {
-				var info = theDataTable.page.info();
+				var settings = theDataTable.fnSettings();
 				var paginationInfo = {
-					currentPage: info.page + 1,
-					totalPages: info.pages
+					currentPage: (settings._iDisplayStart / settings._iDisplayLength) + 1,
+					totalPages: Math.ceil(settings._iRecordsTotal / settings._iDisplayLength)
 				};
 				
 				fireDataTableEvent(onPagination, paginationInfo, 'onPagination');
@@ -887,7 +913,7 @@
 			$timeout(function() {
 				var sortingInfo = [];
 
-				var order = theDataTable.order();
+				var order = theDataTable.fnSettings().aaSorting;
 				for (var i in order) {
 					var columnInfo = columnsByDisplayOrder[order[i][0]];
 					if (columnInfo) {
@@ -960,28 +986,35 @@
 		 * 
 		 */
 		function createRowHandler(row, data, dataIndex) {
-			var row = angular.element(row);
+			row = angular.element(row);
 			row.addClass(CLASSES.BODY_TR);
-			
+
 			var cells = row.find('> td');
 			cells.addClass(CLASSES.TD);
-			angular.forEach(cells, function(cell, i) {
-				cell = angular.element(cell);
 
-				if (columns[i].cellClass && columns[i].cellClass != '') {
+			var visibleOrderedCols = getVisibleColumnsByDisplayOrder();
+
+			angular.forEach(cells, function(cell, i) {
+				// Safety check
+				if (i >= visibleOrderedCols.length) {
+					return;
+				}
+
+				cell = angular.element(cell);
+				if (visibleOrderedCols[i].cellClass && visibleOrderedCols[i].cellClass != '') {
 					var value = cell.attr('class');
 					value = value ? (value.trim() + ' ') : '';
-					value += columns[i].cellClass;
+					value += visibleOrderedCols[i].cellClass;
 					cell.attr('class', value);
 				}
 
-				if (columns[i].cellStyle && columns[i].cellStyle != '') {
+				if (visibleOrderedCols[i].cellStyle && visibleOrderedCols[i].cellStyle != '') {
 					var value = cell.attr('style');
 					value = value ? (value.trim()) : '';
 					if (value.length > 1 && value.substr(value.length - 1) != ';') {
 						value += '; ';
 					}
-					value += columns[i].cellStyle;
+					value += visibleOrderedCols[i].cellStyle;
 					cell.attr('style', value);
 				}
 			});
@@ -1045,7 +1078,7 @@
 		 * 
 		 */
 		function refresh(retainPageIndex) {
-			theDataTable.draw(!retainPageIndex);
+			theDataTable.fnDraw();
 		}
 	    
 		/*
@@ -1271,10 +1304,7 @@
 				var newColumnOrder = [];
 				angular.forEach(columnsByDisplayOrder, function(col, i) {
 					// Show / Hide columns based on new reorder
-					var tableCol = theDataTable.column(i);
-					if (tableCol.visible() != col.visible) {
-						tableCol.visible(col.visible);
-					}
+					theDataTable.fnSetColumnVis(i, col.visible, false);
 					
 					columnsInfoByDisplayOrder[col.name] = {
 						index: i,
@@ -1289,7 +1319,7 @@
 				if (!skipVisibility) {
 					showElement(theTable, false);
 				}
-				theDataTable.draw(false);
+				theDataTable.fnDraw(false);
 
 				// Fire Event
 				fireColumnReorderEvent(currentColumnOrder, newColumnOrder);
@@ -1320,7 +1350,7 @@
 		 * 
 		 */
 		function getPageData(index) {
-			var tableData = theDataTable.data();
+			var tableData = theDataTable.fnGetData();
 
 			if (index == undefined || index == null) {
 				var data = [];
@@ -1337,8 +1367,8 @@
 		 * 
 		 */
 		function getPageDataCount(index) {
-			var info = theDataTable.page.info();
-			return info.end - info.start;
+			var info = theDataTable.fnPagingInfo();
+			return info.iEnd - info.iStart;
 		}
 
 		/*

@@ -168,33 +168,33 @@
    color: #999999 !important
 }
 
-.paginate_button {
+.paging_full_numbers a.paginate_button, .paging_full_numbers a.paginate_active {
     color: #656565 !important;
     border: 1px solid #DBDBDB !important;
     background: #FFFFFF !important;
-    padding: 0px 6px 0px 6px !important;
+    padding: 2px 5px !important;
+    border-radius: 0px;
 }
 
-.paginate_button:hover {
+.paging_full_numbers a.paginate_button:hover {
     color: #FFF !important;
     border: 1px solid #BBB !important;
     background: #CCC !important;
 }
 
-.paginate_button.disabled:hover {
+.paging_full_numbers a.paginate_button_disabled:hover {
     color: #656565 !important;
     border: 1px solid #DBDBDB !important;
     background: #FFFFFF !important;
     cursor: default !important;
 }
 
-.paginate_button.current {
+.paging_full_numbers a.paginate_active {
     color: #FFFFFF !important;
     background: #24415E !important;
-    border: 1px solid #DBDBDB;
 }
 
-.paginate_button.current:hover {
+.paging_full_numbers a.paginate_active:hover {
     color: #FFF !important;
     border: 1px solid #BBB !important;
     background: #CCC !important;
