@@ -21,7 +21,7 @@
  */
 
 
-(function($, window, document) {
+(function(window, document, undefined) {
 
 
 /**
@@ -288,8 +288,9 @@ $.fn.dataTableExt.oApi.fnColReorder = function ( oSettings, iFrom, iTo )
 };
 
 
-
-
+var factory = function( $, DataTable ) {
+//"use strict";
+	
 /** 
  * ColReorder provides column visiblity control for DataTables
  * @class ColReorder
@@ -297,8 +298,37 @@ $.fn.dataTableExt.oApi.fnColReorder = function ( oSettings, iFrom, iTo )
  * @param {object} DataTables settings object
  * @param {object} ColReorder options
  */
-ColReorder = function( oDTSettings, oOpts )
+var ColReorder = function( dt, oOpts )
 {
+	var oDTSettings;
+
+	if ( dt.fnSettings ) {
+		// DataTables object, convert to the settings object
+		oDTSettings = dt.fnSettings();
+	}
+	else if ( typeof dt === 'string' ) {
+		// jQuery selector
+		if ( $.fn.dataTable.fnIsDataTable( $(dt)[0] ) ) {
+			oDTSettings = $(dt).eq(0).dataTable().fnSettings();
+		}
+	}
+	else if ( dt.nodeName && dt.nodeName.toLowerCase() === 'table' ) {
+		// Table node
+		if ( $.fn.dataTable.fnIsDataTable( dt.nodeName ) ) {
+			oDTSettings = $(dt.nodeName).dataTable().fnSettings();
+		}
+	}
+	else if ( dt instanceof jQuery ) {
+		// jQuery object
+		if ( $.fn.dataTable.fnIsDataTable( dt[0] ) ) {
+			oDTSettings = dt.eq(0).dataTable().fnSettings();
+		}
+	}
+	else {
+		// DataTables settings object
+		oDTSettings = dt;
+	}
+
 	/* Santiy check that we are a new instance */
 	if ( !this.CLASS || this.CLASS != "ColReorder" )
 	{
@@ -401,6 +431,7 @@ ColReorder = function( oDTSettings, oOpts )
 	
 	/* Constructor logic */
 	this.s.dt = oDTSettings.oInstance.fnSettings();
+	this.s.dt._colReorder = this;
 	this._fnConstruct();
 
 	/* Add destroy callback */
@@ -429,6 +460,58 @@ ColReorder.prototype = {
 		this._fnOrderColumns( a );
 	},
 	
+	/**
+	 * Get the current order of the columns, as an array. Note that the values
+	 * given in the array are unique identifiers for each column. Currently
+	 * these are the original ordering of the columns that was detected on
+	 * start up, but this could potentially change in future.
+	 *  @return {array} Array of column identifiers
+	 *
+	 *  @example
+	 *    // Get column ordering for the table
+	 *    var order = $.fn.dataTable.ColReorder( dataTable ).fnOrder();
+	 *//**
+	 * Set the order of the columns, from the positions identified in the
+	 * ordering array given. Note that ColReorder takes a brute force approach
+	 * to reordering, so it is possible multiple reordering events will occur
+	 * before the final order is settled upon.
+	 *  @param {array} [set] Array of column identifiers in the new order. Note
+	 *    that every column must be included, uniquely, in this array.
+	 *  @return {this} Returns `this` for chaining.
+	 *
+	 *  @example
+	 *    // Swap the first and second columns
+	 *    $.fn.dataTable.ColReorder( dataTable ).fnOrder( [1, 0, 2, 3, 4] );
+	 *
+	 *  @example
+	 *    // Move the first column to the end for the table `#example`
+	 *    var curr = $.fn.dataTable.ColReorder( '#example' ).fnOrder();
+	 *    var first = curr.shift();
+	 *    curr.push( first );
+	 *    $.fn.dataTable.ColReorder( '#example' ).fnOrder( curr );
+	 *
+	 *  @example
+	 *    // Reverse the table's order
+	 *    $.fn.dataTable.ColReorder( '#example' ).fnOrder(
+	 *      $.fn.dataTable.ColReorder( '#example' ).fnOrder().reverse()
+	 *    );
+	 */
+	"fnOrder": function ( set )
+	{
+		if ( set === undefined )
+		{
+			var a = [];
+			for ( var i=0, iLen=this.s.dt.aoColumns.length ; i<iLen ; i++ )
+			{
+				a.push( this.s.dt.aoColumns[i]._ColReorder_iOrigCol );
+			}
+			return a;
+		}
+
+		this._fnOrderColumns( fnInvertKeyValues( set ) );
+
+		return this;
+	},
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 * Private methods (they are of course public in JS, but recommended as private)
@@ -468,7 +551,7 @@ ColReorder.prototype = {
 			/* Mark the original column order for later reference */
 			this.s.dt.aoColumns[i]._ColReorder_iOrigCol = i;
 		}
-		
+
 		/* State saving */
 		this.s.dt.oApi._fnCallbackReg( this.s.dt, 'aoStateSaveParams', function (oS, oData) {
 			that._fnStateSave.call( that, oData );
@@ -870,6 +953,19 @@ ColReorder.prototype = {
 
 		this.s.dt.oInstance._oPluginColReorder = null;
 		this.s = null;
+	},
+
+	/**
+	 * Add a data attribute to the column headers, so we know the index of
+	 * the row to be reordered. This allows fast detection of the index, and
+	 * for this plug-in to work with FixedHeader which clones the nodes.
+	 *  @private
+	 */
+	"_fnSetColumnIndexes": function ()
+	{
+		$.each( this.s.dt.aoColumns, function (i, column) {
+			$(column.nTh).attr('data-column-index', i);
+		} );
 	}
 };
 
@@ -945,14 +1041,16 @@ ColReorder.prototype.VERSION = ColReorder.VERSION;
 
 
 
-
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Initialisation
+ * DataTables interfaces
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-/*
- * Register a new feature with DataTables
- */
+// Expose
+$.fn.dataTable.ColReorder = ColReorder;
+$.fn.DataTable.ColReorder = ColReorder;
+
+
+// Register a new feature with DataTables
 if ( typeof $.fn.dataTable == "function" &&
      typeof $.fn.dataTableExt.fnVersionCheck == "function" &&
      $.fn.dataTableExt.fnVersionCheck('1.9.3') )
@@ -974,9 +1072,42 @@ if ( typeof $.fn.dataTable == "function" &&
 		"sFeature": "ColReorder"
 	} );
 }
-else
-{
+else {
 	alert( "Warning: ColReorder requires DataTables 1.9.3 or greater - www.datatables.net/download");
 }
 
-})(jQuery, window, document);
+//API augmentation
+if ( $.fn.dataTable.Api ) {
+	$.fn.dataTable.Api.register( 'colReorder.reset()', function () {
+		return this.iterator( 'table', function ( ctx ) {
+			ctx._colReorder.fnReset();
+		} );
+	} );
+
+	$.fn.dataTable.Api.register( 'colReorder.order()', function ( set ) {
+		if ( set ) {
+			return this.iterator( 'table', function ( ctx ) {
+				ctx._colReorder.fnOrder( set );
+			} );
+		}
+
+		return this.context.length ?
+			this.context[0]._colReorder.fnOrder() :
+			null;
+	} );
+}
+
+return ColReorder;
+}; // /factory
+
+
+//Define as an AMD module if possible
+if ( typeof define === 'function' && define.amd ) {
+	define( 'datatables-colreorder', ['jquery', 'datatables'], factory );
+}
+else if ( jQuery && !jQuery.fn.dataTable.ColReorder ) {
+	// Otherwise simply initialise as normal, stopping multiple evaluation
+	factory( jQuery, jQuery.fn.dataTable );
+}
+
+})(window, document);
