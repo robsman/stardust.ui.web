@@ -64,7 +64,7 @@ public class ResourceDependencyUtils
       
                if(CollectionUtils.isEmpty(resDep.getLibs()))
                {
-                  resDep.setLibs(discoverPluginResources(resolver, rInfo, PLUGIN_DEPENDENCY_LIBS, "*.js"));
+                  resDep.setLibs(discoverPluginResources(resolver, rInfo, PLUGIN_DEPENDENCY_LIBS, "*.js", true));
                }
                else
                {
@@ -74,7 +74,7 @@ public class ResourceDependencyUtils
       
                if(CollectionUtils.isEmpty(resDep.getScripts()))
                {
-                  resDep.setScripts(discoverPluginResources(resolver, rInfo, PLUGIN_DEPENDENCY_SCRIPTS, "*.js"));
+                  resDep.setScripts(discoverPluginResources(resolver, rInfo, PLUGIN_DEPENDENCY_SCRIPTS, "*.js", true));
                }
                else
                {
@@ -83,7 +83,7 @@ public class ResourceDependencyUtils
       
                if(CollectionUtils.isEmpty(resDep.getStyles()))
                {
-                  resDep.setStyles(discoverPluginResources(resolver, rInfo, PLUGIN_DEPENDENCY_STYLES, "*.css"));
+                  resDep.setStyles(discoverPluginResources(resolver, rInfo, PLUGIN_DEPENDENCY_STYLES, "*.css", false));
                }
                else
                {
@@ -202,10 +202,11 @@ public class ResourceDependencyUtils
     * @param rInfo
     * @param type
     * @param pattern
+    * @param asc
     * @return
     */
    private static List<String> discoverPluginResources(ResourcePatternResolver resolver, ResourceInfo rInfo,
-         String type, String pattern)
+         String type, String pattern, boolean asc)
    {
       try
       {
@@ -216,7 +217,7 @@ public class ResourceDependencyUtils
          List<String> allResources = PluginUtils.findWebResources(resolver, rInfo.getPluginId(), webUriBase, baseUri, "**/" + pattern);
 
          // Sort
-         sortByFolderHierarchy(allResources);
+         sortByFolderHierarchy(allResources, asc);
          
          return allResources;
       }
@@ -293,8 +294,9 @@ public class ResourceDependencyUtils
 
    /**
     * @param list
+    * @param asc
     */
-   private static void sortByFolderHierarchy(List<String> list)
+   private static void sortByFolderHierarchy(List<String> list, boolean asc)
    {
       Collections.sort(list, new Comparator<String>()
       {
@@ -334,5 +336,10 @@ public class ResourceDependencyUtils
             }
          }
       });
+
+      if(!asc)
+      {
+         Collections.reverse(list);
+      }
    }
 }
