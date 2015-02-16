@@ -229,6 +229,10 @@ define(
 					
 					chartOptions.legend.show = this.report.layout.chart.options.legend.show;
 					chartOptions.legend.location = this.report.layout.chart.options.legend.location;
+					if (!this.report.layout.chart.options.legend.show) {
+						//If Legend is disabled(false) still jqplot tries to draw and fails, so initializing it to empty object 
+						chartOptions.legend = {};
+					} 
 					chartOptions.highlighter.show = this.report.layout.chart.options.highlighter.show;
 					chartOptions.cursor.showTooltip = this.report.layout.chart.options.cursor.showTooltip;
 					chartOptions.cursor.show = this.report.layout.chart.options.cursor.show;
