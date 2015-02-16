@@ -710,7 +710,7 @@
 			dtOptions.aoColumns = dtColumns;
 			dtOptions.bAutoWidth = false;
 
-			dtOptions.bProcessing = true;
+			dtOptions.bProcessing = false;
 
 			// TODO: Datatables does not support single column sorting yet. What it has is only multi column sort
 			dtOptions.bSort = sortingMode != undefined;
