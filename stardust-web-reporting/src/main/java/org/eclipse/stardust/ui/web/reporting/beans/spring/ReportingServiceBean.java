@@ -77,6 +77,7 @@ import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.FileStorage;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.I18nFolderUtils;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
+import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.CommonDescriptorUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSUtils;
@@ -677,7 +678,8 @@ public class ReportingServiceBean
 
                if (participant != null)
                {
-                  participantFolderJson = getReportDefinitions(findOrCreateFolder(participantSubFolder.getPath() + REPORT_DESIGN), I18nUtils.getParticipantName(ParticipantUtils.getParticipant(participant)) + " Report Definitions");
+                  participantFolderJson = getReportDefinitions(findOrCreateFolder(participantSubFolder.getPath() + REPORT_DESIGN), I18nUtils.getParticipantName(ParticipantUtils.getParticipant(participant))
+                        + " " + MessagesViewsCommonBean.getInstance().getString("views.genericRepositoryView.systemFolders.myReportDesigns"));
                }
 
                if (participantFolderJson != null)
