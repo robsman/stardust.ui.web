@@ -115,7 +115,7 @@
     */
 	AbortActivityController.prototype.abortActivities = function (){
 		this.getActvities();
-		return this.sdAbortActivityService.abortActivities(this.abortActivity);
+		return this.sdAbortActivityService.abortActivities( this.abortActivity.scope, this.abortActivity.activities);
 	}
 
 
@@ -153,7 +153,6 @@
 						self.notification.result = {};
 						self.notification.error= true;
 						self.showNotification();
-						console.log("Error in acquiring activities from Abort Activity Service");
 					});
 
 		})

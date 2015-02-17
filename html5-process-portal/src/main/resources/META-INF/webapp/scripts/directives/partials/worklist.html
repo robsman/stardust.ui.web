@@ -61,17 +61,18 @@
 					<div sda-filter-template>
 						<div sd-multi-select-filter sda-options="worklistCtrl.availableStates"></div>
 					</div>
-					</div>
 				</th>
 				<th sda-name="assignedTo" sda-sortable="false" sda-visible="false"></th>
 				<th ng-repeat="descCol in worklistCtrl.descritorCols"
 					sda-name="{{descCol.id}}" sda-label="{{descCol.title}}"
 					sda-visible="false" sda-sortable="{{descCol.sortable}}">
-							<div sda-filter-template ng-if="descCol.filterable && descCol.dataType =='STRING'"><div  sd-text-search-filter></div></div>
-							<div sda-filter-template ng-if="descCol.filterable && descCol.dataType == 'DATE'"><div  sd-date-filter></div></div>
-							<div sda-filter-template ng-if="descCol.filterable && descCol.dataType == 'NUMBER'"><div  sd-number-filter></div></div>
-							<div sda-filter-template ng-if="descCol.filterable && descCol.dataType == 'BOOLEAN'"><div sd-boolean-filter></div></div>
+					<div sda-filter-template ng-if="descCol.filterable">
+						<div ng-if="colData.dataType =='NUMBER'"><div sd-number-filter></div></div>
+						<div ng-if="colData.dataType =='DATE'"><div sd-date-filter></div></div>
+						<div ng-if="colData.dataType =='BOOLEAN'"><div sd-boolean-filter></div></div>
+						<div ng-if="colData.dataType =='STRING'"><div sd-text-search-filter></div></div>
 					</div>
+
 				</th>
 				<th sda-name="data" sda-column="TRIVIAL_DATA" sda-sortable="false"></th>
 				<th sda-name="actions" sda-fixed="true"></th>
@@ -80,13 +81,18 @@
 		<tbody>
 			<tr>
 				<td style="white-space: nowrap;">
-					<a href="#" ng-click="bpmCommon.stopEvent($event); worklistCtrl.$activateWorkItem(rowData);">
+					<a  ng-if="rowData.activatable" href="#" ng-click="bpmCommon.stopEvent($event); worklistCtrl.$activateWorkItem(rowData);">
 						{{rowData.activity.name}}
 					</a>
+					<span ng-if="!rowData.activatable" ng-bind="rowData.activity.name"> </span>
+					<span ng-if="rowData.qualityAssuranceState">
+						<span ng-if="rowData.qualityAssuranceState ==='IS_REVISED'"> <i class="glyphicon glyphicon-remove-circle" style="color:red;margin-left:2px;"></i></span>
+						<span ng-if="rowData.qualityAssuranceState === 'IS_QUALITY_ASSURANCE'"><i class="glyphicon glyphicon-time" style="margin-left:2px;"></i></span>
+					</span>
 				</td>
 				<td sda-data-type="int" style="text-align: center;"></td>
-				<td style="text-align: center;"><div sd-activity-criticality></div></td>
-				<td style="text-align: center;"><div sd-process-priority></div></td>
+				<td style="text-align: center;"><div sd-activity-criticality sda-criticality="rowData.criticality"></div></td>
+				<td style="text-align: center;"><div sd-process-priority sda-priority="rowData.priority"></div></td>
 				<td>
 					<table>
 						<tr ng-repeat="desc in rowData.descriptors">

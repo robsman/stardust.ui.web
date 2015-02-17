@@ -33,12 +33,12 @@
 		/**
 		*
 		*/
-		AbortActivityService.prototype.abortActivities = function(value) {
+		AbortActivityService.prototype.abortActivities = function(scope , activities) {
 
 			var deferred = $q.defer();
 			var requestObj = {
-				scope : value.scope,
-				activities : value.activities
+				scope :scope,
+				activities :activities
 			};
 
 			var httpResponse = $http.post(REST_URL, requestObj);

@@ -15,7 +15,7 @@
 {
    'use strict';
 
-   angular.module('bpm-common').directive('sdProcessPriority', ProcessPriority);
+   angular.module('bpm-common').directive('sdProcessPriority', ['$parse',ProcessPriority]);
 
    /*
     *
@@ -24,25 +24,28 @@
    {
       return {
          restrict : 'A',
-         template : "<i class=\"fa fa-flag priority-flag\" "+
-                      "ng-class=\"'priority-flag-'+rowData.priority\" "+
+         template : "<i class=\"glyphicon glyphicon-flag priority-flag\" "+
+                      "ng-class=\"'priority-flag-'+processPriorityCtrl.priority\" "+
                       "ng-mouseenter=\'processPriorityCtrl.toolTip.show = true\'"+
                       " ng-mouseleave=\'processPriorityCtrl.toolTip.show = false\'><\/i>"+
                       "<div class=\"popup-dlg worklist-tooltip\" style=\"color: black\" ng-show=\"processPriorityCtrl.toolTip.show\">"+
                          "<span class=\"worklist-tooltip-label\" ng-bind=\"processPriorityCtrl.i18n('views-common-messages.views-activityTable-priorityFilter-table-priorityColumn-name')\"><\/span> "+
-                         ": <span ng-bind=\"processPriorityCtrl.i18n('views-common-messages.common-priorities-'+rowData.priority)\"><\/span>" +
+                         ": <span ng-bind=\"processPriorityCtrl.i18n('views-common-messages.common-priorities-'+processPriorityCtrl.priority)\"><\/span>" +
                        "<\/div>",
-         controller : [ '$scope', ProcessPriorityController ]
+         controller : [ '$scope','$attrs','$parse', ProcessPriorityController ]
       };
    }
    /**
     *
     */
-   function ProcessPriorityController($scope, element)
+   function ProcessPriorityController( $scope, $attrs, $parse)
    {
       this.toolTip = {
          show : false
       };
+      
+      var priorityBinding  = $parse($attrs.sdaPriority);
+      this.priority = priorityBinding($scope);
       this.i18n = $scope.i18n;
       $scope.processPriorityCtrl = this;
    }

@@ -108,7 +108,6 @@
       var allProcessBinding  = $parse($attrs.sdaProcesses);
       
       this.allAccessibleProcesses = allProcessBinding($scope);
-      console.log(JSON.stringify(this.allAccessibleProcesses));
 
       this.loadAllActivities = function()
       {

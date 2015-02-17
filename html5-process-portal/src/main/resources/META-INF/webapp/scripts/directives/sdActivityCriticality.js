@@ -15,7 +15,7 @@
 {
    'use strict';
 
-   angular.module('bpm-common').directive('sdActivityCriticality', ActivityCriticality);
+   angular.module('bpm-common').directive('sdActivityCriticality',['$parse', ActivityCriticality]);
 
    /*
     * 
@@ -26,30 +26,30 @@
 
       return {
          restrict : 'A',
-         template : "<span data-ng-repeat=\"t in criticalityCtrl.getTimes(rowData.criticality.count) track by $index\" "+
+         template : "<span data-ng-repeat=\"t in criticalityCtrl.getTimes(criticalityCtrl.criticality.count) track by $index\" "+
                         "ng-mouseenter=\"criticalityCtrl.toolTip.show = true\" "+
                          "ng-mouseleave=\"criticalityCtrl.toolTip.show = false\"> "+
-                         "<i ng-show=\"rowData.criticality.color != 'WHITE' && rowData.criticality.color!='WHITE_WARNING'\" "+
-                         "class=\"fa fa-flag criticality-flag\" "+
-                         "ng-class=\"'criticality-flag-'+rowData.criticality.color\"><\/i>  "+
-                         "<i ng-show=\"rowData.criticality.color == 'WHITE'\" "+
-                         "class=\"fa fa-flag-o criticality-flag criticality-flag-WHITE\"><\/i>  "+
-                         "<i ng-show=\"rowData.criticality.color == 'WHITE_WARNING'\" "+
-                         "class=\"fa criticality-flag criticality-flag-WHITE-WARNING  fa-exclamation-triangle\"><\/i>" +
+                         "<i ng-show=\"criticalityCtrl.criticality.color != 'WHITE' && criticalityCtrl.criticality.color!='WHITE_WARNING'\" "+
+                         "class=\"glyphicon glyphicon-flag criticality-flag\" "+
+                         "ng-class=\"'criticality-flag-'+criticalityCtrl.criticality.color\"><\/i>  "+
+                         "<i ng-show=\"criticalityCtrl.criticality.color == 'WHITE'\" "+
+                         "class=\"glyphicon glyphicon-flag criticality-flag criticality-flag-WHITE\"><\/i>  "+
+                         "<i ng-show=\"criticalityCtrl.criticality.color == 'WHITE_WARNING'\" "+
+                         "class=\"glyphicon criticality-flag criticality-flag-WHITE-WARNING  glyphicon-exclamation-triangle\"><\/i>" +
                    "<\/span> "+
                    "<div class=\"popup-dlg worklist-tooltip\" style=\"color: black\" "+
                       "ng-show=\"criticalityCtrl.toolTip.show\"> "+
                       "<span class=\"worklist-tooltip-label\" ng-bind=\"criticalityCtrl.i18n('views-common-messages.processHistory-activityTable-criticalityTooltip-criticality')\"><\/span> "+
-                      ": <span ng-bind=\"rowData.criticality.label\"><\/span><br> <span class=\"worklist-tooltip-label\""+
+                      ": <span ng-bind=\"criticalityCtrl.criticality.label\"><\/span><br> <span class=\"worklist-tooltip-label\""+
                       "ng-bind=\"criticalityCtrl.i18n('views-common-messages.processHistory-activityTable-criticalityTooltip-value')\"><\/span> "+
-                      ": <span ng-bind=\"rowData.criticality.value\">" +
+                      ": <span ng-bind=\"criticalityCtrl.criticality.value\">" +
                    "<\/div> ",
-         controller : CriticalityController
+         controller : [ '$scope','$attrs','$parse', CriticalityController ]
       };
 
    }
 
-   function CriticalityController($scope)
+   function CriticalityController( $scope, $attrs, $parse)
    {
       this.getTimes = function(count)
       {
@@ -58,6 +58,9 @@
       this.toolTip = {
          show : false
       };
+      
+      var criticalityBinding  = $parse($attrs.sdaCriticality);
+      this.criticality = criticalityBinding($scope);
       this.i18n = $scope.i18n;
       $scope.criticalityCtrl = this;
    }
