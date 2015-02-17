@@ -665,6 +665,9 @@
 					filterScope.colData = {
 						name: col.name,
 						field: col.field,
+						dataType: col.dataType,
+						sortable: col.sortable,
+						fixed: col.fixed,
 						titleExpr: col.titleExpr
 					}
 
