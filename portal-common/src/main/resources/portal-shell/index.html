@@ -198,9 +198,6 @@
 	<script src="portal-shell/js/libs/angular/1.2.11/angular-resource.min.js"></script>
 	<script src="portal-shell/js/libs/angular/1.2.11/angular-route.min.js"></script>
 
-	<!-- Framework now does not depend on requriejs, but this is kept for backward compatibility for now -->
-	<script src="portal-shell/js/libs/require/2.0.5/require.min.js"></script>
-
 	<!-- Shell Framework -->
 	<script src="portal-shell/js/stardust.js"></script>
 	<script src="portal-shell/js/shell.js"></script>
@@ -218,6 +215,10 @@
 
 	<!-- Dependency Scripts from Portal Plugins -->
 	<!-- DEPENDENCY_SCRIPTS_TO_BE_INJECTED -->
+
+	<!-- Framework now does not depend on requriejs, but this is kept for backward compatibility for now. -->
+	<!-- Include it at the end, so that loading of dependency scripts is not affected. -->
+	<script src="portal-shell/js/libs/require/2.0.5/require.min.js"></script>
 
 	<script>
 		var startApp = function () {
