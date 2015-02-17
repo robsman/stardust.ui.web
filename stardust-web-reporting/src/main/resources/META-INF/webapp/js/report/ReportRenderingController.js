@@ -230,7 +230,7 @@ define(
 					chartOptions.legend.show = this.report.layout.chart.options.legend.show;
 					chartOptions.legend.location = this.report.layout.chart.options.legend.location;
 					if (!this.report.layout.chart.options.legend.show) {
-						//If Legend is disabled(false) still jqplot tries to draw and fails, so initializing it to empty object 
+						//JQPLOT issue: If Legend is disabled(false) still jqplot tries to draw and fails, so initializing it to empty object 
 						chartOptions.legend = {};
 					} 
 					chartOptions.highlighter.show = this.report.layout.chart.options.highlighter.show;
@@ -566,6 +566,21 @@ define(
 												    inData[i][j][3] = temp;
 													//after swap avg, min, max, stddev, count
 													inData[i][j].length = 2; //consider only avg value
+												}
+											}
+										}
+										
+
+										if (self.report.dataSet.firstDimension == self.reportingService.metadata.objects.activityInstance.dimensions.activeTimestamp.id) {
+											for ( var i in inData) {
+												for ( var j in inData[i]) {
+													//For dimension, "activeTimestamp" date returned from engine is in wrong format like "2014/11/19 00:00:00:000".
+													//In IE above Date fails.
+													//It should be like "2014/11/19 00:00:00" or "2014/11/19".
+													//Applying below logic to convert date to "2014/11/19"
+													if (inData[i][j][0].length > 10) {
+														inData[i][j][0] = inData[i][j][0].substring(0, 10); 
+													}
 												}
 											}
 										}
