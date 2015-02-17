@@ -836,6 +836,14 @@
 				delete params.filters;	
 			}
 
+			// Visible Columns
+			var visibleOrderedCols = getVisibleColumnsByDisplayOrder();
+			var colNames = [];
+			angular.forEach(visibleOrderedCols, function(col, i) {
+				colNames.push(col.name);
+			});
+			params.columns = colNames;
+
 			fetchData(params, function(result) {
 				try {
 					sdUtilService.assert(jQuery.isPlainObject(result),
