@@ -1,5 +1,6 @@
 package org.eclipse.stardust.ui.web.reporting.beans.rest;
 
+import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Enumeration;
@@ -477,9 +478,9 @@ public class ReportingResource
             fileName = org.eclipse.stardust.ui.web.viewscommon.utils.StringUtils.substringAfterLast(reportPath, "\\");
             reportPath = "\\" + reportPath;
          }
-
+         
          return Response.ok(reportingService.downloadReportDefinition(reportPath), MediaType.APPLICATION_OCTET_STREAM)
-               .header("content-disposition", "attachment; filename = \"" + fileName + "\"").build();
+               .header("content-disposition", "attachment; filename = \"" + URLEncoder.encode(fileName, "UTF-8").replaceAll("\\+", "%20") + "\"").build();
       }
       catch (Exception e)
       {
