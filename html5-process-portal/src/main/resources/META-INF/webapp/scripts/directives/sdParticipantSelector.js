@@ -100,7 +100,9 @@
 			      });
 			    };
 			    
-			    self.activities = $scope.activities;
+			    $scope.$watch("activities", function(showAllVal) {
+			    	self.activities = $scope.activities;
+			    });
 
 			    $scope.$watch("showAll", function(showAllVal) {
 			    	self.showAll = showAllVal;

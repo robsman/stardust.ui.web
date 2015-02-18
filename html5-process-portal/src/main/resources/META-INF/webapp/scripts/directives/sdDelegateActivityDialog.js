@@ -95,6 +95,8 @@
 			    self.resetValues = resetValues;
 			    self.confirm = confirm;
 			    self.validate = validate;
+			    
+			    $scope.tempurl = "plugins/html5-process-portal/scripts/directives/partials/delegateActivityDialogBody.html";
 			}
 			
 			DelegateActivityDialogController.prototype.safeApply = function() {
@@ -209,6 +211,9 @@
 				var deferred = $q.defer();
 				self.participants = {};
 				
+				if(self.activities == undefined) {
+					return {totalCount: 0, list: [{name: '', type: ''}]};
+				}
 				var activities = self.activities.map(function(val) {
 				    return val.oid;
 				});

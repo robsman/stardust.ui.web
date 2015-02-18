@@ -24,13 +24,14 @@
 		return {
 			restrict: 'A',
 			template: " <div  sd-dialog  "+
-               			"sd-show-overlay=\"true\" "+
-               			"sd-show-dialog=\"showDialog\" "+
-               			"sd-dialog-type=\"confirm\" "+
-               			"sd-title=\"{{abortActivityCtrl.i18n('views-common-messages.views-common-activity-abortActivity-label')}}\" "+
-               			"sd-dialog-scope=\"this\" "+
-               			"sd-on-open=\"abortActivityCtrl.onConfirm(res)\" "+
-               			"sd-template=\"plugins\/html5-process-portal\/scripts\/directives\/partials\/abortActivityDialogBody.html\"> "+
+               			"sda-show=\"showDialog\" "+
+               			"sda-type=\"confirm\" "+
+               			"sda-title=\"{{abortActivityCtrl.i18n('views-common-messages.views-common-activity-abortActivity-label')}}\" "+
+               			"sda-scope=\"this\" "+
+               			"sda-confirm-action-label=\"{{abortActivityCtrl.i18n('views-common-messages.common-ok')}}\" " +
+               			"sda-cancel-action-label=\"{{abortActivityCtrl.i18n('views-common-messages.common-close')}}\" " +
+               			"sda-on-open=\"abortActivityCtrl.onConfirm(res)\" "+
+               			"sda-template=\"plugins\/html5-process-portal\/scripts\/directives\/partials\/abortActivityDialogBody.html\"> "+
             			"<\/div>  ",
 			scope :{
 				activitiesToAbort : '=sdaActivitiesToAbort',
