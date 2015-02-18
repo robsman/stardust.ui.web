@@ -1609,6 +1609,7 @@ public class ModelElementMarshaller implements ModelMarshaller
          eventJson.addProperty(ModelerConstants.TYPE_PROPERTY, ModelerConstants.EVENT_KEY);
          eventJson.addProperty(ModelerConstants.IMPLEMENTATION_PROPERTY, "none");
          eventJson.add(ModelerConstants.ATTRIBUTES_PROPERTY, new JsonObject());
+         eventJson.addProperty(ModelerConstants.EVENT_CLASS_PROPERTY, "none");
       }
 
       eventSymbolJson.add(ModelerConstants.MODEL_ELEMENT_PROPERTY, eventJson);
@@ -1627,22 +1628,6 @@ public class ModelElementMarshaller implements ModelMarshaller
    public JsonObject toEndEventJson(EndEventSymbol endEventSymbol)
    {
       JsonObject eventSymbolJson = new JsonObject();
-
-      /*int laneOffsetX = 0;
-      int laneOffsetY = 0;
-      ISwimlaneSymbol container = (endEventSymbol.eContainer() instanceof ISwimlaneSymbol)
-            ? (ISwimlaneSymbol) endEventSymbol.eContainer()
-            : null;
-      while (null != container)
-      {
-         laneOffsetX += container.getXPos();
-         laneOffsetY += container.getYPos();
-
-         // recurse
-         container = (container.eContainer() instanceof ISwimlaneSymbol)
-               ? (ISwimlaneSymbol) container.eContainer()
-               : null;
-      }*/
 
       eventSymbolJson.addProperty(ModelerConstants.OID_PROPERTY,
             endEventSymbol.getElementOid());
