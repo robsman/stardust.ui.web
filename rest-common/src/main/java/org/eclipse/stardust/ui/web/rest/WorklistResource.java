@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
@@ -175,6 +178,17 @@ public class WorklistResource
       {
          options.filter = getFilters(filters.toString());
       }
+      
+      
+      JsonArray visbleColumns = postJSON.getAsJsonObject("descriptors").get("visbleColumns").getAsJsonArray();
+      List<String> columnsList = new ArrayList<String>();
+      for (JsonElement jsonElement : visbleColumns)
+      {
+         columnsList.add(StringUtils.substringAfter(jsonElement.getAsString(), "descriptorValues."));
+      }
+       options.visibleDescriptorColumns = columnsList;
+       options.allDescriptorsVisible = postJSON.getAsJsonObject("descriptors").get("fetchAll").getAsBoolean();
+       
       return options;
    }
    

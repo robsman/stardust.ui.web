@@ -11,10 +11,7 @@
 package org.eclipse.stardust.ui.web.rest.service.utils;
 
 import java.io.Serializable;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.annotation.Resource;
 
@@ -84,8 +81,10 @@ public class WorklistUtils
       {
          WorklistQuery query = org.eclipse.stardust.ui.web.viewscommon.utils.WorklistUtils
                .createWorklistQuery(participant);
+         
          query.setPolicy(HistoricalStatesPolicy.WITH_LAST_USER_PERFORMER);
-         query.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
+                 
+         addDescriptorPolicy(options, query);
 
          addSortCriteria(query, options);
 
@@ -104,6 +103,7 @@ public class WorklistUtils
       return null;
    }
 
+   
    /**
     * Adds filter criteria to the query
     * 
@@ -290,6 +290,23 @@ public class WorklistUtils
       addDescriptorFilters(query, filterDTO);
 
    }
+   /**
+    * Add descriptor policy
+    * @param options
+    * @param query
+    */
+   
+   private void addDescriptorPolicy(Options options, Query query)
+   {
+      
+      if(options.allDescriptorsVisible){
+         query.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
+      }else if(CollectionUtils.isNotEmpty(options.visibleDescriptorColumns)){          
+         query.setPolicy(DescriptorPolicy.withIds(new HashSet<String>(options.visibleDescriptorColumns)));
+      }else{
+         query.setPolicy(DescriptorPolicy.NO_DESCRIPTORS);
+      }
+   }
 
    /**
     * Add filter on descriptor columns .
@@ -301,9 +318,10 @@ public class WorklistUtils
 
       Map<String, DescriptorFilterDTO> descFilterMap = worklistDTO.descriptorFilterMap;
 
+
       if (null != descFilterMap)
       {
-         query.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
+        
          Map<String, DataPath> descriptors = processDefUtils.getAllDescriptors(false);
          GenericDescriptorFilterModel filterModel = GenericDescriptorFilterModel
                .create(descriptors.values());
@@ -354,10 +372,6 @@ public class WorklistUtils
 
          DescriptorFilterUtils.applyFilters(query, filterModel);
       }
-      else
-      {
-         query.setPolicy(DescriptorPolicy.NO_DESCRIPTORS);
-      }
 
    }
 
@@ -377,6 +391,8 @@ public class WorklistUtils
                      ActivityInstanceState.Application, ActivityInstanceState.Suspended});
          // TODO - this is used to enhance performace but has a bug
          // query.setPolicy(EvaluateByWorkitemsPolicy.WORKITEMS);
+         
+         addDescriptorPolicy(options, query);
 
          addSortCriteria(query, options);
 

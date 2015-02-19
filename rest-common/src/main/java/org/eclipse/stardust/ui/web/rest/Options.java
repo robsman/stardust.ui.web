@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest;
 
+import java.util.List;
+
 import org.eclipse.stardust.ui.web.rest.service.dto.WorklistFilterDTO;
 
 /**
@@ -23,6 +25,8 @@ public class Options
    public String orderBy;
    public boolean asc = true;
    public WorklistFilterDTO filter;
+   public List<String> visibleDescriptorColumns;
+   public boolean  allDescriptorsVisible;
   
    
    public Options(){

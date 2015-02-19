@@ -3,7 +3,7 @@
  * the accompanying materials are made available under the terms of the Eclipse Public
  * License v1.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ****************************************************************************************/
@@ -18,27 +18,27 @@
 
    angular.module('workflow-ui.services').provider('sdWorklistService', function()
    {
-      this.$get = [ '$rootScope', '$resource', function($rootScope, $resource)
+      this.$get = [ '$rootScope', '$resource','$filter', function($rootScope, $resource, $filter)
       {
-         var service = new WorklistService($rootScope, $resource);
+         var service = new WorklistService($rootScope, $resource, $filter);
          return service;
       } ];
    });
 
    /*
-    * 
+    *
     */
-   function WorklistService($rootScope, $resource)
+   function WorklistService($rootScope, $resource, $filter)
    {
       var REST_BASE_URL = "services/rest/portal/worklist/";
       /*
-       * 
+       *
        */
       WorklistService.prototype.getWorklist = function(query)
       {
          // Prepare URL
          var restUrl = REST_BASE_URL + ":type/:id";
-         
+
       // Add Query String Params. TODO: Can this be sent as stringified JSON?
          var options = "";
          if (query.options.skip != undefined) {
@@ -53,15 +53,41 @@
             options += "&orderBy=" + query.options.order[index].name;
             options += "&orderByDir=" + query.options.order[index].dir;
          }
-       
+
          if (options.length > 0) {
             restUrl = restUrl + "?" + options.substr(1);
          }
-
+         
          var postData ={
-           filters :query.options.filters   
-         };
+                  filters : query.options.filters,
+                  descriptors : {
+                     fetchAll : false,
+                     visbleColumns : []
+                  }
+          };
+         
 
+         var found = $filter('filter')(query.options.columns, {
+            field : 'descriptors'
+         }, true);
+
+         if (found && found.length > 0)
+         {
+            postData.descriptors.fetchAll = true;
+         }
+         
+          var descriptorColumns = $filter('filter')(query.options.columns, {
+            name : 'descriptorValues'
+         });
+
+         if (descriptorColumns)
+         {
+            angular.forEach(descriptorColumns,function(column){
+               postData.descriptors.visbleColumns.push(column.name);
+            });
+         }
+         
+        
          var worklist = $resource(restUrl, {
             type : '@type',
             id : '@id'
