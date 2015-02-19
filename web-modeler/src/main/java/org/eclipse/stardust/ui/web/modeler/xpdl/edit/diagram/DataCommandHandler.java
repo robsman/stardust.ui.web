@@ -116,10 +116,10 @@ public class DataCommandHandler
             ModelElementEditingUtils.deleteDataMappingConnection(dataSymbol.getDataMappings());
             processDefinition.getDiagram().get(0).getDataSymbol().remove(dataSymbol);
             parentLaneSymbol.getDataSymbol().remove(dataSymbol);
-            if (dataSymbol.getData() != null)
+            /*if (dataSymbol.getData() != null)
             {
                dataSymbol.getData().getSymbols().remove(dataSymbol);
-            }
+            }*/
          }
       }
    }
