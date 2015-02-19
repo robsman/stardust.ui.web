@@ -50,14 +50,19 @@ angular.module('bpm-common.directives')
 	                buttonText = attrs.sdaButtonText || "Select Date",
 	                milliseconds = attrs.sdaMilliseconds === 'true' ? true : false;
 
-	            if (milliseconds) {
 		            ngModelCtrl.$parsers.push(function(value) {
+		               ngModelCtrl.$setValidity('validate', true);
 		            	if (value == undefined || value == null || value == '') {
 		            		return value;
 		            	}
-
+		            	try{
 		            	var date = jQuery.datepicker.parseDate(dateFormat, value);
-                		return date.getTime();
+		            	}catch (e) {
+		            	   ngModelCtrl.$setValidity('validate', false);
+	                     return undefined;
+                     }
+		            	
+                		return milliseconds ? date.getTime():value;
 		            });
 	
 		            ngModelCtrl.$formatters.push(function(value) {
@@ -66,9 +71,8 @@ angular.module('bpm-common.directives')
 		            	}
 
 		            	var date = new Date(value);
-                		return jQuery.datepicker.formatDate(dateFormat, date);
+                		return  milliseconds ? jQuery.datepicker.formatDate(dateFormat, date):vaue;
 		            });
-	            }
 
 	            $(element).datepicker({
 	                numberOfMonths : numberOfMonths,

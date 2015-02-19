@@ -33,7 +33,9 @@
 						if (value == undefined || value == null || value == "") {
 							success = true;
 						} else {
-							success = performValidation(validate, value);
+							var ret = performValidation(validate, value, toUI);
+							success = ret.success;
+							value = ret.value;
 						}
 
 						if (success) {
@@ -58,9 +60,11 @@
 		/*
 		 * 
 		 */
-		function performValidation(dataType, value) {
-			var success = false;
-
+		function performValidation(dataType, value, toUI) {
+			var ret = {
+			    success : false,
+			    value : value
+			};
 			try {
 				var val;
 				var _value = "" + value; // Convert to String. Below code expects it to be String 
@@ -72,46 +76,49 @@
 							// Decimal no. Invalid
 						} else if (dataType === "byte") {
 							if (val >= -128 && val <= 127) {
-								success = true;
+							   ret.success = true;
 							}
 						} else if (dataType === "short") {
 							if (val >= -32768 && val <= 32767) {
-								success = true;
+							   ret.success = true;
 							}
 						} else if (dataType === "integer") {
 							if (val >= -2147483648 && val <= 2147483647) {
-								success = true;
+							   ret.success = true;
 							}
 						} else if (dataType === "long") {
 							if (val >= -9223372036854775808 && val <= 9223372036854775807) {
-								success = true;
+							   ret.success = true;
 							}
+						}
+						if(ret.success) {
+						   ret.value = parseInt(value);
 						}
 					}
 				} else if (dataType === "duration") {
 					var parts = _value.split(":");
 					if (parts.length == 6) {
-						success = true;
+					   ret.success = true;
 						for(var i in parts) {
 							val = new Number(parts[i]);
 							if (!isNaN(val)) {
 								if (val < -32768 || val > 32767) {
-									success = false;
+								   ret.success = false;
 									break;
 								}
 							} else {
-								success = false;
+							   ret.success = false;
 								break;
 							}
 						}
 					}
 				} else {
-					success = true;
+				   ret.success = true;
 				}
 			} catch(e) {
 			}
 
-			return success;
+			return ret;
 		}
 	}
 })();

@@ -33,6 +33,7 @@
 								'<input type="text" sd-date-picker sda-change-year="true" sda-milliseconds="true"' + 
 									' id="from" name="from" ng-model="filterData.from" ng-model-onblur />' +
 								'<div class="msg-error" ng-show="filterForm[\'from\'].$error.datePicker">{{i18n(\'html5-common.converter-number-error\')}}</div>' +
+								'<div class="msg-error" ng-show="filterForm[\'from\'].$error.validate">{{i18n(\'html5-common.date-error\')}}</div>' +
 							'</td>' +
 						'</tr>' +
 						'<tr>' +
@@ -41,6 +42,7 @@
 								'<input type="text" sd-date-picker sda-change-year="true" sda-milliseconds="true"' + 
 									' id="to" name="to" ng-model="filterData.to" ng-model-onblur />' +
 								'<div class="msg-error" ng-show="filterForm[\'to\'].$error.datePicker">{{i18n(\'html5-common.converter-number-error\')}}</div>' +
+								'<div class="msg-error" ng-show="filterForm[\'to\'].$error.validate">{{i18n(\'html5-common.date-error\')}}</div>' +
 							'</td>' +
 						'</tr>' +
 					'</table>' +
