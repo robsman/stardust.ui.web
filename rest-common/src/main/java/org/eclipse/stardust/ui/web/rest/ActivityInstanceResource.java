@@ -272,9 +272,7 @@ public class ActivityInstanceResource
       {
          List<ActivityInstanceOutDataDTO> activities = ActivityInstanceOutDataDTO.toList(postedData);
 
-         Map<Long, String> result = getActivityInstanceService().completeAll(activities, "default");
-
-         String jsonOutput = GsonUtils.stringify(result);
+         String jsonOutput  = getActivityInstanceService().completeAll(activities, "default");
 
          return Response.ok(jsonOutput, MediaType.APPLICATION_JSON).build();
       }

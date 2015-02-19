@@ -1,0 +1,6 @@
+<div ng-bind="i18n('processportal.views-completeActivityDialog-body')"> </div>
+<table>
+	<ul ng-repeat="item in worklistCtrl.selectedActivity">
+	<li> {{item.activity.name}} ({{item.oid}})</li>
+	</ul>
+</table>

@@ -2,7 +2,7 @@
 	<div class="worklist-title tbl-title">{{worklistCtrl.title}}</div>
 	<div sda-toolbar>
 		<div class="tbl-toolbar-section">
-			<button sda-column="TRIVIAL_DATA" ng-disabled="!worklistCtrl.containsAllTrivialManualActivities()" ng-click="worklistCtrl.$completeAll()" title="{{i18n('processportal.views-worklistPanel-tooltip-completeAll')}}" class="button-link tbl-toolbar-item tbl-tool-link">
+			<button sda-column="TRIVIAL_DATA" ng-disabled="!worklistCtrl.containsAllTrivialManualActivities()" ng-click="worklistCtrl.$openCompleteDialog()" title="{{i18n('processportal.views-worklistPanel-tooltip-completeAll')}}" class="button-link tbl-toolbar-item tbl-tool-link">
 			   <i class="glyphicon glyphicon-share-alt"></i>
 			</button>
 			<button ng-disabled="worklistCtrl.dataTable.getSelection() < 1" href="#" ng-click="worklistCtrl.$openDelegateDialog();" title="{{i18n('processportal.toolbars-worklistView-tooltip-delegate')}}" class="button-link tbl-toolbar-item tbl-tool-link" >
@@ -113,28 +113,7 @@
 					sda-field="{{descCol.field}}" sda-data-type="{{descCol.dataType}}" style="white-space: nowrap;">
 				</td>
 				<td sda-column="TRIVIAL_DATA">
-					<table ng-hide="!worklistCtrl.worklist.trivialManualActivities[rowData.oid]">
-						<tbody>
-					    	<tr ng-repeat="mapping in worklistCtrl.worklist.trivialManualActivities[rowData.oid].dataMappings">
-					        	<td style="white-space: nowrap;">{{mapping.name}}</td>
-					            <td>
-					            	<select ng-show="mapping.isEnum" ng-click="bpmCommon.stopEvent($event)"
-					      		    	ng-model="worklistCtrl.worklist.trivialManualActivities[rowData.oid].inOutData[mapping.id]"
-					                    ng-init="worklistCtrl.worklist.trivialManualActivities[rowData.oid].inOutData[mapping.id] = worklistCtrl.worklist.trivialManualActivities[rowData.oid].inOutData[mapping.id] || mapping.enumValues[0]"
-					                    ng-options="enumVal for enumVal in mapping.enumValues">
-									</select>
-
-									<input type="text" ng-click="bpmCommon.stopEvent($event)"
-					                	ng-show="mapping.typeName == 'java.lang.String'"
-					                    ng-model="worklistCtrl.worklist.trivialManualActivities[rowData.oid].inOutData[mapping.id]" />
-
-									<input type="checkbox" ng-click="bpmCommon.stopEvent($event)"
-										ng-show="mapping.typeName == 'java.lang.Boolean'"
-										ng-model="worklistCtrl.worklist.trivialManualActivities[rowData.oid].inOutData[mapping.id]" />
-								</td>
-							</tr>
-						</tbody>
-					</table>
+				 <div data-ng-include="'plugins/html5-process-portal/scripts/directives/partials/worklistData.html'">
 				</td>
 				<td>
 					<div style="text-align: right; white-space: nowrap;">
@@ -148,7 +127,7 @@
 						</button>
 						<button sda-column="TRIVIAL_DATA"
 							ng-disabled="worklistCtrl.worklist.trivialManualActivities[rowData.oid] == undefined"
-							ng-click="bpmCommon.stopEvent($event); worklistCtrl.$complete(rowData);"
+							ng-click="bpmCommon.stopEvent($event); worklistCtrl.$openCompleteDialog(rowData);"
 							title="{{i18n('processportal.toolbars-workflowActions-tooltip-complete')}}" class="button-link tbl-tool-link">
 							<i class="glyphicon glyphicon-share-alt"></i>
 						</button>
@@ -165,6 +144,20 @@
 			</tr>
 		</tbody>
 	</table>
+
+	<div sd-dialog sd-show-overlay="true"
+		sd-show-dialog="worklistCtrl.showCompleteDialog"
+		sd-dialog-type="confirm" sd-title="{{i18n('processportal.views-completeActivityDialog-title')}}"
+		sd-dialog-scope="this" sd-on-open="worklistCtrl.$completeAll(res)"
+		sd-template="plugins/html5-process-portal/scripts/directives/partials/completeActivityDialog.html">
+	</div>
+
+	<div sd-dialog sd-show-overlay="true"
+		sd-show-dialog="worklistCtrl.showCompleteNotificationDialog"
+		sd-dialog-type="info" sd-title="{{i18n('admin-portal-messages.common-notification-title')}}"
+		sd-dialog-scope="this" 
+		sd-template="plugins/html5-process-portal/scripts/directives/partials/completeActivityNotfication.html">
+	</div>
 
 	<span sd-delegate-activity-dialog sda-show-dialog="worklistCtrl.showDelegateDialog" sda-activity-list="worklistCtrl.selectedActivity"
 		sda-on-confirm="worklistCtrl.onDelegateConfirm()">

@@ -16,16 +16,16 @@
 (function(){
 	'use strict';
 
-	angular.module('bpm-common').directive('sdWorklist', 
-			['$parse', '$q', 'sdUtilService', 'sdViewUtilService', 'sdLoggerService', 'sdPreferenceService', 'sdWorklistService', 
+	angular.module('bpm-common').directive('sdWorklist',
+			['$parse', '$q', 'sdUtilService', 'sdViewUtilService', 'sdLoggerService', 'sdPreferenceService', 'sdWorklistService',
 			 'sdActivityInstanceService', 'sdProcessDefinitionService', 'sdCriticalityService', 'sdStatusService', WorklistDirective]);
 
 	/*
-	 * 
+	 *
 	 */
-	function WorklistDirective($parse, $q, sdUtilService, sdViewUtilService, sdLoggerService, sdPreferenceService, sdWorklistService, 
+	function WorklistDirective($parse, $q, sdUtilService, sdViewUtilService, sdLoggerService, sdPreferenceService, sdWorklistService,
 			sdActivityInstanceService, sdProcessDefinitionService, sdCriticalityService, sdStatusService) {
-		
+
 		var trace = sdLoggerService.getLogger('bpm-common.sdWorklist');
 
 		var directiveDefObject = {
@@ -44,7 +44,7 @@
 		};
 
 		/*
-		 * 
+		 *
 		 */
 		function processRawMarkup(elem, attr) {
 			// Process Trivial Data Column
@@ -57,7 +57,7 @@
 				var cols = elem.find('[sda-column="TRIVIAL_DATA"]');
 				cols.remove();
 			}
-			
+
 			// Toolbar
 			var toolbar = elem.prev();
 			var items = toolbar.find('[sda-column="TRIVIAL_DATA"]');
@@ -65,7 +65,7 @@
 		}
 
 		/*
-		 * 
+		 *
 		 */
 		function WorklistCompiler(scope, element, attr, ctrl) {
 			var self = this;
@@ -85,7 +85,7 @@
 		}
 
 		/*
-		 * 
+		 *
 		 */
 		WorklistCompiler.prototype.initialize = function(attr, scope) {
 			var scopeToUse = scope.$parent;
@@ -94,7 +94,7 @@
 			// Define data
 			this.worklist = {};
 			this.dataTable = null; // Handle to data table instance, to be set later
-			
+
 			//Abort Activity Data
 			this.showAbortActivityDialog = false;
 			this.activitiesToAbort = [];
@@ -127,12 +127,12 @@
 			this.tableHandleExpr = 'worklistCtrl.dataTable';
 
 			var unregister = scope.$watch(this.tableHandleExpr, function(newVal, oldVal) {
-				if (newVal != undefined && newVal != null && newVal != oldVal) {				
+				if (newVal != undefined && newVal != null && newVal != oldVal) {
 					if (attr.sdWorklist) {
 						var assignable = $parse(attr.sdWorklist).assign;
 						if (assignable) {
 							assignable(scopeToUse, self.dataTable);
-						}						
+						}
 					}
 					unregister();
 				}
@@ -155,7 +155,7 @@
 						}
 					});
 
-					// Update for sdDataTable for change in parent 
+					// Update for sdDataTable for change in parent
 					scopeToUse.$watch(attr.sdaSelection, function(newVal, oldVal) {
 						if (newVal != undefined && newVal != null && newVal != self.selection) {
 							self.selection = newVal;
@@ -195,14 +195,14 @@
 		};
 
 		/*
-		 * 
+		 *
 		 */
 		WorklistCompiler.prototype.refresh = function() {
 			this.dataTable.refresh(true);
 		};
-		
+
 		/*
-		 * 
+		 *
 		 */
 		WorklistCompiler.prototype.fetchPage = function(options) {
 			var self = this;
@@ -214,7 +214,7 @@
 			sdWorklistService.getWorklist(query).then(function(data) {
 				self.worklist.list = data.list;
 				self.worklist.totalCount = data.totalCount;
-				
+
 				var oids = [];
 				angular.forEach(self.worklist.list, function(workItem, index){
 					if (workItem.trivial == undefined || workItem.trivial) {
@@ -235,35 +235,35 @@
 		};
 
 		/*
-		 * 
+		 *
 		 */
 		WorklistCompiler.prototype.onSelect = function(info) {
 			// NOP
 		};
 
 		/*
-		 * 
+		 *
 		 */
 		WorklistCompiler.prototype.onPagination = function(info) {
 			// NOP
 		};
 
 		/*
-		 * 
+		 *
 		 */
 		WorklistCompiler.prototype.onColumnReorder = function(info) {
 			// NOP
 		};
 
 		/*
-		 * 
+		 *
 		 */
 		WorklistCompiler.prototype.onSorting = function(info) {
 			// NOP
 		};
 
 		/*
-		 * 
+		 *
 		 */
 		WorklistCompiler.prototype.fetchDescriptorCols = function() {
 			var self = this;
@@ -280,14 +280,14 @@
 						filterable : descriptor.filterable
 					});
 				});
-				
+
 				self.ready = true;
 				self.safeApply();
 			});
 		};
 
 		/*
-		 * 
+		 *
 		 */
 		WorklistCompiler.prototype.fetchAllProcesses = function() {
 			var self = this;
@@ -308,9 +308,9 @@
             self.allAvailableCriticalities = criticalities;
          });
       };
-      
+
       /*
-       * 
+       *
        */
 
       WorklistCompiler.prototype.fetchAvailableStates = function()
@@ -321,30 +321,30 @@
             self.availableStates = value;
          });
       };
-      
-    
+
+
 
 		/*
-       * 
+       *
        */
 		WorklistCompiler.prototype.activateWorkItem = function(workItem) {
 			sdViewUtilService.openView("activityPanel", "OID=" + workItem.oid, {"oid" : "" + workItem.oid});
 		};
 
 		/*
-		 * 
+		 *
 		 */
 		WorklistCompiler.prototype.openNotes = function(workItem) {
-			sdViewUtilService.openView("notesPanel", "oid=" + workItem.processInstance.oid, 
+			sdViewUtilService.openView("notesPanel", "oid=" + workItem.processInstance.oid,
 					{"oid": "" + workItem.processInstance.oid}, true);
 		};
 
 		/*
-		 * 
+		 *
 		 */
 		WorklistCompiler.prototype.openProcessHistory = function(workItem) {
-			sdViewUtilService.openView("processInstanceDetailsView", 
-					"processInstanceOID=" + workItem.processInstance.oid, 
+			sdViewUtilService.openView("processInstanceDetailsView",
+					"processInstanceOID=" + workItem.processInstance.oid,
 					{
 						"oid": "" + workItem.oid,
 						"processInstanceOID": "" + workItem.processInstance.oid
@@ -352,28 +352,9 @@
 			);
 		};
 
-		/*
-		 * 
-		 */
-		WorklistCompiler.prototype.complete = function(workItem) {
-			var self = this;
 
-			var trivialActivityInfo = self.worklist.trivialManualActivities[workItem.oid];
-			if (trivialActivityInfo) {
-				var outData = trivialActivityInfo.inOutData;
-				var activityData = {oid: workItem.oid, outData: outData};
-				sdActivityInstanceService.completeAll([activityData]).then(function(data) {
-					if (sdUtilService.isEmpty(data)) {
-						self.refresh();
-					} else {
-						showError('Failed in completing activity...', data); // TODO I18N
-					}
-				});
-			}
-		};
-		
 		/**
-		 * 
+		 *
 		 */
 		 WorklistCompiler.prototype.containsAllTrivialManualActivities = function() {
 	         var self = this;
@@ -395,47 +376,70 @@
 	               activitiesData.push(workItem.oid);
 	            }
 	         });
-	         
+
 	         if(selectedWorkItems.length == activitiesData.length){
 	            return true;
 	         }
 	         return false;
 	      };
-
+	      
+	      
 		/*
-		 * 
+		 *
 		 */
-		WorklistCompiler.prototype.completeAll = function() {
-			var self = this;
+	      WorklistCompiler.prototype.completeAll = function(res) {
 
-			// This will always be array as selection mode is 'multiple'
-			var selectedWorkItems = self.dataTable.getSelection();
-			if (selectedWorkItems.length > 0) {
-				var activitiesData = [];
-				angular.forEach(selectedWorkItems, function(workItem, index){
-					var trivialActivityInfo = self.worklist.trivialManualActivities[workItem.oid];
-					if(trivialActivityInfo) {
-						var outData = trivialActivityInfo.inOutData;
-						activitiesData.push({oid: workItem.oid, outData: outData});
-					}
-				});
+	         var self = this;
+	         self.completeActivityResult = {
+	                  error : false,
+	                  notifications : []
+	         };
+	         
+	         var promise = res.promise;
 
-				if (activitiesData.length > 0) {
-					sdActivityInstanceService.completeAll(activitiesData).then(function(data) {
-						if (!sdUtilService.isEmpty(data)) {
-							showError('Failed in completing activities...', data); // TODO I18N
-						}
-						
-						self.refresh();
-					});
-				} else {
-					self.dataTable.setSelection([]);
-				}
-			}
-		};
+	         promise.then(function(data){
+	            var selectedWorkItems = self.selectedActivity;
+	            if (selectedWorkItems.length > 0) {
+	               var activitiesData = [];
+	               angular.forEach(selectedWorkItems, function(workItem, index){
+	                  var trivialActivityInfo = self.worklist.trivialManualActivities[workItem.oid];
+	                  if(trivialActivityInfo) {
+	                     var outData = trivialActivityInfo.inOutData;
+	                     activitiesData.push({oid: workItem.oid, outData: outData});
+	                  }
+	               });
+
+	               if (activitiesData.length > 0) {
+	                  sdActivityInstanceService.completeAll(activitiesData).then(function(data) {
+	                     self.showCompleteNotificationDialog = true;
+	                     self.completeActivityResult.notifications = data;
+	                     self.completeActivityResult.error = false;
+	                     self.refresh();
+	                  });
+	               } else {
+	                  self.dataTable.setSelection([]);
+	               }
+	            }
+	            
+	            self.selectedActivity = [];
+	         });
+
+	      };
+		
+		WorklistCompiler.prototype.openCompleteDialog = function(workItem){
+		  this.showCompleteDialog = true;
+		   if (angular.isDefined(workItem)) {
+            this.selectedActivity = [workItem];
+         } else {
+            var selectedWorkItems = this.dataTable.getSelection();
+            if (selectedWorkItems.length > 0) {
+               this.selectedActivity = selectedWorkItems;
+            }
+         }
+		}
 
 		/*
-		 * 
+		 *
 		 */
 		WorklistCompiler.prototype.openDelegateDialog = function(workItem) {
 			this.showDelegateDialog = true;
@@ -449,21 +453,21 @@
 				}
 			}
 		};
-		
+
 		/*
-		 * 
+		 *
 		 */
 		WorklistCompiler.prototype.onDelegateConfirm = function() {
 			this.refresh();
 		};
 
 		/*
-		 * 
+		 *
 		 */
 		WorklistCompiler.prototype.onAbortPopoverConfirm = function() {
 			this.refresh();
 		};
-		
+
 		/*
 		 *
 		 */
@@ -477,7 +481,7 @@
 					trace.log("No Rows selected");
 					return;
 				}
-				
+
 				angular.forEach(selectedWorkItems, function(workItem) {
 					self.activitiesToAbort.push(workItem.oid);
 				});
@@ -485,7 +489,7 @@
 				var workItem = value;
 				this.activitiesToAbort.push(workItem.oid);
 			}
-			
+
 			this.showAbortActivityDialog = true;
 		}
 
@@ -499,27 +503,6 @@
 			this.activitiesToAbort = [];
 		};
 
-		/*
-		 * 
-		 */
-		function showError(title, error) {
-			var msg = title + '\n';
-			if (angular.isObject(error)) {
-				if (angular.isArray(error)) {
-					for (var key in error) {
-						msg += '\n' + error[key];
-					}
-				} else {
-					for (var key in error) {
-						msg += '\n' + key + ' : ' + error[key];
-					}
-				}
-			} else {
-				msg += error;
-			}
-
-			alert(msg); // TODO: Till we have reusable message dialog
-		}
 
 		return directiveDefObject;
 	}

@@ -16,7 +16,6 @@ package org.eclipse.stardust.ui.web.rest.service;
 import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,6 +32,7 @@ import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.service.dto.*;
+import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap.NotificationDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DocumentDTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.utils.ActivityInstanceUtils;
@@ -107,22 +107,30 @@ public class ActivityInstanceService
 	 * @param context
 	 * @return
 	 */
-	public Map<Long, String> completeAll(List<ActivityInstanceOutDataDTO> activities, String context)
+	public String completeAll(List<ActivityInstanceOutDataDTO> activities, String context)
 	{
-		Map<Long, String> result = new HashMap<Long, String>();
+	   NotificationMap notificationMap = new NotificationMap();
+
 		for (ActivityInstanceOutDataDTO aiDto : activities)
 		{
 			try
 			{
 				activityInstanceUtils.complete(aiDto.oid, context, aiDto.outData);
+				notificationMap.addSuccess(new NotificationDTO(aiDto.oid, null, ActivityInstanceState.Completed.getName()));
 			}
 			catch (Exception e)
 			{
-				result.put(aiDto.oid, e.getMessage());
+			   notificationMap.addFailure(new NotificationDTO(aiDto.oid, null, e.getMessage()));
 			}
 		}
-		return result;
+		 return GsonUtils.toJsonHTMLSafeString(notificationMap);
 	}
+	
+	  
+   private Map<String, Serializable> convertOutDataTOAppropriateType(Long oid, Map<String,Serializable> outData ,String context){
+      
+      return outData;
+   }
 
 	/**
 	 * @param activityInstanceOid

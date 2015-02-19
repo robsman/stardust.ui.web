@@ -63,7 +63,6 @@ public class WorklistResource
          @PathParam("participantQId") String participantQId,
          @QueryParam("skip") @DefaultValue("0") Integer skip,
          @QueryParam("pageSize") @DefaultValue("8") Integer pageSize,
-         @QueryParam("filterBy") String filters,
          @QueryParam("orderBy") @DefaultValue("oid") String orderBy,
          @QueryParam("orderByDir") @DefaultValue("asc") String orderByDir, String postData)
    {
@@ -96,7 +95,6 @@ public class WorklistResource
    public Response getWorklistForUser(@PathParam("userId") String userId,
          @QueryParam("skip") @DefaultValue("0") Integer skip,
          @QueryParam("pageSize") @DefaultValue("8") Integer pageSize,
-         @QueryParam("filterBy") String filters,
          @QueryParam("orderBy") @DefaultValue("oid") String orderBy,
          @QueryParam("orderByDir") @DefaultValue("asc") String orderByDir, String postData)
    {

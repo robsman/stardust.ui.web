@@ -10,10 +10,7 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service;
 
-import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.getAssignedToLabel;
-import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.getLastPerformer;
-import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.isAbortable;
-import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.isDelegable;
+import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.*;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -22,28 +19,27 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.springframework.stereotype.Component;
+
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetails;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
+import org.eclipse.stardust.engine.api.runtime.QualityAssuranceUtils.QualityAssuranceState;
 import org.eclipse.stardust.ui.web.rest.Options;
-import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.CriticalityDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.StatusDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.TrivialActivityInstanceDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.*;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.CriticalityUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.WorklistUtils;
+import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityCategory;
 import org.eclipse.stardust.ui.web.viewscommon.utils.CommonDescriptorUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDescriptor;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
-import org.springframework.stereotype.Component;
 /**
  * @author Subodh.Godbole
  * @version $Revision: $
@@ -158,6 +154,18 @@ public class WorklistService
                }
             }
 
+            dto.activatable = isActivatable(ai);
+            if (QualityAssuranceState.IS_QUALITY_ASSURANCE.equals(ai.getQualityAssuranceState()))
+            {
+               long monitoredActivityPerformerOID = ai.getQualityAssuranceInfo().getMonitoredInstance()
+                     .getPerformedByOID();
+               long currentPerformerOID = SessionContext.findSessionContext().getUser().getOID();
+               if (monitoredActivityPerformerOID == currentPerformerOID)
+               {
+                  dto.activatable = false;
+               }
+            }
+            
             list.add(dto);
          }
       }
