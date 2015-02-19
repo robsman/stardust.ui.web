@@ -843,7 +843,13 @@
 			var visibleOrderedCols = getVisibleColumnsByDisplayOrder();
 			var colNames = [];
 			angular.forEach(visibleOrderedCols, function(col, i) {
-				colNames.push(col.name);
+				colNames.push({
+					name: col.name,
+					field: col.field,
+					dataType: col.dataType,
+					sortable: col.sortable,
+					fixed: col.fixed
+				});
 			});
 			params.columns = colNames;
 
