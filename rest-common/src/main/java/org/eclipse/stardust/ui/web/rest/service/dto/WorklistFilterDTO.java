@@ -18,9 +18,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.stardust.ui.web.rest.FilterDTO;
+
 import com.google.gson.reflect.TypeToken;
 
-public class WorklistFilterDTO {
+public class WorklistFilterDTO implements FilterDTO{
 
    public ProcessActivityDTO processDefinition;
 
@@ -46,33 +48,6 @@ public class WorklistFilterDTO {
       public List<String> activities;
    }
 
-   public static class RangeDTO {
-      public Long from;
-      public Long to;
-   }
-
-   public static class RangesDTO {
-      public List<RangeDTO> rangeLike;
-   }
-   public static class EqualsDTO {
-      public List<String> like;
-   }
-   
-   public static class BooleanDTO {
-      public boolean equals;
-   }
-
-   public static class PriorityLikeDTO {
-      public List<PrioirtyDTO> priorityLike;
-   }
-
-   public static class CriticalityLikeDTO {
-      public List<CriticalityDTO> criticalityLike;
-   }
-
-   public static class TextSearchDTO {
-      public String textSearch;
-   }
 
    public static class DescriptorFilterDTO{
       public String type;

@@ -16,4 +16,16 @@ public class SelectItemDTO extends AbstractDTO{
 
 	   @DTOAttribute("label")
 	   public String label;
+
+	public SelectItemDTO(String value, String label) {
+		super();
+		this.value = value;
+		this.label = label;
+	}
+
+	public SelectItemDTO() {
+		// TODO Auto-generated constructor stub
+	}
+	   
+	   
 }

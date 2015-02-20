@@ -8,7 +8,7 @@
  * Contributors:
  *    Anoop.Nair (SunGard CSA LLC) - initial API and implementation and/or initial documentation
  *******************************************************************************/
-package org.eclipse.stardust.ui.web.rest;
+package org.eclipse.stardust.ui.web.rest.service.dto;
 
 import java.util.List;
 
@@ -16,28 +16,10 @@ import java.util.List;
  * @author Subodh.Godbole
  * @version $Revision: $
  */
-public class Options {
-	public int pageSize;
-	public int skip;
-	public String orderBy;
-	public boolean asc = true;
-	public FilterDTO filter;
-	public List<String> visibleDescriptorColumns;
-	public boolean allDescriptorsVisible;
-
-	public Options() {
-
-	}
-
-	/**
-	 * @param pageSize
-	 * @param skip
-	 */
-	public Options(int pageSize, int skip, String orderBy, boolean asc) {
-		super();
-		this.pageSize = pageSize;
-		this.skip = skip;
-		this.orderBy = orderBy;
-		this.asc = asc;
-	}
+public class DocumentSearchFilterAttributesDTO extends AbstractDTO
+{
+   public List<?> typicalFileTypes;
+   public List<?> documentTypes;
+   public List<?> repositories;
+   public List<?> allRegisteredMimeFileTypes;
 }
