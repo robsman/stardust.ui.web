@@ -43,7 +43,7 @@ public class DumpDependencies
    }
 
    /**
-    *  Scans the invoking JVM's classpath for dependencies
+    * Scans the invoking JVM's classpath for dependencies
     */
    public void discover()
    {
@@ -62,19 +62,34 @@ public class DumpDependencies
       dependencies.append("Resource Name");
       dependencies.append(SEPERATOR);
       dependencies.append("Resource Path");
+      dependencies.append(SEPERATOR);
+      dependencies.append("Library Name");
+      dependencies.append(SEPERATOR);
+      dependencies.append("Library Version");
       dependencies.append(NEWLINE);
 
+      // Separate for loops to club all libs, styles and scripts together
       for (ResourceDependency resourceDependency : resourceDependencies)
       {
-         dependencies.append(getDependencies(resourceDependency.getLibs(), resourceDependency.getPluginLocation()));
+         dependencies
+               .append(getDependencies(resourceDependency.getLibs(), resourceDependency.getPluginLocation(), true));
       }
 
       dependencies.append(NEWLINE);
 
-      // Separate for loops to club all libs and styles together
       for (ResourceDependency resourceDependency : resourceDependencies)
       {
-         dependencies.append(getDependencies(resourceDependency.getStyles(), resourceDependency.getPluginLocation()));
+         dependencies.append(getDependencies(resourceDependency.getStyles(), resourceDependency.getPluginLocation(),
+               false));
+      }
+
+      dependencies.append(NEWLINE);
+
+      // Scripts can be commented if not required
+      for (ResourceDependency resourceDependency : resourceDependencies)
+      {
+         dependencies.append(getDependencies(resourceDependency.getScripts(), resourceDependency.getPluginLocation(),
+               false));
       }
 
    }
@@ -109,9 +124,10 @@ public class DumpDependencies
    /**
     * @param resourceDependencyEntries
     * @param jarLocation
+    * @param versionInfo
     * @return Formatted output string containing dependencies
     */
-   private String getDependencies(List<String> resourceDependencyEntries, String jarLocation)
+   private String getDependencies(List<String> resourceDependencyEntries, String jarLocation, boolean versionInfo)
    {
       StringBuilder dependencies = new StringBuilder();
       for (int i = 0; i < resourceDependencyEntries.size(); i++)
@@ -131,9 +147,30 @@ public class DumpDependencies
          // For Resource Name
          String name = reseDepEntry.substring(lastIndexOf + 1, reseDepEntry.length());
 
+         String libraryname = null;
+         String libraryVersion = null;
+
          dependencies.append(name);
          dependencies.append(SEPERATOR);
          dependencies.append(path);
+
+         if (versionInfo)
+         {
+            String[] pathTokens = path.split(DELIMITER);
+            if (pathTokens.length > 5)
+            {
+               // sample path-token "plugins/html5-common/libs/datatables/1.9.4/plugins"
+               // 2nd last token token would be version and 3rd last token library name
+               libraryVersion = pathTokens[pathTokens.length - 1];
+               dependencies.append(SEPERATOR);
+               dependencies.append(libraryVersion);
+
+               libraryname = pathTokens[pathTokens.length - 2];
+               dependencies.append(SEPERATOR);
+               dependencies.append(libraryname);
+            }
+         }
+
          dependencies.append(NEWLINE);
       }
       return dependencies.toString();
