@@ -108,7 +108,6 @@ define(
 				this.warningMessages = [];
 				this.helpPanel = m_utils.jQuerySelect("#" + this.id + " #helpPanel");
 				this.lastSelectedPageIndex = 0;
-        this.m_user = m_user;
 
 				/**
 				 *

@@ -18,15 +18,6 @@ define(
 		function(m_i18nUtils, m_globalVariables, m_constants) {
 
 			return {
-			  
-			  m_i18nUtils : function(){
-			    return m_i18nUtils
-			  },
-			  
-			  m_constants : function(){
-          return m_constants
-        },
-        
 				removeFromArray : function(array, from, to) {
 					removeFromArray(array, from, to);
 				},
