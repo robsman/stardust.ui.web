@@ -387,11 +387,11 @@ define(
 												}
 												
 												//reset data path
-												event.data.panel.currentParameterDefinition.dataPath = ""; 
-												event.data.panel.parameterDefinitionPathInput.val("");
-												
+												event.data.panel.currentParameterDefinition.dataPath = "";
+												if (event.data.panel.parameterDefinitionPathInput) {
+												  event.data.panel.parameterDefinitionPathInput.val("");  
+												}
 												event.data.panel.setAutoCompleteMatches(event.data.panel.currentParameterDefinition); 
-												
 												event.data.panel.currentFocusInput = null;
 
 												event.data.panel
