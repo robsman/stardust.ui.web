@@ -5,163 +5,165 @@
  -->
 
 	<div ng-controller="sdDataFlowPropertiesPageCtrl as ctrl">
-		<div>
-			<table>
-				<tr>
-					<td>
-						<div class="panelBorder" style="margin-bottom: 10px;">
-							<table width="100%" cellpadding="0" cellspacing="0"
-								class="layoutTable">
-								<tr>
-									<td><div class="toolBar">
-											<table>
-												<tr>
-													<td><input type="image"
-														src="plugins/bpm-modeler/images/icons/add.png"
-														title="ctrl.getProperty('modeler.element.properties.commonProperties.add')"
-														alt="ctrl.getProperty('modeler.element.properties.commonProperties.add')"
-														class="toolbarButton" ng-click="ctrl.addMapping()" /></td>
-													<td><img
-														ng-src="plugins/bpm-modeler/images/icons/toolbar-separator.png"></img>
-													</td>
-													<td><input type="image"
-														src="plugins/bpm-modeler/images/icons/delete.png"
-														title="ctrl.getProperty('modeler.element.properties.commonProperties.delete')"
-														alt="ctrl.getProperty('modeler.element.properties.commonProperties.delete')"
-														class="toolbarButton" ng-click="ctrl.deleteMapping()" /></td>
+		<div ng-if="ctrl.initialized">
+			<div>
+				<table>
+					<tr>
+						<td>
+							<div class="panelBorder" style="margin-bottom: 10px;">
+								<table width="100%" cellpadding="0" cellspacing="0"
+									class="layoutTable">
+									<tr>
+										<td><div class="toolBar">
+												<table>
+													<tr>
+														<td><input type="image"
+															src="plugins/bpm-modeler/images/icons/add.png"
+															title="ctrl.getProperty('modeler.element.properties.commonProperties.add')"
+															alt="ctrl.getProperty('modeler.element.properties.commonProperties.add')"
+															class="toolbarButton" ng-click="ctrl.addMapping()" /></td>
+														<td><img
+															ng-src="plugins/bpm-modeler/images/icons/toolbar-separator.png"></img>
+														</td>
+														<td><input type="image"
+															src="plugins/bpm-modeler/images/icons/delete.png"
+															title="ctrl.getProperty('modeler.element.properties.commonProperties.delete')"
+															alt="ctrl.getProperty('modeler.element.properties.commonProperties.delete')"
+															class="toolbarButton" ng-click="ctrl.deleteMapping()" /></td>
+													</tr>
+												</table>
+											</div></td>
+									</tr>
+									<tr>
+										<td>
+											<table class="dataTable" style="width: 100%">
+												<tr ng-repeat="dataMapping in ctrl.unifiedDataMappings"
+													ng-click="ctrl.setSelected($index)"
+													ng-class="{selected: dataMapping.id == ctrl.selectedDataMapping.id}">
+													<td ng-class="ctrl.getClassFor(dataMapping)"></td>
+													<td style="min-width: 200px">{{ dataMapping.name }}</td>
 												</tr>
 											</table>
-										</div></td>
-								</tr>
-								<tr>
-									<td>
-										<table class="dataTable" style="width: 100%">
-											<tr ng-repeat="dataMapping in ctrl.unifiedDataMappings"
-												ng-click="ctrl.setSelected($index)"
-												ng-class="{selected: dataMapping.id == ctrl.selectedDataMapping.id}">
-												<td ng-class="ctrl.getClassFor(dataMapping)"></td>
-												<td style="min-width: 200px">{{ dataMapping.name }}</td>
-											</tr>
-										</table>
-									</td>
-								</tr>
-							</table>
-						</div>
-					</td>
-				</tr>
-			</table>
-		</div>
+										</td>
+									</tr>
+								</table>
+							</div>
+						</td>
+					</tr>
+				</table>
+			</div>
 
-		<div>
-			<table>
-				<tr ng-show="ctrl.integrator">
-					<td><label>{{ctrl.getProperty('modeler.element.properties.commonProperties.uuid')}}</label></td>
-					<td>{{ctrl.selectedDataMapping.uuid}}</td>
-				</tr>
-				<tr ng-show="ctrl.integrator">
-					<td><label>{{ctrl.getProperty('modeler.element.properties.commonProperties.id')}}</label></td>
-					<td><div class="output" />{{ctrl.selectedDataMapping.id}}</td>
-				</tr>
-				<tr>
-					<td><label>{{ctrl.getProperty('modeler.element.properties.commonProperties.name')}}</label></td>
-					<td><input type="text"
-						ng-model="ctrl.selectedDataMapping.name"
-						ng-blur="ctrl.nameModified()"></td>
-				</tr>
-			</table>
-			<table>
-				<tr>
-					<td><input type="checkbox"
-						ng-model="ctrl.selectedDataMapping.inMappingExist"
-						ng-change="ctrl.inputCheckboxChanged()" /></td>
-					<td><label>{{ctrl.getProperty('modeler.dataFlow.propertiesPanel.label.input')}}</label></td>
-					<td><input type="checkbox"
-						ng-model="ctrl.selectedDataMapping.outMappingExist"
-						ng-change="ctrl.outputCheckboxChanged()" /></td>
-					<td><label>{{ctrl.getProperty('modeler.dataFlow.propertiesPanel.label.output')}}</label></td>
-				</tr>
-			</table>
-			<table>
-				<tr>
-					<td>
-						<div ng-show="ctrl.selectedDataMapping.inMappingExist">
-							<table>
-								<tr>
-									<td><label>{{ctrl.getProperty('modeler.dataFlow.propertiesPanel.label.inputDataPath')}}</label></td>
-								</tr>
-								<tr>
-									<td><textarea
-											ng-model="ctrl.selectedDataMapping.inMapping.dataPath"
-											ng-blur="ctrl.submitChanges()"
-											ng-disabled="ctrl.dataPathDisabled" cols="40" rows="3"></textarea></td>
-								</tr>
-								<tr>
-									<td>
-										<div ng-show="ctrl.inputAccessPointSelectInputPanel">
-											<table>
-												<tr>
-													<td><label>{{ctrl.getProperty('modeler.dataFlow.propertiesPanel.label.inputAccessPoint')}}</label></td>
-													<td><select
-														ng-options="item as item.label group by item.group for item in ctrl.inputAccessPoints"
-														ng-model="ctrl.inputAccessPointVal"
-														ng-change="ctrl.inputAccessPointChanged()"></td>
-												</tr>
-												<tr>
-													<td><label>{{ctrl.getProperty('modeler.dataFlow.propertiesPanel.label.inputAccessPointPathInput')}}</label></td>
-													<td><input
-														ng-model="ctrl.selectedDataMapping.inMapping.accessPointPath"
-														ng-disabled="ctrl.inputAPPathDisabled"
-														ng-blur="ctrl.submitChanges()" type="text"
-														style="width: 200px" /></td>
-												</tr>
-											</table>
-										</div>
-									</td>
-								</tr>
-							</table>
-						</div>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<div ng-show="ctrl.selectedDataMapping.outMappingExist">
-							<table>
-								<tr>
-									<td colspan="2"><label>{{ctrl.getProperty('modeler.dataFlow.propertiesPanel.label.outputDataPath')}}</label></td>
-								</tr>
-								<tr>
-									<td colspan="2"><textarea
-											ng-model="ctrl.selectedDataMapping.outMapping.dataPath"
-											ng-blur="ctrl.submitChanges()" cols="40" rows="3"></textarea></td>
-								</tr>
-								<tr>
-									<td>
-										<div ng-show="ctrl.outputAccessPointSelectInputPanel">
-											<table>
-												<tr>
-													<td><label>{{ctrl.getProperty('modeler.dataFlow.propertiesPanel.label.outputAccessPoint')}}</label></td colspan="2">
-													<td><select
-														ng-options="item as item.label group by item.group for item in ctrl.outputAccessPoints"
-														ng-model="ctrl.outputAccessPointVal"
-														ng-change="ctrl.outputAccessPointChanged()"></td>
-												</tr>
-												<tr>
-													<td><label>{{ctrl.getProperty('modeler.dataFlow.propertiesPanel.label.outputAccessPointPathInput')}}</label></td>
-													<td><input
-														ng-model="ctrl.selectedDataMapping.outMapping.accessPointPath"
-														ng-blur="ctrl.submitChanges()"
-														ng-disabled="ctrl.outputAPPathDisabled" type="text"
-														style="width: 200px" /></td>
-												</tr>
-											</table>
-										</div>
-									</td>
-								</tr>
-							</table>
-						</div>
-					</td>
-				</tr>
-			</table>
+			<div>
+				<table>
+					<tr ng-show="ctrl.integrator">
+						<td><label>{{ctrl.getProperty('modeler.element.properties.commonProperties.uuid')}}</label></td>
+						<td>{{ctrl.selectedDataMapping.uuid}}</td>
+					</tr>
+					<tr ng-show="ctrl.integrator">
+						<td><label>{{ctrl.getProperty('modeler.element.properties.commonProperties.id')}}</label></td>
+						<td><div class="output" />{{ctrl.selectedDataMapping.id}}</td>
+					</tr>
+					<tr>
+						<td><label>{{ctrl.getProperty('modeler.element.properties.commonProperties.name')}}</label></td>
+						<td><input type="text"
+							ng-model="ctrl.selectedDataMapping.name"
+							ng-blur="ctrl.nameModified()"></td>
+					</tr>
+				</table>
+				<table>
+					<tr>
+						<td><input type="checkbox"
+							ng-model="ctrl.selectedDataMapping.inMappingExist"
+							ng-change="ctrl.inputCheckboxChanged()" /></td>
+						<td><label>{{ctrl.getProperty('modeler.dataFlow.propertiesPanel.label.input')}}</label></td>
+						<td><input type="checkbox"
+							ng-model="ctrl.selectedDataMapping.outMappingExist"
+							ng-change="ctrl.outputCheckboxChanged()" /></td>
+						<td><label>{{ctrl.getProperty('modeler.dataFlow.propertiesPanel.label.output')}}</label></td>
+					</tr>
+				</table>
+				<table>
+					<tr>
+						<td>
+							<div ng-show="ctrl.selectedDataMapping.inMappingExist">
+								<table>
+									<tr>
+										<td><label>{{ctrl.getProperty('modeler.dataFlow.propertiesPanel.label.inputDataPath')}}</label></td>
+									</tr>
+									<tr>
+										<td><textarea
+												ng-model="ctrl.selectedDataMapping.inMapping.dataPath"
+												ng-blur="ctrl.submitChanges()"
+												ng-disabled="ctrl.dataPathDisabled" cols="40" rows="3"></textarea></td>
+									</tr>
+									<tr>
+										<td>
+											<div ng-show="ctrl.inputAccessPointSelectInputPanel">
+												<table>
+													<tr>
+														<td><label>{{ctrl.getProperty('modeler.dataFlow.propertiesPanel.label.inputAccessPoint')}}</label></td>
+														<td><select
+															ng-options="item as item.label group by item.group for item in ctrl.inputAccessPoints"
+															ng-model="ctrl.inputAccessPointVal"
+															ng-change="ctrl.inputAccessPointChanged()"></td>
+													</tr>
+													<tr>
+														<td><label>{{ctrl.getProperty('modeler.dataFlow.propertiesPanel.label.inputAccessPointPathInput')}}</label></td>
+														<td><input
+															ng-model="ctrl.selectedDataMapping.inMapping.accessPointPath"
+															ng-disabled="ctrl.inputAPPathDisabled"
+															ng-blur="ctrl.submitChanges()" type="text"
+															style="width: 200px" /></td>
+													</tr>
+												</table>
+											</div>
+										</td>
+									</tr>
+								</table>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<div ng-show="ctrl.selectedDataMapping.outMappingExist">
+								<table>
+									<tr>
+										<td colspan="2"><label>{{ctrl.getProperty('modeler.dataFlow.propertiesPanel.label.outputDataPath')}}</label></td>
+									</tr>
+									<tr>
+										<td colspan="2"><textarea
+												ng-model="ctrl.selectedDataMapping.outMapping.dataPath"
+												ng-blur="ctrl.submitChanges()" cols="40" rows="3"></textarea></td>
+									</tr>
+									<tr>
+										<td>
+											<div ng-show="ctrl.outputAccessPointSelectInputPanel">
+												<table>
+													<tr>
+														<td><label>{{ctrl.getProperty('modeler.dataFlow.propertiesPanel.label.outputAccessPoint')}}</label></td colspan="2">
+														<td><select
+															ng-options="item as item.label group by item.group for item in ctrl.outputAccessPoints"
+															ng-model="ctrl.outputAccessPointVal"
+															ng-change="ctrl.outputAccessPointChanged()"></td>
+													</tr>
+													<tr>
+														<td><label>{{ctrl.getProperty('modeler.dataFlow.propertiesPanel.label.outputAccessPointPathInput')}}</label></td>
+														<td><input
+															ng-model="ctrl.selectedDataMapping.outMapping.accessPointPath"
+															ng-blur="ctrl.submitChanges()"
+															ng-disabled="ctrl.outputAPPathDisabled" type="text"
+															style="width: 200px" /></td>
+													</tr>
+												</table>
+											</div>
+										</td>
+									</tr>
+								</table>
+							</div>
+						</td>
+					</tr>
+				</table>
+			</div>
 		</div>
 	</div>
 </div>
