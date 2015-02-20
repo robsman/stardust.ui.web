@@ -319,7 +319,9 @@ define(
 						if (this.getFirstDimension().type == this.reportingService.metadata.timestampType) {
 							chartOptions.axes.xaxis.renderer = jQuery.jqplot.DateAxisRenderer;
 							chartOptions.axes.xaxis.tickOptions.formatString = this.getDateFormatForDimension(true);
-						} else {
+						} else if (this.getFirstDimension().type == this.reportingService.metadata.integerType) {
+							//No need to set any axis renderer, default is sufficient for integer values
+						} else {						
 							chartOptions.axes.xaxis.renderer = jQuery.jqplot.CategoryAxisRenderer;
 						}
 						
