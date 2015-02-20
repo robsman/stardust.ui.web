@@ -14,37 +14,60 @@
   'use strict';
 
   angular.module('modeler-ui').controller('sdDataFlowPropertiesPageCtrl',
-          ['$scope', DataFlowPropertiesPageCtrl]);
+          ['$scope', 'sgRequireJSService', DataFlowPropertiesPageCtrl]);
 
   /*
    * 
    */
-  function DataFlowPropertiesPageCtrl($scope) {
+  function DataFlowPropertiesPageCtrl($scope, sgRequireJSService) {
     var self = this;
-
     self.initialized = false;
-
+    
+/*    self.failedToLoadRequireJsModules = false;
+    var promise = sgRequireJSService.getModule('m_utils');
+    promise.then(function(data){
+      self.m_utils = data;
+    }, function(){
+      self.failedToLoadRequireJsModules = true;
+    })
+*/    
+    
     $scope.$on('PAGE_ELEMENT_CHANGED', function(event, page) {
       if (!self.initialized) {
         // generic
         self.page = page;
         self.propertiesPanel = self.page.propertiesPanel;
+        
+        //TODO: use sgRequireJSService.getModule in future, currently it is not working as expected
         self.m_utils = self.page.m_utils;
         self.m_user = self.propertiesPanel.m_user;
         self.m_i18nUtils = self.m_utils.m_i18nUtils();
         self.m_constants = self.m_utils.m_constants();
-
+        
         // dataFlow specific
         self.dataMappingIndex = 0;
-
         self.initialized = true;
       }
 
       // dataFlow specific
       self.reset();
-      $scope.$apply();
     });
 
+    /**
+     * 
+     */
+    DataFlowPropertiesPageCtrl.prototype.getProperty = function(key, param1,
+            param2) {
+      var value = this.m_i18nUtils.getProperty(key);
+      if (param1) {
+        value = value.replace('{0}', param1);
+      }
+      if (param2) {
+        value = value.replace('{1}', param2);
+      }
+      return value;
+    }
+    
     /**
      * 
      */
@@ -686,21 +709,6 @@
           dataMappings: self.modelElement.dataMappings
         }
       });
-    }
-
-    /**
-     * 
-     */
-    DataFlowPropertiesPageCtrl.prototype.getProperty = function(key, param1,
-            param2) {
-      var value = this.m_i18nUtils.getProperty(key);
-      if (param1) {
-        value = value.replace('{0}', param1);
-      }
-      if (param2) {
-        value = value.replace('{1}', param2);
-      }
-      return value;
     }
   }
 
