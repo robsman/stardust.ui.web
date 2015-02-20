@@ -2894,12 +2894,9 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       }
 
       JsonObject declarationJson = json.getAsJsonObject("typeDeclaration");
-      JsonObject typeJson = (null != declarationJson)
-            ? declarationJson.getAsJsonObject("type")
-            : null;
-      if ((null != typeJson)
-            && "SchemaType".equals(typeJson.getAsJsonPrimitive("classifier")
-                  .getAsString()))
+      JsonObject typeJson = declarationJson == null ? null : declarationJson.getAsJsonObject("type");
+      String classifier = typeJson == null ? null : typeJson.getAsJsonPrimitive("classifier").getAsString();
+      if ("SchemaType".equals(classifier))
       {
          if (hasNotJsonNull(json, ModelerConstants.ATTRIBUTES_PROPERTY))
          {
@@ -2932,8 +2929,11 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
          XsdSchemaUtils.updateXSDSchemaType(getModelBuilderFacade(),
                typeDeclaration.getSchemaType(), declarationJson.getAsJsonObject("schema"));
       }
-
-      // ExternalReference ?
+      else if ("ExternalReference".equals(classifier))
+      {
+         XsdSchemaUtils.updateExternalReferenceAnnotations(getModelBuilderFacade(),
+               typeDeclaration.getExternalReference(), declarationJson.getAsJsonObject("schema"));
+      }
    }
 
    /**

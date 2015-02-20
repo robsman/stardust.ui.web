@@ -3758,6 +3758,7 @@ public class ModelElementMarshaller implements ModelMarshaller
          if (schemaJson == null)
          {
             schemaJson = XsdSchemaUtils.toSchemaJson(schema);
+            XsdSchemaUtils.patchAnnotations(structType, schemaJson);
             cache.put(schema, schemaJson);
          }
          typeDeclarationJson.add("schema", schemaJson);
