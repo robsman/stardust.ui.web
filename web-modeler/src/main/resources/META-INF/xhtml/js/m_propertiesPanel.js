@@ -108,6 +108,7 @@ define(
 				this.warningMessages = [];
 				this.helpPanel = m_utils.jQuerySelect("#" + this.id + " #helpPanel");
 				this.lastSelectedPageIndex = 0;
+        this.m_user = m_user;
 
 				/**
 				 *
@@ -251,11 +252,7 @@ define(
 																						"id"));
 														pageDiv.append(data);
 														var extension = extensions[pageDiv.attr("id")];
-														var page = extension.provider
-																.create(
-																		panel,
-																		extension.id,
-																		extension.title);
+														var page = panel.createPage(extension);
 
 														page.hide();
 														page.profiles = extension.profiles;
@@ -267,8 +264,7 @@ define(
 						} else {
 							// Embedded Markup
 
-							var page = extension.provider
-							.create(this);
+							var page = this.createPage(extension);
 
 							this.propertiesPages.push(page);
 
@@ -282,11 +278,11 @@ define(
 						m_angularContextUtils.runInActiveViewContext(function($scope){
 							m_extensionManager.handleAngularizedExtensions($scope, dynamicExtensions, self.id, {
 								onload: function(extension) {
-									var page = extension.provider.create(self, extension.id, extension.title);
-									page.hide();
-									page.profiles = extension.profiles;
-									dynamicPropertiesPages.push({extension: extension, page: page});
-									page.safeApply(true);
+									var page = self.createPage(extension);
+									  page.hide();
+	                  page.profiles = extension.profiles;
+	                  dynamicPropertiesPages.push({extension: extension, page: page});
+	                  page.safeApply(true);  
 								},
 								done: function() {
 									// Once all propertiesPages are loaded build the properties page list
@@ -319,7 +315,19 @@ define(
 						});
 					}
 				};
+            
+				PropertiesPanel.prototype.createPage = function(extension) {
+              var page;
+              if (extension.html5) {
+                return extension.provider.create(this, extension);
+              } else {
+                return extension.provider.create(this, extension.id,
+                        extension.title)
+              }
 
+              return page;
+            };
+				
 				/**
 				 * 
 				 */

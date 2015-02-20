@@ -25,11 +25,16 @@ define(
 						imageUrl) {
 					return new PropertiesPage(propertiesPanel, id, titel,
 							imageUrl);
-				}
+				},
+				createPage : function(propertiesPanel, extCfg) {
+		          return new PropertiesPage(propertiesPanel, extCfg.id, extCfg.titel,
+		                  extCfg.imageUrl);
+		        }
 			};
 
 			function PropertiesPage(propertiesPanel, id, title, imageUrl) {
-				this.propertiesPanel = propertiesPanel;
+				this.m_utils = m_utils;
+			  this.propertiesPanel = propertiesPanel;
 				this.id = id;
 				this.title = title;
 				this.page = m_utils.jQuerySelect("#" + this.propertiesPanel.id + " #"
@@ -297,5 +302,15 @@ define(
 						}
 					}, m_utils.jQuerySelect("#" + self.id).get(0));
 				};
+				
+				/**
+				 * 
+				 */
+				PropertiesPage.prototype.broadcastElementChangedEvent = function() {
+          var self = this;
+          m_angularContextUtils.runInAngularContext(function($scope){
+            $scope.$broadcast('PAGE_ELEMENT_CHANGED', self);
+          }, m_utils.jQuerySelect("#" + self.id).get(0));
+        };
 			}
 		});

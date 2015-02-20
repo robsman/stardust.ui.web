@@ -40,8 +40,6 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js
 				this.type = m_constants.DATA_FLOW;
 				this.id = id;
 				this.description = null;
-				this.inputDataMapping = true;
-				this.outputDataMapping = true;
 				this.inputDataPath = null;
 				this.outputDataPath = null;
 				this.inputAccessPointId = null;
@@ -88,5 +86,31 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js
 
 					return transferObject;
 				};
+
+				/**
+				 * 
+				 */
+        DataFlow.prototype.inputOutputMappingExists = function() {
+          var inputMappingExist = false;
+          var outputMappingExist = false;
+    
+          var dataMappings = this.dataMappings
+          for (var n = 0; n < dataMappings.length; n++) {
+            if (dataMappings[n].direction == "IN") {
+              inputMappingExist = true;
+            }
+            if (dataMappings[n].direction == "OUT") {
+              outputMappingExist = true;
+            }
+            if (inputMappingExist && outputMappingExist) {
+              break;
+            }
+          }
+          return {
+            input: inputMappingExist,
+            output: outputMappingExist
+          };
+        }            
+
 			}
 		});
