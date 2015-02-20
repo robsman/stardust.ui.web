@@ -124,6 +124,19 @@ public class DTOBuilder
       return list;
    }
    
+   
+   /**
+    * @param jsonString
+    * @param toClass
+    * @return
+    * @throws Exception
+    */
+   public static <DTO, T> DTO buildFromJSON(String jsonString, Class<DTO> toClass) throws Exception
+   {
+      return buildFromJSON(jsonString, toClass, null);
+   }
+   
+   
   /**
    * Builds a DTO from a JSON String
    * @param jsonString
@@ -186,7 +199,7 @@ public class DTOBuilder
                Type listType = new TypeToken<List<String>>()
                {
                }.getType();
-               if (customTokens.containsKey(field.getName()))
+               if (customTokens != null && customTokens.containsKey(field.getName()))
                {
                   listType = customTokens.get(field.getName());
                }
