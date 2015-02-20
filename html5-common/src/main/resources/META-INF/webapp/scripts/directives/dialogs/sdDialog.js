@@ -20,6 +20,7 @@
 	 * 		sda-on-open: (@) Eg: func(res)
 	 * 		sda-on-close: (@) Eg: func(res)
 	 * 		sda-on-confirm: (@) Eg: func(res)
+	 * 		sda-model (@)
 	 */
 	function DialogDirectiveFn(sdLoggerService, $compile, $document) {
 		var trace = sdLoggerService.getLogger('bpm-common.directives.sdDialog');
@@ -42,7 +43,7 @@
 			},
 			transclude: true,
 			templateUrl: 'plugins/html5-common/scripts/directives/dialogs/templates/dialog.html',
-			controller: ['$attrs', '$scope', '$element', '$parse', '$timeout', '$q', DialogControllerFn],
+			controller: ['$attrs', '$scope', '$element', '$parse', '$transclude', '$q', '$timeout', DialogControllerFn],
 			compile: DialogCompilerFn
 		};
 		
@@ -57,6 +58,12 @@
             y1; //tracked y pos
 			
 			var dialogElem = elem.find('#modal');
+			var dialogBlock = dialogElem.find('.modal-dialog')
+			
+			if (attr.sdaModal == 'false') {
+				dialogElem.addClass('no-modal');
+				dialogElem.removeClass('modal');
+			}
 			
 			if (attr.sdaDraggable == 'true') {
 				bindDraggable();
@@ -64,12 +71,12 @@
 			
 			function bindDraggable() {
 				// Make sure to bind mouse event only on the header
-				var headerElem = dialogElem.find('.modal-header');
+				var headerElem = dialogBlock.find('.modal-header');
 				headerElem.css({cursor: 'all-scroll'});
 				headerElem.bind('mousedown', function($event) {
 					// Now make the dialog draggable by noting down the position of the mouse cursor
-			          x1 = dialogElem.prop('offsetLeft');
-			          y1 = dialogElem.prop('offsetTop');
+			          x1 = dialogBlock.prop('offsetLeft');
+			          y1 = dialogBlock.prop('offsetTop');
 			          x0 = $event.clientX;
 			          y0 = $event.clientY;
 			          $document.bind('mousemove', mouseMove);
@@ -81,10 +88,26 @@
 	        function mouseMove($event) {
 	          var dx = $event.clientX - x0,
 	              dy = $event.clientY - y0;
-	              
-	          dialogElem.css({
-	            top:  y1 + dy + 'px',
-	            left: x1 + dx + 'px'
+	          var w = jQuery(window);
+	          var top = y1 + dy;
+	          var left = x1 + dx;
+	          
+	          if (top < 0) {
+	        	  top = 0;
+	          }
+	          if (left < 0) {
+	        	  left = 0;
+	          }
+	          if (top > w.height()) {
+	        	  top = w.height();
+	          }
+	          if (left > w.width()) {
+	        	  left = w.width();
+	          }
+	          
+	          dialogBlock.css({
+	            top:  top + 'px',
+	            left: left + 'px'
 	          });
 	          return false;
 	        }
@@ -95,38 +118,44 @@
 	        }
 			
 			return function (scope, element, attrs) { // Link Function
-				DialogLinkFn(scope, transcludeFn);
+				DialogLinkFn(scope, element, attrs);				
 			}
 		}
 		
 		/*
 		 * Link function class
 		 */
-		function DialogLinkFn(scope, transcludeFn) {
-			var templateUrl = scope.template;
+		function DialogLinkFn(scope, element, attrs) {
+			// Detach the element from the DOM to hide it from the document.
+			// it will be attached when openDialog is called
+			scope.dialogController.dialogElem.detach();
 			
-			var dialogElem = scope.dialogController.dialogElem;
-			//scope.dialogController.dialogElem.detach();
+			// Dialog block element
+			var dialogContent = scope.dialogController.dialogElem.find('.modal-dialog');
 			
-			// Transclude using 2 options - by use of template and trancluded content
-			// If 'sda-template' is provided, it is the content of the template that gets appended to the popup body
-			// else actual directive body contents will be appended.
-			transcludeFn(scope.dialogController.dialogScope, function(clone, innerScope) {
-				var templatePlaceHolder = dialogElem.find('.transclude');
-				var template = '';
-				if (scope.dialogController.useTransclude === false) {
-					template = $compile(angular.element('<div ng-include="\'' + templateUrl + '\'"></div>'))(innerScope);
-				} else if (scope.dialogController.useTransclude === true) {
-					template = clone;
-				}
-				templatePlaceHolder.append(template);
-			});
+			// Creating this in the scope to track changes in the height of the dialog content
+			scope.getContentHeight = function () {
+	            return dialogContent.outerHeight();
+	        };
+	        
+	        scope.$watch(scope.getContentHeight, function(height) {
+	        	if (height === 0) {
+	        		return;
+	        	}
+	        	// Now determine and set correct position for the dialog.
+	        	var w = jQuery(window);
+	        	dialogContent.css({
+				    'position':'absolute',
+				    'top':Math.abs(((w.height() - dialogContent.outerHeight()) / 2) + w.scrollTop()),
+				    'left':Math.abs(((w.width() - dialogContent.outerWidth()) / 2) + w.scrollLeft())
+				 });
+	        });
 		}
 		
 		/*
 		 *Controller Function class
 		 */
-		function DialogControllerFn($attrs, $scope, $element, $parse, $timeout, $q) {
+		function DialogControllerFn($attrs, $scope, $element, $parse, $transclude, $q, $timeout) {
 			
 			var self = this;
 			$scope.dialogController = self;
@@ -158,7 +187,11 @@
 				}
 				
 				// Determines which transclude strategy to be used (See #DialogCompilerFn)
+				self.template = $scope.template;
 				self.useTransclude = !angular.isDefined($scope.template);
+				
+				// modal or no modal
+				self.modal = $attrs.sdaModal;
 				
 				// Dialog type. Default is 'custom'
 				self.dialogType = $attrs.sdaType;
@@ -184,9 +217,18 @@
 			    });
 				
 				exposeAPI($attrs.sdDialog);
-				
-				//TODO deprecated - to be removed
+
+				// Expose closeDialog to the provided scope.
 				self.dialogScope.closeThisDialog = closeDialog;
+				
+				$scope.$on('$destroy', onDestroyDialog);
+			}
+			
+			// Scope destroy function
+			function onDestroyDialog() {
+				self.dialogElem.detach();
+				self.dialogElem.empty();
+				self.dialogElem = null;
 			}
 			
 			function setContentWidth(width) {
@@ -249,13 +291,50 @@
 				
 				onOpenDialog();
 				
+				// Compiles and adds the body content in the right scope
+				transcludeBody();
+				
 				self.isOpen = true;
+				
+				var backdrop = 'static'; //Default
+				if (self.modal == 'false') {
+					backdrop = false;
+				}
 				
 				self.dialogElem.modal({
 					keyboard: false,
-					backdrop: 'static'
-				})
+					backdrop: backdrop,
+					show: false
+				});
+				
 				self.dialogElem.modal('show');
+			}
+			
+			function transcludeBody() {
+				// Transclude using 2 options - by use of template and trancluded content
+				// If 'sda-template' is provided, it is the content of the template that gets appended to the popup body
+				// else actual directive body contents will be appended.
+				$transclude(function(clone) {
+					var dialogElem = self.dialogElem;
+					var templatePlaceHolder = dialogElem.find('.transclude');
+					var template = '';
+					if (self.useTransclude === false) {
+						template = $compile(angular.element('<div ng-include="\'' + self.template + '\'"></div>'))(self.dialogScope);
+					} else if (self.useTransclude === true) {
+						template = clone;
+					}
+					templatePlaceHolder.append(template);
+				});
+			}
+			
+			// Removes the body content since it is no longer needed in the DOM. 
+			// It will be retrieved again when needed ie. Dialog is opened.
+			function removeBody() {
+				var templatePlaceHolder = self.dialogElem.find('.transclude');
+				templatePlaceHolder.empty();
+				
+				// Remove the element itself from the dom.
+				self.dialogElem.detach();
 			}
 			
 			// Close the dialog. Promise returned in on-open-dialog function will get fail function called.
@@ -271,6 +350,9 @@
 			}
 			
 			function hideDialog() {
+				// Remove the heavy body content first.
+				removeBody();
+				
 				if (angular.isDefined(self.dialogElem)) {
 					self.dialogElem.modal('hide');
 				}

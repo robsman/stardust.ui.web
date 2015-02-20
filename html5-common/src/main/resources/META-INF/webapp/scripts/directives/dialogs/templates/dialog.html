@@ -1,19 +1,16 @@
-<div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true" 
-	style="width: auto; background: none; top: 0; overflow: visible; border: 0; box-shadow: none; margin:0;">
-  <div class="modal-dialog" style="z-index: 99999">
+<div class="modal sd-dialog" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+  <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <button ng-show="dialogController.showClose" type="button" class="close" ng-click="dialogController.cancelAction()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <button ng-show="dialogController.showClose" type="button" class="close" ng-click="dialogController.cancelAction()" aria-label="Close">
+        	<span aria-hidden="true">&times;</span>
+        </button>
         <div id="modalLabel" class="confirmation-header">
 			<p><span class="header">{{title}}</span></p>
 		</div>
       </div>
       <div class="modal-body">
-      	<!-- <div ng-hide="dialogController.useTransclude">
-	      	<div ng-include="template"></div>
-      	</div> -->
-      	<div class="transclude" >
-		</div>
+      	<div class="transclude"></div>
       </div>
       <div class="modal-footer" ng-hide="dialogController.dialogType === TYPE_CUSTOM">
         <div class="confirmation-buttonpane">

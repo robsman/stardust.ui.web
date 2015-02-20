@@ -272,3 +272,45 @@
    margin-left:100%;
   }
 }
+
+/********sd-dialog*******************************/
+
+.sd-dialog {
+	width: auto; 
+	background: none; 
+	top: 0;
+	overflow: visible; 
+	border: 0; 
+	box-shadow: none; 
+	margin:0; 
+	position:absolute;
+}
+
+.no-modal {
+	display: table;
+}
+
+.sd-dialog .modal-dialog {
+	z-index: 99999;
+	margin: 0px auto;
+}
+
+.sd-dialog .modal-dialog .modal-content {
+	height: inherit;
+}
+
+.sd-dialog .modal-dialog .modal-content .modal-header {
+	height: 50px;
+}
+
+.sd-dialog .modal-dialog .modal-content .confirmation-header {
+	width: 98%;
+}
+
+.sd-dialog .modal-dialog .modal-content .modal-body {
+	height: inherit;
+}
+
+.sd-dialog .modal-dialog .modal-content .modal-footer {
+	height: 73px;
+}
