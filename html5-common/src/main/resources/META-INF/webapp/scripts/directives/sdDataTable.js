@@ -412,7 +412,7 @@
 					sortable: hCol.attr('sda-sortable') == 'true' ? true : false,
 					filterable: hCol.attr('sda-filterable') == 'true' ? true : false,
 					exportable: hCol.attr('sda-exportable') == undefined || hCol.attr('sda-exportable') == 'true' ? true : false,
-					exportHandler: bCol.attr('sda-exporter') ? $parse(bCol.attr('sda-exporter')) : null,
+					exportParser: bCol.attr('sda-exporter') ? $parse(bCol.attr('sda-exporter')) : null,
 					fixed: hCol.attr('sda-fixed') != undefined && hCol.attr('sda-fixed') == 'true' ? true : false
 				};
 
@@ -449,8 +449,9 @@
 				colDef.contents = bCol.html();
 				colDef.contents = colDef.contents.trim();
 				if (colDef.contents == "") {
-					colDef.contents = getDefaultContent(colDef);
-					colDef.defaultContents = true;
+					var contents = getDefaultContent(colDef);
+					colDef.contents = '{{' + contents + '}}';
+					colDef.defaultContentsParser = $parse(contents);
 				}
 
 				if (bCol.attr('style')) {
@@ -523,16 +524,16 @@
 		 * 
 		 */
 		function getDefaultContent(colDef) {
-			var contents = '{{rowData.' + colDef.field + '}}';
+			var contents = 'rowData.' + colDef.field;
 
 			if (colDef.dataType === 'int') {
-				contents = '{{rowData.' + colDef.field + ' | number}}';
+				contents = 'rowData.' + colDef.field + ' | number';
 			} else if (colDef.dataType === 'dateTime') {
-				contents = '{{rowData.' + colDef.field + ' | date: "short"}}';
+				contents = 'rowData.' + colDef.field + ' | date: "short"';
 			} else if (colDef.dataType === 'date') {
-				contents = '{{rowData.' + colDef.field + ' | date: "shortDate"}}';
+				contents = 'rowData.' + colDef.field + ' | date: "shortDate"';
 			} else if (colDef.dataType === 'time') {
-				contents = '{{rowData.' + colDef.field + ' | date: "shortTime"}}';
+				contents = 'rowData.' + colDef.field + ' | date: "shortTime"';
 			}
 
 			return contents;
@@ -1718,20 +1719,27 @@
 					// Export Header / Titles
 					exportedRows.push(getTableTitlesForExport(expotCols, encoder));
 	
+					// Validate
+					for (var j = 0; j < expotCols.length; j++) {
+						if (!expotCols[j].exportParser && !expotCols[j].defaultContentsParser) {
+							trace.warn(theTableId + ': Cannot export column ' + expotCols[j].name + ', as sda-exporter is not defined.');
+						}
+					}
+
 					// Export Data
 					for (var i = 0; i < data.length; i++) {
 						var rowExportData = [];
 						for (var j = 0; j < expotCols.length; j++) {
+							var locals = {
+								rowData : data[i],
+								exportType : exportType
+							}
+
 							var exportVal = '';
-	
-							if (expotCols[j].exportHandler) {
-								var locals = {
-									rowData : data[i],
-									exportType : exportType
-								}
-								exportVal = expotCols[j].exportHandler(elemScope, locals);
-							} else if (expotCols[j].defaultContents) {
-								exportVal = data[i][expotCols[j].field];
+							if (expotCols[j].exportParser) {
+								exportVal = expotCols[j].exportParser(elemScope, locals);
+							} else if (expotCols[j].defaultContentsParser) {
+								exportVal = expotCols[j].defaultContentsParser(elemScope, locals);
 							}
 							
 							rowExportData.push(encoder(exportVal));
