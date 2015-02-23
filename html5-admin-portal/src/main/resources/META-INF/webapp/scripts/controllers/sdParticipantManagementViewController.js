@@ -20,15 +20,13 @@
 	var _sdViewUtilService,
 		_sdUserService,
 		_$q,
-		_eventBus,
-		_ngDialog;
+		_eventBus;
 	
-	var controller = function(sdViewUtilService,sdUserService,$q,eventBus,ngDialog){
+	var controller = function(sdViewUtilService,sdUserService,$q,eventBus){
 		_sdViewUtilService=sdViewUtilService;
 		_sdUserService = sdUserService;
 		_$q=$q;
 		_eventBus=eventBus;
-		_ngDialog=ngDialog;
 		
 		this.dataSelected=[];
 		this.matchVal="";
@@ -134,6 +132,6 @@
 	
 	angular.module('admin-ui')
 	.controller('sdParticipantManagementViewController', 
-			['sdViewUtilService', 'sdUserService', '$q', 'eventBus', 'ngDialog',controller]);
+			['sdViewUtilService', 'sdUserService', '$q', 'eventBus',controller]);
 	
 })();
