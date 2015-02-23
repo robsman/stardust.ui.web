@@ -39,8 +39,11 @@ define(
                   var includeAttachmentBean = this.includeAttachmentBean(mailIntegrationOverlay
                            .getApplication().contexts.application.accessPoints);
                   
-                  // process template configuration
-                  route += "<to uri=\"bean:documentHandler?method=processTemplateConfigurations\"/>\n";
+                  if(this.includeProcessTemplateConfigurations(mailIntegrationOverlay))
+                  {
+                	  // process template configuration
+                      route += "<to uri=\"bean:documentHandler?method=processTemplateConfigurations\"/>\n";
+                  }
                   
                   if(mailIntegrationOverlay.templateSourceSelect.val() == "classpath"
                      || mailIntegrationOverlay.templateSourceSelect.val() == "repository")
@@ -413,6 +416,16 @@ define(
                      }
                   }
                   return false;
+               };
+               
+               MailRouteDefinitionHandler.prototype.includeProcessTemplateConfigurations = function(mailIntegrationOverlay) 
+               {
+            	  if ((mailIntegrationOverlay.attachmentsTemplateSource == "embedded" || 
+            			  mailIntegrationOverlay.attachmentsTemplateSource == undefined)
+						&& mailIntegrationOverlay.templateConfigurations.length == 0)
+					return false;
+            	  
+            	  return true;
                };
             };
             
