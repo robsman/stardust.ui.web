@@ -17,7 +17,7 @@
 	'use strict';
 
 	angular.module('bpm-common').directive('sdDataTable', 
-			['$parse', '$compile', '$timeout', 'sdUtilService', 'sdLoggerService', 'sdPreferenceService', DataTableDirective]);
+			['$parse', '$q', '$compile', '$timeout', 'sdUtilService', 'sdLoggerService', 'sdPreferenceService', DataTableDirective]);
 
 	var trace;
 
@@ -33,7 +33,7 @@
 	/*
 	 * 
 	 */
-	function DataTableDirective($parse, $compile, $timeout, sdUtilService, sdLoggerService, sdPreferenceService) {
+	function DataTableDirective($parse, $q, $compile, $timeout, sdUtilService, sdLoggerService, sdPreferenceService) {
 		trace = sdLoggerService.getLogger('bpm-common.sdDataTable');
 
 		return {
@@ -46,7 +46,7 @@
 				return {
 					post : function(scope, element, attr, ctrl) {
 						var dataTableCompiler = new DataTableCompiler(
-								$parse, $compile, $timeout, sdUtilService, sdPreferenceService, 
+								$parse, $q, $compile, $timeout, sdUtilService, sdPreferenceService, 
 								scope, element, attr, ctrl);
 					}
 				};
@@ -95,7 +95,7 @@
 	/*
 	 * 
 	 */
-	function DataTableCompiler($parse, $compile, $timeout, sdUtilService, sdPreferenceService, 
+	function DataTableCompiler($parse, $q, $compile, $timeout, sdUtilService, sdPreferenceService, 
 			scope, element, attr, ctrl) {
 		var TOOLBAR_TEMPLATE =
 			'<div class="tbl-toolbar-section">\n' +
@@ -107,7 +107,7 @@
 					' title="{{i18n(\'portal-common-messages.common-genericDataTable-asExcel\')}}" class="tbl-toolbar-item tbl-tool-link">\n' +
 					'<i class="glyphicon glyphicon-export"></i>\n' +
 				'</button>\n' +
-				'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if="$dtApi.enableExportCSV" ng-click=""' +
+				'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if="$dtApi.enableExportCSV" ng-click="$dtApi.exportCSV()"' +
 					' title="{{i18n(\'portal-common-messages.common-genericDataTable-asCSV\')}}" class="tbl-toolbar-item tbl-tool-link">\n' +
 					'<i class="glyphicon glyphicon-export"></i>\n' +
 				'</button>\n' +
@@ -134,8 +134,7 @@
 						'<div class="tbl-col-sel-list">\n' +
 							'<div ng-repeat="col in $dtApi.columns" class="tbl-col-sel-row" ng-model="$index" sd-data-drag sd-data-drop on-drop="$dtApi.moveColumns($data, $index, $event)">\n' +
 								'<input type="checkbox" class="tbl-col-sel-input" ng-model="col.visible"></span>\n' +
-								'<span class="tbl-col-sel-label" ng-if="col.labelKey">{{i18n(col.labelKey)}}</span>\n' +
-								'<span class="tbl-col-sel-label" ng-if="!col.labelKey">{{col.label}}</span>\n' +
+								'<span class="tbl-col-sel-label">{{col.title}}</span>\n' +
 							'</div>\n' +
 						'</div>\n' +
 					'</div>\n' +
@@ -160,7 +159,7 @@
 		var pageSize = 8;
 		var sortingMode, sortByGetter;
 		var columnFilters;
-		var enableExports = {};
+		var enableExports = {}, exportAnchor = document.createElement("a"), remoteModeLastParams;
 
 		// Setup component instance
 		setup();
@@ -334,6 +333,12 @@
 						enableExports.CSV = true;
 					}
 				}
+
+				if (attr.sdaExportsFileName != undefined && attr.sdaExportsFileName != '') {
+					enableExports.fileName = attr.sdaExportsFileName;
+				} else {
+					enableExports.fileName = 'table_data';
+				}
 			}
 		}
 
@@ -406,6 +411,8 @@
 					visible: hCol.attr('sda-visible') == undefined || hCol.attr('sda-visible') == 'true' ? true : false,
 					sortable: hCol.attr('sda-sortable') == 'true' ? true : false,
 					filterable: hCol.attr('sda-filterable') == 'true' ? true : false,
+					exportable: hCol.attr('sda-exportable') == undefined || hCol.attr('sda-exportable') == 'true' ? true : false,
+					exportHandler: bCol.attr('sda-exporter') ? $parse(bCol.attr('sda-exporter')) : null,
 					fixed: hCol.attr('sda-fixed') != undefined && hCol.attr('sda-fixed') == 'true' ? true : false
 				};
 
@@ -432,12 +439,18 @@
 					}
 				}
 				
-				colDef.titleExpr = colDef.labelKey ? '{{i18n("' + colDef.labelKey + '")}}' : colDef.label;
+				if (colDef.labelKey) {
+					var titleParser = $parse('i18n("' + colDef.labelKey + '")');
+					colDef.title = titleParser(elemScope);
+				} else {
+					colDef.title = colDef.label;
+				}
 				
 				colDef.contents = bCol.html();
 				colDef.contents = colDef.contents.trim();
 				if (colDef.contents == "") {
 					colDef.contents = getDefaultContent(colDef);
+					colDef.defaultContents = true;
 				}
 
 				if (bCol.attr('style')) {
@@ -625,7 +638,7 @@
 						'<div ng-show="' + filterVisible + '" class="popup-dlg tbl-col-flt-dlg" col="' + col.name + '">\n' +
 							'<div class="popup-dlg-hdr">\n' +
 								'<span class="popup-dlg-hdr-txt">' +
-									'{{i18n("portal-common-messages.common-filterPopup-dataFilterByLabel")}} ' + col.titleExpr + '</span>\n' + 
+									'{{i18n("portal-common-messages.common-filterPopup-dataFilterByLabel")}} ' + col.title + '</span>\n' + 
 								'<span class="popup-dlg-cls glyphicon glyphicon-remove" title="{{i18n(\'portal-common-messages.common-filterPopup-close\')}}" ng-click="' + toggleFilter + '"></span>\n' +
 							'</div>\n' +
 							'<div class="popup-dlg-cnt tbl-col-flt-dlg-cnt">\n' +
@@ -643,7 +656,7 @@
 				var columnHeader = 
 					'<div>\n' + 
 						'<div class="tbl-col-flt-wrapper">' + filterMarkup + '</div>\n' +
-						'<div class="tbl-hdr-col-label">' + col.titleExpr + '</div>\n' +
+						'<div class="tbl-hdr-col-label">' + col.title + '</div>\n' +
 					'</div>';
 
 				var hCol = angular.element(headCols[i]);
@@ -668,8 +681,8 @@
 						dataType: col.dataType,
 						sortable: col.sortable,
 						fixed: col.fixed,
-						titleExpr: col.titleExpr
-					}
+						title: col.title
+					};
 
 					// Wrapper for applyFilter and resetFilter callback functions
 					filterScope.handlers = {};
@@ -853,6 +866,7 @@
 			});
 			params.columns = colNames;
 
+			remoteModeLastParams = params;
 			fetchData(params, function(result) {
 				try {
 					sdUtilService.assert(jQuery.isPlainObject(result),
@@ -1370,8 +1384,17 @@
 			var tableData = theDataTable.fnGetData();
 
 			if (index == undefined || index == null) {
+				var start = 0;
+				var end = tableData.length;
+
+				if (attr.sdaMode == 'local') {
+					var settings = theDataTable.fnSettings();
+					start = settings._iDisplayStart;
+					end = settings._iDisplayEnd;
+				}
+
 				var data = [];
-				for (var i = 0; i < tableData.length; i++) {
+				for (var i = start; i < end; i++) {
 					data.push(tableData[i]);
 				}
 				return data;
@@ -1383,9 +1406,17 @@
 		/*
 		 * 
 		 */
-		function getPageDataCount(index) {
+		function getPageDataCount() {
 			var info = theDataTable.fnPagingInfo();
 			return info.iEnd - info.iStart;
+		}
+
+		/*
+		 * 
+		 */
+		function getTotalCount() {
+			var settings = theDataTable.fnSettings()
+			return settings._iRecordsTotal;
 		}
 
 		/*
@@ -1628,6 +1659,191 @@
 		}
 
 		/*
+		 * options.allRows = boolean, true for All Rows
+		 * options.allCols = boolean, true for All Columns
+		 */
+		function exportAsCSV(options) {
+			var promise = getDataForExport(options, 'csv', encoderForCSV);
+			promise.then(function(exportedRows) {
+				var exportData = [];;
+				for (var i = 0; i < exportedRows.length; i++) {
+					exportData.push(exportedRows[i].join(','));
+				}
+				
+				var exportConents = exportData.join('\n');
+				
+				// Download File
+				var downloadMetaData = 'data:application/csv;charset=utf-8,';
+				var downloadUrl = downloadMetaData + encodeURIComponent(exportConents);
+				downloadDataAsFile(enableExports.fileName + '.csv', downloadUrl);
+			});
+		}
+
+		/*
+		 * 
+		 */
+		function encoderForCSV(text) {
+			if (text != undefined && text != null) {
+				text = '' + text; // Convert to String
+				text = text.replace('"', '""'); // Escape double quotes
+				text = '\"' + text + '\"'; // Wrap value in double quotes
+			}
+			return text;
+		}
+
+		/*
+		 * options.allRows = boolean, true for All Rows
+		 * options.allCols = boolean, true for All Columns
+		 */
+		function getDataForExport(options, exportType, encoder) {
+			var deferred = $q.defer();
+
+			if (options == undefined || options == null) {
+				options = {};
+			}
+
+			var expotCols = [];
+			var colDefs = options.allCols ? columnsByDisplayOrder : getVisibleColumnsByDisplayOrder();
+			for (var j = 0; j < colDefs.length; j++) {
+				if (colDefs[j].exportable) {
+					expotCols.push(colDefs[j]);
+				}
+			}
+
+			var promise = getTableDataForExport(options.allRows, expotCols);
+			promise.then(function(data) {
+				try {
+					var exportedRows = [];
+	
+					// Export Header / Titles
+					exportedRows.push(getTableTitlesForExport(expotCols, encoder));
+	
+					// Export Data
+					for (var i = 0; i < data.length; i++) {
+						var rowExportData = [];
+						for (var j = 0; j < expotCols.length; j++) {
+							var exportVal = '';
+	
+							if (expotCols[j].exportHandler) {
+								var locals = {
+									rowData : data[i],
+									exportType : exportType
+								}
+								exportVal = expotCols[j].exportHandler(elemScope, locals);
+							} else if (expotCols[j].defaultContents) {
+								exportVal = data[i][expotCols[j].field];
+							}
+							
+							rowExportData.push(encoder(exportVal));
+						}
+						exportedRows.push(rowExportData);
+					}
+
+					deferred.resolve(exportedRows);
+				} catch(e) {
+					trace.error(theTableId + ': Error while exporting data', e);
+					deferred.reject(e);
+				}
+			}, function(error) {
+				deferred.reject(e);
+			});
+			
+			return deferred.promise;
+		}
+
+		/*
+		 * 
+		 */
+		function getTableDataForExport(exportAllRows, expotCols) {
+			if (attr.sdaMode == 'local') {
+				return getLocalModeTableDataForExport(exportAllRows, expotCols);
+			} else {
+				return getRemoteModeTableDataForExport(exportAllRows, expotCols);
+			}
+		}
+
+		/*
+		 * 
+		 */
+		function getTableTitlesForExport(colDefs, encoder) {
+			var titles = [];
+
+			angular.forEach(colDefs, function(col, i) {
+				titles.push(encoder(col.title));
+			});
+
+			return titles;
+		}
+
+		/*
+		 * 
+		 */
+		function getLocalModeTableDataForExport(exportAllRows, expotCols) {
+			var deferred = $q.defer();
+
+			var data;
+			if (exportAllRows) {
+				data = theDataTable.fnGetData();
+			} else {
+				data = getPageData();
+			}
+
+			deferred.resolve(data);
+
+			return deferred.promise;
+		}
+
+		/*
+		 * 
+		 */
+		function getRemoteModeTableDataForExport(exportAllRows, expotCols) {
+			var deferred = $q.defer();
+
+			// Get Table Data
+			if (exportAllRows) {
+				var params = angular.copy(remoteModeLastParams);
+
+				params.skip = 0;
+				params.pageSize = getTotalCount();
+
+				params.columns = [];
+				angular.forEach(expotCols, function(col, i) {
+					params.columns.push({
+						name: col.name,
+						field: col.field,
+						dataType: col.dataType,
+						sortable: col.sortable,
+						fixed: col.fixed
+					});
+				});
+
+				fetchData(params, function(result) {
+					deferred.resolve(result.list);
+				}, function(error) {
+					deferred.reject(error);
+				});
+			} else {
+				var data = getPageData();
+				deferred.resolve(data);
+			}
+
+			return deferred.promise;
+		}
+
+		/*
+		 * 
+		 */
+		function downloadDataAsFile(fileName, dataUrl) {
+			exportAnchor.download = fileName;
+			exportAnchor.href = dataUrl;
+			exportAnchor.target = '_blank';
+
+			var mouseEvent = document.createEvent("MouseEvents");
+			mouseEvent.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+			exportAnchor.dispatchEvent(mouseEvent);
+		}
+
+		/*
 		 * Public API
 		 */
 		function DataTable() {
@@ -1671,7 +1887,7 @@
 				self.columnSelectorAdmin = columnSelectorAdmin;
 				self.showSelectColumns = false;
 				self.applyTo = 'USER';
-				self.enableExportExcel = enableExports.EXCEL;
+				self.enableExportExcel = false; // enableExports.EXCEL; // TODO: Support Excel download
 				self.enableExportCSV = enableExports.CSV;
 
 				self.showColumnFilters = {};
@@ -1843,6 +2059,13 @@
 			/*
 			 * 
 			 */
+			this.exportCSV = function() {
+				exportAsCSV();
+			}
+
+			/*
+			 * 
+			 */
 			function getSelectableColumns(cols) {
 				var selectableCols = [];
 				angular.forEach(cols, function(col, i) {
@@ -1850,8 +2073,7 @@
 						selectableCols.push({
 							name: col.name,
 							visible: col.visible,
-							labelKey: col.labelKey,
-							label: col.label
+							title: col.title
 						});
 					}
 				});

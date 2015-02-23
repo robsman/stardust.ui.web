@@ -2,7 +2,7 @@
 	<div class="worklist-title tbl-title">{{worklistCtrl.title}}</div>
 	<div sda-toolbar>
 		<div class="tbl-toolbar-section">
-			<button sda-column="TRIVIAL_DATA" ng-disabled="!worklistCtrl.containsAllTrivialManualActivities()" ng-click="worklistCtrl.$openCompleteDialog()" title="{{i18n('processportal.views-worklistPanel-tooltip-completeAll')}}" class="button-link tbl-toolbar-item tbl-tool-link">
+			<button sda-column="TRIVIAL_DATA" ng-disabled="!worklistCtrl.containsAllTrivialManualActivities()" ng-click="worklistCtrl.$completeAll()" title="{{i18n('processportal.views-worklistPanel-tooltip-completeAll')}}" class="button-link tbl-toolbar-item tbl-tool-link">
 			   <i class="glyphicon glyphicon-share-alt"></i>
 			</button>
 			<button ng-disabled="worklistCtrl.dataTable.getSelection() < 1" href="#" ng-click="worklistCtrl.$openDelegateDialog();" title="{{i18n('processportal.toolbars-worklistView-tooltip-delegate')}}" class="button-link tbl-toolbar-item tbl-tool-link" >
@@ -25,7 +25,7 @@
 		sda-column-selector="{{worklistCtrl.columnSelector}}" sda-preference-delegate="worklistCtrl.preferenceDelegate(prefInfo)"
 		sda-on-column-reorder="worklistCtrl.onColumnReorder(info)"
 		sda-sortable="true" sda-sort-by="{name : 'started', dir : 'desc'}" sda-on-sorting="worklistCtrl.onSorting(info)"
-		sda-exports="Excel,CSV">
+		sda-exports="Excel,CSV" sda-exports-file-name="worklist">
 		<thead sda-i18n-scope="processportal.views-worklistPanel-column">
 			<tr>
 				<th sda-name="overview" sda-sortable="true">
@@ -33,8 +33,7 @@
 						<div sd-process-activity-filter sda-filter-type='activity' sda-processes="worklistCtrl.allAccessibleProcesses"></div>
 					</div>
 				</th>
-				<th sda-name="oid" sda-sortable="true" sda-filterable="true"
-					sda-exportable=""></th>
+				<th sda-name="oid" sda-sortable="true" sda-filterable="true"></th>
 				<th sda-name="criticality" sda-sortable="true">
 					<div sda-filter-template>
 						<div sd-criticality-filter sda-criticalities="worklistCtrl.allAvailableCriticalities"></div>
@@ -61,38 +60,34 @@
 					<div sda-filter-template>
 						<div sd-multi-select-filter sda-options="worklistCtrl.availableStates"></div>
 					</div>
+					</div>
 				</th>
 				<th sda-name="assignedTo" sda-sortable="false" sda-visible="false"></th>
 				<th ng-repeat="descCol in worklistCtrl.descritorCols"
 					sda-name="{{descCol.id}}" sda-label="{{descCol.title}}"
 					sda-visible="false" sda-sortable="{{descCol.sortable}}">
-					<div sda-filter-template ng-if="descCol.filterable">
-						<div ng-if="colData.dataType =='NUMBER'"><div sd-number-filter></div></div>
-						<div ng-if="colData.dataType =='DATE'"><div sd-date-filter></div></div>
-						<div ng-if="colData.dataType =='BOOLEAN'"><div sd-boolean-filter></div></div>
-						<div ng-if="colData.dataType =='STRING'"><div sd-text-search-filter></div></div>
+							<div sda-filter-template ng-if="descCol.filterable && descCol.dataType =='STRING'"><div  sd-text-search-filter></div></div>
+							<div sda-filter-template ng-if="descCol.filterable && descCol.dataType == 'DATE'"><div  sd-date-filter></div></div>
+							<div sda-filter-template ng-if="descCol.filterable && descCol.dataType == 'NUMBER'"><div  sd-number-filter></div></div>
+							<div sda-filter-template ng-if="descCol.filterable && descCol.dataType == 'BOOLEAN'"><div sd-boolean-filter></div></div>
 					</div>
-
 				</th>
-				<th sda-name="data" sda-column="TRIVIAL_DATA" sda-sortable="false"></th>
-				<th sda-name="actions" sda-fixed="true"></th>
+				<th sda-name="data" sda-column="TRIVIAL_DATA" sda-sortable="false" sda-exportable="false"></th>
+				<th sda-name="actions" sda-fixed="true" sda-exportable="false"></th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
-				<td style="white-space: nowrap;">
-					<a  ng-if="rowData.activatable" href="#" ng-click="bpmCommon.stopEvent($event); worklistCtrl.$activateWorkItem(rowData);">
+				<td style="white-space: nowrap;" sda-exporter="rowData.activity.name">
+					<a href="#" ng-click="bpmCommon.stopEvent($event); worklistCtrl.$activateWorkItem(rowData);">
 						{{rowData.activity.name}}
 					</a>
-					<span ng-if="!rowData.activatable" ng-bind="rowData.activity.name"> </span>
-					<span ng-if="rowData.qualityAssuranceState">
-						<span ng-if="rowData.qualityAssuranceState ==='IS_REVISED'"> <i class="glyphicon glyphicon-remove-circle" style="color:red;margin-left:2px;"></i></span>
-						<span ng-if="rowData.qualityAssuranceState === 'IS_QUALITY_ASSURANCE'"><i class="glyphicon glyphicon-time" style="margin-left:2px;"></i></span>
-					</span>
 				</td>
 				<td sda-data-type="int" style="text-align: center;"></td>
-				<td style="text-align: center;"><div sd-activity-criticality sda-criticality="rowData.criticality"></div></td>
-				<td style="text-align: center;"><div sd-process-priority sda-priority="rowData.priority"></div></td>
+				<td style="text-align: center;"><div sd-activity-criticality></div></td>
+				<td style="text-align: center;" sda-exporter="i18n('views-common-messages.common-priorities-' + rowData.priority)">
+					<div sd-process-priority></div>
+				</td>
 				<td>
 					<table>
 						<tr ng-repeat="desc in rowData.descriptors">
@@ -113,7 +108,28 @@
 					sda-field="{{descCol.field}}" sda-data-type="{{descCol.dataType}}" style="white-space: nowrap;">
 				</td>
 				<td sda-column="TRIVIAL_DATA">
-				 <div data-ng-include="'plugins/html5-process-portal/scripts/directives/partials/worklistData.html'">
+					<table ng-hide="!worklistCtrl.worklist.trivialManualActivities[rowData.oid]">
+						<tbody>
+					    	<tr ng-repeat="mapping in worklistCtrl.worklist.trivialManualActivities[rowData.oid].dataMappings">
+					        	<td style="white-space: nowrap;">{{mapping.name}}</td>
+					            <td>
+					            	<select ng-show="mapping.isEnum" ng-click="bpmCommon.stopEvent($event)"
+					      		    	ng-model="worklistCtrl.worklist.trivialManualActivities[rowData.oid].inOutData[mapping.id]"
+					                    ng-init="worklistCtrl.worklist.trivialManualActivities[rowData.oid].inOutData[mapping.id] = worklistCtrl.worklist.trivialManualActivities[rowData.oid].inOutData[mapping.id] || mapping.enumValues[0]"
+					                    ng-options="enumVal for enumVal in mapping.enumValues">
+									</select>
+
+									<input type="text" ng-click="bpmCommon.stopEvent($event)"
+					                	ng-show="mapping.typeName == 'java.lang.String'"
+					                    ng-model="worklistCtrl.worklist.trivialManualActivities[rowData.oid].inOutData[mapping.id]" />
+
+									<input type="checkbox" ng-click="bpmCommon.stopEvent($event)"
+										ng-show="mapping.typeName == 'java.lang.Boolean'"
+										ng-model="worklistCtrl.worklist.trivialManualActivities[rowData.oid].inOutData[mapping.id]" />
+								</td>
+							</tr>
+						</tbody>
+					</table>
 				</td>
 				<td>
 					<div style="text-align: right; white-space: nowrap;">
@@ -127,7 +143,7 @@
 						</button>
 						<button sda-column="TRIVIAL_DATA"
 							ng-disabled="worklistCtrl.worklist.trivialManualActivities[rowData.oid] == undefined"
-							ng-click="bpmCommon.stopEvent($event); worklistCtrl.$openCompleteDialog(rowData);"
+							ng-click="bpmCommon.stopEvent($event); worklistCtrl.$complete(rowData);"
 							title="{{i18n('processportal.toolbars-workflowActions-tooltip-complete')}}" class="button-link tbl-tool-link">
 							<i class="glyphicon glyphicon-share-alt"></i>
 						</button>
@@ -144,20 +160,6 @@
 			</tr>
 		</tbody>
 	</table>
-
-	<div sd-dialog 
-		sda-show="worklistCtrl.showCompleteDialog"
-		sda-type="confirm" sda-title="{{i18n('processportal.views-completeActivityDialog-title')}}"
-		sda-scope="this" sda-on-open="worklistCtrl.$completeAll(res)"
-		sda-template="plugins/html5-process-portal/scripts/directives/partials/completeActivityDialog.html">
-	</div>
-
-	<div sd-dialog
-		sda-show="worklistCtrl.showCompleteNotificationDialog"
-		sda-type="custom" sda-title="{{i18n('admin-portal-messages.common-notification-title')}}"
-		sda-scope="this" 
-		sda-template="plugins/html5-process-portal/scripts/directives/partials/completeActivityNotfication.html">
-	</div>
 
 	<span sd-delegate-activity-dialog sda-show-dialog="worklistCtrl.showDelegateDialog" sda-activity-list="worklistCtrl.selectedActivity"
 		sda-on-confirm="worklistCtrl.onDelegateConfirm()">
