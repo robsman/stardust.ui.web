@@ -374,9 +374,13 @@ define(
 						   chartOptions.axes.xaxis.renderer = jQuery.jqplot.DateAxisRenderer;
 						   chartOptions.axes.xaxis.tickOptions.formatString = this.getDateFormatForDimension(true);
 						   chartOptions.axes.xaxis.tickRenderer = jQuery.jqplot.AxisTickRenderer;
+						} else if (this.getFirstDimension().type == this.reportingService.metadata.integerType) {
+						   chartOptions.axes.xaxis.tickRenderer = jQuery.jqplot.CanvasAxisTickRenderer;
+						   chartOptions.axes.yaxis.tickRenderer = jQuery.jqplot.CanvasAxisTickRenderer;
 						} else {
 						   chartOptions.axes.xaxis.renderer = jQuery.jqplot.CategoryAxisRenderer;
 						   chartOptions.axes.xaxis.tickRenderer = jQuery.jqplot.CanvasAxisTickRenderer;
+						   chartOptions.axes.yaxis.tickRenderer = jQuery.jqplot.CanvasAxisTickRenderer;
 						}
 						
 						chartOptions.axes.yaxis.pad = 1.05;
