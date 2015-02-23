@@ -784,7 +784,7 @@
 							'sd-data did not return acceptable result: Missing "list" or its not an array');
 	
 					if (attr.sdaNoPagination == '' || attr.sdaNoPagination == 'true') {
-						dtOptions.iDisplayLength = dtOptions.data.length;
+						dtOptions.iDisplayLength = dtOptions.aaData.length;
 						dtOptions.sDom = 't';
 					} else {
 						// TODO: Undefine this for now! It causes wired issue with pagination
