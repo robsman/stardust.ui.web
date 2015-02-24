@@ -240,7 +240,7 @@
 		function processAttributes() {
 			trace.log(theTableId + ': Processing table attributes...');
 
-			if (attr.sdaPageSize != '') {
+			if (attr.sdaPageSize != undefined && attr.sdaPageSize != '') {
 				pageSize = parseInt(attr.sdaPageSize);
 			}
 
@@ -1408,15 +1408,15 @@
 		 * 
 		 */
 		function getPageDataCount() {
-			var info = theDataTable.fnPagingInfo();
-			return info.iEnd - info.iStart;
+			var settings = theDataTable.fnSettings();
+			return settings._iDisplayEnd - settings._iDisplayStart;
 		}
 
 		/*
 		 * 
 		 */
 		function getTotalCount() {
-			var settings = theDataTable.fnSettings()
+			var settings = theDataTable.fnSettings();
 			return settings._iRecordsTotal;
 		}
 
@@ -2052,8 +2052,10 @@
 			 * 
 			 */
 			this.isColumnFilterSet = function(colName) {
-				var filterScope = columnFilters[colName].filter.scope();
-				return !jQuery.isEmptyObject(filterScope.$$filterData);
+				if (columnFilters[colName]) {
+					var filterScope = columnFilters[colName].filter.scope();
+					return !jQuery.isEmptyObject(filterScope.$$filterData);
+				}
 			}
 
 			/*
