@@ -9,7 +9,7 @@ angular.module('bpm-common.init', []).run(['$rootScope', 'sdUtilService', functi
 	};
 }]);
 
-angular.module('bpm-common', ['bpm-common.services', 'bpm-common.directives', 'bpm-common.init', 'ngDialog'])
+angular.module('bpm-common', ['bpm-common.services', 'bpm-common.directives', 'bpm-common.init'])
 .config(['$httpProvider', function ($httpProvider) {
 	$httpProvider.interceptors.push('httpInterceptor');
 }]);
