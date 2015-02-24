@@ -144,9 +144,8 @@ table.formTable td {
 													ng-model="query.documentSearchCriteria.searchData" /> <label
 													style="display: inline-block; margin-bottom: 5px; padding-left: 1px; vertical-align: text-top;">{{i18n('views-common-messages.views-documentSearchView-searchData-label')}}</label>
 												</td>
-												<td><a href="#"
-													ng-model="advancedTextSearch.advancedContainingText"
-													ng-click="docSearchViewCtrl.setAdvancedContainingText()">
+												<td><a href="#"								
+													ng-click="docSearchViewCtrl.setShowAdvancedTextSearch()">
 														{{i18n('views-common-messages.views-documentSearchView-advanced-label')
 														+ ">>"}} </a></td>
 											</tr>
@@ -225,12 +224,13 @@ table.formTable td {
 			</table>
 		</div>
 		<div sd-dialog sd-show-overlay="true"
-			 sda-show="advancedTextSearch.advancedContainingText"
+			 sda-show="docSearchViewCtrl.showAdvancedTextSearch"
 			 sda-type="confirm"
 			 sda-title="{{i18n('views-common-messages.views-documentSearchView-advancedTextSearch-label')}}"
 			 sda-scope="this"
 			 sda-template="plugins/html5-process-portal/partials/views/advancedTextSearch.html"
-			 sda-on-open="docSearchViewCtrl.onConfirmFromAdvanceText(res)"
+			 sda-on-confirm="docSearchViewCtrl.onConfirmFromAdvanceText(res)"
+			 sda-on-close="docSearchViewCtrl.onCancelFromAdvanceText(res)"
 			 sda-width="800px">
 		</div>
 		<div ng-include="'plugins/html5-process-portal/partials/views/documentSearchResult.html'">

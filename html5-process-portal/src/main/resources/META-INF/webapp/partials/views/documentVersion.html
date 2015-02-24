@@ -1,9 +1,8 @@
 <div>
 <table sd-data-table="{{docSearchViewCtrl.docVersionsTblHndExp}}"
-		sd-data="docSearchViewCtrl.getDocumentVersions(params)"  sda-mode="local" sda-no-pagination="true"
-		 sda-column-selector="{{docSearchViewCtrl.columnSelector}}"
+		sd-data="docSearchViewCtrl.getDocumentVersions(params)"  sda-mode="local" sda-no-pagination="true"		
 		sda-sortable="true"
-		sda-sort-by="{name : 'versionNo', dir : 'desc'}">
+		sda-sort-by="{name : 'versionNo', dir : 'desc'}"> <!-- sda-column-selector="{{docSearchViewCtrl.columnSelector}}"  add this when the column selector problem gets resolved-->
 		<thead
 			sda-i18n-scope="views-common-messages.views-documentView-documentVersion">
 			<tr>
@@ -21,7 +20,7 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td></td>
+				<td><a href="#" ng-click="bpmCommon.stopEvent($event); docSearchViewCtrl.openDocumentView(rowData.revisionId);docSearchViewCtrl.documentHistory.close();">{{rowData.versionNo}}</a></td>
 				<td></td>
 				<td><a href="#" ng-click="docSearchViewCtrl.openUserDetailsFromVersionHistory(rowData.documentOwner)">{{rowData.author}}</a></td>
 				<td></td>

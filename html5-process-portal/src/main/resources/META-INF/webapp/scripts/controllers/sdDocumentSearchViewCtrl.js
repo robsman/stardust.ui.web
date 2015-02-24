@@ -64,8 +64,7 @@
 			containingText : ""
 		};
 
-		$scope.advancedTextSearch ={
-			displayInd : true,
+		this.advancedTextSearch ={
 			finalText:'',
 			allWords:'',
 			exactPhrase:'',
@@ -73,7 +72,6 @@
 			oneOrMore2:'',
 			oneOrMore3:'',
 			unwantedWords:''
-			// advancedContainingText:false
 		};
 
 
@@ -177,10 +175,10 @@
 
 		this.openUserDetails = function(documentOwner){
 			var self = this;
-			self.showUserDetails = true;
 			sdDocumentSearchService.getUserDetails(documentOwner).then(function(data){
 				self.userDetails = data;
 				self.userDetails.userImageURI = self.getRootUrl(null) + data.userImageURI;
+				self.showUserDetails = true;
 			});
 		}
 
@@ -206,68 +204,76 @@
 	};
 	
 	this.constructFinalText = function(){
-		$scope.advancedTextSearch.finalText = $scope.advancedTextSearch.allWords;
-		if(!$scope.advancedTextSearch.exactPhrase.length==0){
-			$scope.advancedTextSearch.finalText = $scope.advancedTextSearch.finalText.concat(" ");
-			$scope.advancedTextSearch.finalText = $scope.advancedTextSearch.finalText.concat("\"").concat($scope.advancedTextSearch.exactPhrase).concat("\"");
-		}
-		if(!$scope.advancedTextSearch.oneOrMore1.length==0){
-			$scope.advancedTextSearch.finalText = $scope.advancedTextSearch.finalText.concat(" ");
-			$scope.advancedTextSearch.finalText = $scope.advancedTextSearch.finalText.concat($scope.advancedTextSearch.oneOrMore1);
-
-		}
-
-		if(!$scope.advancedTextSearch.oneOrMore1.length==0
-			&& !$scope.advancedTextSearch.oneOrMore2.length==0){
-			$scope.advancedTextSearch.finalText = $scope.advancedTextSearch.finalText.concat(" ");
-			$scope.advancedTextSearch.finalText = $scope.advancedTextSearch.finalText.concat("OR");
-			$scope.advancedTextSearch.finalText = $scope.advancedTextSearch.finalText.concat(" ");
-			$scope.advancedTextSearch.finalText = $scope.advancedTextSearch.finalText.concat($scope.advancedTextSearch.oneOrMore2);
-		}else if(!$scope.advancedTextSearch.oneOrMore2.length==0)
-		{
-			$scope.advancedTextSearch.finalText = $scope.advancedTextSearch.finalText.concat(" ");
-			$scope.advancedTextSearch.finalText = $scope.advancedTextSearch.finalText.concat($scope.advancedTextSearch.oneOrMore2);
-		}
-
-		if ((!$scope.advancedTextSearch.oneOrMore1.length==0
-			|| !$scope.advancedTextSearch.oneOrMore2.length==0) && !$scope.advancedTextSearch.oneOrMore3.length==0)
-		{
-			$scope.advancedTextSearch.finalText = $scope.advancedTextSearch.finalText.concat(" ");
-			$scope.advancedTextSearch.finalText = $scope.advancedTextSearch.finalText.concat("OR");
-			$scope.advancedTextSearch.finalText = $scope.advancedTextSearch.finalText.concat(" ");
-			$scope.advancedTextSearch.finalText = $scope.advancedTextSearch.finalText.concat($scope.advancedTextSearch.oneOrMore3);
-		}
-		else if (!$scope.advancedTextSearch.oneOrMore3.length==0)
-		{
-			$scope.advancedTextSearch.finalText = $scope.advancedTextSearch.finalText.concat(" ");
-			$scope.advancedTextSearch.finalText = $scope.advancedTextSearch.finalText.concat($scope.advancedTextSearch.oneOrMore3);
-		}
-
-		if (!$scope.advancedTextSearch.unwantedWords.length==0)
-		{
-			$scope.advancedTextSearch.finalText = $scope.advancedTextSearch.finalText.concat(" -");
-			$scope.advancedTextSearch.finalText = $scope.advancedTextSearch.finalText.concat($scope.advancedTextSearch.unwantedWords);
-		}
-
-		if(!$scope.advancedTextSearch.finalText.length==0){
-			$scope.advancedTextSearch.displayInd = false;
+		var self = this;
+		if(self.advancedTextSearch.allWords != undefined && self.advancedTextSearch.allWords != 0){
+			self.advancedTextSearch.finalText = self.advancedTextSearch.allWords;
 		}else{
-			$scope.advancedTextSearch.displayInd = true;
+			self.advancedTextSearch.finalText = "";
+		}
+		if(self.advancedTextSearch.exactPhrase != undefined && self.advancedTextSearch.exactPhrase.length != 0){
+			self.advancedTextSearch.finalText = self.advancedTextSearch.finalText.concat(" ");
+			self.advancedTextSearch.finalText = self.advancedTextSearch.finalText.concat("\"").concat(self.advancedTextSearch.exactPhrase).concat("\"");
+		}
+		if(self.advancedTextSearch.oneOrMore1 != undefined && self.advancedTextSearch.oneOrMore1.length != 0){
+			self.advancedTextSearch.finalText = self.advancedTextSearch.finalText.concat(" ");
+			self.advancedTextSearch.finalText = self.advancedTextSearch.finalText.concat(self.advancedTextSearch.oneOrMore1);
+
+		}
+
+		if((self.advancedTextSearch.oneOrMore1 != undefined && self.advancedTextSearch.oneOrMore1.length != 0) && (self.advancedTextSearch.oneOrMore2 !=undefined
+			&& self.advancedTextSearch.oneOrMore2.length!=0)){
+			self.advancedTextSearch.finalText = self.advancedTextSearch.finalText.concat(" ");
+			self.advancedTextSearch.finalText = self.advancedTextSearch.finalText.concat("OR");
+			self.advancedTextSearch.finalText = self.advancedTextSearch.finalText.concat(" ");
+			self.advancedTextSearch.finalText = self.advancedTextSearch.finalText.concat(self.advancedTextSearch.oneOrMore2);
+		}else if(self.advancedTextSearch.oneOrMore2 != undefined && self.advancedTextSearch.oneOrMore2.length!=0)
+		{
+			self.advancedTextSearch.finalText = self.advancedTextSearch.finalText.concat(" ");
+			self.advancedTextSearch.finalText = self.advancedTextSearch.finalText.concat(self.advancedTextSearch.oneOrMore2);
+		}
+
+		if (((self.advancedTextSearch.oneOrMore1 != undefined && self.advancedTextSearch.oneOrMore1.length!=0)
+			|| (self.advancedTextSearch.oneOrMore2 != undefined && self.advancedTextSearch.oneOrMore2.length!=0)) 
+			&& (self.advancedTextSearch.oneOrMore3 != undefined && self.advancedTextSearch.oneOrMore3.length!=0))
+		{
+			self.advancedTextSearch.finalText = self.advancedTextSearch.finalText.concat(" ");
+			self.advancedTextSearch.finalText = self.advancedTextSearch.finalText.concat("OR");
+			self.advancedTextSearch.finalText = self.advancedTextSearch.finalText.concat(" ");
+			self.advancedTextSearch.finalText = self.advancedTextSearch.finalText.concat(self.advancedTextSearch.oneOrMore3);
+		}
+		else if (self.advancedTextSearch.oneOrMore3 != undefined && self.advancedTextSearch.oneOrMore3.length!=0)
+		{
+			self.advancedTextSearch.finalText = self.advancedTextSearch.finalText.concat(" ");
+			self.advancedTextSearch.finalText = self.advancedTextSearch.finalText.concat(self.advancedTextSearch.oneOrMore3);
+		}
+
+		if (self.advancedTextSearch.unwantedWords != undefined && self.advancedTextSearch.unwantedWords.length!=0)
+		{
+			self.advancedTextSearch.finalText = self.advancedTextSearch.finalText.concat(" -");
+			self.advancedTextSearch.finalText = self.advancedTextSearch.finalText.concat(self.advancedTextSearch.unwantedWords);
+		}
+
+		if(!self.advancedTextSearch.finalText.length==0){
+			self.showFinalText = false;
+		}else{
+			self.showFinalText = true;
 		}
 	};
 
 	this.onConfirmFromAdvanceText = function(res){
-		var promise = res.promise;
-		promise.then(
-			function(data){
-				$scope.query.documentSearchCriteria.containingText = $scope.advancedTextSearch.finalText;
-				$scope.advancedTextSearch.advancedContainingText = false;
-				console.log("dialog state: confirmed");
-			}).catch(function(){
-				console.log("dialog state: rejected");
-			});
+		var self = this;
+		$scope.query.documentSearchCriteria.containingText = self.advancedTextSearch.finalText;
+		self.advancedTextSearch ={};
+		self.showAdvancedTextSearch = false;
+		console.log("dialog state: confirmed");		
 	};
 
+	this.onCancelFromAdvanceText = function(res){
+		var self = this;
+		self.advancedTextSearch ={};
+		console.log("dialog state: cancelled");		
+	};
+	
 	this.onConfirmFromAttachToProcess = function(res){
 			var promise = res.promise;
 			promise.then(
@@ -288,8 +294,10 @@
 		$scope.query.documentSearchCriteria.selectedFileTypes = [];
 	};
 
-	this.setAdvancedContainingText = function(){
-		$scope.advancedTextSearch.advancedContainingText = true;
+	this.setShowAdvancedTextSearch = function(){
+		var self = this;
+		self.showAdvancedTextSearch = true;
+		self.showFinalText = true;
 	};
 
 	this.pickFromList = function(){
@@ -345,13 +353,14 @@
           return deferred.promise;
 	  };
 	  
-	  this.setShowDocumentVersions = function(documentId){
+	  this.setShowDocumentVersions = function(documentId,documentName){
 		    var self = this;
-		    //this.documentId = documentId;
+		    // this.documentId = documentId;
 	    	sdDocumentSearchService.getDocumentVersions(documentId).then(function(data){
 	    		self.documentVersions.list = data.list;
 	    		self.documentVersions.totalCount = data.totalCount;
 	    		self.showDocumentVersions = true;
+	    		self.documentName = documentName;
 	    	});	
 		    
 	    	
@@ -370,10 +379,10 @@
 	
 	this.openUserDetailsFromVersionHistory=function(documentOwner){
 		var self = this;
-		self.showUserDetailsFromDocHistory = true;
 		sdDocumentSearchService.getUserDetails(documentOwner).then(function(data){
 			self.userDetails = data;
 			self.userDetails.userImageURI = self.getRootUrl(null) + data.userImageURI;
+			self.showUserDetailsFromDocHistory = true;
 		});
 		
 	};

@@ -13,13 +13,13 @@
                                  <tbody>
                                     <tr>
                                        <td>
-                                          <div ng-show="advancedTextSearch.displayInd"
+                                          <div ng-show="docSearchViewCtrl.showFinalText"
                                              style="text-indent: 10px; width: 750px; background-color: #F0F0F0; border: 5px solid #C5C5C5">
                                              <span>{{i18n('views-common-messages.views-documentSearchView-advancedTextSearch-placeHolder')}}</span>
                                           </div>
-                                          <div ng-show="!advancedTextSearch.displayInd"
+                                          <div ng-show="!docSearchViewCtrl.showFinalText"
                                              style="text-indent: 10px; width: 750px; background-color: #F0F0F0; border: 5px solid #C5C5C5">
-                                             <span>{{advancedTextSearch.finalText}}</span>
+                                             <span>{{docSearchViewCtrl.advancedTextSearch.finalText}}</span>
                                           </div>
                                        </td>
                                     </tr>
@@ -35,15 +35,15 @@
                                                    <td><span class="label-form">{{i18n('views-common-messages.views-documentSearchView-advancedTextSearch-allWords')}}</span>
                                                    </td>
                                                    <td><input maxlength="30" size="30" type="text"
-                                                      ng-model="advancedTextSearch.allWords"
-                                                      value="{{advancedTextSearch.allWords}}"
+                                                      ng-model="docSearchViewCtrl.advancedTextSearch.allWords"
+                                                      value="{{docSearchViewCtrl.advancedTextSearch.allWords}}"
                                                       ng-blur="docSearchViewCtrl.constructFinalText()"/></td>
                                                 </tr>
                                                 <tr>
                                                    <td><span class="label-form">{{i18n('views-common-messages.views-documentSearchView-advancedTextSearch-exactPhrase')}}</span></td>
                                                    <td><input maxlength="30" size="30" type="text"
-                                                      ng-model="advancedTextSearch.exactPhrase"
-                                                      value="{{advancedTextSearch.exactPhrase}}"
+                                                      ng-model="docSearchViewCtrl.advancedTextSearch.exactPhrase"
+                                                      value="{{docSearchViewCtrl.advancedTextSearch.exactPhrase}}"
                                                       ng-blur="docSearchViewCtrl.constructFinalText()" /></td>
                                                 </tr>
                                                 <tr>
@@ -51,19 +51,19 @@
                                                    </td>
                                                    <td><input maxlength="30" size="30"
                                                       style="margin-right: 5px" type="text"
-                                                      ng-model="advancedTextSearch.oneOrMore1"
-                                                      value="{{advancedTextSearch.oneOrMore1}}"
+                                                      ng-model="docSearchViewCtrl.advancedTextSearch.oneOrMore1"
+                                                      value="{{docSearchViewCtrl.advancedTextSearch.oneOrMore1}}"
                                                       ng-blur="docSearchViewCtrl.constructFinalText()"><span
                                                       class="label-form">{{i18n('views-common-messages.views-documentSearchView-advancedTextSearch-or')}}</span><input
                                                       maxlength="30" size="30"
                                                       style="margin-left: 5px; margin-right: 5px"
-                                                      ng-model="advancedTextSearch.oneOrMore2" type="text"
-                                                      value="{{advancedTextSearch.oneOrMore2}}"
+                                                      ng-model="docSearchViewCtrl.advancedTextSearch.oneOrMore2" type="text"
+                                                      value="{{docSearchViewCtrl.advancedTextSearch.oneOrMore2}}"
                                                       ng-blur="docSearchViewCtrl.constructFinalText()"><span
                                                       class="label-form">{{i18n('views-common-messages.views-documentSearchView-advancedTextSearch-or')}}</span><input
                                                       maxlength="30" size="30" style="margin-left: 5px"
-                                                      type="text" ng-model="advancedTextSearch.oneOrMore3"
-                                                      value="{{advancedTextSearch.oneOrMore3}}"
+                                                      type="text" ng-model="docSearchViewCtrl.advancedTextSearch.oneOrMore3"
+                                                      value="{{docSearchViewCtrl.advancedTextSearch.oneOrMore3}}"
                                                       ng-blur="docSearchViewCtrl.constructFinalText()"></td>
                                                 </tr>
                                              </tbody>
@@ -90,8 +90,8 @@
                                                    <td><span class="label-form">{{i18n('views-common-messages.views-documentSearchView-advancedTextSearch-unwantedWords')}}</span>
                                                    </td>
                                                    <td><input maxlength="30" size="30" type="text"
-                                                      ng-model="advancedTextSearch.unwantedWords"
-                                                      value="{{advancedTextSearch.unwantedWords}}"
+                                                      ng-model="docSearchViewCtrl.advancedTextSearch.unwantedWords"
+                                                      value="{{docSearchViewCtrl.advancedTextSearch.unwantedWords}}"
                                                       ng-blur="docSearchViewCtrl.constructFinalText()"></td>
                                                 </tr>
                                              </tbody>

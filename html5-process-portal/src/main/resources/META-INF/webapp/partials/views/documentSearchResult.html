@@ -88,7 +88,7 @@
 								title="{{i18n('views-common-messages.views-myDocumentsTreeView-documentTree-downloadFile')}}" class="button-link tbl-tool-link">
 							<i class="glyphicon glyphicon-download"></i>
 						</button>
-						<button ng-click="bpmCommon.stopEvent($event);docSearchViewCtrl.setShowDocumentVersions(rowData.documentId);"
+						<button ng-click="bpmCommon.stopEvent($event);docSearchViewCtrl.setShowDocumentVersions(rowData.documentId,rowData.documentName);"
 								title="{{i18n('views-common-messages.views-myDocumentsTreeView-documentTree-versionHistory')}}" class="button-link tbl-tool-link">
 							<i class="glyphicon glyphicon-book"></i><!-- need to chnage this icon once we get correct one -->
 						</button>
@@ -105,10 +105,10 @@
 		 sda-template="plugins/html5-process-portal/scripts/directives/partials/userDetails.html"
 		 sda-width="400px">
 	</div>
-	<div sd-dialog sda-modal="true"
+	<div sd-dialog="docSearchViewCtrl.documentHistory" sda-modal="true"
 		 sda-show="docSearchViewCtrl.showDocumentVersions"
 		 sda-type="custom"
-		 sda-title="{{i18n('views-common-messages.views-userDetails-title')}}"
+		 sda-title="{{i18n('views-common-messages.views-documentView-documentVersion-versionHistory')+ ' ' + docSearchViewCtrl.documentName}}"
 		 sda-scope="this"
 		 sda-template="plugins/html5-process-portal/partials/views/documentVersion.html"
 		 sda-on-close="docSearchViewCtrl.onCloseDocumentVersions(res)"
