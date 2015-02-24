@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 SunGard CSA LLC and others.
+ * Copyright (c) 2013, 2015 SunGard CSA LLC and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,8 @@
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.reporting.beans.spring;
+
+import static org.eclipse.stardust.common.StringUtils.isEmpty;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -41,11 +43,13 @@ import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.Activity;
+import org.eclipse.stardust.engine.api.model.Data;
 import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.Participant;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.model.QualifiedModelParticipantInfo;
 import org.eclipse.stardust.engine.api.query.UnsupportedFilterException;
+import org.eclipse.stardust.engine.api.runtime.DeployedModel;
 import org.eclipse.stardust.engine.api.runtime.DmsUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentInfo;
@@ -219,6 +223,8 @@ public class ReportingServiceBean
          {
             JsonObject processJson = new JsonObject();
 
+            DeployedModel model = modelService.getModel(processDefinition.getModelOID());
+
             processJson.addProperty("id", processDefinition.getQualifiedId());
             processJson.addProperty("name", I18nUtils.getProcessName(processDefinition)); // I18n
             processJson.addProperty("auxiliary", ProcessDefinitionUtils.isAuxiliaryProcess(processDefinition));
@@ -231,14 +237,20 @@ public class ReportingServiceBean
                DataPath dataPath = dataPathEntry.getKey();
                if (dataPath.isDescriptor())
                {
-                  if (!descriptorsMap.containsKey(dataPath.getId()))
+                  Data data = model.getData(dataPath.getData());
+                  String descriptorId = dataPath.getId() + ":" + data.getQualifiedId();
+                  if ( !isEmpty(dataPath.getAccessPath()))
+                  {
+                     descriptorId += ":" + dataPath.getAccessPath();
+                  }
+
+                  if (!descriptorsMap.containsKey(descriptorId))
                   {
                      JsonObject descriptorJson = new JsonObject();
 
-                     descriptorsJson.add(dataPath.getId(), descriptorJson);
+                     descriptorsJson.add(descriptorId, descriptorJson);
 
-                        descriptorJson.addProperty("id",
-                              processDefinition.getQualifiedId() + ":" + dataPath.getQualifiedId());
+                     descriptorJson.addProperty("id", descriptorId);
                      descriptorJson.addProperty("name", I18nUtils.getDataPathName(dataPath));
                      descriptorJson.addProperty("type", UiHelper.mapDesciptorType(dataPath.getMappedType()).getId());
 
@@ -247,6 +259,7 @@ public class ReportingServiceBean
                      JsonObject metadataJson = new JsonObject();
                      metadataJson.addProperty("isDescriptor", true);
                      metadataJson.addProperty("isStructuredType", metadata.isStructured());
+                     metadataJson.addProperty("data", data.getQualifiedId());
                      metadataJson.addProperty("xPath", metadata.getxPath());
                      metadataJson.addProperty("javaType", dataPath.getMappedType().getName());
                      
