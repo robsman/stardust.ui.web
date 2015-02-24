@@ -1,7 +1,5 @@
 package org.eclipse.stardust.ui.web.rest;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.MissingResourceException;
 
 import javax.annotation.Resource;
@@ -17,18 +15,12 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.engine.api.query.DocumentFilter;
-import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
-import org.eclipse.stardust.engine.api.query.ProcessInstances;
-import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.ui.web.rest.service.DocumentSearchServiceBean;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentSearchCriteriaDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentSearchFilterDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.ProcessWrapperDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.UserDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
@@ -42,8 +34,6 @@ import com.google.gson.JsonObject;
 /**
  *
  * @author Abhay.Thappan
- * 
- *         Copy paste from web-reporting
  *
  */
 @Component
@@ -51,9 +41,6 @@ import com.google.gson.JsonObject;
 public class DocumentSearchResource {
 	private static final Logger trace = LogManager
 			.getLogger(DocumentSearchResource.class);
-	private final JsonMarshaller jsonIo = new JsonMarshaller();
-	private final Gson prettyPrinter = new GsonBuilder().setPrettyPrinting()
-			.create();
 
 	@Resource
 	private DocumentSearchServiceBean documentSearchService;
@@ -65,15 +52,11 @@ public class DocumentSearchResource {
 	private HttpServletRequest httpRequest;
 
 	@GET
-	/* @Produces(MediaType.APPLICATION_JSON) */
-	@Path("/search/{serviceName}/{searchValue}")
-	public Response search(@PathParam("serviceName") String serviceName,
-			@PathParam("searchValue") String searchValue) {
-		if (StringUtils.isNotEmpty(serviceName)
-				&& StringUtils.isNotEmpty(searchValue)) {
+	@Path("/searchUsers/{searchValue}")
+	public Response searchUsers(@PathParam("searchValue") String searchValue) {
+		if (StringUtils.isNotEmpty(searchValue)) {
 			try {
-				String result = documentSearchService.searchData(serviceName,
-						searchValue);
+				String result = documentSearchService.searchUsers(searchValue);
 				return Response.ok(result, MediaType.TEXT_PLAIN_TYPE).build();
 			} catch (MissingResourceException mre) {
 				return Response.status(Status.NOT_FOUND).build();
@@ -86,7 +69,6 @@ public class DocumentSearchResource {
 	}
 
 	@GET
-	/* @Produces(MediaType.APPLICATION_JSON) */
 	@Path("/searchAttributes")
 	public Response searchAttributes() {
 
@@ -102,7 +84,6 @@ public class DocumentSearchResource {
 	}
 
 	@POST
-	/* @Produces(MediaType.APPLICATION_JSON) */
 	@Path("/searchByCriteria")
 	public Response searchByCritera(
 			@QueryParam("skip") @DefaultValue("0") Integer skip,
@@ -131,13 +112,13 @@ public class DocumentSearchResource {
 	}
 
 	@GET
-	// @Produces(MediaType.APPLICATION_JSON)
 	@Path("/loadProcessByDocument/{documentId}")
 	public Response loadProcessByDocument(
 			@PathParam("documentId") String documentId) {
 		try {
 
-			QueryResultDTO resultDTO = documentSearchService.getProcessInstancesFromDocument(documentId);
+			QueryResultDTO resultDTO = documentSearchService
+					.getProcessInstancesFromDocument(documentId);
 
 			Gson gson = new Gson();
 			return Response.ok(gson.toJson(resultDTO),
@@ -148,9 +129,8 @@ public class DocumentSearchResource {
 			return Response.status(Status.BAD_REQUEST).build();
 		}
 	}
-	
+
 	@GET
-	// @Produces(MediaType.APPLICATION_JSON)
 	@Path("/loadUserDetails/{documentOwner}")
 	public Response getUserDetails(
 			@PathParam("documentOwner") String documentOwner) {
@@ -159,16 +139,35 @@ public class DocumentSearchResource {
 			UserDTO user = documentSearchService.getUserDetails(documentOwner);
 
 			Gson gson = new Gson();
-			return Response.ok(gson.toJson(user),
-					MediaType.TEXT_PLAIN_TYPE).build();
+			return Response.ok(gson.toJson(user), MediaType.TEXT_PLAIN_TYPE)
+					.build();
 		} catch (MissingResourceException mre) {
 			return Response.status(Status.NOT_FOUND).build();
 		} catch (Exception e) {
 			return Response.status(Status.BAD_REQUEST).build();
 		}
 	}
-	
 
+	@GET
+	@Path("/loadDocumentVersions/{documentId}")
+	public Response getDocumentVersions(
+			@PathParam("documentId") String documentId) {
+
+		try {
+
+			QueryResultDTO resultDTO = documentSearchService
+					.getDocumentVersions(documentId);
+
+			Gson gson = new Gson();
+			return Response.ok(gson.toJson(resultDTO),
+					MediaType.TEXT_PLAIN_TYPE).build();
+		} catch (MissingResourceException mre) {
+			return Response.status(Status.NOT_FOUND).build();
+		} catch (Exception e) {
+			return Response.status(Status.BAD_REQUEST).build();
+		}
+
+	}
 
 	/**
 	 * Populate the options with the post data.

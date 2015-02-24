@@ -39,6 +39,16 @@ public class UserDTO extends AbstractDTO {
 
 	@DTOAttribute("realm.name")
 	private String realm;
+	
+	private String userImageURI;
+
+	public String getUserImageURI() {
+		return userImageURI;
+	}
+
+	public void setUserImageURI(String userImageURI) {
+		this.userImageURI = userImageURI;
+	}
 
 	public String getId() {
 		return id;

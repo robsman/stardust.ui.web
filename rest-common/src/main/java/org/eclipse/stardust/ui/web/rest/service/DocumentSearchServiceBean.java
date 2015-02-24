@@ -11,7 +11,6 @@
 package org.eclipse.stardust.ui.web.rest.service;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -24,15 +23,18 @@ import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.rest.Options;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentSearchCriteriaDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentSearchResultDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.DocumentVersionDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.UserDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.utils.DocumentSearchUtils;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
+import org.eclipse.stardust.ui.web.viewscommon.utils.MyPicturePreferenceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
+
+import com.google.gson.Gson;
 
 /**
  *
@@ -40,14 +42,10 @@ import org.springframework.stereotype.Component;
  */
 
 @Component
-@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class DocumentSearchServiceBean {
 
 	private static final Logger trace = LogManager
 			.getLogger(DocumentSearchServiceBean.class);
-
-	@Resource
-	private DocumentSearchHandlerChain documentSearchHandlerChain;
 
 	@Resource
 	private DocumentSearchUtils documentSearchUtils;
@@ -57,9 +55,23 @@ public class DocumentSearchServiceBean {
 	 * @param searchValue
 	 * @return
 	 */
-	public String searchData(String serviceName, String searchValue) {
-		return documentSearchHandlerChain.handleRequest(serviceName,
-				searchValue);
+	public String searchUsers(String searchValue) {
+		List<User> users = documentSearchUtils.searchUsers(searchValue, true,
+				20);
+		List<UserDTO> userWrappers = new ArrayList<UserDTO>();
+		for (User user : users) {
+			UserDTO dto = new UserDTO();
+			dto.setId(user.getId());
+			dto.setName(UserUtils.getUserDisplayLabel(user));
+			userWrappers.add(dto);
+		}
+
+		QueryResultDTO resultDTO = new QueryResultDTO();
+		resultDTO.list = userWrappers;
+		resultDTO.totalCount = userWrappers.size();
+
+		Gson gson = new Gson();
+		return gson.toJson(resultDTO);
 	}
 
 	public String createDocumentSearchFilterAttributes() {
@@ -105,10 +117,19 @@ public class DocumentSearchServiceBean {
 		User user = UserUtils.getUser(documentOwner);
 		UserDTO userDTO = DTOBuilder.build(user, UserDTO.class);
 		userDTO.setName(UserUtils.getUserDisplayLabel(user));
-		userDTO.setValidFrom(new Date());
-		userDTO.setValidTo(new Date());
-		userDTO.setEMail("abhay.thappan@sungard.com");
-		userDTO.setDescription("Master user");
+		userDTO.setUserImageURI(MyPicturePreferenceUtils.getUsersImageURI(user));
 		return userDTO;
+	}
+
+	public QueryResultDTO getDocumentVersions(String documentId)
+			throws ResourceNotFoundException {
+		List<DocumentVersionDTO> docVersions = documentSearchUtils
+				.getDocumentVersions(documentId);
+
+		QueryResultDTO resultDTO = new QueryResultDTO();
+		resultDTO.list = docVersions;
+		resultDTO.totalCount = docVersions.size();
+
+		return resultDTO;
 	}
 }

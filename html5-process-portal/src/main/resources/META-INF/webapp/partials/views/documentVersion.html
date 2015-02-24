@@ -1,0 +1,40 @@
+<div>
+<table sd-data-table="{{docSearchViewCtrl.docVersionsTblHndExp}}"
+		sd-data="docSearchViewCtrl.getDocumentVersions(params)"  sda-mode="local" sda-no-pagination="true"
+		 sda-column-selector="{{docSearchViewCtrl.columnSelector}}"
+		sda-sortable="true"
+		sda-sort-by="{name : 'versionNo', dir : 'desc'}">
+		<thead
+			sda-i18n-scope="views-common-messages.views-documentView-documentVersion">
+			<tr>
+				<th sda-name="versionNo" sda-sortable="true">				
+				</th>
+				<th sda-name="documentName" sda-label="{{i18n('views-common-messages.views-documentSearchView-documentSearchTable-column-documentName')}}" sda-sortable="true">
+				</th>
+				<th sda-name="author" sda-label="{{i18n('views-common-messages.views-documentSearchView-documentSearchTable-column-author')}}" sda-sortable="true">					
+				</th>
+				<th sda-name="modifiedDate"  sda-sortable="true">					
+				</th>
+				<th sda-name="comments" sda-label="{{i18n('views-common-messages.views-myDocumentsTreeView-saveDocumentVersionDialog-comments')}}" sda-sortable="true">
+				</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td></td>
+				<td></td>
+				<td><a href="#" ng-click="docSearchViewCtrl.openUserDetailsFromVersionHistory(rowData.documentOwner)">{{rowData.author}}</a></td>
+				<td></td>
+				<td></td>
+			</tr>
+		</tbody>
+	</table>
+	<div sd-dialog sda-modal="false"
+		 sda-show="docSearchViewCtrl.showUserDetailsFromDocHistory"
+		 sda-type="custom"
+		 sda-title="{{i18n('views-common-messages.views-userDetails-title')}}"
+		 sda-scope="this"
+		 sda-template="plugins/html5-process-portal/scripts/directives/partials/userDetails.html"
+		 sda-width="400px">
+	</div>
+</div>

@@ -12,49 +12,59 @@
  * @author Subodh.Godbole
  */
 
-(function(){
+(function() {
 	'use strict';
 
-	angular.module('workflow-ui.services').provider('sdDocumentSearchService', function () {
-		this.$get = ['$rootScope', '$resource', 'sdLoggerService','$q','$http', function ($rootScope, $resource, sdLoggerService, $q, $http) {
-			var service = new DocumentSearchService($rootScope, $resource, sdLoggerService, $q, $http);
-			return service;
-		}];
-	});
+	angular.module('workflow-ui.services').provider(
+			'sdDocumentSearchService',
+			function() {
+				this.$get = [
+						'$rootScope',
+						'$resource',
+						'sdLoggerService',
+						'$q',
+						'$http',
+						function($rootScope, $resource, sdLoggerService, $q,
+								$http) {
+							var service = new DocumentSearchService($rootScope,
+									$resource, sdLoggerService, $q, $http);
+							return service;
+						} ];
+			});
 
 	/*
 	 * 
 	 */
-	function DocumentSearchService($rootScope, $resource, sdLoggerService, $q, $http) {
+	function DocumentSearchService($rootScope, $resource, sdLoggerService, $q,
+			$http) {
 		var REST_BASE_URL = "services/rest/portal/documentSearch";
 		var trace = sdLoggerService.getLogger('bpm-common.sdDataTable');
-		DocumentSearchService.prototype.search = function(serviceName, searchValue) {
+		DocumentSearchService.prototype.searchUsers = function(searchValue) {
 			trace.info("Getting authors for:", searchValue);
 
 			// Prepare URL
-			var restUrl = REST_BASE_URL + "/:type/:serviceName/:searchValue";
-			
+			var restUrl = REST_BASE_URL + "/:type/:searchValue";
+
 			var urlTemplateParams = {};
-			
-				urlTemplateParams.type = "search";
-				urlTemplateParams.serviceName = serviceName;
-				urlTemplateParams.searchValue = searchValue;
-			
-				return $resource(restUrl).get(urlTemplateParams).$promise;	
+
+			urlTemplateParams.type = "searchUsers";
+			urlTemplateParams.searchValue = searchValue;
+
+			return $resource(restUrl).get(urlTemplateParams).$promise;
 		};
-		
+
 		DocumentSearchService.prototype.searchAttributes = function() {
 			trace.info("inside searchAttributes function");
 			// Prepare URL
 			var restUrl = REST_BASE_URL + "/:type";
-			
+
 			var urlTemplateParams = {};
-			
-				urlTemplateParams.type = "searchAttributes";
-				
-				return $resource(restUrl).get(urlTemplateParams).$promise;	
+
+			urlTemplateParams.type = "searchAttributes";
+
+			return $resource(restUrl).get(urlTemplateParams).$promise;
 		};
-		
+
 		DocumentSearchService.prototype.performSearch = function(query) {
 			trace.info("inside performSearch function");
 			// Prepare URL
@@ -78,28 +88,28 @@
 				restUrl = restUrl + "?" + options.substr(1);
 			}
 
-			 var postData ={
-			           filters :query.options.filters,
-			           documentSearchCriteria : query.documentSearchCriteria 
-			         };
-			 
-			 
-			 var documentSearch = $resource(restUrl, {
-		            type : '@type'
-		         }, {
-		            fetch : {
-		               method : 'POST'
-		            }
-		         });
-			
+			var postData = {
+				filters : query.options.filters,
+				documentSearchCriteria : query.documentSearchCriteria
+			};
+
+			var documentSearch = $resource(restUrl, {
+				type : '@type'
+			}, {
+				fetch : {
+					method : 'POST'
+				}
+			});
+
 			var urlTemplateParams = {};
 			urlTemplateParams.type = "searchByCriteria";
-				 
+
 			return documentSearch.fetch(urlTemplateParams, postData).$promise;
 
 		};
 
-		DocumentSearchService.prototype.fetchProcessDialogData = function(documentId){
+		DocumentSearchService.prototype.fetchProcessDialogData = function(
+				documentId) {
 
 			var restUrl = REST_BASE_URL + "/:type/:documentId";
 
@@ -111,7 +121,7 @@
 			return $resource(restUrl).get(urlTemplateParams).$promise;
 		};
 
-		DocumentSearchService.prototype.getUserDetails = function(documentOwner){
+		DocumentSearchService.prototype.getUserDetails = function(documentOwner) {
 			var restUrl = REST_BASE_URL + "/:type/:documentOwner";
 
 			var urlTemplateParams = {};
@@ -122,48 +132,19 @@
 			return $resource(restUrl).get(urlTemplateParams).$promise;
 
 		};
-		
-		
-		/*function ajax(restUrl, extension, value) {
-			var deferred = $q.defer();
 
-			var type;
-			var data;
-			if (angular.isObject(value) || angular.isArray(value)) {
-				restUrl += extension;
-				type = "POST";
-				data = JSON.stringify(value);
-			} else {
-				restUrl += value + "/" + extension;
-				type = "GET";
-			}
-			
-			var httpResponse;
-			if(type == "GET") {
-				httpResponse = $http.get(restUrl);
-			} else {
-				httpResponse = $http.post(restUrl, data);
-			}
-
-			httpResponse.success(function(data){
-				deferred.resolve(data);
-			}).error(function(data) {
-				deferred.reject(data);
-			});
-			
-			return deferred.promise;
-		};*/
-
-		/*DocumentSearchService.prototype.getAllRegisteredMimeFileTypes= function(){
-			console.log("inside getAllRegisteredMimeFileTypes function");
-			// Prepare URL
-			var restUrl = REST_BASE_URL + "/:type";
+		this.getDocumentVersions = function(
+				documentId) {
+			var restUrl = REST_BASE_URL + "/:type/:documentId";
 
 			var urlTemplateParams = {};
 
-			urlTemplateParams.type = "allRegisteredMimeFileTypes";
+			urlTemplateParams.type = "loadDocumentVersions";
+			urlTemplateParams.documentId = documentId;
 
 			return $resource(restUrl).get(urlTemplateParams).$promise;
-		};*/
-	};
+
+		}
+	}
+	;
 })();

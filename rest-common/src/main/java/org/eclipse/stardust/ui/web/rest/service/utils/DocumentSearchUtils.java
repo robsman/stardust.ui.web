@@ -1,9 +1,13 @@
 package org.eclipse.stardust.ui.web.rest.service.utils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
@@ -23,6 +27,7 @@ import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.Documents;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
+import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.core.spi.dms.IRepositoryInstanceInfo;
 import org.eclipse.stardust.engine.core.thirdparty.encoding.Text;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
@@ -31,11 +36,11 @@ import org.eclipse.stardust.ui.web.rest.Options;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentSearchCriteriaDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentSearchFilterAttributesDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentSearchFilterDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.DocumentVersionDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.ProcessWrapperDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.SelectItemDTO;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DocumentTypeWrapper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MIMEType;
@@ -44,7 +49,9 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.QueryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.DocumentHandlersRegistryBean;
+import org.eclipse.stardust.ui.web.viewscommon.views.document.JCRVersionTracker;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
@@ -136,7 +143,6 @@ public class DocumentSearchUtils {
 		return gson.toJson(dsfaDTO);
 	}
 
-
 	private SelectItemDTO getMimeTypeInSelectItemFormat(MIMEType mimeType) {
 		return new SelectItemDTO(mimeType.getType(), getI18nLabel(mimeType));
 	}
@@ -175,7 +181,7 @@ public class DocumentSearchUtils {
 	public QueryResult<Document> performSearch(Options options,
 			DocumentSearchCriteriaDTO documentSearchAttributes) {
 		DocumentQuery query = new DocumentQuery();
-		
+
 		addSortCriteria(query, options);
 
 		if (options.filter != null) {
@@ -350,10 +356,9 @@ public class DocumentSearchUtils {
 
 		query.where(filter);
 	}
-	
-	
-	
-	public List<ProcessInstanceDTO> getProcessInstancesFromDocument(String documentId) {
+
+	public List<ProcessInstanceDTO> getProcessInstancesFromDocument(
+			String documentId) {
 		ProcessInstanceQuery query = new ProcessInstanceQuery();
 
 		query.where(new DocumentFilter(documentId, null));
@@ -364,10 +369,11 @@ public class DocumentSearchUtils {
 		List<ProcessInstanceDTO> processList = new ArrayList<ProcessInstanceDTO>();
 		if (CollectionUtils.isNotEmpty(processInstances)) {
 			for (ProcessInstance processInstance : processInstances) {
-				
+
 				ProcessInstanceDTO processInstanceDTO = new ProcessInstanceDTO();
-	    		processInstanceDTO.processName = ProcessInstanceUtils.getProcessLabel(processInstance);
-	    		processInstanceDTO.oid = processInstance.getOID();
+				processInstanceDTO.processName = ProcessInstanceUtils
+						.getProcessLabel(processInstance);
+				processInstanceDTO.oid = processInstance.getOID();
 				processList.add(processInstanceDTO);
 			}
 		}
@@ -391,6 +397,48 @@ public class DocumentSearchUtils {
 		} else if (COL_DOCUMENT_TYPE.equals(options.orderBy)) {
 			query.orderBy(DocumentQuery.DOCUMENT_TYPE_ID, options.asc);
 		}
+	}
+
+	/**
+	 * prepares the Document Version list for display purpose
+	 * 
+	 * @return
+	 * @throws ResourceNotFoundException
+	 */
+	public List<DocumentVersionDTO> getDocumentVersions(String id)
+			throws ResourceNotFoundException {
+		Document document = DocumentMgmtUtility.getDocument(id);
+		JCRVersionTracker vt = new JCRVersionTracker(document);
+		List<DocumentVersionDTO> documentVersionList = new ArrayList<DocumentVersionDTO>();
+		Map<Integer, Document> docVersions = vt.getVersions();
+		if (docVersions.size() > 0) {
+			TreeSet<Integer> sortedVersions = new TreeSet<Integer>(
+					docVersions.keySet());
+			int version;
+			DocumentVersionDTO docVersion = null;
+			String documentName = "";
+			for (Iterator<Integer> iterator = sortedVersions.iterator(); iterator
+					.hasNext();) {
+				version = (Integer) iterator.next();
+				docVersion = new DocumentVersionDTO(version,
+						(Document) docVersions.get(version));
+
+				if (documentName.equals(docVersion.getDocumentName())) {
+					docVersion.setDocumentName("");
+				} else {
+					documentName = docVersion.getDocumentName();
+				}
+				documentVersionList.add(docVersion);
+			}
+			Collections.reverse(documentVersionList);
+		}
+		return documentVersionList;
+	}
+
+
+	public List<User> searchUsers(String searchValue, boolean onlyActive,
+			int maxMatches) {
+		return UserUtils.searchUsers(searchValue, true, 20);
 	}
 
 	private boolean checkIfAllOptionSelect(List<String> selectedValues) {

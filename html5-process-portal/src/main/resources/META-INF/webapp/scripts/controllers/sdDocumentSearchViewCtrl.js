@@ -25,8 +25,12 @@
 	function DocumentSearchViewCtrl($q,$scope,sdDocumentSearchService,sdViewUtilService) {
 	    // variable for search result table
 		$scope.documentSearchResult={};
-		$scope.documentSearchResult.tableHandleExpr = null;
-		$scope.documentSearchResult.columnSelector = 'admin';
+		this.documentVersions={};
+		this.dataTable = null;
+		this.docSearchRsltTblHndExp = 'docSearchViewCtrl.dataTable';
+		this.columnSelector = 'admin';
+		this.docVersionsdataTable = null;
+		this.docVersionsTblHndExp = 'docSearchViewCtrl.docVersionsdataTable'
 
 		$scope.documentTypes = [];
 
@@ -48,7 +52,6 @@
 			showAll : false,
 			searchContent:true,
 			searchData:true,
-			serviceName : "userService",
 			advancedFileType : "",
 			selectFileTypeAdvance : false,
 			documentName : "",
@@ -70,7 +73,7 @@
 			oneOrMore2:'',
 			oneOrMore3:'',
 			unwantedWords:''
-			//advancedContainingText:false
+			// advancedContainingText:false
 		};
 
 
@@ -79,6 +82,8 @@
 	    $scope.partialAuthor="";
 
 		$scope.processDialogData={};
+
+
 
 
 	 this.searchAttributes = function(){
@@ -97,6 +102,10 @@
 
 	    this.searchAttributes();
 
+		DocumentSearchViewCtrl.prototype.refresh = function() {
+			this.dataTable.refresh(true);
+		};
+
 	    this.performSearch = function(options){
 			var deferred = $q.defer();
             if($scope.selectedAuthors.length == 1) {
@@ -113,7 +122,9 @@
 			return deferred.promise;
 	    };
 
-	this.getAuthors = function(serviceName, searchVal){
+
+
+	this.getAuthors = function(searchVal){
 		if(searchVal.length > 0) {
 			searchVal = searchVal.concat("%");
 
@@ -121,7 +132,7 @@
 
 			$scope.typingTimer = setTimeout(
 				function(){
-					sdDocumentSearchService.search(serviceName, searchVal).then(function(data) {
+					sdDocumentSearchService.searchUsers(searchVal).then(function(data) {
 						$scope.authors = data.list;
 					});
 				},
@@ -143,7 +154,7 @@
 		}
 
 		this.openProcessHistory = function(oid) {
-			$scope.closeThisDialog();
+			this.processDialog.close();
 			sdViewUtilService.openView("processInstanceDetailsView",
 				"processInstanceOID=" + oid,
 				{
@@ -165,22 +176,27 @@
 		}
 
 		this.openUserDetails = function(documentOwner){
-			this.showUserDetails = true;
+			var self = this;
+			self.showUserDetails = true;
 			sdDocumentSearchService.getUserDetails(documentOwner).then(function(data){
-				$scope.userDetails = data;
-				//$scope.processDialogData.totalCount = data.totalCount;
+				self.userDetails = data;
+				self.userDetails.userImageURI = self.getRootUrl(null) + data.userImageURI;
 			});
 		}
-	/*
-	 * 
-	 */
-	/*DocumentSearchViewCtrl.prototype.handleViewEvents = function(event) {
-		if (event.type == "ACTIVATED") {
-			this.refresh();
-		} else if (event.type == "DEACTIVATED") {
-			// TODO
+
+		this.setShowTableData=function(){
+			this.showTableData = true;
+			if(this.dataTable != null){
+				this.refresh();
+			}
 		}
-	};*/
+
+	/*
+	 * DocumentSearchViewCtrl.prototype.handleViewEvents = function(event) { if
+	 * (event.type == "ACTIVATED") { this.refresh(); } else if (event.type ==
+	 * "DEACTIVATED") { // TODO } };
+	 */
+		
 	this.getFileTypes = function(){
 		if($scope.query.documentSearchCriteria.showAll){
 			$scope.fileTypes = $scope.allRegisteredMimeFileTypes;
@@ -188,6 +204,7 @@
 			$scope.fileTypes = $scope.typicalFileTypes
 		}
 	};
+	
 	this.constructFinalText = function(){
 		$scope.advancedTextSearch.finalText = $scope.advancedTextSearch.allWords;
 		if(!$scope.advancedTextSearch.exactPhrase.length==0){
@@ -320,5 +337,46 @@
 			if(iconPath == 'document-music.png')
 			return "glyphicon glyphicon-music";
 		};
+		
+	  this.getDocumentVersions = function(options){
+		  var deferred = $q.defer();
+		  var self = this;
+		  deferred.resolve(self.documentVersions);
+          return deferred.promise;
+	  };
+	  
+	  this.setShowDocumentVersions = function(documentId){
+		    var self = this;
+		    //this.documentId = documentId;
+	    	sdDocumentSearchService.getDocumentVersions(documentId).then(function(data){
+	    		self.documentVersions.list = data.list;
+	    		self.documentVersions.totalCount = data.totalCount;
+	    		self.showDocumentVersions = true;
+	    	});	
+		    
+	    	
+	  };
+	  
+	  this.onCloseDocumentVersions= function(res){	  
+	  var self = this;
+		  self.documentVersions = {};
+	};
+	
+	this.getRootUrl = function(html) {
+		return window.location.href.substring(0, location.href
+				.indexOf("/main.html"));
+
+	};
+	
+	this.openUserDetailsFromVersionHistory=function(documentOwner){
+		var self = this;
+		self.showUserDetailsFromDocHistory = true;
+		sdDocumentSearchService.getUserDetails(documentOwner).then(function(data){
+			self.userDetails = data;
+			self.userDetails.userImageURI = self.getRootUrl(null) + data.userImageURI;
+		});
+		
+	};
+	
 	}
 })();

@@ -167,7 +167,7 @@ table.formTable td {
 									<!--  <td><input type="text" ng-model="author" value="{{author}}"/></td> -->
 									<td><div sd-auto-complete sda-matches="authors"
 											sda-match-str="partialAuthor"
-											sda-change="docSearchViewCtrl.getAuthors(query.documentSearchCriteria.serviceName,partialAuthor)"
+											sda-change="docSearchViewCtrl.getAuthors(partialAuthor)"
 											sda-text-property="name"
 											sda-container-class="sd-ac-container"
 											sda-item-hot-class="sd-ac-item-isActive"
@@ -213,7 +213,7 @@ table.formTable td {
 									<tbody>
 										<tr>
 											<td><input class="button" type="submit" value="Search"
-												ng-click="docSearchViewCtrl.performSearch(query.options)"></td>
+												ng-click="docSearchViewCtrl.setShowTableData()"></td>
 											<td><input type="submit" value="Reset"></td>
 										</tr>
 									</tbody>
@@ -233,8 +233,7 @@ table.formTable td {
 			 sda-on-open="docSearchViewCtrl.onConfirmFromAdvanceText(res)"
 			 sda-width="800px">
 		</div>
-		<div
-			ng-include="'plugins/html5-process-portal/partials/views/documentSearchResult.html'">
+		<div ng-include="'plugins/html5-process-portal/partials/views/documentSearchResult.html'">
 		</div>
 	</div>
 </body>
