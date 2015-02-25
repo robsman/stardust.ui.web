@@ -8,8 +8,8 @@
  * documentation
  ******************************************************************************/
 
-/*
- * @author Subodh.Godbole
+/**
+ * @author Abhay.Thappan
  */
 
 (function() {
@@ -145,6 +145,18 @@
 			return $resource(restUrl).get(urlTemplateParams).$promise;
 
 		}
-	}
-	;
+
+	
+	this.downloadDocument = function(documentId,documentName) {
+		trace.info("inside downloadDocument function");		
+		window.location = this.getRootUrl() 
+			+"/" +REST_BASE_URL + "/downloadDocument" + "/"+ documentId +"/"+ documentName;
+
+	};
+	
+	this.getRootUrl = function() {
+		return window.location.href.substring(0, location.href
+				.indexOf("/main.html"));
+    };
+	};
 })();

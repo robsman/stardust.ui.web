@@ -13,7 +13,7 @@ package org.eclipse.stardust.ui.web.rest.service.dto;
 import java.util.List;
 
 /**
- * @author Subodh.Godbole
+ * @author Abhay.Thappan
  * @version $Revision: $
  */
 public class DocumentSearchFilterAttributesDTO extends AbstractDTO

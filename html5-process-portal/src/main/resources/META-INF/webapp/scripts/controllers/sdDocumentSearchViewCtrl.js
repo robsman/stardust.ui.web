@@ -9,7 +9,7 @@
  ******************************************************************************/
 
 /**
- * @author Subodh.Godbole
+ * @author Abhay.Thappan
  */
 
 (function() {
@@ -177,7 +177,7 @@
 			var self = this;
 			sdDocumentSearchService.getUserDetails(documentOwner).then(function(data){
 				self.userDetails = data;
-				self.userDetails.userImageURI = self.getRootUrl(null) + data.userImageURI;
+				self.userDetails.userImageURI = sdDocumentSearchService.getRootUrl() + data.userImageURI;
 				self.showUserDetails = true;
 			});
 		}
@@ -360,7 +360,7 @@
 	    		self.documentVersions.list = data.list;
 	    		self.documentVersions.totalCount = data.totalCount;
 	    		self.showDocumentVersions = true;
-	    		self.documentName = documentName;
+	    		self.documentVersions.documentName = documentName;
 	    	});	
 		    
 	    	
@@ -371,20 +371,37 @@
 		  self.documentVersions = {};
 	};
 	
-	this.getRootUrl = function(html) {
-		return window.location.href.substring(0, location.href
-				.indexOf("/main.html"));
-
-	};
-	
 	this.openUserDetailsFromVersionHistory=function(documentOwner){
 		var self = this;
 		sdDocumentSearchService.getUserDetails(documentOwner).then(function(data){
 			self.userDetails = data;
-			self.userDetails.userImageURI = self.getRootUrl(null) + data.userImageURI;
+			self.userDetails.userImageURI = sdDocumentSearchService.getRootUrl() + data.userImageURI;
 			self.showUserDetailsFromDocHistory = true;
 		});
 		
+	};
+	
+	this.downloadDocument = function(res){
+		var self = this;
+		sdDocumentSearchService.downloadDocument(self.documentDownload.documentId,self.documentDownload.documentName);
+		delete self.documentDownload;
+		
+	};
+	
+	this.setShowDocumentDownload = function(documentId,documentName){
+		var self = this;
+		self.showDoumentDownload = true;
+		var documentDownload = {
+			documentId : documentId,
+			documentName : documentName
+		};
+		self.documentDownload = documentDownload;
+		
+	};
+	
+	this.downloadDocumentClose = function(){
+		var self = this;
+		delete self.documentDownload;
 	};
 	
 	}

@@ -1,14 +1,29 @@
+/*******************************************************************************
+ * Copyright (c) 2014 SunGard CSA LLC and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    SunGard CSA LLC - initial API and implementation and/or initial documentation
+ *******************************************************************************/
+/**
+ * @author Abhay.Thappan
+ */
 package org.eclipse.stardust.ui.web.rest;
 
 import java.util.MissingResourceException;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -28,14 +43,8 @@ import org.eclipse.stardust.ui.web.rest.service.utils.ServiceFactoryUtils;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
-/**
- *
- * @author Abhay.Thappan
- *
- */
 @Component
 @Path("/documentSearch")
 public class DocumentSearchResource {
@@ -161,6 +170,30 @@ public class DocumentSearchResource {
 			Gson gson = new Gson();
 			return Response.ok(gson.toJson(resultDTO),
 					MediaType.TEXT_PLAIN_TYPE).build();
+		} catch (MissingResourceException mre) {
+			return Response.status(Status.NOT_FOUND).build();
+		} catch (Exception e) {
+			return Response.status(Status.BAD_REQUEST).build();
+		}
+
+	}
+
+	@GET
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_OCTET_STREAM)
+	@Path("/downloadDocument/{documentId}/{documentName}")
+	public Response downloadReportDefinition(
+			@PathParam("documentId") String documentId,
+			@PathParam("documentName") String documentName) {
+		try {
+
+			return Response
+					.ok(documentSearchService
+							.downloadDocumentDefinition(documentId),
+							MediaType.APPLICATION_OCTET_STREAM)
+					.header("content-disposition",
+							"attachment; filename = \"" + documentName + "\"")
+					.build();
 		} catch (MissingResourceException mre) {
 			return Response.status(Status.NOT_FOUND).build();
 		} catch (Exception e) {

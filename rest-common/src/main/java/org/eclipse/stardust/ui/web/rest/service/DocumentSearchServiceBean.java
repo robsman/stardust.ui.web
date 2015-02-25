@@ -8,6 +8,11 @@
  * Contributors:
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
+
+/**
+ *
+ * @author Abhay.Thappan
+ */
 package org.eclipse.stardust.ui.web.rest.service;
 
 import java.util.ArrayList;
@@ -19,6 +24,7 @@ import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.runtime.Document;
+import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.rest.Options;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentSearchCriteriaDTO;
@@ -31,24 +37,28 @@ import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.utils.DocumentSearchUtils;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MyPicturePreferenceUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 
-/**
- *
- * @author Abhay.Thappan This is copy paste from web-reporting.
- */
-
 @Component
+@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class DocumentSearchServiceBean {
 
 	private static final Logger trace = LogManager
 			.getLogger(DocumentSearchServiceBean.class);
+	/* private DocumentManagementService documentManagementService; */
 
 	@Resource
 	private DocumentSearchUtils documentSearchUtils;
+
+	/*
+	 * @Resource private SessionContext sessionContext;
+	 */
 
 	/**
 	 * @param serviceName
@@ -132,4 +142,31 @@ public class DocumentSearchServiceBean {
 
 		return resultDTO;
 	}
+
+	public byte[] downloadDocumentDefinition(String documentId) {
+		try {
+			DocumentManagementService documentManagementService = ServiceFactoryUtils
+					.getDocumentManagementService();
+			return documentManagementService
+					.retrieveDocumentContent(documentId);
+		} catch (Exception e) {
+			trace.error("Exception while Download Document Definition " + e, e);
+		}
+		return null;
+	}
+
+	/*
+	 * private ServiceFactory getServiceFactory() { return
+	 * sessionContext.getServiceFactory(); }
+	 *//**
+	 *
+	 * @return
+	 */
+	/*
+	 * private DocumentManagementService getDocumentManagementService() { if
+	 * (documentManagementService == null) { documentManagementService =
+	 * getServiceFactory() .getDocumentManagementService(); }
+	 * 
+	 * return documentManagementService; }
+	 */
 }

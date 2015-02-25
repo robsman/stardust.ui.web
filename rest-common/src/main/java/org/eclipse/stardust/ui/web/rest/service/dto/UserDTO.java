@@ -8,16 +8,15 @@
  * Contributors:
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
-
+/**
+ * @author Abhay.Thappan
+ */
 package org.eclipse.stardust.ui.web.rest.service.dto;
 
 import java.util.Date;
 
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOAttribute;
 
-/**
- * @author Abhay.Thappan
- */
 public class UserDTO extends AbstractDTO {
 	@DTOAttribute("id")
 	private String id;

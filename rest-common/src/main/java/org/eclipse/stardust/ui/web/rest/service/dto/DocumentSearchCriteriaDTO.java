@@ -9,7 +9,7 @@
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
 /**
- * @author Johnson.Quadras
+ * @author Abhay.Thappan
  */
 package org.eclipse.stardust.ui.web.rest.service.dto;
 
