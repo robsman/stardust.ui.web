@@ -113,7 +113,14 @@
 					sda-field="{{descCol.field}}" sda-data-type="{{descCol.dataType}}" style="white-space: nowrap;">
 				</td>
 				<td sda-column="TRIVIAL_DATA">
-				 <div data-ng-include="'plugins/html5-process-portal/scripts/directives/partials/worklistData.html'">
+					<div
+						ng-if="worklistCtrl.worklist.trivialManualActivities[rowData.oid]">
+						<div sd-trivial-manual-activity-data
+							sda-data-mappings="worklistCtrl.worklist.trivialManualActivities[rowData.oid].dataMappings"
+							sda-activity-id="rowData.oid"
+							sda-out-data="worklistCtrl.worklist.trivialManualActivities[rowData.oid].inOutData"
+							sda-on-change=worklistCtrl.changeFormStatus(rowData.oid)></div>
+					</div>
 				</td>
 				<td>
 					<div style="text-align: right; white-space: nowrap;">
