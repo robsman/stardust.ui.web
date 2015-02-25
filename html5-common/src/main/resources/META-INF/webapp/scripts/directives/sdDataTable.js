@@ -107,9 +107,12 @@
 					' title="{{i18n(\'portal-common-messages.common-genericDataTable-asExcel\')}}" class="tbl-toolbar-item tbl-tool-link">\n' +
 					'<i class="glyphicon glyphicon-export"></i>\n' +
 				'</button>\n' +
-				'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if="$dtApi.enableExportCSV" ng-click="$dtApi.exportCSV()"' +
-					' title="{{i18n(\'portal-common-messages.common-genericDataTable-asCSV\')}}" class="tbl-toolbar-item tbl-tool-link">\n' +
+				'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if="$dtApi.enableExportCSV" ng-click="$dtApi.exportCSV({allRows: false, allCols: false})"' +
+					' title="{{i18n(\'portal-common-messages.common-genericDataTable-asCSV\')}}" style="margin-right: 0px;">\n' +
 					'<i class="glyphicon glyphicon-export"></i>\n' +
+				'</button>\n' +
+				'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if="$dtApi.enableExportCSV" ng-click="$dtApi.toggleExportOptions()">\n' +
+					'<i class="glyphicon glyphicon-chevron-right glyphicon-rotate-90"></i>\n' +
 				'</button>\n' +
 				'<div ng-if="$dtApi.showSelectColumns" class="popup-dlg">\n' +
 					'<div class="popup-dlg-hdr">\n' +
@@ -141,6 +144,22 @@
 					'<div class="popup-dlg-footer">\n' +
 						'<input type="submit" class="button primary" value="{{i18n(\'portal-common-messages.common-apply\')}}" ng-click="$dtApi.applyColumnSelector()" />' +
 						'<input type="submit" class="button secondary" value="{{i18n(\'portal-common-messages.common-filterPopup-close\')}}" ng-click="$dtApi.toggleColumnSelector()" />' +
+					'</div>\n' +
+				'</div>\n' +
+				'<div ng-show="$dtApi.showExportOptions" class="popup-dlg" style="margin-left: 20px;">\n' +
+					'<div class="popup-dlg-cnt">\n' +
+						'<div><a href="" ng-click="$dtApi.exportCSV({allRows: false, allCols: false})">' + 
+							'{{i18n(\'html5-common.export-options-current-page-current-fields\')}}\n' +
+						'</a></div>\n' +
+						'<div><a href="" ng-click="$dtApi.exportCSV({allRows: false, allCols: true})">' + 
+							'{{i18n(\'html5-common.export-options-current-page-all-fields\')}}\n' +
+						'</a></div>\n' +
+						'<div><a href="" ng-click="$dtApi.exportCSV({allRows: true, allCols: false})">' + 
+							'{{i18n(\'html5-common.export-options-all-pages-current-fields\')}}\n' +
+						'</a></div>\n' +
+						'<div><a href="" ng-click="$dtApi.exportCSV({allRows: true, allCols: true})">' + 
+							'{{i18n(\'html5-common.export-options-all-pages-all-fields\')}}\n' +
+						'</a></div>\n' +
 					'</div>\n' +
 				'</div>\n' +
 			'</div>\n';
@@ -1908,6 +1927,7 @@
 				self.applyTo = 'USER';
 				self.enableExportExcel = false; // enableExports.EXCEL; // TODO: Support Excel download
 				self.enableExportCSV = enableExports.CSV;
+				self.showExportOptions = false;
 
 				self.showColumnFilters = {};
 			}
@@ -2080,8 +2100,20 @@
 			/*
 			 * 
 			 */
-			this.exportCSV = function() {
-				exportAsCSV();
+			this.toggleExportOptions = function(forceHide) {
+				if (forceHide) {
+					self.showExportOptions = false;
+				} else {
+					self.showExportOptions = !self.showExportOptions;
+				}
+			}
+
+			/*
+			 * 
+			 */
+			this.exportCSV = function(options) {
+				exportAsCSV(options);
+				self.toggleExportOptions(true);
 			}
 
 			/*
