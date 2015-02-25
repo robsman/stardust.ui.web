@@ -32,21 +32,14 @@
 	width: 340px;
 	overflow: auto;
 	padding: 7px;
-}/* ********** Abort Activity Dialog ********** */
+}
+/* ********** Abort Activity Dialog ********** */
 .abort-activity-form-content{
-padding-top : 10px;
+padding-bottom : 10px;
 }
 
-.abort-activity-notification-title{
-width:200px;
-}
-
-.abort-activity-message{
-padding-left: 10px;
-}
-
-.abort-activity-notification-list{
-list-style: none;
+.abort-activity-notication-message{
+padding-bottom : 10px;
 }
 
 /* ********** Activity Criticality flags ********** */
