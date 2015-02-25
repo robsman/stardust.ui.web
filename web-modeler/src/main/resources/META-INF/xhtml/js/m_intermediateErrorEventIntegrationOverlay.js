@@ -169,8 +169,89 @@ define(
                      }
                   });
                });
+               
+               m_utils
+                      .jQuerySelect("#writeToDataHeader")
+                      .text(
+                              m_i18nUtils
+                                      .getProperty("modeler.element.properties.errorEvent_intermediate.writetoData"));
+              // data
+              m_utils
+                      .jQuerySelect("label[for='dataActionDataSelect']")
+                      .text(
+                              m_i18nUtils
+                                      .getProperty("modeler.element.properties.commonProperties.data"));
+
+              this.dataActionDataSelect = this
+                      .mapInputId("#dataActionDataSelect");
+
+              this.dataActionDataSelect.change({
+                that: this
+              }, function(event) {
+                // reset data path
+                event.data.that.dataActionPathInput.val("");
+                event.data.that.submitDataAction();
+              });
+
+              // dataPath
+              m_utils
+                      .jQuerySelect("label[for='dataActionPathInput']")
+                      .text(
+                              m_i18nUtils
+                                      .getProperty("modeler.element.properties.timerEvent_intermediate.eventTrigger.data.path"));
+
+              this.dataActionPathInput = this
+                      .mapInputId("#dataActionPathInput");
+
+              this.dataActionPathInput.change({
+                panel: this
+              }, function(event) {
+                event.data.that.submitDataAction();
+              });
             };
 
+            /**
+             * 
+             */
+            IntermediateErrorEventIntegrationOverlay.prototype.populateData = function() {
+              this.dataActionDataSelect.empty();
+              this.scopeModel = this.page.getModel();
+
+              var modelElement = this.page.propertiesPanel.element.modelElement;
+
+              this.dataActionDataSelect
+                      .append("<option value=\"TO_BE_DEFINED\">"
+                              + m_i18nUtils
+                                      .getProperty("modeler.general.toBeDefined")
+                              + "</option>");
+
+              if (this.scopeModel) {
+                var modelname = m_i18nUtils
+                        .getProperty("modeler.element.properties.commonProperties.thisModel");
+                this.dataActionDataSelect.append("<optgroup label=\""
+                        + modelname + "\">");
+
+                for ( var i in this.scopeModel.dataItems) {
+                  var dataItem = this.scopeModel.dataItems[i];
+                  this.dataActionDataSelect.append("<option value='"
+                          + dataItem.getFullId() + "'>" + dataItem.name
+                          + "</option>");
+                }
+              }
+
+              if (modelElement.setDataAction
+                      && modelElement.setDataAction.dataId) {
+                this.dataActionDataSelect
+                        .val(modelElement.setDataAction.dataId);
+              }
+
+              if (modelElement.setDataAction
+                      && modelElement.setDataAction.dataPath) {
+                this.dataActionPathInput
+                        .val(modelElement.setDataAction.dataPath);
+              }
+            }
+            
             /**
             *
             */
@@ -182,6 +263,24 @@ define(
                      }
                   }
                });
+            };
+            
+            /**
+             * 
+             */
+            IntermediateErrorEventIntegrationOverlay.prototype.submitDataAction = function(value) {
+              var dataFullId = null;
+              if (this.dataActionDataSelect.val() != m_constants.TO_BE_DEFINED) {
+                dataFullId = this.dataActionDataSelect.val();
+              }
+              this.submitChanges({
+                 modelElement : {
+                   setDataAction : {
+                       dataId : dataFullId,
+                       dataPath : this.dataActionPathInput.val()
+                    }
+                 }
+              });
             };
 
             /**
@@ -257,6 +356,8 @@ define(
                      this.eventTriggerInput.val('');
                   }
                }
+               
+               this.populateData();
             };
 
             /*IntermediateErrorEventIntegrationOverlay.prototype.initializeInterruptingSelect = function(
