@@ -45,17 +45,16 @@ import org.eclipse.stardust.ui.web.rest.exception.PortalRestException;
 import org.eclipse.stardust.ui.web.rest.service.ActivityInstanceService;
 import org.eclipse.stardust.ui.web.rest.service.DelegationComponent;
 import org.eclipse.stardust.ui.web.rest.service.ParticipantSearchComponent;
+import org.eclipse.stardust.ui.web.rest.service.dto.AbortNotificationDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceOutDataDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.JoinNotificationDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.JoinProcessDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.RelatedProcessesDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.SelectItemDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.SwitchNotificationDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.SwitchProcessDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.TrivialManualActivityDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.RelatedProcessSearchUtils;
@@ -498,7 +497,7 @@ public class ActivityInstanceResource
    public Response checkIfProcessesAbortable(String postedData)
    {
     	try {
-	    	List<SwitchNotificationDTO> notAbortableProcesses = new ArrayList<SwitchNotificationDTO>();
+	    	List<AbortNotificationDTO> notAbortableProcesses = new ArrayList<AbortNotificationDTO>();
 	    	List<Long> processInstOIDs = JsonDTO.getAsList(postedData, Long.class);
 	    	for (Long processInstOID : processInstOIDs) {
 	    		ProcessInstance processInstance = getProcessInstance(processInstOID);
@@ -508,18 +507,18 @@ public class ActivityInstanceResource
 	    		processInstanceDTO.processName = ProcessInstanceUtils.getProcessLabel(processInstance);
 	    		processInstanceDTO.oid = processInstance.getOID();
 	    		
-	    		SwitchNotificationDTO switchNotificationDTO = null;
+	    		AbortNotificationDTO switchNotificationDTO = null;
 	    		
 	    		MessagesViewsCommonBean propsBean = MessagesViewsCommonBean.getInstance();
 	            
 	    		if (!AuthorizationUtils.hasAbortPermission(processInstance)) {
-	    			switchNotificationDTO = new SwitchNotificationDTO();
+	    			switchNotificationDTO = new AbortNotificationDTO();
 	    			switchNotificationDTO.statusMessage = propsBean.getString("common.authorization.msg");
 	    		} else if (!ProcessInstanceUtils.isAbortable(processInstance)) {
-	    			switchNotificationDTO = new SwitchNotificationDTO();
+	    			switchNotificationDTO = new AbortNotificationDTO();
 	    			switchNotificationDTO.statusMessage = propsBean.getString("common.notifyProcessAlreadyAborted");
 	    		} else if(processInstance.isCaseProcessInstance()) {
-	    			switchNotificationDTO = new SwitchNotificationDTO();
+	    			switchNotificationDTO = new AbortNotificationDTO();
 	    			switchNotificationDTO.statusMessage = propsBean.getString("views.switchProcessDialog.caseAbort.message");
 	    		}
 	    		
@@ -583,7 +582,7 @@ public class ActivityInstanceResource
    public Response switchProcess(String processData)
    {
       try {
-    	  List<SwitchNotificationDTO> newProcessInstances = new ArrayList<SwitchNotificationDTO>();
+    	  List<AbortNotificationDTO> newProcessInstances = new ArrayList<AbortNotificationDTO>();
     	  SwitchProcessDTO processDTO = GsonUtils.fromJson(processData, SwitchProcessDTO.class);
     	  List<Long> processInstOIDs = processDTO.processInstaceOIDs;
     	  
@@ -604,7 +603,7 @@ public class ActivityInstanceResource
 			  
 			  ProcessInstanceDTO target = null;
 			  
-			  SwitchNotificationDTO switchNotificationDTO = new SwitchNotificationDTO();
+			  AbortNotificationDTO switchNotificationDTO = new AbortNotificationDTO();
 			  switchNotificationDTO.abortedProcess = source;
 			  
 			  try {
@@ -617,7 +616,7 @@ public class ActivityInstanceResource
 					  target.processName = ProcessInstanceUtils.getProcessLabel(pi);
 					  target.oid = pi.getOID();
 					  
-					  switchNotificationDTO.startedProcess = target;
+					  switchNotificationDTO.targetProcess = target;
 					  switchNotificationDTO.statusMessage = propsBean.getString("common.success");
 				  }
 			  } catch (Exception e) {
@@ -664,7 +663,7 @@ public class ActivityInstanceResource
     	
     	MessagesViewsCommonBean propsBean = MessagesViewsCommonBean.getInstance();
     	
-    	JoinNotificationDTO joinNotificationDTO = new JoinNotificationDTO();
+    	AbortNotificationDTO joinNotificationDTO = new AbortNotificationDTO();
     	
     	ProcessInstanceDTO source = new ProcessInstanceDTO();
     	source.processName = ProcessInstanceUtils.getProcessLabel(srcProcessInstance);
@@ -675,7 +674,7 @@ public class ActivityInstanceResource
 	    	ProcessInstanceDTO target = new ProcessInstanceDTO();
 	    	target.processName = ProcessInstanceUtils.getProcessLabel(targetProcessInstance);
 	    	target.oid = targetProcessInstance.getOID();
-	    	joinNotificationDTO.joinedProcess = target;
+	    	joinNotificationDTO.targetProcess = target;
     	}
     			
     	joinNotificationDTO.abortedProcess = source;

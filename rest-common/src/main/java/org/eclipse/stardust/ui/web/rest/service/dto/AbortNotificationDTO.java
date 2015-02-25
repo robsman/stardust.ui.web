@@ -1,15 +1,23 @@
 package org.eclipse.stardust.ui.web.rest.service.dto;
 
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOAttribute;
+import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOClass;
 
-public class JoinNotificationDTO {
-
+/**
+ * 
+ * @author Nikhil.Gahlot
+ *
+ */
+@DTOClass
+public class AbortNotificationDTO {
+	
 	@DTOAttribute("messageKey")
 	public String statusMessage;
 	
 	@DTOAttribute("abortedProcess")
 	public ProcessInstanceDTO abortedProcess;
 	
-	@DTOAttribute("joinedProcess")
-	public ProcessInstanceDTO joinedProcess;
+	@DTOAttribute("targetProcess")
+	public ProcessInstanceDTO targetProcess;
+	
 }

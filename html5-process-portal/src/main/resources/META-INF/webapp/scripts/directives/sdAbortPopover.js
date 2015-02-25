@@ -17,15 +17,25 @@
 	'use strict';
 
 	angular.module('bpm-common').directive('sdAbortPopover', ['$q', 'sdUtilService', 'sdActivityInstanceService', 'sdLoggerService', 'eventBus', 
-	                                                          '$timeout', '$parse', 'sgViewPanelService',
+	                                                          '$timeout', '$parse', 'sdViewUtilService',
 	                                                          AbortPopoverDirective]);
 
 	var trace;
 	
 	/*
 	 * Directive class
+	 * Attributes supported:
+	 * 		sda-activities {@}	REQUIRED 
+	 * 			- Interpolated expression expected to return array ([...])
+	 * 		sda-on-open (@)	NOT REQUIRED
+	 * 			- Function string
+	 * 		sda-on-confirm (@)	NOT REQUIRED
+	 * 			- Function string
+	 * 		ng-disabled
+	 * Usage:
+	 * 	<button sd-abort-popover sda-activities="..." ...
 	 */
-	function AbortPopoverDirective($q, sdUtilService, sdActivityInstanceService, sdLoggerService, eventBus, $timeout, $parse, sgViewPanelService) {
+	function AbortPopoverDirective($q, sdUtilService, sdActivityInstanceService, sdLoggerService, eventBus, $timeout, $parse, sdViewUtilService) {
 		
 		trace = sdLoggerService.getLogger('bpm-common.sdAbortPopover');
 		
@@ -40,6 +50,9 @@
 			    INFO: 'info'
 		}
 		
+		// Adding utility method to the String to parse i18n messages with arguments
+		// Usage: 'some string with {0} and {1}'.format(arg1, arg2)
+		// TODO Should be moved to a common utility script
 		if (!String.prototype.format) {
 		  String.prototype.format = function() {
 		    var args = arguments;
@@ -61,10 +74,12 @@
 				},
 				transclude: true,
 				template: '<span id="abortPopoverSpan" class="sd-abort-popover-link" ng-click="abortPopoverController.handlePopoverClick()" ng-transclude></span>'
+				// Popover Div
 				+ '<div id="abortPopoverDiv" ng-show="showPopover" class="popup-dlg sd-abort-popover-box">'
 					+ '<div><a href="#" ng-click="abortPopoverController.handleAbort(\'' + ACTION_TYPE.ABORT_AND_START +'\')" >{{i18n(\'views-common-messages.views-switchProcessDialog-Menu-abortandstart\')}}</a></div>'
 					+ '<div><a ng-hide="abortPopoverController.disableStartJoin()" href="#" ng-click="abortPopoverController.handleAbort(\'' + ACTION_TYPE.ABORT_AND_JOIN +'\')" >{{i18n(\'views-common-messages.views-switchProcessDialog-Menu-abortandjoin\')}}</a></div>'
 				+ '</div>'
+				// Abort popover Dialog
 				+ '<span style="float: left;"' 
 				+ ' sd-dialog="abortPopoverController.abortPopoverDialog"'
 				+ ' sda-title="{{abortPopoverController.dialogTitle}}"'
@@ -73,6 +88,7 @@
 				+ ' sda-template="plugins/html5-process-portal/scripts/directives/partials/abortPopoverDialogBody.html"'
 				+ ' class="view-tool-link">'				
 				+ '</span>'
+				// Notification Dialog
 				+ '<span style="float: left;"' 
 				+ ' sd-dialog="abortPopoverController.abortNotificationDialog"'
 				+ ' sda-title="{{abortPopoverController.abortNotificationTitle}}"'
@@ -136,8 +152,6 @@
 				self.showAbortAndJoin = function () {
 					return ACTION_TYPE.ABORT_AND_JOIN == self.actionType;
 				};
-				
-			    self.resetValues();
 			}
 			
 			function resetValues() {
@@ -157,7 +171,8 @@
 					pageSize: 6,
 					dialogMsg: self.i18n('views-common-messages.views-switchProcessDialog-joinProcessMessage-message'),
 					joinScope: 'Process', // Other alternative is 'Case'
-					notificationMsg: ''
+					notificationMsg: '',
+					linkComment: ''
 				};
 				
 				self.abortNotification = {totalCount: 0, list: []};
@@ -168,25 +183,27 @@
 			}
 			
 			function handlePopoverClick() {
-				
-				var popoverCloseEvent = function(event) {
-					if (event.target.parentElement.id !== 'abortPopoverSpan' || (event.target.firstElementChild != undefined && event.target.firstElementChild.id !== 'abortPopoverSpan')) {
-						$scope.$apply(function() {
-							$scope.showPopover = false;
-							$(document).unbind('click', popoverCloseEvent);
-						});
-					}
-				};
-				
-				$(document).bind('click', popoverCloseEvent);
-				
+				// In case of ng-disabled, make sure the click is not activated
 				var disabled = false;
 				if (angular.isDefined($attrs.ngDisabled)) {
 					disabled = parseAttribute($scope.$parent, $attrs.ngDisabled);
 				}
 				
 				if (!disabled) {
-//					self.resetValues();
+					// Reset the values first
+					self.resetValues();
+					
+					// Handle close by click on document event
+					var popoverCloseEvent = function(event) {
+						if (event.target.parentElement.id !== 'abortPopoverSpan' || (event.target.firstElementChild != undefined && event.target.firstElementChild.id !== 'abortPopoverSpan')) {
+							$scope.$apply(function() {
+								$scope.showPopover = false;
+								// this is important since we want this to be called exactly once
+								$(document).unbind('click', popoverCloseEvent);
+							});
+						}
+					};
+					$(document).bind('click', popoverCloseEvent);
 					
 					if (angular.isDefined(self.onOpen)) {
 						self.onOpen();
@@ -201,9 +218,6 @@
 					angular.forEach(self.activities, function(actvty) {
 						self.processInstOIDs.push(actvty.processInstance.oid);
 					});
-					
-					//TODO remove
-					//self.processInstOIDs = [45, 47];
 				}
 			}
 			
@@ -230,8 +244,6 @@
 					}
 				}, function(result) {
 					// Error occurred
-					//TODO
-					
 				})
 			}
 			
@@ -242,16 +254,19 @@
 						self.abortPopoverDialog.open();
 					}, function() {
 						self.spawnableProcesses = [];
+						self.abortPopoverDialog.open();
 					});
 				} else if (self.showAbortAndJoin()) {
 					loadRelatedProcesses().then(function() {
 						self.abortPopoverDialog.open();
-					}, function() {});
+					}, function() {
+						self.abortPopoverDialog.open();
+					});
 				}
 			}
 			
 			function handleAbortAndJoin() {
-				self.dialogTitle = self.i18n('views-common-messages.views-joinProcessDialog-title').replace('{0}', self.activities[0].processInstance.processName);
+				self.dialogTitle = self.i18n('views-common-messages.views-joinProcessDialog-title').format(self.activities[0].processInstance.processName);
 				openAbortPopoverDialog();
 			}
 			
@@ -419,9 +434,8 @@
 				
 				if (self.switchCompleted || self.showAbortAndJoin()) {
 					// Switch/Join finished
-					// Go to view spawned activitoes
-					// TODO use sgViewPanelService to open the required view
-					//sgViewPanelService.open
+					// Go to view activitoes
+					openWorklistView()
 					
 					BridgeUtils.View.syncLaunchPanels();
 					if (angular.isDefined(self.onConfirm)) {
@@ -431,6 +445,12 @@
 					// Proceed to perform abort
 					openAbortPopoverDialog();
 				}
+			}
+			
+			function openWorklistView() {
+				// TODO open spawned/joined activities
+				// Use self.targetActivities
+				sdViewUtilService.openView("worklistViewHtml5", true);
 			}
 			
 			function closeNotification(scope) {
@@ -444,6 +464,7 @@
 			function openInfoDialog(result) {
 				if (self.showAbortAndStart()) {
 					// Show notification dialog for abort & start
+					self.targetActivities = result;
 					self.abortNotification = {list: result, totalCount: result.length};
 					self.abortNotificationType = getNotificationType(result);
 					self.abortNotificationTitle = self.i18n('portal-common-messages.common-' + self.abortNotificationType);
@@ -454,11 +475,11 @@
 					}
 				} else if (self.showAbortAndJoin()) {
 					// Show notification dialog for abort & Join
-					//views.joinProcessDialog.processJoined
+					self.targetActivities = [result];
 					if (angular.isDefined(result)) {
 						self.abortAndJoin.notificationMsg = self.i18n('views-common-messages.views-joinProcessDialog-processJoined');
-						if (angular.isDefined(result.abortedProcess) && angular.isDefined(result.joinedProcess)) {
-							self.abortAndJoin.notificationMsg = self.abortAndJoin.notificationMsg.format(result.abortedProcess.processName, result.joinedProcess.processName);
+						if (angular.isDefined(result.abortedProcess) && angular.isDefined(result.targetProcess)) {
+							self.abortAndJoin.notificationMsg = self.abortAndJoin.notificationMsg.format(result.abortedProcess.processName, result.targetProcess.processName);
 						}
 						self.abortNotificationTitle = self.i18n('portal-common-messages.common-' + SUPPORTED_NOTIFICATION_TYPES.INFO);
 					}

@@ -29,7 +29,7 @@
 							<tr>
 								<td>{{rowData.abortedProcess.processName}}</td>
 								
-								<td>{{rowData.startedProcess.processName}}</td>
+								<td>{{rowData.targetProcess.processName}}</td>
 								
 								<td>{{rowData.statusMessage}}</td>
 							</tr>
@@ -100,14 +100,13 @@
 				ng-if="abortPopoverController.abortAndJoin.joinScope == 'Case'"
 				ng-bind="i18n('views-common-messages.views-attachToCase-showCase-message')"></span>
 		</div>
-		
-		<div class="confirmation-buttonpane">
-			<div class="button-pane cf" >
-				<div class="right">
-				  	<button class="button" ng-click="abortPopoverController.okNotification(this)">{{i18n('views-common-messages.common-yes')}}</button>
-				    <button class="button" ng-click="abortPopoverController.closeNotification(this)">{{i18n('views-common-messages.common-no')}}</button>
-				</div>
-		    </div>
-		</div>
+	</div>
+	<div class="confirmation-buttonpane">
+		<div class="button-pane cf" >
+			<div class="right">
+			  	<button class="button" ng-click="abortPopoverController.okNotification(this)">{{i18n('views-common-messages.common-yes')}}</button>
+			    <button class="button" ng-click="abortPopoverController.closeNotification(this)">{{i18n('views-common-messages.common-no')}}</button>
+			</div>
+	    </div>
 	</div>
 </div>
