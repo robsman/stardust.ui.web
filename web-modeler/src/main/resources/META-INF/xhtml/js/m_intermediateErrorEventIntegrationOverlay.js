@@ -26,11 +26,12 @@ define(
             "bpm-modeler/js/m_command", "bpm-modeler/js/m_model",
             "bpm-modeler/js/m_accessPoint",
             "bpm-modeler/js/m_parameterDefinitionsPanel",
-            "bpm-modeler/js/m_eventIntegrationOverlay",
-            "bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_dialog" ],
+            "bpm-modeler/js/m_eventIntegrationOverlay", 
+            "bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_dialog",
+            "bpm-modeler/js/m_parsingUtils"],
       function(m_utils, m_constants, m_commandsController, m_command,
             m_model, m_accessPoint, m_parameterDefinitionsPanel,
-            m_eventIntegrationOverlay, m_i18nUtils, m_dialog) {
+            m_eventIntegrationOverlay, m_i18nUtils, m_dialog, m_parsingUtils) {
 
          return {
             create : function(page, id) {
@@ -60,6 +61,8 @@ define(
             */
             IntermediateErrorEventIntegrationOverlay.prototype.initialize = function(
                   page, id) {
+               var thisOverlay = this;
+              
                this.initializeEventIntegrationOverlay(page, id);
 
                /*jQuery("label[for='autoBindingInput']")
@@ -190,6 +193,8 @@ define(
               }, function(event) {
                 // reset data path
                 event.data.that.dataActionPathInput.val("");
+                event.data.that.setAutoCompleteMatches(event.data.that.dataActionDataSelect.val());
+                
                 event.data.that.submitDataAction();
               });
 
@@ -203,13 +208,75 @@ define(
               this.dataActionPathInput = this
                       .mapInputId("#dataActionPathInput");
 
-              this.dataActionPathInput.change({
-                panel: this
-              }, function(event) {
-                event.data.that.submitDataAction();
+              /*Setup autocomplete for data paths*/
+              m_utils.jQuerySelect(this.dataActionPathInput)
+              .autocomplete({
+                minLength: 0,
+                  minChars: 0,
+                  autoFill: true,
+                  mustMatch: true,
+                  matchContains: false
+              })
+              .on("focus",function(){
+                /*Force the dropdown menu to display all items on focus*/
+                m_utils.jQuerySelect(this).autocomplete("search","");
+              })
+              .on("autocompletechange",function(event,ui){
+                thisOverlay.submitDataAction();
               });
+              
             };
 
+            /**
+             * 
+             */
+            IntermediateErrorEventIntegrationOverlay.prototype.setAutoCompleteMatches = function(dataFullId, delim){
+              var matches=[],    /*matches for the autocomplete option*/
+                  typeDecl,      /*typeDecl returned by matching the schemaName*/
+                  isDelimDefault,/*track whether our delim has the default value*/
+                  tempStr,       /*temp match string before we parse the schemaName from it*/
+                  i;         /*iterator*/
+              
+              isDelimDefault =(delim)?false:true;
+              delim=delim || ".";
+              
+              //check if the id qualified or placeholder
+              if(dataFullId.indexOf(":") != -1){
+                paramDef = { dataFullId: dataFullId, id:""}
+                matches=m_parsingUtils.parseParamDefToStringFrags(paramDef) || [];
+              }             
+              
+              /*Replacing '.' delimiter from the parse function and stripping the rootName*/
+              for(i=0;i<matches.length;i++){
+                if(isDelimDefault){
+                  tempStr=matches[i].replace(/\./g,delim);
+                }
+                matches[i]=tempStr.slice(tempStr.indexOf(delim)+1);
+              }
+              
+              /*Set Autocomplete source to our new match function*/
+              m_utils.jQuerySelect(this.dataActionPathInput)
+              .autocomplete("option","source",function(req,res){
+                var match=req.term,
+                  filtered=[],
+                  temp;
+
+                for(var j=0; j< matches.length; j++){
+                  temp=matches[j];
+                  if(temp.indexOf(match)==0 ){
+                    if(temp.indexOf(delim,match.length)==-1){
+                      if(temp.lastIndexOf(delim)>0){
+                        temp=temp.slice(temp.lastIndexOf(delim)+1);
+                      }
+                      filtered.push({label:temp,value:matches[j]});
+                    }
+                  }
+                }
+                res(filtered);
+              });
+            }
+            
+            
             /**
              * 
              */
@@ -243,13 +310,19 @@ define(
                       && modelElement.setDataAction.dataId) {
                 this.dataActionDataSelect
                         .val(modelElement.setDataAction.dataId);
+              } else {
+                this.dataActionDataSelect.val(m_constants.TO_BE_DEFINED);
               }
 
               if (modelElement.setDataAction
                       && modelElement.setDataAction.dataPath) {
                 this.dataActionPathInput
                         .val(modelElement.setDataAction.dataPath);
+              } else {
+                this.dataActionPathInput.val("");
               }
+              
+              this.setAutoCompleteMatches(this.dataActionDataSelect.val());
             }
             
             /**
@@ -268,18 +341,22 @@ define(
             /**
              * 
              */
-            IntermediateErrorEventIntegrationOverlay.prototype.submitDataAction = function(value) {
-              var dataFullId = null;
-              if (this.dataActionDataSelect.val() != m_constants.TO_BE_DEFINED) {
-                dataFullId = this.dataActionDataSelect.val();
+            IntermediateErrorEventIntegrationOverlay.prototype.submitDataAction = function(
+                    value) {
+              var setDataAction = null;
+              if (this.dataActionDataSelect.val() == m_constants.TO_BE_DEFINED) {
+                setDataAction = null;
+              } else {
+                setDataAction = {
+                  dataId: this.dataActionDataSelect.val(),
+                  dataPath: this.dataActionPathInput.val()
+                }
               }
+
               this.submitChanges({
-                 modelElement : {
-                   setDataAction : {
-                       dataId : dataFullId,
-                       dataPath : this.dataActionPathInput.val()
-                    }
-                 }
+                modelElement: {
+                  setDataAction: setDataAction
+                }
               });
             };
 

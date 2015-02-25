@@ -1859,6 +1859,13 @@ public class ModelElementMarshaller implements ModelMarshaller
                      PredefinedConstants.SET_DATA_ACTION_DATA_PATH_ATT));
          eventJson.add(ModelerConstants.SD_SET_DATA_ACTION, setDataJson);
       }
+      else
+      {
+         JsonObject setDataJson = new JsonObject();
+         setDataJson.addProperty(ModelerConstants.SD_SET_DATA_ACTION_DATA_ID, ""); 
+         setDataJson.addProperty(ModelerConstants.SD_SET_DATA_ACTION_DATA_PATH, "");
+         eventJson.add(ModelerConstants.SD_SET_DATA_ACTION, setDataJson);
+      }
 
       return eventJson;
    }
