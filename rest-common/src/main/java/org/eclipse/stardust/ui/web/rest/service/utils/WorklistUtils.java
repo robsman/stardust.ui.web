@@ -11,36 +11,19 @@
 package org.eclipse.stardust.ui.web.rest.service.utils;
 
 import java.io.Serializable;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.annotation.Resource;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Component;
+
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.Participant;
 import org.eclipse.stardust.engine.api.model.ParticipantInfo;
-import org.eclipse.stardust.engine.api.query.ActivityFilter;
-import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
-import org.eclipse.stardust.engine.api.query.ActivityInstances;
-import org.eclipse.stardust.engine.api.query.ActivityStateFilter;
-import org.eclipse.stardust.engine.api.query.DescriptorPolicy;
-import org.eclipse.stardust.engine.api.query.FilterAndNotTerm;
-import org.eclipse.stardust.engine.api.query.FilterAndTerm;
-import org.eclipse.stardust.engine.api.query.FilterOrTerm;
-import org.eclipse.stardust.engine.api.query.HistoricalStatesPolicy;
-import org.eclipse.stardust.engine.api.query.PerformingParticipantFilter;
-import org.eclipse.stardust.engine.api.query.PerformingUserFilter;
-import org.eclipse.stardust.engine.api.query.ProcessDefinitionFilter;
-import org.eclipse.stardust.engine.api.query.Query;
-import org.eclipse.stardust.engine.api.query.QueryResult;
-import org.eclipse.stardust.engine.api.query.SubsetPolicy;
-import org.eclipse.stardust.engine.api.query.Worklist;
-import org.eclipse.stardust.engine.api.query.WorklistQuery;
+import org.eclipse.stardust.engine.api.query.*;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
 import org.eclipse.stardust.engine.api.runtime.Grant;
 import org.eclipse.stardust.engine.api.runtime.User;
@@ -56,7 +39,6 @@ import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.GenericDescriptorFilterModel;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.NumberRange;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
-import org.springframework.stereotype.Component;
 
 /**
  * @author Subodh.Godbole
@@ -100,7 +82,8 @@ public class WorklistUtils
          WorklistQuery query = org.eclipse.stardust.ui.web.viewscommon.utils.WorklistUtils
                .createWorklistQuery(participant);
          query.setPolicy(HistoricalStatesPolicy.WITH_LAST_USER_PERFORMER);
-         query.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
+
+         addDescriptorPolicy(options, query);
 
          addSortCriteria(query, options);
 
@@ -305,6 +288,23 @@ public class WorklistUtils
       addDescriptorFilters(query, filterDTO);
 
    }
+   /**
+    * Add descriptor policy
+    * @param options
+    * @param query
+    */
+
+   private void addDescriptorPolicy(Options options, Query query)
+   {
+      
+      if(options.allDescriptorsVisible){
+         query.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
+      }else if(CollectionUtils.isNotEmpty(options.visibleDescriptorColumns)){          
+         query.setPolicy(DescriptorPolicy.withIds(new HashSet<String>(options.visibleDescriptorColumns)));
+      }else{
+         query.setPolicy(DescriptorPolicy.NO_DESCRIPTORS);
+      }
+   }
 
    /**
     * Add filter on descriptor columns .
@@ -318,7 +318,7 @@ public class WorklistUtils
 
       if (null != descFilterMap)
       {
-         query.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
+        
          Map<String, DataPath> descriptors = processDefUtils.getAllDescriptors(false);
          GenericDescriptorFilterModel filterModel = GenericDescriptorFilterModel
                .create(descriptors.values());
@@ -369,10 +369,6 @@ public class WorklistUtils
 
          DescriptorFilterUtils.applyFilters(query, filterModel);
       }
-      else
-      {
-         query.setPolicy(DescriptorPolicy.NO_DESCRIPTORS);
-      }
 
    }
 
@@ -392,6 +388,8 @@ public class WorklistUtils
                      ActivityInstanceState.Application, ActivityInstanceState.Suspended});
          // TODO - this is used to enhance performace but has a bug
          // query.setPolicy(EvaluateByWorkitemsPolicy.WORKITEMS);
+
+         addDescriptorPolicy(options, query);
 
          addSortCriteria(query, options);
 
