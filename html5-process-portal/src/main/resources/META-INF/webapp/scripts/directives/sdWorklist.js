@@ -212,7 +212,7 @@
 			      }, true);
 
 			      if (rows && rows.length === 1) {
-			         selectedRows.push(rows[0]);
+			         selectedRows.push({oid:rows[0].oid});
 			      }
 
 			      self.dataTable.setSelection(selectedRows);
@@ -482,7 +482,7 @@
 	         var promise = res.promise;
 	         var selectedWorkItems = self.selectedActivity;
             
-	         promise.then(function(data){
+	         promise.then(function(){
 	            
 	            angular.forEach(selectedWorkItems,function(item){
 	               self.completeActivityResult.nameIdMap[item.oid] = item.activity.name;
@@ -514,12 +514,13 @@
 	               }
 
 	               if (activitiesData.length > 0 ) {
-	                  sdActivityInstanceService.completeAll(activitiesData).then(function(data) {
-	                     self.refresh();
-	                     if(data.failure.length > 0){
+	                  sdActivityInstanceService.completeAll(activitiesData).then(function(result) {
+	                     if(result.failure.length > 0){
 	                        self.showCompleteNotificationDialog = true;
-	                        self.completeActivityResult.notifications = data;
+	                        self.completeActivityResult.notifications = result;
 	                        self.completeActivityResult.error = false;
+	                     }else if(result.success.length > 0){
+	                        self.refresh();
 	                     }
 	                  });
 	               } else {
