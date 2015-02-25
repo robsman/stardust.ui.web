@@ -14,7 +14,7 @@
 (function(){
 	'use strict';
 
-	angular.module('bpm-common').directive('sdAbortActivityDialog',['sdAbortActivityService','ngDialog',AbortActivity]);
+	angular.module('bpm-common').directive('sdAbortActivityDialog',['sdAbortActivityService',AbortActivity]);
 
 	/**
     * 
@@ -32,24 +32,31 @@
                			"sda-cancel-action-label=\"{{abortActivityCtrl.i18n('views-common-messages.common-close')}}\" " +
                			"sda-on-open=\"abortActivityCtrl.onConfirm(res)\" "+
                			"sda-template=\"plugins\/html5-process-portal\/scripts\/directives\/partials\/abortActivityDialogBody.html\"> "+
-            			"<\/div>  ",
+            			"<\/div>  " +
+               			"<span style=\"float: left;\" " +
+        				"sd-dialog=\"abortActivityCtrl.abortActivityNotification\" " +
+        				"sda-title=\"{{admin-portal-messages.common-notification-title}}\" " +
+        				"sda-type=\"custom\" " +
+        				"sda-scope=\"this\" " +
+        				"sda-template=\"plugins/html5-process-portal/scripts/directives/partials/abortActivityNotification.html\">" +
+        				"</span>",
 			scope :{
 				activitiesToAbort : '=sdaActivitiesToAbort',
 				showDialog : '=sdaShowDialog',
 				abortCompleted: '&sdaOnAbortComplete'
 			},
-			controller: ['$scope','sdAbortActivityService','ngDialog',AbortActivityController]
+			controller: ['$scope','sdAbortActivityService',AbortActivityController]
 		};
 	}
 
 	/**
     * 
     */
-	var AbortActivityController = function($scope, sdAbortActivityService,ngDialog){
+	var AbortActivityController = function($scope, sdAbortActivityService){
 
 		var self = this;
 
-		this.intialize($scope,sdAbortActivityService,ngDialog);
+		this.intialize($scope,sdAbortActivityService);
 
 
 		AbortActivityController.prototype.abortCompleted = function (){
@@ -73,16 +80,7 @@
        */
 		AbortActivityController.prototype.showNotification = function (){
 
-			var options = {
-				template: 'plugins/html5-common/scripts/directives/dialogs/templates/info.html',
-				userTemplate : 'plugins/html5-process-portal/scripts/directives/partials/abortActivityNotification.html',
-				controller: this,
-				scope: $scope ,
-				showOverlay:  true,
-				title: self.i18n('admin-portal-messages.common-notification-title')
-			};
-
-			ngDialog.openConfirm(options);
+			self.abortActivityNotification.open();
 		}
 
 		$scope.abortActivityCtrl = this;
@@ -91,7 +89,7 @@
 	/**
     * 
     */
-	AbortActivityController.prototype.intialize = function ($scope, sdAbortActivityService, ngDialog){
+	AbortActivityController.prototype.intialize = function ($scope, sdAbortActivityService){
 
 		this.i18n = $scope.$parent.i18n;
 		this.sdAbortActivityService = sdAbortActivityService;

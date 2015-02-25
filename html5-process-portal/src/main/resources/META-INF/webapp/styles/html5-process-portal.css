@@ -203,3 +203,17 @@ list-style: none;
 	margin: 10px 0 10px 0;
 	font-size: .9em;
 }
+
+.sd-abort-popover-dlg .abort-join-section select {
+	width: 95px;
+}
+
+.sd-abort-popover-dlg .abort-join-section textarea {
+	width: 315px;
+	height: 60px;
+}
+
+.sd-abort-popover-dlg .abort-join-section .switch-form-info {
+	margin: 10px 0 10px 0;
+	font-size: .9em;
+}

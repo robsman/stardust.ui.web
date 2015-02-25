@@ -1,4 +1,4 @@
-<div class="sd-abort-popover-noti-dlg">
+<div ng-if="abortPopoverController.showAbortAndStart()" class="sd-abort-popover-noti-dlg">
 	<div class="section">
 		<div id="infoSign" ng-show="abortPopoverController.switchCompleted">
 			<i style="color: grey;" class="glyphicon glyphicon-exclamation-sign"></i>
@@ -16,7 +16,7 @@
 						<span>{{i18n('views-common-messages.views-switchProcessDialog-operationSuccess')}}</span>
 					</div>
 					<table sd-data-table="abortPopoverController.abortNotificationDataTable" sd-data="abortPopoverController.abortNotification"
-						sda-no-pagination="true"
+						sda-page-size="5"
 						sda-mode="local">
 						<thead>
 							<tr>
@@ -66,7 +66,6 @@
 				<span id="switchCompleted" ng-show="abortPopoverController.switchCompleted">{{i18n('views-common-messages.views-switchProcessDialog-viewSwitchedActivities')}}</span>
 			</div>
 		</div>
-			
 	</div>
 	<div class="confirmation-buttonpane">
 		<div class="button-pane cf" >
@@ -78,5 +77,37 @@
 			    <button class="button" ng-click="abortPopoverController.closeNotification(this)">{{i18n('views-common-messages.common-no')}}</button>
 			</div>
 	    </div>
+	</div>
+</div>
+
+<div ng-if="abortPopoverController.showAbortAndJoin()" class="sd-abort-popover-noti-dlg">
+	<div class="section">
+		<div id="infoSign">
+			<i style="color: grey;" class="glyphicon glyphicon-exclamation-sign"></i>
+		</div>
+		
+		<div id="notificationBody" class="notification-body">
+			<div>
+				<span ng-bind-html="abortPopoverController.abortAndJoin.notificationMsg"></span>
+			</div>
+	
+			<div styleClass="clearing"></div><br/>
+				
+			<span
+				ng-if="abortPopoverController.abortAndJoin.joinScope == 'Process'"
+				ng-bind="i18n('views-common-messages.views-joinProcessDialog-viewprocessJoined')"></span>
+			<span
+				ng-if="abortPopoverController.abortAndJoin.joinScope == 'Case'"
+				ng-bind="i18n('views-common-messages.views-attachToCase-showCase-message')"></span>
+		</div>
+		
+		<div class="confirmation-buttonpane">
+			<div class="button-pane cf" >
+				<div class="right">
+				  	<button class="button" ng-click="abortPopoverController.okNotification(this)">{{i18n('views-common-messages.common-yes')}}</button>
+				    <button class="button" ng-click="abortPopoverController.closeNotification(this)">{{i18n('views-common-messages.common-no')}}</button>
+				</div>
+		    </div>
+		</div>
 	</div>
 </div>

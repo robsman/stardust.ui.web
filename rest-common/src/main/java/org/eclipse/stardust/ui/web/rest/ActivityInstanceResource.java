@@ -34,6 +34,7 @@ import javax.ws.rs.core.Response;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetails;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.query.ProcessDefinitionQuery;
 import org.eclipse.stardust.engine.api.runtime.ProcessDefinitions;
@@ -48,15 +49,20 @@ import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceOutDataDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.JoinNotificationDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.JoinProcessDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.RelatedProcessesDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.SelectItemDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.SwitchNotificationDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.SwitchProcessDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.TrivialManualActivityDTO;
+import org.eclipse.stardust.ui.web.rest.service.utils.RelatedProcessSearchUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.AuthorizationUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.CommonDescriptorUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
@@ -518,7 +524,6 @@ public class ActivityInstanceResource
 	    		}
 	    		
 	    		if (switchNotificationDTO != null) {
-	    			switchNotificationDTO.switched = false;
 		    		switchNotificationDTO.abortedProcess = processInstanceDTO;
 		    		
 	    			notAbortableProcesses.add(switchNotificationDTO);
@@ -613,7 +618,6 @@ public class ActivityInstanceResource
 					  target.oid = pi.getOID();
 					  
 					  switchNotificationDTO.startedProcess = target;
-					  switchNotificationDTO.switched = true;
 					  switchNotificationDTO.statusMessage = propsBean.getString("common.success");
 				  }
 			  } catch (Exception e) {
@@ -633,6 +637,103 @@ public class ActivityInstanceResource
 		}
    }
     
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/abortAndJoinProcess")
+    public Response abortAndJoinProcess(String processData)
+    {
+    	JoinProcessDTO processDTO = GsonUtils.fromJson(processData, JoinProcessDTO.class);
+    	Long sourceProcessInstanceOid = Long.parseLong(processDTO.sourceProcessOID);
+    	Long targetProcessInstanceOid = Long.parseLong(processDTO.targetProcessOID);
+    	
+    	ProcessInstance srcProcessInstance = getProcessInstance(sourceProcessInstanceOid);
+    	
+    	ProcessInstance targetProcessInstance = null;
+    	
+    	if (!srcProcessInstance.isCaseProcessInstance()) {
+    		targetProcessInstance = ServiceFactoryUtils.getWorkflowService().joinProcessInstance(
+        			sourceProcessInstanceOid, targetProcessInstanceOid, processDTO.linkComment);
+    	} else {
+    		  targetProcessInstance = ServiceFactoryUtils.getWorkflowService().mergeCases(
+    				  sourceProcessInstanceOid, new long[] {sourceProcessInstanceOid}, processDTO.linkComment);
+    		  
+              CommonDescriptorUtils.reCalculateCaseDescriptors(srcProcessInstance);
+              CommonDescriptorUtils.reCalculateCaseDescriptors(targetProcessInstance);
+    	}
+    	
+    	MessagesViewsCommonBean propsBean = MessagesViewsCommonBean.getInstance();
+    	
+    	JoinNotificationDTO joinNotificationDTO = new JoinNotificationDTO();
+    	
+    	ProcessInstanceDTO source = new ProcessInstanceDTO();
+    	source.processName = ProcessInstanceUtils.getProcessLabel(srcProcessInstance);
+    	source.oid = srcProcessInstance.getOID();
+    	joinNotificationDTO.abortedProcess = source;
+    	
+    	if (targetProcessInstance != null) {
+	    	ProcessInstanceDTO target = new ProcessInstanceDTO();
+	    	target.processName = ProcessInstanceUtils.getProcessLabel(targetProcessInstance);
+	    	target.oid = targetProcessInstance.getOID();
+	    	joinNotificationDTO.joinedProcess = target;
+    	}
+    			
+    	joinNotificationDTO.abortedProcess = source;
+    	
+    	joinNotificationDTO.statusMessage = propsBean.getString("common.success");
+    	
+    	return Response.ok(GsonUtils.toJsonHTMLSafeString(joinNotificationDTO), MediaType.APPLICATION_JSON).build();
+    }
+    
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/getRelatedProcesses")
+    public Response getRelatedProcesses(String processData, @QueryParam("matchAny") String matchAnyStr, @QueryParam("case") String searchCasesStr)
+    {
+    	List<Long> processInstOIDs = JsonDTO.getAsList(processData, Long.class);
+    	boolean matchAny = "true".equals(matchAnyStr);
+    	boolean searchCases = "true".equals(searchCasesStr);
+    	
+    	List<ProcessInstance> sourceProcessInstances = new ArrayList<ProcessInstance>();
+    	for (Long processInstOID : processInstOIDs) {
+  		  ProcessInstance srcProcessInstance = getProcessInstance(processInstOID);
+  		  sourceProcessInstances.add(srcProcessInstance);
+    	}
+    	
+    	List<ProcessInstance> result = RelatedProcessSearchUtils.getProcessInstances(sourceProcessInstances, matchAny, searchCases);
+    	
+    	List<RelatedProcessesDTO> relatedProcesses = new ArrayList<RelatedProcessesDTO>();
+    	
+    	for (ProcessInstance pi : result) {
+    	    relatedProcesses.add(getRelatedProcessesDTO(pi));
+        }
+    	
+    	return Response.ok(GsonUtils.toJsonHTMLSafeString(relatedProcesses), MediaType.APPLICATION_JSON).build();
+    }
+    
+	private RelatedProcessesDTO getRelatedProcessesDTO(ProcessInstance pi) {
+		RelatedProcessesDTO dto = new RelatedProcessesDTO();
+		MessagesViewsCommonBean COMMON_MESSAGE_BEAN = MessagesViewsCommonBean.getInstance();
+		ProcessDefinition processDefinition = ProcessDefinitionUtils.getProcessDefinition(pi.getModelOID(),
+                pi.getProcessID());
+		
+		dto.processName = I18nUtils.getProcessName(processDefinition);;
+	    dto.oid = pi.getOID();
+		if (pi.getPriority() == 1) {
+			dto.priority = COMMON_MESSAGE_BEAN.getString("common.priorities.high");
+		} else if (pi.getPriority() == -1) {
+			dto.priority = COMMON_MESSAGE_BEAN.getString("common.priorities.low");
+		} else {
+			dto.priority = COMMON_MESSAGE_BEAN.getString("common.priorities.normal");
+		}
+		
+		dto.descriptorValues = ((ProcessInstanceDetails) pi).getDescriptors();
+	    dto.startTime = pi.getStartTime();
+		
+		return dto;
+	}
+
 	private ProcessInstance getProcessInstance(long processInstanceOID)
 	{
 	    return ProcessInstanceUtils.getProcessInstance(Long.valueOf(processInstanceOID));

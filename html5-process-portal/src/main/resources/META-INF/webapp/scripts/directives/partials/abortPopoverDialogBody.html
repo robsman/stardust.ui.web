@@ -3,7 +3,8 @@
 		<div sd-js-error class="msgError">
 		</div>
 		
-		<div ng-show="abortPopoverController.showAbortAndStart" class="abort-start-section">
+		<!-- Abort & Start -->
+		<div ng-show="abortPopoverController.showAbortAndStart()" class="abort-start-section">
 			<table class="switch-form">
 				<tr>
 					<td><label class="label-form">{{i18n('views-common-messages.views-switchProcessDialog-selectProcess')}}</label></td>
@@ -34,18 +35,111 @@
 			</table>
 		</div>
 		
-		<div ng-show="abortPopoverController.showAbortAndJoin">
-			To be implemented
+		<!-- Abort & Join -->
+		<div ng-show="abortPopoverController.showAbortAndJoin()" class="abort-join-section">
+		
+			<!-- Select From List -->	
+			<div ng-show="!abortPopoverController.abortAndJoin.advancedSelect">
+				<div style="float:right;"><a class="action-link " ng-click="abortPopoverController.showAdvancedSelect(true)">{{i18n('views-common-messages.views-joinProcessAdvanced-advanced-link-label')}} >></a></div>
+				<br/>
+				<div style="clear:both; margin-top: 10px;">
+					<span ng-hide="abortPopoverController.abortAndJoin.matchAll">
+						<span style="margin-right: 10px;">{{i18n('views-common-messages.views-joinProcessDialog-descriptorAnyMatchingProcesses-message')}}</span>
+						<button class="button" ng-click="abortPopoverController.showMatchAll(true)">
+							{{i18n('views-common-messages.views-joinProcessDialog-descriptorMatchAll-button-label')}}
+						</button>
+					</span>
+					<span ng-show="abortPopoverController.abortAndJoin.matchAll">
+						<span style="margin-right: 10px;">{{i18n('views-common-messages.views-joinProcessDialog-descriptorAllMatchingProcesses-message')}}</span>
+						<button class="button" ng-click="abortPopoverController.showMatchAll(false)">
+							{{i18n('views-common-messages.views-joinProcessDialog-descriptorMatchAny-button-label')}}
+						</button>
+					</span>
+				</div>
+				<br/>
+				<div>
+					<table sd-data-table="abortPopoverController.abortAndJoin.relatedProcessDataTable" sd-data="abortPopoverController.abortAndJoin.relatedProcesses"
+						sda-page-size="4"
+						sda-selectable="row"
+						sda-mode="local">
+						<thead>
+							<tr>
+								<th sda-name="processName" sda-label="{{i18n('views-common-messages.views-relatedProcessSearch-table-column-processName')}}" sda-sortable="false"></th>
+								<th sda-name="oid" sda-label="{{i18n('views-common-messages.views-relatedProcessSearch-table-column-oid')}}" sda-sortable="false"></th>
+								<th sda-name="priority" sda-label="{{i18n('views-common-messages.views-relatedProcessSearch-table-column-priority')}}" sda-sortable="false"></th>
+								<th sda-name="startTime" sda-label="{{i18n('views-common-messages.views-relatedProcessSearch-table-column-startTime')}}" sda-sortable="false"></th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td sda-field="processName"></td>
+								<td sda-field="oid"></td>
+								<td sda-field="priority"></td>
+								<td sda-field="startTime"></td>
+							</tr>
+						</tbody>
+					</table>
+					<br/>
+					<table class="join-form">
+						<tr>
+							<td><label class="label-form">{{i18n('views-common-messages.views-switchProcessDialog-linkComment')}}</label></td>
+							<td>
+								<textarea ng-model="abortPopoverController.abortAndJoin.linkComment"></textarea>
+							</td>
+						</tr>
+					</table>
+					
+					<table class="switch-form-info">
+						<tr>
+							<td style="padding-right: 11px;">
+								<i class="glyphicon glyphicon-info-sign"></i>
+							</td>
+							<td>
+								<div ng-bind-html="abortPopoverController.abortAndJoin.dialogMsg"></div>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+			
+			<!-- Advanced -->	
+			<div ng-show="abortPopoverController.abortAndJoin.advancedSelect">
+				<div style="float:right;"><a class="action-link " ng-click="abortPopoverController.showAdvancedSelect(false)">{{i18n('views-common-messages.views-joinProcessDialog-selectFromList-link-label')}} >></a></div>
+				<br/>
+				<div style="clear:both; margin-top: 10px;">
+					<div>{{i18n('views-common-messages.views-joinProcessDialog-specifyProcessToAbort-message')}}</div>
+					<table class="join-form">
+						<tr>
+							<td><label class="label-form">{{i18n('views-common-messages.views-joinProcessDialog-processOID-label')}}</label></td>
+							<td>
+								<div>
+									<input ng-model="abortPopoverController.abortAndJoin.processOID" type="text" />
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td><label class="label-form">{{i18n('views-common-messages.views-switchProcessDialog-linkComment')}}</label></td>
+							<td>
+								<textarea ng-model="abortPopoverController.abortAndJoin.linkComment"></textarea>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
 		</div>
-	
 	</div>
 	
 	<div class="confirmation-buttonpane">
 		<div class="button-pane cf" >
-			<div class="right">
+			<div class="right" ng-show="abortPopoverController.showAbortAndStart()">
 			  	<button class="button" ng-click="abortPopoverController.confirm(this)">{{i18n('views-common-messages.delegation-applyButton-text')}}</button>
+			    <button class="button" ng-click="abortPopoverController.closeThisDialog(this)">{{i18n('views-common-messages.common-cancel')}}</button>
+			</div>
+			<div class="right" ng-show="abortPopoverController.showAbortAndJoin()">
+			  	<button class="button" ng-click="abortPopoverController.confirm(this)">{{i18n('views-common-messages.views-joinProcessDialog-abortAndJoin-button-label')}}</button>
 			    <button class="button" ng-click="abortPopoverController.closeThisDialog(this)">{{i18n('views-common-messages.common-cancel')}}</button>
 			</div>
 	    </div>
 	</div>
+</div>
 </div>

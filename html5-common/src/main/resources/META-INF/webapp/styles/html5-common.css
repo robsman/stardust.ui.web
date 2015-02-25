@@ -300,7 +300,7 @@
 }
 
 .sd-dialog .modal-dialog .modal-content .modal-header {
-	height: 50px;
+	height: 33px;
 }
 
 .sd-dialog .modal-dialog .modal-content .confirmation-header {
@@ -309,8 +309,9 @@
 
 .sd-dialog .modal-dialog .modal-content .modal-body {
 	height: inherit;
+	max-height: none;
 }
 
 .sd-dialog .modal-dialog .modal-content .modal-footer {
-	height: 73px;
+	height: 33px;
 }

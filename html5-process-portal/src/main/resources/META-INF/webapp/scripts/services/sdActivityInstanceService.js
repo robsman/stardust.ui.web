@@ -153,6 +153,46 @@
 			
 			return ajax(restUrl, "checkIfProcessesAbortable", activityProInstanceOids);
 		};
+		
+		/*
+		 * 
+		 */
+		ActivityInstanceService.prototype.getRelatedProcesses = function(proInstanceOids, matchAny, searchCases) {
+			console.log("Calling getRelatedProcesses for:");
+			console.log(proInstanceOids);
+			
+			var restUrl = REST_BASE_URL + 'getRelatedProcesses?';
+			
+			if (matchAny != undefined) {
+				restUrl += '?matchAny=' + matchAny;
+			} else {
+				restUrl += '?matchAny=false';
+			}
+			
+			if (searchCases != undefined) {
+				restUrl += '&case=' + searchCases;
+			}
+			
+			return ajax(restUrl, '', proInstanceOids);
+		};
+		
+		/*
+		 *
+		 *	{
+		 *	  sourceProcessOID: oid,
+		 *	  targetProcessOID: oid,
+		 *	  linkComment: string value
+		 *	}
+		 * 
+		 */
+		ActivityInstanceService.prototype.abortAndJoinProcess = function(payload) {
+			console.log("Aborting & joining new process for:");
+			console.log(payload);
+			
+			var restUrl = REST_BASE_URL;
+			
+			return ajax(restUrl, "abortAndJoinProcess", payload);
+		};
 
 		/*
 		 * 
