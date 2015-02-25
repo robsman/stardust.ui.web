@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Anoop.Nair (SunGard CSA LLC) - initial API and implementation and/or initial documentation
+ *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
 /**
  * @author Johnson.Quadras
@@ -28,10 +28,10 @@ public class CriticalityDTO extends AbstractDTO {
 
 	@DTOAttribute("iconCount")
 	public int count;
-	
+
 	@DTOAttribute("rangeFrom")
 	public int rangeFrom;
-	
+
 	@DTOAttribute("rangeTo")
 	public int rangeTo;
 

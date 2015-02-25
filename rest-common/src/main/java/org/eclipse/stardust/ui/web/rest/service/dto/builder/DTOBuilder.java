@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Anoop.Nair (SunGard CSA LLC) - initial API and implementation and/or initial documentation
+ *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service.dto.builder;
 
@@ -42,10 +42,10 @@ public class DTOBuilder
    private static final Logger trace = LogManager.getLogger(DTOBuilder.class);
 
    /**
-    * 
+    *
     */
    private DTOBuilder()
-   {      
+   {
    }
 
    /**
@@ -75,11 +75,11 @@ public class DTOBuilder
                   {
                      fieldName = field.getName();
                   }
-   
+
                   try
                   {
                      Object value = getFieldValue(fromInstance, fieldName);
-                     
+
                      Class<?> fieldClass = field.getType();
                      if (null != value && fieldClass.isAnnotationPresent(DTOClass.class))
                      {
@@ -94,7 +94,7 @@ public class DTOBuilder
                   }
                }
             }
-            
+
             iteratorClass = iteratorClass.getSuperclass();
          }
       }
@@ -102,7 +102,7 @@ public class DTOBuilder
       {
          throw new RuntimeException(e);
       }
-      
+
       return toInstance;
    }
 
@@ -124,8 +124,8 @@ public class DTOBuilder
 
       return list;
    }
-   
-   
+
+
    /**
     * @param jsonString
     * @param toClass
@@ -136,8 +136,8 @@ public class DTOBuilder
    {
       return buildFromJSON(jsonString, toClass, null);
    }
-   
-   
+
+
   /**
    * Builds a DTO from a JSON String
    * @param jsonString
@@ -161,7 +161,7 @@ public class DTOBuilder
     * @return
     * @throws Exception
     */
-   
+
    public static <DTO, T> DTO buildFromJSON(JsonObject json, Class<DTO> toClass,
          Map<String, Type> customTokens) throws Exception
    {
@@ -220,7 +220,7 @@ public class DTOBuilder
       }
       return toInstance;
    }
-   
+
    public static <DTO, T> DTO buildFromJSONDocumentCriteria(String jsonString,
 			Class<DTO> toClass) throws Exception {
 		DTO toInstance = null;
@@ -292,7 +292,7 @@ public class DTOBuilder
          return getPlainField(instance, fieldName);
       }
    }
-   
+
    /**
     * @param instance
     * @param fieldName
@@ -340,7 +340,7 @@ public class DTOBuilder
    /*
     * TODO: Performance: Check availability of setter method first using simple if than relying on exception
     */
-   private static void setFieldValue(Object instance, Field field, Object value) throws Exception 
+   private static void setFieldValue(Object instance, Field field, Object value) throws Exception
    {
       try
       {
@@ -349,7 +349,7 @@ public class DTOBuilder
 
          Object[] params = new Object[1];
          params[0] = value;
-   
+
          ReflectionUtils.invokeMethod(instance, methodName, params);
       }
       catch(Exception e)

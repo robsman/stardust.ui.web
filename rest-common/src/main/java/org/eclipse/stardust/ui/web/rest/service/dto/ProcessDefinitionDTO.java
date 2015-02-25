@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Anoop.Nair (SunGard CSA LLC) - initial API and implementation and/or initial documentation
+ *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service.dto;
 
@@ -21,23 +21,23 @@ import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOAttribute;
  */
 public class ProcessDefinitionDTO extends AbstractDTO
  {
- 
+
 	@DTOAttribute("qualifiedId")
 	public String id;
-	
+
 	@DTOAttribute("name")
 	public String name;
-	
+
 	@DTOAttribute("description")
 	public String description;
-	
+
 	@DTOAttribute("modelOID")
 	public long modelOid;
-	
+
 	public String modelName;
-	
+
 	public boolean auxillary;
-	 
+
 	public List<ActivityDTO> activities;
-	
+
  }

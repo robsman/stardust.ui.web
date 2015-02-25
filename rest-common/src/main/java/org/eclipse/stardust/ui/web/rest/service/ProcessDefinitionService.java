@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Anoop.Nair (SunGard CSA LLC) - initial API and implementation and/or initial documentation
+ *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service;
 
@@ -48,10 +48,10 @@ public class ProcessDefinitionService
 
 	@Resource
 	private ProcessDefinitionUtils processDefinitionUtils;
-	
+
 	@Resource
 	private ModelUtils modelUtils;
-	
+
 
 	/**
 	 * @return
@@ -62,7 +62,7 @@ public class ProcessDefinitionService
 				.getStartableProcesses();
 
 		List<ProcessDefinitionDTO> startableProcessesDTO = buildProcessesDTO( startableProcesses, true);
-		
+
 		return startableProcessesDTO;
 	}
 
@@ -76,8 +76,8 @@ public class ProcessDefinitionService
 		List<DescriptorColumnDTO> descriptorCols = createDescriptorColumns( descriptors);
 		return descriptorCols;
 	}
-	
-	 
+
+
 	  /**
 	    * creates filterable columns on the provided table
 	    * @param table
@@ -86,30 +86,30 @@ public class ProcessDefinitionService
 	    */
 	   private static List<DescriptorColumnDTO> createDescriptorColumns( Map<String, DataPath> allDescriptors)
 	   {
-	      
+
 	      List<DescriptorColumnDTO> descriptorColumns = new ArrayList<DescriptorColumnDTO>();
-	
+
 	      for (Entry<String, DataPath> descriptor : allDescriptors.entrySet())
 	      {
 	         String descriptorId = descriptor.getKey();
 	         DataPath dataPath = descriptor.getValue();
-	
+
 	         Class<?> mappedType = dataPath.getMappedType();
-	         
+
 	         ColumnDataType columnType = DescriptorColumnUtils.determineColumnType(mappedType);
-	         
+
 	         // double and float are not sortable
 	         boolean sortable = DescriptorFilterUtils.isDataSortable(dataPath);
 	         boolean filterable = DescriptorFilterUtils.isDataFilterable(dataPath);
-	         
+
 	         DescriptorColumnDTO descriptorColumn = new DescriptorColumnDTO("descriptorValues." +descriptorId,I18nUtils.getDataPathName(dataPath),columnType.toString(),sortable,filterable);
 	         descriptorColumns.add(descriptorColumn);
 	      }
 	      return descriptorColumns;
-	     
+
 	   }
-	   
-	  
+
+
 
 
 	/**
@@ -123,17 +123,17 @@ public class ProcessDefinitionService
 	}
 
 	/**
-	 * Build the process DTO list from the process definitions 
+	 * Build the process DTO list from the process definitions
 	 * @param allProcesses
 	 * @return
 	 */
 	private List<ProcessDefinitionDTO> buildProcessesDTO(
 			List<ProcessDefinition> allProcesses, boolean excludeActivities) {
-		
+
 		List<ProcessDefinitionDTO> processDTOList = CollectionUtils.newArrayList();
-		
+
 		for (ProcessDefinition processDefinition : allProcesses) {
-			
+
 			ProcessDefinitionDTO processDTO = buildProcessDTO(processDefinition);
 			if(!excludeActivities){
 				List<ActivityDTO> activitiesDTO = buildActivitiesDTO(processDefinition);
@@ -152,7 +152,7 @@ public class ProcessDefinitionService
 	private List<ActivityDTO> buildActivitiesDTO(ProcessDefinition processDefinition) {
 		List<ActivityDTO> activitiesDTO = CollectionUtils.newArrayList();
 		for (Object activityObj : processDefinition.getAllActivities()) {
-			
+
 			Activity activity = (Activity) activityObj;
 			 ActivityDTO activityDTO = DTOBuilder.build(activity, ActivityDTO.class);
 			 activityDTO.auxillary = isAuxiliaryActivity(activity);
@@ -170,7 +170,7 @@ public class ProcessDefinitionService
 	private ProcessDefinitionDTO buildProcessDTO(
 			ProcessDefinition processDefinition) {
 		String modelName = I18nUtils.getModelName(modelUtils.getModel(processDefinition.getModelOID()));
-		
+
 		ProcessDefinitionDTO processDTO = DTOBuilder.build(processDefinition, ProcessDefinitionDTO.class);
 		processDTO.auxillary = isAuxiliaryProcess(processDefinition);
 		processDTO.modelName = modelName;

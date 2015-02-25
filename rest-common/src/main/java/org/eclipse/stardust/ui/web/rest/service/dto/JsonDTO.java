@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Anoop.Nair (SunGard CSA LLC) - initial API and implementation and/or initial documentation
+ *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service.dto;
 
@@ -60,7 +60,7 @@ public class JsonDTO
       {
          list.add((T)getJsonElemAs(jElem, type));
       }
-     
+
       return list;
    }
 
@@ -94,13 +94,13 @@ public class JsonDTO
    }
 
    /*
-    * 
+    *
     */
    public static Map<String, Object> getAsMap(String json)
    {
       return toObject(getJsonObject(json));
    }
-   
+
    /**
     * @param elem
     * @return
@@ -112,7 +112,7 @@ public class JsonDTO
       {
          data.put(entry.getKey(), toObject(entry.getValue()));
       }
-      
+
       return data;
    }
 
@@ -127,7 +127,7 @@ public class JsonDTO
       {
          data.add(toObject(elem.get(i)));
       }
-      
+
       return data;
    }
 

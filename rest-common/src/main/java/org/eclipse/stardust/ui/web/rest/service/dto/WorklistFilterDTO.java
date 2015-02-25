@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Anoop.Nair (SunGard CSA LLC) - initial API and implementation and/or initial documentation
+ *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
 /**
  * @author Johnson.Quadras
@@ -63,7 +63,7 @@ public class WorklistFilterDTO implements FilterDTO{
 
    /**
     * Tokens for converting custom object in JSON array to DTO
-    * 
+    *
     * @return
     */
    public static Map<String, Type> getCustomTokens() {

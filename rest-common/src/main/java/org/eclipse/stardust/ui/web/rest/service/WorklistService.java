@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Anoop.Nair (SunGard CSA LLC) - initial API and implementation and/or initial documentation
+ *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service;
 
@@ -116,8 +116,8 @@ public class WorklistService
             CriticalityCategory criticalCategory =  criticalityUtils.getCriticalityCategory(criticalityValue, criticalityConfigurations);
             CriticalityDTO criticalityDTO = DTOBuilder.build(criticalCategory, CriticalityDTO.class);
             criticalityDTO.value = criticalityValue;
-            dto.criticality = criticalityDTO; 
-            
+            dto.criticality = criticalityDTO;
+
             dto.defaultCaseActivity= ActivityInstanceUtils.isDefaultCaseActivity(ai);
             if ( !dto.defaultCaseActivity )
             {
@@ -165,7 +165,7 @@ public class WorklistService
                   dto.activatable = false;
                }
             }
-            
+
             list.add(dto);
          }
       }

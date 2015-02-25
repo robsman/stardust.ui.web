@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Anoop.Nair (SunGard CSA LLC) - initial API and implementation and/or initial documentation
+ *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service.helpers;
 
@@ -43,7 +43,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 public class ModelHelper
 {
    private static final Logger trace = LogManager.getLogger(ModelHelper.class);
-   
+
    public static enum SystemDefinedDataType
    {
       PROCESS_ID,
@@ -78,10 +78,10 @@ public class ModelHelper
    public static enum DmsWritableData
    {
       DESCRIPTION ("Description", "description");
-      
+
       private final String dataMappingId;
       private final String dataPath;
-      
+
       /**
        * @param dataMappingId
        * @param dataPath
@@ -102,7 +102,7 @@ public class ModelHelper
          return dataPath;
       }
    }
-   
+
    /**
     * @param model
     * @param mapping
@@ -118,9 +118,9 @@ public class ModelHelper
 
       return PrimitiveXmlUtils.isPrimitiveType(model, mapping);
    }
-   
+
    /**
-    * 
+    *
     * @param type
     * @return
     */
@@ -134,9 +134,9 @@ public class ModelHelper
       }
       return false;
    }
-   
+
    /**
-    * 
+    *
     * @param mapping
     * @return
     */
@@ -149,7 +149,7 @@ public class ModelHelper
       }
       return false;
    }
-   
+
    /**
     * @param model
     * @param mapping
@@ -175,7 +175,7 @@ public class ModelHelper
    }
 
    /**
-    * 
+    *
     * @return
     */
    private static DataDetails getDataDetails(DataMapping dataMapping)
@@ -203,7 +203,7 @@ public class ModelHelper
 
       return isStruct;
    }
-   
+
    public static boolean isStructuredType(Model model, Data data)
    {
       boolean isStruct = false;
@@ -213,12 +213,12 @@ public class ModelHelper
 
       return isStruct;
    }
-   
+
    public static String getTypeId(Data data)
    {
       return (String) Reflect.getFieldValue(data, "typeId");
-   }   
-   
+   }
+
    /**
     * @param model
     * @param mapping
@@ -259,7 +259,7 @@ public class ModelHelper
       Data data = model.getData(mapping.getDataId());
       return StructuredTypeRtUtils.isDmsType(getTypeId(data));
    }
-   
+
    /**
     * @param mapping
     * @return
@@ -351,7 +351,7 @@ public class ModelHelper
       }
       return false;
    }
-   
+
    /**
     * @param model
     * @param mapping
@@ -426,11 +426,11 @@ public class ModelHelper
       SelectItem[] preferenceScopes = new SelectItem[3];
       preferenceScopes[i++] = new SelectItem(ProcessInstancePriority.HIGH,
             ProcessInstanceUtils.getPriorityLabel(ProcessInstancePriority.HIGH));
-      preferenceScopes[i++] = new SelectItem(ProcessInstancePriority.NORMAL, 
+      preferenceScopes[i++] = new SelectItem(ProcessInstancePriority.NORMAL,
             ProcessInstanceUtils.getPriorityLabel(ProcessInstancePriority.NORMAL));
-      preferenceScopes[i++] = new SelectItem(ProcessInstancePriority.LOW, 
+      preferenceScopes[i++] = new SelectItem(ProcessInstancePriority.LOW,
             ProcessInstanceUtils.getPriorityLabel(ProcessInstancePriority.LOW));
-      
+
       return preferenceScopes;
    }
 
@@ -443,7 +443,7 @@ public class ModelHelper
    public static Serializable wrapPrimitiveValue(DataMapping mapping, Serializable value)
    {
       Serializable returnValue = value;
-      
+
       // Convert Calendar to Date
       if (mapping.getMappedType().isAssignableFrom(Calendar.class))
       {
@@ -465,7 +465,7 @@ public class ModelHelper
    public static Serializable unwrapPrimitiveValue(DataMapping mapping, Serializable value)
    {
       Serializable returnValue = value;
-      
+
       // Convert Date to Calendar
       if (mapping.getMappedType().isAssignableFrom(Calendar.class))
       {
@@ -473,7 +473,7 @@ public class ModelHelper
          {
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(((Date)value));
-            
+
             returnValue = calendar;
          }
       }

@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Anoop.Nair (SunGard CSA LLC) - initial API and implementation and/or initial documentation
+ *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest;
 
@@ -160,7 +160,7 @@ public class WorklistResource
 
       return worklistFilter;
    }
-   
+
    /**
     * Populate the options with the post data.
     * @param options
@@ -178,8 +178,8 @@ public class WorklistResource
       {
          options.filter = getFilters(filters.toString());
       }
-      
-      
+
+
       JsonArray visbleColumns = postJSON.getAsJsonObject("descriptors").get("visbleColumns").getAsJsonArray();
       List<String> columnsList = new ArrayList<String>();
       for (JsonElement jsonElement : visbleColumns)
@@ -188,10 +188,10 @@ public class WorklistResource
       }
        options.visibleDescriptorColumns = columnsList;
        options.allDescriptorsVisible = postJSON.getAsJsonObject("descriptors").get("fetchAll").getAsBoolean();
-       
+
       return options;
    }
-   
+
    /**
     * Populates the descriptor filter values.
     * @param worklistFilter
