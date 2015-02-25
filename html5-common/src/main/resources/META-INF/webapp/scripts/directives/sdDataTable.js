@@ -1400,7 +1400,13 @@
 				}
 				return data;
 			} else {
-				return tableData[index];
+				if (attr.sdaMode == 'local') {
+					// TODO: Get the current UI ordered Data
+					var settings = theDataTable.fnSettings();
+					return tableData[settings._iDisplayStart + index];
+				} else {
+					return tableData[index];
+				}
 			}
 		}
 
@@ -1408,8 +1414,13 @@
 		 * 
 		 */
 		function getPageDataCount() {
-			var settings = theDataTable.fnSettings();
-			return settings._iDisplayEnd - settings._iDisplayStart;
+			if (attr.sdaMode == 'local') {
+				var settings = theDataTable.fnSettings();
+				return settings._iDisplayEnd - settings._iDisplayStart;
+			} else {
+				var data = theDataTable.fnGetData();
+				return data.length;
+			}
 		}
 
 		/*
