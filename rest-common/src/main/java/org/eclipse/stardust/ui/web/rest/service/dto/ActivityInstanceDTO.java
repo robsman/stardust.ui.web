@@ -41,6 +41,9 @@ public class ActivityInstanceDTO extends AbstractDTO
 
    @DTOAttribute("processInstance")
    public ProcessInstanceDTO processInstance;
+   
+   @DTOAttribute("modelOID")
+   public int modelOID;
 
    public CriticalityDTO criticality;
 

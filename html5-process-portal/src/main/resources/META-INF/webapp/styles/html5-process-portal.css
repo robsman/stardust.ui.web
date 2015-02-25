@@ -217,3 +217,12 @@ list-style: none;
 	margin: 10px 0 10px 0;
 	font-size: .9em;
 }
+.complete-activity-legend {
+    border-style: none;
+    border-width: 0;
+    font-size: 14px;
+    line-height: 4px;
+    margin-bottom: 0px;
+    background :white;
+    width:80px;
+    

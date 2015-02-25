@@ -62,7 +62,7 @@ public class WorklistResource
    @Produces(MediaType.APPLICATION_JSON)
    @Consumes(MediaType.APPLICATION_JSON)
    @Path("/participant/{participantQId}")
-   public Response getWorklistForParticipant1(
+   public Response getWorklistForParticipant(
          @PathParam("participantQId") String participantQId,
          @QueryParam("skip") @DefaultValue("0") Integer skip,
          @QueryParam("pageSize") @DefaultValue("8") Integer pageSize,

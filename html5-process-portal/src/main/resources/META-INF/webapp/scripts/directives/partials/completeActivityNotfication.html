@@ -1,27 +1,32 @@
 <div class="confirmation-contents section">
 	<div ng-hide="worklistCtrl.completeActivityResult.error">
-
-		<div ng-show="worklistCtrl.completeActivityResult.notifications.success.length>0">
-			<div ng-bind="i18n('processportal.views-completeActivityDialog-notification-success')"> </div>
-			<ul>
-				<li ng-repeat="activity in worklistCtrl.completeActivityResult.notifications.success">
-					<span ng-bind="activity.OID"> </span> <span
-					class="abort-activity-message" ng-bind="activity.message"> </span>
-				</li>
-			</ul>
-		</div>
 		<div
 			ng-show="worklistCtrl.completeActivityResult.notifications.failure.length > 0">
-			<div ng-bind="i18n('processportal.views-completeActivityDialog-notification-failure')"> </div>
-			<ul>
-				<li ng-repeat="activity in worklistCtrl.completeActivityResult.notifications.failure">
-					<span ng-bind="activity.OID"> </span> <span
-					class="abort-activity-message" ng-bind="activity.message"> </span>
-				</li>
-			</ul>
+			<div ng-bind="i18n('processportal.views-completeActivityDialog-notificaition-failure')"></div>
+			<br>
+			<table  class="table">
+				<thead>
+					<tr>
+						<th ng-bind="i18n('processportal.views-completeActivityDialog-notificaition-table-header-activity')"></th>
+						<th ng-bind="i18n('processportal.views-completeActivityDialog-notificaition-table-header-activityOID')"></th>
+						<th ng-bind="i18n('processportal.views-completeActivityDialog-notificaition-table-header-error')"></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr
+						ng-repeat="activity in worklistCtrl.completeActivityResult.notifications.failure">
+						<td>{{
+							worklistCtrl.completeActivityResult.nameIdMap[activity.OID]}}</td>
+						<td ng-bind="activity.OID"></td>
+						<td ng-bind="activity.message"></td>
+					</tr>
+				</tbody>
+			</table>
 		</div>
 	</div>
-<div ng-show="worklistCtrl.completeActivityResult.error" ng-bind="i18n('processportal.views-completeActivityDialog-notification-error')"> </div>
+	<div ng-show="worklistCtrl.completeActivityResult.error"
+		ng-bind="i18n('processportal.views-completeActivityDialog-notification-error')">
+	</div>
 </div>
 <div class="confirmation-buttonpane">
 	<div class="button-pane cf">
