@@ -71,6 +71,10 @@
      */
     DataFlowPropertiesPageCtrl.prototype.reset = function() {
       this.element = this.propertiesPanel.element;
+      if(!this.element){
+        return;
+      }
+      
       this.modelElement = this.element.modelElement;
       this.unifiedDataMappings = transformDMs(this.modelElement.dataMappings);
       this.unifiedDataMappings = this.m_utils.convertToSortedArray(
