@@ -93,7 +93,7 @@
 				<td style="text-align: center;" sda-exporter="i18n('views-common-messages.common-priorities-' + rowData.priority)">
 					<div sd-process-priority sda-priority="rowData.priority"></div>
 				</td>
-				<td>
+				<td sda-exporter="worklistCtrl.getDescriptorExportText(rowData.descriptors)">
 					<table>
 						<tr ng-repeat="desc in rowData.descriptors">
 							<td style="white-space: nowrap;">{{desc.key}}</td>

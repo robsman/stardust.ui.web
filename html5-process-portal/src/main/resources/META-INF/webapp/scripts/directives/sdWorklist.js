@@ -635,6 +635,19 @@
 			BridgeUtils.View.syncLaunchPanels();
 			this.activitiesToAbort = [];
 		};
+		
+		/*
+      *
+      */
+     WorklistCompiler.prototype.getDescriptorExportText = function(descriptors) {
+        var descriptorsToExport  = [];
+        
+        angular.forEach(descriptors,function(descriptor){
+           descriptorsToExport.push(descriptor.key +" : "+descriptor.value);
+        });
+        return descriptorsToExport.join(',');
+     };
+
 
 
 		return directiveDefObject;
