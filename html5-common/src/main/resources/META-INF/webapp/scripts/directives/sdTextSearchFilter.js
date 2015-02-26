@@ -45,11 +45,7 @@
 				scope.handlers.applyFilter = function() {
 					if (scope.filterForm.$valid) {
 						var title = scope.filterData.textSearch;
-						if (title.length > MAX_TITLE_LENGTH) {
-							title = title.substring(0, MAX_TITLE_LENGTH - 3);
-							title += '...';
-						}
-						scope.setFilterTitle(title);
+						scope.setFilterTitle(sdUtilService.truncateTitle(title));
 						return true;
 					}
 

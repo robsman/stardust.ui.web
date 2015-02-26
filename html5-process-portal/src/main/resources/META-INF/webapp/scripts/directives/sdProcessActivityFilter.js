@@ -11,57 +11,43 @@
 /**
  * @author Johnson.Quadras
  */
- (function()
- {
+ (function() {
    'use strict';
 
    angular.module('bpm-common').directive('sdProcessActivityFilter',
-      [ '$filter','$parse', ActivityFilter ]);
+      [ '$filter','$parse','sdUtilService', ActivityFilter]);
 
    /*
     *
     */
-    function ActivityFilter()
-    {
-      var MAX_TITLE_LENGTH = 35;
+    function ActivityFilter( $filter, $parse, sdUtilService) {
 
       return {
          restrict : 'A',
          templateUrl : 'plugins/html5-process-portal/scripts/directives/partials/processActivityFilter.html',
          controller : [ '$scope', '$attrs', '$filter','$parse', FilterController ],
-         link : function(scope, element, attr, ctrl)
-         {
+         link : function(scope, element, attr, ctrl) {
 
             /*
-            */
-            scope.handlers.applyFilter = function()
-            {
+             */
+            scope.handlers.applyFilter = function() {
                var displayText = [];
 
-               if (ctrl.isActivityFilter())
-               {
-                  angular.forEach(scope.filterData.activities, function(value)
-                  {
+               if (ctrl.isActivityFilter()) {
+                  angular.forEach(scope.filterData.activities, function(value) {
                      displayText.push(ctrl.idToName[value]);
                   });
                }
-               else
-               {
+               else {
                   if ((scope.filterData.processes) < 1)
                      return false;
 
-                  angular.forEach(scope.filterData.processes, function(value)
-                  {
+                  angular.forEach(scope.filterData.processes, function(value) {
                      displayText.push(ctrl.idToName[value]);
                   });
                }
                var title = displayText.join(',');
-               if (title.length > MAX_TITLE_LENGTH)
-               {
-                  title = title.substring(0, MAX_TITLE_LENGTH - 3);
-                  title += '...';
-               }
-               scope.setFilterTitle(title);
+               scope.setFilterTitle(sdUtilService.truncateTitle(title));
                return true;
             };
          }
@@ -98,53 +84,55 @@
    /**
     *
     */
-    var FilterController = function($scope, $attrs, $filter,$parse)
-    {
+   var FilterController = function($scope, $attrs, $filter, $parse) {
 
       var self = this;
 
       this.filterType = $attrs.sdaFilterType;
-      
-      var allProcessBinding  = $parse($attrs.sdaProcesses);
-      
+
+      var allProcessBinding = $parse($attrs.sdaProcesses);
+
       this.allAccessibleProcesses = allProcessBinding($scope);
 
-      this.loadAllActivities = function()
-      {
+      /**
+       * 
+       */
+      this.loadAllActivities = function() {
          this.getAllActivities($filter);
       }
-
-      this.isActivityFilter = function()
-      {
+      /**
+       * 
+       */
+      this.isActivityFilter = function() {
          return self.filterType == FILTER_TYPE_ACTIVITY;
       }
-
-      this.updateProcess = function()
-      {
-         if (self.isActivityFilter())
-         {
+      
+      /***
+       * 
+       */
+      this.updateProcess = function() {
+         if (self.isActivityFilter()) {
             this.getActivitiesForSelectedProcesses($filter, $scope.filterData.processes);
          }
       }
-
-      this.loadValues = function()
-      {
-         angular.forEach(self.allAccessibleProcesses, function(data)
-         {
+      
+      /**
+       * 
+       */
+      this.loadValues = function() {
+         angular.forEach(self.allAccessibleProcesses, function(data) {
 
             var found = $filter('filter')(self.processes, {
                name : data.name
             }, true);
-            if (found.length < 1)
-            {
+            if (found.length < 1) {
                data['order'] = 1;
                self.processes.push(data)
             }
 
          });
 
-         if (this.isActivityFilter())
-         {
+         if (this.isActivityFilter()) {
             this.loadAllActivities();
          }
       }
@@ -155,36 +143,28 @@
    /*
     *
     */
-
-    FilterController.prototype.getActivitiesForSelectedProcesses = function($filter,selectedProcesses)
-    {
+   FilterController.prototype.getActivitiesForSelectedProcesses = function($filter,
+            selectedProcesses) {
       var self = this;
       self.activities = [ DEFAULT_ACTIVITY ];
 
-      if (selectedProcesses.indexOf('-1') > -1)
-      {
+      if (selectedProcesses.indexOf('-1') > -1) {
 
          self.loadAllActivities();
       }
-      else
-      {
+      else {
 
-         angular.forEach(selectedProcesses, function(selectedProcess)
-         {
+         angular.forEach(selectedProcesses, function(selectedProcess) {
 
-            angular.forEach(self.allAccessibleProcesses, function(process)
-            {
-               if (process.id === selectedProcess)
-               {
+            angular.forEach(self.allAccessibleProcesses, function(process) {
+               if (process.id === selectedProcess) {
                   var activities = process.activities;
-                  angular.forEach(activities, function(activity)
-                  {
+                  angular.forEach(activities, function(activity) {
                      activity['order'] = 1;
                      var found = $filter('filter')(self.activities, {
                         name : activity.name
                      }, true);
-                     if (found.length < 1)
-                     {
+                     if (found.length < 1) {
                         activity['order'] = 1;
                         self.activities.push(activity)
                      }
@@ -198,22 +178,19 @@
    /*
     *
     */
-    FilterController.prototype.intialize = function($scope)
-    {
+   FilterController.prototype.intialize = function($scope) {
       this.i18n = $scope.$parent.i18n;
       this.showAuxillaryProcess = false;
       this.showAuxillaryActivity = false;
 
       this.idToName = {};
       this.createIdNamePairs($scope);
-      if (angular.isUndefined($scope.filterData.processes))
-      {
+      if (angular.isUndefined($scope.filterData.processes)) {
          this.processes = [ DEFAULT_PROCESS ];
          this.activities = [ DEFAULT_ACTIVITY ];
          this.loadValues();
       }
-      else
-      {
+      else {
          this.processes = [ DEFAULT_PROCESS ];
          this.activities = [ DEFAULT_ACTIVITY ];
          this.loadValues();
@@ -225,16 +202,13 @@
    /**
     *
     */
-    FilterController.prototype.createIdNamePairs = function()
-    {
+   FilterController.prototype.createIdNamePairs = function() {
       var self = this;
       self.idToName[DEFAULT_PROCESS.id] = DEFAULT_PROCESS.name;
       self.idToName[DEFAULT_ACTIVITY.id] = DEFAULT_ACTIVITY.name;
-      angular.forEach(self.allAccessibleProcesses, function(process)
-      {
+      angular.forEach(self.allAccessibleProcesses, function(process) {
          self.idToName[process.id] = process.name;
-         angular.forEach(process.activities, function(activity)
-         {
+         angular.forEach(process.activities, function(activity) {
             self.idToName[activity.qualifiedId] = activity.name;
          });
       });
@@ -243,14 +217,11 @@
    /*
     *
     */
-    FilterController.prototype.auxComparator = function(auxValue, showAux)
-    {
-      if (showAux)
-      {
+   FilterController.prototype.auxComparator = function(auxValue, showAux) {
+      if (showAux) {
          return true;
       }
-      else
-      {
+      else {
          return !auxValue;
       }
    }
@@ -258,24 +229,19 @@
    /*
     *
     */
-    FilterController.prototype.getAllActivities = function($filter)
-    {
+   FilterController.prototype.getAllActivities = function($filter) {
       var self = this;
       self.activities = [];
       self.activities.push(DEFAULT_ACTIVITY);
 
-      angular.forEach(self.allAccessibleProcesses, function(process)
-      {
+      angular.forEach(self.allAccessibleProcesses, function(process) {
 
-         if (!angular.isUndefined(process.activities))
-         {
-            angular.forEach(process.activities, function(activity)
-            {
+         if (!angular.isUndefined(process.activities)) {
+            angular.forEach(process.activities, function(activity) {
                var found = $filter('filter')(self.activities, {
                   name : activity.name
                }, true);
-               if (found.length < 1)
-               {
+               if (found.length < 1) {
                   activity['order'] = 1;
                   self.activities.push(activity)
                }
@@ -287,16 +253,14 @@
    /*
     *
     */
-    FilterController.prototype.showHideAuxillaryProcess = function()
-    {
+   FilterController.prototype.showHideAuxillaryProcess = function() {
       this.showAuxillaryProcess = !this.showAuxillaryProcess;
    }
 
    /*
     *
     */
-    FilterController.prototype.showHideAuxillaryActivity = function()
-    {
+   FilterController.prototype.showHideAuxillaryActivity = function() {
       this.showAuxillaryActivity = !this.showAuxillaryActivity;
    }
 

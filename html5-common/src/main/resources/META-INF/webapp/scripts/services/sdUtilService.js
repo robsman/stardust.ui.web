@@ -204,6 +204,28 @@
 
 			return data;
 		};
+		
+
+		/**
+		 * 
+		 */
+		UtilService.prototype.truncateTitle = function(title) {
+		   var MAX_TITLE_LENGTH = 35;
+		   return this.truncate(title,MAX_TITLE_LENGTH);
+		}
+		
+		
+		 /**
+       * 
+       */
+      UtilService.prototype.truncate = function(string,maxLength) {
+         
+         if (string.length > maxLength) {
+            string = string.substring(0, maxLength - 3);
+            string += '...';
+         }
+         return string;
+      }
 
 		/*
 		 * 
@@ -216,5 +238,7 @@
 			
 			return proxyFunc;
 		}
+		
+		
 	};
 })();

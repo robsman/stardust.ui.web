@@ -10,18 +10,15 @@
 /**
  * @author Johnson.Quadras
  */
-(function()
-{
+(function() {
    'use strict';
 
    angular.module('bpm-common').directive('sdCriticalityFilter',
-            [ '$parse', CriticalityFilter ]);
+            [ '$parse', 'sdUtilService', CriticalityFilter ]);
 
    /*
     */
-   function CriticalityFilter()
-   {
-      var MAX_TITLE_LENGTH = 35;
+   function CriticalityFilter( $parse, sdUtilService) {
       return {
          restrict : 'A',
          template : "<div class=\"priority-criticality-filter-container\"> "+
@@ -39,57 +36,48 @@
                          "<\/div>" +
                    "<\/div> ",
          controller : [ '$scope','$attrs','$parse', CriticalityFilterController ],
-         link : function(scope, element, attr, ctrl)
-         {
+         link : function(scope, element, attr, ctrl) {
             /*
+             * 
              */
-            scope.handlers.applyFilter = function()
-            {
+            scope.handlers.applyFilter = function() {
                scope.filterData.rangeLike = [];
                var displayText = [];
-               angular.forEach(ctrl.like, function(value)
-               {
-                  displayText.push(value.label);
-                  scope.filterData.rangeLike.push({
-                     'from' : value.rangeFrom,
-                     'to' : value.rangeTo,
-                     'label' : value.label
-                  });
+               angular.forEach(ctrl.like, function(value) {
+                  if (displayText.indexOf(value.label) < 0) {
+                     displayText.push(value.label);
+                     scope.filterData.rangeLike.push({
+                        'from' : value.rangeFrom,
+                        'to' : value.rangeTo,
+                        'label' : value.label
+                     });
+                  }
                })
                var title = displayText.join(',');
-               if (title.length > MAX_TITLE_LENGTH) 
-               {
-                  title = title.substring(0, MAX_TITLE_LENGTH - 3);
-                  title += '...';
-               }
-               scope.setFilterTitle(title);
+               scope.setFilterTitle(sdUtilService.truncateTitle(title));
                return true;
             };
          }
       };
-   }
-   ;
+   };
 
    /*
     * 
     */
-   var CriticalityFilterController = function($scope, $attrs, $parse)
-   {
+   var CriticalityFilterController = function($scope, $attrs, $parse) {
       var self = this;
       this.i18n = $scope.$parent.i18n;
       this.intialize($scope, $attrs, $parse);
 
-      this.loadAvailableCriticalities = function()
-      {
+      this.loadAvailableCriticalities = function() {
 
-                     var criticalityValues = [];
+         var criticalityValues = [];
 
-                     angular.forEach($scope.filterData.rangeLike, function(criticality)
-                     {
-                        criticalityValues.push(criticality.label)
+         angular.forEach($scope.filterData.rangeLike, function(criticality) {
+            criticalityValues.push(criticality.label)
          });
-                     self.like = self.getCriticalityByValue(self.availableCriticalities,
-                              criticalityValues);
+         self.like = self.getCriticalityByValue(self.availableCriticalities,
+                  criticalityValues);
       }
       this.loadAvailableCriticalities();
       $scope.criticalityCtrl = this;
@@ -98,25 +86,21 @@
    /*
     * 
     */
-   CriticalityFilterController.prototype.intialize = function($scope,$attrs,$parse)
-   {
+   CriticalityFilterController.prototype.intialize = function($scope, $attrs, $parse) {
 
       this.data = [];
       this.matchVal = "";
       this.like = this.like || [];
       $scope.filterData.rangeLike = $scope.filterData.rangeLike || [];
-      var allCriticalitiesBinding  = $parse($attrs.sdaCriticalities);
+      var allCriticalitiesBinding = $parse($attrs.sdaCriticalities);
       this.availableCriticalities = allCriticalitiesBinding($scope);
       $scope.criticalityCtrl = this;
-     
-      
-      
+
    };
    /*
     * 
     */
-   CriticalityFilterController.prototype.tagPreMapper = function(item, index)
-   {
+   CriticalityFilterController.prototype.tagPreMapper = function(item, index) {
       var tagClass = "glyphicon glyphicon-flag criticality-flag-" + item.color;
       return tagClass;
    };
@@ -124,15 +108,12 @@
    /**
     * 
     */
-   CriticalityFilterController.prototype.getCriticalities = function(value)
-   {
+   CriticalityFilterController.prototype.getCriticalities = function(value) {
 
       var results = [];
 
-      this.availableCriticalities.forEach(function(v)
-      {
-         if (v.label.indexOf(value) > -1)
-         {
+      this.availableCriticalities.forEach(function(v) {
+         if (v.label.indexOf(value) > -1) {
             results.push(v);
          }
       });
@@ -144,13 +125,10 @@
     * 
     */
    CriticalityFilterController.prototype.getCriticalityByValue = function(
-            allCriticalities, criticalityValues)
-   {
+            allCriticalities, criticalityValues) {
       var criticalityObjs = [];
-      angular.forEach(allCriticalities, function(criticality)
-      {
-         if (criticalityValues.indexOf(criticality.label) > -1)
-         {
+      angular.forEach(allCriticalities, function(criticality) {
+         if (criticalityValues.indexOf(criticality.label) > -1) {
             criticalityObjs.push(criticality);
          }
       });
