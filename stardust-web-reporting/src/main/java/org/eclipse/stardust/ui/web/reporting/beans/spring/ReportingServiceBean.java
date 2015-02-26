@@ -1106,7 +1106,7 @@ public class ReportingServiceBean
             {
                File file = new File(path);
                InputStream is = new FileInputStream(path);
-               String reportJsonTxt = IOUtils.toString(is);
+               String reportJsonTxt = IOUtils.toString(is, "UTF-8");
                
                JsonMarshaller jsonIo = new JsonMarshaller();
                JsonObject reportJson = jsonIo.readJsonObject(reportJsonTxt);
