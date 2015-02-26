@@ -563,6 +563,8 @@
                   var firstItem = selectedWorkItems[0];
                   self.completeDialog.dataMappings = angular
                            .copy(self.worklist.trivialManualActivities[firstItem.oid].dataMappings);
+                  self.completeDialog.outData =angular
+                  .copy(self.worklist.trivialManualActivities[firstItem.oid].inOutData);
                }else{
                   self.completeDialog.confirmationType = 'generic';
                }

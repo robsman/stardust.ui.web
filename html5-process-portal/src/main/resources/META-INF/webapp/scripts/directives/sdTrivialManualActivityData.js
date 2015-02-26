@@ -12,28 +12,28 @@
  * @author Johnson.Quadras
  */
 (function() {
-	'use strict';
+   'use strict';
 
-	angular.module('bpm-common').directive('sdTrivialManualActivityData',['sdUtilService', Directive]);
+   angular.module('bpm-common').directive('sdTrivialManualActivityData',['sdUtilService', Directive]);
 
-	/*
-	 *
-	 */
-	function Directive(sdUtilService) {
+   /*
+    *
+    */
+   function Directive(sdUtilService) {
 
-		return {
-			restrict : 'A',
-			templateUrl : 'plugins/html5-process-portal/scripts/directives/partials/trivialManualActivityData.html',
-			controller : [ '$scope', '$parse', '$attrs','sdUtilService', DataController ]
-		};
-	}
-	/**
-	 *
-	 */
-	function DataController($scope, $parse, $attrs, sdUtilService) {
-	   this.i18n = $scope.$parent.i18n;
-	   
-	   var mappingHandler  = $parse($attrs.sdaDataMappings);
+      return {
+         restrict : 'A',
+         templateUrl : 'plugins/html5-process-portal/scripts/directives/partials/trivialManualActivityData.html',
+         controller : [ '$scope', '$parse', '$attrs','sdUtilService', DataController ]
+      };
+   }
+   /**
+    *
+    */
+   function DataController($scope, $parse, $attrs, sdUtilService) {
+      this.i18n = $scope.$parent.i18n;
+      
+      var mappingHandler  = $parse($attrs.sdaDataMappings);
       this.dataMappings = mappingHandler($scope);
       
       var dataHandler  = $parse($attrs.sdaOutData);
@@ -41,25 +41,25 @@
       
       var methodHandler  = $parse($attrs.sdaOnChange);
       
-	 
-	   /**
-	    * 
-	    */
-	   this.onChange = function(){
-	      if($attrs.sdaOnChange){
-	         methodHandler($scope);
-	      }
-	   }
-	   /**
-	    * 
-	    */
+    
+      /**
+       * 
+       */
+      this.onChange = function(){
+         if($attrs.sdaOnChange){
+            methodHandler($scope);
+         }
+      }
+      /**
+       * 
+       */
       this.stopEvent = function(event) {
          sdUtilService.stopEvent(event);
       }
 
-	   
-	   $scope.dataCtrl = this;
-	}
-	
-	
+      
+      $scope.dataCtrl = this;
+   }
+   
+   
 })();
