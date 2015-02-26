@@ -100,11 +100,11 @@
 		var TOOLBAR_TEMPLATE =
 			'<div class="tbl-toolbar-section">\n' +
 				'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if="$dtApi.enableSelectColumns" ng-click="$dtApi.toggleColumnSelector()"' + 
-					' title="{{i18n(\'portal-common-messages.common-filterPopup-selectColumnsLabel\')}}" class="tbl-toolbar-item tbl-tool-link">\n' +
+					' title="{{i18n(\'portal-common-messages.common-filterPopup-selectColumnsLabel\')}}">\n' +
 					'<i class="glyphicon glyphicon-th"></i>\n' +
 				'</button>\n' +
 				'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if="$dtApi.enableExportExcel" ng-click=""' +
-					' title="{{i18n(\'portal-common-messages.common-genericDataTable-asExcel\')}}" class="tbl-toolbar-item tbl-tool-link">\n' +
+					' title="{{i18n(\'portal-common-messages.common-genericDataTable-asExcel\')}}">\n' +
 					'<i class="glyphicon glyphicon-export"></i>\n' +
 				'</button>\n' +
 				'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if="$dtApi.enableExportCSV" ng-click="$dtApi.exportCSV({allRows: false, allCols: false})"' +
@@ -217,7 +217,7 @@
 			trace.printStackTrace();
 
 			// TODO: i18n? Is it required? Because this mostly for development only
-			var msg = 'sd-data-table is unable to process table. Reason: ' + e;
+			var msg = 'sd-data-table is unable to process table. Pl. refer browser console for details. Reason: ' + e;
 			jQuery('<pre class="tbl-error">' + msg + '</pre>').insertAfter(element);
 		}
 
@@ -799,8 +799,13 @@
 
 			trace.log(theTableId + ': Building table for remote mode... with options: ', dtOptions);
 
-			theDataTable = theTable.DataTable(dtOptions);
-			buildDataTableCompleted();
+			try {
+				theDataTable = theTable.DataTable(dtOptions);
+				buildDataTableCompleted();
+			} catch (e) {
+				trace.error(theTableId + ': Error occurred while using Datatables library', e);
+				showErrorOnUI(e);
+			}
 		}
 
 		/*
@@ -1074,7 +1079,7 @@
 			if (rowScope == undefined) {
 				rowScope = myScope.$new();
 				rowScope.$on('$destroy', function() {
-					trace.log(theTableId + ': Row Scope ' + rowScope.$id + ' destroyed for parent ' + rowScope.$parent.$id);
+					//trace.log(theTableId + ': Row Scope ' + rowScope.$id + ' destroyed for parent ' + rowScope.$parent.$id);
 				});
 			}
 

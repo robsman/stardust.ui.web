@@ -14,8 +14,6 @@
 			<button sd-abort-popover ng-disabled="worklistCtrl.dataTable.getSelection() < 1" sda-activities="worklistCtrl.dataTable.getSelection()" sda-on-confirm="worklistCtrl.refresh()" class="button-link tbl-toolbar-item tbl-tool-link" style="padding-left: 0px;">
 				<i class="glyphicon glyphicon-chevron-right glyphicon-rotate-90"></i>
 			</button>
-			<!-- <div sd-abort-popover sda-show-popover="worklistCtrl.showAbortPopover">
-			</div> -->
 		</div>
 	</div>
 	<table sd-data-table="{{worklistCtrl.tableHandleExpr}}" sd-data="worklistCtrl.fetchPage(params)" sda-ready="worklistCtrl.ready"
@@ -71,7 +69,6 @@
 						<div ng-if="colData.dataType =='BOOLEAN'"><div sd-boolean-filter></div></div>
 						<div ng-if="colData.dataType =='STRING'"><div sd-text-search-filter></div></div>
 					</div>
-
 				</th>
 				<th sda-name="data" sda-column="TRIVIAL_DATA" sda-sortable="false" sda-exportable="false"></th>
 				<th sda-name="actions" sda-fixed="true" sda-exportable="false"></th>
@@ -90,7 +87,9 @@
 					</span>
 				</td>
 				<td sda-data-type="int" style="text-align: center;"></td>
-				<td style="text-align: center;"><div sd-activity-criticality sda-criticality="rowData.criticality"></div></td>
+				<td style="text-align: center;" sda-exporter="rowData.criticality.label">
+					<div sd-activity-criticality sda-criticality="rowData.criticality"></div>
+				</td>
 				<td style="text-align: center;" sda-exporter="i18n('views-common-messages.common-priorities-' + rowData.priority)">
 					<div sd-process-priority sda-priority="rowData.priority"></div>
 				</td>
