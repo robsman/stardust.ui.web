@@ -27,7 +27,7 @@
 
       return {
          restrict : 'A',
-         templateUrl : 'plugins/html5-process-portal/scripts/directives/partials/ProcessActivityFilter.html',
+         templateUrl : 'plugins/html5-process-portal/scripts/directives/partials/processActivityFilter.html',
          controller : [ '$scope', '$attrs', '$filter','$parse', FilterController ],
          link : function(scope, element, attr, ctrl)
          {
