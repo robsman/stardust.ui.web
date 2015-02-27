@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -59,6 +60,8 @@ public class DumpDependencies
 
       List<ResourceDependency> htmlResourceDependencies = ResourceDependencyUtils.discoverDependencies(context);
 
+      dependencies.append("Dependency Type");
+      dependencies.append(SEPERATOR);
       dependencies.append("Jar Name");
       dependencies.append(SEPERATOR);
       dependencies.append("Resource Name");
@@ -71,23 +74,23 @@ public class DumpDependencies
       dependencies.append(NEWLINE);
 
       // Separate for loops to club all libs, styles and scripts together
+      dependencies.append("HTML5 Deps Libs");
       for (ResourceDependency resourceDependency : htmlResourceDependencies)
       {
+         
          html5PluginIds.add(resourceDependency.getPluginId());
          dependencies
                .append(getDependencies(resourceDependency.getLibs(), resourceDependency.getPluginLocation(), true));
       }
 
-      dependencies.append(NEWLINE);
-
+      dependencies.append("HTML5 Deps Styles");
       for (ResourceDependency resourceDependency : htmlResourceDependencies)
       {
          dependencies.append(getDependencies(resourceDependency.getStyles(), resourceDependency.getPluginLocation(),
                false));
       }
 
-      dependencies.append(NEWLINE);
-
+      dependencies.append("HTML5 Deps Scripts");
       // Scripts can be commented if not required
       for (ResourceDependency resourceDependency : htmlResourceDependencies)
       {
@@ -95,13 +98,11 @@ public class DumpDependencies
                false));
       }
       
-      dependencies.append(NEWLINE);
-      dependencies.append(NEWLINE);
-      
       // For all plugins/Resources
       List<ResourceDependency> resourceDependencies = ResourceDependencyUtils.discoverAllDependencies(context);
 
       // Separate for loops to club all libs and styles together
+      dependencies.append("Common Deps JS");
       for (ResourceDependency resourceDependency : resourceDependencies)
       {
          if (!html5PluginIds.contains(resourceDependency.getPluginId()))// Filter HTML5 plugins
@@ -111,8 +112,7 @@ public class DumpDependencies
          }
       }
       
-      dependencies.append(NEWLINE);
-      
+      dependencies.append("Common Deps CSS");      
       for (ResourceDependency resourceDependency : resourceDependencies)
       {
          if (!html5PluginIds.contains(resourceDependency.getPluginId()))// Filter HTML5 plugins
@@ -163,6 +163,8 @@ public class DumpDependencies
       for (int i = 0; i < resourceDependencyEntries.size(); i++)
       {
          String reseDepEntry = resourceDependencyEntries.get(i);
+         
+         dependencies.append(SEPERATOR);
 
          // For jarName
          String jarName = jarLocation.substring(jarLocation.lastIndexOf(DELIMITER) + 1, jarLocation.length());
@@ -171,10 +173,11 @@ public class DumpDependencies
          dependencies.append(SEPERATOR);
 
          // For Resource Path
+         reseDepEntry = reseDepEntry.replaceAll("//", "/");
          int lastIndexOf = reseDepEntry.lastIndexOf(DELIMITER);
-         String path = reseDepEntry.substring(0, lastIndexOf);
-         path =  path.replaceAll("//", "/");
-
+         int ordinalIndexOf = StringUtils.ordinalIndexOf(reseDepEntry, "/", 2);
+         String path = reseDepEntry.substring(ordinalIndexOf, lastIndexOf);
+         
          // For Resource Name
          String name = reseDepEntry.substring(lastIndexOf + 1, reseDepEntry.length());
 
@@ -188,7 +191,7 @@ public class DumpDependencies
          if (versionInfo)
          {
             String[] pathTokens = path.split(DELIMITER);
-            if (pathTokens.length > 5)
+            if (pathTokens.length > 2)
             {
                // sample path-token "plugins/html5-common/libs/datatables/1.9.4/plugins"
                // 2nd last token token would be version and 3rd last token library name
