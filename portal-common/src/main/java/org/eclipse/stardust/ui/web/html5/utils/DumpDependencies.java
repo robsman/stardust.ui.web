@@ -12,6 +12,7 @@ package org.eclipse.stardust.ui.web.html5.utils;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.context.ApplicationContext;
@@ -52,10 +53,11 @@ public class DumpDependencies
        * scanned for dependencies.
        */
       String[] configLocations = {};
+      List<String> html5PluginIds = new ArrayList<String>();
 
       ApplicationContext context = new ClassPathXmlApplicationContext(configLocations);
 
-      List<ResourceDependency> resourceDependencies = ResourceDependencyUtils.discoverDependencies(context);
+      List<ResourceDependency> htmlResourceDependencies = ResourceDependencyUtils.discoverDependencies(context);
 
       dependencies.append("Jar Name");
       dependencies.append(SEPERATOR);
@@ -69,15 +71,16 @@ public class DumpDependencies
       dependencies.append(NEWLINE);
 
       // Separate for loops to club all libs, styles and scripts together
-      for (ResourceDependency resourceDependency : resourceDependencies)
+      for (ResourceDependency resourceDependency : htmlResourceDependencies)
       {
+         html5PluginIds.add(resourceDependency.getPluginId());
          dependencies
                .append(getDependencies(resourceDependency.getLibs(), resourceDependency.getPluginLocation(), true));
       }
 
       dependencies.append(NEWLINE);
 
-      for (ResourceDependency resourceDependency : resourceDependencies)
+      for (ResourceDependency resourceDependency : htmlResourceDependencies)
       {
          dependencies.append(getDependencies(resourceDependency.getStyles(), resourceDependency.getPluginLocation(),
                false));
@@ -86,10 +89,37 @@ public class DumpDependencies
       dependencies.append(NEWLINE);
 
       // Scripts can be commented if not required
-      for (ResourceDependency resourceDependency : resourceDependencies)
+      for (ResourceDependency resourceDependency : htmlResourceDependencies)
       {
          dependencies.append(getDependencies(resourceDependency.getScripts(), resourceDependency.getPluginLocation(),
                false));
+      }
+      
+      dependencies.append(NEWLINE);
+      dependencies.append(NEWLINE);
+      
+      // For all plugins/Resources
+      List<ResourceDependency> resourceDependencies = ResourceDependencyUtils.discoverAllDependencies(context);
+
+      // Separate for loops to club all libs and styles together
+      for (ResourceDependency resourceDependency : resourceDependencies)
+      {
+         if (!html5PluginIds.contains(resourceDependency.getPluginId()))// Filter HTML5 plugins
+         {
+            dependencies.append(getDependencies(resourceDependency.getLibs(), resourceDependency.getPluginLocation(),
+                  true));
+         }
+      }
+      
+      dependencies.append(NEWLINE);
+      
+      for (ResourceDependency resourceDependency : resourceDependencies)
+      {
+         if (!html5PluginIds.contains(resourceDependency.getPluginId()))// Filter HTML5 plugins
+         {
+            dependencies.append(getDependencies(resourceDependency.getStyles(), resourceDependency.getPluginLocation(),
+                  false));
+         }
       }
 
    }
@@ -143,6 +173,7 @@ public class DumpDependencies
          // For Resource Path
          int lastIndexOf = reseDepEntry.lastIndexOf(DELIMITER);
          String path = reseDepEntry.substring(0, lastIndexOf);
+         path =  path.replaceAll("//", "/");
 
          // For Resource Name
          String name = reseDepEntry.substring(lastIndexOf + 1, reseDepEntry.length());
@@ -161,13 +192,18 @@ public class DumpDependencies
             {
                // sample path-token "plugins/html5-common/libs/datatables/1.9.4/plugins"
                // 2nd last token token would be version and 3rd last token library name
-               libraryVersion = pathTokens[pathTokens.length - 1];
-               dependencies.append(SEPERATOR);
-               dependencies.append(libraryVersion);
-
-               libraryname = pathTokens[pathTokens.length - 2];
-               dependencies.append(SEPERATOR);
-               dependencies.append(libraryname);
+               libraryVersion = pathTokens[pathTokens.length - 2];
+               libraryname = pathTokens[pathTokens.length - 3];
+               
+               if (libraryVersion.matches("[0-9,.]+"))
+               {
+                  dependencies.append(SEPERATOR);
+                  dependencies.append(libraryname);
+                  
+                  dependencies.append(SEPERATOR);
+                  dependencies.append(libraryVersion);
+               }
+               
             }
          }
 
