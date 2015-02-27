@@ -5,11 +5,10 @@ import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
 import static org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils.findContainingModel;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractBoolean;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
@@ -771,5 +770,38 @@ public class EventMarshallingUtils
       return oaJson;
    }
 
-
+   public static Object getJsonAttribute(JsonObject object, String name)
+   {
+      if (!object.has(ModelerConstants.ATTRIBUTES_PROPERTY))
+      {
+         return null;
+      }
+      
+      JsonObject attributes = object.getAsJsonObject(ModelerConstants.ATTRIBUTES_PROPERTY);
+      if (attributes != null)
+      {
+         for (Map.Entry<String, ? > entry : attributes.entrySet())
+         {
+            String key = entry.getKey();
+            if(key.equals(name))
+            {            
+               JsonElement jsonValue = attributes.get(key);
+               if (jsonValue.isJsonNull())
+               {
+                  return null;
+               }
+               else if (jsonValue.getAsJsonPrimitive().isBoolean())
+               {
+                  return jsonValue.getAsBoolean();
+               }
+               else
+               {
+                  return jsonValue.getAsString();
+               }
+            }
+         }
+      }
+      
+      return null;
+   }
 }
