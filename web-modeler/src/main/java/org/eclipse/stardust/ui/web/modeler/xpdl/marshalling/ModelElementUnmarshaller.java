@@ -79,10 +79,7 @@ import org.eclipse.xsd.XSDTypeDefinition;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
+import com.google.gson.*;
 
 /**
  *
@@ -290,7 +287,12 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       storeAttributes(activity, activityJson);
       storeDescription(activity, activityJson);
 
-      if (activityJson.has(ModelerConstants.QUALITYCONTROL))
+      AttributeUtil.setAttribute(activity, PredefinedConstants.QUALITY_ASSURANCE_PROBABILITY_ATT, null);      
+      AttributeUtil.setAttribute(activity, PredefinedConstants.QUALITY_ASSURANCE_FORMULA_ATT, null);      
+      activity.setQualityControlPerformer(null);
+      activity.getValidQualityCodes().clear();
+      if (activityJson.has(ModelerConstants.QUALITYCONTROL) 
+            && !(activityJson.get(ModelerConstants.QUALITYCONTROL) instanceof JsonNull))
       {
          updateQualityControl(activity, activityJson);
       }
@@ -484,9 +486,16 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
 
       IModelParticipant importParticipant = getModelBuilderFacade().importParticipant(ModelUtils.findContainingModel(activity), fullParticipantID);
       activity.setQualityControlPerformer(importParticipant);
-
-      activity.getValidQualityCodes().clear();
-
+      
+      if(EventMarshallingUtils.getJsonAttribute(activityJson, PredefinedConstants.QUALITY_ASSURANCE_FORMULA_ATT) != null)
+      {
+         AttributeUtil.setCDataAttribute(activity, PredefinedConstants.QUALITY_ASSURANCE_FORMULA_ATT, (String) EventMarshallingUtils.getJsonAttribute(activityJson, PredefinedConstants.QUALITY_ASSURANCE_FORMULA_ATT));                        
+      }
+      if(EventMarshallingUtils.getJsonAttribute(activityJson, PredefinedConstants.QUALITY_ASSURANCE_PROBABILITY_ATT) != null)
+      {      
+         AttributeUtil.setCDataAttribute(activity, PredefinedConstants.QUALITY_ASSURANCE_PROBABILITY_ATT, (String) EventMarshallingUtils.getJsonAttribute(activityJson, PredefinedConstants.QUALITY_ASSURANCE_PROBABILITY_ATT));
+      } 
+      
       JsonArray qcCodes = qcJson.getAsJsonArray(ModelerConstants.QC_VALID_CODES);
       for (Iterator<JsonElement> i = qcCodes.iterator(); i.hasNext();)
       {
@@ -501,7 +510,6 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
 
       }
    }
-
 
    private void updateLoop(ActivityType activity, JsonElement loopJson)
    {

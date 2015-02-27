@@ -342,4 +342,78 @@ public class ResourceDependencyUtils
          Collections.reverse(list);
       }
    }
+   
+   public static List<ResourceDependency> discoverAllDependencies(ResourcePatternResolver resolver)
+   {
+      List<ResourceDependency> resourceDependencies = new ArrayList<ResourceDependency>();
+
+      List<ResourceInfo> allResources = PluginUtils.findPluginResources(resolver, "", true);
+
+      for (ResourceInfo rInfo : allResources)
+      {
+
+         ResourceDependency resDep = new ResourceDependency(rInfo.getPluginId(), rInfo.getPluginLocation(),
+               new ArrayList<String>(), new ArrayList<String>(), new ArrayList<String>(), new ArrayList<String>());
+
+         if (CollectionUtils.isEmpty(resDep.getLibs()))
+         {
+            resDep.setLibs(discoverPluginResources(resolver, rInfo, "", "*.js"));
+         }
+         else
+         {
+            discoverAndReplaceWithLocalPath(resolver, resDep.getLibs(), rInfo);
+            prefixResourceWebUri(resDep.getLibs(), rInfo.getResourceBaseWebUri());
+         }
+
+         if (CollectionUtils.isEmpty(resDep.getStyles()))
+         {
+            resDep.setStyles(discoverPluginResources(resolver, rInfo, "", "*.css"));
+         }
+         else
+         {
+            prefixResourceWebUri(resDep.getStyles(), rInfo.getResourceBaseWebUri());
+         }
+
+         resourceDependencies.add(resDep);
+
+      }
+
+      // Sort based on plugin interdependency
+      final List<String> targetOrder = new ArrayList<String>();
+      for (ResourceDependency resDep : resourceDependencies)
+      {
+         int index = targetOrder.indexOf(resDep.getPluginId());
+         if (index == -1)
+         {
+            targetOrder.add(resDep.getPluginId());
+            index = targetOrder.indexOf(resDep.getPluginId());
+         }
+
+         for (String parentPlugin : resDep.getPortalPlugins())
+         {
+            if (!targetOrder.contains(parentPlugin))
+            {
+               targetOrder.add(index, parentPlugin);
+            }
+         }
+      }
+
+      if (trace.isDebugEnabled())
+      {
+         trace.debug("Dependency descriptors sorted by interdependency: " + targetOrder);
+      }
+
+      Collections.sort(resourceDependencies, new Comparator<ResourceDependency>()
+      {
+         public int compare(ResourceDependency rd1, ResourceDependency rd2)
+         {
+            Integer index1 = targetOrder.indexOf(rd1.getPluginId());
+            Integer index2 = targetOrder.indexOf(rd2.getPluginId());
+
+            return index1.compareTo(index2);
+         }
+      });
+
+      return resourceDependencies;
+   }
 }

@@ -90,20 +90,22 @@ public class ExternalReferenceChangeTracker implements ChangePostprocessor
          String uri = i.next();
          WebModelerConnectionManager cm = (WebModelerConnectionManager) model.getConnectionManager();
          Connection connection = (Connection) cm.findConnection(uri);
-         List<EObject> references = this.getExternalReferences(model,
-               (Connection) connection);
-         if (references.size() == 1)
+         if (connection != null)
          {
-            ExternalPackage externalReference = (ExternalPackage) references.get(0);
-            removeConnection(externalReference);
-            model.getExternalPackages().getExternalPackage().remove(externalReference);
-            change.markAlsoRemoved(externalReference);
-            change.markAlsoModified(model);
+            List<EObject> references = this.getExternalReferences(model,
+                  (Connection) connection);
+            if (references.size() == 1)
+            {
+               ExternalPackage externalReference = (ExternalPackage) references.get(0);
+               model.getExternalPackages().getExternalPackage().remove(externalReference);
+               change.markAlsoRemoved(externalReference);
+               change.markAlsoModified(model);
+            }
          }
       }
    }
 
-   private void removeConnection(ExternalPackage externalPackage)
+   public static void removeConnection(ExternalPackage externalPackage)
    {
       ModelType model = ModelUtils.findContainingModel(externalPackage);
       String uri = ExtendedAttributeUtil.getAttributeValue(externalPackage,
