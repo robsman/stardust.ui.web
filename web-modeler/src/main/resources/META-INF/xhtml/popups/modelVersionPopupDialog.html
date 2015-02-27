@@ -1,0 +1,102 @@
+<!doctype html>
+<html ng-app="modelVersionPopupApp">
+<head>
+<script src="../js/libs/angular/angular-1.0.2.js"></script>
+<script>
+	var app = angular.module('modelVersionPopupApp', []);
+
+	app.controller('modelVersionPopupController', [
+			'$scope',
+			function($scope) {
+				$scope.i18n = payloadObj.i18n;
+				$scope.modelUUID = payloadObj.model.uuid;
+				$scope.currentVersion = payloadObj.model.attributes['carnot:engine:version'];
+				
+				$scope.ok = function() {
+					if ($scope.modelVersionDuplicate || !$scope.newVersion) {
+						$scope.showOnSubmitErrors = true;
+						return;
+					}
+
+					payloadObj.acceptFunction({
+						currentVersion : $scope.currentVersion,
+						newVersion : $scope.newVersion,
+						modelUUID : $scope.modelUUID
+					});
+
+					closePopup();
+				};
+
+				$scope.cancel = function() {
+					closePopup();
+				};
+
+				$scope.$watch('newVersion', function(newVersion, currentVersion, scope) {
+					//prepare id
+					$scope.modelVersionDuplicate = false;
+					
+					if (newVersion == $scope.currentVersion) {
+						$scope.modelVersionDuplicate = true;
+					}
+					$scope.showOnSubmitErrors = false;
+				});
+
+			} ]);
+</script>
+<link type="text/css" rel="stylesheet"
+	href="../../common/css/iPopupDialogStyle.css">
+</head>
+<body ng-controller="modelVersionPopupController"
+	style="height: 100%; width: 100%; overflow: hidden; margin: 0px;">
+
+	<form name="modelVersionPopupForm">
+
+		<div id="titleBar" class="iPopupDialogTitleBar">
+			<span id="titleText" class="iPopupDialogTitleText">{{i18n.getProperty("modeler.messages.versionizemodel")}}</span>
+			<input id="dialogCloseIcon" type="button" title={{i18n.getProperty(
+				"modeler.messages.confirm.close")}}
+				class="iPopupDialogCloseControl"
+				ng-click="cancel()" />
+		</div>
+
+		<div id="contentArea" class="iPopupDialogContentArea" style="padding-bottom:10px">
+			<div class="iPopupDialogSpacerDiv"></div>
+			<table border="0">
+				<tr class="iPopupDialogContentText">
+					<td>{{i18n.getProperty("modeler.propertyView.modelView.currentVersion")}}</td>
+					<td><input ng-model="currentVersion" name="currentVersion" type="text"
+						readonly></input></td>
+					<td></td>
+				</tr>
+				<tr class="iPopupDialogContentText">
+					<td>* {{i18n.getProperty("modeler.propertyView.modelView.newVersion")}}</td>
+					<td><input ng-model="newVersion" name="newVersion" type="text"
+						required></input></td>
+					
+				</tr>
+				<tr>
+					<td></td>
+					<td>
+						<div class="iPopupDialogError"
+							ng-show="showOnSubmitErrors && modelVersionPopupForm.newVersion.$error.required">
+							{{i18n.getProperty("modeler.messages.modelVersionPopup.newVersion.required")}}</div>
+						<div class="iPopupDialogError" ng-show="modelVersionDuplicate">
+							{{i18n.getProperty("modeler.messages.modelVersionPopup.newVersion.unique")}}</div>
+					</td>
+					<td></td>
+				</tr>
+			</table>
+		</div>
+
+		<div id="controlsBar" class="iPopupDialogControlsArea">
+			<input id="acceptButton" type="button" value={{i18n.getProperty('modeler.messages.confirm.ok')}}
+				class="iPopupDialogControlButton"
+				ng-click="ok()" /> <input id="cancelButton" type="button"
+				value={{i18n.getProperty('modeler.messages.confirm.cancel')}}
+				class="iPopupDialogControlButton"
+				ng-click="cancel()" />
+		</div>
+
+	</form>
+</body>
+</html>
