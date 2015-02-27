@@ -165,8 +165,9 @@ public class ModelManagementUserObject extends NodeUserObject
             {
                return true;
             }
-            else if (onOffFilter.getName().equals(getType().name()) && !treeItem.isActiveVersion()
-                  && ModelManagementTreeItem.Type.MODEL_VERSION.equals(getType()))
+            else if (!treeItem.isActiveVersion()
+                  && (ModelManagementTreeItem.Type.MODEL_VERSION.equals(getType()) || ModelManagementTreeItem.Type.MODEL_VERSION_CONSUMER
+                        .equals(getType())))
             {
                return true;
             }

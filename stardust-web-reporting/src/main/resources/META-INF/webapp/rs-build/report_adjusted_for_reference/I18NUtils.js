@@ -35,6 +35,8 @@ define([], function() {
 		
 			if (value) {
 				return value;
+			} else if(defaultValue) {
+				return defaultValue;
 			} else {
 				return key;
 			}

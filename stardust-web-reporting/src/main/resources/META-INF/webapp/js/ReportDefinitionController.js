@@ -26,9 +26,8 @@ define(
 				"bpm-reporting/js/m_autoCompleters"],
 		function(I18NUtils, AngularAdapter, ReportingService,
 				ReportRenderingController, SchedulingController, ReportFilterController, ReportHelper,
-				utils, m_codeEditorAce, m_autoCompleters) {
-		      var angularAdapter = null; 
-		      var angularCompile = null;
+				utils, m_codeEditorAce, m_autoCompleters) { 
+		      var angularServices = null;
 			return {
 				create : function(angular, reportUID, name, path, isClone, options) {
 					var controller = new ReportDefinitionController();
@@ -47,9 +46,9 @@ define(
 					controller = angularAdapter
 							.mergeControllerWithScope(controller);
 					
-					angularCompile = angularAdapter.getCompiler();
+					angularServices = angularAdapter.getAngularServices();
 					
-					var renderingController = ReportRenderingController.create(angularCompile);
+					var renderingController = ReportRenderingController.create(angularServices);
 
 					controller.initialize(renderingController, reportUID, name, path, isClone);
 					
@@ -161,10 +160,13 @@ define(
                   }
                });
 					
-					window.parent.EventHub.events.subscribe("BPM-REPORTING-REPORT-NAME-UPDATED", function(newName, newPath) {
-                  self.report.name = newName;
-                  self.report.storage.path = newPath; 
-                  self.updateView();
+					window.parent.EventHub.events.subscribe("BPM-REPORTING-REPORT-NAME-UPDATED", function(reportUID, newName, newPath) {
+					   if (self.report.reportUID == reportUID)
+					   {
+					      self.report.name = newName;
+					      self.report.storage.path = newPath; 
+					      self.updateView();   
+					   }
                }, false);
 					
 					var self = this;
@@ -371,15 +373,15 @@ define(
 													//self.resetParamFilters();
 													self.updateView();			
 												});
-
-										if(self.report.layout.table){
-											setTimeout(function () {
-												   self.initializeDataTableOptions();
-													}, 500);
-										}	
 									}
 									if (ui.newPanel.selector === "#schedulingTab") {
 										self.resetParamFilters();
+										self.updateView();
+									}
+									
+									if (ui.newPanel.selector === "#dataSetTab") {
+										//refresh facts as they contain computed columns
+										self.populateFacts();
 										self.updateView();
 									}
 								}
@@ -421,7 +423,9 @@ define(
 
 								self.runInAngularContext(function (scope) {
 									scope.$watch("report.scheduling", function (newValue, oldValue) {
-										self.getNextExecutionDate();
+									   if (angular.equals(newValue.delivery, oldValue.delivery)) {
+									      self.getNextExecutionDate();                                 
+                              } 
 									}, true);
 								});
 			
@@ -581,123 +585,129 @@ define(
 						// Initialize
 						// defaults
 
-						// TODO Get chart options from central place
-
-						self.report = {
-						   reportUID : reportUID,      
-							name : name,
-							description : "",
-							storage : {
-								location : "publicFolder",
-								state : "created"
-							},
-							dataSet : {
-								type : "seriesGroup",
-								primaryObject : "processInstance",
-								joinExternalData : false,
-								externalJoins : [ {
-									joinType : "outer",
-									restUri : "http://127.0.0.1:1337/",
-									fields : []
-								} ],
-								computedColumns : [],
-								columns : [],
-								factDurationUnit : "d",
-								firstDimensionCumulationIntervalCount : 1,
-								firstDimensionCumulationIntervalUnit : "d",
-								firstDimensionDurationUnit: "s",
-								filters: getDefaultFilterFor("processInstanceStartTimestamp")
-							},
-							parameters : {},
-							layout : {
-								type : "simpleReport",
-								chart : {
-									type : this.reportingService.metadata.chartTypes.xyPlot.id,
-									options : {
-										animate : true,
-										animateReplot : true,
-										series : {},
-										seriesDefaults : {
-											lineWidth : 1.5,
-											markerOptions : {
-												style : "filledCircle"
-											},
-											pointLabels : {},
-											trendline : {
-												color : '#666666',
-												label : '',
-												type : 'linear',
-												shadow : true,
+						//get user locale
+						
+						self.reportingService.getUserLanguage()
+						.done(function(userLanguage) {
+						   
+							// TODO Get chart options from central place
+							self.report = {
+							    userLanguage : userLanguage,
+							    reportUID : reportUID,      
+								name : name,
+								description : "",
+								storage : {
+									location : "publicFolder",
+									state : "created"
+								},
+								dataSet : {
+									type : "seriesGroup",
+									primaryObject : "processInstance",
+									joinExternalData : false,
+									externalJoins : [ {
+										joinType : "outer",
+										restUri : "http://127.0.0.1:1337/",
+										fields : []
+									} ],
+									computedColumns : [],
+									columns : [],
+									factDurationUnit : "d",
+									firstDimensionCumulationIntervalCount : 1,
+									firstDimensionCumulationIntervalUnit : "d",
+									firstDimensionDurationUnit: "s",
+									filters: getDefaultFilterFor("processInstanceStartTimestamp")
+								},
+								parameters : {},
+								layout : {
+									type : "simpleReport",
+									chart : {
+										type : self.reportingService.metadata.chartTypes.xyPlot.id,
+										options : {
+											animate : true,
+											animateReplot : true,
+											series : {},
+											seriesDefaults : {
 												lineWidth : 1.5,
-												shadowAngle : 45,
-												shadowOffset : 1.5,
-												shadowDepth : 3,
-												shadowAlpha : 0.07
-											},
-										},
-										axes : {
-											xaxis : {
-												tickOptions : {
-													mark : "outside",
-													markSize : 4,
-													angle : 0,
-													showMark : true,
-													showGridline : true
+												markerOptions : {
+													style : "filledCircle"
 												},
-												showTickMarks : true,
-												showTicks : true
-											},
-											x2axis : {},
-											yaxis : {
-												tickOptions : {
-													mark : "outside",
-													markSize : 4,
-													angle : 0,
-													showMark : true,
-													showGridline : true
+												pointLabels : {},
+												trendline : {
+													color : '#666666',
+													label : '',
+													type : 'linear',
+													shadow : true,
+													lineWidth : 1.5,
+													shadowAngle : 45,
+													shadowOffset : 1.5,
+													shadowDepth : 3,
+													shadowAlpha : 0.07
 												},
-												showTickMarks : true,
-												showTicks : true
 											},
-											y2axis : {}
-										},
-										legend : {
-											show: true,
-											location : "e"
-										},
-										highlighter : {},
-										cursor : {
-											show : true,
-											showTooltip : true
-										},
-										zoom : {}
-									}
+											axes : {
+												xaxis : {
+													tickOptions : {
+														mark : "outside",
+														markSize : 4,
+														angle : 0,
+														showMark : true,
+														showGridline : true
+													},
+													showTickMarks : true,
+													showTicks : true
+												},
+												x2axis : {},
+												yaxis : {
+													tickOptions : {
+														mark : "outside",
+														markSize : 4,
+														angle : 0,
+														showMark : true,
+														showGridline : true
+													},
+													showTickMarks : true,
+													showTicks : true
+												},
+												y2axis : {}
+											},
+											legend : {
+												show: true,
+												location : "e"
+											},
+											highlighter : {},
+											cursor : {
+												show : true,
+												followMouse : true,
+												showTooltip : true
+											},
+											zoom : {}
+										}
+									},
+									table : {
+										options : {
+										   showExportButtons : true,	
+										   showSearchInput : true,
+								           showVisibleRowCountSelector : true  
+										}
+									},
+									document : {}
 								},
-								table : {
-									options : {
-									   showExportButtons : true,	
-									   showSearchInput : true,
-							           showVisibleRowCountSelector : true  
-									}
-								},
-								document : {}
-							},
-							scheduling : self.schedulingController
-									.createDefaultSettings()
-						};
+								scheduling : self.schedulingController
+										.createDefaultSettings()
+							};
 
-						this.report.storage.participant = "Administrator";
-						
-						this.report.dataSet.fact = this.getPrimaryObject().facts.count.id;
-						this.setDefaultFirstDimension();
-						
-						this.initFilters();
-						
-						deferred.resolve();
+							self.report.storage.participant = "Administrator";
+							
+							self.report.dataSet.fact = self.getPrimaryObject().facts.count.id;
+							self.setDefaultFirstDimension();
+							
+							self.initFilters();
+							
+							deferred.resolve();
+						});
 					}
 
 					return deferred.promise();
-
 				};
 
 				/**
@@ -809,7 +819,7 @@ define(
 				 * 
 				 */
 				ReportDefinitionController.prototype.getFact = function() {
-					return (this.dataAvailable && this.getPrimaryObject()) ? this.getPrimaryObject().facts[this.report.dataSet.fact] : null;
+					return (this.dataAvailable && this.getPrimaryObject()) ? this.reportingService.getCumulatedFacts(this.report)[this.report.dataSet.fact] : null;
 				};
 
 				/**
@@ -841,7 +851,8 @@ define(
 						this.report.layout.type = "processDiagram";
 					} else if (this.report.dataSet.type === 'seriesGroup') {
 						this.report.layout.type = "simpleReport";
-						this.report.layout.subType = this.metadata.layoutSubTypes.chart.id;
+						this.report.layout.subType = this.reportingService.metadata.layoutSubTypes.chart.id;
+						jQuery("#layoutSubTypeSelect").change();
 						this.report.dataSet.columns = [];
 					} else if (this.report.dataSet.type === 'recordSet') {
 						this.report.layout.type = "table";
@@ -852,7 +863,6 @@ define(
 				 * 
 				 */
 				ReportDefinitionController.prototype.layoutChanged = function() {
-					this.report.layout = {};
 					this.report.layout.type = 'document';
 					this.report.layout.subType = null;
 				};
@@ -870,37 +880,7 @@ define(
 						this.resetReportDefinitionProperties();
 					}
 
-					this.factSelect.empty();
-
-					var stdQuantities = "<optgroup label=\"" + this.getI18N("reporting.definitionView.stdQuantities") + "\">";
-					
-					var group = "<optgroup label=\"" + this.getI18N("reporting.definitionView.numericDescriptors") + "\">";
-					var areDiscriptorsAvailable = false;
-					
-					for ( var n in this.getPrimaryObject().facts) {
-						var fact = this.getPrimaryObject().facts[n];
-
-						if (this.isNumeric(fact) || this.isCount(fact) || this.isDuration(fact))
-						{
-						   if(fact.metadata && fact.metadata.isDescriptor) 
-						   {
-						      group += "<option value='" + n + "'>" + fact.name + "</option>";
-						      areDiscriptorsAvailable = true;
-						   } else {
-							   stdQuantities += "<option value='" + n + "'>"  + fact.name + "</option>";
-						   }
-						}
-					}
-					
-					stdQuantities += "</optgroup>";
-					this.factSelect.append(stdQuantities);
-					
-					group += "</optgroup>";
-					
-					if (areDiscriptorsAvailable)
-					{
-					   this.factSelect.append(group);
-					}
+					this.populateFacts();
 					
 					this.populatelayoutSubTypes();
 					//this.populateChartTypes();
@@ -917,6 +897,58 @@ define(
 					this.updateView();
 				};
 
+				/**
+				 * 
+				 */
+				ReportDefinitionController.prototype.populateFacts = function() {
+					
+					this.factSelect.empty();
+
+					var stdQuantities = "<optgroup label=\"" + this.getI18N("reporting.definitionView.stdQuantities") + "\">";
+					
+					var group = "<optgroup label=\"" + this.getI18N("reporting.definitionView.numericDescriptors") + "\">";
+					
+					var computedColGroup = "<optgroup label=\"" + this.getI18N("reporting.definitionView.computedColumns") + "\">";
+					
+					var areDiscriptorsAvailable = false;
+					var areComputedColumnsAvailable = false;
+					
+					var cumulatedFacts = this.reportingService.getCumulatedFacts(this.report, true); 
+					
+					for ( var n in cumulatedFacts) {
+						var fact = cumulatedFacts[n];
+
+						if (this.isNumeric(fact) || this.isCount(fact) || this.isDuration(fact))
+						{
+						   if (fact.metadata && fact.metadata.isDescriptor) {
+							group += "<option value='" + fact.id + "'>" + fact.name + "</option>";
+							areDiscriptorsAvailable = true;
+						   } else if (fact.metadata && fact.metadata.isComputedType) {
+							computedColGroup += "<option value='" + fact.id + "'>" + fact.name + "</option>";
+							areComputedColumnsAvailable = true;
+						   } else {
+							stdQuantities += "<option value='" + fact.id + "'>" + fact.name + "</option>";
+						   }
+						}
+					}
+					
+					stdQuantities += "</optgroup>";
+					this.factSelect.append(stdQuantities);
+					
+					group += "</optgroup>";
+					computedColGroup += "</optgroup>";
+					
+					if (areDiscriptorsAvailable) {
+					   this.factSelect.append(group);
+					}
+					
+					if (areComputedColumnsAvailable) {
+						this.factSelect.append(computedColGroup);
+					}
+					
+					this.factSelect.val(this.report.dataSet.fact);
+				};
+				
 				/**
 				 * 
 				 */
@@ -942,11 +974,6 @@ define(
 				ReportDefinitionController.prototype.changeFirstDimension = function() {
 					console.log("First Dimension");
 					console.log(this.getFirstDimension());
-
-					if (this.getFirstDimension().type == this.reportingService.metadata.enumerationType) {
-						this.firstDimensionEnumerators = this
-								.getEnumerators(this.getFirstDimension());
-					}
 
 					this.populateChartTypes();
 					if(this.report.layout.chart){
@@ -975,20 +1002,6 @@ define(
 					return [ "Nase", "Wurst", "Propase" ];
 				};
 
-				/**
-				 * 
-				 */
-				ReportDefinitionController.prototype.getEnumerators = function(
-						dimension) {
-					if (!dimension || !dimension.enumerationType) {
-						return null;
-					}
-
-					var qualifier = dimension.enumerationType.split(":");
-
-					return this.reportingService.getEnumerators(qualifier[0],
-							qualifier[1], qualifier[2]);
-				};
 
 				/**
 				 * Returns a consolidated list of possible dimensions excluding
@@ -1196,24 +1209,17 @@ define(
                   {
                      //report name has been changed
 	                  console.log("report name has been changed");
-	                  self.reportingService
-                     .renameReportDefinition(
-                              self.path,
-                              self.report.name).done(
-                                    function() {
-                                       self.reportingService.saveReportDefinition(self.report)
-                                       .done(
-                                             function(report) {
-                                                self.report.storage = report.storage;
-                                                window.parent.EventHub.events.publish("BPM-REPORTING-REPORT-UPDATED", 
-                                                         self.report.reportUID, self.report.name);
-                                                self.updateView();
-                                             });
-                                             document.body.style.cursor = "default";
-                                       }).fail(
-                                          function() {
-                                             document.body.style.cursor = "default";
-                                       });
+	                  
+	                  self.reportingService.renameAndSaveReportDefinition(self.report)
+                     .done(
+                           function(report) {
+                              self.path = report.storage.path;
+                              self.report.storage = report.storage;
+                              window.parent.EventHub.events.publish("BPM-REPORTING-REPORT-UPDATED", 
+                                       self.report.reportUID, self.report.name, self.path);
+                              self.updateView();
+                           });
+	                  
 	                  return;
                   }
                } 
@@ -1224,8 +1230,8 @@ define(
                            self.report.metadata = report.metadata;
                            if (self.path == null)
                            {// Create Case
-                              window.parent.EventHub.events.publish("BPM-REPORTING-REPORT-UPDATED", 
-                                       self.report.reportUID, self.report.name);
+                              window.parent.EventHub.events.publish("BPM-REPORTING-REPORT-CREATED", 
+                                       self.report.reportUID, self.report.name, self.path);
                            }
                            self.showFavoriteBtn = true;
                            self.updateView();
@@ -1515,11 +1521,11 @@ define(
 							.push(this.selectedComputedColumn);
 				};
 
-				/**
-				 * 
-				 */
 				ReportDefinitionController.prototype.deleteComputedColumn = function(
 						column) {
+					
+					this.adjustReportDefinition(column);
+					
 					for ( var n = 0; n < this.report.dataSet.computedColumns.length; ++n) {
 						if (this.report.dataSet.computedColumns[n].$$hashKey === column.$$hashKey) {
 							this.report.dataSet.computedColumns.splice(n, 1);
@@ -1534,7 +1540,58 @@ define(
 						}
 					}
 				};
+				
+				/**
+				 * adjust report definition if computer column is being used elsewhere.
+				 */
+				ReportDefinitionController.prototype.adjustReportDefinition = function(
+						column) {
+					// check if the selected computed column is set as
+					// Fact
+					if (this.report.dataSet.fact == column.id) {
+						this.report.dataSet.fact = this.getPrimaryObject().facts.count.id;
+					}
 
+					// Dimension
+					if (this.report.dataSet.firstDimension == column.id) {
+						if (this.report.dataSet.primaryObject == this.reportingService.metadata.objects.processInstance.id) {
+							this.report.dataSet.firstDimension = this.reportingService.metadata.objects.processInstance.dimensions.priority.id;
+						} else {
+							this.report.dataSet.firstDimension = this.reportingService.metadata.objects.activityInstance.dimensions.activityInstanceDuration.id;
+						}
+					}
+
+					// Filter
+					if (this.report.dataSet.filters) {
+						var filters = this.report.dataSet.filters;
+						for (var int = 0; int < filters.length; int++) {
+							var filter = filters[int];
+							if (filter && filter.dimension == column.id) {
+								this.reportFilterController
+										.deleteFilter(filter);
+							}
+						}
+					}
+
+					// Group by
+					if (this.report.dataSet.groupBy == column.id) {
+						this.report.dataSet.groupBy = "None";
+						this.changeGroupBy();
+					}
+
+					// Column in Record set
+					if (this.report.dataSet.columns) {
+						var columns = this.report.dataSet.columns;
+						for (var int2 = 0; int2 < columns.length; int2++) {
+							var column2 = columns[int2];
+							if (column2.id == column.id) {
+								this.removeItem(columns, column.id);
+							}
+						}
+					}
+				};
+				
+				
 				/**
 				 * 
 				 */
@@ -1732,16 +1789,20 @@ define(
         };
       
       
-               /**
-                * This function will return true if argument is of Integer Type
-                */
-              ReportDefinitionController.prototype.isNumeric = function(element) {
-                 return (element.type.id === this.reportingService.metadata.integerType.id)? true : false;
-              };
+	       /**
+	        * This function will return true if argument is of Integer Type
+	        */
+	      ReportDefinitionController.prototype.isNumeric = function(element) {
+	    	  	if ((element.type.id === this.reportingService.metadata.integerType.id)
+						|| (element.type.id === this.reportingService.metadata.decimalType.id)) {
+					return true;
+				}
+				return false;
+	      };
               
               /**
                * This function will return true if argument is of duration Type
-               */
+				 */
              ReportDefinitionController.prototype.isDuration = function(element) {
             	 if (this.dataAvailable && element) {
             		 return (element.type.id === this.reportingService.metadata.durationType.id)? true : false;
@@ -1811,7 +1872,10 @@ define(
                var enumerators = [];
                for ( var n in dimensions ) {
                   var add = true; 
-                  if (this.report.dataSet.columns) {
+                  
+                  if(dimensions[n].notSupportedAsColumn){
+                	  add = false;
+                  }else if (this.report.dataSet.columns) {
                      this.report.dataSet.columns
                            .forEach(function(column) {
                               if (self.report.dataSet.groupBy && self.report.dataSet.groupBy != 'None') 
@@ -2177,27 +2241,6 @@ define(
                  return dimensions[index];
               }
            }
-        };
-        
-        /**
-         * 
-         */
-        ReportDefinitionController.prototype.initializeDataTableOptions = function() {
-        	(this.report.layout.table.options.showExportButtons) ? jQuery('.DTTT_container').css({display:'block'}) :
-                jQuery('.DTTT_container').css({display:'none'});
-        	
-           (this.report.layout.table.options.showSearchInput) ? jQuery('.dataTables_filter').css({display:'block'}) :
-              jQuery('.dataTables_filter').css({display:'none'});
-           
-           (this.report.layout.table.options.showVisibleRowCountSelector) ? jQuery('.dataTables_length').css({display:'block'}) :
-              jQuery('.dataTables_length').css({display:'none'});
-           
-           
-           (this.report.layout.table.options.showExportButtons || this.report.layout.table.options.showSearchInput ||
-                    this.report.layout.table.options.showVisibleRowCountSelector) ? jQuery('div .heading').css({display:'block'}) :
-                       jQuery('div .heading').css({display:'none'});
-           
-           this.updateView();
         };
         
         /**

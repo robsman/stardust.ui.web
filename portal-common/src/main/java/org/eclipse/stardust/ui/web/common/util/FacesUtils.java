@@ -38,6 +38,7 @@ import javax.faces.lifecycle.LifecycleFactory;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.swing.plaf.basic.BasicMenuUI;
 
 import org.eclipse.stardust.ui.web.common.ToolbarSection;
 import org.eclipse.stardust.ui.web.common.app.PortalApplicationSingleView;
@@ -136,7 +137,10 @@ public class FacesUtils implements Constants
          }
          catch(Exception e)
          {
-            trace.debug("[instanceOf]: Object:" + object.getClass().getName() + " is not instanceof: " + className);
+            if (trace.isDebugEnabled())
+            {
+               trace.debug("[instanceOf]: Object:" + object.getClass().getName() + " is not instanceof: " + className);
+            }
          }
       }
 
@@ -152,7 +156,10 @@ public class FacesUtils implements Constants
     */
    public static Map<String, Object> getObjectPropertyMapping(Object object, String property)
    {
-      trace.debug("getObjectPropertyMapping() -> " + object + " : " + property);
+      if (trace.isDebugEnabled())
+      {
+         trace.debug("getObjectPropertyMapping() -> " + object + " : " + property);
+      }
       
       Map<String, Object> returnMap = new HashMap<String, Object>();
       if(object == null || StringUtils.isEmpty(property))
@@ -171,8 +178,10 @@ public class FacesUtils implements Constants
             while(propTokens.hasMoreTokens())
             {
                nestedProperty = propTokens.nextToken();
-               trace.debug("getObjectPropertyMapping(): Loop -> " + nestedObject + " : " + nestedProperty);
-
+               if (trace.isDebugEnabled())
+               {
+                  trace.debug("getObjectPropertyMapping(): Loop -> " + nestedObject + " : " + nestedProperty);
+               }
                if(tokens == 1) // Process only till second last Token
                   break;
 
@@ -203,7 +212,10 @@ public class FacesUtils implements Constants
                tokens--;
             }
             
-            trace.debug("getObjectPropertyMapping(): Loop END -> " + nestedObject + " : " + nestedProperty);
+            if (trace.isDebugEnabled())
+            {
+               trace.debug("getObjectPropertyMapping(): Loop END -> " + nestedObject + " : " + nestedProperty);
+            }
             
             returnMap.put("object", nestedObject);
             returnMap.put("property", nestedProperty);
@@ -627,7 +639,7 @@ public class FacesUtils implements Constants
    
    public static Locale getLocaleFromRequest()
    {
-      return FacesContext.getCurrentInstance().getExternalContext().getRequestLocale();
+      return ManagedBeanUtils.getLocale();
    }
    
    /**

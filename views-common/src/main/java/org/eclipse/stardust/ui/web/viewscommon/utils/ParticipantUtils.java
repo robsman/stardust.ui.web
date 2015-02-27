@@ -46,6 +46,7 @@ import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserGroupInfo;
 import org.eclipse.stardust.engine.api.runtime.UserInfo;
+import org.eclipse.stardust.ui.web.viewscommon.common.ModelHelper;
 import org.eclipse.stardust.ui.web.viewscommon.common.constant.ProcessPortalConstants;
 import org.eclipse.stardust.ui.web.viewscommon.common.constant.TaskAssignmentConstants;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
@@ -161,10 +162,12 @@ public class ParticipantUtils
    }
 
    /**
+    * 
     * @param participantInfo
+    * @param userDetailsLevel
     * @return
     */
-   public static Participant getParticipant(ParticipantInfo participantInfo)
+   public static Participant getParticipant(ParticipantInfo participantInfo, UserDetailsLevel userDetailsLevel)
    {
       Participant participant = null;
       if (participantInfo == null)
@@ -203,7 +206,7 @@ public class ParticipantUtils
             break;
 
          case USER:
-            participant = UserUtils.getUser(participantInfo.getId(), UserDetailsLevel.Full);
+            participant = UserUtils.getUser(participantInfo.getId(), userDetailsLevel);
             break;
 
          case USERGROUP:
@@ -215,6 +218,17 @@ public class ParticipantUtils
       return participant;
    }
    
+   /**
+    * By Default User with Core + PreferenceStore properties are fetch
+    * 
+    * @param participantInfo
+    * @return
+    */
+   public static Participant getParticipant(ParticipantInfo participantInfo)
+   {
+      return getParticipant(participantInfo, UserDetailsLevel.WithProperties);
+   }
+
    /**
     *  Specially used in REST
     * @param partcipantQID
@@ -806,6 +820,32 @@ public class ParticipantUtils
       return modelParticipants;
    }
    
+   public static String getParticipantName(ParticipantInfo participantInfo)
+   {
+      if (participantInfo instanceof DynamicParticipantInfo)
+      {
+         if (participantInfo instanceof UserInfo)
+         {
+            if ("PerUser".equals(Parameters.instance().getString("Carnot.Client.Ui.User.NamePattern", "Global")))
+            {
+               // optionally resolve
+               participantInfo = ParticipantUtils.getParticipant(participantInfo, UserDetailsLevel.WithProperties);
+
+
+            }
+
+            return I18nUtils.getUserLabel((UserInfo) participantInfo, UserUtils.getDefaultUserNameDisplayFormat());
+         }
+         else if (participantInfo instanceof UserGroupInfo)
+         {
+            return I18nUtils.getUserGroupLabel((UserGroupInfo) participantInfo);
+         }
+      }
+
+      // fallback
+      return ModelHelper.getParticipantName(participantInfo);
+   }
+
    /**
     * @param participant
     * @return

@@ -65,6 +65,7 @@ define(
                      .mapInputId("camelContextInput");
                
                this.transactedRouteInput = this.mapInputId("transactedRouteInput");
+               this.autoStartupInput = this.mapInputId("autoStartupInput");
                
                this.configurationSpan = this.mapInputId("configuration");
                this.configurationSpan.text(m_i18nUtils.getProperty("modeler.element.properties.event.configuration"));
@@ -225,9 +226,22 @@ define(
                      }
                   });
                });
+               this.autoStartupInput.change({
+                  overlay : this
+               }, function(event) {
+                  var overlay = event.data.overlay;
+                  overlay.submitChanges({
+                     modelElement : {
+                        attributes : {
+                           "carnot:engine:camel::autoStartup" : overlay.autoStartupInput
+                                          .prop("checked")
+                        }
+                     }
+                  });
+               });
                
                
-               this.parameterDefinitionNameInput = jQuery("#parametersTab #parameterDefinitionNameInput");
+               this.parameterDefinitionNameInput = jQuery("#genericCamelRouteEvent #parametersTab #parameterDefinitionNameInput");
             
                this.outputBodyAccessPointInput.change(
                            {
@@ -368,6 +382,15 @@ define(
                      }
                   });
                }
+               if(this.page.getEvent().attributes["carnot:engine:camel::autoStartup"]==null || this.page.getEvent().attributes["carnot:engine:camel::autoStartup"]===undefined){
+                  this.submitChanges({
+                     modelElement : {
+                        attributes : {
+                           "carnot:engine:camel::autoStartup" : true
+                        }
+                     }
+                  });
+               }
                
                if (this.page.getEvent().attributes["carnot:engine:camel::producerBpmTypeConverter"]!=null && this.page.getEvent().attributes["carnot:engine:camel::producerBpmTypeConverter"]!==undefined &&this.page.getEvent().attributes["carnot:engine:camel::producerBpmTypeConverter"]==true) {
                   this.producerInboundConversion.prop('disabled',false);
@@ -405,6 +428,8 @@ define(
 
                
                this.transactedRouteInput.prop("checked",this.page.getEvent().attributes["carnot:engine:camel::transactedRoute"]);
+               this.autoStartupInput.prop("checked",this.page.getEvent().attributes["carnot:engine:camel::autoStartup"]);
+               
                var route = this.page.getEvent().attributes["carnot:engine:camel::camelRouteExt"];
                this.camelContextInput
                      .val(this.page.getEvent().attributes["carnot:engine:camel::camelContextId"]);
@@ -463,6 +488,7 @@ define(
                
                this.camelContextInput.removeClass("error");
                this.routeTextarea.removeClass("error");
+               this.parameterDefinitionNameInput.removeClass("error");
                this.page.propertiesPanel.errorMessages=[];
                this.page.propertiesPanel.warningMessages=[];
                this.page.propertiesPanel.clearWarningMessages();
@@ -500,6 +526,24 @@ define(
                   this.page.propertiesPanel.showWarningMessages();
                }
                
+               var parameterDefinitionNameInputWhithoutSpaces =  this.parameterDefinitionNameInput.val().replace(/ /g, "");
+               if ((parameterDefinitionNameInputWhithoutSpaces ==  "exchange")|| (parameterDefinitionNameInputWhithoutSpaces ==  "headers"))
+               {
+            	   this.page.propertiesPanel.errorMessages.push(this.parameterDefinitionNameInput.val()+" cannot be used as an access point");
+            	   this.parameterDefinitionNameInput.addClass("error");
+               }
+               for (var n = 0; n < this.page.getEvent().parameterMappings.length; n++)
+               {
+            	   var ap = this.page.getEvent().parameterMappings[n];
+            	   if ((ap.name.replace(/ /g, "") == "headers")||(ap.name.replace(/ /g, "") == "exchange")||(ap.name.replace(/ /g, "") == "headers"))
+            	   {
+            		   if(this.page.propertiesPanel.errorMessages.indexOf(ap.name.replace(/ /g, "")+" cannot be used as an access point")<0)
+            		   {
+            			   this.page.propertiesPanel.errorMessages.push(ap.name.replace(/ /g, "")+" cannot be used as an access point");
+            		   }
+            		   this.parameterDefinitionNameInput.addClass("error");
+                   }
+               }
                if (this.page.propertiesPanel.errorMessages.length != 0){
                   this.page.propertiesPanel.showErrorMessages();
                   return false;

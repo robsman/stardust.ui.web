@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?><!--
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
     Copyright (c) 2011 SunGard CSA LLC and others.
     All rights reserved. This program and the accompanying materials
     are made available under the terms of the Eclipse Public License v1.0
@@ -18,12 +19,14 @@
         <message-bundle>facesOverride</message-bundle>		
         <!-- other application child elements -->
         <variable-resolver>org.springframework.web.jsf.SpringBeanVariableResolver</variable-resolver>
- 	</application> 	    <lifecycle>
+ 	</application>
+ 	
+    <lifecycle>
     	<phase-listener>org.eclipse.stardust.ui.web.common.app.PortalApplicationPhaseListener</phase-listener>
     	<phase-listener>org.eclipse.stardust.ui.web.common.app.BlockSaveListener</phase-listener>
 
         <!-- support Spring Bean based phase listeners -->
-   	    <phase-listener>org.springframework.web.jsf.DelegatingPhaseListenerMulticaster</phase-listener>
+   	    <phase-listener>org.eclipse.stardust.ui.web.common.spring.ConfigurableDelegatingPhaseListenerMulticaster</phase-listener>
     </lifecycle>
 
    <navigation-rule>

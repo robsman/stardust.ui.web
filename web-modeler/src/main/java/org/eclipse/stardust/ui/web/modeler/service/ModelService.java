@@ -15,11 +15,17 @@ import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 
 import org.eclipse.emf.ecore.EObject;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationContext;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
@@ -31,6 +37,7 @@ import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserService;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
+import org.eclipse.stardust.model.xpdl.builder.utils.ExternalReferenceUtils;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
@@ -43,12 +50,6 @@ import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSessionManager;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelBinding;
 import org.eclipse.stardust.ui.web.modeler.spi.ThreadInitializer;
-
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.ApplicationContext;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 
 /**
  *
@@ -210,7 +211,8 @@ public class ModelService
    {
       try
       {
-         if (reload || getModelManagementStrategy().getModels().isEmpty())
+         Map<String, ModelType> models = getModelManagementStrategy().getModels();
+         if (reload || models.isEmpty())
          {
             TypeDeclarationUtils.clearExternalSchemaCache();
             // reload upon request or if never loaded before
@@ -229,6 +231,13 @@ public class ModelService
          {
             try
             {
+               if (model instanceof ModelType)
+               {
+                  ExternalReferenceUtils.fixExternalReferences(models,
+                        (ModelType) model);
+
+               }
+
                JsonObject modelJson = modelRepository.getModelBinding(model)
                      .getMarshaller()
                      .toModelJson(model);
@@ -282,7 +291,8 @@ public class ModelService
    {
       ModelRepository modelRepository = currentSession().modelRepository();
       List<ModelType> modelsToBeSaved = newArrayList();
-      for (ModelType xpdlModel : getModelManagementStrategy().getModels().values())
+      Map<String, ModelType> models = getModelManagementStrategy().getModels();
+      for (ModelType xpdlModel : models.values())
       {
          // do only save if the model was actually changed (which implies an edit lock)
          EObject nativeModel = modelRepository.findModel(xpdlModel.getId());
@@ -293,7 +303,7 @@ public class ModelService
                throw new MissingWritePermissionException(
                      "Failed to (re-)validate edit lock on model " + xpdlModel.getId());
             }
-
+            //ExternalReferenceUtils.checkExternalReferences(models, xpdlModel);
             modelsToBeSaved.add(xpdlModel);
          }
       }

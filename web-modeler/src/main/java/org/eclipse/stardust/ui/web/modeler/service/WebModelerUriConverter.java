@@ -14,12 +14,12 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.ref.WeakReference;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Map;
 
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.resource.URIHandler;
 import org.eclipse.emf.ecore.resource.impl.ExtensibleURIConverterImpl;
 import org.eclipse.emf.ecore.resource.impl.URIHandlerImpl;
 
@@ -40,7 +40,12 @@ public class WebModelerUriConverter extends ExtensibleURIConverterImpl
 
    public static final String JCR_SCHEME = "jcr";
 
-   private ModelService modelService;
+   /**
+    * Don't impose a strong reference on model service to allow it to be garbage collected
+    * upon session termination, even if some thread-local still remains in place (the
+    * session would be invalid anyways).
+    */
+   private WeakReference<ModelService> modelServiceRef;
 
    public WebModelerUriConverter()
    {
@@ -94,6 +99,7 @@ public class WebModelerUriConverter extends ExtensibleURIConverterImpl
 
          private InputStream createJcrInputStream(URI uri)
          {
+            ModelService modelService = resolveModelService();
             if (modelService != null)
             {
                byte[] content = modelService.getDocumentManagementService().retrieveDocumentContent(uri.path());
@@ -118,6 +124,7 @@ public class WebModelerUriConverter extends ExtensibleURIConverterImpl
             }
 
             ClassLoader ctxCl = null;
+            ModelService modelService = resolveModelService();
             if(modelService != null)
             {
                ClassLoaderProvider classLoaderProvider = modelService.currentSession().classLoaderProvider();
@@ -177,6 +184,11 @@ public class WebModelerUriConverter extends ExtensibleURIConverterImpl
 
    void setModelService(ModelService modelService)
    {
-      this.modelService = modelService;
+      this.modelServiceRef = new WeakReference<ModelService>(modelService);
+   }
+
+   private ModelService resolveModelService()
+   {
+      return (null != modelServiceRef) ? modelServiceRef.get() : null;
    }
 }

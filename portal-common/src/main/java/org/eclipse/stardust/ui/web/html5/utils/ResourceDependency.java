@@ -20,6 +20,7 @@ import java.util.List;
 public class ResourceDependency
 {
    private String pluginId;
+   private String pluginLocation;
    private List<String> portalPlugins = new ArrayList<String>();
    private List<String> libs = new ArrayList<String>();
    private List<String> scripts = new ArrayList<String>();
@@ -35,15 +36,17 @@ public class ResourceDependency
       
    /**
     * @param pluginId
+    * @param pluginLocation
     * @param portalPlugins
     * @param libs
     * @param scripts
     * @param styles
     */
-   public ResourceDependency(String pluginId, List<String> portalPlugins, List<String> libs, List<String> scripts,
-         List<String> styles)
+   public ResourceDependency(String pluginId, String pluginLocation, List<String> portalPlugins, List<String> libs,
+         List<String> scripts, List<String> styles)
    {
       this.pluginId = pluginId;
+      this.pluginLocation = pluginLocation;
       this.portalPlugins = portalPlugins;
       this.libs = libs;
       this.scripts = scripts;
@@ -53,6 +56,11 @@ public class ResourceDependency
    public String getPluginId()
    {
       return pluginId;
+   }
+
+   public String getPluginLocation()
+   {
+      return pluginLocation;
    }
 
    public List<String> getPortalPlugins()

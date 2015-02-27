@@ -58,7 +58,7 @@ public class ResourceDependencyUtils
             Map<String, Object> deps = readJsonContents(rInfo);
             if (null != deps)
             {
-               ResourceDependency resDep = new ResourceDependency(rInfo.getPluginId(),
+               ResourceDependency resDep = new ResourceDependency(rInfo.getPluginId(), rInfo.getPluginLocation(),
                      (List<String>) deps.get(PLUGIN_DEPENDENCY_PLUGINS), (List<String>) deps.get(PLUGIN_DEPENDENCY_LIBS),
                      (List<String>)deps.get(PLUGIN_DEPENDENCY_SCRIPTS), (List<String>)deps.get(PLUGIN_DEPENDENCY_STYLES));
       

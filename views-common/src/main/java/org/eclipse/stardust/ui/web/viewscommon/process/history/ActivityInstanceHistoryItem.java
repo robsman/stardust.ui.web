@@ -24,17 +24,12 @@ import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.RuntimeObject;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
-import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserInfo;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
-import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
-
-
 
 /**
  * @author Yogesh.Manware
@@ -180,8 +175,7 @@ public class ActivityInstanceHistoryItem extends AbstractProcessHistoryTableEntr
          if (activityInstance.isAssignedToUser())
          {
             UserInfo userInfo = (UserInfo) activityInstance.getCurrentPerformer();
-            User user = UserUtils.getUser(userInfo.getId());
-            performer = I18nUtils.getUserLabel(user);
+            performer = ParticipantUtils.getParticipantName(userInfo);
          }
          else if (activityInstance.isAssignedToModelParticipant() && activityInstance.getCurrentPerformer()!=null)
          {            
@@ -201,8 +195,7 @@ public class ActivityInstanceHistoryItem extends AbstractProcessHistoryTableEntr
             UserInfo userInfo = activityInstance.getPerformedBy();
             if (null != userInfo)
             {
-               User user = UserUtils.getUser(userInfo.getId());
-               performer= I18nUtils.getUserLabel(user);
+               performer= ParticipantUtils.getParticipantName(userInfo);
             }
             else
             {

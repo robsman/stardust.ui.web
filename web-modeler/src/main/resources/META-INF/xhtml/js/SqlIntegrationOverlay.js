@@ -61,6 +61,7 @@ define(
                this.sqlQueryHeading = m_utils
                      .jQuerySelect("#sqlIntegrationOverlay #sqlQueryHeading");
                this.transactedRouteInput = m_utils.jQuerySelect("#sqlIntegrationOverlay #transactedRouteInput");
+               this.autoStartupInput = m_utils.jQuerySelect("#sqlIntegrationOverlay #autoStartupInput");
                this.inputBodyAccessPointInput = m_utils
                      .jQuerySelect("#parametersTab #inputBodyAccessPointInput");
                this.outputBodyAccessPointInput = m_utils
@@ -316,7 +317,7 @@ define(
                            });
 
                var self = this;
-
+               this.parameterDefinitionNameInput = m_utils.jQuerySelect("#parametersTab #parameterDefinitionNameInput");
                this.codeEditor.getEditor().on('blur', function(e) {
                   self.submitChanges();
                });
@@ -637,6 +638,20 @@ define(
                         self.transactedRouteInput.prop('checked'));
                   self.submitChanges();
                });
+               this.autoStartupInput.change(
+                        {
+                           panel : this
+                        },
+                        function(event) {
+                  if (!event.data.panel.view.validate()) {
+                     return;
+                  }
+                  self.view.submitModelElementAttributeChange(
+                        "carnot:engine:camel::autoStartup",
+                        self.autoStartupInput.prop('checked'));
+                  self.submitChanges();
+               });
+               
                this.update();
             };
 
@@ -792,10 +807,15 @@ define(
                this.parameterDefinitionsPanel
                      .selectCurrentParameterDefinition();
                if(this.getApplication().attributes["carnot:engine:camel::transactedRoute"]==null||this.getApplication().attributes["carnot:engine:camel::transactedRoute"]===undefined){
-                  this.view.submitModelElementAttributeChange("carnot:engine:camel::transactedRoute", true);
+                   this.view.submitModelElementAttributeChange("carnot:engine:camel::transactedRoute", true);
+                }
+               this.transactedRouteInput.prop("checked",
+                       this.getApplication().attributes["carnot:engine:camel::transactedRoute"]); 
+               if(this.getApplication().attributes["carnot:engine:camel::autoStartup"]==null||this.getApplication().attributes["carnot:engine:camel::autoStartup"]===undefined){
+                  this.view.submitModelElementAttributeChange("carnot:engine:camel::autoStartup", true);
                }
-              this.transactedRouteInput.prop("checked",
-                      this.getApplication().attributes["carnot:engine:camel::transactedRoute"]); 
+              this.autoStartupInput.prop("checked",
+                      this.getApplication().attributes["carnot:engine:camel::autoStartup"]); 
             };
 
             SqlIntegrationOverlay.prototype.initializeParameterDefinitionsTable = function() {
@@ -1293,7 +1313,26 @@ define(
                       valid = false;
                   }
                }
-               return valid;  
+    		this.parameterDefinitionNameInput.removeClass("error");
+			var parameterDefinitionNameInputWhithoutSpaces =  this.parameterDefinitionNameInput.val().replace(/ /g, "");
+			if ((parameterDefinitionNameInputWhithoutSpaces.indexOf("-") != -1) || (parameterDefinitionNameInputWhithoutSpaces ==  "exchange")|| (parameterDefinitionNameInputWhithoutSpaces ==  "headers")){
+				this.view.errorMessages.push(this.parameterDefinitionNameInput.val()+" cannot be used as an access point");
+					this.parameterDefinitionNameInput.addClass("error");
+					valid = false;
+			}
+			for (var n = 0; n < this.getApplication().contexts.application.accessPoints.length; n++)
+			{
+				var ap = this.getApplication().contexts.application.accessPoints[n];
+                if ((ap.name.replace(/ /g, "") == "headers")||(ap.name.replace(/ /g, "") == "exchange"))
+                {
+					if(this.view.errorMessages.indexOf(ap.name.replace(/ /g, "")+" cannot be used as an access point")<0){
+						this.view.errorMessages.push(ap.name.replace(/ /g, "")+" cannot be used as an access point");
+					}
+				this.parameterDefinitionNameInput.addClass("error");
+				valid = false;
+                }
+            }
+			return valid;  
             };
          }
       });

@@ -56,6 +56,8 @@ public class DaemonsBean extends UIComponentBean implements  ViewEventHandler
    private static final String TIMER_TRIGGER = "timer.trigger";
    
    private static final String REPORTING_DAEMON = "reporting.daemon";
+   
+   private static final String BUSINESS_CALENDAR_DAEMON = "business_calendar.daemon";
 
    private AdminMessagesPropertiesBean propsBean;
 
@@ -233,6 +235,8 @@ public class DaemonsBean extends UIComponentBean implements  ViewEventHandler
                type = propsBean.getString("views.daemons.criticalityDaemon.label");
             else if (REPORTING_DAEMON.equals(dd.getType()))
                type = propsBean.getString("views.daemons.reportingDaemon.label");
+            else if (BUSINESS_CALENDAR_DAEMON.equals(dd.getType()))
+               type = propsBean.getString("views.daemons.businessCalendarDaemon.label");
             else 
                type = dd.getType();
 

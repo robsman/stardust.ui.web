@@ -85,6 +85,19 @@ public class ModelingSessionManager
          session = userSessions.get(userId);
          if (null != session)
          {
+            // destroy the associated Spring scope
+            try
+            {
+               ModelingSessionScopeManager sessionScopeProvider = context
+                     .getBean(ModelingSessionScopeManager.class);
+
+               sessionScopeProvider.destroySessionScope(session.getId());
+            }
+            catch (Exception e)
+            {
+               trace.warn("Failed to properly clean up modeling session bean scope.", e);
+            }
+
             userSessions.remove(userId);
             sessions.remove(session.getId(), session);
             session.reset();

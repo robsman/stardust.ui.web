@@ -31,6 +31,7 @@ import org.eclipse.stardust.ui.web.modeler.common.ConflictingRequestException;
 import org.eclipse.stardust.ui.web.modeler.common.ItemNotFoundException;
 import org.eclipse.stardust.ui.web.modeler.common.ModelRepository;
 import org.eclipse.stardust.ui.web.modeler.common.ModelingSessionLocator;
+import org.eclipse.stardust.ui.web.modeler.common.exception.ModelerException;
 import org.eclipse.stardust.ui.web.modeler.edit.LockInfo;
 import org.eclipse.stardust.ui.web.modeler.edit.MissingWritePermissionException;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
@@ -437,6 +438,8 @@ public class ModelerSessionController
       {
          throw new ConflictingRequestException("Missing write permission: " + mwpe.getMessage());
       }
+
+
    }
 
 
@@ -526,10 +529,17 @@ public class ModelerSessionController
             commandId, changeDescriptors);
       if (null != change)
       {
-         postprocessChange(change);
+         if (change.getFailure() instanceof ModelerException)
+         {
+            throw (ModelerException) change.getFailure();
+         }
 
          change.getMetadata().put("commandId", commandId);
          change.getMetadata().put("modelId", modelBinding.getModelId(model));
+
+         postprocessChange(change);
+
+
          if (null != commandJto.account)
          {
             change.getMetadata().put("account", commandJto.account);

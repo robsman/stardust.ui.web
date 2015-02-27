@@ -12,31 +12,38 @@ package org.eclipse.stardust.ui.web.viewscommon.descriptors;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.stardust.engine.api.model.DataPath;
+import org.eclipse.stardust.engine.api.runtime.Document;
+import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
 import org.eclipse.stardust.ui.web.common.column.IColumnModel;
 import org.eclipse.stardust.ui.web.common.filter.ITableDataFilter;
+import org.eclipse.stardust.ui.web.common.filter.ITableDataFilter.DataType;
 import org.eclipse.stardust.ui.web.common.filter.ITableDataFilterBetween;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterDate;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterNumber;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterOnOff;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterPopup;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterSearch;
-import org.eclipse.stardust.ui.web.common.filter.ITableDataFilter.DataType;
 import org.eclipse.stardust.ui.web.common.table.DataTable;
 import org.eclipse.stardust.ui.web.common.table.DefaultRowModel;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.viewscommon.common.DateRange;
+import org.eclipse.stardust.ui.web.viewscommon.common.ProcessAttachmentColumnPreference;
+import org.eclipse.stardust.ui.web.viewscommon.common.ProcessDocumentColumnPreference;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentInfo;
 import org.eclipse.stardust.ui.web.viewscommon.utils.CommonDescriptorUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDescriptor;
+import org.springframework.util.CollectionUtils;
 
 
 
@@ -58,6 +65,62 @@ public class DescriptorColumnUtils
    }
    
    /**
+    * contentUrl for Document Descriptor rendering (Process Attachment and Type Documents)
+    * 
+    * @param contentUrl
+    * @return
+    */
+   public static List<ColumnPreference> createDescriptorColumns(String contentUrl)
+   {
+      return createDescriptorColumns(null, CommonDescriptorUtils.getAllDescriptors(false), contentUrl);
+   }
+   
+   
+   /**
+    * creates filterable columns on the provided table
+    * @param table
+    * @param allDescriptors
+    * @return
+    */
+   public static List<ColumnPreference> createDescriptorColumns(
+         DataTable<? extends DefaultRowModel> table, Map<String, DataPath> allDescriptors, String contentUrl)
+   {
+      List<ColumnPreference> descriptorColumns = new ArrayList<ColumnPreference>();
+
+      for (Entry<String, DataPath> descriptor : allDescriptors.entrySet())
+      {
+         String descriptorId = descriptor.getKey();
+         DataPath dataPath = descriptor.getValue();
+         Class mappedType = dataPath.getMappedType();
+         ColumnDataType columnType = determineColumnType(mappedType);
+         if(contentUrl!=null && determineDocumentTypeColumn(mappedType))
+         {
+            ColumnPreference descriptorColumn = new ProcessDocumentColumnPreference(descriptorId ,
+                  "descriptorValues." + descriptorId + "",I18nUtils.getDataPathName(dataPath), contentUrl, false, false);
+            descriptorColumn.setEscape(false);
+            descriptorColumns.add(descriptorColumn);
+         }
+         else if(contentUrl !=null && DmsConstants.DATA_ID_ATTACHMENTS.equals(dataPath.getData()))
+         {
+            ColumnPreference descriptorColumn = new ProcessAttachmentColumnPreference(descriptorId,
+                  "descriptorValues." + descriptorId + "", I18nUtils.getDataPathName(dataPath), contentUrl, false, false);
+            descriptorColumn.setEscape(false);
+            descriptorColumns.add(descriptorColumn);
+         }
+         else{
+            // double and float are not sortable
+            boolean sortable = DescriptorFilterUtils.isDataSortable(dataPath);
+            
+            ColumnPreference descriptorColumn = new ColumnPreference(descriptorId,
+                  "descriptorValues." + descriptorId + "", columnType, I18nUtils.getDataPathName(dataPath), false, sortable);
+            descriptorColumn.setEscape(false);
+            descriptorColumns.add(descriptorColumn);
+         }
+      }
+      return descriptorColumns;
+   }
+   
+   /**
     * creates filterable columns on the provided table
     * @param table
     * @param allDescriptors
@@ -66,26 +129,7 @@ public class DescriptorColumnUtils
    public static List<ColumnPreference> createDescriptorColumns(
          DataTable<? extends DefaultRowModel> table, Map<String, DataPath> allDescriptors)
    {
-      List<ColumnPreference> descriptorColumns = new ArrayList<ColumnPreference>();
-
-      for (Entry<String, DataPath> descriptor : allDescriptors.entrySet())
-      {
-         String descriptorId = descriptor.getKey();
-         DataPath dataPath = descriptor.getValue();
-
-         Class mappedType = dataPath.getMappedType();
-         
-         ColumnDataType columnType = determineColumnType(mappedType);
-         
-         // double and float are not sortable
-         boolean sortable = DescriptorFilterUtils.isDataSortable(dataPath);
-         
-         ColumnPreference descriptorColumn = new ColumnPreference(descriptorId,
-               "descriptorValues." + descriptorId + "", columnType, I18nUtils.getDataPathName(dataPath), false, sortable);
-         descriptorColumn.setEscape(false);
-         descriptorColumns.add(descriptorColumn);
-      }
-      return descriptorColumns;
+      return createDescriptorColumns(table, allDescriptors, null);
    }
 
    /**
@@ -174,6 +218,57 @@ public class DescriptorColumnUtils
       return null;
    }
 
+   /**
+    * 
+    * @param colPref
+    * @param allDescriptors
+    * @param separator
+    * @return
+    */
+   public static Object exportDescriptorColumn(ColumnPreference colPref, Map<String, Object> allDescriptors, String separator)
+   {
+      String property = colPref.getColumnProperty();
+      if (property.indexOf("descriptorValues.") != -1)
+      {
+         String descriptorId = property.substring(property.indexOf(".") + 1);
+            
+         Object descriptorValue = allDescriptors.get(descriptorId);
+         if (null != descriptorValue)
+         {
+            if (descriptorValue instanceof Collection< ? >)
+            {
+               List descVals = (List) descriptorValue;
+               if (!CollectionUtils.isEmpty(descVals) && descVals.get(0) instanceof DocumentInfo)
+               {
+
+                  List<DocumentInfo> docList = (List<DocumentInfo>) descriptorValue;
+                  StringBuffer exportData = new StringBuffer("");
+                  for (DocumentInfo doc : docList)
+                  {
+                     exportData.append(doc.getName()).append(separator);
+                  }
+                  String data = exportData.toString();
+                  if (data.length() > 0)
+                  {
+                     data = data.substring(0, data.length() - separator.length());
+                  }
+                  return data;
+               }
+            }
+            if (descriptorValue instanceof DocumentInfo)
+            {
+               DocumentInfo document = (DocumentInfo) descriptorValue;
+               return document.getName();
+            }
+            else
+            {
+               return descriptorValue.toString();
+            }
+         }
+      }
+      return null;
+   }
+   
    /**
     * @param descriptors
     * @param separator
@@ -269,6 +364,25 @@ public class DescriptorColumnUtils
       }
    }
 
+   /**
+    * 
+    * @param mappedType
+    * @return
+    */
+   private static boolean determineDocumentTypeColumn(Class mappedType)
+   {
+      if (Document.class.equals(mappedType))
+      {
+         return true;
+      }
+      // To support List<Documents> apart from DocumentInfo
+      else if (Collection.class.isAssignableFrom(mappedType))
+      {
+         return true;
+      }
+      return false;
+   }
+   
    /**
     * @param mappedType
     * @return

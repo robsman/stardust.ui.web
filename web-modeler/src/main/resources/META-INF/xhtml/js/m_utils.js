@@ -190,6 +190,11 @@ define(
 				getUniqueElementNameId : function(array, name) {
 					return getUniqueElementNameId(array, name);
 				},
+				
+				getUpdatedUniqueElementNameId : function(array, name) {
+				   return getUpdatedUniqueElementNameId(array, name);
+				},
+				
 				generateID : generateID
 			};
 			
@@ -471,6 +476,29 @@ define(
 				}
 				return false;
 			}
+			
+			/**
+			 * @author Aditya.Gaikwad
+			 * This method accepts Element Array and proposed name for new
+			 * element. This function checks Default Label of a Diagram Element which is 
+			 * used only once should not contain "1". 
+			 */
+			function getUpdatedUniqueElementNameId(array, name) {
+			   var id = name.replace(/\s+/g, '');
+			   
+			   var elementNameId = {};
+			   var hasElement = true;
+               
+			   hasElement = hasElementWithName(array, name);
+			   hasElement = hasElement || hasElementWithId(array, id);
+			   if (hasElement) {
+			      return getUniqueElementNameId(array, name);
+			   } else {
+			      elementNameId.name = name;
+			      elementNameId.id = id;
+			      return elementNameId; 
+			   }
+			}
 
 			/**
 			 * Trim the text for TextNode element when symbol size is less than
@@ -626,6 +654,9 @@ define(
 						continue;
 					}
 
+					//TODO: this logic needs to be improved, 
+					//if server has deleted any element, consequently parentObject does not contain it
+					//child object still contain this element.
 					if (typeof parentObject[member] == "object"
 							&& childObject[member] != null
 							&& !isArray(parentObject[member])

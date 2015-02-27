@@ -16,6 +16,7 @@ import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractSt
 
 import javax.annotation.Resource;
 
+import org.eclipse.stardust.model.xpdl.builder.utils.XPDLFinderUtils;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.AnnotationSymbolType;
@@ -27,7 +28,6 @@ import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
 import org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils;
 import org.eclipse.stardust.ui.web.modeler.xpdl.edit.utils.CommandHandlerUtils;
-
 import org.springframework.context.ApplicationContext;
 
 import com.google.gson.JsonObject;
@@ -56,7 +56,7 @@ public class AnnotationCommandHandler
       int yProperty = extractInt(request, ModelerConstants.Y_PROPERTY);
       int widthProperty = extractInt(request, ModelerConstants.WIDTH_PROPERTY);
       int heightProperty = extractInt(request, ModelerConstants.HEIGHT_PROPERTY);
-      
+
       String content = "";
       if (request.has(ModelerConstants.CONTENT_PROPERTY))
       {
@@ -81,7 +81,7 @@ public class AnnotationCommandHandler
    {
       ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(parentLaneSymbol);
       Long annotationOId = GsonUtils.extractLong(request, ModelerConstants.OID_PROPERTY);
-      AnnotationSymbolType delAnnSymbol = getModelBuilderFacade().findAnnotationSymbol(
+      AnnotationSymbolType delAnnSymbol = XPDLFinderUtils.findAnnotationSymbol(
             parentLaneSymbol, annotationOId);
 
       if (null != delAnnSymbol)
@@ -100,8 +100,8 @@ public class AnnotationCommandHandler
       }
    }
 
-   
-   
+
+
    private ModelBuilderFacade getModelBuilderFacade()
    {
       return CommandHandlerUtils.getModelBuilderFacade(springContext);

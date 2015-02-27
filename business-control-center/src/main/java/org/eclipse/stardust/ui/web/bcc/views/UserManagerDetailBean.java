@@ -14,7 +14,6 @@ package org.eclipse.stardust.ui.web.bcc.views;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 
 import javax.faces.event.AbortProcessingException;
 import org.eclipse.stardust.common.CollectionUtils;
@@ -33,7 +32,6 @@ import org.eclipse.stardust.engine.api.query.UserQuery;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
 import org.eclipse.stardust.engine.api.runtime.Grant;
-import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.bcc.ResourcePaths;
 import org.eclipse.stardust.ui.web.bcc.WorkflowFacade;
@@ -74,7 +72,6 @@ import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.AuthorizationUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DefaultColumnModelEventHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 
 
@@ -127,8 +124,6 @@ public class UserManagerDetailBean extends UIComponentBean
    private View thisView;   
 
    private ActivityTableHelper activityHelper;
-   
-   private Map<Long, ProcessInstance> processInstances;
    
    private InfoPanelBean infoPanelBean;
    
@@ -1000,8 +995,6 @@ public class UserManagerDetailBean extends UIComponentBean
          try
          {
             QueryResult<ActivityInstance> result = facade.getAllActivityInstances((ActivityInstanceQuery) query);
-            processInstances = ProcessInstanceUtils.getProcessInstancesAsMap(result, true);
-            activityHelper.setProcessInstanceMap(processInstances);
             return result;
          }
          catch (InvalidServiceException e)

@@ -17,11 +17,15 @@ import java.util.Map;
 import javax.faces.event.ActionEvent;
 
 import org.eclipse.stardust.common.CollectionUtils;
+import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.UIViewComponentBean;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentInfo;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentViewUtil;
+import org.eclipse.stardust.ui.web.viewscommon.participantspanel.ParticipantsPanelBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.AuthorizationUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
@@ -176,6 +180,23 @@ public class ProcessHistoryTable extends UIViewComponentBean
    }
 
    /**
+    * 
+    * @param event
+    */
+   public void openDocument(ActionEvent event)
+   {
+      DocumentInfo docInfo = (DocumentInfo) event.getComponent().getAttributes().get("documentInfo");
+      ProcessInstance pi = (ProcessInstance) event.getComponent().getAttributes().get("processInstance");
+      if (StringUtils.isNotEmpty(docInfo.getId()))
+      {
+         Map<String, Object> params = CollectionUtils.newMap();
+         params.put("processInstance", pi);
+         params.put("documentName", docInfo.getName());
+         DocumentViewUtil.openJCRDocument(docInfo.getId(), params);
+      }
+   }
+
+   /**
     * @param event
     */
    public void selectRow(ActionEvent event)
@@ -200,6 +221,28 @@ public class ProcessHistoryTable extends UIViewComponentBean
          activityTreeTable.setCurrentProcessInstance(selectedRow.getProcessInstance());
          activityTreeTable.renderTree();
       }
+
+      refreshParticipantsPanel();
+   }
+   
+   
+   /**
+    * Initialize ParticipantsPanel only if different process is selected
+    */
+   private void refreshParticipantsPanel()
+   {
+      ParticipantsPanelBean participantPanel = ParticipantsPanelBean.getCurrent();
+      if (participantPanel.getCurrentProcessInstance() != null
+            && participantPanel.getCurrentProcessInstance().getOID() == selectedRow.getProcessInstance().getOID())
+      {
+         return;
+      }
+
+      trace.debug("<----------- Refreshing Participant Panel");
+      participantPanel.initializePanel(selectedRow.getProcessInstance(), ProcessHistoryTable.getCurrent()
+            .getActivityTreeTable().getActivityTableRoot());
+
+      trace.debug("Refreshing Participant Panel ----------->");
    }
 
    /**

@@ -19,6 +19,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
+import org.eclipse.stardust.model.xpdl.builder.utils.XPDLFinderUtils;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.*;
@@ -26,7 +27,6 @@ import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 import org.eclipse.stardust.ui.web.modeler.xpdl.edit.utils.CommandHandlerUtils;
-
 import org.springframework.context.ApplicationContext;
 
 import com.google.gson.JsonObject;
@@ -54,7 +54,7 @@ public class ParticipantChangeCommandHandler
       {
          role = getModelBuilderFacade().createRole(model, null, roleName);
       }
- 
+
       // Map newly created data element to a UUID
       EObjectUUIDMapper mapper = modelService().uuidMapper();
       mapper.map(role);
@@ -165,7 +165,7 @@ public class ParticipantChangeCommandHandler
    public void deleteParticipant(ModelType model, JsonObject request)
    {
       String participantId = extractString(request, ModelerConstants.ID_PROPERTY);
-      IModelParticipant modelParticipantInfo = getModelBuilderFacade().findParticipant(
+      IModelParticipant modelParticipantInfo = XPDLFinderUtils.findParticipant(
             model, participantId);
       if (modelParticipantInfo instanceof RoleType)
       {

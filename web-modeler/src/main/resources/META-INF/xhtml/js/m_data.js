@@ -34,7 +34,7 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js
 
 		createDataFromDataStructure : function(model, dataStructure) {
 			var data = new Data();
-			var elementNameId = m_utils.getUniqueElementNameId(model.dataItems, dataStructure.name);
+			var elementNameId = m_utils.getUpdatedUniqueElementNameId(model.dataItems, dataStructure.name);
 
 			data.initialize(model, elementNameId.name,
 							m_constants.STRUCTURED_DATA_TYPE);

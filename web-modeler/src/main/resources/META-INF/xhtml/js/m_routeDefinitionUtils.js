@@ -21,19 +21,19 @@ define(
             return {
                createTemplatingHandlerRouteDefinition : function(format, location,
                         embeddedTemplateContent, templatePath, generateFileOutputName,
-                        convertToPdf)
+                        convertToPdf, defaultInAp)
                {
                   return createTemplatingHandlerRouteDefinition(format, location,
                            embeddedTemplateContent, templatePath, generateFileOutputName,
-                           convertToPdf);
+                           convertToPdf,defaultInAp);
                },
                createRouteForVelocityTemplates : function(format, location,
                         embeddedTemplateContent, templatePath, generateFileOutputName,
-                        convertToPdf)
+                        convertToPdf,defaultInAp)
                {
                   return createRouteForVelocityTemplates(format, location,
                            embeddedTemplateContent, templatePath, generateFileOutputName,
-                           convertToPdf);
+                           convertToPdf,defaultInAp);
                },
                createRouteForXDocReportTemplates : function(format, location,
                         embeddedTemplateContent, templatePath, generateFileOutputName,
@@ -75,13 +75,13 @@ define(
              */
             function createTemplatingHandlerRouteDefinition(format, location,
                      embeddedTemplateContent, templatePath, generateFileOutputName,
-                     convertToPdf)
+                     convertToPdf,defaultInAp)
             {
                if (format != "docx")
                {
                   return createRouteForVelocityTemplates(format, location,
                            embeddedTemplateContent, templatePath, generateFileOutputName,
-                           convertToPdf);
+                           convertToPdf,defaultInAp);
                }
                else
                {
@@ -113,44 +113,37 @@ define(
              */
             function createRouteForVelocityTemplates(format, location,
                      embeddedTemplateContent, templatePath, generateFileOutputName,
-                     convertToPdf)
+                     convertToPdf,defaultInAp)
             {
                // create RouteDefinition that handle velocity templates
                var routeDefinition = "";
                routeDefinition += "<process ref=\"customVelocityContextAppender\"/>\n";
                if (location == "embedded")
                {
-                  routeDefinition += "<setHeader headerName=\"CamelVelocityTemplate\">\n";
+                  routeDefinition += "<setHeader headerName=\"CamelTemplatingTemplateContent\">\n";
                   routeDefinition += "   <constant>\n";
                   routeDefinition += "<![CDATA[";
-                  routeDefinition += "#parse(\"commons.vm\")\n";
-                  routeDefinition += "#getInputs()\n";
                   routeDefinition += embeddedTemplateContent;
-                  routeDefinition += "\n";
-                  routeDefinition += "#setOutputs()\n";
                   routeDefinition += "]]>\n";
                   routeDefinition += "   </constant>\n";
                   routeDefinition += "</setHeader>\n";
                }
                else if (location == "classpath")
                {
-                  routeDefinition += "<setHeader headerName=\"CamelVelocityResourceUri\">\n";
-                  routeDefinition += "   <constant>" + templatePath + "</constant>\n";
-                  routeDefinition += "</setHeader>\n";
+                  //Handle Classpath
                }
-               else if (location == "repository" || location == "data")
+               else if (location == "data")
                {
-                  if (location == "repository")
-                  {
-                     routeDefinition += "<setHeader headerName=\"ippDmsTargetPath\">\n";
-                     routeDefinition += "   <constant>templates/" + templatePath;
-                     routeDefinition += "</constant>\n";
+                  if( defaultInAp!=null && defaultInAp.dataType=="primitive"){
+                     routeDefinition += "<setHeader headerName=\"CamelTemplatingTemplateContent\">\n";
+                     routeDefinition += "   <simple>$simple{header.defaultInputAp}</simple>\n";
+                     routeDefinition += "</setHeader>\n";
+                  }else{
+                     routeDefinition += "<to uri=\"bean:documentHandler?method=retrieveContent\"/>";
+                     routeDefinition += "<setHeader headerName=\"CamelTemplatingTemplateContent\">\n";
+                     routeDefinition += "   <simple>$simple{header.ippDmsDocumentContent}</simple>\n";
                      routeDefinition += "</setHeader>\n";
                   }
-                  routeDefinition += "<to uri=\"bean:documentHandler?method=retrieveContent\"/>";
-                  routeDefinition += "<setHeader headerName=\"CamelVelocityTemplate\">\n";
-                  routeDefinition += "   <simple>$simple{header.ippDmsDocumentContent}</simple>\n";
-                  routeDefinition += "</setHeader>\n";
                }
                var uri = "templating:" + location + "?format=" + format;
                if (templatePath != null && templatePath != "")
@@ -162,10 +155,6 @@ define(
                   uri += "&amp;convertToPdf=" + convertToPdf;
                }
                routeDefinition += "<to uri=\"" + uri + "\" />\n";
-               if (convertToPdf)
-               {
-                  routeDefinition += "<to uri=\"bean:pdfConverterProcessor?method=process\"/>\n";
-               }
                return routeDefinition;
             }
             /**
@@ -194,12 +183,8 @@ define(
             {
                var routeDefinition = "";
                routeDefinition += "<process ref=\"customVelocityContextAppender\"/>\n";
-               if (location == "repository" || location == "data")
+               if (location == "data")
                {
-                  routeDefinition += "<setHeader headerName=\"ippDmsTargetPath\">\n";
-                  routeDefinition += "   <constant>templates/" + templatePath
-                  routeDefinition += "</constant>\n";
-                  routeDefinition += "</setHeader>\n";
                   routeDefinition += "<to uri=\"bean:documentHandler?method=retrieveContent\"/>\n";
                   routeDefinition += "<setHeader headerName=\"CamelTemplatingTemplateContent\">\n";
                   routeDefinition += "   <simple>$simple{header.ippDmsDocumentContent}</simple>\n";
@@ -220,7 +205,7 @@ define(
                routeDefinition += "   <simple>$simple{header.CamelTemplatingOutputName}</simple>\n";
                routeDefinition += "</setHeader>\n";
                routeDefinition += "<to uri=\"bean:documentHandler?method=toDocument\"/>";
-               routeDefinition += "<setHeader headerName=\"output\">\n";
+               routeDefinition += "<setHeader headerName=\"defaultOutputAp\">\n";
                routeDefinition += "<simple>$simple{body}</simple>\n";
                routeDefinition += "</setHeader>\n";
                return routeDefinition;

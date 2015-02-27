@@ -19,8 +19,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
@@ -66,10 +66,10 @@ import org.eclipse.stardust.ui.web.common.column.IColumnModel;
 import org.eclipse.stardust.ui.web.common.column.IColumnModelListener;
 import org.eclipse.stardust.ui.web.common.columnSelector.TableColumnSelectorPopup;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog;
-import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialogHandler;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogActionType;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogContentType;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogStyle;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialogHandler;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
 import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
 import org.eclipse.stardust.ui.web.common.filter.ITableDataFilter;
@@ -118,6 +118,8 @@ import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.GenericDescriptorFilterModel;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.AbortActivityBean;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentInfo;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentViewUtil;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ClientContextBean;
@@ -133,11 +135,8 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessWorklistCacheManager
 import org.eclipse.stardust.ui.web.viewscommon.utils.QueryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.SpecialWorklistCacheManager;
-import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
-
-
 
 /**
  * @author roland.stamm
@@ -172,8 +171,6 @@ public class WorklistTableBean extends UIComponentBean
 
    private List<ColumnPreference> fixedColumns2 = CollectionUtils.newList();
 
-   private Map<Long, ProcessInstance> processInstances;
-   
    private boolean isActivated = false;
 
    private Query query;
@@ -203,9 +200,7 @@ public class WorklistTableBean extends UIComponentBean
    private ProcessDefinition processDefintion;
    
    private String preferenceId;
-   
-   private String defaultUserDisplayFormat = null;
-   
+
    private Boolean showAllWorklist = false;
    
    public WorklistTableBean()
@@ -748,7 +743,7 @@ public class WorklistTableBean extends UIComponentBean
 
       //set descriptors list and map<dataId, dataPath>
       allDescriptors = CommonDescriptorUtils.getAllDescriptors(false);
-      List<ColumnPreference> descriptorColumns = DescriptorColumnUtils.createDescriptorColumns(worklistTable, allDescriptors);
+      List<ColumnPreference> descriptorColumns = DescriptorColumnUtils.createDescriptorColumns(worklistTable, allDescriptors, ResourcePaths.V_DOCUMENT_DESC_COLUMNS);
       standardColumns.addAll(descriptorColumns);
 
       IColumnModel worklistColumnModel = new DefaultColumnModel(standardColumns, fixedColumns1,
@@ -861,6 +856,8 @@ public class WorklistTableBean extends UIComponentBean
             {
                ProcessInstanceDetails processInstanceDetails = (ProcessInstanceDetails) ai.getProcessInstance();
                descriptorValues = processInstanceDetails.getDescriptors();
+               // Update document Descriptors (Process Attachment and Type Documents) in Map
+               CommonDescriptorUtils.updateProcessDocumentDescriptors(descriptorValues, processInstanceDetails, processDefinition);
                if (processInstanceDetails.isCaseProcessInstance())
                {
                   processDescriptorsList = CommonDescriptorUtils.createCaseDescriptors(
@@ -873,25 +870,12 @@ public class WorklistTableBean extends UIComponentBean
                }
             }
 
-            ProcessInstance pi = null;
-            if (null != processInstances)
-            {
-               pi = processInstances.get(ai.getProcessInstanceOID());
-            }
-            if (null == pi)
-            {
-               pi = ProcessInstanceUtils.getProcessInstance(ai);
-            }
-            
-            List<Note> notes = ProcessInstanceUtils.getNotes(pi);
-            int notesSize = null != notes ? ProcessInstanceUtils.getNotes(pi).size() : 0;
-            defaultUserDisplayFormat = null == defaultUserDisplayFormat
-                  ? UserUtils.getDefaultUserNameDisplayFormat()
-                  : defaultUserDisplayFormat;
-            
+            List<Note> notes = ActivityInstanceUtils.getNotes(ai);
+            int notesSize = null != notes ? notes.size() : 0;
+
             worklistTableEntry = new WorklistTableEntry(I18nUtils.getActivityName(ai.getActivity()),
                   processDescriptorsList, ActivityInstanceUtils.isActivatable(ai),
-                  ActivityInstanceUtils.getLastPerformer(ai, defaultUserDisplayFormat), pi.getPriority(), ai.getStartTime(),
+                  ActivityInstanceUtils.getLastPerformer(ai), ai.getProcessInstance().getPriority(), ai.getStartTime(),
                   ai.getLastModificationTime(), ai.getOID(), this.getDuration(ai), notesSize, descriptorValues,
                   ai.getProcessInstanceOID(), ai, currentPerformerOID, showResubmissionLink);
          }
@@ -999,6 +983,23 @@ public class WorklistTableBean extends UIComponentBean
 
    /**
     * 
+    * @param event
+    */
+   public void openDocument(ActionEvent event)
+   {
+      DocumentInfo docInfo = (DocumentInfo) event.getComponent().getAttributes().get("documentInfo");
+      ProcessInstance pi = (ProcessInstance) event.getComponent().getAttributes().get("processInstance");
+      if (StringUtils.isNotEmpty(docInfo.getId()))
+      {
+         Map<String, Object> params = CollectionUtils.newMap();
+         params.put("processInstance", pi);
+         params.put("documentName", docInfo.getName());
+         DocumentViewUtil.openJCRDocument(docInfo.getId(), params);
+      }
+   }
+   
+   /**
+    * 
     */
    private void initializeSelectiveDescriptorFetchProperties()
    {
@@ -1079,9 +1080,7 @@ public class WorklistTableBean extends UIComponentBean
       @Override
       public QueryResult<Object> performSearch(Query query)
       {
-         QueryResult queryResult = fetchQueryResult(query, participantInfo, userParticipantId);
-         processInstances = ProcessInstanceUtils.getProcessInstancesAsMap(queryResult, true);
-         return queryResult;
+         return fetchQueryResult(query, participantInfo, userParticipantId);
       }
    }
    
@@ -1496,6 +1495,10 @@ public class WorklistTableBean extends UIComponentBean
          {
             return DescriptorColumnUtils.exportDescriptors(row.getProcessDescriptorsList(),
                   ExportType.EXCEL == exportType ? "\n" : ", ");
+         }
+         else if (column.getColumnProperty().startsWith("descriptorValues."))
+         {
+            return DescriptorColumnUtils.exportDescriptorColumn(column, row.getDescriptorValues(), ExportType.EXCEL == exportType ? "\n" : ", ");
          }
          else if (Constants.COL_CRITICALITY.equals(column.getColumnName()))
          {

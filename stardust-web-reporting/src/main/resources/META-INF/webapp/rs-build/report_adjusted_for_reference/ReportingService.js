@@ -28,6 +28,8 @@ define(
 			 */
 			function ReportingService() {
 				
+				jQuery.ajaxSetup({ cache: false });  
+				
 				ReportingService.prototype.getI18N = function(key) {
 					return I18NUtils.getProperty(key);
 				};
@@ -180,6 +182,34 @@ define(
 					name : this.getI18N("reporting.definitionView.metadata.autocompleteType.label")
 				};
 				
+				//common or mostly used types - to avoid duplication
+				this.metadata.commonTypes = {};
+				this.metadata.commonTypes.activityInstanceProcessingTime = {
+					id : "activityInstanceProcessingTime",
+					name : this.getI18N("reporting.definitionView.activityInstanceProcessingTime"),
+					type : this.metadata.durationType
+				};
+				
+				this.metadata.commonTypes.activeTimestamp = {
+						id : "activeTimestamp",
+						name : this.getI18N("reporting.definitionView.activeInstancesOverTime"),
+						type : this.metadata.timestampType,
+						notSupportedAsColumn : true,
+						disableCumulationInterval : true
+				};
+
+				this.metadata.commonTypes.processInstanceProcessingTime = {
+					id : "processInstanceProcessingTime",
+					name : this.getI18N("reporting.definitionView.processInstanceProcessingTime"),
+					type : this.metadata.durationType
+				}
+
+				this.metadata.commonTypes.rootProcessInstanceProcessingTime = {
+					id : "rootProcessInstanceProcessingTime",
+					name : this.getI18N("reporting.definitionView.rootProcessInstanceProcessingTime"),
+					type : this.metadata.durationType
+				}; 
+				
 				this.metadata.objects = {
 					processInstance : {
 						id : "processInstance",
@@ -200,9 +230,11 @@ define(
                         id : "rootProcessInstanceDuration",
                         name : this.getI18N("reporting.definitionView.rootProcessInstanceDuration"),
                         type : this.metadata.durationType
-                     }
-						},
-						dimensions : {
+                     },
+                     processInstanceProcessingTime : this.metadata.commonTypes.processInstanceProcessingTime,
+                     rootProcessInstanceProcessingTime : this.metadata.commonTypes.rootProcessInstanceProcessingTime
+					},
+					dimensions : {
 						   processInstanceStartTimestamp : {
 								id : "processInstanceStartTimestamp",
 								name : this.getI18N("reporting.definitionView.additionalFiltering.processInstanceStartTimestamp"),
@@ -224,11 +256,14 @@ define(
                         name : this.getI18N("reporting.definitionView.processInstanceDuration"),
                         type : this.metadata.durationType
                      },
+                     activeTimestamp: this.metadata.commonTypes.activeTimestamp,
                      rootProcessInstanceDuration : {
                         id : "rootProcessInstanceDuration",
                         name : this.getI18N("reporting.definitionView.rootProcessInstanceDuration"),
                         type : this.metadata.durationType
                      },
+                     processInstanceProcessingTime : this.metadata.commonTypes.processInstanceProcessingTime,
+                     rootProcessInstanceProcessingTime : this.metadata.commonTypes.rootProcessInstanceProcessingTime,
 					processOID : {
                         id : "processOID",
                         name : this.getI18N("reporting.definitionView.additionalFiltering.processOID"),
@@ -243,7 +278,7 @@ define(
 						id : "processName",
 						name : this.getI18N("reporting.definitionView.additionalFiltering.processName"),
 						type : this.metadata.enumerationType,
-						enumerationType : "modelData:processDefinitions:name"
+						enumerationType : "modelData:processDefinitions"
 					},
 					startingUserName : {
 						id : "startingUserName",
@@ -256,7 +291,7 @@ define(
 						id : "state",
 						name : this.getI18N("reporting.definitionView.additionalFiltering.processState"),
 						type : this.metadata.enumerationType,
-						enumerationType : "staticData:processStates:name",
+						enumerationType : "staticData:processStates",
 						customSort : true
 					},
 					priority : {
@@ -264,7 +299,7 @@ define(
 						name : this.getI18N("reporting.definitionView.additionalFiltering.priority"),
 						type : this.metadata.enumerationType,
 						display : "singleSelect",
-						enumerationType : "staticData:priorityLevel:name",
+						enumerationType : "staticData:priorityLevel",
 						operators : ["E", "LE", "GE", "NE"],
 						customSort : true
 					}
@@ -287,6 +322,7 @@ define(
 								type : this.metadata.durationType,
 								cumulated : true
 							},
+							activityInstanceProcessingTime: this.metadata.commonTypes.activityInstanceProcessingTime, 
                      processInstanceDuration : {
                         id : "processInstanceDuration",
                         name : this.getI18N("reporting.definitionView.processInstanceDuration"),
@@ -296,7 +332,9 @@ define(
                         id : "rootProcessInstanceDuration",
                         name : this.getI18N("reporting.definitionView.rootProcessInstanceDuration"),
                         type : this.metadata.durationType
-                     }
+                     },
+                     processInstanceProcessingTime : this.metadata.commonTypes.processInstanceProcessingTime,
+                     rootProcessInstanceProcessingTime : this.metadata.commonTypes.rootProcessInstanceProcessingTime
 						},
 						dimensions : {
 							startTimestamp : {
@@ -322,6 +360,8 @@ define(
                         type : this.metadata.durationType,
                         cumulated : true
                      },
+                     activeTimestamp: this.metadata.commonTypes.activeTimestamp,
+                     activityInstanceProcessingTime: this.metadata.commonTypes.activityInstanceProcessingTime,
                      processInstanceDuration : {
                         id : "processInstanceDuration",
                         name : this.getI18N("reporting.definitionView.processInstanceDuration"),
@@ -332,7 +372,9 @@ define(
                         name : this.getI18N("reporting.definitionView.rootProcessInstanceDuration"),
                         type : this.metadata.durationType
                      },
-							lastModificationTimestamp : {
+                     processInstanceProcessingTime : this.metadata.commonTypes.processInstanceProcessingTime,
+                     rootProcessInstanceProcessingTime : this.metadata.commonTypes.rootProcessInstanceProcessingTime,
+					 lastModificationTimestamp : {
 								id : "lastModificationTimestamp",
 								name : this.getI18N("reporting.definitionView.additionalFiltering.timestamp.last"),
 								type : this.metadata.timestampType
@@ -361,13 +403,13 @@ define(
 								id : "activityName",
 								name : this.getI18N("reporting.definitionView.additionalFiltering.activityName"),
 								type : this.metadata.enumerationType,
-								enumerationType : "modelData:processDefinitions:name"
+								enumerationType : "modelData:processDefinitions"
 							},
 							processName : {
 								id : "processName",
 								name : this.getI18N("reporting.definitionView.additionalFiltering.processName"),
 								type : this.metadata.enumerationType,
-								enumerationType : "modelData:processDefinitions:name",
+								enumerationType : "modelData:processDefinitions",
 								notSupportedAsFilter : true
 							},
 							userPerformerName : {
@@ -381,23 +423,31 @@ define(
 								id : "participantPerformerName",
 								name : this.getI18N("reporting.definitionView.additionalFiltering.performer"),
 								type : this.metadata.enumerationType,
-								enumerationType : "modelData:participants:name",
+								enumerationType : "modelData:participants",
 								notSupportedAsFilter : true
 							},
 							state : {
 								id : "state",
 								name : this.getI18N("reporting.definitionView.additionalFiltering.activityState"),
 								type : this.metadata.enumerationType,
-								enumerationType : "staticData:activityStates:name"
+								enumerationType : "staticData:activityStates"
 							},
 							criticality : {
 								id : "criticality",
 								name : this.getI18N("reporting.definitionView.additionalFiltering.criticality"),
 								type : this.metadata.enumerationType,
 								display : "singleSelect",
-								enumerationType : "preferenceData:criticality:label",
+								enumerationType : "preferenceData:criticality",
 								operators : ["E", "LE", "GE", "NE"],
 								customSort : true
+							},
+							activityType : {
+							   id : "activityType",
+							   name : this.getI18N("reporting.definitionView.additionalFiltering.activityType"),
+							   type : this.metadata.enumerationType,
+							   display : "singleSelect",
+							   operators : ["E"],
+							   enumerationType : "staticData:activityTypes"
 							}
 						}
 					}/*,
@@ -431,9 +481,9 @@ define(
 
 				this.staticData = {
 					processStates : {
-						alive : {
-							id : "Alive", 
-							name : this.getI18N("reporting.definitionView.additionalFiltering.processState.alive"),
+						active : {
+							id : "Active", 
+							name : this.getI18N("reporting.definitionView.additionalFiltering.processState.active"),
 							order : 1
 						},
 						aborted : {
@@ -453,9 +503,9 @@ define(
 						}
 					},
 					activityStates : {
-						alive : {
-							id : "Alive",
-							name : this.getI18N("reporting.definitionView.additionalFiltering.activityState.alive")
+						application : {
+							id : "Application",
+							name : this.getI18N("reporting.definitionView.additionalFiltering.activityState.application")
 						},
 						suspended : {
 							id : "Suspended",
@@ -495,6 +545,16 @@ define(
 							id : "1",
 							name : this.getI18N("reporting.definitionView.additionalFiltering.priority.high")
 						}
+					},
+					activityTypes : {
+					   interactive : {
+					      id : "Interactive",
+					      name : this.getI18N("reporting.definitionView.additionalFiltering.activityType.interactive")
+					   },
+					   nonInteractive : {
+					      id : "NonInteractive",
+					      name : this.getI18N("reporting.definitionView.additionalFiltering.activityType.nonInteractive")
+					   }                 
 					}
 				};
 
@@ -531,13 +591,23 @@ define(
 				
 				this.clientDateFormat = 'yyyy-MM-dd hh:mm a';
 				
-				this.formats = {
-						date : "MM/dd/yy",
-						minutes : "MM/dd/yy hh:mm a",
-						seconds : "MM/dd/yy hh:mm:ss a",
-						hours : "MM/dd/yy hh a",
-						months : "MM/yy"
+				this.dateFormats = {
+						date : this.getI18N("dateFormats.defaultDateFormat"),
+						minutes : this.getI18N("dateFormats.defaultDateTimeFormat"),
+						seconds : this.getI18N("dateFormats.date.seconds"),
+						hours : this.getI18N("dateFormats.date.hours"),
+						months : this.getI18N("dateFormats.date.months")
 				};
+				
+				this.jqPlot = {};
+				this.jqPlot.dateFormats = {
+						date : this.getI18N("jqPlot.dateFormats.defaultDateFormat"),
+						minutes : this.getI18N("jqPlot.dateFormats.defaultDateTimeFormat"),
+						seconds : this.getI18N("jqPlot.dateFormats.date.seconds"),
+						hours : this.getI18N("jqPlot.dateFormats.date.hours"),
+						months : this.getI18N("jqPlot.dateFormats.date.months")
+				};
+				
 				this.serverDateFormat = "yy/mm/dd";
 
 				/**
@@ -559,44 +629,35 @@ define(
 				/**
 				 * 
 				 */
-				ReportingService.prototype.getEnumeratorsForDimension = function(
-						primaryObject, dimension) {
-					if (this.getDimension(primaryObject, dimension).enumerationType) {
-						var qualifier = this.getDimension(primaryObject,
-								dimension).enumerationType.split(":");
-
-						return this.getEnumerators(qualifier[0], qualifier[1],
-								qualifier[2]);
-					}
-
-					return [];
-				};
-
-				/**
-				 * 
-				 */
-				ReportingService.prototype.getEnumerators = function(type,
-						scope, property) {
+				ReportingService.prototype.getEnumerators = function(path) {
+					
+					var q = path.split(":"); //qualifiers
+					
 					var enumerators = [];
-
-					for ( var n in this[type][scope]) {
-						enumerators.push(this[type][scope][n][property]);
+					
+					if(q.length == 1) {
+						for ( var n in this[q[0]]) {
+							enumerators.push(this[q[0]][n]);
+						}	
+					}else if(q.length == 2) {
+						for ( var n in this[q[0]][q[1]]) {
+							enumerators.push(this[q[0]][q[1]][n]);
+						}	
+					}else if(q.length == 3) {
+						for ( var n in this[q[0]][q[1]][q[2]]) {
+							enumerators.push(this[q[0]][q[1]][q[2]][n]);
+						}	
+					}else if(q.length == 4) {
+						for ( var n in this[q[0]][q[1]][q[2]][q[3]]) {
+							enumerators.push(this[q[0]][q[1]][q[2]][q[3]][n]);
+						}	
+					}else {
+						console.error("qualifier not supported yet: " + path);
 					}
-
+					
 					return enumerators;
 				};
 
-				ReportingService.prototype.getEnumerators2 = function(type,
-						scope) {
-					var enumerators = [];
-
-					for ( var n in this[type][scope]) {
-						enumerators.push(this[type][scope][n]);
-					}	
-
-					return enumerators;
-				};
-				
 				/**
 				 * 
 				 */
@@ -725,8 +786,34 @@ define(
 							}).fail(function() {
 								deferred.reject();
 							});
-						this.getDateFormats();
 					}
+
+					return deferred.promise();
+				};
+				
+				ReportingService.prototype.getUserLanguage = function() {
+					var deferred = jQuery.Deferred();
+
+					var self = this;
+					jQuery
+							.ajax(
+									{
+										type : "GET",
+										async : false,
+										beforeSend : function(request) {
+											request
+													.setRequestHeader(
+															"Authentication",
+															self
+																	.getBasicAuthenticationHeader());
+										},
+										url : self.getRootUrl() + "/services/rest/bpm-reporting/language",
+										contentType : "application/json"
+									}).done(function(data) {
+								deferred.resolve(data);
+							}).fail(function() {
+								deferred.reject();
+							});
 
 					return deferred.promise();
 				};
@@ -759,8 +846,8 @@ define(
 															self
 																	.getBasicAuthenticationHeader());
 										},
-										url : self.getRootUrl()
-												+ "/services/rest/bpm-reporting/search/"+ serviceName + "/" + searchValue,
+										url : encodeURI(self.getRootUrl()
+												+ "/services/rest/bpm-reporting/search/"+ serviceName + "/" + searchValue),
 										contentType : "application/json"
 									}).done(function(data) {
 								deferred.resolve(data);
@@ -800,6 +887,11 @@ define(
 									type : type,
 									metadata : descriptor.metadata
 								};
+								
+								//if the descriptor is of type enumeration
+								if(descriptor.enumList){
+									object.dimensions[descriptor.id].enumerationType = "modelData:descriptors:" + descriptorId + ":enumList";
+								}
 							}
 						}
 					}
@@ -881,8 +973,8 @@ define(
 																		self
 																				.getBasicAuthenticationHeader());
 													},
-													url : self.getRootUrl()
-															+ "/services/rest/bpm-reporting/report-data?" + parametersString,
+													url : encodeURI(self.getRootUrl()
+															+ "/services/rest/bpm-reporting/report-data?" + parametersString),
 													contentType : "application/json",
 													data : JSON.stringify(report)
 												}).done(function(data) {
@@ -930,8 +1022,8 @@ define(
 															self
 																	.getBasicAuthenticationHeader());
 										},
-										url : self.getRootUrl()
-												+ "/services/rest/bpm-reporting/report-data?" + parametersString,
+										url : encodeURI(self.getRootUrl()
+												+ "/services/rest/bpm-reporting/report-data?" + parametersString),
 										contentType : "application/json",
 									}).done(function(data) {
 								deferred.resolve(data);
@@ -1282,7 +1374,7 @@ define(
 															self
 																	.getBasicAuthenticationHeader());
 										},
-										url : self.getRootUrl() + "/services/rest/bpm-reporting/report-definition" + path
+										url : encodeURI(self.getRootUrl() + "/services/rest/bpm-reporting/report-definition" + path)
 									}).done(function(response) {
 								if(response.definition){
 									applyUIAdjustment(response.definition);
@@ -1319,7 +1411,7 @@ define(
 							// self
 							// .getBasicAuthenticationHeader());
 						},
-						url : uri,
+						url : encodeURI(uri),
 						contentType : "application/json"
 					}).done(function(response) {
 						console.debug("Retrieved external data");
@@ -1350,7 +1442,7 @@ define(
 						path, name) {
 					var deferred = jQuery.Deferred();
 					var self = this;
-
+					
 					jQuery
 							.ajax(
 									{
@@ -1400,7 +1492,7 @@ define(
 															self
 																	.getBasicAuthenticationHeader());
 										},
-										url : self.getRootUrl() + "/services/rest/bpm-reporting/report-definition" + path
+										url : encodeURI(self.getRootUrl() + "/services/rest/bpm-reporting/report-definition" + path)
 									}).done(function() {
 								deferred.resolve();
 							}).fail(function() {
@@ -1510,16 +1602,29 @@ define(
 					// Joined external data
 					if (report.dataSet.joinExternalData && report.dataSet.externalJoins) {
 					    for (var l in report.dataSet.externalJoins) {
+
+					        // this should be read from rest service instead - but only once!
 					        var join = report.dataSet.externalJoins[l];
 
 					        for (var k in join.fields) {
 					            var field = join.fields[k];
 
-					            dimensions.push({
-					                id: field.name,
-					                name: field.name,
-					                type: this.metadata[field.type]
-					            });
+								// add static data
+								if(field.customStaticDataId) {
+									this.staticData[field.customStaticDataId] = field.customStaticData;
+								}
+
+								// copy all properties from external data
+								var externalDimension = {};
+								for(var prop in field) {
+									if(prop === 'type') {
+										externalDimension.type = this.metadata[field.type];
+									} else {
+										externalDimension[prop] = field[prop];
+									}
+								}
+
+								dimensions.push(externalDimension);
 					        }
 					    }
 					}
@@ -1551,6 +1656,52 @@ define(
 
 					return dimensions;
 				};
+				
+				
+				/**
+				 * Returns a consolidated list of possible Facts including computed columns
+				 * 
+				 */
+				ReportingService.prototype.getCumulatedFacts = function(report, asArray) {
+					var cumulatedFacts = {};
+					var cumulatedFactsArr = [];
+					var baseFacts = this.getPrimaryObject(report.dataSet.primaryObject).facts;
+					
+					for ( var i in baseFacts) {
+						cumulatedFacts[i] = baseFacts[i];
+						cumulatedFactsArr.push(baseFacts[i]);
+					}
+
+					// Computed columns
+					for ( var n in report.dataSet.computedColumns) {
+						var column = report.dataSet.computedColumns[n];
+						var type = this.metadata[column.type];
+
+						var columnWrapper = {
+							id : column.id,
+							name : column.name,
+							type : type,
+							metadata : {
+								isComputedType : true,
+								name : column.name,
+								type : type.id
+							}
+						};
+						cumulatedFacts[column.id] = columnWrapper;
+						cumulatedFactsArr.push(columnWrapper);
+					}
+
+					if (asArray) {
+						// sort data
+						cumulatedFactsArr.sort(function(object1, object2) {
+							return object1.name.localeCompare(object2.name);
+						});
+						return cumulatedFactsArr;
+					} else {
+						return cumulatedFacts;
+					}
+				};
+				
 
 				/**
 				 * 
@@ -1991,37 +2142,6 @@ define(
             /**
              * 
              */
-            ReportingService.prototype.getDateFormats = function() {
-               var deferred = jQuery.Deferred();
-               var self = this;
-
-               jQuery
-                     .ajax(
-                           {
-                              type : "GET",
-                              async: false,
-                              beforeSend : function(request) {
-                                 request
-                                       .setRequestHeader(
-                                             "Authentication",
-                                             self
-                                                   .getBasicAuthenticationHeader());
-                              },
-                              url : self.getRootUrl()
-                                    + "/services/rest/bpm-reporting/dateFormats",
-                              contentType : "application/json"
-                           }).done(function(data) {
-                        	  self.formats = data;
-                              deferred.resolve();
-                     }).fail(function() {
-                        deferred.reject();
-                     });
-               return deferred.promise();
-            };
-            
-            /**
-             * 
-             */
             ReportingService.prototype.uploadReport = function(uuid) {
                var deferred = jQuery.Deferred();
                var self = this;
@@ -2065,6 +2185,46 @@ define(
                };
                return reportName;
             }
+            
+            /**
+             * 
+             */
+            ReportingService.prototype.renameAndSaveReportDefinition = function(
+                  report) {
+               var deferred = jQuery.Deferred();
+               var self = this;
+
+               revertUIAdjustment(report);
+               
+               jQuery
+                     .ajax(
+                           {
+                              type : "PUT",
+                              async: false,
+                              beforeSend : function(request) {
+                                 request
+                                       .setRequestHeader(
+                                             "Authentication",
+                                             self
+                                                   .getBasicAuthenticationHeader());
+                              },
+                              url : self.getRootUrl()
+                                    + "/services/rest/bpm-reporting/report-definition",
+                              contentType : "application/json",
+                              data : JSON.stringify({
+                                 operation : "renameAndSave",
+                                 report : report
+                              })
+                           }).done(function(report) {
+                        applyUIAdjustment(report);    
+                        deferred.resolve(report);
+                     }).fail(function(response) {
+                        deferred.reject(response);
+                     });
+
+               applyUIAdjustment(report);
+               return deferred.promise();
+            };
             
 			}
 			
@@ -2175,5 +2335,4 @@ define(
 			    }
 			    report.uiAdjustmentApplied = false;
 			};
-			
 		});

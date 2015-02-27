@@ -1232,14 +1232,15 @@ define(
 						m_commandsController.submitCommand(command);
 					}
 
-					if (this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
-						this.x -= this.symbolXOffset;
-					} else {
-						this.y -= this.symbolYOffset;
+					if (this.symbolXOffset != 0 || this.symbolYOffset != 0) {
+						if (this.orientation === m_constants.DIAGRAM_FLOW_ORIENTATION_VERTICAL) {
+							this.x -= this.symbolXOffset;
+						} else {
+							this.y -= this.symbolYOffset;
+						}
+						this.parentSymbol.recalculateBoundingBox();
+						this.parentSymbol.adjustGeometry();
 					}
-
-					this.parentSymbol.recalculateBoundingBox();
-					this.parentSymbol.adjustGeometry();
 				};
 
 

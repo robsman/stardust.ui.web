@@ -49,6 +49,7 @@ define(
                this.responseTypeSelect = m_utils.jQuerySelect("#restServiceOverlay #responseTypeSelect");
                this.crossDomainInput = m_utils.jQuerySelect("#restServiceOverlay #crossDomainInput");
                this.transactedRouteInput = m_utils.jQuerySelect("#restServiceOverlay #transactedRouteInput");
+               this.autoStartupInput = m_utils.jQuerySelect("#restServiceOverlay #autoStartupInput");
                this.resetButton = m_utils.jQuerySelect("#testTab #resetButton");
                this.runButton = m_utils.jQuerySelect("#testTab #runButton");
                this.inputDataTextarea = m_utils.jQuerySelect("#testTab #inputDataTextarea");
@@ -120,7 +121,7 @@ define(
                      });
 
                var self = this;
-               
+               this.parameterDefinitionNameInput = m_utils.jQuerySelect("#parametersTab #parameterDefinitionNameInput");
                var httpHeadersJson = this.getApplication().attributes["stardust:restServiceOverlay::httpHeaders"];
                
                if (!httpHeadersJson)
@@ -133,6 +134,10 @@ define(
                this.initializeHeaderAttributesTable();
                
                this.uriInput.change(function() {
+                  self.submitChanges();
+               });
+
+			   this.parameterDefinitionNameInput.change(function() {
                   self.submitChanges();
                });
                this.commandSelect.change(function() {
@@ -149,7 +154,9 @@ define(
                });
                this.inputBodyAccessPointInput
                      .change(function() {
-                        
+                    	if (!self.view.validate()) {
+                    		return;
+                    	}
                         if (self.inputBodyAccessPointInput.val() == m_constants.TO_BE_DEFINED) {
                            self.submitSingleAttributeChange(
                                  "carnot:engine:camel::inBodyAccessPoint",
@@ -163,7 +170,9 @@ define(
                      });
                this.outputBodyAccessPointInput
                      .change(function() {
-                        
+                    	if (!self.view.validate()) {
+                     		return;
+                     	}
                         if (self.outputBodyAccessPointInput.val() == m_constants.TO_BE_DEFINED) {
                            self.submitSingleAttributeChange(
                                  "carnot:engine:camel::outBodyAccessPoint",
@@ -178,6 +187,9 @@ define(
                
                this.securityModeSelect.change(function() {
                   self.setSecurityMode(self.securityModeSelect.val());
+    			  if (!self.view.validate()) {
+                      return;
+                   }
                   self.submitChanges();
                });
                
@@ -211,6 +223,9 @@ define(
                if(this.getApplication().attributes["carnot:engine:camel::transactedRoute"]==null||this.getApplication().attributes["carnot:engine:camel::transactedRoute"]===undefined){
                    this.view.submitModelElementAttributeChange("carnot:engine:camel::transactedRoute", false);
                 }
+               if(this.getApplication().attributes["carnot:engine:camel::autoStartup"]==null||this.getApplication().attributes["carnot:engine:camel::autoStartup"]===undefined){
+                  this.view.submitModelElementAttributeChange("carnot:engine:camel::autoStartup", true);
+                }
                
                this.transactedRouteInput.change(function() {
                    if (!self.view.validate()) {
@@ -221,6 +236,16 @@ define(
                          self.transactedRouteInput.prop('checked'));
                    self.submitChanges();
                 });
+               
+               this.autoStartupInput.change(function() {
+                  if (!self.view.validate()) {
+                     return;
+                  }
+                  self.view.submitModelElementAttributeChange(
+                        "carnot:engine:camel::autoStartup",
+                        self.autoStartupInput.prop('checked'));
+                  self.submitChanges();
+               });
                
                this.runButton
                      .click(
@@ -969,6 +994,7 @@ define(
                this.customSecurityTokenUsingCVInput.prop("checked", this.getApplication().attributes["stardust:restServiceOverlay::customSecurityTokenCV"]);
                this.customSecurityTokenValueInput.val(this.convertConfigVariableToPassword(this.getApplication().attributes["stardust:restServiceOverlay::customSecurityTokenValue"]));
                this.transactedRouteInput.prop("checked", this.getApplication().attributes["carnot:engine:camel::transactedRoute"]);
+               this.autoStartupInput.prop("checked", this.getApplication().attributes["carnot:engine:camel::autoStartup"]);
                
             };
 
@@ -989,6 +1015,7 @@ define(
                            "stardust:restServiceOverlay::responseType" : this.responseTypeSelect.val(),
                            "stardust:restServiceOverlay::crossDomain" : this.crossDomainInput.prop("checked"),
                            "carnot:engine:camel::transactedRoute" : this.transactedRouteInput.prop("checked"),
+                           "carnot:engine:camel::autoStartup" : this.autoStartupInput.prop("checked"),
                            "stardust:restServiceOverlay::securityMode" : this.securityModeSelect.val(),
                            "stardust:restServiceOverlay::httpBasicAuthUser" : this.httpBasicAuthUserInput.val(),
                            "stardust:restServiceOverlay::httpBasicAuthPwd" : this.getHttpBasicAuthRawPwd(),
@@ -1070,7 +1097,7 @@ define(
                   
                      var parameterDefinition = parameterDefinitionsChanges[n];
 
-                     if (parameterDefinition.name.indexOf("-") != -1 ) 
+                     if ((parameterDefinition.name.indexOf("-") != -1 ) ||(parameterDefinition.name.replace(/ /g, "") == "headers")||(parameterDefinition.name.replace(/ /g, "") == "exchange"))
                      {
                         this.view.errorMessages.push(parameterDefinition.name+" is not a valid name."); 
                         this.parameterDefinitionsPanel.parameterDefinitionNameInput.addClass("error");
@@ -1101,8 +1128,28 @@ define(
                this.httpBasicAuthPwdInput.removeClass("warn");
                this.customSecurityTokenKeyInput.removeClass("error");
                this.customSecurityTokenValueInput.removeClass("error");
+               this.parameterDefinitionNameInput.removeClass("error");
                this.customSecurityTokenValueInput.removeClass("warn");
                
+               var parameterDefinitionNameInputWhithoutSpaces =  this.parameterDefinitionNameInput.val().replace(/ /g, "");
+               if ((parameterDefinitionNameInputWhithoutSpaces.indexOf("-") != -1) || (parameterDefinitionNameInputWhithoutSpaces ==  "exchange")|| (parameterDefinitionNameInputWhithoutSpaces ==  "headers")){
+            	   this.view.errorMessages.push(this.parameterDefinitionNameInput.val()+" cannot be used as an access point");
+            	   this.parameterDefinitionNameInput.addClass("error");
+						valid = false;
+					}
+				  for (var n = 0; n < this.getApplication().contexts.application.accessPoints.length; n++)
+                  {
+                     var ap = this.getApplication().contexts.application.accessPoints[n];
+                     if ((ap.name.replace(/ /g, "") == "headers")||(ap.name.replace(/ /g, "") == "exchange"))
+                     {
+						if(this.view.errorMessages.indexOf(ap.name.replace(/ /g, "")+" cannot be used as an access point")<0){
+							this.view.errorMessages.push(ap.name.replace(/ /g, "")+" cannot be used as an access point");
+						}
+						this.parameterDefinitionNameInput.addClass("error");
+						valid = false;
+                     }
+                  }
+				  
                if (m_utils.isEmptyString(this.uriInput.val())) 
                {
                   this.view.errorMessages.push("URI must not be empty."); // TODO I18N

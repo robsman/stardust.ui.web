@@ -1,5 +1,4 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
 <html ng-controller="ReportDefinitionController">
 <head>
 <title>Process Reporting</title>
@@ -380,7 +379,7 @@ table.formTable td {
 												<table cellpadding="0" cellspacing="0" class="formTable">
 													<tr>
 														<td><label>{{getI18N('reporting.definitionView.cumulationInterval.label')}}</label></td>
-														<td><input id="auto-reporting-dataSetTab-firstDimensionCumulationIntervalCount" type="number" style="width: 50px;"
+														<td><input ng-disabled="getFirstDimension().disableCumulationInterval" id="auto-reporting-dataSetTab-firstDimensionCumulationIntervalCount" type="number" style="width: 50px;"
 															ng-model="report.dataSet.firstDimensionCumulationIntervalCount"></input>
 														</td>
 														<td><select id="auto-reporting-dataSetTab-firstDimensionCumulationIntervalUnit" 
@@ -400,8 +399,7 @@ table.formTable td {
 												ng-show="getFirstDimension().type == reportingService.metadata.integerType">
 												<table cellpadding="0" cellspacing="0" class="formTable">
 													<tr>
-														<td style="padding-left: 20px;"><label>Cumulation
-																Interval</label></td>
+														<td style="padding-left: 20px;"><label>{{getI18N('reporting.definitionView.cumulationInterval.label')}}</label></td>
 														<td><input id="auto-reporting-dataSetTab-firstDimensionCumulationIntervalWidthInt" type="number" style="width: 50px;"
 															ng-model="report.dataSet.firstDimensionCumulationIntervalWidth"></input>
 														</td>
@@ -509,7 +507,8 @@ table.formTable td {
 								style="margin-bottom: 10px;">
 								<tr>
 									<td><input id="auto-reporting-layoutTab-simpleReport" ng-model="report.layout.type"
-										ng-show="report.dataSet.type == 'seriesGroup'" value="simpleReport"
+										ng-show="report.dataSet.type == 'seriesGroup'" value="simpleReport" 
+                                        ng-click="changeDataSetType()"
 										type="radio"></td>
 									<td><label ng-show="report.dataSet.type == 'seriesGroup'">{{getI18N('reporting.definitionView.simpletReport.label')}}</label></td>
 									
@@ -631,6 +630,19 @@ table.formTable td {
 												</table>
 											</div>
 										</td>
+                              <td ng-show="report.layout.chart.type && report.layout.chart.type === reportingService.metadata.chartTypes.barChart.id" 
+                                             valign="top">
+                                 <div style="margin-left: 20px;">
+                                    <div class="heading">{{getI18N('reporting.definitionView.series.title')}}</div>
+                                    <table cellpadding="0" cellspacing="0" class="formTable">
+                                       <tr>
+                                          <td><input id="auto-reporting-layoutTab-stockSeries" type="checkbox"
+                                             ng-model="report.layout.chart.options.stackSeries" /></td>
+                                          <td><label>{{getI18N('reporting.definitionView.stockSeries.label')}}</label></td>
+                                       </tr>
+                                    </table>
+                                 </div>
+                              </td>
 									</tr>
 									<tr>
 										<td valign="top">
@@ -965,7 +977,6 @@ table.formTable td {
                                        <select id="auto-reporting-schedulingTab-executionTime" 
                                           ng-model="report.scheduling.executionTime"
                                           ng-options="k as v for (k, v) in getExecutionTime()">
-                                          <option value="" ng-hide="report.scheduling.executionTime">{{report.scheduling.executionTime}}</option>
                                        </select>
                                        </td>
                                     </tr>
@@ -1169,7 +1180,7 @@ table.formTable td {
                                                                            <option value="3">{{getI18N('reporting.definitionView.third.label')}}</option>
                                                                            <option value="4">{{getI18N('reporting.definitionView.fourth.label')}}</option>
                                                                            <option value="5">{{getI18N('reporting.definitionView.last.label')}}</option>
-                                                                           <option value="" ng-hide="report.scheduling.monthlyRecurrenceOptions.dayIndex">{{report.scheduling.monthlyRecurrenceOptions.dayIndex}}</option>
+                                                                           
                                                                      </select></td>
                                                                      <td><select id="auto-reporting-schedulingTab-monthsRecurrenceDay" 
 																								ng-disabled="report.scheduling.monthlyRecurrenceOptions.monthsRecurrence != 'weekday'" 
@@ -1181,7 +1192,7 @@ table.formTable td {
 																									<option value="5">{{getI18N('reporting.definitionView.friday.label')}}</option>
 																									<option value="6">{{getI18N('reporting.definitionView.saturday.label')}}</option>
 																									<option value="7">{{getI18N('reporting.definitionView.sunday.label')}}</option>
-                                                                           <option value="" ng-hide="report.scheduling.monthlyRecurrenceOptions.day">{{report.scheduling.monthlyRecurrenceOptions.day}}</option>
+                                                                           
 																							</select></td>
 																							<td><label>{{getI18N('reporting.definitionView.ofEvery.label')}}</label></td>
 																							<td><input id="auto-reporting-schedulingTab-monthsRecurrenceMonthIndex" type="number" min="1"
@@ -1215,7 +1226,7 @@ table.formTable td {
 																			<tr>
 																				<td><input id="auto-reporting-schedulingTab-yearlyRecurrenceFirst" type="radio" value="weekday"
 																					ng-model="report.scheduling.yearlyRecurrenceOptions.yearlyRecurrence" /></td>
-																				<td><label>on</label></td>
+																				<td><label>{{getI18N('reporting.definitionView.on.label')}}</label></td>
 																				<td><table cellpadding="0" cellspacing="0">
 																						<tr>
 																							<td><select id="auto-reporting-schedulingTab-yearlyRecurrenceOnMonth"  
@@ -1233,7 +1244,7 @@ table.formTable td {
 																									<option value="10">{{getI18N('reporting.definitionView.october.label')}}</option>
 																									<option value="11">{{getI18N('reporting.definitionView.november.label')}}</option>
 																									<option value="12">{{getI18N('reporting.definitionView.december.label')}}</option>
-                                                                           <option value="" ng-hide="report.scheduling.yearlyRecurrenceOptions.onMonth">{{report.scheduling.yearlyRecurrenceOptions.onMonth}}</option>
+                                                                           
 																									<td><input id="auto-reporting-schedulingTab-yearlyRecurrenceOnDay" type="number"
                                                                               ng-model="report.scheduling.yearlyRecurrenceOptions.onDay"
 																										ng-disabled="report.scheduling.yearlyRecurrenceOptions.yearlyRecurrence != 'weekday'"
@@ -1256,7 +1267,6 @@ table.formTable td {
 																									<option value="3">{{getI18N('reporting.definitionView.third.label')}}</option>
 																									<option value="4">{{getI18N('reporting.definitionView.fourth.label')}}</option>
 																									<option value="5">{{getI18N('reporting.definitionView.last.label')}}</option>
-                                                                           <option value="" ng-hide="report.scheduling.yearlyRecurrenceOptions.onTheXDay">{{report.scheduling.yearlyRecurrenceOptions.onTheXDay}}</option>
 																							</select></td>
 																							<td><select id="auto-reporting-schedulingTab-yearlyRecurrenceOnTheXDayName"  
                                                                         ng-model="report.scheduling.yearlyRecurrenceOptions.onTheXDayName"
@@ -1267,7 +1277,7 @@ table.formTable td {
 																									<option value="5">{{getI18N('reporting.definitionView.friday.label')}}</option>
 																									<option value="6">{{getI18N('reporting.definitionView.saturday.label')}}</option>
 																									<option value="7">{{getI18N('reporting.definitionView.sunday.label')}}</option>
-                                                                           <option value="" ng-hide="report.scheduling.yearlyRecurrenceOptions.onTheXDayName">{{report.scheduling.yearlyRecurrenceOptions.onTheXDayName}}</option>
+                                                                           
 																							</select></td>
 																							<td><label>{{getI18N('reporting.definitionView.of.label')}}</label></td>
 																							<td><select id="auto-reporting-schedulingTab-yearlyRecurrenceOnTheMonth"  
@@ -1285,7 +1295,7 @@ table.formTable td {
                                                                            <option value="10">{{getI18N('reporting.definitionView.october.label')}}</option>
                                                                            <option value="11">{{getI18N('reporting.definitionView.november.label')}}</option>
                                                                            <option value="12">{{getI18N('reporting.definitionView.december.label')}}</option>
-                                                                           <option value="" ng-hide="report.scheduling.yearlyRecurrenceOptions.onTheMonth">{{report.scheduling.yearlyRecurrenceOptions.onTheMonth}}</option>
+
 																							</select></td>
 																						</tr>
 																					</table></td>

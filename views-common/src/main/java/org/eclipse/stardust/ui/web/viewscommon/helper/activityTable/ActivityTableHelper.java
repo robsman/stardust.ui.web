@@ -23,6 +23,7 @@ import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
 
 import org.eclipse.stardust.common.CollectionUtils;
+import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.Activity;
@@ -39,22 +40,22 @@ import org.eclipse.stardust.engine.api.query.Query;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
+import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnAlignment;
+import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
 import org.eclipse.stardust.ui.web.common.column.DefaultColumnModel;
 import org.eclipse.stardust.ui.web.common.column.IColumnModel;
 import org.eclipse.stardust.ui.web.common.column.IColumnModelListener;
-import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnAlignment;
-import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
 import org.eclipse.stardust.ui.web.common.columnSelector.TableColumnSelectorPopup;
 import org.eclipse.stardust.ui.web.common.filter.ITableDataFilter;
+import org.eclipse.stardust.ui.web.common.filter.ITableDataFilter.DataType;
+import org.eclipse.stardust.ui.web.common.filter.ITableDataFilter.FilterCriteria;
 import org.eclipse.stardust.ui.web.common.filter.ITableDataFilterBetween;
 import org.eclipse.stardust.ui.web.common.filter.ITableDataFilterPickList;
+import org.eclipse.stardust.ui.web.common.filter.ITableDataFilterPickList.RenderType;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterDate;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterNumber;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterPickList;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterPopup;
-import org.eclipse.stardust.ui.web.common.filter.ITableDataFilter.DataType;
-import org.eclipse.stardust.ui.web.common.filter.ITableDataFilter.FilterCriteria;
-import org.eclipse.stardust.ui.web.common.filter.ITableDataFilterPickList.RenderType;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.common.table.DataTableRowSelector;
 import org.eclipse.stardust.ui.web.common.table.DataTableSortModel;
@@ -64,9 +65,9 @@ import org.eclipse.stardust.ui.web.common.table.SortCriterion;
 import org.eclipse.stardust.ui.web.common.table.export.DataTableExportHandler;
 import org.eclipse.stardust.ui.web.common.table.export.ExportType;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
-import org.eclipse.stardust.ui.web.viewscommon.common.ProcessActivityDataFilter;
 import org.eclipse.stardust.ui.web.viewscommon.common.PriorityAutoCompleteItem;
 import org.eclipse.stardust.ui.web.viewscommon.common.PriorityAutocompleteTableDataFilter;
+import org.eclipse.stardust.ui.web.viewscommon.common.ProcessActivityDataFilter;
 import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityAutocompleteItem;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityAutocompleteTableDataFilter;
@@ -84,6 +85,8 @@ import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.JoinProcessDialogBean;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.PanelConfirmation;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.SwitchProcessDialogBean;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentInfo;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentViewUtil;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.user.ParticipantAutocompleteTableDataFilter;
 import org.eclipse.stardust.ui.web.viewscommon.user.ParticipantWrapper;
@@ -132,8 +135,6 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
    private Map<String, DataPath> allDescriptors = CollectionUtils.newMap();
    
    private boolean switchPanelDisplayOn;
-   
-   private Map<Long, ProcessInstance> processInstanceMap; 
    
    private ColumnModelListener columnModelListener;
    
@@ -331,6 +332,23 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
       if (ai != null)
       {
          ProcessInstanceUtils.openNotes(ai.getProcessInstance());
+      }
+   }
+   
+   /**
+    * 
+    * @param event
+    */
+   public void openDocument(ActionEvent event)
+   {
+      DocumentInfo docInfo = (DocumentInfo) event.getComponent().getAttributes().get("documentInfo");
+      ProcessInstance pi = (ProcessInstance) event.getComponent().getAttributes().get("processInstance");
+      if (StringUtils.isNotEmpty(docInfo.getId()))
+      {
+         Map<String, Object> params = CollectionUtils.newMap();
+         params.put("processInstance", pi);
+         params.put("documentName", docInfo.getName());
+         DocumentViewUtil.openJCRDocument(docInfo.getId(), params);
       }
    }
    
@@ -536,7 +554,7 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
       activityCols.add(participantPerformerCol);
 
       // Adding Descriptor Columns
-      List<ColumnPreference> descriptorColumns = DescriptorColumnUtils.createDescriptorColumns(activityTable, allDescriptors);
+      List<ColumnPreference> descriptorColumns = DescriptorColumnUtils.createDescriptorColumns(activityTable, allDescriptors, ResourcePaths.V_DOCUMENT_DESC_COLUMNS);
       activityCols.addAll(descriptorColumns);
 
       IColumnModel activityColumnModel = new DefaultColumnModel(activityCols, null, activityFixedCols2, moduleId,
@@ -1152,6 +1170,10 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
          {
             return CriticalityConfigurationUtil.getCriticalityDisplayLabel(row.getCriticalityValue(), row.getCriticality());
          }
+         else if (column.getColumnProperty().startsWith("descriptorValues."))
+         {
+            return DescriptorColumnUtils.exportDescriptorColumn(column, row.getDescriptorValues(), ExportType.EXCEL == exportType ? "\n" : ", ");
+         }
          else
          {
             return value;
@@ -1351,16 +1373,8 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
          else if (resultRow instanceof ActivityInstance)
          {
             ActivityInstance ai = (ActivityInstance) resultRow;
-            ProcessInstance processInstance = null;
+            row = new ActivityInstanceWithPrio(ai);
             
-            if (CollectionUtils.isNotEmpty(processInstanceMap))
-            {
-               processInstance = processInstanceMap.get(ai.getProcessInstanceOID());
-            }
-
-            row = null != processInstance
-                  ? new ActivityInstanceWithPrio(ai, processInstance)
-                  : new ActivityInstanceWithPrio(ai);
             if (showResubmissionTime)
             {
                Date resubmissionTime = ActivityInstanceUtils.getResubmissionDate(ai);
@@ -1380,21 +1394,8 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
       }
    }
 
-   public Map<Long, ProcessInstance> getProcessInstanceMap()
-   {
-      return processInstanceMap;
-   }
-
-   public void setProcessInstanceMap(Map<Long, ProcessInstance> processInstanceMap)
-   {
-      this.processInstanceMap = processInstanceMap;
-   }
-
    public ColumnModelListener getColumnModelListener()
    {
       return columnModelListener;
    }  
-   
-   
-   
 }

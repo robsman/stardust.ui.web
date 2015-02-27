@@ -79,5 +79,7 @@ define(function() {
 		} else {
 			return win;
 		}
+
+		return window.top;
 	};
 });

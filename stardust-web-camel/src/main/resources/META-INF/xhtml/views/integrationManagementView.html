@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="utf-8">
+<title>Integration Management View</title>
+
+<link href="plugins/stardust-web-camel/css/stardust-modern.css"
+	rel="stylesheet" type="text/css">
+
+</head>
+<body>
+
+	<div class="view-panel" ng-controller="IntegrationManagementCtrl as ctrl" sg-stretch-to-bottom>
+		<!-- View Content -->
+		<div class="view-panel-content">
+
+			<table>
+				<tr valign="center">
+					<th><a href="#" class="iconLink"
+						ng-click="ctrl.expandCamelContextTable = !ctrl.expandCamelContextTable;">
+							<i class="fa fa-chevron-down" title="Expand"
+								ng-if="!ctrl.expandCamelContextTable">
+							</i>
+						</a> 
+						<a href="#"
+							class="iconLink"
+							ng-click="ctrl.expandCamelContextTable = !ctrl.expandCamelContextTable;">
+							<i	class="fa fa-chevron-up" title="Collapse"
+								ng-if="ctrl.expandCamelContextTable">
+							</i>
+						</a>
+					</th>
+					<th><span class="popup-dlg-hdr-txt ng-binding">Camel Contexts</span></th>
+				</tr>
+			</table>
+
+			<div ng-show="ctrl.expandCamelContextTable">
+
+				<div class="view-panel-toolbar">
+					<table style="width: 100%" cellpadding="0" cellspacing="0">
+						<tr>
+							<td style="width: 100%"></td>
+						
+							<td class="view-toolbar-item">
+								<a href="#" ng-click="ctrl.refresh()" title="Refresh" class="view-tool-link">
+									<i class="glyphicon glyphicon-refresh"></i>
+								</a>
+							</td>
+						</tr>
+					</table>
+				</div>
+				
+				<table sd-data-table="ctrl.camelContextDataTable"
+						sd-data="ctrl.fetchCamelContexts(params)" 
+						sda-page-size="{{ctrl.camelContextsPageSize}}"
+						sda-mode="remote" sda-selectable="row"
+						sda-on-pagination="ctrl.camelContextsDataTableOnPagination(info)"
+						sda-selection="ctrl.selectionCamelContext"
+						sda-on-select="ctrl.onCamelContextSelection(info)"
+						sda-sortable="true" 
+						sda-sort-by="{name : 'contextId', dir : 'asc'}" 
+						sda-on-sorting="ctrl.onCamelContextSorting(info)"
+						sda-column-selector="true"
+						>
+					<thead>
+						<tr>
+							<th sda-label="Context Id" sda-name="contextId" sda-sortable="true" style="text-align: left;"></th>
+							<th sda-label="Status" sda-name="status" sda-sortable="true" style="text-align: left;"></th>
+							<th sda-label="Uptime" sda-name="uptime" sda-sortable="true" style="text-align: left;"></th>
+							<th sda-label="Version" sda-name="version" sda-sortable="true" style="text-align: left;"></th>
+							<th sda-label="Actions" sda-name="Actions" style="text-align: left;"></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td sda-field="contextId"></td>
+							<td sda-field="status"></td>
+							<td sda-field="uptime"></td>
+							<td sda-field="version"></td>
+							<td align="center">
+								<a href="#"	ng-click="ctrl.stopEvent($event);  ctrl.startAllRoutes(rowData.contextId);"
+									class="view-tool-link" title="Start All Routes"> 
+										<img ng-src="plugins/stardust-web-camel/css/images/control_play.png" />
+								</a> 
+								<a href="#"	ng-click="ctrl.stopEvent($event);  ctrl.stopAllRoutes(rowData.contextId);"
+									class="view-tool-link" title="Stop All Routes"> 
+										<img ng-src="plugins/stardust-web-camel/css/images/control_stop.png" />
+								</a>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<!-- details of selected camel context -->
+		</br>
+		</br>
+		<div
+			style="margin-left: 10px; margin-right: 10px; margin-bottom: 10px;"
+			ng-cloak ng-hide="ctrl.selectionCamelContext == null">
+			<table>
+				<tr valign="center">
+					<th><a href="#" class="iconLink" ng-click="ctrl.expandRoutesTable = !ctrl.expandRoutesTable;">
+							<i class="fa fa-chevron-down" title="Expand" ng-if="!ctrl.expandRoutesTable"></i>
+						</a> 
+						<a href="#" class="iconLink" ng-click="ctrl.expandRoutesTable = !ctrl.expandRoutesTable;">
+							<i class="fa fa-chevron-up" title="Collapse" ng-if="ctrl.expandRoutesTable"></i>
+						</a>
+					</th>
+					<!-- <th><h2>Camel Routes</h2></th> -->
+					<th><span class="popup-dlg-hdr-txt ng-binding">Camel Routes</span></th>
+				</tr>
+			</table>
+			</br>
+			<div ng-show="ctrl.expandRoutesTable">
+				<section class="tab">
+					<ul class="nav nav-pills">
+						<li ng-class="{ active: ctrl.isSet(1) }">
+							<a href	ng-click="ctrl.setTab(1)">Producer Routes</a>
+						</li>
+						<li ng-class="{ active: ctrl.isSet(2) }">
+							<a href ng-click="ctrl.setTab(2)">Consumer Routes</a>
+						</li>
+						<li ng-class="{ active: ctrl.isSet(3) }">
+							<a href ng-click="ctrl.setTab(3)">Other Routes</a>
+						</li>
+					</ul>
+
+					<div ng-if="ctrl.isSet(1)">
+						<div class="view-panel-toolbar">
+							<table style="width: 100%" cellpadding="0" cellspacing="0">
+								<tr>
+									<td style="width: 100%"></td>
+									<td class="view-toolbar-item">
+										<a href="#" ng-click="ctrl.refreshProducers()" title="Refresh" class="view-tool-link"> 
+											<i class="glyphicon glyphicon-refresh"></i>
+									</a></td>
+								</tr>
+							</table>
+						</div>
+						<table sd-data-table="ctrl.producerRoutesDataTable"
+								sd-data="ctrl.fetchProducerRoutes(ctrl.selectionCamelContext.contextId,params)"
+								sda-mode="remote"
+								sda-on-pagination="ctrl.producerRoutesDataTableOnPagination(info)"
+								sda-page-size="{{ctrl.routesPageSize}}"
+								sda-sortable="true" 
+								sda-sort-by="{name : 'id', dir : 'asc'}"
+								sda-column-selector="true"
+								>
+							<thead>
+								<tr>
+									<th sda-name="id" sda-label="Route Id" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="description" sda-label="Description" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="exchangesCompleted" sda-label="Exchanges Completed" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="exchangesFailed" sda-label="Exchanges Failed" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="status" sda-label="Status" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="resetTimestamp" sda-label="Reset Timestamp" sda-visible="false" sda-data-type="dateTime" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="minProcessingTime" sda-label="Min Processing Time" sda-visible="false" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="maxProcessingTime" sda-label="Max Processing Time" sda-visible="false" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="totalProcessingTime" sda-label="Total Processing Time" sda-visible="false" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="selfProcessingTime" sda-label="Self Processing Time" sda-visible="false" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="failuresHandled" sda-label="Failures Handled" sda-visible="false" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="redeliveries" sda-label="Redeliveries" sda-visible="false" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="externalRedeliveries" sda-label="External Redeliveries" sda-visible="false" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="lastProcessingTime" sda-label="Last Processing Time" sda-visible="false" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="deltaProcessingTime" sda-label="Delta Processing Time" sda-visible="false" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="meanProcessingTime" sda-label="Mean Processing Time" sda-visible="false" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="firstExchangeCompletedTimestamp" sda-label="First Exchange Completed Timestamp" sda-visible="false" sda-data-type="dateTime" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="firstExchangeCompletedExchangeId" sda-label="First Exchange Completed ExchangeId" sda-visible="false" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="firstExchangeFailureTimestamp" sda-label="First Exchange Failure Timestamp" sda-visible="false" sda-data-type="dateTime" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="firstExchangeFailureExchangeId" sda-label="First Exchange Failure ExchangeId" sda-visible="false" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="lastExchangeCompletedTimestamp" sda-label="Last Exchange Completed Timestamp" sda-visible="false" sda-data-type="dateTime" sda-sortable="true" style="text-align: left;"></th>		
+									<th sda-name="lastExchangeCompletedExchangeId" sda-label="Last Exchange Completed Exchange Id" sda-visible="false" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="lastExchangeFailureTimestamp" sda-label="Last Exchange Failure Timestamp" sda-visible="false" sda-data-type="dateTime" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="lastExchangeFailureExchangeId" sda-label="Last Exchange Failure Exchange Id" sda-visible="false" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="Actions" sda-label="Actions" style="text-align: left;"></th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td sda-field="id"></td>
+									<td sda-field="description"></td>
+									<td sda-field="exchangesCompleted"></td>
+									<td sda-field="exchangesFailed"></td>
+									<td sda-field="status"></td>
+									
+									<td sda-field="resetTimestamp | date:'yyyy-MM-dd HH:mm:ss'"></td>
+									<td sda-field="minProcessingTime"></td>
+									<td sda-field="maxProcessingTime"></td>
+									<td sda-field="totalProcessingTime"></td>
+									<td sda-field="selfProcessingTime"></td>
+									<td sda-field="failuresHandled"></td>
+									<td sda-field="redeliveries"></td>
+									<td sda-field="externalRedeliveries"></td>
+									<td sda-field="lastProcessingTime"></td>
+									<td sda-field="deltaProcessingTime"></td>
+									<td sda-field="meanProcessingTime"></td>
+									<td sda-field="firstExchangeCompletedTimestamp | date:'yyyy-MM-dd HH:mm:ss'"></td>
+									<td sda-field="firstExchangeCompletedExchangeId"></td>
+									<td sda-field="firstExchangeFailureTimestamp | date:'yyyy-MM-dd HH:mm:ss'"></td>
+									<td sda-field="firstExchangeFailureExchangeId"></td>
+									<td sda-field="lastExchangeCompletedTimestamp | date:'yyyy-MM-dd HH:mm:ss'"></td>							
+									<td sda-field="lastExchangeCompletedExchangeId"></td>
+									<td sda-field="lastExchangeFailureTimestamp | date:'yyyy-MM-dd HH:mm:ss'"></td>
+									<td sda-field="lastExchangeFailureExchangeId"></td>
+									<td><a href="#"	ng-click="ctrl.stopEvent($event); ctrl.startOrStopRoute(ctrl.selectionCamelContext.contextId,rowData.id,rowData.status)"
+											class="expandCollapseLink" title="Start" ng-hide="rowData.status === 'Started'">
+											<img ng-src="plugins/stardust-web-camel/css/images/control_play.png" />
+										</a> 
+										<a href="#"	ng-click="ctrl.stopEvent($event); ctrl.startOrStopRoute(ctrl.selectionCamelContext.contextId,rowData.id,rowData.status)"
+											class="expandCollapseLink" title="Stop" ng-show="rowData.status === 'Started'">
+											<img ng-src="plugins/stardust-web-camel/css/images/control_stop.png" />
+									</a></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<div ng-if="ctrl.isSet(2)">
+						<div class="view-panel-toolbar">
+							<table style="width: 100%" cellpadding="0" cellspacing="0">
+								<tr>
+									<td style="width: 100%"></td>
+									<td class="view-toolbar-item">
+										<a href="#"	ng-click="ctrl.refreshConsumers()" title="Refresh"	class="view-tool-link"> 
+											<i class="glyphicon glyphicon-refresh"></i></i>
+										</a>
+									</td>
+								</tr>
+							</table>
+						</div>
+						<table sd-data-table="ctrl.consumerRoutesDataTable"
+								sd-data="ctrl.fetchConsumerRoutes(ctrl.selectionCamelContext.contextId,params)"
+								sda-mode="remote" sda-selectable="row"
+								sda-on-pagination="ctrl.consumerRoutesDataTableOnPagination(info)"
+								sda-page-size="{{ctrl.routesPageSize}}"
+								sda-sortable="true" 
+								sda-sort-by="{name : 'id', dir : 'asc'}" 
+								sda-column-selector="true"
+								>
+
+							<thead>
+								<tr>
+									<th sda-name="id" sda-label="Route Id" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="description" sda-label="Description" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="exchangesCompleted" sda-label="Exchanges Completed" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="exchangesFailed" sda-label="Exchanges Failed" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="status" sda-label="Status" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="resetTimestamp" sda-label="Reset Timestamp" sda-visible="false" sda-data-type="dateTime" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="minProcessingTime" sda-label="Min Processing Time" sda-visible="false" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="maxProcessingTime" sda-label="Max Processing Time" sda-visible="false" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="totalProcessingTime" sda-label="Total Processing Time" sda-visible="false" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="selfProcessingTime" sda-label="Self Processing Time" sda-visible="false" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="failuresHandled" sda-label="Failures Handled" sda-visible="false" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="redeliveries" sda-label="Redeliveries" sda-visible="false" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="externalRedeliveries" sda-label="External Redeliveries" sda-visible="false" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="lastProcessingTime" sda-label="Last Processing Time" sda-visible="false" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="deltaProcessingTime" sda-label="Delta Processing Time" sda-visible="false" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="meanProcessingTime" sda-label="Mean Processing Time" sda-visible="false" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="firstExchangeCompletedTimestamp" sda-label="First Exchange Completed Timestamp" sda-visible="false" sda-data-type="dateTime" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="firstExchangeCompletedExchangeId" sda-label="First Exchange Completed ExchangeId" sda-visible="false" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="firstExchangeFailureTimestamp" sda-label="First Exchange Failure Timestamp" sda-visible="false" sda-data-type="dateTime" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="firstExchangeFailureExchangeId" sda-label="First Exchange Failure ExchangeId" sda-visible="false" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="lastExchangeCompletedTimestamp" sda-label="Last Exchange Completed Timestamp" sda-visible="false" sda-data-type="dateTime" sda-sortable="true" style="text-align: left;"></th>		
+									<th sda-name="lastExchangeCompletedExchangeId" sda-label="Last Exchange Completed Exchange Id" sda-visible="false" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="lastExchangeFailureTimestamp" sda-label="Last Exchange Failure Timestamp" sda-visible="false" sda-data-type="dateTime" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="lastExchangeFailureExchangeId" sda-label="Last Exchange Failure Exchange Id" sda-visible="false" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="Actions" sda-label="Actions" style="text-align: left;"></th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td sda-field="id"></td>
+									<td sda-field="description"></td>
+									<td sda-field="exchangesCompleted"></td>
+									<td sda-field="exchangesFailed"></td>
+									<td sda-field="status"></td>
+									<td sda-field="resetTimestamp | date:'yyyy-MM-dd HH:mm:ss'"></td>
+									<td sda-field="minProcessingTime"></td>
+									<td sda-field="maxProcessingTime"></td>
+									<td sda-field="totalProcessingTime"></td>
+									<td sda-field="selfProcessingTime"></td>
+									<td sda-field="failuresHandled"></td>
+									<td sda-field="redeliveries"></td>
+									<td sda-field="externalRedeliveries"></td>
+									<td sda-field="lastProcessingTime"></td>
+									<td sda-field="deltaProcessingTime"></td>
+									<td sda-field="meanProcessingTime"></td>
+									<td sda-field="firstExchangeCompletedTimestamp | date:'yyyy-MM-dd HH:mm:ss'"></td>
+									<td sda-field="firstExchangeCompletedExchangeId"></td>
+									<td sda-field="firstExchangeFailureTimestamp | date:'yyyy-MM-dd HH:mm:ss'"></td>
+									<td sda-field="firstExchangeFailureExchangeId"></td>
+									<td sda-field="lastExchangeCompletedTimestamp | date:'yyyy-MM-dd HH:mm:ss'"></td>							
+									<td sda-field="lastExchangeCompletedExchangeId"></td>
+									<td sda-field="lastExchangeFailureTimestamp | date:'yyyy-MM-dd HH:mm:ss'"></td>
+									<td sda-field="lastExchangeFailureExchangeId"></td>
+									<td><a href="#" ng-click="ctrl.stopEvent($event); ctrl.startOrStopRoute(ctrl.selectionCamelContext.contextId,rowData.id,rowData.status)"
+											class="expandCollapseLink" title="Start" ng-hide="rowData.status === 'Started'">
+												<img ng-src="plugins/stardust-web-camel/css/images/control_play.png" />
+										</a> 
+										<a href="#"	ng-click="ctrl.stopEvent($event); ctrl.startOrStopRoute(ctrl.selectionCamelContext.contextId,rowData.id,rowData.status)"
+											class="expandCollapseLink" title="Stop"	ng-show="rowData.status === 'Started'">
+												<img ng-src="plugins/stardust-web-camel/css/images/control_stop.png" />
+										</a>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<div ng-if="ctrl.isSet(3)">
+						<div class="view-panel-toolbar">
+							<table style="width: 100%" cellpadding="0" cellspacing="0">
+								<tr>
+									<td style="width: 100%"></td>
+									<td class="view-toolbar-item">
+										<a href="#"	ng-click="ctrl.refreshOthers();" title="Refresh" class="view-tool-link"> <i class="glyphicon glyphicon-refresh"></i></i></a>
+									</td>
+								</tr>
+							</table>
+						</div>
+						<table sd-data-table="ctrl.otherRoutesDataTable"
+								sd-data="ctrl.fetchOtherRoutes(ctrl.selectionCamelContext.contextId,params)"
+								sda-mode="remote" sda-selectable="row"
+								sda-on-pagination="ctrl.otherRoutesDataTableOnPagination(info)"
+								sda-page-size="{{ctrl.routesPageSize}}"
+								sda-sortable="true" 
+								sda-sort-by="{name : 'id', dir : 'asc'}"
+								sda-column-selector="true"
+								>
+
+							<thead>
+								<tr>
+									<th sda-name="id" sda-label="Route Id" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="description" sda-label="Description" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="exchangesCompleted" sda-label="Exchanges Completed" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="exchangesFailed" sda-label="Exchanges Failed" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="status" sda-label="Status" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="resetTimestamp" sda-label="Reset Timestamp" sda-visible="false" sda-data-type="dateTime" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="minProcessingTime" sda-label="Min Processing Time" sda-visible="false" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="maxProcessingTime" sda-label="Max Processing Time" sda-visible="false" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="totalProcessingTime" sda-label="Total Processing Time" sda-visible="false" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="selfProcessingTime" sda-label="Self Processing Time" sda-visible="false" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="failuresHandled" sda-label="Failures Handled" sda-visible="false" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="redeliveries" sda-label="Redeliveries" sda-visible="false" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="externalRedeliveries" sda-label="External Redeliveries" sda-visible="false" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="lastProcessingTime" sda-label="Last Processing Time" sda-visible="false" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="deltaProcessingTime" sda-label="Delta Processing Time" sda-visible="false" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="meanProcessingTime" sda-label="Mean Processing Time" sda-visible="false" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="firstExchangeCompletedTimestamp" sda-label="First Exchange Completed Timestamp" sda-visible="false" sda-data-type="dateTime" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="firstExchangeCompletedExchangeId" sda-label="First Exchange Completed ExchangeId" sda-visible="false" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="firstExchangeFailureTimestamp" sda-label="First Exchange Failure Timestamp" sda-visible="false" sda-data-type="dateTime" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="firstExchangeFailureExchangeId" sda-label="First Exchange Failure ExchangeId" sda-visible="false" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="lastExchangeCompletedTimestamp" sda-label="Last Exchange Completed Timestamp" sda-visible="false" sda-data-type="dateTime" sda-sortable="true" style="text-align: left;"></th>		
+									<th sda-name="lastExchangeCompletedExchangeId" sda-label="Last Exchange Completed Exchange Id" sda-visible="false" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="lastExchangeFailureTimestamp" sda-label="Last Exchange Failure Timestamp" sda-visible="false" sda-data-type="dateTime" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="lastExchangeFailureExchangeId" sda-label="Last Exchange Failure Exchange Id" sda-visible="false" sda-sortable="true" style="text-align: left;"></th>
+									<th sda-name="Actions" sda-label="Actions" style="text-align: left;"></th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td sda-field="id"></td>
+									<td sda-field="description"></td>
+									<td sda-field="exchangesCompleted"></td>
+									<td sda-field="exchangesFailed"></td>
+									<td sda-field="status"></td>
+									<td sda-field="resetTimestamp | date:'yyyy-MM-dd HH:mm:ss'"></td>
+									<td sda-field="minProcessingTime"></td>
+									<td sda-field="maxProcessingTime"></td>
+									<td sda-field="totalProcessingTime"></td>
+									<td sda-field="selfProcessingTime"></td>
+									<td sda-field="failuresHandled"></td>
+									<td sda-field="redeliveries"></td>
+									<td sda-field="externalRedeliveries"></td>
+									<td sda-field="lastProcessingTime"></td>
+									<td sda-field="deltaProcessingTime"></td>
+									<td sda-field="meanProcessingTime"></td>
+									<td sda-field="firstExchangeCompletedTimestamp | date:'yyyy-MM-dd HH:mm:ss'"></td>
+									<td sda-field="firstExchangeCompletedExchangeId"></td>
+									<td sda-field="firstExchangeFailureTimestamp | date:'yyyy-MM-dd HH:mm:ss'"></td>
+									<td sda-field="firstExchangeFailureExchangeId"></td>
+									<td sda-field="lastExchangeCompletedTimestamp | date:'yyyy-MM-dd HH:mm:ss'"></td>							
+									<td sda-field="lastExchangeCompletedExchangeId"></td>
+									<td sda-field="lastExchangeFailureTimestamp | date:'yyyy-MM-dd HH:mm:ss'"></td>
+									<td sda-field="lastExchangeFailureExchangeId"></td>
+									
+									<td><a href="#"	ng-click="ctrl.stopEvent($event); ctrl.startOrStopRoute(ctrl.selectionCamelContext.contextId,rowData.id,rowData.status)"
+											class="expandCollapseLink" title="Start" ng-hide="rowData.status === 'Started'">
+												<img ng-src="plugins/stardust-web-camel/css/images/control_play.png" />
+										</a> 
+										<a href="#"	ng-click="ctrl.stopEvent($event); ctrl.startOrStopRoute(ctrl.selectionCamelContext.contextId,rowData.id,rowData.status)"
+											class="expandCollapseLink" title="Stop"	ng-show="rowData.status === 'Started'">
+												<img ng-src="plugins/stardust-web-camel/css/images/control_stop.png" />
+										</a>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+
+					</div>
+				</section>
+			</div>
+		</div>
+	</div>
+
+	<script src="plugins/stardust-web-camel/js/integration-management.js"></script>
+</body>
+</html>

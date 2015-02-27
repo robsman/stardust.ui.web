@@ -447,15 +447,23 @@ define(
                            this.diagram.process, data, activity);
 
                      if (this.fromModelElementType == m_constants.DATA) {
-                        this.modelElement.inputDataMapping = {};
-                        this.modelElement.outputDataMapping = null;
+                       this.modelElement.dataMappings = [{
+                           id : this.modelElement.id,
+                           name : this.modelElement.name,
+                           direction : "IN"
+                         }
+                       ];
                      } else {
-                        this.modelElement.inputDataMapping = null;
-                        this.modelElement.outputDataMapping = {};
+                       this.modelElement.dataMappings = [{
+                           id : this.modelElement.id,
+                           name : this.modelElement.name,
+                           direction : "OUT"
+                         }
+                       ];
                      }
 
-                     this.propertiesPanel = this.diagram.dataFlowPropertiesPanel;
-
+                    this.propertiesPanel = this.diagram.dataFlowPropertiesPanel;
+                     
                   } else {
                      this.fromModelElementOid = this.fromAnchorPoint.symbol.oid;
 
@@ -491,9 +499,19 @@ define(
             * and remove original))
             */
             Connection.prototype.setSecondAnchorPoint = function(
-                  anchorPoint, sync) {
+                  anchorPoint, sync, reRoutedConnectionModelElement) {
 
                this.setSecondAnchorPointNoComplete(anchorPoint);
+               
+               if(reRoutedConnectionModelElement){
+            	   this.modelElement.conditionExpression = reRoutedConnectionModelElement.conditionExpression;
+            	   this.modelElement.otherwise = reRoutedConnectionModelElement.otherwise;
+            	   this.modelElement.name = reRoutedConnectionModelElement.name;
+            	   this.modelElement.description = reRoutedConnectionModelElement.description;
+            	   this.modelElement.forkOnTraversal = reRoutedConnectionModelElement.forkOnTraversal;
+            	   this.modelElement.comments = reRoutedConnectionModelElement.comments;
+               }
+               
                var updateConnection = null;
 
                if (this.toAnchorPoint.symbol != null) {
@@ -516,9 +534,16 @@ define(
                            // Use the existing connection
                            updateConnection = dataSymbol.connections[n];
 
-                           updateConnection.modelElement.inputDataMapping = {};
-                           updateConnection.modelElement.outputDataMapping = {};
-
+                           this.modelElement.dataMappings = [{
+                             id : this.modelElement.id,
+                             name : this.modelElement.name,
+                             direction : "IN"
+                           }, {
+                             id : this.modelElement.id,
+                             name : this.modelElement.name,
+                             direction : "OUT"
+                           }];
+                           
                            if (updateConnection.fromAnchorPoint.symbol.type !== m_constants.DATA_SYMBOL) {
                               var tempFromAnchorPoint = updateConnection.fromAnchorPoint;
                               updateConnection.fromAnchorPoint = updateConnection.toAnchorPoint;
@@ -538,8 +563,7 @@ define(
                                  toAnchorPointOrientation : updateConnection.toAnchorPointOrientation,
                                  toModelElementOid : updateConnection.toModelElementOid,
                                  fromModelElementOid : updateConnection.fromModelElementOid,
-                                 inputDataMapping : updateConnection.modelElement.inputDataMapping,
-                                 outputDataMapping : updateConnection.modelElement.outputDataMapping,
+                                 dataMappings : updateConnection.modelElement.dataMappings,
                                  id : updateConnection.modelElement.id,
                                  name : updateConnection.modelElement.name,
                                  updateDataMapping : true
@@ -929,13 +953,15 @@ define(
                   // For In-Mapping path will be from Data to
                   // Activity
                   // vice-versa for Out mapping
-                  if (this.modelElement.inputDataMapping != null
-                        && this.modelElement.outputDataMapping != null) {
+                  var mappingExist = this.modelElement.inputOutputMappingExists();
+                  
+                  if (mappingExist.input
+                        && mappingExist.output) {
                      this.path.attr("arrow-start",
                            "block-wide-long");
                      this.path.attr("arrow-end",
                            "block-wide-long");
-                  } else if (this.modelElement.inputDataMapping != null) {
+                  } else if (mappingExist.input) {
                      // When dataFlow modified from properties
                      // panel
                      // the From,To anchor point symbols to not
@@ -950,7 +976,7 @@ define(
                         this.path.attr("arrow-end",
                               "block-wide-long");
                      }
-                  } else if (this.modelElement.outputDataMapping != null) {
+                  } else if (mappingExist.output) {
                      if (this.fromAnchorPoint.symbol.type == m_constants.DATA_SYMBOL) {
                         this.path.attr("arrow-start",
                               "block-wide-long");

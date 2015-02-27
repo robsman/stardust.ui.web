@@ -109,7 +109,7 @@
       </dependency>
       <dependency>
          <groupId>javax.ws.rs</groupId>
-         <artifactId>jsr311-api</artifactId>
+         <artifactId>javax.ws.rs-api</artifactId>
          <scope>compile</scope>
       </dependency>
       <dependency>
@@ -191,7 +191,7 @@
             </exclusion>
             <exclusion>
                <groupId>javax.ws.rs</groupId>
-               <artifactId>jsr311-api</artifactId>
+               <artifactId>javax.ws.rs-api</artifactId>
             </exclusion>
             <exclusion>
                <groupId>com.sun.xml.bind</groupId>
@@ -229,11 +229,6 @@
       <dependency>
          <groupId>javax.el</groupId>
          <artifactId>el-api</artifactId>
-         <scope>provided</scope>
-      </dependency>
-      <dependency>
-         <groupId>javax.servlet</groupId>
-         <artifactId>jsp-api</artifactId>
          <scope>provided</scope>
       </dependency>
       <dependency>

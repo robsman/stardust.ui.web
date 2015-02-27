@@ -139,6 +139,7 @@ public class ProcessInstanceHistoryItem extends AbstractProcessHistoryTableEntry
                   processDescriptorsList = CommonDescriptorUtils.createProcessDescriptors(descriptorValues,
                         processDefinition, true);
                }
+               CommonDescriptorUtils.updateProcessDocumentDescriptors(descriptorValues, processInstance, processDefinition);
             }
             if (ProcessDefinitionUtils.isAuxiliaryProcess(processDefinition))
             {

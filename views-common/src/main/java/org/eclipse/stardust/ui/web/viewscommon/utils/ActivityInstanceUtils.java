@@ -31,10 +31,12 @@ import org.eclipse.stardust.common.error.ConcurrencyException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.dto.HistoricalState;
+import org.eclipse.stardust.engine.api.dto.Note;
 import org.eclipse.stardust.engine.api.model.Activity;
 import org.eclipse.stardust.engine.api.model.ContextData;
 import org.eclipse.stardust.engine.api.model.ImplementationType;
 import org.eclipse.stardust.engine.api.model.Participant;
+import org.eclipse.stardust.engine.api.model.ParticipantInfo;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.ActivityInstances;
@@ -63,7 +65,6 @@ import org.eclipse.stardust.ui.web.viewscommon.common.spi.IActivityInteractionCo
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.DelegationBean;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
 import org.eclipse.stardust.engine.api.runtime.EventHandlerBinding;
-import org.eclipse.stardust.engine.core.runtime.beans.ActivityInstanceProperty;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 
 
@@ -283,7 +284,10 @@ public class ActivityInstanceUtils
     * Gets the last performer for the ActivityInstance
     * 
     * @param ai
+    * @param defaultDisplayFormat
     * @return
+    *
+    * TODO: This method should be deleted in favor of the overloaded version accepting a single parameter  
     */
    public static String getLastPerformer(ActivityInstance ai, String defaultDisplayFormat)
    {
@@ -297,6 +301,29 @@ public class ActivityInstanceUtils
       }
       return null;
    }
+   
+   /**
+    * Gets the last performer for the ActivityInstance
+    * 
+    * @param ai
+    * @return
+    */
+   public static String getLastPerformer(ActivityInstance ai)
+   {
+      for (HistoricalState hs : ai.getHistoricalStates())
+      {
+         if (hs.getState() == ActivityInstanceState.Application)
+         {
+            ParticipantInfo lastPerformer = hs.getParticipant();
+            if (lastPerformer instanceof UserInfo)
+            {
+               return ParticipantUtils.getParticipantName(lastPerformer);
+            }
+         }
+      }
+      return null;
+   }
+   
    /**
     * returns assigned to performer name
     * 
@@ -309,18 +336,13 @@ public class ActivityInstanceUtils
       if (ai.isAssignedToUser())
       {
          UserInfo userInfo = (UserInfo) ai.getCurrentPerformer();
-         User user = UserUtils.getUser(userInfo.getId());
-         performerName = I18nUtils.getUserLabel(user);
+         performerName = ParticipantUtils.getParticipantName(userInfo);
       }
       else
       {
          if (ai.getCurrentPerformer() != null)
          {
-            Participant participant = ParticipantUtils.getParticipant(ai.getCurrentPerformer());
-            if (null != participant)
-            {
-               performerName = I18nUtils.getParticipantName(participant);
-            }
+            performerName = ParticipantUtils.getParticipantName(ai.getCurrentPerformer());
          }
          if (null == performerName)
          {
@@ -900,5 +922,20 @@ public class ActivityInstanceUtils
    public static Map<String, String> getIconMap()
    {
       return iconMap;
+   }
+   
+   
+   /**
+    * @param ai
+    * @return
+    */
+   public static List<Note> getNotes(ActivityInstance ai)
+   {
+      List<Note> notes = new ArrayList<Note>();
+      if (ai.isScopeProcessInstanceNoteAvailable())
+      {
+         notes = ProcessInstanceUtils.getNotes2(ai.getProcessInstance());
+      }
+      return notes;
    }
 }

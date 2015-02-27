@@ -1,5 +1,7 @@
 package org.eclipse.stardust.ui.web.html5;
 
+import static org.eclipse.stardust.ui.web.plugin.support.resources.PluginResourceUtils.resolveResources;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -75,10 +77,10 @@ public class HTML5LandingPageFilter implements Filter
          try
          {
             // At the movement, landing page does not belong to 'plugins'
-            Resource[] matchedResources = appContext.getResources("classpath*:" + landingPage);
-            if (matchedResources.length > 0)
+            List<Resource> matchedResources = resolveResources(appContext, "classpath*:" + landingPage);
+            if ( !matchedResources.isEmpty())
             {
-               String landingPageContent = PluginUtils.readResource(matchedResources[0]);
+               String landingPageContent = PluginUtils.readResource(matchedResources.get(0));
 
                ArrayList<String> allScripts = new ArrayList<String>();
                ArrayList<String> allStyles = new ArrayList<String>();

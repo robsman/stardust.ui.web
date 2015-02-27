@@ -1,0 +1,54 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGroup
+		rendered="#{pc:instanceOf(col, 'org.eclipse.stardust.ui.web.viewscommon.common.ProcessAttachmentColumnPreference')}">
+		<ice:panelSeries value="#{rowObject[property]}"
+			var="processAttachment">
+			<ice:commandLink styleClass="action-link"
+				actionListener="#{bean.openDocument}" immediate="true"
+				rendered="#{pc:instanceOf(processAttachment, 'org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentInfo')}">
+				<pc:automationTag
+					value="auto-PP-ProcAttachDlg-ToolbarOpenNewDocument" />
+				<f:attribute name="documentInfo" value="#{processAttachment}" />
+				<f:attribute name="processInstance"
+					value="#{row.activityInstance.processInstance}" />
+				<ice:panelGrid columns="2">
+					<ice:graphicImage value="#{processAttachment.documentIcon}" />
+					<ice:outputText value="#{processAttachment.name}"
+						style="white-space: nowrap;" />
+				</ice:panelGrid>
+			</ice:commandLink>
+			<ice:outputText value="#{processAttachment}"
+				rendered="#{!pc:instanceOf(processAttachment, 'org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentInfo')}" />
+		</ice:panelSeries>
+	</ice:panelGroup>
+
+	<ice:panelGroup
+		rendered="#{pc:instanceOf(col, 'org.eclipse.stardust.ui.web.viewscommon.common.ProcessDocumentColumnPreference')}">
+		<ice:panelSeries value="#{rowObject[property]}"
+			var="document">
+			<ice:commandLink styleClass="action-link"
+				actionListener="#{bean.openDocument}" immediate="true"
+				rendered="#{pc:instanceOf(document, 'org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentInfo')}">
+				<pc:automationTag
+					value="auto-PP-ProcAttachDlg-ToolbarOpenNewDocument" />
+				<f:attribute name="documentInfo" value="#{document}" />
+				<f:attribute name="processInstance"
+					value="#{row.activityInstance.processInstance}" />
+				<ice:panelGrid columns="2">
+					<ice:graphicImage value="#{document.documentIcon}" />
+					<ice:outputText value="#{document.name}"
+						style="white-space: nowrap;" />
+				</ice:panelGrid>
+			</ice:commandLink>
+			<ice:outputText value="#{document}"
+				rendered="#{!pc:instanceOf(document, 'org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentInfo')}" />
+		</ice:panelSeries>
+	</ice:panelGroup>
+</f:view>

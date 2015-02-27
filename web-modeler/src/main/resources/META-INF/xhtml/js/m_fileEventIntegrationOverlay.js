@@ -74,6 +74,11 @@ define(
                                     m_i18nUtils
                                              .getProperty("modeler.element.properties.fileEvent.recursive"));
                   m_utils
+                        .jQuerySelect("label[for='autoStartupInput']")
+                        .text(
+                                 m_i18nUtils
+                                          .getProperty("modeler.element.properties.fileEvent.autoStartup"));
+                  m_utils
                            .jQuerySelect("label[for='initialIntervalInput']")
                            .text(
                                     m_i18nUtils
@@ -269,6 +274,7 @@ define(
                   this.directoryNameInput = this.mapInputId("directoryNameInput");
                   this.fileNameInput = this.mapInputId("fileNameInput");
                   this.recursiveInput = this.mapInputId("recursiveInput");
+                  this.autoStartupInput = this.mapInputId("autoStartupInput");                
                   this.transactedRouteInput = this.mapInputId("transactedRouteInput");
                   this.initialIntervalInput = this.mapInputId("initialIntervalInput");
                   this.initialIntervalUnitSelect = this
@@ -319,6 +325,21 @@ define(
                          }
                       });
                    });
+                  
+                  this.autoStartupInput.change({
+                     overlay : this
+                  }, function(event) {
+                     var overlay = event.data.overlay;
+                     overlay.submitChanges({
+                        modelElement : {
+                           attributes : {
+                              "carnot:engine:camel::autoStartup" : overlay.autoStartupInput
+                                             .prop("checked")
+                           }
+                        }
+                     });
+                  });
+                  
                   this.outputBodyAccessPointInput
                            .change(
                                     {
@@ -410,6 +431,7 @@ define(
                   this.registerForRouteChanges(this.directoryNameInput);
                   this.registerForRouteChanges(this.fileNameInput);
                   this.registerForRouteChanges(this.recursiveInput);
+                  this.registerForRouteChanges(this.autoStartupInput);
                   this.registerForRouteChanges(this.initialIntervalInput);
                   this.registerForRouteChanges(this.initialIntervalUnitSelect);
                   this.registerForRouteChanges(this.repeatIntervalInput);
@@ -740,7 +762,17 @@ define(
                          }
                       });
                    }
+                  if(this.page.getEvent().attributes["carnot:engine:camel::autoStartup"]==null || this.page.getEvent().attributes["carnot:engine:camel::autoStartup"]===undefined){
+                     this.submitChanges({
+                        modelElement : {
+                           attributes : {
+                              "carnot:engine:camel::autoStartup" : true
+                           }
+                        }
+                     });
+                  }
                   this.transactedRouteInput.prop("checked",this.page.getEvent().attributes["carnot:engine:camel::transactedRoute"]);
+                  this.autoStartupInput.prop("checked",this.page.getEvent().attributes["carnot:engine:camel::autoStartup"]);
                   var route = this.page.propertiesPanel.element.modelElement.attributes["carnot:engine:camel::camelRouteExt"];
 
                   if (route == null)
@@ -927,6 +959,7 @@ define(
                   this.grouping.removeClass("error");
                   this.directoryNameInput.removeClass("error");
 				  this.repeatIntervalInput.removeClass("error");
+				  this.parameterDefinitionNameInput.removeClass("error");
                   this.page.propertiesPanel.errorMessages = [];
                   this.page.propertiesPanel.warningMessages = [];
                   this.page.propertiesPanel.clearWarningMessages();
@@ -1000,7 +1033,25 @@ define(
                               .push("No parameters defined for Start Event.");
                      this.page.propertiesPanel.showWarningMessages();
                   }
-
+                  
+                  
+                  var parameterDefinitionNameInputWhithoutSpaces =  this.parameterDefinitionNameInput.val().replace(/ /g, "");
+                  if ((parameterDefinitionNameInputWhithoutSpaces ==  "exchange")|| (parameterDefinitionNameInputWhithoutSpaces ==  "headers"))
+                  {
+                	  this.page.propertiesPanel.errorMessages.push(this.parameterDefinitionNameInput.val().replace(/ /g, "")+" cannot be used as an access point");	this.parameterDefinitionNameInput.addClass("error");
+                  }
+                  for (var n = 0; n < this.page.getEvent().parameterMappings.length; n++)
+                  {
+                	  var ap = this.page.getEvent().parameterMappings[n];
+                	  if ((ap.name.replace(/ /g, "") == "headers")||(ap.name.replace(/ /g, "") == "exchange"))
+                	  {
+                		  if(this.page.propertiesPanel.errorMessages.indexOf(ap.name.replace(/ /g, "")+" cannot be used as an access point")<0)
+                		  {
+                			  this.page.propertiesPanel.errorMessages.push(ap.name.replace(/ /g, "")+" cannot be used as an access point");
+                		  }
+                		  this.parameterDefinitionNameInput.addClass("error");
+                    }
+                 }
                   if (this.page.propertiesPanel.errorMessages.length != 0)
                   {
                      this.page.propertiesPanel.showErrorMessages();

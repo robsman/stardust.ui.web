@@ -350,9 +350,13 @@ define(
 					var inOutMapping = new Array();
 					for ( var n in this.connections) {
 						var connection = this.connections[n];
-						if (null != connection.modelElement
-								&& connection.modelElement.inputDataMapping
-								&& connection.modelElement.outputDataMapping) {
+						
+ 						var mappingExist;
+ 						if (null != connection.modelElement) {
+ 						  mappingExist = connection.modelElement.inputOutputMappingExists();
+            }
+						
+						if (null != connection.modelElement && mappingExist.input && mappingExist.output) {
 							if (connection.fromAnchorPoint.symbol.type == m_constants.ACTIVITY_SYMBOL) {
 								outMapping
 										.push(connection.fromAnchorPoint.symbol.oid);

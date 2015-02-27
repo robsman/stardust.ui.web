@@ -175,15 +175,18 @@ public final class ModelingSession
       // TODO ensure all previously tracked models can still be edited
       for (EObject model : editingSession.getTrackedModels())
       {
-         if ( !ensureEditLock(model, false))
+         String modelId = modelRepository.getModelBinding(model).getModelId(model);
+         if (null != modelRepository.findModel(modelId))
          {
-            // TODO improve message
-            throw new MissingWritePermissionException(
-                  "Failed to re-validate edit lock on model "
-                        + this.modelRepository().getModelBinding(model).getModelId(model));
+            if ( !ensureEditLock(model, false))
+            {
+               // TODO improve message
+               throw new MissingWritePermissionException(
+                     "Failed to re-validate edit lock on model "
+                           + this.modelRepository().getModelBinding(model).getModelId(model));
+            }
          }
       }
-
 
       for (EObject model : models)
       {

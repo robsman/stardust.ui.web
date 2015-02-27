@@ -23,6 +23,7 @@ import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
+import org.eclipse.stardust.model.xpdl.builder.utils.XPDLFinderUtils;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.DataSymbolType;
@@ -45,7 +46,6 @@ import org.eclipse.stardust.ui.web.modeler.xpdl.edit.utils.ModelElementEditingUt
 @CommandHandler
 public class DataCommandHandler
 {
-
    @Resource
    private ApplicationContext springContext;
 
@@ -81,6 +81,9 @@ public class DataCommandHandler
             {
                data = getModelBuilderFacade().createPrimitiveData(model, dataID,
                      dataName, ModelerConstants.STRING_PRIMITIVE_DATA_TYPE);
+            }
+            if (mapper.getUUID(data) == null)
+            {
                mapper.map(data);
             }
          }
@@ -104,17 +107,19 @@ public class DataCommandHandler
    {
       ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(parentLaneSymbol);
       Long dataOID = extractLong(request, ModelerConstants.OID_PROPERTY);
-      String dataFullID = extractString(request, ModelerConstants.DATA_FULL_ID_PROPERTY);
-      DataType data = getModelBuilderFacade().importData(model, dataFullID);
-      DataSymbolType dataSymbol = getModelBuilderFacade().findDataSymbolRecursively(parentLaneSymbol, dataOID);
+
+      DataSymbolType dataSymbol = XPDLFinderUtils.findDataSymbolRecursively(parentLaneSymbol, dataOID);
       synchronized (model)
       {
          if(dataSymbol != null)
          {
             ModelElementEditingUtils.deleteDataMappingConnection(dataSymbol.getDataMappings());
-            data.getDataSymbols().remove(dataSymbol);
             processDefinition.getDiagram().get(0).getDataSymbol().remove(dataSymbol);
             parentLaneSymbol.getDataSymbol().remove(dataSymbol);
+            /*if (dataSymbol.getData() != null)
+            {
+               dataSymbol.getData().getSymbols().remove(dataSymbol);
+            }*/
          }
       }
    }

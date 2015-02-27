@@ -1,45 +1,109 @@
 <div>
-	<div class="heading" style="margin-top: 10px;">
-		{{overlayPanel.i18nLabels('templateConfigurations.title')}}
-	</div>
-	
-	<div class="toolBar">
-		<input type="image" src="plugins/bpm-modeler/images/icons/add.png" class="toolbarButton"
-			title="Add"
-			alt="Add"
-			ng-click="overlayPanel.addConfiguration()" />
-	</div>
-	<table style="width: 100%;">
-		<thead>
-			<tr>
-				<th style="border: 1px solid lightgray;"></th>
-				<th style="border: 1px solid lightgray;">Name</th>
-				<th style="border: 1px solid lightgray;">Source</th>
-				<th style="border: 1px solid lightgray;">Path</th>
-				<th style="border: 1px solid lightgray;">Format</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr ng-repeat="templateConf in overlayPanel.templateConfigurations">
-				<td style="border: 1px solid lightgray;">
-					<input type="image" src="plugins/bpm-modeler/images/icons/delete.png"
-						ng-click="overlayPanel.deleteConfiguration($index)" />
-				</td>
-				<td style="border: 1px solid lightgray;">
-					<input type="text" ng-model="templateConf.tName"/>
-				</td>
-				<td style="border: 1px solid lightgray;">
-					<select ng-model="templateConf.tSource"
-						ng-options="srcOpt.value as srcOpt.title for srcOpt in overlayPanel.sourceOptions" />
-				</td>
-				<td style="border: 1px solid lightgray;">
-					<input type="text" ng-model="templateConf.tPath"/>
-				</td>
-				<td style="border: 1px solid lightgray;">
-					<select ng-model="templateConf.tFormat"
-						ng-options="formatOpt.value as formatOpt.title for formatOpt in overlayPanel.formatOptions" />
-				</td>
-			</tr>
-		</tbody>
-	</table>
+   <div class="heading" style="margin-top: 10px;">
+      {{overlayPanel.i18nLabels('templateConfigurations.title')}}
+    </div>
+    <div>
+         <table cellpadding="0" cellspacing="0" class="fieldSetTable">
+            <tr>
+               <td>
+                  <label>Source</label>
+               </td>
+               <td>
+                <select id ="attachmentsTemplateSourceSelect"
+                     ng-model="temSrcOptInit"
+                     ng-options="temSrcOpt.value as temSrcOpt.title for temSrcOpt in overlayPanel.templateSourceOptions"
+                     ng-change="overlayPanel.updateTemplateConfTab(temSrcOptInit)">
+                </select> 
+               </td>
+               <td>
+                 <div id="attachmentsTemplateSourceTypeTab" style="margin-left: 5px; display: none;">
+                  <table>
+                     <tr>
+                        <td><label style="margin-left: 10px;">Structured Type</label>
+                        </td>
+                        <td>
+                          <select id="attachmentsTemplateSourceTypeSelect"
+                           style="margin-left: 5px; display: block;"
+                           ng-model="typeDeclaration"
+                           ng-options="typeDeclaration.getFullId() as typeDeclaration.name for typeDeclaration in overlayPanel.typeDeclarationsTab"
+                           ng-change="overlayPanel.addApTemplateConfiguration(typeDeclaration)">
+                              <option value="">Please select ...</option>
+                           </select>
+                        </td>
+                     </tr>
+                  </table>
+               </div>
+            </td>
+         </table>
+   </div>
+   <div id="typeErrorMessagesTab" style="margin-left: 5px; display: none;">
+      <table>
+         <tr>
+            <td>
+               <div>
+                  <div style="background: #ffcc33;">The structured type selected
+                     needs to be a List of bellow structure:</div>
+                  <div id="typeErrorMessages"></div>
+               </div>
+            </td>
+         </tr>
+      </table>
+   </div>
+   <div id="templateConfigurationTab">
+      <div class="toolBar">
+        <input type="image" src="plugins/bpm-modeler/images/icons/add.png" class="toolbarButton"
+            title="Add"
+            alt="Add"
+            ng-click="overlayPanel.addConfiguration()" />
+      </div>
+      <table style="width: 100%;">
+         <thead>
+            <tr>
+               <th style="border: 1px solid lightgray;"></th>
+               <th style="border: 1px solid lightgray;">Template</th>
+               <th style="border: 1px solid lightgray;">Name</th>
+               <th style="border: 1px solid lightgray;">Source</th>
+               <th style="border: 1px solid lightgray;">Path</th>
+               <th style="border: 1px solid lightgray;">Format</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr ng-repeat="templateConf in overlayPanel.templateConfigurations">
+               <td style="border: 1px solid lightgray;">
+                  <input type="image" src="plugins/bpm-modeler/images/icons/delete.png"
+                        ng-model="templateConf.tSource"
+                        ng-disabled="templateConf.tSource == 'data' ? true : false"
+                     ng-click="overlayPanel.deleteConfiguration($index)" />
+               </td>
+                <td style="border: 1px solid lightgray;">
+                    <input type="checkbox" ng-model="templateConf.tTemplate" 
+                        ng-checked="templateConf.tTemplate != undefined ? templateConf.tTemplate : true"
+                        ng-disabled="templateConf.tSource != 'data' ? true : false"
+                        ng-change="overlayPanel.submitTemplateChanges()"/>
+                </td>
+               <td style="border: 1px solid lightgray;">
+                  <input type="text" ng-model="templateConf.tName"
+                        ng-disabled="templateConf.tSource == 'data' ? true : false"
+                        ng-blur="overlayPanel.submitTemplateChanges()"/>
+               </td>
+               <td style="border: 1px solid lightgray;">
+                  <select ng-model="templateConf.tSource"
+                        ng-disabled="templateConf.tSource == 'data' ? true : false"
+                     ng-options="srcOpt.value as srcOpt.title for srcOpt in overlayPanel.sourceOptions"
+                        ng-change="overlayPanel.submitTemplateChanges(templateConf.tSource, $index)"/>
+               </td>
+               <td style="border: 1px solid lightgray;">
+                  <input type="text" ng-model="templateConf.tPath"
+                       ng-disabled="templateConf.tSource == 'data' ? true : false"
+                       ng-blur="overlayPanel.submitTemplateChanges()"/>
+               </td>
+               <td style="border: 1px solid lightgray;">
+                  <select ng-model="templateConf.tFormat"
+                     ng-options="formatOpt.value as formatOpt.title for formatOpt in overlayPanel.formatOptions" 
+                        ng-change="overlayPanel.submitTemplateChanges()"/>
+               </td>
+            </tr>
+         </tbody>
+      </table>
+   </div>
 </div>

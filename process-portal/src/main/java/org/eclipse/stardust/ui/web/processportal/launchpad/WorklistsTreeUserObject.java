@@ -70,7 +70,6 @@ public class WorklistsTreeUserObject extends IceUserObject
    public void select(ActionEvent event)
    {
       String viewKey = ParticipantUtils.getWorklistViewKey(participantInfo);
-      Participant participant= ParticipantUtils.getParticipant(participantInfo);
       Map<String, Object> params = CollectionUtils.newTreeMap();
       Query query = null;
       boolean leafNode= Boolean.valueOf((FacesUtils.getRequestParameter("leafNode")));
@@ -79,8 +78,7 @@ public class WorklistsTreeUserObject extends IceUserObject
          // Use Activity Instance Query for Unified worklist
          query = ParticipantWorklistCacheManager.getInstance().getActivityInstanceQuery(participantInfo, userParticipantId);
          FilterOrTerm or = query.getFilter().addOrTerm();
-         User user = (User) ParticipantUtils.getParticipant(participantInfo);
-         or.add(new PerformingUserFilter(user.getOID()));
+         or.add(new PerformingUserFilter(((UserInfo) participantInfo).getOID()));
          Set<ParticipantInfo> partInfo = ParticipantWorklistCacheManager.getInstance().getWorklistParticipants()
                .get(participantInfo.getQualifiedId());
          for (ParticipantInfo participantInfo1 : partInfo)
@@ -99,7 +97,7 @@ public class WorklistsTreeUserObject extends IceUserObject
       params.put(Query.class.getName(), query);
       params.put("participantInfo", participantInfo);
       params.put("userParticipantId", userParticipantId);
-      params.put("id", participant.getQualifiedId());
+      params.put("id", participantInfo.getQualifiedId());
       ParticipantLabel label = ModelHelper.getParticipantLabel(participantInfo);
       params.put("name", label.getLabel());
       params.put("wrappedLabel", label.getWrappedLabel());

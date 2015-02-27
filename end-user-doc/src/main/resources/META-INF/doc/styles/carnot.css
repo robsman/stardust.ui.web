@@ -46,8 +46,9 @@ h4 {
 h5 { font-size: 9pt; font-weight: bold; color: #104A5F;}
 
 body {
-		background-color: #FFFFFF;
-		text: "#000000";
+   background-color: #ffffff;
+   text: "#000000";
+   padding: 0px 5px 2px 5px;
 }
 
 p {
@@ -60,23 +61,24 @@ p {
 }
 
 p.image {
-   font-family:   Geneva, Arial, Helvetica, sans-serif;
-   font-size:     9pt;
-   color:         #000000;
-   font-style: normal;
-   padding-top: 15px;
-   line-height: 18px;
-   font-weight: normal;
-   text-align: center;
+	font-family: 	Geneva, Arial, Helvetica, sans-serif;
+	font-size: 		9pt;
+	color: 			#000000;
+	font-style: normal;
+    padding-top: 15px;
+    line-height: 18px;
+	font-weight: normal;
+	text-align: center;
 }
 
 p.note {
     font-family:    Geneva, Arial, Helvetica, sans-serif;
     font-size:      10pt;
     color:          #000000;
-    margin-left:20px;
+    background-color: #fefefa;
+    margin-left: 20px;
+    margin-right: 10px;
     padding: 9px;
-    width: 90%;
     border: 1px solid #104A5F;
     font-style: normal;
     line-height: 18px;
@@ -202,6 +204,10 @@ th {
 	rowspan=1;
 }
 
+th ul {
+   color: #7036be;
+}
+
 /* use for note sections */
 th.note {
     padding-top:        1px;
@@ -276,14 +282,20 @@ pre {
 	background-color: #EEEEEE;
 	word-wrap: break-word; /* only supported in IE and only needed there as workaround for bug with overflow */
 	max-height: 30em;
-	width: 90%;
+	width: 97%;
 	overflow: auto;
 }
 
 tt {
-	color:	#000000;
-	font-family: "Courier New", Courier, mono;
-	font-size: 10pt;
+   color:   #000000;
+   font-family: "Courier New", Courier, mono;
+   font-size: 10pt;
+}
+
+code {
+   color:   #000000;
+   font-family: "Courier New", Courier, mono;
+   font-size: 10pt;
 }
 
 hr {
@@ -342,6 +354,9 @@ li.noicon {
 li.ipp { display: none; }
 li.stardust { }
 
+tr.ipp { display: none; }
+tr.stardust { }
+
 /* Indenting the second line in a list element, e.g. in a new line after a 
 colon.*/
 
@@ -367,7 +382,7 @@ li.collapse {
 
 /* Classes used to show/hide IPP and Stardust specific documentation. */
 
-.ipp { display: none; }
+.ipp { display:none; }
 .stardust { }
 
 /* Hide links in portal documentation and replace with text containing 
@@ -421,9 +436,10 @@ img.noborder {
     font-family:    Geneva, Arial, Helvetica, sans-serif;
     font-size:      10pt;
     color:          #000000;
-    margin-left:20px;
+    background-color: #fefefa;
+    margin-left: 20px;
+    margin-right: 10px;
     padding: 9px;
-    width: 90%;
     border: 1px solid #104A5F;
     font-style: normal;
     line-height: 18px;

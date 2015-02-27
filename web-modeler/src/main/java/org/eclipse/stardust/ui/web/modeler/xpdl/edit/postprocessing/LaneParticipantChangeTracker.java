@@ -9,14 +9,7 @@ import org.eclipse.stardust.common.CompareHelper;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.model.xpdl.builder.session.Modification;
 import org.eclipse.stardust.model.xpdl.builder.utils.LaneParticipantUtil;
-import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
-import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
-import org.eclipse.stardust.model.xpdl.carnot.AttributeType;
-import org.eclipse.stardust.model.xpdl.carnot.CarnotWorkflowModelPackage;
-import org.eclipse.stardust.model.xpdl.carnot.IModelParticipant;
-import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.StartEventSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.TriggerType;
+import org.eclipse.stardust.model.xpdl.carnot.*;
 import org.eclipse.stardust.model.xpdl.carnot.util.ActivityUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
@@ -99,15 +92,18 @@ public class LaneParticipantChangeTracker implements ChangePostprocessor
       String originalPerformerId = AttributeUtil.getAttributeValue(manualTrigger,
             PredefinedConstants.PARTICIPANT_ATT);
       String newPerformerId = (null != newPerformer) ? newPerformer.getId() : null;
-      if ( !CompareHelper.areEqual(newPerformerId, originalPerformerId))
+      if(newPerformer != null && !(newPerformer instanceof ConditionalPerformerType))
       {
-         AttributeType attribute = AttributeUtil.setAttribute(manualTrigger,
-               PredefinedConstants.PARTICIPANT_ATT, newPerformerId);
-         if (attribute != null)
+         if ( !CompareHelper.areEqual(newPerformerId, originalPerformerId))
          {
-            ModelUtils.setReference(attribute,
-                  ModelUtils.findContainingModel(manualTrigger), "role+organization");
-            modification.markAlsoModified(manualTrigger);
+            AttributeType attribute = AttributeUtil.setAttribute(manualTrigger,
+                  PredefinedConstants.PARTICIPANT_ATT, newPerformerId);
+            if (attribute != null)
+            {
+               ModelUtils.setReference(attribute,
+                     ModelUtils.findContainingModel(manualTrigger), "role+organization");
+               modification.markAlsoModified(manualTrigger);
+            }
          }
       }
    }

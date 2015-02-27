@@ -2,27 +2,31 @@
 
 <html>
 <head>
-<base href="../../../" target="_blank">
+<script type="text/javascript">
+/* Internet Explorer does not support relative paths in <base> tag */
+document.write("<base href='" + window.location.href.substring(0, location.href.indexOf("/plugins") + 9) + "' />");
+
+/* have to inject all the styles to reduce the errors on server side, 
+it is noticed that before 'base' is set, the browser loads all stylesheets and fails first time */
+var cssFiles = ["bpm-reporting/css/thirdparty/jquery/jquery-ui-1.10.2.custom.css", "bpm-reporting/css/thirdparty/jqplot/jquery.jqplot.css", "bpm-reporting/css/thirdparty/jquery.dataTables.css",
+                "bpm-reporting/css/bpm-reporting.css", "bpm-reporting/css/thirdparty/datatables/extras/TableTools/TableTools.css", "bpm-reporting/css/thirdparty/datatables/extras/TableTools/TableTools_JUI.css",
+                "bpm-reporting/css/bpm-reporting-table.css", "bpm-reporting/css/bpm-reporting.custom.jquery.ui.css"];
+                
+for (var i = 0, l = cssFiles.length; i < l; i++) {
+	/* Again, special handling for Internet Explorer */
+	if (document.createStyleSheet) {
+	    document.createStyleSheet(cssFiles[i]);
+	}
+	else {
+	  document.getElementsByTagName("head")[0].innerHTML += ("<link href=\"" + cssFiles[i] + "\" rel=\"stylesheet\" type=\"text/css\"></li" + "nk>");		
+	}
+}
+</script>
+
 <title>Process Reporting</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <meta name="keywords" content="">
-<link
-	href="bpm-reporting/css/thirdparty/jquery/jquery-ui-1.10.2.custom.css"
-	rel="stylesheet" type="text/css" />
-<link rel="stylesheet" type="text/css"
-	href="bpm-reporting/css/thirdparty/jqplot/jquery.jqplot.css" />
-<link href="bpm-reporting/css/thirdparty/jquery.dataTables.css"
-	rel="stylesheet" type="text/css" />
-<link href="bpm-reporting/css/bpm-reporting.css" rel="stylesheet"
-	type="text/css">
-<link rel="stylesheet" type="text/css"
-	href="bpm-reporting/css/thirdparty/datatables/extras/TableTools/TableTools.css" />
-<link rel="stylesheet" type="text/css"
-	href="bpm-reporting/css/thirdparty/datatables/extras/TableTools/TableTools_JUI.css" />
-<link rel="stylesheet" type="text/css"
-	href="bpm-reporting/css/bpm-reporting-table.css" />
-<link rel="stylesheet" type="text/css"
-	href="bpm-reporting/css/bpm-reporting.custom.jquery.ui.css" />
+
 <style type="text/css">
 table.formTable td {
 	padding: 3px;

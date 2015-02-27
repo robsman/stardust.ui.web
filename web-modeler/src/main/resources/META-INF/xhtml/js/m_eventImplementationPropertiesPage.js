@@ -216,7 +216,8 @@ define(
 
 					// TODO Review - may not be needed anymore
 					if (overlay == null) {
-						if (this.getModelElement().eventType == m_constants.START_EVENT_TYPE) {
+						if (this.getModelElement().eventType == m_constants.START_EVENT_TYPE
+								&& this.getModelElement().implementation != "none") {
 							this.overlayControllers["manualTrigger"].activate();
 							this.setOverlay("manualTrigger");
 						} else {
@@ -228,8 +229,9 @@ define(
 					}
 
 					this.eventIntegrationOverlaySelect.val(overlay);
-
-					m_dialog.makeVisible(this.overlays[overlay]);
+					if(overlay){
+						m_dialog.makeVisible(this.overlays[overlay]);						
+					}
 
 					if (this.overlayControllers[overlay]) {
 						this.overlayControllers[overlay].update();
