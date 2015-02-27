@@ -328,7 +328,7 @@ public class ModelerSessionController
          if (editingSession.canRedo())
          {
             Modification pendingRedo = editingSession.getPendingRedo();
-            postprocessChange(pendingRedo);
+            //postprocessChange(pendingRedo);
             jto.pendingRedoableChange = toJto(pendingRedo);
          }
 
@@ -537,7 +537,9 @@ public class ModelerSessionController
          change.getMetadata().put("commandId", commandId);
          change.getMetadata().put("modelId", modelBinding.getModelId(model));
 
+         editingSession.beginEdit();
          postprocessChange(change);
+         editingSession.endEdit(false);
 
 
          if (null != commandJto.account)

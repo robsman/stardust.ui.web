@@ -87,8 +87,10 @@ public class SimpleCommandHandlingMediator
       }
       finally
       {
-         if ((null != editingSession) && editingSession.endEdit())
+
+         if (null != editingSession)
          {
+            editingSession.endEdit(true);
             change = editingSession.getPendingUndo();
          }
       }
