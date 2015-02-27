@@ -357,7 +357,7 @@ public class ResourceDependencyUtils
 
          if (CollectionUtils.isEmpty(resDep.getLibs()))
          {
-            resDep.setLibs(discoverPluginResources(resolver, rInfo, "", "*.js"));
+            resDep.setLibs(discoverPluginResources(resolver, rInfo, "", "*.js", true));
          }
          else
          {
@@ -367,7 +367,7 @@ public class ResourceDependencyUtils
 
          if (CollectionUtils.isEmpty(resDep.getStyles()))
          {
-            resDep.setStyles(discoverPluginResources(resolver, rInfo, "", "*.css"));
+            resDep.setStyles(discoverPluginResources(resolver, rInfo, "", "*.css", false));
          }
          else
          {
