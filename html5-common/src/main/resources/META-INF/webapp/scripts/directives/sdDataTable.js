@@ -942,6 +942,13 @@
 				}
 			}
 
+			// If column selector is not there, then mark all columns as visible
+			if (!enableColumnSelector) {
+				for (var i = 0; i < columnsByDisplayOrder.length; i++) {
+					columnsByDisplayOrder[i].visible = true;
+				}
+			}
+
 			exposeAPIs();
 		}
 
