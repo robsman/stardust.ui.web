@@ -13,8 +13,8 @@
 	'use strict';
 
 	angular.module('bpm-common.services').provider('sdLoggerService', function () {
-		this.$get = ['$rootScope', function ($rootScope) {
-			var service = new LoggerService($rootScope);
+		this.$get = ['$log', function ($log) {
+			var service = new LoggerService($log);
 			return service;
 		}];
 	});
@@ -22,7 +22,7 @@
 	/*
 	 * 
 	 */
-	function LoggerService($rootScope) {
+	function LoggerService($log) {
 		var MAIN_MODULE = 'bpm-portal.'
 
 		/*
@@ -33,29 +33,29 @@
 
 			return {
 				log: function() {
-					logIt(console.log, Array.prototype.slice.call(arguments, 0));
+					logIt($log.log, Array.prototype.slice.call(arguments, 0));
 				},
 				debug: function() {
-					logIt(console.log, Array.prototype.slice.call(arguments, 0));
+					logIt($log.log, Array.prototype.slice.call(arguments, 0));
 				},
 				info: function() {
-					logIt(console.info, Array.prototype.slice.call(arguments, 0));
+					logIt($log.info, Array.prototype.slice.call(arguments, 0));
 				},
 				warn: function() {
-					logIt(console.warn, Array.prototype.slice.call(arguments, 0));
+					logIt($log.warn, Array.prototype.slice.call(arguments, 0));
 				},
 				error: function() {
-					logIt(console.error, Array.prototype.slice.call(arguments, 0));
+					logIt($log.error, Array.prototype.slice.call(arguments, 0));
 				},
 				printStackTrace : function(msg) {
 					if (msg != undefined) {
-						logIt(console.error, msg);
+						logIt($log.error, msg);
 					}
 
 					if (console.trace) {
 						console.trace();
 					} else {
-						logIt(console.warn, 'Could not log stack trace as browser does not support console.trace().');
+						logIt($log.warn, 'Could not log stack trace as browser does not support console.trace().');
 					}
 				}
 			};
@@ -66,9 +66,9 @@
 			function logIt(loggerFunc, args) {
 				args = [prefix].concat(args);
 				if (!loggerFunc) {
-					loggerFunc = console.log;
+					loggerFunc = $log.log;
 				}
-				loggerFunc.apply(console, args);
+				loggerFunc.apply($log, args);
 			}
 		};
 	};
