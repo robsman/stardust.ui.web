@@ -178,7 +178,7 @@
 		var pageSize = 8;
 		var sortingMode, sortByGetter;
 		var columnFilters;
-		var enableExports = {}, exportAnchor = document.createElement("a"), remoteModeLastParams;
+		var exportConfig = {}, exportAnchor = document.createElement("a"), remoteModeLastParams;
 
 		// Setup component instance
 		setup();
@@ -347,16 +347,22 @@
 				var exports = attr.sdaExports.split(',');
 				for (var i in exports) {
 					if (exports[i].toLowerCase() == 'excel') {
-						enableExports.EXCEL = true;
+						exportConfig.EXCEL = true;
 					} else if (exports[i].toLowerCase() == 'csv') {
-						enableExports.CSV = true;
+						exportConfig.CSV = true;
 					}
 				}
 
 				if (attr.sdaExportsFileName != undefined && attr.sdaExportsFileName != '') {
-					enableExports.fileName = attr.sdaExportsFileName;
+					exportConfig.fileName = attr.sdaExportsFileName;
 				} else {
-					enableExports.fileName = 'table_data';
+					exportConfig.fileName = 'table_data';
+				}
+
+				if (attr.sdaExportsBatchSize != undefined && attr.sdaExportsBatchSize != '') {
+					exportConfig.batchSize = parseInt(attr.sdaExportsBatchSize);
+				} else {
+					exportConfig.batchSize = 250; // Default Batch Size
 				}
 			}
 		}
@@ -814,7 +820,7 @@
 		function buildDataTableLocalMode(dtOptions) {
 			trace.log(theTableId + ': Building table for local mode... with options: ', dtOptions);
 
-			fetchData(undefined, function(result) {
+			fetchData(undefined).then(function(result) {
 				try {
 					dtOptions.aaData = result.list ? result.list : result;
 	
@@ -834,6 +840,8 @@
 				} catch (e) {
 					showErrorOnUI(e);
 				}
+			}, function(error) {
+				alert('Error while fetching data'); // TODO
 			});
 		}
 
@@ -892,7 +900,7 @@
 			params.columns = colNames;
 
 			remoteModeLastParams = params;
-			fetchData(params, function(result) {
+			fetchData(params).then(function(result) {
 				try {
 					sdUtilService.assert(jQuery.isPlainObject(result),
 							'sd-data did not return acceptable result: Return is not a plain object');
@@ -911,6 +919,8 @@
 				} catch (e) {
 					showErrorOnUI(e);
 				}
+			}, function(error) {
+				showErrorOnUI(error);
 			});
 		}
 
@@ -1029,20 +1039,21 @@
 		/*
 		 * 
 		 */
-		function fetchData(params, successCallback, errorCallback) {
+		function fetchData(params) {
 			trace.log(theTableId + ': Calling sd-data with params:', params);
+
+			var deferred = $q.defer();
+
 			var dataResult = sdData.retrieveData(params);
 			dataResult.then(function(result) {
 				trace.log(theTableId + ': sd-data returned with:', result);
-				successCallback(result);
+				deferred.resolve(result);
 			}, function(error) {
 				trace.log(theTableId + ': sd-data failed with:', error);
-				if (errorCallback == undefined) {
-					// TODO
-				} else {
-					errorCallback(error);
-				}
+				deferred.reject(error);
 		    });
+
+			return deferred.promise;
 		}
 
 		/*
@@ -1718,7 +1729,10 @@
 				// Download File
 				var downloadMetaData = 'data:application/csv;charset=utf-8,';
 				var downloadUrl = downloadMetaData + encodeURIComponent(exportConents);
-				downloadDataAsFile(enableExports.fileName + '.csv', downloadUrl);
+				downloadDataAsFile(exportConfig.fileName + '.csv', downloadUrl);
+			}, function(error) {
+				trace.error(theTableId + ': Error occurred while exporting data', error);
+				alert('Error occurred while exporting data.'); // TODO
 			});
 		}
 
@@ -1791,11 +1805,10 @@
 
 					deferred.resolve(exportedRows);
 				} catch(e) {
-					trace.error(theTableId + ': Error while exporting data', e);
 					deferred.reject(e);
 				}
 			}, function(error) {
-				deferred.reject(e);
+				deferred.reject(error);
 			});
 			
 			return deferred.promise;
@@ -1852,9 +1865,10 @@
 			// Get Table Data
 			if (exportAllRows) {
 				var params = angular.copy(remoteModeLastParams);
+				params.fetchType = 'export';
 
 				params.skip = 0;
-				params.pageSize = getTotalCount();
+				params.pageSize = exportConfig.batchSize;
 
 				params.columns = [];
 				angular.forEach(expotCols, function(col, i) {
@@ -1867,17 +1881,36 @@
 					});
 				});
 
-				fetchData(params, function(result) {
-					deferred.resolve(result.list);
-				}, function(error) {
-					deferred.reject(error);
-				});
+				fetchAllInBatches(deferred, params, getTotalCount(), []);
 			} else {
 				var data = getPageData();
 				deferred.resolve(data);
 			}
 
 			return deferred.promise;
+		}
+
+		/*
+		 * 
+		 */
+		function fetchAllInBatches(deferred, params, totalCount, data) {
+			var batchNo = (params.skip / params.pageSize) + 1;
+			trace.log(theTableId + ': Fetching data for export, batch ' + batchNo);
+
+			fetchData(params).then(function(result) {
+				// TODO: Validate result!
+				data = data.concat(result.list);
+				totalCount = result.totalCount;
+
+				params.skip += params.pageSize;
+				if (params.skip < totalCount) {
+					fetchAllInBatches(deferred, params, totalCount, data);
+				} else {
+					deferred.resolve(data);
+				}
+			}, function(error) {
+				deferred.reject(error);
+			});
 		}
 
 		/*
@@ -1937,8 +1970,8 @@
 				self.columnSelectorAdmin = columnSelectorAdmin;
 				self.showSelectColumns = false;
 				self.applyTo = 'USER';
-				self.enableExportExcel = false; // enableExports.EXCEL; // TODO: Support Excel download
-				self.enableExportCSV = enableExports.CSV;
+				self.enableExportExcel = false; // exportConfig.EXCEL; // TODO: Support Excel download
+				self.enableExportCSV = exportConfig.CSV;
 				self.showExportOptions = false;
 
 				self.showColumnFilters = {};
