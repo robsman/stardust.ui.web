@@ -1881,7 +1881,7 @@
 					});
 				});
 
-				fetchAllInBatches(deferred, params, getTotalCount(), []);
+				fetchAllInBatches(deferred, params, []);
 			} else {
 				var data = getPageData();
 				deferred.resolve(data);
@@ -1893,18 +1893,17 @@
 		/*
 		 * 
 		 */
-		function fetchAllInBatches(deferred, params, totalCount, data) {
+		function fetchAllInBatches(deferred, params, data) {
 			var batchNo = (params.skip / params.pageSize) + 1;
 			trace.log(theTableId + ': Fetching data for export, batch ' + batchNo);
 
 			fetchData(params).then(function(result) {
 				// TODO: Validate result!
 				data = data.concat(result.list);
-				totalCount = result.totalCount;
 
 				params.skip += params.pageSize;
-				if (params.skip < totalCount) {
-					fetchAllInBatches(deferred, params, totalCount, data);
+				if (params.skip < result.totalCount) {
+					fetchAllInBatches(deferred, params, data);
 				} else {
 					deferred.resolve(data);
 				}
