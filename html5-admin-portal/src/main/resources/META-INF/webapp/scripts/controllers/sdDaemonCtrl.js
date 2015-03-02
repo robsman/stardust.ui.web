@@ -40,6 +40,7 @@
 		this.daemonType['reporting.daemon'] = "admin-portal-messages.views-daemons-reportingDaemon-label";
 		this.daemonType['system.daemon'] = "admin-portal-messages.views-daemons-systemDaemon-label";
 		this.daemonType['timer.trigger'] = "admin-portal-messages.views-daemons-timeDaemon-label";
+		this.daemonType['business_calendar.daemon'] = "admin-portal-messages.views-daemons-businessCalendarDaemon-label";
 
 		this.getDaemonTypeLabel = function(key) {
 			return this.daemonType[key];
