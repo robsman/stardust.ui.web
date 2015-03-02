@@ -1887,7 +1887,7 @@ public class ModelElementMarshaller implements ModelMarshaller
       else
       {
          JsonObject setDataJson = new JsonObject();
-         setDataJson.addProperty(ModelerConstants.SD_SET_DATA_ACTION_DATA_ID, ""); 
+         setDataJson.addProperty(ModelerConstants.SD_SET_DATA_ACTION_DATA_ID, "");
          setDataJson.addProperty(ModelerConstants.SD_SET_DATA_ACTION_DATA_PATH, "");
          eventJson.add(ModelerConstants.SD_SET_DATA_ACTION, setDataJson);
       }
@@ -2103,12 +2103,21 @@ public class ModelElementMarshaller implements ModelMarshaller
             dataJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY, dataTypeId);
             if (ModelerConstants.STRUCTURED_DATA_TYPE_KEY.equals(dataTypeId))
             {
-               TypeDeclarationType typeDeclaration = StructuredTypeUtils.getTypeDeclaration(data);
+               TypeDeclarationType typeDeclaration = StructuredTypeUtils
+                     .getTypeDeclaration(data);
+
+               if (typeDeclaration == null && data.eIsProxy())
+               {
+                  typeDeclaration = ExternalReferenceUtils
+                        .getTypeDeclarationFromProxy(data);
+               }
+
                if (typeDeclaration != null)
                {
                   String fullId = getModelBuilderFacade().createFullId(
-                     ModelUtils.findContainingModel(typeDeclaration), typeDeclaration);
-                  dataJson.addProperty(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY, fullId);
+                        ModelUtils.findContainingModel(typeDeclaration), typeDeclaration);
+                  dataJson.addProperty(
+                        ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY, fullId);
                }
             }
             else if (dataTypeId.equals(ModelerConstants.DOCUMENT_DATA_TYPE_KEY))
