@@ -118,6 +118,8 @@ define(
 					childRow.data("attributes", element.attributes);
 				}
 
+				//childRow.data("element", element);
+				
 				return childRow;
 			}
 
@@ -127,10 +129,9 @@ define(
 			 * It's consequential in determining weather to insert a dummy row as a child of this row.
 			 * (The function is used thus in the import XSD dialog)
 			 */
-			function hasChildElements(parent) {
+			function hasChildElements(parent, forceCheck) {
 				var parentRow = m_utils.jQuerySelect(parent);
-				if ( !parentRow.data("elements-initialized")) {
-					var parentPath = parent.id;
+				if ( !parentRow.data("elements-initialized") || forceCheck) {
 					var schemaTypeOrElements = parentRow.data("schemaType");
 					var attributes = parentRow.data("attributes");
 				}

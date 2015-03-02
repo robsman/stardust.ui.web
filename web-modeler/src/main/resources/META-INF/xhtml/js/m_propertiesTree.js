@@ -291,6 +291,15 @@ define(
 						},
 
 						/**
+						 * 
+						 */
+						PropertiesTree.prototype.clear = function() {
+              this.table = m_utils.jQuerySelect("#fieldPropertiesTable");
+              this.tableBody = m_utils.jQuerySelect("table#fieldPropertiesTable tbody");
+              this.tableBody.empty();
+            }
+						
+						/**
 						 * Initialize
 						 */
 						PropertiesTree.prototype.initialize = function(
