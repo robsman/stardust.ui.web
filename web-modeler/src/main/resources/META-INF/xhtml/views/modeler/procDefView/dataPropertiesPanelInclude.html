@@ -157,6 +157,12 @@
 						</td>
 					</tr>
 				</table>
+				<table>
+					<tr>
+						<td> <input type="checkbox" id="volatileDataInput" name="volatileDataInput"/> </td>
+						<td><label for="volatileDataInput">Volatile Data</label></td>
+					</tr>
+				</table>
 			</div>
 			<div ng-repeat="ext in dataPropertiesPanel.extensions" id="{{ext.id}}" class="propertiesPage">
 				<sd-include src="ext.pageHtmlUrl"
