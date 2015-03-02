@@ -534,7 +534,7 @@ define(
                            // Use the existing connection
                            updateConnection = dataSymbol.connections[n];
 
-                           this.modelElement.dataMappings = [{
+                           updateConnection.modelElement.dataMappings = [{
                              id : this.modelElement.id,
                              name : this.modelElement.name,
                              direction : "IN"
