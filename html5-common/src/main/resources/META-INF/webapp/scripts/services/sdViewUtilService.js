@@ -15,17 +15,19 @@
 	'use strict';
 
 	angular.module('bpm-common.services').provider('sdViewUtilService', function () {
-		this.$get = ['$rootScope', 'sgViewPanelService', 'sgPubSubService', function ($rootScope, sgViewPanelService, sgPubSubService) {
-			var service = new ViewUtilService($rootScope, sgViewPanelService, sgPubSubService);
-			return service;
+		this.$get = ['$rootScope', 'sgViewPanelService', 'sgPubSubService', 'sdLoggerService',
+		    function ($rootScope, sgViewPanelService, sgPubSubService, sdLoggerService) {
+		    	var service = new ViewUtilService($rootScope, sgViewPanelService, sgPubSubService, sdLoggerService);
+		    	return service;
 		}];
 	});
 
 	/*
 	 * 
 	 */
-	function ViewUtilService($rootScope, sgViewPanelService, sgPubSubService) {
-
+	function ViewUtilService($rootScope, sgViewPanelService, sgPubSubService, sdLoggerService) {
+		var trace = sdLoggerService.getLogger('bpm-common.sdViewUtilService');
+		
 		var viewHandlers = {};
 
 		var self = this;
@@ -43,10 +45,12 @@
 
 			if (currentViewPath !== beforeViewPath) {
 				if (beforeViewPath && viewHandlers[beforeViewPath]) {
+					trace.log('Calling DEACTIVATE event on view ' + beforeViewPath);
 					callHandlerFunction(viewHandlers[beforeViewPath], "DEACTIVATED");
 				}
 
 				if (viewHandlers[currentViewPath]) {
+					trace.log('Calling ACTIVATE event on view ' + currentViewPath);
 					callHandlerFunction(viewHandlers[currentViewPath], "ACTIVATED");
 				}
 			}
@@ -142,7 +146,7 @@
 				}
 			} catch (e) {
 				if(console) {
-					console.log(e);
+					trace.error(e);
 				}
 			}
 		}

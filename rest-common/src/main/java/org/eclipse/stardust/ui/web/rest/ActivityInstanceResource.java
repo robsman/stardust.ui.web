@@ -6,31 +6,71 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Anoop.Nair (SunGard CSA LLC) - initial API and implementation and/or initial documentation
+ *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.ws.rs.*;
+import javax.annotation.Resource;
+import javax.faces.FacesException;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.eclipse.stardust.common.CollectionUtils;
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetails;
+import org.eclipse.stardust.engine.api.model.ProcessDefinition;
+import org.eclipse.stardust.engine.api.query.ProcessDefinitionQuery;
+import org.eclipse.stardust.engine.api.runtime.ProcessDefinitions;
+import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
+import org.eclipse.stardust.engine.api.runtime.SubprocessSpawnInfo;
+import org.eclipse.stardust.ui.web.common.util.GsonUtils;
+import org.eclipse.stardust.ui.web.rest.exception.PortalRestException;
+import org.eclipse.stardust.ui.web.rest.service.ActivityInstanceService;
+import org.eclipse.stardust.ui.web.rest.service.DelegationComponent;
+import org.eclipse.stardust.ui.web.rest.service.ParticipantSearchComponent;
+import org.eclipse.stardust.ui.web.rest.service.dto.AbortNotificationDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceOutDataDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.JoinProcessDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.RelatedProcessesDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.SelectItemDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.SwitchProcessDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.TrivialManualActivityDTO;
+import org.eclipse.stardust.ui.web.rest.service.utils.RelatedProcessSearchUtils;
+import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
+import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
+import org.eclipse.stardust.ui.web.viewscommon.utils.AuthorizationUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.CommonDescriptorUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.ui.web.common.util.GsonUtils;
-import org.eclipse.stardust.ui.web.rest.service.ActivityInstanceService;
-import org.eclipse.stardust.ui.web.rest.service.dto.*;
 
 /**
  * @author Anoop.Nair
@@ -45,7 +85,16 @@ public class ActivityInstanceResource
 
    @Autowired
    private ActivityInstanceService activityInstanceService;
+   
+   @Resource
+   private ParticipantSearchComponent participantSearchComponent;
 
+   @Resource
+   private DelegationComponent delegationComponent;
+
+   @Context
+   private HttpServletRequest httpRequest;
+   
    private final JsonMarshaller jsonIo = new JsonMarshaller();
 
    @GET
@@ -228,9 +277,7 @@ public class ActivityInstanceResource
       {
          List<ActivityInstanceOutDataDTO> activities = ActivityInstanceOutDataDTO.toList(postedData);
 
-         Map<Long, String> result = getActivityInstanceService().completeAll(activities, "default");
-
-         String jsonOutput = GsonUtils.stringify(result);
+         String jsonOutput  = getActivityInstanceService().completeAll(activities, "default");
 
          return Response.ok(jsonOutput, MediaType.APPLICATION_JSON).build();
       }
@@ -297,6 +344,420 @@ public class ActivityInstanceResource
       }
    }
 
+	/**
+	 * @author Yogesh.Manware
+	 * @param postedData
+	 * @return
+	 */
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/abort")
+   public Response abortActivities(String postedData)
+   {
+      //postedData = "{scope: 'activity', activities : [11]}";
+      return Response.ok(getActivityInstanceService().abortActivities(postedData), MediaType.APPLICATION_JSON).build();
+   }
+
+    /**
+     * @author Yogesh.Manware
+     * @param postedData
+     * @return
+     */
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/searchParticipants")
+   public Response searchParticipant(String postedData)
+   {
+      // postedData = "{searchText: '', activities=[8], participantType='All', limitedSearch=false, disableAdministrator=false, excludeUserType=false}";
+      // postedData = "{activities=[8], limitedSearch=false}";
+      return Response.ok(participantSearchComponent.searchParticipants(postedData), MediaType.APPLICATION_JSON).build();
+   }
+    
+    /**
+     * @author Yogesh.Manware
+     * @param postedData
+     * @return
+    * @throws PortalRestException 
+    * @throws PortalException 
+    * @throws FacesException 
+     */
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/delegate")
+   public Response delegateActivity(String postedData) throws PortalRestException, PortalException
+   {
+      //postedData = "{activities:[12], participantType:'User', participant:1}"; 
+      //postedData = "{activities:[8], participantType:'User', participant:2, department:false, activityData: {'Country':{'id':'India', 'States':[{ id: 'dd', name:'nameo'}, { id: 'dd2', name:'nameo2'}] } } }"; 
+      //postedData = "{activities:[8], participant:{}, department:false, activityData: {Country:{id:'India',States:[{id:'MAH',cities:[{id:'Pn',Name:'Pune'},{id:'Pn2',Name:'Pune2'}]},{id:'Dl',cities:[{id:'DL1',Name:'Delhi'}]}]}} }";     
+      
+      return Response.ok(delegationComponent.delegate(postedData), MediaType.APPLICATION_JSON).build();
+   }
+    
+    
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/availableCriticalities")
+    public Response getAvailiableCriticalities()
+    {
+       try
+       {
+          
+          return Response.ok(AbstractDTO.toJson(getActivityInstanceService().getCriticalities()), MediaType.APPLICATION_JSON).build();
+       }
+       catch (Exception e)
+       {
+          trace.error(e, e);
+
+          return Response.serverError().build();
+       }
+    }
+    
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/allActivityStates")
+    public Response getAllActivityStates()
+    {
+       try
+       {
+          
+          return Response.ok(AbstractDTO.toJson(getActivityInstanceService().getAllActivityStates()), MediaType.APPLICATION_JSON).build();
+       }
+       catch (Exception e)
+       {
+          trace.error(e, e);
+
+          return Response.serverError().build();
+       }
+    }
+	
+    
+    /**
+     * @author Nikhil.Gahlot
+     * @param processInstanceOID
+     * @return
+     */
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/spawnableProcesses")
+   public Response spawnableProcesses(String postedData, @QueryParam("type") String type)
+   {
+    	try {
+    		List<Long> processInstOIDs = JsonDTO.getAsList(postedData, Long.class);
+    		List<ProcessInstance> processInstances = new ArrayList<ProcessInstance>();
+    		for (Long processInstOID : processInstOIDs) {
+    			ProcessInstance processInstance = getProcessInstance(processInstOID);
+    			processInstances.add(processInstance);
+    		}
+    		
+    		if (CollectionUtils.isNotEmpty(processInstances)) {
+	    		ProcessDefinitions pds = ServiceFactoryUtils.getQueryService().getProcessDefinitions(
+		    	ProcessDefinitionQuery.findStartable(ProcessInstanceUtils.getProcessModelOID(processInstances)));
+	
+		        Object responseObj = pds;
+		        if ("select".equals(type)) {
+		    	    Map<String, ProcessDefinition> pdMap = CollectionUtils.newHashMap();
+	
+		            for (ProcessDefinition pd : pds)
+		            {
+		               pdMap.put(pd.getId(), pd);
+		            }
+	
+		            List<ProcessDefinition> filteredPds = new ArrayList<ProcessDefinition>(pdMap.values());
+		            ProcessDefinitionUtils.sort(filteredPds);
+	
+		            List<SelectItemDTO> items = new ArrayList<SelectItemDTO>();
+		            for (ProcessDefinition pd : pdMap.values())
+		            {
+		        	  SelectItemDTO selectItem = new SelectItemDTO();
+		        	  selectItem.label = I18nUtils.getProcessName(pd);
+		        	  selectItem.value = pd.getQualifiedId();
+		        	  items.add(selectItem);
+		            }
+		          
+		            responseObj = items;
+		        }
+	
+		        return Response.ok(GsonUtils.toJsonHTMLSafeString(responseObj), MediaType.APPLICATION_JSON).build();
+    		}
+    		return Response.ok("", MediaType.APPLICATION_JSON).build();
+    	} catch (Exception e) {
+			trace.error(e, e);
+	        return Response.serverError().build();
+		}
+   }
+    
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/checkIfProcessesAbortable")
+   public Response checkIfProcessesAbortable(String postedData)
+   {
+    	try {
+	    	List<AbortNotificationDTO> notAbortableProcesses = new ArrayList<AbortNotificationDTO>();
+	    	List<Long> processInstOIDs = JsonDTO.getAsList(postedData, Long.class);
+	    	for (Long processInstOID : processInstOIDs) {
+	    		ProcessInstance processInstance = getProcessInstance(processInstOID);
+	    		processInstance = ProcessInstanceUtils.getRootProcessInstance(processInstance, true);
+	    		
+	    		ProcessInstanceDTO processInstanceDTO = new ProcessInstanceDTO();
+	    		processInstanceDTO.processName = ProcessInstanceUtils.getProcessLabel(processInstance);
+	    		processInstanceDTO.oid = processInstance.getOID();
+	    		
+	    		AbortNotificationDTO switchNotificationDTO = null;
+	    		
+	    		MessagesViewsCommonBean propsBean = MessagesViewsCommonBean.getInstance();
+	            
+	    		if (!AuthorizationUtils.hasAbortPermission(processInstance)) {
+	    			switchNotificationDTO = new AbortNotificationDTO();
+	    			switchNotificationDTO.statusMessage = propsBean.getString("common.authorization.msg");
+	    		} else if (!ProcessInstanceUtils.isAbortable(processInstance)) {
+	    			switchNotificationDTO = new AbortNotificationDTO();
+	    			switchNotificationDTO.statusMessage = propsBean.getString("common.notifyProcessAlreadyAborted");
+	    		} else if(processInstance.isCaseProcessInstance()) {
+	    			switchNotificationDTO = new AbortNotificationDTO();
+	    			switchNotificationDTO.statusMessage = propsBean.getString("views.switchProcessDialog.caseAbort.message");
+	    		}
+	    		
+	    		if (switchNotificationDTO != null) {
+		    		switchNotificationDTO.abortedProcess = processInstanceDTO;
+		    		
+	    			notAbortableProcesses.add(switchNotificationDTO);
+	    		}
+	    	}
+	    	
+	    	return Response.ok(GsonUtils.toJsonHTMLSafeString(notAbortableProcesses), MediaType.APPLICATION_JSON).build();
+    	} catch (Exception e) {
+			trace.error(e, e);
+	        return Response.serverError().build();
+		}
+   }
+    
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/{activityInstanceOid: \\d+}/spawnProcess")
+   public Response spawnProcess(@PathParam("activityInstanceOid") long activityInstanceOid, String processNamesData)
+   {
+    
+      try {
+		List<ProcessInstanceDTO> subprocessInstances = new ArrayList<ProcessInstanceDTO>();
+		  ActivityInstanceDTO aiDTO = getActivityInstanceService().getActivityInstance(
+		            activityInstanceOid);
+		  if (aiDTO != null) {
+			String[] processNames = GsonUtils.fromJson(processNamesData, String[].class);
+			if (CollectionUtils.isNotEmpty(processNames))
+		    {
+		       List<SubprocessSpawnInfo> infoList = CollectionUtils.newArrayList();
+		       for (String process : processNames)
+		       {
+		          SubprocessSpawnInfo info = new SubprocessSpawnInfo(process, true, null);
+		          infoList.add(info);
+		       }
+		       List<ProcessInstance> result = ServiceFactoryUtils.getWorkflowService().spawnSubprocessInstances(aiDTO.processInstance.oid,
+		    		   infoList);
+		       for (ProcessInstance pi : result) {
+		    	   ProcessInstanceDTO dto = new ProcessInstanceDTO();
+		    	   dto.processName = pi.getProcessName();
+		    	   dto.oid = pi.getOID();
+		    	   subprocessInstances.add(dto);
+		       }
+		    }
+		  }
+		  return Response.ok(GsonUtils.toJsonHTMLSafeString(subprocessInstances), MediaType.APPLICATION_JSON).build();
+		} catch (Exception e) {
+			trace.error(e, e);
+	        return Response.serverError().build();
+		}
+   }
+    
+    
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/switchProcess")
+   public Response switchProcess(String processData)
+   {
+      try {
+    	  List<AbortNotificationDTO> newProcessInstances = new ArrayList<AbortNotificationDTO>();
+    	  SwitchProcessDTO processDTO = GsonUtils.fromJson(processData, SwitchProcessDTO.class);
+    	  List<Long> processInstOIDs = processDTO.processInstaceOIDs;
+    	  
+    	  MessagesViewsCommonBean propsBean = MessagesViewsCommonBean.getInstance();
+    	  
+    	  for (Long processInstOID : processInstOIDs) {
+    		  ProcessInstance srcProcessInstance = getProcessInstance(processInstOID);
+    		  
+    		  // First check the permission
+    		  if (!AuthorizationUtils.hasAbortPermission(srcProcessInstance) || !ProcessInstanceUtils.isAbortable(srcProcessInstance)
+    				  || srcProcessInstance.isCaseProcessInstance()) {
+    			  continue;
+	    	  }
+
+			  ProcessInstanceDTO source = new ProcessInstanceDTO();
+			  source.processName = ProcessInstanceUtils.getProcessLabel(srcProcessInstance);
+			  source.oid = srcProcessInstance.getOID();
+			  
+			  ProcessInstanceDTO target = null;
+			  
+			  AbortNotificationDTO switchNotificationDTO = new AbortNotificationDTO();
+			  switchNotificationDTO.abortedProcess = source;
+			  
+			  try {
+				  ProcessInstance pi = ServiceFactoryUtils.getWorkflowService().spawnPeerProcessInstance(
+						  processInstOID, processDTO.processId, true, null, true, processDTO.linkComment);
+				  
+				  
+				  if (pi != null) {
+					  target = new ProcessInstanceDTO();
+					  target.processName = ProcessInstanceUtils.getProcessLabel(pi);
+					  target.oid = pi.getOID();
+					  
+					  switchNotificationDTO.targetProcess = target;
+					  switchNotificationDTO.statusMessage = propsBean.getString("common.success");
+				  }
+			  } catch (Exception e) {
+				  trace.error("Unable to abort the process with oid: " + processInstOID + " and target process id: " + processDTO.processId);
+				  trace.error(e, e);
+				  
+				  switchNotificationDTO.statusMessage = propsBean.getString("common.fail");
+			  }
+			
+        	  newProcessInstances.add(switchNotificationDTO);
+		  }
+    	  
+		  return Response.ok(GsonUtils.toJsonHTMLSafeString(newProcessInstances), MediaType.APPLICATION_JSON).build();
+		} catch (Exception e) {
+			trace.error(e, e);
+	        return Response.serverError().build();
+		}
+   }
+    
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/abortAndJoinProcess")
+    public Response abortAndJoinProcess(String processData)
+    {
+    	JoinProcessDTO processDTO = GsonUtils.fromJson(processData, JoinProcessDTO.class);
+    	Long sourceProcessInstanceOid = Long.parseLong(processDTO.sourceProcessOID);
+    	Long targetProcessInstanceOid = Long.parseLong(processDTO.targetProcessOID);
+    	
+    	ProcessInstance srcProcessInstance = getProcessInstance(sourceProcessInstanceOid);
+    	
+    	ProcessInstance targetProcessInstance = null;
+    	
+    	if (!srcProcessInstance.isCaseProcessInstance()) {
+    		targetProcessInstance = ServiceFactoryUtils.getWorkflowService().joinProcessInstance(
+        			sourceProcessInstanceOid, targetProcessInstanceOid, processDTO.linkComment);
+    	} else {
+    		  targetProcessInstance = ServiceFactoryUtils.getWorkflowService().mergeCases(
+    				  sourceProcessInstanceOid, new long[] {sourceProcessInstanceOid}, processDTO.linkComment);
+    		  
+              CommonDescriptorUtils.reCalculateCaseDescriptors(srcProcessInstance);
+              CommonDescriptorUtils.reCalculateCaseDescriptors(targetProcessInstance);
+    	}
+    	
+    	MessagesViewsCommonBean propsBean = MessagesViewsCommonBean.getInstance();
+    	
+    	AbortNotificationDTO joinNotificationDTO = new AbortNotificationDTO();
+    	
+    	ProcessInstanceDTO source = new ProcessInstanceDTO();
+    	source.processName = ProcessInstanceUtils.getProcessLabel(srcProcessInstance);
+    	source.oid = srcProcessInstance.getOID();
+    	joinNotificationDTO.abortedProcess = source;
+    	
+    	if (targetProcessInstance != null) {
+	    	ProcessInstanceDTO target = new ProcessInstanceDTO();
+	    	target.processName = ProcessInstanceUtils.getProcessLabel(targetProcessInstance);
+	    	target.oid = targetProcessInstance.getOID();
+	    	joinNotificationDTO.targetProcess = target;
+    	}
+    			
+    	joinNotificationDTO.abortedProcess = source;
+    	
+    	joinNotificationDTO.statusMessage = propsBean.getString("common.success");
+    	
+    	return Response.ok(GsonUtils.toJsonHTMLSafeString(joinNotificationDTO), MediaType.APPLICATION_JSON).build();
+    }
+    
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/getRelatedProcesses")
+    public Response getRelatedProcesses(String processData, @QueryParam("matchAny") String matchAnyStr, @QueryParam("case") String searchCasesStr)
+    {
+    	List<Long> processInstOIDs = JsonDTO.getAsList(processData, Long.class);
+    	boolean matchAny = "true".equals(matchAnyStr);
+    	boolean searchCases = "true".equals(searchCasesStr);
+    	
+    	List<ProcessInstance> sourceProcessInstances = new ArrayList<ProcessInstance>();
+    	for (Long processInstOID : processInstOIDs) {
+  		  ProcessInstance srcProcessInstance = getProcessInstance(processInstOID);
+  		  sourceProcessInstances.add(srcProcessInstance);
+    	}
+    	
+    	List<ProcessInstance> result = RelatedProcessSearchUtils.getProcessInstances(sourceProcessInstances, matchAny, searchCases);
+    	
+    	List<RelatedProcessesDTO> relatedProcesses = new ArrayList<RelatedProcessesDTO>();
+    	
+    	for (ProcessInstance pi : result) {
+    	    relatedProcesses.add(getRelatedProcessesDTO(pi));
+        }
+    	
+    	return Response.ok(GsonUtils.toJsonHTMLSafeString(relatedProcesses), MediaType.APPLICATION_JSON).build();
+    }
+    
+	private RelatedProcessesDTO getRelatedProcessesDTO(ProcessInstance pi) {
+		RelatedProcessesDTO dto = new RelatedProcessesDTO();
+		MessagesViewsCommonBean COMMON_MESSAGE_BEAN = MessagesViewsCommonBean.getInstance();
+		ProcessDefinition processDefinition = ProcessDefinitionUtils.getProcessDefinition(pi.getModelOID(),
+                pi.getProcessID());
+		
+		dto.processName = I18nUtils.getProcessName(processDefinition);;
+	    dto.oid = pi.getOID();
+		if (pi.getPriority() == 1) {
+			dto.priority = COMMON_MESSAGE_BEAN.getString("common.priorities.high");
+		} else if (pi.getPriority() == -1) {
+			dto.priority = COMMON_MESSAGE_BEAN.getString("common.priorities.low");
+		} else {
+			dto.priority = COMMON_MESSAGE_BEAN.getString("common.priorities.normal");
+		}
+		
+		dto.descriptorValues = ((ProcessInstanceDetails) pi).getDescriptors();
+	    dto.startTime = pi.getStartTime();
+		
+		return dto;
+	}
+
+	private ProcessInstance getProcessInstance(long processInstanceOID)
+	{
+	    return ProcessInstanceUtils.getProcessInstance(Long.valueOf(processInstanceOID));
+	}
+    
+   /** 
+    * @author Yogesh.Manware
+    * @param httpRequest
+    * @param paramName
+    * @param defaultValue
+    * @return
+    */
+   private String getParam(HttpServletRequest httpRequest, String paramName, String defaultValue)
+   {
+      Map<String, String[]> paramMap = httpRequest.getParameterMap();
+      if (paramMap != null && paramMap.get(paramName) != null && paramMap.get(paramName)[0] != null)
+      {
+         System.out.println(paramName + " : " + paramMap.get(paramName)[0]);
+         return paramMap.get(paramName)[0];
+      }
+
+      return defaultValue;
+   }    
+	
+	
    /**
     * @return the activityInstanceService
     */

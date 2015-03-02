@@ -6,9 +6,11 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Anoop.Nair (SunGard CSA LLC) - initial API and implementation and/or initial documentation
+ *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service;
+
+import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.*;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -25,17 +27,19 @@ import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
+import org.eclipse.stardust.engine.api.runtime.QualityAssuranceUtils.QualityAssuranceState;
 import org.eclipse.stardust.ui.web.rest.Options;
-import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.TrivialActivityInstanceDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.*;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.utils.ActivityInstanceUtils;
+import org.eclipse.stardust.ui.web.rest.service.utils.CriticalityUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.WorklistUtils;
+import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
+import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityCategory;
 import org.eclipse.stardust.ui.web.viewscommon.utils.CommonDescriptorUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDescriptor;
-
+import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 /**
  * @author Subodh.Godbole
  * @version $Revision: $
@@ -49,6 +53,9 @@ public class WorklistService
    @Resource
    private ActivityInstanceUtils activityInstanceUtils;
 
+   @Resource
+   private CriticalityUtils criticalityUtils;
+
    /**
     * @param participantQId
     * @return
@@ -56,7 +63,7 @@ public class WorklistService
    public QueryResultDTO getWorklistForParticipant(String participantQId, String context, Options options)
    {
       QueryResult<?> queryResult = worklistUtils.getWorklistForParticipant(participantQId, options);
-      return buildWorklistResult(queryResult, context);
+      return buildWorklistResult(queryResult);
    }
 
    /**
@@ -66,16 +73,19 @@ public class WorklistService
    public QueryResultDTO getWorklistForUser(String userId, String context, Options options)
    {
       QueryResult<?> queryResult = worklistUtils.getWorklistForUser(userId, options);
-      return buildWorklistResult(queryResult, context);
+      return buildWorklistResult(queryResult);
    }
 
    /**
     * @param queryResult
     * @return
     */
-   private QueryResultDTO buildWorklistResult(QueryResult<?> queryResult, String context)
+   private QueryResultDTO buildWorklistResult(QueryResult<?> queryResult)
    {
       List<ActivityInstanceDTO> list = new ArrayList<ActivityInstanceDTO>();
+
+      List<CriticalityCategory>  criticalityConfigurations = criticalityUtils.getCriticalityConfiguration();
+
       for (Object object : queryResult)
       {
          if (object instanceof ActivityInstance)
@@ -83,15 +93,36 @@ public class WorklistService
             ActivityInstance ai = (ActivityInstance) object;
 
             ActivityInstanceDTO dto;
-            if (null == context)
+            if (!activityInstanceUtils.isTrivialManualActivity(ai))
             {
                dto = DTOBuilder.build(ai, ActivityInstanceDTO.class);
             }
             else
             {
                TrivialActivityInstanceDTO trivialDto = DTOBuilder.build(ai, TrivialActivityInstanceDTO.class);
-               trivialDto.trivial = activityInstanceUtils.isTrivialManualActivity(ai, context);
+               trivialDto.trivial = true;
                dto = trivialDto;
+            }
+
+            dto.duration = ActivityInstanceUtils.getDuration(ai);
+            dto.lastPerformer = getLastPerformer(ai, UserUtils.getDefaultUserNameDisplayFormat());
+            dto.assignedTo = getAssignedToLabel(ai);
+
+            StatusDTO status = DTOBuilder.build(ai, StatusDTO.class);
+            status.label = ActivityInstanceUtils.getActivityStateLabel(ai);
+            dto.status = status;
+
+            int criticalityValue = criticalityUtils.getPortalCriticalityValue(ai.getCriticality());
+            CriticalityCategory criticalCategory =  criticalityUtils.getCriticalityCategory(criticalityValue, criticalityConfigurations);
+            CriticalityDTO criticalityDTO = DTOBuilder.build(criticalCategory, CriticalityDTO.class);
+            criticalityDTO.value = criticalityValue;
+            dto.criticality = criticalityDTO;
+
+            dto.defaultCaseActivity= ActivityInstanceUtils.isDefaultCaseActivity(ai);
+            if ( !dto.defaultCaseActivity )
+            {
+               dto.abortActivity = isAbortable(ai);
+               dto.delegable = isDelegable(ai);
             }
 
             List<ProcessDescriptor> processDescriptorsList = CollectionUtils.newList();
@@ -116,13 +147,25 @@ public class WorklistService
             }
 
             if (!processDescriptorsList.isEmpty()) {
-               dto.descriptors = new LinkedHashMap();
+               dto.descriptors = new LinkedHashMap<String, ProcessDescriptor>();
                for (ProcessDescriptor processDescriptor : processDescriptorsList)
                {
                   dto.descriptors.put(processDescriptor.getId(), processDescriptor);
                }
             }
-            
+
+            dto.activatable = isActivatable(ai);
+            if (QualityAssuranceState.IS_QUALITY_ASSURANCE.equals(ai.getQualityAssuranceState()))
+            {
+               long monitoredActivityPerformerOID = ai.getQualityAssuranceInfo().getMonitoredInstance()
+                     .getPerformedByOID();
+               long currentPerformerOID = SessionContext.findSessionContext().getUser().getOID();
+               if (monitoredActivityPerformerOID == currentPerformerOID)
+               {
+                  dto.activatable = false;
+               }
+            }
+
             list.add(dto);
          }
       }

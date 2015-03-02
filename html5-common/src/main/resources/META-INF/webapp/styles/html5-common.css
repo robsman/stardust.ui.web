@@ -1,3 +1,9 @@
+/************** General *****************/
+.msg-error {
+	color: red;
+	padding-left: 2px;
+}
+
 /* ********** View ********** */
 .view-panel {
 	margin: 6px;
@@ -23,63 +29,94 @@
 	margin-right: 5px;
 }
 
-/* ********** Data Table ********** */
+/************** popup dialog *****************/
 
-.tbl-error {
-   color: red;
+.popup-dlg {
+   position: absolute;
+   z-index: 10;
+   padding: 10px;
+   border-top: 1px solid #CCCCCC;
+   border-left: 1px solid #CCCCCC;
+   border-bottom: 1px solid #999999;
+   border-right: 1px solid #999999;
+   background: #FFFFFF;
+   overflow: auto;
+   box-shadow: 5px 5px 25px #888888; 
 }
 
-.tbl-title {
+.popup-dlg-bgImg {
+	background: url('./css-images/notes-background.png') top repeat-x #FFFFE0;
+}
+
+.popup-dlg-hdr {
+   border-bottom: 1px solid #CCCCCC;
+   padding: 5px;
+}
+
+.popup-dlg-hdr-txt {
+   color: #A69A88;
+   font-size: 15px;
    font-weight: bold;
-   margin-bottom: 8px;
 }
 
-.selectedRow td {
-	background-color: #E8E6FC;
+.popup-dlg-cls {
+   float: right;
+   margin: 5px 0px 0px 10px;
+   cursor: pointer;
 }
 
-.tbl-col {
-	padding: 2px 5px 2px 5px;
-	border: 1px solid #CCCCCC;
+.popup-dlg-cnt {
+   padding-top: 10px;
+   padding-bottom: 10px;
 }
 
-.tbl-hdr-col {
-	padding: 2px 5px 2px 5px;
-	border: 1px solid #CCCCCC;
-	background-color: #EEEEEE;
-	cursor: pointer;
-	font-weight: normal;
+.popup-dlg-footer {
+   border-top: 1px solid #CCCCCC;
+   padding-top: 10px;
+   text-align: right;
+   white-space: nowrap;
 }
 
-.tbl-hdr-col-label {
-	font-weight: bold;
+.popup-dlg-footer .button {
+   margin-left: 5px;
 }
 
-.tbl-toolbar {
+.popup-dlg-footer .button .primary {
+   margin-right: 5px;
+   border-radius: 3px;
+   color: white;
+   background: #24415E;
+   border-color: #21659d;
 }
 
-.tbl-toolbar-section {
-	margin-right: 5px;
-	border-right: 1px dotted gray;
-	float: left;
+.popup-dlg-footer .button .secondary {
+   background: #FFF !important;
+   color: #333 !important;
 }
 
-.tbl-toolbar-item {
+/************** Input Components *****************/
+
+.inp-sel-one {
+   border-color: #AAAAAA;
+   margin: 2px;
+   width: auto;
 }
 
-.tbl-tool-link {
-	margin-right: 5px;
-	cursor: pointer;
+.ui-section {
+   border-right: 1px dotted gray;
+   padding-right: 10px;
+   margin-right: 10px;
 }
 
-.tbl-row-selected {
-   background-color: #a9b7d1;
+.button-link {
+	background: none;
+	border: none;
 }
 
-.tbl-flt-title {
-   font-weight: normal;
-   margin-bottom: 10px;
+.button-link[disabled='disabled'] {
+	cursor: default;	
 }
+
 /************** Behaviors *****************/
 
 .right {
@@ -234,4 +271,47 @@
   to {
    margin-left:100%;
   }
+}
+
+/********sd-dialog*******************************/
+
+.sd-dialog {
+	width: auto; 
+	background: none; 
+	top: 0;
+	overflow: visible; 
+	border: 0; 
+	box-shadow: none; 
+	margin:0; 
+	position:absolute;
+}
+
+.no-modal {
+	display: table;
+}
+
+.sd-dialog .modal-dialog {
+	z-index: 99999;
+	margin: 0px auto;
+}
+
+.sd-dialog .modal-dialog .modal-content {
+	height: inherit;
+}
+
+.sd-dialog .modal-dialog .modal-content .modal-header {
+	height: 33px;
+}
+
+.sd-dialog .modal-dialog .modal-content .confirmation-header {
+	width: 98%;
+}
+
+.sd-dialog .modal-dialog .modal-content .modal-body {
+	height: inherit;
+	max-height: none;
+}
+
+.sd-dialog .modal-dialog .modal-content .modal-footer {
+	height: 33px;
 }

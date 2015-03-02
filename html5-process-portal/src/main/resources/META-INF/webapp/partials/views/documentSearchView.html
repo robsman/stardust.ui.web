@@ -1,0 +1,240 @@
+<html>
+<head>
+<style type="text/css">
+table.formTable td {
+	padding: 3px;
+}
+
+</style>
+</head>
+<body>
+	<div class="view-panel" style="width: 100%; height: 100%"
+		ng-controller="sdDocumentSearchViewCtrl as docSearchViewCtrl">
+		<div class="icePnlClpsblHdr" ng-model="showDocumentSearchView"
+			ng-click="showDocumentSearchView=!showDocumentSearchView">
+			<div style="padding: 1px; width: 100%; background-image: none;"
+				class="heading">
+				<a href="#"
+					style="float: left; border: 0px none; margin: 0px; visibility: visible; outline-style: none; outline-width: 0px;">
+				</a>
+				<div>
+					<span>{{i18n('views-common-messages.views-documentSearchView-documentSearchCriteria-label')}}</span>
+				</div>
+			</div>
+		</div>
+		<div ng-show="showDocumentSearchView">
+			<table style="vertical-align: top;">
+				<tbody>
+					<tr>
+						<td style="vertical-align: top;">
+							<table class="formTable">
+								<tr>
+									<td><label>{{i18n('views-common-messages.views-documentSearchView-createDate-label')
+											+
+											i18n('views-common-messages.views-documentSearchView-colon')}}</label>
+									</td>
+									<td><input type="text" sd-date-picker
+										sda-change-year="true" sda-milliseconds="true" ng-model-onblur
+										ng-model="query.documentSearchCriteria.createDateFrom" /></td>
+								</tr>
+								<tr>
+									<td><label>{{i18n('views-common-messages.views-documentSearchView-createDateTo-label')
+											+
+											i18n('views-common-messages.views-documentSearchView-colon')}}</label>
+									</td>
+									<td><input type="text" sd-date-picker
+										sda-change-year="true" sda-milliseconds="true" ng-model-onblur
+										ng-model="query.documentSearchCriteria.createDateTo" /></td>
+								</tr>
+								<tr>
+									<td><label>{{i18n('views-common-messages.views-documentSearchView-modificationDate-label')
+											+
+											i18n('views-common-messages.views-documentSearchView-colon')}}</label>
+									</td>
+									<td><input type="text" sd-date-picker
+										sda-change-year="true" sda-milliseconds="true" ng-model-onblur
+										ng-model="query.documentSearchCriteria.modificationDateFrom" /></td>
+								</tr>
+								<tr>
+									<td><label>{{i18n('views-common-messages.views-documentSearchView-modificationDateTo-label')
+											+
+											i18n('views-common-messages.views-documentSearchView-colon')}}</label>
+									</td>
+									<td><input type="text" sd-date-picker
+										sda-change-year="true" sda-milliseconds="true" ng-model-onblur
+										ng-model="query.documentSearchCriteria.modificationDateTo" /></td>
+								</tr>
+								<tr>
+									<td><label>{{i18n('views-common-messages.views-documentSearchView-documentType-label')
+											+
+											i18n('views-common-messages.views-documentSearchView-colon')}}</label>
+									</td>
+									<td><select multiple="multiple"
+										ng-model="query.documentSearchCriteria.selectedDocumentTypes"
+										name="txtDocumentType"
+										style="height: 75px; width: 210px; align: center;"
+										ng-options="opt.value as opt.label for opt in documentTypes">
+									</select></td>
+								</tr>
+								<tr>
+									<td><label>{{i18n('views-common-messages.views-documentSearchView-fileType-label')
+											+
+											i18n('views-common-messages.views-documentSearchView-colon')}}</label>
+									</td>
+									<td>
+										<table
+											ng-show="!query.documentSearchCriteria.selectFileTypeAdvance">
+											<tr>
+												<td><input type="checkbox"
+													ng-model="query.documentSearchCriteria.showAll"
+													ng-change="docSearchViewCtrl.getFileTypes()"
+													style="vertical-align: middle" /> <label
+													style="display: inline-block; margin-bottom: 5px; padding-left: 1px; vertical-align: text-top;">{{i18n('views-common-messages.views-documentSearchView-showAll-label')}}</label>
+												</td>
+												<td><a href="#"
+													ng-click="docSearchViewCtrl.advancedFileTypes()"
+													style="margin-left: 70px">
+														{{i18n('views-common-messages.views-documentSearchView-advanced-label')
+														+ ">>"}} </a></td>
+											</tr>
+										</table>
+										<table
+											ng-show="query.documentSearchCriteria.selectFileTypeAdvance">
+											<tr>
+												<td width="30px"></td>
+												<td><a href="#"
+													ng-click="docSearchViewCtrl.pickFromList()"
+													style="margin-left: 70px">
+														{{i18n('views-common-messages.views-documentSearchView-pickFromList-label')
+														+ ">>"}} </a></td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+								<tr>
+									<td></td>
+									<td
+										ng-show="!query.documentSearchCriteria.selectFileTypeAdvance">
+										<select multiple="multiple"
+										ng-model="query.documentSearchCriteria.selectedFileTypes"
+										style="height: 75px; width: 210px; align: center;"
+										ng-options="opt.value as opt.label for opt in fileTypes">
+									</select>
+									</td>
+									<td
+										ng-show="query.documentSearchCriteria.selectFileTypeAdvance">
+										<input type="text"
+										ng-model="query.documentSearchCriteria.advancedFileType"
+										value="{{query.documentSearchCriteria.advancedFileType}}" />
+									</td>
+								</tr>
+								<tr>
+									<td><label>{{i18n('views-common-messages.views-documentSearchView-containingText-label')
+											+
+											i18n('views-common-messages.views-documentSearchView-colon')}}</label>
+									</td>
+									<td>
+										<table>
+											<tr>
+												<td><input type="checkbox"
+													ng-model="query.documentSearchCriteria.searchContent" /> <label
+													style="display: inline-block; margin-bottom: 5px; padding-left: 1px; vertical-align: text-top;">{{i18n('views-common-messages.views-documentSearchView-searchContent-label')}}</label>
+												</td>
+												<td><input type="checkbox"
+													ng-model="query.documentSearchCriteria.searchData" /> <label
+													style="display: inline-block; margin-bottom: 5px; padding-left: 1px; vertical-align: text-top;">{{i18n('views-common-messages.views-documentSearchView-searchData-label')}}</label>
+												</td>
+												<td><a href="#"								
+													ng-click="docSearchViewCtrl.setShowAdvancedTextSearch()">
+														{{i18n('views-common-messages.views-documentSearchView-advanced-label')
+														+ ">>"}} </a></td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+								<tr>
+									<td></td>
+									<td><textarea
+											ng-model="query.documentSearchCriteria.containingText"
+											cols="20" rows="2" style="width: 260px"></textarea></td>
+								</tr>
+								<tr>
+									<td><label>{{i18n('views-common-messages.views-documentSearchView-author-label')
+											+
+											i18n('views-common-messages.views-documentSearchView-colon')}}</label>
+									</td>
+									<!--  <td><input type="text" ng-model="author" value="{{author}}"/></td> -->
+									<td><div sd-auto-complete sda-matches="authors"
+											sda-match-str="partialAuthor"
+											sda-change="docSearchViewCtrl.getAuthors(partialAuthor)"
+											sda-text-property="name"
+											sda-container-class="sd-ac-container"
+											sda-item-hot-class="sd-ac-item-isActive"
+											sda-selected-matches="selectedAuthors"
+											sda-allow-multiple=false sda-allow-duplicates=false></div></td>
+								</tr>
+								<tr>
+									<td><label>{{i18n('views-common-messages.views-documentSearchView-documentName-label')
+											+
+											i18n('views-common-messages.views-documentSearchView-colon')}}</label>
+									</td>
+									<td><input type="text"
+										ng-model="query.documentSearchCriteria.documentName"
+										value="{{query.documentSearchCriteria.documentName}}" /></td>
+								</tr>
+								<tr>
+									<td><label>{{i18n('views-common-messages.views-documentSearchView-documentId-label')
+											+
+											i18n('views-common-messages.views-documentSearchView-colon')}}</label>
+									</td>
+									<td><input type="text"
+										ng-model="query.documentSearchCriteria.documentId"
+										value="{{query.documentSearchCriteria.documentId}}" /></td>
+								</tr>
+								<tr ng-show="repositories.length>1">
+									<td><label>{{i18n('views-common-messages.views-documentSearchView-repository-label')
+											+
+											i18n('views-common-messages.views-documentSearchView-colon')}}</label>
+									</td>
+									<td><select multiple="multiple"
+										ng-model="query.documentSearchCriteria.selectedRepository"
+										style="height: 75px; width: 210px; align: center;"
+										ng-options="opt.value as opt.label for opt in repositories">
+									</select></td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td style="vertical-align: top;">
+							<div style="white-space: nowrap;">
+								<table>
+									<tbody>
+										<tr>
+											<td><input class="button" type="submit" value="Search"
+												ng-click="docSearchViewCtrl.setShowTableData()"></td>
+											<td><input type="submit" value="Reset"></td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div sd-dialog sd-show-overlay="true"
+			 sda-show="docSearchViewCtrl.showAdvancedTextSearch"
+			 sda-type="confirm"
+			 sda-title="{{i18n('views-common-messages.views-documentSearchView-advancedTextSearch-label')}}"
+			 sda-scope="this"
+			 sda-template="plugins/html5-process-portal/partials/views/advancedTextSearch.html"
+			 sda-on-confirm="docSearchViewCtrl.onConfirmFromAdvanceText(res)"
+			 sda-on-close="docSearchViewCtrl.onCancelFromAdvanceText(res)"
+			 sda-width="800px">
+		</div>
+		<div ng-include="'plugins/html5-process-portal/partials/views/documentSearchResult.html'">
+		</div>
+	</div>
+</body>
+<html>

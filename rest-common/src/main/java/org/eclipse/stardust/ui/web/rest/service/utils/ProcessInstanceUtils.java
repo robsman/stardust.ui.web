@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Anoop.Nair (SunGard CSA LLC) - initial API and implementation and/or initial documentation
+ *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service.utils;
 
@@ -31,7 +31,7 @@ import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
  * @author Anoop.Nair
  * @version $Revision: $
  */
-@Component
+@Component("ProcessInstanceUtilsREST")
 public class ProcessInstanceUtils
 {
 
@@ -94,7 +94,7 @@ public class ProcessInstanceUtils
 
    /**
     * return true if the provided Process Instance supports Process Attachments
-    * 
+    *
     * @param oid
     * @return
     */

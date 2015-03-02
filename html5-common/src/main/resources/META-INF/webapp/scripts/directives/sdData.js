@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Anoop.Nair (SunGard CSA LLC) - initial API and implementation and/or initial documentation
+ *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
 
 /**
@@ -67,7 +67,8 @@
 				var deferred = $q.defer();
 				
 				if(dataAsFunction) {
-					var object = dataGetter(currentScope, {params: params});
+					var funcParams = params ? {params: params} : undefined;
+					var object = dataGetter(currentScope, funcParams);
 
 					// It's a function returning deferred promise
 					if (angular.isFunction(object.then)) {
@@ -80,6 +81,7 @@
 						deferred.resolve(object);
 					}
 				} else { // It's a simple scope data
+					var object = dataGetter(currentScope);
 					deferred.resolve(object);
 				}
 

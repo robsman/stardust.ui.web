@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.common.util;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -20,6 +21,8 @@ import java.util.Map.Entry;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -37,6 +40,10 @@ public class GsonUtils
 
    private final static JsonParser jsonParser = new JsonParser();
 
+   private final static Gson gson = new Gson();
+   
+   private final static Gson gsonHTMLSafe = new GsonBuilder().disableHtmlEscaping().create();
+   
    /**
     * @param jsonText
     * @return
@@ -287,11 +294,66 @@ public class GsonUtils
       return (null != member) ? processJson(member.getAsJsonObject()) : null;
    }
    
+	/**
+	 * @author Yogesh.Manware
+	 * Return Java List from provided jsonArray
+	 * examples of ListType are 1. Type listType = new TypeToken<List<Long>>(){}.getType();
+	 * 2. Type listType = new TypeToken<List<Person>>(){}.getType(); //where Person is a custom object
+	 *  
+	 * @param jsonArray
+	 * @param listType
+	 * @return
+	 */
+	public static Object extractList(JsonArray jsonArray, Type listType) {
+		return (null != jsonArray && listType != null) ? gson.fromJson(
+				jsonArray.toString(), listType) : null;
+	}
+	
+    /**
+    * @param json
+    * @param classOfT
+    * @return
+    */
+   public static <T> T fromJson(String json, Class<T> classOfT)
+    {
+      return (null != json && classOfT != null) ? gson.fromJson(json, classOfT) : null;
+    }
+	
+	/**
+	 * @param obj
+	 * @return
+	 */
+	public static Object toJson(Object obj) {
+		return gson.toJson(obj);
+	}
+
+	public static String toJsonString(Object obj) {
+		return toJson(obj).toString();
+	}
+
+   /**
+    * @param obj
+    * @return
+    */
+   public static Object toJsonHTMLSafe(Object obj)
+   {
+      return gsonHTMLSafe.toJson(obj);
+   }
+
+   /**
+    * @param obj
+    * @return
+    */
+   public static String toJsonHTMLSafeString(Object obj)
+   {
+      return toJsonHTMLSafe(obj).toString();
+   }
+	
    /**
     * @param jsonObj
     * @return
     */
-   private static Map<String, Object> processJson(JsonObject jsonObj)
+   public static Map<String, Object> processJson(JsonObject jsonObj)
    {
       Map<String, Object> map = new LinkedHashMap<String, Object>();
       for (Entry<String, JsonElement> entry : jsonObj.entrySet())

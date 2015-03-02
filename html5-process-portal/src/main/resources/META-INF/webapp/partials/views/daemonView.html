@@ -1,0 +1,35 @@
+<script src="plugins/html5-process-portal/scripts/controllers/AggregateCtrl.js" />
+<div class="view-panel" ng-controller="AggregateCtrl as ctrl"
+	sg-stretch-to-bottom>
+	<!-- View Content -->
+	<div class="view-panel-content">
+		<h3>Daemons:</h3>
+		<table sd-data-table="ctrl.daemonDataTable"
+			sd-data="ctrl.fetchDaemons(params)" sda-mode="local"
+			sda-selectable="row"
+			sda-on-pagination="ctrl.daemonDataTableOnPagination(info)">
+			<thead>
+				<tr>
+					<th sda-fixed="true" sda-name="type" sda-label="Type"></th>
+					<th sda-name="running" sda-label="Running"></th>
+					<th sda-name="daemonExecutionState" sda-visible="false"
+						sda-label="Execution State"></th>
+					<th sda-name="acknowledgementState"
+						sda-label="Acknowledgement State"></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>{{rowData.type + ":"}}</td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+			</tbody>
+		</table>
+		<div ng-show="ctrl.daemonDataTable.ready">
+			<br />
+			<b>Selection:</b>{{ctrl.daemonDataTable.getSelection()}}
+		</div>
+	</div>
+</div>

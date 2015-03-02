@@ -10,13 +10,16 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service.utils;
 
+import java.util.Locale;
+
+import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
 
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 
@@ -56,6 +59,21 @@ public abstract class ManagedBeanUtils
       return bean;
    }
 
+   /**
+    * @return
+    */
+   public static Locale getLocale()
+   {
+      if (FacesContext.getCurrentInstance() != null)
+      {
+         return FacesContext.getCurrentInstance().getExternalContext().getRequestLocale();
+      }
+      else
+      {
+         return LocaleContextHolder.getLocale();
+      }
+   }
+   
    private ManagedBeanUtils()
    {}
 }

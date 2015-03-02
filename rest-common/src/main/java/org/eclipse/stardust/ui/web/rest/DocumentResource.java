@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Anoop.Nair (SunGard CSA LLC) - initial API and implementation and/or initial documentation
+ *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest;
 
@@ -27,7 +27,7 @@ import com.google.gson.JsonObject;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.rest.exception.PortalErrorClass;
-import org.eclipse.stardust.ui.web.rest.exception.PortalException;
+import org.eclipse.stardust.ui.web.rest.exception.PortalRestException;
 import org.eclipse.stardust.ui.web.rest.service.DocumentService;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentTypeDTO;
@@ -83,7 +83,7 @@ public class DocumentResource
    @Produces(MediaType.APPLICATION_JSON)
    @Path("{documentId}/document-type")
    public Response getDocumentType(@PathParam("documentId")
-   String documentId) throws PortalException
+   String documentId) throws PortalRestException
    {
       try
       {
@@ -97,7 +97,7 @@ public class DocumentResource
       }
       catch (Exception e)
       {
-         throw new PortalException(PortalErrorClass.DOCUMENT_NOT_FOUND, e);
+         throw new PortalRestException(PortalErrorClass.DOCUMENT_NOT_FOUND, e);
       }
    }
 

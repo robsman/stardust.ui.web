@@ -81,6 +81,155 @@
 		/*
 		 * 
 		 */
+		UtilService.prototype.parseFunction = function(funcAsStr) {
+			var ret = null;
+
+			try {
+				if (funcAsStr.indexOf('(') != -1) {
+					funcAsStr = funcAsStr.substring(funcAsStr.indexOf('(') + 1);
+					
+					if (funcAsStr.indexOf(')') != -1) {
+						var params = funcAsStr.substring(0, funcAsStr.indexOf(')'));
+						params = params.split(',');
+						for(var i = 0; i < params.length; i++) {
+							params[i] = params[i].trim();
+						}
+						ret = {};
+						ret.params = params;
+					}
+				}
+			} catch (e) {
+			}
+
+			return ret;
+		};
+
+		/*
+		 * 
+		 */
+		UtilService.prototype.isEmpty = function(data) {
+			if (data == undefined || data == null) {
+				return true; 
+			}
+
+			var empty = false;
+
+			switch(typeof data) {
+				case 'string':
+					if (data == '') {
+						empty = true;
+					}
+					break;
+				case 'object':
+					if (angular.isArray(data)) {
+						empty = data.length == 0;
+					} else {
+						var properties = 0;
+						for(var key in data) {
+							properties++;
+							break;
+						}
+						empty = properties == 0;
+					}
+					break;
+			}
+
+			return empty;
+		};
+
+		/*
+		 * 
+		 */
+		UtilService.prototype.assert = function(condition, msg) {
+			if (!condition) {
+				throw msg;
+			}
+		};
+
+		/*
+		 * For async, use angular resource
+		 */
+		UtilService.prototype.syncAjax = function(endpoint) {
+			var data, failed;
+
+			jQuery.ajax({
+				type: 'GET',
+				url: endpoint,
+				async: false,
+				contentType: 'application/json',
+				success: function(result) {
+					data = result;
+				},
+				error: function(errObj) {
+					failed = true;
+				}
+			});
+
+			if (failed) {
+				throw 'Error in invoking syncAjaxPost()';
+			}
+
+			return data;
+		};
+
+		/*
+		 * For async, use angular resource
+		 */
+		UtilService.prototype.syncAjaxSubmit = function(endpoint, value, type) {
+			var data, failed;
+
+			if (angular.isObject(value) || angular.isArray(value)) {
+				value = angular.toJson(value);
+			} else {
+				value = '' + value;
+			}
+			
+			jQuery.ajax({
+				type: type ? type : 'POST',
+				url: endpoint,
+				async: false,
+				contentType: 'application/json',
+				data: value,
+				success: function(result) {
+					data = result;
+				},
+				error: function(errObj) {
+					failed = true;
+				}
+			});
+
+			if (failed) {
+				throw 'Error in invoking syncAjaxSubmit()';
+			}
+
+			return data;
+		};
+		
+
+		/**
+		 * 
+		 */
+		UtilService.prototype.truncateTitle = function(title) {
+		   var MAX_TITLE_LENGTH = 35;
+		   return this.truncate(title,MAX_TITLE_LENGTH);
+		}
+		
+		
+		 /**
+       * 
+       */
+      UtilService.prototype.truncate = function(string,maxLength) {
+         
+         if (string.length > maxLength) {
+            string = string.substring(0, maxLength - 3);
+            string += '...';
+         }
+         return string;
+      }
+
+		/*
+		 * 
+		 */
 		function createProxyFunc(obj, member) {
 			function proxyFunc() {
 				var args = Array.prototype.slice.call(arguments, 0);
@@ -89,5 +238,7 @@
 			
 			return proxyFunc;
 		}
+		
+		
 	};
 })();

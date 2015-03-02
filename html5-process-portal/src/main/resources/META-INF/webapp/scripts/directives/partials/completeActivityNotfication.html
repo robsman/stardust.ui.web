@@ -1,0 +1,37 @@
+<div class="confirmation-contents section">
+	<div ng-hide="worklistCtrl.completeActivityResult.error">
+		<div
+			ng-show="worklistCtrl.completeActivityResult.notifications.failure.length > 0">
+			<div ng-bind="i18n('processportal.views-completeActivityDialog-notificaition-failure')"></div>
+			<br>
+			<table  class="table">
+				<thead>
+					<tr>
+						<th ng-bind="i18n('processportal.views-completeActivityDialog-notificaition-table-header-activity')"></th>
+						<th ng-bind="i18n('processportal.views-completeActivityDialog-notificaition-table-header-activityOID')"></th>
+						<th ng-bind="i18n('processportal.views-completeActivityDialog-notificaition-table-header-error')"></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr
+						ng-repeat="activity in worklistCtrl.completeActivityResult.notifications.failure">
+						<td>{{
+							worklistCtrl.completeActivityResult.nameIdMap[activity.OID]}}</td>
+						<td ng-bind="activity.OID"></td>
+						<td ng-bind="activity.message"></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<div ng-show="worklistCtrl.completeActivityResult.error"
+		ng-bind="i18n('processportal.views-completeActivityDialog-notification-error')">
+	</div>
+</div>
+<div class="confirmation-buttonpane">
+	<div class="button-pane cf">
+		<div class="right">
+			<button class="button" ng-click="closeThisDialog()">Close</button>
+		</div>
+	</div>
+</div>

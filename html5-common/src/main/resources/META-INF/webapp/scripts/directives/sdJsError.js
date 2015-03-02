@@ -17,7 +17,7 @@ angular.module('bpm-common.directives')
         },
         template: '<div  ng-click="dismiss()" class="message warning" ' +
                   'ng-show="showError">'+
-                  '<i class="fa fa-warning"></i>' +
+                  '<i class="glyphicon glyphicon-exclamation-sign"></i>' +
                   'ERROR: {{errorModel | json}}' + 
                   '<div class="right">' +
                   '<span class="bubble dark">{{errors.length}}</span>' +

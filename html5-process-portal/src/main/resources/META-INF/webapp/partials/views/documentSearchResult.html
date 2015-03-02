@@ -1,0 +1,138 @@
+<div class="worklist-wrapper">
+	<table sd-data-table="{{docSearchViewCtrl.docSearchRsltTblHndExp}}" sda-ready="docSearchViewCtrl.showTableData"
+		sd-data="docSearchViewCtrl.performSearch(params)" sda-mode="remote"
+		sda-selectable="multiple" sda-page-size="8"
+		sda-column-selector="{{docSearchViewCtrl.columnSelector}}"
+		sda-sortable="true"
+		sda-sort-by="{name : 'documentName', dir : 'desc'}">
+		<thead
+			sda-i18n-scope="views-common-messages.views-documentSearchView-documentSearchTable-column">
+			<tr>
+				<th sda-name="documentName" sda-sortable="true">
+					<div sda-filter-template>
+						<div sd-text-search-filter></div>
+					</div>
+				</th>
+				<th sda-name="createDate" sda-sortable="true">
+					<div sda-filter-template>
+						<div sd-date-filter></div>
+					</div>
+				</th>
+				<th sda-name="modificationDate" sda-sortable="true">
+					<div sda-filter-template>
+						<div sd-date-filter></div>
+					</div>
+				</th>
+				<th sda-name="fileType" sda-sortable="true">
+					<div sda-filter-template>
+						<div sd-text-search-filter></div>
+					</div>
+				</th>
+				<th sda-name="documentType" sda-sortable="true">
+					<div sda-filter-template>
+						<div sd-multi-select-filter sda-options="documentTypes"></div>
+					</div>
+				</th>
+				<th sda-name="fileSize"></th>
+				<th sda-name="metadata"></th>
+				<th sda-name="documentPath"></th>
+				<th sda-name="repository"></th>
+				<th sda-name="documentId" sda-sortable="true">
+					<div sda-filter-template>
+						<div sd-text-search-filter></div>
+					</div>
+				</th>
+				<th sda-name="author" sda-sortable="true">
+					<div sda-filter-template>
+						<div sd-text-search-filter></div>
+					</div>
+				</th>
+				<th sda-name="actions" sda-fixed="true"></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>
+					<table><tbody><tr style="vertical-align: top;"><td>
+					<i class="{{docSearchViewCtrl.getGlyphiconClass(rowData.iconPath)}}"></i></td>
+					<td><a href="#" ng-click="bpmCommon.stopEvent($event); docSearchViewCtrl.openDocumentView(rowData.documentId);">
+						<div sd-tool-tip
+							sda-tool-tip-url="'plugins/html5-process-portal/scripts/directives/partials/DocumentDetailToolTip.html'"
+							sda-title="rowData.documentName"
+							sda-tool-tip-class="popup-dlg-bgImg"></div>
+				</a></td></tr></tbody></table></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td><div
+						ng-bind="docSearchViewCtrl.bytesToSize(rowData.fileSize)"></div></td>
+				<td></td>
+				<td><table><tbody><tr style="vertical-align: top;"><td>
+					<i class="glyphicon glyphicon-folder-close"></i></td><td><div ng-bind="rowData.documentPath"></div> </td></tr></tbody></table></td>
+				<td><div ng-bind="rowData.repositoryId"></div></td>
+				<td></td>
+				<td><a href="#" ng-click="docSearchViewCtrl.openUserDetails(rowData.documentOwner)">{{rowData.author}}</a>
+				</td>
+				<td>
+					<div style="text-align: right; white-space: nowrap;">
+						<button ng-click="bpmCommon.stopEvent($event); docSearchViewCtrl.openProcessDialog(rowData); "
+								title="{{i18n('views-common-messages.views-documentSearchView-documentSearchTable-tooltip-process')}}" class="button-link tbl-tool-link">
+							<i class="glyphicon glyphicon-cog"></i>
+						</button>
+						<button ng-click="bpmCommon.stopEvent($event); docSearchViewCtrl.openAttachToProcessDialog(rowData);"
+								title="{{i18n('views-common-messages.views-documentSearchView-documentSearchTable-attachToProcess')}}" class="button-link tbl-tool-link">
+							<i class="glyphicon glyphicon-file"></i>
+						</button>
+						<button ng-click="bpmCommon.stopEvent($event); docSearchViewCtrl.setShowDocumentDownload(rowData.documentId,rowData.documentName);"
+								title="{{i18n('views-common-messages.views-myDocumentsTreeView-documentTree-downloadFile')}}" class="button-link tbl-tool-link">
+							<i class="glyphicon glyphicon-download"></i>
+						</button>
+						<button ng-click="bpmCommon.stopEvent($event);docSearchViewCtrl.setShowDocumentVersions(rowData.documentId,rowData.documentName);"
+								title="{{i18n('views-common-messages.views-myDocumentsTreeView-documentTree-versionHistory')}}" class="button-link tbl-tool-link">
+							<i class="glyphicon glyphicon-book"></i><!-- need to chnage this icon once we get correct one -->
+						</button>
+					</div>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<div sd-dialog sda-modal="true"
+		 sda-show="docSearchViewCtrl.showUserDetails"
+		 sda-type="custom"
+		 sda-title="{{i18n('views-common-messages.views-userDetails-title')}}"
+		 sda-scope="this"
+		 sda-template="plugins/html5-process-portal/scripts/directives/partials/userDetails.html"
+		 sda-width="400px">
+	</div>
+	<div sd-dialog="docSearchViewCtrl.documentHistory" sda-modal="true"
+		 sda-show="docSearchViewCtrl.showDocumentVersions"
+		 sda-type="custom"
+		 sda-title="{{i18n('views-common-messages.views-documentView-documentVersion-versionHistory')+ ' ' + docSearchViewCtrl.documentVersions.documentName}}"
+		 sda-scope="this"
+		 sda-template="plugins/html5-process-portal/partials/views/documentVersion.html"
+		 sda-on-close="docSearchViewCtrl.onCloseDocumentVersions(res)"
+		 sda-width="700px">
+	</div>
+		<div sd-dialog="docSearchViewCtrl.processDialog" sda-modal="true"
+		 sda-show="docSearchViewCtrl.showProcessDialog"
+		 sda-type="custom"
+		 sda-title="{{i18n('views-common-messages.views-documentSearchView-documentSearchTable-tooltip-process')}}"
+		 sda-scope="this"
+		 sda-template="plugins/html5-process-portal/scripts/directives/partials/documentProcessesDialog.html"
+		 sda-width="300px"
+		 sda-height="800px"	>
+	</div>
+	<div sd-dialog="docSearchViewCtrl.documentDownload" sda-modal="true"
+		 sda-show="docSearchViewCtrl.showDoumentDownload"
+		 sda-type="confirm"
+		 sda-title="{{i18n('views-common-messages.views-myDocumentsTreeView-documentTree-downloadFile')}}"
+		 sda-scope="this"
+		 sda-template="plugins/html5-process-portal/scripts/directives/partials/documentDownloadDialog.html"
+		 sda-on-confirm="docSearchViewCtrl.downloadDocument(res)"
+		 sda-on-close="docSearchViewCtrl.downloadDocumentClose(res)"
+		 sda-confirm-action-label="{{i18n('views-common-messages.views-genericRepositoryView-downloanFile-label')}}"
+		 sda-width="300px"
+		 sda-height="50px"	>
+	</div>
+</div>
