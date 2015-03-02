@@ -1081,32 +1081,57 @@ public class ModelElementMarshaller implements ModelMarshaller
 
          if (activity.getQualityControlPerformer() != null)
          {
-            JsonObject qcJson = new JsonObject();
+            JsonObject qcJson = new JsonObject();                     
             qcJson.addProperty(
                   ModelerConstants.PARTICIPANT_FULL_ID,
                   getModelBuilderFacade().createFullId(
                         ModelUtils.findContainingModel(activity),
                         activity.getQualityControlPerformer()));
-
-            JsonArray validCodesJson = new JsonArray();
-            for (Iterator<Code> i = activity.getValidQualityCodes().iterator(); i
-                  .hasNext();)
+            if(activity.getValidQualityCodes() != null)
             {
-               Code code = i.next();
-               Code resolvedCode = resolveCode(activity, code);
-               if (resolvedCode != null)
+               JsonArray validCodesJson = new JsonArray();
+               for (Iterator<Code> i = activity.getValidQualityCodes().iterator(); i
+                     .hasNext();)
                {
-                  JsonObject codeJson = new JsonObject();
-                  codeJson.addProperty(ModelerConstants.QC_CODE, resolvedCode.getCode());
-                  codeJson.addProperty(ModelerConstants.QC_NAME, resolvedCode.getName());
-                  codeJson
-                        .addProperty(ModelerConstants.QC_VALUE, resolvedCode.getValue());
-                  validCodesJson.add(codeJson);
+                  Code code = i.next();
+                  Code resolvedCode = resolveCode(activity, code);
+                  if (resolvedCode != null)
+                  {
+                     JsonObject codeJson = new JsonObject();
+                     codeJson.addProperty(ModelerConstants.QC_CODE, resolvedCode.getCode());
+                     codeJson.addProperty(ModelerConstants.QC_NAME, resolvedCode.getName());
+                     codeJson
+                           .addProperty(ModelerConstants.QC_VALUE, resolvedCode.getValue());
+                     validCodesJson.add(codeJson);
+                  }
                }
+               qcJson.add(ModelerConstants.QC_VALID_CODES, validCodesJson);
             }
-            qcJson.add(ModelerConstants.QC_VALID_CODES, validCodesJson);
             activityJson.add(ModelerConstants.QUALITYCONTROL, qcJson);
-         }
+                  
+            JsonObject attributes;
+            if (!hasNotJsonNull(activityJson, ModelerConstants.ATTRIBUTES_PROPERTY))
+            {
+               activityJson.add(ModelerConstants.ATTRIBUTES_PROPERTY, attributes = new JsonObject());
+            }
+            else
+            {
+               attributes = activityJson.getAsJsonObject(ModelerConstants.ATTRIBUTES_PROPERTY);
+            }
+
+            attributes.remove(PredefinedConstants.QUALITY_ASSURANCE_PROBABILITY_ATT);
+            attributes.remove(PredefinedConstants.QUALITY_ASSURANCE_FORMULA_ATT);            
+            String probability = AttributeUtil.getCDataAttribute(activity, PredefinedConstants.QUALITY_ASSURANCE_PROBABILITY_ATT);
+            if(!StringUtils.isEmpty(probability))
+            {
+               attributes.addProperty(PredefinedConstants.QUALITY_ASSURANCE_PROBABILITY_ATT, probability);
+            }
+            String formula = AttributeUtil.getCDataAttribute(activity, PredefinedConstants.QUALITY_ASSURANCE_FORMULA_ATT);
+            if(!StringUtils.isEmpty(formula))
+            {
+               attributes.addProperty(PredefinedConstants.QUALITY_ASSURANCE_FORMULA_ATT, formula);               
+            }         
+         }                  
       }
 
       /*EventHandlerType eventHandler = EventMarshallingUtils
