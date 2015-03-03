@@ -30,6 +30,7 @@ import org.eclipse.stardust.ui.web.common.util.ReflectionUtils;
 import org.eclipse.stardust.ui.web.rest.JsonMarshaller;
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOAttribute;
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOClass;
+import org.eclipse.stardust.ui.web.viewscommon.spi.descriptor.ISemanticalDescriptorComparator;
 
 
 /**
@@ -249,9 +250,12 @@ public class DTOBuilder
 					setFieldValue(toInstance, field, json.get(field.getName())
 							.getAsBoolean());
 				} else if (Date.class.equals(field.getType())) {
-
+                    if(json.get(field.getName()).getAsString().isEmpty()){
+                    	setFieldValue(toInstance, field,null);
+                    }else{
 					setFieldValue(toInstance, field,
 							new Date(json.get(field.getName()).getAsLong()));
+                    }
 				} else if (List.class.equals(field.getType())) {
 					Type listType = new TypeToken<List<String>>() {
 					}.getType();

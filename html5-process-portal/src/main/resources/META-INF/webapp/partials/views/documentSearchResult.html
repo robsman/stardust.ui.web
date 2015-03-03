@@ -30,7 +30,7 @@
 				</th>
 				<th sda-name="documentType" sda-sortable="true">
 					<div sda-filter-template>
-						<div sd-multi-select-filter sda-options="documentTypes"></div>
+						<div sd-multi-select-filter sda-options="docSearchViewCtrl.documentTypes"></div>
 					</div>
 				</th>
 				<th sda-name="fileSize"></th>
@@ -57,7 +57,7 @@
 					<i class="{{docSearchViewCtrl.getGlyphiconClass(rowData.iconPath)}}"></i></td>
 					<td><a href="#" ng-click="bpmCommon.stopEvent($event); docSearchViewCtrl.openDocumentView(rowData.documentId);">
 						<div sd-tool-tip
-							sda-tool-tip-url="'plugins/html5-process-portal/scripts/directives/partials/DocumentDetailToolTip.html'"
+							sda-tool-tip-url="'plugins/html5-process-portal/scripts/directives/partials/documentDetailToolTip.html'"
 							sda-title="rowData.documentName"
 							sda-tool-tip-class="popup-dlg-bgImg"></div>
 				</a></td></tr></tbody></table></td>
@@ -97,6 +97,23 @@
 			</tr>
 		</tbody>
 	</table>
+	<div sd-dialog sda-modal="false"
+		 sda-show="docSearchViewCtrl.showAttachToProcessDialog"
+		 sda-type="confirm"
+		 sda-title="{{i18n('views-common-messages.views-documentSearchView-documentSearchTable-attachToProcess')}}"
+		 sda-scope="this"
+		 sda-template="plugins/html5-process-portal/scripts/directives/partials/selectProcessDialog.html"
+		 sda-on-confirm="docSearchViewCtrl.onConfirmFromAttachToProcess(res)"
+		 > <!-- sda-on-open="docSearchViewCtrl.onOpenFromAttachToProcess(res)" -->
+	</div>
+	<div sd-dialog sda-modal="false"
+		 sda-show="docSearchViewCtrl.showAttachDocumentResult"
+		 sda-type="alert"
+		 sda-title="{{docSearchViewCtrl.infoData.messageType}}"
+		 sda-scope="this"
+		 sda-template="plugins/html5-process-portal/scripts/directives/partials/attachDocumentResult.html"
+		 >
+	</div>
 	<div sd-dialog sda-modal="true"
 		 sda-show="docSearchViewCtrl.showUserDetails"
 		 sda-type="custom"

@@ -25,7 +25,7 @@
 			restrict : 'EA',
 			transclude : true,
 			replace : true,
-			templateUrl : 'plugins/html5-process-portal/scripts/directives/partials/ToolTip.html',
+			templateUrl : 'plugins/html5-process-portal/scripts/directives/partials/toolTip.html',
 			controller : [ '$scope', '$parse', '$attrs', ToolTipController ]
 		};
 	}

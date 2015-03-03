@@ -36,6 +36,7 @@ import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.rest.service.DocumentSearchServiceBean;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentSearchCriteriaDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentSearchFilterDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.InfoDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.UserDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
@@ -177,6 +178,43 @@ public class DocumentSearchResource {
 		}
 
 	}
+
+	@GET
+	@Path("/loadAvailableProcessDefns")
+	public Response getAvailableProcessDefinitions() {
+		try {
+
+			QueryResultDTO resultDTO = documentSearchService
+					.getAvailableProcessDefns();
+			Gson gson = new Gson();
+			return Response.ok(gson.toJson(resultDTO),
+					MediaType.TEXT_PLAIN_TYPE).build();
+		} catch (MissingResourceException mre) {
+			return Response.status(Status.NOT_FOUND).build();
+		} catch (Exception e) {
+			return Response.status(Status.BAD_REQUEST).build();
+		}
+	}
+	
+	@GET
+	@Path("/attachDocumentsToProcess/{processOID}/{documentId}")
+	public Response attachDocumentsToProcess(@PathParam("processOID") String processOID,
+			@PathParam("documentId") String documentId) {
+		try {
+
+			InfoDTO result = documentSearchService
+					.attachDocumentsToProcess(Long.parseLong(processOID), documentId);
+			Gson gson = new Gson();
+			return Response.ok(gson.toJson(result),
+					MediaType.TEXT_PLAIN_TYPE).build();
+		} catch (MissingResourceException mre) {
+			return Response.status(Status.NOT_FOUND).build();
+		} catch (Exception e) {
+			return Response.status(Status.BAD_REQUEST).build();
+		}
+	}
+	
+	
 
 	@GET
 	@Consumes(MediaType.APPLICATION_JSON)

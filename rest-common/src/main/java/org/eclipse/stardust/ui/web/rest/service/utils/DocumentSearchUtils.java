@@ -36,6 +36,7 @@ import org.eclipse.stardust.engine.api.query.ProcessInstances;
 import org.eclipse.stardust.engine.api.query.Query;
 import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.query.RepositoryPolicy;
+import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.Documents;
@@ -43,6 +44,8 @@ import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.core.spi.dms.IRepositoryInstanceInfo;
 import org.eclipse.stardust.engine.core.thirdparty.encoding.Text;
+import org.eclipse.stardust.ui.web.common.app.PortalApplication;
+import org.eclipse.stardust.ui.web.common.app.View;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
 import org.eclipse.stardust.ui.web.rest.FilterDTO;
 import org.eclipse.stardust.ui.web.rest.Options;
@@ -50,15 +53,20 @@ import org.eclipse.stardust.ui.web.rest.service.dto.DocumentSearchCriteriaDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentSearchFilterAttributesDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentSearchFilterDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentVersionDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.InfoDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.InfoDTO.MessageType;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.SelectItemDTO;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DocumentTypeWrapper;
+import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MIMEType;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.QueryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
@@ -89,6 +97,8 @@ public class DocumentSearchUtils {
 
 	private static final String COL_DOCUMENT_ID = "documentId";
 	private static final String COL_AUTHOR = "author";
+
+	private static final String VIEW_ACTIVITY_PANEL = "activityPanel";
 
 	private MessagesViewsCommonBean messageCommonBean;
 
@@ -448,7 +458,6 @@ public class DocumentSearchUtils {
 		return documentVersionList;
 	}
 
-
 	public List<User> searchUsers(String searchValue, boolean onlyActive,
 			int maxMatches) {
 		return UserUtils.searchUsers(searchValue, true, 20);
@@ -461,6 +470,92 @@ public class DocumentSearchUtils {
 			}
 		}
 		return false;
+	}
+
+	public List<SelectItemDTO> getAvailableProcessDefns() {
+		List<View> openViews = PortalApplication.getInstance().getOpenViews();
+		List<SelectItemDTO> allProcessDefns = new ArrayList<SelectItemDTO>();
+		for (Iterator<View> iterator = openViews.iterator(); iterator.hasNext();) {
+			View view = (View) iterator.next();
+			if (VIEW_ACTIVITY_PANEL.equals(view.getName())) {
+				Object activityOid = (String) view.getViewParams().get("oid");
+				if (null != activityOid && activityOid instanceof String) {
+					long activityOidLong = Long
+							.parseLong(((String) activityOid).trim());
+					ActivityInstance actInstance = ActivityInstanceUtils
+							.getActivityInstance(activityOidLong);
+					ProcessInstance pi = actInstance.getProcessInstance();
+					StringBuffer processLabel = new StringBuffer(
+							I18nUtils.getProcessName(ProcessDefinitionUtils
+									.getProcessDefinition(pi.getProcessID())));
+					processLabel.append(" (#").append(pi.getOID()).append(")");
+					allProcessDefns.add(new SelectItemDTO(String.valueOf(pi
+							.getOID()), processLabel.toString()));
+				}
+			}
+		}
+		return allProcessDefns;
+	}
+
+	public InfoDTO attachDocuments(Long processOid, String documentId)
+			throws ResourceNotFoundException {
+		InfoDTO infoDTO = null;
+		ProcessInstance pi = null;
+		try {
+			pi = ProcessInstanceUtils.getProcessInstance(processOid);
+		} catch (Exception e) { // Todo for Errors
+			return new InfoDTO(MessageType.ERROR, MessagesViewsCommonBean
+					.getInstance().getString(
+							"views.common.process.invalidProcess.message"));
+
+		}
+
+		if (DocumentMgmtUtility.isProcessAttachmentAllowed(pi)) {
+			List<Document> documentList = new ArrayList<Document>();
+			Document selectedDoc = DocumentMgmtUtility.getDocument(documentId);
+			if (null != selectedDoc) {// single document is selected
+				documentList.add(selectedDoc);
+			} else { // multiple documents are selected
+						// Can be implemented later as for me it was not in
+						// scope.
+			}
+
+			if (documentList.size() > 0) {
+				// create copy of the documents and update process instance
+				try {
+					if (DocumentMgmtUtility.getDuplicateDocuments(pi,
+							documentList).size() > 0) {
+						return new InfoDTO(
+								MessageType.ERROR,
+								MessagesViewsCommonBean
+										.getInstance()
+										.getString(
+												"views.common.process.duplicateDocAttached.message"));
+					}
+					DocumentMgmtUtility.addDocumentsToProcessInstance(pi,
+							documentList);
+					infoDTO = new InfoDTO(
+							MessageType.INFO,
+							MessagesViewsCommonBean
+									.getInstance()
+									.getString(
+											"views.common.process.documentAttachedSuccess.message"));
+				} catch (Exception e) {
+					return new InfoDTO(
+							MessageType.ERROR,
+							MessagesViewsCommonBean
+									.getInstance()
+									.getString(
+											"views.common.process.documentAttachedFailure.message"));
+				}
+			}
+		} else {
+			infoDTO = new InfoDTO(MessageType.ERROR, MessagesViewsCommonBean
+					.getInstance().getString(
+							"views.common.process.invalidProcess.message"));
+		}
+
+		return infoDTO;
 	}
 
 }

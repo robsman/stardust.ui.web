@@ -15,298 +15,384 @@
 (function() {
 	'use strict';
 
-
-
-	angular.module("workflow-ui").controller('sdDocumentSearchViewCtrl', ['$q','$scope','sdDocumentSearchService','sdViewUtilService', DocumentSearchViewCtrl]);
+	angular.module("workflow-ui").controller(
+			'sdDocumentSearchViewCtrl',
+			[ '$q', '$scope', 'sdDocumentSearchService', 'sdViewUtilService','sdUtilService',
+					DocumentSearchViewCtrl ]);
 
 	/*
 	 * 
 	 */
-	function DocumentSearchViewCtrl($q,$scope,sdDocumentSearchService,sdViewUtilService) {
-	    // variable for search result table
-		$scope.documentSearchResult={};
-		this.documentVersions={};
+	function DocumentSearchViewCtrl($q, $scope, sdDocumentSearchService,
+			sdViewUtilService,sdUtilService) {
+		// variable for search result table
+		this.documentSearchResult = {};
+		this.documentVersions = {};
 		this.dataTable = null;
 		this.docSearchRsltTblHndExp = 'docSearchViewCtrl.dataTable';
 		this.columnSelector = 'admin';
 		this.docVersionsdataTable = null;
 		this.docVersionsTblHndExp = 'docSearchViewCtrl.docVersionsdataTable'
 
-		$scope.documentTypes = [];
 
-		$scope.fileTypes = [];
+		this.searchAttributes = function() {
+			var self = this;
+			sdDocumentSearchService
+					.searchAttributes()
+					.then(
+							function(data) {
+								self.fileTypes = data.typicalFileTypes;
+								self.typicalFileTypes = data.typicalFileTypes;
+								self.allRegisteredMimeFileTypes = data.allRegisteredMimeFileTypes;
+								self.documentTypes = data.documentTypes;
+								self.repositories = data.repositories;
+								self.query.documentSearchCriteria.selectedFileTypes = [ self.fileTypes[0].value ];
+								self.query.documentSearchCriteria.selectedDocumentTypes = [ self.documentTypes[0].value ];
+								self.query.documentSearchCriteria.selectedRepository = [ self.repositories[0].value ];
+							});
 
-		$scope.repositories=[];
-
-
-
-	    // $scope.query.documentSearchCriteria = this;
-         $scope.query ={
-			 options:{}
-		 };
-		 
-         $scope.query.documentSearchCriteria ={
-			selectedFileTypes :[],
-			selectedDocumentTypes : [],
-			selectedRepository :[],
-			showAll : false,
-			searchContent:true,
-			searchData:true,
-			advancedFileType : "",
-			selectFileTypeAdvance : false,
-			documentName : "",
-			documentId : "",
-			// createDateFrom : new Date(),
-			// createDateTo : new Date(),
-			// modificationDateFrom : new Date(),
-			// modificationDateTo : new Date(),
-			author:"",
-			containingText : ""
 		};
-
-		this.advancedTextSearch ={
-			finalText:'',
-			allWords:'',
-			exactPhrase:'',
-			oneOrMore1:'',
-			oneOrMore2:'',
-			oneOrMore3:'',
-			unwantedWords:''
-		};
-
-
-		$scope.authors=[];
-		$scope.selectedAuthors=[];
-	    $scope.partialAuthor="";
-
-		$scope.processDialogData={};
-
-
-
-
-	 this.searchAttributes = function(){
-		sdDocumentSearchService.searchAttributes().then(function(data){
-			$scope.fileTypes = data.typicalFileTypes;
-			$scope.typicalFileTypes = data.typicalFileTypes;
-			$scope.allRegisteredMimeFileTypes = data.allRegisteredMimeFileTypes;
-			$scope.documentTypes = data.documentTypes;
-			$scope.repositories = data.repositories;
-			$scope.query.documentSearchCriteria.selectedFileTypes =[$scope.fileTypes[0].value];
-			$scope.query.documentSearchCriteria.selectedDocumentTypes = [$scope.documentTypes[0].value];
-			$scope.query.documentSearchCriteria.selectedRepository = [$scope.repositories[0].value];
-		});
-
-	    };
-
-	    this.searchAttributes();
+		
+		DocumentSearchViewCtrl.prototype.defineData = function(){
+			var self = this;
+			self.query= {
+					documentSearchCriteria : {
+							selectedFileTypes : [],
+							selectedDocumentTypes : [],
+							selectedRepository : [],
+							showAll : false,
+							searchContent : true,
+							searchData : true,
+							advancedFileType : "",
+							selectFileTypeAdvance : false,
+							documentName : "",
+							documentId : "",
+						    createDateTo : new Date().getTime(),
+						    modificationDateTo : new Date().getTime(),
+							author : "",
+							containingText : ""
+					}
+				};
+				
+			self.partialAuthor="";
+		}
+		
+		DocumentSearchViewCtrl.prototype.initialize = function(){
+			this.defineData();
+			this.searchAttributes();
+		}
+		
+		this.initialize();
+		
+		this.resetSearchCriteria = function(){
+			var self = this;
+			self.defineData();
+			self.fileTypes = self.typicalFileTypes;
+			self.query.documentSearchCriteria.selectedFileTypes = [ self.fileTypes[0].value ];
+			self.query.documentSearchCriteria.selectedDocumentTypes = [ self.documentTypes[0].value ];
+			self.query.documentSearchCriteria.selectedRepository = [ self.repositories[0].value ];
+			if(self.selectedAuthors != undefined && self.selectedAuthors.length == 1){
+				delete self.selectedAuthors;
+			}
+		}
 
 		DocumentSearchViewCtrl.prototype.refresh = function() {
 			this.dataTable.refresh(true);
 		};
 
-	    this.performSearch = function(options){
+		this.performSearch = function(options) {
 			var deferred = $q.defer();
-            if($scope.selectedAuthors.length == 1) {
-				$scope.query.documentSearchCriteria.author = $scope.selectedAuthors[0].id;
+			var self = this;
+			var error = false;
+			
+			if(!this.validateDateRange(self.query.documentSearchCriteria.createDateFrom, self.query.documentSearchCriteria.createDateTo)){
+				 error = true;
+				 self.searchCriteriaForm.$error.createDateRange = true;
+			}else{
+				self.searchCriteriaForm.$error.createDateRange = false;
 			}
-            
-            $scope.query.options = options;
-            
-	    	sdDocumentSearchService.performSearch($scope.query).then(function(data){
-	    		$scope.documentSearchResult.list = data.list;
-	    		$scope.documentSearchResult.totalCount = data.totalCount;
-				deferred.resolve($scope.documentSearchResult);
-	    	});
+			
+			if(!this.validateDateRange(self.query.documentSearchCriteria.modificationDateFrom, self.query.documentSearchCriteria.modificationDateTo)){
+				 error = true;
+				 self.searchCriteriaForm.$error.modificationDateRange = true;
+			}else{
+				 self.searchCriteriaForm.$error.modificationDateRange = false;
+			}
+			
+			if(error){
+				return true;
+			}
+			
+			if (self.selectedAuthors != undefined && self.selectedAuthors.length == 1) {
+				self.query.documentSearchCriteria.author = self.selectedAuthors[0].id;
+			}else{
+				self.query.documentSearchCriteria.author="";
+			}
+
+			self.query.options = options;
+
+			sdDocumentSearchService
+					.performSearch(self.query)
+					.then(
+							function(data) {
+								self.documentSearchResult.list = data.list;
+								self.documentSearchResult.totalCount = data.totalCount;
+								deferred.resolve(self.documentSearchResult);
+							});
 			return deferred.promise;
-	    };
+		};
 
+		this.getAuthors = function(searchVal) {
+			var self = this;
+			if (searchVal.length > 0) {
+				searchVal = searchVal.concat("%");
 
+				clearTimeout(self.typingTimer);
 
-	this.getAuthors = function(searchVal){
-		if(searchVal.length > 0) {
-			searchVal = searchVal.concat("%");
+				self.typingTimer = setTimeout(function() {
+					sdDocumentSearchService.searchUsers(searchVal).then(
+							function(data) {
+								self.authors = data.list;
+							});
+				}, 500);
+			}
+		};
+		
+		this.validateDateRange = function(fromDate,toDate){		
+				if (!sdUtilService.isEmpty(fromDate) && !sdUtilService.isEmpty(toDate)) {
+					 if(fromDate > toDate){
+						 return false;
+					 }					
+				} 			
+               return true;
+		}
 
-			clearTimeout($scope.typingTimer);
+		this.openAttachToProcessDialog = function(rowData) {
+			var self = this;
+			self.processDefns = {};
+			self.showAttachToProcessDialog = true;
+			self.documentId = rowData.documentId;
+			sdDocumentSearchService.getAvailableProcessDefns().then(
+					function(data) {
+						self.processDefns.list = data.list;
+						self.processDefns.totalCount = data.totalCount;
+						if (self.processDefns.totalCount == 0) {
+							self.processDefns.disabledSelectProcess = true;
+							self.processType = "SPECIFY";
+						} else {
+							self.processType = "SELECT";
+						}
 
-			$scope.typingTimer = setTimeout(
-				function(){
-					sdDocumentSearchService.searchUsers(searchVal).then(function(data) {
-						$scope.authors = data.list;
 					});
-				},
-				500
-			);
-		}
-	    };
+		};
 
-		this.openAttachToProcessDialog = function(rowData){
-			this.showAttachToProcessDialog = true;
-		}
-
-		this.openProcessDialog = function(rowData){
-			this.showProcessDialog = true;
-			sdDocumentSearchService.fetchProcessDialogData(rowData.documentId).then(function(data){
-				$scope.processDialogData.list = data.list;
-				$scope.processDialogData.totalCount = data.totalCount;
-			});
+		this.openProcessDialog = function(rowData) {
+			var self = this;
+			self.showProcessDialog = true;
+			sdDocumentSearchService.fetchProcessDialogData(rowData.documentId)
+					.then(function(data) {
+						self.processDialogData ={};
+						self.processDialogData.list = data.list;
+						self.processDialogData.totalCount = data.totalCount;
+					});
 		}
 
 		this.openProcessHistory = function(oid) {
 			this.processDialog.close();
 			sdViewUtilService.openView("processInstanceDetailsView",
-				"processInstanceOID=" + oid,
-				{
-					"processInstanceOID": "" + oid
-				}, true
-			);
+					"processInstanceOID=" + oid, {
+						"processInstanceOID" : "" + oid
+					}, true);
 		};
 
-		this.openDocumentView = function(documentId){
-			var viewKey = "documentOID=" + documentId
-			+ "_instance";
+		this.openDocumentView = function(documentId) {
+			var viewKey = "documentOID=" + documentId + "_instance";
 			viewKey = window.btoa(viewKey);
 			sdViewUtilService.openView("documentView",
-				"documentOID=" + viewKey,
-				{
-					"documentId":documentId
-				}, true
-			);
+					"documentOID=" + viewKey, {
+						"documentId" : documentId
+					}, true);
 		}
 
-		this.openUserDetails = function(documentOwner){
+		this.openUserDetails = function(documentOwner) {
 			var self = this;
-			sdDocumentSearchService.getUserDetails(documentOwner).then(function(data){
-				self.userDetails = data;
-				self.userDetails.userImageURI = sdDocumentSearchService.getRootUrl() + data.userImageURI;
-				self.showUserDetails = true;
-			});
+			sdDocumentSearchService.getUserDetails(documentOwner).then(
+					function(data) {
+						self.userDetails = data;
+						self.userDetails.userImageURI = sdDocumentSearchService
+								.getRootUrl()
+								+ data.userImageURI;
+						self.showUserDetails = true;
+					});
 		}
 
-		this.setShowTableData=function(){
+		this.setShowTableData = function() {
 			this.showTableData = true;
-			if(this.dataTable != null){
+			if (this.dataTable != null) {
 				this.refresh();
 			}
 		}
 
-	/*
-	 * DocumentSearchViewCtrl.prototype.handleViewEvents = function(event) { if
-	 * (event.type == "ACTIVATED") { this.refresh(); } else if (event.type ==
-	 * "DEACTIVATED") { // TODO } };
-	 */
-		
-	this.getFileTypes = function(){
-		if($scope.query.documentSearchCriteria.showAll){
-			$scope.fileTypes = $scope.allRegisteredMimeFileTypes;
-		}else{
-			$scope.fileTypes = $scope.typicalFileTypes
-		}
-	};
-	
-	this.constructFinalText = function(){
-		var self = this;
-		if(self.advancedTextSearch.allWords != undefined && self.advancedTextSearch.allWords != 0){
-			self.advancedTextSearch.finalText = self.advancedTextSearch.allWords;
-		}else{
-			self.advancedTextSearch.finalText = "";
-		}
-		if(self.advancedTextSearch.exactPhrase != undefined && self.advancedTextSearch.exactPhrase.length != 0){
-			self.advancedTextSearch.finalText = self.advancedTextSearch.finalText.concat(" ");
-			self.advancedTextSearch.finalText = self.advancedTextSearch.finalText.concat("\"").concat(self.advancedTextSearch.exactPhrase).concat("\"");
-		}
-		if(self.advancedTextSearch.oneOrMore1 != undefined && self.advancedTextSearch.oneOrMore1.length != 0){
-			self.advancedTextSearch.finalText = self.advancedTextSearch.finalText.concat(" ");
-			self.advancedTextSearch.finalText = self.advancedTextSearch.finalText.concat(self.advancedTextSearch.oneOrMore1);
+		this.getFileTypes = function() {
+			var self =this;
+			if (self.query.documentSearchCriteria.showAll) {
+				self.fileTypes = self.allRegisteredMimeFileTypes;
+			} else {
+				self.fileTypes = self.typicalFileTypes
+			}
+		};
 
+		this.constructFinalText = function() {
+			var self = this;
+			if (self.advancedTextSearch.allWords != undefined
+					&& self.advancedTextSearch.allWords != 0) {
+				self.advancedTextSearch.finalText = self.advancedTextSearch.allWords;
+			} else {
+				self.advancedTextSearch.finalText = "";
+			}
+			if (self.advancedTextSearch.exactPhrase != undefined
+					&& self.advancedTextSearch.exactPhrase.length != 0) {
+				self.advancedTextSearch.finalText = self.advancedTextSearch.finalText
+						.concat(" ");
+				self.advancedTextSearch.finalText = self.advancedTextSearch.finalText
+						.concat("\"").concat(
+								self.advancedTextSearch.exactPhrase).concat(
+								"\"");
+			}
+			if (self.advancedTextSearch.oneOrMore1 != undefined
+					&& self.advancedTextSearch.oneOrMore1.length != 0) {
+				self.advancedTextSearch.finalText = self.advancedTextSearch.finalText
+						.concat(" ");
+				self.advancedTextSearch.finalText = self.advancedTextSearch.finalText
+						.concat(self.advancedTextSearch.oneOrMore1);
+
+			}
+
+			if ((self.advancedTextSearch.oneOrMore1 != undefined && self.advancedTextSearch.oneOrMore1.length != 0)
+					&& (self.advancedTextSearch.oneOrMore2 != undefined && self.advancedTextSearch.oneOrMore2.length != 0)) {
+				self.advancedTextSearch.finalText = self.advancedTextSearch.finalText
+						.concat(" ");
+				self.advancedTextSearch.finalText = self.advancedTextSearch.finalText
+						.concat("OR");
+				self.advancedTextSearch.finalText = self.advancedTextSearch.finalText
+						.concat(" ");
+				self.advancedTextSearch.finalText = self.advancedTextSearch.finalText
+						.concat(self.advancedTextSearch.oneOrMore2);
+			} else if (self.advancedTextSearch.oneOrMore2 != undefined
+					&& self.advancedTextSearch.oneOrMore2.length != 0) {
+				self.advancedTextSearch.finalText = self.advancedTextSearch.finalText
+						.concat(" ");
+				self.advancedTextSearch.finalText = self.advancedTextSearch.finalText
+						.concat(self.advancedTextSearch.oneOrMore2);
+			}
+
+			if (((self.advancedTextSearch.oneOrMore1 != undefined && self.advancedTextSearch.oneOrMore1.length != 0) || (self.advancedTextSearch.oneOrMore2 != undefined && self.advancedTextSearch.oneOrMore2.length != 0))
+					&& (self.advancedTextSearch.oneOrMore3 != undefined && self.advancedTextSearch.oneOrMore3.length != 0)) {
+				self.advancedTextSearch.finalText = self.advancedTextSearch.finalText
+						.concat(" ");
+				self.advancedTextSearch.finalText = self.advancedTextSearch.finalText
+						.concat("OR");
+				self.advancedTextSearch.finalText = self.advancedTextSearch.finalText
+						.concat(" ");
+				self.advancedTextSearch.finalText = self.advancedTextSearch.finalText
+						.concat(self.advancedTextSearch.oneOrMore3);
+			} else if (self.advancedTextSearch.oneOrMore3 != undefined
+					&& self.advancedTextSearch.oneOrMore3.length != 0) {
+				self.advancedTextSearch.finalText = self.advancedTextSearch.finalText
+						.concat(" ");
+				self.advancedTextSearch.finalText = self.advancedTextSearch.finalText
+						.concat(self.advancedTextSearch.oneOrMore3);
+			}
+
+			if (self.advancedTextSearch.unwantedWords != undefined
+					&& self.advancedTextSearch.unwantedWords.length != 0) {
+				self.advancedTextSearch.finalText = self.advancedTextSearch.finalText
+						.concat(" -");
+				self.advancedTextSearch.finalText = self.advancedTextSearch.finalText
+						.concat(self.advancedTextSearch.unwantedWords);
+			}
+
+			if (!self.advancedTextSearch.finalText.length == 0) {
+				self.showFinalText = false;
+			} else {
+				self.showFinalText = true;
+			}
+		};
+
+		this.onConfirmFromAdvanceText = function(res) {
+			var self = this;
+			self.query.documentSearchCriteria.containingText = self.advancedTextSearch.finalText;
+			delete self.advancedTextSearch;
+			self.showAdvancedTextSearch = false;
+			console.log("dialog state: confirmed");
+		};
+
+		this.onCancelFromAdvanceText = function(res) {
+			var self = this;
+			delete self.advancedTextSearch;
+			console.log("dialog state: cancelled");
+		};
+
+		this.onConfirmFromAttachToProcess = function(res) {
+			var self = this;
+			if (self.processType == "SPECIFY" && self.specifiedProcess == null) {
+				self.showRequiredProcessId = true;
+				return false;
+			}
+
+			if (self.processType == "SPECIFY") {
+				self.selectedProcess = self.specifiedProcess;
+			}
+
+			this.attachDocumentsToProcess(self.selectedProcess,
+							self.documentId);
+		};
+
+		this.attachDocumentsToProcess = function(processOID, documentId) {
+			var self = this;
+			sdDocumentSearchService.attachDocumentsToProcess(processOID,
+					documentId).then(function(data) {
+				self.infoData ={};
+				self.infoData.messageType = data.messageType;
+				self.infoData.details = data.details;
+				self.showAttachDocumentResult = true;
+			});
 		}
 
-		if((self.advancedTextSearch.oneOrMore1 != undefined && self.advancedTextSearch.oneOrMore1.length != 0) && (self.advancedTextSearch.oneOrMore2 !=undefined
-			&& self.advancedTextSearch.oneOrMore2.length!=0)){
-			self.advancedTextSearch.finalText = self.advancedTextSearch.finalText.concat(" ");
-			self.advancedTextSearch.finalText = self.advancedTextSearch.finalText.concat("OR");
-			self.advancedTextSearch.finalText = self.advancedTextSearch.finalText.concat(" ");
-			self.advancedTextSearch.finalText = self.advancedTextSearch.finalText.concat(self.advancedTextSearch.oneOrMore2);
-		}else if(self.advancedTextSearch.oneOrMore2 != undefined && self.advancedTextSearch.oneOrMore2.length!=0)
-		{
-			self.advancedTextSearch.finalText = self.advancedTextSearch.finalText.concat(" ");
-			self.advancedTextSearch.finalText = self.advancedTextSearch.finalText.concat(self.advancedTextSearch.oneOrMore2);
+		this.checkForProcessIdEmpty = function() {
+			var self = this;
+			if (self.processType == "SPECIFY"
+					&& self.specifiedProcess == undefined) {
+				self.showRequiredProcessId = false;
+			}
+		};
+
+		this.onOpenFromAttachToProcess = function(res) {
+			var self = this;
+			self.attachProcess = {};
+			self.attachProcess.$valid = true;
 		}
 
-		if (((self.advancedTextSearch.oneOrMore1 != undefined && self.advancedTextSearch.oneOrMore1.length!=0)
-			|| (self.advancedTextSearch.oneOrMore2 != undefined && self.advancedTextSearch.oneOrMore2.length!=0)) 
-			&& (self.advancedTextSearch.oneOrMore3 != undefined && self.advancedTextSearch.oneOrMore3.length!=0))
-		{
-			self.advancedTextSearch.finalText = self.advancedTextSearch.finalText.concat(" ");
-			self.advancedTextSearch.finalText = self.advancedTextSearch.finalText.concat("OR");
-			self.advancedTextSearch.finalText = self.advancedTextSearch.finalText.concat(" ");
-			self.advancedTextSearch.finalText = self.advancedTextSearch.finalText.concat(self.advancedTextSearch.oneOrMore3);
-		}
-		else if (self.advancedTextSearch.oneOrMore3 != undefined && self.advancedTextSearch.oneOrMore3.length!=0)
-		{
-			self.advancedTextSearch.finalText = self.advancedTextSearch.finalText.concat(" ");
-			self.advancedTextSearch.finalText = self.advancedTextSearch.finalText.concat(self.advancedTextSearch.oneOrMore3);
-		}
+		this.advancedFileTypes = function() {
+			var self = this;
+			self.query.documentSearchCriteria.selectFileTypeAdvance = true;
+			self.query.documentSearchCriteria.selectedFileTypes = [];
+		};
 
-		if (self.advancedTextSearch.unwantedWords != undefined && self.advancedTextSearch.unwantedWords.length!=0)
-		{
-			self.advancedTextSearch.finalText = self.advancedTextSearch.finalText.concat(" -");
-			self.advancedTextSearch.finalText = self.advancedTextSearch.finalText.concat(self.advancedTextSearch.unwantedWords);
-		}
-
-		if(!self.advancedTextSearch.finalText.length==0){
-			self.showFinalText = false;
-		}else{
+		this.setShowAdvancedTextSearch = function() {
+			var self = this;
+			self.advancedTextSearch={};
+			self.showAdvancedTextSearch = true;
 			self.showFinalText = true;
-		}
-	};
+		};
 
-	this.onConfirmFromAdvanceText = function(res){
-		var self = this;
-		$scope.query.documentSearchCriteria.containingText = self.advancedTextSearch.finalText;
-		self.advancedTextSearch ={};
-		self.showAdvancedTextSearch = false;
-		console.log("dialog state: confirmed");		
-	};
+		this.pickFromList = function() {
+			var self = this;
+			self.query.documentSearchCriteria.selectFileTypeAdvance = false;
+			self.query.documentSearchCriteria.selectedFileTypes = [ self.fileTypes[0].value ];
+		};
 
-	this.onCancelFromAdvanceText = function(res){
-		var self = this;
-		self.advancedTextSearch ={};
-		console.log("dialog state: cancelled");		
-	};
-	
-	this.onConfirmFromAttachToProcess = function(res){
-			var promise = res.promise;
-			promise.then(
-				function(data){
-					/*
-					 * $scope.query.documentSearchCriteria.containingText =
-					 * $scope.advancedTextSearch.finalText;
-					 * $scope.advancedTextSearch.advancedContainingText = false;
-					 */
-					console.log("dialog state: confirmed");
-				}).catch(function(){
-					console.log("dialog state: rejected");
-				});
-	};
-
-	this.advancedFileTypes = function(){
-		$scope.query.documentSearchCriteria.selectFileTypeAdvance = true;
-		$scope.query.documentSearchCriteria.selectedFileTypes = [];
-	};
-
-	this.setShowAdvancedTextSearch = function(){
-		var self = this;
-		self.showAdvancedTextSearch = true;
-		self.showFinalText = true;
-	};
-
-	this.pickFromList = function(){
-		$scope.query.documentSearchCriteria.selectFileTypeAdvance = false;
-		$scope.query.documentSearchCriteria.selectedFileTypes =[$scope.fileTypes[0].value];
-	};
-
-	this.bytesToSize = function(bytes)
-		{
+		this.bytesToSize = function(bytes) {
 			var kilobyte = 1024;
 			var megabyte = kilobyte * 1024;
 			var gigabyte = megabyte * 1024;
@@ -332,77 +418,82 @@
 			}
 		};
 
-		this.getGlyphiconClass = function(iconPath){
-			if(iconPath == 'document-image.png'){
+		this.getGlyphiconClass = function(iconPath) {
+			if (iconPath == 'document-image.png') {
 				return "glyphicon glyphicon-export";
 			}
-			if(iconPath =='document-code.png'){
+			if (iconPath == 'document-code.png') {
 				return "glyphicon glyphicon-music";
 			}
-			if(iconPath == 'tree_document.gif'){
+			if (iconPath == 'tree_document.gif') {
 				return "glyphicon glyphicon-th";
 			}
-			if(iconPath == 'document-music.png')
-			return "glyphicon glyphicon-music";
+			if (iconPath == 'document-music.png')
+				return "glyphicon glyphicon-music";
 		};
-		
-	  this.getDocumentVersions = function(options){
-		  var deferred = $q.defer();
-		  var self = this;
-		  deferred.resolve(self.documentVersions);
-          return deferred.promise;
-	  };
-	  
-	  this.setShowDocumentVersions = function(documentId,documentName){
-		    var self = this;
-		    // this.documentId = documentId;
-	    	sdDocumentSearchService.getDocumentVersions(documentId).then(function(data){
-	    		self.documentVersions.list = data.list;
-	    		self.documentVersions.totalCount = data.totalCount;
-	    		self.showDocumentVersions = true;
-	    		self.documentVersions.documentName = documentName;
-	    	});	
-		    
-	    	
-	  };
-	  
-	  this.onCloseDocumentVersions= function(res){	  
-	  var self = this;
-		  self.documentVersions = {};
-	};
-	
-	this.openUserDetailsFromVersionHistory=function(documentOwner){
-		var self = this;
-		sdDocumentSearchService.getUserDetails(documentOwner).then(function(data){
-			self.userDetails = data;
-			self.userDetails.userImageURI = sdDocumentSearchService.getRootUrl() + data.userImageURI;
-			self.showUserDetailsFromDocHistory = true;
-		});
-		
-	};
-	
-	this.downloadDocument = function(res){
-		var self = this;
-		sdDocumentSearchService.downloadDocument(self.documentDownload.documentId,self.documentDownload.documentName);
-		delete self.documentDownload;
-		
-	};
-	
-	this.setShowDocumentDownload = function(documentId,documentName){
-		var self = this;
-		self.showDoumentDownload = true;
-		var documentDownload = {
-			documentId : documentId,
-			documentName : documentName
+
+		this.getDocumentVersions = function(options) {
+			var deferred = $q.defer();
+			var self = this;
+			deferred.resolve(self.documentVersions);
+			return deferred.promise;
 		};
-		self.documentDownload = documentDownload;
-		
-	};
-	
-	this.downloadDocumentClose = function(){
-		var self = this;
-		delete self.documentDownload;
-	};
-	
+
+		this.setShowDocumentVersions = function(documentId, documentName) {
+			var self = this;
+			// this.documentId = documentId;
+			sdDocumentSearchService.getDocumentVersions(documentId).then(
+					function(data) {
+						self.documentVersions.list = data.list;
+						self.documentVersions.totalCount = data.totalCount;
+						self.showDocumentVersions = true;
+						self.documentVersions.documentName = documentName;
+					});
+
+		};
+
+		this.onCloseDocumentVersions = function(res) {
+			var self = this;
+			self.documentVersions = {};
+		};
+
+		this.openUserDetailsFromVersionHistory = function(documentOwner) {
+			var self = this;
+			sdDocumentSearchService.getUserDetails(documentOwner).then(
+					function(data) {
+						self.userDetails = data;
+						self.userDetails.userImageURI = sdDocumentSearchService
+								.getRootUrl()
+								+ data.userImageURI;
+						self.showUserDetailsFromDocHistory = true;
+					});
+
+		};
+
+		this.downloadDocument = function(res) {
+			var self = this;
+			sdDocumentSearchService.downloadDocument(
+					self.documentDownload.documentId,
+					self.documentDownload.documentName);
+			delete self.documentDownload;
+
+		};
+
+		this.setShowDocumentDownload = function(documentId, documentName) {
+			var self = this;
+			self.showDoumentDownload = true;
+			var documentDownload = {
+				documentId : documentId,
+				documentName : documentName
+			};
+			self.documentDownload = documentDownload;
+
+		};
+
+		this.downloadDocumentClose = function() {
+			var self = this;
+			delete self.documentDownload;
+		};
+
 	}
 })();

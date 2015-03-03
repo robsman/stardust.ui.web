@@ -1,4 +1,4 @@
-<div ng-repeat="process in processDialogData.list">
+<div ng-repeat="process in docSearchViewCtrl.processDialogData.list">
     <a href="" ng-click="bpmCommon.stopEvent($event); docSearchViewCtrl.openProcessHistory(process.oid);">
         <i class="glyphicon glyphicon-cog"></i>{{process.processName}}
     </a>

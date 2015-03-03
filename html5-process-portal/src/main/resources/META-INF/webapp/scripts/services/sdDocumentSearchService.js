@@ -133,8 +133,18 @@
 
 		};
 
-		this.getDocumentVersions = function(
-				documentId) {
+		this.getAvailableProcessDefns = function() {
+			var restUrl = REST_BASE_URL + "/:type";
+
+			var urlTemplateParams = {};
+
+			urlTemplateParams.type = "loadAvailableProcessDefns";
+
+			return $resource(restUrl).get(urlTemplateParams).$promise;
+
+		};
+
+		this.getDocumentVersions = function(documentId) {
 			var restUrl = REST_BASE_URL + "/:type/:documentId";
 
 			var urlTemplateParams = {};
@@ -146,17 +156,29 @@
 
 		}
 
-	
-	this.downloadDocument = function(documentId,documentName) {
-		trace.info("inside downloadDocument function");		
-		window.location = this.getRootUrl() 
-			+"/" +REST_BASE_URL + "/downloadDocument" + "/"+ documentId +"/"+ documentName;
+		this.downloadDocument = function(documentId, documentName) {
+			trace.info("inside downloadDocument function");
+			window.location = this.getRootUrl() + "/" + REST_BASE_URL
+					+ "/downloadDocument" + "/" + documentId + "/"
+					+ documentName;
 
-	};
-	
-	this.getRootUrl = function() {
-		return window.location.href.substring(0, location.href
-				.indexOf("/main.html"));
-    };
+		};
+
+		this.attachDocumentsToProcess = function(processOID, documentId) {
+			var restUrl = REST_BASE_URL + "/:type/:processOID/:documentId";
+
+			var urlTemplateParams = {};
+
+			urlTemplateParams.type = "attachDocumentsToProcess";
+			urlTemplateParams.documentId = documentId;
+			urlTemplateParams.processOID = processOID;
+
+			return $resource(restUrl).get(urlTemplateParams).$promise;
+		}
+
+		this.getRootUrl = function() {
+			return window.location.href.substring(0, location.href
+					.indexOf("/main.html"));
+		};
 	};
 })();

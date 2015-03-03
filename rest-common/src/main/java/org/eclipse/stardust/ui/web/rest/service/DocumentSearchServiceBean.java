@@ -30,8 +30,10 @@ import org.eclipse.stardust.ui.web.rest.Options;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentSearchCriteriaDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentSearchResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentVersionDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.InfoDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.SelectItemDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.UserDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.utils.DocumentSearchUtils;
@@ -51,14 +53,9 @@ public class DocumentSearchServiceBean {
 
 	private static final Logger trace = LogManager
 			.getLogger(DocumentSearchServiceBean.class);
-	/* private DocumentManagementService documentManagementService; */
 
 	@Resource
 	private DocumentSearchUtils documentSearchUtils;
-
-	/*
-	 * @Resource private SessionContext sessionContext;
-	 */
 
 	/**
 	 * @param serviceName
@@ -155,18 +152,16 @@ public class DocumentSearchServiceBean {
 		return null;
 	}
 
-	/*
-	 * private ServiceFactory getServiceFactory() { return
-	 * sessionContext.getServiceFactory(); }
-	 *//**
-	 *
-	 * @return
-	 */
-	/*
-	 * private DocumentManagementService getDocumentManagementService() { if
-	 * (documentManagementService == null) { documentManagementService =
-	 * getServiceFactory() .getDocumentManagementService(); }
-	 * 
-	 * return documentManagementService; }
-	 */
+	public QueryResultDTO getAvailableProcessDefns() {
+		List<SelectItemDTO> processDefns = documentSearchUtils
+				.getAvailableProcessDefns();
+		QueryResultDTO resultDTO = new QueryResultDTO();
+		resultDTO.list = processDefns;
+		resultDTO.totalCount = processDefns.size();
+		return resultDTO;
+	}
+	
+	public InfoDTO attachDocumentsToProcess(long processOid, String documentId) throws ResourceNotFoundException{
+		return documentSearchUtils.attachDocuments(processOid, documentId);
+	}
 }
