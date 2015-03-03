@@ -319,7 +319,7 @@
 				angular.forEach(descriptors, function(descriptor){
 					self.descritorCols.push({
 						id: descriptor.id,
-						field: "descriptors['" + descriptor.id + "'].value",
+						field: "descriptors['" + descriptor.title + "'].value",
 						title: descriptor.title,
 						dataType: descriptor.type,
 						sortable: descriptor.sortable,
