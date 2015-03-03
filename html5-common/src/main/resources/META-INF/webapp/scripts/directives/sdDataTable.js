@@ -216,9 +216,17 @@
 			trace.error(theTableId + ':', e);
 			trace.printStackTrace();
 
-			// TODO: i18n? Is it required? Because this mostly for development only
-			var msg = 'sd-data-table is unable to process table. Pl. refer browser console for details. Reason: ' + e;
-			jQuery('<pre class="tbl-error">' + msg + '</pre>').insertAfter(element);
+			showElement(theTable.parent(), false);
+			showElement(theToolbar, false);
+
+			var errorToShow = e;
+			if (e.status != undefined && e.statusText != undefined) {
+				errorToShow = e.status + ' - ' + e.statusText;
+			}
+
+			// TODO: i18n
+			var msg = 'sd-data-table is unable to process table. Pl. refer browser console for details. Reason: ' + errorToShow;
+			jQuery('<pre class="tbl-error">' + msg + '</pre>').insertAfter(theTable.parent());
 		}
 
 		/*
