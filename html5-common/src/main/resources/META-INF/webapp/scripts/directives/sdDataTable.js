@@ -357,8 +357,12 @@
 				}
 			}
 
-			if (attr.sdaExports != undefined && attr.sdaExports != '') {
-				var exports = attr.sdaExports.split(',');
+			var exports = ['excel', 'csv'];
+			if (attr.sdaExports != undefined && attr.sdaExports != 'true') {
+				exports = attr.sdaExports.split(',');
+			}
+			
+			if (exports != undefined && exports != '') {
 				for (var i in exports) {
 					if (exports[i].toLowerCase() == 'excel') {
 						exportConfig.EXCEL = true;
