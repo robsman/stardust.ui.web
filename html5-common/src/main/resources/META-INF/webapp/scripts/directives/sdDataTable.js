@@ -31,6 +31,9 @@
 		ROW_SELECTED : 'tbl-row-selected' 
 	};
 
+	var EXPORT_LIMIT = 10000;
+	var EXPORT_BATCH_SIZE = 250;
+	
 	/*
 	 * 
 	 */
@@ -373,7 +376,13 @@
 				if (attr.sdaExportsBatchSize != undefined && attr.sdaExportsBatchSize != '') {
 					exportConfig.batchSize = parseInt(attr.sdaExportsBatchSize);
 				} else {
-					exportConfig.batchSize = 250; // Default Batch Size
+					exportConfig.batchSize = EXPORT_BATCH_SIZE;
+				}
+
+				if (attr.sdaExportsLimit != undefined && attr.sdaExportsLimit != '') {
+					exportConfig.limit = parseInt(attr.sdaExportsLimit);
+				} else {
+					exportConfig.limit = EXPORT_LIMIT;
 				}
 			}
 		}
@@ -1773,8 +1782,7 @@
 					alert(sgI18nService.translate('html5-common.' + message.key, message.val));
 				}
 			}, function(error) {
-				trace.error(theTableId + ': Error occurred while exporting data', error);
-				alert(sgI18nService.translate('html5-common.export-error', 'Error occurred while exporting data.'));
+				alert(error);
 			});
 		}
 
@@ -1919,6 +1927,13 @@
 
 			// Get Table Data
 			if (exportAllRows) {
+				var totalCount = getTotalCount();
+				if (totalCount > exportConfig.limit) {
+					deferred.reject(
+						sgI18nService.translate('html5-common.export-error-limit-exceds',
+								'Cannot export, total count exceeds the set limit of') + ' ' + exportConfig.limit);
+				}
+				
 				var params = angular.copy(remoteModeLastParams);
 				params.fetchType = 'export';
 
