@@ -268,6 +268,8 @@
 					deferred.resolve(self.worklist);
 
 					self.safeApply();
+				}, function(error) {
+					deferred.reject(error);
 				});
 			}, function(error) {
 				deferred.reject(error);

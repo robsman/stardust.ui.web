@@ -220,8 +220,10 @@
 			showElement(theTable.parent(), false);
 			showElement(theToolbar, false);
 
-			var errorToShow = e;
-			if (e.status != undefined && e.statusText != undefined) {
+			var errorToShow = 'Unknown Error'; // TODO: i18n
+			if (angular.isString(e)) {
+				errorToShow = e;
+			} else if (e.status != undefined && e.statusText != undefined) {
 				errorToShow = e.status + ' - ' + e.statusText;
 			}
 
