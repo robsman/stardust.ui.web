@@ -11,15 +11,17 @@
 					ng-init="dataCtrl.outData[mapping.id] = dataCtrl.outData[mapping.id] || mapping.enumValues[0]"
 					ng-options="enumVal for enumVal in mapping.enumValues">
 				</select> 
-				<!-- 	Text -->
+				<!--Text -->
 				<input type="text" ng-click="dataCtrl.stopEvent($event)"
 					ng-change="dataCtrl.onChange();"
 					ng-if="mapping.typeName == 'java.lang.String'"
-					ng-model="dataCtrl.outData[mapping.id]" /> <input type="checkbox"
-					ng-click="dataCtrl.stopEvent($event)" 
-					ng-show="mapping.typeName == 'java.lang.Boolean'" ng-model-on-blur
-					ng-model="outData[mapping.id]"></input>
-					<!-- Integer -->
+					ng-model="dataCtrl.outData[mapping.id]" /> 
+				<!-- Boolean -->	
+				<input type="checkbox"
+					ng-click="dataCtrl.stopEvent($event)"  ng-change="dataCtrl.onChange();"
+					ng-if="mapping.typeName == 'java.lang.Boolean'" ng-model-on-blur
+					ng-model="dataCtrl.outData[mapping.id]"></input>
+				<!-- Integer -->
 				<div ng-if="mapping.typeName == 'java.lang.Integer'">
 					<input name="integerField" sd-validate="integer" ng-model-on-blur
 						ng-click="dataCtrl.stopEvent($event)" ng-change="dataCtrl.onChange();"
@@ -29,7 +31,7 @@
 						class="msg-error">{{i18n('html5-common.converter-number-error')}}
 					</div>
 				</div>
-				<!-- 	Date -->
+				<!--Date -->
 				<div ng-if="mapping.typeName == 'java.util.Date'">
 					<input type="text" name="dateField" sd-date-picker
 						ng-click="dataCtrl.stopEvent($event)"
@@ -39,6 +41,17 @@
 					<div ng-show="subForm.dateField.$error.validate" class="msg-error">{{i18n('html5-common.date-error')}}
 					</div>
 				</div>
+				<!-- Money -->
+				<div  ng-if="mapping.typeName == 'org.eclipse.stardust.common.Money'">
+					<input name="moneyField"  ng-model-on-blur ng-pattern="/^[-+]?\d{0,308}(\.\d{1,309})?%?$/"
+						ng-click="dataCtrl.stopEvent($event)" ng-change="dataCtrl.onChange();"
+					    ng-model="dataCtrl.outData[mapping.id]" />
+					<div
+						ng-show="subForm.moneyField.$error.pattern"
+						class="msg-error">{{i18n('html5-common.money-error')}} 
+					</div>
+				</div>
+				
 			</td>
 		</tr>
 	</tbody>

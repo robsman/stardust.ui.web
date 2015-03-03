@@ -502,9 +502,14 @@
 	                  //When data fields are filled in a dialog
 	                  angular.forEach(selectedWorkItems, function(workItem, index) {
 	                     var outData = self.completeDialog.outData;
+	                     var dataMappings = {};
+	                     angular.forEach( self.completeDialog.dataMappings,function(mapping){
+	                        dataMappings[mapping.id] = mapping.typeName; 
+	                     });
 	                     activitiesData.push({
 	                        oid : workItem.oid,
-	                        outData : outData
+	                        outData : outData,
+	                        dataMappings : dataMappings
 	                     });
 	                  });
 
@@ -514,7 +519,12 @@
 	                     var trivialActivityInfo = self.worklist.trivialManualActivities[workItem.oid];
 	                     if(trivialActivityInfo) {
 	                        var outData = trivialActivityInfo.inOutData;
-	                        activitiesData.push({oid: workItem.oid, outData: outData});
+	                        var dataMappings = {};
+	                        angular.forEach( trivialActivityInfo.dataMappings,function(mapping){
+	                           dataMappings[mapping.id] = mapping.typeName; 
+	                        });
+	         
+	                        activitiesData.push({oid: workItem.oid, outData: outData , dataMappings : dataMappings});
 	                     }
 	                  });
 	               }
@@ -537,6 +547,7 @@
 
 	      };
 		
+
 
 	      /**
 	       * 

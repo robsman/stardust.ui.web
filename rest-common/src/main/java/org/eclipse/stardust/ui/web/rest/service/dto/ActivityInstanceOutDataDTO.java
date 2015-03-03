@@ -14,11 +14,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import org.eclipse.stardust.common.Money;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 
 /**
@@ -46,11 +48,34 @@ public class ActivityInstanceOutDataDTO
          
          ActivityInstanceOutDataDTO dto = new ActivityInstanceOutDataDTO();
          dto.oid = jObject.get("oid").getAsLong();
-         dto.outData = (Map)GsonUtils.extractMap(jObject, "outData");
-
+         dto.outData =  extractOutData(jObject, dto);
          list.add(dto);
       }
       
       return list;
    }
+   
+   /**
+    * 
+    * @param jObject
+    * @param dto
+    * @return
+    */
+   @SuppressWarnings({"unchecked", "rawtypes"})
+   private static Map<String, Serializable> extractOutData(JsonObject jObject, ActivityInstanceOutDataDTO dto)
+   {
+      Map<String, Serializable> outData = (Map)GsonUtils.extractMap(jObject, "outData");
+      Map<String, String> dataMapping = (Map)GsonUtils.extractMap(jObject, "dataMappings");
+      
+      for (Entry<String, Serializable> data : outData.entrySet())
+      {  
+           String id = data.getKey();
+           if(Money.class.getCanonicalName().equals(dataMapping.get(id))){
+              outData.put(id, new Money(Double.valueOf(data.getValue().toString())));
+           }
+      }
+      
+      return outData;
+   }
+   
 }
