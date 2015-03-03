@@ -1,4 +1,4 @@
-var IntegrationManagementCtrl = function($scope, $http, $q, $timeout,$parse, sdUtilService, ngDialog, sdViewUtilService, eventBus) {
+var IntegrationManagementCtrl = function($scope, $http, $q, $timeout,$parse, sdUtilService, sdViewUtilService, eventBus) {
 	this.camelContextDataTable = null;
 	this.selectionCamelContext;
 
@@ -62,7 +62,7 @@ var IntegrationManagementCtrl = function($scope, $http, $q, $timeout,$parse, sdU
 				}
 			} else {
 				filtredCamelContexts.list = [];
-				filtredCamelContexts.totalCount = -1;
+				filtredCamelContexts.totalCount = 0;
 			}
 			deferred.resolve(filtredCamelContexts);
 			this.safeApply();
@@ -136,7 +136,7 @@ var IntegrationManagementCtrl = function($scope, $http, $q, $timeout,$parse, sdU
 								}
 							} else {
 								filtredRoutes.list = [];
-								filtredRoutes.totalCount = -1;
+								filtredRoutes.totalCount = 0;
 							}
 							deferred.resolve(filtredRoutes);
 							this.safeApply();
@@ -307,4 +307,4 @@ var IntegrationManagementCtrl = function($scope, $http, $q, $timeout,$parse, sdU
 	};
 
 }
-IntegrationManagementCtrl.$inject = [ '$scope', '$http', '$q', '$timeout','$parse', 'sdUtilService', 'ngDialog', 'sdViewUtilService', 'eventBus' ];
+IntegrationManagementCtrl.$inject = [ '$scope', '$http', '$q', '$timeout','$parse', 'sdUtilService',  'sdViewUtilService', 'eventBus' ];
