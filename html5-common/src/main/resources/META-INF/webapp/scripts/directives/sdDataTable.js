@@ -17,7 +17,8 @@
 	'use strict';
 
 	angular.module('bpm-common').directive('sdDataTable', 
-			['$parse', '$q', '$compile', '$timeout', 'sdUtilService', 'sdLoggerService', 'sdPreferenceService', DataTableDirective]);
+			['$parse', '$q', '$compile', '$timeout', 'sgI18nService', 'sdUtilService', 'sdLoggerService', 'sdPreferenceService',
+			 DataTableDirective]);
 
 	var trace;
 
@@ -33,7 +34,7 @@
 	/*
 	 * 
 	 */
-	function DataTableDirective($parse, $q, $compile, $timeout, sdUtilService, sdLoggerService, sdPreferenceService) {
+	function DataTableDirective($parse, $q, $compile, $timeout, sgI18nService, sdUtilService, sdLoggerService, sdPreferenceService) {
 		trace = sdLoggerService.getLogger('bpm-common.sdDataTable');
 
 		return {
@@ -46,7 +47,7 @@
 				return {
 					post : function(scope, element, attr, ctrl) {
 						var dataTableCompiler = new DataTableCompiler(
-								$parse, $q, $compile, $timeout, sdUtilService, sdPreferenceService, 
+								$parse, $q, $compile, $timeout, sgI18nService, sdUtilService, sdPreferenceService, 
 								scope, element, attr, ctrl);
 					}
 				};
@@ -95,7 +96,7 @@
 	/*
 	 * 
 	 */
-	function DataTableCompiler($parse, $q, $compile, $timeout, sdUtilService, sdPreferenceService, 
+	function DataTableCompiler($parse, $q, $compile, $timeout, sgI18nService, sdUtilService, sdPreferenceService, 
 			scope, element, attr, ctrl) {
 		var TOOLBAR_TEMPLATE =
 			'<div class="tbl-toolbar-section">\n' +
@@ -148,13 +149,13 @@
 				'</div>\n' +
 				'<div ng-show="$dtApi.showExportOptions" class="popup-dlg" style="margin-left: 20px;">\n' +
 					'<div class="popup-dlg-cnt">\n' +
-						'<div><a href="" ng-click="$dtApi.exportCSV({allRows: false, allCols: false})">' + 
+						'<div><a href="" ng-hide="!$dtApi.enableSelectColumns" ng-click="$dtApi.exportCSV({allRows: false, allCols: false})">' + 
 							'{{i18n(\'html5-common.export-options-current-page-current-fields\')}}\n' +
 						'</a></div>\n' +
 						'<div><a href="" ng-click="$dtApi.exportCSV({allRows: false, allCols: true})">' + 
 							'{{i18n(\'html5-common.export-options-current-page-all-fields\')}}\n' +
 						'</a></div>\n' +
-						'<div><a href="" ng-click="$dtApi.exportCSV({allRows: true, allCols: false})">' + 
+						'<div><a href="" ng-hide="!$dtApi.enableSelectColumns" ng-click="$dtApi.exportCSV({allRows: true, allCols: false})">' + 
 							'{{i18n(\'html5-common.export-options-all-pages-current-fields\')}}\n' +
 						'</a></div>\n' +
 						'<div><a href="" ng-click="$dtApi.exportCSV({allRows: true, allCols: true})">' + 
@@ -1726,21 +1727,52 @@
 		 */
 		function exportAsCSV(options) {
 			var promise = getDataForExport(options, 'csv', encoderForCSV);
-			promise.then(function(exportedRows) {
-				var exportData = [];;
-				for (var i = 0; i < exportedRows.length; i++) {
-					exportData.push(exportedRows[i].join(','));
+			promise.then(function(result) {
+				var exportedRows;
+				if (angular.isArray(result)) {
+					exportedRows = result;
+				} else {
+					exportedRows = result.data;
 				}
-				
-				var exportConents = exportData.join('\n');
-				
-				// Download File
-				var downloadMetaData = 'data:application/csv;charset=utf-8,';
-				var downloadUrl = downloadMetaData + encodeURIComponent(exportConents);
-				downloadDataAsFile(exportConfig.fileName + '.csv', downloadUrl);
+
+				// First entry will be headers, so exportData.length == 1 means no data to export
+				if (exportedRows.length > 1) {
+					var exportData = [];
+					for (var i = 0; i < exportedRows.length; i++) {
+						exportData.push(exportedRows[i].join(','));
+					}
+	
+					var exportConents = exportData.join('\n');
+					
+					// Download File
+					var downloadMetaData = 'data:application/csv;charset=utf-8,';
+					var downloadUrl = downloadMetaData + encodeURIComponent(exportConents);
+					downloadDataAsFile(exportConfig.fileName + '.csv', downloadUrl);
+				}
+
+				var message = {};
+				if (angular.isArray(result)) {
+					if (exportedRows.length == 1) {
+						message.key = 'export-error-no-data';
+						message.val = 'No data to export.';
+					}
+				} else {
+					trace.error(theTableId + ': Error occurred while exporting data.', result.error);
+					if (exportedRows.length > 1) {
+						message.key = 'export-error-incomplete-data';
+						message.val = 'Error occurred, however exported the data fetched till now.'; 
+					} else {
+						message.key = 'export-error';
+						message.val = 'Error occurred while exporting data.';
+					}
+				}
+
+				if (message.key != undefined) {
+					alert(sgI18nService.translate('html5-common.' + message.key, message.val));
+				}
 			}, function(error) {
 				trace.error(theTableId + ': Error occurred while exporting data', error);
-				alert('Error occurred while exporting data.'); // TODO
+				alert(sgI18nService.translate('html5-common.export-error', 'Error occurred while exporting data.'));
 			});
 		}
 
@@ -1776,8 +1808,15 @@
 			}
 
 			var promise = getTableDataForExport(options.allRows, expotCols);
-			promise.then(function(data) {
+			promise.then(function(result) {
 				try {
+					var data;
+					if (angular.isArray(result)) {
+						data = result;
+					} else {
+						data = result.data;
+					}
+
 					var exportedRows = [];
 	
 					// Export Header / Titles
@@ -1811,7 +1850,13 @@
 						exportedRows.push(rowExportData);
 					}
 
-					deferred.resolve(exportedRows);
+					if (angular.isArray(result)) {
+						deferred.resolve(exportedRows);
+					} else {
+						result.data = exportedRows;
+						deferred.resolve(result);
+					}
+					
 				} catch(e) {
 					deferred.reject(e);
 				}
@@ -1916,7 +1961,7 @@
 					deferred.resolve(data);
 				}
 			}, function(error) {
-				deferred.reject(error);
+				deferred.resolve({data: data, error: error});
 			});
 		}
 
