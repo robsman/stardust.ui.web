@@ -11,18 +11,17 @@
 /**
  * @author Johnson.Quadras
  */
-(function()
-{
+(function() {
    'use strict';
 
-   angular.module('bpm-common').directive('sdActivityCriticality',['$parse', ActivityCriticality]);
+   angular.module('bpm-common').directive('sdActivityCriticality',
+            [ '$parse', ActivityCriticality ]);
 
    /*
     * 
     */
 
-   function ActivityCriticality()
-   {
+   function ActivityCriticality() {
 
       return {
          restrict : 'A',
@@ -44,22 +43,20 @@
                       "ng-bind=\"criticalityCtrl.i18n('views-common-messages.processHistory-activityTable-criticalityTooltip-value')\"><\/span> "+
                       ": <span ng-bind=\"criticalityCtrl.criticality.value\">" +
                    "<\/div> ",
-         controller : [ '$scope','$attrs','$parse', CriticalityController ]
+         controller : [ '$scope', '$attrs', '$parse', CriticalityController ]
       };
 
    }
 
-   function CriticalityController( $scope, $attrs, $parse)
-   {
-      this.getTimes = function(count)
-      {
+   function CriticalityController($scope, $attrs, $parse) {
+      this.getTimes = function(count) {
          return new Array(count);
       }
       this.toolTip = {
          show : false
       };
-      
-      var criticalityBinding  = $parse($attrs.sdaCriticality);
+
+      var criticalityBinding = $parse($attrs.sdaCriticality);
       this.criticality = criticalityBinding($scope);
       this.i18n = $scope.i18n;
       $scope.criticalityCtrl = this;

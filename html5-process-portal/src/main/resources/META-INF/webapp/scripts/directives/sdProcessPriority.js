@@ -11,17 +11,16 @@
 /**
  * @author Johnson.Quadras
  */
-(function()
-{
+(function() {
    'use strict';
 
-   angular.module('bpm-common').directive('sdProcessPriority', ['$parse',ProcessPriority]);
+   angular.module('bpm-common').directive('sdProcessPriority',
+            [ '$parse', ProcessPriority ]);
 
    /*
-    *
+    * 
     */
-   function ProcessPriority()
-   {
+   function ProcessPriority() {
       return {
          restrict : 'A',
          template : "<i class=\"glyphicon glyphicon-flag priority-flag\" "+
@@ -32,19 +31,18 @@
                          "<span class=\"worklist-tooltip-label\" ng-bind=\"processPriorityCtrl.i18n('views-common-messages.views-activityTable-priorityFilter-table-priorityColumn-name')\"><\/span> "+
                          ": <span ng-bind=\"processPriorityCtrl.i18n('views-common-messages.common-priorities-'+processPriorityCtrl.priority)\"><\/span>" +
                        "<\/div>",
-         controller : [ '$scope','$attrs','$parse', ProcessPriorityController ]
+         controller : [ '$scope', '$attrs', '$parse', ProcessPriorityController ]
       };
    }
    /**
     *
     */
-   function ProcessPriorityController( $scope, $attrs, $parse)
-   {
+   function ProcessPriorityController($scope, $attrs, $parse) {
       this.toolTip = {
          show : false
       };
-      
-      var priorityBinding  = $parse($attrs.sdaPriority);
+
+      var priorityBinding = $parse($attrs.sdaPriority);
       this.priority = priorityBinding($scope);
       this.i18n = $scope.i18n;
       $scope.processPriorityCtrl = this;

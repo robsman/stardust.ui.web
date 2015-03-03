@@ -13,36 +13,33 @@
  * @author Johnson.Quadras
  */
 
-(function()
-{
+(function() {
    'use strict';
-   angular.module('bpm-common').directive('sdBooleanFilter',
-            [BooleanFilterDirective ]);
+   angular.module('bpm-common').directive('sdBooleanFilter', [ BooleanFilterDirective ]);
 
    /*
     * 
     */
-   function BooleanFilterDirective()
-   {
+   function BooleanFilterDirective() {
       return {
          restrict : 'A',
          template : '<form name="filterForm">'
-                  + '<table> <tr>'
-                  + '<td><label class="label-form" style="margin-right : 20px;"> {{i18n(\'views-common-messages.views-common-column-select\')}}</label></td>'
-                  + '<td><input type="radio" style="margin-top: -4px; margin-left: 5px;" ng-model="filterData.equals" ng-value="true"></td>'
-                  + '<td><label  class="label-form"> {{i18n(\'portal-common-messages.common-true\')}}</label></td></td>'
-                  + '<td><input type="radio" style="margin-top: -4px; margin-left: 5px;" ng-model="filterData.equals" ng-value="false"></td>'
-                  + '<td><label  class="label-form"> {{i18n(\'portal-common-messages.common-false\')}}</label></td></td>'
-                  + '</tr></table>' + ' </form>',
-         link : function(scope, element, attr, ctrl)
-         {
+                  +  '<table>'
+                  +      '<tr>'
+                  +          '<td><label class="label-form" style="margin-right : 20px;"> {{i18n(\'views-common-messages.views-common-column-select\')}}</label></td>'
+                  +           '<td><input type="radio" style="margin-top: -4px; margin-left: 5px;" ng-model="filterData.equals" ng-value="true"></td>'
+                  +           '<td><label  class="label-form"> {{i18n(\'portal-common-messages.common-true\')}}</label></td></td>'
+                  +           '<td><input type="radio" style="margin-top: -4px; margin-left: 5px;" ng-model="filterData.equals" ng-value="false"></td>'
+                  +           '<td><label  class="label-form"> {{i18n(\'portal-common-messages.common-false\')}}</label></td></td>'
+                  +      '</tr>'
+                  +   '</table>' 
+                  + '</form>',
+         link : function(scope, element, attr, ctrl) {
             /*
              * 
              */
-            scope.handlers.applyFilter = function()
-            {
-               if (scope.filterForm.$valid)
-               {
+            scope.handlers.applyFilter = function() {
+               if (scope.filterForm.$valid) {
                   scope.setFilterTitle(scope.filterData.equals);
                   return true;
                }
@@ -52,8 +49,7 @@
             /*
              * 
              */
-            scope.handlers.resetFilter = function()
-            {
+            scope.handlers.resetFilter = function() {
                // NOP
             };
          }

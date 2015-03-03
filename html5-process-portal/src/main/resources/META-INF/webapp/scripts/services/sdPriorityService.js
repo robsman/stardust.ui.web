@@ -11,14 +11,11 @@
 /**
  * @author Johnson.Quadras
  */
-(function()
-{
+(function() {
    'use strict';
 
-   angular.module('workflow-ui.services').provider('sdPriorityService', function()
-   {
-      this.$get = [ '$q', 'sgI18nService', function($q, sgI18nService)
-      {
+   angular.module('workflow-ui.services').provider('sdPriorityService', function() {
+      this.$get = [ '$q', 'sgI18nService', function($q, sgI18nService) {
          var service = new PriorityService($q, sgI18nService);
          return service;
       } ];
@@ -27,8 +24,7 @@
    /**
     * 
     */
-   function PriorityService($q, sgI18nService)
-   {
+   function PriorityService($q, sgI18nService) {
 
       this.priorities = [
                {
@@ -50,8 +46,7 @@
                   "name" : "high"
                } ];
 
-      PriorityService.prototype.getAllPriorities = function()
-      {
+      PriorityService.prototype.getAllPriorities = function() {
          var deferred = $q.defer();
          deferred.resolve(this.priorities);
          return deferred.promise;

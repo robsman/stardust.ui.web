@@ -15,17 +15,17 @@
    'use strict';
 
    angular.module('bpm-common').directive('sdProcessActivityFilter',
-      [ '$filter','$parse','sdUtilService', ActivityFilter]);
+            [ '$filter', '$parse', 'sdUtilService', ActivityFilter ]);
 
    /*
     *
     */
-    function ActivityFilter( $filter, $parse, sdUtilService) {
+   function ActivityFilter($filter, $parse, sdUtilService) {
 
       return {
          restrict : 'A',
          templateUrl : 'plugins/html5-process-portal/scripts/directives/partials/processActivityFilter.html',
-         controller : [ '$scope', '$attrs', '$filter','$parse', FilterController ],
+         controller : [ '$scope', '$attrs', '$filter', '$parse', FilterController ],
          link : function(scope, element, attr, ctrl) {
 
             /*
@@ -106,7 +106,7 @@
       this.isActivityFilter = function() {
          return self.filterType == FILTER_TYPE_ACTIVITY;
       }
-      
+
       /***
        * 
        */
@@ -115,7 +115,7 @@
             this.getActivitiesForSelectedProcesses($filter, $scope.filterData.processes);
          }
       }
-      
+
       /**
        * 
        */

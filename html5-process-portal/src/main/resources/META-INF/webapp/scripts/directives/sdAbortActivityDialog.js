@@ -33,13 +33,13 @@
                			"sda-on-open=\"abortActivityCtrl.onConfirm(res)\" "+
                			"sda-template=\"plugins\/html5-process-portal\/scripts\/directives\/partials\/abortActivityDialogBody.html\"> "+
             			"<\/div>  " +
-               			"<span style=\"float: left;\" " +
-        				"sd-dialog=\"abortActivityCtrl.abortActivityNotification\" " +
-        				"sda-title=\"{{admin-portal-messages.common-notification-title}}\" " +
-        				"sda-type=\"custom\" " +
-        				"sda-scope=\"this\" " +
-        				"sda-template=\"plugins/html5-process-portal/scripts/directives/partials/abortActivityNotification.html\">" +
-        				"</span>",
+               		"<span style=\"float: left;\" " +
+        			       	"sd-dialog=\"abortActivityCtrl.abortActivityNotification\" " +
+        				      "sda-title=\"{{abortActivityCtrl.i18n('admin-portal-messages.common-notification-title')}}\" " +
+        			       	"sda-type=\"custom\" " +
+        			      	"sda-scope=\"this\" " +
+        			      	"sda-template=\"plugins/html5-process-portal/scripts/directives/partials/abortActivityNotification.html\">" +
+        				 "</span>",
 			scope :{
 				activitiesToAbort : '=sdaActivitiesToAbort',
 				showDialog : '=sdaShowDialog',
