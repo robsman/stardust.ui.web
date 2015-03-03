@@ -869,7 +869,6 @@
 		 * 
 		 */
 		function ajaxHandler(source, data, callback, settings) {
-			trace.log(theTableId + ': Callback received for fetching server data, with data:', data);
 			var dataMap = {};
 			for (var i = 0; i < data.length; i++) {
 				dataMap[data[i].name] = data[i].value;
