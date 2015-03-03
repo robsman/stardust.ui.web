@@ -2823,6 +2823,11 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
     */
    private void updateData(DataType data, JsonObject dataJson)
    {
+      if (data.eIsProxy())
+      {
+         // we do not change proxies
+         return;
+      }
       updateIdentifiableElement(data, dataJson);
 
       mapDeclaredProperties(data, dataJson, propertiesMap.get(DataType.class));
