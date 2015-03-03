@@ -23,7 +23,7 @@
 		sda-column-selector="{{worklistCtrl.columnSelector}}" sda-preference-delegate="worklistCtrl.preferenceDelegate(prefInfo)"
 		sda-on-column-reorder="worklistCtrl.onColumnReorder(info)"
 		sda-sortable="true" sda-sort-by="{name : 'started', dir : 'desc'}" sda-on-sorting="worklistCtrl.onSorting(info)"
-		sda-exports="Excel,CSV" sda-exports-file-name="worklist">
+		sda-exports="Excel,CSV" sda-exports-file-name="worklist-{{worklistCtrl.exportFileName}}">
 		<thead sda-i18n-scope="processportal.views-worklistPanel-column">
 			<tr>
 				<th sda-name="overview" sda-sortable="true">

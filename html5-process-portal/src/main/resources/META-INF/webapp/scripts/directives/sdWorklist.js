@@ -170,6 +170,8 @@
 
 			this.columnSelector = 'admin'; //TODO
 
+			this.exportFileName = this.query.userId || this.query.participantQId; //TODO
+
 			this.worklistPrefModule = 'ipp-workflow-perspective';
 			this.worklistPrefId = 'worklist-participant-columns' || 'worklist-process-columns'; //TODO
 			this.worklistPrefName = this.query.userId || this.query.participantQId; //TODO
