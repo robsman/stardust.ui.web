@@ -32,6 +32,13 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
+import org.eclipse.xsd.XSDElementDeclaration;
+import org.eclipse.xsd.XSDSchema;
+import org.eclipse.xsd.XSDTypeDefinition;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
+
+import com.google.gson.*;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
@@ -41,13 +48,8 @@ import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.runtime.*;
 import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
-import org.eclipse.stardust.model.xpdl.builder.utils.XPDLFinderUtils;
-import org.eclipse.stardust.model.xpdl.builder.utils.LaneParticipantUtil;
-import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
-import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
-import org.eclipse.stardust.model.xpdl.builder.utils.NameIdUtilsExtension;
+import org.eclipse.stardust.model.xpdl.builder.utils.*;
 import org.eclipse.stardust.model.xpdl.carnot.*;
-import org.eclipse.stardust.model.xpdl.carnot.util.AccessPointUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.model.xpdl.carnot.util.StructuredTypeUtils;
@@ -72,14 +74,6 @@ import org.eclipse.stardust.ui.web.modeler.spi.ModelFormat;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelingSessionScoped;
 import org.eclipse.stardust.ui.web.modeler.xpdl.edit.utils.ModelElementEditingUtils;
 import org.eclipse.stardust.ui.web.modeler.xpdl.edit.utils.WebServiceApplicationUtils;
-
-import org.eclipse.xsd.XSDElementDeclaration;
-import org.eclipse.xsd.XSDSchema;
-import org.eclipse.xsd.XSDTypeDefinition;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Service;
-
-import com.google.gson.*;
 
 /**
  *
@@ -287,11 +281,11 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       storeAttributes(activity, activityJson);
       storeDescription(activity, activityJson);
 
-      AttributeUtil.setAttribute(activity, PredefinedConstants.QUALITY_ASSURANCE_PROBABILITY_ATT, null);      
-      AttributeUtil.setAttribute(activity, PredefinedConstants.QUALITY_ASSURANCE_FORMULA_ATT, null);      
+      AttributeUtil.setAttribute(activity, PredefinedConstants.QUALITY_ASSURANCE_PROBABILITY_ATT, null);
+      AttributeUtil.setAttribute(activity, PredefinedConstants.QUALITY_ASSURANCE_FORMULA_ATT, null);
       activity.setQualityControlPerformer(null);
       activity.getValidQualityCodes().clear();
-      if (activityJson.has(ModelerConstants.QUALITYCONTROL) 
+      if (activityJson.has(ModelerConstants.QUALITYCONTROL)
             && !(activityJson.get(ModelerConstants.QUALITYCONTROL) instanceof JsonNull))
       {
          updateQualityControl(activity, activityJson);
@@ -486,16 +480,16 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
 
       IModelParticipant importParticipant = getModelBuilderFacade().importParticipant(ModelUtils.findContainingModel(activity), fullParticipantID);
       activity.setQualityControlPerformer(importParticipant);
-      
+
       if(EventMarshallingUtils.getJsonAttribute(activityJson, PredefinedConstants.QUALITY_ASSURANCE_FORMULA_ATT) != null)
       {
-         AttributeUtil.setCDataAttribute(activity, PredefinedConstants.QUALITY_ASSURANCE_FORMULA_ATT, (String) EventMarshallingUtils.getJsonAttribute(activityJson, PredefinedConstants.QUALITY_ASSURANCE_FORMULA_ATT));                        
+         AttributeUtil.setCDataAttribute(activity, PredefinedConstants.QUALITY_ASSURANCE_FORMULA_ATT, (String) EventMarshallingUtils.getJsonAttribute(activityJson, PredefinedConstants.QUALITY_ASSURANCE_FORMULA_ATT));
       }
       if(EventMarshallingUtils.getJsonAttribute(activityJson, PredefinedConstants.QUALITY_ASSURANCE_PROBABILITY_ATT) != null)
-      {      
+      {
          AttributeUtil.setCDataAttribute(activity, PredefinedConstants.QUALITY_ASSURANCE_PROBABILITY_ATT, (String) EventMarshallingUtils.getJsonAttribute(activityJson, PredefinedConstants.QUALITY_ASSURANCE_PROBABILITY_ATT));
-      } 
-      
+      }
+
       JsonArray qcCodes = qcJson.getAsJsonArray(ModelerConstants.QC_VALID_CODES);
       for (Iterator<JsonElement> i = qcCodes.iterator(); i.hasNext();)
       {
@@ -760,13 +754,6 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
             mergeInOutDataMappings(newDataMappings);
          }
        }
-
-
-
-
-      updateOldStyleDataFlowConnection(dataFlowConnection, dataFlowJson);
-
-
    }
 
    private void mergeInOutDataMappings(List<DataMappingType> dataMappings)
@@ -799,171 +786,6 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
          }
       }
    }
-
-
-
-   public void updateOldStyleDataFlowConnection(DataMappingConnectionType dataFlowConnection,
-         JsonObject dataFlowJson)
-   {
-      if (dataFlowJson.has(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY)
-            || dataFlowJson.has(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY))
-      {
-         // Collect all data mappings between the activity and the data
-
-         List<DataMappingType> dataMappings = new ArrayList<DataMappingType>();
-
-         for (DataMappingType dataMapping : dataFlowConnection.getActivitySymbol()
-               .getActivity().getDataMapping())
-         {
-            if (dataMapping.getData().getId()
-                  .equals(dataFlowConnection.getDataSymbol().getData().getId()))
-            {
-               dataMappings.add(dataMapping);
-            }
-         }
-
-         // Delete all data mappings between the activity and the data
-
-         for (DataMappingType dataMapping : dataMappings)
-         {
-            dataFlowConnection.getActivitySymbol().getActivity().getDataMapping()
-                  .remove(dataMapping);
-            dataFlowConnection.getDataSymbol().getData().getDataMappings()
-                  .remove(dataMapping);
-         }
-
-         // dataFlowJson holds an input and/or an output dataMappingJson; data mappings
-         // have to be created for both
-
-         // Create input mapping
-         JsonObject inJson = null;
-         JsonObject outJson = null;
-
-         if (hasNotJsonNull(dataFlowJson, ModelerConstants.INPUT_DATA_MAPPING_PROPERTY))
-         {
-            inJson = dataFlowJson
-                  .getAsJsonObject(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY);
-
-         }
-         if (hasNotJsonNull(dataFlowJson, ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY))
-         {
-            outJson = dataFlowJson
-                  .getAsJsonObject(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY);
-         }
-
-         boolean hasInAccessPoints = hasAccessPoints(dataFlowConnection
-               .getActivitySymbol().getActivity(), DirectionType.IN_LITERAL);
-         boolean hasOutAccessPoints = hasAccessPoints(dataFlowConnection
-               .getActivitySymbol().getActivity(), DirectionType.OUT_LITERAL);
-
-         if ((hasInAccessPoints && hasOutAccessPoints)
-               || (!hasInAccessPoints && !hasOutAccessPoints))
-         {
-            if (inJson != null)
-            {
-               createOldStyleDataMapping(dataFlowConnection.getActivitySymbol().getActivity(),
-                     dataFlowConnection.getDataSymbol().getData(), dataFlowJson,
-                     DirectionType.IN_LITERAL, inJson);
-            }
-
-            // Create output mapping
-            if (outJson != null)
-            {
-               createOldStyleDataMapping(dataFlowConnection.getActivitySymbol().getActivity(),
-                     dataFlowConnection.getDataSymbol().getData(), dataFlowJson,
-                     DirectionType.OUT_LITERAL, outJson);
-            }
-         }
-
-         if (hasInAccessPoints && !hasOutAccessPoints)
-         {
-            if (inJson != null)
-            {
-               createOldStyleDataMapping(dataFlowConnection.getActivitySymbol().getActivity(),
-                     dataFlowConnection.getDataSymbol().getData(), dataFlowJson,
-                     DirectionType.IN_LITERAL, inJson);
-            }
-
-            // Create output mapping
-            if (outJson != null)
-            {
-               createOldStyleDataMapping(dataFlowConnection.getActivitySymbol().getActivity(),
-                     dataFlowConnection.getDataSymbol().getData(), dataFlowJson,
-                     DirectionType.OUT_LITERAL, inJson);
-            }
-         }
-
-         if (!hasInAccessPoints && hasOutAccessPoints)
-         {
-            if (inJson != null)
-            {
-               createOldStyleDataMapping(dataFlowConnection.getActivitySymbol().getActivity(),
-                     dataFlowConnection.getDataSymbol().getData(), dataFlowJson,
-                     DirectionType.IN_LITERAL, outJson);
-            }
-
-            // Create output mapping
-            if (outJson != null)
-            {
-               createOldStyleDataMapping(dataFlowConnection.getActivitySymbol().getActivity(),
-                     dataFlowConnection.getDataSymbol().getData(), dataFlowJson,
-                     DirectionType.OUT_LITERAL, outJson);
-            }
-         }
-
-      }
-
-   }
-
-   private boolean hasAccessPoints(ActivityType activity, DirectionType direction)
-   {
-      if (activity.getImplementation().getLiteral().equals("Subprocess"))
-      {
-         return true;
-      }
-      return !getAccessPoints(activity, direction).isEmpty();
-   }
-
-   private List<AccessPointType> getAccessPoints(ActivityType activity,
-         DirectionType direction)
-   {
-      List<AccessPointType> emptyList = new ArrayList<AccessPointType>();
-      if (activity.getImplementation().getLiteral().equals("Application"))
-      {
-         if (direction.equals(DirectionType.IN_LITERAL))
-         {
-            List<AccessPointType> accessPoints = AccessPointUtil
-                  .getInAccessPonts(activity.getApplication());
-            if (!accessPoints.isEmpty())
-            {
-               return accessPoints;
-            }
-            if (activity.getApplication().getContext() != null
-                  && !activity.getApplication().getContext().isEmpty())
-            {
-               return AccessPointUtil.getInAccessPonts(activity.getApplication()
-                     .getContext().get(0));
-            }
-         }
-         if (direction.equals(DirectionType.OUT_LITERAL))
-         {
-            List<AccessPointType> accessPoints = AccessPointUtil
-                  .getOutAccessPonts(activity.getApplication());
-            if (!accessPoints.isEmpty())
-            {
-               return accessPoints;
-            }
-            if (activity.getApplication().getContext() != null
-                  && !activity.getApplication().getContext().isEmpty())
-            {
-               return AccessPointUtil.getOutAccessPonts(activity.getApplication()
-                     .getContext().get(0));
-            }
-         }
-      }
-      return emptyList;
-   }
-
 
    /**
     *
@@ -1011,75 +833,6 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
             dataMapping.setName(dataFlowJson.get(ModelerConstants.NAME_PROPERTY)
                   .getAsString());
          }
-         dataMapping.setName(data.getName());
-      }
-
-      dataMapping.setDirection(direction);
-
-      if (hasNotJsonNull(dataMappingJson, ModelerConstants.ACCESS_POINT_ID_PROPERTY))
-      {
-
-         dataMapping.setApplicationAccessPoint(dataMappingJson.get(
-               ModelerConstants.ACCESS_POINT_ID_PROPERTY).getAsString());
-         {
-            dataMapping.setContext(dataMappingJson.get(
-                  ModelerConstants.ACCESS_POINT_CONTEXT_PROPERTY).getAsString());
-         }
-      }
-      if (dataMappingJson.has(ModelerConstants.ACCESS_POINT_PATH_PROPERTY))
-      {
-         if (dataMappingJson.get(ModelerConstants.ACCESS_POINT_PATH_PROPERTY)
-               .isJsonNull())
-         {
-            dataMapping.setApplicationPath(null);
-         }
-         else
-         {
-            dataMapping.setApplicationPath(dataMappingJson.get(
-                  ModelerConstants.ACCESS_POINT_PATH_PROPERTY).getAsString());
-         }
-      }
-
-      if (StringUtils.isEmpty(dataMapping.getContext()))
-      {
-         dataMapping.setContext(getModelBuilderFacade().getDefaultContext(activity,
-               direction));
-      }
-
-      if (hasNotJsonNull(dataMappingJson, ModelerConstants.DATA_PATH_PROPERTY))
-      {
-         dataMapping.setDataPath(dataMappingJson.get(ModelerConstants.DATA_PATH_PROPERTY)
-               .getAsString());
-      }
-
-      dataMapping.setData(data);
-      activity.getDataMapping().add(dataMapping);
-      data.getDataMappings().add(dataMapping);
-
-      return dataMapping;
-   }
-
-   private DataMappingType createOldStyleDataMapping(ActivityType activity, DataType data,
-         JsonObject dataFlowJson, DirectionType direction, JsonObject dataMappingJson)
-   {
-      DataMappingType dataMapping = AbstractElementBuilder.F_CWM.createDataMappingType();
-
-      if (hasNotJsonNull(dataFlowJson, ModelerConstants.ID_PROPERTY))
-      {
-         dataMapping.setId(dataFlowJson.get(ModelerConstants.ID_PROPERTY).getAsString());
-      }
-      else
-      {
-         dataMapping.setId(data.getId());
-      }
-
-      if (hasNotJsonNull(dataFlowJson, ModelerConstants.NAME_PROPERTY))
-      {
-         dataMapping.setName(dataFlowJson.get(ModelerConstants.NAME_PROPERTY)
-               .getAsString());
-      }
-      else
-      {
          dataMapping.setName(data.getName());
       }
 
