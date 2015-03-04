@@ -1,0 +1,16 @@
+<button ng-click="documentDownloadCtrl.setShowDocumentDownload(rowData.documentId,rowData.documentName);"
+		title="{{i18n('views-common-messages.views-myDocumentsTreeView-documentTree-downloadFile')}}" class="button-link tbl-tool-link">
+		<i class="glyphicon glyphicon-download"></i>
+<div sd-dialog="documentDownloadCtrl.documentDownload" sda-modal="true"
+		 sda-show="documentDownloadCtrl.showDoumentDownload"
+		 sda-type="confirm"
+		 sda-title="{{i18n('views-common-messages.views-myDocumentsTreeView-documentTree-downloadFile')}}"
+		 sda-scope="this"
+		 sda-template="plugins/html5-process-portal/scripts/directives/partials/documentDownloadDialog.html"
+		 sda-on-confirm="documentDownloadCtrl.downloadDocument(res)"
+		 sda-on-close="documentDownloadCtrl.downloadDocumentClose(res)"
+		 sda-confirm-action-label="{{i18n('views-common-messages.views-genericRepositoryView-downloanFile-label')}}"
+		 sda-width="300px"
+		 sda-height="50px">
+</div>
+</button>

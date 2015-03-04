@@ -12,10 +12,12 @@ package org.eclipse.stardust.ui.web.rest;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.MissingResourceException;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.DocumentTypeDTO;
 
 /**
  * @author Anoop.Nair
+ * @author Abhay.Thappan
  * @version $Revision: $
  */
 @Component
@@ -78,6 +81,31 @@ public class DocumentResource
          return Response.serverError().build();
       }
    }
+   
+
+	@GET
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_OCTET_STREAM)
+	@Path("/downloadDocument/{documentId}/{documentName}")
+	public Response downloadReportDefinition(
+			@PathParam("documentId") String documentId,
+			@PathParam("documentName") String documentName) {
+		try {
+
+			return Response
+					.ok(documentService
+							.downloadDocumentDefinition(documentId),
+							MediaType.APPLICATION_OCTET_STREAM)
+					.header("content-disposition",
+							"attachment; filename = \"" + documentName + "\"")
+					.build();
+		} catch (MissingResourceException mre) {
+			return Response.status(Status.NOT_FOUND).build();
+		} catch (Exception e) {
+			return Response.status(Status.BAD_REQUEST).build();
+		}
+
+	}
 
    @GET
    @Produces(MediaType.APPLICATION_JSON)

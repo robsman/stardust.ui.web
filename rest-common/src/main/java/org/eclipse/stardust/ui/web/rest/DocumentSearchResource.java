@@ -17,13 +17,11 @@ import java.util.MissingResourceException;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -195,49 +193,24 @@ public class DocumentSearchResource {
 			return Response.status(Status.BAD_REQUEST).build();
 		}
 	}
-	
+
 	@GET
 	@Path("/attachDocumentsToProcess/{processOID}/{documentId}")
-	public Response attachDocumentsToProcess(@PathParam("processOID") String processOID,
+	public Response attachDocumentsToProcess(
+			@PathParam("processOID") String processOID,
 			@PathParam("documentId") String documentId) {
 		try {
 
-			InfoDTO result = documentSearchService
-					.attachDocumentsToProcess(Long.parseLong(processOID), documentId);
+			InfoDTO result = documentSearchService.attachDocumentsToProcess(
+					Long.parseLong(processOID), documentId);
 			Gson gson = new Gson();
-			return Response.ok(gson.toJson(result),
-					MediaType.TEXT_PLAIN_TYPE).build();
-		} catch (MissingResourceException mre) {
-			return Response.status(Status.NOT_FOUND).build();
-		} catch (Exception e) {
-			return Response.status(Status.BAD_REQUEST).build();
-		}
-	}
-	
-	
-
-	@GET
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_OCTET_STREAM)
-	@Path("/downloadDocument/{documentId}/{documentName}")
-	public Response downloadReportDefinition(
-			@PathParam("documentId") String documentId,
-			@PathParam("documentName") String documentName) {
-		try {
-
-			return Response
-					.ok(documentSearchService
-							.downloadDocumentDefinition(documentId),
-							MediaType.APPLICATION_OCTET_STREAM)
-					.header("content-disposition",
-							"attachment; filename = \"" + documentName + "\"")
+			return Response.ok(gson.toJson(result), MediaType.TEXT_PLAIN_TYPE)
 					.build();
 		} catch (MissingResourceException mre) {
 			return Response.status(Status.NOT_FOUND).build();
 		} catch (Exception e) {
 			return Response.status(Status.BAD_REQUEST).build();
 		}
-
 	}
 
 	/**

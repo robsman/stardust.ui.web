@@ -156,14 +156,6 @@
 
 		}
 
-		this.downloadDocument = function(documentId, documentName) {
-			trace.info("inside downloadDocument function");
-			window.location = this.getRootUrl() + "/" + REST_BASE_URL
-					+ "/downloadDocument" + "/" + documentId + "/"
-					+ documentName;
-
-		};
-
 		this.attachDocumentsToProcess = function(processOID, documentId) {
 			var restUrl = REST_BASE_URL + "/:type/:processOID/:documentId";
 

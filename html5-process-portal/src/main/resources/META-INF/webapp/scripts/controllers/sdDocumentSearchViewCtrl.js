@@ -465,31 +465,5 @@
 					});
 
 		};
-
-		this.downloadDocument = function(res) {
-			var self = this;
-			sdDocumentSearchService.downloadDocument(
-					self.documentDownload.documentId,
-					self.documentDownload.documentName);
-			delete self.documentDownload;
-
-		};
-
-		this.setShowDocumentDownload = function(documentId, documentName) {
-			var self = this;
-			self.showDoumentDownload = true;
-			var documentDownload = {
-				documentId : documentId,
-				documentName : documentName
-			};
-			self.documentDownload = documentDownload;
-
-		};
-
-		this.downloadDocumentClose = function() {
-			var self = this;
-			delete self.documentDownload;
-		};
-
 	}
 })();

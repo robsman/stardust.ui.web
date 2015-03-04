@@ -24,7 +24,6 @@ import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.runtime.Document;
-import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.rest.Options;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentSearchCriteriaDTO;
@@ -39,7 +38,6 @@ import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.utils.DocumentSearchUtils;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MyPicturePreferenceUtils;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -140,18 +138,6 @@ public class DocumentSearchServiceBean {
 		return resultDTO;
 	}
 
-	public byte[] downloadDocumentDefinition(String documentId) {
-		try {
-			DocumentManagementService documentManagementService = ServiceFactoryUtils
-					.getDocumentManagementService();
-			return documentManagementService
-					.retrieveDocumentContent(documentId);
-		} catch (Exception e) {
-			trace.error("Exception while Download Document Definition " + e, e);
-		}
-		return null;
-	}
-
 	public QueryResultDTO getAvailableProcessDefns() {
 		List<SelectItemDTO> processDefns = documentSearchUtils
 				.getAvailableProcessDefns();
@@ -160,8 +146,9 @@ public class DocumentSearchServiceBean {
 		resultDTO.totalCount = processDefns.size();
 		return resultDTO;
 	}
-	
-	public InfoDTO attachDocumentsToProcess(long processOid, String documentId) throws ResourceNotFoundException{
+
+	public InfoDTO attachDocumentsToProcess(long processOid, String documentId)
+			throws ResourceNotFoundException {
 		return documentSearchUtils.attachDocuments(processOid, documentId);
 	}
 }

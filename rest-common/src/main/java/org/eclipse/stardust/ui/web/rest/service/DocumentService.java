@@ -13,17 +13,23 @@ package org.eclipse.stardust.ui.web.rest.service;
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Component;
-
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.runtime.Document;
+import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.extensions.dms.data.DocumentType;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentTypeDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DocumentDTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DocumentTypeDTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.utils.DocumentUtils;
+import org.eclipse.stardust.ui.web.rest.service.utils.ServiceFactoryUtils;
+
+
 
 /**
  * @author Anoop.Nair
+ * @author Abhay.Thappan
  * @version $Revision: $
  */
 @Component
@@ -32,6 +38,12 @@ public class DocumentService
 
    @Resource
    private DocumentUtils documentUtils;
+   
+   @Resource
+   private ServiceFactoryUtils serviceFactoryUtils;
+   
+   private static final Logger trace = LogManager
+			.getLogger(DocumentService.class);
 
    /**
     * @param documentId
@@ -78,4 +90,22 @@ public class DocumentService
 
       return documentDTO;
    }
+   
+   
+	/**
+	 * @param documentId
+	 * @return
+	 * @throws Exception
+	 */
+	public byte[] downloadDocumentDefinition(String documentId) throws Exception {
+		try {
+			DocumentManagementService documentManagementService = serviceFactoryUtils
+					.getDocumentManagementService();
+			return documentManagementService
+					.retrieveDocumentContent(documentId);
+		} catch (Exception e) {
+			trace.error("Exception while Download Document Definition " + e, e);
+			throw e;
+		}
+	}
 }
