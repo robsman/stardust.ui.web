@@ -36,7 +36,7 @@ public class ExternalReferenceChangeTracker implements ChangePostprocessor
    @Override
    public int getInspectionPhase()
    {
-      return 100;
+      return 800;
    }
 
    @Override

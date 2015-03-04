@@ -42,7 +42,7 @@ public class ExternalElementChangeTracker implements ChangePostprocessor
    @Override
    public int getInspectionPhase()
    {
-      return 10;
+      return 700;
    }
 
    @Override
