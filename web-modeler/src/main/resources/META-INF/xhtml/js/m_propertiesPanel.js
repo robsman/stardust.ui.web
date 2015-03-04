@@ -565,8 +565,31 @@ define(
 								this.setElement(this.element);
 							}
 						}
+
+						//refresh data
+         		if (null != object && null != object.changes
+                    && null != object.changes.added
+                    && 0 != object.changes.added.length) {
+         		  
+         		    this.refreshData(object.changes.added);
+            }
+         		
+         		if (null != object && null != object.changes
+                    && null != object.changes.removed
+                    && 0 != object.changes.removed.length) {
+            
+         		  this.refreshData(object.changes.removed);
+            }
 					}
 				};
+				
+				PropertiesPanel.prototype.refreshData = function(changes){
+				  for (var i = 0; i < changes.length; i++) {
+            if (changes[i].type == m_constants.DATA) {
+              this.setElement(this.element);
+            }
+          }
+				}
 
 				/**
 				 *
