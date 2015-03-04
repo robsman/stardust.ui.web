@@ -73,12 +73,13 @@
 					onConfirm: "&sdaOnConfirm"
 				},
 				transclude: true,
-				template: '<span id="abortPopoverSpan" class="sd-abort-popover-link" ng-click="abortPopoverController.handlePopoverClick()" ng-transclude></span>'
-				// Popover Div
-				+ '<div id="abortPopoverDiv" ng-show="showPopover" class="popup-dlg sd-abort-popover-box">'
+				template: '<span sd-popover sda-on-open="abortPopoverController.handlePopoverClick()" id="abortPopoverSpan" class="sd-abort-popover-link" ng-disabled="abortPopoverController.disabled" >'
+				+ '<span ng-transclude></span>'
+				+ '<div id="abortPopoverDiv" class="popover-body">'
 					+ '<div><a href="#" ng-click="abortPopoverController.handleAbort(\'' + ACTION_TYPE.ABORT_AND_START +'\')" >{{i18n(\'views-common-messages.views-switchProcessDialog-Menu-abortandstart\')}}</a></div>'
 					+ '<div><a ng-hide="abortPopoverController.disableStartJoin()" href="#" ng-click="abortPopoverController.handleAbort(\'' + ACTION_TYPE.ABORT_AND_JOIN +'\')" >{{i18n(\'views-common-messages.views-switchProcessDialog-Menu-abortandjoin\')}}</a></div>'
-				+ '</div>'
+				+ '</div>'					
+				+ '</span>'
 				// Abort popover Dialog
 				+ '<span style="float: left;"' 
 				+ ' sd-dialog="abortPopoverController.abortPopoverDialog"'
@@ -152,6 +153,13 @@
 				self.showAbortAndJoin = function () {
 					return ACTION_TYPE.ABORT_AND_JOIN == self.actionType;
 				};
+				
+				if (angular.isDefined($attrs.ngDisabled)) {
+					self.disabled = parseAttribute($scope.$parent, $attrs.ngDisabled);
+				}
+				
+				// Reset the values first
+				self.resetValues();
 			}
 			
 			function resetValues() {
@@ -184,34 +192,13 @@
 			
 			function handlePopoverClick() {
 				// In case of ng-disabled, make sure the click is not activated
-				var disabled = false;
-				if (angular.isDefined($attrs.ngDisabled)) {
-					disabled = parseAttribute($scope.$parent, $attrs.ngDisabled);
-				}
-				
-				if (!disabled) {
-					// Reset the values first
-					self.resetValues();
-					
-					// Handle close by click on document event
-					var popoverCloseEvent = function(event) {
-						if (event.target.parentElement.id !== 'abortPopoverSpan' || (event.target.firstElementChild != undefined && event.target.firstElementChild.id !== 'abortPopoverSpan')) {
-							$scope.$apply(function() {
-								$scope.showPopover = false;
-								// this is important since we want this to be called exactly once
-								$(document).unbind('click', popoverCloseEvent);
-							});
-						}
-					};
-					$(document).bind('click', popoverCloseEvent);
+				if (!self.disabled) {
 					
 					if (angular.isDefined(self.onOpen)) {
 						self.onOpen();
 					}
 					
 					self.activities = parseAttribute($scope.$parent, $attrs.sdaActivities);
-					
-					$scope.showPopover = true;
 					
 					self.processInstOIDs = [];
 					
