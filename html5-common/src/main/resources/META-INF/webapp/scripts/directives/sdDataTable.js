@@ -64,8 +64,12 @@
 	function processRawMarkup(elem, attr) {
 		// Add ng-non-bindable, so that the markup is not compiled
 		var bodyCols = elem.find('> tbody > tr > td');
-		bodyCols.attr('ng-non-bindable', '');
-
+		angular.forEach(bodyCols, function(bCol, i) {
+			bCol = angular.element(bCol);
+			var contents = bCol.html();
+			bCol.html('<div ng-non-bindable>' + contents + '</div>');
+		});
+		
 		var headCols = elem.find('> thead > tr > th');
 		angular.forEach(headCols, function(hCol) {
 			hCol = angular.element(hCol);
@@ -497,7 +501,7 @@
 					colDef.title = colDef.label;
 				}
 				
-				colDef.contents = bCol.html();
+				colDef.contents = bCol.children().html();
 				colDef.contents = colDef.contents.trim();
 				if (colDef.contents == "") {
 					var contents = getDefaultContent(colDef);
