@@ -637,7 +637,7 @@ public class EventMarshallingUtils
 
       if (dataFullID.split(":").length > 1)
       {
-         dataFullID = dataFullID.split(":")[1];
+         dataID = dataFullID.split(":")[1];
       }
 
       String dataPath = GsonUtils.extractAsString(sdJson, ModelerConstants.SD_SET_DATA_ACTION_DATA_PATH);
@@ -776,7 +776,7 @@ public class EventMarshallingUtils
       {
          return null;
       }
-      
+
       JsonObject attributes = object.getAsJsonObject(ModelerConstants.ATTRIBUTES_PROPERTY);
       if (attributes != null)
       {
@@ -784,7 +784,7 @@ public class EventMarshallingUtils
          {
             String key = entry.getKey();
             if(key.equals(name))
-            {            
+            {
                JsonElement jsonValue = attributes.get(key);
                if (jsonValue.isJsonNull())
                {
@@ -801,7 +801,7 @@ public class EventMarshallingUtils
             }
          }
       }
-      
+
       return null;
    }
 }
