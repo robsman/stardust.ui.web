@@ -1081,7 +1081,7 @@ public class ModelElementMarshaller implements ModelMarshaller
 
          if (activity.getQualityControlPerformer() != null)
          {
-            JsonObject qcJson = new JsonObject();                     
+            JsonObject qcJson = new JsonObject();
             qcJson.addProperty(
                   ModelerConstants.PARTICIPANT_FULL_ID,
                   getModelBuilderFacade().createFullId(
@@ -1108,7 +1108,7 @@ public class ModelElementMarshaller implements ModelMarshaller
                qcJson.add(ModelerConstants.QC_VALID_CODES, validCodesJson);
             }
             activityJson.add(ModelerConstants.QUALITYCONTROL, qcJson);
-                  
+
             JsonObject attributes;
             if (!hasNotJsonNull(activityJson, ModelerConstants.ATTRIBUTES_PROPERTY))
             {
@@ -1120,7 +1120,7 @@ public class ModelElementMarshaller implements ModelMarshaller
             }
 
             attributes.remove(PredefinedConstants.QUALITY_ASSURANCE_PROBABILITY_ATT);
-            attributes.remove(PredefinedConstants.QUALITY_ASSURANCE_FORMULA_ATT);            
+            attributes.remove(PredefinedConstants.QUALITY_ASSURANCE_FORMULA_ATT);
             String probability = AttributeUtil.getCDataAttribute(activity, PredefinedConstants.QUALITY_ASSURANCE_PROBABILITY_ATT);
             if(!StringUtils.isEmpty(probability))
             {
@@ -1129,9 +1129,9 @@ public class ModelElementMarshaller implements ModelMarshaller
             String formula = AttributeUtil.getCDataAttribute(activity, PredefinedConstants.QUALITY_ASSURANCE_FORMULA_ATT);
             if(!StringUtils.isEmpty(formula))
             {
-               attributes.addProperty(PredefinedConstants.QUALITY_ASSURANCE_FORMULA_ATT, formula);               
-            }         
-         }                  
+               attributes.addProperty(PredefinedConstants.QUALITY_ASSURANCE_FORMULA_ATT, formula);
+            }
+         }
       }
 
       /*EventHandlerType eventHandler = EventMarshallingUtils
@@ -2748,8 +2748,6 @@ public class ModelElementMarshaller implements ModelMarshaller
       {
          ActivityType activity = dataMappingConnection.getActivitySymbol().getActivity();
 
-         createOldStyleDatamappingJson(dataFlowJson, data, activity); //To be Removed for RC1
-
          // Find all data mappings between the data and the activity connected by the
          // connection
 
@@ -2775,38 +2773,38 @@ public class ModelElementMarshaller implements ModelMarshaller
                }
 
                dataMappingsJson.add(toDataMappingJson(dataMapping));
+
+               if (!hasNotJsonNull(connectionJson, ModelerConstants.FROM_MODEL_ELEMENT_OID))
+               {
+                  if (dataMapping.getDirection().equals(DirectionType.OUT_LITERAL))
+                  {
+                     connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_OID,
+                           dataMappingConnection.getActivitySymbol().getElementOid());
+                     connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_TYPE,
+                           ModelerConstants.ACTIVITY_KEY);
+                     connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_OID,
+                           dataMappingConnection.getDataSymbol().getElementOid());
+                     connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_TYPE,
+                           ModelerConstants.DATA);
+                  }
+
+                  if (dataMapping.getDirection().equals(DirectionType.IN_LITERAL))
+                  {
+                     connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_OID,
+                           dataMappingConnection.getDataSymbol().getElementOid());
+                     connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_TYPE,
+                           ModelerConstants.DATA);
+                     connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_OID,
+                           dataMappingConnection.getActivitySymbol().getElementOid());
+                     connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_TYPE,
+                           ModelerConstants.ACTIVITY_KEY);
+                  }
+               }
             }
          }
 
-         // TODO Review
-
          if (dataFlowJson != null)
          {
-            if (hasNotJsonNull(dataFlowJson,
-                  ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY))
-            {
-               connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_OID,
-                     dataMappingConnection.getActivitySymbol().getElementOid());
-               connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_TYPE,
-                     ModelerConstants.ACTIVITY_KEY);
-               connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_OID,
-                     dataMappingConnection.getDataSymbol().getElementOid());
-               connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_TYPE,
-                     ModelerConstants.DATA);
-            }
-
-            if (hasNotJsonNull(dataFlowJson, ModelerConstants.INPUT_DATA_MAPPING_PROPERTY))
-            {
-               connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_OID,
-                     dataMappingConnection.getDataSymbol().getElementOid());
-               connectionJson.addProperty(ModelerConstants.FROM_MODEL_ELEMENT_TYPE,
-                     ModelerConstants.DATA);
-               connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_OID,
-                     dataMappingConnection.getActivitySymbol().getElementOid());
-               connectionJson.addProperty(ModelerConstants.TO_MODEL_ELEMENT_TYPE,
-                     ModelerConstants.ACTIVITY_KEY);
-            }
-
             dataFlowJson.addProperty(
                   ModelerConstants.DATA_FULL_ID_PROPERTY,
                   getModelBuilderFacade().createFullId(
@@ -2820,50 +2818,7 @@ public class ModelElementMarshaller implements ModelMarshaller
       return connectionJson;
    }
 
-   public void createOldStyleDatamappingJson(JsonObject dataFlowJson, DataType data,
-         ActivityType activity)
-   {
-      for (DataMappingType dataMapping : activity.getDataMapping())
-      {
-         if (dataMapping.getData().getId().equals(data.getId()))
-         {
-            if (hasNotJsonNull(dataFlowJson, ModelerConstants.ID_PROPERTY))
-            {
-               if ( !dataFlowJson.get(ModelerConstants.ID_PROPERTY)
-                     .getAsString()
-                     .equals(dataMapping.getId()))
-               {
-                  // TODO Other data mapping
-                  continue;
-               }
-            }
-            else
-            {
-               // Set ID etc. for first data mapping between activity and data found
 
-               dataFlowJson.addProperty(ModelerConstants.TYPE_PROPERTY,
-                     ModelerConstants.DATA_FLOW_LITERAL);
-               dataFlowJson.addProperty(ModelerConstants.ID_PROPERTY,
-                     dataMapping.getId());
-               dataFlowJson.addProperty(ModelerConstants.NAME_PROPERTY,
-                     dataMapping.getName());
-               dataFlowJson.addProperty(ModelerConstants.OID_PROPERTY,
-                     dataMapping.getElementOid());
-            }
-
-            if (dataMapping.getDirection().equals(DirectionType.IN_LITERAL))
-            {
-               dataFlowJson.add(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY,
-                     toOldStyleDataMappingJson(dataMapping));
-            }
-            else
-            {
-               dataFlowJson.add(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY,
-                     toOldStyleDataMappingJson(dataMapping));
-            }
-         }
-      }
-   }
    /**
     *
     * @param transitionConnection
