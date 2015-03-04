@@ -43,7 +43,7 @@ public class ApplicationExceptionMapper implements ExceptionMapper<ApplicationEx
    @Override
    public Response toResponse(ApplicationException exception)
    {
-      trace.error(exception);
+      trace.error("", exception);
       ErrorMessageDTO errorMessage = exceptionHelper.getMessageFromProvider(exception, httpRequest.getLocale());
       return Response.status(Status.INTERNAL_SERVER_ERROR).entity(GsonUtils.toJson(errorMessage)).build();
    }

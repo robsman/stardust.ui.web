@@ -46,7 +46,7 @@ public class PortalExceptionMapper implements ExceptionMapper<PortalException>
    @Override
    public Response toResponse(PortalException exception)
    {
-      trace.error(exception);
+      trace.error("", exception);
       ErrorMessageDTO errorMessage = exceptionHelper.getMessageFromProvider(exception, httpRequest.getLocale());
       return Response.status(Status.INTERNAL_SERVER_ERROR).entity(GsonUtils.toJson(errorMessage)).build();
    }

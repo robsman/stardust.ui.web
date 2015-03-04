@@ -43,7 +43,7 @@ public class PortalRestExceptionMapper implements ExceptionMapper<PortalRestExce
    @Override
    public Response toResponse(PortalRestException exception)
    {
-      trace.error(exception);
+      trace.error("", exception);
       ErrorMessageDTO errorMessage = new ErrorMessageDTO(exception.getMessage(httpRequest.getLocale()));
       return Response.status(exception.getHttpStatus()).entity(GsonUtils.toJson(errorMessage)).build();
    }

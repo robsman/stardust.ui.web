@@ -30,7 +30,6 @@
             <bean class="org.eclipse.stardust.ui.web.rest.exception.PortalExceptionMapper"/>
             <bean class="org.eclipse.stardust.ui.web.rest.exception.ApplicationExceptionMapper"/>
             <bean class="org.eclipse.stardust.ui.web.rest.exception.I18nExceptionMapper"/>
-            <bean class="org.eclipse.stardust.ui.web.rest.exception.GenericThrowableMapper"/>
         </jaxrs:providers>
 	</jaxrs:server>
 

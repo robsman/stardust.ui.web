@@ -43,7 +43,7 @@ public class I18nExceptionMapper implements ExceptionMapper<I18NException>
    @Override
    public Response toResponse(I18NException exception)
    {
-      trace.error(exception);
+      trace.error("", exception);
       ErrorMessageDTO errorMessage = new ErrorMessageDTO(exception.getMessage());
       return Response.status(Status.INTERNAL_SERVER_ERROR).entity(GsonUtils.toJson(errorMessage)).build();
    }
