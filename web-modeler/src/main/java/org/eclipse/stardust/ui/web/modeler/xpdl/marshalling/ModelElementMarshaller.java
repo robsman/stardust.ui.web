@@ -2738,6 +2738,12 @@ public class ModelElementMarshaller implements ModelMarshaller
 
       JsonObject dataFlowJson = new JsonObject();
 
+      dataFlowJson.addProperty(ModelerConstants.TYPE_PROPERTY,
+            ModelerConstants.DATA_FLOW_LITERAL);
+      dataFlowJson.addProperty(ModelerConstants.OID_PROPERTY,
+            dataMappingConnection.getElementOid());
+
+
       connectionJson.add(ModelerConstants.MODEL_ELEMENT_PROPERTY, dataFlowJson);
 
       DataType data = null != dataMappingConnection.getDataSymbol()
@@ -2760,16 +2766,11 @@ public class ModelElementMarshaller implements ModelMarshaller
             {
                if (!hasNotJsonNull(dataFlowJson, ModelerConstants.ID_PROPERTY))
                {
-                  // Set ID etc. for first data mapping between activity and data found
-
-                  dataFlowJson.addProperty(ModelerConstants.TYPE_PROPERTY,
-                        ModelerConstants.DATA_FLOW_LITERAL);
-                  dataFlowJson.addProperty(ModelerConstants.ID_PROPERTY,
-                        dataMapping.getId());
-                  dataFlowJson.addProperty(ModelerConstants.NAME_PROPERTY,
-                        dataMapping.getName());
-                  dataFlowJson.addProperty(ModelerConstants.OID_PROPERTY,
-                        dataMapping.getElementOid());
+                  String id = dataMappingConnection.getDataSymbol().getData().getId()
+                        + "_"
+                        + dataMappingConnection.getActivitySymbol().getActivity().getId();
+                  dataFlowJson.addProperty(ModelerConstants.ID_PROPERTY, id);
+                  dataFlowJson.addProperty(ModelerConstants.NAME_PROPERTY, id);
                }
 
                dataMappingsJson.add(toDataMappingJson(dataMapping));
