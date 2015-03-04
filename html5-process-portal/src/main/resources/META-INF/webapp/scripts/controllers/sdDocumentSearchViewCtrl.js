@@ -103,26 +103,6 @@
 		this.performSearch = function(options) {
 			var deferred = $q.defer();
 			var self = this;
-			var error = false;
-			
-			if(!this.validateDateRange(self.query.documentSearchCriteria.createDateFrom, self.query.documentSearchCriteria.createDateTo)){
-				 error = true;
-				 self.searchCriteriaForm.$error.createDateRange = true;
-			}else{
-				self.searchCriteriaForm.$error.createDateRange = false;
-			}
-			
-			if(!this.validateDateRange(self.query.documentSearchCriteria.modificationDateFrom, self.query.documentSearchCriteria.modificationDateTo)){
-				 error = true;
-				 self.searchCriteriaForm.$error.modificationDateRange = true;
-			}else{
-				 self.searchCriteriaForm.$error.modificationDateRange = false;
-			}
-			
-			if(error){
-				return true;
-			}
-			
 			if (self.selectedAuthors != undefined && self.selectedAuthors.length == 1) {
 				self.query.documentSearchCriteria.author = self.selectedAuthors[0].id;
 			}else{
@@ -226,10 +206,32 @@
 					});
 		}
 
-		this.setShowTableData = function() {
-			this.showTableData = true;
-			if (this.dataTable != null) {
-				this.refresh();
+		this.validateSearchCriteria = function() {
+			var self = this;
+            var error = false;
+			
+			if(!this.validateDateRange(self.query.documentSearchCriteria.createDateFrom, self.query.documentSearchCriteria.createDateTo)){
+				 error = true;
+				 self.searchCriteriaForm.$error.createDateRange = true;
+			}else{
+				self.searchCriteriaForm.$error.createDateRange = false;
+			}
+			
+			if(!this.validateDateRange(self.query.documentSearchCriteria.modificationDateFrom, self.query.documentSearchCriteria.modificationDateTo)){
+				 error = true;
+				 self.searchCriteriaForm.$error.modificationDateRange = true;
+			}else{
+				 self.searchCriteriaForm.$error.modificationDateRange = false;
+			}
+			
+			if(error){
+				self.showDocumentSearchResult = false;
+			}else{
+				self.showDocumentSearchResult = true;
+				self.showTableData = true;
+				if (self.dataTable != null) {
+					self.refresh();
+				}
 			}
 		}
 
@@ -366,12 +368,6 @@
 				self.showRequiredProcessId = false;
 			}
 		};
-
-		this.onOpenFromAttachToProcess = function(res) {
-			var self = this;
-			self.attachProcess = {};
-			self.attachProcess.$valid = true;
-		}
 
 		this.advancedFileTypes = function() {
 			var self = this;

@@ -97,16 +97,16 @@
 			</tr>
 		</tbody>
 	</table>
-	<div sd-dialog sda-modal="false"
+	<div sd-dialog sda-modal="true"
 		 sda-show="docSearchViewCtrl.showAttachToProcessDialog"
 		 sda-type="confirm"
 		 sda-title="{{i18n('views-common-messages.views-documentSearchView-documentSearchTable-attachToProcess')}}"
 		 sda-scope="this"
 		 sda-template="plugins/html5-process-portal/scripts/directives/partials/selectProcessDialog.html"
 		 sda-on-confirm="docSearchViewCtrl.onConfirmFromAttachToProcess(res)"
-		 sda-width="500px"> <!-- sda-on-open="docSearchViewCtrl.onOpenFromAttachToProcess(res)" -->
+		 sda-width="450px">
 	</div>
-	<div sd-dialog sda-modal="false"
+	<div sd-dialog sda-modal="true"
 		 sda-show="docSearchViewCtrl.showAttachDocumentResult"
 		 sda-type="alert"
 		 sda-title="{{docSearchViewCtrl.infoData.messageType}}"

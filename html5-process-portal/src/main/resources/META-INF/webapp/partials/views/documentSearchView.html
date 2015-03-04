@@ -223,7 +223,7 @@ table.formTable td {
 									<tbody>
 										<tr>
 											<td><input class="button" type="submit" value="Search"
-												ng-click="docSearchViewCtrl.setShowTableData()"></td>
+												ng-click="docSearchViewCtrl.validateSearchCriteria()"></td>
 											<td><input type="submit" value="Reset" ng-click="docSearchViewCtrl.resetSearchCriteria()"></td>
 										</tr>
 									</tbody>
@@ -244,7 +244,8 @@ table.formTable td {
 			sda-on-confirm="docSearchViewCtrl.onConfirmFromAdvanceText(res)"
 			sda-on-close="docSearchViewCtrl.onCancelFromAdvanceText(res)"
 			sda-width="800px"></div>
-		<div
+		
+		<div ng-show="docSearchViewCtrl.showDocumentSearchResult"
 			ng-include="'plugins/html5-process-portal/partials/views/documentSearchResult.html'">
 		</div>
 	</div>
