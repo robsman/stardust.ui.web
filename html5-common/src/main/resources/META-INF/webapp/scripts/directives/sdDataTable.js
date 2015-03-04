@@ -357,8 +357,10 @@
 				}
 			}
 
-			var exports = ['excel', 'csv'];
-			if (attr.sdaExports != undefined && attr.sdaExports != 'true') {
+			var exports = [];
+			if (attr.sdaExports == 'true') {
+				exports = ['excel', 'csv'];
+			} else if (attr.sdaExports != undefined) {
 				exports = attr.sdaExports.split(',');
 			}
 			
