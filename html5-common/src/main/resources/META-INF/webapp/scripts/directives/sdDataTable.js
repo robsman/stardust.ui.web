@@ -507,6 +507,12 @@
 					var contents = getDefaultContent(colDef);
 					colDef.contents = '{{' + contents + '}}';
 					colDef.defaultContentsParser = $parse(contents);
+				} else {
+					// Adding dummy ng-if for creating separate subscope for cell, this is to receive separate colData 
+					colDef.contents = 
+						'<div ng-if="true" ng-init="colData = $dtApi.getColumnData(\'' + colDef.name + '\')">' +
+							colDef.contents + 
+						'</div>';
 				}
 
 				if (bCol.attr('style')) {
@@ -2237,6 +2243,25 @@
 			this.exportCSV = function(options) {
 				exportAsCSV(options);
 				self.toggleExportOptions(true);
+			}
+
+			/*
+			 * 
+			 */
+			this.getColumnData = function(colName) {
+				var colInfo = columnsInfoByDisplayOrder[colName];
+				if (colInfo && colInfo.column) {
+					var colData = {
+						name: colInfo.column.name,
+						field: colInfo.column.field,
+						dataType: colInfo.column.dataType,
+						sortable: colInfo.column.sortable,
+						fixed: colInfo.column.fixed,
+						title: colInfo.column.title
+					};
+
+					return colData;
+				}
 			}
 
 			/*
