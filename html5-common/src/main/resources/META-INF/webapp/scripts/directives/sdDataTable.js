@@ -1863,6 +1863,14 @@
 						for (var j = 0; j < expotCols.length; j++) {
 							var locals = {
 								rowData : data[i],
+								colData : {
+									name: expotCols[j].name,
+									field: expotCols[j].field,
+									dataType: expotCols[j].dataType,
+									sortable: expotCols[j].sortable,
+									fixed: expotCols[j].fixed,
+									title: expotCols[j].title
+								},
 								exportType : exportType
 							}
 
