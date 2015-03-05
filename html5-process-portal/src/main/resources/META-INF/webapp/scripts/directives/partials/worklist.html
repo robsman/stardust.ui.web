@@ -110,7 +110,7 @@
 				<td sda-field="status.label" ></td>
 				<td sda-field="assignedTo"></td>
 				<td ng-repeat="descCol in worklistCtrl.descritorCols"
-					 style="text-align: center; white-space: nowrap;"  sda-data-type="{{descCol.dataType}}" sda-exporter="worklistCtrl.getDescriptorValueForExport( rowData, descCol);">
+					 style="text-align: center; white-space: nowrap;"  sda-data-type="{{descCol.dataType}}" sda-exporter="worklistCtrl.getDescriptorValueForExport( rowData.descriptorValues[colData.title])">
 					<div sd-descriptor-content sda-value="rowData.descriptorValues[colData.title]" sda-data-type = "colData.dataType"> </div>
 				</td>
 				<td sda-column="TRIVIAL_DATA">

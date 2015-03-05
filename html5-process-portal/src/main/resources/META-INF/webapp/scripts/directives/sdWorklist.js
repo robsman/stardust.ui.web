@@ -670,11 +670,24 @@
      /**
       * 
       */
-	WorklistCompiler.prototype.getDescriptorValueForExport = function(
-				rowData, desc) {
+     WorklistCompiler.prototype.getDescriptorValueForExport = function(
+    		 descriptorData ) {
+    	 var exportValue;
+    	 if(angular.isUndefined(descriptorData)){
+    		 return;
+    	 }
+    	 if(descriptorData.isDocument) {
 
-			return "TBD";
-		};
+    		 var documentNames = [];
+    		 angular.forEach(descriptorData.documents,function(document){
+    			 documentNames.push(document.name)
+    		 });
+    		 exportValue = documentNames.join(',');
+    	 }else {
+    		 exportValue = descriptorData.value;
+    	 }
+    	 return exportValue;
+     };
     
 
 
