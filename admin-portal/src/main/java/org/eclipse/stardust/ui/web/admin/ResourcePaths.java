@@ -72,4 +72,6 @@ public interface ResourcePaths
    public static final String LP_Recovery = "/plugins/admin-portal/extensions/launchpad/revoveryPopupContent.xhtml";
    public static final String V_QA_ACTIVITIES_TABLE_COLUMNS = "/plugins/admin-portal/views/qualityAssuranceActivityTableColumns.xhtml";
    public static final String V_QA_DEPARTMENT_TABLE_COLUMNS = "/plugins/admin-portal/views/qualityAssuranceDepartmentTableColumns.xhtml";
+   
+   public static final String V_PREFERENCE_VIEW_COLUMNS = "/plugins/admin-portal/views/preferenceManagerTableColumns.xhtml";
 }

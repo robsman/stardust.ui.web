@@ -13,9 +13,13 @@ package org.eclipse.stardust.ui.web.admin.views;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
@@ -23,14 +27,21 @@ import javax.faces.model.SelectItem;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.query.PreferenceQuery;
 import org.eclipse.stardust.engine.api.runtime.AdministrationService;
+import org.eclipse.stardust.engine.api.runtime.DeployedModel;
 import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.core.preferences.IPreferenceCache;
 import org.eclipse.stardust.engine.core.preferences.PreferenceScope;
 import org.eclipse.stardust.engine.core.preferences.Preferences;
+import org.eclipse.stardust.engine.core.preferences.configurationvariables.ConfigurationVariable;
+import org.eclipse.stardust.engine.core.preferences.configurationvariables.ConfigurationVariableScope;
+import org.eclipse.stardust.engine.core.preferences.configurationvariables.ConfigurationVariableUtils;
+import org.eclipse.stardust.engine.core.preferences.configurationvariables.ConfigurationVariables;
 import org.eclipse.stardust.engine.core.preferences.manager.IPreferencesManager;
+import org.eclipse.stardust.ui.web.admin.ResourcePaths;
 import org.eclipse.stardust.ui.web.admin.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.admin.messages.AdminMessagesPropertiesBean;
 import org.eclipse.stardust.ui.web.common.UIComponentBean;
@@ -56,6 +67,7 @@ import org.eclipse.stardust.ui.web.common.util.ReflectionUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.user.UserAutocompleteMultiSelector;
 import org.eclipse.stardust.ui.web.viewscommon.user.UserWrapper;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 
 /**
  * 
@@ -171,6 +183,9 @@ public class PreferenceManagerBean extends UIComponentBean implements ViewEventH
 
          }
       }
+      
+      Map<String, ConfigurationVariables> ConfigVariables = getConfigurationVariables();
+      
       for (Preferences pref : prefs)
       {
          Map<String, Serializable> pref11 = pref.getPreferences();
@@ -179,12 +194,72 @@ public class PreferenceManagerBean extends UIComponentBean implements ViewEventH
          {
             prefList.add(new PreferenceManagerTableEntry(pref.getScope().name(), pref.getModuleId(), pref
                   .getPreferencesId(), entry.getKey(), entry.getValue().toString(), pref.getUserId(),
-                  pref.getRealmId(), pref.getPartitionId(), userFullName));
+                  pref.getRealmId(), pref.getPartitionId(), userFullName, isPassword(ConfigVariables, pref, entry.getKey())));
          }
       }
 
    }
+   
+   /**
+    * @param ConfigVariables
+    * @param pref
+    * @param key
+    * @return
+    */
+   private boolean isPassword(Map<String, ConfigurationVariables> ConfigVariables, Preferences pref, String key)
+   {
+      if (ConfigurationVariableUtils.CONFIGURATION_VARIABLES.equals(pref.getModuleId()))
+      {
+         ConfigurationVariables confVariables = ConfigVariables.get(pref.getPreferencesId());
+         List<ConfigurationVariable> cvs = confVariables.getConfigurationVariables();
+         for (ConfigurationVariable configurationVariable : cvs)
+         {
+            if (configurationVariable.getName().equals(ConfigurationVariableUtils.getName(key)))
+            {
+               if (ConfigurationVariableScope.Password.equals(configurationVariable.getType()))
+               {
+                  return true;
+               }
+            }
+         }
 
+      }
+      return false;
+   }
+
+   /**
+    * @return
+    */
+   private Map<String, ConfigurationVariables> getConfigurationVariables()
+   {
+      Map<String, ConfigurationVariables> configVariables = new HashMap<String, ConfigurationVariables>();
+
+      AdministrationService administrationService = SessionContext.findSessionContext().getServiceFactory()
+            .getAdministrationService();
+      Collection<DeployedModel> models = ModelCache.findModelCache().getAllModels();
+
+      Set<String> idSet = new HashSet<String>();
+
+      for (Model model : models)
+      {
+         idSet.add(model.getId());
+      }
+
+      for (String id : idSet)
+      {
+         // Retrieving config variable(String type) and password type
+         ConfigurationVariables confVariables = administrationService.getConfigurationVariables(id, true);
+
+         // add model only if ConfigurationVariables present for model id
+         if (!confVariables.getConfigurationVariables().isEmpty())
+         {
+            configVariables.put(id, confVariables);
+         }
+      }
+
+      return configVariables;
+   }
+   
    /**
     * 
     */
@@ -207,8 +282,8 @@ public class PreferenceManagerBean extends UIComponentBean implements ViewEventH
             ColumnDataType.STRING, getMessages().getString("preferenceName.label"), null, true, true);
       cols.add(preferenceNameCol);
 
-      ColumnPreference preferenceValueCol = new ColumnPreference("PreferenceValue", "preferenceValue",
-            ColumnDataType.STRING, getMessages().getString("preferenceValue.label"), null, true, true);
+      ColumnPreference preferenceValueCol = new ColumnPreference("PreferenceValue", "preferenceValue", getMessages().getString("preferenceValue.label"),
+            ResourcePaths.V_PREFERENCE_VIEW_COLUMNS, true, false);
       cols.add(preferenceValueCol);
       
       IColumnModel columnModel = new DefaultColumnModel(cols, null, null,
