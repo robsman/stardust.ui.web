@@ -31,7 +31,6 @@
     *
     */
    function DataController($scope, $parse, $attrs, sdUtilService) {
-      this.i18n = $scope.$parent.i18n;
       
       var mappingHandler  = $parse($attrs.sdaDataMappings);
       this.dataMappings = mappingHandler($scope);

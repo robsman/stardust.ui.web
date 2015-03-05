@@ -8,8 +8,9 @@
 package org.eclipse.stardust.ui.web.rest.service.utils;
 
 import java.util.Date;
+import java.util.List;
 
-import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
+import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.ui.web.common.filter.ITableDataFilter.DataType;
 
 public class DescriptorColumnUtils
@@ -19,27 +20,35 @@ public class DescriptorColumnUtils
     * @param mappedType
     * @return
     */
-   public static ColumnDataType determineColumnType(Class< ? > mappedType)
-   {
-      if (Boolean.class.equals(mappedType))
-      {
-         return ColumnDataType.BOOLEAN;
-      }
-      if (Date.class.equals(mappedType))
-      {
-         return ColumnDataType.DATE;
-      }
-      else if (determineNumberDataType(mappedType) != null)
-      {
-         return ColumnDataType.NUMBER;
-      }
-      else
-      {
-         return ColumnDataType.STRING;
-      }
-   }
+	public static ColumnDataType determineColumnType(Class< ? > mappedType)
+	{
+		if (Boolean.class.equals(mappedType))
+		{
+			return ColumnDataType.BOOLEAN;
+		}
+		if (Date.class.equals(mappedType))
+		{
+			return ColumnDataType.DATE;
+		}
+		else if (determineNumberDataType(mappedType) != null)
+		{
+			return ColumnDataType.NUMBER;
+		}
+		else if(Document.class.equals(mappedType))
+		{
+			return ColumnDataType.DOCUMENT;
+		}
+		else if(List.class.equals(mappedType))
+		{
+			return ColumnDataType.LIST;
+		}
+		else
+		{
+			return ColumnDataType.STRING;
+		}
+	}
 
-   /**
+	/**
     * @param mappedType
     * @return
     */
@@ -70,6 +79,17 @@ public class DescriptorColumnUtils
          return DataType.DOUBLE;
       }
       return null;
+   }
+   
+   public static enum ColumnDataType
+   {
+      STRING,
+      NUMBER,
+      DATE,
+      BOOLEAN,
+      DOCUMENT,
+      LIST,
+      NONE
    }
 
 }

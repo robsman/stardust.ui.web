@@ -265,8 +265,9 @@ public class CommonDescriptorUtils
     * @param evaluateBlankDescriptors
     * @return
     */
-   public static List<ProcessDescriptor> createProcessDescriptors(Map<String, Object> descriptors,
-         ProcessDefinition processDefinition, boolean evaluateBlankDescriptors)
+   @SuppressWarnings("unchecked")
+public static List<ProcessDescriptor> createProcessDescriptors(Map<String, Object> descriptors,
+         ProcessDefinition processDefinition, boolean evaluateBlankDescriptors,boolean includeDocuments)
    {
       trace.debug("Inside Create Process Descriptors");
       //escape special character to avoid UI
@@ -285,7 +286,7 @@ public class CommonDescriptorUtils
       {
          Map<String, DataPathDetails> datapathMap = getDatapathMap(processDefinition);
 
-         ProcessDescriptor processDescriptor;
+         ProcessDescriptor processDescriptor ;
          for (Entry<String, DataPathDetails> entry : datapathMap.entrySet())
          {
             Object descriptorValue = descriptors.get(entry.getKey());
@@ -302,7 +303,24 @@ public class CommonDescriptorUtils
                      || (null != dataDetails && (DmsConstants.DATA_TYPE_DMS_DOCUMENT.equals(dataDetails.getTypeId()) || DmsConstants.DATA_TYPE_DMS_DOCUMENT_LIST
                            .equals(dataDetails.getTypeId()))))
                {
-                  continue;
+
+            	   if (includeDocuments) {
+            		   List<DocumentInfo> documents = new ArrayList<DocumentInfo>();
+            		   if(descriptorValue instanceof DocumentInfo){
+            			   documents.add((DocumentInfo) descriptorValue);
+
+
+            		   }else if(descriptorValue instanceof List){
+            			   documents = (List<DocumentInfo>) descriptorValue;
+            		   }
+            		   ProcessDocumentDescriptor docDescriptor = new ProcessDocumentDescriptor(
+            				   dataPathDetails.getId(),
+            				   dataPathDetails.getData(), null, documents);
+
+            		   processDescriptors.add(docDescriptor);
+            	   } else {
+            		   continue;
+            	   }
                }
                else
                {
@@ -320,6 +338,20 @@ public class CommonDescriptorUtils
       return processDescriptors;
    }
 
+   /**
+    * 
+    * @param descriptors
+    * @param processDefinition
+    * @param evaluateBlankDescriptors
+    * @return
+    */
+	public static List<ProcessDescriptor> createProcessDescriptors(
+			Map<String, Object> descriptors,
+			ProcessDefinition processDefinition,
+			boolean evaluateBlankDescriptors) {
+		return createProcessDescriptors(descriptors, processDefinition,
+				evaluateBlankDescriptors, false);
+	}
    /**
     * @param processInstanceOID
     * @param dataPath

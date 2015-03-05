@@ -93,11 +93,11 @@
 				<td style="text-align: center;" sda-exporter="i18n('views-common-messages.common-priorities-' + rowData.priority)">
 					<div sd-process-priority sda-priority="rowData.priority"></div>
 				</td>
-				<td sda-exporter="worklistCtrl.getDescriptorExportText(rowData.descriptors)">
+				<td sda-exporter="worklistCtrl.getDescriptorExportText(rowData.descriptorValues)">
 					<table>
-						<tr ng-repeat="desc in rowData.descriptors">
-							<td style="white-space: nowrap;">{{desc.key}}</td>
-							<td style="white-space: nowrap;">{{desc.value}}</td>
+						<tr ng-repeat="desc in rowData.descriptorValues">
+							<td ng-if ="!desc.isDocument" style="white-space: nowrap;">{{desc.key}}</td>
+							<td ng-if ="!desc.isDocument" style="white-space: nowrap;">{{desc.value}}</td>
 						</tr>
 					</table>
 					<div sd-editor-template></div>
@@ -110,7 +110,8 @@
 				<td sda-field="status.label" ></td>
 				<td sda-field="assignedTo"></td>
 				<td ng-repeat="descCol in worklistCtrl.descritorCols"
-					sda-field="{{descCol.field}}" sda-data-type="{{descCol.dataType}}" style="text-align: center; white-space: nowrap;">
+					 style="text-align: center; white-space: nowrap;"  sda-data-type="{{descCol.dataType}}" sda-exporter="worklistCtrl.getDescriptorValueForExport( rowData, descCol);">
+					<div sd-descriptor-content sda-value="rowData.descriptorValues[colData.title]" sda-data-type = "colData.dataType"> </div>
 				</td>
 				<td sda-column="TRIVIAL_DATA">
 					<div

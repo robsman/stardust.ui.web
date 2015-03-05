@@ -21,22 +21,21 @@ import java.util.Map.Entry;
 
 import javax.annotation.Resource;
 
-import org.springframework.stereotype.Component;
-
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.model.Activity;
 import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
-import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
 import org.eclipse.stardust.ui.web.rest.service.dto.ActivityDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DescriptorColumnDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessDefinitionDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.utils.DescriptorColumnUtils;
+import org.eclipse.stardust.ui.web.rest.service.utils.DescriptorColumnUtils.ColumnDataType;
 import org.eclipse.stardust.ui.web.rest.service.utils.ModelUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.ProcessDefinitionUtils;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
+import org.springframework.stereotype.Component;
 /**
  * @author Anoop.Nair
  * @author Johnson.Quadras

@@ -319,7 +319,7 @@
 				angular.forEach(descriptors, function(descriptor){
 					self.descritorCols.push({
 						id: descriptor.id,
-						field: "descriptors['" + descriptor.title + "'].value",
+						field: "descriptorValues['" + descriptor.title + "'].value",
 						title: descriptor.title,
 						dataType: descriptor.type,
 						sortable: descriptor.sortable,
@@ -660,11 +660,22 @@
         var descriptorsToExport  = [];
         
         angular.forEach(descriptors,function(descriptor){
+        	if( !descriptor.isDocument )
            descriptorsToExport.push(descriptor.key +" : "+descriptor.value);
         });
         return descriptorsToExport.join(',');
      };
+     
+     
+     /**
+      * 
+      */
+	WorklistCompiler.prototype.getDescriptorValueForExport = function(
+				rowData, desc) {
 
+			return "TBD";
+		};
+    
 
 
 		return directiveDefObject;

@@ -10,75 +10,29 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service.dto;
 
+import java.util.List;
+
 /**
  * @author Anoop.Nair
  * @version $Revision: $
  */
-public class DescriptorDTO
-{
-   private String id;
+public class DescriptorDTO extends AbstractDTO{
+	public String key;
 
-   private String name;
+	public String value;
 
-   private String value;
+	public boolean isDocument;
 
-   /**
-    *
-    */
-   public DescriptorDTO()
-   {
+	public List<DocumentDTO> documents;
 
-   }
+	public DescriptorDTO(String key, String value, boolean isDocument,
+			List<DocumentDTO> documents) {
+		super();
+		this.key = key;
+		this.value = value;
+		this.isDocument = isDocument;
+		this.documents = documents;
+	}
 
-   /**
-    * @return the id
-    */
-   public String getId()
-   {
-      return id;
-   }
-
-   /**
-    * @param id
-    *           the id to set
-    */
-   public void setId(String id)
-   {
-      this.id = id;
-   }
-
-   /**
-    * @return the name
-    */
-   public String getName()
-   {
-      return name;
-   }
-
-   /**
-    * @param name
-    *           the name to set
-    */
-   public void setName(String name)
-   {
-      this.name = name;
-   }
-
-   /**
-    * @return the value
-    */
-   public String getValue()
-   {
-      return value;
-   }
-
-   /**
-    * @param value
-    *           the value to set
-    */
-   public void setValue(String value)
-   {
-      this.value = value;
-   }
 
 }

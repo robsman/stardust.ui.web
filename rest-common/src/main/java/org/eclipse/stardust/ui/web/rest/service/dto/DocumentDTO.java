@@ -14,125 +14,22 @@ package org.eclipse.stardust.ui.web.rest.service.dto;
  * @author Anoop.Nair
  * @version $Revision: $
  */
-public class DocumentDTO
+public class DocumentDTO extends AbstractDTO
 {
-   private String uuid;
+   public String uuid;
 
-   private String name;
+   public String name;
 
-   private String contentType;
+   public String contentType;
 
-   private String path;
+   public String path;
 
-   private int numPages;
+   public int numPages;
 
-   private DocumentTypeDTO documentType;
+   public DocumentTypeDTO documentType;
 
    public DocumentDTO()
    {
 
    }
-
-   /**
-    * @return the uuid
-    */
-   public String getUuid()
-   {
-      return uuid;
-   }
-
-   /**
-    * @param uuid
-    *           the uuid to set
-    */
-   public void setUuid(String uuid)
-   {
-      this.uuid = uuid;
-   }
-
-   /**
-    * @return the name
-    */
-   public String getName()
-   {
-      return name;
-   }
-
-   /**
-    * @param name
-    *           the name to set
-    */
-   public void setName(String name)
-   {
-      this.name = name;
-   }
-
-   /**
-    * @return the contentType
-    */
-   public String getContentType()
-   {
-      return contentType;
-   }
-
-   /**
-    * @param contentType
-    *           the contentType to set
-    */
-   public void setContentType(String contentType)
-   {
-      this.contentType = contentType;
-   }
-
-   /**
-    * @return the path
-    */
-   public String getPath()
-   {
-      return path;
-   }
-
-   /**
-    * @param path
-    *           the path to set
-    */
-   public void setPath(String path)
-   {
-      this.path = path;
-   }
-
-   /**
-    * @return the numPages
-    */
-   public int getNumPages()
-   {
-      return numPages;
-   }
-
-   /**
-    * @param numPages
-    *           the numPages to set
-    */
-   public void setNumPages(int numPages)
-   {
-      this.numPages = numPages;
-   }
-
-   /**
-    * @return the documentType
-    */
-   public DocumentTypeDTO getDocumentType()
-   {
-      return documentType;
-   }
-
-   /**
-    * @param documentType
-    *           the documentType to set
-    */
-   public void setDocumentType(DocumentTypeDTO documentType)
-   {
-      this.documentType = documentType;
-   }
-
 }

@@ -15,7 +15,6 @@ import java.util.Map;
 import org.eclipse.stardust.engine.api.runtime.QualityAssuranceUtils.QualityAssuranceState;
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOAttribute;
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOClass;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDescriptor;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 
 
@@ -69,7 +68,7 @@ public class ActivityInstanceDTO extends AbstractDTO
    
    public boolean activatable;
 
-   public Map<String, ProcessDescriptor> descriptors;
+   public Map<String, DescriptorDTO> descriptorValues;
 
    public void setPriority(Integer priority) {
       this.priority = ProcessInstanceUtils.getPriorityValue(priority);
