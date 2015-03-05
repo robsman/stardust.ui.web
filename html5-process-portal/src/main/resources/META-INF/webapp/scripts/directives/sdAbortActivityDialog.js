@@ -58,7 +58,6 @@
 
 		this.intialize($scope,sdAbortActivityService);
 
-
 		AbortActivityController.prototype.abortCompleted = function (){
 			$scope.abortCompleted();
 		}
@@ -93,20 +92,15 @@
 
 		this.i18n = $scope.$parent.i18n;
 		this.sdAbortActivityService = sdAbortActivityService;
-
 		this.notification = {
 			result : null,
 			error : false
 		};
-
-
 		this.abortActivity = {
 			scope : 'activity',
 			activities : []
 		}
 	}
-
-
 
 	/**
     * 
@@ -116,7 +110,6 @@
 		return this.sdAbortActivityService.abortActivities( this.abortActivity.scope, this.abortActivity.activities);
 	}
 
-
 	/**
     * 
     */
@@ -124,42 +117,30 @@
 		this.abortActivity.scope ='activity';
 		this.notification.result = {};
 		this.notification.error = false;
-
 	}
-
 	/**
     * 
     */
-	AbortActivityController.prototype.onConfirm = function (res){
+	AbortActivityController.prototype.onConfirm = function(res) {
 
 		var self = this;
 		var promise = res.promise;
 
 		this.resetValues();
 
-		promise.then(function(data){
-
-			self.abortActivities()
-				.then(function(data){
-						// success
-						self.showNotification();
-						self.abortCompleted();
-						self.notification.result = data;
-
-					},function(data){
-						// Failure
-						self.notification.result = {};
-						self.notification.error= true;
-						self.showNotification();
-					});
-
+		promise.then(function(data) {
+			self.abortActivities().then(function(data) {
+				// success
+				self.showNotification();
+				self.abortCompleted();
+				self.notification.result = data;
+			}, function(data) {
+				// Failure
+				self.notification.result = {};
+				self.notification.error = true;
+				self.showNotification();
+			});
 		})
-		.catch(function(){
-			console.log("dialog state: rejected");
-		});
 	};
-}
-
-
-
-)();
+	
+})();

@@ -65,23 +65,25 @@
     * 
     */
    var CriticalityFilterController = function($scope, $attrs, $parse) {
-      var self = this;
       this.i18n = $scope.$parent.i18n;
       this.intialize($scope, $attrs, $parse);
-
-      this.loadAvailableCriticalities = function() {
-
-         var criticalityValues = [];
-
-         angular.forEach($scope.filterData.rangeLike, function(criticality) {
-            criticalityValues.push(criticality.label)
-         });
-         self.like = self.getCriticalityByValue(self.availableCriticalities,
-                  criticalityValues);
-      }
-      this.loadAvailableCriticalities();
+      this.loadAvailableCriticalities($scope);
+    
       $scope.criticalityCtrl = this;
    };
+   
+   /**
+    * 
+    */
+   CriticalityFilterController.prototype.loadAvailableCriticalities = function($scope) {
+	 
+	   var criticalityValues = [];
+	   angular.forEach($scope.filterData.rangeLike, function(criticality) {
+		   criticalityValues.push(criticality.label)
+	   });
+	   self.like = self.getCriticalityByValue(self.availableCriticalities,
+			   criticalityValues);
+   }
 
    /*
     * 

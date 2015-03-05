@@ -39,7 +39,6 @@
       this.outData = dataHandler($scope);
       
       var methodHandler  = $parse($attrs.sdaOnChange);
-      
     
       /**
        * 
@@ -49,13 +48,6 @@
             methodHandler($scope);
          }
       }
-      /**
-       * 
-       */
-      this.stopEvent = function(event) {
-         sdUtilService.stopEvent(event);
-      }
-
       
       $scope.dataCtrl = this;
    }
