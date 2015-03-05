@@ -1007,11 +1007,12 @@ define(
 					
 					//disable data path input for ENUM
 					if(this.isCurrentSelectionEnum()){
-						this.parameterDefinitionPathInput.attr(
-								"disabled", true);
+					  if(this.parameterDefinitionPathInput){
+					    this.parameterDefinitionPathInput.attr(
+			                "disabled", true);  
+					  }
 					}
 				};
-
 
 				/**
 				 * 
