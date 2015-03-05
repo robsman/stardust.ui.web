@@ -1295,6 +1295,9 @@
 		 */
 		function reorderColumns(pScope, preview, skipVisibility) {
 			if (!enableColumnSelector) {
+				// Draw is required here for angular markup work properly!
+				// If this is not done then colData is not available for render templates on first pass (1st page)
+				theDataTable.fnDraw(false);
 				return;
 			}
 
