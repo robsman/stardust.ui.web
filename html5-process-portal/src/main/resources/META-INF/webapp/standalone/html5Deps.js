@@ -46,6 +46,7 @@ var html5Deps = function() {
 		var reqMod = {
 			paths : {
 				'jquery.dataTables' : [ "html5-common/libs/datatables/1.9.4/jquery.dataTables" ],
+				'angularjs' : ['../portal-shell/js/libs/angular/1.2.11/angular'],
 				'portalApplication' : [ 'common/html5/portalApplication' ],
 				'html5CommonMain' : [ 'html5-common/scripts/main' ],
 				'sdEventBusService' : [ 'html5-common/scripts/services/sdEventBusService' ],
@@ -59,6 +60,9 @@ var html5Deps = function() {
 			},
 			shim : {
 				'jquery.dataTables' : [ 'jquery' ],
+				'angularjs' : {
+					exports : "angular"
+				},
 				'html5CommonMain' : [ 'angularjs' ],
 				'sdEventBusService' : [ 'html5CommonMain' ],
 				'httpInterceptorProvider' : [ 'html5CommonMain' ],
@@ -69,7 +73,7 @@ var html5Deps = function() {
 				'sdViewUtilService' : [ 'html5CommonMain' ],
 				'sdPreferenceService' : [ 'html5CommonMain' ]
 			},
-			deps : [ "jquery.dataTables", "portalApplication",
+			deps : [ "jquery.dataTables", "angularjs", "portalApplication",
 					"html5CommonMain", "sdEventBusService", "httpInterceptorProvider",
 					"sdLoggerService", "sdData", "sdDataTable",
 					'sdUtilService', 'sdViewUtilService', 'sdPreferenceService' ]
