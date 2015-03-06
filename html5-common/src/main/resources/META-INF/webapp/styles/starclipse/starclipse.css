@@ -1,6 +1,6 @@
 @font-face{
-    font-family: starclipse;
-	src: url('../starclipse/fonts/starclipse.woff');
+        font-family: starclipse;
+        src: url(fonts/starclipse.woff);
 }
 
 .sc-fw:before{
@@ -435,3 +435,95 @@
 .sc-document-excel-alpha:before{
     content:'\F065';
 }
+.sc-paperclip:before{
+    content:'\F066';
+}
+.sc-document-attach:before{
+    content:'\F067';
+}
+.sc-document-image:before{
+    content:'\F068';
+}
+.sc-document-info:before{
+    content:'\F069';
+}
+.sc-book:before{
+    content:'\F06A';
+}
+.sc-document-flash:before{
+    content:'\F06B';
+}
+.sc-document-audio:before{
+    content:'\F06C';
+}
+.sc-document-video:before{
+    content:'\F06D';
+}
+.sc-video:before{
+    content:'\F06E';
+}
+.sc-document-word:before{
+    content:'\F06F';
+}
+.sc-document-adobe:before{
+    content:'\F070';
+}
+.sc-logo-adobe:before{
+    content:'\F071';
+}
+.sc-document-csv-alt:before{
+    content:'\F072';
+}
+.sc-document-powerpoint:before{
+    content:'\F073';
+}
+.sc-document-powerpoint-o:before{
+    content:'\F074';
+}
+.sc-document-csv-alt-o:before{
+    content:'\F075';
+}
+.sc-document-adobe-o:before{
+    content:'\F076';
+}
+.sc-document-word-o:before{
+    content:'\F077';
+}
+.sc-document-video-o:before{
+    content:'\F078';
+}
+.sc-document-audio-o:before{
+    content:'\F079';
+}
+.sc-document-flash-o:before{
+    content:'\F07A';
+}
+.sc-document-info-o:before{
+    content:'\F07B';
+}
+.sc-document-image-o:before{
+    content:'\F07C';
+}
+.sc-document-attach-o:before{
+    content:'\F07D';
+}
+.sc-document-excel-o:before{
+    content:'\F07E';
+}
+.sc-document-text-alt-o:before{
+    content:'\F07F';
+}
+.sc-document-html-o:before{
+    content:'\F080';
+}
+.sc-document-html:before{
+    content:'\F081';
+}
+.sc-document-zip:before{
+    content:'\F082';
+}
+.sc-document-zip-o:before{
+    content:'\F083';
+}
+
+
