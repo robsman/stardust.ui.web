@@ -14,52 +14,52 @@
 (function() {
 	'use strict';
 
-   angular.module('bpm-common').directive('sdPriorityFilter',
-            [ 'sdPriorityService', 'sdUtilService', PriorityFilter ]);
+   angular.module('bpm-common').directive( 'sdPriorityFilter', [ 'sdPriorityService', 'sdUtilService', PriorityFilter]);
 
 		/*
 		*/
    function PriorityFilter( sdPriorityService, sdUtilService) {
 			return {
 				restrict : 'A',
-				template : "<div class=\"priority-criticality-filter-container\"> "+
-				               "<label ng-bind=\"criticalityCtrl.i18n('views-common-messages.views-activityTable-priorityFilter-autoComplete-title')\"><\/label> "+
-                         "<div sd-auto-complete "+
-                            "sda-item-pre-class=\"priorityCtrl.tagPreMapper(item,index)\" "+
-                            "sda-tag-pre-class=\"priorityCtrl.tagPreMapper(item,index)\" "+
-                            "sda-matches=\"priorityCtrl.data\" sda-match-str=\"priorityCtrl.matchVal\" "+
-                            "sda-change=\"priorityCtrl.getPriority(priorityCtrl.matchVal)\" "+
-                            "sda-text-property=\"label\""+
-                            "sda-container-class=\"priority-criticality-filter-ac-container\" "+
-                            "sda-item-hot-class=\"sd-ac-item-isActive\" "+
-                            "sda-selected-matches=\"filterData.like\">" +
-                         "<\/div> " +
-                     "<\/div> ",
+				template : '<div class="priority-criticality-filter-container"> '+
+								'<label ng-bind="criticalityCtrl.i18n(\'views-common-messages.views-activityTable-priorityFilter-autoComplete-title\')"><\/label> '+
+								'<div sd-auto-complete '+
+									'sda-item-pre-class="priorityCtrl.tagPreMapper(item,index)"'+
+									'sda-tag-pre-class="priorityCtrl.tagPreMapper(item,index)" '+
+									'sda-matches="priorityCtrl.data" sda-match-str="priorityCtrl.matchVal"'+
+									'sda-change="priorityCtrl.getPriority(priorityCtrl.matchVal)" '+
+									'sda-text-property="label" '+
+									'sda-container-class="priority-criticality-filter-ac-container" '+
+									'sda-item-hot-class="sd-ac-item-isActive" '+
+									'sda-selected-matches="filterData.like">' +
+								'<\/div>' +
+							'<\/div>',
          controller : [ '$scope', 'sdPriorityService', PriorityFilterController ],
-         link : function(scope, element, attr, ctrl) {
+         link : function( scope, element, attr, ctrl) {
             /*
+             * 
              */
-            scope.handlers.applyFilter = function() {
-               var filterValues = [];
-               var displayText = [];
-               angular.forEach(scope.filterData.like, function(priority) {
-                  if (displayText.indexOf(priority.label) < 0) {
-                     displayText.push(priority.label);
-                     filterValues.push(priority.value);
-                  }
-               });
-               var title = displayText.join(',');
-               scope.setFilterTitle(sdUtilService.truncateTitle(title));
-               scope.filterData.like = filterValues;
-               return true;
-            };
+        	 scope.handlers.applyFilter = function() {
+        		 var filterValues = [];
+        		 var displayText = [];
+        		 angular.forEach(scope.filterData.like, function(priority) {
+        			 if (displayText.indexOf(priority.label) < 0) {
+        				 displayText.push(priority.label);
+        				 filterValues.push(priority.value);
+        			 }
+        		 });
+        		 var title = displayText.join(',');
+        		 scope.setFilterTitle(sdUtilService.truncateTitle(title));
+        		 scope.filterData.like = filterValues;
+        		 return true;
+        	 };
          }
       };
    }
    /*
     * 
     */
-   var PriorityFilterController = function($scope, sdPriorityService) {
+   var PriorityFilterController = function( $scope, sdPriorityService) {
 
       this.intialize($scope, sdPriorityService);
       $scope.priorityCtrl = this;
@@ -76,14 +76,12 @@
       this.matchVal = "";
 
       sdPriorityService.getAllPriorities().then(
-               function(value) {
-                  self.priorities = value;
-                  if ($scope.filterData.like.length > 0) {
-                     $scope.filterData.like = self.getPriorityFromValues(value,
-                              $scope.filterData.like);
-                  }
-               });
-
+    		  function(value) {
+    			  self.priorities = value;
+    			  if ($scope.filterData.like.length > 0) {
+    				  $scope.filterData.like = self.getPriorityFromValues(value, $scope.filterData.like);
+    			  }
+    		  });
    };
 
    /*
@@ -99,28 +97,26 @@
     */
    PriorityFilterController.prototype.getPriority = function(value) {
 
-      var results = [];
+	   var results = [];
 
-      this.priorities.forEach(function(v) {
-         if (v.label.indexOf(value) > -1) {
-            results.push(v);
-         }
-      });
+	   this.priorities.forEach(function(v) {
+		   if (v.label.indexOf(value) > -1) {
+			   results.push(v);
+		   }
+	   });
 
-      this.data = results;
+	   this.data = results;
    };
 
-   PriorityFilterController.prototype.getPriorityFromValues = function(
-            availablePriorities, values) {
-      var prioirtyObjs = [];
+   PriorityFilterController.prototype.getPriorityFromValues = function( availablePriorities, values) {
+	   var prioirtyObjs = [];
 
-      angular.forEach(availablePriorities, function(priority) {
-         if (values.indexOf(priority.value) > -1) {
-            prioirtyObjs.push(priority);
-         }
-      });
-
-      return prioirtyObjs;
+	   angular.forEach(availablePriorities, function(priority) {
+		   if (values.indexOf(priority.value) > -1) {
+			   prioirtyObjs.push(priority);
+		   }
+	   });
+	   return prioirtyObjs;
    };
 
 })();

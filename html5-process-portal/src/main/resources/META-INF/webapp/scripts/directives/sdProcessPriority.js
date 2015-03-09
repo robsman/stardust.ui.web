@@ -14,26 +14,26 @@
 (function() {
    'use strict';
 
-   angular.module('bpm-common').directive('sdProcessPriority',
-            [ '$parse', ProcessPriority ]);
+   angular.module('bpm-common').directive( 'sdProcessPriority', [ '$parse', ProcessPriority ]);
 
    /*
     * 
     */
    function ProcessPriority() {
-      return {
-         restrict : 'A',
-         template : "<i class=\"glyphicon glyphicon-flag priority-flag\" "+
-                      "ng-class=\"'priority-flag-'+processPriorityCtrl.priority\" "+
-                      "ng-mouseenter=\'processPriorityCtrl.toolTip.show = true\'"+
-                      " ng-mouseleave=\'processPriorityCtrl.toolTip.show = false\'><\/i>"+
-                      "<div class=\"popup-dlg worklist-tooltip\" style=\"color: black\" ng-show=\"processPriorityCtrl.toolTip.show\">"+
-                         "<span class=\"worklist-tooltip-label\" ng-bind=\"processPriorityCtrl.i18n('views-common-messages.views-activityTable-priorityFilter-table-priorityColumn-name')\"><\/span> "+
-                         ": <span ng-bind=\"processPriorityCtrl.i18n('views-common-messages.common-priorities-'+processPriorityCtrl.priority)\"><\/span>" +
-                       "<\/div>",
-         controller : [ '$scope', '$attrs', '$parse', ProcessPriorityController ]
-      };
-   }
+	   return {
+		   restrict : 'A',
+		   template : '<i class="glyphicon glyphicon-flag priority-flag" '+
+		   						'ng-class="\'priority-flag-\'+processPriorityCtrl.priority" '+
+		   						'ng-mouseenter=\'processPriorityCtrl.toolTip.show = true\' '+
+		   						'ng-mouseleave=\'processPriorityCtrl.toolTip.show = false\'> '+
+		   			  '<\/i>'+
+		   			  '<div class="popup-dlg worklist-tooltip" style="color: black" ng-show="processPriorityCtrl.toolTip.show">'+
+		   			  		'<span class="worklist-tooltip-label" ng-bind="processPriorityCtrl.i18n(\'views-common-messages.views-activityTable-priorityFilter-table-priorityColumn-name\')"><\/span> '+
+		   			  		': <span ng-bind="processPriorityCtrl.i18n(\'views-common-messages.common-priorities-\'+processPriorityCtrl.priority)"><\/span>' +
+		   			  '<\/div>',
+		   controller : [ '$scope', '$attrs', '$parse', ProcessPriorityController ]
+	   };
+   };
    /**
     *
     */

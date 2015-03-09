@@ -14,13 +14,12 @@
  (function() {
    'use strict';
 
-   angular.module('bpm-common').directive('sdProcessActivityFilter',
-            [ '$filter', '$parse', 'sdUtilService', ActivityFilter ]);
+   angular.module('bpm-common').directive('sdProcessActivityFilter',[ '$filter', '$parse', 'sdUtilService', ActivityFilter]);
 
    /*
     *
     */
-   function ActivityFilter($filter, $parse, sdUtilService) {
+   function ActivityFilter( $filter, $parse, sdUtilService) {
 
       return {
          restrict : 'A',
@@ -99,13 +98,13 @@
        */
       this.loadAllActivities = function() {
          this.getAllActivities($filter);
-      }
+      };
       /**
        * 
        */
       this.isActivityFilter = function() {
          return self.filterType == FILTER_TYPE_ACTIVITY;
-      }
+      };
 
       /***
        * 
@@ -114,7 +113,7 @@
          if (self.isActivityFilter()) {
             this.getActivitiesForSelectedProcesses($filter, $scope.filterData.processes);
          }
-      }
+      };
 
       /**
        * 
@@ -135,16 +134,16 @@
          if (this.isActivityFilter()) {
             this.loadAllActivities();
          }
-      }
+      };
+      
       this.intialize($scope);
       $scope.filterCtrl = this;
-   }
+   };
 
    /*
     *
     */
-   FilterController.prototype.getActivitiesForSelectedProcesses = function($filter,
-            selectedProcesses) {
+   FilterController.prototype.getActivitiesForSelectedProcesses = function( $filter, selectedProcesses) {
       var self = this;
       self.activities = [ DEFAULT_ACTIVITY ];
 
@@ -154,9 +153,9 @@
       }
       else {
 
-         angular.forEach(selectedProcesses, function(selectedProcess) {
+         angular.forEach(selectedProcesses, function( selectedProcess) {
 
-            angular.forEach(self.allAccessibleProcesses, function(process) {
+            angular.forEach(self.allAccessibleProcesses, function( process) {
                if (process.id === selectedProcess) {
                   var activities = process.activities;
                   angular.forEach(activities, function(activity) {
@@ -173,19 +172,18 @@
             });
          });
       }
-   }
+   };
 
    /*
     *
     */
-   FilterController.prototype.intialize = function($scope) {
-      this.i18n = $scope.$parent.i18n;
+   FilterController.prototype.intialize = function( $scope) {
       this.showAuxillaryProcess = false;
       this.showAuxillaryActivity = false;
 
       this.idToName = {};
-      this.createIdNamePairs($scope);
-      if (angular.isUndefined($scope.filterData.processes)) {
+      this.createIdNamePairs( $scope);
+      if (angular.isUndefined( $scope.filterData.processes)) {
          this.processes = [ DEFAULT_PROCESS ];
          this.activities = [ DEFAULT_ACTIVITY ];
          this.loadValues();
@@ -197,7 +195,7 @@
          this.updateProcess();
       }
 
-   }
+   };
 
    /**
     *
@@ -206,62 +204,61 @@
       var self = this;
       self.idToName[DEFAULT_PROCESS.id] = DEFAULT_PROCESS.name;
       self.idToName[DEFAULT_ACTIVITY.id] = DEFAULT_ACTIVITY.name;
-      angular.forEach(self.allAccessibleProcesses, function(process) {
+      
+      angular.forEach(self.allAccessibleProcesses, function( process) {
          self.idToName[process.id] = process.name;
          angular.forEach(process.activities, function(activity) {
             self.idToName[activity.qualifiedId] = activity.name;
          });
       });
-   }
+   };
 
    /*
     *
     */
    FilterController.prototype.auxComparator = function(auxValue, showAux) {
-      if (showAux) {
-         return true;
-      }
-      else {
-         return !auxValue;
-      }
-   }
+	   if (showAux) {
+		   return true;
+	   }
+	   else {
+		   return !auxValue;
+	   }
+   };
 
    /*
     *
     */
    FilterController.prototype.getAllActivities = function($filter) {
-      var self = this;
-      self.activities = [];
-      self.activities.push(DEFAULT_ACTIVITY);
+	   var self = this;
+	   self.activities = [];
+	   self.activities.push(DEFAULT_ACTIVITY);
 
-      angular.forEach(self.allAccessibleProcesses, function(process) {
+	   angular.forEach(self.allAccessibleProcesses, function(process) {
 
-         if (!angular.isUndefined(process.activities)) {
-            angular.forEach(process.activities, function(activity) {
-               var found = $filter('filter')(self.activities, {
-                  name : activity.name
-               }, true);
-               if (found.length < 1) {
-                  activity['order'] = 1;
-                  self.activities.push(activity)
-               }
-            });
-         }
-      });
-   }
+		   if (!angular.isUndefined(process.activities)) {
+			   angular.forEach(process.activities, function(activity) {
+				   var found = $filter('filter')(self.activities,{ name : activity.name}, true);
+				   if (found.length < 1) {
+					   activity['order'] = 1;
+					   self.activities.push(activity)
+				   }
+			   });
+		   }
+	   });
+   };
 
    /*
     *
     */
    FilterController.prototype.showHideAuxillaryProcess = function() {
       this.showAuxillaryProcess = !this.showAuxillaryProcess;
-   }
+   };
 
    /*
     *
     */
    FilterController.prototype.showHideAuxillaryActivity = function() {
       this.showAuxillaryActivity = !this.showAuxillaryActivity;
-   }
+   };
 
 })();

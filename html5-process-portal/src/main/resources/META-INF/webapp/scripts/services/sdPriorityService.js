@@ -51,7 +51,6 @@
          deferred.resolve(this.priorities);
          return deferred.promise;
       };
-
-   }
+   };
 
 })();

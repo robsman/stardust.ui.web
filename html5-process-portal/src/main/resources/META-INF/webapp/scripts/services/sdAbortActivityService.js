@@ -16,8 +16,8 @@
    'use strict';
 
    angular.module('workflow-ui.services').provider('sdAbortActivityService', function() {
-      this.$get = [ '$q', '$http', function($q, $http) {
-         var service = new AbortActivityService($q, $http);
+      this.$get = [ '$q', '$http', function( $q, $http) {
+         var service = new AbortActivityService( $q, $http);
          return service;
       } ];
    });
@@ -31,7 +31,7 @@
       /**
        * 
        */
-      AbortActivityService.prototype.abortActivities = function(scope, activities) {
+      AbortActivityService.prototype.abortActivities = function( scope, activities) {
 
          var deferred = $q.defer();
          var requestObj = {

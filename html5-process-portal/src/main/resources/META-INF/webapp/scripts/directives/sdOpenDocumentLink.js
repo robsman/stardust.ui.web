@@ -12,17 +12,16 @@
  * @author Johnson.Quadras
  */
 (function() {
+	
    'use strict';
-
-   angular.module('bpm-common').directive('sdOpenDocumentLink',
-            [ 'sdUtilService','sdViewUtilService','sdMimeTypeService', Directive ]);
+   angular.module('bpm-common').directive( 'sdOpenDocumentLink', [ 'sdUtilService', 'sdViewUtilService', 'sdMimeTypeService', OpenDocumentDirective]);
 
    /*
     * 
     */
-   function Directive(sdUtilService) {
+   function OpenDocumentDirective( sdUtilService ) {
 
-      return {
+	   return {
          restrict : 'A',
          scope : {
             name : '=sdaName',
@@ -30,36 +29,42 @@
             documentId : '=sdaDocumentId'
          },
          template : '<a href="#"  ng-click="docLinkCtrl.openDocument($event);">'+
-        	 			'<i ng-class="docLinkCtrl.mimeIcon" style="font-size:18px;"> </i> <span ng-bind="name"></span></a>',
-         controller : [ '$scope', '$parse', '$attrs', 'sdUtilService','sdViewUtilService','sdMimeTypeService',
-                  DocumentLinkController ]
+        	 			'<i ng-class="docLinkCtrl.mimeIcon" style="font-size:18px;"> </i> <span ng-bind="name"></span>'+
+         			'</a>',
+         controller : [ '$scope', '$parse', '$attrs', 'sdUtilService', 'sdViewUtilService', 'sdMimeTypeService', DocumentLinkController ]
       };
-   }
+   };
    /**
     * 
     */
-   function DocumentLinkController($scope, $parse, $attrs, sdUtilService, sdViewUtilService, sdMimeTypeService) {
+   function DocumentLinkController( $scope, $parse, $attrs, sdUtilService, sdViewUtilService, sdMimeTypeService) {
 
-      this.mimeIcon = sdMimeTypeService.getIcon($scope.mimeType);
+      this.mimeIcon = sdMimeTypeService.getIcon( $scope.mimeType);
       
-      this.openDocumentView = function(documentId){
-         var viewKey = 'documentOID=' + documentId
-         + '_instance';
-         viewKey = window.btoa(viewKey);
-         sdViewUtilService.openView('documentView',
-            'documentOID=' + viewKey,
-            {
-               'documentId':documentId
-            }, true
-         );
-      }
-
+      /**
+       * Declared here for accessing the $scope variable
+       */
       this.openDocument = function() {
          sdUtilService.stopEvent(event);
-          this.openDocumentView($scope.documentId);
+          this.openDocumentView( $scope.documentId, sdViewUtilService);
       };
 
       $scope.docLinkCtrl = this;
-   }
+   };
+   
+   /**
+    * 
+    */
+   DocumentLinkController.prototype.openDocumentView = function( documentId, sdViewUtilService){
+
+       var viewKey = 'documentOID=' + documentId + '_instance';
+       viewKey = window.btoa(viewKey);
+       sdViewUtilService.openView('documentView',
+          'documentOID=' + viewKey,
+          {
+             'documentId':documentId
+          }, true
+       );
+   };
 
 })();

@@ -10,14 +10,14 @@
 /**
  * @author Johnson.Quadras
  */
-(function(){
+(function() {
 	'use strict';
 
 	/**
 	 * 
 	 */
-	angular.module('workflow-ui.services').provider('sdStatusService',function(){
-		this.$get = ['$q', '$resource', function ($q, $resource) {
+	angular.module('workflow-ui.services').provider( 'sdStatusService', function() {
+		this.$get = [ '$q', '$resource', function ( $q, $resource) {
 			var service = new StatusService($q, $resource);
 			return service;
 		}];
@@ -26,12 +26,12 @@
 	/**
 	 *
 	 */
-	function StatusService($q, $resource) {
+	function StatusService( $q, $resource) {
 		var REST_URL = "services/rest/portal/activity-instances/allActivityStates";
 		StatusService.prototype.getAllActivityStates = function() {
 			return  $resource(REST_URL).query().$promise;
 		};
-	}
+	};
 
 })();
 

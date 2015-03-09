@@ -14,8 +14,7 @@
 (function() {
    'use strict';
 
-   angular.module('bpm-common').directive('sdActivityCriticality',
-            [ '$parse', ActivityCriticality ]);
+   angular.module('bpm-common').directive('sdActivityCriticality', [ '$parse', ActivityCriticality ]);
 
    /*
     * 
@@ -25,33 +24,31 @@
 
       return {
          restrict : 'A',
-         template : "<span data-ng-repeat=\"t in criticalityCtrl.getTimes(criticalityCtrl.criticality.count) track by $index\" "+
-                        "ng-mouseenter=\"criticalityCtrl.toolTip.show = true\" "+
-                         "ng-mouseleave=\"criticalityCtrl.toolTip.show = false\"> "+
-                         "<i ng-show=\"criticalityCtrl.criticality.color != 'WHITE' && criticalityCtrl.criticality.color!='WHITE_WARNING'\" "+
-                         "class=\"glyphicon glyphicon-flag criticality-flag\" "+
-                         "ng-class=\"'criticality-flag-'+criticalityCtrl.criticality.color\"><\/i>  "+
-                         "<i ng-show=\"criticalityCtrl.criticality.color == 'WHITE'\" "+
-                         "class=\"glyphicon glyphicon-flag criticality-flag criticality-flag-WHITE\"><\/i>  "+
-                         "<i ng-show=\"criticalityCtrl.criticality.color == 'WHITE_WARNING'\" "+
-                         "class=\"glyphicon criticality-flag criticality-flag-WHITE-WARNING  glyphicon-exclamation-triangle\"><\/i>" +
-                   "<\/span> "+
-                   "<div class=\"popup-dlg worklist-tooltip\" style=\"color: black\" "+
-                      "ng-show=\"criticalityCtrl.toolTip.show\"> "+
-                      "<span class=\"worklist-tooltip-label\" ng-bind=\"criticalityCtrl.i18n('views-common-messages.processHistory-activityTable-criticalityTooltip-criticality')\"><\/span> "+
-                      ": <span ng-bind=\"criticalityCtrl.criticality.label\"><\/span><br> <span class=\"worklist-tooltip-label\""+
-                      "ng-bind=\"criticalityCtrl.i18n('views-common-messages.processHistory-activityTable-criticalityTooltip-value')\"><\/span> "+
-                      ": <span ng-bind=\"criticalityCtrl.criticality.value\">" +
-                   "<\/div> ",
+         template : '<span data-ng-repeat="t in criticalityCtrl.getFlagCount(criticalityCtrl.criticality.count) track by $index" '+
+                        'ng-mouseenter="criticalityCtrl.toolTip.show = true" '+
+                         'ng-mouseleave="criticalityCtrl.toolTip.show = false"> '+
+                        '<i ng-show="criticalityCtrl.criticality.color != \'WHITE\' && criticalityCtrl.criticality.color!=\'WHITE_WARNING\'" '+
+                         'class="glyphicon glyphicon-flag criticality-flag" '+
+                         'ng-class="\'criticality-flag-\'+criticalityCtrl.criticality.color"><\/i>  '+
+                        '<i ng-show="criticalityCtrl.criticality.color == \'WHITE\'" '+
+                        'class="glyphicon glyphicon-flag criticality-flag criticality-flag-WHITE"><\/i>  '+
+                         '<i ng-show="criticalityCtrl.criticality.color == \'WHITE_WARNING\'" '+
+                         'class="glyphicon criticality-flag criticality-flag-WHITE-WARNING  glyphicon-exclamation-triangle"><\/i>' +
+                   '<\/span> '+
+                   '<div class="popup-dlg worklist-tooltip" style="color: black" '+
+                      'ng-show="criticalityCtrl.toolTip.show"> '+
+                      '<span class="worklist-tooltip-label" ng-bind="criticalityCtrl.i18n(\'views-common-messages.processHistory-activityTable-criticalityTooltip-criticality\')"><\/span> '+
+                      ': <span ng-bind="criticalityCtrl.criticality.label"><\/span><br> <span class="worklist-tooltip-label"'+
+                      'ng-bind="criticalityCtrl.i18n(\'views-common-messages.processHistory-activityTable-criticalityTooltip-value\')"><\/span> '+
+                      ': <span ng-bind="criticalityCtrl.criticality.value">' +
+                   '<\/div> ',
          controller : [ '$scope', '$attrs', '$parse', CriticalityController ]
       };
 
    }
 
-   function CriticalityController($scope, $attrs, $parse) {
-      this.getTimes = function(count) {
-         return new Array(count);
-      }
+   function CriticalityController( $scope, $attrs, $parse) {
+      
       this.toolTip = {
          show : false
       };
@@ -60,6 +57,13 @@
       this.criticality = criticalityBinding($scope);
       this.i18n = $scope.i18n;
       $scope.criticalityCtrl = this;
-   }
-
+   };
+   
+   /**
+    * 
+    */
+   CriticalityController.prototype.getFlagCount = function( count){
+	   return new Array(count);
+   };
+   
 })();

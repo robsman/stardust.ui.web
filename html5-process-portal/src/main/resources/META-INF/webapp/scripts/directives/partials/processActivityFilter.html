@@ -1,17 +1,17 @@
 <label
-	margin-bottom: 0px; ng-bind="filterCtrl.i18n('admin-portal-messages.views-common-processes-label')"></label>
+	margin-bottom: 0px; ng-bind="i18n('admin-portal-messages.views-common-processes-label')"></label>
 <div>
 	<button class="button-link"
-		title="{{filterCtrl.showAuxillaryProcess ? filterCtrl.i18n('views-common-messages.processHistory-processTable-hideAuxiliaryProcess') :
-filterCtrl.i18n('views-common-messages.processHistory-processTable-showAuxiliaryProcess') }}"
+		title="{{filterCtrl.showAuxillaryProcess ? i18n('views-common-messages.processHistory-processTable-hideAuxiliaryProcess') :
+	i18n('views-common-messages.processHistory-processTable-showAuxiliaryProcess') }}"
 		ng-click="filterCtrl.showHideAuxillaryProcess()">
 		<i class="glyphicon glyphicon-cog auxillary-gear"
 			ng-class="{auxillaryGearDisabled:!filterCtrl.showAuxillaryProcess }"></i>
 	</button>
 </div>
 <div>
-	<select style="height: 75px; min-width: 200px; max-width: 350px;" name="processes"
-		ng-model="filterData.processes" multiple
+	<select style="height: 75px; min-width: 200px; max-width: 350px;"
+		name="processes" ng-model="filterData.processes" multiple
 		ng-options="process.id as process.name for process in filterCtrl.processes | filter:{'auxillary': filterCtrl.showAuxillaryProcess } : filterCtrl.auxComparator | orderBy:['order','name']"
 		ng-change="filterCtrl.updateProcess()"
 		ng-init="filterData.processes = filterData.processes || ['-1']">
@@ -20,23 +20,23 @@ filterCtrl.i18n('views-common-messages.processHistory-processTable-showAuxiliary
 </div>
 <div ng-show="filterCtrl.filterType ==='activity'">
 	<br /> <label
-		margin-bottom: 0px; ng-bind="filterCtrl.i18n('admin-portal-messages.views-common-activities-label')"></label>
+		margin-bottom: 0px; ng-bind="i18n('admin-portal-messages.views-common-activities-label')"></label>
 	<div>
-			<button class="button-link"
-		title="{{filterCtrl.showAuxillaryActivity ? filterCtrl.i18n('views-common-messages.processHistory-processTable-hideAuxiliaryActivities') :
-filterCtrl.i18n('views-common-messages.processHistory-processTable-showAuxiliaryActivities') }}"
-		ng-click="filterCtrl.showHideAuxillaryActivity()">
+		<button class="button-link"
+			title="{{filterCtrl.showAuxillaryActivity ? i18n('views-common-messages.processHistory-processTable-hideAuxiliaryActivities') :
+	i18n('views-common-messages.processHistory-processTable-showAuxiliaryActivities') }}"
+			ng-click="filterCtrl.showHideAuxillaryActivity()">
 			<i class="glyphicon glyphicon-cog auxillary-gear"
 				ng-class="{auxillaryGearDisabled:!filterCtrl.showAuxillaryActivity }"></i>
 		</button>
 	</div>
 	<div>
-		<select style="height: 75px; min-width: 200px; max-width: 350px;" name="activities"
-			ng-model="filterData.activities" multiple
+		<select style="height: 75px; min-width: 200px; max-width: 350px;"
+			name="activities" ng-model="filterData.activities" multiple
 			ng-init="filterData.activities = filterData.activities || ['-1']"
 			ng-options="activity.qualifiedId as activity.name for activity in filterCtrl.activities |filter:{'auxillary': filterCtrl.showAuxillaryActivity } : filterCtrl.auxComparator|orderBy:['order','name'] ">
 		</select>
 	</div>
 </div>
 <label
-	ng-bind="filterCtrl.i18n('portal-common-messages.common-filterPopup-pickListFilter-pickMany-list-message')"></label>
+	ng-bind="i18n('portal-common-messages.common-filterPopup-pickListFilter-pickMany-list-message')"></label>

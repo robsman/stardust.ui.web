@@ -18,7 +18,7 @@
 
 	angular.module('bpm-common').directive('sdWorklist',
 			['$parse', '$q', 'sdUtilService', 'sdViewUtilService', 'sdLoggerService', 'sdPreferenceService', 'sdWorklistService',
-			 'sdActivityInstanceService', 'sdProcessDefinitionService', 'sdCriticalityService', 'sdStatusService','$filter','sgI18nService', WorklistDirective]);
+			 'sdActivityInstanceService', 'sdProcessDefinitionService', 'sdCriticalityService', 'sdStatusService','$filter','sgI18nService', 'sdViewUtilService', WorklistDirective]);
 
 	/*
 	 *
@@ -453,7 +453,6 @@
       
       /**
        * 
-       * @param rows
        */
       WorklistCompiler.prototype.isSelectionDirty = function(activities) { 
          var self = this;
@@ -473,11 +472,14 @@
       }
 	      
 	      
-		/*
+	  /*
        * 
        */
 	    WorklistCompiler.prototype.completeAll = function(res) {
 	         var self = this;
+	         var STATUS_PARTIAL_SUCCESS = 'partialSuccess';
+	         var STATUS_SUCCESS = 'success';
+	         var STATUS__FAILURE = 'failure';
 	   
 	         self.completeActivityResult = {
 	                  status : 'success',  //success failure partialSuccess
@@ -488,7 +490,7 @@
 	         var promise = res.promise;
 	         var selectedWorkItems = self.selectedActivity;
             
-	         promise.then(function(){
+	         promise.then(function() {
 	            
 	            angular.forEach(selectedWorkItems,function(item){
 	               self.completeActivityResult.nameIdMap[item.oid] = item.activity.name;
@@ -496,7 +498,6 @@
 	            
 	            if (selectedWorkItems.length > 0) {
 	               var activitiesData = [];
-	               
 	               
 	               if(self.completeDialog.confirmationType === 'dataMapping') {
 	                  //When data fields are filled in a dialog
@@ -531,20 +532,23 @@
 
 	               if (activitiesData.length > 0 ) {
 	                  sdActivityInstanceService.completeAll(activitiesData).then(function(result) {
+	                	 
 	                	  self.showCompleteNotificationDialog = true;
 	                	  self.completeActivityResult.notifications = result;
 	                	  self.refresh();
+	                	  sdViewUtilService.syncLaunchPanels();
+	                	  
 	                	  if (result.failure.length > 0
 	                			  && result.success.length > 0) {
 	                		  // partial Success
-	                		  self.completeActivityResult.status = 'partialSuccess';
+	                		  self.completeActivityResult.status = STATUS_PARTIAL_SUCCESS;
 	                		  self.completeActivityResult.title = sgI18nService.translate('processportal.views-completeActivityDialog-notification-title-error','ERROR');
 	                	  } else if (result.success.length === activitiesData.length) {
 	                		  // Success
-	                		  self.completeActivityResult.status = 'success';
+	                		  self.completeActivityResult.status = STATUS_SUCCESS;
 	                		  self.completeActivityResult.title = sgI18nService.translate('processportal.views-completeActivityDialog-notification-title-success','SUCCESS');
 	                	  } else {
-	                		  self.completeActivityResult.status = 'failure';
+	                		  self.completeActivityResult.status = STATUS__FAILURE;
 	                		  self.completeActivityResult.title = sgI18nService.translate('processportal.views-completeActivityDialog-notification-title-error','ERROR');
 	                	  }
 	                    
@@ -554,7 +558,6 @@
 	               }
 	            }
 	         });
-
 	      };
 		
 
@@ -563,41 +566,47 @@
 	       * 
 	       * @param workItem
 	       */
-      WorklistCompiler.prototype.openCompleteDialog = function(workItem) {
+      WorklistCompiler.prototype.openCompleteDialog = function( workItem) {
+    	  
          var self = this;
+         var CONFIRMATION_TYPE_SINGLE=  'single'
+         var CONFIRMATION_TYPE_GENERIC=  'generic'
+         var CONFIRMATION_TYPE_DATAMAPPING= 'dataMapping'
          
          self.selectedActivity = [];
          self.completeDialog = {
-            confirmationType : 'single',  //single / generic / dataMapping
+            confirmationType : CONFIRMATION_TYPE_SINGLE,  //single / generic / dataMapping
             dataMappings : {},
             outData : {}
          }
          self.showCompleteDialog = true;
 
-         if (angular.isDefined(workItem)) {
+         if (angular.isDefined( workItem)) {
 
             self.selectedActivity = [ workItem ];
-            self.completeDialog.confirmationType = 'single';
+            self.completeDialog.confirmationType = CONFIRMATION_TYPE_SINGLE;
          }
          else {
             var selectedWorkItems = this.dataTable.getSelection();
-            if (selectedWorkItems.length > 0) {
+            if ( selectedWorkItems.length > 0) {
                // Add rows having dirty field to selected activity
                this.selectedActivity = selectedWorkItems;
 
-               if (this.isSelectionHomogenous(selectedWorkItems) && !this.isSelectionDirty(selectedWorkItems)) {
-                  self.completeDialog.confirmationType = 'dataMapping';
+               if ( this.isSelectionHomogenous( selectedWorkItems) && !this.isSelectionDirty( selectedWorkItems) ) {
+                 
+            	  self.completeDialog.confirmationType = CONFIRMATION_TYPE_DATAMAPPING;
                   var firstItem = selectedWorkItems[0];
                   self.completeDialog.dataMappings = angular
                            .copy(self.worklist.trivialManualActivities[firstItem.oid].dataMappings);
                   self.completeDialog.outData =angular
                   .copy(self.worklist.trivialManualActivities[firstItem.oid].inOutData);
-               }else{
-                  self.completeDialog.confirmationType = 'generic';
+               } else {
+            	   
+                  self.completeDialog.confirmationType = CONFIRMATION_TYPE_GENERIC;
                }
             }
          }
-      }
+      };
 
 		/*
 		 *
@@ -659,7 +668,7 @@
 		 */
 		 WorklistCompiler.prototype.abortCompleted = function(workItem) {
 			this.refresh();
-			BridgeUtils.View.syncLaunchPanels();
+			sdViewUtilService.syncLaunchPanels();
 			this.activitiesToAbort = [];
 		};
 		
@@ -669,7 +678,7 @@
      WorklistCompiler.prototype.getDescriptorExportText = function(descriptors) {
         var descriptorsToExport  = [];
         
-        angular.forEach(descriptors,function(descriptor){
+        angular.forEach(descriptors,function( descriptor){
         	if( !descriptor.isDocument )
            descriptorsToExport.push(descriptor.key +" : "+descriptor.value);
         });
@@ -680,27 +689,24 @@
      /**
       * 
       */
-     WorklistCompiler.prototype.getDescriptorValueForExport = function(
-    		 descriptorData ) {
+     WorklistCompiler.prototype.getDescriptorValueForExport = function( descriptorData ) {
     	 var exportValue;
-    	 if(angular.isUndefined(descriptorData)){
+    	 if( angular.isUndefined(descriptorData)){
     		 return;
     	 }
-    	 if(descriptorData.isDocument) {
+    	 if( descriptorData.isDocument) {
 
     		 var documentNames = [];
     		 angular.forEach(descriptorData.documents,function(document){
     			 documentNames.push(document.name)
     		 });
     		 exportValue = documentNames.join(',');
-    	 }else {
+    	 } else {
     		 exportValue = descriptorData.value;
     	 }
     	 return exportValue;
      };
     
-
-
 		return directiveDefObject;
 	}
 })();
