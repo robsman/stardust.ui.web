@@ -44,7 +44,18 @@ angular.module('bpm-common.directives')
             $scope.errorModel = $scope.errors[$scope.errors.length-1];
             $scope.showError=true;
           };
+          
+          var resetScope = function(e,m){
+            console.log(m);
+            $scope.errors.pop();
+      	  	if($scope.errors.length===0){
+      		  $scope.showError=false;
+      	  	}
+          };
+          
           eventBus.onMsg("js.error",initScope,$scope);
+          
+          eventBus.onMsg("js.error.reset",resetScope,$scope);
         }
       };
     }

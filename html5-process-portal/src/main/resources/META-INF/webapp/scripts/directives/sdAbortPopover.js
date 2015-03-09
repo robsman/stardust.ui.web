@@ -38,47 +38,38 @@
 	function AbortPopoverDirective($q, sdUtilService, sdActivityInstanceService, sdLoggerService, eventBus, $timeout, $parse, sdViewUtilService) {
 		
 		trace = sdLoggerService.getLogger('bpm-common.sdAbortPopover');
-		
+				
 		var ACTION_TYPE = {
-				ABORT_AND_START: 'abortandstart',
-				ABORT_AND_JOIN: 'abortandjoin'
+			ABORT_AND_START : 'abortandstart',
+			ABORT_AND_JOIN : 'abortandjoin'
 		}
 		
 		var SUPPORTED_NOTIFICATION_TYPES = {
-				ERROR: 'error',
-			    WARNING: 'warning',
-			    INFO: 'info'
-		}
-		
-		// Adding utility method to the String to parse i18n messages with arguments
-		// Usage: 'some string with {0} and {1}'.format(arg1, arg2)
-		// TODO Should be moved to a common utility script
-		if (!String.prototype.format) {
-		  String.prototype.format = function() {
-		    var args = arguments;
-		    return this.replace(/{(\d+)}/g, function(match, number) { 
-		      return typeof args[number] != 'undefined'
-		        ? args[number]
-		        : match
-		      ;
-		    });
-		  };
+			ERROR: 'error',
+			WARNING: 'warning',
+			INFO: 'info'
 		}
 		
 		var directiveDefObject = {
 				restrict : 'AE',
 				scope: {  // Creates a new sub scope
-					/*activities: "=sdaActivities",*/
-					onOpen: "&sdaOnOpen",
-					onConfirm: "&sdaOnConfirm"
+					onOpen: '&sdaOnOpen',
+					onConfirm: '&sdaOnConfirm'
 				},
 				transclude: true,
-				template: '<span sd-popover sda-on-open="abortPopoverController.handlePopoverClick()" id="abortPopoverSpan" class="sd-abort-popover-link" ng-disabled="abortPopoverController.disabled" >'
-				+ '<span ng-transclude></span>'
-				+ '<div id="abortPopoverDiv" class="popover-body">'
-					+ '<div><a href="#" ng-click="abortPopoverController.handleAbort(\'' + ACTION_TYPE.ABORT_AND_START +'\')" >{{i18n(\'views-common-messages.views-switchProcessDialog-Menu-abortandstart\')}}</a></div>'
-					+ '<div><a ng-hide="abortPopoverController.disableStartJoin()" href="#" ng-click="abortPopoverController.handleAbort(\'' + ACTION_TYPE.ABORT_AND_JOIN +'\')" >{{i18n(\'views-common-messages.views-switchProcessDialog-Menu-abortandjoin\')}}</a></div>'
-				+ '</div>'					
+				template: 
+				  '<span sd-popover sda-on-open="abortPopoverController.handlePopoverClick()" id="abortPopoverSpan" class="sd-abort-popover-link" ng-disabled="abortPopoverController.disabled" >'
+					+ '<span ng-transclude></span>'
+					+ '<div id="abortPopoverDiv" class="popover-body">'
+						+ '<div><a href="#" ng-click="abortPopoverController.handleAbort(\'' + ACTION_TYPE.ABORT_AND_START +'\')" >'
+							+ '{{i18n(\'views-common-messages.views-switchProcessDialog-Menu-abortandstart\')}}</a>'
+						+ '</div>'
+						+ '<div><a ng-hide="abortPopoverController.disableStartJoin()" href="#"' 
+							+ ' ng-click="abortPopoverController.handleAbort(\'' 
+							+ ACTION_TYPE.ABORT_AND_JOIN +'\')" >'
+							+ '{{i18n(\'views-common-messages.views-switchProcessDialog-Menu-abortandjoin\')}}</a>'
+						+ '</div>'
+					+ '</div>'					
 				+ '</span>'
 				// Abort popover Dialog
 				+ '<span style="float: left;"' 
@@ -95,9 +86,9 @@
 				+ ' sda-title="{{abortPopoverController.abortNotificationTitle}}"'
 				+ ' sda-type="custom"'
 				+ ' sda-scope="this"'
+				+ ' sda-on-close="abortPopoverController.onCloseNotification()"'
 				+ ' sda-template="plugins/html5-process-portal/scripts/directives/partials/abortPopoverNotification.html">'
-				+ '</span>'
-				,
+				+ '</span>',
 				controller: AbortPopoverController
 			};
 		
@@ -105,7 +96,7 @@
 		 * Controller class
 		 */
 		function AbortPopoverController($attrs, $scope, $element) {
-			
+
 			var self = this;
 
 			initialize();
@@ -115,112 +106,168 @@
 			 */
 			function initialize() {
 				$element.addClass('sd-abort-popover')
-				
+
 				if (!angular.isDefined($scope.i18n)) {
 					$scope.i18n = $scope.$parent.i18n;
 					self.i18n = $scope.i18n;
 				}
-				
+
 				self.onConfirm = $scope.onConfirm;
 				self.onOpen = $scope.onOpen;
-				
-				self.switchProcessDialogMsg = self.i18n('views-common-messages.views-switchProcessDialog-switchProcessmessage');
-				
+
+				self.switchProcessDialogMsg = self
+						.i18n('views-common-messages.views-switchProcessDialog-switchProcessmessage');
+
 				self.handleAbort = handleAbort;
 				self.handlePopoverClick = handlePopoverClick;
 				self.fetchSpawnableProcesses = fetchSpawnableProcesses;
 				self.closeThisDialog = closeThisDialog;
-			    self.resetValues = resetValues;
-			    self.confirm = confirm;
-			    self.validateAbortStart = validateAbortStart;
-			    self.validateAbortJoin = validateAbortJoin;
-			    self.performAbortSwitch = performAbortSwitch;
-			    self.okNotification = okNotification;
-			    self.closeNotification = closeNotification;
-			    self.disableStartJoin = disableStartJoin;
-			    self.safeApply = function() {
+				self.resetValues = resetValues;
+				self.confirm = confirm;
+				self.validateAbortStart = validateAbortStart;
+				self.validateAbortJoin = validateAbortJoin;
+				self.performAbortSwitch = performAbortSwitch;
+				self.okNotification = okNotification;
+				self.closeNotification = closeNotification;
+				self.onCloseNotification = onCloseNotification;
+				self.disableStartJoin = disableStartJoin;
+				self.safeApply = function() {
 					sdUtilService.safeApply($scope);
 				};
-			    
-			    // Abort & Join scope functions
-			    self.showAdvancedSelect = showAdvancedSelect;
-			    self.showMatchAll = showMatchAll;
-			    
-			    self.showAbortAndStart = function () {
+
+				// Abort & Join scope functions
+				self.showAdvancedSelect = showAdvancedSelect;
+				self.showMatchAll = showMatchAll;
+
+				self.showAbortAndStart = function() {
 					return ACTION_TYPE.ABORT_AND_START == self.actionType;
 				};
-				
-				self.showAbortAndJoin = function () {
+
+				self.showAbortAndJoin = function() {
 					return ACTION_TYPE.ABORT_AND_JOIN == self.actionType;
 				};
-				
+
 				if (angular.isDefined($attrs.ngDisabled)) {
 					self.disabled = parseAttribute($scope.$parent, $attrs.ngDisabled);
 				}
-				
+
 				// Reset the values first
 				self.resetValues();
 			}
 			
+			/*
+			 * 
+			 */
+			AbortPopoverController.prototype.safeApply = function() {
+				sdUtilService.safeApply($scope);
+			};
+			
+			/*
+			 * 
+			 */
+			AbortPopoverController.prototype.showErrorMessage = function(key, def) {
+				var msg = key;
+				if (def) {
+					msg = def;
+				}
+				var prefix = 'views-common-messages.abort.dialog.error.';
+				key = prefix + key;
+				msg = self.i18n(key, def);
+				
+				self.resetErrorMessage();
+				eventBus.emitMsg('js.error', msg);
+			};
+			
+			/*
+			 * 
+			 */
+			AbortPopoverController.prototype.resetErrorMessage = function() {
+				eventBus.emitMsg('js.error.reset');
+			};
+			
+			/*
+			 * 
+			 */
 			function resetValues() {
 				self.actionType = undefined;
-				
+
 				// Abort & Start scope variables
 				self.selectedProcess = undefined;
 				self.spawnableProcesses = [];
 				self.switchCompleted = false;
 				self.linkComment = '';
-				
+
 				// Abort & Join scope variables
 				self.abortAndJoin = {
-					advancedSelect: false,
-					matchAll: true,
-					relatedProcesses: {totalCount: 0, list: []},
-					pageSize: 6,
-					dialogMsg: self.i18n('views-common-messages.views-switchProcessDialog-joinProcessMessage-message'),
-					joinScope: 'Process', // Other alternative is 'Case'
-					notificationMsg: '',
-					linkComment: ''
+					advancedSelect : false,
+					matchAll : true,
+					relatedProcesses : {
+						totalCount : 0,
+						list : []
+					},
+					pageSize : 6,
+					dialogMsg : self.i18n('views-common-messages.views-switchProcessDialog-joinProcessMessage-message'),
+					joinScope : 'Process', // Other alternative is 'Case'
+					notificationMsg : '',
+					linkComment : ''
 				};
-				
-				self.abortNotification = {totalCount: 0, list: []};
+
+				self.abortNotification = {
+					totalCount : 0,
+					list : []
+				};
 			}
 			
+			/*
+			 * 
+			 */
 			function disableStartJoin() {
 				return !(self.activities != undefined && self.activities.length === 1);
 			}
-			
+
+			/*
+			 * 
+			 */
 			function handlePopoverClick() {
 				// In case of ng-disabled, make sure the click is not activated
 				if (!self.disabled) {
 					
+					self.selectedProcess = undefined;
+					self.linkComment = '';
+
 					if (angular.isDefined(self.onOpen)) {
 						self.onOpen();
 					}
-					
+
 					self.activities = parseAttribute($scope.$parent, $attrs.sdaActivities);
-					
+
 					self.processInstOIDs = [];
-					
+
 					angular.forEach(self.activities, function(actvty) {
 						self.processInstOIDs.push(actvty.processInstance.oid);
 					});
 				}
 			}
 			
+			/*
+			 * 
+			 */
 			function handleAbort(actionType) {
 				self.actionType = actionType;
 				if (ACTION_TYPE.ABORT_AND_START === actionType) {
 					handleAbortAndStart();
-					
+
 				} else if (ACTION_TYPE.ABORT_AND_JOIN === actionType) {
 					handleAbortAndJoin();
 				}
 			}
-			
+
+			/*
+			 * 
+			 */
 			function handleAbortAndStart() {
 				self.dialogTitle = self.i18n('views-common-messages.views-switchProcessDialog-title');
-				
+
 				checkIfProcessesAbortable().then(function(data) {
 					if (data.length > 0) {
 						// Un-abortable condition found
@@ -233,7 +280,10 @@
 					// Error occurred
 				})
 			}
-			
+
+			/*
+			 * 
+			 */
 			function openAbortPopoverDialog() {
 				if (self.showAbortAndStart()) {
 					fetchSpawnableProcesses(self.activities).then(function(process) {
@@ -251,15 +301,22 @@
 					});
 				}
 			}
-			
+
+			/*
+			 * 
+			 */
 			function handleAbortAndJoin() {
-				self.dialogTitle = self.i18n('views-common-messages.views-joinProcessDialog-title').format(self.activities[0].processInstance.processName);
+				self.dialogTitle = sdUtilService.format(self
+						.i18n('views-common-messages.views-joinProcessDialog-title'), [ self.activities[0].processInstance.processName ]);
 				openAbortPopoverDialog();
 			}
-			
+
+			/*
+			 * 
+			 */
 			function fetchSpawnableProcesses(activities) {
 				var deferred = $q.defer();
-				
+
 				sdActivityInstanceService.getSpawnableProcesses(self.processInstOIDs).then(function(data) {
 					deferred.resolve(data);
 
@@ -268,32 +325,38 @@
 					// Error occurred
 					trace.log('An error occurred while fetching Spawnable Processes.\n Caused by: ' + result);
 					self.showErrorMessage('fetch', 'An error occurred while fetching Spawnable Processes.');
-					
+
 					deferred.reject(result);
 				});
-				
+
 				return deferred.promise;
 			}
-			
+
+			/*
+			 * 
+			 */
 			function closeThisDialog(scope) {
 				self.abortPopoverDialog.close();
 			}
 			
+			/*
+			 * 
+			 */
 			function confirm(scope) {
 				var abortData = {
-					linkComment: self.linkComment
+					linkComment : self.linkComment
 				};
-				
+
 				if (self.showAbortAndStart()) {
 					abortData.processInstaceOIDs = self.processInstOIDs;
 					if (angular.isDefined(self.selectedProcess)) {
 						abortData.processId = self.selectedProcess.qualifiedId;
 					}
-					
+
 					if (self.validateAbortStart(abortData)) {
 						performAbortSwitch(abortData).then(function(data) {
 							self.switchCompleted = true;
-							
+
 							openInfoDialog(data);
 							self.closeThisDialog(scope);
 						}, function(result) {
@@ -305,21 +368,21 @@
 					if (self.processInstOIDs.length > 0) {
 						abortData.sourceProcessOID = self.processInstOIDs[0];
 					}
-					
+
 					if (self.abortAndJoin.advancedSelect == true) {
 						abortData.targetProcessOID = self.abortAndJoin.processOID;
 					} else {
-						if (angular.isDefined(self.abortAndJoin.relatedProcessDataTable.getSelection()) 
+						if (angular.isDefined(self.abortAndJoin.relatedProcessDataTable.getSelection())
 								&& self.abortAndJoin.relatedProcessDataTable.getSelection() != null) {
 							abortData.targetProcessOID = self.abortAndJoin.relatedProcessDataTable.getSelection().oid;
 						}
 					}
-					
+
 					if (self.validateAbortJoin(abortData)) {
 						performAbortJoin(abortData).then(function(data) {
 							// 
 							self.closeThisDialog(scope);
-							
+
 							openInfoDialog(data);
 						}, function(result) {
 							// Error occurred
@@ -329,6 +392,9 @@
 				}
 			}
 			
+			/*
+			 * 
+			 */
 			function validateAbortStart(abortData) {
 				if (!angular.isDefined(abortData.processId)) {
 					self.showErrorMessage('abortandstart', 'Please select a process.');
@@ -337,6 +403,9 @@
 				return true;
 			}
 			
+			/*
+			 * 
+			 */
 			function validateAbortJoin(abortData) {
 				if (!angular.isDefined(abortData.targetProcessOID)) {
 					self.showErrorMessage('abortandjoin', 'Please select a process.');
@@ -344,87 +413,113 @@
 				}
 				return true;
 			}
-			
+
+			/*
+			 * 
+			 */
 			function performAbortSwitch(abortPayload) {
 				var deferred = $q.defer();
-				
+
 				sdActivityInstanceService.switchProcess(abortPayload).then(function(data) {
 					// abort & start successful
 					deferred.resolve(data);
-					
+
 				}, function(result) {
 					// Error occurred
 					trace.log('An error occurred while performing abort & start.\n Caused by: ' + result);
 					deferred.reject(result);
 				});
-				
+
 				return deferred.promise;
 			}
 			
+			/*
+			 * 
+			 */
 			function performAbortJoin(abortPayload) {
 				var deferred = $q.defer();
-				
+
 				sdActivityInstanceService.abortAndJoinProcess(abortPayload).then(function(data) {
 					// abort & start successful
 					deferred.resolve(data);
-					
+
 				}, function(result) {
 					// Error occurred
 					trace.log('An error occurred while performing abort & join.\n Caused by: ' + result);
 					deferred.reject(result);
 				});
-				
+
 				return deferred.promise;
 			}
-			
+
+			/*
+			 * 
+			 */
 			function checkIfProcessesAbortable() {
 				var deferred = $q.defer();
-				
-				sdActivityInstanceService.checkIfProcessesAbortable(self.processInstOIDs).then(function(data) {
-					// checkIfProcessesAbortable successful
-					deferred.resolve(data);
-				}, function(result) {
-					// Error occurred
-					trace.log('An error occurred while performing "Check If Processes Abortable".\n Caused by: ' + result);
-					deferred.reject(result);
-				});
-				
+
+				sdActivityInstanceService
+						.checkIfProcessesAbortable(self.processInstOIDs)
+						.then(
+								function(data) {
+									// checkIfProcessesAbortable successful
+									deferred.resolve(data);
+								},
+								function(result) {
+									// Error occurred
+									trace
+											.log('An error occurred while performing "Check If Processes Abortable".\n Caused by: '
+													+ result);
+									deferred.reject(result);
+								});
+
 				return deferred.promise;
 			}
-			
+
+			/*
+			 * 
+			 */
 			function loadRelatedProcesses() {
 				var deferred = $q.defer();
-				
-				sdActivityInstanceService.getRelatedProcesses(self.processInstOIDs, 
-						!self.abortAndJoin.matchAll, false).then(function(data) {
-					// getRelatedProcesses successful
-					self.abortAndJoin.relatedProcesses = {};
-					self.abortAndJoin.relatedProcesses.list = data;
-					self.abortAndJoin.relatedProcesses.totalCount = data.length;
-					
-					if (angular.isDefined(self.abortAndJoin.relatedProcessDataTable)) {
-						self.abortAndJoin.relatedProcessDataTable.refresh();
-						self.safeApply();
-					}
-					deferred.resolve(data);
-				}, function(result) {
-					// Error occurred
-					trace.log('An error occurred while performing "Get Related Processes".\n Caused by: ' + result);
-					deferred.reject(result);
-				});
-				
+
+				sdActivityInstanceService
+						.getRelatedProcesses(self.processInstOIDs, !self.abortAndJoin.matchAll, false)
+						.then(
+								function(data) {
+									// getRelatedProcesses successful
+									self.abortAndJoin.relatedProcesses = {};
+									self.abortAndJoin.relatedProcesses.list = data;
+									self.abortAndJoin.relatedProcesses.totalCount = data.length;
+
+									if (angular.isDefined(self.abortAndJoin.relatedProcessDataTable)) {
+										self.abortAndJoin.relatedProcessDataTable.refresh();
+										self.safeApply();
+									}
+									deferred.resolve(data);
+								},
+								function(result) {
+									// Error occurred
+									trace
+											.log('An error occurred while performing "Get Related Processes".\n Caused by: '
+													+ result);
+									deferred.reject(result);
+								});
+
 				return deferred.promise;
 			}
 			
+			/*
+			 * 
+			 */
 			function okNotification(scope) {
 				self.abortNotificationDialog.confirm();
-				
+
 				if (self.switchCompleted || self.showAbortAndJoin()) {
 					// Switch/Join finished
 					// Go to view activitoes
 					openWorklistView()
-					
-					BridgeUtils.View.syncLaunchPanels();
+
+					sdViewUtilService.syncLaunchPanels();
 					if (angular.isDefined(self.onConfirm)) {
 						self.onConfirm();
 					}
@@ -433,48 +528,74 @@
 					openAbortPopoverDialog();
 				}
 			}
-			
+
+			/*
+			 * 
+			 */
 			function openWorklistView() {
 				// TODO open spawned/joined activities
 				// Use self.targetActivities
-				sdViewUtilService.openView("worklistViewHtml5", true);
+				sdViewUtilService.openView('worklistViewHtml5', true);
+			}
+
+			/*
+			 * 
+			 */
+			function closeNotification(scope) {
+				onCloseNotification();
+				self.abortNotificationDialog.close();
 			}
 			
-			function closeNotification(scope) {
-				self.abortNotificationDialog.close();
-				BridgeUtils.View.syncLaunchPanels();
+			/*
+			 * 
+			 */
+			function onCloseNotification() {
+				sdViewUtilService.syncLaunchPanels();
 				if (angular.isDefined(self.onConfirm)) {
 					self.onConfirm();
 				}
 			}
-			
+
+			/*
+			 * 
+			 */
 			function openInfoDialog(result) {
 				if (self.showAbortAndStart()) {
 					// Show notification dialog for abort & start
 					self.targetActivities = result;
-					self.abortNotification = {list: result, totalCount: result.length};
+					self.abortNotification = {
+						list : result,
+						totalCount : result.length
+					};
 					self.abortNotificationType = getNotificationType(result);
-					self.abortNotificationTitle = self.i18n('portal-common-messages.common-' + self.abortNotificationType);
-					
+					self.abortNotificationTitle = self.i18n('portal-common-messages.common-'
+							+ self.abortNotificationType);
+
 					if (angular.isDefined(self.abortNotificationDataTable)) {
 						self.abortNotificationDataTable.refresh();
 						self.safeApply();
 					}
 				} else if (self.showAbortAndJoin()) {
 					// Show notification dialog for abort & Join
-					self.targetActivities = [result];
+					self.targetActivities = [ result ];
 					if (angular.isDefined(result)) {
-						self.abortAndJoin.notificationMsg = self.i18n('views-common-messages.views-joinProcessDialog-processJoined');
+						self.abortAndJoin.notificationMsg = self
+								.i18n('views-common-messages.views-joinProcessDialog-processJoined');
 						if (angular.isDefined(result.abortedProcess) && angular.isDefined(result.targetProcess)) {
-							self.abortAndJoin.notificationMsg = self.abortAndJoin.notificationMsg.format(result.abortedProcess.processName, result.targetProcess.processName);
+							self.abortAndJoin.notificationMsg = sdUtilService.format(self.abortAndJoin.notificationMsg,
+									[ result.abortedProcess.processName, result.targetProcess.processName ]);
 						}
-						self.abortNotificationTitle = self.i18n('portal-common-messages.common-' + SUPPORTED_NOTIFICATION_TYPES.INFO);
+						self.abortNotificationTitle = self.i18n('portal-common-messages.common-'
+								+ SUPPORTED_NOTIFICATION_TYPES.INFO);
 					}
 				}
-				
+
 				self.abortNotificationDialog.open();
 			}
-			
+
+			/*
+			 * 
+			 */
 			function getNotificationType(data) {
 				var type = SUPPORTED_NOTIFICATION_TYPES.ERROR;
 				if (self.switchCompleted === true) {
@@ -488,48 +609,35 @@
 				}
 				return type;
 			}
-			
+
+			/*
+			 * 
+			 */
 			function parseAttribute(scope, attr) {
-	        	try {
-	        		var evalAttr = $parse(attr)(scope);
-	        		if (!angular.isDefined(evalAttr)) {
-	        			evalAttr = attr;
-	        		}
-	        		return evalAttr;
-	            } catch( err ) {
-	                return attr;
-	            }
-	        }
-			
+				try {
+					var evalAttr = $parse(attr)(scope);
+					if (!angular.isDefined(evalAttr)) {
+						evalAttr = attr;
+					}
+					return evalAttr;
+				} catch (err) {
+					return attr;
+				}
+			}
+
+			/*
+			 * 
+			 */
 			function showAdvancedSelect(val) {
 				self.abortAndJoin.advancedSelect = val;
 			}
-			
+
+			/*
+			 * 
+			 */
 			function showMatchAll(val) {
 				self.abortAndJoin.matchAll = val;
 				loadRelatedProcesses();
-			}
-			
-			AbortPopoverController.prototype.safeApply = function() {
-				sdUtilService.safeApply($scope);
-			};
-			
-			AbortPopoverController.prototype.showErrorMessage = function(key, def) {
-				var msg = key;
-				if (def) {
-					msg = def;
-				}
-				var prefix = 'views-common-messages.abort.dialog.error.';
-				key = prefix + key;
-				msg = self.i18n(key, def);
-				
-				self.resetErrorMessage();
-				eventBus.emitMsg("js.error", msg);
-			}
-			
-			AbortPopoverController.prototype.resetErrorMessage = function() {
-				// TODO reset the error
-				eventBus.emitMsg("js.error", '');
 			}
 			
 			$scope.abortPopoverController = self;

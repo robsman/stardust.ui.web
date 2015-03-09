@@ -16,7 +16,7 @@
 (function(){
 	'use strict';
 
-	angular.module('bpm-common').directive('sdDelegateActivityDialog', ['$parse', '$q', 'sdUtilService', 'sdActivityInstanceService', 'sdLoggerService', 'eventBus',
+	angular.module('bpm-common').directive('sdDelegateActivityDialog', ['$parse', '$q', 'sdUtilService', 'sdActivityInstanceService', 'sdLoggerService', 'eventBus', 'sdViewUtilService',
 	                                                                    DelegateActivityDialogDirective]);
 
 	var trace;
@@ -24,7 +24,7 @@
 	/*
 	 * Directive class
 	 */
-	function DelegateActivityDialogDirective($parse, $q, sdUtilService, sdActivityInstanceService, sdLoggerService, eventBus) {
+	function DelegateActivityDialogDirective($parse, $q, sdUtilService, sdActivityInstanceService, sdLoggerService, eventBus, sdViewUtilService) {
 		
 		trace = sdLoggerService.getLogger('bpm-common.sdDelegateActivityDialog');
 		
@@ -36,7 +36,15 @@
 					onConfirm: "&sdaOnConfirm"
 				},
 				transclude: true,
-				templateUrl: 'plugins/html5-process-portal/scripts/directives/partials/delegateActivityDialog.html',
+				template: '<span sd-dialog'
+							+ ' sda-show="showDelegateDialog"'
+							+ ' sda-title="{{i18n(\'views-common-messages.delegation-title\')}}"'
+							+ ' sda-type="custom"'
+							+ ' sda-scope="this"'
+							+ ' sda-on-open="delegateActivityController.onOpenDialog(res)"'
+							+ ' sda-template="plugins/html5-process-portal/scripts/directives/partials/delegateActivityDialogBody.html"'
+							+ ' class="view-tool-link">'
+						+ '</span>',
 				controller: DelegateActivityDialogController
 			};
 		
@@ -81,7 +89,7 @@
 			    	self.activities = activitiesVal;
 			    });
 			    
-			    $scope.$watch("delActivityDialogCtlr.searchAllParticipant", function(activitiesVal) {
+			    $scope.$watch("delegateActivityController.searchAllParticipant", function(activitiesVal) {
 			    	if (angular.isDefined(self.participantDataTable) && angular.isDefined(self.participantDataTable.refresh)) {
 			    		self.participantDataTable.refresh();
 			    	}
@@ -99,10 +107,16 @@
 			    $scope.tempurl = "plugins/html5-process-portal/scripts/directives/partials/delegateActivityDialogBody.html";
 			}
 			
+			/*
+			 * 
+			 */
 			DelegateActivityDialogController.prototype.safeApply = function() {
 				sdUtilService.safeApply($scope);
 			};
-			
+
+			/*
+			 * 
+			 */
 			DelegateActivityDialogController.prototype.showErrorMessage = function(key, def) {
 				var msg = key;
 				if (def) {
@@ -111,46 +125,66 @@
 				var prefix = 'views-common-messages.delegation.error.';
 				key = prefix + key;
 				msg = self.i18n(key, def);
-				
+
 				self.resetErrorMessage();
 				eventBus.emitMsg("js.error", msg);
 			}
-			
+
+			/*
+			 * 
+			 */
 			DelegateActivityDialogController.prototype.resetErrorMessage = function() {
-				// TODO reset the error
-				eventBus.emitMsg("js.error", '');
+				eventBus.emitMsg("js.error.reset");
 			}
-			
+
+			/*
+			 * 
+			 */
 			function showSearchParticipantSection() {
 				self.searchParticipantSectionVisible = true;
 			}
-			
+
+			/*
+			 * 
+			 */
 			function showSelectParticipantSection() {
 				self.searchParticipantSectionVisible = false;
 			}
-			
+
+			/*
+			 * 
+			 */
 			function onOpenDialog(result) {
 				self.resetValues();
-				
+
 				if (angular.isDefined(self.onOpen)) {
 					self.onOpen();
 				}
 			}
-			
+
+			/*
+			 * 
+			 */
 			function closeThisDialog(scope) {
 				scope.closeThisDialog();
 			}
-			
+
+			/*
+			 * 
+			 */
 			function resetValues() {
 				self.searchParticipantSectionVisible = true;
 				self.searchAllParticipant = false;
-				self.participantDataSelected=[];
-				
+				self.participantDataSelected = [];
+
 				self.participantType = self.participantTypes[0];
 			}
-			
+
+			/*
+			 * 
+			 */
 			function confirm(scope) {
-				var selectedParticipant = {};
+				var selectedParticipant = null;
 				if (self.searchParticipantSectionVisible) {
 					// Use data from selector
 					if (self.participantDataSelected.length > 0) {
@@ -161,24 +195,24 @@
 						selectedParticipant = self.participantDataTable.getSelection();
 					}
 				}
-				
+
 				var activitiesArr = [];
 				angular.forEach(self.activities, function(actvty) {
 					activitiesArr.push(actvty.oid);
 				});
-				
+
 				var delegateData = {
-						activities: activitiesArr,
-						participant: selectedParticipant,
+					activities : activitiesArr,
+					participant : selectedParticipant,
 				};
 				if (self.validate(delegateData)) {
 					performDelegate(delegateData).then(function(data) {
-						BridgeUtils.View.syncLaunchPanels();
-						
+						sdViewUtilService.syncLaunchPanels();
+
 						if (angular.isDefined(self.onConfirm)) {
 							self.onConfirm();
 						}
-						
+
 						self.closeThisDialog(scope);
 					}, function(result) {
 						// Error occurred
@@ -186,13 +220,16 @@
 					});
 				}
 			}
-			
+
+			/*
+			 * 
+			 */
 			function validate(delegateData) {
 				if (!delegateData) {
 					self.showErrorMessage('general', 'An error occurred.');
 					return false;
 				}
-				if (!angular.isDefined(delegateData.participant)) {
+				if (!angular.isDefined(delegateData.participant) || delegateData.participant == null) {
 					self.showErrorMessage('participant', 'Please select a participant.');
 					return false;
 				}
@@ -202,36 +239,45 @@
 				}
 				return true;
 			}
-			
+
+			/*
+			 * 
+			 */
 			function fetchPage(options) {
-				
+
 				var query = angular.extend({}, this.query);
 				query.options = options;
-				
+
 				var deferred = $q.defer();
 				self.participants = {};
-				
-				if(self.activities == undefined) {
-					return {totalCount: 0, list: [{name: '', type: ''}]};
+
+				if (self.activities == undefined) {
+					return {
+						totalCount : 0,
+						list : [ {
+							name : '',
+							type : ''
+						} ]
+					};
 				}
 				var activities = self.activities.map(function(val) {
-				    return val.oid;
+					return val.oid;
 				});
 
 				query.data = {
-						searchText: '', // Fetch all
-						participantType: 'All',
-						limitedSearch: !self.searchAllParticipant,
-						activities: activities,
-						disableAdministrator: false,
-						excludeUserType: false
-					};
-				
+					searchText : '', // Fetch all
+					participantType : 'All',
+					limitedSearch : !self.searchAllParticipant,
+					activities : activities,
+					disableAdministrator : false,
+					excludeUserType : false
+				};
+
 				sdActivityInstanceService.getParticipants(query).then(function(data) {
-					
+
 					self.participants.list = data;
 					self.participants.totalCount = data.length;
-					
+
 					deferred.resolve(self.participants);
 
 					self.safeApply();
@@ -239,13 +285,16 @@
 					// Error occurred
 					trace.log('An error occurred while fetching participants.\n Caused by: ' + result);
 					self.showErrorMessage('fetch', 'An error occurred while fetching participants.');
-					
+
 					deferred.reject(result);
 				});
 
 				return deferred.promise;
-			};
-			
+			}
+
+			/*
+			 * 
+			 */
 			function performDelegate(delegatePayload) {
 				var deferred = $q.defer();
 				sdActivityInstanceService.delegateActivities(delegatePayload).then(function(data) {
@@ -256,11 +305,11 @@
 					trace.log('An error occurred while performing delegation.\n Caused by: ' + result);
 					deferred.reject(result);
 				});
-				
+
 				return deferred.promise;
 			}
 
-			$scope.delActivityDialogCtlr = self;
+			$scope.delegateActivityController = self;
 		}
 		
 		return directiveDefObject;

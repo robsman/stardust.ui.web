@@ -131,6 +131,9 @@
 			}
 		};
 
+		ViewUtilService.prototype.syncLaunchPanels = function() {
+			BridgeUtils.View.syncLaunchPanels();
+		};
 
 		/*
 		 * 
