@@ -8,19 +8,19 @@
 	 * Attributes supported:
 	 * 		sda-show (=)
 	 * 		sda-title (@)
-	 * 		sda-type (@)
+	 * 		sda-type (String)
 	 * 		sda-scope: ($Scope object)
 	 * 		sda-confirm-action-label: (@)	
 	 * 		sda-cancel-action-label: (@)
 	 * 		sda-template: (@)
-	 * 		sda-draggable: (@)
+	 * 		sda-draggable: (String)
 	 * 		sda-show-close: (@)
-	 * 		sda-width: (@)
-	 * 		sda-height: (@)
+	 * 		sda-width: (String)
+	 * 		sda-height: (String)
 	 * 		sda-on-open: (@) Eg: func(res)
 	 * 		sda-on-close: (@) Eg: func(res)
 	 * 		sda-on-confirm: (@) Eg: func(res)
-	 * 		sda-model (@)
+	 * 		sda-modal (String)
 	 */
 	function DialogDirectiveFn(sdLoggerService, $compile, $document) {
 		var trace = sdLoggerService.getLogger('bpm-common.directives.sdDialog');

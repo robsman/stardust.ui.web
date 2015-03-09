@@ -16,8 +16,8 @@
         <div class="confirmation-buttonpane">
 			<div class="button-pane cf" >
 				<div class="right">
-				  	<button class="button" ng-click="dialogController.confirmAction()">{{confirmActionLabel == undefined ? i18n('views-common-messages.common-ok') : confirmActionLabel}}</button>
-				    <button class="button" ng-click="dialogController.cancelAction()" ng-hide="dialogController.dialogType === TYPE_ALERT">
+				  	<button class="button" ng-click="dialogController.confirmAction()" ng-hide="dialogController.dialogType === TYPE_ALERT">{{confirmActionLabel == undefined ? i18n('views-common-messages.common-ok') : confirmActionLabel}}</button>
+				    <button class="button" ng-click="dialogController.cancelAction()">
 				    	{{cancelActionLabel == undefined ? i18n('views-common-messages.common-cancel') : cancelActionLabel}}
 				    </button>
 				</div>
