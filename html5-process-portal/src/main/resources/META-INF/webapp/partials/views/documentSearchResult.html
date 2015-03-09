@@ -65,8 +65,7 @@
 				<td></td>
 				<td></td>
 				<td></td>
-				<td><div
-						ng-bind="docSearchViewCtrl.bytesToSize(rowData.fileSize)"></div></td>
+				<td>{{rowData.fileSize | sdFileSizeFilter}}</td>
 				<td></td>
 				<td><table><tbody><tr style="vertical-align: top;"><td>
 					<i class="glyphicon glyphicon-folder-close"></i></td><td><div ng-bind="rowData.documentPath"></div> </td></tr></tbody></table></td>

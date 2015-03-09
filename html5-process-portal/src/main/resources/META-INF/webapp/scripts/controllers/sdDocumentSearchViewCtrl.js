@@ -467,35 +467,6 @@
 		/**
 		 * 
 		 */
-		this.bytesToSize = function(bytes) {
-			var kilobyte = 1024;
-			var megabyte = kilobyte * 1024;
-			var gigabyte = megabyte * 1024;
-			var terabyte = gigabyte * 1024;
-
-			if ((bytes >= 0) && (bytes < kilobyte)) {
-				return bytes + ' B';
-
-			} else if ((bytes >= kilobyte) && (bytes < megabyte)) {
-				return (bytes / kilobyte).toFixed(2) + ' KB';
-
-			} else if ((bytes >= megabyte) && (bytes < gigabyte)) {
-				return (bytes / megabyte).toFixed(2) + ' MB';
-
-			} else if ((bytes >= gigabyte) && (bytes < terabyte)) {
-				return (bytes / gigabyte).toFixed(2) + ' GB';
-
-			} else if (bytes >= terabyte) {
-				return (bytes / terabyte).toFixed(2) + ' TB';
-
-			} else {
-				return bytes + ' B';
-			}
-		};
-
-		/**
-		 * 
-		 */
 		this.getGlyphiconClass = function(iconPath) {
 			if (iconPath == 'document-image.png') {
 				return "glyphicon glyphicon-export";
