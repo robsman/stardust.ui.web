@@ -1,18 +1,16 @@
 <div class="confirmation-contents section">
-	<div ng-hide="worklistCtrl.completeActivityResult.error">
-		<div
-			ng-show="worklistCtrl.completeActivityResult.notifications.failure.length > 0">
-			<div ng-bind="i18n('processportal.views-completeActivityDialog-notificaition-failure')"></div>
+	<div ng-show="worklistCtrl.completeActivityResult.status =='partialSuccess'">
+			<div ng-bind="i18n('processportal.views-completeActivityDialog-notification-partialSuccess')"></div>
 			<br>
 			<table  class="table">
 				<thead>
 					<tr>
 						<th ng-bind="i18n('processportal.views-completeActivityDialog-notificaition-table-header-activity')"></th>
-						<th ng-bind="i18n('processportal.views-completeActivityDialog-notificaition-table-header-activityOID')"></th>
-						<th ng-bind="i18n('processportal.views-completeActivityDialog-notificaition-table-header-error')"></th>
+						<th ng-bind="i18n('processportal.views-completeActivityDialog-notification-table-header-activityOID')"></th>
+						<th ng-bind="i18n('processportal.views-completeActivityDialog-notification-table-header-message')"></th>
 					</tr>
 				</thead>
-				<tbody>
+				<tbody>  
 					<tr
 						ng-repeat="activity in worklistCtrl.completeActivityResult.notifications.failure">
 						<td>{{
@@ -22,11 +20,16 @@
 					</tr>
 				</tbody>
 			</table>
-		</div>
 	</div>
-	<div ng-show="worklistCtrl.completeActivityResult.error"
-		ng-bind="i18n('processportal.views-completeActivityDialog-notification-error')">
-	</div>
+	<div ng-show="worklistCtrl.completeActivityResult.status =='success'">
+	 <span ng-show="worklistCtrl.completeActivityResult.notifications.success.length >1">{{i18n('processportal.views-completeActivityDialog-notification-success') | interpolate:worklistCtrl.completeActivityResult.notifications.success.length}}</span>
+	  <span ng-show="worklistCtrl.completeActivityResult.notifications.success.length == 1">{{i18n('processportal.views-completeActivityDialog-notification-success-single')}}</span>
+ 	</div>
+ 	
+ 	<div ng-show="worklistCtrl.completeActivityResult.status =='failure'">
+		<span ng-bind="i18n('processportal.views-completeActivityDialog-notification-error')"></span><br/>
+ 	</div>
+	
 </div>
 <div class="confirmation-buttonpane">
 	<div class="button-pane cf">

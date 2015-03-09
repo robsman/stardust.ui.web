@@ -18,13 +18,13 @@
 
 	angular.module('bpm-common').directive('sdWorklist',
 			['$parse', '$q', 'sdUtilService', 'sdViewUtilService', 'sdLoggerService', 'sdPreferenceService', 'sdWorklistService',
-			 'sdActivityInstanceService', 'sdProcessDefinitionService', 'sdCriticalityService', 'sdStatusService','$filter', WorklistDirective]);
+			 'sdActivityInstanceService', 'sdProcessDefinitionService', 'sdCriticalityService', 'sdStatusService','$filter','sgI18nService', WorklistDirective]);
 
 	/*
 	 *
 	 */
 	function WorklistDirective($parse, $q, sdUtilService, sdViewUtilService, sdLoggerService, sdPreferenceService, sdWorklistService,
-			sdActivityInstanceService, sdProcessDefinitionService, sdCriticalityService, sdStatusService ,$filter) {
+			sdActivityInstanceService, sdProcessDefinitionService, sdCriticalityService, sdStatusService, $filter, sgI18nService) {
 
 		var trace = sdLoggerService.getLogger('bpm-common.sdWorklist');
 
@@ -480,7 +480,7 @@
 	         var self = this;
 	   
 	         self.completeActivityResult = {
-	                  error : false,
+	                  status : 'success',  //success failure partialSuccess
 	                  notifications : [],
 	                  nameIdMap : {}
 	         };
@@ -531,13 +531,23 @@
 
 	               if (activitiesData.length > 0 ) {
 	                  sdActivityInstanceService.completeAll(activitiesData).then(function(result) {
-	                     if(result.failure.length > 0){
-	                        self.showCompleteNotificationDialog = true;
-	                        self.completeActivityResult.notifications = result;
-	                        self.completeActivityResult.error = false;
-	                     }else if(result.success.length > 0){
-	                        self.refresh();
-	                     }
+	                	  self.showCompleteNotificationDialog = true;
+	                	  self.completeActivityResult.notifications = result;
+	                	  self.refresh();
+	                	  if (result.failure.length > 0
+	                			  && result.success.length > 0) {
+	                		  // partial Success
+	                		  self.completeActivityResult.status = 'partialSuccess';
+	                		  self.completeActivityResult.title = sgI18nService.translate('processportal.views-completeActivityDialog-notification-title-error','ERROR');
+	                	  } else if (result.success.length === activitiesData.length) {
+	                		  // Success
+	                		  self.completeActivityResult.status = 'success';
+	                		  self.completeActivityResult.title = sgI18nService.translate('processportal.views-completeActivityDialog-notification-title-success','SUCCESS');
+	                	  } else {
+	                		  self.completeActivityResult.status = 'failure';
+	                		  self.completeActivityResult.title = sgI18nService.translate('processportal.views-completeActivityDialog-notification-title-error','ERROR');
+	                	  }
+	                    
 	                  });
 	               } else {
 	                  self.dataTable.setSelection([]);
