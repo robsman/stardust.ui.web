@@ -1,7 +1,7 @@
 <div class="worklist-wrapper">
-	<table sd-data-table="{{docSearchViewCtrl.docSearchRsltTblHndExp}}" sda-ready="docSearchViewCtrl.showTableData"
+	<table sd-data-table="{{docSearchViewCtrl.dataTable}}" sda-ready="docSearchViewCtrl.showTableData"
 		sd-data="docSearchViewCtrl.performSearch(params)" sda-mode="remote"
-		sda-selectable="multiple" sda-page-size="8"
+		sda-selectable="multiple"
 		sda-column-selector="{{docSearchViewCtrl.columnSelector}}"
 		sda-sortable="true"
 		sda-sort-by="{name : 'documentName', dir : 'desc'}">
@@ -57,7 +57,7 @@
 					<i class="{{docSearchViewCtrl.getGlyphiconClass(rowData.iconPath)}}"></i></td>
 					<td><a href="#" ng-click="bpmCommon.stopEvent($event); docSearchViewCtrl.openDocumentView(rowData.documentId);">
 						<div sd-tool-tip
-							sda-tool-tip-url="'plugins/html5-process-portal/scripts/directives/partials/documentDetailToolTip.html'"
+							sda-tool-tip-url="'plugins/html5-process-portal/partials/views/documentDetailToolTip.html'"
 							sda-title="rowData.documentName"
 							sda-tool-tip-class="popup-dlg-bgImg"></div>
 				</a></td></tr></tbody></table></td>
@@ -99,7 +99,7 @@
 		 sda-type="confirm"
 		 sda-title="{{i18n('views-common-messages.views-documentSearchView-documentSearchTable-attachToProcess')}}"
 		 sda-scope="this"
-		 sda-template="plugins/html5-process-portal/scripts/directives/partials/selectProcessDialog.html"
+		 sda-template="plugins/html5-process-portal/partials/views/selectProcessDialog.html"
 		 sda-on-confirm="docSearchViewCtrl.onConfirmFromAttachToProcess(res)"
 		 sda-width="450px">
 	</div>
@@ -108,7 +108,7 @@
 		 sda-type="alert"
 		 sda-title="{{docSearchViewCtrl.infoData.messageType}}"
 		 sda-scope="this"
-		 sda-template="plugins/html5-process-portal/scripts/directives/partials/attachDocumentResult.html"
+		 sda-template="plugins/html5-process-portal/partials/views/attachDocumentResult.html"
 		 >
 	</div>
 	<div sd-dialog sda-modal="true"
@@ -116,7 +116,7 @@
 		 sda-type="custom"
 		 sda-title="{{i18n('views-common-messages.views-userDetails-title')}}"
 		 sda-scope="this"
-		 sda-template="plugins/html5-process-portal/scripts/directives/partials/userDetails.html"
+		 sda-template="plugins/html5-process-portal/partials/views/userDetails.html"
 		 sda-width="400px">
 	</div>
 	<div sd-dialog="docSearchViewCtrl.documentHistory" sda-modal="true"
@@ -133,7 +133,7 @@
 		 sda-type="custom"
 		 sda-title="{{i18n('views-common-messages.views-documentSearchView-documentSearchTable-tooltip-process')}}"
 		 sda-scope="this"
-		 sda-template="plugins/html5-process-portal/scripts/directives/partials/documentProcessesDialog.html"
+		 sda-template="plugins/html5-process-portal/partials/views/documentProcessesDialog.html"
 		 sda-width="300px"
 		 sda-height="800px"	>
 	</div>

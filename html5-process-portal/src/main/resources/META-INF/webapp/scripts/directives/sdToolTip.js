@@ -17,7 +17,7 @@
 	angular.module('bpm-common').directive('sdToolTip', ToolTip);
 
 	/*
-	 *
+	 * 
 	 */
 	function ToolTip() {
 
@@ -30,7 +30,7 @@
 		};
 	}
 	/**
-	 *
+	 * 
 	 */
 	function ToolTipController($scope, $parse, $attrs) {
 		this.toolTip = {

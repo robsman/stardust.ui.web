@@ -1,8 +1,9 @@
 <div>
-<table sd-data-table="{{docSearchViewCtrl.docVersionsTblHndExp}}"
+<table sd-data-table="{{docSearchViewCtrl.docVersionsdataTable}}"
 		sd-data="docSearchViewCtrl.getDocumentVersions(params)"  sda-mode="local" sda-no-pagination="true"		
 		sda-sortable="true"
-		sda-sort-by="{name : 'versionNo', dir : 'desc'}"> <!-- sda-column-selector="{{docSearchViewCtrl.columnSelector}}"  add this when the column selector problem gets resolved-->
+		sda-sort-by="{name : 'versionNo', dir : 'desc'}" 
+		sda-column-selector="{{docSearchViewCtrl.columnSelector}}">
 		<thead
 			sda-i18n-scope="views-common-messages.views-documentView-documentVersion">
 			<tr>
@@ -33,7 +34,7 @@
 		 sda-type="custom"
 		 sda-title="{{i18n('views-common-messages.views-userDetails-title')}}"
 		 sda-scope="this"
-		 sda-template="plugins/html5-process-portal/scripts/directives/partials/userDetails.html"
+		 sda-template="plugins/html5-process-portal/partials/views/userDetails.html"
 		 sda-width="400px">
 	</div>
 </div>

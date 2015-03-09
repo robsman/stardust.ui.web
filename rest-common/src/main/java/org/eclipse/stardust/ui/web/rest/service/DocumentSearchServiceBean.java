@@ -138,9 +138,9 @@ public class DocumentSearchServiceBean {
 		return resultDTO;
 	}
 
-	public QueryResultDTO getAvailableProcessDefns() {
+	public QueryResultDTO loadAvailableProcessDefinitions() {
 		List<SelectItemDTO> processDefns = documentSearchUtils
-				.getAvailableProcessDefns();
+				.loadAvailableProcessDefinitions();
 		QueryResultDTO resultDTO = new QueryResultDTO();
 		resultDTO.list = processDefns;
 		resultDTO.totalCount = processDefns.size();

@@ -472,7 +472,7 @@ public class DocumentSearchUtils {
 		return false;
 	}
 
-	public List<SelectItemDTO> getAvailableProcessDefns() {
+	public List<SelectItemDTO> loadAvailableProcessDefinitions() {
 		List<View> openViews = PortalApplication.getInstance().getOpenViews();
 		List<SelectItemDTO> allProcessDefns = new ArrayList<SelectItemDTO>();
 		for (Iterator<View> iterator = openViews.iterator(); iterator.hasNext();) {

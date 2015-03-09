@@ -25,31 +25,32 @@
 			transclude : true,
 			replace : true,
 			templateUrl : 'plugins/html5-process-portal/scripts/directives/partials/documentDownload.html',
-			controller : [ '$scope', '$parse', '$attrs', DocumentDownloadController ]
+			controller : [ '$scope', '$parse', '$attrs', 'sdUtilService', DocumentDownloadController ]
 		};
 	}
 	
 	/**
 	 *
 	 */
-	function DocumentDownloadController($scope, $parse, $attrs) {
+	function DocumentDownloadController($scope, $parse, $attrs, sdUtilService) {
 		this.i18n = $scope.i18n;
 		
+		/**
+		 * 
+		 */
 		this.downloadDocument = function(res) {
 			var REST_BASE_URL = "services/rest/portal/documents";
 			var self = this;
-			window.location = this.getRootUrl() + "/" + REST_BASE_URL
+			window.location = sdUtilService.getRootUrl() + "/" + REST_BASE_URL
 			+ "/downloadDocument" + "/" + self.documentDownload.documentId + "/"
 			+ self.documentDownload.documentName;
 			delete self.documentDownload;
 
 		};
 		
-		this.getRootUrl = function() {
-			return window.location.href.substring(0, location.href
-					.indexOf("/main.html"));
-		};
-
+		/**
+		 * 
+		 */
 		this.setShowDocumentDownload = function() {
 			var self = this;
 			if($attrs.sdaDocumentId != undefined && $attrs.sdaDocumentName != undefined){
@@ -65,6 +66,9 @@
 
 		};
 
+		/**
+		 * 
+		 */
 		this.downloadDocumentClose = function() {
 			var self = this;
 			delete self.documentDownload;

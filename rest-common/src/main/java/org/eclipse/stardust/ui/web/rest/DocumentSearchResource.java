@@ -178,12 +178,12 @@ public class DocumentSearchResource {
 	}
 
 	@GET
-	@Path("/loadAvailableProcessDefns")
-	public Response getAvailableProcessDefinitions() {
+	@Path("/loadAvailableProcessDefinitions")
+	public Response loadAvailableProcessDefinitions() {
 		try {
 
 			QueryResultDTO resultDTO = documentSearchService
-					.getAvailableProcessDefns();
+					.loadAvailableProcessDefinitions();
 			Gson gson = new Gson();
 			return Response.ok(gson.toJson(resultDTO),
 					MediaType.TEXT_PLAIN_TYPE).build();

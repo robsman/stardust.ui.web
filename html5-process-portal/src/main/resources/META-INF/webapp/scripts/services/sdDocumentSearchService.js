@@ -24,10 +24,12 @@
 						'sdLoggerService',
 						'$q',
 						'$http',
+						'sdUtilService',
 						function($rootScope, $resource, sdLoggerService, $q,
-								$http) {
+								$http, sdUtilService) {
 							var service = new DocumentSearchService($rootScope,
-									$resource, sdLoggerService, $q, $http);
+									$resource, sdLoggerService, $q, $http,
+									sdUtilService);
 							return service;
 						} ];
 			});
@@ -36,9 +38,13 @@
 	 * 
 	 */
 	function DocumentSearchService($rootScope, $resource, sdLoggerService, $q,
-			$http) {
+			$http, sdUtilService) {
 		var REST_BASE_URL = "services/rest/portal/documentSearch";
-		var trace = sdLoggerService.getLogger('bpm-common.sdDataTable');
+		var trace = sdLoggerService.getLogger('workflow-ui.services');
+
+		/**
+		 * 
+		 */
 		DocumentSearchService.prototype.searchUsers = function(searchValue) {
 			trace.info("Getting authors for:", searchValue);
 
@@ -53,8 +59,10 @@
 			return $resource(restUrl).get(urlTemplateParams).$promise;
 		};
 
+		/**
+		 * 
+		 */
 		DocumentSearchService.prototype.searchAttributes = function() {
-			trace.info("inside searchAttributes function");
 			// Prepare URL
 			var restUrl = REST_BASE_URL + "/:type";
 
@@ -65,24 +73,14 @@
 			return $resource(restUrl).get(urlTemplateParams).$promise;
 		};
 
+		/**
+		 * 
+		 */
 		DocumentSearchService.prototype.performSearch = function(query) {
-			trace.info("inside performSearch function");
 			// Prepare URL
 			var restUrl = REST_BASE_URL + "/:type";
 
-			var options = "";
-			if (query.options.skip != undefined) {
-				options += "&skip=" + query.options.skip;
-			}
-			if (query.options.pageSize != undefined) {
-				options += "&pageSize=" + query.options.pageSize;
-			}
-			if (query.options.order != undefined) {
-				// Supports only single column sort
-				var index = query.options.order.length - 1;
-				options += "&orderBy=" + query.options.order[index].name;
-				options += "&orderByDir=" + query.options.order[index].dir;
-			}
+			var options = sdUtilService.prepareUrlParams(query.options);
 
 			if (options.length > 0) {
 				restUrl = restUrl + "?" + options.substr(1);
@@ -108,6 +106,9 @@
 
 		};
 
+		/**
+		 * 
+		 */
 		DocumentSearchService.prototype.fetchProcessDialogData = function(
 				documentId) {
 
@@ -121,6 +122,9 @@
 			return $resource(restUrl).get(urlTemplateParams).$promise;
 		};
 
+		/**
+		 * 
+		 */
 		DocumentSearchService.prototype.getUserDetails = function(documentOwner) {
 			var restUrl = REST_BASE_URL + "/:type/:documentOwner";
 
@@ -133,18 +137,25 @@
 
 		};
 
-		this.getAvailableProcessDefns = function() {
+		/**
+		 * 
+		 */
+		DocumentSearchService.prototype.getAvailableProcessDefns = function() {
 			var restUrl = REST_BASE_URL + "/:type";
 
 			var urlTemplateParams = {};
 
-			urlTemplateParams.type = "loadAvailableProcessDefns";
+			urlTemplateParams.type = "loadAvailableProcessDefinitions";
 
 			return $resource(restUrl).get(urlTemplateParams).$promise;
 
 		};
 
-		this.getDocumentVersions = function(documentId) {
+		/**
+		 * 
+		 */
+		DocumentSearchService.prototype.getDocumentVersions = function(
+				documentId) {
 			var restUrl = REST_BASE_URL + "/:type/:documentId";
 
 			var urlTemplateParams = {};
@@ -154,9 +165,13 @@
 
 			return $resource(restUrl).get(urlTemplateParams).$promise;
 
-		}
+		};
 
-		this.attachDocumentsToProcess = function(processOID, documentId) {
+		/**
+		 * 
+		 */
+		DocumentSearchService.prototype.attachDocumentsToProcess = function(
+				processOID, documentId) {
 			var restUrl = REST_BASE_URL + "/:type/:processOID/:documentId";
 
 			var urlTemplateParams = {};
@@ -166,11 +181,8 @@
 			urlTemplateParams.processOID = processOID;
 
 			return $resource(restUrl).get(urlTemplateParams).$promise;
-		}
-
-		this.getRootUrl = function() {
-			return window.location.href.substring(0, location.href
-					.indexOf("/main.html"));
 		};
-	};
+
+	}
+	;
 })();
