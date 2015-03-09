@@ -10,37 +10,30 @@
 		<div class="tbl-title">{{i18n('admin-portal-messages.views-daemons-table-title')}}</div>
 		<table sd-data-table="ctrl.daemonDataTable"
 			sd-data="ctrl.fetchDaemons()" sda-mode="local"
-			sda-no-pagination="true" sda-column-selector="ctrl.columnSelector"
-			sda-sortable="single" sda-exports="Excel,csv">
-			<thead>
+			sda-no-pagination="true"
+			sda-column-selector="{{ctrl.columnSelector}}" sda-sortable="single"
+			sda-exports="Excel,CSV" sda-exports-file-name="daemons">
+			<thead sda-i18n-scope="admin-portal-messages.views-daemons-column">
 				<tr>
-					<th sda-name="type" sda-fixed="true" sda-sortable="true"
-						sda-label-key="admin-portal-messages.views-daemons-column-type"></th>
-					<th sda-name="startTime"
-						sda-label-key="admin-portal-messages.views-daemons-column-started"></th>
-					<th sda-name="lastExecutionTime"
-						sda-label-key="admin-portal-messages.views-daemons-column-lastTime"></th>
-					<th sda-name="running"
-						sda-label-key="admin-portal-messages.views-daemons-column-status"></th>
+					<th sda-name="type" sda-fixed="true" sda-sortable="true"></th>
+					<th sda-name="startTime" sda-label-key="started"></th>
+					<th sda-name="lastExecutionTime" sda-label-key="lastTime"></th>
+					<th sda-name="running" sda-label-key="status"></th>
 					<th sda-name="acknowledgementState"
-						sda-label-key="admin-portal-messages.views-daemons-column-acknowledgeState"></th>
-					<th sda-name="daemonExecutionState"
-						sda-label-key="admin-portal-messages.views-daemons-column-executionState"></th>
-					<th sda-name="actions" sda-fixed="true"
-						sda-label-key="admin-portal-messages.views-common-column-actions"></th>
+						sda-label-key="acknowledgeState"></th>
+					<th sda-name="daemonExecutionState" sda-label-key="executionState"></th>
+					<th sda-name="actions" sda-fixed="true" sda-exportable="false"
+						sda-label="{{i18n('admin-portal-messages.views-common-column-actions')}}"></th>
 				</tr>
 			</thead>
 			<tbody>
 				<tr>
-					<td>{{i18n(ctrl.getDaemonTypeLabel(rowData.type))}}</td>
+					<td sda-exporter="ctrl.getDaemonTypeLabel(rowData.type)">{{ctrl.getDaemonTypeLabel(rowData.type)}}</td>
 					<td sda-data-type="dateTime"
 						style="text-align: center; white-space: nowrap;"></td>
 					<td sda-data-type="dateTime"
 						style="text-align: center; white-space: nowrap;"></td>
-					<td>{{(rowData.running) ?
-						i18n('admin-portal-messages.views-daemons-status-column-running')
-						:
-						i18n('admin-portal-messages.views-daemons-status-column-stopped')}}</td>
+					<td sda-exporter="ctrl.getDaemonStatus(rowData)">{{ctrl.getDaemonStatus(rowData)}}</td>
 					<td></td>
 					<td></td>
 					<td style="white-space: nowrap; text-align: center;"><a

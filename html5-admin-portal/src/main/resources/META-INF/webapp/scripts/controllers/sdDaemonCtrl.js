@@ -12,49 +12,56 @@
  * @author Aditya.Gaikwad
  */
 
-'use strict';
-
 (function() {
+	'use strict';
 
-	//Closures for our dependencies injected by the DI subsystem.
-	var _sdViewUtilService, _sdUserService, _sdDaemonService, _eventBus;
+	angular.module('admin-ui').controller('sdDaemonCtrl',
+			[ 'sdDaemonService', controller ]);
 
-	var controller = function(sdViewUtilService, sdUserService,
-			sdDaemonService, $http, eventBus) {
-		_sdViewUtilService = sdViewUtilService;
-		_sdUserService = sdUserService;
-		_sdDaemonService = sdDaemonService, _eventBus = eventBus;
+	var _sdDaemonService;
+
+	/*
+	 * 
+	 */
+	function controller(sdDaemonService) {
+		_sdDaemonService = sdDaemonService;
 
 		this.initialize();
 
 		this.data = {};
 		this.title = "Daemons";
 
-		this.columnSelector = "admin"; //TODO
-
-		//TODO refactor
-		this.daemonType = new Object();
-		this.daemonType['event.daemon'] = "admin-portal-messages.views-daemons-eventDaemon-label";
-		this.daemonType['mail.trigger'] = "admin-portal-messages.views-daemons-mailDaemon-label";
-		this.daemonType['criticality.daemon'] = "admin-portal-messages.views-daemons-criticalityDaemon-label";
-		this.daemonType['reporting.daemon'] = "admin-portal-messages.views-daemons-reportingDaemon-label";
-		this.daemonType['system.daemon'] = "admin-portal-messages.views-daemons-systemDaemon-label";
-		this.daemonType['timer.trigger'] = "admin-portal-messages.views-daemons-timeDaemon-label";
-		this.daemonType['business_calendar.daemon'] = "admin-portal-messages.views-daemons-businessCalendarDaemon-label";
-
-		this.getDaemonTypeLabel = function(key) {
-			return this.daemonType[key];
-		}
-
-		this.fetchDaemons = function() {
-			this.data = sdDaemonService.fetchDaemons();
-			return this.data;
-		}
-
+		this.columnSelector = "admin"; // TODO
 	}
 
+	/*
+	 * 
+	 */
+	controller.prototype.getDaemonTypeLabel = function(key) {
+		return _sdDaemonService.getDaemonTypeLabel(key);
+	}
+
+	/*
+	 * 
+	 */
+	controller.prototype.getDaemonStatus = function(daemon) {
+		return _sdDaemonService.getDaemonStatus(daemon);
+	}
+
+	/*
+	 * 
+	 */
+	controller.prototype.fetchDaemons = function() {
+		this.data = _sdDaemonService.fetchDaemons();
+		return this.data;
+	}
+
+	/*
+	 * 
+	 */
 	controller.prototype.initialize = function() {
-		this.daemonDataTable = null; // This will be set to underline data table instance automatically	
+		this.daemonDataTable = null; // This will be set to underline data
+		// table instance automatically
 	}
 
 	/*
@@ -62,7 +69,7 @@
 	 */
 	controller.prototype.refresh = function() {
 		this.daemonDataTable.refresh(true);
-		//Refresh for sda-mode local is not working
+		// Refresh for sda-mode local is not working
 	};
 
 	/*
@@ -70,15 +77,10 @@
 	 */
 	controller.prototype.toggleDaemonAction = function(daemonItem) {
 		if (daemonItem.running) {
-			_sdDaemonService.stopDaemon(daemonItem.type);
+			return _sdDaemonService.stopDaemon(daemonItem.type);
 		} else {
-			_sdDaemonService.startDaemon(daemonItem.type);
+			return _sdDaemonService.startDaemon(daemonItem.type);
 		}
 	};
-
-	angular.module('admin-ui').controller(
-			'sdDaemonCtrl',
-			[ 'sdViewUtilService', 'sdUserService', 'sdDaemonService', '$http',
-					'eventBus', controller ]);
 
 })();
