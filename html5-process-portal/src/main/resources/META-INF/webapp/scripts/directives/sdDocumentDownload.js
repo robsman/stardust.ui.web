@@ -38,7 +38,7 @@
 		/**
 		 * 
 		 */
-		this.downloadDocument = function(res) {
+		DocumentDownloadController.prototype.downloadDocument = function(res) {
 			var REST_BASE_URL = "services/rest/portal/documents";
 			var self = this;
 			window.location = sdUtilService.getRootUrl() + "/" + REST_BASE_URL
@@ -51,7 +51,7 @@
 		/**
 		 * 
 		 */
-		this.setShowDocumentDownload = function() {
+		DocumentDownloadController.prototype.setShowDocumentDownload = function() {
 			var self = this;
 			if($attrs.sdaDocumentId != undefined && $attrs.sdaDocumentName != undefined){
 		    var documentId = $parse($attrs.sdaDocumentId);
@@ -69,7 +69,7 @@
 		/**
 		 * 
 		 */
-		this.downloadDocumentClose = function() {
+		DocumentDownloadController.prototype.downloadDocumentClose = function() {
 			var self = this;
 			delete self.documentDownload;
 		};

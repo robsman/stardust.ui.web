@@ -47,108 +47,153 @@ import com.google.gson.Gson;
 
 @Component
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class DocumentSearchServiceBean {
+public class DocumentSearchServiceBean
+{
 
-	private static final Logger trace = LogManager
-			.getLogger(DocumentSearchServiceBean.class);
+   private static final Logger trace = LogManager
+         .getLogger(DocumentSearchServiceBean.class);
 
-	@Resource
-	private DocumentSearchUtils documentSearchUtils;
+   @Resource
+   private DocumentSearchUtils documentSearchUtils;
 
-	/**
-	 * @param serviceName
-	 * @param searchValue
-	 * @return
-	 */
-	public String searchUsers(String searchValue) {
-		List<User> users = documentSearchUtils.searchUsers(searchValue, true,
-				20);
-		List<UserDTO> userWrappers = new ArrayList<UserDTO>();
-		for (User user : users) {
-			UserDTO dto = new UserDTO();
-			dto.setId(user.getId());
-			dto.setName(UserUtils.getUserDisplayLabel(user));
-			userWrappers.add(dto);
-		}
+   /**
+    * @param serviceName
+    * @param searchValue
+    * @return
+    */
+   public String searchUsers(String searchValue)
+   {
+      List<User> users = documentSearchUtils.searchUsers(searchValue, true, 20);
+      List<UserDTO> userWrappers = new ArrayList<UserDTO>();
+      for (User user : users)
+      {
+         UserDTO dto = new UserDTO();
+         dto.setId(user.getId());
+         dto.setName(UserUtils.getUserDisplayLabel(user));
+         userWrappers.add(dto);
+      }
 
-		QueryResultDTO resultDTO = new QueryResultDTO();
-		resultDTO.list = userWrappers;
-		resultDTO.totalCount = userWrappers.size();
+      QueryResultDTO resultDTO = new QueryResultDTO();
+      resultDTO.list = userWrappers;
+      resultDTO.totalCount = userWrappers.size();
 
-		Gson gson = new Gson();
-		return gson.toJson(resultDTO);
-	}
+      Gson gson = new Gson();
+      return gson.toJson(resultDTO);
+   }
 
-	public String createDocumentSearchFilterAttributes() {
-		return documentSearchUtils.getFilterAttributes();
-	}
+   /**
+    * @return
+    */
+   public String createDocumentSearchFilterAttributes()
+   {
+      return documentSearchUtils.getFilterAttributes();
+   }
 
-	public QueryResultDTO performSearch(Options options,
-			DocumentSearchCriteriaDTO documentSearchAttributes) {
-		QueryResult<Document> docs = documentSearchUtils.performSearch(options,
-				documentSearchAttributes);
-		return buildDocumentSearchResult(docs);
+   public QueryResultDTO performSearch(Options options,
+         DocumentSearchCriteriaDTO documentSearchAttributes)
+   {
+      QueryResult<Document> docs = documentSearchUtils.performSearch(options,
+            documentSearchAttributes);
+      return buildDocumentSearchResult(docs);
 
-	}
+   }
+   
+   /**
+    * 
+    * @param documentId
+    * @return
+    */
+   public QueryResultDTO getProcessInstancesFromDocument(String documentId)
+   {
+      List<ProcessInstanceDTO> processList = documentSearchUtils
+            .getProcessInstancesFromDocument(documentId);
+      QueryResultDTO resultDTO = new QueryResultDTO();
+      resultDTO.list = processList;
+      resultDTO.totalCount = processList.size();
+      return resultDTO;
 
-	public QueryResultDTO getProcessInstancesFromDocument(String documentId) {
-		List<ProcessInstanceDTO> processList = documentSearchUtils
-				.getProcessInstancesFromDocument(documentId);
-		QueryResultDTO resultDTO = new QueryResultDTO();
-		resultDTO.list = processList;
-		resultDTO.totalCount = processList.size();
-		return resultDTO;
+   }
+   
+   /**
+    * 
+    * @param docs
+    * @return
+    */
+   private QueryResultDTO buildDocumentSearchResult(QueryResult<Document> docs)
+   {
+      List<DocumentSearchResultDTO> list = new ArrayList<DocumentSearchResultDTO>();
 
-	}
+      for (Document doc : docs)
+      {
+         DocumentSearchResultDTO docSearchResultDTO = new DocumentSearchResultDTO(doc);
+         list.add(docSearchResultDTO);
+      }
 
-	private QueryResultDTO buildDocumentSearchResult(QueryResult<Document> docs) {
-		List<DocumentSearchResultDTO> list = new ArrayList<DocumentSearchResultDTO>();
+      QueryResultDTO resultDTO = new QueryResultDTO();
+      resultDTO.list = list;
+      resultDTO.totalCount = list.size();
 
-		for (Document doc : docs) {
-			DocumentSearchResultDTO docSearchResultDTO = new DocumentSearchResultDTO(
-					doc);
-			list.add(docSearchResultDTO);
-		}
+      return resultDTO;
 
-		QueryResultDTO resultDTO = new QueryResultDTO();
-		resultDTO.list = list;
-		resultDTO.totalCount = list.size();
+   }
+   
+   /**
+    * 
+    * @param documentOwner
+    * @return
+    */
+   public UserDTO getUserDetails(String documentOwner)
+   {
+      User user = UserUtils.getUser(documentOwner);
+      UserDTO userDTO = DTOBuilder.build(user, UserDTO.class);
+      userDTO.setName(UserUtils.getUserDisplayLabel(user));
+      userDTO.setUserImageURI(MyPicturePreferenceUtils.getUsersImageURI(user));
+      return userDTO;
+   }
 
-		return resultDTO;
+   /**
+    * 
+    * @param documentId
+    * @return
+    * @throws ResourceNotFoundException
+    */
+   public QueryResultDTO getDocumentVersions(String documentId)
+         throws ResourceNotFoundException
+   {
+      List<DocumentVersionDTO> docVersions = documentSearchUtils
+            .getDocumentVersions(documentId);
 
-	}
+      QueryResultDTO resultDTO = new QueryResultDTO();
+      resultDTO.list = docVersions;
+      resultDTO.totalCount = docVersions.size();
 
-	public UserDTO getUserDetails(String documentOwner) {
-		User user = UserUtils.getUser(documentOwner);
-		UserDTO userDTO = DTOBuilder.build(user, UserDTO.class);
-		userDTO.setName(UserUtils.getUserDisplayLabel(user));
-		userDTO.setUserImageURI(MyPicturePreferenceUtils.getUsersImageURI(user));
-		return userDTO;
-	}
+      return resultDTO;
+   }
 
-	public QueryResultDTO getDocumentVersions(String documentId)
-			throws ResourceNotFoundException {
-		List<DocumentVersionDTO> docVersions = documentSearchUtils
-				.getDocumentVersions(documentId);
+   /**
+    * 
+    * @return
+    */
+   public QueryResultDTO loadAvailableProcessDefinitions()
+   {
+      List<SelectItemDTO> processDefns = documentSearchUtils
+            .loadAvailableProcessDefinitions();
+      QueryResultDTO resultDTO = new QueryResultDTO();
+      resultDTO.list = processDefns;
+      resultDTO.totalCount = processDefns.size();
+      return resultDTO;
+   }
 
-		QueryResultDTO resultDTO = new QueryResultDTO();
-		resultDTO.list = docVersions;
-		resultDTO.totalCount = docVersions.size();
-
-		return resultDTO;
-	}
-
-	public QueryResultDTO loadAvailableProcessDefinitions() {
-		List<SelectItemDTO> processDefns = documentSearchUtils
-				.loadAvailableProcessDefinitions();
-		QueryResultDTO resultDTO = new QueryResultDTO();
-		resultDTO.list = processDefns;
-		resultDTO.totalCount = processDefns.size();
-		return resultDTO;
-	}
-
-	public InfoDTO attachDocumentsToProcess(long processOid, String documentId)
-			throws ResourceNotFoundException {
-		return documentSearchUtils.attachDocuments(processOid, documentId);
-	}
+   /**
+    * 
+    * @param processOid
+    * @param documentId
+    * @return
+    * @throws ResourceNotFoundException
+    */
+   public InfoDTO attachDocumentsToProcess(long processOid, String documentId)
+         throws ResourceNotFoundException
+   {
+      return documentSearchUtils.attachDocuments(processOid, documentId);
+   }
 }

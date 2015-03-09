@@ -18,24 +18,26 @@
 	angular.module("workflow-ui").controller(
 			'sdDocumentSearchViewCtrl',
 			[ '$q', '$scope', 'sdDocumentSearchService', 'sdViewUtilService',
-					'sdUtilService', DocumentSearchViewCtrl ]);
+					'sdUtilService', 'sdMimeTypeService', DocumentSearchViewCtrl ]);
 
 	/*
 	 * 
 	 */
 	function DocumentSearchViewCtrl($q, $scope, sdDocumentSearchService,
-			sdViewUtilService, sdUtilService) {
+			sdViewUtilService, sdUtilService, sdMimeTypeService) {
 		// variable for search result table
 		this.documentSearchResult = {};
 		this.documentVersions = {};
 		this.dataTable = null;
 		this.columnSelector = 'admin';
 		this.docVersionsdataTable = null;
+		
+		this.exportFileName = new Date();
 
 		/**
 		 * 
 		 */
-		this.searchAttributes = function() {
+		DocumentSearchViewCtrl.prototype.searchAttributes = function() {
 			var self = this;
 			sdDocumentSearchService
 					.searchAttributes()
@@ -56,7 +58,7 @@
 		/**
 		 * 
 		 */
-		this.defineData = function() {
+		DocumentSearchViewCtrl.prototype.defineData = function() {
 			var self = this;
 			self.query = {
 				documentSearchCriteria : {
@@ -83,7 +85,7 @@
 		/**
 		 * 
 		 */
-		this.initialize = function() {
+		DocumentSearchViewCtrl.prototype.initialize = function() {
 			this.defineData();
 			this.searchAttributes();
 		}
@@ -93,7 +95,7 @@
 		/**
 		 * 
 		 */
-		this.resetSearchCriteria = function() {
+		DocumentSearchViewCtrl.prototype.resetSearchCriteria = function() {
 			var self = this;
 			self.defineData();
 			self.fileTypes = self.typicalFileTypes;
@@ -109,14 +111,14 @@
 		/**
 		 * 
 		 */
-		this.refresh = function() {
+		DocumentSearchViewCtrl.prototype.refresh = function() {
 			this.dataTable.refresh(true);
 		};
 
 		/**
 		 * 
 		 */
-		this.performSearch = function(options) {
+		DocumentSearchViewCtrl.prototype.performSearch = function(options) {
 			var deferred = $q.defer();
 			var self = this;
 			if (self.selectedAuthors != undefined
@@ -140,7 +142,7 @@
 		/**
 		 * 
 		 */
-		this.getAuthors = function(searchVal) {
+		DocumentSearchViewCtrl.prototype.getAuthors = function(searchVal) {
 			var self = this;
 			if (searchVal.length > 0) {
 				searchVal = searchVal.concat("%");
@@ -159,7 +161,7 @@
 		/**
 		 * 
 		 */
-		this.validateDateRange = function(fromDate, toDate) {
+		DocumentSearchViewCtrl.prototype.validateDateRange = function(fromDate, toDate) {
 			if (!sdUtilService.isEmpty(fromDate)
 					&& !sdUtilService.isEmpty(toDate)) {
 				if (fromDate > toDate) {
@@ -172,7 +174,7 @@
 		/**
 		 * 
 		 */
-		this.openAttachToProcessDialog = function(rowData) {
+		DocumentSearchViewCtrl.prototype.openAttachToProcessDialog = function(rowData) {
 			var self = this;
 			self.processDefns = {};
 			self.showAttachToProcessDialog = true;
@@ -194,7 +196,7 @@
 		/**
 		 * 
 		 */
-		this.openProcessDialog = function(rowData) {
+		DocumentSearchViewCtrl.prototype.openProcessDialog = function(rowData) {
 			var self = this;
 			self.showProcessDialog = true;
 			sdDocumentSearchService.fetchProcessDialogData(rowData.documentId)
@@ -208,7 +210,7 @@
 		/**
 		 * 
 		 */
-		this.openProcessHistory = function(oid) {
+		DocumentSearchViewCtrl.prototype.openProcessHistory = function(oid) {
 			this.processDialog.close();
 			sdViewUtilService.openView("processInstanceDetailsView",
 					"processInstanceOID=" + oid, {
@@ -219,7 +221,7 @@
 		/**
 		 * 
 		 */
-		this.openDocumentView = function(documentId) {
+		DocumentSearchViewCtrl.prototype.openDocumentView = function(documentId) {
 			var viewKey = "documentOID=" + documentId + "_instance";
 			viewKey = window.btoa(viewKey);
 			sdViewUtilService.openView("documentView",
@@ -231,7 +233,7 @@
 		/**
 		 * 
 		 */
-		this.openUserDetails = function(documentOwner) {
+		DocumentSearchViewCtrl.prototype.openUserDetails = function(documentOwner) {
 			var self = this;
 			sdDocumentSearchService.getUserDetails(documentOwner).then(
 					function(data) {
@@ -246,7 +248,7 @@
 		/**
 		 * 
 		 */
-		this.validateSearchCriteria = function() {
+		DocumentSearchViewCtrl.prototype.validateSearchCriteria = function() {
 			var self = this;
 			var error = false;
 
@@ -282,7 +284,7 @@
 		/**
 		 * 
 		 */
-		this.getFileTypes = function() {
+		DocumentSearchViewCtrl.prototype.getFileTypes = function() {
 			var self = this;
 			if (self.query.documentSearchCriteria.showAll) {
 				self.fileTypes = self.allRegisteredMimeFileTypes;
@@ -294,7 +296,7 @@
 		/**
 		 * 
 		 */
-		this.constructFinalText = function() {
+		DocumentSearchViewCtrl.prototype.constructFinalText = function() {
 			var self = this;
 			if (self.advancedTextSearch.allWords != undefined
 					&& self.advancedTextSearch.allWords != 0) {
@@ -374,7 +376,7 @@
 		/**
 		 * 
 		 */
-		this.onConfirmFromAdvanceText = function(res) {
+		DocumentSearchViewCtrl.prototype.onConfirmFromAdvanceText = function(res) {
 			var self = this;
 			self.query.documentSearchCriteria.containingText = self.advancedTextSearch.finalText;
 			delete self.advancedTextSearch;
@@ -385,7 +387,7 @@
 		/**
 		 * 
 		 */
-		this.onCancelFromAdvanceText = function(res) {
+		DocumentSearchViewCtrl.prototype.onCancelFromAdvanceText = function(res) {
 			var self = this;
 			delete self.advancedTextSearch;
 			console.log("dialog state: cancelled");
@@ -394,7 +396,7 @@
 		/**
 		 * 
 		 */
-		this.onConfirmFromAttachToProcess = function(res) {
+		DocumentSearchViewCtrl.prototype.onConfirmFromAttachToProcess = function(res) {
 			var self = this;
 			if (self.processType == "SPECIFY" && self.specifiedProcess == null) {
 				self.showRequiredProcessId = true;
@@ -413,7 +415,7 @@
 		/**
 		 * 
 		 */
-		this.attachDocumentsToProcess = function(processOID, documentId) {
+		DocumentSearchViewCtrl.prototype.attachDocumentsToProcess = function(processOID, documentId) {
 			var self = this;
 			sdDocumentSearchService.attachDocumentsToProcess(processOID,
 					documentId).then(function(data) {
@@ -428,7 +430,7 @@
 		 * 
 		 */
 
-		this.checkForProcessIdEmpty = function() {
+		DocumentSearchViewCtrl.prototype.checkForProcessIdEmpty = function() {
 			var self = this;
 			if (self.processType == "SPECIFY"
 					&& self.specifiedProcess == undefined) {
@@ -439,7 +441,7 @@
 		/**
 		 * 
 		 */
-		this.advancedFileTypes = function() {
+		DocumentSearchViewCtrl.prototype.advancedFileTypes = function() {
 			var self = this;
 			self.query.documentSearchCriteria.selectFileTypeAdvance = true;
 			self.query.documentSearchCriteria.selectedFileTypes = [];
@@ -448,7 +450,7 @@
 		/**
 		 * 
 		 */
-		this.setShowAdvancedTextSearch = function() {
+		DocumentSearchViewCtrl.prototype.setShowAdvancedTextSearch = function() {
 			var self = this;
 			self.advancedTextSearch = {};
 			self.showAdvancedTextSearch = true;
@@ -458,7 +460,7 @@
 		/**
 		 * 
 		 */
-		this.pickFromList = function() {
+		DocumentSearchViewCtrl.prototype.pickFromList = function() {
 			var self = this;
 			self.query.documentSearchCriteria.selectFileTypeAdvance = false;
 			self.query.documentSearchCriteria.selectedFileTypes = [ self.fileTypes[0].value ];
@@ -467,24 +469,15 @@
 		/**
 		 * 
 		 */
-		this.getGlyphiconClass = function(iconPath) {
-			if (iconPath == 'document-image.png') {
-				return "glyphicon glyphicon-export";
-			}
-			if (iconPath == 'document-code.png') {
-				return "glyphicon glyphicon-music";
-			}
-			if (iconPath == 'tree_document.gif') {
-				return "glyphicon glyphicon-th";
-			}
-			if (iconPath == 'document-music.png')
-				return "glyphicon glyphicon-music";
+		DocumentSearchViewCtrl.prototype.getGlyphiconClass = function(mimeType) {
+			return sdMimeTypeService.getIcon(mimeType);
+			 
 		};
 
 		/**
 		 * 
 		 */
-		this.getDocumentVersions = function(options) {
+		DocumentSearchViewCtrl.prototype.getDocumentVersions = function(options) {
 			var self = this;
 			return self.documentVersions;
 		};
@@ -492,7 +485,7 @@
 		/**
 		 * 
 		 */
-		this.setShowDocumentVersions = function(documentId, documentName) {
+		DocumentSearchViewCtrl.prototype.setShowDocumentVersions = function(documentId, documentName) {
 			var self = this;
 			sdDocumentSearchService.getDocumentVersions(documentId).then(
 					function(data) {
@@ -507,7 +500,7 @@
 		/**
 		 * 
 		 */
-		this.onCloseDocumentVersions = function(res) {
+		DocumentSearchViewCtrl.prototype.onCloseDocumentVersions = function(res) {
 			var self = this;
 			self.documentVersions = {};
 		};
@@ -515,7 +508,7 @@
 		/**
 		 * 
 		 */
-		this.openUserDetailsFromVersionHistory = function(documentOwner) {
+		DocumentSearchViewCtrl.prototype.openUserDetailsFromVersionHistory = function(documentOwner) {
 			var self = this;
 			sdDocumentSearchService.getUserDetails(documentOwner).then(
 					function(data) {

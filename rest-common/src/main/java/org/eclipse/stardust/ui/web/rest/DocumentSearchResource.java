@@ -46,218 +46,308 @@ import com.google.gson.JsonObject;
 
 @Component
 @Path("/documentSearch")
-public class DocumentSearchResource {
-	private static final Logger trace = LogManager
-			.getLogger(DocumentSearchResource.class);
+public class DocumentSearchResource
+{
+   private static final Logger trace = LogManager.getLogger(DocumentSearchResource.class);
 
-	@Resource
-	private DocumentSearchServiceBean documentSearchService;
+   @Resource
+   private DocumentSearchServiceBean documentSearchService;
 
-	@Resource
-	private ServiceFactoryUtils serviceFactoryUtils;
+   @Resource
+   private ServiceFactoryUtils serviceFactoryUtils;
 
-	@Context
-	private HttpServletRequest httpRequest;
+   @Context
+   private HttpServletRequest httpRequest;
 
-	@GET
-	@Path("/searchUsers/{searchValue}")
-	public Response searchUsers(@PathParam("searchValue") String searchValue) {
-		if (StringUtils.isNotEmpty(searchValue)) {
-			try {
-				String result = documentSearchService.searchUsers(searchValue);
-				return Response.ok(result, MediaType.TEXT_PLAIN_TYPE).build();
-			} catch (MissingResourceException mre) {
-				return Response.status(Status.NOT_FOUND).build();
-			} catch (Exception e) {
-				return Response.status(Status.BAD_REQUEST).build();
-			}
-		} else {
-			return Response.status(Status.FORBIDDEN).build();
-		}
-	}
+   /**
+    * 
+    * @param searchValue
+    * @return
+    */
+   @GET
+   @Path("/searchUsers/{searchValue}")
+   public Response searchUsers(@PathParam("searchValue") String searchValue)
+   {
+      if (StringUtils.isNotEmpty(searchValue))
+      {
+         try
+         {
+            String result = documentSearchService.searchUsers(searchValue);
+            return Response.ok(result, MediaType.TEXT_PLAIN_TYPE).build();
+         }
+         catch (MissingResourceException mre)
+         {
+            return Response.status(Status.NOT_FOUND).build();
+         }
+         catch (Exception e)
+         {
+            return Response.status(Status.BAD_REQUEST).build();
+         }
+      }
+      else
+      {
+         return Response.status(Status.FORBIDDEN).build();
+      }
+   }
+   
+   /**
+    * 
+    * @return
+    */
+   @GET
+   @Path("/searchAttributes")
+   public Response searchAttributes()
+   {
 
-	@GET
-	@Path("/searchAttributes")
-	public Response searchAttributes() {
+      try
+      {
+         String result = documentSearchService.createDocumentSearchFilterAttributes();
+         return Response.ok(result, MediaType.TEXT_PLAIN_TYPE).build();
+      }
+      catch (MissingResourceException mre)
+      {
+         return Response.status(Status.NOT_FOUND).build();
+      }
+      catch (Exception e)
+      {
+         return Response.status(Status.BAD_REQUEST).build();
+      }
+   }
+   
+   /**
+    * 
+    * @param skip
+    * @param pageSize
+    * @param orderBy
+    * @param orderByDir
+    * @param postData
+    * @return
+    */
+   @POST
+   @Path("/searchByCriteria")
+   public Response searchByCritera(@QueryParam("skip") @DefaultValue("0") Integer skip,
+         @QueryParam("pageSize") @DefaultValue("8") Integer pageSize,
+         @QueryParam("orderBy") @DefaultValue("documentName") String orderBy,
+         @QueryParam("orderByDir") @DefaultValue("desc") String orderByDir,
+         String postData)
+   {
 
-		try {
-			String result = documentSearchService
-					.createDocumentSearchFilterAttributes();
-			return Response.ok(result, MediaType.TEXT_PLAIN_TYPE).build();
-		} catch (MissingResourceException mre) {
-			return Response.status(Status.NOT_FOUND).build();
-		} catch (Exception e) {
-			return Response.status(Status.BAD_REQUEST).build();
-		}
-	}
+      try
+      {
+         Options options = new Options(pageSize, skip, orderBy,
+               "desc".equalsIgnoreCase(orderByDir));
+         populateFilters(options, postData);
 
-	@POST
-	@Path("/searchByCriteria")
-	public Response searchByCritera(
-			@QueryParam("skip") @DefaultValue("0") Integer skip,
-			@QueryParam("pageSize") @DefaultValue("8") Integer pageSize,
-			@QueryParam("orderBy") @DefaultValue("documentName") String orderBy,
-			@QueryParam("orderByDir") @DefaultValue("desc") String orderByDir,
-			String postData) {
+         DocumentSearchCriteriaDTO documentSearchAttributes = getDocumentSearchCriteria(postData);
 
-		try {
-			Options options = new Options(pageSize, skip, orderBy,
-					"desc".equalsIgnoreCase(orderByDir));
-			populateFilters(options, postData);
+         QueryResultDTO result = documentSearchService.performSearch(options,
+               documentSearchAttributes);
+         Gson gson = new Gson();
+         return Response.ok(gson.toJson(result), MediaType.TEXT_PLAIN_TYPE).build();
+      }
+      catch (MissingResourceException mre)
+      {
+         return Response.status(Status.NOT_FOUND).build();
+      }
+      catch (Exception e)
+      {
+         return Response.status(Status.BAD_REQUEST).build();
+      }
+   }
+   
+   /**
+    * 
+    * @param documentId
+    * @return
+    */
+   @GET
+   @Path("/loadProcessByDocument/{documentId}")
+   public Response loadProcessByDocument(@PathParam("documentId") String documentId)
+   {
+      try
+      {
 
-			DocumentSearchCriteriaDTO documentSearchAttributes = getDocumentSearchCriteria(postData);
+         QueryResultDTO resultDTO = documentSearchService
+               .getProcessInstancesFromDocument(documentId);
 
-			QueryResultDTO result = documentSearchService.performSearch(
-					options, documentSearchAttributes);
-			Gson gson = new Gson();
-			return Response.ok(gson.toJson(result), MediaType.TEXT_PLAIN_TYPE)
-					.build();
-		} catch (MissingResourceException mre) {
-			return Response.status(Status.NOT_FOUND).build();
-		} catch (Exception e) {
-			return Response.status(Status.BAD_REQUEST).build();
-		}
-	}
+         Gson gson = new Gson();
+         return Response.ok(gson.toJson(resultDTO), MediaType.TEXT_PLAIN_TYPE).build();
+      }
+      catch (MissingResourceException mre)
+      {
+         return Response.status(Status.NOT_FOUND).build();
+      }
+      catch (Exception e)
+      {
+         return Response.status(Status.BAD_REQUEST).build();
+      }
+   }
+ 
+   /**
+    * 
+    * @param documentOwner
+    * @return
+    */
+   @GET
+   @Path("/loadUserDetails/{documentOwner}")
+   public Response getUserDetails(@PathParam("documentOwner") String documentOwner)
+   {
+      try
+      {
 
-	@GET
-	@Path("/loadProcessByDocument/{documentId}")
-	public Response loadProcessByDocument(
-			@PathParam("documentId") String documentId) {
-		try {
+         UserDTO user = documentSearchService.getUserDetails(documentOwner);
 
-			QueryResultDTO resultDTO = documentSearchService
-					.getProcessInstancesFromDocument(documentId);
+         Gson gson = new Gson();
+         return Response.ok(gson.toJson(user), MediaType.TEXT_PLAIN_TYPE).build();
+      }
+      catch (MissingResourceException mre)
+      {
+         return Response.status(Status.NOT_FOUND).build();
+      }
+      catch (Exception e)
+      {
+         return Response.status(Status.BAD_REQUEST).build();
+      }
+   }
+   
+   /**
+    * 
+    * @param documentId
+    * @return
+    */
+   @GET
+   @Path("/loadDocumentVersions/{documentId}")
+   public Response getDocumentVersions(@PathParam("documentId") String documentId)
+   {
 
-			Gson gson = new Gson();
-			return Response.ok(gson.toJson(resultDTO),
-					MediaType.TEXT_PLAIN_TYPE).build();
-		} catch (MissingResourceException mre) {
-			return Response.status(Status.NOT_FOUND).build();
-		} catch (Exception e) {
-			return Response.status(Status.BAD_REQUEST).build();
-		}
-	}
+      try
+      {
 
-	@GET
-	@Path("/loadUserDetails/{documentOwner}")
-	public Response getUserDetails(
-			@PathParam("documentOwner") String documentOwner) {
-		try {
+         QueryResultDTO resultDTO = documentSearchService.getDocumentVersions(documentId);
 
-			UserDTO user = documentSearchService.getUserDetails(documentOwner);
+         Gson gson = new Gson();
+         return Response.ok(gson.toJson(resultDTO), MediaType.TEXT_PLAIN_TYPE).build();
+      }
+      catch (MissingResourceException mre)
+      {
+         return Response.status(Status.NOT_FOUND).build();
+      }
+      catch (Exception e)
+      {
+         return Response.status(Status.BAD_REQUEST).build();
+      }
 
-			Gson gson = new Gson();
-			return Response.ok(gson.toJson(user), MediaType.TEXT_PLAIN_TYPE)
-					.build();
-		} catch (MissingResourceException mre) {
-			return Response.status(Status.NOT_FOUND).build();
-		} catch (Exception e) {
-			return Response.status(Status.BAD_REQUEST).build();
-		}
-	}
+   }
+   /**
+    * 
+    * @return
+    */
+   @GET
+   @Path("/loadAvailableProcessDefinitions")
+   public Response loadAvailableProcessDefinitions()
+   {
+      try
+      {
 
-	@GET
-	@Path("/loadDocumentVersions/{documentId}")
-	public Response getDocumentVersions(
-			@PathParam("documentId") String documentId) {
+         QueryResultDTO resultDTO = documentSearchService
+               .loadAvailableProcessDefinitions();
+         Gson gson = new Gson();
+         return Response.ok(gson.toJson(resultDTO), MediaType.TEXT_PLAIN_TYPE).build();
+      }
+      catch (MissingResourceException mre)
+      {
+         return Response.status(Status.NOT_FOUND).build();
+      }
+      catch (Exception e)
+      {
+         return Response.status(Status.BAD_REQUEST).build();
+      }
+   }
+   
+   
+   /**
+    * 
+    * @param processOID
+    * @param documentId
+    * @return
+    */
+   @GET
+   @Path("/attachDocumentsToProcess/{processOID}/{documentId}")
+   public Response attachDocumentsToProcess(@PathParam("processOID") String processOID,
+         @PathParam("documentId") String documentId)
+   {
+      try
+      {
 
-		try {
+         InfoDTO result = documentSearchService.attachDocumentsToProcess(
+               Long.parseLong(processOID), documentId);
+         Gson gson = new Gson();
+         return Response.ok(gson.toJson(result), MediaType.TEXT_PLAIN_TYPE).build();
+      }
+      catch (MissingResourceException mre)
+      {
+         return Response.status(Status.NOT_FOUND).build();
+      }
+      catch (Exception e)
+      {
+         return Response.status(Status.BAD_REQUEST).build();
+      }
+   }
 
-			QueryResultDTO resultDTO = documentSearchService
-					.getDocumentVersions(documentId);
+   /**
+    * Populate the options with the post data.
+    * 
+    * @param options
+    * @param postData
+    * @return
+    */
+   private Options populateFilters(Options options, String postData)
+   {
+      JsonMarshaller jsonIo = new JsonMarshaller();
+      JsonObject postJSON = jsonIo.readJsonObject(postData);
 
-			Gson gson = new Gson();
-			return Response.ok(gson.toJson(resultDTO),
-					MediaType.TEXT_PLAIN_TYPE).build();
-		} catch (MissingResourceException mre) {
-			return Response.status(Status.NOT_FOUND).build();
-		} catch (Exception e) {
-			return Response.status(Status.BAD_REQUEST).build();
-		}
+      // For filter
+      JsonObject filters = postJSON.getAsJsonObject("filters");
+      if (null != filters)
+      {
+         DocumentSearchFilterDTO docSearchFilterDTO = new Gson().fromJson(
+               postJSON.get("filters"), DocumentSearchFilterDTO.class);
 
-	}
+         options.filter = docSearchFilterDTO;
+      }
+      return options;
+   }
 
-	@GET
-	@Path("/loadAvailableProcessDefinitions")
-	public Response loadAvailableProcessDefinitions() {
-		try {
+   /**
+    * 
+    * @param postData
+    * @return
+    */
+   private DocumentSearchCriteriaDTO getDocumentSearchCriteria(String postData)
+   {
+      DocumentSearchCriteriaDTO documentSearchCriteria = null;
 
-			QueryResultDTO resultDTO = documentSearchService
-					.loadAvailableProcessDefinitions();
-			Gson gson = new Gson();
-			return Response.ok(gson.toJson(resultDTO),
-					MediaType.TEXT_PLAIN_TYPE).build();
-		} catch (MissingResourceException mre) {
-			return Response.status(Status.NOT_FOUND).build();
-		} catch (Exception e) {
-			return Response.status(Status.BAD_REQUEST).build();
-		}
-	}
+      JsonMarshaller jsonIo = new JsonMarshaller();
+      JsonObject postJSON = jsonIo.readJsonObject(postData);
 
-	@GET
-	@Path("/attachDocumentsToProcess/{processOID}/{documentId}")
-	public Response attachDocumentsToProcess(
-			@PathParam("processOID") String processOID,
-			@PathParam("documentId") String documentId) {
-		try {
+      JsonObject documentSearchCriteriaJson = postJSON
+            .getAsJsonObject("documentSearchCriteria");
 
-			InfoDTO result = documentSearchService.attachDocumentsToProcess(
-					Long.parseLong(processOID), documentId);
-			Gson gson = new Gson();
-			return Response.ok(gson.toJson(result), MediaType.TEXT_PLAIN_TYPE)
-					.build();
-		} catch (MissingResourceException mre) {
-			return Response.status(Status.NOT_FOUND).build();
-		} catch (Exception e) {
-			return Response.status(Status.BAD_REQUEST).build();
-		}
-	}
+      String documentSearchCriteriaJsonStr = documentSearchCriteriaJson.toString();
+      if (StringUtils.isNotEmpty(documentSearchCriteriaJsonStr))
+      {
+         try
+         {
+            documentSearchCriteria = DTOBuilder.buildFromJSONDocumentCriteria(
+                  documentSearchCriteriaJsonStr, DocumentSearchCriteriaDTO.class);
+         }
+         catch (Exception e)
+         {
+            trace.error("Error in Deserializing filter JSON", e);
+         }
+      }
 
-	/**
-	 * Populate the options with the post data.
-	 * 
-	 * @param options
-	 * @param postData
-	 * @return
-	 */
-	private Options populateFilters(Options options, String postData) {
-		JsonMarshaller jsonIo = new JsonMarshaller();
-		JsonObject postJSON = jsonIo.readJsonObject(postData);
-
-		// For filter
-		JsonObject filters = postJSON.getAsJsonObject("filters");
-		if (null != filters) {
-			DocumentSearchFilterDTO docSearchFilterDTO = new Gson().fromJson(
-					postJSON.get("filters"), DocumentSearchFilterDTO.class);
-
-			options.filter = docSearchFilterDTO;
-		}
-		return options;
-	}
-
-	private DocumentSearchCriteriaDTO getDocumentSearchCriteria(String postData) {
-		DocumentSearchCriteriaDTO documentSearchCriteria = null;
-
-		JsonMarshaller jsonIo = new JsonMarshaller();
-		JsonObject postJSON = jsonIo.readJsonObject(postData);
-
-		JsonObject documentSearchCriteriaJson = postJSON
-				.getAsJsonObject("documentSearchCriteria");
-
-		String documentSearchCriteriaJsonStr = documentSearchCriteriaJson
-				.toString();
-		if (StringUtils.isNotEmpty(documentSearchCriteriaJsonStr)) {
-			try {
-				documentSearchCriteria = DTOBuilder
-						.buildFromJSONDocumentCriteria(
-								documentSearchCriteriaJsonStr,
-								DocumentSearchCriteriaDTO.class);
-			} catch (Exception e) {
-				trace.error("Error in Deserializing filter JSON", e);
-			}
-		}
-
-		return documentSearchCriteria;
-	}
+      return documentSearchCriteria;
+   }
 
 }

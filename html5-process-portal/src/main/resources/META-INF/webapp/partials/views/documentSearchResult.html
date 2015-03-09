@@ -4,7 +4,8 @@
 		sda-selectable="multiple"
 		sda-column-selector="{{docSearchViewCtrl.columnSelector}}"
 		sda-sortable="true"
-		sda-sort-by="{name : 'documentName', dir : 'desc'}">
+		sda-sort-by="{name : 'documentName', dir : 'desc'}"
+		sda-exports="true" sda-exports-file-name="export-{{docSearchViewCtrl.exportFileName}}">
 		<thead
 			sda-i18n-scope="views-common-messages.views-documentSearchView-documentSearchTable-column">
 			<tr>
@@ -54,7 +55,7 @@
 			<tr>
 				<td>
 					<table><tbody><tr style="vertical-align: top;"><td>
-					<i class="{{docSearchViewCtrl.getGlyphiconClass(rowData.iconPath)}}"></i></td>
+					<i class="{{docSearchViewCtrl.getGlyphiconClass(rowData.fileType)}}"></i></td>
 					<td><a href="#" ng-click="bpmCommon.stopEvent($event); docSearchViewCtrl.openDocumentView(rowData.documentId);">
 						<div sd-tool-tip
 							sda-tool-tip-url="'plugins/html5-process-portal/partials/views/documentDetailToolTip.html'"
@@ -108,7 +109,7 @@
 		 sda-title="{{docSearchViewCtrl.infoData.messageType}}"
 		 sda-scope="this"
 		 sda-template="plugins/html5-process-portal/partials/views/attachDocumentResult.html"
-		 >
+		 sda-cancel-action-label="{{i18n('views-common-messages.common-ok')}}">
 	</div>
 	<div sd-dialog sda-modal="true"
 		 sda-show="docSearchViewCtrl.showUserDetails"

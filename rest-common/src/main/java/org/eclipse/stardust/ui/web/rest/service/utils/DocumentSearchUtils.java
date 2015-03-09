@@ -105,6 +105,10 @@ public class DocumentSearchUtils {
 	private static final Logger trace = LogManager
 			.getLogger(DocumentSearchUtils.class);
 
+	/**
+	 * 
+	 * @return
+	 */
 	public String getFilterAttributes() {
 
 		messageCommonBean = MessagesViewsCommonBean.getInstance();
@@ -166,6 +170,11 @@ public class DocumentSearchUtils {
 		return gson.toJson(dsfaDTO);
 	}
 
+	/**
+	 * 
+	 * @param mimeType
+	 * @return
+	 */
 	private SelectItemDTO getMimeTypeInSelectItemFormat(MIMEType mimeType) {
 		return new SelectItemDTO(mimeType.getType(), getI18nLabel(mimeType));
 	}
@@ -180,6 +189,10 @@ public class DocumentSearchUtils {
 		return label;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public ArrayList<SelectItemDTO> getAllRegisteredMimeFileTypes() {
 
 		DocumentHandlersRegistryBean documentHandlersRegistryBean = DocumentHandlersRegistryBean
@@ -200,7 +213,12 @@ public class DocumentSearchUtils {
 		}
 		return fileTypes;
 	}
-
+    /**
+     * 
+     * @param options
+     * @param documentSearchAttributes
+     * @return
+     */
 	public QueryResult<Document> performSearch(Options options,
 			DocumentSearchCriteriaDTO documentSearchAttributes) {
 		DocumentQuery query = new DocumentQuery();
@@ -310,7 +328,12 @@ public class DocumentSearchUtils {
 
 		return docs;
 	}
-
+    
+	/**
+	 * 
+	 * @param query
+	 * @param filters
+	 */
 	private void applyFiltering(Query query, FilterDTO filters) {
 		DocumentSearchFilterDTO documentSearchFilter = (DocumentSearchFilterDTO) filters;
 
@@ -379,7 +402,12 @@ public class DocumentSearchUtils {
 
 		query.where(filter);
 	}
-
+	
+    /**
+     * 
+     * @param documentId
+     * @return
+     */
 	public List<ProcessInstanceDTO> getProcessInstancesFromDocument(
 			String documentId) {
 		ProcessInstanceQuery query = new ProcessInstanceQuery();
@@ -403,7 +431,12 @@ public class DocumentSearchUtils {
 		return processList;
 
 	}
-
+    
+	/**
+	 * 
+	 * @param query
+	 * @param options
+	 */
 	private void addSortCriteria(Query query, Options options) {
 		if (COL_DOCUMENT_NAME.equals(options.orderBy)) {
 			query.orderBy(DocumentQuery.NAME, options.asc);
@@ -457,12 +490,24 @@ public class DocumentSearchUtils {
 		}
 		return documentVersionList;
 	}
-
+    
+	/**
+	 * 
+	 * @param searchValue
+	 * @param onlyActive
+	 * @param maxMatches
+	 * @return
+	 */
 	public List<User> searchUsers(String searchValue, boolean onlyActive,
 			int maxMatches) {
 		return UserUtils.searchUsers(searchValue, true, 20);
 	}
-
+    
+	/**
+	 * 
+	 * @param selectedValues
+	 * @return
+	 */
 	private boolean checkIfAllOptionSelect(List<String> selectedValues) {
 		for (String value : selectedValues) {
 			if ("All".equalsIgnoreCase(value)) {
@@ -471,7 +516,11 @@ public class DocumentSearchUtils {
 		}
 		return false;
 	}
-
+    
+	/**
+	 * 
+	 * @return
+	 */
 	public List<SelectItemDTO> loadAvailableProcessDefinitions() {
 		List<View> openViews = PortalApplication.getInstance().getOpenViews();
 		List<SelectItemDTO> allProcessDefns = new ArrayList<SelectItemDTO>();
@@ -496,7 +545,14 @@ public class DocumentSearchUtils {
 		}
 		return allProcessDefns;
 	}
-
+    
+	/**
+     * 
+     * @param processOid
+     * @param documentId
+     * @return
+     * @throws ResourceNotFoundException
+     */
 	public InfoDTO attachDocuments(Long processOid, String documentId)
 			throws ResourceNotFoundException {
 		InfoDTO infoDTO = null;
