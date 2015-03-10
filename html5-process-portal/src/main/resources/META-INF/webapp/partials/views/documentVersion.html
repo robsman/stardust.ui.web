@@ -1,9 +1,10 @@
 <div>
-<table sd-data-table="{{docSearchViewCtrl.docVersionsdataTable}}"
+<table sd-data-table="docSearchViewCtrl.docVersionsdataTable"
 		sd-data="docSearchViewCtrl.getDocumentVersions(params)"  sda-mode="local" sda-no-pagination="true"		
 		sda-sortable="true"
 		sda-sort-by="{name : 'versionNo', dir : 'desc'}" 
-		sda-column-selector="{{docSearchViewCtrl.columnSelector}}">
+		sda-column-selector="{{docSearchViewCtrl.columnSelector}}"
+		sda-exports="false">
 		<thead
 			sda-i18n-scope="views-common-messages.views-documentView-documentVersion">
 			<tr>

@@ -27,7 +27,7 @@
 								ng-options="opt.value as opt.label for opt in docSearchViewCtrl.processDefns.list"></select>
 						</div>
 						<div>
-							<input ng-model="docSearchViewCtrl.specifiedProcess" sd-validate="long" name="specifiedProcess" ng-change="docSearchViewCtrl.checkForProcessIdEmpty()" maxlength="30" size="30" type="number">
+							<input ng-disabled="docSearchViewCtrl.processType == 'SELECT'" ng-model="docSearchViewCtrl.specifiedProcess" sd-validate="long" name="specifiedProcess" ng-change="docSearchViewCtrl.checkForProcessIdEmpty()" maxlength="30" size="30" type="number">
 							<div class="msg-error" ng-show="docSearchViewCtrl.showRequiredProcessId">{{i18n('views-common-messages.views-joinProcessDialog-inputProcess-message')}}</div>
 							<div class="msg-error" ng-show="docSearchViewCtrl.attachProcess.specifiedProcess.$error.number || docSearchViewCtrl.attachProcess.specifiedProcess.$error.validate">{{i18n('html5-common.converter-number-error')}}</div>
 						</div>

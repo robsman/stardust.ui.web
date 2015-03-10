@@ -28,11 +28,13 @@
 		// variable for search result table
 		this.documentSearchResult = {};
 		this.documentVersions = {};
-		this.dataTable = null;
+		this.docSrchRsltTable = null;
 		this.columnSelector = 'admin';
 		this.docVersionsdataTable = null;
 		
 		this.exportFileName = new Date();
+		
+		this.rowSelection = null;
 
 		/**
 		 * 
@@ -112,7 +114,7 @@
 		 * 
 		 */
 		DocumentSearchViewCtrl.prototype.refresh = function() {
-			this.dataTable.refresh(true);
+			this.docSrchRsltTable.refresh(true);
 		};
 
 		/**
@@ -171,27 +173,6 @@
 			return true;
 		}
 
-		/**
-		 * 
-		 */
-		DocumentSearchViewCtrl.prototype.openAttachToProcessDialog = function(rowData) {
-			var self = this;
-			self.processDefns = {};
-			self.showAttachToProcessDialog = true;
-			self.documentId = rowData.documentId;
-			sdDocumentSearchService.getAvailableProcessDefns().then(
-					function(data) {
-						self.processDefns.list = data.list;
-						self.processDefns.totalCount = data.totalCount;
-						if (self.processDefns.totalCount == 0) {
-							self.processDefns.disabledSelectProcess = true;
-							self.processType = "SPECIFY";
-						} else {
-							self.processType = "SELECT";
-						}
-
-					});
-		};
 
 		/**
 		 * 
@@ -275,7 +256,7 @@
 			} else {
 				self.showDocumentSearchResult = true;
 				self.showTableData = true;
-				if (self.dataTable != null) {
+				if (self.docSrchRsltTable != null) {
 					self.refresh();
 				}
 			}
@@ -392,6 +373,29 @@
 			delete self.advancedTextSearch;
 			console.log("dialog state: cancelled");
 		};
+		
+		/**
+		 * 
+		 */
+		DocumentSearchViewCtrl.prototype.openAttachToProcessDialog = function(rowData) {
+			var self = this;
+			self.processDefns = {};
+			self.showAttachToProcessDialog = true;
+			self.documentId = rowData.documentId;
+			sdDocumentSearchService.getAvailableProcessDefns().then(
+					function(data) {
+						self.processDefns.list = data.list;
+						self.processDefns.totalCount = data.totalCount;
+						if (self.processDefns.totalCount == 0) {
+							self.processDefns.disabledSelectProcess = true;
+							self.processType = "SPECIFY";
+						} else {
+							self.processType = "SELECT";
+							self.selectedProcess = self.processDefns.list[0].value;
+						}
+
+					});
+		};
 
 		/**
 		 * 
@@ -407,9 +411,21 @@
 				self.selectedProcess = self.specifiedProcess;
 			}
 
-			this
-					.attachDocumentsToProcess(self.selectedProcess,
+			this.attachDocumentsToProcess(self.selectedProcess,
 							self.documentId);
+			delete self.documentId;
+			delete self.selectedProcess;
+			delete self.specifiedProcess;
+		};
+		
+		/**
+		 * 
+		 */
+		DocumentSearchViewCtrl.prototype.onCloseFromAttachToProcess = function(res){
+			var self = this;
+			delete self.documentId;
+			delete self.selectedProcess;
+			delete self.specifiedProcess;
 		};
 
 		/**
