@@ -314,9 +314,8 @@ public static List<ProcessDescriptor> createProcessDescriptors(Map<String, Objec
             			   documents = (List<DocumentInfo>) descriptorValue;
             		   }
             		   ProcessDocumentDescriptor docDescriptor = new ProcessDocumentDescriptor(
-            				   dataPathDetails.getId(),
-            				   dataPathDetails.getData(), null, documents);
-
+            		         entry.getKey(),
+            		         I18nUtils.getDataPathName(entry.getValue()), null, documents);
             		   processDescriptors.add(docDescriptor);
             	   } else {
             		   continue;
