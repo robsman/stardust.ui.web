@@ -77,7 +77,7 @@
 		<tbody>
 			<tr>
 				<td style="white-space: nowrap;" sda-exporter="rowData.activity.name">
-					<a  ng-if="rowData.activatable" href="#" ng-click="bpmCommon.stopEvent($event); worklistCtrl.$activateWorkItem(rowData);">
+					<a  ng-if="rowData.activatable" href="#" ng-click="bpmCommon.stopEvent($event); worklistCtrl.$activateWorkItem(rowData);" title="{{i18n('processportal.views-worklistPanel-tooltip-openActivity')}}" class="button-link tbl-tool-link">
 						{{rowData.activity.name}}
 					</a>
 					<span ng-if="!rowData.activatable" ng-bind="rowData.activity.name"> </span>
