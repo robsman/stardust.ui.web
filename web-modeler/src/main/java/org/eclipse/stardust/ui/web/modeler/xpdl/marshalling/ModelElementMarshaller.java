@@ -2119,6 +2119,10 @@ public class ModelElementMarshaller implements ModelMarshaller
                   dataJson.addProperty(
                         ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY, fullId);
                }
+               else
+               {
+                  dataJson.addProperty(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY, "");
+               }
             }
             else if (dataTypeId.equals(ModelerConstants.DOCUMENT_DATA_TYPE_KEY))
             {
