@@ -21,6 +21,7 @@ public class ModelerErrorClass extends ErrorCase
    private static final long serialVersionUID = -2758652922569722703L;
    public final static ModelerErrorClass UNABLE_TO_DELETE_REFERENCED_MODEL = new ModelerErrorClass("ModelerError.01001");
    public final static ModelerErrorClass MODEL_ID_ALREADY_EXISTS = new ModelerErrorClass("ModelerError.01002");
+   public final static ModelerErrorClass MODEL_ID_INVALID = new ModelerErrorClass("ModelerError.01003");
    // add other errors
 
    public ModelerErrorClass(String id)

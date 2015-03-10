@@ -2950,9 +2950,15 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       if (modelJson.has(ModelerConstants.ID_PROPERTY))
       {
          String id = modelJson.get(ModelerConstants.ID_PROPERTY).getAsString();
-         if (getModelBuilderFacade().getModelManagementStrategy().getModels().containsKey(id))
+         if (getModelBuilderFacade().getModelManagementStrategy().getModels()
+               .containsKey(id))
          {
             throw new ModelerException(ModelerErrorClass.MODEL_ID_ALREADY_EXISTS);
+         }
+
+         if (!StringUtils.isValidIdentifier(id))
+         {
+            throw new ModelerException(ModelerErrorClass.MODEL_ID_INVALID);
          }
       }
 
@@ -2997,7 +3003,6 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
          }
       }
    }
-
 
    /**
     *
