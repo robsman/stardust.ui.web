@@ -308,8 +308,6 @@ public static List<ProcessDescriptor> createProcessDescriptors(Map<String, Objec
             		   List<DocumentInfo> documents = new ArrayList<DocumentInfo>();
             		   if(descriptorValue instanceof DocumentInfo){
             			   documents.add((DocumentInfo) descriptorValue);
-
-
             		   }else if(descriptorValue instanceof List){
             			   documents = (List<DocumentInfo>) descriptorValue;
             		   }
