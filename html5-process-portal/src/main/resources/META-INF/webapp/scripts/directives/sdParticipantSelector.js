@@ -16,163 +16,124 @@
 (function(){
 	'use strict';
 
-	angular.module('bpm-common').directive('sdParticipantSelector', ['$parse', '$q', 'sdUtilService', 'sdActivityInstanceService', 
+	angular.module('bpm-common').directive('sdParticipantSelector', ['$q', 'sdUtilService', 
 	                                                                 ParticipantSelectorDirective]);
 
 	/*
 	 * Directive class
 	 */
-	function ParticipantSelectorDirective($parse, $q, sdUtilService, sdActivityInstanceService) {
-		
-		var SUPPORTED_SELECTOR_TYPES = {
-				USER: "user",
-				PARTICIPANT: "participant"
-		};
-		
-		var DEFAULT_SELECTOR = SUPPORTED_SELECTOR_TYPES.PARTICIPANT;
+	function ParticipantSelectorDirective($q, sdUtilService) {
 		
 		var directiveDefObject = {
 				restrict : 'AE',
+				require: ['sdData'],
 				scope: {  // Creates a new sub scope
-					dataSelected: "=sdaSelectedMatches",
-					allowMultiple: "=sdaAllowMultiple",
-					activities: "=sdaActivities",
-					showAll: "=sdaShowAll",
-					participantType: "=sdaParticipantType"
+					dataSelected: '=sdaSelectedData',
+					allowMultiple: '=sdaMultiple'
 				},
 				transclude: true,
-				templateUrl: 'plugins/html5-process-portal/scripts/directives/partials/participantSelector.html',
-				controller: ParticipantSelectorController
+				template: '<div sd-auto-complete'
+						  + ' sda-matches="participantSelectorCtlr.data"' 
+				          + ' sda-match-str="participantSelectorCtlr.matchVal"' 
+				          + ' sda-change="participantSelectorCtlr.getMatches(matchVal)"' 
+				          + ' sda-text-property="{{participantSelectorCtlr.textProperty}}"' 
+				          + ' sda-container-class="sd-ac-container"' 
+				          + ' sda-item-hot-class="sd-ac-item-isActive"'
+				          + ' sda-selected-matches="dataSelected"'
+				          + ' sda-allow-multiple="allowMultiple"'
+				          + ' sda-tag-pre-class="participantSelectorCtlr.tagPreMapper(item,index)"'
+				          + ' sda-item-pre-class="participantSelectorCtlr.tagPreMapper(item,index)">'
+				          + '</div>',
+				link: function(scope, element, attrs, ctrl) {
+					new ParticipantSelectorLink(scope, element, attrs, ctrl);
+				}
 			};
 		
 		/*
-		 * Controller class
+		 * Link class
 		 */
-		function ParticipantSelectorController($attrs, $scope, $element) {
+		function ParticipantSelectorLink(scope, element, attrs, ctrl) {
+			
 			var self = this;
-
+			
+			var sdData = ctrl[0];
+			
+			scope.participantSelectorCtlr = self;
+			
 			initialize();
-			
-			ParticipantSelectorController.prototype.safeApply = function() {
-				sdUtilService.safeApply($scope);
-			};
-			
-			$scope.participantSelectorCtlr = self;
 
-			// Private methods
+			ParticipantSelectorLink.prototype.safeApply = function() {
+				sdUtilService.safeApply(scope);
+			};
+
 			/*
 			 * Initialize the component
 			 */
 			function initialize() {
 				// Make sure i18n is available in the current scope
-				if (!angular.isDefined($scope.i18n)) {
-					$scope.i18n = $scope.$parent.i18n;
+				if (!angular.isDefined(scope.i18n)) {
+					scope.i18n = scope.$parent.i18n;
 				}
-				
-				// Determine selector type (user/participant)
-				if (angular.isDefined($attrs.sdaSelectorType) 
-						&& (SUPPORTED_SELECTOR_TYPES.USER === $attrs.sdaSelectorType || SUPPORTED_SELECTOR_TYPES.PARTICIPANT === $attrs.sdaSelectorType)) {
-					self.selectorType = $attrs.sdaSelectorType;
-				} else {
-					self.selectorType = DEFAULT_SELECTOR;
-				}
-				
-				if (self.selectorType === SUPPORTED_SELECTOR_TYPES.PARTICIPANT) {
-					self.fetchData = fetchParticipants;
-				} else {
-					self.fetchData = fetchUsers;
-				}
-				
-				self.dataTable = {};
-				
-				// Initialize scope values for participant selector
-				self.data=[];
-				self.matchVal="";
-				self.textProperty = "name";
-				self.tagPreMapper = tagPreMapper;
-				
-				/*Retrieve data from the service*/
-				self.getMatches = function(v){
-			      var options = {};
-			      var dataPromise = self.fetchData(options);
-			      dataPromise.then(function(data) {
-			    	  self.data = data;
-			      });
-			    };
-			    
-			    $scope.$watch("activities", function(showAllVal) {
-			    	self.activities = $scope.activities;
-			    });
 
-			    $scope.$watch("showAll", function(showAllVal) {
-			    	self.showAll = showAllVal;
-			    });
-			    
-			    $scope.$watch("participantType", function(participantTypeVal) {
-			    	self.participantType = participantTypeVal;
-			    });
+				self.fetchData = fetchParticipantData;
+
+				// Initialize scope values for participant selector
+				self.data = [];
+				self.matchVal = '';
+				self.textProperty = 'name';
+				self.tagPreMapper = tagPreMapper;
+
+				/* Retrieve data from the service */
+				self.getMatches = function(v) {
+					var options = {};
+					var dataPromise = self.fetchData(options);
+					dataPromise.then(function(data) {
+						self.data = data;
+					}, function() {
+						self.data = [];
+					});
+				};
+				
+				if (!angular.isDefined(scope.dataSelected)) {
+					scope.dataSelected = [];
+				}
 			}
 			
-			function fetchParticipants(options) {
-				var activities = self.activities.map(function(val) {
-				    return val.oid;
-				});
-				return performFetch('getParticipants', self.matchVal, self.participantType, self.showAll, activities);
+			function tagPreMapper(item, index) {
+				var tagClass = '';
+
+				switch (item.type) {
+				case 'USER':
+					tagClass = 'sd-particpant-img-tag-user';
+					break;
+				case 'ROLE':
+					tagClass = 'sd-particpant-img-tag-role';
+					break;
+				case 'ORGANIZATION':
+					tagClass = 'sd-particpant-img-tag-org';
+					break;
+				case 'DEPARTMENT':
+					tagClass = 'sd-particpant-img-tag-dept';
+					break;
+				case 'USERGROUP':
+					tagClass = 'sd-particpant-img-tag-ugrp';
+					break;
+				}
+				return tagClass;
 			};
 			
-			function fetchUsers(options) {
-				var activities = self.activities.map(function(val) {
-				    return val.oid;
-				});
-				return performFetch('getUsers', self.matchVal, self.participantType, self.showAll, activities);
-			};
-			
-			function performFetch(method, matchVal, participantType, showAll, activities) {
+			function fetchParticipantData() {
 				var deferred = $q.defer();
-				var searchParam = {
-						searchText: matchVal,
-						participantType: participantType,
-						limitedSearch: !showAll,
-						activities: activities, 
-						disableAdministrator: false,
-						excludeUserType: false
-					};
-				
-				var query = {};
-				query.data = searchParam;
-				
-				sdActivityInstanceService[method](query).then(function(data) {
+				var dataResult = sdData.retrieveData(self.matchVal);
+				dataResult.then(function(data) {
 					deferred.resolve(data);
 					self.safeApply();
-				}, function(result) {
-					deferred.reject(result);
+				}, function(error) {
+					deferred.reject(error);
 				});
 
 				return deferred.promise;
 			};
-			
-			function tagPreMapper(item,index){
-			      var tagClass="";
-			      
-			      switch(item.type){
-			        case "USER":
-			          tagClass="sd-particpant-img-tag-user";
-			          break;
-			        case "ROLE":
-			          tagClass="sd-particpant-img-tag-role";
-			          break;
-			        case "ORGANIZATION":
-			          tagClass="sd-particpant-img-tag-org";
-			          break;
-			        case "DEPARTMENT":
-			          tagClass="sd-particpant-img-tag-dept";
-			          break;
-			        case "USERGROUP":
-			          tagClass="sd-particpant-img-tag-ugrp";
-			          break;
-			      }
-			      return tagClass;
-		    };
 		}
 		
 		return directiveDefObject;

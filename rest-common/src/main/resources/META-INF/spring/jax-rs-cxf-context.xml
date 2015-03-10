@@ -24,6 +24,7 @@
          <bean class="org.eclipse.stardust.ui.web.rest.PreferenceResource" />
          <bean class="org.eclipse.stardust.ui.web.rest.UserGroupResource" />
          <bean class="org.eclipse.stardust.ui.web.rest.DocumentSearchResource" />
+         <bean class="org.eclipse.stardust.ui.web.rest.UserResource" />
 		</jaxrs:serviceBeans>
 		<jaxrs:providers>
             <bean class="org.eclipse.stardust.ui.web.rest.exception.PortalRestExceptionMapper"/>

@@ -5,7 +5,7 @@
 		</div>
 	</div>
 	
-	<div ng-show="delegateActivityController.searchParticipantSectionVisible">
+	<div ng-if="delegateActivityController.searchParticipantSectionVisible">
 		<div style="float:right;"><a class="action-link " ng-click="delegateActivityController.showSelectParticipantSection()">{{i18n('views-common-messages.delegation-search-toggleLinkText')}} >></a></div>
 		<div style="clear:both;"><input ng-model="delegateActivityController.searchAllParticipant" type="checkbox" /> &nbsp; <span>{{i18n('views-common-messages.delegation-searchAllUserRoles')}}</span></div>
 		<br/>
@@ -17,13 +17,10 @@
 				</tr>
 				<tr>
 					<td class="sd-participant-selector">
-				      <div sd-participant-selector 
-				      		sda-selected-matches="delegateActivityController.participantDataSelected"
-				      		sda-selector-type="participant" 
-				      		sda-allow-multiple="false"
-				      		sda-activities="activityList"
-				      		sda-show-all="delegateActivityController.searchAllParticipant"
-				      		sda-participant-type="delegateActivityController.participantType.value">
+				      <div sd-participant-selector
+				      		sda-selected-data="delegateActivityController.participantDataSelected"
+				      		sda-multiple="true"
+				      		sd-data="delegateActivityController.fetchParticipants(params)">
 				      </div>
 					</td>
 					<td>
@@ -37,7 +34,7 @@
 		</div>
 	</div>
 	
-	<div ng-show="!delegateActivityController.searchParticipantSectionVisible">
+	<div ng-if="!delegateActivityController.searchParticipantSectionVisible">
 		<div style="float:right;"><a class="action-link" ng-click="delegateActivityController.showSearchParticipantSection()">{{i18n('views-common-messages.delegation-select-toggleLinkText')}} >></a></div>
 		<div style="clear:both;"><input ng-model="delegateActivityController.searchAllParticipant" type="checkbox" /> &nbsp; <span>{{i18n('views-common-messages.delegation-showAllUserRoles')}}</span></div>
 		<br/>

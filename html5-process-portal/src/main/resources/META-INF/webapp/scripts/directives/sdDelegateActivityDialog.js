@@ -91,11 +91,13 @@
 			    
 			    $scope.$watch("delegateActivityController.searchAllParticipant", function(activitiesVal) {
 			    	if (angular.isDefined(self.participantDataTable) && angular.isDefined(self.participantDataTable.refresh)) {
-			    		self.participantDataTable.refresh();
+			    		if (!self.searchParticipantSectionVisible) {
+			    			self.participantDataTable.refresh();
+			    		}
 			    	}
 			    });
 			    
-			    self.fetchParticipants = fetchPage;
+			    self.fetchParticipants = fetchParticipants;
 			    self.showSearchParticipantSection = showSearchParticipantSection;
 			    self.showSelectParticipantSection = showSelectParticipantSection;
 			    self.onOpenDialog = onOpenDialog;
@@ -243,10 +245,9 @@
 			/*
 			 * 
 			 */
-			function fetchPage(options) {
+			function fetchParticipants(options) {
 
-				var query = angular.extend({}, this.query);
-				query.options = options;
+				var query = {};
 
 				var deferred = $q.defer();
 				self.participants = {};
@@ -264,8 +265,14 @@
 					return val.oid;
 				});
 
+				var matchVal = '';
+
+				if (self.searchParticipantSectionVisible) {
+					matchVal = options;
+				}
+
 				query.data = {
-					searchText : '', // Fetch all
+					searchText : matchVal, // Fetch all
 					participantType : 'All',
 					limitedSearch : !self.searchAllParticipant,
 					activities : activities,
@@ -278,7 +285,11 @@
 					self.participants.list = data;
 					self.participants.totalCount = data.length;
 
-					deferred.resolve(self.participants);
+					if (self.searchParticipantSectionVisible) {
+						deferred.resolve(data);
+					} else {
+						deferred.resolve(self.participants);
+					}
 
 					self.safeApply();
 				}, function(result) {
@@ -290,7 +301,7 @@
 				});
 
 				return deferred.promise;
-			}
+			};
 
 			/*
 			 * 
