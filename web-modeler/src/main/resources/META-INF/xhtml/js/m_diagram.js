@@ -651,7 +651,7 @@ define(
 					this.dataPropertiesPanel = m_dataPropertiesPanel.initialize(this);
 					this.eventPropertiesPanel = m_eventPropertiesPanel.initialize(this);
 					this.gatewayPropertiesPanel = m_gatewayPropertiesPanel.initialize(this);
-					this.annotationPropertiesPanel = m_annotationPropertiesPanel.initialize(this);
+					this.annotationPropertiesPanel = m_annotationPropertiesPanel.initialize(this); 
 					this.swimlanePropertiesPanel = m_swimlanePropertiesPanel.initialize(this);
 					this.controlFlowPropertiesPanel = m_controlFlowPropertiesPanel.initialize(this);
 					this.dataFlowPropertiesPanel = m_dataFlowPropertiesPanel.initialize(this);
@@ -979,7 +979,7 @@ define(
 								m_utils.debug("Changed symbol to:");
 								m_utils.debug(symbol);
 								symbol.refresh();
-								if (symbol.type == m_constants.SWIMLANE_SYMBOL) {
+								if (symbol.type == m_constants.SWIMLANE_SYMBOL && (command.isUndo || command.isRedo)) {
 									// When swimlane co-ordinates change in
 									// Undo/Redo,
 									// PoolSymbol needs adjustment.
@@ -1025,12 +1025,10 @@ define(
 										&& conn.isDataFlow()) {
 									// When dataMapping changes in Undo/Redo, only checked mapping is available in
 									// change array, Update the dataMapping for unchecked dataMapping
-									if (obj.changes.modified[i].modelElement.inputDataMapping == null
-											&& conn.modelElement.inputDataMapping != null) {
-										conn.modelElement.inputDataMapping = null;
-									} else if (obj.changes.modified[i].modelElement.outputDataMapping == null
-											&& conn.modelElement.outputDataMapping != null) {
-										conn.modelElement.outputDataMapping = null;
+								  var dataMappings = obj.changes.modified[i].modelElement.dataMappings;
+									if ((dataMappings == null || dataMappings.length == 0) 
+											&& conn.modelElement.dataMappings != null && conn.modelElement.dataMappings.length > 0) {
+										conn.modelElement.dataMappings = null;
 									}
 								}
 								conn.applyChanges(obj.changes.modified[i]);

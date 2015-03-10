@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Anoop.Nair (SunGard CSA LLC) - initial API and implementation and/or initial documentation
+ *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
 
 /**
@@ -16,15 +16,17 @@
 (function(){
 	'use strict';
 
-	angular.module('bpm-common').directive('sdWorklist', 
-			['$parse', 'sdUtilService', 'sdViewUtilService', 'sdWorklistService', 
-			 'sdActivityInstanceService', 'sdProcessDefinitionService', WorklistDirective]);
+	angular.module('bpm-common').directive('sdWorklist',
+			['$parse', '$q', 'sdUtilService', 'sdViewUtilService', 'sdLoggerService', 'sdPreferenceService', 'sdWorklistService',
+			 'sdActivityInstanceService', 'sdProcessDefinitionService', 'sdCriticalityService', 'sdStatusService','$filter', WorklistDirective]);
 
 	/*
-	 * 
+	 *
 	 */
-	function WorklistDirective($parse, sdUtilService, sdViewUtilService, sdWorklistService, 
-			sdActivityInstanceService, sdProcessDefinitionService) {
+	function WorklistDirective($parse, $q, sdUtilService, sdViewUtilService, sdLoggerService, sdPreferenceService, sdWorklistService,
+			sdActivityInstanceService, sdProcessDefinitionService, sdCriticalityService, sdStatusService ,$filter) {
+
+		var trace = sdLoggerService.getLogger('bpm-common.sdWorklist');
 
 		var directiveDefObject = {
 			restrict : 'AE',
@@ -42,7 +44,7 @@
 		};
 
 		/*
-		 * 
+		 *
 		 */
 		function processRawMarkup(elem, attr) {
 			// Process Trivial Data Column
@@ -55,7 +57,7 @@
 				var cols = elem.find('[sda-column="TRIVIAL_DATA"]');
 				cols.remove();
 			}
-			
+
 			// Toolbar
 			var toolbar = elem.prev();
 			var items = toolbar.find('[sda-column="TRIVIAL_DATA"]');
@@ -63,13 +65,12 @@
 		}
 
 		/*
-		 * 
+		 *
 		 */
 		function WorklistCompiler(scope, element, attr, ctrl) {
 			var self = this;
-			var scopeToUse = scope.$parent;
 
-			this.initialize(attr, scopeToUse);
+			this.initialize(attr, scope, $filter);
 
 			/*
 			 * This needs to be defined here as it requires access to scope
@@ -84,12 +85,24 @@
 		}
 
 		/*
-		 * 
+		 *
 		 */
-		WorklistCompiler.prototype.initialize = function(attr, scopeToUse) {
+		WorklistCompiler.prototype.initialize = function(attr, scope, $filter) {
+			var scopeToUse = scope.$parent;
+			var self = this;
+
 			// Define data
 			this.worklist = {};
 			this.dataTable = null; // Handle to data table instance, to be set later
+
+			//Abort Activity Data
+			this.showAbortActivityDialog = false;
+			this.activitiesToAbort = [];
+
+			//All processes with activities
+			this.allAccessibleProcesses = [];
+			this.allAvailableCriticalities = [];
+			this.availableStates = [];
 
 			// Process Query
 			if (!attr.sdaQuery) {
@@ -111,35 +124,131 @@
 			this.title = titleGetter(scopeToUse);
 
 			// Process TableHandle and then set data table instance
-			this.tableHandleExpr = attr.sdWorklist;
-			if (!this.tableHandleExpr) {
-				this.tableHandleExpr = "WorklistCompiler.dataTable";
-			}
+			this.tableHandleExpr = 'worklistCtrl.dataTable';
 
-			var self = this;
-			var unregister = scopeToUse.$watch(this.tableHandleExpr, function(newVal, oldVal) {
+			var unregister = scope.$watch(this.tableHandleExpr, function(newVal, oldVal) {
 				if (newVal != undefined && newVal != null && newVal != oldVal) {
-					self.dataTable = newVal;
+					if (attr.sdWorklist) {
+						var assignable = $parse(attr.sdWorklist).assign;
+						if (assignable) {
+							assignable(scopeToUse, self.dataTable);
+						}
+					}
 					unregister();
 				}
 			});
 
+			if (attr.sdaInitialSelection) {
+				this.initialSelection = attr.sdaInitialSelection;
+			}
+
+			if (attr.sdaSelection) {
+				var assignable = $parse(attr.sdaSelection).assign;
+				if (assignable) {
+					this.selection = null;
+					this.selectionExpr = 'worklistCtrl.selection';
+
+					// Update parent for change in sdDataTable
+					scope.$watch(this.selectionExpr, function(newVal, oldVal) {
+						if (newVal != undefined && newVal != null && newVal != oldVal) {
+							assignable(scopeToUse, self.selection);
+						}
+					});
+
+					// Update for sdDataTable for change in parent
+					scopeToUse.$watch(attr.sdaSelection, function(newVal, oldVal) {
+						if (newVal != undefined && newVal != null && newVal != self.selection) {
+							self.selection = newVal;
+						}
+					});
+				}
+			}
+
+			if (attr.sdaPageSize) {
+				this.sdaPageSize = attr.sdaPageSize;
+			}
+
+			this.columnSelector = 'admin'; //TODO
+
+			this.exportFileName = this.query.userId || this.query.participantQId; //TODO
+
+			this.worklistPrefModule = 'ipp-workflow-perspective';
+			this.worklistPrefId = 'worklist-participant-columns' || 'worklist-process-columns'; //TODO
+			this.worklistPrefName = this.query.userId || this.query.participantQId; //TODO
+
+			this.preferenceDelegate = function(prefInfo) {
+				var preferenceStore = sdPreferenceService.getStore(prefInfo.scope, self.worklistPrefModule, self.worklistPrefId);
+
+				// Override
+				preferenceStore.marshalName = function(scope) {
+					if (scope == 'PARTITION') {
+						return 'Default';
+					}
+					return self.worklistPrefName;
+				}
+
+				return preferenceStore;
+			}
+			
+			
+			this.dirtyDataForms =[];
+
+			/**
+			 * 
+			 */
+			this.changeFormStatus = function(rowId) {
+			   var self = this;
+
+			   if (this.dirtyDataForms.indexOf(rowId) == -1) {
+			      this.dirtyDataForms.push(rowId);
+			   }
+
+			   //Auto select dirty rows
+			   var selectedRows = self.dataTable.getSelection();
+			   var matchArray   = $filter('filter')(selectedRows, { oid : rowId }, true);
+			   var isRowSelected = matchArray.length > 0;
+
+			   if(!isRowSelected){
+			      var rows = $filter('filter')(self.worklist.list, {
+			         oid : rowId
+			      }, true);
+
+			      if (rows && rows.length === 1) {
+			         selectedRows.push({oid:rows[0].oid});
+			      }
+
+			      self.dataTable.setSelection(selectedRows);
+			   }
+			}
+
+			
 			this.fetchDescriptorCols();
+			this.fetchAllProcesses();
+			this.fetchAllAvailableCriticalities();
+			this.fetchAvailableStates();
 		};
 
 		/*
-		 * 
+		 *
 		 */
 		WorklistCompiler.prototype.refresh = function() {
 			this.dataTable.refresh(true);
 		};
 		
 		/*
-		 * 
+      *
+      */
+     WorklistCompiler.prototype.cleanLocals = function() {
+         this.dirtyDataForms = [];
+     };
+
+		/*
+		 *
 		 */
 		WorklistCompiler.prototype.fetchPage = function(options) {
 			var self = this;
-			var deferred = jQuery.Deferred();
+			var deferred = $q.defer();
+			self.cleanLocals();
 
 			var query = angular.extend({}, this.query);
 			query.options = options;
@@ -147,7 +256,7 @@
 			sdWorklistService.getWorklist(query).then(function(data) {
 				self.worklist.list = data.list;
 				self.worklist.totalCount = data.totalCount;
-				
+
 				var oids = [];
 				angular.forEach(self.worklist.list, function(workItem, index){
 					if (workItem.trivial == undefined || workItem.trivial) {
@@ -161,14 +270,46 @@
 					deferred.resolve(self.worklist);
 
 					self.safeApply();
+				}, function(error) {
+					deferred.reject(error);
 				});
+			}, function(error) {
+				deferred.reject(error);
 			});
 
-			return deferred.promise();
+			return deferred.promise;
 		};
 
 		/*
-		 * 
+		 *
+		 */
+		WorklistCompiler.prototype.onSelect = function(info) {
+			// NOP
+		};
+
+		/*
+		 *
+		 */
+		WorklistCompiler.prototype.onPagination = function(info) {
+			// NOP
+		};
+
+		/*
+		 *
+		 */
+		WorklistCompiler.prototype.onColumnReorder = function(info) {
+			// NOP
+		};
+
+		/*
+		 *
+		 */
+		WorklistCompiler.prototype.onSorting = function(info) {
+			// NOP
+		};
+
+		/*
+		 *
 		 */
 		WorklistCompiler.prototype.fetchDescriptorCols = function() {
 			var self = this;
@@ -177,46 +318,79 @@
 				self.descritorCols = [];
 				angular.forEach(descriptors, function(descriptor){
 					self.descritorCols.push({
-						field: "descriptors['" + descriptor.id + "'].value",
+						id: descriptor.id,
+						field: "descriptors['" + descriptor.title + "'].value",
 						title: descriptor.title,
 						dataType: descriptor.type,
-						sortable: descriptor.sortable
+						sortable: descriptor.sortable,
+						filterable : descriptor.filterable
 					});
 				});
-				
+
 				self.ready = true;
 				self.safeApply();
 			});
 		};
 
 		/*
-		 * 
+		 *
 		 */
-		WorklistCompiler.prototype.stopEvent = function(event) {
-			sdUtilService.stopEvent(event);
+		WorklistCompiler.prototype.fetchAllProcesses = function() {
+			var self = this;
+
+			sdProcessDefinitionService.getAllProcesses(false).then(function(processes) {
+				self.allAccessibleProcesses = processes;
+			});
 		};
 
 		/*
-		 * 
+		 *
 		 */
+      WorklistCompiler.prototype.fetchAllAvailableCriticalities = function()
+      {
+         var self = this;
+         sdCriticalityService.getAllCriticalities().then(function(criticalities)
+         {
+            self.allAvailableCriticalities = criticalities;
+         });
+      };
+
+      /*
+       *
+       */
+
+      WorklistCompiler.prototype.fetchAvailableStates = function()
+      {
+         var self = this;
+         sdStatusService.getAllActivityStates().then(function(value)
+         {
+            self.availableStates = value;
+         });
+      };
+
+
+
+		/*
+       *
+       */
 		WorklistCompiler.prototype.activateWorkItem = function(workItem) {
 			sdViewUtilService.openView("activityPanel", "OID=" + workItem.oid, {"oid" : "" + workItem.oid});
 		};
 
 		/*
-		 * 
+		 *
 		 */
 		WorklistCompiler.prototype.openNotes = function(workItem) {
-			sdViewUtilService.openView("notesPanel", "oid=" + workItem.processInstance.oid, 
+			sdViewUtilService.openView("notesPanel", "oid=" + workItem.processInstance.oid,
 					{"oid": "" + workItem.processInstance.oid}, true);
 		};
 
 		/*
-		 * 
+		 *
 		 */
 		WorklistCompiler.prototype.openProcessHistory = function(workItem) {
-			sdViewUtilService.openView("processInstanceDetailsView", 
-					"processInstanceOID=" + workItem.processInstance.oid, 
+			sdViewUtilService.openView("processInstanceDetailsView",
+					"processInstanceOID=" + workItem.processInstance.oid,
 					{
 						"oid": "" + workItem.oid,
 						"processInstanceOID": "" + workItem.processInstance.oid
@@ -224,53 +398,274 @@
 			);
 		};
 
-		/*
-		 * 
+
+		/**
+		 *
 		 */
-		WorklistCompiler.prototype.complete = function(workItem) {
-			var self = this;
+		 WorklistCompiler.prototype.containsAllTrivialManualActivities = function() {
+	         var self = this;
+	         var selectedWorkItems = [];
 
-			var outData = self.worklist.trivialManualActivities[workItem.oid].inOutData;
-			var activityData = {oid: workItem.oid, outData: outData};
-			sdActivityInstanceService.completeAll([activityData]).then(function(data) {
-				self.refresh();
-			});
-		};
+	         var dataTable = self.dataTable;
+
+	         if(dataTable != null){
+	         	selectedWorkItems = dataTable.getSelection();
+	         }
+
+	         if(selectedWorkItems.length < 1){
+	            return false;
+	         }
+	         var activitiesData = [];
+	         angular.forEach(selectedWorkItems,function(workItem){
+	            var trivialActivityInfo = self.worklist.trivialManualActivities[workItem.oid];
+	            if(trivialActivityInfo){
+	               activitiesData.push(workItem.oid);
+	            }
+	         });
+
+	         if(selectedWorkItems.length == activitiesData.length){
+	            return true;
+	         }
+	         return false;
+	      };
+
+      /**
+       * 
+       */
+      WorklistCompiler.prototype.isSelectionHomogenous = function(rows) {
+
+         var firstItem = rows[0];
+
+         var matchArray = [];
+
+         angular.forEach(rows, function(row) {
+            if (row.activity.qualifiedId === firstItem.activity.qualifiedId && row.modelOID === firstItem.modelOID) {
+               matchArray.push(row);
+            }
+         });
+         
+         if(matchArray.length ===rows.length ){
+            return true;
+         }
+         
+         return false;
+      };
+      
+      /**
+       * 
+       * @param rows
+       */
+      WorklistCompiler.prototype.isSelectionDirty = function(activities) { 
+         var self = this;
+         var activitiesWithDirtyForms =[]; 
+         angular.forEach(activities,function(activity){
+    
+            if(self.dirtyDataForms.indexOf(activity.oid) > -1){
+               activitiesWithDirtyForms.push(activity);
+            }
+         });
+         
+         if(activitiesWithDirtyForms.length > 0){
+            return true;
+         }
+         
+         return false;
+      }
+	      
+	      
+		/*
+       * 
+       */
+	    WorklistCompiler.prototype.completeAll = function(res) {
+	         var self = this;
+	   
+	         self.completeActivityResult = {
+	                  error : false,
+	                  notifications : [],
+	                  nameIdMap : {}
+	         };
+	         
+	         var promise = res.promise;
+	         var selectedWorkItems = self.selectedActivity;
+            
+	         promise.then(function(){
+	            
+	            angular.forEach(selectedWorkItems,function(item){
+	               self.completeActivityResult.nameIdMap[item.oid] = item.activity.name;
+	            });
+	            
+	            if (selectedWorkItems.length > 0) {
+	               var activitiesData = [];
+	               
+	               
+	               if(self.completeDialog.confirmationType === 'dataMapping') {
+	                  //When data fields are filled in a dialog
+	                  angular.forEach(selectedWorkItems, function(workItem, index) {
+	                     var outData = self.completeDialog.outData;
+	                     var dataMappings = {};
+	                     angular.forEach( self.completeDialog.dataMappings,function(mapping){
+	                        dataMappings[mapping.id] = mapping.typeName; 
+	                     });
+	                     activitiesData.push({
+	                        oid : workItem.oid,
+	                        outData : outData,
+	                        dataMappings : dataMappings
+	                     });
+	                  });
+
+	               }else {
+	                  //When data fields are filled inline in worklist
+	                  angular.forEach(selectedWorkItems, function(workItem, index) {
+	                     var trivialActivityInfo = self.worklist.trivialManualActivities[workItem.oid];
+	                     if(trivialActivityInfo) {
+	                        var outData = trivialActivityInfo.inOutData;
+	                        var dataMappings = {};
+	                        angular.forEach( trivialActivityInfo.dataMappings,function(mapping){
+	                           dataMappings[mapping.id] = mapping.typeName; 
+	                        });
+	         
+	                        activitiesData.push({oid: workItem.oid, outData: outData , dataMappings : dataMappings});
+	                     }
+	                  });
+	               }
+
+	               if (activitiesData.length > 0 ) {
+	                  sdActivityInstanceService.completeAll(activitiesData).then(function(result) {
+	                     if(result.failure.length > 0){
+	                        self.showCompleteNotificationDialog = true;
+	                        self.completeActivityResult.notifications = result;
+	                        self.completeActivityResult.error = false;
+	                     }else if(result.success.length > 0){
+	                        self.refresh();
+	                     }
+	                  });
+	               } else {
+	                  self.dataTable.setSelection([]);
+	               }
+	            }
+	         });
+
+	      };
+		
+
+
+	      /**
+	       * 
+	       * @param workItem
+	       */
+      WorklistCompiler.prototype.openCompleteDialog = function(workItem) {
+         var self = this;
+         
+         self.selectedActivity = [];
+         self.completeDialog = {
+            confirmationType : 'single',  //single / generic / dataMapping
+            dataMappings : {},
+            outData : {}
+         }
+         self.showCompleteDialog = true;
+
+         if (angular.isDefined(workItem)) {
+
+            self.selectedActivity = [ workItem ];
+            self.completeDialog.confirmationType = 'single';
+         }
+         else {
+            var selectedWorkItems = this.dataTable.getSelection();
+            if (selectedWorkItems.length > 0) {
+               // Add rows having dirty field to selected activity
+               this.selectedActivity = selectedWorkItems;
+
+               if (this.isSelectionHomogenous(selectedWorkItems) && !this.isSelectionDirty(selectedWorkItems)) {
+                  self.completeDialog.confirmationType = 'dataMapping';
+                  var firstItem = selectedWorkItems[0];
+                  self.completeDialog.dataMappings = angular
+                           .copy(self.worklist.trivialManualActivities[firstItem.oid].dataMappings);
+                  self.completeDialog.outData =angular
+                  .copy(self.worklist.trivialManualActivities[firstItem.oid].inOutData);
+               }else{
+                  self.completeDialog.confirmationType = 'generic';
+               }
+            }
+         }
+      }
 
 		/*
-		 * 
+		 *
 		 */
-		WorklistCompiler.prototype.completeAll = function() {
-			var self = this;
-
-			// This will always be array as selection mode is 'multiple'
-			var selectedWorkItems = self.dataTable.getSelectedRows();
-			if (selectedWorkItems.length > 0) {
-				var activitiesData = [];
-				angular.forEach(selectedWorkItems, function(workItem, index){
-					var trivialActivityInfo = self.worklist.trivialManualActivities[workItem.oid];
-					if(trivialActivityInfo) {
-						var outData = trivialActivityInfo.inOutData;
-						activitiesData.push({oid: workItem.oid, outData: outData});
-					}
-				});
-
-				if (activitiesData.length > 0) {
-					sdActivityInstanceService.completeAll(activitiesData).then(function(data) {
-						self.refresh();
-					});
-				} else {
-					self.refresh();
+		WorklistCompiler.prototype.openDelegateDialog = function(workItem) {
+			this.showDelegateDialog = true;
+			if (angular.isDefined(workItem)) {
+				this.selectedActivity = [workItem];
+			} else {
+				var selectedWorkItems = this.dataTable.getSelection();
+				if (selectedWorkItems.length > 0) {
+					// TODO
+					this.selectedActivity = selectedWorkItems;
 				}
 			}
 		};
 
 		/*
-		 * 
+		 *
 		 */
-		WorklistCompiler.prototype.openDelegateDialog = function(workItem) {
-			
+		WorklistCompiler.prototype.onDelegateConfirm = function() {
+			this.refresh();
 		};
+
+		/*
+		 *
+		 */
+		WorklistCompiler.prototype.onAbortPopoverConfirm = function() {
+			this.refresh();
+		};
+
+		/*
+		 *
+		 */
+		WorklistCompiler.prototype.openAbortDialog = function(value) {
+			var self = this;
+			this.activitiesToAbort = [];
+
+			if (Array.isArray(value)) {
+				var selectedWorkItems = value;
+				if (selectedWorkItems.length < 1) {
+					trace.log("No Rows selected");
+					return;
+				}
+
+				angular.forEach(selectedWorkItems, function(workItem) {
+					self.activitiesToAbort.push(workItem.oid);
+				});
+			} else {
+				var workItem = value;
+				this.activitiesToAbort.push(workItem.oid);
+			}
+
+			this.showAbortActivityDialog = true;
+		}
+
+		/*
+		 *
+		 */
+		 WorklistCompiler.prototype.abortCompleted = function(workItem) {
+			this.refresh();
+			BridgeUtils.View.syncLaunchPanels();
+			this.activitiesToAbort = [];
+		};
+		
+		/*
+      *
+      */
+     WorklistCompiler.prototype.getDescriptorExportText = function(descriptors) {
+        var descriptorsToExport  = [];
+        
+        angular.forEach(descriptors,function(descriptor){
+           descriptorsToExport.push(descriptor.key +" : "+descriptor.value);
+        });
+        return descriptorsToExport.join(',');
+     };
+
+
 
 		return directiveDefObject;
 	}

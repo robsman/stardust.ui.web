@@ -1,0 +1,207 @@
+.tbl {
+   width: 100%;
+   color: #708090;
+}
+
+.tbl-error {
+   color: red;
+}
+
+.tbl-title {
+   font-weight: bold;
+   margin-bottom: 8px;
+}
+
+.tbl-col {
+	padding: 2px 5px 2px 5px;
+	text-align: left;
+}
+
+.tbl-hdr-col {
+    text-align: center;
+    vertical-align: bottom;
+	padding: 2px 15px 2px 10px;
+	border: none;
+	border-bottom: solid 1px #708090;
+	background: #FFFFFF;
+	font-weight: normal;
+}
+
+.tbl-hdr-col.sorting {
+	cursor: pointer;
+	background: transparent url("../images/icons/arrows-ud-10X16.png") no-repeat scroll 100% 90%;
+}
+
+.tbl-hdr-col.sorting_asc {
+	cursor: pointer;
+	background: transparent url("../images/icons/arrows-ud-d10X16.png") no-repeat scroll 100% 90%;
+}
+
+.tbl-hdr-col.sorting_desc {
+	cursor: pointer;
+	background: transparent url("../images/icons/arrows-ud-u10X16.png") no-repeat scroll 100% 90%;
+}
+
+.tbl-hdr-col-label {
+	font-weight: bold;
+	white-space: normal;
+}
+
+.tbl-col-flt-wrapper {
+	white-space: nowrap;
+	text-align: left;
+}
+
+.tbl-col-flt {
+	margin-right: 5px;
+	color: gray;
+}
+
+.tbl-col-flt-set {
+	margin-right: 5px;
+	color: black;
+}
+
+.tbl-col-flt-dlg {
+	text-align: left;
+	cursor: default;
+}
+
+.tbl-col-flt-title {
+	color: gray;
+	font-weight: normal;
+}
+
+.tbl-toolbar {
+}
+
+.tbl-toolbar-section {
+	margin-right: 8px;
+	padding-right: 3px;
+	border-right: 1px dotted gray;
+	float: left;
+}
+
+.tbl-toolbar-item {
+}
+
+.tbl-tool-link {
+	margin-right: 10px;
+	padding: 0px;
+	cursor: pointer;
+}
+
+.tbl-row {
+   border-bottom: solid 1px #ddd;
+}
+
+.tbl-row.odd {
+   background: #FFFFFF;
+}
+
+.tbl-row.even {
+   background: #F4F4F4;
+}
+
+.tbl-row.odd:hover {
+   background: #FFFFE0;
+}
+
+.tbl-row.even:hover {
+   background: #FFFFE0;
+}
+
+.tbl-row-selected {
+   background: #EEE2CF !important;
+}
+
+.tbl-row a {
+   color: #2B2865;
+}
+
+.tbl-row a:hover {
+   text-decoration: underline;
+}
+
+.tbl-flt-title {
+   font-weight: normal;
+   margin-bottom: 10px;
+}
+
+/* ********** Table Column Selector ********** */
+
+.tbl-col-sel-row {
+   margin-right: 4px;
+   margin: 2px 0;
+   padding: 5px 10px 5px 5px;
+   border-bottom: solid 1px #DDD;
+   border-right: solid 1px #DDD;
+   background: url(../images/icons/colItemBox-grip.png) top right no-repeat #FFFFFF;
+   cursor: n-resize;
+}
+
+.tbl-col-sel-list {
+   max-height: 400px;
+   margin-top: 10px;
+   overflow: auto;
+}
+
+.tbl-col-sel-input {
+   vertical-align: top;
+   width: 13px !important;
+   height: 13px !important;
+}
+
+.tbl-col-sel-label {
+   margin-left: 10px;
+   color: #333333;
+}
+
+/* ********** dataTables Overridden classes ********** */
+
+.dataTables_wrapper .dataTables_info {
+   float: none !important;
+}
+
+.dataTables_info {
+   font-size: 9px;
+   color: #999999 !important
+}
+
+.paging_full_numbers a.paginate_button, .paging_full_numbers a.paginate_active {
+    color: #656565 !important;
+    border: 1px solid #DBDBDB !important;
+    background: #FFFFFF !important;
+    padding: 2px 5px !important;
+    border-radius: 0px;
+}
+
+.paging_full_numbers a.paginate_button:hover {
+    color: #FFF !important;
+    border: 1px solid #BBB !important;
+    background: #CCC !important;
+}
+
+.paging_full_numbers a.paginate_button_disabled:hover {
+    color: #656565 !important;
+    border: 1px solid #DBDBDB !important;
+    background: #FFFFFF !important;
+    cursor: default !important;
+}
+
+.paging_full_numbers a.paginate_active {
+    color: #FFFFFF !important;
+    background: #24415E !important;
+}
+
+.paging_full_numbers a.paginate_active:hover {
+    color: #FFF !important;
+    border: 1px solid #BBB !important;
+    background: #CCC !important;
+}
+
+.dataTables_paginate {
+    float: none !important;
+    text-align: left !important;
+    margin-top: 4px !important;
+}

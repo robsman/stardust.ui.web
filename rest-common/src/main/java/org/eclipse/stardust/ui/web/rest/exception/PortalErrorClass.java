@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Anoop.Nair (SunGard CSA LLC) - initial API and implementation and/or initial documentation
+ *    Yogesh.Manware (SunGard CSA LLC) - initial API and implementation and/or initial documentation
  *******************************************************************************/
 
 package org.eclipse.stardust.ui.web.rest.exception;
@@ -29,7 +29,7 @@ public class PortalErrorClass implements Serializable
 
    // throw this error when document does exist in the repository
    public final static PortalErrorClass DOCUMENT_NOT_FOUND = new PortalErrorClass("DOC00001", Status.NOT_FOUND);
-
+      
    private Status httpStatus;
    private String id;
 

@@ -654,6 +654,9 @@ define(
 						continue;
 					}
 
+					//TODO: this logic needs to be improved, 
+					//if server has deleted any element, consequently parentObject does not contain it
+					//child object still contain this element.
 					if (typeof parentObject[member] == "object"
 							&& childObject[member] != null
 							&& !isArray(parentObject[member])

@@ -27,3 +27,10 @@ exports.JSHINT = JSLINT;
 
 Side-effects: ACE panels running in Javascript mode will now complain just like
 Douglas Crockford.
+------------
+CRNT-34956
+line 5572 is changed 
+from -> s.string = s;
+to -> x.string = s;
+JSLint itself git fixed with commit  
+https://github.com/douglascrockford/JSLint/commit/656150a46106206b915e1e881ce95e2ce0c12cd2

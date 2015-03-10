@@ -6,119 +6,38 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Anoop.Nair (SunGard CSA LLC) - initial API and implementation and/or initial documentation
+ *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service.dto;
 
 import java.util.List;
 
+import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOAttribute;
+
 /**
  * @author Anoop.Nair
+ * @author Johnson.Quadras
  * @version $Revision: $
  */
-public class ProcessDefinitionDTO
-{
-   private String id;
+public class ProcessDefinitionDTO extends AbstractDTO
+ {
 
-   private String name;
+	@DTOAttribute("qualifiedId")
+	public String id;
 
-   private String description;
+	@DTOAttribute("name")
+	public String name;
 
-   private long modelOid;
+	@DTOAttribute("description")
+	public String description;
 
-   private List<SpecificDocumentDTO> specificDocuments;
+	@DTOAttribute("modelOID")
+	public long modelOid;
 
-   /**
-    * 
-    */
-   public ProcessDefinitionDTO()
-   {
+	public String modelName;
 
-   }
+	public boolean auxillary;
 
-   /**
-    * @return the id
-    */
-   public String getId()
-   {
-      return id;
-   }
+	public List<ActivityDTO> activities;
 
-   /**
-    * @param id
-    *           the id to set
-    */
-   public void setId(String id)
-   {
-      this.id = id;
-   }
-
-   /**
-    * @return the name
-    */
-   public String getName()
-   {
-      return name;
-   }
-
-   /**
-    * @param name
-    *           the name to set
-    */
-   public void setName(String name)
-   {
-      this.name = name;
-   }
-
-   /**
-    * @return the description
-    */
-   public String getDescription()
-   {
-      return description;
-   }
-
-   /**
-    * @param description
-    *           the description to set
-    */
-   public void setDescription(String description)
-   {
-      this.description = description;
-   }
-
-   /**
-    * @return the modelOid
-    */
-   public long getModelOid()
-   {
-      return modelOid;
-   }
-
-   /**
-    * @param oid
-    *           the modelOid to set
-    */
-   public void setModelOid(long oid)
-   {
-      this.modelOid = oid;
-   }
-
-   /**
-    * @return the specificDocuments
-    */
-   public List<SpecificDocumentDTO> getSpecificDocuments()
-   {
-      return specificDocuments;
-   }
-
-   /**
-    * @param specificDocuments
-    *           the specificDocuments to set
-    */
-   public void setSpecificDocuments(List<SpecificDocumentDTO> specificDocuments)
-   {
-      this.specificDocuments = specificDocuments;
-   }
-
-}
+ }

@@ -58,6 +58,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class RecordingTestcase
 {
    protected static final String PROVIDER_MODEL_ID = "ProviderModel";
+   protected static final String PROVIDER_MODEL_ID2 = "ProviderModel2";
 
    protected static final String CONSUMER_MODEL_ID = "ConsumerModel";
 
@@ -91,6 +92,7 @@ public class RecordingTestcase
    protected ModelingSession mySession;
 
    protected ModelType providerModel;
+   protected ModelType providerModel2;
 
    protected ModelType consumerModel;
 
@@ -106,6 +108,14 @@ public class RecordingTestcase
       for (Iterator<EObject> i = providerModel.eAllContents(); i.hasNext();)
       {
          eObjectUUIDMapper.map(i.next());
+      }
+      if (includeProviderModel2())
+      {         
+         eObjectUUIDMapper.map(providerModel2);
+         for (Iterator<EObject> i = providerModel2.eAllContents(); i.hasNext();)
+         {
+            eObjectUUIDMapper.map(i.next());
+         }
       }
 
       if (includeConsumerModel())
@@ -134,13 +144,26 @@ public class RecordingTestcase
          if (newJto != null)
          {
             newJto = jsonIo.gson().fromJson(command, CommandJto.class);
-            Object o = changeApiDriver.performChange(newJto);
+            changeApiDriver.performChange(newJto);
          }
       }
       System.out.println("Replay finished.");
       return new String[] {responseString, expectedResponse};
    }
 
+   public void saveModel()
+   {
+      XpdlModelIoUtils.saveModel(providerModel);
+      if (providerModel2 != null)
+      {      
+         XpdlModelIoUtils.saveModel(providerModel2);
+      }
+      if (consumerModel != null)
+      {
+         XpdlModelIoUtils.saveModel(consumerModel);
+      }      
+   }   
+   
    protected void saveReplayModel(String filePath)
    {
       byte[] bytes = XpdlModelIoUtils.saveModel(providerModel);
@@ -151,12 +174,31 @@ public class RecordingTestcase
                + ".xpdl");
          out.println(xmlString);
          out.flush();
+         out.close();
       }
       catch (FileNotFoundException e)
       {
          e.printStackTrace();
       }
 
+      if (providerModel2 != null)
+      {      
+         bytes = XpdlModelIoUtils.saveModel(providerModel2);
+         xmlString = new String(bytes);
+         try
+         {
+            PrintWriter out = new PrintWriter(filePath + "/" + providerModel2.getName()
+                  + ".xpdl");
+            out.println(xmlString);
+            out.flush();
+            out.close();
+         }
+         catch (FileNotFoundException e)
+         {
+            e.printStackTrace();
+         }
+      }
+            
       if (consumerModel != null)
       {
          bytes = XpdlModelIoUtils.saveModel(consumerModel);
@@ -167,6 +209,7 @@ public class RecordingTestcase
                   + ".xpdl");
             out.println(xmlString);
             out.flush();
+            out.close();
          }
          catch (FileNotFoundException e)
          {
@@ -199,6 +242,10 @@ public class RecordingTestcase
       Mockito.when(providerModel.getId()).thenReturn(PROVIDER_MODEL_ID);
       Mockito.when(providerModel.getName()).thenReturn(PROVIDER_MODEL_ID + ".xpdl");
 
+      final Document providerModel2 = Mockito.mock(Document.class);
+      Mockito.when(providerModel2.getId()).thenReturn(PROVIDER_MODEL_ID2);
+      Mockito.when(providerModel2.getName()).thenReturn(PROVIDER_MODEL_ID2 + ".xpdl");
+            
       final Document consumerModel = Mockito.mock(Document.class);
       Mockito.when(consumerModel.getId()).thenReturn(CONSUMER_MODEL_ID);
       Mockito.when(consumerModel.getName()).thenReturn(CONSUMER_MODEL_ID + ".xpdl");
@@ -207,8 +254,16 @@ public class RecordingTestcase
 
       if (includeConsumerModel())
       {
-         Mockito.when(modelsFolder.getDocuments()).thenReturn(
-               asList(providerModel, consumerModel));
+         if (includeProviderModel2())
+         {         
+            Mockito.when(modelsFolder.getDocuments()).thenReturn(
+                  asList(providerModel, providerModel2, consumerModel));
+         }
+         else
+         {
+            Mockito.when(modelsFolder.getDocuments()).thenReturn(
+                  asList(providerModel, consumerModel));            
+         }
       }
       else
       {
@@ -230,6 +285,24 @@ public class RecordingTestcase
                {
                   InputStream isModel = getClass().getResourceAsStream(
                         modelLocation + providerModel.getName());
+                  try
+                  {
+                     return toByteArray(isModel);
+                  }
+                  finally
+                  {
+                     closeQuietly(isModel);
+                  }
+               }
+            });
+      Mockito.when(dmsService.retrieveDocumentContent(providerModel2.getId())).thenAnswer(
+            new Answer<byte[]>()
+            {
+               @Override
+               public byte[] answer(InvocationOnMock invocation) throws Throwable
+               {
+                  InputStream isModel = getClass().getResourceAsStream(
+                        modelLocation + providerModel2.getName());
                   try
                   {
                      return toByteArray(isModel);
@@ -288,4 +361,8 @@ public class RecordingTestcase
       return true;
    }
 
+   protected boolean includeProviderModel2()
+   {
+      return false;
+   }  
 }

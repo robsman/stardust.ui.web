@@ -8605,6 +8605,21 @@ input[src *='chart-up.png']:hover{
 	background-image:url('./images/flat-icons/chart-up.png');
 }
 
+img[src *='quality-assurance.png'],
+input[src *='quality-assurance.png']{
+     background-image:url('./images/flat-icons/quality-assurance.png');
+     width:16px;
+     background-size: 16px 16px;
+     padding: 16px 0 0 0 !important;
+     height:0px;
+     background-repeat: no-repeat !important;
+     opacity: 0.7;
+}
+input[src *='quality-assurance.png']:hover{
+	background:none;
+	background-image:url('./images/flat-icons/quality-assurance.png');
+}
+
 img[src *='clipboard-task.png']{
      background-image:url('./images/flat-icons/clipboard-task.png');
      width:16px;

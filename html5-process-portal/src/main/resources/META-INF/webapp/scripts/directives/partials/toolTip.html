@@ -1,0 +1,10 @@
+<div>
+	<div ng-mouseenter="toolTipCtrl.toolTip.show = true"
+		ng-mouseleave="toolTipCtrl.toolTip.show = false">{{toolTipCtrl.title}}</div>
+	<div class="{{toolTipCtrl.toolTipClass}}"
+		ng-show="toolTipCtrl.toolTip.show">
+		<div ng-show="toolTipCtrl.showUserTemplate"
+			ng-include="toolTipCtrl.userTemplate"></div>
+		<div ng-show="!toolTipCtrl.showUserTemplate" ng-transclude></div>
+	</div>
+</div>

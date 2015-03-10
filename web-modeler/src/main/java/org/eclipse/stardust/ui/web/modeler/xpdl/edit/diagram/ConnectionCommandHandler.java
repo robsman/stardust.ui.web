@@ -149,12 +149,14 @@ public class ConnectionCommandHandler
             }
             else if (ModelerConstants.DATA.equals(targetType))
             {
+               JsonObject controlFlowJson = request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
+               JsonArray dataMappingsJson = controlFlowJson.getAsJsonArray(ModelerConstants.DATAMAPPINGS_PROPERTY);
+               String direction = dataMappingsJson.get(0).getAsJsonObject().get(ModelerConstants.DIRECTION_PROPERTY).getAsString();
                DataMappingConnectionType dataConnectionType = getModelBuilderFacade().createDataFlowConnection(
                      processDefinition,
                      fromActivitySymbol,
                      XPDLFinderUtils.findDataSymbol(diagram, toSymbolOid),
-                           hasNotJsonNull(request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY),
-                                 ModelerConstants.INPUT_DATA_MAPPING_PROPERTY)
+                     direction.equals(ModelerConstants.DATAMAPPING_IN)
                            ? DirectionType.IN_LITERAL
                            : DirectionType.OUT_LITERAL,
                            mapAnchorOrientation(extractInt(request,
@@ -245,12 +247,14 @@ public class ConnectionCommandHandler
          {
             if (ModelerConstants.ACTIVITY_KEY.equals(targetType))
             {
+               JsonObject controlFlowJson = request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
+               JsonArray dataMappingsJson = controlFlowJson.getAsJsonArray(ModelerConstants.DATAMAPPINGS_PROPERTY);
+               String direction = dataMappingsJson.get(0).getAsJsonObject().get(ModelerConstants.DIRECTION_PROPERTY).getAsString();
                DataMappingConnectionType dataConnectionType = getModelBuilderFacade().createDataFlowConnection(
                      processDefinition,
                      XPDLFinderUtils.findActivitySymbol(diagram, toSymbolOid),
                      XPDLFinderUtils.findDataSymbol(diagram, fromSymbolOid),
-                           hasNotJsonNull(request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY),
-                                 ModelerConstants.INPUT_DATA_MAPPING_PROPERTY)
+                           direction.equals(ModelerConstants.DATAMAPPING_IN)
                            ? DirectionType.IN_LITERAL
                            : DirectionType.OUT_LITERAL,
                            mapAnchorOrientation(extractInt(request,
@@ -297,6 +301,8 @@ public class ConnectionCommandHandler
          }
       }
    }
+
+
 
    /**
     * Finds NodeSymbol in Model based on input parameters

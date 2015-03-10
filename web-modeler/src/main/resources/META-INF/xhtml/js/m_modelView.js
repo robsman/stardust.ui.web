@@ -12,10 +12,10 @@ define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_extensionManager", "bpm-modeler/js/m_communicationController",
 				"bpm-modeler/js/m_command", "bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_dialog", "bpm-modeler/js/m_view",
 				"bpm-modeler/js/m_model", "bpm-modeler/js/m_modelElementView","bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_constants",
-				"bpm-modeler/js/m_jsfViewManager", "bpm-modeler/js/m_elementConfiguration"],
+				"bpm-modeler/js/m_jsfViewManager", "bpm-modeler/js/m_elementConfiguration", "bpm-modeler/js/m_user"],
 		function(m_utils, m_extensionManager, m_communicationController,
 				m_command, m_commandsController, m_dialog, m_view, m_model, m_modelElementView,m_i18nUtils, m_constants,
-				m_jsfViewManager, m_elementConfiguration) {
+				m_jsfViewManager, m_elementConfiguration, m_user) {
 			return {
 				initialize : function(modelId) {
 					m_utils.initializeWaitCursor(m_utils.jQuerySelect("html"));
@@ -23,7 +23,7 @@ define(
 
 					m_utils.jQuerySelect("#hideGeneralProperties").hide();
 					initViewCollapseClickHandlers();
-					
+
 					var model = m_model.findModel(modelId);
 					var view = new ModelView();
 					i18modelview();
@@ -37,7 +37,7 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function initViewCollapseClickHandlers() {
 				m_utils.jQuerySelect("#showGeneralProperties").click(function() {
@@ -49,16 +49,16 @@ define(
 					m_utils.jQuerySelect("#hideGeneralProperties").hide();
 				});
 			}
-			
+
 			function i18modelview() {
-				
+
 				m_utils.jQuerySelect("#hideGeneralProperties label")
 					.text(m_i18nUtils.getProperty("modeler.element.properties.commonProperties.generalProperties"));
-		
+
 				m_utils.jQuerySelect("#showGeneralProperties label")
 					.text(m_i18nUtils.getProperty("modeler.element.properties.commonProperties.generalProperties"));
-			
-				
+
+
 				m_utils.jQuerySelect("#accesscontrol")
 						.text(
 								m_i18nUtils
@@ -119,8 +119,8 @@ define(
 				m_utils.jQuerySelect("label[for='validFromDate']")
 						.text(
 								m_i18nUtils
-										.getProperty("modeler.propertyView.modelView.validFrom"));		
-				
+										.getProperty("modeler.propertyView.modelView.validFrom"));
+
 				m_utils.jQuerySelect("#refreshValidationLbl")
 						.text(
 								m_i18nUtils
@@ -156,6 +156,22 @@ define(
 					this.validFromDate.datepicker();
 
 					m_utils.jQuerySelect("#modelTabs").tabs();
+
+					this.idInput = m_utils.jQuerySelect("#idInput");
+					this.idInputRow = m_utils.jQuerySelect("#idInputRow");
+
+					this.idInput.change({
+						"view" : this
+					}, function(event) {
+						var view = event.data.view;
+
+						if (view.modelElement.id != view.idInput.val()) {
+							view.submitChanges({
+								id : view.idInput.val()
+							});
+						}
+					});
+
 
 					this.versionTable.tableScroll({
 						height : 200
@@ -215,6 +231,15 @@ define(
 					this.model = model;
 
 					this.initializeModelElement(model);
+
+					m_dialog.makeInvisible(this.idOutputRow);
+					if (m_user.getCurrentRole() != m_constants.INTEGRATOR_ROLE) {
+						m_dialog.makeInvisible(this.idInputRow);
+					}else{
+						m_dialog.makeVisible(this.idInputRow);
+						this.idInput.val(model.id);
+					}
+
 					if (this.model[m_constants.DATE_OF_CREATION]) {
 						this.creationDateOutput.empty();
 						this.creationDateOutput.append(this.model[m_constants.DATE_OF_CREATION]);
@@ -348,7 +373,7 @@ define(
 									},
 									{
 										"success" : function(json) {
-											
+
 											if(json.length==0){
 												m_utils.jQuerySelect("#refreshValidationLbl")
 												.text(
@@ -359,7 +384,7 @@ define(
 												m_utils.jQuerySelect("#refreshValidationLbl")
 												.text("");
 											}
-											
+
 											for ( var n = 0; n < json.length; ++n) {
 												var content = "<tr>";
 
@@ -549,5 +574,27 @@ define(
 										this.model.uuid);
 					}
 				};
+
+      	ModelView.prototype.processCommandError = function(command,response) {
+            // handle server side exceptions (validation etc)
+            if (command.commandId == "modelElement.update") {
+              if (response.responseText
+                      && ((response.responseText.indexOf("ModelerError.01002") > -1) || (response.responseText.indexOf("ModelerError.01003") > -1))) {
+                this.clearErrorMessages();
+                this.errorMessages.push(m_i18nUtils.getProperty(
+                        response.responseText, response.responseText)
+                        .replace('{0}', this.idInput.val()));
+                this.idInput.addClass("error");
+                this.showErrorMessages();
+                this.idInput.val(this.model.id);
+              } else if (response.responseText
+                      && (response.responseText.indexOf("ModelerError.") > -1)) {
+                this.clearErrorMessages();
+                this.errorMessages.push(m_i18nUtils.getProperty(
+                        response.responseText, response.responseText));
+                this.showErrorMessages();
+              }
+            }
+        };
 			}
 		});

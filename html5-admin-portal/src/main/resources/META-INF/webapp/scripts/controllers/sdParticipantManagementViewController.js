@@ -20,22 +20,57 @@
 	var _sdViewUtilService,
 		_sdUserService,
 		_$q,
-		_eventBus,
-		_ngDialog;
+		_eventBus;
 	
-	var controller = function(sdViewUtilService,sdUserService,$q,eventBus,ngDialog){
+	var controller = function(sdViewUtilService,sdUserService,$q,eventBus){
 		_sdViewUtilService=sdViewUtilService;
 		_sdUserService = sdUserService;
 		_$q=$q;
 		_eventBus=eventBus;
-		_ngDialog=ngDialog;
 		
+		this.dataSelected=[];
+		this.matchVal="";
 		this.data={};
+		this.matchData=[];
 		this.message = "Hello World";
 		this.testShow = false;
-		
 	}
 	
+	
+	controller.prototype.getMatches = function(val){
+		var results=[],
+		    data = [
+		            {"id": "1", "name" : "Alabama", "category" : "Part1"},
+		            {"id": "2", "name" : "Alaska", "category" : "Part1"},
+		            {"id": "3", "name" : "Arizona", "category" : "Part1"},
+		            {"id": "4", "name" : "Arkansas", "category" : "Part2"},
+		            {"id": "5", "name" : "California", "category" : "Part2"},
+		            {"id": "6", "name" : "Conneticut", "category" : "Part2"},
+		            {"id": "7", "name" : "Colorado", "category" : "Part3"},
+		            {"id": "8", "name" : "Delaware", "category" : "Part3"},
+		            {"id": "9", "name" : "Florida", "category" : "Part3"},
+		            {"id": "10", "name" : "Georgia", "category" : "Part4"},
+		            {"id": "11", "name" : "Idaho", "category" : "Part4"},
+		            {"id": "12", "name" : "Iowa", "category" : "Part2"},
+		            {"id": "13", "name" : "Illinois", "category" : "Part4"},
+		            {"id": "14", "name" : "Indiana", "category" : "Part1"},
+		            {"id": "15", "name" : "Kansas", "category" : "Part1"},
+		            {"id": "16", "name" : "Louisiana", "category" : "Part2"},
+		            {"id": "17", "name" : "Maine", "category" : "Part2"},
+		            {"id": "18", "name" : "Montana", "category" : "Part2"},
+		            {"id": "19", "name" : "Michigan", "category" : "Part3"},
+		            {"id": "20", "name" : "New York", "category" : "Part3"},
+		            {"id": "21", "name" : "Mississippi", "category" : "Part4"}
+		          ];
+		
+		data.forEach(function(v){
+			if(v.name.indexOf(val) > -1){
+				results.push(v);
+			}
+		});
+			
+		this.matchData= results;
+	};
 	/**
 	 * Initialization routine for the controller
 	 * @this {controller}
@@ -97,6 +132,6 @@
 	
 	angular.module('admin-ui')
 	.controller('sdParticipantManagementViewController', 
-			['sdViewUtilService', 'sdUserService', '$q', 'eventBus', 'ngDialog',controller]);
+			['sdViewUtilService', 'sdUserService', '$q', 'eventBus',controller]);
 	
 })();

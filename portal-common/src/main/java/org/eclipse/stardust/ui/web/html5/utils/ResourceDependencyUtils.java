@@ -58,13 +58,13 @@ public class ResourceDependencyUtils
             Map<String, Object> deps = readJsonContents(rInfo);
             if (null != deps)
             {
-               ResourceDependency resDep = new ResourceDependency(rInfo.getPluginId(),
+               ResourceDependency resDep = new ResourceDependency(rInfo.getPluginId(), rInfo.getPluginLocation(),
                      (List<String>) deps.get(PLUGIN_DEPENDENCY_PLUGINS), (List<String>) deps.get(PLUGIN_DEPENDENCY_LIBS),
                      (List<String>)deps.get(PLUGIN_DEPENDENCY_SCRIPTS), (List<String>)deps.get(PLUGIN_DEPENDENCY_STYLES));
       
                if(CollectionUtils.isEmpty(resDep.getLibs()))
                {
-                  resDep.setLibs(discoverPluginResources(resolver, rInfo, PLUGIN_DEPENDENCY_LIBS, "*.js"));
+                  resDep.setLibs(discoverPluginResources(resolver, rInfo, PLUGIN_DEPENDENCY_LIBS, "*.js", true));
                }
                else
                {
@@ -74,7 +74,7 @@ public class ResourceDependencyUtils
       
                if(CollectionUtils.isEmpty(resDep.getScripts()))
                {
-                  resDep.setScripts(discoverPluginResources(resolver, rInfo, PLUGIN_DEPENDENCY_SCRIPTS, "*.js"));
+                  resDep.setScripts(discoverPluginResources(resolver, rInfo, PLUGIN_DEPENDENCY_SCRIPTS, "*.js", true));
                }
                else
                {
@@ -83,7 +83,7 @@ public class ResourceDependencyUtils
       
                if(CollectionUtils.isEmpty(resDep.getStyles()))
                {
-                  resDep.setStyles(discoverPluginResources(resolver, rInfo, PLUGIN_DEPENDENCY_STYLES, "*.css"));
+                  resDep.setStyles(discoverPluginResources(resolver, rInfo, PLUGIN_DEPENDENCY_STYLES, "*.css", false));
                }
                else
                {
@@ -202,30 +202,22 @@ public class ResourceDependencyUtils
     * @param rInfo
     * @param type
     * @param pattern
+    * @param asc
     * @return
     */
    private static List<String> discoverPluginResources(ResourcePatternResolver resolver, ResourceInfo rInfo,
-         String type, String pattern)
+         String type, String pattern, boolean asc)
    {
       try
       {
          String baseUri = rInfo.getResource().createRelative(type).getURI().toString();
          String webUriBase = baseUri.substring(rInfo.getPluginBaseUri().length());
 
-         // Get Main Resources i.e. Resources at root level and not from sub folders
-         List<String> allResources = PluginUtils.findWebResources(resolver, rInfo.getPluginId(), webUriBase, baseUri, "*" + pattern);
-         
          // Get All Resources i.e. Resources including sub folders
-         List<String> mainResources = PluginUtils.findWebResources(resolver, rInfo.getPluginId(), webUriBase, baseUri, "**/" + pattern);
+         List<String> allResources = PluginUtils.findWebResources(resolver, rInfo.getPluginId(), webUriBase, baseUri, "**/" + pattern);
 
-         // Finally, club together, by maintaining main resources at top
-         for (String resource : mainResources)
-         {
-            if (!allResources.contains(resource))
-            {
-               allResources.add(resource);
-            }
-         }
+         // Sort
+         sortByFolderHierarchy(allResources, asc);
          
          return allResources;
       }
@@ -298,5 +290,130 @@ public class ResourceDependencyUtils
    private static boolean isCdnUri(String uri)
    {
       return uri.startsWith("//") || uri.startsWith("http://") || uri.startsWith("https://");
+   }
+
+   /**
+    * @param list
+    * @param asc
+    */
+   private static void sortByFolderHierarchy(List<String> list, boolean asc)
+   {
+      Collections.sort(list, new Comparator<String>()
+      {
+         @Override
+         public int compare(String str1, String str2)
+         {
+            String[] folders1 = str1.substring(0, str1.lastIndexOf("/")).split("/");
+            String[] folders2 = str2.substring(0, str2.lastIndexOf("/")).split("/");
+
+            // Compare folders
+            int length = folders1.length < folders2.length ? folders1.length : folders2.length;
+            for (int i = 0; i < length; i++)
+            {
+               int comp = folders1[i].compareTo(folders2[i]);
+               if (comp != 0)
+               {
+                  return comp;
+               }
+            }
+
+            // Files are from same folder hierarchy, so compare remaining part
+            if (folders1.length == folders2.length)
+            {
+               // Compare file name without extension
+               String name1 = str1.substring(str1.lastIndexOf("/") + 1);
+               name1 = name1.substring(0, name1.lastIndexOf("."));
+
+               String name2 = str2.substring(str2.lastIndexOf("/") + 1);
+               name2 = name2.substring(0, name2.lastIndexOf("."));
+               
+               return name1.compareTo(name2);
+            }
+            else
+            {
+               // Files from sub folders appear later
+               return ((Integer)folders1.length).compareTo(folders2.length);
+            }
+         }
+      });
+
+      if(!asc)
+      {
+         Collections.reverse(list);
+      }
+   }
+   
+   public static List<ResourceDependency> discoverAllDependencies(ResourcePatternResolver resolver)
+   {
+      List<ResourceDependency> resourceDependencies = new ArrayList<ResourceDependency>();
+
+      List<ResourceInfo> allResources = PluginUtils.findPluginResources(resolver, "", true);
+
+      for (ResourceInfo rInfo : allResources)
+      {
+
+         ResourceDependency resDep = new ResourceDependency(rInfo.getPluginId(), rInfo.getPluginLocation(),
+               new ArrayList<String>(), new ArrayList<String>(), new ArrayList<String>(), new ArrayList<String>());
+
+         if (CollectionUtils.isEmpty(resDep.getLibs()))
+         {
+            resDep.setLibs(discoverPluginResources(resolver, rInfo, "", "*.js", true));
+         }
+         else
+         {
+            discoverAndReplaceWithLocalPath(resolver, resDep.getLibs(), rInfo);
+            prefixResourceWebUri(resDep.getLibs(), rInfo.getResourceBaseWebUri());
+         }
+
+         if (CollectionUtils.isEmpty(resDep.getStyles()))
+         {
+            resDep.setStyles(discoverPluginResources(resolver, rInfo, "", "*.css", false));
+         }
+         else
+         {
+            prefixResourceWebUri(resDep.getStyles(), rInfo.getResourceBaseWebUri());
+         }
+
+         resourceDependencies.add(resDep);
+
+      }
+
+      // Sort based on plugin interdependency
+      final List<String> targetOrder = new ArrayList<String>();
+      for (ResourceDependency resDep : resourceDependencies)
+      {
+         int index = targetOrder.indexOf(resDep.getPluginId());
+         if (index == -1)
+         {
+            targetOrder.add(resDep.getPluginId());
+            index = targetOrder.indexOf(resDep.getPluginId());
+         }
+
+         for (String parentPlugin : resDep.getPortalPlugins())
+         {
+            if (!targetOrder.contains(parentPlugin))
+            {
+               targetOrder.add(index, parentPlugin);
+            }
+         }
+      }
+
+      if (trace.isDebugEnabled())
+      {
+         trace.debug("Dependency descriptors sorted by interdependency: " + targetOrder);
+      }
+
+      Collections.sort(resourceDependencies, new Comparator<ResourceDependency>()
+      {
+         public int compare(ResourceDependency rd1, ResourceDependency rd2)
+         {
+            Integer index1 = targetOrder.indexOf(rd1.getPluginId());
+            Integer index2 = targetOrder.indexOf(rd2.getPluginId());
+
+            return index1.compareTo(index2);
+         }
+      });
+
+      return resourceDependencies;
    }
 }

@@ -11,11 +11,10 @@
 package org.eclipse.stardust.ui.web.viewscommon.common;
 
 import java.util.Locale;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.html5.ManagedBeanUtils;
 
 public class Localizer
 {
@@ -23,7 +22,7 @@ public class Localizer
 
    public static String getString(LocalizerKey key)
    {
-      return getString(org.eclipse.stardust.ui.web.common.util.FacesUtils.getLocaleFromRequest(), key);
+      return getString(ManagedBeanUtils.getLocale(), key);
    }
 
    public static String getString(Locale locale, LocalizerKey key)
@@ -83,7 +82,7 @@ public class Localizer
 
    public static String getString(LocalizerKey key, String replacePattern, String replaceBy)
    {
-      return getString(org.eclipse.stardust.ui.web.common.util.FacesUtils.getLocaleFromRequest(), key, replacePattern,
+      return getString(ManagedBeanUtils.getLocale(), key, replacePattern,
             replaceBy);
    }
 

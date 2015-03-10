@@ -34,7 +34,7 @@ define(
 					// In Initializer?
 
 					m_commandsController.registerCommandHandler(view);
-
+					
 					view.initialize(m_model.findTypeDeclaration(fullId));
 					m_utils.hideWaitCursor();
 				}
@@ -840,6 +840,7 @@ define(
 					var n = 0;
 
 					var view = this;
+					
 					var rootSchemaType = this.typeDeclaration.asSchemaType();
 					var roots = m_structuredTypeBrowser.generateChildElementRows(null,
 							rootSchemaType.isStructure() ? rootSchemaType : rootSchemaType.getElements(),
@@ -885,6 +886,9 @@ define(
 						indent: 14,
 						onNodeShow: function() {
 							m_structuredTypeBrowser.insertChildElementRowsLazily(m_utils.jQuerySelect(this));
+							if (view.typeDeclaration.getType() === "importedStructuredDataType") {
+							  view.bindMouseDownEventHandler();  
+							}
 						}
 					});
 
@@ -923,6 +927,38 @@ define(
 						}
 					}
 				};
+				
+				/**
+				 * 
+				 */
+        XsdStructuredDataTypeView.prototype.bindMouseDownEventHandler = function() {
+          var view = this;
+          m_utils.jQuerySelect("tr", this.tableBody).unbind("mousedown");
+          m_utils.jQuerySelect("tr", this.tableBody).mousedown(
+              function() {
+                m_utils.jQuerySelect("tr.selected",
+                        view.tableBody).removeClass("selected");
+                m_utils.jQuerySelect(this).addClass("selected");
+                
+                var schemaType = m_utils.jQuerySelect(this).data("schemaType");
+                var el = m_utils.jQuerySelect(this).data("element");
+                if (!el) {
+                  if (view.typeDeclaration.getType() === "importedStructuredDataType") {
+                    el = schemaType;
+                  }
+                }
+
+                // Storage properties are not applicable to parent element
+                // UI properties are allowed for parent element but not supported when this code was added.
+                if (m_structuredTypeBrowser.hasChildElements(this, true)) {
+                  if (view.propertiesTree) {
+                    view.propertiesTree.clear();
+                  }
+                } else {
+                  view.propertiesTree = m_propertiesTree.create(el, view);  
+                }
+              });
+        }
 
 				/**
 				 * Initialize event handling
@@ -930,12 +966,7 @@ define(
 				XsdStructuredDataTypeView.prototype.bindTableEventHandlers = function() {
 					var view = this;
 
-					m_utils.jQuerySelect("tr", this.tableBody).mousedown(
-						function() {
-							m_utils.jQuerySelect("tr.selected", view.tableBody).removeClass("selected");
-							m_utils.jQuerySelect(this).addClass("selected");
-							view.propertiesTree = m_propertiesTree.create(m_utils.jQuerySelect(this).data("element"), view);
-						});
+					view.bindMouseDownEventHandler();
 
 					m_utils.jQuerySelect(".nameInput", this.tree).on("change", function(event) {
 							return view.renameElement(m_utils.jQuerySelect(event.target).closest("tr"), m_utils.jQuerySelect(event.target));

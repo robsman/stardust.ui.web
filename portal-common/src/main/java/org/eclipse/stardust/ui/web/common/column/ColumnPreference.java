@@ -398,10 +398,10 @@ public class ColumnPreference implements Serializable
          }
          */
 
-         if(!Pattern.matches(PROPERTY_REG_EX, columnProperty))
+         /*if(!Pattern.matches(PROPERTY_REG_EX, columnProperty))
          {
             throw new IllegalArgumentException("Incorrect Syntax for Property, " + columnProperty);
-         }
+         }*/
       }
    }
 

@@ -173,11 +173,11 @@ define(
 							show: true,
 							    renderer: $.jqplot.EnhancedLegendRenderer,
 			                location: 'e',
-			                placement: 'outside',
+			                placement: 'outsideGrid',
 			                fontSize: '11px'
 						},
 						highlighter : {},
-						cursor : {show : true},
+						cursor : {show : true, followMouse : true},
 						zoom : {},
 						seriesColors: [ "#4bb2c5", "#c5b47f", "#EAA228", "#579575", "#839557", "#958c12",
 						                 "#953579", "#4b5de4", "#d8b83f", "#ff5800", "#0085cc"]
@@ -224,6 +224,15 @@ define(
 					chartOptions.animate = this.report.layout.chart.options.animate;
 					chartOptions.animateReplot = this.report.layout.chart.options.animateReplot;
 
+					if (this.report.layout.chart.options.seriesDefaults.lineWidth) {
+					   chartOptions.seriesDefaults.lineWidth = this.report.layout.chart.options.seriesDefaults.lineWidth;
+					}
+					
+					if (this.report.layout.chart.options.seriesDefaults.color) {
+					   chartOptions.seriesDefaults.color = this.report.layout.chart.options.seriesDefaults.color;
+					}
+					
+
 					//For Legend Positioning.
 					if (this.report.dataSet.type === 'seriesGroup'
 			         && this.report.layout.subType === this.reportingService.metadata.layoutSubTypes.chart.id
@@ -248,29 +257,32 @@ define(
       			      jQuery("#dataSetExceedWarning").show();
                   }
       
-      			/*   if (northSide.indexOf(this.report.layout.chart.options.legend.location) != -1)
+      			   var defaultChartSize = 400;
+      			   var adjustedChartSize = 500;
+      			   jQuery('#chartView').css('height', defaultChartSize);
+      			   if (northSide.indexOf(this.report.layout.chart.options.legend.location) != -1)
                   {
       			      chartOptions.legend.rendererOptions = {
-                              numberRows : Math.ceil(data.seriesGroup.length / 16)
+                              numberRows : Math.ceil(data.seriesGroup.length / 14)
                            }
-                  } else */if (southSide.indexOf(this.report.layout.chart.options.legend.location) != -1)
+      			      jQuery('#chartView').css('height', adjustedChartSize);
+                  } else if (southSide.indexOf(this.report.layout.chart.options.legend.location) != -1)
                   {
-                     chartOptions.legend.marginTop = "65px";
                      chartOptions.legend.rendererOptions = {
                         numberRows : Math.ceil( dataLength/ 14)
                      }
+                     jQuery('#chartView').css('height', adjustedChartSize);
                   } else if (eastSide.indexOf(this.report.layout.chart.options.legend.location) != -1)
       			   {
       			      chartOptions.legend.rendererOptions = {
       			         numberColumns : Math.ceil(dataLength / 10)
       			      }
-      			   } /*else if (westSide.indexOf(this.report.layout.chart.options.legend.location) != -1)
+      			   } else if (westSide.indexOf(this.report.layout.chart.options.legend.location) != -1)
                   {
-      			      chartOptions.legend.marginRight = "96px";
                      chartOptions.legend.rendererOptions = {
                         numberColumns : Math.ceil(data.seriesGroup.length / 10)
                      }
-                  }  */
+      			}
       			}
 
 					// TODO There is more
@@ -280,8 +292,8 @@ define(
 
 						if (this.getFirstDimension().type == this.reportingService.metadata.timestampType) {
 							chartOptions.axes.xaxis.renderer = jQuery.jqplot.DateAxisRenderer;
-						} else if (this.getFirstDimension().type == this.reportingService.metadata.enumerationType ||
-						         this.getFirstDimension().type == this.reportingService.metadata.stringType) {
+							chartOptions.axes.xaxis.tickOptions.formatString = this.getDateFormatForDimension(true);
+						} else {
 							chartOptions.axes.xaxis.renderer = jQuery.jqplot.CategoryAxisRenderer;
 						}
 						
@@ -296,6 +308,7 @@ define(
 					} else if (this.report.layout.chart.type === this.reportingService.metadata.chartTypes.candlestickChart.id) {
 						if (this.getFirstDimension().type == this.reportingService.metadata.timestampType) {
 							chartOptions.axes.xaxis.renderer = jQuery.jqplot.DateAxisRenderer;
+							chartOptions.axes.xaxis.tickOptions.formatString = this.getDateFormatForDimension(true);
 						} else {
 							chartOptions.axes.xaxis.renderer = jQuery.jqplot.CategoryAxisRenderer;
 						}
@@ -331,6 +344,7 @@ define(
 
 						if (this.getFirstDimension().type == this.reportingService.metadata.timestampType) {
 						   chartOptions.axes.xaxis.renderer = jQuery.jqplot.DateAxisRenderer;
+						   chartOptions.axes.xaxis.tickOptions.formatString = this.getDateFormatForDimension(true);
 						   chartOptions.axes.xaxis.tickRenderer = jQuery.jqplot.AxisTickRenderer;
 						} else {
 						   chartOptions.axes.xaxis.renderer = jQuery.jqplot.CategoryAxisRenderer;
@@ -388,8 +402,7 @@ define(
 					      " : " + plot.data[seriesIndex][pointIndex][1];
 					}
 					
-					if (chartOptions.stackSeries ||
-					         this.getFirstDimension().id == this.reportingService.metadata.objects.activityInstance.dimensions.criticality.id) {
+					if (chartOptions.stackSeries) {
 					   var x_axis = [];
 					   for ( var i = 0; i < data.seriesGroup.length; ++i) {
 					      var tempData = [];
@@ -468,95 +481,27 @@ define(
 					tableOptions.bPaginate = this.report.layout.table.options.showVisibleRowCountSelector;
 					tableOptions.bFilter = this.report.layout.table.options.showSearchInput;
 					
+					if (this.report.layout.subType == this.reportingService.metadata.layoutSubTypes.table.id)
+					{
+					   this.setLanguage(tableOptions);
+					}  
+					
 					if(scopeController){
 						scopeController.tableOptions = tableOptions;	
 					}
 					
 					var primaryObject = this.reportingService.metadata.objects[report.dataSet.primaryObject];
+					
 					//format groupby
 					var dimension = this.getDimension(report.dataSet.groupBy);
-					
-					var self = this;
 					//if groupby is empty or none
 					if(!dimension){
 						Object.keys(inData).forEach(function(key) {
-							inData[primaryObject.name] = inData[key];
-	                        delete inData[key];	
+							if("processInstance" == key || "activityInstance" == key){
+								inData[primaryObject.name] = inData[key]; //to I18n processInstance and activityInstance
+		                        delete inData[key];	
+							}
 						});
-					}
-
-					if (dimension && dimension.enumerationType) {
-						var qualifier = dimension.enumerationType.split(":");
-						var enums = null;
-			
-						//model data must be added from server side
-						if(qualifier[0] != 'modelData' || this.reportingService.modelData){
-							enums = this.reportingService.getEnumerators(dimension.enumerationType);	
-						}
-						
-						if(!enums){
-							return;
-						}
-						var displayValueMapping = {};
-						Object.keys(inData).forEach(function(key) {
-							if (dimension.id == self.reportingService.metadata.objects.activityInstance.dimensions.criticality.id) {
-								var critName = self.getCriticalityName(key,enums);
-								displayValueMapping[critName] = key;
-								inData[critName] = inData[key];
-								delete inData[key];	
-							}else{
-							for ( var item in enums)
-	                          {
-	                             if (enums[item].id == key) {
-									if (enums[item].order) {
-										displayValueMapping[enums[item].name] = enums[item].order;
-									} else {
-										displayValueMapping[enums[item].name] = key;
-									}
-	                            	 if(enums[item].name != key){
-	                            		 inData[enums[item].name] = inData[key];
-		                                 delete inData[key];	 
-									}
-		                                 break;
-	                            	 }
-	                             }
-	                          }
-						});
-						if(dimension.customSort && !dimensionAsRow){
-							tableOptions.aoColumnDefs.push(getColumnDef(0, displayValueMapping));	
-					}
-					}
-					//format first dimensions
-					dimension = this.getDimension(self.report.dataSet.firstDimension);
-					if (dimension && dimension.enumerationType) {
- 				        var enums = self.reportingService.getEnumerators(dimension.enumerationType);
- 				        var displayValueMapping = {};
-					    Object
-							.keys(inData)
-							.forEach(
-									function(key) {
-										for (var i = 0; i < inData[key].length; i++) {
-											if (dimension.id == self.reportingService.metadata.objects.activityInstance.dimensions.criticality.id) {
-												var critName = self.getCriticalityName(inData[key][i][0],enums);
-												displayValueMapping[critName] = inData[key][i][0];
-												inData[key][i][0] = critName;	
-											} else {
-												for (var j = 0; j < enums.length; j++) {
-													if (enums[j].id == inData[key][i][0]) {
-														if(enums[j].order){
-															displayValueMapping[enums[j].name] = enums[j].order;	
-														}else{
-															displayValueMapping[enums[j].name] = inData[key][i][0];
-														}
-														inData[key][i][0] = enums[j].name;
-													}
-												}
-											}
-										}
-									});
-					    if(dimension.customSort && dimensionAsRow){
-							tableOptions.aoColumnDefs.push(getColumnDef(0, displayValueMapping));	
-						}
 					}
 				};
 				
@@ -682,7 +627,7 @@ define(
 																jQuery(
 																		"#chartView")
 																		.append(
-																				"<p>Empty data set retrieved.</p>");
+																				"<p>" + self.getI18N('reporting.definitionView.preview.emptyDataSet.message') + "</p>");
 
 															}
 
@@ -878,6 +823,7 @@ define(
                 document.body.style.cursor = "wait";
                 
                 if(this.reportData){
+                	document.body.style.cursor = "default";
                    return deferred.resolve(this.reportData);
                 }else{
                 	var self = this;
@@ -921,8 +867,6 @@ define(
 				document.body.style.cursor = "wait";
 				scopeController.updateView();
             	
-				
-				
 					setTimeout(
 							function() {
 								if (self.report.layout.type == 'document') {
@@ -1046,7 +990,7 @@ define(
 			 */
 			ReportRenderingController.prototype.refreshSeriesTable = function(data, scopeController) {
 			
-			    self = this;
+			    var self = this;
 			    var inData = data;
 			
 			    //detect Table drawing mode
@@ -1170,7 +1114,7 @@ define(
 			        if (tableDrawMode == 3 || tableDrawMode == 4) {
 			            var baseTableIndex = 0;
 			            var h1 = [dimensionName]; // header line one
-			            var h2 = ["Cumulants"]; // header line two
+			            var h2 = [this.getI18N("reporting.definitionView.cumulants.title", "Cumulants")]; // header line two
 			
 			            baseTable.push(h1);
 			            baseTableIndex++;
@@ -1204,7 +1148,7 @@ define(
 			        } else if (tableDrawMode == 5 || tableDrawMode == 6) {
 			
 			            var baseTableIndex = 0;
-			            var h1 = ["Series"]; // header line one
+			            var h1 = [this.getI18N("reporting.definitionView.series.title", "Series")]; // header line one
 			            var h2 = [dimensionName]; // header line two
 			
 			            baseTable.push(h1);
@@ -1240,7 +1184,7 @@ define(
 			        }
 			
 			        if (addTotalRow) {
-			            var totalRow = ["Total"] // TODO: I18n
+			            var totalRow = [this.getI18N("reporting.definitionView.total.title", "Total")] // TODO: I18n
 			            totalRow = totalRow.concat(getTotalRow(baseTable, 2, 1));
 			            baseTable.push(totalRow);
 			        }
@@ -1250,7 +1194,7 @@ define(
 			        }
 			    } else { // fact is count
 			        var baseTableIndex = 0;
-			        var h1 = ["Series"]; // header line one
+			        var h1 = [this.getI18N("reporting.definitionView.series.title", "Series")]; // header line one
 			
 			        //for selected number of cumulants
 			
@@ -1274,7 +1218,7 @@ define(
 			        }
 			
 			        if (addTotalRow) {
-			            var totalRow = ["Total"] // TODO: I18n
+			            var totalRow = [this.getI18N("reporting.definitionView.total.title", "Total")] // TODO: I18n
 			            totalRow = totalRow.concat(getTotalRow(baseTable, 1, 1));
 			            baseTable.push(totalRow);
 			        }
@@ -1296,21 +1240,28 @@ define(
          /**
           * 
           */
-         ReportRenderingController.prototype.getDateFormatForDimension = function() {
+         ReportRenderingController.prototype.getDateFormatForDimension = function(jqPlotFormat) {
         	if (this.getFirstDimension().type != this.reportingService.metadata.timestampType){
         	 return null;
-        	} 
+        	}
+        	
+        	var dateFormatObj = this.reportingService.dateFormats;
+        	
+        	if(jqPlotFormat){
+        		dateFormatObj = this.reportingService.jqPlot.dateFormats;
+        	}
+        	
 			if (this.report.dataSet.firstDimensionCumulationIntervalUnit == 's') {
-				return this.reportingService.formats.seconds;
+				return dateFormatObj.seconds;
 			} else if (this.report.dataSet.firstDimensionCumulationIntervalUnit == 'm') {
-				return this.reportingService.formats.minutes;
+				return dateFormatObj.minutes;
 			} else if (this.report.dataSet.firstDimensionCumulationIntervalUnit == 'h') {
-				return this.reportingService.formats.hours;
+				return dateFormatObj.hours;
 			} else if (this.report.dataSet.firstDimensionCumulationIntervalUnit == 'd'
 					|| this.report.dataSet.firstDimensionCumulationIntervalUnit == 'w') {
-				return this.reportingService.formats.date;
+				return dateFormatObj.date;
 			} else if (this.report.dataSet.firstDimensionCumulationIntervalUnit == 'M') {
-				return this.reportingService.formats.months;
+				return dateFormatObj.months;
 			}
 			return null;
 		};
@@ -1433,6 +1384,8 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
    tableOptions.bPaginate = this.report.layout.table.options.showVisibleRowCountSelector;
    tableOptions.bFilter = this.report.layout.table.options.showSearchInput;
    
+   this.setLanguage(tableOptions);
+   
    scopeController.tableOptions = tableOptions;
       
    var selectedColumns =  this.reportingService.getColumnDimensions(this.report);
@@ -1454,63 +1407,13 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
    
    for ( var selColumn in selectedColumns)
    {
-      if (selectedColumns[selColumn].id == this.
-            reportingService.metadata.objects.activityInstance.dimensions.criticality.id) 
+	  if (selectedColumns[selColumn].type.id == this.reportingService.metadata.timestampType.id) 
       {
-            //Formatting Criticality data to display string values
-         if (this.report.dataSet.groupBy === this.
-                  reportingService.metadata.objects.activityInstance.dimensions.criticality.id) 
-         {
-            tableOptions.aoColumnDefs.push(getColumnDef(selColumn, displayValueMapping));
+         tableOptions.aoColumnDefs.push(getColumnDefForDate(selColumn, this.reportingService.dateFormats.minutes));
          }
-         var enumItems = this.reportingService.getEnumerators(this.
-                           reportingService.metadata.objects.activityInstance.dimensions.criticality.enumerationType);
-                
-         for ( var row in data) 
-         {
-            var record = data[row];
-            var criticality = this.getCriticalityName(record[selColumn], enumItems);
-            displayValueMapping[criticality] = record[selColumn];
-            record[selColumn] = criticality; 
          }
-      } else if (selectedColumns[selColumn] && selectedColumns[selColumn].enumerationType) 
-      {
-         var enumItems = this.reportingService.getEnumerators(selectedColumns[selColumn].enumerationType);
-         var displayValueMapping = {};
 
-         for ( var row in data)
-         {
-            var record = data[row];
-            for ( var item in enumItems)
-            {
-               if (enumItems[item].id == record[selColumn])
-               {
-                  if (enumItems[item].order)
-                  {
-                     displayValueMapping[enumItems[item].name] = enumItems[item].order;
-                  }
-                  else
-                  {
-                     displayValueMapping[enumItems[item].name] = record[selColumn];
-                  }
-                  record[selColumn] = enumItems[item].name;
-                  break;
-               }
-            }
-         }
-         if (selectedColumns[selColumn].customSort
-                        && this.report.dataSet.groupBy === selectedColumns[selColumn].id) 
-         {
-            tableOptions.aoColumnDefs.push(getColumnDef(selColumn, displayValueMapping));
-         }
                
-      } else if (selectedColumns[selColumn].type.id == this.reportingService.metadata.timestampType.id) 
-      {
-         tableOptions.aoColumnDefs.push(getColumnDefForDate(selColumn, this.reportingService.formats.minutes));
-      }
-      }
-   
-   
    var a = [];
    
    for ( var row in data)
@@ -1529,8 +1432,8 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
    return a;
 };
 
-		ReportRenderingController.prototype.getI18N = function(key) {
-			return I18NUtils.getProperty(key);
+		ReportRenderingController.prototype.getI18N = function(key, defaultValue) {
+			return I18NUtils.getProperty(key, defaultValue);
 		};
 		
 		//Report Instance
@@ -1623,23 +1526,6 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
 					return popupData;
 				};
 				
-				/**
-				 * 
-				 */
-				ReportRenderingController.prototype.getCriticalityName = function(criticalityRating, enumItems)
-				{
-				   criticalityRating *= 1000;
-				   var self = this;//enumItems.forEach(function(item)
-					for (var i = 0; i < enumItems.length; i++) {
-						if (criticalityRating >= enumItems[i].rangeFrom
-								&& criticalityRating <= enumItems[i].rangeTo) {
-							return enumItems[i].name;
-                  }
-				   }
-					
-					return criticalityRating;
-				};
-				
             /*
              * 
              */
@@ -1667,7 +1553,34 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
                         this.report.layout.table.options.showVisibleRowCountSelector) ? jQuery('div .heading').css({display:'block'}) :
                            jQuery('div .heading').css({display:'none'});
             };
+            
+            /**
+             * 
+             */
+            ReportRenderingController.prototype.setLanguage = function (tableOptions) {
+            	tableOptions.oLanguage = {
+            		"sProcessing" : this.getI18N('datatables.sProcessing'),
+            		"sSearch" : this.getI18N('datatables.sSearch'),
+            		"sLengthMenu" : this.getI18N('datatables.sLengthMenu'),
+            		"sInfo" : this.getI18N('datatables.sInfo'),
+            		"sInfoEmpty" : this.getI18N('datatables.sInfoEmpty'),
+            		"sInfoFiltered" : this.getI18N('datatables.sInfoFiltered'),
+            		"sLoadingRecords" : this.getI18N('datatables.sLoadingRecords'),
+            		"sZeroRecords" : this.getI18N('datatables.sZeroRecords'),
+            		"sEmptyTable" : this.getI18N('datatables.sEmptyTable'),
+            		"oPaginate" : {
+            			"sFirst" : this.getI18N('datatables.oPaginate.sFirst'),
+            			"sPrevious" : this.getI18N('datatables.oPaginate.sPrevious'),
+            			"sNext" : this.getI18N('datatables.oPaginate.sNext'),
+            			"sLast" : this.getI18N('datatables.oPaginate.sLast')
+            		},
+            		"oAria" : {
+            			"sSortAscending" : this.getI18N('datatables.oAria.sSortAscending'),
+            			"sSortDescending" : this.getI18N('datatables.oAria.sSortDescending')
 		}
+            	};
+             };	
+           };
 			
 			function transposeArray(aInput) {
 			      return Object.keys(aInput[0]).map(
@@ -1715,16 +1628,29 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
 			 * 
 			 */
 			function getColumnDefForDate(selColumn, dateFormat) {
+				var col = parseInt(selColumn);
 				return {
-					"aTargets" : [ parseInt(selColumn) ],
-					"mData" : (function(dateFormat) { return function(source, type, val) {
+					"aTargets" : [col],
+					"mData" : (function (dateFormat, col) {
+						return function (source, type, val) {
 
 						if (type === 'set') {
 							//backup original date value
-							source[0] = val;
+								source[col] = val;
 
+								if (!source.display) {
+									source.display = [];
+								}
+
+								try {
 							//format date value
 							var dateVal = val;
+
+									if (!val) {
+										source.display[col] = dateVal;
+										return;
+									}
+
 							var matches = dateVal.match(/\:/g);
 							// cannot handle millisecs at the moment
 							if (matches.length > 2) {
@@ -1739,38 +1665,23 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
 									dateVal = angularServices.filter('date')(d, dateFormat);
 								}
 							}
-
-							//store it for later usage
-							source.date_rendered = dateVal;
+								} catch (e) {
+									console.debug("Error occurred while formatting date");
+								}
+								finally {
+									source.display[col] = dateVal;
 							return;
+								}
 						} else if (type === 'display' || type == 'filter') {
-							return source.date_rendered;
+								return source.display[col];
 						}
 
 						// 'sort' and 'type' both just use the raw data
-						return source[0];
-			        };})(dateFormat) 
+							return source[col];
 				};
-			}
-			
-			/**
-			 * 
-			 */
-			function getColumnDef(selColumn, displayValueMapping){
-				return {
-			        "aTargets": [parseInt(selColumn)],
-			        "mData": (function(displayValueMapping) { return function(source, type, val) {
-			            if (type === 'set') {
-			                source[0] = val;
-			                return;
-			            } else if (type === 'display' || type == 'filter') {
-			                return source[0];
-			            }
-			            // 'sort' and 'type' both just use the raw data
-			            return displayValueMapping[source[0]];
-			        };})(displayValueMapping)
+					})(dateFormat, col)
 			    };
-			}
+			};
 			
 			 /**
 			 * To get unique elements and their count.

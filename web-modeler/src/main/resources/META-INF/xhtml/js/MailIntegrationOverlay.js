@@ -520,7 +520,6 @@ define(
                   CKEDITOR.instances[this.mailTemplateEditor.id].on('blur', function(e)
                   {
                      self.submitChanges();
-                     event.data.panel.view.submitModelElementAttributeChange("stardust:emailOverlay::mailTemplate", CKEDITOR.instances[this.mailTemplateEditor.id].getData());
                   });
                   this.parameterDefinitionsPanel = m_parameterDefinitionsPanel.create({
                      scope : "parametersTab",

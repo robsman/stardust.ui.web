@@ -18,8 +18,8 @@ import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.dto.EventActionDetails;
 import org.eclipse.stardust.engine.api.dto.EventHandlerDetails;
 import org.eclipse.stardust.engine.api.model.Participant;
+import org.eclipse.stardust.engine.api.model.ParticipantInfo;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
-import org.eclipse.stardust.engine.api.runtime.DeployedModel;
 import org.eclipse.stardust.engine.api.runtime.HistoricalEvent;
 import org.eclipse.stardust.engine.api.runtime.HistoricalEventDescriptionDelegation;
 import org.eclipse.stardust.engine.api.runtime.HistoricalEventDescriptionStateChange;
@@ -32,7 +32,6 @@ import org.eclipse.stardust.ui.web.viewscommon.common.ModelHelper;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalErrorClass;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
 
 public class EventHistoryItem extends AbstractProcessHistoryTableEntry
 {
@@ -162,7 +161,9 @@ public class EventHistoryItem extends AbstractProcessHistoryTableEntry
       case HistoricalEventType.STATE_CHANGE:
          HistoricalEventDescriptionStateChange stateDescr = (HistoricalEventDescriptionStateChange) event.getDetails();
          ActivityInstanceState toState = stateDescr.getToState();
+         ParticipantInfo fromPerformer = null;
          Participant toPerformer = null;
+         ParticipantInfo onBehalfOfParticipant = null;
          switch (toState.getValue())
          {
          case ActivityInstanceState.HIBERNATED:
@@ -172,6 +173,21 @@ public class EventHistoryItem extends AbstractProcessHistoryTableEntry
          case ActivityInstanceState.APPLICATION:
             name = Localizer.getString(LocalizerKey.PH_ACTIVITY_ACTIVE_TYPE);
             type = ACTIVITY_ACTIVE_TYPE;
+            fromPerformer = stateDescr.getFromPerformer();
+            onBehalfOfParticipant = stateDescr.getOnBehalfOfPerformer();
+            if (fromPerformer != null)
+            {
+               fullDetail = ModelHelper.getParticipantName(fromPerformer);
+               if ((onBehalfOfParticipant != null) && !onBehalfOfParticipant.getQualifiedId().equals(fromPerformer.getQualifiedId()))
+               {
+                  fullDetail += "<br>" + ModelHelper.getParticipantName(onBehalfOfParticipant);
+               }
+               fullDetail += " ->";
+            }
+            else if (onBehalfOfParticipant != null)
+            {
+               fullDetail = ModelHelper.getParticipantName(onBehalfOfParticipant) + " ->";
+            }
             break;
          case ActivityInstanceState.SUSPENDED:
             name = Localizer.getString(LocalizerKey.PH_SUSPENDED_TYPE);
@@ -179,7 +195,7 @@ public class EventHistoryItem extends AbstractProcessHistoryTableEntry
             toPerformer = stateDescr.getToPerformer();
             if (toPerformer != null)
             {
-               fullDetail = "-> " + I18nUtils.getParticipantName(toPerformer);
+               fullDetail = "-> " + ModelHelper.getParticipantName(toPerformer);
             }
             break;
          case ActivityInstanceState.ABORTED:

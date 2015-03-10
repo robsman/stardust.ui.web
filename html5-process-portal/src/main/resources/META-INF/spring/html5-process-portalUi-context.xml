@@ -12,6 +12,10 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 		<ippui:viewsExtension>
 			<ippui:view name="worklistViewHtml5" include="/plugins/html5-process-portal/partials/views/worklistView.html" />
 		</ippui:viewsExtension>
-
+		
+		<ippui:viewsExtension>
+			<ippui:view name="documentSearchViewHtml5" include="/plugins/html5-process-portal/partials/views/documentSearchView.html" />
+		</ippui:viewsExtension>
+		
 	</ippui:perspectiveExtension>
 </beans>

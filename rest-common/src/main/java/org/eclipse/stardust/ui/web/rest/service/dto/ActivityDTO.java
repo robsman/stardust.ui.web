@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Anoop.Nair (SunGard CSA LLC) - initial API and implementation and/or initial documentation
+ *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service.dto;
 
@@ -24,7 +24,10 @@ public class ActivityDTO extends AbstractDTO
 {
    @DTOAttribute("id")
    public String id;
-
+   
+   @DTOAttribute("qualifiedId")
+   public String qualifiedId;
+   
    @DTOAttribute("name")
    public String name;
 
@@ -36,4 +39,6 @@ public class ActivityDTO extends AbstractDTO
 
    @DTOAttribute("implementationType.name")
    public String implementationTypeName;
+   
+   public Boolean auxillary;
 }

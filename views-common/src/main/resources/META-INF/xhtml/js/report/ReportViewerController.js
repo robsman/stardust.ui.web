@@ -181,7 +181,12 @@ define(
 					msg.data.viewId = "documentView";
 					msg.data.viewKey = "documentOID=" + this.documentId
 							+ "_instance";
-					msg.data.viewKey = window.btoa(msg.data.viewKey);
+					
+					if(window.btoa){
+						msg.data.viewKey = window.btoa(msg.data.viewKey);	
+					}else{ //IE9-
+						msg.data.viewKey = jQuery.base64.encode(msg.data.viewKey);
+					}
 
 					msg.data.params = {};
 					msg.data.params.documentId = this.documentId;

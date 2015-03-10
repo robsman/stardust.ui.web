@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Anoop.Nair (SunGard CSA LLC) - initial API and implementation and/or initial documentation
+ *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service.utils;
 
@@ -37,7 +37,7 @@ public class ProcessDefinitionUtils
 {
    @Resource
    private ServiceFactoryUtils serviceFactoryUtils;
-   
+
    public static final Logger trace = LogManager.getLogger(ProcessDefinitionUtils.class);
 
    /**
@@ -62,7 +62,7 @@ public class ProcessDefinitionUtils
 
    /**
     * return true if the provided Process Definition supports Process Attachments
-    * 
+    *
     * @param processInstance
     * @return
     */

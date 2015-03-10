@@ -23,6 +23,7 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.config.Parameters;
+import org.eclipse.stardust.engine.api.dto.DepartmentDetails;
 import org.eclipse.stardust.engine.api.dto.UserDetailsLevel;
 import org.eclipse.stardust.engine.api.model.DynamicParticipantInfo;
 import org.eclipse.stardust.engine.api.model.Model;
@@ -48,6 +49,7 @@ import org.eclipse.stardust.engine.api.runtime.UserInfo;
 import org.eclipse.stardust.ui.web.viewscommon.common.ModelHelper;
 import org.eclipse.stardust.ui.web.viewscommon.common.constant.ProcessPortalConstants;
 import org.eclipse.stardust.ui.web.viewscommon.common.constant.TaskAssignmentConstants;
+import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 
 
 
@@ -225,6 +227,57 @@ public class ParticipantUtils
    public static Participant getParticipant(ParticipantInfo participantInfo)
    {
       return getParticipant(participantInfo, UserDetailsLevel.WithProperties);
+   }
+
+   /**
+    *  Specially used in REST
+    * @param partcipantQID
+    * @param participantType
+    * @return
+    */
+   public static Participant getParticipant(String partcipantQID, ParticipantType participantType)
+   {
+      Participant participant = null;
+         switch (participantType)
+         {
+         case ORGANIZATION:
+         case ROLE:
+         case SCOPED_ORGANIZATION:
+         case SCOPED_ROLE:
+            String modelId = ModelUtils.extractModelId(partcipantQID);
+            String participantId = ModelUtils.extractParticipantId(partcipantQID);
+            if (null == participantId)
+            {
+               participantId = partcipantQID;
+            }
+   
+            if (null == modelId)
+            {
+               modelId = PredefinedConstants.PREDEFINED_MODEL_ID;
+            }
+            for (DeployedModel model : ModelUtils.getAllModelsActiveFirst())
+            {
+               if (model.getId().equals(modelId))
+               {
+                  participant = model.getParticipant(participantId);
+                  if (null != participant)
+                  {
+                     break;
+                  }
+               }
+            }
+            break;
+
+         case USER:
+            participant = UserUtils.getUser(Long.valueOf(partcipantQID), UserDetailsLevel.Full);
+            break;
+
+         case USERGROUP:
+            participant = ServiceFactoryUtils.getUserService().getUserGroup(partcipantQID);
+            break;
+         }
+
+         return participant;
    }
 
    /**
@@ -766,7 +819,7 @@ public class ParticipantUtils
 
       return modelParticipants;
    }
-
+   
    public static String getParticipantName(ParticipantInfo participantInfo)
    {
       if (participantInfo instanceof DynamicParticipantInfo)
@@ -777,6 +830,8 @@ public class ParticipantUtils
             {
                // optionally resolve
                participantInfo = ParticipantUtils.getParticipant(participantInfo, UserDetailsLevel.WithProperties);
+
+
             }
 
             return I18nUtils.getUserLabel((UserInfo) participantInfo, UserUtils.getDefaultUserNameDisplayFormat());
@@ -791,4 +846,89 @@ public class ParticipantUtils
       return ModelHelper.getParticipantName(participantInfo);
    }
 
+   /**
+    * @param participant
+    * @return
+    */
+   public static long getParticipantOID(Participant participant)
+   {
+      if (participant != null)
+      {
+         if (participant instanceof User)
+         {
+            User u = (User) participant;
+            return u.getOID();
+         }
+         else if (participant instanceof Role)
+         {
+            return ((Role) participant).getElementOID();
+         }
+         else if (participant instanceof Organization)
+         {
+            return ((Organization) participant).getRuntimeElementOID();
+         }
+         else
+         {
+            return -1l;
+         }
+      }
+      return -1;
+   }
+
+   /**
+    * This is used specially in Delegation dialog 
+    * return participant Label
+    * 
+    * @param participant
+    * @return
+    */
+   public static String getParticipantLabel(Participant participant)
+   {
+      MessagesViewsCommonBean propsBean = MessagesViewsCommonBean.getInstance();
+      if (participant != null)
+      {
+         if (participant instanceof User)
+         {
+            User user = (User) participant;
+            return I18nUtils.getUserLabel(user);
+         }
+         if (participant instanceof Role)
+         {
+            return I18nUtils.getParticipantName(participant) + " ("
+                  + propsBean.getString("delegation.search.roleNamePostFix") + ")";
+         }
+         if (participant instanceof Organization)
+         {
+            return I18nUtils.getParticipantName(participant) + " ("
+                  + propsBean.getString("delegation.search.organizationNamePostFix") + ")";
+         }
+      }
+      return "";
+   }
+   
+   /**
+    * This is used specially in Delegation dialog 
+    * return department Label
+    * 
+    * @param department
+    * @return
+    */
+   public static String getDepartmentLabel(DepartmentInfo department)
+   {
+      StringBuilder departmentName = new StringBuilder().append(department.getName()).append(" (")
+            .append(MessagesViewsCommonBean.getInstance().getString("delegation.search.departmentNamePostFix"))
+            .append(")");
+
+      if (department instanceof DepartmentDetails)
+      {
+         DepartmentDetails deptDetail = (DepartmentDetails) department;
+         if (null != deptDetail.getOrganization() && deptDetail.getOrganization().isDepartmentScoped())
+         {
+            String orgName = I18nUtils.getParticipantName(deptDetail.getOrganization());
+            departmentName.insert(0, orgName + " - ");
+         }
+      }
+
+      return departmentName.toString();
+   }
 }

@@ -70,7 +70,7 @@ public class CustomColumnUtils
       items.add(new SelectItem(DAY_TYPE, "Days"));
       items.add(new SelectItem(WEEK_TYPE, "Weeks"));
       items.add(new SelectItem(MONTH_TYPE, "Months"));
-      items.add(new SelectItem(YEAR_TYPE, "Year"));
+      items.add(new SelectItem(YEAR_TYPE, "Years"));
       return items;
    }
    

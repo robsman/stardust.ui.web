@@ -1280,6 +1280,8 @@ public class ActivityDetailsBean extends UIComponentBean
                   skipViewEvents = true;
                   PortalApplication.getInstance().closeView(thisView, true);
                   releaseInteraction();
+                  // When view close is auto-operation, sync view is required to update focus view
+                  PortalApplication.getInstance().addEventScript("parent.BridgeUtils.View.syncActiveView();");
                   skipViewEvents = false;
                }
             }

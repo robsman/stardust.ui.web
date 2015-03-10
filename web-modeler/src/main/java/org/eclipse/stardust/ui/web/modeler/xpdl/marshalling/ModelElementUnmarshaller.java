@@ -32,6 +32,14 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
+import org.eclipse.xsd.XSDElementDeclaration;
+import org.eclipse.xsd.XSDSchema;
+import org.eclipse.xsd.XSDTypeDefinition;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
+
+import com.google.gson.*;
+
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
@@ -40,13 +48,8 @@ import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.runtime.*;
 import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
-import org.eclipse.stardust.model.xpdl.builder.utils.XPDLFinderUtils;
-import org.eclipse.stardust.model.xpdl.builder.utils.LaneParticipantUtil;
-import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
-import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
-import org.eclipse.stardust.model.xpdl.builder.utils.NameIdUtilsExtension;
+import org.eclipse.stardust.model.xpdl.builder.utils.*;
 import org.eclipse.stardust.model.xpdl.carnot.*;
-import org.eclipse.stardust.model.xpdl.carnot.util.AccessPointUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.model.xpdl.carnot.util.StructuredTypeUtils;
@@ -59,6 +62,8 @@ import org.eclipse.stardust.model.xpdl.xpdl2.extensions.ExtensionFactory;
 import org.eclipse.stardust.model.xpdl.xpdl2.extensions.LoopDataRefType;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.TypeDeclarationUtils;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.XpdlUtil;
+import org.eclipse.stardust.ui.web.modeler.common.exception.ModelerErrorClass;
+import org.eclipse.stardust.ui.web.modeler.common.exception.ModelerException;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
 import org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
@@ -69,16 +74,6 @@ import org.eclipse.stardust.ui.web.modeler.spi.ModelFormat;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelingSessionScoped;
 import org.eclipse.stardust.ui.web.modeler.xpdl.edit.utils.ModelElementEditingUtils;
 import org.eclipse.stardust.ui.web.modeler.xpdl.edit.utils.WebServiceApplicationUtils;
-import org.eclipse.xsd.XSDElementDeclaration;
-import org.eclipse.xsd.XSDSchema;
-import org.eclipse.xsd.XSDTypeDefinition;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Service;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 
 /**
  *
@@ -286,7 +281,12 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       storeAttributes(activity, activityJson);
       storeDescription(activity, activityJson);
 
-      if (activityJson.has(ModelerConstants.QUALITYCONTROL))
+      AttributeUtil.setAttribute(activity, PredefinedConstants.QUALITY_ASSURANCE_PROBABILITY_ATT, null);
+      AttributeUtil.setAttribute(activity, PredefinedConstants.QUALITY_ASSURANCE_FORMULA_ATT, null);
+      activity.setQualityControlPerformer(null);
+      activity.getValidQualityCodes().clear();
+      if (activityJson.has(ModelerConstants.QUALITYCONTROL)
+            && !(activityJson.get(ModelerConstants.QUALITYCONTROL) instanceof JsonNull))
       {
          updateQualityControl(activity, activityJson);
       }
@@ -477,11 +477,18 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
             .getAsJsonObject(ModelerConstants.QUALITYCONTROL);
       String fullParticipantID = qcJson.get(ModelerConstants.PARTICIPANT_FULL_ID)
             .getAsString();
-      IModelParticipant performer = getModelBuilderFacade().findParticipant(
-            fullParticipantID);
-      activity.setQualityControlPerformer(performer);
 
-      activity.getValidQualityCodes().clear();
+      IModelParticipant importParticipant = getModelBuilderFacade().importParticipant(ModelUtils.findContainingModel(activity), fullParticipantID);
+      activity.setQualityControlPerformer(importParticipant);
+
+      if(EventMarshallingUtils.getJsonAttribute(activityJson, PredefinedConstants.QUALITY_ASSURANCE_FORMULA_ATT) != null)
+      {
+         AttributeUtil.setCDataAttribute(activity, PredefinedConstants.QUALITY_ASSURANCE_FORMULA_ATT, (String) EventMarshallingUtils.getJsonAttribute(activityJson, PredefinedConstants.QUALITY_ASSURANCE_FORMULA_ATT));
+      }
+      if(EventMarshallingUtils.getJsonAttribute(activityJson, PredefinedConstants.QUALITY_ASSURANCE_PROBABILITY_ATT) != null)
+      {
+         AttributeUtil.setCDataAttribute(activity, PredefinedConstants.QUALITY_ASSURANCE_PROBABILITY_ATT, (String) EventMarshallingUtils.getJsonAttribute(activityJson, PredefinedConstants.QUALITY_ASSURANCE_PROBABILITY_ATT));
+      }
 
       JsonArray qcCodes = qcJson.getAsJsonArray(ModelerConstants.QC_VALID_CODES);
       for (Iterator<JsonElement> i = qcCodes.iterator(); i.hasNext();)
@@ -497,7 +504,6 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
 
       }
    }
-
 
    private void updateLoop(ActivityType activity, JsonElement loopJson)
    {
@@ -529,7 +535,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
                }
             }
          }
-         if ("multi".equals(type))
+         if (ModelerConstants.LOOP_MULTI.equals(type))
          {
             LoopMultiInstanceType multiLoop = XpdlUtil.getOrCreateLoopMulti(loop);
             if (json.has("sequential"))
@@ -579,6 +585,27 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
             if (loop == null)
             {
                activity.setLoop((LoopType) multiLoop.eContainer());
+            }
+         }
+         else if (ModelerConstants.LOOP_STANDARD.equals(type))
+         {
+            LoopStandardType standardLoop = XpdlUtil.getOrCreateLoopStandard(loop);
+            XpdlUtil.setLoopStandardCondition(standardLoop, GsonUtils.safeGetAsString(json, ModelerConstants.LOOP_CONDITION));
+            String testTime = GsonUtils.safeGetAsString(json, ModelerConstants.LOOP_TESTTIME); // before / after
+            if(!StringUtils.isEmpty(testTime))
+            {
+               if(ModelerConstants.LOOP_TESTTIME_BEFORE.equals(testTime))
+               {
+                  standardLoop.setTestTime(TestTimeType.BEFORE);
+               }
+               else
+               {
+                  standardLoop.setTestTime(TestTimeType.AFTER);
+               }
+            }
+            if (loop == null)
+            {
+               activity.setLoop((LoopType) standardLoop.eContainer());
             }
          }
       }
@@ -686,9 +713,8 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
                ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
       }
 
-      // Mapping should be updated,if JSON contains mapping element
-      if (dataFlowJson.has(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY)
-            || dataFlowJson.has(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY))
+
+      if (dataFlowJson.has(ModelerConstants.DATAMAPPINGS_PROPERTY))
       {
          // Collect all data mappings between the activity and the data
 
@@ -714,155 +740,52 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
                   .remove(dataMapping);
          }
 
-         // dataFlowJson holds an input and/or an output dataMappingJson; data mappings
-         // have to be created for both
-
-         // Create input mapping
-         JsonObject inJson = null;
-         JsonObject outJson = null;
-
-         if (hasNotJsonNull(dataFlowJson, ModelerConstants.INPUT_DATA_MAPPING_PROPERTY))
+         JsonArray dataMappingsJson = dataFlowJson.getAsJsonArray(ModelerConstants.DATAMAPPINGS_PROPERTY);
+         List<DataMappingType> newDataMappings = new ArrayList<DataMappingType>();
+         for (Iterator<JsonElement> i = dataMappingsJson.iterator(); i.hasNext();)
          {
-            inJson = dataFlowJson
-                  .getAsJsonObject(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY);
-
+            JsonObject dataMappingJson = i.next().getAsJsonObject();
+            String direction = dataMappingJson.get(ModelerConstants.DIRECTION_PROPERTY).getAsString();
+            DirectionType directionType = direction.equals(ModelerConstants.DATAMAPPING_IN) ? DirectionType.IN_LITERAL : DirectionType.OUT_LITERAL;
+            DataMappingType dataMapping = createDataMapping(dataFlowConnection.getActivitySymbol().getActivity(),
+                  dataFlowConnection.getDataSymbol().getData(), dataMappingJson,
+                  directionType, dataMappingJson.getAsJsonObject());
+            newDataMappings.add(dataMapping);
+            mergeInOutDataMappings(newDataMappings);
          }
-         if (hasNotJsonNull(dataFlowJson, ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY))
-         {
-            outJson = dataFlowJson
-                  .getAsJsonObject(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY);
-         }
-
-         boolean hasInAccessPoints = hasAccessPoints(dataFlowConnection
-               .getActivitySymbol().getActivity(), DirectionType.IN_LITERAL);
-         boolean hasOutAccessPoints = hasAccessPoints(dataFlowConnection
-               .getActivitySymbol().getActivity(), DirectionType.OUT_LITERAL);
-
-         if ((hasInAccessPoints && hasOutAccessPoints)
-               || (!hasInAccessPoints && !hasOutAccessPoints))
-         {
-            if (inJson != null)
-            {
-               createDataMapping(dataFlowConnection.getActivitySymbol().getActivity(),
-                     dataFlowConnection.getDataSymbol().getData(), dataFlowJson,
-                     DirectionType.IN_LITERAL, inJson);
-            }
-
-            // Create output mapping
-            if (outJson != null)
-            {
-               createDataMapping(dataFlowConnection.getActivitySymbol().getActivity(),
-                     dataFlowConnection.getDataSymbol().getData(), dataFlowJson,
-                     DirectionType.OUT_LITERAL, outJson);
-            }
-         }
-
-         if (hasInAccessPoints && !hasOutAccessPoints)
-         {
-            if (inJson != null)
-            {
-               createDataMapping(dataFlowConnection.getActivitySymbol().getActivity(),
-                     dataFlowConnection.getDataSymbol().getData(), dataFlowJson,
-                     DirectionType.IN_LITERAL, inJson);
-            }
-
-            // Create output mapping
-            if (outJson != null)
-            {
-               createDataMapping(dataFlowConnection.getActivitySymbol().getActivity(),
-                     dataFlowConnection.getDataSymbol().getData(), dataFlowJson,
-                     DirectionType.OUT_LITERAL, inJson);
-            }
-         }
-
-         if (!hasInAccessPoints && hasOutAccessPoints)
-         {
-            if (inJson != null)
-            {
-               createDataMapping(dataFlowConnection.getActivitySymbol().getActivity(),
-                     dataFlowConnection.getDataSymbol().getData(), dataFlowJson,
-                     DirectionType.IN_LITERAL, outJson);
-            }
-
-            // Create output mapping
-            if (outJson != null)
-            {
-               createDataMapping(dataFlowConnection.getActivitySymbol().getActivity(),
-                     dataFlowConnection.getDataSymbol().getData(), dataFlowJson,
-                     DirectionType.OUT_LITERAL, outJson);
-            }
-         }
-
-      }
-
-      // Following condition is added to handle the scenario where only name property is
-      // modified
-      if (dataFlowJson.has(ModelerConstants.NAME_PROPERTY))
-      {
-         for (DataMappingType dataMapping : dataFlowConnection.getActivitySymbol()
-               .getActivity().getDataMapping())
-         {
-            if (dataMapping.getData().getId()
-                  .equals(dataFlowConnection.getDataSymbol().getData().getId()))
-            {
-               dataMapping.setName(extractAsString(dataFlowJson,
-                     ModelerConstants.NAME_PROPERTY));
-               dataMapping.setId(extractAsString(dataFlowJson,
-                     ModelerConstants.NAME_PROPERTY));
-            }
-         }
-      }
+       }
    }
 
-   private boolean hasAccessPoints(ActivityType activity, DirectionType direction)
+   private void mergeInOutDataMappings(List<DataMappingType> dataMappings)
    {
-      if (activity.getImplementation().getLiteral().equals("Subprocess"))
+      // Post Process Datamappings
+      List<DataMappingType> duplicates = new ArrayList<DataMappingType>();
+      for (Iterator<DataMappingType> i = dataMappings.iterator(); i.hasNext();)
       {
-         return true;
-      }
-      return !getAccessPoints(activity, direction).isEmpty();
-   }
-
-   private List<AccessPointType> getAccessPoints(ActivityType activity,
-         DirectionType direction)
-   {
-      List<AccessPointType> emptyList = new ArrayList<AccessPointType>();
-      if (activity.getImplementation().getLiteral().equals("Application"))
-      {
-         if (direction.equals(DirectionType.IN_LITERAL))
+         boolean matched = false;
+         DataMappingType apt1 = (DataMappingType) i.next();
+         if (!duplicates.contains(apt1))
          {
-            List<AccessPointType> accessPoints = AccessPointUtil
-                  .getInAccessPonts(activity.getApplication());
-            if (!accessPoints.isEmpty())
+            for (Iterator<DataMappingType> j = dataMappings.iterator(); j.hasNext();)
             {
-               return accessPoints;
-            }
-            if (activity.getApplication().getContext() != null
-                  && !activity.getApplication().getContext().isEmpty())
-            {
-               return AccessPointUtil.getInAccessPonts(activity.getApplication()
-                     .getContext().get(0));
-            }
-         }
-         if (direction.equals(DirectionType.OUT_LITERAL))
-         {
-            List<AccessPointType> accessPoints = AccessPointUtil
-                  .getOutAccessPonts(activity.getApplication());
-            if (!accessPoints.isEmpty())
-            {
-               return accessPoints;
-            }
-            if (activity.getApplication().getContext() != null
-                  && !activity.getApplication().getContext().isEmpty())
-            {
-               return AccessPointUtil.getOutAccessPonts(activity.getApplication()
-                     .getContext().get(0));
+               DataMappingType apt2 = (DataMappingType) j.next();
+               if (!apt1.equals(apt2) && !apt1.getDirection().equals(apt2.getDirection())
+                     && apt1.getName().equals(apt2.getName()))
+               {
+                  if (matched)
+                  {
+                     duplicates.add(apt2);
+                  }
+                  else
+                  {
+                     matched = true;
+                     apt2.setId(apt1.getId());
+                  }
+               }
             }
          }
       }
-      return emptyList;
    }
-
 
    /**
     *
@@ -878,22 +801,38 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
    {
       DataMappingType dataMapping = AbstractElementBuilder.F_CWM.createDataMappingType();
 
-      if (hasNotJsonNull(dataFlowJson, ModelerConstants.ID_PROPERTY))
+      if (hasNotJsonNull(dataMappingJson, ModelerConstants.ID_PROPERTY))
       {
-         dataMapping.setId(dataFlowJson.get(ModelerConstants.ID_PROPERTY).getAsString());
-      }
-      else
-      {
-         dataMapping.setId(data.getId());
-      }
-
-      if (hasNotJsonNull(dataFlowJson, ModelerConstants.NAME_PROPERTY))
-      {
-         dataMapping.setName(dataFlowJson.get(ModelerConstants.NAME_PROPERTY)
+         dataMapping.setId(dataMappingJson.get(ModelerConstants.ID_PROPERTY)
                .getAsString());
       }
       else
       {
+         if (hasNotJsonNull(dataFlowJson, ModelerConstants.ID_PROPERTY))
+         {
+            dataMapping.setId(dataFlowJson.get(ModelerConstants.ID_PROPERTY)
+                  .getAsString());
+         }
+         else
+         {
+            dataMapping.setId(data.getId());
+         }
+      }
+
+      if (hasNotJsonNull(dataMappingJson, ModelerConstants.NAME_PROPERTY))
+      {
+         dataMapping.setName(dataMappingJson.get(ModelerConstants.NAME_PROPERTY)
+               .getAsString());
+         String id = NameIdUtilsExtension.createIdFromName(activity, dataMapping);
+         dataMapping.setId(id);
+      }
+      else
+      {
+         if (hasNotJsonNull(dataFlowJson, ModelerConstants.NAME_PROPERTY))
+         {
+            dataMapping.setName(dataFlowJson.get(ModelerConstants.NAME_PROPERTY)
+                  .getAsString());
+         }
          dataMapping.setName(data.getName());
       }
 
@@ -941,7 +880,6 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
 
       return dataMapping;
    }
-
 
    /**
     *
@@ -2005,6 +1943,22 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
             hostingConfig.remove(ModelerConstants.EVENT_CLASS_PROPERTY);
             hostingConfig.remove(ModelerConstants.THROWING_PROPERTY);
             hostingConfig.remove(ModelerConstants.INTERRUPTING_PROPERTY);
+
+
+            if (eventHandler != null) {
+               if (eventJson.has(ModelerConstants.SD_SET_DATA_ACTION))
+               {
+                  if (eventJson.get(ModelerConstants.SD_SET_DATA_ACTION).isJsonNull())
+                  {
+                     EventMarshallingUtils.removeSetDataAction(eventHandler);
+                  }
+                  else
+                  {
+                     EventMarshallingUtils.createSetDataAction(eventHandler, eventJson);
+                  }
+               }
+            }
+
          }
          else
          {
@@ -2146,7 +2100,11 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
                List<? extends IModelParticipant> localParticipants = performer instanceof OrganizationType ? model.getOrganization() : model.getRole();
                performer = ModelUtils.findIdentifiableElement(localParticipants, performer.getId());
             }
-            AttributeUtil.setReference(trigger, PredefinedConstants.PARTICIPANT_ATT, performer);
+            if((performer != null && !(performer instanceof ConditionalPerformerType))
+                  || performer == null)
+            {
+               AttributeUtil.setReference(trigger, PredefinedConstants.PARTICIPANT_ATT, performer);
+            }
          }
       }
 
@@ -2496,23 +2454,19 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
    private void fixReferencesToAccessPoint(String oldID, String newID,
          ApplicationType application)
    {
+      // TODO review if application.getExecutedActivities() would be equivalent to the full model scan below
       ModelType model = ModelUtils.findContainingModel(application);
-      for (Iterator<ProcessDefinitionType> i = model.getProcessDefinition().iterator(); i
-            .hasNext();)
+      for (ProcessDefinitionType processDefinition : model.getProcessDefinition())
       {
-         ProcessDefinitionType processDefinitonType = i.next();
-         for (Iterator<ActivityType> j = processDefinitonType.getActivity().iterator(); j
-               .hasNext();)
+         for (ActivityType activity : processDefinition.getActivity())
          {
-            ActivityType activity = j.next();
-            for (Iterator<DataMappingType> k = activity.getDataMapping().iterator(); k
-                  .hasNext();)
+            // check if activity is associated with target application
+            if ((null != activity.getApplication()) && activity.getApplication().getId().equals(application.getId()))
             {
-               DataMappingType dm = k.next();
+               for (DataMappingType dm : activity.getDataMapping())
+               {
                if (dm.getApplicationAccessPoint() != null && dm.getApplicationAccessPoint().equals(oldID))
                {
-                  if (activity.getApplication().getId().equals(application.getId()))
-                  {
                      dm.setApplicationAccessPoint(newID);
                   }
                }
@@ -2701,12 +2655,9 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       }
 
       JsonObject declarationJson = json.getAsJsonObject("typeDeclaration");
-      JsonObject typeJson = (null != declarationJson)
-            ? declarationJson.getAsJsonObject("type")
-            : null;
-      if ((null != typeJson)
-            && "SchemaType".equals(typeJson.getAsJsonPrimitive("classifier")
-                  .getAsString()))
+      JsonObject typeJson = declarationJson == null ? null : declarationJson.getAsJsonObject("type");
+      String classifier = typeJson == null ? null : typeJson.getAsJsonPrimitive("classifier").getAsString();
+      if ("SchemaType".equals(classifier))
       {
          if (hasNotJsonNull(json, ModelerConstants.ATTRIBUTES_PROPERTY))
          {
@@ -2739,8 +2690,11 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
          XsdSchemaUtils.updateXSDSchemaType(getModelBuilderFacade(),
                typeDeclaration.getSchemaType(), declarationJson.getAsJsonObject("schema"));
       }
-
-      // ExternalReference ?
+      else if ("ExternalReference".equals(classifier))
+      {
+         XsdSchemaUtils.updateExternalReferenceAnnotations(getModelBuilderFacade(),
+               typeDeclaration.getExternalReference(), declarationJson.getAsJsonObject("schema"));
+      }
    }
 
    /**
@@ -2869,6 +2823,11 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
     */
    private void updateData(DataType data, JsonObject dataJson)
    {
+      if (data.eIsProxy())
+      {
+         // we do not change proxies
+         return;
+      }
       updateIdentifiableElement(data, dataJson);
 
       mapDeclaredProperties(data, dataJson, propertiesMap.get(DataType.class));
@@ -2988,6 +2947,21 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
     */
    private void updateModel(ModelType model, JsonObject modelJson)
    {
+      if (modelJson.has(ModelerConstants.ID_PROPERTY))
+      {
+         String id = modelJson.get(ModelerConstants.ID_PROPERTY).getAsString();
+         if (getModelBuilderFacade().getModelManagementStrategy().getModels()
+               .containsKey(id))
+         {
+            throw new ModelerException(ModelerErrorClass.MODEL_ID_ALREADY_EXISTS);
+         }
+
+         if (!StringUtils.isValidIdentifier(id))
+         {
+            throw new ModelerException(ModelerErrorClass.MODEL_ID_INVALID);
+         }
+      }
+
       updateIdentifiableElement(model, modelJson);
 
       mapDeclaredProperties(model, modelJson, propertiesMap.get(ModelType.class));
@@ -3029,7 +3003,6 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
          }
       }
    }
-
 
    /**
     *

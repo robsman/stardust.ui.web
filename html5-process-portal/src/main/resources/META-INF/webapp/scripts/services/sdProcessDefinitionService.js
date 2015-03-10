@@ -23,18 +23,24 @@
 	});
 
 	/*
-	 * 
+	 *
 	 */
 	function ProcessDefinitionService($rootScope, $resource) {
 		var REST_BASE_URL = "services/rest/portal/process-definitions/";
 
 		/*
-		 * 
+		 *
 		 */
 		ProcessDefinitionService.prototype.getDescriptorColumns = function(onlyFilterable) {
 			var restUrl = REST_BASE_URL + "descriptor-columns";
 			restUrl += "?onlyFilterable=" + (onlyFilterable === true ? true : false);
 			return $resource(restUrl).query().$promise;
 		};
+
+		ProcessDefinitionService.prototype.getAllProcesses = function(excludeActivties) {
+		var restUrl = REST_BASE_URL + 'all-processes?excludeActivties='+excludeActivties;
+			return $resource(restUrl).query().$promise;
+		};
+
 	};
 })();

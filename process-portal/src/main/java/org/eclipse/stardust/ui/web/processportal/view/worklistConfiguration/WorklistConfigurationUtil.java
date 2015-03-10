@@ -85,22 +85,14 @@ public class WorklistConfigurationUtil
 
       if (CollectionUtils.isNotEmpty(configuration))
       {
-         String lock = (String) configuration.get(WorklistConfigurationUtil.LOCK);
-         if (!Boolean.valueOf(lock))
-         {
-            fetchUserConf = true;
-         }
+         fetchUserConf = !getLockValue(configuration.get(WorklistConfigurationUtil.LOCK));
       }
       else
       {
          // check default configuration for Participant, if it is locked, don't fetch user
          // level configurations
          configuration = getStoredValues(DEFAULT, worklistConf);
-         String lock = (String) configuration.get(WorklistConfigurationUtil.LOCK);
-         if (!Boolean.valueOf(lock))
-         {
-            fetchUserConf = true;
-         }
+         fetchUserConf = !getLockValue(configuration.get(WorklistConfigurationUtil.LOCK));
       }
 
       // Check at user level
@@ -123,6 +115,25 @@ public class WorklistConfigurationUtil
          configuration = getStoredValues(DEFAULT, worklistConf);
       }
       return configuration;
+   }
+
+   /**
+    * @param lock
+    * @return
+    */
+   public static boolean getLockValue(Object lock)
+   {
+      if (null != lock)
+      {
+         if (lock instanceof Boolean)
+         {
+            return (Boolean)lock;
+         }  
+
+         return Boolean.valueOf((String)lock);
+      }
+
+      return false;
    }
 
    /**

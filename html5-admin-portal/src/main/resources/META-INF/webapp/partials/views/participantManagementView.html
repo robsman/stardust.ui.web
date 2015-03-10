@@ -24,17 +24,17 @@
 				<tr>
 					<td class="tbl-toolbar-item">
 						<a href="#" ng-click="" title="Select Columns" class="tbl-tool-link">
-							<i class="fa fa-table"></i>
+							<i class="glyphicon glyphicon-th"></i>
 						</a>
 					</td>
 					<td class="tbl-toolbar-item">
 						<a href="#" ng-click="" title="Export Excel" class="tbl-tool-link">
-							<i class="fa fa-file-excel-o"></i>
+							<i class="glyphicon glyphicon-export"></i>
 						</a>
 					</td>
 					<td class="tbl-toolbar-item">
 						<a href="#" ng-click="" title="Export CSV" class="tbl-tool-link">
-							<i class="fa fa-file-text-o"></i>
+							<i class="glyphicon glyphicon-export"></i>
 						</a>
 					</td>
 				</tr>
@@ -105,5 +105,17 @@
 				</tr>
 			</tbody>
 		</table>
+	</div>
+	<div style="height:500px;">
+		<h2>Autocomplete</h2>
+		<div  sd-auto-complete
+            sda-matches="pmCtrl.matchData" 
+            sda-match-str="pmCtrl.matchVal" 
+            sda-change="pmCtrl.getMatches(pmCtrl.matchVal)" 
+            sda-text-property="name" 
+            sda-container-class="sd-ac-container" 
+            sda-item-hot-class="sd-ac-item-isActive" 
+            sda-selected-matches="pmCtrl.dataSelected">
+      </div>
 	</div>
 </div>

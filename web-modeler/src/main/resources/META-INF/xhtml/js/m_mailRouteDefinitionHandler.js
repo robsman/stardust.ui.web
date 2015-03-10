@@ -39,8 +39,11 @@ define(
                   var includeAttachmentBean = this.includeAttachmentBean(mailIntegrationOverlay
                            .getApplication().contexts.application.accessPoints);
                   
-                  // process template configuration
-                  route += "<to uri=\"bean:documentHandler?method=processTemplateConfigurations\"/>\n";
+                  if(this.includeProcessTemplateConfigurations(mailIntegrationOverlay))
+                  {
+                	  // process template configuration
+                      route += "<to uri=\"bean:documentHandler?method=processTemplateConfigurations\"/>\n";
+                  }
                   
                   if(mailIntegrationOverlay.templateSourceSelect.val() == "classpath"
                      || mailIntegrationOverlay.templateSourceSelect.val() == "repository")
@@ -256,9 +259,9 @@ define(
                   route += "}\n";
                   route += "     String.prototype.hashCode = function() {";
                   route += "        var hash = 0;\n";
-                  route += "        if (MailIntegrationOverlay == 0) return hash;\n";
-                  route += "        for (var i = 0; i &lt; MailIntegrationOverlay.length; i++) {\n";
-                  route += "           var character = MailIntegrationOverlay.charCodeAt(i);\n";
+                  route += "        if (this == 0) return hash;\n";
+                  route += "        for (var i = 0; i &lt; this.length; i++) {\n";
+                  route += "           var character = this.charCodeAt(i);\n";
                   route += "           hash = ((hash&lt;&lt;5)-hash)+character;\n";
                   route += "           hash = hash &amp; hash;\n";
                   route += "        }\n";
@@ -396,6 +399,9 @@ define(
                   route += "   <simple>$simple{in.header.response}</simple>\n";
                   route += "</setBody>\n";
                   
+                  // remove processed response from header. CRNT-35370
+                  route += "<removeHeaders pattern=\"response\"/>\n";
+                  
                   return route;
                };
                
@@ -410,6 +416,16 @@ define(
                      }
                   }
                   return false;
+               };
+               
+               MailRouteDefinitionHandler.prototype.includeProcessTemplateConfigurations = function(mailIntegrationOverlay) 
+               {
+            	  if ((mailIntegrationOverlay.attachmentsTemplateSource == "embedded" || 
+            			  mailIntegrationOverlay.attachmentsTemplateSource == undefined)
+						&& mailIntegrationOverlay.templateConfigurations.length == 0)
+					return false;
+            	  
+            	  return true;
                };
             };
             

@@ -110,87 +110,90 @@ define(
                                     + "</option>");
 
                   this.locationInput.change({
-                     panel : this
-                  }, function(event)
-                  {
-                     var accessPointList=event.data.panel.getApplication().contexts.application.accessPoints;
-                     var defaultInputAp=m_routeDefinitionUtils.findAccessPoint(accessPointList, "defaultInputAp");
-                     if(event.data.panel.locationInput.val()!="data" && defaultInputAp!=null){
-                        accessPointList=m_routeDefinitionUtils.filterAccessPoint(accessPointList, "defaultInputAp");
-                        event.data.panel.submitParameterDefinitionsChanges(accessPointList);
-                     }
-                     if(event.data.panel.locationInput.val()=="data"){
-                           if(defaultInputAp!=null){
-                              accessPointList=m_routeDefinitionUtils.filterAccessPoint(accessPointList, "defaultInputAp");
-                           }
-                           accessPointList.push({
-                              id : "defaultInputAp",
-                              name : "template",
-                              dataType : "primitive",
-                              primitiveDataType : "String",
-                              direction : "IN",
-                              attributes : {
-                                 "stardust:predefined" : true
-                              }
-                           });
-
-                        event.data.panel.view.submitChanges({
-                           contexts : {
-                              application : {
-                                 accessPoints : accessPointList
-                              }
-                           }
-                        }, true);
-                     }
-                     event.data.panel.parameterDefinitionsPanel.setParameterDefinitions(accessPointList);
-                     event.data.panel.submitChanges(false);
-                     event.data.panel.updateView(event.data.panel.locationInput.val());
-                  });
-
-                  this.parameterDefinitionNameInput = m_utils.jQuerySelect("#parametersTab #parameterDefinitionNameInput");
-                  this.parameterDefinitionNameInput.change({
                       panel : this
                    }, function(event)
                    {
-                	   event.data.panel.submitChanges(false);
+                      event.data.panel.view.clearErrorMessages();
+                      var accessPointList=event.data.panel.getApplication().contexts.application.accessPoints;
+                      var defaultInputAp=m_routeDefinitionUtils.findAccessPoint(accessPointList, "defaultInputAp");
+                      if(event.data.panel.locationInput.val()!="data" && defaultInputAp!=null){
+                         accessPointList=m_routeDefinitionUtils.filterAccessPoint(accessPointList, "defaultInputAp");
+                         event.data.panel.submitParameterDefinitionsChanges(accessPointList);
+                      }
+                      if(event.data.panel.locationInput.val()=="data"){
+                            if(defaultInputAp!=null){
+                               accessPointList=m_routeDefinitionUtils.filterAccessPoint(accessPointList, "defaultInputAp");
+                            }
+                            accessPointList.push({
+                               id : "defaultInputAp",
+                               name : "template",
+                               dataType : "primitive",
+                               primitiveDataType : "String",
+                               direction : "IN",
+                               attributes : {
+                                  "stardust:predefined" : true
+                               }
+                            });
+
+                         event.data.panel.view.submitChanges({
+                            contexts : {
+                               application : {
+                                  accessPoints : accessPointList
+                               }
+                            }
+                         }, true);
+                      }
+                      event.data.panel.parameterDefinitionsPanel.setParameterDefinitions(accessPointList);
+                      event.data.panel.submitChanges(true);
+                      event.data.panel.updateView(event.data.panel.locationInput.val());
                    });
-                  this.formatInput.change({
-                     panel : this
-                  }, function(event)
-                  {
-                    // event.data.panel.view.submitModelElementAttributeChange("stardust:templatingIntegrationOverlay::format",event.data.panel.formatInput.val());
-                     event.data.panel.submitChanges(true);
-                     event.data.panel.updateView(event.data.panel.locationInput.val());
-                  });
 
-                  this.templateInput.change({
-                     panel : this
-                  }, function(event)
-                  {
-                     event.data.panel.submitChanges(false);
-                  });
+                   this.parameterDefinitionNameInput = m_utils.jQuerySelect("#parametersTab #parameterDefinitionNameInput");
+                   this.parameterDefinitionNameInput.change({
+                       panel : this
+                    }, function(event)
+                    {
+                 	   event.data.panel.submitChanges(false);
+                    });
+                   this.formatInput.change({
+                      panel : this
+                   }, function(event)
+                   {
+                      event.data.panel.view.clearErrorMessages();
+                      event.data.panel.submitChanges(true);
+                      event.data.panel.updateView(event.data.panel.locationInput.val());
+                      event.data.panel.view.validate();
+                   });
 
-                  this.outputNameInput.change({
-                     panel : this
-                  }, function(event)
-                  {
-                        event.data.panel.submitChanges(false);
-                  });
+                   this.templateInput.change({
+                      panel : this
+                   }, function(event)
+                   {
+                      event.data.panel.view.clearErrorMessages();
+                      event.data.panel.submitChanges();
+                   });
 
-                  this.convertToPdfInput.change({
-                     panel : this
-                  }, function(event)
-                  {
-                     event.data.panel.submitChanges(false);
-                     event.data.panel.updateView(event.data.panel.locationInput.val());
-                  });
+                   this.outputNameInput.change({
+                      panel : this
+                   }, function(event)
+                   {
+                         event.data.panel.submitChanges(false);
+                   });
 
-                  this.autoStartupInput.change({
-                     panel : this
-                  }, function(event)
-                  {
-                     event.data.panel.submitChanges(false);
-                  });
+                   this.convertToPdfInput.change({
+                      panel : this
+                   }, function(event)
+                   {
+                      event.data.panel.submitChanges(false);
+                      event.data.panel.updateView(event.data.panel.locationInput.val());
+                   });
+
+                   this.autoStartupInput.change({
+                      panel : this
+                   }, function(event)
+                   {
+                      event.data.panel.submitChanges(false);
+                   });
                   
                   this.editorAnchor.id = "codeEditorDiv"
                            + Math.floor((Math.random() * 100000) + 1);
@@ -240,6 +243,7 @@ define(
                                     },
                                     function(event)
                                     {
+                                       event.data.panel.view.clearErrorMessages();
                                        var accessPoints = self.getApplication().contexts.application.accessPoints;
                                        if (self.outputAccessPointInput.val() == m_constants.TO_BE_DEFINED)
                                        {
@@ -287,6 +291,7 @@ define(
                                           }, true);
                                           event.data.panel.parameterDefinitionsPanel.setParameterDefinitions(filteredAccessPoints)
                                           event.data.panel.view.submitModelElementAttributeChange("carnot:engine:camel::routeEntries",event.data.panel.getRoute());
+                                          event.data.panel.view.validate();
                                      }
                                     });
 
@@ -296,6 +301,7 @@ define(
                            },
                            function(event)
                            {//shown only when location==data
+                              event.data.panel.view.clearErrorMessages();
                               var accessPointList=event.data.panel.getApplication().contexts.application.accessPoints;
                               var defaultInputAp=m_routeDefinitionUtils.findAccessPoint(accessPointList, "defaultInputAp");
                               if (self.sourceTypeInput.val() == m_constants.TO_BE_DEFINED)
@@ -400,6 +406,10 @@ define(
                                        + m_i18nUtils
                                                 .getProperty("modeler.model.applicationOverlay.templating.formatInput.docx.label")
                                        + "</option>");
+                  }
+                  if (this.getApplication().attributes["stardust:templatingIntegrationOverlay::format"])
+                  {
+                	  this.formatInput.val(this.getApplication().attributes["stardust:templatingIntegrationOverlay::format"]);  
                   }
                }
                /**
@@ -584,6 +594,7 @@ define(
                   this.textAreaConfigurationDiv.hide();
                   this.outputAccessPointRow.show();
                   this.outputNameRow.hide();
+                 
                   if (location == "embedded")
                   {
                      this.textAreaConfigurationDiv.show();
@@ -614,6 +625,7 @@ define(
                            this.outputNameRow.show();
                      }
                   }
+                  this.populateFormatInputField();
                };
                /**
                 * returns camel route definition
@@ -770,7 +782,7 @@ define(
                      if (m_utils.isEmptyString(this.templateInput.val()))
                      {
                         this.view.errorMessages.push("Template field cannot be empty.");
-                        valid = false;
+                        valid = true;
                      }
                   }
                   if(this.formatInput.val()=="docx" && this.templateInput.val().search(/.docx$/) == -1 && this.locationInput.val() != "data"){
@@ -781,7 +793,7 @@ define(
                      this.view.errorMessages.push("The provided configuration is not valid.");
                      valid = false;
                   }
-                  if(this.formatInput.val()=="docx" && this.outputAccessPointInput.val()==m_constants.TO_BE_DEFINED){
+                  if((this.formatInput.val()=="docx" && this.outputAccessPointInput.val()==m_constants.TO_BE_DEFINED) || (this.convertToPdfInput.prop("checked") && this.outputAccessPointInput.val()==m_constants.TO_BE_DEFINED)){
                      this.view.errorMessages.push("The Out AccessPoint should be of document Type.");
                      valid = false;
                   }

@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Anoop.Nair (SunGard CSA LLC) - initial API and implementation and/or initial documentation
+ *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service.dto;
 
@@ -31,4 +31,18 @@ public class DescriptorColumnDTO extends AbstractDTO
 
    @DTOAttribute("sortable")
    public Boolean sortable;
+
+   public Boolean filterable;
+
+   public DescriptorColumnDTO(String id, String title, String type, Boolean sortable,
+         Boolean filterable)
+   {
+      super();
+      this.id = id;
+      this.title = title;
+      this.type = type;
+      this.sortable = sortable;
+      this.filterable = filterable;
+   }
+
 }

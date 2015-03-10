@@ -160,10 +160,13 @@ define(
                   }
                });
 					
-					window.parent.EventHub.events.subscribe("BPM-REPORTING-REPORT-NAME-UPDATED", function(newName, newPath) {
-                  self.report.name = newName;
-                  self.report.storage.path = newPath; 
-                  self.updateView();
+					window.parent.EventHub.events.subscribe("BPM-REPORTING-REPORT-NAME-UPDATED", function(reportUID, newName, newPath) {
+					   if (self.report.reportUID == reportUID)
+					   {
+					      self.report.name = newName;
+					      self.report.storage.path = newPath; 
+					      self.updateView();   
+					   }
                }, false);
 					
 					var self = this;
@@ -582,123 +585,129 @@ define(
 						// Initialize
 						// defaults
 
-						// TODO Get chart options from central place
-
-						self.report = {
-						   reportUID : reportUID,      
-							name : name,
-							description : "",
-							storage : {
-								location : "publicFolder",
-								state : "created"
-							},
-							dataSet : {
-								type : "seriesGroup",
-								primaryObject : "processInstance",
-								joinExternalData : false,
-								externalJoins : [ {
-									joinType : "outer",
-									restUri : "http://127.0.0.1:1337/",
-									fields : []
-								} ],
-								computedColumns : [],
-								columns : [],
-								factDurationUnit : "d",
-								firstDimensionCumulationIntervalCount : 1,
-								firstDimensionCumulationIntervalUnit : "d",
-								firstDimensionDurationUnit: "s",
-								filters: getDefaultFilterFor("processInstanceStartTimestamp")
-							},
-							parameters : {},
-							layout : {
-								type : "simpleReport",
-								chart : {
-									type : this.reportingService.metadata.chartTypes.xyPlot.id,
-									options : {
-										animate : true,
-										animateReplot : true,
-										series : {},
-										seriesDefaults : {
-											lineWidth : 1.5,
-											markerOptions : {
-												style : "filledCircle"
-											},
-											pointLabels : {},
-											trendline : {
-												color : '#666666',
-												label : '',
-												type : 'linear',
-												shadow : true,
+						//get user locale
+						
+						self.reportingService.getUserLanguage()
+						.done(function(userLanguage) {
+						   
+							// TODO Get chart options from central place
+							self.report = {
+							    userLanguage : userLanguage,
+							    reportUID : reportUID,      
+								name : name,
+								description : "",
+								storage : {
+									location : "publicFolder",
+									state : "created"
+								},
+								dataSet : {
+									type : "seriesGroup",
+									primaryObject : "processInstance",
+									joinExternalData : false,
+									externalJoins : [ {
+										joinType : "outer",
+										restUri : "http://127.0.0.1:1337/",
+										fields : []
+									} ],
+									computedColumns : [],
+									columns : [],
+									factDurationUnit : "d",
+									firstDimensionCumulationIntervalCount : 1,
+									firstDimensionCumulationIntervalUnit : "d",
+									firstDimensionDurationUnit: "s",
+									filters: getDefaultFilterFor("processInstanceStartTimestamp")
+								},
+								parameters : {},
+								layout : {
+									type : "simpleReport",
+									chart : {
+										type : self.reportingService.metadata.chartTypes.xyPlot.id,
+										options : {
+											animate : true,
+											animateReplot : true,
+											series : {},
+											seriesDefaults : {
 												lineWidth : 1.5,
-												shadowAngle : 45,
-												shadowOffset : 1.5,
-												shadowDepth : 3,
-												shadowAlpha : 0.07
-											},
-										},
-										axes : {
-											xaxis : {
-												tickOptions : {
-													mark : "outside",
-													markSize : 4,
-													angle : 0,
-													showMark : true,
-													showGridline : true
+												markerOptions : {
+													style : "filledCircle"
 												},
-												showTickMarks : true,
-												showTicks : true
-											},
-											x2axis : {},
-											yaxis : {
-												tickOptions : {
-													mark : "outside",
-													markSize : 4,
-													angle : 0,
-													showMark : true,
-													showGridline : true
+												pointLabels : {},
+												trendline : {
+													color : '#666666',
+													label : '',
+													type : 'linear',
+													shadow : true,
+													lineWidth : 1.5,
+													shadowAngle : 45,
+													shadowOffset : 1.5,
+													shadowDepth : 3,
+													shadowAlpha : 0.07
 												},
-												showTickMarks : true,
-												showTicks : true
 											},
-											y2axis : {}
-										},
-										legend : {
-											show: true,
-											location : "e"
-										},
-										highlighter : {},
-										cursor : {
-											show : true,
-											showTooltip : true
-										},
-										zoom : {}
-									}
+											axes : {
+												xaxis : {
+													tickOptions : {
+														mark : "outside",
+														markSize : 4,
+														angle : 0,
+														showMark : true,
+														showGridline : true
+													},
+													showTickMarks : true,
+													showTicks : true
+												},
+												x2axis : {},
+												yaxis : {
+													tickOptions : {
+														mark : "outside",
+														markSize : 4,
+														angle : 0,
+														showMark : true,
+														showGridline : true
+													},
+													showTickMarks : true,
+													showTicks : true
+												},
+												y2axis : {}
+											},
+											legend : {
+												show: true,
+												location : "e"
+											},
+											highlighter : {},
+											cursor : {
+												show : true,
+												followMouse : true,
+												showTooltip : true
+											},
+											zoom : {}
+										}
+									},
+									table : {
+										options : {
+										   showExportButtons : true,	
+										   showSearchInput : true,
+								           showVisibleRowCountSelector : true  
+										}
+									},
+									document : {}
 								},
-								table : {
-									options : {
-									   showExportButtons : true,	
-									   showSearchInput : true,
-							           showVisibleRowCountSelector : true  
-									}
-								},
-								document : {}
-							},
-							scheduling : self.schedulingController
-									.createDefaultSettings()
-						};
+								scheduling : self.schedulingController
+										.createDefaultSettings()
+							};
 
-						this.report.storage.participant = "Administrator";
-						
-						this.report.dataSet.fact = this.getPrimaryObject().facts.count.id;
-						this.setDefaultFirstDimension();
-						
-						this.initFilters();
-						
-						deferred.resolve();
+							self.report.storage.participant = "Administrator";
+							
+							self.report.dataSet.fact = self.getPrimaryObject().facts.count.id;
+							self.setDefaultFirstDimension();
+							
+							self.initFilters();
+							
+							deferred.resolve();
+						});
 					}
 
 					return deferred.promise();
-
 				};
 
 				/**
@@ -1200,24 +1209,17 @@ define(
                   {
                      //report name has been changed
 	                  console.log("report name has been changed");
-	                  self.reportingService
-                     .renameReportDefinition(
-                              self.path,
-                              self.report.name).done(
-                                    function() {
-                                       self.reportingService.saveReportDefinition(self.report)
-                                       .done(
-                                             function(report) {
-                                                self.report.storage = report.storage;
-                                                window.parent.EventHub.events.publish("BPM-REPORTING-REPORT-UPDATED", 
-                                                         self.report.reportUID, self.report.name);
-                                                self.updateView();
-                                             });
-                                             document.body.style.cursor = "default";
-                                       }).fail(
-                                          function() {
-                                             document.body.style.cursor = "default";
-                                       });
+	                  
+	                  self.reportingService.renameAndSaveReportDefinition(self.report)
+                     .done(
+                           function(report) {
+                              self.path = report.storage.path;
+                              self.report.storage = report.storage;
+                              window.parent.EventHub.events.publish("BPM-REPORTING-REPORT-UPDATED", 
+                                       self.report.reportUID, self.report.name, self.path);
+                              self.updateView();
+                           });
+	                  
 	                  return;
                   }
                } 
@@ -1228,8 +1230,8 @@ define(
                            self.report.metadata = report.metadata;
                            if (self.path == null)
                            {// Create Case
-                              window.parent.EventHub.events.publish("BPM-REPORTING-REPORT-UPDATED", 
-                                       self.report.reportUID, self.report.name);
+                              window.parent.EventHub.events.publish("BPM-REPORTING-REPORT-CREATED", 
+                                       self.report.reportUID, self.report.name, self.path);
                            }
                            self.showFavoriteBtn = true;
                            self.updateView();
@@ -1787,16 +1789,20 @@ define(
         };
       
       
-               /**
-                * This function will return true if argument is of Integer Type
-                */
-              ReportDefinitionController.prototype.isNumeric = function(element) {
-                 return (element.type.id === this.reportingService.metadata.integerType.id)? true : false;
-              };
+	       /**
+	        * This function will return true if argument is of Integer Type
+	        */
+	      ReportDefinitionController.prototype.isNumeric = function(element) {
+	    	  	if ((element.type.id === this.reportingService.metadata.integerType.id)
+						|| (element.type.id === this.reportingService.metadata.decimalType.id)) {
+					return true;
+				}
+				return false;
+	      };
               
               /**
                * This function will return true if argument is of duration Type
-               */
+				 */
              ReportDefinitionController.prototype.isDuration = function(element) {
             	 if (this.dataAvailable && element) {
             		 return (element.type.id === this.reportingService.metadata.durationType.id)? true : false;
@@ -1866,7 +1872,10 @@ define(
                var enumerators = [];
                for ( var n in dimensions ) {
                   var add = true; 
-                  if (this.report.dataSet.columns) {
+                  
+                  if(dimensions[n].notSupportedAsColumn){
+                	  add = false;
+                  }else if (this.report.dataSet.columns) {
                      this.report.dataSet.columns
                            .forEach(function(column) {
                               if (self.report.dataSet.groupBy && self.report.dataSet.groupBy != 'None') 
