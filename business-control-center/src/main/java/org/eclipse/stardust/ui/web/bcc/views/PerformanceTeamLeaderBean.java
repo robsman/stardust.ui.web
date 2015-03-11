@@ -58,6 +58,8 @@ import org.eclipse.stardust.ui.web.common.event.ViewEvent.ViewEventType;
 import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterPopup;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterSearch;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.table.SortableTable;
 import org.eclipse.stardust.ui.web.common.table.SortableTableComparator;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
@@ -78,6 +80,8 @@ public class PerformanceTeamLeaderBean extends UIComponentBean implements Resour
    private static final long serialVersionUID = 1L;
    private final static String QUERY_EXTENDER = "carnotBcPerformanceTeamleader/queryExtender";   
 
+   private static final Logger trace = LogManager.getLogger(PerformanceTeamLeaderBean.class);
+   
    private IQueryExtender queryExtender;
 
    private SessionContext sessionCtx;
@@ -114,49 +118,55 @@ public class PerformanceTeamLeaderBean extends UIComponentBean implements Resour
    @Override
    public void initialize()
    {
-      processes = ProcessDefinitionUtils.getAllBusinessRelevantProcesses();
-      
-      teamMap = CollectionUtils.newHashMap();
-
-      UserQuery query = UserQuery.findActive();
-      facade = WorkflowFacade.getWorkflowFacade();
-      FilterTerm filter = query.getFilter().addOrTerm();
-      roleInfoMap = CollectionUtils.newHashMap();
-     
-      for (Object leadRole : facade.getTeamleadRoles())
+      try
       {
-         QualifiedRoleInfo teamLeadRoleInfo = (QualifiedRoleInfo) leadRole;
-        
-         String participantKey = ParticipantUtils.getParticipantUniqueKey(teamLeadRoleInfo);
-         roleInfoMap.put(participantKey, teamLeadRoleInfo);
-         
-         List<Participant> teams = teamMap.get(participantKey);
-         if (teams == null)
-         {
-            teams = CollectionUtils.newArrayList();
-            teamMap.put(participantKey, teams);
-         }
-         filter.add(ParticipantAssociationFilter.forParticipant(teamLeadRoleInfo));
+         processes = ProcessDefinitionUtils.getAllBusinessRelevantProcesses();
 
-         Role teamLeadRole = getRole(teamLeadRoleInfo);
+         teamMap = CollectionUtils.newHashMap();
 
-         if (null != teamLeadRole)
+         UserQuery query = UserQuery.findActive();
+         facade = WorkflowFacade.getWorkflowFacade();
+         FilterTerm filter = query.getFilter().addOrTerm();
+         roleInfoMap = CollectionUtils.newHashMap();
+
+         for (Object leadRole : facade.getTeamleadRoles())
          {
-            for (Object teamIter : teamLeadRole.getTeams())
+            QualifiedRoleInfo teamLeadRoleInfo = (QualifiedRoleInfo) leadRole;
+
+            String participantKey = ParticipantUtils.getParticipantUniqueKey(teamLeadRoleInfo);
+            roleInfoMap.put(participantKey, teamLeadRoleInfo);
+
+            List<Participant> teams = teamMap.get(participantKey);
+            if (teams == null)
             {
-               Participant teamMember = (Participant) teamIter;
-               teams.add(teamMember);
+               teams = CollectionUtils.newArrayList();
+               teamMap.put(participantKey, teams);
+            }
+            filter.add(ParticipantAssociationFilter.forParticipant(teamLeadRoleInfo));
+
+            Role teamLeadRole = getRole(teamLeadRoleInfo);
+
+            if (null != teamLeadRole)
+            {
+               for (Object teamIter : teamLeadRole.getTeams())
+               {
+                  Participant teamMember = (Participant) teamIter;
+                  teams.add(teamMember);
+               }
             }
          }
+         query.setPolicy(new UserDetailsPolicy(UserDetailsLevel.Full));
+         userStatistics = (UserPerformanceStatistics) facade.getAllUsers(UserPerformanceStatisticsQuery.forAllUsers());
+         if (queryExtender != null)
+         {
+            queryExtender.extendQuery(query);
+         }
+         createTeamLeaderList(query);
       }
-      query.setPolicy(new UserDetailsPolicy(UserDetailsLevel.Full));
-      userStatistics = (UserPerformanceStatistics) facade.getAllUsers(UserPerformanceStatisticsQuery.forAllUsers());
-      if (queryExtender != null)
+      catch (Exception e)
       {
-         queryExtender.extendQuery(query);
+         trace.error("Exception Occurred while initializing Performance Team Lead View", e);
       }
-      createTeamLeaderList(query);
-
    }
    /**
     * 
@@ -411,7 +421,6 @@ public class PerformanceTeamLeaderBean extends UIComponentBean implements Resour
    {
       if (userStatistics != null && processes!=null)
       {
-        
          for (ProcessDefinition process:processes)
          {  
             PerformanceStatistics performanceStatistics = userStatistics
@@ -426,21 +435,18 @@ public class PerformanceTeamLeaderBean extends UIComponentBean implements Resour
             
             if (performanceStatistics != null)
             {
-               
                List contributions = performanceStatistics.contributions;
                for (int i = 0; i < contributions.size(); ++i)
                {
                   Contribution con = (Contribution) contributions.get(i);
-                  pStat.countToday += con.getPerformanceInInterval(DateRange.TODAY).getnAisCompleted();
-                  pStat.countWeek += con.getPerformanceInInterval(DateRange.THIS_WEEK).getnAisCompleted();
-                  pStat.countMonth += con.getPerformanceInInterval(DateRange.THIS_MONTH).getnAisCompleted();
+                  pStat.countToday += con.getOrCreatePerformanceInInterval(DateRange.TODAY).getnAisCompleted();
+                  pStat.countWeek += con.getOrCreatePerformanceInInterval(DateRange.THIS_WEEK).getnAisCompleted();
+                  pStat.countMonth += con.getOrCreatePerformanceInInterval(DateRange.THIS_MONTH).getnAisCompleted();
                }
-
             }            
             activityStatisticsList.add(new CompletedActivityStatisticsTableEntry(
                   I18nUtils.getProcessName(process), pStat.countToday, pStat.countWeek,
                   pStat.countMonth));
-
          }
       }
    }
