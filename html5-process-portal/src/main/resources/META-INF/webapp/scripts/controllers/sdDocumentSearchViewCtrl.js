@@ -35,6 +35,8 @@
 		this.exportFileName = new Date();
 		
 		this.rowSelection = null;
+		
+		this.showDocumentSearchCriteria = true;
 
 		/**
 		 * 
@@ -255,6 +257,7 @@
 				self.showDocumentSearchResult = false;
 			} else {
 				self.showDocumentSearchResult = true;
+				self.showDocumentSearchCriteria = false;
 				self.showTableData = true;
 				if (self.docSrchRsltTable != null) {
 					self.refresh();
@@ -535,6 +538,14 @@
 						self.showUserDetailsFromDocHistory = true;
 					});
 
+		};
+		
+		/**
+		 * 
+		 */
+		DocumentSearchViewCtrl.prototype.setShowDocumentSearchCriteria = function(){
+			var self = this;
+			self.showDocumentSearchCriteria = !self.showDocumentSearchCriteria;
 		};
 	}
 })();

@@ -131,7 +131,7 @@ public class DocumentSearchServiceBean
 
       QueryResultDTO resultDTO = new QueryResultDTO();
       resultDTO.list = list;
-      resultDTO.totalCount = list.size();
+      resultDTO.totalCount = docs.getTotalCount();
 
       return resultDTO;
 

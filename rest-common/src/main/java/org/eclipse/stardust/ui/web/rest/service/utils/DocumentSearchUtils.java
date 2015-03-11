@@ -36,6 +36,7 @@ import org.eclipse.stardust.engine.api.query.ProcessInstances;
 import org.eclipse.stardust.engine.api.query.Query;
 import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.query.RepositoryPolicy;
+import org.eclipse.stardust.engine.api.query.SubsetPolicy;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
@@ -222,6 +223,10 @@ public class DocumentSearchUtils {
 	public QueryResult<Document> performSearch(Options options,
 			DocumentSearchCriteriaDTO documentSearchAttributes) {
 		DocumentQuery query = new DocumentQuery();
+		
+		SubsetPolicy subsetPolicy = new SubsetPolicy(options.pageSize, options.skip,
+               true);
+        query.setPolicy(subsetPolicy);
 
 		addSortCriteria(query, options);
 
