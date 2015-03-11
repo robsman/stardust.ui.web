@@ -338,7 +338,7 @@ public class DocumentSearchResource
       {
          try
          {
-            documentSearchCriteria = DTOBuilder.buildFromJSONDocumentCriteria(
+            documentSearchCriteria = DTOBuilder.buildFromJSON(
                   documentSearchCriteriaJsonStr, DocumentSearchCriteriaDTO.class);
          }
          catch (Exception e)

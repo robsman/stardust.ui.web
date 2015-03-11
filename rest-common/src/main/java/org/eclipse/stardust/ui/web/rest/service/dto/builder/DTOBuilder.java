@@ -18,11 +18,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.util.StringUtils;
-
-import com.google.gson.JsonObject;
-import com.google.gson.reflect.TypeToken;
-
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
@@ -30,8 +25,10 @@ import org.eclipse.stardust.ui.web.common.util.ReflectionUtils;
 import org.eclipse.stardust.ui.web.rest.JsonMarshaller;
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOAttribute;
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOClass;
-import org.eclipse.stardust.ui.web.viewscommon.spi.descriptor.ISemanticalDescriptorComparator;
+import org.springframework.util.StringUtils;
 
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 
 /**
  * @author Subodh.Godbole
@@ -46,8 +43,7 @@ public class DTOBuilder
     *
     */
    private DTOBuilder()
-   {
-   }
+   {}
 
    /**
     * @param <DTO>
@@ -63,10 +59,10 @@ public class DTOBuilder
       {
          toInstance = toClass.newInstance();
 
-         Class<?> iteratorClass = toClass;
+         Class< ? > iteratorClass = toClass;
          while (iteratorClass != Object.class)
          {
-            for(Field field : iteratorClass.getDeclaredFields())
+            for (Field field : iteratorClass.getDeclaredFields())
             {
                if (field.isAnnotationPresent(DTOAttribute.class))
                {
@@ -81,7 +77,7 @@ public class DTOBuilder
                   {
                      Object value = getFieldValue(fromInstance, fieldName);
 
-                     Class<?> fieldClass = field.getType();
+                     Class< ? > fieldClass = field.getType();
                      if (null != value && fieldClass.isAnnotationPresent(DTOClass.class))
                      {
                         value = build(value, fieldClass);
@@ -114,7 +110,8 @@ public class DTOBuilder
     * @param toClass
     * @return
     */
-   public static <DTO, T> List<DTO> buildList(Collection<T> fromInstances, Class<DTO> toClass)
+   public static <DTO, T> List<DTO> buildList(Collection<T> fromInstances,
+         Class<DTO> toClass)
    {
       List<DTO> list = new ArrayList<DTO>();
 
@@ -126,27 +123,27 @@ public class DTOBuilder
       return list;
    }
 
-
    /**
     * @param jsonString
     * @param toClass
     * @return
     * @throws Exception
     */
-   public static <DTO, T> DTO buildFromJSON(String jsonString, Class<DTO> toClass) throws Exception
+   public static <DTO, T> DTO buildFromJSON(String jsonString, Class<DTO> toClass)
+         throws Exception
    {
       return buildFromJSON(jsonString, toClass, null);
    }
 
-
-  /**
-   * Builds a DTO from a JSON String
-   * @param jsonString
-   * @param toClass
-   * @param customTokens
-   * @return
-   * @throws Exception
-   */
+   /**
+    * Builds a DTO from a JSON String
+    * 
+    * @param jsonString
+    * @param toClass
+    * @param customTokens
+    * @return
+    * @throws Exception
+    */
    public static <DTO, T> DTO buildFromJSON(String jsonString, Class<DTO> toClass,
          Map<String, Type> customTokens) throws Exception
    {
@@ -154,8 +151,10 @@ public class DTOBuilder
       JsonObject json = jsonIo.readJsonObject(jsonString);
       return buildFromJSON(json, toClass, customTokens);
    }
+
    /**
     * Builds a DTO from a JSON
+    * 
     * @param json
     * @param toClass
     * @param customTokens
@@ -196,6 +195,18 @@ public class DTOBuilder
             {
                setFieldValue(toInstance, field, json.get(field.getName()).getAsBoolean());
             }
+            else if (Date.class.equals(field.getType()))
+            {
+               if (json.get(field.getName()).getAsString().isEmpty())
+               {
+                  setFieldValue(toInstance, field, null);
+               }
+               else
+               {
+                  setFieldValue(toInstance, field, new Date(json.get(field.getName())
+                        .getAsLong()));
+               }
+            }
             else if (List.class.equals(field.getType()))
             {
                Type listType = new TypeToken<List<String>>()
@@ -222,60 +233,14 @@ public class DTOBuilder
       return toInstance;
    }
 
-   public static <DTO, T> DTO buildFromJSONDocumentCriteria(String jsonString,
-			Class<DTO> toClass) throws Exception {
-		DTO toInstance = null;
-		toInstance = toClass.newInstance();
-		JsonMarshaller jsonIo = new JsonMarshaller();
-		JsonObject json = jsonIo.readJsonObject(jsonString);
-
-		for (Field field : toClass.getDeclaredFields()) {
-			if (null != json.get(field.getName())) {
-				if (String.class.equals(field.getType())) {
-					setFieldValue(toInstance, field, json.get(field.getName())
-							.getAsString());
-				} else if (int.class.equals(field.getType())
-						|| Integer.class.equals(field.getType())) {
-					setFieldValue(toInstance, field, json.get(field.getName())
-							.getAsInt());
-				} else if (Long.class.equals(field.getType())
-						|| long.class.equals(field.getType())) {
-					setFieldValue(toInstance, field, json.get(field.getName())
-							.getAsLong());
-				} else if (Float.class.equals(field.getType())) {
-					setFieldValue(toInstance, field, json.get(field.getName())
-							.getAsFloat());
-				} else if (Boolean.class.equals(field.getType())
-						|| boolean.class.equals(field.getType())) {
-					setFieldValue(toInstance, field, json.get(field.getName())
-							.getAsBoolean());
-				} else if (Date.class.equals(field.getType())) {
-                    if(json.get(field.getName()).getAsString().isEmpty()){
-                    	setFieldValue(toInstance, field,null);
-                    }else{
-					setFieldValue(toInstance, field,
-							new Date(json.get(field.getName()).getAsLong()));
-                    }
-				} else if (List.class.equals(field.getType())) {
-					Type listType = new TypeToken<List<String>>() {
-					}.getType();
-
-					setFieldValue(toInstance, field, GsonUtils.extractList(json
-							.get(field.getName()).getAsJsonArray(), listType));
-				}
-
-			}
-		}
-		return toInstance;
-	}
-
    /**
     * @param instance
     * @param fieldName
     * @return
     * @throws IllegalAccessException
     */
-   private static Object getFieldValue(Object instance, String fieldName) throws Exception
+   private static Object getFieldValue(Object instance, String fieldName)
+         throws Exception
    {
       if (fieldName.indexOf(".") > -1)
       {
@@ -303,7 +268,8 @@ public class DTOBuilder
     * @return
     * @throws IllegalAccessException
     */
-   private static Object getPlainField(Object instance, String fieldName) throws Exception
+   private static Object getPlainField(Object instance, String fieldName)
+         throws Exception
    {
       Object value = null;
 
@@ -321,8 +287,8 @@ public class DTOBuilder
       }
       catch (Exception e)
       {
-         trace.warn("Error in invoking getter method for, class: " + instance.getClass().getName() + ", field: "
-               + fieldName);
+         trace.warn("Error in invoking getter method for, class: "
+               + instance.getClass().getName() + ", field: " + fieldName);
 
          if (null != instance)
          {
@@ -342,9 +308,11 @@ public class DTOBuilder
    }
 
    /*
-    * TODO: Performance: Check availability of setter method first using simple if than relying on exception
+    * TODO: Performance: Check availability of setter method first using simple if than
+    * relying on exception
     */
-   private static void setFieldValue(Object instance, Field field, Object value) throws Exception
+   private static void setFieldValue(Object instance, Field field, Object value)
+         throws Exception
    {
       try
       {
@@ -356,7 +324,7 @@ public class DTOBuilder
 
          ReflectionUtils.invokeMethod(instance, methodName, params);
       }
-      catch(Exception e)
+      catch (Exception e)
       {
          // Now try with direct field
          if (!field.isAccessible())
