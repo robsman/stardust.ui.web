@@ -397,6 +397,7 @@ public class ModelUtils
    public static Set<TypedXPath> getXPaths(Model model, Activity activity, AccessPoint ap)
    {
       Model refModel = model;
+      Reference ref = activity.getReference();
 
       String typeDeclarationId = (String) ap.getAttribute(StructuredDataConstants.TYPE_DECLARATION_ATT);
 
@@ -415,6 +416,12 @@ public class ModelUtils
             trace.error("Error occured in Type declaration parsing", e);
          }
       }
+
+      if (null == refModel.getTypeDeclaration(typeDeclarationId) && null != ref)
+      {
+         refModel = getModel(ref.getModelOid());
+      }
+
       return XPathUtils.getXPaths(refModel, typeDeclarationId);
    }
 
