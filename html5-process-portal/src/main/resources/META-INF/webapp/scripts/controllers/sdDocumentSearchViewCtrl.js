@@ -547,5 +547,25 @@
 			var self = this;
 			self.showDocumentSearchCriteria = !self.showDocumentSearchCriteria;
 		};
+		
+		/**
+		 * 
+		 */
+		DocumentSearchViewCtrl.prototype.setShowDocumentSearchCriteria = function(){
+			var self = this;
+			self.showDocumentSearchCriteria = !self.showDocumentSearchCriteria;
+		};
+		
+		/**
+		 * 
+		 */
+		DocumentSearchViewCtrl.prototype.getMetaData = function(metadata){
+			 var metadataToExport  = [];
+		        
+		        angular.forEach(metadata,function( metadataItem){
+		        	metadataToExport.push(metadataItem.first +" : "+metadataItem.second);
+		        });
+		        return metadataToExport.join(',');
+		};
 	}
 })();

@@ -5,7 +5,7 @@
 				ng-click="bpmCommon.stopEvent($event); docSearchViewCtrl.openAttachToProcessDialog(docSearchViewCtrl.rowSelection);"
 				title="{{i18n('views-common-messages.views-documentSearchView-documentSearchTable-attachToProcess')}}"
 				class="button-link tbl-toolbar-item tbl-tool-link">
-				<i class="glyphicon glyphicon-file"></i>
+				<i class="sc sc-fw sc-1x sc-document-attach"></i>
 			</button>
 		</div>
 	</div>
@@ -89,7 +89,14 @@
 				<td></td>
 				<td sda-exporter="rowData.fileSize | sdFileSizeFilter">{{rowData.fileSize
 					| sdFileSizeFilter}}</td>
-				<td></td>
+				<td sda-exporter="docSearchViewCtrl.getMetaData(rowData.metadata)">
+				    <table>
+						<tr ng-repeat="item in rowData.metadata">
+							<td style="white-space: nowrap;">{{item.first}}:</td>
+							<td style="white-space: nowrap;">{{item.second}}</td>
+						</tr>
+					</table>
+				</td>
 				<td sda-exporter="rowData.documentPath"><table>
 						<tbody>
 							<tr style="vertical-align: top;">
@@ -110,13 +117,13 @@
 							ng-click="bpmCommon.stopEvent($event); docSearchViewCtrl.openProcessDialog(rowData); "
 							title="{{i18n('views-common-messages.views-documentSearchView-documentSearchTable-tooltip-process')}}"
 							class="button-link tbl-tool-link">
-							<i class="glyphicon glyphicon-cog"></i>
+							<i class="glyphicon sc-1x glyphicon-cog"></i>
 						</button>
 						<button
 							ng-click="bpmCommon.stopEvent($event); docSearchViewCtrl.openAttachToProcessDialog(rowData);"
 							title="{{i18n('views-common-messages.views-documentSearchView-documentSearchTable-attachToProcess')}}"
 							class="button-link tbl-tool-link">
-							<i class="glyphicon glyphicon-file"></i>
+							<i class="sc sc-fw sc-1x sc-document-attach"></i>
 						</button>
 						<sd-document-download sda-document-id="rowData.documentId"
 							sda-document-name="rowData.documentName"></sd-document-download>
@@ -124,7 +131,7 @@
 							ng-click="bpmCommon.stopEvent($event);docSearchViewCtrl.setShowDocumentVersions(rowData.documentId,rowData.documentName);"
 							title="{{i18n('views-common-messages.views-myDocumentsTreeView-documentTree-versionHistory')}}"
 							class="button-link tbl-tool-link">
-							<i class="glyphicon glyphicon-book"></i>
+							<i class="sc sc-fw sc-1x sc-documents"></i>
 							<!-- need to chnage this icon once we get correct one -->
 						</button>
 					</div>
