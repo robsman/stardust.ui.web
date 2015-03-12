@@ -1,14 +1,18 @@
-/**
- * 
- */
+/*******************************************************************************
+ * Copyright (c) 2014 SunGard CSA LLC and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    SunGard CSA LLC - initial API and implementation and/or initial documentation
+ *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest;
-
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -22,12 +26,11 @@ import javax.ws.rs.core.Response;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.rest.service.UserGroupService;
-import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.UserGroupDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.UserGroupQueryResultDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import com.google.gson.Gson;
 
 /**
  * @author Aditya.Gaikwad
@@ -35,107 +38,70 @@ import com.google.gson.Gson;
  */
 @Component
 @Path("/user-group")
-public class UserGroupResource {
+public class UserGroupResource
+{
 
-	public static final Logger trace = LogManager
-			.getLogger(UserGroupResource.class);
+   public static final Logger trace = LogManager.getLogger(UserGroupResource.class);
 
-	@Autowired
-	private UserGroupService userGroupService;
+   @Autowired
+   private UserGroupService userGroupService;
 
-	public UserGroupService getUserGroupService() {
-		return userGroupService;
-	}
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/all")
+   public Response getAllUserGroups(@QueryParam("skip") @DefaultValue("0") Integer skip,
+         @QueryParam("pageSize") @DefaultValue("8") Integer pageSize,
+         @QueryParam("orderBy") @DefaultValue("oid") String orderBy,
+         @QueryParam("orderByDir") @DefaultValue("asc") String orderByDir, String postData)
+   {
+      Options options = new Options(pageSize, skip, orderBy, "asc".equalsIgnoreCase(orderByDir));
+      UserGroupQueryResultDTO allUserGroupsDTO = getUserGroupService().getAllUserGroups(options);
+      return Response.ok(allUserGroupsDTO.toJson(), MediaType.APPLICATION_JSON).build();
+   }
 
-	public void setUserGroupService(UserGroupService userGroupService) {
-		this.userGroupService = userGroupService;
-	}
+   @PUT
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/modify")
+   public Response modifyUserGroup(String postData) throws Exception
+   {
+      UserGroupDTO userGroupDTO;
+      UserGroupDTO modifiedUserGroup = null;
+      userGroupDTO = DTOBuilder.buildFromJSON(postData, UserGroupDTO.class);
+      modifiedUserGroup = getUserGroupService().modifyUserGroup(userGroupDTO);
+      return Response.status(202).entity(modifiedUserGroup.toJson()).build();
+   }
 
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/all")
-	public Response getAllUserGroups() {
-		List<UserGroupDTO> allUserGroupsDTO = getUserGroupService()
-				.getAllUserGroups();
-		return Response.ok(AbstractDTO.toJson(allUserGroupsDTO),
-				MediaType.APPLICATION_JSON).build();
-	}
+   @DELETE
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/delete/{id}")
+   public Response deleteUserGroup(@PathParam("id") String id)
+   {
+      UserGroupDTO deleteUserGroup = getUserGroupService().deleteUserGroup(id);
+      return Response.ok(deleteUserGroup.toJson(), MediaType.APPLICATION_JSON).build();
+   }
 
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/{id}")
-	public Response getUserGroup(@PathParam("id") String id) {
-		try {
-			UserGroupDTO userGroupDTO = getUserGroupService().getUserGroup(id);
+   @POST
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/create")
+   public Response createUserGroup(String postData) throws Exception
+   {
+      UserGroupDTO userGroupDTO;
+      UserGroupDTO createUserGroup = null;
+      userGroupDTO = DTOBuilder.buildFromJSON(postData, UserGroupDTO.class);
+      createUserGroup = getUserGroupService().createUserGroup(userGroupDTO.getId(), userGroupDTO.getName(),
+            userGroupDTO.getDescription(), userGroupDTO.getValidFrom(), userGroupDTO.getValidTo());
+      return Response.status(201).entity(createUserGroup.toJson()).build();
+   }
 
-			return Response.ok(userGroupDTO.toJson(),
-					MediaType.APPLICATION_JSON).build();
-		} catch (Exception e) {
-			trace.error(e, e);
+   public UserGroupService getUserGroupService()
+   {
+      return userGroupService;
+   }
 
-			return Response.serverError().build();
-		}
-	}
-
-	@PUT
-	@Consumes({ "application/xml", "application/json",
-			"application/x-www-form-urlencoded" })
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/modify")
-	public Response modifyUserGroup(UserGroupDTO userGroupDTO) {
-		UserGroupDTO modifiedUserGroup = getUserGroupService().modifyUserGroup(
-				userGroupDTO);
-		return Response.ok(modifiedUserGroup, MediaType.APPLICATION_JSON)
-				.build();
-	}
-
-/*	@DELETE
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/delete/{id}")
-	public Response deleteUserGroup(@PathParam("id") String id) {
-		UserGroupDTO deleteUserGroup = getUserGroupService()
-				.deleteUserGroup(id);
-		return Response
-				.ok(deleteUserGroup.toJson(), MediaType.APPLICATION_JSON)
-				.build();
-	}*/
-
-	@POST
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/create")
-	public Response createUserGroup(@QueryParam("id") String id,
-			@QueryParam("name") String name,
-			@QueryParam("description") String description,
-			@QueryParam("validFrom") Date validFrom,
-			@QueryParam("validTo") Date validTo) {
-		UserGroupDTO createUserGroup = getUserGroupService().createUserGroup(
-				id, name, description, validFrom, validTo);
-		return Response
-				.ok(createUserGroup.toJson(), MediaType.APPLICATION_JSON)
-				.build();
-	}
-
-	/**
-	 * Test method for Create and modify case
-	 * 
-	 * @return
-	 */
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/test/test")
-	public Response test() {
-		String tempId = "Test_User_Group_"
-				+ Calendar.getInstance().getTimeInMillis();
-		UserGroupDTO userGroupDTO = getUserGroupService().createUserGroup(
-				tempId, tempId, tempId, null, null);
-
-		userGroupDTO.setDescription("Desc Modified "
-				+ Calendar.getInstance().getTimeInMillis());
-
-		UserGroupDTO modifyUserGroup = getUserGroupService().modifyUserGroup(
-				userGroupDTO);
-
-		return Response.ok(modifyUserGroup, MediaType.APPLICATION_JSON).build();
-	}
+   public void setUserGroupService(UserGroupService userGroupService)
+   {
+      this.userGroupService = userGroupService;
+   }
 
 }

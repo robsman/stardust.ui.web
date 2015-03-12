@@ -1,0 +1,39 @@
+<div>
+	<table>
+		<tr ng-show="ctrl.errorExists != null">
+			<td>
+				<label id=msg>{{ctrl.errorMessage}}</label>
+			</td>
+		</tr>
+		<tr>
+			<td><label>*{{i18n('admin-portal-messages.views-common-id-label')+
+					i18n('admin-portal-messages.common-colon')}}</label></td>
+			<td><input type="text" ng-model="ctrl.newUserGroup.id"></td>
+		</tr>
+		<tr>
+			<td><label>*{{i18n('admin-portal-messages.views-common-name-label')+
+					i18n('admin-portal-messages.common-colon')}}</label></td>
+			<td><input type="text" ng-model="ctrl.newUserGroup.name"></td>
+		</tr>
+		<tr>
+			<td><label>{{i18n('admin-portal-messages.views-common-validFrom-label')+
+					i18n('admin-portal-messages.common-colon')}}</label></td>
+			<td><input type="text" sd-date-picker sda-change-year="true"
+				sda-milliseconds="true" ng-model-onblur
+				ng-model="ctrl.newUserGroup.validFrom"></td>
+		</tr>
+		<tr>
+			<td><label>{{i18n('admin-portal-messages.views-common-validTo-label')+
+					i18n('admin-portal-messages.common-colon')}}</label></td>
+			<td><input type="text" sd-date-picker sda-change-year="true"
+				sda-milliseconds="true" ng-model-onblur
+				ng-model="ctrl.newUserGroup.validTo"></td>
+		</tr>
+		<tr>
+			<td><label>{{i18n('admin-portal-messages.views-common-descr-label')+
+					i18n('admin-portal-messages.common-colon')}}</label></td>
+			<td><textarea rows="4" cols="20"
+					ng-model="ctrl.newUserGroup.description"></td>
+		</tr>
+	</table>
+</div>

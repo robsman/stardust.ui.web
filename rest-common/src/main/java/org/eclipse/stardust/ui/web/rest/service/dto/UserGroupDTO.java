@@ -1,114 +1,152 @@
+/*******************************************************************************
+ * Copyright (c) 2014 SunGard CSA LLC and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    SunGard CSA LLC - initial API and implementation and/or initial documentation
+ *******************************************************************************/
+
 package org.eclipse.stardust.ui.web.rest.service.dto;
 
-import java.util.Date;
-
-import javax.xml.bind.annotation.XmlRootElement;
-
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOAttribute;
+import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOClass;
 
 /**
  * @author Aditya.Gaikwad
  * @version $Revision: $
  */
 
-@XmlRootElement(name = "UserGroupDTO")
-public class UserGroupDTO extends AbstractDTO {
-	
-	@DTOAttribute("id")
-	private String id;
-	
-	@DTOAttribute("name")
-	private String name;
-	
-	@DTOAttribute("validFrom")
-	private Date validFrom;
-	
-	@DTOAttribute("validTo")
-	private Date validTo;
-	
-	@DTOAttribute("description")
-	private String description;
-	
-	/**
+@DTOClass
+public class UserGroupDTO extends AbstractDTO
+{
+
+   @DTOAttribute("id")
+   private String id;
+
+   @DTOAttribute("OID")
+   private long oid;
+
+   @DTOAttribute("name")
+   private String name;
+
+   @DTOAttribute("validFrom.time")
+   private Long validFrom;
+
+   @DTOAttribute("validTo.time")
+   private Long validTo;
+
+   @DTOAttribute("description")
+   private String description;
+
+   /**
 	 * 
 	 */
-	public UserGroupDTO() {
-	}
+   public UserGroupDTO()
+   {}
 
+   /**
+    * @return the id
+    */
+   public String getId()
+   {
+      return id;
+   }
 
-	/**
-	 * @return the id
-	 */
-	public String getId() {
-		return id;
-	}
+   /**
+    * @param id
+    *           the id to set
+    */
+   public void setId(String id)
+   {
+      this.id = id;
+   }
 
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(String id) {
-		this.id = id;
-	}
+   /**
+    * @return the oid
+    */
+   public long getOid()
+   {
+      return oid;
+   }
 
-	/**
-	 * @return the name
-	 */
-	public String getName() {
-		return name;
-	}
+   /**
+    * @param oid
+    *           the oid to set
+    */
+   public void setOid(long oid)
+   {
+      this.oid = oid;
+   }
 
-	/**
-	 * @param name the name to set
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
+   /**
+    * @return the name
+    */
+   public String getName()
+   {
+      return name;
+   }
 
-	/**
-	 * @return the validFrom
-	 */
-	public Date getValidFrom() {
-		return validFrom;
-	}
+   /**
+    * @param name
+    *           the name to set
+    */
+   public void setName(String name)
+   {
+      this.name = name;
+   }
 
-	/**
-	 * @param validFrom the validFrom to set
-	 */
-	public void setValidFrom(Date validFrom) {
-		this.validFrom = validFrom;
-	}
+   /**
+    * @return the validFrom
+    */
+   public Long getValidFrom()
+   {
+      return validFrom;
+   }
 
-	/**
-	 * @return the validTo
-	 */
-	public Date getValidTo() {
-		return validTo;
-	}
+   /**
+    * @param validFrom
+    *           the validFrom to set
+    */
+   public void setValidFrom(Long validFrom)
+   {
+      this.validFrom = validFrom;
+   }
 
-	/**
-	 * @param validTo the validTo to set
-	 */
-	public void setValidTo(Date validTo) {
-		this.validTo = validTo;
-	}
+   /**
+    * @return the validTo
+    */
+   public Long getValidTo()
+   {
+      return validTo;
+   }
 
-	/**
-	 * @return the description
-	 */
-	public String getDescription() {
-		return description;
-	}
+   /**
+    * @param validTo
+    *           the validTo to set
+    */
+   public void setValidTo(Long validTo)
+   {
+      this.validTo = validTo;
+   }
 
-	/**
-	 * @param description the description to set
-	 */
-	public void setDescription(String description) {
-		this.description = description;
-	}
-	
-	
-//	private String password;
-	
-	
+   /**
+    * @return the description
+    */
+   public String getDescription()
+   {
+      return description;
+   }
+
+   /**
+    * @param description
+    *           the description to set
+    */
+   public void setDescription(String description)
+   {
+      this.description = description;
+   }
 
 }
