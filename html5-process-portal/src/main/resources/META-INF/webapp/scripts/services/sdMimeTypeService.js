@@ -50,10 +50,10 @@
 		'application/bpmrptdesign' : 'glyphicon glyphicon-book',
 		'application/bpmrpt' : 'glyphicon glyphicon-book',
 		'audio/x-mpeg' : 'sc sc-fw  sc-document-audio',
-		'text/csv' : 'sc sc-fw  sc-document-csv'
-	// 'text/css' : 'glyphicon-plus',
-	// 'application/octet-stream' : 'glyphicon-plus',
-	// 'text/xml' : 'glyphicon-plus',
+		'text/csv' : 'sc sc-fw  sc-document-csv',
+		'text/css' : 'sc sc-fw sc-document-text-o',
+		'application/octet-stream' : 'sc sc-fw sc-document-o',
+		'text/xml' : 'sc sc-fw sc-document-html'
 	};
 
 	/**
