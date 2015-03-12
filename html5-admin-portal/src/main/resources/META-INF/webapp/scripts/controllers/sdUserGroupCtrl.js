@@ -86,7 +86,6 @@
 	 */
 	controller.prototype.refresh = function() {
 		this.userGroupDataTable.refresh(true);
-		// Refresh for sda-mode local is not working
 	};
 
 	/*
@@ -103,13 +102,17 @@
 	 */
 	controller.prototype.onConfirmCreateUser = function(res) {
 		var self = this;
-		_sdUserGroupService.createUserGroup(this.newUserGroup).then(function(data) {
-			self.showCreateUserGroup = false;
-		}, function(error) {
-			self.errorExists = true;
-			self.errorMessage = error.data.message.substr(error.data.message.indexOf(" - ") + 2, error.data.message.length);
-			self.showCreateUserGroup = true;
-		});
+		_sdUserGroupService.createUserGroup(this.newUserGroup).then(
+				function(data) {
+					self.showCreateUserGroup = false;
+				},
+				function(error) {
+					self.errorExists = true;
+					self.errorMessage = error.data.message.substr(
+							error.data.message.indexOf(" - ") + 2,
+							error.data.message.length);
+					self.showCreateUserGroup = true;
+				});
 	};
 
 	/*
