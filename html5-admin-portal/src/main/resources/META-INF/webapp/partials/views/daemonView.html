@@ -36,13 +36,15 @@
 					<td sda-exporter="ctrl.getDaemonStatus(rowData)">{{ctrl.getDaemonStatus(rowData)}}</td>
 					<td></td>
 					<td></td>
-					<td style="white-space: nowrap; text-align: center;"><a
-						href="#"
-						ng-click="bpmCommon.stopEvent($event); ctrl.toggleDaemonAction(rowData);"
-						ng-attr-title="{{rowData.running ? i18n('admin-portal-messages.views-daemons-stopDaemon') : i18n('admin-portal-messages.views-daemons-startDaemon')}}"
-						class="view-tool-link"> <i
+					<td style="white-space: nowrap; text-align: center;">
+						<button ng-click="bpmCommon.stopEvent($event); ctrl.toggleDaemonAction(rowData);"
+							ng-attr-title="{{rowData.running ? i18n('admin-portal-messages.views-daemons-stopDaemon') : i18n('admin-portal-messages.views-daemons-startDaemon')}}"
+							class="button-link tbl-tool-link">
+							<i
 							ng-class="rowData.running ? 'glyphicon glyphicon-ban-circle' : 'glyphicon glyphicon-play-circle'"></i>
-					</a></td>
+						</button>
+					
+					</td>
 				</tr>
 			</tbody>
 		</table>
