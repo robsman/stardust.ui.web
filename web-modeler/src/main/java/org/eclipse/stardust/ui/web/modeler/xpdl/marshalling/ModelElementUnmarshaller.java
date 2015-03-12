@@ -823,8 +823,6 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       {
          dataMapping.setName(dataMappingJson.get(ModelerConstants.NAME_PROPERTY)
                .getAsString());
-         String id = NameIdUtilsExtension.createIdFromName(activity, dataMapping);
-         dataMapping.setId(id);
       }
       else
       {
