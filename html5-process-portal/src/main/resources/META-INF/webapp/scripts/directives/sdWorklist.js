@@ -30,6 +30,7 @@
 
 		var directiveDefObject = {
 			restrict : 'AE',
+			require : '^?sdData',
 			scope: true, // Creates a new sub scope
 			templateUrl: 'plugins/html5-process-portal/scripts/directives/partials/worklist.html',
 			compile: function(elem, attr, transclude) {
@@ -71,6 +72,13 @@
 			var self = this;
 
 			this.initialize(attr, scope, $filter);
+			
+			/*
+			 * Defined here as access required to scope
+			 */
+			if(angular.isDefined(ctrl)){
+				this.sdDataCtrl = ctrl;
+			}
 
 			/*
 			 * This needs to be defined here as it requires access to scope
@@ -249,33 +257,48 @@
 			var self = this;
 			var deferred = $q.defer();
 			self.cleanLocals();
-
-			var query = angular.extend({}, this.query);
-			query.options = options;
-
-			sdWorklistService.getWorklist(query).then(function(data) {
-				self.worklist.list = data.list;
-				self.worklist.totalCount = data.totalCount;
-
-				var oids = [];
-				angular.forEach(self.worklist.list, function(workItem, index){
-					if (workItem.trivial == undefined || workItem.trivial) {
-						oids.push(workItem.oid);
-					}
+			
+			if( angular.isDefined(this.sdDataCtrl) ) {
+				trace.debug("sdData is defined fetching custom data. ");
+				
+				self.sdDataCtrl.retrieveData().then(function(data){
+					self.worklist = data;
+					deferred.resolve(self.worklist);
+					self.safeApply();
 				});
 
-				sdActivityInstanceService.getTrivialManualActivitiesDetails(oids).then(function(data) {
-					self.worklist.trivialManualActivities = data;
+			} else {
+				trace.debug("sdData not defined fetching default data. ");
+				
+				var query = angular.extend({}, this.query);
+				query.options = options;
 
-					deferred.resolve(self.worklist);
+				sdWorklistService.getWorklist(query).then(function(data) {
+					self.worklist.list = data.list;
+					self.worklist.totalCount = data.totalCount;
 
-					self.safeApply();
+					var oids = [];
+					angular.forEach(self.worklist.list, function(workItem, index){
+						if (workItem.trivial == undefined || workItem.trivial) {
+							oids.push(workItem.oid);
+						}
+					});
+
+					sdActivityInstanceService.getTrivialManualActivitiesDetails(oids).then(function(data) {
+						self.worklist.trivialManualActivities = data;
+
+						deferred.resolve(self.worklist);
+
+						self.safeApply();
+					}, function(error) {
+						deferred.reject(error);
+					});
 				}, function(error) {
 					deferred.reject(error);
 				});
-			}, function(error) {
-				deferred.reject(error);
-			});
+				
+			}
+			
 
 			return deferred.promise;
 		};
