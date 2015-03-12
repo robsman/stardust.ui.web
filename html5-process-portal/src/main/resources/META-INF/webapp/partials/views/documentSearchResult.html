@@ -161,18 +161,21 @@
 		sda-title="{{i18n('views-common-messages.views-userDetails-title')}}"
 		sda-scope="this"
 		sda-template="plugins/html5-process-portal/partials/views/userDetails.html"
-		sda-width="400px"></div>
+		sda-width="400px">
+    </div>
 	<div sd-dialog="docSearchViewCtrl.documentHistory" sda-modal="true"
 		sda-show="docSearchViewCtrl.showDocumentVersions" sda-type="custom"
 		sda-title="{{i18n('views-common-messages.views-documentView-documentVersion-versionHistory')+ ' ' + docSearchViewCtrl.documentVersions.documentName}}"
 		sda-scope="this"
 		sda-template="plugins/html5-process-portal/partials/views/documentVersion.html"
 		sda-on-close="docSearchViewCtrl.onCloseDocumentVersions(res)"
-		sda-width="700px"></div>
+		sda-width="700px">
+	</div>
 	<div sd-dialog="docSearchViewCtrl.processDialog" sda-modal="true"
 		sda-show="docSearchViewCtrl.showProcessDialog" sda-type="custom"
 		sda-title="{{i18n('views-common-messages.views-documentSearchView-documentSearchTable-tooltip-process')}}"
 		sda-scope="this"
 		sda-template="plugins/html5-process-portal/partials/views/documentProcessesDialog.html"
-		sda-width="300px" sda-height="800px"></div>
+		sda-width="300px">
+	</div>
 </div>

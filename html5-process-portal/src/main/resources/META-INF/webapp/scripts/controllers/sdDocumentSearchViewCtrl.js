@@ -18,25 +18,30 @@
 	angular.module("workflow-ui").controller(
 			'sdDocumentSearchViewCtrl',
 			[ '$q', '$scope', 'sdDocumentSearchService', 'sdViewUtilService',
-					'sdUtilService', 'sdMimeTypeService', DocumentSearchViewCtrl ]);
+					'sdUtilService', 'sdMimeTypeService', 'sdLoggerService',
+					DocumentSearchViewCtrl ]);
 
 	/*
 	 * 
 	 */
 	function DocumentSearchViewCtrl($q, $scope, sdDocumentSearchService,
-			sdViewUtilService, sdUtilService, sdMimeTypeService) {
+			sdViewUtilService, sdUtilService, sdMimeTypeService,
+			sdLoggerService) {
 		// variable for search result table
 		this.documentSearchResult = {};
 		this.documentVersions = {};
 		this.docSrchRsltTable = null;
 		this.columnSelector = 'admin';
 		this.docVersionsdataTable = null;
-		
+
 		this.exportFileName = new Date();
-		
+
 		this.rowSelection = null;
-		
+
 		this.showDocumentSearchCriteria = true;
+
+		var trace = sdLoggerService
+				.getLogger('workflow-ui.sdDocumentSearchViewCtrl');
 
 		/**
 		 * 
@@ -55,6 +60,8 @@
 								self.query.documentSearchCriteria.selectedFileTypes = [ self.fileTypes[0].value ];
 								self.query.documentSearchCriteria.selectedDocumentTypes = [ self.documentTypes[0].value ];
 								self.query.documentSearchCriteria.selectedRepository = [ self.repositories[0].value ];
+							}, function(error) {
+								trace.log(error);
 							});
 
 		};
@@ -139,6 +146,9 @@
 						self.documentSearchResult.list = data.list;
 						self.documentSearchResult.totalCount = data.totalCount;
 						deferred.resolve(self.documentSearchResult);
+					}, function(error) {
+						trace.log(error);
+						deferred.reject(error);
 					});
 			return deferred.promise;
 		};
@@ -157,6 +167,8 @@
 					sdDocumentSearchService.searchUsers(searchVal).then(
 							function(data) {
 								self.authors = data.list;
+							}, function(error) {
+								trace.log(error);
 							});
 				}, 500);
 			}
@@ -165,7 +177,8 @@
 		/**
 		 * 
 		 */
-		DocumentSearchViewCtrl.prototype.validateDateRange = function(fromDate, toDate) {
+		DocumentSearchViewCtrl.prototype.validateDateRange = function(fromDate,
+				toDate) {
 			if (!sdUtilService.isEmpty(fromDate)
 					&& !sdUtilService.isEmpty(toDate)) {
 				if (fromDate > toDate) {
@@ -175,18 +188,19 @@
 			return true;
 		}
 
-
 		/**
 		 * 
 		 */
 		DocumentSearchViewCtrl.prototype.openProcessDialog = function(rowData) {
 			var self = this;
-			self.showProcessDialog = true;
 			sdDocumentSearchService.fetchProcessDialogData(rowData.documentId)
 					.then(function(data) {
 						self.processDialogData = {};
 						self.processDialogData.list = data.list;
 						self.processDialogData.totalCount = data.totalCount;
+						self.showProcessDialog = true;
+					}, function(error) {
+						trace.log(error);
 					});
 		}
 
@@ -216,7 +230,8 @@
 		/**
 		 * 
 		 */
-		DocumentSearchViewCtrl.prototype.openUserDetails = function(documentOwner) {
+		DocumentSearchViewCtrl.prototype.openUserDetails = function(
+				documentOwner) {
 			var self = this;
 			sdDocumentSearchService.getUserDetails(documentOwner).then(
 					function(data) {
@@ -225,6 +240,8 @@
 								.getRootUrl()
 								+ data.userImageURI;
 						self.showUserDetails = true;
+					}, function(error) {
+						trace.log(error);
 					});
 		}
 
@@ -360,7 +377,8 @@
 		/**
 		 * 
 		 */
-		DocumentSearchViewCtrl.prototype.onConfirmFromAdvanceText = function(res) {
+		DocumentSearchViewCtrl.prototype.onConfirmFromAdvanceText = function(
+				res) {
 			var self = this;
 			self.query.documentSearchCriteria.containingText = self.advancedTextSearch.finalText;
 			delete self.advancedTextSearch;
@@ -376,34 +394,40 @@
 			delete self.advancedTextSearch;
 			console.log("dialog state: cancelled");
 		};
-		
+
 		/**
 		 * 
 		 */
-		DocumentSearchViewCtrl.prototype.openAttachToProcessDialog = function(rowData) {
+		DocumentSearchViewCtrl.prototype.openAttachToProcessDialog = function(
+				rowData) {
 			var self = this;
 			self.processDefns = {};
 			self.showAttachToProcessDialog = true;
 			self.documentId = rowData.documentId;
-			sdDocumentSearchService.getAvailableProcessDefns().then(
-					function(data) {
-						self.processDefns.list = data.list;
-						self.processDefns.totalCount = data.totalCount;
-						if (self.processDefns.totalCount == 0) {
-							self.processDefns.disabledSelectProcess = true;
-							self.processType = "SPECIFY";
-						} else {
-							self.processType = "SELECT";
-							self.selectedProcess = self.processDefns.list[0].value;
-						}
+			sdDocumentSearchService
+					.getAvailableProcessDefns()
+					.then(
+							function(data) {
+								self.processDefns.list = data.list;
+								self.processDefns.totalCount = data.totalCount;
+								if (self.processDefns.totalCount == 0) {
+									self.processDefns.disabledSelectProcess = true;
+									self.processType = "SPECIFY";
+								} else {
+									self.processType = "SELECT";
+									self.selectedProcess = self.processDefns.list[0].value;
+								}
 
-					});
+							}, function(error) {
+								trace.log(error);
+							});
 		};
 
 		/**
 		 * 
 		 */
-		DocumentSearchViewCtrl.prototype.onConfirmFromAttachToProcess = function(res) {
+		DocumentSearchViewCtrl.prototype.onConfirmFromAttachToProcess = function(
+				res) {
 			var self = this;
 			if (self.processType == "SPECIFY" && self.specifiedProcess == null) {
 				self.showRequiredProcessId = true;
@@ -414,17 +438,19 @@
 				self.selectedProcess = self.specifiedProcess;
 			}
 
-			this.attachDocumentsToProcess(self.selectedProcess,
+			this
+					.attachDocumentsToProcess(self.selectedProcess,
 							self.documentId);
 			delete self.documentId;
 			delete self.selectedProcess;
 			delete self.specifiedProcess;
 		};
-		
+
 		/**
 		 * 
 		 */
-		DocumentSearchViewCtrl.prototype.onCloseFromAttachToProcess = function(res){
+		DocumentSearchViewCtrl.prototype.onCloseFromAttachToProcess = function(
+				res) {
 			var self = this;
 			delete self.documentId;
 			delete self.selectedProcess;
@@ -434,7 +460,8 @@
 		/**
 		 * 
 		 */
-		DocumentSearchViewCtrl.prototype.attachDocumentsToProcess = function(processOID, documentId) {
+		DocumentSearchViewCtrl.prototype.attachDocumentsToProcess = function(
+				processOID, documentId) {
 			var self = this;
 			sdDocumentSearchService.attachDocumentsToProcess(processOID,
 					documentId).then(function(data) {
@@ -442,6 +469,8 @@
 				self.infoData.messageType = data.messageType;
 				self.infoData.details = data.details;
 				self.showAttachDocumentResult = true;
+			}, function(error) {
+				trace.log(error);
 			});
 		};
 
@@ -490,7 +519,7 @@
 		 */
 		DocumentSearchViewCtrl.prototype.getGlyphiconClass = function(mimeType) {
 			return sdMimeTypeService.getIcon(mimeType);
-			 
+
 		};
 
 		/**
@@ -504,7 +533,8 @@
 		/**
 		 * 
 		 */
-		DocumentSearchViewCtrl.prototype.setShowDocumentVersions = function(documentId, documentName) {
+		DocumentSearchViewCtrl.prototype.setShowDocumentVersions = function(
+				documentId, documentName) {
 			var self = this;
 			sdDocumentSearchService.getDocumentVersions(documentId).then(
 					function(data) {
@@ -512,6 +542,8 @@
 						self.documentVersions.totalCount = data.totalCount;
 						self.showDocumentVersions = true;
 						self.documentVersions.documentName = documentName;
+					}, function(error) {
+						trace.log(error);
 					});
 
 		};
@@ -527,7 +559,8 @@
 		/**
 		 * 
 		 */
-		DocumentSearchViewCtrl.prototype.openUserDetailsFromVersionHistory = function(documentOwner) {
+		DocumentSearchViewCtrl.prototype.openUserDetailsFromVersionHistory = function(
+				documentOwner) {
 			var self = this;
 			sdDocumentSearchService.getUserDetails(documentOwner).then(
 					function(data) {
@@ -536,36 +569,39 @@
 								.getRootUrl()
 								+ data.userImageURI;
 						self.showUserDetailsFromDocHistory = true;
+					}, function(error) {
+						trace.log(error);
 					});
 
 		};
-		
+
 		/**
 		 * 
 		 */
-		DocumentSearchViewCtrl.prototype.setShowDocumentSearchCriteria = function(){
+		DocumentSearchViewCtrl.prototype.setShowDocumentSearchCriteria = function() {
 			var self = this;
 			self.showDocumentSearchCriteria = !self.showDocumentSearchCriteria;
 		};
-		
+
 		/**
 		 * 
 		 */
-		DocumentSearchViewCtrl.prototype.setShowDocumentSearchCriteria = function(){
+		DocumentSearchViewCtrl.prototype.setShowDocumentSearchCriteria = function() {
 			var self = this;
 			self.showDocumentSearchCriteria = !self.showDocumentSearchCriteria;
 		};
-		
+
 		/**
 		 * 
 		 */
-		DocumentSearchViewCtrl.prototype.getMetaData = function(metadata){
-			 var metadataToExport  = [];
-		        
-		        angular.forEach(metadata,function( metadataItem){
-		        	metadataToExport.push(metadataItem.first +" : "+metadataItem.second);
-		        });
-		        return metadataToExport.join(',');
+		DocumentSearchViewCtrl.prototype.getMetaData = function(metadata) {
+			var metadataToExport = [];
+
+			angular.forEach(metadata, function(metadataItem) {
+				metadataToExport.push(metadataItem.first + " : "
+						+ metadataItem.second);
+			});
+			return metadataToExport.join(',');
 		};
 	}
 })();

@@ -39,6 +39,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.UserDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.utils.ServiceFactoryUtils;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
@@ -89,7 +90,7 @@ public class DocumentSearchResource
          return Response.status(Status.FORBIDDEN).build();
       }
    }
-   
+
    /**
     * 
     * @return
@@ -104,16 +105,13 @@ public class DocumentSearchResource
          String result = documentSearchService.createDocumentSearchFilterAttributes();
          return Response.ok(result, MediaType.TEXT_PLAIN_TYPE).build();
       }
-      catch (MissingResourceException mre)
-      {
-         return Response.status(Status.NOT_FOUND).build();
-      }
       catch (Exception e)
       {
-         return Response.status(Status.BAD_REQUEST).build();
+         trace.error(e, e);
+         return Response.serverError().build();
       }
    }
-   
+
    /**
     * 
     * @param skip
@@ -145,16 +143,13 @@ public class DocumentSearchResource
          Gson gson = new Gson();
          return Response.ok(gson.toJson(result), MediaType.TEXT_PLAIN_TYPE).build();
       }
-      catch (MissingResourceException mre)
-      {
-         return Response.status(Status.NOT_FOUND).build();
-      }
       catch (Exception e)
       {
-         return Response.status(Status.BAD_REQUEST).build();
+         trace.error(e, e);
+         return Response.serverError().build();
       }
    }
-   
+
    /**
     * 
     * @param documentId
@@ -164,25 +159,23 @@ public class DocumentSearchResource
    @Path("/loadProcessByDocument/{documentId}")
    public Response loadProcessByDocument(@PathParam("documentId") String documentId)
    {
+
       try
       {
-
          QueryResultDTO resultDTO = documentSearchService
                .getProcessInstancesFromDocument(documentId);
 
          Gson gson = new Gson();
          return Response.ok(gson.toJson(resultDTO), MediaType.TEXT_PLAIN_TYPE).build();
       }
-      catch (MissingResourceException mre)
-      {
-         return Response.status(Status.NOT_FOUND).build();
-      }
       catch (Exception e)
       {
-         return Response.status(Status.BAD_REQUEST).build();
+         trace.error(e, e);
+         return Response.serverError().build();
       }
+
    }
- 
+
    /**
     * 
     * @param documentOwner
@@ -194,22 +187,18 @@ public class DocumentSearchResource
    {
       try
       {
-
          UserDTO user = documentSearchService.getUserDetails(documentOwner);
 
          Gson gson = new Gson();
          return Response.ok(gson.toJson(user), MediaType.TEXT_PLAIN_TYPE).build();
       }
-      catch (MissingResourceException mre)
-      {
-         return Response.status(Status.NOT_FOUND).build();
-      }
       catch (Exception e)
       {
-         return Response.status(Status.BAD_REQUEST).build();
+         trace.error(e, e);
+         return Response.serverError().build();
       }
    }
-   
+
    /**
     * 
     * @param documentId
@@ -220,24 +209,21 @@ public class DocumentSearchResource
    public Response getDocumentVersions(@PathParam("documentId") String documentId)
    {
 
+      QueryResultDTO resultDTO;
       try
       {
-
-         QueryResultDTO resultDTO = documentSearchService.getDocumentVersions(documentId);
-
+         resultDTO = documentSearchService.getDocumentVersions(documentId);
          Gson gson = new Gson();
          return Response.ok(gson.toJson(resultDTO), MediaType.TEXT_PLAIN_TYPE).build();
       }
-      catch (MissingResourceException mre)
+      catch (ResourceNotFoundException e)
       {
+         trace.error(e, e);
          return Response.status(Status.NOT_FOUND).build();
-      }
-      catch (Exception e)
-      {
-         return Response.status(Status.BAD_REQUEST).build();
       }
 
    }
+
    /**
     * 
     * @return
@@ -254,17 +240,13 @@ public class DocumentSearchResource
          Gson gson = new Gson();
          return Response.ok(gson.toJson(resultDTO), MediaType.TEXT_PLAIN_TYPE).build();
       }
-      catch (MissingResourceException mre)
-      {
-         return Response.status(Status.NOT_FOUND).build();
-      }
       catch (Exception e)
       {
+         trace.error(e, e);
          return Response.status(Status.BAD_REQUEST).build();
       }
    }
-   
-   
+
    /**
     * 
     * @param processOID
@@ -286,10 +268,12 @@ public class DocumentSearchResource
       }
       catch (MissingResourceException mre)
       {
+         trace.error(mre, mre);
          return Response.status(Status.NOT_FOUND).build();
       }
       catch (Exception e)
       {
+         trace.error(e, e);
          return Response.status(Status.BAD_REQUEST).build();
       }
    }
@@ -322,8 +306,10 @@ public class DocumentSearchResource
     * 
     * @param postData
     * @return
+    * @throws Exception
     */
    private DocumentSearchCriteriaDTO getDocumentSearchCriteria(String postData)
+         throws Exception
    {
       DocumentSearchCriteriaDTO documentSearchCriteria = null;
 
@@ -344,6 +330,7 @@ public class DocumentSearchResource
          catch (Exception e)
          {
             trace.error("Error in Deserializing filter JSON", e);
+            throw e;
          }
       }
 

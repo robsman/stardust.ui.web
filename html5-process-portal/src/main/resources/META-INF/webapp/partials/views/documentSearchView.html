@@ -170,7 +170,6 @@ table.formTable td {
 						<td><label>{{i18n('views-common-messages.views-documentSearchView-author-label')
 								+ i18n('views-common-messages.views-documentSearchView-colon')}}</label>
 						</td>
-						<!--  <td><input type="text" ng-model="author" value="{{author}}"/></td> -->
 						<td><div sd-auto-complete
 								sda-matches="docSearchViewCtrl.authors"
 								sda-match-str="docSearchViewCtrl.partialAuthor"
@@ -178,7 +177,9 @@ table.formTable td {
 								sda-text-property="name" sda-container-class="sd-ac-container"
 								sda-item-hot-class="sd-ac-item-isActive"
 								sda-selected-matches="docSearchViewCtrl.selectedAuthors"
-								sda-allow-multiple=false sda-allow-duplicates=false></div></td>
+								sda-allow-multiple=false sda-allow-duplicates=false>
+							</div>
+						</td>
 					</tr>
 					<tr>
 						<td><label>{{i18n('views-common-messages.views-documentSearchView-documentName-label')
