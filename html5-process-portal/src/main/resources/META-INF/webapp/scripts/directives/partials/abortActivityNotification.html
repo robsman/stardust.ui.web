@@ -7,7 +7,7 @@
 			<table class="table-bordered">
 				<tr
 					ng-repeat="activity in abortActivityCtrl.notification.result.success">
-					<td ng-bind="activity.name" class="abort-activity-cell-message"></td>
+					<td  class="abort-activity-cell-message">{{activity.name}} (#{{activity.OID}})</td>
 					<td ng-bind="activity.message" class="abort-activity-cell-message"></td>
 				</tr>
 			</table>
@@ -19,7 +19,7 @@
 			<table class="table-bordered">
 				<tr 
 					ng-repeat="activity in abortActivityCtrl.notification.result.failure">
-					<td ng-bind="activity.name" class="abort-activity-cell-message"></td>
+						<td  class="abort-activity-cell-message">{{activity.name}} (#{{activity.OID}})</td>
 					<td ng-bind="activity.message" class="abort-activity-cell-message"></td>
 				</tr>
 			</table>
