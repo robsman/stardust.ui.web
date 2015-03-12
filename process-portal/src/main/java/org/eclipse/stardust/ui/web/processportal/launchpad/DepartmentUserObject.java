@@ -17,6 +17,7 @@ import javax.faces.event.ActionEvent;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.eclipse.stardust.common.CollectionUtils;
+import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.error.PublicException;
 import org.eclipse.stardust.engine.api.model.Data;
 import org.eclipse.stardust.engine.api.model.Model;
@@ -25,12 +26,12 @@ import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.Department;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
-import org.eclipse.stardust.ui.web.common.message.MessageDialog.MessageType;
 import org.eclipse.stardust.ui.web.processportal.common.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.processportal.common.PPUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
+
 
 
 import com.icesoft.faces.component.tree.IceUserObject;
@@ -99,32 +100,38 @@ public class DepartmentUserObject extends IceUserObject
                      }
                      Map map1 = (Map) obj;
                      String s2 = (String) organization.getAttribute("carnot:engine:dataPath");
-                     boolean flag = false;
-                     do
+                     if (StringUtils.isEmpty(s2))
                      {
-                        int i;
-                        if (0 >= (i = s2.indexOf('/')))
-                        {
-                           break;
-                        }
-                        String s3 = s2.substring(0, i).trim();
-                        s2 = s2.substring(i + 1);
-                        if (s3.length() > 0)
-                        {
-                           Map map2 = (Map) map1.get(s3);
-                           if (map2 == null)
-                           {
-                              map2 = CollectionUtils.newMap();
-                              map1.put(s3, map2);
-                           }
-                           map1 = map2;
-                        }
+                        map.put(s, department1.getId());
                      }
-                     while (true);
-                     s2 = s2.trim();
-                     if (s2.length() > 0)
+                     else
                      {
-                        map1.put(s2, department1.getId());
+                        do
+                        {
+                           int i;
+                           if (0 >= (i = s2.indexOf('/')))
+                           {
+                              break;
+                           }
+                           String s3 = s2.substring(0, i).trim();
+                           s2 = s2.substring(i + 1);
+                           if (s3.length() > 0)
+                           {
+                              Map map2 = (Map) map1.get(s3);
+                              if (map2 == null)
+                              {
+                                 map2 = CollectionUtils.newMap();
+                                 map1.put(s3, map2);
+                              }
+                              map1 = map2;
+                           }
+                        }
+                        while (true);
+                        s2 = s2.trim();
+                        if (s2.length() > 0)
+                        {
+                           map1.put(s2, department1.getId());
+                        }
                      }
                   }
                   else
