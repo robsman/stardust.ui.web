@@ -25,6 +25,7 @@ import org.eclipse.stardust.engine.api.query.UserDetailsPolicy;
 import org.eclipse.stardust.engine.api.query.UserQuery;
 import org.eclipse.stardust.engine.api.query.Users;
 import org.eclipse.stardust.engine.core.query.statistics.api.DateRange;
+import org.eclipse.stardust.engine.core.query.statistics.api.StatisticsDateRangePolicy;
 import org.eclipse.stardust.engine.core.query.statistics.api.UserPerformanceStatistics;
 import org.eclipse.stardust.engine.core.query.statistics.api.UserPerformanceStatisticsQuery;
 import org.eclipse.stardust.engine.core.query.statistics.api.UserPerformanceStatistics.Contribution;
@@ -50,6 +51,7 @@ import org.eclipse.stardust.ui.web.common.filter.TableDataFilterPopup;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterSearch;
 import org.eclipse.stardust.ui.web.common.table.SortableTable;
 import org.eclipse.stardust.ui.web.common.table.SortableTableComparator;
+import org.eclipse.stardust.ui.web.common.util.CollectionUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
@@ -249,8 +251,16 @@ public class CompletedActivitiesBean extends UIComponentBean implements Resource
       UserDetailsPolicy userPolicy = new UserDetailsPolicy(UserDetailsLevel.Core);
       userPolicy.setPreferenceModules(UserPreferencesEntries.M_ADMIN_PORTAL);
       query.setPolicy(userPolicy);
+      
+      List<DateRange> dateRange = CollectionUtils.newArrayList();
+      dateRange.add(DateRange.TODAY);
+      dateRange.add(DateRange.THIS_WEEK);
+      dateRange.add(DateRange.THIS_MONTH);
+      
+      UserPerformanceStatisticsQuery userPerformanceStatisticsQuery = UserPerformanceStatisticsQuery.forAllUsers();      
+      userPerformanceStatisticsQuery.setPolicy(new StatisticsDateRangePolicy(dateRange));
 
-      userStatistics = (UserPerformanceStatistics) facade.getAllUsers(UserPerformanceStatisticsQuery.forAllUsers());
+      userStatistics = (UserPerformanceStatistics) facade.getAllUsers(userPerformanceStatisticsQuery);
 
       if (queryExtender != null)
       {

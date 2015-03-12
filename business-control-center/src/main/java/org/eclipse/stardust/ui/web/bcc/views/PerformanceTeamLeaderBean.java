@@ -37,6 +37,7 @@ import org.eclipse.stardust.engine.api.runtime.DeployedModel;
 import org.eclipse.stardust.engine.api.runtime.Grant;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.core.query.statistics.api.DateRange;
+import org.eclipse.stardust.engine.core.query.statistics.api.StatisticsDateRangePolicy;
 import org.eclipse.stardust.engine.core.query.statistics.api.UserPerformanceStatistics;
 import org.eclipse.stardust.engine.core.query.statistics.api.UserPerformanceStatistics.Contribution;
 import org.eclipse.stardust.engine.core.query.statistics.api.UserPerformanceStatistics.PerformanceStatistics;
@@ -156,7 +157,15 @@ public class PerformanceTeamLeaderBean extends UIComponentBean implements Resour
             }
          }
          query.setPolicy(new UserDetailsPolicy(UserDetailsLevel.Full));
-         userStatistics = (UserPerformanceStatistics) facade.getAllUsers(UserPerformanceStatisticsQuery.forAllUsers());
+         List<DateRange> dateRange = CollectionUtils.newArrayList();
+         dateRange.add(DateRange.TODAY);
+         dateRange.add(DateRange.THIS_WEEK);
+         dateRange.add(DateRange.THIS_MONTH);
+         
+         UserPerformanceStatisticsQuery userPerformanceStatisticsQuery = UserPerformanceStatisticsQuery.forAllUsers();      
+         userPerformanceStatisticsQuery.setPolicy(new StatisticsDateRangePolicy(dateRange));
+         
+         userStatistics = (UserPerformanceStatistics) facade.getAllUsers(userPerformanceStatisticsQuery);
          if (queryExtender != null)
          {
             queryExtender.extendQuery(query);
