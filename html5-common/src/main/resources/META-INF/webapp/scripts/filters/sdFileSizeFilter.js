@@ -25,8 +25,8 @@ angular.module('bpm-common').filter('sdFileSizeFilter', function() {
 			bytes /= 1024;
 			unit++;
 		}
-		
-		if(precision == undefined){
+
+		if (precision == undefined) {
 			precision = 2;
 		}
 
