@@ -14,66 +14,77 @@
 (function() {
 	'use strict';
 
-	angular.module('bpm-common').directive('sdDocumentDownload', DocumentDownload);
+	angular.module('bpm-common').directive('sdDocumentDownload',
+			[ 'sdUtilService', DocumentDownload ]);
 	/*
-	 *
+	 * 
 	 */
-	function DocumentDownload() {
+	function DocumentDownload(sdUtilService) {
 
 		return {
 			restrict : 'EA',
+			scope : { // Creates a new sub scope
+				documentName : '=sdaDocumentName',
+				documentId : '=sdaDocumentId'
+			},
 			transclude : true,
 			replace : true,
 			templateUrl : 'plugins/html5-process-portal/scripts/directives/partials/documentDownload.html',
-			controller : [ '$scope', '$parse', '$attrs', 'sdUtilService', DocumentDownloadController ]
+			link : function(scope, element, attrs, ctrl) {
+				new DocumentDownloadLink(scope, element, attrs, ctrl);
+			}
 		};
-	}
-	
-	/**
-	 *
-	 */
-	function DocumentDownloadController($scope, $parse, $attrs, sdUtilService) {
-		this.i18n = $scope.i18n;
-		
-		/**
-		 * 
-		 */
-		DocumentDownloadController.prototype.downloadDocument = function(res) {
-			var REST_BASE_URL = "services/rest/portal/documents";
-			var self = this;
-			window.location = sdUtilService.getRootUrl() + "/" + REST_BASE_URL
-			+ "/downloadDocument" + "/" + self.documentDownload.documentId + "/"
-			+ self.documentDownload.documentName;
-			delete self.documentDownload;
 
-		};
-		
 		/**
 		 * 
 		 */
-		DocumentDownloadController.prototype.setShowDocumentDownload = function() {
+		function DocumentDownloadLink(scope, element, attrs, ctrl) {
+
 			var self = this;
-			if($attrs.sdaDocumentId != undefined && $attrs.sdaDocumentName != undefined){
-		    var documentId = $parse($attrs.sdaDocumentId);
-		    var documentName = $parse($attrs.sdaDocumentName);
-			self.showDoumentDownload = true;
-			var documentDownload = {
-				documentId : documentId($scope),
-				documentName : documentName($scope)
+
+			scope.documentDownloadCtrl = self;
+
+			initialize();
+
+			/*
+			 * 
+			 */
+			DocumentDownloadLink.prototype.safeApply = function() {
+				sdUtilService.safeApply(scope);
 			};
-			self.documentDownload = documentDownload;
+
+			function initialize() {
+				// Make sure i18n is available in the current scope
+				if (!angular.isDefined(scope.i18n)) {
+					scope.i18n = scope.$parent.i18n;
+				}
+
+				self.setShowDocumentDownload = setShowDocumentDownload;
+				self.downloadDocument = downloadDocument;
+				self.downloadDocumentClose = downloadDocumentClose;
 			}
 
-		};
+			/**
+			 * 
+			 */
+			function downloadDocument(res) {
+				var REST_BASE_URL = "services/rest/portal/documents";
+				window.location = sdUtilService.getRootUrl() + "/"
+						+ REST_BASE_URL + "/downloadDocument" + "/"
+						+ scope.documentId + "/" + scope.documentName;
+			}
+			;
 
-		/**
-		 * 
-		 */
-		DocumentDownloadController.prototype.downloadDocumentClose = function() {
-			var self = this;
-			delete self.documentDownload;
-		};
-		
-		$scope.documentDownloadCtrl = this;
+			/**
+			 * 
+			 */
+			function setShowDocumentDownload() {
+				if (scope.documentId != undefined
+						&& scope.documentName != undefined) {
+					self.showDoumentDownload = true;
+				}
+			}
+			;
+		}
 	}
 })();
