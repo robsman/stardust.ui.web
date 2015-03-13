@@ -40,7 +40,8 @@
 	function DocumentSearchService($rootScope, $resource, sdLoggerService, $q,
 			$http, sdUtilService) {
 		var REST_BASE_URL = "services/rest/portal/documentSearch";
-		var trace = sdLoggerService.getLogger('workflow-ui.services.sdDocumentSearchServic');
+		var trace = sdLoggerService
+				.getLogger('workflow-ui.services.sdDocumentSearchServic');
 
 		/**
 		 * 

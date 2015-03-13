@@ -97,7 +97,7 @@ public class DocumentSearchServiceBean
       return buildDocumentSearchResult(docs);
 
    }
-   
+
    /**
     * 
     * @param documentId
@@ -113,7 +113,7 @@ public class DocumentSearchServiceBean
       return resultDTO;
 
    }
-   
+
    /**
     * 
     * @param docs
@@ -136,7 +136,7 @@ public class DocumentSearchServiceBean
       return resultDTO;
 
    }
-   
+
    /**
     * 
     * @param documentOwner

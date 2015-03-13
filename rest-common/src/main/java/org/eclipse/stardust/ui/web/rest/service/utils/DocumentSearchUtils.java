@@ -79,544 +79,605 @@ import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
 
 @Component
-public class DocumentSearchUtils {
+public class DocumentSearchUtils
+{
 
-	private static final String ALL = "All";
-	private static final String MIME_TYPE_PREFIX = "views.documentSearchView.mimeType.";
-	private static final String POSTFIX_OPEN = " (";
-	private static final String POSTFIX_CLOSE = ")";
+   private static final String ALL = "All";
 
-	private static final String COL_DOCUMENT_NAME = "documentName";
+   private static final String MIME_TYPE_PREFIX = "views.documentSearchView.mimeType.";
 
-	private static final String COL_CREATE_DATE = "createDate";
+   private static final String POSTFIX_OPEN = " (";
 
-	private static final String COL_MODIFICATION_DATE = "modificationDate";
+   private static final String POSTFIX_CLOSE = ")";
 
-	private static final String COL_FILE_TYPE = "fileType";
+   private static final String COL_DOCUMENT_NAME = "documentName";
 
-	private static final String COL_DOCUMENT_TYPE = "documentType";
+   private static final String COL_CREATE_DATE = "createDate";
 
-	private static final String COL_DOCUMENT_ID = "documentId";
-	private static final String COL_AUTHOR = "author";
+   private static final String COL_MODIFICATION_DATE = "modificationDate";
 
-	private static final String VIEW_ACTIVITY_PANEL = "activityPanel";
+   private static final String COL_FILE_TYPE = "fileType";
 
-	private MessagesViewsCommonBean messageCommonBean;
+   private static final String COL_DOCUMENT_TYPE = "documentType";
 
-	private static final Logger trace = LogManager
-			.getLogger(DocumentSearchUtils.class);
+   private static final String COL_DOCUMENT_ID = "documentId";
 
-	/**
-	 * 
-	 * @return
-	 */
-	public String getFilterAttributes() {
+   private static final String COL_AUTHOR = "author";
 
-		messageCommonBean = MessagesViewsCommonBean.getInstance();
+   private static final String VIEW_ACTIVITY_PANEL = "activityPanel";
 
-		List<IRepositoryInstanceInfo> repositoryInstances = DocumentMgmtUtility
-				.getDocumentManagementService().getRepositoryInstanceInfos();
-		Set<DocumentTypeWrapper> declaredDocumentTypes = ModelUtils
-				.getAllActiveDeclaredDocumentTypes();
+   private MessagesViewsCommonBean messageCommonBean;
 
-		// set file types list
-		ArrayList<SelectItemDTO> typicalFileTypes = new ArrayList<SelectItemDTO>();
-		typicalFileTypes.add(new SelectItemDTO(ALL, messageCommonBean
-				.getString("views.documentSearchView.documentType.All")));
-		typicalFileTypes
-				.add(getMimeTypeInSelectItemFormat(MimeTypesHelper.PDF));
-		typicalFileTypes
-				.add(getMimeTypeInSelectItemFormat(MimeTypesHelper.HTML));
-		typicalFileTypes
-				.add(getMimeTypeInSelectItemFormat(MimeTypesHelper.TXT));
-		typicalFileTypes
-				.add(getMimeTypeInSelectItemFormat(MimeTypesHelper.TIFF));
+   private static final Logger trace = LogManager.getLogger(DocumentSearchUtils.class);
 
-		// set document types list
-		List<SelectItemDTO> documentTypes = new ArrayList<SelectItemDTO>(
-				declaredDocumentTypes.size());
-		documentTypes.add(new SelectItemDTO(ALL, messageCommonBean
-				.getString("views.documentSearchView.documentType.All")));
+   /**
+    * 
+    * @return
+    */
+   public String getFilterAttributes()
+   {
 
-		for (DocumentTypeWrapper documentTypeWrapper : declaredDocumentTypes) {
-			documentTypes.add(new SelectItemDTO(documentTypeWrapper
-					.getDocumentTypeId(), documentTypeWrapper
-					.getDocumentTypeI18nName()));
-		}
+      messageCommonBean = MessagesViewsCommonBean.getInstance();
 
-		// set repository list
-		ArrayList<SelectItemDTO> repositories = new ArrayList<SelectItemDTO>();
-		repositories.add(new SelectItemDTO(ALL, messageCommonBean
-				.getString("views.documentSearchView.documentType.All")));
+      List<IRepositoryInstanceInfo> repositoryInstances = DocumentMgmtUtility
+            .getDocumentManagementService().getRepositoryInstanceInfos();
+      Set<DocumentTypeWrapper> declaredDocumentTypes = ModelUtils
+            .getAllActiveDeclaredDocumentTypes();
 
-		if (!CollectionUtils.isEmpty(repositoryInstances)
-				&& repositoryInstances.size() > 1) {
-			for (IRepositoryInstanceInfo repos : repositoryInstances) {
-				repositories.add(new SelectItemDTO(repos.getRepositoryId(),
-						repos.getRepositoryId() + POSTFIX_OPEN
-								+ repos.getRepositoryName() + POSTFIX_CLOSE));
-			}
-		}
+      // set file types list
+      ArrayList<SelectItemDTO> typicalFileTypes = new ArrayList<SelectItemDTO>();
+      typicalFileTypes.add(new SelectItemDTO(ALL, messageCommonBean
+            .getString("views.documentSearchView.documentType.All")));
+      typicalFileTypes.add(getMimeTypeInSelectItemFormat(MimeTypesHelper.PDF));
+      typicalFileTypes.add(getMimeTypeInSelectItemFormat(MimeTypesHelper.HTML));
+      typicalFileTypes.add(getMimeTypeInSelectItemFormat(MimeTypesHelper.TXT));
+      typicalFileTypes.add(getMimeTypeInSelectItemFormat(MimeTypesHelper.TIFF));
 
-		// Set the RegisteredMimeFileTypes
+      // set document types list
+      List<SelectItemDTO> documentTypes = new ArrayList<SelectItemDTO>(
+            declaredDocumentTypes.size());
+      documentTypes.add(new SelectItemDTO(ALL, messageCommonBean
+            .getString("views.documentSearchView.documentType.All")));
 
-		ArrayList<SelectItemDTO> allRegisteredMimeFileTypes = getAllRegisteredMimeFileTypes();
+      for (DocumentTypeWrapper documentTypeWrapper : declaredDocumentTypes)
+      {
+         documentTypes.add(new SelectItemDTO(documentTypeWrapper.getDocumentTypeId(),
+               documentTypeWrapper.getDocumentTypeI18nName()));
+      }
 
-		DocumentSearchFilterAttributesDTO dsfaDTO = new DocumentSearchFilterAttributesDTO();
-		dsfaDTO.typicalFileTypes = typicalFileTypes;
-		dsfaDTO.documentTypes = documentTypes;
-		dsfaDTO.repositories = repositories;
-		dsfaDTO.allRegisteredMimeFileTypes = allRegisteredMimeFileTypes;
-		Gson gson = new Gson();
-		return gson.toJson(dsfaDTO);
-	}
+      // set repository list
+      ArrayList<SelectItemDTO> repositories = new ArrayList<SelectItemDTO>();
+      repositories.add(new SelectItemDTO(ALL, messageCommonBean
+            .getString("views.documentSearchView.documentType.All")));
 
-	/**
-	 * 
-	 * @param mimeType
-	 * @return
-	 */
-	private SelectItemDTO getMimeTypeInSelectItemFormat(MIMEType mimeType) {
-		return new SelectItemDTO(mimeType.getType(), getI18nLabel(mimeType));
-	}
+      if (!CollectionUtils.isEmpty(repositoryInstances) && repositoryInstances.size() > 1)
+      {
+         for (IRepositoryInstanceInfo repos : repositoryInstances)
+         {
+            repositories.add(new SelectItemDTO(repos.getRepositoryId(), repos
+                  .getRepositoryId()
+                  + POSTFIX_OPEN
+                  + repos.getRepositoryName()
+                  + POSTFIX_CLOSE));
+         }
+      }
 
-	private String getI18nLabel(MIMEType mimeType) {
-		String label = messageCommonBean.getString(MIME_TYPE_PREFIX
-				+ mimeType.getType());
-		if (label == null) {
-			label = mimeType.getUserFriendlyName() + " (" + mimeType.getType()
-					+ ")";
-		}
-		return label;
-	}
+      // Set the RegisteredMimeFileTypes
 
-	/**
-	 * 
-	 * @return
-	 */
-	public ArrayList<SelectItemDTO> getAllRegisteredMimeFileTypes() {
+      ArrayList<SelectItemDTO> allRegisteredMimeFileTypes = getAllRegisteredMimeFileTypes();
 
-		DocumentHandlersRegistryBean documentHandlersRegistryBean = DocumentHandlersRegistryBean
-				.getInstance();
-		Set<MIMEType> mimeTypes = documentHandlersRegistryBean
-				.getAllRegisteredMimeTypes();
-		ArrayList<SelectItemDTO> fileTypes = new ArrayList<SelectItemDTO>(
-				mimeTypes.size() + 1);
-		fileTypes
-				.add(0,
-						new SelectItemDTO(
-								"All",
-								messageCommonBean
-										.getString("views.documentSearchView.documentType.All")));
-		int index = 1;
-		for (MIMEType mimeType : mimeTypes) {
-			fileTypes.add(index++, getMimeTypeInSelectItemFormat(mimeType));
-		}
-		return fileTypes;
-	}
-    /**
-     * 
-     * @param options
-     * @param documentSearchAttributes
-     * @return
-     */
-	public QueryResult<Document> performSearch(Options options,
-			DocumentSearchCriteriaDTO documentSearchAttributes) {
-		DocumentQuery query = new DocumentQuery();
-		
-		SubsetPolicy subsetPolicy = new SubsetPolicy(options.pageSize, options.skip,
-               true);
-        query.setPolicy(subsetPolicy);
+      DocumentSearchFilterAttributesDTO dsfaDTO = new DocumentSearchFilterAttributesDTO();
+      dsfaDTO.typicalFileTypes = typicalFileTypes;
+      dsfaDTO.documentTypes = documentTypes;
+      dsfaDTO.repositories = repositories;
+      dsfaDTO.allRegisteredMimeFileTypes = allRegisteredMimeFileTypes;
+      Gson gson = new Gson();
+      return gson.toJson(dsfaDTO);
+   }
 
-		addSortCriteria(query, options);
+   /**
+    * 
+    * @param mimeType
+    * @return
+    */
+   private SelectItemDTO getMimeTypeInSelectItemFormat(MIMEType mimeType)
+   {
+      return new SelectItemDTO(mimeType.getType(), getI18nLabel(mimeType));
+   }
 
-		if (options.filter != null) {
-			applyFiltering(query, options.filter);
-		}
+   private String getI18nLabel(MIMEType mimeType)
+   {
+      String label = messageCommonBean.getString(MIME_TYPE_PREFIX + mimeType.getType());
+      if (label == null)
+      {
+         label = mimeType.getUserFriendlyName() + " (" + mimeType.getType() + ")";
+      }
+      return label;
+   }
 
-		FilterAndTerm filter = query.where(DocumentQuery.NAME.like(QueryUtils
-				.getFormattedString(documentSearchAttributes.documentName)));
+   /**
+    * 
+    * @return
+    */
+   public ArrayList<SelectItemDTO> getAllRegisteredMimeFileTypes()
+   {
 
-		if (null != documentSearchAttributes.createDateFrom
-				&& null != documentSearchAttributes.createDateTo) {
-			filter.and(DocumentQuery.DATE_CREATED.between(
-					DateUtils
-							.convertToGmt(documentSearchAttributes.createDateFrom),
-					DateUtils
-							.convertToGmt(documentSearchAttributes.createDateTo)));
-		}
+      DocumentHandlersRegistryBean documentHandlersRegistryBean = DocumentHandlersRegistryBean
+            .getInstance();
+      Set<MIMEType> mimeTypes = documentHandlersRegistryBean.getAllRegisteredMimeTypes();
+      ArrayList<SelectItemDTO> fileTypes = new ArrayList<SelectItemDTO>(
+            mimeTypes.size() + 1);
+      fileTypes.add(
+            0,
+            new SelectItemDTO("All", messageCommonBean
+                  .getString("views.documentSearchView.documentType.All")));
+      int index = 1;
+      for (MIMEType mimeType : mimeTypes)
+      {
+         fileTypes.add(index++, getMimeTypeInSelectItemFormat(mimeType));
+      }
+      return fileTypes;
+   }
 
-		if (null != documentSearchAttributes.modificationDateFrom
-				&& null != documentSearchAttributes.modificationDateTo) {
-			filter.and(DocumentQuery.DATE_LAST_MODIFIED.between(
-					DateUtils
-							.convertToGmt(documentSearchAttributes.modificationDateFrom),
-					DateUtils
-							.convertToGmt(documentSearchAttributes.modificationDateTo)));
-		}
+   /**
+    * 
+    * @param options
+    * @param documentSearchAttributes
+    * @return
+    */
+   public QueryResult<Document> performSearch(Options options,
+         DocumentSearchCriteriaDTO documentSearchAttributes)
+   {
+      DocumentQuery query = new DocumentQuery();
 
-		if (StringUtils.isNotEmpty(documentSearchAttributes.author)) {
-			filter.and(DocumentQuery.OWNER.like(QueryUtils
-					.getFormattedString(documentSearchAttributes.author)));
-		}
+      SubsetPolicy subsetPolicy = new SubsetPolicy(options.pageSize, options.skip, true);
+      query.setPolicy(subsetPolicy);
 
-		// Document types
-		List<String> documentTypeIds = documentSearchAttributes.selectedDocumentTypes;
-		if (documentTypeIds.size() > 0
-				&& !checkIfAllOptionSelect(documentTypeIds)) {
-			FilterOrTerm filterOrTerm = filter.addOrTerm();
-			for (String documentTypeId : documentTypeIds) {
-				filterOrTerm.add(DocumentQuery.DOCUMENT_TYPE_ID
-						.isEqual(documentTypeId));
-			}
-		}
+      addSortCriteria(query, options);
 
-		// Repository types
-		List<String> selectedRepo = documentSearchAttributes.selectedRepository;
-		if (selectedRepo.size() > 0 && !checkIfAllOptionSelect(selectedRepo)) {
-			query.setPolicy(RepositoryPolicy
-					.includeRepositories(CollectionUtils
-							.newArrayList(selectedRepo)));
-		} else {
-			query.setPolicy(RepositoryPolicy.includeAllRepositories());
-		}
+      if (options.filter != null)
+      {
+         applyFiltering(query, options.filter);
+      }
 
-		// File Type
-		if (documentSearchAttributes.selectFileTypeAdvance) {
-			filter.and(DocumentQuery.CONTENT_TYPE.like(QueryUtils
-					.getFormattedString(documentSearchAttributes.advancedFileType)));
-		} else {
-			List<String> mimeTypes = documentSearchAttributes.selectedFileTypes;
-			if (mimeTypes.size() > 0 && !checkIfAllOptionSelect(mimeTypes)) {
-				FilterOrTerm filterOrTerm = filter.addOrTerm();
-				for (String mimeType : mimeTypes) {
-					filterOrTerm.add(DocumentQuery.CONTENT_TYPE
-							.isEqual(mimeType));
-				}
-			}
-		}
+      FilterAndTerm filter = query.where(DocumentQuery.NAME.like(QueryUtils
+            .getFormattedString(documentSearchAttributes.documentName)));
 
-		if (StringUtils.isNotEmpty(documentSearchAttributes.documentId)) {
-			filter.and(DocumentQuery.ID.like(QueryUtils
-					.getFormattedString(documentSearchAttributes.documentId)));
-		}
+      if (null != documentSearchAttributes.createDateFrom
+            && null != documentSearchAttributes.createDateTo)
+      {
+         filter.and(DocumentQuery.DATE_CREATED.between(
+               DateUtils.convertToGmt(documentSearchAttributes.createDateFrom),
+               DateUtils.convertToGmt(documentSearchAttributes.createDateTo)));
+      }
 
-		FilterCriterion contentFilter = null, dataFilter = null;
-		if (StringUtils.isNotEmpty(documentSearchAttributes.containingText)) {
-			if (documentSearchAttributes.searchContent) {
-				contentFilter = DocumentQuery.CONTENT
-						.like(QueryUtils.getFormattedString(Text
-								.escapeIllegalJcrChars(documentSearchAttributes.containingText)));
-			}
+      if (null != documentSearchAttributes.modificationDateFrom
+            && null != documentSearchAttributes.modificationDateTo)
+      {
+         filter.and(DocumentQuery.DATE_LAST_MODIFIED.between(
+               DateUtils.convertToGmt(documentSearchAttributes.modificationDateFrom),
+               DateUtils.convertToGmt(documentSearchAttributes.modificationDateTo)));
+      }
 
-			if (documentSearchAttributes.searchData) {
-				dataFilter = DocumentQuery.META_DATA
-						.any()
-						.like(QueryUtils.getFormattedString(Text
-								.escapeIllegalJcrChars(documentSearchAttributes.containingText)));
-			}
+      if (StringUtils.isNotEmpty(documentSearchAttributes.author))
+      {
+         filter.and(DocumentQuery.OWNER.like(QueryUtils
+               .getFormattedString(documentSearchAttributes.author)));
+      }
 
-			if (null != contentFilter && null != dataFilter) {
-				FilterOrTerm filterOrTerm = filter.addOrTerm();
-				filterOrTerm.add(contentFilter);
-				filterOrTerm.add(dataFilter);
-			} else if (null != contentFilter) {
-				filter.and(contentFilter);
-			} else if (null != dataFilter) {
-				filter.and(dataFilter);
-			}
-		}
+      // Document types
+      List<String> documentTypeIds = documentSearchAttributes.selectedDocumentTypes;
+      if (documentTypeIds.size() > 0 && !checkIfAllOptionSelect(documentTypeIds))
+      {
+         FilterOrTerm filterOrTerm = filter.addOrTerm();
+         for (String documentTypeId : documentTypeIds)
+         {
+            filterOrTerm.add(DocumentQuery.DOCUMENT_TYPE_ID.isEqual(documentTypeId));
+         }
+      }
 
-		DocumentManagementService documentManagementService = ServiceFactoryUtils
-				.getDocumentManagementService();
-		Documents docs = documentManagementService.findDocuments(query);
+      // Repository types
+      List<String> selectedRepo = documentSearchAttributes.selectedRepository;
+      if (selectedRepo.size() > 0 && !checkIfAllOptionSelect(selectedRepo))
+      {
+         query.setPolicy(RepositoryPolicy.includeRepositories(CollectionUtils
+               .newArrayList(selectedRepo)));
+      }
+      else
+      {
+         query.setPolicy(RepositoryPolicy.includeAllRepositories());
+      }
 
-		return docs;
-	}
-    
-	/**
-	 * 
-	 * @param query
-	 * @param filters
-	 */
-	private void applyFiltering(Query query, FilterDTO filters) {
-		DocumentSearchFilterDTO documentSearchFilter = (DocumentSearchFilterDTO) filters;
+      // File Type
+      if (documentSearchAttributes.selectFileTypeAdvance)
+      {
+         filter.and(DocumentQuery.CONTENT_TYPE.like(QueryUtils
+               .getFormattedString(documentSearchAttributes.advancedFileType)));
+      }
+      else
+      {
+         List<String> mimeTypes = documentSearchAttributes.selectedFileTypes;
+         if (mimeTypes.size() > 0 && !checkIfAllOptionSelect(mimeTypes))
+         {
+            FilterOrTerm filterOrTerm = filter.addOrTerm();
+            for (String mimeType : mimeTypes)
+            {
+               filterOrTerm.add(DocumentQuery.CONTENT_TYPE.isEqual(mimeType));
+            }
+         }
+      }
 
-		FilterAndTerm filter = query.getFilter().addAndTerm();
+      if (StringUtils.isNotEmpty(documentSearchAttributes.documentId))
+      {
+         filter.and(DocumentQuery.ID.like(QueryUtils
+               .getFormattedString(documentSearchAttributes.documentId)));
+      }
 
-		if (null != documentSearchFilter.documentName) {
+      FilterCriterion contentFilter = null, dataFilter = null;
+      if (StringUtils.isNotEmpty(documentSearchAttributes.containingText))
+      {
+         if (documentSearchAttributes.searchContent)
+         {
+            contentFilter = DocumentQuery.CONTENT.like(QueryUtils.getFormattedString(Text
+                  .escapeIllegalJcrChars(documentSearchAttributes.containingText)));
+         }
 
-			if (StringUtils
-					.isNotEmpty(documentSearchFilter.documentName.textSearch)) {
-				filter.and(DocumentQuery.NAME.like(QueryUtils
-						.getFormattedString(documentSearchFilter.documentName.textSearch)));
-			}
-		} else if (null != documentSearchFilter.createDate) {
-			Date startTime = new Date(documentSearchFilter.createDate.from);
-			Date endTime = new Date(documentSearchFilter.createDate.to);
-			if (startTime != null)
-				filter.and(DocumentQuery.DATE_CREATED.greaterOrEqual(DateUtils
-						.convertToGmt(startTime)));
+         if (documentSearchAttributes.searchData)
+         {
+            dataFilter = DocumentQuery.META_DATA.any().like(
+                  QueryUtils.getFormattedString(Text
+                        .escapeIllegalJcrChars(documentSearchAttributes.containingText)));
+         }
 
-			if (endTime != null)
-				filter.and(DocumentQuery.DATE_CREATED.lessOrEqual(DateUtils
-						.convertToGmt(endTime)));
+         if (null != contentFilter && null != dataFilter)
+         {
+            FilterOrTerm filterOrTerm = filter.addOrTerm();
+            filterOrTerm.add(contentFilter);
+            filterOrTerm.add(dataFilter);
+         }
+         else if (null != contentFilter)
+         {
+            filter.and(contentFilter);
+         }
+         else if (null != dataFilter)
+         {
+            filter.and(dataFilter);
+         }
+      }
 
-		} else if (null != documentSearchFilter.modificationDate) {
-			Date startTime = new Date(
-					documentSearchFilter.modificationDate.from);
-			Date endTime = new Date(documentSearchFilter.modificationDate.to);
-			if (startTime != null)
-				filter.and(DocumentQuery.DATE_LAST_MODIFIED
-						.greaterOrEqual(DateUtils.convertToGmt(startTime)));
+      DocumentManagementService documentManagementService = ServiceFactoryUtils
+            .getDocumentManagementService();
+      Documents docs = documentManagementService.findDocuments(query);
 
-			if (endTime != null)
-				filter.and(DocumentQuery.DATE_LAST_MODIFIED
-						.lessOrEqual(DateUtils.convertToGmt(endTime)));
-		} else if (null != documentSearchFilter.author) {
-			if (StringUtils.isNotEmpty(documentSearchFilter.author.textSearch)) {
-				filter.and(DocumentQuery.OWNER.like(QueryUtils
-						.getFormattedString(documentSearchFilter.author.textSearch)));
-			}
-		} else if (null != documentSearchFilter.fileType) {
+      return docs;
+   }
 
-			if (StringUtils
-					.isNotEmpty(documentSearchFilter.fileType.textSearch)) {
-				filter.and(DocumentQuery.CONTENT_TYPE.like(QueryUtils
-						.getFormattedString(documentSearchFilter.fileType.textSearch)));
-			}
-		} else if (null != documentSearchFilter.documentId) {
-			if (StringUtils
-					.isNotEmpty(documentSearchFilter.documentId.textSearch)) {
-				filter.and(DocumentQuery.ID.like(QueryUtils
-						.getFormattedString(documentSearchFilter.documentId.textSearch)));
-			}
-		} else if (null != documentSearchFilter.documentType) {
+   /**
+    * 
+    * @param query
+    * @param filters
+    */
+   private void applyFiltering(Query query, FilterDTO filters)
+   {
+      DocumentSearchFilterDTO documentSearchFilter = (DocumentSearchFilterDTO) filters;
 
-			List<String> filterByValues = documentSearchFilter.documentType.like;
+      FilterAndTerm filter = query.getFilter().addAndTerm();
 
-			if (!CollectionUtils.isEmpty(filterByValues)
-					&& !checkIfAllOptionSelect(filterByValues)) {
-				FilterOrTerm filterOrTerm = filter.addOrTerm();
-				for (String object : filterByValues) {
-					filterOrTerm.add(DocumentQuery.DOCUMENT_TYPE_ID
-							.isEqual(object));
-				}
-			}
-		}
+      if (null != documentSearchFilter.documentName)
+      {
 
-		query.where(filter);
-	}
-	
-    /**
-     * 
-     * @param documentId
-     * @return
-     */
-	public List<ProcessInstanceDTO> getProcessInstancesFromDocument(
-			String documentId) {
-		ProcessInstanceQuery query = new ProcessInstanceQuery();
+         if (StringUtils.isNotEmpty(documentSearchFilter.documentName.textSearch))
+         {
+            filter.and(DocumentQuery.NAME.like(QueryUtils
+                  .getFormattedString(documentSearchFilter.documentName.textSearch)));
+         }
+      }
+      else if (null != documentSearchFilter.createDate)
+      {
+         Date startTime = new Date(documentSearchFilter.createDate.from);
+         Date endTime = new Date(documentSearchFilter.createDate.to);
+         if (startTime != null)
+            filter.and(DocumentQuery.DATE_CREATED.greaterOrEqual(DateUtils
+                  .convertToGmt(startTime)));
 
-		query.where(new DocumentFilter(documentId, null));
+         if (endTime != null)
+            filter.and(DocumentQuery.DATE_CREATED.lessOrEqual(DateUtils
+                  .convertToGmt(endTime)));
 
-		ProcessInstances processInstances = ServiceFactoryUtils
-				.getQueryService().getAllProcessInstances(query);
+      }
+      else if (null != documentSearchFilter.modificationDate)
+      {
+         Date startTime = new Date(documentSearchFilter.modificationDate.from);
+         Date endTime = new Date(documentSearchFilter.modificationDate.to);
+         if (startTime != null)
+            filter.and(DocumentQuery.DATE_LAST_MODIFIED.greaterOrEqual(DateUtils
+                  .convertToGmt(startTime)));
 
-		List<ProcessInstanceDTO> processList = new ArrayList<ProcessInstanceDTO>();
-		if (CollectionUtils.isNotEmpty(processInstances)) {
-			for (ProcessInstance processInstance : processInstances) {
+         if (endTime != null)
+            filter.and(DocumentQuery.DATE_LAST_MODIFIED.lessOrEqual(DateUtils
+                  .convertToGmt(endTime)));
+      }
+      else if (null != documentSearchFilter.author)
+      {
+         if (StringUtils.isNotEmpty(documentSearchFilter.author.textSearch))
+         {
+            filter.and(DocumentQuery.OWNER.like(QueryUtils
+                  .getFormattedString(documentSearchFilter.author.textSearch)));
+         }
+      }
+      else if (null != documentSearchFilter.fileType)
+      {
 
-				ProcessInstanceDTO processInstanceDTO = new ProcessInstanceDTO();
-				processInstanceDTO.processName = ProcessInstanceUtils
-						.getProcessLabel(processInstance);
-				processInstanceDTO.oid = processInstance.getOID();
-				processList.add(processInstanceDTO);
-			}
-		}
-		return processList;
+         if (StringUtils.isNotEmpty(documentSearchFilter.fileType.textSearch))
+         {
+            filter.and(DocumentQuery.CONTENT_TYPE.like(QueryUtils
+                  .getFormattedString(documentSearchFilter.fileType.textSearch)));
+         }
+      }
+      else if (null != documentSearchFilter.documentId)
+      {
+         if (StringUtils.isNotEmpty(documentSearchFilter.documentId.textSearch))
+         {
+            filter.and(DocumentQuery.ID.like(QueryUtils
+                  .getFormattedString(documentSearchFilter.documentId.textSearch)));
+         }
+      }
+      else if (null != documentSearchFilter.documentType)
+      {
 
-	}
-    
-	/**
-	 * 
-	 * @param query
-	 * @param options
-	 */
-	private void addSortCriteria(Query query, Options options) {
-		if (COL_DOCUMENT_NAME.equals(options.orderBy)) {
-			query.orderBy(DocumentQuery.NAME, options.asc);
-		} else if (COL_AUTHOR.equals(options.orderBy)) {
-			query.orderBy(DocumentQuery.OWNER, options.asc);
-		} else if (COL_FILE_TYPE.equals(options.orderBy)) {
-			query.orderBy(DocumentQuery.CONTENT_TYPE, options.asc);
-		} else if (COL_CREATE_DATE.equals(options.orderBy)) {
-			query.orderBy(DocumentQuery.DATE_CREATED, options.asc);
-		} else if (COL_MODIFICATION_DATE.equals(options.orderBy)) {
-			query.orderBy(DocumentQuery.DATE_LAST_MODIFIED, options.asc);
-		} else if (COL_DOCUMENT_ID.equals(options.orderBy)) {
-			query.orderBy(DocumentQuery.ID, options.asc);
-		} else if (COL_DOCUMENT_TYPE.equals(options.orderBy)) {
-			query.orderBy(DocumentQuery.DOCUMENT_TYPE_ID, options.asc);
-		}
-	}
+         List<String> filterByValues = documentSearchFilter.documentType.like;
 
-	/**
-	 * prepares the Document Version list for display purpose
-	 * 
-	 * @return
-	 * @throws ResourceNotFoundException
-	 */
-	public List<DocumentVersionDTO> getDocumentVersions(String id)
-			throws ResourceNotFoundException {
-		Document document = DocumentMgmtUtility.getDocument(id);
-		JCRVersionTracker vt = new JCRVersionTracker(document);
-		List<DocumentVersionDTO> documentVersionList = new ArrayList<DocumentVersionDTO>();
-		Map<Integer, Document> docVersions = vt.getVersions();
-		if (docVersions.size() > 0) {
-			TreeSet<Integer> sortedVersions = new TreeSet<Integer>(
-					docVersions.keySet());
-			int version;
-			DocumentVersionDTO docVersion = null;
-			String documentName = "";
-			for (Iterator<Integer> iterator = sortedVersions.iterator(); iterator
-					.hasNext();) {
-				version = (Integer) iterator.next();
-				docVersion = new DocumentVersionDTO(version,
-						(Document) docVersions.get(version));
+         if (!CollectionUtils.isEmpty(filterByValues)
+               && !checkIfAllOptionSelect(filterByValues))
+         {
+            FilterOrTerm filterOrTerm = filter.addOrTerm();
+            for (String object : filterByValues)
+            {
+               filterOrTerm.add(DocumentQuery.DOCUMENT_TYPE_ID.isEqual(object));
+            }
+         }
+      }
 
-				if (documentName.equals(docVersion.getDocumentName())) {
-					docVersion.setDocumentName("");
-				} else {
-					documentName = docVersion.getDocumentName();
-				}
-				documentVersionList.add(docVersion);
-			}
-			Collections.reverse(documentVersionList);
-		}
-		return documentVersionList;
-	}
-    
-	/**
-	 * 
-	 * @param searchValue
-	 * @param onlyActive
-	 * @param maxMatches
-	 * @return
-	 */
-	public List<User> searchUsers(String searchValue, boolean onlyActive,
-			int maxMatches) {
-		return UserUtils.searchUsers(searchValue, true, 20);
-	}
-    
-	/**
-	 * 
-	 * @param selectedValues
-	 * @return
-	 */
-	private boolean checkIfAllOptionSelect(List<String> selectedValues) {
-		for (String value : selectedValues) {
-			if ("All".equalsIgnoreCase(value)) {
-				return true;
-			}
-		}
-		return false;
-	}
-    
-	/**
-	 * 
-	 * @return
-	 */
-	public List<SelectItemDTO> loadAvailableProcessDefinitions() {
-		List<View> openViews = PortalApplication.getInstance().getOpenViews();
-		List<SelectItemDTO> allProcessDefns = new ArrayList<SelectItemDTO>();
-		for (Iterator<View> iterator = openViews.iterator(); iterator.hasNext();) {
-			View view = (View) iterator.next();
-			if (VIEW_ACTIVITY_PANEL.equals(view.getName())) {
-				Object activityOid = (String) view.getViewParams().get("oid");
-				if (null != activityOid && activityOid instanceof String) {
-					long activityOidLong = Long
-							.parseLong(((String) activityOid).trim());
-					ActivityInstance actInstance = ActivityInstanceUtils
-							.getActivityInstance(activityOidLong);
-					ProcessInstance pi = actInstance.getProcessInstance();
-					StringBuffer processLabel = new StringBuffer(
-							I18nUtils.getProcessName(ProcessDefinitionUtils
-									.getProcessDefinition(pi.getProcessID())));
-					processLabel.append(" (#").append(pi.getOID()).append(")");
-					allProcessDefns.add(new SelectItemDTO(String.valueOf(pi
-							.getOID()), processLabel.toString()));
-				}
-			}
-		}
-		return allProcessDefns;
-	}
-    
-	/**
-     * 
-     * @param processOid
-     * @param documentId
-     * @return
-     * @throws ResourceNotFoundException
-     */
-	public InfoDTO attachDocuments(Long processOid, String documentId)
-			throws ResourceNotFoundException {
-		InfoDTO infoDTO = null;
-		ProcessInstance pi = null;
-		try {
-			pi = ProcessInstanceUtils.getProcessInstance(processOid);
-		} catch (Exception e) { // Todo for Errors
-			return new InfoDTO(MessageType.ERROR, MessagesViewsCommonBean
-					.getInstance().getString(
-							"views.common.process.invalidProcess.message"));
+      query.where(filter);
+   }
 
-		}
+   /**
+    * 
+    * @param documentId
+    * @return
+    */
+   public List<ProcessInstanceDTO> getProcessInstancesFromDocument(String documentId)
+   {
+      ProcessInstanceQuery query = new ProcessInstanceQuery();
 
-		if (DocumentMgmtUtility.isProcessAttachmentAllowed(pi)) {
-			List<Document> documentList = new ArrayList<Document>();
-			Document selectedDoc = DocumentMgmtUtility.getDocument(documentId);
-			if (null != selectedDoc) {// single document is selected
-				documentList.add(selectedDoc);
-			} else { // multiple documents are selected
-						// Can be implemented later as for me it was not in
-						// scope.
-			}
+      query.where(new DocumentFilter(documentId, null));
 
-			if (documentList.size() > 0) {
-				// create copy of the documents and update process instance
-				try {
-					if (DocumentMgmtUtility.getDuplicateDocuments(pi,
-							documentList).size() > 0) {
-						return new InfoDTO(
-								MessageType.ERROR,
-								MessagesViewsCommonBean
-										.getInstance()
-										.getString(
-												"views.common.process.duplicateDocAttached.message"));
-					}
-					DocumentMgmtUtility.addDocumentsToProcessInstance(pi,
-							documentList);
-					infoDTO = new InfoDTO(
-							MessageType.INFO,
-							MessagesViewsCommonBean
-									.getInstance()
-									.getString(
-											"views.common.process.documentAttachedSuccess.message"));
-				} catch (Exception e) {
-					return new InfoDTO(
-							MessageType.ERROR,
-							MessagesViewsCommonBean
-									.getInstance()
-									.getString(
-											"views.common.process.documentAttachedFailure.message"));
-				}
-			}
-		} else {
-			infoDTO = new InfoDTO(MessageType.ERROR, MessagesViewsCommonBean
-					.getInstance().getString(
-							"views.common.process.invalidProcess.message"));
-		}
+      ProcessInstances processInstances = ServiceFactoryUtils.getQueryService()
+            .getAllProcessInstances(query);
 
-		return infoDTO;
-	}
+      List<ProcessInstanceDTO> processList = new ArrayList<ProcessInstanceDTO>();
+      if (CollectionUtils.isNotEmpty(processInstances))
+      {
+         for (ProcessInstance processInstance : processInstances)
+         {
+
+            ProcessInstanceDTO processInstanceDTO = new ProcessInstanceDTO();
+            processInstanceDTO.processName = ProcessInstanceUtils
+                  .getProcessLabel(processInstance);
+            processInstanceDTO.oid = processInstance.getOID();
+            processList.add(processInstanceDTO);
+         }
+      }
+      return processList;
+
+   }
+
+   /**
+    * 
+    * @param query
+    * @param options
+    */
+   private void addSortCriteria(Query query, Options options)
+   {
+      if (COL_DOCUMENT_NAME.equals(options.orderBy))
+      {
+         query.orderBy(DocumentQuery.NAME, options.asc);
+      }
+      else if (COL_AUTHOR.equals(options.orderBy))
+      {
+         query.orderBy(DocumentQuery.OWNER, options.asc);
+      }
+      else if (COL_FILE_TYPE.equals(options.orderBy))
+      {
+         query.orderBy(DocumentQuery.CONTENT_TYPE, options.asc);
+      }
+      else if (COL_CREATE_DATE.equals(options.orderBy))
+      {
+         query.orderBy(DocumentQuery.DATE_CREATED, options.asc);
+      }
+      else if (COL_MODIFICATION_DATE.equals(options.orderBy))
+      {
+         query.orderBy(DocumentQuery.DATE_LAST_MODIFIED, options.asc);
+      }
+      else if (COL_DOCUMENT_ID.equals(options.orderBy))
+      {
+         query.orderBy(DocumentQuery.ID, options.asc);
+      }
+      else if (COL_DOCUMENT_TYPE.equals(options.orderBy))
+      {
+         query.orderBy(DocumentQuery.DOCUMENT_TYPE_ID, options.asc);
+      }
+   }
+
+   /**
+    * prepares the Document Version list for display purpose
+    * 
+    * @return
+    * @throws ResourceNotFoundException
+    */
+   public List<DocumentVersionDTO> getDocumentVersions(String id)
+         throws ResourceNotFoundException
+   {
+      Document document = DocumentMgmtUtility.getDocument(id);
+      JCRVersionTracker vt = new JCRVersionTracker(document);
+      List<DocumentVersionDTO> documentVersionList = new ArrayList<DocumentVersionDTO>();
+      Map<Integer, Document> docVersions = vt.getVersions();
+      if (docVersions.size() > 0)
+      {
+         TreeSet<Integer> sortedVersions = new TreeSet<Integer>(docVersions.keySet());
+         int version;
+         DocumentVersionDTO docVersion = null;
+         String documentName = "";
+         for (Iterator<Integer> iterator = sortedVersions.iterator(); iterator.hasNext();)
+         {
+            version = (Integer) iterator.next();
+            docVersion = new DocumentVersionDTO(version,
+                  (Document) docVersions.get(version));
+
+            if (documentName.equals(docVersion.getDocumentName()))
+            {
+               docVersion.setDocumentName("");
+            }
+            else
+            {
+               documentName = docVersion.getDocumentName();
+            }
+            documentVersionList.add(docVersion);
+         }
+         Collections.reverse(documentVersionList);
+      }
+      return documentVersionList;
+   }
+
+   /**
+    * 
+    * @param searchValue
+    * @param onlyActive
+    * @param maxMatches
+    * @return
+    */
+   public List<User> searchUsers(String searchValue, boolean onlyActive, int maxMatches)
+   {
+      return UserUtils.searchUsers(searchValue, true, 20);
+   }
+
+   /**
+    * 
+    * @param selectedValues
+    * @return
+    */
+   private boolean checkIfAllOptionSelect(List<String> selectedValues)
+   {
+      for (String value : selectedValues)
+      {
+         if ("All".equalsIgnoreCase(value))
+         {
+            return true;
+         }
+      }
+      return false;
+   }
+
+   /**
+    * 
+    * @return
+    */
+   public List<SelectItemDTO> loadAvailableProcessDefinitions()
+   {
+      List<View> openViews = PortalApplication.getInstance().getOpenViews();
+      List<SelectItemDTO> allProcessDefns = new ArrayList<SelectItemDTO>();
+      for (Iterator<View> iterator = openViews.iterator(); iterator.hasNext();)
+      {
+         View view = (View) iterator.next();
+         if (VIEW_ACTIVITY_PANEL.equals(view.getName()))
+         {
+            Object activityOid = (String) view.getViewParams().get("oid");
+            if (null != activityOid && activityOid instanceof String)
+            {
+               long activityOidLong = Long.parseLong(((String) activityOid).trim());
+               ActivityInstance actInstance = ActivityInstanceUtils
+                     .getActivityInstance(activityOidLong);
+               ProcessInstance pi = actInstance.getProcessInstance();
+               StringBuffer processLabel = new StringBuffer(
+                     I18nUtils.getProcessName(ProcessDefinitionUtils
+                           .getProcessDefinition(pi.getProcessID())));
+               processLabel.append(" (#").append(pi.getOID()).append(")");
+               allProcessDefns.add(new SelectItemDTO(String.valueOf(pi.getOID()),
+                     processLabel.toString()));
+            }
+         }
+      }
+      return allProcessDefns;
+   }
+
+   /**
+    * 
+    * @param processOid
+    * @param documentId
+    * @return
+    * @throws ResourceNotFoundException
+    */
+   public InfoDTO attachDocuments(Long processOid, String documentId)
+         throws ResourceNotFoundException
+   {
+      InfoDTO infoDTO = null;
+      ProcessInstance pi = null;
+      try
+      {
+         pi = ProcessInstanceUtils.getProcessInstance(processOid);
+      }
+      catch (Exception e)
+      { // Todo for Errors
+         return new InfoDTO(MessageType.ERROR, MessagesViewsCommonBean.getInstance()
+               .getString("views.common.process.invalidProcess.message"));
+
+      }
+
+      if (DocumentMgmtUtility.isProcessAttachmentAllowed(pi))
+      {
+         List<Document> documentList = new ArrayList<Document>();
+         Document selectedDoc = DocumentMgmtUtility.getDocument(documentId);
+         if (null != selectedDoc)
+         {// single document is selected
+            documentList.add(selectedDoc);
+         }
+         else
+         { // multiple documents are selected
+           // Can be implemented later as for me it was not in
+           // scope.
+         }
+
+         if (documentList.size() > 0)
+         {
+            // create copy of the documents and update process instance
+            try
+            {
+               if (DocumentMgmtUtility.getDuplicateDocuments(pi, documentList).size() > 0)
+               {
+                  return new InfoDTO(MessageType.ERROR, MessagesViewsCommonBean
+                        .getInstance().getString(
+                              "views.common.process.duplicateDocAttached.message"));
+               }
+               DocumentMgmtUtility.addDocumentsToProcessInstance(pi, documentList);
+               infoDTO = new InfoDTO(MessageType.INFO, MessagesViewsCommonBean
+                     .getInstance().getString(
+                           "views.common.process.documentAttachedSuccess.message"));
+            }
+            catch (Exception e)
+            {
+               return new InfoDTO(MessageType.ERROR, MessagesViewsCommonBean
+                     .getInstance().getString(
+                           "views.common.process.documentAttachedFailure.message"));
+            }
+         }
+      }
+      else
+      {
+         infoDTO = new InfoDTO(MessageType.ERROR, MessagesViewsCommonBean.getInstance()
+               .getString("views.common.process.invalidProcess.message"));
+      }
+
+      return infoDTO;
+   }
 
 }

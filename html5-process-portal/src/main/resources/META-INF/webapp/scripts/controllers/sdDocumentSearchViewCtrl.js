@@ -33,12 +33,10 @@
 		this.docSrchRsltTable = null;
 		this.columnSelector = 'admin';
 		this.docVersionsdataTable = null;
-
 		this.exportFileName = new Date();
-
 		this.rowSelection = null;
-
 		this.showDocumentSearchCriteria = true;
+
 
 		var trace = sdLoggerService
 				.getLogger('workflow-ui.sdDocumentSearchViewCtrl');
@@ -120,14 +118,14 @@
 		}
 
 		/**
-		 * 
+		 * To refresh the document search table
 		 */
 		DocumentSearchViewCtrl.prototype.refresh = function() {
 			this.docSrchRsltTable.refresh(true);
 		};
 
 		/**
-		 * 
+		 * This method is for getting the document search result by using search criteria
 		 */
 		DocumentSearchViewCtrl.prototype.performSearch = function(options) {
 			var deferred = $q.defer();
@@ -251,7 +249,7 @@
 		DocumentSearchViewCtrl.prototype.validateSearchCriteria = function() {
 			var self = this;
 			var error = false;
-
+			// validating the createDateTo and createDateFrom
 			if (!this.validateDateRange(
 					self.query.documentSearchCriteria.createDateFrom,
 					self.query.documentSearchCriteria.createDateTo)) {
@@ -260,7 +258,7 @@
 			} else {
 				self.searchCriteriaForm.$error.createDateRange = false;
 			}
-
+			// validating the modificationDateTo and modificationDateFrom
 			if (!this.validateDateRange(
 					self.query.documentSearchCriteria.modificationDateFrom,
 					self.query.documentSearchCriteria.modificationDateTo)) {
@@ -271,8 +269,10 @@
 			}
 
 			if (error) {
+				// validation error in search criteria, then don't perform search
 				self.showDocumentSearchResult = false;
 			} else {
+				// search criteria is valid then perform search 
 				self.showDocumentSearchResult = true;
 				self.showDocumentSearchCriteria = false;
 				self.showTableData = true;
@@ -383,7 +383,6 @@
 			self.query.documentSearchCriteria.containingText = self.advancedTextSearch.finalText;
 			delete self.advancedTextSearch;
 			self.showAdvancedTextSearch = false;
-			console.log("dialog state: confirmed");
 		};
 
 		/**
@@ -392,7 +391,6 @@
 		DocumentSearchViewCtrl.prototype.onCancelFromAdvanceText = function(res) {
 			var self = this;
 			delete self.advancedTextSearch;
-			console.log("dialog state: cancelled");
 		};
 
 		/**
