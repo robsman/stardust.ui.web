@@ -551,18 +551,6 @@ public class DocumentSearchUtils
 
    /**
     * 
-    * @param searchValue
-    * @param onlyActive
-    * @param maxMatches
-    * @return
-    */
-   public List<User> searchUsers(String searchValue, boolean onlyActive, int maxMatches)
-   {
-      return UserUtils.searchUsers(searchValue, true, 20);
-   }
-
-   /**
-    * 
     * @param selectedValues
     * @return
     */

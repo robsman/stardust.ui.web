@@ -14,7 +14,7 @@
 
 'use strict';
 
-angular.module('admin-ui.services').provider('sdUserService', function () {
+angular.module('admin-ui.services').provider('sdUserServiceMock', function () {
 	var self = this;
 	
 	self.$get = ['$rootScope', '$q', '$http', function ($rootScope, $q, $http) {

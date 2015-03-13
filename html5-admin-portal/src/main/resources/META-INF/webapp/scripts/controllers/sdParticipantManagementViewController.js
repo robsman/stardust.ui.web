@@ -22,9 +22,9 @@
 		_$q,
 		_eventBus;
 	
-	var controller = function(sdViewUtilService,sdUserService,$q,eventBus){
+	var controller = function(sdViewUtilService,sdUserServiceMock,$q,eventBus){
 		_sdViewUtilService=sdViewUtilService;
-		_sdUserService = sdUserService;
+		_sdUserService = sdUserServiceMock;
 		_$q=$q;
 		_eventBus=eventBus;
 		
@@ -132,6 +132,6 @@
 	
 	angular.module('admin-ui')
 	.controller('sdParticipantManagementViewController', 
-			['sdViewUtilService', 'sdUserService', '$q', 'eventBus',controller]);
+			['sdViewUtilService', 'sdUserServiceMock', '$q', 'eventBus',controller]);
 	
 })();

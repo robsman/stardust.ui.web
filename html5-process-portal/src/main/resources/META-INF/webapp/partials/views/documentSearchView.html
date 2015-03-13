@@ -12,10 +12,10 @@ table.formTable td {
 		<div class="view-panel-toolbar"
 			ng-click="docSearchViewCtrl.setShowDocumentSearchCriteria()">
 			<i ng-show="docSearchViewCtrl.showDocumentSearchCriteria"
-				class="sc sc-arrow-d"></i>
-			<i ng-show="!docSearchViewCtrl.showDocumentSearchCriteria"
-				class="sc sc-arrow-r"></i>
-			<span style="color: #2F6871; font-weight: bold; font-size: 11px;">{{i18n('views-common-messages.views-documentSearchView-documentSearchCriteria-label')}}</span>
+				class="sc sc-arrow-d"></i> <i
+				ng-show="!docSearchViewCtrl.showDocumentSearchCriteria"
+				class="sc sc-arrow-r"></i> <span
+				style="color: #2F6871; font-weight: bold; font-size: 11px;">{{i18n('views-common-messages.views-documentSearchView-documentSearchCriteria-label')}}</span>
 		</div>
 		<div ng-show="docSearchViewCtrl.showDocumentSearchCriteria">
 			<form name="docSearchViewCtrl.searchCriteriaForm">
@@ -27,8 +27,7 @@ table.formTable td {
 						<td><input type="text" sd-date-picker sda-change-year="true"
 							sda-milliseconds="true" ng-model-onblur
 							ng-model="docSearchViewCtrl.query.documentSearchCriteria.createDateFrom"
-							name="createDateFrom" />
-						</td>
+							name="createDateFrom" /></td>
 					</tr>
 					<tr>
 						<td><label class="form-lable">{{i18n('views-common-messages.views-documentSearchView-createDateTo-label')
@@ -91,8 +90,7 @@ table.formTable td {
 									<td><input type="checkbox"
 										ng-model="docSearchViewCtrl.query.documentSearchCriteria.showAll"
 										ng-change="docSearchViewCtrl.getFileTypes()"
-										style="vertical-align: middle" />
-										<label class="form-lable"
+										style="vertical-align: middle" /> <label class="form-lable"
 										style="display: inline-block; margin-bottom: 5px; padding-left: 1px; vertical-align: text-top;">{{i18n('views-common-messages.views-documentSearchView-showAll-label')}}</label>
 									</td>
 									<td><a href="#"
@@ -167,14 +165,10 @@ table.formTable td {
 						<td><label class="form-lable">{{i18n('views-common-messages.views-documentSearchView-author-label')
 								+ i18n('views-common-messages.views-documentSearchView-colon')}}</label>
 						</td>
-						<td><div sd-auto-complete
-								sda-matches="docSearchViewCtrl.authors"
-								sda-match-str="docSearchViewCtrl.partialAuthor"
-								sda-change="docSearchViewCtrl.getAuthors(docSearchViewCtrl.partialAuthor)"
-								sda-text-property="name" sda-container-class="sd-ac-container"
-								sda-item-hot-class="sd-ac-item-isActive"
-								sda-selected-matches="docSearchViewCtrl.selectedAuthors"
-								sda-allow-multiple=false sda-allow-duplicates=false></div></td>
+						<td><div sd-user-selector
+								sda-selected-data="docSearchViewCtrl.selectedAuthors"
+								sda-active-only="true" sda-multiple="false" sda-max="20">
+							</div></td>
 					</tr>
 					<tr>
 						<td><label class="form-lable">{{i18n('views-common-messages.views-documentSearchView-documentName-label')

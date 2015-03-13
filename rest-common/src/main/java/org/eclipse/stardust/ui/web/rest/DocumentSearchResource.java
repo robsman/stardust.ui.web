@@ -62,37 +62,6 @@ public class DocumentSearchResource
 
    /**
     * 
-    * @param searchValue
-    * @return
-    */
-   @GET
-   @Path("/searchUsers/{searchValue}")
-   public Response searchUsers(@PathParam("searchValue") String searchValue)
-   {
-      if (StringUtils.isNotEmpty(searchValue))
-      {
-         try
-         {
-            String result = documentSearchService.searchUsers(searchValue);
-            return Response.ok(result, MediaType.TEXT_PLAIN_TYPE).build();
-         }
-         catch (MissingResourceException mre)
-         {
-            return Response.status(Status.NOT_FOUND).build();
-         }
-         catch (Exception e)
-         {
-            return Response.status(Status.BAD_REQUEST).build();
-         }
-      }
-      else
-      {
-         return Response.status(Status.FORBIDDEN).build();
-      }
-   }
-
-   /**
-    * 
     * @return
     */
    @GET

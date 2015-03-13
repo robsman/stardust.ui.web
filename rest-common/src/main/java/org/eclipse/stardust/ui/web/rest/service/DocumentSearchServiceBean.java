@@ -57,31 +57,6 @@ public class DocumentSearchServiceBean
    private DocumentSearchUtils documentSearchUtils;
 
    /**
-    * @param serviceName
-    * @param searchValue
-    * @return
-    */
-   public String searchUsers(String searchValue)
-   {
-      List<User> users = documentSearchUtils.searchUsers(searchValue, true, 20);
-      List<UserDTO> userWrappers = new ArrayList<UserDTO>();
-      for (User user : users)
-      {
-         UserDTO dto = new UserDTO();
-         dto.setId(user.getId());
-         dto.setName(UserUtils.getUserDisplayLabel(user));
-         userWrappers.add(dto);
-      }
-
-      QueryResultDTO resultDTO = new QueryResultDTO();
-      resultDTO.list = userWrappers;
-      resultDTO.totalCount = userWrappers.size();
-
-      Gson gson = new Gson();
-      return gson.toJson(resultDTO);
-   }
-
-   /**
     * @return
     */
    public String createDocumentSearchFilterAttributes()
