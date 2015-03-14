@@ -6,17 +6,13 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry excluding="**" kind="src" output="target/classes" path="src/main/resources">
-		<attributes>
-			<attribute name="maven.pomderived" value="true"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="src" output="target/test-classes" path="src/test/java">
 		<attributes>
 			<attribute name="optional" value="true"/>
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry including="**/*.java" kind="src" path="src/main/resources"/>
 	<classpathentry kind="var" path="STARDUST_JAXWS_CXF_LIBS/lib/gson.jar"/>
 	<classpathentry kind="var" path="STARDUST_PORTAL_LIBS/lib/slf4j-log4j12.jar"/>
 	<classpathentry kind="var" path="STARDUST_CXF_LIBS/lib/commons-logging.jar"/>
@@ -31,15 +27,25 @@
 	<classpathentry kind="var" path="STARDUST_SPRING_LIBS/lib/spring-beans.jar"/>
 	<classpathentry kind="var" path="STARDUST_PORTAL_LIBS/lib/ipp-portal-common.jar"/>
 	<classpathentry kind="var" path="STARDUST_PORTAL_LIBS/lib/ipp-views-common.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="var" path="STARDUST_PORTAL_LIBS/lib/icepdf-core-5.0.0.jar"/>
-	<classpathentry kind="lib" path="/server/lib/carnot-engine.jar"/>
-	<classpathentry kind="var" path="STARDUST_PORTAL_LIBS/lib/jsr311-api-1.1.1.jar"/>
-	<classpathentry kind="var" path="STARDUST_PORTAL_LIBS/lib/jsf-facelets.jar"/>
+	<classpathentry kind="var" path="STARDUST_PORTAL_LIBS/lib/javax.ws.rs-api.jar"/>
 	<classpathentry kind="var" path="STARDUST_PORTAL_LIBS/lib/icefaces-facelets.jar"/>
 	<classpathentry kind="var" path="STARDUST_PORTAL_LIBS/lib/myfaces-api.jar"/>
 	<classpathentry kind="var" path="STARDUST_SPRING_LIBS/lib/spring-context.jar"/>
 	<classpathentry kind="var" path="STARDUST_PORTAL_LIBS/lib/icefaces.jar"/>
-	<classpathentry kind="lib" path="/server/lib/carnot-base.jar"/>
+	<classpathentry kind="lib" path="C:/Users/anoop.nair/.m2/repository/org/eclipse/stardust/engine/carnot-base/8.1.0-RC1-SNAPSHOT/carnot-base-8.1.0-RC1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="C:/Users/anoop.nair/.m2/repository/org/eclipse/stardust/engine/carnot-engine/8.1.0-RC1-SNAPSHOT/carnot-engine-8.1.0-RC1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="C:/Users/anoop.nair/.m2/repository/org/eclipse/stardust/engine/carnot-spring/8.1.0-RC1-SNAPSHOT/carnot-spring-8.1.0-RC1-SNAPSHOT.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

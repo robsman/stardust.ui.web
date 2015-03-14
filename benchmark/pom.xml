@@ -8,7 +8,7 @@
    <parent>
       <groupId>com.infinity.bpm</groupId>
       <artifactId>product-parent</artifactId>
-      <version>8.1.1-M3-SNAPSHOT</version>
+      <version>8.2.0-M14-SNAPSHOT</version>
    </parent>
 
    <groupId>org.eclipse.stardust.ui.web</groupId>
@@ -28,12 +28,12 @@
          <version>${gson.version}</version>
       </dependency>
 
-      <dependency>
+      <!-- <dependency>
          <groupId>org.eclipse.stardust.engine</groupId>
          <artifactId>engine-module</artifactId>
          <version>${project.version}</version>
          <type>pom</type>
-      </dependency>
+      </dependency> -->
 
       <dependency>
          <groupId>org.eclipse.stardust.ui.web</groupId>
