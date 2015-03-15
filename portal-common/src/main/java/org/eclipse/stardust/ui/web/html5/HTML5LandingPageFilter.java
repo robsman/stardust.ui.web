@@ -44,6 +44,8 @@ public class HTML5LandingPageFilter implements Filter
    private static final String DEFAULT_LANDING_PAGE = "/portal-shell/index.html";
    private static final String SCRIPTS_PLACE_HOLDER = "<!-- DEPENDENCY_SCRIPTS_TO_BE_INJECTED -->";
    private static final String STYLES_PLACE_HOLDER = "<!-- DEPENDENCY_STYLES_TO_BE_INJECTED -->";
+   private static final String SKIN_AND_OTHER_STYLES_PLACE_HOLDER = "<!-- SKIN_AND_OTHER_STYLES_TO_BE_INJECTED -->";
+
 
    private String landingPage;
 
@@ -100,52 +102,29 @@ public class HTML5LandingPageFilter implements Filter
                   allStyles.addAll(resourceDependency.getStyles());
                }
 
-               // Icons Styles (for legacy requirements)
-               allStyles.addAll(getPluginViewIconStyleSheets(appContext));
-
-               // Theme Styles
-               allStyles.addAll(getThemeStyleSheets(request.getSession(false).getServletContext()));
-
                if (trace.isDebugEnabled())
                {
                   trace.debug("Dependency Scripts to Inject: " + allScripts);
                   trace.debug("Dependency Styles to Inject: " + allStyles);
                }
 
-               // Process Scripts
-               StringBuffer sbScripts = new StringBuffer();
-               for (String script : allScripts)
+               // Process Scripts & Styles
+               landingPageContent = injectArtifacts(allScripts, landingPageContent, SCRIPTS_PLACE_HOLDER, true);
+               landingPageContent = injectArtifacts(allStyles, landingPageContent, STYLES_PLACE_HOLDER, false);
+
+               // Process other Styles
+               List<String> otherStyles = new ArrayList<String>();
+               otherStyles.addAll(getPluginViewIconStyleSheets(appContext)); // Icons Styles (for legacy requirements)
+               otherStyles.addAll(getThemeStyleSheets(request.getSession(false).getServletContext())); // Theme Styles
+
+               if (trace.isDebugEnabled())
                {
-                  sbScripts.append("\n\t<script src=\"" + script + "\"></script>");
+                  trace.debug("Other Styles to Inject: " + otherStyles);
                }
 
-               if (-1 != landingPageContent.indexOf(SCRIPTS_PLACE_HOLDER))
-               {
-                  landingPageContent = landingPageContent.replace(SCRIPTS_PLACE_HOLDER, sbScripts);
-               }
-               else
-               {
-                  trace.error("Landing page does not have a place holder '" + SCRIPTS_PLACE_HOLDER
-                        + "' to inject the dependency scripts");
-               }
+               landingPageContent = injectArtifacts(otherStyles, landingPageContent, SKIN_AND_OTHER_STYLES_PLACE_HOLDER, false);
 
-               // Process Styles
-               StringBuffer sbStyles = new StringBuffer();
-               for (String style : allStyles)
-               {
-                  sbStyles.append("\n\t<link rel=\"stylesheet\" href=\"" + style + "\"/>");
-               }
-
-               if (-1 != landingPageContent.indexOf(STYLES_PLACE_HOLDER))
-               {
-                  landingPageContent = landingPageContent.replace(STYLES_PLACE_HOLDER, sbStyles);
-               }
-               else
-               {
-                  trace.error("Landing page does not have a place holder '" + STYLES_PLACE_HOLDER
-                        + "' to inject the dependency styles");
-               }
-
+               // Return the contents
                response.getWriter().print(landingPageContent);
             }
          }
@@ -240,5 +219,43 @@ public class HTML5LandingPageFilter implements Filter
       }
       
       return styles;
+   }
+
+   /**
+    * @param list
+    * @param content
+    * @param placeholder
+    * @param scripts
+    * @return
+    */
+   private String injectArtifacts(List<String> list, String content, String placeholder, boolean scripts)
+   {
+      StringBuffer toInject = new StringBuffer();
+
+      if (scripts)
+      {
+         for (String path : list)
+         {
+            toInject.append("\n\t<script src=\"" + path + "\"></script>");
+         }
+      }
+      else
+      {
+         for (String path : list)
+         {
+            toInject.append("\n\t<link rel=\"stylesheet\" href=\"" + path + "\"/>");
+         }
+      }
+
+      if (-1 != content.indexOf(placeholder))
+      {
+         content = content.replace(placeholder, toInject);
+      }
+      else
+      {
+         trace.error("Landing page does not have a place holder '" + placeholder + "' to inject the artifacts");
+      }
+      
+      return content;
    }
 }
