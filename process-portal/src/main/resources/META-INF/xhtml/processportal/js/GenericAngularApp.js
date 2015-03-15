@@ -33,7 +33,18 @@ if (!window.bpm.portal.GenericAngularApp) {
 		 *
 		 */
 		GenericAngularApp.prototype.initialize = function() {
-			var angularModule = angular.module(options.module, []);
+			var angularModule;
+
+			// If module is available use it else create it
+			try {
+				if (angular.module(options.module) != undefined) {
+					angularModule = angular.module(options.module);
+				} else {
+					angularModule = angular.module(options.module, []);
+				}
+			} catch (e) {
+				angularModule = angular.module(options.module, []);
+			}
 			
 			// Taken From - http://jsfiddle.net/cn8VF/
 			// This is to delay model updates till element is in focus
