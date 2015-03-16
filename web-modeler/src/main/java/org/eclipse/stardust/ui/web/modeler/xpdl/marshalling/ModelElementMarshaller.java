@@ -2103,8 +2103,7 @@ public class ModelElementMarshaller implements ModelMarshaller
             dataJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY, dataTypeId);
             if (ModelerConstants.STRUCTURED_DATA_TYPE_KEY.equals(dataTypeId))
             {
-               TypeDeclarationType typeDeclaration = StructuredTypeUtils
-                     .getTypeDeclaration(data);
+               TypeDeclarationType typeDeclaration = StructuredTypeUtils.getTypeDeclaration(data);
 
                if (typeDeclaration == null && data.eIsProxy())
                {
@@ -2119,9 +2118,14 @@ public class ModelElementMarshaller implements ModelMarshaller
                   dataJson.addProperty(
                         ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY, fullId);
                }
-               else
+               else 
                {
-                  dataJson.addProperty(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY, "");
+                  // while loading the models, this attribute gets set properly as part loadAttributes(data, dataJson);
+                  // but for updating data type later, following code is required.
+                  if (!hasNotJsonNull(dataJson, ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY))
+                  {
+                     dataJson.addProperty(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY, "");
+                  }
                }
             }
             else if (dataTypeId.equals(ModelerConstants.DOCUMENT_DATA_TYPE_KEY))
