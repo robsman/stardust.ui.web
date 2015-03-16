@@ -815,7 +815,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
          }
          else
          {
-            String id = data.getId() + "_" + activity.getId();
+            String id = data.getId();
             dataMapping.setId(id);
             dataMapping.setName(id);
          }
@@ -833,7 +833,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
             dataMapping.setName(dataFlowJson.get(ModelerConstants.NAME_PROPERTY)
                   .getAsString());
          }
-         String id = data.getId() + "_" + activity.getId();
+         String id = data.getId();
          dataMapping.setId(id);
          dataMapping.setName(id);
       }

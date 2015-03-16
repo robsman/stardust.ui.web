@@ -2118,7 +2118,7 @@ public class ModelElementMarshaller implements ModelMarshaller
                   dataJson.addProperty(
                         ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY, fullId);
                }
-               else 
+               else
                {
                   // while loading the models, this attribute gets set properly as part loadAttributes(data, dataJson);
                   // but for updating data type later, following code is required.
@@ -2774,9 +2774,7 @@ public class ModelElementMarshaller implements ModelMarshaller
             {
                if (!hasNotJsonNull(dataFlowJson, ModelerConstants.ID_PROPERTY))
                {
-                  String id = dataMappingConnection.getDataSymbol().getData().getId()
-                        + "_"
-                        + dataMappingConnection.getActivitySymbol().getActivity().getId();
+                  String id = dataMappingConnection.getDataSymbol().getData().getId();
                   dataFlowJson.addProperty(ModelerConstants.ID_PROPERTY, id);
                   dataFlowJson.addProperty(ModelerConstants.NAME_PROPERTY, id);
                }
