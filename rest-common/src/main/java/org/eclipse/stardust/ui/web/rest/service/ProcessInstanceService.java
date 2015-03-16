@@ -11,13 +11,24 @@
 package org.eclipse.stardust.ui.web.rest.service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
+import org.eclipse.stardust.common.error.AccessForbiddenException;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.util.GsonUtils;
+import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap;
+import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap.NotificationDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
+import org.eclipse.stardust.ui.web.rest.service.utils.ActivityInstanceUtils;
+import org.eclipse.stardust.ui.web.viewscommon.common.converter.PriorityConverter;
+import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.JsonObject;
-
-import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
 
 /**
  * @author Anoop.Nair
@@ -26,7 +37,8 @@ import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
 @Component
 public class ProcessInstanceService
 {
-
+   private static final Logger trace = LogManager.getLogger(ActivityInstanceUtils.class);
+   
    public ProcessInstanceDTO startProcess(JsonObject json)
    {
       // TODO Auto-generated method stub
@@ -58,6 +70,44 @@ public class ProcessInstanceService
    {
       // TODO Auto-generated method stub
       return null;
+   }
+   
+
+   /**
+    * Updates the process priorities
+    * 
+    * @param type
+    * @param oidPriorityMap
+    * @return
+    */
+   public String updatePriorities( Map<String, Integer> oidPriorityMap)
+   {
+
+      NotificationMap notificationMap = new NotificationMap();
+      for (Entry<String, Integer> entry : oidPriorityMap.entrySet())
+      {
+         Long oid = Long.valueOf(entry.getKey());
+         try
+         {
+            ProcessInstanceUtils.setProcessPriority(oid, entry.getValue());
+            notificationMap.addSuccess(new NotificationDTO(oid, null, MessagesViewsCommonBean.getInstance()
+                  .getParamString("views.processTable.savePriorities.priorityChanged",
+                        PriorityConverter.getPriorityLabel(entry.getValue()))));
+
+         }
+         catch (AccessForbiddenException exception)
+         {
+            notificationMap.addFailure(new NotificationDTO(oid, null, MessagesViewsCommonBean.getInstance().getString(
+                  "common.authorization.msg")));
+            trace.error("Authorization exception occurred while changing process priority: ", exception);
+         }
+         catch (Exception exception)
+         {
+            notificationMap.addFailure(new NotificationDTO(oid, null, exception.getMessage()));
+            trace.error("Exception occurred while changing process priority: ", exception);
+         }
+      }
+      return GsonUtils.toJsonHTMLSafeString(notificationMap);
    }
 
 }

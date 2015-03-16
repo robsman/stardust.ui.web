@@ -13,11 +13,28 @@
  */
 package org.eclipse.stardust.ui.web.rest.service.dto;
 
-public class PrioirtyDTO extends AbstractDTO{
+import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOAttribute;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 
-   public String value;
+public class PriorityDTO extends AbstractDTO
+{
 
-	public String name;
+   @DTOAttribute("processInstance.priority")
+   public int value;
 
-	public String label;
+   @DTOAttribute("processInstance.priority")
+   public String name;
+
+   @DTOAttribute("processInstance.priority")
+   public String label;
+
+   public void setName(Integer value)
+   {
+      this.name = ProcessInstanceUtils.getPriorityValue(value);
+   }
+
+   public void setLabel(Integer value)
+   {
+      this.label = ProcessInstanceUtils.getPriorityLabel(value);
+   }
 }

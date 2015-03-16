@@ -1,5 +1,5 @@
 <div class="confirmation-contents section">
-	<div ng-show="worklistCtrl.completeActivityResult.status =='partialSuccess'">
+	<div ng-show="activityTableCtrl.completeActivityResult.status =='partialSuccess'">
 			<div ng-bind="i18n('processportal.views-completeActivityDialog-notification-partialSuccess')"></div>
 			<br>
 			<table  class="table">
@@ -12,21 +12,20 @@
 				</thead>
 				<tbody>  
 					<tr
-						ng-repeat="activity in worklistCtrl.completeActivityResult.notifications.failure">
-						<td>{{
-							worklistCtrl.completeActivityResult.nameIdMap[activity.OID]}}</td>
+						ng-repeat="activity in activityTableCtrl.completeActivityResult.notifications.failure">
+						<td>{{activityTableCtrl.completeActivityResult.nameIdMap[activity.OID]}}</td>
 						<td ng-bind="activity.OID"></td>
 						<td ng-bind="activity.message"></td>
 					</tr>
 				</tbody>
 			</table>
 	</div>
-	<div ng-show="worklistCtrl.completeActivityResult.status =='success'">
-	 <span ng-show="worklistCtrl.completeActivityResult.notifications.success.length >1">{{i18n('processportal.views-completeActivityDialog-notification-success') | interpolate:worklistCtrl.completeActivityResult.notifications.success.length}}</span>
-	  <span ng-show="worklistCtrl.completeActivityResult.notifications.success.length == 1">{{i18n('processportal.views-completeActivityDialog-notification-success-single')}}</span>
+	<div ng-show="activityTableCtrl.completeActivityResult.status =='success'">
+	 <span ng-show="activityTableCtrl.completeActivityResult.notifications.success.length >1">{{i18n('processportal.views-completeActivityDialog-notification-success') | interpolate:activityTableCtrl.completeActivityResult.notifications.success.length}}</span>
+	  <span ng-show="activityTableCtrl.completeActivityResult.notifications.success.length == 1">{{i18n('processportal.views-completeActivityDialog-notification-success-single')}}</span>
  	</div>
  	
- 	<div ng-show="worklistCtrl.completeActivityResult.status =='failure'">
+ 	<div ng-show="activityTableCtrl.completeActivityResult.status =='failure'">
 		<span ng-bind="i18n('processportal.views-completeActivityDialog-notification-error')"></span><br/>
  	</div>
 	
@@ -34,7 +33,7 @@
 <div class="confirmation-buttonpane">
 	<div class="button-pane cf">
 		<div class="right">
-			<button class="button" ng-click="closeThisDialog()">Close</button>
+			<button class="button" ng-click="closeThisDialog()">{{i18n('views-common-messages.common-close')}} </button>
 		</div>
 	</div>
 </div>

@@ -1,13 +1,12 @@
-
-<div ng-if="worklistCtrl.completeDialog.confirmationType == 'single'">
+<div ng-if="activityTableCtrl.completeDialog.confirmationType == 'single'">
 	<div
 		ng-bind="i18n('processportal.views-completeActivityDialog-confirmation-singleActivity')">
 	</div>
-	{{worklistCtrl.selectedActivity[0].activity.name}}
-	({{worklistCtrl.selectedActivity[0].oid}})
+	{{activityTableCtrl.selectedActivity[0].activity.name}}
+	(#{{activityTableCtrl.selectedActivity[0].oid}})
 </div>
 
-<div ng-if="worklistCtrl.completeDialog.confirmationType == 'generic'">
+<div ng-if="activityTableCtrl.completeDialog.confirmationType == 'generic'">
 	<div
 		ng-bind="i18n('processportal.views-completeActivityDialog-confirmation-generic-line1')"></div>
 	<div
@@ -16,7 +15,7 @@
 		ng-bind="i18n('processportal.views-completeActivityDialog-confirmation-generic-line3')"></div>
 </div>
 <div
-	ng-if="worklistCtrl.completeDialog.confirmationType == 'dataMapping'">
+	ng-if="activityTableCtrl.completeDialog.confirmationType == 'dataMapping'">
 	<div style="margin-bottom: 25px;"
 		ng-bind="i18n('processportal.views-completeActivityDialog-confirmation-homogenous')"></div>
 	<form name="dataForm">
@@ -25,8 +24,8 @@
 				ng-bind="i18n('processportal.views-completeActivityDialog-confirmation-homogenous-legend')"></legend>
 
 			<div sd-trivial-manual-activity-data
-				sda-data-mappings="worklistCtrl.completeDialog.dataMappings"
-				sda-out-data="worklistCtrl.completeDialog.outData"></div>
+				sda-data-mappings="activityTableCtrl.completeDialog.dataMappings"
+				sda-out-data="activityTableCtrl.completeDialog.outData"></div>
 
 		</fieldset>
 	</form>

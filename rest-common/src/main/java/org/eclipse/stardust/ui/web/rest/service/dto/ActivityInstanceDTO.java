@@ -46,8 +46,7 @@ public class ActivityInstanceDTO extends AbstractDTO
 
    public CriticalityDTO criticality;
 
-   @DTOAttribute("processInstance.priority")
-   public String priority;
+   public PriorityDTO priority;
 
    public String duration;
 
@@ -70,10 +69,6 @@ public class ActivityInstanceDTO extends AbstractDTO
 
    public Map<String, DescriptorDTO> descriptorValues;
 
-   public void setPriority(Integer priority) {
-      this.priority = ProcessInstanceUtils.getPriorityValue(priority);
-   }
-   
    public void setQualityAssuranceState(QualityAssuranceState state)
    {
       if (QualityAssuranceState.IS_QUALITY_ASSURANCE.equals(state) || QualityAssuranceState.IS_REVISED.equals(state))

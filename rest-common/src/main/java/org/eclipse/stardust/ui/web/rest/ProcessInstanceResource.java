@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest;
 
+import java.util.Map;
+
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -21,7 +23,9 @@ import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.service.ProcessInstanceService;
+import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
 
 /**
  * @author Anoop.Nair
@@ -144,6 +148,25 @@ public class ProcessInstanceResource
 
          return Response.ok(getProcessInstanceService().startProcess(json).toString(),
                MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
+
+         return Response.serverError().build();
+      }
+   }
+   
+   @POST
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/updatePriorities")
+   public Response updatePriorities( String postedData)
+   {
+      try
+      {
+         Map<String, Integer> oidPriorityMap = (Map)GsonUtils.extractMap(JsonDTO.getJsonObject(postedData), "priorities");
+         String jsonOutput = getProcessInstanceService().updatePriorities( oidPriorityMap);
+         return Response.ok(jsonOutput, MediaType.APPLICATION_JSON).build();
       }
       catch (Exception e)
       {

@@ -40,6 +40,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.CriticalityDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DescriptorDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.PriorityDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.StatusDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.TrivialActivityInstanceDTO;
@@ -135,6 +136,8 @@ public class WorklistService
             CriticalityDTO criticalityDTO = DTOBuilder.build(criticalCategory, CriticalityDTO.class);
             criticalityDTO.value = criticalityValue;
             dto.criticality = criticalityDTO;
+            
+            dto.priority = DTOBuilder.build(ai, PriorityDTO.class);
 
             dto.defaultCaseActivity= ActivityInstanceUtils.isDefaultCaseActivity(ai);
             if ( !dto.defaultCaseActivity )

@@ -1,0 +1,55 @@
+<div class="confirmation-contents section" style="padding-bottom: 20px">
+	<div ng-hide="activityTableCtrl.updatePriorityNotification.error">
+		<div
+			ng-show="activityTableCtrl.updatePriorityNotification.result.success.length > 0">
+			
+			<div >{{i18n('views-common-messages.views-processTable-savePriorities-status')}}  {{i18n('views-common-messages.views-processTable-savePriorities-successMsg')}}  </div>
+			</br>
+			<table  class="table">
+				<thead>
+					<tr>
+						<th ng-bind="i18n('views-common-messages.common-notification-selectedItems')"></th>
+						<th ng-bind="i18n('views-common-messages.common-notification-actionStatus')"></th>
+					</tr>
+				</thead>
+				<tbody>  
+					<tr
+						ng-repeat="result in activityTableCtrl.updatePriorityNotification.result.success">
+						<td ng-bind="result.item"></td>
+						<td ng-bind="result.message"></td>
+					</tr>
+				</tbody>
+			</table>
+			</br>
+		</div>
+		
+		<div
+			ng-show="activityTableCtrl.updatePriorityNotification.result.failure.length > 0">
+			
+			<div >{{i18n('views-common-messages.views-processTable-savePriorities-status')}}  {{i18n('views-common-messages.views-processTable-savePriorities-failureMsg')}}  </div>
+			</br>
+			<table  class="table">
+				<thead>
+					<tr>
+						<th ng-bind="i18n('views-common-messages.common-notification-selectedItems')"></th>
+						<th ng-bind="i18n('views-common-messages.common-notification-actionStatus')"></th>
+					</tr>
+				</thead>
+				<tbody>  
+					<tr
+						ng-repeat="result in activityTableCtrl.updatePriorityNotification.result.failure">
+						<td ng-bind="result.item"></td>
+						<td ng-bind="result.message"></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+<div class="confirmation-buttonpane">
+	<div class="button-pane cf">
+		<div class="right">
+			<button class="button" ng-click="closeThisDialog()">{{i18n('views-common-messages.common-close')}}</button>
+		</div>
+	</div>
+</div>

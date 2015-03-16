@@ -22,29 +22,35 @@
    function ProcessPriority() {
 	   return {
 		   restrict : 'A',
-		   template : '<i class="glyphicon glyphicon-flag priority-flag" '+
-		   						'ng-class="\'priority-flag-\'+processPriorityCtrl.priority" '+
+		   scope : {
+			   sdaPriority : '=',
+			   sdaEditable : '=',
+			   sdaAvailablePriorities : '=',
+			   sdaOnChange : '&'
+		   },
+		   template : '<i ng-if="!sdaEditable" class="glyphicon glyphicon-flag priority-flag" '+
+		   						'ng-class="\'priority-flag-\'+sdaPriority.name" '+
 		   						'ng-mouseenter=\'processPriorityCtrl.toolTip.show = true\' '+
 		   						'ng-mouseleave=\'processPriorityCtrl.toolTip.show = false\'> '+
 		   			  '<\/i>'+
+		   			  '<select ng-if="sdaEditable" ng-model="sdaPriority.value" ng-change="sdaOnChange();" '+
+		   	         ' ng-options="item.value as item.label for item in sdaAvailablePriorities"></select>'+
 		   			  '<div class="popup-dlg worklist-tooltip" style="color: black" ng-show="processPriorityCtrl.toolTip.show">'+
 		   			  		'<span class="worklist-tooltip-label" ng-bind="processPriorityCtrl.i18n(\'views-common-messages.views-activityTable-priorityFilter-table-priorityColumn-name\')"><\/span> '+
-		   			  		': <span ng-bind="processPriorityCtrl.i18n(\'views-common-messages.common-priorities-\'+processPriorityCtrl.priority)"><\/span>' +
+		   			  		': <span ng-bind="sdaPriority.label"><\/span>' +
 		   			  '<\/div>',
-		   controller : [ '$scope', '$attrs', '$parse', ProcessPriorityController ]
+		   controller : [ '$scope', '$attrs', '$parse' , 'sdPriorityService', ProcessPriorityController ]
 	   };
    };
    /**
     *
     */
    function ProcessPriorityController($scope, $attrs, $parse) {
-      this.toolTip = {
+	   this.toolTip = {
          show : false
       };
-
-      var priorityBinding = $parse($attrs.sdaPriority);
-      this.priority = priorityBinding($scope);
-      this.i18n = $scope.i18n;
+      
+      this.i18n = $scope.$parent.i18n;
       $scope.processPriorityCtrl = this;
    }
 })();
