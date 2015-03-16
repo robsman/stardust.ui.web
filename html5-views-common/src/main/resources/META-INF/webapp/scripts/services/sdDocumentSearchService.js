@@ -15,7 +15,7 @@
 (function() {
 	'use strict';
 
-	angular.module('workflow-ui.services').provider(
+	angular.module('viewscommon-ui.services').provider(
 			'sdDocumentSearchService',
 			function() {
 				this.$get = [
@@ -41,7 +41,7 @@
 			$http, sdUtilService) {
 		var REST_BASE_URL = "services/rest/portal/documentSearch";
 		var trace = sdLoggerService
-				.getLogger('workflow-ui.services.sdDocumentSearchServic');
+				.getLogger('viewscommon-ui.services.sdDocumentSearchServic');
 
 		/**
 		 * 

@@ -16,7 +16,10 @@ package org.eclipse.stardust.ui.web.rest.service.dto;
 import java.util.Date;
 import java.util.List;
 
-public class DocumentSearchCriteriaDTO {
+import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOClass;
+
+@DTOClass
+public class DocumentSearchCriteriaDTO extends AbstractDTO {
 	public boolean showAll;
 	public Date createDateFrom;
 	public Date createDateTo;

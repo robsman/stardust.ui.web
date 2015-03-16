@@ -9,6 +9,8 @@
  ******************************************************************************/
 
 // Define modules
-
+angular.module('viewscommon-ui.services', []);
+angular.module('viewscommon-ui', ['viewscommon-ui.services']);
 
 // Register top level module
+portalApplication.registerModule('viewscommon-ui');

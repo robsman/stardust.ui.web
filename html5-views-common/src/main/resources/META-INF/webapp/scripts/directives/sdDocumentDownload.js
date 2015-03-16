@@ -14,7 +14,7 @@
 (function() {
 	'use strict';
 
-	angular.module('bpm-common').directive('sdDocumentDownload',
+	angular.module('viewscommon-ui').directive('sdDocumentDownload',
 			[ 'sdUtilService', DocumentDownload ]);
 	/*
 	 * 

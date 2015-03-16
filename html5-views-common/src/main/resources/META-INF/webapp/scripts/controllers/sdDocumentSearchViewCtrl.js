@@ -15,7 +15,7 @@
 (function() {
 	'use strict';
 
-	angular.module("workflow-ui").controller(
+	angular.module("viewscommon-ui").controller(
 			'sdDocumentSearchViewCtrl',
 			[ '$q', '$scope', 'sdDocumentSearchService', 'sdViewUtilService',
 					'sdUtilService', 'sdMimeTypeService', 'sdLoggerService',
@@ -39,7 +39,7 @@
 
 
 		var trace = sdLoggerService
-				.getLogger('workflow-ui.sdDocumentSearchViewCtrl');
+				.getLogger('viewscommon-ui.sdDocumentSearchViewCtrl');
 
 		/**
 		 * 

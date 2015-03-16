@@ -19,6 +19,10 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 
 	<ippui:perspectiveExtension
 		targetPerspective="*" id="ippHtml5ViewsCommonPerspective" messageBundles="html5-views-common">
+		
+		<ippui:viewsExtension>
+			<ippui:view name="documentSearchViewHtml5" include="/plugins/html5-views-common/partials/views/documentSearchView.html" />
+		</ippui:viewsExtension>
 
 	</ippui:perspectiveExtension>
 </beans>

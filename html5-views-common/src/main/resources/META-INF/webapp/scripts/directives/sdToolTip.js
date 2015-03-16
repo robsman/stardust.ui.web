@@ -14,7 +14,7 @@
 (function() {
 	'use strict';
 
-	angular.module('bpm-common').directive('sdToolTip', ToolTip);
+	angular.module('viewscommon-ui').directive('sdToolTip', ToolTip);
 
 	/*
 	 * 
@@ -25,7 +25,7 @@
 			restrict : 'EA',
 			transclude : true,
 			replace : true,
-			templateUrl : 'plugins/html5-process-portal/scripts/directives/partials/toolTip.html',
+			templateUrl : 'plugins/html5-views-common/scripts/directives/partials/toolTip.html',
 			controller : [ '$scope', '$parse', '$attrs', ToolTipController ]
 		};
 	}
