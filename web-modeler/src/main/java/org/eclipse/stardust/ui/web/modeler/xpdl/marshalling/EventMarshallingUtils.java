@@ -474,6 +474,10 @@ public class EventMarshallingUtils
       {
          eventHandler.setLogHandler(extractBoolean(eventJson, ModelerConstants.LOG_HANDLER_PROPERTY));
       }
+      if (eventJson.has(ModelerConstants.CONSUME_ON_MATCH_PROPERTY))
+      {
+         eventHandler.setConsumeOnMatch(extractBoolean(eventJson, ModelerConstants.CONSUME_ON_MATCH_PROPERTY));
+      }
 
       if (eventJson.has(ModelerConstants.INTERRUPTING_PROPERTY))
       {
