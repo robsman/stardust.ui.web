@@ -1,17 +1,22 @@
 package org.eclipse.stardust.ui.web.rest.service.dto;
 
+import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOClass;
 
-public class InfoDTO extends AbstractDTO{
-	public static enum MessageType {
-		INFO, WARNING, ERROR
-	}
+@DTOClass
+public class InfoDTO extends AbstractDTO
+{
+   public static enum MessageType {
+      INFO, WARNING, ERROR
+   }
 
-	private MessageType messageType;
-	private String details;
-	
-	public InfoDTO(MessageType messageType, String details) {
-		super();
-		this.messageType = messageType;
-		this.details = details;
-	}
+   public MessageType messageType;
+
+   public String details;
+
+   public InfoDTO(MessageType messageType, String details)
+   {
+      super();
+      this.messageType = messageType;
+      this.details = details;
+   }
 }

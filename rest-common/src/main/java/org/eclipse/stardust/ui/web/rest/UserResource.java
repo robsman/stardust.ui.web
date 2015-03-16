@@ -18,7 +18,6 @@ import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.Participant;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.UserDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantSearchResponseDTO;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 import org.springframework.stereotype.Component;
@@ -48,9 +47,6 @@ public class UserResource
       List<ParticipantSearchResponseDTO> userWrappers = new ArrayList<ParticipantSearchResponseDTO>();
       for (User user : users)
       {
-         UserDTO dto = new UserDTO();
-         dto.setId(user.getId());
-         dto.setName(UserUtils.getUserDisplayLabel(user));
          userWrappers.add(new ParticipantSearchResponseDTO((Participant) user));
       }
 
@@ -64,8 +60,8 @@ public class UserResource
 
    @GET
    @Path("/search/{searchValue}")
-   public Response searchUsers(@PathParam("searchValue") String searchValue, @QueryParam("active") Boolean active,
-         @QueryParam("max") Integer max)
+   public Response searchUsers(@PathParam("searchValue") String searchValue,
+         @QueryParam("active") Boolean active, @QueryParam("max") Integer max)
    {
       if (StringUtils.isNotEmpty(searchValue))
       {
@@ -96,7 +92,7 @@ public class UserResource
          return Response.status(Status.FORBIDDEN).build();
       }
    }
-   
+
    @GET
    @Path("/test")
    public Response test()

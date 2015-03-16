@@ -18,8 +18,11 @@ import java.util.List;
  */
 public class DocumentSearchFilterAttributesDTO extends AbstractDTO
 {
-   public List<?> typicalFileTypes;
-   public List<?> documentTypes;
-   public List<?> repositories;
-   public List<?> allRegisteredMimeFileTypes;
+   public List< ? > typicalFileTypes;
+
+   public List< ? > documentTypes;
+
+   public List< ? > repositories;
+
+   public List< ? > allRegisteredMimeFileTypes;
 }

@@ -534,13 +534,13 @@ public class DocumentSearchUtils
             docVersion = new DocumentVersionDTO(version,
                   (Document) docVersions.get(version));
 
-            if (documentName.equals(docVersion.getDocumentName()))
+            if (documentName.equals(docVersion.documentName))
             {
-               docVersion.setDocumentName("");
+               docVersion.documentName = "";
             }
             else
             {
-               documentName = docVersion.getDocumentName();
+               documentName = docVersion.documentName;
             }
             documentVersionList.add(docVersion);
          }

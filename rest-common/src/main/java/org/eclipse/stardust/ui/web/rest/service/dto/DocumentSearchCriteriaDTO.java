@@ -19,23 +19,41 @@ import java.util.List;
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOClass;
 
 @DTOClass
-public class DocumentSearchCriteriaDTO extends AbstractDTO {
-	public boolean showAll;
-	public Date createDateFrom;
-	public Date createDateTo;
-	public Date modificationDateFrom;
-	public Date modificationDateTo;
-	public String author;
-	public String documentId;
-	public String documentName;
-	public String documentPath;
-	public List<String> selectedFileTypes;
-	public String advancedFileType;
-	public List<String> selectedDocumentTypes;
-	public List<String> selectedRepository;
-	public String containingText;
-	public boolean searchContent;
-	public boolean searchData;
-	public String selectedFileSize;
-	public boolean selectFileTypeAdvance;
+public class DocumentSearchCriteriaDTO extends AbstractDTO
+{
+   public boolean showAll;
+
+   public Date createDateFrom;
+
+   public Date createDateTo;
+
+   public Date modificationDateFrom;
+
+   public Date modificationDateTo;
+
+   public String author;
+
+   public String documentId;
+
+   public String documentName;
+
+   public String documentPath;
+
+   public List<String> selectedFileTypes;
+
+   public String advancedFileType;
+
+   public List<String> selectedDocumentTypes;
+
+   public List<String> selectedRepository;
+
+   public String containingText;
+
+   public boolean searchContent;
+
+   public boolean searchData;
+
+   public String selectedFileSize;
+
+   public boolean selectFileTypeAdvance;
 }

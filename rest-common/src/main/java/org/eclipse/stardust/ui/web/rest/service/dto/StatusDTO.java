@@ -15,20 +15,23 @@ package org.eclipse.stardust.ui.web.rest.service.dto;
 
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOAttribute;
 
-public class StatusDTO extends AbstractDTO{
+public class StatusDTO extends AbstractDTO
+{
 
-	@DTOAttribute(value = "state.value")
-	public Integer value;
+   @DTOAttribute(value = "state.value")
+   public Integer value;
 
-	public String label;
+   public String label;
 
-	public StatusDTO() {
-		// TODO Auto-generated constructor stub
-	}
+   public StatusDTO()
+   {
+      // TODO Auto-generated constructor stub
+   }
 
-	public StatusDTO(Integer value, String label) {
-		this.value = value;
-		this.label = label;
-	}
+   public StatusDTO(Integer value, String label)
+   {
+      this.value = value;
+      this.label = label;
+   }
 
 }

@@ -14,6 +14,7 @@ import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
+import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOClass;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
 import org.eclipse.stardust.ui.web.viewscommon.utils.FormatterUtils;
@@ -22,61 +23,46 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.FormatterUtils;
  * @author Abhay.Thappan
  * @version $Revision: $
  */
-public class DocumentVersionDTO {
-	private static final long serialVersionUID = 1L;
-	private String comments;
-	private float versionNo;
-	private String revisionId;
-	// private User user;
-	private String documentName;
-	private String author = "";
-	private String modifiedDate;
-	private String documentOwner;
+@DTOClass
+public class DocumentVersionDTO extends AbstractDTO
+{
+   private static final long serialVersionUID = 1L;
 
-	/**
-	 * @param version
-	 * @param document
-	 */
-	public DocumentVersionDTO(int version, Document document) {
-		this.comments = RepositoryUtility.getVersionComment(document);
-		this.versionNo = version;
-		this.revisionId = document.getRevisionId();
-		this.documentName = document.getName();
+   public String comments;
 
-		User user = DocumentMgmtUtility.getOwnerOfDocument(document);
-		this.documentOwner = document.getOwner();
-		if (null != user) {
-			author = FormatterUtils.getUserLabel(user);
-		} else if (StringUtils.isNotEmpty(document.getOwner())) {
-			author = document.getOwner();
-		}
-		this.modifiedDate = DateUtils.formatDateTime(document
-				.getDateLastModified());
-	}
+   public float versionNo;
 
-	public String getAuthor() {
-		return author;
-	}
+   public String revisionId;
 
-	/*
-	 * public String getModifiedDate() { return
-	 * DateUtils.formatDateTime(document.getDateLastModified()); }
-	 */
+   public String documentName;
 
-	public String getComments() {
-		return comments;
-	}
+   public String author = "";
 
-	public String getDocumentName() {
-		return documentName;
-	}
+   public String modifiedDate;
 
-	public void setDocumentName(String documentName) {
-		this.documentName = documentName;
-	}
+   public String documentOwner;
 
-	public String getRevisionId() {
-		return revisionId;
-	}
+   /**
+    * @param version
+    * @param document
+    */
+   public DocumentVersionDTO(int version, Document document)
+   {
+      this.comments = RepositoryUtility.getVersionComment(document);
+      this.versionNo = version;
+      this.revisionId = document.getRevisionId();
+      this.documentName = document.getName();
 
+      User user = DocumentMgmtUtility.getOwnerOfDocument(document);
+      this.documentOwner = document.getOwner();
+      if (null != user)
+      {
+         this.author = FormatterUtils.getUserLabel(user);
+      }
+      else if (StringUtils.isNotEmpty(document.getOwner()))
+      {
+         this.author = document.getOwner();
+      }
+      this.modifiedDate = DateUtils.formatDateTime(document.getDateLastModified());
+   }
 }

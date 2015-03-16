@@ -43,8 +43,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
-import com.google.gson.Gson;
-
 @Component
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class DocumentSearchServiceBean
@@ -121,8 +119,8 @@ public class DocumentSearchServiceBean
    {
       User user = UserUtils.getUser(documentOwner);
       UserDTO userDTO = DTOBuilder.build(user, UserDTO.class);
-      userDTO.setName(UserUtils.getUserDisplayLabel(user));
-      userDTO.setUserImageURI(MyPicturePreferenceUtils.getUsersImageURI(user));
+      userDTO.name = UserUtils.getUserDisplayLabel(user);
+      userDTO.userImageURI = MyPicturePreferenceUtils.getUsersImageURI(user);
       return userDTO;
    }
 
