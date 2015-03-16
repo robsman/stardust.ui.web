@@ -8,24 +8,11 @@ import static org.junit.Assert.assertThat;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-
-
-
-
-
-
-
-
-
 import java.util.Iterator;
 
-
-//import org.eclipse.stardust.ui.web.modeler.utils.test.GenericModelingAssertions;
 import org.junit.Test;
 
-import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.model.xpdl.carnot.*;
-import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.ui.web.modeler.utils.test.GenericModelingAssertions;
 
 public class TestEventHandler extends RecordingTestcase
