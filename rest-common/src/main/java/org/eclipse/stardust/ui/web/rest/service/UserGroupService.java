@@ -70,16 +70,16 @@ public class UserGroupService
     */
    public UserGroupDTO modifyUserGroup(UserGroupDTO userGroupDTO)
    {
-      UserGroup userGroup = userGroupUtils.getUserGroup(userGroupDTO.getId());
-      userGroup.setDescription(userGroupDTO.getDescription());
-      userGroup.setName(userGroupDTO.getName());
-      if (userGroupDTO.getValidFrom() != null)
+      UserGroup userGroup = userGroupUtils.getUserGroup(userGroupDTO.id);
+      userGroup.setDescription(userGroupDTO.description);
+      userGroup.setName(userGroupDTO.name);
+      if (userGroupDTO.validFrom != null)
       {
-         userGroup.setValidFrom(new Date(userGroupDTO.getValidFrom()));
+         userGroup.setValidFrom(new Date(userGroupDTO.validFrom));
       }
-      if (userGroupDTO.getValidTo() != null)
+      if (userGroupDTO.validTo != null)
       {
-         userGroup.setValidTo(new Date(userGroupDTO.getValidTo()));
+         userGroup.setValidTo(new Date(userGroupDTO.validTo));
       }
       return DTOBuilder.build(userGroupUtils.modifyUserGroup(userGroup), UserGroupDTO.class);
    }

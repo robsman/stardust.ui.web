@@ -24,129 +24,21 @@ public class UserGroupDTO extends AbstractDTO
 {
 
    @DTOAttribute("id")
-   private String id;
+   public String id;
 
    @DTOAttribute("OID")
-   private long oid;
+   public long oid;
 
    @DTOAttribute("name")
-   private String name;
+   public String name;
 
    @DTOAttribute("validFrom.time")
-   private Long validFrom;
+   public Long validFrom;
 
    @DTOAttribute("validTo.time")
-   private Long validTo;
+   public Long validTo;
 
    @DTOAttribute("description")
-   private String description;
-
-   /**
-	 * 
-	 */
-   public UserGroupDTO()
-   {}
-
-   /**
-    * @return the id
-    */
-   public String getId()
-   {
-      return id;
-   }
-
-   /**
-    * @param id
-    *           the id to set
-    */
-   public void setId(String id)
-   {
-      this.id = id;
-   }
-
-   /**
-    * @return the oid
-    */
-   public long getOid()
-   {
-      return oid;
-   }
-
-   /**
-    * @param oid
-    *           the oid to set
-    */
-   public void setOid(long oid)
-   {
-      this.oid = oid;
-   }
-
-   /**
-    * @return the name
-    */
-   public String getName()
-   {
-      return name;
-   }
-
-   /**
-    * @param name
-    *           the name to set
-    */
-   public void setName(String name)
-   {
-      this.name = name;
-   }
-
-   /**
-    * @return the validFrom
-    */
-   public Long getValidFrom()
-   {
-      return validFrom;
-   }
-
-   /**
-    * @param validFrom
-    *           the validFrom to set
-    */
-   public void setValidFrom(Long validFrom)
-   {
-      this.validFrom = validFrom;
-   }
-
-   /**
-    * @return the validTo
-    */
-   public Long getValidTo()
-   {
-      return validTo;
-   }
-
-   /**
-    * @param validTo
-    *           the validTo to set
-    */
-   public void setValidTo(Long validTo)
-   {
-      this.validTo = validTo;
-   }
-
-   /**
-    * @return the description
-    */
-   public String getDescription()
-   {
-      return description;
-   }
-
-   /**
-    * @param description
-    *           the description to set
-    */
-   public void setDescription(String description)
-   {
-      this.description = description;
-   }
+   public String description;
 
 }
