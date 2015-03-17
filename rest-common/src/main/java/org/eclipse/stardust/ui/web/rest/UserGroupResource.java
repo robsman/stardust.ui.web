@@ -89,8 +89,8 @@ public class UserGroupResource
       UserGroupDTO userGroupDTO;
       UserGroupDTO createUserGroup = null;
       userGroupDTO = DTOBuilder.buildFromJSON(postData, UserGroupDTO.class);
-      createUserGroup = getUserGroupService().createUserGroup(userGroupDTO.getId(), userGroupDTO.getName(),
-            userGroupDTO.getDescription(), userGroupDTO.getValidFrom(), userGroupDTO.getValidTo());
+      createUserGroup = getUserGroupService().createUserGroup(userGroupDTO.id, userGroupDTO.name,
+            userGroupDTO.description, userGroupDTO.validFrom, userGroupDTO.validTo);
       return Response.status(201).entity(createUserGroup.toJson()).build();
    }
 
