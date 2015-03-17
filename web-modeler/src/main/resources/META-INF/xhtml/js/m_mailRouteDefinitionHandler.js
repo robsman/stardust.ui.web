@@ -15,8 +15,8 @@
  */
 define(
          [ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_globalVariables",
-                  "bpm-modeler/js/m_constants", "bpm-modeler/js/m_routeDefinitionUtils" ],
-         function(m_utils, m_i18nUtils, m_globalVariables, m_constants, m_routeDefinitionUtils)
+                  "bpm-modeler/js/m_constants", "bpm-modeler/js/m_routeDefinitionUtils","bpm-modeler/js/MailIntegrationOverlayTestTabHandler","bpm-modeler/js/MailIntegrationOverlayResponseTabHandler" ],
+         function(m_utils, m_i18nUtils, m_globalVariables, m_constants, m_routeDefinitionUtils,mailIntegrationOverlayTestTabHandler,mailIntegrationOverlayResponseTabHandler)
          {
             return {
                createRouteForEmail : function(mailIntegrationOverlay)
@@ -41,7 +41,7 @@ define(
                   
                   if(this.includeProcessTemplateConfigurations(mailIntegrationOverlay))
                   {
-                	  // process template configuration
+                    // process template configuration
                       route += "<to uri=\"bean:documentHandler?method=processTemplateConfigurations\"/>\n";
                   }
                   
@@ -314,9 +314,9 @@ define(
                   }
                   route += "\n";
                   var markup = CKEDITOR.instances[mailIntegrationOverlay.mailTemplateEditor.id].getData();
-                  if (mailIntegrationOverlay.responseTypeSelect.val() != "none")
+                  if (mailIntegrationOverlayResponseTabHandler.getResponseTypeSelect() != "none")
                   {
-                     markup += mailIntegrationOverlay.createResponseOptionString();
+                     markup += mailIntegrationOverlayTestTabHandler.createResponseOptionString();
                   }
                   markup = markup.replace(new RegExp("(&#39;)", 'g'), "\\'");
                   markup = markup.replace(new RegExp("(&amp;)", 'g'), "&");
@@ -420,12 +420,12 @@ define(
                
                MailRouteDefinitionHandler.prototype.includeProcessTemplateConfigurations = function(mailIntegrationOverlay) 
                {
-            	  if ((mailIntegrationOverlay.attachmentsTemplateSource == "embedded" || 
-            			  mailIntegrationOverlay.attachmentsTemplateSource == undefined)
-						&& mailIntegrationOverlay.templateConfigurations.length == 0)
-					return false;
-            	  
-            	  return true;
+                 if ((mailIntegrationOverlay.attachmentsTemplateSource == "embedded" || 
+                       mailIntegrationOverlay.attachmentsTemplateSource == undefined)
+                  && mailIntegrationOverlay.templateConfigurations.length == 0)
+               return false;
+                 
+                 return true;
                };
             };
             
