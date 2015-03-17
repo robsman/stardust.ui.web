@@ -34,6 +34,7 @@
       <module>skins/modern</module>
       <module>html5-common</module>
       <module>html5-process-portal</module>
+      <module>html5-business-control-center</module>
       <module>html5-admin-portal</module>
       <module>html5-views-common</module>
       <module>rest-common</module>
