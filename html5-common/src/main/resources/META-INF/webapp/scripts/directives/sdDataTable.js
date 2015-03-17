@@ -1359,8 +1359,7 @@
 							columnDisplayOrderObjects.push({
 								name: colInfo.column.name,
 								visible: true,
-								labelKey: colInfo.column.labelKey,
-								label: colInfo.column.label
+								title: colInfo.column.title
 							});
 						}
 					}
@@ -1382,8 +1381,7 @@
 						columnDisplayOrderObjects.push({
 							name: col.name,
 							visible: prefCols ? false : col.visible,
-							labelKey: col.labelKey,
-							label: col.label
+							title: col.title
 						});
 					}
 				}
