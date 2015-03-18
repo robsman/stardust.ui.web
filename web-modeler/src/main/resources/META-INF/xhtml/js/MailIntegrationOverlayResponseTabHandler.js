@@ -107,7 +107,7 @@ define(
                                     function(event)
                                     {
                                        var submitElements={};
-                                       var attributes={};
+                                       var attributes=event.data.panel.base.getApplication().attributes;
                                        var accessPoints = event.data.panel.base.getApplication().contexts.application.accessPoints;
                                        var applicationTypeChanges = null;
                                        var invocationPatternChanges = null;
@@ -149,10 +149,8 @@ define(
                                           attributes["carnot:engine:camel::invocationPattern"]=invocationPatternChanges;
                                        if(!attributes["carnot:engine:camel::invocationType"])
                                           attributes["carnot:engine:camel::invocationType"]=invocationTypeChanges;
-                                       if(!attributes["stardust:emailOverlay::responseType"])
-                                          attributes["stardust:emailOverlay::responseType"]=responseTypeChanges;
-                                       if(!attributes["carnot:engine:camel::routeEntries"])
-                                          attributes["carnot:engine:camel::routeEntries"]=event.data.panel.base.getRoute();
+                                       attributes["stardust:emailOverlay::responseType"]=responseTypeChanges;
+                                       attributes["carnot:engine:camel::routeEntries"]= event.data.panel.base.getRoute(attributes,event.data.panel.base.getApplication().contexts.application.accessPoints);
                                        
                                        submitElements.attributes=attributes;
                                        submitElements.contexts={
@@ -171,13 +169,13 @@ define(
                                     },
                                     function(event)
                                     {
+                                       var attributes=event.data.panel.base.getApplication().attributes;
+                                       attributes["stardust:emailOverlay::responseOptionType"]=event.data.panel.responseOptionsTypeSelect.val();
+                                       attributes["carnot:engine:camel::routeEntries"]= event.data.panel.base.getRoute(attributes,event.data.panel.base.getApplication().contexts.application.accessPoints);
                                        event.data.panel.base.view
                                                 .submitChanges(
                                                          {
-                                                            attributes : {
-                                                               "stardust:emailOverlay::responseOptionType" : event.data.panel.responseOptionsTypeSelect.val(),
-                                                               "carnot:engine:camel::routeEntries" : event.data.panel.base.getRoute()
-                                                            }
+                                                            attributes : attributes
                                                          }, false);
                                     });
                   this.responseHttpUrlInput
@@ -187,13 +185,13 @@ define(
                                     },
                                     function(event)
                                     {
+                                       var attributes=event.data.panel.base.getApplication().attributes;
+                                       attributes["stardust:emailOverlay::responseHttpUrl"]=event.data.panel.responseHttpUrlInput.val();
+                                       attributes["carnot:engine:camel::routeEntries"]= event.data.panel.base.getRoute(attributes,event.data.panel.base.getApplication().contexts.application.accessPoints);
                                        event.data.panel.base.view
                                                 .submitChanges(
                                                          {
-                                                            attributes : {
-                                                               "stardust:emailOverlay::responseHttpUrl" : event.data.panel.responseHttpUrlInput.val(),
-                                                               "carnot:engine:camel::routeEntries" : event.data.panel.base.getRoute()
-                                                            }
+                                                            attributes : attributes
                                                          }, false);
                                     });
                };

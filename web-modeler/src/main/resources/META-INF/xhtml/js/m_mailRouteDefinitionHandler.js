@@ -19,10 +19,10 @@ define(
          function(m_utils, m_i18nUtils, m_globalVariables, m_constants, m_routeDefinitionUtils,mailIntegrationOverlayTestTabHandler,mailIntegrationOverlayResponseTabHandler)
          {
             return {
-               createRouteForEmail : function(mailIntegrationOverlay)
+               createRouteForEmail : function(attributes,accessPoints)
                {
                   var handler = new MailRouteDefinitionHandler();
-                  return handler.createRouteForEmail(mailIntegrationOverlay);
+                  return handler.createRouteForEmail(attributes,accessPoints);
                }
             };
             
@@ -33,31 +33,34 @@ define(
                /**
                 * Generate route definition for email App
                 */
-               MailRouteDefinitionHandler.prototype.createRouteForEmail = function(mailIntegrationOverlay)
+               MailRouteDefinitionHandler.prototype.createRouteForEmail = function(attributes,accessPoints)
                {
+                  if(!attributes["stardust:emailOverlay::protocol"])
+                     attributes["stardust:emailOverlay::protocol"]="smtp";
+                  if(!attributes["stardust:emailOverlay::mailFormat"])
+                     attributes["stardust:emailOverlay::mailFormat"]="text/plain";
                   var route = "";
-                  var includeAttachmentBean = this.includeAttachmentBean(mailIntegrationOverlay
-                           .getApplication().contexts.application.accessPoints);
+                  var includeAttachmentBean = this.includeAttachmentBean(attributes,accessPoints);
                   
-                  if(this.includeProcessTemplateConfigurations(mailIntegrationOverlay))
+                  if(this.includeProcessTemplateConfigurations(attributes,accessPoints))
                   {
                     // process template configuration
                       route += "<to uri=\"bean:documentHandler?method=processTemplateConfigurations\"/>\n";
                   }
                   
-                  if(mailIntegrationOverlay.templateSourceSelect.val() == "classpath"
-                     || mailIntegrationOverlay.templateSourceSelect.val() == "repository")
+                  if(attributes["stardust:emailOverlay::templateSource"]  == "classpath"
+                     || attributes["stardust:emailOverlay::templateSource"]  == "repository")
                   {
-                     route += this.createRouteForRepositoryOrClassPathContent(mailIntegrationOverlay);
+                     route += this.createRouteForRepositoryOrClassPathContent(attributes,accessPoints);
                      
                   } else
                   {
-                     route += this.createRouteForEmbeddedOrDataContent(mailIntegrationOverlay);
+                     route += this.createRouteForEmbeddedOrDataContent(attributes,accessPoints);
                   }
                   
                   // set content type
                   route += "<setHeader headerName=\"contentType\">\n";
-                  route += "   <constant>" + mailIntegrationOverlay.mailFormatSelect.val()
+                  route += "   <constant>" + attributes["stardust:emailOverlay::mailFormat"]
                            + "</constant>\n";
                   route += "</setHeader>\n";
                   
@@ -66,26 +69,25 @@ define(
                      route += "<to uri=\"bean:documentHandler?method=toAttachment\"/>\n";
                   
                   // execute smpt endpoint
-                  route += "<to uri=\"" + mailIntegrationOverlay.protocolSelect.val() + "://"
-                           + mailIntegrationOverlay.serverInput.val();
-                  if (!m_utils.isEmptyString(mailIntegrationOverlay.userInput.val())
-                           && !m_utils.isEmptyString(mailIntegrationOverlay.passwordInput.val()))
+                  route += "<to uri=\"" + attributes["stardust:emailOverlay::protocol"] + "://"+ attributes["stardust:emailOverlay::server"];
+                  if (!m_utils.isEmptyString(attributes["stardust:emailOverlay::user"])
+                           && !m_utils.isEmptyString(attributes["stardust:emailOverlay::pwd"]))
                   {
-                     route += "?username=" + mailIntegrationOverlay.userInput.val();
-                     route += "&amp;password=" + mailIntegrationOverlay.passwordInput.val();
+                     route += "?username=" + attributes["stardust:emailOverlay::user"];
+                     route += "&amp;password=" + attributes["stardust:emailOverlay::pwd"];
                   }
-                  else if (!m_utils.isEmptyString(mailIntegrationOverlay.userInput.val()))
+                  else if (!m_utils.isEmptyString(attributes["stardust:emailOverlay::user"]))
                   {
-                     route += "?username=" + mailIntegrationOverlay.userInput.val();
+                     route += "?username=" + attributes["stardust:emailOverlay::user"];
                   }
                   route += "\"/>";
                   
                   // store attachments
-                  if(mailIntegrationOverlay.storeAttachmentsInput.prop("checked")){
+                  if(attributes["stardust:emailOverlay::storeAttachments"]){
                      route += "<to uri=\"bean:documentHandler?method=storeExchangeAttachments\"/>\n";
                   }
                   // store email content
-                  if(mailIntegrationOverlay.storeEmailInput.prop("checked")){
+                  if(attributes["stardust:emailOverlay::storeEmail"]){
                      route += "<convertBodyTo type=\"javax.mail.internet.MimeMessage\"/>\n";
                      route += "<setHeader headerName=\"ippDmsDocumentName\">\n";
                      route += "   <simple>$simple{header.subject}.eml</simple>\n";
@@ -95,69 +97,69 @@ define(
                   return route;
                };
                
-               MailRouteDefinitionHandler.prototype.createRouteForRepositoryOrClassPathContent = function(mailIntegrationOverlay)
+               MailRouteDefinitionHandler.prototype.createRouteForRepositoryOrClassPathContent = function(attributes,accessPoints)
                {
                   var route = "";
                   // set headers for email: from, to, cc, bcc, subject
-                  if (mailIntegrationOverlay.fromInput.val())
+                  if (attributes["stardust:emailOverlay::from"])
                   {
-                     route += this.setHeaderInputForEmailRepositoryOrClassPathMode("from", mailIntegrationOverlay.fromInput.val());
+                     route += this.setHeaderInputForEmailRepositoryOrClassPathMode("from", attributes["stardust:emailOverlay::from"]);
                   }
-                  if (mailIntegrationOverlay.toInput.val())
+                  if (attributes["stardust:emailOverlay::to"])
                   {
-                     route += this.setHeaderInputForEmailRepositoryOrClassPathMode("to", mailIntegrationOverlay.toInput.val());
+                     route += this.setHeaderInputForEmailRepositoryOrClassPathMode("to", attributes["stardust:emailOverlay::to"]);
                   }
-                  if (mailIntegrationOverlay.ccInput.val())
+                  if (attributes["stardust:emailOverlay::cc"])
                   {
-                     route += this.setHeaderInputForEmailRepositoryOrClassPathMode("cc", mailIntegrationOverlay.ccInput.val());
+                     route += this.setHeaderInputForEmailRepositoryOrClassPathMode("cc", attributes["stardust:emailOverlay::cc"]);
                   }
-                  if (mailIntegrationOverlay.bccInput.val())
+                  if (attributes["stardust:emailOverlay::bcc"])
                   {
-                     route += this.setHeaderInputForEmailRepositoryOrClassPathMode("bcc", mailIntegrationOverlay.bccInput.val());
+                     route += this.setHeaderInputForEmailRepositoryOrClassPathMode("bcc", attributes["stardust:emailOverlay::bcc"]);
                   }
-                  if(mailIntegrationOverlay.subjectInput.val())
+                  if(attributes["stardust:emailOverlay::subject"])
                   {
-                     route += this.setHeaderInputForEmailRepositoryOrClassPathMode("subject", mailIntegrationOverlay.subjectInput.val());
+                     route += this.setHeaderInputForEmailRepositoryOrClassPathMode("subject", attributes["stardust:emailOverlay::subject"]);
                   }
                   
                    route += m_routeDefinitionUtils.createTemplatingHandlerRouteDefinition(
-                            "text", mailIntegrationOverlay.templateSourceSelect.val(), null,
-                            mailIntegrationOverlay.templatePathInput.val(), null, false);
+                            "text", attributes["stardust:emailOverlay::templateSource"] , null,
+                            attributes["stardust:emailOverlay::templatePath"], null, false);
                    
                    return route;
                };
                
                // create route for Email Embedded/Data content 
-               MailRouteDefinitionHandler.prototype.createRouteForEmbeddedOrDataContent = function(mailIntegrationOverlay)
+               MailRouteDefinitionHandler.prototype.createRouteForEmbeddedOrDataContent = function(attributes,accessPoints)
                {
                   var route = "";
                   // set headers for email: from, to, cc, bcc, subject
-                  if (mailIntegrationOverlay.fromInput.val())
+                  if (attributes["stardust:emailOverlay::from"])
                   {
-                     route += this.setHeaderInputForEmailEmbeddedOrDataMode("from", mailIntegrationOverlay.fromInput.val());
+                     route += this.setHeaderInputForEmailEmbeddedOrDataMode("from", attributes["stardust:emailOverlay::from"]);
                   }
-                  if (mailIntegrationOverlay.toInput.val())
+                  if (attributes["stardust:emailOverlay::to"])
                   {
-                     route += this.setHeaderInputForEmailEmbeddedOrDataMode("to", mailIntegrationOverlay.toInput.val());
+                     route += this.setHeaderInputForEmailEmbeddedOrDataMode("to", attributes["stardust:emailOverlay::to"]);
                   }
-                  if (mailIntegrationOverlay.ccInput.val())
+                  if (attributes["stardust:emailOverlay::cc"])
                   {
-                     route += this.setHeaderInputForEmailEmbeddedOrDataMode("cc", mailIntegrationOverlay.ccInput.val());
+                     route += this.setHeaderInputForEmailEmbeddedOrDataMode("cc",attributes["stardust:emailOverlay::cc"]);
                   }
-                  if (mailIntegrationOverlay.bccInput.val())
+                  if (attributes["stardust:emailOverlay::bcc"])
                   {
-                     route += this.setHeaderInputForEmailEmbeddedOrDataMode("bcc", mailIntegrationOverlay.bccInput.val());
+                     route += this.setHeaderInputForEmailEmbeddedOrDataMode("bcc", attributes["stardust:emailOverlay::bcc"]);
                   }
-                  if(mailIntegrationOverlay.subjectInput.val())
+                  if(attributes["stardust:emailOverlay::subject"])
                   {
-                     route += this.setHeaderInputForEmailEmbeddedOrDataMode("subject", mailIntegrationOverlay.subjectInput.val());
+                     route += this.setHeaderInputForEmailEmbeddedOrDataMode("subject", attributes["stardust:emailOverlay::subject"]);
                   }
                   
                   // convert to native object before JS execution
                   route += "<to uri=\"ipp:data:toNativeObject\"/>\n";
                 
                   // generate js route
-                  route += this.createJsRouteForEmail(mailIntegrationOverlay);
+                  route += this.createJsRouteForEmail(attributes,accessPoints);
                   
                   return route;
                };
@@ -229,7 +231,7 @@ define(
                   return header;
                };
                
-               MailRouteDefinitionHandler.prototype.createJsRouteForEmail = function(mailIntegrationOverlay)
+               MailRouteDefinitionHandler.prototype.createJsRouteForEmail = function(attributes,accessPoints)
                {
                   var route = "";
                   route += "<setHeader headerName=\"CamelLanguageScript\">\n";
@@ -273,9 +275,9 @@ define(
                   route += "var investigate = false;\n";
                   route += "var attachments = {};\n";
                   route += "exchange.out.attachments=request.attachments;\n";
-                  for (var n = 0; n < mailIntegrationOverlay.getApplication().contexts.application.accessPoints.length; ++n)
+                  for (var n = 0; n < accessPoints.length; ++n)
                   {
-                     var accessPoint = mailIntegrationOverlay.getApplication().contexts.application.accessPoints[n];
+                     var accessPoint = accessPoints[n];
                      if (accessPoint.direction == m_constants.OUT_ACCESS_POINT)
                      {
                         continue;
@@ -313,8 +315,8 @@ define(
                      }
                   }
                   route += "\n";
-                  var markup = CKEDITOR.instances[mailIntegrationOverlay.mailTemplateEditor.id].getData();
-                  if (mailIntegrationOverlayResponseTabHandler.getResponseTypeSelect() != "none")
+                  var markup = attributes["stardust:emailOverlay::mailTemplate"];//CKEDITOR.instances[mailIntegrationOverlay.mailTemplateEditor.id].getData();
+                  if (attributes["stardust:emailOverlay::responseOptionType"] != "none")
                   {
                      markup += mailIntegrationOverlayTestTabHandler.createResponseOptionString();
                   }
@@ -347,7 +349,7 @@ define(
                   route += "} else {\n";
                   route += "var bcc= eval(bcc);\n";
                   route += "}\n";
-                  if (mailIntegrationOverlay.templateSourceSelect.val() == "data")
+                  if (attributes["stardust:emailOverlay::templateSource"] == "data")
                   {
                      route += "if(mailContentAP){\n";
                      route += "      response = String(mailContentAP);";
@@ -363,8 +365,8 @@ define(
                   }
                   route += "]]>";
                   route += "\n      setOutHeader('response', response);\n";
-                  if (mailIntegrationOverlay.identifierInSubjectInput.val() != null
-                           && mailIntegrationOverlay.identifierInSubjectInput.prop("checked"))
+                  if (attributes["stardust:emailOverlay::includeUniqueIdentifierInSubject"] != null
+                           && attributes["stardust:emailOverlay::includeUniqueIdentifierInSubject"]==true)
                   {
                      route += "  setOutHeader('subject', '#ID:' + (partition + '|' + processInstanceOid + '|' + activityInstanceOid).hashCode() + '# - ' + subject);\n";
                   }
@@ -405,8 +407,10 @@ define(
                   return route;
                };
                
-               MailRouteDefinitionHandler.prototype.includeAttachmentBean = function(accessPoints)
+               MailRouteDefinitionHandler.prototype.includeAttachmentBean = function(attributes,accessPoints)
                {
+                  if(attributes["stardust:emailOverlay::attachmentsTemplateSource"]=="DOCUMENT_REQUEST")
+                     return true;
                   for (var n = 0; n < accessPoints.length; ++n)
                   {
                      var accessPoint = accessPoints[n];
@@ -418,11 +422,14 @@ define(
                   return false;
                };
                
-               MailRouteDefinitionHandler.prototype.includeProcessTemplateConfigurations = function(mailIntegrationOverlay) 
+               MailRouteDefinitionHandler.prototype.includeProcessTemplateConfigurations = function(attributes,accessPoints) 
                {
-                 if ((mailIntegrationOverlay.attachmentsTemplateSource == "embedded" || 
-                       mailIntegrationOverlay.attachmentsTemplateSource == undefined)
-                  && mailIntegrationOverlay.templateConfigurations.length == 0)
+                  if(!attributes["stardust:emailOverlay::templateConfigurations"])
+                     attributes["stardust:emailOverlay::templateConfigurations"]="[]";
+                  
+                 if ((attributes["stardust:emailOverlay::attachmentsTemplateSource"]== "embedded" || 
+                          attributes["stardust:emailOverlay::attachmentsTemplateSource"] == undefined)
+                  && JSON.parse(attributes["stardust:emailOverlay::templateConfigurations"]).length == 0)
                return false;
                  
                  return true;
