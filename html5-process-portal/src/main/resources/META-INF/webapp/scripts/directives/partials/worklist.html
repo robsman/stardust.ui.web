@@ -1,3 +1,4 @@
+<pre class="tbl-error"  ng-if="activityTableCtrl.showError" ng-bind="activityTableCtrl.errorMessage"></pre>
 <div class="activity-table-wrapper">
 	<div class="worklist-title tbl-title">{{activityTableCtrl.title}}</div>
 	<div sda-toolbar>
@@ -81,7 +82,7 @@
 			<tr>
 				<td style="white-space: nowrap;" sda-exporter="rowData.activity.name" style="text-align: center;"">
 					
-					<div ng-if="activityTableCtrl.mode === 'worklist'">
+					<div ng-if="activityTableCtrl.isWorklistMode();">
 						<a ng-if="rowData.activatable" href="#"
 							ng-click="bpmCommon.stopEvent($event); activityTableCtrl.$activateItem(rowData);"
 							title="{{i18n('processportal.views-worklistPanel-tooltip-openActivity')}}"
@@ -97,7 +98,7 @@
 								class="glyphicon glyphicon-time" style="margin-left: 2px;"></i></span>
 						</span>
 					</div>
-					<div ng-if="activityTableCtrl.mode === 'activityOverview'">
+					<div ng-if="activityTableCtrl.isActivityInstanceMode();">
 						<a  href="#"
 							ng-click="bpmCommon.stopEvent($event); activityTableCtrl.$openProcessHistory(rowData);"
 						title="{{i18n('processportal.toolbars-workflowActions-tooltip-processContextExplorer')}}"
@@ -111,8 +112,8 @@
 				</td>
 				<td style="text-align: center;" sda-exporter="rowData.priority.label">
 					<div ng-if = "!activityTableCtrl.priorityEditable" sd-process-priority sda-priority="rowData.priority" sda-editable="activityTableCtrl.priorityEditable"></div>
-					<div ng-if = "activityTableCtrl.priorityEditable" sd-process-priority sda-priority="rowData.priority" sda-editable="activityTableCtrl.priorityEditable" 
-					 sda-available-priorities ="activityTableCtrl.availablePriorities" 
+					<div ng-if = "activityTableCtrl.priorityEditable" sd-process-priority sda-priority="rowData.priority"
+						sda-editable="activityTableCtrl.priorityEditable"  sda-available-priorities ="activityTableCtrl.availablePriorities" 
 					sda-on-change ="activityTableCtrl.registerNewPriority( rowData.oid, rowData.priority.value)"></div>
 				</td>
 
@@ -151,11 +152,11 @@
 							title="{{i18n('processportal.toolbars-workflowActions-tooltip-processContextExplorer')}}" class="button-link tbl-tool-link">
 							<i class="glyphicon glyphicon-cog"></i>
 						</button>
-						<button ng-if="'activityOverview' === activityTableCtrl.mode " 	ng-click="bpmCommon.stopEvent($event); activityTableCtrl.$activateItem(rowData);"
+						<button ng-if="activityTableCtrl.isActivityInstanceMode();" 	ng-click="bpmCommon.stopEvent($event); activityTableCtrl.$activateItem(rowData);"
 							    ng-disabled="!rowData.activatable"	title="{{i18n('processportal.views-worklistPanel-tooltip-openActivity')}}" class="button-link tbl-tool-link">
 							<i class="sc sc-gear-lightning" style="font-size : 15px;"></i>
 						</button>
-						<button sda-column="TRIVIAL_DATA" ng-if="'worklist' === activityTableCtrl.mode "
+						<button sda-column="TRIVIAL_DATA" ng-if="activityTableCtrl.isWorklistMode();"
 							ng-disabled="activityTableCtrl.activities.trivialManualActivities[rowData.oid] == undefined"
 							ng-click="bpmCommon.stopEvent($event); activityTableCtrl.$openCompleteDialog(rowData);"
 							title="{{i18n('processportal.toolbars-workflowActions-tooltip-complete')}}" class="button-link tbl-tool-link">
@@ -169,7 +170,7 @@
 							title="{{i18n('processportal.toolbars-workflowActions-tooltip-abort')}}" class="button-link tbl-tool-link">
 							<i class="glyphicon glyphicon-remove"></i>
 						</button>
-						<button ng-if="'activityOverview' === activityTableCtrl.mode " sd-abort-popover ng-disabled="false" sda-activities="activityTableCtrl.dataTable.getSelection()" sda-on-confirm="activityTableCtrl.refresh()" class="button-link tbl-toolbar-item tbl-tool-link" style="padding-left: 0px;">
+						<button ng-if="activityTableCtrl.isActivityInstanceMode();" sd-abort-popover ng-disabled="false" sda-activities="activityTableCtrl.dataTable.getSelection()" sda-on-confirm="activityTableCtrl.refresh()" class="button-link tbl-toolbar-item tbl-tool-link" style="padding-left: 0px;">
 							<i class="glyphicon glyphicon-chevron-right glyphicon-rotate-90"></i>
 						</button>
 						<button ng-click="bpmCommon.stopEvent($event); activityTableCtrl.$openNotes(rowData);"

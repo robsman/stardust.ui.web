@@ -18,7 +18,7 @@ public class CriticalityUtils {
 	 * Returns the List of criticality categories
 	 * @return List
 	 */
-	public  List<CriticalityCategory> getCriticalityConfiguration() {
+	public static  List<CriticalityCategory> getCriticalityConfiguration() {
 		List<CriticalityCategory> criticalityConfiguration = CriticalityConfigurationUtil
 				.getCriticalityCategoriesList();
 		criticalityConfiguration.add(CriticalityConfigurationUtil
@@ -30,7 +30,7 @@ public class CriticalityUtils {
 	 * Returns the Icon color for a criticality value.
 	 * @return String
 	 */
-	public  String getCriticalityIconColor(int value,
+	public static String getCriticalityIconColor(int value,
 			List<CriticalityCategory> criticalityConfiguration) {
 		CriticalityCategory criticality = getCriticalityCategory(value,
 				criticalityConfiguration);
@@ -43,7 +43,7 @@ public class CriticalityUtils {
 	 * @param criticalityConfiguration
 	 * @return CriticalityCategory
 	 */
-	public  CriticalityCategory getCriticalityCategory(int criticality,
+	public static CriticalityCategory getCriticalityCategory(int criticality,
 			List<CriticalityCategory> criticalityConfiguration) {
 		
 		for (CriticalityCategory cCat : criticalityConfiguration) {
@@ -61,7 +61,7 @@ public class CriticalityUtils {
 	 * @param engineCriticality
 	 * @return
 	 */
-	public int getPortalCriticalityValue(double engineCriticality){
+	public static int getPortalCriticalityValue(double engineCriticality){
 		return CriticalityConfigurationUtil.getPortalCriticality(engineCriticality);
 	}
 

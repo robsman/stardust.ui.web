@@ -15,8 +15,8 @@
 	'use strict';
 
 	angular.module('workflow-ui.services').provider('sdActivityInstanceService', function () {
-		this.$get = ['$rootScope', '$http', '$q', function ($rootScope, $http, $q) {
-			var service = new ActivityInstanceService($rootScope, $http, $q);
+		this.$get = ['$rootScope', '$http', '$q', 'sdActivityTableUtilService', function ($rootScope, $http, $q, sdActivityTableUtilService) {
+			var service = new ActivityInstanceService($rootScope, $http, $q, sdActivityTableUtilService);
 			return service;
 		}];
 	});
@@ -24,8 +24,31 @@
 	/*
 	 * 
 	 */
-	function ActivityInstanceService($rootScope, $http, $q) {
+	function ActivityInstanceService($rootScope, $http, $q, sdActivityTableUtilService) {
 		var REST_BASE_URL = "services/rest/portal/activity-instances/";
+		
+		/*
+		 * 
+		 */
+		ActivityInstanceService.prototype.getAllCounts = function() {
+			return ajax(REST_BASE_URL,'' , "allCounts");
+		};
+		
+		/*
+		 * 
+		 */
+		ActivityInstanceService.prototype.getAllActivities = function(query) {
+			var restUrl = REST_BASE_URL+ 'allActivities';
+			var queryParams = sdActivityTableUtilService.getQueryParamsFromOptions(query.options);
+
+			if (queryParams.length > 0) {
+				restUrl = restUrl + "?" + queryParams.substr(1);
+			}
+
+			var postData = sdActivityTableUtilService.getPostParamsFromOptions(query.options);
+
+			return ajax(restUrl, '', postData);
+		};
 
 		/*
 		 * 

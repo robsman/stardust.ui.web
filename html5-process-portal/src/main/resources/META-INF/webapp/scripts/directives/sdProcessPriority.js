@@ -26,15 +26,16 @@
 			   sdaPriority : '=',
 			   sdaEditable : '=',
 			   sdaAvailablePriorities : '=',
-			   sdaOnChange : '&'
+			   sdaOnChange : '&',
+			   sdaValueChanged : '='
 		   },
 		   template : '<i ng-if="!sdaEditable" class="glyphicon glyphicon-flag priority-flag" '+
 		   						'ng-class="\'priority-flag-\'+sdaPriority.name" '+
 		   						'ng-mouseenter=\'processPriorityCtrl.toolTip.show = true\' '+
 		   						'ng-mouseleave=\'processPriorityCtrl.toolTip.show = false\'> '+
 		   			  '<\/i>'+
-		   			  '<select ng-if="sdaEditable" ng-model="sdaPriority.value" ng-change="sdaOnChange();" '+
-		   	         ' ng-options="item.value as item.label for item in sdaAvailablePriorities"></select>'+
+		   			  '<div style="width:90px;" ng-class="{\'activity-table-priority-changed-highlight\':sdaValueChanged}"><select ng-if="sdaEditable" class="activity-table-priority-combo" ng-model="sdaPriority.value" ng-change="sdaOnChange();" '+
+		   	         ' ng-options="item.value as item.label for item in sdaAvailablePriorities"></select></div>'+
 		   			  '<div class="popup-dlg worklist-tooltip" style="color: black" ng-show="processPriorityCtrl.toolTip.show">'+
 		   			  		'<span class="worklist-tooltip-label" ng-bind="processPriorityCtrl.i18n(\'views-common-messages.views-activityTable-priorityFilter-table-priorityColumn-name\')"><\/span> '+
 		   			  		': <span ng-bind="sdaPriority.label"><\/span>' +

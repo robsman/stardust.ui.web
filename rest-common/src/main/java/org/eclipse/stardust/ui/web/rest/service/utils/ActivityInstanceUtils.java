@@ -31,6 +31,8 @@ import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.ActivityInstances;
 import org.eclipse.stardust.engine.api.query.FilterOrTerm;
+import org.eclipse.stardust.engine.api.query.QueryResult;
+import org.eclipse.stardust.engine.api.query.SubsetPolicy;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
 import org.eclipse.stardust.engine.api.runtime.Document;
@@ -42,6 +44,7 @@ import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
 import org.eclipse.stardust.ui.web.common.util.ReflectionUtils;
+import org.eclipse.stardust.ui.web.rest.Options;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap.NotificationDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.PathDTO;
@@ -117,6 +120,30 @@ public class ActivityInstanceUtils
       ActivityInstances ais = serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
 
       return ais;
+   }
+   
+   /**
+    * @param userId
+    * @return
+    */
+   public QueryResult< ? > getActivityInstances( Options options)
+   {
+      ActivityInstanceQuery query = ActivityInstanceQuery.findAll();
+
+      ActivityTableUtils.addDescriptorPolicy(options, query);
+
+      ActivityTableUtils.addSortCriteria(query, options);
+
+      ActivityTableUtils.addFilterCriteria(query, options);
+
+      SubsetPolicy subsetPolicy = new SubsetPolicy(options.pageSize, options.skip,
+            true);
+      query.setPolicy(subsetPolicy);
+
+      ActivityInstances activityInstances = serviceFactoryUtils.getQueryService()
+            .getAllActivityInstances(query);
+
+      return activityInstances;
    }
 
    /**
@@ -216,7 +243,7 @@ public class ActivityInstanceUtils
     * @param context
     * @return
     */
-   public boolean isTrivialManualActivity(ActivityInstance ai)
+   public static boolean isTrivialManualActivity(ActivityInstance ai)
    {
       Boolean trivialManualActivity = (Boolean)ai.getActivity().getAttribute("trivialManualActivity");
       return (null != trivialManualActivity && trivialManualActivity == true);

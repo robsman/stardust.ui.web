@@ -169,7 +169,7 @@ padding : 5px;;
 .priority-criticality-filter-container{
   width: 200px
 }
-/* ********** Worklist tooltip ********** */
+/* ********** Activitiy tooltip ********** */
 .worklist-tooltip-label{
 	font-weight: bold;
 }
@@ -177,6 +177,13 @@ padding : 5px;;
 	background-color: #FFEDF0;
 }
 
+.activity-table-priority-combo{
+	width :80px;
+}
+
+.activity-table-priority-changed-highlight{
+	background-color: gray;
+}
 
 
 .sd-abort-popover-box {

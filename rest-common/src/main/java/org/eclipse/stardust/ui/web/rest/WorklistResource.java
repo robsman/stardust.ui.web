@@ -10,36 +10,29 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
 import org.eclipse.stardust.ui.web.rest.service.ProcessDefinitionService;
 import org.eclipse.stardust.ui.web.rest.service.WorklistService;
 import org.eclipse.stardust.ui.web.rest.service.dto.DescriptorColumnDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.WorklistFilterDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.WorklistFilterDTO.DescriptorFilterDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
+import org.eclipse.stardust.ui.web.rest.service.utils.ActivityTableUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * @author Subodh.Godbole
@@ -120,123 +113,35 @@ public class WorklistResource
          return Response.status(Status.INTERNAL_SERVER_ERROR).build();
       }
    }
+   
+   /**
+    * 
+    * @param options
+    * @param postData
+    */
+   private void populatePostData(Options options, String postData)
+   {
+      List<DescriptorColumnDTO> availableDescriptors = processDefService.getDescriptorColumns(true);
+      ActivityTableUtils.populatePostData(options, postData, availableDescriptors);
+   }
 
+   /**
+    * 
+    * @return
+    */
    public WorklistService getWorklistService()
    {
       return worklistService;
    }
-
+   
+   /**
+    * 
+    * @param worklistService
+    */
    public void setWorklistService(WorklistService worklistService)
    {
       this.worklistService = worklistService;
    }
 
-   /**
-    * Get the filters from the JSON string
-    * @param jsonFilterString
-    * @return
-    */
-   private WorklistFilterDTO getFilters(String jsonFilterString)
-   {
-      WorklistFilterDTO worklistFilter = null;
-      if (StringUtils.isNotEmpty(jsonFilterString))
-      {
-         try
-         {
-            JsonMarshaller jsonIo = new JsonMarshaller();
-            JsonObject json = jsonIo.readJsonObject(jsonFilterString);
-            worklistFilter = DTOBuilder.buildFromJSON(json, WorklistFilterDTO.class,
-                  WorklistFilterDTO.getCustomTokens());
-            if (StringUtils.contains(jsonFilterString, "descriptorValues"))
-            {
-               populateDescriptorFilters(worklistFilter, json);
-            }
-         }
-         catch (Exception e)
-         {
-            trace.error("Error in Deserializing filter JSON", e);
-         }
-      }
-
-      return worklistFilter;
-   }
-
-   /**
-    * Populate the options with the post data.
-    * @param options
-    * @param postData
-    * @return
-    */
-   private Options populatePostData(Options options, String postData)
-   {
-      JsonMarshaller jsonIo = new JsonMarshaller();
-      JsonObject postJSON = jsonIo.readJsonObject(postData);
-
-      // For filter
-      JsonObject filters = postJSON.getAsJsonObject("filters");
-      if (null != filters)
-      {
-         options.filter = getFilters(filters.toString());
-      }
-
-
-      JsonArray visbleColumns = postJSON.getAsJsonObject("descriptors").get("visbleColumns").getAsJsonArray();
-      List<String> columnsList = new ArrayList<String>();
-      for (JsonElement jsonElement : visbleColumns)
-      {
-         columnsList.add(StringUtils.substringAfter(jsonElement.getAsString(), "descriptorValues."));
-      }
-       options.visibleDescriptorColumns = columnsList;
-       options.allDescriptorsVisible = postJSON.getAsJsonObject("descriptors").get("fetchAll").getAsBoolean();
-
-      return options;
-   }
-
-   /**
-    * Populates the descriptor filter values.
-    * @param worklistFilter
-    * @param descriptorColumnsFilterJson
-    */
-   private void populateDescriptorFilters(WorklistFilterDTO worklistFilter,
-         JsonObject descriptorColumnsFilterJson)
-   {
-
-      List<DescriptorColumnDTO> descriptorColumns = processDefService
-            .getDescriptorColumns(true);
-      Map<String, DescriptorFilterDTO> descriptorColumnMap = new HashMap<String, DescriptorFilterDTO>();
-
-      for (DescriptorColumnDTO descriptorColumnDTO : descriptorColumns)
-      {
-         Object filterDTO = null;
-         if (null != descriptorColumnsFilterJson.get(descriptorColumnDTO.id))
-         {
-            // String TYPE
-            if (ColumnDataType.STRING.toString().equals(descriptorColumnDTO.type))
-            {
-               filterDTO = new Gson().fromJson(
-                     descriptorColumnsFilterJson.get(descriptorColumnDTO.id),
-                     WorklistFilterDTO.TextSearchDTO.class);
-
-            }
-            else if (ColumnDataType.DATE.toString().equals(descriptorColumnDTO.type)
-                  || ColumnDataType.NUMBER.toString().equals(descriptorColumnDTO.type))
-            {
-               filterDTO = new Gson().fromJson(
-                     descriptorColumnsFilterJson.get(descriptorColumnDTO.id),
-                     WorklistFilterDTO.RangeDTO.class);
-            }
-            else if (ColumnDataType.BOOLEAN.toString().equals(descriptorColumnDTO.type))
-            {
-               filterDTO = new Gson().fromJson(
-                     descriptorColumnsFilterJson.get(descriptorColumnDTO.id),
-                     WorklistFilterDTO.BooleanDTO.class);
-            }
-            descriptorColumnMap.put(descriptorColumnDTO.id, new DescriptorFilterDTO(
-                  descriptorColumnDTO.type, filterDTO));
-         }
-      }
-
-      worklistFilter.descriptorFilterMap = descriptorColumnMap;
-   }
 
 }

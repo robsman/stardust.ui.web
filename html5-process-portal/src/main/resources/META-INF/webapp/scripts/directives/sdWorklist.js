@@ -47,15 +47,19 @@
 
 		//Defaults
 
-		var defaultValues = {
-				mode:'worklist',
-				worklist: {
-					visibleColumns : ['overview', 'oid', 'criticality', 'priority', 'descriptors', 'started', 'lastModified', 'duration', 'lastPerformer', 'data'],
-					preferenceModule : 'ipp-workflow-perspective'
+		var DEFAULT_VALUES = {
+				MODE:'worklist',
+				WORKLIST: {
+					NAME : 'worklist',
+					VISIBLE_COLUMNS : ['overview', 'oid', 'criticality', 'priority', 'descriptors', 'started', 'lastModified', 'duration', 'lastPerformer', 'data'],
+					PREFERENCE_MODULE : 'ipp-workflow-perspective',
+					SHOW_TRIVIAL_DATA_COLUMNS : true
 
 				},
-				activityInstanceView : {
-					visibleColumns : ['overview', 'oid', 'criticality', 'priority', 'descriptors', 'started', 'lastModified', 'duration', 'lastPerformer', 'data']
+				ACITIVITY_INSTANCE_VIEW : {
+					NAME:'activityInstanceView',
+					VISIBLE_COLUMNS : ['overview', 'oid', 'assignedTo', 'priority', 'criticality', 'descriptors', 'started', 'lastModified', 'duration', 'status'],
+					SHOW_TRIVIAL_DATA_COLUMNS : false
 				}
 		};
 
@@ -66,7 +70,12 @@
 		 */
 		function processRawMarkup(elem, attr) {
 			// Process Trivial Data Column
-			var showTrivialDataColumn = true; // Default
+			var showTrivialDataColumn =  DEFAULT_VALUES.WORKLIST.SHOW_TRIVIAL_DATA_COLUMNS;
+			
+			if( attr.sdaMode === DEFAULT_VALUES.ACITIVITY_INSTANCE_VIEW.NAME ){
+				showTrivialDataColumn = DEFAULT_VALUES.ACITIVITY_INSTANCE_VIEW.SHOW_TRIVIAL_DATA_COLUMNS;
+			}
+		
 			if (attr.sdaTrivialDataColumn && attr.sdaTrivialDataColumn === 'false') {
 				showTrivialDataColumn = false;
 			}
@@ -100,8 +109,13 @@
 		function ActivityTableCompiler(scope, element, attr, ctrl) {
 			var self = this;
 
+			try{
 			this.initialize(attr, scope, $filter);
+				this.showError = false;
+			}catch (e) {
 			
+				this.showError(e);
+			}
 			/*
 			 * Defined here as access required to scope
 			 */
@@ -149,29 +163,32 @@
 			this.columnSelector = 'admin';
 
 			// Process Query
-			if (!attr.sdaQuery) {
+			if (!attr.sdaQuery && !attr.sdData) {
 				throw 'Query attribute has to be specified if sdData is not specified.';
 			}
+			
+			if(!attr.sdData) {
 			var queryGetter = $parse(attr.sdaQuery);
 			var query = queryGetter(scopeToUse);
 			if (query == undefined) {
 				throw 'Query evaluated to "nothing" for activity table.';
 			}
 			this.query = query;
+			}
 
 			
 			if(attr.sdaMode){
 				this.mode= attr.sdaMode;
 			}else{
-				this.mode = defaultValues.mode;  
+				this.mode = DEFAULT_VALUES.MODE;  
 			}
 
-			if (this.mode === 'worklist') {
+			if (this.mode === DEFAULT_VALUES.WORKLIST.NAME) {
 				this.initializeWorklistMode(attr, scope);
-			} else if(this.mode === 'activityInstanceView'){
+			} else if(this.mode === DEFAULT_VALUES.ACITIVITY_INSTANCE_VIEW.NAME){
 				this.initializeActivityInstanceMode(attr, scope);
 			}else{
-				throw 'Not a valid value for sdaMode';
+				throw 'Not a valid value for sdaMode.Valid modes are : '+ DEFAULT_VALUES.WORKLIST.NAME +' & '+DEFAULT_VALUES.ACITIVITY_INSTANCE_VIEW.NAME;
 			}
 
 			this.customizeWithAttributeValues(attr, scope, scopeToUse);
@@ -225,9 +242,6 @@
 			});
 
 		
-			this.exportFileName = this.query.userId || this.query.participantQId; 
-			console.log(self.worklistPrefModule);
-			console.log(self.worklistPrefId);
 
 			this.preferenceDelegate = function(prefInfo) {
 				var preferenceStore = sdPreferenceService.getStore(prefInfo.scope, self.worklistPrefModule, self.worklistPrefId);
@@ -297,8 +311,8 @@
 		 */
 		ActivityTableCompiler.prototype.initializeWorklistMode = function(attr, scope){
 			this.priorityEditable = false;
-			this.visbleColumns = defaultValues.worklist.visibleColumns;
-			this.worklistPrefModule = defaultValues.worklist.preferenceModule;
+			this.visbleColumns = DEFAULT_VALUES.WORKLIST.VISIBLE_COLUMNS;
+			this.worklistPrefModule = DEFAULT_VALUES.WORKLIST.PREFERENCE_MODULE;
 
 		};
 
@@ -314,14 +328,14 @@
 					error : false,
 					result : {}
 			};
-			this.visbleColumns = defaultValues.activityInstance.visibleColumns;
+			this.visbleColumns = DEFAULT_VALUES.ACITIVITY_INSTANCE_VIEW.VISIBLE_COLUMNS;
 			
 			if (!attr.sdaPreferenceModule) {
 				throw "sdaPreferenceModule is not defined."
 			}
 			
 			if (!attr.sdaPreferenceId) {
-				throw "sdaPreferenceModule is not defined."
+				throw "sdaPreferenceId is not defined."
 			}
 			
 			if (!attr.sdaPreferenceName) {
@@ -343,6 +357,7 @@
 			var titleGetter = $parse(titleExpr);
 			this.title = titleGetter(scopeToUse);
 
+			if(this.query){
 
 			var idFromQuery = this.query.userId || this.query.participantQId;
 
@@ -352,6 +367,12 @@
 				this.worklistPrefId = 'worklist-process-columns';
 			}
 
+				this.worklistPrefName = idFromQuery ;
+				
+				this.exportFileName = idFromQuery; 
+			}
+			
+
 			if (attr.sdaPreferenceModule) {
 				this.worklistPrefModule = attr.sdaPreferenceModule;
 			}
@@ -360,7 +381,6 @@
 				this.worklistPrefId = attr.sdaPreferenceId;
 			}
 
-			this.worklistPrefName = this.query.userId || this.query.participantQId; 
 			if (attr.sdaPreferenceName) {
 				this.worklistPrefName = attr.sdaPreferenceName;
 			}
@@ -390,14 +410,21 @@
 			var deferred = $q.defer();
 			self.cleanLocals();
 
+			var query = angular.extend({}, this.query);
+			query.options = options;
+
 			if( angular.isDefined(this.sdDataCtrl) ) {
 				trace.debug("sdData is defined fetching custom data. ");
 
-				self.sdDataCtrl.retrieveData().then(function(data){
+				var dataResult = self.sdDataCtrl.retrieveData(query);
+
+				dataResult.then(function(data){
 					self.activities = data;
 					deferred.resolve(self.activities);
 					self.safeApply(self.activities.list);
 					self.storePriorities();
+				},function(error){
+					deferred.reject(error);
 				});
 
 			} else {
@@ -406,9 +433,6 @@
 					throw 'sdData is not defined for sdActivityTable';
 				}
 				trace.debug("sdData not defined fetching default data. ");
-
-				var query = angular.extend({}, this.query);
-				query.options = options;
 
 				sdWorklistService.getWorklist(query).then(function(data) {
 					self.activities.list = data.list;
@@ -509,10 +533,10 @@
       ActivityTableCompiler.prototype.fetchAllAvailableCriticalities = function()
       {
          var self = this;
-         sdCriticalityService.getAllCriticalities().then(function(criticalities)
-         {
+			sdCriticalityService.getAllCriticalities()
+			.then(function(criticalities){ 
             self.allAvailableCriticalities = criticalities;
-         });
+			});
       };
 
       /*
@@ -522,10 +546,10 @@
       ActivityTableCompiler.prototype.fetchAvailableStates = function()
       {
          var self = this;
-         sdStatusService.getAllActivityStates().then(function(value)
-         {
+			sdStatusService.getAllActivityStates()
+			.then(function(value){
             self.availableStates = value;
-         });
+			});
       };
 
 
@@ -910,11 +934,9 @@
 
     	 if(self.originalPriorities[oid] != value){
     		 self.changedPriorities[oid] = value;
-    	 }else{
-    		 if(angular.isDefined(self.changedPriorities[oid])){
-    			 delete self.changedPriorities[oid];
-    		 }
-    	 }
+			}else if(angular.isDefined(self.changedPriorities[oid])){
+				delete self.changedPriorities[oid];
+			}
      };
 
      /*
@@ -966,7 +988,39 @@
  				}, true);
  	};
 
+		/**
+		 * 
+		 */
+		ActivityTableCompiler.prototype.isWorklistMode = function() {
 
+			return this.mode === DEFAULT_VALUES.WORKLIST.NAME;
+		};
+
+		/**
+		 * 
+		 */
+		ActivityTableCompiler.prototype.isActivityInstanceMode = function() {
+			
+			return this.mode === DEFAULT_VALUES.ACITIVITY_INSTANCE_VIEW.NAME;
+		};
+
+		
+		/*
+		 * 
+		 */
+		ActivityTableCompiler.prototype.showError = function(e) {
+			trace.error('Error on activity table:', e);
+			trace.printStackTrace();
+			this.showError = "true";
+				
+			var errorToShow = 'Unknown Error';
+			if (angular.isString(e)) {
+				errorToShow = e;
+			} else if (e.status != undefined && e.statusText != undefined) {
+				errorToShow =  e.status + ' - ' + e.statusText;
+			}
+			this.errorMessage = 'sd-activity-table is unable to process table. Pls. refer browser console for details. Reason: ' + errorToShow;
+		};
 
      return directiveDefObject;
 	};

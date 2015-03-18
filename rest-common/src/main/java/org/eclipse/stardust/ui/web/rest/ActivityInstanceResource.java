@@ -21,6 +21,7 @@ import javax.annotation.Resource;
 import javax.faces.FacesException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -30,8 +31,10 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.eclipse.stardust.common.CollectionUtils;
+import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetails;
@@ -45,18 +48,23 @@ import org.eclipse.stardust.ui.web.rest.exception.PortalRestException;
 import org.eclipse.stardust.ui.web.rest.service.ActivityInstanceService;
 import org.eclipse.stardust.ui.web.rest.service.DelegationComponent;
 import org.eclipse.stardust.ui.web.rest.service.ParticipantSearchComponent;
+import org.eclipse.stardust.ui.web.rest.service.ProcessDefinitionService;
 import org.eclipse.stardust.ui.web.rest.service.dto.AbortNotificationDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceCountDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceOutDataDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.DescriptorColumnDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.JoinProcessDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.RelatedProcessesDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.SelectItemDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.SwitchProcessDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.TrivialManualActivityDTO;
+import org.eclipse.stardust.ui.web.rest.service.utils.ActivityTableUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.RelatedProcessSearchUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
@@ -94,6 +102,9 @@ public class ActivityInstanceResource
 
    @Context
    private HttpServletRequest httpRequest;
+
+   @Autowired
+   ProcessDefinitionService processDefService;
    
    private final JsonMarshaller jsonIo = new JsonMarshaller();
 
@@ -684,6 +695,8 @@ public class ActivityInstanceResource
     	return Response.ok(GsonUtils.toJsonHTMLSafeString(joinNotificationDTO), MediaType.APPLICATION_JSON).build();
     }
     
+    
+    
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -711,6 +724,61 @@ public class ActivityInstanceResource
     	return Response.ok(GsonUtils.toJsonHTMLSafeString(relatedProcesses), MediaType.APPLICATION_JSON).build();
     }
     
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/allCounts")
+    public Response getAllCounts( )
+    {
+       try
+       {
+         ActivityInstanceCountDTO acitivityInstanceCountDTO = getActivityInstanceService().getAllCounts();
+         return Response.ok(GsonUtils.toJsonHTMLSafeString( acitivityInstanceCountDTO ), MediaType.APPLICATION_JSON).build();
+       }
+       catch (Exception e)
+       {
+          trace.error(e, e);
+
+          return Response.serverError().build();
+       }
+    }
+    
+    
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/allActivities")
+    public Response getAllActivities(
+          @QueryParam("skip") @DefaultValue("0") Integer skip,
+          @QueryParam("pageSize") @DefaultValue("8") Integer pageSize,
+          @QueryParam("orderBy") @DefaultValue("oid") String orderBy,
+          @QueryParam("orderByDir") @DefaultValue("asc") String orderByDir, String postData)
+    {
+       try
+       {
+          Options options = new Options(pageSize, skip, orderBy,
+                "asc".equalsIgnoreCase(orderByDir));
+          populatePostData(options, postData);
+          QueryResultDTO resultDTO = getActivityInstanceService().getAllInstances(options);
+          return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
+       }
+       catch (ObjectNotFoundException onfe)
+       {
+          return Response.status(Status.NOT_FOUND).build();
+       }
+       catch (Exception e)
+       {
+          trace.error("", e);
+          return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+       }
+    }
+    
+    
+    
+    /**
+     * 
+     * @param pi
+     * @return
+     */
 	private RelatedProcessesDTO getRelatedProcessesDTO(ProcessInstance pi) {
 		RelatedProcessesDTO dto = new RelatedProcessesDTO();
 		MessagesViewsCommonBean COMMON_MESSAGE_BEAN = MessagesViewsCommonBean.getInstance();
@@ -733,6 +801,11 @@ public class ActivityInstanceResource
 		return dto;
 	}
 
+	/**
+	 * 
+	 * @param processInstanceOID
+	 * @return
+	 */
 	private ProcessInstance getProcessInstance(long processInstanceOID)
 	{
 	    return ProcessInstanceUtils.getProcessInstance(Long.valueOf(processInstanceOID));
@@ -756,6 +829,18 @@ public class ActivityInstanceResource
 
       return defaultValue;
    }    
+   
+   /**
+    * 
+    * @param options
+    * @param postData
+    */
+   private void populatePostData(Options options, String postData)
+   {
+      List<DescriptorColumnDTO> availableDescriptors = processDefService.getDescriptorColumns(true);
+      ActivityTableUtils.populatePostData(options, postData, availableDescriptors);
+   }
+
 	
 	
    /**

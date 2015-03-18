@@ -89,7 +89,7 @@ public class ProcessDefinitionUtils
     * @param onlyFilterable
     * @return
     */
-   public Map<String, DataPath> getAllDescriptors(Boolean onlyFilterable)
+   public static Map<String, DataPath> getAllDescriptors(Boolean onlyFilterable)
    {
       return CommonDescriptorUtils.getAllDescriptors(onlyFilterable);
    }

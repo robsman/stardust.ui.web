@@ -21,24 +21,38 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
+import org.eclipse.stardust.engine.api.query.QueryResult;
+import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
+import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
+import org.eclipse.stardust.engine.api.runtime.Document;
+import org.eclipse.stardust.engine.api.runtime.QueryService;
+import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
+import org.eclipse.stardust.ui.web.common.util.GsonUtils;
+import org.eclipse.stardust.ui.web.rest.Options;
+import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceCountDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceOutDataDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.CriticalityDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap;
+import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap.NotificationDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.StatusDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.TrivialManualActivityDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
+import org.eclipse.stardust.ui.web.rest.service.dto.builder.DocumentDTOBuilder;
+import org.eclipse.stardust.ui.web.rest.service.utils.ActivityInstanceUtils;
+import org.eclipse.stardust.ui.web.rest.service.utils.ActivityTableUtils;
+import org.eclipse.stardust.ui.web.rest.service.utils.CriticalityUtils;
+import org.eclipse.stardust.ui.web.rest.service.utils.ServiceFactoryUtils;
+import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityCategory;
+import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
-
-import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
-import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
-import org.eclipse.stardust.engine.api.runtime.Document;
-import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
-import org.eclipse.stardust.ui.web.common.util.GsonUtils;
-import org.eclipse.stardust.ui.web.rest.service.dto.*;
-import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap.NotificationDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
-import org.eclipse.stardust.ui.web.rest.service.dto.builder.DocumentDTOBuilder;
-import org.eclipse.stardust.ui.web.rest.service.utils.ActivityInstanceUtils;
-import org.eclipse.stardust.ui.web.rest.service.utils.CriticalityUtils;
-import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityCategory;
-import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 
 /**
  * @author Anoop.Nair
@@ -48,198 +62,295 @@ import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 @Component
 public class ActivityInstanceService
 {
-	@Resource
-	private ActivityInstanceUtils activityInstanceUtils;
-	@Resource
-	private ParticipantSearchComponent participantSearchComponent;
-	@Resource
-	private DelegationComponent delegateComponent;
+   @Resource
+   private ActivityInstanceUtils activityInstanceUtils;
 
-	@Resource
-	CriticalityUtils criticalityUtils;
+   @Resource
+   private ParticipantSearchComponent participantSearchComponent;
 
-	/**
-	 * @param activityInstanceOid
-	 * @return
-	 */
-	public ActivityInstanceDTO getActivityInstance(long activityInstanceOid)
-	{
-		ActivityInstance ai = activityInstanceUtils.getActivityInstance(activityInstanceOid);
-		return DTOBuilder.build(ai, ActivityInstanceDTO.class);
-	}
+   @Resource
+   private DelegationComponent delegateComponent;
 
-	/**
-	 * @param oid
-	 * @return
-	 */
-	public String getAllDataMappingsAsJson(long oid, String context)
-	{
-		ActivityInstance ai = activityInstanceUtils.getActivityInstance(oid);
-		String json = activityInstanceUtils.getAllDataMappingsAsJson(ai, context);
-		return json;
-	}
+   @Resource
+   private ServiceFactoryUtils serviceFactoryUtils;
 
-	/**
-	 * @param oid
-	 * @return
-	 */
-	public Map<String, Serializable> getAllInDataValues(long oid, String context)
-	{
-		ActivityInstance ai = activityInstanceUtils.getActivityInstance(oid);
-		Map<String, Serializable> values = activityInstanceUtils.getAllInDataValues(ai, context);
+   @Resource
+   CriticalityUtils criticalityUtils;
 
-		return values;
-	}
-
-	/**
-	 * @param userId
-	 * @return
-	 */
-	public Map<String, TrivialManualActivityDTO> getTrivialManualActivitiesDetails(List<Long> oids, String context)
-	{
-		Map<String, TrivialManualActivityDTO> dto = activityInstanceUtils
-				.getTrivialManualActivitiesDetails(oids, context);
-		return dto;
-	}
-
-	/**
-	 * @param activities
-	 * @param context
-	 * @return
-	 */
-	public String completeAll(List<ActivityInstanceOutDataDTO> activities, String context)
-	{
-	   NotificationMap notificationMap = new NotificationMap();
-
-		for (ActivityInstanceOutDataDTO aiDto : activities)
-		{
-			try
-			{
-				activityInstanceUtils.complete(aiDto.oid, context, aiDto.outData);
-				notificationMap.addSuccess(new NotificationDTO(aiDto.oid, null, ActivityInstanceState.Completed.getName()));
-			}
-			catch (Exception e)
-			{
-			   notificationMap.addFailure(new NotificationDTO(aiDto.oid, null, e.getMessage()));
-			}
-		}
-		 return GsonUtils.toJsonHTMLSafeString(notificationMap);
-	}
-	
-	  
-   private Map<String, Serializable> convertOutDataTOAppropriateType(Long oid, Map<String,Serializable> outData ,String context){
-      
-      return outData;
+   /**
+    * @param activityInstanceOid
+    * @return
+    */
+   public ActivityInstanceDTO getActivityInstance(long activityInstanceOid)
+   {
+      ActivityInstance ai = activityInstanceUtils.getActivityInstance(activityInstanceOid);
+      return DTOBuilder.build(ai, ActivityInstanceDTO.class);
    }
 
-	/**
-	 * @param activityInstanceOid
-	 * @return
-	 */
-	public List<DocumentDTO> getProcessAttachmentsForActivityInstance(
-			long activityInstanceOid)
-			{
-		List<Document> processAttachments = activityInstanceUtils
-				.getProcessAttachments(activityInstanceOid);
+   /**
+    * @param oid
+    * @return
+    */
+   public String getAllDataMappingsAsJson(long oid, String context)
+   {
+      ActivityInstance ai = activityInstanceUtils.getActivityInstance(oid);
+      String json = activityInstanceUtils.getAllDataMappingsAsJson(ai, context);
+      return json;
+   }
 
-		List<DocumentDTO> processAttachmentsDTO = DocumentDTOBuilder
-				.build(processAttachments);
+   /**
+    * @param oid
+    * @return
+    */
+   public Map<String, Serializable> getAllInDataValues(long oid, String context)
+   {
+      ActivityInstance ai = activityInstanceUtils.getActivityInstance(oid);
+      Map<String, Serializable> values = activityInstanceUtils.getAllInDataValues(ai, context);
 
-		return processAttachmentsDTO;
-			}
+      return values;
+   }
 
-	/**
-	 * @param oid
-	 * @param documentId
-	 * @return
-	 */
-	public List<ProcessInstanceDTO> completeRendezvous(long oid, String documentId)
-	{
-		ActivityInstance completedAi = activityInstanceUtils.completeRendezvous(oid,
-				documentId);
+   /**
+    * @param userId
+    * @return
+    */
+   public Map<String, TrivialManualActivityDTO> getTrivialManualActivitiesDetails(List<Long> oids, String context)
+   {
+      Map<String, TrivialManualActivityDTO> dto = activityInstanceUtils
+            .getTrivialManualActivitiesDetails(oids, context);
+      return dto;
+   }
 
-		// TODO: Change method return type
-		// return completedAi;
+   /**
+    * @param activities
+    * @param context
+    * @return
+    */
+   public String completeAll(List<ActivityInstanceOutDataDTO> activities, String context)
+   {
+      NotificationMap notificationMap = new NotificationMap();
 
-		return null;
-	}
+      for (ActivityInstanceOutDataDTO aiDto : activities)
+      {
+         try
+         {
+            activityInstanceUtils.complete(aiDto.oid, context, aiDto.outData);
+            notificationMap.addSuccess(new NotificationDTO(aiDto.oid, null, ActivityInstanceState.Completed.getName()));
+         }
+         catch (Exception e)
+         {
+            notificationMap.addFailure(new NotificationDTO(aiDto.oid, null, e.getMessage()));
+         }
+      }
+      return GsonUtils.toJsonHTMLSafeString(notificationMap);
+   }
 
-	/**
-	 * @author Yogesh.Manware
-	 * @param request
-	 * @return
-	 */
-	public String abortActivities(String request)
-	{
-		JsonObject json = GsonUtils.readJsonObject(request);
-		String scope = GsonUtils.extractString(json, "scope");
+   /**
+    * @param activityInstanceOid
+    * @return
+    */
+   public List<DocumentDTO> getProcessAttachmentsForActivityInstance(long activityInstanceOid)
+   {
+      List<Document> processAttachments = activityInstanceUtils.getProcessAttachments(activityInstanceOid);
 
-		Type listType = new TypeToken<List<Long>>(){}.getType();
+      List<DocumentDTO> processAttachmentsDTO = DocumentDTOBuilder.build(processAttachments);
 
-		@SuppressWarnings("unchecked")
-		List<Long> activities = (List<Long>) GsonUtils.extractList(GsonUtils.extractJsonArray(json, "activities"),
-				listType);
-		NotificationMap notificationMap = new NotificationMap();
+      return processAttachmentsDTO;
+   }
 
-		if ("activity".equalsIgnoreCase(scope))
-		{
-			notificationMap = activityInstanceUtils.abortActivities(AbortScope.SubHierarchy, activities);
-		}
-		else if ("rootProcess".equalsIgnoreCase(scope))
-		{
-			notificationMap = activityInstanceUtils.abortActivities(AbortScope.RootHierarchy, activities);
-		}
-		return GsonUtils.toJsonHTMLSafeString(notificationMap);
-	}
+   /**
+    * @param oid
+    * @param documentId
+    * @return
+    */
+   public List<ProcessInstanceDTO> completeRendezvous(long oid, String documentId)
+   {
+      ActivityInstance completedAi = activityInstanceUtils.completeRendezvous(oid, documentId);
 
-	/**
-	 * Get all available criticalities
-	 * @return List
-	 */
-	public List<CriticalityDTO> getCriticalities() {
+      // TODO: Change method return type
+      // return completedAi;
 
-		List<CriticalityDTO> criticalityCategories = new ArrayList<CriticalityDTO>();
-		for (CriticalityCategory category : criticalityUtils
-				.getCriticalityConfiguration()) {
-			CriticalityDTO criticalityDTO = DTOBuilder.build(category,
-					CriticalityDTO.class);
-			criticalityCategories.add(criticalityDTO);
-		}
-		return criticalityCategories;
-	}
+      return null;
+   }
 
-	
-	/**
-	 * Returns all states
-	 * @return List
-	 */
-	public List<StatusDTO> getAllActivityStates() {
-	      MessagesViewsCommonBean propsBean = MessagesViewsCommonBean.getInstance();
-	      List<StatusDTO> allStatusList = new ArrayList<StatusDTO>();
+   /**
+    * @author Yogesh.Manware
+    * @param request
+    * @return
+    */
+   public String abortActivities(String request)
+   {
+      JsonObject json = GsonUtils.readJsonObject(request);
+      String scope = GsonUtils.extractString(json, "scope");
 
-	      allStatusList.add(new StatusDTO(ActivityInstanceState.ABORTED, propsBean
-	            .getString("views.activityTable.statusFilter.aborted")));
+      Type listType = new TypeToken<List<Long>>()
+      {
+      }.getType();
 
-	      allStatusList.add(new StatusDTO(ActivityInstanceState.ABORTING, propsBean
-	            .getString("views.activityTable.statusFilter.aborting")));
+      @SuppressWarnings("unchecked")
+      List<Long> activities = (List<Long>) GsonUtils.extractList(GsonUtils.extractJsonArray(json, "activities"),
+            listType);
+      NotificationMap notificationMap = new NotificationMap();
 
-	      allStatusList.add(new StatusDTO(ActivityInstanceState.APPLICATION, propsBean
-	            .getString("views.activityTable.statusFilter.application")));
+      if ("activity".equalsIgnoreCase(scope))
+      {
+         notificationMap = activityInstanceUtils.abortActivities(AbortScope.SubHierarchy, activities);
+      }
+      else if ("rootProcess".equalsIgnoreCase(scope))
+      {
+         notificationMap = activityInstanceUtils.abortActivities(AbortScope.RootHierarchy, activities);
+      }
+      return GsonUtils.toJsonHTMLSafeString(notificationMap);
+   }
 
-	      allStatusList.add(new StatusDTO(ActivityInstanceState.COMPLETED, propsBean
-	            .getString("views.activityTable.statusFilter.completed")));
+   /**
+    * Get all available criticalities
+    * 
+    * @return List
+    */
+   public List<CriticalityDTO> getCriticalities()
+   {
 
-	      allStatusList.add(new StatusDTO(ActivityInstanceState.CREATED, propsBean
-	            .getString("views.activityTable.statusFilter.created")));
+      List<CriticalityDTO> criticalityCategories = new ArrayList<CriticalityDTO>();
+      for (CriticalityCategory category : criticalityUtils.getCriticalityConfiguration())
+      {
+         CriticalityDTO criticalityDTO = DTOBuilder.build(category, CriticalityDTO.class);
+         criticalityCategories.add(criticalityDTO);
+      }
+      return criticalityCategories;
+   }
 
-	      allStatusList.add(new StatusDTO(ActivityInstanceState.HIBERNATED, propsBean
-	            .getString("views.activityTable.statusFilter.hibernated")));
+   /**
+    * Get all activity instances count
+    * 
+    * @return List
+    */
+   public ActivityInstanceCountDTO getAllCounts()
+   {
 
-	      allStatusList.add(new StatusDTO(ActivityInstanceState.INTERRUPTED, propsBean
-	            .getString("views.activityTable.statusFilter.interrupted")));
+      ActivityInstanceCountDTO countDTO = new ActivityInstanceCountDTO();
 
-	      allStatusList.add(new StatusDTO(ActivityInstanceState.SUSPENDED, propsBean
-	            .getString("views.activityTable.statusFilter.suspended")));
-	      return allStatusList;
-	   }
+      countDTO.aborted = getAbortedActivityInstanceCount();
+      countDTO.active = getActiveInstanceCount();
+      countDTO.total = getTotalActivityInstanceCount();
+      countDTO.waiting = getWaitingAcitivityInstanceCount();
+      countDTO.completed = getCompletedActivityInstanceCount();
+      
+      return countDTO;
+
+   }
+
+   /**
+    * 
+    * @return
+    */
+   public long getActiveInstanceCount()
+   {
+      QueryService service = serviceFactoryUtils.getQueryService();
+      return new Long(service.getActivityInstancesCount(ActivityInstanceQuery
+            .findInState(ActivityInstanceState.Application)));
+   }
+
+   /**
+    * 
+    * @return
+    */
+   public long getAbortedActivityInstanceCount()
+   {
+      QueryService service = serviceFactoryUtils.getQueryService();
+      return new Long(service.getActivityInstancesCount(ActivityInstanceQuery
+            .findInState(ActivityInstanceState.Aborted)));
+   }
+
+   /**
+    * 
+    * @return
+    */
+   public long getCompletedActivityInstanceCount()
+   {
+      QueryService service = serviceFactoryUtils.getQueryService();
+      return new Long(service.getActivityInstancesCount(ActivityInstanceQuery.findCompleted()));
+   }
+
+   /**
+    * 
+    * @return
+    */
+   public long getTotalActivityInstanceCount()
+   {
+      QueryService service = serviceFactoryUtils.getQueryService();
+      return new Long(service.getActivityInstancesCount(ActivityInstanceQuery.findAll()));
+   }
+
+   /**
+    * 
+    * @return
+    */
+   public long getWaitingAcitivityInstanceCount()
+   {
+      QueryService service = serviceFactoryUtils.getQueryService();
+      ActivityInstanceQuery query = ActivityInstanceQuery.findInState(new ActivityInstanceState[] {
+            ActivityInstanceState.Interrupted, ActivityInstanceState.Suspended, ActivityInstanceState.Hibernated});
+      return new Long(service.getActivityInstancesCount(query));
+   }
+   
+   
+   /**
+    * @param userId
+    * @return
+    */
+   public QueryResultDTO getAllInstances( Options options)
+   {
+      QueryResult<?> queryResult = activityInstanceUtils.getActivityInstances( options);
+      return ActivityTableUtils.buildWorklistResult(queryResult);
+   }
+
+   /**
+    * Returns all states
+    * 
+    * @return List
+    */
+   public List<StatusDTO> getAllActivityStates()
+   {
+      MessagesViewsCommonBean propsBean = MessagesViewsCommonBean.getInstance();
+      List<StatusDTO> allStatusList = new ArrayList<StatusDTO>();
+
+      allStatusList.add(new StatusDTO(ActivityInstanceState.ABORTED, propsBean
+            .getString("views.activityTable.statusFilter.aborted")));
+
+      allStatusList.add(new StatusDTO(ActivityInstanceState.ABORTING, propsBean
+            .getString("views.activityTable.statusFilter.aborting")));
+
+      allStatusList.add(new StatusDTO(ActivityInstanceState.APPLICATION, propsBean
+            .getString("views.activityTable.statusFilter.application")));
+
+      allStatusList.add(new StatusDTO(ActivityInstanceState.COMPLETED, propsBean
+            .getString("views.activityTable.statusFilter.completed")));
+
+      allStatusList.add(new StatusDTO(ActivityInstanceState.CREATED, propsBean
+            .getString("views.activityTable.statusFilter.created")));
+
+      allStatusList.add(new StatusDTO(ActivityInstanceState.HIBERNATED, propsBean
+            .getString("views.activityTable.statusFilter.hibernated")));
+
+      allStatusList.add(new StatusDTO(ActivityInstanceState.INTERRUPTED, propsBean
+            .getString("views.activityTable.statusFilter.interrupted")));
+
+      allStatusList.add(new StatusDTO(ActivityInstanceState.SUSPENDED, propsBean
+            .getString("views.activityTable.statusFilter.suspended")));
+      return allStatusList;
+   }
+
+   /**
+    * 
+    * @param oid
+    * @param outData
+    * @param context
+    * @return
+    */
+   private Map<String, Serializable> convertOutDataTOAppropriateType(Long oid, Map<String, Serializable> outData,
+         String context)
+   {
+      return outData;
+   }
 }
