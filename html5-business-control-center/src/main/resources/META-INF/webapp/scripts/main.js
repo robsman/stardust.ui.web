@@ -8,7 +8,9 @@
  * documentation
  ******************************************************************************/
 
-// Define modules
-
+// Define modules bcc = businesscontrolcenter
+angular.module('bcc-ui.services', []);
+angular.module('bcc-ui', ['bcc-ui.services']);
 
 // Register top level module
+portalApplication.registerModule('bcc-ui');
