@@ -188,15 +188,27 @@ if (!window.bpm.portal.GenericAngularApp) {
 
 			angularModule.filter('sdFilterDate', function() {
 				return function(value) {
-					// Convert to Client Format
-					if (value && value != null && value != "") {
-						var datePart;
-						var dateParts = value.split(SERVER_DATE_TIME_FORMAT_SEPARATOR); // Get 2 Parts
-						if (dateParts.length >= 1) {
-							datePart = formatDate(dateParts[0], SERVER_DATE_FORMAT, options.dateFormat);
+					try {
+						// Convert to Client Format
+						if (value && value != null) {
+							var numCheck = new Number(value);
+							if (isNaN(numCheck)) {
+								if (value != "") {
+									var datePart;
+									var dateParts = value.split(SERVER_DATE_TIME_FORMAT_SEPARATOR); // Get 2 Parts
+									if (dateParts.length >= 1) {
+										datePart = formatDate(dateParts[0], SERVER_DATE_FORMAT, options.dateFormat);
+									}
+		
+									value = datePart;
+								}
+							} else {
+								var date = new Date(value);
+								value = formatDate(date, null, options.dateFormat);
+							}
 						}
-
-						value = datePart;
+					} catch(e) {
+						// Ignore
 					}
 					return value;
 				};
@@ -204,38 +216,66 @@ if (!window.bpm.portal.GenericAngularApp) {
 
 			angularModule.filter('sdFilterDateTime', function() {
 				return function(value) {
-					// Convert to Client Format
-					if (value && value != null && value != "") {
-						var datePart;
-						var timePart;
-						var dateParts = value.split(SERVER_DATE_TIME_FORMAT_SEPARATOR); // Get 2 Parts
-						if (dateParts.length >= 1) {
-							datePart = formatDate(dateParts[0], SERVER_DATE_FORMAT, options.dateFormat);
+					try {
+						// Convert to Client Format
+						if (value && value != null) {
+							var numCheck = new Number(value);
+							if (isNaN(numCheck)) {
+								if (value != "") {
+									var datePart;
+									var timePart;
+									var dateParts = value.split(SERVER_DATE_TIME_FORMAT_SEPARATOR); // Get 2 Parts
+									if (dateParts.length >= 1) {
+										datePart = formatDate(dateParts[0], SERVER_DATE_FORMAT, options.dateFormat);
+									}
+									if (dateParts.length >= 2) {
+										var timeParts = dateParts[1].split(":"); // Get 3 Parts, and stripoff seconds part
+										timePart = timeParts[0] + ":" + timeParts[1];
+									}
+		
+									value = datePart + " " + timePart;
+								}
+							} else {
+								var date = new Date(value);
+								var datePart = formatDate(date, null, options.dateFormat);
+								var timePart = date.getHours() + ":" + date.getMinutes();
+								value = datePart + " " + timePart;
+							}
 						}
-						if (dateParts.length >= 2) {
-							var timeParts = dateParts[1].split(":"); // Get 3 Parts, and stripoff seconds part
-							timePart = timeParts[0] + ":" + timeParts[1];
-						}
-
-						value = datePart + " " + timePart;
+					} catch(e) {
+						// Ignore
 					}
+
 					return value;
 				};
 			});
 
 			angularModule.filter('sdFilterTime', function() {
 				return function(value) {
-					// Convert to Client Format
-					if (value && value != null && value != "") {
-						var timePart;
-						var dateParts = value.split(SERVER_DATE_TIME_FORMAT_SEPARATOR); // Get 2 Parts
-						if (dateParts.length >= 2) {
-							var timeParts = dateParts[1].split(":"); // Get 3 Parts, and stripoff seconds part
-							timePart = timeParts[0] + ":" + timeParts[1];
+					try {
+						// Convert to Client Format
+						if (value && value != null) {
+							var numCheck = new Number(value);
+							if (isNaN(numCheck)) {
+								if (value != "") {
+									var timePart;
+									var dateParts = value.split(SERVER_DATE_TIME_FORMAT_SEPARATOR); // Get 2 Parts
+									if (dateParts.length >= 2) {
+										var timeParts = dateParts[1].split(":"); // Get 3 Parts, and stripoff seconds part
+										timePart = timeParts[0] + ":" + timeParts[1];
+									}
+	
+									value = timePart;
+								}
+							} else {
+								var date = new Date(value);
+								value = date.getHours() + ":" + date.getMinutes();								
+							}
 						}
-
-						value = timePart;
+					} catch(e) {
+						// Ignore
 					}
+
 					return value;
 				};
 			});
@@ -272,7 +312,12 @@ if (!window.bpm.portal.GenericAngularApp) {
 		function formatDate(value, fromFormat, toFormat) {
 			if (value != undefined && value != null && value != "") {
 				try {
-					var date = jQuery.datepicker.parseDate(fromFormat, value);
+					var date;
+					if (fromFormat) {
+						date = jQuery.datepicker.parseDate(fromFormat, value);
+					} else {
+						date = value;
+					}
 					value = jQuery.datepicker.formatDate(toFormat, date);
 				} catch(e) {
 					log(e);
