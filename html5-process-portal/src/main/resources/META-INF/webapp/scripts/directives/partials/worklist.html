@@ -2,7 +2,7 @@
 	<div class="worklist-title tbl-title">{{activityTableCtrl.title}}</div>
 	<div sda-toolbar>
 		<div class="tbl-toolbar-section">
-			<button sda-column="TRIVIAL_DATA" ng-disabled="!activityTableCtrl.containsAllTrivialManualActivities()" ng-click="activityTableCtrl.$openCompleteDialog()" title="{{i18n('processportal.views-worklistPanel-tooltip-completeAll')}}" class="button-link tbl-toolbar-item tbl-tool-link">
+			<button ng-if="'worklist' === activityTableCtrl.mode " sda-column="TRIVIAL_DATA" ng-disabled="!activityTableCtrl.containsAllTrivialManualActivities()" ng-click="activityTableCtrl.$openCompleteDialog()" title="{{i18n('processportal.views-worklistPanel-tooltip-completeAll')}}" class="button-link tbl-toolbar-item tbl-tool-link">
 			   <i class="glyphicon glyphicon-share-alt"></i>
 			</button>
 			<button ng-disabled="activityTableCtrl.dataTable.getSelection() < 1" href="#" ng-click="activityTableCtrl.$openDelegateDialog();" title="{{i18n('processportal.toolbars-worklistView-tooltip-delegate')}}" class="button-link tbl-toolbar-item tbl-tool-link" >
@@ -29,43 +29,43 @@
 		sda-exports="true" sda-exports-file-name="worklist-{{activityTableCtrl.exportFileName}}">
 		<thead sda-i18n-scope="processportal.views-worklistPanel-column">
 			<tr>
-				<th sda-name="overview" sda-sortable="true">
+				<th sda-name="overview" sda-sortable="true" sda-visible="{{activityTableCtrl.isColumnVisible('overview')}}">
 					<div sda-filter-template>
 						<div sd-process-activity-filter sda-filter-type='activity' sda-processes="activityTableCtrl.allAccessibleProcesses"></div>
 					</div>
 				</th>
-				<th sda-name="oid" sda-sortable="true" sda-filterable="true"></th>
-				<th sda-name="criticality" sda-sortable="true">
+				<th sda-name="oid" sda-sortable="true" sda-filterable="true" sda-visible="{{activityTableCtrl.isColumnVisible('oid')}}"></th>
+				<th sda-name="criticality" sda-sortable="true" sda-visible="{{activityTableCtrl.isColumnVisible('criticality')}}">
 					<div sda-filter-template>
 						<div sd-criticality-filter sda-criticalities="activityTableCtrl.allAvailableCriticalities"></div>
 					</div>
 				</th>
-				<th sda-name="priority" sda-sortable="true">
+				<th sda-name="priority" sda-sortable="true" sda-visible="{{activityTableCtrl.isColumnVisible('priority')}}">
 					<div sda-filter-template>
 						<div sd-priority-filter></div>
 					</div>
 				</th>
-				<th sda-name="descriptors" sda-visible="true"></th>
-				<th sda-name="started" sda-sortable="true" sda-filterable="true"></th>
+				<th sda-name="descriptors" sda-sortable="false"  sda-visible="{{activityTableCtrl.isColumnVisible('descriptors')}}"></th>
+				<th sda-name="started" sda-sortable="true" sda-filterable="true" sda-visible="{{activityTableCtrl.isColumnVisible('started')}}"></th>
 				<th sda-name="lastModified" sda-label-key="lastmodification"
-					sda-sortable="true" sda-filterable="true"></th>
-				<th sda-name="duration" sda-sortable="false"></th>
-				<th sda-name="lastPerformer" sda-sortable="false"></th>
-				<th sda-name="processDefinition" sda-label-key="processName"
-					sda-visible="false" sda-sortable="false">
+					sda-sortable="true" sda-filterable="true" sda-visible="{{activityTableCtrl.isColumnVisible('lastModified')}}"></th>
+				<th sda-name="duration" sda-sortable="false" sda-filterable="false" sda-visible="{{activityTableCtrl.isColumnVisible('duration')}}"></th>
+				<th sda-name="lastPerformer" sda-sortable="false" sda-filterable="false" sda-visible="{{activityTableCtrl.isColumnVisible('lastPerformer')}}"></th>
+				<th sda-name="processDefinition" sda-label-key="processName" sda-visible="{{activityTableCtrl.isColumnVisible('processDefinition')}}"
+					 sda-sortable="false">
 					<div sda-filter-template>
 						<div sd-process-activity-filter sda-filter-type='process' sda-processes="activityTableCtrl.allAccessibleProcesses"></div>
 					</div>
 				</th>
-				<th sda-name="status" sda-sortable="false" sda-visible="false">
+				<th sda-name="status" sda-sortable="false" sda-visible="{{activityTableCtrl.isColumnVisible('status')}}">
 					<div sda-filter-template>
 						<div sd-multi-select-filter sda-options="activityTableCtrl.availableStates"></div>
 					</div>
 				</th>
-				<th sda-name="assignedTo" sda-sortable="false" sda-visible="false"></th>
-				<th ng-repeat="descCol in activityTableCtrl.descritorCols"
+				<th sda-name="assignedTo" sda-sortable="false" sda-visible="{{activityTableCtrl.isColumnVisible('assignedTo')}}" sda-filterable="false"></th>
+				<th ng-repeat="descCol in activityTableCtrl.descritorCols" sda-visible="{{activityTableCtrl.isColumnVisible('descritorCols')}}" sda-column="DESCRIPTOR_COLUMNS"
 					sda-name="{{descCol.id}}" sda-label="{{descCol.title}}"
-					sda-visible="false" sda-sortable="{{descCol.sortable}}">
+				    sda-sortable="{{descCol.sortable}}">
 					<div sda-filter-template ng-if="descCol.filterable">
 						<div ng-if="colData.dataType =='NUMBER'"><div sd-number-filter></div></div>
 						<div ng-if="colData.dataType =='DATE'"><div sd-date-filter></div></div>
@@ -73,13 +73,13 @@
 						<div ng-if="colData.dataType =='STRING'"><div sd-text-search-filter></div></div>
 					</div>
 				</th>
-				<th sda-name="data" sda-column="TRIVIAL_DATA" sda-sortable="false" sda-exportable="false"></th>
-				<th sda-name="actions" sda-fixed="true" sda-exportable="false"></th>
+				<th sda-name="data" sda-column="TRIVIAL_DATA" sda-sortable="false" sda-exportable="false" sda-filterable="false" sda-visible="{{activityTableCtrl.isColumnVisible('data')}}"></th>
+				<th sda-name="actions" sda-fixed="true" sda-exportable="false" sda-filterable="false"></th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
-				<td style="white-space: nowrap;" sda-exporter="rowData.activity.name">
+				<td style="white-space: nowrap;" sda-exporter="rowData.activity.name" style="text-align: center;"">
 					
 					<div ng-if="activityTableCtrl.mode === 'worklist'">
 						<a ng-if="rowData.activatable" href="#"
@@ -132,7 +132,7 @@
 				<td sda-field="processInstance.processName"></td>
 				<td sda-field="status.label" ></td>
 				<td sda-field="assignedTo"></td>
-				<td ng-repeat="descCol in activityTableCtrl.descritorCols"
+				<td ng-repeat="descCol in activityTableCtrl.descritorCols" sda-column="DESCRIPTOR_COLUMNS"
 					 style="text-align: center; white-space: nowrap;"  sda-data-type="{{descCol.dataType}}" sda-exporter="activityTableCtrl.getDescriptorValueForExport( rowData.descriptorValues[colData.title])">
 					<div sd-descriptor-content sda-value="rowData.descriptorValues[colData.title]" sda-data-type = "colData.dataType"> </div>
 				</td>
@@ -151,7 +151,11 @@
 							title="{{i18n('processportal.toolbars-workflowActions-tooltip-processContextExplorer')}}" class="button-link tbl-tool-link">
 							<i class="glyphicon glyphicon-cog"></i>
 						</button>
-						<button sda-column="TRIVIAL_DATA"
+						<button ng-if="'activityOverview' === activityTableCtrl.mode " 	ng-click="bpmCommon.stopEvent($event); activityTableCtrl.$activateItem(rowData);"
+							    ng-disabled="!rowData.activatable"	title="{{i18n('processportal.views-worklistPanel-tooltip-openActivity')}}" class="button-link tbl-tool-link">
+							<i class="sc sc-gear-lightning" style="font-size : 15px;"></i>
+						</button>
+						<button sda-column="TRIVIAL_DATA" ng-if="'worklist' === activityTableCtrl.mode "
 							ng-disabled="activityTableCtrl.activities.trivialManualActivities[rowData.oid] == undefined"
 							ng-click="bpmCommon.stopEvent($event); activityTableCtrl.$openCompleteDialog(rowData);"
 							title="{{i18n('processportal.toolbars-workflowActions-tooltip-complete')}}" class="button-link tbl-tool-link">
@@ -164,6 +168,9 @@
 						<button ng-click="bpmCommon.stopEvent($event); activityTableCtrl.$openAbortDialog(rowData);" ng-disabled="!rowData.abortActivity || row.defaultCaseActivity"
 							title="{{i18n('processportal.toolbars-workflowActions-tooltip-abort')}}" class="button-link tbl-tool-link">
 							<i class="glyphicon glyphicon-remove"></i>
+						</button>
+						<button ng-if="'activityOverview' === activityTableCtrl.mode " sd-abort-popover ng-disabled="false" sda-activities="activityTableCtrl.dataTable.getSelection()" sda-on-confirm="activityTableCtrl.refresh()" class="button-link tbl-toolbar-item tbl-tool-link" style="padding-left: 0px;">
+							<i class="glyphicon glyphicon-chevron-right glyphicon-rotate-90"></i>
 						</button>
 						<button ng-click="bpmCommon.stopEvent($event); activityTableCtrl.$openNotes(rowData);"
 							title="{{i18n('processportal.toolbars-workflowActions-tooltip-notes')}}" class="button-link tbl-tool-link">

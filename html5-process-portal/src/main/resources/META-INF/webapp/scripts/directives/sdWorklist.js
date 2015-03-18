@@ -44,6 +44,23 @@
 			}
 		};
 
+
+		//Defaults
+
+		var defaultValues = {
+				mode:'worklist',
+				worklist: {
+					visibleColumns : ['overview', 'oid', 'criticality', 'priority', 'descriptors', 'started', 'lastModified', 'duration', 'lastPerformer', 'data'],
+					preferenceModule : 'ipp-workflow-perspective'
+
+				},
+				activityInstanceView : {
+					visibleColumns : ['overview', 'oid', 'criticality', 'priority', 'descriptors', 'started', 'lastModified', 'duration', 'lastPerformer', 'data']
+				}
+		};
+
+
+
 		/*
 		 *
 		 */
@@ -58,11 +75,23 @@
 				var cols = elem.find('[sda-column="TRIVIAL_DATA"]');
 				cols.remove();
 			}
-
 			// Toolbar
 			var toolbar = elem.prev();
 			var items = toolbar.find('[sda-column="TRIVIAL_DATA"]');
 			items.remove();
+
+			// Process Descriptor columns
+			var showDescriptorCoulmns = true; // Default
+			if (attr.sdaDescriptorColumn && attr.sdaDescriptorColumn === 'false') {
+				showDescriptorCoulmns = false;
+		}
+			// If not required remove the column
+			if (!showDescriptorCoulmns) {
+				var cols = elem.find('[sda-column="DESCRIPTOR_COLUMNS"]');
+				cols.remove();
+			}
+
+
 		}
 
 		/*
@@ -106,68 +135,51 @@
 			//Abort Activity Data
 			this.showAbortActivityDialog = false;
 			this.activitiesToAbort = [];
+			this.dirtyDataForms =[];
 
 			//All processes with activities
 			this.allAccessibleProcesses = [];
 			this.allAvailableCriticalities = [];
 			this.availableStates = [];
 			this.availablePriorities = [];
-			
-			
-			this.mode = "worklist";  //worklist activityOverview
-			
-			if(this.mode === 'worklist'){
-				this.priorityEditable = false;
-			}else{
-				this.priorityEditable = true;
-			}
-			
-			
-			
-			if(this.priorityEditable){
-				this.originalPriorities = {};
-				this.changedPriorities = {};
-				this.updatePriorityNotification ={
-					error: false,
-					result:{}
-				};
-			}
-			
-		
-			
+
+			this.worklistPrefModule = "";
+			this.worklistPrefId ="";
+
+			this.columnSelector = 'admin';
+
 			// Process Query
 			if (!attr.sdaQuery) {
-				throw 'Query attribute is not specified for activity table.';
+				throw 'Query attribute has to be specified if sdData is not specified.';
 			}
 			var queryGetter = $parse(attr.sdaQuery);
 			var query = queryGetter(scopeToUse);
 			if (query == undefined) {
-				throw 'Query evaluated to "nothing" for activity table..';
+				throw 'Query evaluated to "nothing" for activity table.';
 			}
 			this.query = query;
 
-			// Process Title
-			var titleExpr = "";
-			if (attr.sdaTitle) {
-				titleExpr = attr.sdaTitle;
+			
+			if(attr.sdaMode){
+				this.mode= attr.sdaMode;
+			}else{
+				this.mode = defaultValues.mode;  
 			}
-			var titleGetter = $parse(titleExpr);
-			this.title = titleGetter(scopeToUse);
 
-			// Process TableHandle and then set data table instance
-			this.tableHandleExpr = 'activityTableCtrl.dataTable';
+			if (this.mode === 'worklist') {
+				this.initializeWorklistMode(attr, scope);
+			} else if(this.mode === 'activityInstanceView'){
+				this.initializeActivityInstanceMode(attr, scope);
+			}else{
+				throw 'Not a valid value for sdaMode';
+			}
 
-			var unregister = scope.$watch(this.tableHandleExpr, function(newVal, oldVal) {
-				if (newVal != undefined && newVal != null && newVal != oldVal) {
-					if (attr.sdActivityTable) {
-						var assignable = $parse(attr.sdActivityTable).assign;
-						if (assignable) {
-							assignable(scopeToUse, self.dataTable);
+			this.customizeWithAttributeValues(attr, scope, scopeToUse);
+
+
+			if (attr.sdaPageSize) {
+				this.sdaPageSize = attr.sdaPageSize;
 						}
-					}
-					unregister();
-				}
-			});
 
 			if (attr.sdaInitialSelection) {
 				this.initialSelection = attr.sdaInitialSelection;
@@ -195,17 +207,27 @@
 				}
 			}
 
-			if (attr.sdaPageSize) {
-				this.sdaPageSize = attr.sdaPageSize;
-			}
 
-			this.columnSelector = 'admin'; //TODO
 
-			this.exportFileName = this.query.userId || this.query.participantQId; //TODO
+			// Process TableHandle and then set data table instance
+			this.tableHandleExpr = 'activityTableCtrl.dataTable';
 
-			this.worklistPrefModule = 'ipp-workflow-perspective';
-			this.worklistPrefId = 'worklist-participant-columns' || 'worklist-process-columns'; //TODO
-			this.worklistPrefName = this.query.userId || this.query.participantQId; //TODO
+			var unregister = scope.$watch(this.tableHandleExpr, function(newVal, oldVal) {
+				if (newVal != undefined && newVal != null && newVal != oldVal) {
+					if (attr.sdActivityTable) {
+						var assignable = $parse(attr.sdActivityTable).assign;
+						if (assignable) {
+							assignable(scopeToUse, self.dataTable);
+						}
+					}
+					unregister();
+				}
+			});
+
+		
+			this.exportFileName = this.query.userId || this.query.participantQId; 
+			console.log(self.worklistPrefModule);
+			console.log(self.worklistPrefId);
 
 			this.preferenceDelegate = function(prefInfo) {
 				var preferenceStore = sdPreferenceService.getStore(prefInfo.scope, self.worklistPrefModule, self.worklistPrefId);
@@ -220,14 +242,23 @@
 
 				return preferenceStore;
 			}
-			
-			
-			this.dirtyDataForms =[];
 
 			/**
 			 * 
 			 */
-			this.changeFormStatus = function(rowId) {
+			ActivityTableCompiler.prototype.isColumnVisible = function(columnName) {
+				var found = $filter('filter')(self.visbleColumns, columnName);
+				if(found && found.length === 1){
+					return true;
+				}
+				return false;
+			};
+
+
+			/**
+			 * 
+			 */
+			ActivityTableCompiler.prototype.changeFormStatus = function(rowId) {
 			   var self = this;
 
 			   if (this.dirtyDataForms.indexOf(rowId) == -1) {
@@ -239,7 +270,7 @@
 			   var matchArray   = $filter('filter')(selectedRows, { oid : rowId }, true);
 			   var isRowSelected = matchArray.length > 0;
 
-			   if(!isRowSelected){
+				if(!isRowSelected) {
 			      var rows = $filter('filter')(self.activities.list, {
 			         oid : rowId
 			      }, true);
@@ -250,9 +281,9 @@
 
 			      self.dataTable.setSelection(selectedRows);
 			   }
-			}
+			};
 
-			
+
 			this.fetchDescriptorCols();
 			this.fetchAllProcesses();
 			this.fetchAllAvailableCriticalities();
@@ -260,15 +291,92 @@
 			this.fetchAvailablePriorities();
 		};
 
+
+		/**
+		 * 
+		 */
+		ActivityTableCompiler.prototype.initializeWorklistMode = function(attr, scope){
+			this.priorityEditable = false;
+			this.visbleColumns = defaultValues.worklist.visibleColumns;
+			this.worklistPrefModule = defaultValues.worklist.preferenceModule;
+
+		};
+
+		/**
+		 * 
+		 */
+		ActivityTableCompiler.prototype.initializeActivityInstanceMode = function(attr, scope){
+
+			this.priorityEditable = true;
+			this.originalPriorities = {};
+			this.changedPriorities = {};
+			this.updatePriorityNotification = {
+					error : false,
+					result : {}
+			};
+			this.visbleColumns = defaultValues.activityInstance.visibleColumns;
+			
+			if (!attr.sdaPreferenceModule) {
+				throw "sdaPreferenceModule is not defined."
+			}
+			
+			if (!attr.sdaPreferenceId) {
+				throw "sdaPreferenceModule is not defined."
+			}
+			
+			if (!attr.sdaPreferenceName) {
+				throw "sdaPreferenceName is not defined."
+			}
+		};
+
+		/**
+		 * 
+		 */
+		ActivityTableCompiler.prototype.customizeWithAttributeValues = function(attr, scope, scopeToUse){
+
+
+			// Process Title
+			var titleExpr = "";
+			if (attr.sdaTitle) {
+				titleExpr = attr.sdaTitle;
+			}
+			var titleGetter = $parse(titleExpr);
+			this.title = titleGetter(scopeToUse);
+
+
+			var idFromQuery = this.query.userId || this.query.participantQId;
+
+			if(idFromQuery){
+				this.worklistPrefId = 'worklist-participant-columns';
+			}else{
+				this.worklistPrefId = 'worklist-process-columns';
+			}
+
+			if (attr.sdaPreferenceModule) {
+				this.worklistPrefModule = attr.sdaPreferenceModule;
+			}
+
+			if (attr.sdaPreferenceId) {
+				this.worklistPrefId = attr.sdaPreferenceId;
+			}
+
+			this.worklistPrefName = this.query.userId || this.query.participantQId; 
+			if (attr.sdaPreferenceName) {
+				this.worklistPrefName = attr.sdaPreferenceName;
+			}
+
+		};
+
+
 		/*
-		 *
+		 * 
 		 */
 		ActivityTableCompiler.prototype.refresh = function() {
 			this.dataTable.refresh(true);
 		};
-		
+
 		/*
-      *
+		 * 
       */
      ActivityTableCompiler.prototype.cleanLocals = function() {
          this.dirtyDataForms = [];
@@ -281,10 +389,10 @@
 			var self = this;
 			var deferred = $q.defer();
 			self.cleanLocals();
-			
+
 			if( angular.isDefined(this.sdDataCtrl) ) {
 				trace.debug("sdData is defined fetching custom data. ");
-				
+
 				self.sdDataCtrl.retrieveData().then(function(data){
 					self.activities = data;
 					deferred.resolve(self.activities);
@@ -294,7 +402,7 @@
 
 			} else {
 				trace.debug("sdData not defined fetching default data. ");
-				
+
 				var query = angular.extend({}, this.query);
 				query.options = options;
 
@@ -302,7 +410,7 @@
 					self.activities.list = data.list;
 					self.activities.totalCount = data.totalCount;
 					self.storePriorities(self.activities.list);
-					
+
 					var oids = [];
 					angular.forEach(self.activities.list, function(workItem, index){
 						if (workItem.trivial == undefined || workItem.trivial) {
@@ -321,9 +429,9 @@
 				}, function(error) {
 					deferred.reject(error);
 				});
-				
+
 			}
-			
+
 
 			return deferred.promise;
 		};
@@ -503,14 +611,14 @@
                matchArray.push(row);
             }
          });
-         
+
          if(matchArray.length === selectedRows.length ){
             return true;
          }
-         
+
          return false;
       };
-      
+
       /**
        * 
        */
@@ -518,20 +626,20 @@
          var self = this;
          var activitiesWithDirtyForms =[]; 
          angular.forEach(activities,function(activity){
-    
+
             if(self.dirtyDataForms.indexOf(activity.oid) > -1){
                activitiesWithDirtyForms.push(activity);
             }
          });
-         
+
          if(activitiesWithDirtyForms.length > 0){
             return true;
          }
-         
+
          return false;
       }
-	      
-	      
+
+
 	  /*
        * 
        */
@@ -540,25 +648,25 @@
 	         var STATUS_PARTIAL_SUCCESS = 'partialSuccess';
 	         var STATUS_SUCCESS = 'success';
 	         var STATUS__FAILURE = 'failure';
-	   
+
 	         self.completeActivityResult = {
 	                  status : 'success',  //success failure partialSuccess
 	                  notifications : [],
 	                  nameIdMap : {}
 	         };
-	         
+
 	         var promise = res.promise;
 	         var selectedItems = self.selectedActivity;
-            
+
 	         promise.then(function() {
-	            
+
 	            angular.forEach(selectedItems,function(item){
 	               self.completeActivityResult.nameIdMap[item.oid] = item.activity.name;
 	            });
-	            
+
 	            if (selectedItems.length > 0) {
 	               var activitiesData = [];
-	               
+
 	               if(self.completeDialog.confirmationType === 'dataMapping') {
 	                  //When data fields are filled in a dialog
 	                  angular.forEach(selectedItems, function(item, index) {
@@ -584,7 +692,7 @@
 	                        angular.forEach( trivialActivityInfo.dataMappings,function(mapping){
 	                           dataMappings[mapping.id] = mapping.typeName; 
 	                        });
-	         
+
 	                        activitiesData.push({oid: item.oid, outData: outData , dataMappings : dataMappings});
 	                     }
 	                  });
@@ -592,12 +700,12 @@
 
 	               if (activitiesData.length > 0 ) {
 	                  sdActivityInstanceService.completeAll(activitiesData).then(function(result) {
-	                	 
+
 	                	  self.showCompleteNotificationDialog = true;
 	                	  self.completeActivityResult.notifications = result;
 	                	  self.refresh();
 	                	  sdViewUtilService.syncLaunchPanels();
-	                	  
+
 	                	  if (result.failure.length > 0
 	                			  && result.success.length > 0) {
 	                		  // partial Success
@@ -611,7 +719,7 @@
 	                		  self.completeActivityResult.status = STATUS__FAILURE;
 	                		  self.completeActivityResult.title = sgI18nService.translate('processportal.views-completeActivityDialog-notification-title-error','ERROR');
 	                	  }
-	                    
+
 	                  });
 	               } else {
 	                  self.dataTable.setSelection([]);
@@ -619,7 +727,7 @@
 	            }
 	         });
 	      };
-		
+
 
 
 	      /**
@@ -627,12 +735,12 @@
 	       * @param rowItem
 	       */
       ActivityTableCompiler.prototype.openCompleteDialog = function( rowItem) {
-    	  
+
          var self = this;
          var CONFIRMATION_TYPE_SINGLE=  'single'
          var CONFIRMATION_TYPE_GENERIC=  'generic'
          var CONFIRMATION_TYPE_DATAMAPPING= 'dataMapping'
-         
+
          self.selectedActivity = [];
          self.completeDialog = {
             confirmationType : CONFIRMATION_TYPE_SINGLE,  //single / generic / dataMapping
@@ -653,7 +761,7 @@
                this.selectedActivity = selectedItems;
 
                if ( this.isSelectionHomogenous( selectedItems ) && !this.isSelectionDirty( selectedItems ) ) {
-                 
+
             	  self.completeDialog.confirmationType = CONFIRMATION_TYPE_DATAMAPPING;
                   var firstItem = selectedItems[0];
                   self.completeDialog.dataMappings = angular
@@ -661,7 +769,7 @@
                   self.completeDialog.outData =angular
                   .copy(self.activities.trivialManualActivities[firstItem.oid].inOutData);
                } else {
-            	   
+
                   self.completeDialog.confirmationType = CONFIRMATION_TYPE_GENERIC;
                }
             }
@@ -730,21 +838,21 @@
 			sdViewUtilService.syncLaunchPanels();
 			this.activitiesToAbort = [];
 		};
-		
+
 		/*
       *
       */
      ActivityTableCompiler.prototype.getDescriptorExportText = function(descriptors) {
         var descriptorsToExport  = [];
-        
+
         angular.forEach(descriptors,function( descriptor){
         	if( !descriptor.isDocument )
            descriptorsToExport.push(descriptor.key +" : "+descriptor.value);
         });
         return descriptorsToExport.join(',');
      };
-     
-     
+
+
      /**
       * 
       */
@@ -765,7 +873,7 @@
     	 }
     	 return exportValue;
      };
-     
+
      /*
       *
       */
@@ -843,7 +951,7 @@
     				 trace.error("Error occured in updating the priorities : ",failureResult);
     			 });
      };
-     
+
      /**
  	 * 
  	 */
@@ -854,10 +962,10 @@
  				}, true);
  	};
 
+
+
      return directiveDefObject;
 	};
-	
-	
-	
+
 
 })();
